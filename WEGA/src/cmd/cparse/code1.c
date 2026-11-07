@@ -386,11 +386,11 @@ genswitch(p,n) register struct sw *p; {
 	if( range>0 && range <= 3*n && n>=5 ){ /* implement a direct switch */
 #endif
 		dlab = p[1].slab >= 0 ? p[1].slab : getlab();
-		q->lval = -1;
+		q->tn.lval = -1;
 #ifdef OLD_D6D
 		if( p[2].sval ){
 			t = bcon( 0 );
-			t->lval = p[2].sval;
+			t->tn.lval = p[2].sval;
 			r = block( MINUS, q, t, INT, 0, INT );
 			}
 		else r = q;
@@ -398,8 +398,8 @@ genswitch(p,n) register struct sw *p; {
 		r = p[2].sval ? block( MINUS, q, bcon( p[2].sval ), INT, 0, INT ) : q;
 #endif
 		t = block( DESC, NIL, NIL, 0, 0, 0 );
-		t->lval = range;
-		t->rval = swlab = getlab();
+		t->tn.lval = range;
+		t->tn.rval = swlab = getlab();
 		t = block( CM, bcon( -dlab ), t, 0, 0, 0 );
 		ecomp( block( SWTCH, r, t, 0, 0, 0 ) );
 		fprintf( outfile, "C %d\t%d\t", swlab, dlab );
@@ -428,14 +428,14 @@ genswitch(p,n) register struct sw *p; {
 		dlab = p[1].slab >= 0 ? p[1].slab : getlab();
 		tlab = getlab();
 		swlab = getlab();
-		q->lval = -1;
+		q->tn.lval = -1;
 		s = block( DESC, NIL, NIL, 0, 0, 0 );
-		s->lval = n-1;
-		s->rval = tlab;
+		s->tn.lval = n-1;
+		s->tn.rval = tlab;
 		s = block( SEARCH, q, s, INT, 0, INT );
 		t = block( DESC, NIL, NIL, 0, 0, 0 );
-		t->lval = n-1;
-		t->rval = swlab;
+		t->tn.lval = n-1;
+		t->tn.rval = swlab;
 		r = bcon( -dlab );
 		t = block( CM, r, t, 0, 0, 0 );
 		r = block( SWTCH, s, t, 0, 0, 0 );
@@ -475,7 +475,7 @@ genswitch(p,n) register struct sw *p; {
 		s = bcon( p[i].slab );
 		r = t = talloc();
 		ncopy( r, q );
-		t->lval = n-i;
+		t->tn.lval = n-i;
 		t = block( NE, t, (NODE *) tlab, INT, 0, INT );
 		r = block( CBRANCH, t, s, INT, 0, INT );
 		ecomp( r );

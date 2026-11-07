@@ -55,7 +55,7 @@ tinit(){ /* initialize expression tree search */
 
 	NODE *p;
 
-	for( p=node; p<= &node[TREESZ-1]; ++p ) p->op = FREE;
+	for( p=node; p<= &node[TREESZ-1]; ++p ) p->in.op = FREE;
 	lastfree = node;
 
 	}
@@ -68,7 +68,7 @@ talloc(){
 
 	q = lastfree;
 	for( p = TNEXT(q); p!=q; p= TNEXT(p))
-		if( p->op ==FREE ) return(lastfree=p);
+		if( p->in.op ==FREE ) return(lastfree=p);
 
 	cerror( "out of tree space; simplify expression");
 	/* NOTREACHED */
@@ -80,20 +80,20 @@ tcheck(){ /* ensure that all nodes have been freed */
 
 	if( !nerrors )
 		for( p=node; p<= &node[TREESZ-1]; ++p )
-			if( p->op != FREE ) cerror( "wasted space: %%%x(%d)", p, p->op );
+			if( p->in.op != FREE ) cerror( "wasted space: %%%x(%d)", p, p->in.op );
 	tinit();
 	}
 tfree( p )  NODE *p; {
 	/* free the tree p */
 	extern tfree1();
 
-	if( p->op != FREE ) walkf( p, tfree1 );
+	if( p->in.op != FREE ) walkf( p, tfree1 );
 
 	}
 
 tfree1(p)  NODE *p; {
 	if( p == 0 ) cerror( "freeing blank tree!");
-	else p->op = FREE;
+	else p->in.op = FREE;
 	}
 
 fwalk( t, f, down ) register NODE *t; int (*f)(); {
@@ -105,16 +105,16 @@ fwalk( t, f, down ) register NODE *t; int (*f)(); {
 
 	(*f)( t, down, &down1, &down2 );
 
-	switch( optype( t->op ) ){
+	switch( optype( t->in.op ) ){
 
 	case BITYPE:
-		fwalk( t->left, f, down1 );
-		t = t->right;
+		fwalk( t->in.left, f, down1 );
+		t = t->in.right;
 		down = down2;
 		goto more;
 
 	case UTYPE:
-		t = t->left;
+		t = t->in.left;
 		down = down1;
 		goto more;
 
@@ -125,10 +125,10 @@ walkf( t, f ) register NODE *t;  int (*f)(); {
 	register opty;
 
 	if( t == 0 ) return;
-	opty = optype(t->op);
+	opty = optype(t->in.op);
 
-	if( opty != LTYPE ) walkf( t->left, f );
-	if( opty == BITYPE ) walkf( t->right, f );
+	if( opty != LTYPE ) walkf( t->in.left, f );
+	if( opty == BITYPE ) walkf( t->in.right, f );
 	(*f)( t );
 	}
 
@@ -297,9 +297,9 @@ twords( t ) TWORD t; { /* the size of a scalar type in words */
 argsize( p ) register NODE *p; { /* the size of an argument in words */
 	int s1, s2;
 
-	if( p->op == STARG )
-		return( (tsize( STRTY, p->left->cdim, p->left->csiz ) + 7) / SZINT );
-	return( s1 = s2 = twords( p->type == FLOAT ? DOUBLE : p->type ) );
+	if( p->in.op == STARG )
+		return( (tsize( STRTY, p->in.left->fn.cdim, p->in.left->fn.csiz ) + 7) / SZINT );
+	return( s1 = s2 = twords( p->in.type == FLOAT ? DOUBLE : p->in.type ) );
 	}
 
 where(c){ /* print the location of an error */
@@ -358,14 +358,14 @@ tcopy( p ) register NODE *p; {
 	register r;
 
 	ncopy( q=talloc(), p );
-	r = p->rval;
+	r = p->tn.rval;
 
-	switch( optype(q->op) ){
+	switch( optype(q->in.op) ){
 
 	case BITYPE:
-		q->right = tcopy(p->right);
+		q->in.right = tcopy(p->in.right);
 	case UTYPE:
-		q->left = tcopy(p->left);
+		q->in.left = tcopy(p->in.left);
 		}
 
 	return(q);
@@ -380,7 +380,7 @@ ispow2( c ) register CONSZ c; {
 
 nncon( p ) register NODE *p; {
 	/* is p a constant without a name */
-	return( p->op == ICON && p->rval == NONAME );
+	return( p->in.op == ICON && p->tn.rval == NONAME );
 	}
 
 

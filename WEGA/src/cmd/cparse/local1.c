@@ -9,9 +9,9 @@ cast( p, t ) register NODE *p; TWORD t; {
 	/* cast node p to type t */
 
 	p = buildtree( CAST, block( NAME, NIL, NIL, t, 0, (int)t ), p );
-	p->left->op = FREE;
-	p->op = FREE;
-	return( p->right );
+	p->in.left->in.op = FREE;
+	p->in.op = FREE;
+	return( p->in.right );
 	}
 NODE *
 clocal(p) NODE *p; {
@@ -31,31 +31,31 @@ clocal(p) NODE *p; {
 	register x;
 	int i;
 
-	l = p->left;
-	r = p->right;
-	o = p->op;
+	l = p->in.left;
+	r = p->in.right;
+	o = p->in.op;
 
 	switch( o ){
 
 	case NAME:
-		q = STP(p->rval);
+		q = STP(p->tn.rval);
 		switch( q->sclass ){
 
 		case LABEL:
 		case ULABEL:
 			if( q->slevel ){
-				p->op = LAB;
-				p->lval = 0;
-				p->rval = -q->offset;
+				p->in.op = LAB;
+				p->tn.lval = 0;
+				p->tn.rval = -q->offset;
 				}
 			}
 		break;
 
 	case EQ:
 	case NE:
-		if( l->type == DOUBLE || l->type == FLOAT || r->type == DOUBLE || r->type == FLOAT ){
+		if( l->in.type == DOUBLE || l->in.type == FLOAT || r->in.type == DOUBLE || r->in.type == FLOAT ){
 		flt:
-			p->op += FEQ-EQ;
+			p->in.op += FEQ-EQ;
 			}
 		break;
 
@@ -63,91 +63,91 @@ clocal(p) NODE *p; {
 	case LE:
 	case GT:
 	case GE:
-		if( l->type == DOUBLE || l->type == FLOAT || r->type == DOUBLE || r->type == FLOAT ) goto flt;
-		if( ISPTR(l->type) || ISPTR(r->type) ) p->op += ULE-LE;
+		if( l->in.type == DOUBLE || l->in.type == FLOAT || r->in.type == DOUBLE || r->in.type == FLOAT ) goto flt;
+		if( ISPTR(l->in.type) || ISPTR(r->in.type) ) p->in.op += ULE-LE;
 		break;
 
 	case PCONV:
-		m = l->type;
+		m = l->in.type;
 #ifdef SEG
-		if( (m == CHAR || m == UCHAR || m == INT || m == UNSIGNED || m == SHORT || m == USHORT) && l->op != ICON ){
-			p->op = o = SCONV;
+		if( (m == CHAR || m == UCHAR || m == INT || m == UNSIGNED || m == SHORT || m == USHORT) && l->in.op != ICON ){
+			p->in.op = o = SCONV;
 			break;
 			}
-		if( l->op == ICON ) l->lval &= 0x7f00ffffL;
+		if( l->in.op == ICON ) l->tn.lval &= 0x7f00ffffL;
 	paint:
-		l->type = p->type;
-		l->cdim = p->cdim;
-		l->csiz = p->csiz;
-		p->op = FREE;
+		l->in.type = p->in.type;
+		l->fn.cdim = p->fn.cdim;
+		l->fn.csiz = p->fn.csiz;
+		p->in.op = FREE;
 		p = l;
 		return( p );
 #else
-		if( (m == CHAR || m == UCHAR || m == LONG || m == ULONG) && l->op != ICON ){
-			p->op = o = SCONV;
+		if( (m == CHAR || m == UCHAR || m == LONG || m == ULONG) && l->in.op != ICON ){
+			p->in.op = o = SCONV;
 			break;
 			}
 		goto paint;
 #endif
 
 	case SCONV:
-		ml = p->type == FLOAT || p->type == DOUBLE;
-		m = l->type == FLOAT || l->type == DOUBLE;
+		ml = p->in.type == FLOAT || p->in.type == DOUBLE;
+		m = l->in.type == FLOAT || l->in.type == DOUBLE;
 		if( ml ) break;
 		if( m ) break;
-		while( l->op == SCONV && tbytes( l->type ) > tbytes( p->type ) &&
-				l->left->type != DOUBLE && l->left->type != FLOAT ){
-			l->op = FREE;
-			p->left = l = l->left;
+		while( l->in.op == SCONV && tbytes( l->in.type ) > tbytes( p->in.type ) &&
+				l->in.left->in.type != DOUBLE && l->in.left->in.type != FLOAT ){
+			l->in.op = FREE;
+			p->in.left = l = l->in.left;
 			}
-		ml = p->type;
-		m = l->type;
-		if( l->op == ICON ){ /* fold the conversion into the constant */
+		ml = p->in.type;
+		m = l->in.type;
+		if( l->in.op == ICON ){ /* fold the conversion into the constant */
 			long val;
 
-			val = l->lval;
+			val = l->tn.lval;
 #ifdef SEG
 			if( ml == INT && ISPTR(m) ){
-				l->lval = (int) val;
+				l->tn.lval = (int) val;
 				break;
 				}
 			if( ml == UNSIGNED && ISPTR(m) ){
-				l->lval = val & 0177777;
+				l->tn.lval = val & 0177777;
 				break;
 				}
 			if( ml == SHORT && ISPTR(m) ){
-				l->lval = (int) val;
+				l->tn.lval = (int) val;
 				break;
 				}
 			if( ml == USHORT && ISPTR(m) ){
-				l->lval = val & 0177777;
+				l->tn.lval = val & 0177777;
 				break;
 				}
 #endif
 			switch( ml ){
 
 			case CHAR:
-				l->lval = (char) val;
+				l->tn.lval = (char) val;
 				break;
 
 			case UCHAR:
-				l->lval = val & 0377;
+				l->tn.lval = val & 0377;
 				break;
 
 			case USHORT:
 			case UNSIGNED:
-				l->lval = val & 0177777;
+				l->tn.lval = val & 0177777;
 				break;
 
 			case SHORT:
 			case INT:
-				l->lval = (int) val;
+				l->tn.lval = (int) val;
 				break;
 				}
 		settype:
-			l->type = ml;
+			l->in.type = ml;
 			}
-		else if( l->op == MUL && twords( ml ) - twords( m ) == 1 ) goto settype;	/* the product is long */
+		else if( l->in.op == MUL && twords( ml ) - twords( m ) == 1 ) goto settype;	/* the product is long */
 		else if( tbytes( ml ) != tbytes( m ) ) break;
 #ifdef SEG
 		else if( ISPTR(ml) ) break;
@@ -157,32 +157,32 @@ clocal(p) NODE *p; {
 #else
 		if( tbytes( ml ) == tbytes( m ) ){
 		paint:
-			l->type = p->type;
-			l->cdim = p->cdim;
-			l->csiz = p->csiz;
+			l->in.type = p->in.type;
+			l->fn.cdim = p->fn.cdim;
+			l->fn.csiz = p->fn.csiz;
 			}
 #endif
-		p->op = FREE;
+		p->in.op = FREE;
 		p = l;
 		return( p );
 
 	case ASSIGN:
-		if( r->op == SCONV ){
-			ml = r->type;
-			m = r->left->type;
+		if( r->in.op == SCONV ){
+			ml = r->in.type;
+			m = r->in.left->in.type;
 			}
 		break;
 
 	case PVCONV:
-		if( nncon( r ) && (i = ispow2( r->lval )) > 0 ){
-			p->op = FREE;
-			r->lval = i;
+		if( nncon( r ) && (i = ispow2( r->tn.lval )) > 0 ){
+			p->in.op = FREE;
+			r->tn.lval = i;
 			p = buildtree( RS, l, r );
 			return( p );
 			}
 	case PMCONV:
-		if( r->op != ICON ) cerror( "bad conversion", 0 );
-		p->op = FREE;
+		if( r->in.op != ICON ) cerror( "bad conversion", 0 );
+		p->in.op = FREE;
 		p = buildtree( o == PMCONV ? MUL : DIV, l, r );
 		return( p );
 
@@ -190,32 +190,32 @@ clocal(p) NODE *p; {
 	case MINUS:
 	case MUL:
 	case LS:	/* WEGA: pointer arithmetic is done in words */
-		if( ISPTR(p->type) || ISARY(p->type) ){
-			if( l->type == LONG || l->type == ULONG ) l = p->left = cast( l, INT );
-			if( r->type == LONG || r->type == ULONG ) r = p->right = cast( r, INT );
+		if( ISPTR(p->in.type) || ISARY(p->in.type) ){
+			if( l->in.type == LONG || l->in.type == ULONG ) l = p->in.left = cast( l, INT );
+			if( r->in.type == LONG || r->in.type == ULONG ) r = p->in.right = cast( r, INT );
 			}
 		break;
 
 	case DIV:
 	case MOD:	/* WEGA: a char operand is used without its conversion */
-		if( l->op == SCONV && bsize( l->type ) == SZINT && bsize( l->left->type ) == SZCHAR ){
-			l->op = FREE;
-			p->left = l = l->left;
+		if( l->in.op == SCONV && bsize( l->in.type ) == SZINT && bsize( l->in.left->in.type ) == SZCHAR ){
+			l->in.op = FREE;
+			p->in.left = l = l->in.left;
 			}
 		break;
 
 	case UNARY MINUS:
-		if( p->type == UCHAR ) p->type = CHAR;
+		if( p->in.type == UCHAR ) p->in.type = CHAR;
 		break;
 		}
 
 	/* WEGA: a compare of a char with a constant that fits */
-	if( logop( p->op ) && r->op == ICON && l->op == SCONV && (l->left->type == CHAR || l->left->type == UCHAR) &&
-			r->lval >= -256 && r->lval <= 255 ){
-		l->op = FREE;
-		l = p->left = l->left;
-		r->type = l->type;
-		if( !logop( p->op ) ) p->type = l->type;
+	if( logop( p->in.op ) && r->in.op == ICON && l->in.op == SCONV && (l->in.left->in.type == CHAR || l->in.left->in.type == UCHAR) &&
+			r->tn.lval >= -256 && r->tn.lval <= 255 ){
+		l->in.op = FREE;
+		l = p->in.left = l->in.left;
+		r->in.type = l->in.type;
+		if( !logop( p->in.op ) ) p->in.type = l->in.type;
 		}
 
 	return(p);
@@ -238,7 +238,7 @@ offcon( off, t, d, s ) OFFSZ off; TWORD t; register d, s; {
 	/* in general they  are necessary for offcon, but not on H'well */
 
 	p = bcon(0);
-	p->lval = off/SZCHAR;
+	p->tn.lval = off/SZCHAR;
 	return(p);
 
 	}
@@ -254,12 +254,12 @@ incode( p, sz ) register NODE *p; register sz; {
 	/* inoff is updated to have the proper final value */
 	/* we also assume sz  < SZINT */
 
-	word |= p->lval << (SZINT-sz-inwd);
+	word |= p->tn.lval << (SZINT-sz-inwd);
 	if( sz+inwd <= SZINT ) inwd += sz;
 	inoff += sz;
 	if( inwd == 8 ) fprintf( dfile, "\t.byte\t%%%x\n", word>>8 );
 	else if( sz == SZINT ) fprintf( dfile, "\t.word\t%%%x\n", word );
-	else if( sz == SZLONG ) fprintf( dfile, "\t.long\t%%%lx\n", p->lval );
+	else if( sz == SZLONG ) fprintf( dfile, "\t.long\t%%%lx\n", p->tn.lval );
 	else return;
 	inwd = 0;
 	word = 0;
@@ -290,14 +290,14 @@ cinit( p, sz ) register NODE *p; register sz; {
 	struct symtab *q;
 	char *s;
 
-	switch( p->left->op ){
+	switch( p->in.left->in.op ){
 
 	case ICON:
-		incode( p->left, sz );
+		incode( p->in.left, sz );
 		return;
 
 	case NAME:
-		q = STP(p->left->rval);
+		q = STP(p->in.left->tn.rval);
 		if( q->sclass == STATIC && q->slevel > 0 ) fprintf( dfile, "\t.addr\tL%ld\n", q->offset );
 		else {
 			s = exname( q->sname );
@@ -307,11 +307,11 @@ cinit( p, sz ) register NODE *p; register sz; {
 		return;
 
 	case LAB:
-		fprintf( dfile, "\t.addr\tL%d\n", -p->left->rval );
+		fprintf( dfile, "\t.addr\tL%d\n", -p->in.left->tn.rval );
 		break;
 
 	default:
-		if( ISPTR(p->type) ) fprintf( dfile, "\t.addr\t" );
+		if( ISPTR(p->in.type) ) fprintf( dfile, "\t.addr\t" );
 		else fprintf( dfile, "\t.word\t" );
 		cprint( p );
 		putc( '\n', dfile );
@@ -324,15 +324,15 @@ cprint( p ) register NODE *p; { /* print the constant expression p into the .D f
 	struct symtab *q;
 	char *s;
 
-	if( (o = optype(p->op)) == LTYPE ){
-		switch( p->op ){
+	if( (o = optype(p->in.op)) == LTYPE ){
+		switch( p->in.op ){
 
 		case ICON:
-			fprintf( dfile, "%d", p->lval );
+			fprintf( dfile, "%d", p->tn.lval );
 			break;
 
 		case NAME:
-			q = STP(p->rval);
+			q = STP(p->tn.rval);
 			if( q->sclass == STATIC && q->slevel > 0 ) fprintf( dfile, "L%ld", q->offset );
 			else if( q->sclass == MOS ) fprintf( dfile, "%d", q->offset/SZCHAR );
 			else {
@@ -342,17 +342,17 @@ cprint( p ) register NODE *p; { /* print the constant expression p into the .D f
 			break;
 
 		case LAB:
-			fprintf( dfile, "L%d", -p->rval );
+			fprintf( dfile, "L%d", -p->tn.rval );
 			break;
 			}
 		return;
 		}
 	if( o == UTYPE ){
-		cprint( p->left );
+		cprint( p->in.left );
 		return;
 		}
-	cprint( p->left );
-	switch( p->op ){
+	cprint( p->in.left );
+	switch( p->in.op ){
 
 	case PLUS:
 	case STREF:
@@ -364,7 +364,7 @@ cprint( p ) register NODE *p; { /* print the constant expression p into the .D f
 		putc( '-', dfile );
 		break;
 		}
-	cprint( p->right );
+	cprint( p->in.right );
 	}
 
 vfdzero( n ) register n; { /* define n bits of zeros in a vfd */
@@ -450,11 +450,11 @@ ecode( p ) NODE *p; {
 	/* walk the tree and write out the nodes.. */
 
 	if( nerrors ) return;
-	if( p->op == CBRANCH && p->left->op == FREE ){
-		p->right->op = FREE;
-		p->op = FREE;
+	if( p->in.op == CBRANCH && p->in.left->in.op == FREE ){
+		p->in.right->in.op = FREE;
+		p->in.op = FREE;
 		}
-	if( p->op == FREE ) return;
+	if( p->in.op == FREE ) return;
 	putc( '.', outfile );
 	fprintf( outfile, "%d\t%s\n", lineno, ftitle );
 	prtree( p );

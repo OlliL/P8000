@@ -117,7 +117,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 
 	/* check for constants */
 
-	if( opty == UTYPE && l->op == ICON ){
+	if( opty == UTYPE && l->in.op == ICON ){
 
 		switch( o ){
 
@@ -130,27 +130,27 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			}
 		}
 
-	else if( o==UNARY MINUS && l->op==FCON ){
-		l->dval = -l->dval;
+	else if( o==UNARY MINUS && l->in.op==FCON ){
+		l->fpn.dval = -l->fpn.dval;
 		return(l);
 		}
 
-	else if( o==QUEST && l->op==ICON ) {
-		r->op = FREE;
-		l->op = FREE;
-		if( l->lval ){
-			tfree( r->right );
-			return( r->left );
+	else if( o==QUEST && l->in.op==ICON ) {
+		r->in.op = FREE;
+		l->in.op = FREE;
+		if( l->tn.lval ){
+			tfree( r->in.right );
+			return( r->in.left );
 			}
 		else {
-			tfree( r->left );
-			return( r->right );
+			tfree( r->in.left );
+			return( r->in.right );
 			}
 		}
 
-	else if( (o==ANDAND || o==OROR) && (l->op==ICON||r->op==ICON) ) goto ccwarn;
+	else if( (o==ANDAND || o==OROR) && (l->in.op==ICON||r->in.op==ICON) ) goto ccwarn;
 
-	else if( opty == BITYPE && l->op == ICON && r->op == ICON ){
+	else if( opty == BITYPE && l->in.op == ICON && r->in.op == ICON ){
 
 		switch( o ){
 
@@ -180,42 +180,42 @@ buildtree( o, l, r ) register NODE *l, *r; {
 		case LS:
 		case RS:
 			if( conval( l, o, r ) ) {
-				r->op = FREE;
+				r->in.op = FREE;
 				return(l);
 				}
 			break;
 			}
 		}
 
-	else if( opty == BITYPE && (l->op==FCON||l->op==ICON) &&
-		(r->op==FCON||r->op==ICON) ){
+	else if( opty == BITYPE && (l->in.op==FCON||l->in.op==ICON) &&
+		(r->in.op==FCON||r->in.op==ICON) ){
 		switch(o){
 		case PLUS:
 		case MINUS:
 		case MUL:
 		case DIV:
-			if( l->op == ICON ){
-				l->dval = l->lval;
+			if( l->in.op == ICON ){
+				l->fpn.dval = l->tn.lval;
 				}
-			if( r->op == ICON ){
-				r->dval = r->lval;
+			if( r->in.op == ICON ){
+				r->fpn.dval = r->tn.lval;
 				}
-			l->op = FCON;
-			l->type = l->csiz = DOUBLE;
-			r->op = FREE;
+			l->in.op = FCON;
+			l->in.type = l->fn.csiz = DOUBLE;
+			r->in.op = FREE;
 			switch(o){
 			case PLUS:
-				l->dval += r->dval;
+				l->fpn.dval += r->fpn.dval;
 				return(l);
 			case MINUS:
-				l->dval -= r->dval;
+				l->fpn.dval -= r->fpn.dval;
 				return(l);
 			case MUL:
-				l->dval *= r->dval;
+				l->fpn.dval *= r->fpn.dval;
 				return(l);
 			case DIV:
-				if( r->dval == 0 ) uerror( "division by 0." );
-				else l->dval /= r->dval;
+				if( r->fpn.dval == 0 ) uerror( "division by 0." );
+				else l->fpn.dval /= r->fpn.dval;
 				return(l);
 				}
 			}
@@ -228,21 +228,21 @@ buildtree( o, l, r ) register NODE *l, *r; {
 	actions = opact(p);
 
 	if( actions&LVAL ){ /* check left descendent */
-		if( notlval(p->left) ) {
+		if( notlval(p->in.left) ) {
 			uerror( "lvalue required" );
 			}
 		}
 
 	if( actions & NCVTR ){
-		p->left = pconvert( p->left );
+		p->in.left = pconvert( p->in.left );
 		}
 	else if( !(actions & NCVT ) ){
 		switch( opty ){
 
 		case BITYPE:
-			p->right = pconvert( p->right );
+			p->in.right = pconvert( p->in.right );
 		case UTYPE:
-			p->left = pconvert( p->left );
+			p->in.left = pconvert( p->in.left );
 
 			}
 		}
@@ -253,11 +253,11 @@ buildtree( o, l, r ) register NODE *l, *r; {
 
 	if( actions & (TYPL|TYPR) ){
 
-		q = (actions&TYPL) ? p->left : p->right;
+		q = (actions&TYPL) ? p->in.left : p->in.right;
 
-		p->type = q->type;
-		p->cdim = q->cdim;
-		p->csiz = q->csiz;
+		p->in.type = q->in.type;
+		p->fn.cdim = q->fn.cdim;
+		p->fn.csiz = q->fn.csiz;
 		}
 
 	if( actions & CVTL ) p = convert( p, CVTL );
@@ -266,8 +266,8 @@ buildtree( o, l, r ) register NODE *l, *r; {
 	if( actions & PTMATCH ) p = ptmatch(p);
 
 	if( actions & OTHER ){
-		l = p->left;
-		r = p->right;
+		l = p->in.left;
+		r = p->in.right;
 
 		switch(o){
 
@@ -276,95 +276,95 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			if( sp->stype == UNDEF ){
 				uerror( "%s undefined", &ntab[sp->sname] );
 				/* make p look reasonable */
-				p->type = p->cdim = p->csiz = INT;
-				p->rval = (int) idname;
-				p->lval = 0;
+				p->in.type = p->fn.cdim = p->fn.csiz = INT;
+				p->tn.rval = (int) idname;
+				p->tn.lval = 0;
 				defid( p, SNULL );
 				break;
 				}
-			p->type = sp->stype;
-			p->cdim = sp->dimoff;
-			p->csiz = sp->sizoff;
-			p->lval = 0;
-			p->rval = (int) idname;
+			p->in.type = sp->stype;
+			p->fn.cdim = sp->dimoff;
+			p->fn.csiz = sp->sizoff;
+			p->tn.lval = 0;
+			p->tn.rval = (int) idname;
 			/* special case: MOETY is really an ICON... */
-			if( p->type == MOETY ){
-				p->rval = NONAME;
-				p->lval = sp->offset;
-				p->cdim = 0;
-				p->type = ENUMTY;
-				p->op = ICON;
+			if( p->in.type == MOETY ){
+				p->tn.rval = NONAME;
+				p->tn.lval = sp->offset;
+				p->fn.cdim = 0;
+				p->in.type = ENUMTY;
+				p->in.op = ICON;
 				}
 			break;
 
 		case ICON:
-			p->type = INT;
-			p->cdim = 0;
-			p->csiz = INT;
+			p->in.type = INT;
+			p->fn.cdim = 0;
+			p->fn.csiz = INT;
 			break;
 
 		case STRING:
-			p->op = LAB;
-			p->type = CHAR+ARY;
-			p->lval = 0;
-			p->rval = NOLAB;
-			p->cdim = curdim;
-			p->csiz = CHAR;
+			p->in.op = LAB;
+			p->in.type = CHAR+ARY;
+			p->tn.lval = 0;
+			p->tn.rval = NOLAB;
+			p->fn.cdim = curdim;
+			p->fn.csiz = CHAR;
 			break;
 
 		case FCON:
-			p->lval = 0;
-			p->rval = 0;
-			p->type = DOUBLE;
-			p->cdim = 0;
-			p->csiz = DOUBLE;
+			p->tn.lval = 0;
+			p->tn.rval = 0;
+			p->in.type = DOUBLE;
+			p->fn.cdim = 0;
+			p->fn.csiz = DOUBLE;
 			break;
 
 		case ANDAND:
 		case OROR:
 		case NOT:
-			p->type = p->csiz = INT;
+			p->in.type = p->fn.csiz = INT;
 			break;
 
 		case STREF:
 			/* p->x turned into *(p+offset) */
 			/* rhs must be a name; check correctness */
 #ifdef SEG
-			p->type = INCREF( p->right->type );
+			p->in.type = INCREF( p->in.right->in.type );
 #endif
 
-			sp = STP(i = r->rval);
+			sp = STP(i = r->tn.rval);
 			if( sp->sclass != MOS && sp->sclass != MOU && !(sp->sclass&FIELD) ){
 				uerror( "member of structure or union required" );
 				}
-			else if( (sp->sflags&SMEMB) && (l->type == PTR+STRTY || l->type == PTR+UNIONTY) ){
+			else if( (sp->sflags&SMEMB) && (l->in.type == PTR+STRTY || l->in.type == PTR+UNIONTY) ){
 				/* WEGA: a member name of several structures: the member of this one */
 				char *cp2, *cp1;
 				int m;
 				int j, k;
 
-				for( j = dimtab[l->csiz+1]; k = dimtab[j]; ++j ){
+				for( j = dimtab[l->fn.csiz+1]; k = dimtab[j]; ++j ){
 					cp1 = &ntab[STP(k)->sname];
 					cp2 = &ntab[STP(i)->sname];
 					if( (STP(k)->sflags&SMEMB) && !strcmp( cp2, cp1 ) ){
-						r->rval = i = k;
-						r->type = STP(k)->stype;
-						p->type = INCREF( STP(k)->stype );
+						r->tn.rval = i = k;
+						r->in.type = STP(k)->stype;
+						p->in.type = INCREF( STP(k)->stype );
 						if( !STP(k)->slevel ) refid( STP(k) );
 						break;
 						}
 					}
 				}
-			else if( l->type != PTR+STRTY && l->type != PTR+UNIONTY ){
+			else if( l->in.type != PTR+STRTY && l->in.type != PTR+UNIONTY ){
 				if( STP(i)->sflags&SMEMB ) uerror( "non-unique name demands struct/union or struct/union pointer" );
-				else if( tsize( l->type, l->cdim, l->csiz ) != SZPOINT ) uerror( "illegal type of struct/union pointer" );
+				else if( tsize( l->in.type, l->fn.cdim, l->fn.csiz ) != SZPOINT ) uerror( "illegal type of struct/union pointer" );
 				else werror( "struct/union or struct/union pointer required" );
 				}
 			else {
 				int j;
 
-				if( (j=l->csiz+1)<0 ) cerror( "undefined structure or union" );
-				else if( !chkstr( i, (int)dimtab[j], DECREF(l->type) ) ){
+				if( (j=l->fn.csiz+1)<0 ) cerror( "undefined structure or union" );
+				else if( !chkstr( i, (int)dimtab[j], DECREF(l->in.type) ) ){
 					werror( "illegal member use: %s", &ntab[STP(i)->sname] );
 					}
 				}
@@ -373,42 +373,42 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			break;
 
 		case UNARY MUL:
-			if( l->op == UNARY AND ){
-				p->op = l->op = FREE;
-				p = l->left;
+			if( l->in.op == UNARY AND ){
+				p->in.op = l->in.op = FREE;
+				p = l->in.left;
 				}
-			if( !ISPTR(l->type))uerror("illegal indirection");
-			p->type = DECREF(l->type);
-			p->cdim = l->cdim;
-			p->csiz = l->csiz;
+			if( !ISPTR(l->in.type))uerror("illegal indirection");
+			p->in.type = DECREF(l->in.type);
+			p->fn.cdim = l->fn.cdim;
+			p->fn.csiz = l->fn.csiz;
 			break;
 
 		case UNARY AND:
-			switch( l->op ){
+			switch( l->in.op ){
 
 			case UNARY MUL:
-				p->op = l->op = FREE;
-				p = l->left;
+				p->in.op = l->in.op = FREE;
+				p = l->in.left;
 			case NAME:
 			case LAB:
-				p->type = INCREF( l->type );
-				p->cdim = l->cdim;
-				p->csiz = l->csiz;
+				p->in.type = INCREF( l->in.type );
+				p->fn.cdim = l->fn.cdim;
+				p->fn.csiz = l->fn.csiz;
 				break;
 
 			case COMOP:
-				lr = buildtree( UNARY AND, l->right, NIL );
-				p->op = l->op = FREE;
-				p = buildtree( COMOP, l->left, lr );
+				lr = buildtree( UNARY AND, l->in.right, NIL );
+				p->in.op = l->in.op = FREE;
+				p = buildtree( COMOP, l->in.left, lr );
 				break;
 
 			case QUEST: {
 				int a1, a2, a3;
 
-				lr = buildtree( UNARY AND, l->right->right, NIL );
-				ll = buildtree( UNARY AND, l->right->left, NIL );
-				p->op = l->op = l->right->op = FREE;
-				p = buildtree( QUEST, l->left, buildtree( COLON, ll, lr ) );
+				lr = buildtree( UNARY AND, l->in.right->in.right, NIL );
+				ll = buildtree( UNARY AND, l->in.right->in.left, NIL );
+				p->in.op = l->in.op = l->in.right->in.op = FREE;
+				p = buildtree( QUEST, l->in.left, buildtree( COLON, ll, lr ) );
 				break;
 				}
 
@@ -420,18 +420,18 @@ buildtree( o, l, r ) register NODE *l, *r; {
 
 		case LS:
 		case RS:
-			if(tsize(p->left->type, p->left->cdim, p->left->csiz)
+			if(tsize(p->in.left->in.type, p->in.left->fn.cdim, p->in.left->fn.csiz)
 			   < SZINT) {
-				p->left = makety(p->left, INT, 0, INT );
-				p->type = ISUNSIGNED(p->left->type) ? UNSIGNED : INT;
+				p->in.left = makety(p->in.left, INT, 0, INT );
+				p->in.type = ISUNSIGNED(p->in.left->in.type) ? UNSIGNED : INT;
 			}
 		case ASG LS:
 		case ASG RS:
-			if(tsize(p->right->type, p->right->cdim, p->right->csiz)
+			if(tsize(p->in.right->in.type, p->in.right->fn.cdim, p->in.right->fn.csiz)
 			   == SZINT) break;
 		case SUBSR:
 		intright:
-			p->right = makety(p->right, INT, 0, INT );
+			p->in.right = makety(p->in.right, INT, 0, INT );
 			break;
 
 		case RETURN:
@@ -446,75 +446,75 @@ buildtree( o, l, r ) register NODE *l, *r; {
 				TWORD t;
 				int d, s;
 
-				if( l->csiz != r->csiz ) uerror( "assignment of diff structures" );
+				if( l->fn.csiz != r->fn.csiz ) uerror( "assignment of diff structures" );
 
 				r = buildtree( UNARY AND, r, NIL );
-				t = r->type;
-				d = r->cdim;
-				s = r->csiz;
+				t = r->in.type;
+				d = r->fn.cdim;
+				s = r->fn.csiz;
 
 				l = block( STASG, l, r, t, d, s );
 
 				if( o == RETURN ){
-					p->op = FREE;
+					p->in.op = FREE;
 					p = l;
 					break;
 					}
 
-				p->op = UNARY MUL;
-				p->left = l;
-				p->right = NIL;
+				p->in.op = UNARY MUL;
+				p->in.left = l;
+				p->in.right = NIL;
 				break;
 				}
 		case COLON:
 			/* structure colon */
 
-			if( l->csiz != r->csiz ) uerror( "type clash in conditional" );
+			if( l->fn.csiz != r->fn.csiz ) uerror( "type clash in conditional" );
 			break;
 
 		case CALL:
-			p->right = r = strargs( p->right );
+			p->in.right = r = strargs( p->in.right );
 		case UNARY CALL:
-			if( !ISPTR(l->type)) uerror("illegal function");
-			p->type = DECREF(l->type);
-			if( !ISFTN(p->type)) uerror("illegal function");
-			p->type = DECREF( p->type );
-			p->cdim = l->cdim;
-			p->csiz = l->csiz;
-			if( p->type == STRTY || p->type == UNIONTY ){
+			if( !ISPTR(l->in.type)) uerror("illegal function");
+			p->in.type = DECREF(l->in.type);
+			if( !ISFTN(p->in.type)) uerror("illegal function");
+			p->in.type = DECREF( p->in.type );
+			p->fn.cdim = l->fn.cdim;
+			p->fn.csiz = l->fn.csiz;
+			if( p->in.type == STRTY || p->in.type == UNIONTY ){
 				/* function returning structure */
 				/*  make function really return ptr to str., with * */
 
-				p->op += STCALL-CALL;
-				p->type = INCREF( p->type );
+				p->in.op += STCALL-CALL;
+				p->in.type = INCREF( p->in.type );
 				p = buildtree( UNARY MUL, p, NIL );
 
 				}
 			break;
 
 		case UNARY MINUS:	/* WEGA: of an unsigned char */
-			p->left = block( SCONV, p->left, NIL, INT, 0, INT );
-			p->type = INT;
+			p->in.left = block( SCONV, p->in.left, NIL, INT, 0, INT );
+			p->in.type = INT;
 			break;
 
 		case ASG DIV:
 		case ASG MOD:	/* WEGA: a char divided by an int */
-			if( (t = l->type) == CHAR || t == UCHAR ){
-				p->right = makety( p->right, INT, 0, INT );
-				p->type = l->type;
-				p->cdim = l->cdim;
-				p->csiz = l->csiz;
+			if( (t = l->in.type) == CHAR || t == UCHAR ){
+				p->in.right = makety( p->in.right, INT, 0, INT );
+				p->in.type = l->in.type;
+				p->fn.cdim = l->fn.cdim;
+				p->fn.csiz = l->fn.csiz;
 				}
 			else p = tymatch( p );
 			break;
 
 		case ASG MUL:	/* WEGA: the product of words is long */
-			if( (t = l->type) == CHAR || t == UCHAR || t == INT || t == UNSIGNED ){
-				p->right = makety( p->right, INT, 0, INT );
-				p->type = LONG;
-				p->cdim = 0;
-				p->csiz = LONG;
-				p = makety( p, t, 0, l->csiz );
+			if( (t = l->in.type) == CHAR || t == UCHAR || t == INT || t == UNSIGNED ){
+				p->in.right = makety( p->in.right, INT, 0, INT );
+				p->in.type = LONG;
+				p->fn.cdim = 0;
+				p->fn.csiz = LONG;
+				p = makety( p, t, 0, l->fn.csiz );
 				}
 			else p = tymatch( p );
 			break;
@@ -524,7 +524,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 		case ASG MINUS:
 		case INCR:
 		case DECR:	/* WEGA: a pointer and a long */
-			if( ISPTR(p->left->type) && (p->right->type == LONG || p->right->type == ULONG) ) goto intright;
+			if( ISPTR(p->in.left->in.type) && (p->in.right->in.type == LONG || p->in.right->in.type == ULONG) ) goto intright;
 			break;
 #endif
 
@@ -544,15 +544,15 @@ buildtree( o, l, r ) register NODE *l, *r; {
 NODE *
 strargs( p ) register NODE *p;  { /* rewrite structure flavored arguments */
 
-	if( p->op == CM ){
-		p->left = strargs( p->left );
-		p->right = strargs( p->right );
+	if( p->in.op == CM ){
+		p->in.left = strargs( p->in.left );
+		p->in.right = strargs( p->in.right );
 		return( p );
 		}
 
-	if( p->type == STRTY || p->type == UNIONTY ){
-		p = block( STARG, p, NIL, p->type, p->cdim, p->csiz );
-		p->left = buildtree( UNARY AND, p->left, NIL );
+	if( p->in.type == STRTY || p->in.type == UNIONTY ){
+		p = block( STARG, p, NIL, p->in.type, p->fn.cdim, p->fn.csiz );
+		p->in.left = buildtree( UNARY AND, p->in.left, NIL );
 		p = clocal(p);
 		}
 	return( p );
@@ -601,35 +601,35 @@ chkpun(p) register NODE *p; {
 	register t1, t2;
 	register d1, d2;
 
-	t1 = p->left->type;
-	t2 = p->right->type;
+	t1 = p->in.left->in.type;
+	t2 = p->in.right->in.type;
 
 	if( t1==ENUMTY || t2==ENUMTY ) { /* check for enumerations */
 		if( t1==ENUMTY && t2==ENUMTY ){
-			if( p->left->csiz != p->right->csiz )
-				werror( "operands are from different enumerations, operator %s", opst[p->op] );
+			if( p->in.left->fn.csiz != p->in.right->fn.csiz )
+				werror( "operands are from different enumerations, operator %s", opst[p->in.op] );
 			}
-		else if( t1 != INT && t2 != INT ) uerror( "enumeration type clash, operator %s", opst[p->op] );
+		else if( t1 != INT && t2 != INT ) uerror( "enumeration type clash, operator %s", opst[p->in.op] );
 		return;
 		}
 
-	if( ISPTR(t1) || ISARY(t1) ) q = p->right;
-	else q = p->left;
+	if( ISPTR(t1) || ISARY(t1) ) q = p->in.right;
+	else q = p->in.left;
 
-	if( !ISPTR(q->type) && !ISARY(q->type) ){
-		if( q->op != ICON || q->lval != 0 ){
+	if( !ISPTR(q->in.type) && !ISARY(q->in.type) ){
+		if( q->in.op != ICON || q->tn.lval != 0 ){
 			werror( "illegal combination of pointer and integer");
 			}
 #ifdef SEG
-		if( q->op == ICON ) q->lval &= 0x7f00ffffL;
+		if( q->in.op == ICON ) q->tn.lval &= 0x7f00ffffL;
 #endif
 		}
 	else {
-		d1 = p->left->cdim;
-		d2 = p->right->cdim;
+		d1 = p->in.left->fn.cdim;
+		d2 = p->in.right->fn.cdim;
 		for( ;; ){
 			if( t1 == t2 ) {;
-				if( p->left->csiz != p->right->csiz ) {
+				if( p->in.left->fn.csiz != p->in.right->fn.csiz ) {
 					werror( "illegal structure pointer combination" );
 					}
 				return;
@@ -669,7 +669,7 @@ stref( p ) register NODE *p; {
 	/* WEGA: the STREF node stays, codgen computes the offset */
 
 	ptr = 1;
-	q = STP(p->right->rval);
+	q = STP(p->in.right->tn.rval);
 	dsc = q->sclass;
 	t = INCREF( q->stype );
 	d = q->dimoff;
@@ -677,28 +677,28 @@ stref( p ) register NODE *p; {
 
 	p = clocal( makety( p, t, d, s ) );
 
-	if( !ISPTR(p->type) ) p->type = p->type + PTR;
-	if( !ISPTR(p->left->type) ){
+	if( !ISPTR(p->in.type) ) p->in.type = p->in.type + PTR;
+	if( !ISPTR(p->in.left->in.type) ){
 		ptr = 0;
-		p->left->type = p->left->type + PTR;
+		p->in.left->in.type = p->in.left->in.type + PTR;
 		}
 
 	if( dsc & FIELD ){ /* build field info */
-		if( ptr ) p->left = buildtree( UNARY MUL, p->left, NIL );
-		p->op = FLD;
-		p->type = q->stype;
-		p->csiz = q->sizoff;
-		if( p->left->op == UNARY AND && p->left->left->op == NAME ){
-			p->left->op = FREE;
-			p->left = p->left->left;
+		if( ptr ) p->in.left = buildtree( UNARY MUL, p->in.left, NIL );
+		p->in.op = FLD;
+		p->in.type = q->stype;
+		p->fn.csiz = q->sizoff;
+		if( p->in.left->in.op == UNARY AND && p->in.left->in.left->in.op == NAME ){
+			p->in.left->in.op = FREE;
+			p->in.left = p->in.left->in.left;
 			}
-		else if( p->left->op != NAME && !ptr ){
+		else if( p->in.left->in.op != NAME && !ptr ){
 			r = talloc();
-			ncopy( r, p->left );
-			r->op = UNARY MUL;
-			r->type = p->type;
-			r->left = p->left;
-			p->left = r;
+			ncopy( r, p->in.left );
+			r->in.op = UNARY MUL;
+			r->in.type = p->in.type;
+			r->in.left = p->in.left;
+			p->in.left = r;
 			}
 		}
 	else p = buildtree( UNARY MUL, p, NIL );
@@ -710,13 +710,13 @@ notlval(p) register NODE *p; {
 
 	/* return 0 if p an lvalue, 1 otherwise */
 
-	switch( p->op ){
+	switch( p->in.op ){
 
 	case NAME:
 	case STREF:
 	case UNARY MUL:
 	case FLD:
-		if( ISARY(p->type) || ISFTN(p->type) ) return(1);
+		if( ISARY(p->in.type) || ISFTN(p->in.type) ) return(1);
 		return(0);
 
 	default:
@@ -731,14 +731,14 @@ bcon( i ){ /* make a constant node with value i */
 	register NODE *p;
 
 	p = block( ICON, NIL, NIL, INT, 0, INT );
-	p->lval = i;
-	p->rval = NONAME;
+	p->tn.lval = i;
+	p->tn.rval = NONAME;
 	return( clocal(p) );
 	}
 
 NODE *
 bpsize(p) register NODE *p; {
-	return( offcon( psize(p), p->type, p->cdim, p->csiz ) );
+	return( offcon( psize(p), p->in.type, p->fn.cdim, p->fn.csiz ) );
 	}
 
 OFFSZ
@@ -746,12 +746,12 @@ psize( p ) register NODE *p; {
 	/* p is a node of type pointer; psize returns the
 	   size of the thing pointed to */
 
-	if( !ISPTR(p->type) ){
+	if( !ISPTR(p->in.type) ){
 		uerror( "pointer required");
 		return( SZINT );
 		}
 	/* note: no pointers to fields */
-	return( tsize( DECREF(p->type), p->cdim, p->csiz ) );
+	return( tsize( DECREF(p->in.type), p->fn.cdim, p->fn.csiz ) );
 	}
 
 NODE *
@@ -764,22 +764,22 @@ convert( p, f )  register NODE *p; {
 	register NODE *q, *r;
 
 	if( f == CVTL ){
-		q = p->right;
-		r = p->left;
+		q = p->in.right;
+		r = p->in.left;
 		}
 	else {
-		q = p->left;
-		r = p->right;
+		q = p->in.left;
+		r = p->in.right;
 		}
-	if( p->op == COLON ){
-		r = makety( r, q->type, 0, q->csiz );
-		if( f == CVTL ) p->left = r;
-		else p->right = r;
+	if( p->in.op == COLON ){
+		r = makety( r, q->in.type, 0, q->fn.csiz );
+		if( f == CVTL ) p->in.left = r;
+		else p->in.right = r;
 		return( p );
 		}
 	r = optim( clocal( block( PMCONV, r, bpsize(q), INT, 0, INT ) ) );
-	p->left = q;	/* WEGA: for CVTL the operands change places */
-	p->right = r;
+	p->in.left = q;	/* WEGA: for CVTL the operands change places */
+	p->in.right = r;
 	return(p);
 
 	}
@@ -790,15 +790,15 @@ econvert( p ) register NODE *p; {
 
 	register TWORD ty;
 
-	if( (ty=BTYPE(p->type)) == ENUMTY || ty == MOETY ) {
-		if( dimtab[ p->csiz ] == SZCHAR ) ty = CHAR;
-		else if( dimtab[ p->csiz ] == SZINT ) ty = INT;
-		else if( dimtab[ p->csiz ] == SZSHORT ) ty = SHORT;
+	if( (ty=BTYPE(p->in.type)) == ENUMTY || ty == MOETY ) {
+		if( dimtab[ p->fn.csiz ] == SZCHAR ) ty = CHAR;
+		else if( dimtab[ p->fn.csiz ] == SZINT ) ty = INT;
+		else if( dimtab[ p->fn.csiz ] == SZSHORT ) ty = SHORT;
 		else ty = LONG;
 		ty = ctype( ty );
-		p->csiz = ty;
-		MODTYPE(p->type,ty);
-		if( p->op == ICON && ty != LONG ) p->type = p->csiz = INT;
+		p->fn.csiz = ty;
+		MODTYPE(p->in.type,ty);
+		if( p->in.op == ICON && ty != LONG ) p->in.type = p->fn.csiz = INT;
 		}
 	}
 
@@ -807,12 +807,12 @@ pconvert( p ) register NODE *p; {
 
 	/* if p should be changed into a pointer, do so */
 
-	if( ISARY( p->type) ){
-		p->type = DECREF( p->type );
-		++p->cdim;
+	if( ISARY( p->in.type) ){
+		p->in.type = DECREF( p->in.type );
+		++p->fn.cdim;
 		return( buildtree( UNARY AND, p, NIL ) );
 		}
-	if( ISFTN( p->type) )
+	if( ISFTN( p->in.type) )
 		return( buildtree( UNARY AND, p, NIL ) );
 
 	return( p );
@@ -823,25 +823,25 @@ oconvert(p) register NODE *p; {
 	/* convert the result itself: used for pointer and unsigned */
 	register NODE *q;
 
-	switch(p->op) {
+	switch(p->in.op) {
 
 	case LE:
 	case LT:
 	case GE:
 	case GT:
-		if( ISUNSIGNED(p->left->type) || ISUNSIGNED(p->right->type) )  p->op += (ULE-LE);
+		if( ISUNSIGNED(p->in.left->in.type) || ISUNSIGNED(p->in.right->in.type) )  p->in.op += (ULE-LE);
 	case EQ:
 	case NE:
 		return( p );
 
 	case MINUS:
-		p->left = block( SCONV, q = p->left, NIL, INT, 0, INT );
-		p->right = block( SCONV, p->right, NIL, INT, 0, INT );
+		p->in.left = block( SCONV, q = p->in.left, NIL, INT, 0, INT );
+		p->in.right = block( SCONV, p->in.right, NIL, INT, 0, INT );
 		return(  clocal( block( PVCONV,
 			p, bpsize(q), INT, 0, INT ) ) );
 		}
 
-	cerror( "illegal oconvert: %d", p->op );
+	cerror( "illegal oconvert: %d", p->in.op );
 	}
 
 NODE *
@@ -856,13 +856,13 @@ ptmatch(p)  register NODE *p; {
 	register TWORD t1;
 	TWORD t2, t;
 
-	o = p->op;
-	t = t1 = p->left->type;
-	t2 = p->right->type;
-	d = p->left->cdim;
-	d2 = p->right->cdim;
-	s = p->left->csiz;
-	s2 = p->right->csiz;
+	o = p->in.op;
+	t = t1 = p->in.left->in.type;
+	t2 = p->in.right->in.type;
+	d = p->in.left->fn.cdim;
+	d2 = p->in.right->fn.cdim;
+	s = p->in.left->fn.csiz;
+	s2 = p->in.right->fn.csiz;
 
 	switch( o ){
 
@@ -872,7 +872,7 @@ ptmatch(p)  register NODE *p; {
 		{  break; }
 
 	case MINUS:
-		{  if( psize(p->left) != psize(p->right) ){
+		{  if( psize(p->in.left) != psize(p->in.right) ){
 			uerror( "illegal pointer subtraction");
 			}
 		   break;
@@ -901,13 +901,13 @@ ptmatch(p)  register NODE *p; {
 		break;
 		}
 
-	p->left = makety( p->left, t, d, s );
-	p->right = makety( p->right, t, d, s );
+	p->in.left = makety( p->in.left, t, d, s );
+	p->in.right = makety( p->in.right, t, d, s );
 	if( o!=MINUS && !logop(o) ){
 
-		p->type = t;
-		p->cdim = d;
-		p->csiz = s;
+		p->in.type = t;
+		p->fn.cdim = d;
+		p->fn.csiz = s;
 		}
 
 	return(clocal(p));
@@ -932,10 +932,10 @@ tymatch(p)  register NODE *p; {
 	register NODE *p1;
 	int cvl;	/* the left operand may be converted */
 
-	o = p->op;
+	o = p->in.op;
 
-	t1 = p->left->type;
-	t2 = p->right->type;
+	t1 = p->in.left->in.type;
+	t2 = p->in.right->in.type;
 	if( (t1==UNDEF || t2==UNDEF) && o!=CAST )
 		uerror( "void type illegal in expression" );
 
@@ -957,35 +957,35 @@ tymatch(p)  register NODE *p; {
 	if( asgop(o) ){
 		cvl = 0;
 		t = t1;
-		tu = p->left->type;
+		tu = p->in.left->in.type;
 		}
 	else {
 		tu = (u && UNSIGNABLE(t))?ENUNSIGN(t):t;
 		cvl = 1;
 		}
 
-	if( t != t1 && cvl ) p->left = makety( p->left, tu, 0, (int)tu );
+	if( t != t1 && cvl ) p->in.left = makety( p->in.left, tu, 0, (int)tu );
 
-	if( t != t2 || o==CAST ) p->right = makety( p->right, tu, 0, (int)tu );
+	if( t != t2 || o==CAST ) p->in.right = makety( p->in.right, tu, 0, (int)tu );
 
 	if( asgop(o) ){
-		p->type = p->left->type;
-		p->cdim = p->left->cdim;
-		p->csiz = p->left->csiz;
+		p->in.type = p->in.left->in.type;
+		p->fn.cdim = p->in.left->fn.cdim;
+		p->fn.csiz = p->in.left->fn.csiz;
 		}
 	else if( !logop(o) ){
-		p->type = tu;
-		p->cdim = 0;
-		p->csiz = t;
+		p->in.type = tu;
+		p->fn.cdim = 0;
+		p->fn.csiz = t;
 		}
 	else {
-		p->type = p->csiz = tu = INT;
-		p->cdim = 0;
+		p->in.type = p->fn.csiz = tu = INT;
+		p->fn.cdim = 0;
 		}
 
 	/* WEGA: a product of two words is long */
-	if( (o == MUL || o == ASG MUL) && twords( p->left->type ) == 1 && twords( p->right->type ) == 1 ){
-		p->type = u ? ULONG : LONG;
+	if( (o == MUL || o == ASG MUL) && twords( p->in.left->in.type ) == 1 && twords( p->in.right->in.type ) == 1 ){
+		p->in.type = u ? ULONG : LONG;
 		p = makety( p, tu, 0, (int)tu );
 		}
 
@@ -997,12 +997,12 @@ makety( p, t, d, s ) register NODE *p; register TWORD t; {
 	/* make p into type t by inserting a conversion */
 	register TWORD pt;
 
-	pt = p->type;
-	if( p->type == ENUMTY && p->op == ICON ){
+	pt = p->in.type;
+	if( p->in.type == ENUMTY && p->in.op == ICON ){
 		econvert(p);
 	same:
-		p->cdim = d;
-		p->csiz = s;
+		p->fn.cdim = d;
+		p->fn.csiz = s;
 		return( p );
 		}
 	if( t == pt ) goto same;
@@ -1012,10 +1012,10 @@ makety( p, t, d, s ) register NODE *p; register TWORD t; {
 		return( block( PCONV, p, NIL, t, d, s ) );
 		}
 
-	if( p->op == ICON && ( t==DOUBLE||t==FLOAT ) ){
-		p->op = FCON;
-		p->dval = p->lval;
-		p->type = p->csiz = t;
+	if( p->in.op == ICON && ( t==DOUBLE||t==FLOAT ) ){
+		p->in.op = FCON;
+		p->fpn.dval = p->tn.lval;
+		p->in.type = p->fn.csiz = t;
 		return( clocal(p) );
 		}
 
@@ -1034,13 +1034,13 @@ block( o, l, r, t, d, s ) register NODE *l, *r; TWORD t; {
 	register NODE *p;
 
 	p = talloc();
-	p->rval = 0;	/* WEGA */
-	p->op = o;
-	p->left = l;
-	p->right = r;
-	p->type = t;
-	p->cdim = d;
-	p->csiz = s;
+	p->tn.rval = 0;	/* WEGA */
+	p->in.op = o;
+	p->in.left = l;
+	p->in.right = r;
+	p->in.type = t;
+	p->fn.cdim = d;
+	p->fn.csiz = s;
 	return(p);
 	}
 
@@ -1049,11 +1049,11 @@ lcons(p) register NODE *p; {
 	/* if p is an integer constant, return its value (long) */
 	CONSZ val;
 
-	if( p->op != ICON ){
+	if( p->in.op != ICON ){
 		uerror( "constant expected");
 		val = 1;
 		}
-	else val = p->lval;
+	else val = p->tn.lval;
 	tfree( p );
 	return(val);
 	}
@@ -1062,13 +1062,13 @@ icons(p) register NODE *p; {
 	/* if p is an integer constant, return its value */
 	int val;
 
-	if( p->op != ICON ){
+	if( p->in.op != ICON ){
 		uerror( "constant expected");
 		val = 1;
 		}
 	else {
-		val = p->lval;
-		if( val != p->lval ) uerror( "constant too big for compiler" );
+		val = p->tn.lval;
+		if( val != p->tn.lval ) uerror( "constant too big for compiler" );
 		}
 	tfree( p );
 	return(val);
@@ -1080,12 +1080,12 @@ opact( p )  NODE *p; {
 
 	mt12 = 0;
 
-	switch( optype(o=p->op) ){
+	switch( optype(o=p->in.op) ){
 
 	case BITYPE:
-		mt12=mt2 = moditype( p->right->type );
+		mt12=mt2 = moditype( p->in.right->in.type );
 	case UTYPE:
-		mt12 &= (mt1 = moditype( p->left->type ));
+		mt12 &= (mt1 = moditype( p->in.left->in.type ));
 
 		}
 
@@ -1103,7 +1103,7 @@ opact( p )  NODE *p; {
 	case OROR:
 		{  return( OTHER ); }
 	case UNARY MINUS:
-		if( p->left->type == UCHAR ) return( OTHER );
+		if( p->in.left->in.type == UCHAR ) return( OTHER );
 		if( mt1 & MDBI ) return( TYPL );
 		break;
 
@@ -1267,7 +1267,7 @@ doszof( p )  register NODE *p; {
 	register i;
 
 	/* whatever is the meaning of this if it is a bitfield? */
-	i = tsize( p->type, p->cdim, p->csiz )/SZCHAR;
+	i = tsize( p->in.type, p->fn.cdim, p->fn.csiz )/SZCHAR;
 
 	tfree(p);
 	if( i == 0 ) werror( "sizeof returns 0" );
@@ -1281,20 +1281,20 @@ prtdcon( p ) register NODE *p; {
 	long pos;
 	int l;
 
-	if( p->op == FCON ){ /* a new constant goes to the .D file, an old one is found by its label */
+	if( p->in.op == FCON ){ /* a new constant goes to the .D file, an old one is found by its label */
 		pos = 0;
-		if( (lab = fltlab( p->dval )) == crslab ){
+		if( (lab = fltlab( p->fpn.dval )) == crslab ){
 			defalign( ALDOUBLE );
 			if( sectfull( DATA, size = SZDOUBLE/SZCHAR ) ) newsect( DATA );
 			sectadd( DATA, size );
 			l = lab = getlab();
 			fprintf( dfile, "L%d: \n", l );
 			pos = ftell( dfile );
-			fincode( p->dval, SZDOUBLE );
+			fincode( p->fpn.dval, SZDOUBLE );
 			}
-		p->lval = pos;
-		p->rval = -lab;
-		p->type = DOUBLE;
+		p->tn.lval = pos;
+		p->tn.rval = -lab;
+		p->in.type = DOUBLE;
 		}
 	}
 
@@ -1316,26 +1316,26 @@ prtree(p) register NODE *p; {
 	register ty;
 	register n;
 
-	ty = optype(p->op);
+	ty = optype(p->in.op);
 
-	fprintf( outfile, "%d\t", p->op );
+	fprintf( outfile, "%d\t", p->in.op );
 
 	if( ty == LTYPE ) {
-		fprintf( outfile, CONFMT, p->lval );
+		fprintf( outfile, CONFMT, p->tn.lval );
 		putc( '\t', outfile );
 		}
 	if( ty != BITYPE ) {
-		if( p->op == ICON ) fprintf( outfile, "0\t" );
-		else if( p->op == NAME ) fprintf( outfile, "%d\t", STP(p->rval)->symno );
-		else fprintf( outfile, "%d\t", p->rval );
+		if( p->in.op == ICON ) fprintf( outfile, "0\t" );
+		else if( p->in.op == NAME ) fprintf( outfile, "%d\t", STP(p->tn.rval)->symno );
+		else fprintf( outfile, "%d\t", p->tn.rval );
 		}
-	if( p->op == TEMP ) fprintf( outfile, "%d\t", p->csiz );
+	if( p->in.op == TEMP ) fprintf( outfile, "%d\t", p->fn.csiz );
 
-	fprintf( outfile, "%0.2o\t", p->type );
+	fprintf( outfile, "%0.2o\t", p->in.type );
 
 	/* handle special cases */
 
-	switch( p->op ){
+	switch( p->in.op ){
 
 	case NAME:
 	case ICON:
@@ -1350,33 +1350,33 @@ prtree(p) register NODE *p; {
 		/* use lhs size, in order to avoid hassles with the structure `.' operator */
 
 		/* note: p->in.left not a field... */
-		fprintf( outfile, CONFMT, tsize( STRTY, p->left->cdim, p->left->csiz ) );
-		fprintf( outfile, "\t%d\t\n", talign( STRTY, p->left->csiz ) );
+		fprintf( outfile, CONFMT, tsize( STRTY, p->in.left->fn.cdim, p->in.left->fn.csiz ) );
+		fprintf( outfile, "\t%d\t\n", talign( STRTY, p->in.left->fn.csiz ) );
 		break;
 
 	default:
 		putc( '\n', outfile );
 		}
 
-	if( p->op == STCALL || p->op == CALL ){ /* the stack words of the arguments */
+	if( p->in.op == STCALL || p->in.op == CALL ){ /* the stack words of the arguments */
 		aregs = 7;
 		afregs = 19;
 		afull = 0;
-		n = argregs( p->right );
+		n = argregs( p->in.right );
 		if( n > maxoff ) maxoff = n;
 		}
 
-	if( ty != LTYPE ) prtree( p->left );
-	if( ty == BITYPE ) prtree( p->right );
+	if( ty != LTYPE ) prtree( p->in.left );
+	if( ty == BITYPE ) prtree( p->in.right );
 
 	}
 
 argregs( p ) register NODE *p; { /* the stack words of the arguments p of a call (those that are not in registers) */
 	register n;
 
-	if( p->op == CM ){
-		n = argregs( p->left );
-		return( n + argregs( p->right ) );
+	if( p->in.op == CM ){
+		n = argregs( p->in.left );
+		return( n + argregs( p->in.right ) );
 		}
 	n = argsize( p );
 #ifdef OLD_D22
@@ -1386,13 +1386,13 @@ argregs( p ) register NODE *p; { /* the stack words of the arguments p of a call
 		return( n*2 );
 		}
 #else
-	if( ( (p->type == FLOAT || p->type == DOUBLE) && afregs < 16 ) || afull ){
+	if( ( (p->in.type == FLOAT || p->in.type == DOUBLE) && afregs < 16 ) || afull ){
 	full:
 		afull = 1;
 		return( n*2 );
 		}
-	if( p->type != FLOAT && p->type != DOUBLE && aregs < 2 ) goto full;
-	if( p->type == FLOAT || p->type == DOUBLE ){
+	if( p->in.type != FLOAT && p->in.type != DOUBLE && aregs < 2 ) goto full;
+	if( p->in.type == FLOAT || p->in.type == DOUBLE ){
 		--afregs;
 		goto ret0;
 		}
@@ -1432,9 +1432,9 @@ tempnode( t, flag ) TWORD t; { /* a TEMP node of type t; flag 1: it gets the nex
 	NODE *q;
 
 	q = block( TEMP, NIL, NIL, t, 0, INT );
-	q->rval = tmpno++;
+	q->tn.rval = tmpno++;
 	if( flag == 1 ){
-		q->csiz = tmpoff;
+		q->fn.csiz = tmpoff;
 		tmpoff += twords( t ) * 2;
 		}
 	return( q );

@@ -83,9 +83,14 @@ union ndu {
 		int op;
 		TWORD type;
 		int cdim, csiz;
+		}fn; /* front node */
+	struct {
+		int op;
+		TWORD type;
+		int cdim, csiz;
 		NODE *left;
 		NODE * right;
-		};
+		}in; /* interior node */
 	
 	struct {
 		/* this structure is the same as above,
@@ -96,7 +101,7 @@ union ndu {
 		int cdim, csiz;
 		CONSZ lval;
 		int rval;
-		};
+		}tn; /* terminal node */
 	
 	struct {
 		/* this structure is used when a floating point constant
@@ -105,7 +110,7 @@ union ndu {
 		TWORD type;
 		int cdim, csiz;
 		double dval;
-		};
+		}fpn; /* floating point node */
 
 	};
 # endif
@@ -271,6 +276,33 @@ char *exname(), *exdcon();
 /* this is a macro to defend against cross-compilers, etc. */
 # define CHARCAST(x) (char)(x)
 # endif
+
+# define BCSZ 100 /* size of the table to save break and continue labels */
+# define SYMTSZ 500 /* WEGA: only the limit of chkstr */
+# define DIMTABSZ 1000 /* size of the dimension/size table (WEGA: the bss of /lib/cparse) */
+# define PARAMSZ 150 /* size of the parameter stack */
+# define SWITSZ 300 /* size of switch table (WEGA: the bss of /lib/cparse) */
+
+/*	special interfaces for yacc alone */
+/*	These serve as abbreviations of 2 or more ops:
+	ASOP	=, = ops
+	RELOP	LE,LT,GE,GT
+	EQUOP	EQ,NE
+	DIVOP	DIV,MOD
+	SHIFTOP	LS,RS
+	ICOP	ICR,DECR
+	UNOP	NOT,COMPL
+	STROP	DOT,STREF
+
+	*/
+# define ASOP 25
+# define RELOP 26
+# define EQUOP 27
+# define DIVOP 28
+# define SHIFTOP 29
+# define INCOP 30
+# define UNOP 31
+# define STROP 32
 
 struct instk {	/* WEGA: 22 bytes */
 	OFFSZ in_sz;   /* size of array element */

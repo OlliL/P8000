@@ -18,27 +18,6 @@
 # define ANDAND 23
 # define OROR 24
 
-/*	special interfaces for yacc alone */
-/*	These serve as abbreviations of 2 or more ops:
-	ASOP	=, = ops
-	RELOP	LE,LT,GE,GT
-	EQUOP	EQ,NE
-	DIVOP	DIV,MOD
-	SHIFTOP	LS,RS
-	ICOP	ICR,DECR
-	UNOP	NOT,COMPL
-	STROP	DOT,STREF
-
-	*/
-# define ASOP 25
-# define RELOP 26
-# define EQUOP 27
-# define DIVOP 28
-# define SHIFTOP 29
-# define INCOP 30
-# define UNOP 31
-# define STROP 32
-
 /*	reserved words, etc */
 # define TYPE 33
 # define CLASS 34
@@ -206,25 +185,25 @@
 
 /*	macros	*/
 
-# define MODTYPE(x,y) x = (x&(~BTMASK))|y  /* set basic type of x to y */
-# define BTYPE(x)  (x&BTMASK)   /* basic type of x */
+# define MODTYPE(x,y) x = ( (x)&(~BTMASK))|(y)  /* set basic type of x to y */
+# define BTYPE(x)  ( (x)&BTMASK)   /* basic type of x */
 # define ISUNSIGNED(x) ((x)<=ULONG&&(x)>=UCHAR)
 # define UNSIGNABLE(x) ((x)<=LONG&&(x)>=CHAR)
 # define ENUNSIGN(x) ((x)+(UNSIGNED-INT))
 # define DEUNSIGN(x) ((x)+(INT-UNSIGNED))
-# define ISPTR(x) ((x&TMASK)==PTR)
-# define ISFTN(x)  ((x&TMASK)==FTN)  /* is x a function type */
-# define ISARY(x)   ((x&TMASK)==ARY)   /* is x an array type */
-# define INCREF(x) (((x&~BTMASK)<<TSHIFT)|PTR|(x&BTMASK))
-# define DECREF(x) (((x>>TSHIFT)&~BTMASK)|(x&BTMASK))
-# define SETOFF(x,y)   if( x%y != 0 ) x = ( (x/y + 1) * y)
+# define ISPTR(x) (( (x)&TMASK)==PTR)
+# define ISFTN(x)  (( (x)&TMASK)==FTN)  /* is x a function type */
+# define ISARY(x)   (( (x)&TMASK)==ARY)   /* is x an array type */
+# define INCREF(x) ((( (x)&~BTMASK)<<TSHIFT)|PTR|( (x)&BTMASK))
+# define DECREF(x) ((( (x)>>TSHIFT)&~BTMASK)|( (x)&BTMASK))
+# define SETOFF(x,y)   if( (x)%(y) != 0 ) (x) = ( ((x)/(y) + 1) * (y))
 		/* advance x to a multiple of y */
-# define NOFIT(x,y,z)   ( (x%z + y) > z )
+# define NOFIT(x,y,z)   ( ( (x)%(z) + (y) ) > (z) )
 		/* can y bits be added to x without overflowing z */
 	/* pack and unpack field descriptors (size and offset) */
-# define PKFIELD(s,o) ((o<<6)|s)
-# define UPKFSZ(v)  (v&077)
-# define UPKFOFF(v) (v>>6)
+# define PKFIELD(s,o) (( (o)<<6)| (s) )
+# define UPKFSZ(v)  ( (v) &077)
+# define UPKFOFF(v) ( (v) >>6)
 
 /*	operator information */
 
@@ -251,18 +230,11 @@
 #define callop(o) (dope[o]&CALLFLG)
 #define asgshf(o) (dope[o]&(ASGOPFLG|SHFFLG))
 
-/*	table sizes	*/
-
-# define BCSZ 100 /* size of the table to save break and continue labels */
-# define SYMTSZ 500 /* WEGA: only the limit of chkstr */
-# define DIMTABSZ 1000 /* size of the dimension/size table (WEGA: the bss of /lib/cparse) */
-# define PARAMSZ 150 /* size of the parameter stack */
 # ifndef FORT
 # define TREESZ 350 /* space for building parse tree */
 # else
 # define TREESZ 1000
 # endif
-# define SWITSZ 300 /* size of switch table (WEGA: the bss of /lib/cparse) */
 
 # define NCHNAM 8  /* number of characters in a name */
 

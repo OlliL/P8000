@@ -69,14 +69,14 @@ defid( q, class )  NODE *q; {
 
 	if( q < node || q >= &node[TREESZ] ) cerror( "defid call" );
 
-	idp = STP(q->rval);
+	idp = STP(q->tn.rval);
 
 	if( idp == 0 ) cerror( "tyreduce" );
 	p = idp;
 
 	fixtype( q, class );
 
-	type = q->type;
+	type = q->in.type;
 	class = fixclass( class, type );
 
 	stp = p->stype;
@@ -104,7 +104,7 @@ defid( q, class )  NODE *q; {
 	if( type != stp ) goto mismatch;
 	/* test (and possibly adjust) dimensions */
 	dsym = p->dimoff;
-	ddef = q->cdim;
+	ddef = q->fn.cdim;
 	temp = type;
 	goto dimtest;
 dimloop:
@@ -144,7 +144,7 @@ dimtest:
 	if( temp&TMASK ) goto dimloop;
 
 	/* check that redeclarations are to the same structure */
-	if( (temp==STRTY||temp==UNIONTY||temp==ENUMTY) && p->sizoff != q->csiz &&
+	if( (temp==STRTY||temp==UNIONTY||temp==ENUMTY) && p->sizoff != q->fn.csiz &&
 			class != STNAME && class != UNAME && class != ENAME ) {
 		goto mismatch;
 		}
@@ -247,7 +247,7 @@ dimtest:
 
 	redecl:
 	if( blevel > slev && class != EXTERN && !( class == LABEL && slev >= 2 ) ){
-		idp = hide( p ); q->rval = (int) idp;
+		idp = hide( p ); q->tn.rval = (int) idp;
 		p = idp;
 		goto enter;
 		}
@@ -277,7 +277,7 @@ dimtest:
 		case STRTY:
 		case UNIONTY:
 		case ENUMTY:
-			p->sizoff = q->csiz;
+			p->sizoff = q->fn.csiz;
 			break;
 		default:
 			p->sizoff = BTYPE(type);
@@ -286,7 +286,7 @@ dimtest:
 
 	/* copy dimensions */
 
-	p->dimoff = q->cdim;
+	p->dimoff = q->fn.cdim;
 
 	/* allocate offsets */
 	if( class&FIELD ){
@@ -436,22 +436,22 @@ argalloc( a, n ) NODE *a[]; { /* the offsets of the arguments a[0] ... a[n-1] th
 		int k, kk;
 
 		for( k=0; k<n; ++k ){
-			q = STP(a[k]->rval);
+			q = STP(a[k]->tn.rval);
 			if( q->sfldc == 1 && q->stype != DOUBLE && q->sclass != REGISTER ) break;
 			}
 		for( kk=n-1; kk>=0; --kk ){
-			q = STP(a[kk]->rval);
+			q = STP(a[kk]->tn.rval);
 			if( q->sfldc == 1 && q->stype != DOUBLE && q->sclass != REGISTER ) break;
 			}
 		for( i=n-1; i>=0; --i ){
-			p = STP(a[i]->rval);
+			p = STP(a[i]->tn.rval);
 			if( (i < k || i > kk) && p->sclass == REGISTER ) continue;
 			if( p->sfldc == 1 && p->stype != DOUBLE ){
 				if( j ){
-					q = STP(a[j]->rval);
+					q = STP(a[j]->tn.rval);
 					sz = (tsize( q->stype, q->dimoff, q->sizoff ) + 15) / 16;
-					if( -a[j]->lval + sz != -a[i]->lval )
-						autooff += (-a[i]->lval + a[j]->lval - sz) * SZINT;
+					if( -a[j]->tn.lval + sz != -a[i]->tn.lval )
+						autooff += (-a[i]->tn.lval + a[j]->tn.lval - sz) * SZINT;
 					}
 				j = i;
 				if( oalloc( p, &autooff ) ) cerror( "bad argument" );
@@ -461,20 +461,20 @@ argalloc( a, n ) NODE *a[]; { /* the offsets of the arguments a[0] ... a[n-1] th
 	if( 0 )
 #endif
 	for( i=n-1; i>=0; --i ){
-		p = STP(a[i]->rval);
+		p = STP(a[i]->tn.rval);
 		if( p->sfldc == 1 && p->stype != DOUBLE ){
 			if( j ){
-				q = STP(a[j]->rval);
+				q = STP(a[j]->tn.rval);
 				sz = (tsize( q->stype, q->dimoff, q->sizoff ) + 15) / 16;
-				if( -a[j]->lval + sz != -a[i]->lval )
-					autooff += (-a[i]->lval + a[j]->lval - sz) * SZINT;
+				if( -a[j]->tn.lval + sz != -a[i]->tn.lval )
+					autooff += (-a[i]->tn.lval + a[j]->tn.lval - sz) * SZINT;
 				}
 			j = i;
 			if( oalloc( p, &autooff ) ) cerror( "bad argument" );
 			}
 		}
 	for( i=n-1; i>=0; --i ){
-		p = STP(a[i]->rval);
+		p = STP(a[i]->tn.rval);
 		if( p->sfldc == 1 && p->stype == DOUBLE ){
 			if( oalloc( p, &autooff ) ) cerror( "bad argument" );
 			}
@@ -512,15 +512,15 @@ dclargs(){
 			}
 		if( p->stype == FARG ) {
 			q = block( NAME, NIL, NIL, INT, 0, INT );
-			q->rval = (int) p;
+			q->tn.rval = (int) p;
 			defid( q, PARAM );
 			}
 		else {
 			q = block( NAME, NIL, NIL, p->stype, 0, p->sizoff );
-			q->rval = (int) p;
+			q->tn.rval = (int) p;
 			}
 		args[n++] = q;
-		q->lval = getpreg( p, p->stype );
+		q->tn.lval = getpreg( p, p->stype );
 		if( p->sfldc == 2 ){ /* on the stack: the offset */
 			long o;
 			char c;
@@ -531,11 +531,11 @@ dclargs(){
 			s->sclass = PARAM;
 			s->offset = NOOFFSET;
 			oalloc( s, &off );
-			q->lval = s->offset/SZCHAR;
+			q->tn.lval = s->offset/SZCHAR;
 			s->sclass = c;
 			s->offset = o;
 			}
-		else q->lval = -q->lval;
+		else q->tn.lval = -q->tn.lval;
 		}
 	locctr(PROG);
 	defalign(ALINT);
@@ -544,13 +544,13 @@ dclargs(){
 		t = args[0];
 		for( i=1; i<n; ++i ) t = block( CM, args[i], t, 0, 0, 0 );
 		q = block( NAME, NIL, NIL, curftn->stype, 0, curftn->sizoff );
-		q->rval = (int) curftn;
-		t = block( PROC, q, t, q->type, 0, 0 );
+		q->tn.rval = (int) curftn;
+		t = block( PROC, q, t, q->in.type, 0, 0 );
 		}
 	else {
 		q = block( NAME, NIL, NIL, curftn->stype, 0, curftn->sizoff );
-		q->rval = (int) curftn;
-		t = block( UPROC, q, NIL, q->type, 0, 0 );
+		q->tn.rval = (int) curftn;
+		t = block( UPROC, q, NIL, q->in.type, 0, 0 );
 		}
 	bfcode( paramstk, paramno );
 	ecode( t );
@@ -678,8 +678,8 @@ rstruct( idn, soru ){ /* reference to a structure or union, with no definition *
 	case UNDEF:
 	def:
 		q = block( FREE, NIL, NIL, 0, 0, 0 );
-		q->rval = idn;
-		q->type = (soru&INSTRUCT) ? STRTY : ( (soru&INUNION) ? UNIONTY : ENUMTY );
+		q->tn.rval = idn;
+		q->in.type = (soru&INSTRUCT) ? STRTY : ( (soru&INUNION) ? UNIONTY : ENUMTY );
 		defid( q, (soru&INSTRUCT) ? STNAME : ( (soru&INUNION) ? UNAME : ENAME ) );
 		break;
 
@@ -717,23 +717,23 @@ bstruct( idn, soru ) struct symtab *idn; { /* begining of structure or union dec
 	strucoff = 0;
 	instruct = soru;
 	q = block( FREE, NIL, NIL, 0, 0, 0 );
-	q->rval = (int) idn;
+	q->tn.rval = (int) idn;
 	if( instruct==INSTRUCT ){
 		curclass = MOS;
-		q->type = STRTY;
+		q->in.type = STRTY;
 		if( idn ) defid( q, STNAME );
 		}
 	else if( instruct == INUNION ) {
 		curclass = MOU;
-		q->type = UNIONTY;
+		q->in.type = UNIONTY;
 		if( idn ) defid( q, UNAME );
 		}
 	else { /* enum */
 		curclass = MOE;
-		q->type = ENUMTY;
+		q->in.type = ENUMTY;
 		if( idn ) defid( q, ENAME );
 		}
-	psave( (int) (idn = STP(q->rval)) );
+	psave( (int) (idn = STP(q->tn.rval)) );
 	if( idn ) idn->suse = lineno;
 	return( paramno-5 );
 	}

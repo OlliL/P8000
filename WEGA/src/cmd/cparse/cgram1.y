@@ -141,20 +141,20 @@ external_def:	   data_def
 		;
 data_def:
 		   oattributes  SM
-			={  $1->op = FREE; }
+			={  $1->in.op = FREE; }
 		|  oattributes init_dcl_list  SM
-			={  $1->op = FREE;
+			={  $1->in.op = FREE;
 			    if( paramno ) uerror( "Inappropriate parameter(s" );
 			    }
 		|  oattributes fdeclarator {
 				defid( tymerge($1,$2), curclass==STATIC?STATIC:EXTDEF );
-				refid( STP($2->rval) );
+				refid( STP($2->tn.rval) );
 				autooff = 0;
 				}  function_body
 			={  
 			    if( blevel ) cerror( "fcn level error" );
 			    if( reached ) retstat |= NRETVAL; 
-			    $1->op = FREE;
+			    $1->in.op = FREE;
 			    ftnend();
 			    }
 		;
@@ -173,15 +173,15 @@ stmt_list:	   stmt_list statement
 		;
 
 dcl_stat_list	:  dcl_stat_list attributes SM
-			={  $2->op = FREE; }
+			={  $2->in.op = FREE; }
 		|  dcl_stat_list attributes init_dcl_list SM
-			={  $2->op = FREE; }
+			={  $2->in.op = FREE; }
 		|  /* empty */
 		;
 declaration:	   attributes declarator_list  SM
-			={ curclass = SNULL;  $1->op = FREE; }
+			={ curclass = SNULL;  $1->in.op = FREE; }
 		|  attributes SM
-			={ curclass = SNULL;  $1->op = FREE; }
+			={ curclass = SNULL;  $1->in.op = FREE; }
 		|  error  SM
 			={  curclass = SNULL; }
 		;
@@ -205,12 +205,12 @@ class:		  CLASS
 
 type:		   TYPE
 		|  TYPE TYPE
-			={  $1->type = types( $1->type, $2->type, UNDEF );
-			    $2->op = FREE;
+			={  $1->in.type = types( $1->in.type, $2->in.type, UNDEF );
+			    $2->in.op = FREE;
 			    }
 		|  TYPE TYPE TYPE
-			={  $1->type = types( $1->type, $2->type, $3->type );
-			    $2->op = $3->op = FREE;
+			={  $1->in.type = types( $1->in.type, $2->in.type, $3->in.type );
+			    $2->in.op = $3->in.op = FREE;
 			    }
 		|  struct_dcl
 		|  enum_dcl
@@ -257,7 +257,7 @@ type_dcl_list:	   type_declaration
 		;
 
 type_declaration:  type declarator_list
-			={ if( curclass != MOU ) curclass = SNULL;  stwart=0; $1->op = FREE; }
+			={ if( curclass != MOU ) curclass = SNULL;  stwart=0; $1->in.op = FREE; }
 		|  type
 			={  if( curclass != MOU ){
 				curclass = SNULL;
@@ -268,7 +268,7 @@ type_declaration:  type declarator_list
 				werror( "structure typed union member must be named" );
 				}
 			    stwart = 0;
-			    $1->op = FREE;
+			    $1->in.op = FREE;
 			    }
 		;
 
@@ -309,16 +309,16 @@ nfdeclarator:	   MUL nfdeclarator
 				$$ = bdty( UNARY CALL, $1, 0 );  }
 		|  nfdeclarator LB RB		
 			={  uary:
-				if( $1->op == LB ) uerror( "illegal null dimension" );
+				if( $1->in.op == LB ) uerror( "illegal null dimension" );
 				$$ = bdty( LB, $1, 0 );  }
 		|  nfdeclarator LB lcon_e RB	
 			={  bary:	/* WEGA: the dimension is a long (lcon_e) */
 				if( $<yylong>3 <= 0 ) uerror( "zero or negative subscript" );
 				else if( $<yylong>3 > 0x10000L ) uerror( "dimension too large" );
 				$$ = block( LB, $1, NIL, INT, 0, INT );
-				$$->right = bcon( 0 );
-				$$->right->lval = $<yylong>3;
-				$$->right->csiz = $$->right->type = ctype( LONG );
+				$$->in.right = bcon( 0 );
+				$$->in.right->tn.lval = $<yylong>3;
+				$$->in.right->fn.csiz = $$->in.right->in.type = ctype( LONG );
 				}
 		|  NAME  		
 			={  $$ = bdty( NAME, NIL, $1 );  }
@@ -368,7 +368,7 @@ init_dcl_list:	   init_declarator
 		/* always preceeded by attributes */
 xnfdeclarator:	   nfdeclarator
 			={  defid( $1 = tymerge($<nodep>0,$1), curclass);
-			    beginit($1->rval);
+			    beginit($1->tn.rval);
 			    }
 		|  error
 		;
@@ -513,13 +513,13 @@ statement:	   e   SM
 			={  register NODE *temp;
 			    idname = curftn;
 			    temp = buildtree( NAME, NIL, NIL );
-			    if( temp->type == TVOID ) uerror( "void function %s cannot return value", idname->sname );	/* (the offset of the name, not the name) */
-			    temp->type = DECREF( temp->type );
+			    if( temp->in.type == TVOID ) uerror( "void function %s cannot return value", idname->sname );	/* (the offset of the name, not the name) */
+			    temp->in.type = DECREF( temp->in.type );
 			    temp = buildtree( RETURN, temp, $2 );
 			    /* now, we have the type of the RHS correct */
-			    temp->left->op = FREE;
-			    temp->op = FREE;
-			    ecomp( buildtree( RET, temp->right, NIL ) );
+			    temp->in.left->in.op = FREE;
+			    temp->in.op = FREE;
+			    ecomp( buildtree( RET, temp->in.right, NIL ) );
 			    retstat |= RETVAL;
 			    branch( retlab );
 			    reached = 0;
@@ -527,7 +527,7 @@ statement:	   e   SM
 		|  GOTO NAME SM
 			={  register NODE *q;
 			    q = block( FREE, NIL, NIL, INT|ARY, 0, INT );
-			    q->rval = idname = $2;
+			    q->tn.rval = idname = $2;
 			    defid( q, ULABEL );
 			    STP(idname)->suse = -lineno;
 			    branch( (int) STP(idname)->offset );
@@ -541,7 +541,7 @@ statement:	   e   SM
 label:		   NAME COLON
 			={  register NODE *q;
 			    q = block( FREE, NIL, NIL, INT|ARY, 0, LABEL );
-			    q->rval = $1;
+			    q->tn.rval = $1;
 			    defid( q, LABEL );
 			    reached = 1;
 			    }
@@ -580,7 +580,7 @@ ifelprefix:	  ifprefix statement ELSE
 whprefix:	  WHILE  LP  e  RP
 			={  savebc();
 			    if( !reached ) werror( "loop not entered at top");
-			    if( $3->op == ICON && $3->lval != 0 ) flostat = FLOOP;
+			    if( $3->in.op == ICON && $3->tn.lval != 0 ) flostat = FLOOP;
 			    deflab( contlab = getlab() );
 			    reached = 1;
 			    brklab = getlab();
@@ -604,7 +604,7 @@ switchpart:	   SWITCH  LP  e  RP
 			={  NODE *t;	/* WEGA: the value goes to a TEMP, kept in swtab for genswitch */
 			    savebc();
 			    brklab = getlab();
-			    switch( BTYPE($3->type) ){
+			    switch( BTYPE($3->in.type) ){
 
 			    case LONG:
 			    case ULONG:
@@ -625,10 +625,10 @@ switchpart:	   SWITCH  LP  e  RP
 				$3 = bcon( 0 );
 				}
 			    swx = swp - swtab;
-			    *(NODE **)swp = tempnode( $3->type, 0 );
+			    *(NODE **)swp = tempnode( $3->in.type, 0 );
 			    ncopy( t = talloc(), *(NODE **)swp );
-			    t->lval = -1;
-			    ecomp( block( ASSIGN, t, $3, $3->type, 0, $3->csiz ) );
+			    t->tn.lval = -1;
+			    ecomp( block( ASSIGN, t, $3, $3->in.type, 0, $3->fn.csiz ) );
 			    ++swp;
 			    branch( $$ = getlab() );
 			    swstart();
@@ -722,7 +722,7 @@ term:		   term INCOP
 			    $$ = buildtree( UNARY $1, $2, NIL );
 			    }
 		|  AND term
-			={  if( ISFTN($2->type) || ISARY($2->type) ){
+			={  if( ISFTN($2->in.type) || ISARY($2->in.type) ){
 				werror( "& before array or function: ignored" );
 				$$ = $2;
 				}
@@ -743,9 +743,9 @@ term:		   term INCOP
 			={  $$ = doszof( $2 ); }
 		|  LP cast_type RP term  %prec INCOP
 			={  $$ = buildtree( CAST, $2, $4 );
-			    $$->left->op = FREE;
-			    $$->op = FREE;
-			    $$ = $$->right;
+			    $$->in.left->in.op = FREE;
+			    $$->in.op = FREE;
+			    $$ = $$->in.right;
 			    }
 		|  SIZEOF LP cast_type RP  %prec SIZEOF
 			={  $$ = doszof( $3 ); }
@@ -753,13 +753,13 @@ term:		   term INCOP
 			={  $$ = buildtree( UNARY MUL, buildtree( SUBSR, $1, $3 ), NIL ); }	/* WEGA: SUBSR */
 		|  funct_idn  RP
 			={  if( Fflag ){ /* WEGA: -F writes the names of the called functions */
-				if( $1->op == NAME ) fprintf( Ffile, "%s\n", &ntab[STP($1->rval)->sname] );
+				if( $1->in.op == NAME ) fprintf( Ffile, "%s\n", &ntab[STP($1->tn.rval)->sname] );
 				else fprintf( Ffile, "*???*\n" );
 				}
 			    $$=buildtree(UNARY CALL,$1,NIL); }
 		|  funct_idn elist  RP
 			={  if( Fflag ){
-				if( $1->op == NAME ) fprintf( Ffile, "%s\n", &ntab[STP($1->rval)->sname] );
+				if( $1->in.op == NAME ) fprintf( Ffile, "%s\n", &ntab[STP($1->tn.rval)->sname] );
 				else fprintf( Ffile, "*???*\n" );
 				}
 			    $$=buildtree(CALL,$1,$2); }
@@ -778,7 +778,7 @@ term:		   term INCOP
 				register NODE *q;
 				werror( "undeclared initializer name %s", &ntab[STP(idname)->sname] );
 				q = block( FREE, NIL, NIL, INT, 0, INT );
-				q->rval = idname;
+				q->tn.rval = idname;
 				defid( q, EXTERN );
 				}
 			    $$=buildtree(NAME,NIL,NIL);
@@ -786,13 +786,13 @@ term:		   term INCOP
 			}
 		|  ICON
 			={  $$=bcon(0);
-			    $$->lval = lastcon;
-			    $$->rval = NONAME;
-			    if( $1 ) $$->csiz = $$->type = ctype(LONG);
+			    $$->tn.lval = lastcon;
+			    $$->tn.rval = NONAME;
+			    if( $1 ) $$->fn.csiz = $$->in.type = ctype(LONG);
 			    }
 		|  FCON
 			={  $$=buildtree(FCON,NIL,NIL);
-			    $$->dval = dcon;
+			    $$->fpn.dval = dcon;
 			    }
 		|  STRING
 			={  $$ = getstr(); /* get string contents */ }
@@ -803,8 +803,8 @@ term:		   term INCOP
 cast_type:	  type null_decl
 			={
 			$$ = tymerge( $1, $2 );
-			$$->op = NAME;
-			$1->op = FREE;
+			$$->in.op = NAME;
+			$1->in.op = FREE;
 			}
 		;
 
@@ -828,7 +828,7 @@ funct_idn:	   NAME  LP
 			={  if( STP($1)->stype == UNDEF ){
 				register NODE *q;
 				q = block( FREE, NIL, NIL, FTN|INT, 0, INT );
-				q->rval = $1;
+				q->tn.rval = $1;
 				defid( q, EXTERN );
 				}
 			    idname = $1;
@@ -857,11 +857,11 @@ bdty( op, p, v ) NODE *p; {
 		break;
 
 	case LB:
-		q->right = bcon(v);
+		q->in.right = bcon(v);
 		break;
 
 	case NAME:
-		q->rval = v;
+		q->tn.rval = v;
 		break;
 
 	default:
@@ -901,7 +901,7 @@ resetbc(mask){
 addcase(p) register NODE *p; { /* add case to switch */
 
 	p = optim( p );  /* change enum to ints */
-	if( p->op != ICON ){
+	if( p->in.op != ICON ){
 		uerror( "non-constant case expression");
 		return;
 		}
@@ -912,7 +912,7 @@ addcase(p) register NODE *p; { /* add case to switch */
 	if( swp >= &swtab[SWITSZ] ){
 		cerror( "switch table overflow");
 		}
-	swp->sval = p->lval;
+	swp->sval = p->tn.lval;
 	deflab( swp->slab = getlab() );
 	++swp;
 	tfree(p);

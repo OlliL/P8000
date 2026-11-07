@@ -159,7 +159,7 @@ getstr(){ /* decide if the string is external or an initializer, and get the con
 #endif
 		locctr( oloc );
 		p = buildtree( STRING, NIL, NIL );
-		p->rval = -l;
+		p->tn.rval = -l;
 		return(p);
 		}
 	}
@@ -321,25 +321,25 @@ doinit( p ) register NODE *p; {
 	inforce( pstk->in_off );
 
 	p = buildtree( ASSIGN, block( NAME, NIL,NIL, t, d, s ), p );
-	p->left->op = FREE;
-	p->left = p->right;
-	p->right = NIL;
-	p->left = optim( p->left );
-	if( p->left->op == UNARY AND ){
-		p->left->op = FREE;
-		p->left = p->left->left;
+	p->in.left->in.op = FREE;
+	p->in.left = p->in.right;
+	p->in.right = NIL;
+	p->in.left = optim( p->in.left );
+	if( p->in.left->in.op == UNARY AND ){
+		p->in.left->in.op = FREE;
+		p->in.left = p->in.left->in.left;
 		}
-	p->op = INIT;
+	p->in.op = INIT;
 
 	if( sz < SZINT ){ /* special case: bit fields, etc. */
-		if( p->left->op != ICON ) uerror( "illegal initialization" );
-		else incode( p->left, sz );
+		if( p->in.left->in.op != ICON ) uerror( "illegal initialization" );
+		else incode( p->in.left, sz );
 		}
-	else if( p->left->op == FCON ){
-		fincode( p->left->dval, sz );
+	else if( p->in.left->in.op == FCON ){
+		fincode( p->in.left->fpn.dval, sz );
 		}
-	else if( p->left->op == SCONV && p->left->left->op == FCON ){
-		fincode( p->left->left->dval, sz );
+	else if( p->in.left->in.op == SCONV && p->in.left->in.left->in.op == FCON ){
+		fincode( p->in.left->in.left->fpn.dval, sz );
 		}
 	else {
 		cinit( optim(p), sz );

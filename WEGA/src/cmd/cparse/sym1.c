@@ -86,16 +86,16 @@ falloc( p, w, new, pty )  register struct symtab *p; NODE *pty; {
 	register al,sz;
 	register TWORD type;
 
-	type = (new<0)? pty->type : p->stype;
+	type = (new<0)? pty->in.type : p->stype;
 
 	/* this must be fixed to use the current type in alignments */
-	switch( new<0?pty->type:p->stype ){
+	switch( new<0?pty->in.type:p->stype ){
 
 	case ENUMTY:
 		{
 		int s;
 
-		s = new<0 ? pty->csiz : p->sizoff;
+		s = new<0 ? pty->fn.csiz : p->sizoff;
 		al = dimtab[s+2];
 		sz = dimtab[s];
 		break;
@@ -171,21 +171,21 @@ nidcl( p ) NODE *p; { /* handle unitialized declarations */
 			}
 		}
 
-	if( ISARY(p->type) && dimtab[p->cdim]==0 && (class==AUTO || class==REGISTER) )
+	if( ISARY(p->in.type) && dimtab[p->fn.cdim]==0 && (class==AUTO || class==REGISTER) )
 		werror( "empty array declaration - no space reserved" );
 
 	defid( p, class );
 
 	if( class==EXTDEF || class==STATIC ){
-		beginit( p->rval );
+		beginit( p->tn.rval );
 		endinit();
 		}
 	if( commflag ){
-		commdec( p->rval );
+		commdec( p->tn.rval );
 		commflag = 0;
 		}
 	if( class == AUTO ){
-		if( (sz = tsize( STP(p->rval)->stype, STP(p->rval)->dimoff, STP(p->rval)->sizoff )/SZCHAR) > 0xfffe )
+		if( (sz = tsize( STP(p->tn.rval)->stype, STP(p->tn.rval)->dimoff, STP(p->tn.rval)->sizoff )/SZCHAR) > 0xfffe )
 			uerror( "size too large" );
 		}
 	}
@@ -258,24 +258,24 @@ tymerge( typ, idp ) NODE *typ, *idp; {
 	register i;
 	extern int eprint();
 
-	if( typ->op != TYPE ) cerror( "tymerge: arg 1" );
+	if( typ->in.op != TYPE ) cerror( "tymerge: arg 1" );
 	if( idp == 0 ) return( 0 );
 
-	idp->type = typ->type;
-	idp->cdim = curdim;
+	idp->in.type = typ->in.type;
+	idp->fn.cdim = curdim;
 	tyreduce( idp );
-	idp->csiz = typ->csiz;
+	idp->fn.csiz = typ->fn.csiz;
 
-	for( t=typ->type, i=typ->cdim; t&TMASK; t = DECREF(t) ){
+	for( t=typ->in.type, i=typ->fn.cdim; t&TMASK; t = DECREF(t) ){
 		if( ISARY(t) ) dstash( dimtab[i++] );
 		}
 
 	/* now idp is a single node: fix up type */
 
-	idp->type = ctype( idp->type );
+	idp->in.type = ctype( idp->in.type );
 
-	if( (t = BTYPE(idp->type)) != STRTY && t != UNIONTY && t != ENUMTY ){
-		idp->csiz = t;  /* in case ctype has rewritten things */
+	if( (t = BTYPE(idp->in.type)) != STRTY && t != UNIONTY && t != ENUMTY ){
+		idp->fn.csiz = t;  /* in case ctype has rewritten things */
 		}
 
 	return( idp );
@@ -289,29 +289,29 @@ tyreduce( p ) register NODE *p; {
 	register unsigned t;
 	OFFSZ off;
 
-	o = p->op;
-	p->op = FREE;
+	o = p->in.op;
+	p->in.op = FREE;
 
 	if( o == NAME ) return;
 
-	t = INCREF( p->type );
+	t = INCREF( p->in.type );
 	if( o == UNARY CALL ) t += (FTN-PTR);
 	else if( o == LB ){
 		t += (ARY-PTR);
-		temp = p->right->lval;
-		p->right->op = FREE;
+		temp = p->in.right->tn.lval;
+		p->in.right->in.op = FREE;
 		}
 
-	p->left->type = t;
-	tyreduce( p->left );
+	p->in.left->in.type = t;
+	tyreduce( p->in.left );
 
 	if( o == LB ){
 		off = (unsigned) temp;
 		dstash( off );
 		}
 
-	p->rval = p->left->rval;
-	p->type = p->left->type;
+	p->tn.rval = p->in.left->tn.rval;
+	p->in.type = p->in.left->in.type;
 
 	}
 
@@ -320,7 +320,7 @@ fixtype( p, class ) register NODE *p; {
 	register mod1, mod2;
 	/* fix up the types, and check for legality */
 
-	if( (type = p->type) == UNDEF ) return;
+	if( (type = p->in.type) == UNDEF ) return;
 	if( mod2 = (type&TMASK) ){
 		t = DECREF(type);
 		if( mod2 == FTN && t == FLOAT ) type = (type&~BTMASK) | DOUBLE;	/* WEGA: float functions return double */
@@ -343,7 +343,7 @@ fixtype( p, class ) register NODE *p; {
 	if( class == PARAM || ( class==REGISTER && blevel==1 ) ){
 		if( type == FLOAT ) type = DOUBLE;
 		else if( ISARY(type) ){
-			++p->cdim;
+			++p->fn.cdim;
 			type += (PTR-ARY);
 			}
 		else if( ISFTN(type) ) type = INCREF(type);
@@ -354,7 +354,7 @@ fixtype( p, class ) register NODE *p; {
 		uerror( "function illegal in structure or union" );
 		type = INCREF(type);
 		}
-	p->type = type;
+	p->in.type = type;
 	}
 
 uclass( class ) register class; {
