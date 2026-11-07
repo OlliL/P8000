@@ -11,7 +11,7 @@ Lines without comments and blanks that also stand in the file.
 | z20.c | pdp11/c20.c | 3 | c2.d/c20.c | 4 | 44 |
 | z21.c | pdp11/c21.c | 229 | c2.d/c21.c | 180 | 933 |
 | z22.c | — | — | c2.d/c22.c | 349 | 1610 |
-| z23.c | — | — | c2.d/c23.c | 135 | 621 |
+| z23.c | — | — | c2.d/c23.c | 135 | 620 |
 | z2.h | pdp11/c2.h | 41 | c2.d/c2.h | 42 | 163 |
 
 40 of the 75 function names are those of System III.

@@ -8,7 +8,7 @@ Lines without comments and blanks that also stand in the file.
 
 | File | System III file | Equal | Plexus file | Equal | Of |
 |---|---|---:|---|---:|---:|
-| cgram1.y | pcc/mip/cgram.y | 768 | pcc.d/mip/cgram.y | 736 | 859 |
+| cgram1.y | pcc/mip/cgram.y | 757 | pcc.d/mip/cgram.y | 727 | 860 |
 | scan1.c | pcc/mip/scan.c | 599 | pcc.d/mip/scan.c | 601 | 678 |
 | trees1.c | pcc/mip/trees.c | 830 | pcc.d/mip/trees.c | 634 | 1075 |
 | pftn1.c | pcc/mip/pftn.c | 483 | pcc.d/mip/pftn.c | 485 | 786 |
@@ -40,4 +40,7 @@ PCC functions without a counterpart here: `andable aocode aoend bycode cendarg c
 - `defid`: the dimension loop as a goto loop; `mismatch:` and the step of the SMEMB loop in the physical order of the original.
 - `stref`: `x = x + PTR` in place of `x += PTR`.
 - `cinit`: `inoff += sz; return;` in case NAME.
+- `lxer` loop: `switch( lxchar=getchar(), (p=lxcp[lxchar+1])->lxact )` in place of the System III form `switch( (p=lxcp[(lxchar=getchar())+1])->lxact )`; the data of `xdefs1.c` keep the order of the initialized definitions (`reached` before `ftitle`), the order of System III changes the data.
+- Warnings are fixed by casts at the call (`(struct symtab *) lookup(...)`, `(NODE *) tcopy(...)`), not by declaring the return type: that would change the code of the segmented build.
+- `cgram1.y`: the 7 shift/reduce conflicts (the same as in System III) are resolved as shifts with `%prec CM` and `%nonassoc error RP ELSE`; the yacc tables stay the same.
 They give the bytes with the shipped popt (`OLDCC.md`, D20).

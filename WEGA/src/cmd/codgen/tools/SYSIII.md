@@ -8,7 +8,7 @@ Lines without comments and blanks that also stand in the file.
 
 | File | System III file | Equal | Plexus file | Equal | Of |
 |---|---|---:|---|---:|---:|
-| reader3.c | pcc/mip/reader.c | 550 | pcc.d/mip/reader.c | 479 | 1584 |
+| reader3.c | pcc/mip/reader.c | 550 | pcc.d/mip/reader.c | 479 | 1585 |
 | match3.c | pcc/mip/match.c | 99 | pcc.d/mip/match.c | 95 | 514 |
 | allo3.c | pcc/mip/allo.c | 80 | pcc.d/mip/allo.c | 74 | 669 |
 | regs3.c | pcc/mip/allo.c | 136 | pcc.d/mip/allo.c | 99 | 1039 |
@@ -37,3 +37,4 @@ Own functions, no function of System III does the same (read in both texts where
 ## Forms that follow the bytes, not the System III text
 
 Many labels and `goto` in the physical order of the original: `match`, `getreg`, `regjam`, `argscan`, `reclaim`, `setbin`, `rmove`, `allocreg`, `cbranch`, `regargs`, `rsmatch`, `symreg`, `optim` (`order` has its gotos from PCC). They give the bytes with the shipped popt; whether the authors wrote them is not known. Tried 2026-11-03: the System III text of the search loop of `match` with the goto form of its switch: match 62 lines worse, popt moves the loop (trace in `OLDCC_LOG.md`, how to: `host/recon/poptrace.sh`). A natural form with the same bytes may exist; `mainp2`, `optim`, `xjump` had one.
+- `rddata` (rdr3.c): `if (1) return d12kcopy(n);` in place of `return d12kcopy(n);` with the code behind it; the compiler of `-DOLD_V0P` emits the code that cannot be reached, and `#else` would drop it.
