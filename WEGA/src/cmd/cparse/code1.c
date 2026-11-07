@@ -71,18 +71,18 @@ openfiles( argc, argv ) char *argv[]; { /* -E base: create base.I, base.D and ba
 		cp = argv[i];
 		if( *cp == '-' && *++cp == 'E' ){
 			++i;
-			ipath = strcpy( ifname, argv[i] );
-			ipath = strcat( ipath, ".I" );
+			ipath = (char *) strcpy( ifname, argv[i] );
+			ipath = (char *) strcat( ipath, ".I" );
 			if( (fd = creat( ipath, 0660 )) < 0 ) syserr( ipath );
 			if( (outfile = fdopen( fd, "w" )) == NULL ) syserr( ipath );
 			setbuf( outfile, ibuf );
-			dpath = strcpy( dfname, argv[i] );
-			dpath = strcat( dpath, ".D" );
+			dpath = (char *) strcpy( dfname, argv[i] );
+			dpath = (char *) strcat( dpath, ".D" );
 			if( (fd = creat( dpath, 0660 )) < 0 ) syserr( dpath );
 			if( (dfile = fdopen( fd, "w" )) == NULL ) syserr( dpath );
 			setbuf( dfile, dbuf );
-			spath = strcpy( sfname, argv[i] );
-			spath = strcat( spath, ".S" );
+			spath = (char *) strcpy( sfname, argv[i] );
+			spath = (char *) strcat( spath, ".S" );
 			if( (fd = creat( spath, 0660 )) < 0 ) syserr( spath );
 			if( (sfile = fdopen( fd, "w" )) == NULL ) syserr( spath );
 			setbuf( sfile, sbuf );

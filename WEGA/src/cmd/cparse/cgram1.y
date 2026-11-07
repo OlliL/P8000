@@ -527,7 +527,7 @@ statement:	   e   SM
 		|  GOTO NAME SM
 			={  register NODE *q;
 			    q = block( FREE, NIL, NIL, INT|ARY, 0, INT );
-			    q->tn.rval = idname = $2;
+			    q->tn.rval = (int) (idname = (struct symtab *) $2);
 			    defid( q, ULABEL );
 			    STP(idname)->suse = -lineno;
 			    branch( (int) STP(idname)->offset );
@@ -625,7 +625,7 @@ switchpart:	   SWITCH  LP  e  RP
 				$3 = bcon( 0 );
 				}
 			    swx = swp - swtab;
-			    *(NODE **)swp = tempnode( $3->in.type, 0 );
+			    *(NODE **)swp = (NODE *) tempnode( $3->in.type, 0 );
 			    ncopy( t = talloc(), *(NODE **)swp );
 			    t->tn.lval = -1;
 			    ecomp( block( ASSIGN, t, $3, $3->in.type, 0, $3->fn.csiz ) );
@@ -650,7 +650,7 @@ lcon_e:		   { $<intval>$=instruct; stwart=instruct=0; } e
 		;
 elist:		   e
 			%prec CM
-			={  $$ = argdebug( $1 ); }
+			={  $$ = (NODE *) argdebug( $1 ); }
 		|  elist  CM  e
 			={  $$ = buildtree( $2, $1, argdebug( $3 ) ); }
 		;
@@ -768,17 +768,17 @@ term:		   term INCOP
 				if( notlval( $1 ) ) uerror( "structure reference must be addressable" );
 				$1 = buildtree( UNARY AND, $1, NIL );
 				}
-			    idname = $3;
+			    idname = (struct symtab *) $3;
 			    $$ = buildtree( STREF, $1, buildtree( NAME, NIL, NIL ) );
 			    }
 		|  NAME
-			={  idname = $1;
+			={  idname = (struct symtab *) $1;
 			    /* recognize identifiers in initializations */
 			    if( blevel==0 && STP(idname)->stype == UNDEF ) {
 				register NODE *q;
 				werror( "undeclared initializer name %s", &ntab[STP(idname)->sname] );
 				q = block( FREE, NIL, NIL, INT, 0, INT );
-				q->tn.rval = idname;
+				q->tn.rval = (int) idname;
 				defid( q, EXTERN );
 				}
 			    $$=buildtree(NAME,NIL,NIL);
@@ -831,7 +831,7 @@ funct_idn:	   NAME  LP
 				q->tn.rval = $1;
 				defid( q, EXTERN );
 				}
-			    idname = $1;
+			    idname = (struct symtab *) $1;
 			    $$=buildtree(NAME,NIL,NIL);
 			    STP(idname)->suse = -lineno;
 			}

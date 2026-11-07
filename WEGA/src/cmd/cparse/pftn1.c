@@ -128,7 +128,7 @@ dimloop:
 							}
 						goto mstep;
 						}
-					p = copysym( &idp );
+					p = (struct symtab *) copysym( &idp );
 					goto enter;
 					}
 					goto redecl;
@@ -247,7 +247,7 @@ dimtest:
 
 	redecl:
 	if( blevel > slev && class != EXTERN && !( class == LABEL && slev >= 2 ) ){
-		idp = hide( p ); q->tn.rval = (int) idp;
+		idp = (struct symtab *) hide( p ); q->tn.rval = (int) idp;
 		p = idp;
 		goto enter;
 		}

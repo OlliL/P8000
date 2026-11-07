@@ -73,16 +73,16 @@ optim(p) register NODE *p; {
 		/* WEGA: (x+a)-(x+b) is a-b, (x-a)-(x-b) is b-a, x-x is 0 */
 		if( LO(p) == PLUS && RO(p) == PLUS && treeeq( p->in.left->in.left, p->in.right->in.left ) &&
 				p->in.left->in.right->in.type == p->in.type && p->in.right->in.right->in.type == p->in.type ){
-			a = tcopy( p->in.left->in.right );
-			b = tcopy( p->in.right->in.right );
+			a = (NODE *) tcopy( p->in.left->in.right );
+			b = (NODE *) tcopy( p->in.right->in.right );
 			goto rebuild;
 			}
 		goto minus1;
 	minus2:
 		if( RO(p) == MINUS && treeeq( p->in.left->in.left, p->in.right->in.left ) &&
 				p->in.left->in.right->in.type == p->in.type && p->in.right->in.right->in.type == p->in.type ){
-			b = tcopy( p->in.left->in.right );
-			a = tcopy( p->in.right->in.right );
+			b = (NODE *) tcopy( p->in.left->in.right );
+			a = (NODE *) tcopy( p->in.right->in.right );
 		rebuild:
 			tfree( p->in.left );
 			tfree( p->in.right );
@@ -355,7 +355,7 @@ rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes not
 		if( q->in.type == q->in.left->in.type || ( bsize( q->in.type ) == bsize( q->in.left->in.type ) &&
 				!( notflt( q->in.type ) ^ notflt( q->in.left->in.type ) ) ) ||
 				( q->in.type == DOUBLE && q->in.left->in.type == FLOAT ) ){
-			r = tcopy( q->in.left );
+			r = (NODE *) tcopy( q->in.left );
 			tfree( q );
 			p->in.right = r;
 			}
@@ -365,13 +365,13 @@ rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes not
 		if( q->in.type == q->in.left->in.type || ( bsize( q->in.type ) == bsize( q->in.left->in.type ) &&
 				!( notflt( q->in.type ) ^ notflt( q->in.left->in.type ) ) ) ||
 				( q->in.type == DOUBLE && q->in.left->in.type == FLOAT ) ){
-			r = tcopy( q->in.left );
+			r = (NODE *) tcopy( q->in.left );
 			tfree( q );
 			p->in.left = r;
 			}
 		}
 	else if( p->in.type == UNDEF ){
-		r = tcopy( p->in.left );
+		r = (NODE *) tcopy( p->in.left );
 		tfree( p );
 		p = r;
 		}

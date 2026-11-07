@@ -302,7 +302,7 @@ savestr( ct, lab ){ /* a string constant: read it and keep it with its label in 
 	strcur->s_lab = lab;
 	lxstr( ct );
 	strcur->s_len = strsize;
-	if( (strcur->s_str = malloc( strcur->s_len )) == 0 ) syserr( "malloc" );
+	if( (strcur->s_str = (char *) malloc( strcur->s_len )) == 0 ) syserr( "malloc" );
 	strsize = 0;
 	for( cp = strcur->s_str; strsize < strcur->s_len; ++strsize ) *cp++ = strbuf[strsize];
 	}
@@ -469,7 +469,7 @@ yylex(){
 			lxget( lxchar, LEXLET|LEXDIG );
 			if( (lxchar=lxres()) > 0 ) return( lxchar ); /* reserved word */
 			if( lxchar== 0 ) continue;
-			sp = lookup( yytext, (stwart&(INSTRUCT|INUNION|FUNNYNAME))?SMOS:0, 1, 0 );
+			sp = (struct symtab *) lookup( yytext, (stwart&(INSTRUCT|INUNION|FUNNYNAME))?SMOS:0, 1, 0 );
 			if( sp->sclass == TYPEDEF && !stwart ){
 				stwart = instruct;
 				yylval.nodep = mkty( sp->stype, sp->dimoff, sp->sizoff );
