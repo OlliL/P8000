@@ -31,9 +31,9 @@ build/nonsegv1/popt:
 	cd build/nonsegv1  && make -f ../../Makefile popt CC="cc" CFLAGS="$(CFLAGS) -DOLD_D20"
 
 build/seg/spopt:
-	cd build/seg   && make -f ../../Makefile spopt CFLAGS="$(CFLAGS) -DSEG"
+	cd build/seg   && make -f ../../Makefile spopt CFLAGS="$(CFLAGS) -DSPOPT"
 build/segv1/spopt:
-	cd build/segv1 && make -f ../../Makefile spopt CC="cc" CFLAGS="$(CFLAGS) -DSEG -DOLD_D20"
+	cd build/segv1 && make -f ../../Makefile spopt CC="cc" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D20"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
