@@ -104,6 +104,7 @@
 %right UNOP
 %right INCOP SIZEOF
 %left LB LP STROP
+%nonassoc error RP ELSE /* only the precedence, the conflicts resolve to shift as before */
 %{
 static char sccsid[] = "@[$]cgram1.y\t2.5  10/06/83 12:58:30 Copr. 1981 87wega3.2.";
 # include "mfile1"
@@ -186,7 +187,7 @@ declaration:	   attributes declarator_list  SM
 			={  curclass = SNULL; }
 		;
 oattributes:	  attributes
-		|  /* VOID */
+		|  /* VOID */ %prec CM
 			={  $$ = mkty(INT,0,INT);  curclass = SNULL; }
 		;
 attributes:	   class type
@@ -320,7 +321,7 @@ nfdeclarator:	   MUL nfdeclarator
 				$$->in.right->tn.lval = $<yylong>3;
 				$$->in.right->fn.csiz = $$->in.right->in.type = ctype( LONG );
 				}
-		|  NAME  		
+		|  NAME %prec CM		
 			={  $$ = bdty( NAME, NIL, $1 );  }
 		|   LP  nfdeclarator  RP 		
 			={ $$=$2; }
@@ -366,7 +367,7 @@ init_dcl_list:	   init_declarator
 		|  init_dcl_list  CM {$<nodep>$=$<nodep>0;}  init_declarator
 		;
 		/* always preceeded by attributes */
-xnfdeclarator:	   nfdeclarator
+xnfdeclarator:	   nfdeclarator %prec CM
 			={  defid( $1 = tymerge($<nodep>0,$1), curclass);
 			    beginit($1->tn.rval);
 			    }
@@ -442,7 +443,7 @@ begin:		  LC
 statement:	   e   SM
 			={ ecomp( $1 ); }
 		|  compoundstmt
-		|  ifprefix statement
+		|  ifprefix statement %prec CM
 			={ deflab($1);
 			   reached = 1;
 			   }
@@ -771,7 +772,7 @@ term:		   term INCOP
 			    idname = (struct symtab *) $3;
 			    $$ = buildtree( STREF, $1, buildtree( NAME, NIL, NIL ) );
 			    }
-		|  NAME
+		|  NAME %prec CM
 			={  idname = (struct symtab *) $1;
 			    /* recognize identifiers in initializations */
 			    if( blevel==0 && STP(idname)->stype == UNDEF ) {
@@ -808,7 +809,7 @@ cast_type:	  type null_decl
 			}
 		;
 
-null_decl:	   /* empty */
+null_decl:	   /* empty */ %prec CM
 			={ $$ = bdty( NAME, NIL, -1 ); }
 		|  LP RP
 			={ $$ = bdty( UNARY CALL, bdty(NAME,NIL,-1),0); }
