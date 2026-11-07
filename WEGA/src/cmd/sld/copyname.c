@@ -61,9 +61,9 @@ long spare4c4;
 long comsize;
 int spare4d0;
 int symbytes;
-int fctrel;
-int fcdrel;
-int fcbrel;
+int ctrel;
+int cdrel;
+int cbrel;
 char *pname;
 struct buf toutb;
 struct buf tmpoutb;
@@ -88,9 +88,9 @@ struct p2seg *lastd;
 struct p2seg *lastt;
 struct p2seg *lastb;
 struct p2seg *p2tail;
-long ttotal;
-long dtotal;
-long btotal;
+long tsize;
+long dsize;
+long bsize;
 struct mlist mlist[50];
 int ncopied;
 int dseg;
@@ -106,7 +106,7 @@ char secflg[128][5];
 int secorg[128][5];
 int placekd;
 char **curarg;
-int exstat;
+int errlev;
 char **cmdfile;
 char **cmdav;
 int cmdac;
@@ -148,34 +148,34 @@ test:
 	return n;
 }
 
-/* pack_name: build the table form of a C string: up to 8 characters padded, longer names with the length byte 0x80|n and padding to 16 bytes (0x00ee..0x0178 of /bin/sld) */
-pack_name(src, dst)
-char *src;
-char *dst;
+/* cp8c: build the table form of a C string: up to 8 characters padded, longer names with the length byte 0x80|n and padding to 16 bytes (0x00ee..0x0178 of /bin/sld) */
+cp8c(from, to)
+char *from;
+char *to;
 {
 	register char *q;
-	register char *d;
-	register char *s;
+	register char *t;
+	register char *f;
 	char cnt;
 
-	s = src;
-	q = src;
-	d = dst;
+	f = from;
+	q = from;
+	t = to;
 	cnt = 0;
-	while (*s++)
+	while (*f++)
 		cnt++;
 	if (cnt <= 8)
-		unpack_run(q, d);
+		unpack_run(q, t);
 	else {
-		*d++ = cnt | 0x80;
-		s--;
-		while (q < s)
-			*d++ = *q++;
+		*t++ = cnt | 0x80;
+		f--;
+		while (q < f)
+			*t++ = *q++;
 		cnt -= 8;
 		while (cnt > 0)
 			cnt -= 16;
 		while (cnt-- != 0)
-			*d++ = 0;
+			*t++ = 0;
 	}
 }
 
@@ -191,7 +191,7 @@ char *dst;
 		if ((*s++ & 0x7f) > 8) {
 			s--;
 			put_name(s);
-			report_error(1, "-- symbol name truncated\n");
+			error(1, "-- symbol name truncated\n");
 			s++;
 		}
 	}

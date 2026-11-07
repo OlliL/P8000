@@ -16,13 +16,13 @@ int n;
 	register struct p1seg *p;
 
 	if (n > maxblk)
-		report_error(2, "Too many pass 1 segment table entries --try -Ap option");
+		error(2, "Too many pass 1 segment table entries --try -Ap option");
 	if (n > nblks) {
 		goto test;
 body:
-		p = blktab[++nblks] = calloc(1, 0x36);
+		p = blktab[++nblks] = (struct p1seg *) calloc(1, 0x36);
 		if (p == 0)
-			report_error(2, "malloc unable to allocate enough memory");
+			error(2, "malloc unable to allocate enough memory");
 test:
 		if (n > nblks)
 			goto body;
@@ -35,7 +35,7 @@ test:
 segtab_alloc(a)
 int a;
 {
-	blktab = calloc(a, 4);
+	blktab = (struct p1seg **) calloc(a, 4);
 	if (!blktab)
-		report_error(2, "malloc unable to allocate enough memory");
+		error(2, "malloc unable to allocate enough memory");
 }

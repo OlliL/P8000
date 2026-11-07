@@ -26,7 +26,7 @@ char *p;
 			n = 8;
 			if (pnflag == 0) {
 				pnflag++;
-				report_error(0, "Warning - only 8 characters of name are significant");
+				error(0, "Warning - only 8 characters of name are significant");
 			}
 		} else if (n > 0x2c) {
 			flag++;

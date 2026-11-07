@@ -33,7 +33,7 @@ read_entry_hdr()
 			swap_pair(&cursym);
 		if (cursym.sname[0] & 0x80) {
 			cnt = cursym.sname[0] & 0x7f;
-			cur = &r;
+			cur = (char *) &r;
 			end = r.ssnam + cnt;
 			base = lnbuf;
 			q = lnbuf;
@@ -104,7 +104,7 @@ char c;
 		if (put_name(p->sname) < 8)
 			putchar(9);
 		putchar(0x20);
-		report_error(1, "-- Multiply defined");
+		error(1, "-- Multiply defined");
 		return;
 	}
 	p->stype = c;
@@ -144,14 +144,14 @@ char c;
 }
 
 /* mkfsym: make the file symbol of a symbol (0x6a08..0x6a58 of /bin/sld) */
-mkfsym(p)
-char *p;
+mkfsym(s)
+char *s;
 {
 	if (sflag)
 		return;
 	if (xflag)
 		return;
-	unpack_run(p, cursym.sname);
+	unpack_run(s, cursym.sname);
 	cursym.stype = 0x1f;
 	cursym.svalue = 0;
 	cursym.sseg = 0;
@@ -218,7 +218,7 @@ char *p;
 {
 	long dummy;
 
-	pack_name(p, cursym.sname);
+	cp8c(p, cursym.sname);
 	cursym.stype = 0x20;
 	cursym.svalue = 0;
 	lookup_name();
@@ -238,23 +238,23 @@ char *p;
 }
 
 /* enter: enter a symbol into the symbol table (0x6bae..0x6c6a of /bin/sld) */
-enter(a)
-struct symbol **a;
+enter(hp)
+struct symbol **hp;
 {
-	register struct symbol *r;
+	register struct symbol *sp;
 
-	if (*a == 0) {
+	if (*hp == 0) {
 		if (symindex >= 0x0ffa)
-			report_error(2, "Symbol table overflow");
-		symhash[symindex] = a;
-		*a = lastsym = r = table16_entry(symindex++);
-		symindex = unpack_run(cursym.sname, r->sname) + symindex;
-		r->stype = cursym.stype;
-		r->svalue = cursym.svalue;
-		r->sseg = cursym.sseg;
+			error(2, "Symbol table overflow");
+		symhash[symindex] = hp;
+		*hp = lastsym = sp = table16_entry(symindex++);
+		symindex = unpack_run(cursym.sname, sp->sname) + symindex;
+		sp->stype = cursym.stype;
+		sp->svalue = cursym.svalue;
+		sp->sseg = cursym.sseg;
 		return 1;
 	}
-	lastsym = *a;
+	lastsym = *hp;
 	return 0;
 }
 
@@ -313,15 +313,15 @@ symreloc()
 	switch (cursym.stype) {
 	case 2:
 	case 0x22:
-		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fctrel);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + ctrel);
 		return;
 	case 3:
 	case 0x23:
-		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fcdrel);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + cdrel);
 		return;
 	case 4:
 	case 0x24:
-		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fcbrel);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + cbrel);
 		return;
 	case 0x20:
 		return;
@@ -419,25 +419,25 @@ unsigned x;
 
 	if (x < nsym)
 		return symtab + x;
-	report_error(2, "Symbol table overflow --try -As option");
+	error(2, "Symbol table overflow --try -As option");
 }
 
 /* symtab_alloc: allocate the symbol table (0x6ffe..0x702a of /bin/sld) */
 symtab_alloc(a)
 int a;
 {
-	symtab = calloc(a, 16);
+	symtab = (struct symbol *) calloc(a, 16);
 	if (!symtab)
-		report_error(2, "malloc unable to allocate enough memory for symbol table");
+		error(2, "malloc unable to allocate enough memory for symbol table");
 }
 
 /* resize_symtab: change the size of the symbol table (0x702a..0x705e of /bin/sld) */
 resize_symtab(a)
 int a;
 {
-	symtab = realloc(symtab, a << 4);
+	symtab = (struct symbol *) realloc(symtab, a << 4);
 	if (!symtab)
-		report_error(2, "realloc unable to allocate enough memory for symbol table");
+		error(2, "realloc unable to allocate enough memory for symbol table");
 }
 
 /* next_entry: next entry of the symbol table (a long name occupies several entries) (0x705e..0x70ce of /bin/sld) */
@@ -457,7 +457,7 @@ register struct symbol *p;
 		p++;
 	if (p >= symtab && p < symtab + nsym)
 		return p;
-	report_error(2, "Error in stepsym");
+	error(2, "Error in stepsym");
 }
 
 /* index16: index of an entry of the symbol table (byte offset / 16) (0x70ce..0x7112 of /bin/sld) */
@@ -468,7 +468,7 @@ struct symbol *x;
 
 	if (symtab <= x && symtab + nsym > x)
 		return ((int)x - (int)symtab) >> 4;
-	report_error(2, "Error in getindex");
+	error(2, "Error in getindex");
 }
 
 /* ensure_buf: make sure the ranlib buffer is large enough (0x7112..0x7186 of /bin/sld) */
@@ -477,12 +477,12 @@ unsigned long n;
 {
 	if (rlsize < n) {
 		if (n > 0xffff)
-			report_error(2, "ranlib table of contents too large");
+			error(2, "ranlib table of contents too large");
 		if (rlsize != 0)
 			free(rlbuf);
 		rlbuf = calloc(1, (int)n);
 		if (rlbuf == 0)
-			report_error(2, "malloc unable to allocate enough memory for ranlib contents");
+			error(2, "malloc unable to allocate enough memory for ranlib contents");
 		rlsize = (unsigned)n;
 	}
 	return rlbuf;
@@ -500,5 +500,5 @@ unsigned x;
 {
 	if (x < 0x0100)
 		return p2tab + x;
-	report_error(2, "Pass 2 segment table overflow");
+	error(2, "Pass 2 segment table overflow");
 }

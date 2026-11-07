@@ -14,7 +14,7 @@ long dcum = 0;
 int unused484 = 0;
 long *libp = (long *)liblist;
 char *aoutnam = "a.out";
-char *ofilnam = "l.out";
+char *ofilename = "l.out";
 char tfname[] = "/tmp/ldaXXXXX";
 char *secnam[] = {"all", "text", "data", "bss"};
 char symdef[] = "__.SYMDEF";
@@ -90,16 +90,16 @@ char **argv;
 				j++;
 				goto optchar;
 			case 'l':
-				load_lib_syms(s + (j - 1));
+				load1arg(s + (j - 1));
 				break;
 			case 'b':
 			case 't':
 				if (mcnt)
-					report_error(2, "Cannot use -t or -b options with -M");
+					error(2, "Cannot use -t or -b options with -M");
 				tbflag = 1;
 				i++;
 				if (i >= argc)
-					report_error(2, "-%c: arg missing", s[j]);
+					error(2, "-%c: arg missing", s[j]);
 				if (reg_sect_addr(s + j, *curarg))
 					j++;
 				curarg++;
@@ -107,12 +107,12 @@ char **argv;
 				goto optchar;
 			case 'M':
 				if (tbflag)
-					report_error(2, "Cannot use -t or -b options with -M");
+					error(2, "Cannot use -t or -b options with -M");
 				mcnt++;
 				scan_m_opt(s + j, &i, argc);
 				break;
 			default:
-				report_error(2, "-%c: bad flag", s[j]);
+				error(2, "-%c: bad flag", s[j]);
 				break;
 			case 'N':
 			case 'O':
@@ -131,7 +131,7 @@ char **argv;
 			}
 			goto next;
 		lib:
-			load_lib_syms(s);
+			load1arg(s);
 next:
 			i++;
 		}
@@ -146,18 +146,18 @@ next:
 	}
 	if (rflag && secspec)
 		printf("%s: warning, -r option overrides -t, -b\n", pname);
-	parse_args(argc, argv);
+	endload(argc, argv);
 }
 
 
 char tmpname[] = "l.out";
 
-/* sig_handler: signal handler: remove the temporary files and exit (0x0a5c..0x0aba of /bin/sld) */
-sig_handler()
+/* delexit: signal handler: remove the temporary files and exit (0x0a5c..0x0aba of /bin/sld) */
+delexit()
 {
 	unlink(tmpname);
 	if (!delarg && !(arflag && nundef) && !rflag) {
-		chmod(ofilnam, (~umask(0)) & 0x1ff);
+		chmod(ofilename, (~umask(0)) & 0x1ff);
 	}
 	exit(delarg);
 }
@@ -166,9 +166,9 @@ sig_handler()
 init_signals()
 {
 	if (signal(2, 1L) != 1)
-		signal(2, sig_handler);
+		signal(2, delexit);
 	if (signal(15, 1L) != 1)
-		signal(15, sig_handler);
+		signal(15, delexit);
 }
 
 /* scan_options: scan the options (-l, -o, -M, -f, ...) of the command line or of a command file (0x0b04..0x0f26 of /bin/sld) */
@@ -192,9 +192,9 @@ char **argv;
 			switch ((*argv)[1]) {
 	case 'f':
 				if (fflag)
-					report_error(2, "Duplicate -f flags");
+					error(2, "Duplicate -f flags");
 				if (argc <= 1)
-					report_error(2, "Bad command file");
+					error(2, "Bad command file");
 				argv++;
 				cmdfile = (char **)*argv;
 				argc--;
@@ -214,7 +214,7 @@ char **argv;
 				goto next;
 	case 'R':
 				if (sscanf(*argv, "-R%d", &v0a) < 1)
-					report_error(2, "invalid syntax for R option");
+					error(2, "invalid syntax for R option");
 				nrflag++;
 				resv_seg(v0a, 'r');
 				goto next;
@@ -230,11 +230,11 @@ char **argv;
 	case 'e':
 	case 'u':
 				if (argc <= 1)
-					report_error(2, "Bad 'use' or 'entry'");
+					error(2, "Bad 'use' or 'entry'");
 				p = (char **)slookup(argv[1]);
 				enter(p);
 				if ((*argv)[1] == 'e')
-					entrypt = (long)lastsym;
+					entrypt = lastsym;
 				goto skip2;
 	case 'd':
 				dflag++;
@@ -251,37 +251,37 @@ char **argv;
 				goto next;
 	case 'o':
 				if (argc <= 1)
-					report_error(2, "Bad output file");
+					error(2, "Bad output file");
 				argv++;
-				ofilnam = *argv;
-				if (access(ofilnam, 0) == 0) {
-					if (access(ofilnam, 2) != 0)
-						report_error(2, "%s is write protected", ofilnam);
+				ofilename = *argv;
+				if (access(ofilename, 0) == 0) {
+					if (access(ofilename, 2) != 0)
+						error(2, "%s is write protected", ofilename);
 				}
 				argc--;
 				ofilfnd++;
 				goto next;
 	case 'A':
 				if (argc <= 1)
-					report_error(2, "Need size specification");
+					error(2, "Need size specification");
 				switch ((*argv)[2]) {
 		case 's':
 					if (sscanf(argv[1], "%d", &v08) != 1)
-						report_error(2, "Unable to convert symbol table size specification");
+						error(2, "Unable to convert symbol table size specification");
 					if ((long)(unsigned)v08 + 2 << 4 > 0xfff8L)
-						report_error(2, "Symbol table size specification is too big");
+						error(2, "Symbol table size specification is too big");
 					nsym = v08;
 					resize_symtab(v08);
 					goto skip2;
 		case 'p':
 					if (sscanf(argv[1], "%d", &v08) != 1)
-						report_error(2, "Unable to convert pass 1 segment table size specification");
+						error(2, "Unable to convert pass 1 segment table size specification");
 					if ((long)(unsigned)v08 + 2 << 2 > 0xfff8L)
-						report_error(2, "Pass 1 segment table size specification is too big");
+						error(2, "Pass 1 segment table size specification is too big");
 					maxblk = v08;
 					goto skip2;
 		default:
-					report_error(2, "Invalid character after -A");
+					error(2, "Invalid character after -A");
 				}
 skip2:
 				argc--;
@@ -303,7 +303,7 @@ skip2:
 					nlflag = 0;
 					break;
 		default:
-					report_error(2, "-N%c :bad argument (l or s)", (*argv)[2]);
+					error(2, "-N%c :bad argument (l or s)", (*argv)[2]);
 				}
 				goto next;
 			}
@@ -335,22 +335,22 @@ char *name;
 	cmdargv[0] = cmdbuf;
 	fd = open(name, 0);
 	if (fd < 0)
-		report_error(2, "Unable to open command file");
+		error(2, "Unable to open command file");
 	inword = 0;
 	idx = 0;
 	while (n = read(fd, &c, 1) != 0) {
 	if (n == -1)
-		report_error(2, "Bad command file read");
+		error(2, "Bad command file read");
 	if (ctab[c] & 8) {
 		if (!inword) {
 			inword++;
 			*p = 0;
 			p++;
 			if (p > libname)
-				report_error(2, "Command file arguments too long");
+				error(2, "Command file arguments too long");
 			idx++;
 			if (idx > 2000)
-				report_error(2, "Too many command file arguments");
+				error(2, "Too many command file arguments");
 			cmdargv[idx] = p;
 		}
 	} else {
@@ -358,7 +358,7 @@ char *name;
 		*p = c;
 		p++;
 		if (p > libname)
-			report_error(2, "Command file arguments too long");
+			error(2, "Command file arguments too long");
 	}
 	}
 	cmdav = cmdargv;
@@ -392,7 +392,7 @@ char *t;
 		k = 0;
 		break;
 	default:
-		report_error(2, "-%.2s: invalid selector (must be t, d or b)", s);
+		error(2, "-%.2s: invalid selector (must be t, d or b)", s);
 	}
 	u = t;
 	if (iflag && (k == 2 || k == 3))
@@ -400,7 +400,7 @@ char *t;
 	else
 		g = 0;
 	if ((tab42b4 + g * 5)[k])
-		report_error(2, "-%.2s: -%c%c already specified", s, (tab42b4 + g * 5)[k], s[1]);
+		error(2, "-%.2s: -%c%c already specified", s, (tab42b4 + g * 5)[k], s[1]);
 	(tab42b4 + g * 5)[k] = *s;
 	fmt = "%o%c";
 	if (*u != '0')
@@ -410,15 +410,15 @@ char *t;
 		fmt = "%x%c";
 	}
 	if (sscanf(u, fmt, &secorg[g][k]) != 1)
-		report_error(2, "-%.2s %s: bad address", s, t);
+		error(2, "-%.2s %s: bad address", s, t);
 	if (k == 0)
 		return 0;
 	return 1;
 }
 
 
-/* parse_args: second pass over the arguments: load every object and library in order (0x11ea..0x1364 of /bin/sld) */
-int parse_args(argc, argv)
+/* endload: second pass over the arguments: load every object and library in order (0x11ea..0x1364 of /bin/sld) */
+int endload(argc, argv)
 int argc;
 char **argv;
 {
@@ -435,8 +435,8 @@ char **argv;
 
 	flag = 0;
 	filname = 0;
-	end_pass1();
-	start_output();
+	middle();
+	setupout();
 	av = argv + 1;
 	nblk = 0;
 	fblk = 0;
@@ -475,7 +475,7 @@ char **argv;
 					case 'M':
 						goto mm;
 					case 'R':
-						goto next;
+						if (1) goto next;
 						load2arg(a);
 					}
 					continue;
@@ -524,12 +524,12 @@ next:
 		argc = saved_argc;
 		flag = 0;
 	}
-	finish_output();
+	finishout();
 }
 
 
-/* load_lib_syms: load an archive: only the members that define an undefined symbol (ranlib table) (0x1364..0x14a4 of /bin/sld) */
-int load_lib_syms(p)
+/* load1arg: load an archive: only the members that define an undefined symbol (ranlib table) (0x1364..0x14a4 of /bin/sld) */
+int load1arg(p)
 char *p;
 {
 	register char *r;
@@ -538,7 +538,7 @@ char *p;
 	r = p;
 	switch (getfile(r)) {
 	case 0:
-		read_symbols(0, 0L);
+		load1(0, 0L);
 		break;
 	case 1:
 		for (n = 1; load_header(n); n = ((archdr.asize + 27) >> 1) + n)
@@ -555,7 +555,7 @@ char *p;
 		*libp++ = -1;
 		break;
 	case 3:
-		report_error(0, "out of date (warning)");
+		error(0, "out of date (warning)");
 		for (n = ((archdr.asize + 27) >> 1) + 1; load_header(n); n = ((archdr.asize + 27) >> 1) + n)
 			;
 		break;
@@ -579,7 +579,7 @@ long p;
 	if (swapflg)
 		magic = swap(magic);
 	if (magic == 0xe707 || magic == 0xe711 || magic == 0xe607 || magic == 0xe611) {
-		if (read_symbols(1, p + 13)) {
+		if (load1(1, p + 13)) {
 			*libp++ = p;
 		}
 	}
@@ -613,8 +613,8 @@ int ranlib_scan()
 	return sv != libp;
 }
 
-/* add16_checked: sum of two unsigned values; error (level 1) when it exceeds 16 bits (0x1664..0x1696 of /bin/sld) */
-int add16_checked(x, y, a)
+/* add: sum of two unsigned values; error (level 1) when it exceeds 16 bits (0x1664..0x1696 of /bin/sld) */
+int add(x, y, a)
 int x;
 int y;
 long a;
@@ -623,12 +623,12 @@ long a;
 
 	s = (long)(unsigned)x + (unsigned)y;
 	if (s >= 0x10000)
-		report_error(1);
+		error(1);
 	return s;
 }
 
-/* read_symbols: pass one for one object: read the symbol table, enter the symbols (0x1696..0x18f2 of /bin/sld) */
-int read_symbols(a, b, c)
+/* load1: pass one for one object: read the symbol table, enter the symbols (0x1696..0x18f2 of /bin/sld) */
+int load1(a, b, c)
 int a;
 int b;
 long c;
@@ -650,7 +650,7 @@ long c;
 	k = 1;
 	saved = symindex;
 	if ((filhdr.relflg & 1) == 1) {
-		report_error(1, "No relocation bits");
+		error(1, "No relocation bits");
 		return 0;
 	}
 	c = (long)((unsigned)(hdrsz + segtsz) / 2) + filhdr.tsize + filhdr.dsize + c;
@@ -690,16 +690,16 @@ long c;
 			cnt++;
 		}
 		cur->sseg = fblk + cursym.sseg;
-		fctrel = (blk = get_block(cur->sseg))->ctrel;
-		fcdrel = blk->cdrel;
-		fcbrel = blk->cbrel;
+		ctrel = (blk = get_block(cur->sseg))->ctrel;
+		cdrel = blk->cdrel;
+		cbrel = blk->cbrel;
 		*(int *)&cur->svalue = 0;
 		symreloc();
 		cur->stype = cursym.stype;
 		cur->svalue = cursym.svalue;
 	}
 	if (a == 0 || cnt != 0) {
-		symbytes = add16_checked(symbytes, k << 4, "symbol table overflow");
+		symbytes = add(symbytes, k << 4, "symbol table overflow");
 		return 1;
 	}
 	while (symindex > saved) {
@@ -768,7 +768,7 @@ int k;
 		switch (secflg[k][j]) {
 		case 't':
 			if (q->tsize > secorg[k][j])
-				report_error(1, "top address of %s in segment %d too low", secnam[j], k);
+				error(1, "top address of %s in segment %d too low", secnam[j], k);
 			if ((r8 = secorg[k][j] & 0xff00) != secorg[k][j])
 				printf("%s: warning, top address of %s in segment %d relocated to 0x%x\n", pname, secnam[j], k, r8);
 			r8 = (r8 - q->tsize) & 0xff00;
@@ -783,7 +783,7 @@ int k;
 		areas[0].tsize = 0;
 		q->tend = r8 + q->tsize;
 		if (r8 > q->tend)
-			report_error(1, "%s area wrap around", secnam[j]);
+			error(1, "%s area wrap around", secnam[j]);
 		for (i = 1; i < j; i++) {
 			if (r8 < areas[i].tend && q->tend > areas[i].tstart) {
 				printf("sld: warning, %s and %s overlap in segment %d - creating overlay segment\n", secnam[i], secnam[j], k);
@@ -864,7 +864,7 @@ struct p2seg *p;
 int kind;
 {
 	if (np2seg > 0x100)
-		report_error(2, "Pass2 segment table overflow");
+		error(2, "Pass2 segment table overflow");
 	if (kind == 2) {
 		dsplseg = table32_entry(np2seg++);
 		dsplseg->segno = 0xff;
@@ -884,8 +884,8 @@ int kind;
 	}
 }
 
-/* start_output: open the output and temporary files, write the header (0x2056..0x22a4 of /bin/sld) */
-int start_output()
+/* setupout: open the output and temporary files, write the header (0x2056..0x22a4 of /bin/sld) */
+int setupout()
 {
 	register int n;
 	register struct p2seg *p;
@@ -894,25 +894,25 @@ int start_output()
 	char arr[8192];
 	char hdr[24];
 
-	open_tmp(&toutb, 0);
+	tcreat(&toutb, 0);
 	mktemp(tfname);
-	open_tmp(&tmpoutb, 1);
-	open_tmp(&doutb, 1);
+	tcreat(&tmpoutb, 1);
+	tcreat(&doutb, 1);
 	if (!sflag || !xflag)
-		open_tmp(&soutb, 1);
+		tcreat(&soutb, 1);
 	if (rflag) {
-		open_tmp(&troutb, 1);
-		open_tmp(&droutb, 1);
-		open_tmp(&routb, 1);
+		tcreat(&troutb, 1);
+		tcreat(&droutb, 1);
+		tcreat(&routb, 1);
 	}
 	filhdr.fmagic = segmode == 1 ? (Oflag ? 0xe605 : iflag ? 0xe611 : 0xe607) : (Oflag ? 0xe705 : iflag ? 0xe711 : 0xe707);
-	filhdr.tsize = ttotal;
-	filhdr.dsize = dtotal;
-	filhdr.bsize = btotal;
+	filhdr.tsize = tsize;
+	filhdr.dsize = dsize;
+	filhdr.bsize = bsize;
 	filhdr.ssize = sflag ? 0 : (((unsigned)symbytes >> 4) + symindex) * 12;
 	if (entrypt) {
 		if (entrypt->stype != '"')
-			report_error(1, "Entry point not in text");
+			error(1, "Entry point not in text");
 		else
 			filhdr.entry = entrypt->svalue;
 	} else {
@@ -940,27 +940,27 @@ int start_output()
 	mput(&toutb, arr, n << 4);
 }
 
-/* open_tmp: create a temporary or output file (0x22a4..0x2346 of /bin/sld) */
-open_tmp(out, flag)
-struct buf *out;
-int flag;
+/* tcreat: create a temporary or output file (0x22a4..0x2346 of /bin/sld) */
+tcreat(buf, tempflg)
+struct buf *buf;
+int tempflg;
 {
-	register int fd;
-	char *name;
+	register int ufd;
+	char *nam;
 
-	if (flag)
-		name = tfname;
+	if (tempflg)
+		nam = tfname;
 	else
-		name = ofilnam;
-	fd = creat(name, 0x1b6);
-	if (fd < 0)
-		report_error(2, flag ? "cannot create temp" : "cannot create output");
-	close(fd);
-	out->fildes = open(name, 2);
-	if (flag)
+		nam = ofilename;
+	ufd = creat(nam, 0x1b6);
+	if (ufd < 0)
+		error(2, tempflg ? "cannot create temp" : "cannot create output");
+	close(ufd);
+	buf->fildes = open(nam, 2);
+	if (tempflg)
 		unlink(tfname);
-	out->nleft = 0x100;
-	out->xnext = out->iobuf;
+	buf->nleft = 0x100;
+	buf->xnext = buf->iobuf;
 }
 
 /* init_entry: fill the header of the output (objhdr) from the totals and the flags (0x2346..0x23fe of /bin/sld) */
@@ -969,10 +969,10 @@ struct objhdr *p;
 int a;
 {
 	p->hmagic = filhdr.fmagic;
-	p->hx = ttotal + dtotal;
+	p->hx = tsize + dsize;
 	if (p->hx > 0x10000 && tbflag)
-		report_error(2, "cannot have segment overflow with t or b option");
-	p->hbss = btotal;
+		error(2, "cannot have segment overflow with t or b option");
+	p->hbss = bsize;
 	p->hsegsz = a << 4;
 	p->hrelflg = filhdr.relflg;
 	if (zflag)
@@ -984,28 +984,28 @@ int a;
 }
 
 /* load2arg: pass two for one argument (object file or archive member) (0x23fe..0x2492 of /bin/sld) */
-load2arg(p)
-char *p;
+load2arg(acp)
+char *acp;
 {
-	register char *q;
+	register char *cp;
 	register long *lp;
 	int spare[2];	/* unused: the frame of the original has 4 more bytes */
 
-	q = p;
-	if (getfile(q) == 0) {
+	cp = acp;
+	if (getfile(cp) == 0) {
 		goto test0;
 body0:
-		q++;
+		cp++;
 test0:
-		if (*q != 0)
+		if (*cp != 0)
 			goto body0;
 		for (;;) {
-			if (q < p)
+			if (cp < acp)
 				break;
-			if (*--q == 0x2f)
+			if (*--cp == 0x2f)
 				break;
 		}
-		load2(0L, ++q);
+		load2(0L, ++cp);
 	} else {
 		lp = libp;
 		goto test1;
@@ -1061,11 +1061,11 @@ char *b;
 		}
 		rec = *lookup_name();
 		if (!rec)
-			report_error(2, "internal error: symbol not found");
+			error(2, "internal error: symbol not found");
 		if (cursym.stype != 0x20)
 			goto other;
 		if (t >= (struct local *)&symtab)
-			report_error(2, "Local symbol overflow");
+			error(2, "Local symbol overflow");
 		t->locindex = k;
 		t->locsymbol = rec;
 		t++;
@@ -1076,7 +1076,7 @@ other:
 		if (put_name(cursym.sname) < 8)
 			putchar(9);
 		putchar(9);
-		report_error(1, "- Multiply defined");
+		error(1, "- Multiply defined");
 next:
 		k += n;
 	}
@@ -1162,7 +1162,7 @@ top:
 			w12 = *text.ptr++;
 		if (--reloc.size <= 0) {
 			if (reloc.size < 0)
-				report_error(2, "Relocation error");
+				error(2, "Relocation error");
 			reloc.size++;
 			w13 = get(&reloc);
 		} else if (--reloc.nibuf < 0) {
@@ -1179,13 +1179,13 @@ top:
 	switch (((w13 & 8) ? w13 : (w13 >> 4)) & 7) {
 	case 2:
 	if (!(w13 & 1))
-		report_error(2, "bad segmented bit in relocation word");
+		error(2, "bad segmented bit in relocation word");
 	cursym.stype = ((w13 & 7) >> 1) + 1;
 	cursym.svalue = (long)(w12 & 0xff);
 	cursym.sseg = (unsigned)w13 >> 8;
 	map_sym();
 	if ((w12 = (int)cursym.svalue) & 0xff00)
-		report_error(2, "short segmented offset too large");
+		error(2, "short segmented offset too large");
 addhi:
 	w12 += ((int)(cursym.svalue >> 16)) & 0xff00;
 setseg:
@@ -1202,7 +1202,7 @@ emit:
 		break;
 	case 1:
 	if (!(w13 & 1))
-		report_error(2, "bad segmented bit in relocation word");
+		error(2, "bad segmented bit in relocation word");
 	w10 = w12;
 	cursym.sseg = (unsigned)w13 >> 8;
 	cursym.stype = ((w13 & 7) >> 1) + 1;
@@ -1244,11 +1244,11 @@ symdone:
 	w12 = (int)cursym.svalue;
 	goto setseg;
 	default:
-		report_error(2, "unrecognized relocation address type");
+		error(2, "unrecognized relocation address type");
 	}
 	goto emit;
 	} else {
-		e = table_lookup(p, w13);
+		e = lookloc(p, w13);
 		if (e->stype != 0x20)
 			goto extsym;
 		w13 = (((w13 & 8) ? w13 : (w13 >> 4)) & 7) + ((index16(e) + nsymf) << 4) + 8;
@@ -1261,13 +1261,13 @@ extsym:
 	w13 = (e->stype - 0x21) * 2 + 0x21;
 	w13 = (e->sseg << 8) + (w13 & 0xff);
 	if ((w12 = ((int)e->svalue + 0xff) & w12) & 0xff00)
-		report_error(2, "short segment offset too large");
+		error(2, "short segment offset too large");
 	w12 += ((int)(e->svalue >> 16)) & 0xff00;
 	goto emit;
 		break;
 	case 1:
 	if (!(w13 & 1))
-		report_error(2, "bad segmented bit in relocation word");
+		error(2, "bad segmented bit in relocation word");
 	w10 = (w12 & 0x8000) | ((int)(e->svalue >> 16) & 0xff00);
 	if (swapflg)
 		w10 = swap_bytes(w10);
@@ -1280,7 +1280,7 @@ extsym:
 		goto extoff;
 	flag = 0;
 	if (e != save)
-		report_error(2, "mismatched segment & offset relocation words");
+		error(2, "mismatched segment & offset relocation words");
 	w11 = (e->stype - 0x21) * 2 + 0x11;
 	w11 = (e->sseg << 8) + (w11 & 0xff);
 	if (swapflg)
@@ -1293,15 +1293,15 @@ extoff:
 	w12 = w12 + (int)e->svalue;
 	goto emit;
 	default:
-		report_error(2, "unrecognized relocation address type");
+		error(2, "unrecognized relocation address type");
 	}
 	goto emit;
 	}end:
 	;
 }
 
-/* finish_output: write the remaining parts of the output and patch the header (0x2cbc..0x2d4c of /bin/sld) */
-finish_output()
+/* finishout: write the remaining parts of the output and patch the header (0x2cbc..0x2d4c of /bin/sld) */
+finishout()
 {
 	copy_segs();
 	if (rflag)
@@ -1311,16 +1311,16 @@ finish_output()
 			copy(&soutb);
 		put_all();
 	}
-	flush_buffer(&toutb);
+	flush(&toutb);
 	close(toutb.fildes);
 	if (!ofilfnd) {
 		unlink(aoutnam);
 		link("l.out", aoutnam);
-		ofilnam = aoutnam;
+		ofilename = aoutnam;
 	}
-	delarg = exstat;
+	delarg = errlev;
 	patch_hdr();
-	sig_handler();
+	delexit();
 }
 
 /* patch_hdr: rewrite the header of the output file with the final values (0x2d4c..0x2dde of /bin/sld) */
@@ -1333,26 +1333,26 @@ patch_hdr()
 		int rest[5];
 	} h;
 
-	n = open(ofilnam, 1);
+	n = open(ofilename, 1);
 	if (n == -1)
-		report_error(2, "Unable to reopen output file");
+		error(2, "Unable to reopen output file");
 	if (lseek(n, (long)((char *)&h.syms - (char *)&h), 0) == -1)
-		report_error(2, "Unable to seek in output file");
+		error(2, "Unable to seek in output file");
 	nwsym = nwsym * 14;
 	if (write(n, &nwsym, 2) != 2)
-		report_error(2, "Unable to write in output file");
+		error(2, "Unable to write in output file");
 }
 
 /* copy: copy a temporary file to the output (0x2dde..0x2e4c of /bin/sld) */
-copy(p)
-struct buf *p;
+copy(buf)
+struct buf *buf;
 {
 	register int n;
 	register int c;
 	register int *q;
 
-	flush_buffer(p);
-	n = p->fildes;
+	flush(buf);
+	n = buf->fildes;
 	lseek(n, 0L, 0);
 	while ((c = read(n, tmpoutb.iobuf, 0x200)) > 1) {
 		c >>= 1;
@@ -1369,33 +1369,33 @@ high_byte(x)
 int x;
 {
 	if ((x & 0xff00) != x)
-		report_error(2, "internal error - mkchar");
+		error(2, "internal error - mkchar");
 	return ((unsigned)x >> 8) & 0xff;
 }
 
 /* mget: read n bytes from the current input into a buffer (0x2e76..0x2f04 of /bin/sld) */
-mget(p, n)
-char *p;
-int n;
+mget(aloc, an)
+char *aloc;
+int an;
 {
-	register int *q;
+	register int *p;
 	register char *d;
 	register int k;
 
-	k = n;
+	k = an;
 	k >>= 1;
-	d = p;
+	d = aloc;
 	text.nibuf -= k;
 	if (text.nibuf >= 0) {
 		text.size -= k;
 		if (text.size > 0) {
-			q = text.ptr;
+			p = text.ptr;
 			do {
-				*(int *)d = *q;
-				q++;
+				*(int *)d = *p;
+				p++;
 				d += 2;
 			} while (--k);
-			text.ptr = q;
+			text.ptr = p;
 			return;
 		}
 		text.size += k;
@@ -1408,19 +1408,19 @@ int n;
 }
 
 /* mput: write n bytes to an output buffer (0x2f04..0x2f3a of /bin/sld) */
-mput(q, a, n)
-struct buf *q;
+mput(buf, a, an)
+struct buf *buf;
 int *a;
-int n;
+int an;
 {
 	register int k;
 	register int x;
-	register int *p;
+	register int *aloc;
 
-	p = a;
-	k = n >> 1;
+	aloc = a;
+	k = an >> 1;
 	do {
-		put_int_buf(*p++, q);
+		put_int_buf(*aloc++, buf);
 	} while (--k);
 }
 
@@ -1452,7 +1452,7 @@ int n;
 			nw = 0;
 		cur->nibuf = nw;
 	} else
-		report_error(2, "No pages");
+		error(2, "No pages");
 common:
 	cur->nuser += 1;
 	obj->bno = hi;
@@ -1466,10 +1466,10 @@ common:
 
 
 /* half: x / 2 as an unsigned word (0x3090..0x30a4 of /bin/sld) */
-half(x)
-int x;
+half(i)
+int i;
 {
-	return (x >> 1) & 0x7fff;
+	return (i >> 1) & 0x7fff;
 }
 
 /* get: next byte of a stream; reads the next page and checks the end of the member (0x30a4..0x3144 of /bin/sld) */
@@ -1485,7 +1485,7 @@ struct stream *sp;
 	}
 	if (--q->size <= 0) {
 		if (q->size < 0)
-			report_error(2, premeof);
+			error(2, premeof);
 		fpage.nuser++;
 		--q->pno->nuser;
 		q->pno = (struct page *)&fpage;
@@ -1545,14 +1545,14 @@ char *name;
 				strcat(libpath, libname);
 				infil = open(libpath, 0);
 				if (infil == -1)
-					report_error(2, "cannot open library");
+					error(2, "cannot open library");
 			}
 		}
 	}
 	if (infil == -1) {
 		infil = open(filname, 0);
 		if (infil < 0)
-			report_error(2, "cannot open");
+			error(2, "cannot open");
 	}
 	page[1].bno = -1;
 	page[0].bno = -1;
@@ -1563,7 +1563,7 @@ char *name;
 	fpage.nuser = 2;
 	dseek(&text, 0L, 2);
 	if (text.size <= 0)
-		report_error(2, premeof);
+		error(2, premeof);
 	if (get(&text) != -155)
 		return 0;
 	dseek(&text, 1L, 0x1a);
@@ -1578,8 +1578,8 @@ char *name;
 	return 2;
 }
 
-/* report_error: print a message with the program and file name; fatal depending on the level (0x3408..0x34b8 of /bin/sld) */
-int report_error(level, msg, a, b, c, d, e)
+/* error: print a message with the program and file name; fatal depending on the level (0x3408..0x34b8 of /bin/sld) */
+int error(level, msg, a, b, c, d, e)
 int level;
 char *msg;
 int a;
@@ -1588,7 +1588,7 @@ int c;
 int d;
 int e;
 {
-	if (!exstat)
+	if (!errlev)
 		printf("%s: ", pname);
 	if (filname) {
 		printf("%s", filname);
@@ -1599,12 +1599,12 @@ int e;
 	printf(msg, a, b, c, d, e);
 	printf("\n");
 	if (level > 1)
-		sig_handler();
-	exstat = level;
+		delexit();
+	errlev = level;
 }
 
-/* table_lookup: find an entry of the local symbol table (botch on failure) (0x34b8..0x3516 of /bin/sld) */
-struct symbol *table_lookup(end, a)
+/* lookloc: find an entry of the local symbol table (botch on failure) (0x34b8..0x3516 of /bin/sld) */
+struct symbol *lookloc(end, a)
 struct local *end;
 int a;
 {
@@ -1623,7 +1623,7 @@ int a;
 		p++;
 	}
 	printf("botch on %x\n", a);
-	report_error(2, "Local symbol botch");
+	error(2, "Local symbol botch");
 }
 
 /* readhdr: read and convert the header of an object file or member (0x3516..0x3760 of /bin/sld) */
@@ -1679,7 +1679,7 @@ int b;
 		w |= p->atr;
 	}
 	if (w & 0xf8)
-		report_error(2, "Invalid segment attributes");
+		error(2, "Invalid segment attributes");
 	filhdr.entry = tmp.hentry;
 	filhdr.relflg = tmp.hrelflg & 1;
 	filhdr.ssize = tmp.hsymsz;
@@ -1706,7 +1706,7 @@ register int kind;
 		j = mlhead;
 		idx = 0;
 		while (idx < mlcnt) {
-			if (str_compare(mlist[j].mname, key))
+			if (eq(mlist[j].mname, key))
 				break;
 			j = mlist[j].mnext;
 			idx++;
@@ -1725,11 +1725,11 @@ register int kind;
 	}
 	while (n--) {
 		if (nblk >= maxblk)
-			report_error(2, "pass one segment table overflow --Try -Ap option");
+			error(2, "pass one segment table overflow --Try -Ap option");
 		if (kind == 1) {
 			*(struct fseg *)blk = *src++;
 			if (filhdr.fmagic != 0xe707 && filhdr.fmagic != 0xe607)
-				report_error(0, "warning: nonsegmented object");
+				error(0, "warning: nonsegmented object");
 			if (filhdr.fmagic == 0xe707 || filhdr.fmagic == 0xe607) {
 				blk->cdrel = -blk->s_code;
 				blk->cbrel = blk->cdrel - blk->s_data;
@@ -1755,8 +1755,8 @@ register int kind;
 	}
 }
 
-/* str_compare: compare two names: in cmpmode the difference of the first unequal characters, else 1 when equal and 0 when not (0x3a30..0x3a88 of /bin/sld) */
-int str_compare(p, q)
+/* eq: compare two names: in cmpmode the difference of the first unequal characters, else 1 when equal and 0 when not (0x3a30..0x3a88 of /bin/sld) */
+int eq(p, q)
 char *p;
 char *q;
 {
@@ -1780,11 +1780,11 @@ register struct buf *p;
 {
 	*p->xnext++ = v;
 	if (--p->nleft <= 0)
-		flush_buffer(p);
+		flush(p);
 }
 
-/* flush_buffer: write an output buffer to its file (0x3ac6..0x3b1e of /bin/sld) */
-flush_buffer(p)
+/* flush: write an output buffer to its file (0x3ac6..0x3b1e of /bin/sld) */
+flush(p)
 register struct buf *p;
 {
 	register int n;
@@ -1793,7 +1793,7 @@ register struct buf *p;
 	n = (char *)p->xnext - (char *)p->iobuf;
 	if (n > 0) {
 		if (write(p->fildes, p->iobuf, n) != n)
-			report_error(2, "output error");
+			error(2, "output error");
 	}
 	p->xnext = p->iobuf;
 	p->nleft = 0x100;
@@ -1849,5 +1849,5 @@ struct symbol *a;
 	if (put_name(a->sname) < 8)
 		putchar(9);
 	putchar(0x20);
-	report_error(0, "- warning: symbol redefined in archive");
+	error(0, "- warning: symbol redefined in archive");
 }

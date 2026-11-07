@@ -33,7 +33,7 @@ int argc;
 		mcnt++;
 	}
 	if (s[k] == 0)
-		report_error(2, "usage error: -%s", s);
+		error(2, "usage error: -%s", s);
 	j = k;
 	while (s[j] <= '9') {
 		if (s[j] < '0')
@@ -41,7 +41,7 @@ int argc;
 		j++;
 	}
 	if (s[j] != 0 && s[j] != ':')
-		report_error(2, "usage error: -%s", s);
+		error(2, "usage error: -%s", s);
 	m = 0;
 	while (s[k] <= '9') {
 		if (s[k] < '0' || m >= 3)
@@ -53,9 +53,9 @@ int argc;
 	digs[m] = 0;
 	v = atoi(digs);
 	if (zflag && v == 127)
-		report_error(2, "segment number in illegal range with %d", v);
+		error(2, "segment number in illegal range with %d", v);
 	if (v < 0 || v > 127)
-		report_error(2, "segment number out of range with %d", v);
+		error(2, "segment number out of range with %d", v);
 	if (v > maxseg)
 		maxseg = v;
 	if (s[k] == ':') {
@@ -75,17 +75,17 @@ int argc;
 			w = 3;
 			break;
 		default:
-			report_error(2, "-%s: invalid section selector (must be t, d or b)", s);
+			error(2, "-%s: invalid section selector (must be t, d or b)", s);
 		}
 		if (s[k] == 't' || s[k] == 'b') {
 			if (secflg[v][w] != 0)
-				report_error(2, "-%s: section already specified", s);
+				error(2, "-%s: section already specified", s);
 			else {
 				secflg[v][w] = s[k];
 				k++;
 			}
 		} else
-			report_error(2, "-%s: invalid location selector (must be t or b)", s);
+			error(2, "-%s: invalid location selector (must be t or b)", s);
 		if (s[k] == 0) {
 			s = *curarg++;
 			(*ip)++;
@@ -103,14 +103,14 @@ int argc;
 		}
 		if (s[k] != 0) {
 			if (sscanf(s + k, fmt, &secorg[v][w]) != 1)
-				report_error(2, "-%s: bad offset", s);
+				error(2, "-%s: bad offset", s);
 		}
 	} else if (s[k] != 0)
-		report_error(2, "-%s: usage error", s);
+		error(2, "-%s: usage error", s);
 	p = *curarg;
 	if (p[0] == '+') {
 		if (type == 's')
-			report_error(2, "invalid -Ms option ");
+			error(2, "invalid -Ms option ");
 		curarg++;
 		p = *curarg;
 		(*ip)++;
@@ -128,7 +128,7 @@ int argc;
 			p = *curarg;
 		}
 		if (*ip == argc)
-			report_error(2, "no closing + for M file list");
+			error(2, "no closing + for M file list");
 		(*ip)++;
 		curarg++;
 	} else {
@@ -153,11 +153,11 @@ int argc;
 			break;
 		case 's':
 			if (zflag)
-				report_error(2, "cannot use -Ms option after -z");
+				error(2, "cannot use -Ms option after -z");
 			resv_seg(v, 's');
 			break;
 		default:
-			report_error(2, "%c illegal type for M; not s, t,d or b", type);
+			error(2, "%c illegal type for M; not s, t,d or b", type);
 		}
 	}
 }
@@ -175,12 +175,12 @@ int x;
 	int r;
 
 	if (mlcnt == 0x32)
-		report_error(2, "-M list overflow, maximum number is %d", 0x32);
+		error(2, "-M list overflow, maximum number is %d", 0x32);
 	i = mlhead;
 	prev = 0;
 	cmpmode = 1;
 	for (k = 0; k < mlcnt; k++) {
-		r = str_compare(y, mlist[i].mname);
+		r = eq(y, mlist[i].mname);
 		if (r < 0)
 			continue;
 		if (r == 0)
@@ -219,13 +219,13 @@ int x;
 char c;
 {
 	if (x < 0 || x >= 0x80)
-		report_error(2, "reserved segment is out of range with %d", x);
+		error(2, "reserved segment is out of range with %d", x);
 	if (x > maxseg)
 		maxseg = x;
 	switch (c) {
 	case 'r':
 		if (reslist[x].res == 0x07d0) {
-			report_error(0, "warning: stack seg has been moved because seg is reserved");
+			error(0, "warning: stack seg has been moved because seg is reserved");
 			stksegn = -1;
 		}
 		reslist[x].res = 0x03e8;
@@ -234,7 +234,7 @@ char c;
 		if (stksegn > -1)
 			reslist[stksegn].res = -1;
 		if (reslist[x].res == 0x03e8) {
-			report_error(0, "warning: stack seg has been moved because seg is reserved");
+			error(0, "warning: stack seg has been moved because seg is reserved");
 			stksegn = -1;
 		} else {
 			reslist[x].res = 0x07d0;
@@ -243,7 +243,7 @@ char c;
 		break;
 	case 'M':
 		if (reslist[x].res == 0x07d0) {
-			report_error(0, "warning: stack seg has been moved because seg is reserved");
+			error(0, "warning: stack seg has been moved because seg is reserved");
 			stksegn = -1;
 		}
 		reslist[x].res = 0x01f4;
@@ -280,8 +280,8 @@ char *d;
 	d[n] = 0;
 }
 
-/* end_pass1: end of pass one: define _etext, _edata, _end, lay out the sections (0x44e6..0x4968 of /bin/sld) */
-int end_pass1()
+/* middle: end of pass one: define _etext, _edata, _end, lay out the sections (0x44e6..0x4968 of /bin/sld) */
+int middle()
 {
 	register struct p1seg *blk;
 	register struct p2seg *a;
@@ -301,7 +301,7 @@ int end_pass1()
 	p_stkseg = *slookup("_stkseg");
 	if (p_stkseg == 0) {
 		if (stksegn > -1)
-			report_error(1, "warning: _stkseg undefined");
+			error(1, "warning: _stkseg undefined");
 		else
 			stksegn = -2;
 	} else {
@@ -343,7 +343,7 @@ int end_pass1()
 				t4 = comsize + t8;
 				if (t4 > 0x10000L || flg == 0) {
 					if (nblk >= maxblk)
-						report_error(2, "pass one segment table overflow -- Try -Ap option");
+						error(2, "pass one segment table overflow -- Try -Ap option");
 					comsize = 0;
 					t4 = t8;
 					blk2 = get_block(nblk++);
@@ -378,7 +378,7 @@ dolayout:
 			case 0x20:
 				if (arflag)
 					break;
-				exstat |= 1;
+				errlev |= 1;
 				if (ep->svalue)
 					break;
 				if (nundef == 0)
@@ -428,7 +428,7 @@ int *res;
 	}
 	q = table32_entry(np2seg);
 	if (np2seg++ > 0x100)
-		report_error(2, "pass2 segment table overflow");
+		error(2, "pass2 segment table overflow");
 	if (reslist[x].res == 0x0bb8)
 		q->atr |= 8;
 	else
@@ -473,7 +473,7 @@ int lay_out()
 				blk->ncode = ins_block(2, blk->s_code, reslist[blk->ncoff].txtptr, i, blk->ncoff);
 				blk->ncoff = blk->ncode->s_code;
 				blk->ncode->s_code += blk->s_code;
-				ttotal += (unsigned)blk->s_code;
+				tsize += (unsigned)blk->s_code;
 				blk->ncode->atr |= 1;
 			}
 			if (blk->s_data && k == 2) {
@@ -483,7 +483,7 @@ int lay_out()
 					blk->ndata = ins_block(3, blk->s_data, reslist[blk->ndoff].datptr, i, blk->ndoff);
 				blk->ndoff = blk->ndata->s_data;
 				blk->ndata->s_data += blk->s_data;
-				dtotal += (unsigned)blk->s_data;
+				dsize += (unsigned)blk->s_data;
 				blk->ndata->atr |= 2;
 			}
 			if (blk->s_bss && k == 3) {
@@ -493,7 +493,7 @@ int lay_out()
 					blk->nbss = ins_block(4, blk->s_bss, reslist[blk->nboff].bssptr, i, blk->nboff);
 				blk->nboff = blk->nbss->s_bss;
 				blk->nbss->s_bss += blk->s_bss;
-				btotal += (unsigned)blk->s_bss;
+				bsize += (unsigned)blk->s_bss;
 				blk->nbss->atr |= 4;
 			}
 		}
@@ -529,7 +529,7 @@ int lay_out()
 				if (!(reslist[k].txtptr == -1 && reslist[k].datptr == -1 && reslist[k].bssptr == -1)) {
 					for (j = 0; j < 128; j++) {
 						if (reslist[j].txtptr == -1 && reslist[j].datptr == -1 && reslist[j].bssptr == -1 && reslist[j].res == -1) {
-							report_error(0, "warning: image in seg %d has been moved to seg %d because of -R; origins are reset", k, j);
+							error(0, "warning: image in seg %d has been moved to seg %d because of -R; origins are reset", k, j);
 							reslist[j].txtptr = reslist[k].txtptr;
 							reslist[j].datptr = reslist[k].datptr;
 							reslist[j].bssptr = reslist[k].bssptr;
@@ -571,7 +571,7 @@ int lay_out()
 		bsplf = 0;
 		place_sec(l1, cnt);
 		if (reslist[k].txtptr > -1) {
-			lastt = (char *)l1;
+			lastt = l1;
 			if (*(char *)l1 == -1) {
 				q = 1;
 				delta = alloc_segment(l1, &cnt, 0, 't', &q);
@@ -587,17 +587,17 @@ int lay_out()
 					delta = delta - 2;
 			} else
 				delta = 0;
-			ttotal += delta;
+			tsize += delta;
 			l1->s_code += delta;
 			if (l1->segno == stksegn)
 				l1->atr |= 8;
 			while ((i = (cur = get_block(i))->xtnext) > -1) {
 				if (l1 != (get_block(i))->ncode) {
 					if (secflg[k][1])
-						report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[1]);
+						error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[1]);
 					l1 = (get_block(i))->ncode;
 					l1->torig = 0;
-					lastt = (char *)l1;
+					lastt = l1;
 					place_sec(l1, cnt);
 					q = i;
 					delta = alloc_segment(l1, &cnt, 1, 't', &q);
@@ -609,13 +609,13 @@ int lay_out()
 					}
 					cur->xtnext = -1;
 					if (placekd == 1) {
-						ttotal += delta;
+						tsize += delta;
 						l1->s_code += delta;
 					} else if (placekd == 2) {
-						dtotal += delta;
+						dsize += delta;
 						l1->s_data += delta;
 					} else if (placekd == 3) {
-						btotal += delta;
+						bsize += delta;
 						l1->s_bss += delta;
 					}
 				}
@@ -631,7 +631,7 @@ int lay_out()
 				cnt--;
 			} else
 				l1 = l2;
-			lastd = (char *)l1;
+			lastd = l1;
 			if (*(char *)l1 == -1) {
 				q = 1;
 				delta = alloc_segment(l1, &cnt, 0, 'd', &q);
@@ -647,7 +647,7 @@ int lay_out()
 					delta = delta - 2;
 			} else
 				delta = 0;
-			dtotal += delta;
+			dsize += delta;
 			l1->s_data += delta;
 			if (l1->segno == stksegn)
 				l1->atr |= 8;
@@ -655,21 +655,21 @@ int lay_out()
 				blk = get_block(i);
 				if (l2 != blk->ndata) {
 					if (secflg[k][2])
-						report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[2]);
+						error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[2]);
 					l1 = (get_block(i))->ndata;
 					l1->dorig = 0;
 					place_sec(l1, cnt);
-					lastd = (char *)l1;
+					lastd = l1;
 					q = i;
 					delta = alloc_segment(l1, &cnt, 1, 'd', &q);
 					cur->datnext = -1;
 					if (placekd == 2) {
-						dtotal += delta;
+						dsize += delta;
 						l1->s_data += delta;
 					} else {
 						reslist[q].bssptr = reslist[k].bssptr;
 						reslist[k].bssptr = -1;
-						btotal += delta;
+						bsize += delta;
 						l1->s_bss += delta;
 					}
 					l2 = l1;
@@ -687,7 +687,7 @@ int lay_out()
 				cnt--;
 			} else
 				l1 = l2;
-			lastb = (char *)l1;
+			lastb = l1;
 			if (*(char *)l1 == -1) {
 				q = 1;
 				delta = alloc_segment(l1, &cnt, 0, 'b', &q);
@@ -703,7 +703,7 @@ int lay_out()
 					delta = delta - 2;
 			} else
 				delta = 0;
-			btotal += delta;
+			bsize += delta;
 			l1->s_bss += delta;
 			if (l1->segno == stksegn)
 				l1->atr |= 8;
@@ -711,15 +711,15 @@ int lay_out()
 				blk = get_block(i);
 				if (l2 != blk->nbss) {
 					if (secflg[k][3])
-						report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[3]);
+						error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[3]);
 					l1 = (get_block(i))->nbss;
 					l1->borig = l1->dorig + l1->s_data;
-					lastb = (char *)l1;
+					lastb = l1;
 					if (*(char *)l1 == -1) {
 						q = i;
 						delta = alloc_segment(l1, &cnt, 1, 'b', &q);
 						cur->bssnext = -1;
-						btotal += delta;
+						bsize += delta;
 						l1->s_bss += delta;
 					}
 					l2 = l1;
@@ -733,7 +733,7 @@ int lay_out()
 	if (stksegn == -1) {
 		l1 = table32_entry(np2seg);
 		if (np2seg++ > 0x100)
-			report_error(2, "pass2 segment table overflow");
+			error(2, "pass2 segment table overflow");
 		maxseg++;
 		l1->atr = 8;
 		q = 1;
@@ -885,7 +885,7 @@ int idx;
 		*(char *)s = 0xff;
 		return s;
 	} else
-		report_error(2, "pass two segment table overflow");
+		error(2, "pass two segment table overflow");
 gotblk:
 	if (reslist[idx].bssptr == -1) {
 		reslist[idx].bssptr = val;
@@ -934,7 +934,7 @@ int *q;
 			}
 		}
 		if (i == 128)
-			report_error(2, "No more segments");
+			error(2, "No more segments");
 	} else {
 		if (b != 'r') {
 			while (reslist[*pidx].res == 1000 || reslist[*pidx].res == 100 || reslist[*pidx].res == 3000)
@@ -986,11 +986,11 @@ copy_segs()
 {
 	register int i;
 
-	flush_buffer(&tmpoutb);
-	flush_buffer(&doutb);
+	flush(&tmpoutb);
+	flush(&doutb);
 	if (rflag) {
-		flush_buffer(&troutb);
-		flush_buffer(&droutb);
+		flush(&troutb);
+		flush(&droutb);
 	}
 	for (i = 0; i <= maxseg; i++) {
 		ncopied = 0;
@@ -1053,19 +1053,19 @@ head:
 		}
 		if (type == 0x74) {
 			if (read(tmpoutb.fildes, buf, m) < 1)
-				report_error(2, "i/o error reading from tmpoutb");
+				error(2, "i/o error reading from tmpoutb");
 		} else {
 			if (read(doutb.fildes, buf, m) < 1)
-				report_error(2, "i/o error reading from doutb");
+				error(2, "i/o error reading from doutb");
 		}
 		mput(&toutb, buf, m);
 		if (rflag) {
 			if (type == 0x74) {
 				if (m != read(troutb.fildes, buf, m))
-					report_error(2, "eof error on trout.b");
+					error(2, "eof error on trout.b");
 			} else {
 				if (m != read(droutb.fildes, buf, m))
-					report_error(2, "eof error on droutb");
+					error(2, "eof error on droutb");
 			}
 			mput(&routb, buf, m);
 		}

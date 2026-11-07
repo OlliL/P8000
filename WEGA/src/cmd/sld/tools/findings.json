@@ -3,7 +3,7 @@
  "compiler": "shipped scc",
  "binary": "/bin/sld",
  "functions": {
-  "sig_handler": {
+  "delexit": {
    "file": "ld.c",
    "orig": "0x0a5c",
    "size_orig": 94,
@@ -15,14 +15,14 @@
    "size_orig": 74,
    "status": "exact"
   },
-  "table_lookup": {
+  "lookloc": {
    "file": "ld.c",
    "orig": "0x34b8",
    "size_orig": 94,
    "status": "exact",
    "note": "Odd form: unused local spare[5] for the frame of the original."
   },
-  "str_compare": {
+  "eq": {
    "file": "ld.c",
    "orig": "0x3a30",
    "size_orig": 88,
@@ -66,14 +66,14 @@
    "size_orig": 162,
    "status": "exact"
   },
-  "flush_buffer": {
+  "flush": {
    "file": "ld.c",
    "orig": "0x3ac6",
    "size_orig": 88,
    "status": "exact",
    "note": "Odd form: unused local spare for the frame of the original."
   },
-  "add16_checked": {
+  "add": {
    "file": "ld.c",
    "orig": "0x1664",
    "size_orig": 50,
@@ -92,7 +92,7 @@
    "status": "exact",
    "note": "Odd form: unused local spare[2] for the frame of the original."
   },
-  "finish_output": {
+  "finishout": {
    "file": "ld.c",
    "orig": "0x2cbc",
    "size_orig": 144,
@@ -117,13 +117,13 @@
    "status": "exact",
    "note": "Odd form: loops as goto skeletons (body, test) instead of for/while."
   },
-  "open_tmp": {
+  "tcreat": {
    "file": "ld.c",
    "orig": "0x22a4",
    "size_orig": 162,
    "status": "exact"
   },
-  "pack_name": {
+  "cp8c": {
    "file": "copyname.c",
    "orig": "0x00ee",
    "size_orig": 138,
@@ -179,13 +179,13 @@
    "size_orig": 330,
    "status": "exact"
   },
-  "report_error": {
+  "error": {
    "file": "ld.c",
    "orig": "0x3408",
    "size_orig": 176,
    "status": "exact"
   },
-  "parse_args": {
+  "endload": {
    "file": "ld.c",
    "orig": "0x11ea",
    "size_orig": 378,
@@ -210,13 +210,13 @@
    "size_orig": 544,
    "status": "exact"
   },
-  "read_symbols": {
+  "load1": {
    "file": "ld.c",
    "orig": "0x1696",
    "size_orig": 604,
    "status": "exact"
   },
-  "start_output": {
+  "setupout": {
    "file": "ld.c",
    "orig": "0x2056",
    "size_orig": 590,
@@ -266,7 +266,7 @@
    "size_orig": 352,
    "status": "exact"
   },
-  "end_pass1": {
+  "middle": {
    "file": "ldm.c",
    "orig": "0x44e6",
    "size_orig": 1154,
@@ -346,7 +346,7 @@
    "size_orig": 44,
    "status": "exact"
   },
-  "load_lib_syms": {
+  "load1arg": {
    "file": "ld.c",
    "orig": "0x1364",
    "size_orig": 320,

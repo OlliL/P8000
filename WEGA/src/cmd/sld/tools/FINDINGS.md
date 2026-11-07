@@ -22,14 +22,14 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 |---|---|---|
 | unpack_run | 0x0056 | Odd form: loops as goto skeletons (body, test) instead of for/while. |
 | get_block | 0x06c6 | Odd form: loops as goto skeletons (body, test) instead of for/while. |
-| parse_args | 0x11ea | Odd form: only case f has its body in the switch; the other cases jump to blocks behind it (bt/consume, nn, ll, mm), so the switch register r2 (a TEMP held from the evaluation to the dispatch) is free there; an unreachable load2arg(a) behind case R kills the TEMP before the dispatch (the cpir count then takes r6). Dead code: that call. |
-| start_output | 0x2056 | Odd form: ((unsigned)p->torig & 0xffffL): spopt turns and r4,#0 into ldk r4,#0 and drops the first ldk of the conversion (ld r5,r2; ldk r4,#0). |
+| endload | 0x11ea | Odd form: only case f has its body in the switch; the other cases jump to blocks behind it (bt/consume, nn, ll, mm), so the switch register r2 (a TEMP held from the evaluation to the dispatch) is free there; an unreachable load2arg(a) behind case R kills the TEMP before the dispatch (the cpir count then takes r6). Dead code: that call. |
+| setupout | 0x2056 | Odd form: ((unsigned)p->torig & 0xffffL): spopt turns and r4,#0 into ldk r4,#0 and drops the first ldk of the conversion (ld r5,r2; ldk r4,#0). |
 | load2arg | 0x23fe | Odd form: unused local spare[2] for the frame of the original; loops as goto skeletons (body0, test0, body1, test1) instead of for/while. |
 | load2 | 0x2492 | Odd form: unused local spare[5] for the frame of the original. |
 | load2td | 0x27d8 | Odd form: unused local spare[3] for the frame of the original; label addhi that no goto names. |
-| table_lookup | 0x34b8 | Odd form: unused local spare[5] for the frame of the original. |
+| lookloc | 0x34b8 | Odd form: unused local spare[5] for the frame of the original. |
 | readhdr | 0x3516 | Odd form: unused local spare[3] for the frame of the original. |
-| flush_buffer | 0x3ac6 | Odd form: unused local spare for the frame of the original. |
+| flush | 0x3ac6 | Odd form: unused local spare for the frame of the original. |
 | swab12 | 0x3b1e | Odd form: unused local spare[8] for the frame of the original. |
 | lay_out | 0x4a16 | Odd form: if (reslist[k].res > 500) if (reslist[k].res != 2000) {...}: nested ifs where && would clear the register knowledge of codgen (the original keeps r2, r3); as chk_ranlib of ld. |
 | ins_block | 0x5a2c | Odd form: if (size <= ...) { switch } instead of continue; case 4: goto gotblk (its code is there once); the then part of case 3 is a label setdat in front of case 3, reached by goto (its code stands in front of the test in the original). |
