@@ -34,7 +34,7 @@ peephole optimizer (descends from the Plexus `c2`); cas decides the jump forms.
   (`host/codgen`, `host/popt`, ...) get no switches, except `host/cas/casold`, used by the models.
 - One source and one Makefile per pass; every old version is a target of it, built in its own directory with its switches
   (`src/cmd/cparse/build/nonsegv1`, `codgen/build/nonsegv1q`, ..., the segmented v1 passes in `build/segv1`; `make old`,
-  `make oldinstall`). The cas of v0 and v0p is `src/cmd/cas/old`. Built programs are not in git.
+  `make oldinstall`). The cas of v0 and v0p is `make oldcas` in `src/cmd/cas` (built in `old/`). Built programs are not in git.
 - The driver `cc.c` with `OLD_V1`, `OLD_V0`, `OLD_V0P` runs `/lib/vN/cparse`, `codgen`, `popt`. `sccv1` (`-DSCC -DOLD_V1`) runs `/lib/v1/scparse`,
   `scodgen`, `spopt`, built with the switches of v1. v0 and v0p run `/lib/old/cas`;
   v1 runs `/bin/cas`. cpp, gopt, ld, crt0.o and libc.a are the shipped ones.

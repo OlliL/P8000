@@ -16,7 +16,7 @@ OLDPRINTF = lib/oldlibc/printf/s1.o
 
 all: stage1 lib stage2 cmds
 
-stage1: # clean
+stage1: clean
 	cd lib/oldlibc/printf ; cp 0_5.c s1.c ; $(CC) -O -c s1.c ; rm -f s1.c
 	cd cmd/cas    ; $(MAKE) oldinstall PREFIX=$(PREFIX)
 

@@ -48,7 +48,7 @@ WPATH = PATH=$(WBIN):$$PATH
 WEGA_PROGS = dc/dc:bin/dc ar:bin/ar cc/build/nonseg/cc:bin/cc cc/build/seg/scc:bin/scc ranlib/ranlib:usr/bin/ranlib \
 	getud:bin/getud putud:bin/putud copydisk/1.5/copydisk:bin/copydisk dump:etc/dump \
 	dumpdir:etc/dumpdir format/1.5/format:bin/format restor:etc/restor sync:bin/sync \
-	tar:bin/tar verify/1.5/verify:bin/verify cas/cas:bin/cas \
+	tar:bin/tar verify/1.5/verify:bin/verify cas/build/cas:bin/cas \
 	BOOT0/pb.image:pb.image \
 	doscopy/doscat:usr/bin/doscat doscopy/dosrm:usr/bin/dosrm \
 	doscopy/doscp:usr/bin/doscp doscopy/dosdir:usr/bin/dosdir \

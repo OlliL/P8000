@@ -1,10 +1,11 @@
 # cas: the cas assembler (U8000 assembler), reconstructed from the binary /bin/cas.
 #
-#   make		 build cas
+#   make		 build/cas
 #   make check WEGA=dir  compare the modules with the original (see check.sh, MODULES)
 #   make install PREFIX=dir
 #   make clean
-#   make oldcas	  build oldcas
+#   make oldcas	  old/cas: the cas of the old compilers v0 and v0p, -DOLD_CAS (host/OLDCC.md, D17)
+#   make oldinstall PREFIX=dir  dir/lib/old/cas
 #
 # The modules are linked in the order of MODULES. As in /bin/cas, text goes to segment 4, data
 # and bss to segment 5 and the three tables of the symbol table (stable, itable, ntable) to
@@ -19,7 +20,6 @@ SCRT0 = /lib/scrt0.o
 SLIBC = /lib/slibc.a
 PREFIX = /
 ALL_OBJS = ifile.o instr.o scanner.o main.o done.o nodes.o parser.o pst.o subr.o symbols.o ssymtab.o table1.o table2.o locntr.o expr.o p2loop.o ofile.o gen.o assemble.o getops.o error.o pstab.o jpr.o jpr2.o optim.o listing.o
-OLDDIRS = old
 
 all: build/cas
 
@@ -57,6 +57,7 @@ cas: $(ALL_OBJS) stable.o itable.o ntable.o
 ###################
 
 $(ALL_OBJS) stable.o itable.o ntable.o: ../cas.h
+pst.o: ../pstdata.h
 
 y.tab.h: parser.c
 
@@ -83,7 +84,7 @@ ifile.o: ../ifile.c
 instr.o: ../instr.c
 	$(SCC) $(SCCFLAGS) -c ../instr.c
 scanner.o: ../scanner.c
-	  $(SCC) $(SCCFLAGS) -I. -c ../scanner.c
+	$(SCC) $(SCCFLAGS) -I. -c ../scanner.c
 main.o: ../main.c
 	$(SCC) $(SCCFLAGS) -c ../main.c
 done.o: ../done.c
