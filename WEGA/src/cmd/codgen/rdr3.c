@@ -346,8 +346,8 @@ void
 readmems(n)
 	int n;
 {
-	static struct { long off; int x; } mem[550];
-	struct { long off; int x; } *cur, *first;
+	static struct stent { long off; int x; } mem[550];
+	struct stent *cur, *first;
 	struct sym *dp;
 	long base;
 	int k, rem, dest, cnt;

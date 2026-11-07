@@ -210,6 +210,7 @@ p2init(argc, argv)
 	register int err, r11, r10;
 	char buf[50];
 	char *x, *b;
+	extern char *strcpy(), *strcat();
 
 	err = 0;
 	for (i = 1; i < argc; i++) {

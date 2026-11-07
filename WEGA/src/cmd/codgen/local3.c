@@ -542,8 +542,8 @@ hopcode(p)
 	register int t = p->in.type;
 
 	q = (t == 7 || t == 6) ? fhoptab : ihoptab;
-	for (; q->in.op >= 0; q++)
-		if (q->in.op == o && ttype(t, q->tword)) {
+	for (; q->op >= 0; q++)
+		if (q->op == o && ttype(t, q->tword)) {
 			printf("%s", q->str);
 			return;
 		}

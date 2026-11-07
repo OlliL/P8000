@@ -213,7 +213,7 @@ setrew()
 	register struct optab *q;
 	register int op, mask;
 
-	for (q = table; q->in.op != FREE; q++)
+	for (q = table; q->op != FREE; q++)
 		if (q->needs == 0x1000) {
 			rwdefault = q;
 			goto more;
@@ -222,11 +222,11 @@ setrew()
 more:
 	for (op = 0; op < 129; op++)
 		if (dope[op]) {
-			for (q = table; q->in.op != FREE; q++) {
-				if (q->in.op < 0x1000) {
-					if (q->in.op == op)
+			for (q = table; q->op != FREE; q++) {
+				if (q->op < 0x1000) {
+					if (q->op == op)
 						break;
-				} else if ((mask = opclass[q->in.op - 0x1000]) & 0x4000) {
+				} else if ((mask = opclass[q->op - 0x1000]) & 0x4000) {
 					if (op == NAME || op == ICON || op == OREG)
 						break;
 					else if (shltype(op, (NODE *)0))
@@ -332,7 +332,7 @@ match(p, cookie)
 	}
 	goto cont;
 aa:
-	if (q->in.op == p->in.op)
+	if (q->op == p->in.op)
 		goto cand;
 	goto next;
 zz:
@@ -347,14 +347,14 @@ zz:
 next:
 	++q;
 top:
-	if (q->in.op == FREE)
+	if (q->op == FREE)
 		goto nom;
-	if (q->in.op < 0x1000)
+	if (q->op < 0x1000)
 		goto aa;
 	{
 		register int opmtemp;
 
-		if ((opmtemp = opclass[q->in.op - 0x1000]) & 0x4000)
+		if ((opmtemp = opclass[q->op - 0x1000]) & 0x4000)
 			goto zz;
 		if ((dope[p->in.op] & (opmtemp | 1)) == opmtemp) {
 cand:
