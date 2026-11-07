@@ -18,10 +18,6 @@ What is byte-identical is checked by `make -C host checkall` (16 minutes): every
 - The other files of `/lib` (`crt0.o` is built from `libc/csu/crt0.s` and installed): `scrt0.o`, `mcrt0.o`, `smcrt0.o` (PLZ/ASM
   modules like `crt0.o`), `cnvt.o`, `scnvt.o`, `doprnt.o`, `sdoprnt.o` (not the members of `libc.a`), `slibc.a`: no source yet.
 
-## 6. System III form for all existing programs
-
-The source follows the System III sources as far as the bytes allow: names, macros, comments, order. System III is primary; for what is specific to the Z8000 the Plexus sources are the model (owner 2026-11-04). Bytes stay equal, checked by `checkall`. First find out what System III holds for cparse, codgen and popt. Lists of what is WEGA's: `tools/SYSIII.md` of codgen, cparse, popt (still against the PCC of Plexus), to be redone against System III; every program gets one. Also the odd forms in findings.json (the `top:` labels of cpp).
-
 ## 7. Host tool chain
 
 Every program of the inventory (`host/HANDOFF_wega_disasm.md`) with WEGA status "exact" gets a host version: ANSI C, compiles with a recent gcc without warnings (`-Wall -Wextra`, no `-w`), behaves like the WEGA original. Excluded: `libc`, `cas`, all `*crt0*`. Programs: ar, ranlib, strip, size, cpp, cparse and scparse, codgen and scodgen, popt and spopt, ld, sld, cc and scc.
