@@ -88,8 +88,8 @@ char	*codgen		= SEG("/lib/v1/codgen", "/lib/v1/scodgen");
 char	*popt		= SEG("/lib/v1/popt", "/lib/v1/spopt");
 #else
 #ifdef OLD_VK
-/* sccvk (segvk/Makefile): the shipped scparse and spopt with the code generator of the kernel objects in /lib/vk */
-char	*cparse		= "/lib/scparse";
+/* sccvk (segvk/Makefile): the front end and the code generator of the kernel objects are in /lib/vk, the shipped spopt */
+char	*cparse		= "/lib/vk/scparse";
 char	*gopt		= "/lib/gopt";
 char	*codgen		= "/lib/vk/scodgen";
 char	*popt		= "/lib/spopt";

@@ -128,11 +128,16 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
   `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L`, `OLD_D23` (codgen). popt needs no switch.
 - The corpus of cparse and scparse holds only with the ccv0p build: the heap contents of the .S file follow the data layout of the pass.
 
-### vk: the code generator of the kernel objects
+### vk: the compiler of the kernel objects
 
-The objects of `/wega` (`usr/sys/sys/LIB1`, `usr/sys/dev/LIB2`) were made by the shipped scparse and spopt with an older scodgen. `sccvk` (`-DSCC -DOLD_VK`
-in `src/cmd/cc`) runs `/lib/scparse`, `/lib/vk/scodgen` (built in `src/cmd/codgen/build/segvk` with `OLD_VK`, switches in `oldcc.h`) and `/lib/spopt`.
-Switches so far: `OLD_D3`. Witnesses: ureg (identical). Not yet identical: sig, sys1, sys2, sys3, debug, tt0, tty (`src/uts/TODO.md`, section 3).
+The objects of `/wega` (`usr/sys/sys/LIB1`, `usr/sys/dev/LIB2`) were made by an older scc. `sccvk` (`-DSCC -DOLD_VK` in `src/cmd/cc`) runs `/lib/vk/scparse`
+(built in `src/cmd/cparse/build/segvk`, `OLD_D25`), `/lib/vk/scodgen` (`src/cmd/codgen/build/segvk`, `OLD_VK` in `oldcc.h` = `OLD_D3` and `OLD_D24`) and the
+shipped `/lib/spopt`. Source forms did not help (20 forms of the statements tried); sccv1 (v1 scparse and spopt) is further away. Witnesses (identical):
+ureg (D3), sig, sys2, sys3, debug (D24, D25). Not yet identical: sys1, tt0, tty (`src/uts/TODO.md`, section 3).
+
+- `OLD_D25` (cparse local1.c, SEG, PCONV): a cast of a long to a pointer stays a conversion (SCONV), the shipped scparse paints the type.
+- `OLD_D24` (codgen optim3.c): `convelim` keeps a conversion between a pointer and a non-pointer of the same size; the SCONV of a long to a pointer then
+  uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`, a copy and the mask of the segmented address); an `& 0x7f00ffff` under it is dropped.
 
 ### The old scc of cas
 

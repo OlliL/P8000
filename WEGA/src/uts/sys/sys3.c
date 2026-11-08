@@ -222,7 +222,7 @@ smount()
 	dev = getmdev();
 	if(u.u_error)
 		return;
-	u.u_dirp.l = (caddr_t)(((long)uap->freg) & 0x7F00FFFF);	/* FIXME: this is not 100% compatible */
+	u.u_dirp.l = (caddr_t)(((long)uap->freg) & 0x7F00FFFF);
 	ip = namei(uchar, 0);
 	if(ip == NULL)
 		return;

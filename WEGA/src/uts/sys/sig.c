@@ -360,7 +360,7 @@ ptrace()
 		sleep((caddr_t)&ipc, IPCPRI);
 	ipc.ip_lock = p->p_pid;
 	ipc.ip_data = uap->data;
-	ipc.ip_addr.l = (caddr_t)((long)uap->addr.l & 0x7F00FFFF); /* FIXME: not compatible */
+	ipc.ip_addr.l = (caddr_t)((long)uap->addr.l & 0x7F00FFFF);
 	ipc.ip_req = uap->req;
 	p->p_flag &= ~SWTED;
 	setrun(p);

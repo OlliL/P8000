@@ -65,6 +65,18 @@ optim(p)
 	if (ty == BITYPE)
 		p->in.right = optim(p->in.right);
 	p->in.left = optim(p->in.left);
+#ifdef OLD_D24
+	/* the conversion of a long to a pointer masks the address (template 040a): the mask 0x7f00ffff in front of it is dropped */
+	if (o == SCONV && (p->in.type & 0x30) == 0x10 && p->in.left->in.op == AND && p->in.left->in.right->in.op == ICON &&
+	    p->in.left->in.right->in.sname == 0 && p->in.left->in.right->tn.lval == 0x7F00FFFFL) {
+		NODE *a;
+
+		a = p->in.left;
+		p->in.left = a->in.left;
+		a->in.right->in.op = FREE;
+		a->in.op = FREE;
+	}
+#endif
 	switch (o) {
 	case UAND:
 		if (p->in.left->in.op != NAME)
@@ -383,6 +395,10 @@ convelim(p, c)
 
 	if (c == 'r') {
 		q = p->in.right;
+#ifdef OLD_D24
+		if ((q->in.type & 0x30) != (q->in.left->in.type & 0x30) && ((q->in.type & 0x30) == 0x10 || (q->in.left->in.type & 0x30) == 0x10))
+			return p;
+#endif
 		if (q->in.type != q->in.left->in.type) {
 			s = bsize(q->in.left->in.type);
 			if (s != bsize(q->in.type))
@@ -401,6 +417,10 @@ convelim(p, c)
 	}
 	if (c == 'l') {
 		q = p->in.left;
+#ifdef OLD_D24
+		if ((q->in.type & 0x30) != (q->in.left->in.type & 0x30) && ((q->in.type & 0x30) == 0x10 || (q->in.left->in.type & 0x30) == 0x10))
+			return p;
+#endif
 		if (q->in.type != q->in.left->in.type) {
 			s = bsize(q->in.left->in.type);
 			if (s != bsize(q->in.type))

@@ -10,8 +10,8 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 
 ## State
 
-- LIB1: 22 of 28 members identical. Different: `sig`, `sys1`, `sys2`, `sys3`, `debug` (`ureg` is identical with sccvk).
-- LIB2: 23 of 25 identical. Different: `tt0` (7 bytes), `tty`. `mt`, `rd`, `udev1..6` are dummies from `*.d.s` (identical).
+- LIB1: 22 of 28 members identical. Different: `sys1`.
+- LIB2: 23 of 25 identical. Different: `tt0` (4 bytes), `tty`. `mt`, `rd`, `udev1..6` are dummies from `*.d.s` (identical).
 - conf: `conf.o`, `event.o`, `fpe.o`, `mch.o`, `u.o`, `bstart.o` identical; `boot` identical; `BOOTLIB` same size, 63 bytes differ (archive headers).
 - `wega` links, but 96628 of 97282 bytes: it contains other versions of `lp` and `siok` (2.1).
 - Not built / no source yet: `usr/sys/conf/wpar.o` (root copy is from an older `wpar.c`: no `cpu2_flag`, version " 3.0 (4)"),
@@ -41,18 +41,16 @@ without `chmog`/`chmod` (the archive headers: 6.), `uts` in `all` of `src/Makefi
 
 ## 3. Objects that differ
 
-The kernel objects are made by the shipped scparse and spopt with an older scodgen: version `vk` (`sccvk`, `src/cmd/cc`, `src/cmd/codgen/build/segvk`,
-switch set in `codgen/oldcc.h` under `OLD_VK`; so far `OLD_D3`). `ureg.o` is identical with it (done, `sys/Makefile`). Measured with `vk` (differing
-lines of the disassembly): sig 4, sys1 98, sys2 7, sys3 4, debug 19, tt0 1, tty 16 (shipped scc: 4, 118, 16, 4, 19, 4, 14); no other existing OLD_Dn switch
-helps (swept alone and on top of D3). The differences are a few code generator behaviours, each to be found as a new switch (witness: the objects):
+The kernel objects are made by an older compiler: version `vk` (`sccvk`, `host/OLDCC.md` section 2): scparse with `OLD_D25`, scodgen with `OLD_D3` and
+`OLD_D24`, the shipped spopt. Identical with it: `ureg`, `sig`, `sys2`, `sys3`, `debug` (`sys/Makefile`). Differing lines of the disassembly with `vk`
+for the others: sys1 98 (shipped scc 118), tt0 1 (4), tty 16 (14). Each remaining difference is a code generator behaviour to be found as a new switch:
 
-1. `(caddr_t)(((long)ptr) & 0x7F00FFFF)` (sig, sys2 x2, sys3, debug x3): the original copies the loaded pointer into a new pair and masks it there
-   (`ldl rr6,rr4; and r6,#%7F00`, the SCONV template 040a of `table3_scodgen.c`), the shipped one masks in place. Source forms tried: ten, none changes it.
-2. switch layout (tty, `sioioctl` in dev/wega/siok.c): the original has the compares of a small switch behind the case bodies (the first one threaded to the
+1. switch layout (tty, `sioioctl` in dev/wega/siok.c): the original has the compares of a small switch behind the case bodies (the first one threaded to the
    top by popt); the shipped scodgen puts them in front.
-3. `andb rl6,#%0F` against `and r6,#%000F` (debug): byte operation for `& 0xf` of a char.
-4. scratch register choice: tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion; `sysinfo.outch++` through rr6), tty (`ld r4,...` against `ld r2,...`), sys1 (98 lines).
-5. After each new switch: `host/recon/oldcc.sh matrix check`, tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
+2. scratch register choice: tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion), tty (`ld r4,...` against `ld r2,...`), sys1 (98 lines; FIXME "uses different
+   temp regs" in sys1.c, "has to be r4+r5 instead of r2+r3").
+3. After each new switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already
+   without this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 
 ## 4. Assembler sources that should be C
 

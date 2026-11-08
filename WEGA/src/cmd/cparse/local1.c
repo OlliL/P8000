@@ -70,7 +70,12 @@ clocal(p) NODE *p; {
 	case PCONV:
 		m = l->in.type;
 #ifdef SEG
+#ifdef OLD_D25
+		/* a cast of a long to a pointer stays a conversion (the code generator masks the address, OLD_D24) */
+		if( (m == CHAR || m == UCHAR || m == INT || m == UNSIGNED || m == SHORT || m == USHORT || m == LONG || m == ULONG) && l->in.op != ICON ){
+#else
 		if( (m == CHAR || m == UCHAR || m == INT || m == UNSIGNED || m == SHORT || m == USHORT) && l->in.op != ICON ){
+#endif
 			p->in.op = o = SCONV;
 			break;
 			}

@@ -37,7 +37,6 @@ int  kdebug = 0;
 #define NBPL	16
 #define UMASK	0x3f00ffffL
 #define KMASK	0x7f00ffffL
-#define HMASK	0x0f
 
 struct {
 	unsigned a;
@@ -92,10 +91,10 @@ unsigned int hval;
 
 	phzif = hzif;
 	h = hval;
-	kdbstr[0] = phzif[(unsigned char)((int)h >> 12 & HMASK)];
-	kdbstr[1] = phzif[(unsigned char)((int)h >> 8 & HMASK)];
-	kdbstr[2] = phzif[(unsigned char)((int)h >> 4 & HMASK)];
-	kdbstr[3] = phzif[(unsigned char)((int)h & HMASK)];
+	kdbstr[0] = phzif[(unsigned char)((int)h >> 12) % 16];
+	kdbstr[1] = phzif[(unsigned char)((int)h >> 8) % 16];
+	kdbstr[2] = phzif[(unsigned char)((int)h >> 4) % 16];
+	kdbstr[3] = phzif[(unsigned char)((int)h & 0xffff) % 16];
 	kdbstr[4] = 0;
 	return (kdbstr);
 }
