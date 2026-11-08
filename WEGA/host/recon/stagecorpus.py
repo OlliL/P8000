@@ -32,7 +32,8 @@ The inputs are prepared once and kept in a tar (compare/NAME/corpus.tar, not in 
 directory: casold uses the tar of cas): normal runs only unpack it; a missing tar is made (under a lock) first, `--make` makes it new
 (host/tools/mkcorpus.sh does that and removes the cache). Results are cached beside it (compare/NAME/cache/, not in git):
   - the original's output per case, key = sha1 of tar, of the program code of the corpus (*.py, *.sh of the directory and of host/recon),
-    of the emulator, of the original binary and of the tree ROOT (bin lib usr etc ..., not tmp);
+    of the emulator, of the original binary and of the files of ROOT the runs read (progcfg CORPUS_ROOT_FILES: headers, libraries, a program
+    the original runs);
   - "candidate identical" per candidate, key = that key + sha1 of the candidate binary + progcfg CORPUS_DEPENDS[candidate] (files or
     directories the candidate runs, relative to the WEGA directory). A hit means the same binary was already tested against the same
     original on the same inputs: nothing runs. Failures are never cached. CORPUS_NOCACHE=1 ignores the cache (it is still written);
@@ -67,6 +68,22 @@ VARIANTS = getattr(CFG, 'CORPUS_VARIANTS', [None])
 IGNORE = re.compile(CFG.CORPUS_IGNORE) if getattr(CFG, 'CORPUS_IGNORE', None) else None
 NORMALIZE = getattr(CFG, 'CORPUS_NORMALIZE', None)
 
+_STRACE_N = [0]
+
+
+def strace_prefix(tag):
+    """STAGE_STRACE=DIR: every run of the original or of a candidate under strace (the files it opens, the programs it starts), one
+    file per run in DIR (named TAG.N); host/tools/corpusdeps.py reads them: the dependencies that belong in CORPUS_DEPENDS"""
+    d = os.environ.get('STAGE_STRACE')
+    if not d:
+        return []
+    os.makedirs(d, exist_ok=True)
+    with PHASE_LOCK:
+        _STRACE_N[0] += 1
+        n = _STRACE_N[0]
+    return ['strace', '-f', '-qq', '-e', 'trace=openat,open,execve,access,stat,newfstatat', '-o', os.path.join(d, '%s.%s.%d' % (CFG.NAME, tag, n))]
+
+
 def run_script(binary, base, work, variant, tag, native):
     """script mode: the script of the case with PROG = the program; the result as of run_pass"""
     rd = os.path.join(work, 'run_' + tag)
@@ -93,9 +110,9 @@ def run_script(binary, base, work, variant, tag, native):
     if native:
         env.update(getattr(CFG, 'CORPUS_HOST_ENV', lambda root: {})(CFG.ROOT))
     if native:
-        prog = os.path.join(rd, binary)
+        prog = ' '.join(shlex.quote(x) for x in strace_prefix(tag) + [os.path.join(rd, binary)])
     else:
-        prog = ' '.join(shlex.quote(x) for x in [CFG.EMU] + sum((['-e', '%s=%s' % kv] for kv in var.items()), [])
+        prog = ' '.join(shlex.quote(x) for x in strace_prefix(tag) + [CFG.EMU] + sum((['-e', '%s=%s' % kv] for kv in var.items()), [])
                         + ['-r', CFG.ROOT, binary])
     env['PROG'] = prog
     script = os.path.join(CFG.DIR, CFG.CORPUS_SCRIPT(base))
@@ -138,10 +155,10 @@ def run_pass(binary, base, work, variant, tag='', native=False):
         # a host build: runs natively; the environment from CORPUS_HOST_ENV(root) of progcfg.py
         env = dict(os.environ)
         env.update(getattr(CFG, 'CORPUS_HOST_ENV', lambda root: {})(CFG.ROOT))
-        r = subprocess.run([os.path.join(work, argv[0])] + argv[1:], cwd=work, stdin=fin, capture_output=True,
+        r = subprocess.run(strace_prefix(tag) + [os.path.join(work, argv[0])] + argv[1:], cwd=work, stdin=fin, capture_output=True,
                            timeout=600, env=env)
     else:
-        r = subprocess.run([CFG.EMU, '-r', CFG.ROOT] + argv, cwd=work, stdin=fin, capture_output=True, timeout=600)
+        r = subprocess.run(strace_prefix(tag) + [CFG.EMU, '-r', CFG.ROOT] + argv, cwd=work, stdin=fin, capture_output=True, timeout=600)
     outs = {}
     for f in CFG.CORPUS_OUTPUTS(base):
         p = os.path.join(work, f)
@@ -211,7 +228,10 @@ def key_parts(cands):
     """{part: sha1}: what the cache keys are made of (--keys prints them)"""
     k = {'tar': sha1file(TAR), 'code': code_key(), 'emulator': sha1file(CFG.EMU),
          'original': sha1file(os.path.join(CFG.ROOT, CFG.ORIG_BIN)), 'variants': hashlib.sha1(repr(VARIANTS).encode()).hexdigest(),
-         'root': sha1tree(CFG.ROOT, skip=('tmp',))}
+         }
+    for dep in getattr(CFG, 'CORPUS_ROOT_FILES', []):
+        q = os.path.join(CFG.ROOT, dep)
+        k['root ' + dep] = sha1tree(q) if os.path.exists(q) else 'missing'
     for name, path in cands.items():
         k['binary ' + name] = sha1file(path)
         for dep in getattr(CFG, 'CORPUS_DEPENDS', {}).get(name, []):

@@ -32,3 +32,6 @@ CORPUS_DEPENDS = {'host': ['host/ar/ar']}	# the programs the candidate runs (par
 def CORPUS_HOST_ENV(root):
     """the host ranlib lets the host ar insert the table (RANLIB_AR)"""
     return {'RANLIB_AR': os.path.normpath(os.path.join(HERE, '..', '..', 'host', 'ar', 'ar'))}
+
+# files of the tree the runs read (part of the cache key; host/tools/corpusdeps.sh checks the list)
+CORPUS_ROOT_FILES = ['bin/ar', 'bin/sh']

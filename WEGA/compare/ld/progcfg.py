@@ -93,3 +93,6 @@ def model_link(work, objs):
 # the strict comparison runs on the d12model link (our data layout differs from the original only by D12)
 MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_ld', 'ldm')
 STRICT_INPUT = MODEL_OUT
+
+# files of the tree the runs read (part of the cache key; host/tools/corpusdeps.sh checks the list)
+CORPUS_ROOT_FILES = ['lib/crt0.o', 'lib/libc.a']

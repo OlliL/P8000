@@ -57,3 +57,6 @@ def CORPUS_NORMALIZE(name, data):
     """the host cpp names the include directory of the system as it was given (CPP_INCLUDE), the original as /usr/include"""
     import corpusc
     return data.replace(os.path.join(corpusc.root(), 'usr', 'include').encode(), b'/usr/include')
+
+# files of the tree the runs read (part of the cache key; host/tools/corpusdeps.sh checks the list)
+CORPUS_ROOT_FILES = ['usr/include']

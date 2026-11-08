@@ -75,3 +75,6 @@ def CORPUS_RUN(binary, base, work):
 
 def CORPUS_OUTPUTS(base):
     return [base]
+
+# files of the tree the runs read (part of the cache key; host/tools/corpusdeps.sh checks the list)
+CORPUS_ROOT_FILES = ['lib/scrt0.o', 'lib/slibc.a']
