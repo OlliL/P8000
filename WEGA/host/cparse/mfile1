@@ -1,0 +1,363 @@
+
+# include "macdefs"
+# include "manifest"
+
+/*	storage classes  */
+# define SNULL 0
+# define AUTO 1
+# define EXTERN 2
+# define STATIC 3
+# define REGISTER 4
+# define EXTDEF 5
+# define LABEL 6
+# define ULABEL 7
+# define MOS 8
+# define PARAM 9
+# define STNAME 10
+# define MOU 11
+# define UNAME 12
+# define TYPEDEF 13
+# define FORTRAN 14
+# define ENAME 15
+# define MOE 16
+# define UFORTRAN 17
+# define USTATIC 18
+	/* field size is ORed in */
+# define FIELD 0100
+# define FLDSIZ 077
+
+/*	location counters */
+# define PROG 0
+# define DATA 1
+# define ADATA 2
+# define STRNG 5	/* WEGA (PCC 3) */
+# define ISTRNG 6	/* WEGA (PCC 4) */
+# define STAB 7	/* (WEGA value open) */
+# define BSS 6
+
+
+/* symbol table flags */
+# define SMOS 01
+# define SHIDDEN 02
+# define SHIDES 04
+# define SSET 010
+# define SREF 020
+# define SMEMB 040	/* WEGA: a member or a structure name (defid) */
+
+# ifndef FIXDEF
+# define FIXDEF(p)
+#endif
+
+	/* alignment of initialized quantities */
+# ifndef AL_INIT
+#	define	AL_INIT ALINT
+# endif
+
+struct symtab {	/* WEGA: 26 bytes from malloc, in hash chains linked by the xor of the two neighbours */
+	struct symtab *slink;	/* xor of the previous and the next entry of the chain */
+	int sname;	/* offset of the name in ntab */
+	TWORD stype;  /* type word */
+
+	char sclass;  /* storage class */
+	char slevel;  /* scope level */
+	int sfld8;	/* (use open) */
+	char sflags;  /* flags for set, use, hidden, mos, etc. */
+	char sfldb;	/* (use open) */
+	char sfldc;	/* (use open) */
+	OFFSZ offset;  /* offset or value */
+	short dimoff; /* offset into the dimension table */
+	short sizoff; /* offset into the size table */
+	short suse;  /* line number of last use of the variable */
+	short symno;	/* number of the symbol in the .S file */
+	};
+
+
+# ifdef ONEPASS
+/* NOPREF must be defined for use in first pass tree machine */
+# define NOPREF 020000  /* no preference for register assignment */
+#else
+
+union ndu {
+	struct {
+		int op;
+		TWORD type;
+		int cdim, csiz;
+		}fn; /* front node */
+	struct {
+		int op;
+		TWORD type;
+		int cdim, csiz;
+		NODE *left;
+		NODE * right;
+		}in; /* interior node */
+	
+	struct {
+		/* this structure is the same as above,
+		   but is used when a value, rather than
+		   address, is kept in +left */
+		int op;
+		TWORD type;
+		int cdim, csiz;
+		CONSZ lval;
+		intptr_t rval;	/* also holds a pointer to a symbol (STP) */
+		}tn; /* terminal node */
+	
+	struct {
+		/* this structure is used when a floating point constant
+		   is being computed */
+		int op;
+		TWORD type;
+		int cdim, csiz;
+		double dval;
+		}fpn; /* floating point node */
+
+	};
+# endif
+
+struct sw {
+	CONSZ sval;
+	int slab;
+	};
+
+extern struct sw swtab[];
+extern struct sw *swp;
+extern int swx;
+
+extern int ftnno;
+extern int blevel;
+extern int instruct, stwart;
+
+extern int lineno, nerrors;
+typedef union {
+	intptr_t intval;	/* also holds a pointer to a symbol (yylex) */
+	NODE * nodep;
+	long yylong;	/* WEGA: YYSTYPE has 4 bytes (yyval, yyv of the parser) */
+	} YYSTYPE;
+extern YYSTYPE yylval;
+
+extern CONSZ lastcon;
+extern double dcon;
+
+extern char ftitle[];
+
+struct strlist {	/* WEGA: a string constant, kept until the data are written (vinit1 putstrs) */
+	int s_lab;	/* its label */
+	int s_len;	/* its bytes */
+	char *s_str;
+	struct strlist *s_next;
+	};
+extern struct strlist *strhead, *strcur;
+# define HASHSZ 64	/* WEGA: the hash chains of the symbol table */
+# define NTABSZ 6500	/* WEGA: the name table */
+extern FILE *outfile;	/* WEGA: the .I file (for codgen) */
+extern FILE *dfile;	/* WEGA: the .D file (data and strings) */
+extern FILE *sfile;	/* WEGA: the .S file (symbols for the debugger) */
+extern char *memtop, *memcur;	/* WEGA: the hunk of getmem */
+extern int curloc;	/* WEGA: the current location counter (locctr) */
+# define STP(x) ((struct symtab *)(intptr_t)(x))	/* WEGA: the rval of a NAME node points to its entry */
+extern char ntab[];	/* the names: locals from the bottom (ntabindx), globals from the top (ntab_globals) */
+extern int ntabindx, ntab_globals;
+extern struct symtab *hashtab[];
+extern struct symtab *curftn;
+extern int curclass;
+extern int curdim;
+/* dimtab has one element in front of it: putsym reads dimtab[-1] for a structure tag without members (the original finds a zero there) */
+extern OFFSZ dimtabx[];
+# define dimtab (dimtabx + 1)
+extern intptr_t paramstk[];	/* WEGA: int (PCC OFFSZ) */
+extern int paramno;
+extern OFFSZ autooff, strucoff;
+extern int regvar;
+extern int minrvar;
+extern int fregvar, fminrvar;	/* WEGA: the same for the float registers */
+extern int lregvar;
+extern int symcount;	/* WEGA: the number of the next symbol of the .S file */
+extern int tmpno, tmpoff;	/* WEGA: the TEMP nodes of a function */
+extern long ftnpos;	/* WEGA: the function head in the .I file */
+extern int crslab;	/* the next label */
+extern int Fflag;	/* WEGA: -F */
+extern FILE *Ffile;
+extern long maxoff;	/* WEGA: the most stack words of the arguments of a call in the function (prtree) */
+extern int brkflag;
+extern char yytext[];
+
+extern int strflg;
+
+extern OFFSZ inoff;
+
+extern int reached;
+
+/*	tunnel to buildtree for name id's */
+
+extern struct symtab *idname;	/* WEGA: a pointer (PCC: an index of stab) */
+extern int ncharsig;	/* significant characters of a name */
+
+extern NODE node[];
+extern NODE *lastfree;
+
+extern int cflag, hflag, pflag;
+
+/* various labels */
+extern int brklab;
+extern int contlab;
+extern int flostat;
+extern int retlab;
+extern int retstat;
+extern int asavbc[], *psavbc;
+
+/*	flags used in structures/unions */
+
+# define SEENAME 01
+# define INSTRUCT 02
+# define INUNION 04
+# define FUNNYNAME 010
+
+/*	flags used in the (elementary) flow analysis ... */
+
+# define FBRK 02
+# define FCONT 04
+# define FDEF 010
+# define FLOOP 020
+
+/*	flags used for return status */
+
+# define RETVAL 1
+# define NRETVAL 2
+
+/*	used to mark a constant with no name field */
+
+# define NONAME 0	/* WEGA: 0 (PCC 040000); nncon of /lib/cparse tests rval against 0 */
+
+	/* mark an offset which is undefined */
+
+# define NOOFFSET (-10201)
+
+/*	declarations of various functions */
+
+
+# define checkst(x)
+
+# ifndef CHARCAST
+/* to make character constants into character connstants */
+/* this is a macro to defend against cross-compilers, etc. */
+# define CHARCAST(x) (char)(x)
+# endif
+
+# define BCSZ 100 /* size of the table to save break and continue labels */
+# define SYMTSZ 500 /* WEGA: only the limit of chkstr */
+# define DIMTABSZ 1000 /* size of the dimension/size table (WEGA: the bss of /lib/cparse) */
+# define PARAMSZ 150 /* size of the parameter stack */
+# define SWITSZ 300 /* size of switch table (WEGA: the bss of /lib/cparse) */
+
+/*	special interfaces for yacc alone */
+/*	These serve as abbreviations of 2 or more ops:
+	ASOP	=, = ops
+	RELOP	LE,LT,GE,GT
+	EQUOP	EQ,NE
+	DIVOP	DIV,MOD
+	SHIFTOP	LS,RS
+	ICOP	ICR,DECR
+	UNOP	NOT,COMPL
+	STROP	DOT,STREF
+
+	*/
+# define ASOP 25
+# define RELOP 26
+# define EQUOP 27
+# define DIVOP 28
+# define SHIFTOP 29
+# define INCOP 30
+# define UNOP 31
+# define STROP 32
+
+struct instk {	/* WEGA: 22 bytes */
+	OFFSZ in_sz;   /* size of array element */
+	int in_x;    /* current index for structure member in structure initializations */
+	int in_n;    /* number of initializations seen */
+	int in_s;    /* sizoff */
+	int in_d;    /* dimoff */
+	TWORD in_t;    /* type */
+	struct symtab *in_id;   /* the symbol (PCC: stab index) */
+	int in_fl;   /* flag which says if this level is controlled by {} */
+	OFFSZ in_off;  /* offset of the beginning of this level */
+	};
+struct shdr { int h_magic; long h_syms; long h_names; int h_tags; int h_refs; };
+struct ref { long r_id; char r_flag; };
+
+/* the globals of the original: the modules define them as commons (tentative definitions, merged by the old linker). Host: defined once,
+ * in xdefs1.c (DEFGLOBALS); the other modules see them as extern (gcc 10 and later do not merge commons). */
+#ifdef DEFGLOBALS
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif
+
+GLOBAL struct symtab *curftn;
+GLOBAL int asavbc[100];
+GLOBAL int instruct;
+extern char ntab[6500];
+GLOBAL int brklab;
+GLOBAL int stwart;
+GLOBAL int contlab;
+GLOBAL int paramno;
+extern FILE *Ffile;
+GLOBAL int flostat;
+GLOBAL CONSZ lastcon;
+GLOBAL int curdim;
+GLOBAL struct symtab *idname;
+GLOBAL OFFSZ strucoff;
+GLOBAL double dcon;
+GLOBAL int blevel;
+GLOBAL int regvar;
+GLOBAL int curclass;
+GLOBAL int retstat;
+GLOBAL struct sw swtab[300];
+GLOBAL struct sw *swp;
+GLOBAL int swx;
+GLOBAL OFFSZ autooff;
+GLOBAL int lregvar;
+extern FILE *dfile;
+GLOBAL NODE node[350];
+extern char *dpath;
+extern FILE *sfile;
+extern FILE *outfile;
+GLOBAL int minrvar;
+extern long ftnpos;
+extern char dfname[50];
+GLOBAL int fminrvar;
+GLOBAL OFFSZ inoff;
+extern char ifname[50];
+extern char *ipath;
+GLOBAL int fregvar;
+extern char sfname[50];
+extern char *spath;
+GLOBAL int strflg;
+extern long maxoff;
+extern short lxmask[129];
+extern int lxmatch;
+extern char *lxgcp;
+extern struct lxdope *lxcp[129];
+extern int pregvar;
+GLOBAL intptr_t paramstk[150];
+extern long dpos;
+extern int pfregvar;
+extern int dope[129];
+extern int afull;
+extern char *opst[129];
+extern char dbuf[512];
+extern char ibuf[512];
+extern char sbuf[512];
+extern NODE *lastfree;
+extern struct instk instack[10];
+extern int iclass;
+extern struct instk *pstk;
+extern struct symtab *hashtab[64];
+extern long shdrpos;
+extern struct ref reftab[551];
+extern int commflag;
+extern struct shdr shdr;
+extern struct symtab *refsym[551];
+extern int taglist[500];
+
+
+# include "cpproto.h"

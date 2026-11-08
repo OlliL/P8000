@@ -1682,7 +1682,7 @@ special(NODE *p, int shape)
 	case SPECIAL + 8:
 		return 0;
 	}
-	cerror("bad special shape: SPECIAL | %%%.2x", shape - SPECIAL);
+	cerror("bad special shape: SPECIAL | %%%x", shape - SPECIAL);
 	return 0;
 }
 

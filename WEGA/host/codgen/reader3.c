@@ -724,7 +724,7 @@ prcook(int cookie)
 			printf("SICON");
 			break;
 		default:
-			printf("SPECIAL+%%%.2x", cookie & 0x7FFF);
+			printf("SPECIAL+%%%x", cookie & 0x7FFF);
 		}
 		return;
 	}
@@ -736,7 +736,7 @@ prcook(int cookie)
 			flag++;
 			fputs(cnames[i], stdout);
 		}
-	printf(" [%%%.2x]", cookie);
+	printf(" [%%%x]", cookie);
 }
 
 /* generate code for p; cook says in which form the result is wanted */

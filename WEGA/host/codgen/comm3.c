@@ -262,7 +262,7 @@ bsize(int t)
 #else
 		return 16;				/* a pointer */
 #endif
-	cerror("illegal bsize type: %%%.2x\n", t);
+	cerror("illegal bsize type: %%%x\n", t);
 }
 
 /* size of a type in words: long, float and unsigned long 2, double 4, everything else 1 */

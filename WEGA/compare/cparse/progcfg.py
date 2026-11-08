@@ -21,6 +21,7 @@ REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 
 CORPUS_BINARY = 'build/nonseg/cparse'
+CANDIDATES = {'wega': 'src/cmd/cparse/build/nonseg/cparse', 'host': 'host/cparse/cparse'}
 
 
 def CORPUS_SOURCES():
@@ -47,7 +48,7 @@ def CORPUS_NORMALIZE(f, data):
         ns, na = struct.unpack('>II', bytes(d[pos + 2:pos + 10]))
         nn, nm = struct.unpack('>HH', bytes(d[pos + 10:pos + 14]))
         for k in range(pos + 14, pos + 14 + ns, 22):
-            if d[k + 4] != 4 and d[k + 4] < 0x40:
+            if k + 5 < len(d) and d[k + 4] != 4 and d[k + 4] < 0x40:
                 d[k + 5] = 0
         pos += 14 + ns + na + nn + nm
     return bytes(d)

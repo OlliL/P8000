@@ -1,0 +1,916 @@
+# include "mfile1"
+
+# include <ctype.h>
+static char sccsid[] __attribute__((unused)) = "@[$]scan1.c\t2.4  10/06/83 13:10:32 Copr. 1981 87wega3.2.";
+
+	/* temporarily */
+
+	/* lexical actions */
+
+# define A_ERR 0		/* illegal character */
+# define A_LET 1		/* saw a letter */
+# define A_DIG 2		/* saw a digit */
+# define A_1C 3			/* return a single character */
+# define A_STR 4		/* string */
+# define A_CC 5			/* character constant */
+# define A_BCD 6		/* GCOS BCD constant */
+# define A_SL 7			/* saw a / */
+# define A_DOT 8		/* saw a . */
+# define A_PL 9		/* + */
+# define A_MI 10		/* - */
+# define A_EQ 11		/* = */
+# define A_NOT 12		/* ! */
+# define A_LT 13		/* < */
+# define A_GT 14		/* > */
+# define A_AND 16		/* & */
+# define A_OR 17		/* | */
+# define A_WS 18		/* whitespace (not \n) */
+# define A_NL 19		/* \n */
+
+	/* character classes */
+
+# define LEXLET 01
+# define LEXDIG 02
+# define LEXOCT 04
+# define LEXHEX 010
+# define LEXWS 020
+# define LEXDOT 040
+
+	/* reserved word actions */
+
+# define AR_TY 0		/* type word */
+# define AR_RW 1		/* simple reserved word */
+# define AR_CL 2		/* storage class word */
+# define AR_S 3		/* struct */
+# define AR_U 4		/* union */
+# define AR_E 5		/* enum */
+# define AR_A 6		/* asm */
+
+	/* text buffer */
+# define LXTSZ 125
+char yytext[LXTSZ+1];	/* one more: the BCD constant of the original writes its end mark behind the last byte */
+char * lxgcp;
+
+
+
+# ifdef ibm
+
+# define CSMASK 0377
+# define CSSZ 256
+
+# else
+
+# define CSMASK 0177
+# define CSSZ 128
+
+# endif
+
+short lxmask[CSSZ+1];
+
+
+
+# define lxget(c,m) (lxgcp=yytext,lxmore(c,m))
+
+
+struct lxdope {
+	short lxch;	/* the character */
+	short lxact;	/* the action to be performed */
+	short lxtok;	/* the token number to be returned */
+	short lxval;	/* the value to be returned */
+	} lxdope[] = {
+
+	{ '$',	A_ERR,	0,	0 },	/* illegal characters go here... */
+	{ '_',	A_LET,	0,	0 },	/* letters point here */
+	{ '0',	A_DIG,	0,	0 },	/* digits point here */
+	{ ' ',	A_WS,	0,	0 },	/* whitespace goes here */
+	{ '\n',	A_NL,	0,	0 },
+	{ '"',	A_STR,	0,	0 },	/* character string */
+	{ '\'',	A_CC,	0,	0 },	/* character constant */
+	{ '`',	A_BCD,	0,	0 },	/* GCOS BCD constant */
+	{ '(',	A_1C,	LP,	0 },
+	{ ')',	A_1C,	RP,	0 },
+	{ '{',	A_1C,	LC,	0 },
+	{ '}',	A_1C,	RC,	0 },
+	{ '[',	A_1C,	LB,	0 },
+	{ ']',	A_1C,	RB,	0 },
+	{ '*',	A_1C,	MUL,	MUL },
+	{ '?',	A_1C,	QUEST,	0 },
+	{ ':',	A_1C,	COLON,	0 },
+	{ '+',	A_PL,	PLUS,	PLUS },
+	{ '-',	A_MI,	MINUS,	MINUS },
+	{ '/',	A_SL,	DIVOP,	DIV },
+	{ '%',	A_1C,	DIVOP,	MOD },
+	{ '&',	A_AND,	AND,	AND },
+	{ '|',	A_OR,	OR,	OR },
+	{ '^',	A_1C,	ER,	ER },
+	{ '!',	A_NOT,	UNOP,	NOT },
+	{ '~',	A_1C,	UNOP,	COMPL },
+	{ ',',	A_1C,	CM,	CM },
+	{ ';',	A_1C,	SM,	0 },
+	{ '.',	A_DOT,	STROP,	DOT },
+	{ '<',	A_LT,	RELOP,	LT },
+	{ '>',	A_GT,	RELOP,	GT },
+	{ '=',	A_EQ,	ASSIGN,	ASSIGN },
+	{ -1,	A_1C,	0,	0 },
+	};
+
+struct lxdope *lxcp[CSSZ+1];
+
+char strbuf[512] = "";	/* the bytes of a string constant (savestr) */
+int strsize = 0;	/* the number of bytes in strbuf */
+
+
+int lxmatch;  /* character to be matched in char or string constant */
+
+
+
+
+
+extern char *spath;
+
+#ifdef OLD_D12
+extern long dpos;	/* pftn1.c */
+#endif
+
+int mainp1(void)
+{
+	long pos;
+
+	lxstart();
+	tinit();
+	mkdope();
+	dimtinit();
+	sfinit();
+	lxtitle();
+
+	yyparse();
+	yyaccpt();
+#ifdef OLD_D12
+	if( strhead ){ /* the string literals of the file into the last section of the .D file */
+		putstrs();
+		pos = ftell( dfile );
+		fseek( dfile, dpos-9, 0 );
+		fprintf( dfile, "%07ld", pos-dpos );
+		fseek( dfile, 0L, 2 );
+		}
+#endif
+
+	/* the first word of the .S file: the position of the names */
+	pos = ftell( sfile );
+	fseek( sfile, 0L, 0 );
+	put32( sfile, pos );
+	fseek( sfile, 0L, 2 );
+	blevel = -1;
+	sinit();
+	putrefsyms();
+	putnames();
+	puttags();
+	sheader();
+	return(nerrors?1:0);
+
+	}
+
+void lxstart(void)
+{ /* initialize the lexical analyzer */
+	lxclass();
+	lxinit();
+	}
+
+void lxclass(void)
+{ /* set up character classes */
+	lxenter( "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", LEXLET );
+	lxenter( "0123456789", LEXDIG );
+	lxenter( "0123456789abcdefABCDEF", LEXHEX );
+	lxenter( " \t\r\b\f", LEXWS );
+	lxenter( "01234567", LEXOCT );
+	lxenter( ".", LEXDOT );
+	}
+
+void lxenter(char *s, short m)
+{
+	/* enter a mask into lxmask */
+	int c;
+
+	while( (c= *s++) ) lxmask[c+1] |= m;
+
+	}
+
+void lxinit(void)
+{
+	register struct lxdope *p;
+	int i;
+	register char *cp;
+
+	/* make lxcp point to appropriate lxdope entry for each character */
+
+	/* initialize error entries */
+
+	for( i= 0; i<=CSSZ; ++i ) lxcp[i] = lxdope;
+
+	/* make unique entries */
+
+	for( p=lxdope; ; ++p ) {
+		lxcp[p->lxch+1] = p;
+		if( p->lxch < 0 ) break;
+		}
+
+	/* handle letters, digits, and whitespace */
+	/* by convention, first, second, and third places */
+
+	cp = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	while( *cp ) lxcp[*cp++ + 1] = &lxdope[1];
+	cp = "123456789";
+	while( *cp ) lxcp[*cp++ + 1] = &lxdope[2];
+	cp = "\t\b\r\f";
+	while( *cp ) lxcp[*cp++ + 1] = &lxdope[3];
+
+	}
+
+void sfinit(void)
+{ /* the first word of the .S file (rewritten by mainp1) */
+	long zero;
+
+	zero = 0;
+	put32( sfile, zero );
+	if( ferror( sfile ) ) syserr( spath );
+	}
+
+static struct symtab before_dimtab;
+
+void dimtinit(void)
+{ /* dimension table initialization */
+
+	/* dimtab[-1]: putsym reads it for a structure tag without members; in the original it points to a word (symno) that holds 0x3020 */
+	dimtabx[0] = (intptr_t) &before_dimtab;
+	before_dimtab.symno = 0x3020;
+	dimtab[0] = 0;
+	dimtab[CHAR] = SZCHAR;
+	dimtab[INT] = SZINT;
+	dimtab[FLOAT] = SZFLOAT;
+	dimtab[DOUBLE] = SZDOUBLE;
+	dimtab[LONG] = SZLONG;
+	dimtab[SHORT] = SZSHORT;
+	dimtab[UCHAR] = SZCHAR;
+	dimtab[USHORT] = SZSHORT;
+	dimtab[UNSIGNED] = SZINT;
+	dimtab[ULONG] = SZLONG;
+	/* starts past any of the above */
+	curdim = 16;
+	}
+
+void lxtitle(void)
+{
+	/* called after a newline; set linenumber and file name */
+
+	int c, val;
+	register char *cp;
+
+	for(;;){  /* might be several such lines in a row */
+		if( (c=getchar()) != '#' ){
+			if( c != EOF && ungetc(c,stdin) == EOF ) syserr( "stdin" );
+			return;
+			}
+
+		lxget( ' ', LEXWS );
+		val = 0;
+		for( c=getchar(); isdigit(c); c=getchar() ){
+			val = val*10+ c - '0';
+			}
+		if( ungetc( c, stdin ) == EOF ) syserr( "stdin" );
+		lineno = val;
+		lxget( ' ', LEXWS );
+		if( (c=getchar()) != '\n' ){
+			for( cp=ftitle; c!='\n'; c=getchar(),++cp ){
+				*cp = c;
+				}
+			*cp = '\0';
+			}
+		}
+	}
+
+void lxmore(int c, int m)
+{
+	register char *cp;
+
+	*(cp = lxgcp) = c;
+	while( c=getchar(), lxmask[c+1]&m ){
+		if( cp < &yytext[LXTSZ] ){
+			*++cp = c;
+			}
+		}
+	if( ungetc(c,stdin) == EOF ) syserr( "stdin" );
+	*(lxgcp = cp+1) = '\0';
+	}
+
+void savestr(int ct, int lab)
+{ /* a string constant: read it and keep it with its label in the list strhead */
+	char *cp;
+
+	if( !strhead ){
+		if( (strhead = (struct strlist *) malloc( sizeof(struct strlist) )) == 0 ) syserr( "malloc" );
+		strcur = strhead;
+		}
+	else {
+		if( (strcur->s_next = (struct strlist *) malloc( sizeof(struct strlist) )) == 0 ) syserr( "malloc" );
+		strcur = strcur->s_next;
+		}
+	strcur->s_next = 0;
+	strcur->s_lab = lab;
+	lxstr( ct );
+	strcur->s_len = strsize;
+	if( (strcur->s_str = (char *) malloc( strcur->s_len )) == 0 ) syserr( "malloc" );
+	strsize = 0;
+	for( cp = strcur->s_str; strsize < strcur->s_len; ++strsize ) *cp++ = strbuf[strsize];
+	}
+
+void lxstr(int ct)
+{
+	/* match a string or character constant, up to lxmatch */
+
+	int c;
+	int val;
+	int i;
+
+	i=0;
+	while( (c=getchar()) != lxmatch ){
+		switch( c ) {
+
+		case EOF:
+			uerror( "unexpected EOF" );
+			break;
+
+		case '\n':
+			uerror( "newline in string or char constant" );
+			++lineno;
+			break;
+
+		case '\\':
+			switch( c = getchar() ){
+
+			case '\n':
+				++lineno;
+				continue;
+
+			case 'n':
+				val = '\n';
+				goto mkcc;
+
+			case 'r':
+				val = '\r';
+				goto mkcc;
+
+			case 'b':
+				val = '\b';
+				goto mkcc;
+
+			case 't':
+				val = '\t';
+				goto mkcc;
+
+			case 'f':
+				val = '\f';
+				goto mkcc;
+
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+				val = c-'0';
+				c=getchar();  /* try for 2 */
+				if( lxmask[c+1] & LEXOCT ){
+					val = (val<<3) | (c-'0');
+					c = getchar();  /* try for 3 */
+					if( lxmask[c+1] & LEXOCT ){
+						val = (val<<3) | (c-'0');
+						}
+					else ungetc( c ,stdin);
+					}
+				else ungetc( c ,stdin);
+
+				goto mkcc;
+
+				}
+		/* fall through */
+		default:
+			val =c;
+		mkcc:
+			if( lxmatch == '\'' ){
+				val = CHARCAST(val);  /* it is, after all, a "character" constant */
+				lastcon = i ? (long)(val<<8) | lastcon : val;
+				}
+			else { /* stash the byte into the string */
+				if( strflg ) {
+					if( ct==0 || i<ct ) putbyte( val );
+					else if( i == ct ) werror( "non-null byte ignored in string initializer" );
+					}
+				else strbuf[i] = val;
+				}
+			++i;
+			continue;
+			}
+		break;
+		}
+	/* end of string or  char constant */
+
+	if( lxmatch == '"' ){
+		if( strflg ){ /* end the string */
+			if( ct==0 || i<ct ) putbyte( 0 );  /* the null at the end */
+			}
+		else {  /* the string gets a null byte */
+			strbuf[i++] = 0;
+			strsize = i;
+			dimtab[curdim] = i;  /* in case of later sizeof ... */
+			}
+		}
+	else { /* end the character constant */
+		if( i == 0 ) uerror( "empty character constant" );
+		if( i>(SZINT/SZCHAR) )
+			uerror( "too many characters in character constant" );
+		}
+	}
+
+void lxcom(void)
+{
+	int c;
+	/* saw a slash-star: process a comment */
+
+	for(;;){
+
+		switch( c = getchar() ){
+
+		case EOF:
+			uerror( "unexpected EOF" );
+			return;
+
+		case '\n':
+			++lineno;
+
+		default:
+			continue;
+
+		case '*':
+			if( (c = getchar()) == '/' ) return;
+			else ungetc( c ,stdin);
+			continue;
+
+			}
+		}
+	}
+
+int yylex(void)
+{
+	for(;;){
+
+		int lxchar;
+		register struct lxdope *p;
+		register struct symtab *sp;
+
+		switch( lxchar=getchar(), (p=lxcp[lxchar+1])->lxact ){
+
+		onechar:
+			if( ungetc( lxchar ,stdin) == EOF ) syserr( "stdin" );
+
+		/* fall through */
+		case A_1C:
+			/* eat up a single character, and return an opcode */
+
+			yylval.intval = p->lxval;
+			return( p->lxtok );
+
+		case A_ERR:
+			uerror( "illegal character: %%%02x (hex)", lxchar );
+			break;
+
+		case A_LET:
+			/* collect an identifier, check for reserved word, and return */
+			lxget( lxchar, LEXLET|LEXDIG );
+			if( (lxchar=lxres()) > 0 ) return( lxchar ); /* reserved word */
+			if( lxchar== 0 ) continue;
+			sp = (struct symtab *) lookup( yytext, (stwart&(INSTRUCT|INUNION|FUNNYNAME))?SMOS:0, 1, 0 );
+			if( sp->sclass == TYPEDEF && !stwart ){
+				stwart = instruct;
+				yylval.nodep = mkty( sp->stype, sp->dimoff, sp->sizoff );
+				return( TYPE );
+				}
+			stwart = (stwart&SEENAME) ? instruct : 0;
+			yylval.intval = (intptr_t) sp;
+			return( NAME );
+
+		case A_DIG:
+			/* collect a digit string, then look at last one... */
+			lastcon = 0;
+			lxget( lxchar, LEXDIG );
+			switch( lxchar=getchar() ){
+
+			case 'x':
+			case 'X':
+				if( yytext[0] != '0' && !yytext[1] ) uerror( "illegal hex constant" );
+				lxmore( lxchar, LEXHEX );
+				/* convert the value */
+				{
+					register char *cp;
+					for( cp = yytext+2; *cp; ++cp ){
+						/* this code won't work for all wild character sets,
+						   but seems ok for ascii and ebcdic */
+						lastcon = (CONSZ) ((uint32_t) lastcon << 4);	/* wraps at 32 bits like the Z8000 */
+						if( isdigit( *cp ) ) lastcon += *cp-'0';
+						else if( isupper( *cp ) ) lastcon += *cp - 'A'+ 10;
+						else lastcon += *cp - 'a'+ 10;
+						}
+					}
+
+			hexlong:
+				/* criterion for longness for hex and octal constants is that it
+				   fit within 0177777 */
+				if( lastcon & ~0177777L ) yylval.intval = 1;
+				else yylval.intval = 0;
+
+				goto islong;
+
+			case '.':
+				lxmore( lxchar, LEXDIG );
+
+			getfp:
+				if( (lxchar=getchar()) == 'e' || lxchar == 'E' ){ /* exponent */
+
+			case 'e':
+			case 'E':
+					if( (lxchar=getchar()) == '+' || lxchar == '-' ){
+						*lxgcp++ = 'e';
+						}
+					else {
+						ungetc(lxchar,stdin);
+						lxchar = 'e';
+						}
+					lxmore( lxchar, LEXDIG );
+					/* now have the whole thing... */
+					}
+				else {  /* no exponent */
+					ungetc( lxchar ,stdin);
+					}
+				return( isitfloat( yytext ) );
+
+			default:
+				ungetc( lxchar ,stdin);
+				if( yytext[0] == '0' ){
+					/* convert in octal */
+					register char *cp;
+					for( cp = yytext+1; *cp; ++cp ){
+						lastcon <<= 3;
+						lastcon += *cp - '0';
+						}
+					goto hexlong;
+					}
+				else {
+					/* convert in decimal */
+					register char *cp;
+					for( cp = yytext; *cp; ++cp ){
+						lastcon = lastcon * 10 + *cp - '0';
+						}
+					}
+
+				/* decide if it is long or not (decimal case) */
+
+				/* if it is positive and fits in 15 bits, or negative and
+				   and fits in 15 bits plus an extended sign, it is int; otherwise long */
+				/* if there is an l or L following, all bets are off... */
+
+				{	CONSZ v;
+					v = lastcon & ~077777L;
+					if( v == 0 || v == ~077777L ) yylval.intval = 0;
+					else yylval.intval = 1;
+					}
+
+			islong:
+				/* finally, look for trailing L or l */
+				if( (lxchar = getchar()) == 'L' || lxchar == 'l' ) yylval.intval = 1;
+				else ungetc( lxchar ,stdin);
+				return( ICON );
+				}
+
+		case A_DOT:
+			/* look for a dot: if followed by a digit, floating point */
+			lxchar = getchar();
+			if( lxmask[lxchar+1] & LEXDIG ){
+				ungetc(lxchar,stdin);
+				lxget( '.', LEXDIG );
+				goto getfp;
+				}
+			stwart = FUNNYNAME;
+			goto onechar;
+
+		case A_STR:
+			/* string constant */
+			lxmatch = '"';
+			return( STRING );
+
+		case A_CC:
+			/* character constant */
+			lxmatch = '\'';
+			lastcon = 0;
+			lxstr(0);
+			yylval.intval = 0;
+			return( ICON );
+
+		case A_BCD:
+			{
+				int i;
+				int j;
+				for( i=0; i<LXTSZ; ++i ){
+					if( ( j = getchar() ) == '`' ) break;
+					if( j == '\n' ){
+						uerror( "newline in BCD const" );
+						break;
+						}
+					yytext[i] = j;
+					}
+				yytext[i] = '\0';
+				if( i>6 ) uerror( "BCD constant exceeds 6 chars" );
+				uerror( "gcos BCD constant illegal" );
+				yylval.intval = 0;  /* not long */
+				return( ICON );
+				}
+
+		case A_SL:
+			/* / */
+			if( (lxchar=getchar()) != '*' ) goto onechar;
+			lxcom();
+		case A_WS:
+			continue;
+
+		case A_NL:
+			++lineno;
+			lxtitle();
+			continue;
+
+		case A_NOT:
+			/* ! */
+			if( (lxchar=getchar()) != '=' ) goto onechar;
+			yylval.intval = NE;
+			return( EQUOP );
+
+		case A_MI:
+			/* - */
+			if( (lxchar=getchar()) == '-' ){
+				yylval.intval = DECR;
+				return( INCOP );
+				}
+			if( lxchar != '>' ) goto onechar;
+			stwart = FUNNYNAME;
+			yylval.intval=STREF;
+			return( STROP );
+
+		case A_PL:
+			/* + */
+			if( (lxchar=getchar()) != '+' ) goto onechar;
+			yylval.intval = INCR;
+			return( INCOP );
+
+		case A_AND:
+			/* & */
+			if( (lxchar=getchar()) != '&' ) goto onechar;
+			return( yylval.intval = ANDAND );
+
+		case A_OR:
+			/* | */
+			if( (lxchar=getchar()) != '|' ) goto onechar;
+			return( yylval.intval = OROR );
+
+		case A_LT:
+			/* < */
+			if( (lxchar=getchar()) == '<' ){
+				yylval.intval = LS;
+				return( SHIFTOP );
+				}
+			if( lxchar != '=' ) goto onechar;
+			yylval.intval = LE;
+			return( RELOP );
+
+		case A_GT:
+			/* > */
+			if( (lxchar=getchar()) == '>' ){
+				yylval.intval = RS;
+				return(SHIFTOP );
+				}
+			if( lxchar != '=' ) goto onechar;
+			yylval.intval = GE;
+			return( RELOP );
+
+		case A_EQ:
+			/* = */
+			switch( lxchar = getchar() ){
+
+			case '=':
+				yylval.intval = EQ;
+				return( EQUOP );
+
+			case '+':
+				yylval.intval = ASG PLUS;
+				break;
+
+			case '-':
+				yylval.intval = ASG MINUS;
+
+			warn:
+				if( lxmask[ (lxchar=getchar())+1] & (LEXLET|LEXDIG|LEXDOT) ){
+					werror( "ambiguous assignment: assignment op taken" );
+					}
+				ungetc( lxchar ,stdin);
+				break;
+
+			case '*':
+				yylval.intval = ASG MUL;
+				goto warn;
+
+			case '/':
+				yylval.intval = ASG DIV;
+				break;
+
+			case '%':
+				yylval.intval = ASG MOD;
+				break;
+
+			case '&':
+				yylval.intval = ASG AND;
+				break;
+
+			case '|':
+				yylval.intval = ASG OR;
+				break;
+
+			case '^':
+				yylval.intval = ASG ER;
+				break;
+
+			case '<':
+				if( (lxchar=getchar()) != '<' ){
+					uerror( "=<%c illegal", lxchar );
+					}
+				yylval.intval = ASG LS;
+				break;
+
+			case '>':
+				if( (lxchar=getchar()) != '>' ){
+					uerror( "=>%c illegal", lxchar );
+					}
+				yylval.intval = ASG RS;
+				break;
+
+			default:
+				goto onechar;
+
+				}
+
+			return( ASOP );
+
+		default:
+			cerror( "yylex error, character %%%02x (hex)", lxchar );
+
+			}
+
+		/* ordinarily, repeat here... */
+		cerror( "out of switch in yylex" );
+
+		}
+
+	}
+
+struct lxrdope {
+	/* dope for reserved, in alphabetical order */
+
+	char *lxrch;	/* name of reserved word */
+	short lxract;	/* reserved word action */
+	short lxrval;	/* value to be returned */
+	} lxrdope[] = {
+
+	{ "",		AR_TY,	0 },
+	{ "auto",		AR_CL,	AUTO },
+	{ "break",	AR_RW,	BREAK },
+	{ "char",		AR_TY,	CHAR },
+	{ "case",		AR_RW,	CASE },
+	{ "continue",	AR_RW,	CONTINUE },
+	{ "double",	AR_TY,	DOUBLE },
+	{ "default",	AR_RW,	DEFAULT },
+	{ "do",		AR_RW,	DO },
+	{ "extern",	AR_CL,	EXTERN },
+	{ "else",		AR_RW,	ELSE },
+	{ "enum",		AR_E,	ENUM },
+	{ "for",		AR_RW,	FOR },
+	{ "fortran",	AR_A,	0 },
+	{ "float",	AR_TY,	FLOAT },
+	{ "goto",		AR_RW,	GOTO },
+	{ "if",		AR_RW,	IF },
+	{ "int",		AR_TY,	INT },
+	{ "long",		AR_TY,	LONG },
+	{ "return",	AR_RW,	RETURN },
+	{ "register",	AR_CL,	REGISTER },
+	{ "switch",	AR_RW,	SWITCH },
+	{ "struct",	AR_S,	0 },
+	{ "sizeof",	AR_RW,	SIZEOF },
+	{ "short",	AR_TY,	SHORT },
+	{ "static",	AR_CL,	STATIC },
+	{ "typedef",	AR_CL,	TYPEDEF },
+	{ "unsigned",	AR_TY,	UNSIGNED },
+	{ "union",	AR_U,	0 },
+	{ "void",		AR_TY,	UNDEF },
+	{ "while",	AR_RW,	WHILE },
+	{ "",		0,	0 },	/* to stop the search */
+	};
+
+int lxres(void)
+{
+	/* check to see of yytext is reserved; if so,
+	   do the appropriate action and return */
+	/* otherwise, return -1 */
+
+	int c, ch;
+	register struct lxrdope *p;
+
+	ch = yytext[0];
+
+	if( !islower(ch) ) return( -1 );
+
+	switch( ch ){
+
+	case 'a':
+		c=1; break;
+	case 'b':
+		c=2; break;
+	case 'c':
+		c=3; break;
+	case 'd':
+		c=6; break;
+	case 'e':
+		c=9; break;
+	case 'f':
+		c=12; break;
+	case 'g':
+		c=15; break;
+	case 'i':
+		c=16; break;
+	case 'l':
+		c=18; break;
+	case 'r':
+		c=19; break;
+	case 's':
+		c=21; break;
+	case 't':
+		c=26; break;
+	case 'u':
+		c=27; break;
+	case 'v':
+		c=29; break;
+	case 'w':
+		c=30; break;
+
+	default:
+		return( -1 );
+		}
+
+	for( p= lxrdope+c; p->lxrch[0] == ch; ++p ){
+		if( !strcmp( yytext, p->lxrch ) ){ /* match */
+			switch( p->lxract ){
+
+			case AR_TY:
+				/* type word */
+				stwart = instruct;
+				yylval.nodep = mkty( (TWORD)p->lxrval, 0, p->lxrval );
+				return( TYPE );
+
+			case AR_RW:
+				/* ordinary reserved word */
+				return( yylval.intval = p->lxrval );
+
+			case AR_CL:
+				/* class word */
+				yylval.intval = p->lxrval;
+				return( CLASS );
+
+			case AR_S:
+				/* struct */
+				stwart = INSTRUCT|SEENAME;
+				yylval.intval = INSTRUCT;
+				return( STRUCT );
+
+			case AR_U:
+				/* union */
+				stwart = INUNION|SEENAME;
+				yylval.intval = INUNION;
+				return( STRUCT );
+
+			case AR_E:
+				/* enums */
+				stwart = SEENAME;
+				return( yylval.intval = ENUM );
+
+			default:
+				cerror( "bad AR_?? action" );
+				}
+			}
+		}
+	return( -1 );
+	}

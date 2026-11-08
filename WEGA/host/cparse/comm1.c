@@ -1,0 +1,443 @@
+# include "mfile1"
+# include <stdarg.h>
+
+static char sccsid[] __attribute__((unused)) = "@[$]comm1.c\t2.1  11/15/82 13:10:48 Copr. 1981 87wega3.2.";
+static char sccsid2[] __attribute__((unused)) = "@[$]common\t2.5  08/24/83 16:19:58 Copr. 1981 87wega3.2.";
+
+# ifndef EXIT
+# define EXIT exit
+# endif
+
+int nerrors = 0;  /* number of errors */
+int cunused[8] = { 0 };	/* 16 bytes of zeros in the data of /lib/cparse (0x357e), not referenced; meaning open */
+
+NODE *lastfree;  /* pointer to last free node; (for allocator) */
+
+	/* VARARGS1 */
+int syserr(char *s)
+{ /* a system call failed: die */
+	fprintf( stderr, "system call error: " );
+	perror( s );
+	dexit( 64 );
+	}
+void uerror(char *s, ...)
+{
+	va_list ap;
+ /* nonfatal error message */
+	/* the routine where is different for pass 1 and pass 2;
+	    it tells where the error took place */
+
+	++nerrors;
+	where('u');
+	va_start( ap, s );
+	vfprintf( stderr, s, ap );
+	va_end( ap );
+	fprintf( stderr, "\n" );
+	if( nerrors > 30 ) cerror( "too many errors");
+	}
+
+	/* VARARGS1 */
+void cerror(char *s, ...)
+{ /* compiler error: die */
+	va_list ap;
+
+	where('c');
+	if( nerrors && nerrors <= 30 ){ /* give the compiler the benefit of the doubt */
+		fprintf( stderr, "cannot recover from earlier errors\n" );
+		}
+	else {
+		fprintf( stderr, "compiler error: " );
+		va_start( ap, s );
+		vfprintf( stderr, s, ap );
+		va_end( ap );
+		putc( '\n', stderr );
+		}
+	dexit( 64 );
+	}
+
+	/* VARARGS1 */
+int werror(char *s, ...)
+{  /* warning */
+	va_list ap;
+
+	where('w');
+	fprintf( stderr, "warning: " );
+	va_start( ap, s );
+	vfprintf( stderr, s, ap );
+	va_end( ap );
+	fprintf( stderr, "\n" );
+	return 0;
+	}
+
+void tinit(void)
+{ /* initialize expression tree search */
+
+	NODE *p;
+
+	for( p=node; p<= &node[TREESZ-1]; ++p ) p->in.op = FREE;
+	lastfree = node;
+
+	}
+
+# define TNEXT(p) (p== &node[TREESZ-1]?node:p+1)
+
+NODE *talloc(void)
+{
+	NODE *p, *q;
+
+	q = lastfree;
+	for( p = TNEXT(q); p!=q; p= TNEXT(p))
+		if( p->in.op ==FREE ) return(lastfree=p);
+
+	cerror( "out of tree space; simplify expression");
+	/* NOTREACHED */
+	}
+
+void tcheck(void)
+{ /* ensure that all nodes have been freed */
+
+	NODE *p;
+
+	if( !nerrors )
+		for( p=node; p<= &node[TREESZ-1]; ++p )
+			if( p->in.op != FREE ) cerror( "wasted space: %%%x(%d)", p, p->in.op );
+	tinit();
+	}
+void tfree(NODE *p)
+{
+	/* free the tree p */
+	if( p->in.op != FREE ) walkf( p, tfree1 );
+
+	}
+
+void tfree1(NODE *p)
+{
+	if( p == 0 ) cerror( "freeing blank tree!");
+	else p->in.op = FREE;
+	}
+
+void fwalk( NODE *t, void (*f)(NODE *, int, int *, int *), int down )
+{
+
+	int down1, down2;
+
+	more:
+	down1 = down2 = 0;
+
+	(*f)( t, down, &down1, &down2 );
+
+	switch( optype( t->in.op ) ){
+
+	case BITYPE:
+		fwalk( t->in.left, f, down1 );
+		t = t->in.right;
+		down = down2;
+		goto more;
+
+	case UTYPE:
+		t = t->in.left;
+		down = down1;
+		goto more;
+
+		}
+	}
+
+void walkf( NODE *t, void (*f)(NODE *) )
+{
+	int opty;
+
+	if( t == 0 ) return;
+	opty = optype(t->in.op);
+
+	if( opty != LTYPE ) walkf( t->in.left, f );
+	if( opty == BITYPE ) walkf( t->in.right, f );
+	(*f)( t );
+	}
+
+
+
+int dope[ DSIZE ];
+char *opst[DSIZE];
+
+struct dopest { int dopeop; char opst[8]; int dopeval; } indope[] = {
+
+	{ NAME, "NAME", LTYPE },
+	{ STRING, "STRING", LTYPE },
+	{ REG, "REG", LTYPE },
+	{ OREG, "OREG", LTYPE },
+	{ ICON, "ICON", LTYPE },
+	{ FCON, "FCON", LTYPE },
+	{ CCODES, "CCODES", LTYPE },
+	{ UNARY MINUS, "U-", UTYPE },
+	{ UNARY MUL, "U*", UTYPE },
+	{ UNARY AND, "U&", UTYPE },
+	{ UNARY CALL, "UCALL", UTYPE|CALLFLG },
+	{ UNARY FORTCALL, "UFCALL", UTYPE|CALLFLG },
+	{ NOT, "\"!\"", UTYPE|LOGFLG },
+	{ COMPL, "\"~\"", UTYPE },
+	{ RET, "RET", UTYPE },
+	{ INIT, "INIT", UTYPE },
+	{ SCONV, "SCONV", UTYPE },
+	{ PCONV, "PCONV", UTYPE },
+	{ PLUS, "\"+\"", BITYPE|SIMPFLG|COMMFLG|FLOFLG|LTYFLG },
+	{ ASG PLUS, "\"+=\"", BITYPE|SIMPFLG|COMMFLG|FLOFLG|LTYFLG|ASGFLG|ASGOPFLG },
+	{ MINUS, "\"-\"", BITYPE|SIMPFLG|FLOFLG|LTYFLG },
+	{ ASG MINUS, "\"-=\"", BITYPE|SIMPFLG|FLOFLG|LTYFLG|ASGFLG|ASGOPFLG },
+	{ MUL, "\"*\"", BITYPE|LTYFLG|MULFLG },
+	{ ASG MUL, "\"*=\"", BITYPE|LTYFLG|MULFLG|ASGFLG|ASGOPFLG },
+	{ AND, "\"&\"", BITYPE|SIMPFLG|COMMFLG|BITFLG },
+	{ ASG AND, "\"&=\"", BITYPE|SIMPFLG|COMMFLG|ASGFLG|ASGOPFLG|BITFLG },
+	{ QUEST, "\"?\"", BITYPE },
+	{ COLON, "\":\"", BITYPE },
+	{ ANDAND, "\"&&\"", BITYPE|LOGFLG },
+	{ OROR, "\"||\"", BITYPE|LOGFLG },
+	{ CM, "\",\"", BITYPE },
+	{ COMOP, "\",OP\"", BITYPE },
+	{ ASSIGN, "\"=\"", BITYPE|ASGFLG },
+	{ DIV, "\"/\"", BITYPE|DIVFLG|LTYFLG|MULFLG },
+	{ ASG DIV, "\"/=\"", BITYPE|DIVFLG|LTYFLG|MULFLG|ASGFLG|ASGOPFLG },
+	{ MOD, "\"%\"", BITYPE|DIVFLG|MULFLG },
+	{ ASG MOD, "\"%=\"", BITYPE|DIVFLG|MULFLG|ASGFLG|ASGOPFLG },
+	{ LS, "\"<<\"", BITYPE|SHFFLG },
+	{ ASG LS, "\"<<=\"", BITYPE|SHFFLG|ASGFLG|ASGOPFLG },
+	{ RS, "\">>\"", BITYPE|SHFFLG },
+	{ ASG RS, "\">>=\"", BITYPE|SHFFLG|ASGFLG|ASGOPFLG },
+	{ OR, "\"|\"", BITYPE|SIMPFLG|COMMFLG|BITFLG },
+	{ ASG OR, "\"|=\"", BITYPE|SIMPFLG|COMMFLG|ASGFLG|ASGOPFLG|BITFLG },
+	{ ER, "\"^\"", BITYPE|SIMPFLG|COMMFLG|BITFLG },
+	{ ASG ER, "\"^=\"", BITYPE|SIMPFLG|COMMFLG|ASGFLG|ASGOPFLG|BITFLG },
+	{ INCR, "\"++\"", BITYPE|ASGFLG },
+	{ DECR, "\"--\"", BITYPE|ASGFLG },
+	{ STREF, "\"->\"", BITYPE },
+	{ CALL, "CALL", BITYPE|CALLFLG },
+	{ FORTCALL, "FCALL", BITYPE|CALLFLG },
+	{ EQ, "\"==\"", BITYPE|LOGFLG },
+	{ NE, "\"!=\"", BITYPE|LOGFLG },
+	{ LE, "\"<=\"", BITYPE|LOGFLG },
+	{ LT, "\"<\"", BITYPE|LOGFLG },
+	{ GE, "\">=\"", BITYPE|LOGFLG },
+	{ GT, "\">\"", BITYPE|LOGFLG },
+	{ UGT, "UGT", BITYPE|LOGFLG },
+	{ UGE, "UGE", BITYPE|LOGFLG },
+	{ ULT, "ULT", BITYPE|LOGFLG },
+	{ ULE, "ULE", BITYPE|LOGFLG },
+	{ FEQ, "FEQ", BITYPE|LOGFLG },
+	{ FNE, "FNE", BITYPE|LOGFLG },
+	{ FLE, "FLE", BITYPE|LOGFLG },
+	{ FLT, "FLT", BITYPE|LOGFLG },
+	{ FGE, "FGE", BITYPE|LOGFLG },
+	{ FGT, "FGT", BITYPE|LOGFLG },
+	{ TYPE, "TYPE", LTYPE },
+	{ LB, "\"[\"", BITYPE },
+	{ CBRANCH, "CBRANCH", BITYPE },
+	{ FLD, "FLD", BITYPE },
+	{ PMCONV, "PMCONV", BITYPE },
+	{ PVCONV, "PVCONV", BITYPE },
+	{ RETURN, "RETURN", BITYPE|ASGFLG|ASGOPFLG },
+	{ CAST, "CAST", BITYPE|ASGFLG|ASGOPFLG },
+	{ GOTO, "GOTO", UTYPE },
+	{ STASG, "STASG", BITYPE|ASGFLG },
+	{ STARG, "STARG", UTYPE },
+	{ STCALL, "STCALL", BITYPE|CALLFLG },
+	{ UNARY STCALL, "USTCALL", UTYPE|CALLFLG },
+	{ PROC, "PROC", BITYPE },
+	{ UPROC, "UPROC", UTYPE },
+	{ SUBSR, "SUBSR", BITYPE },
+	{ TEMP, "TEMP", LTYPE },
+	{ SWTCH, "SWTCH", BITYPE },
+	{ DESC, "DESC", LTYPE },
+	{ SEARCH, "SEARCH", BITYPE },
+	{ TMPS, "TMPS", LTYPE },
+	{ LAB, "LAB", LTYPE },
+	{ FREE, "FREE", LTYPE },
+
+	{ -1, "", 0 }
+};
+
+char *rnames[] = {	/* the names of the registers (WEGA: in the data, not used by pass 1) */
+#ifdef SEG
+	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "sp", "fp",
+#else
+	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "fp",
+#endif
+	"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
+	};
+
+void mkdope(void)
+{
+	register struct dopest *q;
+
+	for( q = indope; q->dopeop >= 0; ++q ){
+		dope[q->dopeop] = q->dopeval;
+		opst[q->dopeop] = q->opst;
+		}
+	}
+
+int bsize(int t)
+{ /* the size of a scalar type in bits */
+	switch( t ){
+	case CHAR:
+	case UCHAR:
+		return( 8 );
+	case INT:
+	case UNSIGNED:
+		return( 16 );
+	case LONG:
+	case FLOAT:
+	case ULONG:
+		return( 32 );
+	case DOUBLE:
+		return( 64 );
+		}
+#ifdef SEG
+	if( ISPTR(t) ) return( 32 );
+#else
+	if( ISPTR(t) ) return( 16 );
+#endif
+	cerror( "illegal bsize type: %%%x\n", t );
+	}
+
+int twords(TWORD t)
+{ /* the size of a scalar type in words */
+	switch( t ){
+	case LONG:
+	case FLOAT:
+	case ULONG:
+		return( 2 );
+	case DOUBLE:
+		return( 4 );
+	case INT:
+	case ENUMTY:
+	case UNSIGNED:
+		return( 1 );
+		}
+#ifdef SEG
+	if( ISPTR(t) ) return( 2 );
+#else
+	if( ISPTR(t) ) return( 1 );
+#endif
+	return( 1 );
+	}
+
+int argsize(NODE *p)
+{ /* the size of an argument in words */
+	int s1, s2;
+
+	if( p->in.op == STARG )
+		return( (tsize( STRTY, p->in.left->fn.cdim, p->in.left->fn.csiz ) + 7) / SZINT );
+	return( s1 = s2 = twords( p->in.type == FLOAT ? DOUBLE : p->in.type ) );
+	}
+
+void where(int c)
+{
+	(void) c; /* print the location of an error */
+	fprintf( stderr, "%s:%d: ", ftitle, lineno );
+	}
+
+int tbytes(TWORD t)
+{ /* the size of a scalar type in bytes, at most 4 */
+	switch( t ){
+	case LONG:
+	case ULONG:
+		return( 4 );
+	case CHAR:
+	case UCHAR:
+		return( 1 );
+	case SHORT:
+	case USHORT:
+		return( 2 );
+		}
+#ifdef SEG
+	if( ISPTR(t) ) return( 4 );
+#else
+	if( ISPTR(t) ) return( 2 );
+#endif
+	return( 2 );
+	}
+
+	/* mapping relationals when the sides are reversed (optim) */
+short revrel[] ={ EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
+char *memtop = 0, *memcur = 0;	/* the hunk of getmem */
+int memfirst = 1;	/* getmem has not been called yet */
+
+void dexit(int v)
+{
+	fflush( stdout );
+	exit( v );
+	}
+
+extern FILE *outfile;
+
+void branch(int n)
+{ /* a branch record of the intermediate file */
+	fprintf( outfile, "B%d\t\n", n );
+	}
+
+void ncopy(NODE *q, NODE *p)
+{
+	/* copy the contents of p into q, without any feeling for
+	   the contents */
+
+	*q = *p;
+	}
+
+NODE *tcopy(NODE *p)
+{
+	/* make a fresh copy of p */
+
+	register NODE *q;
+	int r;
+
+	ncopy( q=talloc(), p );
+	r = p->tn.rval;
+	(void) r;
+
+	switch( optype(q->in.op) ){
+
+	case BITYPE:
+		q->in.right = tcopy(p->in.right);
+	/* fall through */
+	case UTYPE:
+		q->in.left = tcopy(p->in.left);
+		}
+
+	return(q);
+	}
+
+int ispow2(CONSZ c)
+{
+	int i;
+	if( c <= 0 || (c&(c-1)) ) return(-1);
+	for( i=0; c>1; ++i ) c >>= 1;
+	return(i);
+	}
+
+int nncon(NODE *p)
+{
+	/* is p a constant without a name */
+	return( p->in.op == ICON && p->tn.rval == NONAME );
+	}
+
+
+char *getmem(int n)
+{ /* n bytes of memory, from a hunk of at least 2000 bytes */
+	register char *p;
+	int incr;
+
+	if( memfirst ){
+		memfirst = 0;
+		memcur = memtop = 0;
+		}
+	n += 1;
+	n &= ~1;
+	if( memcur + n >= memtop ){
+		if( n > 2000 ) incr = n;
+		else incr = 2000;
+		/* the original moves the break; the host takes a new hunk (nobody calls getmem) */
+		if( (memcur = malloc( incr )) == 0 ) cerror( "Code generator: out of space\n" );
+		memtop = memcur + incr;
+		}
+	p = memcur;
+	memcur += n;
+	return( p );
+	}

@@ -18,3 +18,4 @@ model_link = _p.model_link
 MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_scparse', os.path.basename(_p.MODEL_OUT))
 STRICT_INPUT = MODEL_OUT
 CORPUS_BINARY = 'build/seg/scparse'
+CANDIDATES = {'wega': 'src/cmd/cparse/build/seg/scparse', 'host': 'host/cparse/scparse'}

@@ -124,7 +124,7 @@ cp $T/tree/WEGA/src/lib/*.a $T/shipped/WEGA/src/lib/
 	cd $C/cas && make all SCC=scc
 	cd $C/cc && make all CC=cc
 ) > $T/shipped.log 2>&1
-make -C $T/shipped/WEGA/host cpp ar binutils cc popt > $T/hostbuild.log 2>&1
+make -C $T/shipped/WEGA/host cpp ar binutils cc popt codgen cparse > $T/hostbuild.log 2>&1
 # the corpora run side by side, each in a work directory of its own; every candidate of a program is tested against the
 # same inputs (the original runs once)
 CS=$T/shipped/WEGA/host/tools/corpus.sh
