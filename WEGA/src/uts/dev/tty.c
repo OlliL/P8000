@@ -225,7 +225,7 @@ caddr_t arg;
 		break;
 	case TCSBRK:
 		ttywait(tp);
-		if(0 == arg)
+		if(0 == ((long)arg & 0xffffL))
 			(*tp->t_proc)(tp, T_BREAK);
 		break;
 

@@ -28,6 +28,9 @@ LIB1: $(OBJ)
 	$(CC) $(CFLAGS) -c $<
 
 # compiled by the code generator of the kernel (sccvk, see ../../../host/OLDCC.md)
+sys1.o: sys1.c
+	$(SCCVK) $(CFLAGS) -c sys1.c
+
 sig.o: sig.c
 	$(SCCVK) $(CFLAGS) -c sig.c
 
