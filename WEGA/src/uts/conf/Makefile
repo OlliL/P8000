@@ -85,6 +85,7 @@ install: all
 	test -d $(IDIR) || mkdir $(IDIR)
 	for f in $(IFILES); do cp $$f $(IDIR)/$$f; done
 	cp boot $(PREFIX)/boot
+	cp boot $(PREFIX)/usr/boot
 	cp wega $(PREFIX)/wega
 
 clean:

@@ -15,7 +15,7 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 - conf: `conf.o`, `event.o`, `fpe.o`, `mch.o`, `u.o`, `bstart.o` identical; `boot` identical; `BOOTLIB` same size, 63 bytes differ (archive headers).
 - `wega` links, but 96628 of 97282 bytes: the shipped `wega` has the symbols `_ditab _tabeint _ptab1 _ptab2 _itab1 _btab _stab _pctab2 _mstab`
   (data of `siok`), ours has `_sioxout` instead, although our `siok.o` equals the one in LIB2.
-- Not built / no source yet: `usr/boot`, `usr/sys/conf/wpar.o` (root copy is from an older `wpar.c`: no `cpu2_flag`, version " 3.0 (4)"),
+- Not built / no source yet: `usr/sys/conf/wpar.o` (root copy is from an older `wpar.c`: no `cpu2_flag`, version " 3.0 (4)"),
   `usr/sys/h/*.h` and `usr/sys/dev/*.c` are only copied (identical to the root files), `bstart.c` differs from the root file.
 
 ## 1. Build and install
@@ -24,9 +24,8 @@ Done: Makefiles in the style of `src/cmd` (`all`, `install PREFIX=`, `clean`), `
 (the wrapper in `host/tools/wbin.sh` fixes the date), `wega` and `boot` built in `conf/`, install into `PREFIX/{boot,wega,usr/sys/...}`
 without `chmog`/`chmod` (the archive headers: 6.), `uts` in `all` of `src/Makefile`, not in `install`.
 
-1. `usr/boot`: target in `conf/Makefile` and install, when 2.4 has found what it is.
-2. `COVERAGE.md`: regenerate (`host/tools/coverage.py`) when files become exact.
-3. The `uts` target in `src/Makefile` has not been run through `checkall.sh -b` yet (it needs a full `make`); do it once.
+1. `COVERAGE.md`: regenerate (`host/tools/coverage.py`) when files become exact.
+2. The `uts` target in `src/Makefile` has not been run through `checkall.sh -b` yet (it needs a full `make`); do it once.
 
 ## 2. The links of `wega` and `boot` (what decides 100% of two files)
 
@@ -36,8 +35,7 @@ without `chmog`/`chmod` (the archive headers: 6.), `uts` in `all` of `src/Makefi
 2. `wpar.o`: the root copy is from `wpar.c` 3.0; the `wega` was linked with another `wpar.o`. Compare the `wpar` part of `wega` with ours (data `_md_flag` ...).
    Then either `wpar.c` is right (check `wpar.o` against the `wega` part) or there is another `wpar.c` version (`git log` on GitHub master).
 3. After 1 and 2: the remaining differences of `wega` are the objects of 4.; the link order and the symbol table (`-X`, `-i`, `-Ms62`) are proven by the identical parts.
-4. `usr/boot`: not located yet. Find which program/Makefile makes it (`make.boot` makes `boot` from `bstart.o` + `BOOTLIB`; `usr/boot` is likely the same or a sibling, D12 new?). Compare with `boot`.
-5. `u.o`: still a binary `u.obj` copied (`$ABS` works only in segment 1; `u` must lie at segment 62, `0xf600`). Target: `u.s`/`u.c` that gives the same bytes (README). Until then `u.obj` stays and is documented.
+4. `u.o`: still a binary `u.obj` copied (`$ABS` works only in segment 1; `u` must lie at segment 62, `0xf600`). Target: `u.s`/`u.c` that gives the same bytes (README). Until then `u.obj` stays and is documented.
 
 ## 3. Objects that differ (ordered by effort)
 
@@ -54,7 +52,7 @@ without `chmog`/`chmod` (the archive headers: 6.), `uts` in `all` of `src/Makefi
 Rule (owner): a `.s` whose header names a "Bearbeiter" other than O. Lehmann is an original assembler source and stays assembler.
 Checked by the headers:
 
-- Original assembler, stays: `dev/disk.s`, `mt.d.s`, `rd.d.s`, `udev1..6.d.s` (P. Hoge), `dev/koppel.s` (U. Wiesner), `conf/bmch.s`, `brm.s`, `bud.s`,
+- Original assembler, stays: `dev/disk.s`, `mt.d.s`, `rd.d.s`, `udev1..6.d.s` (P. Hoge), `dev/koppel.s` (U. Wiesner), `conf/bmch.s`, `brm.s`, `bud.s`
   `sa.function.s` (P. Hoge), `conf/event.s` (U. Wiesner, P. Hoge), `conf/mch.s` (J. Zabel, P. Hoge).
 - Original assembler (PLZ/ASM `module` syntax, no header): `conf/fpe.s`, `conf/u.s`; stays. `u.s` is wrong in one point (segment 62, see 2.5).
 - Reconstructed by O. Lehmann (candidates for C, check each against the object): `sys/lock.s` (no header, written as C-ASM; README: 9 functions
