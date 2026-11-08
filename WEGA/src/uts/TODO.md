@@ -10,21 +10,13 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 
 ## State
 
-- LIB1: 22 of 28 members identical. Different: `sys1`.
-- LIB2: 23 of 25 identical. Different: `tt0` (4 bytes), `tty`. `mt`, `rd`, `udev1..6` are dummies from `*.d.s` (identical).
-- conf: `conf.o`, `event.o`, `fpe.o`, `mch.o`, `u.o`, `bstart.o` identical; `boot` identical; `BOOTLIB` same size, 63 bytes differ (archive headers).
-- `wega` links, but 96628 of 97282 bytes: it contains other versions of `lp` and `siok` (2.1).
-- Not built / no source yet: `usr/sys/conf/wpar.o` (root copy is from an older `wpar.c`: no `cpu2_flag`, version " 3.0 (4)"),
-  `usr/sys/h/*.h` and `usr/sys/dev/*.c` are only copied (identical to the root files), `bstart.c` differs from the root file.
+- Objects not identical yet: `sys1.o` (LIB1), `tt0.o` and `tty.o` (LIB2), `dev/wega/siok.o` (`sioioctl`). Everything else in LIB1 and LIB2 is identical.
+- `wega`: 97282 bytes like the original, content differs because of the objects above and the data of `siok`/`wpar`.
+- `BOOTLIB`: 63 bytes differ (archive headers). `wpar.o` in the root is from an older `wpar.c`.
 
 ## 1. Build and install
 
-Done: Makefiles in the style of `src/cmd` (`all`, `install PREFIX=`, `clean`), `.s` rules with `as -u`/`cas -u`, `ver.c` by `chkout`
-(the wrapper in `host/tools/wbin.sh` fixes the date), `wega` and `boot` built in `conf/`, install into `PREFIX/{boot,wega,usr/sys/...}`
-without `chmog`/`chmod` (the archive headers: 6.), `uts` in `all` of `src/Makefile`, not in `install`.
-
 1. `COVERAGE.md`: regenerate (`host/tools/coverage.py`) when files become exact.
-2. The `uts` target in `src/Makefile` has not been run through `checkall.sh -b` yet (it needs a full `make`); do it once.
 
 ## 2. The links of `wega` and `boot` (what decides 100% of two files)
 
@@ -41,28 +33,22 @@ without `chmog`/`chmod` (the archive headers: 6.), `uts` in `all` of `src/Makefi
 
 ## 3. Objects that differ
 
-The kernel objects are made by an older compiler: version `vk` (`sccvk`, `host/OLDCC.md` section 2): scparse with `OLD_D25`, scodgen with `OLD_D3` and
-`OLD_D24`, the shipped spopt. Identical with it: `ureg`, `sig`, `sys2`, `sys3`, `debug` (`sys/Makefile`). Differing lines of the disassembly with `vk`
-for the others: sys1 98 (shipped scc 118), tt0 1 (4), tty 16 (14). Each remaining difference is a code generator behaviour to be found as a new switch:
+Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). Differing lines of the disassembly with `vk` (shipped scc): sys1 98 (118), tt0 1 (4), tty 16 (14).
+Each remaining difference is a code generator behaviour to be found as a new switch (witnesses: these objects):
 
 1. switch layout (tty, `sioioctl` in dev/wega/siok.c): the original has the compares of a small switch behind the case bodies (the first one threaded to the
    top by popt); the shipped scodgen puts them in front.
-2. scratch register choice: tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion), tty (`ld r4,...` against `ld r2,...`), sys1 (98 lines; FIXME "uses different
-   temp regs" in sys1.c, "has to be r4+r5 instead of r2+r3").
+2. registers: a register that held a frame slot (`!c.l` in `exece`: `ldl rr4,|12|(r15); testl rr4`) stays taken for the next operand of the `&&`/`||`
+   (original: rr6, shipped: rr4 again); tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion; a switch of the template 037 breaks sig, sys2, sys3),
+   tty (`ld r4,...` against `ld r2,...`); sys1.c FIXME "uses different temp regs", "has to be r4+r5 instead of r2+r3"; frame 0x1C0 against 0x1C2 in `exece`.
 3. After each new switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already
-   without this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
+   before this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 
 ## 4. Assembler sources that should be C
 
-Rule (owner): a `.s` whose header names a "Bearbeiter" other than O. Lehmann is an original assembler source and stays assembler.
-Checked by the headers:
-
-- Original assembler, stays: `dev/disk.s`, `mt.d.s`, `rd.d.s`, `udev1..6.d.s` (P. Hoge), `dev/koppel.s` (U. Wiesner), `conf/bmch.s`, `brm.s`, `bud.s`
-  `conf/event.s` (U. Wiesner, P. Hoge), `conf/mch.s` (J. Zabel, P. Hoge).
-- Original assembler (PLZ/ASM `module` syntax, no header): `conf/fpe.s`, `conf/u.s`; stays. `u.s` is wrong in one point (segment 62, see 2.5).
-- Reconstructed by O. Lehmann (candidates for C, check each against the object): `sys/lock.s` (no header, written as C-ASM; README: 9 functions
-  `lkdata unlk locked deadlock unlock lockalloc lockfree lockadd lkfront` not yet in C, SYSIII `lock.c` as the base) and `dev/clist.s`
-  (header O. Lehmann, 02.05.08; C-ASM; check the SYSIII `clist` in `tmp/sys3` and the object for C-compiler traces).
+Rule (owner): a `.s` whose header names a "Bearbeiter" other than O. Lehmann is an original assembler source and stays assembler. Candidates for C (check each
+against the object): `sys/lock.s` (README: 9 functions `lkdata unlk locked deadlock unlock lockalloc lockfree lockadd lkfront`, SYSIII `lock.c` as the base) and
+`dev/clist.s` (O. Lehmann, C-ASM; SYSIII `clist` in `tmp/sys3`, traces of the C compiler in the object).
 
 ## 5. Text files of the root
 
