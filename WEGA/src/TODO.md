@@ -18,21 +18,17 @@ What is byte-identical is checked by `make -C host checkall` (16 minutes): every
 - The other files of `/lib` (`crt0.o` is built from `libc/csu/crt0.s` and installed): `scrt0.o`, `mcrt0.o`, `smcrt0.o` (PLZ/ASM
   modules like `crt0.o`), `cnvt.o`, `scnvt.o`, `doprnt.o`, `sdoprnt.o` (not the members of `libc.a`), `slibc.a`: no source yet.
 
-## 8. Clean up
+## 8. Clean up (three steps, in this order)
 
-To look at: codgen, scodgen and spopt built with the shipped cc and shipped libc plus the old sprintf (stage 1) differ from the originals on the corpora (47, 46, 79 cases; with `libc-v5.a` 0, spopt 2, the `NK core` line). The final programs are identical; which module causes it is not known.
+**8.1 `host/recon`.** Remove `castrig/` (research on the early jump optimization of the old cas, which is exact now; fix the references in `host/OLDCC_LOG.md` and `host/recon/README.md`). Check with grep who calls `blockmap.py` and `callcmp.py` and remove them only if nobody does. Keep the rest: the tools of `host/HOWTO_reconstruct.md` (inventory, own_table, findings, strictcmp, fncheck, modcheck, odis, rename, zcode, d12model, stagecorpus, corpusc) are needed for the next binaries; `witness`, `datemap`, `switchmatrix`, `oldvar`, `poptrace`, `oldcc.sh` for 8.3. Check that `__pycache__` is ignored.
 
-Switches not in any version (`OLD_D1F`, `OLD_D2D`, `OLD_D3A`, `OLD_D19A`); switches with one witness (`OLDCC.md`, section 5); whether v0 and v0p are two versions; whether v1 had the old cas. `KNOWLEDGE.md`, `HANDOFF_*`, the table in section 4 of `OLDCC.md`.
+**8.2 The commands of `cmd/` with the shipped libc.** Every command in `src/cmd` should compile and run with the shipped cc and the shipped `libc.a`. Today three sources need the libc of their time (measured 2026-11-07 with the corpus, shipped cc and shipped libc): popt uses the value of `sprintf` (the buffer; the shipped one returns a count), codgen meets the `%s` defect of the shipped `printf` (KNOWLEDGE.md, quirks), ld calls `swap_quad`, which only the old `swap.o` (`oldlibc/swap/0_1.s`) has. In addition codgen, scodgen and spopt built with the shipped cc and libc plus the old sprintf (stage 1) differ from the originals on the corpora (47, 46, 79 cases; with `libc-v5.a` 0, spopt 2, the `NK core` line); the final programs are identical, which module causes it is not known (probably the same causes; measure).
+- First measure: which commands of `cmd/` still differ from the originals (corpus) when built with `CC=cc` and the shipped libc; the result as a table here.
+- The changes go behind a switch (a define, e.g. `-DSHIPPED_LIBC`); without it the bytes stay identical. A new target in the Makefiles of `src/cmd` (e.g. `make shipped`) builds with it.
+- `checkall` uses this target instead of setting `CC=cc` by hand (`host/tools/checkall.sh`, the `build` lines); `LIBC` stays as it is until all commands work with the shipped libc.
+- The goal of `checkall` does not change: the old way stays byte-identical with the originals.
 
-Host side: `host/recon/castrig` (`hostcas.patch`, `triggers.txt`), the reconstruction scripts of `host/recon` that only served the cutting of objects.
-
-## 8a. Sources without the old libc
-
-For building everything with the shipped cc and the shipped libc later: the sources still need the libc of their time
-(measured 2026-11-07 with the corpus, shipped cc and shipped libc): popt uses the value of `sprintf` (the buffer; the
-shipped one returns a count), codgen meets the `%s` defect of the shipped `printf` (KNOWLEDGE.md, quirks), ld calls
-`swap_quad`, which only the old `swap.o` (`oldlibc/swap/0_1.s`) has. Changing them changes the bytes of the identical
-builds: only when the development line leaves them.
+**8.3 The switches of the old compilers (last, the most work).** Switches not in any version (`OLD_D1F`, `OLD_D2D`, `OLD_D3A`, `OLD_D19A`); switches with one witness (`OLDCC.md`, section 5); whether v0 and v0p are two versions; whether v1 had the old cas. `KNOWLEDGE.md`, `HANDOFF_*`, the table in section 4 of `OLDCC.md`.
 
 ## 9. New programs
 
