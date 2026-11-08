@@ -471,7 +471,7 @@ long arg;
 
 	switch(cmd) {
 	case LDCHG:
-		chg = tp->t_lflag^arg;
+		chg = (tp->t_lflag & 0xffffL)^arg;
 		if (!(chg&ICANON))
 			break;
 		dvi();

@@ -8,6 +8,7 @@
 
 AS = as
 CAS = cas
+SCCVK = sccvk
 CC = scc
 CFLAGS = -O
 AR = ar
@@ -31,6 +32,13 @@ LIB2: $(OBJ)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
+
+# compiled by the code generator of the kernel (sccvk, see ../../../host/OLDCC.md)
+tty.o: tty.c
+	$(SCCVK) $(CFLAGS) -c tty.c
+
+tt0.o: tt0.c
+	$(SCCVK) $(CFLAGS) -c tt0.c
 
 koppel.o: koppel.s
 	$(AS) -u -o $@ koppel.s

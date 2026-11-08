@@ -114,7 +114,7 @@ register struct tty *tp;
 		return;
 	}
 	if ((pp->p_pid == pp->p_pgrp)
-	&&(u.u_ttyp == NULL)
+	&&(!u.u_ttyp)
 	&&(tp->t_pgrp == 0)) {
 		u.u_ttyp = tp;
 		tp->t_pgrp = pp->p_pgrp;

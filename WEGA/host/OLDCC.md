@@ -133,9 +133,8 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 The objects of `/wega` (`usr/sys/sys/LIB1`, `usr/sys/dev/LIB2`) were made by an older scc. `sccvk` (`-DSCC -DOLD_VK` in `src/cmd/cc`) runs `/lib/vk/scparse`
 (built in `src/cmd/cparse/build/segvk`, `OLD_D25`), `/lib/vk/scodgen` (`src/cmd/codgen/build/segvk`, `OLD_VK` in `oldcc.h` = `OLD_D3` and `OLD_D24`) and the
 shipped `/lib/spopt`. Source forms did not help (20 forms of the statements tried); sccv1 (v1 scparse and spopt) is further away. Witnesses (identical):
-ureg (D3), sig, sys2, sys3, debug (D24, D25), sys1 (D27). Not yet identical: tt0, tty (`src/uts/TODO.md`, section 3).
+ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25). Not yet identical: tty (`src/uts/TODO.md`, section 3).
 
-- `OLD_D27` (codgen table3_scodgen.c, entry 057b `ldl VA1,AR; cpl A1,#0`): the register keeps the name of the operand (register effect 14, the shipped table has 19: forgotten), so the next operand of an `&&`/`||` takes another register (`exece`: `!c.l` then `uap->envp`).
 - `OLD_D25` (cparse local1.c, SEG, PCONV): a cast of a long to a pointer stays a conversion (SCONV), the shipped scparse paints the type.
 - `OLD_D24` (codgen optim3.c): `convelim` keeps a conversion between a pointer and a non-pointer of the same size; the SCONV of a long to a pointer then
   uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`, a copy and the mask of the segmented address); an `& 0x7f00ffff` under it is dropped.

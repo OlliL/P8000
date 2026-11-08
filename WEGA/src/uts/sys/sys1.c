@@ -90,7 +90,7 @@ bad:		u.u_error = EACCES;
 			if (((!u.u_segmented) && (long)uap->argp & 0x0ffffL) ||
 			    (u.u_segmented && uap->argp)){
 				if (u.u_segmented){
-					if (fuword((caddr_t)uap->argp, &c.left) ||	/*FIXME: uses different temp regs here */
+					if (fuword((caddr_t)uap->argp, &c.left) ||
 					    (fuword((long)uap->argp+2, &c.right)))
 						goto bad;
 					(long)uap->argp += 4;
@@ -101,8 +101,8 @@ bad:		u.u_error = EACCES;
 				}
 			}
 			if ((!u.u_segmented && c.right  == NULL && ((long)uap->envp & 0xffffL) != NULL) ||
-			    ( u.u_segmented && !c.l && uap->envp )){		/*FIXME: uses different temp regs here */
-				uap->argp = NULL;					/*FIXME: uses different temp regs here */
+			    ( u.u_segmented && c.l == 0 && uap->envp )){
+				uap->argp = NULL;
 				if (u.u_segmented){
 					if ((fuword(uap->envp, &c.left)) ||
 					   (fuword((long)uap->envp+2, &c.right)))
@@ -345,7 +345,7 @@ bad0:		u.u_error = ENOEXEC;
 			readi(ip);
 			u.u_segflg = 0;
 		}
-		if (code_size && (ip->i_flag & ITEXT) == 0 && ip->i_count != 1){
+		if (code_size != 0 && (ip->i_flag & ITEXT) == 0 && ip->i_count != 1){
 			u.u_error = ETXTBSY;
 			goto out;
 		}
@@ -407,7 +407,7 @@ bad0:		u.u_error = ENOEXEC;
 	} else
 		code_size = u.u_exdata.segtable[0].sg_code;
 	if ((head_size = u.u_exdata.s_exc.s_segt) == sizeof(struct segt) || (magic == N_MAGIC1))
-		data_size = u.u_exdata.segtable[0].sg_data; /*FIXME: has to be r4+r5 instead of r2+r3*/
+		data_size = u.u_exdata.segtable[0].sg_data;
 	else
 		data_size = u.u_exdata.segtable[1].sg_data;
 	bss_size = (unsigned)u.u_exdata.s_exc.s_bss;
@@ -436,7 +436,7 @@ bad0:		u.u_error = ENOEXEC;
 			u.u_error = ENOEXEC;
 			goto out;
 	}
-	if ((code_size) && (ip->i_flag & ITEXT) == 0 &&
+	if ((code_size != 0) && (ip->i_flag & ITEXT) == 0 &&
 	    ip->i_count!=(cnt_t)1){
 		u.u_error = ETXTBSY;
 		goto out;

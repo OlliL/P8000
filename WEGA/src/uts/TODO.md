@@ -10,7 +10,7 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 
 ## State
 
-- All 27 objects of LIB1 are identical (`cmp`). Not identical yet: `tt0.o` and `tty.o` (LIB2), `dev/wega/siok.o` (`sioioctl`). Everything else in LIB2 is identical.
+- All 27 objects of LIB1 are identical (`cmp`). Not identical yet: `tty.o` (LIB2). Everything else in LIB2 is identical.
 - `wega`: 97282 bytes like the original, content differs because of the objects above and the data of `siok`/`wpar`.
 - `BOOTLIB`: 63 bytes differ (archive headers). `wpar.o` in the root is from an older `wpar.c`.
 
@@ -30,14 +30,12 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 
 ## 3. Objects that differ
 
-Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). Differing lines of the disassembly with `vk` (shipped scc): tt0 1 (4), tty 13.
+Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). Differing lines of the disassembly with `vk`: tty 11 (one is the size line).
 Each remaining difference is a code generator behaviour to be found as a new switch (witnesses: these objects):
 
 1. switch layout (tty `TCXONC`): in the original `ld r2,value; cp r2,#3; jr ule,X; jp default` stands behind the case bodies and `X: rl r2,#2; ldl ...; jp @rr4` in front of them; our
    input gives value, compare and table jump in one piece (codemove of popt moves the dispatch to the head). Tried without effect: order of TCXONC/TCSBRK, place of `default`, casts of the switch value, case order, `return` for `break`, the form of the end of TCGETA. The `jr ule,X; jp default` is what popt makes of `cjp ugt,default; jp X` (reversal) when the block behind the compare has moved away; which source moves it is open.
-2. registers: tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion, `chg = tp->t_lflag^arg`; swapping the template 037 breaks sig, sys2, sys3), tty (`ld r4,...` against `ld r2,...` behind `u.u_ttyp == NULL` in `ttopen`).
-   Forms without effect: casts and operand order of `chg`, `!`, `== 0`, `NULL ==`, `(long)` for `u.u_ttyp` and `t_pgrp`. New switches only as the last resort (owner).
-   Lesson of `getxfile` (sys1): look at the source structure first (see OLDCC_LOG.md, vk sys1): what looked like register behaviour of the code generator was the place of statements in or behind a `switch`, the number of `return`s and the block of a declaration.
+2. Lesson of `getxfile` and of `OLD_D27` (gone): look at the source structure first (OLDCC_LOG.md, vk sys1 and vk D27 removed): what looked like register behaviour of the code generator was the form of the source: the place of statements in or behind a `switch`, the number of `return`s, the block of a declaration, `!x` against `x == 0` (entry 057b forgets the name of the operand, 054a with 043 keeps it).
 3. After each new switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already
    before this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 
