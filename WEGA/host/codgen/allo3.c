@@ -1,80 +1,71 @@
 /*
- * allo3.c - allocation of the registers a table entry needs, and the rewrite of the tree afterwards
- * (codgen / scodgen)
- *
- * Reconstructed from /lib/codgen: rbusy 0x66bc, freeparm 0x6792, allo 0x67e8, freetemp 0x6ba6, rclass 0x6bf4, allocreg 0x6c4e,
- * freereg 0x6d5a, usable 0x6e78, rfreenode 0x6efa, rfree 0x6f76, prcookie 0x6fca (debug), reclaim 0x7058,
- * tfree 0x873c, fwalk 0x87ec, tcopy 0x8a24, rfind 0x96e6, rfreeall 0x9696.
- * Not done: nxwork (0x98e4, the action selected by the field nx of the table entry), tmpcleanup (0x9308),
- * rmove (0x3cf2).
+ * allo3.c - allocation of the registers and temporaries of a template
  */
 #include "cg.h"
+#include "cg2.h"
 
-extern void fwalk(), tfree();
-extern struct node *getlr(), *talloc();
-extern struct sym *symtab0;
-extern int tshape();
-extern int szty();
-extern int getreg();
+
+extern long baseoff;
+extern int dope[];
+extern struct sym *fpsym1;
+extern struct sym *fpsym2;
+extern long maxoff;
+extern long maxtemp;
+extern NODE node[];
+extern long parmax;
+extern long paroff;
+extern NODE resc[];
+extern struct rs *rsfree;
 extern void rsreturn();
-extern void nxwork();	/* 0x98e4 */
-extern void tmpcleanup();			/* 0x9308 */
-extern void rmove();	/* 0x3cf2 */
-extern void ncopy();
-extern int rallkind();
-void rfreeall();
-
-
-long tmpoff;		/* 0x69d4: the next free temporary (bits) */
-long maxoff;		/* 0x8fcc: the largest frame offset so far */
-long paroff;		/* 0x8e0c: next free place for the parameters of a call (bits) */
-long parmax;		/* 0x69d8 */
-long baseoff;		/* 0x0050 */
-long maxtemp;		/* 0x0054 */
-int tflag;		/* 0x35d0: set by the template macro T */
-
-struct node resc[4];	/* the work registers RESC1 .. RESC3 (0x8f24); the contents stay from call to call; a 4th entry because allo reads one past the last */
+extern struct rs *rsuse;
+extern int rwtab[][2];
+extern struct sym *symtab0;
+extern int tflag;
+extern long tmpoff;
+static char sccsid[] __attribute__((unused)) = "@[$]allo3.c\t2.4  08/24/83 11:29:34 Copr. 1981 87wega3.2.";
 
 #define RLEFT	01
+
 #define RRIGHT	02
+
 #define RESC1	04
+
 #define RESC2	010
+
 #define RESC3	020
+
 #define RESCC	04000
+
 #define RESC	02000		/* rewrite & 0x400: the second register of a long result */
+
 #define RNULL	0
+
 #define RNOP	010000
-#define FOREFF	01
 
-/* ---- register classes ------------------------------------------------------------------------------- */
 
-int rclass(int type, int reg)
-{
-	if (type == 6 || type == 7)
-		return reg > 0x13 ? 8 : 4;
+/* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
 #ifdef SEG
-	if (szty(type) == 2 || type == 8 || type == 9)
+#define PTRWORDS	2
 #else
-	if (szty(type) == 2)
+#define PTRWORDS	1
 #endif
-		return reg > 7 ? 7 : 3;
-	return reg > 7 ? 6 : 2;
-}
 
-/* the status node of the register reg of class cls on the use list */
-struct rs * rfind(int reg, int cls)
-{
-	register struct rs *n;
+#define TEMPWORDS(p, nfield) \
+	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
+	 (p->in.type == 5 || p->in.type == 15) ? 2 : (p->in.type & 0x30) == 0x10 ? PTRWORDS : \
+	 p->in.type == 7 ? 4 : p->in.type == 6 ? 2 : (nfield))
+#define PARMWORDS(p, nfield) \
+	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
+	 (p->in.type == 5 || p->in.type == 15) ? 2 : (p->in.type & 0x30) == 0x10 ? PTRWORDS : \
+	 p->in.type == 7 ? 4 : p->in.type == 6 ? 4 : (nfield))
 
-	for (n = rsuse; n; n = n->next)
-		if (n->reg == reg && n->cls == cls)
-			return n;
-	return 0;
-}
 
 /* count the register of an operand as busy; sym and lval are only passed on */
-void rbusy(int reg, int type, struct sym * sym, long lv)
+void
+rbusy(int reg, int type, struct sym *sym, long lv)
 {
+	(void)sym;
+	(void)lv;
 	register int cls = rclass(type, reg);
 	register struct rs *n, *prev;
 	int l;
@@ -101,8 +92,429 @@ found:
 	n->busy++;
 }
 
+/* ---- temporaries ------------------------------------------------------------------------------------ */
+
+/* k words of temporary space for parameters (the area behind the parameters of a call) */
+long
+freeparm(int k)
+{
+	register long t = tmpoff;
+
+	tmpoff += k << 4;
+#ifdef OLD_D14Q
+	if (tmpoff > maxoff)
+		maxoff = tmpoff;
+#endif
+	if (tmpoff > maxoff)
+		cerror("paroff exceeds parmax, %d, %ld", (int)tmpoff / 8, maxoff / 8);
+	return t;
+}
+
+/*
+ * Get the resources of the table entry q for the tree p: the registers (needs bits 0-3: A registers,
+ * 4-7: B registers), temporaries in the frame (8-9) and parameter temporaries (10-11), in resc[]. Returns 0
+ * when a register is not available.
+ */
+int
+allo(NODE *p, struct optab *q)
+{
+	register int need, k, k0;
+	register int b;
+	register struct rs *s;
+	int cls;
+
+	need = q->needs;
+	b = need;
+	k = 0;
+
+	while (need & 3) {			/* A registers */
+		resc[k].in.op = REG;
+		resc[k].in.type = p->in.type;
+		resc[k].tn.rval = allocreg(p, need & 0xF);
+		resc[k].tn.lval = 0;
+		resc[k].in.sname = 0;
+		need--;
+		k++;
+	}
+	k0 = k;
+	while (b & 3) {				/* the registers stay busy only for the code of the entry */
+		if (((b & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
+		    (dope[p->in.op] & DIVFLG))
+			cls = 3;
+		else
+			cls = rclass(p->in.type, resc[k0].tn.rval);
+		b--;
+		k0--;
+		s = rfind(resc[k0].tn.rval, cls);
+		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
+	}
+	while (need & 0x30) {			/* B registers */
+		resc[k].in.op = REG;
+		resc[k].in.type = p->in.type;
+		resc[k].tn.rval = allocreg(p, need & 0xF0);
+		resc[k].tn.lval = 0;
+		resc[k].in.sname = 0;
+		need -= 16;
+		k++;
+	}
+	k0 = k;
+	while (b & 0x30) {
+		cls = rclass(p->in.type, resc[k0].tn.rval);
+		b -= 16;
+		k0--;
+		s = rfind(resc[k0].tn.rval, cls);
+		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
+	}
+	if (need & 0x300) {			/* a temporary in the frame */
+		resc[k].in.op = OREG;
+		resc[k].in.type = p->in.type;
+		resc[k].tn.rval = 15;
+		resc[k].stn.stsize = 0;
+		resc[k].tn.lval = freetemp(TEMPWORDS(p, (need & 0x300) / 0x100));
+		resc[k].in.sname = fpsym1;
+		resc[k].tn.lval = resc[k].tn.lval >> 3;
+		k++;
+	}
+	if (need & 0xC00) {			/* a temporary for parameters */
+		resc[k].in.op = OREG;
+		resc[k].in.type = p->in.type;
+		resc[k].tn.rval = 15;
+		resc[k].stn.stsize = 0;
+		resc[k].tn.lval = freeparm(PARMWORDS(p, (need & 0xC00) / 0x400));
+		resc[k].tn.lval = resc[k].tn.lval >> 3;
+#ifdef SEG
+		resc[k].in.sname = symtab0;
+#else
+		resc[k].in.sname = 0;
+#endif
+		k++;
+	}
+	for (k0 = 0; k0 < k; k0++)
+		if (resc[k0].tn.rval < 0)
+			return 0;
+	nxwork(p, q->nx);
+	return 1;
+}
+
+/* k words of temporary space in the frame */
+long
+freetemp(int k)
+{
+	register long t = paroff;
+
+	paroff += k << 4;
+	if (paroff > parmax)
+		parmax = paroff;
+	if (paroff - baseoff > maxtemp)
+		maxtemp = paroff - baseoff;
+	return t;
+}
+
+/* ---- register classes ------------------------------------------------------------------------------- */
+
+int
+rclass(int type, int reg)
+{
+	register int c;
+
+	if (type != 6 && type != 7) {
+#ifdef SEG
+		if (szty(type) == 2 || type == 8 || type == 9)
+#else
+		if (szty(type) == 2)
+#endif
+		{
+			if (reg > 7)
+				c = 7;
+			else
+				c = 3;
+		} else if (reg > 7)
+			c = 6;
+		else
+			c = 2;
+	} else if (reg > 0x13)
+		c = 8;
+	else
+		c = 4;
+	return c;
+}
+
+#ifdef OLD_D2QF
+/* the word register r is busy once and its partner r + 1 is free */
+static int
+d2qfree(int r)
+{
+	register struct rs *n;
+
+	for (n = rsuse; n; n = n->next)
+		if (n->reg == r && n->cls == 2)
+			break;
+	if (n == 0 || n->busy != 1)
+		return 0;
+	for (n = rsfree; n; n = n->next)
+		if (n->reg == r + 1 && n->cls == 2)
+			return 1;
+	return 0;
+}
+#endif
+
+#if defined(OLD_D2O) || defined(OLD_D2MO)
+/* the odd word register r is busy once and its partner r - 1 is free, or idle and then given back */
+static int
+d2ofree(int r)
+{
+	register struct rs *n;
+
+	for (n = rsuse; n; n = n->next)
+		if (n->reg == r && n->cls == 2)
+			break;
+	if (n == 0 || n->busy != 1)
+		return 0;
+	for (n = rsfree; n; n = n->next)
+		if (n->reg == r - 1 && n->cls == 2)
+			return 1;
+	for (n = rsuse; n; n = n->next)
+		if (n->reg == r - 1 && n->cls == 2 && n->busy <= 0 && n->kind != 6) {
+			rsreturn(2, r - 1);
+			return 1;
+		}
+	return 0;
+}
+#endif
+
+
+/* a register for the result of p; cookie says what the caller wants */
+int
+allocreg(NODE *p, int cookie)
+{
+	register int want, r, cls;
+
+	if callop(p->in.op)
+		want = callreg(p);
+	else if ((p->in.rall & MUSTDO) || !(p->in.rall & NOPREF))
+		want = p->in.rall & ~MUSTDO;
+	else
+		want = -1;
+	if (p->in.sname == fpsym1)
+		fpsym1->soffset = p->tn.lval;
+	else if (p->in.sname == fpsym2)
+		fpsym2->soffset = p->tn.lval;
+#ifdef SEG
+	if (((cookie & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
+	    p->in.type == 8 || p->in.type == 9 || (dope[p->in.op] & DIVFLG))
+#else
+	if (((cookie & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
+	    (dope[p->in.op] & DIVFLG))
+#endif
+		cls = 3;
+	else
+		cls = rclass(p->in.type, want);
+#ifdef OLD_D2R
+	r = cls == 2 && (p->in.op == STAR || p->in.op == OREG) ? freereg(p, want, cookie) : -1;	/* a load through a pointer: its register */
+#ifdef OLD_D2V
+	if (r != -1 && want == -1 && r < 8 && !d2vfirst(r))
+		r = -1;		/* v0: only when no lighter register is free; r stays busy for the operand */
+#endif
+#ifdef OLD_D2D
+	if (r == -1 && cls == 3 && want == -1 && (p->in.op == DIV || p->in.op == MOD || p->in.op == ASG DIV || p->in.op == ASG MOD)) {
+		register NODE *l = getlr(p, 'L');	/* a word operand in an odd register: its pair */
+
+		if (l->in.op == REG && (l->tn.rval & 1) && l->tn.rval < 8 && szty(l->in.type) == 1) {
+			rfree(l->tn.rval, l->in.type);
+			r = getreg(3, l->tn.rval - 1, 0x1000, p->in.sname);
+			if (r != l->tn.rval - 1) {
+				if (r != -1)
+					rfree(r, p->in.type);
+				r = -1;
+				getreg(2, l->tn.rval, 0x1000, l->in.sname);
+			}
+		}
+	}
+#endif
+#ifdef OLD_D2N
+	if (r == -1 && cls == 2 && (p->in.op == NAME || (p->in.op == OREG && p->tn.rval == 15)))
+		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: a loaded name is not remembered */
+#endif
+#ifdef OLD_D2C
+	if (r == -1 && p->in.op == REG)
+		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: the copy of a name in a register holds no name */
+#endif
+#ifdef OLD_D2X
+	if (r == -1 && cls == 3 && want == -1 && optype(p->in.op) == BITYPE && p->in.op != LS && p->in.op != RS &&
+	    p->in.op != ASG LS && p->in.op != ASG RS && p->in.left->in.op == REG && szty(p->in.left->in.type) == 2)
+		r = freereg(p, want, cookie);	/* v0: a long result into the pair of its left operand */
+#endif
+#ifdef OLD_D2M
+	if (r == -1 && cls == 3 && want == -1 && p->in.op == MUL && p->in.left->in.op == REG &&
+	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval < 8 && !(p->in.left->tn.rval & 1) && d2qfree(p->in.left->tn.rval)) {
+		rfree(p->in.left->tn.rval, 4);	/* v0: a word multiplied in the pair of its even register */
+		rsreturn(2, p->in.left->tn.rval);
+		r = getreg(3, p->in.left->tn.rval, 0, p->in.sname);
+		if (r == -1)
+			rbusy(p->in.left->tn.rval, 4, p->in.left->in.sname, p->in.left->tn.lval);
+	}
+#ifdef OLD_D2MO
+	/* an odd one in the pair below it when the even half is free or idle */
+	if (r == -1 && cls == 3 && want == -1 && p->in.op == MUL && p->in.left->in.op == REG &&
+	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval < 8 && (p->in.left->tn.rval & 1) && d2ofree(p->in.left->tn.rval)) {
+		rfree(p->in.left->tn.rval, 4);
+		rsreturn(2, p->in.left->tn.rval);
+		r = getreg(3, p->in.left->tn.rval - 1, 0, p->in.sname);
+		if (r == -1)
+			rbusy(p->in.left->tn.rval, 4, p->in.left->in.sname, p->in.left->tn.lval);
+	}
+#endif
+#endif
+#ifdef OLD_D2Q
+	if (r == -1 && cls == 3 && (p->in.op == STAR || p->in.op == OREG)) {
+		register NODE *q = getlr(p, 'L');	/* a long through a pointer: the pair of its even register */
+
+		if (q->in.op == STAR)
+			q = q->in.left;
+#ifdef OLD_D2QO
+		/* v0p: also when an odd word register is wanted (the low half of the value, an argument) */
+		if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && !(q->tn.rval & 1) &&
+		    (want == -1 || want == q->tn.rval || (want >= 0 && want < 8 && (want & 1))) && d2qfree(q->tn.rval)) {
+#else
+		if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && !(q->tn.rval & 1) && (want == -1 || want == q->tn.rval) &&
+		    d2qfree(q->tn.rval)) {
+#endif
+			rfree(q->tn.rval, 4);
+			rsreturn(2, q->tn.rval);		/* merged with its free partner */
+			r = getreg(3, q->tn.rval, 0, p->in.sname);
+			if (r == -1)
+				rbusy(q->tn.rval, 4, q->in.sname, q->tn.lval);
+		}
+#ifdef OLD_D2O
+		/* v0p: an odd address register takes its pair too when the even half is free or idle */
+		else if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && (q->tn.rval & 1) &&
+		    (want == -1 || want == q->tn.rval - 1) && d2ofree(q->tn.rval)) {
+			rfree(q->tn.rval, 4);
+			rsreturn(2, q->tn.rval);
+			r = getreg(3, q->tn.rval - 1, 0, p->in.sname);
+			if (r == -1)
+				rbusy(q->tn.rval, 4, q->in.sname, q->tn.lval);
+		}
+#endif
+	}
+#endif
+	if (r == -1)
+		r = getreg(cls, want, 0x1000, p->in.sname);
+#else
+	r = getreg(cls, want, 0x1000, p->in.sname);
+#endif
+	if (r == -1) {
+		r = freereg(p, want, cookie);
+		if (r == -1)
+			cerror("register jam");
+	}
+	return r;
+}
+
+/* a register that the operand of the result can reuse */
+int
+freereg(NODE *p, int r, int cookie)
+{
+	register NODE *q;
+	register int ty;
+	register int reg;
+	register struct sym *sym;
+	char side;
+	int cls;
+
+	if ((cookie & 04) | 0100)
+		side = 'L';
+	else if ((cookie & 010) | 0200)
+		side = 'R';
+	else
+		return -1;
+	q = getlr(p, side);
+	(void)q;
+	ty = p->in.type;
+	sym = p->in.sname;
+	if (r == -1) {
+		if ((cookie & 04) | 010) {
+			for (reg = 0; reg <= 7; reg++)
+				if (usable(p, side, reg) > 0) {
+				found:
+					rfree(reg, ty);
+					cls = rclass(ty, reg);
+					return getreg(cls, reg, 0x1000, sym);
+				}
+		} else if ((cookie & 0100) | 0200) {
+			for (reg = 0x10; ; reg++) {
+				if (reg > 0x13)
+					return -1;
+				if (usable(p, side, reg) > 0)
+					goto found;
+			}
+		}
+		return -1;
+	}
+	if (usable(p, side, r) <= 0)
+		return -1;
+	rfree(r, ty);
+	cls = rclass(ty, r);
+	return getreg(cls, r, 0x1000, sym);
+}
+
+/* ---- getting registers ------------------------------------------------------------------------------- */
+
+/* does the operand on side of p already live in register r (or is its long register r - 1)? */
+int
+usable(NODE *p, int side, int r)
+{
+	register int rv;
+
+	p = getlr(p, side);
+	if (p->in.op == STAR)
+		p = p->in.left;
+	rv = p->tn.rval;
+#ifdef SEG
+	if (p->in.op == OREG) {
+		if (rv >= 0x100)
+			return (rv >> 8) - 1 == r || (rv >> 8) - 1 + 1 == r || (rv & 0xFF) - 1 == r;
+		return rv == r || (p->tn.lval == 0 && p->in.sname == 0 && !(p->in.op == OREG && p->stn.stsize < 0) && rv + 1 == r);
+	}
+	if (p->in.op == REG)
+		return rv == r || (szty(p->in.type) == 2 && rv + 1 == r);
+	return 0;
+#else
+	if (p->in.op == OREG)
+		return rv == r;
+	if (p->in.op == REG)
+		return (rv == r && (r != 0 || (p->in.type & 0x30) != 0x10)) || (szty(p->in.type) == 2 && rv + 1 == r);
+	return 0;
+#endif
+}
+
+/* free the registers an operand node holds */
+void
+recl2(NODE *p)
+{
+	register int r = p->tn.rval;
+
+	if (p->in.op == REG) {
+		rfree(r, p->in.type);
+		return;
+	}
+	if (p->in.op != OREG)
+		return;
+	if (r >= 0x100) {			/* base and index register */
+		rfree((r >> 8) - 1, 0x14);
+		if (r & 0xFF)
+			rfree((r & 0xFF) - 1, 4);
+		return;
+	}
+	if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))
+		rfree(r, 4);
+	else
+		rfree(r, 0x14);
+}
+
 /* the register is no longer needed by one more operand */
-void rfree(int reg, int type)
+void
+rfree(int reg, int type)
 {
 	register struct rs *n;
 	register int cls = rclass(type, reg);
@@ -120,332 +532,72 @@ void rfree(int reg, int type)
 		n->busy--;
 }
 
-/* free the registers an operand node holds */
-void rfreenode(struct node * p)
-{
-	register int r = p->rval;
-
-	if (p->op == REG) {
-		rfree(r, p->type);
-		return;
-	}
-	if (p->op != OREG)
-		return;
-	if (r >= 0x100) {			/* base and index register */
-		rfree((r >> 8) - 1, 0x14);
-		if (r & 0xFF)
-			rfree((r & 0xFF) - 1, 4);
-		return;
-	}
-	if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
-		rfree(r, 4);
-	else
-		rfree(r, 0x14);
-}
-
-/* ---- temporaries ------------------------------------------------------------------------------------ */
-
-/* k words of temporary space for parameters (the area behind the parameters of a call) */
-long freeparm(register int k)
-{
-	register long t = tmpoff;
-
-	tmpoff += k << 4;
-	if (tmpoff > maxoff)
-		cerror("paroff exceeds parmax, %d, %ld", (int)tmpoff / 8, maxoff / 8);
-	return t;
-}
-
-/* k words of temporary space in the frame */
-long freetemp(register int k)
-{
-	register long t = paroff;
-
-	paroff += k << 4;
-	if (paroff > parmax)
-		parmax = paroff;
-	if (paroff - baseoff > maxtemp)
-		maxtemp = paroff - baseoff;
-	return t;
-}
-
-/* ---- getting registers ------------------------------------------------------------------------------- */
-
-/* does the operand on side of p already live in register r (or is its long register r - 1)? */
-int usable(struct node *p, int side, int r)
-{
-	register struct node *q = getlr(p, side);
-	register int rv;
-
-	if (q->op == STAR)
-		q = q->left;
-	rv = q->rval;
-#ifdef SEG
-	if (q->op == OREG) {
-		if (rv >= 0x100)
-			return (rv >> 8) - 1 == r || (rv >> 8) + 0 == r || (rv & 0xFF) - 1 == r;
-		if (rv == r)
-			return 1;
-		if (q->lval != 0 || q->sname != 0 || (q->op == OREG && q->stsize < 0))
-			return 0;
-		return rv + 1 == r;
-	}
-	if (q->op != REG)
-		return 0;
-	if (rv == r)
-		return 1;
-	return szty(q->type) == 2 && rv + 1 == r;
-#else
-	if (q->op == OREG)
-		return rv == r;
-	if (q->op != REG)
-		return 0;
-	if (rv == r && (r != 0 || (q->type & 0x30) != 0x10))
-		return 1;
-	return szty(q->type) == 2 && rv + 1 == r;
-#endif
-}
-
-/* a register that the operand of the result can reuse */
-int freereg(struct node *p, int r, int cookie)
-{
-	register int ty;
-	register int reg;
-	register struct sym *sym;
-	char side;
-	int cls;
-
-	if ((cookie & 04) | 0100)
-		side = 'L';
-	else if ((cookie & 010) | 0200)
-		side = 'R';
-	else
-		return -1;
-	getlr(p, side);
-	ty = p->type;
-	sym = p->sname;
-	if (r != -1) {
-		if (usable(p, side, r) <= 0)
-			return -1;
-		rfree(r, ty);
-		cls = rclass(ty, r);
-		return getreg(cls, r, 0x1000, sym);
-	}
-	if ((cookie & 04) | 010) {
-		for (reg = 0; reg <= 7; reg++)
-			if (usable(p, side, reg) > 0)
-				goto found;
-	} else if ((cookie & 0100) | 0200) {
-		for (reg = 0x10; reg <= 0x13; reg++)
-			if (usable(p, side, reg) > 0)
-				goto found;
-	}
-	return -1;
-found:
-	rfree(reg, ty);
-	cls = rclass(ty, reg);
-	return getreg(cls, reg, 0x1000, sym);
-}
-
-/* a register for the result of p; cookie says what the caller wants */
-int allocreg(struct node * p, int cookie)
-{
-	register int want, r, cls;
-
-	if (dope[p->op] & 0x400)
-		want = rallkind(p);
-	else if (!(p->rall & 0x1000) && (p->rall & 0x2000))
-		want = -1;
-	else
-		want = p->rall & ~0x1000;
-	if (p->sname == fpsym1)
-		fpsym1->soffset = p->lval;
-	else if (p->sname == fpsym2)
-		fpsym2->soffset = p->lval;
-#ifdef SEG
-	if (((cookie & 0xF) != 0 && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
-	    p->type == 8 || p->type == 9 || (dope[p->op] & 0x80))
-#else
-	if (((cookie & 0xF) != 0 && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
-	    (dope[p->op] & 0x80))
-#endif
-		cls = 3;
-	else
-		cls = rclass(p->type, want);
-	r = getreg(cls, want, 0x1000, p->sname);
-	if (r == -1) {
-		r = freereg(p, want, cookie);
-		if (r == -1)
-			cerror("register jam");
-	}
-	return r;
-}
-
-/* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
-#ifdef SEG
-#define PTRWORDS	2
-#else
-#define PTRWORDS	1
-#endif
-#define TEMPWORDS(p, nfield) \
-	((p->op == STCALL || p->op == STARG || p->op == USTCALL || p->op == STASG) ? ((unsigned)((p->stsize << 3) + 15)) >> 4 : \
-	 (p->type == 5 || p->type == 15) ? 2 : (p->type & 0x30) == 0x10 ? PTRWORDS : \
-	 p->type == 7 ? 4 : p->type == 6 ? 2 : (nfield))
-
-/*
- * Get the resources of the table entry q for the tree p: the registers (needs bits 0-3: A registers,
- * 4-7: B registers), temporaries in the frame (8-9) and parameter temporaries (10-11), in resc[]. Returns 0
- * when a register is not available.
- */
-int allo(struct node * p, struct optab * q)
-{
-	register int need, k, k0;
-	register int n;
-	register int b;
-	register struct rs *s;
-	int cls;
-
-	b = need = q->needs;
-	k = 0;
-
-	while (need & 3) {			/* A registers */
-		resc[k].op = REG;
-		resc[k].type = p->type;
-		resc[k].rval = allocreg(p, need & 0xF);
-		resc[k].lval = 0;
-		resc[k].sname = 0;
-		need--;
-		k++;
-	}
-	k0 = k;
-	while (b & 3) {				/* the registers stay busy only for the code of the entry */
-		if (((b & 0xF) != 0 && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
-		    (dope[p->op] & 0x80))
-			cls = 3;
-		else
-			cls = rclass(p->type, resc[k0].rval);
-		b--;
-		k0--;
-		s = rfind(resc[k0].rval, cls);
-		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
-	}
-	while (need & 0x30) {			/* B registers */
-		resc[k].op = REG;
-		resc[k].type = p->type;
-		resc[k].rval = allocreg(p, need & 0xF0);
-		resc[k].lval = 0;
-		resc[k].sname = 0;
-		need -= 16;
-		k++;
-	}
-	k0 = k;
-	while (b & 0x30) {
-		cls = rclass(p->type, resc[k0].rval);
-		b -= 16;
-		k0--;
-		s = rfind(resc[k0].rval, cls);
-		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
-	}
-	if (need & 0x300) {			/* a temporary in the frame */
-		resc[k].op = OREG;
-		resc[k].type = p->type;
-		resc[k].rval = 15;
-		resc[k].stsize = 0;
-		resc[k].lval = freetemp(TEMPWORDS(p, (need & 0x300) / 0x100));
-		resc[k].sname = fpsym1;
-		resc[k].lval >>= 3;
-		k++;
-	}
-	if (need & 0xC00) {			/* a temporary for parameters */
-		resc[k].op = OREG;
-		resc[k].type = p->type;
-		resc[k].rval = 15;
-		resc[k].stsize = 0;
-		resc[k].lval = freeparm(TEMPWORDS(p, (need & 0xC00) / 0x400));
-		resc[k].lval >>= 3;
-#ifdef SEG
-		resc[k].sname = symtab0;
-#else
-		resc[k].sname = 0;
-#endif
-		k++;
-	}
-	for (n = 0; n < k; n++)
-		if (resc[n].rval < 0)
-			return 0;
-	nxwork(p, q->nx);
-	return 1;
-}
-
-/* ---- trees (the pool and the walkers are in comm3.c) ---- */
-
-/* a copy of the tree; the registers it uses count as busy once more */
-struct node * tcopy(struct node * p)
-{
-	register struct node *q = talloc();
-	register int r = p->rval;
-	int kind;
-
-	ncopy(q, p);
-	if (p->op == REG)
-		rbusy(r, p->type, p->sname, p->lval);
-	else if (p->op == OREG) {
-		if (r >= 0x100) {
-			rbusy((r & 0xFF) - 1, 0x14, p->sname, p->lval);
-			if (r & 0xFF)
-				rbusy((r >> 8) - 1, 4, p->sname, p->lval);
-		} else if (p->lval != 0 || p->sname != 0 || p->stsize < 0)
-			rbusy(r, 4, p->sname, p->lval);
-		else
-			rbusy(r, 0x14, p->sname, p->lval);
-	}
-	kind = dope[q->op] & 0xE;
-	if (kind == BITYPE)
-		q->right = tcopy(p->right);
-	if (kind != LTYPE)
-		q->left = tcopy(p->left);
-	return q;
-}
-
 /* ---- reclaim ------------------------------------------------------------------------------------------- */
 
 /* cookie masks and the shapes of the node that serves them */
-static int rwtab[][2] = {
-	{ 0x14, 0x14 }, { 0xe, 0xaca }, { 0x1000, 0x1000 }, { 0x2000, 0x2000 }, { 0x4, 0x240 }, { 0, 0 }
-};
 
 /*
  * After the code of an entry was printed: free the registers of the tree and make the result (the node the
  * rewrite names: RLEFT, RRIGHT, RESC1..3) the new tree p.
  */
-void reclaim(struct node * p, int rewrite, int cookie)
+void
+rwprint(int rw)
+{
+	register int i, flag;
+	static char *rwnames[] = {
+		"RLEFT",
+		"RRIGHT",
+		"RESC1",
+		"RESC2",
+		"RESC3",
+		0,
+	};
+
+	if (rw == 0) {
+		printf("RNULL");
+		return;
+	}
+	if (rw == 0x1000) {
+		printf("RNOP");
+		return;
+	}
+	flag = 0;
+	for (i = 0; rwnames[i]; ++i) {
+		if (rw & (1 << i)) {
+			if (flag)
+				putchar('|');
+			++flag;
+			fputs(rwnames[i], stdout);
+		}
+	}
+}
+
+void
+reclaim(NODE *p, int rewrite, int cookie)
 {
 	register int want;
-	register struct node *c;
-	register struct node **ap;
+	register NODE *c;
+	register NODE **ap;
 	register int o;
 	register int *rw;
-	struct node *a[6];
+	NODE *a[5];
 
-	o = p->op;
+	o = p->in.op;
 	if (rewrite == RNOP)
 		goto done;
 	if (o == FREE && rewrite == RNULL)
 		goto done;
 	want = o;
-	fwalk(p, rfreenode);
+	walkf(p, recl2);
 	if (rewrite == 0 || (cookie & FOREFF)) {
 		tfree(p);
 		goto done;
 	}
 	if ((cookie & 0x20) && (rewrite & RESCC)) {	/* the condition codes */
-		long *lp;
-
 		tfree(p);
-		p->op = CCODES;
-		lp = &p->lval;
-		*lp = want;
-		p->rval = 0;
+		p->in.op = CCODES;
+		p->tn.lval = want;
+		p->tn.rval = 0;
 		goto done;
 	}
 	ap = a;
@@ -472,85 +624,73 @@ void reclaim(struct node * p, int rewrite, int cookie)
 	cerror("cannot reclaim");
 found:
 	if (o == STARG)
-		p = p->left;
-	c->type = p->type;
+		p = p->in.left;
+	c->in.type = p->in.type;
 	c = tcopy(c);
 	tfree(p);
-	p->op = c->op;
-	p->lval = c->lval;
-	p->rval = c->rval;
-	p->sname = c->sname;
-	if (c->op == OREG)
-		p->stsize = c->stsize;
-	c->op = FREE;
-	switch (p->op) {
+	p->in.op = c->in.op;
+	p->tn.lval = c->tn.lval;
+	p->tn.rval = c->tn.rval;
+	p->in.sname = c->in.sname;
+	if (c->in.op == OREG)
+		p->stn.stsize = c->stn.stsize;
+	c->in.op = FREE;
+	switch (p->in.op) {
 	case REG:
-		break;
+		goto isreg;
 	case OREG:
-	default:
-		goto done;
+		break;
 	}
-	if (!tflag) {
-		if (p->type == 3)
-			p->type = 4;
-		else if (p->type == 13)
-			p->type = 14;
-	}
-	if (rewrite & RESC) {			/* the second register of a long result */
-		want = p->rval + 1;
-		if (!(p->rall & 0x1000))
-			p->rall = (p->rall & 0x2000) | want;
-		rfree(p->rval, p->type);
-		if (getreg(2, want, 0x1000, p->sname) != want)
-			cerror("reclaim: cannot find register free");
-		p->rval = want;
-		if (p->type == 5)
-			p->type = 4;
-		else if (p->type == 15)
-			;
-		p->type = 14;		/* sic: also after the LONG case (the original jumps to this store) */
-		if (p->rall & 0x1000)
-			want = p->rall & ~0x1000;
-	} else if (o == 0x3E || o == 0x3F) {	/* a long result of a shift or divide goes to rr4 */
-		if (p->type == 5 || p->type == 15) {
-			rfree(p->rval, p->type);
-			if (getreg(3, 4, 0x1000, p->sname) != 4)
-				cerror("reclaim: cannot find register free");
-			p->rval = 4;
-			if (!(p->rall & 0x1000))
-				p->rall = (p->rall & 0x2000) | 4;
-		}
-	}
-	if (!(p->rall & 0x1000))
-		goto done;
-	if (!(rewrite & RESC)) {
-		want = p->rall & ~0x1000;
-		if (want & 0x2000)
-			goto done;
-	}
-	if (want == p->rval)
-		goto done;
-	rfree(p->rval, p->type);
-	if (getreg(rclass(p->type, want), want, 0x1000, p->sname) != want)
-		cerror("reclaim dest reg not free");
-	rmove(want, p->rval, p->type);
-	p->rval = want;
 done:
 	tmpcleanup();
 	rfreeall(0);
-}
-
-/* idle registers go back to the free list (flag 0: only the ones that hold no symbol) */
-void rfreeall(int flag)
-{
-	register struct rs *n;
-	struct rs *next;
-
-	for (n = rsuse; n; n = next) {
-		next = n->next;
-		if (n->busy > 0 || n->kind == 6)
-			continue;
-		if (n->sym == 0 || flag != 0)
-			rsreturn(n->cls, n->reg);
+	return;
+isreg:
+	if (!tflag) {
+		if (p->in.type == 3)
+			p->in.type = 4;
+		else if (p->in.type == 13)
+			p->in.type = 14;
 	}
+	if (rewrite & RESC) {			/* the second register of a long result */
+		want = p->tn.rval;
+		want++;
+		if (!(p->in.rall & MUSTDO))
+			p->in.rall = (p->in.rall & NOPREF) | want;
+		rfree(p->tn.rval, p->in.type);
+		if (getreg(2, want, 0x1000, p->in.sname) != want)
+			cerror("reclaim: cannot find register free");
+		p->tn.rval = want;
+		if (p->in.type == 5)
+			p->in.type = 4;
+		else if (p->in.type == 15) {
+		}
+		p->in.type = 14;		/* sic: also after the LONG case (the original jumps to this store) */
+		if (p->in.rall & MUSTDO)
+			want = p->in.rall & ~MUSTDO;
+	} else if (o == 0x3E || o == 0x3F) {	/* a long result of a shift or divide goes to rr4 */
+		if (p->in.type == 5 || p->in.type == 15) {
+			rfree(p->tn.rval, p->in.type);
+			if (getreg(3, 4, 0x1000, p->in.sname) != 4)
+				cerror("reclaim: cannot find register free");
+			p->tn.rval = 4;
+			if (!(p->in.rall & MUSTDO))
+				p->in.rall = (p->in.rall & NOPREF) | 4;
+		}
+	}
+	if (!(p->in.rall & MUSTDO))
+		goto done;
+	if (!(rewrite & RESC)) {
+		want = p->in.rall & ~MUSTDO;
+		if (want & 0x2000)
+			goto done;
+	}
+	if (want == p->tn.rval)
+		goto done;
+	rfree(p->tn.rval, p->in.type);
+	if (getreg(rclass(p->in.type, want), want, 0x1000, p->in.sname) != want)
+		cerror("reclaim dest reg not free");
+	rmove(want, p->tn.rval, p->in.type);
+	p->tn.rval = want;
+	goto done;
 }

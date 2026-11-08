@@ -918,6 +918,7 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/codgen` | `ifname` holds 16 bytes in the data, directly in front of the version string `common`: a longer file name of a `#line` overwrites that string (harmless). | kept | `OLDCC_LOG.md` 2026-11-02 |
 | `/lib/codgen` | `clocal`, a static or extern-like name (`sclass` 3, 6 with bit 2 of `sflags`): `return` without a value (`jp` to the end, r2 holds 1), the caller goes on with that as a node. Not hit on the corpus. | kept (`return;`) | `OLDCC_LOG.md` 2026-11-02 |
 | `/lib/codgen`, `/lib/scodgen` | The rewrite of a field access or an address of a static (`mapregs` in `lcl3.c`, the `STREF` and `UAND` cases) copies only some fields of the replacement node (`op`, `type`, `sname`, `lval`, `rval`). The original's `lval` and `rval` overlay `left` and `right`, so the operands come along by accident. | kept in the original; the host copy copies the whole node | `host/codgen`, `src/TODO.md` (codgen host version) |
+| `/lib/codgen`, `/lib/scodgen` | Reads through a null symbol pointer (a `NAME` that is a label, an `ICON` without symbol in `mkoreg`/`oreg2`, `zzzcode` for an `OREG`): the original reads the zero page (a zero word, so `sclass == 3` and `nameoff` are false). `rweight[8]` is indexed with the registers 8..15 and 16 (class 4: the value is not used). `clocal` has `return;` without value. | kept (same result): the host tests the symbol first; `rweight[16]` with defined values, the key only computed for class 3 | `host/codgen`, `KNOWLEDGE.md` "codgen host version" |
 | `/lib/scodgen` | The SEG bar test in `oregput` (the `|` around a stack-segment operand) compares low words: `lval` for the symbol `symtab0`, and `lval + maxoff` (not `frame0`) for `~L1`. | kept: host copy uses the same tests | `host/codgen` (`out3.c`), `src/TODO.md` |
 | popt | `fixldm` looks up the last `#` of an operand with `strrchr` (the original calls 0x548c = strrchr), not the first with `strchr` | kept: `strrchr` (oldlibc 0_1); the difference matters only if `#` occurs twice in an operand | popt-02 in `compare/popt/findings.json`; popt corpus 813 of 816 |
 | popt | `movedat` reads its head node `hd.forw` (`if (hd.forw)`) without setting it when the input has no data section; the original does not clear `hd` (0x2fc8) | kept: no clearing (the original's value comes from the frame); the corpus (272 cases) gives the same output | popt-24 in `compare/popt/findings.json` |
@@ -2360,93 +2361,19 @@ compared using `cmp` and are identical.
   between large files, several overflowing start segments in combined mode, see KNOWLEDGE.md). `gld` (`host/ld/gld.c`, same files and messages as `/bin/gld`; not reproduced: the original's undefined output when no object is loaded, its memory limit ("out of memory(load2td)" with sections of about 50000 bytes) and hangs with sections near 64K). Still only the
   original binaries under the emulator: `cpp`, `cparse`/`scparse`, `gopt`, `as`. `spopt` is done (`host/popt`, `make spopt`). `host/ld/ld.c` is written from the binary and measurements, not transcribed function by function.
 
-### codgen host version (`host/codgen`, ANSI C, separate source)
+### codgen host version (`host/codgen`, ANSI C)
 
-Working copy of `src/cmd/codgen` for the host, made with `host/tools/kr_code_transform.py` (run on the copy only; the script overwrites its input).
-Rule: no sharing with `src/cmd/codgen`; each file is checked with `gcc -Wall`.
+Taken over anew from `src/cmd/codgen` by the port rules in `HANDOFF_wega_disasm.md` (same files, same order; `scodgen` is the same source with `-DSEG` and
+`table3_scodgen.c`). Corpus (`compare/codgen`, `compare/scodgen`): 282 of 282 inputs identical for each, also built with `-fsanitize=address,undefined`; `-Wall -Wextra` clean.
+What differs from the original source besides the K&R to ANSI conversion (each is a rule of the port, the behaviour is the original's):
+- The symbol file (`x.S`) is decoded field by field, big endian (`rd16`, `rd32`, `symdecode`; the host `struct sym` has another size); the nodes are separate fields, `bn.label` is `long`.
+- `setbuf(dfile, malloc(0x200))`: glibc writes `BUFSIZ` bytes into it; `setvbuf(..., 0x200)`. A bump allocator on one arena replaces the break (`allocinit`, `alloc`, `inarena`: words of `sname` that hold numbers are not read as symbols).
+- `opclass[]`, `dope[]`, `opptr[]` have 129 entries (`setrew` runs to `op 128`); `rweight[16]` (the original has 8 entries and reads past them for the registers 8..15; defined values here, the value is used only for the classes 2 and 3).
+- Reads through a null `sname` (the original reads address 0, a zero word): `fixname` returns for a `NAME` without symbol (a label); `zzzcode` tests `op == NAME` before `sname->sclass`; `mkoreg` (SEG) and `oreg2` test the symbol of an `ICON` before `nameoff` and `sclass`; `mapnm(NULL)`.
+- `prolog()` is called with three arguments by the original (`w`, `tot` are stack leftovers); the STREF/UAND rewrite in `mapregs` (`lcl3.c`) copies `left` and `right` as well (the original's `lval`/`rval` overlay them).
+- `oregput` (SEG): the bar test is `(lval & 0xFFFF) <= 0xFF` for `symtab0`, `((lval + maxoff) & 0xFFFF) <= 0xFF` for `fpsym1` (`maxoff`, not `frame0`; found with a memory dump of the emulator).
+- `clocal` returns `p` where the original has `return;` without value; `cerror` and `dexit` are `noreturn`; the format strings of `printf(cnames[i])` and the like go through `fputs`.
 
-- `main3.c`: done at syntax level (`gcc -Wall -std=gnu99 -fsyntax-only` clean). ANSI heads for `options`, `init`, `main`; unused variables removed; `malloc`, `strcpy`, `strcat` from the standard headers.
-- `rdr3.c`: done at syntax level, also clean with `-Wold-style-definition`. The binary symbol table file is no longer copied into C structs (the host `struct sym` has another size):
-  `get_sym` decodes the 22-byte records field by field; `rd16be` and `rd32be` read the big-endian words and longs (`rd32be` moved from `main3.c`);
-  the number and member tables are decoded the same way; all byte offsets (`+ 0x16`, `* 22`, `+ 0x42`) became element indices (`symtab + 1`, `symtab + dest`, `symtab + 3`).
-  `eread` keeps the 16-bit truncation of the original (macro `S16` in `cg.h`). A pointer that was passed through an `int` is kept as a pointer (`mapnm`).
-  The debug print of a pointer uses `%p`.
-- `cg.h`: the stdio macros of the original (`getc` on `_cnt`/`_ptr`) are replaced by the standard `getc`; declarations of `rd16be`, `rd32be`, `S16`.
-- `regallo3.c`: done at syntax level (also clean with `-Wold-style-definition`). Findings:
-  - `rsmerge(hp)` took `struct rs *hp` but dereferences it as a pointer to the list head (`*hp`); the original loads the word at `hp` (`ld r3,@r2`),
-    so the parameter is `struct rs **hp` (the only caller passes `&rsstk[j].list`). The WEGA `cc` accepted the mistake silently.
-  - `rweight[8]` is indexed with `reg` (a `char` 0..15 in the struct) for the classes 2 and 3 only; the index range for those classes is not checked yet.
-  - The unused third register pointer in `rsbuild` and the unused `last` in `rsrestart` are removed (no effect on the behaviour; only the register use of the original is not reproduced).
-  - Register numbers used as array indices are cast to `unsigned char` (the `char` fields hold 0..15).
-- `comm3.c`: done at syntax level. Findings:
-  - `alloc` and `allocinit` no longer use `sbrk`/`brk`: on the host `malloc` (used in `main3.c`) keeps its heap on the same break, so the
-    original scheme would corrupt it. One static arena of 4 MB replaces it; `alloc` keeps the order of the reservations (symbol tables must be contiguous),
-    `allocinit(base)` resets the pointer. Behaviour change: out of space is reported at 4 MB instead of at the system limit.
-  - `cerror`, `uerror` and `werror` are variadic (`...`, `vfprintf`); their prototypes are in `cg.h`; the K&R `extern` declarations in all files were removed.
-    `uerror` returns `int` (as the other declarations say); the original returned nothing.
-  - The wasted-space message prints the node address as `%lx` of an `unsigned long` (the address itself is different on the host).
-- `lcl3.c`: done at syntax level (also clean with `-Wold-style-definition`). The copy loop of `fbegin` tests the copied byte explicitly (same meaning);
-  `findtemp` gets a forward declaration (it is used before its definition); two unused register variables of `fbegin` and one of `regtabinit`-era code removed.
-- `reader3.c`: done at syntax level (also clean with `-Wold-style-definition`). Findings:
-  - `label` was a macro for `sname` (the same word of the node). On the host `sname` is a pointer, the label an `int`; `cg.h` now puts both in one union
-    (`nsn.sy` as `sname`, `nsn.lb` as `label`), so the overlap of the original is kept.
-  - The cookie names are printed with `printf("%s", ...)` (no format from data); the hex width of the SPECIAL and cookie messages stays `%02x`.
-  - `oreg2`: unused register variable removed; `ffld` converted to ANSI.
-- `allo3.c`: done at syntax level (also clean with `-Wold-style-definition`). The `calloc` declaration (not used) is removed; `fwalk` and `tfree` are declared;
-  the mask tests `cookie & 04 | 0100` get explicit parentheses (the same meaning, `&` binds tighter than `|`); unused variables removed (`prev`, `spare`, `q`);
-  `getlr` is still called in `freereg` for its effect (it can stop the run on a bad cookie).
-- `tr3.c`: done at syntax level (also clean with `-Wold-style-definition`). Unused variables removed (`ob`, `t`, `spare`, `spare1` to `spare4`, `sz`, `cl`).
-  The assignments of `sz` (`(int)m->ssize`) and `cl` (`m->sclass`) in `member` had no further use; `makeblock` and `buildstar` converted to ANSI.
-- The remaining files of the host copy (`order3`, `out3`, `zzz3`, `optim3`): done at syntax level and the K&R heads converted (all files are clean with `gcc -Wall` and `-DSEG`, with and without `-Wold-style-definition`). Next: the four small ones (`order3`, `out3`, `zzz3`, `optim3`), then the 16-bit width audit (`int` fields and comparisons, `printf` formats with negative values).
-- Acceptance: the host `codgen` must produce the same text as `/lib/codgen` (emulator) on the corpus. Not yet possible: the program does not link yet.
-
-#### codgen host version: first run against the original (corpus, not finished)
-
-Status: the host `codgen` (`host/codgen`, non-SEG) links and runs. Test: `host_corp.sh` (scratch), 100 cases of the codgen corpus,
-output compared with `/lib/codgen` under the emulator: 69 identical, 25 crash (SIGSEGV), 6 stop in `cerror` (exit 64), 0 other differences.
-
-Bugs found by the run and fixed (host copy only):
-- `setbuf(dfile, malloc(0x200))`: glibc `setbuf` writes a `BUFSIZ` buffer (8192 bytes); now `setvbuf(..., _IOFBF, 0x200)`.
-- `opclass[]` had 24 entries, the table uses `op = 0x1000 + k` up to k = 24; the original array has k = 24 -> `0x4000` and k = 25 -> `0xe` (read from the binary at 0x3530).
-- `dope[]` and `opptr[]` had 128 entries; `setrew` runs to `op 128`; both arrays now have 129 entries (the entry is 0).
-
-Node overlay (decided: option A, separate fields): `lval`/`left`, `sname`/`label` and `rval`/`right` are separate fields in the host copy (`cg.h`).
-The corpus result did not change (70/100); the crashes are not caused by the overlay (see below).
-
-#### codgen host version: corpus status (current)
-
-`codgen` (non-SEG): 100 of 100 corpus cases identical to `/lib/codgen` (`host_corp.sh`, scratch). Last step: in `lcl3.c` the rewrite
-of `STREF` and `UAND` nodes (`mapregs`) copied only some fields of the replacement node; the original's overlaid `lval`/`rval` carry the
-operands `left`/`right` along by accident. The host copy now copies the whole node (`ncopy`). That removed all 20 failures.
-
-Corrections of earlier notes in this file:
-- `INCR`/`DECR` (`78`/`79`) are binary nodes (dope flags `0x9`): the step is the right subtree, not `rval`. The earlier "INCR is the cause"
-  was wrong; the cause was the incomplete copy above. The INCR rewrite in `reader3.c` is the original's and is not changed.
-
-`scodgen` (`-DSEG`): 100 of 100 corpus cases identical to `/lib/scodgen` (`host_scorp.sh`, scratch). An earlier run showed
-46 of 100 (15 crashes); that was an error of the test script, which copied the codgen corpus data (`.D`, `.S`) for the scodgen cases.
-With the corrected script both host versions are complete for the corpus.
-
-#### Large corpus: source files of `src/cmd` and `src/lib` (scratch, `big_corp.sh`, `big_scorp.sh`)
-
-Each file: `cpp` and `cparse` (or `scparse`) of the original make the intermediate files; the original and the host code generator run on them.
-- `codgen`: 213 of 213 comparable files identical to `/lib/codgen`, after two host corrections found by this run:
-  `zzzcode` tested `sname->sclass` before `op == NAME` (an `OREG` has no symbol); `fixname` returns for a `NAME` without symbol (a label;
-  the original reads memory there; the five `doscopy` cases match the original with this rule). 3 files are not comparable: `cas/scanner.c`
-  needs the yacc output `y.tab.h` (not in the tree); `doscopy/dosdir.c` and `dosfat.c` fail in the original `cparse` itself.
-- `scodgen` (`-DSEG`): 209 of 213 identical; 4 text differences (`doscopy/1.3/dosdir.c`, `pburn/2.1|2.3|2.6/pb.cmdline.c`): the host prints
-  a `|` around `_stkseg+~L1` operands (`oregput`, the SEG branch with `bar`), the original does not. Cause not found. The union of `sname` and
-  `label` was tried (no change); the cause is not the field split.
-
-#### scodgen SEG: the `|` difference (resolved)
-
-Cause: the bar test in `oregput` (SEG). The original's code (`scodgen` at 0x4076) tests the low words only: for `sname == symtab0` the
-low word of `lval`; for `sname == fpsym1` the low word of `lval + X`, where X is the global at 0x963A. The dump of that global at the
-calls in question shows `maxoff` (288 = 36 * 8), not `frame0` (36). The host used `frame0` and the full value.
-Fix (host copy): `(lval & 0xFFFF) <= 0xFF` for `symtab0`, `((lval + maxoff) & 0xFFFF) <= 0xFF` for `fpsym1`.
-Result: `scodgen` 100 of 100 corpus cases identical; large corpus 213 of 213 comparable files identical (3 not comparable, see above).
-The method: the scratch emulator was patched to dump memory at the n-th hit of an address (`Z8K_MEM_NTH`); the host debug copy printed the
-values at the same calls.
 
 ## sld: how far the reconstruction is
 

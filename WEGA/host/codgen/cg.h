@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <unistd.h>
+#include "oldcc.h"
 
 /* operators (the dope table in ops_*.c has the flags: arity in bits 1-3) */
 #define NAME	2
@@ -72,6 +76,22 @@
 #define TEMP	121
 #define LAB	127
 
+#define TYFLG	016
+#define ASGFLG	01
+#define LOGFLG	020
+#define DIVFLG	0200
+#define CALLFLG	02000
+#define MULFLG	04000
+#define optype(o)	(dope[o] & TYFLG)
+#define asgop(o)	(dope[o] & ASGFLG)
+#define logop(o)	(dope[o] & LOGFLG)
+#define callop(o)	(dope[o] & CALLFLG)
+#define FOREFF	01
+#define INAREG	02
+#define INTAREG	04
+#define INBREG	010
+#define INTBREG	020
+#define FORCC	040
 #define LTYPE	2		/* arity bits of the dope flags */
 #define UTYPE	4
 #define BITYPE	8
@@ -92,6 +112,11 @@
 #define INTEMP	0010000
 #define FORARG	0020000
 #define SWADD	0040000
+#ifdef SEG
+#define NREGVAR	11	/* entries of regvar */
+#else
+#define NREGVAR	12
+#endif
 #define SPECIAL	0100000
 #define SZERO	SPECIAL
 
@@ -111,28 +136,54 @@
 #define TANY	0010000
 #define TSTRUCT	0020000
 
-#define NOPREF	0x2000
+#define MUSTDO	010000
+#define NOPREF	020000
 
-struct node {
-	int	op;
-	int	rall;		/* register preference, NOPREF when none */
-	int	type;
-	char	su;		/* 6: registers the subtree needs (word registers) */
-	char	fsu;		/* 7: float registers the subtree needs */
-	struct sym *sy;		/* 8: the symbol of a NAME or ICON (non-zero: the constant has a name) (host: own field, see TODO.md) */
-	int	lb;		/* 8: the label of a CBRANCH (host: own field, see TODO.md) */
-	int	stsize;		/* 0xA: STASG size, TEMP number */
-	long	lvv;			/* 0xC: the value of a leaf (host: own field, see the note on the overlay in TODO.md) */
-	struct node *lp;		/* the left subtree (host: own field; the original overlays it on the low word of lvv) */
-	int	rvv;		/* 0x10: the register, the tag (host: own field, see TODO.md) */
-	struct node *rpp;	/* 0x10: the right subtree (host: own field, see TODO.md) */
+typedef union ndu NODE;
+
+union ndu {
+	struct {
+		int	op;
+		int	rall;		/* register preference, NOPREF when none */
+		int	type;
+		char	su;		/* 6: registers the subtree needs (word registers) */
+		char	fsu;		/* 7: float registers the subtree needs */
+		struct sym *sname;	/* 8: symbol of a NAME or ICON; non-zero: the constant has a name; the label of a compare */
+		int	stsize;		/* 0xA: STASG size, TEMP number */
+		int	hi;		/* 0xC: the high word of lval; STASG alignment */
+		NODE	*left;		/* 0xE: overlays the low word of lval */
+		NODE	*right;		/* 0x10: overlays rval */
+	}in;				/* interior node */
+	struct {
+		int	op;
+		int	rall;
+		int	type;
+		char	su;
+		char	fsu;
+		struct sym *sname;
+		int	stsize;
+		long	lval;		/* 0xC: the value of a leaf */
+		int	rval;		/* 0x10: the register, the tag */
+	}tn;				/* terminal node */
+	struct {
+		int	op;
+		int	rall;
+		int	type;
+		char	su;
+		char	fsu;
+		long	label;		/* 8: for use with branching (overlays sname; long: as wide as the pointer) */
+	}bn;				/* branch node */
+	struct {
+		int	op;
+		int	rall;
+		int	type;
+		char	su;
+		char	fsu;
+		struct sym *sname;
+		int	stsize;		/* sizes of structure objects */
+		int	stalign;	/* alignment of structure objects */
+	}stn;				/* structure node */
 };
-#define lval	lvv
-#define left	lp
-#define rval	rvv
-#define right	rpp
-#define sname	sy
-#define label	lb
 
 /* a symbol of the symbol table file (22 bytes there), see ../KNOWLEDGE.md */
 struct sym {
@@ -176,19 +227,7 @@ struct optab {
 	char	*cstring;
 };
 extern struct optab table[];
-extern int ntable;
 
-struct indope { int op; char name[8]; int flags; };	/* 12 bytes like the original */
-extern struct indope indope[];
+struct dopest { int dopeop; char opst[8]; int dopeval; };	/* 12 bytes like the original */
+extern struct dopest indope[];
 extern int dope[];		/* dope flags by operator, filled from indope[] */
-
-/* binary input of the intermediate files: big endian; WEGA int is 16 bit signed, long 32 bit signed */
-extern int rd16be(FILE *f);
-extern long rd32be(FILE *f);
-/* the decimal value of a 16 bit int of the WEGA target as the host sees it */
-#define S16(v)	((int)((((long)(v)) & 0xFFFFL) ^ 0x8000L) - 0x8000)
-
-/* error functions: the arguments are passed to the printf formats of the messages (comm3.c) */
-extern int cerror(char *, ...);
-extern int uerror(char *, ...);
-extern void werror(char *, ...);

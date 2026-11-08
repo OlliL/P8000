@@ -1,39 +1,64 @@
 /*
- * regallo3.c - the register status lists (codgen / scodgen)
- *
- * Reconstructed from /lib/codgen: rsinit 0x740c, rsbuild 0x7458, newnode 0x75e0, rsinsert 0x7650, roverlap 0x7790,
- * regjam 0x7916, getreg 0x7c10, rsreturn 0x7f50, nullsyms 0x811e, rsrelease 0x847a. rsfreeall 0x815e,
- * rspush 0x81c4, rsmerge 0x81fe, rsmatch 0x83ec, rsrelall 0x84b6, rsrestart 0x8502, rsdump 0x750c (debug).
- * rspush, rsmatch, rsrelall, rsrestart and rsdump are never called in codgen.
- *
- * The registers are kept on two lists of 14 byte nodes: rsfree (the free registers, ordered by class) and rsuse
- * (the ones that are in use). A register class is: 1 byte register, 2 word register, 3 long register, 4 float
- * register, 6 word register for variables (r14), 7 long register for variables, 8 float register for variables;
- * the node of a long register is split into two word nodes when one of its halves is wanted, and merged again
- * when both are free.
+ * regallo3.c - the register lists
  */
 #include "cg.h"
+#include "cg2.h"
 
-extern int roverlap();
-extern int getreg();
+extern char ascii[];
+extern struct sym *fpsym1;
+extern struct sym *fpsym2;
+extern struct rs pool[];
+extern int rsdepth;
+extern struct rs *rsexcl;
+extern int rsflag1;
+extern int rsflag2;
+extern struct rs *rsfree;
+extern struct rs *rspool;
 extern void rsreturn();
+extern struct { struct rs *list; int mark; } rsstk[];
+extern int rstab1[];
+extern int rstab2[];
+extern struct rs *rsuse;
+static char sccsid[] __attribute__((unused)) = "@[$]regallo3.c\t2.5  08/24/83 13:36:00 Copr. 1981 87wega3.2.";
+static char rcname[][8] = {
+	"TBYTE", "TWORD", "TLONG", "TFLOAT", "GBYTE", "GWORD", "GLONG", "GFLOAT", "RANY", "NULL"
+};
+
+#define MAXRCOUNT 5000
 
 
-#define NPOOL	87
-static struct rs pool[NPOOL];
-struct rs *rsexcl;		/* 0xa79a: nodes taken away from rsuse by rsmerge */
-struct rs *rsfree, *rsuse, *rspool;	/* 0xa154, 0xa166, 0xa79c */
-int rsdepth;			/* 0xa7aa: saved lists */
-struct { struct rs *list; int mark; } rsstk[3];	/* the saved lists and their marks, interleaved */
-int rsflag1;			/* 0xa2d6: number of entries of rstab1 */
-int rstab1[3];			/* 0xa2d0 */
-int rsflag2;			/* 0xa7ac: number of entries of rstab2 */
-int rstab2[3];			/* 0xa7ae */
 
 /* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
-static int rweight[16] = { 8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };	/* the original has 8 entries and reads past them for register numbers 8..15 (host: defined values) */
 
-void rsinit(void)
+#ifdef OLD_D2PT
+#define D2PK(t)	1		/* v0p: OLD_D2P takes the registers of a TEMP too (the value of a switch) */
+#else
+#define D2PK(t)	((t)->kind != 6)
+#endif
+
+#ifdef OLD_D2L
+#define D2VARS
+#endif
+#ifdef OLD_D2P
+#define D2VARS
+#endif
+#ifdef OLD_D2W6
+#define D2VARS
+#endif
+
+/* the other register of a pair */
+int
+pairmate(int r)
+{
+	if (r & 1)
+		r--;
+	else
+		r++;
+	return r;
+}
+
+void
+rsinit(void)
 {
 	register struct rs *n;
 	register struct rs *nx;
@@ -42,9 +67,8 @@ void rsinit(void)
 	rsflag1 = 0;
 	rsflag2 = 0;
 	rsdepth = 0;
-	n = &pool[0];
-	rspool = n;
-	nx = n + 1;
+	rspool = nx = n = &pool[0];
+	nx++;
 	while (n < &pool[NPOOL]) {
 		n->next = nx;
 		nx++;
@@ -59,31 +83,30 @@ void rsinit(void)
 	rsfree = 0;
 }
 
-/* give the nodes of a list back to the pool */
-void rsrelease(struct rs * l)
-{
-	register struct rs *n;
-	register struct rs *last;
-
-	if (l == 0)
-		cerror("freelist: null list");
-	for (last = n = l; n; last = n, n = n->next)
-		;
-	last->next = rspool;
-	rspool = l;
-}
-
 /* the free list at the start of a function: rr2 rr4 rr6 rr0, f0-f3, r14, rr8 rr10 rr12, f4-f7 */
-void rsbuild(void)
+void
+rsbuild(void)
 {
 	register struct rs *n;
 	register struct rs *last;
-	/* the original has a third register pointer here that nothing uses (not reproduced) */
 	register int r;
 
 	if (rsfree)
 		rsrelease(rsfree);
-	rsfree = n = rspool;
+	n = rsfree = rspool;
+#ifdef OLD_D3J
+	for (last = n; last; last = last->next)
+		last->flags &= ~0x4000;
+#endif
+#ifdef OLD_D2W
+	for (r = 2; r <= 6; n = n->next, r += 2) {	/* the pairs in the order of rweight: rr2 rr0 rr4 rr6 */
+		n->cls = 3;
+		n->reg = r == 4 ? 0 : r == 6 ? 4 : r;
+	}
+	n->cls = 3;
+	n->reg = 6;
+	n = n->next;
+#else
 	for (r = 2; r <= 6; n = n->next, r += 2) {
 		n->cls = 3;
 		n->reg = r;
@@ -91,10 +114,10 @@ void rsbuild(void)
 	n->cls = 3;
 	n->reg = 0;
 	n = n->next;
-	for (r = 16; r <= 19; r++, n = n->next) {
+#endif
+	for (r = 16; r <= 19; r++, last = n, n = n->next) {
 		n->cls = 4;
 		n->reg = r;
-		last = n;
 	}
 #ifndef SEG
 	n->cls = 6;
@@ -105,51 +128,86 @@ void rsbuild(void)
 		n->cls = 7;
 		n->reg = r;
 	}
-	for (r = 20; r <= 23; r++, n = n->next) {
+	for (r = 20; r <= 23; r++, last = n, n = n->next) {
 		n->cls = 8;
 		n->reg = r;
-		last = n;
 	}
 	last->next = 0;
 	rspool = n;
+}
+
+/* debug: print a list of register nodes */
+
+void
+rsdump(struct rs *l)
+{
+	register struct rs *n;
+
+	printf("//\n//   Reg No.\tType\tSymbol\tusecount\toffset\taddr\tdtype\n");
+	for (n = l; n; n = n->next) {
+		printf("//\t%d", n->reg);
+		printf("\t%s", rcname[n->cls - 1]);
+		printf("\t%s", ascii + n->sym->nameoff);
+		printf("\t%d", n->busy);
+		printf("\t\t%ld", n->off);
+		printf("\t%d", n->flags >> 15 & 1);
+		if (n->kind == 8)
+			printf("\tDNULL");
+		else if (n->kind == 6)
+			printf("\tDETMP");
+		putchar('\n');
+	}
 }
 
 /*
  * Split the node n into two nodes of class k: a long node into two words, a word node into two bytes,
  * a long variable node into two word variable nodes. The new node gets the lower register.
  */
-struct rs *newnode(register struct rs *n, register int k)
+struct rs *
+newnode(struct rs *n, int k)
 {
 	register struct rs *m;
 
 	if (rspool == 0)
 		cerror("splitreg: no nodes left on elist");
 	m = rspool;
-	rspool = m->next;
+	rspool = rspool->next;
 	switch (n->cls) {
-	case 2: case 6:
-		n->reg = n->reg * 2;			/* word register r: bytes 2r and 2r+1 */
-		/* FALLTHROUGH */
-	case 3: case 7:
+	case 3:
+	case 7:
 		m->reg = n->reg;
 		n->reg++;
-		m->cls = k;
-		n->cls = k;
+		n->cls = m->cls = k;
+	rt:
 		return m;
+	case 2:
+	case 6:
+		m->reg = n->reg = n->reg * 2;		/* word register r: bytes 2r and 2r+1 */
+		n->reg++;
+		n->cls = m->cls = k;
+		goto rt;
+	default:
+		cerror("splitreg: illegal type");
+		goto rt;
 	}
-	cerror("splitreg: illegal type");
-	return m;
 }
+
+#ifdef OLD_D2W
+static int rweight[16] = { 3, 4, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };	/* the old codgen v0: r0 is taken early (pairs rr2, rr0 first) */
+#else
+static int rweight[16] = { 8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };	/* the original has 8 entries and reads past them for the registers 8..15 (host: defined values) */
+#endif
 
 /*
  * Put the node n at its place in the free list again. mode 1: the node was just freed or changed, its
  * place is behind the nodes of a lower class (word registers: ordered by rweight); mode 2: a node that was
  * made by merging.
  */
-void rsinsert(struct rs * n, int mode)
+void
+rsinsert(struct rs *n, int mode)
 {
-	struct rs *a, *b, *p, *prev;
-	int key;
+	register struct rs *a = 0, *b = 0, *prev, *p;
+	register int key;
 
 	if (mode == 1) {
 		a = n == rsfree ? n->next : rsfree;
@@ -187,8 +245,7 @@ void rsinsert(struct rs * n, int mode)
 				a = a->next;
 			}
 		}
-	} else
-		return;
+	}
 	if (b == n)
 		return;
 	/* take n out of the list and put it between b and a */
@@ -210,8 +267,15 @@ void rsinsert(struct rs * n, int mode)
 	}
 }
 
+void
+rcount_reset(void)
+{
+	/* the original has this empty function at 0x778e and nobody calls it; p2compile() clears nrecur */
+}
+
 /* does register reg of class cls overlap the register of the node n? */
-int roverlap(int cls, int reg, struct rs * n)
+int
+roverlap(int cls, int reg, struct rs *n)
 {
 	register int q;
 
@@ -292,43 +356,45 @@ int roverlap(int cls, int reg, struct rs * n)
 	return 0;
 }
 
-extern int getreg();
-void rsreturn();
-
 /*
  * Force a register for a variable out of a larger node: look at the used list for a free
  * node that can be split (regjam). Returns the register, or -1.
  */
-int regjam(int cls, int reg, int flag, struct sym * sym)
+int
+regjam(int cls, int reg, int flag, struct sym *sym)
 {
-	struct rs *n, *m, *w;
-	int found = 0;
+	(void)flag;
+	register struct rs *n;
+	register struct rs *prev;
 
-	for (n = rsuse; n; n = n->next) {
-		if (n->cls != cls)
-			continue;
-		if (reg != -1 && n->reg != reg)
-			continue;
-		if (n->busy > 0) {
-			if (reg == n->reg)
-				goto fail;
-			continue;
-		}
-		n->sym = sym;
-		n->off = sym ? sym->soffset : 0;
-		n->flags &= ~0x8000;
-		n->kind = 8;
-		n->busy = 1;
-		return n->reg;
-	}
-	if (cls == 1 || cls == 2 || cls == 6) {
-		for (n = rsuse; n; n = n->next) {
+	for (prev = n = rsuse; n; prev = n, n = n->next) {
+		if (cls == n->cls) {
+			if ((reg == -1 || reg == n->reg) && n->busy <= 0) {
+				n->sym = sym;
+				n->off = (sym && inarena(sym)) ? sym->soffset : 0;
+				n->flags &= ~0x8000;
+				n->kind = 8;
+				n->busy = 1;
+				goto ret;
+			}
+			goto chk;
+		split: {
+		struct rs *w;
+
+		for (prev = n = rsuse; n; prev = n, n = n->next) {
 			if (!(n->cls <= 3 || (n->cls == 7 && cls == 6)) || n->busy > 0)
 				continue;
 			switch (cls) {
 			case 1:
-				if (reg != -1 && (n->cls == 3 || n->cls == 2) && !roverlap(1, reg, n))
-					continue;
+				if (reg != -1) {
+					if (n->cls == 3) {
+						if (!roverlap(1, reg, n))
+							continue;
+					} else if (n->cls == 2) {
+						if (!roverlap(1, reg, n))	/* the original passes two arguments */
+							continue;
+					}
+				}
 				if (n->cls == 3) {
 					w = newnode(n, 2);
 					if (reg != -1 && reg / 2 == n->reg) {
@@ -338,66 +404,75 @@ int regjam(int cls, int reg, int flag, struct sym * sym)
 					w->next = rsfree;
 					rsfree = w;
 					rsinsert(w, 1);
-				} else if (n->cls != 2) {
+				} else if (n->cls != 2)
 					cerror("regjam: illegal type");
-				}
-				m = newnode(n, 1);
-				if (reg == m->reg) {
-					n->reg--;
-					m->reg++;
-				}
-				break;
-			case 2:
-				if (n->cls != 3)
-					continue;
-				if (reg != -1 && !roverlap(2, reg, n))
-					continue;
-				m = newnode(n, 2);
-				if (reg == m->reg) {
-					n->reg--;
-					m->reg++;
-				}
-				break;
+				w = newnode(n, 1);
+				if (reg == w->reg)
+					goto swap;
+				goto link;
 			case 6:
 				if (n->cls != 7)
 					continue;
-				if (reg != -1 && !roverlap(6, reg, n))
+				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
-				m = newnode(n, 6);
-				if (reg == m->reg) {
+				w = newnode(n, 6);
+				if (reg != -1 && reg == w->reg)
+					goto swap;
+				goto link;
+			case 2:
+				if (n->cls != 3)
+					continue;
+				if (reg != -1 && !roverlap(cls, reg, n))
+					continue;
+				w = newnode(n, 2);
+				if (reg != -1 && reg == w->reg) {
+				swap:
 					n->reg--;
-					m->reg++;
+					w->reg++;
 				}
+			link:
+				w->next = rsfree;
+				rsfree = w;
+				rsinsert(w, 1);
 				break;
 			default:
 				cerror("regjam: illegal type");
-				continue;
+				break;
 			}
-			m->next = rsfree;
-			rsfree = m;
-			rsinsert(m, 1);
 			n->busy = 1;
 			n->sym = sym;
-			n->off = sym ? sym->soffset : 0;
+			n->off = (sym && inarena(sym)) ? sym->soffset : 0;
 			n->flags &= ~0x8000;
 			n->kind = 8;
+		ret:
 			return n->reg;
 		}
+			}
+			goto more;
+		chk:
+			if (reg == n->reg && n->busy > 0)
+				goto fail;
+		}
 	}
+	if (cls == 1 || cls == 2 || cls == 6)
+		goto split;
+more:
 	if (cls == 3 || cls == 7) {
 		/* free the smaller registers that lie inside the wanted long register */
-		for (n = rsuse; n; n = w) {
-			w = n->next;
+		int found, t;
+
+		found = 0;
+		for (prev = n = rsuse; n; n = prev) {
+			prev = n->next;
 			if (n->busy > 0)
 				continue;
-			if (cls == 3 && n->cls != 1 && n->cls != 2)
-				continue;
-			if (cls == 7 && n->cls != 5 && n->cls != 6)
-				continue;
-			if (reg != -1 && !roverlap(cls, reg, n))
-				continue;
-			found = 1;
-			rsreturn(n->cls, n->reg);
+			if ((cls == 3 && ((t = n->cls) == 1 || t == 2)) ||
+			    (cls == 7 && ((t = n->cls) == 5 || t == 6))) {
+				if (reg != -1 && !roverlap(cls, reg, n))
+					continue;
+				found = 1;
+				rsreturn(n->cls, n->reg);
+			}
 		}
 		if (found)
 			return getreg(cls, reg, 0x1000, sym);
@@ -408,19 +483,48 @@ fail:
 	return -1;
 }
 
+#ifdef OLD_D2V
+/* v0: the word register reg (that of an address) weighs no more than the one getreg(2, -1) would take */
+int
+d2vfirst(int reg)
+{
+	register struct rs *w, *t;
+	register int k;
+
+	for (w = rsfree; w && w->cls != 2 && w->cls != 3; w = w->next)
+		;
+	if (w && w->cls == 2) {
+		for (t = w; t && t->cls != 3; t = t->next)
+			;
+		if (t && rweight[(unsigned char)w->reg] > rweight[(unsigned char)t->reg])
+			w = t;
+	}
+	k = w ? rweight[(unsigned char)w->reg] : 100;
+	for (t = rsuse; t; t = t->next)
+		if (t->cls == 2 && t->busy <= 0 && t->reg != reg && rweight[(unsigned char)t->reg] < k)
+			k = rweight[(unsigned char)t->reg];
+	return rweight[(unsigned char)reg] <= k;
+}
+#endif
+
 /*
  * Get a register of the class cls for the symbol sym (or a temporary when sym is 0); reg = -1: any.
  * flag 0x1000: if no register is free, take one from the used list (regjam). Returns the register
  * number, or -1.
  */
-int getreg(int cls, int reg, int flag, struct sym * sym)
+int
+getreg(int cls, int reg, int flag, struct sym *sym)
 {
 	register struct rs *n;
 	register struct rs *prev;
 	struct rs *w;
+#ifdef D2VARS
 	struct rs *m;
 	struct rs *t;
-	struct rs *old;
+#endif
+#ifdef OLD_D2P
+	int k;
+#endif
 
 	switch (cls) {				/* register variables: the register is named */
 	case 5:
@@ -434,13 +538,19 @@ int getreg(int cls, int reg, int flag, struct sym * sym)
 				n->busy++;
 				goto ret;
 			}
-			if (n->busy <= 0) {
-				n->flags &= ~0x8000;
-				n->sym = sym;
-				n->off = sym ? sym->soffset : 0;
-				n->kind = 8;
-				goto found;
-			}
+			goto chk;
+		blk:
+			n->flags &= ~0x8000;
+			n->sym = sym;
+			n->off = (sym && inarena(sym)) ? sym->soffset : 0;
+			n->kind = 8;
+		found:
+			n->busy = 1;
+		ret:
+			return n->reg;
+		chk:
+			if (n->busy <= 0)
+				goto blk;
 			cerror("bad getreg for register variable");
 		}
 	}
@@ -453,6 +563,107 @@ int getreg(int cls, int reg, int flag, struct sym * sym)
 			continue;
 		goto found;
 	}
+#ifdef OLD_D2L
+	if (cls == 2 && reg == -1) {	/* v0: an idle word that holds a name is free when it weighs less */
+		for (w = rsfree; w && w->cls != 2 && w->cls != 3; w = w->next)
+			;
+#ifdef OLD_D2F
+		if (w && w->cls == 2) {		/* the word getreg would take: the first free word or the first pair */
+			for (t = w; t && t->cls != 3; t = t->next)
+				;
+			if (t && rweight[(unsigned char)w->reg] > rweight[(unsigned char)t->reg])
+				w = t;
+		}
+#endif
+		m = 0;
+		for (t = rsuse; t; t = t->next)
+#ifdef OLD_D2T
+			/* v0: also the register of a TEMP (the value of a switch, needed again only behind a jump) */
+#ifdef OLD_D2G
+			if (t->cls == 2 && t->busy <= 0 && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg] || (rweight[(unsigned char)t->reg] == rweight[(unsigned char)w->reg] && t->reg != 0)) &&
+#else
+			if (t->cls == 2 && t->busy <= 0 && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) &&
+#endif
+#else
+			if (t->cls == 2 && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) &&
+#endif
+			    (m == 0 || rweight[(unsigned char)t->reg] < rweight[m->reg]))
+				m = t;
+#ifdef OLD_D2P
+		for (t = rsuse; t; t = t->next)		/* an idle pair lighter than both: given back, it is split */
+			if (t->cls == 3 && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
+			    (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) && (m == 0 || rweight[(unsigned char)t->reg] < rweight[m->reg])) {
+				rsreturn(3, t->reg);
+				return getreg(cls, reg, flag, sym);
+			}
+#endif
+		if (m) {
+			n = m;
+			n->flags &= ~0x8000;
+			n->sym = sym;
+			n->off = (sym && inarena(sym)) ? sym->soffset : 0;
+			n->kind = 8;
+			goto found;
+		}
+	}
+#endif
+#ifdef OLD_D2P
+	if (cls == 3 && reg == -1) {	/* v0: an idle pair that holds a name is free when it weighs less (OLD_D2L for pairs) */
+		for (w = rsfree; w && w->cls != 3; w = w->next)
+			;
+		for (t = rsuse; t; t = t->next)		/* two idle words of a pair: given back, they merge */
+			if (t->cls == 2 && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) &&
+			    (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg])) {
+				for (m = rsuse; m; m = m->next)
+					if (m->cls == 2 && m->reg == t->reg + 1 && m->busy <= 0 && D2PK(m))
+						break;
+				if (m == 0) {
+					for (m = rsfree; m; m = m->next)
+						if (m->cls == 2 && m->reg == t->reg + 1)
+							break;
+					if (m == 0)
+						continue;
+					k = t->reg;
+					rsreturn(2, k);
+				} else {
+					k = t->reg;
+					rsreturn(2, k);
+					rsreturn(2, k + 1);
+				}
+				return getreg(cls, reg, flag, sym);
+			}
+#ifdef OLD_D2PO
+		for (t = rsuse; t; t = t->next)		/* an idle odd word whose even half is free: given back */
+			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) &&
+			    (w == 0 || rweight[t->reg - 1] < rweight[(unsigned char)w->reg])) {
+				for (m = rsfree; m; m = m->next)
+					if (m->cls == 2 && m->reg == t->reg - 1)
+						break;
+				if (m == 0)
+					continue;
+				rsreturn(2, t->reg);
+				return getreg(cls, reg, flag, sym);
+			}
+#endif
+		m = 0;
+		for (t = rsuse; t; t = t->next)
+#ifdef OLD_D3KC
+			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) &&
+#else
+			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == 9) && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) &&
+#endif
+			    (m == 0 || rweight[(unsigned char)t->reg] < rweight[m->reg]))
+				m = t;
+		if (m) {
+			n = m;
+			n->flags &= ~0x8000;
+			n->sym = sym;
+			n->off = (sym && inarena(sym)) ? sym->soffset : 0;
+			n->kind = 8;
+			goto found;
+		}
+	}
+#endif
 	prev = n = rsfree;
 	for (; n; prev = n, n = n->next) {	/* a free node of the class */
 		if (cls < n->cls)
@@ -461,38 +672,52 @@ int getreg(int cls, int reg, int flag, struct sym * sym)
 			continue;
 		if (reg != -1 && reg != n->reg)
 			continue;
+#ifdef OLD_D2F
+		if (cls == 2 && reg == -1) {	/* v0: a free word only when it weighs no more than the first free pair */
+			for (w = n; w && w->cls != 3; w = w->next)
+				;
+			if (w && rweight[(unsigned char)n->reg] > rweight[(unsigned char)w->reg])
+				break;
+		}
+#endif
+#ifdef OLD_D2W6
+		if (cls == 3 && reg == -1 && n->reg == 4) {	/* v0p: a pair asked for: rr6 before rr4 */
+			for (m = n; m && m->cls == 3; prev = m, m = m->next)
+				if (m->reg == 6)
+					break;
+			if (m && m->cls == 3 && m->reg == 6)
+				n = m;
+			else
+				for (prev = rsfree; prev != n && prev->next != n; prev = prev->next)
+					;
+		}
+#endif
 		n->flags &= ~0x8000;
 		n->sym = sym;
-		n->off = sym ? sym->soffset : 0;
+		n->off = (sym && inarena(sym)) ? sym->soffset : 0;
 		n->kind = 8;
-		old = rsuse;		/* take the free node n out of rsfree and put it on the front of rsuse */
+		w = rsuse;		/* take the free node n out of rsfree and put it on the front of rsuse */
 		rsuse = n;
 		if (prev == n)
 			rsfree = n->next;
 		else
 			prev->next = n->next;
-		n->next = old;
-		goto found;
-	}
-	if (cls == 1 || cls == 2 || cls == 6) {	/* split a larger node */
-		prev = n = rsfree;
-		while (n) {
-			if (!(n->cls <= 3 || (n->cls == 7 && cls == 6))) {
-				prev = n;
-				n = n->next;
+		goto nxt;
+	split:					/* split a larger node */
+		for (prev = n = rsfree; n; prev = n, n = n->next) {
+			if (!(n->cls <= 3 || (n->cls == 7 && cls == 6)))
 				continue;
-			}
 			switch (cls) {
 			case 1:
-				if (reg != -1 && n->cls == 3 && !roverlap(1, reg, n)) {
-					prev = n;
-					n = n->next;
-					continue;
-				}
-				if (reg != -1 && n->cls == 2 && !roverlap(1, reg, n)) {
-					prev = n;
-					n = n->next;
-					continue;
+				if (reg != -1) {
+					if (n->cls == 3) {
+						if (!roverlap(1, reg, n))
+							continue;
+					} else if (n->cls == 2) {
+						if (!roverlap(1, reg, n))
+							continue;
+					} else
+						continue;
 				}
 				if (n->cls == 3) {
 					w = newnode(n, 2);
@@ -507,71 +732,64 @@ int getreg(int cls, int reg, int flag, struct sym * sym)
 						prev->next = w;
 					rsinsert(n, 1);
 					n = w;
-				} else if (n->cls != 2) {
-					prev = n;
-					n = n->next;
+				} else if (n->cls != 2)
 					continue;
-				}
-				m = newnode(n, 1);
-				if (reg != -1 && reg != m->reg) {
-					n->reg--;
-					m->reg++;
-				}
-				break;
-			case 2:
-				if (n->cls != 3 || (reg != -1 && !roverlap(cls, reg, n))) {
-					prev = n;
-					n = n->next;
-					continue;
-				}
-				m = newnode(n, 2);
-				if (reg != -1 && reg != m->reg) {
-					n->reg--;
-					m->reg++;
-				}
-				break;
+				w = newnode(n, 1);
+				if (reg != -1 && reg != w->reg)
+					goto swap;
+				goto link;
 			case 6:
-				if (n->cls != 7 || (reg != -1 && !roverlap(cls, reg, n))) {
-					prev = n;
-					n = n->next;
+				if (n->cls != 7)
 					continue;
-				}
-				m = newnode(n, 6);
-				if (reg != -1 && reg != m->reg) {
+				if (reg != -1 && !roverlap(cls, reg, n))
+					continue;
+				w = newnode(n, 6);
+				if (reg != -1 && reg != w->reg)
+					goto swap;
+				goto link;
+			case 2:
+				if (n->cls != 3)
+					continue;
+				if (reg != -1 && !roverlap(cls, reg, n))
+					continue;
+				w = newnode(n, 2);
+				if (reg != -1 && reg != w->reg) {
+				swap:
 					n->reg--;
-					m->reg++;
+					w->reg++;
 				}
+			link:
+				rsinsert(n, 1);
+				n = w;
 				break;
 			default:
 				cerror("getreg: illegal type default case");
-				goto take;
+				break;
 			}
-			rsinsert(n, 1);
-			t = m;
-take:
-			t->flags &= ~0x8000;
-			t->sym = sym;
-			t->off = sym ? sym->soffset : 0;
-			t->kind = 8;
+			n->flags &= ~0x8000;
+			n->sym = sym;
+			n->off = (sym && inarena(sym)) ? sym->soffset : 0;
+			n->kind = 8;
 			w = rsuse;
-			rsuse = t;
-			t->next = w;
-			n = t;
+			rsuse = n;
+		nxt:
+			rsuse->next = w;
 			goto found;
 		}
+		goto fail;
 	}
+	if (cls == 1 || cls == 2 || cls == 6)
+		goto split;
+fail:
 	return flag == 0x1000 ? regjam(cls, reg, flag, sym) : -1;
-found:
-	n->busy = 1;
-ret:
-	return n->reg;
 }
 
 /*
  * Give the register (cls, reg) back (cls 9: any class): take it out of rsuse and put it on rsfree in its
  * place; a node whose partner (reg ^ 1) is free too is merged into one node of the next class.
  */
-void rsreturn(int cls, int reg)
+void
+rsreturn(int cls, int reg)
 {
 	register struct rs *n;
 	register struct rs *prev;
@@ -581,128 +799,100 @@ void rsreturn(int cls, int reg)
 	struct rs *itprev;
 	int key;
 
-	if (rsuse == 0)
+	if ((n = rsuse) == 0)
 		cerror("deletereg allocated register status list empty");
-	prev = n = rsuse;
-	for (; n; prev = n, n = n->next)
-		if ((n->cls == cls || cls == 9) && n->reg == reg)
-			break;
-	if (n == 0)
-		return;
-	cls = n->cls;
-	if (prev == n)
-		rsuse = n->next;
-	else
-		prev->next = n->next;
-	n->next = 0;
-	a = rsfree;
-	if (a == 0) {
-		rsfree = n;
-		return;
-	}
-	b = a;
-	while (a && cls > a->cls) {
-		b = a;
-		a = a->next;
-	}
-	if (a == 0) {
-		b->next = n;
-		return;
-	}
-	if (cls == a->cls && (cls == 1 || cls == 2 || cls == 6)) {
-		partner = reg ^ 1;
-		b = a;
-		while (b->cls == cls) {
-			if (b->reg == partner) {
-				b->reg = partner & ~1;
-				if (cls == 1) {
-					b->cls = 2;
-					b->reg = b->reg / 2;
-				} else if (cls == 2)
-					b->cls = 3;
-				else if (cls == 6)
-					b->cls = 7;
-				else
-					cerror("deletereg: illegal type");
-				n->next = rspool;
-				rspool = n;
-				rsinsert(b, 2);
-				return;
-			}
-			itprev = b;
-			b = b->next;
-		}
-		if (b == a) {
-			if (a == rsfree) {
-				n->next = a;
+	for (prev = n; n; prev = n, n = n->next) {
+		if ((cls == n->cls || cls == 9) && reg == n->reg) {
+			cls = n->cls;
+			if (prev == n)
+				rsuse = prev->next;
+			else
+				prev->next = n->next;
+			n->next = 0;
+			a = rsfree;
+			if (a == 0) {
 				rsfree = n;
 				return;
 			}
-			n->next = a->next;
-			a->next = n;
+			for (b = a; a && cls > a->cls; ) {
+				b = a;
+				a = a->next;
+			}
+			if (a == 0) {
+				b->next = n;
+				return;
+			}
+			if (cls != a->cls || (cls != 1 && cls != 2 && cls != 6)) {
+				key = cls == 3 ? rweight[(unsigned char)reg] : 0;	/* only used for cls 3 (the original reads rweight[] past its end for cls 4) */
+				if (cls == 3)
+					while (a && cls == a->cls && key > rweight[(unsigned char)a->reg]) {
+						b = a;
+						a = a->next;
+					}
+				if (b == a) {
+					n->next = b;
+					rsfree = n;
+					return;
+				}
+				b->next = n;
+				n->next = a;
+				return;
+			}
+			partner = reg ^ 1;
+			for (b = a; cls == b->cls; ) {
+				if (partner == b->reg) {
+					b->reg = partner & ~1;
+					if (cls == 1) {
+						b->cls = 2;
+						b->reg = b->reg / 2;
+					} else if (cls == 2)
+						b->cls = 3;
+					else if (cls == 6)
+						b->cls = 7;
+					else
+						cerror("deletereg: illegal type");
+					if (rspool)
+						n->next = rspool;
+					rspool = n;
+					rsinsert(b, 2);
+					return;
+				}
+				itprev = b;
+				b = b->next;
+			}
+			if (b == a) {
+				if (a == rsfree) {
+					n->next = a;
+					rsfree = n;
+					return;
+				}
+				n->next = a->next;
+				a->next = n;
+				return;
+			}
+			n->next = b;
+			itprev->next = n;
+			rsinsert(n, 1);
 			return;
 		}
-		n->next = b;
-		itprev->next = n;
-		rsinsert(n, 1);
-		return;
-	}
-	key = rweight[(unsigned char)reg];
-	if (cls == 3)
-		while (a && cls == a->cls && key > rweight[(unsigned char)a->reg]) {
-			b = a;
-			a = a->next;
-		}
-	if (b == a) {
-		n->next = a;
-		rsfree = n;
-	} else {
-		b->next = n;
-		n->next = a;
 	}
 }
 
 /* the registers in use no longer hold symbols */
-void nullsyms(int mode)
-{
-	struct rs *n;
-
-	for (n = rsuse; n; n = n->next) {
-		if (mode != 1)
-			cerror("nullist: illegal case");
-		if (n->cls <= 4)
-			n->sym = 0;
-	}
-}
-
-/* the other register of a pair */
-int pairmate(int r)
-{
-	return r & 1 ? r - 1 : r + 1;
-}
-
-/* debug: print a list of register nodes */
-static char rcname[][8] = {
-	"TBYTE", "TWORD", "TLONG", "TFLOAT", "GBYTE", "GWORD", "GLONG", "GFLOAT", "RANY", "NULL"
-};
-
-void rsdump(struct rs * l)
+void
+nullsyms(int mode)
 {
 	register struct rs *n;
 
-	printf("//\n//   Reg No.\tType\tSymbol\tusecount\toffset\taddr\tdtype\n");
-	for (n = l; n; n = n->next) {
-		printf("//\t%d", n->reg);
-		printf("\t%s", rcname[n->cls - 1]);
-		printf("\t%s", ascii + n->sym->nameoff);
-		printf("\t%d", n->busy);
-		printf("\t\t%ld", n->off);
-		printf("\t%d", n->flags >> 15 & 1);
-		if (n->kind == 8)
-			printf("\tDNULL");
-		else if (n->kind == 6)
-			printf("\tDETMP");
-		putchar('\n');
+	for (n = rsuse; n; n = n->next) {
+		switch (mode) {
+		case 1:
+			if (n->cls <= 4)
+				n->sym = 0;
+			break;
+		default:
+			cerror("nullist: illegal case");
+		}
 	}
 }
 
@@ -710,12 +900,14 @@ void rsdump(struct rs * l)
  * Free the nodes of rsuse that flag selects: 1 the variables of the classes up to 4 that are not
  * register variables (kind 6), 2 the nodes of the classes above 4, 3 all of them.
  */
-void rsfreeall(int flag)
+void
+rsfreeall(int flag)
 {
 	register struct rs *next;
 	register struct rs *n;
 
-	for (n = rsuse; n; n = next) {
+
+	for (next = n = rsuse; n; n = next) {
 		next = n->next;
 		switch (flag) {
 		case 1:
@@ -723,23 +915,31 @@ void rsfreeall(int flag)
 				continue;
 			if (n->kind == 6)
 				continue;
-			break;
+			goto ret;
+#ifdef OLD_D3K
+		case 4:			/* v0, at a label: as 1, but a parameter stays known in its register */
+			if (n->cls > 4 || n->kind == 6)
+				continue;
+			if (n->busy <= 0 && n->sym && n->sym->sclass == 9)
+				continue;
+			goto ret;
+#endif
 		case 2:
 			if (n->cls <= 4)
 				continue;
-			break;
+		/* fall through */
 		case 3:
-			break;
-		default:
-			continue;
+ret:
+			rsreturn(n->cls, n->reg);
 		}
-		rsreturn(n->cls, n->reg);
 	}
 }
 
 /* save rsuse (with a mark) and start with an empty list; never called */
-void rspush(int mark)
+void
+rspush(int mark)
 {
+
 	if (rsdepth < 3) {
 		rsstk[rsdepth].list = rsuse;
 		rsstk[rsdepth].mark = mark;
@@ -749,9 +949,10 @@ void rspush(int mark)
 }
 
 /* put the nodes of a saved list back: those that overlap one of rsuse or rsexcl replace or are dropped */
-void rsmerge(struct rs **hp)
+void
+rsmerge(struct rs **hp)
 {
-	struct rs *n, *prev, *p, *q;
+	register struct rs *q, *p, *prev, *n;
 	char gone1, gone2, drop1, drop2;
 
 	if (rsuse == 0) {
@@ -759,20 +960,18 @@ void rsmerge(struct rs **hp)
 		rsexcl = 0;
 		return;
 	}
-	gone2 = gone1 = 0;
-	n = prev = *hp;
-	while (n) {
-		drop2 = drop1 = 0;
+	gone1 = gone2 = 0;
+	for (prev = n = *hp; n; ) {
+		drop1 = drop2 = 0;
 		q = p = rsexcl;
 		while (p) {
 			if (roverlap(p->cls, p->reg, n)) {
 				gone1 = 1;
 				if (p->cls < n->cls) {
 					drop1 = 0;
-					if (q == p) {
-						rsexcl = p->next;
-						q = rsexcl;
-					} else
+					if (q == p)
+						q = rsexcl = p->next;
+					else
 						q->next = p->next;
 					p->next = rspool;
 					rspool = p;
@@ -790,24 +989,22 @@ void rsmerge(struct rs **hp)
 			while (p) {
 				if (roverlap(p->cls, p->reg, n)) {
 					gone2 = 1;
-					if (p->cls >= n->cls) {
-						drop2 = 1;
-						if (q == p) {
-							rsuse = p->next;
-							q = rsuse;
-						} else
-							q->next = p->next;
-						p->next = rsexcl;
-						rsexcl = p;
-					} else {
+					if (p->cls < n->cls) {
 						drop2 = 0;
-						if (q == p) {
-							rsuse = p->next;
-							q = rsuse;
-						} else
+						if (q == p)
+							q = rsuse = p->next;
+						else
 							q->next = p->next;
 						p->next = rspool;
 						rspool = p;
+					} else {
+						drop2 = 1;
+						if (q == p)
+							q = rsuse = p->next;
+						else
+							q->next = p->next;
+						p->next = rsexcl;
+						rsexcl = p;
 					}
 					p = q;
 					if (q == rsuse)
@@ -818,28 +1015,25 @@ void rsmerge(struct rs **hp)
 			}
 		}
 		if (gone2 || gone1) {
-			if (drop1 || drop2) {
-				if (prev == n) {
-					*hp = prev->next;
-					prev = *hp;
-				} else
-					prev->next = n->next;
-				n->next = rspool;
-				rspool = n;
-			} else {
-				if (prev == n) {
-					*hp = prev->next;
-					prev = *hp;
-				} else
+			if (!drop1 && !drop2) {
+				if (prev == n)
+					prev = *hp = prev->next;
+				else
 					prev->next = n->next;
 				n->next = rsexcl;
 				rsexcl = n;
+			} else {
+				if (prev == n)
+					prev = *hp = prev->next;
+				else
+					prev->next = n->next;
+				n->next = rspool;
+				rspool = n;
 			}
 		} else {
-			if (prev == n) {
-				*hp = prev->next;
-				prev = *hp;
-			} else
+			if (prev == n)
+				prev = *hp = prev->next;
+			else
 				prev->next = n->next;
 			n->next = rsuse;
 			rsuse = n;
@@ -851,20 +1045,26 @@ void rsmerge(struct rs **hp)
 }
 
 /* merge the saved lists whose marks are all in rstab1; 0 when one is missing; never called */
-int rsmatch(void)
+int
+rsmatch(void)
 {
 	register int i;
 	register int j;
 
-	if (rsflag2 <= 0)
-		return 0;
+	if (rsflag2 > 0)
+		goto st;
+	return 0;
+nx:
+	j++;
+	goto tst;
+st:
 	for (i = rsflag2; i > 0; i--) {
-		for (j = 0; ; j++) {
-			if (j >= rsdepth)
-				return 0;
-			if (rsstk[j].mark == rstab1[i - 1])
-				break;
-		}
+		j = 0;
+	tst:
+		if (j >= rsdepth)
+			return 0;
+		if (rsstk[j].mark != rstab1[i - 1])
+			goto nx;
 	}
 	for (i = rsflag2; i > 0; i--)
 		for (j = 0; j < rsdepth; j++)
@@ -873,20 +1073,37 @@ int rsmatch(void)
 	return 1;
 }
 
-/* give back the saved lists named in rstab2 (the loop runs only for a negative count: dead code); never called */
-void rsrelall(void)
+/* give the nodes of a list back to the pool */
+void
+rsrelease(struct rs *l)
+{
+	register struct rs *n;
+	register struct rs *last;
+
+	if (l == 0)
+		cerror("freelist: null list");
+	for (n = last = l; n; last = n, n = n->next)
+		;
+	last->next = rspool;
+	rspool = l;
+}
+
+/* give back the saved lists named in rstab2 (the loop runs only for a negative count: dead code); never called (rstab2[i & 3]: the index of the original is negative, gcc warns) */
+void
+rsrelall(void)
 {
 	register int i;
 	register int j;
 
 	for (i = rsflag1; i < 0; i--)
 		for (j = 0; j < rsdepth; j++)
-			if (rsstk[j].mark == rstab2[i])
+			if (rsstk[j].mark == rstab2[i & 3])
 				rsrelease(rsstk[j].list);
 }
 
 /* take the registers of rsuse again on a fresh free list; never called */
-void rsrestart(void)
+void
+rsrestart(void)
 {
 	register struct rs *l;
 	register struct rs *n;

@@ -20,7 +20,7 @@ STRICT_INPUT = MODEL_OUT
 
 
 # the corpus: every C source; the input (.I .D .S) from the original /bin/scc -S -:d, compared: the assembler text (stdout)
-CORPUS_BINARY = 'build/seg/scodgen'
+CANDIDATES = {'wega': 'src/cmd/codgen/build/seg/scodgen', 'host': 'host/codgen/scodgen'}
 
 
 def CORPUS_SOURCES():

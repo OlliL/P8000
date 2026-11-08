@@ -1,206 +1,1132 @@
 /*
- * local3.c - machine dependent helpers of the code generator that the matcher uses (codgen / scodgen)
- *
- * Reconstructed from /lib/codgen: special() 0x471a, shtemp() 0x3e8e, shumul() 0x3f4e, shincr() 0x3ed6,
- * ltypeok() 0x3e1c, ltypeop() 0x3e66, ispow2() 0x8af6, bsize() 0x8878, szty() 0x88c4, rcount() 0x15ba.
- * The values are those of the non-segmented codgen; scodgen differs where a pointer is involved (to do).
+ * local3.c - machine dependent code: entry and exit of a function, the escape codes "Z" of the templates, operands, calls
  */
 #include "cg.h"
+#include "cg2.h"
 
-extern void tsuffix();
-extern char *rnames[], *rlnames[];
-extern int rmode, rlmode;
-extern int rstatus[];		/* regs3.c: status bits of the registers (SAREG, STAREG, ... by register number) */
+static void epilog(int a, long sz, int b, long w, int tot);
+static void regrestore(int a, long sz, int b, long w, int tot);
+static void fpinc(unsigned tot);
+static void prolog(int a, long sz, int b, long w, int tot);
+static void fpdec(unsigned tot);
+static void regsave(int a, long sz, int b, long w, int tot);
+static void regargs(int tot);
+
+extern int argreg;
+extern int argstop;
+extern char ascii[];
+extern int cbflag;
+extern int dope[];
+extern int entlab;
+extern struct hoptab fhoptab[];
+extern int fldoff;
+extern int fldshf;
+extern int fldsz;
+extern int fltused;
+extern char fname[];
+extern struct sym *fpsym1;
+extern struct sym *fpsym2;
+extern long frame0;
+extern struct hoptab ihoptab[];
+extern int jlab;
+extern long maxoff;
+extern int maxreg;
+extern int minreg;
+extern int negrel[];
+extern NODE node[];
+extern int nosuffix;
+extern int nparmtab;
+extern int nsave;
+extern char *opst[];
+extern long parmax;
+extern struct { struct sym *sym; int reg; } parmtab[];
+extern int retlab;
+extern int revrel[];
+extern char *rhnames[];
+extern int rlmode;
+extern char *rlnames[];
+extern int rmode;
+extern char *rnames[];
+extern struct rs *rsfree;
+extern void rsreturn();
+extern int rstatus[];
+extern struct rs *rsuse;
+extern int rwtab[][2];
+extern int savecls[];
+extern int saveorig[];
+extern int savereg[];
+extern int structret;
+extern struct sym *symtab0;
+extern long tmpoff;
+extern int upperlval;
+static char sccsid[] __attribute__((unused)) = "@[$]local3.c\t2.4  08/24/83 11:48:31 Copr. 1981 87wega3.2.";
+char *rhnames[] = { "rh0", "rh1", "rh2", "rh3", "rh4", "rh5", "rh6", "rh7" };
+char *rlnames[] = { "rl0", "rl1", "rl2", "rl3", "rl4", "rl5", "rl6", "rl7" };
+int rstatus[] = {
+	SAREG | STAREG, SAREG | STAREG, SAREG | STAREG, SAREG | STAREG,
+	SAREG | STAREG, SAREG | STAREG, SAREG | STAREG, SAREG | STAREG,
+	SAREG, SAREG, SAREG, SAREG, SAREG, SAREG, SAREG, SAREG,
+	SBREG | STBREG, SBREG | STBREG, SBREG | STBREG, SBREG | STBREG,
+	SBREG, SBREG, SBREG, SBREG,
+};
+int rmode = 0;
+int rlmode = 0;
+int nosuffix = 0;
+
+#define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
+
+#define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
+
+#define DIVFLAG	0x80		/* dope flag of the division operators: the dividend gets extended */
+
+/* the test condition codes for ZN, by relation */
 
 #define MAXRCOUNT 5000
 
-/* a loop guard: the matcher is called more than 5000 times for one expression */
-int nrecur;		/* 0x8fd0: cleared by stmt() itself */
-void rcount(void)
+#define FORREW	0x4000
+
+#define MDONE	0x1001
+
+#define FREE_	100
+
+static void fpinc();
+static void fpdec();
+static void regrestore();
+static void regsave();
+static void epilog();
+static void regargs();
+static void prolog();
+
+/* the type suffix of the type of the node */
+void
+psuffix(NODE *p)
 {
-	if (++nrecur > MAXRCOUNT)
-		cerror("expression causes compiler loop: try simplifying");
-}
-void rcount_reset(void)
-{
-	/* the original has this empty function at 0x778e and nobody calls it; stmt() clears nrecur */
+	tsuffix(p->in.type);
 }
 
-/* the operator is a leaf that can be addressed: NAME, REG, ICON, OREG */
-int ltypeop(struct node * p)
+void
+tsuffix(int t)
 {
-	return p->op == NAME || p->op == REG || p->op == ICON || p->op == OREG;
+	if (nosuffix)
+		return;
+	switch (t) {
+	case 6:
+		putchar('s');
+		break;
+	case 7:
+		putchar('d');
+		break;
+	case 5:
+	case 15:
+		putchar('l');
+		rmode++;
+		break;
+	case 2:
+	case 12:
+		putchar('b');
+		rlmode++;
+		break;
+	case 3:
+	case 4:
+	case 13:
+	case 14:
+		break;
+	default:
+#ifdef SEG
+		if ((t & 0x30) != 0x10)
+			cerror("zzzcode - bad type");
+		putchar('l');
+		rmode++;
+#else
+		if ((t & 0x30) != 0x10)
+			cerror("zzzcode - bad type");
+#endif
+	}
 }
 
-/* log2 of a power of two, else -1 */
-int ispow2(register long c)
-{
-	int n;
+char fldd[] = "fldd";
+char flds[] = "flds";
 
-	if (c <= 0 || (c & (c - 1)))
-		return -1;
-	for (n = 0; c > 1; c >>= 1)
-		n++;
+void
+lineout(int line, char *file)
+{
+	printf("\t.line\t%d\t%s\t\n", (int)line, file);
+}
+
+/* the end of the text of a function */
+void
+eobl2(int a, int b)
+{
+	printf("\n");
+	if (fltused) {
+		fltused = 0;
+		printf("\t.extern\t__fltuse\n");
+	}
+	printf("\t~L1 := %u\n", a);
+	printf("\t~L2 := %u\n", b);
+	printf("\n\t}\t/* %s */\n\n", fname);
+#ifdef SEG
+	printf("\t.psec data\n");
+#endif
+	printf("\t.data\n\n");
+	endline();
+}
+
+/* the end of the function: entry and exit code with the frame sizes now known */
+void
+efcode(void)
+{
+	register int a, b, tot;
+	register long sz;
+	long w;
+
+	sz = parmax + maxoff;
+	sz /= 8;
+	if (sz % 2)
+		sz = (sz / 2 + 1) << 1;
+#ifdef SEG
+	a = 13 - minreg;
+#else
+	a = 14 - minreg;
+#endif
+	b = 23 - maxreg;
+	w = a * 2 + sz;
+	tot = b * 8 + w;
+	epilog(a, sz, b, w, tot);
+	/* the original passes three arguments to a function of five: the rest is what the call of epilog left on the stack (w and tot) */
+	prolog(a, sz, tot, w, tot);
+}
+
+/* the exit of the function: the label, the registers back, ret */
+static void
+epilog(int a, long sz, int b, long w, int tot)
+{
+	if (!structret)
+		deflab(retlab);
+	else
+		structretcode();
+	regrestore(a, sz, b, w, tot);
+	fpinc(tot);
+	printf("\tret\n");
+}
+
+/* load back the registers saved in the frame: a word registers, b float registers */
+static void
+regrestore(int a, long sz, int b, long w, int tot)
+{
+	int k, off;
+
+	if (!tot)
+		return;
+#ifdef SEG
+	if (a > 1)
+		printf("\tldm\t%s,_stkseg+%d(fp),#%d\n", rnames[minreg + 1], (int)sz, a);
+	else if (a == 1)
+		printf("\tld\t%s,_stkseg+%d(fp)\n", rnames[minreg + 1], (int)sz);
+#else
+	if (a > 1) {
+		if (sz != 0)
+			printf("\tldm\t%s,%d(fp),#%d\n", rnames[minreg + 1], (int)sz, a);
+		else
+#ifdef OLD_D18
+			printf("\tldm\t%s,0(fp),#%d\n", rnames[minreg + 1], a);
+#else
+			printf("\tldm\t%s,@fp,#%d\n", rnames[minreg + 1], a);
+#endif
+	} else if (a == 1) {
+		if (sz != 0)
+			printf("\tld\t%s,%d(fp)\n", rnames[minreg + 1], (int)sz);
+		else
+#ifdef OLD_D18
+			printf("\tld\t%s,0(fp)\n", rnames[minreg + 1]);
+#else
+			printf("\tld\t%s,@fp\n", rnames[minreg + 1]);
+#endif
+	}
+#endif
+	if (b >= 1) {
+		k = maxreg;
+		off = (int)w;
+		for (; k < 0x17; k++, off += 8)
+#ifdef SEG
+			printf("\tfldd\t%s,_stkseg+%d(fp)\n", rnames[k + 1], off);
+#else
+			printf("\tfldd\t%s,%d(fp)\n", rnames[k + 1], off);
+#endif
+	}
+}
+
+/* ~L2 grows or shrinks the frame pointer */
+static void
+fpinc(unsigned tot)
+{
+	if (tot) {
+		if (tot <= 0x10)
+			printf("\tinc\tfp,#~L2\n");
+		else
+			printf("\tadd\tfp,#~L2\n");
+	}
+}
+
+/* the entry of the function */
+static void
+prolog(int a, long sz, int b, long w, int tot)
+{
+	deflab(entlab);
+	fpdec(tot);
+	regsave(a, sz, b, w, tot);
+	regargs(tot);
+	branch(jlab);
+	eobl2((int)(maxoff / 8), tot);
+}
+
+static void
+fpdec(unsigned tot)
+{
+	if (tot) {
+		if (tot <= 0x10)
+			printf("\tdec\tfp,#~L2\n");
+		else
+			printf("\tsub\tfp,#~L2\n");
+	}
+}
+
+static void
+regsave(int a, long sz, int b, long w, int tot)
+{
+	int k, off;
+
+	if (tot) {
+#ifdef SEG
+	if (a > 1)
+		printf("\tldm\t_stkseg+%d(fp),%s,#%d\n", (int)sz, rnames[minreg + 1], a);
+	else if (a == 1)
+		printf("\tld\t_stkseg+%d(fp),%s\n", (int)sz, rnames[minreg + 1]);
+#else
+	if (a > 1) {
+		if (sz != 0)
+			printf("\tldm\t%d(fp),%s,#%d\n", (int)sz, rnames[minreg + 1], a);
+		else
+#ifdef OLD_D18
+			printf("\tldm\t0(fp),%s,#%d\n", rnames[minreg + 1], a);
+#else
+			printf("\tldm\t@fp,%s,#%d\n", rnames[minreg + 1], a);
+#endif
+	} else if (a == 1) {
+		if (sz != 0)
+			printf("\tld\t%d(fp),%s\n", (int)sz, rnames[minreg + 1]);
+		else
+#ifdef OLD_D18
+			printf("\tld\t0(fp),%s\n", rnames[minreg + 1]);
+#else
+			printf("\tld\t@fp,%s\n", rnames[minreg + 1]);
+#endif
+	}
+#endif
+	}
+	if (b >= 1) {
+		k = maxreg;
+		off = (int)w;
+		for (; k < 0x17; k++, off += 8)
+#ifdef SEG
+			printf("\tfldd\t_stkseg+%d(fp),%s\n", off, rnames[k + 1]);
+#else
+			printf("\tfldd\t%d(fp),%s\n", off, rnames[k + 1]);
+#endif
+	}
+}
+
+/* the registers that arrive as arguments but live in the frame go to their place */
+static void
+regargs(int tot)
+{
+	register int lo, hi, t;
+	int i, cls, reg;
+	struct sym *s;
+	struct rs *n;
+
+	lo = 7;
+	hi = 2;
+	t = tot;
+	for (i = nparmtab - 1; i >= 0; i--) {
+		s = parmtab[i].sym;
+		reg = parmtab[i].reg;
+		cls = rclass(s->stype, reg);
+#ifdef OLD_D22
+		if ((s->stype == 6 || s->stype == 7) && reg < 8) {	/* v0p: a double parameter in rq4 */
+			if (lo > reg)
+				lo = reg;
+			if (hi < reg + 3)
+				hi = reg + 3;
+			if ((unsigned long)(s->soffset / 8) < (unsigned long)(unsigned)t)
+				t = (int)(s->soffset / 8);
+			continue;
+		}
+#endif
+		n = rfind(reg, cls);
+#ifdef OLD_D3J
+		if ((!n || n->sym != s || (n->flags & 0x4000)) && cls < 4) {
+#else
+		if ((!n || n->sym != s) && cls < 4) {
+#endif
+			int k;
+
+			if (lo > reg)
+				lo = reg;
+			if (cls == 3)
+				k = 1;
+			else
+				k = 0;
+			if (hi < reg + k)
+				hi = reg + k;
+			if ((unsigned long)(s->soffset / 8) < (unsigned long)(unsigned)t) {
+				t = (int)(s->soffset / 8);
+				if (t & 1)
+					t--;
+			}
+		} else if (cls == 4) {
+			char *mn;
+
+			if (s->stype == 6)
+				mn = flds;
+			else
+				mn = fldd;
+#ifdef SEG
+			printf("\t%s\t|_stkseg+~L1+%ld|(fp),%s\n", mn, s->soffset / 8, rnames[reg]);
+#else
+			if (maxoff + s->soffset)
+				printf("\t%s\t~L1+%ld(fp),%s\n", mn, s->soffset / 8, rnames[reg]);
+			else
+#ifdef OLD_D18
+				printf("\t%s\t0(fp),%s\n", mn, rnames[reg]);
+#else
+				printf("\t%s\t@fp,%s\n", mn, rnames[reg]);
+#endif
+#endif
+		}
+	}
+	if (hi < lo)
+		return;
+#ifdef SEG
+	if (hi == lo)
+		printf("\tld\t|_stkseg+~L1+%u|(fp),r%d\n", t, lo);
+	else if (!(lo & 1) && hi - lo == 1)
+		printf("\tldl\t|_stkseg+~L1+%u|(fp),rr%d\n", t, lo);
+	else
+		printf("\tldm\t|_stkseg+~L1+%u|(fp),r%d,#%d\n", t, lo, hi - lo + 1);
+#else
+	if (hi == lo) {
+		if ((long)(unsigned)t + maxoff)
+			printf("\tld\t~L1+%u(fp),r%d\n", t, lo);
+		else
+#ifdef OLD_D18
+			printf("\tld\t0(fp),r%d\n", lo);
+#else
+			printf("\tld\t@fp,r%d\n", lo);
+#endif
+	} else if (!(lo & 1) && hi - lo == 1) {
+		if ((long)(unsigned)t + maxoff)
+			printf("\tldl\t~L1+%u(fp),rr%d\n", t, lo);
+		else
+#ifdef OLD_D18
+			printf("\tldl\t0(fp),rr%d\n", lo);
+#else
+			printf("\tldl\t@fp,rr%d\n", lo);
+#endif
+	} else {
+		if ((long)(unsigned)t + maxoff)
+			printf("\tldm\t~L1+%u(fp),r%d,#%d\n", t, lo, hi - lo + 1);
+		else
+#ifdef OLD_D18
+			printf("\tldm\t0(fp),r%d,#%d\n", lo, hi - lo + 1);
+#else
+			printf("\tldm\t@fp,r%d,#%d\n", lo, hi - lo + 1);
+#endif
+	}
+#endif
+}
+
+#ifdef SEG
+#include "hop_scodgen.c"
+#else
+#include "hop_codgen.c"
+#endif
+
+void
+hopcode(NODE *p)
+{
+	register int o = p->in.op;
+	register struct hoptab *q;
+	register int t = p->in.type;
+
+	q = (t == 7 || t == 6) ? fhoptab : ihoptab;
+	for (; q->op >= 0; q++)
+		if (q->op == o && ttype(t, q->tword)) {
+			printf("%s", q->str);
+			return;
+		}
+	cerror("no hoptab for %s", opst[o]);
+}
+
+/* print inc/dec or add/sub for the operator, depending on the size of the constant n; returns the constant to print */
+long
+geninc(int op, long n)
+{
+	switch (op) {
+	case PLUS:
+	case ASG PLUS:
+	case INCR:
+		if (n < 0) {
+			n = -n;
+			goto dec;
+		}
+	inc:
+		if (n != 0 && n <= 16)
+			printf("inc");
+		else
+			printf("add");
+		break;
+	case MINUS:
+	case ASG MINUS:
+	case DECR:
+		if (n < 0) {
+			n = -n;
+			goto inc;
+		}
+	dec:
+		if (n != 0 && n <= 16)
+			printf("dec");
+		else
+			printf("sub");
+		break;
+	default:
+		cerror("geninc: bad op: %s\n", opst[op]);
+	}
 	return n;
 }
 
-/* size of a type in bits (pointers 16, segmented 32); SHORT and USHORT do not occur (cparse maps them to int) */
-int bsize(int t)
+
+int unused9 = 0;
+static char *tcctab[] = {
+	"\ttcc\teq,A1\n",
+	"\ttcc\tne,A1\n",
+	"\ttcc\tle,A1\n",
+	"\ttcc\tlt,A1\n",
+	"\ttcc\tge,A1\n",
+	"\ttcc\tgt,A1\n",
+	"\ttcc\tule,A1\n",
+	"\ttcc\tult,A1\n",
+	"\ttcc\tuge,A1\n",
+	"\ttcc\tugt,A1\n",
+	"\ttcc\tfeq,A1\n",
+	"\ttcc\tfneu,A1\n",
+	"\ttcc\tfle,A1\n",
+	"\ttcc\tflt,A1\n",
+	"\ttcc\tfge,A1\n",
+	"\ttcc\tfgt,A1\n",
+};
+
+void
+zzzcode(NODE *p, char c)
 {
-	switch (t) {
-	case 2: case 12: return 8;			/* CHAR UCHAR */
-	case 4: case 14: return 16;			/* INT UNSIGNED */
-	case 5: case 6: case 15: return 32;		/* LONG FLOAT ULONG */
-	case 7: return 64;				/* DOUBLE */
-	}
-	if ((t & 0x30) == 0x10)
+	register int n;
+	register NODE *z;
+	register NODE *l;
+	register NODE *q, *r;
+	register NODE *u;
+	int ut;		/* the type, kept in the pointer u in the original */
+	int x;
+	struct rs *rp;
+
+	switch (c) {
+	case '<':
+	case '>':
+		/* the type suffix of the left or the right operand */
+		l = getlr(p, c == '<' ? 'L' : 'R');
+	/* fall through */
+	case 'B':
+		/* the type suffix of the node, none when a float operation works on registers only */
+		if (p->in.type == 6 || p->in.type == 7) {
+			q = getlr(p, 'L');
+			r = getlr(p, 'R');
+			if (q->in.op == REG && r->in.op == REG)
+				return;
+		}
+		psuffix(c == 'B' ? p : l);
+		return;
+	case 'R':
+		/* "sgl," or "dbl," */
+		q = getlr(p, 'L');
+		if (q->in.type == 6)
+			printf("sgl,");
+		else if (q->in.type == 7)
+			printf("dbl,");
+		return;
+	case 'f':
+		if (p->in.op == FNE || p->in.op == FEQ)
+			return;
+		putchar('x');
+		return;
+	case 'U':
+		printf(".word\t");
+		return;
+	case 'V':
+		printf(".byte\t");
+		return;
+	case 'W':
+		printf(".long\t");
+		return;
+	case 'F':
+	case 'I':
+		cbgen(p->in.op, p->bn.label, c);
+		return;
+	case '2':
+		/* log2 of the constant */
+		printf("%d", ispow2(p->in.right->tn.lval));
+		return;
+	case '~':
+		printf("%d", ispow2(~p->in.right->tn.lval));
+		return;
+	case 'i':
+		/* inc/dec/add/sub or the mnemonic of the operator, with the type suffix */
+		if (!tshape(z = getlr(p, 'R'), SCON))
+			cerror("bad Zi");
+		if (plainicon(z))
+			z->tn.lval = geninc(p->in.op, z->tn.lval);
+		else
+			hopcode(p);
+		psuffix(p);
+		return;
+	case 't':
+		nosuffix++;
+		return;
+	case 'C':
+		if (p->in.type == 2)
+			p->in.type = 4;
+		else if (p->in.type == 12)
+			p->in.type = 14;
+		else
+			cerror("bad ZC");
+		return;
+	case 'c':
+		/* float <-> double: the operand has to be in a B register */
+		if (p->in.type == 6)
+			p->in.type = 7;
+		else
+			p->in.type = 6;
+		if (!tshape(p->in.left, STBREG))
+			order(p->in.left, STBREG);
+		return;
+	case 'N':
+		/* a comparison used as a value: 0 or 1 */
+		switch ((int)p->tn.lval) {
+		case EQ:
+		case NE:
+		case LE:
+		case LT:
+		case GE:
+		case GT:
+		case ULE:
+		case ULT:
+		case UGE:
+		case UGT:
+		case FEQ:
+		case FNE:
+		case FLE:
+		case FLT:
+		case FGE:
+		case FGT:
+			deflab(p->bn.label);
+			expand(p, FOREFF, "\tldk\tA1,#0\n");
+			expand(p, FOREFF, tcctab[negrel[p->tn.lval - EQ] - EQ]);
+			return;
+		}
+		expand(p, FOREFF, "\tldk\tA1,#1\n");
+		cbgen(0, n = getlab(), 'I');
+		deflab(p->bn.label);
+		expand(p, FOREFF, "\tldk\tA1,#0\n");
+		deflab(n);
+		return;
+	case 'H':
+	case 'h':
+		/* the low byte register of a word register */
+		p = getlr(p, c == 'H' ? 'L' : 'R');
+		if (p->tn.rval > 7 || p->tn.rval < 0)
+			cerror("bad %c call: register = %s\n", c, rnames[p->tn.rval]);
+		fputs(rhnames[p->tn.rval], stdout);
+		return;
+	case 'l':
+	case 'r':
+		/* the upper half of a long operand */
+		upperlval = 1;
+		adrput(getlr(p, c));
+		upperlval = 0;
+		return;
+	case 'Q':
+		if (p->in.type == 5)
+			printf("\textsl\trq4\n");
+		else
+			printf("\tsubl\trr4,rr4\n");
+		return;
+	case '0':
+		/* give the registers back that were moved around a call (nxwork 33 and 34) */
+		while (nsave) {
+			int m, k;
+
+			nsave--;
+			x = savecls[nsave] == 3 ? 5 : 4;
+			m = rmode;
+			k = rlmode;
+			if (x == 5)
+				rmode = 1;
+			else
+				rmode = 0;
+			rlmode = 0;
+			rmove(saveorig[nsave], savereg[nsave], x);
+			rp = rfind(saveorig[nsave], savecls[nsave]);
+			if (!rp)
+				cerror("zzzcode : can't find %d on rslist\n", saveorig[nsave]);
+			rp->busy = 1;
+			rp = rfind(savereg[nsave], savecls[nsave]);
+			if (!rp)
+				cerror("zzzcode : can't find %d on rslist\n", savereg[nsave]);
+			rp->busy = 0;
+			if ((p->in.left->in.op == REG || p->in.left->in.op == OREG) && p->in.left->tn.rval == savereg[nsave])
+				p->in.left->tn.rval = saveorig[nsave];
+			if ((p->in.right->in.op == REG || p->in.right->in.op == OREG) && p->in.right->tn.rval == savereg[nsave])
+				p->in.right->tn.rval = saveorig[nsave];
+			rmode = m;
+			rlmode = k;
+		}
+		return;
+	case 'u':
 #ifdef SEG
-		return 32;				/* a pointer */
+		u = p->in.left;
+		if (u->in.op != OREG || u->tn.lval != 0 || u->in.sname != 0 || (u->in.op == OREG && u->stn.stsize < 0)) {
+			expand(p, FOREFF, "\tZtZi\tUL,AR\n");
+			return;
+		}
+		printf("\tinc\t%s,#2\n", rnames[u->tn.rval + 1]);
+		expand(p, FOREFF, "\tZtZi\tAL,AR\n");
+		printf("\tdec\t%s,#2\n", rnames[u->tn.rval + 1]);
+		return;
 #else
-		return 16;				/* a pointer */
+		expand(p, FOREFF, "\tZtZi\tUL,AR\n");
+		return;
 #endif
-	cerror("illegal bsize type: %%%0.2x\n", t);
-	return t;
-}
-
-/* size of a type in words: long, float and unsigned long 2, double 4, everything else 1 */
-int szty(int t)
-{
-	switch (t) {
-	case 4: return 1;
-	case 5: case 6: case 15: return 2;
-	case 7: return 4;
-	}
-	if ((t & 0x30) == 0x10)
+	case 'K':
+		/* store into a field: bit instructions, a byte, a word or the general mask and shift */
+		switch (fldsz) {
+		case 1:
+		case 2:
+			if (p->in.right->tn.lval & 1)
+				expand(p, FOREFF, "\tset\tAL,");
+			else
+				expand(p, FOREFF, "\tres\tAL,");
+			printf("#%d\n", fldshf);
+			if (fldsz == 1)
+				return;
+			if (p->in.right->tn.lval & 2)
+				expand(p, FOREFF, "\tset\tAL,");
+			else
+				expand(p, FOREFF, "\tres\tAL,");
+			printf("#%d\n", fldshf + 1);
+			return;
+		case 8:
+			if (fldoff % 8)
+				break;
+			if (fldoff) {
 #ifdef SEG
-		return 2;
+				if (p->in.left->in.left->tn.lval != 0)
+					p->in.left->in.left->tn.lval += 1;
+				else
+					printf("\tinc\t%s,#1\n", rnames[p->in.left->in.left->tn.rval + 1]);
 #else
-		return 1;		/* no effect: the original has the test in both versions */
+				p->in.left->in.left->tn.lval += 1;
 #endif
-	return 1;
-}
+			}
+			if (p->in.right->tn.lval & 0xFFFF)
+				expand(p, FOREFF, "\tldb\tWAL,AR\n");
+			else
+				expand(p, FOREFF, "\tclrb\tWAL\n");
+			return;
+		case 16:
+			if (p->in.right->tn.lval)
+				expand(p, FOREFF, "\tld\tAL,AR\n");
+			else
+				expand(p, FOREFF, "\tclr\tAL\n");
+			return;
+		}
+		expand(p, FOREFF, "\tld\tA1,AL\n\tand\tA1,#N\n");
+		if (p->in.right->tn.lval) {
+			expand(p, FOREFF, "\tor\tA1,");
+			printf("#%d\n", ((int)p->in.right->tn.lval & ~(int)((unsigned)-1 << fldsz)) << fldshf);
+		}
+		expand(p, FOREFF, "\tld\tAL,A1\n");
+		return;
+	case 'L':
+		/* the address of the left operand into the register A1 */
+		if ((u = getlr(p, 'L'))->in.op == NAME) {
+			expand(p, FOREFF, "\tldZB\tA1,#AL\n");
+			return;
+		}
+		if (u->tn.rval >= 0x100 || u->tn.lval != 0 || u->in.sname != 0 || (u->in.op == OREG && u->stn.stsize < 0)) {
+#ifdef SEG
+			expand(p, FOREFF, "\tlda\tVA1X,AL\n");
+			expand(p, FOREFF, "\tand\tA1,#%7f00\n");
+#else
+			expand(p, FOREFF, "\tlda\tA1,AL\n");
+#endif
+			return;
+		}
+		expand(p, FOREFF, "\tldZB\tA1");
+#ifdef SEG
+		printf(",r%s\n", rnames[u->tn.rval]);
+#else
+		printf(",%s\n", rnames[u->tn.rval]);
+#endif
+		return;
+	case 'M':
+		/* load the operand into U1 and extend it */
+		{
+		int t;
 
-/* is p->lval an operand that a one word instruction takes: an unnamed constant */
-int plainicon(struct node * p)
-{
-	return p->op == ICON && p->sname == 0 && p->rval >= 0;
-}
+		u = p->in.left;
+		t = u->in.type;
+		if (t == 12)
+			expand(p, FOREFF, "\tldk\tU1,#0\n");
+		if (u->in.op != REG || getlr(p, '1')->tn.rval + 1 != u->tn.rval)
+			expand(u, FOREFF, "\tldZB\tU1,AL\n");
+		if (t == 2)
+			expand(p, FOREFF, "\textsb\tU1\n");
+		if (!(dope[p->in.op] & DIVFLAG))
+			return;
+		if ((unsigned)t <= 15 && (unsigned)t >= 12)
+			expand(p, FOREFF, "\tldk\tA1,#0\n");
+		else
+			expand(p, FOREFF, "\texts\tVA1\n");
+		return;
+		}
+	case 'S':
+	case 's':
+		/* the structure assignment: a word, a long or a block move */
+		{
+		NODE *r2;
+		int n2;
+		char *name;
+		int rn;
+		NODE *rg, *tmp;
+		struct rs *rp2;
+		int k2;
+		int cls;
 
-/* the SPECIAL shapes: small constants and powers of two */
-int special(struct node * p, int shape)
-{
-	long v;
+		if (p->in.op != STASG)
+			cerror("zzzcode: bad ZS");
+		u = p->in.left;
+		r2 = p->in.right;
+		n2 = p->stn.stsize;
+		rg = getlr(p, '1');
+		rn = rg->tn.rval;
+		name = rnames[rn];
+		k2 = szty(rg->in.type) == 2 ? 5 : 4;
+		cls = rclass(rg->in.type, -1);
+		rp2 = rfind(rn, cls);
+		rp2->busy = 1;
+		if (n2 <= 4) {
+			tmp = 0;
+			if (r2->in.op == ICON) {
+				tmp = tcopy(r2);
+				r2->in.op = NAME;
+				r2->in.type = DECREF(r2->in.type);
+			} else if (!tshape(r2, STAREG | SAREG))
+				order(r2, STAREG | SAREG);
+			if (r2->in.op == REG) {
+				if (notoff(r2->in.type, r2->tn.rval, 0L, (char *)0))
+					order(r2, STAREG);
+				tmp = tcopy(r2);
+				r2->in.op = OREG;
+				r2->in.sname = 0;
+				r2->stn.stsize = 0;
+			}
+			printf("\tld");
+			if (n2 == 4) {
+				printf("l\tr%s,", name);
+				rmode++;
+			} else
+				printf("\t%s,", name);
+			expand(p, FOREFF, "AR\n\tld");
+			if (n2 == 4) {
+				putchar('l');
+				rmode++;
+			}
+			expand(p, FOREFF, "\tAL,");
+			printf(n2 != 4 ? "%s\n" : "r%s\n", name);
+			rfree(rn, k2);
+			if (tmp) {
+				walkf(r2, recl2);
+				tfree(r2);
+				p->in.right = tmp;
+			}
+		} else {
+			tmp = 0;
+			if (!tshape(r2, STAREG))
+				order(r2, STAREG);
+			if (notoff(r2->in.type, r2->tn.rval, 0L, (char *)0))
+				order(r2, STAREG);
+			if (u->in.op == OREG && u->tn.lval == 0 && u->in.sname == 0 && u->tn.rval < 0x100) {
+				tmp = tcopy(u);
+				u->in.op = REG;
+				if ((u->in.type & 0x30) != 0x10)
+					u->in.type = INCREF(u->in.type);
+			}
+			if (!tshape(u, STAREG)) {
+				if (!tmp)
+					tmp = tcopy(u);
+				order(u, STAREG);
+			}
+			if (notoff(u->in.type, u->tn.rval, 0L, (char *)0))
+				order(u, STAREG);
+			n2 >>= 1;
+			if (n2 < 16)
+				printf("\tldk\t%s,#%d\n", name, n2);
+			else
+				printf("\tld\t%s,#%d\n", name, n2);
+#ifdef SEG
+			expand(p, FOREFF, "\tldir\t@rAL,@rAR,");
+#else
+			expand(p, FOREFF, "\tldir\t@AL,@AR,");
+#endif
+			printf("%s\n", name);
+			rfree(rn, k2);
+			if (c == 's') {
+				if (!tmp || (tmp && (tmp->in.op == REG || tmp->in.op == OREG) && tmp->tn.rval == u->tn.rval))
+#ifdef SEG
+					printf("\tsub\t%s,#%d\n", rnames[u->tn.rval + 1], n2 * 2);
+#else
+					printf("\tsub\t%s,#%d\n", rnames[u->tn.rval], n2 * 2);
+#endif
+			} else
+#ifdef SEG
+				printf("\tsub\t%s,#%d\n", rnames[r2->tn.rval + 1], n2 * 2);
+#else
+				printf("\tsub\t%s,#%d\n", rnames[r2->tn.rval], n2 * 2);
+#endif
+			if (tmp) {
+				if (c == 's') {
+					walkf(u, recl2);
+					tfree(u);
+					p->in.left = tmp;
+				} else {
+					walkf(tmp, recl2);
+					tfree(tmp);
+				}
+			}
+		}
+		if (c == 's')
+			p->in.type = p->in.left->in.type;
+		return;
+		}
+	case 'A':
+		/* an argument that is a structure: up to 4 bytes through a register, else ldm */
+		{
+		int n3, m3, k3;
 
-	if (p->op != ICON)
-		return 0;
-	if (p->sname) {
-		if (shape != SPECIAL + 8)
-			return 0;
-		return 1;
+		if (p->in.op != STARG)
+			cerror("zzzcode: bad ZA");
+		u = p->in.left;
+		n3 = p->stn.stsize;
+		if (n3 <= 0 || n3 > 0x6b5d)
+			cerror("structure size out of range: %ld", (long)n3);
+		if (n3 <= 4) {
+			if (u->in.op == ICON)
+				u->in.op = NAME;
+			if (!tshape(u, SNAME | STAREG | SAREG))
+				order(u, SNAME | STAREG | SAREG);
+			if (u->in.op == REG) {
+				if (notoff(u->in.type, u->tn.rval, 0L, (char *)0))
+					order(u, STAREG);
+				u->in.op = OREG;
+				u->in.sname = 0;
+				u->stn.stsize = 0;
+			}
+			printf("\tld");
+			if (n3 == 4) {
+				printf("l\tr");
+				rmode++;
+			} else
+				putchar('\t');
+			m3 = p->in.rall & 0xEFFF;
+			printf("%s,", rnames[m3]);
+			expand(p, FOREFF, "AL\n");
+			k3 = getreg(n3 == 4 ? 3 : 2, m3, 0x1000, p->in.sname);
+			if (m3 == k3) {
+				rbusy(m3, n3 == 4 ? 5 : 4, p->in.sname, p->tn.lval);
+				return;
+			}
+			rfree(k3, n3 == 4 ? 5 : 4);
+			rsreturn(n3 == 4 ? 3 : 2, k3);
+			return;
+		}
+		if (!tshape(u, STAREG))
+			order(u, STAREG);
+		if (notoff(u->in.type, u->tn.rval, 0L, (char *)0))
+			order(u, STAREG);
+		n3 >>= 1;
+		printf("\tldm\t%s,", rnames[p->in.rall & 0xEFFF]);
+#ifdef SEG
+		expand(p, FOREFF, "@VAL");
+#else
+		expand(p, FOREFF, "@AL");
+#endif
+		printf(",#%d\n", n3);
+		return;
+		}
+	case 'T':
+		/* the second word of a long operand, for the conversion to a shorter type */
+		ut = p->in.type;
+		p = p->in.left;
+		n = p->in.type;
+		switch (p->in.op) {
+		case NAME:
+		case OREG:
+#ifdef SEG
+			if (p->tn.rval == 15)
+				goto frame;
+			order(p, 6);
+		/* fall through */
+		case REG:
+			if (szty(n) != 2)
+				return;
+			rfree(p->tn.rval, p->in.type);
+			rfreeall(0);
+			p->tn.rval++;
+			p->in.type = ut;
+			if (p->tn.rval <= 7 && getreg(2, p->tn.rval, 0x1000, 0) != p->tn.rval)
+				cerror("zzzcode: case 'T'  reg not found");
+			return;
+		frame:
+			if (p->in.op == NAME && p->in.sname && p->in.sname->sclass == 3 && !(p->in.sname->sflags >> 2 & 1) && p->tn.rval >= 0) {
+				if (szty(n) == 2) {
+					if (ut == 2 || ut == 12)
+						p->tn.rval += 3;
+					else {
+						if (ut == 3 || ut == 13) {
+							}
+						p->tn.rval += 2;
+					}
+				} else
+					p->tn.rval += 1;
+				return;
+			}
+			if (szty(n) == 2) {
+				if (ut == 2 || ut == 12)
+					p->tn.lval += 3;
+				else {
+					if (ut == 3 || ut == 13) {
+						}
+					p->tn.lval += 2;
+				}
+			} else
+				p->tn.lval += 1;
+			return;
+#else
+			if (p->in.op == NAME && p->in.sname && p->in.sname->sclass == 3 && !(p->in.sname->sflags >> 2 & 1) && p->tn.rval >= 0) {
+				if (szty(n) == 2) {
+					if (ut == 2 || ut == 12)
+						p->tn.rval += 3;
+					else {
+						if (ut == 3 || ut == 13) {
+							}
+						p->tn.rval += 2;
+					}
+				} else
+					p->tn.rval += 1;
+				return;
+			}
+			if (szty(n) == 2) {
+				if (ut == 2 || ut == 12)
+					p->tn.lval += 3;
+				else {
+					if (ut == 3 || ut == 13) {
+						}
+					p->tn.lval += 2;
+				}
+			} else
+				p->tn.lval += 1;
+			return;
+		case REG:
+			if (szty(n) != 2)
+				return;
+			rfree(p->tn.rval, p->in.type);
+			rfreeall(0);
+			p->tn.rval++;
+			p->in.type = ut;
+			if (p->tn.rval <= 7 && getreg(2, p->tn.rval, 0x1000, 0) != p->tn.rval)
+				cerror("zzzcode: case 'T'  reg not found");
+			return;
+#endif
+		default:
+			cerror("Illegal ZT type conversion");
+			return;
+		}
+	case 'P':
+		/* the argument registers r4 .. r7 on the use list are free again after a call */
+		{
+		struct rs *a, *b;
+
+		for (a = rsuse; a; a = b) {
+			b = a->next;
+			switch (a->reg) {
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+				rsreturn(9, a->reg);
+			}
+		}
+		return;
+		}
+	default:
+		cerror("illegal zzzcode: %c", c);
 	}
-	if (p->rval < 0)
-		return 0;
-	v = p->lval;
-	switch (shape) {
-	case SPECIAL + 1: return v >= 0 && v <= 15;
-	case SPECIAL + 2: return v >= -16 && v <= 16;
-	case SPECIAL + 3: return v >= -256 && v <= 255;
-	case SPECIAL + 5:
-		if (!plainicon(p))
-			return 0;
-		/* FALLTHROUGH */
-	case SPECIAL + 4: return v >= -32768 && v <= 32767;
-	case SPECIAL + 6: return ispow2(v) >= 0;
-	case SPECIAL + 7: return ispow2(~v) >= 0;
-	case SPECIAL + 8: return 0;
-	}
-	cerror("bad special shape: SPECIAL | %%%0.2x", shape - SPECIAL);
-	return 0;
-}
-
-/* STAR over p: a register variable or a constant (operand that needs no register) */
-int shtemp(struct node * p)
-{
-	if (p->op == STAR)
-		p = p->left;
-	if (p->op == REG || p->op == OREG)
-		return (rstatus[p->rval] & 0x14) == 0;
-	return p->op == NAME || p->op == ICON;
-}
-
-/* does an increment of incr bytes on a pointer of type t step by the size of the object it points to? */
-int shincr(int t, register long incr)
-{
-	if ((t & 0x30) != 0x10)
-		return 0;
-	t = ((unsigned)t >> 2 & ~0xF) | (t & 0xF);
-	if ((t & 0x30) == 0x10)
-		return incr == 2;		/* a pointer to a pointer (16 bit) */
-	switch (t) {
-	case 2: case 12: return incr == 1;
-	case 3: case 4: case 13: case 14: return incr == 2;
-	case 6: return incr == 4;
-	case 7: return incr == 8;
-	}
-	return 0;
-}
-
-/* STAR over p: which address shapes does it fit? STARNM for a name, STARREG for a post increment through a register */
-int shumul(struct node * p)
-{
-	register int o = p->op;
-
-	if (o == NAME || o == OREG || o == ICON)
-		return STARNM;
-	if ((o == 0x4E || o == 9) && p->left->op == REG && p->right->op == ICON && p->right->sname == 0 &&
-	    shincr(p->left->type, p->right->lval))
-		return STARREG;
-	return 0;
-}
-
-/* an operator that is a leaf, or (with p) a STAR over a leaf that shumul accepts */
-int ltypeok(int op, struct node * p)
-{
-	if (op == NAME || op == REG || op == ICON || op == OREG)
-		return 1;
-	if (op == STAR && p != 0 && shumul(p->left))
-		return 1;
-	return 0;
 }
 
 /*
  * rmove: copy register `from` to register `to` (assembler text) and let `to` take over what `from` holds
  * (symbol, offset, kind); when `from` is on no list `to` holds nothing known afterwards (0x3cf2)
  */
-void rmove(int to, int from, int type)
+int rwtab[][2] = {
+	{ 0x14, 0x14 }, { 0xe, 0xaca }, { 0x1000, 0x1000 }, { 0x2000, 0x2000 }, { 0x4, 0x240 }, { 0, 0 }
+};
+
+void
+rmove(int to, int from, int type)
 {
 	register struct rs *t, *f;
 
 	for (t = rsuse; t; t = t->next)
 		if (t->reg == to)
-			break;
-	if (t == 0)
-		for (t = rsfree; t; t = t->next)
-			if (t->reg == to)
-				break;
-	if (t == 0)
-		cerror("rmove: destination reg not found");
+			goto tfound;
+	for (t = rsfree; t; t = t->next)
+		if (t->reg == to)
+			goto tfound;
+	cerror("rmove: destination reg not found");
+tfound:
 	for (f = rsuse; f; f = f->next)
 		if (f->reg == from)
-			break;
-	if (f == 0)
-		for (f = rsfree; f; f = f->next)
-			if (f->reg == from)
-				break;
-	if (f == 0) {
-		t->sym = 0;
-		t->off = 0;
-		t->kind = 8;
-	} else {
-		t->sym = f->sym;
-		t->off = f->off;
-		t->kind = f->kind;
-	}
+			goto ffound;
+	for (f = rsfree; f; f = f->next)
+		if (f->reg == from)
+			goto ffound;
+	t->sym = 0;
+	t->off = 0;
+	t->kind = 8;
+	goto copied;
+ffound:
+	t->sym = f->sym;
+	t->off = f->off;
+	t->kind = f->kind;
+copied:
 	if (type == 6 || type == 7)
 		printf("/* rmove */\n\tfld");
 	else
@@ -216,15 +1142,579 @@ void rmove(int to, int from, int type)
 		printf("\t%s,%s\n", rnames[to], rnames[from]);
 }
 
-/* size of an argument in words (0x88f6): a structure argument by its size, a float counts as a double */
-int argsize(struct node * p)
+/* an operator that is a leaf, or (with p) a STAR over a leaf that shumul accepts */
+int
+shltype(int op, NODE *p)
 {
-	int t;
+	if (op == NAME || op == REG || op == ICON || op == OREG)
+		return 1;
+	return op == STAR && p != 0 && shumul(p->in.left);
+}
 
-	if (p->op == STARG)
-		return (unsigned)p->stsize >> 1;
-	if (p->op == NAME && p->type == 8)
-		return p->sname->ssize / 16;
-	t = szty(p->type == 6 ? 7 : p->type);
-	return t;
+/* the operator is a leaf that can be addressed: NAME, REG, ICON, OREG */
+int
+ltypeop(NODE *p)
+{
+	register int o;
+
+	o = p->in.op;
+	return o == NAME || o == REG || o == ICON || o == OREG;
+}
+
+/* STAR over p: a register variable or a constant (operand that needs no register) */
+int
+shtemp(NODE *p)
+{
+	if (p->in.op == STAR)
+		p = p->in.left;
+	return (p->in.op == REG || p->in.op == OREG) ? !(rstatus[p->tn.rval] & 0x14) : (p->in.op == NAME || p->in.op == ICON);
+}
+
+/* does an increment of incr bytes on a pointer of type t step by the size of the object it points to? */
+int
+shincr(int t, long incr)
+{
+	if ((t & 0x30) != 0x10)
+		return 0;
+	t = ((unsigned)t >> 2 & ~0xF) | (t & 0xF);
+	if ((t & 0x30) == 0x10)
+#ifdef SEG
+		return incr == 4;		/* a pointer to a pointer */
+#else
+		return incr == 2;		/* a pointer to a pointer (16 bit) */
+#endif
+	switch (t) {
+	case 2: case 12: return incr == 1;
+	case 3: case 4: case 13: case 14: return incr == 2;
+	case 6: return incr == 4;
+	case 7: return incr == 8;
+	}
+	return 0;
+}
+
+/* STAR over p: which address shapes does it fit? STARNM for a name, STARREG for a post increment through a register */
+int
+shumul(NODE *p)
+{
+	register int o = p->in.op;
+
+	if (o == NAME || o == OREG || o == ICON)
+		return STARNM;
+	if ((o == 0x4E || o == 9) && p->in.left->in.op == REG && p->in.right->in.op == ICON && p->in.right->in.sname == 0 &&
+	    shincr(p->in.left->in.type, p->in.right->tn.lval))
+		return STARREG;
+	return 0;
+}
+
+/* print a long mask of the M and N templates */
+void
+prlong(long v)
+{
+	printf("%ld", v);
+}
+
+/* a constant or a register as an operand part */
+void
+conput(NODE *p)
+{
+	switch (p->in.op) {
+	case ICON:
+		acon(p);
+		break;
+	case REG:
+		if (rlmode)
+			printf("%s", rlnames[p->tn.rval]);
+		else {
+			if (rmode)
+				printf("r");
+			printf("%s", rnames[p->tn.rval]);
+		}
+		break;
+	case OREG:
+		if (p->tn.lval >= 0x100)
+			cerror("bad oreg in conput");
+		else if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))
+			oregput(p);
+		else
+#ifdef SEG
+			printf("@r%s", rnames[p->tn.rval]);
+#else
+			printf("@%s", rnames[p->tn.rval]);
+#endif
+		break;
+	default:
+		cerror("illegal conput");
+	}
+}
+
+void
+insput(NODE *p)
+{
+	(void)p;
+	cerror("insput");
+}
+
+/* offset(register) of an OREG */
+void
+oregput(NODE *p)
+{
+#ifdef SEG
+	int bar = 0;
+
+	if (p->tn.rval == 15) {
+		if ((p->in.sname == symtab0 && (unsigned)(int)p->tn.lval <= 0xFF) ||
+		    (p->in.sname == fpsym1 && (unsigned)(int)(p->tn.lval + maxoff) <= 0xFF)) {
+			bar++;
+			putchar('|');
+		}
+		acon(p);
+		if (bar)
+			putchar('|');
+		printf("(fp)");
+	} else {
+		acon(p);
+		printf("(%s)", rnames[p->tn.rval]);
+	}
+#else
+	if (p->tn.rval == 15) {
+		acon(p);
+		printf("(fp)");
+	} else {
+		acon(p);
+		printf("(%s)", rnames[p->tn.rval]);
+	}
+#endif
+}
+
+/* the second word of an operand */
+void
+upput(NODE *p)
+{
+	register long save;
+	register int r;
+#ifdef SEG
+	register int r2;
+#endif
+
+	if (p->in.op == FLD)
+		p = p->in.left;
+	save = p->tn.lval;
+	switch (p->in.op) {
+	case NAME:
+		p->tn.lval += 2;
+		if (p->tn.rval < 0)
+			goto ac;
+		r = p->tn.rval;
+		p->tn.rval += 2;
+		acon(p);
+		p->tn.rval = r;
+		break;
+	case ICON:
+		p->tn.lval &= 0xFFFF;
+		putchar('#');
+		goto ac;
+	case REG:
+		if (rlmode) {
+			printf("%s", rlnames[p->tn.rval + 1]);
+			return;
+		}
+		printf("%s", rnames[p->tn.rval + 1]);
+		break;
+	case OREG:
+		if (p->tn.rval >= 0x100)
+			cerror("illegal OREG upput");
+#ifdef SEG
+		if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0)) {
+			p->tn.lval += 2;
+			oregput(p);
+		} else {
+			p->tn.lval = 2;
+			r2 = p->tn.rval;
+			p->tn.rval = (p->tn.rval + 1) << 8;
+			adrput(p);
+			p->tn.rval = r2;
+		}
+#else
+		p->tn.lval += 2;
+		oregput(p);
+#endif
+		break;
+	default:
+		cerror("illegal upper address");
+		break;
+	ac:
+		acon(p);
+	}
+	p->tn.lval = save;
+}
+
+/* an operand */
+void
+adrput(NODE *p)
+{
+	long save;
+	register int r;
+
+	if (p->in.op == FLD)
+		p = p->in.left;
+	switch (p->in.op) {
+	case NAME:
+		acon(p);
+		break;
+	case ICON:
+		if (upperlval) {			/* the high word of a long constant */
+			save = p->tn.lval;
+			p->tn.lval = (p->tn.lval >> 16) & 0xFFFF;
+			putchar('#');
+			acon(p);
+			p->tn.lval = save;
+		} else {
+			putchar('#');
+			acon(p);
+		}
+		break;
+	case REG:
+		if (rlmode)
+			printf("%s", rlnames[p->tn.rval]);
+		else {
+			if (rmode)
+				printf("r");
+			printf("%s", rnames[p->tn.rval]);
+		}
+		break;
+	case OREG:
+		r = p->tn.rval;
+		if (r >= 0x100) {			/* base and index register */
+			if (r & 0xFF)
+#ifdef SEG
+				printf("r%s(%s)", rnames[(r >> 8) - 1], rnames[(r & 0xFF) - 1]);
+#else
+				printf("r%s(%s)", rnames[(r >> 8) - 1], rnames[(r & 0xFF) - 1]);
+#endif
+			else {
+				printf("r%s(#", rnames[(r >> 8) - 1]);
+				acon(p);
+				putchar(')');
+			}
+		} else if (p->tn.lval == 0 && p->in.sname == 0 && p->stn.stsize == 0)
+#ifdef SEG
+			printf("@r%s", rnames[r]);
+#else
+			printf("@%s", rnames[r]);
+#endif
+		else
+			oregput(p);
+		break;
+	default:
+		cerror("illegal address: %d (%s)", p->in.op, opst[p->in.op]);
+	}
+}
+
+/* a name or constant: label, name, +offset */
+void
+acon(NODE *p)
+{
+	char c;
+
+	if (p->in.op == ICON && p->tn.rval < 0)
+		printf("L%d", -p->tn.rval);
+	else if (p->in.op == OREG && p->stn.stsize < 0)
+		printf("L%d", -p->stn.stsize);
+	else if (p->in.op == NAME && p->tn.rval < 0)
+		printf("L%d", -p->tn.rval);
+	else {
+		if (p->in.sname == 0) {
+			printf("%ld", p->tn.lval);
+			return;
+		}
+#ifdef SEG
+		if (p->in.sname != symtab0 && ascii[p->in.sname->nameoff] != '~') {
+			if (p->in.op == NAME && p->in.sname->sclass == 3 && !(p->in.sname->sflags >> 2 & 1)) {
+				putchar('L');
+				printf("%ld", p->in.sname->soffset);
+				p->tn.lval = p->tn.rval;
+			} else {
+				putchar('_');
+				printf("%s", ascii + p->in.sname->nameoff);
+			}
+		} else {		/* an address in the stack segment: _stkseg+~L1+offset */
+			printf("_stkseg");
+			if ((c = ascii[p->in.sname->nameoff]) == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c)
+				printf("+%s", ascii + p->in.sname->nameoff);
+		}
+#else
+		if (p->in.sname && ascii[p->in.sname->nameoff] != '~') {
+			if (p->in.op == NAME && p->in.sname->sclass == 3 && !(p->in.sname->sflags >> 2 & 1)) {	/* a local static: its label */
+				putchar('L');
+				printf("%ld", p->in.sname->soffset);
+				p->tn.lval = p->tn.rval;
+			} else {
+				putchar('_');
+				printf("%s", ascii + p->in.sname->nameoff);
+			}
+		} else if ((c = ascii[p->in.sname->nameoff]) == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c)
+			printf("%s", ascii + p->in.sname->nameoff);		/* ~L1, ~L2 */
+#endif
+	}
+	if (p->tn.lval) {
+		putchar('+');
+		printf("%ld", p->tn.lval);
+	}
+}
+
+int
+genscall(NODE *p, int cookie)
+{
+	return gencall(p, cookie);
+}
+
+/* generate a call: the function address (an expression) is made addressable, the arguments are placed, then the call itself */
+int
+gencall(NODE *p, int cookie)
+{
+	(void)cookie;
+	register NODE *f;
+	register int fop;
+	register int indirect;
+#ifdef SEG
+	long save;
+#endif
+
+	f = p->in.left;
+	fop = f->in.op;
+	indirect = 0;
+	argstop = 0;
+	if (fop != ICON) {
+		if (p->in.right) {
+			indirect = 1;
+			order(f, INTEMP);
+		} else if (fop != REG || f->tn.rval == 0) {
+			order(f, 6);
+			if (f->tn.rval == 0)
+				order(f, 6);
+			rfree(f->tn.rval, 0x14);
+		}
+	}
+	if (p->in.right) {
+		genargs(p->in.right);
+	}
+#ifdef SEG
+	if (indirect) {
+		if (argstop == 0 && argreg >= 3) {
+			/* the address is still in reach of a free register pair */
+			f->in.rall = 0x1002;
+			order(f, 6);
+			rfree(f->tn.rval, 0x14);
+			indirect = 0;
+		} else {
+			/* rr8 holds the address during the call; its old contents wait in a temporary */
+			save = freetemp(2) / 8;
+			printf("\tldl\t_stkseg+~L1+%ld(fp),rr8\n", save);
+			printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", f->tn.lval);
+			f->tn.rval = 8;
+			f->tn.lval = 0;
+			f->in.sname = 0;
+		}
+	}
+#else
+	if (indirect) {
+		if (maxoff + f->tn.lval)
+			printf("\tld\tr1,~L1+%ld(fp)\n", f->tn.lval);
+		else
+#ifdef OLD_D18
+			printf("\tld\tr1,0(fp)\n");
+#else
+			printf("\tld\tr1,@fp\n");
+#endif
+		f->tn.rval = 1;
+		f->tn.lval = 0;
+		f->in.sname = 0;
+	}
+#endif
+	if (f->in.op == REG) {
+		f->in.op = OREG;
+		f->stn.stsize = 0;
+	}
+	p->in.op = UCALL;
+	rsfreeall(1);
+#ifndef OLD_D14Q
+	tmpoff = 0;
+#endif
+#ifdef SEG
+	fop = match(p, 0x16);
+	if (indirect)
+		printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", save);
+	return fop != MDONE;
+#else
+#ifdef OLD_D22
+	/* v0p: a double result comes back in rq4 */
+	if (match(p, 0x16) != MDONE)
+		return 1;
+	if ((p->in.type == 6 || p->in.type == 7) && p->in.op == REG)
+		printf("\tfldd\t%s,r4\n", rnames[p->tn.rval]);
+	return 0;
+#else
+	return match(p, 0x16) != MDONE;
+#endif
+#endif
+}
+
+/* the table of the conditional jumps by relation */
+static char *jprtab[] = {
+	"\tjpr\teq,L%d\n",
+	"\tjpr\tne,L%d\n",
+	"\tjpr\tle,L%d\n",
+	"\tjpr\tlt,L%d\n",
+	"\tjpr\tge,L%d\n",
+	"\tjpr\tgt,L%d\n",
+	"\tjpr\tule,L%d\n",
+	"\tjpr\tult,L%d\n",
+	"\tjpr\tuge,L%d\n",
+	"\tjpr\tugt,L%d\n",
+	"\tjpr\tfeq,L%d\n",
+	"\tjpr\tfneu,L%d\n",
+	"\tjpr\tfle,L%d\n",
+	"\tjpr\tflt,L%d\n",
+	"\tjpr\tfge,L%d\n",
+	"\tjpr\tfgt,L%d\n",
+};
+
+/* the relation with the operands exchanged (EQ stays EQ, LE becomes GE ...) */
+
+/* a jump to the label lab when the relation o holds (o 0: always); mode 'F': the operands are exchanged */
+void
+cbgen(int o, int lab, int mode)
+{
+
+#ifdef OLD_D3K
+	d3kjump(lab);
+#endif
+	if (o == 0) {
+		printf("\tjpr\tL%d\n", lab);
+		return;
+	}
+	if (o > FGT) {
+		cerror("bad conditional branch: %s", opst[o]);
+		return;
+	}
+	if (mode == 'F')
+		o = revrel[o - EQ];
+	printf(jprtab[o - EQ], lab);
+	cbflag = 0;
+}
+
+/* the next cookie to try when no table entry matched */
+int
+nextcook(NODE *p, int cookie)
+{
+	if (cookie == FORREW)
+		return 0;
+	if (!(cookie & 0x14))
+		return 0x14;
+	if (!(cookie & 0x1000) && asgop(p->in.op))
+		return 0x101E;
+	return FORREW;
+}
+
+/* the last chance: a name or an OREG may go to a register by the rewrite tables */
+int
+lastchance(NODE *p, int cookie)
+{
+	if (cookie == 0x2000 && (p->in.op == OREG || p->in.op == NAME))
+		return 1;
+	return 0;
+}
+
+/* a constant operand of an AND goes to the right */
+void
+icright(NODE *p)
+{
+	register NODE *t;
+
+	switch (p->in.op) {
+	case AND:
+		if (p->in.left->in.op == ICON) {
+			t = p->in.left;
+			p->in.left = p->in.right;
+			p->in.right = t;
+		}
+	}
+}
+
+/* canon, then the constants of the ANDs to the right */
+void
+canon2(NODE *p)
+{
+	p = canon(p);
+	walkf(p, icright);
+}
+
+/* the SPECIAL shapes: small constants and powers of two */
+int
+special(NODE *p, int shape)
+{
+	if (p->in.op != ICON)
+		return 0;
+	if (p->in.sname) {
+		if (shape != SPECIAL + 8)
+			return 0;
+		return 1;
+	}
+	if (p->tn.rval < 0)
+		return 0;
+	switch (shape) {
+	case SPECIAL + 1:
+		return p->tn.lval >= 0 && p->tn.lval <= 15;
+	case SPECIAL + 2:
+		return p->tn.lval >= -16 && p->tn.lval <= 16;
+	case SPECIAL + 3:
+		return p->tn.lval >= -256 && p->tn.lval <= 255;
+	case SPECIAL + 5:
+		if (!plainicon(p))
+			return 0;
+		/* FALLTHROUGH */
+	case SPECIAL + 4:
+		return p->tn.lval >= -32768 && p->tn.lval <= 32767;
+	case SPECIAL + 6:
+		return ispow2(p->tn.lval) >= 0;
+	case SPECIAL + 7:
+		return ispow2(~p->tn.lval) >= 0;
+	case SPECIAL + 8:
+		return 0;
+	}
+	cerror("bad special shape: SPECIAL | %%%.2x", shape - SPECIAL);
+	return 0;
+}
+
+
+/* a comparison with a register on the right goes with the operands exchanged */
+static int rev[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
+
+void
+mycanon(NODE *p)
+{
+	register NODE *t;
+
+	switch (p->in.op) {
+	case EQ: case NE: case GE: case GT: case LE: case LT: case UGE: case UGT: case ULE: case ULT:
+		break;
+	default:
+		return;
+	}
+	if (p->in.right->in.op != REG)
+		return;
+	if (p->in.left->in.op == REG)
+		return;
+	if (p->in.left->in.op == ICON && p->in.left->tn.lval == 0)
+		return;
+	t = p->in.left;
+	p->in.left = p->in.right;
+	p->in.right = t;
+	p->in.op = rev[p->in.op - EQ];
+}
+
+int
+main(int argc, char **argv)
+{
+	return mainp2(argc, argv);
 }

@@ -1,825 +1,48 @@
 /*
- * lcl3.c - the commands F R S T of the intermediate file, register variables, temporaries, function head, switch
- *
- * Reconstructed from /lib/codgen: parminit() 0x8c74, hdrout() 0x8c0c, endline() 0x8c22, structretcode() 0x8f7e,
- * fbegin() 0x8fda, regtabinit() 0x910e, tabfind() 0x9116, tabclear() 0x9152, fixtemp() 0x918e, fixfld() 0x944a,
- * mapregs() 0x9512, symuse() 0x964c, symreg() 0x9fdc, regforsym() 0xa03a, fixname() 0xa0c6, oregfix() 0xa12a,
- * fcmd() 0xa1ba, regreset() 0xa252, rcmd() 0xa2f4, memname() 0xa734, scmd() 0xa4aa, tcmd() 0xa5de, findtemp() 0xa7ac,
- * gswitch() 0xa7e0. Names are guesses. The register variables of the function are in regvar[]: the first 7
- * entries are word registers, the next ones float registers.
+ * lcl3.c - switch statements
  */
 #include "cg.h"
-void ncopy(struct node *q, struct node *p);
-int findtemp(int tag);
+#include "cg2.h"
+
+static void chk(NODE *p);
+
+extern int dope[];
+extern struct sym *fpsym1;
+extern struct sym *fpsym2;
+extern NODE node[];
+extern char *rnames[];
+static char sccsid[] __attribute__((unused)) = "@[$]lcl3.c\t2.4  10/06/83 10:39:09 Copr. 1981 87wega3.2.";
 
 #define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
+
 #define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 
-extern int deflab(), getlab();
-extern int getreg(), rclass(), mapsym(), argsize(), rallkind(), szty();
-extern void rsreturn(), rfree(), rmove(), reclaim(), delay(), tfree();
-extern struct rs *rfind();
-extern struct sym *mapn();
-void oregfix();
-extern struct node *clocal(), *foldadd(), *member();
-extern void mapnm();
-extern char *rnames[];
-extern char ascii[];
-extern int rflag, pflag, lflag;
-extern int minreg, maxreg, ifline;
-extern long maxoff;
-extern char ifname[];
-extern struct rs *rsuse;
-extern struct sym *fpsym1, *fpsym2, *symtab0;
-extern struct tmpent { int off; char done; char cls; int flags; int reg; } tmptab[];
-
-struct rv { struct sym *sym; int rtag; int rreg; int rtype; int rcls; };
-int nparmtab;			/* 0x8f98 */
-struct { struct sym *sym; int reg; } parmtab[10];	/* 0x8f5c */
-struct rv regvar[12];		/* 0x8fe8: symbol, tag of the symbol or of the temporary, register, type, saved class */
-int structret;			/* 0xa15a: the function returns a structure */
-int structlab;		/* 0xa7b8 */
-long structsz;		/* 0xa7ba */
-int retlab;			/* 0x8fca */
-int entlab, jlab;		/* 0xa0e2, 0xa14c */
-int mcountlab;			/* 0xa7b6 */
-char fname[64];			/* 0xa0e4 */
-extern long frame0;			/* 0x69ce */
-
-/* the header of the assembler text */
-void hdrout(void)
-{
-#ifdef SEG
-	printf("\t.seg\n\t.psec data\n\t.data\n\n");
-	printf("\n\tfp\t\t:= r15;\n");
-	printf("\tsp\t\t:= rr14;\n");
-#else
-	printf("\n\tfp\t\t:= r15;\n");
-	printf("\tsp\t\t:= r15;\n");
-#endif
-}
-
-/* with -l: the line directive for a source file with the extension .c */
-void endline(void)
-{
-	register int n;
-	register char *cp;
-
-	if (lflag) {
-		n = strlen(ifname);
-		cp = &ifname[n - 1];
-		if (*cp == '"')
-			cp--;
-		if (*cp-- == 'c' && *cp == '.')
-			printf("\t.line\t%d\t%s\t\n", ifline, ifname);
-	}
-}
-
-void endrun(void)
-{
-	endline();
-}
-
-/* a formal parameter of the function: into its register, or noted for the entry code */
-void parminit(struct node * p)
-{
-	register struct sym *s;
-	register int sz, n, t, r, t2;
-	int cls;
-	struct rs *q;
-
-	if (p->op != NAME)
-		return;
-	mapsym(p);
-	sz = argsize(p);
-	s = p->sname;
-	n = s->sbyte5;
-	t = s->stype;
-#ifdef SEG
-	if (t == 6 || t == 7)
-		n -= 6;
-#else
-	if (t == 6 || t == 7)
-		n -= 5;
-#endif
-	else
-		n -= 7;
-	if (rflag && s->sclass == 4 && regvar[n].sym != s)
-		s->sclass = 9;
-	if (p->lval < 0 && s->sclass != 4 && s->sclass != 8)
-		s->sbyte5 = -(int)p->lval;
-	r = s->sbyte5;
-	if (p->type == 8 || p->type == 9) {
-		if (sz == 1)
-			t2 = 4;
-		else if (sz == 2)
-			t2 = 5;
-		else
-			t2 = p->type;
-	} else
-		t2 = p->type;
-	cls = rclass(t2, r);
-	if ((s->sclass == 9 && p->lval < 0) || s->sclass == 4) {
-		for (q = rsuse; q; q = q->next)
-			if (q->reg == r) {
-				q->busy = 0;
-				goto got;
-			}
-		getreg(cls, r, 0x1000, s);
-		rfree(r, t2);
-	got:
-		if (s->sclass == 4) {
-			if (s->stype == 7 || (s->stype == 6 && p->lval < 0))
-				printf("\tfldd\t%s,", rnames[r]);
-			else if (s->stype == 6)
-				printf("\tflds\t%s,", rnames[r]);
-			else {
-				if (sz == 1)
-					printf("\tld\t");
-				else if (sz == 2)
-					printf("\tldl\tr");
-				printf("%s,", rnames[r]);
-			}
-			if (p->lval >= 0)
-#ifdef SEG
-				printf("_stkseg+~L2+%ld(fp)\n", p->lval);
-#else
-				printf("~L2+%ld(fp)\n", p->lval);
-#endif
-			else {
-				if (sz == 2)
-					putchar('r');
-				printf("%s\n", rnames[-(int)p->lval]);
-			}
-			return;
-		}
-		if (s->stype == 8) {
-			if (sz == 1)
-#ifdef SEG
-				printf("\tld\t|_stkseg+~L1+%ld|(fp),%s\n", s->soffset / 8, rnames[r]);
-#else
-				printf("\tld\t~L1+%ld(fp),%s\n", s->soffset / 8, rnames[r]);
-#endif
-			else if (sz == 2)
-#ifdef SEG
-				printf("\tldl\t|_stkseg+~L1+%ld|(fp),r%s\n", s->soffset / 8, rnames[r]);
-#else
-				printf("\tldl\t~L1+%ld(fp),r%s\n", s->soffset / 8, rnames[r]);
-#endif
-			else
-				cerror("structure argument too long");
-			s->sflags &= ~8;
-			return;
-		}
-		if (nparmtab > 9)
-			cerror("rinit: formal paramter array overflow");
-		parmtab[nparmtab].reg = s->sbyte5;
-		parmtab[nparmtab].sym = s;
-		nparmtab++;
-		parmtab[nparmtab].sym = 0;
-		s->sflags &= ~8;
-		return;
-	}
-	if (s->sclass == 9 && p->lval >= 0)
-		s->sflags |= 8;
-	else if (s->sclass != 9)
-		cerror("illegal class in PROC tree");
-}
-
-/* the exit of a function that returns a structure: copy it to the place the caller gave */
-void structretcode(void)
-{
-	if (structret) {
-#ifdef SEG
-		printf("\tldl\trr4,#L%d\n", structlab);
-		printf("\tld\tr1,#%ld\n", structsz);
-		printf("\tldir\t@rr4,@r%s,r1\n", rnames[rallkind(0)]);
-		printf("\tldl\tr%s,#L%d\n", rnames[rallkind(0)], structlab);
-#else
-		printf("\tld\tr4,#L%d\n", structlab);
-		printf("\tld\tr1,#%ld\n", structsz);
-		printf("\tldir\t@r4,@%s,r1\n", rnames[rallkind(0)]);
-		printf("\tld\t%s,#L%d\n", rnames[rallkind(0)], structlab);
-#endif
-	}
-}
-
-/* the head of a function: the label and the jumps to the entry code */
-void fbegin(struct sym * s)
-{
-	register int t;
-	register char *cp, *np;
-
-	endline();
-	cp = fname;
-	*cp++ = '_';
-	for (np = ascii + s->nameoff; (*cp++ = *np++) != 0; )
-		;
-	if (s->sclass == 5)
-		printf("/*~~%s:*/\n", ascii + s->nameoff);
-#ifdef SEG
-	printf("\n\t.psec\n\t.code\n\n");
-#else
-	printf("\n\t.code\n\n");
-#endif
-	printf("\t%s:", fname);
-	if (s->sclass == 5)
-		printf(":");
-	printf("\n\t{\n\n");
-	t = DECREF(s->stype);
-	structret = t == 8 || t == 9;
-	if (structret) {
-		structlab = s->sx6;
-		structsz = s->ssize / 16;
-	}
-	retlab = getlab();
-	if (pflag) {
-		mcountlab = s->soffset;
-#ifdef SEG
-		printf("\tpushl\t@sp,rr2\n\tldl\trr2,#L%d\n", mcountlab);
-		printf("\tpushl\t@sp,rr2\n");
-		printf("\tcall\tmcount\n\tinc\tfp,#4\n");
-		printf("\tpopl\trr2,@sp\n");
-#else
-		printf("\tpush\t@sp,#L%d\n", mcountlab);
-		printf("\tcall\tmcount\n\tinc\tsp,#2\n");
-#endif
-	}
-	entlab = getlab();
-	jlab = getlab();
-	printf("\tjpr\tL%d\n", entlab);
-	printf("L%d:\n", jlab);
-}
-
-/* the table of the temporaries: tmptab[], an entry with a negative key ends the used part */
-void regtabinit(void)
-{
-	tmptab[0].off = -1;
-}
-
-int tabfind(int key)
-{
-	register int i;
-
-	for (i = 0; ; ) {
-		if (tmptab[i].off < 0 || key == tmptab[i].off)
-			break;
-		if (++i > 0x4f)
-			break;
-	}
-	return i;
-}
-
-void tabclear(int key)
-{
-	register int i;
-
-	i = tabfind(key);
-	if (tmptab[i].off != key)
-		cerror("Switch temp not found in table");
-	else
-		tmptab[i].done = 0;
-}
-
-/* a TEMP node becomes a register or an OREG on the frame */
-void fixtemp(struct node * p)
-{
-	register int i;
-	register int j, cls, reg;
-	struct rs *n;
-
-	if (rflag) {
-		if (p->rval >= 0 && (j = findtemp(p->rval)) >= 0) {
-			p->op = REG;
-			p->lval = 0;
-			p->rval = regvar[j].rreg;
-			return;
-		}
-	}
-	i = tabfind(p->rval);
-	if (tmptab[i].off != p->rval) {
-		if (i == 0x50)
-			cerror("TEMP table overflow\n");
-		tmptab[i].off = p->rval;
-		if (p->lval == -1) {
-			tmptab[i].flags |= 0x8000;
-			cls = rclass(p->type, -1);
-			reg = getreg(cls, -1, 0x1000, 0);
-			tmptab[i].reg = reg;
-			tmptab[i].cls = cls;
-			n = rfind(reg, cls);
-			n->kind = 6;
-			n->busy = 0;
-		} else {
-			tmptab[i].flags &= ~0x8000;
-			tmptab[i].reg = (int)((long)(unsigned)p->stsize + frame0);
-		}
-		if (i + 1 != 0x50)
-			tmptab[i + 1].off = -1;
-	}
-	tmptab[i].done = p->lval;
-	if (tmptab[i].flags >> 15 & 1) {
-		p->op = REG;
-		p->lval = 0;
-		p->rval = tmptab[i].reg;
-	} else {
-		p->op = OREG;
-		p->lval = (long)(unsigned)tmptab[i].reg;
-		p->rval = 15;
-		p->stsize = 0;
-#ifdef SEG
-		p->sname = symtab0;
-#else
-		p->sname = 0;
-#endif
-	}
-}
-
-/* a field: the address of the member is added to the address of the structure */
-void fixfld(struct node * p)
-{
-	register struct node *m, *a;
-	register int ismember;
-
-	if (p->op == FLD) {
-		m = p->left;
-		ismember = 1;
-	} else {
-		p->op = PLUS;
-		a = p->left;
-		m = a->left;
-		ismember = 0;
-	}
-	if (p->op != FLD && a->op != UAND)
-		return;
-	if (m->op != NAME || m->rval < 0 || (m->sname->sflags >> 2 & 1))
-		return;
-	m = clocal(m);
-	if (m->op != STAR)
-		return;
-	if (ismember)
-		p->left = m;
-	else {
-		m->op = FREE;
-		a->op = FREE;
-		p->type = INCREF(DECREF((unsigned)m->type));
-		p->left = m->left;
-	}
-}
-
-/* a callback of the walk before the code is generated: members and addresses of names */
-void mapregs(struct node * p)
-{
-	register struct node *m, *n, *r;
-
-	if (p->op == 120) {
-		fixfld(p);
-		return;
-	}
-	if (p->op == STREF) {
-		fixfld(p);
-		r = p->right;
-		if (p->left->op == UAND)
-			p->left->type = p->type;
-		if (r->op == NAME && (r->sname->sclass == 8 || r->sname->sclass == 11)) {
-			r->op = ICON;
-			r->lval = r->sname->soffset / 8;
-			r->rval = 0;
-			r->sname = 0;
-			r->type = 4;
-		}
-		n = foldadd(p);
-		if (n == p)
-			return;
-		ncopy(p, n);		/* the whole node, with its operands (the original copies the overlaid fields, which carry the operands) */
-		n->op = FREE;
-		return;
-	}
-	if (p->op == UAND) {
-		m = p->left;
-		if (m->op != NAME)
-			return;
-		if (m->sname == 0 || m->sname->sflags >> 2 & 1)	/* no symbol: the original reads the flags at address 0; host: not a static, keep the tree */
-			return;
-		if (m->rval < 0)
-			return;
-		m = clocal(m);
-		if (m->op != STAR)
-			return;
-		m->op = FREE;
-		p->op = FREE;
-		n = m->left;
-		ncopy(p, n);
-		n->op = FREE;
-		return;
-	}
-}
-
-/* the registers that hold the symbol are no longer valid */
-void symuse(struct sym * s)
-{
-	register struct rs *n, *next;
-
-	for (n = rsuse; n; n = next) {
-		next = n->next;
-		if (s && s == n->sym) {
-			if ((s == fpsym1 || s == fpsym2) && n->off != s->soffset)
-				continue;
-			if (n->busy <= 0) {
-				n->off = 0;
-				n->sym = 0;
-			}
-		}
-	}
-}
-
-/* the register that holds the symbol (and offset), marked busy; -1 if none */
-int symreg(struct sym * s, long off)
-{
-	register struct rs *n;
-	register struct sym *f1, *f2;
-
-	f1 = fpsym1;
-	f2 = fpsym2;
-	for (n = rsuse; n; n = n->next) {
-		if (s == f1 || s == f2) {
-			if (n->off != off)
-				continue;
-		} else if (s != n->sym)
-			continue;
-		n->busy = 1;
-		return n->reg;
-	}
-	return -1;
-}
-
-/* the register that can serve for the symbol; -1 if none */
-int regforsym(int reg, struct sym * s, int type, long off)
-{
-	register int r, cls;
-
-	if (s->sclass == 4) {
-		cls = rclass(type, reg);
-		r = getreg(cls, reg, 0x1000, s);
-		if (r == s->sbyte5)
-			return r;
-		rsreturn(cls, r);
-		return -1;
-	}
-	if (s == fpsym1 || s == fpsym2)
-		return symreg(s, off);
-	if (type != s->stype)
-		return -1;
-	if (reg != -1 && reg != s->sbyte5)
-		return -1;
-	return symreg(s, 0L);
-}
-
-/* a name that lives in a register becomes REG, otherwise an OREG */
-void fixname(struct node * p)
-{
-	register int r;
-
-	if (p->sname == 0)	/* a label used as a NAME has no symbol (variant A) */
-		return;
-	r = (p->rall & 0x1000) ? p->rall & ~0x1000 : -1;
-	r = regforsym(r, p->sname, p->type, p->sname->soffset / 8);
-	if (r >= 0) {
-		p->op = REG;
-		p->rval = r;
-		p->lval = 0;
-	} else
-		oregfix(p);
-}
-
-/* a NAME of an automatic variable or a parameter becomes an OREG off the frame pointer */
-void oregfix(struct node * p)
-{
-	if ((p->sname->sflags >> 2 & 1) == 1)
-		return;
-	if (p->op == NAME && p->sname->sclass == 3)
-		return;
-	if (p->op == NAME && p->rval < 0)
-		return;
-	p->op = OREG;
-	p->rval = 15;
-	p->lval = p->sname->soffset / 8;
-	p->stsize = 0;
-	p->sname = p->sname->sclass == 9 && ((p->sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
-}
-
-int findtemp(int tag)
-{
-	register int i;
-
-	for (i = 0; i < 12; i++)
-		if (regvar[i].rtag == tag)
-			return i;
-	return -1;
-}
-
-/* command F: a register variable or a temporary is released */
-void fcmd(int n)
-{
-	register struct sym *s;
-	register int i;
-
-	if (n > 0) {
-		s = mapn(n);
-		i = s->sbyte5;
-	} else {
-		i = findtemp(-n);
-		if (i == -1)
-			cerror("Can't find temp to be freed");
-	}
-	regvar[i].sym = 0;
-	regvar[i].rtag = -1;
-	regvar[i].rreg = -1;
-	regvar[i].rtype = -1;
-	if (n > 0)
-		s->sclass = regvar[i].rcls;
-	regvar[i].rcls = -1;
-}
-
-/* the register variables are given up at the end of a function (flag: put the classes back) */
-void regreset(int flag)
-{
-	register int i;
-	register struct sym *s;
-
-#ifdef SEG
-	for (i = 0; i < 11; i++) {
-#else
-	for (i = 0; i < 12; i++) {
-#endif
-		s = regvar[i].sym;
-		if (flag && s)
-			s->sclass = regvar[i].rcls;
-		regvar[i].sym = 0;
-		regvar[i].rtag = -1;
-		regvar[i].rreg = -1;
-		regvar[i].rtype = -1;
-	}
-#ifdef SEG
-	for (i = 8; i <= 13; i++)
-#else
-	for (i = 8; i <= 14; i++)
-#endif
-		if (rsuse)
-			rsreturn(9, i);
-	for (i = 20; i <= 23; i++)
-		if (rsuse)
-			rsreturn(9, i);
-}
-
-/* command R: a variable (b > 0: by its tag, else a temporary) is placed in register a */
-void rcmd(int a, int b, int type)
-{
-	register struct sym *s;
-	register struct sym *old;
-	register int tag, i;
-	int r, cls, got, saved;
-	struct rs *n;
-
-	if (b > 0) {
-		s = mapn(b);
-		type = s->stype;
-		tag = -1;
-	} else {
-		s = 0;
-		tag = -b;
-	}
-	if (type == 6 || type == 7) {
-#ifdef SEG
-		i = a + 6;
-#else
-		i = a + 7;
-#endif
-		old = regvar[i].sym;
-		regvar[i].sym = s;
-		regvar[i].rtag = tag;
-		r = a + 19;
-		regvar[i].rreg = r;
-		regvar[i].rtype = type;
-		saved = regvar[i].rcls;
-		regvar[i].rcls = s->sclass;
-		if (b > 0)
-			s->sbyte5 = r;
-		if (r - 1 < maxreg)
-			maxreg = r - 1;
-	} else {
-		i = a;
-		old = regvar[i].sym;
-		regvar[i].sym = s;
-		regvar[i].rtag = tag;
-		r = a + 7;
-		regvar[i].rreg = r;
-		regvar[i].rtype = type;
-		saved = regvar[i].rcls;
-		regvar[i].rcls = s->sclass;
-		if (b > 0)
-			s->sbyte5 = r;
-		if (r - 1 < minreg)
-			minreg = r - 1;
-	}
-	cls = rclass(type, r);
-	got = getreg(cls, r, 0x1000, s);
-	if (got != r)
-		cerror("rvplace: getreg got wrong register");
-	n = rfind(got, cls);
-	n->busy = 0;
-	if (b > 0)
-		s->sclass = 4;
-	if (old && old != s)
-		old->sclass = saved;
-}
-
-/* the operand of a store or load of a register variable: a name or an address on the frame */
-void memname(struct sym * s, long off)
-{
-	if (s && (s->sflags >> 2 & 1))
-		printf("_%s", ascii + s->nameoff);
-	else if (s && s->sclass == 3) {
-		putchar('L');
-		printf("%ld", off);
-	} else {
-#ifdef SEG
-		printf("_stkseg+");
-#endif
-		printf("~L1+%ld(fp)", off);
-	}
-}
-
-/* command S: a register variable or a temporary is stored in its memory place */
-void scmd(register int n)
-{
-	register struct sym *s;
-	register long off;
-	register int t, reg;
-	int i, j, tmp;
-
-	if (n > 0) {
-		s = mapn(n);
-		t = s->stype;
-		off = s->soffset;
-		reg = s->sbyte5;
-		i = reg - 7;
-		if (regvar[i].rcls != 3)
-			off = off / 8;
-		tmp = s->sclass;
-		s->sclass = regvar[i].rcls;
-	} else {
-		j = findtemp(-n);
-		if (j == -1)
-			cerror("Can't find temp to be freed");
-		t = regvar[j].rtype;
-		s = 0;
-		off = -n;
-		reg = regvar[j].rreg;
-	}
-	printf("/* rvstore */\n");
-#ifdef SEG
-	if ((t & 0x30) == 0x10)
-		t = 5;
-#endif
-	switch (t) {
-	case 5:
-		printf("\tldl\t");
-		memname(s, off);
-		printf(",rr%d\n", reg);
-		break;
-	case 6:
-		printf("\tflds\t");
-		memname(s, off);
-		printf(",f%d\n", reg - 16);
-		break;
-	case 7:
-		printf("\tfldd\t");
-		memname(s, off);
-		printf(",f%d\n", reg - 16);
-		break;
-	default:
-		printf("\tld\t");
-		memname(s, off);
-		printf(",r%d\n", reg);
-	}
-	if (s)
-		s->sclass = tmp;
-}
-
-/* command T: a register variable or a temporary is loaded from its memory place */
-void tcmd(register int n)
-{
-	register struct sym *s;
-	register long off;
-	register int t, reg;
-	int j;
-
-	if (n > 0) {
-		s = mapn(n);
-		t = s->stype;
-		off = s->soffset;
-		if (s->sclass != 3)
-			off = off / 8;
-		reg = s->sbyte5;
-	} else {
-		j = findtemp(-n);
-		if (j == -1)
-			cerror("Can't find temp to be restored");
-		t = regvar[j].rtype;
-		s = 0;
-		off = -n;
-		reg = regvar[j].rreg;
-	}
-	printf("/* rvrestore */\n");
-#ifdef SEG
-	if ((t & 0x30) == 0x10)
-		t = 5;
-#endif
-	switch (t) {
-	case 5:
-		printf("\tldl\t");
-		printf("rr%d,", reg);
-		break;
-	case 6:
-		printf("\tflds\t");
-		printf("f%d,", reg - 16);
-		break;
-	case 7:
-		printf("\tfldd\t");
-		printf("f%d,", reg - 16);
-		break;
-	default:
-		printf("\tld\t");
-		printf("r%d,", reg);
-	}
-	memname(s, off);
-	putchar('\n');
-}
-
-#ifdef SEG
-/* a free register other than avoid and r0 */
-static int newreg(int avoid)
-{
-	int r, t, t2;
-
-	r = getreg(2, -1, 0x1000, 0);
-	if (r == avoid || r == 0) {
-		t = r;
-		r = getreg(2, -1, 0x1000, 0);
-		if (r == avoid || r == 0) {
-			t2 = r;
-			r = getreg(2, -1, 0x1000, 0);
-			rfree(t2, 3);
-		}
-		rfree(t, 3);
-	}
-	return r;
-}
+#ifdef OLD_D3P
+#define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
 #endif
 
-#ifdef SEG
-/* a free long register that does not overlap avoid, not rr0 */
-static int newlreg(int avoid)
-{
-	int r, t, t2;
+#define SCONV	110
 
-	r = getreg(3, -1, 0x1000, 0);
-	if (r == avoid || (avoid ^ 1) == r || r == 0) {
-		t = r;
-		r = getreg(3, -1, 0x1000, 0);
-		if (r == avoid || (avoid ^ 1) == r || r == 0) {
-			t2 = r;
-			r = getreg(3, -1, 0x1000, 0);
-			rfree(t2, 5);
-		}
-		rfree(t, 5);
-	}
-	return r;
-}
-#endif
+
 
 /* the code for a switch: a jump table, or a search with cpir */
-void gswitch(struct node * p)
+#ifdef SEG
+void
+gswitch(NODE *p)
 {
-	register struct node *l, *r;
-	register struct node *x;
 	register long n;
-	register int dlab;
-	int tab, reg, save, ra, rb, cnt, tlab;
-#ifndef SEG
-	int t, t2;		/* used by the non-segmented version only */
-#endif
+	register int dlab, tab;
+	NODE *r, *l;
+	int reg, a6, save, t2, tlab, rb, t, cnt;
 
-	l = p->left;
-	r = p->right;
-	n = r->right->lval;
-	tab = r->right->rval;
-	dlab = -r->left->lval;
-	x = l->op == REG ? l : l->left;
-	reg = x->rval;
-	if (l->op != 124) {
-		mapnm(l->left);
+	l = p->in.left;
+	r = p->in.right;
+	n = r->in.right->tn.lval;
+	tab = r->in.right->tn.rval;
+	dlab = -r->in.left->tn.lval;
+	reg = (l->in.op == REG ? l : l->in.left)->tn.rval;
+	if (l->in.op != 124) {
+		mapnm(l->in.left);
 		delay(l);
 		reclaim(l, 0, 0);
 		printf("\tcp\t%s,#%ld\n", rnames[reg], n);
@@ -830,46 +53,115 @@ void gswitch(struct node * p)
 			rmove(reg, save, 3);
 			rfree(save, 3);
 		}
-#ifdef SEG
-		ra = newlreg(reg);
+		a6 = getreg(3, -1, 0x1000, 0);
+		if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
+			save = a6;
+			a6 = getreg(3, -1, 0x1000, 0);
+			if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
+				t2 = a6;
+				a6 = getreg(3, -1, 0x1000, 0);
+				rfree(t2, 5);
+			}
+			rfree(save, 5);
+		}
 		printf("\trl\t%s,#2\n", rnames[reg]);
-		printf("\tldl\tr%s,L%d(%s)\n", rnames[ra], tab, rnames[reg]);
-		printf("\tjp\t@r%s\n", rnames[ra]);
+		printf("\tldl\tr%s,L%d(%s)\n", rnames[a6], tab, rnames[reg]);
+		printf("\tjp\t@r%s\n", rnames[a6]);
+		return;
+	}
+	if (l->in.op == 124) {
+		cnt = (int)l->in.right->tn.lval;
+		tlab = l->in.right->tn.rval;
+		a6 = getreg(3, -1, 0x1000, 0);
+		if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
+			t = a6;
+			a6 = getreg(3, -1, 0x1000, 0);
+			if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
+				t2 = a6;
+				a6 = getreg(3, -1, 0x1000, 0);
+				rfree(t2, 5);
+			}
+			rfree(t, 5);
+		}
+		rb = getreg(2, -1, 0x1000, 0);
+		if (reg == rb || rb == 0) {
+			t = rb;
+			rb = getreg(2, -1, 0x1000, 0);
+			if (reg == rb || rb == 0) {
+				t2 = rb;
+				rb = getreg(2, -1, 0x1000, 0);
+				rfree(t2, 3);
+			}
+			rfree(t, 3);
+		}
+		printf("\tldl\tr%s,#L%d\n", rnames[a6], tlab);
+		printf("\tld\t%s,#%d\n", rnames[rb], cnt);
+		printf("\tcpir\t%s,@r%s,%s,eq\n", rnames[reg], rnames[a6], rnames[rb]);
+		printf("\tjpr\tne,L%d\n", dlab);
+		printf("\tsll\t%s,#2\n", rnames[rb]);
+		printf("\tneg\t%s\n", rnames[rb]);
+		printf("\tldl\tr%s,L%d+%d(%s)\n", rnames[a6], tab, (cnt - 1) << 2, rnames[rb]);
+		printf("\tjp\t@r%s\n", rnames[a6]);
+		rfree(a6, 5);
+		rfree(rb, 3);
+		rfree(reg, 3);
+	}
+}
 #else
+void
+gswitch(NODE *p)
+{
+	register long n;
+	register int dlab, tab;
+	NODE *r, *l;
+	int reg, save, t2, tlab, rb, ra, t, cnt;
+#ifdef OLD_D2T
+	struct rs *tn;
+#endif
+
+	l = p->in.left;
+	r = p->in.right;
+	n = r->in.right->tn.lval;
+	tab = r->in.right->tn.rval;
+	dlab = -r->in.left->tn.lval;
+	reg = (l->in.op == REG ? l : l->in.left)->tn.rval;
+	if (l->in.op != 124) {
+		mapnm(l->in.left);
+		delay(l);
+		reclaim(l, 0, 0);
+		printf("\tcp\t%s,#%ld\n", rnames[reg], n);
+		printf("\tjpr\tugt,L%d\n", dlab);
+		if (reg == 0) {
+			save = reg;
+			reg = getreg(2, -1, 0x1000, 0);
+			rmove(reg, save, 3);
+			rfree(save, 3);
+		}
 		printf("\trl\t%s,#1\n", rnames[reg]);
 		printf("\tld\t%s,L%d(%s)\n", rnames[reg], tab, rnames[reg]);
 		printf("\tjp\t@%s\n", rnames[reg]);
-#endif
 		return;
 	}
-	cnt = (int)l->right->lval;
-	tlab = l->right->rval;
-#ifdef SEG
-	ra = newlreg(reg);
-	rb = newreg(reg);
-	printf("\tldl\tr%s,#L%d\n", rnames[ra], tlab);
-	printf("\tld\t%s,#%d\n", rnames[rb], cnt);
-	printf("\tcpir\t%s,@r%s,%s,eq\n", rnames[reg], rnames[ra], rnames[rb]);
-	printf("\tjpr\tne,L%d\n", dlab);
-	printf("\tsll\t%s,#2\n", rnames[rb]);
-	printf("\tneg\t%s\n", rnames[rb]);
-	printf("\tldl\tr%s,L%d+%d(%s)\n", rnames[ra], tab, (cnt - 1) << 2, rnames[rb]);
-	printf("\tjp\t@r%s\n", rnames[ra]);
-	rfree(ra, 5);
-	rfree(rb, 3);
-	rfree(reg, 3);
-#else
+	if (l->in.op == 124) {
+	cnt = (int)l->in.right->tn.lval;
+	tlab = l->in.right->tn.rval;
 	if (reg == 0) {
-		save = reg;
+		t = reg;
 		reg = getreg(2, -1, 0x1000, 0);
-		rmove(reg, save, 3);
-		rfree(save, 3);
+		rmove(reg, t, 3);
+		rfree(t, 3);
 	}
+#ifdef OLD_D2T
+	if ((tn = rfind(reg, 2)) != 0)	/* the register of the switch value is in use here (OLD_D2T frees it in between) */
+		tn->busy++;
+	else
+		getreg(2, reg, 0x1000, 0);
+#endif
 	ra = getreg(2, -1, 0x1000, 0);
-	if (ra == reg || ra == 0) {
+	if (reg == ra || ra == 0) {
 		t = ra;
 		ra = getreg(2, -1, 0x1000, 0);
-		if (ra == reg || ra == 0) {
+		if (reg == ra || ra == 0) {
 			t2 = ra;
 			ra = getreg(2, -1, 0x1000, 0);
 			rfree(t2, 3);
@@ -877,10 +169,15 @@ void gswitch(struct node * p)
 		rfree(t, 3);
 	}
 	rb = getreg(2, -1, 0x1000, 0);
-	if (rb == reg || rb == 0) {
+#ifdef OLD_D6R
+#define D6RBAD(r)	(reg == (r) || (r) <= 1)	/* v0: the count of cpir in neither half of rr0 */
+#else
+#define D6RBAD(r)	(reg == (r) || (r) == 0)
+#endif
+	if (D6RBAD(rb)) {
 		t = rb;
 		rb = getreg(2, -1, 0x1000, 0);
-		if (rb == reg || rb == 0) {
+		if (D6RBAD(rb)) {
 			t2 = rb;
 			rb = getreg(2, -1, 0x1000, 0);
 			rfree(t2, 3);
@@ -891,12 +188,193 @@ void gswitch(struct node * p)
 	printf("\tld\t%s,#%d\n", rnames[rb], cnt);
 	printf("\tcpir\t%s,@%s,%s,eq\n", rnames[reg], rnames[ra], rnames[rb]);
 	printf("\tjpr\tne,L%d\n", dlab);
+#ifdef OLD_D6T
+	/* v0: the target from the pointer cpir leaves behind the value found (the labels follow the values) */
+	printf("\tld\t%s,%d(%s)\n", rnames[reg], (cnt - 1) * 2, rnames[ra]);
+#else
 	printf("\tsll\t%s,#1\n", rnames[rb]);
 	printf("\tneg\t%s\n", rnames[rb]);
 	printf("\tld\t%s,L%d+%d(%s)\n", rnames[reg], tab, (cnt - 1) * 2, rnames[rb]);
+#endif
 	printf("\tjp\t@%s\n", rnames[reg]);
 	rfree(ra, 3);
 	rfree(rb, 3);
 	rfree(reg, 3);
+	}
+}
 #endif
+
+#ifdef SEG
+/* PLUS(frame register, offset): the offset goes first and takes the pointer type, the register becomes an int */
+static void
+chk(NODE *p)
+{
+	register NODE *r;
+
+	r = p->in.left;
+	p->in.right->in.type = r->in.type;
+	p->in.left = p->in.right;
+	if (r->in.op != REG)
+		cerror("badly formed offset");
+	p->in.right = r;
+	r->in.type = 4;
+}
+#else
+/* a debugging hook that does nothing */
+static void
+chk(NODE *p)
+{
+	(void)p;
+}
+#endif
+
+/* the node p after the conversions: names to addresses of their class, conversions of constants */
+NODE *
+clocal(NODE *p)
+{
+	register int o, pf, lf;
+	register struct sym *s;
+	register NODE *r, *l, *q;
+
+	l = p->in.left;
+	r = p->in.right;
+	switch (o = p->in.op) {
+	case NAME:
+		s = p->in.sname;
+		switch (s->sclass) {
+		case 9:
+#ifdef OLD_D3K
+#ifndef OLD_D3KC
+			/* v0: a parameter whose address is taken is not known in its register: it needs its home */
+			{
+				register struct rs *n;
+
+				for (n = rsuse; n; n = n->next)
+					if (n->sym == s)
+						n->sym = 0;
+			}
+#endif
+#endif
+			r = makeblock(REG, 0, 0, 0x18);
+			r->tn.lval = s->soffset / 8;
+			r->tn.rval = 15;
+			p = member(makeblock(STREF, r, p, 0));
+			q = p->in.left;
+			if (q->in.op == PLUS) {
+				if (q->in.right->in.op == ICON) {
+					if (s->sflags >> 3 & 1)
+						q->in.right->in.sname = fpsym2;
+					else
+						q->in.right->in.sname = fpsym1;
+				}
+				chk(q);
+			}
+			break;
+		case 1:
+			r = makeblock(REG, 0, 0, 0x18);
+			r->tn.lval = s->soffset / 8;
+			r->tn.rval = 15;
+			p = member(makeblock(STREF, r, p, 0));
+			q = p->in.left;
+			if (q->in.op == PLUS) {
+				if (q->in.right->in.op == ICON)
+					q->in.right->in.sname = fpsym1;
+				chk(q);
+			}
+			break;
+		case 3:
+		case 6:
+			if ((s->sflags >> 2 & 1) == 1)
+				return p;	/* the original returns without a value (the caller gets what is left in the register) */
+			p->tn.lval = 0;
+			p->tn.rval = -s->soffset;
+			break;
+		case 4:
+			p->in.op = REG;
+			p->tn.lval = 0;
+			p->tn.rval = s->sbyte5;
+			break;
+		case 18:
+			break;
+		default:
+			cerror("lcl: NAME op has illegal class\n");
+		}
+		break;
+	case SCONV:
+		pf = p->in.type == 6 || p->in.type == 7;
+		lf = l->in.type == 6 || l->in.type == 7;
+		if (pf || lf)
+			break;
+		while (l->in.op == SCONV) {
+			if (tbytes(l->in.type) <= tbytes(p->in.type))
+				break;
+			if (l->in.left->in.type == 7 || l->in.left->in.type == 6)
+				break;
+			l->in.op = FREE;
+			p->in.left = l = l->in.left;
+		}
+		pf = p->in.type;
+		lf = l->in.type;
+		{
+		long val;
+
+		if (l->in.op == ICON) {
+			val = l->tn.lval;
+#ifdef SEG
+			if (pf == 4 && (lf & 0x30) == 0x10) {
+				l->tn.lval = (long)(int)val;
+				goto done;
+			}
+			if (pf == 14 && (lf & 0x30) == 0x10) {
+				l->tn.lval = val & 0xFFFFL;
+				goto done;
+			}
+#endif
+			switch (pf) {
+			case 2:
+				l->tn.lval = (long)(char)val;
+				break;
+			case 12:
+				l->tn.lval = val & 0xFF;
+				break;
+			case 14:
+				l->tn.lval = val & 0xFFFFL;
+				break;
+			case 4:
+				l->tn.lval = (long)(int)val;
+				break;
+			}
+			l->in.type = pf;
+		} else if (l->in.op == MUL && szty(pf) - szty(lf) == 1)
+			l->in.type = pf;
+		else if (tbytes(pf) != tbytes(lf))
+			break;
+#ifdef SEG
+		else if ((pf & 0x30) == 0x10)
+			break;
+#endif
+		if (tbytes(pf) == tbytes(lf)) {
+			l->in.type = p->in.type;
+			l->tn.rval = p->tn.rval;
+			l->tn.lval = p->tn.lval;
+			l->in.sname = p->in.sname;
+			p = l;
+			goto ret;
+		}
+		p->in.op = FREE;
+		p = l;
+		goto ret;
+		}
+	}
+#ifdef SEG
+done:
+#endif
+	if (logop(p->in.op) && r->in.op == ICON && l->in.op == SCONV &&
+	    (l->in.left->in.type == 2 || l->in.left->in.type == 12) && r->tn.lval >= -256 && r->tn.lval <= 255) {
+		l->in.op = FREE;
+		l = p->in.left = l->in.left;
+		p->in.type = r->in.type = l->in.type;
+	}
+ret:
+	return p;
 }
