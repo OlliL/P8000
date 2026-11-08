@@ -294,11 +294,16 @@ see "ranlib, strip, size on the host").
   `scc -c` and linked with `gld /lib/scrt0.o <objects> /lib/slibc.a -o pburn`;
   the result is byte-identical to `/bin/pburn`.
 
-### ld on the host (`host/ld`, measured with the original `/bin/ld`, ld.c 1.18)
+### ld on the host (`host/ld/nonseg`, taken over from `src/cmd/ld`; measured with the original `/bin/ld`, ld.c 1.18)
 
-`host/ld/ld.c` writes the same files as `/bin/ld` (146 command lines compared by `make -C host/ld check`; the 19 `ld` links of
-`src/cmd` give the same programs as the original ld). Nonsegmented only: E707/E711 objects, no 8 bit objects (E507/E511, diagnosed), no
-`-T` (prints the arguments), no `-v`. Facts found in the binary and by comparison:
+`host/ld/nonseg` is `src/cmd/ld` ported by the rules of `HANDOFF_wega_disasm.md` (146 command lines identical to the original in the corpus
+`compare/ld`, also built with the sanitizers; `-Wall -Wextra` clean). It has everything of the source (8 bit objects E507/E511, `-T`, `-v`). The
+structures that come from or go to a file, and the names that run over several entries of the symbol table, are kept as the byte image of the
+Z8000 (big endian) and read with `rd16`/`rd32`; the integers of the program are `int16_t`/`int32_t`. Where the original reads outside its
+data the host does the same on defined data: `areas[4]` (a kind of 4 in `place_sec`) is an all-zero entry, `libpath` has 26 bytes (the name
+"/z/bin/lib/libxxxxxxxx.a" runs into `spare7054`), `sym16` has 10 entries (140 bytes) behind it for a long name at its end, `symhash[]` entries
+behind a long name are null and are skipped where the original stores 0 at address 0. The heap of the original (64 KB: "Symbol table overflow",
+"table of contents overflow") is `malloc`/`realloc` here. Facts found in the binary and by comparison:
 
 - **Two passes.** Pass 1 runs while the arguments are read (an option and a file are handled in the order of the command line, `-u`/`-e`
   enter their symbol at that point): it collects the global symbols and the sizes. Pass 2 (after the options) reads the files again in
@@ -344,9 +349,14 @@ see "ranlib, strip, size on the host").
   Bad format, ...) ends with status 4, no arguments with 4, "cannot create output" with 2.
 - **Checks in pass 2:** a symbol defined with another type or value than in the table gives "- Multiply defined" (error).
 
-### sld on the host (`host/ld/sld.c`, measured with the original `/bin/sld`, ld.c 3.8)
+### sld on the host (`host/ld/seg`, taken over from `src/cmd/sld`; measured with the original `/bin/sld`, ld.c 3.8)
 
-`sld.c` writes the same files as `/bin/sld` on 91 command lines (`make -C host/ld check`), among them the `cas` link of `src/cmd/cas`
+`host/ld/seg` is `src/cmd/sld` ported by the same rules (91 command lines identical in the corpus `compare/sld`, also with the sanitizers; `-Wall -Wextra`
+clean; all options of the source: `-f`, `-A`, `-b`, `-t`, `-M`). Differences from the original source: `get_block(-1)` (the index -1 of `copy_blocks`) is an
+all-zero block, the words of the output are written big endian, a segment record of `p1seg`/`p2seg` is decoded from and encoded to its 16 byte image, the
+value of a symbol is a long whose high word is the segment (`map_sym`, the high word is cleared by `& 0xffff`), 16 bit sums are cut where the original
+adds `unsigned` words (`middle`), and `load1` has the two parameters the callers pass (the original declares a third that nobody passes). Earlier it was
+an independent reconstruction that wrote the same files on 91 command lines (`make -C host/ld check`), among them the `cas` link of `src/cmd/cas`
 (`-i -s -e start -z -Mt4 -Md5 -Mb5 ... -Md7 stable.o ...`) and the kernel link of `usr/sys/conf/make.wega` (`-Ns -e start -X -i -Ms62`, the
 objects of the system and its LIB1/LIB2, a `ver.o` of our own). It shares the symbol table, archive and message logic with `ld.c`
 (see "ld on the host"); `sld` is another program (it has `dump.c`, `ext.c`, `ldm.c`; the debug dump strings are in the binary but no
@@ -919,6 +929,8 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/codgen` | `clocal`, a static or extern-like name (`sclass` 3, 6 with bit 2 of `sflags`): `return` without a value (`jp` to the end, r2 holds 1), the caller goes on with that as a node. Not hit on the corpus. | kept (`return;`) | `OLDCC_LOG.md` 2026-11-02 |
 | `/lib/codgen`, `/lib/scodgen` | The rewrite of a field access or an address of a static (`mapregs` in `lcl3.c`, the `STREF` and `UAND` cases) copies only some fields of the replacement node (`op`, `type`, `sname`, `lval`, `rval`). The original's `lval` and `rval` overlay `left` and `right`, so the operands come along by accident. | kept in the original; the host copy copies the whole node | `host/codgen`, `src/TODO.md` (codgen host version) |
 | `/lib/codgen`, `/lib/scodgen` | Reads through a null symbol pointer (a `NAME` that is a label, an `ICON` without symbol in `mkoreg`/`oreg2`, `zzzcode` for an `OREG`): the original reads the zero page (a zero word, so `sclass == 3` and `nameoff` are false). `rweight[8]` is indexed with the registers 8..15 and 16 (class 4: the value is not used). `clocal` has `return;` without value. | kept (same result): the host tests the symbol first; `rweight[16]` with defined values, the key only computed for class 3 | `host/codgen`, `KNOWLEDGE.md` "codgen host version" |
+| `/bin/ld` | The symbol table lives in the heap (64 KB, `sbrk`): "Symbol table overflow" and "table of contents overflow" depend on the free memory; `symhash[]` entries behind a long name are 0 and `restore`/`load1` store 0 through them (address 0); `place_sec` reads `areas[4]` (the bytes behind the table) for a kind of 4; the name `/z/bin/lib/libX.a` is longer than `libpath[20]` and runs into the next variable. | host: `malloc` (no limit), the zero entries are skipped, `areas[5]` with a zero last entry, `libpath[26]` | `host/ld/nonseg` |
+| `/bin/sld` | `copy_blocks` reads the block with the index -1 (`blktab[-1]`, behind the table) and takes its `ncode`; `load1` is declared with a parameter that the callers do not pass; `read_words` tests `isspace` with the table of the old ctype; `middle` adds `unsigned` words (16 bit) before the segment is added. | host: block -1 is all zero, the parameter is dropped, `isspace`, `(uint16_t)` sums | `host/ld/seg` |
 | `/lib/cparse`, `/lib/scparse` | `clocal` reads `p->in.right` of a unary node (`NOT` is a unary node with the logical flag): the pointer is 0, the test `r->in.op == ICON` reads address 0 and is false. | kept (same result): the host tests `r` first | `host/cparse/local1.c` |
 | `/lib/cparse`, `/lib/scparse` | `putsym` of a structure tag without members (`struct sgtty *ap;`, the structure is never defined) reads `dimtab[-1]` (the word in front of the table) and takes it for a symbol: one wrong entry (symbol number 0x3020) in the tag list. `instk` with such a structure reads `dimtab[-1]` too and stops with `insane structure member list`. | kept: `dimtab` has one element in front (`dimtabx[0]` points to a symbol with number 0x3020); `instk` tests the index | `host/cparse/scan1.c`, `vinit1.c`; `compare/cparse` stty.c |
 | `/lib/cparse`, `/lib/scparse` | `clearst` frees a symbol and `putsym` then reads it again through `dimtab` (the tag of a structure); `putstrs` reads `strcur->s_next` after `free(strcur)`. | kept in the first case (no `free`), fixed in the second (the next pointer is saved first): the output does not depend on it | `host/cparse/sym1.c`, `vinit1.c` |
@@ -2361,9 +2373,7 @@ compared using `cmp` and are identical.
 ## The host tool chain: what is native
 
 - Host tool chain (compile without z8k-emu): native on the host are the `cc`/`scc` drivers, `popt`, `cas`, `ar`, `ranlib`, `strip`, `size` and
-  since 2026-10-22 `ld` (`host/ld`, nonsegmented, same files as `/bin/ld` on 146 command lines; no 8 bit objects, no `-T`/`-v`) and `sld`
-  (`host/ld/sld.c`, same files as `/bin/sld` on 91 command lines; not implemented: `-f`, `-A`, `-b`, `-t`, `-M` with `:t`/`:b`/`+files+`, `-M` changing
-  between large files, several overflowing start segments in combined mode, see KNOWLEDGE.md). `gld` (`host/ld/gld.c`, same files and messages as `/bin/gld`; not reproduced: the original's undefined output when no object is loaded, its memory limit ("out of memory(load2td)" with sections of about 50000 bytes) and hangs with sections near 64K). Still only the
+  `ld` (`host/ld/nonseg`) and `sld` (`host/ld/seg`), both taken over from `src/cmd` (146 and 91 command lines identical to the originals). `gld` (`host/ld/gld.c`, same files and messages as `/bin/gld`; not reproduced: the original's undefined output when no object is loaded, its memory limit ("out of memory(load2td)" with sections of about 50000 bytes) and hangs with sections near 64K). Still only the
   original binaries under the emulator: `cpp`, `cparse`/`scparse`, `gopt`, `as`. `spopt` is done (`host/popt`, `make spopt`). `host/ld/ld.c` is written from the binary and measurements, not transcribed function by function.
 
 ### codgen host version (`host/codgen`, ANSI C)

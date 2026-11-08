@@ -7,18 +7,22 @@
 #                        (WEGA=<file tree of the original system>)
 
 HOSTCC = cc
-CFLAGS = -O2 -Wall -I../tools/lib
+CFLAGS = -O2 -Wall -Wextra -std=gnu99 -I../tools/lib
 CONF   = ldconf.c ../tools/lib/conf.c
 WEGA = ../../../tmp/wega31_root
 EMU  = $(abspath ../z8k-emu/z8k-emu)
 
 all: ld sld gld
 
-ld: ld.c $(CONF) ldconf.h
-	$(HOSTCC) $(CFLAGS) -o $@ ld.c $(CONF)
+LDSRC = nonseg/ld.c nonseg/symbols.c nonseg/copyname.c nonseg/printname.c
 
-sld: sld.c $(CONF) ldconf.h
-	$(HOSTCC) $(CFLAGS) -o $@ sld.c $(CONF)
+ld: $(LDSRC) nonseg/ld.h nonseg/proto.h $(CONF) ldconf.h
+	$(HOSTCC) $(CFLAGS) -fsigned-char -Inonseg -I. -o $@ $(LDSRC) $(CONF)
+
+SLDSRC = seg/ld.c seg/ldm.c seg/symbols.c seg/copyname.c seg/printname.c seg/swap.c seg/ext.c seg/dump.c
+
+sld: $(SLDSRC) seg/ld.h seg/proto.h $(CONF) ldconf.h
+	$(HOSTCC) $(CFLAGS) -fsigned-char -Iseg -I. -o $@ $(SLDSRC) $(CONF)
 
 gld: gld.c $(CONF) ldconf.h
 	$(HOSTCC) $(CFLAGS) -o $@ gld.c $(CONF)

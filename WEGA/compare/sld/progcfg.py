@@ -18,6 +18,7 @@ MODULES = ['copyname', 'dump', 'ext', 'ld', 'ldm', 'printname', 'swap', 'symbols
 
 # the corpus: the segmented command lines of host/ld/check.py (SFIXED and random ones) on its test objects
 CORPUS_BINARY = 'sld'
+CANDIDATES = {'wega': 'src/cmd/sld/sld', 'host': 'host/ld/sld'}
 REPO_ = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
 CORPUS_FIXTURES = None
 CORPUS_LOCK = threading.Lock()

@@ -39,7 +39,6 @@ static void put32(unsigned char *p, uint32_t v) { p[0] = v >> 24; p[1] = v >> 16
 static int status;			/* 0, or 2 after a warning */
 static const char *curfile;		/* the file that is being read */
 static char curmember[15];		/* the archive member that is being read */
-static const char *tmpout = "l.out";	/* the output file, "l.out" unless -o is given */
 static int outcreated;
 
 static void
@@ -684,7 +683,7 @@ static void
 pass1file(const char *arg)
 {
 	const char *path = arg;
-	size_t len;
+	size_t len = 0;
 	unsigned char *data;
 
 	curfile = arg;

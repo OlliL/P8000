@@ -18,6 +18,7 @@ MODULES = ['ld', 'copyname', 'printname', 'symbols']   # link order of the own m
 TABLES = []
 
 CORPUS_BINARY = 'ld'
+CANDIDATES = {'wega': 'src/cmd/ld/ld', 'host': 'host/ld/ld'}
 REPO_ = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
 CORPUS_FIXTURES = None
 CORPUS_LOCK = threading.Lock()
