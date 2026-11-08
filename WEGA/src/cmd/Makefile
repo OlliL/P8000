@@ -162,7 +162,8 @@ crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranl
 	$(CAS) -u -o $@ `echo $@ | sed -e 's/\.o$$/.s/'`
 
 install: $(PROGS) $(FILES) $(SIMPLE)
-	for file in ar chkdiff getud putud tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
+	for file in ar getud putud tar sync ; do cp $$file $(PREFIX)/bin/$$file ; done
+	for file in chkdiff uuclear whodo ; do cp $$file.sh $(PREFIX)/bin/$$file ; chmod 755 $(PREFIX)/bin/$$file ; done
 	for file in ar tar sync ; do $(STRIP) $(PREFIX)/bin/$$file ; done
 	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; $(STRIP) $(PREFIX)/etc/$$file ; done
 	cp rm $(PREFIX)/bin/rm ; $(STRIP) $(PREFIX)/bin/rm
@@ -175,6 +176,24 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	rm -f $(PREFIX)/bin/cp $(PREFIX)/bin/ln
 	ln $(PREFIX)/bin/mv $(PREFIX)/bin/cp
 	ln $(PREFIX)/bin/mv $(PREFIX)/bin/ln
+	# the scripts of /etc (NAME.sh, as in System III), with the modes of the originals; mfs=umfs and makelost+found=mlf are links
+	cp adduser.sh $(PREFIX)/etc/adduser ; chmod 700 $(PREFIX)/etc/adduser
+	cp down.sh $(PREFIX)/etc/down ; chmod 700 $(PREFIX)/etc/down
+	cp halt.sh $(PREFIX)/etc/halt ; chmod 700 $(PREFIX)/etc/halt
+	cp install.sh $(PREFIX)/etc/install ; chmod 750 $(PREFIX)/etc/install
+	cp killall.sh $(PREFIX)/etc/killall ; chmod 744 $(PREFIX)/etc/killall
+	cp makelost+found.sh $(PREFIX)/etc/makelost+found ; chmod 700 $(PREFIX)/etc/makelost+found
+	cp makewhatis.sh $(PREFIX)/etc/makewhatis ; chmod 700 $(PREFIX)/etc/makewhatis
+	cp man.dbmgr.sh $(PREFIX)/etc/man.dbmgr ; chmod 700 $(PREFIX)/etc/man.dbmgr
+	cp mfs.sh $(PREFIX)/etc/mfs ; chmod 750 $(PREFIX)/etc/mfs
+	cp mvdir.sh $(PREFIX)/etc/mvdir ; chmod 700 $(PREFIX)/etc/mvdir
+	cp new.install.sh $(PREFIX)/etc/new.install ; chmod 700 $(PREFIX)/etc/new.install
+	cp rmuser.sh $(PREFIX)/etc/rmuser ; chmod 700 $(PREFIX)/etc/rmuser
+	cp sysgen.sh $(PREFIX)/etc/sysgen ; chmod 751 $(PREFIX)/etc/sysgen
+	cp UGETT1.sh $(PREFIX)/etc/UGETT1 ; chmod 700 $(PREFIX)/etc/UGETT1
+	rm -f $(PREFIX)/etc/umfs $(PREFIX)/etc/mlf
+	ln $(PREFIX)/etc/mfs $(PREFIX)/etc/umfs
+	ln $(PREFIX)/etc/makelost+found $(PREFIX)/etc/mlf
 	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX) ; cd .. ; done
 
 clean:

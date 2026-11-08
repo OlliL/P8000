@@ -1,0 +1,40 @@
+: "@[$]rc	1.1"
+: "This is the rc control script.  Init invokes this script and then"
+: "for the other important states where real work occurs we use csh(1)"
+: "scripts"
+
+TZ=MEZ-1MES
+export TZ
+trap "INIT 1" 2
+
+: "In all cases i/o is re-directed to the console"
+
+: "zero out the mount table if this is a bootup"
+if [ $3 = "0" ]
+	then /bin/cat /dev/null > /etc/mnttab
+	     /etc/devnm / | grep root | /etc/setmnt
+fi
+
+(
+case ${1-2} in
+1)
+	echo
+	uname -sn
+	echo Single-User Mode
+	if [ $3 = "2" ]
+		then /etc/killall 1 > /dev/null 2>&1
+		     /etc/killall > /dev/null 2>&1
+	fi
+	/etc/umfs > /dev/null 2>&1
+	;;
+2)
+	if [ $1 != $3 ]
+		then exec rc_csh
+	fi
+	;;
+
+*)
+	echo "Unknown state for init:" $*
+	;;
+esac
+)

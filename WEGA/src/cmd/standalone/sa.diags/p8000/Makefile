@@ -45,3 +45,7 @@ clean:
 	rm -f $(PROCED) boot.o  brk.o  comm.o  disk.o  gesa.o  init.o  ldsd.o  mch.o  menu.o  misc.o  ram.o  sa.test.o  term.o  wdc.o term.s ldsd.s gesa.s
 
 .PHONY: all clean
+
+install: $(PROCED)
+	cp sa.diags $(PREFIX)/sa.diags
+	chmod 444 $(PREFIX)/sa.diags

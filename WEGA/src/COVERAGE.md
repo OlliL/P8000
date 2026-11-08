@@ -8,9 +8,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
-| [root](#root) | 12 | 8 | 1 | 0 | 3 |
+| [root](#root) | 12 | 9 | 0 | 0 | 3 |
 | [bin](#bin) | 111 | 24 | 1 | 54 | 32 |
-| [etc](#etc) | 67 | 3 | 0 | 30 | 34 |
+| [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 9 | 0 | 2 | 19 |
 | [usr/bin](#usr-bin) | 145 | 10 | 0 | 81 | 54 |
 | [usr/lib](#usr-lib) | 197 | 0 | 0 | 128 | 69 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [usr/other](#usr-other) | 15 | 0 | 0 | 9 | 6 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 646 | 2 | 305 | 244 |
+| **all** | 1197 | 677 | 1 | 294 | 225 |
 
 <a id="root"></a>
 ## root
@@ -29,7 +29,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `boot` | binary E707 | - | todo | - | - |
 | `pb.image` | data | `src/cmd/BOOT0` | exact | - | - |
 | `sa.cat` | binary E707 | `src/cmd/standalone` | exact | cc | - |
-| `sa.diags` | binary E707 | `src/cmd/standalone` | partial | cc | - |
+| `sa.diags` | binary E707 | `src/cmd/standalone` | exact | cc | - |
 | `sa.format` | binary E707 | `src/cmd/standalone` | exact | cc | - |
 | `sa.install` | binary E707 | `src/cmd/standalone` | exact | cc | - |
 | `sa.mkfs` | binary E707 | `src/cmd/standalone` | exact | cc | - |
@@ -53,7 +53,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `bin/cat` | binary E707 | `tmp/sys3/usr/src/cmd/cat.c` | sys3 | D12 mixed, D1 tight | - |
 | `bin/cc` | binary E707 | `src/cmd/cc` | exact | cc | libc-v8.a |
 | `bin/chgrp` | binary E707 | `tmp/sys3/usr/src/cmd/chgrp.c` | sys3 | D12 old, D1 slots | - |
-| `bin/chkdiff` | text | `src/cmd/chkdiff` | exact | - | - |
+| `bin/chkdiff` | text | `src/cmd/chkdiff.sh` | exact | - | - |
 | `bin/chkin` | binary E707 | - | todo | D12 new, D1 loose | - |
 | `bin/chkout` | binary E707 | - | todo | D12 old, D1 tight | - |
 | `bin/chkwhat` | binary E707 | - | todo | D12 new?, D1 slots | - |
@@ -141,7 +141,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `bin/touch` | binary E707 | `tmp/sys3/usr/src/cmd/touch.c` | sys3 | D12 old?, D1 slots | - |
 | `bin/tr` | binary E707 | `tmp/sys3/usr/src/cmd/tr.c` | sys3 | D12 -, D1 slots | - |
 | `bin/uname` | binary E707 | `tmp/sys3/usr/src/cmd/uname.c` | sys3 | D12 -, D1 slots | - |
-| `bin/uuclear` | text | `src/cmd/uuclear` | exact | - | - |
+| `bin/uuclear` | text | `src/cmd/uuclear.sh` | exact | - | - |
 | `bin/uucp` | binary E707 | `tmp/sys3/usr/src/cmd/uucp/uucp.c` | sys3 | D12 new, D1 loose | - |
 | `bin/uulog` | binary E707 | `tmp/sys3/usr/src/cmd/uucp/uulog.c` | sys3 | D12 new, D1 loose | - |
 | `bin/uuname` | binary E707 | `tmp/sys3/usr/src/cmd/uucp/uuname.c` | sys3 | D12 -, D1 loose | - |
@@ -152,7 +152,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `bin/view` | binary E711 | - | todo | D12 old, D1 tight | - |
 | `bin/whereis` | binary E707 | - | todo | D12 old?, D1 tight | - |
 | `bin/who` | binary E707 | `tmp/sys3/usr/src/cmd/who.c` | sys3 | D12 new?, D1 loose | - |
-| `bin/whodo` | text | `src/cmd/whodo` | exact | - | - |
+| `bin/whodo` | text | `src/cmd/whodo.sh` | exact | - | - |
 | `bin/write` | binary E707 | `src/cmd/write.c` | exact | ccv1r | libc-v10.a |
 
 <a id="etc"></a>
@@ -162,71 +162,71 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 |---|---|---|---|---|---|
 | `etc/GETTY` | binary E711 | - | todo | D12 mixed, D1 loose | - |
 | `etc/INIT` | binary E707 | - | todo | D12 old, D1 slots | - |
-| `etc/UGETT1` | text | - | todo | - | - |
+| `etc/UGETT1` | text | `src/cmd/UGETT1.sh` | exact | - | - |
 | `etc/UGETTY` | binary E711 | - | todo | D12 mixed, D1 loose | - |
-| `etc/adduser` | text | - | todo | - | - |
-| `etc/checklist` | text | `tmp/sys3/etc/checklist` | sys3 | - | - |
+| `etc/adduser` | text | `src/cmd/adduser.sh` | exact | - | - |
+| `etc/checklist` | text | `src/etc/checklist` | exact | - | - |
 | `etc/chmog` | binary E707 | - | todo | D12 old, D1 slots | - |
 | `etc/chog` | binary E707 | - | todo | D12 old, D1 slots | - |
 | `etc/chroot` | binary E707 | `tmp/sys3/usr/src/cmd/chroot.c` | sys3 | D12 old, D1 slots | - |
 | `etc/clri` | binary E707 | `tmp/sys3/usr/src/cmd/clri.c` | sys3 | D12 -, D1 tight | - |
 | `etc/cron` | binary E707 | `tmp/sys3/usr/src/cmd/cron.c` | sys3 | D12 -, D1 tight | - |
-| `etc/cshprofile` | text | - | todo | - | - |
+| `etc/cshprofile` | text | `src/etc/cshprofile` | exact | - | - |
 | `etc/datem` | binary E707 | - | todo | D12 old, D1 slots | - |
 | `etc/dcheck` | binary E707 | - | todo | D12 old?, D1 tight | - |
-| `etc/default/dos` | text | - | todo | - | - |
+| `etc/default/dos` | text | `src/etc/default/dos` | exact | - | - |
 | `etc/devnm` | binary E707 | `tmp/sys3/usr/src/cmd/devnm.c` | sys3 | D12 -, D1 slots | - |
-| `etc/down` | text | - | todo | - | - |
+| `etc/down` | text | `src/cmd/down.sh` | exact | - | - |
 | `etc/dqueuer` | binary E711 | - | todo | D12 new, D1 loose | - |
 | `etc/dump` | binary E707 | `src/cmd/dump.c` | exact | cc | libc.a |
 | `etc/dumpdir` | binary E707 | `src/cmd/dumpdir.c` | exact | cc | libc.a |
 | `etc/fsck` | binary E707 | `tmp/sys3/usr/src/cmd/fsck.c` | sys3 | D12 new, D1 loose | - |
 | `etc/fsdb` | binary E707 | `tmp/sys3/usr/src/cmd/fsdb.c` | sys3 | D12 new?, D1 slots | - |
 | `etc/getty` | binary E711 | `tmp/sys3/usr/src/cmd/getty.c` | sys3 | D12 mixed, D1 loose | - |
-| `etc/group` | text | `tmp/sys3/etc/group` | sys3 | - | - |
-| `etc/halt` | text | - | todo | - | - |
+| `etc/group` | text | `src/etc/group` | exact | - | - |
+| `etc/halt` | text | `src/cmd/halt.sh` | exact | - | - |
 | `etc/icheck` | binary E707 | - | todo | D12 old, D1 slots | - |
 | `etc/init` | binary E707 | `tmp/sys3/usr/src/cmd/init.c` | sys3 | D12 old, D1 slots | - |
-| `etc/inittab` | text | `tmp/sys3/etc/inittab` | sys3 | - | - |
-| `etc/install` | text | `tmp/sys3/etc/install` | sys3 | - | - |
+| `etc/inittab` | text | `src/etc/inittab` | exact | - | - |
+| `etc/install` | text | `src/cmd/install.sh` | exact | - | - |
 | `etc/kdb` | binary E707 | - | todo | D12 new?, D1 slots | - |
-| `etc/killall` | text | `tmp/sys3/etc/killall` | sys3 | - | - |
+| `etc/killall` | text | `src/cmd/killall.sh` | exact | - | - |
 | `etc/labelit` | binary E707 | `tmp/sys3/usr/src/cmd/labelit.c` | sys3 | D12 old, D1 slots | - |
 | `etc/link` | binary E707 | `tmp/sys3/usr/src/cmd/link.c` | sys3 | D12 -, D1 - | - |
 | `etc/login` | binary E707 | `tmp/sys3/usr/src/cmd/login.c` | sys3 | D12 old, D1 slots | - |
-| `etc/makelost+found` | text | - | todo | - | - |
-| `etc/makewhatis` | text | - | todo | - | - |
-| `etc/man.dbmgr` | text | - | todo | - | - |
-| `etc/mfs` | text | - | todo | - | - |
+| `etc/makelost+found` | text | `src/cmd/makelost+found.sh` | exact | - | - |
+| `etc/makewhatis` | text | `src/cmd/makewhatis.sh` | exact | - | - |
+| `etc/man.dbmgr` | text | `src/cmd/man.dbmgr.sh` | exact | - | - |
+| `etc/mfs` | text | `src/cmd/mfs.sh` | exact | - | - |
 | `etc/mkfs` | binary E707 | `tmp/sys3/usr/src/cmd/mkfs.c` | sys3 | D12 new, D1 loose | - |
 | `etc/mknod` | binary E707 | `tmp/sys3/usr/src/cmd/mknod.c` | sys3 | D12 old?, D1 slots | - |
-| `etc/mlf` | text | - | todo | - | - |
-| `etc/mnttab` | data | `tmp/sys3/etc/mnttab` | sys3 | - | - |
-| `etc/motd` | text | `tmp/sys3/etc/motd` | sys3 | - | - |
+| `etc/mlf` | text | `src/cmd/makelost+found.sh` | exact | - | - |
+| `etc/mnttab` | data | `src/etc/mnttab` | exact | - | - |
+| `etc/motd` | text | `src/etc/motd` | exact | - | - |
 | `etc/mount` | binary E707 | `tmp/sys3/usr/src/cmd/mount.c` | sys3 | D12 old, D1 slots | - |
-| `etc/mvdir` | text | `tmp/sys3/etc/mvdir` | sys3 | - | - |
+| `etc/mvdir` | text | `src/cmd/mvdir.sh` | exact | - | - |
 | `etc/ncheck` | binary E711 | `tmp/sys3/usr/src/cmd/ncheck.c` | sys3 | D12 new?, D1 loose | - |
-| `etc/new.install` | text | - | todo | - | - |
-| `etc/passwd` | text | `tmp/sys3/bin/passwd` | sys3 | - | - |
-| `etc/profile` | text | `tmp/sys3/etc/profile` | sys3 | - | - |
-| `etc/rc` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/rc` | sys3 | - | - |
-| `etc/rc_csh` | text | - | todo | - | - |
+| `etc/new.install` | text | `src/cmd/new.install.sh` | exact | - | - |
+| `etc/passwd` | text | `src/etc/passwd` | exact | - | - |
+| `etc/profile` | text | `src/etc/profile` | exact | - | - |
+| `etc/rc` | text | `src/etc/rc` | exact | - | - |
+| `etc/rc_csh` | text | `src/etc/rc_csh` | exact | - | - |
 | `etc/restor` | binary E707 | `src/cmd/restor.c` | exact | cc | libc.a |
-| `etc/rmuser` | text | - | todo | - | - |
+| `etc/rmuser` | text | `src/cmd/rmuser.sh` | exact | - | - |
 | `etc/setlp` | binary E707 | - | todo | D12 -, D1 loose | - |
 | `etc/setmnt` | binary E707 | `tmp/sys3/usr/src/cmd/setmnt.c` | sys3 | D12 -, D1 slots | - |
 | `etc/shut` | binary E707 | - | todo | D12 old?, D1 loose | - |
-| `etc/sysgen` | text | - | todo | - | - |
-| `etc/termcap` | text | - | todo | - | - |
+| `etc/sysgen` | text | `src/cmd/sysgen.sh` | exact | - | - |
+| `etc/termcap` | text | `src/etc/termcap` | exact | - | - |
 | `etc/ttyconfig` | binary E707 | - | todo | D12 new?, D1 loose | - |
-| `etc/ttytype` | text | - | todo | - | - |
-| `etc/umfs` | text | - | todo | - | - |
+| `etc/ttytype` | text | `src/etc/ttytype` | exact | - | - |
+| `etc/umfs` | text | `src/cmd/mfs.sh` | exact | - | - |
 | `etc/umount` | binary E707 | `tmp/sys3/usr/src/cmd/umount.c` | sys3 | D12 -, D1 slots | - |
 | `etc/unlink` | binary E707 | `tmp/sys3/usr/src/cmd/unlink.c` | sys3 | D12 -, D1 - | - |
 | `etc/update` | binary E707 | - | todo | D12 -, D1 - | - |
 | `etc/upkeep` | binary E707 | - | todo | D12 old, D1 tight | - |
 | `etc/wall` | binary E707 | `tmp/sys3/usr/src/cmd/wall.sh` | sys3 | D12 -, D1 tight | - |
-| `etc/whois` | text | - | todo | - | - |
+| `etc/whois` | text | `src/etc/whois` | exact | - | - |
 
 <a id="lib"></a>
 ## lib

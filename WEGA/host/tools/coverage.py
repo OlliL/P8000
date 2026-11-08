@@ -36,7 +36,7 @@ SOURCE = {'bin/cc': 'cmd/cc', 'bin/scc': 'cmd/cc', 'bin/cas': 'cmd/cas', 'bin/ld
           'lib/cpp': 'cmd/cpp', 'lib/cparse': 'cmd/cparse', 'lib/scparse': 'cmd/cparse', 'lib/codgen': 'cmd/codgen',
           'lib/scodgen': 'cmd/codgen', 'lib/popt': 'cmd/popt', 'lib/spopt': 'cmd/popt', 'pb.image': 'cmd/BOOT0',
           'lib/libc.a': 'lib/libc', 'lib/crt0.o': 'lib/libc/csu', 'etc/dump': 'cmd/dump.c', 'etc/dumpdir': 'cmd/dumpdir.c',
-          'etc/restor': 'cmd/restor.c'}
+          'etc/restor': 'cmd/restor.c', 'etc/umfs': 'cmd/mfs.sh', 'etc/mlf': 'cmd/makelost+found.sh'}
 # Makefile variable -> name of the compiler
 CCNAME = {'CC': 'cc', 'SCC': 'scc', 'CCV0': 'ccv0', 'CCV1': 'ccv1', 'CCV1R': 'ccv1r', 'CCV1Q': 'ccv1q', 'CCV0P': 'ccv0p'}
 
@@ -105,6 +105,10 @@ def find_source(rel):
         p = 'man/' + rel[len('usr/man/'):]
         return p if os.path.exists(os.path.join(SRC, p)) else None
     name = os.path.basename(rel)
+    if rel.startswith('etc/') and os.path.exists(os.path.join(SRC, rel)):
+        return rel
+    if os.path.exists(os.path.join(SRC, 'cmd', name + '.sh')):
+        return 'cmd/%s.sh' % name
     if name.startswith('dos') and os.path.isdir(os.path.join(SRC, 'cmd', 'doscopy')) and rel.startswith('usr/bin/'):
         return 'cmd/doscopy'
     if name.startswith('sa.') and rel.count('/') == 0:

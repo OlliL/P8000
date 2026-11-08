@@ -2350,7 +2350,7 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
 
 ## Layout of src and the build
 
-`cmd/chkdiff`, `cmd/uuclear` and `cmd/whodo` are text scripts; they were
+`cmd/chkdiff.sh`, `cmd/uuclear.sh` and `cmd/whodo.sh` are text scripts (installed without the `.sh`); they were
 compared using `cmp` and are identical.
 
 `getud` and `putud` are unstripped: the symbol table holds the name of a temporary file of cc with its PID. With that PID replaced in the binary (`dd`, the shipped value) both are byte-identical (owner).

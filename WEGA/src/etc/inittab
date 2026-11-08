@@ -1,0 +1,16 @@
+1:00:k:/etc/GETTY tty0 !
+1:co:kc:/bin/env HOME=/ TZ=MEZ-1MES LOGNAME=wega PATH=/bin:/etc:/usr/bin /bin/csh</dev/console>/dev/console 2>&1
+1:02:k:/etc/GETTY tty2 !
+1:03:k:/etc/GETTY tty3 !
+1:04:k:/etc/GETTY tty4 !
+1:05:k:/etc/GETTY tty5 !
+1:06:k:/etc/GETTY tty6 !
+1:07:k:/etc/GETTY tty7 !
+2:00:c:/etc/GETTY tty0 2
+2:co:c:/etc/GETTY console 2
+2:02:c:/etc/GETTY tty2 2
+2:03:k:
+2:04:c:/etc/GETTY tty4 2
+2:05:c:/etc/GETTY tty5 2
+2:06:c:/etc/GETTY tty6 2
+2:07:c:/etc/GETTY tty7 2

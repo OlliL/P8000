@@ -92,6 +92,7 @@ install: $(FILES)
 	for p in $(FILES); do cp $$p $(PREFIX)/$$p; done
 	for p in $(STRIPPED); do $(STRIP) $(PREFIX)/$$p; done
 	for p in $(FILES); do chmod 400 $(PREFIX)/$$p; done
+	for d in $(SUBDIRS); do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX) ; cd .. ; done
 
 clean:
 	rm -f $(FILES) sd41.c ft41.c vf41.c libb.a bmisc.o  ft41.o  sa.cat.o  sa.function.o  sa.inout.o  sa.install.o  sa.mkfs.o  sa.timer.o  sd41.o  vf41.o  wdc.o

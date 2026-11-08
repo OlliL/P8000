@@ -1,0 +1,47 @@
+# "@[$]rc_csh	1.1"
+	echo
+	uname -sn
+	echo "Multi-user Startup"
+	echo
+
+# Check for filesystem consistency
+	/etc/fsck -y /dev/root
+	/etc/fsck -y /dev/rusr /dev/rtmp
+	/etc/mount /dev/tmp /tmp >& /dev/null
+	/etc/fsck -y -t /tmp/scratch /dev/rz
+	/etc/umount /dev/tmp >& /dev/null
+
+# Set the date
+	/etc/datem
+
+# Now mount the filesystems
+	/etc/mfs
+
+# Give the user a chance to interrupt, then go multi-user
+	/bin/echo -n 'The date the system knows is ' ; date
+	echo 'Going multi-user in 30 seconds\!'
+
+# configure system for correct modem/tty configuration
+	/etc/ttyconfig -t 0-7
+
+# Remove the remote lock file
+	cat /dev/null > /usr/spool/uucp/LCK..tmp
+	rm -f /usr/spool/uucp/LCK..*
+
+# Save the su and cron log files
+	if ( -e /usr/adm/sulog ) then
+		mv /usr/adm/sulog /usr/adm/osulog
+	endif
+	if ( -e /usr/lib/cronlog ) then
+		mv /usr/lib/cronlog /usr/lib/ocronlog
+	endif
+
+# Start cron, update and the dqueuer
+	/etc/dqueuer -r
+	/etc/cron > /usr/lib/cronlog
+	/etc/update
+
+# zero out utmp file
+	cat /dev/null > /etc/utmp
+
+	exit 0

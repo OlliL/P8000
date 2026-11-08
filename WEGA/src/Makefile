@@ -49,6 +49,7 @@ cmds:
 install:
 	cd lib ; $(MAKE) install PREFIX=$(PREFIX)
 	cd cmd ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX)
+	cd etc ; $(MAKE) install PREFIX=$(PREFIX)
 
 clean:
 	cd lib ; $(MAKE) clean

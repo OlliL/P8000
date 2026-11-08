@@ -1,0 +1,8 @@
+#
+# Standard-Zuordnungsdatei fuer Floppylaufwerke
+# unter WDOS
+#
+A=/dev/fd096ds9
+B=/dev/fd196ds9
+C=/dev/fd048ds9
+D=/dev/fd148ds9

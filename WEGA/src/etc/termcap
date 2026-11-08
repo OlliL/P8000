@@ -1,0 +1,92 @@
+un|dumb|unknown:co#80:am:bs:
+P8|P8000-A|P8000-Terminal kompatibel ADM31:\
+	:al=\EE:am:bs:ce=\ET:cm=\E=%+ %+ :cl=50\E*^^:co#80:dc=\EW:dl=\ER:\
+	:cd=\EY:ho=^^:li#24:ma=^Z^L^K^P^L j^Jk^Pl :\
+	:kl=^H:kd=^J:ku=^K:kr=^L:kh=^^:\
+	:NM=\E(\EG0:NB=\E(\EG2:NR=\E(\EG4:NS=\E(\EG6:\
+	:AL=\E)\EG0:AB=\E)\EG2:AR=\E)\EG4:AS=\E)\EG6:OV#1:\
+	:mi:nd=^L:up=^K:\
+	:so=\EG4:se=\EG0:sg#1:us=\EGC:ue=\EG0:ug#1:
+p8|p8000-A|P8000-Terminal kompatibel ADM31 ohne Videoattribute:\
+	:al=\EE:am:bs:ce=\ET:cm=\E=%+ %+ :cl=50\E*^^:co#80:dc=\EW:dl=\ER:\
+	:cd=\EY:ho=^^:li#24:ma=^Z^L^K^P^L j^Jk^Pl :\
+	:kl=^H:kd=^J:ku=^K:kr=^L:kh=^^:\
+	:mi:nd=^L:up=^K:
+PV|P8000-V|P8000-Terminal kompatibel vt100:\
+	:al=\E[L:co#80:li#24:am:mi:bs:cm=5\E[%i%2;%2H:\
+	:cl=50\E[;H\E[2J:dc=\E[P:dl=\E[M:\
+	:ce=3\E[K:cd=50\E[J:\
+	:nd=2\E[C:up=2\E[A:ho=\E[H:\
+	:ku=\E[A:kd=\E[B:kr=\E[C:kl=\E[D:kh=\E[H:\
+	:NM=\E[m:NB=\E[5m:NR=\E[7m:NS=\E[7;5m:\
+	:AM=\E[m:AB=\E[1;5m:AR=\E[1;7m:AS=\E[1;7;5m:\
+	:so=2\E[7m:se=2\E[m:sg#1:us=2\E[4m:ue=2\E[m:ug#1:
+pv|p8000-V|P8000-Terminal kompatibel vt100 ohne Videoattribute:\
+	:al=\E[L:co#80:li#24:am:mi:bs:cm=5\E[%i%2;%2H:\
+	:cl=50\E[;H\E[2J:dc=\E[P:dl=\E[M:\
+	:ce=3\E[K:cd=50\E[J:\
+	:nd=2\E[C:up=2\E[A:ho=\E[H:\
+	:ku=\E[A:kd=\E[B:kr=\E[C:kl=\E[D:kh=\E[H:
+G6|GDS6000|GDS 6000 ABS 7024 PUTA.ADM31 remote:\
+	:al=\EE:am:bs:ce=\ET:cm=\E=%+ %+ :cl=\E*^^:co#80:dl=\ER:\
+	:ho=^^:li#24:ma=^Z^L^K^P^L j^Jk^Pl :\
+	:up=^K:\
+	:kl=^H:kd=^J:ku=^K:kr=^L:kh=^^:
+vp|viewpoint60|-:\
+	:am:bs:ce=\EK:cm=\EY%+ %+ :\
+	:cl=^L:co#80:li#24:\
+	:cd=\Ek:up=^Z:
+v2|vt52|dec vt52:\
+	:bs:cd=\EJ:ce=\EK:cl=\EH\EJ:cm=\EY%+ %+ :co#80:li#24:nd=\EC:\
+	:pt:sr=\EI:up=\EA:
+d0|vt100n|vt100 w/no init:\
+	:co#80:li#24:am:cl=50\E[;H\E[2J:bs:cm=5\E[%i%2;%2H:nd=2\E[C:up=2\E[A:\
+	:ce=3\E[K:cd=50\E[J:so=2\E[7m:se=2\E[m:us=2\E[4m:ue=2\E[m:\
+	:ks=\E[?1h\E=:ke=\E[?1l\E>:ho=\E[H:\
+	:ku=\EOA:kd=\EOB:kr=\EOC:kl=\EOD:\
+	:kh=\E[H:k1=\EOP:k2=\EOQ:k3=\EOR:k4=\EOS:pt:sr=5\EM:
+d1|vt100|vt-100|pt100|pt-100|dec vt100:\
+	:co#80:li#24:am:cl=50\E[;H\E[2J:bs:cm=5\E[%i%2;%2H:nd=2\E[C:up=2\E[A:\
+	:ce=3\E[K:cd=50\E[J:so=2\E[7m:se=2\E[m:us=2\E[4m:ue=2\E[m:\
+	:is=\E>\E[?3l\E[?4l\E[?5l\E[?7h\E[?8h:ks=\E[?1h\E=:ke=\E[?1l\E>:\
+	:if=/usr/lib/tabset/vt100:ku=\EOA:kd=\EOB:kr=\EOC:kl=\EOD:\
+	:kh=\E[H:k1=\EOP:k2=\EOQ:k3=\EOR:k4=\EOS:pt:sr=5\EM:ho=\E[H:
+t1|vt100|aehnlich d1|tektronix 4105:\
+	:co#80:li#30:am:cl=50\E[;H\E[2J:bs:cm=5\E[%i%2;%2H:nd=2\E[C:up=2\E[A:\
+	:ce=3\E[K:cd=50\E[J:so=2\E[7m:se=2\E[m:us=2\E[4m:ue=2\E[m:\
+	:ks=\E[?1h\E=:ke=\E[?1l\E>:\
+	:ku=\E[A:kd=\E[B:kr=\E[C:kl=\E[D:\
+	:kh=\E[H:k1=\EOP:k2=\EOQ:k3=\EOR:k4=\EOS:pt:sr=5\EM:ho=\E[H:
+	:is=\E>\ELB30\E[?3l\E[?5l\E[?7h\E[?8h:\
+	:if=/usr/lib/tabset/vt100:
+o2|ct8500|oem2|tektronix ct8500:\
+	:YK:al=\E^L:am:bs:bt=\E^I:bw:cd=\E^U:ce=\E^T:cl=\E^E:cm=\E|%+ %+ :\
+	:co#80:da:db:dc=\E^]:dl=\E^M:ic=\E^\:li#25:nd=\ES:pt:sb=\E^A:\
+	:se=\E :so=\E$:ue=\E :up=\ER:us=\E\041:\
+	:ug#1:sg#1:ei=:im=:ho=\ET:k0=\E@:k1=\EA:k2=\EB:k3=\EC:k4=\ED:\
+	:k5=\EE:k6=\EF:k7=\EG:k8=\EH:k9=\EI:KA=\EJ:KB=\EK:KC=\EL:KD=\EM:\
+	:KE=\EN:KF=\EO:kl=\EP:kr=\ES:ks=\E=:ku=\ER:cs=\E^E\E>%+ :ke=\E]:kh=\ET:
+ia|ibmpc|ibm pc with msdos and full ansi :\
+	:co#80:li#25:cl=\E[H\E[J:am:bs:\
+	:cm=\E[%i%d;%dH:\
+	:nd=\E[C:up=\E[A:do=\E[B:ho=\E[H:\
+	:ce=\E[K:cd=\E[J:\
+	:al=\E[L:dl=\E[M:sf=\E[S:sr=\E[T:\
+	:ic=\E[@:dc=\E[P:\
+	:so=\E[7m:se=\E[0m:\
+	:us=\E[1m:ue=\E[0m:\
+	:ku=\EH:kr=\EM:kd=\EP:kl=\EK:kh=\EG:\
+	:kn=10:\
+	:k0=\ED:k1=\E;:k2=\E<:k3=\E=:k4=\E>:\
+	:k5=\E?:k6=\E@:k7=\EA:k8=\EB:k9=\EC:
+im|ibmpc|ibm pc with msdos restricted ansi.sys:\
+	:co#80:li#25:cl=\E[H\E[J:am:bs:\
+	:cm=\E[%H;%df:\
+	:nd=\E[1C:up=\E[1A:do=\E[1B:\
+	:ce=\E[K:\
+	:so=\E[7m:se=\E[0m:\
+	:us=\E[1m:ue=\E[0m:\
+	:ku=\EH:kr=\EM:kd=\EP:kl=\EK:kh=\EG:\
+	:kn=10:\
+	:k0=\ED:k1=\E;:k2=\E<:k3=\E=:k4=\E>:\
+	:k5=\E?:k6=\E@:k7=\EA:k8=\EB:k9=\EC:
