@@ -67,6 +67,7 @@ WORK = os.path.join(os.environ.get('STAGE_TMP', '/tmp/wega_stage'), 'corpus_' + 
 VARIANTS = getattr(CFG, 'CORPUS_VARIANTS', [None])
 IGNORE = re.compile(CFG.CORPUS_IGNORE) if getattr(CFG, 'CORPUS_IGNORE', None) else None
 NORMALIZE = getattr(CFG, 'CORPUS_NORMALIZE', None)
+PROG_NAME = getattr(CFG, 'PROG_NAME', CFG.NAME)	# script mode: the candidate's file name (a driver finds its cc.conf next to it)
 
 _STRACE_N = [0]
 
@@ -99,8 +100,8 @@ def run_script(binary, base, work, variant, tag, native):
     if binary.startswith('pass_'):
         # a candidate under its own name (the messages show argv[0]): <run>/.prog/NAME
         os.makedirs(os.path.join(rd, '.prog'))
-        shutil.copy(os.path.join(work, binary), os.path.join(rd, '.prog', CFG.NAME))
-        binary = '.prog/' + CFG.NAME
+        shutil.copy(os.path.join(work, binary), os.path.join(rd, '.prog', PROG_NAME))
+        binary = '.prog/' + PROG_NAME
     env = dict(os.environ)
     env.pop('TZ', None)
     env['LC_ALL'] = 'C'
@@ -369,7 +370,8 @@ def main():
     n = flt = only = None
     if '--make' in a:
         if getattr(CFG, 'CORPUS_OF', None):
-            sys.exit('%s: uses the tar of %s' % (CFG.NAME, CFG.CORPUS_OF))
+            print('%s: uses the tar of %s' % (CFG.NAME, CFG.CORPUS_OF))
+            return 0
         shutil.rmtree(CACHE, ignore_errors=True)
         make_tar(excl=True)
         return 0

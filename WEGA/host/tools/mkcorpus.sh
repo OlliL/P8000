@@ -8,6 +8,6 @@ REPO=`cd $HERE/../.. && pwd`
 [ $# = 0 ] && set -- `grep -v '^#' $REPO/compare/CORPORA`
 rc=0
 for p in "$@"; do
-	RECON_PROG=$p python3 $REPO/host/recon/stagecorpus.py --make || { [ "$p" = casold ] || rc=1; }
+	RECON_PROG=$p python3 $REPO/host/recon/stagecorpus.py --make || rc=1
 done
 exit $rc
