@@ -20,11 +20,8 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 
 ## 2. The links of `wega` and `boot` (what decides 100% of two files)
 
-1. `dev/wega/lp.c` (identical object) and `dev/wega/siok.c` (text size equal, 3 diff hunks left) are reconstructed from the shipped `wega`; `LIB2W`
-   (LIB2 with these two members replaced) is what `wega` links. The shipped LIB2 has other versions of both members. Left in `siok.c`:
-   `sioioctl` has the code blocks of the cases in another order (the orig places the TIOCMCS body before the second comparison: a
-   dispatch at the end of a switch, threaded by popt; the shipped scc does not generate this for the forms tried: if/else chains, switch with
-   break/return/default, while/for, goto); the data of `siok.o` (28 bytes more than LIB2's) is not compared yet. Material from WEGA 3.0
+1. `dev/wega/lp.c` (identical object) and `dev/wega/siok.c` (text of `sioioctl` right since the form `if (copyout(...) == 0) return(0); u.u_error = EFAULT; return;`) are reconstructed from the shipped `wega`; `LIB2W`
+   (LIB2 with these two members replaced) is what `wega` links. The shipped LIB2 has other versions of both members. Left in `siok`: the data of `siok.o` (28 bytes more than LIB2's) is not compared yet. Material from WEGA 3.0
    (`/home/olivleh1/Downloads/tmp`: LIB1, LIB2, lp.c with `$D$`, wpar.o, ...) shows that 3.0's `lp.o` and `siok.o` are older again (not the ones in `wega`).
    The link places `tty tt0 md lp cpu2` in segment 2 (first fit); proven when the objects are right.
 2. `wpar.o`: the root copy is from `wpar.c` 3.0; check the `wpar` data part of `wega` against ours (data `_md_flag` ...); the objects of `wpar` have no text.
@@ -36,8 +33,8 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). Differing lines of the disassembly with `vk` (shipped scc): tt0 1 (4), tty 13.
 Each remaining difference is a code generator behaviour to be found as a new switch (witnesses: these objects):
 
-1. switch layout (tty `TCXONC`, `sioioctl` in dev/wega/siok.c): in the original `ld r2,value; cp r2,#3; jr ule,X; jp default` stands behind the case bodies and `X: rl r2,#2; ldl ...; jp @rr4` in front of them; our
-   input gives value, compare and table jump in one piece (codemove of popt moves the dispatch to the head). Tried without effect: order of TCXONC/TCSBRK, place of `default`, casts of the switch value, case order.
+1. switch layout (tty `TCXONC`): in the original `ld r2,value; cp r2,#3; jr ule,X; jp default` stands behind the case bodies and `X: rl r2,#2; ldl ...; jp @rr4` in front of them; our
+   input gives value, compare and table jump in one piece (codemove of popt moves the dispatch to the head). Tried without effect: order of TCXONC/TCSBRK, place of `default`, casts of the switch value, case order, `return` for `break`, the form of the end of TCGETA. The `jr ule,X; jp default` is what popt makes of `cjp ugt,default; jp X` (reversal) when the block behind the compare has moved away; which source moves it is open.
 2. registers: tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion, `chg = tp->t_lflag^arg`; swapping the template 037 breaks sig, sys2, sys3), tty (`ld r4,...` against `ld r2,...` behind `u.u_ttyp == NULL` in `ttopen`).
    Forms without effect: casts and operand order of `chg`, `!`, `== 0`, `NULL ==`, `(long)` for `u.u_ttyp` and `t_pgrp`. New switches only as the last resort (owner).
    Lesson of `getxfile` (sys1): look at the source structure first (see OLDCC_LOG.md, vk sys1): what looked like register behaviour of the code generator was the place of statements in or behind a `switch`, the number of `return`s and the block of a declaration.

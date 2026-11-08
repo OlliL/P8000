@@ -136,11 +136,10 @@ caddr_t addr;
 
 	tp = &sio[minor(dev)];
 	if (cmd == TIOCMCG) {
-		if (copyout(&sioset, addr, 4)) {
-			u.u_error = EFAULT;
-			return;
-		}
-		return(0);
+		if (copyout(&sioset, addr, 4) == 0)
+			return(0);
+		u.u_error = EFAULT;
+		return;
 	}
 	if (cmd == TIOCMCS) {
 		if (copyin(addr, &rsioset, 4)) {
