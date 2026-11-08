@@ -18,23 +18,6 @@ What is byte-identical is checked by `make -C host checkall` (16 minutes): every
 - The other files of `/lib` (`crt0.o` is built from `libc/csu/crt0.s` and installed): `scrt0.o`, `mcrt0.o`, `smcrt0.o` (PLZ/ASM
   modules like `crt0.o`), `cnvt.o`, `scnvt.o`, `doprnt.o`, `sdoprnt.o` (not the members of `libc.a`), `slibc.a`: no source yet.
 
-## 7. Host tool chain
-
-Every program of the inventory (`host/HANDOFF_wega_disasm.md`) with WEGA status "exact" gets a host version: ANSI C, compiles with a recent gcc without warnings (`-Wall -Wextra`, no `-w`), behaves like the WEGA original. Excluded: `libc`, `cas`, all `*crt0*`. Programs: ar, ranlib, strip, size, cpp, cparse and scparse, codgen and scodgen, popt and spopt, ld, sld, cc and scc.
-
-Method: the sources are taken over anew from `src/cmd/X` (the exact, byte-identical state), not synchronised by diff; `findings.json` is no source for what changed.
-
-1. Collect what exists only in the host version before it is replaced: fixes of defects of the original (quirks table in `host/KNOWLEDGE.md`, "kept"/"fixed"), settings of the host (`cc.conf`, `ld.conf`), tests and checks. None of it may get lost.
-2. Take the sources of `src/cmd/X` into `host/X`, as close as possible: same file, function and variable names and order, so that `diff src/cmd/X host/X` shows exactly the port. Allowed changes: ANSI prototypes, headers, and what Z8000 to 64 bit needs (3.). Programs of `src/cmd` that are one file (`ar.c`, `ranlib.c`, `strip.c`, `size.c`) the same way. `scparse`, `scodgen`, `spopt`, `sld`, `scc` from the same source with `-DSEG`/`-DSCC` as in `src`.
-3. Z8000 to 64 bit (host int is 32 bit, long 64 bit, char may be unsigned, little endian):
-   - Always: fixed width types (`int16_t`, `uint16_t`, `int32_t`, ...) for everything that is a data format (object files, archive headers, symbol tables, relocations) and for `long`; binary files are read and written field by field, big endian, never a struct by `fread`/`fwrite`; pointers kept in an `int` become `intptr_t` or an index; `char` signedness explicit (`-fsigned-char` or a type).
-   - Plain computation with `int` stays `int` at first. Built with `-fsanitize=undefined,address` and `-ftrapv`, run with the corpora: where a 16 bit overflow, a sign extension of a `short`/`char` or a shift beyond 16 bit changes the result, that place gets `int16_t`/`uint16_t`. Each such place is recorded (evidence) in `host/KNOWLEDGE.md`.
-   - `printf` formats with `long`, `sizeof` and struct layout assumptions, `strcpy` overlaps and similar are checked on every program.
-4. cparse needs a host yacc (bison `-y` or byacc); the tables differ from the WEGA yacc, so inputs with syntax errors belong to the corpus.
-5. Order: first a small pilot (`ar`) to settle the recipe, shown to the owner; then ranlib, strip, size, cpp, ld, sld, cc, popt, codgen, cparse. One program per commit.
-6. Check per program, against the original under `z8k-emu`, by the corpus only (`host/tools/corpus.sh`, candidates `wega` and `host` of `compare/NAME/progcfg.py`, see `host/HANDOFF_wega_disasm.md`, "Check of a program"); the `check.sh` and `check.py` of the host directories and their `check` targets are converted into corpus cases and removed (done: `ar`, `cpp`, binutils, `cc`, `popt`; open: cas, ld, libc), proved by deliberately broken builds; for the compiler passes also error cases. Codgen, cpp, cparse get a `Makefile` and an entry in `host/Makefile` (`all`, `check`) and in `host/tools/checkall.sh`.
-7. Finish: inventory table (column "Host source") and `host/KNOWLEDGE.md` current, `make -C host checkall` including the new programs.
-
 ## 8. Clean up
 
 To look at: codgen, scodgen and spopt built with the shipped cc and shipped libc plus the old sprintf (stage 1) differ from the originals on the corpora (47, 46, 79 cases; with `libc-v5.a` 0, spopt 2, the `NK core` line). The final programs are identical; which module causes it is not known.
