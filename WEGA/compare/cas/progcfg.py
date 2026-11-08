@@ -1,4 +1,13 @@
-"""Configuration of the recon toolkit (host/recon/progcfg.py) for cas (segmented, built by an older scc we do not have)."""
+"""Configuration of the recon toolkit (host/recon/progcfg.py) for cas (segmented, built by an older scc we do not have).
+
+The corpus (script mode, case.sh): the inputs are made fresh and are the same every time (nothing is random)
+  c:PATH       a C source of src/cmd or src/lib, made into assembler by the original /bin/cc -S -O (n.s) and /bin/scc -S -O (s.s)
+  op:MODE:K    block K (3000 instructions) of the opcodes z8k.py decodes: MODE ns, ss, sl (test/casgen.py)
+  fz:MODE:K    block K of the operand patterns of the mnemonics z8k.py does not decode: MODE ns, sl
+  rel:SEG:D    jumps and calls at the distance D (words), or the chains of jpr (D = chain), nonsegmented (SEG 0) and segmented (SEG 1)
+  jpr:NAME     the fixed sources test/jpr/NAME.s (the decision of jpr and callr), assembled nonsegmented and with a .seg in front
+  opt:NAME     the options -l -d -r -t -i -m -v -^ on the fixed sources test/jpr/NAME.s
+"""
 import os
 
 NAME = 'cas'
@@ -8,29 +17,96 @@ ORIG_LIM = 0x10000  # the original is stripped
 SEG = True
 CC = '/bin/scc'
 
-# the corpus: every C source, made into assembler by the original /bin/cc -S -O (n.s) and /bin/scc -S -O (s.s); each is
-# assembled as cc does it (cas -u -o X.o X.s); object and messages compared
+CANDIDATES = {'wega': 'src/cmd/cas/build/cas', 'host': 'host/cas/cas'}
 CORPUS_BINARY = 'build/cas'
-CORPUS_VARIANTS = [['n'], ['s']]
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+TESTDIR = os.path.join(HERE, 'test')
+BLOCK = 3000
+OPTS = ['-u -l', '-u -d', '-u -r', '-u -t', '-u -i', '-u -m', '-u -v', '-u -^', '-l', '-u -l -d']
+
+
+OLD = False		# the corpus of the old cas (compare/casold) sets it: the sources old_*.s need its early decision (the shipped cas
+			# stops with "jump optimization: Not enough core" on the 250 undecided entries of old_max.s, the host cas has no such limit)
+
+
+def _jpr_names():
+    d = os.path.join(TESTDIR, 'jpr')
+    names = sorted(f[:-2] for f in os.listdir(d) if f.endswith('.s')) if os.path.isdir(d) else []
+    return [n for n in names if OLD or not n.startswith('old_')]
+
+
+def _blocks(items):
+    return (len(items) + BLOCK - 1) // BLOCK
 
 
 def CORPUS_SOURCES():
     import corpusc
-    return corpusc.c_sources()
+    import sys
+    sys.path.insert(0, TESTDIR)
+    import casgen
+    out = ['c:' + s for s in corpusc.c_sources()]
+    for mode in ('ns', 'ss', 'sl'):
+        out += ['op:%s:%d' % (mode, k) for k in range(_blocks(casgen.opcodes(mode)))]
+    for mode in ('ns', 'sl'):
+        out += ['fz:%s:%d' % (mode, k) for k in range(_blocks(casgen.fuzz(mode)))]
+    for seg in (0, 1):
+        out += ['rel:%d:%d' % (seg, d) for d in casgen.ALL] + ['rel:%d:chain' % seg]
+    for n in _jpr_names():
+        out += ['jpr:' + n, 'opt:' + n]
+    return out
+
+
+def _write(path, text):
+    with open(path, 'w') as f:
+        f.write(text)
+
+
+def _block_text(mode, lines):
+    return ('.seg\n' if mode != 'ns' else '') + '.code\n' + ''.join('\t' + t + '\n' for t in lines)
 
 
 def CORPUS_PREPARE(src, work):
+    import sys
+    sys.path.insert(0, TESTDIR)
+    import casgen
     import corpusc
-    for cc, out in (('/bin/cc', 'n'), ('/bin/scc', 's')):
-        if corpusc.prepare_s(src, work, cc, ['-O']) is None:
-            return None
-        os.rename(os.path.join(work, 'in.s'), os.path.join(work, out + '.s'))
-    return 'x'
+    kind, _, rest = src.partition(':')
+    runs = []
+    if kind == 'c':
+        for cc, out in (('/bin/cc', 'n'), ('/bin/scc', 's')):
+            if corpusc.prepare_s(rest, work, cc, ['-O']) is None:
+                return None
+            os.rename(os.path.join(work, 'in.s'), os.path.join(work, out + '.s'))
+            runs.append('%s.s -u' % out)
+    elif kind in ('op', 'fz'):
+        mode, k = rest.split(':')
+        items = casgen.opcodes(mode) if kind == 'op' else casgen.fuzz(mode)
+        lines = [t for _, t, _ in items[int(k) * BLOCK:(int(k) + 1) * BLOCK]]
+        _write(os.path.join(work, 'x.s'), _block_text(mode, lines))
+        runs.append('x.s -u')
+    elif kind == 'rel':
+        seg, d = rest.split(':')
+        if d == 'chain':
+            text = casgen.reljump(int(seg), [], True)
+        else:
+            text = casgen.reljump(int(seg), [int(d)], False)
+        _write(os.path.join(work, 't.s'), text)
+        runs.append('t.s -u')
+    elif kind in ('jpr', 'opt'):
+        text = open(os.path.join(TESTDIR, 'jpr', rest + '.s')).read()
+        _write(os.path.join(work, 'n.s'), text)
+        _write(os.path.join(work, 's.s'), '.seg\n' + text)
+        if kind == 'jpr':
+            runs += ['n.s -u', 's.s -u', 'n.s -u -l', 's.s -u -l']
+        else:
+            for o in OPTS:
+                runs += ['n.s ' + o, 's.s ' + o]
+    else:
+        return None
+    _write(os.path.join(work, 'runs'), '\n'.join(runs) + '\n')
+    return src.replace(':', '_').replace('/', '_')
 
 
-def CORPUS_RUN(binary, base, work, variant):
-    return [binary, '-u', '-o', variant[0] + '.o', variant[0] + '.s'], None
-
-
-def CORPUS_OUTPUTS(base):
-    return ['n.o', 's.o']
+def CORPUS_SCRIPT(base):
+    return 'case.sh'

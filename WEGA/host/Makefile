@@ -42,10 +42,6 @@ all: cc popt codgen cparse ar binutils cas ld cpp
 cc popt codgen cparse ar binutils cas ld cpp:
 	$(MAKE) -C $@ all
 
-check:
-	$(MAKE) -C cas check WEGA=$(WEGAABS)
-	$(MAKE) -C ld check WEGA=$(WEGAABS) EMU=$(EMU)
-
 checkall:
 	WEGA=$(WEGAABS) sh tools/checkall.sh
 
@@ -69,4 +65,4 @@ clean:
 	$(MAKE) -C cas clean
 	$(MAKE) -C cpp clean
 
-.PHONY: all check checkall wbin oldroot src clean cc popt codgen cparse ar binutils cas ld cpp
+.PHONY: all checkall wbin oldroot src clean cc popt codgen cparse ar binutils cas ld cpp

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # mklib.py OUT member.o ...: an archive with a __.SYMDEF in the format ld reads (the original ranlib loses
-# most long names, see KNOWLEDGE.md), used by check.py
+# most long names, see KNOWLEDGE.md), used by the fixtures of the ld, sld and gld corpora (compare/*/fixtures.py)
 import sys,struct,time,os
-sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','..','tools'))
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','..','..','host','tools'))
 from sout import SOut
 out=sys.argv[1]; mem=sys.argv[2:]
 def hdr(name,data,date):

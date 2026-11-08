@@ -16,7 +16,7 @@ SEG = True
 CC = '/bin/scc'
 MODULES = ['copyname', 'dump', 'ext', 'ld', 'ldm', 'printname', 'swap', 'symbols']   # link order of the own modules
 
-# the corpus: the segmented command lines of host/ld/check.py (SFIXED and random ones) on its test objects
+# the corpus: the segmented command lines of fixtures.py (SFIXED and random ones) on its test objects
 CORPUS_BINARY = 'sld'
 CANDIDATES = {'wega': 'src/cmd/sld/sld', 'host': 'host/ld/sld'}
 REPO_ = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
@@ -25,7 +25,7 @@ CORPUS_LOCK = threading.Lock()
 
 
 def _check():
-    path = os.path.join(REPO_, 'host', 'ld', 'check.py')
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fixtures.py')
     spec = importlib.util.spec_from_file_location('ld_check_corpus', path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

@@ -25,7 +25,7 @@ CORPUS_LOCK = threading.Lock()
 
 
 def _ld_check():
-    path = os.path.join(REPO_, 'host', 'ld', 'check.py')
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fixtures.py')
     spec = importlib.util.spec_from_file_location('ld_check_corpus', path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -51,7 +51,7 @@ def _setup_corpus():
 
 
 def CORPUS_SOURCES():
-    """the fixed and random command lines from host/ld/check.py"""
+    """the fixed and random command lines of fixtures.py"""
     _setup_corpus()
     check = _ld_check()
     return check.FIXED + [' '.join(args) for args in check.rnd(100, 1)]

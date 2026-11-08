@@ -839,6 +839,7 @@ means it does something fixed instead (only possible where the original's result
 | Program | Bug or quirk | Rebuild | Details |
 |---------|--------------|---------|---------|
 | `/bin/cas` (`jdeps`) | for a forward jump a jpr that stands exactly at the label counts as growth of the distance (`>=`), so a jump at distance 256 whose target is a long jpr becomes long; the old cas has `>` | kept (`host/cas`), `OLD_CAS` for the old one | `OLDCC.md`, D17 |
+| `/bin/cas` | with many undecided jpr/callr entries (about 250 jprs that jump to one label) `optim` runs out of memory: `jump optimization: Not enough core` (`newrec`, `ssgbrk`); the old cas stops at 255 entries before it | not reproduced: the host takes the records from `malloc` and has no limit; the sources of the corpus stay below it (`old_max.s` only for the old cas) | `compare/cas/progcfg.py` |
 | `/bin/cas` against its manual | manual 3.4.5 says `.=` and a difference of labels force jump optimization before the end of pass 1; the shipped cas does neither (nor does the ZEUS cas): an old text | kept | `OLDCC.md`, D17 |
 | kernel `fpe.s` (`mulno`) | a mantissa product below 2 is normalised with bit 55 instead of bit 63 and an unshifted guard byte: wrong last bit in about 1 of 5 extended `fmul` results | kept (z8k-emu) | "EPU (floating point)", `z8k-emu/README.md` |
 | `/lib/gopt` (`cc -Or`) | register pointer parameters get a wrong frame offset (`ld r4,~L1+-1275(fp)`); same output on the real hardware | kept (emulated binary) | "gopt (-Or) output with register pointer parameters" |
@@ -1150,8 +1151,8 @@ reading the original code with `tools/odis.py NAME`:
 
 ### sld: corpus test of the rebuilt sld
 
-`host/tools/corpus.sh sld` links the test objects of `host/ld/test` with the rebuilt sld and with the original `/bin/sld`
-under z8k-emu (the segmented command lines of `host/ld/check.py`: options, areas, `-r` chains, the objects big1..big8 with
+`host/tools/corpus.sh sld` links the test objects of `compare/ld/test` with the rebuilt sld and with the original `/bin/sld`
+under z8k-emu (the segmented command lines of `compare/sld/fixtures.py`: options, areas, `-r` chains, the objects big1..big8 with
 many segments, the kernel link of `make.wega`, random lines) and compares the output file, stdout/stderr and the exit
 status: 91 of 91 identical (2026-11-07). Errors of the reconstruction found on the way, which a comparison of instruction
 forms with masked addresses does not show:
@@ -2125,10 +2126,15 @@ of a file and on some tokens (`<<`, `^$`, `5|3`); the test `exp.py` therefore le
 
 `host/cas` is the cas assembler for Linux: the decompilation of `src/cmd/cas` moved to a 32/64 bit host and to ANSI C (see `host/cas/README` for what changed: 16 bit
 types where the width shows, nodes and symbol tables without pointers in longs, big endian binary files, `mkstemp`). Same options, messages, return codes, objects and
-listings as `/bin/cas`. Checks: `make -C host/cas check WEGA=...` (`check.sh`) runs the scripts of `compare/cas/test/` with `NATIVE=1` (the program under test runs on the
-host, the original under z8k-emu).
+listings as `/bin/cas`. Checks: the corpus `compare/cas` (`host/tools/corpus.sh cas`: the original, the build of `src/cmd/cas` and the host build on the same inputs; the inputs are the same
+every time, see `compare/cas/test/README`): all opcodes of the three address modes (`casgen.py`), operand patterns, jumps at 23 distances, the 230 compiler outputs and the fixed
+sources `compare/cas/test/jpr/*.s` for the decision of `jpr` and `callr`, each also with the options `-l -d -r -t -i -m -v -^`. 643 of 643 inputs identical for both candidates.
+`compare/casold` runs `host/cas/casold` against the old cas of `src/cmd/cas/old` (installed as `/lib/old/cas` of OLDROOT; there is no original binary of the old cas) on the same inputs
+and on `old_block.s`, `old_max.s`, `old_label.s` (the rules of D17): 649 of 649 identical. The fixed sources were chosen with gcov and mutants of the host source (the thresholds of
+`jdist`, `jiter`, `jdeps`, the growth in `jprange`: found; three mutants of the `d2` limits in `jprange` were not found, probably because the entry is then decided in `optim` and the object is the same; line coverage `jpr2.c` 100 %, `jpr.c` and `optim.c` all lines except the failure paths of `malloc` and the error of a non-constant operand).
+A source on which the original does not terminate, or whose result depends on leftover memory (`jpr eq` without a target), is no input.
 
-Results: `rel.py` 48 files, no difference; `exh.py` ns/ss/sl (all opcodes of the three address modes) no difference; `fz`/`fzs` (about 346 000 operand patterns)
+Earlier results (the scripts `rel.py`, `exh.py`, `opts.py`, `exp.py` are replaced by the corpus): `rel.py` 48 files, no difference; `exh.py` ns/ss/sl (all opcodes of the three address modes) no difference; `fz`/`fzs` (about 346 000 operand patterns)
 differ only in lines `jpr cc` without an address (undefined in the original); `opts.py` on the 228 compiler outputs, 10 option sets each, 2280 runs, no difference;
 about 600 single statements (scanner, numbers, strings, comments, nesting depth, expressions, directives, stab records) and 570 random files compared with the original:
 one difference (a statement with `\` after a name: another one of the `error` rules). ASAN/UBSAN over 4800 random files (earlier state) and 1100 files with the final code (`parser.c` built without the object-size and bounds checks: the yacc driver uses `yys - 1`): no report, no hang.

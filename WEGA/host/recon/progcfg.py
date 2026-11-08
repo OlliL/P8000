@@ -53,6 +53,9 @@ def load():
     if not hasattr(m, 'ORIG_BIN'):
         m.ORIG_BIN = m.ORIG
     m.ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
+    if getattr(m, 'ROOT_ENV', None):
+        # a program whose reference is not in the WEGA tree (the old cas of the old compilers: OLDROOT, host/Makefile `oldroot`)
+        m.ROOT = os.environ.get(m.ROOT_ENV) or os.path.normpath(os.path.join(HERE, '..', '..', '..', 'tmp', 'oldroot'))
     if not hasattr(m, 'LIBC_FROM'):
         m.LIBC_FROM = getattr(m, 'OWN_LIM', 0)
     cmd = os.path.join(HERE, '..', '..', 'src', 'cmd')

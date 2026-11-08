@@ -3,8 +3,6 @@
 # binaries (see ../KNOWLEDGE.md).
 #
 #   make                 build ./ld, ./sld and ./gld
-#   make check           compare with the original /bin/ld under z8k-emu
-#                        (WEGA=<file tree of the original system>)
 
 HOSTCC = cc
 CFLAGS = -O2 -Wall -Wextra -std=gnu99 -I../tools/lib
@@ -27,10 +25,7 @@ sld: $(SLDSRC) seg/ld.h seg/proto.h $(CONF) ldconf.h
 gld: gld.c $(CONF) ldconf.h
 	$(HOSTCC) $(CFLAGS) -o $@ gld.c $(CONF)
 
-check: ld sld gld
-	WEGA=$(abspath $(WEGA)) EMU=$(EMU) python3 check.py
-
 clean:
 	rm -f ld sld gld
 
-.PHONY: all check clean
+.PHONY: all clean

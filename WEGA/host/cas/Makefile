@@ -3,8 +3,6 @@
 # /bin/cas); table1.c, table2.c, pstab.c and pstdata.h are the generated tables of that directory.
 #
 #   make                 build ./cas
-#   make check           compare with the original /bin/cas under z8k-emu
-#                        (WEGA=<file tree of the original system>)
 #   make parser          make parser.c and parser.h from parser.y with the original yacc
 #                        (run by z8k-emu, WEGA=...). Both files are in the repository: the
 #                        tables of another yacc handle syntax errors differently.
@@ -43,10 +41,7 @@ parser:
 
 scanner.o: parser.h
 
-check: cas
-	WEGA=$(abspath $(WEGA)) sh check.sh
-
 clean:
 	rm -f *.o cas
 
-.PHONY: all check clean parser
+.PHONY: all clean parser
