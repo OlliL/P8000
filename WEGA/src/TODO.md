@@ -18,13 +18,9 @@ What is byte-identical is checked by `make -C host checkall` (16 minutes): every
 - The other files of `/lib` (`crt0.o` is built from `libc/csu/crt0.s` and installed): `scrt0.o`, `mcrt0.o`, `smcrt0.o` (PLZ/ASM
   modules like `crt0.o`), `cnvt.o`, `scnvt.o`, `doprnt.o`, `sdoprnt.o` (not the members of `libc.a`), `slibc.a`: no source yet.
 
-## 8. Clean up (three steps, in this order)
+## 8. The switches of the old compilers
 
-**8.1 `host/recon`.** Done 2026-11-08: `castrig/` removed (the old cas is exact; the references in `host/OLDCC_LOG.md` are history). `blockmap.py` and `callcmp.py` stay: general tools of `host/recon/README.md` for the next binaries; `__pycache__` is ignored.
-
-**8.2 The commands of `cmd/` with the shipped libc.** Done 2026-11-08: `make shipped` in `src/cmd` (`-DSHIPPED`), used by `checkall`; the facts are in `host/KNOWLEDGE.md`. No `wega` candidate is planned for casold, cchain, scchain; gld comes with section 9.
-
-**8.3 The switches of the old compilers (last, the most work).** Switches not in any version (`OLD_D1F`, `OLD_D2D`, `OLD_D3A`, `OLD_D19A`); switches with one witness (`OLDCC.md`, section 5); whether v0 and v0p are two versions; whether v1 had the old cas. `KNOWLEDGE.md`, `HANDOFF_*`, the table in section 4 of `OLDCC.md`.
+Switches not in any version (`OLD_D1F`, `OLD_D2D`, `OLD_D3A`, `OLD_D19A`); switches with one witness (`OLDCC.md`, section 5); whether v0 and v0p are two versions; whether v1 had the old cas. `KNOWLEDGE.md`, `HANDOFF_*`, the table in section 4 of `OLDCC.md`.
 
 ## 9. New programs
 
