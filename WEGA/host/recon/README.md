@@ -25,7 +25,6 @@ Makefile of `src` refers to `tools/` or `host/`, so `src` can go to a WEGA syste
 | `inventory.py`, `own_table.py` | function starts and call graph of an original (nonsegmented or segmented), the first `findings.json` |
 | `datemap.py [-m] [WEGA]` | the build dates of all original programs (crt0 stamp, own SCCS ids, libc marks, D12 read from the data), the input of `host/OLDCC_DATES.md` |
 | `witness.py [-c ARGS] [PROG ...]` | test bench of the old compiler v1: the System III sources (SYS3SRC, not in git) of 26 WEGA programs of the v1 time compiled with ccv1 (or another compiler) and aligned with the originals; equal functions per program, compared with and without a switch |
-| `castrig/` | the early jump optimization of the old cas: trigger points from an original (`windows.py`), table offsets and fits (`offsets.py`, `fit.py`, `reset.py`, `memsum.py`), test cas (`hostcas.patch`, `triggers.txt`) |
 | `oldvar.sh NAME PATCH.py [PASS]` | a change of a pass of ccv0p measured in a copy: the three models with it, the functions that changed against the last `oldcc.sh model` |
 | `poptrace.sh PROG FUNC` | what popt does with one function: the nodes after each iteration, the blocks moved by codemove |
 | `stagecorpus.py` | corpus test of a program (through `host/tools/corpus.sh NAME`): original and ours on the same inputs, made fresh by `corpusc.py` from the C sources (or the command lines of `host/ld/check.py` for ld, sld); outputs, exit status, messages |
