@@ -5,8 +5,8 @@
 #   make                 build ./cc and ./scc (the same source, scc with -DSCC)
 #   make check           compare with the original /bin/cc under z8k-emu
 
-HOSTCC ?= cc
-CFLAGS ?= -O2 -w
+HOSTCC = cc
+CFLAGS = -O2 -Wall -Wextra -std=gnu99
 WEGA ?= ../../../../wega/arc/cpio
 EMU  ?= $(abspath ../z8k-emu/z8k-emu)
 
@@ -15,14 +15,14 @@ all: cc scc
 LIB  = ../tools/lib
 
 cc: cc.c $(LIB)/conf.c $(LIB)/conf.h
-	$(HOSTCC) $(CFLAGS) -std=gnu89 -I$(LIB) -o $@ cc.c $(LIB)/conf.c
+	$(HOSTCC) $(CFLAGS) -I$(LIB) -o $@ cc.c $(LIB)/conf.c
 
 check: cc scc
 	WEGA=$(abspath $(WEGA)) E=$(EMU) PROG=cc sh check.sh
 	WEGA=$(abspath $(WEGA)) E=$(EMU) PROG=scc sh check.sh
 
 scc: cc.c $(LIB)/conf.c $(LIB)/conf.h
-	$(HOSTCC) $(CFLAGS) -std=gnu89 -DSCC -I$(LIB) -o $@ cc.c $(LIB)/conf.c
+	$(HOSTCC) $(CFLAGS) -DSCC -I$(LIB) -o $@ cc.c $(LIB)/conf.c
 
 clean:
 	rm -f cc scc
