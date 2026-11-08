@@ -23,6 +23,18 @@ OLD=$T/oldroot
 FAIL=0
 BUILDONLY=0
 [ "$1" = -b ] && BUILDONLY=1
+# the parallel make: MAKEARGS reaches the directories that can build in parallel (src/Makefile); MAKEJOBS=-j1 for a serial run
+J=${MAKEJOBS:--j`nproc`}
+
+# the time of every step, in $T/timing.log: seconds of the step, seconds since the start, the step (a table at the end)
+now() { date +%s.%N; }
+START=`now`
+LAST=$START
+stamp() {
+	n=`now`
+	awk -v a="$LAST" -v b="$n" -v s="$START" -v l="$1" 'BEGIN { printf "%8.1f %8.1f  %s\n", b - a, b - s, l }' >> $T/timing.log
+	LAST=$n
+}
 
 # not byte-identical yet: reported, not counted
 OPEN='bin/cas'
@@ -46,32 +58,52 @@ result() {
 }
 
 finish() {
+	stamp 'end'
+	echo
+	echo "time of the steps ($T/timing.log; seconds of the step, seconds since the start):"
+	cat $T/timing.log
+	if [ -s $T/timing_corpus.log ]; then
+		echo
+		echo "time of the corpora (wall; CPU seconds of the phases over all cases: prepare, original, wega, host, rest; cases):"
+		cat $T/timing_corpus.log
+	fi
 	[ $FAIL = 0 ] && echo ALL OK || echo FAILED
 	exit $FAIL
 }
 
 mkdir -p $T
+rm -f $T/timing.log $T/timing_corpus.log
+echo "machine: `nproc` cores, load `cut -d' ' -f1-3 /proc/loadavg`, MAKEARGS=$J" >> $T/timing.log
 
 # 1. everything from the sources
 copytree $T/tree
+stamp '1 copy of the files of git (tree)'
 rm -rf $OLD $T/bin
 sh $HERE/oldroot.sh $WEGA $OLD
 sh $HERE/wbin.sh $T/bin $WEGA $OLD $EMU
-if (cd $T/tree/WEGA/src && PATH=$T/bin:$PATH make all OLDROOT=$OLD) > $T/make.log 2>&1; then
-	result 'make in src' ok 'stage1 lib stage2 cmds'
-else
-	result 'make in src' fail "see $T/make.log"
-	finish
-fi
+stamp '1 oldroot.sh, wbin.sh'
+# make all = stage1 lib stage2 cmds, one after the other so that every part is timed
+: > $T/make.log
+for g in stage1 lib stage2 cmds; do
+	if (cd $T/tree/WEGA/src && PATH=$T/bin:$PATH make $g OLDROOT=$OLD MAKEARGS="$J") >> $T/make.log 2>&1; then
+		stamp "1 make $g in src"
+	else
+		stamp "1 make $g in src (failed)"
+		result 'make in src' fail "make $g, see $T/make.log"
+		finish
+	fi
+done
+result 'make in src' ok 'stage1 lib stage2 cmds'
 
 # 2. the bytes: make install into an empty root, every file there against the file of the same name in WEGA
 I=$T/install
 rm -rf $I
 mkdir -p $I/bin $I/etc $I/lib $I/usr/bin
-if (cd $T/tree/WEGA/src && PATH=$T/bin:$PATH make install PREFIX=$I) > $T/install.log 2>&1; then :; else
+if (cd $T/tree/WEGA/src && PATH=$T/bin:$PATH make install PREFIX=$I MAKEARGS="$J") > $T/install.log 2>&1; then :; else
 	result 'make install' fail "see $T/install.log"
 	finish
 fi
+stamp '2 make install'
 same=0
 o=
 for f in `cd $I && find . -type f | sed 's|^\./||' | sort`; do
@@ -83,16 +115,19 @@ for f in `cd $I && find . -type f | sed 's|^\./||' | sort`; do
 done
 result 'install root' ok "$same files identical with WEGA ($I)"
 echo "open, not counted:$o"
+stamp '2 cmp of the install root with WEGA'
 # the members of libc.a, each from its source
 L=$T/tree/WEGA/src/lib/libc
 rm -rf $T/orig
 mkdir -p $T/orig
 (cd $T/orig && $EMU -r $WEGA /bin/ar x /lib/libc.a)
+stamp '2 ar x of the original libc.a'
 same=0
 for f in `cd $T/orig && ls`; do
 	if cmp -s $T/orig/$f $L/obj/$f; then same=`expr $same + 1`; else result "libc $f" fail "differs or missing: $L/obj/$f"; fi
 done
 result 'libc.a members' ok "$same identical, from source"
+stamp '2 cmp of the members of libc.a'
 
 [ $BUILDONLY = 1 ] && finish
 
@@ -109,30 +144,44 @@ corpus() {
 # its Makefile; a byte-identical binary cannot show anything in a corpus, this build tests the sources.
 # The host programs (compare/NAME/progcfg.py, CANDIDATES) are built beside them by the compiler of the host.
 copytree $T/shipped
-C=$T/shipped/WEGA/src/cmd
 cp $T/tree/WEGA/src/lib/*.a $T/shipped/WEGA/src/lib/
-(
-	PATH=$T/bin:$PATH; export PATH
-	cd $C && make ar ranlib strip size CC=cc
-	cd $C/cpp && make cpp CC=cc
-	cd $C/cparse && make all CC=cc
-	cd $C/codgen && make all CC=cc
-	cd $C/popt && make all CC=cc
-	cd $C/ld && make ld CC=cc
-	cd $C/sld && make sld SCC=scc
-	cd $C/cas && make all SCC=scc
-	cd $C/cc && make all CC=cc
-) > $T/shipped.log 2>&1
-make -C $T/shipped/WEGA/host cpp ar binutils cc popt codgen cparse cas ld > $T/hostbuild.log 2>&1
+stamp '3 copy of the files of git (shipped)'
+C=$T/shipped/WEGA/src/cmd
+: > $T/shipped.log
+PATH=$T/bin:$PATH; export PATH
+build() {	# build LABEL DIR make-arguments: the program of the shipped build, with its time
+	l=$1; d=$2; shift 2
+	(cd $d && make "$@" MAKEARGS="$J") >> $T/shipped.log 2>&1
+	stamp "3 shipped build: $l"
+}
+build 'ar ranlib strip size' $C ar ranlib strip size CC=cc
+build cpp $C/cpp cpp CC=cc
+build 'cparse scparse' $C/cparse all CC=cc
+build 'codgen scodgen' $C/codgen all CC=cc
+build 'popt spopt' $C/popt all CC=cc
+build ld $C/ld ld CC=cc
+build sld $C/sld sld SCC=scc
+build cas $C/cas all SCC=scc
+build 'cc scc' $C/cc all CC=cc
+: > $T/hostbuild.log
+for p in cpp ar binutils cc popt codgen cparse cas ld; do
+	make -C $T/shipped/WEGA/host $p >> $T/hostbuild.log 2>&1
+	stamp "3 host build: $p"
+done
 make -C $T/shipped/WEGA/host/cas casold >> $T/hostbuild.log 2>&1
+stamp '3 host build: casold'
 # the corpora run side by side, each in a work directory of its own; every candidate of a program is tested against the
 # same inputs (the original runs once)
 CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
+echo "corpora start: load `cut -d' ' -f1-3 /proc/loadavg`" >> $T/timing.log
 for n in $CORP; do
 	STAGE_TMP=$T/stage_$n JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &
 done
 wait
+stamp '3 all corpora (in parallel)'
+echo "corpora end: load `cut -d' ' -f1-3 /proc/loadavg`" >> $T/timing.log
+grep -h '^TIME ' $T/corpus_*.log | sed 's/^TIME //' | sort >> $T/timing_corpus.log
 for n in $CORP; do
 	corpus $n $T/corpus_$n.log
 done

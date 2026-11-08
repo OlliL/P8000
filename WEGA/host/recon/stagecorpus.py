@@ -33,6 +33,8 @@ The exit status and the messages (stdout, stderr) are compared too. Result: one 
 exit status 1 when a case differs.
 """
 import concurrent.futures
+import threading
+import time
 import os
 import re
 import shlex
@@ -97,6 +99,16 @@ def run_script(binary, base, work, variant, tag, native):
     if NORMALIZE:
         msg = NORMALIZE('messages', msg)
     return r.returncode, msg, {'files': '\n'.join(lines).encode()}
+
+
+# time of the phases (CPU seconds of the threads added up): prepare, original, each candidate, the rest of a case; printed at the end as TIME
+PHASES = {}
+PHASE_LOCK = threading.Lock()
+
+
+def phase_add(name, seconds):
+    with PHASE_LOCK:
+        PHASES[name] = PHASES.get(name, 0.0) + seconds
 
 
 def run_pass(binary, base, work, variant, tag='', native=False):
@@ -168,7 +180,9 @@ def main():
     for name, path in cands.items():
         if not os.path.exists(path):
             sys.exit('%s: %s (%s) not built' % (CFG.NAME, path, name))
+    wall0 = time.monotonic()
     srcs = CFG.CORPUS_SOURCES()
+    sources_t = time.monotonic() - wall0	# the list of the inputs (fixtures of ld, sld, gld; the directory scan)
     if flt:
         srcs = [s for s in srcs if flt in s]
     if n:
@@ -178,9 +192,12 @@ def main():
 
     def case(k, src):
         """(skipped, {candidate: differences}) of one source, in a directory of its own"""
+        t0 = time.monotonic()
         work = os.path.join(WORK, '%04d' % k)
         os.makedirs(work)
         base = CFG.CORPUS_PREPARE(src, work)
+        t1 = time.monotonic()
+        phase_add('prepare', t1 - t0)
         if base is None:
             shutil.rmtree(work)
             return True, {}
@@ -190,10 +207,14 @@ def main():
             os.makedirs(os.path.join(work, '.prog_' + name))
             shutil.copy(path, os.path.join(work, '.prog_' + name, CFG.NAME))
         for v in VARIANTS:
+            ta = time.monotonic()
             r1 = run_pass('/' + CFG.ORIG_BIN, base, work, v, 'orig')	# the original once for all candidates
+            phase_add('original', time.monotonic() - ta)
             tag = '' if v is None else '[%s] ' % (' '.join('%s=%s' % kv for kv in v.items()) if isinstance(v, dict) else ' '.join(v))
             for name in cands:
+                ta = time.monotonic()
                 r2 = run_pass('pass_' + name, base, work, v, name, native=(name == 'host'))
+                phase_add(name, time.monotonic() - ta)
                 d = diffs[name]
                 if r1[0] != r2[0]:
                     d.append('%src %d/%d' % (tag, r1[0], r2[0]))
@@ -205,6 +226,7 @@ def main():
                                                  None if r2[2][f] is None else len(r2[2][f])))
         if not (any(diffs.values()) and keep):
             shutil.rmtree(work)
+        phase_add('total', time.monotonic() - t0)
         return False, diffs
 
     total = skipped = 0
@@ -225,6 +247,12 @@ def main():
                     same[c] += 1
     for c in cands:
         print('%s [%s]: %d of %d inputs identical (%d sources skipped)' % (CFG.NAME, c, same[c], total, skipped))
+    # TIME: the wall time and the CPU seconds of the phases (over all cases; 'rest' = copies, comparison, clean up)
+    ph = lambda n: PHASES.get(n, 0.0)
+    used = ph('prepare') + ph('original') + sum(ph(c) for c in cands)
+    print('TIME %-8s wall %7.1f (list of the inputs %5.1f)  cpu: prepare %7.1f original %7.1f %s rest %6.1f   %d cases, %d at a time' % (
+        CFG.NAME, time.monotonic() - wall0, sources_t, ph('prepare'), ph('original'),
+        ' '.join('%s %7.1f' % (c, ph(c)) for c in cands), max(0.0, ph('total') - used), total + skipped, jobs))
     return 1 if any(same[c] != total for c in cands) else 0
 
 
