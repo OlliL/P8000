@@ -1,0 +1,968 @@
+.TH PWB 3
+.\" @[$]pwb.3   1.2
+.ad
+.fi
+.SH NAME
+any, anystr, balbrk, cat, clean_up, curdir, dname, fatal, fdfopen, giveup, imatch, index, lockit, move, patoi , patol, rename, repeat, satoi, setsig1, setsig, sname, strend, substr, trnslat, unlockit , userdir, userexit, username, verify, xalloc, xcreat, xfree, xfreeall, xlink,  xmsg, xopen, xpipe, xunlink, xwrite, zero, zeropad \- Funktionen der pwb-Bibliothek
+.SH SYNTAX
+.sp
+(siehe BESCHREIBUNG)
+.SH BESCHREIBUNG
+Die folgenden Funktionen sind in der pwb-Bibliothek
+(pwb - programmers workbench)
+enthalten.
+.TP
+\fBany\fI (c,str)\fR
+.br
+\fBchar\fI c, \(**str;\fR
+.IP
+Stimmt das Zeichen
+.I c
+mit einem beliebigen Zeichen in der Zeichenkette
+.IR str
+ueberein,
+wird der Wert 1 zurueckgegeben, sonst wird der Wert Null zurueckgegeben.
+.TP
+\fBanystr\fI (str1,str2)\fR
+.br
+\fBchar\fI \(**str1, \(**str2;\fR
+.IP
+Ist
+.I str2
+in
+.I str1
+enthalten, wird die Position (Offset)
+des ersten uebereinstimmenden Zeichens in
+.I str1
+zurueckgegeben.
+Ist in
+.I str1
+kein Zeichen von
+.I str2
+enthalten, wird der Wert -1 zurueckgegeben.
+.TP
+\fBbalbrk\fI (str,open,clos,end)\fR
+.br
+\fBchar\fI \(**str, \(**open, \(**clos, \(**end;\fR
+.IP
+Es wird die Position (Offset) in der Zeichenkette
+.IR str
+ermittelt, an der die ersten Zeichen in der Zeichenkette
+.I end
+ausserhalb einer eingeschlossenen Subzeichenkette erscheinen.
+Eine solche Subzeichenkette wird durch Zeichen eingeschlossen,
+die in der Zeichenkette
+.I open
+und in der Zeichenkette
+.I clos
+an den gleichen Positionen enthalten sind.
+Derartige Subzeichenketten koennen verschachtelt werden.
+Das Nullzeichen ist implizit ein
+Zeichen in
+.IR end .
+Existiert in der Zeichenkette
+.I str
+fuer ein Zeichen,
+das in einer der Zeichenketten
+.I open
+und
+.I clos
+enthalten ist, nicht das entsprechende oeffnende oder schliessende Zeichen,
+wird zur Fehlersignalisation der Wert -1 zurueckgegeben.
+.nf
+
+.I Beispiel 1:
+.sp
+      s = "a[bc=2]=3;
+      o = "({[";
+      c = ")}]";
+      e = "=";
+.sp
+   balbrk(s,o,c,e) gibt 7 zurueck.
+.sp
+\fI Beispiel 2\fR: (Die Zeichenketten o, c und e entsprechen Beispiel 1.)
+.sp
+      s = "a[bc=2=3";
+.sp
+   balbrk(s,o,c,e) gibt -1 zurueck.
+.fi
+.TP
+\fBchar \(**cat\fI (dest,source1,source2,source3...sourcen,0)\fR
+.br
+\fBchar \(**dest, \fI \(**source1, \(**source2, \(**source3, \(**sourcen;\fR
+.IP
+Verketten von Zeichenketten.
+Zuerst wird die Zeichenkette
+.I source1
+in die Zeichenkette
+.I dest
+kopiert. Anschliessend werden alle folgenden Zeichenketten
+.I sourcek
+an das Ende von
+.I dest
+kopiert.
+Der rufende Prozess muss beginnend ab der durch
+.I dest
+angegebenen Adresse genuegend Speicherplatz bereitstellen.
+Die Adresse des Ergebnisses
+.RI ( dest )
+wird zurueckgegeben.
+.TP
+\fBchar \(**repeat\fI (result,str,repfac)\fR
+.br
+\fBchar\fI \(**result, \(**str;\fR
+.br
+\fBunsigned\fI repfac;\fR
+.IP
+Die Zeichenkette
+.I str
+wird in die Zeichenkette
+.I result
+kopiert. Anschliessend wird die Zeichenkette
+.I str
+wiederholt an das Ende von
+.I result
+kopiert.
+Die Anzahl der Kopiervorgaenge ergibt sich aus dem Argument
+.IB rpfac -1.
+Wie bei
+.BR cat ()
+(siehe oben) muss der rufende Prozess ausreichend Speicherplatz fuer
+.I result
+bereitstellen. Der Pointer
+.I result
+wird zurueckgegeben.
+.TP
+\fBchar \(**satoi\fI (str,ip)\fR
+.br
+\fBchar\fI \(**str;\fR
+.br
+\fBint\fI \(**ip;\fR
+.IP
+Die durch
+.I str
+angegebene ASCII-Zeichenkette wird in einen Integerwert, der
+in dem durch
+.I ip
+bezeichneten Speicherbereich zurueckgegeben wird (siehe
+.BR patoi )
+konvertiert.
+Es wird ein Pointer auf das erste auftretende
+nichtnumerische Zeichen zurueckgegeben.
+.TP
+\fBchar \(**sname\fI (str)\fR
+.br
+\fBchar\fI \(**str;\fR
+.IP
+Es wird ein Pointer auf die letzte Komponente des durch
+.I str
+angegebenen Pfadnamens
+zurueckgegeben (d.h. einen Pointer auf das Zeichen,
+das zuerst nach dem letzten Schraegstrich "/" in
+.I str
+auftritt).
+Enthaelt
+.I str
+keinen Schraegstrich, wird ein Pointer auf die urspruengliche Zeichenkette
+zurueckgegeben.
+.TP
+\fBchar \(**strend\fI (str)\fR
+.br
+\fBchar\fI \(**str;\fR
+.IP
+Es wird ein Pointer auf das Ende (Nullbyte) der Zeichenkette
+.I str
+zurueckgegeben.
+.TP
+\fBchar \(**trnslat\fI (str,old,new,result)\fR
+.br
+\fBchar\fI \(**str, \(**old, \(**new, \(**result;\fR
+.IP
+Die Zeichenkette
+.I str
+wird in die Zeichenkette
+.I result
+kopiert, wobei alle in der Zeichenkette
+.I old
+gefundenen Zeichen durch die entsprechenden Zeichen in der Zeichenkette
+.I new
+ersetzt werden.
+Der Pointer
+.I "result"
+wird zurueckgegeben.
+.TP
+\fBchar \(**zero\fI(ptr,cnt)\fR
+.br
+\fBchar\fI \(**ptr;\fR
+.br
+\fBint\fI cnt;\fR
+.IP
+Der Speicherbereich, der von der durch
+.I ptr
+angegebenen Adresse
+.I cnt
+Bytes lang ist, wird mit Nullen gefuellt.
+Der Wert
+.I ptr
+wird zurueckgegeben.
+.TP
+\fBchar \(**zeropad\fI(str)\fR
+.br
+\fBchar\fI \(**str;\fR
+.IP
+In der Zeichenkette
+.I str
+werden fuehrende Leerzeichen durch Null-Zeichen ersetzt.
+Der Pointer
+.I str
+wird zurueckgegeben.
+.TP
+\fBchar\fI \(**dname(pathname)\fR
+.br
+\fBchar\fI \(**pathname;\fR
+.IP
+Es wird ein Pointer auf den Namen des Directorys zurueckgegeben, in dem die
+durch
+.I pathname
+angegebene Datei enthalten ist.
+.B Dname
+ist die entsprechende Funktion zu
+.B sname()
+(siehe oben).
+Ist
+.I pathname
+ein einfacher Name (z.B.
+"file"), wird ein Pointer auf "." zurueckgegeben.
+Ist
+.I pathname
+"/wega", wird ein Pointer auf  "/" zurueckgegeben.
+Ist
+.I pathname
+"/bin/who", wird ein Pointer auf "/bin" zurueckgegeben, etc.
+Die Zeichenkette, auf die
+.I pathname
+zeigt, wird durch 
+.B dname
+modifiziert.
+Der Pointer
+.I pathname
+wird zurueckgegeben.
+.TP
+\fBimatch\fI (prefix,str)\fR
+.br
+\fBchar\fI \(**prefix, \(**str;\fR
+.IP
+Ist die Zeichenkette
+.I prefix
+ein Prefix der Zeichenkette
+.IR str ,
+wird ein Wert 1 zurueckgegeben (sonst 0).
+.TP
+\fBindex\fI (str1,str2)\fR
+.br
+\fBchar\fI \(**str1, \(**str2;\fR
+.IP
+Ist die Zeichenkette
+.I str2
+eine Teilzeichenkette (Substring) von
+.IR str1 ,
+wird die Stelle zurueckgegeben, an der
+.I str2
+zuerst in
+.I str1
+erscheint (sonst wird -1 zurueckgegeben).
+.TP
+\fBlong patol\fI (str)\fR
+.br
+\fBchar\fI \(**str;\fR
+.IP
+Eine ASCII-Zeichenkette wird in einen (long) Integerwert konvertiert.
+Die Zeichenkette
+.I str
+wird als Zeichenkette mit Dezimalziffern betrachtet.
+Der durch
+.I str
+dargestellte numerische Wert wird zurueckgegeben.
+Es werden nur positive Zahlen konvertiert. Bei einem nichtnumerischen
+Zeichen wird der Wert -1 zurueckgegeben.
+.TP
+\fBchar \(**move\fI(a,b,n)\fR
+.br
+\fBchar\fI \(**a, \(**b;\fR
+.br
+\fBunsigned\fI n;\fR
+.IP
+Die ersten 
+.I n
+Zeichen aus der Zeichenkette
+.I a
+werden in die Zeichenkette
+.I b
+kopiert.
+.TP
+\fBpatoi\fI (str)\fR
+.br
+\fBchar\fI \(**str;\fR
+.IP
+Eine  ASCII-Zeichenkette wird in einen Integerwert konvertiert.
+Die Zeichenkette
+.I str
+wird als eine Zeichenkette mit Dezimalziffern betrachtet.
+Der durch
+.I str
+dargestellte numerische Wert wird zurueckgegeben.
+Nur positive Zahlen werden konvertiert.
+Bei Auftreten eines nichtnumerischen Zeichens
+wird der Wert -1 zurueckgegeben.
+.TP
+\fBchar \(**substr\fI (str,result,origin,len)\fR
+.br
+\fBchar\fI \(**str, \(**result;\fR
+.br
+\fBint\fI origin;\fR
+.br
+\fBunsigned\fI len;\fR
+.IP
+Beginnend ab
+.I str[origin]
+werden hoechstens 
+.I len
+Zeichen aus der Zeichenkette
+.I str
+in die Zeichenkette kopiert, auf die
+.I result
+zeigt.
+Es muss genug Speicherplatz fuer diese Zeichenkette vorhanden sein;
+.I result
+wird zurueckgegeben.
+Fuer die Argumente findet 
+.B keine
+Plausibilitaetskontrolle statt.
+Das Kopieren von 
+.I str
+in
+.I result
+ist beendet, wenn die angegebene Zeichenanzahl (d.h.
+.IR len ,
+ein vorzeichenloser Integerwert)
+kopiert wurde oder wenn das Ende von
+.I str
+(d.h. ein Nullbyte) erreicht ist.
+Ist 
+.I len
+ein sehr grosser Wert (z.B. -1), wird normalerweise die gesamte Zeichenkette 
+.I str
+kopiert.
+.TP
+\fBchar \(**verify\fI (str1,str2)\fR
+.br
+\fBchar\fI \(**str1, \(**str2;\fR
+.IP
+Es wird ueberprueft, ob die Zeichenkette
+.I str1
+Zeichen enthaelt, die nicht in der Zeichenkette 
+.I str2
+enthalten sind.
+Die Stelle in
+.IR str1 ,
+an der sich das erste derartige  Zeichen befindet,
+wird zurueckgegeben (sonst -1).
+.SH Fehlerbehandlungsfunktionen
+.PP
+Das Unterprogrammpaket
+.I error
+besteht aus einer universellen Funktion zur
+Fehlerbehandlung, die als
+.B fatal()
+bezeichnet wird
+und aus universellen Funktionen zur Signalsetzung und Signalerfassung,
+die als
+.B setsig()
+bzw. 
+.B setsig1(),
+bezeichnet werden.
+Ausserdem gibt es zwei weitere Funktionen, die als
+.B clean_up
+und 
+.B userexit
+bezeichnet werden und die von
+.B fatal
+oder 
+.B setsig1
+benutzt werden koennen. In der Bibliothek sind Standardversionen
+dieser beiden Funktionen enthalten.
+Der Nutzer kann seine eigenen
+.B clean_up
+und 
+.B userexit
+Funktionen festlegen.
+.PP
+Die Datei
+.I /usr/include/fatal.h
+enthaelt Definitionen, die zur Verwendung von
+.B fatal
+erforderlich sind. Diese Definitionen sind:
+.sp
+.nf
+   extern int   Fflags;
+   extern char  *Ffile;
+   extern int   Fvalue;
+   extern int   (*Ffunc)();
+   extern ret_buf   Fjmp[10];
+.sp
+   # define FTLMSG   0100000
+   # define FTLCLN    040000
+   # define FTLFUNC   020000
+   # define FTLACT       077
+   # define FTLJMP        02
+   # define FTLEXIT       01
+   # define FTLRET         0
+.sp
+   # define FSAVE(val)  SAVE(Fflags,old_Fflags): Fflags = val;
+   # define FRSTR()     RSTR(Fflags,old_Fflags);
+.fi
+.TP
+\fBclean_up()\fR
+Standard 
+.B clean_up
+Funktion, die fuer die Aufloesung externer Referenzen notwendig ist.
+Sie kehrt sofort zurueck.
+Vom Nutzer gelieferte
+.B clean_up
+Funktionen werden oft benutzt, um nur zeitweilig verwendete Dateien usw.
+zu loeschen.
+.TP
+\fBfatal\fI (msg)\fR
+.br
+\fBchar\fI \(**msg;\fR
+.IP
+Universelles Programm zur Fehlerbehandlung.
+Unterprogramme auf unterer Ebene, die 
+Fehlerzustaende erkennen koennten (z.B. eine Funktion zum Oeffnen oder
+Erzeugen von Dateien),
+sollten als Rueckgabewert einen Aufruf von
+.B fatal
+mit einer Meldungszeichenkette als Argument enthalten, z.B.:
+.sp
+.nf
+     return(fatal("can\'t do it"));
+.fi
+.PP
+Funktionen auf hoeherer Ebene steuern die Ausfuehrung von
+.B fatal
+ueber die globalen 
+.I Fflags.
+Die Macros
+.BR FSAVE ()
+und
+.BR FRSTR
+()
+in "/usr/include/fatal.h" koennen von 
+Unterprogrammen hoeherer Ebene verwendet werden, um die Werte der
+.I Fflags
+zu sichern und wiederherzustellen.
+.PP
+Das Argument der Funktion
+.B fatal
+ist ein Pointer auf eine Meldungszeichenkette.
+Die Ausfuehrung von
+.B fatal
+wird ausschliesslich von der Variablen
+.I Fflags
+gesteuert, die nach unten stehender Erklaerung interpretiert wird.
+.PP
+Das Bit
+.B FTLMSG
+steuert das Schreiben der Meldung in den Dateidescriptor 2.
+Vor der Meldung steht die Zeichenkette "ERROR:", ausser wenn der
+globale Zeichenkettenpointer 
+.I Ffile
+ein Wert ungleich Null ist. In letzterem Fall
+steht vor der Meldung eine Zeichenkette,
+die auch wie folgt erzeugt werden koennte:
+.sp
+.nf
+   s = sprintf(space, "ERROR [%s]:", Ffile);
+.fi
+.PP
+Nach der vom Nutzer eingegebenen Meldung wird ein Newline-Zeichen
+geschrieben.
+.PP
+Ist das Bit
+.B FTLCLN
+gesetzt, wird 
+.B clean_up
+mit dem Argument Null aufgerufen (siehe oben).
+.PP
+Ist das Bit
+.B FTLFUNC
+gesetzt, wird die Funktion aufgerufen, auf die der globale Funktionspointer 
+.I Ffunc
+zeigt, wobei der vom Nutzer gelieferten Meldungspointer als Argument
+benutzt wird.
+Er kann somit zum Protokollieren dieser Meldungen benutzt werden.
+.PP
+Die Bits
+.B FTLACT
+bestimmen den Rueckgabewert der Funktion
+.IR fatal .
+Ist das Bit
+.B FTLJMP
+gesetzt, wird die Funktion
+.B longret(Fjmp)
+(siehe 
+.BR setret (3))
+aufgerufen.
+Hat das Bit
+.B FTLEXIT
+den Wert 1,
+wird der Wert von 
+.BI userexit (1)
+als Argument an
+.BR exit (2)
+(siehe unten) weitergegeben.
+Ist keins der
+.BR FTLACT -Bits
+gesetzt (Vorgabewert fuer 
+.I Fflags
+ist Null), wird die globale Variable
+.I Fvalue
+zurueckgegeben (Vorgabewert -1).
+.PP
+Haben alle globalen Variablen fuer die Funktion
+.B fatal
+ihren Standardwert,
+gibt
+.B fatal
+den Wert -1 zurueck.
+.TP
+\fBsetsig()\fR
+.IP
+Setzen von Signalen.
+Alle Signale, die noch nicht ignoriert oder behandelt worden sind, 
+werden durch die Signalerfassungsroutine
+.B setsig1
+aufgefangen.
+.TP
+\fBsetsig1()\fR
+.IP
+Signale, die von
+.B setsig
+gesetzt wurden, werden behandelt.
+Alle empfangenen Signale ausser
+.BR hangup ,
+.B interrupt
+oder 
+.B quit
+bewirken die Ausgabe einer "nutzerorientierten"
+.BR help (1) 
+Meldung an Dateidescriptor 2.
+Werden die Signale
+.BR hangup ,
+.B interrupt
+oder
+.B quit 
+aufgefangen, werden sie bei nochmaligem Auftreten ignoriert.
+Der Abschluss wird aehnlich wie bei den Optionen
+.I FTLCLN 
+und 
+.I FTLEXIT 
+von
+.B fatal
+realisiert, wobei die Funktionen
+\fBclean_up\fR(\fIsig\fR)
+(\fIsig\fR: Signalnummer) und 
+\fBexit\fR(\fBuserexit\fR(\fI1\fR))
+aufgerufen werden.
+.sp
+Wenn im aktuellen Directory die Datei "dump.core" existiert,
+wird das IOT-Signal auf den Wert Null gesetzt und die Funktion
+.BR abort (3) 
+wird zur Erzeugung eines Speicherabzugs aufgerufen
+(nach Aufruf von 
+.B clean_up
+und vor Aufruf von
+.BR userexit ).
+.TP
+.B userexit(\fIcode\fB)\fR
+Diese Standardaustrittsfunktion
+dient zur Erfuellung externer Referenzen.
+Sie gibt den Wert 
+.I code 
+zurueck. Vom Nutzer gegebene
+.B userexit
+Funktionen koennen fuer die Protokollierung einer Aufrufstatistik
+benutzt werden.
+.SH Interface zu Systemrufen
+.PP
+Die folgenden Funktionen bilden ein Interface zu den Systemrufen.
+Sie verarbeiten Fehlerzustaende und rufen die Funktion
+.B fatal
+auf.
+.TP
+\fBcurdir\fI (path)\fR
+.br
+\fBchar\fI \(**path;\fR
+.IP
+Der vollstaendige Pfadname des aktuellen Directorys wird in die
+durch
+.I path
+angegebene Zeichenkette geschrieben.
+Bei erfolgreicher Abarbeitung entspricht das aktuelle
+Directory dem vor dem Aufruf und der Rueckgabewert ist Null.
+Andernfalls ist der Rueckgabewert ungleich Null
+und das aktuelle Directory ist unbekannt.
+.TP
+\fBFILE\fI \(**fdfopen(fd,mode)\fR
+.br
+\fBint\fI fd,mode;\fR
+.IP
+Diese Funktion bildet ein Interface zu den in Abschnitt 3 
+beschriebenen Eingabe/Ausgabe-Funktionen.
+Das erste Argument ist ein Dateidescriptor (durch eine der Funktionen
+.BR open (2),
+.BR creat (2)
+oder 
+.BR pipe (2)
+erzeugt)
+und das zweite Argument ist der Lese-/Schreibmodus (0 bzw. 1).
+Bei erfolgreicher Abarbeitung wird ein 
+.I Dateipointer
+(siehe 
+.BR fopen (3))
+zurueckgegeben, ansonsten der Wert Null
+(typisch, wenn keine
+Dateistrukturen zur Verfuegung stehen).
+.TP
+\fBgiveup\fI (dump)\fR
+.br
+\fBint\fI dump;\fR
+.IP
+Ist das Argument Null,
+aendert die Funktion das Directory auf "/",
+setzt IOT-Signal auf Systemstandard (0) und
+ruft die Funktion
+.BR abort (3)).
+Wird also
+.B giveup
+mit einem Argument Null aufgerufen und ist die Datei
+"/core" nicht beschreibbar (oder existiert die Datei "/core" nicht
+und das Directory "/" ist nicht beschreibbar), wird kein Speicherabzug 
+erzeugt.
+.TP
+\fBlockit\fI (lockfile,count,pid)\fR
+.br
+\fBchar\fI \(**lockfile;\fR
+.br
+\fBunsigned\fI count,pid;\fR
+.IP
+Diese Funktion stellt
+ein mit Dateien implementiertes Prozess-Semaphor dar, das normalerweise
+zur Sicherung einer alleinigen Nutzung der Betriebsmittel
+(normalerweise eine Datei)
+benutzt wird.
+.B Lockit
+versucht, die Datei
+.I lockfile
+mit dem Modus 444 zu erzeugen.
+Die Anzahl der Versuche wird durch
+.I count
+angegeben.
+Zwischen den Versuchen wird jeweils 10 Sekunden pausiert.
+Ist 
+.I lockfile
+erzeugt, wird die Nummer
+.I pid
+(normalerweise
+die Prozess-ID des aktuellen Prozesses) binaer (d.h. als zwei Bytes) in
+die Datei
+.I lockfile
+geschrieben. Der Wert Null wird zurueckgegeben.
+Existiert die Datei 
+.I lockfile
+und wurde sie innerhalb der letzten 60 Sekunden nicht geaendert,
+ist leer oder die ersten zwei Bytes (Binaerwert)
+entsprechen
+.I nicht
+der Prozess-ID eines existierenden Prozesses, wird
+.I lockfile
+geloescht und
+.B lockit
+versucht erneut,
+.I lockfile
+anzulegen.
+.B Lockit
+gibt den Wert -1 zurueck, wenn
+.I lockfile
+aus einem der folgenden Gruende
+nicht erzeugt werden kann:
+.RS
+.IP - 3
+Nach
+.I count
+Versuchen war
+.B lockit
+nicht erfolgreich.
+.PD 0
+.IP - 3
+Der Fehlercode fuer ein nicht erfolgreiches Anlegen
+von
+.I lockfile
+entsprach nicht
+.B EACCES
+(siehe
+.BR INTRO (2)). 
+Siehe auch 
+.BR unlockit .
+.RE
+.PD
+.TP
+\fBrename\fI (oldname,newname)\fR
+.br
+\fBchar\fI \(**oldname, \(**newname;\fR
+.IP
+Die Datei
+.I oldname
+wird in 
+.I newname
+umbenannt.
+.B Rename benutzt die Funktion
+.B xlink
+(siehe unten).
+.TP
+\fBunlockit\fI (lockfile,pid)\fR
+.br
+\fBchar\fI \(**lockfile;\fR
+.br
+\fBunsigned\fI pid;\fR
+.IP
+Es wird ueberprueft, ob
+in den ersten zwei Bytes der genannten,
+durch die Funktion
+.B lockit
+erzeugten Datei
+.I lockfile
+der angegebene Wert
+.I pid
+als Binaerwert enthalten ist und loescht anschliessend
+.IR lockfile .
+Ist 
+.I pid
+der richtige Wert und wurde die Datei erfolgreich geloescht, gibt
+.B unlockit
+den Wert Null zurueck, andernfalls den Wert -1.
+.TP
+\fBchar\fI \(**userdir(uid)\fR
+.br
+\fBint\fI uid;\fR
+.IP
+Der Name des Login-Directories des Nutzers wird zurueckgegeben.
+Das Argument muss eine numerische Nutzer-ID sein.
+Bei erfolgreicher Abarbeitung gibt 
+.B userdir
+einen Pointer auf das Login-Directory zurueck, sonst einen Wert Null.
+Bei nachfolgenden Aufrufen bleibt das Argument und das
+zurueckgegebene Login-Directory erhalten.
+.TP
+\fBchar \(**username\fI (uid)\fR
+.br
+\fBint\fI uid;\fR
+.IP
+Der Login-Name des Nutzers wird zurueckgegeben.
+Das Argument muss eine numerische Nutzer-ID sein.
+Bei erfolgreicher Abarbeitung gibt
+.B username
+einen Pointer auf den Login-Namen zurueck.
+Konnte der Login-Name nicht ermittelt werden, wird
+ein Pointer auf die als Zeichenkette dargestellte
+Nutzer-ID zurueckgegeben.
+Die Funktion
+.BR logname (3) 
+stellt eine Alternative zu dieser Funktion dar.
+.TP
+\fBxalloc\fI (size)\fR
+.br
+\fBunsigned\fI size;\fR
+.TP
+\fBxfree\fI (ptr)\fR
+.br
+\fBchar\fI \(**ptr;\fR
+.TP
+\fBxfreeall()\fR
+.IP
+Diese Funktionen dienen zur Speicherverwaltung.
+.B Xalloc
+und 
+.B xfree
+werden wie
+.BR malloc (3) 
+und 
+.BR free (3)
+benutzt.
+Die Funktion
+.B xfreeall()
+gibt den gesamten durch
+.B xalloc
+zugewiesenen Speicherbereich frei (benutzt
+.BR brk (2)).
+Bei erfolgreicher Abarbeitung gibt 
+.B xalloc
+die Adresse des zugewiesenen Bereiches zurueck, andernfalls wird der Wert
+.B fatal
+zurueckgegeben.
+.B Xfree
+und 
+.B xfreeall
+haben keinen Rueckgabewert.
+.B Xalloc
+benutzt eine "first fit" Strategie.
+.B Xfree
+fuegt fortlaufende freie Bloecke zusammen.
+.B Xalloc
+weist immer Worte (2 Byte) zu.
+Es wird immer ein
+zusaetzliches Wort (das erste Wort des zugeordneten Blocks)
+zugewiesen, dass die Groesse des gesamten Blocks (in Bytes) angibt.
+Diese Groesse wird von
+.B xfree
+zur Kennung fortlaufender Bloecke benutzt und wird von
+.B xalloc
+zur Realisierung der first-fit-Strategie benutzt.
+.br
+.B ACHTUNG:
+Diese Groessenangabe darf nicht ueberschrieben werden!
+Ebenso darf
+.B xfree
+nicht mit einem falschen Argument aufgerufen werden!
+.TP
+\fBxcreat\fI (name,mode)\fR
+.br
+\fBchar\fI \(**name;\fR
+.br
+\fBint\fI mode;\fR
+.IP
+Diese Funktion wird wie der Systemruf
+.BR creat (2)
+benutzt.
+Fuer
+.B xcreat
+ist
+.I immer
+eine Schreiberlaubnis im entsprechenden Directory erforderlich.
+Die angelegte Datei hat garantiert den angegebenen
+.I mode
+und gehoert dem effektiven Nutzer (
+.B xcreat
+erreicht dies, indem die anzulegende Datei zuerst (ueber unlink)
+geloescht wird).
+Bei erfolgreicher Abarbeitung gibt
+.B xcreat
+einen Dateidescriptor zurueck, andernfalls den Wert
+.BR fatal .
+.TP
+\fBxlink\fI (f1,f2)\fR
+.br
+\fBchar\fI \(**f1, \(**f2;\fR
+.IP
+Diese Funktion wird wie der Systemruf
+.BR link (2)
+benutzt.
+Sie stellt ein Interface zu
+.B link
+dar, in dem alle Fehlerzustaende behandelt werden.
+Bei erfolgreicher Abarbeitung wird der Wert Null zurueckgegeben,
+bei Fehlern wird
+.B fatal
+zurueckgegeben.
+.TP
+\fBxmsg\fI (file,\fIfunc)\fR
+.br
+\fBchar\fI \(**file, \(**func;\fR
+.IP
+Diese Funktion wird von den anderen mit dem Buchstaben
+.I x
+beginnenden Funktionen zur Erzeugung einer
+Fehlermeldung (auf Basis
+.IR errno )
+benutzt
+(siehe 
+.BR INTRO (2)).
+Mit der entsprechenden Fehlermeldung wird
+.B fatal
+aufgerufen. 
+Das zweite Argument ist ein Pointer
+auf den Namen (Zeichenkette) einer Ganzzahl-Funktion (ceil).
+Fuer die am haeufigsten auftretenden Fehler existieren festgelegte
+Meldungen. Andere Fehler fuehren zu Meldungen, die aehnlich der folgenden an 
+.I fatal
+weitergegeben werden:
+.nf
+.sp
+str = sprintf(space, "error = %d, function = %s",
+errno, funcname)
+.fi
+.TP
+\fBxopen(\fIname, mode)
+.br
+\fBchar \fI*name;
+.br
+\fBint \fI mode;
+.IP
+Diese Funktion wird wie der Systemruf
+.BR open (2)
+benutzt.
+Sie stellt ein Interface zu
+.B open
+dar, in dem alle Fehlerzustaende behandelt werden.
+Bei erfolgreicher Abarbeitung wird ein Dateidescriptor zurueckgegeben.
+Bei Fehlern wird
+.B fatal
+zurueckgegeben.
+.TP
+\fBxpipe\fI (t)\fR
+.br
+\fBint\fI \(**t;\fR
+.IP
+Diese Funktion wird wie der Systemruf
+.BR pipe (2)
+benutzt.
+Sie stellt ein Interface zu
+.B pipe
+dar, in dem alle Fehlerzustaende behandelt werden.
+Bei erfolgreicher Abarbeitung wird der Wert Null zurueckgegeben.
+Bei Fehlern wird
+.B fatal
+zurueckgegeben.
+.TP
+\fBxunlink\fI (f)\fR
+.br
+\fBchar\fI \(**f;\fR
+.IP
+Diese Funktion wird wie der Systemruf
+.BR unlink (2)
+benutzt.
+Sie stellt ein Interface zu
+.B unlink
+dar, in dem alle Fehlerzustaende behandelt werden.
+Bei erfolgreicher Abarbeitung wird der Wert Null zurueckgegeben,
+bei Fehlern wird
+.B fatal
+zurueckgegeben.
+.TP
+\fBxwrite\fI (fildes,buffer,nbytes)\fR
+.br
+\fBint\fI fildes;\fR
+.br
+\fBchar\fI \(**buffer;\fR
+.br
+\fBint\fI nbytes;\fR
+.IP
+Diese Funktion wird wie der Systemruf
+.BR write (2)
+benutzt.
+Sie stellt ein Interface zu
+.B write
+dar, in dem alle Fehlerzustaende behandelt werden.
+Bei erfolgreicher Abarbeitung wird die Anzahl der geschriebenen Bytes 
+zurueckgegeben, sonst der Wert
+.BR fatal .

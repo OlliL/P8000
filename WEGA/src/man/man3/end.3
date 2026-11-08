@@ -1,0 +1,37 @@
+.TH END 3 WEGA
+.\" @[$]end.3   1.2
+.ad
+.fi
+.SH NAME
+end, etext, edata \- letzte Speicherplaetze im Programm 
+.SH SYNTAX
+.B extern end;
+.br
+.B extern etext;
+.br
+.B extern edata;
+.SH BESCHREIBUNG
+Die Adresse von
+.B etext
+ist die erste Adresse ueber dem Programmtext,
+.B edata
+ist die erste Adresse ueber dem initialisierten Datenbereich und
+.B end
+ist die erste Adresse ueber dem nichtinitialisierten Datenbereich.
+.PP
+Zu Beginn der Programmausfuehrung stimmt der Break-Wert des Programms mit
+.B end
+ueberein. Es gibt jedoch viele Funktionen, durch die der Break-Wert
+wieder aufgehoben wird, z.B. die Routinen
+.BR brk (2),
+.BR malloc (3), 
+die Standard Eingabe/Ausgabe
+.RI ( stdio (3))
+und die Profil-Option
+.RB ( \-p )
+von
+.BR cc (1).
+Der aktuelle Break-Wert wird zuverlaessig von
+\fIsbrk\fR(0) (\fIbrk\fR (2)) geliefert.
+.SH SIEHE AUCH
+brk(2), malloc(3).

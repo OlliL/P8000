@@ -1,0 +1,42 @@
+.TH APROPOS 1 WEGA
+.\" @[$]apropos.1	1.2
+.ad
+.fi
+.SH NAME
+apropos \- sucht Kommando-Beschreibungen mittels Schluesselwort
+.SH SYNTAX
+.B apropos
+\fIword\fR ...
+.SH BESCHREIBUNG
+.B Apropos
+gibt an, welche Manualeintraege das angegebene Schluesselwort
+in ihrem Titel enthalten.
+Jedes Wort wird einzeln betrachtet, Gross- und Kleinschreibung
+wird igno\%riert.
+Es werden auch Woerter betrachtet, die Teil anderer Woerter sind.
+Beim Suchen nach
+\fIcompile\fR wird z.B. auch \fIcompiler\fR gefunden.
+.PP
+Beginnt die von
+.B apropos
+ausgegebene Zeile mit `name (section) ...', kann durch
+die Eingabe
+`man section name' die entsprechende Dokumentation eingesehen werden.
+.SH BEISPIELE
+.RS
+.nf
+% apropos password
+getpass (3)             - Lesen eines Passworts
+getpwent(3) ...         - Ausgabe eines Eintrags in
+                          /etc/passwd
+gpasswd (1)             - Aendern des Gruppenpassworts
+passwd (1)              - Aendern des Login-Passworts
+passwd (5)              - Passwort-Datei
+pwck, grpck (1)         - Ueberpruefen der Passwort/
+                          Gruppen-Datei
+.fi
+.RE
+.SH DATEIEN
+/usr/lib/whatis		Informationsbasis
+.SH SIEHE AUCH
+makewhatis(1), man(1), whatis(1)

@@ -1,0 +1,43 @@
+.TH WHATIS 1 WEGA
+.\" @[$]whatis.1	1.2
+.ad
+.fi
+.SH NAME
+whatis \- Kurzbeschreibung eines Kommandos
+.SH SYNTAX
+.B whatis
+name ...
+.SH BESCHREIBUNG
+.B Whatis
+sucht ein gegebenes Kommando und gibt die Kopfzeile aus dem Abschnitt
+des Online-Handbuches aus.
+Die Ausgabe erfolgt i.a. in der Form
+.IP
+Name (Sektion)    - einzeilige Kurzbeschreibung
+.PP
+Einige Begriffe treten in mehreren Sektionen des
+Online-Handbuchs auf (z.B.
+.BR chmod (1)
+und
+.BR chmod (2)).
+Ueber das Kommando
+.BR man (1)
+kann anschliessend der gewuenschte Eintrag
+mit der Kommandofolge
+.IP
+man
+.I Sektion
+.I name
+.PP
+ausgegeben werden.
+.SH BEISPIEL
+.RS
+.sp
+     % whatis wc
+     wc (1)                  - Wortzaehlung
+.RE
+.SH DATEIEN
+.DT
+/usr/lib/whatis    Datenbasis
+.SH SIEHE AUCH
+apropos(1), makewhatis(M).

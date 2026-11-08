@@ -1,0 +1,62 @@
+.TH PERROR 3 WEGA
+.\"@[$]perror.3 1.2
+.ad
+.SH NAME
+perror, deverr, sys_errlist, sys_nerr, errno \- System-Fehlermeldungen
+.SH SYNTAX
+.nf
+\fBperror\fI(s)
+.br
+\fBchar \fI*s;
+.PP
+.br
+\fBint deverr;\fR
+.br
+\fBint sys_nerr;\fR
+.br
+\fBchar *sys_errlist[];\fR
+.br
+\fBint errno;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B perror
+schreibt eine kurze Fehlermeldung in die Standardfehlerausgabe,
+die den letzten Fehler, der waehrend eines Systemrufs
+aus einem C-Programm auftrat, beschreibt.
+Zuerst wird die Argument-Zeichenkette
+.I s
+ausgegeben, dann ein Doppelpunkt, dann die Meldung und
+ein Newline-Zeichen.
+Zweckmaessigerweise sollte die Argument-Zeichenkette den Namen des
+den Fehler verursachenden Programms enthalten.
+Als Fehlernummer wird der Wert der externen Variablen
+.I errno
+oder
+.I deverr
+(siehe
+.BR intro (2))
+benutzt. Die Variable wird bei auftretenden Fehlern gesetzt,
+ihr Wert wird jedoch bei fehlerfreien Systemrufen
+nicht zurueckgesetzt.
+.PP
+Zur Vereinheitlichung der verschiedenen Meldungsformate wird der
+(externe) Pointer auf den Vektor der Meldungszeichenketten
+.B sys_errlist
+bereitgestellt.
+Die Variablen
+.I errno
+oder
+.I deverr
+koennen in dieser Tabelle als Index benutzt werden,
+um die Meldungszeichenkette (ohne abschliessendes Newline-Zeichen)
+zu erhalten.
+Die externe Variable
+.B sys_nerr
+spezifiziert die Anzahl der fuer die Tabelle bereitgestellten Meldungen.
+Diese Anzahl
+ist zu ueberpruefen, da neue Fehlercodes vom System
+ausgegeben werden koennen,
+bevor sie in der Tabelle eingetragen sind.
+.SH SIEHE AUCH
+intro(2).

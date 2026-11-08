@@ -1,0 +1,62 @@
+.TH UNGET 1 WEGA
+.\" @[$]unget.1	1.2
+.ad
+.fi
+.SH NAME
+unget \- Aufhebung des letzten get-Kommandos einer SCCS-Datei
+.SH SYNTAX
+\fBunget \fR[ \fB\-r\fISID\fR] [ \fB\-s\fR ] [ \fB\-n\fR ] \fIfiles\fR
+.SH BESCHREIBUNG
+.B Unget
+hebt die Wirkung des letzten Kommandos
+.B "get \-e"
+fuer die angegebenen SCCS-Dateien auf, das vor der Erzeugung
+eines neuen Deltas erfolgte.
+Ist ein Directory angegeben, sind alle
+im Directory befindlichen
+Dateien spezifiziert ("Nicht-SCCS-Dateien" werden ignoriert).
+Der Name
+.B \-
+spezifiziert die Standardeingabe, wobei jede Zeile
+als Name einer zu verarbeitenden
+SCCS-Datei betrachtet wird.
+.SH OPTIONEN
+Alle Optionen beziehen sich unabhaengig voneinander
+auf jede spezifizierte Datei.
+.TP 7
+.B \-n
+Verhindert ein Streichen der durch
+.BR get (1)
+erzeugten Kopie
+aus dem aktuellen Directory (Standard: Streichen).
+.TP
+\fB\-r\fISID\fR
+Alle Vorbereitungen, die fuer die durch
+.I SID
+bezeichnete Version bereits zum Einbringen in die
+SCCS-Datei getroffen wurden, werden rueckgaengig gemacht
+.RI ( SID
+entspricht dem SID, das beim Kommando
+.B get
+als neues Delta angegeben wurde).
+Diese Option ist nur dann erforderlich,
+wenn mehr als ein offenstehendes
+.BR get
+zur Editierung derselben
+SCCS-Datei von ein und derselben Person (Login-Name) erfolgte.
+Ist das angegebene
+.I SID
+nicht eindeutig oder nicht angegeben, obwohl eine Angabe notwendig ist,
+erfolgt eine Fehlermeldung.
+.TP
+.B \-s
+Unterdrueckt alle Ausgaben auf der Standardausgabe.
+.SH SIEHE AUCH
+delta(1),
+get(1),
+sact(1).
+.br
+"Source Code Control System" in WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+Erklaerungen siehe
+.BR help (1).

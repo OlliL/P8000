@@ -1,0 +1,93 @@
+.TH FORK 2 WEGA
+.\"@[$]fork.2   1.2
+.ad
+.fi
+.SH NAME
+fork  \- Erzeugen eines neuen Prozesses
+.SH SYNTAX
+.B int fork( )
+.SH BESCHREIBUNG
+Mit dem Systemruf
+.B fork
+koennen neue Prozesse erzeugt werden.
+Das Abbild des neuen Prozesses ist eine Kopie des rufenden Prozesses.
+Die einzigen Unterschiede sind:
+.IP - 3
+Der Child-Prozess hat eine eigene Prozess-ID.
+.PD 0
+.IP - 3
+Der Child-Prozess hat eine andere Parent-Prozess-ID
+(d.h., die Prozess-ID des Parent-Prozesses).
+.IP - 3
+Die 
+.BR utime (2)
+.BR stime (2) 
+.BR cutime 
+und
+.B cstime
+des Child-Prozesses sind auf Null gesetzt (siehe
+.BR times (2)).
+.PD
+.PP
+.B Fork
+gibt einen Wert
+.B Null
+an den Child-Prozess zurueck.
+.PP
+.B Fork
+gibt die Prozess-ID
+des Child-Prozesses an den Parent-Prozess zurueck.
+Diese Prozess-ID wird von 
+.BR wait (2)
+genutzt.
+.PP
+Dateien, die vor dem Systemruf
+.B fork
+offen waren, werden gemeinsam genutzt und haben einen gemeinsamen 
+Lese-Schreib-Pointer.
+Auf diese Weise werden auch Standard-Ein- und Ausgabedateien uebertragen
+und Pipes erzeugt.
+.PP
+Nur der Superuser kann den letzten freien Platz der Prozesstabelle nutzen.
+.SH DIAGNOSTIK
+.B Fork
+wird nicht ausgefuehrt und es wird kein Child-Prozess erzeugt, wenn
+mindestens einer der folgenden Punkte zutrifft:
+.TP 11
+\%[EAGAIN]
+Das vom System gesetzte Limit der Gesamtanzahl von Prozessen, die 
+ausgefuehrt werden koennen, wuerde ueberschritten.
+.PD 0
+.TP 11
+\%[EAGAIN]
+Das vom System gesetzte Limit der Gesamtanzahl von Prozessen, die 
+von einem einzigen Nutzer ausgefuehrt werden koennen, wuerde 
+ueberschritten.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung gibt 
+.B fork
+einen Wert Null an den Child-Prozess und gibt die Prozess-ID
+des Childprozesses an den Parent-Prozess zurueck.
+Andernfalls wird ein Wert \-1 an den Parent-Prozess zurueckgegeben,
+es wird kein Child-Prozess erzeugt, und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+exec(2), wait(2).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT FORK   := 2
+
+     sc    #FORK
+     <instruc>       !* neuer Prozess kehrt hierher zurueck. *!
+                     !* r4 : Parent-User-ID *!
+                     !* Diese Instruktion muss 1 Wort sein, *!
+                     !* gewoehnlich eine "jr" Instruktion *!
+
+     <instruc>       !* alter Prozess kehrt hierher zurueck. *!
+                     !* r4 : Child-Prozess-ID *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

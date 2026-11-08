@@ -1,0 +1,29 @@
+.TH RAND 3 WEGA
+.\" @[$]rand.3  1.2
+.ad
+.fi
+.SH NAME
+rand, srand \- Zufallszahlengenerator
+.SH SYNTAX
+.nf
+\fBsrand\fI(seed)
+.br
+\fBint \fIseed;
+.PP
+\fBrand( )\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B rand
+verwendet einen multiplikativen kongruenten Zufallszahlengenerator mit der
+Periode 28329. Er liefert (logisch) aufeinanderfolgende Pseudo-Zufallszahlen
+im Bereich 0 bis 32767 .
+.PP
+Der Generator wird durch den Aufruf von
+.B srand
+mit dem Argument
+.I 1
+reinitialisiert.
+Er wird auf einen zufaelligen Anfangspunkt gesetzt, indem
+.B srand
+mit einem beliebigen Argument aufgerufen wird.

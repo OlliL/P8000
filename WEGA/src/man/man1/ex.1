@@ -1,0 +1,116 @@
+.TH EX 1 WEGA
+.\"@[$]ex.1	1.2
+.ad
+.fi
+.SH NAME
+ex, edit \- Texteditor
+.SH SYNTAX
+.B ex
+.br
+	[ \fB\-\fR ]
+.br
+	[ \fB\-v\fR ]
+.br
+	[ \fB\-t\fItag\fR ]
+.br
+	[ \fB\-r\fR ]
+.br
+	[ \fB\-R\fR ]
+.br
+	[ \fB\+\fI[command\fR ]]
+.br
+	[ \fB\-l\fR ]
+.br
+.I 	file ...
+.sp 
+.B edit
+[
+.I ex options
+]
+.SH BESCHREIBUNG
+.B Ex
+ist Hauptvertreter der Editorfamilie
+.B edit,
+.B ex,
+und
+.B vi.
+.B Ex
+ist ein zeilenorientierten Editor und stellt eine Erweiterung von
+.B ed
+dar.
+Ein cursorgesteuertes Editieren ist mit
+.B vi
+moeglich.
+.SH OPTIONEN
+.TP 5
+.B \-
+Alle Eingabeanforderungen des Editors und die
+Zeichenanzahlausgabe der
+\fIe, r,\fR und \fIw\fR Kommandos werden unterdrueckt;
+diese Option ist bei der Verarbeitung von Editorscripts in Kommandodateien
+sinnvoll.
+.TP 5
+.B \-v
+Es wird \fIvi\fR anstelle von \fIex\fR aufgerufen.
+.TP 5
+.BI \-t \ tag
+Der Cursor wird sofort auf die Definition von
+\fItag\fR gesetzt, nachdem \fIex\fR aufgerufen wurde.
+.TP 5
+.B \-r
+Wiederherstellung der letzten Version von Dateien
+nach einem Editor- oder Systemabsturz.
+.TP 5
+.B \-R
+Aufruf einer "read only" Version von \fIex\fR .
+.TP 5
+.BI \+ \[command]
+Der Editor beginnt mit der Ausfuehrung des angegebenen Kommandos.
+Ist \fIcommand\fR nicht angegeben, positioniert der Editor
+den Cursor auf die letzte Zeile der Datei.
+.TP 5
+.B \-l
+Einstellung auf LISP-Editierung; d.h.
+die Editoroptionen \fIshowmatch\fR und \fIlisp\fR werden gesetzt.
+.TP 5
+\fIfile\fR
+Name(n) der zu editierenden Datei(en).
+.PP
+Der Editor \fIedit\fR ist fuer gelegentliche Benutzer geeignet, er vermeidet
+einige komplexere Aktivitaeten von \fIex\fR.
+.SH DATEIEN
+.nf
+/usr/lib/ex?.?strings   Fehlermeldungen
+/usr/lib/ex?.?recover   Wiederherstellen eines Kommandos
+/usr/lib/ex?.?preserve  Erhalten eines Kommandos
+/etc/termcap            Terminalsteuersequenzen
+~/.exrc                 Editor-Startdatei
+/tmp/Ex\fInnnnn\fR            temporaerer Editor
+/tmp/Rx\fInnnnn\fR            temporaerer Puffer
+/usr/preserve           Directory zum Retten
+.fi
+.SH SIEHE AUCH
+ed(1), grep(1), sed(1), vi(1), termcap(5), environ(5), termlist(7)
+.br
+"EX/VI Kurzbeschreibung" in WEGA-Dienstprogramme
+.SH EINSCHRAENKUNGEN
+Das
+.I undo
+Kommando bewirkt, dass alle Marken auf geaenderten Zeilen verloren gehen.
+Wurde eine Aenderung durch ein
+.I undo
+Kommando rueckgaengig gemacht, bleibt der Puffer jedoch modifiziert.
+.PP
+Das
+.I z
+Kommando gibt die Anzahl der logischen anstelle der physischen Zeilen aus.
+Sind lange Zeilen vorhanden, laeuft der Bildschirm ueber.
+.PP
+Wurde die Option \- benutzt, erfolgt bei Dateiein-/-ausgabefehlern
+keine Ausgabe des Namens.
+.PP
+Der Editor gibt keine Warnmeldung aus, wenn ein Text in einen benannten Puffer
+plaziert wurde und dieser vor Verlassen des Editors nicht verwendet wurde.
+.PP
+Null-Zeichen werden in Eingabedateien gestrichen und koennen nicht
+in erzeugten Dateien erscheinen.

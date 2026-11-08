@@ -1,0 +1,84 @@
+.TH LOGIN 1 WEGA
+.\" @[$]login.1 1.2
+.ad
+.fi
+.SH NAME
+login  \- Benutzeranmeldung und Setzen der Nutzerumgebung
+.SH BESCHREIBUNG
+.B Login
+kann explizit aufgerufen werden, es wird
+implizit bei jeder Benutzeranmeldung unter WEGA ausgefuehrt.
+.PP
+Bei der Ausfuehrung des login-Kommandos
+wird die Eingabeanforderung fuer das Passwort ausgegeben.
+Bis zur Beendigung der Passworteingabe ist die
+Echoausgabe aller auf der Tastatur
+eingegebenen Zeichen unterdrueckt
+(siehe passwd(1)).
+.PP
+Falls kein Passwort existiert oder das Passwort durch
+den Superuser gestrichen wurde, kann mit dem Kommando
+.BR passwd (1)
+ein neues Passwort definiert werden.
+.PP
+Nach der ordnungsgemaessen Ausfuehrung des login-Kommandos
+werden - falls vorhanden - alle Abrechnungsdateien
+aktualisiert, der Nutzer wird ueber die Existenz von
+Post informiert und die "Meldung des Tages"
+wird auf dem Bildschirm ausgegeben
+.BR (motd (5)).
+.B Login
+initialisiert die Variable TERM (Terminaltyp-Beschreibungsvariable),
+die Nutzer- und Gruppen-IDs und das Arbeitsdirectory.
+Anschliessend wird der Kommandointerpreter (gewoehnlich
+.BR  csh (1))
+aufgerufen.
+.PP
+Die Umgebungsvariablen
+(siehe
+.BR environ (5))
+werden wie folgt initialisiert:
+.RS
+.RI \s-1HOME\s+1= login-directory\^
+.br
+\s-1PATH\s+1=:/bin:/usr/bin
+.br
+.RI \s-1LOGNAME\s+1= login-name\^
+.RE
+.SH OPTIONEN
+.TP
+.B \-
+Ausschalten der Meldung des Tages.
+.SH DATEIEN
+.ta 20m
+/etc/utmp          Abrechnung (accounting)
+.br
+/usr/adm/wtmp      Abrechnung (accounting)
+.br
+/usr/spool/mail/*  Post
+.br
+/etc/motd          Meldung des Tages
+.br
+/etc/passwd        Passwortdatei
+.br
+/etc/profile       System Sh-Initialisierung
+.br
+/etc/cshprofile    System Csh-Initialisierung
+.br
+/etc/ttytype       Terminaltyp-Datei
+.SH SIEHE AUCH
+newgrp(1), mail(1), passwd(1), motd(5), passwd(5), ttytype(5),
+init(M), getty(M).
+.SH DIAGNOSTIK
+.TP 22
+"Login incorrect,"
+Falsche Passworteingabe.
+.TP 22
+"No shell,"
+Shell nicht zugreifbar.
+.TP 22
+"Cannot open password file,"
+Passwortdatei nicht zugreifbar.
+.TP 22
+"No directory,"
+Homedirectory nicht zugreifbar (z.B. bei fehlendem Dateisystem).

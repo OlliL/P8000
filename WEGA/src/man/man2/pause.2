@@ -1,0 +1,39 @@
+.TH PAUSE 2 WEGA
+.\"@[$]pause.2  1.2
+.ad
+.fi
+.SH NAME
+pause \- Anhalten bis zum Signal
+.SH SYNTAX
+.B pause( )
+.SH BESCHREIBUNG
+.B Pause
+kehrt nie normal zurueck.
+Der Systemruf wird verwendet, um die Steuerung abzugeben,
+waehrend auf den Empfang eines Signals gewartet wird, dass durch
+.BR kill (2)
+oder
+.BR alarm (2)
+initiiert wurde.
+Das empfangene Signal darf nicht zum Abschluss fuehren bzw. vorher 
+so gesetzt worden sein, dass es vom Aufrufprozess ignoriert wird.
+Wird das Signal vom rufenden Prozess empfangen
+(siehe 
+.BR signal (2))
+und wird die Steuerung von der Signalbehandlungsroutine wieder
+zurueckgegeben, nimmt der Prozess dort wieder seine Arbeit auf,
+wo er unterbrochen wurde.
+.B Pause
+gibt einen Wert von -1 zurueck und
+.B errno 
+wird auf EINTR gesetzt.
+.SH SIEHE AUCH
+kill(1), kill(2), alarm(2), signal(2), setret(3).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT PAUSE  := 29
+
+     sc      #PAUSE
+.fi
+.ad

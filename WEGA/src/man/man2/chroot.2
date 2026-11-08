@@ -1,0 +1,62 @@
+.TH CHROOT 2 WEGA
+.\" @[$]chroot.2        1.2
+.ad
+.fi
+.SH NAME
+chroot \- Veraendern des Root-Directory
+.SH SYNTAX
+.B int chroot
+.I (dirname)
+.br
+.B char
+.I *dirname;
+.SH BESCHREIBUNG
+.B Chroot
+setzt das Root-Directory, den Anfangspunkt fuer Pfadnamen, die mit / beginnen.
+.I Dirname
+ist die Adresse des Pfadnamens eines Directory (Zeichenkette
+mit einem Null-Byte abgeschlossen).
+Der Systemruf kann nur durch den Superuser erfolgen.
+.SH SIEHE AUCH
+cd(1), chdir(2).
+.SH DIAGNOSTIK
+.B Chroot
+meldet Fehler und das Root-Directory bleibt unveraendert,
+wenn mindestens einer der folgenden Punkte zutrifft:
+.TP 11
+\%[ENOTDIR]
+Eine Komponente des Pfadnamens ist kein Directory.
+.PD 0
+.TP 11
+\%[ENOENT]
+Die benannte Datei existiert nicht.
+.TP 11
+\%[EPERM]
+Die effektive Nutzer-ID
+entspricht nicht der des Superusers.
+.TP 11
+\%[EFAULT]
+.I Dirname
+verweist auf einen Bereich, der ausserhalb des dem Prozess
+zugewiesenen Adressbereichs liegt.
+.PD
+.SH RUECKGABEWERT
+Wurde das Root-Directory veraendert, wird der Wert Null zurueckgegeben.
+Andernfalls wird der Wert \-1 zurueckgegeben und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT CHROOT := 61
+
+Nichtsegmentiert
+     ...             !* r0 : dirname *!
+Segmentiert
+     ...             !* rr0 : dirname *!
+     clr    r4
+     sc     #CHROOT
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

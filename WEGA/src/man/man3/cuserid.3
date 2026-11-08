@@ -1,0 +1,59 @@
+.TH CUSERID 3 WEGA
+.\" @[$]cuserid.3       1.2
+.ad
+.fi
+.SH NAME
+cuserid \- Zeichenkette fuer Login-Namen des Nutzers
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.sp
+\fBchar \(**cuserid \fR(\fIs\fR)
+.br
+\fBchar \fI\(**s;\fR
+.fi
+.SH BESCHREIBUNG
+.B Cuserid\^
+erzeugt eine Zeichendarstellung des Login-Namens des Nutzers des
+aktuellen Prozesses.
+Ist
+.RI (int) s\^
+Null, wird diese Darstellung in einem internen 
+statischen Bereich erzeugt, dessen Adresse zurueckgegeben wird.
+Ist
+.RI (int) s\^
+ungleich Null, wird davon ausgegangen, dass 
+.I s\^
+auf ein Feld von mindestens 
+.B L_cuserid
+Zeichen zeigt; die Zeichen werden in diesem Feld abgelegt.
+Die Konstante 
+.B L_cuserid
+ist in der Datei
+.BR <stdio.h>
+definiert.
+.SH DIAGNOSTIK
+Kann der Login-Name nicht gefunden werden, liefert 
+.B cuserid\^
+eine
+.BR NULL ;
+ist in diesem Fall
+.I s\^
+ungleich Null, wird das Zeichen
+.B \e0
+in das durch
+.IR \(**s 
+bezeichnete Feld geschrieben.
+.SH SIEHE AUCH
+getlogin(3), getpwuid(3).
+.SH EINSCHRAENKUNGEN
+.B Cuserid\^
+benutzt
+.BR getpwnam (3).
+Ruft der Nutzer 
+.BR getpwnam (3)
+auf und anschliessend
+.BR cuserid ,
+werden die Ergebnisse von
+.BR getpwnam (3)
+geloescht.

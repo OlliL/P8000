@@ -1,0 +1,39 @@
+.TH NEWGRP 1 WEGA
+.\" @[$]newgrp.1	1.2
+.ad
+.fi
+.SH NAME
+newgrp \- Aenderung der Gruppenzugehoerigkeit
+.SH SYNTAX
+.B newgrp
+[\fIgroup\fR]
+.SH BESCHREIBUNG
+.B Newgrp
+aendert die Gruppenzugehoerigkeit des Nutzers (analog zu
+.BR  login (1)).
+Der Nutzer bleibt im System angemeldet und das Arbeitsdirectory
+wird nicht geaendert, aber alle folgenden Berechnungen von
+Zugriffsrechten auf Dateien werden unter Beruecksichtigung
+des neuen Gruppen-ID durchgefuehrt.
+.PP
+Wenn fuer die Gruppe ein Passwort definiert ist und
+der Nutzer standardmaessig nicht Mitglied der gewuenschten Gruppe ist,
+wird die Eingabe des Passworts verlangt.
+.PP
+Nach dem Anmelden im System sind die meisten Nutzer Mitglied der
+Gruppe "other".
+.B Newgrp
+wird von Shell direkt (ohne ein "fork") ausgefuehrt, wenn das Shell
+ein "login shell" ist.
+.PP
+Durch Eingabe von
+.B newgrp
+kann man jederzeit
+zu seiner login-Gruppen-ID zurueckkehren.
+Der Super-User kann mit
+.B newgrp
+zu jeder Gruppe gehen.
+.SH DATEIEN
+/etc/group, /etc/passwd
+.SH SIEHE AUCH
+csh(1), login(1), sh(1), group(5).

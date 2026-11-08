@@ -1,0 +1,103 @@
+.TH PASSWD 5 WEGA
+.\" @[$]passwd.5        1.2
+.ad
+.fi
+.SH NAME
+passwd \- Passwortdatei
+.SH BESCHREIBUNG
+Die Datei
+.B passwd
+enthaelt fuer jeden Benutzer folgende Informationen:
+.RS
+.IP - 2
+Name (Login-Name, enthaelt keine Grossbuchstaben)
+.PD 0
+.IP -
+verschluesseltes Passwort
+.IP -
+numerisches Nutzer-ID
+.IP -
+numerisches Gruppen-ID
+.IP -
+optional
+.IP -
+Home-Directory
+.IP -
+Name des Shell-Programms
+.PD
+.RE
+.fi
+.PP
+Diese Datei ist eine ASCII-Datei.
+Die Felder innerhalb eines Nutzereintrags werden durch
+Doppelpunkte getrennt.
+Das optionale Feld kann eine beliebige Information enthalten.
+Jeder Benutzer wird durch ein Newline abgeschlossen.
+Fehlt die Angabe des Shell-Programms, wird die Shell
+.BR sh (1)
+verwendet.
+.PP
+Die Passwortdatei wird im Directory
+.B /etc
+gefuehrt.
+Aufgrund des verschluesselten Passworts hat die Datei eine
+generelle Leseerlaubnis und kann beispielsweise verwendet
+werden, um eine numerische
+Nutzer-ID dem entsprechenden Namen zuzuordnen.
+.PP
+Das verschluesselte Passwort besteht aus 13 Zeichen, die
+aus einem aus 64 Zeichen bestehenden Alphabet
+.RB ( . ", " / ,
+.BR 0\-9 ", " A\-Z ", " a\-z ),
+ausgewaehlt werden. Eine Ausnahme bildet ein
+Passwort, das gleich Null ist. In diesem Fall ist auch das verschluesselte
+Passwort gleich Null.
+Ein Passwort ist von seinem Alter abhaengig, wenn in der Passwortdatei
+hinter dem
+verschluesselten Passwort
+ein Komma und
+eine Zeichenkette ungleich Null folgen.
+Die Zeichen entstammen dem gleichen Alphabet.
+(Eine solche Zeichenkette muss erstmalig vom Superuser
+eingefuehrt werden.)
+Das erste Zeichen des Alters,
+.I M
+genannt,
+gibt an, wieviele Wochen das Passwort hoechstens gueltig ist.
+Ein Benutzer, der nach Ablauf seines Passwortes versucht, sich
+damit anzumelden, muss ein neues
+Passwort eingeben.
+Das naechste Zeichen,
+.I m
+genannt,
+gibt an, wieviel Wochen mindestens vergangen sein muessen, bevor
+das Passwort geaendert werden kann.
+Die uebrigen Zeichen geben die Woche an (gerechnet von
+Anfang 1970), in der das Passwort zuletzt veraendert wurde.
+Eine leere Zeichenkette bedeutet keine Aenderung.
+\fIM\fR und \fIm\fR haben numerische Werte im Bereich von 0\-63.
+Ist
+.IR m = M =0
+(nach dem Komma wird
+.B .
+oder
+.B ..
+eingetragen),
+wird der Benutzer gezwungen, beim naechsten Login sein
+Passwort zu aendern. Das
+Alterskennzeichen verschwindet aus seinem Eintrag in der
+Passwortdatei.
+Ist
+.IR m > M
+(nach dem Komma z.B. durch die Zeichenkette
+.B ./
+angegeben),
+kann nur der Superuser das Passwort aendern.
+.SH DATEIEN
+/etc/passwd
+.SH SIEHE AUCH
+login(1),
+passwd(1),
+getpwent(3),
+crypt(3),
+group(5).

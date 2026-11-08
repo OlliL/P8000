@@ -1,0 +1,64 @@
+.TH PIPE 2 WEGA
+.\"@[$]pipe.2   1.2
+.ad
+.fi
+.SH NAME
+pipe \- Erzeugen eines Kanals zwischen Prozessen
+.SH SYNTAX
+.B int pipe
+.I (fildes)
+.br
+.B int
+.IR fildes [2];
+.SH BESCHREIBUNG
+Der Systemruf
+.B pipe
+erstellt einen als Pipe bezeichneten E/A-Mechanismus,
+bei dem der Ausgabedatenstrom eines Prozesses auf den
+Eingabedatenstrom eines anderen Prozesses gelenkt wird.
+Es werden zwei Dateidescriptoren zurueckgegeben,
+die in Lese- und Schreiboperationen benutzt werden.
+Wird unter Verwendung des Descriptors
+.IR fildes [1]
+auf die Pipe geschrieben, werden bis zu 5120 Bytes gepuffert, bevor der
+Schreibprozess unterbrochen wird.
+Beim Lesen unter Verwendung des Descriptors
+.IR fildes [0]
+werden die Daten aufgenommen.
+Das Schreiben von 5120 Bytes oder weniger 
+wird als eine Einheit betrachtet; kein anderer Prozess kann
+Daten einstreuen.
+.PP
+Es wird davon ausgegangen, dass nach der Errichtung der Pipe zwei
+oder mehr durch nachfolgende
+.B fork
+Systemrufe erzeugte kooperierende Prozesse die Daten ueber
+.BR read (2)
+und
+.BR write (2)
+Systemrufe durch die Pipe uebergeben.
+.PP
+Leserufe auf eine leere Pipe (keine gepufferten Daten) mit
+nur einem Ende (alle Schreib-Dateidescriptoren sind geschlossen)
+geben ein EOF zurueck.
+Die Shell verfuegt ueber eine Syntax, um mehrere Prozesse
+ueber Pipes aneinander zu reihen.
+.SH SIEHE AUCH
+sh(1), csh(1), read(2), write(2), fork(2).
+.SH DIAGNOSTIK
+Wurde die Pipe erstellt, wird Null zurueckgegeben.
+Wird versucht, in eine Pipe mit nur einem Ende zu schreiben,
+wird ein Signal erzeugt.
+Wenn schon zu viele Dateien (mehr als 20) offen sind, wird 
+der Wert \-1 zurueckgegeben \%[EMFILE].
+.SH EINSCHRAENKUNGEN
+Sollten in einer Pipe in einer Schleife von Prozessen mehr als 5120
+Bytes notwendig sein, tritt eine Systemblockierung ein.
+.SH ASSEMBLER
+.nf
+     CONSTANT PIPE := 42
+
+     ...
+     sc     #PIPE
+     ...             !* r4 : Dateidescriptor fuer Lesen *!
+     ...             !* r5 : Dateidescriptor fuer Schreiben *!

@@ -1,0 +1,86 @@
+.TH NM 1 
+.\" @[$]nm.1	1.2
+.ad
+.fi
+.SH NAME
+nm \- Ausgabe der Symboltabelle
+.SH SYNTAX
+.B nm
+[\fB-gnoprsu\fR] [\fIfile\fR] ...
+.SH BESCHREIBUNG
+.B Nm
+gibt die Symboltabelle jeder angegebenen Objektdatei bzw.
+jedes angegebenen Lademoduls aus.
+Ist ein Argument ein Archiv, wird ein Ausdruck von jeder
+Objektdatei des Archivs erzeugt. Wurde keine Datei angegeben,
+werden die Symbole der a.out-Datei ausgegeben.
+.PP
+Die Ausgabe ist alphabetisch geordnet.
+Jedem Symbolnamen wird sein hexadezimaler Wert (Leerzeichen, wenn
+undefiniert) und ein Kennzeichen vorangestellt.
+Die Kennzeichen haben folgende Bedeutung:
+.PP
+.RS
+U 	undefiniert
+.br
+A 	absolut
+.br
+T 	Textsegmentsymbol
+.br
+D 	Datensegmentsymbol
+.br
+B 	bss-Segmentsymbol
+.br
+C 	common-Symbol
+.br
+F	Dateiname
+.br
+S	Segmentname
+.RE
+.PP
+Ein Grossbuchstabe kennzeichnet globale oder externe Symbolnamen.
+Ein Kleinbuchstabe kennzeichnet lokale Symbole.
+.SH OPTIONEN
+.TP
+.B \-g
+Gibt nur die globalen (externen) Symbole aus.
+.TP
+.B \-n
+Sortierung erfolgt numerisch.
+.TP 
+.B \-o
+Zu jeder Ausgabezeile wird der Datei- oder Archivelementname hinzugefuegt.
+.TP
+.B \-p
+Gibt die Symbole in ungeordneter Reihenfolge aus.
+.TP
+.B \-r
+Sortiert in umgekehrter Reihenfolge.
+.TP
+.B \-s
+Sortiert entsprechend der numerischen Abstaende der Symbole.
+Diese numerischen Abstaende ergeben sich aus der Differenz des
+numerischen Wertes des Symbols und dem naechst hoeheren Wert
+eines anderen Symbols. Die Differenzen werden als Werte ausgegeben.
+Diese Option aktiviert die Optionen
+.B \-g
+und
+.B \-n
+und deaktiviert
+.B \-u
+und
+.BR \-p .
+.TP 
+.B \-u
+Gibt nur die undefinierten Symbole aus.
+.SH DATEIEN
+a.out		Objektdatei
+.SH SIEHE AUCH
+ar(1), objdu(1), objhdr(1), a.out(5), ar(5).
+.SH EINSCHRAENKUNGEN
+Die \fB-s\fR Option funktioniert nicht in segmentierten Objekt\%dateien.
+.sp
+Die Groesse eines durch \fBnm\fR beschriebenen externen Symbols kann,
+wenn der Aufruf der \fB-s\fR Option erfolgte, die Groesse anderer
+Objekte beinhalten, die in der Symboltabelle (z.B. statische Symbole,
+Sprungtabellen, usw.) enthalten sind, aber keinen Namen besitzen.

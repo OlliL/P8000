@@ -1,0 +1,70 @@
+.TH ME 7
+.\" @[$]me.7    1.2
+.ad
+.fi
+.SH NAME
+me \- Makropaket zur Textformatierung mit nroff/troff
+.SH SYNTAX
+.B nroff -me
+[\fIoptions\fR] \fIfile\fR
+.br
+.B troff -me
+[\fIoptions\fR] \fIfile\fR
+.SH BESCHREIBUNG
+Dieses Paket enthaelt Makrodefinitionen zur Formatierung von
+technischen Dokumenten oder anderen
+Manuskripten verschiedener Formate mit Hilfe der Programme
+.B nroff (1)
+oder
+.B troff (1).
+.PP
+Die Ausgabe der Preprozessoren
+.BR eqn (1),
+.BR neqn (1)
+und
+.BR tbl (1)
+fuer Gleichungen und Tabellen wird als Eingabe akzeptiert.
+.SH MAKROS
+.PD 0
+.IP \.bc 8
+Beginn einer neuen Spalte.
+.IP \.bp
+Beginn einer neuen Seite.
+.IP "\.ce  \fIN\fR
+Zentrieren der naechsten \fIN\fR Zeilen
+.IP "\.in \fI+N\fR
+Einruecken um \fIN\fR Stellen.
+.IP \.ip
+Absatz wird eingerueckt.
+.IP \.lp
+Absatz beginnt linksbuendig (ohne Einruecken der ersten Zeile).
+.IP \.np
+Beginn eines eingerueckten, numerierten Absatzes.
+.IP \.pp
+Beginn eines Absatzes (erste Zeile eingerueckt).
+.IP \.sh
+Angabe einer Abschnittsueberschrift.
+.IP "\.sp  \fIN\fR
+\fIN\fR Zeilen freilassen.
+.IP "\.ti \fI+N\fR
+Temporaere Einrueckung von \fIN\fR Leerzeichen.
+.IP \.tp
+Titelseite beginnen.
+.IP "\.ul  \fIN\fR
+Die naechsten \fIN\fR Zeilen werden in Kursivschrift gesetzt.
+.IP \.1c
+Uebergehen zu einspaltiger Ausgabe.
+.IP \.2c
+Automatische Ausgabe in zwei Spalten.
+.PD
+.SH DATEIEN
+/usr/lib
+.SH SIEHE AUCH
+eqn(1),
+nroff(1),
+troff(1),
+tbl(1).
+.SH EINSCHRAENKUNGEN
+Bei Verwendung des Formatierprogramms
+.BR nroff (1)
+wird Kursivschrift durch Unterstreichung ersetzt.

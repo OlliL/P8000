@@ -1,0 +1,39 @@
+.TH CHOWN 1 WEGA
+.\"@[$]chown.1	1.2
+.ad
+.fi
+.SH NAME
+chown \- Aendern des Eigentuemers einer Datei
+.SH SYNTAX
+\fBchown\fI owner file\fR
+.PP
+.SH BESCHREIBUNG
+.B Chown
+aendert den Eigentuemer der angegebenen Datei 
+.I file
+zu
+.IR owner .
+Der Eigentuemer (owner) kann eine dezimale Nutzeridentifikationsnummer 
+oder ein Nutzername sein, der in der Datei /etc/passwd 
+eingetragen ist.
+.SH BEISPIEL
+Das Kommando:
+.sp
+.RS
+\fBchown \fIhans bina.l\fR
+.RE
+.PP
+aendert den Eigentuemer der
+Datei \fIbina.l\fR zu \fIhans\fR (vorausgesetzt \fIhans\fR ist ein 
+zulaessiger Nutzername in der Datei \fI/etc/passwd\fR ).
+.SH DATEIEN
+ /etc/chown
+.br
+ /etc/passwd
+.SH SIEHE AUCH
+ chown(2), chgrp(1), passwd(5), group(5), chmog(M).
+.PP
+.SH EINSCHRAENKUNGEN
+.PP 
+Nur der Eigentuemer oder der Super-User ist in der Lage,
+den Eigentuemer einer Datei zu aendern.

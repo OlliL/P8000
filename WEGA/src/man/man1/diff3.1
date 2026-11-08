@@ -1,0 +1,99 @@
+.TH DIFF3 1 WEGA 
+.\" @[$]diff3.1	1.2
+.ad
+.fi
+.SH NAME
+diff3 \- 3-Wege Vergleich unterschiedlicher Dateien
+.SH SYNTAX
+.B diff3
+[
+.B \-ex3
+] \fIfile1 file2 file3\fR
+.SH BESCHREIBUNG
+.B Diff3\^
+vergleicht drei Textdateien miteinander und gibt die nichtuebereinstimmenden
+Bereiche, die mit entsprechenden Codes markiert werden, aus.
+.RS
+.TP 16
+====
+alle drei Dateien unterscheiden sich
+.TP 16
+====1
+.IR file1 " ist verschieden"
+.TP 16
+====2
+.IR file2 " ist verschieden"
+.TP 16
+====3
+.IR file3 " ist verschieden"
+.RE
+.PP
+Es folgen die Kommandos, mit deren Hilfe ein gekenn\%zeichneter Bereich
+einer angegebenen Datei in eine andere umgewandelt werden kann:
+.RS
+.TP 16
+.IB f " : " n1 " a"
+Text soll nach der Zeilenzahl
+.I n1\^
+an die Datei
+.IR f
+angehangen werden. Dabei ist
+.I f\^
+= 1, 2, oder 3 .
+.TP 16
+.IB f " : " n1 " , " n2 " c"
+Text soll im Bereich ab Zeile
+.I n1\^
+bis Zeile
+.I n2\^
+geaendert werden. Ist
+.I n1\^
+=
+.IR n2 ,
+kann der Bereich mit
+.I n1\^
+abgekuerzt werden.
+.RE
+.PP
+Der Originalinhalt des Bereiches folgt direkt nach
+der "c"-Angabe.
+Wenn die Inhalte zweier Dateien identisch sind, werden die
+Zeilen der Datei mit der niedrigeren Nummer unterdrueckt.
+.SH OPTIONEN
+.TP
+.B \-e
+.B diff3\^
+erzeugt auf der Standardausgabe einen Kommandoscript 
+fuer den Editor \fBed\fR(1),
+der alle Aenderungen zwischen
+.I file2\^
+und
+.IR file3
+in
+.I file1\^
+einbringt, d.h. die Aenderungen, die normalerweise
+durch "====" und "====3" angezeigt werden.
+.TP
+\fB\-x \fR(\fB\-3\fR)
+erzeugt einen Kommandoscript, der nur die durch "====" ("====3")
+gekennzeichneten Aenderungen einbringt.
+.SH BEISPIELE
+.PP
+Der folgende Befehl wendet den erhaltenen Script auf die Datei
+\fIfile1\fR an:
+.PP
+.ti 10n
+(cat script; echo \(fm1,$p\(fm; echo w) \(bv ed \- file1
+.SH DATEIEN
+/tmp/d3\(**
+.br
+/usr/lib/diff3prog
+.SH SIEHE AUCH
+diff(1), ed(1)
+.SH EINSCHRAENKUNGEN
+Textzeilen, die nur aus einem einzelnen "." bestehen, werden
+bei Anwendung der
+.BR \-e
+Option nicht richtig behandelt.
+.sp
+Dateien, die laenger als 64 kByte sind, koennen nicht bearbeitet werden.

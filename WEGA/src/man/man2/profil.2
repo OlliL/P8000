@@ -1,0 +1,116 @@
+.TH PROFIL 2 WEGA
+.\" @[$]profil.2        1.2
+.ad
+.fi
+.SH NAME
+profil \- Profil der Ausfuehrungszeit
+.SH SYNTAX
+.B profil
+.I (buff, bufsiz, offset, scale)
+.br
+.B sprofil
+.I (segno, buff, bufsiz, offset, scale)
+.br
+.B char
+.I *buff;
+.br
+.B int 
+.I segno, bufsiz, offset, scale;
+.SH BESCHREIBUNG
+Diese Systemrufe erstellen einen Puffer mit Informationen
+ueber das Laufzeitprofil eines Anwenderprogramms.
+Fuer segmentierte Programme kann mit dem Systemruf
+.BR sprofil (2) 
+fuer das durch
+.I segno
+angegebene Segment das Laufzeitprofil erzeugt werden.
+Fuer jedes Code-Segment ist ein separater Systemruf
+.BR sprofil (2) 
+notwendig.
+Der Systemruf
+.BR profil (2) 
+ist fuer nichtsegmentierte Programme vorgesehen.
+.PP
+Der Pointer
+.I buff
+zeigt auf einen Speicherbereich, dessen Laenge (in Bytes) durch
+.IR bufsiz
+gegeben ist. Bei
+.B sprofil
+ist zu beachten, dass
+.I buff
+eine segmentierte Adresse (Typ long) ist.
+Nach diesem Systemruf wird der Befehlszaehler des Anwenderprogramms (pc)
+bei jedem Uhrtakt (sechzigstel Sekunde) geprueft;
+.I offset
+wird davon subtrahiert und das Ergebnis mit
+.IR scale
+multipliziert. Stimmt der resultierende Wert mit einem Wort innerhalb von
+.I buff
+ueberein, wird dieses Wort inkrementiert.
+.PP
+Die Skala wird als eine vorzeichenlose Festkommazahl mit dem
+Dezimalpunkt ganz links betrachtet:
+0177777 gibt eine 1:1 Abbildung des Befehlszaehlers (pc) zu den Worten in
+.I buff;
+077777 bildet jedes Paar von Befehlsworten zusammen ab.
+02 bildet alle Befehle auf den Beginn von
+.I buff
+ab (Taktzaehlung).
+.PP
+Die Erzeugung des Zeitprofils wird abgeschaltet, wenn fuer
+.I scale
+der Wert 0 oder 1 gegeben wird.
+Die Angabe von
+.I bufsiz
+gleich 0 ist unwirksam.
+Die Erzeugung des Zeitprofils wird bei Ausfuehrung eines
+.B exec
+Systemrufs abgeschaltet, bleibt jedoch 
+nach einem Systemruf
+.BR fork
+im Child-Prozess und Parent-Prozess eingeschaltet.
+Die Erzeugung des Zeitprofils kann ausgeschaltet werden, wenn eine
+Aktualisierung von
+.I buff
+zu einem Speicherfehler fuehren wuerde.
+.SH RUECKGABEWERT
+Trat kein Fehler auf, wird Null zurueckgegeben.
+Der Wert -1  wird von 
+.B sprofil 
+zureckgegeben, wenn gilt:
+.TP 11
+[ENDSEG]
+Die Segmentnummer liegt ausserhalb des vorgegebenen Bereiches,
+oder sie wird nicht benutzt
+oder sie bezeichnet ein Datensegment.
+.PD 0
+.TP
+[ENDPROF]
+Es soll fuer mehr als 10 Codesegmente ein Zeitprofil erzeugt werden.
+.PD
+.SH SIEHE AUCH
+monitor(3), prof(1), mon.out(5).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT PROFIL := 44
+        
+     ...             !* r0 : buf *!
+                     !* r1 : bufsiz *!
+                     !* r2 : offset *!
+                     !* r3 : scale *!
+     sc     #PROFIL
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+        
+     CONSTANT SPROFIL := 52
+     
+     ...             !* r0 : segno *!
+                     !* r1,r2 : buf *!
+                     !* r3 : bufsiz *!
+                     !* r4 : offset *!
+                     !* r5 : scale *!
+     sc     #SPROFIL
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!

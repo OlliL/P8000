@@ -1,0 +1,81 @@
+.TH DEVNAMES 4
+.\" @[$]devnames.4      1.2
+.ad
+.fi
+.SH NAME
+root, rroot, usr, rusr, tmp, rtmp, z, rz, tardev, dumpdev und resdev
+.SH BESCHREIBUNG
+Die
+im Directory
+.B /dev
+befindlichen Dateien
+.B "root, rroot, usr, rusr, tmp, rtmp, z und rz"
+stellen Links zu den Standard-Dateisystemen
+.BR "/, /usr, /tmp und /z"
+auf den zugeordneten virtuellen Platten (siehe
+.BR md (4))
+dar.
+In der folgenden Tabelle sind die Dateisysteme und die entsprechenden
+Geraetedateien der virtuellen Platten fuer das verwendete 5.25"
+Winchesterlaufwerk aufgefuehrt:
+.RS
+.nf
+.sp
+Datei          Geraetedatei
+---------------------------
+/dev/root        /dev/md2
+/dev/rroot       /dev/rmd2
+
+/dev/usr         /dev/md0
+/dev/rusr        /dev/rmd0
+
+/dev/tmp         /dev/md3
+/dev/rtmp        /dev/rmd3
+
+/dev/z           /dev/md4
+/dev/rz          /dev/rmd4
+.RE
+.fi
+.PP
+Die Datei
+.B tardev
+stellt das Standardgeraet
+fuer das Kommando
+.BR tar (1)
+dar.
+Die Datei
+.B dumpdev
+wird von den Kommandos
+.BR dump (M)
+und
+.BR restor (M)
+als Standardgeraet verwendet.
+Die Dateien
+.B tardev
+und
+.B dumpdev
+sollten mit den entsprechenden Raw-Geraetedateien
+ueber Links verbunden werden.
+Besteht keine solche Verbindung, wird
+.B /dev/rfd1
+(Standard) verwendet.
+.SH DATEIEN
+.nf
+/dev/root
+/dev/rroot
+/dev/usr
+/dev/rusr
+/dev/tmp
+/dev/rtmp
+/dev/z
+/dev/rz
+/dev/tardev
+/dev/dumpdev
+/dev/resdev
+.fi
+.SH SIEHE AUCH
+tar(1),
+dump(M),
+mfs(M),
+rc(M),
+restor(M).

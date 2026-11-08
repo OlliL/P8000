@@ -1,0 +1,83 @@
+.TH CTYPE 3 WEGA
+.\" @[$]ctype.3 1.2
+.ad
+.fi
+.SH NAME
+isalpha, isupper, islower, isdigit, isxdigit, isalnum, isspace , ispunct, isprint, isgraph, iscntrl, isascii \- Zeichenklassifizierung
+.SH SYNTAX
+.B #include <ctype.h>
+.PP
+.B int isalpha \fR(\fIc\fR)
+.br
+.B int \fIc\fR;
+.PP
+.B . . .
+.SH BESCHREIBUNG
+Diese Macros klassifizieren
+ASCII-kodierte Integerwerte ueber das Durchsuchen einer
+Tabelle.
+Jedes dieser Macros liefert im Fall wahr einen Wert
+ungleich Null und im Fall falsch den Wert Null.
+.B Isascii\^
+ist fuer alle ganzzahligen Werte definiert, alle anderen Werte sind nur
+dann definiert, wenn
+.B isascii\^
+wahr ist sowie fuer das einzelne Nicht-ASCII-Zeichen
+.B EOF
+(siehe
+.BR stdio (3)).
+.TP 10
+.B isalpha\^
+.I c\^
+ist ein Buchstabe
+.TP
+.B isupper\^
+.I c\^
+ist ein Grossbuchstabe
+.TP
+.B islower\^
+.I c\^
+ist ein Kleinbuchstabe
+.TP
+.B isdigit\^
+.I c\^
+ist eine Ziffer [0-9]
+.TP
+.B isxdigit\^
+.I c\^
+ist eine hexadezimale Ziffer [0-9], [A-F] or [a-f]
+.TP
+.B isalnum\^
+.I c\^
+ist ein alphanumerisches Zeichen
+.TP
+.B isspace\^
+.I c\^
+ist ein Leerzeichen, ein Tabulator, ein Carrige Return, ein Newline
+oder ein Formfeed.
+.TP
+.B ispunct\^
+.I c\^
+ist ein Interpunktionszeichen (es handelt sich dabei weder um ein Steuer-
+noch um ein alphanumerisches Zeichen)
+.TP
+.B isprint\^
+.I c\^
+ist ein Druckzeichen, Code 0x20 (Leerzeichen) bis 0x7e (Tilde)
+.TP
+.B isgraph\^
+.I c\^
+ist ein Druckzeichen, wie in
+.B isprint\^
+aber ohne Leerzeichen
+.TP
+.B iscntrl\^
+.I c\^
+ist ein Loeschzeichen (0x7f) oder ein normales Steuerzeichen
+(kleiner als 0x20).
+.TP
+.B isascii\^
+.I c\^
+ist ein ASCII Zeichen, Code kleiner als 0x100
+.SH SIEHE AUCH
+ascii(7).

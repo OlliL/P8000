@@ -1,0 +1,107 @@
+.TH LINK 2 WEGA
+.\" @[$]link.2  1.2
+.ad
+.fi
+.SH NAME
+link \- Link (Verbindung) zu einer Datei
+.SH SYNTAX
+.B int link
+.I (file1, file2)
+.br
+.B char
+.I *file1, *file2;
+.SH BESCHREIBUNG
+Ein Link
+erzeugt einen Directoryeintrag zu einer Datei.
+.I File1
+ist dabei ein bereits existierender Eintrag zu der Datei,
+.I file2
+ist der zu erzeugende Directoryeintrag
+zu der Datei.
+Der Linkzaehler im i-node der Datei wird um 1 erhoeht.
+.I File1
+und
+.I file2
+sind Zeiger auf willkuerliche Pfadnamen, die durch
+ein Nullbyte abgeschlossen sind.
+.SH SIEHE AUCH
+ln(1), unlink(2).
+.SH DIAGNOSTIK
+.B Link
+meldet Fehler und erzeugt kein Link, wenn mindestens einer
+der folgenden Punkte zutrifft:
+.TP 11
+\%[ENOTDIR]
+Eine vordere Komponente eines Pfadnamens ist kein Directory.
+.PD 0
+.TP 11
+\%[ENOENT]
+Eine Komponente eines Pfadnamens existiert nicht.
+.TP 11
+\%[EACCES]
+Eine Komponente eines Pfadnamens weist die Sucherlaubnis zurueck.
+.TP 11
+\%[ENOENT]
+Die Datei, auf die
+.I file1
+zeigt, existiert nicht.
+.TP 11
+\%[EEXIST]
+Das Link, auf das
+.I file2
+zeigt, existiert.
+.TP 11
+\%[EPERM]
+Die Datei, auf die
+.I file1
+zeigt, ist ein Directory und die effektive Nutzer-ID
+ist entspricht nicht der des Superusers.
+.TP 11
+\%[EXDEV]
+Das Link, auf das
+.I file2
+zeigt und die Datei, auf die
+.I file1
+zeigt, befinden sich in unterschiedlichen Dateisystemen.
+.TP 11
+\%[ENOENT]
+.I file2
+weist auf einen Null-Pfadnamen.
+.TP 11
+\%[EACCES]
+Das erwuenschte Link erfordert das Schreiben in einem Directory mit
+einem Modus, das die Schreiberlaubnis zurueckweist.
+.TP 11
+\%[EROFS]
+Das erwuenschte Link erfordert das Schreiben in einem Directory in einem
+Read-Only-Dateisystem.
+.TP 11
+\%[EFAULT]
+.I Path
+verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen 
+Adressbereichs liegt.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird ein Wert Null zurueckgegeben.
+Andernfalls wird ein Wert \-1 zurueckgegeben und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+link(1M), unlink(2).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT LINK := 9
+
+Nichtsegmentiert
+     ...             !* r0 : file1 *!
+                     !* r1 : file2 *!
+Segmentiert
+     ...             !* rr0 : file1 *!
+                     !* rr2 : file2 *!
+     clr    r4
+     sc     #LINK
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

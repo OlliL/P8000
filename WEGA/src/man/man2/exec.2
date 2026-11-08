@@ -1,0 +1,438 @@
+.TH EXEC 2 WEGA
+.\"@[$]exec.2   1.2
+.ad
+.fi
+.SH NAME
+execl, execv, execle, execve, execlp, execvp  \- Ausfuehren einer Datei
+.SH SYNTAX
+.B int execl
+.I (file, arg0, arg1, ..., argn, 0)
+.br
+.B char
+.I *file, *arg0, *arg1, ..., *argn;
+.PP
+.B int execv
+.I (file, argv)
+.br
+.B char
+.I *file, *argv[ ];
+.PP
+.B int execle
+.I (file, arg0, arg1, ..., argn, 0, envp)
+.br
+.B char
+.I *file, *arg0, *arg1, ..., *argn, *envp[ ];
+.PP
+.B int execve
+.I (file, argv, envp);
+.br
+.B char
+.I *file, *argv[ ], *envp[ ];
+.PP
+.PP
+.B int execlp
+.I (file, arg0, arg1, ..., argn, 0)
+.br
+.B char
+.I *file, *arg0, *arg1, ..., *argn;
+.PP
+.B int execvp
+.I  (file, argv)
+.br
+.B char
+.I *file, *argv[ ];
+.SH BESCHREIBUNG
+.B Exec
+in allen seinen Formen ueberlagert den aufrufenden Prozess mit 
+der angegebenen Datei
+.I file
+und springt dann zum
+Eintrittspunkt des Speicherabbildes der Datei.
+Es gibt keine Rueckkehr aus einem erfolgreichen
+.BR exec (2); 
+das aufrufende Speicherabbild geht verloren.
+.PP
+Dateidescriptoren, die im rufenden Prozess offen sind,
+bleiben im neuen Prozess offen, wenn fuer sie nicht das
+\%close-on-exec 
+Flag gesetzt ist (siehe 
+.BR fcntl (2)).
+Fuer jene Dateidescriptoren, die offen bleiben, wird der Dateipointer nicht
+geaendert.
+.PP
+Ignorierte Signale bleiben durch diese Aufrufe ignoriert.
+Behandelte Signale (siehe
+.BR signal (2))
+werden auf ihre Standardwerte zurueckgesetzt.
+.PP
+Die Erzeugung des Laufzeitprofils (Profiling) ist fuer den neuen Prozess
+nicht moeglich (siehe
+.BR profil (2)).
+.PP 
+Jeder Nutzer hat eine reale Nutzer-ID und Gruppen-ID und eine effektive
+Nutzer-ID und Gruppen-ID.
+Die reale ID identifiziert die Person, die das System bedient;
+die effektive ID legt die Zugriffsprivilegien fest.
+.B Exec
+aendert die effektive Nutzer-ID und Gruppen-ID auf den Eigentuemer der
+abgearbeiteten Datei, wenn die Datei einen der Modi
+Set-User-ID oder Set-Group-ID
+hat.
+Die reale Nutzer-ID wird nicht beeinflusst.
+.PP
+Der neue Prozess uebernimmt auch die folgenden Attribute des aufrufenden
+Prozesses:
+.PP
+.PD 0
+.RS 0.5i
+.PP
+nice-Wert (siehe 
+.BR nice (2))
+.PP
+Prozess-ID
+.PP
+Parent-Prozess-ID
+.PP
+Prozessgruppen-ID
+.PP
+Terminalgruppen-ID
+(siehe 
+.BR exit (2)
+und
+.BR signal (2))
+.PP
+Trace-Flag (siehe
+.BR ptrace "(2) request 0)"
+.PP
+Zeit, die seit einem Alarmsignal vergangen ist
+(siehe
+.BR alarm (2))
+.PP
+Aktuelles Arbeitsdirectory
+.PP
+Root-Directory
+.PP
+Maske fuer Modus zur Dateierzeugung (siehe
+.BR umask (2))
+.PP
+Limit fuer Dateigroesse (siehe
+.BR ulimit (2))
+.PP
+.BR utime ,
+.BR stime ,
+.BR cutime ,
+und
+.B cstime
+(siehe 
+.BR times (2))
+.RE
+.PD
+.PP
+Aus der Sprache C sind zwei Interfaces verfuegbar.
+.B Execl
+ist nuetzlich, wenn eine bekannte Datei mit bekannten Argumenten 
+aufgerufen wird. Die Argumente fuer
+.B execl
+sind die Zeichenketten, die die Datei und die Argumente darstellen;
+das erste Argument ist ueblicherweise das gleiche, wie der 
+Dateiname oder seine letzte Komponente.
+Ein Argument 0 muss die Argumentliste beenden. 
+.br
+.B Achtung:
+Fuer segmentierte Programme muss die Argumentliste mit einem Wert 0L
+abgeschlossen werden!
+.PP
+Die Version
+.B execv
+ist nuetzlich, wenn die Anzahl der Argumente im voraus unbekannt
+ist. Die Argumente fuer
+.B execv
+sind der Name der abzuarbeitenden Datei und ein Vector 
+von Zeichenketten, die die Argumente enthalten.
+Die letzte Argumentkette muss von einem Null-Pointer gefolgt werden
+(bei segmentierten Programmen 0L).
+.PP
+Wenn ein C-Programm abgearbeitet wird, wird es wie folgt aufgerufen:
+.PP
+        main(argc, argv, envp)
+.br
+        int argc;
+.br
+        char **argv, **envp;
+.PP
+wobei
+.I argc
+ein Argumentzaehler und
+.I argv
+ein Feld von Zeichenpointern fuer die Argumente selbst ist.
+.PP
+.I Argc
+ist mindestens Eins und das erste Element des Feldes
+.I argv
+weist auf
+eine Zeichenkette, die den Namen der Datei selbst enthaelt.
+.PP
+.I Argv
+ist direkt nutzbar in einem weiteren
+.B execv,
+weil 
+.I argv [ argc ]
+Null ist.
+.PP 
+.B Execlp
+und
+.B execlvp
+werden mit den gleichen Argumenten wie
+.B execl
+und 
+.B execv
+aufgerufen, aber duplizieren die Shell-Aktionen zur Suche nach einer
+abarbeitbaren Datei in einer Liste von Directories.
+Die Directoryliste wird aus der Umgebung gewonnen.
+.SH ARGUMENTE
+Das Argument
+.I file
+ist ein Pointer auf die Datei, die abgearbeitet werden soll.
+Die vordere Komponente des Pfadnames fuer diese Datei wird aus einer Suche der 
+Directories aus der Umgebungsvariablen "PATH =" (siehe
+.BR environ (7))
+gewonnen.
+Die Umgebung wird durch das Shell gestellt (siehe
+.BR sh (1)).
+.PP
+.I Argv
+ist ein Feld von Pointern auf Zeichenketten
+.IR arg0,
+.IR arg1 " ..."
+, die mit einem Nullbyte
+abgeschlossen sind.
+Gewoehnlich ist
+.IR arg0
+der Name der Datei.
+Diese Zeichenketten bilden die Argumentliste,
+die fuer den neuen Prozess verfuegbar ist.
+Nach Vereinbarung muss
+.I argv
+mindestens ein Element haben
+und auf eine Zeichenkette zeigen, die
+.I file
+(oder ihre letzte Komponente) enthaelt.
+.I Argv
+wird durch einen Null-Pointer beendet.
+.PP
+.I Envp
+ist ein Pointer auf ein Feld von Zeichenketten,
+das die Umgebung des Prozesses darstellt.
+Jede Zeichenkette besteht aus einem Namen, einem Gleichheitszeichen
+und einem mit Null abgeschlossenen Wert.
+Das Feld der Pointer wird durch einen Null-Pointer beendet.
+Null-Pointer fuer segmentierte Programme, die exec ausfuehren,
+besitzen den Wert 0L .
+Die Shell (siehe
+.BR sh (1))
+uebergibt einen Eintritt fuer jede globale
+Shell-Umgebungsvariable, die beim Programmaufruf definiert ist.
+.PP
+Einige vereinbarungsgemaess benutzte Namen sind in
+.BR environ (5)
+enthalten.
+Die C-Laufzeit-Startroutine gibt eine Kopie von
+.B envp
+in die globale Zelle
+.IR environ ,
+die von 
+.B execv 
+und 
+.B execl
+benutzt wird, um die Umgebung an jedes Subprogramm zu geben, das vom
+gegenwaertig laufenden Programm ausgefuehrt wird.
+Die
+.B exec
+Routinen nutzen Routinen auf niedrigem Niveau, wie die folgenden, um eine
+Umgebung explizit zu uebergeben:
+.RS
+.nf
+execle(file, arg0, arg1, . . . , argn, 0, environ);
+execve(file, argv, environ);
+.fi
+.RE
+.SH DATEIEN
+.nf
+/bin/sh  shell, wird gestartet, wenn eine Kommandodatei durch
+         \fBexeclp\fR oder \fBexecvp\fR gefunden wird.
+.fi
+.SH SIEHE AUCH
+fork(2), environ(5).
+.SH DIAGNOSTIK
+.B Exec
+wird nicht ausgefuehrt und es wird zum aufrufenden Prozess zurueckgekehrt,
+wenn mindestens einer der folenden Punkte zutrifft:
+.TP 11
+\%[ENOENT]
+Eine oder mehrere Komponenten des Pfadnamens der neuen Prozessdatei 
+existieren nicht.
+.PD 0
+.TP 11
+\%[ENOTDIR]
+Eine Komponente des vorderen Pfadnamens der neuen Prozessdatei ist 
+kein Directory.
+.TP 11
+\%[EACCES]
+Die Sucherlaubnis fuer ein Directory, das in der vorderen Komponente
+des Pfadnamens der neuen Prozessdatei aufgelistet ist, wird verweigert.
+.TP 11
+\%[EACCES]
+Die neue Prozessdatei ist keine gewoehnliche Datei.
+.TP 11
+\%[EACCES]
+Der Modus der neuen Prozessdatei weist die Ausfuehrungserlaubnis zurueck.
+.TP 11
+\%[ENOEXEC]
+Die neue Prozessdatei hat das entsprechende Zugriffsrecht, aber eine
+ungueltige Magic-Nummer im Dateikopf.
+.TP 11
+\%[ETXTBSY]
+Die neue Prozessdatei ist eine reine Prozedur (shared text) , die
+gegenwaertig fuer das Schreiben durch einen Prozess offen ist.
+.TP 11
+\%[ENOMEM]
+Der neue Prozess erfordert mehr Speicherkapazitaet, als durch das vom
+System gesetzte Maximum
+.SM MAXMEM 
+erlaubt ist.
+.TP 11
+\%[E2BIG]
+Die Anzahl der Bytes in der Argumentliste des neuen Prozesses ist groesser
+als das vom System gesetzte Limit von 5120 Bytes. 
+.TP 11
+\%[EFAULT]
+Die neue Prozessdatei ist nicht so lang, wie in ihrem Dateikopf
+angegeben ist.
+.TP 11
+\%[EFAULT]
+.IR Path ,
+.IR argv ,
+oder
+.B envp
+weist auf eine unerlaubte Adresse hin.
+.PD
+.SH RUECKGABEWERT
+Wenn
+.B exec
+zum aufrufenden Prozess zurueckkehrt, ist ein Fehler aufgetreten; der
+Rueckgabewert wird \-1 und 
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH EINSCHRAENKUNGEN
+Wird
+.B execvp
+zur Abarbeitung einer Shell-Kommando-Datei aufgerufen
+und ist es nicht moeglich, diese Shell abzuarbeiten,
+werden die Werte von
+.I argv[0]
+und
+.I argv[\-1]
+vor der Rueckgabe modifiziert.
+.SH ASSEMBLER
+.nf
+.na
+    CONSTANT EXECE      := 59
+
+    _environ LABEL
+
+
+    !****************************************************!
+    !*  execl (Dateiname, arg0, arg1, ... , 0)          *!
+    !*  Abarbeiten einer Datei - lin. Arg.uebertragung  *!
+    !*  Umgebung wird automatisch uebergeben            *!
+    !****************************************************!
+
+Nichtsegmentiert
+    ...                 !* r0 : Dateiname *!
+                        !* r1 : Pointer auf die Spitze des Stack *!
+                        !* (arg0 an die Spitze *!
+                        !* darunter arg1, ... *!
+                        !* Abschluss der Argumente mit Null) *!
+    ld  r2,_environ     !* envp Pointer *!
+Segmentiert
+    ...                 !* rr0 : Dateiname *!
+                        !* rr2 : Pointer auf die Spitze des Stack *!
+                        !* (arg0 an die Spitze *!
+                        !* darunter arg1, ... *!
+                        !* Abschluss der Argumente mit (long)Null) *!
+    ld  rr4,_environ    !* envp Pointer *!
+    sc  #EXECE
+    ...                 !* Rueckgabewert in r4 *!
+                        !* bei Rueckkehr, Fehler *!
+
+
+
+    !*******************************************************!
+    !*  execv (Dateiname, argv)                            *!
+    !*  Abarbeiten - vektorgesteuerte Argumentuebertragung *!
+    !*  Umgebung automatisch uebergeben                    *!
+    !*******************************************************!
+
+Nichtsegmentiert
+    ...                 !* r0 : Dateiname *!
+                        !* r1 : argv *!
+    ld  r2,_environ     !* envp Pointer *!
+Segmentiert
+    ...                 !* rr0 : Dateiname *!
+                        !* rr2 : argv *!
+    ld  rr4,_environ    !* envp Pointer *!
+    sc  #EXECE
+    ...                 !* Rueckgabewert in r4 *!
+                        !* bei Rueckkehr, Fehler *!
+
+
+
+    !***************************************************!
+    !* execle (Dateiname, arg0, arg1, ... , 0, env)    *!
+    !*  Abarbeiten - lineare Argumentuebertragung      *!
+    !***************************************************!
+
+Nichtsegmentiert
+    ...                 !* r0 : Dateiname *!
+                        !* r1 : Pointer auf die Spitze des Stack *!
+                        !* (arg0 an die Spitze *!
+                        !* darunter arg1, ... *!
+                        !* Abschluss der Argumente mit Null) *!
+    ld    r2,r1         !* envp wird an das Ende der Argumentliste *!
+    ld    r3,#32768     !* gesetzt (Suche nach Argument Null) *!
+    clr   r4
+    cpir  r4,@r2,r3,z
+Segmentiert
+    ...                 !* rr0 : Dateiname *!
+                        !* rr2 : Pointer auf die Spitze des Stack *!
+                        !* (arg0 an die Spitze *!
+                        !* darunter arg1, ... *!
+                        !* Abschluss der Argumente mit (long)Null) *!
+    ...                 !* Einfuegen des segmentierten Assemblercodes, *!
+    ...                 !* um envp an das Ende der Argumentliste *!
+    ...                 !* zu setzen (Suche nach Argument (long)Null *!
+    sc  #EXECE
+    ...                 !* Rueckgabewert in r4 *!
+                        !* bei Rueckkehr, Fehler *!
+
+
+
+    !****************************************************!
+    !*  execve (Dateiname, argv, env)                   *!
+    !*  Abarbeiten einer Datei - vektorgesteuerte       *!
+    !*                           Argumentuebertragung   *!
+    !****************************************************!
+
+Nichtsegmentiert
+    ...                 !* r0 : Dateiname *!
+                        !* r1 : mode *!
+                        !* r1 : env *!
+Segmentiert
+    ...                 !* rr0 : Dateiname *!
+                        !* rr2 : mode *!
+                        !* rr4 : env *!
+    sc  #EXECE
+    ...                 !* Rueckgabewert in r4 *!
+                        !* bei Rueckkehr, Fehler *!
+.fi
+.ad

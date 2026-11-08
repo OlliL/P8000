@@ -1,0 +1,67 @@
+.TH ECVT 3 
+.\" @[$]ecvt.3  1.2
+.ad
+.fi
+.SH NAME
+ecvt, _ecvt, fcvt, _fcvt, gcvt, _gcvt \- Ausgabekonvertierung 
+.SH SYNTAX
+.nf
+\fBchar *ecvt\fR(\fIvalue, ndigit, decpt, sign)
+\fBdouble \fIvalue;
+\fBint\fI ndigit, *decpt, *sign;
+.PP
+\fBchar *fcvt\fR(\fIvalue, ndigit, decpt, sign)
+\fBdouble \fIvalue;
+\fBint\fI ndigit, *decpt, *sign;
+.PP
+\fBchar *gcvt\fR(\fIvalue, ndigit, buf)
+\fBdouble \fIvalue;
+\fBint\fI ndigit;
+\fBchar *\fIbuf;\fR
+.fi
+.SH BESCHREIBUNG
+.B Ecvt
+konvertiert
+.I value
+in eine mit einem Nullbyte abgeschlossene gerundete Zeichenkette mit
+.I ndigit
+ASCII-Ziffern (auf 19 begrenzt)
+und gibt einen Pointer auf diese Zeichenkette zurueck.
+Die Stellung, die der Dezimalpunkt bezueglich des Anfangs der 
+Zeichenkette hat, wird indirekt durch
+.B decpt
+gespeichert (negativ bedeutet von rechts beginnend).
+Hat das Ergebnis ein negatives Vorzeichen, ist das durch
+.I sign
+bezeichnete Wort ungleich Null, ansonsten ist es Null.
+.PP
+.B Fcvt
+ist identisch mit
+.BR ecvt ,
+aber die korrekte Ziffer wurde zur Ausgabe im Fortran F-Format
+gerundet, wobei
+.I ndigits
+Nachkommastellen sind. Es koennen nicht mehr als 19 Vor- und
+Nachkommastellen konvertiert werden.
+.PP
+.B Gcvt
+konvertiert
+.I value
+in eine mit einem Nullbyte endende ASCII-Zeichenkette in
+.I buf
+und gibt einen Pointer auf
+.I buf
+zurueck. Die Funktion erzeugt eine druckfertige Zeichenkette mit
+.I ndigit
+signifikanten Ziffern. Es wird moeglichst
+Fortran F-Format benutzt, andernfalls wird E-Format benutzt.
+.SH SIEHE AUCH
+printf(3).
+.SH DIAGNOSTIK
+Ist die Gesamtanzahl der signifikanten Digits in fcvt groesser als 19,
+wird die Ziffernzeichenkette auf
+????????? gesetzt.
+.SH EINSCHRAENKUNGEN
+Die Rueckgabewerte von ecvt und fcvt sind statische Puffer, deren
+Inhalt durch jeden Aufruf ueberschrieben wird.
+Somit kann man in die Routinen nicht wieder eintreten.

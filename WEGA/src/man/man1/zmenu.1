@@ -1,0 +1,231 @@
+.TH ZMENU 1 
+.\" @[$]zmenu.1	1.2
+.ad
+.fi
+.SH NAME
+zmenu \-  Menuetreiber
+.SH SYNTAX
+.BI zmenu " [ file ]"
+.SH BESCHREIBUNG
+\fBZmenu\fR ist der Treiber des Menuesystems.
+Ein Ueberblick ueber das Menuesystem befindet sich in
+\fBmkmenu\fR(1).
+.PP
+\fBZmenu\fR
+sucht die durch das Argument
+\fImenuname\fR (Standard: ~/.menu)
+angegebene Menuespezifikationsdatei
+nach einer Suchliste in den Directories, die
+.IP - 3
+.PD 0
+in der Umgebungsvariablen \fBMENUPATH\fR,
+.IP - 3
+in der Datei ~/.menupath oder
+.IP - 3
+in der Datei /etc/menupath
+.PD
+.PP
+angegeben sind, danach im Homedirectory des Nutzers.
+\fBZmenu\fR
+benutzt die erste gefundene Spezifikationsdatei,
+unabhaengig davon, ob noch weitere
+Eintraege in der Suchliste vorhanden sind.
+.PP
+Jedes Menue enthaelt
+oben auf dem Bildschirm
+die durch
+.BR mkmenu (1)
+festgelegte Kopfinformation
+mit Systemzeit und  -datum, dem aktuellen
+Menuenamen und der TTY-Kanalnummer.
+Darunter werden bis zu 16 Menue-Auswahlmoeglichkeiten angezeigt.
+.PP
+Kommandos werden durch Auswahl der entsprechenden Menueoption
+aufgerufen. Nach Kommandoausfuehrung kehrt der Nutzer ins
+Menue zurueck.
+.PP
+Existiert in dem Directory, das das aufgerufene Menue enthaelt,
+eine Datei namens
+\fImenuname\fR.hlp,
+wird sie duch Eingabe von
+`?` seitenweise \fImenuname\fR.hlp
+bis zur EOF-Erkennung angezeigt. Danach wird das Menue
+erneut angezeigt.
+.PP
+Die Meldung
+.RS
+`Invalid option. Try again.`
+.RE
+wird angezeigt, wenn
+eine Eingabe nicht deutbar ist.
+Kann eine gewaehlte Option nicht ausgefuehrt werden, wird die Meldung
+.RS
+`Option not implemented, try again.`
+.RE
+ausgegeben.
+.PP
+Die Arbeitsweise von
+\fBzmenu\fR
+wird in verschiedenen Nutzerumgebungen durch entsprechende
+Umgebungsvariablen gesteuert. Diese sind:
+.TP
+.B MENUPATH
+Ist die Umgebungsvariable \fBMENUPATH\fR
+gesetzt, durchsucht
+\fBzmenu\fR das von
+\fBMENUPATH\fR
+benannte Directory nach der Menuespezifikationsdatei.
+Diese Datei muss im Format dotmenu(5) vorliegen.
+Sie sollte durch \fBmkmenu\fR(1) erzeugt werden.
+Existiert \fBMENUPATH\fR
+und befindet sich der genannte \fImenuname\fR
+nicht in dem Directory, auf das sie zeigt, werden
+keine weiteren Directories durchsucht
+(gleiches gilt auch fuer ~/.menupath und /etc/menupath).
+Siehe auch
+menupath(5). 
+.TP
+.B ZMSHELL
+Ist \fBZMSHELL\fR auf /bin/sh oder /bin/csh
+gesetzt, koennen Shell-Kommandos im
+Menueprompt aufgerufen werden, indem dem Kommando ein `!` vorangestellt wird. 
+.TP
+.B ZMTIME
+Ist \fBZMTIME\fR auf AMPM gesetzt,
+wird die Systemzeit im Format
+HH:MM [AM|PM] angezeigt, andernfalls im Format HH:MM:SS.
+.TP
+.B ZMCENTER
+Ist \fBZMCENTER\fR auf `YES` gesetzt,
+wird Feld 2 im Menuekopf zentriert.
+Ist \fBZMCENTER\fR nicht oder auf `NO` gesetzt, wird Feld 2
+linksbuendig ausgerichtet.
+.TP
+.B ZMBELL
+Ist \fBZMBELL\fR auf `YES`
+gesetzt, werden angezeigte Fehlermeldungen von einem
+Tonsignal begleitet, sonst nicht.
+.TP
+.B ZMHHILITE
+Ist \fBZMHHILITE\fR auf `YES` gesetzt,
+wird die Kopfinformation hervorgehoben angezeigt, sonst nicht.
+.TP
+.B ZMOHILITE
+Ist \fBZMOHILITE\fR auf `YES` gesetzt,
+werden die Menue-Auswahlmoeglichkeiten in hervorgehobener
+Form angezeigt, sonst nicht.
+.TP
+.B ZMINTIGN
+Ist \fBZMINTIGN\fR auf `YES`
+gesetzt, werden alle vom Bediener ausgehenden
+interrupt/kill-Signale ignoriert. Wird diese Variable gesetzt,
+ist auch ein vom Nutzer gelieferter Austrittspunkt
+bereitzustellen.
+Ist \fBZMINTIGN\fR nicht oder auf `NO`
+gesetzt, werden normale kill/interrupt-Signale wirksam.
+.TP
+.B ZMCOLUMNS
+Ist \fBZMCOLUMNS\fR auf `ONE`
+oder nicht gesetzt, werden
+alle Menues mit sechzehn oder weniger
+Auswahlmoeglichkeiten im einspaltigen Format
+angezeigt.
+Menues mit mehr als sechzehn Auswahlmoeglichkeiten werden
+automatisch im zweispaltigen Format angezeigt. Ist
+\fBZMCOLUMNS\fR auf `TWO`, 
+gesetzt, werden Menues mit mehr als vier Auswahlmoeglichkeiten
+im zweispaltigen Format angezeigt.
+.TP
+.B ZMPROMPT
+Ist \fBZMPROMPT\fR gesetzt, ersetzt sein Inhalt das
+mit jedem neuen Bildschirminhalt
+standardmaessig angezeigte Prompt `Please make a selection:` .
+In diesem Feld sind maximal siebzig Zeichen zulaessig.
+.TP
+.B ZMRETMSG
+Ist \fBZMRETMSG\fR gesetzt,
+ersetzt sein Inhalt das bei Beendigung eines Kommandos
+standardmaessig angezeigte Prompt `Depress RETURN to continue` .
+In diesem Feld duerfen maximal siebzig Zeichen stehen.
+.TP
+.B ZMPORT
+Ist \fBZMPORT\fR 
+gesetzt, ersetzt sein Inhalt den Standardwert `Port`,
+der neben dem Terminalkanal im Menuekopf angezeigt wird.
+In diesem Feld sind maximal vier Zeichen zulaessig.
+.TP
+.B ZMAMPM 
+Diese Variable wird in Verbindung mit
+\fBZMTIME\fR
+benutzt, sie muss nach dem Setzen von
+\fBZMTIME\fR
+gesetzt werden. 
+Ist \fBZMAMPM\fR
+gesetzt, ersetzt sein Inhalt den Standardwert von `AMPM`,
+der von
+\fBZMTIME\fR
+gesetzt wird. Die ersten zwei von
+\fBZMAMPM\fR
+gesetzten Zeichen ersetzen `AM`, die darauffolgenden zwei Zeichen 
+ersetzen `PM`. In diesem Feld sind maximal vier Zeichen zulaessig.
+.TP
+.B ZMHLPMSG
+Ist \fBZMHLPMSG\fR
+gesetzt, ersetzt sein Inhalt das standardmaessig die
+Beendigung der help (?) Option begleitende
+Prompt `Depress RETURN for more` .
+In diesem Feld sind maximal 35 Zeichen zulaessig.
+.TP
+.B ZMHLPRES
+Ist \fBZMHLPRES\fR
+gesetzt, ersetzt sein Inhalt das standardmaessig
+angezeigte Prompt `'b' will restart`, das
+zur erneuten Anzeige einer help-Datei angezeigt wird.
+In diesem Feld sind maximal 20 Zeichen zulaessig.
+.TP
+.B ZMHLPXIT
+Ist \fBZMHLPXIT\fR
+gesetzt, ersetzt sein Inhalt das
+Standardprompt `'x' will exit`, das zur Beendigung der Anzeige einer
+help-Datei zurueckgegeben wird. In diesem Feld sind maximal 20
+Zeichen zulaessig.
+.TP
+.B ZMHLPERR
+Ist \fBZMHLPERR\fR
+gesetzt, ersetzt sein Inhalt das Standardprompt `Help not available ...` ,
+das angezeigt wird, wenn keine
+Hilfe gegeben werden kann (z.B. wenn keine Datei
+\fIhelpfile\fR.hlp
+in dem Directory existiert, in dem
+die Menuespezifikationsdatei
+gespeichert ist). In diesem Feld sind maximal 70 Zeichen zulaessig.
+.TP
+.B ZMNOTERR
+Ist \fBZMNOTERR\fR
+gesetzt, ersetzt sein Inhalt das
+Standardprompt `Option not implemented, try again!`, das angezeigt
+wird, wenn die gewaehlte Option nicht
+ausgefuehrt werden kann.
+.TP
+.B ZMINVERR
+Ist \fBZMINVERR\fR
+gesetzt, ersetzt sein Inhalt das
+Standardprompt `Invalid option, try again!`, das angezeigt wird,
+wenn die gewaehlte Option nicht erkannt wird. In diesem
+Feld sind maximal siebzig Zeichen zulaessig.
+.SH DATEIEN
+.nf
+~/.menupath               Menue-Suchpfad vom Nutzer
+/etc/menupath             globaler Menue-Suchpfad
+~/.menu                   Standard-Menuedatei
+.SH SIEHE AUCH
+.nf
+mkmenu(1), setenv(1), zmprint(1), dotmenu(5), 
+menupath(5), termcap(5)
+.SH EINSCHRAENKUNGEN
+Kommandozeilenargumente koennen bei der Menueauswahl nicht angegeben werden
+(nur unter Verwendung von Shell-Programmen).
+.PP
+Wird das WEGA \fBpwd\fR(1)
+Kommando als Menueoption verwendet, wird immer das
+\fIHOME\fR Directory des Nutzers angezeigt.

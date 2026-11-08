@@ -1,0 +1,931 @@
+.TH SLD 1 
+.\" @[$]sld.1	1.2
+.ad
+.fi
+.SH NAME
+\fBsld\fR \- Segmentierter U8001-Lader
+.SH SYNTAX
+.B sld
+[ \fIoptions\fR ] [ \fIfiles\fR ] ...
+.SH BESCHREIBUNG  
+.B Sld
+verbindet Objektmodule fuer U8001-Programme, in denen
+die segmentierten Betriebsart des U8001 genutzt wird.
+Alle Programme koennen logisch in folgende Sektionen geteilt werden:
+.RS
+.nf
+Textsektion  - Befehle, Codebereich
+Datensektion - initialisierte Daten
+BSS-Sektion  - uninitialisierte Daten, Blockspeicher
+.fi
+.RE
+.PP
+Bei der segmentierten Speicherverwaltung werden logische
+Programmsektionen als verschiebliche
+Objekte behandelt, deren interne Adressen nur in Beziehung
+zum logischen Beginn des Segmentes bekannt sind.
+In einer segmentierten Umgebung kennt der Programmierer Adressen der
+Form
+.IP
+virtuelle Adresse = ( logische Segmentnummer , Offset )
+.PP
+Alle Segmente haben den logischen Ursprung 0x0000 
+und eine Endadresse gleich der Groesse des Segmentes.
+Im WEGA-System koennen Segmente durch Systemaufrufe bis zur
+Endadresse von 0xFFFE ausgedehnt werden.
+.PP
+Sld gestattet es, sowohl logische Sektionen in
+logische Segmente zu plazieren, als auch
+Programmsektionen
+in beliebige Segmente im Bereich logischer Segmentnummern zu plazieren.
+.PP
+.B Sld
+kombiniert mehrere U8001-Objektprogramme in einem Lademodul.
+Dabei werden externe Referenzen aufgeloest und Bibliotheken durchsucht.
+Im einfachsten Fall
+kombiniert \fBsld\fR mehrere U8001-Objektdateien
+und erzeugt einen ablauffaehigen Lademodul.
+Durch Angabe der Option
+.B -r
+kann wieder ein Objektmodul als Eingabe fuer 
+einen spaeteren
+.B sld
+Lauf erzeugt werden
+(die Verschiebungsbits werden gespeichert).
+Mit Hilfe der Option
+.B -o
+kann der Name des erzeugten Lademoduls festgelegt werden
+(Standard: \fB a.out\fR).
+Treten waehrend des Verbindens keine Fehler auf, ist der
+Lademodul ausfuehrbar.
+.PP
+Die angegebenen Objektdateien werden
+im Lademodul in der in der Aufrufzeile spezifizierten Reihenfolge verkettet.
+Es gelten folgende Abbildungszuordnungen
+(diese sind jedoch durch die Optionen
+.B -M 
+und 
+.B -R 
+aenderbar):
+.PD 0
+.IP - 3
+Sind Befehls- und Datenbereich kombiniert (executable),
+ist Segment 0 das Startsegment
+fuer Text, Daten und Bss.
+.IP -
+Sind Befehls- und Datenbereich
+getrennt, ist das Segment 0 das Startsegment fuer Text,
+Daten und BSS beginnen im Segment 1. 
+.PD
+.PP
+Sowohl bei kombiniertem als auch bei getrenntem Befehls- und Datenbereich
+koennen sich
+Daten und BSS auf nachfolgende Segmente ausdehnen.
+Bei getrenntem Befehls- und Datenbereich laufen Daten
+und BSS in die erste Segmentnummer ueber, die groesser ist als
+das letzte Segment, in das der Text ueberlaeuft (bzw. Segment
+2, falls der Text nicht ueberlaeuft). Hier sind zwei Beispiele:
+.nf
+.sp
+             Tabelle 1               Tabelle 2
+
+         Segment 0: Text          Segment 0: Text
+         Segment 1: Daten         Segment 1: Daten/BSS
+         Segment 2: Text          Segment 2: Text
+         Segment 3: Text          Segment 3: Text
+         Segment 4: Daten/BSS     Segment 4: BSS
+.fi
+.PP
+In diesen Beispielen nimmt der Text drei Segmente ein. Daten und BSS
+nehmen zwei ein.
+Zu beachten ist jedoch, wie sich die Verteilung von Daten und BSS
+von der Verteilung
+von Text und Daten/BSS unterscheidet.
+Obwohl Text und Daten/BSS jeweils einmal
+einen Sprung vornehmen, wenn der Textbereich das Segment 0 ueberschreitet,
+wird BSS immer an Daten angefuegt.
+Daher kann folgendes nicht auftreten:
+.nf
+.sp
+                       Tabelle 3
+
+                     Segment 0: Text
+                     Segment 1: Daten/BSS
+                     Segment 2: Text
+                     Segment 3: Text
+                     Segment 4: Daten
+.fi
+.PP
+Wenn im Segment 1 BSS auf Daten folgen, werden den Daten keine
+weiteren Segmente zugeordnet.
+.PP
+Mit Hilfe der Optionen
+.B \-M
+bzw.
+.B \-R
+koennen den Objektprogrammen bestimmte Segmente zugewiesen
+bzw. leere Segmente reserviert werden.
+Der Bereich gueltiger Segmentnummern ist:
+.IP
+0 <= Segmentnummer <= 127 .
+.PP
+Die Ordnung der Sektionen der Argumentroutinen bleibt dem
+Nutzer ueberlassen.
+Ist keine
+.B -e
+Option vorhanden, ist die niedrigste Textadresse 
+die Einsprungadresse des ablauffaehigen Lademoduls.
+In Programmen, die unter WEGA abgearbeitet werden sollen,
+wird das Symbol 'start' (Definition siehe 
+/lib/scrt0.o) als Einsprungadresse festgelegt.
+Siehe dazu auch Abschnitt \fBBEISPIELE\fR.
+.PP
+Sind als Argumente Bibliotheken angegeben, werden sie einmal an dem Punkt
+durchsucht, an dem sie in der Argumentliste auftreten.
+Routinen, die eine ungeloeste externe Referenz definieren, werden
+verbunden.
+Die Reihenfolge, in der Module innerhalb von Bibliotheken auftreten,
+ist signifikant.
+Bezieht sich eine Routine aus einer Bibliothek auf eine andere
+Routine in dieser Bibliothek, muss die Routine, auf
+die Bezug genommen wird, nach der bezugnehmenden Routine
+in der Bibliothek erscheinen. 
+Deshalb sollte jede Bibliothek vor dem Verbindungslauf mit
+\fBranlib\fR(1) verarbeitet werden (Erzeugung von
+.BR __.SYMDEF ).
+Falls vorhanden, wird __.SYMDEF 
+wiederholt durchsucht, um alle moeglichen Bezugnahmen zu finden.
+.PP
+Die Symbole 
+`_etext`, 
+`_edata`, 
+`_end` 
+und 
+`_stkseg` 
+im Assemblersprachcode
+(`etext`, `edata`, `end` und `stkseg` in C-Programmen)
+sind reserviert und koennen vom Nutzer nicht umdefiniert werden.
+Sie bedeuten:
+.PD 0
+.TP 8
+_etext
+erste Adresse ueber der Textsektion.
+.TP
+_edata
+erste Adresse ueber der Datensektion.
+.TP
+_end
+erste Adresse ueber der Daten- und BSS-Sektion.
+Kann als Startadresse fuer einen
+vom Nutzer verwalteten dynamisch zugewiesenen Speicherbereich
+benutzt werden.
+.TP
+_stkseg
+Stacksegment.
+.PD
+.PP
+Fuer den Stack gelten folgende Standardzuordnungen:
+.PD 0
+.IP - 3
+Bei kombiniertem Befehls- und Datenbereich - Segment 0
+(falls kein Ueberlaufen stattfindet);
+.IP - 3
+Bei getrenntem Befehls- und Datenbereich - das Segment, das
+dem verwendeten Segment mit der hoechsten Nummer folgt.
+.PP
+Der Stack waechst nach unten; seine Anfangsadresse ist
+0xFFFE. 
+Dieser Standard kann durch die
+.B -Ms 
+oder
+.B -z
+Optionen aufgehoben werden.
+.PD
+.SH OPTIONEN
+Mit Ausnahme der Option
+.BR -l
+stehen alle Optionen vor den Dateinamen.
+.TP
+.BI -Ap " number"
+Der intern durch \fBsld\fR fuer Segmenttabelleneintraege
+aus dem Lauf 1
+zugeordnete Raum wird auf
+.I number 
+(dezimal) geaendert (voreingestellt: 2000,
+maximal: 16380).
+Reicht der Raum nicht aus, gibt
+\fBsld\fR
+eine Fehlermeldung zurueck, die
+die Verwendung dieser Option anzeigt. 
+.TP
+.BI -As " number" 
+Der intern durch \fBsld\fR fuer die Symboltabelle
+zugeordnete Raum wird auf
+.I number 
+(dezimal) geaendert (voreingestellt: 2000,
+maximal: 4090).
+Reicht dieser Raum nicht aus, gibt \fBsld\fR
+eine Fehlermeldung zurueck, die auf die Verwendung dieser Option
+hinweist.
+.TP
+.BI -b " address" 
+.PD 0
+.TP
+.BI -b section " \fIaddress\fR"
+.B Bemerkung:
+Die \fB-b\fR Option
+bezieht sich nur auf Programme mit einem Segment. Fuer Programme mit
+mehreren Segmenten ist die Option
+\fB-M\fR zu verwenden. 
+.br
+Die niedrigste Adresse des Programms ist zu setzen, oder, falls
+.I section 
+angegeben ist, die niedrigste Adresse dieser Sektion. 
+.I section 
+kann fuer Text, Daten oder BSS entweder
+\fBt\fR, \fBd\fR oder \fBb\fR sein.
+Die Adresse kann oktal, hexadezimal oder dezimal angegeben werden,
+wobei die C-Sprach-Vereinbarungen angewandt werden
+(fuehrende Null: oktal,
+fuehrendes 0x: hexadezimal, sonst dezimal).
+Die angegebene Adresse muss ein Vielfaches von 256 sein.
+Wird keine Sektion gewaehlt, bezieht sich die untere 
+auf das Speicherabbild, wenn das Programm kombinierten
+Befehls- und Datenbereich besitzt, oder auf die Textsektion,
+wenn Befehls- und Datenbereich getrennt sind.
+Pro Sektion kann nur eine
+\fB\-t\fR oder \fB-b\fR Option angegeben werden.
+Fehler entstehen, wenn die niedrigste Adresse dazu fuehrt,
+dass eine Sektion ueberlaeuft (Adressen groesser 0xFFFF).
+Ueberlagert eine Sektion eine andere, wird
+das `s_magic` 
+Feld des Descriptors der Objektdatei mit
+"Ueberlagerung"
+("overlay)"
+markiert.
+Siehe \fBa.out\fR(5). 
+Die Ueberlagerung ist vom Nutzer zu verwalten, da gegenwaertig
+von WEGA keine Ueberlagerungsverwaltung erfolgt!
+.PD
+.TP
+.B -d
+Definition eines gemeinsamen Speichers wird erzwungen, selbst wenn
+das
+.B -r
+Flag vorhanden ist.
+.TP
+.BI -e " marke"
+Die Einsprungadresse des geladenen Programms wird auf die Adresse von
+.I marke
+gesetzt.
+C-Programm-Namen, die als Einsprungadresse
+angegeben sind, muessen eine vorangestellte Unterstreichung haben.
+Die niedrigste Textadresse ist die Standard-Einsprungadresse.
+Bei Programmen, die unter WEGA laufen, wird die
+\fB-e\fR Option verwendet, um das Symbol 'start'
+(definiert unter Laufzeit-Startroutine in C  /lib/scrt0.o)
+als Einsprungadresse zu bezeichnen.
+.TP
+.BI -f " file" 
+Kommandoargumente werden aus der Datei
+.IR file 
+genommen. Argumente, die sich vor 
+\fB-f\fR
+befinden, werden normal verarbeitet; ist die Argumentliste in
+.I file 
+abgearbeitet, setzt
+\fBsld\fR
+die Verarbeitung von Kommandoargumenten fort, die sich hinter
+.IR file 
+befinden. 
+Argumente in 
+.I file 
+werden durch Leerzeichen oder Newline getrennt.
+.TP
+.B -i
+Der Lademodul erhaelt getrennte Text- und Datenbereiche (separated I&D).
+Folgende Aufteilung der Segmente ist voreingestellt:
+Segment 0 fuer die Textsektion; Segment 1 fuer Daten und BSS.
+Wenn Daten/BSS mehrere Segmente einnehmen, werden sie auf jene
+Segmente mit den niedrigsten Nummern plaziert,
+die nicht von der Textsektion
+eingenommen sind.
+Benoetigt z.B. der Text zwei Segmente und Daten/BSS drei
+Segmente, wird der Text auf die Segmente 0 und 2 plaziert;
+Daten/BSS werden auf die Segmente 1,3 und 4 plaziert.
+.TP
+.BI -l x
+Die angegebene Bibliothek wird durchsucht.
+Diese Option ist eine Abkuerzung des Bibliotheksnamens
+/lib/slib\fIx\fR.a,
+wobei
+.I x
+eine Zeichenkette ist.
+Z.B. bezieht sich -lxyz auf /lib/slibxyz.a.
+Wird die Bibliothek nicht in /lib gefunden, werden nacheinander
+/usr/lib und dann /z/bin/lib durchsucht.
+Eine Bibliothek wird durchsucht, wenn ihr Name auftritt, d.h.
+die Position der 
+.B -l
+Option ist signifikant. Generell sollte sie das letzte
+Objekt in der Kommandozeile sein.
+.TP
+ABBILDUNG VON LADEMODULEN: SEKTIONEN, SEGMENTE, OFFSETS
+.TP
+.BI -M segment " #"  
+.TP
+\fB-M\fI<section><segment #>\fR 
+.TP
+\fB-M\fI<segment #>\fB<:t\fIoffset\fB>\fR 
+.TP
+\fB-M\fI<segment #>\fB<:b\fIoffset\fB>\fR
+.TP
+\fB-M\fI<section><segment #>\fB<:t\fIoffset\fB>< + file \.\.\. +>\fR 
+.TP
+\fB-M\fI<section><segment #>\fB<:b\fIoffset\fB>< + file \.\.\. +>\fR  
+.TP
+.BI -Ms segment " #" 
+.sp
+Fuer die Plazierung von Sektionen in Segmente werden folgende
+Parameter benutzt:
+.RS 5
+.TP 3
+\fI<section>\fR
+`t`, `d` oder `b` fuer Text, Daten, BSS
+.TP 3
+\fI<segment #>\fR
+Segmentnummer im Bereich 0 - 127 
+.TP 3
+\fB<:t\fIoffset\fR>
+das Ende der Sektion (Top) wird auf \fIoffset\fR gesetzt,
+wobei \fIoffset\fR auf das naechste Vielfache von 256
+ABGERUNDET wird. 
+.TP 3
+\fB<:b\fIoffset\fR>
+der Beginn der Sektion (Bottom) wird auf \fIoffset\fR gesetzt,
+wobei \fIoffset\fR auf das naechste Vielfache von
+256 AUFGERUNDET wird. 
+.TP 3
+\fB< + file  \.\.\. +>\fR
+Basisname (d.h. Dateiname am Ende einer Pfadspezifikation)
+von Dateien, deren Sektionen entsprechend der
+unmittelbar vorhergehenden \fB-M\fR Spezifikation
+plaziert werden. Die Spezifikation fuer Dateien,
+die durch Pluszeichen begrenzt werden, wird nicht
+durch darauf folgende \fB-M\fR Optionen aufgehoben.
+.TP 3
+BEACHTE:
+Erfolgt eine Spezifizierung der \fB+ \fIfile \fB+\fR ,
+wird die entsprechende Datei zweimal angegeben:
+innerhalb von \fB+  +\fR nur der BASISNAME und nach 
+\fB+  +\fR der VOLLSTAENDIGE PFADNAME (ausser wenn
+dieser lokal ist). Der Grund dafuer ist, dass der
+VOLLSTAENDIGE PFADNAME bei der Verarbeitung der
+Kommandozeile verwendet wird und der BASISNAME
+von der \fB-M\fR Option verwendet wird. 
+.sp
+   z.B.: \fB+ \fIfile \fB+ \fI/path/path/file\fR 
+.PP
+Es folgen Erlaeuterungen an Bespielen.
+.sp
+      \fB-M\fI<segment #>\fR  z.B.: -M46
+.PP
+.B -M46 
+besagt: die Sektionen fuer alle nach dieser Option bis zum
+naechsten
+.B -M 
+auftretenden Dateien werden in Segment 46 und folgende plaziert.
+.sp
+.nf
+      \fB-M\fI<section><segment #>\fR  z.B.: -Mt18  -Md22  -Mb31 
+.fi
+.PP
+.B -Mt18 
+besagt: alle nach dieser Option bis zum naechsten
+.B -M
+oder
+.B -Mt
+auftretenden Textsektionen werden
+in Segment 18 und folgende plaziert.
+.B -Md22 
+besagt: alle nach dieser Option bis zum naechsten
+.B -M  
+oder
+.B -Md
+auftretenden Datensektionen sind in Segment 22 zu plazieren.
+.B -Mb31 
+wird fuer BSS-Sektionen gleichermassen behandelt.
+Ist die
+.B -i 
+Option NICHT angegeben, ist Segment 0 fuer die nichtangegebenen
+Sektionen standardmaessig das Startsegment.
+Ansonsten ist das Segment 0 standardmaessig
+das Startsegment
+fuer Text
+und das Segment 1 fuer Daten und BSS.
+.sp
+.nf
+      \fB-M\fI<segment #>\fB<:t\fIoffset\fR>   z.B.:  -M12:t0xE400 
+      \fB-M\fI<segment #>\fB<:t\fIoffset\fR>   z.B.:  -M16:t0xD79B  
+      \fB-M\fI<segment #>\fB<:b\fIoffset\fR>   z.B.:  -M106:b0x200 
+      \fB-M\fI<segment #>\fB<:b\fIoffset\fR>   z.B.:  -M81:b0x239
+.fi
+.PP
+.B -M12:t0xE400 
+besagt: Ist die
+.B -i 
+Option NICHT angegeben, werden alle Sektionen zwischen
+diesem und dem ersten widersprechenden
+.B -M 
+in Segment 12 plaziert, wobei die obere Adresse
+des Programmspeichers auf
+0xE400 gesetzt ist. Wenn die 
+.B -i 
+Option angegeben IST, wird der Text in Segment 12 und
+Daten und BSS in Segment 13 und folgende plaziert.
+Wenn der obere Programmspeicher eine Adresse kleiner als
+0xE400 belegt, wird der Zwischenraum mit Nullen aufgefuellt.  
+.PP
+.B -M16:t0xD79B 
+entspricht inhaltlich dem vorhergehenden Beispiel, da aber
+die angegebene obere Adresse KEIN Vielfaches von
+0x100 (256) ist, wird die angegebene obere Adresse
+vor dem Laden
+auf das naechste
+Vielfache von 0x100 (click) ABGERUNDET. Der Zwischenraum
+zwischen der ABGERUNDETEN und tatsaechlichen oberen Adresse
+wird mit Nullen aufgefuellt.
+.PP
+.B -M106:b0x200 
+besagt: wenn NICHT auch die
+.B -i 
+Option angegeben ist, werden alle
+Optionen
+zwischen diesem und dem naechsten
+widersprechenden
+.B -M 
+in Segment 106 plaziert, wobei die untere Textadresse auf 0x200
+gesetzt wird.
+Wenn die
+.B -i 
+Option angegeben IST,
+wird der Text in Segment 106 beginnend ab 0x200 plaziert,
+und die Daten in Segment 107, beginnend ab 0x0000.
+Bss wird den Daten nachgestellt. 
+.PP
+.B -M81:b0x239 
+entspricht inhaltlich dem vorangehenden Beispiel, da jedoch
+die angegebene untere Adresse KEIN Vielfaches von 0x100 ist,
+wird die untere Adresse fuer die Textsektion vor dem Laden
+auf das naechste Vielfache von 256 AUFGERUNDET.
+.sp
+.nf
+      \fB-M\fI<section><segment #>\fB<:t\fIoffset>\fB<+ file  ... +>\fR 
+
+  Z.B.: -Mt5:t0xEFC1 + module1  module2  module3 + 
+.sp
+      \fB-M\fI<section><segment #>\fB<:b\fIoffset>\fB<+ file  ... +>\fR 
+
+  Z.B.: -Md43:b0x452 + module1  module2  module3 +        
+.fi
+.PP
+Bemerkung: Wird ein Modul oder werden mehrere Module
+in Segmente plaziert, die vom Programmierer bestimmt werden,
+erscheinen die angegebenen Module zweimal:
+einmal innerhalb von \fB+  +\fR als BASISNAME und einmal nach
+\fB+  +\fR als VOLLSTAENDIGER PFADNAME . Der vollstaendige
+Pfadname wird in diesen Beispielen nicht gezeigt -- es wird
+nur der Teil der Kommandozeile gezeigt, der
+zur \fB-M\fR Option gehoert. 
+.PP
+.B -Mt5:t0xEFC1 + module1 module2 module3 +
+besagt:
+die Textsektionen von
+module1, module2 und module3 (und nur die Textsektionen dieser
+Module) werden in Segment 5 plaziert.
+Die obere Adresse der Textsektion von module3 ist das naechste
+Vielfache von 0x100, das KLEINER als 0xEFC1 ist. Wenn die
+.B -i 
+Option
+NICHT auch angegeben ist, ist Segment 0 standardmaessig Startsegment
+fuer Daten und BSS. Andernfalls ist Segment 1 Startsegment.
+Alle Zwischenraeume zwischen der angegebenen und der
+angepassten oberen Adresse werden mit Nullen aufgefuellt.
+.PP
+\fB-Md43:b0x452 \+ module1 module2 module3 \+\fR
+.br
+besagt: BSS-Sektionen von
+module1, module2 und module3
+(und nur die BSS-Sektionen dieser Module) werden in Segment 43
+plaziert. Die untere Adresse der BSS-Sektionen von module3
+ist das naechste Vielfache von 0x100, das GROESSER als 0x452 ist.
+Wenn die
+.B -i 
+Option NICHT  auch angegeben ist, ist Segment 0 standardmaessig
+Startsegment fuer Text und Daten. Andernfalls ist Segment 0
+standardmaessig Startsegment fuer Text, und Segment 1 fuer
+Daten und BSS.
+.PP
+Hier ein Beispiel:
+.nf
+.sp
+             sld -i -M5 -Mt4 file.c
+.fi
+.PP
+In Kombination mit der
+.B -i 
+Option besagt
+.B -M5 :
+Die Textsektion wird in Segment 5 gebracht und die
+Daten- und BSS-Sektionen in Segment 6.
+.B -Mt4 
+besagt jedoch:
+Die Textsektion wird in Segment 4 gebracht.
+Es wird deshalb folgende Verfahrensweise benutzt:
+Die Textsektion wird in Segment 4 geschrieben, die Daten- und
+BSS-Sektionen in Segment 6. Aus dieser Tatsache lassen sich
+zwei Regeln ableiten:
+.PD 0
+.IP 1. 3
+Treten mehrere 
+.B -M 
+Spezifikationen auf, die NICHT die
+\fB+  +\fR Konstruktion verwenden, heben
+sie sich gegenseitig ohne Fehler auf,
+wobei die am weitesten rechts stehende der gegensaetzlichen Spezifikationen
+am Ende Prioritaet hat.
+.IP 2.
+Sind Plazierungen von Sektionen
+in Segmente erst einmal wirksam, bleiben sie so lange wirksam, bis
+ein Widerspruch entsteht. Besteht ein Widerspruch zwischen
+\fB+  +\fR Spezifikationen und \fB-M\fR Spezifikationen,
+die \fB+  +\fR nicht benutzen, hebt die \fB+  +\fR Spezifikation
+die andere auf.
+.PD
+.PP
+.nf
+      \fB-Ms\fI<segment #>\fR  Z.B.: -Ms45
+.sp
+.fi
+.B -Ms45 
+besagt: die Stacksektion wird in Segment 45 plaziert.
+.RE
+.TP
+.BI -N "many" 
+.IX
+Diese Option gibt an, wieviele
+der im Namen eines 
+Symboltabelleneintrags erscheinenden Zeichen 
+von 
+.B sld
+bearbeitet werden. Wenn
+.I many 
+gleich 
+.B l
+ist, verwendet \fBsld\fR den gesamten Long-Name (Standard). Wenn 
+.I many 
+gleich
+.B s
+ist, dann verwendet 
+.B sld
+nur die ersten acht Zeichen.
+.TP
+.BI -o " name"
+Der Name der 
+.B sld
+Ausgabedatei wird auf
+.IR name 
+geaendert.
+Der Lademodul besitzt
+\fBa.out\fR(5) Format.
+.TP
+.B -O
+Das Programm wird als Ueberlagerung (Overlay) interpretiert
+(Magic Number S_MAGIC4, siehe \fBa.out\fR(5)).
+.TP
+.B -r
+In der Ausgabedatei werden Verschiebungsbits erzeugt,
+so dass diese in einem weiteren 
+.B sld
+Lauf verwendet werden kann.
+Dieses Flag hebt die 
+.B -t
+und
+.B -b
+Optionen auf.
+Common-Symbole
+werden nicht endgueltig definiert und 
+Fehlermeldung fuer undefinierte Symbole werden unterdrueckt.
+.TP
+.BI -R segment# 
+Es wird ein Eintrag in der Segmenttabelle
+fuer ein Segment der Laenge Null vorgenommen.
+.I segment# 
+spezifiziert die Segmentnummer (0 - 127).
+.TP
+.B -s
+Die Symboltabelle
+und die Verschiebungsbits werden
+in der Ausgabedatei geloescht (Platzeinsparung).
+.TP
+.BI -t " address"
+.PD 0
+.TP
+.BI -t section " \fIaddress\fR"
+Bemerkung: Die
+.B -t 
+Option bezieht sich nur auf Programme mit einem Segment. Fuer
+Programme mit mehreren Segmenten ist die
+.B -M
+Option zu verwenden.
+.br
+Die obere Adresse
+des Programms oder der Sektion wird auf die
+angegebene hexadezimale, oktale oder dezimale Zahl gesetzt
+(analog zur Option
+.BR -b ,
+nur wird statt einer unteren Adresse
+eine obere Adresse angegeben).
+Die Link-Adresse des Programms oder der Sektion ist
+so ausgerichtet, dass
+die tatsaechliche obere Adresse
+innerhalb der 256 Bytes der angegebenen oberen Adresse liegt;
+der Zwischenraum wird mit Nullen aufgefuellt.
+Die untere Adresse einer Sektion oder eines Programms ist
+immer ein Vielfaches von 256.
+.PD
+.TP
+.BI -u " symbol" 
+In der Symboltabelle wird das Symbol
+als undefiniert eingetragen
+(nuetzlich, wenn ein vollstaendiger
+Verbindungslauf von einer Bibliothek erfolgen soll, da die Symboltabelle
+urspruenglich leer ist und eine unaufgeloeste
+Referenz erforderlich ist, um eine Verbindung der ersten
+Routine zu erzwingen).
+.TP
+.B -w
+Die Warnung bei Symbolumdefinierung wird unterdrueckt.
+Diese Warnung wird bei der Durchsuchung von Archiven erzeugt.
+Wenn ein Archiv einen Modul enthaelt, der ein Symbol definiert, das
+bereits definiert ist, wird eine Symbolumdefinierungs-Warnung
+erzeugt.
+.TP
+.B -x
+Es werden nur externe und globale Symbole in die Symboltabelle eingetragen,
+keine lokalen Symbole (Platzeinsparung).
+.TP
+.B -X
+Es werden lokale Symbole mit Ausnahme derjenigen, deren Name auf L
+beginnt, gespeichert.
+Diese Option wird vom C-Compiler verwendet, um
+intern erzeugte Marken zu loeschen und dabei
+Symbole, die fuer eine Routine lokal sind, beizubehalten.
+.TP
+.B -z
+Diese Option bringt die standardmaessige Plazierung von
+Sektionen in Segmente fuer das P 8000 auf Grundstellung.
+Die untere Adresse bleibt erhalten (d.h. Segment 0 ist das
+erste zugeordnete Segment), aber dem Stack wird Segment 127 zugeordnet.
+Diese Option sollte fuer alle auf dem P8000 lauffaehigen
+Programme gesetzt werden.
+Sie wird nicht fuer Programme verwendet, die in den Emulator eingelesen werden.
+.SH BEISPIELE
+.nf
+sld -X -e start -z /lib/scrt0.o file1.o file2.o file3.o  \\ 
+    -o prog -lc
+.sp
+.fi
+Das Beispiel ist eine Standard-Kommandozeile
+zur Erzeugung eines Lademoduls mit kombiniertem Befehls- und Datenbereich.
+In diesem speziellen Beispiel werden drei
+Objektdateien im
+aktuellen Arbeitsdirectory verbunden, wobei der Lademodul ./prog
+entsteht.
+Die Plazierung von
+\fB/lib/scrt0.o\fR ist nicht kritisch, jedoch die Position
+von \fB-lc\fR.
+.sp
+.nf
+sld -X -e start -z -i /lib/scrt0.o *.o -lc
+.sp
+.fi
+Das Beispiel ist die Standard-Kommandozeile zur
+Erzeugung eines Lademoduls mit der Standardplazierung fuer getrennte
+Befehls- und Datenbereiche.
+Alle Objektdateien
+im aktuellen Arbeitsdirectory werden zur ausfuehrbaren Datei ./a.out verbunden.
+.nf
+.sp
+sld -X -e start -z -i -Mt3 -Md4 -Mb5 /lib/scrt0.o  \\ 
+    /z/work/*.o -o prog -lc
+.sp
+.fi
+Das Beispiel gilt fuer getrennte Befehls- und
+Datenbereiche  und verbindet alle Objektmodule im
+Arbeitsdirectory /z/work,
+wobei der Text in Segment 3, Daten in Segment 4 und BSS in
+Segment 5 plaziert werden.
+Der Lademodul ist ./prog.
+.nf
+.sp
+sld -e start -i -z -Md2 data1.o -Md3 data2.o  \\ 
+    -Mt7 -Md8 -Mb9 /lib/scrt0.o obj1.o obj2.o  \\ 
+    obj3.o -lc
+.sp
+.fi
+Das Beispiel gilt fuer getrennte Befehls- und Datenbereiche
+und laedt den Datenmodul ./data1.o in das Segment 2,
+den Datenmodul ./data2.o 
+in das Segment 3; die Textsektionen von ./obj1.o, ./obj2.o,
+und ./obj3.o in das Segment 7; die Datensektionen der Module obj1.o, obj2.o
+und obj3.o in Segment 8; die BSS-Sektionen der Module obj1.o, obj2.o
+und obj3.o in Segment 9. Der Lademodul ist ./a.out.
+.sp
+.nf
+sld -i -z -e start -Mt41 -Md42 -Mb43 /lib/scrt0.o  \\ 
+    /z/work/first.o -Mt50 -Md51 -Mb52 + second.o  \\ 
+    third.o fourth.o + /usr/public/second.o  \\ 
+    /z/work/third.o /usr/public/fourth.o  -o prog -lc
+.sp
+.fi
+Das Beispiel gilt fuer getrennte Befehls- und Datenbereiche
+und bildet Text-, Daten- und BSS-Sektionen von
+/z/work/first.o auf die Segmente 41, 42 bzw. 43 ab; die
+Text-, Daten- und BSS-Sektionen von 
+/usr/public/second.o, /z/work/third.o und /usr/public/fourth.o 
+werden in die Segmente 
+50, 51 bzw. 52 plaziert. Entsprechend der Regel ist zu beachten, dass alle
+Basisnamen-Spezifikationen, die innerhalb von
+\fB+  +\fR auftreten, auch ausserhalb von
+\fB+  +\fR als vollstaendige Pfadnamen angegeben sein muessen.
+Nur der Basisname selbst kann innerhalb von
+\fB+  +\fR auftreten. Der Lademodul ist ./prog.
+.nf
+.sp
+sld -i -z -e start -Mt6 -Md7 -Mb9 /lib/scrt0.o  \\ 
+    /z2/programme/main.o -Mt2 + mod1.o mod2.o +  \\ 
+    -Mt3 -Md4 -Mb5 /z2/programme/mod1.o  \\ 
+    /z2/programme/mod2.o /z2/programme/mod3.o -lc
+.sp
+.fi
+Das Beispiel gilt fuer getrennten Befehls- und 
+Datenbereich und plaziert die Textsektion von
+/z2/programme/main.o in
+Segment 6; die Datensektion von
+main.o in Segment 7; die BSS-Sektion von main.o in Segment 9;
+die Textsektionen von /z2/programme/mod1.o und /z2/programme/mod2.o in
+Segment 2; die Textsektion
+von /z2/programme/mod3.o in Segment 3; die Datensektionen von mod1.o, mod2.o
+und mod3.o
+in Segment 4; die BSS-Sektionen von mod1.o, mod2.o und mod3.o in
+Segment 5. 
+.PD 0
+.TP
+Bemerkung 1:
+Die Textsektionen von
+mod1.o und mod2.o werden zuerst in
+\fB-Mt2\fR und dann in \fB-Mt3\fR plaziert.
+Wie bereits gezeigt, hat die erste Abbildungszuordnung Prioritaet, da
+Spezifikationen innerhalb von
+\fB+  +\fR Prioritaet ueber gegensaetzliche Spezifikationen haben, die
+nicht die \fB+  +\fR Konstruktion verwenden.
+.TP
+Bemerkung 2:
+Die gegensaetzliche Spezifikation folgt dennoch der Regel,
+dass Basisnamen, die innerhalb von
+\fB+  +\fR
+auftreten, auch als vollstaendiger Pfadname ausserhalb 
+dieser Konstruktion
+auftreten muessen.
+Der Lademodul ist ./a.out.  
+.PD
+.PP
+.nf
+sld -o output -i -z -e start -Mt5 + mod1.o mod2.o +  \\ 
+    -Mt22 mod1.o mod2.o mod3.o -lc
+.fi
+.sp
+Das Beispiel gilt fuer getrennte Befehls- und Datenbereiche und
+bildet die Textsektionen von ./mod1.o
+und ./mod2.o auf Sektion 5 ab (auch wieder aufgrund der 
+Regeln ueber die Prioritaet); die Textsektion von ./mod3.o
+wird in Segment 22 plaziert; die Daten- und BSS-Sektionen 
+von mod1.o, mod2.o und mod3.o
+werden in Segment 1 plaziert (Standardsegment fuer
+getrennten Befehls- und Datenbereich). Da sowohl
+mod1.o, mod2.o als auch mod3.o
+im aktuellen Arbeitsdirectory gesucht werden, muss der vollstaendige
+Pfadname
+fuer mod1.o und mod2.o
+nicht ausserhalb von
+\fB+  +\fR angegeben werden
+-- nur der Basisname muss nocheinmal angegeben werden.
+Der Lademodul ist ./a.out. 
+.sp
+sld -o DM -M0:b0x5000 *.o
+.sp
+In diesem Beispiel werden alle
+\fB.o\fR Dateien im aktuellen Arbeitsdirectory verbunden
+und in Segment 0 plaziert (z.B. zum Einlesen in den Emulator).
+Die untere Adresse der Textsektion
+ist auf 0x5000 gesetzt; die Einsprungadresse des Lademoduls DM ist
+0x5000. 
+.nf
+.sp
+INKREMENTELLE LINKS
+.sp
+.fi
+Der Compiler bringt nichtinitialisierte Variable in eine
+Speicherklasse "common".
+Wenn zwei oder mehrere Module gemeinsame (common) Variable mit
+demselben Namen belegen, ordnet der Linker Speicherplatz fuer
+eine einzelne Variable mit dem gemeinsamen Namen zu und
+weist dieser den groessten vereinbarten Speichertyp zu. 
+Da der Linker erst nach dem Verbinden des letzten Moduls weiss,
+wieviele gemeinsame Variable auftreten, erfolgt die Verschiebung
+gemeinsamer Symbole erst zuletzt. Gemeinsame Symbole
+werden in die oberen BSS-Segmentadressen gebracht.
+Ist die Abbildung dieser Symbole wichtig, kann die
+\fB-d\fR Option verwendet werden, um gemeinsame 
+Symbole als BSS zu definieren; darauf folgende
+\fB-M\fR Spezifikationen binden das Symbol an das gewuenschte Segment.
+In diesem Fall ist jedoch darauf zu achten, dass diese Symbole
+nicht in anderen Modulen definiert werden. Geschieht dies,
+wird ein "multiply defined"-Fehler zurueckgegeben.
+.nf
+.sp
+sld -z -i /lib/scrt0.o -e start -Mt11 -Md12 -Mb13  \\   
+    obj1.o -Mt4 -Md5 -Mb6 obj2.o
+.sp
+.fi
+Im Beispiel werden gemeinsame Variable, die in
+obj1.o
+vereinbart werden, in Segment 6 verschoben und nicht in Segment 13,
+da
+\fB-Mb6\fR
+das BSS-Segment umdefiniert (aufgrund der Regeln ueber die Prioritaet)
+und da gemeinsame Variable auf das BSS-Segment plaziert werden, das
+die hoechste Prioritaet besitzt.
+Damit gemeinsame Symbole in ausgewaehlte Segmente
+plaziert werden koennen, muessen sie zuerst in den
+Bss-Speichertyp konvertiert werden:
+.nf
+.sp
+sld -r -d obj1.o -o obj1
+
+sld -z -i -e start /lib/scrt0.o -Mt11 -Md12 -Mb13  \\
+    obj1 -Mt4 -Md5 -Mb6 obj2.o
+.fi
+.sp
+Die erste Zeile definiert gemeinsame Speicherung in 
+obj1.o als Speicherung vom Typ BSS.
+Nach dieser Definition koennen die ehemals gemeinsamen Variablen in obj1
+in ausgewaehlte Segmente plaziert werden. Enthaelt beispielsweise
+obj1.o eine einzelne gemeinsame
+Variable \fBi\fR,
+wird - gemaess der in der ersten Zeile oben erfolgten Definition von
+\fBi\fR als BSS -
+\fBi\fR in Segment 13 plaziert. Es darf keine Variable
+\fBi\fR in obj2.o auftreten. Tritt eine solche doch dort auf,
+wird eine
+"multiply defined" Fehlermeldung zurueckgegeben. 
+.SH DATEIEN
+.nf
+{ /lib, /usr/lib/, /z/bin/lib } /slib*.a
+		Bibliotheken fuer -l Option 
+a.out           Name des Standard-Lademoduls
+/lib/scrt0.o    Laufzeit-Startroutine in C
+.SH SIEHE AUCH
+LOAD(1), ar(1), ld(1), ranlib(1), a.out(5), 
+nm(1), objhdr(1), objdu(1), gld(5)
+.fi
+.SH DIAGNOSTIK
+Undefinierte Referenzen fuehren dazu, dass das spezielle Symbol
+`_end` als undefiniert gemeldet wird.
+Zur Unterstuetzung fuer den Programmierer erfolgt die
+"Umdefinierungs-Warnung"
+("redefinition"), wenn waehrend der Durchsuchung eines
+Archivs ein bereits definiertes Symbol in einem Teil des
+Archivs definiert wird.
+Diese Warnung kann mit der
+.B -w
+Option unterdrueckt werden. Sie erscheint auch dann nicht, wenn
+der Symbolname mit zwei Unterstreichungen beginnt (bzw. bei C
+mit einer Unterstreichung).
+.SH EINSCHRAENKUNGEN
+Die Warnung
+"redefinition" 
+erfolgt nicht fuer Symbole, die zweimal innerhalb desselben
+Archivs erscheinen.
+.sp
+Die Segmentnummern fuer Sektionseintraege in der Symboltabelle
+koennen fehlerhaft sein. Diese Information wird jedoch
+nicht von
+.B sld
+verwendet.
+.sp
+Bei sehr grossen Programmen entstehen Ueberlaeufe in internen
+Tabellen. In solchen Faellen ist der segmentierte Lader
+.B gld(1)
+zu benutzen.

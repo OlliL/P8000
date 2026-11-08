@@ -1,0 +1,44 @@
+.TH GETLOGIN 3 WEGA
+.\" @[$]getlogin.3      1.2
+.ad
+.fi
+.SH NAME
+getlogin \- Ermitteln des Login-Namens
+.SH SYNTAX
+.B char *getlogin();
+.SH BESCHREIBUNG
+Die Funktion
+.B getlogin
+gibt einen Pointer auf den Login-Namen zurueck, wie er in der Datei
+.IR /etc/utmp 
+enthalten ist.
+Die Funktion wird in Verbindung mit 
+.B getpwnam
+(siehe
+.BR getpwent (3))
+benutzt, um den korrekten Eintrag in der Passwortdatei zu ermitteln,
+wenn die gleiche Nutzer-ID von verschiedenen Login-Namen benutzt wird.
+.PP
+Wird
+.B getlogin
+innerhalb eines Prozesses aufgerufen, der nicht an ein 
+Terminal angeschlossen ist, wird Null zurueckgegeben.
+Fuer die korrekte Bestimmung des Login-Namens ist zuerst
+.B getlogin
+aufzurufen.
+Wird es nicht ausgefuehrt, ist
+.BR getpwuid 
+(siehe
+.BR getpwent (3))
+aufzurufen.
+.SH DATEIEN
+/etc/utmp
+.SH SIEHE AUCH
+getpwent(3),
+getgrent(3),
+utmp(5).
+.SH DIAGNOSTIK
+Wird der Name nicht gefunden, wird Null zurueckgegeben.
+.SH EINSCHRAENKUNGEN
+Die Rueckgabewerte weisen auf statische Daten, deren Inhalte durch
+jeden Aufruf ueberschrieben werden.

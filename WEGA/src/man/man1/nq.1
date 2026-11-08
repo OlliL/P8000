@@ -1,0 +1,172 @@
+.TH NQ 1 
+.\" @[$]nq.1	1.2
+.ad
+.fi
+.SH NAME
+nq \- Ausdruck von Dateien ueber Warteschlangen (spooler)
+.SH SYNTAX
+.B nq
+[ \fIoptions ] [ files ]\fR
+.SH BESCHREIBUNG
+.B Nq
+ist ein Programm zum Verwaltung von Warteschlangen.
+Dateien, die nacheinander verarbeitet werden sollen, werden durch
+.BR dqueuer (M)
+zu Warteschlangen zusammengestellt.
+.B Dqueuer
+ist verantwortlich fuer die Behandlung der Requests von unterschiedlichen
+Geraeten, wie z.B. Zeilen- und Schoenschriftdrucker.
+.B Nq
+stellt Requests fuer alle
+.BR dqueuer (M)
+Geraete zusammen.
+.BR Xq (1)
+untersucht und/oder streicht die durch
+.BR nq
+in die Warteschlange eingereihten Auftraege.
+.B Nq
+akzeptiert eine beliebige Anzahl von Dateien, die
+zum Ausdrucken zu Warteschlangen zusammengestellt
+werden sollen (Standard: stdin).
+.PP
+Sind keine Optionen angegeben, nimmt
+.B nq
+entweder seine Argument-Dateien oder die Standardeingabe und stellt
+sie in der voreingestellten Warteschlange des benutzten Systems zusammen.
+Die voreingestellte Warteschlange ist die erste in der Liste, die durch
+.BR xq (1)
+ausgedruckt wird.
+Alle Attribute, die zum Ausdruck dieser Dateien benutzt werden,
+nehmen einen sinnvollen Wert fuer das Standardgeraet an.
+.PP
+Eine Option modifiziert die Attribute. Sie bezieht sich
+auf alle Dateien, die der Kommandozeile folgen, bis sie durch
+eine weitere Option ungueltig gemacht werden.
+.SH OPTIONEN
+.TP 3
+.B \-b
+Wurde der Druck der Kopfseite durch ein vorhergehendes
+Kommando abgeschaltet, wird er
+durch diese Option
+wieder eingeschaltet (Standard ist mit Kopfseite).
+.TP 3
+.B  \-c
+Normalerweise merkt sich
+.B nq
+die Dateinamen der Warteschlange und liest sie aus dem
+angegebenen Directory dann, wenn sie ausgegeben werden sollen.
+Um die Datei vor Aenderungen
+zu schuetzen, die vor der Ausgabe auftreten koennen,
+erzwingt die \fB-c\fR Option, dass
+.B nq
+eine Kopie der Datei erstellt.
+.TP 3
+\fB\-d\fI dest\fR
+.br
+Setzt das Zielfeld im Kopfseitenformat (z.B. Login-Name).
+Ist zusaetzlich die
+.B -m 
+Option angegeben und ist
+.I dest
+ein gueltiger login-Name, wird
+.BR mail (1)
+zum Nutzer
+.I dest
+gesendet.
+.TP 3
+.B  \-m
+.BR Mail (1)
+meldet die Beendigung des Ausdrucks.
+Ist zusaetzlich die
+.B -d 
+Option angegeben, wird
+.BR mail (1)
+zum angegebenen Nutzer gesendet (siehe
+.B -d 
+Option).
+.TP 3
+.BI \-n bcdmpqrst
+Diese Option negiert die vorangegangenen Optionen, durch ein
+Neusetzen der angegebenen Option(en) auf ihren Standardwert.
+Standardwert ist \fB-n\fIm\fR,
+wenn keine Option angegeben wurde.
+.TP 3
+\fB\-p\fI pri\fR
+.br
+Ausdruck der Datei entsprechend der Prioritaet
+.IR pri .
+Gueltige Prioritaeten sind
+.BR n
+(normal),
+.BR d
+(langsam), und 
+.BR r
+(eilig). Alle
+.B r
+Requests werden vor den
+.B n
+Requests, und diese wiederum vor den
+.B d
+Requests gedruckt. 
+Die Bearbeitung bestimmter Prioritaeten kann
+verhindert werden.
+.TP 3
+\fB\-q\fI que[:dev]\fR
+Angabe der Warteschlange, zu der die Datei gesendet werden soll.
+Wird eine Schlange von mehr als einem Geraet bedient, aber
+ist nur ein spezielles Geraet gewuenscht, kann die
+.I :dev
+Option hinzugefuegt werden.
+.I Que
+und
+.I dev
+koennen durch
+.BR xq (1) 
+ermittelt werden.
+.TP 3
+.B  \-r
+Nach dem Ausdruck werden die Dateien geloescht.
+.TP 3
+.B  \-s
+Bei der Inspektion der Warteschlange (siehe
+.BR xq (1))
+werden diese Dateien nicht angezeigt.
+.TP 3
+\fB\-t\fI n\fR
+Druckt die Datei \fIn\fR-mal.
+.SH BEISPIELE
+.TP
+\fBnq\fI file1\fR
+Druckt die Datei 
+.I file1 
+mit Kopfseite.
+.TP
+\fBnq -nb\fI file1\fR \fB-b\fI file2\fR
+Druckt die Datei 
+.I file1 
+ohne Kopfseite, die Datei
+.I file2
+mit Kopfseite.
+.TP
+\fBnq -t \fI8 file1\fR   
+Druckt
+.I 8
+Kopien der Datei
+.IR file1 .
+.ta
+.SH DATEIEN
+/usr/spool/queuer/activeconfig
+.br
+/usr/spool/queuer/statusdir
+.br
+/usr/spool/queuer/requestdir
+.br
+/tmp/queuer
+.br
+/usr/spool/queuer/logfile
+.SH SIEHE AUCH
+xq(1), backend(M), dqueuer(M), xq(M).
+.SH "DIAGNOSTIK"
+.B Nq
+meldet, wenn der Warteschlangenverwalter (spooler daemon) nicht aktiv ist.
+Requests werden jedoch anerkannt.

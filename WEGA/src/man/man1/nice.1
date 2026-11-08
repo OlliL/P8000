@@ -1,0 +1,56 @@
+.TH NICE 1 WEGA
+.\" @[$]nice.1	1.2
+.ad
+.fi
+.SH NAME
+nice, nohup \- Veraenderung der Prioritaet eines Kommandos
+.SH SYNTAX
+.B nice
+[
+.BI \- number
+]
+command [ arguments ]
+.PP
+.B nohup
+command [ arguments ]
+.SH BESCHREIBUNG
+.B Nice
+fuehrt das nachfolgend angegebene Kommando
+mit niedrigerer Prioritaet bei der Abarbeitungsfolgeplanung aus.
+Ist das Argument
+.I number
+angegeben, wird die Prioritaetszahl um die angegebene
+Zahl erhoeht (hoehere Zahlen bedeuten kleinere Prioritaeten).
+Die hoechste Prioritaetszahl ist 20, Standard ist 7.
+.PP
+Nur der Superuser kann mit diesem Kommando hoehere Prioritaeten 
+durch die Eingabe einer negativen Zahl (z.B. \-\-10) vergeben.
+.PP
+.B Nohup
+fuehrt das angegebene Kommando
+aus und macht es gegenueber "hangup"- und "terminate"-Signale immun.
+Die Prioritaet wird um 5 erhoeht.
+.B Nohup
+sollte von Shell mit '&' aufgerufen werden, um eine Reaktion
+auf Interrupts durch ein
+.BR login (1)
+anderer Nutzer auf dem gleichen
+Terminal zu verhindern.
+.PP
+.B BEACHTE:
+C-Shell fuehrt diese Kommandos intern aus. Die Syntax und
+die Merkmale unterscheiden sich etwas von den hier beschriebenen,
+so dass sich C-Shell-Nutzer direkt auf
+.BR nice(1C) ,
+und 
+.B nohup(1C)
+beziehen sollten.
+.SH DATEIEN
+nohup.out	Standardausgabe- und Standardfehlerdateien unter
+.B nohup
+.SH SIEHE AUCH
+csh(1), nice(1C), nice(2).
+.SH DIAGNOSTIK
+.B Nice
+gibt den Exitstatus des Befehls zurueck, der Gegenstand des
+Kommandos ist.

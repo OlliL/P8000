@@ -1,0 +1,71 @@
+.TH MM 7 WEGA
+.\" @[$]mm.7    1.2
+.ad
+.fi
+.SH NAME
+mm \- Das MM-Makropaket zur Formatierung von Dokumenten
+.SH SYNTAX
+.B mm
+[\fIoptions\fR] [\fIfiles\fR]
+.PP
+.B "nroff \-mm"
+[\fIoptions\fR] [\fIfiles\fR]
+.PP
+.B "nroff \-cm"
+[\fIoptions\fR] [\fIfiles\fR]
+.sp 1v
+.B mmt
+[\fIoptions\fR] [\fIfiles\fR]
+.PP
+.B "troff \-mm"
+[\fIoptions\fR] [\fIfiles\fR]
+.PP
+.B "troff \-cm"
+[\fIoptions\fR] [\fIfiles\fR]
+.SH BESCHREIBUNG
+Dieses Paket bietet eine Vielzahl
+von Moeglichkeiten zur Formatierung
+von Dokumenten.
+Fuer die Eingabe der Dokumente ist es nicht entscheidend,
+ob die Ausgabe mit Hilfe der Programme
+.BR nroff (1)
+oder
+.BR troff (1)
+erfolgen soll.
+.SH OPTIONEN
+.TP
+.B \-cm
+Die Programme
+.IR nroff (1)
+und
+.IR troff (1)
+benutzen die kompakte Version des Makropakets
+(Beschleunigung des Ladevorgangs).
+.TP
+.B \-mm
+Die Programme
+.IR nroff (1)
+und
+.IR troff (1)
+benutzen die nichtkompakte Version des Makropakets.
+.SH DATEIEN
+.TP "\w'/usr/lib/macros/cmp.[nt].[dt].m    'u"
+/usr/lib/tmac/tmac.m
+Pointer auf die nichtkompakte Version des Pakets
+.TP
+/usr/lib/macros/mm[nt]
+Nichtkompakte Version des Pakets
+.TP
+/usr/lib/macros/cmp.[nt].[dt].m
+Kompakte Version des Pakets
+.TP
+/usr/lib/macros/ucmp.[nt].m
+Zur Initialisierung der kompakten Version des Pakets
+.SH SIEHE AUCH
+mm(1),
+mmt(1),
+nroff(1),
+troff(1).
+.br
+"MM - Makropaket" in WEGA-Dienstprogramme.
+

@@ -1,0 +1,39 @@
+.TH GETPID 2 WEGA
+.SH NAME
+.ad
+.fi
+getpid, - Erhalten der Process-ID
+.br
+getpgrp \- Erhalten der Gruppen-Prozess-ID
+.br
+getppid \- Erhalten der Parent-Prozess-ID
+.SH SYNTAX
+.B int getpid( )
+.br
+.B int getpgrp( )
+.br
+.B int getppid( )
+.SH BESCHREIBUNG
+.B Getpid
+gibt die Prozess-ID des aufrufenden Prozesses zurueck.
+.PP
+.B Getpgrp
+gibt die Prozess-Gruppen-ID
+des aufrufenden Prozesses zurueck.
+.PP
+.B Getppid
+gibt die Parent-Prozess-ID
+des aufrufenden Prozesses zurueck.
+.SH SIEHE AUCH
+exec(2), fork(2), intro(2), setpgrp(2), signal(2), mktemp(3).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT GETPID := 20
+
+     ...             
+     sc     #GETPID
+     ...             !* r4 : pid *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

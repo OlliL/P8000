@@ -1,0 +1,37 @@
+.TH GROUP 5 WEGA
+.\"@[$]group.5  1.2
+.ad
+.SH NAME
+group \- Datei fuer Gruppeneintraege
+.SH BESCHREIBUNG
+Die Datei
+.B /etc/group
+enthaelt fuer jede Gruppe die folgenden Informationen:
+.IP - 3
+Gruppenname.
+.PD 0
+.IP -
+Verschluesseltes Passwort.
+.IP -
+Numerisches Gruppen-ID.
+.IP -
+Eine durch Komma getrennte Liste aller in der Gruppe zugelassenen Benutzer.
+.PD
+.PP
+Die Gruppendatei ist eine ASCII-Datei.
+Die Felder werden durch Doppelpunkte getrennt.
+Jede Gruppe wird von der naechsten durch ein Newline-Zeichen
+getrennt.
+Ist das Passwortfeld Null, wird kein Passwort verlangt.
+.PP
+Diese Datei ist im Directory /etc abgelegt.
+Aufgrund der verschluesselten Passworte hat diese Datei
+allgemeine Leseerlaubnis und kann z.B. verwendet werden,
+um den numerischen Gruppen-IDs den entsprechenden Namen zuzuordnen.
+.SH DATEIEN
+/etc/group
+.SH SIEHE AUCH
+newgrp(1),
+passwd(1),
+crypt(3),
+passwd(5).

@@ -1,0 +1,88 @@
+.TH MP 3 WEGA
+.\" @[$]mp.3    1.1
+.ad
+.fi
+.SH NAME
+itom, madd, msub, mult, mdiv, min, mout, pow, gcd, rpow \- Integer-Arithmetik
+waehlbarer Genauigkeit
+.SH SYNTAX
+.nf
+\fBtypedef struct { int \fIlen; \fBshort \fI*val; } \fBmint;\fR
+.PP
+\fBmadd\fI(a, b, c)\fR
+\fBmsub\fI(a, b, c)\fR
+\fBmult\fI(a, b, c)\fR
+\fBmdiv\fI(a, b, q, r)\fR
+\fBmin\fI(a)\fR
+\fBmout\fI(a)\fR
+\fBpow\fI(a, b, m, c)\fR
+\fBgcd\fI(a, b, c)\fR
+\fBrpow\fI(a, b, c)\fR
+\fBmsqrt\fI(a, b, r)\fR
+\fBmint \fI*a, *b, *c, *m, *q, *r;\fR
+.sp
+\fBsdiv\fI(a, n, q, r)\fR
+\fBmint \fI*a, *q;\fR
+\fBint \fIn;\fR
+\fBshort \fI*r;\fR
+.sp
+\fBmint \fI*itom(n)\fR
+\fBint \fIn;\fR
+.fi
+.SH BESCHREIBUNG
+Diese Routinen fuehren arithmetische Operationen mit Integerwerten
+beliebiger Laenge aus.
+Die Integerwerte werden unter Verwendung des definierten Typs
+.BR mint
+abgespeichert.
+Pointer auf eine Struktur
+.B mint
+sind unter Verwendung der Funktion
+.BR itom
+zu initialisieren, die den Ausgangswert auf
+.IR n
+setzt. Danach wird der Speicherplatz automatisch von den Routinen
+verwaltet.
+.PP
+Die Funktionen
+.BR madd , " msub" , " mult" ,
+weisen jeweils ihren dritten Argumenten die Summe, Differenz bzw. das
+Produkt ihrer ersten zwei Argumente zu.
+.B Mdiv
+ordnet seinem dritten und vierten Argumenten
+den Quotienten bzw. den Rest zu.
+Die Funktion
+.B Sdiv
+ist gleich
+.BR mdiv ,
+ausser dass der Divisor ein normaler Integerwert ist
+(kein Pointer auf eine Struktur
+.BR mint ).
+Die Funktion
+.B msqrt
+berechnet die Quadratwurzel und den Rest ihres ersten Argumentes.
+.B rpow
+berechnet
+.I a
+hoch
+.IR b ,
+waehrend
+.B pow
+dieses Ergebnis reduziert auf Modulo
+.IR m
+berechnet.
+Die Funktionen
+.BR min " und " mout
+realisieren die dezimale Eingabe und Ausgabe.
+.PP
+Die Funktionen werden durch die Laderoption
+.BR -lmp
+mit dem Objekt verbunden (siehe
+.BR ld (1)).
+.SH DATEIEN
+/usr/lib/libmp.a
+.br
+/usr/lib/slibmp.a
+.SH DIAGNOSTIK
+Unzulaessige Operationen und nicht ausreichender Speicher fuehren zu
+Meldungen mit Speicherabzuegen (core dump).

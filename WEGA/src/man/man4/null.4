@@ -1,0 +1,21 @@
+.TH NULL 4 WEGA
+.\"@[$]null.4	1.2
+.ad
+.fi
+.SH NAME
+null \- Datensenke
+.SH BESCHREIBUNG
+.PP
+Die Geraetedatei
+.B null
+dient als Datensenke.
+Stellt
+.B /dev/null
+das Ziel eines Schreibvorgangs dar, werden die gelesenen Daten vernichtet
+(die Quelle bleibt jedoch erhalten!).
+.PP
+Wird aus der Geraetedatei
+.B /dev/null
+gelesen, werden 0 Bytes zurueckgegeben (ohne Fehlermeldung).
+.SH DATEIEN
+/dev/null

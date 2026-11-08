@@ -1,0 +1,39 @@
+.TH L3TOL 3 WEGA
+.\" @[$]l3tol.3 1.2
+.ad
+.fi
+.SH NAME
+l3tol, ltol3 \- Konvertieren zwischen 3-Byte-Integer und long Integer
+.SH SYNTAX
+.nf
+\fBl3tol\fI(lp, cp, n)
+\fB     long \fI*lp;
+\fB     char \fI*cp;
+\fB     int \fIn;
+.PP
+\fBltol3\fI(cp, lp, n)
+\fB     char \fI*cp;
+\fB     long \fI*lp;
+\fB     int \fIn;\fR
+.fi
+.SH BESCHREIBUNG
+.B L3tol
+konvertiert eine Folge von
+.I n
+3-Byte-Integerwerten, die in einer
+Zeichenkette enthalten sind und auf die der Pointer
+.I cp
+zeigt, in eine Folge von long Integerwerten, auf die der Pointer
+.IR lp 
+zeigt.
+.PP
+.B Ltol3
+konvertiert umgekehrt long Integerwerte (angegeben durch Pointer
+.IR lp )
+in 3-Byte-Integerwerte (angegeben durch Pointer
+.IR cp ).
+.PP
+Diese Funktionen koennen fuer die Dateisystemverwaltung benutzt werden
+(Plattenadressen sind drei Bytes lang).
+.SH SIEHE AUCH
+filsys(5).

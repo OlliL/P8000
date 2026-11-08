@@ -1,0 +1,103 @@
+.TH COMB 1 WEGA
+.\" @[$]comb.1	1.2
+.ad
+.fi
+.SH NAME
+comb \- Reorganisation von SCCS-Dateien
+.SH SYNTAX
+\fBcomb\fR [\fB\-c\fIlist \fB\-o \fB\-p\fISID \fB\-s\fR] \fIfiles\fR
+.SH BESCHREIBUNG
+.B Comb\^
+erzeugt eine Shellprozedur, die die angegebenen
+SCCS-Dateien reorganisiert. Die reorganisierten Dateien sind i.a.
+kleiner als die urspruenglichen Dateien.
+Die Argumente koennen in beliebiger Reihenfolge angegeben werden,
+wobei sich die Optionen auf alle genannten
+SCCS-Dateien beziehen.
+.PP
+Ist ein Directory angegeben, verhaelt sich
+.B comb\^
+so, als ob jede Datei des Directorys angegeben wurde. Ausgenommen  
+sind Dateien, die keine SCCS-Dateien sind (der letzte Teil des
+Pfadnamens beginnt nicht mit \fBs.\fR), und unlesbare Dateien; diese
+werden ignoriert.
+.PP
+Ist als Name \fB\-\fR angegeben, wird die Standardeingabe gelesen;
+jede Eingabezeile wird als Name einer zu bearbeitenden SCCS-Datei
+gewertet; Dateien, die keine SCCS-Dateien sind sowie unlesbare
+Dateien werden ignoriert.
+.PP
+Die erzeugte Shellprozedur wird an die Standardausgabe ausgegeben.
+.SH OPTIONEN
+Die Optionen werden so erklaert, als ob sie sich nur auf eine angegebene Datei
+beziehen, die bearbeitet werden soll.
+Sie wirken jedoch unabhaengig voneinander auf jede 
+angegebene Datei.
+.PP
+Sind keine Optionen angegeben, reorganisiert die durch
+.B comb\^
+erzeugte Shellprozedur die SCCS-Datei so,
+dass der Versionsbaum erhalten bleibt,
+aber Zwischenausgaben geloescht werden.
+Es bleiben alle Versionen zur Release erhalten;
+sie enthalten jedoch nur noch den letzte Ausgabestand.
+.TP 10
+\fB\-c\fIlist\fR
+Die durch die Liste
+(Syntax fuer \fIlist\fR siehe \fBget\fR(1)) angegebenen Deltas
+bleiben in der SCCS-Datei erhalten.
+Alle anderen Deltas werden verworfen.
+.TP
+\fB\-o\fR
+Fuer die zur Reorganisation der SCCS-Datei erstellten
+\fBget \'\-e\fR\' Befehle
+wird ein um eine Release verschobener Standort gewaehlt.
+Dabei kann die Groesse der SCCS-Datei verringert und die
+Form des Versionsbaums veraendert werden.
+.TP
+\fB\-p\fISID
+Gibt den \fISID\fR des aeltesten Delta an, das erhalten
+werden soll. Alle einzelnen Veraenderungen des Originals bis zu dem
+Datum der spezifizierten Version werden zu einem Delta zusammengefasst.
+.TP
+\fB\-s\fR
+\fBComb\fR erzeugt eine Shellprozedur, die fuer
+jede Datei zusaetzlich folgende Statistikinformationen ausgibt:
+.br
+Dateiname,
+Umfang (in Bloecken) nach der Reorganisation,
+urspruengliche Groesse (Original)
+und die prozentuale Einsparung bezogen auf die nicht reorganisierte
+SCCS-Datei.
+.sp
+Es wird empfohlen, diese Option vor der Reorganisation
+von SCCS-Dateien zu nutzen, um die Effektivitaet (Speicherplatzeinsparung)
+des Reorganisationsvorgangs genau bestimmen 
+zu koennen.
+.PP
+.SH DATEIEN
+.TP 14
+s.COMB
+Name der reorganisierten SCCS-Datei.
+.TP 14
+comb?????
+Zwischendatei.
+.SH SIEHE AUCH
+admin(1),
+delta(1),
+get(1),
+help(1),
+prs(1),
+sccsfile(5).
+.br
+"Source Code Control System Benutzerhandbuch\^"
+in WEGA-Dienstprogramme.
+.SH DIAGNOSTIK
+Nutze
+.BR help (1)
+fuer Erlaeuterungen.
+.SH EINSCHRAENKUNGEN
+.B Comb\^
+kann die Form eines Versionsbaums neu ordnen.
+In Ausnahmefaellen kann die reorganisierte SCCS-Datei
+mehr Speicherplatz verbrauchen als das Original.

@@ -1,0 +1,31 @@
+.TH CP 1 WEGA
+.\" @[$]cp.1	1.2
+.ad
+.fi
+.SH NAME
+cp \- Kopieren einer Datei in eine andere oder in ein Directory
+.SH SYNTAX
+\fBcp \fIfile1 file2\fR
+.br
+\fBcp \fIfile directory\fR
+.SH BESCHREIBUNG
+Die Datei
+.I file1
+wird in die Datei
+.IR file2
+kopiert.
+Wenn die Datei 
+.I file2
+bereits vorhanden ist, bleiben Mode und Eigner der Datei 
+erhalten, im anderen Fall wird der Mode der Quelldatei verwendet.
+.PP
+In der zweiten Form werden ein oder mehrere mit
+.I file
+angegebene Dateien mit ihren urspruenglichen Dateinamen in das durch
+.I directory
+angegebene Directory kopiert.
+.PP
+.B Cp
+verhindert das Kopieren einer Datei auf sich selbst.
+.SH SIEHE AUCH
+cat(1), pr(1), mv(1).

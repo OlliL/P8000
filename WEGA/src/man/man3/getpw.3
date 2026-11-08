@@ -1,0 +1,31 @@
+.TH GETPW 3  WEGA
+.\" @[$]getpw.3 1.2
+.ad
+.fi
+.SH NAME
+getpw \- Ermittlung des Namens zu einem Nutzer-ID
+.SH SYNTAX
+.nf
+\fBgetpw\fI(uid, buf)\fR
+\fBchar \fI*buf;\fR
+\fBint uid;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B getpw
+sucht in der Passwort-Datei nach dem (numerischen) Nutzer-ID
+.IR uid
+und traegt die entsprechende Zeile in den durch
+.I buf
+angegebenen Speicherbereich ein.
+Die Zeile wird mit einem Nullbyte abgeschlossen.
+Wird
+.IR uid
+nicht gefunden, ist der Rueckgabewert ungleich Null.
+.SH DATEIEN
+/etc/passwd
+.SH SIEHE AUCH
+getpwent(3),
+passwd(5).
+.SH DIAGNOSTIK
+Bei Fehler ist der Rueckgabewert ungleich Null.

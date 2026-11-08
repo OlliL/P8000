@@ -1,0 +1,305 @@
+.TH STTY 1 WEGA
+.\" @[$]stty.1	1.2
+.ad
+.fi
+.SH NAME
+stty \- Setzen von Terminaloptionen
+.SH SYNTAX
+\fBstty\fR [\fB\-a\fR] [\fB\-g\fR] [\fIoptions\fR]
+.SH BESCHREIBUNG
+.B Stty\^
+dient zum Anzeigen und Setzen bestimmter Terminal-E/A-Optionen fuer das
+aktuelle Standardeingabegeraet.
+.SH OPTIONEN
+.TP
+.B \-a
+Alle gesetzten Optionen werden angezeigt.
+.TP
+.B \-g
+Alle gesetzten Optionen werden in einer Form angezeigt,
+die als Argument fuer ein anderes
+.B stty\^
+Kommando benutzt werden kann.
+.SH MODI
+Ausfuehrliche Informationen ueber die Modi befinden sich in
+.BR tty (4).
+.SS Steuer-Modi
+.TP 10m
+.BR clocal " (" \-clocal )
+Es wird eine Leitung ohne (mit) Modemkontrolle angenommen.
+.TP
+.BR cread " (" \-cread )
+Der Empfaenger wird aktiviert (deaktiviert).
+.TP
+.BR cstopb " (" \-cstopb )
+Es werden zwei (ein) Stopbit(s) pro Zeichen benutzt.
+(Das P8000 unterstuetzt gegenwaertig nicht \fB\-cstopb\fR).
+.TP
+.B "cs5 cs6 cs7 cs8"
+Auswahl der Zeichenlaenge in Bits (siehe
+.BR tty (4)).
+.TP
+.BR hup " (" \-hup )
+Die Verbindung wird (wird nicht)
+beim letzten close unterbrochen.
+.TP
+.BR hupcl " (" \-hupcl )
+Wirkungsweise wie
+.BR hup " (" \-hup )
+.TP
+.BR parenb " (" \-parenb )
+Die Paritaetserzeugung und -erkennung wird aktiviert (deaktiviert).
+.TP
+.BR parodd " (" \-parodd )
+Ungeradzahlige (geradzahlige) Paritaet wird ausgewaehlt.
+.TP
+.B 0
+Die Verbindung wird direkt getrennt.
+\fBBemerkung:\fR Diese Option wird fuer das Trennen
+einer Leitung (fuer ein Modem mit Waehler) bereitgestellt und
+sollte nicht fuer eine Leitung, die mit einem Login-Shell
+verbunden ist, benutzt werden.\fR
+.TP
+.B "50 75 110 134 150 200 300 600 1200 1800 2400 4800 9600 19200 extb"
+Setzen der Baud-Rate des Terminals auf die angegebene Zahl (nur diese 
+Geschwindigkeiten werden vom P8000-Interface unterstuetzt).
+.SS Eingabe-Modi
+.TP 10m
+.BR brkint " (" \-brkint )
+Bei einem Break wird (wird nicht) ein Signal INTR gesendet.
+.TP
+.BR icrnl " (" \-icrnl )
+Bei der Eingabe wird (wird nicht) CR in NL umgewandelt.
+.TP
+.BR ignbrk " (" \-ignbrk )
+Bei der Eingabe wird (wird nicht) ein Break ignoriert.
+.TP
+.BR igncr " (" \-igncr )
+Bei der Eingabe wird (wird nicht) ein CR ignoriert.
+.TP
+.BR ignpar " (" \-ignpar )
+Paritaetsfehler werden (werden nicht) ignoriert.
+.TP
+.BR inlcr " (" \-inlcr )
+Bei der Eingabe wird (wird nicht) NL in CR umgewandelt.
+.TP
+.BR inpck " (" \-inpck )
+Die Eingabe-Paritaetskontrolle wird aktiviert (deaktiviert).
+.TP
+.BR istrip " (" \-istrip )
+Die Eingabezeichenlaenge wird (wird nicht) auf sieben Bits verringert.
+.TP
+.BR iuclc " (" \-iuclc )
+Bei der Eingabe werden (werden nicht) Grossbuchstaben in
+Kleinbuchstaben umgewandelt.
+.TP
+.BR ixany " (" \-ixany )
+Alle Zeichen (nur DC1) koennen die Ausgabe neu starten.
+.TP
+.BR ixoff " (" \-ixoff )
+Das System sendet (sendet nicht) START/STOP-Zeichen,
+wenn die Eingabereihe fast leer/voll ist.
+.TP
+.BR ixon " (" \-ixon )
+Es wird die START/STOP-Ausgabekontrolle aktiviert (deaktiviert).
+Die Ausgabe wird durch das Senden eines ASCII DC3 gestoppt und durch das
+Senden eines ASCII DC1 gestartet.
+.TP
+.BR parmrk " (" \-parmrk )
+Die Paritaetsfehler werden (werden nicht) gekennzeichnet (siehe
+.BR tty (4)).
+.SS Ausgabe-Modi
+.TP 10m
+.B "bs0 bs1"
+Verzoegerung fuer Backspace wird ausgewaehlt (siehe
+.BR tty (4)).
+.TP
+.B "cr0 cr1 cr2 cr3"
+Verzoegerung fuer den CR wird ausgewaehlt (siehe
+.BR tty (4)).
+.TP
+.B "ff0 ff1"
+Verzoegerung fuer Formfeed wird ausgewaehlt (siehe
+.BR tty (4)).
+.TP
+.B "nl0 nl1"
+Verzoegerung fuer Linefeed wird ausgewaehlt (siehe
+.BR tty (4)).
+.TP
+.BR ocrnl " (" \-ocrnl )
+Bei der Ausgabe wird (wird nicht) CR in NL umgewandelt.
+.TP
+.BR ofdel " (" \-ofdel )
+Fuellzeichen sind DELs (Nullen).
+.TP
+.BR ofill " (" \-ofill )
+Fuer die Verzoegerungen werden Fuellzeichen (Wartezeiten) benutzt.
+.TP
+.BR olcuc " (" \-olcuc )
+Bei der Ausgabe werden (werden nicht) Kleinbuchstaben in
+Grossbuchstaben umgewandelt.
+.TP
+.BR onlcr " (" \-onlcr )
+Bei der Ausgabe wird (wird nicht) NL in CR-NL umgewandelt.
+.TP
+.BR onlret " (" \-onlret )
+NL fuehrt (fuehrt nicht) die CR-Funktion auf dem Terminal aus.
+.TP
+.BR onocr " (" \-onocr )
+Es werden keine (werden auch die) CRs in Spalte 0 ausgegeben.
+.TP
+.BR opost " (" \-opost )
+Post-Processing fuer die Ausgabe wird eingeschaltet (ausgeschaltet;
+d.h. alle anderen Ausgabe-Modi werden ignoriert).
+.TP
+.B "tab0 tab1 tab2 tab3"
+Verzoegerung fuer horizontale Tabulatoren wird ausgewaehlt (siehe
+.BR tty (4)).
+.TP
+.B "vt0 vt1"
+Verzoegerung fuer vertikale Tabulatoren wird ausgewaehlt (siehe
+.BR tty (4)).
+.SS Lokale Modi
+.TP 10m
+.BR echo " (" \-echo )
+Echo (kein Echo) bei jedem geschriebenen Zeichen.
+.TP
+.BR echoe " (" \-echoe )
+Als Echo wird (wird nicht) bei ERASE-Zeichen eine
+Backspace-Space-Backspace-Zeichenkette ausgegeben
+(Vorsicht! Evtl. Fehler bei Spaltenpositionierung).
+.TP
+.BR echok " (" \-echok )
+Echo (kein Echo) eines NL nach dem KILL-Zeichen.
+.TP
+.BR echonl " (" \-echonl )
+Echo (kein Echo) eines NL.
+.TP
+.BR icanon " (" \-icanon )
+Es wird die kanonische Eingabe (ERASE- und KILL-Verarbeitung) aktiviert
+(deaktiviert).
+.TP
+.BR isig " (" \-isig )
+Die Kontrolle der eingegangenen Zeichen auf die speziellen 
+Kontrollzeichen INTR und QUIT wird aktiviert (deaktiviert).
+.TP
+.BR lfkc " (" \-lfkc )
+Wirkungsweise wie
+.BR echok " (" \-echok ).
+.TP
+.BR noflsh " (" \-noflsh )
+Der Inhalt der internen Puffer des Geraets
+wird nach INTR oder QUIT
+zerstoert (nicht zerstoert).
+.TP
+.BR xcase " (" \-xcase )
+Kanonische (unverarbeitete) Gross- und Kleindarstellung.
+.SS Steuerzuweisungen
+.TP 10m
+.BI "control-charakter c\^"
+Das Steuerzeichen
+.I control-character\^
+wird auf
+.IR c 
+gesetzt.
+Steuerzeichen sind:
+.BR erase ", " kill ", " intr ", "
+.BR quit ", " eof ", " eol ,
+.BR min " oder " time
+.RB ( min " und " time
+werden mit
+.BR \-icanon " benutzt; siehe"
+.BR tty (4)).
+Wird
+.I c\^
+ein (durch Shell nicht verarbeitetes) Zeichen "\fB^\fR"
+vorangestellt, entspricht der benutzte Wert dem entsprechenden
+CTRL-Zeichen (z.B.
+.B " ^d "
+bedeutet
+.BR CTRL-d );
+.RB " ^? "
+wird als DEL und 
+.RB " \- "
+wird als undefiniert interpretiert.
+.TP
+.BI line " i\^"
+Es wird Line-Discipline auf
+.I i\^
+(0 <
+.I i\^
+< 127
+) gesetzt (muss im WEGA-Kern vorbereitet sein!).
+.SS Kombinierte Modi
+Optionen in dieser Gruppe sind unter Nutzung von
+Optionen in den vorhergehenden Gruppen implementiert.
+.TP 10m
+.B ek
+Es werden die ERASE- und KILL-Zeichen auf normales
+.B ^h
+und
+.BR ^x 
+zurueckgesetzt.
+.TP
+.BR evenp " oder " parity
+Aktivieren von
+.BR parenb " und " cs7 .
+.TP
+.BR lcase " (" \-lcase )
+Setzen (Nichtsetzten) von
+.BR xcase ", " iuclc " und " olcuc .
+.TP
+.BR LCASE " (" \-LCASE )
+Wirkungsweise wie
+.BR lcase " (" \-lcase ).
+.TP
+.BR nl " (" \-nl )
+Nichtsetzen (Setzen) von
+.BR icrnl ", " onlcr .
+Zusaetzlich ist bei
+.B \-nl
+.BR inlcr ", " igncr ", "
+.BR ocrnl " und " onlret
+nicht gesetzt.
+.TP
+.B oddp
+Aktivieren von
+.BR parenb ", " cs7 " und " parodd .
+.TP
+.BR \-parity ", " \-evenp " oder " \-oddp
+Deaktivieren von
+.BR parenb 
+und Setzen von
+.BR cs8 .
+.TP
+.BR raw " (" \-raw " oder " cooked )
+Aktivieren (Deaktivieren) der "raw"-E/A (keine ERASE, KILL,
+INTR, QUIT, EOT oder Ausgabenachverarbeitung).
+.TP
+.B sane
+Ruecksetzen aller Modi auf Standardwerte.
+.TP
+.BR tabs " (" \-tabs " oder " tab3 )
+Erhalten (Ausdehnen auf Leerfelder) der Tabulatoren bei der Ausgabe.
+.TP
+.I term\^
+Setzen aller fuer den Terminaltyp
+.IR term 
+gebraeuchlichen Modi, wobei
+.I term\^
+eins von
+.BR tty33 ", " tty37 ", " vt05 ", "
+.BR tn300 ", " ti700 " oder " tek
+ist.
+.PP
+Das Kommando
+.sp
+.RS
+\fBstty < \fI/dev/ttyx\fR.
+.RE
+.sp
+gibt die Charakteristika von \fIttyx\fR aus.
+.SH SIEHE AUCH
+tabs(1),
+ioctl(2),
+tty(4).

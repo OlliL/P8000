@@ -1,0 +1,294 @@
+.TH PS 1 WEGA
+.\" @[$]ps.1	1.2
+.ad
+.fi
+.SH NAME
+ps \- Anzeigen des Prozess-Status
+.SH SYNTAX
+.B ps
+[
+.B -edalf 
+]
+   [
+.B -n
+.I namelist
+]
+   [
+.B -t
+.I tlist
+]
+   [
+.B -p
+.I plist
+]
+   [
+.B -u
+.I ulist
+]
+   [
+.B -g
+.I glist
+]
+.SH BESCHREIBUNG
+.B Ps
+gibt Informationen ueber aktive Prozesse aus.
+Ohne Angabe von Optionen
+werden Informationen ueber Prozesse ausgegeben, die mit dem aktuellen
+Terminal verbunden sind. Durch folgende Optionen koennen die
+dargestellten Information
+gesteuert werden:
+.PP
+.TP 12
+.B \-e
+Ausgabe der Informationen ueber alle Prozesse.
+.TP
+.B \-d
+Ausgabe der Informationen ueber alle Prozesse, ausser Prozessgruppenfuehrer.
+.TP
+.B \-a
+Ausgabe der Informationen ueber alle Prozesse, ausser Prozessgruppenfuehrer
+und Prozesse, die nicht mit einem Terminal verbunden sind.
+.TP
+.B \-f
+Erstellen eines
+vollstaendigen Listings
+(normalerweise kurze Auflistung von Prozess-ID,
+Terminalnamen,
+kumulativer Abarbeitungszeit und
+Kommandonamen).
+Eine Erlaeuterung der
+Bedeutung der Spalten in einem vollstaendigen Listing folgt.
+.TP
+.B \-l
+Erstellen eines langen Listings. Siehe unten.
+.TP
+.BI \-n " namelist"
+Das Argument wird als Name einer alternativen Symboltabelle
+.I namelist
+.RB ( /wega
+ist Vorgabe) genommen.
+.TP
+.BI \-t " tlist"
+Beschraenkung der Auflistung auf Daten ueber die Prozesse,
+die mit den in
+.IR tlist 
+angegebenen Terminals verbunden sind.
+.I Tlist
+ist eine Liste von Terminalnamen, die entweder durch Komma getrennt
+oder die in Anfuehrungszeichen
+eingeschlossen und durch Komma und/oder ein oder
+mehrere Leerzeichen voneinander getrennt sind.
+.TP
+.BI \-p " plist"
+Beschraenkung der Auflistung auf Daten ueber Prozesse, deren Prozess-IDs in 
+.IR plist
+angegeben sind (Format von
+.I plist
+entspricht
+.IR tlist ).
+.TP
+.BI \-u " ulist"
+Beschraenkung der Auflistung auf Daten ueber Prozesse, deren Nutzer-IDs
+oder Login-Namen in
+.IR ulist 
+angegeben sind (Format von
+.I ulist
+entspricht
+.IR tlist ).
+In der Auflistung wird die numerische Nutzer-ID
+ausgegeben (mit
+.B \-f
+Option wird der Login-Name ausgegeben).
+.TP
+.BI \-g " glist"
+Beschraenkung der Auflistung fuer Daten ueber Prozesse,
+deren Prozessgruppen in 
+.IR glist 
+angegeben sind. Dabei ist
+.I glist
+eine Liste von Prozessgruppenfuehrern (Format siehe
+.IR tlist ).
+.PD
+.PP
+Es folgen die Spaltenueberschriften und die Bedeutung
+der Spalten der \fBps\fR-Ausgabe.
+Die Buchstaben
+.B f
+und
+.B l
+bezeichnen die Option
+.RI ( vollstaendig
+oder
+.IR long ),
+die die Ausschrift der entsprechenden Ueberschrift bewirkt.
+.B All
+bedeutet, dass die Ueberschrift in jedem Falle erscheint.
+Es ist zu beachten, dass diese beiden Optionen bestimmen,
+welche Informationen fuer
+einen Prozess bereitgestellt werden; sie bestimmen
+.IR nicht ,
+welche Prozesse aufgelistet werden.
+.ta .65i
+.ne 7
+.PP
+.TP 16
+.SM
+.BR F\*S "	(l)"
+Flags (oktal und additive), die fuer den Prozess gesetzt sind:
+.PD 0
+.RS 20
+.TP 6
+00
+ausgelagert;
+.TP 6
+01
+im Speicher;
+.TP 6
+02
+Systemprozess;
+.TP 6
+04
+im Speicher blockiert (z.B. fuer physische E/A);
+.TP 6
+10
+wird gerade ausgelagert;
+.TP 6
+20
+wird von einem anderen Prozess verfolgt (trace);
+.TP 6
+40
+ein weiteres Trace-Flag.
+.RE
+.sp
+.TP
+.SM
+.BR S\*S "	(l)"
+Der Prozess-Status:
+.RS 20
+.TP 6
+0
+nichtexistent;
+.TP 6
+S
+schlaeft;
+.TP 6
+W
+wartet;
+.TP 6
+R
+wird gerade bearbeitet;
+.TP 6
+I
+Zwischenstatus;
+.TP 6
+Z
+beendet;
+.TP 6
+T
+gestoppt.
+.RE
+.PD
+.br
+.ne 2
+.TP
+.SM
+.BR UID\*S "	(f,l)"
+Nutzer-ID
+des Prozesseigentuemers; der Login-Name wird mittels 
+.B \-f
+Option ausgegeben.
+.TP
+.SM
+.BR PID\*S "	(all)"
+die Prozess-ID
+des Prozesses; ueber diesen Parameter kann man diesen Prozess
+beenden.
+.TP
+.SM
+.BR PPID\*S "	(f,l)"
+die Prozess-ID
+des Parentprozesses.
+.TP
+.SM
+.BR C\*S "	(f,l)"
+Prozessornutzung fuer Programmablaufplanung (Scheduling).
+.TP
+.SM
+.BR STIME\*S "	(f)"
+Startzeit des Prozesses.
+.TP
+.SM
+.BR PRI\*S "	(l)"
+die Prozessprioritaet; hoehere Zahlen bedeuten geringere Prioritaet.
+.TP
+.SM
+.BR NI\*S "	(l)"
+Nice-Wert; wird in der Prioritaetsrechnung benutzt.
+.TP
+.SM
+.BR ADDR\*S "	(l)"
+die Speicheradresse des Prozesses, wenn resident, in Clicks (1 Click=256
+Bytes) in Hexadezimal-Darstellung;
+sonst die Disk-Adresse.
+.TP
+.SM
+.BR SZ\*S "	(l)"
+die Groesse des Speicherabbilds des Prozesses in Clicks (hexadezimal).
+.TP
+.SM
+.BR WCHAN\*S "	(l)"
+das Ereignis, auf den der Prozess wartet oder schlaeft;
+wenn leer, laeuft der Prozess.
+.TP
+.SM
+.BR TTY\*S "	(all)"
+das steuernde Terminal des Prozesses.
+.TP
+.SM
+.BR TIME\*S "	(all)"
+Die kumulative Abarbeitungszeit des Prozesses.
+.TP
+.SM
+.BR CMD\*S "	(all)"
+Kommandoname. Der vollstaendige Kommandoname und seine Argumente 
+werden mittels
+.B \-f
+Option ausgegeben.
+.DT
+.PD
+.PP
+Ein Prozess, der beendet ist und fuer den ein Parentprozess existiert,
+der aber noch nicht
+vom Parentprozess erwartet wurde, wird als
+.BR <defunct> 
+markiert.
+.PP
+Ueber die
+.B \-f
+Option versucht
+.BR ps ,
+den Kommandonamen und die Argumente zu bestimmen, die bei der Prozesserzeugung
+waehrend der Ueberpruefung des Speichers oder des Swapbereiches 
+angegeben wurden.
+Ist dies nicht moeglich,
+wird der Kommandoname in eckigen Klammern ausgegeben, so wie
+er ohne Angabe der
+.B \-f
+Option erscheinen wuerde.
+.SH DATEIEN
+.ta \w'/dev/mem    'u
+/wega	System-Symboltabelle
+.br
+/dev/mem	Speicher
+.br
+/dev	zur Ermittlung der Swap-Device und Terminalnamen
+.DT
+.SH SIEHE AUCH
+kill(1), nice(1).
+.SH EINSCHRAENKUNGEN
+Waehrend der Abarbeitung von
+.B ps
+kann sich der aktuelle Prozesstatus aendern;
+das erhaltene Bild ist nur eine Annaeherung an die Realitaet.
+Einige Daten, die fuer nicht mehr existierende Prozesse ausgegeben wurden, 
+sind irrelevant.

@@ -1,0 +1,109 @@
+.TH WRITE 2 WEGA
+.\" @[$]write.2 1.2
+.ad
+.fi
+.SH NAME
+write \- Schreiben in eine Datei
+.SH SYNTAX
+.B write
+.I (fildes, buffer, nbytes)
+.br
+.B char
+.I *buffer;
+.SH BESCHREIBUNG
+Ein Dateidescriptor
+.I fildes
+ist ein Wort, das von einem erfolgreichen Systemruf
+.BR open (2),
+.BR creat (2),
+.BR dup (2)
+oder
+.BR pipe (2)
+zurueckgegeben wird.
+.PP
+.I Buffer
+ist die Adresse von
+.I nbytes
+zusammenhaengenden Bytes, die in die Ausgabedatei geschrieben werden.
+Die Zahl der tatsaechlich geschriebenen Zeichen wird zurueckgegeben.
+Entspricht diese Anzahl nicht der geforderten, ist ein Fehler aufgetreten.
+.PP
+Ist das Flag
+.B O_APPEND
+der Dateistatusflags gesetzt, wird vor jedem Schreiben
+der Dateipointer auf des Ende der Datei gesetzt.
+.PP
+Ein partielles Schreiben in ein Pipe (oder FIFO)
+ist nicht moeglich
+(d.h. ein Schreiben wird nicht ausgefuehrt, wenn
+.I nbyte
+ein Limit ueberschreitet).
+.PP
+Ist die Datei, in die geschrieben wird, ein Pipe (oder FIFO)
+und ist das Flag
+.B O_NDELAY
+der Dateistatusflags gesetzt,
+wird bei Schreiben in ein volles Pipe (oder FIFO)
+ein Ergebnis von 0 zurueckgegeben.
+Andernfalls (\fBO_NDELAY\fR nicht gesetzt)
+wird bei Schreiben auf ein volles Pipe (oder FIFO
+solange blockiert, bis genuegend Platz frei wird.
+.PP
+Systemrufe
+.BR write ,
+deren Laenge ein Vielfaches von 512 Zeichen
+ist und die an einer 512-Byte-Bereichsgrenze in der Datei beginnen,
+sind effizienter als andere.
+.SH SIEHE AUCH
+creat(2), open(2), pipe(2).
+.SH DIAGNOSTIK
+.B Write
+wird nicht ausgefuehrt und der Dateipointer bleibt unveraendert, wenn
+mindestens einer der folgenden Punkte zutrifft:
+.TP 11
+\%[EBADF]
+.I Fildes
+ist kein zum Schreiben offener gueltiger Dateidescriptor.
+.PD 0
+.TP 11
+\%[EPIPE und SIGPIPE signal]
+Es wird versucht, auf ein Pipe zu schreiben, das fuer keinen Prozess
+zum Lesen offen ist.
+.TP 11
+\%[EFBIG]
+Es wird versucht, eine Datei zu schreiben, die umfangreicher ist als das
+Dateigroessenlimit des Prozesses oder die maximale
+Dateigroesse zulassen (siehe
+.IR ulimit (2)).
+.TP 11
+\%[EFAULT]
+.I Buffer
+verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen
+Adressbereiches liegt.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird die Anzahl der geschriebenen
+Bytes zurueckgegeben.
+Andernfalls wird \-1 zurueckgegeben und
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT WRITE  := 4
+
+Nichtsegmentiert
+     ...             !* r0 : fildes *!
+                     !* r1 : buffer *!
+                     !* r2 : nbytes *!
+Segmentiert
+     ...             !* r0 : fildes *!
+                     !* r1 : buffer (Segmentnummer) *!
+                     !* r2 : buffer (Offset) *!
+                     !* r3 : nbytes *!
+     clr    r4
+     sc     #WRITE
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

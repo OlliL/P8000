@@ -1,0 +1,107 @@
+.TH WHOIS 1 
+.\" @[$]whois.1	1.2
+.ad
+.fi
+.SH NAME
+whois \- Zugriff auf Nutzerdaten
+.SH SYNTAX
+.B whois
+[ \fIname\fR...  ] [
+.B \-a
+\fIname\fR ] [
+.B \-m
+]
+.SH BESCHREIBUNG
+.B Whois
+ermoeglicht den Zugriff auf die Datenbasis ueber die im System
+installierten Nutzer. Diese Datenbasis enthaelt Informationen
+wie Login-Name, vollstaendiger Name des Nutzers, Telefonnummer u.a.
+Durch Angabe des
+Login-Namens oder der vollstaendigen Nutzernamens
+kann auf die Nutzerdaten zugegriffen werden.
+Es ist auch moeglich, Eintragungen in der Datenbasis
+zu modifizieren oder neue Eintragungen vorzunehmen.
+.SH OPTIONEN
+Sind keine Optionen angegeben, werden Informationen
+ueber die Nutzer mit den spezifizierten Login-Namen ausgegeben.
+.TP 9
+\fB-a \fIname\fR\^
+Es werden Informationen ueber den Nutzer ausgegeben,
+dessen vollstaendiger Name angegeben ist.
+.TP
+\fB-m\fR\^
+Hinzufuegen oder Modifizieren der Nutzerdaten (nicht moeglich
+fuer Login-Namen).
+Ein Nutzer kann nur seine eigenen Nutzerdaten modifizieren.
+Zum Modifizieren ist der entsprechende Feldname einzugeben.
+Dabei kann jede 
+eindeutige Abkuerzung des Feldnamens benutzt werden
+(z.B. "o" fuer Office).
+.PP
+Wenn das System einen Namen vergleicht, 
+werden die Felder in Kleinbuchstaben umgewandelt.
+Fuer
+.I name
+koennen auch Shell-Metazeichen benutzt werden.
+Diese Symbole muessen in Anfuehrungszeichen eingeschlossen 
+werden, um eine Interpretation durch Shell zu umgehen. 
+Siehe dazu
+.BR csh (1)
+oder
+.BR sh (1).
+.SH BEISPIELE
+.nf
+Ausgabe von Informationen ueber den Login-Namen hugo:
+
+        % \fBwhois\fR \fIhugo\fR
+        Login name                  hugo
+        Actual user:                Hugo Emmelmann
+        Office phone:               730
+        Home phone:
+        Group:
+        Misc:
+
+Die gleichen Informationen koennen ueber die Kommandos
+
+        % \fBwhois -a\fR "\fIHugo Emmelmann\fR"
+und
+        % \fBwhois -a\fR "\fI*hu*\fR"
+
+ausgegeben werden.
+.fi
+.SH DIAGNOSTIK
+.TP
+Whois database is in use; try again later
+Zur Modifikation der Datenbasis
+muss der Nutzer Exklusiv-Nutzung
+waehrend der Bearbeitung haben.
+.TP
+You cannot modify the login name field
+Es koennen alle Felder ausser dem Login-Namen modifiziert
+werden.
+.TP
+\&....: No such user
+Der gesuchte Nutzer existiert in der Datenbasis-Datei nicht.
+.TP
+\&..: unknown flag
+Es wurde ein unzulaessiges Flag spezifiziert.
+.TP
+\&.... contains separator (:)
+Informationen, die in ein Feld der Datenbasis eingegeben werden,
+duerfen keine Trennzeichen enthalten.
+.TP
+No action taken
+Es wurde keine Veraenderung vorgenommen.
+.TP
+Usage: whois ......
+Es wurden unbekannte Optionen angegeben.
+.SH DATEIEN
+.ta 1.5i
+\&/etc/whois	Datenbasis-Datei
+.br
+\&/etc/owhois	alte Kopie der Datenbasis-Datei
+.ta
+.SH SIEHE AUCH
+who(1), whodo(1), whoami(1), whois(5).
+.br
+"Die C-Shell" in WEGA-Dienstprogramme

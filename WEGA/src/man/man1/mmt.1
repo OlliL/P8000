@@ -1,0 +1,109 @@
+.TH MMT 1 WEGA 
+.\" @[$]mmt.1	1.2
+.ad
+.fi
+.SH NAME
+mmt, mvt \- Erstellung von Dokumenten mit MM-Makropaket mit troff
+.SH SYNTAX
+.B mmt
+[ \fIoptions\fR ] [ \fIfiles\fR ]
+.br
+.B mvt
+[ \fIoptions\fR ] [ \fIfiles\fR ]
+.SH BESCHREIBUNG
+.B Mmt\^
+erstellt aus den angegebenen Dateien
+.I files
+(Minuszeichen fuer Standardeingabe)
+unter Benutzung des Programms
+\fBtroff\fR(1) und dem \fBMM\fR
+Textformatierungsmakropaket Dokumente fuer den Lichtsatz.
+.B Mvt\^
+benutzt das
+das grafische Makropaket.
+Beide Kommandos besitzen Optionen zur Steuerung der Vorverarbeitung durch
+.BR tbl (1)
+und/oder
+.BR eqn (1).
+Abhaengig von den gewaehlten Optionen werden die entsprechenden
+Pipelines, die geforderten Argumente und Flags fuer
+.BR troff (1)
+und fuer die Makropakete erzeugt.
+.PP
+Alle Argumente oder Flags (z.B.
+.BR \-rC3 ),
+die nicht von
+.B mmt
+oder
+.B mvt
+ausgewertet werden,
+werden an
+.BR troff (1)
+oder das Makropaket uebergeben.
+Diese Optionen koennen in beliebiger Reihenfolge auftreten,
+muessen aber vor den Dateien
+.I files'\^
+stehen.
+Sind keine Argumente angegeben, wird eine Liste von moeglichen
+Optionen gedruckt.
+.SH OPTIONEN
+.TP
+.B \-a
+ruft die
+.B \-a
+Option von
+.BR troff (1)
+auf.
+.TP
+.B \-e
+veranlasst den Aufruf von
+.BR eqn (1).
+.TP
+.B \-t
+veranlasst den Aufruf von
+.BR tbl (1).
+.TP
+.B \-T4014 -Ttek
+Ausgabe fuer ein 4014 Terminal.
+.TP
+.B \-y
+.B mmt\^
+ruft die nicht-kompatible Version der Makros (siehe
+.BR mm (7))
+auf (keine Wirkung auf
+.BR mvt ).
+.PP
+\fBMvt\fR ist ueber
+.BR ln (1)
+mit \fBmmt\fR verbunden.
+.SH HINWEIS
+Fuer die Festlegung der Seitenausgabe ist die
+.BI \-o list\^
+Option von
+.BR troff (1)
+zu benutzen.
+Die Kommandos koennen, wenn sie eine oder mehrere
+.BR \-e ,
+.BR \-t ,
+und
+.B \-
+Optionen enthalten und zusammen mit der
+.BI \-o list\^
+Option von
+.BR troff (1)
+aufgerufen werden, eine harmlose
+"broken pipe" Ausschrift verursachen.
+Dies tritt jedoch nur auf,
+wenn die letzte Seite des Dokumentes nicht in der Liste
+.I list
+angegeben wurde.
+.SH SIEHE AUCH
+.tr ~
+env(1), eqn(1), mm(1), tbl(1), tc(1), troff(1), profile(5),
+environ(7), mm(7), mv(7).
+.br
+"MM-Memorandum Makros\^" in WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+.tr ~~
+"m[mv]t: no input file" erscheint, wenn keine der angegebenen
+Dateien lesbar ist und das Kommando auch nicht als Filter benutzt wird.

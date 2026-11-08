@@ -1,0 +1,21 @@
+.TH LOGNAME 1 WEGA
+.\" @[$]logname.1	1.2
+.ad
+.fi
+.SH NAME
+logname \- Ausgabe Login-Name
+.SH SYNTAX
+.B logname
+.SH BESCHREIBUNG
+.B Logname\^
+gibt den Inhalt der Variablen \fB$LOGNAME\fR
+aus. Der Inhalt dieser Variablen
+wird beim Anmelden des  Nutzers in das System (login(1))
+gesetzt.
+.SH DATEIEN
+/etc/profile
+.SH SIEHE AUCH
+env(1),
+login(1),
+logname(3),
+environ(5).

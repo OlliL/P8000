@@ -1,0 +1,36 @@
+.TH SYNC 2 WEGA
+.\"@[$]sync.2   1.2
+.ad
+.fi
+.SH NAME
+sync \- Aktualisieren des Superblocks
+.SH SYNTAX
+.B sync( )
+.SH BESCHREIBUNG
+Der Systemruf
+.B sync
+bewirkt das Rueckschreiben aller Informationen aus dem Hauptspeicher
+auf die Festplatte.
+Es werden modifizierte Superbloecke, modifizierte i-nodes und
+verzoegerte Block-E/A zurueckgeschrieben.
+.PP
+Dieser Systemruf
+wird von Programmen benutzt, die ein Dateisystem pruefen (z.B.
+.BR icheck (M),
+.BR df (M)).
+Er ist obligatorisch vor einem Boot.
+.SH SIEHE AUCH
+sync(M), update(M).
+.SH EINSCHRAENKUNGEN
+Das Schreiben ist durch das Scheduling
+bei Rueckkehr von
+.BR sync 
+nicht notwendigerweise abgeschlossen.
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT SYNC   := 36
+
+     sc     #SYNC
+.ad
+.fi

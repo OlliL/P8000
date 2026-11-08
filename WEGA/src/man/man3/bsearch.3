@@ -1,0 +1,45 @@
+.TH BSEARCH 3 WEGA
+.\" @[$]bsearch.3       1.2
+.ad
+.fi
+.SH NAME
+bsearch \- Binaere Suche
+.SH SYNTAX
+.nf
+\fBchar \(**bsearch \fI(key, base, nel, width, compar)\fR
+     \fBchar \fI\(**key;\fR
+     \fBchar \fI\(**base;\fR
+     \fBint \fInel, width;\fR
+     \fBint \fI(\(**compar)();\fR
+.fi
+.SH BESCHREIBUNG
+.B Bsearch\^
+ist eine binaere Suchroutine.
+Sie gibt einen Pointer auf eine Tabelle zurueck, in der
+angezeigt wird, wo das Datum gefunden werden kann.
+Die Tabelle muss nach steigender Groesse sortiert sein.
+Die Argument haben folgende Bedeutung:
+.TP 8
+.I key
+Pointer fuer das Datum in der Tabelle.
+.TP 8
+.I base
+Pointer auf die Basis der Tabelle.
+.TP 8
+.I nel
+Anzahl der Elemente in der Tabelle.
+.TP 8
+.I width
+Elementbreite in Bytes.
+.TP 8
+.I compar
+Name der Vergleichsroutine.
+Diese wird mit zwei Argumenten (Pointer zu den zu vergleichenden
+Elementen) gerufen.
+Die Routine muss einen Integerwert kleiner, gleich oder groesser Null
+zurueckgeben, je nach dem, ob das erste beruecksichtigte Argument kleiner,
+gleich oder groesser als das zweite Argument ist.
+.SH DIAGNOSTIK
+Ist der key in der Tabelle nicht auffindbar, wird Null zurueckgegeben.
+.SH SIEHE AUCH
+lsearch(3), qsort(3).

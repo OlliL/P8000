@@ -1,0 +1,195 @@
+.TH CHMOD 1 
+.\" @[$]chmod.1	1.2
+.ad
+.fi 
+.SH NAME
+chmod \- Aendern der Dateizugriffsrechte
+.SH SYNTAX
+\fBchmod \fImode file ...
+.SH BESCHREIBUNG
+Die Dateizugriffsrechte (Modus) steuern die Lese-, Schreib- und 
+Ausfuehrungsrechte fuer den Eigner der Datei, fuer die Gruppe
+und fuer alle anderen Nutzer. Die Dateizugriffsrechte werden auf den
+angegebenen Wert
+.I mode
+gesetzt, der als absolute Zahl oder symbolisch durch Buchstaben
+angegebenen werden kann.
+.PP
+Der Dateischutzmodus kann durch das Kommando
+\fBls\ -l\fR wie folgt ausgegeben werden:
+.sp
+.RS
+-rwxrw-r-- 1 owner group  2536 Sep  3 10:30 filename
+.RE
+.PP
+Das Argument
+.B mode
+hat gewoehnlich
+die Form einer dreistelligen Zahl. Die erste Stelle steuert
+die Erlaubnisbits des Eigners, die zweite Stelle die der Gruppe und
+die dritte Stelle die der anderen Nutzer.
+.PP
+Eine fuehrende vierte Stelle steuert den speziellen Zugriffscode
+zum Sichern des Textabbildes nach der Ausfuehrung des Programms oder
+zum Setzen eines neuen Nutzer- oder Gruppenidentifikators bei Ausfuehrung
+des Kommandos.
+.RS
+.sp
+1000         Sichern des Textabbildes nach Ausfuehrung
+.br
+2000         Setzen Gruppen-ID bei Ausfuehrung
+.br
+4000         Setzen Nutzer-ID bei Ausfuehrung
+.RE
+.PP
+Die Dateizugriffsrechte \fImode\fR werden als dreistellige Zahl
+dargestellt. Fuer sie gilt:
+.sp
+.RS
+\fBZahl\fR    Bits    Bedeutung:
+.sp
+\fB0\fR       ---     keine Erlaubnis
+.br
+\fB1\fR       --x     nur Ausfuehrung (Suchen in Directory)
+.br
+\fB2\fR       -w-     nur Schreiben
+.br
+\fB3\fR       -wx     Schreiben und Ausfuehren (Suchen)
+.br
+\fB4\fR       r--     nur Lesen
+.br
+\fB5\fR       r-x     Lesen und Ausfuehren (Suchen)
+.br
+\fB6\fR       rw-     Lesen und Schreiben
+.br
+\fB7\fR       rwx     Lesen, Schreiben und Ausfuehren (Suchen)
+.RE
+.sp
+Somit aendert das Kommando:
+.sp
+.RS
+\fBchmod 750 \fIfile\fR
+.RE
+.sp
+den Modus der Datei so, dass der Eigentuemer Lese-, Schreib- und
+Ausfuehrungserlaubnis hat. Mitglieder der gleichen Gruppe haben
+Lese- und Ausfuehrungserlaubnis. Alle anderen Nutzer sind vom Zugriff
+auf diese Datei ausgeschlossen.
+.PP
+Die Dateizugriffsbits sehen wie folgt aus:
+.sp
+.RS
+-rwxr-x--- 1 owner group  2536 Sep  3 10:30 filename
+.RE
+.PP
+Zu beachten ist, dass das erste Zeichen der Zeichenkette den Dateityp
+angibt
+("-" steht fuer eine regulaere Datei, "d" fuer ein Directory und "p"
+fuer eine Pipe. Fuer special-device-Dateien kennzeichnet ein "c" einen
+Zeichentreiber und ein "b" einen Blocktreiber).
+.PP
+Die ersten drei Bits beziehen sich auf die Erlaubnis fuer den Eigner,
+die zweiten drei Bits auf die Erlaubnis fuer die Gruppe und die letzten 
+drei Bits auf die Erlaubnis fuer alle anderen Nutzer.
+.sp
+.RS
+File  User  Group Others
+.br
+file   7     5     0
+.br
+-     rwx   r-x   ---    1 owner group  2536 Sep  3 10:30 filename
+.RE
+.PP
+Das Kommando kann auch in symbolische Form benutzt werden:
+.RS
+.sp
+\fBchmod \fIwho operator permission file\fR
+.RE
+.PP
+Dabei ist \fIwho\fR einer der folgenden Buchstaben:
+.sp
+.RS
+\fBu\fR       user     -rwx------
+.br
+\fBg\fR       group    ----rwx---
+.br
+\fBo\fR       others   -------rwx
+.sp 
+\fBa\fR       all      -rwxrwxrwx
+.RE
+.sp
+Ist \fIwho\fR nicht angegeben, so wird implizit \fIall\fR
+angenommen. Es wird aber eine gesetzte Dateierzeugungsmaske
+(umask(2)) beruecksichtigt.
+.PP
+Folgende \fIOperatoren\fR koennen benutzt werden:
+.sp
+.RS
+\fB+\fR    zum Hinzufuegen der Erlaubnis
+.br
+\fB\-\fR    zum Entfernen der Erlaubnis
+.br
+\fB=\fR    zur Setzen der absoluten Erlaubnis
+.RE
+.sp
+Alle anderen Bits werden rueckgesetzt.
+.PP
+.I Permission
+ist eine Kombination der Buchstaben
+.bp
+.RS
+Buchstabe  Bit     Bedeutung
+.sp
+\fBr\fR          r--     Lesen
+.br
+\fBw\fR          -w-     Schreiben
+.br
+\fBx\fR          --x     Ausfuehrung
+.sp
+\fBs\fR                  Setzen Eigner- oder Gruppen-ID
+.br
+\fBt\fR                  Sichern des Textabbildes - sticky-Bit
+.RE
+.PP
+Nur der Eigner der Datei oder der Superuser kann den Zugriffsmodus aendern.
+.sp
+.SH BEISPIELE
+.PP
+Das Kommando:
+.sp
+.RS
+\fBchmod 751 \fIfilename\fR
+.sp
+.RE
+erzeugt die folgenden Dateizugriffsrechte:
+.sp
+.RS
+-rwxr-x--x 1 owner group  2536 Sep  3 10:30 filename
+.RE
+.PP
+Der Eigner hat Lese-, Schreib- und Ausfuehrungserlaubnis, Mitglieder der Gruppe
+haben auch Lese- und Ausfuehrungserlaubnis, waehrend alle anderen
+Nutzer nur die Ausfuehrungserlaubnis haben.
+.sp
+Das Kommando
+.sp
+.RS
+\fBchmod a-w \fIfilename\fR
+.sp
+.RE
+entfernt die Schreiberlaubnis fuer alle Nutzer.
+.sp
+.RS
+-r-xr-x--x 1 owner group  2536 Sep  3 10:30 filename
+.RE
+.PP
+Die Datei ist nun schreibgeschuetzt.
+.SH SIEHE AUCH
+ls(1),
+umask(1),
+chown(1),
+chmod(2),
+stat(2),
+umask(2),
+chmog(M),
+chown(M).

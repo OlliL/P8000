@@ -1,0 +1,62 @@
+.TH A64L 3 WEGA
+.\" @[$]a64l.3  1.2
+.ad
+.fi
+.SH NAME
+a64l, l64a \- Konvertierung zwischen long und ASCII-Darstellung
+.SH SYNTAX
+.nf
+\fB long a64l \fI(s)
+\fB char \fR*s ;
+.sp
+\fB char *l64a \fI(l)
+\fB long \fIl ;
+.SH BESCHREIBUNG
+Diese Routinen verwalten Zahlen, die in
+ASCII-Darstellung (Basis 64) gespeichert sind.
+Bei dieser Notation koennen Integerwerte vom Typ
+.B long
+durch bis zu sechs Zeichen dargestellt werden, wobei jedes Zeichen
+eine "Ziffer" in der Notation radix-64 darstellt.
+.PP
+Folgende Zeichen werden zur Darstellung von "Ziffern" verwendet:
+.RS
+.sp
+.B .
+fuer 0,
+.br
+.B /
+fuer 1,
+.br
+.B 0
+bis
+.B 9
+fuer 2\-11,
+.br
+.B A
+bis
+.B Z
+fuer 12\-37 und
+.br
+.B a
+bis
+.B z
+fuer 38\-63.
+.RE
+.PP
+.B A64l\^
+erwartet einen Pointer auf eine auf Null endende Darstellung (Basis 64)
+und gibt den dieser Darstellung entsprechenden
+.B long
+Wert zurueck.
+.B L64a\^
+erwartet ein
+.B long
+Argument und gibt einen Pointer auf die entsprechende
+Darstellung (Basis 64) zurueck.
+.SH EINSCHRAENKUNGEN
+Der von
+.B l64a\^
+zurueckgegebene Wert ist ein in einen statischen Puffer weisender
+Pointer, wobei der Inhalt des statischen Puffers bei jedem Aufruf
+ueberschrieben wird.

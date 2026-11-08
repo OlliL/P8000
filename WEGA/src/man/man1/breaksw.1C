@@ -1,0 +1,42 @@
+.TH BREAKSW 1C WEGA
+.\"@[$]breaksw.1C	1.2
+.ad
+.fi
+.SH NAME
+breaksw \- C-Shell Steueranweisung fuer Unterbrechung
+.SH SYNTAX
+.B breaksw
+.SH BESCHREIBUNG
+.B  Breaksw
+verursacht einen Break-Interrupt nach einem
+.B switch(1C).
+Es bewirkt die Weiterfuehrung der Abarbeitung
+eines C-Shellscripts nach
+.B endsw(1C).
+.SH BEISPIEL
+.nf
+# Ausgabe aller Dateinamen mit 4, 5 oder 6 Zeichen
+
+foreach i ( * )
+	switch ( $i )
+		case ????
+			echo "$i ist ein 4-Zeichen-Dateiname"
+		breaksw
+
+		case ?????
+			echo "$i ist ein 5-Zeichen-Dateiname"
+		breaksw
+
+		case ??????
+			echo "$i ist ein 6-Zeichen-Dateiname"
+		breaksw
+
+		default
+			echo "$i hat nicht 4, 5, oder 6 Zeichen"
+	 endswitch
+end
+.fi
+.SH SIEHE AUCH
+foreach(1C), switch(1C), case(1C), echo(1C)
+.br
+"C-Shell" in WEGA-Dienstprogramme

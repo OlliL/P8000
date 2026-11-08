@@ -1,0 +1,47 @@
+.TH FCLOSE 3 WEGA
+.\" @[$]fclose.3        1.2
+.ad
+.fi
+.SH NAME
+fclose, fflush \- Schliessen oder Leeren eines Stream 
+.SH SYNTAX
+.nf
+#include <stdio.h>
+.PP
+\fBfclose\fR(\fIstream)
+\fBFILE \fR*\fIstream;
+.PP
+\fBfflush\fR(\fIstream)
+\fBFILE \fR*\fIstream;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B fclose
+leert alle Puffer, die zu dem angegebenen
+.I stream
+gehoeren, und schliesst die Datei.
+Die dem Standard-E/A-System zugewiesenen Puffer werden freigegeben.
+.PP
+.B Fclose
+wird beim Systemruf
+.BR  exit (2)
+automatisch ausgefuehrt.
+.PP
+Die Funktion
+.B fflush
+bewirkt, dass alle fuer den benannten Ausgabestrom
+.I stream
+gepufferten Daten in die zugehoerige Datei geschrieben werden.
+.I Stream
+bleibt geoeffnet.
+.SH SIEHE AUCH
+close(2),
+fopen(3),
+setbuf(3).
+.SH DIAGNOSTIK
+Diese Routinen geben
+.B EOF
+zurueck, wenn
+.I stream
+keiner Ausgabedatei zugeordnet ist oder wenn gepufferte Daten nicht
+an diese Datei uebertragen werden koennen.

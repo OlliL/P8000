@@ -1,0 +1,130 @@
+.TH MON.OUT 5 WEGA
+.\" @[$]mon.out.5       1.2
+.ad
+.SH NAME
+mon.out - Informationen ueber das Laufzeitprofil
+.SH BESCHREIBUNG
+.I Mon.out
+ist eine Datei, die Informationen ueber die Erzeugung eines Laufzeitprofils
+eines Programms enthaelt.
+Diese Informationen werden entweder durch
+\fBmonitor\fR(3) oder
+.BR segmon (3)
+erzeugt,
+je nachdem, ob das Anwenderprogramm
+nichtsegmentiert oder segmentiert uebersetzt wurde.
+Es existieren fuer
+\fImon.out\fR
+zwei Formate, ein Format fuer nichtsegmentierte und ein Format
+fuer segmentierte Programme.
+.PP
+Das durch die Funktion
+.BR monitor (3)
+erzeugte Format ist eine Datei, die in drei Sektionen
+geteilt ist: ein Kopf, Zaehler fuer die
+Funktionen und die Informationen ueber den zeitlichen Ablauf.
+Der Kopf besitzt eine feste Struktur, waehrend die Groesse
+der anderen Sektionen sich in Abhaengigkeit von der Anzahl der
+Funktionen, deren Profil erzeugt werden soll, und der
+Groesse des Adressbereiches veraendern.
+.PP
+.nf
+    typedef short UNIT;
+
+/* Struktur des Kopfes */
+    struct hdr {
+        UNIT *lowpc;   /* unteres Ende des Bereiches  */
+        UNIT *highpc;  /* oberes Ende des Bereiches */
+        int  ncount;   /* Anzahl der Funktionen */
+    };
+.PP
+/* Struktur der Zaehler fuer Funktionsaufrufe */
+    struct cnt {
+        unsigned cvalue;   /* Anzahl der Aufrufe der Funktion */
+        long cncall;       /* Adresse der Funktion, die gezaehlt wird */
+    } cbuf[350];
+.fi
+.PP
+Obwohl die Groesse von
+\fBcbuf\fR maximal 350 Strukturen zulaesst,
+wird die Anzahl der Strukturen durch die Anzahl der
+gezaehlten Funktionen
+(\fBncount\fR) bestimmt.
+Der Rest der Datei enthaelt Informationen ueber den zeitlichen
+Ablauf.
+.PP
+Das durch die Funktion
+.BR segmon (3)
+erzeugte Format unterscheidet sich von oben stehendem Format dadurch, dass
+dieses Format mehrere Segmente und mehrere Adressbereiche
+behandeln muss.
+Die Datei besteht aus
+Zaehlern fuer die Funktionen,
+Segmentkoepfen und
+Informationen ueber den zeitlichen Ablauf.
+Die Sektion der Funktionszaehler besteht aus zwei Teilen:
+einem Kopf und dem tatsaechlichen Zaehler.
+.PP
+.nf
+.ne 8
+/* Struktur des Kopfes der Funktionen */
+    struct rhdr {
+        long seghdr;   /* Offset fuer Segmentkopf */
+        long size;     /* Groesse der Funktionssektion und der */
+                       /* Segmentkopfsektion in Bytes */
+        long ncount;   /* Anzahl der Funktionen */
+        long numseg;   /* Anzahl der Segmente */
+    }
+
+/* Struktur fuer Zaehler der Funktionsaufrufe */
+    struct cnt  {
+        unsigned long cvalue; /* Anzahl der Aufrufe der Funktion */
+        long cncall;          /* Adresse der Funktion */
+    } cbuf[350];
+.fi
+.PP
+Wie im nichtsegmentierten Format wird der Umfang der Informationen in
+\fBcbuf\fR durch \fBncount\fR bestimmt.
+Die folgende Struktur wird fuer den Segmentkopf verwendet:
+.PP
+.nf
+    struct shdr {
+        long lowpc;  /* unteres Ende des Bereiches */
+        long highpc; /* oberes Ende des Bereiches */
+        long scale;  /* Skalierung des zeitlichen Ablaufs */
+        long segnum; /* Segmentnummer */
+    }
+.fi
+.PP
+Die Anzahl der Segmentkoepfe haengt von der Anzahl der
+Segmente ab, fuer die das Profil erzeugt wird.
+.SH BEISPIEL
+Im folgenden Beispiel existieren
+3 Segmente und es soll fuer 10
+Funktionen ein Laufzeitprofil
+erzeugt werden.
+.PP
+.nf
+        Funktionskopf (rhdr)
+        Funktionsinformation (cbuf[0])
+                 .
+                 .
+        Funktionsinformation (cbuf[9])
+        Segment-Kopf 1 (shdr)
+        Segment-Kopf 2
+        Segment-Kopf 3
+        Inform. ueber zeitl. Ablauf fuer Segmentkopf 1
+        (Laenge wird bestimmt durch highpc - lowpc)
+        Block mit Informationen ueber zeitlichen Ablauf fuer Segm.3
+        Block mit Informationen ueber zeitlichen Ablauf fuer Segm.3
+.fi
+.ad
+.SH SIEHE AUCH
+prof(1),
+sprof(1),
+monitor(1),
+segmon(3),
+sprofil(2),
+profil(2),
+cc(1),
+scc(1).

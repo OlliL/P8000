@@ -1,0 +1,96 @@
+.TH TIME 2 WEGA
+.\"@[$]time.2   1.2
+.ad
+.fi
+.SH NAME
+time, ftime \- Erhalten von Datum und Zeit
+.SH SYNTAX
+.B long time((long *) 0)
+.PP
+.B long time(
+.I tloc)
+.br
+.B long
+.I *tloc;
+.sp
+.B #include <sys/types.h>
+.br
+.B #include <sys/timeb.h>
+.br
+.B ftime(
+.I tp)
+.br
+.B struct
+.I timeb *tp;
+.SH BESCHREIBUNG
+.B Time
+gibt die Zeit zurueck, die seit 1. Januar 1970 00:00:00 Weltzeit vergangen ist 
+(in Sekunden).
+.PP
+Ist 
+.I tloc
+ungleich Null,
+wird der Rueckgabewert auch auf der durch
+.I tloc
+angegebenen Speicherzelle abgelegt.
+.PP
+Der Systemruf
+.I ftime
+fuellt die Struktur aus, auf die ihr Argument zeigt.
+Die Struktur ist in
+.B sys/timeb.h
+definiert:
+.PP
+.RS
+.nf
+struct timeb {
+    time_t          time;
+    unsigned short  millitm;
+    short           timezone;
+    short           dstflag;
+};
+.RE
+.fi
+.PP
+Die Struktur enthaelt die seit Beginn des Systems vergangene Zeit (mit
+einer Genauigkeit von 1000 Millisekunden),
+die oertliche Zeitzone (westlich von Greenwich, gemessen in Minuten)
+und ein Flag zur Kennzeichnung der Sommerzeit
+(flag != 0 : Sommerzeit).
+.SH DIAGNOSTIK
+.TP 11
+\%[EFAULT]
+.B Time
+wird nicht ausgefuehrt, wenn
+.I tloc
+eine unzulaessige Adresse anzeigt.
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung gibt 
+.B time
+die Zeit (einen in Sekunden gemessenen Long-Wert) zurueck.
+Andernfalls wird \-1 zurueckgegeben und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+date(1), stime(2), ctime(3).
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT FTIME  := 35
+ 
+Nichtsegmentiert
+     ...             !* r0 : tp *!
+Segmentiert
+     ...             !* rr0 : tp *!
+     clr    r4
+     sc     #FTIME
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+
+     CONSTANT TIME   := 13
+
+     ...
+     sc     #TIME
+     ...             !* rr4 : Zeit seit 1970 *!
+.ad
+.fi

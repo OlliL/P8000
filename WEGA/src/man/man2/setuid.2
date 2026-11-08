@@ -1,0 +1,60 @@
+.TH SETUID 2 WEGA 
+.\"@[$]setuid.2 1.2
+.ad
+.fi
+.SH NAME
+setuid, setgid \- Setzen der Nutzer-ID bzw. Gruppen-ID
+.SH SYNTAX
+.B int setuid
+.I (uid)
+.br
+.B int
+.I  uid;
+.PP
+.B int setgid
+.I (gid)
+.br
+.B int
+.I gid;
+.SH BESCHREIBUNG
+Die Nutzer-ID (Gruppen-ID) des aktuellen Prozesses wird auf das
+Argument
+.I uid
+(bzw.
+.IR gid )
+gesetzt.
+Sowohl die effektive als auch die reale ID werden gesetzt.
+Diese Systemrufe sind nur dem Superuser erlaubt oder wenn das Argument
+die reale ID ist.
+.SH SIEHE AUCH
+getuid(2).
+.SH DIAGNOSTIK
+.TP 11
+\%[EPERM]
+.B Setuid
+wird nicht ausgefuehrt, wenn die reale Nutzer-ID (Gruppen-ID)
+des Aufrufprozesses nicht gleich
+.IR uid " (" gid )
+ist und die effektive Nutzer-ID
+nicht die des Superusers ist.
+.SH RUECKGABEWERT
+Null wird zurueckgegeben, wenn die Nutzer-ID (Gruppen-ID) gesetzt ist.
+Andernfalls wird \-1 zurueckgegeben.
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT SETUID := 23
+
+     ...             !* r0 : Nutzer-ID *!
+     sc     #SETUID
+     ...             !* Rueckgabe in  r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+
+     CONSTANT SETGID := 46
+
+     ...             !* r0 : Gruppen-ID *!
+     sc     #SETGID
+     ...             !* Rueckgabe in  r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

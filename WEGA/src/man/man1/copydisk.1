@@ -1,0 +1,47 @@
+.TH COPYDISK 1 WEGA
+.\" @[$]copydisk	1.4
+.ad
+.fi
+.SH NAME
+copydisk \- Disketten kopieren
+.SH SYNTAX
+.B copydisk
+.I [/dev/rfd...
+(source)
+.I /dev/rfd...
+(destination) ]
+.SH BESCHREIBUNG
+.B Copydisk
+dupliziert Disketten durch physisches Kopieren von einem Laufwerk
+zum anderen. Die Zieldiskette wird dabei formatiert und nach dem
+Kopieren verifiziert.
+Die zulaessigen Formate sind in
+.BR fd (4)
+beschrieben. Sind keine Geraetenamen angegeben, wird
+von
+.I /dev/rfd0
+nach
+.I /dev/rfd1
+kopiert.
+Das Kommando kann nur von der Systemkonsole ausgefuehrt werden.
+Das Betriebssystem WEGA muss dazu ueber die WEGA-Startdiskette gestartet
+worden sein. Bei Start durch das U880-Monitorkommando 'X' ist die
+Floppyarbeit verriegelt.
+Nach Aufruf des Kommandos erfolgt die Abfrage "ready? ", diese ist mit 'y'
+zu quittieren.
+Die ready-Abfrage entfaellt, wenn das Kommando im Hintergrund abgearbeitet
+wird.
+.SH SIEHE AUCH
+verify(1),
+copydisk(1),
+fd.4.
+.SH DIAGNOSTIK
+.TP
+"unable to work with floppy"
+wird ausgegeben,
+wenn das Kommando nicht von der Systemkonsole eingegeben wurde,
+oder wenn das System ueber 'X' gestartet wurde. Bei Kopierfehlern
+kann leider nicht unterschieden werden, ob die Quell- oder Zieldiskette
+fehlerhaft ist. Benutze das Programm
+.BR verify (1)
+zum Ueberpruefen der Quelldiskette.

@@ -1,0 +1,27 @@
+.TH SETENV 1C WEGA
+.\"@[$]setenv.1C	1.2
+.ad
+.fi
+.SH NAME
+setenv \- Definieren oder Aendern einer Umgebungsvariablen
+.SH SYNTAX
+\fBsetenv\fI [name value]
+.SH BESCHREIBUNG
+Das Kommando
+.I setenv " name value"
+setzt den Wert der Shell-Umgebungsvariablen (fuer
+.BR sh (1))
+.I name
+auf den Wert
+.IR value ,
+eine einzelne Zeichenkette.
+Haeufig verwendete Umgebungsvariable sind TERM,
+der Terminaltyp, und SHELL, das verwendete Shell.
+.PP
+Mit
+.BR printenv (1)
+koennen die Umgebungsvariablen angezeigt werden.
+.SH SIEHE AUCH
+csh(1), unsetenv(1C), env(1), printenv(1), set(1C).
+.br
+"Die C-Shell" in WEGA-Dienstprogramme.

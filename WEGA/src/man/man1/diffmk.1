@@ -1,0 +1,87 @@
+.TH DIFFMK 1 WEGA
+.\"@[$]diffmk.1	1.2
+.ad
+.fi
+.SH NAME
+diffmk \- Kennzeichnung von Differenzen zwischen Dateien
+.SH SYNTAX
+.B diffmk
+name1 name2 name3
+.SH BESCHREIBUNG
+.B Diffmk\^
+vergleicht zwei Versionen einer Datei und erzeugt eine dritte Datei, die
+"change mark"-Kommandos fuer
+.BR nroff (1)
+oder
+.BR troff (1)
+enthaelt.
+.I Name1
+and
+.I name2
+bezeichnen die alte und die neue Version einer Datei.
+.B Diffmk
+erzeugt
+.IR name3 ,
+die die Zeilen von
+.I name2
+plus den eingefuegten "change mark"
+.RB ( .mc )
+Kommandos zur Formatierung enthaelt. Bei der Formatierung von
+.I name3
+wird der veraenderte oder eingefuegte Text
+durch ein \fB\(bv\fR am rechten Rand der Zeile angezeigt.
+Die Position des gestrichenen Textes wird durch ein einfaches
+.B \(**
+markiert.
+.PP
+.B Diffmk
+kann zur Erstellung von Listings von C- oder anderen Programmen
+mit markierten Aenderungen benutzt werden.
+Eine typische Kommandozeile fuer diese Anwendung ist:
+.PP
+.RS
+diffmk \|old.c \|new.c \|tmp; \|nroff \|macs \|tmp \|\(bv \|pr
+.RE
+.PP
+wobei die Datei
+.B macs
+folgenden Inhalt hat:
+.RS
+.PP
+.nf
+\&.pl \|1
+\&.ll \|77
+\&.nf
+\&.eo
+\&.nc \|\*`
+.fi
+.RE
+.PP
+Der
+.B \&.ll
+Befehl kann eine Zeilenlaenge angeben, die
+von der des urspruenglichen Programms abweicht.
+Die
+.B \&.eo
+und
+.B \&.nc
+Befehle werden i.a. nur fuer C-Programme benoetigt.
+.PP
+Sind die Zeichen \fB\(bv\fR und
+.B \(**
+unpassend, kann eine Kopie von
+.B diffmk
+editiert werden, in der sie gegen andere Zeichen ausgetauscht werden
+.RI ( diffmk
+ist eine Shell-Prozedur).
+.SH SIEHE AUCH
+diff(1), nroff(1).
+.SH BEKANNTE FEHLER
+Dateidifferenzen, die nur Formatierungsbefehle
+enthalten, koennen eine unerwuenschte Ausgabe erzeugen,
+z.B. ein Aenderung von
+.B \&.sp
+in
+.B \&.sp 2
+erzeugt ein "change mark" fuer
+diese Zeile in der Ausgabedatei.

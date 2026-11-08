@@ -1,0 +1,84 @@
+.TH UMOUNT 2 WEGA
+.\" @[$]umount.2        1.2
+.ad
+.fi
+.SH NAME
+umount \- Ausgliedern eines Dateisystems
+.SH SYNTAX
+.B int umount
+.I (spec)
+.br
+.B char 
+.I *spec;
+.SH BESCHREIBUNG
+.B Umount
+fuehrt zum Entfernen eines vorher mit Hilfe von
+.BR mount (2)
+eingegliederten Dateisystems,
+das sich auf dem durch
+.I spec
+bezeichneten Block-Device befindet
+.RI ( spec
+ist ein Pointer auf den Pfadnamen des Block-Special-File).
+Nach dem Entfernen des Dateisystems wird das Directory,
+ueber das das Dateisystem eingegliedert war, wieder 
+normal interpretiert.
+.PP
+.B Umount
+kann nur vom Superuser aufgerufen werden.
+.SH DIAGNOSTIK
+.B Umount
+wird nicht ausgefuehrt, wenn mindestens einer der folenden Punkte
+zutrifft:
+.TP 11
+\%[EPERM]
+Die effektive Nutzer-ID
+ist nicht die des Superusers.
+.PD 0
+.TP 11
+\%[ENXIO]
+.I Spec
+existiert nicht.
+.TP 11
+\%[ENOTBLK]
+.I Spec
+ist kein Block-Special-File.
+.TP 11
+\%[EINVAL]
+.I Spec
+ist nicht ueber
+.BR mount (2)
+eingegliedert.
+.TP 11
+\%[EBUSY]
+Eine Datei in
+.I spec
+ist besetzt.
+.TP 11
+\%[EFAULT]
+.I Spec
+verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen 
+Adressbereichs liegt.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird der Wert Null zurueckgegeben.
+Andernfalls wird der Wert \-1 zurueckgegeben und
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+mount(1M), mount(2).
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT UMOUNT := 22
+
+Nichtsegmentiert:
+     ...             !* r0 : special *!
+Segmentiert:
+     ...             !* rr0 : special *!
+     clr     r4
+     sc      #UMOUNT
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

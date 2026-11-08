@@ -1,0 +1,68 @@
+.TH TALK 1 
+.\" @[$]talk.1	1.2
+.ad
+.fi
+.SH NAME
+talk  \-  Kommunikation mit einem weiteren Nutzer
+.SH SYNTAX
+.B talk
+\fIuser\fR [ \fIttyname\fR ]
+.SH BESCHREIBUNG
+.B Talk
+uebermittelt Nachrichten von Ihrem Terminal zu dem eines weiteren Nutzers.
+Beim ersten Aufruf wird die Nachricht
+.sp
+.RS
+     Message from name ttyname...
+.RE
+.sp
+gesendet.
+Der Empfaenger der Nachricht kann sofort ebenfalls ueber
+.B talk
+mit dem Sender in einen Dialog treten.
+Die Uebermittlung der Nachricht erfolgt zeichenweise
+(im Gegensatz zu
+.BR write (1)).
+Die Kommunikation wird durch ein End-of-File vom
+Terminal oder einen Interrupt beendet
+(wird durch "EOF" auf dem anderen Terminal signalisiert).
+.PP
+Das Argument
+.I ttyname
+spezifiziert das Terminal des Empfaengers (notwendig, wenn der
+Empfaenger an mehr als einem Terminal angemeldet ist).
+.PP
+Die Schreiberlaubnis kann kann ueber das Kommando
+.BR mesg (1)
+festgelegt werden
+(Standard: Schreiben erlaubt).
+Bestimmte Kommandos, speziell
+.BR nroff (1)
+und
+.BR  pr (1),
+erlauben keine Mitteilung von Nachrichten, um ein Durcheinander
+bei der Ausgabe zu verhindern.
+.PP
+Bei Eingabe der "Escape"-Taste werden ein Newline
+und ein Zeichen "<" an das Terminal des Absenders
+geschickt. Ein Newline und ein Zeichen ">"
+werden an das Terminal des Empfaengers uebermittelt.
+Dieser Ablauf soll anzeigen, dass der Empfaenger ueber \fBtalk\fR
+antworten soll.
+.PP
+Das folgende Protokoll wird fuer die Benutzung von
+.BR talk 
+empfohlen:
+Ein Nutzer schreibt zuerst an einen zweiten Nutzer, der erste Nutzer
+wartet auf die Antwort des zweiten Nutzers, bevor er zu senden beginnt.
+Jeder Teilnehmer beendet seine Nachricht durch
+Eingabe der "Escape"-Taste.
+.SH DATEIEN
+/etc/utmp	zur Nutzeridentifikation
+.SH SIEHE AUCH
+mesg(1), who(1), mail(1), write(1)
+.SH EINSCHRAENKUNGEN
+Ein Austritt zum Shell mittels "!" wird nicht
+unterstuetzt
+(im Unterschied zu
+.BR write (1)).

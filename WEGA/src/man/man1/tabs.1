@@ -1,0 +1,218 @@
+.TH TABS 1 WEGA 
+.\" @[$]tabs.1	1.2
+.ad
+.fi
+.SH NAME
+tabs \- Setzen von Tabulatoren an einem Terminal
+.SH SYNTAX
+.B tabs
+[ tabspec ] [
+.BR +m n
+] [
+.BR \-T type
+]
+.SH BESCHREIBUNG
+.B Tabs
+setzt die Tabulatorpositionen am Terminal des 
+Nutzers entsprechend der Spezifikation
+.IR tabspec .
+Alle bisherigen Spezifikationen werden vorher entfernt.
+Das Terminal des Nutzers muss
+ueber von aussen setzbare 
+Hardware-Tabulatoren verfuegen.
+.PP
+Vier Typen von Tabulator-Spezifikationen werden fuer
+.IR tabspec 
+akzeptiert:
+voreingestellte, sich wiederholende,
+willkuerliche und in einer Datei spezifizierte (file) Tabulatoren.
+Ist kein
+.I tabspec
+angegeben, gilt der Standardwert
+.BR \-8
+(WEGA-Standardtabulatoren).
+Die niedrigste Spaltenzahl ist 1.
+Fuer
+.BR tabs 
+ist Spalte 1 immer die am weitesten links liegenden Spalte am Terminal.
+.PP
+.TP 8
+.BI \- code
+Gibt den Namen eines Tabulators aus einem Satz von
+voreingestellten Tabulatoren an.
+Die legalen Codes und ihre Bedeutung sind folgende:
+.TP
+.B \-a
+1,10,16,36,72
+.br
+Assembler, 370, erstes Format
+.TP
+.B \-a2
+1,10,16,40,72
+.br
+Assembler, 370, zweites Format
+.TP
+.B \-c
+1,8,12,16,20,55
+.br
+COBOL, normales Format
+.TP
+.B \-c2
+1,6,10,14,49
+.br
+COBOL Kompaktformat (Spalten 1-6 werden weggelassen).
+Das zuerst eingegebene Zeichen entspricht der
+Kartenspalte 7, durch ein Leerzeichen gelangt man auf Spalte 8 und
+durch ein Tabulator erreicht man Spalte 12.
+Dateien, die eine solche Tabulatoreinstellung benutzen,
+sollten folgende Format-Spezifikation
+enthalten:
+.RS
+.RS
+.B "<:t\-c2 \|m6 \|s66 \|d:>"
+.RE
+.RE
+.TP
+.B \-c3
+1,6,10,14,18,22,26,30,34,38,42,46,50,54,58,62,67
+.br
+COBOL Kompaktformat (Spalten 1-6 werden weggelassen), nur mehr
+Tabulatoren als bei
+.B \-c2
+(fuer COBOL empfohlenes Format).
+Die entsprechende Format-Spezifikation lautet:
+.RS
+.RS
+.B "<:t\-c3 \|m6 \|s66 \|d:>"
+.RE
+.RE
+.TP
+.B \-f
+1,7,11,15,19,23
+.br
+FORTRAN
+.TP
+.B \-p
+1,5,9,13,17,21,25,29,33,37,41,45,49,53,57,61
+.br
+PL/I
+.TP
+.B \-s
+1,10,55
+.br
+SNOBOL
+.PP
+Zusaetzlich zu diesen voreingestellten Formaten existieren drei weitere Typen:
+.PP
+.TP 8
+.BI \- n
+Eine Wiederholungs-Spezifikation verlangt Tabulatoren bei den Spalten
+.RI 1+ n ,
+.RI 1+2\(** n 
+, usw.
+Die WEGA-Standardtabulatoreinstellung ist
+.BR \-8 .
+Sie ist fuer die Benutzung der
+.B \-h
+Option von
+.BR nroff (1)
+erforderlich.
+Bei Angabe von
+.BR \-0 
+sind keine Tabulatoren verfuegbar.
+.TP
+.IR n1 , n2 ,...
+Beim willkuerlichen Format spezifiziert ein
+ausgewaehlter Satz von durch Kommas getrennte Zahlen
+in aufsteigender Reihenfolge die Tabulatoren.
+Es sind bis zu 40 Zahlen moeglich.
+Ist eine Zahl 
+(ausser der ersten) mit einem vorangestellten Plus-Zeichen versehen,
+wird sie als ein Inkrement angenommen, das zu dem vorhergehenden Wert
+addiert werden soll.
+.RS
+z.B.: 1,10,20,30 ist identisch 1,10,+10,+10
+.RE
+.TP
+.BI \-\- file
+Die erste Zeile der Datei muss eine Formatangabe enthalten,
+nach der die entsprechenden Tabulatoren gesetzt werden
+(Standard:
+.BR \-8 ).
+Mit diesem Spezifikationstyp kann abgesichert werden, dass 
+eine tabulierte Datei mit richtigen Tabulator-Einstellungen ausgegeben
+wird.
+.PP
+Die folgenden Angaben sind ebenfalls moeglich.
+Tritt ein gegebenen Flag mehrmals auf,
+wirkt der letzte Wert:
+.PP
+.TP 8
+.BI \-T type
+Angabe des Terminaltyps, um Tabulatoren
+und Rand zu setzen
+(Standard:
+.BR $TERM ).
+Wird kein Typ
+gefunden, benutzt
+.B tabs
+eine Standardsequenz.
+.TP
+.BI +m n
+Das Rand-Argument
+verschiebt alle Tabulatoren ueber
+.I n
+Spalten, indem die Spalte
+.I n+1
+zum linken Rand wird
+(Standardwert fuer
+.IR n
+bei
+.B +m
+Option:
+10).
+Der absolute linke Rand
+wird durch
+.BR +m0 
+erreicht.
+Der Rand wird nur zurueckgesetzt,
+wenn ausdruecklich das
+.B +m
+Flag angegeben wird.
+.PP
+Das Setzen von Tabulatoren sowie des Randes
+wird ueber die Standardausgabe durchgefuehrt.
+.SH DIAGNOSTIK
+.TP "\w@\f2unknown\ tab\ code\fP\ \ \ \ @u"
+.I "illegal tabs"
+wenn willkuerliche Tabulatoren unkorrekt angefordert wurden.
+.br
+.TP
+.I "illegal increment"
+wenn kein Inkrement oder der Wert Null in einer
+Spezifikation willkuerlicher Tabulatoren gefunden wird.
+.br
+.TP
+.I "unknown tab code"
+wenn ein voreingestellter Code nicht gefunden werden kann.
+.br
+.TP
+.I "can't open"
+Die spezifizierte Datei kann nicht geoeffnet werden
+(\f3\-\-\fP\f2file\fP Option).
+.TP
+.I "file indirection"
+Bei Benutzung der \f3\-\-\fP\f2file\fP Option darf die Spezifikation
+in dieser Datei nicht auf eine weitere Datei hinweisen.
+.SH SIEHE AUCH
+nroff(1), environ(7), term(7).
+.SH EINSCHRAENKUNGEN
+Es gibt keine einheitliche Verfahrensweise fuer die verschiedenen Terminals,
+Tabulatoren zu entfernen und den linken Rand zu setzen.
+.br
+Es ist generell unmoeglich, den linken Rand zu setzen, ohne
+auch Tabulatoren zu setzen.
+.br
+.B Tabs
+entfernt nur 20 Tabulatoren.
+Es koennen jedoch 40 Tabulatoren gesetzt werden.

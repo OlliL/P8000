@@ -1,0 +1,707 @@
+.TH GET 1 WEGA
+.\"@[$]get.1	1.2
+.ad
+.fi
+.SH NAME
+get \- Rekonstruieren einer Version aus einer SCCS-Datei
+.SH SYNTAX
+\fBget\fR [\fB-r\fISID\fR]
+.br
+    [\fB-c\fIdate\fR]
+.br
+    [\fB-e\fR]
+.br
+    [\fB-b\fR]
+.br
+    [\fB-i\fIlist\fR]
+.br
+    [\fB-x\fIlist\fR]
+.br
+    [\fB-k\fR]
+.br
+    [[\fB-l\fR[\fIp\fR]]
+.br
+    [\fB-pmnsbgt\fR]
+.br
+    [\fB-a\fIseq-no.\fR]
+.I file
+.SH BESCHREIBUNG
+.B Get
+erzeugt eine ASCII-Textdatei aus jeder angegebenen SCCS-Datei
+unter Bezugnahme auf die mit \fB\-\fR beginnenden optionalen Angaben.
+Die Argumente koennen in beliebiger Reihenfolge angeordnet sein,
+aber alle Argumente mit optionalen Angaben beziehen sich auf
+alle aufgefuehrten SCCS-Dateien.
+Ist ein Directory angegeben, wird jede Datei des Directorys von
+.B get
+so behandelt, als ob sie einzeln aufgefuehrt wurde.
+Dateien, die keine SCCS-Dateien sind
+(der letzte Teil des Pfadnamens beginnt nicht mit
+.BR s. )
+sowie nichtlesbare Dateien werden ohne Meldung ignoriert.
+Ist an Stelle des Dateinamens "\fB\-\fR"
+angegeben, wird die Standard-Eingabe gelesen;
+dabei wird jede Zeile der Standardeingabe als Name einer SCCS-Datei angesehen,
+die bearbeitet werden soll.
+Dateien, die keine SCCS-Dateien sind, sowie
+nichtlesbare Dateien werden ignoriert).
+.PP
+Der erzeugte Text wird normalerweise in eine als 
+.I g-file
+bezeichnete Datei geschrieben.
+Der Name dieser Datei ergibt sich aus dem SCCS-Dateinamen ohne
+fuehrendes
+.BR s. 
+(siehe auch \fIDATEIEN\fR).
+.PP
+Jede der optionalen Angaben ist im folgenden
+so erklaert, als ob sie sich auf eine einzige SCCS-Datei bezieht, 
+die bearbeitet werden soll. Jedes Argument wirkt jedoch unbeeinflusst
+auf jede der angegebenen Dateien.
+.SH OPTIONEN
+.TP "\w'\fB\-c\fIdate\fR~~'u"
+.BI \-r SID
+Es ist das Delta zu rekonstruieren, das dem angegebenen
+SCCS-Identifikator (SID)
+der SCCS-Datei zugeordnet ist.
+Es ist moeglich, den SID unvollstaendig anzugeben
+(z.B. besteht der SID nur aus der Release-Nummer,
+wird die hoechste Version der Release ausgegeben).
+Tabelle 1 zeigt fuer die meisten sinnvollen
+Faelle, welche Version einer SCCS-Datei rekonstruiert wird.
+.TP
+.BI \-c date
+Setzen eines Schnittpunkts (Datum und Zeit) in der Form:
+.br
+	YY[MM[DD[HH[MM[SS]]]]]
+.br
+Alle Aenderungen (Deltas) der SCCS-Dateien,
+die nach dem spezifizierten \fIdate\fR-Datum erstellt wurden, 
+werden nicht in die erzeugte ASCII-Textdatei uebernommen.
+Fuer bei der Datum-Zeit Angabe weggelassene Werte werden die 
+maximal moeglichen Werte eingetragen.
+Somit ist z.B.
+.B \-c7502
+gleichbedeutend mit
+.BR \-c750228235959 .
+Jede beliebige Anzahl von nichtnumerischen Zeichen kann die
+zwei verschiedenen Zahlenpaare von
+Datum-Zeit-Angaben trennen.
+Diese Moeglichkeit erlaubt Angaben in der Form:
+\&"\fB\-c77/2/2 9:22:25\fP".
+Zu beachten ist, dass dadurch die %E% und %U%
+Identifikationsschluesselworte (siehe unten) fuer verschachtelte
+.I get
+Kommandos implizit genutzt werden koennen, z.B.:
+.br
+	~!get  "\-c%E%  %U%"  s.file
+.TP
+.B \-e
+.I get
+wird benutzt, um eine Version der SCCS-Datei zu editieren,
+dadurch eine neue Version zu erzeugen und diese als neues Delta
+in die SCCS-Datei einzufuegen.  Die Option
+.B \-e
+verhindert weitere
+.I get \-e
+Kommandos dieser Version (SID) der SCCS-Datei, bis das Kommando
+.IR delta (1)
+ausgefuehrt oder das 
+.B j
+(joint edit) Flag in der SCCS-Datei gesetzt ist
+(siehe
+.BR admin (1)).
+Die gleichzeitige Nutzung von
+.B "get \-e"
+fuer verschiedene SID's ist immer erlaubt.
+.br
+Wurde das
+durch das
+.B get \-e
+erzeugte
+.I g-file
+waehrend des Editierens versehentlich zerstoert,
+kann es durch ein nachfolgendes Kommando
+.B get \-k
+rekonstruiert werden.
+.br
+Der
+.SM SCCS
+Dateischutz, der in der SCCS-Datei gespeichert ist 
+(siehe
+.BR admin (1)),
+wird bei Angabe der Option
+.B \-e
+voll wirksam.
+.TP
+.B \-b
+Nur wirksam in Verbindung mit der Option
+.BR \-e .
+Das neue Delta erhaelt einen SID in einem
+neuen Zweig (siehe Tabelle 1). 
+Diese Option wird ignoriert, wenn das 
+.B b
+Flag in der Datei nicht gesetzt ist
+(siehe
+.BR admin (1))
+oder wenn das rekonstruierte
+.I Delta
+keine Zweigversion ist (eine Zweigversion
+hat keine Nachfolger im SCCS-Dateibaum).
+.br
+Beachte: Ein
+.I Delta
+Zweig kann nur von einem 
+.IR Delta 
+erzeugt werden, das keine Zweigversion ist.
+.TP
+.BI \-i list
+Die Liste enthaelt SID's von Deltas,
+die bei der Rekonstruktion der Datei
+einbezogen werden sollen.
+Fuer die Liste gilt folgende Syntax:
+.br
+	<list> ::= <range> \(or <list> , <range>
+.br
+	<range> ::= SID \(or SID \- SID
+.br
+Der SID kann in einer der in Tabelle 1 dargestellten Form
+angegeben werden.
+.TP
+.BI \-x list
+Die Liste enthaelt SID's von Deltas, die bei der Rekonstruktion der
+Datei nicht beruecksichtigt werden
+(umgekehrter Fall zu Option
+.BR \-i ).
+.TP
+.B \-k
+Unterdrueckt das Ersetzen der Identifikationsschluesselworte
+(siehe unten) im rekonstruierten Text. Die Option
+.B \-k
+ist in der Option
+.B \-e
+enthalten.
+.TP
+.BR \-l [ p ]
+Die Datei
+.IR l-file 
+wird erzeugt (Format siehe DATEIEN).
+In ihr sind die SID's der Versionen verzeichnet,
+die zur Rekonstruktion der Ausgabe notwendig sind.
+Bei Angabe von
+.B \-lp
+werden die entsprechenden SID's auf die Standardausgabe geschrieben
+(es wird kein
+.I l-file
+erzeugt).
+.TP
+.B \-p
+Der aus der SCCS-Datei erhaltene Text wird auf die
+Standardausgabe geschrieben. Es wird kein 
+.I g-file
+erzeugt. Verarbeitungsmeldungen, die normalerweise
+auf die Standardausgabe geschrieben werden, gehen stattdessen 
+zur Standardfehlerausgabe (siehe auch
+.B \-s
+Option).
+.TP
+.B \-s
+Verarbeitungsmeldungen, die normalerweise an die Standardausgabe gehen,
+werden unterdrueckt.
+Meldungen von fatalen Fehlern werden immer zur Standardfehlerausgabe
+geleitet.
+.TP
+.B \-m
+Jeder Textzeile wird bei der Rekonstruktion
+aus der SCCS-Datei der SID
+des Deltas vorangestellt,
+das diese Textzeile in die SCCS-Datei eingefuegt hat.
+Das Format ist:
+.br
+SID   Tabulator   Textzeile
+.TP
+.B \-n
+Jeder erzeugten Textzeile wird der Wert des Identifikationsschluesselwortes
+%M% (siehe unten) vorangestellt. Das Format ist:
+.br
+Wert von %M%   Tabulator   Textzeile. 
+.br
+Werden die beiden Angaben
+.B \-m
+und
+.B \-n
+benutzt, ergibt sich das Format wie folgt:
+.br
+Wert von %M%   Tabulator   SID   Tabulator   Textzeile
+.TP
+.B \-g
+Die aktuelle Rekonstruktion des Textes aus der SCCS-Datei
+wird unterdrueckt. Die Angabe wird hauptsaechlich benutzt, um ein 
+.IR l-file 
+zu generieren oder das Vorhandensein eines ausgewaehlten SID zu pruefen.
+.TP
+.B \-t
+Wird benutzt, um auf das zuletzt erzeugte Delta
+in einer vorgegebenen Release
+(z.B.,
+.BR \-r1 ),
+oder auf Release und Version
+(z.B.,
+.BR \-r1.2 )
+zuzugreifen.
+.TP
+.BI \-a "nr"
+Gibt die Deltasequenznummer eines Deltas an, das aus einer
+SCCS-Datei zu rekonstruieren ist.
+Diese Option wird durch das Kommando 
+.BR comb (1) 
+verwendet.
+Bei gleichzeitiger Angabe der Option
+.BI \-r SID
+ist die Angabe
+.B \-a
+dominierend.
+Vorsicht ist geboten, wenn die Option
+.B \-a
+zusammen mit der Option
+.B \-e
+benutzt wird, weil der SID des erzeugten Deltas sich anders als erwartet
+verhaelt.
+Die Angabe
+.B \-r
+kann zusammen mit den Angaben
+.B \-a
+und
+.B \-e
+verwendet werden, um die Namensgebung des SID des erzeugten Deltas zu
+kontrollieren.
+.i0
+.PP
+Fuer jede bearbeitete Datei gibt
+.I get
+den SID, auf den zugegriffen wurde, und die Anzahl der aus der
+SCCS-Datei rekonstruierten Zeilen auf die Standardausgabe aus.
+.PP
+Bei Benutzung der Option
+.B \-e
+wird der SID des erzeugten Deltas nach dem SID, auf das zugegriffen
+wurde, und vor der Anzahl der erzeugten Zeilen 
+ausgegeben.
+Ist mehr als eine Datei, ein Directory oder die Standardeingabe
+angegeben, wird vor der Bearbeitung jeder Dateiname angezeigt.
+Bei Angabe der
+.B \-i
+Option werden die einbezogenen 
+Deltas (Auschrift 'Included'),
+bei Angabe der
+.B \-x
+Option die ausgeschlossenen Deltas (Auschrift 'Excluded') angezeigt.
+.ne 10v
+.PP
+.nf
+.na
+
+ TABELLE 1.  Festlegungen zur SCCS-Identifikationszeichenkette
+===============================================================
+SID*      -b ver- Andere             SID rekon-  SID zu erzeu-
+Spez.     wendet  Bedingungen        struiert    gendes Delta 
+===============================================================
+keine      nein   Standard: R=mR     mR.mV       mR.(mV+1)
+keine      ja     Standard: R=mR     mR.mV       mR.mV.(mZ+1).1
+===============================================================
+R          nein   R > mR             mR.mV       R.1***
+R          nein   R = mR             mR.mV       mR.(mV+1)
+R          ja     R > mR             mR.mV       mR.mV.(mZ+1).1
+R          ja     R = mR             mR.mV       mR.mV.(mZ+1).1
+                  R < mR und
+R           -     R existiert nicht  hR.mV**     hR.mV.(mZ+1).1
+                  nachf. Stamm
+R           -     in Version > R     R.mV        R.mV.(mZ+1).1
+                  und R existiert
+===============================================================
+R.V        nein   kein nachf. Stamm  R.V         R.(V+1)
+R.V        ja     kein nachf. Stamm  R.V         R.V.(mZ+1).1  
+                  nachfolgender Stamm
+R.V        -      in Version > R     R.mV        R.mV.(mZ+1).1
+===============================================================
+R.V.Z      nein   kein nachf. Zweig  R.V.Z.mS    R.V.Z.(mS+1)  
+R.V.Z      ja     kein nachf. Zweig  R.V.Z.mS    R.V.(mZ+1).1
+===============================================================
+R.V.Z.S    nein   kein nachf. Zweig  R.V.Z.S     R.V.Z.(S+1)
+R.V.Z.S    ja     kein nachf. Zweig  R.V.Z.S     R.V.(mZ+1).1
+R.V.Z.S    -      nachf. Zweig       R.V.Z.S     R.V.(mZ+1).1
+===============================================================
+.ad
+.fi
+.TP 3
+.B Kodierung
+R = Release       V = Version
+.br
+Z = Zweig         S = Zweigversion      m = Maximum.
+.PP
+So ist z.B.:
+.PD 0
+.TP 6
+R.mV
+= die hoechste Versionsnummer innerhalb der Release R;
+.TP
+R.V.(mZ+1).1
+= die erste Zweigversion im neuen Zweig
+(maximale Zweignummer plus eins)
+der Version V innerhalb der Release R.
+.PD
+.PP
+Hinweise zu Tabelle 1 :
+.PD 0
+.TP 5
+**
+\&'hR' ist die hoechste
+.I existierende
+Release. Sie ist niedriger als die spezifizierte,
+.I nichtexistierende
+Release R.
+.TP
+***
+Hier wird das
+.I erste
+Delta in einer
+.I neuen
+Release erzeugt.
+.TP
+\-
+Die optionale Angabe
+.B \-b
+ist nur dann effektiv, wenn das
+.B b
+Flag (siehe
+.BR admin (1))
+in der SCCS-Datei vorhanden ist.
+Ein \fB\-\fR kennzeichnet das Feld als belanglos.
+.TP
+\-
+Ist das
+.B d
+Flag  (Standard Flag) in der SCCS-Datei vorhanden, wird der aus dem
+.B d
+Flag erhaltene SID so interpretiert,
+als ob er auf der Kommandozeile spezifiziert worden waere.
+Es liegt dann der durch diesen SID spezifizierte Fall in der
+Tabelle vor.
+.TP
+\-
+Ist der spezifizierte SID
+in der Form R.V, R.V.Z, oder R.V.Z.S angegeben,
+muss jeder der spezifizierten Bestandteile vorhanden sein.
+.PD
+.SH IDENTIFIKATIONSSCHLUESSELWORTE
+In den aus der SCCS-Datei rekonstruierten Text werden Informationen
+eingefuegt, die zur Identifizierung notwendig sind. Dabei werden
+die Identifikationsschluesselworte
+ueberall dort durch ihren Wert ersetzt, wo sie auftreten.
+Die folgenden Schluesselworte koennen im Text benutzt werden,
+der in eine SCCS-Datei gespeichert wird:
+.br
+.ne 5v
+.PP
+.PD 0
+.TP 5
+.B %M%
+Modulname: Wert des
+.B m
+Flag in der Datei
+(siehe
+.BR admin (1)),
+oder Name der SCCS-Datei ohne fuehrendes
+.BR s. .
+.TP
+.B %I%
+SCCS Identifikation (SID) (%R%.%L%.%B%.%S%) des rekonstruierten Textes.
+.TP
+.B %R%
+Release-Nummer.
+.TP
+.B %L%
+Versionsnummer (Level).
+.TP
+.B %B%
+Zweignummer.
+.TP
+.B %S%
+Nummer der Zweigversion (Sequenz).
+.TP
+.B %D%
+Aktuelles Datum (YY/MM/DD).
+.TP
+.B %H%
+Aktuelles Datum (MM/DD/YY).
+.TP
+.B %T%
+Aktuelle Zeit (HH:MM:SS).
+.TP
+.B %E%
+Erstellungsdatum des zuletzt verwendeten Deltas (YY/MM/DD).
+.TP
+.B %G%
+Erstellungsdatum des zuletzt verwendeten Deltas (MM/DD/YY).
+.TP
+.B %U%
+Erstellungszeit des zuletzt verwendeten Deltas (HH:MM:SS).
+.TP
+.B %Y%
+Modultyp:
+Wert des
+.B t
+Flags in der SCCS-Datei
+.TP
+.B %F%
+Name der SCCS-Datei.
+.TP
+.B %P%
+Vollstaendiger Name der SCCS-Datei.
+.TP
+.B %Q%
+Der Wert des
+.B q
+Flags in der SCCS-Datei
+.TP
+.B %C%
+Aktuelle Zeilennummer.
+Dieses Schluesselwort ist fuer Mitteilungen bestimmt, die
+durch das Programm ausgegeben werden (z.B. bei Tippfehlern).
+Fuer die Anzeige der Zeilennummern ist es
+.I nicht
+bestimmt.
+.TP
+.B %Z%
+Die Zeichenkette \fB@(#)\fR,
+die durch
+.BR what (1)
+erkannt wird (4 Zeichen).
+.TP
+.B %W%
+Kurzbezeichnung fuer die Bildung von
+.BR what (1)
+Zeichenketten
+fuer WEGA-Programmdateien. Es gilt:
+%W%~=~%Z%%M%<horizontal-tab>%I%
+.TP
+.B %A%
+Eine andere Kurzbezeichnung fuer die Bildung von
+.BR what (1)
+Zeichenketten
+fuer Programmdateien, die keine WEGA-Dateien sind. Es gilt:
+%A%~=~%Z%%Y%~%M%~%I%%Z%
+.PD
+.SH DATEIEN
+.B Get
+erstellt verschiedene Hilfsdateien.
+Sie werden als
+.IR g-file ,
+.IR l-file ,
+.IR p-file 
+und
+.IR z-file
+bezeichnet.
+Der Buchstabe vor dem Bindestrich stellt einen Identifikator dar.
+Der Name einer Hilfsdatei wird aus dem
+SCCS-Dateinamen gebildet.
+Dazu muss der letzte Teil aller SCCS-Dateinamen die Form
+\fBs.\fImodulname\fR haben.
+Fuer die Bildung der Hilfsdateien wird das fuehrende \fBs.\fR
+durch den Identifikator ersetzt.
+Eine Ausnahme bildet das
+.IR g-file :
+Der Name des
+.I g-file
+wird durch Streichen des fuehrenden
+.B s.
+erhalten. So heissen zum Beispiel die aus der Datei
+.BR s.xyz.c 
+abgeleiteten Hilfsdateien
+.BR xyz.c ,
+.BR l.xyz.c ,
+.BR p.xyz.c 
+und
+.BR z.xyz.c .
+.PP
+Das
+.IR g-file
+enthaelt den erzeugten Text und
+wird im aktuellen Directory erstellt
+(wenn nicht die Option
+.B \-p
+benutzt wird).
+Es wird in jedem Falle ein
+.I g-file
+erzeugt, gleichgueltig ob durch
+.IR get 
+Textzeilen erzeugt werden oder nicht.
+Eigentuemer ist der reale Nutzer.
+Normalerweise ist der Modus des g-file 444.
+Bei Angabe der Option
+.B \-k
+(auch wenn sie implizit vorhanden ist) ist der Modus 644.
+Nur der reale Nutzer benoetigt eine Schreiberlaubnis im 
+aktuellen Directory.
+.PP
+Das
+.I l-file
+enthaelt eine Tabelle, die die bei der Erstellung 
+des rekonstruierten Textes einbezogenen Deltas aufzeigt.
+Das
+.I l-file
+wird im aktuellen Directory erzeugt,
+wenn die Option 
+.B \-l
+verwendet wurde.
+Sein Modus ist 444 und der reale Nutzer ist der Eigentuemer.
+Nur der reale Nutzer benoetigt eine Schreiberlaubnis im
+aktuellen Directory.
+.PP
+Die Zeilen im
+.I l-file
+haben das folgende Format:
+.PP
+.PD 0
+.RS
+.nr a 0 1
+.af a a
+.TP
+\n+a.
+Ein Leerzeichen, wenn das Delta benutzt wurde; sonst \fB\(**\fR
+.TP
+\n+a.
+Ein Leerzeichen, wenn das Delta verwendet oder wenn es nicht
+verwendet und ignoriert wurde;
+.br
+\fB\(**\fR wenn das Delta nicht verwendet und nicht ignoriert wurde.
+.TP
+\n+a.
+Eine Kodierung, die einen besonderen Grund angibt, warum 
+das Delta verwendet wurde oder nicht:
+.RS 10
+``I'': Eingeschlossen.
+.br
+``X'': Ausgeschlossen.
+.br
+``C'': Abgetrennt (durch die Option
+.B \-c
+).
+.RE
+.TP
+\n+a.
+Leerzeichen.
+.TP
+\n+a.
+SCCS Identifikation (SID).
+.TP
+\n+a.
+Tabulatorzeichen.
+.TP
+\n+a.
+Datum und Zeit der Erstellung (in der Form:
+YY/MM/DD~HH:MM:SS).
+.TP
+\n+a.
+Leerzeichen.
+.TP
+\n+a.
+Login-Name des Nutzers, der das Delta erstellt hat.
+.PD
+.RE
+.IP
+Der Kommentar und die MR-Daten folgen auf den naechsten Zeilen,
+die durch ein Tabulatorzeichen eingerueckt sind.
+Eine Leerzeile beendet jede Eintragung.
+.PP
+Das
+.I p-file
+uebergibt Informationen an das Delta,
+die aus einem
+.I get \-e
+resultieren.
+Der Inhalt des p-file verhindert eine nachfolgende
+Ausfuehrung des
+.I get \-e
+fuer das gleiche SID, bis ein
+.IR delta (1)
+Kommando ausgefuehrt wird oder das 
+.BR j 
+Flag (siehe
+.BR admin (1))
+in der SCCS-Datei gesetzt ist.
+Das
+.I p-file
+wird in dem Directory angelegt, das die 
+SCCS-Datei enthaelt. Der effektive Nutzer muss 
+in diesem Directory eine Schreiberlaubnis haben. 
+Der Modus des p-file ist 644 und der effektive Nutzer ist der 
+Eigentuemer. Das Format des 
+.I p-file
+ist:
+.IP " " 2
+der erhaltene SID,
+Leerzeichen,
+SID des neuen Deltas,
+Leerzeichen, 
+Login-Name des realen Nutzers,
+Leerzeichen, 
+Datum und Zeit zu der das
+.I get
+ausgefuehrt wurde, 
+Leerzeichen, die Option 
+.BR \-i ,
+falls vorhanden, 
+Leerzeichen, die Option 
+.BR \-x ,
+falls vorhanden, abschliessendes Newline.
+.PP
+Im 
+.I p-file
+kann jederzeit eine beliebige Anzahl von Zeilen stehen.
+Es duerfen aber niemals zwei Zeilen den gleichen SID eines neuen 
+Deltas haben.
+.PP
+Das
+.I z-file
+dient als 
+.I Verriegelung
+gegen gleichzeitiges Aktualisieren.
+Sein Inhalt besteht aus dem binaeren Prozess-ID (zwei Byte) des 
+Kommandos 
+(z.B.,
+.I get\c
+), das das z-file erstellt hat. Das
+.I z-file
+wird in dem Directory erstellt, das die SCCS-Datei 
+waehrend der Bearbeitung des Kommandos
+.IR get 
+enthaelt. Die fuer das 
+.I p-file
+gueltigen Schreibbeschraenkungen beziehen sich auch auf das 
+.IR z-file .
+Das 
+.I z-file
+wird mit Modus 444 erstellt.
+.SH SIEHE AUCH
+admin(1),
+delta(1),
+help(1),
+prs(1),
+what(1),
+sccsfile(5).
+.br
+"Source Code Control System Benutzerhandbuch"
+in WEGA-Dienstprogramme.
+.SH DIAGNOSTIK
+Fuer Erklaerungen kann
+.BR help (1)
+benutzt werden.
+.SH EINSCHRAENKUNGEN
+Hat der effektive Nutzer die Schreiberlaubnis im
+Directory, das die SCCS-Datei enthaelt (entweder 
+explizit oder implizit),
+der reale Nutzer jedoch nicht, 
+kann nur bei Angabe der Option
+.B \-e
+eine Datei angegeben werden.

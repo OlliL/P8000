@@ -1,0 +1,91 @@
+.TH MENUPATH 5
+.\"@[$]menupath.5       1.2
+.ad
+.fi
+.SH NAME
+menupath \- Pfadname fuer Menue-Directory
+.SH BESCHREIBUNG
+Ein
+Ueberblick ueber das Menuesystem ist im Eintrag \fBmkmenu\fR(1)
+enthalten.
+.PP
+Das Programm
+\fBmkmenu\fR(1)
+legt eine Menue-Spezifikationsdatei an, die das in
+\fBdotmenu\fR(5) beschriebene Format hat.
+Die Spezifikationsdatei wird in einer von vier moeglichen Directorys
+angelegt.
+Das Programm
+\fBzmenu\fR(1) steuert das Menue. Es wird mit einem Kommando der Form
+.IP
+\fBzmenu \fImenuname\fR
+.PP
+aufgerufen, wobei
+\fBmenuname\fR die gewuenschte Menue-Spezifikationsdatei ist.
+Das Programm
+\fBzmenu\fR sucht \fImenuname\fR
+unter Verwendung einer Suchliste. Die Suchliste
+wird in folgender Reihenfolge abgearbeitet:
+.IP 1. 4
+Existiert eine Umgebungsvariable
+\fBMENUPATH\fR, wird ihr Name als Pfadname eines Directorys
+betrachtet, in dem
+\fImenuname\fR abgelegt ist.
+.IP 2.
+Existiert
+\fBMENUPATH\fR nicht, wird nach der Datei
+\fB~/.menupath\fR gesucht. Existiert diese und ist sie lesbar,
+wird ihr Inhalt als ein Directory-Pfad betrachtet, in dem
+\fImenuname\fR abgelegt ist.
+.IP 3.
+Existieren
+.B MENUPATH
+und \fB~/.menupath nicht,
+wir die Datei
+\fI/etc/menupath\fR gesucht. Existiert diese und ist sie lesbar,
+wird ihr Inhalt als ein Directory-Pfad betrachtet, in dem
+\fImenuname\fR abgelegt ist.
+.IP 4.
+Trifft keine der Varianten 1. bis 3. zu, sucht
+\fBzmenu\fR im \fBHOME\fR-Directory des Benutzers nach \fBmenuname\fR.
+.PP
+Die Zeiger muessen vor Aufruf von
+\fBzmenu\fR
+gesetzt werden.
+Das Programm
+.B zmenu
+sucht die Menue-Spezifikationsdatei in der oben beschriebenen Reihenfolge.
+Es ist darauf zu achten, dass der Menue-Suchpfad richtig gesetzt ist,
+da sonst u.U. eine falsche Menue-Spezifikationsdatei benutzt werden kann.
+~/.menupath ist der Benutzersuchpfad, /etc/menupath ist
+der globale Suchpfad.
+.PP
+.SH ACHTUNG
+Existieren gleichzeitig zwei oder mehrere Directory-Zeiger
+fragt das Programm zur Erstellung der Menue-Spezifikationsdatei
+\fBmkmenu\fR nach dem Directory, in dem
+\fImenuname\fR angelegt werden soll.
+Somit ist es moeglich,
+\fImenuname\fR in einem Directory anzulegen,
+das nicht das erste in der Suchliste ist.
+In diesem Fall
+bricht das Programm zur Ausfuehrung des Menues,
+\fBzmenu\fR, vorzeitig ab, ohne
+\fImenuname\fR zu finden.
+.PP
+Deshalb ist entweder zu sichern, dass nur ein Directory-Zeiger
+existiert oder es ist ein
+geeignetes Skript zu erarbeiten, um den Zeiger fuer das gewuenschte
+Directory an die erste Stelle der Suchliste zu setzen, wenn
+\fBzmenu\fR aufgerufen wird.
+Damit erhaelt man verschiedene Menue-Directorys mit jeweils
+anderen Funktionen.
+.SH DATEIEN
+.nf
+~/.menupath     Datei enthaelt Menue-Suchpfad des Nutzers
+/etc/menupath   Datei enthaelt globalen Menue-Suchpfad
+\fB.\fRmenu           Standardname der Menuedatei
+.fi
+.SH SIEHE AUCH
+zmenu(1), mkmenu(1), setenv(1), dotmenu(5).
+

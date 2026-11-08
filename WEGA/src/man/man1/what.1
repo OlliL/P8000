@@ -1,0 +1,73 @@
+.TH WHAT 1 WEGA
+.\" @[$]what.1	1.2
+.ad
+.fi
+.SH NAME
+what \- Identifizieren von SCCS-Dateien
+.SH SYNTAX
+\fBwhat\fI files\fR
+.SH BESCHREIBUNG
+.B What\^
+sucht die angegebenen Dateien nach allen Mustern, die durch
+.BR get (1)
+fuer das Identifikationsschluesselwort %Z% (aktuell: \fB@(#)\fR )
+ersetzt wurden.
+Diese Zeilen werden bis zum
+ersten
+.BR ~ ,
+.BR > ,
+Newline,
+.BR \e 
+oder Null-Zeichen ausgegeben.
+.PP
+.B What\^
+ist fuer die Benutzung mit dem SCCS-Kommando
+.BR get (1)
+gedacht, das automatisch Identifikationsinformationen einfuegt.
+Identifikationszeichenketten koennen jedoch auch manuell eingefuegt
+werden.
+.SH BEISPIELE
+Das C-Programm \fBf.c\fR enthaelt folgende Zeile:
+.PP
+.RS 5
+char ident[] = "\|@(#)Identifikationsinformation\|"
+.RE
+.PP
+Es werden die Dateien \fBf.o\fR und \fBa.out\fR
+erzeugt. Das Kommando
+.PP
+.RS 5
+what\|
+.RB f . c\|
+.RB f . o\|
+.RB a . out
+.RE
+.PP
+gibt folgendes aus:
+.PP
+.RS 5
+.TP 8
+f\fB.\fRc:
+.br
+Identifikationsinformation
+.TP 8
+f\fB.\fRo:
+.br
+Identifikationsinformation
+.TP 8
+a\fB.\fRout:
+.br
+Identifikationsinformation
+.RE
+.SH SIEHE AUCH
+get(1),
+help(1).
+.SH DIAGNOSTIK
+Benutze
+.BR help (1)
+fuer Erklaerungen.
+.SH EINSCHRAENKUNGEN
+Es ist moeglich, dass ein unbeabsichtigtes Auftreten des Musters
+.B @(#)
+zufaellig gefunden werden kann, was aber in den meisten Faellen
+nicht schadet.

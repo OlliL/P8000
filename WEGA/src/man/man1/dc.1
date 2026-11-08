@@ -1,0 +1,203 @@
+.TH DC 1 WEGA
+.\" @[$]dc.1	1.2
+.ad
+.fi
+.SH NAME
+dc \- Tischrechner
+.SH SYNTAX
+.B dc
+[ \fIfile \fR]
+.SH BESCHREIBUNG
+.B Dc
+ist ein Arithmetikpaket mit frei waehlbarer Genauigkeit.
+Im Normalfall arbeitet es mit ganzen Dezimalzahlen.
+Es koennen eine Eingabezahlenbasis, Ausgabezahlenbasis und die
+Anzahl der Ziffern hinter dem Dezimalpunkt spezifiziert werden.
+Das Tischrechnerprogramm
+.B dc
+ist von seiner Gesamtstruktur her ein Stackrechner
+(umgekehrt polnische Notation).
+Ist ein Argument angegeben, wird die Eingabe erst
+von dieser Datei bis zu ihrem Ende, und danach
+von der Standardeingabe uebernommen. 
+Folgende Kommandos sind gueltig:
+.TP
+.B  c
+Alle Werte werden aus dem Stack geholt.
+.TP
+.B  d
+Der oberste Wert im Stack wird dupliziert.
+.TP
+.B  f
+Alle Werte im Stack und in den Registern werden ausgedruckt.
+.TP
+.B  i
+Der oberste Wert wird aus dem Stack geholt und als Zahlenbasis fuer die
+weitere Eingabe verwendet.
+.TP
+.B  I
+Die Eingabezahlenbasis wird in den Stack gebracht.
+.TP
+.B  k
+Das oberste Element des Stacks wird geholt.
+Dieser Wert wird als ein nichtnegativer Massstabsfaktor verwendet;
+die entsprechende Stellenanzahl wird ausgedruckt und bleibt waehrend
+der Multiplikation, Division und Exponentialrechnung erhalten.
+Die Eingabe eines neuen Massstabsfaktors, der Eingabezahlenbasis
+und der Ausgabezahlenbasis ist nur sinnvoll, wenn alle
+zusammen veraendert werden.
+.TP
+.BI l x
+Der Wert im Register
+.I x
+wird in den Stack gebracht. Das Register
+.I x
+wird nicht veraendert.
+Alle Register sind zu Beginn mit dem Wert Null initialisiert.
+Wurde das Kommando
+.B l
+angegeben, wird das Register
+.I x
+als ein Stack behandelt, und sein oberster Wert wird in den Haupstack gebracht.
+.TP
+.B o
+Der oberste Wert des Stacks wird geholt
+und als Zahlenbasis fuer weitere Ausgaben verwendet.
+.TP
+.B O
+Speichert die Ausgabezahlenbasis an den Anfang des Stacks.
+.TP
+.B p
+Der oberste Wert im Stack wird ausgedruckt. Er bleibt unveraendert.
+.TP
+.B P
+interpretiert den obersten Wert im Stack als eine ASCII\-Zeichenkette,
+druckt sie aus und streicht sie.
+.TP
+.B  q
+Verlaesst das Programm. Wenn eine Zeichenkette verarbeitet wird,
+wird die Rekursionsebene um zwei heraufgesetzt. Wenn
+.B q
+angegeben wird, wird der oberste Wert aus dem Stack geholt und
+die Zeichenketten-Verarbeitungsebene wird um diesen
+Wert heraufgesetzt.
+.TP
+.BI s x
+Der oberste Wert aus dem Stack wird geholt und in einem Register
+.I x,
+gespeichert, wobei
+.I x
+ein beliebiges Zeichen sein kann. Bei Angabe von
+.B s
+wird
+.I x
+als ein Stack behandelt und der Wert dort hinein gebracht.
+.TP
+.B  v
+Ersetzt das oberste Element im Stack durch seine Quadratwurzel.
+Jeder existierende Bruchteil des Arguments wird in der Berechnung
+einbezogen; der Massstabsfaktor wird jedoch ignoriert.
+.TP
+.B  x
+Behandelt das oberste Element im Stack als eine Zeichenkette
+und verarbeitet sie als eine Zeichenkette von "dc" Befehlen.
+.TP
+.B  X
+Ersetzt die Zahl am obersten Ende des Stacks mit
+seinem Massstabsfaktor.
+.TP
+.B  z
+Die Stackebene wird in den Stack gebracht.
+.TP
+.B  Z
+Ersetzt die Zahl am Anfang des Stacks durch ihre Laenge.
+.TP
+.B number
+Der Wert einer Zahl wird in den Stack gebracht.
+Eine Zahl ist eine ununterbrochene Zeichenkette aus den Ziffern 0\-9.
+Der Zahl kann ein Unterstreichungszeichen (_) vorangehen, um
+eine negative Zahl einzugeben.
+Zahlen koennen Dezimalpunkte enthalten.
+.TP
+.B +  \- /  *  %  ^
+Die obersten zwei Werte im Stack werden addiert
+(+),
+subtrahiert
+(\-),
+multipliziert (*),
+dividiert (/),
+dividiert und der Rest dem Ergebnis zugewiesen (%),
+oder potenziert (^).
+Die zwei Eintragungen werden aus dem Stack geholt.
+Das Ergebnis wird in den Stack gebracht.
+Jeder gebrochene Teil eines Exponenten wird ignoriert.
+.TP
+.B  "[ ... ]"
+Fuegt die eingeklammerte ASCII\-Zeichenkette an den Anfang des Stacks ein.
+.TP
+.I  "<x  >x  =x"
+Die obersten zwei Elemente werden aus dem Stack geholt und verglichen.
+Das Register
+.I x
+wird entsprechend den Relationen gesetzt.
+.TP
+.B  !
+Interpretiert den Rest der Zeile als ein WEGA\-Kommando.
+.TP
+.B  ?
+Eine Eingabezeile wird von der Eingabequelle geholt (i.A. das Terminal)
+und ausgefuehrt.
+.TP
+.B "; :"
+Werden durch 
+.B bc
+fuer Feldoperationen verwendet.
+.SH BEISPIELE
+.RS
+$ dc
+ 2.05
+ 156.35
+ + p      (addieren und Ergebnis ausgeben)
+ 158.40
+ 2.05
+ + p
+ 160.45
+ 6
+ * p      (multiplizieren und Ergebnis ausgeben)
+ 962.70
+ 14
+ / p      (dividieren und Ergebnis ausgeben)
+ 68
+.RE
+.sp
+Ein Beispiel, das die ersten zehn Werte von n! ausdruckt ist:
+.sp
+.RS
+[la1+dsa*pla10>y]sy
+0sa1
+lyx
+.RE
+.SH SIEHE AUCH
+\fBbc\fR(1), ein Praeprozessor fuer
+.B "dc,"
+mit einer C aehnlichen Syntax.
+.SH DIAGNOSTIK
+.TP
+`x is unimplemented'    (x ist nicht implementiert)
+dabei ist x eine Oktalzahl.
+.TP
+`stack empty'    (Stack ist leer)
+wenn zuwenig Elemente im Stack
+sind, um das Kommando auszufuehren
+.TP
+`Out of space'    (kein Platz mehr)
+wenn die freie Liste erschoepft ist (zu viele Ziffern).
+.TP
+`Out of headers'    (ausserhalb des Stack-Kopfes)
+Fuer zu viele Zahlen.
+.TP
+`Out of pushdown'    (ausserhalb des Stacks)
+Fuer zu viele Posten im Stack.
+.TP
+`Nesting Depth'    (Verschachtelungstiefe)	 
+euer zu viele Ebenen des verschachtelten Ausdrucks.

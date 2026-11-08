@@ -1,0 +1,58 @@
+.TH FREAD 3 WEGA
+.\" @[$]fread.3 1.2
+.ad
+.fi
+.SH NAME
+fread, fwrite \- gepufferte binaere Ein-/Ausgabe
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>\fR
+.PP
+\fBfread((char *)\fIptr, sizeof(*ptr), nitems, stream)\fR
+\fBFILE *\fIstream;\fR
+\fBint \fIptr, nitems;\fR
+.PP
+\fBfwrite((char *)\fIptr, sizeof(*ptr), nitems, stream)\fR
+\fBFILE *\fIstream;\fR
+\fBint \fIptr, nitems;\fR
+.fi
+.SH BESCHREIBUNG
+.B Fread
+liest 
+aus dem mit
+.IR stream
+bezeichneten Eingabestrom
+.I nitems
+Daten vom Typ
+.I *ptr
+in einen Block, der bei
+.I ptr
+beginnt.
+Die Anzahl der tatsaechlich eingelesenen Daten wird zurueckgegeben.
+.PP
+.B Fwrite
+fuegt dem mit
+.IR stream
+bezeichneten Ausgabestrom hoechstens
+.I nitems
+Daten vom Typ
+.I *ptr
+hinzu, wobei beim Stand von
+.I ptr
+begonnen wird.
+Die Anzahl der tatsaechlich geschriebenen Daten wird zurueckgegeben.
+.SH SIEHE AUCH
+read(2),
+write(2),
+fopen(3),
+getc(3),
+putc(3),
+gets(3),
+puts(3),
+printf(3),
+scanf(3).
+.SH DIAGNOSTIK
+.B Fread
+und
+.B fwrite
+geben beim Auftreten eines Fehlers oder bei End-of-File eine Null zurueck.

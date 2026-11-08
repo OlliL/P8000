@@ -1,0 +1,49 @@
+.TH LOOK 1 WEGA
+.\" @[$]look.1  1.2
+.ad
+.fi
+.SH NAME
+look \- Suchen von Zeilen in einer sortierten Datei
+.SH SYNTAX
+.B look
+[
+.B \-df
+] \fIstring\fR [ \fIfile\fR ]
+.SH BESCHREIBUNG
+.B Look
+sucht in einer sortierten Datei
+.I file
+alle Zeilen, die mit
+.IR string
+beginnen, und gibt sie aus.
+.B Look
+arbeitet mit binaeren Suchverfahren.
+Wurde keine Datei
+.I file
+spezifiziert, wird standardmaessig die Datei
+.I /usr/dict/words
+unter Verwendung der Option
+.B \-df
+durchsucht.
+.SH OPTIONEN
+.PP
+Die Optionen
+.B \-d
+und
+.B \-f
+beeinflussen das Durchmustern in der gleichen
+Weise wie in
+.BR  sort (1):
+.TP
+.B  \-d
+Reihenfolge wie in Woerterbuechern:
+nur Buchstaben, Zahlen, Tabulatorzeichen
+und Leerzeichen werden beim Vergleich beruecksichtigt.
+.TP 4
+.B  \-f
+Grossbuchstaben und Kleinbuchstaben werden beim Vergleich
+als identisch betrachtet.
+.SH DATEIEN
+/usr/dict/words
+.SH SIEHE AUCH
+sort(1), grep(1).

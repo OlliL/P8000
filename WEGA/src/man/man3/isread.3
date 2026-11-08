@@ -1,0 +1,107 @@
+.TH ISREAD 3 
+.\" @[$]isread.3        1.2
+.ad
+.fi
+.SH NAME
+isread \- Lesen von Datensaetzen aus einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisread\fI(isfd, buffer, mode)\fR
+\fBint \fIisfd;\fR
+\fBchar \fIbuffer[];\fR
+\fBint \fImode;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isread
+liest Datensaetze in sequentieller oder in wahlfreier Reihenfolge
+(Spezifikation durch
+.IR mode \-Parameter).
+.PP
+Bei sequentieller Arbeitsweise spezifiziert das Argument
+.I mode
+den Datensatz, der gelesen werden soll:
+.TP 10
+ISCURR
+Der aktueller Datensatz.
+.PD 0
+.TP 10
+ISFIRST
+Der erste Datensatz.
+.TP 10
+ISLAST
+Der letzte Datensatz.
+.TP 10
+ISNEXT
+Der naechste Datensatz.
+.TP 10
+ISPREV
+Der vorangegangene Datensatz.
+.PD
+.PP
+Das Ergebnis wird in den durch das Argument
+.I buffer
+angegebenen Puffer gelesen.
+.PP
+Bei wahlfreier Arbeitsweise spezifiziert
+.I mode
+den Wert des zurueckzugebenden Datensatzes relativ zum
+angegebenen Suchwert:
+.TP 10
+ISEQUAL
+Gleich.
+.PD 0
+.TP 10
+ISGREAT
+Groesser als.
+.TP 10
+ISGTEQ
+Groesser als / gleich.
+.PD
+.PP
+Der Suchwert wird in die fuer den Schluessel korrekten Bytepositionen
+(definiert in der keydesc-Struktur bei der Erzeugung des Index)
+des durch das Argument
+.I buffer
+angegebenen Bereiches gebracht.
+.B Isread
+fuellt den Puffer mit den Suchergebnissen.
+.PP
+Wurde beim Eroeffnen der Datei eine manuelle Verriegelung angegeben,
+kann der Datensatz vor dem Lesen eine Lesesperre erhalten, indem
+der Wert ISLOCK zum Modus addiert wird.
+Der Datensatz bleibt solange verriegelt,
+bis die Verriegelung durch Aufruf der Funktion
+.B isrelease
+aufgehoben wird.
+.PP
+Folgen am Beginn einer Datei Funktionsaufrufe von
+.BR isopen ,
+.B isbuild
+oder 
+.BR isstart ,
+ergeben die Funktionsaufrufe von
+.B isnext
+oder 
+.B iscurr
+den ersten Datensatz.
+.SH EINSCHRAENKUNGEN
+.B Isread
+kann nicht fuer partielle Zeichenkettensuche verwendet werden.
+Fuer diesen Zweck ist
+.B isstart
+zu benutzen.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isbuild(3),
+islock(3),
+isopen(3),
+isrelease(3),
+isstart(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

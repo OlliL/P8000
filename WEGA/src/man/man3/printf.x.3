@@ -1,0 +1,390 @@
+.TH PRINTF 3X WEGA
+.\"@[$]printf.3 1.1
+.ad
+.fi
+.SH NAME
+printf, fprintf, sprintf \- Ausgabeformatierung
+.SH SYNTAX
+.B "#include <stdio.h>"
+.PP
+.B "int printf (format"
+[
+.B ,
+arg ] .\|.\|.
+.B )
+.br
+.B "char \(**format;"
+.PP
+.B "int fprintf (stream, format"
+[
+.B ,
+arg ] .\|.\|.
+.B )
+.br
+.SM
+.B FILE
+.B \(**stream;
+.br
+.B "char \(**format;"
+.PP
+.B "int sprintf (s, format"
+[
+.B ,
+arg ] .\|.\|.
+.B )
+.br
+.B "char \(**s, \(**format;"
+.SH BESCHREIBUNG
+Die folgende Beschreibung bezieht sich auf die
+UNIX-System-III-kompatible Version von
+.B printf\^
+einschliesslich der zugehoerenden Funktionen.
+Diese Funktionen werden normalerweise nicht vom C-Compiler einbezogen (siehe
+.BR printf (3)).
+Sie unterscheiden sich von
+.BR printf (3)
+nur durch die Interpretation des als Konvertierungszeichen
+verwendeten Grossbuchstaben
+.BR X .
+Ausserdem sind die grossgeschriebenen Konvertierungszeichen
+.BR D ,
+.B O
+und
+.B U
+nicht erlaubt.
+.PP
+Die Funktion
+.B printf\^
+schreibt die Ausgabe auf den Standardausgabestrom
+.IR stdout .
+.PP
+.B Fprintf\^
+schreibt die Ausgabe auf den durch das Argument
+.IR stream
+angegebenen Datenstrom.
+.PP
+.B Sprintf\^
+schreibt die Ausgabe zusammenhaengend in einen Speicherbereich,
+dessen Startadresse durch den Pointer
+.I s
+angegeben ist.
+Die Ausgabe wird mit einem Nullzeichen abgeschlossen.
+Der Nutzer muss sichern, dass genuegend Speicherraum vorhanden ist.
+.PP
+Jede Funktion gibt die Anzahl der uebertragenen Zeichen zurueck
+(mit Ausnahme des Nullbytes bei
+.IR sprintf ).
+Bei Auftreten eines Ausgabefehlers wird ein negativer Wert zurueckgegeben.
+.PP
+Jede dieser Funktionen konvertiert, formatiert und druckt ihre Argumente
+.IR arg
+unter Verwendung des angegebenen
+.IR format .
+Das Argument
+.I format\^
+ist eine Zeichenkette, die zwei Typen von Objekten enthaelt:
+.IP - 3
+Zeichen in Klarschrift, die einfach auf den Ausgabestrom kopiert werden.
+.PD 0
+.IP - 3
+Konvertierungsspezifikationen, die die Konvertierung und die Ausgabe
+des jeweils folgenden Arguments
+.IR arg
+bewirken.
+Stehen fuer das Format nicht genuegend Argumente
+zur Verfuegung, sind die Ergebnisse undefiniert.
+Ist das Format abgearbeitet und es sind noch Argumente
+vorhanden, werden diese ignoriert.
+.PD
+.PP
+Jede Konvertierungsspezifikation wird durch das Zeichen
+.BR %
+eingeleitet.
+Nach dem Prozentzeichen
+folgen:
+.IP - 3
+Null oder mehr
+.IR flags ,
+die die Bedeutung der Konvertierungsspezifikation modifizieren.
+.PD 0
+.IP - 3
+Eine optionale, aus Dezimalziffern bestehende Zeichenkette spezifiziert
+eine minimale
+.IR Ausgabefeldbreite .
+Hat der konvertierte Wert weniger Zeichen als die Feldbreite,
+wird er links mit so viel Leerzeichen aufgefuellt (bzw. rechts,
+wenn Linksbuendigkeit (siehe unten) angegeben wurde),
+bis er die Feldbreite erreicht hat.
+.IP - 3
+Die
+.IR Genauigkeit
+(die Mindestanzahl von Ziffern), die fuer die Konvertierungen
+.BR d ,
+.BR o ,
+.BR u ,
+.B x
+oder
+.B X
+ausgegeben wird,
+die Anzahl der Ziffern, die fuer die Konvertierungen
+.B e
+und
+.B f
+nach dem Dezimalpunkt ausgegeben wird,
+die maximale Anzahl von signifikanten Ziffern bei der
+Konvertierung
+.B g
+oder die maximale Zeichenanzahl, die fuer die Konvertierung
+.B s
+von einer Zeichenkette ausgegeben wird.
+Die Genauigkeit
+.I precision
+wird in Form eines Punktes
+.RB ( \&. )
+angegeben, dem eine Zeichenkette aus Dezimalziffern folgt.
+Eine Zeichenkette mit null Ziffern wird als Null behandelt.
+.IP - 3
+Ein optionaler Buchstabe
+.B l
+gibt an, dass fuer die Konvertierungen
+.BR d ,
+.BR o ,
+.BR u ,
+.B x
+oder
+.B X
+als Argument ein Integerwert vom Typ long verarbeitet werden soll.
+.IP - 3
+Ein Zeichen, das den anzuwendenden Typ der Konvertierung angibt.
+.PD
+.PP
+Die Feldbreite und Genauigkeit koennen auch durch einen Stern 
+.RB ( \(** )
+bezeichnet werden.
+In diesem Fall liefert das folgende Argument
+.I arg\^
+(Integerwert)
+Feldbreite oder Genauigkeit.
+Das zu konvertierende Argument
+.I arg\^
+wird erst dann verarbeitet, wenn der Konvertierungsbuchstabe
+ausgewertet wurde (der erst nach
+.I precision
+im
+.I format
+angegeben wird).
+Die Argumente, die die Feldbreite oder Genauigkeit spezifizieren,
+muessen also
+.B vor
+dem zu konvertierenden Argument
+erscheinen (falls ein solches existiert).
+.PP
+Es folgt eine Aufstellung der Flags und ihre Bedeutung:
+.TP
+.B \-
+Das Ergebnis der Konvertierung wird innerhalb des Feldes linksbuendig
+dargestellt.
+.PD 0
+.TP
+.B +
+Das Ergebnis einer vorzeichenbehafteten Konvertierung beginnt immer mit
+einem Vorzeichen
+.RB ( + , - ).
+.TP
+Leerzeichen
+Ist das erste Zeichen einer vorzeichenbehafteten Konvertierung kein
+Vorzeichen, wird dem Ergebnis ein Leerzeichen vorangestellt.
+Das Leerzeichen-Flag wird bei gleichzeitigem Auftreten eines
+.B +
+Flags ignoriert.
+.TP
+.B #
+Dieses Flag gibt an, dass der Wert in eine
+.I "alternative Form"
+zu konvertieren ist.
+Fuer die Konvertierungen
+.BR c ,
+.BR d ,
+.BR s
+und
+.B u
+hat das Flag keine Wirkung.
+Fuer die Konvertierung
+.B o
+wird die Genauigkeit so erhoeht, dass das Ergebnis
+mit einer Null beginnt.
+Bei der Konvertierung
+.B x
+.RB ( X )
+steht vor einem Ergebnis ungleich Null ein
+.BR 0x
+.RB ( 0X ).
+Bei den Konvertierungen
+.BR e ,
+.BR E ,
+.BR f ,
+.BR g ,
+und
+.B G
+enthaelt das Ergebnis immer einen Dezimalpunkt,
+selbst dann, wenn dem Punkt keine Ziffern folgen (normalerweise
+erscheint im Ergebnis dieser Konvertierungen nur dann ein Dezimalpunkt,
+wenn ihm eine Ziffer folgt).
+Bei
+.B g
+und
+.B G
+Konvertierungen werden nachgestellte Nullen
+.B nicht\^
+aus dem Ergebnis entfernt (was normalerweise der Fall ist).
+.PD
+.PP
+Es folgen die Konvertierungszeichen und ihre Bedeutung:
+.TP 10
+\f3d\fP,\f3o\fP,\f3u\fP,\f3x\fP,\f3X\fP
+Das Integerargument
+.I arg\^
+wird in eine vorzeichenbehaftete dezimale
+.RB ( d ),
+vorzeichenlose oktale,
+.RB ( o ),
+dezimale
+.RB ( u )
+bzw. hexadezimale Notation
+.RB ( x,X )
+konvertiert.
+Fuer die hexadezimale Konvertierungen gilt:
+.br
+.BR "   x" " : "
+Buchstaben werden klein geschrieben (abcdef).
+.br
+.BR "   X" " : "
+Buchstaben werden gross geschrieben (ABCDEF).
+.br
+Die Genauigkeit gibt an, wieviel Ziffern mindestens erscheinen muessen.
+Kann der zu konvertierende Wert mit weniger Ziffern dargestellt werden,
+wird mit fuehrenden Nullen aufgefuellt.
+Die Standardgenauigkeit ist 1.
+Die Konvertierung eines Wertes Null mit einer Genauigkeit Null ergibt
+eine Nullzeichenkette als Ergebnis (ausser fuer die Konvertierung
+.BR o ,
+.B x
+oder
+.BR X
+bei vorhandenem
+.B #
+Flag).
+.TP
+.B f
+Das Float- oder Double-Argument
+.I arg\^
+wird in eine dezimale Notation der Form
+[\f3\-\fP]ddd\f3.\fPddd konvertiert,
+wobei die Anzahl der nach dem Dezimalpunkt stehenden Ziffern
+gleich der vorgegebenen Genauigkeit ist.
+Wird keine Genauigkeit angegeben, werden 6 Ziffern ausgegeben;
+ist die Genauigkeit explizit mit 0 angegeben, erscheint kein Dezimalpunkt.
+.TP
+.BR e , E
+Das Float- oder Double-Argument
+.I arg\^
+wird in die Form
+[\f3\-\fP]d\f3.\fPddd\f3e\(+-\fPdd konvertiert,
+wobei eine Ziffer vor dem Dezimalpunkt steht und die Anzahl der nach dem
+Dezimalpunkt stehenden Ziffern gleich der Genauigkeit ist.
+Wird keine Genauigkeit angegeben, werden 6 Ziffern ausgegeben.
+Ist die Genauigkeit gleich Null, erscheint kein Dezimalpunkt.
+Das Konvertierungszeichen
+.B E
+bewirkt die Kennzeichnung des Exponenten durch den Grossbuchstaben
+.B E
+statt
+.BR e .
+Der Exponent enthaelt immer genau zwei Ziffern.
+.TP
+.BR g , G
+Das Float- oder Double-Argument
+.I arg\^
+wird in der Form
+.BR f
+oder
+.BR e
+gedruckt (fuer
+.B G
+wird die Form von
+.B E
+benutzt),
+wobei die Genauigkeit die Anzahl der signifikanten Ziffern angibt.
+Die Darstellungsform haengt vom konvertierten Wert ab:
+Die Form
+.B e
+wird nur verwendet, wenn der im Ergebnis der Konvertierung entstehende
+Exponent kleiner als \-4 oder groesser als die Genauigkeit ist.
+Nachgestellte Nullen werden aus dem Ergebnis entfernt; ein Dezimalpunkt
+erscheint nur, wenn ihm eine Ziffer folgt.
+.TP
+.B c
+Das durch
+.I arg\^
+angegebene Zeichen wird gedruckt.
+.TP
+.B s
+Das Argument
+.I arg\^
+wird als Zeichenkette (Zeichenpointer) betrachtet.
+Die Zeichen der Zeichenkette werden ausgegeben, bis ein Nullzeichen 
+.RB ( \e0 )
+erreicht wird oder die in der vorgegebenen Genauigkeit angegebene
+Anzahl von Zeichen erreicht ist.
+Fehlt eine Genauigkeitsangabe, wird sie als
+unendlich betrachtet und alle Zeichen bis zum ersten Nullzeichen werden
+ausgegeben.
+.TP
+.B %
+Es wird das Prozentzeichen
+.BR %
+ausgegeben (keine Argumentkonvertierung).
+.PP
+Eine nicht existierende oder zu kleine Feldbreite
+fuehrt auf keinen Fall dazu, dass ein Feld abgeschnitten wird.
+Ist das Ergebnis einer Konvertierung breiter als die Feldbreite,
+wird das Feld erweitert, um die Konvertierungsergebnisse aufnehmen
+zu koennen.
+Mit
+.I printf\^
+und
+.I fprintf\^
+erzeugte Zeichen werden so ausgegeben, als waere
+.BR putc (3)
+aufgerufen worden.
+.PP
+.SH BEISPIELE
+Datum und Zeit sind in der Form "Dienstag, 24. November, 9:37"
+auszugeben, wobei Wochentag
+.I weekday\^
+und Monat
+.I month\^
+Zeiger auf mit einem Nullbyte abgeschlossene Zeichenketten sind:
+.RS
+.PP
+printf("%s, \|%d. \|%s, \|%.2d:%.2d", \|weekday, \|day, \|month, \|hour, \|min);
+.RE
+.PP
+Die Konstante
+.if n .I pi\^
+.if t \(*p
+ist auf 5 Dezimalstellen genau anzugeben:
+.RS
+.PP
+printf("pi \|= \|%.5f", \|4\(**atan(1.0));
+.RE
+.SH DATEIEN
+.nf
+/lib/doprnt.o  printf-Bibliotheksfunktion
+/lib/cnvt.o    cnvt-Bibliotheksfunktion
+.SH SIEHE AUCH
+ecvt(3),
+putc(3),
+scanf(3),
+stdio(3),
+printf(3x).

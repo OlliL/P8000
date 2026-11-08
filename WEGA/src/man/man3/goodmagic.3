@@ -1,0 +1,46 @@
+.TH GOODMAGIC 3 
+.\" @[$]goodmagic.3     1.2
+.ad
+.fi
+.SH NAME
+goodmagic \- Bestimmung der Gueltigkeit der Magic-Nummer
+.SH SYNTAX
+\fBextern int \fIswap_flg;\fR
+.PP
+\fBgoodmagic\fI(magic);\fR
+.br
+\fBint \fImagic;\fR
+.br
+.SH BESCHREIBUNG
+Die Funktion
+.B goodmagic
+ermittelt, ob das Argument
+.I magic
+eine gueltige Magic-Nummer entsprechend
+.BR a.out (5)
+ist.
+Wird ein ungueltiger Wert erkannt,
+wird Null zurueckgegeben.
+Ist
+.I magic
+eine Magic-Nummer mit vertauschten Bytes,
+erhaelt die externe Variable
+.B swap_flg
+einen Wert ungleich Null. Ist
+.I magic
+gueltig, liegt der zurueckgegebene Wert zwischen 1 und 6.
+Dabei werden die Werte 1 bis 3 fuer die nichtsegmentierten Magic-Nummern
+N_MAGIC1, N_MAGIC3 oder
+N_MAGIC4 zurueckgegeben,  und
+die Werte 4 bis 6 werden fuer die segmentierten Magic-Nummern
+S_MAGIC1, S_MAGIC3, and S_MAGIC4 zurueckgegeben.
+.SH SIEHE AUCH
+a.out(5).
+.SH DIAGNOSTIK
+Die Funktion
+.B goodmagic
+gibt einen Wert Null zurueck, wenn
+.I magic
+keine gueltige Magic-Nummer entsprechend
+.BR a.out (5)
+ist.

@@ -1,0 +1,166 @@
+.TH DD 1 WEGA
+.\" @[$]dd.1	1.2
+.ad
+.fi
+.SH NAME
+dd \- konvertiert und kopiert Dateien
+.SH SYNTAX
+.B dd
+[\fIoption\fB=\fIvalue\fR] ...
+.SH BESCHREIBUNG
+.B Dd\^
+kopiert die Eingabedateien in die angegebenen Ausgabedateien.
+Dabei koennen ueber Optionen verschiedene Konvertierungen
+vorgenommen werden.
+Der Standard fuer Ein- und Ausgabe ist stdin und stdout.
+Die Groessen der Ein- und Ausgabebloecke koennen durch Optionen dem
+physikalischen I/O-Geraet angepasst werden.
+.PP
+Alle Blocklaengenangaben werden in Byte erwartet.
+Wird an diese Angaben ein
+.BR k (Kilo),
+.BR b (Bloecke),
+oder
+.BR w (Worte)
+angehaengt, werden die Werte mit 1024, 512 oder 2 multipliziert.
+Aus zwei durch
+.B x
+getrennten Zahlen wird das Produkt gebildet.
+.PP
+Die Option
+.I cbs\^
+wird nur benutzt, wenn
+.I ascii\^-
+oder
+.I ebcdic\^-
+Konvertierungen durchgefuehrt werden sollen.
+Im ersten Fall werden die Zeichen in den Konvertierungspuffer
+gemaess der in der Option
+.I cbs\^
+angegebenen Puffergroesse gebracht und dann in
+ASCII-Zeichen konvertiert, wobei abschliessende Leerzeichen
+gestrichen und dafuer ein Newline angefuegt wird.
+Anschliessend wird die Zeile ausgegeben.
+Im zweiten Fall werden die ASCII-Zeichen in den
+Konvertierungspuffer eingelesen, in
+EBCDIC-Zeichen konvertiert und Leerzeichen hinzugefuegt, um einen
+Ausgabesatz gemaess der mit
+.IR cbs
+definierten Laenge zu erzielen.
+.PP
+.B Dd\^
+meldet die Anzahl der vollstaendigen und der angefangenen Eingabe- und
+Ausgabebloecke.
+.SH OPTIONEN
+.TP "\w'\fBconv=.\|.\|.\ ,\ .\|.\|.\ \ \fP'u"
+.I Option\^
+.I Werte\^
+.sp
+.TP
+.BI bs= n\^
+Setzt die Groesse der Ein- und Ausgabebloecke (ueberschreibt
+.I ibs\^
+und
+.IR obs ).
+Wenn keine Konvertierung angegeben wurde, wird fuer
+Eingabe und Ausgabe der gleiche Puffer verwendet.
+.TP
+.BI cbs= n\^
+Setzt die Groesse des Konvertierungspuffer.
+.TP
+.B conv=ascii
+Konvertiert EBCDIC in ASCII.
+.RS "\w'\fBconv=\fP'u"
+.TP "\w'\fB.\|.\|.\ ,\ .\|.\|.\ \ \fP'u"
+.B ebcdic
+Konvertiert ASCII in EBCDIC.
+.TP
+.B ibm
+Konvertiert ASCII in ein dem EBCDIC aehnlichen IBM-Code.
+.TP
+.B lcase
+Konvertiert alle Grossbuchstaben in Kleinbuchstaben.
+.TP
+.B noerror
+Stoppt die Verarbeitung nicht, wenn ein Fehler auftritt.
+.TP
+.B swab
+Vertauscht die Bytes paarweise.
+.TP
+.B sync
+Fuellt jeden Eingabesatz gemaess
+.I  ibs\^
+auf.
+.TP
+.B ucase
+Konvertiert alle Kleinbuchstaben in Gross\%buchstaben.
+.TP
+.B ".\|.\|. , .\|.\|."
+Es koennen mehrere \fBconv\fR-Werte durch Komma getrennt angegeben werden.
+.RE
+.TP
+.BI count= n\^
+Kopiert nur
+.I n
+Eingabesaetze.
+.TP
+.BI files= n\^
+Ueberspringt die ersten
+.IR n ""
+Dateien beim Ko\%pieren vom Eingabemedium auf das
+Ausgabemedium.
+.TP
+.BI ibs= n\^
+Setzt die Eingabeblockgroesse (Standard: 512) auf
+.I n\^
+Bytes.
+.TP
+.BI if= file\^
+Angabe des Eingabedateinamen (Standard: stdin)
+.TP
+.BI obs= n\^
+Setzt die Ausgabeblockgroesse (Standard: 512) auf
+.I n
+Bytes.
+.TP
+.BI of= file\^
+Angabe des Ausgabedateinamen (Standard: stdout)
+.TP
+.BI seek= n\^
+Ueberspringt vor dem Kopieren die ersten \fIn\fR Saetze des Ausgabemediums.
+.TP
+.BI skip= n\^
+Ueberspringt vor dem Kopieren die ersten
+.IR n ""
+Eingabesaetze.
+.SH BEISPIEL
+Das nachfolgend angegebene Kommando liest die Datei pb.image
+aus dem Root-Dateisystem und kopiert den Inhalt
+an den Beginn des Dateisystems /dev/rmd0 (Prozedur zum Installieren
+des primaeren Bootprogramms auf der Systemplatte).
+Es wird genau ein Block uebertragen und
+der Block wird bis zur Blockgrenze aufgefuellt.
+.PP
+.RS
+dd if=/pb.image of=/dev/rmd0 conv=sync count=1
+.RE
+.PP
+Vorsicht bei Anwendung mit raw-Geraeten!
+.B Dd\^
+ist besonders an Ein-/Ausgaben auf raw-physikalische Geraete angepasst,
+da es das Lesen und Schreiben mit beliebig angebbaren Aufzeichnungsgroessen
+erlaubt.
+.SH SIEHE AUCH
+cp(1).
+.SH DIAGNOSTIK
+.TP
+.I "f+p records in(out)"
+Anzahl der vollen und teilweise gelesenen (geschriebenen) Bloecke.
+.sp
+.SH EINSCHRAENKUNGEN
+Die ASCII/EBCDIC-Konvertierungstabellen wurde vom
+256 Zeichenstandard uebernommen.
+.PP
+Bei der Konvertierung in ASCII werden Newlines
+eingefuegt; bei der Konvertierung in
+EBCDIC wird mit Leerzeichen aufgefuellt.

@@ -1,0 +1,78 @@
+.TH YACC 1 WEGA
+.\" @[$]yacc.1	1.2
+.ad
+.fi
+.SH NAME
+yacc \- Compiler-Compiler
+.SH SYNTAX
+\fByacc\fR [ \fB\-dv\fR ] grammar
+.SH BESCHREIBUNG
+.B Yacc
+konvertiert eine kontextfreie Grammatik in ein
+C-Programm, dass einen
+Parsing-Algorithmus ausfuehrt.
+Die Ausgabedatei \fBy.tab.c\fR muss vom C-Compiler uebersetzt werden,
+um ein Programm
+\fIyyparse\fR zu erzeugen.
+Dieses Programm kann mit einem Programm zur lexikalischen
+Analyse \fIyylex\fR und mit
+.B main
+und
+.IR yyerror ,
+einer Fehlerbehandlungsroutine, geladen werden.
+Diese Routinen sind vom Nutzer bereitzustellen.
+Die mit
+\fByacc\fR
+nutzbaren Programme zur lexikalischen Analyse
+koennen mit
+.BR lex (1)
+erstellt werden.
+.SH OPTIONEN
+.IP \-d 
+die Datei
+.B y.tab.h
+wird mit den
+.B define
+Anweisungen erzeugt, 
+durch die von
+.B yacc
+zugewiesene Zeichencodes (token codes)
+den vom Nutzer vereinbarten Zeichennamen
+(token names) zugeordnet werden.
+Damit wird den von
+.B y.tab.c
+verschiedenen Quelldateien der Zugriff auf die Zeichencodes ermoeglicht.
+.IP \-v
+Es wird die Datei
+.B y.output
+wird angelegt,
+die eine Beschreibung der Parsing-Tabellen und
+einen Report ueber Widersprueche, die durch Mehrdeutigkeiten in der
+Grammatik entstanden sind, enthaelt.
+.SH DATEIEN
+.ta \w'yacc.tmp, yacc.acts 'u
+y.output
+.br
+y.tab.c
+.br
+y.tab.h	Festlegungen von Zeichennamen
+.br
+yacc.tmp, yacc.acts	temporaere Dateien
+.br
+/usr/lib/yaccpar	Parser-Prototyp fuer C-Programme
+.br
+/lib/liby.a	Bibliothek mit Standardroutinen main und yyerror
+.SH SIEHE AUCH
+lex(1).
+.SH DIAGNOSTIK
+Die Anzahl der 
+reduce-reduce und shift-reduce Widersprueche wird
+in der Standardausgabe protokolliert.
+Ausfuehrlichere Aufzeichnungen befinden sich in der Datei
+.I y.output.
+Es wird gemeldet, wenn einige Regeln nicht vom Startsymbol erreicht werden.
+.SH EINSCHRAENKUNGEN
+In einem gegebenen Directory kann gleichzeitig immer
+nur ein
+.B yacc
+Prozess aktiv sein.

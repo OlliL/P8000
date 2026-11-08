@@ -1,0 +1,40 @@
+.TH J0 3M WEGA
+.\" @[$]j0.3    1.2
+.ad
+.fi
+.SH NAME
+j0, j1, jn, y0, y1, yn \- Bessel-Funktionen
+.SH SYNTAX
+.nf
+\fB#include <math.h>
+.PP
+\fBdouble j0\fI(x)
+\fB     double \fIx;
+.PP
+\fBdouble j1\fI(x)
+\fB     double\fI x;
+.PP
+\fBdouble jn\fI(n, x)
+\fB     double\fI x;
+.PP
+\fBdouble y0\fI(x)
+\fB     double\fI x;
+.PP
+\fBdouble y1\fI(x)
+\fB     double\fI x;
+.PP
+\fBdouble yn\fI(n, x)
+\fB     double\fI x;\fR
+.fi
+.SH BESCHREIBUNG
+Diese Funktionen berechnen Bessel-Funktionen erster und zweiter Art
+fuer reale Argumente und ganzzahlige Ordnung.
+.SH DIAGNOSTIK
+Negative Argumente fuehren dazu, dass die Funktionen
+.BR y0 ,
+.B y1
+und
+.B yn
+einen sehr grossen negativen Wert liefern und setzen 
+.I errno
+auf EDOM.

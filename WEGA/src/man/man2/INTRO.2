@@ -1,0 +1,279 @@
+.TH INTRO 2 WEGA
+.\"@[$]INTRO.2	1.2
+.ad
+.fi
+.de en
+.HP
+\\$1  \\$2  \\$3
+.br
+..
+.SH NAME
+intro, errno \- Einfuehrung in die Systemrufe und Fehlernummern
+.SH SYNTAX
+.B #include <errno.h>
+.SH BESCHREIBUNG
+Kapitel 2 dieses Handbuches 
+erlaeutert alle Systemrufe.
+Die meisten Rufe haben eine Fehlerrueckgabe.
+Ein Fehlerzustand wird durch einen Rueckgabewert angezeigt,
+der bei normaler Rueckkehr nicht moeglich waere.
+Dies ist fast immer der Wert -1
+(Einzelheiten siehe
+.BR RUECKGABEWERT ).
+Die Fehlernummer wird auch in der externen Variablen
+.IR errno 
+zur Verfuegung gestellt.
+.I Errno
+wird bei erfolgreichen Systemrufen nicht geloescht.
+.B Errno
+sollte deshalb nur getestet werden, nachdem ein Fehler aufgetreten ist.
+Mit Hilfe von
+.BR perror (3)
+koennen zu jedem Fehler Erlaeuterungen aus einer Tabelle 
+ausgegeben werden.
+.PP
+Die externe Variable
+.B deverr
+kann mit Fehlernummern versehen werden,
+die den Ein- und Ausgabegeraeten zugeordnete sind.
+Ist errno 5 oder 6, muss deverr kontrolliert werden, um
+die Fehlerart weiter zu bestimmen.
+Die moeglichen Fehlernummern werden nicht in jedem Eintrag in 
+Kapitel 2 aufgefuehrt, da fuer die meisten Systemrufe viele Fehler
+moeglich sind.
+.br
+Es folgt die Liste der Fehlernamen und Fehlernummern
+(siehe <errno.h>) sowie die Mitteilungen, die bei Nutzung von
+.BR perror (3)
+verfuegbar sind:
+.en 0 " " "Error 0
+Nicht benutzt.
+.en 1 EPERM "No owner
+Dieser Fehler tritt typischerweise bei einem Versuch auf, eine Datei
+in einer Weise zu modifizieren, die nur dem Besitzer oder
+dem Superuser erlaubt ist.
+.en 2 ENOENT "No such file or directory
+Dieser Fehler tritt auf, wenn ein Dateiname angegeben wird,
+der nicht existiert oder wenn eines der Directories in einem Pfadnamen
+nicht existiert.
+.en 3 ESRCH "No such process
+Der Prozess, dessen Nummer in
+.BR signal (2)
+oder
+.BR ptrace (2)
+angegeben wird, existiert nicht oder ist bereits beendet.
+.en 4 EINTR "Interrupted system call
+Waehrend eines Systemrufs trat ein asynchrones Signal
+(wie interrupt oder quit) auf,
+das der Nutzer zur Behandlung gewaehlt hat.
+Wird die Ausfuehrung nach der Verarbeitung des Signales 
+fortgesetzt, hat es den Anschein, als ob der unterbrochene
+Systemruf diesen Fehlerzustand zurueckgibt.
+.en 5 EIO "I/O error
+Waehrend
+eines Systemrufs
+.BR read (2)
+oder
+.BR write  (2)
+trat ein physischer Ein-/Ausgabefehler auf.
+Dieser Fehler kann in einigen Faellen bei einem Systemruf auftreten,
+der einem Systemruf folgt, auf den er sich tatsaechlich bezieht.
+.en 6 ENXIO "No such device or address
+Die E/A auf ein Special-File bezieht sich auf ein untergeordnetes Geraet,
+das nicht existiert oder auf Bereiche, die ausserhalb der Grenzen des
+Geraetes liegen.
+Er kann auch auftreten, wenn eine Diskette vorzeitig aus dem Laufwerk
+entnommen wurde oder sich keine Diskette im Laufwerk befindet.
+.en 7 E2BIG "Arg list too long
+Einem
+.B exec 
+Systemruf wird eine Argumentliste angeboten,
+die laenger als 5120 Bytes ist.
+.en 8 ENOEXEC "Exec format error
+Es wurde eine Anforderung gemacht, eine Datei abzuarbeiten, die, obwohl
+sie die entsprechenden Erlaubnisse hat, nicht mit einer gueltigen 
+Magic-Nummer beginnt (siehe
+.BR a.out (5)).
+.en 9 EBADF "Bad file number
+Ein Dateidescriptor bezieht sich auf eine nicht offene
+Datei oder eine Lese- (bzw. Schreib-)Anforderung wird fuer eine Datei
+gemacht, die nur fuer Schreiben (bzw. Lesen) offen ist.
+.en 10 ECHILD "No children
+Der Systemruf
+.BR wait (2)
+und der Prozess haben keine existierenden oder wartenden
+Child-Prozesse.
+.en 11 EAGAIN "No more processes
+Bei einem Systemruf
+.BR fork (2)
+ist die Systemprozesstabelle voll oder dem Nutzer ist es
+nicht erlaubt, weitere Prozesse zu erzeugen.
+.en 12 ENOMEM "Not enough core
+Waehrend eines Systemrufs
+.BR exec (2)
+oder
+.BR break (2)
+verlangt ein Programm mehr Speicherplatz, als das System zur 
+Verfuegung stellen kann.
+Das ist kein voruebergehender Zustand; die maximale Speichergroesse
+ist ein Systemparameter.
+.en 13 EACCES "Permission denied
+Es wurde ein Versuch unternommen, auf eine Datei in einer Weise 
+zuzugreifen, die durch das Schutzsystem verboten ist.
+.en 14 EFAULT "Bad address
+Das System fand einen Hardwarefehler beim Versuch, auf die
+Argumente eines Systemrufes zuzugreifen.
+Das ist gewoehnlich das Resultat einer falschen Adresse, die
+an das Betriebssystem als die Adresse des Arguments 
+weitergeleitet wurde.
+.en 15 ENOTBLK "Block device required
+Eine einfache Datei wurde angegeben, wo ein Blockdevice 
+verlangt wird (z.B. bei
+.BR mount (2)).
+.en 16 EBUSY "Mount device busy
+Es wurde ein Versuch unternommen, ein Geraet einzugliedern,
+das schon eingegliedert war oder ein Geraet auszugliedern, auf
+dem sich eine aktive Datei befindet (offene Datei, aktuelles
+Directory, eingegliederte Datei, aktives Textsegment).
+.en 17 EEXIST "File exists
+Eine existierende Datei wurde in einem unpassenden Zusammenhang
+angegeben (z.B. bei 
+.BR link (2)).
+.en 18 EXDEV "Cross-device link
+Es wurde versucht, ein Link zu einer Datei auf
+einem anderen Geraet zu erzeugen.
+.en 19 ENODEV "No such device
+Es wurde versucht, einen unpassenden Systemruf auf ein Geraet
+anzuwenden (z.B. Lesen auf ein Geraet, das nur Schreiben 
+erlaubt).
+.en 20 ENOTDIR "Not a directory
+Es wurde kein Directory angegeben, wo ein Directory verlangt wird
+(z.B. in einem Pfadnamen oder als ein Argument in 
+.BR chdir (2)).
+.en 21 EISDIR "Is a directory
+Es wurde versucht, auf ein Directory zu schreiben.
+.en 22 EINVAL "Invalid argument
+Ungueltige Argumente sind: Ausgliedern eines nichteingegliederten
+Geraetes; Angabe eines unbekanntes Signals in
+.BR signal (2);
+Lesen oder Schreiben einer Datei, fuer die 
+.BR seek (2)
+einen negativen Zeiger erzeugt hat;
+Weiterleitung eines fehlerhaften Arguments an
+.BR ioctl (2).
+Der Fehler wird auch von mathematischen Funktionen erzeugt (siehe
+.BR intro (3)).
+.en 23 ENFILE "File table overflow
+Die Systemtabelle fuer offene Dateien ist voll, es koennen 
+zeitweilig keine weiteren Systemrufe
+.BR open (2)
+angenommen werden.
+.en 24 EMFILE "Too many open files
+Bei normaler Konfiguration koennen maximal 20 Dateien pro Prozess
+eroeffnet werden.
+.en 25 ENOTTY "Not a typewriter
+Die bei den Systemrufen
+.BR stty (2)
+oder
+.BR gtty (2)
+angegebene Datei ist kein Terminal oder eines der anderen Geraete, fuer
+die diese Systemrufe angewendet werden.
+.en 26 ETXTBSY "Text file busy
+Es wurde versucht, ein reines Prozedurprogramm auszufuehren, das 
+augenblicklich fuer Schreiben (oder Lesen!) offen ist.
+Auch ein Versuch, ein reines Prozedurprogramm, das gerade ausgefuehrt wird,
+fuer Schreiben zu oeffnen, fuehrt zu diesem Fehler.
+.en 27 EFBIG "File too large
+Die Groesse einer Datei uebersteigt das Maximum (ungefaehr
+.if t 10\u\s-29\s+2\d
+.if n 1.0E9
+Bytes).
+.en 28 ENOSPC "No space left on device
+Waehrend eines  Systemrufes
+.BR write (2)
+auf eine gewoehnliche Datei ist nicht genuegend
+freier Platz auf dem Geraet verfuegbar.
+.en 29 ESPIPE "Illegal seek
+Ein Systemruf 
+.BR lseek (2)
+wurde auf eine Pipe gegeben. Dieser Fehler wird auch fuer andere Geraete
+gemeldet, die keinen Seek-Systemruf erlauben.
+.en 30 EROFS "Read-only file system
+Es wurde versucht, eine Datei oder ein Directory auf einem
+Geraet zu modifizieren, das mit dem Attribut "nur lesen" 
+eingegliedert wurde.
+.en 31 EMLINK "Too many links
+Es wurde versucht, mehr als 32767 Links zu einer Datei zu
+erzeugen.
+.en 32 EPIPE "Broken pipe
+Es soll auf eine Pipe geschrieben werden, fuer die es keinen
+Prozess gibt, die Daten zu lesen.
+Diese Bedingung erzeugt normalerweise ein Signal;
+der Fehler wird zurueckgegeben, wenn das Signal ignoriert wird.
+.en 33 EDOM "Math argument
+Das Argument einer Funktion im Mathematik-Paket (3M)
+befindet sich ausserhalb des Wertevorrats der Funktion.
+.en 34 ERANGE "Result too large
+Der Wert einer Funktion im Mathematik-Paket (3M)
+ist innerhalb der Maschinengenauigkeit nicht darstellbar.
+.en 35 EDEADLOCK "Deadlock detected
+Waehrend eines Systemrufs
+.BR lkdata (2)
+verursacht das Erteilen dieser Blockierungssperre
+einen Zustand der Systemblockierung, in dem der Prozess eine
+oder mehrere Sperren 
+freigeben muss oder die vom System konfigurierbare Anzahl der
+Sperren ist bereits zugewiesen.
+.en 36 ENOSEG "No such segment
+Waehrend eines Systemrufes
+.BR mkseg (2)
+wurde eine Segmentnummer groesser 127 benutzt.
+Waehrend eines Systemrufes
+.BR break (2)
+wurde ein Segment verwendet, das vom verwendeten Programm
+nicht zugewiesen wurde.
+Waehrend eines Systemrufes
+.BR mkseg (2)
+wurde ein Segment angefordert, das bereits zugewiesen war.
+.en 37 ENOPROF "Profiling failed
+Bei Benutzung eines Systemrufes
+.BR profile (2)
+in einem segmentierten Programm war der Systemruf
+unzulaessig, weil in dem zu profilierendem Programm mehr als 10 Codesegmente
+vorhanden waren.
+.PP
+Es folgt eine Aufstellung der Geraete-Fehlernummern.
+Die Namen wurden gemaess der in <errno.h> erfolgten Definition verwendet 
+und die verfuegbaren Mitteilungen entsprechen
+.BR perror (3).
+.en 0 DGEN "General error
+Ein nicht in die unten aufgefuehrten Kategorien einzuordnender,
+allgemeiner geraetespezifischer Fehler.
+.en 1 DNUNIT "No such unit
+Das angeforderte Geraet existiert nicht oder ist nicht angeschlossen.
+.en 2 DIO "I/O error
+Waehrend der E/A-Operation trat ein physischer Fehler auf.
+.en 3 DBUSY "Device busy
+Das Geraet hatte die vorangegangene E/A-Operation noch nicht abgeschlossen,
+als die diesen Fehler erzeugende E/A-Operation vom Geraet gefordert
+wurde.
+.en 4 DPROT "Write protected
+Das Geraet war physisch schreibgeschuetzt.
+.en 5 DNMEDIA "No media
+Das Geraet hat kein Speichermedium (z.B. Diskette nicht eingelegt).
+.en 6 DEDATA "End of data
+Dieser Fehler tritt auf, wenn von einem leeren Medium gelesen wird. 
+.SH SIEHE AUCH
+intro(3)
+.SH ASSEMBLER
+.PP
+Das Interface fuer die U8000-Assemblersprache wird fuer jeden Systemruf
+gegeben.
+.PP
+Der Rueckgabewert erscheint in Register r4 bzw. rr4 (Long-Werte).
+Ein fehlerhafter Systemruf wird immer durch gesetztes Carry-Flag im
+Programmstatuswort (FCW) angezeigt.
+Der Wert -1 wird in r4 (bzw. rr4) zurueckgegeben.
+.PP
+Die externe Variable errno wird nach dem Systemruf gesetzt, um den 
+Fehler anzuzeigen.

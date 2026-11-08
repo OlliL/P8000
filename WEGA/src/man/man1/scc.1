@@ -1,0 +1,241 @@
+.TH SCC 1 
+.\" @[$]scc.1   1.2
+.ad
+.fi
+.SH NAME
+scc \- segmentierter C-Compiler
+.SH SYNTAX
+.B scc
+[-\fBcDEIOpPSU\fR]  \fIfile ...\fR
+.SH BESCHREIBUNG
+.B Scc
+ist ein portabler C-Compiler fuer die Erzeugung von U8001-Code.
+In Abhaengigkeit von den Optionen kann ein einzelner Aufruf von
+.B scc
+die Vorgaenge Compilieren, Compilieren und Assemblieren, oder Compilieren,
+Assemblieren und Verbinden ausfuehren.
+.PP
+Der Compiler
+.B scc
+stellt den Datentyp \fBunsigned char\fR,
+initialisierte Bit-Felder, die C-Eigenschaften der WEGA-Version 7 
+(Strukturzuweisungen und Verzeichnistypen) und folgende
+Ergaenzungen zur C-Sprache fuer WEGA System III bereit:
+.nf
+   1) den Datentyp \fBvoid\fR;
+   2) die eindeutige Identifikation der Strukturnamen und Elemente
+      von \fBunions\fR.
+.fi
+.PP
+Ohne Angabe von Optionen werden die Vorgaenge Compilieren,
+Assemblieren und Verbinden ausgefuehrt.
+Dazu werden interne Aufrufe an den U8000-Assembler
+.BR cas
+und segmentierten U8000-Linker
+.BR sld 
+benutzt.
+Dateinamen, die auf
+.B \&.c
+enden, werden als zu compilierende C-Quelldateien 
+angenommen.
+Bei Angabe der Option
+.B \-O
+wird die waehrend des Compilerlaufs erzeugte
+Quelle in Assemblersprache bezueglich Programmlaufzeit und Speicherplatz
+optimiert, bevor sie an den Assembler weitergeleitet werden.
+.PP
+Die
+.B \-S
+Option speichert den U8001 Assemblersprachen-Code in Dateien, die auf
+.B \&.s 
+enden und unterdrueckt die weitere Verarbeitung.
+Standardmaessig wird der Code assembliert und dann an den Linker uebergeben.
+Die
+.B \-c
+Option speichert den assemblierten Code in Dateien, die auf
+.B \&.o
+enden und unterdrueckt die weitere Verarbeitung.
+Standardmaessig verknuepft der Linker dann Objektmodule, um ein 
+ausfuehrbares U8001-Programm zu erzeugen.
+.PP
+Dateinamen, die auf
+.B \&.s
+enden, werden als U8001-Assemblerquellen angenommen.
+Standardmaessig werden diese
+Dateien assembliert und mit dem Linker verbunden.
+Der Vorgang des Compilierens wird ausgelassen.
+.PP
+Andere Dateinamen werden als Namen von C-kompatiblen Objektprogrammen
+(die bei einem frueheren
+.B scc
+Durchlauf erzeugt wurden) oder als Bibliotheken von C-kompatiblen Routinen
+angesehen.
+Diese Programme werden gemeinsam mit den Resultaten aller spezifizierten
+Compilierungen (in der gegebenen Reihenfolge) verbunden, um 
+einen ausfuehrbaren Lademodul mit dem Namen a.out (siehe
+.BR a.out (5))
+zu erzeugen.
+.SH OPTIONEN
+.PP
+Optionen koennen beim Aufruf von
+.B scc
+sowohl fuer
+.B scc
+als auch fuer 
+.B sld
+angegeben werden.
+Die folgenden Optionen werden von 
+.BR scc 
+interpretiert:
+.TP
+.B \-c
+Compilieren und Assemblieren der angegebenen C-Quelldateien, aber 
+Unterdruecken des Link-Schritts.
+Fuer jede compilierte Quelldatei wird wird eine Objektdatei erzeugt
+(Endung
+.BR \&.o ).
+.TP
+.BI \-D name
+.ti -5
+.BI \-D name=def
+.br
+Dem Symbol
+.I name
+wird der Wert
+.I def
+zugewiesen, der im Preprozessor ausgewertet wird
+(entspricht einer Anweisung #define).
+Wenn keine Definition gegeben ist, wird
+.I name
+als 1 definiert.
+.TP
+.B \-E
+Es wird nur der Makro-Preprozessor abgearbeitet und das Resultat
+auf die Standardausgabe geleitet.
+.TP
+.BI \-I dir
+Das angegebene Directory enthaelt Dateien, die ueber #include in
+die Uebersetzung einbezogen werden koennen.
+Namen, die nicht mit / beginnen, werden immer
+zuerst in dem gleichen Directory gesucht, in dem sich die Quelldatei
+befindet, danach in Directories, die in den 
+.B -I
+Optionen genannt sind und danach in Directories, die zu einer
+Standardliste gehoeren.
+.TP 
+.B \-O
+Aufruf des C-Optimierers
+.TP
+.B \-p
+Der Compiler erzeugt einen Code, der die Aufrufe jeder Routine
+zaehlt.
+Beim Verbinden wird die
+Standard-Startroutine durch eine Routine ersetzt,
+die beim Programmstart automatisch
+\fBsegmon\fR(3) aufruft. 
+Bei einer normalen Beendigung der Bearbeitung wird eine \fBmon.out\fR(5) Datei
+des Objektprogramms ausgegeben.
+Ueber das Programm \fBsprof\fR(1)
+kann danach ein Abarbeitungsprofil generiert werden.
+(Bemerkung: Die \fB\-p\fR Option erzeugt selbstaendig ein 
+Abarbeitungsprofil; aber das Profil sollte nicht verwendet werden, da
+notwendige zugehoerige Programme fuer das P 8000 nicht
+bereitgestellt werden.)
+.TP
+.B \-P
+Es wird nur der Makro-Preprozessor ausgefuehrt
+und das Resultat fuer
+jede \fB.c\fR-Datei wird in eine entsprechende \fB.i\fR-Datei geschrieben.
+Diese enthaelt keine mit
+.B #
+beginnenden Zeilen mehr.
+.TP
+.BI \-S l
+Compilieren der angegebenen C-Quelldateien, aber Unterdruecken der 
+Assembler- und Link-Laeufe.
+Der Assemblerquellcode wird in Dateien (Endung
+.BR \&.s )
+abgelegt.
+Wird 
+.I l 
+spezifiziert, werden die Originalzeilen der C-Quelle als Kommentare
+in die Assemblerquelle eingefuegt.
+.TP
+.BI \-U name
+Loeschen aller urspruenglichen Definitionen von 
+.IR name .
+.PP
+Alle anderen Optionen eines
+.B scc 
+Aufrufs werden an den Linker
+.BR sld 
+uebergeben.
+Vom
+.B scc
+Aufruf werden keine Optionen an 
+.B cas
+uebergeben. Jeder interne Aufruf an den Assembler spezifiziert
+den Namen der Objektdatei ueber die Option
+.B \-o
+(Originalnamen mit Endung
+.BR \&.o ).
+Der interne Aufruf an den Linker spezifiziert die Optionen
+.B \-X
+und
+.B \-e
+mit dem Symbolnamen des Programmeintrittspunkts \fBstart\fR und fuegt den 
+Bibliotheksnamen /lib/slibc.a an das Ende der Liste der Objektmodulnamen an.
+.B Sld
+und
+.B ld
+erkennen den gleichen Satz von Optionen,
+der ihnen vom C-Compiler uebergeben wurde.
+Siehe Beschreibung von 
+.B ld
+fuer eine Erklaerung dieser Optionen.
+.SH DATEIEN
+file.c          Quelldatei
+.br
+file.o          Objektdatei
+.br
+a.out           Lademodul
+.br
+/tmp/cc.?       temporaere Dateien
+.br
+/lib/cpp        Preprozessor
+.br
+/lib/scparse    Compiler Lauf 1
+.br
+/lib/scodgen    Compiler Lauf 2
+.br
+/lib/spopt      optionaler Optimierer
+.br
+/lib/clist      optionale Listingerzeugung
+.br
+/lib/slibc.a    Standardbibliothek
+.br
+/lib/smcrt0.o   optionale Startroutine fuer profil (1)
+.br
+/lib/scrt0.o    segmentierte Laufzeit-Startroutine in C
+.SH SIEHE AUCH
+.nf
+cas(1), ld(1), cc(1).
+.br
+"U8000-Aufrufvereinbarungen" in WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+Die Ausschriften, die vom Compiler, Assembler 
+oder Linker erzeugt werden, sind selbsterklaerend.
+.SH IMPLEMENTATION
+.PP
+Der
+.B scc
+Compiler hat folgende Charakteristiken:
+.IP -
+Es koennen bis zu 6 Registervariable
+(U8001-Register r8 bis r13) benutzt werden.
+.IP -
+Der erzeugte Objektcode steht in Uebereinstimmung
+zu den U8000-Aufrufvereinbarungen.
+.IP -
+Der Name 'u8000' ist im C-Preprozessor 
+als Konstante 1 vordefiniert.

@@ -1,0 +1,115 @@
+.TH MKSTR 1 WEGA   
+.\" @[$]mkstr.1	1.2
+.ad
+.fi
+.SH NAME
+mkstr \- Fehlernachrichten aus C-Quellen eliminieren
+.SH SYNTAX
+.B mkstr
+[
+.B \-
+]
+messagefile prefix file ...
+.SH BESCHREIBUNG
+.B Mkstr
+wird verwendet, um Fehlernachrichten aus C-Quelldateien herauszuloesen
+und in separaten Dateien zusammenzufassen.
+Seine Anwendung verkleinert Nutzerprogramme mit einer grossen Anzahl von
+Fehlernachrichten betraechtlich und reduziert den Systemaufwand 
+bei der Programmabarbeitung dadurch, dass die Fehlernachrichten
+nicht staendig ein- und ausgelagert werden muessen.
+.PP
+.B Mkstr
+verarbeitet jede der angegebenen C-Quelldateien
+.IR file ...,
+wobei die abgeaenderte Version
+der Eingabedatei in eine Datei gespeichert wird, 
+deren Name aus dem angegebenen
+.I prefix 
+und dem Originalnamen besteht.
+Eine typische Anwendung von 
+.B mkstr
+ist:
+.sp
+.RS
+\fBmkstr \fIerrormsg xx *.c\fR
+.RE
+.PP
+Dieses Kommando bewirkt, dass alle Fehlernachrichten, die in den
+C-Quelldateien enthalten sind, im aktuellen Directory in die Datei
+.I errormsg
+geschrieben werden und die erzeugten Kopien der Quellen dieser Dateien in
+.I xx*.c
+plaziert werden.
+.PP
+Um die Fehlernachrichten aus den C-Quellen in die
+Fehlernachrichtendatei zu uebertragen, sucht
+.B mkstr
+die Zeichenkette (sprich C-Funktion) \fBerror("\fR... im Eingabestrom.
+Bei jedem Auftreten wird die Zeichenkette, die 
+nach " beginnt, in die Fehlernachrichtendatei uebertragen sowie ein
+Null-Zeichen und ein Newline-Zeichen angehaengt.
+Das Null-Zeichen beendet die Mitteilung, so dass sie leicht 
+wiedergefunden werden kann; das Newline-Zeichen ermoeglicht es,
+den Inhalt der Fehlernachrichtendatei mittels
+.B cat
+sichtbar zu machen.
+Die erstellte Kopie der Eingangsdatei enthaelt dann einen Zeiger,
+der in der Fehlernachrichtendatei mit einer Funktion
+.RS
+.BR lseek (fildes,offset,0);
+.RE
+zum Auffinden und Ausgeben der Fehlernachricht benutzt werden kann.
+.SH BEISPIEL
+Das Kommando
+.IP
+error("Lesefehler",a2,a3,a4);
+.PP
+wird durch
+.B mkstr
+in
+.IP
+error(
+.BR m ,
+a2,a3,a4);
+.PP
+geaendert, wobei
+.B m
+die seek-Position der Zeichenkette in der resultierenden
+Fehlernachrichtendatei ist.
+Der Programmierer muss eine Routine erstellen,
+die die Fehlernachrichtendatei oeffnet, die Zeichenketten liest
+und ausgibt.
+Das folgende Beispiel zeigt eine solche Routine:
+.PP
+.DT
+.nf
+\fBchar\fR	efilname[] =  "/mydir/errormsg";
+\fBint\fR	efil = -1;
+.sp
+error(a1, a2, a3, a4)
+{
+	\fBchar\fR buf[256];
+
+	\fBif\fR (efil < 0) {
+		efil = open(efilname, 0);
+		\fBif\fR (efil < 0) {
+oops:
+			perror(efilname);
+			exit(1);
+		}
+    }
+    \fBif\fR (lseek(efil, (long) a1, 0) |\|| read(efil, buf, 256) <= 0)
+    	\fBgoto\fR oops;
+    printf(buf, a2, a3, a4);
+}
+.fi
+.SH OPTIONEN
+.TP
+.B \-
+Die Fehlernachrichten werden an das Ende der angegebenen
+Fehlernachrichtendatei angehaengt (fuer die Recompilierung eines grossen
+.BR mkstr 
+Programms hilfreich).
+.SH SIEHE AUCH
+lseek(2), xstr(1).

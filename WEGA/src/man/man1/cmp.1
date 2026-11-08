@@ -1,0 +1,41 @@
+.TH CMP 1 WEGA
+.\" @[$]cmp.1	1.2
+.ad
+.fi
+.SH NAME
+cmp \- Vergleich zweier Dateien
+.SH SYNTAX
+\fBcmp\fR [ \fB\-l\fR ] [ \fB\-s\fR ] \fIfile1 file2\fR
+.SH BESCHREIBUNG
+Die beiden angegebenen Dateien werden verglichen. 
+Ist fuer
+.I file1
+ein Minuszeichen "\-" angegeben, wir von der Standardeingabe gelesen.
+Sind beide Dateien gleich und wurden keine Optionen angegeben, gibt
+.B cmp
+keine Meldung aus.
+Sind die Dateien nicht gleich, wird 
+Byte- und Zeilennummer des ersten Unterschieds ausgegeben und der Vergleich
+abgebrochen. Es wird gemeldet,
+wenn eine Datei eine echte Teilmenge der anderen ist.
+.SH OPTIONEN
+.TP 6
+.B  \-l
+Langes Format. Ausgabe der Byte-Nummer (dezimal) und des Inhalts der 
+Bytes (oktal) fuer jeden festgestellten Unterschied.
+.TP 6
+.B  \-s
+Keine Ausgabe der Unterschiede, es wird nur ein Rueckkehrkode
+generiert.
+.DT
+.SH SIEHE AUCH
+diff(1), comm(1)
+.SH DIAGNOSTIK
+Der Rueckkehrkode ist:
+.RS 4 
+0  -  bei gleichen Dateien
+.br
+1  -  bei ungleichen Dateien
+.br
+2  -  bei nichtzugreifbarem oder fehlerhaftem Argument.
+.RE

@@ -1,0 +1,1065 @@
+.TH TTY 4 WEGA
+.\"@[$]tty.4   1.3
+.ad
+.fi
+.SH NAME
+tty \- Allgemeines Terminal-Interface
+.SH BESCHREIBUNG
+In diesem Abschnitt wird sowohl die Geraetedatei
+als auch der allgemeine Charakter des Terminalinterface beschrieben.
+.PP
+Die Geraetedatei
+.B /dev/tty
+ist in jedem Prozess das Synonym fuer das
+mit der Prozessgruppe des Prozesses (sofern vorhanden)
+verbundene Steuerterminal.
+Ihre Benutzung ist bei Programmen oder Shellskripten sinnvoll,
+die ihre Meldungen unabhaengig davon, wohin die Ausgabe geleitet wird,
+immer auf ein Terminal ausgeben sollen.
+Sie kann auch fuer Programme benutzt werden, die fuer
+die Ausgabe den Namen einer Datei benoetigen, wenn eine gedruckte
+Ausgabe gewuenscht wird und wenn
+es zu zeitaufwendig waere, festzustellen,
+welches Terminal gerade in Benutzung ist.
+.PP
+Generell gilt fuer alle Terminals:
+alle asynchronen Kommunikationskanaele nutzen das gleiche allgemeine
+Interface, unabhaengig davon, welche Hardware benutzt wird.
+In diesem Abschnitt werden die gemeinsamen Merkmale dieses Interfaces
+behandelt.
+.PP
+Wird eine Terminaldatei geoeffnet,
+wartet der Prozess, bis eine Verbindung hergestellt ist. In der Praxis
+oeffnen Anwenderprogramme diese Datei nur selten.
+Die Datei wird durch
+.BR getty (M)
+geoeffnet.
+Die Standardeingabe, -ausgabe und -fehlerausgabe wird mit dem
+Terminal verbunden.
+Die erste Terminaldatei, die
+vom Prozessgruppeneigner
+einer noch nicht mit einer anderen Prozessgruppe verbundenen Terminaldatei
+geoeffnet wird, 
+wird zum 
+.B Steuerterminal
+dieser Prozessgruppe.
+Das Steuerterminal spielt eine besondere Rolle bei der Behandlung von
+QUIT- und INTERRUPT-Signalen (siehe unten).
+Das Steuerterminal wird waehrend eines Systemrufs
+.BR fork (2)
+von einem Childprozess geerbt.
+Ein Prozess kann diese Bindung durch Veraenderung seiner
+Prozessgruppe ueber den Systemruf
+.BR setpgrp (2)
+abbrechen.
+.PP
+Ist ein Terminal mit einer dieser Dateien verknuepft, arbeitet es normalerweise
+im vollen Duplex-Modus.
+Zeichen koennen jederzeit, auch waehrend einer Ausgabe, eingegeben werden.
+Sie gehen nur dann verloren, wenn die Zeicheneingabepuffer des Systems
+bis zum festgelegten Maximum voll sind (ist nur selten der Fall).
+Sie koennen auch 
+verloren gehen, wenn der Nutzer die maximale Anzahl von 
+Eingabezeichen akkumuliert hat und diese noch nicht von einem Programm
+gelesen wurden.
+Der Maximalwert ist im Betriebssystem WEGA zu 256 Zeichen festgelegt.
+Ist das Eingabelimit erreicht, gehen alle gespeicherten Zeichen ohne
+Meldung verloren.
+.PP
+Terminaleingaben werden normalerweise zeilenweise verarbeitet.
+Zeichen zur Zeilenbegrenzung sind:
+.RS
+.ne 3
+.nf
+- Newline (ASCII Linefeed)
+- End-Of-File (ASCII EOT)
+- End-of-Line-Zeichen.
+
+.RE
+.fi
+Somit ruht die Ausfuehrung eines Programms, das ueber eine
+Systemfunktion von einem Terminal liest,
+solange, bis eine vollstaendige Zeile eingegeben wurde.
+Ausserdem wird immer hoechstens eine Zeile uebergeben, unabhaengig davon,
+wieviele Zeichen im Leseaufruf angefordert wurden.
+Es ist jedoch nicht erforderlich, eine ganze Zeile auf einmal zu lesen.
+Mit einem Leseaufruf kann eine beliebige Anzahl von Zeichen, selbst ein
+einzelnes, angefordert werden, ohne dass Informationen verloren gehen.
+.PP
+Waehrend der Eingabe werden die ERASE- und KILL-Zeichen behandelt.
+Das
+.BR ERASE \-Zeichen
+(Standard: Backspace)
+loescht das letzte eingegebene Zeichen, sofern es nicht am Zeilenanfang 
+eingegeben wurde.
+Das
+.BR KILL \-Zeichen
+(Standard: Control-x)
+loescht die gesamte eingegebene Zeile und gibt optionell
+ein Newline-Zeichen aus.
+Beide Zeichen werden ueber Tastatur eingegeben und
+wirken unabhaengig davon,
+ob vorher
+Backspace- oder Tabulatoroperationen erfolgten.
+Beide Zeichen koennen literal eingegeben werden, indem man ihnen das 
+Escapezeichen
+.RB ( \e )
+voranstellt.
+In diesem Fall wird das Escapezeichen nicht gelesen.
+Die beiden Zeichen
+.B ERASE
+und
+.B KILL
+koennen geaendert werden.
+.SH Spezielle Zeichen
+Einige Zeichen bewirken bei ihrer Eingabe eine spezielle Funktion.
+Es folgt eine Zusammenfassung dieser Zeichen, ihrer Standardzeichenwerte
+und Funktionen:
+.TP 7
+.B INTR
+Rubout oder
+(ASCII) DEL
+.br
+Es wird ein Signal
+.B INTERRUPT
+erzeugt, das an alle Prozesse gesendet wird, die dem entsprechenden 
+Steuerterminal zugeordnet sind.
+Jeder dieser Prozesse endet, sofern er das Signal nicht ignoriert
+oder anderweitig behandelt (siehe
+.BR signal (2)).
+.TP
+.B QUIT
+Control-\(bv oder
+(ASCII) FS
+.br
+Es wird ein Signal
+.B QUIT
+erzeugt.
+Dieses Signal wird wie das INTERRUPT-Signal behandelt.
+Sofern nicht anders festgelegt, wird der Empfangsprozess
+beendet und ein Speicherabbild
+.RB ( core )
+im aktuellen Arbeitsdirectory
+angelegt.
+.TP
+.B ERASE
+Backspace
+.br
+Das zuletzt eingegebene Zeichen wird geloescht, sofern es
+nicht am Zeilenanfang, der durch
+die Zeichen
+Newline, EOF oder EOL
+begrenzt wird, eingegeben wurde.
+.TP
+.B KILL
+Control-x
+.br
+Die gesamte Zeile,
+die durch die Zeichen
+Newline, EOF oder EOL
+begrenzt wird, wird geloescht.
+.TP
+.B EOF
+Control-d oder
+(ASCII) EOT
+.br
+Es wird von einem Terminal
+aus ein End-of-File erzeugt.
+Bei Empfang werden alle bis zu diesem Zeitpunkt
+eingegebenen Zeichen
+sofort an das Programm
+weitergegeben, ohne dass auf ein Newline-Zeichen
+gewartet wird.
+Das
+.B EOF
+wird zerstoert.
+Tritt das Zeichen
+.B EOF
+am Zeilenanfang auf, werden keine Zeichen an den Prozess
+uebergeben.
+Somit gilt auch: Sind keine Zeichen eingegeben worden,
+die auf die Weiterleitung an den Prozess warten,
+wird standardmaessig
+.B EOF
+zurueckgegeben.
+.TP
+.B Newline
+Linefeed
+.br
+Normales Zeilenbegrenzungszeichen.
+Es kann nicht geaendert
+bzw. seine spezielle Bedeutung
+kann nicht mit einem Escapezeichen aufgehoben werden.
+.TP
+.B EOL
+ASCII NUL (0x00)
+.br
+Dieses zusaetzliche Zeilenbegrenzungszeichen hat 
+die gleiche Wirkung wie Newline.
+Es wird normalerweise nicht verwendet.
+.TP
+.B STOP
+Control-s oder (ASCII) DC3
+.br
+Die Ausgabe wird zeitweilig unterbrochen.
+Mit diesem Zeichen kann verhindert werden,
+dass die Ausgabe verschwindet, bevor sie gelesen werden kann.
+Waehrend der Unterbrechung der Ausgabe
+werden weitere
+.BR STOP \-Zeichen
+ignoriert und nicht gelesen.
+.TP
+.B START
+Control-q oder (ASCII) DC1
+.br
+Die Ausgabe wird nach einer Unterbrechung durch ein
+.BR STOP \-Zeichen
+fortgesetzt.
+.BR START \-Zeichen
+werden ignoriert und nicht gelesen, wenn
+die Ausgabe nicht unterbrochen worden ist.
+.B START-
+und
+.BR STOP \-Zeichen
+koennen nicht veraendert bzw. ihre spezielle Bedeutung
+kann nicht mit einem Escapezeichen aufgehoben werden.
+.PP
+Die Zeichenwerte von
+.BR INTR ,
+.BR QUIT ,
+.BR ERASE ,
+.BR KILL ,
+.BR EOF
+und
+.BR EOL
+koennen nach Bedarf veraendert werden.
+Die spezielle Bedeutung der Zeichen
+.BR ERASE ,
+.BR KILL
+und
+.BR EOF
+kann durch Voranstellen eines Escapezeichens
+.B \e
+aufgehoben werden.
+Es wird dann keine spezielle Funktion ausgefuehrt.
+.PP
+Faellt ein Traegersignal von einem
+Datenuebertragungsinterface (Modem)
+aus, wird an alle Prozesse, die mit diesem Terminal als
+Steuerterminal verbunden sind, ein Signal
+.B HANGUP
+gesendet. Sofern keine anderen
+Anordnungen getroffen wurden, fuehrt dieses
+Signal zur Beendigung der Prozesse.
+Wird dieses Signal ignoriert,
+wird bei darauf folgendem Lesen ein
+End-of-File zurueckgegeben.
+Somit koennen Programme, die von einem
+Terminal lesen und das Ergebnis auf End-of-File 
+ueberpruefen, bei Auftreten eines Signals
+.B HANGUP
+enden.
+.PP
+Geschriebene Zeichen werden sofort zum Terminal gesendet,
+sobald die Ausgabe vorher geschriebener Zeichen beendet ist.
+Eingegebene Zeichen werden als Echo wieder ausgegeben, indem
+sie bei Eintreffen sofort in die Ausgabewarteschlange
+uebertragen werden.
+Erzeugt ein Prozess schneller Zeichen, als diese ausgegeben werden koennen,
+wird der Prozess dann unterbrochen, wenn seine Ausgabewarteschlange eine
+bestimmte Laenge ueberschreitet.
+Ist die Warteschlange (durch die interruptgesteuerte Ausgabe)
+wieder bis auf eine festgelegte Groesse abgearbeitet worden,
+wird das Programm reaktiviert.
+.SH Struktur zum Systemruf ioctl(2)
+Einige
+.BR ioctl (2)
+Systemaufrufe beziehen sich auf Terminaldateien.
+Die Rufe verwenden die folgende Struktur, die in der Datei
+.BR <termio.h>
+definiert ist:
+.PP
+.RS
+.nf
+.na
+#define NCC   8
+struct  termio {
+    unsigned    short    c_iflag;    /\(** Eingabemodi \(**/
+    unsigned    short    c_oflag;    /\(** Ausgabemodi \(**/
+    unsigned    short    c_cflag;    /\(** Steuermodi \(**/
+    unsigned    short    c_lflag;    /\(** lokale Modi \(**/
+    char                 c_line;     /\(** Line Discipline \(**/
+    unsigned    char     c_cc[NCC];  /\(** Steuerzeichen \(**/
+};
+.fi
+.ad
+.RE
+.PP
+Die speziellen Steuerzeichen werden im Feld
+.IR c_cc
+festgelegt. Es hat folgenden Aufbau:
+.RS
+.nf
+
+Byte    Bedeutung     Standardwert
+----------------------------------
+ 0       INTR          DEL
+ 1       QUIT          FS
+ 2       ERASE         BS
+ 3       KILL          Control-x
+ 4       EOF           EOT
+ 5       EOL           NUL
+ 6       reserviert
+ 7       reserviert
+.fi
+.RE
+.SH Eingabemodi
+Das Feld
+.B c_iflag
+beschreibt die Grundkommandos der Terminalsteuerung fuer die
+.BR Eingabe :
+.PP
+.RS 3
+.nf
+IGNBRK  0000001  Break-Zustand ignorieren.
+BRKINT  0000002  Bei Break Signal INTERRUPT.
+IGNPAR  0000004  Zeichen mit Paritaetsfehler ignorieren.
+PARMRK  0000010  Markieren von Paritaetsfehlern.
+INPCK   0000020  Paritaetskontrolle bei der Eingabe.
+ISTRIP  0000040  Zeichen auf 7 Bit begrenzen.
+INLCR   0000100  Bei Eingabe NL in CR umwandeln.
+IGNCR   0000200  CR ignorieren.
+ICRNL   0000400  Bei Eingabe CR in NL umwandeln.
+IUCLC   0001000  Grossbuchstaben in Kleinbuchstaben umwandeln.
+IXON    0002000  START/STOP Freigabe fuer Ausgabesteuerung.
+IXANY   0004000  Beliebiges Zeichen kann Ausgabe reaktivieren.
+IXOFF   0010000  START/STOP Freigabe fuer Eingabesteuerung.
+.fi
+.RE
+.PP
+Ist
+.BR IGNBRK
+gesetzt, wird ein
+Break-Zustand
+(Fehler im Uebertragungsrahmen eines Zeichens,
+wobei alle Daten Null sind)
+ignoriert. Das Zeichen Null wird nicht in die Eingabewarteschlange
+gebracht und kann daher von keinem Prozess gelesen werden.
+Ist andererseits
+.BR BRKINT
+gesetzt, erzeugt der Break-Zustand ein Signal
+.B INTERRUPT
+und die Eingabe- sowie Ausgabewarteschlangen werden geleert.
+Ist
+.BR IGNPAR
+gesetzt, werden Zeichen mit anderen Fehlern im Uebertragungsrahmen
+und mit Paritaetsfehlern ignoriert.
+.PP
+Ist
+.BR PARMRK
+gesetzt, wird ein Zeichen mit einem Fehler im Uebertragungsrahmen oder
+mit einem Paritaetsfehler, das nicht ignoriert wird,
+als eine aus 3 Buchstaben bestehende Folge
+0377, 0, X
+gelesen, wobei X fuer die Daten des fehlerhaft
+empfangenen Zeichens steht.
+Zur Vermeidung von Unklarheiten gilt:
+Ist
+.BR ISTRIP
+nicht gesetzt, wird ein gueltiges Zeichen 0377 als 0377, 0377 gelesen.
+Ist
+.BR PARMRK
+nicht gesetzt, wird ein Fehler im Uebertragungsrahmen oder
+ein Paritaetsfehler, der nicht ignoriert wird, als
+das ASCII-Zeichen
+NUL (0x00) gelesen.
+.PP
+Ist
+.BR INPCK
+gesetzt, wird die Paritaetskontrolle der Eingabe zugelassen.
+Ist
+.BR INPCK
+nicht gesetzt, ist die Paritaetskontrolle der Eingabe nicht
+moeglich.
+Dadurch wird eine Paritaetserzeugung in der Ausgabe
+ohne Eingabe-Paritaetsfehler moeglich.
+.PP
+Ist
+.BR ISTRIP
+gesetzt, werden die gueltigen Eingabezeichen
+auf 7 Bit begrenzt, sonst werden alle 8 Bit verarbeitet.
+.PP
+Ist
+.BR INLCR
+gesetzt, wird ein empfangenes
+Newline-Zeichen in ein CR umgewandelt.
+Ist
+.BR IGNCR
+gesetzt, wird ein empfangenes
+CR
+ignoriert (wird nicht gelesen).
+Ist andererseits
+.BR ICRNL
+gesetzt, wird ein empfangenes
+CR in ein Newline-Zeichen umgewandelt.
+.PP
+Ist
+.BR IUCLC
+gesetzt, wird ein empfangenes gross geschriebenes, alphabetisches
+Zeichen in das zugehoerige klein geschriebene Zeichen uebersetzt.
+.PP
+Ist
+.BR IXON
+gesetzt, wird die START/STOP-Ausgabesteuerung
+freigegeben.
+Ein empfangenes
+.BR STOP \-Zeichen
+unterbricht die Ausgabe und ein empfangenes
+.BR START \-Zeichen
+fuehrt zur Wiederaufnahme der Ausgabe.
+Alle START- und STOP-Zeichen werden
+fuer die Eingabe ignoriert und nicht gelesen.
+Ist
+.BR IXANY
+gesetzt, fuehrt ein beliebiges Eingabezeichen zur Wiederaufnahme
+der unterbrochenen Ausgabe.
+.PP
+Ist
+.BR IXOFF
+gesetzt, uebertraegt das System
+.BR START/STOP \-Zeichen,
+wenn die Eingabewarteschlange fast leer/voll ist.
+.PP
+Die voreingestellten Werte fuer die Eingabesteuerung sind:
+.IP
+.BR ICRNL ,
+.BR ISTRIP ,
+.BR IGNPAR ,
+.BR IXON ,
+.BR BRKINT .
+.SH Ausgabemodi
+Das Feld
+.I c_oflag\^
+enthaelt Angaben zur Steuerung der
+.BR Ausgabe .
+.PP
+.RS 3
+.nf
+OPOST   0000001  Ausgabe wird verarbeitet.
+OLCUC   0000002  Kleinbuchstaben werden in Grossbuchstaben
+                   umgewandelt.
+ONLCR   0000004  NL wird in CR-NL umgewandelt.
+OCRNL   0000010  CR wird in NL umgewandelt.
+ONOCR   0000020  Keine Ausgabe von CR in Spalte 0.
+ONLRET  0000040  NL fuehrt CR Funktion aus.
+OFILL   0000100  Fuer Verzoegerung werden Fuellzeichen verwendet.
+OFDEL   0000200  Fuellzeichen sind DEL, sonst NUL.
+NLDLY   0000400  Auswahl der Newline-Verzoegerung:
+NL0     0
+NL1     0000400
+CRDLY   0003000  Auswahl der CR-Verzoegerung:
+CR0     0
+CR1     0001000
+CR2     0002000
+CR3     0003000
+TABDLY  0014000  Auswahl der Horizontaltabulator-Verzoegerung:
+TAB0    0
+TAB1    0004000
+TAB2    0010000
+TAB3    0014000  Tabulatoren durch Leerzeichen ersetzen.
+BSDLY   0020000  Auswahl der Backspace-Verzoegerung:
+BS0     0
+BS1     0020000
+VTDLY   0040000  Auswahl der Vertikaltabulator-Verzoegerung:
+VT0     0
+VT1     0040000
+FFDLY   0100000  Auswahl der Formfeed-Verzoegerung:
+FF0     0
+FF1     0100000
+.fi
+.RE
+.PP
+Ist
+.BR OPOST
+gesetzt, werden die auszugebenden Zeichen in Abhaengigkeit von den
+verbleibenden Flags nachverarbeitet.
+Sonst werden die Zeichen unveraendert zum Terminal gesendet.
+.PP
+Ist
+.BR OLCUC
+gesetzt,  wird ein Kleinbuchstabe
+in den zugehoerigen Grossbuchstaben umgewandelt.
+Diese Funktion wird oft in Verbindung mit
+.BR IUCLC 
+benutzt.
+.PP
+Ist
+.BR ONLCR
+gesetzt, wird fuer ein auszugebendes Newline-Zeichen
+das Zeichenpaar CR-NL ausgegeben.
+Ist
+.BR OCRNL
+gesetzt, wird fuer das Zeichen CR
+das Zeichen
+.BR NL
+ausgegeben.
+Ist
+.BR ONOCR
+gesetzt, wird in der ersten Spalte kein Zeichen
+.BR CR
+ausgegeben.
+Ist
+.BR ONLRET
+gesetzt, bewirkt das Zeichen
+.BR NL
+zusaetzlich die Funktion CR.
+Der Spaltenzeiger wird auf Null gesetzt und die fuer
+.BR CR
+festgelegten Verzoegerungen werden angewandt.
+Sonst erfuellt das Zeichen
+.BR NL
+nur die Zeilenvorschub-Funktion und der
+Spaltenzeiger bleibt unveraendert.
+Der Spaltenzeiger wird nur dann auf Null gesetzt, wenn das Zeichen
+.BR CR
+tatsaechlich ausgegeben wird.
+.PP
+Verzoegerungszeiten sind notwendig,
+wenn das Terminal bei der Ausgabe bestimmter Zeichen
+komplexere Funktionen ausfuehren muss,
+bevor weitere Zeichen ausgegeben werden koennen.
+Die Verzoegerungszeiten werden durch Ausgabe von Fuellzeichen
+oder echte Zeitverzoegerungen realisiert.
+Die Verzoegerungsbits im Ausgabeflag geben die Laenge der Verzoegerung an.
+Sind diese Bits rueckgesetzt, werden keine Verzoegerungen realisiert.
+.PP
+Ist
+.BR OFILL
+gesetzt,
+werden fuer eine Verzoegerung statt einer zeitlichen
+Verzoegerung Fuellzeichen ausgegeben.
+Die Ausgabe von Fuellzeichen ist bei Terminals mit
+hoher Baudrate sinnvoll, die nur geringfuegige
+Verzoegerungen benoetigen.
+Ist
+.BR OFDEL
+gesetzt, wird als Fuellzeichen das ASCII-Zeichen
+.BR DEL (0x7f)
+verwendet, ansonsten
+.BR NUL (0x00).
+.PP
+Ist eine Verzoegerung fuer Formfeed oder fuer
+Vertikaltabulator festgelegt, dauert diese etwa 2 Sekunden.
+.PP
+Die Verzoegerung fuer ein Newline-Zeichen ist zu ca. 0,10 Sekunden
+festgelegt.
+Ist
+.BR ONLRET
+gesetzt, wird statt der Verzoegerung fuer Newline die
+Verzoegerung fuer CR benutzt. 
+Ist
+.BR OFILL
+gesetzt, werden zwei Fuellzeichen ausgegeben.
+.PP
+Die Verzoegerung fuer CR, Typ 1,
+haengt von der aktuellen Spaltenposition ab.
+Die Verzoegerung
+fuer Typ 2 dauert etwa 0,10 Sekunden und fuer Typ 3 etwa 0,15 Sekunden.
+Ist
+.BR OFILL
+gesetzt, werden fuer die Verzoegerung vom Typ 1 zwei Fuellzeichen,
+fuer Typ 2 vier Fuellzeichen ausgegeben.
+.PP
+Die Verzoegerung fuer Horizontaltabulator, Typ 1
+haengt von der aktuellen Spaltenposition ab.
+Typ 2 dauert etwa 0,10 Sekunden.
+Typ 3 legt fest, dass Tabulatoren auf Leerzeichen ausgedehnt werden.
+Ist
+.BR OFILL
+gesetzt, werden fuer jede Verzoegerungsart zwei 
+Fuellzeichen ausgegeben.
+.PP
+Die Verzoegerung fuer Backspace dauert etwa 0,05 Sekunden.
+Ist
+.BR OFILL
+gesetzt, wird ein Fuellzeichen ausgegeben.
+.PP
+Die tatsaechlichen Verzoegerungen sind 
+von der Uebertragungsrate und der Systembelastung abhaengig.
+.PP
+Die voreingestellten Werte fuer die Ausgabesteuerung sind:
+.IP
+.BR TAB3 ,
+.BR OPOST ,
+.BR ONLCR .
+.SH Steuermodi
+Das Feld
+.B c_cflag\^
+beschreibt die Hardwaresteuerung des Terminals:
+.PP
+.RS 3
+.nf
+CBAUD   0000017   Baudrate:
+B0      0          Hangup
+B75     0000002    75 Baud
+B110    0000003    110 Baud
+B134    0000004    134.5 Baud
+B150    0000005    150 Baud
+B200    0000006    200 Baud
+B300    0000007    300 Baud
+B600    0000010    600 Baud
+B1200   0000011    1200 Baud
+B1800   0000012    1800 Baud
+B2400   0000013    2400 Baud
+B4800   0000014    4800 Baud
+B9600   0000015    9600 Baud
+B19200  0000016    19200 Baud
+EXT     0000017    Extern
+CSIZE   0000060   Zeichengroesse:
+CS5     0          5 Bits
+CS6     0000020    6 Bits
+CS7     0000040    7 Bits
+CS8     0000060    8 Bits
+CSTOPB  0000100   Zwei Stop-Bits setzen, ansonsten eins.
+CREAD   0000200   Freigabe Empfaenger.
+PARENB  0000400   Paritaetsfreigabe.
+PARODD  0001000    Ungerade Paritaet, sonst gerade.
+HUPCL   0002000   Hangup bei letztem Close.
+CLOCAL  0004000   Lokale Leitung, ansonsten anwaehlen.
+.fi
+.RE
+.PP
+Die Bitpositionen
+.BR CBAUD
+geben die Uebertragungsgeschwindigkeit (Baudrate) an.
+Die Baudrate B0 dient zum Abbruch der
+Verbindung (Hangup), wobei die Verbindung
+durch Deaktivieren der Signalleitung DTR (Data Terminal Ready)
+getrennt wird.
+Unzulaessige Aenderungen der Uebertragungsgeschwindigkeit
+werden ignoriert.
+.PP
+Die Bitpositionen
+.BR CSIZE
+geben die Zeichengroesse fuer Senden und Empfangen an.
+Paritaetsbits werden in dieser Groesse nicht beruecksichtigt.
+Ist
+.BR CSTOPB
+gesetzt, werden zwei Stop-Bits verwendet,
+ansonsten nur eins
+(z.B. sind bei 110 Baud zwei Stop-Bits erforderlich).
+.PP
+Ist
+.BR PARENB
+gesetzt, sind Paritaetserzeugung und -erkennung zugelassen
+und jedem Zeichen wird ein Paritaetsbit hinzugefuegt.
+Ist Paritaet zugelassen und das Flag
+.BR PARODD
+gesetzt, wird ungerade Paritaet verwendet.
+Ist
+.B PARODD
+rueckgesetzt, wird gerade Paritaet verwendet.
+.PP
+Ist
+.BR CREAD
+gesetzt, ist der Empfaenger freigegeben.
+Andernfalls werden keine Zeichen empfangen.
+.PP
+Ist
+.BR HUPCL
+gesetzt, wird die Leitung getrennt,
+wenn der letzte Prozess, der die Verbindung
+eroeffnete, diese schliesst oder beendet wird.
+Die Signalleitung DTR (Data Terminal Ready) wird deaktiviert.
+.PP
+Ist
+.BR CLOCAL
+gesetzt, wird die Leitung als lokale, direkte Verbindung
+ohne Modem-Steuerung behandelt.
+Andernfalls wird davon ausgegangen, dass eine
+Modem-Steuerung erfolgt.
+.PP
+Die voreingestellten Werte fuer die Hardware-Steuerung sind:
+.IP
+.BR B9600 ,
+.BR CS7 ,
+.BR CREAD ,
+.BR HUPCL ,
+.BR CSTOPB .
+.SH Lokale Modi
+Das Feld
+.B c_lflag\^
+der Argument-Struktur wird
+vom Terminalhandler
+zur Steuerung von Terminalfunktionen benutzt.
+Fuer den gegenwaertig im WEGA-Betriebssystemkern implementierten
+Standardhandler fuer V.24- oder IFSS-Terminals
+stehen folgende Moeglichkeiten zur Verfuegung:
+.PP
+.RS 3
+.nf
+ISIG    0000001   Freigabe von Signalen.
+ICANON  0000002   Kanonische Eingabe
+                    (Verarbeitung von ERASE und KILL).
+XCASE   0000004   Kanonische Gross/Klein-Darstellung.
+ECHO    0000010   Freigabe der Echofunktion.
+ECHOE   0000020   Echo Zeichen loeschen wie BS-SPACE-BS.
+ECHOK   0000040   Echo NL nach KILL-Zeichen.
+ECHONL  0000100   Echo NL.
+NOFLSH  0000200   Eingabepuffer werden nach INTERRUPT oder QUIT
+                    nicht geleert
+.fi
+.RE
+.PP
+Ist
+.BR ISIG
+gesetzt,
+wird jedes Eingabezeichen mit den speziellen Steuerzeichen
+.BR INTR
+und
+.BR QUIT 
+verglichen.
+Stimmt ein Eingabezeichen mit einem dieser
+Steuerzeichen ueberein,
+wird die diesem Zeichen zugeordnete Funktion
+ausgefuehrt.
+Ist
+.BR ISIG
+nicht gesetzt, erfolgt kein Vergleich und die
+speziellen Eingabefunktionen werden nicht ausgefuehrt.
+Diese Funktionen koennen separat deaktiviert werden,
+indem den Steuerzeichen unwahrscheinliche
+Werte zugewiesen werden (z.B. 0xff).
+.PP
+Ist
+.BR ICANON
+gesetzt, werden die Funktionen ERASE und KILL ausgefuehrt.
+Weiterhin werden die Eingabezeichen,
+die von
+.BR NL ,
+.BR EOF ,
+oder
+.BR EOL 
+begrenzt sind, als Eingabezeile betrachtet und uebergeben.
+Ist
+.BR ICANON
+nicht gesetzt, werden Lese-Anforderungen direkt
+aus der Eingabewarteschlange erfuellt.
+Eine Lese-Anforderung wird erst dann befriedigt, wenn
+mindestens
+.BR MIN
+Zeichen empfangen wurden oder die Zeitueberwachung
+.BR TIME
+abgelaufen ist.
+Damit wird ein zuverlaessiges Lesen schneller Eingabefolgen
+moeglich, waehrend gleichzeitig einzelne Zeichen
+eingegeben werden koennen.
+Die Werte fuer
+.BR MIN
+und
+.BR TIME
+werden in der Struktur
+.B termio
+im Feld
+.B c_cc
+an der Position fuer
+.BR EOF
+bzw. fuer
+.BR EOL
+gespeichert.
+Der Wert
+.B TIME
+wird in Zehntelsekunden angegeben.
+.PP
+Ist
+.BR XCASE
+und
+.BR ICANON
+gesetzt, wird ein Buchstabe bei der Eingabe als Grossbuchstabe
+erkannt, wenn ihm ein
+.B \e
+Zeichen vorangestellt wird.
+Ein Buchstabe wird als Grossbuchstabe ausgegeben, wenn ihm ein
+.B \e
+Zeichen vorangestellt wird.
+In diesem Modus werden die folgenden Escapezeichenfolgen
+bei der Ausgabe erzeugt und bei Eingabe erkannt:
+.br
+.ne 7
+.PP
+.PD 0
+.RS
+.TP 8
+.IR fuer :
+.IR verwenden :
+.TP
+.B \`
+.B \e\'
+.TP
+.B \(bv
+.B \e!
+.TP
+.B ~
+.B \e^
+.TP
+.B {
+.B \e(
+.TP
+.B }
+.B \e)
+.TP
+.B \e
+.B \e\e
+.RE
+.PD
+.PP
+So wird beispielsweise
+.B A
+als
+.BR \ea
+eingegeben,
+.B \en
+als
+.BR \e\en ,
+und
+.B \eN
+als
+.BR \e\e\en .
+.PP
+Ist
+.BR ECHO
+gesetzt, werden die Zeichen so als Echo wieder ausgegeben,
+wie sie empfangen werden.
+.PP
+Ist
+.BR ICANON
+gesetzt, sind folgende Echofunktionen moeglich:
+.br
+Werden
+.BR ECHO
+und
+.BR ECHOE
+gesetzt,
+wird das ERASE-Zeichen als
+ASCII-Zeichenfolge
+.B BS-SPACE-BS 
+wiedergegeben, wodurch das letzte Zeichen
+vom Bildschirm geloescht wird.
+Ist
+.BR ECHOE
+gesetzt und wird
+.BR ECHO
+nicht gesetzt, wird das ERASE-Zeichen als
+ASCII-Zeichenfolge
+.B SPACE-BS
+wiedergegeben.
+Ist
+.BR ECHOK
+gesetzt, wird nach dem KILL-Zeichen das Zeichen
+.BR NL
+ausgegeben, um deutlich zu machen, dass die Zeile geloescht wird.
+Es ist zu beachten, dass ein vor einem ERASE- oder KILL-Zeichen
+stehendes Escapezeichen jede spezielle Funktion aufhebt.
+Ist
+.BR ECHONL
+gesetzt, wird das Zeichen
+.BR NL
+auch dann ausgegeben, wenn
+.BR ECHO
+nicht gesetzt ist.
+Das ist bei Terminals sinnvoll, die auf
+lokales Echo eingestellt sind (Halb-Duplex).
+Das Zeichen
+.BR EOF
+wird nur ausgegeben, wenn ein Escapezeichen davor steht.
+Da dem Zeichen
+.B EOF
+das ASCII-Zeichen
+.BR EOT
+zugewiesen ist, kann verhindert werden, dass Terminals blockieren, die auf
+.BR EOT
+ansprechen.
+.PP
+Ist
+.BR NOFLSH
+gesetzt,
+werden die Eingabe- und Ausgabewarteschlangen
+bei Empfang eines
+.B INTERRUPT-
+oder
+.BR QUIT \-Zeichens
+nicht geleert.
+.PP
+Die voreingestellten Werte fuer
+.B c_lflag
+sind:
+.IP
+.BR ISIG ,
+.BR ICANON ,
+.BR ECHO ,
+.BR ECHOE ,
+.BR ECHOK ,
+.BR ECHONL .
+.PP
+Der Wert fuer
+.B c_line
+ist fuer das gegenwaertig ausgelieferte WEGA-Betriebssystem
+immer Null.
+Eine Aenderung dieses Wertes ist nur sinnvoll, wenn im WEGA-Betriebssystemkern
+ein weiterer Terminalhandler implementiert und im Konfigurationsmodul
+(struct linesw linesw[]) eingetragen ist (z.B. fuer die Einbindung von
+Netzsoftware).
+.PP
+Die primaeren
+.BR ioctl (2)
+Systemrufe haben folgende Form:
+.PP
+.RS
+\fBioctl\fI \|(fildes, \|command, \|arg)
+.br
+\fBstruct \|termio\fI \|\(**arg\fR;
+.RE
+.PP
+Die folgenden Kommandos koennen ueber diese Form angegeben werden:
+.TP "\w'TCSETAW\ \ \ 'u"
+.BR TCGETA
+Die zum Terminal gehoerigen Parameter werden ermittelt und
+in der Struktur
+.BR termio ,
+auf die das Argument
+.I arg
+verweist, zurueckgegeben.
+.TP
+.BR TCSETA
+Die durch das Argument
+.I arg
+angegebene Struktur
+.B termio
+enthaelt Parameter, die sofort fuer das Terminal gesetzt werden.
+.TP
+.BR TCSETAW
+Die durch das Argument
+.I arg
+angegebene Struktur
+.B termio
+enthaelt Parameter, die erst dann fuer das Terminal gesetzt werden,
+wenn die Ausgabe der in der Ausgabewarteschlange enthaltenen Zeichen
+abgeschlossen ist.
+.TP
+.BR TCSETAF
+Die durch das Argument
+.I arg
+angegebene Struktur
+.B termio
+enthaelt Parameter, die erst dann fuer das Terminal gesetzt werden,
+wenn die Ausgabewarteschlange und die Eingabewarteschlange
+geleert sind.
+.
+.PP
+Eine weitere Form der Systemrufe
+.BR ioctl (2)
+hat folgende Form:
+.PP
+.RS
+\fBioctl\fI \|(fildes, \|command, \|arg)
+.br
+\fBint \fI\|arg\fR;
+.RE
+.PP
+Die folgenden Kommandos koennen ueber diese Form angegeben werden:
+.TP "\w'TCSETAW\ \ \ 'u"
+.BR TCSBRK
+Besitzt das Argument
+.I arg
+den Wert Null, wird
+nach der Ausgabe aller in der Ausgabewarteschlange enthaltenen Zeichen
+ein Break gesendet (Nullbits fuer die Dauer von 0.25 Sekunden).
+.TP
+.BR TCXONC
+START/STOP-Steuerung.
+Ist
+.I arg\^
+gleich Null, wird die Ausgabe gestoppt.
+Ist
+.I arg\^
+gleich Eins, wird die Ausgabe fortgesetzt.
+.TP
+.BR TCFLSH
+Das Argument
+.I arg\^
+kann folgende Werte annehmen:
+.RS
+.IP \fB0\fR 4
+Eingabewarteschlange leeren.
+.PD 0
+.IP \fB1\fR 4
+Ausgabewarteschlange leeren.
+.IP \fB2\fR 4
+Eingabe- und Ausgabewarteschlange leeren.
+.RE
+.PD
+.PP
+.SH MIN/TIME Wertevorgaben
+Der Wert
+.B MIN
+repraesentiert die kleinste Anzahl von Zeichen,
+die in der Eingabewarteschlange eingegangen sein muessen,
+um die vom Nutzer initiierte Leseanforderung zu erfuellen.
+Der Wert
+.B TIME
+wird fuer einen mit einer Aufloesung von 0.1 Sekunden realisierten
+Zeitgeber benutzt, um eine Zeitueberwachung von
+Terminaleingaben zu realisieren.
+Es folgen die moeglichen Kombinationen fuer die Werte
+.B MIN
+und
+.B TIME
+sowie die Erlaeuterungen der entsprechenden Wirkungen:
+.TP
+\fBMIN\fR >0, \fBTIME\fR >0
+.B TIME dient als Zeitgeber zwischen dem Empfang der Zeichen und wird
+nach Empfang des ersten Zeichens aktiviert.
+Er wird nach Empfang jedes Zeichens rueckgesetzt.
+Sofort nach Empfang eines Zeichen wird der Zeitgeber neu gestartet.
+Wurden
+.B MIN
+Zeichen empfangen, bevor der Zeitgeber ablaeuft,
+ist die Leseanforderung erfuellt.
+Laeuft der Zeitgeber ab, bevor
+.B MIN
+Zeichen empfangen wurden, werden die bis dahin empfangenen Zeichen
+zum Nutzer zurueckgegeben.
+.TP
+\fBMIN\fR >0, \fBTIME\fR =0
+Ist
+.BR TIME =0,
+spielt der Zeitgeber keine Rolle.
+Die Leseanforderung ist erst dann erfuellt, wenn
+.B MIN
+Zeichen empfangen wurden.
+.TP
+\fBMIN\fR =0, \fBTIME\fR >0
+Ist
+.BR MIN =0,
+wirkt
+.B TIME
+nicht mehr als Zeitgeber zwischen dem Empfang von Zeichen.
+Der Zeitgeber wird in diesem Fall bei der Ausfuehrung des Systemrufs
+.BR read (2)
+gestartet.
+Die Leseanforderung ist dann erfuellt, wenn ein einzelnes Zeichen
+empfangen wurde oder der Zeitgeber ablaeuft (es werden Null Zeichen
+zurueckgegeben).
+.TP
+\fBMIN\fR =0, \fBTIME\fR =0
+Es wird sofort zurueckgekehrt.
+Wurden Zeichen empfangen, werden sie an den Nutzer zurueckgegeben.
+.SH DATEIEN
+/dev/tty
+.br
+/dev/tty\(**
+.br
+/dev/console
+.SH SIEHE AUCH
+stty(1),
+ioctl(2).

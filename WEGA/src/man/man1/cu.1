@@ -1,0 +1,223 @@
+.TH CU 1 
+.\" @[$]cu.1	1.2
+.ad
+.fi
+.SH NAME
+cu \- ruft ein anderes WEGA System
+.SH SYNTAX
+.B cu
+.RB [ \-s \fIspeed\fR\|]
+.RB [ \-a \fIacu\fR\|]
+.RB [ \-l \fIline\fR\|]
+.RB [ \-h \|]
+.RB [ \-o \(bv \-e \|]
+.I telno \(bv
+.I dir
+.SH BESCHREIBUNG
+.B Cu\^
+ruft ein anderes WEGA System,
+ein Terminal,
+oder moeglicherweise ein Nicht-WEGA System auf.
+Es organisiert eine interaktive Konversation mit moeglicher
+Uebertragung von
+.SM ASCII
+Dateien.
+.PP
+.B Cu\^
+durchsucht jede Zeile, die in der Datei
+.B /usr/lib/uucp/L-devices
+enthalten ist, bis es eine Zeile mit den entsprechenden Attributen findet
+oder die Eintrittspunkte durchlaufen sind.
+Die Datei \fIL-devices\fR muss wie folgt gesetzt werden:
+.sp
+.RS
+\fICONNECTION line 0 speed\fR
+.RE
+.sp
+Fuer \fIconnection\fR kann entweder \fBDIR\fR (fuer
+eine direkte Verbindung zu einem anderen System) oder \fBACU\fR 
+(Verbindung ueber eine automatische Waehleinheit ACU) stehen.
+.PP
+In der aktuellen WEGA-Version werden automatische Waehleinheiten
+nicht unterstuetzt. Es sind nur direkte Verbindungen moeglich.
+Das ist bei der Auswahl der Optionen zu beruecksichtigen.
+.PP
+\fILine\fR ist der Terminalkanal, ueber den die Verbindung hergestellt wird.
+Er wird in der Form \fBtty\fR\fIX\fR angegeben.
+\fISpeed\fR ist die Baudrate fuer die Verbindung.
+300 Baud sind die Standardeinstellung.
+.PP
+Nach Herstellung der Verbindung arbeitet
+.B cu\^
+mit zwei Prozessen:
+der Sendeprozess
+liest Daten von der Standard\%eingabe und leitet sie zum Remote-System
+weiter (ausser Zeilen, die mit
+.BR ~ 
+beginnen);
+der Empfangsprozess
+akzeptiert Daten vom Remote-System und leitet sie
+zur Standardausgabe weiter (ausser Zeilen, die mit
+.BR ~ 
+beginnen).
+Normalerweise wird ein automatisches DC\&3/DC\&1 Protokoll
+zur Steuerung der Eingabe vom Remote-System benutzt, so dass
+der Puffer nicht ueberlaeuft.
+Zeilen, die mit \fB~\fR beginnen, haben spezielle Bedeutungen.
+.PP
+Der Sendeprozess interpretiert folgende Eingaben:
+.TP 20
+.B ~.
+beendet die Konversation.
+.TP
+.B ~!
+geht zu einer interaktiven Shell auf dem lokalen System ueber.
+Der Shelltyp wird entsprechend der SHELL-Umgebungsvariablen gewaehlt.
+Standardwert ist /bin/sh.
+.TP
+.BI ~! cmd\|.\|.\|.
+arbeitet
+.I cmd\^
+auf dem lokalen System ab.
+Der Shelltyp wird entsprechend der SHELL-Umgebungsvariablen gewaehlt.
+Standardwert ist /bin/sh.
+.TP
+.BI ~$ cmd\|.\|.\|.
+arbeitet
+.I cmd\^
+auf dem lokalen System ab und sendet dessen Ausgaben zum Remote-System.
+.TP
+\&\fB~%take\fR \|\fIfrom\fR \|[ \|\fIto\fR \|]
+kopiert die Datei
+.I from\^
+(auf dem Remote-System) zur Datei
+.I to\^
+auf dem lokalen Ssytem.
+Falls
+.I to\^
+nicht angegeben ist, wird das Argument
+.I from\^
+an beiden Stellen benutzt.
+.TP
+\&\fB~%put\fR \|\fIfrom\fR \|[ \|\fIto\fR \|]
+kopiert die Datei
+.I from\^
+(auf dem lokalen System) zur Datei
+.I to\^
+auf dem Remote-System.
+Falls
+.I to\^
+nicht angegeben ist, wird das Argument
+.I from\^
+an beiden Stellen benutzt.
+.TP
+.BR ~~ .\|.\|.
+sendet die Zeile
+.BR ~ ".\|.\|."
+zum Remote-System.
+.TP
+.BR ~nostop
+schaltet das DC\&3/DC\&1 Eingabeprotokoll ab.
+Dies ist sinnvoll, wenn das Remote-System
+nicht auf die Zeichen DC\&3 und DC\&1 antwortet.
+.PP
+Der Empfangsprozess kopiert normalerweise Daten vom
+Remote-System zu seiner Standardausgabe.
+Eine Zeile vom Remote-System, die mit \fB~>\fR beginnt, initialisiert
+eine Umlenkung der Ausgabe zu einer Datei.
+Die komplette Folge ist:
+.PP
+.RS
+\&\fB~>\fR\^[\^\fB>\fR\^]\^\fB:\fR\^\|\fIfile\fR
+.br
+keine oder mehrere Zeilen, die in die Datei
+.I file\^
+zu schreiben sind
+.br
+.B ~>
+.RE
+.PP
+Die Daten vom Remote-System werden zur Datei umgelenkt (oder 
+bei Verwendung von
+.B >>
+angehaengt).
+Das abschliessende \fB~>\fR beendet die Umlenkung.
+.PP
+Die Verwendung von
+.B ~%put
+erfordert
+.BR stty (1)
+und
+.BR cat (1)
+auf dem Remote-System.
+Die aktuellen "Erase"- und "Kill"-Zeichen 
+auf dem Remote-System muessen identisch mit denen im lokalen System sein.
+"Backslash"-Zeichen werden an den entsprechenden Stellen eingefuegt.
+.PP
+Die Benutzung von
+.B ~%take
+erfordert die Existenz von
+.BR echo (1)
+und
+.BR cat (1)
+auf dem Remote-System.
+Auch sollte der
+.B stty tabs
+Mode auf dem Remote-System gesetzt sein, wenn Tabulatoren ohne
+Erweiterung kopiert werden sollen.
+.PP
+Bei direkten Verbindungen
+muss die Terminalbezeichnung und die Uebertragungsrate
+fuer diese Verbindung bekannt sein.
+Die Eingabe lautet z.B. fuer Teilnehmer tty3:
+.ti +6
+cu -s9600 -ltty3 dir
+.SH OPTIONEN
+.TP
+\fB\-e\fR(\fB\-o\fR)
+Legt fest, ob gerade oder ungerade Paritaet fuer das
+Senden der Daten zum Remote-System zu generieren ist.
+.TP
+.B \-h
+Emuliert ein lokales Echo, das Rufe zu anderen Computersystemen
+unterstuetzt, die mit Terminals im Halb-Duplex-Verkehr arbeiten.
+.TP
+.B \-a\fR(\fB-l\fR)
+Legt den Geraetenamen fuer den ACU und fuer das Kommunikationsgeraet fest.
+Sie kann benutzt werden, um den ersten
+verfuegbaren ACU mit der richtigen Geschwindigkeit zu finden.
+Da in der aktuellen WEGA-Version keine ACU unterstuetzt werden, ist die
+.B \-l
+Option anzugeben.
+.TP
+\fB\-s\fIspeed\fR
+Gibt die Uebertragungsgeschwindigkeit (110, 150, 300, 1200, 4800, 9600)
+an; die Standardgeschwindigkeit ist 300.
+.TP
+.I Telno\^
+ist die Telefonnummer.
+Fuer Direktverbindungen muss
+.B dir
+benutzt werden.
+Bei Angabe von
+.B dir
+muss auch die Option
+.B \-l
+angegeben werden.
+.SH DATEIEN
+/usr/lib/uucp/L-devices
+.br
+/usr/spool/uucp/LCK..(tty-device)
+.br
+/dev/null
+.SH SIEHE AUCH
+cat(1), echo(1), stty(1), uucp(1), tty(4).
+.SH DIAGNOSTIK
+Der Rueckgabecode ist bei normaler Rueckkehr Null,
+sonst ungleich Null (verschiedene Werte).
+.SH EINSCHRAENKUNGEN
+Die Uebertragungsgeschwindigkeit waehrend des Sendens wird von
+.B cu\^
+waehrend der Operation
+.B ~%put,
+so verringert, dass ein Datenverlust unwahrscheinlich ist.

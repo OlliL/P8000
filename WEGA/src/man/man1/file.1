@@ -1,0 +1,25 @@
+.TH FILE 1 WEGA 
+.\" @[$]file.1	1.2
+.ad
+.fi
+.SH NAME
+file \- Bestimmen des Dateityps
+.SH SYNTAX
+.B file
+[-f]
+.I file ...
+.SH BESCHREIBUNG
+.B File
+fuehrt in jeder angegebenen Datei eine Reihe von Tests aus, um den
+Dateityp festzustellen. Koennte es sich um eine ASCII-Datei handeln,
+testet 
+.B file
+die ersten 512 Byte und versucht, die Sprache zu bestimmen.
+Bei Angabe von
+.I -f
+ist das naechste Argument eine Datei, die die Namen der
+zu pruefenden Dateien enthaelt.
+.SH EINSCHRAENKUNGEN
+Das Kommando macht oft Fehler. Haeufig werden Kommandodateien (SHELL-Scripte)
+als C-Programme gedeutet. Es hat auch Schwierigkeiten bei der 
+Unterscheidung von PLZ/ASM- und PLZ/SYS-Programmen.

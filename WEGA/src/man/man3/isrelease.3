@@ -1,0 +1,34 @@
+.TH ISRELEASE 3 
+.\" @[$]isrelease.3     1.2
+.ad
+.fi
+.SH NAME
+isrelease \- Entriegeln von Datensaetzen einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisrelease\fI(isfd)\fR
+\fBint \fIisfd;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isrelease
+hebt die Verriegelung an manuell gesperrten Datensaetzen
+unter Verwendung der Funktion
+.B isread
+auf.
+Die Verriegelung wird fuer alle verriegelten Datensaetze,
+die in der durch den C-ISAM-Dateidescriptor
+.I isfd
+bezeichneten Datei enthaltenen sind, aufgehoben.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isclose(3),
+islock(3),
+isread(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

@@ -1,0 +1,30 @@
+.TH WAIT 1C WEGA
+.\" @[$]wait.1C	1.2
+.ad
+.fi
+.SH NAME
+wait \- Warten auf Beendigung von Prozessen
+.SH SYNTAX
+.B wait
+.SH BESCHREIBUNG
+Es wird auf Die Beendigung aller Child-Prozesse gewartet.
+Wenn es sich um eine interaktive Shell handelt, kann ein Interrupt
+das Wait abbrechen. Es werden dann die Namen und Prozesszahlen aller
+bekannten, ausstehenden Children ausgegeben.
+.PP
+Shell wartet, bis alle Prozesse, die mit
+.B &
+gestartet wurden, beendet sind oder diese anormale Abschluesse
+melden.
+.PP
+Da der Systemaufruf
+.BR  wait (2)
+im Parent-Prozess ausgefuehrt werden muss,
+fuehrt Shell selbst
+.B wait
+aus, ohne einen neuen Prozess zu erzeugen.
+.SH SIEHE AUCH
+csh(1), sh(1), wait (2).
+.SH EINSCHRAENKUNGEN
+Nicht alle Prozesse einer drei- oder mehrschichtigen Pipeline
+sind Children der Shell. Auf sie kann nicht gewartet werden.

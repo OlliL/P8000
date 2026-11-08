@@ -1,0 +1,71 @@
+.TH RMDEL 1 WEGA
+.\" @[$]rmdel.1	1.2
+.ad
+.fi
+.SH NAME
+rmdel \- Loeschen eines Delta aus einer SCCS Datei
+.SH SYNTAX
+.B rmdel
+\fB\-r\fISID\fR files
+.SH BESCHREIBUNG
+.B Rmdel\^
+loescht das durch \fISID\fR spezifizierte Delta aus allen angegebenen
+SCCS-Dateien.
+Das zu loeschende Delta muss das neueste (juengste) Delta in 
+seinem Zweig in der Deltakette jeder angegebenen SCCS-Datei sein.
+Das spezifizierte Delta darf
+.I nicht\^
+das einer gerade bearbeiteten Version sein, mit der
+ein Delta erstellt wird (d.h., wenn ein
+.I p-file\^
+(siehe
+.BR get (1))
+fuer die genannte SCCS-Datei existiert, darf das spezifizierte Delta 
+.I nicht\^
+in irgendeinem Eintrag des 
+\fIp-file\fR erscheinen).
+.PP
+Wurde ein Directory angegeben, ist
+jede Datei im Directory als eine benannte Datei spezifiziert
+(ausgenommen sind Nicht-SCCS-Dateien
+(die letzte Komponente des Pfadnamens beginnt nicht mit \fBs.\fR)
+und unlesbare Dateien).
+Ist ein Argument \fB\-\fR angegeben, werden von der Standardeingabe
+Zeilen gelesen, die als Namen von zu
+bearbeitenden SCCS-Datei interpretiert werden. Nicht-SCCS-Dateien und unlesbare
+SCCS-Dateien werden wieder ignoriert.
+.PP
+Die notwendigen Zugriffsrechte zum Loeschen eines Deltas sind im 
+"Source Code Control System Benutzerhandbuch" 
+dokumentiert.
+Vereinfachte Regeln zum Loeschen von Deltas sind:
+.IP (1) 
+Wenn man ein Delta erstellt, kann
+man es loeschen.
+.IP (2)
+Als Eigentuemer der Datei und des Directory kann
+man ein Delta loeschen.
+.SH DATEIEN
+.PD 0
+.TP 10
+x-file
+(siehe
+.BR delta (1))
+.TP 10
+z-file
+(siehe
+.BR delta (1))
+.PD
+.SH SIEHE AUCH
+delta(1),
+get(1),
+help(1),
+prs(1),
+sccsfile(5).
+.br
+"Source Code Control System Benutzerhandbuch" in WEGA-Dienstprogramme
+.br
+.SH DIAGNOSTIK
+Benutze
+.BR help (1)
+fuer Erklaerungen.

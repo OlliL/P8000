@@ -1,0 +1,56 @@
+.TH HELP 1 WEGA
+.\" @[$]help.1	1.2
+.ad
+.fi
+.SH NAME
+help \- Hilfeanforderung
+.SH SYNTAX
+.B help
+[\fIargs\fR]
+.SH BESCHREIBUNG
+.B Help\^
+liefert Informationen zur Erklaerung von Kommandoausschriften
+oder zur Benutzung eines Kommandos.
+Argumente koennen angegeben werden. Ist kein
+Argument angegeben, wird es von
+.B help\^
+angefordert.
+.PP
+Als Argument kann die Nummer von Meldungen (folgt normalerweise
+der Meldung in runden Klammern eingeschlossen) Verwendung finden
+oder ein Kommandoname entsprechend der folgenden Notation sein:
+.PP
+.TP 10
+type 1
+beginnt nichtnumerisch - endet numerisch.
+Der nichtnumerische Praefix ist dabei gewoehnlich eine
+Abkuerzung fuer den Programmnamen
+oder fuer Routinen, die diese Meldung erzeugen
+(z.B.: \fBge6\fP fuer die Meldung 6 des
+.B get\^
+Kommandos).
+.TP 10
+type 2
+enthaelt keinerlei numerische Werte.
+(z.B.: ein Kommandoname wie
+.BR get )
+.TP 10
+type 3
+besteht ausschliesslich aus numerischen Werten (z.B.: \fB212\fP)
+.PP
+Das Programm antwortet mit Erlaeuterungen, die sich
+auf die angegebenen Argumente beziehen.
+.PP
+Wenn alle Versuche scheitern, kann "help stuck"
+eingegeben werden.
+.SH DATEIEN
+.PP
+.TP 16
+/usr/lib/help
+Directory mit Help-Texten
+.SH DIAGNOSTIK
+Siehe
+.BR help (1)
+fuer Erlaeuterungen.
+.SH SIEHE AUCH
+man(1), INTRO(1), apropos(1).

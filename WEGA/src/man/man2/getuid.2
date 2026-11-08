@@ -1,0 +1,52 @@
+.TH GETUID 2 WEGA
+.\"@[$]getuid.2 1.2
+.ad
+.fi
+.SH NAME
+getuid \ \- Erhalten der Nutzeridentifikation
+.br
+getgid \ \- Erhalten der Gruppenidentifikation
+.br
+geteuid \- Erhalten der effektiven Nutzeridentifikation
+.br
+getegid \- Erhalten der effektiven Gruppenidentifikation
+.SH SYNTAX
+.B int getuid( )
+.br
+.B int geteuid( )
+.br
+.B int getgid( )
+.br
+.B int getegid( )
+.SH BESCHREIBUNG
+.B Getuid
+gibt die reale Nutzer-ID des rufenden Prozesses und
+.B geteuid
+die effektive Nutzer-ID zurueck.
+Die reale Nutzer-ID identifiziert die Person,
+die am System angemeldet ist (login),
+die effektive Nutzer-ID bestimmt die Zugriffsrechte.
+.PP
+.B Getgid
+gibt die reale Gruppen-ID und
+.B getegid
+die effektive Gruppen-ID zurueck.
+.SH SIEHE AUCH
+setuid(2).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT GETUID := 24
+
+     sc     #GETUID
+     ...             !* r4 : reale Nutzer-ID *!
+                     !* r5 : effektive Nutzer-ID *!
+
+
+     CONSTANT GETGID := 47
+
+     sc     #GETGID
+     ...             !* r4 : reale Gruppen-ID *!
+                     !* r5 : effektive Gruppen-ID *!
+.fi
+.ad

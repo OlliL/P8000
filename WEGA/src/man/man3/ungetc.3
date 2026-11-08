@@ -1,0 +1,43 @@
+.TH UNGETC 3 WEGA
+.\" @[$]ungetc.3        1.1
+.ad
+.fi
+.SH NAME
+ungetc \- Rueckschreiben eines Zeichens in den Eingabestrom
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.PP
+\fBungetc\fI(c, stream)
+\fBFILE\fI *stream;
+\fBchar\fI c;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B ungetc
+schreibt das Zeichen
+.I c
+in den Eingabestrom zurueck.
+Dieses Zeichen wird durch den naechsten Aufruf der Funktion
+.BR getc (3)
+an den Datenstrom zurueckgegeben.
+.PP
+Das korrekte Rueckschreiben eines Zeichens erfolgt unter der 
+Voraussetzung, dass schon Zeichen aus dem Datenstrom gelesen wurden und
+der Datenstrom gepuffert ist.
+Das Zeichen
+EOF kann nicht zurueckgeschrieben werden.
+.PP
+Die Funktion
+.BR  fseek (3)
+loescht alle zurueckgeschriebenen Zeichen.
+.SH SIEHE AUCH
+getc(3),
+setbuf(3),
+fseek(3).
+.SH DIAGNOSTIK 
+Die Funktion
+.B ungetc
+gibt
+.B EOF
+zurueck, wenn ein Zeichen nicht zurueckgeschrieben werden kann.

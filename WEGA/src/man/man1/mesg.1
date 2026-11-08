@@ -1,0 +1,41 @@
+.TH MESG 1 WEGA
+.\" @[$]mesg.1	1.2
+.ad
+.fi
+.SH NAME
+mesg \- Ermoeglicht oder verbietet Mitteilungen
+.SH SYNTAX
+.B mesg
+[
+.B n
+] [
+.B y
+]
+.SH BESCHREIBUNG
+Ohne Argument meldet
+.B mesg
+den gegenwaertigen Zustand, ohne ihn zu veraendern.
+.SH OPTIONEN
+.TP
+.B n
+Verbietet Mitteilungen ueber
+.BR write (1)
+oder
+.BR talk (1),
+indem die Schreiberlaubnis fuer Nutzer (others) an diesem
+Terminal aufgehoben wird.
+.TP
+.B y
+Wiederherstellen der Schreiberlaubnis.
+.SH DATEIEN
+/dev/tty*
+.br
+/dev
+.SH SIEHE AUCH
+talk(1),
+write(1).
+.SH DIAGNOSTIK
+.nf
+Exitstatus = 0 : Meldungen koennen empfangen werden,
+Exitstatus = 1 : Meldungen koennen nicht empfangen werden,
+Exitstatus = 2 : bei Fehler.

@@ -1,0 +1,71 @@
+.TH CTAGS 1
+.\" @[$]ctags.1	1.2
+.ad
+.fi
+.SH NAME
+ctags \- Funktionsliste fuer C- oder FORTRAN-Programme erstellen
+.SH SYNTAX
+.B ctags
+[ 
+.B \-auw
+]
+\fIfile \fR...
+.SH BESCHREIBUNG
+.B Ctags
+erstellt eine Funktionsliste fuer
+.BR ex (1)
+aus den angegebenen C- oder FORTRAN-Programmen.
+Dateien, die auf ".f" enden, werden als FORTRAN-Quellprogramme
+und alle anderen als C-Quellprogramme interpretiert.
+Eine Funktionsliste gibt den Platz der angegebenen Objekte
+(in diesem Fall Funktionen) in einer Gruppe von Dateien an.
+Jede Zeile einer Funktionsliste enthaelt den Funktionsnamen,
+die Datei, in der er definiert wurde, sowie ein Pruefmuster, das zum Finden
+der Funktionsdefinition benutzt wird.
+Die Ausgabe erfolgt in seperaten Feldern der Zeile, die
+durch Leerzeichen oder tabs getrennt sind.
+.SH OPTIONEN
+.TP
+.B \-a
+Veranlasst, dass die Ausgabe an die Funktionsliste angehaengt wird.
+Sie wird nicht neu geschrieben.
+.TP
+.B \-u
+Veranlasst, dass die angegebenen Dateien in der Funktionsliste
+.I aktualisiert
+werden, d.h. alle Referenzen zu ihnen werden geloescht
+und die neuen Werte werden an die Datei angehaengt.
+Die Funktionsliste wird dann ueber eine Pipe mittels
+.BR sort (1)
+behandelt, um die Ordnung wieder herzustellen, die durch
+.BR ex (1)
+gefordert wird.
+Diese Option schliesst die Option
+.B \-a
+ein.
+.TP
+.B \-w
+Unterdrueckt Warnungen.
+.PP
+Das Kennzeichen
+.I main
+wird speziell in C-Programmen behandelt.
+Die Funktionsliste wird durch ein dem Dateinamen vorangestelltes
+.I M
+und durch Loeschen eines anhaengenden .c sowie vorangestellter 
+Pfadnamenkomponenten erzeugt.
+Dadurch wird die Verwendung von ctags in Directories
+mit mehr als einem Programm praktikabel.
+FORTRAN-Programme benutzen main nicht.
+.SH DATEIEN
+tags     ausgegebene Funktionsliste
+.PP
+.SH SIEHE AUCH
+ex(1),
+vi(1).
+.SH EINSCHRAENKUNGEN
+In einer Directory mit nur einem \fImain\fR
+wird keine Kennzeichnung \fImain\fR erzeugt.
+.PP
+In Fortran\ 77 ist die program-Anweisung optional.
+Fehlt sie, wird kein Eintrag in der Funktionsliste tags gemacht.

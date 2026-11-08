@@ -1,0 +1,75 @@
+.TH PUTFILE 1 
+.\" @[$]putfile.1	1.2
+.ad
+.fi
+.SH NAME
+putfile \- Dateitransfer von einem Remote-System zum lokalen System
+.SH SYNTAX
+.B putfile 
+[\fB\-bBfq\fR] \fIfilename1\fR [ [\fB\-b\fR] \fIfilename2\fR \.\.\. ]
+.SH BESCHREIBUNG
+.B Putfile 
+laedt eine oder mehrere Dateien von einem abgesetzten WEGA-System in ein lokales
+System, dass mit WEGA, UDOS, SCP oder einem anderen Betriebssystem laeuft.
+Auf dem lokalen System muss die Dateitransfer-Software des
+P8000-Kommunikationspaketes ablaufen.
+Da das Programm auf dem Remote-System ausgefuehrt wird, muss zuerst
+.B remote(1)
+ausgefuehrt werden.
+Dateien werden satzweise mit einer Kontrollsumme
+uebertragen, um die Exaktheit der Daten zu sichern.
+Der Transfer einer Datei kann mit Control-x abgebrochen werden,
+um auf die naechste ueberzugehen.
+Die gesamte Uebertragung kann durch eine Eingabe von Escape abgebrochen
+werden.
+.SH OPTIONEN
+.TP
+.B \-b
+.B Nur
+die naechste Datei wird als Binaerdatei betrachtet.
+Im lokalen System wird eine Binaerdatei erzeugt.
+Newlines werden nicht durch die Carrige Return ersetzt.
+.TP
+.B \-B
+Alle angegebenen Dateien werden als Binaerdateien behandelt
+(wichtig fuer einen WEGA-WEGA-Transfer).
+.TP
+.B \-f
+Das Programm unterdrueckt alle Fehlermeldungen,
+die nicht zu einem Abbruch fuehren.
+.TP
+.B \-q
+Das Programm gibt eine Anfrage aus, bevor eine existierende Datei, die
+den gleichen Namen wie die zu transferierende hat, ueberschrieben wird.
+.SH SIEHE AUCH
+getfile(1), local(1), remote(1).
+.SH DIAGNOSTIK
+.TP
+"checksum error ... retry"
+Die errechnete Kontrollsumme stimmt
+nicht mit der uebertragenen ueberein.
+.TP
+"timeout ... retry"
+Zeichen werden nicht in einer
+vorgegebenen Zeit nach dem Read-Befehl gelesen.
+.TP
+"illegal end-of-text ... retry"
+Systemfehler; es wurden nicht genuegend Zeichen gelesen.
+.TP
+"<filename> ... transfer aborted"
+Abbruch, nachdem eine spezifizierte Anzahl von Wiederholungen
+ausgefuehrt wurden, ebenso nach Eingabe von CTRL-x oder Escape,
+oder wenn die
+Uebertragung fehlgeschlagen ist (infolge von zuwenig Platz oder
+schlechtem Medium).
+.TP
+"putfile: <n1> successful transfers  <n2> unsuccessful transfers"
+ wird bei Programmabbruch ausgegeben.
+.TP
+"<filename> ... unable to open file"
+Datei kann in einem System nicht geoeffnet werden.
+.PP
+Das Programm gibt einen einzelnen Punkt (.) nach jedem erfolgreichen
+Transfer eines Satzes aus.
+Es ist moeglich, dass der Transfer stoppt und nach ca. 20 Sekunden
+wieder gestartet wird (Wiederholung eines Satzes).

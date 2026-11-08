@@ -1,0 +1,96 @@
+.TH GETGRENT 3 WEGA
+.\" @[$]getgrent.3      1.2
+.ad
+.fi
+.SH NAME
+getgrent, getgrgid, getgrnam, setgrent, endgrent \- Informationen aus der Gruppendatei
+.PP
+\fB#include <grp.h>
+.PP
+\fBstruct group *getgrent();
+.PP
+\fBstruct group *getgrgid\fR(\fIgid\fR)
+.br
+\fBint \fIgid;\fR
+.PP
+\fBstruct group *getgrnam\fR(\fIname\fR)
+.br
+\fBchar *\fIname;\fR
+.PP
+\fBint setgrent();
+.PP
+\fBint endgrent();\fR
+.SH BESCHREIBUNG
+Jeder Aufruf an
+.BR getgrent ,
+.B getgrgid
+und
+.B getgrnam
+liest eine oder mehrere Zeilen aus einem Eingabestrom,
+der aus der Gruppendatei geoeffnet wurde.
+Die Funktion bringt den Inhalt der letzten gelesenen Zeile in eine
+Struktur und gibt einen Pointer auf diese Struktur zurueck.
+.PP
+.B Getgrent
+liest eine einzelne Zeile.
+.PP
+.B Getgrgid
+liest solange, bis sein Argument mit dem numerischen Gruppen-ID-Feld
+der letzten gelesenen Zeile uebereinstimmt.
+.PP
+.B Getgrnam
+liest solange, bis seine Argumenten-Zeichenkette mit dem Namen der letzten
+gelesenen Zeile uebereinstimmt.
+.PP
+.B Setgrent
+setzt den Dateipointer des Eingabestroms zurueck.
+Nachfolgende Aufrufe von
+.BR getgrent ,
+.B getgrid,
+oder
+.B getgrnam
+beginnen am Anfang der Datei.
+.PP
+.B Endgrent
+schliesst den Eingabestrom (nuetzlich, wenn
+der Prozess nicht
+genuegend freie Dateidescriptoren besitzt).
+.PP
+Die Funktionen
+.BR getgrent ,
+.B getgrid,
+und
+.B getgrnam
+liefern Pointer auf die folgende Struktur (siehe <group.h> ):
+.RS
+.PP
+struct  group
+.br
+    char  *gr_name;    /* Name der Gruppe */
+.br
+    char  *gr_passwd;  /* verschluesseltes Gruppenpasswort */
+.br
+    int   gr_gid;      /* numerischer Gruppen-ID */
+.br
+    char  **gr_mem;    /* Pointervektor fuer Gruppenmitglieder */
+.br
+};
+.RE
+.PP
+Das Strukturelement
+gr_mem ist ein mit einem Nullpointer abgeschlossener Vektor,
+der Pointer auf die Zeichenketten der Namen der einzelnen
+Gruppenmitglieder enthaelt.
+.SH DATEIEN
+/etc/group - Gruppendatei
+.SH SIEHE AUCH
+getlogin(3),
+getpwent(3),
+group(5).
+.SH DIAGNOSTIK
+Bei Erreichen des Dateiendes, bei Suchfehlern oder anderen Fehlern wird
+ein Nullpointer zurueckgegeben.
+.SH EINSCHRAENKUNGEN
+Der Pointer zeigt auf eine statische Struktur.
+Informationen aus dieser Struktur muessen kopiert werden
+wenn sie gespeichert werden sollen.

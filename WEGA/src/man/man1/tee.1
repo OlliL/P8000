@@ -1,0 +1,39 @@
+.TH TEE 1 WEGA
+.\" @[$]tee.1	1.2
+.ad
+.fi
+.SH NAME
+tee \- Vervielfaetigen der Standardeingabedatei
+.SH SYNTAX
+.B tee
+[
+.B \-a
+] [
+.B \-i
+]
+[ \fIfiles\fR ] \.\.\.
+.SH BESCHREIBUNG
+.B Tee
+uebertraegt die Standardeingabe auf die Standardausgabe
+und fertigt Kopien in die Dateien
+.I files
+an.
+.SH OPTIONEN
+.TP
+.B \-a
+bewirkt, dass die Ausgabe an die Dateien
+.I files
+angefuegt und diese nicht ueberschrieben werden.
+.TP
+.B \-i
+ignoriert Interrupts.
+.SH BEISPIEL
+Das Kommando:
+.sp
+.RS
+\fBcode < \fI/etc/passwd | \fBtee \fItemp\fR
+.RE
+.sp
+uebersetzt die Datei \fI/etc/passwd\fR mit dem \fBcode\fR
+Programm, wobei die Resultate auf dem Terminal ausgegeben
+werden und eine zweite Kopie in der Datei \fItemp\fR abgelegt wird.

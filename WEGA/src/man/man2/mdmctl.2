@@ -1,0 +1,145 @@
+.TH MDMCTL 2 
+.\" @[$]mdmctl.2        1.2
+.ad
+.fi
+.SH NAME
+mdmctl \- Konfigurieren eines Datenkanals fuer Modem- oder Terminalleitungen
+.SH SYNTAX
+.B mdmctl
+.I (request, modems, dev)
+.br
+.B int
+.I request;
+.br
+.B long
+.I *modems;
+.br
+.B int
+.I dev;
+.SH BESCHREIBUNG
+Der Systemaufruf
+.B mdmctl
+konfiguriert die Systemhardware und -software fuer
+die Kommunikation mit Modems oder Terminals.
+Modems (im Sinne dieses Systemrufs) sind
+Datenuebertragungseinrichtungen, die ueber ein
+7adriges Interface mit dem P8000 verbunden sind. 
+Terminals erfordern nur eine
+3adrige Verbindung zum P8000.
+.PP
+Kanaele, die fuer Modems konfiguriert sind, haben folgende Charakteristiken: 
+.PD 0
+.IP - 3
+Bei einem
+.BR open (2) 
+Systemruf (i.a. durch den
+.BR INIT (M)
+Prozess) setzt das System 
+seine 
+DSR
+(Data Set Ready) 
+und
+CTS
+(Clear to Send) Leitungen.
+.IP - 3
+Der
+.BR open (2)  
+Aufruf ruht, bis die
+DTR
+(Data Terminal Ready) Leitung angesteuert wird.
+.IP - 3
+Ist die
+DTR
+Leitung fuer mehr als 1/60 Sekunden inaktiv, wird ein Stoppsignal
+SIGHUP
+an alle Prozesse in der Prozessgruppe des Modems gesendet.
+.IP - 3
+Prozesse, die das Signal nicht auffangen, werden beendet.
+.PD
+.PP
+Terminals nutzen nur drei Leitungen:
+.PD 0
+.TP 4
+\-
+TxD (Transmitted Data),
+.TP 4
+\-
+RxD
+(Received Data) und
+.TP 4
+\-
+GND
+(Signal Ground).
+.PP
+.PD
+Der Systemruf
+.BR open (2)  
+ruht in dieser Konfiguration nie; 
+Interrupts von den anderen Modemsteuerleitungen sind nicht moeglich.
+Das P8000 steuert keine anderen Modemsteuerleitungen an.
+Durch die Unterdrueckung von Interrupts kann die Systemleistung 
+erhoeht werden
+(keine Prozessunterbrechungen durch
+Rauschen in Modemsteuerleitungen).
+.PP
+.BR Mdmctl
+wird auf folgende Weise benutzt:
+.br
+\fIModems\fR
+ist die Adresse eines Long-Wertes.
+Sein Wert ist das bitweise ODER der Modemsteuerleitungen.
+Wenn die Leitungen 0 und 2 Modems sein sollen, muss eine Eins
+in den Bit-Positionen Null und Zwei stehen (beginnend von der 
+niederwertigen Position).
+\fIModems\fR
+ist in diesem Fall 0x5L.
+.PP
+Fuer
+.I request
+koennen die Kommandos
+.B TIOCMCG
+oder
+.B TIOCMCS
+benutzt werden (siehe
+/usr/include/sys/ioctl.h).
+Das Kommando
+.B TIOCMCG
+liest die gegenwaertige Konfiguration und schreibt sie in die durch
+\fImodems\fB
+spezifizierte Speicherzelle.
+.PP
+.B TIOCMCS
+setzt die Leitungen auf die durch
+.B modems
+angegebene Einstellung,
+wobei Interrupts von den Leitungen ein- oder 
+ausgeschaltet werden.
+.PP
+\fIDev\fR 
+ist die Major-Device-Nummer des Geraets, fuer das die 
+Modeminformation geholt/gesetzt werden soll. Gegenwaertig ist
+nur die Major-Device-Nummer 8 (fuer SIO-Kanaele) zulaessig.
+.SH SIEHE AUCH
+open(2), tty(4), signal(2), init(M).
+.br
+P8000 Hardwarebeschreibung
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT MDMCTL:= 62
+
+Nichtsegmentiert
+     ...             !* r0 : request *!
+                     !* r2 : Adresse von modems *!
+                     !* r3 : dev *!
+Segmentiert
+     ...             !* r0 : request *!
+                     !* r1 : Segmentnummer der Adresse von modems *!
+                     !* r2 : Offset der Adresse von modems *!
+                     !* r3 : dev *!
+     clr    r4
+     sc     #MDMCTL
+     ...             !* Rueckgabewert in rr4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

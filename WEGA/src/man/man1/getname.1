@@ -1,0 +1,19 @@
+.TH GETNAME 1 WEGA
+.\" @[$]getname.1	1.2
+.ad
+.fi
+.SH NAME
+getNAME \- Ausgabe der Abschnitte NAME des Online-Manuals fuer whatis/apropos Datenbanken
+.SH SYNTAX
+.B getNAME
+\fIname ...
+.SH BESCHREIBUNG
+.B Getname
+liest die ersten Zeilen jedes angegebenen Manual-Abschnitts, findet die
+\&.TH und die .SH Eintragung und gibt diese an die 
+Standardausgabe aus. Das Ausgabeformat ist fuer Eintragungen
+in whatis/apropos Datenbanken nutzbar.
+.SH DATEIEN
+/usr/lib/whatis		moegliche Datenbank
+.SH SIEHE AUCH
+apropos(1), makewhatis(1), whatis(1).

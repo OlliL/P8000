@@ -1,0 +1,97 @@
+.TH VLS 1 
+.\" @[$]vls.1	1.2
+.ad
+.fi
+.SH NAME
+vls \- \'visuelle\' Auflistung von Dateien und Directories
+.SH SYNTAX
+.B vls
+[
+.B -h
+] \fIfile\fR ...
+.SH BESCHREIBUNG
+.B Vls
+ist eine Version von
+.BR ls (1),
+die Dateien und Directories im "Bildschirm"-Format auflistet.
+Die Anzeige erfolgt analog zur
+"ls -F"-Auflistung, bei der Directories durch Anhaengen von "/" an
+den Pfadnamen und
+ausfuehrbare Dateien durch Anhaengen von "*" gekennzeichnet werden.
+.PP
+Nach der Ausgabe ist eine Cursormanipulation unter
+Verwendung folgender Tasten moeglich:
+.sp
+.PD 0
+.TP 12
+.B Abwaertspfeil
+.TP
+.B j
+.TP
+.B CTRL-j
+Cursor auf dem Bildschirm nach unten
+.sp
+.TP
+.B Aufwaertspfeil
+.TP
+.B k
+.TP
+.B CTRL-k
+Cursor auf dem Bildschirm nach oben
+.sp
+.TP
+.B f
+.TP
+.B w
+Cursor nach rechts
+.sp
+.TP
+.B b
+Cursor nach links
+.sp
+.PP
+Die folgenden Subkommandos wirken auf den durch den Cursor
+gekennzeichneten Eintrag:
+.sp
+.TP 12
+.B Rechtspfeil 
+.TP
+.B l
+Wechseln in durch Cursor gekennzeichnetes Directory
+und neue Ausgabe.
+.sp
+.TP
+.B Linkspfeil
+.TP
+.B h
+Wechseln in das in der Directory-Hierarchie "darueber stehende"
+Directory und neue Ausgabe.
+.PD
+.TP
+.B L
+Ausgabe im langen Format.
+.PP
+Weitere Kommandos sind:
+.TP 12
+.B :n
+Auflisten des naechsten in der Kommandozeile gegebenen Eintrags.
+.TP
+.B :q
+quit
+.TP
+.B ?<CR>
+"help" Datei anzeigen
+.TP
+.B <CR>
+Ausgabe der naechsten Seite (wenn mehr als eine Seite anzuzeigen ist).
+.SH OPTIONEN
+.TP
+.B -h
+Beendet das "Hervorheben" des vom Cursor markierten Eintrags;
+"Hervorheben" ist Standard.
+.SH DATEIEN
+/usr/lib/screen/vlshelp                "help" Datei
+.SH SIEHE AUCH
+ls(1).
+.SH EINSCHRAENKUNGEN
+Auf vorhergehende Seite kann nicht zurueckgeblaettert werden.

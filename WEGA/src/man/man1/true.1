@@ -1,0 +1,49 @@
+.TH TRUE 1 WEGA
+.\" @[$]true.1	1.2
+.ad
+.fi
+.SH NAME
+true, false \- Wahrheitswerte liefern
+.SH SYNTAX
+.B true
+.PP
+.B false
+.SH BESCHREIBUNG
+\fITrue\fR liefert immer einen Exitstatus gleich Null
+(signalisiert erfolgreichen Abschluss).
+\fIFalse\fR
+liefert immer einen Exitstatus ungleich Null
+(zeigt Misserfolg an).
+Sie werden haeufig fuer Eingabe in C-Shell 
+.BR  csh (1)
+oder in Shell
+.BR  sh (1)
+verwendet.
+.SH BEISPIELE
+.PP
+Fuer sh(1):
+.sp
+	while true
+.br
+	do
+.br
+		command
+.br
+	done
+.PP
+Fuer csh(1):
+.sp
+	#
+.br
+	while( { true } )
+.br
+		command
+.br
+	end
+.SH SIEHE AUCH
+csh(1), sh(1)
+.SH DIAGNOSTIK
+.B True
+hat immer einen Exitstatus Null,
+.B false
+einen Exitstatus ungleich Null.

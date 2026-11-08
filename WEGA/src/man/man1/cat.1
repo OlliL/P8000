@@ -1,0 +1,52 @@
+.TH CAT 1 WEGA
+.\" @[$]cat.1	1.2
+.ad
+.fi
+.SH NAME
+cat \- Verketten und Ausgeben von Dateien
+.SH SYNTAX
+\fBcat\fR [ \fB\-u\fR ] [ \fB\-s\fR ] file .\|.\|.
+.SH BESCHREIBUNG
+.B Cat\^
+liest die angegebenen Dateien
+.I file...\^
+in der Reihenfolge der Eingabe und
+gibt deren Inhalt auf die Standardausgabe aus.
+Dabei darf keine der im Aufruf angegebenen Dateien mit
+der Ausgabedatei identisch sein; ausgenommen es handelt
+sich um eine spezielle Geraetedatei (device file).
+.SH OPTIONEN
+.TP
+.B \-
+Liest von der Standardeingabe. Diese
+Notationsform ist funktionell identisch mit einem cat-Aufruf
+ohne irgend eine Angabe eines Argumentes.
+.TP
+.B \-s
+Veranlasst \fBcat\fR zur Unterdrueckung von Fehlermeldungen,
+wenn angegebene Dateien nicht existieren.
+.TP
+.B \-u
+Standardmaessig wird die Ausgabe in 512-Byte-Bloecken gepuffert.
+Die
+.B \-u
+Option hebt diese Pufferung auf.
+.SH BEISPIELE
+.PP
+.RS
+cat file
+.RE
+.PP
+druckt die Datei file
+.PP
+.RS
+cat file1 file2 > file3
+.RE
+.PP
+verkettet die ersten beiden Dateien file1, file2 und legt
+das Ergebnis in einer dritten Datei file3 ab.
+Existiert die dritte Datei file3 zum Zeitpunkt
+der Abarbeitung des cat-Kommandos noch nicht,
+wird sie angelegt.
+.SH SIEHE AUCH
+cp(1), pr(1).

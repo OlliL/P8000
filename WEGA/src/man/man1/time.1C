@@ -1,0 +1,50 @@
+.TH TIME 1C WEGA
+.\" @[$]time.1C	1.2
+.ad
+.fi
+.SH NAME
+time \- Ermittlung der Dauer einer Kommandoausfuehrung
+.SH SYNTAX
+.B time
+[ \fB-v\fR ] command
+.SH BESCHREIBUNG
+Das angegebene Kommando wird ausgefuehrt.
+Anschliessend gibt
+.B time
+die Zeit, die zur Ausfuehrung des Nutzerkommandos benoetigt wurde,
+die Zeit, in der sich das Kommando im Systemzustand befand,
+die Gesamtzeit zur Ausfuehrung des Kommandos bis zu seinem Abschluss
+sowie den Prozentsatz der benutzten CPU-Zeit
+im Verhaeltnis zur Realzeit aus.
+Die Zeiten werden in Sekunden dargestellt.
+.PP
+Das Kommando
+.B time
+steht sowohl als internes Kommando der C-Shell
+als auch als normales Kommando (/bin/time)
+zur Verfuegung.
+.SH OPTIONEN
+.TP
+.B \-v
+Ausfuehrlichere Ausgabe.
+.SH BEISPIELE
+Einfache Ausgabe:
+.PP
+  %time cc file.c
+  1.1u 0.9s 0:07 28%
+.PP
+Ausgabe unter Benutzung der \fB\-v\fR Option:
+.PP
+  %time -v nroff -man tar.1 > tar.1d
+  11.5 user-sec., 2.5 system-sec., 0:19 real-time, 73% of capacity
+.PP
+Die Zeiten werden auf den Diagnose-Ausgabe-Strom ausgegeben.
+.SH SIEHE AUCH
+csh(1), sh(1), time(1).
+.br
+"Die C-Shell" in WEGA-Dienstprogramme
+.SH EINSCHRAENKUNGEN
+Die Zeit wird auf die Sekunde genau bestimmt.
+Die CPU-Zeiten werden auf 1/60 Sekunde gemessen.
+Somit kann die Summe der CPU-Zeiten bis zu einer Sekunde groesser
+als die benoetigte Zeit sein.

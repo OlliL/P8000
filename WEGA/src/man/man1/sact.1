@@ -1,0 +1,71 @@
+.TH SACT 1 WEGA
+.\" @[$]sact.1	1.2
+.ad
+.fi
+.SH NAME
+sact \- Ausgabe der laufenden Aktivitaeten zur Bearbeitung von SCCS-Dateien
+.SH SYNTAX
+.B sact
+files
+.SH BESCHREIBUNG
+.B Sact\^
+informiert den Nutzer ueber alle ausstehenden Deltas fuer eine angegebene
+SCCS-Datei.
+Diese Situation tritt auf, wenn
+.BR get (1)
+mit der
+.B \-e
+Option vorher ausgefuehrt wurde, ohne danach mit
+.BR delta (1)
+bearbeitet worden zu sein.
+Ist ein Directory in der Kommandozeile angegeben, sind
+alle Dateien im Directory spezifiziert
+(ausgenommen sind Nicht-SCCS-Dateien und
+unlesbare Dateien).
+Ein Argument
+.B \-
+bewirkt, dass Zeilen von der Standardeingabe gelesen
+und als Namen von SCCS-Dateien interpretiert werden.
+.PP
+Die Ausgabe fuer jede benannte Datei besteht aus fuenf Feldern, die durch
+Leerzeichen getrennt sind.
+.RS 3
+.TP 8
+Feld 1
+spezifiziert das
+.SM SID
+eines Delta, dass gegenwaertig in der
+SCCS-Datei existiert.
+In dieser Datei werden gerade zur Erstellung eines neuen Deltas
+Veraenderungen vorgenommen.
+.TP 8
+Feld 2
+spezifiziert das 
+.SM SID
+fuer das neu zu schaffende Delta.
+.TP 8
+Feld 3
+enthaelt den Login-Namen des Nutzers, der das Delta erstellen will
+(d.h. der ein
+.B get\^
+fuer die Bearbeitung ausgefuehrt hat).
+.TP 8
+Feld 4
+enthaelt das Datum, an welchem
+.B "get \-e"
+ausgefuehrt wurde.
+.TP 8
+Feld 5
+enthaelt die Zeit, zu der
+.B "get \-e"
+ausgefuehrt wurde.
+.SH SIEHE AUCH
+delta(1),
+get(1),
+unget(1).
+.br
+"Source Code Control System Benutzerhandbuch" in WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+Benutze
+.BR help (1)
+fuer Erklaerungen.

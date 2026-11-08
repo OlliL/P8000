@@ -1,0 +1,29 @@
+.TH ISUNLOCK 3 
+.\" @[$]isunlock.3      1.2
+.ad
+.fi
+.SH NAME
+isunlock \- Aufheben der Verriegelung einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisunlock(isfd)
+\fBint isfd;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isunlock
+hebt eine existierende Verriegelung auf Dateiebene fuer die durch den
+Dateidescriptor
+.I isfd
+bezeichnete Datei auf.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isclose(3),
+islock(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

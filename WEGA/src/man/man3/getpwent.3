@@ -1,0 +1,92 @@
+.TH GETPWENT 3 WEGA
+.\" @[$]getpwent.3      1.2
+.ad
+.fi
+.SH NAME
+getpwent, getpwuid, getpwnam, setpwent, endpwent \- Bereitstellen eines Eintrags aus der Passwort-Datei
+.SH SYNTAX
+.nf
+\fB#include <pwd.h>
+.PP
+\fBstruct passwd *getpwent();
+.PP
+\fBstruct passwd *getpwuid\fI(uid)\fB
+.br
+int\fI uid;
+.PP
+\fBstruct passwd *getpwnam\fI(name)\fB
+.br
+char\fI *name;
+.PP
+\fBint setpwent();
+.PP
+\fBint endpwent();\fR
+.fi
+.SH BESCHREIBUNG
+.BR Getpwent ,
+.BR getpwuid
+und
+.B getpwnam
+geben jeweils einen Pointer auf die folgende Struktur
+.B passwd
+zurueck.
+Die Struktur enthaelt die separierten Felder der Passwort-Datei.
+.RS
+.PP
+.nf
+struct  passwd {
+        char    *pw_name;
+        char    *pw_passwd;
+        int     pw_uid;
+        int     pw_gid;
+        char    pw_age;
+        char    *pw_comment;
+        char    *pw_gecos;
+        char    *pw_dir;
+        char    *pw_shell;
+};
+.ad
+.fi
+.RE
+.PP
+Die Felder
+.I pw_comment
+und
+.I pw_gecos
+werden nicht benutzt; die Bedeutung der anderen Felder ist in 
+.BR passwd (5)
+beschrieben.
+.PP
+.B Getpwent
+oeffnet, falls erforderlich, die Datei und liest die naechste Zeile.
+Diese Funktion kann wiederholt zum Durchsuchen der Datei
+benutzt werden.
+.br
+.B Setpwent
+setzt den Dateipointer an den Anfang der Datei zurueck,
+um die Datei wiederholt durchsuchen zu koennen.
+.br
+.B Endpwent
+schliesst die Datei.
+.PP
+.B Getpwuid
+und
+.B getpwnam
+durchsuchen die Datei vom Beginn an,
+bis ein mit dem Argument uebereinstimmender Nutzer-ID
+.I uid
+bzw. Nutzername
+.I name
+gefunden ist oder EOF erreicht wird.
+.SH DATEIEN
+/etc/passwd.
+.SH SIEHE AUCH
+getlogin(3),
+getgrent(3),
+passwd(5).
+.SH DIAGNOSTIK
+Bei Erreichen von EOF oder bei einem Fehler wird ein Nullpointer
+zurueckgegeben.
+.SH EINSCHRAENKUNGEN
+Die zurueckgegebenen Informationen sind in einem statischen Bereich
+enthalten und muessen kopiert werden, wenn sie erhalten werden sollen.

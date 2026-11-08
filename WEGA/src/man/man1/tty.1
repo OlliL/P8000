@@ -1,0 +1,20 @@
+.TH TTY 1 WEGA
+.\" @[$]tty.1	1.2
+.ad
+.fi
+.SH NAME
+tty \- Ausgabe des Terminalnamens
+.SH SYNTAX
+.B tty
+.SH BESCHREIBUNG
+.B Tty
+gibt den Pfadnamen des Nutzerterminals aus.
+.SH BEISPIEL
+.nf
+% tty
+ /dev/tty04
+.fi
+.SH DIAGNOSTIK
+.TP
+"Not a tty" 
+wird ausgegeben, wenn die Standardeingabedatei kein Terminal ist.

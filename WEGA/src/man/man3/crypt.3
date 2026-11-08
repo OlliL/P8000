@@ -1,0 +1,67 @@
+.TH CRYPT 3 WEGA
+.\" @[$]crypt.3 1.2
+.ad
+.fi
+.SH NAME
+crypt, setkey, encrypt \- Verschluesseln und Entschluesseln
+.SH SYNTAX
+exnf
+\fBchar *crypt\fR(\fIkey, salt\fR)
+\fBchar \fI*key, *salt\fR;
+.sp
+\fBsetkey\fR(\fIkey\fR)
+\fBchar \fI*key\fR;
+.sp
+\fBencrypt\fR(\fIblock, edflag\fR)
+\fBchar \fI*block\fR;
+\fBint edflag;\fR
+.fi
+.SH BESCHREIBUNG
+.B Crypt
+ist die Passwortentschluesselungsroutine.
+.PP
+Das erste Argument von
+.B crypt
+ist ein ueber das Tastenfeld einzugebendes Passwort des Nutzers.
+Das zweite ist eine aus zwei Zeichen bestehende Zeichenkette, die
+aus dem Zeichenvorrat
+[a-zA-Z0-9./] ausgewaehlt wurde.
+Die Zeichenkette
+.I salt
+wird benutzt, um den Algorithmus auf einem von
+4096 Wegen permutiert. Danach wird das Passwort als Schluessel
+fuer die wiederholte Verschluesselung einer konstanten Zeichenkette
+benutzt. Der zurueckgegebene Wert zeigt auf das verschluesselte
+Passwort. Es besteht aus Zeichen desselben Alphabets wie
+\fIsalt\fR.
+Die ersten zwei Zeichen sind
+\fIsalt\fR selbst.
+.PP
+Die anderen Eintragungen gestatten einen (primitiven)
+Zugang zum eigentlichen Algorithmus.
+Das Argument von
+.B setkey
+ist ein Zeichenfeld der Laenge 64, das nur die Zeichen mit
+dem numerischen Wert  0 und 1 enthaelt.
+Wird diese Zeichenkette in Gruppen zu je acht aufgeteilt,
+wird das niederwertige Bit in jeder Gruppe ignoriert. Das fuehrt zu
+einem 56-Bit-Schluessel, der gespeichert wird.
+.PP
+Das Argument von
+.B encrypt
+ist ebenfalls ein Zeichenfeld der Laenge 64, das die Werte 0 und 1
+enthaelt.
+Das Argumentfeld wird zu einem aehnlichen Feld umgebildet,
+das die Bits des Arguments enthaelt, nachdem diese 
+dem Algorithmus unterzogen worden sind, der den durch
+.B setkey
+erzeugten Schluessel benutzt.
+Ist
+.I edflag
+gleich 0, wird das Argument verschluesselt, ist es ungleich Null, wird
+es entschluesselt.
+.SH SIEHE AUCH
+crypt(1), passwd(1), login(1), getpass(3), passwd(5).
+.SH EINSCHRAENKUNGEN
+Der Rueckgabewert zeigt auf statische Daten,
+deren Inhalt bei jedem Aufruf ueberschrieben werden.

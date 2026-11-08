@@ -1,0 +1,158 @@
+.TH NL 1 
+.\" @[$]nl.1	1.2
+.ad
+.fi
+.SH NAME
+nl \- Filter zur Zeilennummerierung
+.SH SYNTAX
+.B nl
+.in +3m
+[ \fB\-b\fItype\fR]
+.br
+[ \fB\-f\fItype\fR]
+.br
+[ \fB\-h\fItype\fR]
+.br
+[ \fB\-i\fIincr\fR]
+.br
+[ \fB\-l\fInum\fR]
+.br
+[ \fB\-n\fIformat\fR]
+.br
+[ \fB\-p \fR]
+.br
+[ \fB\-s\fIsep\fR]
+.br
+[ \fB\-v\fIstart#\fR]
+.br
+[ \fB\-w\fIwidth\fR]
+.br
+\fIfile\fR
+.in -5m
+.SH BESCHREIBUNG
+.B Nl\^
+liest Zeilen aus der angegebenen Datei \fIfile\fR (Standard: stdin)
+und gibt die Zeilen (entsprechend den angegebenen Optionen)
+linksseitig nummeriert auf die Standardausgabe aus.
+.PP
+.B Nl\^
+stellt den gelesenen Text in Form von logischen Seiten dar.
+Die Zeilennummerierung beginnt auf jeder logischen Seite von vorn.
+Eine logische Seite besteht aus Seitenkopf, dem eigentlichen Text
+und dem Seitenabschluss. Leere Sektionen sind moeglich.
+.PP
+Fuer Seitenkopf, Text und Seitenabschluss (header, body, footer) stehen
+unterschiedliche Zeilennummerierungs-Optionen zur Verfuegung
+(z.B. keine Nummerierung fuer Kopf- und Fusszeilen; Nummerierung
+von Leerzeilen kann nur im Text erfolgen).
+.PP
+Der Beginn der logischen Seitensektionen muss durch folgende Zeilen
+(nur angegebene Zeichen) signalisiert werden:
+.br
+.RS 10
+.TP 15
+.I Zeileninhalt\^
+.I Beginn des\^
+.PD 0
+.TP
+\e:\e:\e:
+header (Seitenkopf)
+.TP
+\e:\e:
+body (Textteil)
+.TP
+\e:
+footer (Seitenabschluss)
+.sp
+.PD
+.RE
+Wenn nicht anders angegeben, behandelt
+.B nl\^
+den gesamten gelesenen Text als eine logische Seite (Textteil).
+.PP
+Die Optionen koennen in beliebiger Reihenfolge eingegeben werden
+(gilt auch fuer die Dateioption). Es kann immer nur eine Datei
+angegeben werden.
+.SH OPTIONEN
+.TP 10
+.BI \-b type\^
+Gibt die logischen Textzeilen an, die zu numme\%rieren sind.
+Gueltige Typen \fItype\fR und ihre Bedeutung sind:
+.nf
+a       nummeriere alle Zeilen;
+t       nummeriere nur Zeilen mit druckbarem Text;
+n       keine Zeilennummerierung;
+p\fIstring\fR nummeriere nur Zeilen, die den regulaeren Ausdruck
+        enthalten, der in \fIstring\fR angegeben wurde.
+.fi
+Standard \fItype\fR des Textteils ist
+.B t
+(druckbare Textzeilen nummerieren).
+.TP 10
+.BI \-f type\^
+wie bei
+.BI \-b type\^,
+nur fuer Seitenabschluss
+(Standard: \fBn\fR ; keine Zeilennummerierung).
+.TP 10
+.BI \-h type\^
+wie bei
+.BI \-b type\^,
+nur fuer Seitenkopf
+(Standard: \fBn\fR ; keine Zeilennummerierung).
+.TP 10
+.BI \-i incr\^
+.I Incr\^
+ist das Inkrement fuer die Text\%zeilennummerierung.
+(Standard:
+.BR 1 ).
+.TP 10
+.BI \-l num\^
+.I Num\^
+ist die Anzahl von Leerzeilen, die als eine Zeile betrachtet werden soll.
+So hat z.B.
+.B \-l2
+zur Folge, dass nur jede zweite Leerzeile nummeriert wird, wenn die
+entsprechenden
+.BR \-ha ,
+.BR \-ba ,
+und/oder
+.B \-fa
+Optionen gesetzt wurden.
+Standard ist
+.BR 1 .
+.TP 10
+.BI \-n format\^
+.I Format\^
+gibt das Format der Zeilennummern an.
+Folgende Formatangaben sind moeglich:
+.nf
+  ln   fuehrende Nullen werden unterdrueckt, links justiert;
+  rn   fuehrende Nullen werden unterdrueckt, rechts ju\%stiert;
+  rz   fuehrende Nullen werden ausgegeben, rechts justiert;
+.fi
+Standard \fIformat\fR ist \fBrn\fR (rechts justiert, ohne fuehrende Nullen).
+.TP 10
+.B \-p
+kein Neubeginn der Zeilennummerierung bei Erkennung einer
+neuen logischen Seite.
+.TP 10
+.BI \-s sep\^
+.I Sep\^
+spezifiziert die Trennung zwischen Zeilennummer und Zeile.
+Standard \fIsep\fR ist ein Tabulator
+.BR (HT) .
+.TP 10
+.BI \-v start#\^
+.I Start#\^
+ist die Anfangszeilennummer der logischen Seiten
+(Standard:
+.BR 1 ).
+.TP 10
+.BI \-w width\^
+.I Width\^
+legt die Anzahl von Ziffern der Zeilennummern fest
+(Standard fuer \fIwidth\fR ist
+.BR 6 ).
+.SH SIEHE AUCH
+nroff(1), pr(1).

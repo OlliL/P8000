@@ -1,0 +1,89 @@
+.TH LSEEK 2 WEGA
+.\"@[$]lseek.2  1.2
+.ad
+.fi
+.SH NAME
+lseek \- Setzen des Lese/Schreib-Pointers
+.SH SYNTAX
+.B long lseek
+.I (fildes, offset, whence)
+.br
+.B long
+.I offset;
+.br
+.B int
+.I fildes, whence;
+.PP
+.SH BESCHREIBUNG
+Der angegebene Dateidescriptor bezieht sich auf eine fuer Lesen oder Schreiben
+geoeffnete Datei.
+Der Lese-/Schreib-Pointer wird fuer die Datei folgendermassen gesetzt:
+.IP
+\fIwhence\fR=0 : Pointer wird auf \fIoffset\fR Bytes gesetzt.
+.PD 0
+.IP
+\fIwhence\fR=1 : \fIoffset\fR wird zum aktuellen Wert des Pointers addiert.
+.IP
+\fIwhence\fR=2 : \fIoffset\fR wird zur Dateigroesse addiert.
+.PD
+.PP
+Der neue Wert des Lese-/Schreib-Pointers wird zurueckgegeben.
+.PP
+Das Suchen weit nach dem Ende der Datei und darauffolgendes Schreiben
+erzeugt eine Luecke, die keinen physischen Speicherplatz belegt und als Null 
+gelesen wird.
+.SH SIEHE AUCH
+open(2), creat(2), fseek(3), dup(2), fcntl(2).
+.SH DIAGNOSTIK
+.B Lseek
+wird nicht ausgefuehrt und der Lese-/Schreib-Pointer bleibt unveraendert,
+wenn mindestens einer der folgenden Punkte zutrifft:
+.TP 11
+\%[EBADF]
+.I Fildes
+ist kein offener Dateidescriptor.
+.PD 0
+.TP 11
+\%[ESPIPE]
+.I Fildes
+ist mit einem Pipe oder Fifo verbunden.
+.TP 11
+\%[EINVAL] und Signal \fBSIGSYS\fR
+.I Whence
+ist nicht 0, 1 oder 2.
+.TP 11
+\%[EINVAL]
+Der resultierende Lese-/Schreib-Pointer wird negativ.
+.PD
+.PP
+Fuer einige Special-Files ist ein
+.B lseek
+Aufruf nicht zulaessig.
+Der Wert des Lese-/Schreib-Pointers, der mit einem solchen Device
+verbunden ist, ist nicht definiert.
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird der neue Wert des Lese-/Schreib-Pointers
+(nichtnegativer Long-Wert) zurueckgegeben.
+Andernfalls wird ein Wert \-1L zurueckgegeben und
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH EINSCHRAENKUNGEN
+.I Lseek
+sollte nicht fuer Terminals oder Modems benutzt werden. 
+Es kann undefinierbare Resultate fuer andere Character-Special-Files
+erzeugen.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT LSEEK  := 19
+
+     ...             !* r0 : fildes *!
+                     !* r1 : hoeherwertiges Wort von Offset *!
+                     !* r2 : niederwertiges Wort von Offset *!
+                     !* r3 : whence *!
+     subl   rr4, rr4
+     sc     #LSEEK
+     ...             !* Rueckgabewert in rr4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

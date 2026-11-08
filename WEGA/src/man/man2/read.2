@@ -1,0 +1,122 @@
+.TH READ 2 WEGA
+.\" @[$]read.2  1.2
+.ad
+.fi
+.SH NAME
+read \- Lesen aus einer Datei
+.SH SYNTAX
+.B read
+.I (fildes, buffer, nbytes)
+.br
+.B char
+.I *buffer;
+.br
+.B int
+.I fildes, nbytes;
+.SH BESCHREIBUNG
+Ein Dateidescriptor
+.B fildes
+ist ein Wort, das von einem erfolgreichen
+.BR open (2),
+.BR creat (2),
+.BR  dup (2)
+oder
+.BR pipe (2)
+Systemruf zureckgegeben wird.
+Die aus der Datei gelesenen Datenbytes werden in
+.IR buffer ,
+einem Speicherplatz von
+.I nbytes
+zusammenhaengenden Bytes, gebracht.
+Es wird nicht garantiert, dass alle
+.I nbytes
+Bytes gelesen werden.
+Bezieht sich z.B. eine Datei auf die Tastatur, wird hoechstens
+eine Zeile eingelesen.
+In jedem Fall wird die Anzahl der gelesenen Zeichen zurueckgegeben.
+.PP
+Ist der zurueckgegebene Wert 0, wurde End-Of-File erreicht.
+.PP
+Wird aus einer leeren Pipe (oder
+.SM FIFO\*S)
+gelesen, tritt folgendes ein:
+.TP 16
+.PD 0
+O_NDELAY = 1 :
+Es wird Null zurueckgegeben.
+.TP
+O_NDELAY = 0 :
+Das Lesen wird blockiert, bis Daten in die Datei
+geschrieben sind oder die Datei nicht mehr zum Schreiben offen ist.
+.PD
+.PP
+Wird von einem Terminal-Special-File gelesen,
+das momentan keine Daten liefert, gilt:
+.TP 16
+.PD 0
+O_NDELAY = 1 :
+Es wird Null zurueckgegeben.
+.TP
+O_NDELAY = 0 :
+Das Lesen wird blockiert, bis Daten bereitgestellt werden.
+.PD
+.SH DIAGNOSTIK
+.I Read
+wird nicht ausgefuehrt, wenn mindestens einer der folgenden Punkte
+zutreffen:
+.TP 11
+\%[EBADF]
+.I Fildes
+ist kein zum Lesen offener gueltiger Dateidescriptor.
+.PD 0
+.TP
+\%[EFAULT]
+.I Buffer
+weist auf einen ausserhalb des zugewiesenen Adressbereiches liegenden
+Bereich.
+.PD
+.PP
+Ein Fehler kann auch durch folgende Ursachen entstehen:
+.TP 3
+-
+.PD 0
+Physische E/A-Fehler.
+.TP
+-
+Die Pufferadresse ist fehlerhaft.
+.TP
+-
+Der Wert fuer
+.I nbytes
+ist zu gross.
+.TP
+-
+Der Dateidescriptor ist keiner Eingabedatei zugeordnet.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreichem Abschluss wird eine nichtnegative ganze Zahl
+zurueckgegeben, durch die die Anzahl der tatsaechlich gelesenen
+Bytes angegeben wird.
+Andernfalls wird ein Wert \-1 zurueckgegeben und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+open(2), creat(2), dup(2), pipe(2).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT READ   := 3
+
+Nichtsegmentiert
+     ...             !* r0 : fildes *!
+                     !* r1 : buffer *!
+                     !* r2 : nbytes *!
+Segmentiert
+     ...             !* r0 : fildes *!
+                     !* rr2 : buffer *!
+                     !* r4 : nbytes *!
+     sc     #READ
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

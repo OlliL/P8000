@@ -1,0 +1,112 @@
+.TH ISSTART 3 
+.\" @[$]isstart.3       1.1
+.ad
+.fi
+.SH NAME
+isstart \- Selektieren eines Index
+.SH SYNTAX
+.nf
+\fBisstart\fI(isfd, keydesc, length, record, mode)\fR
+\fBint \fIisfd;\fR
+\fBstruct \fIkeydesc *keydesc;\fR
+\fBint \fIlength;\fR
+\fBchar \fIrecord[];\fR
+\fBint \fImode;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isstart
+selektiert den aktuellen Index,
+der bei nachfolgenden Operationen
+in der C-ISAM-Datei verwendet werden soll
+und ermittelt den entsprechenden Datensatz in der Datei.
+.br
+(Anmerkung:
+Wird eine C-ISAM-Datei durch
+.B isbuild
+angelegt oder durch
+.B isopen
+geoeffnet, bezeichnet der aktuelle Index den Primaerindex 
+und der aktuelle Datensatz den ersten Datensatz.)
+.PP
+Das Argument
+.I keydesc
+bezeichnet den gewuenschten Index.
+Dieser Index muss der Primaerindex oder ein Index sein, der unter 
+Verwendung der Funktion
+.B isaddindex
+vorher angefuegt worden ist.
+.PP
+Soll der aktuelle Datensatz ueber Schluesselsuche selektiert werden,
+muessen die Suchwerte vor dem Funktionsaufruf im durch das Argument
+.I record
+angegebenen Puffer in den korrekten Bytepositionen des Datensatzes
+bereitgestellt werden.
+Fuer das Argument
+.I length
+gilt dann:
+.TP 10
+0 (Null)
+Der gesamte Schluessel wird zum Vergleich benutzt.
+.PD 0
+.TP 10
+k (k>0)
+Die ersten "k" Bytes des Schluessels werden verglichen.
+.PD
+.PP
+Das Argument
+.I mode
+spezifiziert den Datensatz, der zum aktuellen Datensatz werden soll.
+Fuer ihn muss gelten:
+.TP 10
+.B ISEQUAL
+Schluesselwert gleich Suchwert.
+.PD 0
+.TP 10
+.B ISGREAT
+Schluesselwert groesser Suchwert.
+.TP 10
+.B ISGTEQ
+Schluesselwert groesser als oder gleich Suchwert.
+.TP 10
+.B ISFIRST
+Positionierung vor dem durch
+.I keydesc
+angegebenen Datensatz.
+.TP 10
+.B ISLAST
+Positionierung nach dem letzten Datensatz am Dateiende.
+.PD
+.PP
+Wird der Modus
+.B ISFIRST
+oder
+.B ISLAST
+gewaehlt, bleiben die Parameter
+.I length
+und 
+.I record
+unbenutzt.
+.PP
+Die Funktion
+.B isstart
+kehrt mit einem Wert -1 zurueck, wenn kein Datensatz gefunden werden kann,
+fuer den in Abhaengigkeit vom Argument
+.I mode
+die entsprechende Relation gilt.
+.PP
+Vor einem Funktionsaufruf
+.B isread
+ist ein Aufruf von
+.B isstart zur Positionierung des Datensatzes in der Datei
+nicht notwendig.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isbuild(3),
+isopen(3),
+isread(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

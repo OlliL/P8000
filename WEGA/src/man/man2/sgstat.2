@@ -1,0 +1,51 @@
+.TH SGSTAT 2 
+.\"@[$]sgstat.2 1.2
+.fi
+.ad
+.SH NAME
+sgstat \- Ausgabe der hoechsten segmentierten Codeadresse
+.SH SYNTAX
+.nf
+.na
+\fBsgstat\fI(\fI&buffer\fR)
+.br
+\fBstruct {
+.br
+        char \fIsegno ;\fR
+.br
+        \fBunsigned \fIsize ;\fR
+.br
+.B } \fIbuffer\fR[10] ;\fR
+.br
+.SH BESCHREIBUNG
+.fi
+.ad
+Der Systemruf
+.B sgstat
+gibt Informationen in den
+.I buffer
+zurueck, die die Codesegmente des Aufrufprozesses beschreiben.
+Das Aufrufprogramm muss segmentiert arbeiten.
+Die Groesse wird in Bytes zurueckgegeben. Die Tabelle
+.I buffer
+wird mit den ersten 10 Segmentnummern und Groessen der 
+Codesegmente (in Bytes) gefuellt.
+Sind weniger als 10 Codesegmente vorhanden, wird die Tabelle
+mit Werten von -1 aufgefuellt.
+Dieser Aufruf wird in Verbindung mit der Profilierung durch die
+.BR monitor (3)
+Routine verwendet.
+.SH DIAGNOSTIK
+.PP
+Der Systemruf
+.B sgstat
+gibt nie einen Fehler zurueck.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT SGSTAT := 56
+
+     ...             !* rr0 : &buffer *!
+     clr    rr4
+     sc     #SGSTAT
+     ...             !* Rueckgabewert in rr4 *!

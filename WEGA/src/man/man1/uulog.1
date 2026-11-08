@@ -1,0 +1,47 @@
+.TH UULOG 1 WEGA
+.\" @[$]uulog.1	1.2
+.ad
+.fi
+.SH NAME
+uulog \- Verwaltung der Transaktionen auf einem UUCP-Netz
+.SH SYNTAX
+.B uulog
+[\fBoptions\fR]
+.SH BESCHREIBUNG
+.PP
+.B Uulog
+verwaltet verschiedene LOGFILE's, die bei
+paralleler Ausfuehrung mehrerer
+.BR uucp (1)
+oder
+.BR uucico (M)
+Kommandos entstehen,
+in einem LOGFILE und listet vorhandene Eintragungen von
+einem System oder Nutzer auf.
+.SH OPTIONEN
+.TP 8
+.BI \-s sys
+Ausgabe der Eintragungen von entfernten Systemen.
+.TP
+.BI \-u user
+Ausgabe der Eintragungen des angegebenen Nutzers.
+.TP
+.BI \-u sec
+Loeschen der LOG. ...-Dateien; Austausch der Standardzeit
+(3600 sec) gegen den angegebenen Wert.
+.TP
+.BI \-x num
+Angabe der gewuenschten Debugging-Ebene.
+.SH DATEIEN
+/usr/spool/uucp     Spool-Directory
+.br
+/usr/lib/uucp/\(**     Andere Daten- und Programmdateien
+.SH SIEHE AUCH
+uucp(1),
+uulog(1),
+uuname(1),
+uuclean(M),
+uucico(M),
+uux(1).
+.br
+"UUCP - Rechnerkopplung" in WEGA-Dienstprogramme

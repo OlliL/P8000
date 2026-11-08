@@ -1,0 +1,102 @@
+.TH ACCESS 2 WEGA
+.\" @[$]access.2        1.2
+.ad
+.fi
+.SH NAME
+access \- Bestimmung der Zugriffsrechte und Verfuegbarkeit
+.SH SYNTAX
+.B int access(
+.I file, mode)
+.br
+.B char
+.I *name;
+.B int
+.I mode;
+.SH BESCHREIBUNG
+.B Access
+prueft die Zugreifbarkeit der angegebenen Datei
+.I file
+entsprechend dem Modus
+.I mode,
+der die Werte 4 (Lesen), 2 (Schreiben), 1 (Ausfuehren) oder eine Kombination
+davon haben kann. Bei Angabe von Modus 0 wird getestet, ob die zu einer Datei
+fuehrenden Directories durchsucht werden koennen und ob die Datei existiert.
+.PP
+Eine entsprechende Fehleranzeige wird zurueckgegeben, wenn
+.I file
+nicht gefunden oder wenn einer der gewuenschten Zugriffsmodi
+nicht gewaehrt werden kann.
+Der Zugriff auf eine Datei wird verweigert, wenn eine oder mehrere der
+folgenden Bedingungen erfuellt werden:
+.TP 11
+\%[ENOTDIR]
+Eine Komponente des Pfadpraefixes ist kein Directory
+.PD 0
+.TP 11
+\%[ENOENT]
+Schreib-, Lese- oder Ausfuehrungs- (Suche) Erlaubnis wird fuer einen
+nicht vorhandenen Pfadnamen angefordert.
+.TP 11
+\%[ENOENT]
+Die angegebene Datei existiert nicht.
+.TP 11
+\%[EACCES]
+Die Sucherlaubnis wird fuer eine Komponente des Pfadnamens verweigert.
+.TP 11
+\%[EROFS]
+Der Schreibzugriff wird fuer eine Datei aus einem Read-Only-Dateisystem
+angefordert.
+.TP 11
+\%[ETXTBSY]
+Der Schreibzugriff wird fuer eine gerade in Ausfuehrung befindliche
+Prozedurdatei (shared text) angefordert.
+.TP 11
+\%[EACCES]
+Der Dateimodus gestattet den angeforderten Zugriff nicht.
+.TP 11
+\%[EFAULT]
+.I File
+verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen
+Adressbereiches liegt.
+.PD
+.PP
+Dieser Systemruf ist fuer Programme nuetzlich, die
+.BR setuid (2)
+benutzen,
+da die Nutzer- und Gruppen-IDs (hinsichtlich derer die Erlaubnis geprueft
+wird) die reellen UID und GID des Prozesses sind.
+.PP
+Es werden nur die Zugriffrechte geprueft.
+Ein Directory kann durch 
+.BR access
+als schreibbar gemeldet werden, aber ein Versuch, es zum Schreiben
+zu oeffnen, schlaegt fehl (obwohl hier Dateien erstellt werden koennen);
+eine Datei kann ausfuehrbar erscheinen, aber
+.BR exec (2)
+versagt, wenn es nicht im korrekten Format ist.
+.PP
+.SH RUECKGABEWERT
+.PP
+Wenn der angeforderte Zugriff erlaubt ist, wird ein Wert 0 zurueckgegeben. 
+Anderenfalls wird der Wert \-1 zurueckgegeben und
+.BI errno
+wird gesetzt, um den Fehler anzuzeigen.
+.SH SIEHE AUCH
+stat(2).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT ACCESS := 33
+
+Nichtsegmentiert
+     ...             !* r0 : Dateiname *!
+                     !* r1 : mode *!
+Segmentiert
+     ...             !* rr0 : Dateiname *!
+                     !* r2 : mode *!
+     clr    r4
+     sc     #ACCESS
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

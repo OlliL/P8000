@@ -1,0 +1,19 @@
+.TH ABORT 3 WEGA
+.\" @[$]abort.3 1.2
+.ad
+.fi
+.SH NAME
+abort \- Erzeugen eines Fehlers durch IOT-Trap
+.SH BESCHREIBUNG
+.B Abort
+erzeugt ein IOT-Signal, durch das normalerweise der Prozess beendet wird.
+Dabei wird ein Speicherabzug (core dump) erzeugt, der zu Testzwecken
+(Debugging) benutzt werden kann.
+.PP
+Ein IOT-Trap kann nicht durch die Hardware auftreten,
+es handelt sich um einen Software-Trap.
+.SH SIEHE AUCH
+adb(1), signal(2), exit(2).
+.SH DIAGNOSTIK
+Durch Shell erfolgt die Meldung
+"IOT-Trap \- core dumped".

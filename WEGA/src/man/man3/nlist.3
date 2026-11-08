@@ -1,0 +1,54 @@
+.TH NLIST 3 WEGA
+.\" @[$]nlist.3 1.1
+.ad
+.fi
+.SH NAME
+nlist \- Lesen von Eintraegen in der Symboltabelle
+.SH SYNTAX
+.nf
+\fB#include <nlist.h>
+.sp
+\fBnlist\fI(filename, nl)
+.br
+\fBchar \fI*filename;
+.br
+\fBstruct nlist \fInl[ ];\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B nlist
+untersucht die Symboltabelle in der gegebenen ausfuehrbaren Datei
+und selektiert daraus eine Werteliste.
+Die Symboltabelle besteht aus einem Feld von Strukturen mit
+Namen, Typen und Werten.
+Die Liste wird durch einen Null-Namen abgeschlossen.
+Jeder Name wird in der Symboltabelle der Datei gesucht.
+Ist er gefunden, werden sein Typ und Wert in die naechsten zwei
+Felder eingetragen. Wird er nicht gefunden, werden beide
+Eintraege auf Null gesetzt.
+.PP
+Die folgende Struktur unterscheidet sich von einem Eintrag in der aktuellen
+Symboltabelle (siehe
+.BR a.out (5)):
+.PP
+.RS
+.nf
+ struct nlist {
+        char    *nl_name;
+        long    nl_value;
+        char    nl_type;
+ };
+.fi
+.RE
+.PP
+Diese Funktion ist z.B.
+fuer die Untersuchung der Symboltabelle des Systemkerns geeignet
+(Datei
+.BR /wega ).
+Auf diese Weise kann ein Programm aktuelle Systemadressen ermitteln.
+.SH SIEHE AUCH
+a.out(5).
+.SH DIAGNOSTIK
+Alle Typeintragungen werden auf Null gesetzt, wenn die Datei nicht
+gefunden werden kann oder wenn es sich nicht um eine gueltige
+Symboltabelle handelt.

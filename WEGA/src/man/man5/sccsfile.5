@@ -1,0 +1,253 @@
+.TH SCCSFILE 5 WEGA
+.\" @[$]sccsfile.5	1.2
+.ad
+.fi
+.SH NAME
+sccsfile \- Format einer SCCS-Datei
+.SH BESCHREIBUNG
+Eine SCCS-Datei
+ist die Steuerdatei des Source-Code-Control-Systems SCCS, die
+aus ASCII-Zeichen besteht.
+Sie kann in sechs logische Teilen gespalten werden:
+.IP - 3
+Die Pruefsumme.
+.PD 0
+.IP -
+Die Delta-Tabelle, die Informationen ueber jedes Delta enthaelt.
+.IP -
+Den Namen der Nutzer
+(Login-Namen und/oder numerische Gruppen-ID), die
+Deltas hinzufuegen koennen.
+.IP -
+Flags
+(Definitionen interner Schluesselworte).
+.IP -
+Kommentare
+(beliebige beschreibende Informationen zur Datei).
+.IP -
+Hauptteil
+(die eigentlichen Textzeilen einschliesslich Steuerzeilen).
+.PD
+.PP
+In der gesamten SCCS-Datei befinden sich Zeilen, die mit dem ASCII-Zeichen
+\fBSOH\fR (start of heading, oktal 001)
+beginnen. Dieses Zeichen wird im folgenden als
+.I "das Steuerzeichen"\^
+bezeichnet und wird graphisch als
+\fB@\fR dargestellt.
+Alle unten stehenden Zeilen, die nicht mit einem Steuerzeichen am
+Anfang dargestellt sind, koennen nicht mit einem Steuerzeichen beginnen.
+.PP
+Eintragungen der Form DDDDD stellen eine Zeichenkette aus
+fuenf Ziffern dar
+(eine Zahl zwischen 00000 und 99999).
+.PP
+Im folgenden wird
+jeder logische Teil einer SCCS-Datei genau beschrieben:
+.SH Pruefsumme
+Die erste Zeile einer SCCS-Datei enthaelt die Pruefsumme.
+Die Zeile hat folgende Form:
+.sp
+	@\fBhDDDDD\fR
+.sp
+Der Wert der Pruefsumme ist die Summe aller Zeichen,
+mit Ausnahme der Zeichen, die in der ersten Zeile stehen.
+.SH Delta-Tabelle
+Die Delta-Tabelle
+besteht aus einer variablen Anzahl von Eintragungen der Form:
+.nf
+.sp
+	@\fBs\fR DDDDD/DDDDD/DDDDD
+	@\fBd\fR <type> <\fBSCCS ID\fR> yr/mo/da hr:mi:se <pgmr> DDDDD DDDDD
+	@\fBi\fR DDDDD \fB...\fR
+	@\fBx\fR DDDDD \fB...\fR
+	@\fBg\fR DDDDD \fB...\fR
+	@\fBm\fR <MR number>
+	   :
+	   :
+	@\fBc\fR <comments> \fB...\fR
+	   :
+	   :
+	@\fBe\fR
+.fi
+.PP
+Die erste Zeile
+(@\fBs\fR) enthaelt die Anzahl der
+eingefuegten/geloeschten/bzw. unveraenderten Zeilen.
+.PP
+Die zweite Zeile
+(@\fBd\fR)
+enthaelt:
+.IP - 3
+Den Typ des Deltas
+(z.Z. normal: \fBD\fR und removed: \fBR\fR).
+.PD 0
+.IP - 3
+Das SCCS-ID des Deltas.
+.IP - 3
+Datum und Zeit der Erstellung des Deltas.
+.IP - 3
+Login-Name, der zur Zeit der Erstellung des Deltas dem realen
+Nutzer-ID entsprach.
+.IP - 3
+Die seriellen Nummern des Deltas bzw. die des
+Vorgaengers.
+.PD
+.PP
+Die Zeilen @\fBi\fR, @\fBx\fR und @\fBg\fR enthalten die 
+seriellen Nummern der Deltas, die eingereiht, ausgesondert bzw.
+ignoriert werden.
+Diese Zeilen sind optional.
+.PP
+Die optionalen Zeilen  @\fBm\fR
+enthalten je eine MR-Nummer, die mit dem Delta assoziiert.
+Die Zeilen @\fBc\fR enthalten
+Kommentare, die sich auf das Delta beziehen.
+.PP
+Die Zeile @\fBe\fR schliesst den Delta-Tabellen-Eintrag ab.
+.SH Nutzernamen
+Dieser logische Teil der SCCS-Datei enthaelt
+die Liste der Login-Namen und/oder numerischen
+Gruppen-ID der Nutzer, die der Datei Deltas hinzufuegen
+duerfen. Die Eintraege werden durch Newline-Zeichen
+getrennt. Diese Zeilen werden von den Zeilen
+@\fBu\fR und @\fBU\fR eingeschlossen.
+Eine leere Liste gestattet jedem Benutzer, ein Delta anzulegen.
+.SH Flags
+Flags sind
+intern verwendete Schluesselworte (detaillierte Informationen zur
+Anwendung siehe
+.BR admin (1)).
+Jede Flag-Zeile hat die Form:
+.sp
+	@\fBf\fR <flag>	<optionaler Text>
+.sp
+Die folgenden Flags sind festgelegt:
+.sp
+.nf
+	@\fBf\fR t <Programmtyp>
+	@\fBf\fR v <Programmname>
+	@\fBf\fR i
+	@\fBf\fR b
+	@\fBf\fR m <Modulname>
+	@\fBf\fR f <niedrigste Release>
+	@\fBf\fR c <hoechste Release>
+	@\fBf\fR d <Standard-SID>
+	@\fBf\fR n
+	@\fBf\fR j
+	@\fBf\fR l <verriegelte Releases>
+	@\fBf\fR q <vom Nutzer definiert>
+.fi
+.sp
+.TP
+.B b
+Das Flag
+.B \-b
+kann im Kommando
+.B get\^
+verwendet werden, um einen Zweig im Delta-Baum
+zu gruenden.
+.TP
+.B c
+Definiert die hoechste Release.
+Es duerfen keine Deltas mit einer hoeheren Release-Nummer
+hinzugefuegt werden.
+.TP
+.B d
+Definiert die Standard-SID fuer ein
+.BR get\^ -Kommando,
+wenn keine SID festgelegt ist.
+.TP
+.B f
+Definiert die niedrigste Release.
+Es duerfen keine Deltas mit einer niedrigeren Release-Nummer
+hinzugefuegt werden.
+.TP
+.B i
+Steuert den Warnungs-/Fehler-Aspekt
+der Meldung "No id keywords".
+Ist
+.B i
+nicht vorhanden, stellt diese Meldung nur eine Warnung dar.
+Ist das Flag
+.B i
+vorhanden, fuehrt diese Meldung zu einem "fatalen" Fehler
+(die Datei wird nicht erzeugt oder das Delta wird nicht angelegt).
+.TP
+.B j
+Ist dieses Flag gesetzt, erlaubt
+.BR get (1)
+das gleichzeitige Editieren der gleichen Basis-SID mehrerer Nutzer.
+.TP
+.B l
+Es wird eine Liste von Releases definiert,
+die fuer das Editieren verriegelt
+sind (siehe
+.BR get (1)
+mit der Option
+.BR \-e ).
+.TP
+.B m
+Es wird der Modulnamen spezifiziert, der fuer das
+Identifikationsschluesselwort \fB%M%\fR ersetzt wird.
+Voreingestellt ist der Name der SCCS-Datei (ohne fuehrendes
+.BR s. ).
+.TP
+.B n
+Das Flag veranlasst das Programm
+.BR delta (1),
+ein "Null-Delta" in jeder der Releases zu erzeugen,
+die bei der Erzeugung eines Deltas in einer neuen Release
+uebersprungen wurden (z.B. werden bei der Erzeugung von
+Delta 5.1 nach Delta 2.7 die Releases 3 und 4 uebersprungen).
+Diese "Null-Deltas" dienen als "Ankerpunkte",
+um spaeter von diesen Punkten aus
+Delta-Zweige erzeugen zu koennen. Ist dieses
+Flag nicht gesetzt, sind die uebersprungenen Releases in der SCCS-Datei
+nicht existent. Damit koennen an diesen Stellen zu einem spaeteren
+Zeitpunkt keine Delta-Zweige mehr erzeugt werden.
+.TP
+.B q
+Das Flag definiert den Text, der fuer jedes
+Schluesselwort \fB%Q%\fR ersetzt wird.
+.TP
+.B t
+Das Flag definiert den Text, der fuer jedes
+Schluesselwort \fB%Y%\fR ersetzt wird.
+.TP
+.B v
+Das Flag veranlasst das Programm
+.BR delta (1),
+die Eingabe von Modification-Request-Nummern (MR-Nummern)
+anzufordern. Der optionale Text definiert den Namen eines Testprogramms
+fuer die Gueltigkeit der MR-Nummern.
+.SH Kommentare
+Kommentare sind
+beliebige Texte, die von den Zeilen
+@\fBt\fR und @\fBT\fR eingeschlossen werden.
+Normalerweise enthaelt die Kommentarsektion eine Beschreibung
+des Verwendungszwecks der Datei.
+.SH Hauptteil
+Der Hauptteil besteht aus Textzeilen und
+Steuerzeilen.
+Textzeilen beginnen nicht mit einem Steuerzeichen,
+waehrend Steuerzeilen mit dem Steuerzeichen beginnen.
+Es gibt drei Arten von Steuerzeilen:
+\fIinsert\fR (einfuegen), \fIdelete\fR (loeschen) und \fIend\fR.
+Sie werden wie folgt dargestellt:
+.sp
+.nf
+	@\fBI\fR DDDDD
+	@\fBD\fR DDDDD
+	@\fBE\fR DDDDD
+.fi
+.sp
+Die aus Ziffern bestehende Zeichenkette ist die Versionsnummer
+des Deltas, zu dem die Steuerzeile gehoert.
+.SH SIEHE AUCH
+admin(1),
+delta(1),
+get(1),
+prs(1).
+.br
+.I "SCCS-Benutzerhandbuch in WEGA-Dienstprogramme"

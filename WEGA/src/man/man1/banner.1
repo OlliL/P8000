@@ -1,0 +1,30 @@
+.TH BANNER 1 WEGA
+.\" @[$]banner.1	1.2
+.ad
+.fi
+.SH NAME
+banner \- Herstellung von Deckblaettern
+.SH SYNTAX
+\fBbanner\fI strings\fR
+.SH BESCHREIBUNG
+.B Banner\^
+gibt seine Argumente (jedes kann bis zu 10 Zeichen lang sein)
+in grossen Buchstaben auf die Standardausgabe.
+.SH BEISPIELE
+.sp
+.RS
+\fBbanner\fI "Guten Tag"\fR
+.br
+\fBbanner\fI Seid gegruesst\fR
+.br
+\fBbanner\fI "happy" "birthday"\fR
+.sp
+.RE
+.SH EINSCHRAENKUNGEN
+Um jedes der speziellen Symbole einschliesslich
+"harter" Leerzeichen zu erhalten,
+muss dem Symbol bzw. Leerzeichen ein Backslash
+"\ \e\ " vorangestellt werden.
+.I
+Banner
+verarbeitet nur 10 Zeichen pro Zeile.

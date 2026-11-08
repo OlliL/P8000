@@ -1,0 +1,39 @@
+.TH OBJHDR 1 
+.\" @[$]objhdr.1        1.2
+.ad
+.fi
+.SH NAME
+objhdr \- Ausgabe des Dateikopfes fuer Objekt- und Lademodule
+.SH SYNTAX
+.B objhdr
+\fIfile\fR
+.SH BESCHREIBUNG
+.B Objhdr
+ist ein spezielles Programm zur Ausgabe des Dateikopfes
+fuer ein P8000-Lademodul
+im hexadezimalen Format.
+.SH BEISPIEL
+Es soll der Dateikopf des P8000-Laders ausgegeben werden:
+.nf
+.sp
+.RS
+% objhdr /bin/ld
+
+magic:  e711    nonsegmented separate I & D
+imsize: 54bc
+bss:    69ca
+segt:   0010
+syms:   0000
+entry:  0000
+flag:   0001:   no relocation info; 
+lines:  0
+
+Segment 0
+atr:    0007    SG_CODE SG_DATA SG_BSS 
+code:   4a00
+data:   0abc
+bss:    69ca
+.fi
+.RE
+.SH SIEHE AUCH
+nm(1), a.out(5), od(1), objdu(1).

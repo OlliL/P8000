@@ -1,0 +1,137 @@
+.TH UTIME 2 WEGA
+.\"@[$]utime.2  1.1
+.ad
+.fi
+.SH NAME
+utime \- Setzen der Dateizeiten
+.SH SYNTAX
+.B #include <sys/types.h>
+.br
+.B int utime
+.I (file, times)
+.br
+.B char
+.I *file;
+.br
+.B struct utimbuf
+.I *times;
+.SH BESCHREIBUNG
+Der Systemruf
+.B utime
+setzt die Zugriffs- und Modifikationszeiten der angegebenen Datei.
+Das Argument
+.I file
+ist ein Pointer auf den Pfadnamen der Datei.
+.PP
+Ist
+.I times
+.BR NULL ,
+werden Zugriffs- und Modifikationszeit der Datei auf die aktuelle
+Zeit gesetzt.
+Fuer die Ausfuehrung von
+.B utime
+in dieser Weise muss der rufende Prozess Eigentuemer der Datei sein oder 
+Schreiberlaubnis besitzen.
+.PP
+Ist
+.I times
+ungleich
+.B NULL,
+wird
+.I times
+als Pointer auf eine Struktur
+.B utimbuf
+interpretiert und die Zugriffs- und Modifikationszeit
+werden auf die in der Struktur enthaltenen Werte gesetzt.
+Bei dieser Nutzung muss der Rufer Eigentuemer der Datei oder
+Superuser sein.
+.PP
+In der Struktur
+.B utimbuf
+werden alle Zeiten in Sekunden angegeben, wobei
+die Zeitmessung am 1. Januar 1970 00:00:00 Uhr Weltzeit beginnt.
+.PP
+.RS
+.nf
+struct  utimbuf {
+        time_t  actime;      /* Zugriffszeit */
+        time_t  modtime;     /* Modifikationszeit */
+};
+.fi
+.RE
+.PP
+.B Utime
+aktualisiert auch die Zeit der letzten Aenderung des Dateistatus
+(st_ctime , siehe
+.BR stat (2))
+im Inode der Datei.
+.SH DIAGNOSTIK
+.B Utime
+wird nicht ausgefuehrt, wenn mindestens einer der folgenden Punkte
+zutrifft:
+.TP 11
+\%[ENOENT]
+Die angegebene Datei existiert nicht.
+.PD 0
+.TP 11
+\%[ENOTDIR]
+Eine der vorderen Komponenten des Pfadnamen ist kein Directory.
+.TP 11
+\%[EACCES]
+Die Sucherlaubnis wird fuer eine der vorderen Komponenten des
+Pfadnamens verweigert.
+.TP 11
+\%[EPERM]
+Die effektive Nutzer-ID
+ist nicht die des Superusers und nicht Eigentuemer der Datei und
+.I times
+ist nicht
+.BR NULL .
+.TP 11
+\%[EACCES]
+Die effektive Nutzer-ID
+ist nicht die des Superusers und nicht Eigentuemer der Datei.
+Ausserdem ist
+.I times
+.B NULL
+und der Schreibzugriff wird verweigert.
+.TP 11
+\%[EROFS]
+Die Datei befindet sich in einem Read-Only-Dateisystem.
+.TP 11
+\%[EFAULT]
+.I Times
+ist nicht
+.B NULL
+und verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen
+Adressbereiches liegt.
+.TP 11
+\%[EFAULT]
+.I File
+verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen 
+Adressbereiches liegt.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird der Wert Null zurueckgegeben.
+Andernfalls wird der Wert \-1 zurueckgegeben und
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+stat (2).
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT UTIME  := 30
+
+Nichtsegmentiert
+     ...             !* r0 : Dateiname *!
+                     !* r1 : times *!
+Segmentiert
+     ...             !* rr0 : Dateiname *!
+                     !* rr2 : times *!
+     clr    r4
+     sc     #UTIME
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

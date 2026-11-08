@@ -1,0 +1,29 @@
+.TH DFILTER 1 WEGA
+.\" @[$]dfilter.1	1.2
+.ad
+.fi
+.SH NAME
+dfilter \- Filter fuer die Druckerausgabe nach Bearbeitung mit nroff
+.SH SYNTAX
+\fBdfilter\fR [\fB\-x\fR] [ < \fIfile\fR] 
+.br
+\fBnroff\fI file\fB | col | dfilter\fR
+.SH BESCHREIBUNG
+Dieses Filter ersetzt die
+durch \fBnroff\fR(1) erzeugten Sequenzen fuer Unterstreichungen
+und Fettdruck durch die Steuersequenzen fuer die Druckertypen
+K6313/K6314 bzw. EPSON LX86 oder K6311/K6312.
+Fuer die Ausgabe auf einen dieser Druckertypen ist
+.B nroff
+ohne die -T Option zu benutzen und die Ausgabe ist mit
+.B col zu filtern.
+.SH OPTIONEN
+.IP -x
+Mit der x-Option wird das Filter auf den entsprechenden
+Druckertyp eingestellt. Es gilt folgende Zuordnung:
+.nf
+x=0  (standard)  K6313/K6314 oder EPSON LX86
+x=1              K6311/K6312
+.fi
+.SH SIEHE AUCH
+nroff(1), col(1), ascii(7)

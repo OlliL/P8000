@@ -1,0 +1,127 @@
+.TH ISAUDIT 3 
+.\" @[$]isaudit.3       1.1
+.ad
+.fi
+.SH NAME
+isaudit \- Aktionsreport (audit trail) fuer eine C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisaudit\fI(isfd, filename, mode)\fR
+\fBint  \fIisfd;\fR
+\fBchar \fI*filename;\fR
+\fBint  \fImode;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isaudit
+dient zur Steuerung eines optionalen Aktionsreports fuer
+C-ISAM-Dateien. Bei aktiviertem Aktionsreport werden alle
+Modifikationen, die an einer C-ISAM-Datei vorgenommen werden,
+in einer Aktionsreportdatei abgelegt. Diese Aktionsreportdatei
+kann durch andere Programme zur Inspektion oder Rekonstruktion
+benutzt werden.
+.PP
+Vor Beginn eines Aktionsreportes muss der Name der Aktionsreportdatei
+ueber den
+.IR mode \-Parameter
+\fBAUDSETNAME\fR
+und den Parameter
+.I filename
+fuer C-ISAM angegeben werden.
+Der Name kann ein beliebiger gueltiger Pfadname sein (Laenge max 64 Byte).
+Dieser Modus kann auch verwendet werden,
+um den Namen der Aktionsreportdatei zu aendern
+oder eine Aktionsreportdatei mit neuem Namen anzulegen, wenn der aktuelle
+Aktionsreport inaktiv ist (siehe unten).
+.PP
+Ist der Name der Aktionsreportdatei in C-ISAM verzeichnet,
+kann der Nutzer unter Verwendung der
+.IR mode \-Parameter
+.B AUDSTART
+bzw.
+.B AUDSTOP
+den Aktionsreport beliebig aktivieren oder deaktivieren
+(in beiden Faellen wird der
+.I filename
+Parameter ignoriert).
+Ist der Aktionsreport aktiv, werden alle Modifikationen in die 
+Aktionsreportdatei geschrieben, auch wenn diese durch
+einen anderen Prozess erzeugt werden!
+Der Aktionsreport bleibt so lange aktiv, bis er deaktiviert wird,
+selbst wenn der ausloesende Prozess beendet wird.
+.PP
+Wird eine Aktionsreportdatei deaktiviert und spaeter wieder aktiviert,
+werden alle Modifikationen der Datei an die
+Aktionsreportdaten angehaengt, die seit dem letzten
+aktiven Zeitraum vorgenommen wurden.
+.PP
+Mit Hilfe des
+.IR mode \-Parameter
+\fBAUDINFO\fR
+kann ueber die Funktion
+.B isaudit
+der Status des Aktionsreportes abgefragt werden.
+Das erste Byte im Datensatzbereich kennzeichnet den Status:
+.IP 0x01 6
+Der Aktionsreport ist aktiv.
+.PD 0
+.IP 0x00 6
+Der Aktionsreport ist nicht aktiv.
+.PD
+.PP
+Ueber den
+.IR mode \-Parameter
+.B BAUDGETNAME
+gibt
+.B isaudit
+den Namen der durch
+.I isfd
+spezifizierten Aktionsreportdatei zurueck (
+vorausgesetzt, dass dieser vorher gesetzt wurde).
+Der Name wird in dem durch den Parameter
+.I filename
+angegebenen Speicherbereich zurueckgegeben.
+.PP
+Die Aktionsreportdatei hat folgendes Format:
+.IP - 3
+Ein aus einem Zeichen bestehender Code (siehe unten)
+.PD 0
+.IP - 3
+Datum und Zeit in langem Format (siehe
+.BR time (2))
+.IP - 3
+Die Prozess-ID (int)
+.IP - 3
+Die Nutzer-ID (int)
+.IP - 3
+Der Inhalt des Datensatzes
+.PD
+.PP
+Der Code ist folgendermassen:
+.IP A 3
+Hinzufuegen eines Datensatzes.
+.PD 0
+.IP D 3
+Loeschen eines Datensatzes.
+.IP R 3
+Ergebnisse eines Lesevorgangs.
+.IP W 3
+Datensatz wird geschrieben.
+.PD
+.PP
+In der Aktionsreportdatei werden alle Modifikationen an der C-ISAM-Datei
+gespeichert.
+So werden z.B. von einem Aufruf
+.B isrewcurr
+zwei Eintragungen in die Aktionsreportdatei veranlasst:
+Eine Eintragung mit einem 'R'-Code gibt den Datensatz vor seiner
+Aktualisierung an und eine Eintragung mit einem 'W'-Code gibt den
+neuen Datensatz an, der den alten ersetzt.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

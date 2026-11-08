@@ -1,0 +1,43 @@
+.TH GAMMA 3 WEGA
+.\" @[$]gamma.3 1.2
+.ad
+.fi
+.SH NAME
+gamma \- Gamma-Funktion
+.SH SYNTAX
+.B #include <math.h>
+.br
+.B extern int signgam;
+.PP
+.B double gamma (x)
+.br
+.BI double x;
+.SH BESCHREIBUNG
+Es wird der natuerliche Logarithmus der Gamma-Funktion berechnet.
+Das Vorzeichen
+wird als externer Integerwert
+.IR signgam
+zurueckgegeben.
+Das folgende C-Programm-Fragment kann benutzt werden, um
+.I Gamma
+zu berechnen:
+.PP
+.RS
+.nf
+y \|= \|gamma \|(x);
+if \|(y \|> \|88.0)
+{
+        perror \|("progname"\|);
+        exit \|(1\|);
+}
+y \|= \|exp \|(y) \|\(** \|signgam;
+.fi
+.RE
+.SH DIAGNOSTIK
+Bei negativen ganzzahligen Argumenten wird ein sehr grosser Wert
+zurueckgegeben und
+.I errno\^
+wird auf
+.BR EDOM
+gesetzt
+(siehe INTRO(2)).

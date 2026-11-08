@@ -1,0 +1,21 @@
+.TH GLOB 1C WEGA
+.\"@[$]glob.1C	1.2
+.ad
+.fi
+.SH NAME
+glob \- Ausgabe von Zeichenketten auf dem Terminal ohne Leerzeichen
+.SH SYNTAX
+.BR glob " wordlist"
+.SH BESCHREIBUNG
+.B Glob
+arbeitet aehnlich wie das Programm
+.BR echo .
+Der Unterschied besteht darin, dass Shell-Metazeichen auch dann ihre
+Bedeutung behalten, wenn ihnen ein Backslash vorangestellt wurde
+sowie jedes Wort in der Ausgabe durch ein Nullzeichen begrenzt wird.
+Das Programm ist vorwiegend fuer die Nutzung in C-Shell-Scripts
+vorgesehen.
+.SH SIEHE AUCH
+echo(1C), echo2(1).
+.br
+"Die C-Shell" in "WEGA-Dienstprogramme"

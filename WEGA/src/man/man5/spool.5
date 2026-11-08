@@ -1,0 +1,303 @@
+.TH SPOOL 5 WEGA
+.\" @[$]spool.5	1.2
+.ad
+.fi
+.SH NAME
+spool \- Aufbau von Backend-Programmen fuer den WEGA-Drucker-Spooler
+.SH SYNTAX
+\fB#include <spool.h> \fR
+.SH BESCHREIBUNG
+In diesem Abschnitt sollen Informationen ueber
+den Aufbau von Backend-Programmen fuer den Wega-Drucker-Spooler
+gegeben werden.
+.PP
+Backend-Programme fuer den Wega-Drucker-Spooler sollen
+Daten vom Dateideskriptor RFFD (Quelldatei) zum Dateideskriptor SFFD
+(Device) kopieren und dabei alle erforderlichen
+Filterfunktionen vornehmen.
+Bei einer Druckanforderung ruft das Programm
+\fBdqueuer\fR(1) das Backend-Programm auf und uebergibt diesem Status-
+und Druckinformationen.
+Die Backend-Programme lesen nicht ueber den Dateideskriptor RFFD,
+wenn ihnen vom Programm
+.B dquerer
+das Flag
+\fB\-B\fR uebergeben wurde.
+Das Programm
+.B dqueuer
+generiert das Flag \fB\-B\fR,
+wenn die zu druckende Datei nicht auffindbar ist.
+Das Backend-Programm gibt dann auf der Titelseite selbstaendig
+den Text 'file not found' aus.
+Das Backend-Programm wertet Flags und Statusinformationen, die von
+.B dqueuer
+uebergeben werden, aus.
+.PP
+Backend-Programme koennen auch Titelseiten und
+Trennseiten erzeugen.
+.PP
+Bei Aufruf erwarten die Backend-Programme, dass folgende Flags als Argumente
+uebergeben werden.
+Sie werden fuer Titelseiteninformationen
+verwendet.
+.sp
+.nf
+.RS
+\-B            Datei nicht gefunden.
+\-c x          Datei x-mal drucken.
+\-d dest       Ziel-Zeichenkette
+\-f file       Dateiname
+\-F from       'from' ist der anfordernde Benutzer.
+\-s time       Zeichenkette mit der Spool-Zeit.
+\-t title      angeforderter Titel.
+.RE
+.fi
+.PP
+Alle zusaetzlichen in der Konfigurationsdatei enthaltenen Optionen
+werden direkt an das Backend-Programm geleitet.
+.PP 
+Backend-Programm koennen bestimmte
+Statusinformationen zurueckgeben, die vom Programm
+\fBxq\fR(1) zur Ueberwachung benutzt werden.
+Die Statusinformationen werden ueber den
+Dateideskriptor STATUSFD
+in dem durch die Struktur
+.B Dstat
+beschriebenen Format (siehe unten)
+uebergeben.
+Das Backend-Programm hat Zugriff auf die Felder
+\fIDpgsdone\fR
+(Anzahl der gedruckten Seiten) und \fIDpercentd\fR
+(Prozentsatz der gedruckten Datei).
+Eine Modifikation anderer Felder kann zu unerwarteten Ergebnissen fuehren.
+Das folgende OFFSET-Makro kann zum Zugriff auf diese Felder
+benutzt werden:
+.sp
+.nf
+/* Makrodefinition fuer das Finden des Offsets (in Bytes)
+   eines bestimmten Elementes in einer Struktur
+ */
+#define OFFSET(struct,item)
+(off_t)((char *)&(struct.item) - (char *)&struct)
+.fi
+.PP
+Die Felder
+\fIDpgsdone\fR und \fIDpercentd\fR werden von
+\fBxq\fR(1) ausgegeben.
+Sie werden zu Anfang auf -1 gesetzt, wodurch gekennzeichnet
+wird, dass das Backend-Programm diese Zaehler nicht unterstuetzt.
+Es entstehen keine Probleme, wenn diese Zaehler im Backend-Programm
+nicht gesetzt werden.
+Alle Versuche, andere Felder der Struktur
+.B Dstat
+zu lesen oder zu schreiben, sind zu unterlassen.
+Der Spooler benutzt oft Record-Verriegelungen und selbst das Lesen
+eines Feldes kann zu einer totalen Blockierung (deadlock) fuehren.
+.PP
+Das Backend-Programm endet mit dem Systemruf
+.BR exit (2).
+Uebergibt dieser Systemruf
+einen Wert ungleich Null, versucht der Spooler, den Fehler zu beseitigen.
+Wenn die Fehlererfassung (error logging)  aktiviert ist,
+wird eine Meldung in die 
+Fehlerdatei geschrieben.
+Anschliessend versucht der Spooler, die Anforderung zu wiederholen.
+Tritt der Fehler mehr als zweimal auf, setzt das Programm
+.B dqueuer
+den Geraetestatus auf
+.BR DOWN .
+Das E/A-Geraet kann unter Verwendung des Kommandos
+.RS
+
+xq -q q:dev -Ud
+
+.RE
+erneut freigegeben werden, wobei
+\fIq:dev\fR
+durch den Namen der Warteschlange
+und die Geraetenummer ersetzt wird.
+Weitere Einzelheiten siehe \fBxq\fR(M).
+.SH ANFORDERUNGS- und STATUSINFORMATIONEN
+.PP
+Das Directory \fI/usr/spool/queuer/requestdir\fR
+enthaelt Dateien mit Anforderungsdatensaetzen.
+Bei jeder Ausfuehrung des Programms
+.BR nq (1)
+wird eine Datei angelegt.
+Jede Datei enthaelt fuer jede auszugebende Datei einen Anforderungsdatensatz.
+Das erste Feld in dieser Datei ist der Zeiger
+\fIoff_t\fR auf den ersten Anforderungsdatensatz der Datei.
+Die uebrigen Datensaetze werden als eine Link-Liste angeordnet.
+Es folgt die Strukturdefinition fuer normale Druckanforderungen:
+.nf
+.sp
+/* Struktur zur Definition normaler (Druck-)Anforderungen */
+
+struct normal {	
+        ippid   bepid;          /* pid eines Backend, wenn aktiv */
+        char    user[USERL];    /* Eigner des Anforderung */
+        char    from[USERL];    /* Login-ID des Benutzers */
+        int     uid;            /*  "    "     " */
+        int     gid;            /*  "    "     " */
+        char    qnam[QUEL];     /* Warteschlange fuer Anforderung */
+        char    dnam[DEVL];     /* E/A-Geraet fuer Anforderung */
+        struct  opts noptions;
+        int     seqno;
+        int     pri;
+        char    request[FILENL];/* Dateiname der Anforderung */
+        char    temp[FILENL];   /* Dateiname bei Verwendung von cp */
+        char    wdir[2*FILENL]; /* Arbeits-Directory */
+        int     status;
+        time_t  dsptime;        /* Zeitpunkt der Zuweisung */
+        char    form[FORML];
+        long    length;
+        int     copies;
+        time_t  time;
+        char    dest[FILENL];   /* Ziel der Ausgabe */
+        char    title[FILENL];  /* wird auf Titelseite gedruckt */
+        off_t   nextstruct;
+};
+.fi
+.PP
+Die Zeichenkette
+.I qnam
+enthaelt die gewuenschte Warteschlange.
+(Wurde die Standard-Warteschlange angefordert, setzt \fBnq\fR 
+den Standardnamen ein.)
+Die Zeichenkette
+.I dnam
+bezeichnet das gewuenschte E/A-Geraet.
+Wird das erste verfuegbare Geraet gewuenscht, ist dieses
+Feld gleich Null.
+.PP
+Die Struktur
+.I opts
+stellt ein Bit-Feld dar, das vom Nutzer angeforderte Optionen beschreibt,.
+Es hat folgenden Aufbau:
+.nf
+.sp
+/* Definition der Struktur der Optionen */
+struct opts {
+        unsigned burst     : 1;
+        unsigned copy      : 1;
+        unsigned encrypt   : 1;
+        unsigned mail      : 1;
+        unsigned rm        : 1;
+        unsigned silent    : 1;
+};
+.sp
+.fi
+.PP
+Das Element
+\fIseqn\fR enthaelt die laufende Nummer dieser Anforderung.
+.PP
+Das Element
+\fIstatus\fR kann die Werte
+READY, HELD oder DISPCHD annehmen.
+Die Zeichenkette
+\fIform\fR beschreibt die spezielle Form,
+die fuer diese Anforderung benoetigt wird.
+.PP
+Das Directory \fI/usr/spool/queuer/statusdir\fR
+enthaelt die Statusdateien fuer alle Warteschlangen und Geraete.
+Der Statusdateiname fuer Warteschlangen entspricht
+dem Namen der Warteschlange.
+Der Name der Statusdatei fuer eine
+Warteschlange namens
+\fIlp\fR lautet demzufolge /usr/spool/queuer/statusdir/lp.
+Das Format der Statusdatei wird durch folgende Struktur definiert:
+.nf
+.sp
+.ne 6
+/* Eintragungen in Statusdirectory der Warteschlange */
+struct Qstat {	
+        int     Qstatus;
+        int     Qpri;
+        int     Qselect;
+};
+.sp
+.fi
+.PP
+Die Werte fuer \fIQstatus\fR, \fIQpri\fR und \fIQselect\fR
+koennen folgende Werte annehmen:
+.nf
+.sp
+/* Definition der Prioritaeten */
+#define PRIR    0   /*  beschleunigt */
+#define PRIN    1   /*  normal      */
+#define PRID    2   /*  verzoegert  */
+.sp
+/* Definition der Auswahlkriterien */
+#define SELF    0   /* FIFO */
+#define SELS    1   /* nach der Groesse */
+.sp
+/* gueltige Zustaende fuer Warteschlangen, Geraete und
+   Anforderungen. 0 darf nicht verwendet werden, da intern benutzt
+   fuer bestimmte Ueberpruefungen
+ */
+#define HELD    1
+#define OFFLINE 2
+#define DOWN    3
+#define RUNNING 4
+#define DISPCHD 5
+#define READY   6
+.fi
+.PP
+Eine Beschreibung der Prioritaeten- und Auswahlkriterien wird im
+WEGA-Systemhandbuch gegeben.
+.PP
+Zusaetzlich zu den Statusdateien der Warteschlangen wird eine
+Datei fuer jedes dem System bekannte E/A-Geraet angelegt.
+Der Name dieser Datei ist der Warteschlangenname mit 
+nachgestelltem Doppelpunkt und Geraetenamen.
+So gehoert z.B. zum Geraet 'mrm' der Warteschlange 'lp' die Statusdatei
+/usr/spool/queuer/statusdir/lp:mrm.
+Die Statusdatei hat folgenden Aufbau:
+.nf
+.sp
+/* Eintraege im Geraete-Status-Directory */
+struct Dstat {	
+        int     Dstatus;
+        int     Duid;            /* uid der aktuellen Anforderung */
+        char    Dform[FORML];    /* aktuelle Form fuer Geraet */
+        time_t  last_dispatched; /* Zeit der letzten Zuweisung */
+        int     retrys;          /* Anzahl der             
+                                    Zuweisungswiederholungen */
+        ippid   Dpid;            /* pid des Backend, das fuer
+                                    dieses Geraet aktiv ist */
+        int     Dpgsdone;
+        int     Dseqn;           /* aktuelle laufende Nummer */
+        int     Dpercentd;
+};
+.fi
+.PP
+Das Feld
+\fIDstatus\fR
+enthaelt einen der oben unter Warteschlangen beschriebenen Werte.
+Die Zeit
+\fIlast_dispatched\fR
+wird vom Programm
+.B dqueuer
+gesetzt, kurz bevor dqueuer dem Backend-Programm dieses Geraet 
+zuweist.
+Sie wird zur Erkennung von Timeouts des Geraetes benutzt.
+Die Werte
+\fIDpgsdone\fR und \fIDprecentd\fR
+werden den Backend-Programmen gesetzt.
+Sie zeigen an, wieviele Daten bereits verarbeitet worden sind.
+.PP
+Wird bei der Analyse der Konfigurationsdatei festgestellt,
+dass fuer das entsprechende Geraet und die entsprechende
+Warteschlange noch keine Statusdatei existiert, wird sie angelegt.
+Die Initialisierungswerte werden aus der Konfigurationsdatei
+entnommen.
+Eine bestehende Statusdatei kann durch Aenderung der Konfigurationsdatei
+nicht veraendert werden.
+Aenderungen koennen unter Verwendung des Programms
+\fBxq\fR(1) vorgenommen werden.
+.SH SIEHE AUCH
+dqueuer(1),
+xq(1),
+xq(M),
+nq(1),
+backend(M).

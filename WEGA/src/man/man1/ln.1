@@ -1,0 +1,31 @@
+.TH LN 1 WEGA
+.\" @[$]ln.1	1.2
+.ad
+.fi
+.SH NAME
+ln  \- Erzeugen eines Links auf eine vorhandene Datei
+.SH SYNTAX
+.B ln
+\fIname1  name2\fR
+.SH BESCHREIBUNG
+Eine Verbindung (Link) ist eine zusaetzliche Eintragung eines
+weiteren Dateinamen in eine Directory, der sich auf eine bereits
+existierende Datei bezieht.
+Dadurch verweist dieser Dateiname auf genau die selbe Datei
+mit allen ihren Eigenschaften (Inhalt, Laenge, Schutzinformationen, usw.),
+wie der andere (bereits vorher vorhandene) Dateiname.
+Eine Datei kann mehrere Dateinamen haben.
+Es ist nicht moeglich, sie von ihrem originalen Eintrag
+zu unterscheiden. Jede Aenderung in der Datei, egal unter
+welchem Namen sie vollzogen wird,
+gilt fuer alle Namen.
+.PP
+Eine Verbindung erfolgt immer von dem 
+Namen \fIname2\fR zu dem Namen \fIname1\fR.
+.PP
+Es ist verboten, Directorys zu verbinden oder eine Verbindung
+ueber ein Dateisystem hinaus zu erzeugen.
+.SH DATEIEN
+ln(1)
+.SH SIEHE AUCH
+rm(1).

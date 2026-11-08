@@ -1,0 +1,136 @@
+.TH SSIGNAL 3 WEGA
+.\" @[$]ssignal.3       1.2
+.ad
+.fi
+.SH NAME
+ssignal, gsignal \- Softwaresignale
+.SH SYNTAX
+.B #include <signal.h>
+.PP
+\fBint \fI(\(**ssignal (sig, action))( )
+.br
+\fBint \fIsig, (\(**action)( );\fR
+.PP
+.B "int gsignal"
+\fI(sig)
+.br
+\fBint \fIsig;\fR
+.SH BESCHREIBUNG
+Die Funktionen
+.B ssignal\^
+und
+.B gsignal\^
+stellen ueber Software realisierte Dienste analog zu dem Systemruf
+.BR signal (2)
+zur Verfuegung.
+Dem Nutzer werden mit diesen Funktionen
+Aussagen ueber Fehlerzustaende ermoeglicht.
+Sie koennen jedoch auch universell genutzt werden.
+.PP
+Der Aufruf der Funktion
+.BR ssignal 
+assoziiert eine Funktion
+.I action
+mit einem Softwaresignal
+.IR sig .
+Das Softwaresignal
+.I sig
+wird durch Aufruf von
+.BR gsignal 
+ausgeloest.
+Die Ausloesung eines Softwaresignals veranlasst die Ausfuehrung
+der mit dem Signal assoziierten
+.IR action .
+.PP
+Das erste Argument der Funktion
+.B ssignal\^
+ist eine Signalnummer (Integerwert 1 <=
+.I sig
+<= 15),
+fuer die die entsprechende Funktion
+.I action
+ausgefuehrt werden soll.
+Das zweite Argument
+.I action
+definiert die Funktion. Sie ist entweder der
+Name einer (vom Nutzer festgelegten) Funktion
+oder eine der auftretenden Konstanten
+.B SIG_DFL
+(Standard) oder
+.B SIG_IGN
+(Ignorieren).
+Die Funktion
+.B ssignal\^
+liefert die zuvor fuer das Signal
+.I sig
+definierte
+.I action
+als Ergebnis.
+Ist keine Funktion festgelegt oder ist die Signalnummer
+unzulaessig, gibt 
+.B ssignal\^
+den Wert
+.BR SIG_DFL 
+zurueck.
+.PP
+Die Funktion
+.B gsignal\^
+loest das durch sein Argument 
+.IR sig 
+definierte Signal aus:
+.IP - 3
+Wurde fuer das Argument
+.IR sig 
+die Funktion
+.I action
+festgelegt, wird
+.I action
+auf den Wert
+.B SIG_DFL
+zurueckgesetzt und die Funktion
+.I action
+wird mit dem Argument
+.IR sig 
+gerufen.
+Die Funktion
+.B gsignal\^
+gibt den Wert zurueck, der von der Funktion
+.I action
+an 
+.B gsignal\^
+zurueckgegeben wurde.
+.IP - 3
+Ist die fuer
+.I sig\^
+definierte
+.I action
+.BR SIG_IGN ,
+gibt
+.B gsignal\^
+den Wert 1 zurueck und fuehrt keine weiteren Aktionen aus.
+.IP - 3
+Ist die fuer 
+.I sig\^
+definierte
+.I action
+.BR SIG_DFL ,
+gibt
+.B gsignal\^
+den Wert 0 zurueck und fuehrt keine weiteren Aktionen aus.
+.IP - 3
+Hat das Argument
+.I sig\^
+einen unzulaessigen Wert oder wurde fuer 
+.IR sig 
+keine
+.I action
+festgelegt, gibt die Funktion
+.I gsignal\^
+den Wert 0 zurueck und fuehrt keine weiteren Aktionen aus.
+.SH ANMERKUNGEN
+Es existieren weitere Signale, deren Signalnummern ausserhalb des Intervalls
+1 bis 15 liegen und die von der Standard-C-Bibliothek benutzt werden, um
+Fehlerzustaende anzuzeigen.
+Das heisst, dass einige Signalnummern ausserhalb des Intervalls 1 bis 15
+zulaessig sind, obgleich ihre Anwendung die Nutzung der 
+Standard-C-Bibliothek behindern koennte.

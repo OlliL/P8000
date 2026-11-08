@@ -1,0 +1,120 @@
+.TH CREF 1
+.\" @[$]cref.1	1.2
+.ad
+.fi
+.SH NAME
+cref \- Erstellung einer Quellverweisliste
+.SH SYNTAX
+.B cref
+[
+.B \-ilnostux123
+] \fIfiles\fR
+.SH BESCHREIBUNG
+.B Cref\^
+erstellt eine Quellverweisliste
+eines C-Programms.
+Die Dateien
+.I files\^
+werden nach Symbolen in der passenden Syntax durchsucht.
+.PP
+Die Ausgabe erfolgt in vier Spalten:
+.PP
+.PD 0
+.RS
+.TP 4
+1.
+Symbol;
+.TP
+2.
+Dateiname;
+.TP
+3.
+siehe unten;
+.TP
+4.
+Text, wie er in der Datei auftritt.
+.RE
+.PD
+.PP
+.B Cref\^
+benutzt entweder eine
+\fIignore\fR-Datei oder eine
+\fIonly\fR\-Datei.
+.I Ignore\-
+und
+\fIonly\fR\-Dateien sind Listen von Symbolen, die durch
+Newline-Zeichen getrennt sind.
+Alle Symbole in einer
+\fIignore\fR-Datei werden in den Spalten 1 und 3 der Ausgabe ignoriert.
+Ist eine \fIonly\fR\-Datei gegeben, erscheinen nur die Symbole aus dieser
+Datei in Spalte 1.
+Es kann nur eine dieser Optionen angegeben werden.
+Schluesselwoerter aus der C-Sprache werden ignoriert.
+.SH OPTIONEN
+.PP
+Unter dem aktuellen Symbol wird in der C-Sprache der Funktionsname
+und in der Assemblersprache das letzte aufgetretene Symbol verstanden.
+.TP
+.B i
+Das naechste Argument wird als eine \fIignore\fR-Datei gewertet (siehe
+.BR DATEIEN \)\.
+.TP
+.B l
+Gibt die Zeilennummer in Spalte 3 aus (anstelle des aktuellen Symbols).
+.TP
+.B n
+Spalte 4 entfaellt (kein Kontext).
+.TP
+.B o
+Das naechste Argument wird als eine \fIonly\fR-Datei gewertet.
+.TP
+.B s
+Das aktuelle Symbol wird in Spalte 3 ausgegeben (Standardeinstellung)
+.TP
+.B t
+Das naechste Argument wird als Name der Zwischendatei verwendet
+(anstelle der temporaeren Datei /tmp/crt??\^ ).
+.TP
+.B u
+Druckt nur Symbole, die genau einmal auftreten.
+.TP
+.B x
+Druckt nur externe Symbole der C-Sprache.
+.TP
+.B 1
+Sortiert die Ausgabe nach Spalte 1 (Standardeinstellung).
+.TP
+.B 2
+Sortiert die Ausgabe nach Spalte 2.
+.TP
+.B 3
+Sortiert die Ausgabe nach Spalte 3.
+.RE
+.PD
+.SH DATEIEN
+.PD 0
+.TP 2.2i
+/tmp/crt??
+temporaere Dateien
+.TP
+/usr/lib/cref/cign
+Standard fuer \fIignore\fR-Dateien in C
+.TP
+/usr/lib/cref/ctab
+Grammatiktabelle fuer C-Dateien
+.TP
+/usr/lib/cref/crpost
+Postprozessor
+.TP
+/usr/lib/cref/upost
+Postprozessor fuer
+.B \-u
+Option
+.PD
+.SH SIEHE AUCH
+cc(1),
+sort(1),
+.SH EINSCHRAENKUNGEN
+Ist ein Symbolname in einer Quelldatei mindestens 8 Zeichen lang, fuegt
+.B cref\^
+nach jedem achten Zeichen ein ASCII-DEL - Zeichen in die Zwischendatei ein.

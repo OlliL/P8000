@@ -1,0 +1,40 @@
+.TH ISLOCK 3 
+.\" @[$]islock.3        1.2
+.ad
+.fi
+.SH NAME
+islock \- Verriegelung einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBislock\fI(isfd)
+\fBint \fIisfd;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B islock
+verriegelt die gesamte Datei, die durch den Dateidescriptor
+.IR isfd
+bezeichnet ist.
+Der C-ISAM-Dateidescriptor
+.I isfd
+wurde von einem Funktionsaufruf
+.B isbuild
+oder
+.B isopen
+beim Eroeffnen der C-ISAM-Datei zurueckgegeben.
+.PP
+Diese Verriegelung erlaubt anderen Prozessen einen Lesezugriff,
+wenn sie fuer manuelle Verriegelung und
+nicht fuer automatische Verriegelung geoeffnet
+waren, aber sie koennen die Datei nicht aktualisieren.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isclose(3),
+isunlock(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

@@ -1,0 +1,50 @@
+.TH DIR 5 WEGA
+.\"@[$]dir.5    1.2
+.ad
+.SH NAME
+dir \- Directory-Format
+.SH SYNTAX
+.B #include <sys/dir.h>
+.SH BESCHREIBUNG
+Ein Directory entspricht genau einer gewoehnlichen
+Datei, in der kein Benutzer Schreibberechtigung besitzt.
+Eine Directory-Datei
+wird durch ein Bit im Flagwort ihres Inode gekennzeichnet (siehe
+.BR filsys (5)).
+Die Struktur eines Directory-Eintrags ist in der Deklarationsdatei
+.B <sys/dir.h>
+definiert:
+.RS
+.nf
+
+#ifndef DIRSIZ
+#define DIRSIZ  14
+#endif
+struct  direct
+{
+        ino_t   d_ino;
+        char    d_name[DIRSIZ];
+};
+.fi
+.RE
+.PP
+Es ist festgelegt, dass die ersten zwei Eintraege
+in jedem Directory
+fuer '\fB.\fR' (aktuelles Directory selbst)
+und '\fB..\fR' (Elterndirectory)
+vorgesehen sind.
+Fuer '\fB..\fR'
+existieren Ausnahmen
+fuer das root-Directory des Master-Dateisystems
+und fuer die root-Directories der
+ueber das Kommando
+.BR mount (M)
+einbindbaren Dateisysteme.
+Im ersten Fall existiert kein Elterndirectory. Im zweiten Fall
+gestattet das Betriebssystem keine Bezugnahmen,
+die ueber das E/A-Geraet,
+auf dem sich das Dateisystem befindet, hinausgehen.
+In beiden Faellen
+hat also '\fB..\fR' die selbe Bedeutung wie '\fB.\fR' .
+.SH SIEHE AUCH
+filsys(5).

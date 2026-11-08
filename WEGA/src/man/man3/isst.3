@@ -1,0 +1,43 @@
+.TH ISST 3 
+.\" @[$]isst.3  1.2
+.ad
+.fi
+.SH NAME
+stdbl, stfloat, stint, stlong, \- C-ISAM - Speicherroutinen
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBstdbl(d, p)
+\fBdouble d;
+\fBchar  *p;
+.sp
+\fBstfloat(f, p)
+\fBfloat  f;
+\fBchar  *p;
+.sp
+\fBstint(i, p)
+\fBint i;
+\fBchar  *p;
+.sp
+\fBstlong(l, p)
+\fBlong l;
+\fBchar *p;\fR
+.fi
+.SH BESCHREIBUNG
+Diese Routinen speichern einen numerischen Wert (P8000-Format, Bytefolge
+auf Wortgrenze) in eine Bytefolge (C-ISAM-Format, Bytefolge muss nicht
+auf Wortgrenze beginnen).
+Der Parameter
+.I p
+zeigt auf den Beginn der Bytefolge.
+.PP
+Die Routinen koennen nur mit der C-ISAM-Bibliothek verwendet werden.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isld(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

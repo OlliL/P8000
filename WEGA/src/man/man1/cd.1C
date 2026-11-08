@@ -1,0 +1,22 @@
+.TH CD 1C 
+.\" @[$]cd.1C	1.2
+.ad
+.fi 
+.SH NAME
+cd \- Wechsel des Arbeitsdirectorys
+.SH SYNTAX
+.B cd
+.I directory
+.SH BESCHREIBUNG
+.I Directory
+wird zum neuen Arbeitsdirectory.
+Der Prozess muss das Zugriffsrecht "Ausfuehren" (bzw. "Suchen") im
+.IR Directory
+besitzen.
+.PP
+\fBCd\fR wird von Shell erkannt und ausgefuehrt
+(es wird kein neuer Prozess erzeugt).
+.SH SIEHE AUCH
+csh(1), pwd(1), sh(1), chdir(2).
+.br
+"Einfuehrung in die C-Shell" in WEGA-Dienstprogramme

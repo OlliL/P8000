@@ -1,0 +1,35 @@
+.TH EXPAND 1 WEGA
+.\" @[$]expand.1	1.2
+.ad
+.fi
+.SH NAME
+expand \- Aufloesen von Tabulatoren durch Leerzeichen
+.SH SYNTAX
+.B expand
+[
+\-tabstop
+] [
+\-tab1,tab2,...,tabn
+] [
+.I file ...
+]
+.SH BESCHREIBUNG
+.B Expand
+ersetzt in den angegeben Dateien oder im Standardeingabestrom
+alle Tabulatorzeichen durch eine entsprechende Anzahl von Leerzeichen.
+Die Ausgabe erfolgt an die Standardausgabe.
+Backspace-Zeichen bleiben im Ausgabestrom erhalten, sie dekrementieren
+den Spaltenzaehler fuer die Tabulatorberechnung.
+.B Expand
+ist als Filter fuer Textdateien nuetzlich, die Tabulatorzeichen enthalten
+(z.B. vor einer Sortierung, oder Positionierung auf spezielle Spalten u.a.).
+.PP
+Wenn ein einzelnes
+.I tabstop
+Argument angegeben ist, werden die Tabulatorpositionen
+anstelle des impliziten Abstands von 8 Leerzeichen auf den
+Wert von
+.I tabstop
+gesetzt.
+Sind mehrere tabstops angegeben, werden die Tabulatorpositionen
+entsprechend den spezifizierten Spalten gesetzt.

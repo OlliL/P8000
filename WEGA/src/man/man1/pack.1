@@ -1,0 +1,191 @@
+.TH PACK 1 WEGA
+.\" @[$]pack.1	1.2
+.ad
+.fi
+.SH NAME
+pack, pcat, unpack \- Komprimieren, Anzeigen und Dekomprimieren von Dateien
+.SH SYNTAX
+.B pack
+[
+.B \-
+]
+\fIfile\fR .\|.\|.
+.PP
+.B pcat
+\fIfile\fR .\|.\|.
+.PP
+.B unpack
+\fIfile\fR .\|.\|.
+.SH BESCHREIBUNG
+.B Pack\^
+versucht, die benannten Dateien in einer komprimierten Form zu speichern.
+Wo immer es moeglich (und nuetzlich) ist, wird jede eingegebene Datei
+.I file\^
+durch eine komprimierte Datei
+.IB file .z
+mit den gleichen Zugriffsrechten, Datumsangaben und dem
+Eigentuemer wie
+.IR file
+ersetzt.
+Ist
+.B pack\^
+erfolgreich, wird
+.I file\^
+entfernt.
+Komprimierte Dateien koennen durch
+.B unpack\^
+oder
+.BR pcat
+in ihre urspruengliche Form zurueckgefuehrt
+werden.
+.PP
+.B Pack\^
+gebraucht Huffman-Codes (minimale Redundanz) auf einer Byte-fuer-Byte
+Basis.
+Das erste Auftreten des Arguments
+.B \-
+bewirkt,
+dass die Anzahl der Benutzung jedes Bytes, seine relative Haeufigkeit und der
+Code fuer das Byte auf der Standardausgabe erscheint.
+Weiteres Erscheinen von
+.B \-
+an Stelle von
+.I file\^
+hebt das erste
+.B \-
+auf.
+.PP
+Der Grad der erreichten Verdichtung haengt von der Groesse der eingegebenen
+Datei und der Verteilung der Zeichenhaeufigkeit ab.
+Da ein Dekodierbaum den ersten Teil einer jeden Datei
+.IB file .z
+bildet, ist es gewoehnlich nicht der Muehe wert, Dateien zu komprimieren,
+die kleiner als drei Bloecke sind, wenn die Verteilung der 
+Zeichenhaeufigkeit nicht sehr abweichend ist (was bei Druckerdarstellungen oder
+Bildern der Fall sein kann).
+.PP
+Typisch ist, dass Textdateien auf 60-75% ihrer Groesse reduziert werden.
+Lademodule, die einen groesseren Zeichensatz verwenden und ein gleichmaessigere
+Zeichenverteilung haben, zeigen eine geringere Verdichtung. Die komprimierte
+Version hat etwa 90% der Originalgroesse.
+.PP
+.B Pack\^
+gibt die Anzahl der Dateien zurueck,
+die nicht verdichtet wurden.
+.PP
+Es tritt keine Verdichtung auf, wenn:
+.PP
+.RS
+die Datei scheinbar schon verdichtet ist;
+.br
+der Dateiname mehr als 12 Zeichen hat;
+.br
+die Datei Links besitzt;
+.br
+die Datei ein Directory ist;
+.br
+die Datei nicht geoeffnet werden kann;
+.br
+keine Disk-Speicher-Bloecke durch das Verdichten eingespart werden;
+.br
+eine Datei mit der Bezeichnung
+.IB file .z
+bereits existiert;
+.br
+die Datei
+.IB file .z
+nicht erzeugt werden kann;
+.br
+ein E/A-Fehler waehrend der Verarbeitung auftrat.
+.PP
+.RE
+Die letzte Komponente des Dateinamens darf nicht mehr als 12 Zeichen haben,
+um ueber Platz fuer die
+angehaengte
+.B .z
+Erweiterung zu verfuegen.
+Directories koennen nicht verdichtet werden.
+.PP
+.B Pcat\^
+gibt die benannten Dateien so auf die Standardausgabe aus,
+wie sie in ihrer urspruenglichen, nicht komprimierten Form vorlagen
+(aehnlich
+.BR cat (1)).
+Um eine komprimierte Datei mit der Bezeichnung
+.IB file .z
+zu betrachten, benutze:
+.PP
+.RS
+pcat file.z
+.RE
+.sp
+oder:
+.sp
+.RS
+pcat file
+.PP
+.RE
+Um eine unkomprimierte Kopie, z.B.
+.IR nnn ,
+einer komprimierten Datei mit dem Namen
+.IB file .z
+herzustellen
+(ohne \fIfile\fB.z\fR zu zerstoeren),
+benutze das Kommando:
+.PP
+.RS
+pcat file > nnn
+.PP
+.RE
+.B Pcat\^
+gibt die Anzahl der Dateien zurueck, die nicht dekomprimiert wurden.
+Ein Fehler kann auftreten, wenn:
+.PP
+.RS
+der Dateiname (
+.BR .z
+ausgenommen)
+mehr als 12 Zeichen hat;
+.br
+die Datei nicht geoeffnet werden kann;
+.br
+die Datei nicht das Ergebnis von
+.BR pack
+zu sein scheint.
+.RE
+.PP
+.B Unpack\^
+expandiert Dateien, die durch
+.BR pack 
+erzeugt wurden.
+Fuer jedes im Kommando benannte
+.I file\^
+wird eine Suche nach
+.IB file .z
+unternommen
+(oder nur
+.IR file ,
+wenn
+.I file\^
+mit
+.BR .z
+endet).
+Wenn diese Datei eine komprimierte Datei ist, wird sie durch ihre expandierte
+Version ersetzt.
+Bei der neuen Datei ist der Suffix
+.B .z
+aus dem Dateinamen entfernt. Sie hat die gleichen Zugriffsrechte,
+Datumsangaben und den Eigentuemer, wie
+die komprimierte Datei.
+.PP
+.B Unpack\^
+gibt die Anzahl der Dateien zurueck,
+die nicht dekomprimiert werden konnten. 
+Moegliche Fehlerursachen entsprechen denen von
+.BR pcat ,
+mit folgenden Zusaetzen:
+.PP
+.RS
+eine Datei mit dem "dekomprimierten" Namen existiert bereits;
+.br
+die dekomprimierte Datei kann nicht erzeugt werden 

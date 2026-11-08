@@ -1,0 +1,84 @@
+.TH EXIT 2 WEGA 
+.\"@[$]exit.2   1.2
+.ad
+.fi
+.SH NAME
+exit \- Beenden eines Prozesses
+.SH SYNTAX
+.B exit
+.I (status)
+.br
+.B int
+.I status;
+.PP
+.B _exit
+.I (status)
+.br
+.B int
+.I status;
+.SH BESCHREIBUNG
+.B Exit
+beendet einen Prozess auf normale Weise.
+.B Exit
+schliesst alle Prozessdateien und teilt dies dem
+Parent-Prozess mit, wenn dieser einen Systemruf
+.BR wait  (2)
+ausfuehrt.
+Die niederwertigen 8 Bits des Arguments
+.B status
+stehen dem Parent-Prozess zur Verfuegung (siehe
+.BR wait (2)).
+.PP
+Fuehrt der Parent-Prozess des aufrufenden Prozesses kein
+.BR wait 
+aus, wird der aufrufende Prozess in einen Zombie-Prozess umgewandelt.
+Ein
+.I "Zombie-Prozess"
+ist ein Prozess, der nur einen freien Eintrag in der Prozesstabelle
+einnimmt. Ihm ist kein anderer Platz zugeordnet, weder im Nutzerbereich
+noch im Kernbereich.
+Der von ihm belegte freie Eintrag in der Prozesstabelle wird teilweise
+von der Zeitabrechnungsinformation ueberlagert
+(siehe
+.IR <sys/proc.h> ),
+von der mittels
+.BR times (2)
+Gebrauch gemacht wird.
+.PP
+Die Parent-Prozess-ID
+des Child-Prozesses und
+aller existierenden Zombi-Prozesse des aufrufenden Prozesses
+wird auf 1 gesetzt.
+Das heisst, der Initalisierungs-Prozess (siehe
+.BR intro (2))
+erbt jeden dieser Prozesse.
+.PP
+Es wird ein Abrechnungssatz in die Abrechnungsdatei geschrieben, wenn die
+Abrechnungsroutine des Systems aktiviert ist (siehe
+.BR acct (2)).
+.PP
+Wenn die Prozess-ID,
+TTY Gruppen-ID,
+und Prozess-Gruppen-ID
+des aufrufenden Prozesses gleich sind, wird das
+.B SIGHUP
+Signal zu jedem Prozess gesendet, der eine Prozess-Gruppen-ID
+hat, die gleich der des aufrufenden Prozesses ist.
+Dieser Systemruf hat keine Rueckkehr.
+.PP
+Die C-Funktion
+.B exit
+kann Aktualisierungen vor dem endgueltigen Systemaustritt
+veranlassen.
+Die Funktion -\fBexit\fR umgeht alle Aktualisierungen.
+.SH SIEHE AUCH
+signal(2), wait(2).
+Siehe auch
+.B WARNUNG
+bei
+.BR signal (2).
+.SH ASSEMBLER
+.nf
+     CONSTANT XIT := 1
+     ...             !* r0 : status *!
+     sc     #XIT     !* keine Rueckkehr *!

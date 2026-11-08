@@ -1,0 +1,41 @@
+.TH ISUNIQUEID 3 
+.\" @[$]isuniqueid.3    1.2
+.ad
+.fi
+.SH NAME
+isuniqueid \- Ermittlung einer eindeutigen ID fuer eine C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisuniqueid\fI(isfd, uniqueid)\fR
+\fBint \fIisfd;\fR
+\fBlong \fI*uniqueid;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.I isuniqueid
+gibt einen Pointer auf einen (long) Integerwert zurueck,
+der fuer eine C-ISAM-Datei garantiert eindeutig ist
+(sinnvoll, wenn fuer jeden Datensatz ein eindeutiges Kennzeichen
+erforderlich ist).
+.PP
+Es kommt haeufig vor, dass ein Programmierer Aufrufe verwenden
+moechte, die einen eindeutigen Primaerindex erfordern, dass dabei
+jedoch kein Teil des Datensatzes gross genug ist, um Eindeutigkeit
+zu garantieren.
+In einem solchen Fall koennte ein Teil des Datensatzes die durch
+.B isuniqueid
+gewonnene schrittweise inkrementierte vier Byte lange ganze Zahl
+enthalten.
+Es ist Aufgabe des Programmierers, die eindeutige lange ganze Zahl
+unter Verwendung von
+.B stlong
+in den Datensatzpuffer einzugeben, bevor ein Aufruf zum Schreiben oder 
+Ueberschreiben ergeht.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

@@ -1,0 +1,28 @@
+.TH REHASH 1C WEGA
+.\"@[$]rehash.1C	1.2
+.ad
+.fi
+.SH NAME
+rehash \- Wiederherstellen der Kommando-Hash-Tabelle
+.SH SYNTAX
+.B rehash
+.SH BESCHREIBUNG
+Das Kommando
+.B rehash
+ist ein internes Kommando der C-Shell. Es erstellt die
+.I Hash-Tabelle
+der verfuegbaren Kommandos (Dateien), die in der Shellvariablen
+.I PATH
+angegeben sind.
+.PP
+Das 
+.B
+rehash
+Kommando wird bei 
+.I login
+automatisch aufgerufen. Es muss bei jeder Veraenderung in der 
+.I PATH
+Variablen oder der Kommandos (Dateien), die sich
+im Suchpfad befinden, neu aufgerufen werden.
+.SH SIEHE AUCH
+"Die C-Shell" in WEGA-Dienstprogramme.

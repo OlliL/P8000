@@ -1,0 +1,26 @@
+.TH CHGRP 1 
+.ad
+.fi
+.\"@[$]chgrp.1	1.2
+.SH NAME
+chgrp \- Aendern der Gruppenzugehoerigkeit
+.SH SYNTAX
+.B chgrp
+\fIgroup file ...\fR
+.SH BESCHREIBUNG
+.B Chgrp
+aendert den Gruppen-ID fuer
+die angegebenen Dateien
+in die angegebene
+.IR Gruppe .
+Die Gruppe kann eine Dezimalzahl oder ein
+Gruppenname aus der Gruppen-ID-Datei sein.
+.SH DATEIEN
+/etc/chgrp
+.br
+/etc/passwd
+.br
+/etc/group
+.SH SIEHE AUCH
+chown(1), chown(2),
+passwd(5), group(5), chmog(M)

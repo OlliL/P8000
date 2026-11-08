@@ -1,0 +1,37 @@
+.TH ISCLOSE 3 
+.\" @[$]isclose.3       1.2
+.ad
+.fi
+.SH NAME
+isclose \- Schliessen einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisclose\fI(isfd)\fR
+\fBint \fIisfd;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isclose
+schliesst eine C-ISAM-Datei.
+Alle Verriegelungen fuer die Datei, die der die Funktion
+.B isclose
+rufende Prozess errichtet hatte, werden aufgehoben.
+.PP
+.B ACHTUNG!
+.IP
+C-ISAM-Dateien
+.B muessen
+nach ihrer Bearbeitung geschlossen werden. Ansonsten sind
+unvorhergesehene Ergebnisse moeglich!
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isbuild(3),
+islock(3),
+isopen(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

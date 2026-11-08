@@ -1,0 +1,46 @@
+.TH GETS 1C WEGA
+.\" @[$]gets.1	1.2
+.ad
+.fi
+.SH NAME
+gets \- Uebernahme einer Zeichenkette von der Standardeingabe
+.SH SYNTAX
+.B gets
+[ \fIdefault\fR ]
+.SH BESCHREIBUNG
+.B Gets
+liest unter
+.BR csh (1)
+eine Zeichenkette von der Standardeingabe.
+Bei Auftreten eines Fehlers wird ein Standardwert
+.I default
+gesetzt.
+Die resultierende Zeichenkette (entweder das "default" oder die von der
+Standardeingabe gelesene) wird an die Standardausgabe ausgegeben.
+Ist kein Standardwert
+.I default
+angegeben und tritt ein Fehler auf, endet
+.B gets
+mit dem Exitstatus 1.
+.SH BEISPIEL
+Der folgende Shell-Script setzt die Variable \fIa\fR
+auf den Wert, der nach dem Prompt-Zeichen auf dem Terminal eingegeben
+wird und gibt den Inhalt von "a" aus.
+.RS
+.sp
+# Beispiel eines C-Shell-Scripts
+.sp
+echo -n "Bitte einen Buchstaben eingeben:"
+.sp
+set a=`gets`
+.sp
+echo $a
+.sp
+.RE
+.SH EINSCHRAENKUNGEN
+Das Kommando \fBgets\fR ist innerhalb eines Shell-Script nutzbar,
+nicht nach dem Prompt-Zeichen.
+.SH SIEHE AUCH
+csh(1), line(1).
+.br
+"Die C-Shell" in WEGA-Dienstprogramme.

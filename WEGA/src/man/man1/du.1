@@ -1,0 +1,54 @@
+.TH DU 1 WEGA
+.\" @[$]du.1	1.2
+.ad
+.fi
+.SH NAME
+du \- Uebersicht ueber die Plattenbelegung
+.SH SYNTAX
+.B du
+[
+.B \-ars
+] [ \fInames\fR ]
+.SH BESCHREIBUNG
+.B Du\^
+berechnet die Anzahl der Bloecke, die von den im Argument
+.I names\^
+angegebenen Dateien und (rekursiv) Directorys
+belegt werden.
+Die Blockanzahl enthaelt auch die Indirektbloecke der Dateien.
+Ist
+.I name\^
+nicht angegeben, wird der Standard
+.B .
+(aktuelles Directory) verwendet.
+.PP
+Wurde keine Option angegeben, wird fuer jedes Directory
+nur eine Eintragung generiert.
+.B Du\^
+generiert keine Ausgabe fuer Directorys, die nicht gelesen, oder
+Dateien, die nicht eroeffnet werden koennen.
+.PP
+Dateien mit mehreren "links" werden nur einmal gezaehlt.
+.SH OPTIONEN
+.TP
+.B \-a
+Fuer jede Datei wird eine Eintragung erzeugt.
+.TP
+.B \-r
+Fuer die Dateien oder Directorys,
+die nicht eroeffnet oder gelesen werden koennen, wird
+eine Meldung erzeugt.
+.TP
+.B \-s
+Es wird nur eine Zusammenfassung aller 
+angegebenen Dateien erzeugt.
+.SH EINSCHRAENKUNGEN
+Wenn die
+.B \-a
+Option nicht angegeben wurde, werden die Dateien,
+die keine Directories sind und
+die im Argument angegeben wurden, nicht bearbeitet.
+.sp
+Wenn die Anzahl der "links" einer Dateigruppe zu hoch wird, zaehlt
+.B du\^
+ab Erreichen dieser Grenze die folgenden Dateien wieder mit.

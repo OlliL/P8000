@@ -1,0 +1,117 @@
+.TH ACCT 2 WEGA
+.\" @[$]acct.2	1.2
+.ad
+.fi
+.SH NAME
+acct \- Ein- bzw. Ausschalten der Abrechnung
+.SH SYNTAX
+.B int acct(
+.I file)
+.br
+.B char
+.I *file;
+.SH BESCHREIBUNG
+Das System wird angewiesen, fuer jeden
+beendeten Prozess einen Satz
+in die Abrechnungsdatei
+.I file
+zu schreiben.
+Ist das Argument des Systemrufs der Name (eine mit
+Null abgeschlossene Zeichenkette) einer existierenden
+Datei, wird die Abrechnung eingeschaltet
+und bei jeder Beendigung eines Prozesses wird ein
+Satz an die Datei
+.I file
+angehaengt.
+Ist das Argument Null
+(0L fuer segmentierte Programme), wird die Abrechnung ausgeschaltet.
+Die Beendigung kann durch einen
+.B exit
+Systemruf oder ein Signal bewirkt werden
+(siehe
+.BR exit (2),
+.BR signal (2)).
+Um diesen Systemruf nutzen zu koennen,
+muss die Datei existieren
+und der aktuelle Nutzer-ID
+des aufrufenden Prozesses muss
+dem des Superusers entsprechen.
+.PP
+Das Einschalten der Abrechnung,
+wenn diese bereits eingeschaltet ist,
+fuehrt zu einem Fehler.
+.PP
+Der Aufbau der Abrechnungsdatei ist in
+.B acct (5)
+beschrieben.
+.SH DIAGNOSTIK
+.PP
+.B Acct
+meldet Fehler, wenn eine der folgenden Bedingungen erfuellt ist:
+.TP 11
+\%[EPERM]
+.PD 0
+Der aktuelle Nutzer-ID des aufrufenden Prozesses ist nicht der des Superusers.
+.TP 11
+\%[EBUSY]
+Es wird versucht, die Abrechnung einzuschalten,
+wenn sie bereits eingeschaltet war.
+.TP 11
+\%[ENOTDIR]
+Eine Komponente des Pfadnamens ist keine Directory.
+.TP 11
+\%[ENOENT]
+Eine oder mehrere Komponenten des Pfadnamens der Abrechnungsdatei
+existieren nicht.
+.TP 11
+\%[EACCES]
+Eine Komponente des Pfadnamens
+verbietet Such-Zugriff.
+.TP 11
+\%[EACCES]
+Die Abrechnungsdatei
+.I file
+ist keine regulaere Datei.
+.TP 11
+\%[EACCES]
+Der Dateimodus der Abrechnungsdatei verbietet den Zugriff.
+.TP 11
+\%[EISDIR]
+Die angegebene Datei ist eine Directory.
+.TP 11
+\%[EROFS]
+Die angegebene Datei befindet sich in einem Read-Only-Dateisystem.
+.TP 11
+\%[EFAULT]
+.I File
+zeigt auf eine illegale Adresse.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird der Wert Null
+zurueckgegeben.
+Ein Fehler wird durch den Rueckgabewert \-1
+gekennzeichnet und der Wert von
+.B errno
+kennzeichnet den Fehler.
+.SH EINSCHRAENKUNGEN
+Bei einem Systemzusammenbruch wird fuer die laufenden
+Programme keine Abrechnung erstellt.
+Fuer Programme, die nie enden,
+gibt es auch keine Abrechnung.
+.SH SIEHE AUCH
+acct(5), sa(1).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT ACCT := 51
+
+Nichtsegmentiert
+     ...             !* r0 : Dateiname *!
+Segmentiert
+     ...             !* rr0 : Dateiname *!
+     clr    r4
+     sc     #ACCT
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

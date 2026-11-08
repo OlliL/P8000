@@ -1,0 +1,19 @@
+.TH BCMP 1 WEGA
+.\" @[$]bcmp.1	1.2
+.ad
+.fi
+.SH NAME
+bcmp \- Vergleich zweier Dateien
+.SH SYNTAX
+\fBbcmp\fR \fIfile1 file2\fR
+.SH BESCHREIBUNG
+Die beiden angegebenen Dateien werden byteweise verglichen. 
+.B Bcmp
+gibt keine Meldung aus, wenn
+beide Dateien gleich sind. Sind die Dateien nicht gleich, wird 
+die Bytenummer des Unterschieds und die Inhalte der unterschiedlichen
+Bytes ausgegeben.
+Ist eine Datei eine echte Teilmenge der anderen, so wird
+dieses gemeldet.
+.SH SIEHE AUCH
+cmp(1)

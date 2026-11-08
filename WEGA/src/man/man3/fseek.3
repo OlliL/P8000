@@ -1,0 +1,76 @@
+.TH FSEEK 3 WEGA 
+.\" @[$]fseek.3 1.2
+.ad
+.fi
+.SH NAME
+fseek, ftell, rewind \- Repositionieren eines Streams
+.SH SYNTAX
+.nf
+#include <stdio.h>
+.PP
+\fBfseek\fR(\fIstream, offset, ptrname\fR)
+\fBFILE \fR*\fIstream;\fR
+\fBlong \fIoffset;\fR
+\fBint \fIptrname;\fR
+.PP
+\fBlong ftell(\fIstream\fR)
+\fBFILE \fR*\fIstream;\fR
+.PP
+\fBrewind(stream)\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B fseek
+bestimmt die Position der naechsten Eingabe- oder Ausgabeoperation
+auf dem 
+.IR stream .
+Die neue Position des Dateipointers wird
+in Abhaengigkeit des Arguments
+.I ptrname
+festgelegt.
+Das
+.I offset
+wird in Bytes 
+vom Dateianfang, der aktuellen Position des Dateipointers
+oder dem Ende der Datei berechnet. Es gilt:
+.TP 14
+.IR ptrname =0:
+.I Offset
+gilt ab Dateianfang.
+.PD 0
+.TP
+.IR ptrname =1:
+.I Offset
+gilt ab aktueller Position des Dateipointers.
+.TP
+.IR ptrname =2:
+.I Offset
+gilt ab Dateiende.
+.PD
+.PP
+.B Fseek
+macht alle Wirkungen von
+.BR  ungetc (3)
+rueckgaengig.
+.PP
+.B Ftell
+liefert den aktuellen Wert des Offset bezueglich des Anfangs der
+Datei, auf die sich das
+.IR stream
+bezieht.
+Das Offset wird bei WEGA in Bytes gemessen.
+Diese Funktion bietet eine sichere Moeglichkeit, ein
+.I offset
+fuer
+.B fseek
+zu erhalten.
+.PP
+.BI Rewind (stream)
+hat die gleiche Wirkung wie
+.B "fseek\fR(\fIstream, 0L, 0)."\fR
+.SH SIEHE AUCH
+lseek(2),
+fopen(3).
+.SH DIAGNOSTIK
+.B Fseek
+gibt \-1 fuer unrealisierbare Positionierungen zurueck.

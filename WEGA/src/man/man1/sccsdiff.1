@@ -1,0 +1,55 @@
+.TH SCCSDIFF 1 WEGA
+.\" @[$]sccsdiff.1	1.2
+.ad
+.fi
+.SH NAME
+sccsdiff \- Vergleich von zwei Versionen einer SCCS-Datei
+.SH SYNTAX
+\fBsccsdiff \-r\fRSID1 \fB\-r\fRSID2 [ \fB\-p\fR ] \fR[ \fB\-s\fIn\fR] file...
+.SH BESCHREIBUNG
+.B Sccsdiff\^
+vergleicht zwei Versionen einer
+SCCS-Datei und gibt die Unterschiede zwischen beiden Versionen aus.
+Es kann eine beliebige Anzahl von
+SCCS-Dateien spezifiziert werden; die Argumente gelten fuer alle Dateien.
+.SH OPTIONEN
+.RS 5
+.TP 8
+.B \-p
+Pipe-Ausgabe fuer jede Datei durch
+.BR pr (1).
+.TP 8
+.BI \-r SID?\^
+.BR SID1 \ und \ SID2
+spezifizieren die Deltas einer SCCS-Datei,
+die verglichen werden sollen.
+Die Versionen werden in der gegebenen Reihenfolge an
+.BR bdiff (1)
+uebergeben.
+.TP 8
+.BI \-s n\^
+\fIn\fP ist die Segmentgroesse der Datei, die mittels
+.B bdiff\^
+an
+.BR diff (1)
+uebergeben wird
+(nuetzlich, wenn
+.B diff\^
+aufgrund von einer hohen Systembelastung fehlschlaegt).
+.SH DATEIEN
+.TP "\w'/tmp/get?????\ \ 'u"
+/tmp/get?????
+Temporaere Dateien
+.SH SIEHE AUCH
+bdiff(1), get(1), help(1), pr(1).
+.br
+"Source Code Control System Benutzerhandbuch"
+in WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+.TP 25
+"\fIfile\fR: No differences"
+wenn beide Versionen gleich sind.
+.PP
+Benutze
+.IR help (1)
+fuer Erklaerungen.

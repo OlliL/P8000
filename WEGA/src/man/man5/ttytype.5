@@ -1,0 +1,57 @@
+.TH TTYTYPE 5 
+.\"@[$]ttytype.5	1.2
+.ad
+.SH NAME
+ttytype \- Terminal-Typentabelle
+.SH BESCHREIBUNG
+In der Datei
+.B /etc/ttytype
+werden den verfuegbaren
+seriellen Kanaelen Terminaltypen zugeordnet.
+In dieser Datei ist fuer jeden Terminal-Kanal eine Zeile vorhanden.
+Jede Zeile enthaelt folgende zwei durch ein Leerzeichen
+getrennte Felder:
+.IP - 3
+Ein aus zwei Zeichen
+bestehender Kode fuer den Typ des Terminals.
+.PD 0
+.IP - 3
+Den TTY-Namen fuer diesen Kanal.
+.PD
+.LP
+Der aus zwei Zeichen bestehende Kode verweist auf einen Eintrag in der Datei
+.BR /etc/termcap .
+Der Kode entspricht den ersten zwei Zeichen, die jeden Eintrag in dieser
+Datei beschreiben.
+Es folgt eine typische Konfiguration fuer ein
+System mit acht Benutzern, bei der
+P8000-Terminals verwendet werden:
+.sp
+.nf
+.RS
+P8 tty0
+P8 console
+P8 tty2
+P8 tty3
+P8 tty4
+P8 tty5
+P8 tty6
+P8 tty7
+.RE
+.fi
+.PP
+Diese Datei wird vom Programm
+.BR login (1)
+gelesen, um die Umgebungsvariable TERM zu setzen.
+Diese Umgebungsvariable wird z.B. von den Programmen
+.BR vi (1)
+und
+.BR ex (1)
+benutzt.
+.SH DATEIEN
+/etc/ttytype
+.br
+/etc/termcap
+.SH SIEHE AUCH
+login(1),
+termcap(5).

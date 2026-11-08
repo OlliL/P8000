@@ -1,0 +1,318 @@
+.TH FILSYS 5 WEGA
+.\" @[$]filsys.5        1.2
+.ad
+.SH NAME
+filsys, flblk, ino \- Format eines Dateisystems
+.SH SYNTAX
+.B #include <sys/param.h>
+.br
+.B #include <sys/types.h>
+.br
+.B #include <sys/fblk.h>
+.br
+.B #include <sys/filsys.h>
+.br
+.B #include <sys/ino.h>
+.SH BESCHREIBUNG
+Jedes Dateisystem eines Speichermediums besitzt das gleiche Format.
+Block 0 besteht aus 512 Bytes und enthaelt das
+Bootstrap-Programm.
+.PP
+Jedes
+auf einer Platte gespeicherte
+virtuelle Dateisystem ist in eine
+bestimmte Anzahl von 512-Byte-Bloecken unterteilt.
+Block 1 ist der
+.BR Superblock .
+Die Struktur des Superblocks ist in der Deklarationsdatei
+.B <sys/filsys.h>
+definiert:
+.PP
+.nf
+.na
+/*
+ * Struktur des Superblocks
+ */
+struct filsys {
+   unsigned short s_isize;    /* Groesse der i-list in Bloecken */
+   daddr_t   s_fsize;         /* Groesse des gesamten Speichermediums
+                                 in Bloecken */
+   short     s_nfree;         /* Anzahl der Adressen in s_free */
+   daddr_t   s_free[NICFREE]; /* Liste freier Bloecke */
+   short     s_ninode;        /* Anzahl der Inodes in s_inode */
+   ino_t     s_inode[NICINOD];/* Liste der freien Inodes */
+   char      s_flock;         /* verriegeln waehrend Manipulation der
+                                 Freiblockliste */
+   char      s_ilock;         /* verriegeln waehrend der Manipulation
+                                 der i-list */
+   char      s_fmod;          /* Flag, Superblock modifiziert */
+   char      s_ronly;         /* Nur-Lese-Flag fuer mount(M) */
+   time_t    s_time;          /* letzte Aktualisierung des Superbl. */
+   daddr_t   s_tfree;         /* Gesamtzahl der freien Bloecke */
+   ino_t     s_tinode;        /* Gesamtzahl der freien Inodes */
+   short     s_m;             /* Interleaving-Faktor */
+   short     s_n;             /* Anzahl der Bloecke pro Zylinder */
+   char      s_fname[6];      /* Name des Dateisystems */
+   char      s_fpack[6];      /* pack-Name des Dateisystems */
+   char      s_mach;          /* Flag, Byte-Reihenfolge (0 = eigen,
+                                 1 = fremd) */
+};
+.fi
+.ad
+.PP
+.B S_isize
+enthaelt die Adresse des ersten Blocks nach der Inode-Liste (i-list),
+die nach dem Superblock ab Block 2 beginnt.
+Damit ist die Inode-Liste
+.BR s_isize \-2
+Bloecke lang.
+.B S_fsize
+enthaelt die Adresse des ersten Blocks, der nicht mehr im Dateisystem
+verfuegbar ist.
+Diese Zahlen werden vom System benutzt, um Anforderungen auf
+fehlerhafte Blockadressen zu pruefen.
+Wird aus der Freiblockliste eine fehlerhafte Blockadresse erkannt,
+erscheint eine Fehlerdiagnose auf der Systemkonsole.
+Das gesamte Freiblockfeld wird geloescht, um weitere Zuweisungen
+aus einer fehlerhaften Freiblockliste zu verhindern.
+.PP
+.B "Aufbau der Freiblockliste"
+.PP
+Das Feld
+.B s_free
+im Superblock enthaelt die durch
+.B NICEFREE
+festgelegte Anzahl von freien Blocknummern, die beginnend ab
+.BR s_free [1]
+bis
+.BR s_free [ s_nfree \-1]
+gespeichert sind.
+.B NICFREE
+ist eine konfigurierte Systemkonstante (im WEGA-Betriebssystem: 50).
+Das erste Element des Feldes,
+.BR s_free [0],
+ist die Blockadresse des ersten Blocks einer Kette von Bloecken,
+die die Freiblockliste enthalten.
+Das Format jedes Blocks der Freiblockliste ist in der Deklarationsdatei
+.B <sys/fblk.h>
+definiert:
+.PP
+.RS
+.nf
+struct fblk {
+        int     df_nfree;
+        daddr_t df_free[NICFREE];
+};
+.fi
+.RE
+.PP
+Die Felder
+.B df_nfree
+und
+.B df_free
+in einem Block der Freiblockliste
+erfuellen die gleiche Funktion wie die Felder
+.B s_nfree
+und
+.B s_free
+im Superblock.
+Bei der Zuweisung eines Blocks wird
+.B s_nfree
+dekrementiert und die neue Blocknummer ergibt sich aus
+.BR s_free[s_nfree] .
+Ist die neue Blockadresse Null,
+gibt es keine weiteren Blockadressen und ein Fehler wird angezeigt.
+Wurde
+.B s_nfree
+Null, wird ein neuer Block der Freiblockliste gelesen und dessen Werte in
+.B s_free
+eingetragen.
+.B S_nfree
+wird neu gesetzt.
+Wird ein Block frei, ist
+die Adresse des freigewordenen Blocks in das Feld
+.BR s_free [ s_nfree ]
+einzutragen und
+.B s_nfree
+zu inkrementieren. Erreicht
+.B s_nfree
+den Wert
+.BR NICFREE ,
+wird zuerst ein neuer Block mit freien Blockadressen
+in das Dateisystem geschrieben und
+.B s_nfree
+wird auf den Wert Null gesetzt.
+Anschliessend wird die Adresse des freigewordenen Blocks in
+.BR s_free [ s_nfree ]
+eingetragen.
+.PP
+.B S_ninode
+enthaelt die Anzahl der freien Inodes im Feld
+.BR s_inode .
+Zum Zuweisen eines Inodes wird der Wert
+.B s_ninode
+(falls
+.BR s_ninode >0)
+dekrementiert und
+.BR s_inode [ s_ninode ]
+zurueckgegeben.
+Erreicht
+.B s_ninode
+den Wert Null,
+wird die Inode-Liste von der Platte gelesen und die
+Anzahl aller freien Inodes (maximal
+.BR NICINOD )
+in das Feld
+.B s_inode
+eingetragen.
+Anschliessend wird ein neuer Versuch zu unternommen.
+.B NICINOD
+ist eine konfigurierbare Systemkonstante (im WEGA-Betriebssystem: 100).
+Bei der Freigabe eines Inode wird, falls
+.BR s_ninode < NICINODE
+ist, dessen Nummer in
+.BR s_inode [ s_ninode ]
+eingetragen und
+.B s_ninode
+inkrementiert.
+Ist
+.B s_ninode
+bereits gleich
+.BR NICINODE ,
+darf das freigegebene Inode keinesfalls in die Tabelle eingetragen werden.
+Die Inode-Liste dient nur der Beschleunigung des
+Zuweisungsprozesses. Die Information, ob ein Inode
+wirklich frei ist oder nicht, ist im Inode
+selbst enthalten.
+.PP
+.B S_flock
+und
+.B s_ilock
+sind Flags, die im WEGA-Betriebssystemkern fuer jedes Dateisystem
+verwaltet werden, sobald es mit
+.BR mount (M)
+angegliedert wird.
+Die Werte auf der Platte sind bedeutungslos.
+Gleiches gilt fuer den Wert von
+.BR s_fmod .
+Dieses Flag zeigt an, dass
+der Superblock veraendert wurde und dass er waehrend der
+naechsten periodischen Aktualisierung der Dateisysteminformationen
+auf die Platte zu schreiben ist.
+Das Flag
+.B s_ronly
+gibt an, dass dieses Dateisystem schreibgeschuetzt ist.
+Sein Wert auf der Platte ist ebenfalls bedeutungslos.
+.PP
+Der Wert
+.B S_time
+gibt die Zeit an, zu der der Superblock des Dateisystems
+das letzte Mal geaendert wurde.
+Waehrend eines Systemstarts wird
+.B s_time
+des Superblocks des Root-Dateisystems
+benutzt, um die Systemzeit zu setzen.
+.PP
+Das Feld
+.B s_fname
+enthaelt den Namen des Dateisystems, der ueber das Kommando
+.BR labelit (M)
+festgelegt werden kann.
+Die Felder
+.BR s_tfree ,
+.B s_tinode
+und
+.B s_fpack
+werden gegenwaertig nicht verwaltet.
+.PP
+Inode-Nummern beginnen bei 1,
+und die Speicherung der Inodes ab Block 2.
+Inodes sind 64 Bytes lang, d.h. acht Inodes passen in einen Block.
+Inode 2 ist reserviert fuer das root-Directory des Dateisystems.
+Die anderen Inode-Nummern haben keine Sonderstellung.
+Jedes Inode repraesentiert eine Datei.
+Das Format eines Inode ist in der Deklarationsdatei
+.B <sys/ino.h>
+definiert:
+.PP
+.nf
+/*
+ * Inode-Struktur in der Form, wie
+ * sie in einem Diskblock enthalten ist.
+ */
+struct dinode {
+        unsigned short di_mode; /* Modus und Typ der Datei */
+        short   di_nlink;       /* Anzahl der Links zur Datei */
+        short   di_uid;         /* Nutzer-ID des Eigentuemers */
+        short   di_gid;         /* Gruppen-ID des Eigentuemers */
+        off_t   di_size;        /* Anzahl der Bytes in der Datei */
+        char    di_addr[40];    /* Adressen der Diskbloecke */
+        time_t  di_atime;       /* Zeitpunkt des letzten Zugriffs */
+        time_t  di_mtime;       /* Zeitpunkt der letzten Modifizierung */
+        time_t  di_ctime;       /* Zeitpunkt der Erzeugung */
+};
+#define INOPB   8       /* 8 Inodes pro Block */
+.ne 4
+/*
+ * Von den 40 Bytes di_addr werden 39 Byte
+ * fuer 13 Adressen zu je 3 Bytes verwendet.
+ */
+.fi
+.PP
+Der Wert
+.B di_mode
+kennzeichnet den Modus und den Typ der Datei (Kodierung siehe
+.B st_mode
+in
+.BR stat (2)).
+Der Wert
+.B di_nlink
+ist die Anzahl der Directory-Eintraege (Links),
+die sich auf dieses Inode beziehen.
+Die Zahlenwerte
+.B di_uid
+und
+.B di_gid
+kennzeichnen das Nutzer-ID und Gruppen-ID des Eigentuemers.
+.B Di_size
+gibt die Anzahl der Bytes in der Datei an.
+.B Di_atime
+und
+.B di_mtime
+sind die Zeitpunkte, zu denen der letzte
+Zugriff auf den Inhalt der Datei und die letzte
+Modifikation der Datei erfolgten.
+.B Di_ctime
+kennzeichnet den Zeitpunkt der Erzeugung der Datei.
+.PP
+Geraetedateien werden durch ihre Modus-Bits und nicht durch
+ihrer Inode-Nummer erkannt.
+Eine blockorientierte Geraetedatei kann als Dateisystem benutzt
+und ueber
+.BR mount (M)
+angegliedert werden.
+Zeichenorientierte Geraetedateien koennen nicht als Dateisystem
+angegliedert werden, auch wenn auf sie blockorientiert zugegriffen werden
+kann.
+Bei Geraetedateien ist das Feld
+.B di_addr
+durch die Geraetenummer (Major, Minor) belegt, der Rest ist
+unbenutzt.
+.PP
+Blockadressen von normalen Dateien und Directorys
+werden im Feld
+.B di_addr
+in einem 3-Byte-Format abgelegt.
+Die ersten 10 Adressen spezifizieren direkte Blockadressen.
+Die letzten drei Adressen sind einfach, zweifach und dreifach
+indirekt und zeigen auf Bloecke von je 128 Blockpointern.
+Pointer in indirekten Bloecken werden mit dem Typ
+.B daddr_t
+(siehe \fBtypes\fR(5)) abgelegt.
+.SH SIEHE AUCH
+stat(2),
+dir(5),
+types(5),
+dcheck(M),
+icheck(M),
+mount(M).

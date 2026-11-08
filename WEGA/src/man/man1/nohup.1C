@@ -1,0 +1,37 @@
+.TH NOHUP 1C WEGA
+.\"@[$]nohup.1C	1.2
+.ad
+.fi
+.SH NAME
+nohup \- Verhindert Programmabbruch bei HANGUP- und QUIT-Signalen
+.SH SYNTAX
+.B nohup
+.I command
+.SH BESCHREIBUNG
+.B Nohup
+fuehrt das angegebene Kommando
+aus. Waehrend der Abarbeitung werden HANGUP-Signale
+(z.B. Ausschalten des Terminals)
+und QUIT-Signale ignoriert.
+Wurde die Ausgabe des Programms vom Nutzer nicht umgeleitet,
+wird sie in die Datei
+.B nohup.out
+geschrieben. Ist
+.B nohup.out
+im aktuellen Directory nicht beschreibbar, wird die Ausgabe an
+.B $HOME/nohup.out
+umadressiert.
+.PP
+.B Nohup
+wird in Shell-Scripts benutzt. Die Shell ignoriert fuer die Zeit der
+weiteren Bearbeitung des Scripts HANGUP-Signale.
+.SH SIEHE AUCH
+nice(1C), 
+onintr(1C),
+signal(2).
+.br
+"C-Shell" in WEGA-Dienstprogramme
+.SH EINSCHRAENKUNGEN
+.I Nohup
+hat keine Wirkung, wenn Shell nicht im Hintergrund
+arbeitet.

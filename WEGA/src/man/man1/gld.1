@@ -1,0 +1,171 @@
+.TH GLD 1 
+.\" @[$]gld.1	1.0
+.ad
+.fi
+.SH NAME
+\fBgld\fR \- Segmentierter U8001-Lader fuer sehr grosse Programme
+.SH SYNTAX
+.B gld
+[ \fIoptions\fR ] [ \fIfiles\fR ] ...
+.SH BESCHREIBUNG  
+.B Gld
+verbindet Objektmodule fuer U8001-Programme, in denen
+die segmentierten Betriebsart des U8001 genutzt wird.
+Alle Programme werden logisch in folgende Sektionen geteilt:
+.RS
+.nf
+Textsektion  - Befehle, Codebereich
+Datensektion - initialisierte Daten
+BSS-Sektion  - uninitialisierte Daten, Blockspeicher
+.fi
+.RE
+.PP
+Bei der segmentierten Speicherverwaltung werden logische
+Programmsektionen als verschiebliche
+Objekte behandelt, deren interne Adressen nur in Beziehung
+zum logischen Beginn des Segmentes bekannt sind.
+In einer segmentierten Umgebung kennt der Programmierer Adressen der
+Form
+.IP
+virtuelle Adresse = ( logische Segmentnummer , Offset )
+.PP
+Alle Segmente haben den logischen Ursprung 0x0000 
+und eine Endadresse gleich der Groesse des Segmentes.
+Im WEGA-System koennen Segmente durch Systemaufrufe bis zur
+Endadresse von 0xFFFE ausgedehnt werden.
+.PP
+Gld gestattet es, sowohl logische Sektionen in
+logische Segmente zu plazieren, als auch
+Programmsektionen
+in beliebige Segmente im Bereich logischer Segmentnummern zu plazieren.
+.PP
+.B Gld
+kombiniert mehrere U8001-Objektprogramme in einem Lademodul.
+Dabei werden externe Referenzen aufgeloest und Bibliotheken durchsucht.
+Im einfachsten Fall
+kombiniert \fBgld\fR mehrere U8001-Objektdateien
+und erzeugt einen ablauffaehigen Lademodul.
+Mit Hilfe der Option
+.B -o
+kann der Name des erzeugten Lademoduls festgelegt werden
+(Standard: \fB a.out\fR).
+Treten waehrend des Verbindens keine Fehler auf, ist der
+Lademodul ausfuehrbar.
+.PP
+Die angegebenen Objektdateien werden
+im Lademodul in der in der Aufrufzeile spezifizierten Reihenfolge verkettet.
+Es gelten folgende Abbildungszuordnungen
+.nf
+.sp
+	Text:	Segment  0 bis 31
+	Daten:	Segment 32 bis 63
+	BSS:      Segment 64 bis 95
+	Stack:	Segment 128
+.fi
+.PP
+Ist keine
+.B -e
+Option vorhanden, ist die niedrigste Textadresse 
+die Einsprungadresse des ablauffaehigen Lademoduls.
+In Programmen, die unter WEGA abgearbeitet werden sollen,
+wird das Symbol 'start' (Definition siehe 
+/lib/scrt0.o) als Einsprungadresse festgelegt.
+.PP
+Sind als Argumente Bibliotheken angegeben, werden sie einmal an dem Punkt
+durchsucht, an dem sie in der Argumentliste auftreten.
+Routinen, die eine ungeloeste externe Referenz definieren, werden
+verbunden.
+Die Reihenfolge, in der Module innerhalb von Bibliotheken auftreten,
+ist signifikant.
+Bezieht sich eine Routine aus einer Bibliothek auf eine andere
+Routine in dieser Bibliothek, muss die Routine, auf
+die Bezug genommen wird, nach der bezugnehmenden Routine
+in der Bibliothek erscheinen. 
+Deshalb sollte jede Bibliothek vor dem Verbindungslauf mit
+\fBranlib\fR(1) verarbeitet werden (Erzeugung von
+.BR __.SYMDEF ).
+Falls vorhanden, wird __.SYMDEF 
+wiederholt durchsucht, um alle moeglichen Bezugnahmen zu finden.
+.PP
+Das Symbol '_stkseg' im Assemblersprachcode ist reserviert
+und darf vom Nutzer nicht umdefiniert werden.
+.PD
+.SH OPTIONEN
+Mit Ausnahme der Option
+.BR -l
+stehen alle Optionen vor den Dateinamen.
+.TP
+.BI -e " marke"
+Die Einsprungadresse des geladenen Programms wird auf die Adresse von
+.I marke
+gesetzt.
+C-Programm-Namen, die als Einsprungadresse
+angegeben sind, muessen eine vorangestellte Unterstreichung haben.
+Die niedrigste Textadresse ist die Standard-Einsprungadresse.
+Bei Programmen, die unter WEGA laufen, wird die
+\fB-e\fR Option verwendet, um das Symbol 'start'
+(definiert unter Laufzeit-Startroutine in C  /lib/scrt0.o)
+als Einsprungadresse zu bezeichnen.
+.TP
+.BI -l x
+Die angegebene Bibliothek wird durchsucht.
+Diese Option ist eine Abkuerzung des Bibliotheksnamens
+/lib/slib\fIx\fR.a,
+wobei
+.I x
+eine Zeichenkette ist.
+Z.B. bezieht sich -lxyz auf /lib/slibxyz.a.
+Wird die Bibliothek nicht in /lib gefunden, werden nacheinander
+/usr/lib und dann /z/bin/lib durchsucht.
+Eine Bibliothek wird durchsucht, wenn ihr Name auftritt, d.h.
+die Position der 
+.B -l
+Option ist signifikant. Generell sollte sie das letzte
+Objekt in der Kommandozeile sein.
+.TP
+.BI -L " path"
+Die Bibliotheken werden auch in der Directory path gesucht.
+.TP
+.BI -o " name"
+Der Name der 
+.B gld
+Ausgabedatei wird auf
+.IR name 
+geaendert.
+Der Lademodul besitzt
+\fBa.out\fR(5) Format.
+.TP
+.B -s
+Die Symboltabelle
+wird
+in der Ausgabedatei geloescht (Platzeinsparung).
+.TP
+.BI -t 
+Waehrend des Ladelaufes wird der gerade bearbeitete
+Dateiname ausgegeben.
+.TP
+.B -w
+Die Warnung bei Symbolumdefinierung wird unterdrueckt.
+Diese Warnung wird bei der Durchsuchung von Archiven erzeugt.
+Wenn ein Archiv einen Modul enthaelt, der ein Symbol definiert, das
+bereits definiert ist, wird eine Symbolumdefinierungs-Warnung
+erzeugt.
+.TP
+.B -M
+Alle Biblitheksmodule, die geladen werden, werden waehrend des
+Ladelaufes ausgegeben.
+.SH DATEIEN
+.nf
+{ /lib, /usr/lib/, /z/bin/lib } /slib*.a
+		Bibliotheken fuer -l Option 
+a.out           Name des Standard-Lademoduls
+/lib/scrt0.o    Laufzeit-Startroutine in C
+.SH SIEHE AUCH
+LOAD(1), ar(1), ld(1), ranlib(1), a.out(5), 
+nm(1), objhdr(1), objdu(1), sld(1)
+.fi
+.SH EINSCHRAENKUNGEN
+Die Ausgabedatei enthaelt keine Verschiebeinformationen und
+kann nicht fuer einen weiteren gld-Lauf verwendet werden.
+Bei unaufgeloesten Referenzen wird keine Ausgabedatei
+erzeugt.

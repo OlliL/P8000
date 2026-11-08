@@ -1,0 +1,249 @@
+.TH LS 1 WEGA
+.\" @[$]ls.1 1.2
+.ad
+.fi
+.SH NAME
+ls  \- Ausgabe des Inhaltes eines Directory
+.SH SYNTAX
+.B ls
+[
+.B \-aAcCdDfFgilmnqrRstux1
+] \fIfile\fR ...
+.SH BESCHREIBUNG
+Fuer jede regulaere Datei
+.B file
+gibt
+.B ls
+den Dateinamen und alle spezifizierten
+Informationen aus. Ist das Argument
+.B file
+ein Directory, gibt
+.B ls
+den Inhalt dieses Directorys mit den angeforderten
+Zusatzinformationen aus.
+Die Ausgabe wird standardmaessig alphabetisch
+sortiert.
+Wird im Aufruf kein Argument
+.B file
+angegeben, wird der Inhalt des aktuellen Arbeitsdirectorys
+ausgegeben.
+Werden mehrere Argumente
+.B file
+angegeben, werden diese Argumente
+zunaechst sortiert.
+Dabei werden erst Datei- und danach Directoryargumente
+behandelt.
+.PP
+Die durch die
+.B \-l
+Option erzeugte Modusinformation enthaelt 10 Zeichen.
+Das erste Zeichen hat dabei folgende Bedeutung:
+.IP
+ d Directory
+ b Block-Special-File
+ c Character-Special-File
+ p benannte Pipe
+ \- regulaere Datei
+.PP
+Die naechsten neun Zeichen werden in drei Gruppen
+zu jeweils drei Bits interpretiert - sie geben die Zugriffsrechte an.
+Die ersten 3 Bit beziehen sich auf
+die Zugriffsrechte des Eigentuemers der
+Datei oder des Directorys,
+die folgenden 3 Bit beziehen sich auf die
+Zugriffsrechte der Nutzer in der gleichen
+Nutzergruppe
+und die letzten 3 Bit beziehen sich auf
+die Zugriffsrechte
+aller anderen Nutzer.
+Innerhalb jeder Gruppe geben die
+drei Zeichen die Erlaubnis zum
+Lesen, Schreiben bzw. zum Ausfuehren der
+Datei an.
+Bei einem Directory wird das Ausfuehrungsrecht
+als Erlaubnis zum Durchsuchen des Directorys nach einer
+angegebenen Datei interpretiert.
+Es wird folgende Notation verwendet:
+.IP
+ r lesbar
+ w schreibbar
+ x ausfuehrbar
+ \- keine Erlaubnis
+.PP
+Das Ausfuehrungsrecht fuer
+eine Gruppe wird mit
+.B s
+angegeben, wenn die Datei
+den Set-Group-ID Modus besitzt.
+Ebenso wird das Ausfuehrungsrecht
+fuer einen Nutzer mit
+.B s
+angegeben, wenn die Datei den Set-User-ID Modus besitzt.
+Mit dem Zeichen
+.B t
+wird das "sticky bit" der Modusinformation gekennzeichnet 
+(Bit 01000).
+Siehe dazu
+.BR  chmod (1).
+.PP
+Es existieren drei moegliche Listingformate,
+die durch verschiedene optionale
+Flags veraendert werden koennen.
+.IP (1) 4
+Das Standardformat fuer die Ausgabe des Inhaltsverzeichnisses
+eines Directorys auf ein Terminal ist ein mehrspaltiges
+Format mit den Datei- und Subdirectorynamen. Die
+Eintragungen sind innerhalb der Spalten von oben nach unten
+sortiert (kann mit der
+.B \-x
+Option veraendert werden).
+.IP (2) 4
+Ist die Standardausgabe kein Terminal, wird als
+Standardformat eine Eintragung pro Zeile ausgegeben.
+.IP (3) 4
+Die Dateinamen werden durch Kommas getrennt
+ausgegeben (kann mit der
+.B \-m
+Option veraendert werden).
+.SH OPTIONEN
+.TP
+.B  \-a
+Ausgabe aller Eintragungen. Wird diese Option nicht angegeben,
+werden alle Dateien, die mit einem Punktzeichen
+.B \&.
+beginnen, ausgelassen.
+.TP
+.B \-A
+genau wie
+.B \-a,
+jedoch werden alle Dateien, die mit
+.B \&.
+oder
+.B \&..
+beginnen, unterdrueckt.
+.TP
+.B \-c
+verwendet den Zeitpunkt der letzten
+Modifikation eines i-node (Modus, etc.)
+anstelle der letzten Modifikation der Datei selbst
+fuer die Sortierung
+.RB ( \-t )
+oder zum Druck
+.RB ( \-l ).
+.TP
+.B  \-C
+erzwingt eine mehrspaltige Ausgabe (Standard fuer Terminal).
+.TP
+.B  \-d
+wenn das Argument ein Directory ist,
+listet es nur deren Namen, nicht aber deren Inhalt aus
+(wird meist zusammen mit \fB\-l\fR benutzt, um den Status eines Directory
+auszugeben).
+.TP
+.B \-D
+es werden nur Directories ausgegeben.
+.TP
+.B  \-f
+Erzwingt, dass jedes Argument als ein Directory
+interpretiert wird und listet die gefundenen Namen aus.
+Diese Option schaltet
+.B "\-l, \-t, \-s,"
+und
+.B \-r,
+aus, und schaltet
+.BR \-a
+ein. Die Reihenfolge der Ausgabe wird nicht sortiert.
+.TP
+.B \-F
+Kennzeichnet Directories in der Liste der Dateinamen durch einen
+nachgestellten Schraegstrich
+.B /
+und ausfuehrbare Programmdateien durch
+einen nachgestellten Stern
+.BR * .
+Allen anderen Dateinamen wird ein Leerzeichen
+nachgestellt. Das kann ggf. Programme beeinflussen, die die Ausgabe von
+.B ls
+als Eingabe benutzen (siehe
+.BR cpio (1)).
+.TP
+.B  \-g
+Es erfolgt die Angabe des Gruppen-ID anstelle
+des Nutzer-ID in langen Listingformat. Gilt nur im Zusammenhang
+mit der \fB\-l\fR Option.
+.TP
+.B  \-i
+Druckt in der ersten Spalte des Ausdrucks
+die i-Nummer fuer jede ausgegebene Datei.
+.TP
+.B  \-l
+Die Ausgabe erfolgt im langen Format. Ausgegeben werden
+die Zugriffsrechte,
+die Anzahl der Links, der Eigentuemer, die Gruppe,
+die Groesse der Datei in Bytes und der Zeitpunkt
+der letzten Modifikation jeder Datei.
+Fuer Dateien, die aelter als sechs Monate
+sind, wird anstelle der Zeitangabe in Stunden und Minuten
+das Jahr angegeben.
+Fuer ein Directory wird die Gesamtanzahl der Bloecke (einschliesslich
+indirekter Bloecke) ausgegeben.
+Bei Special-Files wird anstelle der Groessenangabe
+die Major- und Minor-Device-Nummer angegeben.
+.TP
+.B  \-m
+Erzwingt ein Stream-Ausgabeformat.
+.TP
+.B \-n
+Im langen Ausgabeformat werden der Nutzer-ID und der Gruppen-ID
+numerisch ausgegeben.
+.TP
+.B  \-q
+Die Ausgabe von nichtdruckbaren Zeichen in Dateinamen erfolgt in
+Form eines Fragezeichens ? (Bei der Terminalausgabe ist diese Option
+standardmaessig gesetzt).
+.TP
+.B  \-r
+Die Reihenfolge der Sortierung wird umgekehrt.
+.TP
+.B \-R
+Es erfolgt die rekursive Ausgabe des Inhaltes
+bei jedem gefundenen Directory.
+.TP
+.B  \-s
+Gibt fuer jede Eintragung die Groesse der Datei in Bloecken
+an (einschliesslich indirekter Bloecke).
+.TP
+.B  \-t
+Die Reihenfolge der Ausgabe erfolgt sortiert nach
+dem letzten Modifikationszeitpunkt (der letzte zuerst).
+.TP
+.B  \-u
+Der Zeitpunkt des letzten Zugriffs wird anstelle des
+Zeitpunktes der letzten Modifikation zum Sortieren
+.RB ( \-t )
+oder zum drucken
+.RB ( \-l )
+verwendet.
+.TP
+.B  \-x
+Die Ausgabe wird waagerecht sortiert ausgegeben.
+.TP
+.B  \-1
+Es erfolgt eine Eintragung pro Ausgabezeile (Standard fuer
+Pipes und Ausgabeumlenkungen).
+.SH DATEIEN
+/etc/passwd     um die Nutzer-ID's mit "ls \-l" zu erhalten.
+.br
+/etc/group      um die Gruppen-ID's mit "ls \-lg" zu erhalten.
+.SH SIEHE AUCH
+file(1),
+find(1),
+chmod(1),
+chown(1),
+umask(1C),
+chmog(M),
+chown(M).
+.SH EINSCHRAENKUNGEN
+Newlinezeichen und Tabulatorzeichen werden
+in Dateinamen
+als druckbare Zeichen betrachtet.

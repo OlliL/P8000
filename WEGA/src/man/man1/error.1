@@ -1,0 +1,252 @@
+.TH ERROR 1 WEGA
+.\" @[$]error.1	1.2
+.ad
+.fi
+.SH NAME
+error \- analysiert und kommentiert Compiler-Fehlernachrichten
+.SH SYNTAX
+.B error
+[
+.B \-I
+.I ignorefile
+] [
+.B \-n
+] [
+.B \-q
+] [
+.B \-s
+] [
+.B \-t
+.I suffixlist
+] [
+.B \-v
+] [
+.I name
+]
+.SH BESCHREIBUNG
+.B Error
+analysiert und kommentiert die Fehlermitteilungen von
+verschiedenen Compilern und Sprachprozessoren.
+Dadurch kann die traditionelle Methode der Ausgabe von
+Fehlerabkuerzungen ersetzt werden. 
+.B Error
+bietet die Moeglichkeit,
+die Fehlernachrichten und den Quellcode in einer Datei abzulegen.
+.PP
+.B Error
+untersucht die Fehlernachrichten, die entweder von der angegebenen Datei
+\fIname\fR
+oder von der Standardeingabe kommen, ermittelt dabei,
+welcher Sprachprozessor sie erzeugt hat und bestimmt die Quelldatei
+und die Zeilennummer, die zu dieser Fehlernachricht gefuehrt hat.
+Die Fehlernachricht wird (moeglicherweise etwas modifiziert) in die
+Quelldatei als Kommentar vor die entsprechende Zeile eingefuegt.
+.PP
+Fehlernachrichten, die keinem Sprachprozessor zugeordnet werden koennen
+und auch in keine Datei eingetragen werden koennen, werden an die
+Standardausgabe ausgegeben.
+.B Error
+bearbeitet Quelldateien erst, nachdem die gesamte Eingabe eingelesen wurde.
+Durch Angabe der
+.B \-q
+Option
+wird der Benutzer gebeten, alle gefaehrlichen Aktionen (wie Ueberschreiben
+von Dateien) zu bestaetigen.
+Bei Angabe der Option
+.B \-t
+und der zugehoerigen Suffixliste koennen nur
+solche Dateien bearbeitet werden, die eine entsprechende Endung haben.
+.PP
+.B Error
+kann durch Angabe von
+.B \-v
+veranlasst werden, den Editor
+.BR vi (1)
+mit der Datei aufzurufen, in die die Fehlernachrichten eingetragen sind.
+Dadurch erspart man sich spaeteres Rueckerinnern an fehlerbehaftete Dateien.
+.PP
+.B Error
+wird durch eine Pipe ueber seine Standardeingabe mit der Fehlerausgabe
+verbunden.
+Einige Sprachprozessoren geben ihre Fehlernachrichten ueber die
+Standardfehlerausgabe aus, andere ueber die Standardausgabe.
+Beide sollten ueber eine Pipe mit
+.B error
+verbunden werden, z.B. wie folgt:
+.IP
+make \-s lint |\|& error \-q \-v
+.LP
+Im Beispiel werden alle Fehlernachrichten, die von den durch
+.BR make (1)
+aufgerufen Programmen zur Herstellung von lint erzeugt werden, analysiert.
+.PP
+.B Error
+kennt die Fehlernachrichten von
+.B make,
+.B cc,
+.I cpp,
+.I ccom,
+.B as,
+.B ld,
+.B lint,
+und
+.B f77.
+.B Error
+kennt das Standardformat der Fehlernachrichten, die von den
+Sprachprozessoren erzeugt werden und kann somit Aenderungen
+in diesen Formaten vornehmen.
+Fehlernachrichten sind auf eine Zeile beschraenkt.
+Einige Fehlermeldungen beziehen sich auf mehr als nur eine Zeile
+in mehr als nur einer Datei;
+.B error
+dupliziert die Fehlernachricht und fuegt sie an allen
+entsprechenden Stellen ein.
+.PP
+.B Error
+realisiert eine der sechs Aktivitaeten mit Fehlermitteilungen:
+.TP 10
+.I synchronize
+Einige Sprachprozessoren erzeugen kurze Fehlerausgaben, die
+beschreiben, welche Datei ihn produzierte.
+.B Error 
+benutzt diese, um den Dateinamen bei Sprachen zu bestimmen,
+die nicht in jeder Fehlermeldung den Dateinamen ausgeben.
+Diese Synchronisationsnachrichten werden vollstaendig von
+.B error
+ausgewertet.
+.TP 10
+.I discard
+Fehlernachrichten von
+.BR lint (1),
+die sich auf eine der zwei
+.BR lint (1)
+Bibliotheken
+.I /usr/lib/llib-lc
+und
+.I /usr/lib/llib-port
+beziehen, werden gestrichen, um Zerstoerungen dieser Bibliotheken zu vermeiden.
+.TP 10
+.I nullify
+Fehlernachrichten von
+.BR lint (1)
+koennen ignoriert werden, wenn sie sich auf eine spezielle
+Funktion beziehen, deren Fehler bekannt und nicht interessant ist.
+Diese Fehlernachrichten werden nicht in die Quelldatei eingefuegt, sie
+werden aber ueber die Standardausgabe ausgegeben.
+Die zu ignorierenden Funktionsnamen werden entweder aus der Datei
+.I .errorrc
+im Homedirectory des Nutzers oder von der durch die
+.B \-I
+Option gekennzeichnete Datei genommen.
+Wenn diese Datei nicht existiert, werden
+keine Fehlernachrichten ignoriert.
+Existiert die Datei, muss pro Zeile ein
+Funktionsname angegeben sein.
+.TP 10
+.I not file specific
+Fehlernachrichten, die nicht eindeutig zuzuordnen sind, werden
+gesammelt vor Bearbeitung einer Datei
+an die Standardausgabe ausgegeben.
+Sie werden nicht in eine Quelldatei eingefuegt.
+.TP 10
+.I file specific
+Fehlernachrichten, die sich auf eine spezielle Datei beziehen,
+nicht aber auf eine spezielle Zeile,
+werden bei Bearbeitung der Datei an die Fehlerausgabe ausgegeben.
+.TP 10
+.I true errors
+Fehlernachrichten, die zugeordnet werden koennen,
+werden in die Datei eingefuegt, auf die sie sich beziehen.
+.PP
+Nur true error Nachrichten werden in die entsprechende Datei eingefuegt.
+Andere Fehlernachrichten werden vollstaendig von
+.B error
+verarbeitet und an die Standardausgabe ausgegeben.
+.B Error
+fuegt die Fehlernachrichten in der Quelldatei vor der fehlerhaften
+Zeile ein.
+Jede Fehlernachricht wird als Kommentar eingefuegt, der durch
+die Zeichenkette
+"###" vor dem Fehler und durch
+"%%%" nach dem Fehler gekennzeichnet ist.
+Dadurch wird das Aufsuchen und Streichen dieser
+Nachrichten erleichtert.
+.PP
+Zusaetzlich enthaelt jede Fehlernachricht noch die Zeilennummer,
+auf die sich der Fehler bezieht.
+Ein vernuenftig formatiertes Quellprogramm kann selbst mit den
+enthaltenen Fehlerkommentaren wieder compiliert werden, ohne das
+dies Fehler verursacht.
+Fuer schlecht formatierte Quellprogramme freier Formatsprachen, wie C,
+ist es moeglich, einen Kommentar in einen anderen Kommentar hineinzuschieben.
+Damit kann eine zukuenftige Uebersetzung scheitern.
+Um dies zu vermeiden, sollten Quellprogramme so gestaltet werden,
+dass Kommentare und Anweisungen nicht in einer Zeile erscheinen.
+.PP
+.B Error
+faengt Interrupts und Terminate-Signale ein.
+Das Einfuegen wird jedoch ordnungsgemaess beendet.
+.SH OPTIONEN
+.TP
+\fB\-I\fI ignorefile\fR
+Benennt eine Datei, die zu ignorierende Funktionsnamen enthaelt.
+.TP
+.B \-n
+Es werden keine Dateien bearbeitet; alle Fehlernachrichten werden
+an die Standardausgabe ausgegeben.
+.TP
+.B \-q
+Der Anwender wird abgefragt,
+ob die Datei bearbeitet werden soll.
+Die Eingabe "y" oder "n" bewirkt die Fortsetzung des Laufs.
+Ist
+.B \-q
+nicht angegeben, werden alle entsprechenden Dateien
+(mit Ausnahme derer, die sich auf gestrichene (discarded) Fehler beziehen)
+verarbeitet.
+.TP
+.B \-s
+Ausgabe der Statistik zur Fehlerkategorisierung.
+.TP
+.B \-t
+Das folgende Argument wird als Suffixliste genommen.
+Dateien, deren Endung nicht in der Suffixliste erscheint, werden nicht
+bearbeitet.
+Die Suffixliste wird durch Punkte getrennt und das Metasymbol "*"
+kann in ihr angegeben werden.
+Somit erlaubt die Suffixliste:
+.IP
+\&     ".c.y.foo*.h"
+.IP
+.B error
+die auf ".c", ".y", ".foo*" und ".h" endenden Dateien zu bearbeiten.
+.TP
+.B \-v
+Nachdem alle Dateien bearbeitet wurden
+wird der Editor
+.BR vi (1)
+aufgerufen und der Cursor wird auf den ersten erkannten Fehler
+gesetzt. Ist
+.BR vi (1)
+nicht vorhanden, wird versucht
+.BR ex (1)
+oder
+.BR ed (1)
+zu starten.
+.SH DATEIEN
+.ta 2i
+~/.errorrc	Funktionsnamen, die bei \fIlint\fP
+.br
+	Fehlernachrichten zu ignorieren sind
+.SH EINSCHRAENKUNGEN
+.PP
+Quelldateien mit Links erzeugen eine Kopie der Datei mit nur
+einem Link darauf.
+.PP
+Ein Aendern des Sprachprozessorformats fuer Fehlerausgaben
+kann dazu fuehren, dass
+.B error
+dann diese nicht mehr verstehen kann.
+.PP
+.B Error,
+findet keine Folgefehler.

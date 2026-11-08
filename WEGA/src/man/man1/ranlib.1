@@ -1,0 +1,47 @@
+.TH RANLIB 1 WEGA
+.\" @[$]ranlib.1	1.2
+.ad
+.fi
+.SH NAME
+ranlib \- Sortierung von Bibliotheken
+.SH SYNTAX
+.B ranlib
+.I archive ...
+.SH BESCHREIBUNG
+.B Ranlib
+wandelt jede
+.I Bibliothek
+in eine Form um, die schneller durch den Lader
+.BR ld (1)
+verarbeitet werden kann.
+An den Beginn der Bibliothek wird ein mit
+.B __.SYMDEF
+bezeichnetes Inhaltsverzeichnis eingefuegt.
+Zur Rekonstruktion der Bibliothek
+(unter Verwendung von
+.BR ar (1))
+muss temporaer genuegend Platz in dem Dateisystem,
+in dem sich das aktuelle Directory befindet,
+zur Verfuegung stehen.
+.SH SIEHE AUCH
+ld(1), ar(1).
+.SH EINSCHRAENKUNGEN
+Da die Generierung einer Bibliothek mittels
+.BR ar (1)
+und die Umordnung ueber
+.B ranlib
+getrennt sind,
+sind Phasenfehler moeglich.
+Der Lader
+.BR ld (1)
+warnt, wenn das Modifikationsdatum einer Bibliothek
+juenger ist, als das Erstellungsdatum ihres Wortverzeichnisses.
+Diese Warnung erscheint allerdings auch, wenn die Bibliothek
+nur kopiert wird.
+.PP
+.B Ranlib
+verarbeitet nur Symbole mit einer maximalen Laenge von 8
+Zeichen. Bibliotheken, die Symbole mit mehr Zeichen verwenden,
+duerfen nicht mit
+.B ranlin
+behandelt werden. Das betrifft auch die C-Bibliotheken.

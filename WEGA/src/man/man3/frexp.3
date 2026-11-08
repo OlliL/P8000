@@ -1,0 +1,46 @@
+.TH FREXP 3 
+.\" @[$]frexp.3 1.2
+.ad
+.fi
+.SH NAME
+frexp, ldexp, modf \- Aufspalten in Mantisse und Exponent 
+.SH SYNTAX
+.nf
+\fBdouble frexp\fR(\fIvalue, eptr\fR)
+\fBdouble \fIvalue;\fR
+\fBint \fR*\fIeptr;\fR
+.PP
+\fBdouble ldexp\fR(\fIvalue, exp\fR)
+\fBdouble \fIvalue;\fR
+\fBint \fIexp;\fR
+.PP
+\fBdouble modf\fR(\fIvalue, iptr\fR)
+\fBdouble \fIvalue, *iptr;\fR
+.fi
+.SH BESCHREIBUNG
+.B Frexp
+liefert die Mantisse einer doppeltgenauen Zahl
+.I value
+als doppeltgenauen Wert
+.I x,
+(x kleiner als 1)
+und speichert indirekt ueber 
+.I eptr
+eine ganze Zahl
+.I n
+ab, fuer die gilt:
+.IP
+.IR value =
+.IR x *2** n.
+.PP
+.B Ldexp
+liefert den Wert
+.IP
+.IR value *2** exp .
+.PP
+.B Modf
+liefert den positiven gebrochenen Anteil von
+.I value
+und speichert den ganzzahligen Teil indirekt ueber
+.I iptr
+ab.

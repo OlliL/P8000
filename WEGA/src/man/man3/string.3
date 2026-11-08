@@ -1,0 +1,244 @@
+.TH STRING 3 WEGA
+.\" @[$]string.3        1.2
+.ad
+.fi
+.SH NAME
+strcat, strncat, strcmp, strncmp, strcpy, strncpy, strlen, strchr, strrchr, strpbrk, strspn, strcspn, strtok, index, rindex \- Zeichenkettenoperationen
+.SH SYNTAX
+(siehe BESCHREIBUNG)
+.SH BESCHREIBUNG
+Diese Funktionen operieren mit Zeichenketten
+(Felder von Zeichen, die mit einem Nullbyte abgeschlossen sind).
+Die resultierenden Zeichenketten werden nicht auf Ueberlauf geprueft.
+.br
+Die Argumente
+.BR s ,
+.B s1
+und
+.B s2
+sind Pointer auf das erste Element der Zeichenkette.
+.TP
+\fBchar \fI\(**strcat (s1, s2)\fR
+\fBchar \fI\(**s1, \(**s2;\fR
+.TP
+\fBchar\fI \(**strncat (s1, s2, n)\fR
+\fBchar\fI \(**s1, \(**s2;\fR
+.br
+\fBint\fI n;\fR
+.IP
+.B Strcat
+fuegt eine Kopie der Zeichenkette
+.I s2
+an das Ende der Zeichenkette
+.IR s1
+an.
+.B Strncat
+kopiert hoechstens
+.I n
+Zeichen.
+Beide geben einen Pointer auf eine mit einem Nullbyte abgeschlossene
+Zeichenkette zurueck.
+.TP
+\fBint strcmp \fI(s1, s2)\fR
+\fB char \fI\(**s1, \(**s2;\fR
+.TP
+\fBint strncmp \fI(s1, s2, n)\fR
+\fBchar \fI\(**s1, \(**s2;\fR
+.br
+\fBint \fIn;\fR
+.IP
+.B Strcmp
+vergleicht seine Argumente und gibt wie folgt einen Integerwert zurueck:
+.RS 10
+.PD 0
+.IP >0 4
+.I s1
+ist lexikographisch groesser als
+.IR s2 .
+.IP =0
+.I s1
+ist lexikographisch gleich
+.IR s2 .
+.IP <0
+.I s1
+ist lexikographisch kleiner als
+.IR s2 .
+.RE
+.IP
+.PD
+.B Strncmp
+realisiert die gleiche Funktion, nur dass maximal
+.I n
+Zeichen verglichen werden.
+.TP
+\fBchar \fI\(**strcpy (s1, s2)\fR
+\fBchar \fI\(**s1, \(**s2;\fR
+.TP
+\fBchar\fI \(**strncpy (s1, s2, n)\fR
+\fBchar \fI\(**s1, \(**s2;\fR
+.br
+\fBint \fIn;\fR
+.IP
+.B Strcpy
+kopiert die Zeichenkette
+.I s2
+in
+.IR s1
+bis einschliesslich des Null-Zeichens.
+.B Strncpy
+kopiert genau
+.I n
+Zeichen, wobei
+.IR s2
+entweder abgeschnitten oder mit Nullen aufgefuellt wird.
+Ist die Laenge von
+.I s2
+groesser oder gleich
+.IR n ,
+muss die erzeugte Zeichenkette nicht mit einem Nullbyte enden.
+Der Pointer
+.IR s1
+wird zurueckgegeben.
+.TP
+\fBint strlen \fI(s)\fR
+\fBchar \fI\(**s;\fR
+.IP
+Die Anzahl der Zeichen, die in
+.IR s
+ungleich Null sind, wird zurueckgegeben.
+.TP
+\fBchar\fI \(**strchr (s, c)\fR
+\fBchar \fI\(**s, c;\fR
+.TP
+\fBchar\fI \(**strrchr (s, c)\fR
+\fBchar \fI\(**s, c;\fR
+.IP
+.B Strchr
+.RB ( strrchr )
+liefert einen Pointer auf die erste (letzte) Stelle in der Zeichenkette
+.IR s ,
+an der das Zeichen
+.I c
+auftritt.
+Ist kein Zeichen
+.I c
+in der Zeichenkette vorhanden, wird
+.B NULL
+zurueckgegeben.
+Das die Zeichenkette abschliessende Null-Zeichen
+wird als Teil der Zeichenkette betrachtet.
+.TP
+\fBchar \fI\(**strpbrk (s1, s2)\fR
+\fBchar \fI\(**s1, \(**s2;\fR
+.IP
+Die Funktion
+gibt einen Pointer auf die erste Stelle
+in der Zeichenkette
+.IR s1
+zurueck, an der ein Zeichen
+aus der Zeichenkette
+.I s2
+auftritt.
+Enthaelt
+.I s1
+kein Zeichen der Zeichenkette
+.IR s2 ,
+wird
+.B NULL
+zurueckgegeben.
+.TP
+\fBint strspn \fI(s1, s2)\fR
+\fBchar \fI\(**s1, \(**s2;\fR
+.TP
+\fBint strcspn \fI(s1, s2)\fR
+.br
+\fBchar \fI\(**s1, \(**s2;\fR
+.IP
+Die Funktion
+.B strspn
+gibt die Laenge des urspruenglichen Segments der Zeichenkette
+.I s1
+zurueck, das ausschliesslich aus Zeichen der Zeichenkette
+.IR s2
+besteht.
+.B Strcspn
+gibt die Laenge des urspruenglichen Segments der Zeichenkette
+.I s1
+zurueck,
+die ausschliesslich aus Zeichen besteht, die nicht in
+.IR s2
+enthalten sind.
+.TP
+\fBchar\fI \(**strtok (s1, s2)\fR
+\fBchar \fI\(**s1, \(**s2;\fR
+.IP
+Die Zeichenkette
+.I s1
+wird als eine Folge von Null oder mehreren Teilen (Tokens) betrachtet,
+die durch ein oder mehrere
+Zeichen aus der Trennzeichenkette
+.IR s2
+getrennt werden.
+Der erste Aufruf von
+.B strtok
+(bei angegebenem Pointer auf
+.IR s1 )
+gibt einen Pointer auf das erste Zeichen des ersten Teils (Tokens)
+zurueck und schreibt unmittelbar hinter dem letzten Zeichen dieses Teils ein
+NULL-Zeichen in
+.IR s1 .
+Die Funktion merkt sich
+zwischen verschiedenen Aufrufen
+die aktuelle Position in der Zeichenkette,
+so dass nachfolgende Aufrufe mit einem NULL-Pointer als erstem Argument
+in dieser Weise in der Zeichenkette
+.I s1
+nach dem ersten Teil fortfahren.
+So verarbeitet die Funktion
+.B strtok
+bei aufeinanderfolgenden Aufrufen nacheinander alle Teile (Token)
+der Zeichenkette
+.IR s1
+und liefert jeweils einen Zeiger auf das erste Zeichen aufeinanderfolgender
+Teile (Token).
+.B Strtok
+schreibt jeweils ein NULL-Zeichen unmittelbar hinter die Teile (Token) in
+.IR s1 .
+Die Trennzeichenkette
+.I s2
+kann bei jedem Aufruf verschieden sein.
+Ist in
+.I s1
+kein Teil (Token) mehr vorhanden,
+wird ein NULL-Pointer zurueckgegeben.
+.TP
+\fBchar\fI *index(s, c)\fR
+\fBchar\fI *s, c;\fR
+.TP
+\fBchar *rindex\fI(s, c)\fR
+\fBchar\fI *s;\fR
+.IP
+.I Index
+.RI ( rindex )
+liefert einen Pointer auf die erste (letzte) Stelle, an der das Zeichen
+.I c
+in der Zeichenkette
+.I s
+auftritt.
+Ist
+.I c
+nicht in der Zeichenkette vorhanden, wird ein Null-Pointer zurueckgegeben.
+.SH EINSCHRAENKUNGEN
+Beim Zeichenvergleich mit der Funktion
+.B strcmp
+wird das Vorzeichen
+auf verschiedenen Systemen
+unterschiedlich behandelt.
+Unter WEGA werden die Zeichen als vorzeichenlos (unsigned) betrachtet.
+.PP
+Die Bewegung der Zeichenketten erfolgt zeichenweise, wobei links
+begonnen wird.
+Somit wird die Bewegung sich ueberlagernder Bereiche nach links das erwartete
+Ergebnis bringen.
+Die Bewegung sich ueberlagernder Bereiche nach rechts fuehrt jedoch zu
+ungewollten Ergebnissen.

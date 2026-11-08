@@ -1,0 +1,131 @@
+.TH DIFF 1 WEGA
+.\" @[$]diff.1	1.2
+.ad
+.fi
+.SH NAME
+diff \- vergleicht zwei Textdateien auf Unterschiede
+.SH SYNTAX
+.B diff
+[
+.B \-befh
+] \fIfile1 file2\fR
+.SH BESCHREIBUNG
+.B Diff
+gibt an, welche Zeilen in zwei unterschiedlichen Dateien
+geaendert werden muessen, um die Dateien in Uebereinstimmung zu bringen.
+Wird statt eines Dateinamen
+.I file1
+.RI ( file2 )
+ein \- angegeben, wird fuer diese Datei die Standardeingabe verwendet.
+Ist
+.I file1
+.RI ( file2 )
+ein Directory, wird aus diesem Directory die Datei
+mit dem gleichen Namen wie
+.I file2
+.RI ( file1 )
+verwendet.
+Die normale Ausgabe enthaelt Zeilen der Form:
+.IP "" 5
+.I n1
+a
+.I n3,n4
+.br
+.I n1,n2
+d
+.I n3
+.br
+.I n1,n2
+c
+.I n3,n4
+.PP
+Diese Zeilen aehneln
+.BR  ed (1)
+Kommandos zur Umwandlung von
+.I file1
+in
+.IR file2 .
+Die Zahlen hinter den Buchstaben beziehen sich auf die Datei
+.IR file2 .
+Vertauscht man \fIa\fR gegen \fId\fR und liest das Ergebnis rueckwaerts,
+ist die Kommandofolge zu Umwandlung von \fIfile2\fR in \fIfile1\fR
+gegeben.
+Wie bei \fIed\fR(1) werden identische Paare,
+wo \fIn1\fR = \fIn2\fR oder \fIn3\fR = \fIn4\fR ist,
+als einfache Zahl abgekuerzt.
+.PP
+Nach jeder dieser Zeilen wird eine Folge markierter Zeilen ausgegeben:
+.nf
+- < markiert Zeilen, die \fIfile1\fR betreffen
+- > markiert Zeilen, die \fIfile2\fR betreffen.
+.fi
+.PP
+.B Diff
+findet in den meisten Faellen
+den kleinsten ausreichenden Satz von Dateidifferenzen.
+.SH OPTIONEN
+.TP
+.B \-b
+ignoriert abschliessende Leerstellen (Leerzeichen und Tabulatoren).
+.TP
+.B \-e
+gibt eine Folge von \fIa, c,\fR und \fId\fR Befehlen fuer den
+Editor \fIed\fR(1) aus, mit denen \fIfile2\fR aus \fIfile1\fR
+erzeugt werden kann.
+.TP
+.B \-f
+erzeugt eine Ausgabe, die der Ausgabe mit der \fB\-e\fR Option
+aehnlich ist, aber
+in umgekehrter Reihenfolge.
+Sie ist nicht fuer \fIed\fR nutzbar.
+.TP
+.B \-h
+ruft eine schnelle, stark vereinfachte Funktion von \fIdiff\fR auf.
+Sie funktioniert nur, wenn die differierenden Passagen kurz und klar
+voneinander getrennt sind. Die Optionen
+.B \-e
+und
+.B \-f
+sind unvereinbar mit
+.B \-h.
+.bp
+.SH BEISPIEL
+.RS
+.nf
+.sp
+\fB% cat list1			% cat list2\fR
+
+dabeisein				da
+dabeisitzen			dabei
+dabeistehen			dabeisein
+dableiben				dabeisitzen
+					dabeistehen
+
+\fI% diff list1 list2\fR
+
+0a1,2
+> da
+> dabei
+4d5
+< dableiben
+
+.fi
+.RE
+.SH DATEIEN
+/tmp/d?????
+.br
+/usr/lib/diffh for 
+.B \-h
+.SH SIEHE AUCH
+cmp(1), comm(1), ed(1)
+.SH DIAGNOSTIK
+.nf
+Exitstatus = 0, wenn keine Differenzen existieren,
+Exitstatus = 1, wenn Differenzen  existieren
+Exitstatus = 2, wenn eine Stoerung auftritt.
+.fi
+.SH EINSCHRAENKUNGEN
+Editorscripte, die von der
+\fB\-e\fR  or \fB\-f\fR Option erzeugt wurden, erstellen fuer
+\fIed\fR fehlerhafte
+Kommandozeilen, wenn die Zeile nur aus einem einfachen (\&.) besteht.

@@ -1,0 +1,728 @@
+.TH EQN 1 WEGA
+.\"@[$]eqn.1	1.2
+.ad
+.fi
+.SH NAME
+eqn, neqn, checkeq  \-  Typensatz von mathematischen Ausdruecken
+.SH SYNTAX
+.B eqn
+[
+.BR \-d xy
+] [
+.BR \-p n
+] [
+.BR \-s n
+] [
+.BR \-f n
+] 
+[
+.I file ] ...
+.br
+.B neqn
+[
+.BR \-d xy
+] [
+.BR \-p n
+] [
+.BR \-s n
+] [
+.BR \-f n
+] 
+[
+.I file ] ...
+.br
+.B checkeq
+[
+.I file ] ...
+.SH BESCHREIBUNG
+.B Eqn
+ist ein
+troff(1)
+Preprocessor
+zum Formatieren von mathematischen Ausdruecken fuer einen
+Phottypesetter,
+.B neqn
+fuer Terminals und Drucker.
+Die uebliche Anwendung ist
+.PP
+	eqn file ... | troff
+.br
+	neqn file ... | nroff
+.PP
+Sind keine Dateien angegeben, lesen diese Programme
+von der Standardeingabe.
+Eine Zeile, die mit `.EQ' beginnt, markiert den Anfang, `.EN' das
+Ende einer Gleichung.
+Es wird keine dieser Zeilen veraendert, dass sie in Makropaketen definiert
+werden koennen, um Zentrierung, Nummerierung usw. zu erhalten.
+Es ist auch moeglich, zwei Zeichen als Begrenzungszeichen zu bestimmen;
+nachfolgender Text zwischen Begrenzungszeichen wird von
+.B eqn
+als Eingabe genommen.
+Begrenzungszeichen koennen
+im Kommandozeilenargument durch
+.BI \-d xy
+oder (haeufiger) im Text durch `delim
+.IR xy '
+zwischen .EQ und .EN eingestellt werden.
+Die linken und rechten Begrenzungszeichen koennen identisch sein.
+Begrenzungszeichen werden durch `delim off' ausser Kraft gesetzt.
+Jeder Text, der weder zwischen Begrenzungszeichen noch zwischen .EQ
+und .EN steht, wird unveraendert ausgegeben.
+.PP
+Das Programm
+.B checkeq
+meldet fehlende oder nicht ausgeglichene .EQ/.EN-Paare.
+.PP
+Ausdruecke innerhalb von
+.B eqn
+werden durch
+Leerzeichen, Tabulatoren, Newlines, runde Klammern, Anfuehrungsstriche,
+eine Tilde (~) oder Circumflexes (^) abgegrenzt.
+Geschweifte Klammern {} werden zur Gruppierung verwendet;
+d.h. fuer ein einzelnes Zeichen
+.I x
+kann eine komplizierte,
+in geschweifte Klammern eingeschlossen Konstruktion verwendet werden.
+Die Tilde ~ repraesentiert eine volle Stelle in der Ausgabe,
+Circumflex ^ eine halbe.
+.PP
+.vs 13p
+Tiefgestellte und hochgestellte Indizes werden mit den
+Schluesselwoertern
+.B sub
+und
+.B sup
+erzeugt.  Somit erzeugt
+.I "x sub i" 
+die Ausgabe:
+.sp
+.\" eqn: x sub i 
+.sp
+.RS
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "x
+.ds 12 "i
+.as 11 \v'20u'\*(12\v'-20u'
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 60>\n(.v .ne 60u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+.PP
+Die Zeile
+.I "a sub i sup 2"
+erzeugt:
+.sp
+.RS
+.\" eqn: a sub i sup 2
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "a
+.ds 12 "i
+.ds 13 "\f12\fP
+.nr 12 \w'\s7\*(12'
+.nr 13 \w'\s7\*(13'
+.nr 14 \n(13
+.if \n(12>\n(14 .nr 14 \n(12
+.as 11 \v'20u'\*(12\h'-\n(12u'\v'-40u'\
+\*(13\h'-\n(13u+\n(14u'\v'20u'
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 80>\n(.v .ne 80u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+.PP
+und
+.I "e sup {x sup 2 + y sup 2}"
+ergibt:
+.sp
+.RS
+.\" eqn: $ e sup {x sup 2 + y sup 2} 
+.EN
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "e
+.ds 12 "x
+.ds 13 "\f12\fP
+.as 12 \v'-20u'\*(13\v'20u'
+.ds 13 "\(pl
+.as 12 "\|\*(13
+.ds 13 "y
+.ds 14 "\f12\fP
+.as 13 \v'-20u'\*(14\v'20u'
+.as 12 "\|\*(13
+.as 11 \v'-20u'\*(12\v'20u'
+.ds 11 \x'0'\x'0-20u'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 80>\n(.v .ne 80u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+.PP
+Brueche werden mit
+.B over
+erzeugt.
+.I "a over b"
+liefert:
+.sp
+.RS
+.\" eqn:  a over b 
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "a
+.ds 12 "b
+.nr 11 \w'\s10\*(11'
+.nr 12 \w'\s10\*(12'
+.nr 13 \n(11
+.if \n(12>\n(13 .nr 13 \n(12
+.ds 11 \v'20u'\h'\n(13u-\n(12u/2u'\*(12\
+\h'-\n(12u-\n(11u/2u'\v'-40u'\*(11\
+\h'-\n(13u-\n(11u-2u/2u'\v'0u'\l'\n(13u'\v'20u'
+.ds 11 \x'0'\f1\s10\*(11\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 80>\n(.v .ne 80u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+.PP
+Quadratwurzeln werden mit
+.B sqrt
+erstellt.
+.I "1 over sqrt {ax sup 2 +bx+c}"
+erzeugt:
+.sp
+.RS
+.\" eqn:  1 over sqrt {ax sup 2 +bx+c} 
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "\f11\fP
+.ds 12 "ax
+.ds 13 "\f12\fP
+.as 12 \v'-20u'\*(13\v'20u'
+.ds 13 "\(plbx\|\(plc
+.as 12 "\|\*(13
+.nr 12 \w'\s7\*(12'
+.ds 12 \v'0u'\e\L'-60u'\l'\n(12u'\v'60u'\h'-\n(12u'\*(12
+.nr 11 \w'\s7\*(11'
+.nr 12 \w'\s7\*(12'
+.nr 13 \n(11
+.if \n(12>\n(13 .nr 13 \n(12
+.ds 11 \v'60u'\h'\n(13u-\n(12u/2u'\*(12\
+\h'-\n(12u-\n(11u/2u'\v'-80u'\*(11\
+\h'-\n(13u-\n(11u-2u/2u'\v'0u'\l'\n(13u'\v'20u'
+.ds 11 \x'0'\f1\s10\*(11\s\n(99\f\n(98\x'40u'
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 120>\n(.v .ne 120u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+.PP
+Die Schluesselwoerter
+.B from
+und
+.B to
+fuehren untere und obere Grenzen ein. Der Grenzwert
+.sp
+.RS
+.\" eqn:  lim from {n-> inf} sum from 0 to n x sub i 
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "\f1lim\fP
+.ds 12 "n\|\(->
+.ds 13 "\(if
+.as 12 "\|\*(13
+.nr 11 \w'\s10\*(11'
+.nr 13 \n(11
+.nr 12 \w'\s7\*(12'
+.if \n(12>\n(13 .nr 13 \n(12
+.ds 13 \v'40u'\h'\n(13u-\n(12u/2u'\s7\*(12\s10\h'-\n(13u-\n(12u/2u'\v'-40u'\
+\h'\n(13u-\n(11u/2u'\*(11\h'\n(13u-\n(11u+2u/2u'\
+
+.ds 11 \(*S
+.ds 12 "\f10\fP
+.ds 14 "n
+.nr 11 \w'\s10\*(11'
+.nr 15 \n(11
+.nr 12 \w'\s7\*(12'
+.if \n(12>\n(15 .nr 15 \n(12
+.nr 14 \w'\s7\*(14'
+.if \n(14>\n(15 .nr 15 \n(14
+.ds 15 \v'40u'\h'\n(15u-\n(12u/2u'\s7\*(12\s10\h'-\n(15u-\n(12u/2u'\v'-40u'\
+\h'\n(15u-\n(11u/2u'\*(11\h'\n(15u-\n(11u+2u/2u'\
+\v'-40u'\h'-\n(15u-\n(14u/2u'\s7\*(14\s10\h'\n(15u-\n(14u/2u'\v'40u'\
+
+.as 13 "\*(15
+.ds 11 "x
+.ds 12 "i
+.as 11 \v'20u'\*(12\v'-20u'
+.as 13 "\*(11
+.ds 13 \x'0'\x'0-20u'\f1\s10\*(13\|\s\n(99\f\n(98\x'20u'
+.nr 13 \w'\*(13'
+.nr MK 0
+.if 120>\n(.v .ne 120u
+.rn 13 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+.PP
+wird durch
+.I "lim from {n\-> inf } sum from 0 to n x sub i"
+erstellt.
+.PP
+Linke und rechte eckige und geschweifte Klammern der richtigen
+Hoehe werden mit
+.B left
+und
+.B right
+erzeugt.
+.I "left [ x sup 2 + y sup 2 over alpha right ] ~=~1"
+erzeugt:
+.sp
+.RS
+.\" eqn:  left [ x sup 2 + y sup 2 over alpha right ] ~=~1 
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "x
+.ds 12 "\f12\fP
+.as 11 \v'-20u'\*(12\v'20u'
+.ds 12 "\(pl
+.as 11 "\|\*(12
+.ds 12 "y
+.ds 13 "\f12\fP
+.as 12 \v'-20u'\*(13\v'20u'
+.ds 13 "\(*a
+.nr 12 \w'\s6\*(12'
+.nr 13 \w'\s6\*(13'
+.nr 14 \n(12
+.if \n(13>\n(14 .nr 14 \n(13
+.ds 12 \v'20u'\h'\n(14u-\n(13u/2u'\*(13\
+\h'-\n(13u-\n(12u/2u'\v'-40u'\*(12\
+\h'-\n(14u-\n(12u-2u/2u'\v'0u'\l'\n(14u'\v'20u'
+.as 11 "\*(12
+.ds 11 \|\v'-10u'\b'\(lc\(bv\(lf'\v'10u'\*(11\|\v'-10u'\b'\(rc\(bv\(rf'\v'10u'
+.ds 12 "\ 
+.as 11 "\*(12
+.ds 12 "\(eq
+.as 11 "\|\*(12
+.ds 12 "\ 
+.as 11 "\|\*(12
+.ds 12 "\f11\fP
+.as 11 "\|\*(12
+.ds 11 \x'0'\x'0-20u'\f1\s10\*(11\|\s\n(99\f\n(98\x'20u'
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 120>\n(.v .ne 120u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+.PP
+Die
+.B right
+Klausel ist optional.
+Gueltige Zeichen nach
+.B left
+und
+.B right
+sind runde Klammern, eckige Klammern, Striche,
+.B c
+und
+.B f
+fuer < und > ,
+und "" fuer nichts (nuetzlich fuer nur eine rechte Klammer).
+.PP
+Vertikal uebereinandergestapelte Bilder koennen mit
+.BR pile ,
+.BR lpile ,
+.BR cpile ,
+und
+.BR rpile 
+erzeugt werden.
+.I "pile {a above b above c}"
+erzeugt:
+.sp
+.RS
+.\" eqn:  pile {a above b above c}
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "a
+.ds 12 "b
+.ds 13 "c
+.nr 11 \w'\s10\*(11'
+.nr 14 \n(11
+.nr 12 \w'\s10\*(12'
+.if \n(12>\n(14 .nr 14 \n(12
+.nr 13 \w'\s10\*(13'
+.if \n(13>\n(14 .nr 14 \n(13
+.ds 14 \v'40u'\h'0u*\n(14u'\
+\v'0u'\h'\n(14u-\n(13u/2u'\*(13\h'-\n(14u-\n(13u/2u'\v'0-40u'\
+\v'0u'\h'\n(14u-\n(12u/2u'\*(12\h'-\n(14u-\n(12u/2u'\v'0-40u'\
+\v'0u'\h'\n(14u-\n(11u/2u'\*(11\h'-\n(14u-\n(11u/2u'\v'0-40u'\
+\v'80u'\h'1u*\n(14u'
+.ds 14 \x'0'\x'0-20u'\f1\s10\*(14\s\n(99\f\n(98\x'20u'
+.nr 14 \w'\*(14'
+.nr MK 0
+.if 120>\n(.v .ne 120u
+.rn 14 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+Die Anzahl der Elemente im Stapel ist beliebig. Fuer die Schluesselwoerter
+gilt:
+.TP 7
+.B lpile
+\- linksbuendige Stapelung,
+.TP 7
+.B pile , cpile
+\- zentrierte Stapelung mit verschiedenen Vertikalabstaenden
+.TP 7
+.B rpile
+\- rechtsbuendige Stapelung.
+.PP
+Matrizen werden mit
+.BR matrix 
+erstellt.
+.I "matrix { lcol { x sub i above y sub 2 } ccol { 1 above 2 } }"
+erzeugt:
+.sp
+.RS
+.\" eqn: matrix { lcol { x sub i above y sub 2 } ccol { 1 above 2 } } 
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "x
+.ds 12 "i
+.as 11 \v'20u'\*(12\v'-20u'
+.ds 12 "y
+.ds 13 "\f12\fP
+.as 12 \v'20u'\*(13\v'-20u'
+.ds 13 "\f11\fP
+.ds 14 "\f12\fP
+.nr 11 \w'\s6\*(11'
+.nr 15 \n(11
+.nr 12 \w'\s6\*(12'
+.if \n(12>\n(15 .nr 15 \n(12
+.ds 15 \v'40u'\h'0u*\n(15u'\
+\v'-20u'\*(12\h'-\n(12u'\v'0-60u'\
+\v'-20u'\*(11\h'-\n(11u'\v'0-60u'\
+\v'120u'\h'1u*\n(15u'
+.nr 13 \w'\s6\*(13'
+.nr 11 \n(13
+.nr 14 \w'\s6\*(14'
+.if \n(14>\n(11 .nr 11 \n(14
+.ds 11 \v'40u'\h'0u*\n(11u'\
+\v'-20u'\h'\n(11u-\n(14u/2u'\*(14\h'-\n(11u-\n(14u/2u'\v'0-60u'\
+\v'-20u'\h'\n(11u-\n(13u/2u'\*(13\h'-\n(11u-\n(13u/2u'\v'0-60u'\
+\v'120u'\h'1u*\n(11u'
+.ds 12 "\*(15\ \ \*(11
+.ds 12 \x'0'\x'0-40u'\f1\s10\*(12\s\n(99\f\n(98\x'20u'
+.nr 12 \w'\*(12'
+.nr MK 0
+.if 140>\n(.v .ne 140u
+.rn 12 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+.PP
+Ausserdem gibt es
+.B rcol
+fuer rechtsbuendige Spalten.
+.PP
+.vs 12p
+Unterscheidende Zeichen werden mit
+.BR dot ,
+.BR dotdot ,
+.BR hat ,
+.BR tilde ,
+.BR bar ,
+.BR vec ,
+.BR dyad ,
+und
+.BR under 
+erzeugt.
+.I "x dot = f(t) bar"
+bedeutet:
+.sp
+.RS
+.\" eqn: x dot = f(t) bar
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "x
+.nr 11 \w'\s10\*(11'
+.nr 10 0u
+.ds 12 \v'-1'.\v'1'
+.nr 12 \w'\s10\*(12'
+.as 11 \h'-\n(11u-\n(12u/2u'\v'0-\n(10u'\*(12\v'\n(10u'\h'-\n(12u+\n(11u/2u'
+.ds 12 "\(eq
+.as 11 "\|\*(12
+.ds 12 "\^f\|\|\f1(\fPt\|\f1)\fP
+.nr 12 \w'\s10\*(12'
+.nr 10 0u
+.ds 13 \v'-1'\l'\n(12u'\v'1'
+.nr 13 \w'\s10\*(13'
+.as 12 \h'-\n(12u-\n(13u/2u'\v'0-\n(10u'\*(13\v'\n(10u'\h'-\n(13u+\n(12u/2u'
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 60>\n(.v .ne 60u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+.I "y dotdot bar ~=~ n under"
+bedeutet:
+.sp
+.RS
+.\" eqn: y dotdot bar ~=~ n under 
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "y
+.nr 11 \w'\s10\*(11'
+.nr 10 0u
+.ds 12 \v'-1'..\v'1'
+.nr 12 \w'\s10\*(12'
+.as 11 \h'-\n(11u-\n(12u/2u'\v'0-\n(10u'\*(12\v'\n(10u'\h'-\n(12u+\n(11u/2u'
+.nr 11 \w'\s10\*(11'
+.nr 10 20u
+.ds 12 \v'-1'\l'\n(11u'\v'1'
+.nr 12 \w'\s10\*(12'
+.as 11 \h'-\n(11u-\n(12u/2u'\v'0-\n(10u'\*(12\v'\n(10u'\h'-\n(12u+\n(11u/2u'
+.ds 12 "\ 
+.as 11 "\|\*(12
+.ds 12 "\(eq
+.as 11 "\|\*(12
+.ds 12 "\ 
+.as 11 "\|\*(12
+.ds 12 "n
+.nr 12 \w'\s10\*(12'
+.nr 10 0u
+.ds 13 \l'\n(12u'
+.nr 13 \w'\s10\*(13'
+.as 12 \h'-\n(12u-\n(13u/2u'\v'0-\n(10u'\*(13\v'\n(10u'\h'-\n(13u+\n(12u/2u'
+.as 11 "\|\*(12
+.ds 11 \x'0'\x'0-20u'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 80>\n(.v .ne 80u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+und
+.I "x vec ~=~ y dyad"
+bedeutet:
+.sp
+.RS
+.\" eqn: x vec ~=~ y dyad 
+.EQ
+.nr 99 \n(.s
+.nr 98 \n(.f
+.ps 10
+.ft 1
+.ds 11 "x
+.nr 11 \w'\s10\*(11'
+.nr 10 0u
+.ds 12 \v'-1'_\v'1'
+.nr 12 \w'\s10\*(12'
+.as 11 \h'-\n(11u-\n(12u/2u'\v'0-\n(10u'\*(12\v'\n(10u'\h'-\n(12u+\n(11u/2u'
+.ds 12 "\ 
+.as 11 "\|\*(12
+.ds 12 "\(eq
+.as 11 "\|\*(12
+.ds 12 "\ 
+.as 11 "\|\*(12
+.ds 12 "y
+.nr 12 \w'\s10\*(12'
+.nr 10 0u
+.ds 13 \v'-1'_\v'1'
+.nr 13 \w'\s10\*(13'
+.as 12 \h'-\n(12u-\n(13u/2u'\v'0-\n(10u'\*(13\v'\n(10u'\h'-\n(13u+\n(12u/2u'
+.as 11 "\|\*(12
+.ds 11 \x'0'\f1\s10\*(11\|\s\n(99\f\n(98
+.nr 11 \w'\*(11'
+.nr MK 0
+.if 60>\n(.v .ne 60u
+.rn 11 10
+\*(10
+.ps \n(99
+.ft \n(98
+.EN
+.RE
+.sp
+.PP
+Die Groessen und die Schriftart koennen mit
+.B size
+.I n
+oder
+.B size
+.BI \(+- n,
+.BR roman ,
+.BR italic ,
+.BR bold ,
+und
+.BR font
+.I n
+geaendert werden.
+Die Groesse und die Schriftart koennen in einem Dokument global
+ueber
+.B gsize
+.I n
+und
+.B gfont
+.IR n ,
+oder durch die Kommandozeilenargumente
+.BI \-s n
+und
+.BI \-f n
+geaendert werden.
+.PP
+Normale tiefgestellte und hochgestellte Indizes werden durch drei
+Punktgroessen von der vorherigen Groesse reduziert;
+dies kann durch das Kommandozeilenargument
+.BI \-p n
+veraendert werden.
+.PP
+Aufeinanderfolgende Display-Argumente koennen eine Linie bilden.
+Dazu ist
+.B mark
+vor dem gewuenschten Punkt in die erste Gleichung zu platzieren;
+.B lineup
+ist an der der Stelle einzufuegen,
+die vertikal eine Linie in aufeinanderfolgenden
+Gleichungen bilden soll.
+.PP
+Kurzschriften koennen definiert oder existierende Schluesselwoerter
+koennen durch
+.BI define 
+neu definiert werden:
+.I "define thing % replacement %"
+definiert einen neuen Ausdruck
+.IR thing ,
+der immer durch
+.I replacement
+ersetzt wird, wenn er auftritt.
+Das
+.I %
+kann jedes Zeichen sein, das nicht in
+.I replacement
+auftritt.
+.PP
+Schluesselwoerter, wie
+.I sum
+( Summe )
+.I int
+( Integral )
+.I inf
+( unendlich )
+und Kurzschriften, wie
+.I >=
+( groesser )
+.I \->
+( -> ),
+und
+.I !=
+( ungleich )
+werden erkannt.
+.EN
+Griechische Buchstaben werden im erforderlichen Fall wie
+.I alpha
+oder
+.I GAMMA
+geschrieben.
+Mathematische Begriffe wie sin, cos, log werden automatisch in Roman
+gesetzt.
+.IR Troff (1)
+4-Zeichen-Escapes, wie \e(bs
+koennen ueberall verwendet werden.
+Zeichenketten in Anfuehrungszeichen "..." werden unbehandelt durchgelassen;
+dies erlaubt die Verwendung von Schluesselwoertern als Text, und kann
+zur Kommunikation mit
+.I troff
+verwendet werden.
+.SH SIEHE AUCH
+troff(1), tbl(1), ms(7), eqnchar(7).
+.SH BEKANNTE FEHLER
+.PP
+Um Ziffern, Klammern, usw. fett zu drucken, muessen sie
+gekennzeichnet werden (z.B.
+`bold "12.3").

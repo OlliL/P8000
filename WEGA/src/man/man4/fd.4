@@ -1,0 +1,87 @@
+.TH FD 4 WEGA
+.\" Version 1.3
+.ad
+.fi
+.SH NAME
+fd - 5.25" und 8" Floppy-Disk-Treiber
+.SH BESCHREIBUNG
+Der Treiber
+.B fd
+liefert das Interface zu den beiden 5.25" Floppy-Disk-Laufwerken
+im P8000-Grundgeraet und zu maximal 2 Laufwerken in einem
+separatem Floppy-Disk-Beisteller (5.25" oder 8").
+Er unterstuetzt mehrere unterschiedliche Floppyformate.
+Die folgende Tabelle gibt die Zuordnung zwischen Treibernamen, Format-Nummer
+(obere 4 Bits der Minor-Nummer)
+und Floppyformat an.
+.nf
+
+fdx       (6) - entspricht fdx96ds9 (Standardformat)
+fdx96ds9  (6) - 80 Spuren, double side,  9 Sekt. a 512 Byte
+fdx96ss9 (10) - 80 Spuren, single side,  9 Sekt. a 512 Byte
+fdx48ds9  (8) - 40 Spuren, double side,  9 Sekt. a 512 Byte
+fdx48ss9  (9) - 40 Spuren, single side,  9 Sekt. a 512 Byte
+fdx96ds16 (5) - 80 Spuren, double side, 16 Sekt. a 256 Byte
+fdx48ds16 (2) - 40 Spuren, double side, 16 Sekt. a 256 Byte
+fdx48ss16 (3) - 40 Spuren, single side, 16 Sekt. a 256 Byte
+fdx96ds5  (7) - 80 Spuren, double side,  5 Sekt. a 1024 Byte
+                (nur Raw-Interface moeglich, rfd..)
+fdx48ds5  (4) - 40 Spuren, double side,  5 Sekt. a 1024 Byte
+                (nur Raw-Interface moeglich, rfd..)
+fdx48ss26 (1) - 77 Spuren, single side, 26 Sekt. a 128 Byte
+                (8" Floppy-Disk-Beisteller, nur LW 2 und 3!)
+
+(x = Laufwerksnummer, 0 - 3)
+
+.fi
+Standardmaessig sind die Geraetetreiber fuer die eingebauten
+Laufwerke (0 und 1) und die Floppyformate 2 bis 10 installiert.
+.br
+Bei Einbindung eines Floppy-Disk-Beistellers sind die
+entsprechenden Geraetetreiber mit dem Kommando mknod(M) einzurichten.
+Die Major-Device-Nummer muss den Wert 1 erhalten.
+In der Minor-Device-Nummer sind in den oberen 4 Bits die
+Formatnummer und in den unteren 2 Bits die Laufwerksnummer
+abgelegt, z.B.
+.nf
+
+	Laufwerk 2, Typ 6:  mknod fd296ds9 b 1 98
+	Laufwerk 3, Typ 1:  mknod fd348ss26 b 1 19
+
+.fi
+Beim Zugriff auf die Floppy-Disk-Laufwerke ueber die blockorientierten
+Geraetedateien
+.B /dev/fdx
+wird der normale Puffermechanismus des Systems benutzt.
+.PP
+Das Raw-Interface gestattet die direkte Uebertragung zwischen der
+Floppy-Disk und dem Lese- oder Schreibpuffer des Nutzers.
+Soll eine grosse Anzahl von Bytes uebertragen werden,
+ist die Raw-Ein-/Ausgabe
+erheblich effektiver. Die Namen der Raw-Geraetedateien entsprechen
+denen der Block-Geraetedateien beginnen jedoch mit den Buchstaben
+.B rfd...
+.PP
+Dem Treiber
+.B fd
+ist die Major-Device-Nummer 1 fest zugeordnet.
+Die oberen 4 Bits der Minor-Device-Nummern der Treiber
+enthalten Angaben zum Floppyformat (Formatnummer)
+und duerfen nicht veraendert werden! Die unteren 2 Bits beinhalten die
+Laufwerknummer.
+.SH DATEIEN
+/dev/fd*  /dev/rfd*
+.SH SIEHE AUCH
+format(1), verify(1), copydisk(1), tar(1), dump(1), restor(1)
+.SH EINSCHRAENKUNGEN
+Die Benutzung der Floppy-Disk-Treiber
+ist nur moeglich, wenn das System ueber die WEGA-Startdiskette
+gestartet worden ist. Bei Start ueber das U880-Monitorkommando 'X'
+ist die Floppyarbeit verriegelt.
+.PP
+Alle Systemkommandos, die die Treiber
+.B fd
+nutzen, wurden so gestaltet, dass sie nur von der Systemkonsole
+abgearbeitet werden koennen. Dadurch wird ein sonst notwendiger
+Verriegelungsmechanismus vermieden. Ausserdem ist abgesichert,
+dass der Nutzer sich neben den Floppy-Disk-Laufwerken befindet.

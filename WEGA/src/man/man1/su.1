@@ -1,0 +1,53 @@
+.TH SU 1 WEGA
+.\" @[$]su.1	1.2
+.ad
+.fi
+.SH NAME
+su  \- Zeitweiliges Ersetzen der Nutzerumgebung
+.SH SYNTAX
+.B su
+[
+.B \-
+] [ \fIname\fR [ \fIarg\fR .\|.\|. ] ]
+.SH BESCHREIBUNG
+.B Su
+ersetzt die aktuelle Nutzerumgebung durch die Umgebung des mit
+.I name
+angegebenen Nutzers (Standard fuer
+.IR name :
+.BR wega ).
+Es wird das Passwort des durch
+.I name
+angegebenen Nutzers verlangt (nicht, wenn der aktuelle Nutzer
+WEGA ist).
+.B Su
+ruft die Standardshell des Nutzers auf (\fIpasswd\fR (5)),
+ohne das aktuelle Directory oder die Umgebung (\fIenviron\fR (5)) geaendert
+werden.
+Die neue Nutzer-ID bleibt solange in Kraft, wie die Shell existiert.
+Ueber CTRL-d wird
+.B su
+(d.h. die Shell) verlassen.
+.PP
+Alle zusaetzlichen Argumente werden an Shell weitergegeben.
+Werden zusaetzliche Argumente uebergeben, wird immer
+.B /bin/sh
+benutzt.
+Werden keine zusaetzlichen Argumente uebergeben, benutzt
+.B su\^
+das in der Passwort-Datei bezeichnete Shell.
+.PP
+Wird in die Umgebung des Superusers gewechselt,
+wird die Shell-Variable $PATH wie folgt gesetzt:
+.IP
+$PATH = /bin:/etc:/usr/bin .
+.sp
+.SH OPTIONEN
+.TP
+.B \-
+Die Umgebung
+wird so veraendert, als ob der Nutzer 
+tatsaechlich noch einmal ein Login ausfuehren wuerde.
+Das gilt auch fuer die Shell-Variable $PATH fuer den Superuser!
+.SH SIEHE AUCH
+csh(1), sh(1) env(1), login(1), environ(5).

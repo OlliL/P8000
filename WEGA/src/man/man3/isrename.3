@@ -1,0 +1,32 @@
+.TH ISRENAME 3 
+.\" @[$]isrename.3      1.2
+.ad
+.fi
+.SH NAME
+isrename \- Umbenennen einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisrename\fI(oldname, newname)\fR
+\fBchar \fI*oldname;\fR
+\fBchar \fI*newname;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isrename
+aendert den Namen der Datei von dem im 
+.IR oldname \-Parameter
+angegebenen auf den im
+.IR newname \-Parameter
+angegebenen Namen.
+Die Parameter muessen Pointer auf mit einem Nullbyte
+abgeschlossene Zeichenketten sein.
+.SH EINSCHRAENKUNGEN
+Namen fuer C-ISAM-Dateien duerfen nicht laenger als 10 Zeichen sein.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

@@ -1,0 +1,87 @@
+.TH ATOF 3 
+.\" @[$]atof.3  1.2
+.ad
+.fi
+.SH NAME
+atof, atofs, atofd, _atof, atoi, atol \- Konvertierung ASCII in Zahlen
+.SH SYNTAX
+.nf
+\fBfloat atofs\fR(\fInptr\fR)
+\fBchar *\fInptr;
+.sp
+\fBdouble atof\fR(\fInptr\fR)
+\fBchar *\fInptr;
+.sp
+\fBdouble atofd\fR(\fInptr\fR)
+\fBchar *\fInptr;
+.sp
+\fB_atof\fR(\fInptr\fR)
+\fBchar *\fInptr;
+.sp
+\fBint atoi\fR(\fInptr\fR)
+\fBchar *\fInptr;
+.sp
+\fBlong atol\fR(\fInptr\fR);
+\fBchar *\fInptr;\fR
+.fi
+.SH BESCHREIBUNG
+Diese Funktionen konvertieren eine  durch
+.I nptr
+bezeichnete Zeichenkette
+in eine Gleitkommadarstellung bzw. in einen Integerwert (int, long).
+Die Zeichenkette wird durch das erste nicht zu einer Zahlendarstellung
+gehoerende Zeichen beendet.
+Folgende Konventionen gelten fuer die Rueckgabewerte:
+.RS
+.BR atofs " :  "
+Wert in rr2.
+.br
+.B atofd
+und
+.BR atof " :  "
+Wert in rq4.
+.br
+.BR _atof " :  "
+Wert in f0.
+.br
+.BR atoi "  :  "
+Integerwert in r2.
+.br
+.BR atol "  :  "
+Long Integerwert in rr2.
+.RE
+.PP
+Die verschiedenen Formen von
+.B atof
+erkennen eine optionale Folge von Tabulatoren und
+Leerzeichen, ein optionales Vorzeichen und eine dann
+folgende numerische Zeichenkette.
+Bei endlichen Zahlen besteht die numerische Zeichenkette aus einer
+aus Ziffern bestehenden Zeichenkette, einem optionalem Dezimalpunkt,
+einem aus den Buchstaben e oder E bestehenden optionalen Exponenten
+gefolgt von einem optionalen Vorzeichen und einem Integerwert.
+.PP
+Eine mit dem Buchstaben I beginnende numerische Zeichenkette
+bedeutet plus/minus Unendlich.
+Eine NAN-Zeichenkette (Not-A-Number) hat die Form
+"NAN(xxxxxx)."
+Die Zeichen x stehen fuer hexadezimale Ziffern, die auf die 24 fuehrenden
+signifikanten Bits von NAN abgebildet werden.
+.B Atoi
+und
+.B atol
+erkennen eine optionale Zeichenkette von Tabulatoren und 
+Leerzeichen, dann ein optionales Vorzeichen und dann eine aus Ziffern
+bestehende Zeichenkette.
+.SH SIEHE AUCH
+scanf(3).
+.SH EINSCHRAENKUNGEN
+Alle Alias muessten eigentlich in eine einzelne Routine (hier als
+.B atof
+bezeichnet) fallen, die einen erweiterten Wert in f0 zurueckgibt.
+Das ist jedoch nicht der Fall.
+Ausserdem sollte eine Variante von
+.B atof
+erstellt werden, um die
+Anerkennung von Gleitkommazeichenketten
+zu uebernehmen, die gegenwaertig anderen Parsern ueberlassen ist.

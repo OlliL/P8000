@@ -1,0 +1,61 @@
+.TH IF 1C WEGA
+.\"@[$]if.1C	1.2
+.ad
+.fi
+.SH NAME
+if \- C-Shell-Steueranweisung fuer Verzweigungen
+.SH SYNTAX
+\fBif \fI( expression.1 ) \fBthen
+.in +5m
+\fIcommand.1\fR
+.in -5m
+\fBelse if \fI (expression.2)\fB then
+.in +5m
+\fIcommand.2\fR
+.in -5m
+\fBelse\fR
+.in +5m
+\fIcommand.3\fR
+.in -5m
+\fBendif\fR
+.SH BESCHREIBUNG
+.PP
+Ist der angegebene Ausdruck
+\fIexpression.1\fR wahr, werden die folgenden Kommandos bis
+zum ersten
+.B else
+ausgefuehrt. Ist der Ausdruck
+.I expression.1
+falsch und ist der Ausdruck
+\fIexpression.2\fR wahr, werden die Kommandos bis zum zweiten
+.B else
+ausgefuehrt.
+Die Kommandos des letzten
+.B else
+Zweiges werden ausgefuehrt, wenn keiner der angegebenen Ausdruecke
+wahr ist.
+.PP
+Jede beliebige Anzahl von
+.B else-if
+Anweisungspaaren ist dabei moeglich.
+Dabei wird immer nur ein einziges
+.B endif
+benoetigt.
+Der
+.B else
+Zweig der Anweisung kann weggelassen werden.
+Wird die Anweisung vom Terminal eingegeben, muessen die Anweisungsteile
+.B else
+und
+.B endif
+immer am Anfang einer Eingabezeile stehen.
+Das Kommando
+.I command
+kann ein einfaches Kommando,
+eine Kommandoliste oder eine Kommandoliste
+in runden Klammern sein.
+.SH SIEHE AUCH
+foreach(1C),
+while(1C).
+.br
+"Die C-Shell" im Dokumentationsband WEGA-Dienstprogramme

@@ -1,0 +1,179 @@
+.TH SORT 1 WEGA
+.\" @[$]sort.1	1.2
+.ad
+.fi
+.SH NAME
+sort \- Sortieren und/oder Mischen von Dateien
+.SH SYNTAX
+.B sort
+.br
+	[ \fB\-bcdfimnrtu\fR ]
+.br
+	[ \fB+\fIpos1 \fR [ \fB\-\fIpos2 \fR] ]
+.br
+	[ \fB\-o \fIname\fR ]
+.br
+	[ \fB\-T \fIdirectory\fR ]
+.br
+[ \fIfile\fR ] ...
+.SH BESCHREIBUNG
+.I Sort
+sortiert die Zeilen aller genannten Dateien (Standard: stdin) und
+gibt das Ergebnis auf der Standardausgabe aus.
+Der Name Minus steht fuer Standardeingabe.
+.PP
+Der Standard-Sortierschluessel ist eine vollstaendige Zeile.
+Standardmaessig erfolgt die Sortierung
+byteweise in
+lexikographischer Ordnung in maschineninterner Sortierfolge.
+.SH OPTIONEN
+Die Sortierung kann durch eine oder mehrere der folgenden
+Optionen beeinflusst werden:
+.TP 5
+.B \- b
+Bei Feldvergleichen werden vorangestellte Leerzeichen und Tabulatoren
+ignoriert.
+.TP 5
+.B \-c
+Es wird ueberprueft, ob die Eingabedatei entsprechend
+den Ordnungsvorschriften sortiert ist.
+Ist die Datei nicht vorsortiert, erfolgt keine Ausgabe.
+.TP 5
+.B  \-d
+Woerterbuch-Ordnung: nur Buchstaben, Ziffern und Leerzeichen
+sind bei Vergleichen signifikant.
+.TP 5
+.B  \-f
+Grossbuchstaben werden in Kleinbuchstaben umgewandelt.
+.TP 5
+.B  \-i
+Bei nichtnumerischen Vergleichen werden Zeichen ignoriert, die
+ausserhalb des ASCII-Bereiches 0x20-0x7f liegen.
+.TP 5
+.B  \-m
+Es wird nur gemischt, die Eingabedateien sind bereits sortiert.
+.TP 5
+.B  \-n
+Die Zeilen werden nach
+fuehrenden numerischen Zeichenketten,
+die aus optionellen Leerzeichen und Minuszeichen
+und aus null oder mehr Ziffern mit optionellem
+Dezimalpunkt bestehen, arithmetisch sortiert.
+Option
+.B \-n
+enthaelt implizit Option
+.BR \-b .
+.TP 5
+.BI \-o \ name
+Die Ausgabe wird in die Datei
+.I name
+geschrieben (Standard: stdout).
+Diese Datei kann mit einer der Eingabedateien uebereinstimmen.
+.TP 5
+.B  \-r
+Umgekehrte Sortierreihenfolge.
+.TP 5
+.BI \-t x
+Zeichen \fIx\fR ist das Trennzeichen fuer die Sortierfelder
+(Standard: Leerzeichen oder Tabulatoren).
+.TP 5
+.BI \-T \ dir
+Angabe des Directorys, in dem
+temporaere Dateien angelegt werden.
+.TP 5
+.B  \-u
+Zeilen mit gleichen Sortierfeldern werden nur einmal ausgegeben.
+Ignorierte Bytes und Bytes ausserhalb von Schluesseln
+werden nicht mit verglichen.
+.PP
+Die Notation
+.BI + "pos1 " "\-\fIpos2"
+beschraenkt einen Sortierschluessel auf ein Feld, das in
+.I pos1
+beginnt und bei
+.IR pos2 
+endet.
+.I pos1
+und
+.I pos2
+haben jeweils die Form
+.IB m . n\fR,
+der wahlweise ein oder mehrere Flags
+.B bdfinr
+folgen koennen. Dabei gilt:
+.TP 3
+.I m
+Anzahl der ab Zeilenanfang zu uebergehenden Felder.
+.PD 0
+.TP
+.I n
+Anzahl der ab Feldbeginn zu uebergehenden Zeichen
+(Standard: 0).
+.PD
+.PP
+Hier angegebene Flags ueberschreiben fuer diesen Schluessel
+alle global angegebenen Sortierkriterien.
+Ist die
+.B \-b
+Option wirksam, wird
+.I n
+vom ersten Zeichen im Feld an gezaehlt, das kein Leerzeichen oder Tabulator ist.
+.B \-b
+gilt unabhaengig von
+.IR pos2 .
+Standard fuer
+.BI \- pos2
+ist das Zeilenende.
+.PP
+Sind mehrere Sortierschluessel vorhanden, werden nachfolgende
+Schluessel nur verglichen, wenn vorangegangene Schluessel
+gleich waren.
+Sind nach Auswertung aller Sortierschluessel noch gleiche
+Zeilen vorhanden,
+wird nach signifikanten Bytes geordnet.
+.SH BEISPIELE
+.PP
+Alle in einer Wortliste enthaltenen Woerter sind
+in alphabetischer Reihenfolge auszugeben, wobei jedes Wort
+nur einmal auftreten soll.
+Grossgeschriebene Woerter unterscheiden sich dabei von kleingeschriebenen.
+.sp
+.ti +8
+sort \-u +0f +0 list
+.PP
+Die Passwort-Datei
+.RB ( passwd (5))
+wird nach Nutzer-ID-Nummern sortiert (drittes durch
+Doppelpunkt getrenntes Feld in dieser Datei) ausgegeben.
+.sp
+.ti +8
+sort \-t: +2n /etc/passwd
+.PP
+In einer bereits sortierten Datei mit Eintragungen der Form
+Monat-Tag soll fuer jeden Monat die Stelle gesucht
+und ausgegeben 
+werden, an der dieser erstmalig auftritt. 
+Die Optionen
+.B \-um
+waehlen in Verbindung mit nur einer Eingabedatei aus einer
+Menge gleicher Zeilen nur die erste aus.
+.sp
+.ti +8
+sort \-um +0 \-1 dates
+.sp 
+.SH DATEIEN
+/usr/tmp/stm*, /tmp/*    temporaere Dateien
+.SH SIEHE AUCH
+uniq(1),
+comm(1),
+rev(1),
+join(1).
+.SH DIAGNOSTIK
+Bei einem Exitstatus ungleich Null
+(unterschiedliche Fehlerbedingungen) werden Meldungen ausgegeben.
+Wurde unter Verwendung der Option
+.BR \-c
+Sortierfehler entdeckt, werden sie gemeldet.
+.sp 
+.SH EINSCHRAENKUNGEN
+Sehr lange Zeilen (mehr als 512 Zeilen) werden ohne Meldung abgeschnitten.

@@ -1,0 +1,57 @@
+.TH SWITCH 1C WEGA
+.\"@[$]switch.1C	1.2
+.ad
+.SH NAME
+switch \- C-Shell Steueranweisung fuer Entscheidungsfindung
+.SH SYNTAX
+\fBswitch \fI(stringargument)\fR
+.sp
+	\fBcase \fIstringmuster1:\fR
+.sp
+		\fIKommandoliste\fR
+.sp
+	\fBbreaksw\fR
+.sp
+	\fBcase \fIstringmuster2:\fR
+.sp
+		\fIKommandoliste\fR
+.sp
+	\fBbreaksw\fR
+.sp
+	\fBdefault\fR
+.sp
+		\fIKommandoliste\fR
+.sp
+\fBendsw\fR
+.SH BESCHREIBUNG
+.PP
+Jedes \fBcase \fIstringmuster\fR wird nacheinander mit dem spezifizierten
+\fIstringargument\fR verglichen.
+Wenn keines der \fIstringmuster\fR uebereinstimmt,
+bevor ein \fBdefault \fIstringmuster\fR
+gefunden ist, beginnt die Ausfuehrung nach dem \fBdefault \fIstringmuster.\fR
+Wenn kein Muster uebereinstimmt und es keine Standardvorgabe gibt, wird
+die Abarbeitung nach \fBendsw\fR fortgesetzt.
+.PP
+\fBSwitch\fR kann guenstig im Zusammenhang mit einer
+\fBforeach\fR oder \fBwhile\fR Anweisung benutzt werden.
+.PP
+Die Metazeichen der Datei "\ \fB*, ?, [ \fRund\fB ]\fR\ " koennen
+in den \fBcase \fIstringmuster\fR benutzt werden.
+Jedes \fBcase \fIstringmuster\fR und das \fBdefault \fIstringmuster\fR
+muessen am Beginn einer Zeile erscheinen.
+Das Kommando \fBbreaksw\fR
+bewirkt die Fortsetzung der Abarbeitung nach \fBendsw\fR.
+Im Allgemeinen gelten die gleichen Regeln wie bei der switch-Anweisung in
+der C-Sprache.
+.SH SIEHE AUCH
+break(1C),
+breaksw(1C),
+continue(1C),
+exit(1C),
+foreach(1C),
+if(1C),
+logout(1C),
+while(1C).
+.br
+"Die C-Shell" in WEGA-Dienstprogramme.

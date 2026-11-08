@@ -1,0 +1,33 @@
+.TH VERIFY 1 WEGA
+.\" @[$]verify	1.4
+.ad
+.fi
+.SH NAME
+verify \- Verifizieren einer Diskette
+.SH SYNTAX
+.B verify
+.I [/dev/rfd...]
+.SH BESCHREIBUNG
+.B Verify
+ueberprueft eine Diskette auf Lesbarkeit aller Spuren bzw. Sektoren.
+Das Diskettenformat wird durch den
+Geraetenamen angegeben. Die Formate sind in
+.BR fd (4)
+beschrieben. Fehlt der Geraetename, wird
+.I /dev/rfd1
+benutzt.
+Das Kommando kann nur von der Systemkonsole ausgefuehrt werden.
+Das Betriebssystem WEGA muss dazu ueber die WEGA-Startdiskette gestartet
+worden sein. Bei Start durch das U880-Monitorkommando 'X' ist die
+Floppyarbeit verriegelt.
+wird.
+.SH SIEHE AUCH
+format(1),
+copydisk(1),
+fd.4.
+.SH DIAGNOSTIK
+.TP
+"unable to work with floppy"
+wird ausgegeben,
+wenn das Kommando nicht von der Systemkonsole eingegeben wurde,
+oder wenn das System ueber 'X' gestartet wurde.

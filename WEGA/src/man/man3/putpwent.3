@@ -1,0 +1,43 @@
+.TH PUTPWENT 3 WEGA
+.\" @[$]putpwent.3      1.2
+.fi
+.ad
+.SH NAME
+putpwent \- Schreiben eines Passwortdateieintrags
+.SH SYNTAX
+.nf
+\fB#include <pwd.h>
+.PP
+\fBint putpwent \fI(p, f)
+.br
+\fBstruct \fIpasswd \(**p;
+.br
+\fBFILE \fI\(**f;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B putpwent\^
+stellt die Umkehrung der Funktion
+.BR getpwent (3)
+dar.
+Ist ein Pointer auf eine Struktur
+.B passwd
+gegeben,
+die durch eine der Funktionen
+.BR getpwent (3),
+.BR getpwuid (3)
+oder
+.BR getpwnam (3)
+angelegt wurde, schreibt
+.B putpwent\^
+eine Zeile,
+die dem Format von
+.BR /etc/passwd
+entspricht,
+in den durch
+.I f
+angegebenen Datenstrom.
+.SH DIAGNOSTIK
+.B Putpwent\^
+gibt einen Wert ungleich Null zurueck, wenn waehrend der Operation
+ein Fehler aufgetreten ist. Sonst wird der Wert Null zurueckgegeben.

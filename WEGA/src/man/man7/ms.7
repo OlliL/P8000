@@ -1,0 +1,237 @@
+.TH MS 7 WEGA
+.\" @[$]ms.7    1.2
+.ad
+.fi
+.SH NAME
+ms \- Makropaket zur Textformatierung mit nroff/troff
+.SH SYNTAX
+.B "nroff \-ms"
+.I "[ options ] file"
+.br
+.B "troff \-ms"
+.I "[ options ] file"
+.SH BESCHREIBUNG
+Dieses Paket enthaelt Makrodefinitionen zur Formatierung von
+technischen Dokumenten oder anderen
+Manuskripten verschiedener Formate mit Hilfe der Programme
+.B nroff (1)
+oder
+.B troff (1).
+.PP
+Die Ausgabe der Preprozessoren
+.BR eqn (1),
+.BR neqn (1)
+und
+.BR tbl (1)
+fuer Gleichungen und Tabellen wird als Eingabe akzeptiert.
+.PP
+Zur Erzeugung einer zweispaltigen Ausgabe an einem Terminal
+ist die Ausgabe durch das Programm
+.BR  col (1)
+zu filtern.
+.PP
+Die Makros des Pakets werden in diesem Eintrag erlaeutert.
+Die ordnungsgemaesse Funktion einiger
+.BR nroff \-
+und
+.BR troff \-Anweisungen
+sind im Zusammenhang mit diesem Paket nicht gewaehrleistet.
+Die folgenden Anweisungen
+koennen jedoch nach dem ersten Makroaufruf \&.PP verwendet werden:
+.RS
+.nf
+ .bp    Beginn einer neuen Seite.
+ .br    Unterbrechung der Ausgabeformatierung.
+ .sp n  Einfuegen von n Leerzeilen.
+ .ls n  Zeilenabstand n-zeilig.
+ .na    Rechter Rand wird nicht ausgerichtet.
+.RE
+.fi
+.SH MAKROS
+Makro   Vorein- Break Erklaerung
+.br
+        stellg.
+.br
+------------------------------------------------------------------------
+.PD 0
+.IP ".1C       ja     ja " 22
+Einspaltige Ausgabe auf einer neuen Seite.
+.IP ".2C      nein    ja " 22
+Zweispaltige Ausgabe.
+.IP ".AB      nein    ja " 22
+Beginn eines Auszugs (abstract).
+.IP ".AE       -      ja " 22
+Ende eines Auszugs.
+.IP ".AI      nein    ja " 22
+Institution des Autors folgt.
+.IP ".AT      nein    ja " 22
+Es wird die Zeichenkette "Attached" ausgegeben. Der folgende Text
+wird nicht mehr aufgefuellt.
+.IP ".AU \fIx \y\fR  nein    ja " 22
+Der Name des Autors folgt.
+.IP ".B \fIx\fR     nein    ja " 22
+Das Argument \fIx\fR wird fett gedruckt.
+Ist kein Argument angegeben, wird auf Fettdruck umgeschaltet.
+.IP ".B1      nein    ja " 22
+Beginn eines Textes, der eingerahmt werden soll.
+.IP ".B2      nein    ja " 22
+Ende des eingerahmten Textes.
+Text und Rahmen werden ausgegeben.
+.IP ".BT      Datum  nein" 22
+Fusszeile, die am Seitenende automatisch
+ausgegeben wird.
+Sie kann neu festgelegt werden.
+.IP ".BX \fIx\fR    nein   nein" 22
+Das Argument
+.I x
+wird in eingerahmt ausgegeben.
+.IP ".CT      nein    ja " 22
+Es wird die Zeichenkette "Copies in" ausgegeben.
+Der Folgende Text wird nicht aufgefuellt.
+.IP ".DA \fIx\fR    nroff   ja " 22
+Das in der Fusszeile befindliche Datum wird auf
+.I x
+eingestellt (Standard: aktuelles Datum).
+.IP ".DE       -      ja " 22
+Ende eines Textblocks.
+Das Makro .KE wird benutzt.
+.IP ".DS \fIx\fR    nein    ja " 22
+Beginn eines Textblocks, der unveraendert ausgegeben wird.
+Werte fuer
+.I x
+sind:
+.RS
+.IP x=I 5 
+Textblock wird eingerueckt (Standard).
+.IP x=L 5 
+Textblock wird linksbuendig ausgegeben.
+.IP x=C 5 
+Textblock wird zentriert.
+.IP x=B 5 
+Textblock
+beginnt linksbuendig und
+wird dann zentriert.
+.PP
+Das Makro .KS wird benutzt.
+.RE
+.IP ".EN       -      ja " 22
+Nach Gleichungen, die durch
+.B eqn
+oder
+.B neqn
+erzeugt wurden, wird eine Leerzeile eingefuegt.
+.IP ".EQ \fIx y\fR  nein    ja " 22
+Dieses Makro wird vor einer Gleichung benutzt.
+Der eingelesene Text wird ausgegeben und eine Leerzeile eingefuegt.
+Die Gleichungsnummer ist
+.IR y .
+Fuer das Argument \Ix\fR gilt:
+.RS
+.IP x=I 5 
+Gleichung wird eingerueckt (Standard).
+.IP x=L 5 
+Gleichung wird linksbuendig ausgegeben.
+.IP x=C 5 
+Gleichung wird zentriert.
+.RE
+.IP ".FE       -      ja " 22
+Ende einer Fussnote.
+.IP ".FS      nein   nein" 22
+Beginn einer Fussnote.
+Die Fussnote wird am Seitenende ausgegeben.
+.IP ".I \fIx\fR     nein   nein" 22
+Das Argument
+.I x
+wird kursiv gedruckt.
+Ist kein Argument angegeben, wird auf Kursivdruck umgeschaltet.
+.IP ".IP \fIx y\fR  nein    ja " 22
+Beginn eines eingerueckten Absatzes mit dem Vorpsann
+.IR x .
+Das Argument
+.I y
+gibt die Einrueckung an (Standard: 5).
+.IP ".KE       -      ja " 22
+Ende des zusammenhaengenden Textes.
+Ist auf der aktuellen Seite nicht genuegend Platz fuer den
+zusammenhaengenden Text vorhanden, wird er auf der naechsten Seite
+ausgegeben.
+.IP ".KF      nein    ja " 22
+Beginn eines zusammenhaengenden Textes, der nach hinten verschoben
+werden kann, falls nicht genuegend Platz auf der aktuellen Seite
+vorhanden ist.
+Die Seite wird dann mit nachfolgendem Text aufgefuellt.
+.IP ".KS      nein    ja " 22
+Beginn eines zusammenhaengenden Textes.
+.IP ".LG      nein   nein" 22
+Verwendung groesserer Buchstaben.
+.IP ".LP       ja     ja " 22
+Beginn eines linksbuendigen Absatzes.
+.IP ".NH \fIx\fR     -      ja " 22
+Es folgt eine Abschnittsueberschrift, die fett gedruckt wird.
+Der Ueberschrift wird eine Abschnittsnummer vorangestellt,
+die automatisch weitergezaehlt wird.
+Das Argument
+.I n
+.RI ( n =1,2,...)
+gibt die Stelle an, die weitergezaehlt werden soll (Standard: 1).
+.IP ".NL       ja    nein" 22
+Buchstaben werden in Normalgroesse ausgegeben.
+.IP ".PP      nein    ja " 22
+Beginn eines Absatzes.
+Die erste Zeile wird eingerueckt.
+.IP ".PT   Seitennr.  - " 22
+Seitentitel.
+Er wird automatisch oben auf der Seite ausgegeben
+und kann neu festgelegt werden.
+.IP ".QE       -      ja " 22
+Ende eines mit den Makros .QP oder .QS begonnenen Absatzes.
+.IP ".QP       -      ja " 22
+Beginn eines einzelnen Absatzes, der links und rechts eingerueckt ist.
+.IP ".QS       -      ja " 22
+Beginn eines Absatzes, der links und rechts eingerueckt ist.
+.IP ".R       nein    ja " 22
+Der folgende Text wird in Normalschrift ausgegeben.
+.IP ".RE       -      ja " 22
+Ende einer relativen Einrueckung.
+.IP ".RP      nein    -  " 22
+Voreingestelltes Deckblattformat.
+Dieses Makro muss als erstes Makro im Text erscheinen.
+.IP ".RS       -      ja " 22
+Beginn einer relativen Einrueckung des Textes.
+Nachfolgende Makros .IP werden von der aktuellen Einrueckung
+an gemessen.
+.IP ".SH       -      ja " 22
+Es folgt eine Abschnittsueberschrift, die fett gedruckt wird.
+.IP ".SM      nein   nein" 22
+Verwendung kleinerer Buchstaben.
+.IP ".TA \fIx\fR... 5...   nein" 22
+Die Tabulatoren werden gesetzt (Standard: 5 10 15 ...).
+.IP ".TE       -      ja " 22
+Ende einer Tabelle.
+.IP ".TH       -      ja " 22
+Ende des Ueberschriftenabschnitts einer Tabelle.
+.IP ".TL      nein    ja " 22
+Es folgt der Titel.
+.IP ".TS \fIx\fR     -      ja " 22
+Beginn einer Tabelle.
+Ist das Argument
+.IR x =H,
+werden die Tabellenueberschriften wiederholt.
+.IP ".UL \fIx\fR     -      ja " 22
+Das Argument
+.I x
+wird unterstrichen (auch in
+.BR troff (1)).
+.PD
+.SH DATEIEN
+/usr/lib/tmac/tmac.s
+.SH SIEHE AUCH
+eqn(1),
+nroff(1),
+troff(1),
+tbl(1).
+.SH EINSCHRAENKUNGEN
+.PP
+Kursivschrift wird vom Programm
+.BR nroff (1)
+immer als Unterstreichung ausgefuehrt.

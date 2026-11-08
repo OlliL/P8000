@@ -1,0 +1,35 @@
+.TH UIMAGE 1 
+.\" @[$]uimage.1	1.2
+.ad
+.fi
+.SH NAME
+uimage \- Umsetzung von Zobj- in a.out-Format
+.SH SYNTAX
+.B uimage file1 [ -o file2 ] [ -v ]
+.SH BESCHREIBUNG
+\fBUimage\fR uebersetzt 
+durch \fBplzcg\fR(1) erzeugte Zobj-Objektdateien in
+Objektdateien im Format
+.BR a.out (5).
+Die Eingabedatei ist im Zobj-Format und der
+voreingestellte Name der Ausgabedatei
+ist
+.BR a.out .
+.PP
+\fBUimage\fR wird automatisch vom 
+plz-Compiler-Treiber \fBplz\fR(1) aufgerufen.
+Dieser verarbeitet nur nichtsegmentierte Zobj-Objektdateien.
+.SH OPTIONEN
+.TP
+.B \-v
+Ausgabe zusaetzlicher Informationen.
+.SH DATEIEN
+/tmp/t*	temporaere Dateien
+.SH SIEHE AUCH
+objdu(1), plzcg(1), plzsys(1), plz(1), a.out(5)
+.SH DIAGNOSTIK.
+Vom Code-Generator
+\fIplzcg\fR(1) erzeugte Dateien muessen fehlerfrei sein.
+.sp
+Fehlerhafte Eingabedateien fuehren zu Fehlern bzgl.
+nichtexistenter oder inkorrekter Zobj-Operationscodes.

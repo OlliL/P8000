@@ -1,0 +1,131 @@
+.TH AR 1 WEGA
+.\" @[$]ar.1	1.2
+.ad
+.fi
+.SH NAME
+ar \- Archiv- und Bibliotheksverwalter
+.SH SYNTAX
+.B ar
+\fIkey\fR [ \fIposname\fR ] afile name ...
+.SH BESCHREIBUNG
+.B Ar
+verwaltet Gruppen von Dateien, die in einer Archivdatei
+zusammengefasst sind.
+Er erzeugt und aktualisiert Bibliotheks\%dateien, die vom Lader
+benutzt werden koennen.
+.SH OPTIONEN
+.PP
+OPTIONEN und KEYS sind ohne Bindestrich einzugeben.
+.TP
+.B c
+Create:
+Normalerweise erzeugt
+.B ar
+das Archiv
+.I afile,
+falls es noch nicht existiert.
+Die
+.B c-
+Option unterdrueckt die Ausschrift
+bei der Erstellung von
+.IR afile .
+.TP
+.B l
+Local:
+Temporaere Dateien werden nicht in der Directory /tmp angelegt,
+sondern im aktuellen Directory.
+.TP
+.B v
+Verbose:
+Die von
+.B ar
+ausgefuehrten Aktionen werden auf der Standardausgabe protokolliert.
+Wird diese Option zusammen mit
+.I t
+benutzt, werden ausfuehrliche Informationen ueber die Dateien
+ausgegeben.
+Wird sie gemeinsam mit
+.I p
+benutzt, wird jeder Datei ein Name vorangestellt.
+.SH KEYS
+Folgende Zeichen sind fuer 
+.I Key
+zulaessig:
+.B dmpqrtx.
+Keys koennen optional zusammen mit einer oder mehreren der Optionen
+.I abciluv
+angegeben werden.
+.I Afile
+ist die Archivdatei.
+.I Name
+sind Dateinamen, die Bestandteil des Archivs sind bzw. werden sollen.
+Folgende
+.I Keys
+koennen angegeben werden:
+.TP
+.B d
+loescht die angegebene Datei aus dem Archiv.
+.TP
+.B m
+Verschiebt die angegebene Datei an das Ende des Archivs.
+Ist ein Positionierzeichen angegeben,
+muss auch das
+.I posname
+Argument spezifiziert sein.
+Es gibt aehnlich wie bei
+.I r
+an, zu welcher Stelle die Datei im Archiv verschoben werden soll.
+.TP
+.B p
+Gibt die angegebenen Dateien des Archivs auf die Standardausgabe aus (auch
+binaere Dateien).
+.TP
+.B q
+"Schnelles Anhaengen" der angegebenen Datei an das Ende des Archivs.
+Optionale Positionierzeichen sind ungueltig.
+Das Kommando prueft nicht, ob die neu hinzuzufuegenden
+Dateien bereits im Archiv enthalten sind.
+.B P
+ist nur sinnvoll, wenn ein grosses Archiv aus
+Einzeldateien aufgebaut werden soll.
+.TP
+.B r
+Ersetzt die angegebenen Dateien im Archiv.
+Wird die Option
+.I u
+gemeinsam mit
+.I r
+benutzt, werden nur die Dateien im Archiv ersetzt,
+die ein juengeres Datum als die im Archiv befindlichen
+Dateien haben.
+Ist eines der optionalen Positionierzeichen
+.I abi
+angegeben, spezifiziert
+.I posname
+die Position im Archiv, an die die angegebenen Dateien
+plaziert werden. Dabei bedeuten:
+.br
+\fIa\fR      Einfuegung nach \fIposname\fR
+.br
+\fIb, i\fR   Einfuegung vor \fIposname\fR
+.br
+Sonst werden neue Dateien an das Ende des Archivs plaziert.
+.TP
+.B t
+Das Inhaltverzeichnis des Archivs wird ausgegeben.
+Wurden keine Namen angegeben, werden alle Dateien des Archivs ausgegeben.
+Sind Namen angegeben, werden nur die bezeichneten Dateien ausgegeben.
+.TP
+.B x
+Es werden Kopien der angegebenen Dateien aus dem Archiv
+im aktuellen Directory angefertigt.
+Sind keine Namen angegeben, werden alle Dateien des Archivs
+herausgeloest.
+Das Archiv bleibt unveraendert.
+.SH DATEIEN
+/tmp/v*	temporaere Dateien
+.SH SIEHE AUCH
+ld(1), ranlib(1), ar(5)
+.SH EINSCHRAENKUNGEN
+Ist eine Datei in der Argumentliste zweimal angegeben,
+erscheint sie auch im Archiv zweimal.

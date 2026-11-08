@@ -1,0 +1,121 @@
+.TH FOPEN 3 WEGA
+.\" @[$]fopen.3	1.2
+.ad
+.fi
+.SH NAME
+fopen, freopen, fdopen \- Eroeffnen eines Stream
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>\fR
+.PP
+\fBFILE \fR*\fBfopen\fR(\fIfilename, type\fR)
+\fBchar \fR*\fIfilename, \fR*\fItype;\fR
+.PP
+\fBFILE \fR*\fBfreopen\fR(\fIfilename, type, stream\fR)
+\fBchar \fR*\fIfilename, \fR*\fItype;\fR
+\fBFILE \fR*\fIstream;\fR
+.PP
+\fBFILE \fR*\fBfdopen\fR(\fIfildes, type\fR)
+\fBchar \fR*\fItype;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B fopen
+eroeffnet die durch
+.I filename
+angegebene Datei und verbindet sie mit einem Stream.
+.B Fopen\^
+gibt einen Pointer zurueck,
+der zur Identifikation des Stream in nachfolgenden Operationen
+benutzt wird.
+.PP
+Die Zeichenkette
+.I type
+kann folgende Werte annehmen:
+.TP 5
+"r"
+Eroeffnen zum Lesen
+.ns
+.TP 5
+"w"
+Erzeugen zum Schreiben
+.ns
+.TP 5
+"a"
+Eroeffnen fuer Schreiben an das Dateiende
+oder Erzeugen fuer Schreiben
+.TP 5
+"r+"
+Eroeffnen zum Aktualisieren (Lesen und Schreiben)
+.TP 5
+"w+"
+Erzeugen zum Aktualisieren
+.TP 5
+"a+"
+Eroeffnen oder Erzeugen zum Aktualisieren am Dateiende
+.PP
+Die Funktion
+.B freopen\^
+ordnet die angegebene Datei dem offenen
+.I stream
+zu.
+Der urspruengliche Wert des
+.I stream
+wird zurueckgegeben und der urspruengliche
+.I stream
+wird geschlossen, unabhaengig davon, ob das Eroeffnen gelang.
+.br
+Eine typische Anwendung von
+.B freopen\^
+ist die Zuweisung von standardmaessig geoeffneten Dateien wie
+.BR stdin ,
+.BR stdout
+und
+.BR stderr
+zu speziellen Dateien.
+.PP
+.B Fdopen\^
+verbindet einen
+.I stream
+mit einem Dateidescriptor, der von einem Systemruf
+.BR open (2),
+.BR dup (2),
+.BR creat (2)
+oder
+.BR pipe (2)
+zurueckgegeben wurde.
+Der
+.I type\^
+des
+.I stream
+muss mit dem Modus der geoeffneten Datei uebereinstimmen.
+.PP
+Ist eine Datei fuer Aktualisierung geoeffnet,
+koennen Eingabe und Ausgabe in den resultierenden
+.I stream
+erfolgen.
+Die Ausgabe kann nicht direkt der Eingabe ohne ein dazwischenliegendes
+.B fseek\^
+oder
+.BR rewind
+folgen.
+Ebenso kann eine Eingabe nicht einer Ausgabe folgen,
+ohne das dazwischen ein
+.BR fseek ,
+.BR rewind
+oder ein Eingabe erfolgte,
+die ein End-Of-File erkannte.
+.SH SIEHE AUCH
+open(2),
+fclose(3).
+.SH DIAGNOSTIK
+.B Fopen\^
+und 
+.B freopen\^
+geben einen Null-Pointer zurueck,
+wenn die durch
+.I filename\^
+angegebene Datei nicht zugreifbar ist.
+.SH EINSCHRAENKUNG
+.B Fdopen
+ist nicht auf Systeme portierbar, auf denen nicht WEGA laeuft.

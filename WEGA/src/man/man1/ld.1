@@ -1,0 +1,281 @@
+.de IX
+.TX \\$2
+\&\\$1
+..
+'       # hanging label
+.de TX
+.if !"\\$1"" .nr )I \\$1n
+.br
+.in \\n()Ru
+.nr )E 1
+.ns
+.it 1 }N
+.di ]B
+..
+.ne 3v
+.TH LD 1   
+.\" @[$]ld.1    1.2
+.ad
+.fi
+.SH NAME
+ld \- nichtsegmentierter U8000 und 8-bit Lader
+.SH SYNTAX
+.B ld
+[ \fIoptions\fR ] \fIfile\fR ...
+.SH BESCHREIBUNG
+.PP
+.B Ld
+erzeugt nichtsegmentierte U8000-Lademodule, die unter WEGA ausgefuehrt
+oder in Anwenderhardware (z.B. Emulator)
+geladen werden koennen.
+Er ist auch fuer einige Cross-Softwarepakete nutzbar.
+.PP
+.B Ld
+verbindet verschiedene Objektdateien (Dateiname endet auf ".o")
+und Bibliotheken (Dateiname endet auf ".a") zu einem
+ausfuehrbaren Lademodul.
+Wurde beim Aufruf von
+.B ld
+die Option
+.B -r
+angegeben, bleiben die Verschiebungsbits erhalten
+und das Ergebnis des Laufs kann als Eingang fuer weitere
+.B ld
+Laeufe benutzt werden.
+.PP
+Der erzeugte Lademodul wird normalerweise im aktuellen Directory
+unter dem Standardnamen \fBa.out\fR abgelegt.
+Das Format des Lademoduls ist in
+.BR a.out (5)
+beschrieben.
+Durch Angabe der
+.B -o
+Option kann dem Lademodul ein gewuenschter Name zugeordnet werden.
+Treten bei der Bearbeitung mit
+.B ld
+keine Fehler auf, ist der Lademodul ausfuehrbar.
+.PP
+Die Dateinamenargumente werden in der angegebenen Reihenfolge verarbeitet.
+Objektdateien sind beim Aufruf generell
+.B vor
+Bibliotheken anzugeben.
+Der Eintrittspunkt des Lademoduls ist normalerweise gleich dem Beginn
+der ersten Routine, kann jedoch ueber die Option
+.B -e
+zugewiesen werden.
+.PP
+Bibliotheken werden genau einmal durchsucht,
+wenn sie in der Argumentliste gefunden werden.
+Es werden nur die Routinen geladen, die eine unaufgeloeste externe
+Referenz definieren.
+Die Reihenfolge der Routinen in Bibliotheken ist signifikant fuer
+die Aufloesung externer Referenzen.
+Bibliotheken sollten deshalb stets vor dem
+.B ld
+Aufruf mit \fBranlib\fR(1) verarbeitet werden
+(der erste Eintrag in der Bibliothek ist dann ein mit
+.B __.SYMDEF
+bezeichnetes Verzeichnis der Bibliothek).
+.PP
+.B Ld
+verarbeitet Programme, in denen 3 verschiedene Sektionen
+definiert sein koennen.
+Fuer diese Sektionen gelten folgende Abkuerzungen:
+.RS
+.nf
+\fBt\fR=Text    (Programmcode),
+\fBd\fR=Daten   (initialisierte Daten),
+\fBb\fR=BSS     (uninitialisierte Daten).
+.fi
+.RE
+.PP
+Fuer die Sektionen koennen separate Adressen festgelegt werden.
+Die Adresse wird unter Benutzung der C-Sprachkonventionen
+dezimal (ohne fuehrende Null), hexadezimal (fuehrendes 0x)
+oder oktal (mit fuehrender Null) angegeben.
+Die angegebene Adresse muss ein Vielfaches von 256 sein.
+.PP
+Die Symbole `_etext`, `_edata`, und `_end` der Assemblersprache
+(`etext`, `edata`, und `end` in C-Programmen) sind reserviert und
+koennen durch den Nutzer nicht neu definiert werden.
+Das Symbol `_etext` bezieht sich auf die erste Position nach der Textsektion
+oder auf den Anfang der Datensektion.
+Das Symbol `_edata` bezieht sich auf die erste Position nach den
+initialisierten Daten oder auf den Anfang der BSS-Sektion.
+Das Symbol `_end` bezieht sich auf die erste Position nach allen Daten und
+kann als Startposition fuer ein dynamisches Speicherfeld
+benutzt werden, das durch den Nutzer verwaltet wird.
+.PP
+Mit Ausnahme der
+.B -l
+Option muessen alle anderen Optionen vor dem Dateinamen stehen. Die
+.B -l
+Option muss den Namen der Routinen folgen, auf die sie sich bezieht.
+.SH OPTIONEN
+.PP
+.BI -b " address"  
+.TP
+.BI -b section " \fIaddress\fR" 
+Die Anfangsadresse fuer das Programm oder fuer die angegebene
+Sektion wird gesetzt.
+Ist keine Sektion angegeben, wird die Anfangsadresse fuer das
+Speicherabbild (falls Text und Daten kombiniert)
+oder die Anfangsadresse fuer den Text
+(falls Text und Daten getrennt) verwendet.
+Pro Sektion kann nur eine \fB\-t\fR oder \fB-b\fR Option verwendet
+werden. Bei Ueberlappungen von Sektionen oder bei
+Ueberlauf der Adressen einer Sektion werden Fehler gemeldet
+(naechste Adresse waere 0x0000).
+.TP
+.B -d
+Veranlasst die Definition eines gemeinsamen Speicherbereiches
+(auch dann, wenn die
+.B -r
+Option angegeben ist).
+.TP
+.BI -e " label"  
+Benennt die Marke \fIlabel\fR, die Eintrittspunkt des Lademoduls
+ist (Standardwert ist der Beginn der Textsektion).
+Meist wird die \fB-e\fR Option mit der
+nichtsegmentierten C-Startroutine /lib/crt0.o benutzt.
+Siehe \fBBEISPIELE\fR.
+.TP
+.B -i
+Programmtext und Datenfelder des Lademoduls werden getrennt.
+Der Text belegt das Segment 0, seine Anfangsadresse ist 0x0000.
+Daten und BSS belegen Segment 1, wobei die Anfangsadresse der
+Daten 0x0000 ist und BSS gleich hinter den Daten liegt.
+.TP
+.BI -l x
+durchsucht die Bibliotheken in der Reihenfolge
+.RI /lib/lib x .a,
+.RI /usr/lib/lib x .a
+und
+.RI /z/bin/lib x .a
+zur Aufloesung externer Referenzen.
+Die angegebene Bibliotheksdatei wird so benutzt, als ob
+anstelle der
+.B -l
+Option der volle Name angegeben wurde.
+Die Bibliothek wird in Abhaengigkeit von der Stellung der
+.B -l
+Option in der Aufrufzeile durchmustert
+(Reihenfolge ist signifikant!).
+.bp
+.TP
+.BI -N many
+gibt an, wie viele Zeichen der Namen,
+die in der Symboltabelle eingetragen sind, von
+.B ld 
+beruecksichtigt werden sollen.
+Ist
+.I many 
+gleich
+.BR s , 
+benutzt 
+.B ld
+nur die ersten 8 Zeichen des Namens.
+Ist
+.I many
+gleich
+.B l
+oder fehlt die Option, werden die vollstaendigen Namen benutzt.
+.TP
+.BI -o " name" 
+Dem Lademodul wird der angegebene Name zugewiesen
+.TP
+.B -r
+erzeugt Verschiebungsbits im Lademodul, so dass er
+in einem nachfolgenden
+.B ld
+Lauf benutzt werden kann.
+Diese Option hebt die
+.B -t
+und
+.B -b
+Optionen auf.
+Sie verhindert auch abschliessende Definitionen fuer common-Symbole
+und unterdrueckt die Warnung fuer undefinierte Symbole.
+Die \fB-r\fR Option kann nicht zur Erzeugung von Objektdateien fuer
+8-Bit-Rechner benutzt werden.
+.TP
+.B -s
+An den Lademodul wird keine Symboltabelle angehaengt.
+Die Erzeugung der Verschiebungsbits wird unterdrueckt.
+.TP
+.BI -t " address"   
+.TP
+.BI -t section " \fIaddress\fR" 
+setzt die Endadresse (hoechste Speicherplatzzuweisung)
+des Programms oder der Sektion auf
+.IR address .
+Die Anfangsadresse der Sektion oder des Programms ist immer ein
+Vielfaches von 256.
+Liegt die Endadresse
+innerhalb einer 256 Byte-Grenze,
+wird die Luecke mit Nullen gefuellt.
+.TP
+.BI -u symbol
+Das Symbol wird als undefiniert gekennzeichnet
+und in die Symboltabelle eingebracht.
+(sinnvoll fuer die Bearbeitung einer einzelnen Bibliothek;
+anfaenglich ist die Symboltabelle leer und es wird eine
+unaufgeloeste Referenz gebraucht, um die Verarbeitung der ersten
+Routine zu erzwingen).
+.TP
+.B -w
+unterdrueckt die Warnung bei Mehrfachdefinitionen eines Symbols
+(nuetzlich beim Durchsuchen von Bibliotheken).
+.TP
+.B -x
+traegt nur externe und globale Symbole in die Symboltabelle ein
+(keine lokalen Symbole).
+.TP
+.B -X
+rettet lokale Symbole in die Symboltabelle. Dies gilt nicht fuer
+Sektionsnamen und Eintragungen, die mit `L` beginnen.
+Diese Option wird vom C-Compiler
+benutzt, um intern erzeugte Marken zu streichen, waehrend Symbole,
+die lokal in den Routinen sind, erhalten bleiben.
+.SH BEISPIELE
+.nf
+ld -X -e start /lib/crt0.o mod1.o mod2.o mod3.o 
+   -o mastermod -lc
+.sp
+.fi
+Das obige Beispiel verbindet ./mod1.o, ./mod2.o, und ./mod3.o zum
+Lademodul ./mastermod. Text, Daten und BSS werden in das
+Segment 0 eingetragen.
+.nf
+.sp
+ld -X -e start /lib/crt0.o -i /z/mod1.o 
+   /usr/mod2.o /z2/work/mod3.o -lc
+.sp
+.fi
+Dieses Beispiel verbindet /z/mod1.o, /usr/mod2.o, und /z2/work/mod3.o
+zum Lademodul ./a.out. Das Text-Segment wird in Segment 0,
+die Daten und BSS werden in das Segment 1 eingetragen.
+.SH DATEIEN
+.nf
+/lib/lib*.a
+/usr/lib/lib*.a
+/z/bin/lib/lib*.a  Bibliotheken fuer die \fB-l\fR Option
+a.out              Lademodul
+/lib/crt0.o        nichtsegmentierte C-Startroutine
+.fi
+.SH SIEHE AUCH
+LOAD(1), ar(1), ranlib(1), a.out(5)
+.SH DIAGNOSTIK
+Alle unaufgeloesten Referenzen bewirken, dass das spezielle Symbol `_end`
+als undefiniert gemeldet wird.
+Die "Redefinition"-Warnung erscheint, wenn waehrend des Durchsuchen
+einer Bibliothek ein bereits definiertes Symbol neu definiert wird.
+Diese Warnung kann mit der
+.B -w
+Option unterdrueckt werden.
+Sie erscheint auch nicht, wenn der Symbolname mit zwei Unterstrichen
+beginnt (in C-Notation entspricht das einem Unterstrich).
+.SH EINSCHRAENKUNGEN
+Die "Redefinition"-Warnung erscheint nicht, wenn ein Symbol innerhalb
+einer Bibliothek mehrmals definiert wird.
+Die Benutzung des doppelten Unterstriches ist sehr vorteilhaft.

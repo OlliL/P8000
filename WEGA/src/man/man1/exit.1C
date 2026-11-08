@@ -1,0 +1,24 @@
+.TH EXIT 1C WEGA
+.\"@[$]exit.1C	1.2
+.ad
+.fi
+.SH NAME
+exit \- Verlassen einer Shell
+.SH SYNTAX
+.B exit
+.br
+.B exit
+.I (expression)
+.SH BESCHREIBUNG
+Shell wird entweder mit dem Wert der Variablen
+.I status
+(erste Form) oder mit dem Wert des angegebenen Ausdrucks
+.I  expression
+(zweite Form) verlassen. Dieses Kommando wird ignoriert, wenn die Variable
+.I ignoreexit
+gesetzt ist.
+.SH SIEHE AUCH
+break(1C),
+logout(1C).
+.br
+"C-Shell" im Band WEGA-Dienstprogramme.

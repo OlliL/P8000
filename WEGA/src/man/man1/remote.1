@@ -1,0 +1,54 @@
+.TH REMOTE 1 
+.\" @[$]remote.1	1.2
+.ad
+.fi
+.SH NAME
+remote \- Kopplung mit einem abgesetzten WEGA-System
+.SH SYNTAX
+.B remote
+.RI [ system_name ]
+.SH BESCHREIBUNG
+.B Remote
+wird zur Kopplung an ein Remote-System benutzt,
+auf dem WEGA oder andere UNIX-kompatible Software (z.B. MUTOS) laeuft.
+Es ist moeglich, Dateien zwischen dem Remote-System und dem lokalen
+System mit den Dienstprogrammen
+.BR getfile (1)
+und
+.BR putfile (1)
+zu uebertragen.
+.IR System_name
+zeigt den Namen des Systems an, an den die Steuerung uebergeben werden
+soll.
+Wenn kein
+.IR System_name
+angegeben ist, wird das erste System, das in der Datei
+"/usr/spool/uucp/remotelines" aufgefuehrt ist,
+als Standard genommen.
+.PP
+Wenn das Remote-System nicht innerhalb von zwanzig Sekunden 
+reagiert, schaltet sich die Uebertragungsstrecke ab und die Nachricht 
+.RS
+"remote line to
+.I system_name
+timed out"
+.RE
+wird ausgegeben.  Dieser Fall tritt auf, wenn die Leitung
+unterbrochen oder das Remote-System abgeschaltet ist.
+.PP
+Wenn
+.B remote
+mit einem "hangup" endet, wird eine Abmeldung
+"logout" an das Remote-System gesendet und die Kontrolle an das
+lokale System zurueckgegeben.
+.PP
+Sollte das Remote-System waehrend der Verbindung ueber
+.BR remote 
+zusammenbrechen, ist es moeglich, zum lokalen System zurueckzukehren,
+indem das control-\\ (ASCII fs) benutzt wird.
+.SH DATEIEN
+/usr/spool/uucp/LCK..*		Sperrdateien
+.br
+/usr/spool/uucp/remotelines	Datenbasis der Systeme
+.SH SIEHE AUCH
+putfile(1), getfile(1), local(1), remotelines(5).

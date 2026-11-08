@@ -1,0 +1,73 @@
+.TH AS 1 WEGA
+.\" @[$]as.1	1.2
+.ad
+.fi
+.SH NAME
+as \- PLZ/ASM Assembler
+.SH SYNTAX
+.B as
+[ \fIoption\fR ... ] file
+.SH BESCHREIBUNG
+.B As
+uebersetzt die angegebenen Dateien.
+.SH OPTIONEN
+.TP 6
+.B \-f
+Erlaubt die Uebersetzung von Gleitkommabefehlen.
+.TP
+.B \-l
+Erzeugt ein Listing, das den Objektcode und die Adressen enthaelt.
+Das Listing zur Quelldatei \fIfile\fB.s\fR wird im
+aktuellen Directory unter dem Namen
+\fIfile\fB.l\fR erstellt.
+.TP
+\fB\-o\ \fR objfile
+Die Ausgabe des Assemblers ist eine Objektdatei und
+wird unter den Namen \fIobjfile\fR abgelegt.
+Ist diese Option nicht angegeben, wird der Lader gestartet.
+Das abarbeitungsfaehige Programm wird unter dem Namen
+.I a.out
+im aktuellen Directory abgelegt.
+.TP
+.B \-p
+Erzeugt ein Listing auf der Standardausgabe.
+.TP
+.B \-u
+Alle nicht definierten Referenzen werden als external deklariert.
+.TP
+.B \-z
+Erzeugt ein Zobj-Objektformat fuer UDOS-Systeme.
+Ist diese Option angegeben, wird die standardmaessige Ausgabedatei
+.I t.out
+genannt (anstelle von
+.I a.out
+).
+.PP
+.SH DATEIEN
+/lib/as2        Lauf 2 des Assemblers
+.br
+/lib/as2d       Lauf 2 Daten
+.br
+/lib/asz2       Lauf 2 fuer Zobj-Ausgabe
+.br
+/lib/asz2d      Lauf 2 Daten fuer Zobj-Ausgabe
+.br
+/tmp/T_*H       temporaer
+.br
+/tmp/T_*I       temporaer
+.br
+a.out	         Objekt
+.SH SIEHE AUCH
+cas(1),
+ld(1),
+nm(1),
+objdu(1),
+objhdr(1),
+a.out(5).
+.br
+"PLZ/ASM Benutzerhandbuch" in WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+Traten syntaktische oder semantische Fehler auf,
+wird die fehlerhafte Zeile gefolgt von einer Fehlernummer
+ausgegeben.
+Die Fehler sind im Benutzerhandbuch erlaeutert.

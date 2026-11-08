@@ -1,0 +1,33 @@
+.TH CXREF 1 WEGA
+.\" @[$]cxref.1	1.2
+.ad
+.fi
+.SH NAME
+cxref \- Ausgabe der Routinen in C-Programmen
+.SH SYNTAX
+.B cxref
+.I file ...
+.SH BESCHREIBUNG
+.B Cxref
+ist ein einfacher Shell-Script, der
+.BR grep (1),
+.BR ex (1)
+und
+.BR sort (1)
+benutzt, um ein Verzeichnis der Routinen der spezifizierten
+C-Programmdateien und der Zeilen, in denen sie definiert
+werden, zu erstellen.
+Dies ist sinnvoll als Zusammenfassung beim Durchsuchen
+eines langen Programms.
+.SH EINSCHRAENKUNGEN
+.B Cxref
+setzt voraus, dass die Routinen in der ersten Spalte einer Zeile
+beginnen und dass die Typnamen in einer anderen Zeile, als in der
+mit den Routinennamen stehen (sonst
+arbeitet 
+.B cxref
+fehlerhaft).
+Das Betriebssystem, der C Compiler, der Editor 
+.B ex
+und andere Programme arbeiten mit
+.B cxref.

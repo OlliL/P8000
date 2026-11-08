@@ -1,0 +1,49 @@
+.TH INTRO 3 
+.\" @[$]INTRO.3 1.2
+.ad
+.fi
+.SH NAME
+intro \- Einfuehrung in die Bibliotheksfunktionen
+.SH SYNTAX
+.B #include <stdio.h>
+.br
+.B #include <math.h>
+.SH BESCHREIBUNG
+In diesem Abschnitt werden Funktionen beschrieben, die in verschiedenen
+Bibliotheken enthalten sind (im Unterschied zu den Systemrufen,
+die vom WEGA-Betriebssystemkern realisiert werden, siehe Sektion 2).
+.LP
+.ce
+.B ANMERKUNG 
+.IP
+Vorsicht ist bei Verwendung einer Bibliotheksfunktion zum Lesen oder
+Schreiben von Dateien geboten, die gegen Zugriff durch andere Prozesse
+verriegelt sein koennten.
+Viele Funktionen puffern automatisch die Ein-/Ausgabe in Ein-Block-Puffern;
+d.h. es wird der ganze Block gelesen, wenn nur ein Teil eines
+512-Byte-Plattenblocks benoetigt wird.
+Ist
+.I ein
+Byte in einem Block gegen Zugriff gesperrt, fuehrt ein gepufferter
+Zugriff auf ein anderes, eventuell auch nicht verriegeltes Byte
+desselben Blocks dazu, dass der
+zugreifende Prozess solange schlaeft, bis die Sperre fuer den Zugriff
+aufgehoben wird.
+.IP
+Die Sperrung von Datensaetzen wird in der Hauptsache bei COBOL-Programmen
+verwendet.
+In Abschnitt 5 wird auf die Systemdateien eingegangen, die von den
+Systemprogrammen routinemaessig gesperrt werden.
+.SH DATEIEN
+/lib/libc.a     /lib/slibc.a    /lib/libm.a     /lib/slibm.a
+.SH SIEHE AUCH
+nm(1), ld(1), cc(1), intro(2), sld(1), scc(1)
+.LP
+Der Mechanismus zur Verriegelung von Datensaetzen
+ist in
+.BR lkdata (2)
+erlaeutert.
+Hinweise zur Ausschaltung der Pufferung bei Standard E/A-Funktionen
+sind in
+.BR setbuf (3)
+enthalten.

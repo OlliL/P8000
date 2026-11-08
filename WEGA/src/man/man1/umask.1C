@@ -1,0 +1,70 @@
+.TH UMASK 1C WEGA
+.\" @[$]umask.1C	1.2
+.ad
+.fi
+.SH NAME
+umask \- Setzen der Modus-Maske zur Dateierzeugung 
+.SH SYNTAX
+\fBumask\fR [\fInnn\fR]
+.SH BESCHREIBUNG
+Die
+Modus-Maske des Nutzers zur Dateierzeugung wird auf
+.IR nnn 
+gesetzt.
+Jede oktale Ziffer gibt die Zugriffsrechte fuer
+Lesen, Schreiben und Ausfuehrung an, wobei die Ziffern
+in ihrer Reihenfolge fuer den Eigentuemer, die Nutzergruppe und
+alle anderen Nutzer stehen
+(siehe
+.BR chmod (2)
+und
+.BR umask (2)).
+Der Wert jeder angegebenen Ziffer wird von der
+entsprechenden Ziffer subtrahiert, die vom
+System fuer die Erstellung einer Datei angegeben wird (siehe
+\fBcreat\fR(2)).
+.PP
+Ist
+.I nnn\^
+nicht angegeben, wird der aktuellen Wert der Maske ausgegeben.
+.PP
+.B Umask\^
+wird vom Shell erkannt und ausgefuehrt.
+.SH BEISPIEL
+.nf
+% umask 000
+
+% cat /dev/null > umask.00
+
+% ls -l umask.000
+-rw-rw-rw- 1 hugo          0 Sep 15 10:56 umask.000
+.fi
+.PP
+Die anderen umask-Werte sind folgende:
+.sp
+.nf
+-rw-rw-rw- 1 hugo          0 Sep 15 10:56 umask.111
+-r--r--r-- 1 hugo          0 Sep 15 10:56 umask.222
+-r--r--r-- 1 hugo          0 Sep 15 10:56 umask.333
+--w--w--w- 1 hugo          0 Sep 15 10:56 umask.444
+--w--w--w- 1 hugo          0 Sep 15 10:56 umask.555
+---------- 1 hugo          0 Sep 15 10:56 umask.666
+---------- 1 hugo          0 Sep 15 10:56 umask.777
+.fi
+.PP
+Sind nur zwei Ziffern angegeben (identisch mit 0xx),
+beziehen sie sich auf die Gruppe
+und alle anderen Nutzer, bei nur einer Ziffer
+(identisch mit 00x)
+werden nur die Rechte
+fuer alle Nutzer beeinflusst.
+.SH SIEHE AUCH
+chmod(1),
+sh(1),
+chmod(2),
+chown(1),
+creat(2),
+umask(2),
+chmog(M).
+.br
+"Die C-Shell" in WEGA-Dienstprogramme

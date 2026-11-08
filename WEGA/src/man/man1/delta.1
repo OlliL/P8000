@@ -1,0 +1,231 @@
+.TH DELTA 1 WEGA
+.\"@[$]delta.1	1.2
+.ad
+.fi
+.SH NAME
+delta \- Erstellen eines Deltas fuer eine SCCS-Datei
+.SH SYNTAX
+\fBdelta \fR[\fB-r\fISID]
+.br
+	 [\fB-sn\fR]
+.br
+	 [\fB-g\fIlist]\fR
+.br
+	 [\fB-m\fI[mrlist]]\fR
+.br
+	 [\fB-y\fI[comment]]\fR
+.br
+	 [\fB-p\fR]
+.br
+	 \fIfiles\fR
+.br
+.SH BESCHREIBUNG
+.B Delta
+wird benutzt, um bleibende Aenderungen in den genannten SCCS-Dateien
+vorzunehmen.
+Diese Dateien muessen vorher durch ein
+.BR get (1)
+Kommando rekonstruiert worden sein.
+.PP
+.B Delta
+erzeugt eine Aenderung (Delta) fuer jede aufgerufene SCCS-Datei.
+Wurde ein Directory angegeben, veraendert
+.B delta
+jede lesbare SCCS-Datei des Directorys.
+Wird statt des Dateinamen ein \fB\-\fR angegeben,
+werden die Dateinamen von der Standardeingabe gelesen
+(siehe \fBWARNUNGEN\fR).
+Dabei wird jede Zeile der Standardeingabe als Name einer zu verarbeitenden
+SCCS-Datei betrachtet.
+.PP
+.B Delta
+kann in Abhaengigkeit von Optionen bzw. flags,
+die in der SCCS-Datei enthalten sind (siehe
+.B \-m
+und
+.B \-y
+Option), Eingabeanforderungen auf der Standardausgabe ausgeben.
+.SH OPTIONEN
+Optionen werden unabhaengig fuer jede aufgerufene Datei verwendet.
+.TP
+\fB-r\fISID\fR
+Spezifiziert das Delta fuer die SCCS-Datei.
+Die Benutzung dieser Option ist nur notwendig, wenn ein oder mehrere
+durch eine Person (login-Name) ueber das Kommando
+.B get \-e
+zur Editierung geoeffnete Versionen der gleichen SCCS-Datei vorhanden sind.
+Der SID-Wert der Option
+.B \-r
+entspricht dem ueber das vorherige
+.B get\^
+-Kommando festgelegten SID.
+Ist das angegebene SID nicht eindeutig oder fehlt es ganz,
+erfolgt eine Fehlermeldung.
+.TP
+\fB-s\fR
+Die Ausgabe der Verarbeitungsinformationen (SID,
+Anzahl der
+in der bearbeiteten SCCS-Datei 
+eingefuegten, gestrichenen und unveraenderten Zeilen)
+wird unterdrueckt.
+.TP
+\fB-n\fR
+Die editierte 
+.I g-file\^
+Wird nach der Einbringung in die SCCS-Datei nicht geloescht
+(i.A. wird sie nach der Erstellung des Deltas geloescht).
+.TP
+\fB-g\fIlist\fR
+Spezifiziert eine \fIListe\fR
+von Deltas (SID's),
+deren Aenderungen in die neu anzulegenden Version nicht
+aufgenommen werden.
+.TP
+\fB-m\fI[mrlist]\fR
+Ist fuer die SCCS-Datei das
+\fBv\fR-Flag gesetzt (siehe
+.BR admin (1)),
+\fImuss\fR eine Anzahl von MR-Nummern (MR: Modification Request)
+bereitgestellt werden.
+Sie bilden den Ausgangspunkt fuer die Erzeugung eines neuen Deltas.
+MR-Nummern koennen vom Nutzer beliebig definiert werden
+und repraesentieren damit sein eigenes Ordnungskriterium.
+.sp
+Ist die Option
+.B \-m
+nicht angegeben und ist die Standardeingabe ein Terminal,
+werden MR-Nummern durch die Eingabeanforderung
+.B MRs?
+angefordert.
+Ist die Standardeingabe kein Terminal, erscheint keine Eingabeanforderung.
+MR-Nummern werden vor den Kommentaren angefordert
+(siehe
+.B \-y
+Option).
+.sp
+MR-Nummern werden in der Liste durch Leerzeichen und/oder Tabulatoren
+getrennt. Ein abschliessendes Newline beendet
+die Liste der MR-Nummern (die Liste kann durch Backslash Newline
+ueber eine Zeile hinaus verlaengert werden).
+.sp
+Hat das
+\fBv\fR-Flag einen Wert, gilt dieser als Name eines Programms
+oder einer Shell-Prozedur zur Bestaetigung der
+Richtigkeit der MR-Nummern.
+Gibt dieses Programm einen Rueckkehrstatus ungleich Null
+zurueck, bewirkt
+.B delta
+keine Veraenderungen des SCCS-Datei
+(es wird angenommen, dass nicht alle MR-Nummern
+gueltig sind).
+.TP
+\fB-y\fI[comment\fR]
+Dem aktuellen Delta wird der Benutzerkommentar
+.I comment
+zugeordnet (willkuerlicher Text, der den Grund fuer die
+Erzeugung des Deltas angeben sollte).
+Eine leere Zeichenkette wird als gueltiger Kommentar betrachtet.
+.sp
+Ist
+.B \-y
+nicht angegeben und die Standardeingabe ist ein Terminal,
+erscheint auf der Standardausgabe die
+Kommentareingabeanforderung \fBcomments?\fR.
+Das Programm erwartet dann ueber die Standardeingabe einen Kommentar.
+Ein Newline beendet den Kommentartext
+(der Kommentar kann durch Backslash Newline
+ueber eine Zeile hinaus verlaengert werden).
+.TP
+\fB-p\fR
+Die SCCS-Dateidifferenzen vor und nach der Ausfuehrung
+der Veraenderungen werden im Format von
+.BR diff (1)
+ausgegeben.
+.SH DATEIEN
+Alle Dateien der Form
+.I \?\-file
+und die entsprechenden Vereinbarungen sind im 
+"Source Code Control System Benutzerhandbuch" erklaert.
+.TP
+g-file
+existiert vor des Ausfuehrung von
+.B delta
+und wird nach Beendigung von
+.B delta
+gestrichen.
+.TP
+p-file
+existiert vor der Ausfuehrung von
+.BR delta ;
+kann nach Beendigung weiter existieren.
+.TP
+q-file
+wird waehrend der Ausfuehrung von
+.B delta
+erzeugt und nach Beendigung von
+.B delta
+gestrichen.
+.TP
+x-file
+wird waehrend der Ausfuehrung von
+.B delta
+erzeugt und nach Beendigung von
+.B delta
+umbenannt.
+.TP
+z-file
+wird waehrend der Ausfuehrung von
+.B delta
+erzeugt und gestrichen.
+.TP
+d-file
+wird waehrend der Ausfuehrung von
+.B delta
+erzeugt und nach Beendigung von
+.B delta
+gestrichen.
+.TP
+/usr/bin/bdiff
+Programm zum Ermitteln der Differenzen zwischen der mit
+.B get (1)
+rekonstruierten Datei und der
+.IR g-file .
+.SH WARNUNGEN
+Dem ASCII-Zeichen SOH (binaer 001)
+muss in SCCS-Dateien ein Backslash vorangestellt werden.
+Dieses Zeichen hat eine spezielle Bedeutung fuer SCCS (siehe
+.B sccsfile\c
+(5)) und verursacht einen Fehler.
+.PP
+Ein \fBget\fR von mehreren SCCS-Dateien, gefolgt von einem
+.B delta
+dieser Dateien, sollte vermieden werden, da
+.B get
+eine grosse Datenmenge erzeugt.
+Statt dessen sollten mehrere
+.B "get/delta"
+Folgen benutzt werden.
+.PP
+Wurde die Standardeingabe (\fB\-\fR) in der
+.B delta
+Kommandozeile angegeben, \fImuessen\fR auch die
+.B \-m
+(wenn noetig) und
+.B \-y
+Optionen benutzt werden.
+Fehlen diese Angaben, treten Fehler auf.
+.SH SIEHE AUCH
+admin(1),
+bdiff(1),
+get(1),
+help(1),
+prs(1),
+sccsfile(5).
+.br
+und das
+"Source Code Control System Benutzerhandbuch" 
+in WEGA-Dienstprogramme.
+.SH DIAGNOSTIK
+Benutze
+.IR help (1)
+fuer weitere Erklaerungen.

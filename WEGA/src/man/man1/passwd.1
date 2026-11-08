@@ -1,0 +1,39 @@
+.TH PASSWD 1 WEGA
+.\"@[$]passwd.1	1.2
+.ad
+.fi
+.SH NAME
+passwd \- Veraendern des Login-Passwortes
+.SH SYNTAX
+.B passwd
+[ name ]
+.SH BESCHREIBUNG
+Dieses Kommando veraendert (oder installiert) ein Passwort, das mit dem
+Nutzer
+.IR name
+verbunden ist (eigener Name ist Standard).
+.PP
+Das Programm fordert erst das alte Passwort und dann das neue an.
+Der Rufer muss beide angeben.
+Das neue Passwort muss zweimal eingegeben werden, um
+Fehler zu verhindern.
+.PP
+Neue Passworte muessen mindestens 4 Zeichen lang sein, wenn sie aus genuegend
+unterschiedlichen Zeichen bestehen.
+Sonst muessen sie mindestens 6 Zeichen lang sein.
+Nur die ersten 8 Zeichen des Passwortes sind von Bedeutung.
+.PP
+Nur der Eigentuemer des Namens oder der Superuser kann ein Passwort aendern;
+der Eigentuemer muss beweisen, dass er das alte Passwort kennt.
+.PP
+Die Passwortdatei wird nicht veraendert, wenn das neue Passwort das gleiche
+wie das alte ist oder das Passwort nicht genuegend "gealtert" ist; siehe
+.BR passwd (5).
+.SH DATEIEN
+/etc/passwd,
+/etc/ptmp
+.SH SIEHE AUCH
+login(1), crypt(3), passwd(5).
+.SH EINSCHRAENKUNGEN
+Unter bestimmten Bedingungen wird die Passwortdatei nicht aktualisiert.
+In solchen Situationen befindet sich die neue Datei in /etc/ptmp.

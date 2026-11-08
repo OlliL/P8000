@@ -1,0 +1,65 @@
+.TH CHDIR 2 WEGA
+.\" @[$]chdir.2 1.2
+.ad
+.fi
+.SH NAME
+chdir \- Aenderung des Standarddirectory
+.SH SYNTAX
+.B int chdir
+.I (dirname)
+.br
+.B char
+.I  *dirname;
+.SH BESCHREIBUNG
+.B Chdir
+veranlasst, dass das durch das Argument
+.I dirname
+(Adresse eines Pfadnamens, Zeichenkette mit Nullbyte abgeschlossen)
+angegebene Directory das aktuelle
+Arbeitsdirectory wird.
+Der Startpunkt fuer den Pfadnamen beginnt im aktuellen
+Directory oder mit "/".
+.SH SIEHE AUCH
+cd(1C), chroot(2).
+.SH DIAGNOSTIK
+.B Chdir
+meldet Fehler und veraendert das aktuelle Directory nicht,
+wenn eine der folgenden Bedingungen erfuellt ist:
+.TP 11
+\%[ENOTDIR]
+Eine Komponente des Pfadnamens ist kein Directory.
+.PD 0
+.TP 11
+\%[ENOENT]
+Das angegebene Directory existiert nicht.
+.TP 11
+\%[EACCES]
+Fuer eine Komponente des Pfadnamens besteht keine Sucherlaubnis.
+.TP 11
+\%[EFAULT]
+.I Path
+zeigt auf einen Bereich ausserhalb des dem Prozess
+zugewiesenen Adressraums.
+.PD
+.SH RUECKGABEWERT
+Ist das Directory veraendert, wird Null zurueckgegeben.
+Trat einer der obengenannten Fehler auf,
+wird -1 zurueckgegeben und
+.B errno
+auf den entsprechenden Wert gesetzt.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT CHDIR  := 12
+
+Nichtsegmentiert
+     ...             !* r0 : dirname *!
+Segmentiert
+     ...             !* rr0 : dirname *!
+     clr    r4
+     sc     #CHDIR
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+
+.fi
+.ad

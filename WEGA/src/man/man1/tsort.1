@@ -1,0 +1,41 @@
+.TH TSORT 1 WEGA
+.\" @[$]tsort.1	1.2
+.ad
+.fi
+.SH NAME
+tsort \- Topologisches Sortieren
+.SH SYNTAX
+.B tsort
+[ \fIfile\fR ]
+.SH BESCHREIBUNG
+.B Tsort
+erzeugt eine geordnete Liste von Elementen, die
+mit der
+in der Eingabedatei
+.IR file
+(Standard: stdin)
+angegebenen
+partiellen Ordnung von Elementen
+uebereinstimmt.
+.PP
+Die Eingabe besteht aus Elementepaaren (nichtleere Zeichenketten),
+die durch Leerzeichen getrennt sind.
+Paare verschiedener Elemente weisen auf eine Ordnung hin.
+Paare identischer Elemente weisen auf Vorhandensein, aber
+keine Ordnung hin.
+.PP
+.B Tsort
+kann zum Sortieren von Programmbibliotheken (in Verbindung
+mit
+.BR lorder (1))
+fuer den Lader
+.BR ld (1)
+verwendet werden (eine bessere Methode ist jedoch
+.BR ranlib (1)).
+.SH SIEHE AUCH
+lorder(1).
+.SH DIAGNOSTIK
+.TP
+Odd data
+in der Eingabedatei befindet sich eine ungerade
+Anzahl von Feldern.

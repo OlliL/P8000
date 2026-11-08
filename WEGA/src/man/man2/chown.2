@@ -1,0 +1,89 @@
+.TH CHOWN 2 WEGA
+.\" @[$]chown.2 1.2
+.ad
+.fi
+.SH NAME
+chown \- Veraendern des Eigentuemers und der Gruppe einer Datei
+.SH SYNTAX
+.B int chown 
+(
+.I path, owner, group
+)
+.br
+.B char *\fIpath;\fR
+.br
+.B int \fIowner, group;\fR
+.SH BESCHREIBUNG
+.B Path
+zeigt auf den Pfadnamen einer Datei.
+Die Eigentuemer-ID und Gruppen-ID
+der benannten Datei werden auf die numerischen Werte gesetzt, die in
+.I owner
+bzw.
+.I group
+angegeben sind.
+.PP
+Es koennen nur Prozesse den Besitz der Datei aendern,
+die mit der effektiven Nutzer-ID
+des Dateieigentuemers oder Superusers uebereinstimmen.
+Wird
+.B chown
+von anderen als dem Superuser aufgerufen, werden das Set-User-ID-Bit
+und das Set-Group-ID-Bit des Dateimodus 04000 beziehungsweise 02000
+geloescht.
+.SH DIAGNOSTIK
+.B Chown
+meldet Fehler und der Eigentuemer und die Gruppe der benannten
+Datei bleiben unveraendert, wenn einer der folenden Punkte
+zutrifft:
+.TP 11
+\%[ENOTDIR]
+Eine vordere Komponente des Pfadnamens ist kein Directory.
+.PD 0
+.TP 11
+\%[ENOENT]
+Die angegebene Datei existiert nicht.
+.TP 11
+\%[EACCES]
+Die Sucherlaubnis wird fuer eine Komponente des Pfadnamens verweigert.
+.TP 11
+\%[EPERM]
+Die effektive Nutzer-ID
+stimmt nicht mit der des Eigentuemers der Datei ueberein und die effektive
+Nutzer-ID
+entspricht nicht der des Superusers.
+.TP 11
+\%[EROFS]
+Die angegebene Datei befindet sich in einem Read-Only-Dateisystem.
+.TP 11
+\%[EFAULT]
+.I Path
+verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen 
+Adressbereichs liegt.
+.PD
+.SH RUECKGABEWERT
+Wurde der Eigentuemer veraendert, wird der Wert Null zurueckgegeben.
+Andernfalls wird der Wert \-1 zurueckgegeben und 
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+chmod(2).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT CHOWN  := 16
+
+Nichtsegmentiert
+     ...             !* r0 : path *!
+                     !* r1 : owner *!
+                     !* r2 : group *!
+Segmentiert
+     ...             !* rr0 : path *!
+                     !* r2 : owner *!
+                     !* r3 : group *!
+     clr    r4
+     sc     #CHOWN
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

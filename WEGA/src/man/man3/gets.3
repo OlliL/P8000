@@ -1,0 +1,73 @@
+.TH GETS 3 WEGA
+.\" @[$]gets.3  1.2
+.ad
+.fi
+.SH NAME
+gets, fgets \- Einlesen einer Zeichenkette aus einem Stream
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.PP
+char *gets\fI(s)\fR
+\fBchar *s;\fR
+.PP
+char *fgets\fI(s, n, stream)\fR
+\fBchar \fI*s;\fR
+\fBFILE \fI*stream;\fR
+\fBint \fIn;\fR
+.fi
+.SH BESCHREIBUNG
+.B Gets
+liest eine Zeichenkette aus dem Standardeingabestrom
+.B stdin
+und legt sie in dem durch
+.I s
+angegebenen Speicherbereich ab.
+Die Zeichenkette wird bis zur Erkennung eines Newline-Zeichens
+oder eines End-Of-File eingelesen.
+Im durch
+.I s
+bezeichneten Feld
+wird das Newline-Zeichen durch ein Nullbyte ersetzt.
+.B Gets
+gibt sein Argument
+.I s
+zurueck.
+.PP
+.B Fgets
+liest
+.IR n \-1
+Zeichen vom Eingabestrom
+.I stream
+und legt sie im durch
+.IR s
+angegebenen Speicherbereich ab.
+Wird beim Einlesen ein Newline-Zeichen oder ein End-Of-File erkannt,
+wird der Lesevorgang abgebrochen.
+An die in
+.I s
+eingelesene Zeichenkette
+wird ein Nullbyte angehaengt.
+.I Fgets
+gibt das Argument
+.I s
+zurueck.
+.SH SIEHE AUCH
+puts(3),
+getc(3),
+scanf(3),
+fread(3),
+ferror(3).
+.SH DIAGNOSTIK
+Wird ein EOF erkannt, wenn noch keine Zeichen gelesen wurden,
+oder trat ein Fehler auf,
+geben die Funktionen
+.B gets
+und
+.B fgets
+einen Nullpointer zurueck.
+.SH EINSCHRAENKUNGEN
+.B Gets
+loescht das Newline-Zeichen;
+.B fgets
+belaesst es in der Zeichenkette.

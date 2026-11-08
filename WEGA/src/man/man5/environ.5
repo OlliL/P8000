@@ -1,0 +1,85 @@
+.TH ENVIRON 5 WEGA
+.\"@[$]environ.5        1.2
+.ad
+.SH NAME
+environ \- Nutzerumgebung
+.SH SYNTAX
+.B extern char **environ;
+.SH BESCHREIBUNG
+Bei Beginn eines Prozesses wird durch den Systemruf
+.BR exec (2)
+ein Feld von Zeichenketten bereitgestellt,
+das als Umgebung bezeichnet wird.
+Diese Zeichenketten haben die Form
+.IP
+.IR Name = Wert .
+.PP
+Die folgenden Namen werden von verschiedenen Kommandos
+verwendet:
+.TP 6
+.B PATH
+Eine Folge von Directory-Namen, die Programme wie
+.BR sh (1),
+.BR time (1),
+und
+.BR nice (1)
+bei der Suche nach einer Datei mit einem unvollstaendigen
+Pfadnamen verwenden.
+Die Directory-Namen werden durch einen Doppelpunkt getrennt.
+Das Programm
+.BR login (1)
+setzt die Umgebungsvariable PATH auf den Initialwert:
+.br
+     PATH=:/bin:/usr/bin.
+.IP
+Die C-Shell
+.BR csh (1)
+benutzt die Variable
+.BR path .
+.TP
+.B HOME
+Login-Directory des Nutzers, das durch das Kommando
+.B login
+mit Hilfe der Passwortdatei
+.BR passwd (5)
+eingerichtet wird.
+.B Csh
+verwendet die Variable \fIhome\fR.
+.TP
+.B TERM
+Der Typ des Terminals, fuer das die Ausgabe aufbereitet
+wird.
+Diese Information wird von Kommandos (z.B.
+.BR vi (1))
+benutzt, die die speziellen Moeglichkeiten der Terminals
+ausnutzen.
+Das Programm
+.BR login (1)
+setzt
+.B TERM
+einmalig auf den Wert, der in der Datei
+.BR /etc/ttytype
+angegeben ist.
+.PP
+Weitere Namen werden
+mit dem Shell-Kommando
+.B export
+und Argumenten der Form
+.IR Name = Wert
+in
+.BR sh (1)
+oder durch den Systemruf
+.BR exec (2)
+in die Umgebung aufgenommem.
+Ueberschneidungen mit bestimmten Shell-Variablen,
+die haeufig in den Dateien
+\&.profile verwendet werden, sind zu vermeiden:
+MAIL, PS1, PS2, IFS.
+.SH SIEHE AUCH
+csh(1),
+login(1),
+sh(1),
+exec(2),
+ttytype(5),
+environ(7),
+term(7).

@@ -1,0 +1,114 @@
+.TH CURSES 3 WEGA
+.\" @[$]curses.3        1.2
+.ad
+.fi
+.SH NAME
+curses \- Bildschirmfunktionen mit "optimaler" Cursorbewegung
+.SH SYNTAX
+.B cc
+[
+.I flags
+]
+.I files
+.B \-lcurses
+.B \-ltermlib
+[
+.I libraries
+]
+.PP
+.B scc
+[
+.I flags
+]
+.I files
+.B \-lcurses
+.B \-ltermlib
+[
+.I libraries
+]
+.SH BESCHREIBUNG
+Mit diesen Routinen wird dem Nutzer eine optimale Methode zur Aktualisierung
+von Bildschirmen in die Hand gegeben.
+Die Routinen bewahren das Abbild des aktuellen Bildschirms, waehrend der
+Nutzer ein Abbild eines neuen Bildschirms entwickelt.
+Dann erhalten die Routinen mit
+.I refresh()
+die Weisung, den aktuellen Schirm so aussehen zu lassen wie den neuen.
+Zur Initialisierung der Routinen muss die Routine
+.I initscr()
+aufgerufen werden, bevor eine Routine benutzt wird, die
+sich mit Bildschirmausschnitten und Bildschirmen beschaeftigt.
+.PP
+Es ist ausserdem zu sichern, dass die Datei
+/usr/include/curses.h in das Quellprogramm
+aufgenommen wird.
+.SH DATEIEN
+/usr/lib/libcurses.a    /usr/lib/slibcurses.a
+.SH SIEHE AUCH
+"SCREEN/CURSES - Beschreibung" in WEGA-Dienstprogramme
+.br
+termcap(5),
+ioctl(2),
+setenv(1C).
+.SH FUNKTIONEN
+.nf
+.ds w \fIwin\fR
+.ds s \fIstdscr\fR
+.ta 3i
+addch(ch)                Zeichen in \*s hinzufuegen
+addstr(str)              Zeichenkette in \*s hinzufuegen
+box(win,vert,hor)        Kasten um \*w zeichnen
+clear()                  \*s loeschen
+clearok(scr,boolf)       Loeschflag fuer \fIscr\fR setzen
+clrtobot()               \*s bis zum Ende loeschen 
+clrtoeol()               \*s bis Zeilenende loeschen
+delwin(win)              \*w loeschen 
+echo()                   Echomodus setzen
+erase()                  \*s loeschen
+getch()                  Zeichen holen ueber \*s
+getstr(str)              Zeichenkette holen ueber \*s
+gettmode()               TTY-Modi holen
+getyx(win,y,x)           (y,x) Koordinaten holen
+inch()                   Zeichen auf aktuelle (y,x) Koordinaten holen
+initscr()                Bildschirme initialisieren
+leaveok(win,boolf)       Leave-Flag fuer \*w setzen
+longname(termbuf,name)   langen Namen von \fItermbuf\fR holen
+move(y,x)                zu (y,x) von \*s bewegen
+mvcur(lasty,lastx,newy,newx)
+                         Cursor bewegen
+newwin(lines,cols,beg_y,beg_x)
+                         Erzeugen eines neuen Windows
+nl()                     Newline-Umwandlung setzen
+noecho()                 Echomodus aufheben
+nonl()                   Newline-Umwandlung ruecksetzen
+noraw()                  Raw-Modus aufheben
+overlay(win1,win2)       win1 auf win2 ueberlagern
+overwrite(win1,win2)     win1 ueber win2 schreiben
+printw(fmt,arg1,arg2,...)
+                         printf auf \*s
+raw()                    Raw-Modus setzen
+refresh()                Bildschirmaktualisierung entspr. \*s
+restty()                 TTY-Flags auf gespeicherten Wert ruecksetzen
+savetty()                Speichern der aktuellen TTY-Flags
+scanw(fmt,arg1,arg2,...) scanf von \*s
+scroll(win)              \*w  um eine Zeile rollen
+scrollok(win,boolf)      Flag fuer Zeilenrollen setzen
+setterm(name)            term-Variable auf name setzen
+subwin(win,lines,cols,beg_y,beg_x)
+                         Erzeugung Sub-Windows \*w
+unctrl(ch)               druckbare Version von \fIch\fR
+waddch(win,ch)           Zeichen zu \*w hinzufuegen
+waddstr(win,str)         Zeichenkette zu \*w hinzufuegen 
+wclear(win)              \*w loeschen 
+wclrtobot(win)           \*w bis zum Ende loeschen
+wclrtoeol(win)           \*w bis Zeilenende loeschen
+werase(win)              \*w loeschen
+wgetch(win)              Zeichen ueber \*w holen
+wgetstr(win,str)         Zeichenkette ueber \*w holen
+winch(win)               Zeichen aus aktuellem (y,x) von \*w holen
+wmove(win,y,x)           aktuelle (y,x) Koordinaten in \*w setzen
+wprintw(win,fmt,arg1,arg2,...)
+                         printf in \*w
+wrefresh(win)            Bildschirm entspr. \*w aktualisieren
+wscanw(win,fmt,arg1,arg2,...)
+                         scanf ueber \*w

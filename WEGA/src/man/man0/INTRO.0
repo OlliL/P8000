@@ -1,0 +1,1870 @@
+.nr LL 7.7i
+.nr LT 7.7i
+.pl 61
+.LP
+.ds LH
+.ds RH
+.ds CF
+.ds CH "0-\\n(PN
+.ce
+0-1
+.nf
+EAW-electronic                                                         P8000
+.sp 5
+.TL
+W E G A - S o f t w a r e
+.sp 2
+.ce
+Programmierhandbuch
+.sp 7
+.LP
+Diese Dokumentation wurde von einem Kollektiv
+des Kombinates
+.DS L
+VEB ELEKTRO-APPARATE-WERKE
+BERLIN-TREPTOW "FRIEDRICH EBERT"
+.DE
+erarbeitet.
+.LP
+Nachdruck und jegliche Vervielfaeltigungen, auch auszugsweise,
+sind nur mit Genehmigung des Herausgebers zulaessig. Im Interesse
+einer staendigen Weiterentwicklung werden die Nutzer gebeten,
+dem Herausgeber Hinweise zur Verbesserung mitzuteilen.
+.nf
+.sp
+Herausgeber:
+.in +15
+Kombinat
+VEB ELEKTRO-APPARATE-WERKE
+BERLIN-TREPTOW "FRIEDRICH EBERT"
+Hoffmannstrasse 15-26
+BERLIN
+1193
+.in -15
+.sp 2
+Verantwortlicher Bearbeiter: U. Wiesner
+.sp
+WAE/03-0201-02
+.sp
+Ausgabe: 11/87
+.sp
+Aenderungen im Sinne des technischen Fortschritts vorbehalten.
+.bp
+.LP
+.sp 6
+Die vorliegende Dokumentation
+unterliegt nicht dem Aenderungsdienst.
+.LP
+Spezielle Hinweise zum aktuellen Stand der Softwarepakete befinden
+sich in README-Dateien auf den entsprechenden Vertriebsdisketten.
+.LP
+Dieser Band stellt ein Nachschlagewerk dar. Weitergehende Erlaeuterungen
+zu ausgewaehlten Komponenten befinden sich im Dokumentationsband
+WEGA-Dienstprogramme.
+.sp 8
+.DS L
+Inhaltsverzeichnis
+
+
+Sektion 0   Einfuehrung
+Sektion 1   Nutzerkommandos
+Sektion 2   Systemrufe
+Sektion 3   Unterprogrammbibliothek
+Sektion 4   Spezialdateien
+Sektion 5   Dateiformate und -konventionen
+Sektion 6   (leere Sektion)
+Sektion 7   Programmunterstuetzungsdateien
+Sektion M   Systemverwaltungskommandos
+.DE
+.ds LH "INTRO (0)
+.ds RH "INTRO (0)
+.fi
+.bp
+.NH
+Einfuehrung in die WEGA-Dokumentation
+.NH 2
+WEGA-Programmierhandbuch
+.LP
+Das WEGA-Programmierhandbuch ist ein Nachschlagewerk
+fuer den Nutzer des WEGA-Betriebssystems.
+Es liegt sowohl als gedrucktes Material vor,
+kann aber auch von den Installationsdisketten
+auf der Systemplatte des P8000 installiert werden (Online-Handbuch)
+und ist dann ueber das Kommando man(1) abrufbar.
+.NH 3
+Sektion 0 - Einfuehrung:
+.LP
+Die vorliegende Einfuehrung
+erlaeutert die WEGA-Software-Dokumentation, 
+gibt eine Einfuehrung zum Rest des WEGA-Programmierhandbuchs und 
+erklaert die Beschreibungen der folgenden Sektionen. Sie gibt ausserdem 
+einen Ueberblick ueber das WEGA-Betriebssystem.
+.NH 3
+Sektion 1 - Nutzerkommandos:
+.LP
+Sektion 1 des WEGA-Programmierhandbuchs
+beschreibt jedes Nutzerkommando, das ueber die 
+Tastatur eingegeben werden kann und eine Aktion veranlasst.
+Die meisten dieser Kommandos sind im Directory /bin oder /usr/bin 
+enthalten.
+.NH 3
+Sektion 2 - Systemrufe:
+.LP
+Systemrufe sind in Programmen enthalten und werden von dort aus beim 
+Programmlauf ausgefuehrt.
+Sie ermoeglichen dem Nutzer den Zugriff auf die Ressourcen
+und Verwaltungsmechanismen des Betriebssystems.
+Sektion 2 erklaert jeden Systemruf, seine 
+Unterprogramm-Schnittstelle (fuer C und PLZ/ASM), seine Wirkung 
+und die Fehlermeldungen.
+Fuer viele Systemrufe existieren entsprechende Kommandos (siehe 
+Sektion 1).
+.NH 3
+Sektion 3 - Unterprogramme:
+.LP
+Sektion 3 beschreibt die Unterprogramme der
+Standard-Bibliotheken.
+Diese Unterprogramme koennen nur mit Programmen, die in C
+geschrieben sind, gelinkt werden. Andere mit WEGA bereitgestellte 
+Hochsprachen besitzen ihre eigene Bibliothek, die zusammen mit der 
+jeweiligen Sprache dokumentiert ist.
+.NH 3
+Sektion 4 - Special-Files:
+.LP
+Sektion 4 beschreibt Special-Files - die 
+E/A-Treiber. E/A-Funktionen werden von WEGA durch Lesen 
+einer Datei oder Schreiben in eine Datei realisiert, die mit einem realen 
+E/A-Geraet korrespondiert, wie z.B. mit dem Port eines Terminals 
+oder dem Kanal eines Disketten-Laufwerkes.
+.NH 3
+Sektion 5 - Dateien und Konventionen:
+.LP
+Sektion 5 beschreibt die Struktur
+spezifischer Dateitypen, wie z.B. das Ausgabe-Dateiformat von Lader 
+und Assembler. Ausgenommen sind Dateien, die nur von einem Kommando 
+benutzt werden; beispielsweise werden die Zwischendateien des 
+Assemblers nicht beschrieben.
+.NH 3
+Sektion 6 - Spiele:
+Diese Sektion entfaellt.
+.NH 3
+Sektion 7 - Programmunterstuetzungsdateien:
+.LP
+Sektion 7 beschreibt 
+spezifische Dateien, auf die sich Programme be\%ziehen. Dazu gehoeren 
+Konfigurationstabellen, Makrodefinitionspakete und andere Online-Daten.
+Sektion 7 enthaelt ausserdem eine Zusammenfassung der gesamten 
+WEGA-Dateihierarchie.
+.NH 3
+Sektion M - Systemverwaltungskommandos:
+.LP
+Sektion M informiert
+ueber die vom Systemverwalter benutzbaren Programme. 
+Diese Kommandos sind privilegiert und koennen nur vom
+Systemverwalter (login: wega)
+ausgefuehrt werden. Sie befinden sich im Directory /etc.
+.NH 3
+Kommando-Syntax-Beschreibungen:
+.LP
+Jede Sektion im WEGA-Programmierhandbuch
+besteht aus einer oder mehreren in sich sich abgeschlossenen Seiten, 
+die jeweils eine Kommandofunktion beschreiben. Der Kommandoname ist in
+der Kopfzeile jeder Seite angegeben.
+Um zukuenftige Aenderungen zu erleichtern, ist jede Kommandobeschreibung
+fuer sich dokumentiert, d.h., jedes Kommando beginnt mit Seite 1.
+.bp
+.nf
+.sp 2
+.B1
+KOMMANDO (1)                                          KOMMANDO (1)
+
+
+NAME
+
+   command - der Name des auf der Tastatur einzugebenden Kommandos
+
+SYNTAX
+
+   command [optionen] [argumente]
+
+BESCHREIBUNG
+
+   Beschreibung der Wirkungen des Kommandos
+
+BEISPIELE
+
+   Ein Kommandobeispiel genau so, wie es in den Rechner eingegeben
+   werden kann.
+
+DATEIEN
+
+   /path/file   Name der Datei, die das Programm enthaelt
+   /path/file   Name von Dateien, die mit dem Kommando in 
+                einer Beziehung stehen
+
+EINSCHRAENKUNGEN
+
+   Gibt die Grenzen des Programms an (z.B. Dateigroesse)
+
+SIEHE AUCH
+
+   Kommando (1), verwandtes Kommando (2), andere (M).
+   Hier werden andere Unterlagen, die sich auf das Kommando
+   beziehen, aufgezaehlt.
+
+
+
+
+
+
+.B2
+.sp 2
+Bild 1. Musterseite des WEGA-Programmierhandbuchs, gekuerzt
+.fi
+.bp
+.NH 3
+Kommandobeschreibungen:
+.LP
+Alle Beschreibungen besitzen einen 
+einheitlichen Aufbau, manche Beschreibungen benutzen nicht alle
+Unterpunkte.
+.RS
+.IP . 2
+Im Abschnitt NAME wird der genaue Name der Kommandos und
+Unterprogramme genannt und eine kurze Beschreibung ihres
+Zwecks gegeben.
+.IP .
+Die SYNTAX gibt die exakte Anwendung des 
+beschriebenen Programmes an. Bei der Kommandobeschreibung werden
+folgende Konventionen benutzt:
+.IP "  -" 4
+Fettgedruckte Woerter sind als Literale zu betrachten und
+sind so gedruckt, wie sie auftreten.
+.IP "  -"
+Eckige Klammern ("[]") um ein Argument charakterisieren es als
+optionales Argument.
+.IP "  -"
+Die Punkte ("...") bedeuten, dass das vorhergehende Argument
+wiederholt verwendet werden kann.
+.IP "  -"
+Ein Argument, das mit einem Minuszeichen (-) beginnt, bedeutet
+meist, dass das Argument eine Option ist, selbst dann, wenn
+es an einer Stelle auftritt, an der Dateinamen moeglich waeren.
+Daher sollten Dateinamen nicht mit einem Minuszeichen beginnen.
+.IP . 2
+Die BESCHREIBUNG erlaeutert das Kommando im Detail.
+.IP .
+Der Abschnitt BEISPIELE bringt ein oder mehrere Beispiele fuer die
+Anwendung des Kommandos.
+.IP .
+Der Abschnitt DATEIEN gibt den Namen der Dateien an, die im 
+Programm, dem Systemruf oder dem Unterprogramm enthalten sind.
+.IP .
+Der Abschnitt SIEHE AUCH gibt Hinweise auf weitere Informationen.
+.IP .
+Ein Abschnitt DIAGNOSTIK erlaeutert die Diagnose-Mitteilungen, die
+ausgegeben werden koennen. Selbsterklaerende Mitteilungen werden
+nicht dargestellt.
+.IP .
+Ein Abschnitt EINSCHRAENKUNGEN gibt bekannte Beschraenkungen (zuweilen auch
+Maengel) an.
+.IP .
+In Sektion 2 gibt ein Abschnitt ASSEMBLER die Assemblernotation an,
+wie der Systemruf implementiert ist.
+.RE
+.LP
+Ein Manualeintrag ist eindeutig charakterisiert durch die Kurzbezeichnung
+mit Titel und Sektionsnummer.
+Manche Namen koennen in mehreren Sektionen
+auftreten. Die meisten Doppelungen ergeben sich bei Kommandos, die
+einen Systemaufruf ausloesen.
+
+.NH 2
+Dokumentation
+.LP
+Die WEGA-Software-Dokumentation wird in 3 Baenden bereitgestellt.
+.LP
+Der 1. Band ist das WEGA-Programmierhandbuch. Es ist das grundlegende Handbuch
+fuer den Benutzer, weil es eine Beschreibung aller Basis-Nutzerkommandos
+(Kommandos, die ueber die Tastatur eingegeben werden) des 
+Betriebssystems WEGA enthaelt.
+.LP
+Der 2. Band ist der Sammelband unter der Bezeichnung
+WEGA-Dienstprogramme. Er enthaelt
+erweiterte Hinweise fuer einige wesent\%liche WEGA-Kommandos.
+Weiterhin sind in diesem Band die Hilfsmittel
+fuer den Programmierer (Sprachen, Debugger, Verwaltungsprogramme)
+erlaeutert.
+.LP
+Das WEGA-Systemhandbuch enthaelt
+Informationen zum Installieren und Unterhalten des 
+Systems (Superuser-Kommandos).
+.NH 3
+Uebersicht ueber das Handbuch WEGA-Dienstprogramme
+.LP
+Das Handbuch WEGA-Dienstprogramme enthaelt Zusatzinformationen zum
+WEGA-Programmierhandbuch. Es besteht aus folgenden Abschnitten:
+.DS L
+CALL-CONV	U8000-Aufrufvereinbarungen
+PGMG		WEGA-Programmierung
+C-SHELL		Eine Einfuehrung in C-Shell
+C-SHELL		Beschreibung des Kommandointerpreters C-Shell
+SHELL		Eine Einfuehrung in Shell
+EX/VI		Kurzbeschreibung der Editoren EX und VI
+VI		Beschreibung des bildschirmorientierten Editors VI
+CAS		U8000-Assembler
+U8000-PLZ/ASM	Benutzerhandbuch
+U8000-PLZ/SYS	Benutzerhandbuch
+ADB		WEGA-Debugger
+SCCS		Source Code Control System
+MAKE		Programmbeschreibung
+C-ISAM		Index-sequentielle Zugriffsmethode
+COMM		WEGA-Kommunikationspaket
+FSCK		Werkzeug zur Ueberpruefung der Dateisysteme
+SCREEN/CURSES	Bibliothek zur Bildschirmarbeit
+.DE
+.LP
+Fuer die meisten Abschnitte im WEGA-Dienstprogramm-Handbuch
+existiert eine Eintrag im 
+WEGA-Programmierhandbuch. Die Abschnitte des Dienstprogramm-Handbuches sollen 
+die fuer kompliziertere WEGA-Kommandos erforderliche vertiefende Information 
+liefern.
+.NH 3
+Uebersicht ueber das WEGA-Systemhandbuch
+.LP
+Das WEGA-Systemhandbuch behandelt Prozeduren, die fuer den 
+Systemverwalter einer WEGA-Installation vorgesehen sind. Diese Unterlage 
+liefert die speziellen Kenntnisse fuer Systemstart- und -wiederanlauf-
+Prozeduren. Kommandos zur Systemerhaltung sind sowohl im
+WEGA-Systemhandbuch als
+auch in Sektion M des WEGA-Programmierhandbuchs zu finden.
+.sp
+Das WEGA-Systemhandbuch enthaelt folgende Abschnitte:
+.DS
+Einleitung
+Start- und Haltprozeduren
+Installation der WEGA-Systemplatte
+Verwaltung der WEGA-Dateisysteme
+Systemgenerierung
+Systemstoerungen
+Ausgewaehlte WEGA-Funktionen
+Schreiben von WEGA-Geraetetreibern
+.DE
+.NH
+Uebersicht ueber die Kommandos von Sektion 1
+.NH 2
+Hauptkommandogruppen
+.LP
+Positionen, die mit "*D" gekennzeichnet sind, besitzen eine ausfuehrliche
+Darstellung im Handbuch WEGA-Dienstprogramme.
+.sp
+Die Kommandos in Sektion 1 gliedern sich in 5 Hauptgruppen:
+.sp
+.nf
+        Dateibehandlungskommandos
+        Programmiersprachenkommandos
+        Shell-Kommandos
+        Systemkommandos
+        Nutzerkommandos
+.fi
+.NH 2
+Dateibehandlungskommandos
+.NH 3
+Dateikommunikation
+.LP
+Die Positionen dieser Gruppe beziehen sich auf Kommandos, die Informationen
+zwischen Dateien transferieren oder ein wesentlicher Be\%standteil des 
+Transferprozesses sind.
+.RS
+.sp
+.nf
+cu     - Anwahl eines anderen WEGA-Systems
+mail   - sende/empfange Post an/von Nutzern
+rmail  - sende Post an Nutzer (Empfang nicht moeglich)
+uucp   - WEGA-WEGA-Kopierprogramm
+uuname - Auflisten der uucp-Namen bekannter Systeme
+uux    - WEGA-WEGA-Kommandoausfuehrung
+.fi
+.RE
+.NH 3
+Dateivergleich
+.LP
+Die Kommandos in diesem Teil werden benutzt, um Dateien (vorzugsweise 
+Textdateien) auf Unterschiede und Gemeinsamkeiten zu untersuchen. Kommandos,
+die den Inhalt einer Datei mit einer anderen Datei vergleichen,
+sind ebenfalls enthalten.
+.RS
+.nf
+.sp
+bdiff     - suche Unterschiede zwischen grossen Dateien (s.diff)
+cmp       - vergleiche den Inhalt von zwei Dateien
+comm      - suche oder streiche Zeilen, die zwei sortierte Dateien
+            gemeinsam besitzen
+diff      - suche Unterschiede zwischen Dateien (s.bdiff)
+diff3     - suche Unterschiede zwischen 3 Dateien (s.diff)
+diffmk    - kennzeichne Unterschiede zwischen Dateien (s.diff)
+dircmp    - vergleiche den Inhalt von zwei Directories
+sdiff     - drucke Unterschiede seitenweise
+sort      - sortiere und/oder kombiniere Zeilen in einer Datei
+tsort     - topologisches Sortieren von Zeilen in einer Datei
+uniq      - suche sich wiederholende Zeilen in einer Datei
+.RE
+.fi
+.NH 3
+Datei-Editierung
+.LP
+Die Kommandos in diesem Teil sind die System-Editoren (ed, edit, ex, vi)
+und Kommandos zum Aendern von Dateiinhalten (vorzugsweise von Textdateien).
+.sp
+.RS
+.nf
+awk     - Sprache zur Zeichenkettenverarbeitung   
+csplit  - Context-Aufteilung
+cut     - Ausschneiden bestimmter Felder jeder Zeile
+ed      - Basis-Editor
+edit    - einfacher zeilenorientierter Editor
+ex      - leistungsfaehiger zeilenorientierter Editor   *D
+join    - Zusammenfuegen von Zeilen zweiter sortierter Dateien
+paste   - Verbinden gleicher Zeilen mehrerer Dateien
+sed     - Stream-Editor
+split   - Aufteilen einer Datei
+tr      - Uebertragen von Zeichen aus einer Klasse in eine andere
+vi      - Visueller Mode des ex-Editors   *D 
+.RE
+.fi
+.NH 3
+Datei-Formatierung
+.LP
+Die Kommandos dieses Teils werden benutzt, um Rohdateien (normalerweise
+Textdateien) in formatierte Dateien umzuwandeln. Kommandos, die mit diesem
+Prozess verwandt sind (z.B. das col-Filter), gehoeren auch dazu.
+.RS
+.sp
+.nf
+banner  - drucke Zeichenketten in Plakatform
+col     - filtere Escape-Zeichen aus einer Datei
+crypt   - Verschluesseln/Entschluesseln einer Datei
+deroff  - entferne nroff/troff-, tbl- und eqn-Konstruktionen
+eqn     - troff-Preprozessor fuer Lichtsatz
+neqn    - nroff-Preprozessor fuer Druck
+checkeq - pruefe die Syntax der Eingangsdateien fuer eqn
+expand  - ersetze Tabulatoren durch Leerzeichen
+nl      - ergaenze eine Zeilennummer zu jeder Zeile
+pr      - formatiere Dateien fuer Druckerausgabe
+ptx     - generiere und formatiere den permutierten Index
+tbl     - Tabellen-Preprozessor fuer nroff oder troff   
+troff   - Textformatierung fuer Lichtsatzgeraete   
+nroff   - Textformatierung fuer Drucker   
+.fi
+.RE
+.NH 3
+Dateipruefung
+.LP
+Die Kommandos dieses Teils werden benutzt, um den Inhalt von Dateien
+(normalerweise Textdateien) darzustellen oder zu inspizieren.
+.sp
+.RS
+.nf
+cat     - gib den Inhalt einer oder mehrerer Dateien aus
+dog     - gib den Inhalt einer Datei aus (jeweils einen
+          Bildschirm voll)
+grep    - suche ein Muster in einer Datei mit der ed-Struktur
+egrep   - grep mit ex-Syntax
+fgrep   - schnelles grep mit festen Zeichenketten
+head    - gib die ersten Zeilen einer Datei aus
+hyphen  - suche abgeteilte Woerter in einer Datei
+more    - gib den Inhalt einer Datei aus
+          (jeweils ein Bildschirm voll)
+page    - aehnlich more
+tail    - gib die letzten Zeilen einer Datei aus
+.RE
+.fi
+.NH 3
+Dateitransfer
+.sp
+.RS
+.nf
+ar      - Archiv- und Bibliotheksverwalter
+cp      - kopiere eine Datei auf einen anderen Namen und/oder Ort
+cpio    - kopiere Archivdateien aus der/in die Bibliothek
+dd      - kopieren und/oder konvertieren von Dateien
+getfile - transferiere Dateien vom lokalen zum Remote-System
+getud   - einlesen von Dateien von UDOS-Disketten am P8000
+ln      - ordne einer Datei einen Dateinamen zu
+mkdir   - generiere ein Directory
+mv      - Verschieben oder Umbenennen von Dateien und Directories
+pack    - komprimiere Dateien, um Speicherplatz auf der Platte zu 
+          sparen
+unpack  - expandiere komprimierte Dateien
+putfile - transferiere Dateien vom Remote-System zum lokalen
+          System
+putud   - auslagern von Dateien auf UDOS-Disketten am P8000
+rm      - streiche eine Datei
+tar     - archiviere Dateien auf Disketten (Blockformat)
+tee     - verzweige den Ausgang eines Prozesses auf zwei Ziele
+.RE
+.fi
+.NH 3
+Dateischutz
+.LP
+Die Kommandos dieses Teils haben mit dem Schutz von Dateien und Directories
+zu tun. Sie steuern den Lese-, Schreib- und Ausfuehrungszugriff von Dateien.
+.sp
+.RS
+.nf
+chmod - aendere die Zugriffsrechte einer Datei oder eines
+        Directorys
+chown - aendere den Eigner einer Datei oder eines Directorys
+umask - setze den impliziten Dateischutz fuer neue Dateien
+.fi
+.RE
+.NH 3
+Source Code Control System SCCS
+.LP
+Die Kommandos dieses Teils beziehen sich auf Behandlung des
+Source Code Control System (SCCS). Naehere Informationen dazu sind in
+WEGA-Dienstprogramme zu finden.
+.sp
+.RS
+.nf
+admin     - generiere und verwalte SCCS-Dateien   *D
+cdc       - aendere den Kommentar in einer SCCS-Datei   *D
+comb      - kombiniere SCCS-Dateien   *D
+delta     - aendere eine SCCS-Datei   *D
+get       - hole eine Version einer SCCS-Datei   *D
+prs       - gib eine SCCS-Datei aus   *D
+rmdel     - streiche eine Aenderung in einer SCCS-Datei   *D
+sact      - gib laufende SCCS-Datei-Editierungsaktivitaet aus  *D
+sccsdiff  - vergleiche zwei Versionen einer SCCS-Datei   *D
+unget     - mache ein vorhergehendes get rueckgaengig   *D
+val       - mache eine SCCS-Datei gueltig   *D
+what      - identifiziere SCCS-Dateien   *D
+.RE
+.fi
+Die folgenden Kommandos beziehen sich auf ein einfacheres
+abgeruestetes Quellcodeverwaltungssystem.
+.sp
+.RS
+.nf
+chkdiff   - liste die Differenzen zwischen verschiedenen
+            Versionen einer Quelldatei auf
+chkin     - nimm eine Datei in die Quellsteuerdatei auf
+chkout    - streiche eine Datei aus der Quellsteuerdatei 
+chkwhat   - gib die Quellsteuerzeilen (what-Strings) aus
+.RE
+.fi
+.NH 3
+Dateistatus
+.LP
+Die Kommandos dieses Teils werden benutzt, um Dateien, ihren Inhalt oder ihre
+Qualitaet zu suchen, zu identifizieren, zu untersuchen oder darzustellen.
+.sp
+.RS
+.nf
+du      - stelle die Platten-Speicherplatzbelegung dar
+file    - bestimme den Dateityp
+find    - suche Dateien
+ls      - Ausgabe des Inhalts von Directories
+quot    - stelle die Eigentumsverhaeltnisse des Dateisystems
+          zusammen
+sum     - addiere und zaehle die Bloecke einer Datei
+touch   - aktualisiere Zugriff und Aenderungsnummer von Dateien
+vls     - stelle Dateien und Directories "grafisch" dar
+wc      - zaehle die Zeilen, Woerter und Buchstaben einer Datei
+whereis - gib Quelle, Binaercode und/oder Manualeintrag fuer ein
+          Programm aus
+.sp
+.RE
+.NH 2
+Sprachen und Programmierhilfsmittel
+.LP
+Die Kommandos dieses Teils werden in Verbindung mit den 
+WEGA-Programmiersprachen benutzt. Mehr Informationen ueber die 
+Programmiersprachen sind in WEGA-Dienstprogramme zu finden.
+.sp
+.RS
+.nf
+adb      - Debugger   *D
+as       - PLZ-ASM-Assembler   *D
+cas      - Assembler-Aufruf   *D
+cb       - C-Programm-Formatierer
+cc       - C-Compiler fuer P8000   
+code     - Ausgabe von Zeichen und ihrer Oktaldarstellung
+cref     - Ausgabe einer Cross-Referenz-Liste   
+cxref    - ein einfaches Verweisprogramm fuer C-Routinen   
+error    - Erlaeuterung der Fehlermeldungen des Compilers
+expr     - Berechnung von Ausdruecken
+flow     - Flussanalyse von C-Programmen   
+ld       - Lader fuer nichtsegmentierte U8000-Programme,
+           fuer U880- und U881-Programme   
+lex      - Generierungsprogramm fuer einfache lexikalische
+           Aufgaben 
+lint     - Pruefung von C-Programmen   
+load     - Laden des P8000-Entwicklungsmoduls
+lorder   - Suchen einer Ordnungsbeziehung fuer eine
+           Objektbibliothek
+m4       - Makro-Prozessor   
+make     - Aufrechterhaltung, Aktualisierung und Regenerierung
+           von Programmgruppen   *D
+mkstr    - Generierung einer Fehlernachrichten-Datei fuer eine
+           C-Quelle   
+nm       - Ausgabe einer Namensliste
+objdu    - Dump von Objekt- und Lademodulen
+objhdr   - Dump der Kopfinformation von Objektmodulen
+objsu    - Entfernen von Unterstrichen in Symboltabellen
+           von Objektmodulen
+od hd bd - oktaler oder hexadezimaler Dump
+plz      - plz/sys-Compiler-Treiber   *D
+plzcg    - plz/sys-Code-Generator fuer P8000   *D
+plzsys   - plz-sys-Compiler   *D
+prof     - Darstellung von Laufzeitprofilen
+prom     - PROM-Programmierung
+ranlib   - Umwandlung von Archiven in Bibliotheken mit wahlfreiem 
+           Zugriff
+regcmp   - Compilieren regulaerer Ausdruecke
+scc      - segmentierter C-Compiler
+send     - Laden in den P8000-Emulator
+size     - Ermittlung der Groesse einer Objektdatei 
+sld      - segmentierter P8000-Lader
+sprof    - Darstellung von Laufzeitprofilen
+strings  - Ausgabe von Zeichenketten auf Objekt- oder andere
+           binaere Dateien
+strip    - Streichen von Symbolen, Relocation-Bits und Kopfzeilen
+uimage   - Uebersetzen von Zobj in a.out
+xcref    - Cross-Referenzen fuer C-Programme   
+xstr     - entferne Zeilen aus C-Programmen
+yacc     - ein Compiler-Compiler  
+.RE
+.sp
+.NH 2
+Shell-Kommandos
+.LP
+Das Shell ist das Primaerinterface zwischen Nutzer und Rechner.
+Standardmaessig werden zum P8000 die C-Shell und die Bourne-Shell
+ausgeliefert. Die Programme
+in diesem Teil beziehen sich auf die Funktionen der Shells. Bezueglich weiterer
+Informationen zu den Shells sei auf die Abschnitte des C-Shell und des Shell
+in WEGA-Dienstprogramme verwiesen.
+.NH 3
+Shell-Kommandos
+.LP
+Die Shell-Kommandos steuern die Reaktion der Shells auf alle anderen in das
+Terminal eingegebenen Kommandos bzw. informieren darueber.
+.sp
+.RS
+.nf
+at       - spaetere Ausfuehrung eines Kommandos oder einer 
+           Shell-Script-Datei
+cd       - wechseln des Arbeitsdirectories
+env      - setze die Umgebung fuer die Kommandoausfuehrung
+kill     - sende ein Signal an einen Prozess
+printenv - Ausgabe der Umgebungsvariablen
+ps       - Prozess-Status
+pwd      - Name des Arbeitsdirectorys
+script   - registriere alle Terminal-Aktionen
+sleep    - verschiebe die Ausfuehrung um ein Zeitintervall
+wait     - warte den Abschluss des Hintergrundprozesses ab
+xargs    - bilde Argumentliste(n) und fuehre ein Kommando aus
+.RE
+.fi
+.NH 3
+Shell-Scripte
+.LP
+Shell-Scripte sind Kommandodateien, die von Shell ausgefuehrt werden. Die
+Kommandos in diesem Teil beziehen sich auf die Erzeugung und Ausfuehrung 
+dieser Shell-Scripts.
+.sp
+.RS
+.nf
+basename - kuerze den Pfadnamen zum Dateinamen
+dirname  - kuerze den Pfadnamen zum Directorynamen
+echo     - gib Zeichenketten auf die Standardausgabe aus
+echo2    - gib Zeichenketten auf die Standardfehlerausgabe aus
+getopt   - zergliedere die Optionen in der Kommandozeile
+gets     - erfasse eine Zeichenkette von der Tastatur
+line     - erfasse eine Zeile von der Tastatur
+nice     - starte ein Programm mit niedriger Proiritaet
+nohup    - starte ein Programm ohne Unterbrechnungsmoeglichkeit
+           durch Ausschalten des Terminals
+test     - teste die Qualitaet von Dateien und Zeichenketten
+true     - stelle den Wert "wahr" bereit
+false    - stelle den Wert "falsch" bereit
+.RE
+.fi
+.NH 3
+Shell als Kommando
+.LP
+Da das Shell selbst wieder ein Kommando ist, besitzt es sein eigenes Programm
+und seine Tastatur-Eingabe. Die 3 Kommandos dieses Teils sind Shells und
+koennen vom Terminal aus benutzt werden.
+.RS
+.sp
+.nf
+csh - Kommando-Interpreter mit C-aehnlicher Syntax   *D
+rsh - Shell mit Restriktionen (Kommando-Interpreter)
+      (Untermenge von sh)
+sh  - Bourne-Shell-Kommandointerpreter   *D
+.RE
+.fi
+.NH 2
+Das System als Ganzes
+.LP
+Einige Kommandos beziehen sich auf Funktionen des Systems als Ganzes, das
+Online-Handbuch, den System-Abrechner, die System-Uhr und auf die 
+angeschlossenen Geraete.
+Die Kommandos dieses Teils befassen sich mit Programmen fuer diese 
+Systemaspekte.
+.NH 3
+Online-Handbuch
+.LP
+Das System enthaelt ein Online-Handbuch.
+Es ist i.a. auf der Systemplatte in dem  Directory /usr/man installiert.
+Die folgenden Kommandos beziehen
+sich auf dieses Handbuch oder andere Online-Informationsquellen.
+.sp
+.RS
+.nf
+apropos - stelle Kommandos anhand eines Schluesselwortes dar
+getname - stelle die Spalte NAME des Handbuches dar
+help    - Online-Unterstuetzung
+look    - suche Zeilen in einem sortierten Directory
+man     - gib Teile des WEGA-Programmierhandbuchs aus
+news    - gib Nachrichten aus
+vnews   - stelle die Nachricht visuell dar
+whatis  - beschreibe ein Kommando
+.fi
+.RE
+.NH 3
+Rechenprogramme
+.LP
+Das System enthaelt verschiedene Rechenprogramme (Benutzung des
+Systems als Tischrechner).
+.sp
+.RS
+.nf
+bc    - Tischrechner (nutzt dc)
+dc    - Tischrechner in umgekehrt polnischer Notation
+units - Umrechnen von Einheiten und Waehrungen
+.fi
+.RE
+.NH 3
+Systemgeraete
+.LP
+Das System verkehrt mit einer Anzahl von Peripheriegeraeten. Die Kommandos
+dieses Teils steuern den Verkehr.
+.sp
+.RS
+.nf
+local  - Rueckgabe der Steuerung an das lokale System
+lpr nq - Drucker-Spooler
+remote - Uebergabe der Steuerung an ein abgesetztes WEGA-System
+reset  - Ruecksetzen des Terminal-Mode auf implizite Werte
+stty   - Setzen der Optionen fuer ein Terminal
+tabs   - Setzen der Tabulatoren fuer ein Terminal
+tty    - liefere den Terminal-Namen
+xq     - Verwaltung von Requests an den Drucker-Spooler
+.fi
+.RE
+.NH 3
+Systemzeit
+.LP
+Das System enthaelt eine Uhr und einen Kalender.
+.sp
+.RS
+.nf
+cal      - gib den Kalender aus
+calendar - Terminakalender-Dienst
+date     - gib Datum und Zeit aus
+daytime  - Ausgabe der Urzeit im "Umgangston"
+time     - kontrolliere die Zeit fuer ein Kommando
+timex    - kontrolliere die Zeit fuer ein Kommando und generiere
+           einen Bericht ueber die System-Aktivitaet
+.fi
+.RE
+.NH 2
+Nutzerorientierte Kommandos
+.LP
+Dieser letzte Informationsblock enthaelt Kommandos fuer den
+Multiuserbetrieb.
+.NH 3
+Nutzer-Kommunikation
+.LP
+Nutzer, die gleichzeitig eingetragen sind, koennen ueber das System
+miteinander kommunizieren.
+.sp
+.RS
+.nf
+mesg  - eingehende Nutzer-Nachrichten erlauben oder verbieten
+talk  - zeichenweiser Verkehr mit einem anderen Nutzer
+write - zeilenweiser Verkehr mit einem anderen Nutzer
+.fi
+.RE
+.NH 3
+Nutzer-Information
+.LP
+Diese Kommandogruppe liefert Informationen ueber andere Nutzer am System.
+.sp
+.RS
+.nf
+id      - gib Nutzer- und Gruppen-Identifikator und -Namen aus
+logname - gib den Login-Namen aus
+uname   - gib Informationen ueber den aktuellen WEGA-Kern aus
+users   - gib eine komprimierte Nutzerliste aus
+who     - gib eine Liste der zur Zeit am System befindlichen
+          Nutzer aus
+whoami  - gib den Login-Namen des aktuellen Nutzers aus
+whodo   - gib die aktuellen Nutzer und ihren Prozesstatus aus
+whois   - Zugriff auf die Nutzerinformation
+.fi
+.RE
+.NH 3
+Nutzer-Manipulation
+.LP
+Die Kommandos dieser Gruppe beziehen sich auf Dateien und Kommandos, die die
+Integritaet und Identitaet eines Nutzers sichern.
+.sp
+.RS
+.nf
+chgrp   - Gruppe aendern
+gpasswd - Passwort der Gruppe aendern
+grpck   - Dateipruefer fuer Passwort/Gruppe
+pwck    - Dateipruefer fuer Passwort/Gruppe
+login   - Anmelden im System
+newgrp  - eintragen in eine neue Gruppe
+passwd  - Login-Passwort aendern
+su      - Nutzer-Identitaet zeitweilig aendern
+.fi
+.RE
+.sp 2
+.NH
+WEGA - eine funktionelle Uebersicht
+.LP
+WEGA ist ein leistungsfaehiges Mehrnutzer-Betriebssystem fuer Dialogbetrieb.
+Es ist kompatibel zu dem international weit verbreiteten Betriebssystem
+UNIX System III und besitzt viele Hilfsmittel
+zur Entwicklung von Betriebssystemen, Sprachen und Anwendersoftware.
+WEGA ist ebenfalls fuer die Dokumentationserstellung geeignet.
+.LP
+Die funktionelle Uebersicht ueber WEGA besteht aus folgenden Punkten:
+.sp
+.RS
+.nf
++ Dateisystem
+  - einfache Dateien
+  - Directories
+  - Special-Files
+  - abgeschlossene Dateisysteme
+
++ Schutz
+
++ WEGA-Ein-/Ausgabe
+
++ Prozesse und Speicherabbilder (Images)
+  - Prozessgenerierung
+  - Programmausfuehrung
+  - Beziehungen Parent-/Child-Prozess
+  - Prozessabschluss
+
++ Prozess-Synchronisation
+  - Signal
+  - Pipeline
+  - Wait
+
++ Das Shell
+  - Standard-E/A
+  - Filter
+  - Musterverarbeitung
+  - Multitask-Betrieb
+  - Kommandodateien
+
++ Shell-Implementation
+.sp
+.RE
+.fi
+.NH 2
+Das Dateisystem
+.LP
+Eine der charakteristischen Eigenschaften von WEGA ist das Dateisystem.
+Das Dateisystem ist hierarchisch unter Verwendung des Konzeptes von
+Root-Directories, Subdirectories und Pfadnamen zur Lokalisierung
+von Dateien aufgebaut. WEGA kennt drei Dateitypen:
+einfache Dateien, Directories
+und Special-Files (fuer System-E/A-Geraete).
+.NH 3
+Einfache Dateien
+.LP
+Einfache Dateien enthalten Informationen, die vom Nutzer eingegeben wurden.
+Diese Informationen koennen Quellprogramme, Objektprogramme, Dokumentationen
+oder Basisdaten sein. Fuer das WEGA-Betriebssystem ist eine Datei nur ein
+nichtstrukturiertes eindimensionales Feld von Bytes. Das bedeutet, dass eine
+einfache Datei vom Nutzer nach eigenem Ermessen
+beliebig strukturiert werden kann.
+.NH 3
+Directories
+.LP
+Auf einfache Dateien wird mit Hilfe einer Directory verwiesen. 
+Directories stellen die Verbindung zwischen dem Dateinamen und der
+Datei selbst her; dies bewirkt eine effektive Struktur des gesamten
+Dateisystems.
+Dateien koennen in geeigneter Stufung in Subdirectories gruppiert
+werden (Subdirectories werden vom Nutzer erzeugt). Die Verweise auf so
+organisierte Dateien lassen sich wie in Bild 3.1. hierarchisch gegliedert
+als umgekehrter Baum darstellen. Diese Struktur wird oft auch Directorybaum
+genannt.
+.LP
+WEGA unterhaelt verschiedene Directories fuer den Eigenbedarf. Eines
+der wichtigsten Directories ist das Root-Directory (/). Es stellt
+die Basis der gesamten Dateistruktur dar. Alle Dateien im System koennen 
+durch Verfolgung eines Pfades vom Root-Directory aus ueber eine Kette von
+Directories gefunden werden; jedoch muss nicht bei jedem Pfad vom
+Root-Directory ausgegangen werden.
+.LP
+Die Konstruktion eines Pfades durch eine Kette von Directories heisst
+Pfadname. Ein solcher Pfadname zu einer Datei besteht aus den Directorynamen,
+die durch / getrennt werden, und endet mit dem Dateinamen.
+.LP
+Bild 3.1. illustriert eine typische Dateistruktur. Dieselbe einfache Datei
+kann, moeglicherweise unter verschiedenen Namen, in verschiedenen 
+Directories erscheinen. Diese Eigenschaft wird Linking genannt; eine 
+Directory-Eintragung fuer eine Datei wird als Link bezeichnet
+(siehe link(2)). Im WEGA-System besitzen alle
+Links fuer eine Datei den gleichen Status. Das heisst, eine Datei existiert
+nicht in einem bestimmten Directory; die Eintragung in ein Directory 
+besteht lediglich aus dem Namen und einem Zeiger auf die
+Beschreibungsinformation der Datei.
+Somit existiert eine Datei unabhaengig von einer 
+Directory-Eintragung, obwohl in der Praxis eine Datei mit der Loeschung
+der letzten Eintragung (des letzten Links) verschwindet.
+.DS L
+
+                    /         WEGA System-Root
+Positionen im
+Root-Directory
+
+
+    . . .   z      fi     dev      /z  : Directory
+                                   /fi : einfache Datei
+                                   /dev: Directory
+
+
+        a   b   c      md5   fd0   /z/a    : einfache Datei
+                                   /z/b    : einfache Datei
+                                   /z/c    : Directory
+                                   /dev/md5: Special-File (Disk)
+                                   /dev/fd0: Special-File (Floppy)
+
+             a     b               /z/c/a: einfache Datei
+                                   /z/c/b: einfache Datei
+
+
+Bild 3-1     Schema eines Dateisystems (Beispiel)
+.DE
+.LP
+Der Ausgangspunkt der im Bild 3.1. dargestellten Baumstruktur ist das
+Root-Directory /. Dieses Root-Directory enthaelt, wie alle anderen 
+Directories, Eintragungen, die auf einen der drei Dateitypen zeigen. Das
+dargestellte Root-Directory besitzt drei Eintragungen, zwei davon zeigen
+auf andere Directories (/dev und /z), eine auf eine einfache Datei (fi).
+Das Directory /dev enthaelt Eintragungen, die auf zwei Special-Files 
+verweisen (md5 und fd0, E/A-Treiber fuer die Platte und das
+Floppy-Disk-Laufwerk 0).
+Das Directory /z enthaelt Eintragungen fuer die beiden Dateien
+a und b sowie das Subdirectory c. Unter dem Directory /z/c befinden sich
+ebenfalls zwei Dateien mit dem Namen a und b. Dies bringt keine Probleme beim
+Aufsuchen der Dateien, da ihre vollstaendigen Pfadnamen unterschiedlich sind
+(/z/a und /z/c/a).
+.LP
+Alle Namen im WEGA-System duerfen aus maximal 14 Zeichen bestehen. Es gibt
+noch einige geringfuegige Beschraenkungen bei der Wahl der Dateinamen; z.B.
+sind Dateinamen, die mit einem Minuszeichen (-) beginnen, nicht zu empfehlen,
+und der C-Compiler erwartet Quelldateinamen, die auf .c enden. Weitere
+Namens-Konventionen sind in den Compiler- und Kommando-Beschreibungen
+zu finden.
+.LP
+Es ist immer moeglich, einen vollstaendigen Pfadnamen fuer ein Datei
+anzugeben, wobei der Pfadname bei der Root beginnt. Die unbegrenzte 
+Staffelungstiefe der WEGA-Directorystruktur kann jedoch zu unpraktisch
+langen Pfadnamen fuehren. Um dies zu vermeiden, wird das Prinzip des
+aktuellen Directorys (auch Arbeitsdirectory genannt) benutzt. Das 
+System interpretiert Pfadnamen, die nicht mit Root beginnen, als relativ zum
+Arbeitsdirectory. Dieses Arbeitsdirectory (sofern es nicht
+schreibgeschuetzt ist)
+kann in den Grenzen des Directorybaumes beliebig veraendert
+werden. Zur Illustration nehmen wir an, das laufende Directory sei /z
+in Bild 3.1. Ein nicht bei Root beginnender Pfadname a verweist auf die 
+Datei /z/a. Wird das aktuelle Directory zu /z/c geaendert, so verweist der
+Name a auf /z/c/a.
+
+Normalerweise enthaelt jedes Directory einen Unterbaum von Dateien und
+Directories. Die Form der Unterbaeume ist frei waehlbar, und 
+Subdirectories koennen beliebig generiert oder geloescht werden. 
+Directories koennen entsprechend der zu loesenden Aufgabe strukturiert
+werden. Beim Login wird der Anfangswert des Arbeitsdirectory
+auf die Spitze des
+Unterbaumes gesetzt. Dieser Anfangswert fuer das aktuelle Directory ist
+als Teil der Login-Information in der Datei /etc/passwd enthalten und wird
+Home-Directory genannt.
+
+Jedes Directory besitzt mindestens zwei Eintragungen. Der Name Punkt (.)
+in jedem Directory verweist auf das Directory selbst. Ein Programm kann
+das laufende Directory unter dem Namen . lesen, ohne dessen vollstaendigen
+Pfadnamen zu kennen. In Bild 3.1. kann auf die Datei a durch /z/a oder, falls
+das laufende Directory /z ist, durch ./a verwiesen werden. Der Name ..
+verweist auf das Elterndirectory, d.h. auf das Directory, in dem das
+laufende Directory erzeugt wurde.
+
+Ausser den Sondereintragungen . und .. muss jedes Directory genau in einem
+anderen Directory, seinem Elterndirectory, eingetragen sein. Dies 
+erleichtert das Schreiben von Programmen mit Zugriffen auf Unterbaeume der
+Directory\%struktur und, was noch wichtiger ist, vermeidet das Abtrennen von
+Teilen der Hierarchie. Wuerden beliebige Links zu Directories zugelassen,
+waere es schwer moeglich, festzustellen, wann die letzte Verbindung von der
+Root zu einem Directory unterbrochen wird.
+
+Der Unterschied zwischen einer einfachen Datei und einem Directory ist,
+dass Directories nur mit Hilfe privilegierter Systemprogramme geschrieben
+werden koennen. Der Grund besteht darin, dass Directories eine bestimmte
+Dateistruktur bewirken. Schreiberlaubnis bei einer einfachen Datei bewirkt,
+dass Aenderungen des Dateiinhaltes zulaessig sind; Schreiberlaubnis bei einem
+Directory bewirkt (fuer alle Nutzer, ausser privilegierten), dass Dateien in
+einem Directory ergaenzt oder gestrichen werden koennen.
+
+.NH 3
+Special-Files
+.LP
+Jedes unterstuetzte E/A-Geraet ist mit mindestens einer Special-File
+(Geraetedatei) gekoppelt.
+Special-Files werden genau wie einfache Platten-Dateien gelesen oder 
+geschrieben, aber Schreib- oder Leseanforderungen aktivieren das zugehoerige
+Geraet. Eine Eintragung fuer jede Special-File existiert im Directory /dev.
+Ein Link zu einer dieser Dateien kann wie bei einfachen Dateien hergestellt
+werden. Um auf den Drucker zu schreiben, muss auf die Datei /dev/lp
+geschrieben werden.
+
+Special-Files existieren fuer Uebertragungsstrecken, Platten-Dateisystem,
+Floppy-Disk-Laufwerke, Drucker und Terminals
+sowie fuer den physischen Hauptspeicher. 
+Diese Dateien werden generell durch den Systemgenerie\%rungsprozess erzeugt.
+
+Die Vorteile der Behandlung von E/A-Geraeten liegen in folgendem:
+.IP - 3
+Die Ein-/Ausgabe von/zu Dateien und Geraeten ist aehnlich.
+.IP - 3
+Datei- und Geraetenamen besitzen die gleiche Syntax und Bedeutung, so dass
+ein Programm, das einen Dateinamen als Parameter erwartet, auch einen
+Geraetenamen benutzen kann.
+.IP - 3
+Auf Special-Files werden die 
+gleichen Schutzmechanismen wie auf einfachen Dateien angewendet.
+.NH 3
+Abgeschlossene verschiebbare Dateisysteme
+.LP
+Wenn das System generiert wird, wird jede Platte in eine oder mehrere 
+be\%ziehungslose, aber physisch benachbarte Regionen unterteilt. Eine Region
+kann als virtuelle Platte verbunden mit einem Dateisystem angesehen werden.
+Obwohl die Root des WEGA-Dateisystems stets auf der gleichen Platte 
+gespeichert ist, muss die gesamte Dateisystem-Hierarchie nicht auf derselben
+(virtuellen) Platte gespeichert sein.
+
+Der Systemruf
+.I mount
+bindet ein unabhaengiges Dateisystem mit eigener 
+Directoryhierarchie an die bestehende Dateisystem-Hierarchie (den Baum)
+an. Der Ruf mount besitzt zwei Argumente: den Namen eines bestehenden
+Directorys und den Namen einer Special-File, deren zugehoerige virtuelle
+Platte eine unabhaengige Dateihierarchie besitzt. Im Ergebnis ersetzt der
+Ruf mount ein Blatt oder einen Unterbaum (das Directory) der laufenden
+Hierarchie-Struktur durch einen ganzen neuen Unterbaum (die auf der virtuellen
+Platte gespeicherte Hierarchie).
+
+Nachdem eine Datei "montiert" ist, besteht keine Unterscheidung mehr zwischen
+Dateien auf der montierten virtuellen Platte und Dateien des permanenten 
+Dateisystems. Es gilt eine Ausnahme von der Regel der Gleichbehandlung von
+Dateien, die auf verschiedenen Geraeten montiert sind:
+.DS L
+Es kann kein Link zwischen zwei Dateisystem-Hierarchien bestehen!
+.DE
+Diese
+Beschraenkung vermeidet die Buchfuehrung, die erforderlich waere, um alle
+bestehenden Links zu streichen, wenn ein verschiebbares Dateisystem demontiert
+wird.
+.NH 2
+Dateischutz
+.LP
+Der WEGA-Systemverwalter (Superuser),
+eine Person, die mit der Verwaltung der
+WEGA-Systeminstallation betraut ist, erzeugt eine Nutzernummer und eine 
+Gruppennummer fuer jeden neuen Nutzer. Wenn der neue Nutzer eine Datei
+generiert, wird sie mit Nutzernummer (Nutzer-Identifikator, Nutzer-ID) und
+Gruppennummer (Gruppen-Identifikator, Gruppen-ID) gekennzeichnet. Diese neue
+Datei besitzt auch Schutzbits. Neun Schutzbits kennzeichnen unabhaengig 
+voneinander die Erlaubnis zum Lesen (r), Schreiben (w) und Ausfuehren (x)
+fuer jede der folgenden drei Zugriffsebenen:
+.DS
+   . Eigentuemer (Nutzer)
+   . Gruppe (Gruppenmitglieder mit gleichem Gruppen-ID)
+   . Oeffentlichkeit (alle uebrigen Nutzer des Systems)
+
+Beispiel:
+
+   drwxrwxrwx 3 wega     system      112 May 21 14:36 bin
+   -rw-r--r-- 1 doc      other     26190 Apr  1 09:15 intro.0
+.DE
+Diese Organisation ist gleich fuer einfache Dateien und Special-Files. Fuer
+Directories ist die Bedeutung der Zugriffsbits modifiziert: Lesen bedeutet
+die Erlaubnis zum Lesen des Directorys als Datei, d.h. zum Lesen aller
+enthaltenen Namen. Ausfuehren bedeutet die Erlaubnis zum Suchen eines 
+gegebenen Namens, wenn er als Teil eines angegebenen Pfadnamens auftritt. 
+Schreiben bedeutet die Erlaubnis zum Eintragen und Loeschen von Dateien in
+diesem Directory, es hat nichts mit dem Schreiben auf Dateien des 
+Directorys zu tun.
+
+Ist das zehnte Schutzbit eingeschaltet, aendert das System zeitweilig die
+Identifikation des laufenden Nutzers in die des Inhabers oder Erzeugers der
+Datei, sobald die Datei als Programm ausgefuehrt wird. Diese Aenderung der
+Nutzer-Identifikation ist nur waehrend der Ausfuehrung des 
+aufrufenden Programms wirksam.
+Die Eigenschaft "Setze-Nutzer-Identifikation" (auch "Setze-Nutzer-ID")
+erlaubt
+privilegierten Porgrammen den Zugriff auf Dateien, die fuer sonstige Nutzer
+gesperrt sind. Beispielsweise kann ein Programm eine Abrechnungsdatei 
+besitzen, die ausser vom Programm selbst weder gelesen noch veraendert werden
+darf. Wenn das "Setze-Nutzer-Identifikations"-Bit fuer ein ausfuehrendes
+Programm gesetzt ist, kann auf die Datei zugegriffen werden (obwohl dieser
+Zugriff fuer andere Programme des betreffenden Nutzers verboten sein kann).
+Da die aktuelle Identifikation des Nutzers, der das Programm ruft, stets 
+greifbar ist, koennen "Setze-Nutzer-Identifikations"-Programme immer die
+Rechte des Aufrufers pruefen. Dieser Mechanismus erlaubt die Ausfuehrung 
+sorgfaeltig geschriebener Kommandos, die privilegierte Systemunterprogramme
+rufen. Da das "Setze-Nutzer-ID"-Bit in den eigenen Dateien gesetzt werden
+kann, ist dieser Mechanismus generell ohne administrative Einmischung
+verfuegbar.
+
+Der Systemruf, der ein leeres Directory generiert, kann nur vom Superuser
+erzeugt werden. Es wird erwartet, dass Directories . und .. Eintragungen
+besitzen. Das Kommando, das ein Directory generiert, gehoert dem Superuser
+und hat das "Setze-Nutzer-ID"-Bit gesetzt. Nachdem WEGA die Rechte des
+Aufrufers zur Generierung des Directorys geprueft hat, werden das
+Directory und die Eintrittspunkte . und .. generiert.
+
+Das System erkennt die Superuser-ID als berechtigt, auf alle Dateien ohne
+Ruecksicht auf Zugriffsrechte zuzugreifen. Der Superuser besitzt auch als
+Einziger das Recht, privilegierte Systemrufe auszufuehren.
+
+Der Systemruf
+.I chmod
+und das entsprechende Kommando, das die Schutzbits einer
+Datei aendert, ist nur vom Superuser ausfuehrbar, oder vom Nutzer fuer die ihm
+gehoerenden Dateien.
+.NH 2
+Ein-/Ausgabe
+.LP
+Dateien in WEGA werden durch Ein-/Ausgabe(I/O)-Systemrufe
+erzeugt, geloescht, gelesen, geschrieben oder durchsucht.
+Die E/A-Systemaufrufe differenzieren nicht zwischen verschiedenen Geraeten
+und Zugriffsmethoden. Es gibt weder eine Unterscheidung zwischen wahlfreier
+und sequentieller Ein-/Ausgabe, noch wird ein bestimmtes Aufzeichnungskonzept
+vorausgesetzt. Die Groesse einfacher Dateien ist durch die Anzahl der auf sie
+geschriebenen Bytes festgelegt; es wird keine Vorbelegung von Platten-
+Speicherplatz benoetigt, da Dateien in dem Masse dynamisch wachsen, wie sie
+geschrieben werden.
+
+Um das Wesen der Ein-/Ausgabe zu illustrieren, sind im folgenden einige der
+wichtigsten Rufe zusammengestellt. Jeder Systemruf kann in eine
+Fehlerrueckkehr muenden (in den Beispielen nicht dargestellt).
+Eine bereits exi\%stierende
+Datei, die beschrieben oder gelesen werden soll, muss mit dem Systemruf
+.I open
+geoeffnet werden:
+.DS
+\fBfildes = open (name, flag)\fR
+.DE
+wobei
+.I name
+der Dateiname (eine Zeichenkette) ist. Es kann ein beliebiger Pfadname
+angegeben werden. Der zurueckgegebene Wert
+.I fildes
+heisst Dateidescriptor.
+Er ist eine positive ganze Zahl, die zur Identifikation der Datei bei
+nachfolgenden Rufen zum Lesen, Schreiben oder zu sonstiger Manipulation
+dient. Das Argument flag gibt an, ob die Datei gelesen, geschrieben oder
+aktualisiert (simultan gelesen und geschrieben) werden soll.
+
+Das Argument
+.I flag
+gibt ausserdem die Zugriffsrechte anderer Nutzer an, waehrend
+die Datei offen ist. Diese Open-Zugriffsrechte sind von den oben diskutierten
+11 Schutzbits zu unterscheiden. Die Schutzbits werden beim Oeffnen geprueft,
+um festzustellen, ob dem Rufer der Dateizugriff gestattet ist. Wenn dies
+erfolgt ist und die Datei bereits offen ist, werden die Open-Zugriffsrechte
+geprueft, um festzustellen, ob das Programm, das die Datei geoeffnet hat, 
+anderen das Oeffnen gestattet. Beim Oeffnen einer Datei koennen folgende Rechte
+fuer andere, die die Datei zu oeffnen versuchen, festgelegt werden:
+.DS L
+. Jedes ausfuehrende Programm kann die Datei oeffnen
+. Jedes ausfuehrende Programm, das die Datei nur liest,
+  kann sie oeffnen
+. Kein ausfuehrendes Programm kann die Datei oeffnen.
+.DE
+Wenn die Ein-/Ausgabe beendet ist und die Datei geschlossen wird, werden alle
+beim Oeffnen getroffenen Festlegungen geloescht.
+
+Um eine neue Datei zu generieren oder eine alte komplett neu zu schreiben, ist
+der Systemruf
+.I creat
+auszufuehren, der eine Datei generiert, falls sie noch
+nicht existiert. Creat oeffnet ausserdem die Datei fuer Schreibzugriff und
+gibt wie open einen Dateidescriptor zurueck. Dieser Ruf ist wie folgt
+definiert:
+.DS
+\fB   fildes = creat (name, mode)\fR
+.DE
+wobei
+.I name
+der Dateiname und fildes der Dateidescriptor ist.
+
+Das Argument
+.I mode
+legt die 11 Schutzbits fest, die die Datei haben soll,
+sowie die Open-Zugriffsrechte fuer andere, wenn die Datei offen ist.
+
+Lesen und Schreiben erfolgen sequentiell
+(Ausnahme siehe unten), d.h. bei einem
+letzten geschriebenen (oder gelesenen) Byte der Datei bezieht sich der
+naechste E/A-Ruf auf das unmittelbar folgende Byte. Fuer jede offene Datei
+existiert im System ein Zeiger (file pointer).
+Werden n Bytes gelesen oder geschrieben, so
+erhoeht sich er Zeiger um n Bytes.
+
+Ist eine Datei offen, koennen folgende Rufe benutzt werden:
+.DS
+\fBn = read (fildes, buffer, count)
+n = write (fildes, buffer, count)\fR
+.DE
+Bis zu
+.I count
+Bytes werden zwischen der durch
+.I fildes
+festgelegten Datei und dem Puffer
+.I buffer
+transferiert. Der zurueckgegebene Wert
+.I n
+ist die Anzahl der
+tatsaechlich transferierten Bytes. Beim Schreiben (write) ist n gleich count
+mit Ausnahme von E/A-Fehlern oder dem Ende des physischen Mediums bei
+Special-Files. Beim Lesen (read) kann n ohne Fehler kleiner als count sein.
+Wenn der Lesepointer so nahe am Dateiende ist, dass das Lesen von count Zeichen
+ueber das Ende der Datei hinaus fuehren wuerde, werden nur so viel Zeichen
+transferiert, bis das Ende der Datei erreicht ist. Wenn ein read-Ruf mit n
+gleich Null zurueckkehrt, ist das Ende der Datei erreicht. Fuer 
+Plattendateien tritt dies ein, wenn der Lesepointer gleich der aktuellen
+Dateigroesse wird.
+
+Beim Schreiben von Bytes werden nur die Teile der Datei, auf die der 
+Schreibpointer zeigt, und die Anzahl veraendert; andere Teile der Datei bleiben
+unveraendert. Liegt das letzte Byte ausserhalb des aktuellen Dateiendes, wird
+die Datei entsprechend erweitert.
+
+Bei wahlfreier (direkter) Ein-/Ausgabe wird der Lese- oder Schreibpointer auf
+die entsprechende Stelle der Datei gestellt:
+.DS
+\fBlocation = lseek (fildes, offset, base)\fR
+.DE
+Der mit
+.I fildes
+zugeordnete Pointer wird je nach Bezugswert
+.I base
+um
+.I offset
+Bytes entfernt vom Dateianfang, von er laufenden Pointerposition oder vom 
+Dateiende gestellt. Das Offset kann negativ werden. Bei einigen Geraeten 
+(Lochstreifenleser und Bildschirm-Terminals) werden lseek-Rufe ignoriert. Das
+tatsaechliche Offset bezogen auf den Dateianfang, auf den der Pointer gestellt
+wurde, wird an
+.I location
+zurueckgegeben.
+
+Es gibt weitere E/A- und Dateisystem-Rufe, die hier nicht behandelt werden.
+Sie sind im folenden (evtl. mit dem entsprechenden Kommando)
+aufgezaehlt:
+.DS
+close(2)                 Datei schliessen
+stat(2)                  Dateistatus lesen
+chmod(2), chmod(1)       Schutzmode aendern
+chown(2), chown(1)       Inhaber wechseln
+mknod(2), mkdir(1)       Directory generieren
+link(2), ln(1)           vorhandene Datei linken
+unlink(2), rm(1)         Datei loeschen
+.DE
+Die Kommandos sind im allgemeinen flexibler und besitzen mehr Optionen, als
+die entsprechenden Systemrufe.
+
+.NH
+Prozesse und Speicherabbilder (Images)
+.LP
+Ein Image kann man sich als Schnappschuss der Programm-Ausfuehrungs-Umgebung
+vorstellen. Das Image beinhaltet nicht nur ein Speicherabbild des Codes und
+der Daten des Programmes selbst, sondern auch den laufenden Zustand der
+Register, offener Dateien und des aktuellen Directorys.
+
+Ein Prozess ist die Ausfuehrung eines Images oder, anders ausgedrueckt, ein
+laufendes Programm. Waehrend die CPU den Prozess ausfuehrt, muss sich das
+Image im Hauptspeicher befinden; es bleibt im Hauptspeicher, bis ein aktiver
+Prozess hoeherer Prioritaet eine Auslagerung auf die Platte erzwingt
+(Swapping).
+
+Der Nutzer besitzt einen virtuellen Adressraum, in dem ein Prozess laeuft. 
+Dieser Adressraum betraegt fuer nichtsegmentierte Programme
+64 oder 128 kByte, je nachdem, wie das Programm
+compiliert ist. Die Compilierung mit separater I&D-Option (Code oder Text, und
+Daten getrennt) erlaubt 64 kByte Befehlsraum und 64 kByte Datenraum,
+so dass insgesamt 128 kByte Speicher nutzbar sind.
+
+Der Nutzer-Speicher eines nichtsegmentierten
+Images wird in drei logische Teile geteilt: 
+Programmtext, Daten und Stack. Diese Teile koennen einen oder zwei 
+zusammenhaengende Speicherbereiche belegen. Wurde mit separater I&D-Option
+compiliert, wird er in zwei physische Speicherbereiche zu je 64 kByte 
+aufgeteilt, einen fuer den schreibgeschuetzten Text und einen fuer Daten und
+Stack.
+Alle Prozesse, die zu einem Zeitpunkt das gleiche Programm ausfuehren,
+nutzen fuer die Ausfuehrung das gleiche schreibgeschuetzte Textsegment,
+dass sich nur in einer Kopie im Speicher befindet.
+
+Wenn nicht die separate I&D-Option beim Compilieren benutzt wird, befinden
+sich (fuer nichtsegmentierte Programme)
+Code, Daten und Stack im gleichen Speicherbereich von max. 64 kByte.
+In diesem Fall wird der Programmcode nicht mehrfach benutzt und nicht
+schreibgeschuetzt. Der Stack, der als Teil der Daten betrachtet wird
+(da er den gleichen Adressraum belegt)
+und die Daten werden unabhaengig von der
+beim Compilieren benutzten Option in keinem Falle mehrfach benutzt.
+
+Die Programmtext-Sektion beginnt bei Adresse 0 im virtuellen Speicherraum.
+Falls mit separate I&D-Option compiliert wurde, beginnt die Datensektion 
+ebenfalls bei Adresse 0 in ihrem eigenen 64 kByte-Adressraum; anderenfalls
+folgt sie dem Programmcode. Die Datensektion kann durch die Systemrufe
+brk(2) und sbrk(2) erweitert werden.
+Die Stack-Sektion beginnt bei der hoechsten Adresse
+des virtuellen Adressraumes und waechst automatisch in dem Masse nach unten,
+wie der Stackpointer sich aendert.
+
+Fuer segmentierte Programme gelten sinngemaess die gleichen
+Aussagen, nur dass sowohl fuer die Groesse des Programmspeichers
+als auch fuer
+den Daten- und Stackadressraum keine Beschraenkungen existieren.
+Der Stackbereich belegt immer in ein eigenes Segment.
+Segmentierte Programme koennen auch mit
+der Option fuer separate I&D compiliert werden.
+Es existieren dann reine Textsegmente, die wieder von mehreren
+Prozessen gemeinsam benutzt werden koennen,
+und reine Datensegmente, die fuer jeden Prozess separat vorhanden sind.
+Detailliertere Aussagen zur Behandlung segmentierter Programme
+befinden sich in cas(1), scc(1) und sld(1) sowie
+im Band WEGA-Dienstprogramme.
+
+.NH 2
+Prozessgenerierung
+.LP
+Ein Prozess kann durch ein laufendes Programm mit folgendem Systemruf zur
+Ausfuehrung gebracht werden:
+.DS
+\fBprocessid = fork ()\fR
+.DE
+Wenn fork ausgefuehrt wird, gabelt sich der Prozess und es entstehen zwei
+Prozesse, die unabhaengig voneinander ausgefuehrt werden. Der neu generierte
+Prozess (Child-Prozess) ist eine Kopie des Originalprozesses (Parent-Prozess).
+Die beiden Prozesse besitzen unabhaengige Kopien des Original-Speicher-Images
+und benutzen alle offenen Dateien gemeinsam. (Bei Ausfuehrung des 
+Parent-Prozesses von einem Read-Only-Textsegment
+benutzt jedoch der Child-Prozess
+den Programmtext mit.) Von allen Datensektionen, auf die geschrieben werden
+kann, werden fuer den Child-Prozess Kopien angefertigt.
+
+Die Herstellung der vollstaendigen Kopie eines Prozesses mit dem fork-Ruf ist
+ein wirksamer Weg der Kommunikation zwischen Parent- und Child-Prozess; der
+Child-Prozess hat Zugriff zum gesamten Speicher-Image des Parent-Prozesses. 
+Dadurch werden komplizierte Strukturen und Restriktionen vermieden, und es
+wird ein freier Informationstransfer zwischen
+Parent- und Child-Prozess moeg\%lich.
+
+Im Gegensatz zu vielen anderen Betriebssystemen fuehren die Prozesse im WEGA
+zum sparsamen Umgang mit CPU-Rechenzeit. Der fork-Ruf fuer einen Prozess 
+mittlerer Groesse dauert nur wenige Millisekunden. Dies bedeutet, dass fork
+haeufig benutzt werden kann und die Basis fuer die Arbeitsweise des Shell
+liefert, bei dem (fast) jedes eingegebene Kommando in einem Child-Prozess
+abgearbeitet wird. Ist das Kommando beendet, endet der Child-Prozess.
+
+.NH 2
+Programmausfuehrung
+.LP
+Programme werden mit Hilfe einer Variante des exec-Systemrufes ausgefuehrt:
+.DS
+\fBexec (file, arg1, arg2, ..., argn)\fR
+.DE
+Fuer
+.I exec
+existieren folgende Varianten:
+execv, execl, execve oder execle. Der exec-Systemruf
+beauftragt das WEGA, das Programm file einzulesen und auszufuehren, wobei die
+Zeichenketten arg1, ..., argn uebergeben werden.
+
+Alle Codes und Daten des durch exec behandelten Prozesses werden durch Codes
+und Daten der Datei file ersetzt. Offene Dateien, Directory-Position und
+Beziehungen zwischen Prozessen bleiben unveraendert, weil der Aufruf von exec
+keine Prozesse veraendert. Der mit exec verknuepfte Prozess dauert an; es wird
+ein anderes Programm file ausgefuehrt. Eine Rueckkehr zum rufenden Prozess
+erfolgt nur, wenn der Ruf exec zu Fehlern fuehrt.
+
+Dialogkommandos sind Beispiele fuer die Verwendung von fork und exec. Durch
+Eingabe des Namens einer auszufuehrenden Objektdatei von der Tastatur aus wird
+ein Prozess eingeleitet. Um z.B. eine Datei temp1 des aktuellen Directorys
+auf eine Datei temp2 zu kopieren, wird mit dem Kommando
+.DS
+/bin/cp temp1 temp2
+.DE
+ein Prozess gestartet. In WEGA kann auch ein einfacher Pfadname cp angegeben
+werden, so dass im Nutzer-Pfad nach der genannten Datei gesucht wird. Meist
+wird folgendes Kommando eingegeben
+.DS
+cp temp1 temp2
+.DE
+Das Kommando wird von dem Shell als Aufforderung interpretiert, einen 
+Kopierprozess auszufuehren. Das Shell stellt eine Kopie von sich selbst her
+und die Kopie des Shell sucht das ausfuehrbare Programm cp.
+Ist das Programm cp gefunden, wird es durch
+einen exec-Systemruf der Shell-Kopie eingelesen. Die laufende Shell-Kopie ist
+der Parent-Prozess des cp-Kommandos. Auf diese Weise wird das Shell nicht
+zerstoert und kann nachfolgende Kommandos interpretieren, wenn der Child-Prozess
+cp beendet ist.
+
+.NH 2
+Die Beziehung zwischen Parent- und Child-Prozess
+.LP
+Die durch fork generierten Prozesse
+unterscheiden sich nur dadurch, welcher als
+Parent-Prozess betrachtet wird. Im Parent-Prozess identifiziert der 
+zurueckgegebene processid den Child-Prozess und ist niemals gleich 0, waehrend
+fuer den Child-Prozess der zurueckgegebene Wert immer gleich 0 ist. Da die durch
+fork im Parent- und Child-Prozess zurueckgegebenen Werte unterschiedlich sind,
+kann jeder Prozess selbst feststellen, ob er Parent- oder Child-Prozess ist.
+
+Wenn Prozess A die Prozesse B und C ruft, heisst A Parent-Prozess und B und C
+heissen Child-Prozesse. Wenn Prozess B die Prozesse D und E ruft, ist B der
+Parent-Prozess von D und E. D und E waeren dann Enkel von A oder allgemeiner,
+Nachkommen von A. Wenn ein Parent-Prozess beendet wird, setzen seine Nachkommen
+die Ausfuehrung bis zum Ende fort. Der Parent-Prozess wird dann zu
+einem WEGA-Systemprozess.
+
+.NH 2
+Prozessende
+.LP
+Der Systemruf
+.DS
+\fBexit (status)\fR
+.DE
+beendet einen Prozess, loescht sein Image, schliesst seine offenen Dateien
+und entfernt ihn insgesamt vom System.
+Ein Prozess kann im Dialog (von der Tastatur aus) durch das Kommando
+.DS
+\fBkill processid\fR
+.DE
+beendet werden. Damit wird ein Signal (s. Abschnitt 2.2.5.) an den Prozess
+mit der Identifikation
+.I processid
+gesendet.
+Falls das Signal nicht anders behandelt wird,
+endet der Prozess. Das Kommando
+.DS
+kill -9 processid
+.DE
+bewirkt ein unbedingtes Ende und muss sorgfaeltig verwendet werden.
+Der dem obigen Kommando entsprechende Systemruf ist
+.DS
+\fBstatus = kill (processid,9)\fR
+.DE
+wobei status ein Fehlerstatus ist.
+
+.NH 3
+Prozess-Synchronisation
+.LP
+Das WEGA besitzt Mechanismen, mit dem sich ein Prozess mit einem externen
+Ereignis oder einem anderen Prozess synchronisieren kann. Diese Mechanismen
+werden im folgenden behandelt.
+
+.NH 2
+Der Signal-Mechanismus
+.LP
+Ein Signal wird durch ein ungewoehnliches Ereignis generiert, eine
+Tastatur-Eingabe (quit, interrupt),
+einen Programmfehler (bus error, illegal 
+instruction usw.) oder eine Programmaktivitaet (kill). Normalerweise bewirken
+alle Signale die Beendigung des Zielprozesses, ein Signal-Systemruf gestattet
+jedoch 3 Reaktionsvarianten: Signale koennen ignoriert werden, sie koennen
+den Prozess beenden (Implizitwert einsetzen) oder sie koennen zum Aufruf einer
+Routine fuehren. Der Signal-Ruf sieht folgendermassen aus:
+.DS
+\fBold_value = signal (sig,func)\fR
+.DE
+Dabei ist
+.I old_value
+ein Wert, der angibt, wie das Signal vorher behandelt
+wurde, die Variable
+.I sig
+ist das betrachtete Ereignis (z.B. quit vom Drucker)
+und
+.I func
+sagt aus, was beim Erscheinen des Signals zu tun ist (Prozess 
+beenden, Signal ignorieren oder die Routine func des Prozesses rufen).
+
+Es gibt 16 Signale. Das Kommando kill(1) generiert normalerweise das Signal 
+SIGTERM (eine Konstante gleich 15), das, wenn es nicht eingefangen wird, den
+Prozess beendet. Ein Prozess kann Signale einfangen, um vor dem Abbruch 
+Zwischendateien zu loeschen, er kann aber auch Signale ignorieren. Wenn ein
+Prozess abgebrochen werden soll, aber SIGTERM-Signale ignoriert werden,
+kann das Signal SIGKILL (eine Konstante gleich 9) gegeben werden:
+.DS
+\fBkill -9 processid\fR .
+.DE
+Dieses Signal kann weder eingefangen noch ignoriert werden; es fuehrt zum
+automatischen Abbruch des mit processid gekennzeichneten Prozesses. (Das
+kill-Kommando darf nur fuer die dem Nutzer gehoerenden Prozesse gegeben werden,
+es sei denn, der Nutzer ist der Superuser.)
+
+Es ist moeglich, die Ausfuehrung eines Programms auszusetzen, bis ein Signal
+eintrifft. Dies leistet der Systemruf
+.B pause
+Mit diesem Ruf wird unnoetiger 
+Rechenzeitverlust vermieden. Wenn ein Prozess einen Signal-Ruf sendet und
+sich dann in einen Child-Prozess teilt, wird das Signal des Child-Prozesses in
+gleicher Weise behandelt; das Kind erbt alle Signale.
+
+.NH 2
+Der Pipeline-Mechanismus
+.LP
+Prozesse koennen sich mit Hilfe des Pipeline-Mechanismus mit anderen Prozessen
+synchronisieren. Der Pipeline-Mechanismus gestattet es, in beiden Richtungen
+Mitteilungen zwischen Prozessen auszutauschen, wobei die gleichen Systemrufe
+(read und write) benutzt werden, wie fuer das Datei-Ein-/Ausgabesystem. Der
+Systemruf
+.DS
+\fBreturn_value = pipe (fildes)\fR
+.DE
+liefert zwei Dateidescriptoren im Feld fildes und erzeugt eine Pipeline pipe
+zwischen zwei Prozessen. Der Rueckgabewert des Kommandos zeigt an, ob der
+Systemruf zur erfolgreichen Erzeugung der Pipeline fuehrte. Ein read-Ruf an
+einen pipe-Dateidescriptor wartet, bis ein anderer Prozess unter Verwendung
+des Dateidescriptors fuer die gleiche Pipeline schreibt. Somit werden Daten 
+zwischen den Images der beiden Prozesse ausgetauscht. Es spielt dabei keine
+Rolle, dass eine Pipeline statt einer einfachen Datei beteiligt ist.
+
+Der Pipeline-Kanal wird, wie andere offene Dateien, mit Hilfe des fork-Rufes
+vom Parent-Prozess an das Image des Child-Prozesses uebergeben.
+
+.NH 2
+Der Wait-Mechanismus
+.LP
+Der Systemruf
+.DS
+\fBprocessid = wait (status)\fR
+.DE
+bewirkt das Anhalten eines Parent-Prozesses bis einer seiner Child-Prozesse 
+beendet ist. Das Kommando wait gibt dann die Prozesskennung processid des
+beendeten Prozesses zurueck. Falls der rufende Prozess keine Nachkommen 
+besitzt, wird eine Fehlermeldung erzeugt. Fuer den Child-Prozess wird eine 
+Statusmeldung bereitgestellt (Ende-Status).
+
+Ein Beispiel fuer die Benutzung des wait-Rufes ist die Arbeitsweise des
+Kommandointerpreters Shell. Wenn ein Kommando eingegeben wird, erzeugt
+das Shell mit fork eine Kopie von sich. Die Kopie (der Child-Prozess) bewirkt
+einen exec-Ruf, der den Prozess zur Ausfuehrung des geforderten Kommandos
+darstellt. Waehrenddessen fuehrt der Parent-Prozess einen wait-Ruf aus und
+interpretiert das naechste Kommando erst, wenn der Child-Prozess beendet ist.
+
+Ein wait-Ruf kann auch durch den Signal-Mechanismus unterbrochen werden.
+
+.NH 3
+Das Shell
+.LP
+Die Kommunikation mit WEGA erfolgt im wesentlichen durch das Shell, 
+einen Kommandointerpreter, der Zeilen liest und als Aufforderung zur 
+Ausfuehrung anderer Programme betrachtet (Das Shell ist ausfuehrlich 
+im Handbuch WEGA-Dienstprogramme beschrieben). Im einfachsten Fall besteht
+eine Kommandozeile aus dem Kommandonamen, gefolgt von Kommandoargumenten,
+wobei als Trennzeichen Leerzeichen oder Tabulatoren verwendet werden:
+.DS
+\fBcommand arg1 arg2 ... argn\fR .
+.DE
+Das Shell teilt den Kommandonamen und die Argumente in getrennte Zeichenketten
+auf. Dann wird die Datei mit dem Namen command gesucht, wobei command ein
+Pfadname zur Auswahl der Datei im System ist. Ist
+das Kommando command gefunden, wird es eingelesen und ausgefuehrt. Die von
+dem Shell bereitgestellten Argumente sind durch das Kommando zugreifbar. Ist
+das Kommando beendet, setzt das Shell seine eigene Ausfuehrung fort und zeigt
+durch ein Prompt-Zeichen die Bereitschaft zur Annahme weiterer Kommandos an.
+
+Wird die Datei command nicht gefunden, setzt das Shell normalerweise den
+Praefix /bin oder /usr/bin vor command und versucht erneut, die Datei zu 
+finden. (Der Pfadname, d.h. die durchzusuchende Folge von Directories kann
+geaendert werden.)
+
+.NH 2
+Standard-Ein-/Ausgabe
+.LP
+Die vorangegangene Diskussion der Ein-/Ausgabe setzt voraus, dass jede von
+einem Programm benutzte Datei durch das Programm geoeffnet oder erzeugt
+werden muss, um den Dateidescriptor zu erhalten. Programme, die von dem Shell
+ausgefuehrt werden, starten jedoch mit drei offenen Dateien mit den 
+Dateidescriptoren 0, 1 und 2. Wenn ein solches Programm beginnt, ist Datei 1,
+genannt Standard-Ausgabedatei, offen zum Schreiben. Diese Datei ist das 
+Terminal, abgesehen von den unten genannten Ausnahmen. Dateidescriptor 1 wird
+normalerweise zum Schreiben von Programmdaten benutzt. Dateidescriptor 2, eine
+andere zum Schreiben offene Datei ist Descriptor 1 aehnlich. Implizit ist sie
+dem Terminal zugeordnet und dient normalerweise als Standard-Fehlerausgabe.
+
+Viele Kommandos fordern Informationen von der Tastatur an. Diese Kommandos
+senden einen read-Systemruf mit Dateidescriptor 0. Dazu wird vom 
+Kommandoprogramm kein Open-Ruf benoetigt.
+
+Das Shell kann die Standardzuordnung der genannten drei Dateien aendern. Wenn
+das Argument einer Kommandodatei mit > versehen wird, verweist fuer die Dauer
+der Kommandoausfuehrung der Dateidescriptor 1 auf den Dateinamen, der nach > 
+steht. Beispielsweise listet
+.DS
+ls
+.DE
+die Namen der Dateien des Arbeitsdirectorys auf der Standardausgabe auf.
+Das Kommando
+.DS
+ls >inhalt
+.DE
+generiert eine Datei mit Namen inhalt und traegt dort das Listing ein. Das
+Argument >inhalt bedeutet, dass die Ausgabe auf inhalt erfolgen soll. Das
+Kommando
+.DS
+ed
+.DE
+holt einfach den Editor, der von der Tastatur aus bedient wird, waehrend das
+Kommando
+.DS
+ed <script
+.DE
+script als Datei von Editorkommandos interpretiert. Somit bedeutet <script,
+dass die Eingabe von script zu erfolgen hat
+(d.h. Dateidescriptor 0 verweist auf die Datei script).
+
+Obwohl die auf < oder > folgenden Dateinamen als Kommandoargumente auftreten,
+werden sie vollstaendig von Shell interpretiert und nicht an das Kommando
+uebergeben. Somit wird in den Kommandos keine spezielle Codefolge zur 
+Ein-/Ausgabeumlenkung benoetigt; das Kommando kann die
+Standard-Dateidescriptoren 0 und 1 benutzen.
+
+Dateidescriptor 2 ist wie Dateidescriptor 1 normalerweise dem Terminal-
+Ausgabestrom zugeordnet. Wenn durch Benutzung des Zeichens > vor einem 
+Kommandoargument die Ausgabe-Zuordnung geaendert wird, bleibt Datei 2 dem
+Terminal zugeordnet, so dass Kommandos, die Fehlermeldungen erzeugen, diese
+nicht stillschweigend in der Ausgabedatei ablegen.
+
+.NH 2
+Filter
+.LP
+Durch Erweiterung des Konzeptes der Standard-Ein-/Ausgabe kann der Ausgang
+eines Kommandos auf den Eingang eines anderen Kommandos gelenkt werden.
+
+Kommandos, die durch einen senkrechten Strich (|) voneinander getrennt sind,
+veranlassen das Shell, die Kommandos simultan auszufuehren und dafuer zu
+sorgen, dass die Standard-Ausgabe eines Kommandos auf die Standard-Eingabe
+des folgenden Kommandos gelegt wird. Das wird als Pipelining (Rohrleitung) 
+bezeichnet, weil der Ausgang eines Kommandos auf den Eingang des folgenden
+geleitet wird. Bei der Kommandozeile
+.DS
+ls | pr -2 | lpr
+.DE
+listet ls die Namen der Dateien des Arbeitsdirectories auf, sein Ausgang
+geht auf pr, das Kopfzeilen mit Datum einfuegt (Das Argument -2 bedeutet
+Ausgabe in 2 Spalten.). Entsprechend gelangt der Ausgang von pr als Eingang
+auf lpr. Dieses Kommando (Drucker-Spooler) sorgt fuer die Einbindung des
+Programms in die Druckerwarteschlange und den spaeteren Ausdruck der Liste.
+
+Weniger effektiv koennte der Vorgang auch folgendermassen angewiesen werden:
+.DS
+ls >temp1
+pr -2 <temp1 >temp2
+lpr <temp2
+.DE
+gefolgt von einem Loeschen der Zwischendateien. Ohne die Faehigkeit zur
+Umlenkung der Ausgabe und Eingabe waere ein noch umstaendlicheres Verfahren
+erforderlich: Das ls-Kommando muesste Anforderungen zur Seitenformatierung,
+zum Mehrspaltendruck und zur Ausgabeverteilung akzeptieren. Es waere 
+unpraktisch und uneffektiv, von den Programmierern, die Programme wie ls
+schreiben, eine solche Vielfalt von Optionen zu verlangen.
+
+.NH
+Mustervergleich und andere Unterstuetzungen
+.LP
+Das Shell kann eine Liste von Dateinamen generieren, die mit einem Muster
+uebereinstimmen. Diese Dateinamen sind dann als Eingangsargumente eines 
+Kommandos verwendbar. Allgemein sind folgende Muster moeglich:
+
+.IP \* 4
+stimmt mit jeder Zeichenkette einschliesslich der leeren Zeichenkette
+ueberein. Zum Beispiel druckt
+
+	lpr /a/b/c/*
+
+alle Dateien des Directorys a/b/c und
+
+	lpr /a/b/c/*.c
+
+druckt alle Dateien dieses Directorys, deren Namen auf .c enden.
+
+.IP \?
+stimmt mit jedem Einzelzeichen ueberein.
+
+.IP [...]
+stimmt mit jedem der eingeklammerten Zeichen ueberein.
+Ein Zeichenpaar, das durch ein Minuszeichen getrennt ist, stimmt mit
+allen Zeichen ueberein, die alphabetisch oder numerisch zwischen
+dem ersten un dem zweiten Zeichen liegen.
+
+.NH 2
+Kommando-Trennzeichen und Multitask-Betrieb
+.LP
+Das Shell gestattet die Anweisung mehrerer Kommandos auf einer einzigen Zeile.
+Die Kommandos sind jeweils durch ein Semikolon zu trennen. Die 
+Kommandofolge
+.DS
+ls; ed
+.DE
+listet zuerst den Inhalt des aktuellen Directorys auf und ruft dann den
+Editor.
+
+Wird ein Kommando mit &
+abgeschlossen, so fuehrt das Shell das Kommando im Hintergrund aus und wartet
+nicht auf den Abschluss des Kommandos, bevor wieder das Prompt-Zeichen 
+ausgegeben wird. Das Shell ist sofort wieder zur Annahme eines
+neuen Kommandos bereit. Zum Beispiel bewirkt
+.DS
+as source &
+.DE
+die Assemblierung der Quelle;
+unabhaengig davon, wie lange die Assemblierung dauert, kehrt das Shell jedoch
+sofort zurueck. Wenn das Shell nicht auf das Ende eines Kommandos wartet,
+wird eine Identifikationsnummer fuer den Prozess, der das Kommando ausfuehrt,
+ausgegeben. Dieser Prozessidentifikator ist dazu geeignet, auf den Abschluss
+des Kommandos zu warten oder es zu beenden (mit kill). Das &-Zeichen kann in
+einer Zeile mehrmals verwendet werden. Das Kommando
+.DS
+as source & ls > files &
+.DE
+fuehrt sowohl die Assemblierung, als auch die Listingausgabe im Hintergrund
+durch.
+
+In den angefuehrten Beispielen geht der Ausgang nicht auf das Terminal, 
+sondern auf eine Datei. Waere dies nicht der Fall, so wuerden die Ausgaenge
+der verschiedenen Kommandos vermischt auf dem Bildschirm erscheinen.
+
+Das Shell gestattet auch eine Klammerung der oben angefuehrten Operationen.
+Im Beispiel
+.DS
+(date; ls) > x&
+.DE
+werden das aktuelle Datum und die Uhrzeit, gefolgt vom Arbeitsdirectory in
+die Datei x geschrieben. Das Shell kehrt sofort zurueck und ist zur Aufnahme
+des folgenden Kommandos bereit.
+
+.NH 2
+Das Shell als Kommando: Kommandodateien
+.LP
+Das Shell selbst ist ein Kommando und kann rekursiv aufgerufen werden.
+Angenommen die Datei namens versuch enthaelt folgende Zeilen:
+.DS
+as source
+mv a.out testprog
+testprog
+.DE
+Das Kommando mv bewirkt die Umbenennung der Datei a.out in testprog. Die 
+Datei a.out ist der zur Ausfuehrung geeignete (binaere) Assemblerausgang. Wenn
+man also die obigen drei Zeilen auf der Tastatur eingibt, wird source 
+assembliert, das sich ergebende Programm in testprog umbenannt und ausgefuehrt.
+Da die obigen Zeilen in der Datei versuch stehen, bewirkt das Kommando
+.DS
+sh < versuch
+.DE
+eine sequentielle Ausfuehrung der Anweisungen durch das Shell. Wenn ausserdem
+das Kommando chmod benutzt wird, um die Schutzbits der Datei versuch so zu
+aendern, dass sie ausfuehrbar wird, ist das Kommando
+.DS
+versuch
+.DE
+aequivalent zum expliziten Aufruf des Shell. Dies ist der Fall, weil bei der
+aus Shell-Kommandos bestehenden Script-Datei die Zugriffsbits fuer
+Ausfuehrungszugriff eingeschaltet sind; das Shell interpretiert das Kommando
+so, als ob
+.DS
+sh < versuch
+.DE
+eingegeben worden waere.
+
+Das Shell besitzt weitere Eigenschaften: Parametersubstitution und die
+Moeg\%lichkeit zum Aufbau von Argumentlisten aus Teilmengen von Dateinamen eines
+Directorys. Sie gestattet auch allgemeine, bedingte und zyklische 
+Laufanweisungen.
+
+.NH 3
+Implementierung des Shell
+.LP
+Die meiste Zeit wartet das Shell auf ein Kommando. Wurde das
+Zeilenen\%dekennzeichen eingegeben,
+wird der read-Ruf des Shell ausgefuehrt. Das Shell
+analysiert die Kommandozeile, wobei die Argumente in eine zur Ausfuehrung
+geeignete Form gebracht werden. Dann wird fork gerufen. Der Child-Prozess,
+dessen Code noch dem Shell gleich ist, versucht einen exec-Ruf mit den
+entsprechenden Argumenten auszufuehren. Ist er erfolgreich, so wird dabei das 
+Programm mit dem gegebenen Namen eingelesen und gestartet. Inzwischen wartet
+der von fork (Gabelung) ausgehende andere Prozess (Parent-Prozess) auf das
+Ende des Child-Prozesses. Das Shell
+gibt dann das Prompt-Zeichen aus und liest das naechste Kommando
+von der Tastatur. 
+
+Auf diese Weise ist die Implementierung von Hintergrundprozessen einfach:
+Immer, wenn in der Kommandozeile ein & auftritt, wartet das Shell nicht auf
+den Abschluss des Prozesses, der zur Ausfuehrung des Kommandos generiert
+wurde.
+
+Dieser Mechanismus vertraegt sich gut mit dem Konzept der
+Standard-Ein-/Ausgabe-Dateien.
+Wird durch den fork-Systemruf ein Prozess geboren, so erbt er nicht
+nur das Speicherabbild (Image) seines Parent-Prozesses, sondern auch alle im 
+Parent-Prozess offenen Dateien, einschliesslich der Dateien mit den
+Dateidescriptoren 0, 1 und 2. Das Shell benutzt natuerlich diese Dateien, um
+Kommandozeilen zu lesen sowie Prompt-Zeichen und Fehlermeldungen zu schreiben.
+Im Normalfall erben ihre Child-Prozesse - die Kommandoprogramme - diese Dateien
+automatisch. Ist jedoch ein Argument mit vorgesetztem < oder > vorhanden, so
+lenkt der Nachkommenprozess unmittelbar vor der Ausfuehrung des exec-Rufes
+die Standard-E/A-Dateidescriptoren 0 oder 1 auf die angegebenen Dateien um.
+Ist eine neue Datei zu eroeffnen (oder zu generieren), so wird ihr der kleinste
+nicht benutzte Dateidescriptor zugeordnet; es muss also nur Datei 0 (oder 1)
+geschlossen und die genannte Datei eroeffnet werden. Wenn der Prozess, in dem
+das Kommando laeuft, nach Ausfuehrung stirbt, endet die Zuordnung des Namens
+nach < oder > zum Dateidescriptor 0 oder 1 automatisch.
+Somit muss das Shell die wirklichen Namen der Dateien, die seine eigene
+Standard-Ein-/Ausgabe darstellen, nicht kennen, denn es muss diese in keinem
+Fall wieder eroeffnen.
+
+Filter sind direkte Erweiterungen der Standard-E/A-Umlenkung, wobei Pipelines
+anstelle von Dateien benutzt werden.
+
+Im Normalfall kommt die Haupt-Programmschleife des Shell nie zum Ende (sie
+enthaelt den zum Parent-Prozess gehoerenden Zweig der Rueckkehr vom fork; d.h.
+den Zweig, der ein wait ausfuehrt und die naechste Kommandozeile liest). Eine
+Ausnahme ist das Dateiende-Kennzeichen in seiner Eingangsdatei. Wenn das Shell
+als Kommando mit einer Eingabedatei ausgefuehrt wird, z.B.
+.DS
+sh < comfile
+.DE
+werden die Kommandos in comfile ausgefuehrt, bis das Ende von comfile erreicht
+ist. Dann endet der durch sh aufgerufene Prozess. Da dieser Shell-Prozess der
+Child-Prozess eines anderen Shell-Aufrufes ist,
+wird das vorher ausgefuehrte wait 
+beendet und das naechste Kommando kann dann ausgefuehrt werden.

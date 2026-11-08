@@ -1,0 +1,82 @@
+.TH EXP 3 
+.\" @[$]exp.3   1.2
+.ad
+.fi
+.SH NAME
+exp, log, log10, pow, sqrt \- Exponentialfunktionen 
+.SH SYNTAX
+.nf
+#include <math.h>
+.PP
+\fBdouble e\fIx\fRp\fR(x)
+.br
+\fBdouble \fIx\fR;
+.PP
+\fBdouble log\fR(\fIx\fR)
+.br
+\fBdouble \fIx\fR;
+.PP
+\fBdouble log10\fR(\fIx\fR)
+.br
+\fBdouble \fIx\fR;
+.PP
+\fBdouble pow\fR(\fIx\fR, y)
+.br
+\fBdouble \fIx\fR, y;
+.PP
+\fBdouble sqrt\fR(\fIx\fR)
+.br
+\fBdouble \fIx\fR;\fR
+.fi
+.SH BESCHREIBUNG
+.B Exp
+berechnet die Exponentialfunktion von
+.I x.
+.PP
+.B Log
+berechnet den natuerlichen Logarithmus von
+.IR x ;
+.B log10
+berechnet den Logarithmus zur Basis 10.
+.PP
+.B Pow
+berechnet die Potenz
+.I x 
+hoch
+.I y.
+.PP
+.B Sqrt
+berechnet die Quadratwurzel aus
+.I x.
+.SH SIEHE AUCH
+hypot(3),
+sinh(3),
+intro(2).
+.SH DIAGNOSTIK
+Die Funktionen
+.B exp
+und
+.B pow
+geben einen sehr grossen Wert zurueck, wenn der korrekte Wert
+ueberschritten wird;
+.I errno
+wird auf ERANGE gesetzt.
+.B Pow
+liefert eine Null und setzt
+.I errno
+auf EDOM, wenn das zweite Argument negativ und keine natuerliche Zahl ist
+sowie wenn beide Argumente Null sind.
+.PP
+.B Log
+gibt Null zurueck, wenn
+.I x
+Null oder negativ ist;
+.I errno
+wird in diesem Fall auf EDOM gesetzt.
+.PP
+.B Sqrt
+gibt Null zurueck, wenn
+.I x
+negativ ist;
+.I errno
+wird auf EDOM gesetzt.

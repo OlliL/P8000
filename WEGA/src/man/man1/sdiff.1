@@ -1,0 +1,119 @@
+.TH SDIFF 1 WEGA
+.\" @[$]sdiff.1	1.2
+.ad
+.fi
+.SH NAME
+sdiff \- Seitenweises Vergleichsprogramm
+.SH SYNTAX
+.B sdiff
+[ \fB-losw\fR \.\.\. ]
+\fIfile1 file2\fR
+.SH BESCHREIBUNG
+.B Sdiff\^
+wandelt die Ausgabe von
+.BR diff (1)
+in eine seitenweise Auflistung der unterschiedlichen Zeilen
+der zwei Dateien um.
+Jede Zeile der beiden Dateien wird mit einer Leerstelle versehen, wenn die
+Zeilen identisch sind, einem "<", wenn die Zeile nur in der Datei
+.IR file1
+existiert,
+einem ">", wenn die Zeile nur in der Datei
+.IR file2 
+existiert und einem "|", fuer Zeilen, die unterschiedlich sind.
+.PP
+Beispiel:
+.PP
+.RS 11
+.nf
+	x	|	y
+	a		a
+	b	<
+	c	<
+	d		d
+		>	c
+.fi
+.RE
+.PP
+.SH OPTIONEN
+.TP
+.B \-l
+Es wird nur die linke Seite aller Zeilen ausgegeben, die identisch sind.
+.TP
+.BI \-o " output\^"
+Das Argument
+.IR output
+ist der Name einer dritten Datei, die als vom Nutzer
+kontrollierte Zusammenstellung von 
+.I file1\^
+und
+.IR file2 
+erstellt wird.
+Identische Zeilen von
+.I file1\^
+und
+.I file2\^
+werden auf 
+.IR output 
+kopiert.
+Die von
+.BR diff (1)
+ermittelten Unterschiede werden ausgegeben.
+Nach der Ausgabe der Unterschiede wartet
+.B sdiff\^
+mit dem Prompt "%" auf eines der
+folgenden, vom Nutzer eingegebenen Kommandos:
+.RS 10
+.TP
+.B e
+Der Editor
+.BR ed (1)
+wird mit einer Datei der Laenge 0 aufgerufen.
+.TP
+.B "e b"
+Der Editor
+.BR ed (1)
+wird mit der Verkettung beider Spalten aufgerufen.
+.TP
+.B "e l"
+Der Editor
+.BR ed (1)
+wird mit der linken Spalte aufgerufen.
+.TP
+.B "e r"
+Der Editor
+.BR ed (1)
+wird mit der rechten Spalte aufgerufen.
+.TP
+.B l
+Die linke Spalte wird an die Ausgabedatei angefuegt.
+.TP
+.B q
+Verlassen des Programms.
+.TP
+.B r
+Die rechte Spalte wird an die Ausgabedatei angefuegt.
+.TP
+.B s
+Identische Zeilen werden nicht ausgegeben.
+.TP
+.B v
+Identische Zeilen werden ausgegeben.
+.RE
+.IP
+Bei Verlassen des Editors
+.BR ed (1)
+wird die resultierende Datei an das Ende der
+.I output\^
+Datei angefuegt.
+.TP
+.B \-s
+Identische Zeilen werden nicht ausgegeben.
+.TP
+.BI \-w " n\^"
+Das naechste Argument
+.IR n
+wird als Laenge der Ausgabezeile benutzt.
+Die Standardzeilenlaenge betraegt 130 Zeichen.
+.SH SIEHE AUCH
+diff(1), ed(1).

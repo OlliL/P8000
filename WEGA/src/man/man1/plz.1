@@ -1,0 +1,141 @@
+.TH PLZ 1 
+.\"@[$]plz.1	1.2
+.ad
+.fi
+.SH NAME
+plz \- plz/sys Compiler-Treiber
+.SH SYNTAX
+\fBplz \fR[ \fIoption\fR ]... \fIfile\fR...
+.SH BESCHREIBUNG
+Plz ist der WEGA plz/sys Compiler-Treiber.
+Wie \fIcc\fR(1) bietet es ein vereinfachtes Interface zum Uebersetzen von
+Programmen.
+.PP
+In der typischen Nutzung, wo das plz-Programm auf das WEGA-Umfeld ausgerichtet
+ist, werden alle plz/sys-Quellen, plz/asm-Quellen, zcode-Dateien usw. in ihre
+entsprechenden \fB\&.o\fR-Dateien umgewandelt und durch den WEGA-Linker 
+\fBld\fR(1) verbunden.
+Plz/sys-Quelldateien muessen mit
+.B \&.p
+enden,
+Plz/asm-Quellen mit
+.BR \&.s ,
+Zcode-Dateien mit
+.B \&.z
+und Zobj-Dateien (Ausgabe des plz-Code-Generators) muessen mit
+.B \&.t
+enden.
+.PP
+Die folgenden Optionen werden von
+.B plz
+interpretiert.
+Andere Kommandozeilen-Optionen werden direkt an \fBld\fR(1) weitergegeben.
+.SH OPTIONEN
+.TP
+.B \-c
+Unterdruecken der Link-Phase und Erzeugen einer Objekt-
+Datei (
+.BR \&.o )
+nur dann, wenn nur ein Programm uebersetzt wird.
+.TP
+.BI \-D name = def
+.br
+.BI \-D name
+.I Name
+wird fuer das Programm definiert (wie durch #define).
+Ist
+.I def
+nicht angegeben, wird
+.I name
+als 1 definiert.
+.TP
+.BI \-I dir
+Dateien, die ueber #include in die Uebersetzung einbezogen sind und
+deren Namen nicht mit / beginnen, werden immer zuerst im
+Directory des Dateiargumentes, dann in den Directories, die in
+\fB-I\fR Optionen angegeben sind und dann in den Directories aus einer 
+Standardliste gesucht.
+.TP
+.B \-L
+Der plz-Code-Generator und Assembler erzeugen Listings in
+Assemblersprache, die in Dateien mit den Suffixen
+.B \&.l
+abgelegt werden.
+Der Code-Generators erzeugt ein Listing in Pseudo-Assemblersprache.
+.TP
+.BI \-o name
+Benennen der endgueltigen Ausgabedatei
+.IR name .
+Diese Option bleibt ohne Wirkung, wenn andere Optionen aufgerufen sind,
+die ein Linken verhindern.
+Wird diese Option benutzt, bleibt die Datei
+.B a.out
+unberuehrt.
+.TP
+.B \-P
+Es wird nur der Makro-Preprozessor abgearbeitet.
+Die Ausgabe des Resultats fuer 
+jede \fB.p\fR-Datei wird in eine \fB.i.p\fR-Datei geschrieben,
+die keine # Zeilen hat.
+.TP
+.B \-t
+Es wird nur der plz/sys-Compiler und der Code-Generator abgearbeitet.
+Die zobj-Ausgabe verbleibt in Dateien mit Suffix
+.BR \&.t .
+.TP
+.BI \-U name
+Loeschung aller urspruenglichen Definitionen von
+.IR name .
+.TP
+.B \-v
+Ausgabe von Meldungen ueber den Abarbeitungsgrad
+waehrend des Uebersetzens oder Assemblierens (verbose).
+Standard ist, dass keine Meldungen ausgegeben werden (silent).
+.TP
+.B \-z
+Es wird nur der plz/sys-Compiler abgearbeitet. Die zcode-Ausgabe wird in die
+entsprechenden Dateien mit dem Suffix
+.B \&.z
+geschrieben.
+.PP
+Andere Argumente werden als Linker-Optionen oder plz-kompatible
+Objektprogramme betrachtet, die normalerweise von einem frueheren
+plz-Durchlauf erzeugt wurden, oder sie werden als Bibliotheken von
+plz-kompatiblen Routinen betrachtet.
+Diese Programme, zusammen mit den Resultaten aller angegebenen Compilierungen
+und Assemblierungen, werden in der angegebenen Reihenfolge so verbunden, dass
+ein ausfuehrbares Programm mit dem Namen a.out entsteht.
+.SH DATEIEN
+.ta 2.5i
+\fIfile\fB.p\fR	plz/sys-Quelle 
+.br
+\fIfile\fB.z\fR	zcode (plz/sys-Zwischencode)
+.br
+\fIfile\fB.t\fR	zobj (Ausgabe des Code-Generators) 
+.br
+\fIfile\fB.o\fR	Objekt-Datei
+.br
+/lib/cpp	Preprozessor
+.br
+/usr/bin/plzsys 	plz/sys-Compiler
+.br
+/usr/bin/plzcg	plz/sys-Code-Generator
+.br
+/usr/bin/uimage	Uebersetzer fuer zobj nach a.out 
+.br
+/usr/lib/libp.a	plz-Bibliothek
+.br
+	  (plz/io, System-Interface, usw.)
+.br
+/lib/libc.a	Standardbibliothek
+.br
+/usr/include	Standard-Directory fuer 
+.br
+	  #Include Files
+.ta
+.SH SIEHE AUCH
+plzsys(1), plzcg(1), uimage(1), ld(1).
+.SH DIAGNOSTIK
+Plz-Ausschriften sind selbsterklaerend.
+Erlaeuterung der Fehlermeldungen siehe
+"U8000-PLZ/SYS Benutzerhandbuch" in WEGA-Dienstprogramme

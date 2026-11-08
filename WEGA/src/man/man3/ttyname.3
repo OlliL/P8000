@@ -1,0 +1,52 @@
+.TH TTYNAME 3 WEGA
+.\" @[$]ttyname.3       1.2
+.ad
+.fi
+.SH NAME
+ttyname, isatty, ttyslot \- Ermitteln eines Terminalnamens
+.SH SYNTAX
+.B char *ttyname\fI(fildes)
+.PP
+.B isatty\fI(fildes)
+.PP
+.B ttyslot()
+.SH BESCHREIBUNG
+Die Funktion
+.B ttyname
+gibt einen Pointer auf den mit einem Nullbyte endenden
+Pfadnamen des Terminals
+zurueck, das dem Dateidescriptor 
+.IR fildes 
+zugeordnet ist.
+.PP
+Die Funktion
+.B isatty
+gibt den Wert 1 zurueck, wenn
+.I fildes
+einem Terminal zugeordnet ist, andernfalls wird der Wert Null
+zurueckgegeben.
+.PP
+.B Ttyslot
+gibt die Zeilennummer in der Datei
+.BR utmp (5)
+zurueck, in der das Steuerterminal des aktuellen Prozesses aufgefuehrt
+ist.
+.SH DATEIEN
+/dev/*
+.br
+/etc/utmp
+.SH SIEHE AUCH
+ioctl(2),
+utmp(5).
+.SH DIAGNOSTIK 
+Die Funktion
+.B ttyname
+gibt einen Null-Pointer zurueck, wenn das Argument
+.I fildes
+kein Terminal im Directory /dev beschreibt.
+.PP
+.B Ttyslot
+gibt den Wert -1 zurueck, wenn die Zeile nicht gefunden werden kann.
+.SH EINSCHRAENKUNGEN
+Der Rueckgabewert verweist auf statische Daten, deren Inhalt bei jedem
+Aufruf ueberschrieben wird.

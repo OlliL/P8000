@@ -1,0 +1,217 @@
+.TH TERMLIB 3
+.\" @[$]termlib.3       1.2
+.ad
+.fi
+.SH NAME
+tgetent, tgetnum, tgetflag, tgetstr, tgoto, tputs \- Terminalunabhaengige Funktionen
+.SH SYNTAX
+.nf
+\fBchar PC; \fR
+\fBchar *BC; \fR
+\fBchar *UP; \fR
+\fBshort \fIospeed; \fR
+.PP
+(Syntax siehe BESCHREIBUNG)
+.fi
+.SH BESCHREIBUNG
+Diese Funktionen extrahieren und verwenden Eintraege aus der
+Datenbasis der Terminalcharakteristika
+.BR termcap (5).
+.TP
+\fBtgetent\fI(bp, name)\fR
+\fBchar \fI*bp, *name;\fR
+.IP
+Die Funktion
+.B tgetent
+uebertraegt den Eintrag fuer den Terminalnamen
+.I name
+in den Puffer, der durch das Argument
+.I bp
+angegeben ist.
+Der Zeichenpuffer ist 1024 Byte gross
+und muss fuer alle nachfolgenden Aufrufe der Funktionen
+.BR tgetnum ,
+.B tgetflag
+und
+.B tgetstr
+erhalten bleiben.
+Die Funktion
+.B tgetent
+kann folgende Werte zurueckgeben:
+.RS
+.IP \fB-1\fR 4
+Die Datei
+.I termcap
+kann nicht geoeffnet werden.
+.PD 0
+.IP "\fB 0\fR" 4
+Unter dem eingegebenen Terminalnamen
+ist kein Eintrag vorhanden.
+.IP "\fB 1\fR" 4
+Der Eintrag wurde ordnungsgemaess uebertragen.
+.RE
+.PD
+.IP
+Die Funktion
+.B tgetent
+sucht in der Umgebung nach  einer Variablen
+.BR TERMCAP .
+Existiert diese und beginnt der Wert nicht mit einem Schraegstrich
+und stimmt der Terminalname
+.B name
+mit der Umgebungsvariablen
+.B TERM
+ueberein, wird die termcap-Datei nicht gelesen, sondern die
+Zeichenkette der Umgebungsvariablen
+.B TERMCAP
+wird verwendet.
+Beginnt die
+Umgebungsvariable
+.B  TERMCAP
+nicht mit einem Schraegstrich und stimmt der Terminalname
+.B name
+nicht mit der Variablen
+.B  TERM
+ueberein, wird die Datei
+.I /etc/termcap
+zur Ermittlung der Terminalcharakteristika des durch die Variable
+.B TERM
+angegebenen Terminals benutzt.
+Beginnt die Variable
+.B TERMCAP
+mit einem Schraegstrich, wird diese Zeichenkette
+als Pfadnamen fuer die Datei der Terminalcharakteristika (anstelle von
+.IR /etc/termcap )
+verwendet.
+Diese Moeglichkeit dient der Beschleunigung der Programme,
+die
+.B tgetent
+benutzen.
+Weiterhin stellt sie
+eine Hilfe beim Austesten neuer Terminalbeschreibungen
+dar und hilft beim Anlegen einer Datei fuer das Terminal,
+wenn die Datei
+.I /etc/termcap
+nicht beschrieben werden kann.
+.TP
+\fBtgetnum\fI(id)\fR
+\fBchar \fI*id;\fR
+.IP
+Der numerische Wert der Terminalcharakteristik
+.I id
+wird (falls im Eintrag enthalten) zurueckgegeben.
+Ist die Terminalcharakteristik fuer dieses Terminal nicht angegeben,
+wird der Wert \-1 zurueckgegeben.
+.TP
+\fBtgetflag\fI(id)\fR
+\fBchar \fI*id;\fR
+.IP
+Ist die angegebene Terminalcharakteristik
+im Eintrag fuer das Terminal vorhanden, wird
+der Wert 1,
+andernfalls der Wert Null zurueckgegeben.
+.TP
+\fBchar * tgetstr\fI(id, area)\fR
+\fBchar \fI*id, **area;\fR
+.IP
+Der Zeichenkettenwert der Terminalcharakteristik
+.IR id
+wird ermittelt.
+Das Argument
+.I area
+ist ein Pointer auf einen Pointer, der waehrend der Ausfuehrung
+der Funktion
+.B tgetstr
+auf die gewuenschte Zeichenkette gesetzt wird.
+Die in
+.BR termcap (5)
+beschriebenen Abkuerzungen werden mit Ausnahme der
+Informationen ueber Cursoradressierung und 
+Auffuellung decodiert.
+.TP
+\fBchar * tgoto\fI(cm, destcol, destline)\fR
+\fBchar\fI *cm;\fR
+.br
+\fBint\fI destcol, destline;\fR
+.IP
+Es wird eine Zeichenkette zur Cursoradressierung zurueckgegeben, die aus
+der Terminalcharakteristik
+.B cm
+decodiert wurde. Diese wird verwendet, um in die durch
+.I destcol
+angegebene Spalte in der durch
+.I destline
+angegebenen Zeile zu gelangen.
+Es werden  die externen Variablen
+.B UP
+(aus der Terminalcharakteristik \fBup\fR)
+und
+.B BC
+(wenn 
+.B bc
+anstelle von
+.B bs
+gegeben ist) 
+benutzt, wenn 
+das Einbringen von
+\fB\en\fR, \fB^D,\fR oder \fB^@\fR in
+die zurueckgegebene Zeichenkette vermieden werden muss.
+Programme, die
+.B tgoto
+aufrufen, muessen die XTABS Bits ruecksetzen, da
+.B tgoto
+jetzt einen Tabulator ausgeben kann.
+Programme, die termcap verwenden, muessen immer
+XTABS ausschalten.
+Wird eine angegebene
+\fB%\fR Folge nicht verstanden, gibt
+.B tgoto
+die Zeichenkette \*(lqOOPS\*(rq
+zurueck.
+.TP
+\fBtputs\fI(cp, affcnt, outc)\fR
+\fBregister\fI char *cp;\fR
+.br
+\fBint\fI affcnt;\fR
+.br
+\fBint\fI (*outc)();\fR
+.IP
+Die vorangestellte Auffuellinformation
+fuer die Zeichenkette
+.B cp
+wird decodiert.
+Das Argument
+.I affcnt
+gibt die Anzahl der von der Operation
+betroffenen Zeilen an, bzw. 1, wenn
+keine Zeile betroffen wird.
+Das Argument
+.I outc
+ist eine Routine, die abwechselnd mit jedem
+Zeichen aufgerufen wird.
+Die externe Variable
+.I ospeed
+muss gemaess der von
+.B stty
+vorgenommenen Codierung die Ausgabegeschwindigkeit des Terminals
+enthalten
+(siehe
+.BR ioctl (2)).
+Die externe Variable
+.B PC
+muss ein Auffuellzeichen
+(aus der Terminalcharakteristik \fBpc\fR)
+enthalten, das zu verwenden ist, wenn ein Null-Zeichen (\fB^@\fR)
+nicht verwendet werden kann.
+.SH DATEIEN
+/usr/lib/libtermlib.a   nichtsegmentierte Bibliothek
+.br
+/usr/lib/slibtermlib.a  segmentierte Bibliothek
+.br
+/etc/termcap            Standarddatenbasis 
+.DT
+.SH SIEHE AUCH
+ex(1),
+termcap(5),
+tty(4),
+ioctl(2).

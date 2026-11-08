@@ -1,0 +1,49 @@
+.TH WHILE 1C WEGA
+.\"@[$]while.1C 1.2
+.ad
+.SH NAME
+while \- C-Shell Steueranweisung fuer Schleifen
+.SH SYNTAX
+.nf
+\fBwhile (\fIexpression\fB) \fR
+
+        \fIcommand\fR
+
+\fBend\fR
+.fi
+.SH BESCHREIBUNG
+Die Kommandos zwischen \fBwhile\fR
+und dem entsprechendem \fBend\fR werden ausgefuehrt,
+solange der angegebene Ausdruck \fIexpression\fR ungleich Null ist.
+\fBBreak\fR und \fBcontinue\fR
+koennen benutzt werden, um die Schleife vorzeitig zu beenden oder
+fortzusetzen. \fBWhile\fR und \fBend\fR muessen auf getrennten
+Zeilen erscheinen.
+Wird die
+.B while
+Steueranweisung von einem Terminal eingegeben,
+wird zur Eingabe des Schleifenkoerpers und der
+.B end
+Anweisung das sekundaere Promptzeichen (siehe Shell)
+ausgegeben.
+.SH BEISPIEL
+.nf
+#
+\fBwhile ( 1 )\fR       # "1" ist immer wahr, deshalb
+                  # ist dies eine endlose Schleife
+
+\fB     echo "Dies ist eine endlose Schleife"\fR
+
+                  # Die Zeichenkette wird staendig
+                  # ausgegeben, bis sie unterbrochen
+                  # wird (Interrupt)
+
+\fBend\fR               # Ende der While-Schleife
+.fi
+.SH SIEHE AUCH
+break(1C), breaksw(1C),
+continue(1C), foreach(1C),
+if(1C),
+onintr(1C), switch(1C),
+.br
+"Die C-Shell" in WEGA-Dienstprogramme

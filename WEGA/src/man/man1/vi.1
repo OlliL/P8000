@@ -1,0 +1,146 @@
+.TH VI 1 WEGA
+.\" @[$]vi.1	1.2
+.ad
+.fi
+.SH NAME
+vi \- Bildschirmorientierter (visueller) Editor
+.SH SYNTAX
+.B vi
+[
+.B \-t
+\fItag\fR ] [
+.B \-r
+] [
+.B \-R
+] [
+\fB+\fR\fI[command\fR ]] [
+.B \-l
+] name \.\.\.
+.SH BESCHREIBUNG
+.B Vi
+ist ein bildschirmorientierter Texteditor, der
+auf
+.BR ex (1)
+basiert.
+.B Ex
+und
+.B vi
+arbeiten mit demselben Code. Es ist moeglich, von 
+.B vi
+aus in den Kommando-Modus von
+.B ex
+zu gelangen und umgekehrt.
+Ausserdem ist zum Lesen von Dateien eine
+"read-only" Version von vi,
+.B view,
+vorhanden.
+.PP
+\fBVi\fR
+ermittelt aus der Umgebung der Shell
+den Terminaltyp.
+Wenn das C-Shell (\fBcsh\fR(1)) ablaeuft, wird diese
+Umgebung durch das
+Kommando
+\fBprintenv\fR
+angezeigt,
+wenn das Shell
+(\fBsh\fR(1)) ablaeuft, wird die Anzeige durch das Kommando
+\fBset\fR
+bewirkt.
+.PP
+In "Beschreibung des bildschirmorientierten Editors VI"
+im Band WEGA-Dienstprogramme
+werden umfassende Informationen ueber die Verwendung von
+.B vi
+gegeben.
+.SH OPTIONEN
+.TP 5
+.B \-l
+Ermoeglicht LISP-Editierung; d.h. die Editoroptionen
+\fIshowmatch\fR und \fIlisp\fR werden gesetzt.
+.TP 5
+.B \-r
+Rekonstruktion der letzten gespeicherten Version
+der angegebenen Dateien nach
+einem Editor- oder Systemabsturz.
+.TP 5
+.B \-R
+Aufruf der
+"read only" Version von \fBvi\fR
+(entspricht
+.BR view ).
+.TP 5
+.BI \-t \ tag
+Nach dem Start wird
+der Cursor auf die Definition von
+\fItag\fR gestellt.
+.TP 5
+.BI \+ \[command]
+Der Editor beginnt mit der Ausfuehrung des Kommandos.
+Ist
+\fIcommand\fR
+nicht angegeben, befindet sich der Cursor auf der letzten Zeile
+der Datei, wenn der Editor seine Arbeit aufnimmt.
+.TP 5
+\fIname\fR
+Name der Datei(en), die editiert werden sollen.
+.SH BEISPIELE
+Einstellung des Terminaltyps fuer das P8000-Terminal:
+.br
+Unter C-Shell:
+.nf
+		# setenv TERM P8
+.fi
+Unter Shell:
+.nf
+		# set TERM=P8
+.br
+		# export TERM
+.fi
+.SH DATEIEN
+Siehe
+.BR ex (1)
+.SH SIEHE AUCH
+ex (1), edit (1), termcap(5), environ(5), termlist(7).
+.br
+"Einfuehrung in den Editor Vi" in WEGA-Dienstprogramme
+.br
+"Beschreibung des bildschirmorientierten Editors Vi" in WEGA-Dienstprogramme
+.SH EINSCHRAENKUNGEN
+Software-Tabulatoren, die
+\fB^T\fR verwenden, werden nur unmittelbar nach dem
+.I autoindent
+wirksam.
+.PP
+Bei
+Links- und Rechtsverschiebungen an intelligenten Terminals
+wird keine Zeicheneinfuege- oder Zeichenloeschoperation des
+Terminals verwendet.
+.PP
+Die Option
+.I wrapmargin
+untersucht die Ausgabespalten auf Leerzeichen.
+Wenn ein langes
+Wort ueber den Rand hinaus
+und ohne Abteilungszeichen
+auf die naechste Zeile geht, wird die Zeile nicht abgeteilt.
+.PP
+Das
+.I source
+Kommando funktioniert nicht, wenn es als
+\fB:source\fR ausgefuehrt wird;
+es gibt keine Moeglichkeit,
+die \fB:append\fR, \fB:change\fR
+und \fB:insert\fR Kommandos zu verwenden, da es nicht moeglich ist,
+mehr als eine Eingabezeile an ein 
+vorangestelltes \fB:\fR  zu geben.
+Sie muessen
+im \fBex\fR Kommandomodus
+ausgefuehrt werden (Rueckkehr ueber \fB:vi\fR).
+.PP
+Sind mehr als 128K Zeichen in der temporaeren Datei, kehrt
+.B vi
+sofort zurueck, ohne die Datei zu editieren.
+Die Datei ist z.B. ueber
+.BR split (1)
+zu teilen.

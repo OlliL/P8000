@@ -1,0 +1,105 @@
+.TH DUP 2 WEGA 
+.\"@[$]dup.2    1.2
+.ad
+.fi
+.SH NAME
+dup, dup2 \- Duplizieren eines offenen Dateidescriptors
+.SH SYNTAX
+.B int dup
+.I (fildes)
+.br
+.B int
+.I fildes;
+.br
+.B dup2
+.I (fildes, fildes2)
+.br
+.B int
+.I fildes, fildes2;
+.SH BESCHREIBUNG
+.I Fildes
+ist ein Dateidescriptor, der von
+einem
+.BR open (2),
+.BR pipe (2)
+oder
+.BR creat (2)
+Systemruf zurueckgegeben wird.
+.B Dup
+ordnet einen anderen Dateidescriptor zu, der mit dem Original uebereinstimmt.
+Der neue Dateidescriptor wird zurueckgegeben.
+Er hat 
+mit dem Original folgendes gemeinsam:
+.IP - 3
+Gleiche offene Datei (oder Pipe).
+.PD 0
+.IP - 3
+Gleicher Dateipointer (d.h. beide Dateidescriptoren teilen sich den
+Dateipointer).
+.IP - 3
+Gleiche Zugriffsrechte (Lesen, Schreiben oder Lesen/Schreiben).
+.PD
+.PP
+Der neue Dateidescriptor wird so gesetzt, dass er waehrend des
+.BR exec (2)
+Systemrufs offen bleibt (siehe
+.BR fcntl (2)).
+Der zurueckgegebene Dateidescriptor ist der niedrigste verfuegbare.
+.PP
+In der zweiten Form des Systemrufs ist
+.I fildes
+ein Dateidescriptor, der sich auf eine offene Datei bezieht und
+.I fildes2
+ist eine nichtnegative ganze Zahl, die kleiner ist als der Maximalwert,
+der fuer den Dateidescriptor erlaubt ist.
+.B Dup2
+bewirkt, dass 
+.I fildes2
+sich auf die gleiche Datei wie
+.I fildes
+bezieht.
+Bezog sich
+.I fildes2
+schon auf eine offene Datei, wird sie zuerst geschlossen.
+.SH SIEHE AUCH
+creat(2), close(2), exec(2), fcntl(2), open(2), pipe(2).
+.SH DIAGNOSTIK
+.B Dup
+wird nicht ausgefuehrt, wenn mindestens einer der folgenden
+Punkte zutrifft:
+.TP 11
+\%[EBADF]
+.I Fildes
+ist kein gueltiger offener Dateidescriptor.
+.PD 0
+.TP 11
+\%[EMFILE]
+Gegenwaertig sind zuviele Dateidescriptoren offen.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird eine nichtnegative ganze Zahl,
+der Dateidescriptor, zurueckgegeben.
+Andernfalls wird ein Wert \-1 zurueckgegeben und
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT DUP := 41
+
+     ...             !* r0 : fildes *!
+                     !* r1 : fildes2 *!
+     set    r0, #6   !* dup2 ruft nur DUP auf *!
+     sc     #DUP
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad
+.PP
+Der Systemruf
+.B dup2
+ist so implementiert, dass vor Aufruf von
+.B dup
+eine ODER-Verknuepfung von
+.I fildes
+mit der Konstanten 0100 erfolgt.

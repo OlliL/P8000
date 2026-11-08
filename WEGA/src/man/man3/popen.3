@@ -1,0 +1,81 @@
+.TH POPEN 3 WEGA
+.\" @[$]popen.3 1.2
+.ad
+.fi
+.SH NAME
+popen, pclose \- Errichten von Pipes von/zu einem Prozess
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.PP
+\fBFILE *popen\fI(command, type)
+\fBchar \fI*command, *type;
+.PP
+\fBint pclose\fI(stream)
+\fBFILE \fI*stream;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B popen
+erzeugt eine Pipe
+zwischen dem Aufrufprozess und dem auszufuehrenden Kommando.
+.PP
+Die Argumente der Funktion
+.B popen
+sind Pointer auf  Zeichenketten (mit einem Nullbyte abgeschlossen),
+die eine Shell-Kommandozeile (siehe
+.BR system (3))
+und einen E/A-Modus enthalten:
+.PD 0
+.TP
+\fIr\fR
+fuer Lesen
+.TP
+\fIw\fR
+fuer Schreiben.
+.PD
+.PP
+Der zurueckgegebene Wert ist ein Pointer auf einen Datenstrom (stream),
+der zum Schreiben der Standardeingabe (Modus
+.IR w )
+oder zum Lesen der Standardausgabe des
+Programms (Modus
+.IR r )
+benutzt werden kann.
+.PP
+Ein durch
+.B popen
+geoeffneter Datenstrom sollte mit
+.B pclose
+geschlossen werden. Dabei wird die Beendigung des ueber Pipe verbundenen
+Prozesses abgewartet und der Exit-Status des Kommandos zurueckgegeben.
+.PP
+Da geoeffnete Dateien gemeinsam benutzte Dateien sind, wird ein Kommando
+vom Modus
+\fIr\fR als Eingabefilter und ein Kommando vom Modus \fIw\fR als
+Ausgabefilter benutzt.
+.SH SIEHE AUCH
+pipe(2),
+fopen(3),
+fclose(3),
+system(3),
+wait(2).
+.SH DIAGNOSTIK 
+.B Popen
+gibt einen Nullpointer zurueck, wenn keine Dateien oder Prozesse
+erzeugt werden koennen oder wenn Shell nicht zugegreifbar ist.
+.PP
+.B Pclose
+gibt den Wert \-1 zurueck, wenn
+.I stream
+nicht mit einer ueber
+.B popen
+eroeffneten Datei verbunden ist.
+.SH EINSCHRAENKUNGEN
+Gepuffertes Lesen vor Oeffnen eines Eingabefilters kann zu einer
+falschen Positionierung der Standardeingabe dieses Filters fuehren.
+Gleiches gilt fuer Ausgabefilter, wenn
+der Puffer vor Aufruf nicht sorgfaeltig geleert wird (z.B. ueber
+.BR fflush ,
+siehe
+.BR fclose (3)).

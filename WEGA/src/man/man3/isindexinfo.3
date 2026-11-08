@@ -1,0 +1,63 @@
+.TH ISINDEXINFO 3 
+.\" @[$]isindexinfo.3   1.2
+.ad
+.fi
+.SH NAME
+isindexinfo \- Zugriff auf Informationen einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisindexinfo\fI(isfd, buffer, number)\fR
+\fBint \fIisfd;\fR
+\fBint \fInumber;\fR
+\fBstruct \fIkeydesc *buffer;\fR
+  oder
+\fBstruct \fIdictinfo *buffer;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isindesinfo
+gewaehrt Zugriff auf Informationen ueber die C-ISAM-Datei.
+Es sind Informationen ueber die definierten Indexe, ueber den
+Platz, an dem sie sich innerhalb des Records befinden, ueber ihre Laenge
+und darueber, ob Duplikatwerte zugelassen sind, verfuegbar.
+.PP
+Informationen ueber einen bestimmten Index erhaelt man durch
+Angabe der Indexnummer unter Verwendung des
+.IR number \-Parameters.
+Allgemeine Informationen, z.B. die Anzahl der Indexe, die Groesse des
+Indexdatensatzes und die Groesse des Datensatzes selbst werden durch
+.B isindexinfo
+bereitgestellt, wenn der Parameter 
+.IR number =0
+gesetzt ist und der Puffer
+in eine Struktur vom Typ
+.I dictinfo
+eingelesen wird.
+.PP
+Das Argument
+.I buffer 
+kann Informationen im Format
+.I keydesc
+oder
+.I dictinfo 
+enthalten, je nachdem, ob der Parameter
+.I number
+positiv oder 0 ist.
+Da Indexe hinzugefuegt und geloescht werden, kann sich die Nummer eines
+bestimmten Index aendern.
+Wird jedoch die Anzahl der in
+.I dictinfo 
+angegebenen Indexe untersucht,
+ist die Ueberpruefung aller Indexe gewaehrleistet.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isaddindex(3),
+isbuild(3),
+isdelindex(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

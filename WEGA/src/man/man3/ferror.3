@@ -1,0 +1,56 @@
+.TH FERROR 3 WEGA
+.\" @[$]ferror.3        1.2
+.ad
+.fi
+.SH NAME
+ferror, feof, clearerr, fileno \- Stream-Statusabfragen
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.PP
+\fBfeof\fR(\fIstream)
+\fBFILE \fR*\fIstream;
+.PP
+\fBferror\fR(\fIstream)
+\fBFILE \fR*\fIstream;
+.PP
+\fBclearerr\fR(\fIstream)
+\fBFILE \fR*\fIstream;
+.PP
+\fBfileno\fR(\fIstream)
+\fBFILE \fR*\fIstream;\fR
+.fi
+.SH BESCHREIBUNG
+.B Feof
+liefert einen Wert ungleich Null, wenn von
+.I stream
+End-of-File gelesen wurde, andernfalls wird Null zurueckgegeben.
+.PP
+.B Ferror
+liefert einen Wert ungleich Null, wenn beim Lesen oder Schreiben
+des angegebenen
+.I stream
+ein Fehler aufgetreten ist, andernfalls wird Null zurueckgegeben.
+Wird der gesetzte Fehlerstatus nicht mit der Funktion
+.B clearerr
+geloescht, bleibt er bis zum Schliessen der Datei bestehen.
+.PP
+.B Clearerr
+setzt den Fehlerstatus in dem 
+.I stream
+zurueck. Darauf folgende Aufrufe an
+.B ferror
+mit gleichem Streamnamenargument liefern Null, bis ein weiterer
+Fehler auftritt.
+.PP
+.B Fileno
+gibt den ganzzahligen Filedescriptor zurueck, der dem 
+.I stream
+zugeordnet ist (siehe
+.BR open (2)).
+.PP
+Die angegebenen Funktionen sind als  Macros implementiert;
+sie koennen nicht neu vereinbart werden.
+.SH SIEHE AUCH
+fopen(3),
+open(2).

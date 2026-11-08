@@ -1,0 +1,50 @@
+.TH ISREWCURR 3 
+.\" @[$]isrewcurr.3     1.2
+.ad
+.fi
+.SH NAME
+isrewcurr \- Ueberschreiben des aktuellen Datensatzes einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisrewcurr\fI(isfd, record)\fR
+\fBint \fIisfd;\fR
+\fBchar \fIrecord[];\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isrewcurr
+wird zum Ueberschreiben des aktuellen Datensatzes
+einer C-ISAM-Datei benutzt,
+die durch den Dateidescriptor
+.I isfd
+angegeben ist.
+Der Parameter
+.I record
+ist ein Pointer auf einen Bereich, der den neuen Datensatz enthaelt.
+Die entsprechenden Werte ueberschreiben jeden definierten Index.
+.PP
+Der Primaerschluessel kann geaendert werden.
+.PP
+Die Funktion
+.B isrewcurr
+ist nuetzlich, wenn der Primaerschluessel nicht eindeutig
+und der Datensatz nicht mit einem Aufruf lokalisiert und ueberschrieben
+werden kann.
+.PP
+Eine Veraenderung der sekundaeren Indexwerte fuehrt zu einer
+Modifikation der entsprechenden Indexdateien.
+.PP
+Die Funktion
+.B isrewcurr
+aendert die Stellung des Pointers auf
+den aktuellen Datensatz nicht.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isdelete(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

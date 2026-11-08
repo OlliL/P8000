@@ -1,0 +1,24 @@
+.TH ABS 3 WEGA
+.\" @[$]abs.3   1.2
+.ad
+.fi
+.SH NAME
+abs \- Absoluter Betrag ganzer Zahlen
+.SH SYNTAX
+.B int abs
+(
+.I i
+)
+.br
+.B int
+.IR i ;
+.SH BESCHREIBUNG
+.B Abs
+gibt den absoluten Betrag seines ganzzahligen Operanden zurueck.
+.SH SIEHE AUCH
+floor(3) fuer
+.I fabs.
+.SH EINSCHRAENKUNGEN
+Der zurueckgegebene Wert ist der Wert, den die Hardware fuer
+die kleinste ganze Zahl angibt.
+Beim P8000 wird fuer das Argument 0x8000 der Wert 0x8000 zurueckgegeben.

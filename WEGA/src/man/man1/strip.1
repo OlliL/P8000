@@ -1,0 +1,41 @@
+.TH STRIP 1 WEGA
+.\" @[$]strip.1	1.2
+.ad
+.fi
+.SH NAME
+strip  \- Loeschen von Symbolen, Verschiebungsbits und des Dateikopfes
+.SH SYNTAX
+.B strip
+[\fB-h\fR] \fIfile\fR \.\.\.
+.SH BESCHREIBUNG
+.B Strip
+entfernt die Symboltabelle und die Verschiebungsbits, die gewoehnlich
+an die Ausgabe des Assemblers und Laders angefuegt sind.
+Das ist nuetzlich, um Platz zu sparen, nachdem ein Programm ausgetestet
+wurde.
+.PP
+Die Wirkung von
+.B strip
+kann auch durch die Benutzung der
+.B \-s
+Option
+beim Aufruf des Laders
+.BR ld (1)
+erzielt werden.
+.SH OPTIONEN
+.TP
+.B \-h
+Es werden der Dateikopf und die Segmenttabelle entfernt.
+.SH SIEHE AUCH
+ld(1), objdu(1), objhdr(1), a.out(5).
+.SH DIAGNOSTIK
+.TP
+"file not in correct object format"
+Die Datei ist keine nichtsegmentierte ausfuehrbare Datei.
+.TP
+"cannot recreate file"
+Der Aufrufer ist nicht Besitzer der Datei.
+.TP
+"file already stripped"
+Die Datei besitzt keine Symboltabelle
+oder Verschiebungsinformationen und die Option -h wurde nicht spezifiziert.

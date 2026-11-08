@@ -1,0 +1,205 @@
+.TH CSH 1
+.\" @[$]csh.1	1.2
+.ad
+.fi
+.SH NAME
+csh \- Kommandointerpreter mit C-aehnlicher Syntax
+.SH SYNTAX
+\fBcsh\fR[\fB\-cefinstvVxX\fR] [\fIarg ...\fR]
+.SH BESCHREIBUNG
+.PP
+.B Csh
+ist der empfohlene Kommandointerpreter des WEGA-Betriebssystems.
+Die Syntax ist der C-Sprache aehnlich.  Ein
+.B csh
+Kommandoscript kann durch die Eingabe
+.sp
+.RS
+csh script \&...
+.sp
+.RE
+interpretiert werden.
+.I Script
+ist der Name einer Datei, die eine Anzahl von
+.B csh
+Kommandos enthaelt und \&... wird durch eine Folge von Argumenten ersetzt.
+Die C-Shell benutzt diese Argumente in der Variablen
+.I argv
+und beginnt, die Kommandos aus dem Script zu lesen.
+Auf diese Parameter kann wie auf jede andere
+C-Shell-Variable Bezug genommen werden.
+.PP
+Zu Beginn der Ausfuehrung jedes
+.B csh
+wird eine Initialisierungsdatei
+.B \.cshrc
+im Homedirectory des Nutzer gelesen und ausgefuehrt.
+Sie kann Anweisungen zum Setzen von Variablen
+oder andere Anweisungen beinhalten.
+Es sollten jedoch keine interaktiven Programme oder Ausschriften
+enthalten sein, da diese Kommandodatei bei jedem Aufruf von
+.B csh
+(z.B. auch bei Aufrufen aus dem Editor heraus)
+ausgefuehrt wird und so eventuelle Bildschirmmasken zerstoeren kann.
+.PP
+Bei Aufruf einer \fBlogin\fR-Shell
+werden die Kommandos einer im Homedirectory des Nutzers
+befindlichen Datei
+.B \.login
+ausgefuehrt. Analog werden beim Verlassen einer
+\fBlogin\fR-Shell die Kommandos aus der Datei
+.B \.logout
+im Homedirectory ausgefuehrt.
+.PP
+Die C-Shell fuehrt dann wiederholend folgende Aktionen aus:
+eine Zeile der Kommandoeingabe wird gelesen und in Worte zerlegt.
+Diese Folge von Woertern wird in der Kommando-History-Liste gespeichert
+und auf Syntax ueberprueft.
+Anschliessend wird jedes Kommando der aktuellen Zeile ausgefuehrt.
+.PP
+.SH OPTIONEN
+.TP 5
+\fB\-c\fR
+Die Kommandos werden von einem (einzelnen) folgenden Argument gelesen,
+das vorhanden sein muss.
+Alle verbleibenden Argumente werden in
+.I argv
+gespeichert.
+.TP
+\fB\-e\fR
+Die C-Shell wird beendet, wenn ein aufgerufenes Kommando unnormal endet
+oder einen Rueckgabestatus ungleich Null liefert.
+.TP
+\fB\-f\fR
+Die C-Shell startet schneller, da die Kommandodatei \&.cshrc
+im Home-Directory des Nutzers nicht gesucht oder ausfuehrt.
+.TP
+\fB\-i\fR 
+Die C-Shell ist interaktiv und fordert zur Eingabe auf, auch wenn es
+sich scheinbar nicht um ein Terminal handelt.
+Eine C-Shell ist immer interaktiv, wenn ihre Eingaben und Ausgaben
+auf ein Terminal gelegt sind.
+.TP
+\fB\-n\fR
+Die Kommandos eines C-Shellscripts werden nur auf Syntax ueberprueft,
+aber nicht ausgefuehrt.
+.TP
+\fB\-s\fR
+Die Kommandoeingabe erfolgt von der Standardeingabe.
+.TP
+\fB\-t\fR 
+Eine einzelne Eingabezeile wird gelesen und ausgefuehrt.
+Ein \e kann benutzt werden, um ein "Newline"-Zeichen am Ende dieser Zeile
+zu umgehen und die Eingabezeile in der naechsten Zeile fortzusetzen.
+.TP
+\fB\-v\fR
+Die "\fIVerbose\fR"-Variable wird gesetzt. Dadurch wird
+die Kommandoeingabe nach der History-Substitution nocheinmal ausgegeben.
+.TP
+\fB\-x\fR
+Die "\fIEcho\fR"-Variable wird gesetzt,
+so dass die Kommandos unmittelbar vor ihrer Ausfuehrung
+noch einmal erscheinen.
+.TP
+\fB\-V\fR
+Die
+"\fIVerbose\fR"-Variable wird gesetzt, bevor \&.cshrc ausgefuehrt wird.
+.TP
+\fB\-X\fR
+Die
+"\fIEcho\fR"-Variable wird gesetzt, bevor \&.cshrc ausgefuehrt wird.
+.DT
+.PP
+Bleiben nach der Abarbeitung der Flag-Argumente noch Argumente uebrig
+(jedoch keine der Optionen \fB\-c, \-i, \-s,\fR oder \fB\-t\fR war
+angegeben), wird das erste Argument als Name einer Kommandodatei
+genommen, die auszufuehren ist.
+Die C-Shell eroeffnet die Datei und sichert ihren Namen fuer eine
+moegliche Wiederersetzung durch $0.
+.SH DATEIEN
+.TP 20
+~/.cshrc
+Wird bei Ausfuehrungsbeginn von jeder C-Shell gelesen
+.TP 20
+~/.login
+Wird beim login abgearbeitet
+.TP
+~/.logout
+Wird beim logout abgearbeitet
+.TP
+/etc/cshprofile 
+Wird durch die "login"-Shell vor .cshrc 
+gelesen (siehe cshrc(5)).
+.TP
+/bin/sh 
+Standard-Shell fuer Shellscripte, die
+nicht mit einem # beginnen
+.TP
+/tmp/sh*
+Temporaere Datei fuer <<
+.TP
+/dev/null
+Quelle einer leeren Datei
+.TP
+/etc/passwd
+Quelle der "home"-Directory fuer ~name.
+.SH SIEHE AUCH
+alias(1C),
+break(1C),
+breaksw(1C),
+cd(1C),
+continue(1C),
+echo(1C),
+exit(1C),
+foreach(1C),
+glob(1C),
+history(1C),
+if(1C),
+logout(1C),
+nice(1C),
+nohup(1C),
+onintr(1C),
+repeat(1C),
+set(1C),
+setenv(1C),
+source(1C),
+switch(1C),
+time(1C),
+umask(1C),
+wait(1C),
+while(1C),
+access(2),
+exec(2),
+fork(2),
+pipe(2),
+signal(2),
+umask(2),
+wait(2),
+a.out(5),
+environ(5).
+.sp
+"C-Shell" im Band WEGA-Dienstprogramme
+.SH EINSCHRAENKUNGEN
+Es sollten einfache Steuerflussstrukturen gewaehlt werden.
+Dadurch bietet sich die Moeglichkeit,
+beliebige Kommandos mit
+"|" und mit
+"&" und ";" zu nutzen.
+.PP
+Kommandos innerhalb von Schleifen, die eine Eingabe durch "?" fordern,
+werden nicht in der History-Liste gespeichert.
+.PP
+Es sollte moeglich sein, den ":"-Modifikator bei der Ausgabe von
+Kommandosubstitutionen zu benutzen.
+Mehr als ein ":"- Modifikator sollte bei
+"$"-Substitutionen erlaubt sein.
+.PP
+Woerter koennen nicht laenger als 512 Zeichen sein.
+Die Zeichenanzahl in einer Argumentliste oder einer Kommandosubstitution
+ist auf 5120 Zeichen begrenzt.
+Die Anzahl der Argumente eines Kommandos, das eine Dateinamenserweiterung
+enthaelt, ist auf 853 begrenzt.
+.PP
+Um Schleifen zu finden, begrenzt C-Shell die Anzahl der
+.BR alias (1C)
+Substitutionen auf einer einzelnen Zeile auf 20.

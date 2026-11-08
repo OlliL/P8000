@@ -1,0 +1,44 @@
+.TH WC 1 WEGA
+.\" @[$]wc.1	1.2
+.ad
+.fi
+.SH NAME
+wc \- Wortzaehlung
+.SH SYNTAX
+.B wc
+[
+.B \-clw
+] [ 
+.I file
+\& ... ]
+.SH BESCHREIBUNG
+.B Wc
+gibt die Anzahl der Zeilen, Worte und Zeichen in der Datei \fIfile\fR
+(Standard: stdin) aus.
+Ein Wort ist eine Zeichenkette,
+die von Leerzeichen, Tabulatoren oder Newlines begrenzt ist.
+.SH OPTIONEN
+.TP
+.B -c
+Es wird nur die Anzahl der Zeichen ausgegeben.
+.TP
+.B -l
+Es wird nur die Anzahl der Zeilen ausgegeben.
+.TP
+.B -w
+Es wird nur die Anzahl der Worte ausgegeben.
+.SH BEISPIELE
+.RS
+.sp
+% wc wc.1
+.br
+     46    128     664 wc.1
+.sp
+% wc -c wc.1
+.br
+    664 wc.1
+.sp
+% wc -l wc.1
+.br
+     46 wc.1
+.RE

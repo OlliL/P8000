@@ -1,0 +1,37 @@
+.TH DATE 1 WEGA
+.\" @[$]date.1	1.2
+.ad
+.fi
+.SH NAME
+date \- Ausgabe von Datum und Uhrzeit
+.SH SYNTAX
+.B date
+[ -u ]
+.SH BESCHREIBUNG
+.B Date
+gibt das Datum und die Uhrzeit in folgendem Format aus:
+.RS
+.sp
+Wochentag Monat Tag Zeit (hh:mm:ss) Zeitzone Jahr.
+.RE
+.PP
+Ist die -u Option angegeben, wird die Zeit entsprechend der
+GMT-Zeitzone ausgegeben.
+.PP
+Die Eingabe des Datums und der Uhrzeit ist nur dem Superuser erlaubt
+(siehe
+.BR date (M)
+und
+.BR datem (M)).
+.SH BEISPIEL
+.RS
+\fB% date\fR
+.br
+\fRTue Jan 20 11:16:34 MEZ 1987\fR
+.RE
+.br
+.SH SIEHE AUCH
+time(2),
+ctime(3),
+date(M),
+datem(M).

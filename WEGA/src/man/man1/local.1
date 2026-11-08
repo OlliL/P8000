@@ -1,0 +1,28 @@
+.TH LOCAL 1
+.\" @[$]local.1	1.2
+.ad
+.fi
+.SH NAME
+local \- Rueckgabe der Kontrolle an ein	lokales	System
+.SH SYNTAX
+.BR local " [ -l ] "
+.SH BESCHREIBUNG
+.B Local
+gibt die Kontrolle an ein lokales System zurueck,
+das ueber
+.BR remote (1)
+mit dem WEGA-System verbunden ist.
+Ein lokales System kann zum Beispiel
+ein Personalcomputer PC1715, ein Buerocomputer BC5120, ein
+Arbeitsplatzcomputersystem A7100 oder ein aehnliches System sein.
+.SH OPTIONEN
+.TP
+.B \-l
+Vor der	Rueckkehr ins lokale System
+wird ein "logout"-Kommando ausgefuehrt.
+.SH DATEIEN
+/usr/src/local.c	C-Quellprogramm
+.SH SIEHE AUCH
+getfile(1), putfile(1),	remote(1).
+.br
+"COMM - WEGA-Kommunikationspaket" in WEGA-Dienstprogramme

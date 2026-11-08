@@ -1,0 +1,62 @@
+.TH NICE 2 WEGA
+.\"@[$]nice.2   1.2
+.ad
+.fi
+.SH NAME
+nice \- Setzen der Programmprioritaet
+.SH SYNTAX
+.B int nice
+.I (incr)
+.br
+.B int
+.I  incr;
+.SH BESCHREIBUNG
+Die vorgegebene Prioritaet des Prozesses wird um den Wert
+.IR incr
+erhoeht.
+Der \fBNice\fR-Wert eines Prozesses bestimmt den Grad der
+Systemdienste fuer den Prozess (groessere Werte bedeuten
+geringere Prioritaet).
+Prioritaet 10 wird fuer lange Programme empfohlen.
+.PP
+Negative Inkremente darf nur der Superuser vorgeben.
+Die Prioritaet ist auf den Bereich -20 (am dringlichsten)
+bis 20 (am wenigsten dringend) begrenzt.
+.PP
+Durch
+.BR fork (2)
+wird die Prioritaet eines Prozesses an den Child-Prozess gegeben.
+Soll ein privilegierter Prozess von einem unbekannten Status zur
+normalen Prioritaet zurueckkehren, ist
+.B nice
+nacheinander mit den Argumenten \-40 (fuehrt infolge Begrenzung auf
+Prioritaet -20), 20 (um auf 0 zu gelangen) und dann 0 (zur Erhaltung der
+Kompatibilitaet mit frueheren Versionen dieses Systemrufs) aufzurufen.
+.SH DIAGNOSTIK
+.TP 11
+\%[EPERM]
+Der Nice-Werte bleibt unveraendert, wenn
+.I incr
+negativ ist und die effektive Nutzer-ID des rufenden Prozesses
+nicht die
+des Superusers ist.
+.SH RUECKGABEWERT
+Nach erfolgreichem Abschluss gibt
+.I nice
+den neuen Nice-Wert minus 20 zurueck.
+Andernfalls wird der Wert -1 zurueckgegeben und
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+nice(1).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT NICE   := 34
+
+     ...             !* r0 : incr *!
+     sc     #NICE
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

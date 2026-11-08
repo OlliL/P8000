@@ -1,0 +1,47 @@
+.TH MNTTAB 5 WEGA
+.\" @[$]mnttab.5        1.2
+.ad
+.fi
+.SH NAME
+mnttab \- Tabelle der ueber mount eingebundenen Dateisysteme
+.SH SYNTAX
+.nf
+struct mnttab {
+        char    mt_dev[32];
+        char    mt_filsys[32];
+        short   mt_ro_flg;
+        time_t  mt_time;
+};
+.fi
+.SH BESCHREIBUNG
+Die Datei
+.B /etc/mnttab
+enthaelt eine Tabelle, in der alle momentan ueber das Kommando
+.BR mount (M)
+eingebundenen Dateisysteme mit den zugehoerigen
+E/A-Geraeten enthalten sind.
+.PP
+Jeder Eintrag ist 70 Byte lang.
+Das Feld
+.B mt_dev
+enthaelt den Namen der Geraetedatei.
+Im Feld
+.B mt_filsys
+ist der root-Name der angegliederten Geraetedatei abgelegt.
+Beide Felder werden mit Nullbytes aufgefuellt.
+Die Lese-/Schreiberlaubnis fuer die
+angegliederte Geraetedatei
+ist im Feld
+.B mt_ro_flg
+abgelegt und die Zeitangabe
+.B mt_time
+enthaelt das Datum ihrer Angliederung.
+.PP
+Die maximale Anzahl von Eintraegen in
+.B mnttab\^
+und damit auch die maximale Anzahl von einbindbaren Geraetedateien
+wird durch den konfigurierbaren Systemparameter
+.BR Nmount
+festgelegt, der sich im WEGA-Betriebssystemkern befindet.
+.SH SIEHE AUCH
+sysgen(m), mount(M).

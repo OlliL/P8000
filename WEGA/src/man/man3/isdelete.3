@@ -1,0 +1,63 @@
+.TH ISDELETE 3 
+.\" @[$]isdelete.3      1.2
+.ad
+.fi
+.SH NAME
+isdelete, isdelcurr \- Loeschen des aktuellen Datensatzes einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisdelete\fI(isfd, record)\fR
+\fBint \fIisfd;\fR
+\fBchar \fIrecord[];\fR
+.sp
+\fBisdelcurr\fI(isfd)\fR
+\fBint \fIisfd;\fR
+.fi
+.SH BESCHREIBUNG
+Sowohl
+.B isdelete
+als auch 
+.B isdelcurr
+loeschen Datensaetze in C-ISAM-Dateien.
+Die Funktion
+.B isdelcurr
+loescht den aktuellen Datensatz.
+.B Isdelete
+lokalisiert den angegebenen Datensatz und loescht ihn.
+Bei Benutzung von
+.B isdelete
+muss der Primaerschluessel eindeutig sein.
+Der Wert des Primaerschluessels des gewuenschten Datensatzes muss
+im E/A-Puffer jeweils an der richtigen Stelle plaziert sein, die
+durch den Parameter
+.I record
+angezeigt wird.
+.PP
+Bei Benutzung der Funktion
+.B isdelcurr
+muss der Datensatz zuvor durch ein
+.B isread
+oder 
+.B isstart
+lokalisiert worden sein.
+.PP
+Das Argument
+.B isfd
+ist der C-ISAM-Dateidescriptor, der beim Eroeffnen der Datei zurueckgegeben
+wurde.
+.PP
+Die Datei muss sowohl fuer Eingabe als auch fuer Ausgabe geoeffnet sein.
+Fuer jeden definierten Index
+werden die entsprechenden Werte 
+in  der Indexdatei geloescht.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isread(3),
+isstart(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

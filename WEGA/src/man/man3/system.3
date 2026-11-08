@@ -1,0 +1,45 @@
+.TH SYSTEM 3 WEGA
+.\" @[$]system.3        1.2
+.ad
+.fi
+.SH NAME
+system \- Abarbeiten eines Shell-Kommandos
+.SH SYNTAX
+.nf
+\fBsystem\fI(string)
+.br
+\fBchar \fI*string;
+.sp
+\fBcsystem\fI(string)
+.br
+\fBchar \fI*string;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B system
+uebergibt die durch das Argument
+.I string
+bezeichnete Zeichenkette als Eingabe an den Kommandointerpreter
+.BR  sh (1),
+so als waere die Zeichenkette string als Kommando ueber ein Terminal
+eingegeben worden.
+Der aktuelle Prozess wartet, bis das Shell-Kommando abgearbeitet ist.
+Der Exit-Status der Shell wird zurueckgegeben.
+.PP
+Die Funktion
+.B csystem
+arbeitet analog zu Funktion
+.BR system ,
+nur wird als Kommandointerpreter die C-Shell (siehe
+.BR csh (1))
+benutzt.
+Der aktuelle Prozess wartet, bis das C-Shell-Kommando
+abgearbeitet ist.
+Der Exit-Status der C-Shell wird zurueckgegeben.
+.SH SIEHE AUCH
+popen(3),
+exec(2),
+wait(2).
+.SH DIAGNOSTIK
+Konnte die Shell nicht abgearbeitet werden, wird der
+Exit-Status 127 zurueckgegeben.

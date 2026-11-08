@@ -1,0 +1,31 @@
+.TH ISWRITE 3 
+.\" @[$]iswrite.3       1.2
+.ad
+.fi
+.SH NAME
+iswrite \- Schreiben eines Datensatzes in eine C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBiswrite\fI(isfd, record)\fR
+\fBint \fIisfd;\fR
+\fBchar\fI record[];\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B iswrite
+schreibt den Datensatz, der in dem durch den Parameter
+.I record
+angegebenen Feld uebergeben wurde, in die C-ISAM-Datei.
+Die entsprechenden Werte werden fuer jeden definierten Index in die
+Indexdatei geschrieben.
+.PP
+.B Iswrite
+aendert die Stellung des aktuellen Datensatz-Pointers nicht.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

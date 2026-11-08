@@ -1,0 +1,74 @@
+.TH BASENAME 1 WEGA
+.\" @[$]basename.1	1.2
+.ad
+.fi
+.SH NAME
+basename, dirname \- Abtrennen von Teilen von Dateinamen
+.SH SYNTAX
+\fBbasename \fIstring [	\fIsuffix\fR ]
+.br
+\fBdirname \fIstring\fR
+.SH BESCHREIBUNG
+.B Basename
+streicht jeden Praefix von
+.I string
+der auf	"\ /\ "	endet und das angegebene
+.I suffix,
+falls es im
+.I string
+enthalten ist.
+.PP
+.B Basename
+gibt das Ergebnis auf der Standardausgabe aus.
+.PP
+.B Basename
+kann innerhalb von Kommandosubstitutionszeichen	(\`\ \`)
+in einem Shellscript benutzt werden.
+.PP
+.B Dirname\^
+loescht	die letzte Komponente eines Dateipfadnamens in
+.IR string .
+.SH BEISPIELE
+.PP
+Das Kommando:
+.sp
+.RS
+basename /usr/spool/file.c
+.RE
+.sp
+gibt folgende Zeichenkette zurueck:
+.sp
+.RS
+file.c
+.RE
+.sp
+Das Kommando:
+.sp
+.RS
+basename /usr/spool/file.c .c
+.RE
+.sp
+gibt folgende Zeichenkette zurueck:
+.sp
+.RS
+file
+.RE
+.sp
+Das Kommando:
+.sp
+.RS
+set NAME=`dirname /usr/src/cmd/cat.c`
+.RE
+.sp
+setzt die Shellvariable
+.B NAME
+zu
+.RS
+.sp
+/usr/src/cmd
+.RE
+.sp
+.SH SIEHE AUCH
+csh(1),	sh(1)
+.br
+"Einfuehrung in die C-Shell" in WEGA-Dienstprogramme

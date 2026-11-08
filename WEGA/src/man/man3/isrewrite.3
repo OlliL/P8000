@@ -1,0 +1,46 @@
+.TH ISREWRITE 3 
+.\" @[$]isrewrite.3     1.1
+.ad
+.fi
+.SH NAME
+isrewrite \- Ueberschreiben eines Records in einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisrewrite\fI(isfd, record)\fR
+\fBint \fIisfd;\fR
+\fBchar \fIrecord[];\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isrewrite
+aendert einen oder mehrere Werte fuer eine C-ISAM-Datei,
+die durch den Dateidescriptor
+.I isfd
+angegeben ist.
+Der Primaerschluessel wird zur Bestimmung des Datensatzes benutzt,
+der geaendert werden soll.
+Der Parameter
+.I record
+ist ein Pointer auf einen Bereich, der den neuen Datensatz enthaelt.
+.B Isrewrite
+sucht den Datensatz und schreibt ihn vollstaendig neu.
+.PP
+Der Primaerschluessel muss eindeutig sein und kann nicht geaendert werden.
+.PP
+Eine Veraenderung der sekundaeren Indexwerte fuehrt zu einer
+Modifikation der entsprechenden Indexdateien.
+.PP
+Die Funktion
+.B isrewrite
+aendert die Stellung des Pointers auf
+den aktuellen Datensatz nicht.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isdelete(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

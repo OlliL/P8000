@@ -1,0 +1,35 @@
+.TH MEM 4 WEGA
+.\" @[$]mem.4	1.2
+.ad
+.fi
+.SH NAME
+mem, kmem  \- Speicher
+.SH BESCHREIBUNG
+Die Geraetedatei
+.B mem
+ermoeglicht den Zugriff auf den physischen Speicher des Rechners.
+Die Geraetedatei
+.B kmem
+funktioniert analog
+.BR mem ,
+sie ermoeglicht jedoch keinen Zugriff zum physischen Speicher,
+sondern zum virtuellen Speicher des WEGA-Betriebssystemkerns.
+.PP
+Byte-Adressen werden als Speicheradressen interpretiert.
+Verweise auf nicht existierende Speicherplaetze fuehren
+zu Fehlern.
+.PP
+Beim Zugriff auf Speicherbereiche des Betriebssystems ist
+aeusserste Vorsicht geboten.
+.PP
+Im P 8000 beginnt der Code-Bereich des WEGA-Betriebssystemkerns
+auf der physischen Adresse Null.
+Der Datenbereich des Betriebssystemkerns beginnt auf der
+naechsten 256-Byte-Grenze nach dem Code-Bereich des Betriebssystemkerns.
+.PP
+Die prozessspezifischen Daten des Betriebssystems
+fuer den aktuellen Prozess
+(user-Struktur) beginnen ab der virtuellen Kernadresse 0x3e00F600.
+.SH DATEIEN
+/dev/mem,
+/dev/kmem.

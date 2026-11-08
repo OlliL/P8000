@@ -1,0 +1,29 @@
+.TH SUM 1 WEGA
+.\" @[$]sum.1	1.2
+.ad
+.fi
+.SH NAME
+sum \- Summierung und Blockzaehlung in einer Datei
+.SH SYNTAX
+.B sum
+[
+.B \-r
+] \fIfile\fR
+.SH BESCHREIBUNG
+.B Sum
+berechnet fuer die angegebene Datei eine 16-Bit-Kontrollsumme und gibt sie aus.
+Ausserdem wird die Anzahl der Bloecke in der Datei ausgegeben.
+.B Sum
+wird benutzt, um
+die Gueltigkeit einer Datei zu pruefen (die z.B. ueber eine Uebertragungsleitung
+uebermittelt wurde).
+.SH OPTIONEN
+.TP
+.B \-r
+Es wird ein anderer Algorithmus
+bei der Berechnung der Kontrollsumme benutzt.
+.SH SIEHE AUCH
+wc(1)
+.SH DIAGNOSTIK
+"Read error" ist bei den meisten Geraeten nicht unterscheidbar
+von End-of-File; man pruefe die Blockzaehlung.

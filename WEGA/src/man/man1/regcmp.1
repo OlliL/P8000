@@ -1,0 +1,77 @@
+.TH REGCMP 1 WEGA
+.\" @[$]regcmp.1	1.2
+.ad
+.fi
+.SH NAME
+regcmp \- Uebersetzung regulaerer Ausdruecke in C-Quellcode
+.SH SYNTAX
+.B regcmp
+[
+.B \-
+]
+.I files
+.SH BESCHREIBUNG
+.B Regcmp
+ersetzt einen Aufruf von
+.B regcmp
+(siehe
+.BR regex (3))
+in C-Programmen.
+Dadurch wird sowohl Abarbeitungszeit als auch Programmspeicher eingespart.
+.PP
+Das Kommando
+.B regcmp\^
+uebersetzt die regulaeren Ausdruecke in
+.I file\^
+und platziert die Ausgabe in \fIfile\fB.i\fR.
+Wurde die \fB\-\fP Option benutzt, wird die Ausgabe in
+.IB file .c
+abgelegt.
+Das Eingabeformat in
+.I file\^
+ist ein Name (C-Variable), dem ein oder mehrere Leerzeichen
+folgen.
+Es folgt ein weiterer regulaerer Ausdruck,
+der in Anfuehrungszeichen eingeschlossen ist.
+.PP
+Die Ausgabe von
+.B regcmp\^
+ist C-Quellcode.
+Uebersetzte regulaere Ausdruecke werden als
+Vektoren vom Typ \fBextern char\fR dargestellt.
+.IB File .i
+Dateien koennen somit in C-Programme
+einbezogen werden oder 
+.IB file .c
+Dateien koennen uebersetzt und spaeter geladen werden.
+Benutzt ein C-Programm die
+.B regcmp\^
+Ausgabe, wird durch
+.BR regex ( abc , line )
+der mit
+.I abc\^
+bezeichnete regulaere Ausdruck auf
+.IR line 
+angewendet.
+Die Ausschriften sind selbsterklaerend.
+.SH BEISPIELE
+.TP "\w'telno\ \ \ \ 'u"
+name
+"([A\-Za\-z][A\-Za\-z0\-9\_]\(**)$0"
+.TP
+telno
+"\\({0,1}([2\-9][01][1\-9])$0\\){0,1} \(**"
+.br
+"([2\-9][0\-9]{2})$1[ \-]{0,1}"
+.br
+"([0\-9]{4})$2"
+.TP
+Im C-Programm, das die \fIregcmp\fP Ausgabe benutzt, wird durch
+.PP
+.RS
+regex(telno, line, area, exch, rest)
+.RE
+.PP
+der mit \fItelno\fP bezeichnete regulaere Ausdruck auf \fIline\fP angewendet.
+.SH SIEHE AUCH
+regex(3).

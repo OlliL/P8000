@@ -1,0 +1,53 @@
+.TH WRITE 1 WEGA
+.\" @[$]write.1	1.2
+.ad
+.fi
+.SH NAME
+write  \- Schreiben an einen anderen Nutzer
+.SH SYNTAX
+.B write
+\fIuser\fR [ \fIttyname\fR ]
+.SH BESCHREIBUNG
+.B Write
+kopiert Zeilen von einem Terminal auf das eines anderen Nutzers.
+Nach dem Aufruf sendet es einmalig die Nachricht
+.sp
+.RS
+Message from name ttyname...
+.RE
+.PP
+Die Nachricht wird durch ein End-of-File (CTRL-d)
+oder einen Interrupt abgeschlossen
+(Ausschrift "EOT" folgt auf dem Terminal des Empfaengers).
+.PP
+Das Argument
+.I ttyname
+spezifiziert den gewuenschten Empfaenger, wenn dieser an
+mehreren Terminals ueber
+.BR login (1)
+angemeldet ist.
+.PP
+Die Schreiberlaubnis kann durch das Kommando
+.BR mesg (1)
+verweigert oder gegeben werden.
+Nach Login ist Schreiben erlaubt.
+Einige Kommandos (z.B.
+.BR nroff (1)
+und
+.BR  pr (1))
+erlauben keine Nachrichten.
+.PP
+Das Zeichen ! am Zeilenbeginn bewirkt den Aufruf einer Shell,
+die den Rest der Zeile als Kommando abarbeitet.
+.PP
+Das Kommando
+\fIwrite\fR eignet sich besser fuer eine einzelne zu sendende Nachricht,
+da jede Nachricht erst nach Eingabe eines Newline oder CTRL-d
+gesendet wird und der Empfaenger waehrend des Schreibens der Nachricht
+warten muss.
+Fuer eine laengere, zweiseitige Konversation sollte \fItalk\fR
+benutzt werden, da dieses Programm die Nachrichten zeichenweise uebermittelt.
+.SH DATEIEN
+/etc/utmp	fuer Nutzeridentifikation
+.SH SIEHE AUCH
+mail(1), mesg(1), talk(1), who(1).

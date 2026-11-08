@@ -1,0 +1,199 @@
+.TH CDC 1 
+.\" @[$]cdc.1	1.2
+.ad
+.fi
+.SH NAME
+cdc \- Aendern des Delta-Kommentars eines SCCS-Deltas
+.SH SYNTAX
+.B cdc -r\fISID [\fB\-m\fR[\fImrlist\fR]] [\-\fBy\fR[\fI comment\fR]] \fIfiles\fR
+.SH BESCHREIBUNG
+.B
+Cdc
+aendert den Delta-Kommentar
+fuer die durch das Schluesselwort
+.B \-r
+gekennzeichnete SID jeder angegebenen SCCS-Datei.
+.PP
+Der Delta-Kommentar
+besteht aus Modification-Request (MR)
+und Kommentarinformationen, die normalerweise ueber
+das Kommando
+.BR delta (1)
+(
+.B \-m
+und 
+.B \-y
+Schluesselwoerter) spezifiziert werden.
+.PP
+Wird ein Directory angegeben, so handelt
+.B cdc\^
+so, als ob jede Datei im Directory spezifiziert wurde.
+Ausgenommen davon sind Dateien, die keine SCCS-Dateien sind
+(letzte Komponente des Pfadnamens beginnt nicht mit
+.BR s. )
+und nicht lesbare Dateien.
+Wurde anstelle eines Namens ein
+.B \-
+angegeben, wird von der Standardeingabe gelesen (siehe
+.BR WARNUNGEN );
+jede Zeile der Standardeingabe wird als Name einer zu bearbeitenden SCCS-Datei
+genommen.
+.PP
+Argumente fuer
+.BR cdc ,
+koennen in beliebiger Reihenfolge angegeben werden, sie bestehen aus
+.I Schluesselwoertern\^
+und Dateinamen.
+.PP
+Alle beschriebenen
+.I Schluesselwoerter\^
+wirken unabhaengig auf jede angegebene Datei:
+.TP
+\fB\-m \fR[\fI mrlist \fR]
+Wenn die SCCS-Datei das
+.B v
+Flag gesetzt hat (siehe
+.BR admin (1))
+wird eine Liste von
+MR-Nummern hinzugefuegt und/oder im Delta-Kommentar des
+.I SID
+gestrichen, der durch das
+.B \-r
+Schluesselwort
+gekennzeichnet ist.
+Eine leere
+MR-Liste hat keine Wirkung.
+.IP
+MR-Eintraege werden zur Liste der
+MR in der gleichen Weise wie bei
+.BR delta (1)
+hinzugefuegt.
+Um ein MR zu streichen, muss der
+MR-Nummer ein
+.B !
+vorangestellt sein
+(siehe
+.BR BEISPIELE ).
+Wenn der zu streichende
+MR sich augenblicklich in der Liste der
+MR befindet, wird er entfernt und in eine "Kommentarzeile" verwandelt.
+Eine Liste aller gestrichenen MR
+wird in der Kommentarsektion des Delta-Kommentars abgelegt
+(ein vorangestellter Kommentar weist auf die Streichung hin).
+.IP
+Wenn
+.B \-m
+nicht benutzt wird und die Standardeingabe ein Terminal ist,
+wird ein Prompt
+.B MRs?
+vor dem Lesen der Standardeingabe ueber die Standardausgabe ausgegeben
+(sonst nicht!).
+Das Prompt
+.B MRs?
+erscheint immer vor
+.B comments?
+(siehe
+.B \-y
+Schluesselwort).
+.IP
+MR werden in einer Liste durch Leer- und/oder Tabulatorzeichen getrennt.
+Ein nicht mit Backslash gekennzeichnetes Newline beendet die
+MR-Liste.
+.IP
+Besitzt das
+.B v
+Flag einen Wert (siehe
+.B admin
+(1)), wird er als Name des Programms
+(oder der Shell-Prozedur) angenommen, das die Korrektheit der
+MR-Nummern ermittelt.
+Gibt das Programm einen Exitstatus ungleich Null
+zurueck, wird
+.B cdc\^
+beendet und der Delta-Kommentar bleibt unveraendert.
+.TP
+.BI \-r SID
+Es wird die Zeichenkette zur
+SCCS-IDentifikation (SID) 
+eines Deltas spezifiziert, fuer den der Delta-Kommentar zu aendern ist.
+.TP
+\fB\-y \fR[\fI comment \fR]
+Willkuerlicher Text. Er wird benutzt, um einen bereits existierenden
+Kommentar fuer das durch das Schluesselwort
+.B \-r
+spezifizierte Delta zu ersetzen. 
+Der vorherige Kommentar bleibt erhalten. Ihm wird eine
+Kommentarzeile
+vorangetsellt, die die Aenderung meldet.
+Ein leerer Kommentar hat keine Wirkung.
+.IP
+Wurde
+.B \-y
+nicht spezifiziert und ist die Standardeingabe ein Terminal,
+wird durch Ausgabe von
+.B comments?
+die Eingabe angefordert (sonst nicht!).
+Ein nicht durch Backslash gekennzeichnetes Newline beendet die
+Kommentartexteingabe.
+.PP
+Die Genehmigungen zur Modifikation
+von SCCS-Dateien werden im "Source-Code-Control-System Benutzerhandbuch"
+beschrieben. Prinzipiell kann ein Nutzer
+den Delta-Kommentar aendern,
+wenn er das Delta selbst erzeugt hat
+oder wenn er Eigner der Datei und des Directorys ist.
+.SH BEISPIELE
+.RS 5n
+cdc \-r1.6 \-m"bl78-12345 \e!bl77-54321 bl79-00001" \-yabcdefg s.file
+.RE
+.PP
+fuegt bl78-12345 und bl79-00001 der
+MR-Liste hinzu und streicht bl77-54321 aus der MR-Liste;
+fuegt weiterhin den Kommentar
+.B abcdefg
+zu Delta 1.6 der s.file hinzu.
+.PP
+.RS 5n
+cdc \-r1.6 s.file
+.br
+MRs? !bl77-54321 bl78-12345 bl79-00001
+.br
+comments? abcdefg
+.RE
+.PP
+realisiert das Gleiche.
+.DT
+.SH WARNUNGEN
+Werden SCCS-Dateinamen ueber die Standardeingabe dem
+.B cdc\^
+Kommando mitgeteilt (
+.B \-
+in der Kommandozeile), so muessen die Schluesselwoerter
+.B \-m
+und
+.B \-y
+ebenfalls benutzt werden.
+.SH DATEIEN
+.TP 10
+x-file
+(siehe
+.BR delta (1))
+.TP
+z-file
+(siehe
+.BR delta (1))
+.PD
+.SH SIEHE AUCH
+admin(1),
+delta(1),
+get(1),
+help(1),
+prs(1),
+sccsfile(5).
+.br
+"Source-Code-Control-System Benutzerhandbuch"
+im Band WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+Benutze
+.BR help (1)
+fuer weitere Erlaeuterungen.

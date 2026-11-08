@@ -1,0 +1,768 @@
+.TH ADB 1
+.\" @[$]adb.1	1.2
+.ad
+.fi
+.SH NAME
+adb \- debugger
+.SH SYNTAX
+\fBadb\fR [\fB\-w\fR] [ \fIobjfil\fR [ \fIcorfil\fR ] ]
+.SH BESCHREIBUNG
+.B Adb
+ist ein universelles Testprogramm. Es wird benutzt, um Dateien zu untersuchen
+und stellt eine steuerbare Umgebung fuer die Ausfuehrung von WEGA-Programmen
+zur Verfuegung.
+.PP
+.I Objfil
+ist eine ausfuehrbare Programmdatei, die eine Symboltabelle enthalten
+sollte.
+Ist keine Symboltabelle vorhanden,
+koennen die Moeg\%lichkeiten der symbolischen Arbeit von
+.B adb
+nicht genutzt werden.
+Die Standardannahme fuer
+.I objfil
+ist
+.B  a.out.
+.I Corfil
+muss eine Core-Datei (Speicherabbild) sein,
+das bei der Abarbeitung von
+.I objfil
+entstanden ist.
+Die Standardannahme fuer
+.I corfil
+ist
+.B  core.
+.PP
+.B Adb
+erwartet Kommandos ueber die Standardeingabe
+und gibt ueber die Standardausgabe aus.
+Die Eingabeanforderung von
+.B adb
+ist das Fragezeichen "\ ?\ ".
+Wenn das
+\fI\-w\fR Flag gesetzt ist, sind \fIobjfil\fR und \fIcorfil\fR
+zum Lesen und Schreiben geoeffnet oder werden, falls nicht vorhanden, erstellt.
+\fBAdb\fR ignoriert QUIT; INTERRUPT fuehrt zum Abbruch des laufenden
+und Aufruf des naechsten
+.B adb
+Kommandos.
+.PP
+Das Format der \fBadb\fR Kommandos ist:
+.PP
+.RS
+[\fIaddress\fR] [,\fIcount\fR] [\fIcommand\fR] [;]
+.RE
+.PP
+Ist
+.I address
+angegeben, wird \fIdot\fR auf den Wert von
+.IR address
+gesetzt.
+Der Anfangswert von
+.I dot
+ist 0.
+Fuer die meisten Kommandos gibt
+.I count
+die Anzahl der Wiederholungen fuer dieses Kommando an
+(Standardwert ist 1).
+.I Address
+wird standardmaessig als Adresse im Segment 0 gewertet.
+.PP
+Die Interpretation einer Adresse haegt von ihrem Kontext ab.
+Wird ein Unterprozess getestet, werden die Adressen
+im Adressraum des Unterprozesses interpretiert.
+Detaillierte Ausfuehrungen zur Adresszuordnung werden unter
+\fBADRESSEN\fR gemacht.
+.PP
+.SH AUSDRUECKE
+.TP 7.2n
+.B .
+Der Wert von
+.IR dot
+.TP 7.2n
++
+Der Wert von
+.I dot ,
+der um die aktuelle Schrittweite erhoeht ist.
+.TP 7.2n
+^
+Der Wert von
+.I dot ,
+der um die aktuelle Schrittweite erniedrigt ist.
+.TP 7.2n
+"
+Der zuletzt eingegebene Wert fuer
+.I address .
+.TP 7.2n
+.I integer
+Eine Oktalzahl, wenn
+.I integer
+mit 0 beginnt;
+eine He\%xadezimalzahl, wenn "\ %\ " vorangestellt wird;
+sonst eine Dezimalzahl.
+.TP 7.2n
+.IB integer . fraction
+Eine 32-Bit Gleitkommazahl.
+.TP 7.2n
+.I \'cccc\|\'
+Der ASCII-Wert von bis zu 4 Zeichen;
+zur Kennzeichnung von "\ \'\ " wird ein Backslash "\ \\\ "
+verwendet.
+.TP 7.2n
+.I < name
+Der Wert von
+.IR name ,
+der entweder Register- oder Variablenname ist.
+.B Adb
+verwaltet mehrere Variablen
+(siehe auch
+.SM VARIABLEN\*S)
+, die durch einzelne Buchstaben oder Ziffern bezeichnet werden.
+Wenn
+.I name
+ein Registername ist, wird der Wert des Registers dem System-Header von
+.IR corfil
+entnommen.
+Die Registernamen sind:
+.br
+.BR "r0 ... r14 sp pc fcw" "."
+.TP 7.2n
+.I symbol
+Ein
+.I symbol
+ist eine Folge von Gross- und Kleinbuchstaben, Unterstrichen oder Ziffern,
+die nicht mit einer Ziffer beginnt.
+"\ \\ " wird verwendet, um andere Zeichen darzustellen.
+Der Wert von
+.I symbol
+wird der Symboltabelle von
+.IR objfil
+entnommen.
+Wenn noetig, wird dem
+.I symbol
+ein Unterstrich "\ _\ " oder eine Tilde "\ ~\ " vorangestellt.
+.TP
+.I _ symbol
+In C beginnt der Name einer externen Variablen
+(in der Symboltabelle\|) mit "\ \_\ ",
+um die Namen der externen Variablen von denen der
+internen und Hilfsvariablen
+zu unterscheiden.
+.TP 7.2n
+.RI ( exp \|)
+Der Wert des Ausdrucks
+.IR exp
+.sp
+.LP
+.SM
+.B  "Einstellige\ Operatoren"
+.TP 7.2n
+.RI * exp
+Der Inhalt des Speicherplatzes, der durch
+.I exp
+in
+.IR corfil
+adressiert wird.
+.TP 7.2n
+.RI @ exp
+Der Inhalt des Speicherplatzes, der durch
+.I exp
+in
+.IR objfil
+adressiert wird.
+.TP 7.2n
+.RI \- exp
+Integer Negation
+.TP 7.2n
+.RI \~ exp
+Bitweises Komplement
+.sp
+.LP
+.B  "Zweistellige\ Operatoren"
+werden von links nach rechts abgearbeitet und haben eine geringere
+Prioritaet als einstellige Operatoren.
+.TP 7.2n
+.IR e1 + e2
+Integer Addition
+.TP 7.2n
+.IR e1 \- e2
+Integer Subtraktion
+.TP 7.2n
+.IR e1 * e2
+Integer Multiplikation
+.TP 7.2n
+.IR e1 % e2
+Integer Division
+.TP 7.2n
+.IR e1 & e2
+Bitweise Konjunktion
+.TP 7.2n
+.IR e1 \(bv e2
+Bitweise Disjunktion
+.TP 7.2n
+.IR e1 # e2
+.I E1
+wird zum naechsten Vielfachen von
+.IR e2 
+gerundet.
+.DT
+.SH KOMMANDOS
+Die meisten Kommandos bestehen aus einem Verb, dem ein Modifikator
+oder eine Liste von Modifikatoren folgt.
+Die folgenden Verben stehen zur Verfuegung
+(Den Kommandos "?" und "/" kann ein Stern "\ *\ " folgen; siehe dazu
+.SM ADDRESSEN
+).
+.TP .5i
+.RI ? f
+Ab Speicherplatz
+.I address
+in
+.I  objfil
+wird im durch \fIf\fR angegebenen Format ausgegeben.
+.TP
+.RI / f
+Ab Speicherplatz
+.I address
+in
+.I  corfil
+wird im durch \fIf\fR angegebenen Format ausgegeben.
+.TP
+.RI  = f
+Der Wert von
+.I address
+selbst wird im durch \fIf\fR angegebenen Format ausgegeben.
+(Beim Format
+.I i 
+wird fuer die Teile des Befehls, die sich auf nachfolgende Worte
+beziehen, ein "?" ausgegeben)
+.PP
+Die Formatangabe
+.I format
+besteht aus einem oder mehreren Zeichen, die die Form der Ausgabe bestimmen.
+Jedem Formatzeichen kann eine ganze De\%zi\%mal\%zahl vorangestellt werden,
+die die Anzahl der Wiederholungen fuer das Formatkennzeichen angibt.
+Bei der Ausgabe, die dem angegebenen Format entspricht, wird
+.I dot
+jeweils um die Formatlaenge erhoeht.
+Ist kein Format angegeben, wird das letzte Format genutzt.
+Folgende Formate koennen gewaehlt werden (1. Angabe: Formatkennzeichen, 
+2. Angabe: Formatlaenge):
+.ta 2.5n .5i
+.RS
+.TP
+.BR o "	2"
+Ausgabe von 2 Bytes als Oktalzahl.
+Alle Oktalzahlen werden von
+.B adb
+duch eine vorangestellte Null gekennzeichnet.
+.br
+.TP
+.BR O "	4"
+Ausgabe von 4 Bytes als Oktalzahl.
+.br
+.TP
+.BR d "	2"
+Ausgabe als Dezimalzahl
+.br
+.TP
+.BR D "	4"
+Ausgabe als lange Dezimalzahl.
+.br
+.TP
+.BR x "	2"
+Ausgabe von 2 Bytes als Hexadezimalzahl.
+.br
+.TP
+.BR X "	4"
+Ausgabe von 4 Bytes als Hexadezimalzahl.
+.br
+.TP
+.BR u "	2"
+Ausgabe als vorzeichenlose Dezimalzahl.
+.br
+.TP
+.BR U "	4"
+Ausgabe als lange vorzeichenlose Dezimalzahl.
+.br
+.TP
+.BR f "	4"
+Ausgabe eines 32-Bit Wertes als Gleitkommazahl.
+.br
+.TP
+.BR F "	8"
+Ausgabe als Gleitkommazahl mit doppelter Genauigkeit.
+.br
+.TP
+.BR b "	1"
+Ausgabe des adressierten Bytes als Oktalzahl.
+.br
+.TP
+.BR c "	1"
+Ausgabe des adressierten Bytes als ASCII-Zeichen.
+.br
+.TP
+.BR C "	1"
+Ausgabe des adressierten Bytes als ASCII-Zeichen
+unter Benutzung folgender Schreibweisen fuer nicht-druckbare Zeichen:
+Fuer die Zeichen mit den Werten 000 bis 040 werden die Zeichen mit den Werten
+0100 bis 0140 mit vorangestellten @ ausgegeben.
+Das Zeichen @ wird als @@ dargestellt.
+.br
+.TP
+.BI s "	n"
+Ausgabe der adressierten Zeichenkette bis zum naech\%sten Nullbyte.
+.br
+.TP
+.BI S "	n"
+Ausgabe der adressierten Zeichenkette unter Benutzung der angegebenen
+Regeln fuer nicht-darstellbare Zeichen (@).
+.I n
+ist die Laenge der Zeichenkette einschliesslich des Nullbyte.
+.br
+.TP
+.BR Y "	4"
+Ausgabe von 4 Bytes im Datumformat (\fBctime\fR(3)).
+.br
+.TP
+.BR i "	n"
+Ausgabe als U8000-Befehl.
+.I n
+ist die Anzahl der Bytes, die der Befehl belegt.
+Diese Art der Ausgabe benutzt die Variablen 1 und 2,
+in denen die Verschiebung von Quell- und Zieloperanden (bei
+Adressrechnung) des jeweils zuletzt ausgegebenen Befehls gespeichert wird.
+.br
+.TP
+.BR a "	0"
+Ausgabe des Wertes von
+.I dot
+in symbolischer Form.
+Dabei wird gesichert, dass die Symbole bei den nachfolgenden
+Anweisungen immer folgenden Typ haben:
+.LP
+.nf
+.DT
+		/	lokales oder globales Datensymbol
+		?	lokales oder globales Textsymbol
+		=	lokales oder globales absolutes Symbol
+.fi
+.ta 2.5n .5i
+.TP
+.BR p "	2"
+Ausgabe des adressierten Bytes in symbolischer Form unter Verwendung
+der Regeln unter
+.BR a .
+.br
+.TP
+.BR t "	0"
+Ist eine ganze Zahl vorangestellt, erfolgt ein Tabulatorsprung
+zur entsprechenden Tabulatormarke.
+Zum Beispiel bewirkt ein
+.B 8t 
+einen Tabulatorsprung zur naechsten 8-Leerzeichen-Tabulatormarke.
+.br
+.TP
+.BR r "	0"
+Ausgabe eines Leerzeichens.
+.br
+.TP
+.BR n "	0"
+Ausgabe eines Newlines.
+.br
+.tr '"
+.TP
+.BR '...' " 0"
+Ausgabe der eingeklammerten Zeichenkette.
+.br
+.tr ''
+.br
+.TP
+.B ^
+.I Dot
+wird um die aktuelle Schrittweite verringert.
+Keine Ausgabe.
+.br
+.TP
++
+.I Dot
+wird um 1 erhoeht. Keine Ausgabe.
+.br
+.TP
+\-
+.I Dot
+wird um 1 erniedrigt. Keine Ausgabe.
+.RE
+.TP
+newline
+Wenn das vorangegangene Kommando
+.I dot
+temporaer veraendert hat, wird dieser Wert
+.I dot
+permanent zugewiesen.
+Es wird mit
+.IR count = 1
+wiederholt.
+.TP
+.RB [ ?/ ] l "\fI value mask\fR"
+Alle Worte ab
+.I  dot
+werden mit
+.I mask
+maskiert und mit
+.I value
+verglichen, bis es zu einer Uebereinstimmung kommt.
+Wird
+.B L
+verwendet, werden immer 4 zusammenhaengende Bytes untersucht.
+Wird keine Uebereinstimmung festgestellt, bleibt
+.I dot
+unveraendert; sonst wird
+.I dot
+auf die Adresse gestellt, bei der Uebereinstimmung festgestellt wurde.
+Fehlt
+.IR mask ,
+wird \-1 verwendet.
+.TP
+.RB [ ?/ ] w "\fI value ...\fR"
+Schreiben eines 2-Byte
+.I value
+auf den adressierten Speicherplatz.
+Wird das Kommando \fIW\fR verwendet, werden 4 Bytes geschrieben.
+Ein Schreiben in den Adressraum eines Unterprozesses
+ist nur auf geraden Adressen erlaubt (Wortgrenze).
+.TP
+[\fB?/\fR]\fBm\fI b1 e1 f1\fR[\fB?/\fR]
+.br
+Den Map-Parametern
+.RI ( b1,\ e1,\ f1 )
+werden neue Werte zugewiesen.
+Sind weniger als 3 Ausdruecke angegeben,
+bleiben die restlichen Map-Parameter unveraendert.
+Folgt einem "?" oder "/" ein "\ *\ ", wird im zweiten Segment 
+(\fIb2\fR\|,\|\fIe2\fR\|,\|\fIf2\fR)
+der Map geaendert.
+Ist die Liste durch "?" oder "/" abgeschlossen,
+wird die entsprechende Datei
+(\fIobjfil\fR oder
+.I corfil
+fuer weitere Kommandos benutzt.
+(z.B. bewirkt /m?, dass "/" sich auf
+.I objfil
+bezieht.)
+.TP
+.BI > name
+.I Dot
+wird dem angegebenen Register bzw. der angegebenen Variablen zugewiesen.
+.TP
+.B !
+Der Rest der Zeile, die '!' folgt, wird von Shell als Kommando abgearbeitet.
+.TP
+.RI $ modifier
+Weitere Kommandos. Folgende 
+Modifikatoren stehen zur Verfuegung:
+.RS
+.TP
+.BI $ < f
+Liest Kommandos der Datei
+.I f
+und kehrt zurueck.
+.br
+.TP
+.BI $ > f
+Gibt die Ausgabe an die Datei
+.I  f.
+Falls die Datei noch nicht existiert, wird sie erzeugt.
+.br
+.TP
+.B $r
+Ausgabe der Register und des durch
+.B pc
+addressierten Befehls.
+.I Dot
+erhaelt den Wert von \fBpc\fR.
+.br
+.TP
+.B $f
+Ausgabe der Gleitkommaregister.
+.TP
+.B $b
+Ausgabe aller Breakpoints und der ihnen zugeordneten Zaehler und Kommandos.
+.br
+.TP
+.B $C
+Wird $C verwendet, werden die 16-Bit-Werte des Stackrahmens jeder aktiven
+Routine mit der zugehoerigen Rueckkehradresse (wenn moeglich mit Marke)
+ausgegeben.
+Ist
+.I count
+angegeben, wird nur der 1. Stackrahmen ausgegeben.
+Ist
+.I address
+angegeben, wird
+.I dot
+temporaer auf diese Adresse gesetzt,
+um die Befehle durchsehen zu koennen (d.h. pc wird nicht veraendert).
+.br
+.TP
+.B $e
+Die Namen und Werte der externen Variablen werden ausgegeben.
+.br
+.TP
+.B $w
+Die Seitenbreite fuer die Ausgabe wird auf den Wert von
+.I address
+gesetzt (Standard ist 72).
+.br
+.TP
+.B $s
+Setzt das Limit fuer die Verwendung von Symbolen zur Bezeichnung von
+.I address
+(Standard ist 255).
+.br
+.TP
+.B $o
+Alle eingegebenen Dezimalzahlen werden als Oktalzahlen interpretiert.
+.br
+.TP
+.B $x
+Alle eingegebenen Dezimalzahlen werden als Hexadezimalzahlen interpretiert.
+.br
+.TP
+.B $d
+Eingegebene Dezimalzahlen werden wieder so interpretiert, wie unter
+.SM AUSDRUECKE
+beschrieben.
+.br
+.TP
+.B $q
+Verlassen von
+.BR adb .
+.br
+.TP
+.B $v
+Ausgabe aller Variablen, die einen Wert ungleich Null besitzen,
+als Hexadezimalzahl.
+.br
+.TP
+.B $m
+Ausgabe der Adress-Map.
+.RE
+.TP
+.BI : modifier
+Arbeit mit Unterprozessen (dynamischer Test).
+Moeg\%liche Modifikatoren sind:
+.RS
+.TP
+.BI : b c
+Setzten eines Breakpoints auf
+.IR address .
+Der Breakpoint wird
+.IR count \-1
+mal durchlaufen, bevor das Programm unterbrochen wird.
+Bei jedem Durchlaufen des Breakpoints wird das Kommando
+.I :c
+ausgefuehrt.
+Setzt dieses Kommando
+.I dot
+auf Null,
+bewirkt der Breakpoint immer einen Programmstop.
+.TP
+.B :d
+Loeschen eines Breakpoint auf
+.IR address .
+.TP
+.B :r
+.I Objfil
+wird als Unterprozess abgearbeitet.
+Ist
+.I address
+explizit angegeben, wird die Programmabarbeitung
+an dieser Stelle begonnen;
+sonst wird das Programm vom Standardeintrittspunkt an abgearbeitet.
+.I Count
+gibt an, wieviele Breakpoints vor dem ersten Programmstop
+uebergangen werden sollen.
+Argumente koennen in der Kommandozeile
+an das zu startende Programm uebergeben werden.
+Beginnt ein Argument mit "<" oder ">", wird fuer den Unterprozess
+die Standardeingabe bzw. -ausgabe festgelegt.
+Alle Signale, die nach dem Programmstart empfangen werden, werden
+an den Unterprozess weitergeleitet.
+.TP
+.BI :c s
+Der Unterprozess wird mit dem Signal
+.I s
+fortgesetzt
+(siehe auch \fIsignal\fR (2)).
+Ist
+.I address
+angegeben, wird das Programm an dieser Adresse fortgesetzt.
+Ist kein Signal spezifiziert, wird das Signal,
+das den Prozess unterbrochen hat, gesendet.
+Die Breakpointbehandlung erfolgt wie bei
+.BR r .
+.TP
+.BI : s s
+Es gilt das unter \fBc\fR Gesagte, nur wird der Unterprozess
+im Einzelschrittbetrieb bzw. in Schritten von
+.I count
+abgearbeitet.
+Ist kein Unterprozess vorhanden, wird
+.I objfil
+als Unterprozess wie bei
+.B r
+ausgefuehrt.
+In diesem Fall koennen keine Signale uebergeben werden;
+der Rest der Zeile kann Argumente fuer den Unterprozess enthalten.
+.TP
+.B :k
+Der aktuelle Unterprozess wird beendet (falls vorhanden).
+.RE
+.SH VARIABLEN
+.B Adb
+stellt mehrere Variablen zur Verfuegung.
+Variablen, denen ein Name zugeordnet ist, werden von
+.B  adb
+am Anfang initialisiert, obwohl nicht alle benoetigt werden.
+Numerierte Variablen sind fuer die Kommunikation wie folgt reserviert:
+.TP
+0
+Der letzte Wert, der ausgegeben wurde.
+.br
+.TP
+1
+Das letzte Offset in einem Befehl.
+.br
+.TP
+2
+Der vorangegangene Wert der Variablen 1.
+.PP
+Zu Beginn werden die folgenden Variablen entsprechend dem
+System-Header in
+.I corfil
+gesetzt.
+Ist
+.I corfil
+keine
+.B Core\- 
+Datei,
+werden diese Werte
+.I objfil
+entnommen.
+.TP
+b
+Die Basisadresse des Datensegments.
+.br
+.TP
+d
+Die Groesse des Datensegments.
+.br
+.TP
+e
+Der Eintrittspunkt.
+.br
+.TP
+m
+Die Magic-Nummer (0xE607, 0xE611, 0xE605, 0xE707, 0xE711, 0xE705)
+.br
+.TP
+s
+Die Groesse des Stacksegments.
+.br
+.TP
+t
+Die Groesse des Textsegments.
+.SH ADRESSEN
+Die Berechnung der Adresse in einer Datei aus der
+Adresse in einem Kommando erfolgt unter Verwendung
+der Map (Speicherzuordnung).
+Jede Map besteht aus 2 Tripeln
+.RI ( "b1, e1, f1" )
+und
+.RI ( "b2, e2, f2" )
+und der
+.I file address.
+Die Adresse in der Datei
+.I file address
+wird aus der Adresse des Kommandos
+.I address
+wie folgt berechnet:
+.PP
+.RS
+\fIb1<address<e1 => file address=address+f1-b1\fR
+.sp
+sonst
+.sp
+\fIb2<address<e2 => file address=address+f2-b2\fR
+.RE
+.PP
+Anderenfalls ist die angegebene
+.I address
+illegal.
+In einigen Faellen (z.B. fuer Programme mit getrenntem Befehls- und
+Datenbereich - separated I&D space),
+koennen sich beide Segmente ueberlappen.
+Folgt einem "\ ?\ "
+oder einem "\ /\ "
+ein "\ *\ ",
+wird nur das zweite Tripel benutzt.
+.PP
+Fuer normale
+.B a.out 
+und
+\fBcore-\fRDateien werden beide Maps zu Beginn initia\%li\%siert.
+Ist eine Datei nicht vom erwarteten Typ,
+wird fuer diese Datei
+.I b1
+auf 0,
+.I e1
+auf die maximale Dateilaenge und
+.I f1
+ebenfalls auf 0 gesetzt.
+Auf diese Weise kann der gesamte Dateiinhalt
+ohne Adress\%umrechnung untersucht werden.
+.PP
+Um mit
+.B adb
+auch sehr lange Dateien bearbeiten zu koennen,
+werden alle Werte als ganzzahlige vorzeichenbehaftete
+32-Bit-Zahlen behandelt.
+.SH DATEIEN
+/dev/mem
+.br
+/dev/swap
+.br
+a.out
+.br
+core
+.SH SIEHE AUCH
+ptrace(2),
+disasm(3),
+a.out(5),
+core(5)
+.br
+"ADB - Ein Debugger" in WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+Ist kein aktuelles Kommado oder Format angegeben,
+wird "Adb" ausgegeben.
+Bei Syntaxfehlern, nicht zugreifbaren Dateien,
+unnormaler Beendigung von Kommandos usw. werden Meldungen ausgegeben.
+Der Exit-Status ist 0, wenn das letzte Kommado keinen Fehler erbrachte
+oder einen von Null verschiedenen Status zurueckgab.
+.SH EINSCHRAENKUNGEN
+Ein Breakpoint, der auf den Entrypoint des Programms gesetzt wurde,
+hat bei einem Programmstart keine Wirkung.
+.sp
+Im Einzelschrittbetrieb zaehlen Systemaufrufe nicht
+als ausgefuehrte Befehle.
+.sp
+Haben lokale und externe Variablen gleiche Namen, koennen Fehler
+beim Zugriff der externen Variablen auftreten.
+.sp
+Wird einer Hexadezimalzahl, die zur Bezeichnung einer Adresse
+benutzt wird, kein "\ %\ " vorangestellt, wird sie als
+.I Symbol
+interpretiert.
+.sp
+Segmentierte Programme koennen mit adb nur im Segment 0 getestet werden.

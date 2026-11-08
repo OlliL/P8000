@@ -1,0 +1,42 @@
+.TH CORE 5 WEGA
+.\"@[$]core.5   1.2
+.ad
+.SH NAME
+core \- Format der Speicherabbilddatei
+.SH BESCHREIBUNG
+Bei Auftreten eines Fehlers
+kann das Betriebssystem WEGA
+eine Datei mit dem
+Speicherabbild des abgebrochenen Prozesses anlegen
+(Ursachen siehe
+.BR signal (2)).
+Die am haeufigsten auftretenden Fehler
+sind Speicherfehler, unzulaessige Befehle
+und vom Benutzer erzeugte
+.BR QUIT \-Signale.
+Das Speicherabbild (als
+.B core
+bezeichnet) wird im aktuellen Arbeitsdirectory des Prozesses abgelegt.
+.PP
+Die ersten 2048 Bytes des Speicherabbildes
+stellen eine Kopie der nutzerspezifischen Daten
+des Systems (User-Struktur) fuer den Prozess dar, das unter anderem
+die Registerinhalte zum Zeitpunkt des Abbruchs beinhaltet.
+Alle folgenden Daten
+repraesentieren den tatsaechlichen Inhalt
+des vom Benutzer belegten Speicherbereiches zu dem
+Zeitpunkt, als das Abbild geschrieben wurde.
+Besitzt das Anwenderprogramm separaten Text- und Datenbereich,
+werden nur die Datensegmente, nicht aber das/die
+Textsegment(e) in die Datei geschrieben.
+Im Falle von kombiniertem
+Text- und Datenbereich werden alle
+Nutzersegmente in die Core-Datei geschrieben.
+Den Nutzersegmenten folgt in beiden Faellen der Nutzerstack.
+.PP
+Mit dem Debugger
+.BR adb (1)
+koennen diese Speicherabbilder untersucht werden.
+.SH SIEHE AUCH
+adb(1),
+signal(2).

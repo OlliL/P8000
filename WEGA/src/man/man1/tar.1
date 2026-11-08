@@ -1,0 +1,204 @@
+.TH TAR 1 WEGA
+.\" @[$]tar.1	1.2
+.ad
+.fi
+.SH NAME
+tar  \- Dateiarchivierung
+.SH SYNTAX
+.B tar
+[-] {\fBcrtux\fR}[\fB01bflmvw\fR] 
+[blocksize] [archivdev] [\fIname\fR ... ]
+.SH BESCHREIBUNG
+.B Tar
+dient zum Schreiben und Lesen von Dateien
+in bzw. aus einem Archiv (Standard: Diskette).
+Die Arbeit des Programms wird durch hoechstens
+einen Funktionsbuchstaben aus {\fBcrtux\fR} und einen oder
+mehrere Funktionsmodifikatoren aus [\fB01bflmvw\fR] bestimmt.
+.PP
+Gueltige
+.I name
+Argumente sind Datei- oder
+Directorynamen, die archiviert, aus dem Archiv gelesen
+oder inspiziert werden sollen.
+Ist ein Directoryname angegeben, werden alle im Directory
+enthaltenen Dateien sowie (rekursiv) alle Dateien,
+die in Subdirectories dieses Directorys enthalten sind, spezifiziert.
+.PP
+Standard fuer das Archivdevice ist /dev/tardev,
+ein Link auf /dev/rfd1 (Diskettenlaufwerk 1,
+96 tpi, double side, double density, 9 Sektoren a 512 Byte).
+.SH OPTIONEN
+Folgende Funktionsbuchstaben sind zulaessig:
+.TP
+.B c
+Erstellen eines neuen Archivs.  Das Schreiben beginnt am
+Anfang des Archivs. Existierende Dateien
+im Archiv werden ueberschrieben.
+.TP
+.B r
+Die benannten Dateien werden
+an das Ende des Archivs geschrieben,
+ohne existierende Dateien auf dem Archiv zu zerstoeren.
+.TP
+.B t
+Die Namen der angegebenen Dateien werden jedesmal, wenn sie im Archiv
+erscheinen, aufgelistet.
+Ist kein Dateiargument gegeben,
+werden alle Namen des Archivs aufgelistet.
+.TP
+.B u
+Die benannten Dateien werden zum Archiv hinzugefuegt, wenn
+sie nicht schon vorhanden sind
+oder seit ihrer letzten Archivierung modifiziert worden sind.
+.TP
+\fBx \fRund \fBX\fR
+Die benannten Dateien werden aus dem Archiv gelesen.
+Angegebene Directories werden rekursiv gelesen.
+.br
+Die Nutzer-ID und die Gruppen-ID der Dateien werden bei Angabe der Option
+.B x
+aus dem Archiv uebernommen, bei Angabe der Option
+.B X
+werden die ID's des effektiven Nutzers gesetzt.
+.br
+Die Modifikationszeit
+(wenn der Modifikator
+.B m
+nicht angegeben ist) und der Modus werden aus dem Archiv uebernommen.
+.br
+Ist kein Dateiargument angegeben, wird der
+gesamte Inhalt des Archivs gelesen.
+Wenn gleiche Dateinamen in dem Archiv mehrfach
+vorhanden sind, ueberschreibt
+das zuletzt Gelesene alle frueheren Dateien.
+.PP
+Mit folgenden Zeichen koennen die Funktionen modifiziert werden:
+.TP
+.B 0,1
+Auswahl des Laufwerks
+(Standard: Laufwerk 1).
+.TP
+.BI b " blocksize"
+Blockungsfaktor folgt.
+Moeglicher Bereich: 1 - 20; Standard: 1
+.br
+(1 Block = 512 Byte).
+.TP
+.BI f " archivdev"
+Archivname folgt (Standard: /dev/tardev).
+Siehe auch
+.BR DATEIEN .
+Der Name \fB-\fR steht fuer
+Standardausgabe bzw. Standardeingabe
+(Nutzung als Filter moeglich).
+.B Tar
+kann auch zum Kopieren ganzer Directorybaeume verwendet werden:
+.sp
+cd fromdir; tar cf - . | (cd todir; tar xf -)
+.sp
+.TP
+.B l
+Ausgabe von Nachrichten, wenn nicht alle Links
+zu den Dateien, die zwischengespeichert werden sollen, geloest
+werden koennen (Standard: keine Fehlernachricht).
+.TP
+.B m
+Als Modifikationszeit wird die Zeit des Lesens aus dem Archiv eingetragen.
+.TP
+.B v
+Der Name jeder Datei wird mit vorangestelltem
+Funktionsbuchstaben ("a", "x") ausgegeben.
+Mit der Funktion
+.B t
+gibt
+.B v
+zusaetzliche Informationen ueber die Dateien aus.
+.TP
+.B  w
+Es wird auf die Bestaetigung durch den Nutzer gewartet.
+Bei "y"-Eingabe wird die Aktion ausgefuehrt.
+.br
+Bei der Funktion \fBx\fR oder
+.B X
+kann der Nutzer jede Datei des Archivs unter einem neuen Namen
+in das Dateisystem einlesen (Eingabe des neuen Dateinamens nach
+dem "y" ).
+Beispiel:
+.nf
+.sp
+     tar xw filename
+     x filename: y newfilename
+.fi
+.sp
+Die im Archiv mit 'filename' bezeichnete Datei wird
+in die mit 'newfilename' bezeichnete Datei
+des aktuellen Directorys geschrieben.
+.SH DATEIEN
+.TP 16
+/dev/tardev
+Standard-Archivdevice (Diskette)
+.TP
+/dev/rfdxDDSSB
+Angabe des Archivdevices (Diskette),
+mit x=0/1 (device), DD=48/96 (tpi), SS=ss/ds (side), B=8/9 (Sektoren pro Spur)
+.TP
+/tmp/tarXXXXXX
+temporaere Dateien
+.SH SIEHE AUCH
+fd(4), format(1).
+.SH DIAGNOSTIK
+Fehlerhafte Funktionskennzeichen, Archiv-Lese/-Schreibfehler
+sowie unzureichende Speicherkapazitaet fuer die Link-Tabellen
+werden gemeldet.
+.SH EINSCHRAENKUNGEN
+Es gibt keine Moeglichkeit, nach dem
+.IR n -ten
+Erscheinen einer Datei zu fragen.
+.sp
+Die
+.B u
+Option ist langsam.
+.sp
+Die Option 
+.B b
+darf im Zusammenhang mit Archiven,
+die aktualisiert werden
+sollen (\fBr\fR- oder \fBu\fR-Option), nicht angegeben werden.
+Die Option 
+.B b
+darf auch nicht benutzt werden,
+wenn das Archiv auf der Festplatte abgelegt werden soll (Zerstoerung
+des Dateisystems!).
+.sp
+Die Laenge eines vollstaendigen Dateinamens
+ist auf 100 Zeichen begrenzt.
+Die Laenge ist abhaengig von der Namenseintragung beim Schreiben auf
+das Archiv. Sie kann aus dem Dateinamen allein (auch Namenserweiterungen
+entsprechend der C-Shell-Konventionen sind moeglich ("?", "*",...)),
+aus dem relativen Namen (ausgehend von ".") oder aus dem
+vollstaendigen Pfadnamen bestehen.
+.sp
+Wenn die Option \fBf\fR mit \fBc\fR benutzt wird, wird die Datei,
+die als \fIarchivdev\fR angegeben wurde, erstellt,
+wenn sie nicht schon existiert.
+.sp
+Wurden beide Modifikatoren \fBf\fR und \fBb\fR angegeben, muessen
+ihre Argumente \fIarchivdev\fR und \fIblocksize\fR in der
+gleichen Reihenfolge angegeben werden.
+.sp
+Der Modifikator zur Laufwerksauswahl \fB0\fR oder \fB1\fR
+ist nur sinnvoll, wenn kein \fBf\fR angegeben wurde.
+Er bezieht sich 
+auf das Diskettenformat (/dev/)rfdx96ds9,
+und bestimmt darin das "x".
+.sp
+Wird ein Diskettenarchiv erstmalig beschrieben, muss es vorher
+mit dem Programm
+.BR format (1)
+formatiert worden sein.
+.sp
+Beim Lesen vom Archiv ist darauf zu achten, dass die Dateien
+(inkl. Subdirectorys) entsprechend ihren Dateinamen
+(relativ oder absolut) in die Directorys der Festplatte
+geschrieben (und auch ueberschrieben !) werden.

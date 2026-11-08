@@ -1,0 +1,143 @@
+.TH TEST 1 WEGA
+.\" @[$]test.1	1.2
+.ad
+.fi
+.SH NAME
+test \- Auswertung von Bedingungen
+.SH SYNTAX
+.B test
+\fIexpr\fR
+.SH BESCHREIBUNG
+.B Test
+wertet den Ausdruck
+.IR expr
+aus.
+Ist sein Wert wahr, wird der Exitstatus Null, sonst ungleich Null
+zurueckgegeben.
+.B Test
+gibt auch einen Exitstatus ungleich Null zurueck, wenn keine Argumente
+vorhanden sind.
+.PP
+Die folgende Moeglichkeiten werden zur Bildung von
+.IR expr 
+benutzt.
+Es ist immer die wahre Bedingung angegeben.
+.TP 12
+.BR \-r " file"
+Datei existiert und kann gelesen werden.
+.TP 
+.BR \-w " file"
+Datei existiert und kann beschrieben werden.
+.TP 
+.BR \-x " file"
+Datei existiert und ist ausfuehrbar.
+.TP 
+.BR \-f " file"
+Datei existiert und ist kein Directory.
+.TP 
+.BR \-d " file"
+Datei existiert und ist ein Directory.
+.TP 
+.BR \-c " file"
+Datei existiert und ist ein
+Character-Special-File.
+.TP 
+.BR \-b " file"
+Datei existiert und ist ein Block-Special-File.
+.TP 
+.BR \-u " file"
+Datei existiert und ihr
+set-user-ID-Bit ist gesetzt.
+.TP 
+.BR \-g " file"
+Datei existiert und ihr
+set-group-ID-Bit ist gesetzt.
+.TP 
+.BR \-k " file"
+Datei existiert und ihr Sticky-Bit ist gesetzt.
+.TP 
+.BR \-s " file"
+Datei existiert und ist groesser als Null.
+.TP 
+.BR \-t " [fildes]"
+Die Datei mit dem angegebenen Filedescriptor
+(Standard: 1) ist mit einem Terminal verbunden.
+.TP 
+.BR \-z " s1"
+Laenge der Zeichenkette
+.I s1
+ist Null.
+.TP 
+.BR \-n " s1"
+Laenge der Zeichenkette
+.I s1
+ist ungleich Null.
+.TP 
+.RB s1 " = " s2
+Zeichenketten
+.I s1
+und
+.I s2
+sind gleich.
+.TP 
+.RB s1 " != " s2
+Zeichenketten
+.I s1
+und
+.I s2
+sind ungleich.
+.TP 
+s1
+.I s1
+ist keine Null-Zeichenkette.
+.TP 
+.RB n1 " \-eq " n2
+Die ganzen Zahlen
+.I n1
+und
+.I n2
+sind algebraisch gleich.
+Jeder der Vergleiche
+.BR \-ne ,
+.BR \-gt ,
+.BR \-ge ,
+.BR \-lt
+oder
+.BR \-le
+kann anstelle von
+.BR \-eq 
+verwendet werden.
+.PP
+Diese Elemente koennen mit folgenden Operatoren kombiniert werden:
+.TP 8
+.B  !
+Negationsoperator
+.TP 
+.B  \-a
+binaerer
+.B und
+Operator
+.TP 
+.B  \-o
+binaerer
+.B oder
+Operator
+.TP 
+.BR "(" "expr" ")"
+Runde Klammern fuer Zusammenfassung in Gruppen.
+.PP
+Der Operator
+.B \-a
+hat hoehere Prioritaet als
+.B \-o.
+.DT
+.PP
+Alle Operatoren und Flags sind getrennte
+Argumente von
+.BR test .
+Runde Klammern haben eine Bedeutung fuer das Shell und muessen
+mit Steuerzeichen versehen werden.
+.SH SIEHE AUCH
+csh(1), expr(1), find(1), sh(1).
+.br
+"Die C-Shell" in WEGA-Dienstprogramme

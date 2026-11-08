@@ -1,0 +1,72 @@
+.TH TBL 1 WEGA
+.\" @[$]tbl.1	1.2
+.ad
+.fi
+.SH NAME
+tbl \- Formatieren von Tabellen fuer nroff oder troff
+.SH SYNTAX
+.B tbl
+[ \fIfiles\fR ] ...
+.SH BESCHREIBUNG
+.B Tbl
+ist ein Preprozessor zur Formatierung von Tabellen fuer
+.BR nroff (1)
+oder
+.BR troff (1).
+Die Eingabedateien werden 
+bis auf die Zeilen zwischen .TS und .TE, die als Kommandos
+fuer den Preprozessor
+.B tbl
+interpretiert werden, auf die Standardausgabe kopiert.
+Tbl wandelt diese Daten in eine Form um, die von 
+.B nroff
+benutzt wird. 
+.PP
+Sind keine Argumente angegeben, liest
+.B tbl
+die Standardeingabe (Benutzung als Filter moeglich).
+Wird es mit
+.BR eqn (1)
+oder
+.BR neqn (1)
+benutzt, muss das
+.B tbl
+Kommando zuerst stehen, um die Datenmenge zu minimieren,
+die durch die Pipes uebergeben werden.
+.SH BEISPIEL
+Tbl-Eingabe (Trennung durch echte Tabulatoren):
+.IP ""
+\&.TS
+.nf
+c s s
+c c s
+c c c
+l n n.
+Schnittstelle
+Bezeichnung\\tAnschluesse
+\\tName\\tPin
+Schutzerde\\tPG\\t1
+Betriebserde\\tSG\\t7
+Sendedaten\\tTxD\\t2
+Empfangsdaten\\tRxD\\t3
+Betriebsbereitschaft\\tDTR\\t20
+\&.TE
+.LP
+.fi
+Ausgabe nach
+.BR "  tbl file | nroff   " ergibt:
+.sp
+.nf
+.na
+          Schnittstelle
+    Bezeichnung        Anschluesse
+                       Name   Pin
+Schutzerde              PG      1
+Betriebserde            SG      7
+Sendedaten             TxD      2
+Empfangsdaten          RxD      3
+Betriebsbereitschaft   DTR     20
+.fi
+.ad
+.SH SIEHE AUCH
+ eqn(1), nroff(1), troff(1).

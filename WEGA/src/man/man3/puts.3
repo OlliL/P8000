@@ -1,0 +1,50 @@
+.TH PUTS 3 WEGA
+.\" @[$]puts.3  1.2
+.ad
+.fi
+.SH NAME
+puts, fputs \- Schreiben einer Zeichenkette in einen Stream
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.PP
+\fBputs\fI(s)
+\fBchar\fI *s;
+.PP
+\fBfputs\fI(s, stream)
+\fBchar\fI *s;
+\fBFILE \fI*stream;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B puts
+kopiert die durch den Pointer
+.I s
+bezeichnete, mit einem Nullzeichen endende Zeichenkette
+in den Standardausgabestrom
+.I stdout
+und fuegt das Newline-Zeichen an.
+.PP
+.B Fputs
+kopiert die durch den Pointer
+.I s
+bezeichnete, mit einem Nullzeichen endende Zeichenkette
+in den Datenstrom, der durch das Argument
+.IR stream
+angegeben ist.
+.PP
+Bei beiden Funktionen wird das abschliessende Nullzeichen
+nicht mit kopiert.
+.SH SIEHE AUCH
+fopen(3),
+gets(3),
+putc(3),
+printf(3),
+ferror(3),
+fread(3).
+.SH EINSCHRAENKUNGEN
+Die Funktion
+.B puts
+fuegt ein Newline-Zeichen an, die Funktion
+.B fputs
+jedoch nicht.

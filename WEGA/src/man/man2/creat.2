@@ -1,0 +1,132 @@
+.TH CREAT 2 WEGA
+.\" @[$]creat.2 1.2
+.ad
+.fi
+.SH NAME
+creat  \- Erzeugen einer neuen Datei
+.SH SYNTAX
+.B int creat
+.I (file, mode)
+.br
+.B char
+.I *file;
+.br
+.B int 
+.I mode;
+.SH BESCHREIBUNG
+.B Creat
+erzeugt eine neue Datei oder bereitet eine existierende Datei
+.IR file
+(angegeben durch die Adresse einer mit einem Nullbyte abgeschlossenen
+Zeichenkette)
+zum Wiederbeschreiben vor.
+Existiert die Datei nicht,
+werden die ID des Dateieigentuemers auf die effektive Nutzer-ID
+des Prozesses, die Gruppen-ID
+der Datei auf die effektive Gruppen-ID
+des Prozesses gesetzt und
+die 12 niederwertigen Bits des Dateimodus werden auf den Wert von
+.I mode
+gesetzt, der wie folgt modifiziert wird:
+.IP - 3
+Alle Bits, die in der Erstellungsmaske 
+der Prozessdatei gesetzt wurden, werden geloescht
+(siehe
+.BR umask (2)).
+.PD 0
+.IP - 3
+Das Bit zur Sicherung des Textabbildes nach Ausfuehrung
+(Sticky-Bit) wird geloescht.
+.PD
+.PP
+Der Aufbau des Arguments
+.I mode
+ist in
+.BR chmod (2)
+erlaeutert.
+Existierte die Datei bereits, bleiben ihr Modus und ihr Eigentuemer 
+unveraendert. Sie wird jedoch auf die Laenge 0 gekuerzt.
+Die Datei ist auch zum Schreiben offen und ihr Dateidescriptor wird
+zurueckgegeben.
+.PP
+Der gegebene Modus
+ist beliebig; es muss keine Schreiberlaubnis bestehen.
+Diese Eigenschaft wird fuer Programme genutzt, die mit temporaeren 
+Dateien mit feststehenden Namen arbeiten. 
+Das Erzeugen erfolgt mit einem Modus, der das Schreiben verbietet.
+Wenn ein zweiter Prozess des Programms einen Systemruf
+.B creat
+ausfuehren will, wird ein Fehler zurueckgegeben
+und das Programm erkennt, dass
+der Name zur Zeit nicht nutzbar ist.
+.SH SIEHE AUCH
+write(2), close(2), chmod(2), umask(2).
+.SH DIAGNOSTIK
+.B Creat
+wird nicht ausgefuehrt, wenn mindestens einer der folgenden Punkte 
+zutrifft:
+.TP 11
+\%[ENOTDIR]
+Eine vordere Komponente des Pfadnamens ist kein Directory.
+.PD 0
+.TP 11
+\%[ENOENT]
+Eine vordere Komponente des  Pfadnamens existiert nicht.
+.TP 11
+\%[EACCES]
+Die Sucherlaubnis wird fuer eine der vorderen Komponenten des 
+Pfadnamens verweigert.
+.TP 11
+\%[ENOENT]
+Der Pfadname ist Null.
+.TP 11
+\%[EACCES]
+Die Datei existiert nicht und das Directory, in dem die Datei zu 
+erzeugen ist, verbietet das Schreiben.
+.TP 11
+\%[EROFS]
+Die benannte Datei existiert oder wuerde in einem
+Read-Only-Dateisystem existieren.
+.TP 11
+\%[ETXTBSY]
+Die Datei ist eine reine Prozedur (shared text) Datei, die gerade
+abgearbeitet wird.
+.TP 11
+\%[EACCES]
+Die Datei existiert und die Schreiberlaubnis wird verweigert.
+.TP 11
+\%[EISDIR]
+Die benannte Datei ist ein existierendes Directory.
+.TP 11
+\%[EMFILE]
+Es sind zu viele Dateien offen.
+.TP 11
+\%[EFAULT]
+.I File
+verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen 
+Adressbereichs liegt.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird eine nichtnegative ganze Zahl,
+der Dateidescriptor, zurueckgegeben.
+Andernfalls wird der Wert \-1 zurueckgegeben und
+I errno
+wird zur Anzeige des Fehlers gesetzt.
+.DT
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT CREAT  := 8
+
+Nichtsegmentiert
+     ...             !* r0 : Dateiname *!
+                     !* r1 : mode *!
+Segmentiert
+     ...             !* rr0 : Dateiname *!
+                     !* r2 : mode *!
+     clr    r4
+     sc     #CREAT
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

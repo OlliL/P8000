@@ -1,0 +1,130 @@
+.TH LINT 1 WEGA
+.\" @[$]lint.1	1.2
+.ad 
+.fi
+.SH NAME
+lint \- Ein Syntax-Tester fuer C-Programme
+.SH SYNTAX
+.B lint
+[
+.B \-abchnpuvx
+]
+file ...
+.SH BESCHREIBUNG
+.B Lint
+sucht Fehler in C-Programmen und ueberprueft die Syntax des
+Programms genauer als der C-Compiler. Es werden u.a.
+folgende Sachverhalte untersucht:
+Anweisungen, die waehrend des Programmlaufs nicht erreicht werden koennen;
+Schleifen, die nicht am Anfang angesprungen werden;
+automatische Variable, die definiert aber nicht benutzt werden;
+logische Ausdruecke, deren Wert konstant 0 oder 1 ist;
+Verwendung von Funktionen, die entsprechend ihrem inneren Programmablauf
+mit und ohne Rueckgabewert zurueckkehren;
+Verwendung der Argumenttypen bei Funktionsaufrufen;
+Verwendung der Rueckgabewerte von Funktionen.
+.PP
+\fBLint\fR nimmt i.A. an, dass alle angegebenen Dateien
+.I files
+zusammen geladen werden sollen. Sie werden deshalb auf wechselseitige
+Kompatibilitaet geprueft.
+Funktionsdefinitionen aus den unterschiedlichen Bibliotheken
+sind bei der Arbeit mit
+.B lint
+verfuegbar. Auf diese Bibliotheken kann man sich unter ihren herkoemmlichen
+Namen, wie z.B. `-lm' beziehen
+(siehe dazu \fBld\fR(1)).
+.PP
+.BR Exit (2)
+und andere Funktionen, die nicht zurueckkehren, werden nicht verstanden.
+Folgende benutzbare Kommentare in den C-Programmen
+haben Einfluss auf die Arbeit von
+.BR lint :
+.TP
+/*NOTREACHED*/
+Stoppt ab dieser Zeile die \fBLint\fR-Kommentare zu nicht erreichbaren
+Programmanweisungen.
+.TP
+.RI /*VARARGS n */
+Unterdrueckt die normale Pruefung aller
+Argumente der naechsten Funktionsdefinition.
+Es werden nur die Datentypen der ersten
+.I n
+Argumente ueberprueft (Standard fuer \fIn\fR ist 0).
+.TP
+/*NOSTRICT*/
+Schaltet die genaue Typpruefung des naechsten Ausdrucks aus.
+.TP
+/*ARGSUSED*/
+Schaltet die
+.B \-v
+Option fuer die naechste Funktion ein.
+.TP
+/*LINTLIBRARY*/
+Wenn dieser Kommentar am Anfang einer Datei steht,
+werden die Nachrichten ueber unbenutzte
+Funktionsdefinitionen in dieser Datei ausgeschaltet.
+.PP
+.SH OPTIONEN
+Es kann eine beliebige Anzahl von Optionen aus der folgenden Liste
+verwendet werden. Zusaetzlich werden auch die Optionen
+.BR \-D
+.BR \-U
+und
+.B \-I
+des C-Compilers
+.BR cc (1)
+als seperate Argumente anerkannt.
+.TP
+.B a
+Protokolliert Zuweisungen von long-Variablen zu int-Variablen.
+.TP
+.B b
+Protokolliert
+.B break
+Anweisungen, die nicht erreicht werden.
+(Dies ist nicht der Standard, da leider die meisten
+.B lex
+und viele
+.B yacc
+Ausgaben viele solcher Anweisungen erzeugen.)
+.TP
+.B c
+Konstruktionen, die evntl. nicht portabel sind,
+werden vermerkt.
+.TP
+.B h
+Wendet eine Anzahl heuristischer Tests an, um Entwurfsfehler
+intuitiv zu erkennen, den Programmierstil zu verbessern
+und Verschwendungen zu reduzieren.
+.TP
+.B n
+Unterdrueckt den Kompatibilitaetstest zwischen den
+Standardbibliotheken.
+.TP
+.B p
+Ueberprueft die Uebertragbarkeit auf
+verschiedene Dialekte von C.
+.TP
+.B u
+Unterdrueckt die Nachrichten ueber Funktionen und Variablen,
+die benutzt werden und nicht definiert sind,
+oder definiert sind und nicht verwendet werden.
+(Diese Option ist fuer die Arbeit von
+.B lint
+mit einer Teilmenge von Dateien aus einem laengeren Programm geeignet.)
+.TP
+.B v
+Unterdrueckt Nachrichten ueber ungenutzte Argumente in Funktionen.
+.TP
+.B x
+Protokolliert Variable, die extern definiert sind
+und nicht benutzt werden.
+.SH DATEIEN
+/usr/lib/lint[12]    Programme
+.br
+/usr/lib/llib-lc     Definitionen der Standardfunktionen
+.br
+/usr/lib/llib-port   Definitionen der portablen Funktionen
+.SH SIEHE AUCH
+cc(1).

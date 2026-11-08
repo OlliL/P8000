@@ -1,0 +1,67 @@
+.TH MD 4 WEGA
+.\" @[$]md.4	1.2
+.ad
+.fi
+.SH NAME
+md \- 5.25" Winchester-Treiber
+.SH BESCHREIBUNG
+Der Treiber
+.B md
+liefert das Interface fuer maximal 2 Winchester-Laufwerke im
+P8000-Winchester-Beisteller.
+.PP
+Jede physische Platte kann in maximal 10 virtuelle Platten aufgeteilt
+werden.
+Die Geraetedateien
+.I "/dev/md0 ... /dev/md9"
+beziehen sich auf die virtuellen Platten des Laufwerkes 0,
+die Geraetedateien
+.I "/dev/md10 ... /dev/md19"
+auf die virtuellen Platten des Laufwerks 1.
+Durch diese Aufteilung
+kann eine grosse Platte leichter verwaltet werden.
+.PP
+Der Treiber
+.B md
+ist mit der Major-Device-Nummer 0 implementiert.
+Die fortlaufende Nummer der virtuellen Platten entspricht der
+Minor-Device-Nummer der Geraetedateien.
+Die Aufteilung der Dateisysteme auf die virtuellen Platten ist
+im WEGA-Betriebssystemkern verankert. Mit dem Programm
+.BR sysgen (M)
+kann eine neue Aufteilung
+im Betriebssystemkern generiert werden
+(siehe WEGA-Systemhandbuch).
+.PP
+Die blockorientierten Geraetedateien
+.BI /dev/md x
+greifen ueber den normalen Puffermechanismus des Systems auf
+die Platte zu. Die Einhaltung der physischen Blockgroesse ist
+beim Lesen und Schreiben nicht erforderlich.
+.PP
+Das Raw-Interface zum Winchesterlaufwerk
+.BI /dev/rmd x
+gestattet
+die direkte Uebertragung zwischen der Platte
+und dem Lese- oder Schreibpuffer des Benutzers.
+Ein einzelner Lese- oder Schreibaufruf fuehrt
+zu genau einer Eingabe/Ausgabe-Operation.
+Die Raw-Ein-/Ausgabe ist
+fuer die Uebertragung einer grossen Byteanzahl
+erheblich effektiver als die blockorientierte Uebertragung.
+.SH DATEIEN
+/dev/md*, /dev/rmd*
+.SH EINSCHRAENKUNGEN
+Bei der Raw-Ein-/Ausgabe runden
+.BR read (2)
+und
+.BR write (2)
+Datei-Offsets auf 512 Byte Blockgrenzen.
+Programme, die mit grosser Wahrscheinlichkeit
+Zugriff auf die Raw-Geraete haben, sollten
+.BR read (2),
+.BR write (2)
+und
+.BR lseek (2)
+mit einem
+Vielfachen von 512 Byte aufrufen.

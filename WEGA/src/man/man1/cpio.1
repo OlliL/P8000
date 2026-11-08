@@ -1,0 +1,158 @@
+.TH CPIO 1 WEGA
+.\" @[$]cpio.1	1.2
+.ad
+.fi
+.SH NAME
+cpio \- Schreiben/Lesen von Dateien in/aus Dateiarchiven
+.SH SYNTAX
+.B cpio
+.B \-o
+[
+.B acBv
+]
+.PP
+.B cpio
+.B \-i
+[
+.B Bdmrtuvs
+] [ patterns ]
+.PP
+.B cpio
+.B \-p
+[
+.B adlmuv
+] \fIdirectory\fR
+.SH BESCHREIBUNG
+.B Cpio \-o
+(Sichern)
+liest von der Standardeingabe eine Liste von Dateinamen,
+die mit ihren Pfadnamen
+und der Statusinformation an die Standardausgabe ausgegeben werden.
+Die Ausgabe kann mit Hilfe des Umrichtungssymbols auf
+ein Sicherungsmedium (z.B. Diskette) umgelenkt werden.
+.PP
+.B Cpio \-i
+(Einlesen) liest von der Standardeingabe
+(z.B. einem Sicherungsmedium Diskette) die durch
+.I patterns
+angegebenen Dateien (Voraussetzung: die Standardeingabe
+ist Ergebnis eines vorherigen
+.BR "cpio \-o").
+Zur Spezifikation der Dateinamen koennen die Shell-Metazeichen
+.BR ? ,
+.BR \(** ,
+und
+.BR [ \|.\|.\|. ]
+zusammen mit einem Schraegstrich
+.B /
+verwendet werden.
+Der Standardwert fuer
+.I patterns
+ist
+.BR \(**
+(d.h., alle Dateien sind ausgewaehlt).
+.PP
+.B Cpio \-p
+(Sichern/Einlesen) liest von der Standardeingabe eine Liste von Dateien
+und kopiert diese in das angegebene Directory. Nicht existierende
+Directories werden angelegt.
+.SH OPTIONEN
+.TP
+.B a
+Setzt das Datum des letzten Dateizugriffs nach dem Kopieren zurueck.
+.TP
+.B B
+Die Ein- oder Ausgabe ist in Bloecken zu 5120 Bytes organisiert
+(funktioniert nicht mit \fB-p\fR Option,
+nur sinnvoll fuer Daten von oder zu "raw" devices).
+.TP
+.B c
+Die Kopfinformationen werden aus Portabilitaetsgruenden
+als ASCII-Zeichen geschrieben.
+.TP
+.B d
+Directorys werden angelegt, wenn sie benoetigt werden.
+.TP
+.B l
+Wenn moeglich, werden fuer die Dateien Links hergestellt, um
+unnoetiges Kopieren zu vermeiden.
+Ist nur bei Angabe der Option 
+.B \-p
+moeglich.
+.TP
+.B m
+Das alte Modifikationsdatum bleibt erhalten (fuer
+Directories nicht wirksam).
+.TP
+.B r
+Waehrend der Uebertragung besteht die Moeglichkeit,
+interaktiv die Dateinamen zu aendern. Bei Eingabe einer Leerzeile
+wird die Datei uebersprungen.
+.TP
+.B s
+Diese Angabe vertauscht die Bytes in den eingelesenen Worten
+(nur bei der Option -i wirksam).
+.TP
+.B t
+Gibt ein Inhaltsverzeichnis des Sicherungsmediums aus. Es werden keine 
+Dateien erstellt.
+.TP
+.B u
+Ueberschreiben ohne Pruefung (normalerweise wird eine aeltere Datei
+nicht durch eine neuere Datei gleichen Namens ersetzen).
+.TP
+.B v
+Beim Sichern oder Einlesen werden die Dateinamen auf der
+Standardausgabe ausgegeben. Wird diese Angabe
+zusammen mit der Option -t benutzt, entspricht die Ausgabe dem Kommando
+ls -l (siehe ls(1)).
+.SH BEISPIELE
+Das erste Beispiel archiviert den Inhalt eines Directorys auf
+Diskette; das zweite dupliziert einen Directory-Baum:
+.PP
+.RS
+ls \|\(bv \|cpio \|\-o \|>/dev/rfd1
+.sp
+cd \|olddir
+.br
+find
+.B \|.\|
+\-print \|\(bv \|cpio \|\-pdl \|newdir
+.RE
+.PP
+Das Kommando lagert einen Directorybaum auf das
+Sicherungsmedium Diskette aus:
+.sp
+.RS
+find
+.B \|.\|
+\-print \|\(bv \|cpio \|\-ov \|>/dev/rfd0
+.RE
+.SH SIEHE AUCH
+ar(1), find(1), cpio(5).
+.SH EINSCHRAENKUNGEN
+Pfadnamen sind auf 128 Zeichen begrenzt.
+Gibt es zu viele gelinkte Dateien, laeuft der Speicher
+ueber und die Link-Informationen gehen verloren.
+Special-files kann nur der Super-User kopieren.
+.sp
+.B cpio
+arbeitet nur mit Dateien innerhalb des aktuellen Directorys.
+Um Dateien von einer anderen Quelle als dem aktuellen Directory
+zu kopieren, muss eine Kommandofolge aehnlich der folgenden 
+ausgefuehrt werden:
+.sp
+.nf
+          set pwd=`pwd`
+          cd $1
+          ls | cpio -pl $2 
+          cd $pwd
+.sp
+Diese Kommandofolge, 'copy' genannt und aufgerufen als
+.sp
+          copy /source/path /destination/path
+.sp
+.fi
+kopiert alle Dateien, ausser Subdirectorys, aus dem 
+Quelldirectory in das Zieldirectory ohne Verlassen des
+aktuellen Directorys. 

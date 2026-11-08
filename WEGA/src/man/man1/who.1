@@ -1,0 +1,65 @@
+.TH WHO 1 WEGA 
+.\" @[$]who.1	1.2
+.ad
+.fi
+.SH NAME
+who  \- Ausgabe der Login-Namen der aktuell angemeldeten Nutzer
+.SH SYNTAX
+.B who
+[\fB-g\fR] [ \fIfile\fR ] [
+.B "am I"
+]
+.SH BESCHREIBUNG
+.B Who
+listet die Login-Namen, die Terminalnamen und die Login-Zeit
+fuer jeden aktuellen WEGA-Nutzer auf.
+.PP
+Die notwendigen Informationen entnimmt das Programm
+.B who
+aus der angegebenen Datei
+.I file
+(Standard: /etc/utmp).
+Das Kommando
+.RS
+who /usr/adm/wtmp
+.RE
+gibt z.B. alle Systemanmeldungen (Login), Systemabmeldungen (Logout)
+und Systemzusammenbrueche,
+die seit der Erstellung der
+wtmp-Datei aufgetreten sind, aus.
+Jede Systemanmeldung wird mit Nutzernamen, Terminalnamen
+(Directorybezeichnung /dev/ wird unterdrueckt),
+Datum und Zeit aufgelistet. Ist
+ein Argument angegeben, erzeugt eine Systemabmeldung eine aehnliche Zeile
+ohne Nutzernamen.
+Wiederholte Starts erzeugen eine Zeile mit x an der Stelle des
+Devicenamens und eine Zeitangabe ueber den Zusammenbruch des Systems.
+.PP
+Sind zwei beliebige Argumente angegeben
+(z.B. who am I ),
+wird nur die Ausgabe fuer das aktuelle Terminal (eigener Nutzername)
+ausgegeben.
+.SH OPTIONEN
+.B
+.IP -g
+Es wird die Gruppe, zu der man gehoert, angegeben.
+.B
+.IP *
+Zusaetzlich wird die Zeit der letzten Systemabmeldung
+an Terminals, an denen momentan kein Nutzer angemeldet ist, ausgegeben.
+.SH BEISPIEL
+.sp
+.RS
+% who
+.br
+peter    console   Sep 15 10:23
+.br
+paul     tty4      Sep 15 14:10
+.br
+hugo     tty5      Sep 15 14:45
+.br
+.RE
+.SH DATEIEN
+/etc/utmp
+.SH SIEHE AUCH
+whois(1), whodo(1), users(1), getuid(2), utmp(5).

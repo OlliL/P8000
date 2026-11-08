@@ -1,0 +1,102 @@
+.TH CHMOD 2 WEGA
+.\" @[$]chmod.2 1.2
+.ad
+.fi
+.SH NAME
+chmod \- Aendern des Dateimodus
+.SH SYNTAX
+.B int chmod
+.I (name, mode)
+.br
+.B char
+.I *name;
+.br
+.B int 
+.I mode;
+.SH BESCHREIBUNG
+Der Modus der mit
+.I name
+angegebenen Datei wird auf
+.IR mode
+geaendert.
+Die Modi werden durch logische ODER-Verbindung der folgenden Oktalwerte
+gebildet:
+.PP
+.RS
+ 04000 Setzen der Nutzer-ID bei Ausfuehrung
+ 02000 Setzen der Gruppen-ID bei Ausfuehrung
+ 01000 Sichern des Textabbildes nach Ausfuehrung
+ 00400 Lesen durch den Eigentuemer
+ 00200 Schreiben durch den Eigentuemer
+ 00100 Ausfuehren (Suchen in einem Directory) durch den Eigentuemer
+ 00070 Lesen, Schreiben, Ausfuehren (Suchen) durch die Gruppe
+ 00007 Lesen, Schreiben, Ausfuehren (Suchen) durch andere
+.RE
+.PP
+Wenn eine ausfuehrbare Datei separate Adressbereiche hat
+(\fB\-i\fR Option von
+.BR ld (1)), 
+dann verhindert der Modus 1000, dass das System das Textabbild im
+Swap-Bereiches aufgibt, wenn der letzte Nutzer seine Arbeit beendet.
+Wenn der naechste Nutzer die Datei bearbeitet,
+wird der Text nicht aus dem Dateisystem eingelesen, sondern einfach
+eingelagert (swapped in), um Zeit zu sparen.
+Dieses Bit kann nur vom Superuser gesetzt werden, da die Abbilder 
+Platz im (begrenzten) Swapbereich belegen.
+Die Anwendung wird nur fuer haeufig benutzte Kommandos empfohlen.
+.PP
+Der Modus einer Datei kann nur durch den Eigentuemer
+oder den Superuser geaendert werden.
+Nur der Superuser kann den Modus 1000 setzen.
+.SH SIEHE AUCH
+chmod(1), chown(2), mknod(2).
+.SH DIAGNOSTIK
+.B Chmod
+meldet Fehler und die Datei bleibt unveraendert, wenn
+einer oder mehrere der folgenden Punkte zutreffen:
+.TP 11
+\%[ENOTDIR]
+Eine vordere Komponente des Pfadnamens ist kein Directory.
+.PD 0
+.TP 11
+\%[ENOENT]
+Die benannte Datei existiert nicht.
+.TP 11
+\%[EACCES]
+Die Sucherlaubnis wird wegen einer Komponente des Pfadnamens verweigert.
+.TP 11
+\%[EPERM]
+Die effektive Nutzer-ID
+stimmt nicht mit dem Eigentuemer der Datei ueberein
+und die ID entspricht nicht der des Superuser.
+.TP 11
+\%[EROFS]
+Die benannte Datei befindet sich in einem Read-Only-Dateisystem.
+.TP 11
+\%[EFAULT]
+.I Name
+verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen
+Adressbereiches liegt.
+.PD
+.SH RUECKGABEWERT
+Wurde der Modus veraendert, wird ein Wert Null zurueckgegeben. 
+Andernfalls wird der Wert \-1 zurueckgegeben und
+.B errno
+gesetzt.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT CHMOD  := 15
+
+Nichtsegmentiert
+     ...             !* r0 : Dateiname *!
+                     !* r1 : mode *!
+Segmentiert
+     ...             !* rr0 : Dateiname *!
+                     !* r2 : mode *!
+     clr    r4
+     sc     #CHMOD
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

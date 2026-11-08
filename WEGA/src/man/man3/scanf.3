@@ -1,0 +1,230 @@
+.TH SCANF 3 WEGA 
+.\" @[$]scanf.3 1.2
+.ad
+.fi
+.SH NAME
+scanf, fscanf, sscanf \- Formatierte Eingabekonvertierung
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.PP
+\fBscanf \fI(format \fR[ , pointer ] . . . \fB)
+.br
+\fBchar \fI*format;
+.PP
+\fBfscanf \fI(stream, format \fR[ , pointer ] . . . \fB)
+.br
+\fBFILE \fI*stream;
+.br
+\fBchar \fI*format;
+.PP
+\fBsscanf \fI(s, format \fR[ , pointer ] . . . \fB)
+.br
+\fBchar \fI*s, *format;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B scanf
+liest vom Standard-Eingabestrom
+.IR stdin .
+.br
+Die Funktion
+.B fscanf
+liest vom angegebenen Datenstrom
+.IR stream .
+.br
+Die Funktion
+.I sscanf
+liest aus der Zeichenkette
+.IR s .
+.PP
+Jede Funktion liest Zeichen, interpretiert sie entsprechend dem Format und
+speichert die Ergebnisse in ihren Argumenten.
+Jede Funktion verlangt als Argumente eine Steuerzeichenkette
+.I format
+und eine Reihe von
+.IR pointer \-Argumenten,
+die die Adressen fuer die konvertierten Ergebnisse bezeichnen.
+.PP
+Die Steuerzeichenkette enthaelt gewoehnlich Konvertierungsspezifikationen,
+die die Interpretation der Eingabesequenzen bestimmen.
+Die Steuerzeichenkette enthaelt:
+.IP 1. 4
+Lueckenzeichen (Leerzeichen, Tabulatoren oder Newline-Zeichen), die
+veranlassen, dass die Eingabe bis zum naechsten Nicht-Lueckenzeichen
+uebergangen wird.
+.IP 2. 4
+Ein normales Zeichen (nicht %), das dem naechsten
+Zeichen des Eingabestroms entsprechen muss.
+.IP 3. 4
+Konvertierungsspezifikationen, die aus
+.PD 0
+.IP "    - " 7
+dem Zeichen
+.BR % ,
+.IP "    - " 7
+dem optionellen Zeichen
+.BR * ,
+das, falls vorhanden, die Zuweisung unterdrueckt,
+.IP "    - " 7
+einer optionellen numerischen
+Maximalfeldbreite und
+.IP "    - " 7
+einem Konvertierungszeichen bestehen.
+.PD
+.PP
+Eine Konvertierungsspezifikation steuert die Konvertierung des naechsten
+Eingabefeldes. Das Ergebnis wird in die Variable gebracht, auf die das
+entsprechende Argument zeigt (ausser wenn die Unterdrueckung der Zuweisung
+durch
+.BR * 
+angegeben war).
+Ein Eingabefeld wird als eine Zeichenkette ohne Leerzeichen definiert.
+Es erstreckt sich bis zum naechsten unpassenden Zeichen
+oder bis die Feldgroesse erreicht ist (falls angegeben).
+.PP
+Das Konvertierungszeichen bezeichnet die Interpretation des Eingabefeldes.
+Das entsprechende Pointer-Argument muss auf einen bestimmten Typ
+zeigen.
+Folgende Konvertierungszeichen sind zugelassen:
+.IP \fB%\fR 4
+Ein einzelnes % wird in der Eingabe erwartet. Es erfolgt keine Zuweisung.
+.IP \fBd\fR 4
+Es wird ein dezimaler Integerwert erwartet.
+Das entsprechende Argument muss ein Integerpointer sein.
+.IP \fBo\fR 4
+Es wird ein oktaler Integerwert erwartet.
+Das entsprechende Argument muss ein Integerpointer sein.
+.IP \fBx\fR 4
+Es wird ein hexadezimaler Integerwert erwartet.
+Das entsprechende Argument muss ein Integerpointer sein.
+.IP \fBs\fR 4
+Es wird eine Zeichenkette erwartet.
+Das entsprechende Argument ist ein Zeichenpointer auf ein Zeichenfeld,
+das gross genug ist, die Zeichenkette und ein abschliessendes
+Nullzeichen \e0 aufzunehmen, das hinzugefuegt wird.
+Das Eingabefeld wird durch ein Leerzeichen oder ein Newline-Zeichen
+abgeschlossen.
+.IP \fBc\fR 4
+Es wird ein Zeichen erwartet. Das entsprechende Argument ist ein 
+Pointer auf ein Zeichen.
+Das normalerweise uebliche Uebergehen von Leerzeichen wird
+unterdrueckt. Zum Lesen den naechsten Nichtleerzeichens ist %1s zu verwenden.
+Ist eine Feldbreite vorgegeben, muss sich das entsprechende Argument
+auf ein Zeichenfeld beziehen, und die angegebene
+Anzahl Zeichen wird gelesen.
+.IP \fBf\fR 4
+Eine Gleitkommazahl wird erwartet. Das naechste Feld wird
+konvertiert und ueber den entsprechenden
+.IR float \-Pointer
+gespeichert.
+Das Eingabeformat fuer Gleitkommazahlen ist unter
+\fBatof\fR(3) angegeben.
+.IP \fBe\fR 4
+wie
+.BR f .
+.IP \fB[\fR 4
+Es wird eine Zeichenkette gekennzeichnet,
+die nicht durch Leerzeichen begrenzt ist.
+Der linken Klammer folgen Zeichen (genannt
+.IR scanset )
+und eine rechte
+Klammer. Die in Klammern stehenden Zeichen definieren den
+Zeichensatz, aus denen die Zeichenkette besteht.
+Das Eingabefeld besteht aus allen gelesenen Zeichen,
+bis ein Zeichen erscheint, das nicht Element von
+.I scanset
+ist.
+Steht als erstes Zeichen in
+.I scanset
+das Zirkumflex  (\|^\|),
+wirkt es als Komplementoperator und definiert
+.I scanset
+als die Menge aller Zeichen, die nicht in der restlichen Zeichenmenge
+.I scanset
+auftreten.
+.br
+Das entsprechende Argument zeigt auf ein Zeichenfeld.
+.PP
+Die Konvertierungszeichen
+.BR D ,
+.BR O ,
+.BR X ,
+.BR ld ,
+.BR lo ,
+und
+.B lx
+dienen zur Konvertierung von (long) Integerwerten
+(das Pointerargument muss auf einen long-Wert zeigen).
+Sind die Konvertierungszeichen
+.BR E ,
+.BR F ,
+.BR le ,
+oder
+.B lf
+angegeben, wird ein Pointer auf Werte vom Typ
+.B double
+statt
+.BR float 
+verlangt.
+Den Konvertierungszeichen
+.BR d ,
+.B o
+und
+.B x
+kann ein
+.B h
+vorangestellt werden, um einen Pointer auf
+.B short
+statt auf
+.BR int 
+anzuzeigen.
+.SH BEISPIELE
+.nf
+Beispiel 1:
+
+    int i; float x; char name[50];
+    scanf( "%d%f%s", &i, &x, name);
+
+Mit der Eingabezeile werden folgende Werte zugewiesen:
+
+    26   12.34E\(mi1  hugo
+
+    i    : 26
+    x    : 1.234
+    name : hugo\e0 .
+
+Beispiel 2:
+
+int i; float x; char name[50];
+
+scanf("%2d%f%*d%[1234567890]", &i, &x, name);
+
+Mit der Eingabezeile werden folgende Werte zugewiesen:
+
+    56789 0123 56a72
+
+    i    : 56
+    x    : 789.0
+    name : 56\e0 .
+.fi
+.PP
+Die Werte 0123 werden uebergangen.
+Beim naechsten Aufruf von
+.B getchar
+wird das Zeichen a zurueckgegeben.
+.SH SIEHE AUCH
+atof(3),
+getc(3),
+printf(3).
+.SH DIAGNOSTIK 
+Die Funktionen
+.B scanf
+geben die Anzahl der erfolgreich konvertierten und 
+zugewiesenen Eingabeelemente zurueck (nuetzlich zur Ermittlung
+der Anzahl der Eingabeelemente).
+Die Konstante
+.B EOF
+wird bei Eingabeende zurueckgegeben.
+Wird der Wert Null zurueckgegeben, trat ein Konflikt zwischen
+einem Eingabezeichen und der Steuerzeichenkette auf.

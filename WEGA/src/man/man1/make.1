@@ -1,0 +1,616 @@
+.TH MAKE 1 WEGA
+.\" @[$]make.1	1.2
+.ad
+.fi
+.SH NAME
+make \- Wartung und Aktualisierung von Programmen
+.SH SYNTAX
+.B make
+[
+.B -bdeikmnpqrst
+] [ \-f 
+.I makefile
+] [
+.I names
+]
+.SH BESCHREIBUNG
+.PP
+.B Make
+fuehrt Kommandos in 
+.I makefile
+aus, um eine oder mehrere Zieldateien
+.I names
+zu aktualisieren.
+Ist die Option
+.B \-f
+nicht angegeben, werden
+.BR makefile , 
+.BR Makefile ,
+.B makefile+
+und 
+.B Makefile+
+in angegebener Reihenfolge als Beschreibungsdatei verarbeitet.
+Steht fuer
+.I makefile
+ein
+.BR \- ,
+wird die Standardeingabe gelesen.
+Ueber die
+.B \-f
+Option koennen mehrere
+Makefile-Argumente angegeben werden.
+.PP
+.B Make
+aktualisiert eine Zieldatei nur dann, wenn sie von Dateien
+mit einem juengeren Datum als dem der Zieldatei abhaengt.
+Alle Dateien, von denen eine Zieldatei abhaengt, werden rekursiv
+zur Liste der Zieldateien hinzugefuegt.
+Fehlende Dateien werden als ueberholt betrachtet.
+.PP
+In
+.I makefile
+werden die Abhaengigkeiten spezifiziert.
+Die erste Zeile einer Eintragung ist eine durch Leerzeichen getrennte 
+nichtleere Liste der Ziele, dann folgt ein Doppelpunkt und eine moeglicherweise
+leere Liste der Vorbedingungsdateien oder Abhaengigkeiten. 
+
+Der Text, der einem Semikolon
+.B " ; "
+folgt, sowie alle folgenden mit Tabulator beginnenden Zeilen
+sind Shell-Befehle.
+Sie werden ausgefuehrt, um die Zieldatei zu aktualisieren.
+Die erste Zeile, die nicht mit einem Tabulator oder
+.B #
+beginnt, startet eine neue Abhaengigkeit oder Makrodefinition.
+Shell-Kommandos koennen mit der Zeichenfolge
+<Backslash><Newline> ueber Zeilen fortgesetzt werden.
+Die Zeichen
+.B #
+und Newline umschliessen Kommentare.
+.PP
+Die folgende Datei
+.I makefile
+gibt an, dass
+.B pgm
+von den beiden Dateien 
+.B a.o
+und
+.BR b.o 
+abhaengt, und dass sie von ihren entsprechenden Quelldateien
+.RB ( a.c
+und
+.BR b.c )
+und von der gemeinsamen Datei
+.BR incl.h 
+abhaengen:
+.PP
+.ss 18
+.RS
+.PD 0
+.TP
+pgm: a.o b.o
+cc a.o b.o \-o pgm
+.TP
+a.o: incl.h a.c
+cc \-c a.c
+.TP
+b.o: incl.h b.c
+cc \-c b.c
+.PD
+.RE
+.ss 12
+.PP
+Die Kommandozeilen werden nacheinander, jede durch ihre eigene Shell,
+ausgefuehrt.
+Eine Zeile wird bei ihrer Ausfuehrung normalerweise ausgegeben.
+Diese Ausgabe kann durch Angabe der Option
+.BR \-s ,
+die Eintragung
+.B \&.SILENT:
+in der Datei
+.IR makefile ,
+oder, indem dem Kommando das Zeichen
+.BR @
+vorangestellt wird, verhindert werden.
+Die Option
+.B \-n
+bewirkt eine Ausgabe ohne Ausfuehrung; steht jedoch in der
+Kommandozeile die Zeichenkette
+.BR $(MAKE) ,
+wird die Zeile ausgefuehrt (siehe Diskussion des Makros
+.SM
+.B MAKEFLAGS
+im Punkt 
+.BR UMGEBUNG ).
+Die Option
+.B \-t
+(touch) aktualisiert das Datum der letzten Modifikation einer Zieldatei
+ohne Ausfuehrung von Kommandos.
+.PP
+Kommandos, die mit einem Status ungleich Null zurueckkehren,
+beenden normalerweise
+.BR make .
+Falls die Option
+.B \-i
+angegeben wurde, oder der Eintrag
+.B \&.IGNORE:
+in der Datei
+.IR makefile 
+auftritt,
+oder die Zeile, die das Kommando spezifiziert, mit
+<Tabulator><-> beginnt, wird ein Fehler ignoriert.
+Falls die Option
+.B \-k
+angegeben wurde, wird die Abarbeitung bei der gegenwaertigen 
+Eintragung abgebrochen, aber bei anderen Zweigen, die
+nicht von dieser Eintragung abhaengen, fortgesetzt.
+.PP
+Interrupt und Quit bewirken, dass das Ziel geloescht wird,
+wenn es nicht vom speziellen Namen
+.BR \&.PRECIOUS: \&
+abhaengt.
+.SH OPTIONEN
+.TP
+.B \-b
+Kompatibilitaetsmodus fuer alte Make-Dateien.
+.TP
+.B \-d
+Debug-Modus.
+Ausgabe detailierter Informationen ueber Dateien und Zeiten,
+die untersucht werden.
+.TP
+.B \-e
+Die Umgebungsvariablen setzen sich ueber die Anweisungen innerhalb
+von Make-Dateien hinweg.
+.TP
+.BI \-f " makefile"
+Name der Beschreibungsdatei.
+Es wird vorausgesetzt, dass
+.I makefile
+der Name einer Beschreibungsdatei ist.
+Ein Dateiname
+.B \-
+kennzeichnet die Standardeingabe.
+Der Inhalt von
+.I makefile
+setzt sich ueber die eingebauten Regeln hinweg.
+.TP
+.B \-i
+Der Fehlercode, der von aufgerufenen Kommandos 
+zurueckgegeben wurde, wird ignoriert.
+Dieser Modus wird auch eingestellt, wenn der Zielname
+.B \&.IGNORE:
+in der Beschreibungsdatei erscheint.
+.TP
+.B \-k
+Aufgabe der Arbeit an der aktuellen Eintragung und Fortsetzung 
+an einem anderen Zweig, der nicht von dieser Eintragung abhaengt.
+.TP
+.B \-n
+Kein Ausfuehrungsmodus.
+Kommandos werden ausgegeben, jedoch nicht ausgefuehrt.
+Es werden auch die Zeilen ausgegeben, die mit
+.B @
+beginnen.
+.TP
+.B \-p
+Ausgabe der vollstaendigen Menge der Makrodefinitionen und
+Zielbeschreibungen.
+.TP
+.B \-q
+Anfrage.
+Das Kommando 
+.B make
+gibt in Abhaengigkeit davon, ob die Zieldatei aktualisiert wird oder nicht,
+einen Status gleich oder ungleich Null zurueck.
+.TP
+.B \-r
+Die eingebauten Regeln werden nicht benutzt.
+.TP
+.B \-s
+Es erfolgt kein Ausgabe der Kommandozeile vor der Abarbeitung.
+Dieser Modus wird auch eingetragen, wenn der Zielname
+.B \&.SILENT:
+in der Beschreibungsdatei erscheint.
+.TP
+.B \-t
+Das Datum der Zieldateien wird mittels
+.BR touch (1)
+aktualisiert,
+um die Ausfuehrung der gewoehnlichen Kommandos zu unterdruecken.
+.TP
+.B \&.DEFAULT:
+Falls eine Datei erstellt werden muss, es aber keine expliziten
+Kommandos oder relevante eingebaute Regeln gibt, 
+werden die Kommandos, die mit dem Namen
+.B \&.DEFAULT:
+(wenn er existiert) verbunden sind, benutzt.
+.TP
+.B \&.IGNORE:
+Entspricht der Option
+.B \-i .
+.TP
+.B \&.PRECIOUS:
+Vom Ziel abhaengige Dateien werden nicht geloescht,
+wenn Quit oder ein Interrupt auftritt.
+.TP
+.B \&.SILENT:
+Entspricht der Option
+.B \-s .
+.SH UMGEBUNG
+Die Umgebungsvariablen werden von
+.B make
+gelesen. Alle Variablen werden als Makrodefinitionen interpretiert.
+Makroanweisungen in einer Make-Datei
+ueberschreiben normalerweise die Umgebungsvariablen.
+Die Option
+.B \-e
+bewirkt, dass die Umgebung die Makroanweisungen 
+in einer Make-Datei ueberschreibt.
+.PP
+Die Umgebungsvariable
+.B MAKEFLAGS
+enthaelt alle legalen Eingabeoptionen (ausser
+.BR \-f , 
+.BR \-p ,
+und 
+.BR \-d ),
+die fuer die Kommandozeile definiert wurden.
+.B Make
+kann sie beim (z.B. rekursiven) Aufruf an Kommandos weiterleiten.
+Ist diese Variable nicht in der Umgebung vorhanden,
+wird sie durch
+.B make
+erzeugt.
+Ist die Option
+.B \-n
+gesetzt und wird das Kommando
+.B $(MAKE)
+ausgefuehrt, kann ueber ein
+.B make \-n
+rekursiv im gesamten Softwaresystem geprueft werden,
+welche Operationen ausgefuehrt werden wuerden
+(Aktualitaetstest fuer groessere Softwaresysteme).
+.PP
+.SS Makros
+Eintragungen der Form
+.IB string1 = string2
+sind Makrodefinitionen.
+Nachfolgende Erscheinungsformen von
+.RI $( string1 [: subst1 =[ subst2
+]])
+werden durch
+.I string2
+ersetzt. Die runden Klammern sind optional, wenn fuer den
+Makronamen ein einzelnes Zeichen benutzt wird und wenn es
+keine Austauschreihenfolge gibt.
+Der optionale Ausdruck
+.RI : subst1 = subst2
+ist eine Austauschsequenz.
+Falls sie spezifiziert ist, werden alle sich nicht
+ueberschneidenden Vorkommen von
+.I subst1
+in dem benannten Makro durch
+.IR subst2 \&
+ersetzt.
+Zeichenketten, die zum Austausch bestimmt sind, werden durch
+Leerzeichen, Tabulatoren, Newline-Zeichen und 
+Zeilenanfang begrenzt.
+Ein Beispiel fuer die Anwendung der Austauschreihenfolge
+ist im Abschnitt
+.I Bibliotheken
+angefuehrt.
+.SS Interne Makros
+Es gibt fuenf intern verwaltete Makros, die
+fuer die Notation der Regeln zur Erzeugung der Zieldateien
+benutzt werden koennen.
+.TP 5
+.B $\(**
+Dateiname der aktuellen Abhaengigkeit ohne Suffix.
+Gilt nur fuer eingebaute Regeln.
+.TP
+.B $@
+Vollstaendiger Dateiname der aktuellen Zieldatei.
+Gilt nur fuer explizit benannte Abhaengigkeiten.
+.TP
+.B $<
+Namen aller Ausgangsdateien, die die Anwendung dieser
+Regel veranlassten (unaktuelle Dateien bzgl. des Ziels).
+Wird nur fuer eingebaute Regeln oder fuer die Regel
+.B \&.DEFAULT:
+ausgewertet.
+.TP 5
+.B $?
+Liste der Objekte, die bezueglich des Ziels unaktuell sind
+(Module, die wieder erstellt werden muessen).
+Gilt nur fuer explizite Regeln.
+.TP
+.B $%
+Gilt nur, wenn das Ziel Mitglied einer Bibliothek 
+.B lib(file.o)
+ist.
+.B $%
+bezeichnet das Mitglied der Bibliothek
+.B file.o
+(dagegen bezeichnet
+.B $@
+die Bibliothek selbst).
+.PP
+Vier der fuenf Makros koennen alternative Formen haben.
+Werden die Grossbuchstaben
+.B D
+oder 
+.B F
+an jedes der Makros angehaengt, 
+aendert sich die Bedeutung in "Directoryteil" fuer
+.B D
+und "Dateiteil" fuer
+.BR F \&.
+So bezieht sich
+.B $(@D)
+auf den Directoryteil der Zeichenkette
+.BR $@ \&.
+Falls es keinen Directoryteil gibt, wird
+.B \&./
+erzeugt. Das Makro
+.B $?
+ist von dieser alternativen Form ausgeschlossen.
+.SS Suffixe
+Einige Namen (z.B. jene, die auf
+.B \&.o
+enden)
+haben ableitbare Vorbedingungen wie z.B.
+.BR \&.c , 
+.BR \&.s ,
+usw.
+Falls fuer eine solche Datei kein Aktualisierungskommando in
+.IR makefile 
+auftritt, aber eine ableitbare Vorbedingung existiert, 
+wird diese Vorbedingungsdatei uebersetzt, um das Ziel zu erstellen.
+Fuer
+.B make
+gelten eingebaute Regeln, die das Erstellen von Dateien aus anderen Dateien
+durch Untersuchung der Suffixe ermoeglichen.
+Die eingebauten Regeln sind:
+.PP
+.RS
+.na
+.fi
+\&.c
+\&.c+
+\&.f
+\&.f+
+\&.sh
+\&.sh+
+\&.c.o
+\&.c+.o
+\&.c+.c
+\&.f.o
+\&.f+.o
+\&.f+.f
+\&.s.o
+\&.s+.o
+\&.s+.s
+\&.y.o
+\&.y+.o
+\&.y+.c
+\&.y.c
+\&.c.a
+\&.c+.a
+\&.s+.a
+.RE
+.PP
+In einer Regel mit nur einem Suffix (z.B.
+.B \&.c:
+) wird definiert, wie
+.I x
+aus 
+\fIx\fB.c\fR
+zu erstellen ist.
+Hierbei ist der andere Suffix Null.
+Zusaetzliche Suffixe werden als Abhaengigkeitsliste fuer
+.B \&.SUFFIXES:
+angegeben.
+Die Reihenfolge ist wichtig; der erste moegliche Name, fuer den
+sowohl eine Datei als auch eine Regel existiert, wird als
+eine Vorbedingung betrachtet.
+.PP
+Die Standardliste ist:
+.PP
+.RS
+.fi
+\&
+.BR \&.SUFFIXES:
+\&.o
+\&.c
+\&.c+
+\&.y
+\&.y+
+\&.f
+\&.f+
+\&.p
+\&.p+
+\&.s
+\&.s+
+\&.sh
+\&.sh+
+\&.h
+\&.h+
+.RE
+.ad
+.fi
+.PP
+Mehrfache Suffixlisten werden akkumuliert; die Angabe
+.B \&.SUFFIXES:
+ohne Abhaengigkeiten loescht die Suffixliste.
+.SS Eingebaute Regeln
+.B Make
+besitzt eine Menge von eingebauten Regeln fuer das Erstellen von Dateien.
+Der Nutzer kann weitere Regeln hinzufuegen, indem er sie in die Datei
+.I makefile
+aufnimmt.
+Einige Makros werden durch die eingebauten Regeln
+benutzt, um die Einbeziehung von Optionen in resultierende Kommandos
+zu ermoeglichen.
+Zum Beispiel werden
+.SM
+.B CFLAGS\*S
+und
+.SM
+.B YFLAGS
+als Compileroptionen fuer
+.BR cc (1)
+und
+.BR yacc (1)
+benutzt.
+.PP
+Die Folgerungen aus den Vorbedingungen koennen gesteuert werden.
+Die Regel zur Erzeugung einer Datei mit dem Suffix
+.B \&.o
+aus einer Datei mit dem Suffix 
+.B \&.c
+wird durch eine Eintragung mit
+.B \f&.c.o:
+als Ziel ohne Angabe von Abhaengigkeiten angegeben.
+Shell-Kommandos, die mit dem Ziel verbunden sind, definieren
+die Regel fuer das Erstellen einer Datei
+.B \f&.o
+aus einer Datei
+.BR \f&.c .
+Jedes Ziel, das keinen Schraegstrich "/" beinhaltet
+und mit einem Punkt beginnt,
+wird als Regel identifiziert, nicht als echtes Ziel.
+.SS Bibliotheken
+Beinhaltet ein Ziel oder ein Abhaengigkeitsname eine runde Klammer,
+wird vorausgesetzt, das es sich um eine Bibliothek handelt.
+Die Zeichenkette innerhalb der runden Klammern verweist auf ein
+Mitglied der Bibliothek.
+So beziehen sich 
+.B lib(file.o)
+und 
+.B $(LIB)(file.o)
+beide auf eine Bibliothek, die die Datei
+.BR file.o \&
+enthaelt
+(Voraussetzung: das Makro
+.SM
+.B LIB
+ist definiert).
+Der Ausdruck
+.B $(LIB)(file1.o file2.o)
+ist nicht legal.
+Regeln, die zu Bibliotheken gehoeren, haben die Form
+.BI \&. XX \&.a
+wobei
+.SM
+.I XX
+der Suffix ist, aus dem das Bibliotheksmitglied erstellt werden soll.
+Es ist erforderlich, dass sich
+.SM
+.I XX
+vom Suffix des Bibliotheksmitgliedes unterscheiden muss.
+Folglich kann 
+.B lib(file.o)
+nicht explizit von der Datei
+.B file.o
+abhaengen.
+.br
+Die gebraeuchlichste Benutzung des Bibliotheksinterfaces folgt.
+Hierbei wird vorausgesetzt, dass alle Quelldateien C-Quellen sind:
+.PP
+.ss 18
+.RS
+.PD 0
+.TP
+lib:
+lib(file1.o) lib(file2.o) lib(file3.o)
+.br
+@echo lib ist jetzt aktualisiert
+.TP
+\&.c.a:
+.br
+$(CC) \-c $(CFLAGS) $<
+.br
+ar rv $@ $*.o
+.br
+rm -f $*.o
+.RE
+.ss 12
+.PD
+.PP
+Die Regel
+.B \&.c.a ,
+die oben angefuehrt wurde, ist in
+.B make
+eingebaut und ist in diesem Beispiel nicht notwendig.
+Das folgende Beispiel zeigt die Verwaltung einer Bibliothek:
+.PP
+.ss 18
+.RS
+.PD 0
+.TP
+lib:
+lib(file1.o) lib(file2.o) lib(file3.o)
+.br
+$(CC) \-c $(CFLAGS) $(?:.o=.c)
+.br
+ar rv lib $?
+.br
+rm $?
+.br
+@echo lib ist jetzt aktualisiert
+.TP
+\&.c.a:;
+.RE
+.ss 12
+.PD
+.PP
+Hier wird der Ersetzungsmodus der Makroexpansion benutzt.
+Die Liste
+.B $?
+wird als Satz der Objektdateinamen definiert (innerhalb von
+.B lib
+), deren C-Quelldateien unaktuell sind.
+Der Ersetzungsmodus uebersetzt das
+.B \&.o
+in 
+.BR \&.c .
+Damit wird die Regel
+\&
+.B \&.c.a:
+ausser Kraft gesetzt,
+die jede Objektdatei erzeugen wuerde (eine nach der anderen).
+Diese besondere Konstruktion beschleunigt betraechtlich die Pflege
+der Bibliothek.
+Diese Konstruktion fuehrt zu Komplikationen, wenn die
+Bibliothek ein Gemisch von Assembler- und C-Programmen enthaelt.
+.SH DATEIEN
+[Mm]akefile
+.br
+[Mm]akefile+
+.SH SIEHE AUCH
+chkin(1),
+chkout(1),
+csh(1),
+sh(1),
+touch(1).
+.br
+"Make - Programmbeschreibung" in WEGA-Dienstprogramme
+.SH EINSCHRAENKUNGEN
+Einige Kommandos kehren unpassenderweise mit einem Status
+ungleich Null zurueck. Mit der Option
+.B \-i
+wird diese Schwierigkeit ueberwunden.
+Kommandos, die direkt von der Shell ausgefuehrt werden, 
+z.B.
+.BR cd (1),
+sind unwirksam ueber Newlines in
+.BR make \&.
+Die Syntax
+.B lib(file1.o file2.o file3.o)
+ist illegal.
+Man kann keine 
+.B lib(file.o)
+aus 
+.BR file.o \&
+erstellen.

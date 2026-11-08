@@ -1,0 +1,88 @@
+.TH GETOPT 1C WEGA
+.\" @[$]getopt.1	1.2
+.ad
+.fi
+.SH NAME
+getopt \- Ueberpruefen von Kommandooptionen
+.SH SYNTAX
+.B "set \-\- \*`getopt"
+.I optstring
+.B $\(**\*`
+.SH BESCHREIBUNG
+.B Getopt
+durchsucht die angegebenen Parameter nach Optionen und wandelt diese
+in ein leichter zu pruefendes Format um.
+.PP
+.I Optstring
+ist eine Zeichenkette von anzuerkennenden Buchstaben 
+(siehe getopt(3)).
+Folgt hinter einem Buchstaben ein Doppelpunkt, wird eine Option mit
+Argument erwartet. Das Argument kann entweder direkt hinter der Option
+stehen oder durch Leerzeichen getrennt sein.
+.PP
+.B Getopt
+setzt die Zeichen
+\fB\-\-\fP an das Ende der Optionen in der Argumentzeichenkette
+(expliziter Benutzung auch moeglich).
+Die Shell-Argumente ($1 $2 . . .) werden zurueckgesetzt,
+so dass jeder Option ein \fB\-\fP vorausgeht.
+Jede Option ist damit ein selbstaendiges Shell-Argument.
+.SH OPTIONEN
+.TP
+\fB\-\-\fP
+Kennzeichnet das Ende der Optionen.
+.SH DIAGNOSTIK
+.B Getopt
+gibt eine Fehlermeldung an die Standardfehlerausgabe,
+wenn der Buchstabe einer Option nicht in
+.IR optstring
+enthalten ist.
+.SH BEISPIEL
+Das folgende Programmstueck zeigt die Behandlung der Argumente
+eines Programms,
+das die Optionen 
+.B a
+.BR b ,
+und die Option
+.BR o
+mit einem Argument verarbeiten kann.
+.PP
+.RS
+.nf
+ set \-\- \*`getopt abo: $\(**\*`
+ if [ $? != 0 ]
+ then
+	 echo $USAGE
+	 exit 2
+ fi
+ for i in $\(**
+ do
+	case $i in
+	\-a \(bv \-b)	FLAG=$i;  shift;;
+	\-o)		OARG=$2;  shift; shift;;
+	\-\-)		shift;    break;;
+	esac
+ done
+.fi
+.RE
+.PP
+Dieses Programmstueck akzeptiert die folgenden Kommandozeilen als
+aequivalente Angaben:
+.PP
+.RS
+.nf
+ cmd \-aoarg file file
+ cmd \-a \-o arg file file
+ cmd \-oarg \-a file file
+ cmd \-a \-oarg \-\- file file
+.fi
+.RE
+.SH SIEHE AUCH
+sh(1),
+getopt(3).
+.SH EINSCHRAENKUNGEN
+Es ist nicht sinnvoll, \fBgetopt\fR 
+nach dem Prompt-Zeichen einzugeben.
+Es sollte innerhalb von Shell-Scripts angewendet werden. Aus 
+diesem Grund ist es auch in dem Abschnitt 1C des Handbuchs
+enthalten, obwohl es nicht interner Bestandteil der C-Shell ist.

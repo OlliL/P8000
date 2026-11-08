@@ -1,0 +1,323 @@
+.TH CW 1 WEGA 
+.\" @[$]cw.1	1.2
+.ad 
+.fi
+.SH NAME
+cw, checkcw \- bereitet Text konstanter Groesse fuer troff(1) auf
+.SH SYNTAX
+.B cw
+[
+.B +t 
+] [
+.B -d 
+] [
+.BI -f n 
+] [
+.BI -l xx 
+] [
+.BI -r xx 
+] [
+.B -t  
+] [ \fIfiles\fR ]
+.PP
+.B checkcw
+[
+.BI -l xx
+] [
+.BI -r xx
+] \fIfiles\fR
+.SH BESCHREIBUNG
+.B Cw
+ist ein Praeprozessor fuer
+.B troff 
+Textdateien, die mit einer
+Schriftart konstanter Groesse (CW) gesetzt werden sollen.
+.PP
+Text, der mit der
+CW-Schriftart gesetzt wurde, aehnelt der Ausgabe von Terminals
+und Zeilendruckern.
+Diese Schriftart wird verwendet, um Programmbeispiele und andere
+Computerausgaben, wie sie in Handbuechern, Programmiertext usw.
+verwendet werden, zu setzen.
+.PP
+Da die
+CW-Schriftart eine nichtstandardisierte Menge von Zeichen enthaelt,
+und Texte aber einen von der Standardschriftart unterschiedlichen
+Zeichensatz und Wortabstand haben, muessen Dokumente, die die
+CW-Schriftart benutzen, zuvor mittels
+.BR cw
+vorbearbeitet werden.
+.PP
+Die CW-Schriftart enthaelt die 94 druckbaren ASCII-Zeichen:
+.sp
+.nf
+     abcdefghijklmnopqrstuvwxyz
+     ABCDEFGHIJKLMNOPQRSTUVWXYZ
+     0123456789
+     !$%&()`'*+@.,/:;=?[]|-_^~"<>{}#\ 
+.fi
+.sp
+sowie acht Nicht-ASCII-Zeichen, die durch
+\fBtroff\fR Namen aus vier Zeichen wiefolgt dargestellt werden:
+.br
+.sp
+.nf
+Zeichen                     Symbol     Nroff-Name
+-------------------------------------------------
+"Cents" Zeichen			\(ct		\e(ct
+EBCDIC "not" Zeichen		_		\e(no
+Linkspfeil				\(<-		\e(<-
+Rechtspfeil				\(->		\e(->
+Pfeil nach unten			\(da		\e(da
+vertikales einfaches
+         Anfuehrungszeichen	\(fm		\e(fm
+Control-Shift Anzeiger		\(dg		\e(dg
+sichtbarer Space-Anzeiger	\(sq		\e(sq
+Bindestrich				\(hy		\e(hy
+.fi
+.sp
+Der Bindestrich ist ein Synonym fuer das Minuszeichen
+.RB ( - ).
+.PP
+\fBCw\fR erkennt sowohl 5 Request-Zeilen an, ebenso vom Anwender
+definierte Trennzeichen.
+Die Request-Zeile hat den Aufbau wie ein
+.B troff 
+Makro-Request; 
+.B cw 
+kopiert vollstaendige Zeilen zu seiner Ausgabe.
+Sie koennen vom Anwender wie \fBtroff\fR Makros definiert werden.
+.PP
+.ad b
+Die 5 Requests lauten:
+.TP
+.B .CW
+Beginn des Textes, der in der
+CW-Schriftart zu setzen ist.  .CW verursacht ein Break.
+Es koennen die gleichen Optionen, das gleiche Format verwendet
+werden, wie sie fuer die
+.B cw
+Kommandozeile verfuegbar sind.
+.TP
+.B .CN
+Ende des Textes, der in der
+CW-Schriftart zu setzen ist. .CN verursacht ein Break.
+Es koennen die gleichen Optionen verwendet werden,
+wie sie fuer die
+.B cw
+Kommandozeile verfuegbar sind.
+.TP
+.B .CD
+Aenderung der Trennzeichen oder/und Setzen von anderen Optionen;
+verwendet die gleichen Optionen, wie sie fuer die
+.B cw
+Kommandozeile verfuegbar sind.
+.TP
+.BI .CP "\*S \^arg1 \^arg2 \^arg3 " ... " \^argn\^
+Alle Argumente (die wie Argumente eines
+.B troff 
+Makros getrennt sind), die mit ungeradzahligen Argumenten verkettet sind,
+werden in der CW-Schriftart gesetzt, die mit geradzahligen Argumenten
+in der vorherrschenden Schriftart.
+.TP
+.BI .PC "\*S \^arg1 \^arg2 \^arg3 " ... " \^argn\^
+Analog zu .CP, ausser, dass die geradzahligen Argumente (nicht
+die ungeradzahligen) in der
+CW-Schriftart gesetzt werden.
+.PP
+Mit den Requests .CW and .CN wird ein Text eingeklammert
+(z.B. ein Programmfragment), der in der CW-Schriftart gesetzt werden soll.
+Normalerweise arbeitet
+.B cw
+im Trans\%parentmodus.
+In diesem Mode steht jedes Zeichen zwischen den .CW und .CN Requestzeilen
+fuer sich selbst.
+Das gilt nicht fuer den Request .CD
+und die neun Namen mit 4 Zeichen, die in der obigen Tabelle
+angefuehrt sind.
+Insbesondere erzeugt
+.B cw
+Punkte
+.RB ( . )
+und Apostrophe
+.RB ( ' )
+am Zeilenanfang; Backlash
+und Ligatur (fi, ff, usw.)
+werden von
+.B troff 
+nicht erkannt.
+Der Transparentmodus kann abgeschaltet werden (siehe unten), in diesem
+Fall kommen die normalen
+.B troff
+Regeln zur Anwendung.
+In jedem Fall ist durch
+.B cw\^
+fuer den Anwender der Effekt des Schriftartenwechsels
+durch die Requests .CW und .CN nicht erkennbar.
+.PP
+Der einzige Zweck des Requests .CD ist es, den Wechsel der
+verschiedenen Optionen im Text zuzulassen.
+.PP
+Der Anwender kann auch Trennzeichen definieren.
+Die linken und rechten Trennzeichen fuehren die selbe Funktion aus,
+wie die Requests .CW\|/.CN ; mit ihnen werden
+CW-Woerter oder Wortverbindungen im laufenden Text eingeschlossen (siehe
+Beispiel unter
+.B EINSCHRAENKUNGEN\^
+unten).
+\fBCw\fR behandelt einen Text, der durch Trennzeichen eingeschlossen ist,
+in der gleichen Art und Weise wie Text, der durch Paare von .CW\|/.CN 
+eingeklammert ist.
+Aus aesthetischen Gruenden haben Leerzeichen im Text, der durch Paare
+von .CW\|/.CN eingeklammert ist, die selbe Groesse wie jedes andere
+CW-Zeichen.
+Leerzeichen zwischen Trennzeichen sind halb so breit;
+sie haben die gleiche Groesse wie Leerzeichen im vorherrschenden Text
+(sind aber
+.I nicht\^
+einstellbar).
+.PP
+Trennzeichen haben keine spezielle Bedeutung innerhalb von .CW\|/.CN Paaren.
+.SH OPTIONEN
+.TP
+.B +t
+Einschaltung des Transparentmodus
+(Standard\%einstellung).
+.TP
+.B -d
+Ausdruck der aktuellen gesetzten Optionen im Dateidescriptor 2 (stderr)
+in der Form von
+.B troff 
+Kommandozeilen (Testmodus).
+.TP
+.BI -f n\^
+Die
+CW-Schriftart wird auf die Schriftartposition
+.IR n 
+gesetzt;
+moegliche Werte fuer
+.I n\^
+sind 1, 2 und 3
+(der Standardwert ist 3, ersetzt den Fettdruck).
+Diese Option ist nur am Beginn eines Dokuments sinnvoll.
+.TP
+.BI -l xx\^
+Die Zeichenkette
+.I xx\^
+aus ein oder zwei Zeichen wird zum linken Trennzeichen;
+falls
+.I xx\^
+nicht angegeben wurde,
+ist das linke Trennzeichen undefiniert 
+(entspricht Anfangszustand).
+.TP
+.BI -r xx\^
+Das gleiche fuer das rechte Trennzeichen.
+Das linke und rechte Trennzeichen koennen sich (muessen 
+aber nicht) unterscheiden.
+.TP
+.B -t
+Ausschalten des Transparentmodus.
+.PP
+.B Cw
+liest von der Standardeingabe, wenn keine Dateien
+.I files
+angegeben wurden (Nutzung als Filter).
+Die typische Verwendung ist:
+.sp
+.nf
+.CW -t
+     \fBcw\fI files\fR | \fBtroff\fR ...
+.CN +t
+.sp
+.fi
+.B Checkcw
+ueberprueft die paarweise Anwendung  sowohl der linken und rechten 
+Trennzeichen, als auch von .CW\|/.CN.
+Es druckt alle diesbezueglich fehlerhaften Zeilen aus.
+.SH HINWEISE
+Die folgende Definitionen der Makros .CW und .CN, die mit dem
+.BR mm (7)
+Makropaket benutzt werden sollen, ist typisch:
+.RS
+.nf
+.sp
+ \.de CW
+ \.DS I
+ \.ps 9
+ \.vs 10.5p
+ \.ta 16m/3u 32m/3u 48m/3u 64m/3u 80m/3u 96m/3u ...
+ \..
+ \.de CN
+ \.ta 0.5i 1i 1.5i 2i 2.5i 3i 3.5i 4i 4.5i 5i 5.5i 6i
+ \.vs
+ \.ps
+ \.DE
+ \..
+.RE
+.fi
+.PP
+Als Abschluss sollte das Makro .CW den
+.B troff 
+no-fill (.nf) Mode enthalten.
+.PP
+Im laufenden Text sollte die
+CW-Schriftart in der gleichen Punktgroesse wie 
+der Rest des Textes gesetzt werden.
+Bei Anzeige auf einem Bildschirm
+kann sie einen Punkt kleiner gesetzt sein als die vorherrschende Punktgroesse.
+Wenn die CW-Schriftart mit 9 Punkten gesetzt ist,
+bedeutet das 12 Zeichen je Zoll.
+.PP
+Dokumente, die
+CW-Text enthalten, koennen ebenso Tabellen und/oder Gleichungen enthalten.
+Ist dies der Fall, sollte die Reihenfolge der Abarbeitung der
+Praeprozessoren folgende sein:
+.BR cw ,
+.BR tbl ,
+und
+.BR eqn .
+Gewoehnlich enthalten Tabellen in solchen Dokumenten keinen
+CW-Text, obwohl es moeglich ist, dass Elemente dieser Tabelle in der
+CW-Schriftart gesetzt sind.
+Man muss absichern, dass die
+.BR tbl (1)
+Formatinformationen nicht durch
+.BR cw 
+modifiziert werden.
+Gleichungen sollten nicht in der 
+CW-Schriftart gesetzt werden.
+.PP
+In der 
+CW-Schriftart wird das Ueberschreiben meist durch Backspaces realisiert.
+Weil aber Leerzeichen (und damit auch Backspaces) innerhalb von
+Trennzeichen nur halb so breit sind wie innerhalb von Paaren .CW\|/.CN,
+sind zwei Backspaces fuer jede Ueberschreibung innerhalb von
+Trennzeichen erforderlich.
+.SH DATEIEN
+/usr/lib/font/ftCW     Tabelle der Groesse der CW-Schriftart
+.SH SIEHE AUCH
+eqn(1),
+mmt(1),
+tbl(1),
+troff(1),
+mm(7),
+mv(7).
+.SH WARNUNGEN
+.B Cw
+ist nur fuer Schriftsetzeinrichtungen sinnvoll,
+die mit der CW-Schriftart ausgeruestet sind.
+.SH EINSCHRAENKUNGEN 
+Punkte und Backslashes
+sollten nicht als Trennzeichen verwendet werden.
+.br
+Bestimmte 
+CW-Zeichen verketten sich nicht gut
+mit bestimmten Roman-Zeichen, z.B. ein
+CW-Ampersand (&)
+gefolgt von einem Roman-Komma(,);
+in diesen Faellen ist die Benutzung der
+.B troff 
+Halb- und Viertel-Leerzeichen 
+(\e| und \e^)
+ratsam.

@@ -1,0 +1,177 @@
+.TH MAN 7 WEGA
+.\" @[$]man.7	1.2
+.ad
+.fi
+.SH NAME
+man \- Nroff-Makros fuer WEGA-Programmierhandbuch (Online-Handbuch)
+.SH SYNTAX
+.B
+nroff  \-man\ 
+.I file 
+.br
+.B
+troff  \-man\ 
+.I file
+.SH BESCHREIBUNG
+Diese Makros dienen zur Formatierung der Eintraege
+im WEGA-Programmierhandbuch, das auch als Online-Handbuch im
+Directory
+.B /usr/man
+verfuegbar ist.
+.PP
+Alle Textargumente
+.I t
+besteht aus null bis sechs Woertern.
+Durch die Benutzung von Anfuehrungsstrichen koennen
+Woerter, die durch Leerzeichen getrennt sind, als ein Wort
+zusammengefasst werden.
+Ist das Argument
+.I t
+in der Zeile des Makroaufrufs nicht vorhanden,
+erhaelt die naechste Eingabezeile, die auszugebenden
+Text enthaelt, eine Sonderbehandlung (z.B. bewirkt das Makro
+.BR . I
+ohne Angabe eines Arguments die Ausgabe
+der naechstfolgenden Zeile, wobei jedes Wort kursiv gedruckt wird).
+.PP
+Wird fuer einen Absatz durch ein Makro eine Einrueckung festgelegt,
+bleibt diese erhalten, bis ein anderer Makroaufruf diese
+Einrueckung wieder aufhebt.
+.PP
+Schriftart und -groesse werden vor jedem Abschnitt
+und nach der Verarbeitung von Makros zur Schriftart- und
+Groesseneinstellung wieder
+auf Standardwerte gebracht.
+.SH DATEIEN
+/usr/lib/tmac/tmac.an
+.SH SIEHE AUCH
+nroff(1),
+man(1).
+.SH EINSCHRAENKUNGEN
+Relative Einrueckungen lassen sich nicht verschachteln.
+.PP
+Kursivschrift wird vom Programm
+.BR nroff (1)
+als Unterstreichung ausgefuehrt.
+.SH MAKROS
+.PP
+Abkuerzungen:
+.TP 5
+nZ
+Naechste Textzeile.
+.PD 0
+.TP
+aE
+Aktuelle Einrueckposition
+.PD
+.PP
+.ne 4
+.I " Makro   Break Argument"
+.PD 0
+.TP 22
+ .B \fIt\fR    nein  \fIt\fR=nZ
+Text
+.I t
+wird fett gedruckt.
+.TP
+ .BI \fIt\fR   nein  \fIt\fR=nZ
+Woerter aus
+.I t
+werden (ohne Trennzeichen) abwechselnd fett oder kursiv gedruckt.
+.TP
+ .BR \fIt\fR   nein  \fIt\fR=nZ
+Woerter aus
+.I t
+werden (ohne Trennzeichen) abwechselnd fett oder normal gedruckt.
+.TP
+ .DT     nein  .5i
+Tabulatoren werden auf Standardwerte gesetzt.
+.TP
+ .HP \fIi\fR    ja   \fIi\fR=aE
+Die aktuelle Einrueckposition wird auf
+.I i
+gesetzt. Der Abschnitt wird mit haengender Einrueckung begonnen.
+.TP
+ .I \fIt\fR    nein  \fIt\fR=nZ
+Text
+.I t
+wird kursiv gedruckt.
+.TP
+ .IB \fIt\fR   nein  \fIt\fR=nZ
+Woerter aus
+.I t
+werden (ohne Trennzeichen) abwechselnd kursiv oder fett gedruckt.
+.TP
+ .IP \fIx\fR \fIi\fR  ja   x=""
+Das Argument
+.I x
+wird beginnend ab der aktuellen Einrueckposition geschrieben.
+Anschliessend wird die aktuelle Einrueckposition auf den Wert
+.I i
+gesetzt.
+Der Absatz wird an der neuen Einrueckposition begonnen.
+.TP
+ .IR \fIt\fR   nein  \fIt\fR=nZ
+Woerter aus
+.I t
+werden (ohne Trennzeichen) abwechselnd normal oder fett gedruckt.
+.TP
+ .LP      ja   -
+Beginn eines Absatzes.
+Die aktuelle Einrueckposition wird auf 0.5i gesetzt.
+.TP
+ .PD \fId\fR   nein  \fId\fR=.4v
+Der Abstand zwischen zwei Absaetzen wird auf den Wert
+.I d
+gesetzt.
+.TP
+ .PP      ja   -
+Beginn eines Absatzes.
+Die aktuelle Einrueckposition wird auf 0.5i gesetzt.
+.TP
+ .RE      ja   -
+Ende der relativen Einrueckung.
+Die aktuelle Einrueckung wird auf den Wert gesetzt,
+der vor dem Start von .RS gueltig war.
+.TP
+ .RB \fIt\fR   nein  \fIt\fR=nZ
+Woerter aus
+.I t
+werden (ohne Trennzeichen) abwechselnd normal oder fett gedruckt.
+.TP
+ .RI \fIt\fR   nein  \fIt\fR=nZ
+Woerter aus
+.I t
+werden (ohne Trennzeichen) abwechselnd normal oder kursiv gedruckt.
+.TP
+ .RS \fIi\fR    ja   \fIi\fR=aE
+Beginn einer relative Einrueckung.
+Die Einrueckposition wird um den Wert
+.I i
+(Standard: 0.5i) nach rechts verschoben.
+.TP
+ .SH \fIt\fR    ja   \fIt\fR=nZ
+Zwischenueberschrift.
+.TP
+ .SM \fIt\fR   nein  \fIt\fR=nZ
+Der Text
+.I t
+wird in einer kleineren Schriftgroesse ausgegeben (nur fuer
+.BR troff (1)).
+.TP
+ .TH \fIn c\fR  ja   -
+Der Seitenkopf eines Handbucheintrags erhaelt den Namen
+.I n
+und die Sektion
+.I c
+sowohl in der linken als auch in der rechten Ecke.
+Die aktuelle Einrueckposition und die Tabulatorschrittweite
+werden auf 0.5i gesetzt.
+.TP
+ .TP \fIi\fR    ja   \fIi\fR=aE
+Die naechste Zeile wird beginnend ab der aktuellen Einrueckposition
+ausgegeben.
+Anschliessend wird die aktuelle Einrueckposition auf den Wert
+.I i
+gesetzt.
+Der Absatz wird ab der neuen Einrueckposition begonnen.

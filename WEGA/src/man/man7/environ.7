@@ -1,0 +1,87 @@
+.TH ENVIRON 7 WEGA
+.\" @[$]environ.7	1.2
+.ad
+.fi
+.SH NAME
+environ \- Nutzerumgebung
+.SH BESCHREIBUNG
+Bei Beginn eines Prozesses wird durch den Systemruf
+.BR exec (2)
+ein Feld aus Zeichenketten, das als "Umgebung" bezeichnet wird,
+bereitgestellt.
+Vereinbarungsgemaess haben diese Zeichenketten die Form
+.IP
+\fIname\fR=\fIvalue\fR.
+.PP
+Die folgenden Namen werden von verschiedenen Kommandos benutzt:
+.TP
+.B HOME
+Name des  Nutzer-Login-Directorys das durch
+.BR login (1)
+aus der Passwort-Datei (siehe
+.BR passwd (5))
+gesetzt wird.
+.TP
+.B PATH
+Die Variable enthaelt die Pfadnamen von Directories, die von den Programmen
+.BR sh (1),
+.BR time (1),
+.BR nice (1),
+.BR nohup (1)
+usw. benutzt werden, um nach einer Datei zu suchen, von der nur
+ein unvollstaendiger Pfadname bekannt ist.
+Die einzelnen Pfadnamen werden durch Doppelpunkte
+voneinander getrennt.
+Das Kommando
+.BR login (1)
+setzt den Standardwert
+.IR PATH \=:/bin:/usr/bin .
+.TP
+.B TERM
+Diese Variable enthaelt den Terminaltyp.
+Sie wird von den Kommandos ausgewertet, die spezielle Funktionen
+des Terminals zur Bildaufbereitung nutzen (z.B.
+.BR vi (1)).
+.TP
+.B TZ
+Diese Variable gibt die Zeitzone in der Form
+.I " xxxnzzz "
+an. Dabei ist
+.I xxx
+die Standardabkuerzung fuer die oertliche Zeitzone,
+.I n
+der Unterschied (in Stunden) zur Weltzeit
+\fBGMT\fR und
+.I zzz
+die Abkuerzung fuer die oertliche Sommerzeit-Zeitzone, falls 
+Sommerzeit existiert.
+Beispiel:
+.BR MEZ-1MES .
+.PP
+Es koennen wie folgt weitere Umgebungsvariablen definiert werden:
+.IP "in \fBsh\fR(1)" 10
+\fIname\fR=\fIvalue\fR
+.br
+\fBexport\fI name\fR
+.IP "in \fBcsh\fR(1)" 10
+\fBsentenv \fIname value\fR
+.IP "\fBexec\fR" 10
+Durch den Systemruf
+.BR exec (2).
+.SH SIEHE AUCH
+env(1),
+login(1),
+sh(1),
+exec(2),
+getenv(3),
+profile(5),
+term(7).
+.SH EINSCHRAENKUNGEN
+Es sind Ueberschneidungen mit bestimmten Shell-Variablen zu vermeiden,
+die haeufig von den Dateien \fB.profile\fR benutzt werden:
+.IP
+.IR MAIL ,
+.IR PS1 ,
+.IR PS2 ,
+.IR IFS .
+.

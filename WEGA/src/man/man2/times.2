@@ -1,0 +1,95 @@
+.TH TIMES 2 WEGA
+.\"@[$]times.2  1.2
+.ad
+.fi
+.SH NAME
+times \- Erhalten der Prozesszeiten
+.SH SYNTAX
+.B long times(
+.I buffer)
+.br
+.B struct
+.I tbuffer *buffer;
+.SH BESCHREIBUNG
+.B Times
+gibt Informationen ueber Zeitablauf und Abrechnung des aktuellen Prozesses
+und ueber den beendeten Child-Prozess des aktuellen Prozesses.
+Alle Zeiten sind in 1/HZ Sekunden angegeben (HZ=60).
+.PP
+Vom Systemruf
+.B times
+wird folgende Struktur zurueckgegeben:
+.PP
+.RS
+.nf
+struct tbuffer {
+        long    proc_user_time;
+        long    proc_system_time;
+        long    child_user_time;
+        long    child_system_time;
+};
+.RE
+.fi
+.PP
+Die Zeiten der Childprozesse sind die Summe aus Prozesszeiten der
+Childprozesse und der Zeiten ihrer Childprozesse. 
+.PP
+.B Utime
+ist die CPU-Zeit, die zur Ausfuehrung von Befehlen im Nutzerbereich
+des Aufrufprozesses aufgewandt wird.
+.PP
+.B Stime
+ist die
+CPU-Zeit, die vom System fuer den Aufrufprozess aufgewandt wird.
+.PP
+.B Cutime
+ist die Summe der Zeiten
+.BR "utime"
+und
+.BR "cutime"
+der Child-Prozesse.
+.PP
+.B Cstime
+ist die Summe der Zeiten
+.BR "stime"
+und
+.BR "cstime"
+der Child-Prozesse.
+.SH DIAGNOSTIK
+.TP 11
+\%[EFAULT]
+.B Times
+wird nicht ausgefuehrt, wenn
+.I buffer
+eine unzulaessige Adresse anzeigt.
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung gibt
+.B times
+die tatsaechlich vergangene Zeit (gemessen in 1/60 Sekunden), die seit 
+einem willkuerlich festgelegten Zeitpunkt (z.B. Zeitpunkt des Systemstarts) 
+abgelaufen ist, zurueck.
+Dieser Zeitpunkt aendert sich nicht von einem Systemruf
+.B times
+zum naechsten.
+Kann
+.B times
+nicht ausgefuehrt werden, wird ein Wert \-1 zurueckgegeben und 
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+exec(2), fork(2), time(2), wait(2).
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT TIMES  := 43
+
+Nichtsegmentiert
+     ...             !* r0 : buffer *!
+Segmentiert
+     ...             !* rr0 : buffer *!
+     clr    rr4
+     sc     #TIMES
+     ...             !* Rueckgabewert in rr4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

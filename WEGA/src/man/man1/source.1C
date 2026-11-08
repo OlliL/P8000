@@ -1,0 +1,32 @@
+.TH SOURCE 1C WEGA
+.\"@[$]source.1C	1.2
+.ad
+.fi
+.SH NAME
+source \- Ausfuehren von Shell-Scripts in der aktuellen Shell
+.SH SYNTAX
+.B source
+.I file
+.SH BESCHREIBUNG
+Das Shell liest Kommandos aus der Datei
+.I file
+und arbeitet sie ab.
+.B Source
+Kommandos koennen verschachtelt werden.
+Die Schachtelungstiefe haengt von der Anzahl der verfuegbaren
+Filedescriptoren ab.
+.SH EINSCHRAENKUNGEN
+Tritt auf irgendeiner Ebene in einem
+.B source
+Kommando ein Fehler auf, werden alle verschachtelten
+.B source
+Kommandos beendet.
+Erfolgt waehrend des Ablaufs eines 
+.B source
+Kommandos eine Eingabe, erscheint diese nicht in der
+History-Liste.
+Die Ausgabe eines
+.B source
+Kommandos kann nicht umgelenkt werden. 
+.SH SIEHE AUCH
+"Die C-Shell" in WEGA-Dienstprogramme

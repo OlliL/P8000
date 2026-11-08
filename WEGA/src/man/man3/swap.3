@@ -1,0 +1,75 @@
+.TH SWAP 3
+.\" @[$]swap.3  1.2
+.ad
+.fi
+.SH NAME
+swap, longswap, swapsegt \- Austauschroutinen
+.SH SYNTAX
+.B #include <s.out.h>
+.PP
+.B swap
+.I (val)
+.br
+.B int
+.I val;
+.PP
+.B longswap
+.I (valp)
+.br
+long *valp;
+.PP
+.B swapsegt
+.I (s_segt)
+.br
+.B struct
+.I "segt *s_segt;"
+.SH BESCHREIBUNG
+Die Funktion
+.B swap
+tauscht die beiden Bytes des Integerwerts
+.I val
+aus und gibt das Ergebnis zurueck.
+.PP
+.B Longswap
+tauscht die beiden Worte eines (long) Integerwerts in dem Speicherbereich aus,
+dessen Adresse durch das Argument
+.I valp
+angegeben ist.
+.PP
+Die Funktion
+.B swapsegt
+erhaelt als Argument die Adresse eines Segmenttabelleneintrags
+.I s_segt
+und tauscht die Bytes der Worte aus.
+Ein Segmenttabelleneintrag hat folgende Struktur:
+
+    struct segt {
+.br
+       char sg_segno;     /* Segmentnummer */
+.br
+       char sg_coff;      /* Offset/256 fuer Code-Sektion */
+.br
+       char sg_doff;      /* Offset/256 fuer Datensektion */
+.br
+       char sg_boff;      /* Offset/256 fuer BSS-Sektion */
+.br
+       unsigned sg_code;  /* Groesse des Code-Anteils */
+.br
+       unsigned sg_data;  /* Groesse des Datenanteils */
+.br
+       unsigned sg_bss;   /* Groesse des BSS-Anteils */
+.br
+       int sg_atr;        /* Attribute */
+.br
+       long sg_unused;    /* nicht verwendet */
+.br
+    }
+.br
+.PP
+Diese Routinen werden generell im Zusammenhang mit der Variable
+.I swap_flg
+benutzt. Ueber diese Variable wird bestimmt,
+ob Bytes getauscht werden muessen.
+.SH SIEHE AUCH
+a.out(5),
+goodmagic(3).

@@ -1,0 +1,64 @@
+.TH SETRET 3 
+.\" @[$]setret.3        1.2
+.ad
+.fi
+.SH NAME
+setret, longret \- Globale Spruenge
+.SH SYNTAX
+.nf
+\fB#include <setret.h>
+.PP
+\fBsetret\fI(env)
+\fBret_buf \fIenv;
+.PP
+\fBlongret\fI(env, val)
+\fBret_buf \fIenv;
+\fBint \fIval;\fR
+.fi
+.SH BESCHREIBUNG
+Diese Funktionen sind nuetzlich fuer die Behandlung von
+Fehlern und Interrupts,
+die in einer Subroutine unterer Ebene bei einem Programm auftreten koennen.
+.PP
+.B Setret 
+speichert seine Stackumgebung in
+.IR env ,
+so dass diese spaeter von der Funktion
+.B longret
+benutzt werden kann.
+Der Rueckgabewert von
+.B setret
+ist Null.
+.PP
+.B Longret
+stellt die durch den letzten Aufruf von
+.BR setret 
+gespeicherte Umgebung wieder her.
+Anschliessend erfolgt ein Ruecksprung, so dass die
+Programmabarbeitung so fortgesetzt wird, 
+als haette der Aufruf von
+.B setret
+gerade den Wert
+.I val
+an die Funktion zurueckgegeben, die 
+.B setret
+aufgerufen hat. Diese Funktion darf zwischenzeitlich nicht
+zurueckgehen.
+Alle Daten, auf die der Zugriff moeglich ist, haben die Werte, die 
+sie bei Aufruf von
+.B longret
+hatten.
+.PP
+Die Funktionen
+.B longret 
+und
+.B setret
+unterscheiden sich von den Version 7 kompatiblen analogen Funktionen
+.I longjmp
+und 
+.I setjmp
+dadurch, dass in der Funktion, die 
+.B setret
+ruft, keine Registervariablen angegeben sein duerfen.
+.SH SIEHE AUCH
+signal(2).

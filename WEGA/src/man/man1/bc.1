@@ -1,0 +1,199 @@
+.TH BC 1 WEGA
+.\" @[$]bc.1   1.2
+.ad
+.fi
+.SH NAME
+bc \- Arithmetiksprache mit waehlbarer Genauigkeit
+.SH SYNTAX
+\fBbc\fR [ \fB\-cl\fR ] [ \fIfile\fR ... ]
+.SH BESCHREIBUNG
+.B Bc
+ist ein interaktiver Uebersetzer fuer eine Arithmetiksprache
+mit waehlbarer Genauigkeit. Die Notation des interaktiven
+Uebersetzers
+.B bc
+ist der Programmiersprache C aehnlich.
+Die Eingabe erfolgt ueber die angegebene Datei oder ueber die
+Standardeingabe.
+.HP 6
+.B Kommentare
+sind
+.br
+in /* und */ einzuschliesen.
+.HP 6
+.B Namen
+sind
+.br
+bei einfachen Variablen: Buchstaben a-z
+.br
+bei Feldelementen: Buchstabe [ Ausdruck ]
+.br
+die reservierten Woerter 'ibase', 'obase' und 'scale'
+.HP 6
+.B "Andere Operanden"
+sind
+.br
+Beliebig lange Zahlen, notwendigenfalls mit Vorzeichen
+und De\%zi\%mal\%punkt.
+.br
+( Ausdruck )
+.br
+sqrt ( Ausdruck )
+.br
+length ( Ausdruck )  Anzahl signifikanter Dezimalziffern
+.br
+scale ( Ausdruck )  Anzahl von Ziffern rechts vom Dezimalpunkt
+.br
+Buchstabe ( Ausdruck , ... , Ausdruck )
+.HP 6
+.B Operatoren
+sind
+.br
++  \-  *  /  %  ^
+.br
+    (% fuer Rest; ^ fuer Potenz)
+.br
+++   \-\-
+.br
+    (prefix und postfix; angewendet auf Namen)
+.br
+==  <=  >=  !=  <  >
+.br
+=  =+  =\-  =*  =/  =%  =^
+.br
+.HP 6
+.B Anweisungen
+sind
+.br
+Ausdruck
+.br
+{ Anweisung ; ... ; Anweisung }
+.br
+if ( Ausdruck ) Anweisung
+.br
+while ( Ausdruck ) Anweisung
+.br
+for ( Ausdruck ; Ausdruck ; Ausdruck ) Anweisung
+.br
+null Anweisung
+.br
+break
+.br
+quit
+.HP 6
+.B Funktionsdefinitionen
+sind
+.br
+define Buchstabe ( Buchstabe ,..., Buchstabe ) {
+.br
+	auto Buchstabe, ... , Buchstabe
+.br
+	Anweisung; ... Anweisung
+.br
+	return ( Ausdruck )
+.br
+}
+.HP 6
+.B "Funktionen in der \-l mathematischen Bibliothek:"
+.br
+s(x)    Sinus
+.br
+c(x)    Kosinus
+.br
+e(x)    e-Funktion
+.br
+l(x)    log-Funktion
+.br
+a(x)    Arkustangens
+.br
+j(n,x)  Besselfunktion
+.PP
+.DT
+Alle Funktionsargumente werden durch den Wert weitergegeben.
+.PP
+Der Wert einer Anweisung, die einen Ausdruck darstellt,
+wird dann ausgegeben, wenn der
+Hauptoperator keine Zuweisung ist. Zur Trennung von Anweisungen
+werden Semikolon oder Newline benutzt.
+Wertezuweisungen auf
+.I scale
+bestimmen die Anzahl der Ziffern, die bei arithmetischen Operationen von
+.BR dc (1)
+verwendet werden sollen. Wertezuweisungen auf
+.I ibase
+oder
+.I obase
+setzen die Eingabe- bzw. Ausagabezahlenbasis.
+.PP
+Ein Buchstabe kann gleichzeitig als Feld, Funktion
+und einfache Variable
+verwendet werden. Alle Variablen sind fuer die Programme global.
+Automatische Variable (auto) werden bei einem
+Funktionsaufruf abgekellert. Wenn
+Felder als Funktionsargumente benutzt
+werden oder automatische Variable
+definiert werden, muessen dem Feldnamen
+leere eckige Klammern folgen.
+.PP
+.B Bc
+ist ein Preprozessor fuer
+.BR dc (1).
+.B Bc
+startet automatisch
+.B dc
+und eroeffnet eine Pipe.
+.SH OPTIONEN
+.TP
+.B -c
+Es wird nur compiliert. \fBDc\fR wird nicht gestartet und
+die \fBdc\fR-Eingabe erscheint auf der
+\fBbc\fR-Standardausgabe.
+.TP
+.B -l
+Definiert eine mathematische Funktionsbibliothek.
+.SH BEISPIELE
+Die folgende Funktion berechnet einen approximierten Wert
+der Exponentialfunktion:
+.bp
+.RS
+.nf
+scale = 20
+define e(x){
+	auto a, b, c, i, s
+	a = 1
+	b = 1
+	s = 1
+	for(i=1; 1==1; i++){
+		a = a*x
+		b = b*i
+		c = a/b
+		if(c == 0) return(s)
+		s = s+c
+	}
+}
+.fi
+.PP
+.RE
+Im folgenden Beispiel werden die approximierten Werte
+der Exponentialfunktion der
+ersten zehn ganzzahligen Argumente ausgegeben.
+.PP
+.RS
+	for(i=1; i<=10; i++) e(i)
+.RE
+.SH DATEIEN
+.ta \w'/usr/lib/lib.b 'u
+/usr/lib/lib.b	mathematische Bibliothek
+.br
+dc(1)	Tischrechnerprogramm
+.SH EINSCHRAENKUNGEN
+Keine &&, \(or\|\(or, oder ! Operatoren.
+.sp
+Die
+.I for
+Anweisung muss immer alle drei Ausdruecke beinhalten.
+.sp
+.I Quit
+wird nur beim Lesen akzeptiert, nicht
+aber waehrend der Ausfuehrung.
+

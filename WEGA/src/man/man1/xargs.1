@@ -1,0 +1,247 @@
+.TH XARGS 1 WEGA
+.\" @[$]xargs.1	1.2
+.ad
+.fi
+.SH NAME
+xargs \- Aufbauen von Argumentlisten und Ausfuehren von Kommandos
+.SH SYNTAX
+.B xargs
+[\fIoptions\fR] [\fIcommand\fR [initial-arguments]]
+.SH BESCHREIBUNG
+.B Xargs\^
+kombiniert die feststehenden Ausgangsargumente
+.I initial-arguments\^
+mit Argumenten, die von der Standardeingabe gelesen werden, um das angegebene
+Kommando
+.I command\^
+ein- oder mehrmals auszufuehren.
+Mit Hilfe der Optionen wird
+die Anzahl der Argumente, die fuer jeden Kommandoaufruf
+gelesen und die Art, in der sie kombiniert werden sollen,
+spezifiziert.
+.PP
+.I Command
+(kann ein Shell-Programm sein) wird unter Nutzung von
+\fB$PATH\fR gesucht (Standard fuer
+.IR command :
+.BR /bin/echo ).
+.PP
+Argumente, die aus der Standardeingabe gelesen werden, werden als
+benachbarte Zeichenketten definiert, die von einer oder mehreren
+Leerzeichen, Tabulatoren oder Newlines begrenzt sind; leere Zeilen werden
+ignoriert.
+Leerzeichen und Tabulatoren koennen in ein Argument eingelagert werden, wenn
+ihnen ein Backslash
+vorangestellt oder sie in Anfuehrungszeichen gesetzt werden.
+.PP
+Jede Argumentliste beginnt mit den
+Ausgangsargumenten
+.IR initial-arguments ,
+denen eine bestimmte Anzahl von Argumenten
+folgt, die aus der Standardeingabe gelesen werden (Ausnahme:
+siehe
+.B \-i
+Option).
+Die Optionen
+.BR \-i ,
+.BR \-l 
+und
+.BR \-n
+bestimmen, wie die Argumente fuer jeden Kommandoaufruf gewaehlt werden.
+Ist keine dieser Optionen angegeben,
+folgen den
+.I initial-arguments\^
+Argumente, die fortgesetzt aus der Standardeingabe gelesen werden,
+bis ein interner Puffer voll ist.
+Anschliessend wird das Kommando
+mit den angesammelten Argumenten ausgefuehrt.
+Dieser Prozess wird so lange wiederholt, bis
+keine Argumente mehr vorhanden sind.
+.SH OPTIONEN
+Die letzte Option hat Prioritaet.
+.TP 12
+.BI \-e eofstr\^
+.I Eofstr\^
+wird als logische End-of-File-Zeichenkette betrachtet
+(Standard: Unterstrich _).
+Die Option
+\fB\-e\fR schaltet bei fehlendem
+.I eofstr\^
+die logische
+\fBEOF\fR
+Zeichenkettenbehandlung aus (der Unterstrich wird dann literal aufgefasst).
+.B Xargs\^
+liest die Standardeingabe immer bis zum
+End-of-File oder bis zur logischen
+\fBEOF\fR Zeichenkette.
+.TP
+.BI \-i replstr\^
+Einfuegungsmodus:
+Jede von der Standardeingabe gelesene Zeile wird als Argumentzeichenkette
+interpretiert, mit der das Kommando ausgefuehrt wird.
+Die gesamte Zeile wird als einzelnes Argument
+betrachtet und fuer jedes auftretende
+.IR replstr
+in die Ausgangsargumente
+.I initial-arguments\^
+eingefuegt.
+Maximal 5 der
+.I initial-arguments\^
+koennen jeweils ein oder mehrere
+.IR replstr
+enthalten. Am Zeilenanfang auftretende Leerzeichen oder Tabulatoren
+werden ignoriert.
+Zusammengesetzte Argumente duerfen nicht mehr als 255 Zeichen
+enthalten und die Option
+.B \-x
+muss angegeben werden.
+Standard fuer
+.I replstr\^
+ist
+.BR "{\|}" .
+.TP
+.BI \-l n
+Das Kommando wird fuer jede \fIn\fR-te (\fIn\fR!=0)
+Argumentzeile aus der Standardeingabe ausgefuehrt.
+Der letzte Aufruf des Kommandos
+nutzt die uebriggebliebenen Argumentzeilen (auch wenn
+weniger als \fIn\fR Zeilen verbleiben).
+Eine Zeile endet mit dem ersten Newline (Ausnahme:
+das letzte Zeichen der Zeile ist ein Leerzeichen oder Tabulator;
+eine Fortsetzung folgt auf der naechsten nichtleeren Zeile).
+.IR n =1
+ist voreingestellt.
+Die Option
+.B \-x
+ist Pflicht.
+.TP
+.BI \-n num\^
+Das angegebene Kommando
+wird ausgefuehrt, wobei so viel Standardeingabeargumente wie moeglich
+verwendet werden. Dabei sind maximal
+.I num\^
+Argumente moeglich.
+Es werden weniger Argumente verwendet, wenn ihre Gesamtgroesse
+.I size\^
+Zeichen ueberschreitet.
+Beim letzten Aufruf werden die restlichen Argumente verwendet
+(auch, wenn weniger als
+.I num\^
+Argumente verbleiben).
+Ist auch die Option
+.B \-x
+angegeben, muss jedes Argument
+.I num\^
+in die Groessenbeschraenkung
+.I size\^
+passen, sonst wird die Ausfuehrung von
+.B xargs\^
+beendet.
+.TP
+.B \-p
+Prompt-Modus: 
+Der Nutzer wird gefragt, ob
+.I command\^
+bei jedem Aufruf auszufuehren ist.
+Der Tracemodus
+(\fB\-t\fR)
+ist zur Anzeige der Kommandoausfuehrung
+eingestellt, danach folgt ein Prompt
+\fB?.\|.\|.\fR.
+Wird mit
+.B y
+geantwortet (nur erstes Zeichen signifikant), wird das
+Kommando ausgefuehrt. Jede andere Antwort
+(einschliesslich CR) fuehrt zum Ueberspringen
+dieses speziellen Kommandoaufrufs.
+.TP
+.BI \-s size\^
+Die maximale Gesamtgroesse jeder Argumentliste
+ist auf
+.I size\^
+Zeichen begrenzt (0 <
+.I size\^
+<= 470, Standard: 470).
+Bei der Zaehlung der Zeichen fuer die Festlegung von
+.I size\^
+wird ein zusaetzliches Zeichen fuer jedes Argument
+und die Anzahl der Zeichen im Kommandonamen
+mit beruecksichtigt.
+.TP
+.B \-t
+Tracemodus:
+Unmittelbar vor der Ausfuehrung werden das Kommando
+und alle zusammengesetzen Argumentlisten als Echo an den Filedescriptor 2
+(stderr) ausgegeben.
+.TP
+.B \-x
+Fuehrt zur Beendigung von
+.B xargs\^,
+wenn eine der Argumentlisten mehr als
+.I size\^
+Zeichen umfasst;
+.B \-x
+wird durch die Optionen
+.B \-i
+und
+.BR \-l
+erzwungen.
+Ist keine der Optionen
+.BR \-i ,
+.BR \-l 
+und
+.B \-n
+angegeben, muss die Gesamtlaenge aller Argumente innerhalb der
+Groessenbeschraenkung
+.I size\^
+liegen.
+.PP
+.B Xargs\^
+wird beendet, wenn ein Kommando den Exitstatus
+.B \-1
+zurueckgibt
+oder wenn das Kommando
+nicht ausgefuehrt werden kann.
+Ist
+.I command\^
+ein Shell-Programm, muss explizit
+ein Exitstatus (siehe
+.BR exit (1C))
+zurueckgegeben werden.
+.SH BEISPIELE
+Alle Dateien sollen von Directory $1 in
+Directory $2 umgespeichert werden und jedes Umspeicherungskommando
+soll unmittelbar vor seiner Ausfuehrung als Echo ausgegeben
+werden:
+.PP
+.RS 10
+ls \|$1 \|| \|xargs \|\-i \|\-t \|mv \|$1/{\|} \|$2/{\|}
+.RE
+.PP
+Die Ausgabe der in Klammern stehenden Kommandos soll
+auf einer Zeile kombiniert werden, die dann als Echo
+an das Ende der Datei \fIlog\fP ausgegeben wird:
+.PP
+.RS 10
+(logname; \|date; \|echo \|$0 \|$\(**) \|| \|xargs \|>>log
+.RE
+.PP
+Der Nutzer wird gefragt, welche Dateien im aktuellen Directory
+archiviert werden sollen.
+\fIXargs\fR archiviert diese in \fIarch\fR, wobei gleichzeitig
+eine oder mehrere Dateien archiviert werden koennen. 
+.PP
+.RS 10
+1.\ \|\ \|ls \|| \|xargs \|\-p \|\-l \|ar \|r \|arch
+.br
+2.\ \|\ \|ls \|| \|xargs \|\-p \|\-l \|| \|xargs \|ar \|r \|arch
+.RE
+.PP
+.BR diff (1)
+soll mit aufeinander folgenden
+Paaren von Argumenten ausgefuehrt werden,
+die urspruenglich als Shell-Argumente eingegeben wurden:
+.PP
+.RS 10
+echo \|$\(** \|| \|xargs \|\-n2 \|diff
+.RE

@@ -1,0 +1,39 @@
+.TH LORDER 1 WEGA
+.\" @[$]lorder.1        1.2
+.ad
+.fi
+.SH NAME
+lorder \- Bestimmt Ordnungsrelationen in Objektbibliotheken
+.SH SYNTAX
+.B lorder
+\fIfile\fR ...
+.SH BESCHREIBUNG
+Die Eingabe besteht aus Objektmodulen oder
+Objektbibliotheken (siehe
+.BR ar (1))
+.I file .
+Auf der Standardausgabe wird eine Liste von paarweise geordneten
+Objektdateinamen,
+in denen sich der jeweils erste Objektdateiname
+auf externe Marken bezieht,
+die in der zweiten Datei definiert werden.
+Die Ausgabe kann durch
+.BR  tsort (1)
+weiter verarbeitet werden, um eine Bibliotheksreihenfolge
+zu erstellen, die dann fuer einen Durchlauf von
+.BR  ld (1)
+geeignet ist.
+.PP
+Beispiel:
+.IP
+ar cr library \`\|lorder *.o | tsort\`
+.SH DATEIEN
+*symref, *symdef
+.SH SIEHE AUCH
+ar(1),
+ld(1),
+tsort(1).
+.SH EINSCHRAENKUNGEN
+Die Namen der Objektdateien muessen
+mit `.o'
+enden.

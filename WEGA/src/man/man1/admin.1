@@ -1,0 +1,452 @@
+.TH ADMIN 1 WEGA
+.\" @[$]admin.1	1.2
+.ad
+.fi
+.SH NAME
+admin \- Erzeugen und Verwalten von SCCS-Dateien
+.SH SYNTAX
+\fBadmin\fR [\fB\-a\fIlogin]\fR
+.br
+      [\fB\-d\fIflag[flag-val]]\fR
+.br
+      [\fB\-e\fIlogin]\fR
+.br
+      [\fB\-f\fIflag[flag-val]]\fR
+.br
+      [\fB\-h\fR]
+.br
+      [\fB-i\fR[\fIname\fR]]
+.br
+      [\fB\-m\fR[\fImrlist\fR]]
+.br
+      [\fB\-n\fR]
+.br
+      [\fB\-r\fIrel\fR]
+.br
+      [\fB\-t\fR[\fIname\fR]]
+.br
+      [\fB\-y\fR[\fIcomment\fR]]
+.br
+      [\fB\-z\fR]
+.br
+         \fIfiles\fR
+.sp
+.SH BESCHREIBUNG
+.B Admin
+wird zur Erzeugung neuer SCCS-Dateien sowie zur Aenderung von Parametern
+bereits existierender SCCS-Dateien benutzt.
+Die Argumente von
+.B admin,
+die in beliebiger Reihenfolge erscheinen koennen, bestehen
+aus Optionen (die mit einem
+.B "\ \-\ "
+beginnen)
+und Dateinamen (Beachte:
+SCCS-Dateinamen muessen mit den Zeichen \fBs.\fR beginnen).
+.PP
+Existiert eine angegebene Datei nicht, wird sie erzeugt.
+Die Parameter dieser Datei werden entsprechend der angegebenen
+Optionen initialisiert.
+Den Parametern, die nicht durch Optionen initialisiert wurden, werden
+Standardwerte zugeordnet.
+Bei bereits existierenden Dateien werden die durch Optionen spezifizierten
+Parameter geaendert, alle anderen bleiben erhalten.
+.PP
+Wird ein Directory angegeben, verfaehrt
+.B admin
+so, als ob alle in dem Directory enthaltenen
+SCCS-Dateien
+in der Aufrufzeile spezifiziert wurden.
+Nicht lesbare Dateien und "nicht-SCCS-Dateien"
+(letzte Komponente des Dateinamens beginnt nicht mit \fBs.\fR)
+werden ignoriert.
+.PP
+Wird als Dateinamen \fB\-\fR angegeben, wird von der Standard\%eingabe gelesen.
+Dabei wird jede Zeile, die von der Standardeingabe gelesen wird, als
+Dateinamen einer SCCS-Datei gewertet; diese wird dann bearbeitet.
+Wieder werden "nicht-SCCS-Dateien" und nicht lesbare Dateien ignoriert.
+.PP
+Fuer die Erlauterung wird folgende Terminologie zur Numerierung
+der Deltas benutzt:
+.br
+Release.Version.Zweig.Zweigversion  .
+.PP
+Die folgenden Optionen koennen spezifiziert werden.
+Jede Option wird so erlaeutert, wie sie fuer eine einzelne Datei
+ausgefuehrt werden wuerde. Die erlaeuterten Aktionen werden jedoch fuer
+jede in der Aufrufzeile angegebene Datei ausgefuehrt.
+.SH OPTIONEN
+.TP
+\fB\-a\fIlogin\fR
+Ein \fIlogin\fR Name oder ein numerischer WEGA Gruppen-ID
+wird in die Liste der Nutzer aufgenommen, die Deltas
+(Aenderungen) in SCCS-Dateien vornehmen koennen.
+Wird ein Gruppen-ID angegeben, sind alle \fIlogin\fR Namen
+spezifiziert, die zu dieser Gruppe gehoeren.
+In einem
+.B admin
+Kommado koennen mehrere
+.B a
+Optionen angegeben werden.
+In einer Liste koenne beliebig viele \fIlogin\fRs oder
+nume\%rische Gruppen-IDs enthalten sein.
+Ist die Liste der Nutzer leer, kann jeder Nutzer Deltas erzeugen.
+.TP
+\fB\-d\fIflag\fR
+bewirkt die Streichung des angegebenen \fIflag\fR aus einer
+SCCS-Datei.
+Die
+.B \-d
+Option kann nur angegeben werden, wenn existierende SCCS-Dateien
+bearbeitet werden.
+Es sind mehrere
+.B \-d
+Optionen in einem
+.B admin
+Kommando moeg\%lich
+(siehe auch
+.B \-f
+Option fuer moegliche \fIflag\fR Namen).
+.TP
+\fB\-l\fIlist\fR
+Eine Liste von Releases wird freigegeben ("unlocked").
+Siehe dazu
+.B \-f
+Option, Beschreibung des
+.B l
+Flag und die Syntax von \fIlist\fR.
+.TP
+\fB\-e\fIlogin\fR
+Ein \fIlogin\fR Name oder ein numerischer Gruppen-ID wird aus der
+Liste der Nutzer gestrichen, die Deltas (Aenderungen)
+in der SCCS-Datei vornehmen koennen.
+Wird ein Gruppen-ID angegeben, sind alle \fIlogin\fR Namen
+spezifiziert, die zu dieser Gruppe gehoeren.
+In einem
+.B admin
+Kommado koennen mehrere
+.B e
+Optionen angegeben werden.
+.TP
+\fB\-f\fIflag\fR
+Diese Option spezifiziert ein \fIflag\fR und, falls moeglich,
+den Wert fuer ein \fIflag\fR, das einer SCCS-Datei zugeordnet werden soll.
+Mehrere
+.B f
+Optionen koennen in einem
+.B admin\^
+Kommando angegeben werden.
+Die moeglichen \fIflag\fRs und ihre Werte sind:
+.IP "      b" 12
+Erlaubt die Benutzung der
+.B \-b
+Option in einem
+.BR get (1)
+Kommando, um Delta-Zweige zu erzeugen.
+.IP "      c\fIhrel\fR" 12
+Gibt die hoechste Release (eine Zahl kleiner oder
+gleich 9999) an, die zum Editieren durch ein 
+.BR get
+Kommando wieder aufgefunden werden kann.
+Der Standardwert fuer ein nicht angegebenes
+.B c
+flag ist 9999.
+.IP "      d\fISID\fR" 12
+Gibt die Standard-Delta-Nummer (SID) an, die fuer ein
+.BR get
+Kommando genutzt wird.
+.sp
+.IP "      f\fIlrel\fR" 12
+Gibt die niedrigste Release an (eine Zahl kleiner oder
+gleich 9999), die zum Editieren durch ein 
+.BR get
+Kommando wieder aufgefunden werden kann.
+Der Standardwert fuer ein nicht angegebenes
+.B c
+flag ist 1.
+.IP "      i" 12
+Die Nachricht "No id keywords (ge6)" wird ausgegeben, wenn im erhaltenen
+oder gespeicherten Text keine SCCS-Schluesselworte
+gefunden werden.
+Das Flag bewirkt, dass diese Nachricht, die bei einem
+.BR get (1)
+oder
+.BR delta (1)
+Kommando ausgegeben wird, wie ein fataler Fehler
+behandelt wird.
+Ist dieses Flag nicht angegeben, stellt diese Nachricht
+nur eine Warnung dar.
+.IP "      j" 12
+Erlaubt gleichzeitige
+.BR get 
+Kommandos fuer das Editieren des gleichen SID einer SCCS-Datei.
+Damit werden mehrere gleichzeitige Aktua\%lisierungen der gleichen Version
+einer SCCS-Datei erlaubt.
+.IP "      l\fIlist\fR" 12
+Eine Liste von Releases,
+fuer die keine Deltas mehr erzeugt werden koennen
+(get \fB-e\fR fuer eine dieser verriegelten ("locked") Releases
+scheitert.).
+Die \fIlist\fR hat folgende Syntax:
+.IP "" 12
+\fB<list> ::= <range> \(or <list> , <range>
+.br
+<range> ::=	\fIRELEASE NUMMER\fB | a\fR
+.IP  "" 12
+Das Zeichen \fBa\fR in der Liste spezifiziert
+\fIalle\fR Releases fuer die bezeichnete SCCS-Datei.
+.IP "      m\fImod\fR" 12
+Spezifiziert den \fIMod\fRulnamen der SCCS-Datei,
+der waehrend eines
+.BR get (1)
+Kommandos fuer jedes auftretende
+%M% Schluesselwort im Text der
+SCCS-Datei ersetzt wird.
+Voreingestellt ist der Name der SCCS-Datei
+(ohne fuehrendes \fBs.\fR).
+.IP "      n" 12
+Veranlasst
+.BR delta,
+ein "Null-Delta" in jeder der Releases (falls vorhanden) zu erzeugen,
+die bei der Erzeugung eines Deltas in einer
+.I neuen
+Release uebersprungen wurden
+(z.B. werden bei der Erzeugung von Delta 5.1 nach Delta 2.7
+die Releases 3 und 4 uebersprungen).
+Diese "Null-Deltas" dienen als "Ankerpunkte", um spaeter
+von diesen Punkten aus Delta-Zweige erzeugen zu koennen.
+Ist dieses Flag nicht gesetzt, sind die uebersprungenen Releases
+in der SCCS-Datei nicht existent. Damit koennen an diesen Stellen
+zu einem spaeteren Zeitpunkt keine Delta-Zweige mehr erzeugt werden.
+.IP "      q\fItext\fR" 12
+Spezifiziert einen vom Nutzer definierten Text,
+der waehrend eines
+.BR get 
+Kommandos fuer jedes auftretende
+%Q% Schluesselwort im Text der
+SCCS-Datei ersetzt wird.
+.IP "      t\fItype\fR" 12
+Spezifiziert einen Modultyp,
+der waehrend eines
+.BR get 
+Kommandos fuer jedes auftretende
+%Y% Schluesselwort im Text der
+SCCS-Datei ersetzt wird.
+.IP "      v[\fIpgm\fR]"
+Veranlasst
+.BR delta,
+die Eingabe von Modification-Request-Nummern (\fIMR-Nummern\fR) anzufordern,
+um ein Delta zu erzeugen.
+Der optionale Wert spezifiziert den Namen eines Testprogramms
+fuer die Gueltigkeit der \fIMR\fR Nummern (siehe auch
+.BR delta (1)).
+Ist dieses Flag beim Erzeugen einer SCCS-Datei gesetzt,
+muss das
+.B m
+Flag auch dann angegeben werden, wenn sein Wert 0 ist.
+.PP
+.TP
+.B \-h
+.B admin
+Ueberprueft die Struktur der SCCS-Datei
+(siehe auch
+.BR sccsfile (5))
+und vergleicht die neu berechnete Pruefsumme
+(die Summe aller Zeichen der SCCS-Datei, mit Ausnahme der der 1. Zeile)
+mit der Pruefsumme, die in der 1. Zeile der SCCS-Datei gespeichert ist.
+Eine entsprechende Fehlernachricht wird gegeben.
+.IP
+Diese Option verbietet das Schreiben in die Datei.
+Sie annulliert die Wirkung jeder anderen Option und hat somit nur
+Bedeutung bei bereits existierenden Dateien.
+.TP
+\fB\-i[\fIname\fR]
+\fIName\fR ist eine Datei, aus der der Text fuer eine neue SCCS-Datei
+genommen wird.
+Der Text stellt das erste Delta der Datei dar.
+Wird die
+.B i
+Option ohne Angabe eines Dateinamens benutzt,
+wird der Text von der Standardeingabe bis zur
+Erkennung eines End-Of-File-Zeichens gelesen.
+Ist die
+.B \-i
+Option nicht angegeben, wird eine
+leere SCCS-Datei erzeugt.
+Mit einem
+.B admin
+Kommando kann immer nur eine SCCS-Datei durch eine
+.B \-i
+Option erzeugt werden.
+Sollen mit einem
+.B admin
+Kommado mehrere SCCS-Dateien erzeugt werden, muessen sie als
+leere Dateien erzeugt werden (ohne
+.B \-i
+Option).
+Es ist zu beachten, dass die
+.B \-i
+Option die
+.B \-n
+Option einschliesst.
+.TP
+\fB\-m[\fImrlist\fR]
+Die Liste der \fIMR\fR-Nummern wird in die
+SCCS-Datei eingefuegt, um ein erstes Delta zu erzeugen.
+Das
+.B v
+Flag muss gesetzt sein und die \fIMR\fR-Nummern sind gueltig,
+wenn das
+.B v
+Flag einen Wert hat (den Namen eines Programms zur Ueberpruefung
+der Gueltigkeit der \fIMR\fR-Nummern).
+War das
+.B v
+Flag  nicht gesetzt oder waren die \fIMR\fR-Nummern fehlerhaft,
+werden Meldungen ausgegeben.
+.TP
+.B \-n
+Eine neue SCCS-Datei wird erzeugt.
+.TP
+\fB\-r\fIrel\fR
+Gibt die Release
+.I rel
+an, in die das erste Delta eingefuegt werden soll.
+Diese Option kann nur in Verbindung mit der
+.B \-i
+Option verwendet werden.
+Ist die
+.B \-r
+Option nicht angegeben, wird das erste Delta in die Release 1 eingefuegt.
+Die Version des ersten Deltas ist immer 1
+(standardmaessig wird das erste Delta mit 1.1 bezeichnet).
+.TP
+\fB\-t[\fIname\fR]
+\fIName\fR bezeichnet die Datei, aus der der beschreibende Text
+der SCCS-Datei genommen wird.
+Wenn die
+.B \-t
+Option benutzt wird und
+.B admin
+eine neue SCCS-Datei erzeugt
+(
+.B \-n
+und/oder
+.B \-i
+Option ist angegeben), muss der Dateiname des beschreibenden Texts
+auch angegeben werden.
+Fuer existierende SCCS-Dateien treten folgende Faelle auf:
+.br
+(1) Eine
+.B \-t
+Option ohne Angabe des Dateinamens bewirkt eine Streichung des
+beschreibenden Texts in der gesamten SCCS-Datei.
+.br
+(2) Eine
+.B \-t
+Option mit angegebenem Dateinamen bewirkt die Ersetzung des
+beschreibenden Texts der SCCS-Datei durch den Text der angegebenen Datei.
+.TP
+\fB\-y\fR[\fIcomment\fR]
+Der Text
+.I comment
+wird in die SCCS-Datei als Kommentar fuer das erste Delta eingefuegt.
+Ist keine \fB\-y\fR Option angegeben, erzeugt
+.I admin
+eine Kommentarzeile der Form:
+.sp
+.br
+date and time created
+.IR \s-1YY\s+1 / \s-1MM\s+1 / \s-1DD\s+1
+.IR \s-1HH\s+1 : \s-1MM\s+1 : \s-1SS\s+1
+by
+.I login
+.br
+.sp
+Die
+.B \-y
+Option ist nur in Verbindung mit der
+.B \-i
+und/oder
+.B \-n
+Option gueltig (d.h., wenn eine neue SCCS-Datei erzeugt wird).
+.TP
+.B \-z
+Die Pruefsumme der SCCS-Datei wird neu berechnet und in der ersten Zeile der
+SCCS-Datei gespeichert (siehe auch
+.B \-h
+Option).
+.TP
+\fBBeachte:\fR Die Benutzung dieser Option bei einer fehlerhaften
+Datei kann die spaetere Erkennung der Fehler verhindern!
+.SH DATEIEN
+Die letzte Komponente aller SCCS-Dateinamen muss die Form
+\fBs.\fP\fIdateiname\fP haben.
+Neue SCCS-Dateien werden mit dem Mode 444 (siehe \fBchmod\fR(1)) erzeugt.
+Die Erzeugung einer Datei erfordert Schreiberlaubnis fuer die
+entsprechende Directory.
+.I Admin
+schreibt immer in eine temporaere x-Datei namens
+\fBx.\fP\fIdateiname\fP.
+Bei Erzeugung einer neuen SCCS-Datei legt
+.B admin
+die x-Datei mit dem Mode 444 an,
+bei existierenden SCCS-Dateien hat die x-Datei
+den gleichen Mode wie die SCCS-Datei selbst.
+Nach erfolgreicher Ausfuehrung von
+.B admin
+wird die SCCS-Datei gestrichen (falls sie existiert) und
+der x-Datei wird der Namen der
+SCCS-Datei zugewiesen.
+Damit ist gesichert, das Aenderungen in
+SCCS-Dateien nur erfolgen, wenn keine Fehler auftraten.
+.PP
+Es wird empfohlen, dass Directories, die SCCS-Dateien enthalten,
+mit dem Mode 755
+und SCCS-Dateien selbst mit dem Mode 444 erzeugt werden.
+Der Mode der Directories erlaubt nur dem Eigner von
+SCCS-Dateien, diese zu aendern.
+Der Mode der
+SCCS-Dateien gestattet Modifikationen nur ueber
+SCCS-Kommandos.
+.PP
+Wenn es noetig sein sollte, eine
+SCCS-Datei zu reparieren, muss der Eigner den Mode auf 644 aendern,
+um einen Editor nutzen zu koennen.
+\fIAeusserste Vorsicht ist geboten!\fR
+Die editierte Datei sollte
+.I immer
+mit einem
+\fBadmin -h\fR
+Kommando behandelt werden, um Fehler zu erkennen.
+Anschliessend ist mit
+.B admin
+.B \-z
+die aktuelle Pruefsumme zu generieren.
+Ein weiteres
+\fBadmin -h\fR
+Kommando wird empfohlen, um zu sichern, dass die SCCS-Datei
+gueltig ist.
+.PP
+.B Admin
+benutzt eine voruebergehend verriegelte Datei
+(bezeichnet als \fBz.\fP\fIdateiname\fP),
+die gleichzeitige Aktua\%lisierungen einer
+SCCS-Datei durch verschiedene Nutzer verhindert.
+Siehe auch
+.BR get (1)
+fuer weitergehende Informationen.
+.SH SIEHE AUCH
+delta(1),
+ed(1),
+get(1),
+help(1),
+prs(1),
+what(1),
+sccsfile(5).
+.br
+"Source Code Control System Benutzerhandbuch" in
+WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+Siehe
+\fBhelp\fR (1) fuer weitere Erklaerungen.

@@ -1,0 +1,65 @@
+.TH MV 1 WEGA
+.\" @[$]mv.1	1.2
+.ad
+.fi
+.SH NAME
+mv  \- Umlagern oder Umbenennen von Dateien und Directorys
+.SH SYNTAX
+.B mv
+\fIfile1 file2\fR
+.PP
+.B mv
+\fIfile\fR ... \fIdirectory\fR
+.PP
+.SH BESCHREIBUNG
+.B Mv
+benennt die Datei
+.I file1
+in die Datei
+.IR file2
+um.
+.PP
+Existiert die Datei
+.I file2
+bereits, wird sie geloescht, bevor
+sie mit dem Inhalt und den Eigenschaften der Datei
+.I file1
+unter dem Namen \fIfile2\fR neu erzeugt wird. Ist die Datei
+.I file2
+schreibgeschuetzt, gibt
+.B mv
+eine Meldung aus
+(siehe
+.BR chmod (2))
+und erwartet ueber die Standardeingabe einen Befehl.
+Beginnt der Befehl mit dem Buchstaben
+.BR y
+(abgeschlossen durch Carriage Return),
+wird die Umlagerung ausgefuehrt; sonst bricht
+.B mv
+die Arbeit ab.
+.PP
+Mit der zweiten Form des Aufrufs von \fBmv\fR werden
+eine oder mehrere Dateien
+.I files
+in das Directory
+.I directory
+unter Beibehaltung ihrer Namen umgelagert.
+.PP
+.B Mv
+laesst keine Umlagerung einer Datei auf sie selbst zu.
+.SH DIAGNOSTIK
+"cannot link /dir2/dir1 to /dir1"	wird fuer Nicht-Superuser ausgegeben.
+.SH SIEHE AUCH
+cat(1), cp(1), chmod(2).
+.SH EINSCHRAENKUNGEN
+Befinden sich die Dateien
+.I file1
+und
+.I file2
+in unterschiedlichen Dateisystemen, muss
+.B mv
+die Datei kopieren und das Original loeschen.
+Dabei erhaelt die neue Datei den Eignernamen von dem Nutzer,
+der \fBmv\fR ausfuehrt. Alle Verbindungsbe\%ziehungen (Link) zu
+anderen Dateien gehen verloren.

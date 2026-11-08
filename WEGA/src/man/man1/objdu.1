@@ -1,0 +1,32 @@
+.TH OBJDU 1 
+.\" @[$]objdu.1	1.2
+.ad
+.fi
+.SH NAME
+objdu \- Ausgabe von Objekt- und Lademodulen hexadezimal
+.SH SYNTAX
+.B objdu
+[\fB\-r\fR] [\fB\-h\fR] \fIfile\fR
+.SH BESCHREIBUNG
+.B Objdu
+gibt P8000 Objekt- und Lademodule wortweise im hexadezimalen Format aus.
+Die Adressen entsprechen den Linkadressen.
+Der Dateikopf wird ebenfalls in einem uebersichtlichen Format ausgegeben.
+Die Werte im Dateikopf sind dezimal angegeben, wenn nicht anders vermerkt.
+.SH OPTIONEN
+.TP
+.B \-h
+Druckt nur die Information des Headers.
+.TP
+.B \-r
+Druckt die Verschiebungsinformationen mit aus, wenn die
+Symboltabelle vorhanden ist.
+.SH DIAGNOSTIK
+.TP
+"Not a loadable file ..."       
+Datei ist kein P8000-Objekt- oder Lademodul.
+.TP
+"Premature EOF"
+Datei besitzt ungerade Byteanzahl.
+.SH SIEHE AUCH
+nm(1), a.out(5), od(1), objhdr(1).

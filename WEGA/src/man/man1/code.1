@@ -1,0 +1,31 @@
+.TH CODE 1 WEGA 
+.\" @[$]code.1	1.2
+.ad
+.fi
+.SH NAME
+code \- Ausgabe der Zeichen und ihres hexadezimalen Aequivalents
+.SH SYNTAX
+\fBcode\fR [ \fI < file\fR ]
+.SH BESCHREIBUNG
+.B Code
+liest von der Standardeingabe oder aus der mit file angegebenen 
+Datei ("kleiner als" ist das Umrichtungssymbol) und gibt jedes
+Zeichen und sein hexadezimales Aequivalent an die Standardausgabe aus.
+.PP
+.B Code
+arbeitet im RAW-Mode
+und wird mit dem Zeichen DEL (hex 7F) abgebrochen.
+.SH BEISPIELE
+.RS
+Ohne Argument:            Eingabe aus \fIfile\fR:
+.sp
+\fBcode\fR                      \fBcode < file\fR
+.sp
+a           61            a          61
+.br
+b           62            b          62
+.br
+c           63            c          63
+.br
+<del>       7f
+.RE

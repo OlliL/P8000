@@ -1,0 +1,230 @@
+.TH MORE 1 WEGA
+.\" @[$]more.1	1.2
+.ad
+.fi
+.SH NAME
+more, page \- Filter zur Ausgabe von Dateien auf dem Terminal
+.SH SYNTAX
+.B more
+[\fB-dfl\fIn\fR] [+\fIline\fR] [+/\fIpat\fR] [\fIfile\fR ... ]
+.LP
+.B page
+[\fB-dfl\fIn\fR] [+\fIline\fR] [+/\fIpat\fR] [\fIfile\fR ... ]
+.SH BESCHREIBUNG
+.B More
+gestattet die seitenweise Betrachtung von Dateien auf dem Terminal.
+Nach jeder neuen Bildschirmfuellung erscheint am unteren Rand
+des Bildschirms die Ausschrift:
+.sp
+.RS
+\fB\--More--
+.RE
+.sp
+und das Programm erwartet eine Eingabe.
+Ein Carriage Return (CR) bewirkt die Ausgabe einer weiteren Zeile,
+ein Space (SP) erzeugt eine komplette neue Bildschirmfuellung.
+.PP
+Wurde die
+.B -l
+Option nicht angegeben, erwartet
+.B more
+nach jeder Zeile, die ein Formfeed (^L) enthaelt,
+eine Eingabe, auch wenn keine vollstaendige
+neue Bildschirmfuellung erzeugt wurde.
+Beginnt eine Datei mit einem Formfeed, wird der Bildschirm vor
+Ausgabe dieser Datei geloescht.
+.PP
+Das Programm
+.B page
+loescht jedesmal, wenn eine volle Bildschirmfuellung
+erzeugt werden soll, den Bildschirm.
+Dabei werden statt
+.B k
+\- 2 Zeilen (wie i.A. ueblich)
+.B k
+\- 1 Zeilen fuer eine volle Bildschirmfuellung angezeigt (
+.B k
+= Anzahl der Zeilen des Terminals).
+.PP
+.B More
+ermittelt aus der Datei
+.I /etc/termcap
+die Terminalcharakteristika
+(z.B. betraegt die Standard-Fenstergroesse eines 24-Zeilen-Terminals
+22 Zeilen).
+.PP
+Wenn
+.B more
+seine Eingabe aus einer Datei, statt aus einem Pipe, erhaelt,
+wird unmittelbar nach dem \fB--More--\fR Prompt
+ein Prozentsatz \fB(xx%)\fR angezeigt.
+Er gibt Auskunft darueber, wieviel Prozent der Datei (in Zeichen)
+bereits angezeigt wurden.
+.PP
+Andere Befehle fuer
+.B more
+im Eingabemodus sind:
+.PP
+.IP \fIi\|\fB<space>\fR
+Anzeige von
+.I i
+Zeilen (Standard fuer \fIi\fR : eine Bildschirmfuellung).
+.PP
+.IP "\fB^D\fR	Control-D"
+Anzeige der naechsten 11 Zeilen.
+Wurde mit einem Befehl
+.I i
+gesetzt, ergibt sich die Zeilenanzahl aus dem Wert von \fIi\|\fR.
+.PP
+.IP \fBd\fR
+wie ^D (Control-D)
+.PP
+.IP \fIi\|\fBz\fR
+Gleiche Wirkung, wie die Eingabe eines Leerzeichens (SP).
+Ausnahme: \fIi\|\fR (wenn angegeben) weist der Fenstergroesse
+einen neuen Wert zu.
+.PP
+.IP \fIi\|\fBs\fR
+Ueberspringt die naechsten \fIi\|\fR Zeilen und
+gibt eine Bildschirmfuellung aus.
+.PP
+.IP \fIi\|\fBf\fR
+Ueberspringt die naechsten \fIi\fR Bildschirmfuellungen
+und gibt die nachfolgende Bildschirmfuellung aus.
+.PP
+.IP "\fBq \fRoder \fBQ\fR"
+Beenden von \fBmore\fR.
+.PP 
+.IP \fB=\fR
+Anzeige der aktuellen Zeilennummer.
+.PP
+.IP \fBv\fR
+Aktivieren des Editors
+.B vi
+ab der aktuellen Zeile.
+.PP
+.IP \fBh\fR
+Kommando-Hilfe; es wird eine Beschreibung aller
+.B more
+Kommandos gegeben.
+.PP
+.IP \fIi\fB/expression
+Suchen des \fIi\fR-ten Auftreten des regulaeren Ausdrucks \fIexpression\fR.
+Tritt der Ausdruck weniger als \fIi\fR-mal auf und die Eingabe ist eine
+Datei (und kein Pipe), bleibt die Position in der Datei unveraendert.
+Andernfalls wird eine Bildschirmfuellung ausgegeben,
+in der der gesuchte Ausdruck in der 3. Zeile enthalten ist.
+Zum Editieren des regulaeren Ausdrucks waehrend der Eingabe koennen
+die ERASE- und KILL-Tasten des Nutzerterminals verwendet werden.
+Wird auch das 1. Zeichen geloescht, ist damit das Suchkommando gestrichen.
+.PP
+.IP \fIi\|\fBn\fR
+suchen des \fIi\|\fR-ten Auftreten des zuletzt eingegebenen
+regulaeren Ausdrucks.
+.PP
+.IP "\fB'\fR"
+(Apostroph) zurueckgehen zu dem Punkt, von dem aus das letzte Suchen
+gestartet wurde. Hat in der aktuellen Datei kein Suchen stattgefunden,
+wird an den Anfang der Datei gegangen.
+.PP
+.IP "\fB!\fIcommand\fR"
+\fRAufruf eines Shell-Kommandos.
+Die Zeichen `%' und `!' in "command" werden durch den Dateinamen
+der zur Zeit beabeiteten Datei bzw. durch das vorhergehende
+Shell-Kommando ersetzt. Liest
+.B more
+keine Datei, sondern ueber ein Pipe,
+wird `%' nicht ersetzt.
+Die Zeichenfolgen "\\%" und "\\!" werden durch "%" und "!" ersetzt.
+.PP
+.IP \fIi\|\fB:n\fR
+Ausgabe der \fIi\|\fR-ten naechsten Datei, die im
+Kommando-Aufruf angegeben wurde. Wenn \fIi\fR groesser als
+die Anzahl der vorhandenen Dateien ist, wird die letzte Datei angezeigt.
+.PP
+.IP \fIi\|\fB:p\fR
+Ausgabe der \fIi\|\fR-ten vorhergehenden Datei, die im
+Kommando-Aufruf angegeben wurde. Wird dieses Kommando waehrend der
+Bearbeitung einer Datei gegeben, kehrt
+.B more
+an den Anfang dieser Datei zurueck. Ergibt der eingegebene Wert
+von \fIi\fR keinen Sinn, springt
+.B more
+zur ersten Datei zurueck. Liest
+.B more
+nicht aus einer Datei, kann der Befehl nicht ausgefuehrt werden. Statt
+dessen wird an das Terminal ein ^G (Bell) ausgegeben.
+.PP
+.IP "\fB:f\fR"
+Anzeigen des aktuellen Dateinamen und der Zeilennummer.
+.PP
+.IP "\fB:q \fRoder \fB:Q\fR"
+Beenden von 
+.B more
+(wie q oder Q).
+.PP
+.IP "\fB.\fR"
+Wiederholen des vorhergehenden Kommandos.
+.PP
+Diese Kommandos wirken sofort, d.h. sie muessen nicht durch ein
+Carriage Return abgeschlossen werden.
+Bis zu dem Zeitpunkt, an dem das Kommandozeichen eingegeben wird,
+kann der Nutzer die DEL-Taste betaetigen, um das angegebene
+numerische Argument zu annullieren.
+Zusaetzlich kann der Nutzer die ERASE-Taste fuer eine
+nochmalige Anzeige der
+--More--(xx%) Nachricht betaetigen.
+.PP
+Der Nutzer kann jederzeit (auch waehrend der Ausgabe) ein Quit geben
+(normalerweise das Control\-\\).
+.B More
+beendet sofort die Ausgabe und gibt das uebliche --More-- auf dem
+Display aus. Der Nutzer kann dann eines der oben angegebenen Kommandos
+eingeben. Dabei koennen jedoch einige auszugebende Zeichen
+verloren gehen, da die in der
+Ausgabeschlange des Terminals wartenden Zeichen durch das Quit verschwinden.
+.PP
+Das Terminal wird von
+.B more
+in den
+.I noecho
+Modus gesetzt, so dass die Ausgabe fortgesetzt werden kann.
+Mit Ausnahme der / und ! Kommandos, werden die Bediener-Eingaben
+nicht auf dem Bildschirm angezeigt.
+.PP
+Ist die Standardausgabe kein Terminal, verhaelt sich
+.B more
+wie \fBcat\fR, mit der Ausnahme,
+dass eine Ueberschrift vor jeder Datei
+gedruckt wird (falls mehrere Dateien angegeben sind).
+.SH OPTIONEN
+.TP 6
+.B \-d
+Nach jeder Ausgabe einer Bildschirmfuellung wird die Meldung
+"Hit space to continue, Rubout to abort" ausgegeben
+(nur sinnvoll fuer Schulbetrieb).
+.TP
+.B \-f
+.B More
+gibt logische Bildschirmzeilen aus,
+d.h., dass lange Zeilen (ueber 80 Zeichen) nicht
+auf dem Bildschirm gefaltet werden.
+.TP
+.B \-l
+Formfeed (^L) wird nicht speziell behandelt.
+.TP
+\fB\-\fIn\fR
+Die Anzahl der Zeilen des Bildschirmfensters wird festgelegt.
+.TP
+.B +\fIn\fR
+Erzeugt eine Anzeige der Datei ab Zeile \fIn\fR.
+.TP
+.B +\fI/expr\fR
+Sucht in der Datei den regulaeren Ausdruck \fIexpr\fR und
+erzeugt eine Anzeige, die 2 Zeilen vor dem gefundenen Muster beginnt.
+.SH DATEIEN
+/etc/termcap		Terminal-Charakteristika
+.br
+/usr/lib/more.help	Help-Datei
+.SH SIEHE AUCH
+cat(1), dog(1), head(1), tail(1), pr(1).

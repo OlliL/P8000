@@ -1,0 +1,62 @@
+.TH NEWS 1 
+.\" @[$]news.1	1.2
+.ad
+.fi
+.SH NAME
+news \- Ausgabe der neuesten Systemnachrichten
+.SH SYNTAX
+.B news
+[ \fB-ans\fR ] [ \fIitems\fR ]
+.SH BESCHREIBUNG
+.B News\^
+wird benutzt, um den Nutzer ueber aktuelle Ereignisse im System zu informieren.
+Die Nachrichten stehen als Textdateien im Directory
+.IR /usr/lib/news .
+.PP
+Beim Aufruf ohne Argumente druckt
+.B news\^
+den Inhalt aller aktuellen Dateien in
+.IR /usr/lib/news .
+Die zuletzt eingegebene (juengste) Datei wird zuerst gedruckt.
+Jeder Nachricht wird eine Kopfzeile vorangestellt.
+.B News\^
+speichert die Erstellungszeit der Nachricht
+als Modifikationsdatum in einer Datei ".news_time",
+die im Homedirectory des Nutzers erzeugt wird.
+.PP
+Wird waehrend des Ausdrucks einer Nachricht
+die Taste
+.I DEL\^
+gedrueckt, wird der Druck unterbrochen und die naechste Nachricht
+wird ausgegeben.
+Ein weiteres Betaetigen der Taste
+.I DEL\^
+innerhalb einer Sekunde nach dem ersten Tastendruck beendet das Kommando.
+.SH OPTIONEN
+.TP
+.B \-a
+Ausgabe aller Nachrichten, ohne Beruecksichtigung der aktuellen Zeit.
+Die gespeicherte Zeit wird nicht veraendert.
+.TP
+.B \-n
+Anzeige der Namen der aktuellen Nachrichten, ohne Ausdruck der Inhalte
+und ohne Aenderung der gespeicherten Zeiten.
+.TP
+.B \-s
+Angabe der Anzahl der aktuellen Nachrichten, ohne Namensangabe,
+Inhaltsausgabe und Zeitaenderung.
+Es ist sinnvoll einen solchen Aufruf von
+.B news\^
+in der eigenen
+.I .login
+Datei zu haben.
+.PP
+Alle anderen Argumente werden als spezielle Nachrichten interpretiert.
+.SH DATEIEN
+/usr/lib/news/\(**
+.br
+\&\s-1$HOME/.news_time
+.br
+/etc/motd
+.SH SIEHE AUCH
+environ(5).

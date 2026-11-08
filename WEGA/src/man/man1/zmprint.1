@@ -1,0 +1,57 @@
+.TH ZMPRINT 1 WEGA
+.\" @[$]zmprint.1	1.2
+.ad
+.fi
+.SH NAME
+zmprint \- Menuedokumentation
+.SH SYNTAX
+.BI zmprint " [ file ]"
+.SH BESCHREIBUNG
+\fBZmprint\fR
+schreibt drei Objekte in die Standardausgabe:
+.IP - 3
+.PD 0
+das Menue (in der Form, in der es auf dem Bildschirm erscheint),
+.IP - 3
+eine Liste der Menueoptionen und
+.IP - 3
+die \fIhelpfile\fR Information
+fuer das angegebene Menue.
+.PD
+.PP
+Wird
+\fBZmprint\fR
+im Kopf eines Pipe verwendet (z.B.
+\fBzmprint | pr | nq\fR),
+erzeugt es eine Dokumentation fuer ein Anwendersystem
+unter Verwendung von \fBzmenu\fR(1) 
+als Nutzer-Interface.
+.PP
+\fBZmprint\fR 
+kann mit und ohne Kommandozeilenargumente aufgerufen werden.
+Die in die Standardausgabe geschriebene Information haengt
+von der Information ab, die in der
+Menuespezifikationsdatei
+(Format siehe
+.BR dotmenu (5))
+enthalten ist.
+Ist kein Argument angegeben, sucht
+\fBzmprint\fR
+ueber den voreingestellten Suchpfad
+($\fBMENUPATH\fR, ~/.menupath, /etc/menupath, $\fBHOME\fR;
+siehe auch
+.BR zmenu (1))
+die Datei namens \fB.menu\fR.   
+.SH DATEIEN
+.nf
+~/.menupath              Menue-Suchpfad vom Nutzer 
+/etc/menupath            globaler Menue-Suchpfad
+ .menu                   Standard-Menuespezifikationsdatei
+.fi
+.SH SIEHE AUCH
+.nf
+zmenu(1), setenv(1), mkmenu(1), dotmenu(5), 
+menupath(5)
+.fi
+.SH EINSCHRAENKUNGEN
+Die Ausgabe wird mit 56 Zeilen pro Seite formatiert.

@@ -1,0 +1,168 @@
+.TH LP 4 WEGA
+.\"@[$]lp.4     1.3
+.ad
+.fi
+.SH NAME
+lp \- Zeilendruckertreiber
+.SH BESCHREIBUNG
+Die Geraetedateien
+.B lp
+und
+.B lp2
+bezeichnen die beiden unter WEGA moeglichen Druckerkanaele.
+.PP
+Die Drucker muessen ueber eine der Schnittstellentypen V.24- oder IFSS
+an das P8000-Grundgeraet angeschlossen werden.
+Jeder serielle Kanal (ausser Systemkonsole) ist fuer den
+Anschluss eines Druckers geeignet. Vom Druckertreiber wird
+fuer beide Schnittstellentypen das XON/XOFF-Softwareprotokoll (DC3/DC1)
+und zusaetzlich fuer die V.24-Schnittstelle das DTR-Hardwareprotokoll
+unterstuetzt. Beide Protokollarten sind bei V.24 gleichzeitig
+aktiv.
+Die Geraetedateien
+.B /dev/lp
+und
+.B /dev/lp2
+besitzen die Major-Device-Nummer 9. Die Minor-Device-Nummer bezeichnet
+die Nummer des seriellen Kanals
+.BI /dev/tty x
+(z.B. Minor-Device-Nummer 3 fuer /dev/tty3).
+Fuer den Druckerkanal
+.B /dev/lp2
+muss zusaetzlich Bit 7 der Minor-Nummer auf eins
+gesetzt werden.
+Naehere Angaben zum Anschluss und zur Installation von Druckern
+sind im P8000-Hardware-Handbuch und im WEGA-Systemhandbuch enthalten.
+.PP
+Der Druckertreiber realisiert die Formatierung der Druckseiten
+nach 3 Kriterien:
+.IP 1.
+Anzahl der Zeilen pro Seite (nach dieser Anzahl wird automatisch
+ein Seitenvorschub ausgefuehrt).
+Ist der Wert 0, wird die Funktion unterdrueckt.
+.IP 2.
+Anzahl der Zeichen pro Zeile (die Ausgabe weiterer Zeichen
+wird unterbunden, es werden nur die druckbaren Zeichen gezaehlt,
+das Zeichen Backspace verringert die Anzahl um eins).
+Ist der Wert 0, wird die Funktion unterdrueckt.
+.IP 3.
+Linker Rand (vor jeder Zeile wird eine bestimmte Anzahl von
+Leerzeichen ausgegeben, die Leerzeichen werden bei der Anzahl
+der Zeichen pro Zeile mitgezaehlt).
+.PP
+Tabulatoren werden vom Druckertreiber in Leerzeichen umgewandelt (erster
+Tabulator Spalte 9, dann jede
+8. Spalte), vor jedem Linefeed wird ein Carriage Return ausgegeben.
+Nach jedem Formfeed wird ein Carriage Return / Linefeed eingefuegt.
+Bei leeren Seiten wird das Formfeed unterdrueckt.
+Alle anderen Zeichen werden unveraendert an den Drucker ausgegeben.
+.PP
+Der Druckertreiber ist unabhaengig vom speziellen Druckertyp.
+Er gibt von sich aus keine Steuerfolgen fuer spezielle Druckfunktionen
+aus.
+Um Konflikte fuer
+die Seitenformatierung bei der Verwendung von druckerabhaengigen
+Steuerfolgen zu verhindern,
+ist ein sogenannter Raw-Modus im Treiber implementiert.
+Erkennt der Druckertreiber das Zeichen Escape (0x1b), wird der
+Raw-Modus eingeschaltet. Im Raw-Modus ist die Seitenformatierung
+aufgehoben. Alle folgenden Zeichen werden unveraendert ausgegeben.
+Die Zaehler fuer die aktuelle Zeilen- und Spaltenposition bleiben
+unveraendert.
+Mit dem Nicht-ASCII-Zeichen 0x80 wird der Raw-Modus beendet.
+Der Druckertreiber setzt die Seitenformatierung mit den letzten
+internen Werten fuer die Zeilen- und Spaltenposition fort.
+.PP
+Steuersequenzen zur Schriftartenumschaltung oder Unterstreichung,
+die die Druckposition fuer die Ausgabe nicht veraendern,
+sollten immer mit einem Zeichen 0x80 abgeschlossen werden,
+um die Seitenformatierung zu erhalten.
+.PP
+Wurde im Raw-Modus die Druckposition der Ausgabe veraendert,
+sollten Treiber und Drucker durch Ausgabe von z.B. Formfeed
+wieder synchronisiert werden.
+Bei einem Systemruf
+.BR close (2)
+fuer die Geraetedatei
+(erfolgt automatisch nach jeder ausgegebenen Datei) wird der Raw-Modus
+beendet und der Drucker auf den Anfang einer neuen Seite
+positioniert.
+.PP
+Da das Zeichen 0x80 nicht mit einem Editor in den Text eingefuegt
+werden kann, existiert unter WEGA das Filterprogramm
+.BR dfilter (1)
+fuer mit dem Textformatierprogramm
+.BR nroff (1)
+bearbeitete Texte.
+.PP
+Mit dem Systemruf
+.BR ioctl (2)
+koennen die 3 Parameter zur Seitenformatierung modifiziert
+werden.
+Die fuer den Systemruf bereitzustellende Struktur sowie die
+verfuegbaren Kommandos sind in der Datei
+.B /usr/include/sgtty.h
+definiert:
+.nf
+.sp
+.br
+#define SHOWLPR   (('l' << 8) | 0)
+#define SETLPR    (('l' << 8) | 1)
+
+struct lparms
+{
+     int     lines;         /* Zeilenanzahl pro Seite       */
+     int     cols;          /* Spaltenanzahl pro Seite      */
+     int     indent;        /* Linker Rand                  */
+};
+.fi
+.PP
+Der Systemruf
+.B ioctl
+kann wie folgt benutzt werden (analog zu tty-Geraeten):
+.sp
+.nf
+#include <sgtty.h>
+
+struct lparms args ;
+
+        if ((fd = open("/dev/lp", 2)) < 0 )
+                printf("can\'t open /dev/lp\\n");
+        rtn = (ioctl(fd, SHOWLPR, &args));
+        rtn = (ioctl(fd, SETLPR, &args));
+.fi
+.PP
+Mit dem
+.BR ioctl (2)-Kommando
+.B SHOWLPR
+koennen die Parameter gelesen, mit dem
+.BR ioctl (2)-Kommando
+.B SETLPR
+gesetzt werden.
+Folgende Standardwerte sind vorgegeben:
+.nf
+
+        Zeilenanzahl           :   66
+        Spaltenanzahl          :  128
+        Zeilenanfang in Spalte :    0
+.fi
+.LP
+Ab WEGA Version 3.1 existieren zusaetzlich die Geraetedateien rlp und rlp2.
+Bei diesen Eintraegen ist zusaetzlich Bit 6 der Minor-Nummer gesetzt. Dieses
+Bit bewirkt, dass der Druckertreiber staendig im Raw-Modus arbeitet.
+.SH DATEIEN
+/dev/lp
+.br
+/dev/lp2
+.br
+/dev/rlp
+.br
+/dev/rlp2
+.br
+/usr/include/sgtty.h
+.SH SIEHE AUCH
+ioctl(2),
+tty(4),
+.br
+Wega-Systemhandbuch,
+P8000 Hardware-Handbuch.

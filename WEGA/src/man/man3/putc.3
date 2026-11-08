@@ -1,0 +1,106 @@
+.TH PUTC 3 WEGA 
+.\" @[$]putc.3  1.2
+.ad
+.fi
+.SH NAME
+putc, putchar, fputc, putw \- Ausgabe eines Zeichens oder Worts an ein Stream
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.PP
+\fBint putc\fI(c, stream)
+\fBchar \fIc;
+.br
+\fBFILE \fI*stream;
+.PP
+\fBputchar\fI(c)
+.PP
+\fBfputc\fI(c, stream)
+\fBFILE \fI*stream;
+.PP
+\fBputw\fI(w, stream)
+\fBFILE \fI*stream;\fR
+.fi
+.SH BESCHREIBUNG
+.B Putc
+schreibt das Zeichen
+.I c
+in den angegebenen Ausgabestrom
+.IR stream .
+Das ausgegebene Zeichen wird zurueckgegeben.
+.PP
+.B Putchar(c)
+ist definiert als
+.B "putc\fI(c, stdout)."\fR
+.PP
+.B Fputc
+ist eine echte Funktion (kein Makro) und verhaelt sich wie
+.BR putc .
+.PP
+.B Putw
+schreibt ein Wort
+.RI (int) w
+in den angegebenen Ausgabestrom
+.IR stream .
+Das ausgegebene Wort wird zurueckgegeben.
+.B Putw
+verlangt keine spezielle Ausrichtung auf Wortgrenze in der Datei.
+.PP
+Der Standardausgabestrom
+.I stdout
+ist normalerweise gepuffert, ausser wenn sich die Ausgabe auf ein
+Terminal bezieht.
+Diese Vorgabe kann durch
+.BR setbuf (3)
+geaendert werden.
+Der Standardfehlerausgabestrom
+.I stderr
+ist standardmaessig immer ungepuffert, er kann aber durch
+.B freopen
+(siehe
+.BR fopen (3))
+gepuffert werden.
+Mit der Funktion
+.IR setbuf
+kann eine beliebige Festlegung bezueglich der Pufferung getroffen werden.
+Ist ein Ausgabestrom ungepuffert, erscheint die uebermittelte Information
+gleich nach dem Senden in der Zieldatei oder am Terminal.
+Bei einem gepufferten Ausgabestrom wird eine festgelegte Anzahl von
+Zeichen gesammelt und anschliessend als Block geschrieben.
+Die Funktion
+.B fflush
+(siehe
+.BR fclose (3))
+bewirkt das vorzeitige Schreiben des Blocks.
+.SH SIEHE AUCH
+fopen(3),
+fclose(3),
+getc(3),
+puts(3),
+printf(3),
+fread(3).
+.SH DIAGNOSTIK 
+Diese Funktionen geben bei Fehler die Konstante
+.B EOF
+zurueck.
+Da diese Konstante ein normaler Integerwert ist, der auch von der
+Funktion
+.B putw
+als Argument ausgegeben und ebenso zurueckgegeben werden kann,
+muss die Funktion
+.BR  ferror (3)
+benutzt werden, um den Rueckgabewert der Funktion
+.B putw
+eindeutig als Fehler
+identifizieren zu koennen.
+.SH EINSCHRAENKUNGEN
+Da 
+.B putc
+als Makro implementiert ist, behandelt es ein Argument
+.I stream
+mit Nebenwirkungen falsch.
+Insbesondere funktioniert
+.IP
+putc(c, *f++);
+.PP
+nicht.

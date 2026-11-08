@@ -1,0 +1,50 @@
+.TH UD 4 WEGA
+.\" Version 1.2
+.ad
+.fi
+.SH NAME
+ud \- Treiber zur 8-Bit-Koppelsoftware
+.SH BESCHREIBUNG
+Ueber den Geraetetreiber
+.B ud
+kommunizieren die WEGA-Systemprogramme
+.BR format (1),
+.BR getud (1),
+.BR putud (1),
+.BR pburn (1)
+und der Geraetetreiber
+.BR fd (4)
+mit der 8-Bit-Koppelsoftware, die die entsprechenden Anforderungen
+auf dem 8-Bit-Rechnerteil ausfuehrt. Folgende Requests werden von der
+8-Bit-Koppelsoftware realisiert:
+.nf
+
+    'L' LOAD:   Empfangen UDOS-Datei
+    'S' SEND:   Senden UDOS-Datei
+    'P' PROM:   EPROM-Programmierung
+    'R' READ:   Lesen Block-Floppy
+    'W' WRITE:  Schreiben Block-Floppy
+    'F' FORMAT: Formatieren Block-Floppy
+
+.fi
+Die 8-Bit-Koppelsoftware ist im Programm
+.B WEGA
+(UDOS-Procedure-Datei auf der WEGA-Startdiskette) integriert.
+.PP
+Der Geraetetreiber
+.B ud
+dient nur als Verbindungsglied fuer die WEGA-Systemprogramme zur
+8-Bit-Koppelsoftware!
+.SH DATEIEN
+/dev/ud
+.SH EINSCHRAENKUNGEN
+Der Geraetetreiber
+.B ud
+darf vom Anwender
+.B nicht
+benutzt werden, da die in der 8-Bit-Koppelsoftware
+enthaltenen Requests ein genau definiertes Wechselspiel voraussetzen,
+das dem Anwender nicht bekannt ist.
+.PP
+Ein Nichtbeachten dieses Hinweises kann zu Systemverklemmungen der 
+8-Bit-Koppelsoftware fuehren!

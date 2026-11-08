@@ -1,0 +1,39 @@
+.TH PWCK 1 WEGA
+.\" @[$]pwck.1	1.2
+.ad
+.fi
+.SH NAME
+pwck, grpck \- Passwort-/Gruppendateikontrolle
+.SH SYNTAX
+.B pwck
+[\fIfile\fR]
+.br
+.B grpck
+[\fIfile\fR]
+.SH BESCHREIBUNG
+.B Pwck\^
+ueberprueft die Passwortdatei nach Widerspruechen.
+Die Kontrollen schliessen die Gueltigkeit der Feldanzahl,
+des Login-Namens, der Nutzer-IDs und der Gruppen-IDs
+ein und stellen fest, ob das Login-Directory und der optionelle 
+Programmname existieren.
+Die Standardpasswortdatei ist 
+.BR /etc/passwd .
+.PP
+.B Grpck\^
+ueberprueft alle Eintraege in der Gruppendatei. Die Pruefung schliesst
+eine Kontrolle der Feldanzahl, des Gruppennamens und der
+Gruppen-IDs ein und stellt fest, ob alle Loginnamen in der
+Passwortdatei erscheinen. Die Standardgruppendatei ist
+.BR /etc/group .
+.SH DATEIEN
+/etc/group
+.br
+/etc/passwd
+.SH SIEHE AUCH
+group(5),
+passwd(5).
+.SH DIAGNOSTIK
+Gruppeneintraege in
+.BR /etc/group
+ohne Loginnamen werden gekennzeichnet.

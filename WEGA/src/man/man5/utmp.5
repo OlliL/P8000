@@ -1,0 +1,75 @@
+.TH UTMP 5 WEGA
+.\"@[$]utmp.5   1.2
+.ad
+.SH NAME
+utmp, wtmp \- Login-Datensaetze
+.SH SYNTAX
+.B #include <utmp.h>
+.SH BESCHREIBUNG
+Die Datei
+.I utmp
+enthaelt Informationen ueber die momentanen Nutzer des WEGA-Betriebssystems.
+Die Datei besteht aus einer Folge von Eintragungen,
+Die Struktur dieser Eintraege ist in der Datei
+.B /usr/include/utmp.h
+definiert:
+.RS
+.PP
+.nf
+/* @[$]utmp.h   1.1 */
+
+struct utmp {
+        char    ut_line[8];     /* TTY-Name */
+        char    ut_name[8];     /* Benutzer-ID */
+        long    ut_time;        /* Login-Zeit */
+};
+.fi
+.RE
+.PP
+In dieser Struktur ist der Name der Geraetedatei, die
+dem Terminal des Benutzers zugeordnet ist, der Login-Name des Benutzers
+und der Zeitpunkt der Anmeldung im Format
+.BR time (2)
+enthalten.
+.PP
+Die Datei
+.B /usr/adm/wtmp
+enthaelt alle An- und Abmeldungen (Login und Logout).
+Ihr Format entspricht dem der Datei
+.BR utmp .
+Ist fuer den Namen des Nutzers eine Null-Zeichenkette eingetragen,
+erfolgte an diesem Terminal ein Logout.
+Der Terminalname
+.B ~
+gibt an, dass das System zur angegebenen
+Zeit neu gestartet wurde.
+Die beiden einander folgenden Eintraege mit den Terminalnamen 
+.B |
+und
+.B }
+geben die Systemzeit unmittelbar vor und nach einer Aenderung der
+Zeit mit dem Kommando
+.BR date (M)
+an.
+.PP
+Eintraege in der Datei
+.B wtmp
+erfolgen durch die Programme
+.BR login (1)
+und
+.BR init (M).
+Diese Programme legen die Datei jedoch nicht an.
+Wurde die Datei geloescht,
+werden keine Datensaetze aufgezeichnet.
+Die Datei wird durch
+.BR acct (M)
+ausgewertet.
+.SH DATEIEN
+/etc/utmp
+.br
+/usr/adm/wtmp
+.SH SIEHE AUCH
+acct(M),
+login(1),
+who(1),
+init(M).

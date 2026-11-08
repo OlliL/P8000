@@ -1,0 +1,215 @@
+.TH DUMP 5 WEGA
+.\"@[$]dump.5   1.1
+.ad
+.SH NAME
+dump, ddate \- Inkrementelles Dump-Format
+.SH SYNTAX
+.B #include <sys/types.h>
+.br
+.B #include <sys/ino.h>
+.br
+.B #include <dumprestor.h>
+.SH BESCHREIBUNG
+Mit Hilfe des Programms
+.BR dump (M)
+werden Backup-Archive erstellt, die mit dem Programm
+.BR restor (M)
+wieder rekonstruiert werden koennen.
+Diese Backup-Archive haben folgende Bestandteile:
+.IP - 2
+einen Kopf-Datensatz,
+.PD 0
+.IP -
+zwei Gruppen von Bit-Map-Datensaetzen,
+.IP -
+eine Gruppe von Datensaetzen, die Directorys beschreiben,
+.IP -
+eine Gruppe von Datensaetzen, die Dateien beschreiben.
+.PD
+.PP
+Das Format des Kopf-Datensatzes und des ersten
+Datensatzes jeder Beschreibung ist in der Deklarationsdatei
+.B <dumprestor.h>
+definiert:
+.PP
+.nf
+#define NTREC           8
+#define MLEN            16
+#define MSIZ            4096
+
+#define TS_TAPE         1
+#define TS_INODE        2
+#define TS_BITS         3
+#define TS_ADDR         4
+#define TS_END          5
+#define TS_CLRI         6
+#define MAGIC           (int)60011
+#define CHECKSUM        (int)84446
+
+struct spcl {
+        int     c_type;
+        time_t  c_date;
+        time_t  c_ddate;
+        int     c_volume;
+        daddr_t c_tapea;
+        ino_t   c_inumber;
+        int     c_magic;
+        int     c_checksum;
+        struct  dinode c_dinode;
+        int     c_count;
+        union {
+                struct {
+                        char c_dev[30];
+                        char c_string[BSIZE-30];
+                }       c_dinfo;
+                char    c_addr[BSIZE];
+        }c_block;
+} spcl;
+
+struct idates {
+        char    id_name[16];
+        char    id_incno;
+        time_t  id_ddate;
+};
+.fi
+.PP
+.B NTREC
+ist die Anzahl der in einem physischen Archivblock enthaltenen
+512-Byte Datensaetze.
+.B MLEN
+ist die Anzahl der Bits in einem Bit-Map-Wort.
+.B MSIZ 
+ist die Anzahl der Bit-Map-Worte.
+.PP
+Die
+\fBTS\fR-Eintraege werden im Feld
+.B c_type
+zur Anzeige des Kopf-Typs benutzt.
+Es folgt eine Aufstellung der
+Typen und ihrer Bedeutung:
+.TP 12
+.B TS_TAPE
+Volume-Name des Archives
+.TP
+.B TS_INODE
+Eine Datei oder ein Directory folgt.
+Das Feld \fBc_dinode\fR
+ist eine Kopie des Disk-Inode und
+enthaelt Bits, die Auskunft ueber den Dateityp
+geben.
+.TP
+.B TS_BITS
+Eine Bit-Map folgt.
+Diese Bit-Map enthaelt ein Bit fuer jedes
+ausgegebene Inode.
+.TP
+.B TS_ADDR
+Es folgt ein Subdatensatz einer Dateibeschreibung (siehe
+.BR c_addr ).
+.TP
+.B TS_END
+Ende des Archivdatensatzes.
+.TP
+.B TS_CLRI
+Es folgt eine Bit-Map.
+Diese enthaelt ein Null-Bit fuer alle
+Inodes, die in dem Dateisystem zum Zeitpunkt der Ausgabe leer waren.
+.TP
+.B MAGIC
+Alle Kopf-Datensaetze haben diese Nummer im Feld
+.BR c_magic .
+.TP
+.B CHECKSUM
+Pruefsumme des Kopf-Datensatzes.
+.PP
+Die Felder der Kopf-Struktur haben folgende Bedeutung:
+.TP 12
+.B c_type
+Kopftyp.
+.TP
+.B c_date
+Datum, an dem das Kommando
+.BR dump (M)
+ausgefuehrt wurde.
+.TP
+.B c_ddate
+Datum, an dem das Dateisystem uebertragen wurde.
+.TP
+.B c_volume
+Die aktuelle Datentraegernummer des Dump-Archivs.
+.TP
+.B c_tapea
+Die aktuelle Nummer dieses 512-Byte Datensatzes.
+.TP
+.B c_inumber
+Die Nummer des ausgegebenen Inode, falls dieser vom Typ
+.B TS_INODE
+war.
+.TP
+.B c_magic
+Enthaelt den oben stehenden Wert
+.B MAGIC,
+der nach Bedarf abgeschnitten wird.
+.TP
+.B c_checksum
+Enthaelt den Wert, der benoetigt wird, um
+die Datensatzsumme gleich
+.B CHECKSUM
+zu machen.
+.TP
+.B c_dinode
+Kopie des Inodes in der Form, wie er im
+Dateisystem
+(\fBfilsys\fR(5))
+erscheint.
+.TP
+.B c_count
+Die Anzahl der Zeichen in
+.BR c_addr .
+.TP
+.B c_addr
+Ein Feld von Zeichen, das die Bloecke der ausgelagerten Datei
+beschreibt.
+Ein Zeichen ist Null, wenn der zu diesem Zeichen gehoerige Block
+nicht im Dateisystem enthalten war;
+ansonsten ist das Zeichen ungleich Null.
+Wenn der Block nicht im Dateisystem enthalten war, wurde kein
+Block abgezogen; der Block wird als ein "Loch" in die Datei
+zurueckgespeichert.
+Ist in diesem Datensatz nicht genuegend Platz fuer die
+Beschreibung aller Bloecke einer Datei,
+werden \fBTS_ADDR\fR-Datensaetze in die Datei eingefuegt,
+die jeweils dort beginnen, wo der letzte Datensatz aufhoert.
+.PP
+Mit Ausnahme des letzten enden alle Datentraeger
+mit einer Archivmarke (Bandmarke), die als Ende der Datei gelesen wird.
+Der letzte Datentraeger endet mit einem
+\fBTS_END\fR-Datensatz, dem die Archivmarke (Bandmarke) folgt.
+.PP
+Die Struktur
+.B idates
+beschreibt einen Eintrag in die Datei
+.BR /etc/ddate ,
+in der Informationen ueber das Dump-Archiv aufbewahrt werden.
+Die Felder der Struktur haben folgende Bedeutung:
+.TP 12
+.B id_name
+Das ueber
+.B dump
+abgezogene Dateisystem heisst
+.RB /dev/ id_nam .
+.TP
+.B id_incno
+Level-Nummer des Dump-Archivs (siehe \fBdump\fR(M)).
+.TP
+.B id_ddate
+Datum des inkrementellen Dump-Archivs im Systemformat
+(siehe \fItypes\fR(5)).
+.SH DATEIEN
+/etc/ddate
+.SH SIEHE AUCH
+dump(M),
+dumpdir(M),
+restor(M),
+filsys(5),
+types(5).

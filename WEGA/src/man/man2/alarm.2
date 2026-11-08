@@ -1,0 +1,44 @@
+.TH ALARM 2 WEGA
+.\"@[$]alarm.2	1.2
+.ad
+.fi
+.SH NAME
+alarm \- Eintragen des Signals nach einer angegebenen Zeit
+.SH SYNTAX
+.B unsigned alarm
+.I (seconds)
+.br
+.B unsigned
+.I seconds;
+.SH BESCHREIBUNG
+.B Alarm
+sendet das Signal SIGALRM (siehe \fBsignal\fR(2))
+nach der als Argument angegebenen Anzahl von Sekunden
+an den rufenden Prozess.
+Wird es nicht behandelt oder ignoriert, beendet
+das Signal den Prozess.
+.PP
+Alarmanforderungen werden nicht im Stack abgelegt.
+Aufeinanderfolgende Rufe setzen die Alarmuhr neu.
+Ist das Argument 0, wird jede Alarmanforderung geloescht.
+Da der Takt eine Genauigkeit von einer Sekunde hat,
+kann das Signal bis zu einer Sekunde frueher auftreten.
+Bedingt durch die Arbeitsweise des Schedulers kann
+die Wiederaufnahme der Ausfuehrung nach der Signalbehandlung
+willkuerlich verzoegert werden.
+Die laengste angebbare Verzoegerungszeit ist 65535 Sekunden.
+.SH RUECKGABEWERT
+Der Rueckkehrwert ist der Betrag der Zeit, die zuvor
+in der Alarmuhr zurueckgeblieben ist.
+.SH SIEHE AUCH
+pause(2), signal(2), sleep(3).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT ALARM := 27
+
+     ...             !* r0 : Sekunden *!
+     sc     #ALARM
+     ...             !* Rueckgabewert in r4 *!
+.fi
+.ad

@@ -1,0 +1,36 @@
+.TH ISDELINDEX 3 
+.\" @[$]isdelindex.3    1.2
+.ad
+.fi
+.SH NAME
+isdelindex \- Loeschen eines Index aus einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisdelindex\fI(isfd, keydesc)\fR
+\fBint \fIisfd;\fR
+\fBstruct \fIkeydesc *keydesc;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isdelindex
+loescht einen in einer C-ISAM-Datei existierenden Index.
+Der zu loeschende Index wird durch die keydesc-Struktur bezeichnet.
+.PP
+Mit Ausnahme des Primaerindex koennen alle Indexe geloescht werden.
+Bei einem Versuch, den Primaerindex zu loeschen, wird der Wert -1
+zurueckgegeben und die globale Variable
+.B iserrno
+wird gesetzt.
+.PP
+Dieser Aufruf wird nur ausgefuehrt, wenn die C-ISAM-Datei fuer
+Eingabe und Ausgabe fuer exklusiven Zugriff eroeffnet wurde.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isaddindex(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

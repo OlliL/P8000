@@ -1,0 +1,164 @@
+.TH FIND 1 WEGA
+.\" @[$]find.1	1.2
+.ad
+.fi
+.SH NAME
+find \- Finden von Dateien
+.SH SYNTAX
+.B find
+.I path-name-list 
+.I expression
+.SH BESCHREIBUNG
+.B Find
+durchsucht die Dateihierarchie unterhalb der in
+\fIpath-name-list\fR (d.h., ein oder mehrere Pfadnamen)
+angegebenen Directories nach Dateien, die den in
+\fIexpression\fR angegebenen logischen Ausdruck erfuellen.
+In den folgenden Beschreibungen wird das Argument  
+\fIn\fR zur Angabe einer Dezimalzahl benutzt, wobei 
+\fB+\fIn\fR mehr als
+\fIn\fR, \fB\-\fIn\fR weniger als \fIn\fR und
+\fIn\fR genau gleich \fIn\fR bedeutet.
+.PP
+Die einfachen Ausdruecke koennen unter Verwendung der folgenden Operatoren
+(in der Reihenfolge in abnehmender Prioritaet) kombiniert werden:
+.TP
+1)
+Die Negation eines einfachen Ausdrucks (\fB!\fR ist der Negationsoperator).
+.TP
+2)
+Verkettung einfacher Ausdruecke (die \fIund\fR Verknuepfung wird durch
+die Nebeneinanderstellung von zwei einfachen Ausdruecken vorgenommen).
+.TP
+3)
+Alternative einfacher Ausdruecke (\fBo\fR ist der \fIoder\fR Operator).
+.SH OPTIONEN
+.TP 14
+.BI \-atime " n\^"
+Wahr, wenn letzter Dateizugriff vor 
+.I n\^
+Tagen war.
+.TP 14
+.BI \-cpio " device\^"
+Schreibt die aktuelle Datei auf das mit
+.I device\^
+angegebene Geraet im
+.BR cpio\| (5)
+Format (5120 Byte je Record).
+.TP 14
+.BI \-ctime " n\^"
+Wahr, wenn Datei vor
+.I n\^
+Tagen ausgetauscht wurde.
+.TP 14
+.BI \-exec " cmd\^"
+Wahr, wenn das ausgefuehrte Kommando
+Null als Exitstatus zurueckgibt. 
+Das Ende des Kommandos
+.I cmd\^
+muss durch ein Semikolon mit vorangestelltem Backslash
+gekennzeichnet sein.
+Das Argument des Kommandos 
+.B {}
+wird durch den aktuellen Pfadnamen ersetzt.
+.TP 14
+.BI \-group " gname\^"
+Wahr, wenn die Datei zur Gruppe
+.IR gname 
+gehoert.
+Ist 
+.I gname\^
+ein numerischer Wert und nicht in der Datei 
+.B /etc/group
+enthalten, wird er als Gruppenidentifikator angesehen.
+.TP 14
+.BI \-links " n\^"
+Wahr, wenn die Datei
+.I n\^
+Links besitzt.
+.TP 14
+.BI \-mtime " n\^"
+Wahr, wenn die Datei vor 
+.I n\^
+Tagen modifiziert wurde.
+.TP 14
+\fB\-name \fIfile\fR
+Wahr, wenn der
+angegebene Dateiname mit dem aktuellen Dateinamen uebereinstimmt.
+Die Shell-Symbole [, ?, * koennen verwendet werden,
+wenn ihnen Backslash vorangestellt ist.
+.TP 14
+.BI \-newer " file\^"
+Wahr, wenn die aktuelle Datei spaeter als die in 
+.IR file 
+angegebene Datei modifiziert wurde.
+.TP 14
+.BI \-ok " cmd\^"
+Wie
+.BR \-exec ,
+nur wird die erzeugte Kommandozeile gefolgt von Fragezeichen
+ausgegeben und nur dann ausgefuehrt, wenn der Nutzer mit einem
+.BR 'y'
+antwortet.
+.TP 14
+.BI \-perm " onum\^"
+Wahr, wenn die Dateizugriffsrechte genau mit der in
+.I onum\^
+angegebenen Oktalzahl uebereinstimmen
+(siehe
+.BR chmod (1)).
+Die Angabe eines Minuszeichens vor
+.I onum\^
+bewirkt, dass alle Bits der Dateizugriffsrechte (017777, siehe
+.BR stat (2))
+signifikant sind.
+.TP 14
+.B  \-print
+Immer wahr. Der aktuelle Pfadname wird ausgegeben.
+.TP 14
+.BI \-size " n\^"
+Wahr, wenn die Datei 
+.I n\^
+Bloecke lang ist (512 Bytes je Block).
+.TP 14
+.BI \-type " c\^"
+Wahr, wenn der Dateityp
+.IR c ,
+ist. Fuer
+.I c\^
+koennen die Dateitypen
+.BR b
+(Block-Special-File),
+.BR c
+(Character-Special-File),
+.BR d
+(Directory),
+.BR p
+(pipe),
+oder
+.BR f
+(regulaere Datei)
+angegeben werden.
+.TP 14
+.BI \-user " uname\^"
+Wahr, wenn die Datei dem Nutzer
+.IR uname 
+gehoert. Ist
+.I uname\^
+ein numerischer Wert und nicht als Login-Name in der 
+.B /etc/passwd
+Datei enthalten, wird er als Nutzeridentifikator behandelt. 
+.TP 14
+(\fIexpression\fR)
+Wahr, wenn der eingeklammerte Ausdruck wahr ist
+(runden Klammern muss ein Backslash vorangestellt werden).
+.SH BEISPIEL
+Es sind alle Dateien mit dem Namen
+.B a.out
+zu finden und anzuzeigen, auf die seit einer Woche nicht mehr zugegriffen wurde:
+.PP
+find / -name a.out -atime +7 -print
+.SH DATEIEN
+/etc/passwd, /etc/group
+.SH SIEHE AUCH
+cpio(1), sh(1), test(1), stat(2), cpio(5), fs(5).

@@ -1,0 +1,52 @@
+.TH FC 1 WEGA
+.\" @[$]fc.1 1.1
+.ad
+.fi
+
+.SH NAME
+fc
+
+.SH SYNTAX
+.B fc [-optionen]  [dateiname]
+
+.SH OPTIONEN
+.TP 5
+siehe cc
+.SH BESCHREIBUNG
+Fc ist eine Komponente zur Unterstuetzung
+der Arbeit mit dem C-Compiler cc.
+Der Aufruf von fc erfolgt analog dem Aufruf von cc.
+Alle Dienste des cc sind auch unter fc verfuegbar.
+.fi
+.B Ablauf :
+.fi
+Zuerst wird der Compiler cc aufgerufen.
+Ihm werden alle Optionen mit denen fc aufgerufen wurde uebergeben.
+War die Uebersetzung erfolgreich, so endet fc mit der Ausschrift
+.B compilation ok.
+Treten jedoch Fehler waehrend der Uebersetzung auf, so erscheinen
+die Fehlerausschriften auf dem Bildschirm.
+Wurden Syntaxfehler entdeckt, so wird automatisch der Editor
+.B fse
+aufgerufen und der Kursor steht in der ersten fehlerhaften Zeile.
+Die zugehoerige Fehlerausschrift befindet sich in der Helpzeile des fse
+(unterste Zeile). Alle anderen Kommandos des fse funktionieren wie gewohnt.
+.fi
+Mit ^QJ (bzw F8) kann der Kursor auf die vorhergehende und
+mit ^QN (bzw F13) in die naechste fehlerhafte Zeile bewegt werden.
+Weiter bedeutet ^UD das Beenden des Editors. Danach wird die
+Uebersetzung erneut gestartet. Ist letzteres nicht erwuenscht, so
+kann mit ^UE der fse so verlassen werden, dass fc seine Arbeit abbricht.
+Zu beachten ist, dass durch ^UE der Text nicht abgespeichert wird.
+Soll also der geaenderte Text aufgehoben werden, die Uebersetzung
+jedoch nicht erneut gestartet werden, so muss erst mit ^US das bearbeitete
+File abgespeichert werden und danach mit ^UE der fse und damit verbunden
+fc verlassen werden.
+In so einem Fall liefert fc den Rueckkehrcode 1, so dass ein make
+auch abgebrochen wird.
+.fi
+Durch Benutzung des Programms make in Verbindung mit fc kann die
+Arbeit an groesseren Programmen beachtlich erleichtert werden.
+
+.SH SIEHE AUCH
+fse(1), fsc(1), cc(1), ld(1)

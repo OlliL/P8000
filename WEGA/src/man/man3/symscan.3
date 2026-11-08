@@ -1,0 +1,73 @@
+.TH SYMSCAN 3
+.\" @[$]symscan.3       1.2
+.ad
+.fi
+.SH NAME
+symscan \- Abfragen der Symboltabelle
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>\fR
+.br
+\fB#include <nlist.h>\fR
+.PP
+\fBsymscan\fI(nl, stream)\fR
+.br
+\fBstruct \fInlist *nl;\fR
+.br
+\fBFILE \fI*stream;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B symscan
+sucht im Datenstrom
+.I stream
+nach der Stelle, an der das durch die als Argument angegebene Struktur
+.IR nl
+bezeichnete Symbol zuerst auftritt.
+Die durch den Pointer
+.I nl
+bezeichnete Struktur besitzt den gleichen Aufbau,
+der unter
+.BR nlist (3)
+angegeben ist.
+Ein Feld dieser Struktur zeigt auf eine mit einem Nullbyte endende
+Zeichenkette,
+die das Suchobjekt definiert. Ist das Symbol
+in der Symboltabelle gefunden, werden die anderen
+Felder der Struktur
+mit den Daten aus der vom Datenstrom eingelesenen Symboltabelle gefuellt.
+Wird das Symbol nicht gefunden, wird dem Feld vom Typ
+.I nl_type
+der Wert Null zugewiesen.
+Im Unterschied zu
+.BR nlist
+gibt
+.B symscan
+sowohl externe als auch nichtexterne Symbole zurueck. Findet das Programm
+ein lokales Symbol mit gleichem Namen, kann
+.B symscan
+nochmals aufgerufen werden, um die naechste Stelle zu finden, an der sich
+ein Symbol desselben Namens befindet.
+Der Datenstrom
+.I stream
+muss vor dem Aufruf der Funktion
+.B symscan
+so positioniert sein, dass der Dateipointer auf den Anfang eines
+Symboltabelleneintrags eines Objektmoduls im Format
+.BR a.out (5)
+zeigt.
+.SH SIEHE AUCH
+a.out(5),
+nlist(3),
+readsym(3).
+.SH DIAGNOSTIK
+Wurde das Symbol nicht gefunden
+oder war die Eingabe fehlerhaft, gibt
+.B symscan
+im Feld
+.I nl_type
+der Struktur
+.I nlist
+(siehe
+.BR nlist (3))
+den Wert Null zurueck.

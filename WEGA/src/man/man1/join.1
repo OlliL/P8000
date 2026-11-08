@@ -1,0 +1,92 @@
+.TH JOIN 1 WEGA
+.\" @[$]join.1	1.2
+.ad
+.fi
+.SH NAME
+join \- Verbindung zweier sortierter Dateien nach gleichen Schluesseln
+.SH SYNTAX
+.B join
+[ \fBoptions\fR ] \fIfile1 file2\fR
+.SH BESCHREIBUNG
+.B Join
+formiert auf der Standardausgabe eine Verbindung
+der Relationen, die durch die Zeilen von
+.I file1
+und
+.IR file2
+spezifiziert werden.
+Steht fuer den Ausdruck
+.I file1
+ein Minuszeichen, wird von der Standardeingabe gelesen.
+.PP
+.I File1
+und
+.I file2
+muessen - bezogen auf die Felder, zwischen denen
+eine Relation hergestellt werden soll - in aufsteigender
+Folge von ASCII-Zeichen sortiert werden.
+.PP
+Fuer jedes Paar von Zeilen, die identische Verbindungsfelder besitzen,
+entsteht eine Zeile auf der Standardausgabe.
+Die Ausgabezeile besteht normalerweise aus einem gemeinsamen Feld,
+dem Rest der Zeile aus \fIfile1\fR und dem Rest der Zeile aus
+\fIfile2\fR.
+Alle Felder werden normalerweise durch Leerzeichen,
+Tabulatoren oder Newline-Zeichen
+getrennt.
+Mehrfachseparatoren zaehlen als ein Zeichen.
+Fuehrende Separatoren werden weggelassen.
+.SH OPTIONEN
+.TP
+.BI \-a n
+Zusaetzlich zur normalen Ausgabe wird eine Zeile
+fuer jede nicht paarweise angeordnete Zeile in der Datei
+.IR n
+erzeugt (
+.I n
+=1, 2).
+.TP
+.BI \-e \ s
+Ersetzt leere Ausgabefelder durch die Zeichenkette
+.IR s .
+.TP
+.BI \-j n\ m
+Verbindet ueber das
+.IR m te
+Feld der Datei
+.IR n .
+Fehlt
+.IR n ,
+wird das
+.IR m te
+Feld in jeder Datei verwendet.
+.TP
+.BI \-o \ list
+Jede Ausgabezeile enthaelt die Felder, die in
+.IR list
+spezifiziert werden. Format der Liste: 
+.IR n . m
+.RI ( n
+=Dateinummer,
+.I m
+=Feldnummer).
+.PP
+.TP
+.BI \-t c
+Es wird das Zeichen
+.I c
+als Separator verwendet (Tabulator).
+Jedes
+.I c
+in einer Zeile ist dabei signifikant.
+.SH SIEHE AUCH
+sort(1), comm(1)
+.SH EINSCHRAENKUNGEN
+Mit der Standardfeldbegrenzung entspricht die Ordnungsreihenfolge
+der von
+.BR sort\ \-b ;
+mit der Feldbegrenzung
+.BR \-t
+entspricht die Ordnungsreihenfolge einer beliebigen Sortierung.
+Die Konventionen von
+\fIjoin, sort, comm, uniq, look\fR (1) sind unvereinbar.

@@ -1,0 +1,175 @@
+.TH GREP 1 WEGA
+.\" @[$]grep.1	1.2
+.ad
+.fi
+.SH NAME
+grep, egrep, fgrep \- Durchmustern einer Datei nach einem Zeichenmuster
+.SH SYNTAX
+.B grep
+.I " [ options ] expression [ files ] "
+.PP
+.B egrep
+.I " [ options ] [ expression ] [ files ] "
+.PP
+.B fgrep
+.I " [ options ] [ strings ] [ files ] "
+.SH BESCHREIBUNG
+Die Kommandos der
+.B grep\^
+Familie durchmustern die Eingabedateien
+.I files\^
+(Standardeingabe, wenn keine Dateien angegeben sind) nach Zeilen,
+die einem vorgegebenen Zeichenmuster entsprechen.
+Normalerweise wird dabei jede der gefundenen Zeilen der
+Eingabedatei auf die Standardausgabe kopiert.
+.B Grep\^
+arbeitet mit Zeichenmustern, die begrenzte
+regulaere Ausdruecke
+.IR expression
+darstellen koennen (siehe
+.BR ed (1)).
+.PP
+In allen Faellen, wo mehr als eine Eingabedatei existiert, wird
+der Dateiname mit ausgegeben.
+Die folgenden Zeichen
+.BR * ,
+.BR [ ,
+.BR ^ ,
+\(bv,
+.BR ( ,
+.BR )
+und
+.B \e
+sind in Ausdruecken
+.IR expression
+in einfache Anfuehrungszeichen
+.BR \&\|\(fm \|.\|.\|.\| \(fm
+eingeschlossen werden.
+.PP
+.B Fgrep\^
+sucht nach Zeilen, die eine Zeichenkette
+.I strings\^
+(getrennt durch Newline-Zeichen) enthaelt.
+Der zugehoerige Algorithmus ist schnell und kompakt.
+.PP
+.B Egrep\^
+akzeptiert vollstaendige regulaere Ausdruecke, wie sie von
+.BR ed (1)
+verwendet werden (ausser (\e und \e)).
+Der Algorithmus benoetigt oftmals einen exponentiell
+wachsenden Speicherplatz.
+.PP
+Fuer die regulaeren Ausdruecke gilt:
+.PP
+.PD 0
+.TP 6
+1.
+Ein regulaerer Ausdruck, dem ein
+.B +
+folgt, steht fuer ein- oder mehrmaliges Auftreten
+dieses regulaeren Ausdruckes.
+.TP
+2.
+Ein regulaerer Ausdruck, dem ein
+.B ?
+folgt, steht fuer kein oder einmaliges Auftreten
+dieses regulaeren Ausdruckes.
+.TP
+3.
+Zwei regulaere Ausdruecke,
+die durch einen senkrechten Strich \(bv oder
+durch ein Newline-Zeichen getrennt sind, entsprechen entweder dem ersten
+oder dem zweiten regulaeren Ausdruck.
+.TP
+4.
+Zur Gruppierung kann ein regulaeren Ausdruck
+in Klammern eingeschlossen werden
+.B (\|).
+.PD
+.PP
+Die Reihenfolge der Abarbeitung von Operatoren
+in regulaeren Ausdruecken ist wie folgt
+festgelegt:
+.BR [\|] ,
+dann
+.BR \(**\|?\|+ ,
+danach Verkettungsoperatoren und zum Schluss
+\(bv sowie das Newline.
+.SH OPTIONEN
+.TP
+.B \-b
+Jeder gefundenen Zeile ist die Blocknummer
+vorangestellt (nuetzlich beim Suchen von
+Plattenspeichernummern).
+.TP
+.B \-c
+Nur die Anzahl der gefundenen Zeilen wird ausgegeben.
+.TP
+.BI \-e " expression\^"
+Diese Notationsform ist identisch mit dem
+.I expression\^
+Argument. Sie ist nuetzlich, wenn der Ausdruck
+.I expression\^
+mit einem Minuszeichen 
+.B \-
+beginnt (gilt nicht fuer
+.BR grep ).
+.TP
+.BI \-f " file\^"
+der regulaere Ausdruck
+.I expression\^
+(bei
+.BR egrep )
+oder die Zeichenkette
+.I strings\^
+(bei
+.BR fgrep )
+wird aus der Datei
+.I file
+entnommen.
+.TP
+.B \-h
+Die Dateinamen werden nicht mit den Ausgabezeilen
+ausgelistet.
+.TP
+.B \-l
+Es werden nur die Namen der Dateien ausgegeben,
+in denen gesuchte Muster gefunden wurden.
+.TP
+.B \-n
+Jeder Zeile geht ihre relative Zeilennummer in
+der Datei voraus.
+.TP
+.B \-s
+Fehlermeldungen fuer nichtexistierende oder unlesbare
+Dateien werden unterdrueckt (gilt nur fuer
+.BR  grep ).
+.TP
+.B \-v
+Alle Zeilen, die das Muster nicht enthalten, werden
+ausgegeben.
+.TP
+.B \-x
+(Exact) Nur die Zeilen werden ausgedruckt, die
+in ihrer Gesamtheit den zu suchenden  Zeilen entsprechen
+(gilt nur fuer
+.BR  fgrep ).
+.SH SIEHE AUCH
+csh(1),
+ed(1),
+sed(1),
+sh(1).
+.SH DIAGNOSTIK
+.nf
+Exitstatus  = 0 : Muster gefunden
+Exitstatus  = 1 : Muster nicht gefunden
+Exitstatus  = 2 : Syntaxfehler, Mustersuche nicht moeglich
+.fi
+.SH EINSCHRAENKUNGEN
+Alle Zeilen sind auf maximal 256 Zeichen begrenzt;
+laengere Zeilen werden abgebrochen.
+.sp
+.B Egrep\^
+erkennt keine Bereiche, wie zum Beispiel
+.BR [a\-z] ,
+in Zeichenklassen.

@@ -1,0 +1,36 @@
+.TH GPASSWD 1 WEGA
+.\" @[$]gpasswd.1	1.2
+.ad
+.fi
+.SH NAME
+gpasswd \- Veraenderung des Gruppenpassworts
+.SH SYNTAX
+.B gpasswd
+[ \fIname\fR ]
+.SH BESCHREIBUNG
+.B Gpasswd
+veraendert (oder installiert) ein mit einem Gruppennamen
+.IR name
+verbundenes Passwort (standardmaessig die eigene Gruppe).
+.PP
+Das Programm loest erst eine Eingabeanforderung fuer das
+alte Passwort und dann eine Eingabeanforderung fuer das neue
+Passwort aus (der Aufrufende muss also beide Passwoerter
+kennen). Das neue Passwort muss zur Sicherheit zweimal eingegeben
+werden.
+.PP
+Das neue Passwort muss mindestens vier - moeglichst aber sechs
+Zeichen lang sein.
+.PP
+Nach der Aenderung des alten Passworts wird eine entsprechende
+Nachricht an alle Mitglieder der jeweiligen Nutzergruppe versandt.
+.SH DATEIEN
+/etc/passwd
+.br
+/etc/gtmp*
+.SH SIEHE AUCH
+login(1), crypt(3), passwd(5).
+.SH EINSCHRAENKUNGEN
+Unter bestimmten Umstaenden erfolgt keine Aktualisierung der
+Gruppendatei. In diesem Fall befindet sich die neue Datei im
+Anschluss  im Directory /etc/gtmp*

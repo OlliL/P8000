@@ -1,0 +1,27 @@
+.TH CAL 1 WEGA
+.\" @[$]cal.1	1.2
+.ad
+.fi
+.SH NAME
+cal \- Kalenderausgabe
+.SH SYNTAX
+.B cal
+[ month ] year
+.SH BESCHREIBUNG
+.B Cal
+druckt einen Kalender fuer das angegebene Jahr aus. Wurde
+ein Monat spezifiziert, wird der Kalender
+nur fuer diesen Monat ausgegeben.
+.I Year
+kann zwischen 1 und 9999 liegen,
+.I Month
+zwischen 1 und 12 .
+.SH BEISPIEL
+.nf
+        FALSCH                      RICHTIG
+.sp
+    cal September 1752             cal 9 1752
+    cal '42                        cal 1942
+.fi
+.SH EINSCHRAENKUNGEN
+Die Kalenderausgabe eines Jahres beginnt immer mit dem Januar.

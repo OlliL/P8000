@@ -1,0 +1,38 @@
+.TH ISLD 3 
+.\" @[$]isld.3  1.2
+.ad
+.fi
+.SH NAME
+lddbl, ldfloat, ldint, ldlong \- C-ISAM - Laderoutinen
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBdouble lddbl\fI(p)\fR
+\fBchar  \fI*p;\fR
+.sp
+\fBfloat  ldfloat\fI(p)\fR
+\fBchar  \fI*p;\fR
+.sp
+\fBint  ldint\fI(p)\fR
+\fBchar  \fI*p;\fR
+.sp
+\fBlong  ldlong\fI(p)\fR
+\fBchar  \fI*p;\fR
+.fi
+.SH BESCHREIBUNG
+Diese Routinen laden Bytes aus einer Bytefolge (C-ISAM-Format, Bytefolge
+muss nicht auf Wortgrenze ausgerichtet sein)
+in ein numerisches Feld (P8000-Format, Werte sind auf Wortgrenze
+ausgerichtet).
+Der Parameter \fIp\fR zeigt auf das erste Byte der Bytefolge.
+.PP
+Fuer diese Routinen ist die C-ISAM-Bibliothek erforderlich
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isst(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

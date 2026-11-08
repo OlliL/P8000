@@ -1,0 +1,88 @@
+.TH MKNOD 1 WEGA
+.\" @[$]mknod.1	1.2
+.ad
+.fi
+.SH NAME
+mknod \- Erstellung eines Special-File
+.SH SYNTAX
+.B /etc/mknod
+name
+[
+.B c
+] [
+.B b
+]
+major
+minor
+.br
+.B /etc/mknod
+name
+.B p
+.SH BESCHREIBUNG
+.B Mknod\^
+erstellt einen Directoryeintrag und den entsprechenden i-Node
+fuer ein Special-File.
+In dieser Variante kann
+.B mknod
+nur durch Mitglieder der 'System'-Gruppe benutzt werden.
+.PP
+.B Mknod\^
+kann auch zur Erzeugung von fifo`s (benannte Pipe's) benutzt werden
+(siehe oben, zweiter Fall in
+.SM
+.B SYNTAX ).
+.PP
+Das erste Argument ist der 
+.I Name\^
+der Eintragung.
+Fuer Special-Files ist das zweite Argument ein
+.BR b ,
+falls das Special-File ein blockorientiertes Ein-/Ausgabegeraet ist
+(Festplatte, Floppy-Disk) oder
+.BR c ,
+wenn es sich um ein zeichenorientiertes Ein-/Ausgabegeraet handelt
+(z.B. Terminal, Drucker, EPROM-Programmer).
+Die letzten beiden Argumente sind Zahlen, die die 
+.I Major-\^
+und 
+.I Minor-\^
+Geraetenummer festlegen (z.B. Unit, Drive, oder Zeilennummer);
+sie koennen entweder dezimal oder oktal (fuehrende Null) eingegeben werden.
+.PP
+Die Zuweisung der Major-Geraetenummer haengt von der Position des
+Treibers in der Konfigurationstabelle im WEGA-Betriebssystemkern ab.
+Folgende Major-Geraetenummer sind gegenwaertig installiert:
+.sp 2
+.ta 2i 4.5i
+Geraet	zeichenorientiert	blockorientiert
+.br
+	Major-Nummer	Major-Nummer
+.ta 2.5i 5i
+.nf
+------------------------------------------------------------
+MD	0	0
+FD	1	1
+UD	2	--
+MEM	6	--
+TTY	7	--
+SIO	8	--
+LP	9	--
+U1 (vom Nutzer def.)	10	2
+U2 (vom Nutzer def.)	11	3
+U3 (vom Nutzer def.)	12	4
+U4 (vom Nutzer def.)	13	5
+U5 (vom Nutzer def.)	14	6
+U6 (vom Nutzer def.)	15	7
+.fi
+.ta
+.PP
+Die Minor-Geraetenummer ist geraeteabhaengig.
+Fuer die Festplatte ist die Minor-Geraetenummer die Nummer des Dateisystems.
+Die erste Ziffer (dezimal) entspricht der Drive-Nummer und
+die zweite Ziffer (dezimal) gibt die Anordnung des Dateisystems auf
+der Festplatte an.
+Fuer Terminalkanaele ist die Minor-Geraetenummer die Nummer des Ports.
+Fuer andere Geraete repraesentieren die Nummern Optionen, die
+zu den Treibern gesendet wurden (z.B. Auswahl von Floppy-Formaten).
+.SH SIEHE AUCH
+mknod(M), mknod(2).

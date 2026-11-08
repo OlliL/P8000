@@ -1,0 +1,159 @@
+.TH MOUNT 2 WEGA
+.\" @[$]mount.2 1.2
+.ad
+.fi
+.SH NAME
+mount, umount \- Eingliedern oder Entfernen eines Dateisystems
+.SH SYNTAX
+.B int mount
+.I (special, directory, rwflag)
+.br
+.B char
+.I *special, *directory;
+.br 
+.B int
+.I  rwflag;
+.PP
+.B int umount
+.I (special)
+.br
+.B char
+.I *special;
+.SH BESCHREIBUNG
+Der Systemruf
+.B mount
+verbindet ein selbstaendiges Dateisystem, dass durch die
+blockstrukturierte Special-File
+.I special
+angegeben ist,
+ueber das angegebene
+.I directory
+mit der aktuellen Dateihierarchie.
+Von nun an verweisen Bezugnahmen auf das
+.I directory
+auf die Root-Datei des neu eingegliederten Dateisystems.
+.I Special
+und
+.I directory
+sind Pointer auf die entsprechenden Pfadnamen.
+.PP
+Das angegebene
+.I directory
+muss als Directory existieren
+(es sei denn, das Root des eingegliederten 
+Dateisystems ist kein Directory).
+Solange das Dateisystem eingegliedert ist, kann
+auf den alten Inhalt des Directorys nicht zugegriffen werden.
+.PP
+Das Argument
+.I rwflag
+bestimmt die Schreiberlaubnis fuer das Dateisystem
+.RS
+.IR rwflag =0:
+Schreiben erlaubt
+.br
+.IR rwflag !=0:
+Schreiben nicht erlaubt
+.RE
+.PP
+Physisch schreibgeschuetzte Dateisysteme
+und Dateisysteme auf Magnetband muessen
+als Read-only eingegliedert werden.
+Es treten sonst bereits Fehler auf, wenn die
+Zugriffszeiten aktualisiert werden, unabhaengig davon, ob Schreiben
+versucht wird.
+.PP
+.B Umount
+loest die Verbindung mit dem durch
+.I special
+angegebenen Dateisystem.
+Der urspruengliche Inhalt des verbundenen Directorys
+wird wieder zugaenglich.
+.SH SIEHE AUCH
+mount(M), umount(2).
+.SH DIAGNOSTIK
+.B Mount
+wird nicht ausgefuehrt, wenn mindestens einer der folgenden Punkte
+zutrifft:
+.TP 11
+.PD 0
+\%[EPERM]
+Effektive Nutzer-ID
+entspricht nicht der des Superusers.
+.TP
+\%[ENOENT]
+Einige der benannten Directories existieren nicht.
+.TP
+\%[ENOTDIR]
+Eine vordere Komponente des Pfadnamens ist kein Directory.
+.TP
+\%[ENOTBLK]
+.I Special
+ist kein Block-Special-File.
+.TP
+\%[ENXIO]
+Das mit
+.I special
+verbundene Device existiert nicht.
+.TP
+\%[ENOTDIR]
+.I Directory
+ist kein Directory.
+.TP
+\%[EFAULT]
+Die Pointer
+.I special
+oder
+.I directory
+verweisen auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen 
+Adressbereichs liegt.
+.TP
+\%[EBUSY]
+Das fuer
+.B mount
+benutzte
+.I directory
+wird bereits von einem Nutzer als Arbeitsdirectory benutzt
+oder ist anderweitig besetzt.
+.TP
+\%[EBUSY]
+Das Device, das mit 
+.I special
+verbunden ist, wird gerade eingegliedert.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird ein Wert 0 zurueckgegeben.
+Andernfalls wird der Wert \-1 zurueckgegeben und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT MOUNT  := 21
+
+Nichtsegmentiert:
+     ...             !* r0 : special *!
+                     !* r1 : directory *!
+                     !* r2 : rwflag *!
+Segmentiert:
+     ...             !* rr0 : special *!
+                     !* rr2 : directory *!
+                     !* r4 : rwflag *!
+     clr     r4
+     sc      #MOUNT
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+
+
+     CONSTANT UMOUNT := 22
+
+Nichtsegmentiert:
+     ...             !* r0 : special *!
+Segmentiert:
+     ...             !* rr0 : special *!
+     clr     r4
+     sc      #UMOUNT
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

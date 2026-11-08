@@ -1,0 +1,77 @@
+.TH VNEWS 1 
+.\" @[$]vnews.1	1.2
+.ad
+.fi
+.SH NAME
+vnews \- \'visuelle\' Anzeige von News-Eintraegen
+.SH SYNTAX
+.B vnews
+[
+.B -h
+]
+.SH BESCHREIBUNG
+.B Vnews
+ist eine Version von
+.BR news (1)
+zur Ausgabe von News-Eintraegen in "Bildschirm"-Format.
+Die "News-Titel"
+werden in drei Spalten angezeigt. Cursormanipulation
+ist unter Verwendung folgender Tasten moeglich:
+.sp
+.PD 0
+.TP 12
+.B Abwaertspfeil
+.TP 
+.B j
+.TP 
+.B CTRL-j
+Cursor auf Bildschirm nach unten
+.sp
+.TP
+.B Aufwaertspfeil
+.TP
+.B k
+.TP
+.B CTRL-k
+Cursor auf Bildschirm nach oben
+.sp
+.TP
+.B f 
+.TP
+.B w
+Cursor nach rechts
+.sp
+.TP
+.B b
+Cursor nach links
+.sp
+.PP
+Druecken der folgenden Tasten fuehrt zur Ausfuehrung
+der beschriebenen Funktionen:
+.sp
+.TP 12
+.B Rechtspfeil 
+.TP
+.B l
+Anzeige des News-Eintrags
+.sp
+.TP
+.B :q
+quit
+.sp
+.TP
+.B ?<CR>
+Anzeige der "help"-Datei
+.sp
+.PD
+.SH OPTIONEN
+.TP
+.B \-h
+Beendet die "Hervorhebung" des durch den Cursor markierten
+Eintrags; "Hervorhebung" ist Standard.
+.SH DATEIEN
+/usr/lib/screen/vnewshelp                "help"-Datei
+.SH SIEHE AUCH
+news(1).
+.SH EINSCHRAENKUNGEN
+Auf vorhergehende Seiten kann nicht zurueckgeblaettert werden.

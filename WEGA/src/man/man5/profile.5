@@ -1,0 +1,40 @@
+.TH PROFILE 5 WEGA
+.\" @[$]profile.5       1.2
+.ad
+.fi
+.SH NAME
+profile \- Setzen der Nutzerumgebung bei Login
+.SH BESCHREIBUNG
+Enthaelt ein Login-Directory eine Datei
+.BR \&.profile ,
+wird diese vor Beginn der Sitzung
+von der Shell
+.BR sh (1)
+ausgefuehrt (Ausfuehrung ueber
+.BR "exec .profile" ).
+In einer
+.BR \&.profile -Datei
+koennen zu exportierende Umgebungsvariablen und Terminalmodi gesetzt werden.
+Existiert die Datei
+.B /etc/profile,
+wird sie fuer jeden Benutzer vor
+.B .profile
+ausgefuehrt. Folgendes Beispiel ist typisch:
+.nf
+.PP
+# Setzen globaler Umgebungsvariablen
+export MAIL PATH TERM
+# Setzen der Dateierstellungsmaske
+umask 22
+# Mitteilung ausloesen, wenn neue Post eintrifft
+MAIL=/usr/mail/myname
+# Einbeziehen eines eigenen /bin-Directorys in den Shell-Suchpfad 
+PATH=$PATH:$HOME/bin
+.RE
+.fi
+.SH DATEIEN
+$HOME/.profile
+.br
+/etc/profile
+.SH SIEHE AUCH
+env(1), login(1), mail(1), sh(1), stty(1), su(1), environ(7), term(7).

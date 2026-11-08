@@ -1,0 +1,295 @@
+.TH SED 1 WEGA
+.\" @[$]sed.1	1.2
+.ad
+.fi
+.SH NAME
+sed \- Streameditor
+.SH SYNTAX
+.B sed
+[
+.B \-e
+\fIscript\fR ] [
+.B \-f
+\fIsfile\fR
+] [
+.B \-n
+] [ \fIfile\fR ] ...
+.SH BESCHREIBUNG
+.B Sed
+kopiert die angegebenen Dateien
+(Standard: stdin),
+die entsprechend einem Kommandoscript editiert wurden,
+auf die Standardausgabe.
+.PP
+Ein Script besteht aus Editorkommandos, von denen
+eins pro Zeile verwendet wird und die die folgende Form haben:
+.IP
+[Adresse [, Adresse] ] Funktion [Argumente]
+.PP
+Bei normaler Bearbeitung
+kopiert
+.B sed
+zyklisch eine Eingabezeile in einen Arbeitsspeicher
+(nicht bei einem D-Kommando),
+wendet der Reihe nach alle Kommandos an, deren
+.I Adresse
+sich auf  den Arbeitsspeicher beziehen,
+kopiert am Ende des Script den Arbeitsspeicher
+auf die Standardausgabe (ausser bei
+.BR \-n )
+und loescht den Arbeitsspeicher.
+.PP
+Eine
+.I Adresse
+ist entweder eine Dezimalzahl, die fortlaufend alle Eingabezeilen der
+Dateien zaehlt,
+oder ein $, das sich auf die letzte Eingabezeile der letzten Datei bezieht,
+oder eine
+Kontextadresse /regulaerer Ausdruck/ (siehe
+.BR ed (1)).
+Sie kann wie folgt modifiziert werden:
+.IP -
+Die Ausgabefolge \en entspricht einem im Arbeitsspeicher enthaltenen
+Newline.
+.IP -
+Eine Kommandozeile ohne Adressen bezieht sich auf jede Zeile.
+.IP -
+Eine Kommandozeile mit einer Adresse bezieht sich auf die Zeile,
+die der Adresse entspricht.
+.IP -
+Eine Kommandozeile mit 2 Adressen bezieht sich auf den Bereich von 
+(einschliesslich) der ersten Zeile, die der ersten Adresse entspricht,
+bis (einschliesslich) der naechsten Zeile, die der zweiten Adresse
+entspricht.
+(Ist die zweite Adresse eine Zahl kleiner als oder gleich
+der zuerst gewaehlten Zeilennummer, wird das Kommando
+nur auf diese Zeile angewandt.)
+Danach wird die Bearbeitung wiederholt, wobei wiederum die erste
+Adresse gesucht wird.
+.DT
+.PP
+Editorkommandos koennen nur unter Verwendung der Negationsfunktion !
+auf nichtselektierte Zeilen angewandt werden.
+.PP
+In der folgenden Liste der Funktionen wird die maximale Anzahl der
+zulaessigen Adressen fuer jede Funktion in Klammern angegeben.
+.PP
+Ein als
+.I text
+gekennzeichnetes Argument besteht aus einer oder mehr Zeilen, die alle mit
+Ausnahme der letzten mit einem \e enden, um das Newline zu vermeiden.
+Ein Backslash im Text wird wie ein Backslash in der 
+Substitutionszeichenkette eines s-Kommandos behandelt
+(schuetzt fuehrende Leerzeichen und Tabulatoren).
+.PP
+Ein als
+.I rfile
+oder
+.I wfile
+bezeichnetes Argument muss
+die Kommandozeile abschliessen. Ihm muss genau ein Leerzeichen 
+vorangestellt werden.
+Alle
+.I wfile
+werden vor Beginn der Bearbeitung angelegt.
+Es koennen hoechstens 10 verschiedene
+.I wfile
+Argumente vorliegen.
+.TP 6
+(1)\|a\e
+.br
+.ns
+.TP
+.I text
+Anfuegen.
+Vor dem Lesen der naechsten Eingabezeile wird
+.I text
+in die Ausgabe gegeben.
+.TP
+.RI (2)\|b " marke"
+Es wird zum : Kommando verzweigt, dem die Marke
+vorangestellt ist.
+Ist keine Marke
+vorhanden, wird ans Ende des Script verzweigt.
+.TP
+(2)\|c\e
+.br
+.ns
+.TP
+.I text
+Aendern.
+Der Arbeitsspeicher wird geloescht und
+.I text
+wird ausgegeben.
+Auch wenn zwei Adressen angegeben sind, wird
+.I text
+nur einmal ausgegeben (nach der zweiten Adresse).
+Der naechste Zyklus wird begonnen.
+.TP
+(2)\|d
+Arbeitsspeicher loeschen (keine Ausgabe).
+Der naechste Zyklus wird begonnen.
+.TP
+(2)\|D
+Loescht die erste Zeile des Arbeitsspeichers einschliesslich Newline.
+Der naechste Zyklus wird begonnen.
+.TP
+(2)\|g
+Inhalt des Arbeitsspeichers durch Inhalt des
+Zwischenspeichers ersetzen.
+.TP
+(2)\|G
+Inhalt des Zwischenspeichers an den Arbeitsspeicher anfuegen.
+.TP
+(2)\|h
+Inhalt des Zwischenspeichers durch den Inhalt des Arbeitsspeichers ersetzen.
+.TP
+(2)\|H
+Inhalt des Arbeitsspeichers an Zwischenspeicher anfuegen.
+.TP
+(1)\|i\e
+.br
+.ns
+.TP
+.I text
+Einfuegen.
+.I text
+wird in die Standardausgabe eingefuegt.
+.bp
+.TP
+(2)\|l
+Adressierte Zeilen in spezieller Form ausgeben.
+Nichtdruckbare Zeichen werden im zweistelligen ASCII-Code dargestellt
+und lange Zeilen getrennt.
+.TP
+(2)\|n
+Arbeitsspeicher auf die Standardausgabe kopieren.
+Arbeitsspeicher durch die naechste Eingabezeile ersetzen.
+.TP
+(2)\|N
+Naechste Eingabezeile an den Arbeitsspeicher mit eingelagertem
+Newline anfuegen.
+Die aktuelle Zeilennummer aendert sich.
+.TP
+(2)\|p
+Drucken.
+Arbeitsspeicher auf die Standardausgabe kopieren.
+.TP
+(2)\|P
+Arbeitsspeicher einschliesslich des ersten Newline
+auf die Standardausgabe kopieren.
+.TP
+(1)\|q
+Quit.
+Beenden der Arbeit mit
+.BR sed
+nach der adressierten Zeile.
+Es wird kein neuer Zyklus begonnen.
+.TP
+.RI (2)\|r " rfile"
+Der Inhalt von
+.IR rfile 
+wird gelesen.
+Er wird vor dem Lesen der naechsten Eingabezeile ausgegeben.
+.TP
+.RI (2)\|s /regulaerer\ Ausdruck/Ersetzung/flags
+Im Arbeitsspeicher werden alle auftretenden regulaeren Ausdruecke
+durch die Substitutionszeichenkette ersetzt.
+Anstelle von / kann jedes beliebige Zeichen verwendet werden.
+Ausfuehrlichere Beschreibung siehe
+.BR ed (1).
+.IR Flags :
+.RS
+.TP
+g
+Global.
+Alle auftretenden, sich nicht ueberschneidenden
+regulaeren Ausdruecke
+werden ersetzt.
+.TP
+p
+Arbeitsspeicher ausgeben, wenn eine Substitution erfolgte.
+.TP
+.RI w " wfile"
+Schreiben.
+Arbeitsspeicher an 
+.I wfile
+anfuegen, wenn eine Substitution erfolgte.
+.RE
+.TP
+.RI (2)\|t " marke"
+Testen.
+Verzweigen zum : Kommando, dem die Marke
+vorangestellt ist, wenn seit dem letzten Lesen einer Eingabezeile
+oder der Ausfuehrung eines 
+\fIt\fR Substitutionen erfolgten. Ist keine Marke
+vorhanden, wird bis ans Scriptende verzweigt.
+.TP
+.RI (2)\|w " wfile"
+Schreiben.
+Arbeitsspeicher an
+.IR wfile
+anfuegen.
+.TP
+.RI (2)\|x
+Inhalt von Arbeits- und Zwischenspeicher austauschen.
+.TP
+.RI (2)\|y /string1/string2/
+Transformieren.
+Alle in
+.I string1
+auftretenden Zeichen durch das entsprechende Zeichen in
+.I string2
+ersetzen.
+Die Laenge von
+.I string1
+muss gleich der Laenge von
+.I string2
+sein.
+.TP
+.RI (2)! " function"
+(Vorsicht!)
+.I function
+(oder Gruppe, wenn
+.I function
+in geschweiften Klammern steht) nur auf Zeilen anwenden, die
+.I nicht
+von der Adresse/den Adressen
+ausgewaehlt wurden.
+.TP
+.RI (0)\|: " marke"
+Dieses Kommando erzeugt eine Marke
+fuer \fIb\fR und \fIt\fR Kommandos.
+.TP
+(1)\|=
+Die aktuelle Zeilennummer wird als eine Zeile in die Standardausgabe gegeben.
+.TP
+(2)\|{ \|}
+Die eingeschlossenen Kommandos werden
+erst dann bearbeitet,
+wenn der Arbeitsspeicher ausgewaehlt wurde.
+Die schliessende Klammer muss auf einer separaten Zeile stehen.
+.TP
+(0)\|
+Ein leeres Kommando wird ignoriert.
+.SH OPTIONEN
+.TP
+.BI \-f " sfile"
+Script wird aus der Datei
+.IR sfile
+genommen; diese Optionen akkumulieren.
+.TP
+.BI \-e " script"
+\fBSed\fR-Kommandos.
+Gibt es nur eine \fB\-e\fR Option und kein
+.BR \-f
+Option, kann
+.B \-e
+entfallen.
+.TP
+.B \-n
+Standardausgabe wird unterdrueckt
+(Zeilen, fuer die ein p- oder s-Kommando mit p-Flag
+angegeben ist, werden ausgegeben).
+.SH SIEHE AUCH
+ed(1), grep(1).

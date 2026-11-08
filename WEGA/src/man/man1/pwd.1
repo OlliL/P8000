@@ -1,0 +1,24 @@
+.TH PWD 1 WEGA
+.\" @[$]pwd.1	1.2
+.ad
+.fi
+.SH NAME
+pwd \- Ausgabe des Namens des aktuellen Directorys
+.SH SYNTAX
+.B pwd
+.SH BESCHREIBUNG
+.B Pwd\^
+gibt den Pfadnamen des aktuellen Directorys (in dem gerade gearbeitet wird)
+aus.
+.SH SIEHE AUCH
+cd(1).
+.SH DIAGNOSTIK
+.PD 0
+.TP
+\&"cannot open .."
+und
+.TP
+"read error in .."
+weisen auf moegliche Stoerungen im
+Dateisystem oder das Fehlen der Zugriffrechte fuer das Directory
+hin.

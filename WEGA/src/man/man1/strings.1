@@ -1,0 +1,44 @@
+.TH STRINGS 1 WEGA
+.\" @[$]strings.1	1.2
+.ad
+.fi
+.SH NAME
+strings \- Zeichenkettenausgabe aus Objekt- oder anderen Binaerdateien
+.SH SYNTAX
+.B strings
+[
+.B \-
+] [
+\fB\-\fInumber\fR
+] [
+.B \-o
+] \fIfile\fR \.\.\.
+.SH BESCHREIBUNG
+.B Strings
+gibt alle Zeichenketten von druckfaehigen Zeichen in
+.I file
+aus, die mehr als 4 Zeichen lang sind.
+Liegt
+.I file
+im Format
+.BR a.out (5)
+vor, sucht
+.I strings
+nur nach Zeichenketten im initialisierten Datenteil.
+.PP
+.I Strings
+ist z.B. nuetzlich fuer die Identifizierung von beliebigen Objektdateien.
+.SH OPTIONEN
+.TP
+.B \-
+Es wird die gesamte Datei geprueft, auch wenn sie im Objektformat steht
+(d.h. auch der Textbereich).
+.TP
+\fB\-\fInumber\fR
+.I number
+ist die minimale Zeichenkettenlaenge (Standard: 4).
+.TP
+.B \-o
+Das Offset jeder Zeichenkette wird oktal ausgegeben.
+.SH SIEHE AUCH
+od(1).

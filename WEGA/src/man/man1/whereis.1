@@ -1,0 +1,81 @@
+.TH WHEREIS 1 WEGA
+.\" @[$]whereis.1	1.2
+.ad
+.fi
+.SH NAME
+whereis \- Sucht Quelle, Binaerdatei und Handbucheintrag eines Programms
+.SH SYNTAX
+.B whereis
+[
+.B \-bms
+] [
+.B \-u
+] [
+.B \-BMS
+dir ...
+.B \-f
+] 
+.I file ...
+.SH BESCHREIBUNG
+.B Whereis
+ermittelt die Pfadnamen der Quelle, der Binaerdatei sowie des
+entsprechenden Eintrags im Online-Handbuch
+fuer die angegebenen Dateien.
+.PP
+Zuerst wird der Basisname der Datei (nur die letzte Komponente des Pfadnamens)
+ohne nachgestellte Erweiterungen der Form ".ext" (z.B. ".c") gebildet.
+.B Whereis
+sucht das gewuenschte Programm in einer Liste von
+Standarddirectories.
+.SH OPTIONEN
+.TP 8
+.B \-b
+Es werden nur Binaerdateien gesucht.
+.TP
+.B \-f
+In der Kommandozeile wird die letzte Directoryliste
+(nach einer der Optionen
+.B \-B
+.B \-M
+und
+.BR \-S )
+beendet. Es folgen Dateinamen.
+.TP
+.B \-m
+Es wird nur nach Handbucheintraegen gesucht.
+.TP
+.B \-s
+Es wird nur nach Quellen gesucht.
+.TP
+.B \-u
+Es werden die in der Kommandozeile spezifizierten Dateien ausgegeben,
+fuer die keine Dateien (Quellen, Binaerdateien oder Handbucheintraege)
+gefunden werden, die den angegebenen Optionen entsprechen.
+Z.B. sucht "whereis -m -u *" nach Dateien ohne Dokumentation
+im aktuellen Directory.
+.TP
+.BI -B \ dir
+Anderer Suchpfad (vollstaendiger Pfadname), sonst wie
+.BR -b .
+.TP
+.BI -M \ dir
+Anderer Suchpfad (vollstaendiger Pfadname), sonst wie
+.BR -m .
+.TP
+.BI -S \ dir
+Anderer Suchpfad (vollstaendiger Pfadname), sonst wie
+.BR -s .
+.SH BEISPIEL
+Es werden alle Dateien in /usr/bin gesucht, die keine Dokumentation
+in /usr/man/man1 besitzen und deren Quelle sich nicht in /usr/src/cmd
+befindet:
+.IP
+cd /usr/bin
+.br
+whereis \-u \-M /usr/man/man1 \-S /usr/src/cmd \-f *
+.SH DATEIEN
+/usr/src/*                          Standardsuchpfad fuer Quellen
+.br
+/usr/{doc,man}/*                    Standardsuchpfad fuer Quellen
+.br
+/lib, /etc, /usr/{lib,bin}, /z/bin  Standardsuchpfad fuer Binaerdateien

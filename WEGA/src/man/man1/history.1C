@@ -1,0 +1,60 @@
+.TH HISTORY 1C WEGA
+.\"@[$]history.1C	1.2
+.ad
+.fi
+.SH NAME
+history \- Ausgabe der Liste vorher benutzter Kommandos
+.SH SYNTAX
+\fBhistory\fR
+.br
+\fBset history=\fIN\fR
+.SH BESCHREIBUNG
+Unter Steuerung der C-Shell werden alle Kommandos,
+die ueber das Terminal eingegeben werden,
+in einer durchnummerierten Liste (History-Liste) abgelegt.
+Den Inhalt der History-Liste kann man sich mit dem Kommando
+.sp
+.RS
+\fBhistory
+.RE
+.PP
+ausgeben lassen.
+.PP
+Die Groesse der History-Liste wird durch die
+History-Shellvariable bestimmt und kann ueber das Kommando
+.sp
+.RS
+\fBset history=\fIN\fR
+.RE
+.sp
+neu festgelegt werden.
+\fIN\fR ist dabei die gewuenschte Groesse der History-Liste
+(Standardwert ist 18).
+.PP
+Auf die Kommandozeilen in der History-Liste (auch
+Ereignisse genannt) kann auf folgende Weise zugegriffen werden:
+.RS
+.IP !n 11
+Ereignisnummer n
+.IP !-m 11
+Das gewuenschte Ereignis ist m Ereignisse frueher (aelter)
+als das gegenwaertige Ereignis.
+.IP !p 11
+Praefix eines Kommandos in einem Ereignis.
+.IP !?string? 11
+Zeichenkette in einem Ereignisargument; das nachgestellte
+Fragezeichen "?" kann weggelassen werden, wenn kein Argument mehr folgt.
+.IP !! 11
+Unmittelbar vorhergehendes Ereignis.
+.RE
+.PP
+Eine History-Referenz kann auch
+ohne eine Ereignisspezifikation angegeben werden -
+z.B.: !$.
+Die Referenz bezieht sich dann auf das vorhergehende Kommando, wenn
+nicht schon eine fruehere History-Referenz auf die gleiche Zeile
+zeigte.
+.SH SIEHE AUCH
+set(1C), setenv(1C).
+.br
+"Die C-Shell" im Dokumentationsband WEGA-Dienstprogramme

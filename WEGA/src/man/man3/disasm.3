@@ -1,0 +1,205 @@
+.TH DISASM 3  
+.\" @[$]disasm.3        1.2
+.ad
+.fi
+.SH NAME
+disasm, disinit \- Rueckuebersetzen von U8000-Assemblerbefehlen 
+.SH SYNTAX
+.nf
+\fB#include <disasm.h>
+.PP
+\fBdisinit\fI(getfunc,symfunc,flag)\fR
+.br
+\fBunsigned \fI*(getfunc)();\fR
+.br
+\fBint \fI*(symfunc)();\fR
+.br
+\fBint \fRflag;
+.PP
+\fIADDR *\fBdisasm\fI(adr,space,insptr)\fR
+.br
+\fI ADDR \fI*adr;\fR
+.br
+\fBint\fI space;\fR
+.br
+\fI INSTR *insptr;\fR
+.fi
+.PP
+Die Befehle
+.BR cc (1)
+und
+.BR scc (1)
+verarbeiten die Option
+.B -lu8000
+fuer den Zugriff zur richtigen Bibliothek.
+.SH BESCHREIBUNG
+Diese Funktionen werden benutzt, um Binaerwoerter in die aequivalenten
+U8000-Assemblerbefehle zurueckzuuebersetzen.
+Die Routinen verarbeiten segmentierte und nichtsegmentierte Codes sowie 
+Gleitkommabefehle.
+.I Disinit
+wird vor
+.B disasm
+aufgerufen, um die verschiedenen Parameter zu initialisieren,
+die die Rueckuebersetzungsroutinen benoetigen.
+Die Datei
+.B <disasm.h>
+enthaelt die verschiedenen Strukturen, Variablen und Konstanten, die zur 
+Kommunikation mit
+.B disasm
+benutzt werden:
+.RS
+.nf
+
+typedef struct address { char a_segno;
+              long a_offset;
+            } ADDR;
+
+typedef struct _instr { char *d_opcode;
+               char *d_operand[4];
+               char *d_comment;
+             } INSTR;
+
+#define NON_SEG 0
+#define SEG     1
+
+#define ISYMBOL 0
+#define DSYMBOL 1
+
+int     disinit();
+ADDR    *disasm();
+
+.fi
+.RE
+.PP
+.IR Getfunc
+ist die Adresse einer Routine, die
+.B disasm
+zur Bereitstellung rueckzuuebersetzender Worte benutzt.
+Die Aufrufsequenz ist:
+.RS
+.nf
+.sp
+\fBgetfunc\fR(\fIadr,space)\fR
+     \fIADDR *adr;
+     \fBint \fIspace;\fR
+.fi
+.sp
+.RE
+wobei
+.IR adr
+ein Pointer auf eine Struktur ist, die die Adresse des durch
+.B disasm
+angeforderten Wortes enthaelt.
+.IR Space
+ist ein Integerwert, der den an
+.B disasm
+zu uebergebenden Wert enthaelt (siehe unten).
+.PP
+.IR Symfunc
+ist die Adresse einer von
+.B disasm
+gerufenen Routine, die 
+die Umcodierung hexadezimaler
+Adressen in symbolische Darstellungen ermoeglicht.
+Die Aufrufsequenz ist:
+.RS
+.nf
+.sp
+\fBsymfunc\fR(\fIadr,symtype,s)
+     \fIADDR *adr;
+     \fRint \fIsymtype;
+     \fRchar *\fIs;\fR
+.fi
+.sp
+.RE
+Dabei gibt
+.IR adr
+die umzucodierende Adresse an.
+.IR Symtype
+enthaelt entweder ISYMBOL oder DSYMBOL (Definition in
+.B  <disasm.h>)
+zur Interpretation der Adresse im Befehls- oder Datenbereich.
+Der Zeichenpointer
+.I s
+bezeichnet die Adresse, wo die mit einem Nullbyte endende
+Zeichenkette abgelegt werden soll.
+Bei Programmen, die keine Symbole behandeln, genuegt eine einfache Funktion,
+die 
+.br
+.sp
+sprintf(s,"%%%04X",adr->a_offset); /* nichtsegmentiertes Beispiel */
+.br
+.sp
+enthaelt.
+.PP
+.IR Flag
+zeigt an, ob die Information als segmentierter (flag=SEG)
+oder nichtsegmentierter (flag=NON_SEG)
+Code interpretiert werden soll
+(Definition in
+.BR <disasm.h> ).
+Alle anderen Werte liefern keine Ergebnisse.
+.PP
+.B Disasm
+ist die Routine, die die Rueckuebersetzung vornimmt.
+.IR Adr
+ist die Adresse einer ADDR-Struktur, die die Anfangsadresse des
+rueckzuuebersetzenden Befehls enthaelt.
+.IR Space
+ist eine ganze Zahl, die Informationen darueber enthaelt, in welchem
+Bereich die rueckzuuebersetzenden Worte sind.
+.B Disasm
+gibt diesen Parameter nur an
+.BR getfunc
+weiter.
+.IR Insptr
+ist die Adresse einer INSPTR-Struktur (Definition in
+.BR <disasm.h> ),
+in die 
+.B disasm
+den rueckuebersetzten Befehl zurueckgibt.
+Sie enthaelt fuenf mit einem Nullbyte endende Zeichenkettenfelder:
+einen Opcode, vier Operanden und einen Kommentar.
+Das Opcodefeld enthaelt das Standardmnemonic
+fuer den entschluesselten Befehl (siehe unten, Fehler).
+Bei EPU-Befehlen wird eine spezielle Notation benutzt.
+.PP
+Die Operanden-Felder enthalten bis zu vier mit einem Nullbyte endende 
+Zeichenketten, die die umcodierten Operanden enthalten.
+Existiert fuer einen bestimmten Befehl kein Operand, ist das erste
+Zeichen dieses Feldes eine Null. Das letzte Feld, das Kommentarfeld
+enthaelt Zusatzinformationen.
+So enthaelt z.B. die Rueckuebersetzung des Befehls
+.B "sc  #5",
+ein Kommentarfeld mit der Zeichenkette "! open !"
+(Systemruf
+.BR open (2)).
+.PP
+.B Disasm
+gibt einen Pointer auf die ADDR-Struktur zurueck, der die Adresse
+des Anfangs des naechsten Befehls enthaelt, falls eine erfolgreiche
+Abarbeitung erfolgte. Im Falle eines Fehlers wird eine Null geliefert.
+Ein Fehler wird angezeigt, wenn
+.B disasm
+den gegebenen Code nicht in einen Befehl umcodieren kann.
+In diesem Fall enthaelt das Opcode-Feld eine Zeichenkette der Form
+%xxxx, wobei xxxx die hexadezimale Darstellung des an 
+.B disasm
+gegebenen Wortes ist.
+Bei einem Fehler beginnen alle Felder, mit Ausnahme des Opcode-Feldes,
+mit einer Null.
+.SH DATEIEN
+/usr/lib/libu8000.a     /usr/lib/slibu8000.a
+.SH SIEHE AUCH
+adb(1).
+.SH DIAGNOSTIK
+Statt eines Pointers wird eine Null zurueckgegeben, wenn der Befehl
+nicht rueckuebersetzt werden kann.
+.SH EINSCHRAENKUNGEN
+.B Disasm
+verarbeitet gueltige Befehle immer korrekt. Es ist jedoch moeglich,
+dass ungueltige binaere Folgen als gueltige Befehle fehlinterpretiert
+werden.
+Das tritt am haeufigsten bei Gleitkommabefehlen auf, bei denen einige
+Bits konstante Felder enthalten, die kein Opcode-Feld sind.

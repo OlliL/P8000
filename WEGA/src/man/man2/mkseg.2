@@ -1,0 +1,64 @@
+.TH MKSEG 2 WEGA
+.ad
+.fi
+.SH NAME
+mkseg \- Erzeugen eines Segmentes
+.SH SYNTAX
+.B char *mkseg
+.I (segno,size);
+.br
+.B unsigned
+.I segno, size;
+.SH BESCHREIBUNG
+Der Systemruf
+.B mkseg
+erzeugt ein neues, namenloses, privates Segment und 
+gibt einen Pointer auf dieses Segment zurueck.  
+Das Segment wird mit einer Groesse von \fIsize\fR Bytes erzeugt
+(abgerundet auf die naechstliegende 256 Byte-Grenze).
+Das Segment ist mit Nullen gefuellt.
+Der rufende Prozess
+muss im segmentierten Modus arbeiten.
+.PP
+Der Parameter
+.I segno
+spezifiziert eine bevorzugte Segmentnummer (1 - 127).
+Ist fuer
+.I segno
+ein Wert 0 angegeben,
+weist das System das naechste freie Segment ( >=4 ) zu.
+.PP
+.SH SIEHE AUCH
+sgbrk(2), exec(2), sgstat(2), sld(1).
+.SH DIAGNOSTIK
+.B Mkseg
+gibt einen Wert -1L als Fehler zurueck, wenn gilt:
+.TP 11
+\%[ENOMEM]
+Das Segment passt nicht in den Speicher.
+.PD 0
+.TP 11
+\%[ENOSEG]
+Die bevorzugte Segmentnummer ist unzulaessig.
+.TP 11
+\%[ENOSEG]
+Fuer den Prozess existieren zu viele Segmente.
+.TP 11
+\%[ENOSEG]
+Das bevorzugte Segment ist bereits zugewiesen.
+.PD
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT MKSEG  := 55
+
+Nur segmentiert:
+
+     ...             !* r0 : segno *!
+                     !* r1 : size *!
+     subl   rr4, rr4
+     sc     #MKSEG
+     ...             !* Rueckgabewert in rr4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

@@ -1,0 +1,93 @@
+.TH COL 1 WEGA
+.\" @[$]col.1	1.2
+.ad
+.fi
+.SH NAME
+col \- Filter fuer die Druckerausgabe nach Bearbeitung mit nroff
+.SH SYNTAX
+\fBcol\fR [\fB\-bfx\fR] [ < \fIfile\fR] 
+.br
+\fBnroff\fI file\fB | col\fR
+.SH BESCHREIBUNG
+Dieser Filter loescht Steuerzeichen fuer
+halbzeiligen Vorschub und Rueckwaertslauf,
+die durch \fBnroff\fR(1) erzeugt wurden.
+.PP
+Fuer die Darstellung von Gleichungen, Tabellen oder Mehrspaltenausgaben
+auf einem Geraet, das keinen Rueckwaertslauf ausfuehren kann,
+(z.B. ein Terminal) ist
+.B nroff
+ohne die -T Option zu benutzen und die Ausgabe mit
+.B col zu filtern.
+.LP
+.B Col
+wird auch verwendet, um die Ausgabe an ein TTY37 zu optimieren.
+In diesem Fall ist die -f Option zu verwenden.
+.LP
+Die wichtigsten Eigenschaften von
+.B col
+sind:
+.TP
+\+
+.B Col 
+wandelt die Sequenzen fuer ganzzeiligen 
+Rueckwaertslauf (ESC-7), halbzeiligen Rueckwaertslauf (ESC-8) und
+halbzeiligen Vorschub (ESC-9) in eine Form um, die fuer Geraete ohne
+diese Moeglichkeiten nutzbar ist. Dazu werden die
+Textzeilen in einem internen Puffer ueberlagert.
+VT (^K)
+ist als ganzzeiliger Rueckwaertslauf definiert.
+.TP
+\+
+.B col
+ersetzt Leerzeichen durch gleichwertige Tabulatoren, wo es moeglich
+ist.
+Der Tabulator ist auf die neunte Spalte und anschliessend auf jede
+achte Spalte gesetzt.
+.TP
+\+
+.B Col 
+streicht ein SI und SO fuer einzelne Buchstaben
+(Umschaltung auf anderen Zeichensatz),
+um unnoetige Umschaltfolgen zu vermeiden.
+.B Col
+kann fuer die Optimierung jeder Nutzung von SI und SO fuer
+einen veraenderlichen Zeichensatz verwendet werden.
+.TP
+\+
+.B Col
+streicht alle Steuerzeichen ausser:
+.sp
+- ESC (escape, hexadezimal 0x1b), wenn eine 7, 8 oder 9 folgt,
+.br
+- SP (space, 0x20),
+.br
+- BS (backspace, 0x08),
+.br
+- HT (tab, 0x09),
+.br
+- CR (return, 0x0d),
+.br
+- NL (newline, 0x0a),
+.br
+- SI (shift in, 0x0f),
+.br
+- SO (shift out, 0x0e).
+.SH OPTIONEN
+.IP -b
+Fuer ein Geraet, das kein Backspace ausfuehren kann,
+wird eine nutzbare Ausgabe erzeugt.
+Bei einer Folge von uebereinandergeschriebenen Zeichen wird 
+nur das letzte ausgegeben.
+.IP -f
+Streicht alle Rueckwaertslaeufe, erlaubt aber halbzeiligen
+Vorschub (ESC-9).
+.IP -x
+Es werden keine neuen Tabulatorzeichen erzeugt.
+.SH SIEHE AUCH
+nroff(1), tbl(1), eqn(1), ascii(7)
+.SH EINSCHRAENKUNGEN
+Es werden nicht mehr als 128 Zeilen im Hintergrund zwischengespeichert.
+.LP
+Es sind nicht mehr als 800 Zeichen auf einer Zeile (einschliesslich
+Backspace) zulaessig.

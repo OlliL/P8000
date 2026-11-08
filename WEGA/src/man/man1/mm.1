@@ -1,0 +1,201 @@
+.TH MM 1 WEGA 
+.\" @[$]mm.1	1.2
+.ad
+.fi
+.SH NAME
+mm \- Erzeugung von Dokumenten mit MM-Makropaket mit nroff
+.SH SYNTAX
+.B mm
+[ \fIoptions\fR ] [ \fIfiles\fR ]
+.SH BESCHREIBUNG
+.B Mm\^
+erstellt aus den angegebenen Dateien
+.I files
+(Minuszeichen fuer Standardeingabe)
+unter Benutzung des Programms
+\fBnroff\fR(1) und dem \fBMM\fR
+Textformatierungsmakropaket druckbare Dokumente.
+Es besitzt Optionen, um die Vorverarbeitung durch
+\fBtbl\fR(1) und/oder
+.BR neqn (1)
+und die Nachverarbeitung durch verschiedene terminalorientierte
+Ausgabefilter zu spezifizieren.
+Die entsprechenden Pipelines und die erforderlichen Argumente
+sowie die Flags fuer
+\fBnroff\fR(1) und \fBMM\fR werden in Abhaengigkeit von den 
+ausgewaehlten Optionen erzeugt.
+.PP
+Die
+.I Optionen\^
+fuer
+.B mm\^
+sind unten angefuehrt.
+Alle anderen Argumente oder Flags (z.B.
+.BR \-rC3 )
+werden an
+.BR nroff (1)
+oder
+.SM MM\*S,
+weitergeleitet.
+Solche Optionen koennen in beliebiger Reihenfolge auftreten,
+sie muessen jedoch vor den Dateinamenargumenten
+.I files\^
+erscheinen.
+Falls keine Argumente angegeben sind, druckt 
+.B mm\^
+eine Liste seiner Optionen aus.
+.SH OPTIONEN
+.TP
+.B \-12
+Das Dokument ist mit einer Schrittlaenge (Zeichenabstand) von 12 zu erstellen.
+Die Option kann benutzt werden, wenn
+.SM
+.I $TERM
+auf einen der folgenden Werte gesetzt ist:
+.BR 300 ,
+.BR 300s ,
+.BR 450 ,
+und
+.BR 1620 .
+.TP
+.B \-c
+Aufruf von
+.BR col (1). 
+Beachte, dass
+.BR col (1)
+automatisch von
+.B mm\^
+aufgerufen wird, es sei denn, dass
+.I term\^
+einen der folgenden Werte hat:
+.BR 300 ,
+.BR 300s ,
+.BR 450 ,
+.BR 37 ,
+.BR 4000A ,
+.BR 382 ,
+.BR 4014 ,
+.BR tek ,
+.BR 1620 ,
+und
+.BR X .
+.TP
+.B \-E
+Aufruf der Option
+.B \-e
+von
+.BR nroff (1).
+.TP
+.B \-e
+Aufruf von
+.BR neqn (1).
+.TP
+.BI \-T term
+Typ des Ausgabeterminals.
+Standard fuer
+.I term
+ist die Umgebungsvariable
+.I $TERM
+(siehe
+.BR profile (5)
+und
+.BR environ (7))
+bzw.
+.BR 450 ,
+falls
+.I $TERM
+nicht definiert ist.
+Sind mehrere Terminaltypen angegeben, wird der letzte genommen.
+.TP
+.B \-t
+Aufruf von
+.BR tbl (1).
+.TP
+.B \-y
+Benutzt die nichtkompakte Makroversion (siehe
+.BR mm (7)).
+.PD
+.SH HINWEISE
+.TP
+1.
+.B Mm\^
+ruft
+.BR nroff (1)
+mit dem Flag
+.B \-h
+auf.
+Mit diesem Flag setzt
+.BR nroff (1)
+voraus, dass das Terminal Tabulatorpositionen auf jedem 8. Zeichen hat.
+.TP
+2.
+Die Option
+.BI \-o list\^
+von
+.BR nroff (1)
+ist zu verwenden,
+um den auszugebenden Seitenbereich festzulegen.
+Der Aufruf von
+.B mm 
+mit einer oder mehreren Optionen
+.BR \-e ,
+.BR \-t ,
+und
+.B \-
+zusammen mit der Option
+.BI \-o list\^
+von
+.BR nroff (1)
+kann einen harmlosen Fehler "broken pipe" bewirken,
+falls die letzte Seite des Dokuments nicht in
+.IR list 
+spezifiziert ist.
+.TP
+3.
+Bei der Verwendung der Option
+.B \-s
+von
+.BR nroff (1)
+(um die Ausgabe zwischen Seiten zu stoppen),
+ist Linefeed zu benutzen (besser als Return oder Newline),
+um die Ausgabe neu zu starten.
+Die Option
+.B \-s
+von
+.BR nroff (1)
+arbeitet nicht mit der Option
+.B \-c
+von
+.BR mm 
+zusammen.
+Gleiches gilt, wenn
+.B mm\^
+automatisch
+.BR col (1)
+aufruft (siehe
+.B \-c ).
+.TP
+4.
+Wurde beim Aufruf von
+.B mm\^
+nicht der richtige Terminaltyp angegeben,
+wird die Ausgabe fehlerhaft ausgedruckt.
+Soll die Ausgabe in eine Datei umgelenkt werden, ist die Option
+.B \-T37
+zu verwenden und zur Ausgabe ein entsprechender Terminalfilter
+(z.B.
+.BR col (1))
+zu benutzen.
+.PD
+.br
+.ne 4
+.SH SIEHE AUCH
+.tr ~
+col(1), env(1), eqn(1), greek(1), mmt(1), nroff(1), tbl(1),
+profile(5), mm(7), term(7).
+.br
+"MM\-Memorandum Makros\^" in WEGA-Dienstprogrammen
+.SH DIAGNOSTIK
+.tr ~~
+"mm: no input file" erscheint, wenn keine der Dateien eine
+lesbare Datei ist und \fBmm\fR nicht als Filter benutzt wird.

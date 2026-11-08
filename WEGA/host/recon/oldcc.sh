@@ -50,7 +50,8 @@ model)
 	prog=${2:-cparse}
 	printf '#!/bin/sh\nexec %s -r %s /bin/ccv0p "$@"\n' $EMU $OLDROOT > $RECON_TMP/ccv0pw
 	chmod +x $RECON_TMP/ccv0pw
-	cd $REPO/src/cmd/$prog || exit 1
+	case $prog in spopt) dir=popt ;; scparse) dir=cparse ;; scodgen) dir=codgen ;; *) dir=$prog ;; esac
+	cd $REPO/src/cmd/$dir || exit 1
 	make -s -C $REPO/host/cas casold
 	RECON_PROG=$prog CAS=${CAS:-$REPO/host/cas/casold} CCHOST=$RECON_TMP/ccv0pw python3 $HERE/d12model.py -q 2>&1 | tail -2
 	RECON_PROG=$prog python3 $HERE/strictcmp.py > $RECON_TMP/oldcc_model_$prog.txt 2>&1

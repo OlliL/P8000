@@ -1,0 +1,119 @@
+.TH EXPR 1 WEGA
+.\" @[$]expr.1	1.2
+.ad
+.fi 
+.SH NAME
+expr \- Berechnung von Ausdruecken
+.SH SYNTAX
+.B expr
+arg
+.B .\|.\|.
+.SH BESCHREIBUNG
+Die Argumente werden als Ausdruck betrachtet.
+Nach der Berechnung wird das Ergebnis an die Standardausgabe ausgegeben.
+Jeder Bestandteil des Ausdrucks ist ein separates Argument.
+.PP
+Die moeglichen Operatoren und Schluesselwoerter werden unten erlaeutert.
+Sie sind nach aufsteigender Prioritaet geordnet, wobei
+Operatoren mit gleicher Prioritaet jeweils zu einer Gruppe
+zusammengefasst sind.
+.TP
+.B expr1 | expr2
+liefert den ersten Ausdruck
+.BR expr1 ,
+wenn er weder Null noch '0' ist; andernfalls wird der zweite Ausdruck
+.B expr2
+geliefert.
+.TP
+.B expr1 & expr2
+sind beide Ausdruecke ungleich Null oder '0', wird
+.BR expr1
+geliefert; andernfalls wird '0' geliefert.
+.TP
+.B expr
+.I relop
+.B expr
+.br
+Hierbei ist
+.I relop 
+einer der Operatoren <, <=, =, !=, >=, oder > .
+Das Ergebnis ist '1', wenn der ausgefuehrte Vergleich
+wahr ist. Sonst wird '0' geliefert.
+Der Vergleich ist numerischer Art, falls beide
+.B expr
+ganze Zahlen sind; andernfalls wird ein lexikographischer
+Vergleich durchgefuehrt.
+.TP
+.BR expr " + " expr
+.TP
+.BR expr " - " expr
+.br
+Addition oder Subtraktion der Argumente
+.TP
+.BR expr " * " expr
+.TP
+.BR expr " / " expr
+.TP
+.BR expr " % " expr
+.br
+Multiplikation, Division oder Rest der Division der Argumente
+.TP
+.BR expr " : " expr
+Der Vergleichsoperator vergleicht die Zeichenkette des ersten Arguments
+mit dem regulaeren Ausdruck des zweiten Arguments.
+Fuer regulaere Ausdruecke wird die Syntax von
+.BR ed (1)
+benutzt.  Die
+\fB\\(\|.\|.\|.\|\\)\fP
+Symbole koennen verwendet werden, um einen Teil des ersten Arguments
+auszuwaehlen;
+andernfalls
+liefert der Vergleichsoperator die Anzahl der uebereinstimmenden Zeichen
+oder '0' bei Ungleichheit.
+.TP
+.B substr string start length
+liefert die Teilzeichenkette mit der Laenge \fBlength\fR aus
+der Zeichenkette \fBstring\fR, die mit \fBstart\fR beginnt (numerischer
+Index, 1 ist das erste Zeichen von \fBstring\fR).
+.TP
+.B length string
+liefert die Laenge der angegebenen Zeichenkette \fBstring\fR
+.TP
+.B index string target
+liefert den Index des ersten Auftretens von irgendeinem Zeichen
+aus \fBtarget\fR in der Zeichenkette \fBstring\fR.
+Die Zeichen von \fBtarget\fR werden nicht als
+Zeichenkette, sondern als einzelne Zeichen behandelt.
+.TP
+.RI ( " expr " )
+Einklammern von Ausdruecken
+.PP
+Beispiele:
+.PP
+Um 1 zu der Shell-Variablen \fIa\fR zu addieren:
+.IP
+a=\`expr $a + 1\`
+.PP
+Um den Dateinamenteil (letzter signifikante Teil) eines
+in der Variablen
+.I a
+enthaltenen Pfadnamens zu erhalten, der '/' enthalten kann:
+.IP
+expr $a : "\&.*/\e(\&.*\e)" "|" $a
+.DT
+.LP
+Zu beachten sind die gekennzeichneten Shell-Metazeichen.
+.SH SIEHE AUCH
+csh(1), ed(1), sh(1), test(1)
+.SH DIAGNOSTIK
+.B Expr
+gibt die folgenden Rueckkehrcodes zurueck:
+.PP
+	0	wenn der Ausdruck weder Null noch '0' ist
+.br
+	1	wenn der Audruck Null oder '0' ist
+.br
+	2	fuer ungueltige Ausdruecke
+.SH EINSCHRAENKUNGEN
+Die Zaehlweise fuer \fIsubstr\fR folgt nicht dem Systemstandard; d.h.
+dass nicht von '0' gezaehlt wird.

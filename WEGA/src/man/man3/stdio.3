@@ -1,0 +1,121 @@
+.TH STDIO 3 WEGA
+.\" @[$]stdio.3 1.2
+.ad
+.fi
+.SH NAME
+stdio \- Standardpaket fuer gepufferte Ein-/Ausgabe
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.PP
+\fBFILE *stdin;
+\fBFILE *stdout;
+\fBFILE *stderr;\fR
+.fi
+.SH BESCHREIBUNG
+Die in der Deklarationsdatei
+\fB<stdio.h>\fR
+beschriebenen Funktionen stellen fuer den Nutzer
+ein effektives System fuer die
+gepufferte Ein-/Ausgabe dar.
+Die Makros
+.BR getc (3)
+und
+.BR  putc (3)
+behandeln Einzelzeichen.
+Die Funktionen
+.IP
+.B "gets, fgets, scanf, fscanf, fread,"
+.B "puts, fputs, printf, fprintf, fwrite"
+.B "fgetc, fputc, getw und putw"
+.PP
+stellen komplexere Funktionen dar, die alle auf die Funktionen
+.B getc
+und
+.B putc
+zurueckgreifen.
+Sie koennen in beliebiger Reihenfolge aufgerufen und kombiniert werden.
+.PP
+Eine Datei, auf die ueber den Puffermechanismus zugegriffen wird,
+heisst Datenstrom oder
+.BR stream .
+Ein Datenstrom wird durch einen Pointer auf den in der Datei
+.B <stdio.h>
+deklarierten Typ
+.B FILE
+vereinbart.
+Die Funktion
+.BR  fopen (3)
+eroeffnet einen Datenstrom und legt dabei verschiedene,
+den Datenstrom beschreibende Informationen an, auf die ueber den
+zurueckgegebenen Dateipointer in nachfolgenden Operationen
+zugegriffen werden kann.
+Der Datenstrom ist ueber diesen Dateipointer eindeutig identifiziert.
+In der Deklarationsdatei sind 3 Datenstroeme mit konstanten Pointern
+deklariert, die vom Betriebssystem eroeffnet werden
+und die folgenden Standard-Dateien zugeordnet sind:
+.RS
+.TP 10
+.B stdin
+Standardeingabedatei
+.PD 0
+.TP
+.B stdout
+Standardausgabedatei
+.TP
+.B stderr
+Standardfehlerausgabedatei
+.RE
+.PD
+.PP
+Der konstante Pointer
+.B NULL
+kennzeichnet einen nicht vorhandenen Datenstrom.
+.PP
+Integer-Funktionen, die sich auf Datenstroeme beziehen, liefern bei
+Auftreten eines Fehlers die ganzzahlige Konstante
+.B EOF
+(\-1). Diese Konstante wird auch bei Erreichen des Dateiendes
+zurueckgegeben.
+.PP
+Jede Funktion, die die Standardein-/ausgaben benutzt, muss die
+Deklarationsdatei <stdio.h> enthalten, in der die noetigen Makrodefinitionen,
+die Funktionen und Konstanten enthalten sind.
+.PP
+Die folgenden Funktionen sind als Makros implementiert.
+Eine Neuvereinbarung der Konstanten sowie dieser Makros sollte nur bei
+genauer Systemkenntnis vorgenommen werden:
+.IP
+.BR getc,
+.BR getchar,
+.BR putc,
+.BR putchar,
+.BR feof,
+.BR ferror,
+.BR fileno .
+.SH SIEHE AUCH
+open(2),
+close(2),
+read(2),
+write(2).
+.SH DIAGNOSTIK
+Der Wert
+.B EOF
+wird zurueckgegeben, wenn folgendes gilt:
+.IP - 3
+Ein Pointer auf
+.B FILE
+wurde nicht durch
+.B fopen
+initialisiert.
+.IP - 3
+Es wurde versucht, eine Eingabe in einen Ausgabestrom
+bzw. eine Ausgabe in einen Eingabestrom
+zu leiten.
+.IP - 3
+Ein
+.B FILE
+Pointer zeigt auf
+verstuemmelte oder anderweitig nichtentzifferbare
+Daten.
+

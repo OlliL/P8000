@@ -1,0 +1,195 @@
+.TH STAT 2 WEGA
+.\" @[$]stat.2  1.2
+.ad
+.fi
+.SH NAME
+stat, fstat \- Dateistatus ermitteln
+.SH SYNTAX
+.B #include <sys/types.h>
+.br
+.B #include <sys/stat.h>
+.PP
+.B int stat
+.I (file, buf)
+.br
+.B char
+.I *file;
+.br
+.B struct stat
+.I *buf;
+.PP
+.B int fstat
+.I (fildes, buf)
+.br
+.B int
+.I fildes;
+.br
+.B struct stat
+.I *buf;
+.SH BESCHREIBUNG
+.B Stat
+liefert detaillierte Informationen ueber die Datei
+.IR file .
+.B Fstat
+liefert die gleichen Informationen ueber eine offene Datei,
+die durch den Dateidescriptor nach einem erfolgreichen 
+.BR open (2),
+.BR creat (2),
+.BR dup (2)
+oder
+.BR pipe (2)
+Systemruf bekannt ist.
+.PP
+.I File
+zeigt auf eine mit einem Null-Byte abgeschlossene Zeichenkette,
+die eine Datei bezeichnet;
+.I buf
+ist die Adresse eines Puffers, in den die Informationen ueber
+die Datei eingetragen werden.
+Es ist nicht erforderlich, hinsichtlich der Datei eine Erlaubnis zu
+besitzen, aber alle zur Datei fuehrenden Directories muessen 
+durchsucht werden koennen.
+Der Aufbau der Struktur
+.IR <stat.h> ,
+auf die
+.I buf
+zeigt, ist unten angegeben.
+.I St_mode 
+wird entsprechend den #define Anweisungen codiert.
+.PP
+.nf
+.na
+struct  stat
+{
+       dev_t          st_dev;
+       ino_t          st_ino;
+       unsigned short st_mode;
+       short          st_nlink;
+       short          st_uid;
+       short          st_gid;
+       dev_t          st_rdev;
+       off_t          st_size;
+       time_t         st_atime;
+       time_t         st_mtime;
+       time_t         st_ctime;
+};
+
+#define   S_IFMT    0170000   /* Dateityp */
+#define   S_IFDIR   0040000   /* Directory */
+#define   S_IFCHR   0020000   /* Character-Special-File */
+#define   S_IFBLK   0060000   /* Block-Special-File */
+#define   S_IFREG   0100000   /* regulaere Datei */
+#define   S_IFMPC   0030000   /* Multiplex Character-Special-File */
+#define   S_IFMPB   0070000   /* Multiplex Block-Special-File */
+#define   S_ISUID   0004000   /* Set-User-ID bei Ausfuehrung */
+#define   S_ISGID   0002000   /* Set-Group-ID bei Ausfuehrung */
+#define   S_ISVTX   0001000   /* Sichern des Textsegments nach Gebrauch */
+#define   S_IREAD   0000400   /* Leseerlaubnis Eigner */
+#define   S_IWRIT   0000200   /* Schreiberlaubnis Eigner */
+#define   S_IEXEC   0000100   /* Ausfuehrungs-/Sucherlaubnis Eigner */
+.fi
+.ad
+.PP
+Durch die Modusbits 0000070 und 0000007 werden die Gruppenerlaubnis
+und andere Erlaubnisse codiert (siehe \fBchmod\fR(2)).
+Die definierten Typen 
+.I ino_t, off_t, time_t
+bezeichnen ganzzahlige Werte unterschiedlicher Groesse;
+.I dev_t
+codiert Major- und Minor-Devicenummern; ihre genaue
+Definition ist in der Datei <sys/types.h> enthalten (siehe \fBtypes\fR(5)).
+.PP
+Ist 
+.I fildes
+mit einem Pipe verbunden, meldet
+.I fstat
+eine normale Datei mit beschraenkten Zugriffsrechten.
+Die Laenge ist die Anzahl der Bytes, die in der Warteschlange in dem
+Pipe gefuehrt werden.
+.PP
+.I St_atime
+gibt den Zeitpunkt an, zu dem die Datei das letzte Mal gelesen wurde.
+Sie wird nicht gesetzt, wenn ein Directory durchsucht wird.
+.I St_mtime
+gibt den Zeitpunkt an, zu dem die Datei zuletzt geschrieben oder
+erstellt wurde.
+Er wird nicht bei Aenderung des Eigentumes, der Gruppe, der 
+Anzahl der Links oder des Modus gesetzt.
+.I St_ctime
+wird sowohl beim Schreiben als auch beim Aendern des i-node gesetzt.
+.SH DIAGNOSTIK
+.B Stat
+wird nicht ausgefuehrt, wenn mindestens einer der folgenden Punkte
+zutrifft:
+.TP 11
+\%[ENOTDIR]
+Eine vordere Komponente des
+Pfadnamens
+ist kein Directory.
+.PD 0
+.TP
+\%[ENOENT]
+Die angegebene Datei existiert nicht.
+.TP
+\%[EACCES]
+Die Sucherlaubnis wird wegen einer der vorderen Komponenten des
+Pfadnamens verweigert.
+.TP
+\%[EFAULT]
+.I Buf
+oder
+.I file
+weisen auf eine ungueltige Adresse hin.
+.PD
+.PP
+.I Fstat
+wird nicht ausgefuehrt, wenn einer oder mehrere der folgenden Punkte
+zutreffen:
+.TP 11
+\%[EBADF]
+.I Fildes
+ist kein gueltiger offener Filedescriptor.
+.PD 0
+.TP
+\%[EFAULT]
+.I Buf
+weist auf eine ungueltige Adresse hin.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird der Wert 0 zurueckgegeben.
+Andernfalls wird der Wert \-1 zurueckgegeben und
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+ls(1), filsys(5).
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT STAT   := 18
+
+Nichtsegmentiert
+     ...             !* r0 : name *!
+                     !* r1 : buf *!
+Segmentiert
+     ...             !* rr0 : name *!
+                     !* rr2 : buf *!
+     clr   r4
+     sc    #STAT
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+  
+     CONSTANT FSTAT  := 28
+
+Nichtsegmentiert
+     ...             !* r0 : fildes *!
+                     !* r1 : buf *!
+Segmentiert
+     ...             !* r0 : fildes *!
+                     !* r1 : Segmentnummer von buf *!
+                     !* r2 : Offset von buf *!
+     clr   r4
+     sc    #FSTAT
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

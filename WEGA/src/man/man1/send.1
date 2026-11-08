@@ -1,0 +1,51 @@
+.TH SEND 1 WEGA
+.\" @[$]send.1	1.2
+.ad
+.fi
+.SH NAME
+SEND \- Auslagern aus dem P8000-Emulator
+.SH SYNTAX
+.B SEND
+\fIfile start end [entry]\fR
+.SH BESCHREIBUNG
+.B SEND
+wird vom Monitor des P8000-Emulators gestartet
+und uebertraegt einen Speicherinhalt des Emulators
+in das WEGA-Dateisystem.
+.B SEND
+erzeugt ein U8000-Speicherabbild in der angegebenen Datei.
+\fIStart, end, \fRund\fI entry \fRsind hexadezimale Adressen
+ohne fuehrendes 0x.
+Weitere Erlaeuterungen befinden sich in "COMM - WEGA-Kommunikation"
+sowie in den Unterlagen zum P8000-Emulator.
+.PP
+Der Standardwert fuer \fIentry\fR ist \fIstart\fR.
+Der Nutzer sollte fuer \fIentry\fR einen Wert angeben.
+Ist fuer \fIentry\fR kein Wert angegeben, muss nach einem
+erneuten Einlagern des Programms in den Emulator der Eintrittspunkt
+explizit spezifiziert werden.
+.PP
+Die Groesse des Textsegments des Lademoduls wird auf die
+Groesse des ausgelagerten Programms gesetzt. Es besteht keine
+Moeglichkeit, Daten- und BSS-Sektionen zu trennen.
+.PP
+Das ausgelagerte Speicherabbild wird als U8000-Programm
+interpretiert und wird im Format
+.BR a.out (5)
+erzeugt.
+Traten waehrend der Uebertragung keine Fehler auf,
+ist die Datei ausfuehrbar.
+Existierende Dateien gleichen Namens werden ueberschrieben.
+Die Datei ist vom Typ N_MAGIC1 (U8000 ausfuehrbar)
+und kann erneut ueber
+.BR LOAD (1)
+in den P8000-Emulator geladen werden.
+.SH SIEHE AUCH
+ld(1), LOAD(1), a.out(5).
+.br
+"COMM - WEGA-Kommunikation" in WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+Die Diagnoseausschriften sind in den Unterlagen zum
+P8000-Emulator erlaeutert.
+.SH EINSCHRAENKUNGEN
+\fIstart\fR muss auf einer 256-Bytegrenze liegen.

@@ -1,0 +1,20 @@
+.TH UNSETENV 1C WEGA
+.\"@[$]unsetenv.1C	1.2
+.ad
+.fi
+.SH NAME
+unsetenv \- Loeschen einer Umgebungsvariablen
+.SH SYNTAX
+\fBunsetenv\fI 
+.I name
+.SH BESCHREIBUNG
+Das Kommando
+.BI unsetenv " name"
+loescht die Umgebungsvariable
+.I name
+aus der Liste der Variablen, die mit dem
+\fBsetenv\fR(1) Kommando gesetzt wurden.
+.SH SIEHE AUCH
+csh(1), env(1), printenv(1), setenv(1C).
+.br
+"Die C-Shell" in WEGA-Dienstprogramme.

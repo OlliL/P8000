@@ -1,0 +1,63 @@
+.TH UMASK 2 WEGA
+.\"@[$]umask.2  1.2
+.ad
+.fi
+.SH NAME
+umask \- Setzen einer Modusmaske fuer Dateierzeugung
+.SH SYNTAX
+.B umask
+.I (cmask)
+.br
+.B int
+.I cmask;
+.SH BESCHREIBUNG
+Die durch den Systemruf
+.B umask
+gesetzte Maske wird zur Bildung des Modus
+bei der Erzeugung von Dateien durch die Systemrufe
+.BR creat (2)
+oder
+.BR mknod (2) 
+verwendet.
+Der aktuelle Modus (siehe
+.BR chmod (2))
+der neu erzeugten Datei wird durch eine logische
+\fBUND\fR-Verknuepfung
+des gegebenen Modus und des Komplements des Arguments gebildet
+(d.h. die Maske gibt die Bits an,
+die bei der Dateierzeugung rueckgesetzt werden).
+Nur die neun niederwertigen Bits der Maske (die Schutzbits) werden
+beruecksichtigt.
+.PP
+Der Wert der Maske ist anfaenglich 0 (keine Einschraenkungen).
+Die Maske wird an die Child-Prozesse vererbt.
+.PP
+Das Argument
+.I cmask
+wird durch ODER-Verknuepfung folgender hexadezimaler Werte gebildet:
+.nf
+
+        0x100           Lesen durch Eigentuemer
+        0x80            Schreiben durch Eigentuemer
+        0x40            Ausfuehrung durch Eigentuemer
+        0x20            Lesen durch Gruppe
+        0x10            Schreiben durch Gruppe
+        0x08            Ausfuehrung durch Gruppe
+        0x04            Lesen durch andere
+        0x02            Schreiben durch andere
+        0x01            Ausfuehrung durch andere
+.fi
+.SH RUECKGABEWERT
+Der vorherige Wert der Dateierzeugungsmaske wird zurueckgegeben.
+.SH SIEHE AUCH
+mkdir(1), mknod(1), sh(1), chmod(2), creat(2), mknod(2), open(2).
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT UMASK  := 60
+
+     ...             !* r0 : cmask *!
+     sc     #UMASK
+     ...             !* Rueckgabewert in r4  *!
+.ad
+.fi

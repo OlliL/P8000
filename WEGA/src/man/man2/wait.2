@@ -1,0 +1,99 @@
+.TH WAIT 2 WEGA
+.\"@[$]wait.2   1.2
+.ad
+.fi
+.SH NAME
+wait \- Warten auf Beendigung eines Prozesses
+.SH SYNTAX
+.B int wait
+.I (status)
+.br
+.B int
+.I *status;
+.PP
+.B int wait((int *) 0)
+.SH BESCHREIBUNG
+.B Wait
+suspendiert den rufenden Prozess, bis ein Signal empfangen wird
+oder einer der Child-Prozesse endet.
+Wurde ein Child-Prozess seit dem letzten Systemruf
+.B wait
+beendet,
+wird sofort zurueckgekehrt.
+Existieren keine Child-Prozesse, wird direkt zurueckgekehrt
+(Fehlerbit ist gesetzt, Rueckgabewert ist \-1).
+Bei normaler Rueckkehr wird die Prozess-ID des beendeten
+Child-Prozesses zurueckgegeben.
+Bei mehreren existierenden Child-Prozessen werden mehrere Systemrufe
+.B wait
+benoetigt, um das Ende aller Child-Prozesse zu ermitteln.
+.PP
+Ist das Argument
+.I status
+ungleich Null,
+wird das niederwertige Byte des Arguments,
+das der beendete Child-Prozess mittels
+.BR exit (2)
+uebergab,
+in das hoeherwertige Byte des durch den Pointer
+.I status
+adressierten Wortes geschrieben.
+Das niederwertige Byte, auf das
+.I status
+zeigt, erhaelt den Rueckkehrstatus des Prozesses (Liste
+der Rueckkehrstati oder auch Signale siehe
+.BR signal (2)).
+Der Status Null zeigt normale Beendigung an.
+Der spezielle Status 0x7f wird fuer einen gestoppten Prozess zureuckgegeben,
+der nicht beendet ist und wieder gestartet werden kann (siehe
+.BR ptrace (2)).
+Ist das siebte Bit (0x80) des Rueckkehrstatus gesetzt,
+wird durch das System ein Speicherabbild des Prozesses (core) erzeugt.
+.PP
+Endet ein Parent-Prozess, ohne auf die Beendigung der Child-Prozesse
+zu warten,
+erbt der Init-Prozess (Prozess-ID = 1) die Child-Prozesse.
+.SH SIEHE AUCH
+exit(2), fork(2), signal(2).
+.SH DIAGNOSTIK
+.B Wait
+meldet Fehler und kehrt direkt zurueck, wenn mindestens eine der
+folgenden Punkte zutrifft:
+.TP 11
+\%[ECHILD]
+Der rufende Prozess hat keine existierenden Child-Prozesse,
+auf die gewartet wird.
+.PD 0
+.TP 11
+\%[EFAULT]
+.I Status
+zeigt auf eine ungueltige Adresse.
+.PD
+.SH RUECKGABEWERT
+Kehrt
+.B wait
+aufgrund des Empfangs eines Signals zurueck, wird der Wert \-1
+an den rufenden Prozess zurueckgegeben.
+.I Errno
+wird zur Anzeige des Fehlers gesetzt [EINTR].
+.br
+Kehrt
+.B wait
+durch einen gestoppten oder beendeten Child-Prozess zurueck,
+wird die Prozess-ID des des Child-Prozesses zum rufenden Prozess
+zurueckgegeben.
+.br
+Anderenfalls wird der Wert \-1 zurueckgegeben und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT WAIT   := 7
+
+     ...
+     sc     #WAIT
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

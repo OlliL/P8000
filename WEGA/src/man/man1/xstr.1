@@ -1,0 +1,131 @@
+.TH XSTR 1 WEGA
+.\" @[$]xstr.1	1.2
+.ad
+.fi
+.SH NAME
+xstr \- Entfernt Zeichenketten aus C-Programmen fuer gemeinsame Nutzung
+.SH SYNTAX
+.B xstr
+[
+.B \-c
+] [
+.B \-
+] [ \fIfile\fR ]
+.SH BESCHREIBUNG
+.B Xstr
+verwaltet eine Datei
+.B strings,
+in die Zeichenketten aus umfangreichen C-Programmen,
+die in mehreren Modulen eines Programms auftreten,
+abgelegt werden.
+Diese Zeichenketten werden aus den C-Programmen herausgeloest,
+durch Pointer ersetzt und in einem
+gemeinsam genutzten Bereich abgelegt (Speicherplatzeinsparung).
+.PP
+Ist fuer
+.I file
+ein "\fB-\fR" angegeben, werden die C-Programme von der
+Standardeingabe gelesen.
+.PP
+Das Kommando
+.PP
+.DT
+	\fBxstr \-c\fR name
+.PP
+entnimmt die Zeichenketten aus der angegebenen C-Quelle und ersetzt sie
+durch Ausdruecke der Form \fB(&xstr[\fIn\fB])\fR , wobei \fIn\fR
+eine Zahl (Feldindex) ist.
+Im C-Programm wird eine entsprechende Deklaration von
+.B xstr
+eingefuegt.
+Der entstehende C-Text wird in der Datei
+.B x.c
+abgelegt und kann uebersetzt werden.
+Bei Angabe der Option
+.B \-c
+werden die herausgeloesten Zeichenketten in der Datei
+.B strings
+gesammelt.
+Mehrfach auftretende Zeichenketten sowie bereits existierende Zeichenketten
+fuehren zu keiner Veraenderung der Datenbasis.
+.PP
+Nachdem alle Komponenten eines umfangreichen Programms
+uebersetzt wurden, kann durch ein Kommando der Form
+.PP
+.DT
+        \fBxstr\fR
+.PP
+die Datei 
+.B xs.c
+angelegt werden, die den gemeinsam genutzten
+Zeichenkettenbereich als C-Quelle enthaelt.
+Diese Datei
+.B xs.c
+ist dann zu uebersetzen und mit dem Rest des Programms
+zu laden.
+Wenn moeglich, kann der Bereich so vereinbart werden, dass
+er nur gelesen werden kann (gemeinschaftlich genutzt),
+wodurch Speicherplatz und Swapbereich gespart wird.
+.PP
+.B Xstr
+kann auch fuer eine einzelne Datei benutzt werden (dann ohne
+.B \-c
+Option).
+Ein Kommando
+.PP
+.DT
+	\fBxstr\fR name
+.PP
+legt die Dateien
+.B x.c
+und
+.B xs.c
+an, ohne dass eine neue
+.B strings
+Datei erzeugt oder die
+.B strings
+Dateien im selben Directory davon beruehrt werden.
+.PP
+.B Xstr
+kann sinnvoll nach dem C-Prozessor abgearbeitet werden, wenn
+Makrodefinitionen Zeichenketten ergeben oder, wenn
+ein bedingter Code vorhanden ist, der Zeichenketten enthaelt,
+die nicht benoetigt werden.
+Die entsprechende Kommandofolge fuer den Ablauf von
+.B xstr
+nach dem C-Prozessor ist:
+.PP
+.nf
+.DT
+	\fBcc \-E\fR name.c | \fBxstr \-c\fR \-
+	\fBcc \-c\fR x.c
+	\fBmv\fR x.o name.o
+.fi
+.PP
+.B Xstr
+veraendert die Datei
+.B strings
+nur, wenn neue Eintraege hinzugefuegt wurden.
+Mit Hilfe von
+.BR make (1)
+wird damit
+.I xs.o
+nur neu erzeugt, wenn dies unbedingt erforderlich ist.
+.SH DATEIEN
+.DT
+strings     Datenbasis von Zeichenketten
+.br
+x.c         Bearbeitete C-Quelle
+.br
+xs.c        C-Quelle fuer Definition des Bereiches `xstr'
+.br
+/tmp/xs*    Temporaere Datei
+.SH SIEHE AUCH
+mkstr(1).
+.SH EINSCHRAENKUNGEN
+Ist eine Zeichenkette ein Suffix einer anderen Zeichenkette
+in der Datenbasis, findet aber
+.B xstr
+zuerst die kuerzere Zeichenkette, werden beide Zeichenketten
+in der Datenbasis abgelegt, auch wenn das Ablegen der
+laengeren hinreichend gewesen waere.

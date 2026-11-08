@@ -1,0 +1,91 @@
+.TH OD 1 WEGA
+.\" @[$]od.1	1.2
+.ad
+.fi
+.SH NAME
+od, hd  \- oktaler oder hexadezimaler Dump (Ausgabe)
+.SH SYNTAX
+.B od
+[
+.B \-bcdox
+] [ \fIfile\fR ] [ [
+.B +
+[x]]\fIoffset\fR[
+.BR ". " "]["
+\fBb\fR ] ]
+.br
+.sp 1
+.B hd
+[
+.B \-bcdox
+] [ \fIfile\fR ] [ [
+.B +
+[x]]\fIoffset\fR[
+.BR ". " "]["
+\fBb\fR ] ]
+.SH BESCHREIBUNG
+.B Od
+gibt den Inhalt der angegebenen Datei
+.I file
+(Standard: stdin)
+in einem oder mehreren Formaten aus, die durch das erste Argument
+ausgewaehlt werden.
+Fehlt das erste Argument, ist
+.B \-o
+Standard.
+.PP
+Das Offsetargument legt den Versatz fest,
+von der die Ausgabe des Dateiinhaltes beginnt.
+.B Hd
+wertet diese Angabe normalerweise als hexadezimale Zahl und
+.B od
+als oktale Zahl.
+Geht dem Offsetargument ein \fBx\fR oder \fB0x\fR voran,
+wird es als eine hexadezimale Angabe gewertet.
+Folgt der Angabe ein Punkt \fB.\fR, wird der Versatz als
+dezimale Zahl gewertet.
+Folgt ein \fBb\fR, wird der Versatz als Blockversatz
+zu je 512 Bytes interpretiert.
+Wird das Dateiargument weggelassen, muss dem Offsetargument ein
+.B +
+vorausgehen.
+Die Ausgabe wird bis zum End-Of-File durchgefuehrt.
+.PP
+Wenn die darzustellenden Daten
+auf den (mindestens) naechsten zwei Zeilen identisch mit den gerade
+dargestellten Zeilen sind, wird ein Stern (*) ausgegeben.
+Der Stern steht in der ersten Spalte der Zeile.
+.PP
+.B Hd
+ist identisch mit dem Programm
+.BR od ,
+jedoch ist die Standardausgabeoption \fB-x\fR gesetzt.
+.SH OPTIONEN
+.TP 3
+.B  \-b
+Interpretiert Bytes oktal.
+.TP 3
+.B  \-c
+Interpretiert die Bytes als ASCII-Zeichen.
+Einige nichtdarstellbare Zeichen werden in der C-Sprachkonvention
+dargestellt:
+.nf
+   null=\e0             backspace=\eb     tab=\et
+   form feed=\ef        new line=\en      return=\er           
+.fi
+die anderen Zeichen werden als dreiziffrige Oktalzahlen (bei
+.BR od )
+oder als Hexade\%zimalzahlen (bei
+.BR hd )
+ausgegeben.
+.TP 3
+.B  \-d
+Interpretiert Worte (je 2 Byte) dezimal.
+.TP 3
+.B  \-o
+Interpretiert Worte (je 2 Byte) oktal.
+.TP 3
+.B  \-x
+Interpretiert Worte (je 2 Byte) und Adressen hexadezimal.
+.SH SIEHE AUCH
+adb(1), objdu(1), objhdr(1).

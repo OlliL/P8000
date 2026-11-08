@@ -1,0 +1,152 @@
+.TH UUCP 1 WEGA
+.\" @[$]uucp.1	1.2
+.ad
+.fi
+.SH NAME
+uucp \- Kopieren unter WEGA-Systemen
+.SH SYNTAX
+.B uucp
+[\fIoption\fR] \.\.\.
+\fIsource-file\fR 
+\.\.\. 
+\fIdestination-file\fR
+.SH BESCHREIBUNG
+\fBUucp\fR
+kopiert die durch
+.I source-file\^
+angegebenen Dateien in die durch
+.I destination-file\^
+angegebenen Dateien.
+Ein Dateiname kann ein Pfadname im lokalen System sein,
+oder folgende Form haben:
+.PP
+.RS .5i
+\fISystemname\fB!\fIPfadname\fR
+.RE
+.PP
+wobei
+.I Systemname\^
+aus einer Liste von Systemnamen stammen muss, die
+\fBuucp\fR bekannt sind.
+Die Shell-Sonderzeichen
+" ?\(**[\^] "
+, die im
+.I Pfadnamen\^
+erscheinen, werden auf dem angegebenen System interpretiert.
+Dabei ist zu beachten, dass Shell-Sonderzeichen,
+die im Pfadnamen eines entfernten Systems enthalten sind,
+in Hochkomma eingeschlossen werden muessen.
+.PP
+Pfadnamen koennen sein:
+.PP
+.TP
+(1)
+ein vollstaendiger Pfadname (beginnt mit / );
+.TP
+(2)
+ein mit
+.BI ~ user\^
+beginnender Pfadname. Dabei ist das Argument
+.I user\^
+ein Login-Name auf dem spezifizierten System.
+Bei der Ausfuehrung wird
+.I user\^
+durch dessen Login-Directory ersetzt wird.
+Diese Ausdehnung erfolgt an dem System,
+in dem die entsprechende Datei gespeichert ist.
+.TP
+(3)
+Jeder anderen Angabe wird das aktuelle Directory auf
+dem lokalen System vorangestellt.
+.PP
+Ist fuer das abgesetzte System bei nicht
+angegebener
+.B \-d
+Option ein Pfadname falsch
+spezifiziert, ist der Kopiervorgang fehlerhaft.
+Ist das Argument
+.I destination-file\^
+ein Directory, wird die letzte Komponente von
+.I source-file\^
+benutzt.
+.B Uucp
+uebernimmt die Ausfuehrungsrechte waehrend der Uebertragung
+und vergibt Lese- und Schreiberlaubnis (Modus 0666, siehe
+.BR chmod (2)).
+.SH OPTIONEN
+.TP 6
+.B \-c
+benutzt die Quelldatei beim Kopieren in das andere System
+(Standard: eine Kopie aus dem Spool-Directory wird benutzt).
+.TP
+.B \-d
+Alle notwendigen Directories werden erzeugt.
+.TP
+.BI \-g letter
+Einfuegen einer Mitteilung in den Namen des aktuellen Directorys.
+.TP 
+.B \-m
+Nach beendetem Transfer wird an den Initiator eine Nachricht
+ueber
+.BR mail (1)
+gesendet.
+.TP
+.B \-r
+Verhinderung des automatischen Starts des Programms
+.BR uucico (M).
+.TP
+.BI \-s dir
+Benutzung des Directorys
+.I dir
+als Spool-Directory.
+.TP
+.BI \-x num
+Angabe der gewuenschten Debugging-Ebene.
+.TP
+.BI \-e sys
+Das
+.BR uucp \-Kommando
+wird zum System
+.I sys
+gesendet, wo es ausgefuehrt wird.
+.RB ( Beachte :
+Die Ausfuehrung ist nur dann erfolgreich,
+wenn die abgesetzte Maschine es erlaubt,
+das
+.BR uucp \-Kommando
+durch /usr/lib/uucp/uuxqt auszufuehren.)
+.SH DATEIEN
+/usr/spool/uucp     Spool-Directory
+.br
+/usr/lib/uucp/\(**     Andere Daten- und Programmdateien
+.SH SIEHE AUCH
+mail(1),
+uulog(1),
+uuname(1),
+uuclean(M),
+uucico(M),
+uux(1).
+.br
+"UUCP - Rechnerkopplung" in WEGA-Dienstprogramme
+.SH ACHTUNG
+Der Umfang der Dateien, die ueber die Kopplung zugreifbar sind,
+kann (und sollte aus Sicherheitsgruenden) eingeschraenkt werden.
+.SH EINSCHRAENKUNGEN
+.br
+Alle Dateien, die von
+.B uucp
+empfangen werden, gehoeren dem fiktiven Nutzer
+.BR uucp .
+.sp
+Die \-\fBm\fR Option wirkt nur beim Senden von Dateien oder
+beim Empfangen einer einzelnen Datei.
+.sp
+Das Empfangen mehrerer Dateien, die durch Shell-Sonderzeichen
+\fB?\(**[]\fR spezifiziert wurden,
+aktiviert nicht die \-\fBm\fR Option.
+.PP
+Bei der
+.B \-s
+Option kann nur ein Directory angegeben werden,
+das sich auf dem gleichen physischen Device befindet, auf dem
+auch /usr/spool/uucp angelegt ist.

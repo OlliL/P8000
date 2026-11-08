@@ -1,0 +1,43 @@
+.TH PUTUD 1 
+.\" @[$]putud.1	1.2
+.ad
+.fi
+.SH NAME
+putud \- Auslagern von Dateien im P8000-UDOS-Format auf die Floppy-Disk-Laufwerke des Grundgeraetes
+.SH SYNTAX
+.B putud
+[\fB\-bBv\fR] \fIfile1\fR [ [\fB\-b\fR] \fIfile2 \fR \.\.\. ]
+.SH BESCHREIBUNG
+.B Putud
+lagert eine oder mehrere Dateien im P8000-UDOS-Format auf die im
+Grundgeraet eingebauten Floppy-Disk-Laufwerke aus.
+Dieses Kommando kann nur von der Systemkonsole ausgefuehrt werden.
+Das Betriebssystem WEGA muss dazu ueber die WEGA-Startdiskette gestartet
+worden sein. Bei Start durch das U880-Monitorkommando 'X' ist die
+Floppyarbeit verriegelt.
+Die Uebertragung kann mit DEL abgebrochen werden.
+.SH OPTIONEN
+.TP
+.B \-b
+Die naechste Datei ist eine Binaerdatei. Carriage Return wird
+nicht durch Newline ersetzt.
+.TP
+.B \-B
+Alle angegebenen Dateien werden als Binaerdateien behandelt.
+.TP
+.B \-v
+Die Namen der uebertragenen Dateien werden auf dem Bildschirm
+ausgegeben (implizit erfolgt keine Ausgabe der Dateinamen).
+.SH SIEHE AUCH
+getud(1)
+.SH DIAGNOSTIK
+.TP
+"unable to open file"
+Die Datei kann unter WEGA nicht eroeffnet werden.
+.TP
+"unable to open /dev/ud"
+Das Kommando wurde nicht von der Systemkonsole eingegeben,
+oder das System wurde ueber 'X' gestartet .
+.TP
+"File ... error ..."
+Diskettenzugriffsfehler. Die Fehlernummer kennzeichnet den UDOS-Dateifehler.

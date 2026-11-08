@@ -1,0 +1,75 @@
+.TH TMPNAM 3 WEGA
+.\" @[$]tmpnam.3        1.2
+.ad
+.fi
+.SH NAME
+tmpnam \- Bildung von Dateinamen fuer temporaere Dateien
+.SH SYNTAX
+.B #include <stdio.h>
+.sp
+.B char \(**tmpnam \fI(s)
+.br
+\fBchar\fI \(**s;\fR
+.SH BESCHREIBUNG
+Die Funktion
+.B tmpnam
+erzeugt einen Dateinamen, der fuer eine temporaere Datei verwendet
+werden kann.
+Ist das Argument
+.RI (int) s
+gleich Null, bringt
+.B tmpnam
+sein Ergebnis in einen internen statischen Bereich und gibt einen Pointer
+auf diesen Bereich zurueck.
+Der naechste Aufruf der Funktion
+.B tmpnam
+ueberschreibt den Inhalt des Bereiches.
+Ist das Argument
+.RI (int) s
+ungleich Null, wird 
+.I s
+als Adresse eines Bereiches der Laenge von
+.B L_tmpnam
+Bytes angesehen;
+.B tmpnam
+bringt sein Ergebnis in diesen Bereich und gibt
+.I s
+als Pointer auf diesen Bereich zurueck.
+.PP
+Bei jedem Aufruf von
+.B tmpnam
+wird ein anderer Dateiname erzeugt.
+Dateien, die unter Verwendung der Funktionen
+.B tmpnam
+und 
+.BR fopen (2)
+oder
+.BR creat (2)
+erzeugt werden, sind nur in dem Sinne temporaer, als sie sich in einem
+Directory befinden, das nur zur termporaeren Benutzung vorgesehen ist
+und ihre Namen einmalig sind.
+Es ist Aufgabe des Nutzers, unter Verwendung von 
+.BR unlink (2)
+die Dateien zu loeschen, wenn sie nicht laenger benoetigt werden.
+.SH DATEIEN
+/usr/tmp        Directory fuer temporaere Dateien
+.SH SIEHE AUCH
+creat(2),
+unlink(2),
+fopen(3),
+mktemp(3).
+.SH EINSCHRAENKUNGEN
+Wird die Funktion
+.B tmpnam
+in einem Prozess mehr als 17.576 mal
+aufgerufen, werden vorher verwendete Namen erneut benutzt.
+.PP
+In dem Zeitraum zwischen der Erstellung eines Dateinamens und dem
+Oeffnen der Datei koennen andere Prozesse eine Datei gleichen
+Namens anlegen. Dieser Fall tritt nicht auf, wenn der andere Prozess
+die Funktionen
+.B tmpnam
+oder
+.BR mktemp 
+zur Vergabe der Dateinamen
+verwendet (doppelte Vergabe ist dann unwahrscheinlich).

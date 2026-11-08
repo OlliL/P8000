@@ -1,0 +1,26 @@
+.TH GETENV 3 WEGA
+.\" @[$]getenv.3        1.2
+.ad
+.fi
+.SH NAME
+getenv \- Wert fuer Namen von Umgebungsvariablen
+.SH SYNTAX
+.nf
+\fBchar *getenv\fR(\fIname\fR)
+.br
+\fBchar *\fIname;\fR
+.fi
+.SH BESCHREIBUNG
+.B Getenv
+durchsucht die Liste der Umgebungsvariablen (siehe
+.BR environ (7))
+nach einer Zeichenkette der Form
+.IP
+.IB name = value
+.PP
+und gibt 
+.I value
+zurueck, falls eine solche Zeichenkette vorhanden ist. Andernfalls
+wird Null zurueckgegeben.
+.SH SIEHE AUCH
+environ(7), exec(2).

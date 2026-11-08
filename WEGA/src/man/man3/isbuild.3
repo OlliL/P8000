@@ -1,0 +1,73 @@
+.TH ISBUILD 3 
+.\" @[$]isbuild.3       1.2
+.ad
+.fi
+.SH NAME
+isbuild \- Definition und Erzeugen einer C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisbuild \fI(filename, recordlength, keydesc, mode)\fR
+\fBchar \fI*filename;\fR
+\fBint \fIrecordlength;\fR
+\fBstruct \fIkeydesc *keydesc;\fR
+\fBint \fImode;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isbuild
+definiert und erzeugt eine C-ISAM-Datei.
+Sie veranlasst die Erzeugung und Initialisierung von zwei 
+Betriebssystem-Dateien.
+Die erste Datei (filename\fI.dat\fR)
+enthaelt die Daten.
+Die zweite Datei (filename\fI.idx\fR)
+enthaelt ein Verzeichnis und die Indexe.
+.PP
+Fuer den Parameter
+.I filename
+kann als Dateiname eine mit einem Nullbyte
+endende, bis zu 10 Zeichen lange Zeichenkette angegeben werden.
+.PP
+Nach erfolgreicher Abarbeitung von
+.B isbuild
+bleibt die C-ISAM-Datei zur weiteren Bearbeitung offen.
+Die Funktion
+.B isbuild
+gibt einen C-ISAM-Dateidescriptor zurueck, der
+fuer alle Operationen mit der offenen Datei benutzt wird.
+.PP
+Das Argument
+.I keydesc
+zeigt auf eine Struktur, die eine Beschreibung des Primaerindex' der
+Datei enthaelt.
+Spaeter koennen noch andere Indexe unter Verwendung von
+.B isaddindex
+hinzugefuegt werden.
+.PP
+Das Argument
+.I mode
+gibt die Zugriffsart des Nutzers (Eingabe, Ausgabe oder beides)
+sowie die Art der Verriegelung der Datei
+(exclusiv, manuell oder automatisch) an.
+.I Mode
+wird durch arithmetische Addition der Konstanten
+ISEXCLLOCK, ISMANULOCK, oder ISAUTOLOCK
+mit
+ISINPUT, ISOUTPUT, oder ISINOUT
+gebildet.
+.SH EINSCHRAENKUNGEN
+.PP
+Die Dateinamen duerfen nicht mehr als zehn Zeichen lang sein.
+.SH DATEIEN
+.IP
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isaddindex(3),
+isindexinfo(3),
+isopen(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

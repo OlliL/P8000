@@ -1,0 +1,38 @@
+.TH NICE 1C WEGA
+.\"@[$]nice.1C	1.2
+.ad
+.fi
+.SH NAME
+nice \- setzt die Prioritaet eines Kommandos
+.SH SYNTAX
+.B nice
+.I [ number ]
+.I command
+.SH BESCHREIBUNG
+.B Nice
+ohne Argument erhoeht die Prioritaetszahl
+fuer dieses Shellkommando um sieben.
+Ist ein Argument
+.B number
+angegeben, erhoeht
+.I nice
+die Prioritaetszahl des aktuellen Shells um den angegebenen Betrag
+.IR number .
+Z.B. bewirken 'nice -+8' und 'nice -8' 
+beide eine Erhoehung der Prioritaetszahl um 8.
+.PP
+Ist ein Argument
+.B command
+angegeben, erhoeht \fInice\fR die Prioritaetszahl
+des angegebenen Kommandos um den Wert
+.I number
+(Standard ist 7).
+.PP
+Der Superuser kann die Prioritaet durch Benutzung
+des Kommandos "nice \--number ..." 
+(negative Werte) erhoehen.
+Das Kommando wird immer in einer Subshell ausgefuehrt.
+.SH SIEHE AUCH
+nice(1), nohup(1C). 
+.br
+"C-Shell" in WEGA-Dienstprogramme

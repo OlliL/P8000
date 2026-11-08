@@ -1,0 +1,116 @@
+.TH BRK 2 WEGA
+.\" @[$]brk.2   1.2
+.ad
+.fi
+.SH NAME
+brk, sbrk \- Veraendern der Speicherzuweisung
+.SH SYNTAX
+.B char *brk
+.I (addr)
+.br
+.B char 
+.I *addr;
+.PP
+.B char *sbrk
+.I (incr)
+.br
+.B int
+.I incr;
+.SH BESCHREIBUNG
+.B Brk
+setzt den vom System gefuehrten Wert des niedrigsten Speicherplatzes,
+der nicht vom Programm benutzt wird
+(Break genannt), auf
+.I addr
+(gerundet auf das naechste Vielfache von 256 Bytes).
+Adressen, die groesser als
+.I addr
+sind und unterhalb des Stackpointers liegen,
+befinden sich nicht im Adressraum und bewirken bei einem Zugriff
+eine Speicherverletzung.
+.PP
+Bei Aufruf der Funktion
+.I sbrk (incr)
+werden
+.I incr
+Bytes zum Datenbereich des Programms addiert.
+Es wird ein Pointer auf den Start des neuen Bereichs zurueckgegeben.
+Beginnt ein Programm die Ausfuehrung durch
+.BR exec ,
+wird der Break auf den hoechsten Speicherplatz gesetzt,
+der durch den Programm- und Datenbereich definiert ist.
+Normalerweise benutzen nur Programme mit zunehmendem Datenbereich
+diese Rufe.
+.PP
+.B Brk
+und
+.B sbrk
+melden Fehler und bewirken keine Veraenderung des Adressraums,
+wenn mehr Speicherplatz als das systemimmanente Maximum
+gefordert wird (siehe auch
+.BR ulimit (2)).
+.SH BEISPIEL
+Ist z.B. der urspruengliche Break auf Adresse 0x12ac
+und fordert das Nutzerprogramm 0x400 Bytes mehr ueber
+.BR sbrk ,
+gibt der Ruf
+.B sbrk
+einen Rueckgabewert von 
+0x12ac zurueck und der Nutzer kann jetzt bis zur Adresse
+0x16ff adressieren.
+Ein nun folgender Ruf brk(0x1501) wuerde dem Nutzer
+nun die Adressierung bis 0x15ff erlauben.
+.SH RUECKGABEWERT
+Bei erfolgreicher Ausfuehrung gibt
+.B brk
+den Wert Null und
+.B sbrk
+den alten Breakwert zurueck.
+Fordert das Programm mehr Speicher als verfuegbar,
+wird ein Wert von -1 zurueckgegeben und 
+.B errno
+auf den Wert ENOMEM gesetzt.
+.SH SIEHE AUCH
+sgbrk(2),
+ssgbrk(2),
+exec(2),
+malloc(3),
+end(3).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT BREAK  := 17
+
+     ...             !* r0 : addr *!
+     clr    r4
+     sc     #BREAK
+     ...             !* Rueckgabewert in r4 *!
+                     !* Bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad
+.PP
+.BR BREAK
+bewirkt die Funktion von
+.BR brk .
+Der Name der Routine unterscheidet sich von dem
+Schluesselwort 'break' in der C-Sprache.
+.PP
+.BR Sbrk
+wird mit Hilfe von
+.B brk
+realisiert. Um
+.B sbrk
+zu nutzen, muss das Programm den alten Breakwert mitfuehren
+und das Argument von
+.B sbrk
+addieren, bevor der Ruf
+.B brk
+erfolgt.
+Der aktuelle Breakwert ist beim Programmstart gleich der Variablen _end
+und muss nach aufeinanderfolgenden
+.B brk
+Rufen auf die Adresse (Argument von
+.BR brk )
+oder den aktuellen Breakwert plus
+.B incr
+gesetzt werden.

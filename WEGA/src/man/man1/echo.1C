@@ -1,0 +1,66 @@
+.TH ECHO 1C WEGA
+.\" @[$]echo.1C	1.2
+.ad
+.fi
+.SH NAME
+echo \- Ausgabe der Argumente an die Standardausgabe (Terminal)
+.SH SYNTAX
+.B echo
+[ -n ] [ \fIarg\fR ] ...
+.SH BESCHREIBUNG
+.B Echo\^ 
+gibt seine Argumente (durch Leerzeichen getrennt und 
+durch ein Newline abgeschlossen) an die Standardausgabe aus.
+.B Echo
+existiert als externes Programm und als internes Shell-Kommando.
+Es akzeptiert auch die in C gebraeuchlichen Escape-Folgen;
+dabei ist auf Konflikte mit der Shell-Benutzung von \fB\e\fP zu achten:
+.PP
+.RS
+.PD 0
+.TP
+.B \eb
+Backspace
+.TP
+.B \ec
+Zeilenausgabe ohne Newline
+.TP
+.B \ef
+Formfeed
+.TP
+.B \en
+Newline
+.TP
+.B \er
+Carriage Return
+.TP
+.B \et
+Tab
+.TP
+.B \e\e
+Backslash
+.TP
+.BI \e n\^
+das 8-Bit-Zeichen, dessen ASCII-Code die
+1-, 2- oder 3-stellige Oktalzahl
+.IR n
+(die mit Null beginnen muss) ist.
+.RE
+.PD
+.PP
+.B Echo\^
+ist zur Erzeugung von Ausschriften in Kommandodateien
+und fuer das Senden von bekannten Daten in eine Pipe nuetzlich.
+.SH OPTIONEN
+.TP
+.B -n 
+Es wird kein Newline angefuegt.
+.SH BEISPIEL
+.RS
+     % \fBecho\fR es wird das echo-Kommando benutzt
+     es wird das echo-Kommando benutzt
+.RE
+.SH SIEHE AUCH
+csh(1), echo(1), echo2(1).
+.br
+"C-Shell" im Band WEGA-Dienstprogramme

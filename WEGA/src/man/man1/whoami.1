@@ -1,0 +1,49 @@
+.TH WHOAMI 1 WEGA
+.\" @[$]whoami.1	1.2
+.ad
+.fi
+.SH NAME
+whoami \- Ausgabe des effektiven Nutzer-ID
+.SH SYNTAX
+.B whoami
+.SH BESCHREIBUNG
+.B Whoami
+gibt den effektiven Nutzernamen des am aktuellen Terminal angemeldeten
+Nutzers aus.
+.PP
+Wurde ueber das
+.BR su (1)
+Kommando die Nutzerumgebung veraendert, wird der Login-Name des durch
+.B su
+angegebenen Nutzers ausgegeben, waehrend  mit Hilfe des
+.B who
+Kommandos mit zwei Argumenten (z.B. "who am I")
+der Name des realen, ueber
+.BR login (1)
+angemeldeten Nutzers
+(unter Benutzung von /etc/utmp ermittelt)
+ausgegeben wird.
+.SH BEISPIELE
+.sp
+.RS
+% whoami
+.br
+hugo
+.sp
+% who am i
+.br
+hugo   tty7   Oct  8 15:40
+.RE
+.SH DATEIEN
+/etc/passwd
+.SH SIEHE AUCH
+who(1), whodo(1), whois(1), users(1), ps(1).
+.SH DIAGNOSTIK
+Die Ausschrift "/etc/passwd file is corrupt" erscheint,
+wenn eine der folgenden Bedingungen nach dem
+Login auftraten:
+.sp
+.br
+	1) /etc/passwd Datei wurde geloescht
+.br
+	2) der Nutzer-ID wurde in der Datei /etc/passwd geloescht

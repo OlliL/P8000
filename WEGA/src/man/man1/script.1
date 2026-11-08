@@ -1,0 +1,66 @@
+.TH SCRIPT 1 WEGA
+.\" @[$]script.1	1.2
+.ad
+.fi
+.SH NAME
+script \- Anfertigen einer Dateikopie von allen Terminaldialogen
+.SH SYNTAX
+.B script
+[
+.B \-a
+] [
+.B \-q
+] [
+.B \-S
+shell
+] [ \fIfile\fR ]
+.SH BESCHREIBUNG
+.B Script
+schreibt alle Terminalaktivitaeten (Ausschriften) in eine Datei
+(voreingestellt ist die Datei
+.IR typescript ).
+Ist ein Dateiname angegeben, wird der Text in dieser Datei gespeichert. 
+.B Script
+wird durch Eingabe von CTRL-D verlassen.
+Dieses Programm ist nuetzlich, wenn eine 
+Papierkopie des Bildschirmdialogs erwuenscht ist.
+.SH OPTIONEN
+.TP
+.B \-a
+die Terminalausgaben werden an die Typescript-Datei
+angehaengt. Es wird keine neue Datei erzeugt.
+.TP
+.B \-q
+Die Ausschriften "script started"
+und "script done" werden unterdrueckt.
+.TP
+.BI \-S shell
+Start der angegebenen Shell
+(voreingestellt ist die in der vom Nutzer
+in der Datei
+.B /etc/passwd
+spezifizierte Shell).
+Ist die angeforderte Shell nicht verfuegbar, nutzt
+.B script
+jede beliebige Shell, die es finden kann.
+.SH EINSCHRAENKUNGEN
+Da WEGA nicht die Moeglichkeit hat, ein End-of-File in das Pipe 
+zu schreiben, ohne das Pipe zu schliessen, gibt es keine Moeglichkeit,
+ein einziges Control-D zu simulieren, ohne Script zu beenden.
+.PP
+Das neue Shell erhaelt seine Standardeingabe von einem Pipe und nicht
+von einem Terminal. Dadurch funktionieren die Programme stty und ttyname
+nicht. Programme wie
+.B ls
+erzeugen kein mehrspaltiges Format, da sie auf ein
+Pipe schreiben.
+Im allgemeinen funktioniert
+.B script
+nicht richtig, wenn ein Programm versucht, viele Systemmoeglichkeiten
+zu nutzen, die keine
+zeichenorientierte E/A benutzen.
+.PP
+Wenn der Nutzer einen Ausgabeprozess unterbricht, versucht
+.B script
+die Ausgabe, die sich im Pipe zur Sicherung befindet, zu entfernen.
+Gewoehnlich wird das naechste Prompt ebenfalls entfernt.

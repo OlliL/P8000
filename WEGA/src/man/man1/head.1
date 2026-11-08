@@ -1,0 +1,26 @@
+.TH HEAD 1 WEGA
+.\" @[$]head.1	1.2
+.ad
+.fi
+.SH NAME
+head \-	Ausgabe der ersten Zeilen eines Datenstromes
+.SH SYNTAX
+.B head
+[
+.BI \- count
+] [
+.I file	...
+]
+.SH BESCHREIBUNG
+.B Head
+liest die durch
+.I count
+angegebene Anzahl Zeilen aus den benannten Dateien
+und gibt die Zeilen auf die Standardausgabe aus.
+Wurden keine Dateien angegeben, wird von der Standardeingabe gelesen.
+.PP
+Der Standardwert fuer
+.I count
+sind 10 Zeilen.
+.SH SIEHE AUCH
+cat(1),	dog(1),	more(1), tail(1).

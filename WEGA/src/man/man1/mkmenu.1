@@ -1,0 +1,140 @@
+.TH MKMENU 1 
+.\" @[$]mkmenu.1	1.2
+.ad
+.fi
+.SH NAME
+mkmenu \- Erzeugung eines Menues
+.SH SYNTAX 
+.BI mkmenu " [ file ]"
+.SH UEBERBLICK UEBER DAS MENUESYSTEM
+Menues ermoeglichen den Aufruf von Kommandos ueber einfache
+Tasteneingaben; sie beschraenken oder erweitern die Ausfuehrungsumgebung.
+In einem System der Groesse des WEGA-Betriebssystems liefert ein Menuesystem
+ein Prisma, durch das ein grosses Feld von Faehigkeiten zu einer
+verstaendlicheren Menge verkleinert werden kann.
+.PP
+WEGA bietet keine vordefinierten Systemmenues.
+Das hier beschriebene Menuesystem ermoeglicht die Erzeugung, Verkettung
+und Ausfuehrung der Menues, die vom Nutzer definiert werden koennen.
+Diese Menues werden durch fuenf Eintragungen im WEGA-Programmierhandbuch
+beschrieben:
+\fBmkmenu\fR(1), \fBzmenu\fR(1), \fBzmprint\fR(1), \fBmenupath\fR(5),
+und \fBdotmenu\fR(5).  
+.sp
+Drei der fuenf Eintragungen beschreiben ausfuehrbare Kommandos
+mit dem gleichen Namen:
+\fBmkmenu\fR, \fBzmenu\fR, and \fBzmprint\fR.
+Mit dem Aufruf von
+.B mkmenu
+(make menu) werden interaktiv Spezifikationen in
+einer Datei abgelegt, die das Menue beschreiben.
+Der Aufruf von 
+.B zmenu
+veranlasst, dass die Spezifikationsdatei, die durch
+\fBmkmenu\fR erzeugt wurde, gesucht und abgearbeitet wird.
+.B Zmprint
+erzeugt die Dokumentation fuer das System.
+.sp
+\fBMenupath\fR und \fBdotmenu\fR beschreiben das System und sind keine
+ausfuehrbaren Kommandos.
+.B Menupath
+gibt an,
+wo Menuespezifikationsdateien im Dateisystem erzeugt werden koennen, 
+und wie 
+\fBmkmenu\fR und \fBzmenu\fR bezueglich ihrer Lage koordiniert sind.
+.B Dotmenu
+beschreibt die durch
+\fBmkmenu\fR erzeugte Menuespezifikationsdatei.
+.sp
+Eine Prozedur fuer eine Menueerzeugung und -darstellung auf dem Display
+sieht komplett wiefolgt aus:
+.sp
+.nf
+setze eine der Anweisungen:
+             (1) \fBsetenv MENUPATH \fI/dir/dir/menudir\fR
+      oder:  (2) \fBvi ~/.menupath\fR  (contents = \fI/dir/dir/menudir\fR)
+      oder:  (3) \fBvi /etc/menupath\fR (contents = \fI/dir/dir/menudir\fR)
+      oder:  (4) setzte nichts
+
+   gib ein:
+                     \fBmkmenu\fR 
+      oder:
+                     \fBmkmenu \fImymenu\fR
+.sp
+.fi
+Erhaelt \fBmkmenu\fR kein Argument, wird es angefordert.
+Es beginnt ein interaktiver Dialog, der zur Erstellung einer
+Menuespezifikationsdatei 
+\fI/dir/dir/menudir/mymenu\fR fuehrt,
+wenn (1), (2), oder (3) gesetzt wurde.
+Sonst wird ./mymenu erzeugt.
+.sp
+.nf
+  gib ein:           \fBzmenu \fImymenu\fR
+.sp
+.fi
+\fBZmenu\fR sucht nach der Existenz seiner Suchlistenzeiger in der
+Reihenfolge
+\fIMENUPATH\fR, ~/.menupath, /etc/menupath. Zeigt der Inhalt einer
+dieser Dateien oder Variablen auf
+/dir/dir/menudir, sucht \fBzmenu\fR mymenu in diesem
+Directory. Anderenfalls wird mymenu im Homedirectory des Aufrufers
+gesucht. Es ist zu beachten, dass bei Benutzung des
+\fBmkmenu\fR-Standards \fBzmenu\fR
+\fImymenu\fR nur findet, wenn sich die Menuespezifikationsdatei
+beim Aufruf von \fBmkmenu\fR im Homedirectory befindet.
+.SH BESCHREIBUNG
+.B Mkmenu
+erzeugt eine Menuespezifikationsdatei.
+Zuerst prueft \fBmkmenu\fR die Existenz der Umgebungsvariablen
+\fIMENUPATH\fR. Dieser Wert wird als Pfadname interpretiert, der zu
+einem Directory zeigt, in dem die Menuespezifikationsdatei angelegt
+werden soll.
+Existiert \fIMENUPATH\fR nicht, sucht \fBmkmenu\fR
+nach einer Zeigerdatei \fB.menupath\fR im Homedirectory des Aufrufers.
+Existiert auch diese Datei nicht, sucht
+\fBmkmenu\fR die Datei \fB/etc/menupath\fR.
+Diese Zeigerdateien enthalten den Pfadnamen
+des Directorys, in dem sich die Menuespezifikationsdatei angelegt werden soll.
+.sp
+Existiert mehr als ein Zeiger gleichzeitg, gibt \fBmkmenu\fR eine
+Eingabeaufforderung aus, um die Spezifikationsdatei im Directory,
+auf das der erste gefundene Zeiger zeigt, zu erzeugen.
+Ist die Antwort negativ, erfolgt eine Eingabeanforderung zur Erzeugung
+der Spezifikationsdatei in dem Directory, auf das der naechste gefundene
+Zeiger zeigt, usw.
+Die Datei wird im ersten Directory erzeugt, dessen Eingabeanforderung
+positiv beantwortet wurde oder, wenn alle Antworten negativ sind bzw.
+keine Zeiger existieren, im Directory, von dem aus \fBmkmenu\fR 
+aufgerufen wurde.
+.SH WARNUNGEN
+Wird die Menuespezifikationsdatei in einem Directory erzeugt,
+das durch einen zweiten oder nachfolgend gefundenen Zeiger angezeigt
+wurde, muss jener Zeiger zum Zeitpunkt, wenn
+\fBzmenu\fR  aufgerufen wird, der erste Zeiger sein oder die 
+Spezifikationsdatei wird nicht gefunden.
+.sp
+Wird die Spezifikationsdatei in dem Directory erzeugt, von dem aus
+\fBmkmenu\fR aufgerufen wird, muss sie in das Homedirectory des
+Aufrufers gebracht werden. Obwohl das Directory, in dem sich
+\fBmkmenu\fR befindet, das Standarddirectory fuer
+\fBmkmenu\fR ist, ist das Homedirectory das Standardsuchdirectory
+fuer \fBzmenu\fR.
+.sp
+Falls \fBmkmenu\fR ohne ein Argument eingegeben wurde,
+wird ein PROMPT-Zeichen ausgegeben, das zur Eingabe eines Namens
+fuer das zu erstellende Menue auffordert.
+Der voreingestellte Name fuer \fBzmenu\fR ist `.menu`.
+.SH DATEIEN
+.nf
+~/.menupath               Nutzer-Menue-Suchpfad 
+/etc/menupath             globaler Menue-Suchpfad
+ .menu                    Standard-Menue-Datei
+.fi
+.SH SIEHE AUCH
+chmod(1), zmenu(1), zmprint(1), dotmenu(5), menupath(5)
+.SH EINSCHRAENKUNGEN
+Ein fuehrendes Leerzeichen, das in den Kopffeldern des Menues
+angegeben wurde, wird ignoriert; es muss mit einem Editor eingefuegt werden.
+Falls dies nicht getan wurde, werden die Menue-Kopffelder auf Spalte 0
+und auf Spalte 30 bei den Zeilen 0 und 1 ausgerichtet.

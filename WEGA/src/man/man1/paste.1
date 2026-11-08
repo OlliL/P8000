@@ -1,0 +1,115 @@
+.TH PASTE 1 WEGA
+.\" @[$]paste.1	1.2
+.ad
+.fi
+.SH NAME
+paste \- Zusammenfuegen von gleichen Zeilen mehrerer Dateien oder nachfolgender Zeilen einer Datei
+.SH SYNTAX
+\fBpaste \fIfile1 file2\fR .\|.\|.
+.br
+\fBpaste \-d\fI\|list file1 file2\fR .\|.\|.
+.br
+\fBpaste \-s\fR [\fB\-d\fI\|list\|\fR] \fIfile1 file2\fR .\|.\|.
+.SH BESCHREIBUNG
+In den ersten beiden Formen verknuepft
+.B paste\^
+die entsprechenden Zeilen der gegebenen Eingabedateien 
+.IR file1 ,
+.IR file2 ,
+etc.
+Es behandelt jede Datei wie eine Spalte oder wie Spalten einer Tabelle
+und fuegt sie horizontal zusammen (paralleles Verschmelzen).
+Es ist sozusagen das Gegenteil von
+.BR cat (1),
+das eine vertikale Verkettung vornimmt, d.h. eine Datei nach der anderen.
+In der letzten o.g. Form ordnet
+.B paste\^
+die Funktion eines aelteren Kommandos mit dem gleichen Namen ein, indem
+die nachfolgenden Zeilen der Eingabedatei kombiniert werden (serielles
+Verschmelzen).
+In allen Faellen werden die Zeilen mit dem Tabulator
+oder mit Zeichen aus einer wahlweise spezifizierten Liste
+.I list
+verbunden.
+Die Ausgabe erfolgt an die Standardausgabe.
+Das Kommando kann in Pipes oder als Filter benutzt werden,
+wenn \fB\-\fR anstelle eines Dateinamens angegeben wird.
+.SH OPTIONEN
+.TP
+.B \-d
+Ohne diese Option werden die Newline-Zeichen jeder Datei, ausser der
+letzten (oder der letzten Zeile im Falle der
+.B \-s
+Option), durch einen Tabulator ersetzt.
+Diese Option erlaubt das Ersetzen des Tabulators
+durch ein oder mehrere abwechselnde Zeichen (siehe unten).
+.TP
+.BI \-d "list\^"
+Ein oder mehrere Zeichen, die sofort
+.B \-d
+folgen, ersetzen den vorgegebenen Tabulator
+als das Zeilenverkettungszeichen.
+Die Liste wird zirkulaer benutzt, d. h. wenn sie abgearbeitet ist,
+wird sie von vorn wieder begonnen.
+Beim parallelen Verschmelzen (d.h. keine
+.B \-s
+Option), werden die Zeilen der letzten Datei
+.B immer
+mit einem Newline-Zeichen
+abgeschlossen und nicht von einem aus der Liste.
+Die Liste kann die speziellen Umschaltfolgen (Escape-Sequenzen) enthalten:
+.B \en
+(Newline),
+.B \et
+(Tabulator),
+.B \e\e
+(Backslash), und
+.B \e0
+(leeres String, kein Null-Zeichen).
+Eine explizite Angabe kann erforderlich sein, wenn die Zeichen fuer das Shell
+von spezieller Bedeutung sind (z.B. um ein Backslash zu erhalten, benutze
+.I \-d\|"\e\e\e\e\^"
+).
+.TP
+.B "\-s"
+Verschmelzen von nachfolgenden Zeilen anstelle einer Zeile von jeder
+Eingabedatei.
+Der Tabulator wird zum Verketten benutzt,
+falls keine Liste
+mit der
+.B \-d
+Option spezifiziert ist.
+Unabhaengig von der Liste
+muss das letzte Zeichen ein Newline sein.
+.TP
+.B "\-"
+Es kann anstelle jedes Dateinamens benutzt werden, um eine Zeile aus der
+Standardeingabe zu lesen (ohne Anforderung).
+.SH BEISPIELE
+.TP 15m
+ls \|\(bv\| paste \|\-d" " \|\-
+Auflisten des Directory in einer Spalte
+.TP
+ls \|\(bv\| paste \|\- \|\- \|\- \|\-
+Auflisten des Directory in vier Spalten
+.TP
+paste \|\-s \|\-d"\e\|t\e\|n" \|file
+Kombinieren von Zeilenpaaren zu Zeilen
+.SH SIEHE AUCH
+grep(1), cut(1),
+.br
+pr(1): 
+.B pr -t  -m...\^
+arbeitet aehnlich, erzeugt aber zusaetzliche Leerzeichen,
+Tabulatoren und Newlines
+fuer eine uebersichtliche Seitenaufteilung.
+.SH DIAGNOSTIK
+.TP 10m
+.I "line too long\^"
+Ausgabezeilen sind auf 511 Zeichen begrenzt.
+.TP
+.I "too many files\^"
+Es koennen nicht mehr als 12 Eingabedateien spezifiziert werden. Ausgenommen
+davon ist die
+.B \-s
+Option.

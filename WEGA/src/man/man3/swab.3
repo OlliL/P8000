@@ -1,0 +1,32 @@
+.TH SWAB 3 WEGA
+.\" @[$]swab.3  1.2
+.ad
+.fi
+.SH NAME
+swab \- Byteaustausch
+.SH SYNTAX
+.nf
+\fBswab\fI(from, to, nbytes)\fR
+.br
+\fBchar\fI *from, *to;\fR
+.br
+\fBint \fInbytes;\fR
+.fi
+.SH BESCHREIBUNG
+.B Swab
+kopiert die durch das Argument
+.I nbytes
+angegebene Byteanzahl beginnend ab der Adresse, auf die der Pointer
+.I from
+verweist, in den Bereich, auf den der Pointer
+.I to
+zeigt, wobei benachbarte geradzahlige und ungeradzahlige Bytes
+ausgetauscht werden.
+Das Argument
+.I nbytes
+muss einen geradzahligen Wert enthalten.
+.PP
+Die Funktion
+.B swab
+ist nuetzlich, wenn Binaerdaten zwischen Maschinen mit unterschiedlicher
+Byteanordnung uebertragen werden sollen.

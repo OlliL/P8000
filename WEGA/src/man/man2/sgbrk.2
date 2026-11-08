@@ -1,0 +1,110 @@
+.TH SGBRK 2 
+.\"@[$]sgbrk.2  1.2
+.ad
+.fi
+.SH NAME
+sgbrk \- Aendern der Groesse eines Datensegments
+.SH SYNTAX
+.B char *sgbrk
+.I (addr) ;
+.br
+.B char
+.I *addr
+.sp
+.B char *ssgbrk
+.I (segno, incr) ;
+.br
+.B unsigned
+.I segno, incr
+.SH BESCHREIBUNG
+Diese Systemrufe sind segmentierte Versionen der Aufrufe
+.BR brk (2)
+und
+.BR sbrk (2).
+Sie sind fuer nichtsegmentierte Nutzer nicht zulaessig.
+Der
+.B sgbrk
+Systemruf veraendert die Groesse eines gegenwaertig bekannten,
+nichtteilbaren, schreibbaren Datensegments.
+Das Argument
+.I addr
+ist eine segmentierte Adresse, deren Offset
+gleich der gewuenschten neuen Groesse des Datensegments ist.
+Die neue Segmentgroesse wird auf die naechste ueber
+dem vom Rufer angegebenen Offset liegende
+256-Byte-Bereichsgrenze aufgerundet.
+Besitzt
+.I addr
+den Wert 0L, gibt
+.B sgbrk 
+die aktuelle obere Datenadresse des Programms zurueck.
+Andernfalls gibt
+.B sgbrk 
+bei erfolgreichem Aufruf einen segmentierten Pointer auf den neuen
+Datenbereich zurueck. Bei nichterfolgreichem Aufruf wird ein Wert -1L
+zurueckgegeben..
+.PP
+Der Systemruf
+.B ssgbrk
+veraendert die Grosse eines gegenwaertig bekannten, 
+nichtteilbaren, schreibbaren Datensegments um das gegebene
+.IR increment .
+Der Nutzer muss die Segmentnummer
+.I segno
+angeben.
+Es wird eine segmentierte Adresse (Pointer
+auf den angeforderten Bereich) zurueckgegeben.
+Ist
+.I incr 
+0, zeigt die zurueckgegebene Adresse auf das aktuelle Ende
+des Datensegments.
+.PP
+Kann ein Segment mit anderen Prozessen geteilt werden,
+darf seine Groesse nicht veraendert werden.
+Ausserdem kann die Groesse eines Segmentes nur dann veraendert
+werden, wenn es beschreibbar ist.
+Diese Einschraenkung soll Aenderungen
+an setuid/setgid-Programmen mit gemeinsam genutztem Text
+verhindern.
+.SH SIEHE AUCH
+mkseg(2), exec(2), sld(1).
+.SH DIAGNOSTIK
+Beide Aufrufe geben bei Auftreten eines Fehlers einen Wert -1L zurueck.
+Haeufig vorkommende Fehler sind:
+.TP 3
+-
+.PD 0
+Die Segmentgroesse ueberschreitet 64K Bytes.
+.TP 3
+-
+Die Programmgroesse ueberschreitet die Systembegrenzungen.
+.TP 3
+-
+Die Segmentnummer ist ungueltig.
+.PD
+.SH ASSEMBLER
+.PP
+Es ist zu beachten, dass der Systemruf
+.B sgbrk
+aehnlich brk(2) realisiert wird.
+.nf
+.na
+
+     CONSTANT SGBRK  := 17
+
+     ...             !* rr0 : Neuer Breakwert *!
+     clr    rr4
+     sc     #SGBRK
+     ...             !* Rueckgabewert in rr4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+
+     CONSTANT SSGBRK := 45
+
+     ...             !* r0 : Segmentnummer *!
+     ...             !* r1 : Increment *!
+     clr    rr4
+     sc     #SSGBRK
+     ...             !* Rueckgabewert in rr4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

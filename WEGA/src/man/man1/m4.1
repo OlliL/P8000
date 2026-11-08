@@ -1,0 +1,165 @@
+.TH M4 1 WEGA
+.\" @[$]m4.1	1.2
+.ad
+.fi
+.SH NAME
+m4 \- Makroprozessor
+.SH SYNTAX
+.B m4
+[ \fIfiles\fR ]
+.SH BESCHREIBUNG
+.B M4
+ist ein Makroprozessor,
+der als Eingangsseite fuer Ratfor, C und andere Sprachen vorgesehen ist.
+Jede Argumentdatei (Standard: stdin)
+wird in der angegebenen Reihenfolge verarbeitet.
+Der verarbeitet Text wird zur Standardausgabe geschrieben.
+.PP
+Makroaufrufe
+haben die Form
+.PP
+	name(arg1,arg2, . . . , argn)
+.br
+.PP
+Die Klammer `(' muss direkt dem Makronamen folgen.
+Wenn einem definierten Makronamen kein `(' folgt,
+wird angenommen, dass das Makro keine Argumente hat.
+Fuehrende, nicht in Anfuehrungszeichen stehende Leerzeichen, Tabulatoren
+und Newlines werden waehrend der Zusammenstellung der Argumente ignoriert.
+Moegliche Makronamen bestehen aus alphabetischen Buchstaben, Ziffern und 
+Unterstreichungszeichen `\_', wobei das erste Zeichen keine Ziffer sein darf.
+.PP
+Zeichenketten  werden in Apostrophe (\`\|\') eingeschlossen.
+Der Wert einer apostrophierten Zeichenkette ist die Zeichenkette ohne
+Apostrophe.
+.PP
+Wenn ein Makroname erkannt wird, 
+werden die Argumente durch die Suche nach einer rechten Klammer gesammelt.
+Die Makroauswertung wird normalerweise waehrend der Sammlung
+der Argumente vorgenommen.
+Jedes Komma oder jede rechte Klammer, die innerhalb des Wertes eines
+geschachtelten Aufrufs auftritt, ist so wirksam wie im originalen Eingabetext.
+Nach der Argumentsammlung wird der Wert des Makros
+zurueck in die Eingabefolge gebracht und neu durchsucht.
+.PP
+.B M4
+verfuegt ueber die folgenden eingebauten Makros.
+Sie koennen neu definiert werden;
+dabei geht jedoch die Originalbedeutung verloren.
+Ihre Werte sind Null, wenn nicht anders angegeben.
+.TP 10
+define
+Das zweite Argument wird als Wert des Makros installiert,
+dessen Name das erste Argument ist.
+Jedes Erscheinen von $\fIn\fR im ersetzten Text (\fIn\fR = Ziffer)
+wird durch das
+.IR n -te
+Argument ersetzt.
+Argument 0 ist der Name des Makros,
+fehlende Argumente werden durch durch die Null-Zeichenkette ersetzt.
+.TP
+undefine
+Loescht die Definition des Makros, das im Argument benannt ist.
+.TP
+ifdef
+Ist das erste Argument definiert, dann
+ist der Wert das zweite Argument,
+ansonsten das dritte.
+Wenn es kein drittes Argument gibt, ist der Wert Null.
+.TP
+changequote
+Die Anfuehrungszeichen werden entsprechend dem ersten und
+zweiten Argument geaendert.
+.I Changequote
+ohne Argumente behaelt die originalen Werte bei
+(d.h., \`\|\').
+.TP
+divert
+.I M4
+verwaltet 10 Ausgabefolgen (0 bis 9).
+Die endgueltige Ausgabe ist die Verkettung der Datenfolgen 
+in numerischer Reihenfolge;
+am Anfang ist Datenfolge 0 die aktuelle Datenfolge.
+Das Makro
+.I divert
+aendert den aktuellen Ausgabestrom auf sein Argument.
+Ein anderer Ausgabestrom als 0 bis 9 wird weggelassen.
+.TP
+undivert
+Veranlasst die direkte Ausgabe des Textes von den angegebenen Umleitungen, 
+oder allen Umleitungen, wenn
+kein Argument angegeben ist.
+Text kann nicht aus einer Umleitung in eine andere Umleitung geleitet werden.
+Undivert loescht den umgeleiteten Text.
+.TP
+divnum
+Gibt den Wert des aktuellen Ausgabestrom zurueck.
+.TP
+dnl
+Liest und loescht Zeichen bis zum naechsten Newline (einschliesslich).
+.TP
+ifelse
+Hat drei oder mehr Argumente.
+Wenn das erste Argument die selbe Zeichenkette ist wie das zweite
+Argument, dann ist der Wert das dritte Argument.
+Wenn nicht und wenn es mehr als vier Argumente gibt, 
+wird der Prozess mit den Argumenten 4, 5, 6, und 7 wiederholt.
+Anderenfalls ist der Wert entweder die vierte Zeichenkette oder
+Null, wenn sie nicht vorhanden ist.
+.TP
+incr
+Gibt den Wert seines um 1 erhoehten Arguments zurueck.
+Der Wert des Arguments wird durch Interpretation einer 
+mit Ziffern beginnenden Zeichenkette als Dezimalzahl berechnet.
+.TP
+eval
+Wertet sein Argument als einen arithmetischen Ausdruck
+unter Verwendung der 32-Bit-Arithmetik aus.
+Operatoren sind +, \-, \(**, /, %, ^ (Potenzrechnung);
+Relationsoperatoren und Klammern.
+.TP
+len
+Gibt die Anzahl der Zeichen in seinem Argument zurueck.
+.TP
+index
+Gibt die Position in seinem ersten Argument zurueck,
+bei der das zweite Argument beginnt (0 im Urzustand),
+oder \-1 falls das zweite Argument nicht auftritt.
+.TP
+substr
+Gibt eine Unterzeichenkette seines ersten Arguments zurueck.
+Das zweite Argument ist eine Zahl (mit 0 beginnend), die das 
+erste Zeichen auswaehlt;
+das dritte Argument gibt die Laenge der Unterzeichenkette an.
+Fehlt das dritte Argument, wird als Laenge der Rest der
+ersten Zeichenkette bis zum Ende gewertet.
+.TP
+translit
+Schreibt die Zeichen in seinem ersten Argument von der Menge,
+die durch das zweite Argument gegeben ist, zu der Menge um, die
+durch das dritte Argument gegeben ist.
+Abkuerzungen sind nicht erlaubt.
+.TP
+include
+Gibt den Inhalt der Datei zurueck, die im Argument benannt ist.
+.TP
+sinclude
+wirkt aehnlich
+.I include,
+es erfolgt jedoch keine Meldung, wenn auf die 
+Datei nicht zugegriffen werden kann.
+.TP
+syscmd
+Fuehrt das WEGA-Kommando aus, das im ersten Argument angegeben ist.
+Es wird kein Wert zurueckgegeben.
+.TP
+maketemp
+Fuellt eine Zeichenkette XXXXX in seinem Argument mit dem
+aktuellen Prozess-ID.
+.TP
+errprint
+Gibt seine Argumente an die Standardfehlerausgabe aus.
+.TP
+dumpdef
+Druckt die aktuellen Namen und Definitionen fuer die benannten
+Ausdruecke oder fuer alle, falls keine Argumente angegeben sind.

@@ -1,0 +1,292 @@
+.TH LKDATA 2 
+.\" @[$]lkdata.2        1.2
+.ad
+.fi
+.SH NAME
+lkdata, unlk \- Verriegeln von Daten gegen gleichzeitigen Zugriff
+.SH SYNTAX
+.ft B
+#include <sys/lockblk.h>
+.sp
+.B long lkdata
+.I (fildes, flag, lkblk);
+.br
+.B int
+.I fildes, flag;
+.br
+.B struct
+.I lockblk *lkblk;
+.sp
+.B long unlk
+.I (fildes, flag, lkblk);
+.br
+.B int
+.I fildes, flag;
+.br
+.B struct
+.I lockblk *lkblk;
+.SH BESCHREIBUNG
+.B Lkdata
+verriegelt Bereiche von Dateien gegen den Zugriff durch andere Prozesse.
+Der verriegelnde Prozess muss die Schreiberlaubnis fuer die Datei besitzen 
+oder muss die Datei zum Schreiben geoeffnet haben.
+Ein Prozess, der einen Zugriffsversuch auf einen durch einen anderen
+Prozess verriegelten Bereich unternimmt,
+ruht, bis der andere Prozess endet oder die Verriegelung aufhebt.
+.PP
+.I Fildes
+ist ein Dateidescriptor einer geoeffneten Datei,
+die verriegelt werden soll (siehe
+.BR open (2)).
+.PP
+.I Flag
+kann folgende Werte annehmen:
+.nf
+
+Konstante    Wert  Funktion
+
+LKRONLY       0    Nur-Lese-Verriegelung
+LKEXCLUSIVE   1    Exklusiv-Verriegelung
+LKUSP         0    Verriegelter Bereich beginnt am Lese/Schreib-Pointer
+LKEXP         2    Beginn des verriegelten Bereiches wird durch
+                   \fIlkblk\fR angegeben.
+LKBLOCKING    0    Blockierung, wenn Bereich nicht verfuegbar
+LKNOBLOCK     4    Fehlerrueckgabe, wenn Bereiche nicht verfuegbar
+.fi
+.PP
+Eine \fBExklusiv\fR-Verriegelung verbietet anderen Prozessen
+jeglichen Zugriff zum verriegelten Bereich;
+eine Nur-Lese-Verriegelung erlaubt nur das Lesen.
+.PP
+Ist das
+.I flag
+so gesetzt, dass der Bereich nicht verriegelt werden soll, jedoch
+ein Teil des angegebenen Bereiches schon durch
+einen anderen Prozess verriegelt ist, kehrt
+.B lkdata
+mit einem EACCES-Fehler zurueck (siehe
+.BR intro (2)).
+Ist das
+.I flag
+so gesetzt, dass der Bereich verriegelt werden soll und
+ein Teil des angegebenen Bereiches schon durch
+einen anderen Prozess verriegelt ist, kehrt
+.B lkdata
+nicht zurueck, bis der gesamte Bereich verfuegbar ist.
+Wuerde eine blockierende Verriegelung eine Systemblockierung (Deadlock)
+verursachen (zwei Prozesse warten unendlich lange aufeinander), kehrt
+.B lkdata
+mit einem EDEADLOCK-Fehler zurueck.
+.PP
+Besitzt das
+.I flag
+den Wert LKUSP, beginnt der verriegelte Bereich an der durch den
+Lese-/Schreib-Pointer gekennzeichneten Stelle,
+wobei das Offset in der lkblk-Struktur
+benutzt wird (siehe
+.BR lseek (2)).
+Ist das
+.I flag
+LKEXP angegeben, ist der verriegelte Bereich nur durch 
+.B lkblk
+spezifiziert.
+.PP
+Das dritte Argument weist auf eine Struktur hin, die die Laenge und
+den Startpunkt des Verriegelungsbereiches angibt.
+.IP - 3
+.I lklen
+gibt die Laenge des verriegelten Bereiches an.
+Ist
+.IR lklen =0,
+ist die gesamte Datei hinter dem Startpunkt der 
+Verriegelung (einschliesslich des gesamten Bereiches hinter dem Dateiende)
+verriegelt: anderen Prozessen ist es nicht gestattet, die Datei zu
+ergaenzen.
+.IP -
+Die Argumente
+.I lkoff
+und
+.I lkwhnce
+geben den Beginn des verriegelten Bereiches an.
+Das Argument
+.I lkoff
+gibt einen Versatz (in Byte) an, der den Startpunkt des
+zu verriegelnden Bereiches spezifiziert.
+Ein negatives Offset
+ist solange erlaubt, wie der spezifizierte Bereich nicht vor dem Anfang
+der Datei beginnt (Fehler EINVAL).
+.br
+Das Argument
+.I lkwhnce
+spezifiziert, von wo aus das Argument
+.I lkoff
+zu ermitteln ist:
+.nf
+
+lkwhnce=0 : Offset gilt ab Dateianfang
+lkwhnce=0 : Offset gilt ab Stand des Lese-/Schreib-Pointers
+lkwhnce=2 : Offset gilt ab Dateiende
+.fi
+.PP
+Es ist gestattet, eine Bereich hinter dem Ende der Datei zu verriegeln.
+In diesem Fall kann nur der verriegelnde Prozess die
+Datei in diesem Bereich erweitern.
+Ist das erste Byte nach dem Ende der Datei verriegelt,
+kann kein anderer Prozess die Datei ergaenzen.
+Somit koennen Ergaenzungen zur Datei durch das Verriegeln der gesamten
+Datei (\fIlklen\fR=0)
+oder mittels Verriegeln des ersten Byte nach dem Ende der Datei 
+ausgeschlossen werden.
+.PP
+Verriegelt ein Prozess zwei ueberlappende Bereiche, werden
+beide Bereiche zu einem Bereich zusammengefuegt.
+Ist der eine Bereich Read-only und der andere exklusiv, wird der
+ueberlappende Bereich exklusiv verriegelt.
+.PP
+.B Unlk
+entriegelte Bereiche einer Datei, die durch
+.B lkdata
+verriegelt wurden.
+.B Unlk
+wirkt nicht auf Bytes, die vorher nicht verriegelt waren und stellt den
+normalen Zugriff auf Bytes her, die vorher verriegelt waren.
+Ist ein Teil des spezifizierten Bereiches durch einen anderen Prozess 
+verriegelt, hebt
+.B unlk
+erfolgreich die eigenen Verriegelungen auf, ohne 
+Verriegelungen anderer Prozesse zu beeinflussen.
+Es wird nicht als Fehler betrachtet, mit
+.B unlk
+Bereiche zu entriegeln, die nicht verriegelt waren.
+Es ist auch moeglich, Teile eines einzelnen verriegelten Bereiches
+(ohne Fehlermeldung) zu entriegeln.
+.PP
+Eine Datei wird immer ueber den letzten
+.BR close (2)
+Systemruf fuer diese Datei aus
+dem zugehoerigen Prozess entriegelt.
+.PP
+Der Systemruf
+.B unlk
+nutzt die gleichen Argumente wie
+.BR lkdata ,
+nur dass die
+.I flag
+Argumente LKRONLY und LKEXCLUSIVE ignoriert werden.
+.PP
+Es folgen die Vereinbarungen in
+.B /usr/include/sys/lockblk.h:
+.nf
+
+struct lockblk 
+{
+     long    lklen;     /* length of region to lock */
+     long    lkoff;     /* offset of 1st byte, only w/ flag=2,3,6,7 */
+     int     lkwhnce;   /* whence flag ala lseek, only w/ flag=2,3,6,7*/
+};
+
+long lkdata(), unlk();
+
+# define LKRONLY     0  /* Request is for a read-only lock              */
+# define LKEXCLUSIVE 1  /* Request is for an exclusive lock             */
+# define LKUSP       0  /* Use current seek pointer                     */
+# define LKEXP       2  /* Use explicit offset                          */
+# define LKBLOCKING  0  /* Block if request cant be immediately honored */
+# define LKNOBLOCK   4  /* Do not block, but return an error if request */
+                        /* cannot immediately be honored                */
+
+static long
+lkdata(fd,flag,lk)
+int fd;
+int flag;
+struct lockblk *lk;
+{
+    int stat;
+    long temp;
+
+    switch( lk->lkwhnce )
+    {
+
+    case 0:
+      return(lk->lkoff >= 0l ? lk->lkoff : -1l );
+      break;
+
+    case 1:
+      return(( temp =lk->lkoff+tell(fd) ) >= 0l ? temp : -1l );
+      break;
+
+    case 2:
+      temp = tell(fd);
+      lseek(fd,temp,0l);
+      return(temp);
+      break;
+
+    default:
+      return(-1l);
+    }
+}
+
+static long
+unlk(fd,flag,lk)
+int fd;
+int flag;
+struct lockblk *lk;
+{
+    return(lkdata(fd,flag,lk));
+}
+.fi
+.SH SIEHE AUCH
+unlk(2), lseek(2).
+.SH RUECKGABEWERT
+Bei erfolgreicher Ver- oder Entriegelung:
+Offset des Startpunkts des Bereiches, sonst
+.BR \-1 .
+.SH DIAGNOSTIK
+Ein EDEADLOCK-Fehler (siehe
+.BR intro (2))
+wird durch Entfernen der Verriegelung, die die Systemblockierung verursacht,
+ueberwunden.
+Der Fehler EDEADLOCK  wird sicher beseitigt,
+wenn der Prozess, der den Fehler erhaelt, 
+nacheinander seine Verriegelungen
+entfernt, bis der 
+.B lkdata
+Aufruf kein EDEADLOCK zurueckgibt.
+.SH EINSCHRAENKUNGEN
+Die Ueberpruefungen der Zugriffskontrolle fuer diesen Aufruf
+unterscheiden sich etwas von denen fuer andere Aufrufe. Insbesondere
+wenn die Datei nur fuer Lesen offen ist, ueberprueft
+.BR lkdata ,
+ob der Prozess gegenwaertig eine Schreiberlaubnis fuer die Datei hat.
+Dies kann zur Inkonsistenz in der Anwendung der Zugriffskontrollregeln
+fuehren.
+.br
+Das soll am Beispiel eines Setuid-Programms erlaeutert werden:
+.br
+Waehrend der Arbeit mit der effektiven uid kann eine Datei
+verriegelt werden, die nur zum Lesen geoeffnet war,
+aber mit der effektiven uid beschreibbar ist.
+Wird unter der realen uid weitergearbeitet, ist die Datei nicht laenger
+beschreibbar und die folgenden Verriegelungsaufrufe werden nicht
+ausgefuehrt.
+Die Inkonsistenz tritt nicht auf,
+wenn die Datei zum Lesen und Schreiben offen ist.
+Ein aehnlicher Widerspruch existiert, wenn die Zugriffsrechte
+fuer die Datei veraendert werden, nachdem ein Prozess sie zum Lesen
+oeffnet.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT LKDATA := 49
+
+     ...             !* r0 : fdes *!
+                     !* r1 : flag *!
+Nichtsegmentiert
+     ...             !* r2 : lkblk *!
+Segmentiert
+     ...             !* rr2 : lkblk *!
+     sc     #LKDATA
+     ...             !* Rueckgabewert in rr4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

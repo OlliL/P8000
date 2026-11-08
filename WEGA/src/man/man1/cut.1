@@ -1,0 +1,128 @@
+.TH CUT 1 WEGA
+.\" @[$]cut.1	1.2
+.ad
+.fi
+.SH NAME
+cut \- Ausgabe selektierter Felder aus jeder Zeile einer Datei
+.SH SYNTAX
+\fBcut  \-c\fIlist\fR [\fIfile1  file2 \fR ...]
+.br
+\fBcut  \-f\fIlist\fR [\fB\-d\fIchar\fR] [\fB\-s\fR] [\fIfile1 file2\fR ...]
+.SH BESCHREIBUNG
+.B Cut\^
+wird benutzt, um Spalten  aus einer Tabelle oder
+Felder aus jeder Zeile einer Datei herauszuschneiden.
+Die Felder, die durch 
+.I list\^
+festgelegt werden, koennen eine feste Laenge haben, d.h.
+Zeichenpositionen wie auf einer Lochkarte
+(Option \fB\-c\fR), oder die Felder variabler Laenge sind durch ein
+Feldbegrenzungszeichen wie
+z.B. einen Tabulator
+(Option \fB\-f\fR) markiert.
+.B Cut\^
+kann als Filter benutzt werden;
+falls keine Dateien angegeben sind, wird die Standard\%eingabe benutzt.
+.SH OPTIONEN
+.PP
+In den folgenden Optionen ist
+.I list\^
+eine durch Komma getrennte Liste von Feldnummern in aufsteigender Folge.
+Mit einem optionalen Minuszeichen \fB\-\fP kann ein Bereich angezeigt
+werden (wie bei der Option
+.B \-o
+von
+.IR nroff / troff
+fuer den Seitenumfang);
+z.B.,
+.BR 1,4,7 ;
+.BR 1\-3,8 ;
+.B \-5,10
+(verkuerzte Schreibweise fuer \fB1\-5,10\fP); oder
+.B 3\-
+(verkuerzte Schreibweise fuer den Bereich vom dritten bis
+zum letzten Feld).
+.TP 8
+\fB\-c\fP\^\fIlist\fP
+gibt die Liste
+der Zeichenposition (ohne Leerzeichen) an, die ausgegeben werden (z.B.,
+.B \-c1\-72
+wuerde die ersten 72 Zeichen jeder Zeile passieren lassen).
+.TP
+\fB\-d\fP\^\fIchar\fP
+gibt den Feldbegrenzer an
+(nur bei Option
+.B \-f\c
+).
+Das Standardzeichen ist der Tabulator.
+Das Leerzeichen oder andere Zeichen mit spezieller Bedeutung fuer die
+SHELL muessen in ' ' stehen.
+.TP
+\fB\-f\fP\^\fIlist\fP
+gibt eine Liste von Feldern an, von denen
+angenommen wird, dass sie in der Datei durch ein Begrenzungszeichen
+getrennt sind (siehe \fB\-d\fR);
+z.B., \fB\-f1,7\fR
+kopiert nur das erste und siebente Feld.
+Zeilen ohne Feldbegrenzungszeichen passieren unveraendert
+(nuetzlich fuer eine Tabelle mit Untertiteln), ausser wenn die Option
+.B \-s
+angegeben ist.
+.TP
+.B \-s
+Unterdrueckt Zeilen ohne Feldbegrenzungszeichen im Falle der Option
+.B \-f.
+Ist diese Option nicht angegeben, passieren Zeilen ohne
+Feldbegrenzer unveraendert.
+.PP
+Es muss entweder die Option
+.B \-c
+oder die Option 
+.B \-f
+angegeben sein.
+.SH HINWEISE
+Das Programm
+.BR grep (1)
+kann benutzt werden, um horizontale 'cuts'
+durch eine Datei zu machen, oder
+.BR paste (1) ,
+um Dateien spaltenweise zusammenzustellen
+(z.B. horizontal).
+Um Spalten in einer Tabelle anzuordnen, koennen
+.B cut\^
+und
+.BR paste
+benutzt werden.
+.SH BEISPIELE
+.TP 2.25i
+cut \-d: \-f1,3 /etc/passwd
+gibt alle Nutzernamen aus
+.TP
+name=\*`who am i | cut \-f1 \-d" "\*`
+weist
+.B name
+den aktuellen Login-Namen zu.
+.SH DIAGNOSTIK
+.TP 1.25i
+.I "line too long\^"
+Eine Zeile darf nicht mehr als 511 Zeichen oder Felder haben.
+.TP
+.I "bad list for c\|/\|f option\^"
+Es fehlen die Optionen
+.B \-c
+bzw. 
+.B \-f
+oder die Liste
+.IR list 
+wurde falsch angegeben.
+Es erscheint kein Fehler, wenn eine Zeile weniger Felder hat, als die Liste
+.I "list"\^
+erwartet.
+.TP
+.I "no fields\^"
+Die Liste
+.I list\^
+ist leer.
+.SH SIEHE AUCH
+grep(1),
+paste(1).

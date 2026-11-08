@@ -1,0 +1,47 @@
+.TH GETUD 1 WEGA
+.\" @[$]getud.1	1.2
+.ad
+.fi
+.SH NAME
+getud \- Einlesen von Dateien im P8000-UDOS-Format von den Floppy-Disk-Laufwerken des Grundgeraetes
+.SH SYNTAX
+.B getud
+[\fB-bBv\fR] \fIfile1\fR [ [\fB-b\fR] \fIfile2\fR ... ]
+.SH BESCHREIBUNG
+.B Getud
+laedt eine oder mehrere Dateien (UDOS-Format) von den im Grundgeraet
+eingebauten Floppy-Disk-Laufwerken. Dieses Kommando kann nur von
+der Systemkonsole ausgefuehrt werden. Das Betriebssystem WEGA muss
+dazu ueber die WEGA-Startdiskette gestartet worden sein. Bei Start
+durch das U880-Monitorkommando 'X' ist die Floppyarbeit unter WEGA
+verriegelt.
+Die Uebertragung kann mit DEL abgebrochen werden.
+.SH OPTIONEN
+.TP
+.B \-b
+Die naechste Datei ist eine Binaerdatei. Carriage Return wird nicht durch
+Newline ersetzt.
+.TP
+.B \-B
+Alle angegebenen Dateien sind Binaerdateien.
+.TP
+.B \-v
+Die Namen der uebertragenen Dateien werden auf dem Bildschirm
+ausgegeben (implizit erfolgt keine Ausgabe der Dateinamen).
+.DT
+.SH SIEHE AUCH
+putud(1)
+.SH DIAGNOSTIK
+.TP
+"unable to open file"
+wird ausgegeben, wenn die
+Datei unter WEGA nicht eroeffnet werden kann.
+.TP
+"unable to open /dev/ud"
+wird ausgegeben,
+wenn das Kommando nicht von der Systemkonsole eingegeben wurde,
+oder wenn das System ueber 'X' gestartet wurde.
+.TP
+"File ... error ..."
+wird bei einem Diskettenzugriffsfehler
+ausgegeben. Die Fehlernummer kennzeichnet den UDOS-Dateifehler.

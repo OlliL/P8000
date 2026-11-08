@@ -1,0 +1,107 @@
+.TH SPELL 1 WEGA
+.\" @[$]spell.1	1.2
+.ad
+.fi
+.SH NAME
+spell, spellin, spellout \- Ermittlung von Rechtschreibfehlern
+.SH SYNTAX
+.B spell
+[ \fB-bdvx\fR ] ...
+[ file ] ...
+.PP
+.B spellin
+[ list ]
+.PP
+.B spellout
+[
+.B \-d
+] list
+.SH BESCHREIBUNG
+.B Spell
+vergleicht alle Woerter in den angegebenen Dateien (Standard: stdin)
+mit denen in einer Wortliste.
+Woerter, die nicht in der Wortliste erscheinen
+oder nicht durch Beugung, ausgewaehlte Praefixe oder Suffixe
+erzeugt werden koennen, werden auf die Standardausgabe geschrieben.
+Eine Kopie der Ausgabe wird an die History-Datei angehaengt
+(Achtung! Sie ist von Zeit zu Zeit zu kuerzen).
+.PP
+.B Spell
+ignoriert die meisten
+.BR nroff (1),
+.BR tbl (1)
+und
+.BR  eqn (1)
+Konstruktionen.
+.PP
+Die Wortliste basiert auf unterschiedlichen Quellen
+(vorrangig technische Begriffe aus der Rechentechnik).
+Sie kann vom Nutzer modifiziert oder fuer
+seine spezielle Begriffswelt auch neu erstellt werden.
+.PP
+Die Routinen
+.B spellin
+und
+.B spellout
+unterstuetzen die Verwaltung der von
+.B spell
+benutzten Hash-Liste.
+Ihre Eingabe besteht aus einer Wortliste (ein Wort pro Zeile)
+von der Standardeingabe.
+.B Spellin
+fuegt Woerter aus der Standardeingabe in die bereits
+existierende Wortliste ein und gibt die neue Liste auf die
+Standardausgabe.
+Existierte noch keine Liste, wird eine neue Wortliste erzeugt.
+.B Spellout
+untersucht den Standardeingabestrom auf Woerter,
+die nicht in der Hash-Liste vorhanden sind
+(bei Angabe der Option
+.BR -d :
+die vorhanden sind).
+.SH OPTIONEN
+.IP \fB\-b\fR
+Rechtschreibung wird entprechend der Hash-Liste hlistb geprueft
+(Standard: hlista).
+.IP \fB\-d\fR
+Nur fuer \fIspellout\fR.
+Gibt die vorhandenen Woerter der Hash-Liste auf die Standardausgabe.
+.IP \fB\-v\fR
+Alle Woerter, die nicht literal in der Wortliste gefunden werden,
+sowie plausible Abweichungen zu Woertern in der Wortliste
+werden ausgegeben.
+.IP \fB\-x\fR
+Jeder plausible Wortstamm wird mit einem = fuer jedes Wort ausgegeben.
+.SH BEISPIELE
+Die in
+.I file
+enthaltenen Woerter sind der Wortliste
+/usr/dict/words
+hinzuzufuegen:
+.sp 2
+cat \fIfile\fR >> /usr/dict/words
+.sp
+sort \-o /usr/dict/words -u /usr/dict/words 
+.sp
+.nf
+spellin /usr/dict/hlista < /usr/dict/words > /usr/dict/hlistx
+.fi
+.sp
+mv /usr/dict/hlistx /usr/dict/hlista
+.SH DATEIEN
+.TP 22
+/usr/dict/hlist[ab]
+Hash-Listen
+.TP
+/usr/dict/hstop
+Hash-Stopliste
+.TP
+/usr/dict/spellhist
+History-Datei
+.TP
+/usr/lib/spell
+.SH SIEHE AUCH
+deroff(1), look(1), sort(1), tee(1), sed(1).
+.SH EINSCHRAENKUNGEN
+Silbentrennstriche werden vor der Untersuchung entfernt,
+so dass richtig geschriebene Woerter als Fragmente falsch gemeldet werden.

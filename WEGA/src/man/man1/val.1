@@ -1,0 +1,123 @@
+.TH VAL 1 WEGA
+.\" @[$]val.1	1.2
+.ad
+.fi
+.SH NAME
+val \-  Konsistenzspruefung fuer SCCS-Dateien
+.SH SYNTAX
+\fBval \-\fR
+.br
+\fBval\fR [\fB\-m\fIname\fR]
+.br
+    [\fB\-r\fISID\fR]
+.br
+    [\fB\-s\fR]
+.br
+    [\fB\-y\fItype\fR]
+.br
+\fIfiles\fR
+.SH BESCHREIBUNG
+.B Val\^
+prueft, ob die angegebene Datei
+.I file\^
+eine SCCS-Datei ist, die die von der
+optionellen Argumentliste angegebenen Charakteristika
+erfuellt.
+Argumente fuer
+.B val\^
+koennen in beliebiger Reihenfolge auftreten.
+Die Argumente bestehen aus Optionen (beginnen mit \fB\-\fR)
+und aus den angegebenen Dateinamen.
+.PP
+Ist das spezielle Argument
+"\fB\-\fR" angegeben, wird von der Standardeingabe bis zur 
+Erkennung eines
+End-of-File gelesen (Optionen duerfen nicht voranstehen).
+Jede eingelesene Zeile wird unabhaengig als
+Argumentliste des Kommandos
+.B val
+verarbeitet.
+.PP
+.B Val\^
+erzeugt fuer jede verarbeitete Kommandozeile und Datei
+Diagnosemeldungen auf der Standardausgabe und gibt
+ausserdem bei Beendigung einen
+8-Bit-Code zurueck.
+Dieser Code 
+ist eine ODER-Verknuepfung der moeglichen Fehler,
+wobei jedem moeglichen Fehler ein Bit zugeordnet ist.
+Ein gesetztes Bit hat die folgende Bedeutung:
+.nf
+.PP
+.RS 2
+Bit 0 : Dateiargument fehlt
+Bit 1 : unbekannte oder doppelte Option
+Bit 2 : SCCS-Datei inkonsistent
+Bit 3 : Datei kann nicht eroeffnet werden o. Datei ist keine SCCS-Datei
+Bit 4 : \fISID\fR ist ungueltig oder nicht eindeutig
+Bit 5 : \fISID\fR existiert nicht
+Bit 6 : %Y% stimmt nicht mit \fB\-y\fR ueberein
+Bit 7 : %M% stimmt nicht mit \fB\-m\fR ueberein
+.RE
+.fi
+.PP
+Es ist zu beachten, dass
+.B val\^
+zwei oder mehrere Dateien in einer gegebenen Kommandozeile
+verarbeiten kann und umgekehrt auch mehrere Kommandozeilen
+verarbeiten kann (bei Lesen der Standardeingabe).
+In diesen Faellen wird ein Summencode
+zurueckgegeben
+\- ein logisches
+\fBODER\fR 
+des fuer jede verarbeitete Kommandozeile und Datei erzeugten Codes.
+.SH OPTIONEN
+.PP
+Die Wirkungen der Optionen beziehen sich
+unabhaengig auf jede der in der Kommandozeile angegebenen Dateien.
+.TP 8
+\fB\-m\fIname\fR
+Der Argumentwert
+.I name\^
+wird mit dem SCCS-Schluesselwort %M% (identisch mit Inhalt des
+.B m
+Flag) in \fIfile\fR verglichen.
+.TP
+\fB\-r\fISID\fR
+Spezifikation der Version der SCCS-Datei, auf die das Kommando
+anzuwenden ist.
+Der \fISID\fR
+wird auf Eindeutigkeit
+(z.B. ist
+\fBr\fR1 nicht eindeutig, da die Versionen
+1.1, 1.2 usw. existieren koennen) und Gueltigkeit
+(z.B. sind
+\fBr\fR1.0 oder \fBr\fR1.1.0 ungueltige Deltanummern)
+ueberprueft.
+Anschliessend wird die Existenz des Deltas geprueft.
+.TP
+\fB\-s\fR
+Die ausfuehrliche Diagnoseinformation, die normalerweise
+auf der Standardausgabe erscheint, wird unterdrueckt.
+.TP
+\fB\-y\fItype\fR
+Der Argumentwert
+.I type\^
+wird mit dem
+SCCS-Schluesselwort %Y% (identisch
+mit dem Inhalt des
+.B y
+Flag)
+in \fIfile\fR verglichen.
+.SH SIEHE AUCH
+admin(1),
+delta(1),
+get(1),
+prs(1).
+.SH DIAGNOSTIK
+Erklaerungen siehe
+.BR help (1)
+.SH EINSCHRAENKUNGEN
+.B Val\^
+kann bis zu 50 Dateien auf einer Kommandozeile verarbeiten
+(bei Ueberschreitung: core dump).

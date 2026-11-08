@@ -1,0 +1,145 @@
+.TH MKNOD 2 WEGA
+.\" @[$]mknod.2 1.2
+.ad
+.fi
+.SH NAME
+mknod \- Erstellen eines Directory oder eines Special-File
+.SH SYNTAX
+.B int mknod
+.I (file, mode, dev)
+.br
+.B char
+.I *file;
+.br
+.B int
+.I mode, dev;
+.SH BESCHREIBUNG
+.B Mknod
+erzeugt eine neue Datei 
+.IR file .
+Der Modus der neuen Datei
+wird auf den Wert
+.IR mode 
+gesetzt.
+Folgenden Werte sind moeglich:
+.sp
+0xf000 Dateityp:
+.br
+       0x1000 Fifo-Special
+.br
+       0x2000 Character-Special-File
+.br
+       0x4000 Directory 
+.br
+       0x6000 Block-Special-File
+.br
+       0x8000 Gewoehnliche Datei
+.br
+       0x0000 Gewoehnliche Datei
+.br
+0xf00 Spezielle Zugriffscodes:
+.br
+        0x800 Setze Nutzer-ID bei Abarbeitung
+.br
+        0x400 Setze Gruppen-ID bei Abarbeitung
+.br
+        0x200 Speichere Textabbild nach Abarbeitung
+.br
+0x1ff Zugriffsrechte siehe
+.BR umask (2).
+.PP
+Die Eigentuemer-ID
+der Datei wird auf die effektive Nutzer-ID
+des Prozesses gesetzt.
+Die Gruppen-ID
+der Datei wird auf die effektive Gruppen-ID
+des Prozesses gesetzt.
+.PP
+Die niederwertigen 9 Bits von
+.I mode
+werden durch die Dateierzeugungsmaske modifiziert:
+alle Bits, die in der Dateierzeugungsmaske des Prozesses gesetzt sind,
+werden geloescht (siehe
+.BR umask (2)).
+Weist
+.I mode
+auf eine Block- oder Character-Special-File hin, ist
+.I dev
+eine von der Konfiguration abhaengige Spezifikation eines
+Zeichen- oder Block-E/A-Devices.
+Sonst wird
+.I dev
+ignoriert.
+.PP
+.B Mknod
+kann nur durch den Superuser angesprochen werden
+(Ausnahme: fuer FIFO-Special).
+.SH DIAGNOSTIK
+.B Mknod
+wird nicht ausgefuehrt und die neue Datei wird nicht erstellt, wenn
+mindestens einer der folgenden Punkte zutrifft:
+.TP 11
+\%[EPERM]
+Die effektive Nutzer-ID
+des Prozesses ist nicht Superuser.
+.PD 0
+.TP 11
+\%[ENOTDIR]
+Eine vordere Komponente des Pfadnamens ist kein Directory.
+.TP 11
+\%[ENOENT]
+Eine vordere Komponente des Pfadnamens existiert nicht.
+.TP 11
+\%[EROFS]
+Das Directory, in dem die Datei
+erzeugt werden soll, befindet sich in einem Nur-Lese-Dateien-System.
+.TP 11
+\%[EEXIST]
+Die Datei
+.I file
+existiert.
+.TP 11
+\%[EFAULT]
+Der Pointer
+.I file
+verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen 
+Adressbereichs liegt.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird ein Wert Null zurueckgegeben.
+Andernfalls wird der Wert \-1 zurueckgegeben und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.PP
+Der erste Block-Pointer des i-Node wird von
+.IR dev 
+initialisiert.
+.SH EINSCHRAENKUNGEN
+Fuer gewoehnliche Dateien und Directories ist
+.I dev
+normalerweise Null.
+.PP
+.B Mknod
+kann nur vom Superuser ausgefuehrt werden.
+.SH SIEHE AUCH
+mkdir(1), mknod(1M), chmod(2), exec(2),
+umask(2), filsys(5), mknod(M).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT MKNOD  := 14
+
+Nichtsegmentiert
+     ...             !* r0 : file *!
+                     !* r1 : mode *!
+                     !* r2 : dev *!
+Segmentiert
+     ...             !* rr0 : file *!
+                     !* r2 : mode *!
+                     !* r3 : dev *!
+     clr    r4
+     sc     #MKNOD
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

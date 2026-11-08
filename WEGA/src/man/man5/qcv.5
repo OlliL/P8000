@@ -1,0 +1,235 @@
+.TH QCV 5 WEGA
+.\"@[$]qcv.5    1.2
+.ad
+.SH NAME
+qcv \- Quellcodeverwaltungssystem
+.SH BESCHREIBUNG
+Das Quellcodeverwaltungssystem ermoeglicht die komprimierte Speicherung
+mehrer Versionen einer Quelldatei in einer QCV-Steuerdatei.
+Eine QCV-Steuerdatei enthaelt alle Informationen, die
+erforderlich sind, um eine beliebige Version einer
+zugehoerigen Quelldatei neu zu erstellen.
+Textzeilen, die sich in verschiedenen Versionen der Quelldatei
+wiederholen, befinden sich nur einmal in der QCV-Steuerdatei.
+.LP
+Die QCV-Steuerdatei ist eine regulaere WEGA-Textdatei.
+Jede Release einer Quelldatei wird mit einem
+Release-Eintrag in der Quelldatei gekennzeichnet.
+Der Release-Eintrag kann mehrere Versionseintraege enthalten,
+die fuer Niveaus innerhalb einer Release der Quelldatei stehen.
+Einer aus einer QCV-Steuerdatei entnommenen Version
+wird eine Versionsnummer der Form
+
+        Release.level
+
+zugeordnet. Level bezeichnet die Nummer der (i.a. leicht veraenderten)
+Version der angegebenen Release.
+Die Versionsnummer
+kann auch in die Quelldatei aufgenommen werden.
+.LP
+Es folgt die Beschreibung des Aufbaus der QCV-Steuerdatei.
+.br
+Eine Zeile der Form
+
+    &R
+
+bezeichnet die Nummer der Release.
+Dieser Zeile  folgt unmittelbar der erste Versionseintrag.
+Jede Version beginnt mit einer Zeile, in der Angaben ueber
+den historischen Hergang gemacht werden:
+
+    &H hugo at Tue Jan 12 11:23:45 1988
+
+In dieser Zeile wird der Name des Benutzers, der die Version
+in die QCV-Steuerdatei eingetragen hat und das Datum der Uebernahme
+in die QCV-Steuerdatei angegeben.
+.LP
+Anschliessend koennen Kommentarzeilen folgender Form angegeben werden:
+
+    &C Nutzerkommentar
+
+Die Kommentarzeilen sollten die Veraenderungen dieser Version
+charakterisieren.
+.LP
+Es folgen die Zeilen, in denen der Unterschied
+zwischen dieser Version und der vorangegangenen
+Version angegeben wird.
+(Fuer Version 1.1 wird
+die gesamte Quelldatei in die QCV-Steuerdatei uebernommen, also
+der Unterschied zwischen der
+Version und einer leeren Datei angegeben.)
+Die Zeilen mit den angegebenen Unterschieden werden durch das
+Programm
+.BR diff (1)
+mit der Option -f erstellt.
+.LP
+Das Ende dieser Zeilen und damit das Ende
+des Versionseintrags wird durch eine Zeile
+
+    &D
+
+angegeben.
+.LP
+Die QCV-Steuerdatei fuer eine Quelldatei namens
+.I file
+wird als
+.IB file +
+bezeichnet.
+.LP
+Die folgenden Kommandos fuehren
+Operationen an einer QCV-Steuerdatei
+aus:
+.TP 10
+.B chkin
+Hinzufuegen einer neuen Version der Quelldatei in
+die QCV-Steuerdatei.
+.TP
+.B chkout
+Rekonstruieren einer Version der Quelldatei aus der
+QCV-Steuerdatei.
+Das Programm
+.B chkin
+fuehrt fuer die hinzugefuegte Version ein
+.B chkout
+aus, sofern die Option
+.B -r
+nicht angegeben ist.
+.TP
+.B chkdiff
+Ermitteln von Unterschieden zwischen der Quelldatei und einer Version
+in der QCV-Steuerdatei
+oder zwischen zwei in der QCV-Steuerdatei befindlichen Versionen.
+.LP
+Eine Version einer Quelldatei kann entweder zum Editieren
+oder nur zum Lesen rekonstruiert werden.
+Eine editierbare Quelldatei wird modifiziert und
+anschliessend wieder als neue Version in die QCV-Steuerdatei eingefuegt.
+Soll eine editierbare Quelldatei rekonstruiert werden, wird eine
+Verriegelungsdatei (lock file) angelegt. Eine modifizierte
+Quelldatei kann ohne Vorhandensein einer
+Verriegelungsdatei nicht wieder in die
+existierende QCV-Steuerdatei eingefuegt werden.
+Soll eine Quelldatei nur gelesen, gedruckt, uebersetzt
+oder anderweitig in ein Programm eingegeben werden,
+ist sie nur zum Lesen zu rekonstruieren.
+In diesem Fall wird keine Verriegelungsdatei angelegt.
+Die Quelldatei darf nicht modifiziert oder wieder eingefuegt werden.
+Ohne Angabe von Optionen legt das Programm
+.B chkout
+eine Quelldatei an, die nur gelesen werden kann.
+Ist
+.B chkout
+jedoch mit der Option
+.B -e
+angegeben, wird eine editierbare Quelldatei erzeugt.
+Ohne Angabe der Option
+.B -r
+ersetzt das Programm
+.B chkin
+die editierbare Quelldatei durch eine Quelldatei,
+die nur gelesen werden kann.
+Ist jedoch die Option
+.B -r
+angegeben, loescht
+.B chkin
+die Quelldatei.
+.LP
+Eine Quelldatei, die nur gelesen werden kann, sollte Informationen
+zur Kennzeichnung ihrer Version enthalten.
+Dazu koennen vor dem ersten Einfuegen der Version 1.1
+in die QCV-Steuerdatei Schluesselworte in die Datei
+aufgenommen werden.
+Ein Schluesselwort besteht aus drei Zeichen.
+Folgende Schluesselworte sind zulaessig:
+.TP
+.B $\W$
+Definition einer what-Zeichenkette zur Kennzeichnung der Version
+eines Moduls (Datei).
+.br
+Beispiel:
+
+        @[$]myprog.c    2.3
+
+Eine what-Zeichenkette besteht aus vier Elementen:
+.RS
+.IP - 2
+Die vier Zeichen
+@[$] (Kennzeichnung einer what-Zeichenkette).
+.PD 0
+.IP - 2
+Name der Quelldatei (Modul).
+.IP - 2
+Ein Tabulator.
+.IP - 2
+Die Versionsnummer.
+.PD
+.LP
+Das Schluesselwort
+$\W$ kann so in die editierbare Quelldatei eingetragen werden,
+dass die what-Zeichenkette sowohl in der Quelldatei, die nur gelesen werden
+kann, als auch in der Objektdatei erscheint.
+Tritt z.B.
+
+        extern char Version[] = "$\W$";
+
+in einer editierbaren C-Quelle auf, erscheint
+
+        extern char Version[] = "@[$]myprog.c   2.3";
+
+in der Quelldatei, die nur gelesen werden kann, und die what-Zeichenkette
+erscheint in der Objektdatei.
+.RE
+.TP
+.B $\Z$
+Wird in die Zeichen @[$] aufgeloest, um vom Nutzer
+definierte what-Zeichenketten zu kennzeichnen.
+.TP
+.B $\R$
+Die Versionsnummer wird eingetragen.
+.TP
+.B $\D$
+Datum und Zeit
+(MM/DD/YY HH:MM:SS)
+der Ausfuehrung des Programms
+.B chkout
+fuer die Quelldatei werden eingetragen.
+.SH BEISPIEL
+Im folgenden wird die moegliche Verwendung der Programme des
+Quellcodeverwaltungssystems demonstriert.
+.IP (1)
+Es wird eine erste Quelldatei angelegt, in der die gewuenschten
+Schluesselworte enthalten sind.
+.IP (2)
+Die Quelldatei wird mit Hilfe des Programms
+.B chkin
+in die QCV-Steuerdatei eingefuegt.
+Durch
+.B chkin
+wird die Quelldatei durch eine Quelldatei ersetzt, die nur
+gelesen werden kann und in der alle Schluesselworte
+durch ihren entsprechenden Zeichenkettenwert
+ersetzt werden.
+.IP (3)
+Das Quellprogramm kann nun weiter verarbeitet werden (Uebersetzen,
+Testen, usw.).
+Wenn keine weiteren Aenderungen erforderlich werden, ist die
+Bearbeitung beendet.
+.IP (4)
+Sind Aenderungen in der Quelldatei notwendig, wird mit Hilfe des Programms
+.B "chkout -e"
+eine editierbare Quelldatei rekonstruiert, die
+die letzte Version besitzt.
+.IP (5)
+In der Quelldatei
+sind die entsprechenden Aenderungen vorzunehmen.
+Anschliessend wird mit Schritt 2 weitergearbeitet.
+.SH SIEHE AUCH
+chkin(1),
+chkout(1),
+chkdiff(1),
+diff(1).
+.SH EINSCHRAENKUNGEN
+Eine Quelldatei, die nur gelesen werden kann, wird nur
+durch fehlende Schreiberlaubnis geschuetzt.
+Der Schreibschutz wird meist erst bei der Benutzung des
+Editors festgestellt.

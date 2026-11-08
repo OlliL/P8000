@@ -1,0 +1,49 @@
+.TH FOREACH 1C WEGA
+.\"@[$]foreach.1C	1.2
+.ad
+.fi
+.SH NAME
+foreach \- Schleifensteueranweisung fuer C-Shell Anweisungen
+.SH SYNTAX
+.B foreach
+.I name 
+.I "( list )"
+.in +5m
+.I command
+.in -5m
+.B end
+.SH BESCHREIBUNG
+Der Variablen
+.I name
+wird bei jedem Schleifendurchlauf nacheinander der Wert jedes Elements aus
+.I list
+zugewiesen und damit die Kommandofolge zwischen
+.B foreach
+und
+.B end
+ausgefuehrt. Sowohl
+.B foreach
+als auch
+.B end
+duerfen nur auf allein auf einer Zeile stehen.
+.PP
+Wurde das Kommando vom Terminal eingegeben, werden die Anweisungen
+des Schleifenkoerpers zeilenweise mit dem Prompt ? 
+bis zur Erkennung der \fBend\fR-Anweisung abgefragt,
+bevor ein Kommando der Schleife ausgefuehrt wird.
+Ein auf dem Terminal ausgegebener Eingabefehler in der Schleife kann
+geloescht werden.
+.SH DATEIEN
+/bin/csh
+.SH SIEHE AUCH
+break(1C),
+breaksw(1C), 
+continue(1C),
+exit(1C),
+if(1C),
+nohup(1C),
+onintr(1C),
+switch(1C),
+while(1C).
+.br
+"C-Shell" in WEGA-Dienstprogramme.

@@ -1,0 +1,33 @@
+.TH UNAME 1 WEGA
+.\" @[$]uname.1	1.2
+.ad
+.fi
+.SH NAME
+uname \- Ausgabe des aktuellen Systemnamens
+.SH SYNTAX
+\fBuname\fR [\fB\-anrsv\fR]
+.SH BESCHREIBUNG
+.B Uname\^
+gibt den aktuellen Systemnamen des WEGA-Betriebssystems auf der Standardausgabe
+aus. Das Programm wird hauptsaechlich in Rechnernetzen
+benutzt, um festzustellen, mit welchem System
+man gerade arbeitet.
+.SH OPTIONEN
+.TP
+.B \-a
+Ausgabe aller verfuegbaren Informationen.
+.TP
+.B \-n
+Ausgabe des Nodename (Name, unter dem das System in einem Rechnernetz
+bekannt ist).
+.TP
+.B \-r
+Ausgabe der Release-Nummer des Betriebssystems.
+.TP
+.B \-s
+Ausgabe des Systemnamens (Standard).
+.TP
+.B \-v
+Ausgabe der  Versionsnummer des Betriebssystems.
+.SH SIEHE AUCH
+uname(2).

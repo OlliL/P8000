@@ -1,0 +1,55 @@
+.TH FLOOR 3 
+.\" @[$]floor.3 1.2
+.ad
+.fi
+.SH NAME
+floor, fabs, ceil, fmod \- Absoluter Wert, Ganzzahl-Funktionen
+.SH SYNTAX
+.nf
+\fB\fB#include <math.h>
+.PP
+\fBdouble fabs\fR(\fIx\fR)\fR
+\fBdouble\fR(\fIx\fR);\fR
+.PP
+\fBdouble floor\fR(\fIx\fR)
+\fBdouble \fIx\fR;
+.PP
+\fBdouble ceil\fR(\fIx\fR)
+\fBdouble \fIx\fR;
+.PP
+\fBdouble fmod\fR(\fIx\fR, \fIy\fR)
+\fBdouble \fIx\fR, \fIy\fR;
+.fi
+.SH BESCHREIBUNG
+.B Fabs
+liefert den absoluten Betrag des Wertes
+.RI | \|x\| |.
+.PP
+.B Floor
+liefert die groesste ganze Zahl, die nicht groesser als
+.IR x
+ist.
+.PP
+.B Ceil
+liefert die kleinste ganze Zahl, die nicht kleiner als
+.IR x
+ist.
+.PP
+.B Fmod
+liefert den Gleitkommarest
+.I f
+der Division von
+.IR x
+durch
+.IR y .
+Es gilt:
+.IP
+\fIx = iy + f\fR 
+.PP
+Dabei ist
+.I i
+eine beliebige ganze Zahl aus dem Bereich
+.IP
+\fI0 <= f < y\fR.
+.SH SIEHE AUCH
+abs(3).

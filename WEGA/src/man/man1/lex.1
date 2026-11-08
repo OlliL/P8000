@@ -1,0 +1,249 @@
+.TH LEX 1 WEGA
+.\" @[$]lex.1	1.2
+.ad
+.fi
+.SH NAME
+lex \- Generierung einfacher lexikalischer Analysatoren
+.SH SYNTAX
+.B lex
+[
+.B \-tvfn
+] [ file ] ...
+.SH BESCHREIBUNG
+.B Lex\^
+erzeugt Programme, die zu einfachen lexikalischen Text\%analysen
+verwendet werden koennen.
+Die Eingabedateien
+.I files\^
+(Standard: stdin)
+enthalten Zeichenketten und Ausdruecke, die im Text gesucht werden sollen,
+sowie Anweisungen in der C-Sprache.
+.PP
+.B Lex
+erzeugt ein C-Quellprogramm
+.IR lex.yy.c ,
+das wie folgt zu uebersetzten ist:
+.IP
+cc \-u \_main lex.yy.c \-ll
+.LP
+Das erzeugte Programm kopiert die Eingabe zur Ausgabe. Wird die
+in der Datei angegebene Zeichenkette gefunden,
+wird der entsprechende Programmtext ausgefuehrt.
+Die gefundene Zeichenkette wird in
+.IR yytext ,
+einem externen Zeichenfeld abgelegt.
+.LP
+Der Vergleich erfolgt in der Reihenfolge der Zeichenketten in der Datei.
+Die Zeichenketten koennen eckige Klammern zur Definition von Zeichengruppen
+enthalten, wie z.B.
+.I [abx\-z]
+fuer die Zeichen
+.I "a, b, x, y" 
+und
+.I "z"
+steht. Die folgenden Operatoren stehen fuer Wiederholungen von
+Zeichen oder Zeichengruppen:
+.PD 0
+.TP 3
+.B \(**
+nichtnegative Anzahl
+.TP 3
+.B +
+positive Anzahl
+.TP 3
+.B ?
+null- oder einmaliges Auftreten.
+.PD
+.PP
+Das Zeichen
+.B "."
+steht fuer ein beliebiges
+.SM ASCII
+Zeichen mit Ausnahme des Newline.
+Statt der eckigen Klammern und des Fragezeichens koennen auch
+runde Klammern zur Zeichengruppie\%rung
+und der senkrechte Strich zur Negation verwendet werden.
+.LP
+Die Notation
+.I "r { d , e }"
+erzeugt eine Verknuepfung zwischen
+.I d\^
+und
+.I e\^
+mit dem regulaeren Ausdruck
+.IR r .
+Die geschweiften Klammern haben eine hoehere Prioritaet als
+.IR | ,
+und eine niedrigere als
+.IR \(** ,
+.IR ? ,
+.IR + ,
+und die Zeichengruppierungsklammern. Das Zeichen
+.B ^
+am Anfang eines Ausdruckes steht fuer ein vorangehendes Newline (d.h.
+die zu suchende Zeichen\%kette muss am Anfang einer Zeile stehen)
+und das Zeichen
+.B $
+steht fuer ein abschliessendes Newline (d.h. die zu suchende
+Zeichen\%kette muss am Ende einer Zeile stehen). Das Zeichen
+.B /
+in einem Ausdruck weist auf einen nachfolgenden Kontext hin.
+Nur der Teil des Ausdruckes bis zum Symbol \fB/\fR kehrt in
+.I yytext
+wieder, der Rest des Ausdrucks folgt dem Eingabestrom.
+Ein Operationszeichen kann wie ein gewoehnliches Symbol benutzt werden,
+wenn es in Anfuehrungsstrichen steht, oder wenn
+ihm ein \fB\e\fR vorangeht.
+Folglich entspricht
+.I [a\-zA\-Z]+
+einer beliebig langen Zeichenkette, die nur aus Buchstaben besteht.
+.PP
+Es existieren drei Subroutinen (definiert als Makros):
+.B input()
+liest ein Zeichen,
+.BI unput( c )
+ersetzt ein gelesenes Zeichen und
+.BI output( c )
+gibt ein Zeichen aus.
+.LP
+Das erzeugte Programm wird
+.B yylex()
+genannt und die Bibliothek enthaelt den Modul
+.BR main() ,
+der es aufruft.
+Die Aktion
+.SM REJECT
+auf der rechten Seite der Regel veranlasst ein Zurueckstellen
+dieses Vergleichs. Der naechste passende Vergleich wird ausgefuehrt.
+Die Funktion
+.B yymore()
+akkumuliert zusaetzliche Zeichen im gleichen
+.IR yytext .
+Die Funktion
+.BI yyless( p )
+schiebt den Zeichenkettenanteil weg, der bei
+.IR p
+beginnt
+und sich zwischen
+.I yytext\^
+und
+.IR yytext + yyleng
+befindet.  Die Makros
+.I input\^
+und
+.I output\^
+benutzen die Dateien
+.B yyin
+und
+.BR yyout
+zum lesen bzw. schreiben (Standard:
+.B stdin
+und
+.BR stdout ).
+.PP
+Jede Zeile, die mit einem Leerzeichen beginnt,
+darf nur C-Text enthalten. Sie wird ko\%piert.
+Beginnt eine Zeile mit
+.BR %% ,
+wird sie in das extern definierte Feld der
+.I lex.yy.c
+Datei kopiert.
+Alle Regeln muessen nach einem
+.B %%
+stehen (siehe
+.BR yacc (1)).
+Zeilen, die vor
+.B %%
+stehen und nicht mit einem Leerzeichen beginnen,
+enthalten Zuweisungen, die spaeter
+in den Regeln in geschweiften Klammern benutzt werden koennen.
+.LP
+Es ist zu beachten, dass geschweifte Klammern keine runde Klammern
+beeinhalten duerfen, da lediglich eine Zeichenkettensubstitution vorgenommen
+wird.
+.SH BEISPIELE
+.ta +8n +8n +8n +8n
+.nf
+	D	[0\-9]
+	%%
+	if	printf("\s-1IF\s+1 statement\\n");
+	[a\-z]+	printf("tag, value %s\\n",yytext);
+	0{D}+	printf("octal number %s\\n",yytext);
+	{D}+	printf("decimal number %s\\n",yytext);
+	"++"	printf("unary op\\n");
+	"+"	printf("binary op\\n");
+	"/\(**"	{	loop:
+			while (input() != \(fm\(**\(fm);
+			switch (input())
+				{
+				case \(fm/\(fm: break;
+				case \(fm\(**\(fm: unput(\(fm\(**\(fm);
+				default: go to loop;
+				}
+			}
+.fi
+.PP
+Das folgende
+.B lex
+Programm konvertiert Grossbuchstaben in Kleinbuchstaben,
+streicht Leerzeichen am Ende der Zeile und
+ersetzt mehrere aufeinanderfolgende Leerzeichen durch ein
+einzelnes Leerzeichen.
+.IP ""
+.nf
+.ta \w'[A\-Z] 'u
+%%
+[A\-Z]	putchar(yytext[0]+\'a\'\-\'A\');
+[ ]+$	;
+[ ]+	putchar(\' \');
+.fi
+.PP
+Die durch
+.B lex\^
+erzeugten externen Namen beginnen alle mit dem Praefix
+.BR yy " oder " YY .
+.PP
+Die Optionen haben folgende Bedeutung:
+.TP
+.B \-t
+Uebergabe des Ergebnisses an die Standardausgabe, nicht an die Datei
+.I lex.yy.c .
+.TP
+.B \-v
+Statistikausgabe
+.TP
+.B \-n
+keine Statistikausgabe
+(Standard)
+.TP
+.B \-f
+`Schnelle` Compilierung (Ohne Ergebnistabelle; nur fuer kleine Programme).
+.PP
+Einige Tabellenwerte, die fuer die Arbeit benoetigt werden,
+koennen in der Definitionssektion gesetzt werden:
+.RS
+.TP "@.TP
+.BI %p " n\^"
+Anzahl der Positionen (Standard: 2000)
+.ns
+.TP
+.BI %n " n\^"
+Anzahl der Zustaende (Standard: 500)
+.ns
+.TP
+.BI %t " n\^"
+Anzahl der "parse tree"-Knoten (Standard: 1000)
+.ns
+.TP
+.BI %a " n\^"
+Anzahl der Uebergaenge (Standard: 3000)
+.RE
+.PP
+Die Benutzung von einem oder mehreren
+der oben angegebenen Werte impliziert die
+.B \-v
+Option, wenn nicht die
+.B \-n
+Option benutzt wird.
+.SH SIEHE AUCH
+yacc(1).

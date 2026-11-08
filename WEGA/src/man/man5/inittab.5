@@ -1,0 +1,78 @@
+.TH INITTAB 5 WEGA
+.\"@[$]inittab.5        1.2
+.ad
+.SH NAME
+inittab \- Steuerinformationen fuer init
+.SH BESCHREIBUNG
+Zur Einnahme eines Systemzustandes liest das Programm
+.BR init (M)
+die Datei
+.BR /etc/inittab .
+Die Zeilen in dieser Datei haben das Format:
+.IP
+state:id:flags:command
+.PP
+Alle Zeilen, bei denen das Feld \fIstate\fP mit dem aktuellen
+(oder angegebenen) Zustand des
+.BR init \-Prozesses
+uebereinstimmt, werden ausgewaehlt.
+Bei der Auslieferung sind in der Datei
+.B /etc/inittab
+zwei Systemzustaende vorgesehen:
+.IP 1.
+Single-User Modus
+.br
+Fuer Systemwartung. Es ist nur die Systemkonsole aktiv.
+.IP 2.
+Multi-User Modus
+.br
+Fuer alle Terminalkanaele (mit Ausnahme des
+fuer den Drucker vorgesehenen Kanals)
+wird zyklisch ein Prozess /etc/getty gestartet.
+.PP
+Das Argument
+.I id
+gibt die
+Nummer eines Terminalkanals an.
+Die
+.BR flag \-Argumente
+wirken auf
+Prozesse, die
+im aktuellen Systemzustand (angegeben durch
+.IR state )
+mit diesem Terminalkanal verbunden sind.
+Die folgenden Argumente koennen in Feld
+.I flag
+angegeben werden:
+.nf
+
+flag  Bedeutung
+-----------------------------------------------------
+ t    Beendigung des Prozesses (Signal 15, TERMINATE)
+ k    Abbruch des Prozesses (Signal 9, KILL)
+ c    Kommandoausfuehrung
+.fi
+.PP
+Es koennen auch mehrere Flags
+in der gewuenschten Reihenfolge angegeben werden.
+Bei Angabe der Flags
+.B t
+oder
+.B k
+wird das entsprechende Signal an alle Prozesse in der
+Prozessgruppe gesendet, die mit
+.I id
+(d.h. diesem Terminalkanal) verbunden sind.
+.PP
+Das Flag
+.B c
+bewirkt, dass das im Feld
+.I command
+angegebene Kommando staendig wieder aufgerufen wird,
+wenn der Prozess mit dem Identifikator
+.I id
+stirbt. Andernfalls wird
+.I command
+hoechstens einmal im aktuellen Zustand aufgerufen.
+.SH DATEIEN
+/etc/inittab

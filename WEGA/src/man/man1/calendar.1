@@ -1,0 +1,69 @@
+.TH CALENDAR 1 WEGA
+.\" @[$]calendar.1	1.2
+.ad
+.fi
+.SH NAME
+calendar \- Terminkalender
+.SH SYNTAX
+.B calendar
+[ \- ]
+.SH BESCHREIBUNG
+.B Calendar
+durchsucht eine Datei "calendar" im aktuellen Arbeitsdirectory
+und gibt alle Zeilen aus, die das aktuelle Datum
+oder das auf das aktuelle Datum folgende Datum in einer Zeile
+enthalten.
+Dabei werden Monats- und Tagesangaben der Form "Dec. 7,"
+"december 7," "12/7," usw. erkannt. Nicht erkannt
+werden Angaben der Form
+"7 December" oder "7/12".
+An Wochenenden werden auch Eintraege ausgegeben,
+die sich auf den folgenden Montag beziehen.
+.PP
+Gibt man ein Argument [-] im Aufruf von \fBcalendar\fR an,
+werden die login-Directories aller Nutzer, die eine Datei
+.B calendar
+besitzen, durchsucht. In diesem Fall
+wird das Ergebnis mit
+.BR mail(1)
+an den jeweiligen Nutzer uebergeben. Das kann zum Beispiel
+taeglich in den fruehen Morgenstunden unter Steuerung von
+.BR cron(M)
+erfolgen.
+.SH BEISPIEL
+Eine Datei \fBcalendar\fR in dem login-Directory eines
+Nutzers enthaelt folgende Zeilen:
+.sp
+.RS
+3/3	10:00 Uhr im Konferenzraum 501
+.br
+3/3	Klaus anrufen
+.br
+3/5	Beratung mit Koll. Mueller -- 14:00 Uhr / 1.8
+.RE
+.sp
+Das Kommando
+.sp
+.RS
+\fB(cd; calendar)\fR
+.RE
+.sp
+bearbeitet die \fBcalendar\fR-Datei im
+home-Directory des Nutzers,
+unabhaengig vom momentanen Arbeitsdirectory.
+.SH DATEIEN
+/usr/lib/calprog - bearbeitet den aktuellen und den folgenden Tag
+.br
+/etc/passwd
+.br
+/tmp/cal*
+.br
+/usr/lib/crontab
+.SH SIEHE AUCH
+egrep(1),
+sed(1),
+at(1),
+mail(1),
+cron(M)
+.SH EINSCHRAENKUNGEN
+Die Kalenderdatei sollte oeffentliche Informationen enthalten.

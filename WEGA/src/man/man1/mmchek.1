@@ -1,0 +1,32 @@
+.TH MMCHEK 1 WEGA  
+.\" @[$]mmchek.1	1.2
+.ad
+.fi
+.SH NAME
+mmchek \- Kontrolle der Verwendung von mm Makros und der eqn Trennzeichen
+.SH SYNTAX
+.B mmchek
+[\^files\^]
+.SH BESCHREIBUNG
+.I Mmchek\^
+ist ein Programm, das in Dateien
+.I files\^
+(Standard: stdin)
+die richtige Anwendung der MM-Makros (siehe
+.IR mm (1))
+und
+einiger
+.IR eqn (1)
+Konstruktionen kontrolliert.
+Es werden entsprechende Meldungen erzeugt.
+Das Programm beruecksichtigt keine Directories.
+.SH SIEHE AUCH
+eqn(1),
+mm(1),
+mmt(1).
+.br
+"MM Memorandum-Makros\^" in WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+.TP
+Cannot open "filename"
+Nichtlesbare Dateien.

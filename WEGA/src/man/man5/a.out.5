@@ -1,0 +1,608 @@
+.TH A.OUT 5 WEGA
+.\"@[$]a.out.5  1.2
+.fi
+.ad
+.SH NAME
+a.out \- Ausgabedatei des P8000-Laders
+.SH SYNTAX
+.B #include <s.out.h>
+.SH BESCHREIBUNG
+.B A.out
+ist die Ausgabedatei, die von
+einem der Laderprogramme
+.BR ld (1)
+oder
+.BR sld (1)
+angelegt wird.
+Die Datei
+.B a.out
+ist ausfuehrbar, wenn waehrend der Assemblierung keine
+fatalen Fehler aufgetreten sind und
+waehrend der Ausfuehrung des Verbindungslaufs keine
+ungeloesten externen Referenzen auftraten.
+Das Dateiformat
+.B a.out
+wird auch als
+.B s.out
+bezeichnet, um es vom Ausgabeformat auf anderen Maschinen
+zu unterscheiden.
+.sp
+Die Datei
+.B a.out
+kann logisch in drei Teile geteilt werden.
+Die drei Teile koennen physisch in bis zu sechs
+Sektionen geteilt werden. Die drei Teile sind:
+Dateikopf (Header), Speicherabbild (memory image) und
+Dateinachsatz (Trailer).
+Zum Dateikopf gehoeren Deskriptor und Segmenttabelle.
+Zum Speicherabbild gehoeren Text- und Datenbereich.
+Zum Dateinachsatz, der nicht immer vorhanden sein muss, gehoeren
+Verschiebungsinformationen und die Symboltabelle.
+.PP
+Der Hauptspeicher wird im Betriebssystem WEGA in Einheiten von
+256 Byte, auch "cliques" genannt, verwaltet, die stets auf
+einer durch 256 teilbaren Adresse beginnen muessen.
+Die Groesse dieser Speicherbloecke ergibt sich aus der Architektur
+der Speicherverwaltungsschaltkreise.
+.PP
+.nf
+.B 1.  DATEIKOPF
+.PP
+struct s_head {
+        struct s_exec   s_exc;       /* s.out Deskriptor */
+        struct segt     segtable[2]; /* nichtsegmentierte Segmenttabelle */
+};
+.fi
+.ad
+.PP
+Dieser Dateikopf beinhaltet den Deskriptor
+und die Segmenttabelle fuer eine nichtsegmentierte \fBa.out\fR Datei.
+Der Deskriptor hat folgende Struktur:
+.nf
+.PP
+.B 1.1. Der Objektmodul-Deskriptor
+.PP
+struct s_exec {
+        int        s_magic;   /* Magic-Nummer                        */
+        long       s_imsize;  /* Groesse der Memory-image-Sektion    */
+        long       s_bss;     /* Groesse der Block-storage-Sektion   */
+        unsigned   s_segt;    /* Groesse der Segmenttabellensektion  */
+        unsigned   s_syms;    /* Groesse der Symboltabellensektion   */
+        long       s_entry;   /* Entry-Point-Adresse                 */
+        unsigned   s_flag;    /* Flags word                          */
+        unsigned   s_codesz;  /* 8-Bit, aufgefuellte Codegroesse     */
+        unsigned   s_unused;  /* unbenutzt                           */
+};
+.fi
+.PP
+Die Groesse der Sektionen wird (ausser in 2 Faellen) in Bytes angegeben.
+Die Ausnahmen bilden die Datensektion, die
+im Speicherabbild enthalten ist, und die
+Verschiebungsinformation.
+Die Groesse des Deskriptors ist nicht enthalten.
+Im folgenden Abschnitt werden die
+einzelnen Felder des Deskriptors erlaeutert:
+.PP
+Die MAGIC-Nummer
+.I s_magic
+charakterisiert den Typ des ausfuehrbaren
+Speicherabbildes. Es wird zwischen segmentierten,
+nichtsegmentierten und 8-Bit-Programmen unterschieden.
+Fuer jedes dieser Programme
+koennen der Befehls- und Datenbereich (I&D) separat (d.h. in verschiedenen
+Segmenten) oder kombiniert (in einem Segment) vorliegen.
+Overlaydateien sind reine Befehlssegmente, die bereits geladenen
+Befehlsbereich ueberschreiben.
+.nf
+.sp
+/* Gueltige z.out Magic-Nummern (definiert in z.out.h) sind:
+   0xE807, 0xE810 und 0xE811 */
+
+#define S_MAGIC1 0xE607   /* segmentiert, I&D kombiniert */
+#define S_MAGIC3 0xE611   /* segmentiert, I&D separat */
+#define S_MAGIC4 0xE605   /* segmentiert, Overlay */
+#define N_MAGIC1 0xE707   /* nichtsegmentiert, I&D kombiniert */
+#define N_MAGIC3 0xE711   /* nichtsegmentiert, I&D separat */
+#define N_MAGIC4 0xE705   /* nichtsegmentiert, Overlay */
+#define X_MAGIC1 0xE507   /* 8-Bit, I&D kombiniert */
+#define X_MAGIC3 0xE511   /* 8-Bit, I&D separat */
+#define X_MAGIC4 0xE505   /* 8-Bit, Overlay */
+.fi
+.PP
+Das Feld
+.I s_imsize
+gibt die Groesse des Speicherabbildes (Text und Daten) an.
+In der folgenden Tabelle werden die allgemeinen Gleichungen
+fuer die Bestimmung der Positionen der Sektionen gegeben.
+Dabei ist '0x18'
+der Beginn der Segmenttabelle,
+'S'
+die Laenge der Segmenttabelle,
+'D'
+die Laenge der Daten und
+'T'
+die Laenge des Textes.
+.nf
+.sp
+0x18 + S          = Beginn der Textsektion
+0x18 + S + T      = Beginn der Datensektion
+0x18 + S + T +    = Beginn der Sektion fuer Verschiebungsinformationen
+0x18 + S + T + D  = Beginn der Symboltabelle, wenn keine
+                    Verschiebungsinformationen vorhanden sind
+0x18 + S + 2(T+D) = Beginn der Symboltabelle, wenn
+                    Verschiebungsinformationen vorhanden sind
+.fi
+.PP
+Das Feld
+.I s_bss
+enthaelt die Laenge des Speichers, der fuer die BSS-Sektion erforderlich ist.
+In U8000-Programmen liefert die Summe aus
+.I s_imsize
+und
+.I s_bss
+die beim Laden des Programms erforderliche physischen Laenge des Speichers.
+Die Summe aus diesen zwei Zahlen,
+dividiert durch 256 und aufgerundet ergibt die
+Anzahl der
+zum Laden eines Programms benoetigten 256-Byte-Speicherbloecke.
+In 8-Bit-Programmen koennen
+Bytes von Speicherabbildern
+zur Synchronisation auf Wortgrenzen aufgefuellt werden.
+In diesem Fall unterscheidet sich das Feld s_imsize
+von der Groesse des Objektcodes
+und sollte daher nicht verwendet werden, um die erforderliche Speichergroesse
+zu bestimmen.
+In 8-Bit-Programmdateien mit separaten I&D, ist
+die aufgefuellte Codegroesse im Feld
+.I s_codesz
+enthalten.
+Die Segmenttabelle enthaelt die Information ueber die
+erforderliche Speichergroesse.
+.PP
+Das Feld
+.I s_segt
+ist die Groesse der Segmenttabelle. Die Segmenttabelle wird weiter unten
+beschrieben.
+.PP
+Das Feld
+.I s_syms
+enthaelt die Groesse der Symboltabelle (Format der Symboltabelle
+siehe unten).
+.PP
+Das Feld
+.I s_entry
+gibt die Startadresse fuer das Programm im Adressformat des U8000 an.
+Das hoeherwertige Byte des hoeherwertigen Wortes
+enthaelt die Segmentnummer.
+Das niederwertige Wort enthaelt das segmentierte Offset.
+In einem nichtsegmentierten oder in einem 8-Bit-Programm
+ist das obere Wort Null.
+.PP
+Die folgenden Werte sind im Feld
+.I s_flag
+gueltig:
+.nf
+.PP
+#define SF_STRIP 0x0001    /* Verschiebungsinformation entfernt */
+#define SF_OPREP 0x0002    /* Reserviert fuer Linker            */
+#define SF_Z8    0x0004    /* U881/U882-Programm                */
+#define SF_Z80   0x0008    /* U880-Programm                     */
+#define SF_SEND  0x0010    /* Von SEND erzeugter Modul          */
+#define SF_7FSTK 0x0020    /* Stack ist im Segment 0x7F         */
+.fi
+.PP
+Die freien Bitpositionen sind reserviert.
+.PP
+Das Feld
+.I s_codesz
+wird in 8-Bit-Programmdateien mit separatem I&D zur Speicherung
+der aufgefuellten Groesse des Text-Speicherabbildes benutzt.
+.PP
+.B "1.2. Die Segmenttabelle
+.PP
+Die Segmenttabelle enthaelt
+fuer jedes Segment im Programm eine Struktur
+.BR segt .
+In segmentierten Programmen mit
+kombinierten I&D und in Overlay-Programmen
+sind maximal 128 derartige Strukturen moeglich. In segmentierten
+Programmen mit separatem I&D sind maximal 256 moeglich.
+.PP
+In nichtsegmentierten oder in 8-Bit-Programmen existiert nur eine
+Struktur in der Tabelle (fuer
+.IR sg_segno =0).
+.PP
+Die Struktur
+.B segt
+ist wie folgt definiert:
+.nf
+.PP
+struct segt {
+        char       sg_segno;    /* Segmentnummer                */
+        char       sg_coff;     /* Offset/256 fuer Textsektion  */
+        char       sg_doff;     /* Offset/256 fuer Datensektion */
+        char       sg_boff;     /* Offset/256 fuer BSS-Sektion  */
+        unsigned   sg_code;     /* Groesse der Textsektion      */
+        unsigned   sg_data;     /* Groesse der Datensektion     */
+        unsigned   sg_bss;      /* Groesse der bss-Sektion      */
+        int        sg_atr;      /* Attribute, Def. s. unten     */
+        long       sg_unused;   /* ungenutzt                    */
+};
+.ad
+.fi
+.PP
+Das Segmenttabellenfeld wird
+in aufsteigender Reihenfolge
+nach der logischen Segmentnummer
+.I sg_segno
+sortiert.
+Text- und Datensektionen folgen dieser Ordnung.
+.PP
+Ein Segment kann maximal 256
+Speicherbloecke zu je 256 Byte enthalten.
+Alle Sektionen beginnen an
+Clique-Grenzen. Die Felder
+.IR sg_coff ,
+.I sg_doff
+und
+.I sg_boff
+enthalten das Offset der entsprechenden Sektion geteilt durch 256.
+Beginnt beispielsweise eine Textsektion innerhalb des Segmentes mit der
+Adresse 0x200, hat sie ein Clique-Offset
+.I sg_coff
+von 0x200/0x100=2.
+Beginnt die Datensektion ab der Adresse
+0xE400 innerhalb des Segmentes, hat sie ein Clique-Offset
+.I sg_doff
+von 0xE400/0x100=0xE4 (228).
+Fuer diese drei Offsets gilt der Wertebereich
+.IP
+0 <= \fIsg_?off\fR <= 255 .
+.PP
+Die Felder
+.IR sg_code ,
+.I sg_data
+und
+.I sg_bss
+enthalten die Groessen der Sektionen. Bei U8000-Programmen
+fuellt der Lader eine Sektion auf die naechste 256-Byte-Grenze
+auf. Die Auffuellung ist in der Groesse der Felder enthalten.
+Der Lader sichert, dass
+die durch 256 dividierte und aufgerundete Groesse
+die Anzahl der 256-Byte-Segmente ergibt,
+die fuer das Laden des Programms erforderlich ist.
+Beispielsweise werden bei einem Programm mit separatem
+Text- und Datenbereich, dessen Textbereich eine Laenge
+von 258 Byte und dessen Datenbereich eine Laenge von
+260 Byte besitzt, sowohl der Textbereich als auch der Datenbereich
+auf eine Laenge von jeweils 512 Bytes aufgefuellt.
+Das Programm benoetigt insgesamt einen Speicherbereich von vier Cliques.
+.PP
+Das Feld
+.I sg_atr
+beschreibt die Segmentattribute.
+Folgende Attribute sind definiert:
+.nf
+.PP
+#define SG_CODE    0x0001    /* Segment enthaelt Text */
+#define SG_DATA    0x0002    /* Segment enthaelt Daten */
+#define SG_BSS     0x0004    /* Segment enthaelt BSS */
+#define SG_STACK   0x0008    /* Segment enthaelt den Stack */
+#define SG_OCODE   0x0010    /* Textsektion besitzt Offset */
+#define SG_ODATA   0x0020    /* Datensektion besitzt Offset */
+#define SG_OBSS    0x0040    /* Bss-Sektion besitzt Offset */
+#define SG_BOUND   0x0080    /* Segmentnummer dieser Sektion */
+.ad
+.fi
+.PP
+Die normale Reihenfolge
+der Sektionen
+ist Text, Daten und zum Schluss BSS.
+Wird eine andere Reihenfolge gewuenscht, sind die
+Offset-Flags und -Werte zu verwenden.
+Bei den meisten segmentierten U8000-Anwendungen enthalten die
+Segmente nur Text oder nur Daten und BSS.
+.PP
+Ist bei segmentierten U8000-Programmen das Bit
+SG_BOUND gesetzt,
+wird eine Sektion einer speziellen Segmentnummer zugeordnet.
+.PP
+.B "2. DAS SPEICHERABBILD
+.PP
+Das Speicherabbild enthaelt fuer jedes in der Segmenttabelle definierte
+Segment die Speicherabbilder fuer die Code- und Datenbereiche.
+Da die BSS-Sektionen nicht gespeichert werden,
+wird BSS nicht als Teil des im Deskriptor definierten
+Speicherabbildes betrachtet.
+Besitzt eine der drei Programmsektionen (Text, Daten, BSS)
+ein Offset (das vom Attribut-Feld bestimmt wird),
+wird das entsprechende Feld
+.I sg_?off
+mit 256 multipliziert und als untere Adresse fuer diese
+Sektion verwendet (auch hier ist 0 ein zulaessiges Offset).
+.PP
+In 8-Bit-Programmen enthaelt das Speicherabbild
+Fuellbytes, um eine Ausrichtung auf
+Wortgrenzen zu gewaehrleisten.
+Fuellbytes werden auch dann eingefuegt, wenn
+zwei an einer Wortgrenze aufeinander folgende Bytes
+nicht als ein absolutes Wort betrachtet werden koennen
+(z.B. verschiebbare Bytewerte bei U881).
+Fuellbytes sind im oberen Byte eines Wortwertes enthalten.
+.PP
+.B "3.  DATEINACHSATZ
+.PP
+.B "3.1.  Verschiebungsinformation
+.PP
+Jedem Wort bzw. jedem aufgefuellten Byte-Wert in den
+Text- und Datensektionen ist ein
+Wort mit Verschiebungsinformationen zugeordnet.
+Dadurch wird gesichert, dass Text- und Datensektionen
+und die Verschiebungssektionen die gleiche Groesse
+besitzen.
+.PP
+Ist das Bit
+.B SF_STRIP
+im Feld
+.I s_flag
+des Objektmodul-Deskriptors gesetzt,
+ist keine Verschiebungssektion vorhanden.
+Ist in 8-Bit-Programmen das Bit
+.B SF_STRIP
+gesetzt, sind in den Programmen keine Verschiebungsinformationen
+vorhanden. Die Fuellbytes fuer
+U881/U882 und U880 Programme wurden aus dem Text-
+und Datenbereich entfernt.
+.PP
+Das Verschiebungswoerter fuer segmentierte und
+nichtsegmentierte U8000-Objektdateien sowie
+fuer 8-Bit-Objektdateien
+unterscheiden sich.
+Generell ist Bit 3 der externe Referenzindikator. Die Bedeutung
+der anderen Bits ist von diesem Bit abhaengig.
+.PP
+Das Verschiebungswort wird wie folgt interpretiert:
+.nf
+
+.ne 3
+Bit 3 = 1: externe Referenz
+  Bits 2-0:
+    000    Offset-Teil (oder anderer 16-Bit-Wert)
+    001    Segmentteil
+    010    short segmented Adresse
+    011    12 Bit relative Adresse (CALR)
+    100    16 Bit relative Adresse (LDR, LDAR)
+  Bits 15-4:
+    Symbolnummer beginnend von 0
+
+.ne 3
+Bit 3 = 0: aufgeloeste Referenz
+  Bits 2-1:
+    00     absolut
+    01     Textreferenz
+    10     Datenreferenz
+    11     BSS-Referenz
+.ne 3v
+  Bit 0 = 1: segmentierte Referenz
+    Bits 15-8: Nummer des Segmenttabelleneintrags
+    Bits 6-4:
+      000      Offset-Teil (oder anderer 16-Bit Wert)
+      001      Segmentteil
+      010      short segmented Adresse
+      011      12-Bit relative Adresse (CALR)
+      100      16-Bit relative Adresse (LDR, LDAR)
+.ne 3v
+  Bit 0 = 0: nichtsegmentierte Referenz
+  Bits 15-4: unbenutzt
+.fi
+.PP
+Es ist zu beachten, dass relative Adressen mit
+12 und 16 Bit enthalten sind.
+Zieladressen fuer einen der Befehle
+CALR, LDR oder LDAR
+werden nach Moeglichkeit
+zum Zeitpunkt der Assemblierung aufgeloest.
+Andernfalls erfolgt eine Markierung der relativen Referenzen.
+Der PLZ/ASM-Assembler
+.BR as (1)
+gestattet keine solchen relativen Referenzen.
+Dort muessen alle Referenzen zum
+Zeitpunkt der Assemblierung aufgeloest werden.
+.PP
+Verschiebungsinformationen fuer 8-Bit-Objektdateien:
+.nf
+
+.ne 3v
+Bit 3 = 1: externe Referenz
+  Bits 2-0:
+    000    Wortwert
+    001    Bytewert
+    010    oberes Byte des Wortwertes
+    011    unteres Byte des Wortwertes
+  Bits 15-4:
+    Symbolnummer beginnend von 0
+
+.ne 3v
+Bit 3 = 0: aufgeloeste Referenz
+  Bits 2-0:
+    000      absolut
+    010      Codereferenz
+    100      Datenreferenz
+    110      BSS-Referenz
+  Bits 6-4:
+    000      Wortwert
+    001      Bytewert
+    010      oberes Byte des Wortwertes
+    011      unteres Byte des Wortwertes
+  Bits 15-7: unbenutzt
+.fi
+.PP
+Die Verschiebungsbits fuer das obere und untere Byte
+unterstuetzen die Operatoren #HI und #LO
+fuer U881-PLZ/ASM-Programme.
+.PP
+.B "3.2. Die Symboltabelle
+.PP
+Die Symboltabelle ist ein Feld von Strukturen
+.BR s_nlist .
+Diese Sektion ist nicht vorhanden, wenn das
+Programm mit der Option
+\fB-s\fR
+des Laders \fBld\fR(1) oder \fBsld\fR(1)
+verbunden wurde oder wenn die Symbole und
+Verschiebungsinformation durch
+das Programm \fBstrip\fR(1) geloescht wurden.
+Enthaelt das Feld
+.I s_syms
+des Objektmodul-Deskriptors den Wert Null, ist
+diese Sektion nicht vorhanden.
+.PP
+Ein Symboltabelleneintrag wird durch
+die folgende Struktur definiert:
+.nf
+.PP
+#define SHORTNAME 8     /* normale Laenge des Namens */
+#define LONGNAME 127    /* maximale Laenge eines langen Namens */
+
+struct s_nlist {
+     long  sn_value;           /* Wert, Adresse */
+     char  sn_type;            /* Typenfeld */
+     char  sn_segt;            /* Nr. des Segmenttabelleneintrags */
+     char  sn_name[SHORTNAME]; /* Symbolname aufgefuellt mit 0 */
+};
+
+/* Die folgenden Definitionen beziehen sich auf das Feld sn_type
+   in der Symboltabelle */
+
+#ifndef N_UNDF  /* s.out.h und z.out.h koennen zusammen benutzt
+                   werden, aber z.out.h muss vor s.out.h stehen */
+
+#define N_UNDF  0       /* nicht definiert                  */
+#define N_ABS   0x01    /* absolut                          */
+#define N_DATA  0x03    /* Datensymbol                      */
+#define N_BSS   0x04    /* BSS-Symbol                       */
+#define N_TYPE  0x1F    /* Maske fuer Typ                   */
+#define N_REG   0x14    /* Registername                     */
+#define N_FN    0x1F    /* Dateiname                        */
+#define N_EXT   0x20    /* external Bit, "oder"-verknuepft  */
+
+#endif
+
+#define N_CODE   0x02   /* Textsymbol                       */
+#define N_SN     0x1E   /* Sektionsname                     */
+#define N_SEG    0x40   /* segmented Bit, "oder"-verknuepft */
+#define LONGBIT  0x80   /* in sn_name[0], markiert          */
+                        /* langen Namen                     */
+#define LONGMASK 0x007F /* LONGBIT ausblenden               */
+.fi
+.PP
+Das Namensfeld unterstuetzt Namen von maximal 127 Zeichen.
+Ist das erste Zeichen des Namens ein normales ASCII-Zeichen
+(hoechstes Bit = 0), ist der Name maximal
+acht Zeichen lang.
+Ist das hoechste Bit des Namens gesetzt,
+werden die 7 niederwertigeren Bits als Laenge
+des Namens einschliesslich des Laengenbytes angenommen.
+Ist ein Name laenger als 8 Zeichen,
+folgen die zusaetzlichen Zeichen unmittelbar nach
+dem achten Zeichen des Namens und belegen somit den Bereich weiterer
+Strukturen der Symboltabelle.
+Der letzte Symboltabelleneintrag, in den
+der lange Name ueberlaeuft, wird
+bis zum Ende der Struktur mit Nullen aufgefuellt.
+.PP
+Zum Lesen eines Symbols mit langen Namen wird folgende
+Definition empfohlen:
+.nf
+.PP
+struct {
+        struct sn_nlist bol;
+        char longname[128];
+} sym;
+
+Referenzen haben dann die Form:
+
+x = sym.bol.sn_value;
+c = sym.bol.sn_name[42];
+.fi
+.PP
+Ist ein Symbol als undefiniert extern markiert und besitzt das Feld
+.I sn_value
+einen Wert ungleich Null,
+wird das Symbol von den Ladern
+.BR ld (1)
+und
+.BR sld (1)
+als Name eines Blocks fuer gemeinsamen Speicher (common) interpretiert,
+dessen Groesse durch das Feld
+.I sn_value
+angegeben wird.
+.PP
+Der Wert eines Wortes in den Text- oder Datensektionen,
+das nicht auf ein undefiniertes externes Symbol Bezug nimmt,
+erscheint im Speicher, wenn die Datei ausgefuehrt
+wird.
+Bezieht sich ein Wort in den Text- oder Datensektionen
+auf ein undefiniertes externes Symbol
+(wird durch die Verschiebungsinformation
+fuer das Wort angezeigt), ist der Wert
+des in der Datei gespeicherten Wortes ein Offset
+des zugehoerigen externen Symbols.
+Wenn durch die Verarbeitung das externe Symbol
+definiert wird, wird der Wert des Symbols zum
+Wort in der Datei addiert.
+.PP
+.ne 4
+.B 4. BENUTZUNG
+.PP
+Das Format
+.B a.out
+definiert Objektdateien, die unter dem WEGA-Betriebssystem
+ausgefuehrt werden koennen
+und Programme, die auf eine Zielhardware eingelesen werden.
+Wird eine Datei
+\fBa.out\fR
+durch das WEGA-Betriebssystem zur Ausfuehrung in den Speicher eingelesen,
+werden drei physische Segmente gebildet:
+Text, Daten (einschliesslich BSS) und ein Stack.
+Das Textsegment beginnt mit dem ersten Byte des Speicherabbildes
+(sofort nach dem Dateikopf).
+Der Dateikopf wird nicht geladen.
+.PP
+Ist im Deskriptor die Magic-Nummer
+.B N_MAGIC1
+angegeben
+ist das Textsegment nicht schreibgeschuetzt
+und kann nicht gemeinsam genutzt werden.
+Das Datensegment folgt unmittelbar auf das Textsegment.
+.PP
+Ist die Magic-Nummer
+.B  N_MAGIC3
+angegeben,
+ist das Textsegment schreibgeschuetzt und kann von mehreren Prozessen
+gemeinsam genutzt werden. Text- und Datenbereich
+sind getrennt. Text und Datensektionen beginnen in ihren Segmenten
+jeweils ab Adresse 0.
+.PP
+Ist die Magic-Nummer
+.B N_MAGIC4
+angegeben,
+wird das Textsegment einem existierenden Textsegment
+.RB ( N_MAGIC3 oder N_MAGIC4 )
+ueberlagert. Das existierende Datensegment
+bleibt erhalten.
+.PP
+Alle obigen Ausfuehrungen treffen
+auch auf segmentierte Dateien zu.
+Es koennen jedoch mehrere Segmente in jeder Kategorie
+(Text, Daten, BSS) existieren.
+.PP
+Der Stack beginnt ab 0xFFFE und waechst nach unten.
+Er wird bei Bedarf automatisch vergroessert.
+Datensegmente werden nur durch
+.BR brk (2)
+oder
+.BR sgbrk (2)
+vergroessert.
+.SH SIEHE AUCH
+as(1), cas(1), ld(1), sld(1), objhdr(1), objdu(1), nm(1).

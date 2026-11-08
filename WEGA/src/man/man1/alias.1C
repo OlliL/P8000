@@ -1,0 +1,76 @@
+.TH ALIAS 1C WEGA
+.\"@[$]alias.1C	1.1
+.ad
+.fi
+.SH NAME
+alias \- ersetzt ein Wort durch ein Kommando oder eine Kommandokette
+.SH SYNTAX
+.B alias 
+.I "word command-string"
+.SH BESCHREIBUNG
+.B Alias 
+ist eine Abkuerzung fuer ein laengeres Kommando.
+Shell verwaltet eine Liste von Zuweisungen, die durch
+.B alias
+und
+.B unalias
+Kommandos erzeugt, ausgegeben, modifiziert oder geloescht werden koennen.
+.SH BEISPIEL
+Dem Kommando zum Auffinden von Namen aus der Datei
+/etc/passwd
+.sp
+.RS
+grep user.name /etc/passwd
+.RE
+.sp
+kann das Wort "lookup" mit folgendem Kommando zugewiesen werden:
+.RS
+.sp
+alias lookup 'grep  \e!* /etc/passwd' .
+.sp
+lookup bill
+.RE
+.sp
+ist dann gleichbedeutend mit dem Kommando
+.sp
+.RS
+grep bill /etc/passwd .
+.RE
+.PP
+Das alias Kommando kann auf 4 verschiedene Arten benutzt werden:
+.HP 5
+.B  alias
+.br
+gibt alle Zuweisungen aus.
+.ns
+.HP 5
+.BR alias " name"
+.br
+gibt die Zuweisung fuer name aus.
+.ns
+.HP 5
+.BI alias " name command.string"
+.br
+weist das spezifizierte
+.I command.string
+der Zuweisung
+.I name
+zu.
+.I Name
+selbst darf nicht
+.B alias
+oder
+.B unalias
+sein.
+.HP 5
+.BR unalias " pattern"
+.br
+Alle Zuweisungen, die mit dem angegebenen Muster uebereinstimmen,
+werden geloescht.
+Mit \fIunalias\fR *  werden alle Zuweisungen geloescht.
+.SH EINSCHRAENKUNGEN
+Alias begrenzt die Ersetzung einer einzelnen Zeile auf 20 neue.
+Metazeichen muessen mittels "\e" getrennt werden.
+.SH SIEHE AUCH
+csh(1C), set(1C),
+"Einfuehrung in die C Shell" in WEGA-Dienstprogramme

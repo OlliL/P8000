@@ -1,0 +1,141 @@
+.TH AT 1 WEGA
+.\" @[$]at.1	1.2
+.ad
+.fi 
+.SH NAME
+at \- Kommandoausfuehrung zu einem angegebenen Zeitpunkt
+.SH SYNTAX
+.B at
+\fItime\fR [\fIday\fR ] \fIfile\fR
+.SH BESCHREIBUNG
+.B At
+erstellt eine Kopie des angegebenen Shell-Scripts
+.I file
+und fuehrt diesen zur spezifizierten Zeit aus.
+.PP
+.B At
+prueft, ob
+.I file
+ein C-Shell oder Bourne-Shell-Script ist,
+fuegt ein
+.BR cd (1)
+Kommando (das das Shell zur richtigen
+.I file
+fuehrt)
+und die entsprechenden Shell-Variablen ein
+(siehe auch
+.B setenv
+in
+.BR sh(1))
+und bringt eine Kopie der Datei in das Directory
+/usr/spool/at/yy.ddd.hhhh.uu. 
+.PP
+Zur angegebenen Zeit ermittelt
+.I atrun 
+aus der Datei den Shell-Typ und ruft das entsprechende Shell auf,
+das das
+.B cd
+Kommando ausfuehrt, die Shell-Umgebung (Shell-Variablen) setzt
+und die Shell-Script-Kommandos ausfuehrt.
+.PP
+Wenn die Datei
+.I file
+abgearbeitet wird, hat sie die Zugriffsrechte ihres Eigners und ihrer
+Gruppe.
+Das Programm /usr/lib/atrun
+sichert, dass
+.I file 
+ueber
+.B at 
+in die Auftrags\%kette (spool) eingegliedert wurde
+und fuehrt das Programm aus.
+.PP
+.I Time
+kann aus einer bis vier Ziffern bestehen, denen einer der Buchstaben
+folgen kann:
+.br
+\fIA\fR    - fuer Vormittag
+.br
+\fIP\fR    - fuer Nachmittag
+.br
+\fIN\fR    - fuer Mittag
+.br
+\fIM\fR    - fuer Mitternacht.
+.br
+Ein- und zweistellige Zahlen werden als Stunden gewertet,
+drei- und vierstellige Zahlen als Stunden und Minuten.
+Folgen den Ziffern keine Buchstaben, wird eine 24-Stundenzeit
+angenommen.
+.PP
+Das optionale Argument
+.I day
+ist entweder ein Monatsname (englische Schreibweise),
+dem ein Datum (Nummer des Tags) folgt
+oder ein Wochentag.
+Folgt das Wort \fIweek\fR,
+wird die Datei in einer Woche ausgefuehrt.
+Monatsnamen koennen auch verkuerzt eingegeben werden.
+.PP
+Der Mode des Shell-Scripts muss nicht "ausfuehrbar" sein.
+.PP
+.B At
+Programme werden durch periodische Ausfuehrung des Kommandos
+.I /usr/lib/atrun
+durch
+.BR cron (M)
+abgearbeitet.
+Die Frequenz von
+.B at
+haengt davon ab, wie oft
+.I atrun
+ausgefuehrt wird.
+.PP
+Die Standardausgabe oder die Fehlerausgabe geht verloren,
+wenn sie nicht umgelenkt wurde.
+.SH BEISPIELE
+Beispiele mit gueltigen Kommandos sind:
+.IP
+at 8:30am 
+.I file
+.sp
+   fuehrt
+.I file
+um 8,30 Uhr des laufenden Tags aus.
+.sp
+at 8am jan 24 
+.I file
+.sp
+   fuehrt
+.I file
+am 24. Jan. um 8 Uhr aus.
+.sp
+at 1530 fr week
+.I file
+.sp
+   fuehrt 
+.I file
+um 3,30 Uhr am Freitag in einer Woche aus.
+.sp
+.SH DATEIEN
+/usr/spool/at/yy.ddd.hhhh.uu    Kopie des Shell-Programms
+.br
+/usr/spool/at/lasttimedone    Zeit der letzten Ausfuehrung
+.br
+/usr/spool/at/past    Directory der laufenden Aktivitaeten
+.br
+/usr/lib/atrun    Deamon, der die Dateien ausfuehrt.
+.SH SIEHE AUCH
+calendar(1),
+cd(1),
+pwd(1),
+setenv -- in csh(1),
+cron(M).
+.SH DIAGNOSTIK
+Syntaxfehler und Zeitbereichsueberschreitungen werden zurueckgewiesen.
+.SH EINSCHRAENKUNGEN
+Infolge der periodischen Ausfuehrung von
+.I /usr/lib/atrun
+durch
+.I cron(M)
+ist eine exakte Synchronisation zeitlich genau aufeinander
+abgestimmter Shell-Scripte nicht moeglich.

@@ -1,0 +1,110 @@
+.TH GETOPT 3 WEGA
+.\" @[$]getopt.3        1.2
+.ad
+.fi
+.SH NAME
+getopt \- Ermitteln von Optionsbuchstaben aus argv
+.SH SYNTAX
+.nf
+\fBint getopt \fI(argc, argv, optstring)\fR
+\fBint \fIargc;\fR
+\fBchar \fI\(**\(**argv;\fR
+\fBchar \fI\(**optstring;\fR
+
+\fBextern char \fI\(**optarg;\fR
+\fBextern int \fIoptind;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B getopt\^
+gibt den naechsten Buchstaben zur Kennzeichnung von Optionen aus
+.IR argv ,
+der mit einem Buchstaben in
+.IR optstring
+uebereinstimmt, zurueck.
+.I Optstring\^
+ist eine Zeichenkette,
+die gueltige optionale Buchstaben enthaelt.
+Folgt einem Buchstaben ein Doppelpunkt, kann der Option
+direkt oder durch einen Freiraum getrennt
+ein Argument folgen.
+Die externe Variable
+.I optarg\^
+zeigt bei der Rueckkehr von
+.B getopt
+auf den Beginn des Arguments der Option.
+.PP
+Die Funktion
+.B getopt
+legt in der externen Variablen
+.I optind\^
+(vor dem ersten Aufruf mit Null initialisiert)
+den Index des
+naechsten Arguments aus
+.IR argv ,
+das abgearbeitet werden soll, ab.
+.PP
+Sind alle Optionen verarbeitet
+(d.h. bis zum ersten Argument, das keine Option ist), gibt
+.B getopt\^
+.BR EOF
+zurueck.
+Die spezielle Option
+.B \-\-
+kann benutzt werden, um das Ende der Optionen zu kennzeichnen.
+Es wird dann
+.B EOF
+zurueckgegeben und
+.B \-\-
+wird uebersprungen.
+.SH DIAGNOSTIK
+Erkennt
+.B getopt\^
+einen Buchstaben, der nicht in
+.I optstring
+enthalten ist, wird eine Fehlermeldung auf
+.I stderr
+ausgegeben und ein Fragezeichen zurueckgegeben.
+.SH BEISPIEL
+Das Beispielprogramm verarbeitet die Optionen
+.I a
+und
+.IR b ,
+wobei die Option
+.I b
+mit einem Argument angegeben werden muss:
+.RS
+.nf
+main (argc, argv)
+int argc;
+char \(**\(**argv;
+{
+    int c;
+    extern int optind;
+    extern char \(**optarg;
+    \&.
+    \&.
+    \&.
+    while ((c = getopt (argc, argv, "ab:")) != EOF)
+        switch (c) {
+        case \(fma\(fm:
+            (Anweisungsfolge)
+            break;
+        case \(fmb\(fm:
+            c = optarg;
+            (Anweisungsfolge)
+            break;
+        case \(fm?\(fm:
+            errflg++;
+        }
+    if (errflg) {
+        fprintf (stderr, "usage: . . . ");
+        exit (2);
+    }
+    for( ; optind < argc; optind++) {
+    \&.
+    \&.
+    \&.
+    }
+}
+.RE

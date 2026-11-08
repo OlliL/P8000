@@ -1,0 +1,166 @@
+.TH DOTMENU 5 WEGA
+.\" @[$]dotmenu.5       1.2
+.ad
+.fi
+.SH NAME
+ .menu \- Format der Menue-Spezifikationsdatei
+.SH SYNTAX
+.BI mkmenu " [ file ]"
+.SH BESCHREIBUNG
+Der Eintrag
+.BR mkmenu (1)
+gibt einen Ueberblick ueber das Menuesystem.
+.PP
+Dieser Eintrag beschreibt das Format der Menue-Spezifikationsdatei, die durch
+\fBmkmenu\fR erstellt und vom Programm
+\fBzmenu\fR(1) benutzt wird.
+Eine Menue-Spezifikationsdatei enthaelt folgende Angaben:
+.PP
+.nf
+- Menue-Kopf, Zeile 1 Feld 1 (Vorschlag: Name des Betriebes).
+- Menue-Kopf, Zeile 1 Feld 2 (Vorschlag: Systemname).
+- Menue-Kopf, Zeile 2 Feld 1 (Vorschlag: Abteilungsname).
+- Menue-Kopf, Zeile 2 Feld 2 (Vorschlag: Menuetitel).
+- WEGA-Funktion, die ausgefuehrt werden soll.
+- Die Umgebung fuer die Ausfuehrung der Funktion.
+- Beschreibung der Funktion.
+.fi
+.PP
+Menue-Spezifikationsdateien sind ASCII-Dateien. Sie koennen mit dem Editor
+oder interaktiv mit dem Programm
+\fBmkmenu\fR erzeugt werden.
+.PP
+Menueoptionen belegen jeweils eine Zeile.
+Sie werden in Gruppen von jeweils 3 Feldern eingegeben:
+.PD 0
+.IP - 3
+die ausfuehrbare WEGA-Funktion,
+.IP - 3
+die Nummer der Ausfuehrungsumgebung und
+.IP - 3
+die Beschreibung der Funktion.
+.PP
+Die Felder werden durch Doppelpunkte getrennt.
+Alle Felder sind optional, jedoch koennen
+durch das Weglassen einzelner Felder
+unbrauchbare Menues entstehen.
+.PD
+.PP
+Die Spezifikationsdatei kann in einem beliebigen Directory enthalten sein.
+Fuer die Ausfuehrung des Programms \fBzmenu\fR
+muss jedoch durch eine Umgebungsvariable oder eine
+Zeigerdatei der Pfadname der Spezifikationsdatei definiert werden.
+Der Menue-Suchpfad ist im Eintrag
+.BR menupath (5)
+ausfuehrlich erklaert.
+.PP
+Es folgen Erlaeuterungen zu den Angaben der Menue-Spezifikationsdatei.
+Positionen auf dem Bildschirm werden in der Form (Zeile,Spalte)
+angegeben.
+.TP 5
+.B "Menue-Directory
+Das Programm
+.BR zmenu (1)
+sucht die Menue-Spezifikationsdatei im Menue-Directory
+(siehe
+.BR menupath (5))
+und
+wechselt in dieses Directory, bevor die Kommandos aus der Spezifikationsdatei
+abgearbeitet werden. Existiert das Menue-Directory nicht, oder ist es nicht
+lesbar, gibt \fBzmenu\fR eine Fehlernachricht aus.
+.TP
+.B "Menue-Kopf (Zeile 1, Feld 1)
+\fBZmenu\fR zeigt die ersten 26 Zeichen dieses Feldes
+auf dem Terminal ab Position (0,0) an. Das Feld geht bis zum ersten
+Doppelpunkt.
+.TP
+.B "Menue-Kopf (Zeile 1, Feld 2)
+\fBZmenu\fR zeigt die ersten 26 Zeichen
+dieses Feldes, die dem Newline-Zeichen folgen,
+auf dem Terminal ab Position (0,27) an. Das Feld geht bis zum naechsten
+Doppelpunkt.
+.TP
+.B "Menue-Kopf (Zeile 2, Feld 1)
+\fBZmenu\fR zeigt die ersten 26 Zeichen
+dieses Feldes, die dem Newline-Zeichen folgen,
+auf dem Terminal ab Position (1,0) an. Das Feld geht bis zum naechsten
+Doppelpunkt.
+.TP
+.B "Menue-Kopf (Zeile 2 Feld 2)
+\fBZmenu\fR zeigt die ersten 26 Zeichen
+dieses Feldes, die dem Newline-Zeichen folgen,
+auf dem Terminal ab Position (1,27) an. Das Feld geht bis zum naechsten
+Doppelpunkt.
+.TP
+.B "Ausfuehrbare Funktion
+Der Inhalt dieses Feldes (bis zu 80 Zeichen) wird
+in Abhaengigkeit von der Ausfuehrungsumgebung durch die Programme
+\fBsh\fR(1), \fBcsh\fR(1)
+oder durch \fBzmenu\fR abgearbeitet.
+.TP
+.B Ausfuehrungsumgebung
+Dieses Feld enthaelt einen von drei moeglichen Werten:
+.RS
+.PD 0
+.IP \fB0\fR 3
+Die ausfuehrbare Funktion ist der Name einer anderen Menuedatei,
+die durch
+.BR zmenu
+ausgefuehrt werden kann
+oder eine Austrittsfunktion aus dem Menue.
+.IP \fB1\fR 3
+Die ausfuehrbare Funktion ist ein Shell-Skript oder ein Kommando,
+dass ueber \fBsh\fR ausgefuehrt werden soll.
+.IP \fB2\fR 3
+Die ausfuehrbare Funktion ist ein C-Shell-Skript oder ein Kommando,
+dass ueber \fBcsh\fR ausgefuehrt werden soll.
+.PP
+Der Standardwert fuer dieses Feld ist '0'. Dies bewirkt die
+Beendigung des Menues.
+.RE
+.PD
+.TP
+.B Funktionsbeschreibung
+Dieses Feld enthaelt Text zur Beschreibung der Funktion, die mit der
+entsprechenden Auswahl ausgefuehrt werden soll.
+.SH BEISPIEL
+.nf
+Inhalt einer einfachen Menuedatei im Format .menue:
+.sp
+.ne 8
++++++ ZFT/KEAW:
+LOGIN-Menue:
+Abt. Basissoftware:
+   WEGA:
+:0:Austritt in Login-Shell
+sh:1:Uebergang Shell sh
+ls:2:Inhalt akt. Directory
+Menuname:0:Menuname menu.
+.sp
+Diese Datei wuerde folgende Ausgabe bewirken:
+.sp
++++++ ZFT/KEAW             LOGIN-Menue       Day Mon dd. (hh:mm:ss)
+Abt. Basissoftware            WEGA           Menu: .menu  Port: 03
+
+
+                    0. Austritt in Login-Shell
+
+                    1. Uebergang Shell sh
+
+                    2. Inhalt akt. Directory
+
+                    3. Menuname menu.
+
+                       Please make a selection:
+
+
+.SH DATEIEN
+~/.menupath         Menuesuchpfad des Benutzers
+.br
+/etc/menupath       globaler Menuesuchpfad
+.br
+\fB.\fRmenu               Standardname der Menuedatei
+.fi
+.SH SIEHE AUCH
+.nf
+zmenu(1), mkmenu(1), zmprint(1), menupath(5), setenv(1)

@@ -1,0 +1,59 @@
+.TH ONINTR 1C WEGA
+.\"@[$]onintr.1C	1.2
+.ad
+.fi
+.SH NAME
+onintr \- Steuerung der Reaktion auf Interrupts in Shell-Scripts
+.SH SYNTAX
+.B onintr
+[
+.B \-
+] [
+arg ...
+]
+.SH BESCHREIBUNG
+.TP
+.B Onintr
+stellt die Standardreaktionen auf Interrupts fuer Shell-Scripts ein.
+Bei Auftreten eines Interrupts werden Shell-Scripts beendet
+bzw. es wird in die aufrufende Shell zureuckgekehrt.
+.TP
+.BR onintr "  \-"
+bewirkt ein Ignorieren aller Interrupts.
+.TP
+\fBonintr \fIlabel\fR
+veranlasst Shell, bei Empfang eines Interrupts ein
+\fBgoto \fIlabel\fR auszufuehren oder einen Child-Prozess zu beenden.
+.PP
+Laeuft Shell selbstaendig und Interrupts werden gerade ignoriert,
+haben alle Formen von
+.B onintr
+keine Bedeutung. Alle Interrupts und aufgerufenen Kommandos werden
+weiterhin ignoriert.
+.PP
+.B "Signalbehandlung"
+.PP
+Normalerweise ignoriert Shell
+.I Quit-
+Signale. Die
+.I Interrupt-
+und
+.I Quit-
+Signale werden fuer ein aufgerufenes Kommando ignoriert, wenn
+dem Kommando ein \fB&\fR folgt.
+Andernfalls haben die Signale die Werte, die Shell von seinen
+Eltern erbte.
+Durch \fIonintr\fR
+kann die InterruptBehandlung durch die Shell gesteuert werden.
+Eine Login-Shell empfaengt das \fITerminate\fR-Signal.
+Jede andere Shell leitet das Signal in Abhaengigkeit
+vom Zustand der Parent-Shell zu den Children weiter.
+Wenn eine Shell die Datei \fI.logout\fR liest,
+sind Interrupts nicht erlaubt.
+.SH SIEHE AUCH
+continue(1C),
+exit(1C),
+logout(1C),
+nohup(1C).
+.br
+"Die C-Shell" im WEGA-Dienstprogramme

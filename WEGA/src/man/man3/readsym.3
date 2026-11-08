@@ -1,0 +1,56 @@
+.TH READSYM 3 
+.\" @[$]readsym.3       1.2
+.ad
+.fi
+.SH NAME
+readsym \- Lesen des naechsten Symbols aus der Symboltabelle
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.br
+#include <s.out.h>
+.PP
+\fBreadsym\fI(sym, stream)\fR
+.br
+\fBstruct {
+.br
+\fB     struct \fBs_nlist \fIbol;
+.br
+\fB     char   \fIextra[128];
+.br
+\fB}      \fI*sym;
+.br
+\fBFILE \fI*stream;\fR
+.fi
+.SH BESCHREIBUNG
+.B Readsym
+kopiert das naechste vollstaendige Symbol aus dem Datenstrom
+.I stream
+in die durch das Argument
+.I sym
+bezeichnete Struktur.
+Der Dateipointer des Datenstroms
+.I stream
+zeigt auf den Beginn eines Symboleintrags in
+der Symboltabelle eines Objektmoduls, das im Format
+.BR a.out (5)
+vorliegt.
+Die durch
+.I sym
+bezeichnete Struktur
+muss gross genug sein, das groesstmoegliche Symbol (
+127 Zeichen plus Steuerinformation) aufnehmen zu koennen.
+.B Readsym
+gibt die Anzahl der zusaetzlichen Eintraege vom Typ s_nlist,
+die vom Symbol eingenommen
+werden, zurueck. 
+Diese Anzahl liegt zwischen 0 (bei einem Symbol mit weniger als acht Zeichen)
+und 9 (bei einem Symbol mit 127 Zeichen).
+.SH SIEHE AUCH
+a.out(5)
+nlist(3).
+.SH DIAGNOSTIK 
+.I Readsym
+gibt den Wert \-1 zurueck,
+wenn beim Lesen das Ende der Datei ueberschritten wird oder
+wenn ungueltige Daten erkannt werden.

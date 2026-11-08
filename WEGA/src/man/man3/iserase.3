@@ -1,0 +1,32 @@
+.TH ISERASE 3 
+.\" @[$]iserase.3       1.2
+.ad
+.fi
+.SH NAME
+iserase \- Loeschen von C-ISAM- sowie zugeordneter Aktionsreportdateien
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBiserase\fI(filename)\fR
+\fBchar\fI *filename;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B iserase
+loescht  die Dateien
+.I filename.idx
+und
+.IR filename.dat ,
+die die C-ISAM-Datei verkoerpern sowie alle Aktionsreportdateien der
+C-ISAM-Datei (falls diese existieren).
+Die Datei darf beim Loeschen nicht geoeffnet sein.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isaudit(3),
+isbuild(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

@@ -1,0 +1,44 @@
+.TH TOUCH 1 WEGA
+.\" @[$]touch.1	1.2
+.ad
+.fi
+.SH NAME
+touch \- Aktualisieren von Zugriffs- und Modifikationszeit von Dateien
+.SH SYNTAX
+.B touch
+[
+.B \-acm
+] [ mmddhhmm[yy] ]
+\fIfile\fR \.\.\.
+.SH BESCHREIBUNG
+.B Touch
+fuehrt zur Aktualisierung der Zugriffs- und Modifikationszeit
+jeder angegebenen Datei
+.IR file .
+Ist keine Zeit angegeben (siehe
+.B date
+(1)), wird die aktuelle Zeit verwendet. Als Exitstatus gibt
+.B touch
+die Anzahl der Dateien, fuer die die Zeiten nicht
+modifiziert werden konnten (einschliesslich der Dateien,
+die noch nicht existierten und nicht angelegt wurden) zurueck.
+.SH OPTIONEN
+.PP
+Sind keine Optionen angegeben, werden die
+Zugriffs- und Modifikationszeit aktualisiert (entspricht
+.BR \-am ).
+.TP
+.B \-a
+Nur die Zugriffszeit wird aktualisiert.
+.TP
+.B \-c
+Angegebene, aber nicht existierende Dateien werden von
+.B touch
+nicht angelegt (Standard: Dateien werden angelegt).
+.TP
+.B \-m
+Nur die Modifikationszeit wird aktualisiert.
+.SH DIAGNOSTIK
+Exitstatus ist die Anzahl der Dateien, auf die erfolglos
+zugegriffen wurde. War der Zugriff auf alle Dateien erfolgreich,
+ist der Exitstatus Null.

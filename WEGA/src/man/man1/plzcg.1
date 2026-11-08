@@ -1,0 +1,75 @@
+.TH PLZCG 1 
+.\" @[$]plzcg.1	1.2
+.ad
+.fi
+.SH NAME
+plzcg \- plz/sys Code-Generator
+.SH SYNTAX
+plzcg [ \fB\-lsv\fR ] [ \fB\-o \fIname\fR ] \fIfile\fR
+.SH BESCHREIBUNG
+.B Plzcg
+erzeugt aus zcode-Dateien, die von 
+.BR plzsys (1)
+erstellt wurden, einen ausfuehrbaren Objektmodul
+im zobj-Format (Standard:
+.BR t.out ).
+Die Eingabedatei muss den Suffix
+.B \&.z
+haben.
+Fehlt dieser Suffix in der Kommandozeile, fuegt
+.B plzcg
+.B \&.z
+an den Namen an, bevor die Datei geoeffnet wird.
+Die Optionen der Kommandozeile koennen in Gross- oder Kleinschreibweise
+angegeben werden.
+.PP
+Zur Erzeugung eines unter WEGA lauffaehigen Objektmoduls muss die
+Ausgabe von 
+.B plzcg
+durch 
+.BR uimage (1) 
+und moeglicherweise 
+.BR ld (1) 
+laufen.
+.B Plzcg
+wird automatisch durch den plz/sys-Compiler-Treiber 
+.BR plz (1) 
+aufgerufen.
+.SH OPTIONEN
+.TP
+.B \-l
+Erzeugen eines Listings in Pseudo-Assemblersprache
+(Listing in \fIfile\fB.l\fR).
+Fuer die Daten im Modul wird kein Assemblerlisting erzeugt und es gibt
+keine symbolischen Marken.  
+Referenzen auf den Code werden mit dem Buchstaben P, auf lokale Daten mit L
+und globale Daten mit G eingeleitet.
+.TP
+.BI \-o name
+Name der Ausgabedatei (Standard:
+.BR t.out ).
+.TP
+.B \-s
+Erzeugen eines Code, der von mehreren Prozessen gemeinsam nutzbar ist.
+Diese Option ist nur fuer segmentierte Codes gueltig und nur
+fuer Programmentwicklung von Cross-Software nuetzlich.
+.TP
+.B \-v
+.B plzcg
+gibt eine Startmeldung aus
+und zeigt am Ende die Menge der erzeugten
+Codes und Daten an.
+.SH DATEIEN
+/tmp/?XXXXX	temporaere Datei
+.br
+\fIfile\fB.z\fR         zcode-Quell-Datei
+.br
+\fIfile\fB.l\fR         Listing-Datei
+.br
+t.out		vorgegebener Name der Ausgabedatei
+.SH SIEHE AUCH
+plzsys(1), plz(1), uimage(1)
+.SH DIAGNOSTIK
+Eine ausfuehrlichere Beschreibung der moeglichen Fehler wird im 
+"U8000-PLZ/SYS Benutzerhandbuch" in WEGA-Dienstprogramme
+gegeben.

@@ -1,0 +1,70 @@
+.TH CONV 3 WEGA
+.\" @[$]conv.3  1.2
+.ad
+.fi
+.SH NAME
+toupper, tolower, toascii \- Zeichenumsetzung
+.SH SYNTAX
+.nf
+\fB#include <ctype.h>
+.sp
+\fBint toupper \fR(\fIc\fR)
+.br
+\fBint \fIc\fR;
+.sp
+\fBint tolower \fR(\fIc\fR)
+.br
+\fBint \fIc\fR;
+.sp
+\fBint _toupper \fR(\fIc\fR)
+.br
+\fBint \fIc\fR;
+.sp
+\fBint _tolower \fR(\fIc\fR)
+.br
+\fBint \fIc\fR;
+.sp
+\fBint toascii \fR(\fIc\fR)
+.br
+\fBint \fIc\fR;\fR
+.fi
+.SH BESCHREIBUNG
+.B Toupper\^
+und
+.B tolower\^
+verarbeiten den Zahlenbereich von
+.BR getc (3),
+d.h. die ganzen Zahlen von \-1 bis 255.
+Stellt das Argument von
+.B toupper\^
+einen Kleinbuchstaben dar, ist das Ergebnis der dazugehoerige
+Grossbuchstabe.
+Stellt das Argument von
+.B tolower\^
+einen Grossbuchstaben dar, ist das Ergebnis der dazugehoerige
+Kleinbuchstabe.
+Alle anderen Argumente im angegebenen Bereich
+werden unveraendert zurueckgegeben.
+.PP
+.B _toupper\^
+und
+.B _tolower\^
+sind Macros, die das gleiche tun wie
+.B toupper\^
+und
+.B tolower\^.
+Sie haben jedoch eingeschraenkte Bereiche und sind schneller.
+.B _toupper\^
+verlangt als Argument einen Kleinbuchstaben,
+das Ergebnis ist der zugehoerige Grossbuchstabe.
+.B _tolower\^
+verlangt als Argument einen Grossbuchstaben,
+das Ergebnis ist der zugehoerige Kleinbuchstabe.
+Argumente ausserhalb dieses Bereiches erbringen unbrauchbare Ergebnisse.
+.PP
+.B Toascii\^
+setzt alle Bits des Arguments zurueck,
+die nicht Teil des ASCII-Zeichensatzes sind
+(dient der Kompatibilitaet zu anderen Systemen).
+.SH SIEHE AUCH
+ctype(3).

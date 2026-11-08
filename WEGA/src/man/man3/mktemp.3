@@ -1,0 +1,30 @@
+.TH MKTEMP 3 WEGA
+.\" @[$]mktemp.3        1.1
+.ad
+.fi
+.SH NAME
+mktemp \- Erzeugen eines eindeutigen Dateinamens
+.SH SYNTAX
+.nf
+\fBchar *mktemp\fI(template)
+.br
+\fBchar \fI*template;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B mktemp
+ersetzt die Zeichenkette, auf die das Argument
+.I template
+zeigt, durch einen eindeutigen (nur einmal auftretenden) Dateinamen und gibt
+die Adresse des Templates
+(eine Zeichenkette, die den eindeutigen Dateinamen enthaelt) zurueck.
+Das Template ist ein Dateiname mit sechs nachgestellten Zeichen X .
+.B Mktemp
+ersetzt die Zeichen X
+durch die aktuelle Prozess-ID und einen eindeutigen Buchstaben.
+.PP
+Die Buchstaben werden zur Vermeidung von doppelten Dateinamen verwendet.
+.SH SIEHE AUCH
+getpid(2).
+.SH EINSCHRAENKUNGEN
+Es ist moeglich, dass mehr Buchstaben benoetigt werden als existieren.

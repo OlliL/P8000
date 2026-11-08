@@ -1,0 +1,60 @@
+.TH CTERMID 3 WEGA
+.\" @[$]ctermid.3       1.2
+.ad
+.fi
+.SH NAME
+ctermid \- Erzeugen von Dateinamen fuer Terminals
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>\fR
+.sp
+\fBchar \(**\fIctermid(s)\fR
+.br
+\fBchar \(**\fIs;\fR
+.fi
+.SH BESCHREIBUNG
+.B Ctermid
+erzeugt eine  Zeichenkette, die als Dateiname fuer
+das steuernde Terminal des aktuellen Prozesses
+verwendet werden kann.
+.PP
+Ist
+.RI (int) s\^
+Null, wird die Zeichenkette in einem internen statischen Bereich gespeichert,
+dessen Inhalt beim naechsten Aufruf von
+.BR ctermid
+ueberschrieben wird und dessen Adresse zurueckgegeben wird.
+Ist
+.RI (int) s\^
+ungleich Null, wird angenommen, dass
+.I s\^
+auf ein Zeichenfeld von mindestens
+.B L_ctermid
+Elementen zeigt; die Zeichenkette wird in dieses Feld geschrieben und der Wert
+.I s\^
+wird zurueckgegeben.
+Die aktuelle Konstante
+.B L_ctermid
+ist in
+.BR <stdio.h>
+definiert.
+.SH ANMERKUNG
+Der Unterschied zwischen
+.B ctermid\^
+und
+.BR ttyname (3)
+besteht darin, dass ein Dateidescriptor an
+.B ttyname\^
+gegeben werden muss und von dort der tatsaechliche Name des zu diesem
+Dateidescriptor gehoerenden Terminals zurueckgegeben wird, waehrend
+.B ctermid\^
+einen Zeichenkettenpointer
+.RI ( /dev/tty )
+zurueckgibt, der sich auf das Terminal bezieht, wenn dieses als Dateiname
+benutzt wird.
+Somit bleibt
+.B ttyname\^
+ohne Wirkung, ausser wenn der Prozess bereits mindestens eine Datei
+fuer ein Terminal geoeffnet hat.
+.SH SIEHE AUCH
+ttyname(3).

@@ -1,0 +1,31 @@
+.TH GETPASS 3 WEGA
+.\" @[$]getpass.3       1.2
+.ad
+.fi
+.SH NAME
+getpass \- Lesen eines Passwortes
+.SH SYNTAX
+.nf
+\fBchar *getpass(\fIprompt)\fR
+.br
+\fBchar \fI*prompt;\fR
+.fi
+.SH BESCHREIBUNG
+.B Getpass
+liest ein Passwort aus der Datei
+.IR /dev/tty ,
+oder falls sie nicht geoeffnet werden kann, von der Standardeingabe,
+nachdem die mit einem
+Nullbyte endende Zeichenkette
+.I prompt
+ausgegeben wurde. Bei der Eingabe des Passwortes wird die Echofunktion
+ausgeschaltet.
+Es wird ein Pointer auf eine mit einem Nullbyte
+endende Zeichenkette von maximal acht Zeichen zurueckgegeben.
+.SH DATEIEN
+/dev/tty
+.SH SIEHE AUCH
+crypt(3).
+.SH EINSCHRAENKUNGEN
+Der Rueckgabewert weist auf statische Daten, deren Inhalte von jedem
+Aufruf ueberschrieben werden koennen.

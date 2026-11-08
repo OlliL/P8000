@@ -1,0 +1,76 @@
+.TH UNITS 1 WEGA
+.\" @[$]units.1	1.2
+.ad
+.fi
+.SH NAME
+units \- Einheiten-Umrechnungsprogramm
+.SH SYNTAX
+.B units
+.SH BESCHREIBUNG
+.B Units
+wandelt Groessen, die in den verschiedenen Massystemen angegeben
+sind, in die entsprechenden Groessen eines anderen
+Massystems um.
+.B Units
+arbeitet interaktiv auf folgende Weise:
+.PP
+.B "	You have:"
+.I inch
+.br
+.B "	You want:"
+.I cm
+.br
+		* 2.540000e0
+.br
+		/ 3.937008e-1
+.PP
+Eine Groesse wird als eine multiplikative
+Kombination von Masseinheiten angegeben, vor der ein
+numerischer Multiplikand stehen kann.
+Multiplikationen werden durch vorzeichenbehaftete positive ganze Zahlen
+gekennzeichnet und Divisionen durch das normale Zeichen.
+.PP
+.I Units 
+kann nur durch multiplikative Operationen 
+von einem Massystem in ein anderes umwandeln.
+So ist es z.B. nicht moeglich,
+Grad Celsius in Grad Fahrenheit umzuwandeln.
+Die meisten bekannten Masseinheiten, Abkuerzungen und
+metrischen Praefixe werden erkannt, sowie auslaendische
+Groessen und einige wenige physikalische Konstanten:
+.PP
+.ta 1.5i
+pi	Umrechnungsfaktor von Kreisumfang und -durchmesser
+.br
+c	Lichtgeschwindigkeit
+.br
+e	Elektronenladung
+.br
+g	Gravitationskonstante 
+.br
+force	wie g
+.br
+mole	Avogadro's Zahl
+.br
+water	Wassersaeule pro Einheit
+.br
+au	astronomische Einheit
+.ta
+.PP
+`Pound' ist eine Masseeinheit.
+Zusammengesetzte Namen laufen zusammen, z.B. ' Lichtjahr'
+`lightyear' (das gilt auch fuer Waehrungen).
+Eine vollstaendige Liste der Masseinheiten befindet
+sich in der Datei /usr/lib/units'.
+.SH BEISPIEL
+.B "	You have:"
+3.5 kg force
+.br
+.B "	You want:"
+newton
+.br
+		* 3.432327e1
+.br
+		/ 2.913475e-2
+.SH DATEIEN
+/usr/lib/units

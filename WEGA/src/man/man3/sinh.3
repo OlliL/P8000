@@ -1,0 +1,34 @@
+.TH SINH 3 WEGA
+.\" @[$]sinh.3  1.2
+.ad
+.fi
+.SH NAME
+sinh, cosh, tanh \- hyperbolische Funktionen
+.SH SYNTAX
+.nf
+\fB#include <math.h>
+.PP
+\fBdouble sinh\fI(x)
+\fBdouble\fI x;
+.PP
+\fBdouble cosh\fI(x)
+\fBdouble\fI x;
+.PP
+\fBdouble tanh\fI(x)
+\fBdouble\fI x;\fR
+.fi
+.SH BESCHREIBUNG
+Diese Funktionen berechnen die angegebenen hyperbolischen Funktionen
+fuer reelle Argumente.
+.SH DIAGNOSTIK 
+Die Funktionen
+.B sinh
+und
+.B cosh
+geben einen sehr grossen Wert mit entsprechendem Vorzeichen zurueck,
+wenn der vorgegebene Zahlenbereich ueberschritten wird.
+Die Variable
+.B errno
+wird auf
+.B ERANGE
+gesetzt.

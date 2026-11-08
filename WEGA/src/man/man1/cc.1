@@ -1,0 +1,239 @@
+.TH CC 1 
+.\" @[$]cc.1	1.2
+.ad
+.fi
+.SH NAME
+cc \- C-Compiler
+.SH SYNTAX
+.B cc
+[
+.I options
+] 
+.I file
+.SH BESCHREIBUNG
+.B Cc
+ist der angepasste portable C-Compiler, der nichtsegmentierten
+U8000-Code erzeugt.
+Abhaengig von den spezifizierten Optionen kann ein Aufruf von
+.B cc
+compilieren; compilieren und assemblieren;
+compilieren, assemblieren und linken.
+Bei der Ausfuehrung dieser Moeglichkeiten kann zusaetzlich noch
+ein globaler Optimierungslauf durchgefuehrt werden.
+.PP
+Der
+.B cc
+Compiler unterstuetzt einen unsigned
+.B char
+Datentyp,
+initiali\%sierte Bitfelder, die Moeglichkeiten von C aus der Version 7
+(Zuweisungen von Strukturen und den Aufzaehlungstyp "enum"), und die neuen
+System III Erweiterungen von C: den Datentyp "void" und die einheitliche
+Behandlung von Strukturnamen und Elementen von Unions.
+.PP
+Implizit wird compiliert, assembliert und gelinkt (interne Aufrufe
+des U8000-Assemblers
+.BR cas (1)
+und des Linkers
+.BR ld (1)).
+Dateinamen, die mit \&.c enden (C-Quelldateinamen), werden compiliert.
+Die
+.B -Ol
+Option bewirkt die Ausfuehrung des globalen Optimierungslaufs,
+der nur eine Optimierung der Programmschleifen durchfuehrt.
+Die
+.B -Or
+Option bewirkt eine globale Optimierung der
+Registerbenutzung und der Programmschleifen.
+Der vom Compiler erzeugte Assemblercode kann auch nur teilweise optimiert
+werden, wenn nur die
+.B -O
+Option angegeben wird (die
+.B -Ol
+und
+.B -Or
+Optionen schliessen diese Optimierungsart ein).
+Die
+.B -S
+Option bewirkt, dass der erzeugte U8000-Assemblercode in einer Datei
+mit der Endung \&.s abgelegt und die weitere Bearbeitung abgebrochen wird.
+Die
+.B -c
+Option bewirkt,
+dass der assemblierte Code in einer Datei mit der Endung \&.o abgelegt
+und die weitere Bearbeitung abgebrochen wird.
+Implizit verbindet der Linker den erzeugten Code zu einem ausfuehrbaren
+U8000 Programm.
+.PP
+Dateinamen, die auf \&.s enden, werden als U8000-Assemblerprogramme
+interpretiert (der Compilierungslauf wird uebersprungen).
+Implizit werden \&.s Dateien assembliert, um \&.o Dateien zu erzeugen;
+diese werden dann verbunden.
+.PP
+Andere Dateinamen werden als Namen von C-kompatiblen Objektprogrammen
+interpretiert (Programme, die durch einen frueheren
+.B cc
+Aufruf erzeugt wurden oder andere Programme,
+die die U8000-Aufrufvereinbarungen
+erfuellen), oder als Bibliotheken von C-kompatiblen
+Routinen.
+Diese Programme werden zusammen mit den Ergebnissen der Uebersetzungsprozesse
+in der angegebenen Reihenfolge zu einem ausfuehrbaren Lademodul
+mit dem Namen a.out (falls nichts anderes spezifiziert wurde) verbunden.
+.PP
+Beim
+.B cc
+Aufruf angegebene Optionen gelten nur fuer
+.B cc
+oder fuer
+.BR ld (1),
+nicht fuer
+.BR cas (1).
+.SH OPTIONEN
+.TP 8
+.B \-c
+Compilieren und Assemblieren der C-Quelle, aber Unterdrueckung des
+Verbindungslaufs.
+Erzeugt eine Objektdatei \&.o , wenn nur eine Quelldatei spezifiziert wurde.
+Bei mehreren C-Quellen werden entsprechend
+viele \&.o Dateien erzeugt.
+.TP
+.BI -D name
+.ti -8  
+.BI -D name=def
+.br
+Definiert den angegebenen Namen
+.I name
+fuer den Preprozessor analog zur #define-Anweisung.
+Erfolgt keine Definition, wird
+.I name
+mit 1 definiert.
+.TP
+.B \-E
+Es wird nur der Makro-Preprozessor abgearbeitet, das
+Ergebnis gelangt auf die Standardausgabe.
+.TP
+.BI -I dir
+Einbringen eines Directorys von #include-Dateien.
+Namen, die nicht mit / beginnen, werden zuerst im Directory der
+Quelldatei gesucht, dann im durch die
+.B -I
+Option festgelegtem Directory und dann in einer Standardliste von
+Directories.
+.TP 8
+.B \-Ol
+Bewirkt die Ausfuehrung des globalen Optimierungslaufs zur
+Schleifenoptimierung.
+.TP
+.B \-Or
+Bewirkt die Ausfuehrung des globalen Optimierungslaufs zur Register-
+und Schleifenoptimierung.
+.TP
+.B \-O
+Bewirkt die Ausfuehrung des einfachen Optimierungslaufs.
+.TP
+.B \-p
+Veranlasst den Compiler, Code zu erzeugen, der die
+Aufrufe einer jeden Routine zaehlt.
+Waehrend des Ladens wird die Standard-Start-Routine
+durch eine andere ersetzt, die automatisch
+.BR monitor (3)
+beim Start aufruft und arrangiert, dass eine Datei
+.I mon.out
+beim normalen Ende der Ausfuehrung erzeugt wird.
+Durch Benutzung von
+.BR prof (1)
+kann ein Laufzeitprofil des Programms erzeugt werden.
+.TP
+.B \-P
+Veranlasst nur die Abarbeitung des Makro-Preprozessors. Das
+Ergebnis wird fuer jede \&.c Datei in einer entsprechenden \&.i Datei
+abgelegt, in der dann keine #-Zeilen mehr enthalten sind.
+.TP
+.BI \-S l
+Compiliert die C-Quellen, unterdrueckt aber den Assembler- und Linklauf.
+Der erzeugte Assemblercode wird in entsprechenden \&.s Dateien abgelegt.
+Bei Angabe der
+.I l
+Option (Buchstabe l) erscheinen die C-Quellzeilen
+in der Assemblerquelle als Kommentare.
+.TP
+.BI -U name
+Entfernt die Anfangsdefinition von
+.IR name .
+.PP
+Alle anderen beim
+.B cc 
+Aufruf angegebene Optionen werden an den Linker
+.BR ld (1)
+weitergereicht.
+Mit einem
+.B cc
+Aufruf koennen keine Optionen an den Assembler
+.B cas
+uebergeben werden. Jeder interne Aufruf des Assemblers
+nutzt die
+.B -u
+und
+.B -o
+Optionen.
+Der interne Aufruf des Linkers spezifiziert die Optionen
+.B -X
+und
+.B -e
+mit dem Eintrittsnamen \fBstart\fR und fuegt den Bibliotheksnamen /lib/libc.a
+der Liste der Objektmodulnamen hinzu.
+Siehe Beschreibung von
+.BR ld (1).
+.SH DATEIEN
+file.c          Quelldatei
+.br
+file.o          Objektdatei
+.br
+a.out           Lademodul
+.br
+/tmp/cc.?       temporaere Dateien
+.br
+/lib/cpp        Preprozessor
+.br
+/lib/cparse     Compiler Lauf 1
+.br
+/lib/gopt       Globaler Optimierer (optional)
+.br
+/lib/codgen     Compiler Lauf 3
+.br
+/lib/popt       Einfacher Optimierer (optional)
+.br
+/lib/clist      Listingprozessor (optional)
+.br
+/lib/libc.a     Standardbibliothek
+.br
+/lib/mcrt0.o    optionale Startroutine fuer Laufzeitprofil
+.br
+/lib/crt0.o     nichtsegmentierte C-Startroutine
+.SH SIEHE AUCH
+.nf
+cas(1), ld(1).
+.fi
+.SH DIAGNOSTIK
+Die vom Compiler, Assembler oder Linker erzeugten
+Fehlermeldungen sind selbsterklaerend.
+.SH IMPLEMENTATION
+.PP
+Der
+.B cc
+Compiler hat folgende Eigenschaften:
+.RS
+.IP \+
+Es werden sieben Register-Vereinbarungen akzeptiert.
+Die U8000-Register r8 bis r14 koennen als Register-Variablen
+verwendet werden.
+.IP \+
+Der
+.B cc
+Compiler erzeugt einen Objektcode, der sich an die U8000-Aufrufvereinbarungen
+haelt.
+.IP \+
+Der Name 'u8000' ist mit der Konstante 1 im Preprozessor vordefiniert.
+.RE
+.DT

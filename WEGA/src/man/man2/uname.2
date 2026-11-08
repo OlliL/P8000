@@ -1,0 +1,70 @@
+.TH UNAME 2 
+.\" @[$]uname.2 1.2
+.ad
+.fi
+.SH NAME
+uname \- Charakteristische Informationen ueber das aktuelle WEGA-System
+.SH SYNTAX
+.B #include <sys/utsname.h>
+.PP
+.B int uname
+.I (name)
+.br
+.B struct utsname
+.I *name;
+.SH BESCHREIBUNG
+.B Uname
+stellt dem rufenden Prozess charakteristische Informationen
+ueber das aktuelle WEGA-System,
+die im Systemkern generiert sind,
+in der durch
+.IR name
+bezeichneten Struktur zur Verfuegung.
+Die Struktur ist wie folgt aufgebaut (siehe auch
+\f3<sys/utsname.h>\fP):
+.PP
+.RS
+.nf
+struct utsname {
+        char    sysname[9];   /* Systemname */
+        char    nodename[9];  /* Name in einem Netzwerk */
+        char    release[9];   /* Release */
+        char    version[9];   /* Version */
+};
+extern struct utsname utsname;
+.fi
+.RE
+.PP
+Alle von
+.B uname
+zurueckgegebenen Argumente sind durch ein Nullbyte abgeschlossene
+Zeichenketten.
+.SH DIAGNOSTIK
+.TP 11
+\%[EFAULT]
+.B Uname
+wird nicht ausgefuehrt, wenn
+.I name
+eine ungueltige Adresse anzeigt.
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird ein nichtnegativer Wert zurueckgegeben.
+Andernfals wird -1 zurueckgegeben und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+uname(1).
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT UNAME  := 57
+
+Nichtsegmentiert
+     ...             !* r0 : Name *!
+Segmentiert
+     ...             !* rr0 : Name *!
+     clr    r4
+     sc     #UNAME
+     ...             !* Rueckgabewert in rr4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

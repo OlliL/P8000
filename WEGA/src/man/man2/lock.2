@@ -1,0 +1,35 @@
+.TH LOCK 2 WEGA
+.\"@[$]lock.2   1.2
+.ad
+.fi
+.SH NAME
+lock \- Verriegeln eines Prozesses im Primaerspeicher
+.SH SYNTAX
+.B lock
+.I (flag)
+.SH BESCHREIBUNG
+Ist das Argument
+.IR flag
+ungleich Null, wird der rufende Prozess
+nicht ausgelagert (Ausnahme: wenn der Prozess sich vergroessert).
+Ist
+.IR flag =0,
+wird der Prozess entriegelt.
+Dieser Systemruf kann nur vom Superuser ausgefuehrt werden.
+.SH EINSCHRAENKUNGEN
+Verriegelte Prozesse wirken stoerend auf die Verdichtung
+des Primaerspeichers und koennen eine Systemblockierung
+verursachen.
+Der Systemruf wird nicht als permanenter Teil des Systems betrachtet.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT LOCK   := 53
+
+     ...             !* r0 : Flag *!
+     clr    r4
+     sc     #LOCK
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

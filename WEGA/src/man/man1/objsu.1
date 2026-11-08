@@ -1,0 +1,23 @@
+.TH OBJSU 1 
+.\" @[$]objsu.1	1.2
+.ad
+.fi
+.SH NAME
+objsu \- Loeschen von Unterstrichen in Symboltabellen von Objektmodulen
+.SH SYNTAX
+.B objsu
+\fIfile\fR ...
+.SH BESCHREIBUNG
+.B Objsu
+ist ein spezielles Programm, um fuehrende Unterstriche bei Namen
+in der Symboltabelle der a.out-Dateien zu loeschen.
+Das Programm ist z.B. fuer PLZ/SYS-Programme sinnvoll, die mit
+Programmen in Assembler-Sprache verbunden werden sollen,
+um Kompatibilitaet der Symbolnamen zu erhalten.
+.SH SIEHE AUCH
+nm(1), a.out(5), plz(1).
+.SH DIAGNOSTIK
+.TP
+"file not in correct a.out format"
+Ungueltige "magic"-Nummer (siehe
+.BR s.out (5)).

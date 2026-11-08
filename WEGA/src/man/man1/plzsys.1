@@ -1,0 +1,103 @@
+.TH PLZSYS 1 WEGA
+.\" @[$]plzsys.1	1.2
+.ad
+.fi
+.SH NAME
+plzsys \- plz/sys-Compiler
+.SH SYNTAX 
+\fBplzsys\fR [ \fB-elnv\fR ]
+[ \fB-n\fR[\fBc\fR/\fBd\fR ]
+[ \fB-o\fIname\fR ]
+[ \fB-t\fIu8000ns,u8000s,u80\fR ]
+\fIfile\fR
+.SH BESCHREIBUNG
+.B Plzsys
+ist der plz/sys-Compiler selbst.
+Ein plz/sys-Quellprogramm, dessen Dateiname mit
+.B \&.p
+endet, 
+wird in einen maschinenunabhaengigen Zwischencode (zcode) uebersetzt.
+Ist das Suffix
+.B \&.p
+nicht eingegeben, wird es durch
+.B plzsys
+vor dem Oeffnen der Eingabedatei angefuegt.
+Die Ausgabedatei wird unter dem Namen \fIfile\fB.z\fR abgelegt.
+Optionen werden in Gross- und Kleinschreibung erkannt.
+.PP
+Um einen unter WEGA abarbeitungsfaehigen Code zu erzeugen,
+muss die Zcode-Datei durch den plz/sys-Code-Generator
+.BR plzcg (1), 
+.BR uimage (1),
+und moeglicherweise
+.BR ld (1) laufen.
+.BR Plz (1),
+das plz/sys-Treiberprogramm, ruft alle Programme, die zum Compiler gehoeren,
+automatisch auf.
+.SH OPTIONEN
+.TP
+.B \-e
+Es wird eine Fehlerdatei unter dem Namen
+.IB file \&.e
+abgelegt, wenn waehrend des Uebersetzens Fehler auftraten.
+Diese Fehlermeldungen sind identisch mit denen, die
+normalerweise nur auf der Standardausgabe ausgegeben werden.
+.TP
+.B \-l
+Erzeugen einer Listing-Datei.
+Diese Datei
+.IB file \&.l
+enthaelt ein komplettes Listing der 
+plz/sys-Quelle sowie alle Fehlermeldungen, die vom Compiler
+erzeugt wurden.
+.TP
+.BR \-n [ c / d ]
+Kein Erzeugen der Debug-Information.
+Diese beiden Optionen bewirken, dass der Compiler keine Debug-Symbole
+.RB ( \-nd )
+oder Debug-Konstanten-Symbole erzeugt.
+.RB ( \-nc ).
+Gewoehnlich erzeugt der Compiler zusaetzliche symbolische Informationen
+fuer ein Fehlersuchprogramm (Debugger).
+Diese Optionen sind nur fuer einen Debugger von Bedeutung,
+der diese speziellen Symbole ignorieren moechte.
+.TP
+.BI \-o name
+Die zcode-Ausgabe wird unter dem Namen
+.I name
+abgelegt.
+.TP
+.BR \-t [ u8000ns, u8000s, u80 ]
+Erzeugen von zcode fuer einen speziellen Zielrechner:
+.br
+u8000ns   U8000 nichtsegmentierte Version
+.br
+u8000s    U8000 segmentierte Version
+.br
+u80       U880.
+.br
+Diese Option teilt dem Compiler mit, fuer welchen Rechner der Code
+erzeugt werden soll.
+Diese Information ist notwendig, da einige maschinenabhaengige
+Eigenschaften (wie z.B. Adressraum) im zcode kodiert werden muessen
+Der Compiler erzeugt einen nichtsegmentierten Code
+(u8000ns), wenn diese Option fehlt.
+.TP
+.B \-v
+Ausfuehrliche Meldungen waehrend des Uebersetzens
+(Vorgabe ist ohne Meldungen).
+Mit dieser Option meldet sich plz/sys und
+teilt am Ende mit, wieviel zcode- und Daten-Bytes erzeugt wurden.
+.SH DATEIEN
+/tmp/pXXXXX     temporaere Datei
+.br
+\fIfile\fB.p\fR          Quelldatei
+.br
+\fIfile\fB.p\fR          vorgegebene Ausgabedatei
+.SH SIEHE AUCH
+plzcg(1), plz(1), uimage(1), ld(1).
+.SH DIAGNOSTIK
+Die Ausschriften sind selbsterklaerend. Das
+"U8000-PLZ/SYS Benutzerhandbuch" in WEGA-Dienstprogramme
+enthaelt eine komplette Liste von
+Erklaerungen fuer plz-Quell-Fehler.

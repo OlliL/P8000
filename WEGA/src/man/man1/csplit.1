@@ -1,0 +1,182 @@
+.TH CSPLIT 1
+.\" @[$]csplit.1	1.2
+.ad
+.fi
+.SH NAME
+csplit \- zerteilt eine Datei entsprechend den angegebenen Argumenten
+.SH SYNTAX
+.B csplit
+.RB [ \-s ]
+.RB [ \-k ]
+[ \fB\-f \fIprefix ]
+file arg1 [\s+3.\|.\|.\s0 argn]
+.SH BESCHREIBUNG
+.B Csplit\^
+liest die Datei
+.I file\^
+und zerteilt sie in n+1 Abschnitte,
+die durch die Argumente
+.IR arg1  "\s+3.\|.\|.\s0"
+.IR argn 
+definiert wurden.
+Im Standardfall werden die Abschnitte in
+xx00 \s+3.\|.\|.\s0
+.RI xx n\^
+.RI ( n\^
+duerfen nicht groesser als 99 sein) abgespeichert.
+Diese Abschnitte enthalten die folgenden Stuecke der Datei
+.IR file :
+.RS 6
+.TP 6
+00:
+Vom Beginn der Datei
+.I file\^
+bis zur Zeile, auf die sich
+.IR arg1 
+bezieht (ausschliesslich).
+.PD 0
+.TP 6
+01:
+Von der Zeile, auf die sich
+.I arg1\^
+bezieht (einschliesslich) bis zur Zeile, auf die sich
+.IR arg2 
+bezieht (ausschliesslich).
+.PD 0
+.TP 6
+n+1:
+Von der Zeile, auf die sich
+.I argn\^
+bezieht (einschliesslich) bis zum Ende der Datei
+.IR file .
+.PD
+.RE
+.SH OPTIONEN
+.TP "\w'\-t\ prefix\ \ 'u"
+.B \-s
+.B Csplit\^
+gibt normalerweise die Anzahl der Zeichen fuer jede erstellte Datei aus.
+Falls die
+"\fB\-s\fR"-Option angegeben wurde, unterdrueckt
+.B csplit\^
+diese Ausgabe.
+.TP
+.B \-k
+.B Csplit\^
+streicht normalerweise die erstellten Dateien, wenn ein Fehler auftrat.
+Falls die "\fB\-k\fR"-Option  angegeben wurde, laesst
+.B csplit\^
+die vorher erstellten Dateien unveraendert.
+.TP
+.BI \-f \ prefix
+Falls die "\fB\-f\fR"-Option verwendet wird,
+werden die erstellten Datei mit
+.IB prefix 00
+\&\s+3.\|.\|.\s0\&
+.I prefixn
+benannt.
+Die Standardnamen sind \fBxx00\fP \s+3.\|.\|.\s0
+.BI xx n\fR.\fP
+.PP
+.SH ARGUMENTE
+.TP 8
+.RI / rexp /
+Es soll eine Datei erzeugt werden, die den Abschnitt von der aktuellen Zeile
+bis zur Zeile mit dem regulaeren Ausdruck 
+.IR rexp 
+(ausschliesslich) enthaelt.
+Die Zeile, die
+.IR rexp 
+enthaelt, wird zur aktuellen Zeile.
+Dieses Argument kann von einem optionalen 
+.B + 
+oder
+.B \-
+und einer Zeilenanzahl
+(e.g., \fB/Page/\-5\fP) gefolgt werden.
+.TP 8
+.RI % rexp %
+Dieses Argument hat die gleiche Bedeutung wie
+.RI / rexp /,
+nur dass keine Datei fuer diesen Abschnitt erzeugt wird.
+.TP 8
+.I lnno\^
+Es soll eine Datei von der aktuellen Zeile bis
+zur Zeile
+.IR lnno 
+(ausschliesslich) erzeugt werden.
+Die aktuelle Zeile wird
+.IR lnno .
+.TP 8
+.RI { num }
+Wiederholung.
+Dieses Argument kann jedem der obigen Argumente folgen.
+Falls es einem
+.I rexp\^
+Argument folgt, wird dieses Argument
+.I num\^
+mal angewendet.
+Falls es einem
+.IR lnno 
+folgt, wird die Datei von diesem Punkt an nach jeweils
+.I lnno\^
+Zeilen
+.RI ( num\^
+mal) zerteilt.
+.PP
+Alle Typen von
+.I rexp\^
+Argumenten, die Leerzeichen oder andere fuer die Shell bedeutungsvolle
+Zeichen in der entsprechenden Notation enthalten,
+sind in einfache Anfuehrungsstriche einzuschliessen.
+Regulaere Ausdruecke koennen keine eingebetteten "Newlines" enthalten.
+.B Csplit\^
+beeinflusst die Originaldatei nicht.
+.SH BEISPIELE
+.LP
+csplit \-f cobol file \(fm/procedure division/\(fm /par5./ /par16./
+.sp
+Dieses Beispiel erzeugt vier Dateien,
+\fBcobol00\fP \s+3.\|.\|.\s0 \fBcobol03\fP.
+Nach der Editierung der einzelnen Dateien koennen sie wiefolgt
+neu vereinigt werden:
+.sp
+.RS
+cat cobol0[0\-3] > file
+.RE
+.PP
+Es ist zu beachten, dass dieses Beispiel die Originaldatei ueberschreibt.
+.sp
+.RS
+csplit -k file 100 {99}
+.RE
+.PP
+Die Datei wird nach jeweils 100 Zeilen geteilt (bis zu
+10000 Zeilen).
+Die
+.B \-k
+Option veranlasst, dass die erzeugten Dateien erhalten bleiben, falls es
+mehr als 10000 Zeilen gibt
+(eine Fehlernachricht wuerde noch gedruckt werden).
+.sp
+.RS
+csplit -k prog.c \(fm%main(%\(fm  \(fm/^}/+1\(fm {20}
+.RE
+.sp
+Unter der Voraussetzung, dass
+.B prog.c
+der normalen C-Kodierung folgt, d.h. dass Routinen mit einem
+.B }
+am Zeilenanfang enden, erzeugt dieses Beispiel eine Datei mit separaten 
+C-Routinen (bis zu 21) in
+.BR prog.c .
+.SH SIEHE AUCH
+ed(1), sh(1), regexp(7).
+.SH FEHLERBEHANDLUNG
+Die Fehlernachrichten sind selbsterklaerend.
+Die Ausschrift
+.RS
+arg \- out of range
+.RE
+bedeutet, dass das angegebene Argument sich nicht auf eine Zeile
+zwischen der aktuellen Position und dem Dateiende bezieht.

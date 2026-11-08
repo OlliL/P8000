@@ -1,0 +1,138 @@
+.TH SEGMON 3 
+.\" @[$]segmon.3        1.2
+.ad
+.fi
+.SH NAME
+segmon \- Vorbereiten des Laufzeitprofils fuer segmentierte Programme
+.SH SYNTAX
+.br
+.B struct segs {
+.br
+.B
+     char \fIsegno;
+.br
+.B
+     unsigned \fIhighpc;
+.br
+.B
+     unsigned \fIlowpc; 
+.br
+.B
+}
+.sp
+.B segmon\fI(sbuff,cntsiz)
+.br
+.B
+     struct \fIsegs sbuff[ ];
+.br
+.B
+     int \fIcntsiz;
+.SH BESCHREIBUNG
+Die Funktion
+.B segmon
+stellt ein Interface zu dem Systemruf
+.BR sprofil (2)
+dar.
+Ein ausfuehrbares Programm, das mit der Option
+.B \-p
+des segmentierten C-Compilers uebersetzt wurde,
+enthaelt automatisch Aufrufe fuer die Funktion
+.B segmon
+mit Standardparametern.
+Die Funktion
+.B segmon
+muss nur bei
+speziellen Anforderungen an das Laufzeitprofil explizit gerufen werden.
+.PP
+.B Segmon
+erzeugt ein Histogramm der
+periodisch abgetasteten Werte des Programmzaehler
+und die Haeufigkeit der Aufrufe bestimmter Funktionen.
+Die Strukturen
+.I sbuf
+enthalten Informationen ueber die Segmente, fuer die das
+Laufzeitprofil zu erstellen ist.
+Das Argument
+.I segno
+enthaelt die Segmentnummer,
+die Argumente
+.I lowpc
+und
+.I highpc
+sind die Offsets der Adressen zweier Funktionen im Segment
+.IR segno ,
+die den Aufzeichnungsbereich bestimmen.
+Die niedrigste abgetastete Adresse ist die von
+.I lowpc
+und die hoechste ist
+die naechste unterhalb von
+.BR highpc .
+Es koennen hoechstens
+.I cntsiz
+Aufrufe gezaehlt werden.
+Ausserdem koennen nur Funktionsaufrufe registriert werden,
+die mit der Compiler-Option
+.B \-p
+(siehe
+.BR scc (1))
+uebersetzt wurden.
+.PP
+Um das Laufzeitprofil fuer ein Programm mit mehreren Segmenten
+zu erhalten, muss
+.I sbuff
+mit den vom Nutzer benoetigten Segmentinformationen gefuellt werden.
+Der Nutzer kann den Systemruf
+.BR sgstat(2)
+mit der Adresse von sbuff benutzen.
+Dieser Systemruf fuellt
+.I sbuff
+mit Informationen ueber die Textsegmente
+(\fIlowpc\fR
+wird auf 0 gesetzt, \fIhighpc\fR wird auf die Groesse des Textsegmentes
+gesetzt).
+Der Nutzer kann aber auch seine eigenen Parameter festlegen.
+Es ist zu beachten, dass nur fuer
+maximal 10 Textsegmente ein
+Laufzeitprofil erzeugt werden kann.
+Zusaetzlich muss das Argument
+.IR segno ,
+das nach dem letzten verwendeten Segment folgt,
+auf 0xff gesetzt werden.
+Dadurch wird festgelegt, dass das Laufzeitprofil fuer
+keine weiteren Segmente erzeugt werden soll.
+Wenn also z.B. fuer 5 Segmente ein Laufzeitprofil erzeugt
+werden soll, muss
+.I sbuff[5].segno
+auf
+.B 0xff
+gesetzt werden.
+.SH BEISPIELE
+Benutzung von
+.BR sgstat (2):
+.sp
+        sgstat(sbuff);
+.br
+        ...
+.br
+        segmon(sbuff,cntsiz)
+.PP
+Soll die Laufzeitueberwachung gestoppt werden und
+die Ergebnisse in die Datei
+.BR mon.out (5)
+geschrieben werden, ist folgendes anzuweisen:
+.sp
+        sbuff[0].segno = 0xff;
+.br
+        segmon(sbuff,0);
+.LP
+Anschliessend kann
+.BR sprof (1)
+verwendet werden, um die Ergebnisse zu untersuchen.
+.SH DATEIEN
+mon.out
+.SH SIEHE AUCH
+mon.out(5),
+sgstat(2),
+sprof(1),
+sprofil(2),
+scc(1).

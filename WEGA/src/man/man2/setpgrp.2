@@ -1,0 +1,21 @@
+.TH SETPGRP 2 WEGA
+.ad
+.fi
+.SH NAME
+setpgrp \- Setzen der Prozessgruppen-ID
+.SH SYNTAX
+.B int setpgrp (\|)
+.SH BESCHREIBUNG
+.B Setpgrp
+stellt die Prozessgruppen-ID des Aufrufprozesses auf die Prozess-ID
+des Aufrufprozesses und gibt die neue 
+Prozessgruppen-ID zurueck.
+.PP
+Der Systemruf
+.B getpid
+gibt den Wert der aktuellen Prozessgruppe zurueck.
+.SH RUECKGABEWERT
+.B Setpgrp
+gibt den neuen Prozessgruppen-ID zurueck.
+.SH SIEHE AUCH
+exec(2), fork(2), getpid(2), intro(2), kill(2), signal(2).

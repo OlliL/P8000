@@ -1,0 +1,30 @@
+.TH SIZE 1 WEGA
+.\" @[$]size.1	1.2
+.ad
+.fi
+.SH NAME
+size \- Groesse einer Objektdatei ausgeben
+.SH SYNTAX
+.B size
+[ \fIfile\fR ... ]
+.SH BESCHREIBUNG
+.I Size
+gibt
+die Anzahl der Bytes (als Dezimalzahl), die von
+den Textsektionen (CODE), den initialisierten Datensektionen (DATA)
+und den BSS-Sektionen (nichtinitialisierte Daten)
+jeder angegebenen Objektdatei
+benoetigt
+werden, sowie deren Summe in dezimaler- und hexadezimaler Darstellung aus.
+Ist keine Datei angegeben, wird
+.B a.out
+verwendet.
+.SH BEISPIEL
+.nf
+
+% size /bin/ls
+
+11058 + 2414 + 3694 = 17166 = 0x430e
+.fi
+.SH SIEHE AUCH
+objdu(1), objhdr(1), a.out(5).

@@ -1,0 +1,1122 @@
+.TH SH 1 WEGA
+.\"@[$]sh.1	1.2
+.ad
+.fi
+.SH NAME
+sh \- Shell, die Bourne-Shell Kommando-Programmiersprache
+.SH SYNTAX
+.B sh
+[
+.B \-ceiknrstuvx
+] [ args ]
+.SH BESCHREIBUNG
+.B Sh
+ist eine Kommando-Programmiersprache, mit deren Hilfe
+an einem Terminal eingegebene
+oder in einer Datei befindliche Kommandos ausgefuehrt werden
+koennen.
+Die Bedeutung der Argumente,
+die an Shell uebergeben werden koennen,
+werden unter
+.I Aufruf
+erklaert.
+.SS Kommandos.
+.PP
+Ein
+.I einfaches Kommando
+ist eine Folge von Worten, die durch
+Tabulatoren oder Leerzeichen
+getrennt sind. Das erste dieser Worte gibt den Namen des auszufuehrenden
+Kommandos an.
+Mit Ausnahme der unten stehenden Festlegungen werden die
+uebrigen Worte als Argumente an das aufgerufene Kommando uebergeben.
+Der Kommandoname selbst wird als Argument 0 uebergeben
+(siehe
+.BR exec (2)).
+Der
+.B Wert
+eines einfachen Kommandos ist sein Exitstatus,
+wenn seine Abarbeitung normal beendet wurde. Bei nicht normaler
+Beendigung ist der Status (oktal)
+200+\f2status\fP
+(Liste der Statuswerte siehe
+.BR signal (2)).
+.PP
+Eine
+.I pipeline
+ist eine Folge von einem oder mehreren 
+Kommandos,
+die durch einen senkrechten Strich
+.BR \(bv 
+getrennt werden. Mit Ausnahme des letzten Kommandos ist
+die Standardausgabe bei allen Kommandos
+durch ein
+.BR pipe (2)
+mit der  Standardeingabe des naechsten Kommandos verbunden.
+Jedes Kommando wird als ein separater Prozess abgearbeitet;
+Shell wartet, bis das letzte Kommando beendet ist, bevor es seine
+Arbeit fortsetzt.
+.PP
+Eine
+.I Liste
+ist eine Folge von einer oder mehreren Pipelines, die durch
+.BR ; ,
+.BR & ,
+.BR && ,
+oder
+.BR \(bv\(bv
+getrennt sind und mit
+.B ;
+oder
+.BR & 
+abgeschlossen werden koennen. Bei diesen vier Symbolen haben
+.B ;
+und
+.B &
+gleiche Prioritaet. Sie ist niedriger als die von
+.B &&
+und
+.BR \(bv\(bv ,
+deren Prioritaet wiederum gleich ist.
+Ein Semikolon
+.B ;
+bewirkt die sequentielle Ausfuehrung der vorangestellten Pipeline;
+ein Ampersand
+.B &
+bewirkt die asynchrone Ausfuehrung (Abarbeitung im "Hintergrund")
+der vorangestellten Pipeline
+(d.h. Shell wartet
+.IR nicht ,
+bis die Ausfuehrung der Pipeline beendet ist).
+Das Symbol
+.B &&
+.RB ( \(bv\(bv )
+bewirkt nur dann die Abarbeitung der ihm folgenden 
+.IR Liste ,
+wenn die vorhergehende Pipeline einen Exitstatus Null (ungleich Null)
+zurueckgibt.
+Ein Kommando kann in einer
+.IR Liste
+statt mit einem Semikolon auch durch eine beliebige Anzahl
+Newlines begrenzt werden.
+.PP
+Wenn nicht anders angegeben, ist der von einem
+Kommando zurueckgegebene Wert der Wert des letzten
+einfachen Kommandos, das innerhalb des Kommandos ausgefuehrt wurde.
+.B Sh
+ermoeglicht die Ausfuehrung folgender Steueranweisungen:
+.TP
+\f3for\fP \f2name\fP [\f3in\fP \f2word\fP ... ] \f3do\fP \f2list\fP \f3done\fP
+Bei jeder Ausfuehrung eines
+.B for
+Kommandos, wird
+.I name
+auf das naechste 
+.I Wort
+aus der
+.B in
+.I word
+Liste gesetzt.
+Wenn 
+.BI in " word"
+\&...
+ausgelassen wurde, fuehrt das
+.B for
+Kommando fuer jeden 
+gesetzten Positionsparameter einmal die \f3do\fP \f2list\fP aus
+(siehe 
+.BR Parametersubstitution ).
+Die Ausfuehrung endet, wenn keine Worte mehr in der Liste sind.
+.TP
+\f3case\fP \f2word\fP \f3in\fP [\f2pattern\fP [\(bv \
+\f2pattern\fP ] ... \f3)\fP \f2list\fP \f3;;\fP ] ... \f3esac\fP
+Ein
+.B case
+Kommando arbeitet diejenige
+Liste
+ab, die dem ersten Muster
+.I pattern
+zugeordnet ist, das mit
+.IR word
+uebereinstimmt.
+Die Form der Muster entspricht denen, die fuer die 
+Erzeugung der Dateinamen verwendet werden
+(siehe
+.BR "Erzeugung von Dateinamen" ).
+.TP
+\f3if\fP \f2list\fP \f3then\fP \f2list\fP [\
+\f3elif\fP \f2list\fP \f3then\fP \f2list\fP ] ... \
+[\f3else\fP \f2list\fP ] \f3f\&i\fP
+Die auf \f3if\fP folgende
+Liste
+wird abgearbeitet. Falls sie den Exitstatus Null hat,
+wird die dem ersten
+.B then
+folgende 
+Liste
+abgearbeitet.
+Andernfalls wird die auf \f3elif\fP folgende
+Liste
+abgearbeitet. Ist deren Wert Null, wird
+die dem naechsten
+.B then folgende
+Liste
+abgearbeitet.
+Ist ihr Wert ungleich Null, wird die auf
+.B else
+folgende
+Liste
+abgearbeitet. Wird keine
+.B else
+Liste
+oder
+.B then
+Liste
+abgearbeitet, gibt das
+.B if
+Kommando den Exitstatus Null zurueck.
+.TP
+\f3while\fP \f2list\fP \f3do\fP \f2list\fP \f3done\fP
+Ein
+.B while
+Kommando arbeitet wiederholt die auf
+.B while
+folgende
+Liste
+ab. Ist der Exitstatus des letzten Kommandos in der Liste Null,
+wird die auf
+.B do
+folgende
+Liste
+abgearbeitet. Ist der Wert ungleich Null, wird die Programmschleife
+beendet.
+Werden keine Kommandos in der
+.B do
+Liste
+abgearbeitet, gibt das
+.B while
+Kommando eine Null zurueck.
+.B Until
+kann anstelle von
+.B while
+verwendet werden,
+wenn der Test zur Beendigung
+der Schleife negiert werden soll.
+.TP
+\f3(\fP\f2list\fP\f3)\fP
+.br
+Abarbeiten der
+Liste
+in einer Sub-Shell.
+.TP
+\f3{\fP\f2list\fP\f3;}\fP
+.br
+Die Liste
+wird einfach ausgefuehrt.
+.PP
+Die folgenden Worte werden nur dann erkannt, wenn sie
+das erste Wort eines Kommandos sind und wenn sie nicht apostrophiert sind:
+.if t .RS
+.PP
+.B
+.if n if then else elif fi case esac for while until do done { }
+.if t if  then  else  elif  f\&i  case  esac  for  while  until  do  done  {  }
+.if t .RE
+.SS Kommentare.
+.PP
+Im allgemeinen bewirkt ein mit
+.B #
+beginnendes Wort, dass dieses Wort und alle
+bis zu einem Newline folgenden Zeichen ignoriert werden.
+Kommentare haben eine besondere Bedeutung, wenn sie die
+erste Zeile in einem Shell-Script bilden.
+In der folgenden Uebersicht ist die spezielle
+Bedeutung angegeben:
+.sp
+.ta 1i
+#!sh	Das ist ein Shell-Script fuer /bin/sh
+.sp
+#!csh	Das ist ein Shell-Script fuer /bin/csh
+.sp
+#!	Fehler, Shell kann nicht bestimmt werden
+.sp
+#!/xxx	Benutze die Shell /xxx 
+.br
+	(in dem die Zeichenkette xxx ein Pfadname ist),
+.br
+	um dieses Script auszufuehren
+.sp
+#?	Ist '?' ein Zeichen ungleich '!',
+.br
+	ist dies ein Shell-Script fuer /bin/csh
+.sp
+?	Ist '?' ein Zeichen ungleich '#',
+.br
+	ist dies ein Shell-Script fuer /bin/sh
+.br
+.ta
+.fi
+.SS Kommandosubstitution.
+.PP
+Die Standardausgabe von einem in Akzentzeichen eingeschlossenen
+Kommando wie
+.sp
+.RS
+\`ls\`
+.RE
+.sp 
+kann als Teil eines Wortes oder als ein ganzes Wort verwendet werden;
+nachgestellte Newlines werden entfernt.
+.SS Parametersubstitution.
+.PP
+Das Zeichen
+.B $
+wird verwendet, um
+.IR Parameter
+einzufuehren, die substituiert werden koennen.
+Positionsparametern koennen durch
+.BR set
+Werte zugeordnet werden.
+Variablen koennen folgendermassen Werte zugewiesen werden:
+.RS
+.sp
+.IB name = wert
+[
+.IB name = wert
+] ...
+.sp
+.RE
+Bei
+.I wert
+erfolgt kein Mustervergleich.
+.PP
+.TP
+\f3${\fP\f2parameter\fP\f3}\fP
+Ein
+.I Parameter
+ist eine Folge von Buchstaben, Ziffern oder Unterstreichungen (ein
+.IR name ),
+eine Ziffer oder ein beliebiges Zeichen
+.BR \(** ,
+.BR @ ,
+.BR # ,
+.BR ? ,
+.BR \- ,
+.BR $ ,
+oder
+.BR !\ .
+Falls der Parameter einen Wert besitzt, wird dieser substituiert.
+Die Klammern sind nur erforderlich, wenn nach dem Parameter
+ein Buchstabe, eine Ziffer oder eine Unterstreichung folgt,
+die nicht als Teil des Parameternamens interpretiert werden sollen.
+Ein
+.I name
+muss mit einem Buchstaben oder einer Unterstreichung beginnen.
+Ist der Parameter
+eine Ziffer, handelt es sich um einen Positionsparameter.
+Ist der Parameter
+.B \(**
+oder
+.BR @ ,
+werden alle Positionsparameter, beginnend mit
+.BR $1 ,
+substituiert (wobei zur Trennung zwischen
+den einzelnen Parametern Leerzeichen eingefuegt werden).
+Der Parameter
+.B $0
+wird bei Aufruf des Shell von Argument Null gesetzt.
+.TP
+\f3${\fP\f2parameter\fP\f3:\-\fP\f2word\fP\f3}\fP
+Besitzt der Parameter
+einen Wert ungleich Null, wird dieser substituiert;
+andernfalls wird
+.I word
+substituiert.
+.TP
+\f3${\fP\f2parameter\fP\f3:=\fP\f2word\fP\f3}\fP
+Besitzt der Parameter
+kein Wert oder den Wert Null, wird ihm
+.IR word
+als Wert zugewiesen, dann wird der Wert des Parameters substituiert.
+.TP
+\f3${\fP\f2parameter\fP\f3:?\fP\f2word\fP\f3}\fP
+Besitzt der Parameter
+einen Wert ungleich Null, wird sein Wert substituiert.
+Andernfalls wird
+.I word
+ausgegeben und der Shell-Prozess beendet.
+Ist
+.I word
+nicht angegeben, wird stattdessen die Meldung
+"parameter null or not set"
+ausgegeben.
+.TP
+\f3${\fP\f2parameter\fP\f3:+\fP\f2word\fP\f3}\fP
+Besitzt der Parameter
+einen Wert, wird
+.IR word
+substituiert. Andernfalls erfolgt keine Substitution.
+.PP
+In den angegebenen Faellen wird
+.I word
+nur dann berechnet, wenn es als die substituierte 
+Zeichenkette 
+verwendet wird. Im folgenden Beispiel wird
+.B pwd
+nur dann ausgefuehrt, wenn
+.B d
+keinen Wert hat oder Null ist:
+.RS
+.PP
+echo ${d:\-\*`pwd\*`}
+.RE
+.PP
+Wenn in den oben stehenden Ausdruecken der Doppelpunkt
+.B :
+ausgelassen wird, ueberprueft Shell nur, ob der
+.I Parameter
+einen Wert hat oder nicht.
+.PP
+Die folgenden Parameter werden automatisch durch die Shell gesetzt:
+.RS
+.TP
+.B #
+Die Anzahl der Positionsparameter (dezimal)
+.TP
+.B \-
+Bei Aufruf
+der Shell oder durch das
+.B set
+Kommando an Shell gelieferte Flags.
+.TP
+.B ?
+Der vom letzten synchron ausgefuehrten Kommando zurueckgegebene
+Dezimalwert.
+.TP
+.B $
+Die Prozessnummer der laufenden Shell.
+.TP
+.B !
+Die Prozessnummer des letzten aufgerufenen Hintergrundkommandos.
+.RE
+.PP
+Folgende Parameter werden von Shell benutzt:
+.RS
+.TP
+.B
+.SM HOME
+Das Standardargument
+(Home-Directory) fuer das
+.I cd
+Kommando.
+.TP
+.B
+.SM PATH
+Der Suchpfad fuer Kommandos (siehe
+.BR Ausfuehrung ).
+.TP
+.B
+.SM MAIL
+Hat diese Variable den Namen einer Datei als Wert,
+informiert die Shell den Nutzer darueber, dass in
+der betreffenden Datei eine Nachricht eingetroffen ist.
+.TP
+.SM
+.B PS1
+Primaere Promptzeichenkette, voreingestellt: "\fB$\fR".
+.TP
+.SM
+.B PS2
+Sekundaere Promptzeichenkette, voreingestellt: "\fB>\fR".
+.TP
+.SM
+.B IFS
+Interne Feld-Trennzeichen, normalerweise
+.BR Leerzeichen ,
+.BR Tabulator
+und
+.BR Newline .
+.RE
+.PP
+Shell gibt Standardwerte an
+\f3PATH\fP, \f3PS1\fP, \f3PS2\fP und \f3IFS\fP,
+waehrend
+.SM
+.B HOME
+und
+.SM
+.B MAIL
+durch Shell nicht gesetzt werden (obwohl
+.SM
+.B HOME
+durch
+.BR login (1)
+gesetzt wird).
+.SS Interpretation der Trennzeichen.
+.PP
+Nach Ausfuehrung der Parameter- und Kommandosubstitution
+werden die Ergebnisse der Substitution auf interne
+Feldtrennzeichen (lt.
+.BR IFS )
+abgesucht und
+dort, wo derartige Zeichen auftreten,
+in einzelne Argumente aufgeteilt.
+Explizite Nullargumente (\f3""\fP oder \f3''\fP)
+bleiben erhalten.
+Implizite Nullargumente (die aus
+.I Parametern
+stammen und keine Werte haben) werden geloescht.
+.SS Erzeugung von Dateinamen.
+.PP
+Nach der Substitution wird jedes Kommandowort
+auf die Zeichen
+.BR \(** ,
+.BR ? ,
+und
+.BR [
+untersucht.
+Tritt eines dieser Zeichen auf, wird das Wort als Muster
+betrachtet.
+Das Wort wird durch alphabetisch geordnete Dateinamen
+ersetzt, die dem Muster entsprechen.
+Wird kein dem Muster entsprechender Dateiname gefunden,
+bleibt das Wort unveraendert.
+Tritt
+das Zeichen
+.B .
+am Anfang eines Dateinamens auf oder unmittelbar nach einem
+.BR / ,
+oder tritt das Zeichen
+.B /
+als solches auf, muessen diese explizit angegeben werden.
+.PP
+.TP
+.B \(**
+Entspricht einer beliebigen Zeichenkette, einschliesslich der Nullzeichenkette.
+.TP
+.B ?
+Entspricht einem beliebigen einzelnen Zeichen.
+.TP
+.BR [ ... ]
+Entspricht allen eingeklammerten Zeichen.
+Ein durch
+.B \-
+getrenntes Zeichenpaar entspricht allen Zeichen, die lexikalisch
+zwischen diesem Paar liegen.
+.SS Apostrophieren.
+.PP
+Die folgenden Zeichen haben fuer Shell eine besondere
+Bedeutung und fuehren zur Beendigung eines Wortes, wenn
+sie nicht apostrophiert werden:
+.PP
+\f3;  &  (  )  \(bv  <  >  Newline  Leerzeichen  Tabulator\fP
+.PP
+Ein Zeichen kann
+.I apostrophiert 
+werden, (d.h. es wird dafuer gesorgt, dass es fuer sich steht),
+indem man ihm ein
+.BR \e
+voranstellt. Das Paar
+.B \eNewline
+wird ignoriert.
+Alle in Apostroph
+(\f3''\fP) eingeschlossenen Zeichen, die kein Apostroph sind, 
+werden apostrophiert.
+Innerhalb von Anfuehrungsstrichen
+(\f3""\fP)
+treten auch Parameter- und Kommandosubstitutionen auf und das Backslash
+.B \e
+apostrophiert die Zeichen
+.BR \e ,
+.BR \*` ,
+\f3"\fP,
+und
+.BR $ .
+.B
+"$\(**"
+entspricht
+\f3"$1 $2\fP ...\f3"\fP,
+und
+.B
+"$@"
+entspricht
+.B
+"$1"
+.B
+"$2"
+\&....
+.SS Eingabeanforderungen (Prompts).
+.PP
+Wird Shell interaktiv verwendet, zeigt es vor dem Lesen eines
+Kommandos den Wert
+.SM
+.B PS1
+an.
+Wird irgendwann ein Newline eingegeben und werden danach
+zur ordnungsgemaessen Beendigung eines Kommandos weitere Eingaben
+erforderlich, wird das Sekundaerprompt
+(d.h. der Wert
+.BR PS2 )
+ausgegeben (z.B. wenn Schleifensteueranweisungen vom
+Terminal eingegeben werden).
+.SS Eingabe/Ausgabe.
+.PP
+Vor Ausfuehrung eines Kommandos koennen dessen Ein- und Ausgaberichtung
+umgelenkt werden. Das geschieht
+unter Verwendung einer speziellen von Shell interpretierten Notation.
+Die nachfolgend angegebenen Moeglichkeiten koennen an beliebiger
+Stelle in einem einfachen Kommando erscheinen oder einem
+Kommando vorangestellt oder nachgestellt sein und werden
+.I nicht
+an das aufgerufene Kommando weitergegeben.
+Substitutionen erfolgen vor der Nutzung von
+.I word
+oder
+.I digit :
+.PP
+.TP 14
+.B <word
+Die Datei 
+.I word
+ist als Standardeingabe zu verwenden (Filedescriptor 0).
+.TP
+.B >word
+Die Datei
+.I word
+ist als Standardausgabe zu benutzen (Filedescriptor 1).
+Existiert die Datei noch nicht, wird sie angelegt;
+andernfalls wird sie auf die Laenge Null gebracht
+(d.h. ihr urspruenglicher Inhalt wird geloescht!).
+.TP
+.B >\h@-.3m@>word
+Die Datei
+.I word
+ist als Standardausgabe zu verwenden.
+Existiert die Datei, wird die Ausgabe an sie angefuegt (indem
+der interne Dateipointer an das Ende der Datei 
+(End-of-File) gesetzt wird); existiert sie noch nicht, wird sie
+angelegt.
+.TP
+\f3<\h@-.3m@<\fP[\f3\-\fP]\f3word\fP
+Die Shell-Eingabe wird bis zu einer Zeile, die mit
+.IR word
+uebereinstimmt oder bis zu einem
+End-of-File gelesen.
+Das entstehende Ergebnis wird zur Standardeingabe gemacht.
+Falls ein Zeichen von
+.I word
+apostrophiert wird, erfolgt keinerlei Interpretation des
+Dokuments. Andernfalls werden Parameter- und Kommandosubstitution
+durchgefuehrt,
+.B \eNewline
+wird ignoriert und
+.B \e
+dient dem Apostrophieren der Zeichen
+.BR \e ,
+.BR $ ,
+.BR \*` ,
+und dem ersten Zeichen von
+.IR word .
+Wird
+.B \-
+an
+.BR <\h@-.3m@< 
+angefuegt, werden alle vorangestellten Tabulatoren aus
+.I word
+und dem Dokument entfernt.
+.TP
+.B <&digit
+Die Standardeingabe wird ein Duplikat des Filedescriptors
+.I digit
+(siehe
+.BR dup (2)).
+Analog geschieht das Duplizieren der Standardausgabe unter Verwendung von
+.BR > .
+.TP
+.B <&\-
+Die Standardeingabe ist geschlossen.
+Analog wird zum Schliessen der Standardausgabe
+.BR > benutzt. 
+.PP
+Wird einer der oben beschriebenen Moeglichkeiten eine Ziffer
+vorangestellt, ist der durch die Ziffer angegebene Filedescriptor
+spezifiziert (und nicht wie im Standardfall 0 oder 1).
+Zum Beispiel wird durch:
+.RS
+.PP
+\&... 2>&1
+.RE
+.PP
+ein Filedescriptor 2 geschaffen, der ein Duplikat von Filedescriptor 1
+ist.
+.PP
+Folgt einem Kommando ein
+.BR & ,
+ist die normale Standardeingabe fuer das Kommando die leere Datei
+.BR /dev/null .
+Andernfalls enthaelt die Ausfuehrungsumgebung eines Kommandos
+die Filedescriptoren der aufrufenden Shell, jedoch entsprechend
+den angegebenen E/A-Spezifikationen modifiziert.
+.SS Umgebung.
+.PP
+Die
+.I Umgebung
+(siehe
+.IR environ (7))
+ist eine Liste von Paaren der Form Name-Wert, die
+wie eine normale Argumentliste an das ablaufende Programm
+uebergeben wird.
+Shell kommuniziert mit der Umgebung auf vielfaeltige Weise.
+Bei Aufruf durchsucht Shell die Umgebung und erstellt
+fuer jeden gefundenen Namen einen Parameter und weist ihm
+den entsprechenden Wert zu.
+Ablaufende Kommandos erben die Umgebung der Shell.
+Modifiziert der Nutzer die Werte dieser Parameter oder erstellt
+er neue, hat dies keinen Einfluss auf die Umgebung. Nur mit Hilfe
+des 
+.B export
+Kommandos koennen Shell-Parameter an die Umgebung gebunden werden.
+Zur Umgebung eines ausgefuehrten Kommandos gehoeren daher alle
+ungeaenderten Paare der Form Name-Wert, die bereits in der Umgebung
+von Shell enthalten waren, sowie alle Modifikationen oder Ergaenzungen,
+fuer die 
+.B export
+Kommandos ausgefuehrt wurden.
+.PP
+Die Umgebung eines 
+.I "einfachen Kommandos"
+kann erweitert werden, indem diesem beim Aufruf eine oder mehrere
+Parameter-Zuweisungen vorangestellt werden.
+Daher sind die folgenden zwei Kommandozeilen aequivalent 
+(was die Ausfuehrung von
+.I cmd
+betrifft):
+.RS
+.PP
+TERM=PV cmd argument
+.br
+(export TERM; TERM=PV; cmd argument)
+.RE
+.PP
+Ist das
+.B \-k
+Flag gesetzt,
+werden alle Schluesselwort-Argumente in die Umgebung eingebunden,
+auch wenn sie nach dem Kommandonamen angegeben sind.
+Durch  die unten stehenden Angaben entsteht erst \fB"a=b c"\fR
+und dann "\fBc\fR":
+.PP
+.RS
+.nf
+echo a=b c
+set \-k
+echo a=b c
+.fi
+.RE
+.SS Signale.
+.PP
+Die INTERRUPT und QUIT Signale werden fuer ein
+aufgerufenes Kommando ignoriert, wenn dem Kommando ein
+.BR & 
+folgt; andernfalls haben die Signale
+die Werte,
+die Shell von
+seinem Parent-Prozess geerbt hat. Eine Ausnahme bildet
+Signal 11 (siehe auch
+.B trap
+Kommando).
+.SS Ausfuehrung.
+.PP
+Bei jeder Ausfuehrung eines Kommandos werden die oben angefuehrten
+Substitutionen ausgefuehrt.
+Mit Ausnahme der
+.B "Speziellen Kommandos"
+wird zur Kommandoausfuehrung ein neuer Prozess geschaffen und versucht,
+das Kommando  mittels 
+.BR exec (2)
+abzuarbeiten.
+.PP
+Der Shell-Parameter
+.B
+.SM $PATH
+legt den Suchpfad fuer das Directory fest, welches das
+Kommando enthaelt. Alternative Directorynamen werden durch
+Doppelpunkt
+.B :
+getrennt. Der Standardpfad ist
+.B :/bin:/usr/bin
+(wodurch das Directory
+.BR /bin
+und
+.BR /usr/bin
+in dieser Reihenfolge angegeben wird).
+Es ist zu beachten, dass das aktuelle Directory durch einen
+Null-Pfadnamen angegeben wird, der unmittelbar nach dem 
+Gleichheitszeichen oder an beliebiger anderer Stelle in der Pfadlisten
+zwischen zwei Doppelpunkt-Trennzeichen stehen kann.
+Enthaelt der Kommandoname ein \f3/\fP, wird der Suchpfad
+nicht benutzt.
+Sonst wird in jedem im Suchpfad enthaltenen Directory nach einer
+ausfuehrbaren Datei gesucht.
+Wenn das Ausfuehrungsrecht fuer die Datei vorliegt und
+es sich nicht um eine
+.B a.out
+Datei handelt,  wird davon ausgegangen, dass es sich um
+eine Datei handelt, die Shell-Kommandos enthaelt.
+Diese Datei wird dann in einer Sub-Shell gelesen
+(d.h. ein separater Prozess).
+Auch ein in Klammern stehendes
+Kommando wird in einem Sub-Shell abgearbeitet.
+.SS Spezielle Kommandos.
+.PP
+Die folgenden Kommandos werden im laufenden Shell-Prozess abgearbeitet;
+fuer sie ist keine E/A-Umlagerung zulaessig
+(nur wenn sie ausdruecklich gefordert wird):
+.PP
+.TP
+.B :
+Dieses Kommando bewirkt nichts.
+Es wird eine Null zurueckgegeben.
+.br
+.TP
+.BI . file
+Lesen und Ausfuehren von Kommandos, die in
+.I file
+enthalten sind. Anschliessend wird zurueckgekehrt.
+Der Suchpfad
+.B
+.SM PATH
+wird benutzt, um das Directory zu finden, in dem
+.IR file
+enthalten ist.
+.TP
+\f3break\fP [ \f2n\fP ]
+Austritt aus der umgebenden
+.B for
+oder
+.B while
+Schleife, falls eine solche vorhanden ist.
+Ist
+.I n
+angegeben, werden 
+.I n
+Schleifen beendet.
+.TP
+\f3continue\fP [ \f2n\fP ]
+Die Abarbeitung wird bei der naechsten Wiederholung der
+umgebenden
+.B for
+oder
+.B while
+Schleife fortgesetzt.
+Ist
+.I n
+angegeben, wird an der
+.IR n -ten
+umgebenden Schleife fortgesetzt.
+.TP
+\f3cd\fP [ \f2directory\fP ]
+.IR directory
+wird zum aktuellen Directory (Standard: der Shell-Parameter
+.BR HOME ).
+.ne 2.1v
+.TP
+\f3eval\fP [ \f2arg\fP ... ]
+Die Argumente werden als Eingabe in Shell gelesen,
+und die resultierenden Kommandos ausgefuehrt.
+.TP
+\f3exec\fP [ \f2arg\fP ... ]
+Das durch die Argumente angegebene Kommando wird anstelle
+der laufenden Shell ausgefuehrt, ohne dass ein neuer Prozess
+geschaffen wird.
+Eingabe/Ausgabe-Argumente koennen angegeben werden. Wenn keine anderen
+Argumente gegeben sind, fuehren sie zur Modifizierung der
+Shell-E/A.
+.TP
+\f3exit\fP [ \f2n\fP ]
+Bewirkt die Beendigung einer Shell mit dem Exitstatus
+.IR n .
+Ist
+.I n
+nicht angegeben, ist der Exitstatus der des letzten
+ausgefuehrten Kommandos (ein End-of-File fuehrt ebenfalls
+zur Beendigung der Shell).
+.TP
+\f3export\fP [ \f2name\fP ... ]
+Die angegebenen Namen
+sind fuer den automatischen Export 
+nachfolgend ausgefuehrter Kommandos an die Umgebung
+bestimmt.
+Sind keine Argumente angegeben, wird eine Liste
+aller in dieser Shell exportierten Namen ausgegeben.
+.TP
+\f3newgrp\fP [ \f2arg\fP ... ]
+Entspricht
+.BI "exec newgrp" " arg"
+\&....
+.TP
+\f3read\fP [ \f2name\fP ... ]
+Von der Standardeingabe wird eine Zeile gelesen und
+das erste Wort wird dem ersten Namen,
+das zweite Wort dem zweiten Namen,
+usw. zugeordnet. Uebriggebliebene Worte werden dem letzten Namen
+zugeordnet.
+Der Exitstatus ist 0, ausser wenn ein End-of-File
+erreicht ist.
+.TP
+\f3readonly\fP [ \f2name\fP ... ]
+Die gegebenen Namen
+werden als
+.I readonly
+festgelegt, d.h. die Werte dieser Namen
+duerfen durch spaetere Zuweisungen nicht geaendert werden.
+Wenn keine Argumente gegeben sind, wird eine
+Liste aller Namen, die nur gelesen werden koennen, ausgegeben.
+.TP
+\f3set\fP [ \f3\-ekntuvx\fP [ \f2arg\fP ... ] ]
+.RS
+.TP
+.B \-e
+Eine nichtinteraktive Shell wird sofort beendet, wenn
+ein Kommando mit einem Exitstatus ungleich Null beendet wird.
+.TP
+.B \-k
+Alle Schluesselwort-Argumente werden in die Umgebung eines Kommandos
+eingebunden, nicht nur diejenigen, die vor dem Kommandonamen
+stehen.
+.TP
+.B \-n
+Die Kommandos werden gelesen, aber nicht ausgefuehrt.
+.TP
+.B \-t
+Beenden des Prozesses nach Lesen und Ausfuehren eines
+Kommandos.
+.TP
+.B \-u
+Nicht mit Werten belegte Variable werden als Fehler betrachtet,
+wenn sie substituiert werden sollen.
+.TP
+.B \-v
+Die Shell-Eingabezeilen werden so wieder ausgegeben, wie sie
+gelesen wurden.
+.TP
+.B \-x
+Die Kommandos und ihre  Argumente werden so ausgegeben, wie sie
+abgearbeitet werden.
+.TP
+.B \-\-
+Die Flags sind nicht zu aendern; das ist nuetzlich, wenn $1
+auf - gesetzt werden soll.
+.PP
+Die Verwendung von
+.B \+
+anstelle von
+.B \-
+fuehrt dazu, dass diese Flags aufgehoben werden.
+Diese Flags koennen auch beim Shell-Aufruf verwendet werden.
+Die aktuell gesetzten Flags sind ueber
+.BR $\-
+zugreifbar.
+Die verbleibenden Argumente sind Positionsparameter und werden
+der Reihe nach
+.BR $1 ,
+.BR $2 ,
+\&....
+zugewiesen. Wenn keine Argumente gegeben sind, werden
+die Werte aller Namen ausgegeben.
+.RE
+.TP
+\f3shift\fP
+.br
+Die Positionsparameter ab
+.B $2
+\&...
+werden umbenannt in
+.B $1
+\&....
+.TP
+\f3test\fP
+.br
+Berechnung der konditionellen Ausdruecke (siehe
+.BR test (1)).
+.TP
+\f3times\fP
+.br
+Die bisher benoetigten Nutzer- und Systemzeiten fuer
+Prozesse, die von Shell gestartet wurden, werden ausgegeben.
+.TP
+\f3trap\fP [ \f2arg\fP ] [ \f2n\fP ] ...
+.I arg
+ist ein Kommando, das gelesen und ausgefuehrt werden soll, wenn 
+Shell das (die) Signal(e)
+.I n 
+empfaengt.
+Es ist zu beachten, dass
+.I arg
+zweimal untersucht wird; einmal, wenn das trap-Kommando
+eingelesen wird und einmal, wenn das zugehoerige Signal
+empfangen wird.
+Trap-Kommandos werden in der Reihenfolge der Signalnummern
+ausgefuehrt. 
+Ein trap-Kommando kann nicht fuer ein Signal eingelesen werden, 
+das bei Eingang in die aktuelle Shell ignoriert wurde.
+Die Anwendung von trap auf Signal 11 (Speicherfehler),
+fuehrt zu einem Fehler.
+Ist kein
+.I arg
+angegeben, werden allen
+trap(s)
+.I n
+wieder die urspruenglichen Werte zugewiesen.
+Ist
+.I arg
+die Null-Zeichenkette, wird dieses Signal
+von Shell und von den Kommandos, die es aufruft, ignoriert.
+Ist \fIn\fR=0, wird das Kommando
+.I arg
+bei Beendigung des Shell ausgefuehrt.
+Hat 
+.B trap
+keine Argumente, wird eine Liste von Kommandos und
+zugeordneten Signalnummern ausgegeben.
+.TP
+\f3umask\fP [ \f2nnn\fP ]
+Die Dateierzeugungsmaske des Nutzers wird auf
+.I nnn
+gesetzt. (siehe
+.BR umask (2)).
+Ist
+.I nnn
+nicht angegeben, wird der aktuelle Wert der Maske ausgegeben.
+.TP
+\f3unset\f2 parameter\fP
+Loescht die Shell-Variablen
+.I Parameter
+aus der Nutzer-Umgebung.
+Die oben beschriebenen vordefinierten Shell-Parameter duerfen nicht
+entfernt werden.
+.TP
+\f3wait\fP [ \f2n\fP ]
+Es wird auf die Beendigung des durch
+.I n
+angegebenen Child-Prozesses gewartet.
+Der Exitstatus wird ausgegeben.
+Ist
+.I n
+nicht gegeben, wird auf die Beendigung aller gerade laufenden
+Child-Prozesse gewartet. Der Exitstatus dieses Kommandos ist
+immer Null.
+.PP
+.SS Aufruf.
+.PP
+Wird Shell durch
+.BR exec (2)
+aufgerufen und ist das erste Zeichen des Arguments Null ein
+.BR \- ,
+werden zuerst die Kommandos aus
+.B /etc/profile
+gelesen und dann aus
+.BR $HOME/.profile ,
+sofern diese Dateien existieren.
+Danach werden die Kommandos wie bereits beschrieben gelesen und ausgefuehrt.
+Das ist auch der Fall, wenn Shell als
+.BR /bin/sh
+aufgerufen wird.
+Die unten aufgefuehrten Flags werden vom Shell nur beim Aufruf
+interpretiert. Es ist zu beachten, dass 
+bei Nichtangabe des
+.B \-c
+oder
+.B \-s
+Flags das erste Argument als Name einer Datei betrachtet wird, die
+Kommandos enthaelt, und die uebrigen Argumente als Positionsparameter
+an diese Kommandodatei gegeben werden:
+.SH FLAGS
+.TP 10
+.BI \-c " string"
+Ist das
+.B \-c
+Flag vorhanden, werden Kommandos
+aus der Zeichenkette
+.IR string 
+gelesen.
+.TP
+.B \-s
+Ist das Flag
+.B \-s
+vorhanden oder sind keine weiteren Argumente angegeben,
+werden die Kommandos aus der Standardeingabe gelesen.
+Alle uebrigen Argumente geben die Positionsparameter an.
+Die Shell-Ausgabe wird in Filedescriptor 2 geschrieben.
+.TP
+.B \-i
+Ist das
+.B \-i
+Flag vorhanden oder sind die Shell-Eingabe und -Ausgabe
+an ein Terminal gebunden, ist diese Shell
+.IR interaktiv .
+In diesem Fall wird das Signal TERMINATE ignoriert (so dass \f3kill 0\fP
+eine interaktive Shell nicht unterbricht) und INTERRUPT wird
+aufgefangen und ignoriert (so dass
+.B wait
+unterbrochen werden kann).
+In allen Faellen wird QUIT von der Shell ignoriert.
+.TP
+.B \-r
+Shell besitzt eingeschraenkten Funktionsumfang (siehe
+.BR rsh (1)).
+.PP
+Die uebrigen Flags und Argumente sind unter dem Kommando
+.B set
+beschrieben.
+.PP
+.SH EXITSTATUS
+Werden durch Shell Fehler (z.B. Sytaxfehler) festgestellt,
+wird ein Exitstatus ungleich Null geliefert.
+Handelt es sich um eine nichtinteraktive Shell, wird die
+Bearbeitung der Shelldatei abgebrochen.
+Andernfalls gibt Shell den Exitstatus des letzten ausgefuehrten
+Kommandos zurueck (siehe auch
+.BR exit ).
+.SH DATEIEN
+/etc/profile
+.br
+$HOME/\f3.\fPprofile
+.br
+/tmp/sh\(**
+.br
+/dev/null
+.SH SIEHE AUCH
+cd(1),
+env(1),
+login(1),
+newgrp(1),
+rsh(1),
+test(1),
+umask(1),
+dup(2),
+exec(2),
+fork(2),
+pipe(2),
+signal(2),
+umask(2),
+wait(2),
+a.out(5),
+profile(5),
+environ(7).
+.SH EINSCHRAENKUNGEN
+Das Kommando
+.B readonly
+(ohne Argumente)
+erzeugt dieselbe Ausgabe wie das Kommando
+.BR export .
+.PP
+Wird
+.B <\h@-.3m@<
+verwendet, um fuer einen durch
+.BR &
+aufgerufenen asynchronen Prozess eine Standardeingabe zu liefern,
+kommt Shell bei der Benennung des Eingabedokumentes durcheinander.
+Es wird eine sinnlose Datei
+.B /tmp/sh\(**
+angelegt und Shell zeigt den Zugriffsfehler an.

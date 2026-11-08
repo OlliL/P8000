@@ -1,0 +1,98 @@
+.TH UUX 1 WEGA
+.\" @[$]uux.1	1.2
+.ad
+.fi
+.SH NAME
+uux \- Kommandoausfuehrung zwischen WEGA-Systemen ueber uucp
+.SH SYNTAX
+.B uux
+[
+.B \-
+]
+.I command-string
+.SH BESCHREIBUNG
+.B Uux
+holt Dateien aus verschiedenen Systemen,
+fuehrt ein Kommando an einem angegebenen System aus
+und sendet eine Standardausgabe an eine Datei in einem
+angegebenen System.
+.PP
+Die Kommandozeichenkette 
+.I command-string 
+besteht aus einem oder mehreren Argumenten, die wie eine
+Shell-Kommandozeile aussehen. Kommando- und Dateinamen
+koennen jedoch in der Form
+.RS
+\fISystemname\fB!\fIPfadname\fR
+.RE
+angegeben werden.
+Ist kein Systemname angegeben, ist das lokale System spezifiziert.
+.PP
+Dateinamen koennen wie folgt angegeben werden:
+.TP
+(1)
+ein vollstaendiger Pfadname (beginnt mit / );
+.TP
+(2)
+ein mit
+.BI ~ user\^
+beginnender Pfadname. Dabei ist das Argument
+.I user\^
+ein Login-Name auf dem spezifizierten System.
+Bei der Ausfuehrung wird
+.I user\^
+durch dessen Login-Directory ersetzt wird.
+Diese Ausdehnung erfolgt an dem System,
+in dem die entsprechende Datei gespeichert ist.
+.TP
+(3)
+Jeder anderen Angabe wird das aktuelle Directory auf
+dem lokalen System vorangestellt.
+.PP
+Shell-Sonderzeichen muessen in Anfuehrungszeichen
+eingeschlossen werden
+(gilt fuer die gesamte Kommandokette oder fuer die speziellen Argumente).
+.SH OPTIONEN
+.TP 8
+.B \-
+Die Standardeingabe fuer das
+.B uux
+Kommando ist die Standardeingabe fuer die Kommandozeichenkette
+\fIcommand-string\fR.
+.TP
+.B \-r
+Verhinderung des automatischen Starts von
+.BR uucico (M).
+.TP
+.BI \-x num
+Angabe der gewuenschten Debugging-Ebene.
+.SH BEISPIELE
+Das Kommando
+.IP
+pr abc | uux - sys2!lpr -c
+.PP
+sendet die Ausgabe von
+\fIpr abc\fR
+an das System
+.IR sys2 .
+Dort wird der Datenstrom dem Druckerspooler
+\fBlpr\fR(1) uebergeben, der die Datei ueber die Warteschlange
+auf den konfigurierten Drucker ausgibt.
+Die Benutzung der
+.B \-c
+Option fuer
+\fBlpr\fR(1)
+ist zu beachten.
+.SH DATEIEN
+/usr/spool/uucp   Spool-Directory
+.br
+/usr/lib/uucp/*   andere Daten und Programme
+.SH SIEHE AUCH
+uucp(1),
+uucico(M).
+.SH ACHTUNG
+Eine Implementierung kann aus Sicherheitsgruenden
+die Liste der Kommandos beschraenken, die auf
+Anforderung von
+.B uux
+ausgefuehrt werden duerfen.

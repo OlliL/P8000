@@ -1,0 +1,49 @@
+.TH ASSERT 3 WEGA
+.\" @[$]assert.3        1.2
+.ad
+.fi
+.SH NAME
+assert \- Programmverifikation
+.SH SYNTAX
+.B #include <assert.h>
+.PP
+.B assert
+(
+.I expression
+)
+.SH BESCHREIBUNG
+.PP
+.B Assert
+ist ein Macro.
+Es verursacht einen Systemruf
+.BR exit (2)
+mit einem Fehlerkommentar auf der Standardfehlerausgabe, wenn
+bei der Ausfuehrung das Argument
+.I expression
+falsch (d.h. gleich Null) ist.
+Ist
+.I expression
+ungleich Null, erfolgt keine Unterbrechung der Programmausfuehrung.
+.PP
+Wird das Programm mit der
+Preprozessor-Option
+.BR \-DNDEBUG
+(siehe
+.BR cc (1))
+uebersetzt, wird
+.B assert
+aus dem Programm geloescht.
+.SH DIAGNOSTIK
+Ausschrift:
+.IP
+"Assertion failed: file \fIf\fR line \fIn\fR"
+.PP
+Dabei ist
+.TP
+.I f
+die Quelldatei und
+.TP
+.I n
+die Nummer der Quellzeile der
+.B assert
+Anweisung.

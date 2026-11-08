@@ -1,0 +1,42 @@
+.TH QSORT 3 WEGA
+.\" @[$]qsort.3 1.2
+.ad
+.fi
+.SH NAME
+qsort \- Schnelles Sortieren
+.SH SYNTAX
+.nf
+\fBqsort(base, nel, width, compar)
+\fBchar \fI*base;
+\fBint \fI(*compar)( );
+\fBint \fInel, width;\fR
+.nf
+.SH BESCHREIBUNG
+.B Qsort
+stellt eine Implementation eines allgemeinen Sortieralgorithmus dar.
+Das Datenfeld wird an Ort und Stelle sortiert.
+Folgende Argumente sind anzugeben:
+.TP 10
+.I base
+Pointer auf den Beginn des Datenfeldes.
+.TP
+.I nel
+Anzahl der Elemente.
+.TP
+.I width
+Byteanzahl eines Elementes.
+.TP
+.I compar
+Name der Vergleichsroutine.
+.PP
+Die Vergleichsroutine wird mit zwei Argumenten aufgerufen, die
+Pointer auf die zu vergleichenden Elemente sind.
+Die Routine muss eine ganze Zahl zurueckgeben, die kleiner, gleich oder
+groesser als Null ist,
+je nachdem, ob das erste Argument kleiner, gleich oder grosser als das
+zweite ist.
+.SH SIEHE AUCH
+sort(1),
+bsearch(3),
+lsearch(3),
+strcmp(3).

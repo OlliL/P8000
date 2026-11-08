@@ -1,0 +1,33 @@
+.TH MKDIR 1 WEGA
+.\" @[$]mkdir.1	1.2
+.ad
+.fi
+.SH NAME
+mkdir  \- Anlegen von Directorys
+.SH SYNTAX
+.B mkdir
+\fIdirname\fR ...
+.SH BESCHREIBUNG
+.B Mkdir
+legt die angegebenen Directories mit dem Modus, der sich
+aus der logischen  Verknuepfung von 777 mit dem Komplement des
+gegenwaertigen Wertes
+.B umask
+ergibt, an. Der Wert
+.B umask
+wird durch das Shell-Kommando
+.BR umask (1C)
+gesetzt.
+Standardeintragungen (\&.  fuer das Directory selbst, und \&.. fuer
+das Parent-Directory) erfolgen automatisch.
+.PP
+.B Mkdir
+benoetigt die Schreiberlaubnis im Parent-Directory.
+.SH SIEHE AUCH
+csh(1), rm(1), sh(1), umask(2), chmod(1).
+.SH DIAGNOSTIK
+.B Mkdir
+gibt den Exitstatus = 0 zurueck, wenn alle
+Directories erfolgreich angelegt wurden.
+Anderenfalls wird eine Fehlerdiagnose ausgegeben und
+mit einem Wert ungleich Null zurueckgekehrt.

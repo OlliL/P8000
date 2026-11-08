@@ -1,0 +1,122 @@
+.TH SLINK 1 
+.\"@[$]slink.1	1.2
+.ad
+.fi
+.SH NAME
+slink \- Verbinder fuer auslagerbare Objektmodule
+.SH SYNTAX
+.B slink
+\fR[ \fB-eioPsvwxX\fR ] [ [ \fB-S\fR addr ] file ...] ...
+.SH BESCHREIBUNG
+.I Slink
+erstellt Lademodule, die speziell zur Auslagerung in Ziel-Hardware
+(z.B. Emulator) bestimmt sind.
+.I Slink
+vereinigt mehrere Objektmodule in der angegebenen Reihenfolge
+in einer Lademodul-Datei (Standardname:
+.BR a.out ).
+Ueber die
+.I -o
+Option kann ein gewuenschter Name des Lademoduls angegeben werden.
+Traten waehrend des Verbindens keine Fehler auf,
+ist die Datei ausfuehrbar.
+.PP
+Die Objektmodule koennen durch Angabe der Adressoption
+.I -S
+auf bestimmte Speicherplaetze verbunden werden.
+.SH OPTIONEN
+Alle Optionen muessen einzeln angegeben werden.
+.TP
+.BI -e \ name
+Definiert den Eintrittspunkt des Programms.
+Standard ist die Link-Adresse der Textsektion
+(erste Routine des ersten Moduls).
+.TP
+.B -i
+Getrennter Befehls- und Daten-Bereich bei der Abarbeitung
+(nur fuer U881-Objektmodule).
+.TP
+.BI \-o \ name
+Definiert den Namen des Lademoduls (Format siehe
+.BR a.out (5).
+.TP
+.B -P
+Die temporaeren Arbeitsdateien
+werden fuer die Fehlersuche gespeichert.
+.TP
+.B -s
+Symboltabelle und Verschiebungsbits
+werden geloescht (Platzeinsparung).
+.TP
+\fB-S\fI address file \fR...
+Die Speicheradressen der aufgefuehrten Dateien werden gesetzt.
+Die Adresse kann
+unter Verwendung der Vereinbarungen der C-Sprache
+hexadezimal (fuehrendes 0x), oktal (fuehrende 0)
+oder dezimal (sonst) angegeben werden.
+Ueberlagerungen von Sektionen oder ein Ueberlauf
+im 64K-Byte-Segment fuehrt zu Fehlern.
+.TP
+.B -v
+Ausgabe der an 
+.BR ld (1)
+uebergebenen Kommandozeile.
+.TP
+.B -w
+Warnung vor Symbolumdefinierung wird unterdrueckt.
+Diese Warnung wird waehrend der Durchsuchung von Archiven erzeugt.
+Enthaelt ein Archiv einen Modul, der ein bereits definiertes Symbol
+noch einmal definiert, wird eine Symbolumdefinierungs-Warnung erzeugt.
+.TP
+.B -x
+Nur externe und globale Symbole werden
+in die Ausgabe-Symboltabelle eingetragen.
+Lokale Symbole werden dort nicht gespeichert (Platzeinsparung).
+.TP
+.B -X
+Mit Ausnahme der in der Symboltabelle eingetragenen Sektionsnamen
+und der auf L beginnenden Namen werden lokale Symbole gespeichert.
+Diese Option wird vom C-Compiler verwendet, um intern erzeugte
+Marken zu loeschen und routinenlokale Symbole beizubehalten.
+.SH DATEIEN
+.TP 15
+/tmp/sl......
+temporaere Dateien (siehe
+.I -P
+Option).
+.TP 15
+a.out
+Lademodul.
+.SH SIEHE AUCH
+ld(1), a.out(5).
+.SH DIAGNOSTIK
+Load not performed.
+.br
+Fork failed.
+.br
+No children to wait for.
+.br
+Temp files, '/tmp/sl......', were not removed.
+.br
+Bad option: <option>.
+.br
+<file> not in correct a.out format.
+.br
+Cannot handle segmented file: <file>.
+.br
+Cannot handle overlay file: <file>.
+.br
+Cannot handle stripped file: <file>.
+.br
+U8000 files cannot start on odd boundaries.
+.br
+Cannot mix U8000 modules with U881 or U880 modules.
+.br
+Cannot mix U881 modules with U880 modules.
+.SH EINSCHRAENKUNGEN
+.I Slink
+kann keine segmentierten oder Ueberlagerungsprogramme bearbeiten.
+.br
+Gemeinsame Symbole
+(common symbols)
+werden nicht bearbeitet, sie folgen BSS.

@@ -1,0 +1,25 @@
+.TH PRINTENV 1 WEGA 
+.\" @[$]printenv.1	1.2
+.ad
+.fi
+.SH NAME
+printenv \- Ausgabe der Umgebungsvariablen
+.SH SYNTAX
+.B printenv
+[ \fIname\fR ]
+.SH BESCHREIBUNG
+.B Printenv
+gibt die Werte der Umgebungsvariablen aus.
+Ist ein
+.I name
+angegeben, wird nur sein Wert gedruckt.
+.PP
+Ist
+.I name
+nicht in der Umgebung definiert, gibt
+.B printenv
+einen Exitstatus 1, sonst einen Status 0 zurueck.
+.SH SIEHE AUCH
+sh(1), environ(5), csh(1).
+.br
+"Die C-Shell" in WEGA-Dienstprogramme

@@ -1,3 +1,4 @@
 /compare/*/corpus.tar
 /compare/*/cache/
 /compare/*/.lock
+/src/cmd/cparse/cgram1.c

@@ -1,0 +1,98 @@
+.TH CHKIN 1 
+.\" @[$]chkin.1	1.2
+.ad
+.fi
+.SH NAME
+chkin \- Aufnahme einer Datei in die QCV-Steuerdatei
+.SH SYNTAX
+\fBchkin \fR[\fB-r\fR] [\fB-b\fR] [\fB-c \fIcomment\fR] [\fB-d \fIdir\fR] \fIfile\fR ...
+.SH BESCHREIBUNG
+\fBChkin\fR uebernimmt eine Quelldatei in die zugehoerige
+QCV-Steuerdatei (Steuerdatei des einfachen Quellcodeverwaltungssystems, siehe
+.BR qcv (5)).
+Existiert die QCV-Steuerdatei nocht nicht, wird sie erzeugt
+und der komplette Inhalt der Quelldatei wird uebernommen.
+Existiert die QCV-Steuerdatei bereits, werden die Unterschiede
+zwischen der Quelldatei und der letzten Version der QCV-Steuerdatei
+mit Hilfe von
+.BR diff (1)
+ermittelt und in die QCV-Steuerdatei uebernommen.
+.LP
+Wenn die QCV-Steuerdatei schon existiert, sucht chkin nach der Lock-Datei.
+Die Existenz der Lock-Datei zeigt an, dass die Quelldatei
+vorher durch
+.BR chkout (1)
+zum Editieren freigegeben wurde.
+Fehlt die Lock-Datei, wird die Datei durch
+chkin nicht uebernommen.
+.LP
+Das Dateinamenargument kann entweder der Name einer Quelldatei sein
+(darf nicht mit + enden) oder der Name einer QCV-Steuerdatei
+(Quelldateiname mit Endung +).
+Ist eine QCV-Steuerdatei angegeben und die -d Option nicht benutzt,
+so wird angenommen, dass die Quelldatei im aktuellen Directory liegt,
+auch wenn die QCV-Steuerdatei sich nicht dort befindet.
+.LP
+Implizit weist chkin der neuen Version die gleiche Release-Nummer
+und eine um 1 groessere Ausgabenummer gegenueber der letzten
+Version zu.
+Chkin fordert implizit die Eingabe eines Kommentars an,
+und liest ihn von der Standardeingabe bis zur Erkennung von EOF
+(Control-d bei Terminaleingabe).
+Die Eingaben werden als Kommentarzeilen in die QCV-Steuerdatei eingefuegt
+(siehe
+.BR qcv (5)).
+Die Laenge einer Kommentarzeile ist auf
+256 Zeichen begrenzt.
+.LP
+Es ist zu beachten, dass die Benutzung der Interrupttaste
+nach Eingabe der Kommentarzeilen zu einer inkonsistenten QCV-Steuerdatei
+fuehren kann.
+.LP
+Nach Aufnahme der neuen Version in die QCV-Steuerdatei streicht chkin
+die Lock-Datei (falls eine vorhanden war).
+Die Quelldatei wird durch eine von chkout erzeugte Readonly-Version
+ersetzt (siehe
+.BR chkout (1)).
+.SH OPTIONEN
+.TP
+.B \-b
+Veraendern der Ausgabenummer: Die Release-Nummer
+fuer diese Version wird um 1 erhoeht
+und die Ausgabenummer wird auf 1 gesetzt.
+.TP
+\fB\-c \fIcomment\fR
+Fuegt den angegebenen Kommentar ein. Es wird keine Kommentareingabe
+angefordert.
+.TP
+\fB\-d \fIdir\fR
+Holt die Quelldatei vom angegebenen Directory.
+.TP
+.B \-r
+Die Quelldatei wird geloescht und nicht durch eine Readonly-Datei ersetzt.
+.SH DATEIEN
+.nr I 20n
+.in +\nIu
+.ti -\nIu
+file+            -- QCV-Steuerdatei fuer \fIfile\fR
+.ti -\nIu
+file-            -- Lock-Datei fuer \fIfile\fR
+.ti -\nIu
+/tmp/chkinXXXXXX -- letzte gespeicherte Version
+.ti -\nIu
+chkinXXXXXX      -- temporaere Datei fuer Schluesselwortsubstitution
+.ti -\nIu
+/bin/diff        -- Programm, das Versionsunterschiede ermittelt
+.SH SIEHE AUCH
+chkout(1), chkdiff(1), chkwhat(1), qcv(5)
+.SH FEHLERBEHANDLUNG
+no lock file for xxxxx:  entweder ist die Lock-Datei
+gestrichen oder man versucht, eine neue Quelldatei in eine
+schon existierende QCV-Steuerdatei zu uebernehmen
+.LP
+corrupt chkfile:  die in
+qcv(5) vereinbarte Konvention wurde verletzt
+.SH EINSCHRAENKUNGEN
+Es ist moeglich, aber nicht zu empfehlen, mit chkin eine Datei
+in die QCV-Steuerdatei aufzunehmen,
+die vorher nicht mittels chkout(1) erzeugt wurde.

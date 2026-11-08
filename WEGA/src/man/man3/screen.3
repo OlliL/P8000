@@ -1,0 +1,449 @@
+.TH SCREEN 3
+.\" @[$]screen.3        1.2
+.ad
+.fi
+.SH NAME
+getkey, gonormal, goraw, wbackspace, wbackword, wcolon, wforspace, wforword, wgetword, whelp, whighlight, wleft, wmesg, wmvcursor, wpageback, wpagefor, wresscrn, wright, wsavescrn, wscrolb, wscrolf \- Screen-Interface-Bibliothek
+.SH SYNTAX
+.nf
+\fB#include <curses.h>\fR
+\fB#include <screen.h>\fR
+.sp
+(siehe BESCHREIBUNG)
+.fi
+.SH BESCHREIBUNG
+Die Screen-Interface-Bibliothek soll dem Programmierer bei der Erarbeitung
+von bildschirmorientierten oder Anzeige-Programmen helfen.
+Die Funktionen benutzen die Datei der Terminalcharakteristika
+(/etc/termcap)
+zur Gewaehrleistung der Unabhaengigkeit der
+Programme vom Terminal und die
+.BR Curses -Bibliothek
+(/usr/lib/libcurses.a fuer nichtsegmentierte Programme und
+/usr/lib/slibcurses.a fuer segmentierte Programme)
+fuer die Funktionen zur Bildschirmaktualisierung.
+.PP
+Zur Bibliothek gehoeren Funktionen zur Terminalinstallation, zur
+Cursormanipulationen ueber die Pfeiltasten, das
+Einfuegen einzelner Zeichen, Hervorhebung  (Highlight)
+des mit dem Cursor markierten Elements,
+Seitenaufbereitung, Rollfunktionen des Bildschirmtextes,
+Speichern und Wiederherstellen der Bildschirmanzeige, Abruf des vom Cursor
+markierten Wortes, die Behandlung von Hilfs-Dateien
+und die allgemeine Handhabung der "letzten" Zeile.
+Die "Window-Orientierung" dieser Funktionen (siehe auch
+.BR Curses -Bibliothek)
+ermoeglicht eine sehr freizuegige Benutzung des Bildschirms.
+.PP
+Bei Verwendung der Screen-Interface-Bibliothek muss das Anwenderprogramm
+folgende Deklarationsdateien einbeziehen:
+.IP
+#include <curses.h>
+.br
+#include <screen.h>
+.PP
+Die Kommandozeilen fuer nichtsegmentierte und segmentierte
+C-Compilierung lauten:
+.IP
+cc file.c -lscreen -lcurses -ltermlib
+.br
+scc file.c -lscreen -lcurses -ltermlib
+.PP
+Im folgenden werden die in der Screen-Interface-Bibliothek vorhandenen
+Funktionen beschrieben.
+Bei Bedarf stehen zwei Aufrufsequenzen zur Verfuegung:
+.PD 0
+.IP - 3
+Fuer ein "window" (Bildschirmfenster, Bildschirmausschnitt)
+.IP - 3
+Fuer "stdscr" (voller Bildschirm, Standardscreen).
+.PD
+.TP
+\fBgetkey\fI()\fR
+.IP
+Mit dieser Funktion koennen ueber Tastatur einzelne Zeichen eingeben werden.
+Bei Betaetigung einer der Pfeiltasten
+wird die in /usr/include/screen.h
+angegebene Standarddefinition (d.h.
+.BR LEFT ,
+.BR DOWN ,
+.B UP
+und
+.BR RIGHT )
+zurueckgegeben.
+Folgende Liste enthaelt die Standardvorgabe fuer die Pfeiltasten:
+.nf
+
+     left  - h, CTRL-h, Backspace
+     down  - j, CTRL-j
+     up    - k, CTRL-k
+     right - l, CTRL-l, Leerzeichen
+
+.fi
+Wurde keine der Pfeiltasten betaetigt,
+wird das eingegebene Zeichen zurueckgegeben.
+Wurde ein Carrige Return eingegeben, wird das Zeichen
+"\\r" zurueckgegeben (Unterscheidung zwischen RETURN-Taste und
+Pfeil nach unten, die bei einigen Terminals gleiche Codierung haben).
+.TP
+\fBgonormal\fI()\fR
+.IP
+Diese Funktion setzt die Standardausgabe
+auf ihren Normalmodus zurueck.
+Das Flag
+.B _rawmode
+wird auf den Wert
+.BR FALSE
+(=0) gesetzt.
+.TP
+\fBgoraw\fI()\fR
+.IP
+Diese Funktion setzt die Standardausgabe in den CBREAK-Modus
+und setzt das Curses-Flag
+.B _rawmode
+auf
+.B TRUE
+(=1).
+.TP
+\fBwbackspace\fI(win, top, bottom)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBint\fI top, bottom;\fR
+.TP
+\fBbackspace\fI(top, bottom)\fR
+\fBint\fI top, bottom;\fR
+.IP
+Diese Funktion bewegt den Cursor nach links,
+bis auf der Anzeige ein Leerzeichen erreicht ist.
+Stand der Cursor in der ersten Spalte
+der ersten Zeile,
+schlaegt er auf die letzte Spalte der letzten Zeile um.
+.TP
+\fBwbackword\fI(win, top, bottom)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBint\fI top, bottom;\fR
+.TP
+\fBbackword\fI(top, bottom)\fR
+\fBint\fI top, bottom;\fR
+.IP
+Diese Funktion bewegt den Cursor an den Anfang des
+vorangegangenen Wortes (nach links).
+Stand der Cursor in der ersten Spalte
+der ersten Zeile, schlaegt er auf das letzte Wort
+der letzten Zeile um.
+.TP
+\fBwcolon\fI(win)\fR
+\fBWINDOW \fI*win;\fR
+.TP
+\fBcolon\fI()\fR
+.IP
+Diese Funktion behandelt die Doppelpunkt-Befehle
+(der Doppelpunkt wird in der letzten Zeile von
+.I win
+ausgegeben).
+Die erwartete Eingabe ist ein Zeichen, gefolgt von einem
+Carrige Return. Die Funktion gibt das
+eingegebene Zeichen zurueck.
+.TP
+\fBwforspace\fI(win, top, bottom)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBint\fI top, bottom;\fR
+.TP
+\fBforspace\fI(top, bottom)\fR
+\fBint\fI top, bottom;\fR
+.IP
+Diese Funktion bewegt den Cursor nach rechts, bis auf der
+Anzeige ein Leerzeichen erreicht wird.
+Stand der Cursor in der letzten Spalte der letzten Zeile,
+wird er in der ersten Zeile
+in die erste Spalte gesetzt.
+.TP
+\fBwforword\fI(win, top, bottom)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBint\fI top, bottom;\fR
+.TP
+\fBforword\fI(top, bottom)\fR
+\fBint\fI top, bottom;\fR
+.IP
+Diese Funktion bewegt den Cursor auf den Anfang
+des naechsten Wortes (nach rechts).
+Stand der Cursor in der letzten Spalte der letzten Zeile,
+schlaegt er in die erste Zeile in die erste Spalte um.
+.TP
+\fBwgetword\fI(win, str)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBchar \fI*str;\fR
+.TP
+\fBgetword\fI(str)\fR
+\fBchar \fI*str;\fR
+.IP
+Diese Funktion holt ein Wort aus der Anzeige und
+bringt die Zeichenkette nach
+.IR str .
+Ist das Wort in der Anzeige hervorgehoben, wird das
+Standout-Modusbit
+in jedem Zeichen ausgeblendet und in
+.I str
+zurueckgegeben.
+.TP
+\fBwhelp\fI(win, file)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBchar \fI*file;\fR
+.TP
+\fBhelp\fI(file)\fR
+\fBchar \fI*file;\fR
+.IP
+Diese Funktion oeffnet die gegebene Hilfsdatei
+.I "file"
+und zeigt deren Inhalt an. Nach der Anzeige
+wird der urspruengliche Bildschirm wiederhergestellt.
+Kann die Hilfsdatei nicht geoeffnet werden
+oder gab es bei der Wiederherstellung des
+urspruenglichen Bildschirms Probleme, gibt
+die Funktion den Wert
+.B ERR
+zurueck, andernfalls wird der Wert
+.B OK
+zurueckgegeben.
+.TP
+\fBwhighlight\fI(win, flag)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBint\fI flag;\fR
+.TP
+\fBhighlight\fI(flag)\fR
+\fBint\fI flag;\fR
+.IP
+Besitzt das Argument
+.I flag
+den Wert
+.BR TRUE ,
+setzt diese Funktion den Standout-Modus fuer das
+vom Cursor markierte Wort (d.h. das Wort wird hervorgehoben).
+Ist der Wert von
+.I flag
+gleich
+.BR FALSE ,
+wird der Standout-Modus fuer das vom Cursor
+angezeigte Wort abgeschaltet.
+.TP
+\fBwleft\fI(win, top, bottom)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBint\fI top, bottom;\fR
+.TP
+\fBleft\fI(top, bottom)\fR
+\fBint\fI top, bottom;\fR
+.IP
+Diese Funktion bewegt den Cusor eine Stelle nach links.
+Stand der Cursor in der ersten Spalte der
+ersten Zeile, schlaegt er auf die letzte Spalte der letzten Zeile um.
+.TP
+\fBwmesg\fI(win, str, data)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBchar \fI*str;\fR
+.br
+\fBchar \fI*data;\fR
+.TP
+\fBmesg\fI(str, data)\fR
+\fBchar \fI*str;\fR
+.br
+\fBchar \fI*data;\fR
+.IP
+Diese Funktion gibt die analog
+.BR printf (3)
+formatierte Meldung 
+.I str
+in der letzte Zeile von
+.I win
+oder
+.I stdscr
+aus. Es ist nicht erforderlich,
+ein Newline-Zeichen oder ein "\\n"
+anzugeben, da die Meldung auf der letzten Zeile
+des Windows erscheint.
+Alle auszugebenden zusaetzlichen Daten
+(z.B. Argumente fuer
+.I %s
+in
+.IR str ),
+werden in der Variablen
+.I data
+gespeichert.
+Sind keine zusaetzlichen Daten vorhanden
+(d.h.
+.I  str
+ist eine informative Meldung),
+sollte
+.I data
+Null enthalten.
+Nach Meldungsausgabe kehrt der Cursor
+an die aktuelle Stelle zurueck.
+.TP
+\fBwmvcursor\fI(win, c, top, bottom)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBchar c;\fR
+.br
+\fBint\fI top, bottom;\fR
+.TP
+\fBmvcursor\fI(c, top, bottom)\fR
+\fBchar c;\fR
+.br
+\fBint\fI top, bottom;\fR
+.IP
+Diese Funktion benutzt das gegebene Zeichen
+.IR c ,
+um den Cursor entsprechend in
+.I win
+innerhalb
+der Anzeigegrenzen der ersten und letzten
+Zeile zu bewegen.
+Die gueltigen Werte fuer
+.I c
+(und damit die gueltigen Cursorbewegungen) sind
+.BR DOWN ,
+.BR UP ,
+.B FORWARD
+(oder WORD) und
+.B BACKWARD
+lt. Definition in /usr/include/screen.h.
+Ueberschreitet der Cursor die letzte Zeile,
+wird er in der ersten Zeile
+in die naechste Spalte rechts
+oder in die erste Spalte gesetzt.
+Nach Beendigung der Cursorbewegung gibt die Funktion den Wert
+.B OK
+zurueck.
+Ist
+.I c
+eine ungueltige Cursorbewegung,
+gibt die Funktion den Wert
+.B ERR
+zurueck.
+Ist das globale Flag
+.I hilite
+gesetzt,
+erfolgt die "Hervorhebung"
+des in der aktuellen Cursorposition befindlichen Worts
+automatisch.
+.TP
+\fBwpagefor\fI(win, fp, top)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBFILE \fI*fp;\fR
+.br
+\fBint\fI top;\fR
+.TP
+\fBpagefor\fI(fp, top)\fR
+\fBFILE \fI*fp;\fR
+.br
+\fBint\fI top;\fR
+.IP
+Diese Funktion gibt die Seite der Datei aus, die durch den Dateipointer
+.I fp
+angegeben ist.
+Wird die Anzahl der Zeilen in
+.I win
+ueberschritten, wird
+das Prompt
+.RS
+.IP
+Type ^f for next page
+.RE
+.IP
+ausgegeben. 
+Wird
+.I "^f"
+nicht eingegeben, kehrt die Funktion zurueck,
+andernfalls wird die naechste Seite ausgegeben.
+.TP
+\fBwresscrn\fI(win)\fR
+\fBWINDOW \fI*win;\fR
+.TP
+\fBresscrn\fR()
+.IP
+Diese Funktion ueberprueft das globale Flag
+.I "scrnflg"
+(wird in der Funktion
+.B "wsavescrn"
+auf den Wert
+.B TRUE
+gesetzt)
+und ueberprueft, ob der Inhalt des globalen WINDOW's
+.I "scrn"
+in
+.I "win"
+passen wird.
+Ist das der Fall, wird der Inhalt von
+.I "scrn"
+in
+.I "win"
+ueberschrieben und die Funktion
+gibt den Wert
+.B OK
+zurueck, andernfalls gibt die Funktion den Wert
+.B ERR
+zurueck.
+.TP
+\fBwright\fI(win, top, bottom)\fR
+\fBWINDOW \fI*win;\fR
+.br
+\fBint\fI top, bottom;\fR
+.TP
+\fBright\fI(top, bottom)\fR
+\fBint\fI top, bottom;\fR
+.IP
+Diese Funktion bewegt den Cursor um eine Stelle nach rechts.
+Stand der Cursor in der letzten Spalte der letzten Zeile,
+wird er auf die erste Spalte der ersten Zeile gesetzt.
+.TP
+\fBwsavescrn\fI(win)\fR
+\fBWINDOW \fI*win;\fR
+.TP
+\fBsavescrn\fI()\fR
+.IP
+Diese Funktion speichert den Inhalt von
+.I "win"
+in das globale WINDOW
+.I "scrn"
+(siehe /usr/include/screen.h),
+das zugewiesener Speicher fuer diese Funktion ist.
+Traten Probleme bei der Zuweisung auf,
+gibt die Funktion den Wert
+.B ERR
+zurueck.
+Andernfalls wird das globale Flag
+.I "scrnflg"
+auf den Wert
+.B TRUE
+gesetzt, der Inhalt von
+.I "win"
+gespeichert und die Funktion gibt den Wert
+.B OK
+zurueck. 
+.SH DATEIEN
+/usr/lib/libscreen.a
+.br
+/usr/lib/slibscreen.a
+.SH SIEHE AUCH
+vls(1),
+vnews(1),
+termcap(3),
+curses(3).
+.sp
+"SCREEN/CURSES - Beschreibung" in WEGA-Dienstprogramme
+.SH EINSCHRAENKUNGEN
+Die Funktionen
+wscrolf (oder scrolf), wscrolb (oder scrolb) und wpageback
+(oder pageback) sind noch nicht implementiert worden.
+.PP
+Die termcap-Moeglichkeiten, "kl, kd, ku, kr und kh",
+werden gegenwaertig nicht von der
+Screen-Interface-Bibliothek ausgewertet.

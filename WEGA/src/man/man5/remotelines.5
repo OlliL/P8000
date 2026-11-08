@@ -1,0 +1,113 @@
+.TH REMOTELINES 5 WEGA
+.\"@[$]remotelines.5    1.2
+.ad
+.fi
+.SH NAME
+remotelines, LCK \- Dateien zur Steuerung von Remote-Leitungen
+.SH BESCHREIBUNG
+Mit Hilfe des Programms
+.B remote
+kann die Steuerung an ein abgesetztes oder Remote-System
+uebertragen werden, das unter WEGA- oder einem
+kompatiblen Betriebssystem laeuft.
+Der Systemverwalter ist verantwortlich
+fuer die Erstellung und Verwaltung der Datei
+.BR /usr/spool/uucp/remotelines ,
+die genaue Informationen darueber enthaelt, welche Systeme
+zur Verfuegung stehen und ueber welche E/A-Geraete die Verbindung erfolgt.
+Diese Datei enthaelt eine Zeile fuer jedes Remote-System.
+.PP
+Jede Zeile enthaelt mindestens zwei Informationen.
+Der erste Eintrag ist die Zeichenkette
+.IR systemname .
+Der Name wird dem Programm
+.BR remote (1)
+beim Aufruf uebergeben.
+Ist beim Aufruf des Programms
+.B remote
+kein
+.I systemname
+angegeben, wird die erste Zeile der Datei
+.B /usr/spool/uucp/remotelines
+spezifiziert.
+Der zweite
+Eintrag ist der Name des Geraetes (normalerweise
+eine TTY-Leitung), das die Verbindung zum Remote-System realisiert.
+Der dritte Eintrag ist die optionale Baudrate
+(Standard ist 9600).  Die
+Eintraege werden durch Tabulatoren oder
+Leerzeichen getrennt.
+.PP
+Beispiel:
+.sp
+sm4   /dev/tty0 1200
+.br
+wega1 /dev/tty4
+.sp
+Es wurden 2 Remote-Systeme definiert.
+Das System mit dem Namen sm4 ist ueber den Kanal
+/dev/tty0 mit 1200 Baud angeschlossen. Das zweite System, genannt wega1,
+ist ueber Kanal /dev/tty4 mit der Uebertragungsgeschwindigkeit von
+9600 Baud mit dem lokalen System verbunden.
+Ist beim Aufruf des Programms
+.BR remote (1)
+kein
+.I systemname
+angegeben, wird
+der Eintrag fuer sm4 verwendet.
+.PP
+Die Datei
+.B remotelines
+muss fuer jeden Nutzer lesbar sein.
+.PP
+Beim Aufruf des Programms
+.BR remote (1)
+wird der entsprechende Eintrag der Datei
+.I remotelines
+ausgewaehlt. Anschliessend wird
+ueberprueft, ob fuer jedes E/A-Geraet zur Verbindung mit dem
+gewuenschten Systems eine Verriegelungsdatei (lock file)
+vorhanden ist.
+Wird eine freie Verriegelungsdatei gefunden,
+bricht
+.B remote
+ab.
+Der Name der Verriegelungsdatei besteht aus der Zeichenkette
+"/usr/spool/uucp/LCK..",
+der der Name des zu verwendenden Geraetes folgt
+(wobei alle vorangestellten Pfadkomponenten entfernt sind).
+Ist diese Datei nicht vorhanden, wird davon ausgegangen,
+dass die Remote-Leitung nicht in Benutzung ist.
+In diesem Fall legt
+.BR remote (1)
+die Datei an, um andere Nachfragen nach der Leitung zu sperren.
+Anschliessend erfolgt der Zugriff auf das Geraet und
+der Verkehr mit dem Remote-System beginnt.
+Der Systemverwalter ist verantwortlich, dass alle als
+Remote-Leitungen definierten Geraete mit den
+Rechnern verbunden sind.
+.SH ACHTUNG
+Es ist erforderlich, dass
+der Zugriff auf die Leitung fuer jeden Nutzer moeglich ist
+(Zugriffsrechte 0666).
+.PP
+In der Datei
+.I /etc/inittab
+des lokalen Systems muss
+.B vor
+der Herstellung der elektrischen Verbindung
+das zyklische Login fuer den Kanal
+gesperrt werden, ueber den die Verbindung zum Remote-System
+aufgebaut wird (in der Datei /etc/inittab ist das Flag k zu setzen, siehe
+.BR inittab (5)).
+.SH DATEIEN
+/usr/spool/uucp/LCK..*          Verriegelungsdateien
+.br
+/usr/spool/uucp/remotelines     Datenbasis
+.SH SIEHE AUCH
+remote(1),
+putfile(1),
+getfile(1),
+local(1),
+inittab(5).
+

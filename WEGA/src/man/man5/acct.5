@@ -1,0 +1,116 @@
+.TH ACCT 5 WEGA
+.\" @[$]acct.5  1.2
+.ad
+.fi
+.SH NAME
+acct \- Dateiformat fuer Prozessabrechnung
+.SH SYNTAX
+.B #include <sys/acct.h>
+.SH BESCHREIBUNG
+Durch den Systemruf
+.BR acct (2)
+werden Datensaetze zur Prozessabrechnung in eine Abrechnungsdatei geschrieben,
+die folgende Struktur besitzt (siehe
+.BR <sys/acct.h> ):
+.nf
+
+/*
+ * Accounting-Strukturen
+ */
+
+typedef       ushort comp_t; /* "Floating Point" */
+                             /* 13-Bit-Mantisse, 3-Bit-Exponent */
+
+struct acct
+{
+    char     ac_flag;     /* Accounting-Flag */
+    char     ac_stat;     /* Exit-Status */
+    ushort   ac_uid;      /* Accounting-Nutzer-ID */
+    ushort   ac_gid;      /* Accounting-Gruppen-ID */
+    dev_t    ac_tty;      /* steuerndes Terminal */
+    time_t   ac_btime;    /* Anfangszeit */
+    comp_t   ac_utime;    /* Accounting-Nutzer-Zeit in clock ticks */
+    comp_t   ac_stime;    /* Accounting-System-Zeit in clock ticks */
+    comp_t   ac_etime;    /* vergangene Acct.-Zeit in clock ticks */
+    comp_t   ac_mem;      /* Speicherbenutzung */
+    comp_t   ac_io;       /* uebertragene Zeichen */
+    comp_t   ac_rw;       /* gelesene oder geschriebene Bloecke */
+    char     ac_comm[8];  /* Kommandoname */
+};
+
+extern struct acct acctbuf;
+extern struct inode *acctp; /* Inode der Accounting-Datei */
+
+#define AFORK  01      /* hat fork abgearbeitet, aber nicht exec */
+#define ASU    02      /* benutzte Superuser-Privilegien */
+#define ACCTF  0300    /* Datensatztyp: 00 = acct */
+.fi
+.PP
+Bei jedem Systemruf
+.BR fork (2)
+wird das Flag
+.B AFORK
+im Feld
+.IR ac_flag
+gesetzt und mit einem Systemruf
+.BR exec (2)
+rueckgesetzt.
+Das Feld
+.I ac_comm\^
+wird vom Elternprozess geerbt und wird durch jeden Systemruf
+.IR exec
+zurueckgesetzt.
+Zu jedem Zeitpunkt, wenn das System den Prozess
+durch einen Zeittakt aktiviert (Prozesswechsel),
+wird gleichzeitig die aktuelle Prozessgroesse zum Wert des Feldes
+.IR ac_mem\^
+nach folgender Vorschrift addiert:
+.nf
+
+(Datengroesse) + (Textgroesse) / (Anzahl der Prozesse,
+                                  die Text benutzen)
+.fi
+.PP
+Der Wert
+.I ac_mem\^/\^ac_stime\^
+kann als ein Naeherungswert der
+durch die gemeinsame Textbenutzung modifizierten Prozessgroesse
+betrachtet werden.
+.PP
+.ne 20
+Die folgende Struktur stellt das vollstaendige Accounting-Format dar,
+das von den verschiedenen Accounting-Kommandos benutzt wird:
+.PP
+.nf
+.lg 0
+/*
+ *    Gesamtabrechnung (fuer jede Abrechnungsperiode)
+ */
+
+struct tacct {
+    uid_t     ta_uid;       /* Nutzer-ID */
+    char      ta_name[8];   /* Login-Name */
+    float     ta_cpu[2];    /* aufsummierte CPU-Zeit, p/np (Min.) */
+    float     ta_kcore[2];  /* aufsummierte kcore-Minuten, p/np */
+    float     ta_con[2];    /* aufsummierte Login-Zeit, p/np, (Min.) */
+    float     ta_du;        /* aufsummierte Disk-Nutzung */
+    long      ta_pc;        /* Anzahl der Prozesse */
+    unsigned short ta_sc;   /* Anzahl der Logins-Sitzungen */
+    unsigned short ta_dc;   /* Anzahl der Disk-Samples */
+    unsigned short ta_fee;  /* Gebuehren fuer Sonderleistungen */
+};
+.fi
+.lg
+.SH SIEHE AUCH
+acctcom(1),
+acct(2),
+acct(M).
+.SH EINSCHRAENKUNGEN
+Der Wert
+.I ac_mem\^
+fuer ein Kommando mit einer kurzen Laufzeit liefert kaum
+Informationen ueber die tatsaechliche Groesse des
+Kommandos, da
+.I ac_mem\^
+inkrementiert werden kann, waehrend ein anderes Kommando
+(z.B. die Shell) vom Prozess ausgefuehrt wird.

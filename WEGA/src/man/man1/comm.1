@@ -1,0 +1,47 @@
+.TH COMM 1 WEGA
+.\" @[$]comm.1	1.2
+.ad
+.fi
+.SH NAME
+comm \- Vergleich zweier sortierter Dateien
+.SH SYNTAX
+\fB comm [\fB\-\fR 123\fR] \fIfile1 file2\fR
+.SH BESCHREIBUNG
+.B Comm
+liest die Dateien
+.I file1
+und
+.I file2,
+die als ASCII-Folge 
+entsprechend \fBsort\fR(1) angeordnet sein muessen,
+und erzeugt folgende dreispaltige Ausgabe:
+.PP
+Spalte 1: Zeilen, die nur in der Datei \fIfile1\fR enthalten sind,
+.br
+Spalte 2: Zeilen, die nur in der Datei \fIfile2\fR enthalten sind und
+.br
+Spalte 3: Zeilen, die in beiden Dateien enthalten sind.
+.PP
+Steht fuer ein Dateinamenargument ein
+Minuszeichen "\fB\-\fR", wird von der Standardeingabe gelesen.
+.PP
+Die Angaben 1, 2 oder 3 unterdruecken die Ausgabe der entsprechenden 
+Spalte. So erzeugt das Kommando:
+.sp
+.RS
+\fBcomm -12 \fIfile1 file2\fR
+.RE
+.PP
+nur die Ausgabe der Zeilen von Spalte 3 und damit der Zeilen,
+die in beiden Dateien gleich sind.
+.PP
+Das Kommando:
+.sp
+.RS
+\fBcomm -23 \fIfile1 file2\fR
+.RE
+.sp
+gibt nur die Zeilen von Spalte 1 aus und damit die Zeilen,
+die nur in der Datei file1 auftreten.
+.SH SIEHE AUCH
+cmp(1), diff(1), sort(1), uniq(1).

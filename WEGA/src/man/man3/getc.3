@@ -1,0 +1,99 @@
+.TH GETC 3 WEGA 
+.\" @[$]getc.3  1.2
+.ad
+.SH NAME
+getc, getchar, fgetc, getw \- Zeichen oder Wort aus einem Stream holen
+.SH SYNTAX
+.B #include <stdio.h>
+.PP
+.B int getc
+(
+.I stream
+)
+.br
+.SM
+.B FILE
+*
+.I stream;
+.PP
+.B int getchar()
+.PP 
+.B int fgetc
+(
+.I stream
+)
+.br
+.SM
+.B FILE
+*
+.I stream;
+.PP
+.B int getw
+(
+.I stream
+)
+.br
+.SM
+.B FILE
+*
+.I stream;
+.SH BESCHREIBUNG
+Die als Makro implementierte Funktion
+.I getc
+gibt das naechste Zeichen aus dem angegebenen Eingabestrom
+.IR stream
+als Integerwert zurueck.
+.PP
+.I Getchar()
+ist mit
+.IR getc (stdin) 
+identisch.
+.PP
+.I Fgetc
+verhaelt sich wie
+.IR getc ,
+ist jedoch eine echte Funktion und kein Makro
+und verarbeitet auch Objekttext.
+.PP
+.I Getw
+gibt das naechste Wort (Integerwert) aus dem angegebenen Eingabestrom
+.IR stream
+zurueck.
+Die Funktion gibt bei End-Of-File oder Fehler die Konstante
+.B EOF
+zurueck, jedoch muessen die Funktionen
+.IR feof (3)
+und
+.IR  ferror (3)
+verwendet werden, um die erfolgreiche Abarbeitung von
+.IR getw
+zu ueberpruefen.
+.I Getw
+setzt in der Datei keine besondere Ausrichtung voraus.
+.SH SIEHE AUCH
+fopen(3), putc(3),
+gets(3), scanf(3),
+fread(3),
+ungetc(3).
+.SH DIAGNOSTIK
+Bei Dateiende oder bei Lesefehler geben diese Funktionen den
+Integerwert
+.B EOF
+zurueck.
+.br
+Wurde versucht, von einem Stream zu lesen, der nicht durch
+.IR fopen
+zum Lesen geoeffnet wurde,
+wird die Funktion mit der Meldung
+"Reading bad file" abgebrochen.
+.SH EINSCHRAENKUNGEN
+Da die Funktion
+.I getc
+als Makro implementiert ist, behandelt es ein Argument
+.I stream
+mit Nebenwirkungen nicht korrekt.
+Insbesondere funktioniert
+.RS
+getc(*f++);
+.RE
+nicht.

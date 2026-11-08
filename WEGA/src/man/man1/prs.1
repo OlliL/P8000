@@ -1,0 +1,238 @@
+.TH PRS 1 WEGA
+.\" @[$]prs.1	1.2
+.ad
+.fi
+.SH NAME
+prs \- Ausgabe einer SCCS-Datei
+.SH SYNTAX
+\fBprs \fR[\fB\-a\fR]
+.br
+	[\fB\-d\fR[dataspec]]
+.br
+	[\fBe\fR]
+.br
+	[\fB\-l\fR]
+.br
+	[\fB\-r\fR[SID]]
+.br
+\fIfiles\fR
+.SH BESCHREIBUNG
+.B Prs\^
+gibt Teile von oder die gesamte SCCS-Datei
+(siehe 
+.BR sccsfile (5))
+in einem vom Nutzer spezifizierten Format auf der Standardausgabe aus.
+Wird ein Directory angegeben, sind alle im Directory enthaltenen
+SCCS-Dateien
+(die letzte Komponente des Pfadnamens muss mit \fBs.\fR beginnen)
+spezifiziert, die lesbar sind.
+Ist ein Dateinamenargument mit \- angegeben, wird die Standardeingabe gelesen;
+dabei wird jede Zeile der Standardeingabe als Name
+einer SCCS-Datei oder eines Directory interpretiert.
+Nicht-SCCS-Dateien und unlesbare Dateien werden ignoriert.
+.PP
+Argumente von
+.BR prs ,
+die in einer beliebigen Anordnung erscheinen koennen, bestehen aus
+Optionen und Dateinamen.
+.SH OPTIONEN
+Alle beschriebenen Optionen
+koennen unabhaengig auf jede benannte Datei angewendet werden:
+.TP
+.B \-a
+Es werden Informationen fuer geloeschte Deltas
+(Deltatyp=\fIR\fR)
+und existierende Deltas (Deltatyp=\fID\fR) ausgegeben.
+Siehe dazu
+.BR rmdel (1)).
+Ist die
+.B \-a
+Option nicht spezifiziert, werden nur Informationen fuer existierende
+Deltas geliefert.
+.TP
+\fB\-d\fR[dataspec]
+Spezifikation der Ausgangsdaten.
+.I Dataspec\^
+ist eine Zeichenkette, die aus 
+Daten-Schluesselworten
+(siehe
+.IR "DATEN-SCHLUESSELWORTE" )
+der SCCS-Datei mit eingefuegtem optionell vom Nutzer gelieferten Text
+besteht.
+.TP
+.B \-e
+Ausgabe von Informationen fuer alle Deltas, die frueher
+als das durch die
+.B \-r
+Option angegebene Delta erzeugt wurden einschliesslich dieses Deltas.
+.TP
+.B \-l
+Ausgabe von Informationen fuer alle Deltas, die
+spaeter als das durch die
+.B \-r
+Option angegebene Delta erzeugt wurden einschliesslich dieses Deltas.
+.TP
+\fB\-r\fR[SID]
+Spezifiziert den SID eines Delta,
+fuer das die Information gewuenscht wird
+(Standard: SID des zuletzt erzeugten Deltas).
+.SH DATEN-SCHLUESSELWORTE
+Daten-Schluesselworte spezifizieren,
+welche Teile einer SCCS-Datei rekonstruiert
+und ausgegeben werden.
+Alle Teile der SCCS-Datei (siehe
+.IR sccsfile (5))
+haben ein assoziiertes Daten-Schluesselwort.
+Es existiert kein Limit fuer das Auftreten eines Daten-Schluesselworts
+in einer Datenspezifikation
+.IR dataspec .
+.PP
+.B Prs\^
+gibt folgende Informationen aus:
+.IP (1)
+dem vom Nutzer gelieferten Text
+.IP (2)
+die entsprechenden Werte (werden aus der SCCS-Datei ermittelt),
+die fuer die erkannten Daten-Schluesselworte
+in der Reihenfolge ihres Erscheinens in
+.I dataspec
+ersetzt werden.
+Das Format des Daten-Schluesselworts ist entweder
+.I Simple\^
+(S), wobei die Schluesselwort-Substitution direkt erfolgt, oder
+.I "Multi-line\^"
+(M), wobei die Schluesselwort-Substitution
+von einem Newline gefolgt wird.
+.PP
+Der Nutzer liefert einen Text, der sich von den
+Daten-Schluesselworten unterscheiden muss.
+Ein Tabulator wird durch ein \fB\\t\fR und ein Newline
+durch \fB\\n\fR spezifiziert.
+.sp 2
+.in 0
+.nf
+.na
+          Tabelle 1 - Daten-Schluesselworte fuer SCCS-Dateien
+
+Schluesselwort  Datenart               Datei-Sektion     Wert      Format
+=========================================================================
+ :Dt:  Delta-Information                 Deltatabelle   Siehe unten*    S
+ :DL:  Delta-Zeilenstatistiken                "       :Li:/:Ld:/:Lu:    S
+ :Li:  durch Delta eingefuegte Zeilen         "            nnnnn        S
+ :Ld:  durch Delta geloeschte Zeilen          "            nnnnn        S
+ :Lu:  durch Delta unveraenderte Zeilen       "            nnnnn        S
+ :DT:  Deltatyp                               "           D~or~R^       S
+  :I:  SCCS-Identifikator (SID)               "       :R:.:L:.:B:.:S:   S
+  :R:  Release-Nummer                         "            nnnn         S
+  :L:  Versionsnummer                         "            nnnn         S
+  :B:  Zweignummer                            "            nnnn         S
+  :S:  Nummer der Zweigversion                "            nnnn         S
+  :D:  Erstellungsdatum des Deltas            "       :Dy:/:Dm:/:Dd:    S
+ :Dy:  Erstellungsjahr des Deltas             "             nn          S
+ :Dm:  Erstellungsmonat des Deltas            "             nn          S
+ :Dd:  Erstellungstag des Deltas              "             nn          S
+  :T:  Erstellungszeit des Deltas             "       :Th:::Tm:::Ts:    S
+ :Th:  Erstellungsstunde des Deltas           "             nn          S
+ :Tm:  Erstellungsminute des Deltas           "             nn          S
+ :Ts:  Erstellungssekunde des Deltas          "             nn          S
+  :P:  Programmierer des Deltas               "           Logname       S
+ :DS:  Nummer der Zweigversion des Deltas     "            nnnn         S
+ :DP:  Zweigversionsnr. d. vorherigen Deltas  "            nnnn         S
+ :DI:  Zweigversionsnr. f. einbezogene,    
+       ausgeschlossene, ignorierte Deltas     "       :Dn:/:Dx:/:Dg:    S
+ :Dn:  Zweigversionsnr. f. einbezogene Deltas "        :DS:~:DS:...     S
+ :Dx:  Zweigversionsnr. f. ausgeschl. Deltas  "        :DS:~:DS:...     S
+ :Dg:  Zweigversionsnr. f. ignorierte Deltas  "        :DS:~:DS:...     S
+ :MR:  MR-Nummern des Deltas                  "            Text         M
+  :C:  Kommentar des Deltas                   "            Text         M
+=========================================================================
+ :UN:  Nutzernamen                        Nutzernamen      Text         M
+ :FL:  Flagliste                            Flags          Text         M
+  :Y:  Modultypflag                           "            Text         S
+ :MF:  MR-Gueltigkeitsflag                    "          ja~oder~nein   S
+ :MP:  Programmname fuer MR-Gueltigkeitstest  "            Text         S
+ :KF:  Schluesselwort Fehler-/Warnungsflag    "          ja~oder~nein   S
+ :BF:  Zweig-Flag (b)                         "          ja~oder~nein   S
+  :J:  Joint-Edit-Flag                        "          ja~oder~nein   S
+ :LK:  gesperrte Releases                     "           :R:...        S
+  :Q:  nutzerdefinierte Schluesselworte       "            Text         S
+  :M:  Modulname                              "            Text         S
+ :FB:  untere Grenze                          "             :R:         S
+ :CB:  obere Grenze                           "             :R:         S
+ :Ds:  Standard SID                           "             :I:         S
+ :ND:  Null-Delta-Flag                        "          ja~oder~nein   S
+=========================================================================
+ :FD:  Text fuer Dateibeschreibung         Kommentare      Text         M
+ :BD:  Koerper                              Body           Text         M
+ :GB:  erhaltener Koerper                     "            Text         M
+  :W:  Eine Form des What(1) String           -         :Z::M:\t:I:     S
+  :A:  Eine Form des What(1) String           -      :Z::Y:~:M:~:I::Z:  S
+  :Z:  What(1) String-Begrenzungssymbol       -            @(#)         S
+  :F:  SCCS-Dateiname                         -            Text         S
+ :PN:  SCCS-Dateipfadname                     -            Text         S
+=========================================================================
+       * :Dt:~=~:DT:~:I:~:D:~:T:~:P:~:DS:~:DP:
+.ad
+.fi
+.SH BEISPIELE
+.IP
+prs \-d"Nutzer und/oder Nutzer-IDs fuer :F: sind: \en:UN:" s.file
+.PP
+ergibt auf der Standardausgabe:
+.PP
+.RS
+.nf
+Nutzer und/oder Nutzer-IDs fuer s.file sind:
+xyz
+321
+abc
+.fi
+.RE
+.IP
+prs \-d"Neuestes Delta fuer Programm :M:: :I: erstellt :D: durch :P:" \-r s.file
+.PP
+ergibt auf der Standardausgabe:
+.IP
+Neuestes Delta fuer Programm main.c: 5.2 erstellt 87/09/01 durch hugo
+.PP
+Als Spezialfall kann \^
+.IP
+prs s.file
+.PP
+fuer jeden Eintrag in der Deltatabelle des "D" Typs
+auf der Standardausgabe ergeben:
+.PP
+.RS
+.nf
+D 1.1 87/09/01 00:00:00 hugo 1 000000/00000/00000
+MRs:
+bl78-12345
+bl79-54321
+COMMENTS:
+Das ist eine Kommentarzeile fuer s.file, erstes Delta
+.fi
+.RE
+.PP
+Nur die
+.B \-a
+Option ist in Verbindung mit
+diesem Spezialfall erlaubt.
+.PP
+.SH DATEIEN
+.RE
+.TP 10
+/tmp/pr?????
+.i0
+.SH SIEHE AUCH
+admin(1),
+delta(1),
+get(1),
+help(1),
+rmdel(1),
+sccsfile(5).
+.br
+"Source Code Control System Benutzerhandbuch" in WEGA-Dienstprogramme
+.SH DIAGNOSTIK
+Nutze
+.IR help (1)
+fuer Erklaerungen.

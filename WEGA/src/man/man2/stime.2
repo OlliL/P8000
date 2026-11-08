@@ -1,0 +1,43 @@
+.TH STIME 2 WEGA
+.\"@[$]stime.2  1.2
+.ad
+.fi
+.SH NAME
+stime \- Setzen der Zeit
+.SH SYNTAX
+.B int stime
+.I (tp)
+.br
+.B long
+.I *tp;
+.SH BESCHREIBUNG
+.B Stime
+setzt Zeit und Datum im System.
+Die durch 
+.I tp
+bezeichnete Zeit wird in Sekunden angegeben und ab 1. Januar 1970 00.00 Uhr
+Weltzeit gemessen.
+Nur der Superuser kann diesen Systemruf ausfuehren.
+.SH SIEHE AUCH
+date(1), time(2), ctime(3).
+.SH DIAGNOSTIK
+.TP 11
+\%[EPERM]
+.B Stime
+wird nicht ausgefuehrt, wenn die effektive Nutzer-ID
+des Aufrufprozesses nicht die des Superusers ist.
+.SH RUECKGABEWERT
+Null wird zurueckgegeben, wenn die Zeit gesetzt ist;
+\-1 wird zurueckgegeben, wenn der Nutzer nicht Superuser ist.
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT STIME  := 25
+
+     ...             !* rr0 : Zeit *!
+     clr    r4
+     sc     #STIME
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

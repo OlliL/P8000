@@ -1,0 +1,208 @@
+.TH PTRACE 2 WEGA 
+.\" @[$]ptrace.2        1.2
+.ad
+.fi
+.SH NAME
+ptrace \- Prozessverfolgung
+.SH SYNTAX
+.B "#include <signal.h>  "
+(fuer nichtsegmentierten parent-Prozess)
+.br
+.B #include <ssignal.h>  "
+(fuer segmentierten parent-Prozess)
+.PP
+.B ptrace
+.I (request, pid, addr, data)
+.br
+.B int
+.I *addr;
+.br
+.B int
+.I request, pid, addr, data;
+.PP
+.B sptrace
+.I (request, pid, addr, data)
+.br
+.B int
+.I *addr;
+.SH BESCHREIBUNG
+Mit dem Systemruf
+.B ptrace
+kann ein Parent-Prozess die Ausfuehrung
+eines Child-Prozesses steuern sowie sein Speicherabbild ueberpruefen und
+aendern. Es wird hauptsaechlich zur Testung mit
+Unterbrechungspunkten benutzt.
+.PP
+Fuer die Prozessverfolgung von
+segmentierten Child-Prozessen ist (unabhaengig vom Parent-Prozess) der Systemruf
+.B sptrace
+(Adresse 32 Bit),
+fuer nichtsegmentierte Child-Prozesse
+.B ptrace
+(Adresse 16 Bit)
+zu benutzen.
+.PP
+Es gibt vier Argumente, deren Interpretation von einem
+.I request
+Argument abhaengt.
+Im allgemeinen ist
+.I pid
+die Prozess-ID des zu verfolgenden Prozesses,
+der ein Child-Prozess (kein entfernterer Abkoemmling)
+des verfolgenden Prozesses sein muss.
+Ein zu verfolgender Prozess verhaelt sich normal, bis er ein
+Signal empfaengt, das intern (z.B. "privilegierte
+Instruktion") oder extern (z.B. "interrupt") erzeugt sein kann
+(siehe
+.BR signal (2)).
+Bei Signalempfang tritt der zu verfolgende Prozess in einen Stopstatus
+ein und sein Parent-Prozess wird ueber
+.BR  wait (2)
+informiert. Im Stopstatus kann das Speicherabbild des Child-Prozesses
+unter Verwendung von
+.BR ptrace
+ueberprueft und modifiziert werden. Nach Bedarf kann dann erneut
+der Systemruf
+.B ptrace
+benutzt werden, um den Child-Prozess fortzusetzen oder zu beenden, wobei
+moeglicherweise das Signal ignoriert wird.
+.PP
+Das Argument
+.I request
+bestimmt die genaue Aktion des Aufrufs.
+.TP 4
+.B 0
+Diese Anforderung wird vom Child-Prozess nur einmal verwendet.
+Sie deklariert, dass der Prozessablauf durch den Parent-Prozess
+verfolgt wird. Alle anderen Argumente werden ignoriert.
+Es koennen die Systemrufe
+.B ptrace
+oder
+.B sptrace
+benutzt werden.
+Es ergeben sich ungewoehnliche Ergebnisse, wenn der Parent-Prozess
+nicht erwartet, den Child-Prozess zu verfolgen.
+.TP 4
+.B 1,2
+Das im Adressbereich des Child-Prozesses ueber
+.I addr
+adressierte Wort (\fIaddr\fR geradzahlig) wird zureckgegeben.
+Sind Text- und Datenbereich getrennt,
+bezieht sich Anforderung 1 auf den Textbereich und Anforderung 2 
+auf den Datenbereich.
+Der Child-Prozess muss gestoppt sein.
+Das Argument
+.I data
+wird ignoriert.
+.TP 4
+.B 3
+Aus dem Prozessdatenbereich des Systems (user-Struktur) wird das durch
+.I addr
+adressierte Wort (\fIaddr\fR geradzahlig) zureckgegeben.
+Dieser Bereich enthaelt die Register und andere Informationen
+ueber den Prozess.
+.TP 4
+.B 4,5
+Die gegebenen Daten
+.I data
+werden im durch
+.I addr
+spezifizierten Adressbereich des Prozesses eingetragen
+(\fIaddr\fR geradzahlig).
+Es wird kein verwertbarer Wert zurueckgegeben.
+Fuer getrennte Text- und Datenbereiche bezieht sich Anforderung 4 auf
+den Textbereich und Anforderung 5 auf den
+Datenbereich.
+Es ist nicht moeglich, waehrend des Programmlaufs zu schreiben,
+wenn ein anderer Prozess die gleiche Datei bearbeitet.
+.TP 4
+.B 6
+Die Systemdaten des Prozesses (user-Struktur) werden geschrieben, wie sie
+mit Anforderung 3 gelesen werden.
+Auf diese Weise koennen nur die allgemeinen Register und
+bestimmte Bits des Prozessorstatuswortes geschrieben werden.
+Der Programmzahler kann nicht veraendert werden.
+.TP 4
+.B 7
+Das Argument
+.I data
+wird als eine Signalnummer interpretiert und der Child-Prozess
+wird ab Speicherplatz
+.I addr
+fortgesetzt, wenn er dieses Signal empfangen hat.
+Normalerweise ist die Signalnummer Null
+(das den Stop verursachende Signal ist zu ignorieren)
+oder sie ist der aus dem Prozessabbild entnommene Wert
+(gibt an, durch welches Signal das Stop verursacht wurde).
+Ist
+.I addr
+(int *)1, wird der Prozess dort fortgesetzt, wo er unterbrochen wurde.
+.TP 4
+.B 8
+Der Prozess, dessen Ablauf verfolgt wurde, endet.
+.TP 4
+.B 9
+Der Prozess wird wie in Anforderung 7 fortgesetzt, es wird jedoch
+nur ein Befehl ausgefuehrt, dann stoppt der Prozess wieder.
+Die Signalnummer des Stops ist SIGTRAP.
+Dieser Mechanismus dient zur Breakpoint-Steuerung.
+.PP
+Wie angegeben, koennen diese Aufrufe (mit Ausnahme von Anforderung 0)
+nur benutzt werden, wenn der zu verfolgende Prozess gestoppt ist.
+Mit Hilfe des Systemrufs
+.RB wait (2)
+wird festgestellt, ob  ein Prozess gestoppt ist.
+Ist dies der Fall, hat der durch
+.B wait
+zurueckgegebene Rueckkehrstatus den Wert 0177
+(keine echte Beendigung, sondern nur ein Stop).
+.PP
+Um einem unbefugten Zugriff vorzubeugen, sperrt
+.B ptrace
+die Moeglichkeit des Setzens der Nutzer-ID fuer
+weitere
+.BR  exec (2)
+Systemrufe.
+Ruft ein unter Trace stehender Prozess
+.B exec ,
+stoppt dieser, bevor er den ersten Befehl des
+neuen Abbildes ausfuehrt. Er zeigt dabei das Signal SIGTRAP an.
+.SH SIEHE AUCH
+wait(2), signal(2), adb(1).
+.SH DIAGNOSTIK
+Der Wert \-1 wird zurueckgegeben,  wenn
+.I request 
+ungueltig ist,
+.I pid
+kein verfolgbarer Prozess ist, 
+.I addr
+ausserhalb der Grenzen liegt
+oder
+.I data
+eine unzulaessige Signalnummer angibt.
+.SH EINSCHRAENKUNGEN
+Die Fehleranzeige \-1 ist ein zulaessiger Funktionswert.
+.I Errno
+(siehe
+.BR INTRO (2))
+kann zur Fehlererlaeuterung verwendet werden.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT PTRACE := 26
+
+Nichtsegmentiert
+     ...             !* r0 : request *!
+                     !* r1 : pid *!
+                     !* r2 : addr *!
+                     !* r3 : data *!
+Segmentiert
+     ...             !* r0 : request *!
+                     !* r1 : pid *!
+                     !* rr2 : addr *!
+                     !* r4 : data *!
+     sc    #PTRACE
+     ...             !* Rueckgabewert in r4 *!
+                     !* Bei Fehler: Carry-Bit gesetzt *!
+.ad
+.fi

@@ -1,0 +1,40 @@
+.TH CB 1 WEGA
+.\" @[$]cb.1	1.2
+.ad
+.fi
+.SH NAME
+cb \- C-Programm Formatierer
+.SH SYNTAX
+.B cb
+<
+.I file.c
+.SH BESCHREIBUNG
+.B Cb
+verbessert die Formatierung von C-Quellprogrammen
+durch Einfuegen von Leerzeichen und Absaetzen.
+.SH BEISPIEL
+Die Eingangsdatei mit dem Namen test.c enthaelt die
+Quellprogrammzeile:
+.sp
+.RS
+main() { printf("Guten Tag\en"); }
+.RE
+.sp
+Die Formatierung dieser Quellprogrammzeile
+mit dem cb-Programm:
+.sp
+.RS
+\fBcb < test.c
+.RE
+.sp
+erzeugt eine funktionell identische, aber gut strukturierte
+Programmzeilenfolge:
+.sp
+.RS
+main() {
+.br
+	printf("Guten Tag\en");
+.br
+}
+.br
+.RE

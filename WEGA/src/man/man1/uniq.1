@@ -1,0 +1,78 @@
+.TH UNIQ 1  WEGA
+.\" @[$]uniq.1	1.2
+.ad
+.fi
+.SH NAME
+uniq \- Ausgabe wiederholt auftretender Zeilen in einer Datei
+.SH SYNTAX
+.B uniq
+[
+.B \-cdu
+[
+.BI + n
+] [
+.BI \- n
+]
+] [ \fIinfile\fR [ \fIoutfile\fR ] ]
+.SH BESCHREIBUNG
+.B Uniq
+liest
+.I infile
+und vergleicht aneinandergrenzende Zeilen.
+Tritt eine Zeile wiederholt auf,
+wird diese Zeile nur einmal in
+.IR outfile
+geschrieben.
+.B Uniq
+erkennt nur wiederholt vorkommende Zeilen,
+wenn sie hintereinander stehen
+(siehe \fBsort\fR(1)).
+.PP
+Die Argumente
+.I n
+geben an, dass beim Vergleich ein Anfangsteil
+jeder Zeile uebersprungen werden soll:
+.TP 
+.BI \- n
+Die ersten
+.IR n 
+Felder und alle eventuell davor stehenden Leerzeichen werden ignoriert.
+Ein Feld wird als eine Zeichenkette aus 
+Zeichen definiert, die keine Leerzeichen und keine Tabulatoren
+sind und die durch Tabulatoren und Leerzeichen
+von den ihnen benachbarten Zeichen getrennt werden.
+.TP
+.BI + n
+Die ersten
+.IR n 
+Zeichen werden ignoriert.
+.PP
+Das Argument
+.BI \- n
+wird vor dem Argument
+.BI + n
+ausgewertet.
+.SH OPTIONEN
+Fuer die normale Ausgabe ohne optionale Argumente sind die
+.B \-u
+und
+.B \-d
+Option gesetzt.
+.TP
+.B \-d
+Es werden nur die wiederholt auftretenden Zeilen ausgegeben.
+.TP
+.B \-u
+Es werden genau die Zeilen ausgegeben, die in
+.I infile
+nicht wiederholt auftreten.
+.TP
+.B \-c
+Es wird eine Ausgabe erzeugt, die alle Zeilen nur einmal enthaelt.
+Vor jeder Zeile steht, wie oft sie aufgetreten ist (hebt
+.B \-u
+und
+.B \-d
+Option auf).
+.SH SIEHE AUCH
+sort(1), comm(1), diff(1), diff3(1), bdiff(1).

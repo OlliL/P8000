@@ -1,0 +1,30 @@
+.TH TMPFILE 3 WEGA
+.\" @[$]tmpfile.3       1.2
+.ad
+.fi
+.SH NAME
+tmpfile \- Anlegen einer temporaeren Datei
+.SH SYNTAX
+.B #include <stdio.h>
+.PP
+.B
+.SM FILE
+.B "\(**tmpfile (\|)"
+.SH BESCHREIBUNG
+Die Funktion
+.B tmpfile\^
+legt eine temporaere Datei an und gibt einen zugehoerigen
+.BR FILE \-Pointer
+zurueck.
+Wenn der Prozess, der diese temporaere Datei eroeffnet hat und der
+sie benutzt, endet, wird die temporaere Datei
+automatisch geloescht.
+Die Datei ist zur Aktualisierung (update) geoeffnet.
+.SH DATEIEN
+/usr/tmp        Directory fuer temporaere Dateien
+.SH SIEHE AUCH
+creat(2),
+unlink(2),
+fopen(3),
+mktemp(3),
+tmpnam(3).

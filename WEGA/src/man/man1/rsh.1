@@ -1,0 +1,84 @@
+.TH RSH 1 WEGA
+.\" @[$]rsh.1	1.2
+.ad
+.fi
+.SH NAME
+rsh \- Shell mit eingeschraenktem Funktionsumfang
+.SH SYNTAX
+\fBrsh\fR [\fIflags\fR] [name[\fIarg1\fR...]]
+.SH BESCHREIBUNG
+.B Rsh
+ist eine Version des Standard-Kommandointerpreters
+.BR sh (1)
+mit eingeschraenktem Funktionsumfang.
+Es versieht die Loginnamen und die Ausfuehrungsumgebung mit Moeglichkeiten,
+die staerker als das Standard-Shell kontrolliert werden.
+Die Aktionen von
+.B rsh
+sind mit
+.BR sh 
+identisch, wobei folgende nicht erlaubt sind:
+.RS
+.PP
+.B cd
+.br
+Setzen des Wertes von
+.B $PATH
+.br
+Kommandonamen, die
+.B /
+enthalten
+.br
+.B >
+und
+.B >>
+.RE
+.PP
+Wird das Programm mit dem Namen
+.BR \-rsh 
+aufgerufen, liest
+.B rsh
+das \fB.profile\fR des Benutzters (von \fB$HOME/.profile\fR).
+Nach Ausfuehrung dieser Datei wirkt es wie das Standard
+.B sh.
+Ein Interrupt bewirkt einen sofortigen Austritt und
+es wird nicht in die Kommandoebene zurueckgekehrt.
+Die Restriktionen werden nach Ausfuehrung von .profile wirksam.
+.PP
+Wird festgestellt, dass ein auszufuehrendes Kommando eine Shell-
+Prozedur ist, erzeugt
+.B rsh
+eine
+.B sh
+fuer die Kommandoausfuehrung.
+Es ist moeglich, einem Nutzer einige Shell-Prozeduren bereitzustellen,
+mit denen er ueber
+einen begrenzten Kommandosatz
+Zugriff zur vollen Leistung der Standard-Shell hat.
+Dabei wird davon
+ausgegangen, dass der Nutzer keine Schreib- und Ausfuehrungsrechte
+im gleichen Directory hat.
+.PP
+Im Ergebnis dieser Regeln hat der Schreiber von .profile vollstaendige
+Kontrolle ueber die Nutzeraktivitaeten, indem gesicherte
+Initialisierungsaktivitaeten ausfuehrt werden
+und der Nutzer danach in einem festgelegten
+Directory verbleibt (hoechstwahrscheinlich
+.I nicht
+im Login-Directory).
+.PP
+.B Rsh
+ist ueber ein Link mit
+.B sh
+verbunden und alle
+.I flag
+Argumente entsprechen denen von
+.BR sh (1).
+.PP
+Der Systemverwalter richtet ein Kommandodirectory ein, das ohne Probleme
+von
+.BR rsh 
+aufgerufen werden kann.
+.SH SIEHE AUCH
+sh(1),
+profile(5).

@@ -1,0 +1,877 @@
+.TH TERMCAP 5 WEGA
+.\" @[$]termcap.5       1.2
+.ad
+.fi
+.SH NAME
+termcap \- Datenbasis fuer Terminalfunktionen
+.SH SYNTAX
+/etc/termcap
+.SH BESCHREIBUNG
+Die Datei
+.B /etc/termcap
+ist eine Datenbasis zur Beschreibung von Terminalfunktionen.
+Bildschrimorientierte Programme wie z.B.
+die Editoren der Familie
+.BR vi (1),
+die Programme
+.BR more (1)
+oder
+.BR vls (1)
+benutzen diese Datenbasis.
+Eintraege in 
+.B termcap
+bestehen aus einer Kopfzeile, Codierungen fuer die Funktionen
+und Argumenten. Die Argumente koennen zur Realisierung der Funktion an das
+Terminal ausgegeben werden oder nur als Informationen dienen.
+Initialisierungssequenzen sind ebenfalls in
+.B termcap
+enthalten.
+.PP
+Die Kopfzeile der Eintraege in
+.B termcap
+besteht aus drei Feldern, die durch vertikale Striche
+voneinander getrennt werden. Im ersten Feld der Kopfzeile
+wird eine aus zwei Buchstaben bestehende Abkuerzung fuer den
+Namen des Terminals angegeben.
+Diese Abkuerzung wird auch in der Datei
+.B /etc/ttytype 
+zur Kennzeichnung der aktuell an das P8000 angeschlossenen
+Terminals benutzt.
+Der zweite Name in der Kopfzeile ist die am haeufigsten 
+fuer das Terminal gebrauchte Abkuerzung.
+Dieser Name darf keine Leerzeichen enthalten.
+Das letzte Feld der Kopfzeile enthaelt den
+vollstaendigen Namen des Terminals (Leerzeichen duerfen benutzt werden).
+Die Kopfzeile wird durch einen Doppelpunkt
+.B :
+abgeschlossen.
+.SH FUNKTIONEN
+.PP
+Eintragungen koennen sich ueber mehrere Zeilen erstrecken.
+Sie sind mit Ausnahme der letzten Zeile mit dem Zeichen \e abzuschliessen.
+Die Funktionseintraege selbst werden durch einen Doppelpunkt
+.B :
+voneinander getrennt.
+Alle Funktionscodes bestehen aus zwei Zeichen.
+.sp
+.PP
+.B Funktionstypen
+.PP
+In der Datei
+.B termcap
+existieren drei Typen von Funktionen:
+.IP - 3
+.B "Boolsche Funktionen"
+zeigen das Vorhandensein spezieller Eigenschaften
+des Terminals an.
+.br
+.I Beispiel:
+.br
+Der Funktionseintrag \fBam\fR zeigt an,
+dass das Terminal automatische Randeinstellung
+(d.h. einen automatischen Wagenruecklauf (CR) und Zeilenvorschub (LF)
+bei Erreichen des Zeilenendes) realisiert
+(gilt z.B. fuer P8000-Terminal).
+.IP - 3
+.B "Numerische Funktionen"
+beschreiben Groessen bestimmter Terminaleigenschaften
+oder geben die Groesse bestimmter Verzoegerungen an.
+Sie werden durch den Funktionscode, das Zeichen
+.B #
+und den Wert angegeben.
+.br
+.I Beispiel:
+.br
+Der Funktionseintrag \fBco#\fI80\fR gibt an, dass das Terminal
+80 Zeichen pro Zeile darstellen kann
+(gilt z.B. fuer P8000-Terminal).
+.IP - 3
+.B Zeichenkettenfunktionen
+geben eine Folge von Zeichen fuer die
+Ausfuehrung bestimmter Terminaloperationen an.
+Sie werden durch den Funktionscode, das Zeichen
+.B = 
+und die entsprechende Steuersequenz (eine Zeichenkette) angegeben,
+die durch den naechstfolgenden Doppelpunkt abgeschlossen wird.
+Nach dem Gleichheitszeichen kann
+in einer Zeichenkettenfunktion eine Verzoegerung
+in Millisekunden angegeben werden. 
+.br
+.I Beispiel:
+.br
+Der Funktionseintrag
+\fBce=\fR50\eE*: gibt die Steuersequenz zum Loeschen
+des gesamten Bildschirms an, wobei nach der Ausgabe der Sequenz
+eine Verzoegerung von 50ms realisiert wird (gilt z.B. fuer
+P8000-Terminal in der Variante ADM31-kompatibel).
+.PP
+Zur Realisierung  von Verzoegerung werden vom Editor Fuellzeichen
+ausgegeben,
+nachdem die angegebene Steuersequenz gesendet wurde.
+Die Verzoegerung kann entweder eine ganze Zahl sein, z.B. 20, oder
+eine ganze Zahl gefolgt von
+einem
+.BR * ,
+z.B. 3*.
+Ein Stern gibt an, dass die erforderliche Verzoegerung proportional
+zur Anzahl der von der Operation betroffenen Zeilen ist.
+Der gegebene Betrag gibt dann die Verzoegerung fuer jede
+Einheit an.
+Ist ein Stern angegeben, kann die Verzoegerung z.B. als 3.5 
+angegeben werden, um eine Verzoegerung auch in Zehntausendstelsekunden
+zu ermoeglichen. 
+.PP
+In Zeichenkettenfunktionen koennen Steuerzeichenfolgen 
+zur einfachen Verschluesselung von Sonderzeichen benutzt werden.
+Die ASCII-Sonderzeichen werden wie folgt angegeben:
+.RS
+.TP
+.B \eE
+Escape-Zeichen
+.PD 0
+.TP
+.B ^x
+Control-X
+.TP
+.B \en
+Newline
+.TP
+.B \er
+Wagenruecklauf (Carrige Return)
+.TP
+.B \et
+Tabulator
+.TP
+.B \eb
+Backspace
+.TP
+.B \ef
+Seitenvorschub (Formfeed)
+.TP
+.B \e\e
+Backslash-Zeichen
+.TP
+.B \e^
+Circumflex
+.TP
+.B \exxx
+Zeichen mit der oktalen Codierung xxx.
+.PD
+.RE
+.PP
+Ist es erforderlich, das Zeichen Doppelpunkt
+.B :
+in eine
+Terminalfunktion zu bringen, muss es in oktaler Schreibweise
+mit \fB\e072\fR angegeben werden.
+Ist es erforderlich, ein Nullzeichen in eine Zeichenkettenfunktion zu 
+bringen, muss dieses als \fB\e200\fR verschluesselt werden.
+Die Routinen, die 
+.B termcap
+verwenden, benutzen C-Zeichenketten und setzen das oberste Bit
+der Zeichen erst sehr spaet zurueck, so dass dann ein
+\fB\e200\fR als \fB\e000\fR ausgegeben wird.
+.PP
+Die folgende Tabelle enthaelt die in der Datei
+.B termcap
+spezifizierbaren Funktionen.
+.PP
+Zeichenerklaerung:
+.PD 0
+.IP bool 6
+Boolsche Funktion
+.IP num
+Numerische Funktion
+.IP str
+Zeichenkettenfunktion
+.IP (P)
+Es koennen Angaben bzgl. einer Verzoegerung (durch
+Ausgabe von Fuellzeichen) gemacht werden.
+.IP (P*)
+Die Verzoegerung erfolgt in Abhaengigkeit von
+der Anzahl der betroffenen Zeilen.
+.PD
+.PP  
+.nf
+Name  Typ   Pad?  Beschreibung
+----------------------------------------------------------------------
+ae    str   (P)   Beenden des alternativen Zeichensatzes
+al    str   (P*)  Neue Leerzeile ueber der aktuellen Zeile einfuegen
+am    bool        Terminal fuegt am Zeilenende automatisch CR-LF ein
+as    str   (P)   Start des alternativen Zeichensatzes
+bc    str         Zeichen fuer Backspace, falls nicht \fB^H\fR
+bs    bool        Terminal fuehrt Backspace bei \fB^H\fR aus
+bt    str   (P)   Back-Tab
+bw    bool        Backspace fuehrt von Spalte 0 zu letzter Spalte
+cd    str   (P*)  Loeschen bis zum Ende des Bildschirms
+ce    str   (P)   Loeschen bis zum Zeilenende
+ch    str   (P)   Wie cm aber nur horizontale Bewegung,
+                  Zeile bleibt dieselbe
+cl    str   (P*)  Bildschirm loeschen
+cm    str   (P)   Cursorbewegung
+co    num         Anzahl der Spalten in einer Zeile
+cr    str   (P*)  Wagenruecklauf, (Standard CR, ^M)
+cs    str   (P)   Rollbereich aendern (vt100), wie cm
+cv    str   (P)   Wie ch, aber nur vertikal
+da    bool        Anzeige bleibt oberhalb erhalten
+dB    num         Bs-Verzoegerung (in ms)
+db    bool        Anzeige bleibt unterhalb erhalten
+dC    num         CR-Verzoegerung (in ms)
+dc    str   (P*)  Zeichen loeschen
+dF    num         FF-Verzoegerung (in ms)
+dl    str   (P*)  Zeile loeschen
+dm    str         Delete-Mode einschalten
+dN    num         NL-Verzoegerung (in ms)
+do    str         Cursor eine Zeile nach unten setzen
+dT    num         Tabulator-Verzoegerung (in ms)
+ed    str         Beenden des Delete-Mode
+ei    str         Beenden des Insert-Mode; ist \fBic\fR vorhanden,
+                  sollte \*(lq:ei=:\*(rq angegeben werden
+eo    str         Ueberschreibungen koennen durch Leerzeichen
+                  geloescht werden
+ff    str   (P*)  Hardcopy-Terminal-Seitenvorschub (Standard \fB^L\fR)
+hc    bool        Hardcopy-Terminal
+hd    str         Halbe Zeile tiefer (1/2 Zeilenvorschub, vorwaerts)
+ho    str         Cursor Home
+hu    str         Halbe Zeile hoch (1/2 Zeilenvorschub, rueckwaerts)
+hz    str         kann kein Zeichen ~ ausgeben
+ic    str   (P)   Zeichen einfuegen
+if    str         Name der Datei, die \fBis\fR enthaelt
+im    bool        Insert-Mode einschalten; ist \fBic\fR vorhanden,
+                  sollte \*(lq:im=:\*(rq angegeben werden
+in    bool        Insert-Mode unterscheidet Nullen in der Anzeige
+ip    str   (P*)  Verzoegerung nach Einfuegen von Zeichen
+is    str         Terminal-Initialisierungs-Zeichenkette
+k0-k9 str         Tastencode der Funktionstasten 0-9
+kb    str         Tastencode der Backspace-Taste
+kd    str         Tastencode der Taste Cursor abwaerts
+ke    str         Uebertragung der Funktionstastencodes beenden
+kh    str         Tastencode der Home-Taste
+kl    str         Tastencode der Taste Cursor links
+kn    num         Anzahl der "anderen" Tasten
+ko    str         Termcap-Eintraege fuer andere Tasten, die 
+                  keine Funktionstasten sind
+kr    str         Tastencode der Taste Cursor rechts
+ks    str         Uebertragung der Funktionstastencodes starten
+ku    str         Tastencode der Taste Cursor aufwaerts
+l0-l9 str         Labels auf "andere" Funktionstasten
+li    num         Anzahl der Zeilen auf Bildschirm oder Seite
+ll    str         Letzte Zeile, erste Spalte (wenn \fBcm\fR fehlt)
+ma    str         Cursortastatur (nur von vi benutzt)
+mi    bool        Bewegung kann im Insert-Mode problemlos erfolgen
+ml    str         Ueber dem Cursor erfolgt Speichersperre
+mu    str         Speichersperre aufheben
+nc    bool        CR funktioniert nicht korrekt
+nd    str         Nichtzerstoerendes Leerzeichen (Cursor rechts)
+nl    str   (P*)  Newline-Zeichen (Standard \fB\en\fR)
+ns    bool        Terminal ohne Rollmodus
+os    bool        Terminal ueberschreibt ohne zu loeschen
+pc    str         Fuellzeichen (statt Null)
+pt    bool        Hardware-Tabulatoren (koennen mit \fBis\fR gesetzt werden)
+se    str         Beenden des Hervorhebungs-Modus
+sf    str   (P)   Rollen vorwaerts
+sg    num         Anzahl der Leerzeichen, die durch so oder se
+                  freigelassen werden
+so    str         Anfang des Hervorhebungs-Modus (fett,invers ...)
+sr    str   (P)   Rollen rueckwaerts
+ta    str   (P)   Tabulator (falls nicht \fB^I\fR oder mit Verzoegerung)
+tc    str         Eintrag eines aehnlichen Terminals
+                  - muss das letzte sein
+te    str         Zeichenkette zum Beenden von Programmen, die
+                  \fBcm\fP benutzen
+ti    str         Zeichenkette zum Starten von Programmen, die
+                  \fBcm\fR benutzen
+uc    str         Ein Zeichen unterstreichen und dann weitergehen
+ue    str         Beenden des Unterstreichungs-Modus
+ug    num         Anzahl von Leerzeichen, die von us oder ue
+                  freigelassen werden
+ul    bool        Terminal unterstreicht, ohne Ueberschreiben
+up    str         Cursor aufwaerts
+us    str         Beginn des Unterstreichungs-Modus
+vb    str         Sichtbarer Ton (Cursor wird nicht bewegt)
+ve    str         Sequenz zum Beenden des open/visual Modus
+vs    str         Sequenz zum Starten des open/visual Modus
+xb    bool        Beehive (f1=escape, f2=ctrl C)
+xn    bool        Newline wird nach Wrap ignoriert
+xr    bool        Return erfolgt wie \fBce\fP \er \en
+xs    bool        Hervorhebung bei Ueberschreiben nicht geloescht
+xt    bool        Tabulatoren wirken zerstoerend
+AB    str         alternative Intensitaet, normales Bild, blinkend
+                  (nur fuer WEGA-COBOL)
+AL    str         alternative Intensitaet, normales Bild,
+                  nichtblinkend (nur fuer WEGA-COBOL)
+AR    str         alternative Intensitaet, inverses Bild,
+                  nichtblinkend (nur fuer WEGA-COBOL)
+AS    str         alternative Intensitaet, inverses Bild,
+                  blinkend (nur fuer WEGA-COBOL)
+CF    str         Cursor aus (nur fuer WEGA-COBOL)
+CN    str         Cursor ein  (nur fuer WEGA-COBOL)
+NB    str         normale Intensitaet, normales Bild, blinkend
+                  (nur fuer WEGA-COBOL)
+NM    str         normale Intensitaet, normales Bild,
+                  nichtblinkend (nur fuer WEGA-COBOL)
+NR    str         normale Intensitaet, inverses Bild,
+                  nichtblinkend (nur fuer WEGA-COBOL)
+NS    str         normale Intensitaet, inverses Bild, blinkend
+                  (nur fuer WEGA-COBOL)
+OV    str         Overhead; die maximale Anzahl der Bildschirm-
+                  positionen, die von den oben definierten Faehigkeiten
+                  belegt werden (nur fuer WEGA-COBOL)
+.fi
+.PP
+.B "Beispiel eines Eintrags"
+.PP
+Die folgende Eintragung beschreibt das P8000-Terminal:
+.nf
+.ne 8
+.PP
+P8|P8000-A|P8000-Terminal kompatibel ADM31:\e
+    :al=\eEE:am:bs:ce=\eET:cm=\eE=%+ %+ :cl=50\eE*^^:co#80:dc=\eEW:dl=\eER:\e
+    :cd=\eEY:ho=^^:li#24:ma=^Z^L^K^P^L j^Jk^Pl :\e
+    :kl=^H:kd=^J:ku=^K:kr=^L:kh=^^:\e
+    :NM=\eE(\eEG0:NB=\eE(\eEG2:NR=\eE(\eEG4:NS=\eE(\eEG6:\e
+    :AL=\eE)\eEG0:AB=\eE)\eEG2:AR=\eE)\eEG4:AS=\eE)\eEG6:OV#1:\e
+    :mi:nd=^L:up=^K:\e
+    :so=\eEG4:se=\eEG0:sg#1:us=\eEGC:ue=\eEG0:ug#1:
+.fi
+.sp
+.PP
+.B Erarbeitung von Beschreibungen
+.PP
+Eine Terminalbeschreibung kann am einfachsten erarbeitet werden,
+indem die Beschreibung eines aehnlichen Terminals in 
+.B termcap
+kopiert und mit der Kopie schrittweise eine Beschreibung
+aufgebaut wird.
+Teilbeschreibungen koennen mit dem Editor
+.BR vi (1)
+auf ihre Richtigkeit ueberprueft werden.
+Es ist moeglich, dass ein aussergewoehnliches Terminal
+nicht hinreichend in der Datei
+.B termcap
+beschrieben ist oder dass durch
+.BR vi 
+nicht alle Programmierfehler aufgezeigt werden.
+Zum Testen einer neuen Terminalbeschreibung wird die
+Umgebungsvariable
+.B TERMCAP
+auf den Pfadnamen einer Datei gesetzt,
+die die in Bearbeitung befindliche 
+Beschreibung enthaelt. Der Editor benutzt dann diese
+Datei anstelle von
+.B /etc/termcap.
+.sp
+.PP
+.B Grundfunktionen
+.PP
+Die Anzahl der Spalten pro Zeile wird fuer das Terminal durch die
+numerische Funktion
+\fBco\fR angegeben.
+Fuer ein Bildschirmterminal
+wird die Anzahl der Zeilen auf dem Schirm
+durch die Funktion \fBli\fR angegeben.
+Wenn das Terminal bei Erreichen des rechten Randes
+auf die naechste Zeile springt, muss die Funktion
+\fBam\fR angegeben werden.
+Kann das Terminal seinen Bildschirminhalt loeschen, wird 
+die Steuersequenz durch die Zeichenkettenfunktion
+\fBcl\fR angegeben.
+Wenn das Terminal fuer das Zeichen
+.B "^H"
+die Funktion Backspace ausfuehrt,
+muss die Funktion \fBbs\fR angegeben werden.
+Wird Backspace durch ein von \fB^H\fR
+verschiedenes Zeichen ausgefuehrt, muss
+dieses Zeichen mit der Zeichenkettenfunktion
+\fBbc\fR definiert werden.
+Wird beim Ueberschreiben eines Zeichens die Position nicht geloescht,
+sondern ohne Loeschen ueberschrieben, muss die Funktion
+\fBos\fR benutzt werden.
+.PP
+Die lokalen Cursorbewegungen, die in
+.B termcap
+verschluesselt sind, sind am linken und oberen Rand
+eines
+CRT-Terminals undefiniert. Der Editor fuehrt kein
+Backspace ueber den linken Rand hinaus aus und geht auch nicht
+ueber den oberen Rand hinaus.
+Der Editor erwartet, dass ein Zeilenvorschub in der letzten Zeile
+dazu fuehrt, dass der Bildschirminhalt nach oben gerollt wird.
+Automatische Randeinstellung wird mit der Funktion
+\fBam\fR gesetzt. Die Grundfunktionen eines Terminals sind
+damit definiert.
+.sp
+.ne 3
+.PP
+.B Cursoradressierung
+.PP
+Die Cursoradressierung im Terminal wird durch die Zeichenkettenfunktion
+\fBcm\fR beschrieben. Die Zeichen sind analog
+.BR printf (3)
+(wie \fB%x\fR) anzugeben.
+Die \fB%\fR-Kodierungen haben folgende Bedeutung:
+.PP
+.nf
+   %d      wie in printf (d ist voreingestellt und kann entfallen)
+   %2      wie %2d
+   %3      wie %3d
+   %.      wie %c
+   %+x     addiert x zu Wert, dann %
+   %>xy    ist der Wert > x, wird y addiert, keine Ausgabe
+   %r      umgekehrte Ordnung der Zeilen und Spalten, keine Ausgabe
+   %i      inkrementiert Zeile/Spalte
+   %%      Ausgabe des Zeichens %
+   %n      exklusiv oder Zeile und Spalte mit 0140
+   %B      BCD (16*(x/10)) + (x%10), keine Ausgabe
+   %D      Kodierungsumkehrung (x-2*(x%16)), keine Ausgabe
+.fi
+.PP
+Beispiel:
+.br
+Fuer das P8000-Terminal (Variante ADM31-kompatibel) werden die
+Argumente fuer die gewuenschte
+Zeile und Spalte als zwei Ziffern mit einem Offset
+von 0x20 (ASCII-Zeichen SPACE) ausgegeben.
+Der Funktionseintrag lautet:
+.RS
+\*(lqcm=\eE=%+ %+ \*(rq:
+.RE
+Fuer das P8000-Terminal (Variante VT100-kompatibel) sind die Argumente
+fuer Zeile und Spalte als zweistellige Dezimalzahlen anzugeben,
+wobei die Numerierung bei Zeile (und Spalte) 1 beginnt.
+Der Funktionseintrag lautet:
+.RS
+\*(lqcm=\eE[%i%2;%2H\*(rq:
+.RE
+.sp
+.PP
+.B Cursorbewegungen
+.PP
+Wenn das Terminal den Cursor um eine Stelle nach rechts
+bewegen kann, ohne das Zeichen in der aktuellen Position
+zu aendern, ist die entsprechende Sequenz als
+\fBnd\fR (nichtzerstoerendes Leerzeichen) anzugeben.
+Kann das Terminal den Cursor auf dem Bildschirm innerhalb derselben
+Spalte eine Zeile nach oben bewegen, ist die Funktion \fBup\fR
+anzugeben. Hat das Terminal keine Funktion zur Cursoradressierung und
+kann es aber den Cursor in die Home-Position bringen
+(in die obere linke Ecke des Bildschirms),
+wird die Funktion \fBho\fR benutzt.
+Analog kann die Moeglichkeit, schnell in die
+linke unterste Ecke zu gelangen, durch \fBll\fR
+angegeben werden (z.B. durch ein \fBup\fR
+aus der Home-Position nach oben).
+.sp
+.PP
+.B Loeschen von Bereichen
+.PP
+Kann das Terminal von der aktuellen Position ausgehend
+bis ans Zeilenende loeschen und bleibt dabei die Cursorposition unveraendert,
+ist die Funktion \fBce\fR anzugeben.
+Kann das Terminal von der aktuellen Position aus bis ans Ende
+der des Bildschirms loeschen, ist die Funktion \fBcd\fR
+zu verwenden.
+Der Editor verwendet
+\fBcd\fR nur von der ersten Spalte einer Zeile aus.
+.sp
+.PP
+.B Einfuegen/Loeschen einer Zeile
+.PP
+Kann das Terminal eine neue freie Zeile vor der Zeile eroeffnen,
+in der sich der Cursor befindet, ist die Steuersequenz nach \fBal\fR
+anzugeben.
+Diese Funktion wird meist nur von der
+ersten Spalte einer Zeile aus benutzt.
+Der Cursor muss dann auf der neuen freien Zeile erscheinen.
+Die Funktion des Loeschens der durch den Cursor adressierten Zeile
+wird durch die Funktion \fBdl\fR angegeben.
+Auch diese Funktion wird meist nur von der
+ersten Spalte der zu loeschenden Zeile aus benutzt.
+Die Faehigkeit des Terminals, den Bildschirm rueckwaerts zu rollen,
+kann mit der Funktion \fBsb\fR angegeben werden, es genuegt jedoch
+die Funktion \fBal\fR.
+Speichert das Terminal oberhalb der Bildschirmanzeige noch Zeilen,
+ist die Funktion
+\fBda\fR anzugeben, speichert es Zeilen unterhalb der
+Bildschirmanzeige, ist \fBdb\fR anzugeben.
+Mit diesen Funktionen wird dem Editor mitgeteilt,
+dass das Loeschen einer Zeile
+auf dem Bildschirm nichtleere Zeilen von unten auf den Schirm
+bringen kann oder dass das Rueckwaertsrollen mit
+\fBsb\fR nichtleere Zeilen von oben auf den Bildschirm bringen kann.
+.sp
+.PP
+.B Einfuegen/Loeschen von Zeichen
+.PP
+Hinsichtlich des Einfuegen/Loeschens von Zeichen koennen die Terminals
+in zwei Gruppen unterschieden werden.
+In der einen Gruppe beeinflussen die Operationen zum Einfugen und Loeschen von
+Zeichen nur die Zeichen auf der aktuellen Zeile und
+verschieben die Zeichen ueber das Zeilenende hinaus.
+Andere Terminals unterscheiden zwischen
+ausgegebenen Leerzeichen und nichtausgegebenen Leerzeichen
+und fuehren das
+Einfuegen oder Loeschen nur fuer ein
+nicht ausgegebenes Leerzeichen aus, das dann entweder eliminiert wird
+oder auf zwei nichtausgegebene Leerzeichen erweitert wird.
+Um herauszufinden, wie das Terminal reagiert,
+wird der Bildschirminhalt geloescht und dann ein Text eingegeben,
+der durch Cursorbewegungen getrennt wird.
+Es wird \*(lq\fIabc\ \ \ \ def\*(rq\fR eingegeben, wobei
+lokale Cursorbewegungen (keine Leerzeichen)
+zwischen
+\*(lq\fIabc\*(rq\fR und
+\*(lq\fIdef\*(rq\fR ausgefuehrt werden.
+Dann wird der Cursor vor
+\*(lq\fIabc\*(rq\fR positioniert und am Terminal der
+Insert-Mode eingestellt.
+Wenn die Eingabe von Zeichen dazu fuehrt, dass der Rest
+der Zeile verschoben wird und die Zeichen am Ende der
+Zeile verschwinden, unterscheidet das Terminal
+nicht zwischen Leerzeichen und nichtausgegebenen Positionen.
+Wenn sich
+\*(lq\fIabc\*(rq\fR auf \*(lq\fIdef\*(rq\fR verschiebt und beide
+zusammen ueber das Ende der aktuellen Zeile hinwegbewegt und auf
+die naechste Zeile gebracht werden, handelt es sich um
+die zweite Art Terminal und die Funktion
+\fBin\fR
+muss angegeben sein (Insert Null).
+Fuehrt das Terminal andere Operationen aus, muss der
+fuer das Terminal definierte Insert-Mode benutzt werden.
+.PP
+Der Editor behandelt sowohl Terminals, die einen
+Insert-Mode besitzen, als auch Terminals, die eine einfache
+Sequenz auswerten, um eine Leerstelle auf der aktuellen
+Zeile zu eroeffnen.
+Die Sequenz zum Eintritt in den Insert-Mode wird ueber die Funktion
+\fBim\fR
+angegeben. Benutzt das Terminal eine Sequenz zum
+Einfuegen einer Leerstelle, ist die Funktion
+.B im
+ohne Wert anzugeben.
+Die Sequenz zum Verlassen des
+Insert-Mode wird ueber die Funktion
+\fBei\fR
+angegeben (\fBei\fR ist auch mit einem leeren Wert anzugeben, wenn
+\fBim\fR einen leeren Wert erhielt).
+Die Sequenz zum Einfuegen einer Leerstelle wird ueber die Funktion
+\fBic\fR
+angegeben. Unmittelbar danach muss das auszugebende Zeichen zum Terminal
+gesendet werden.
+.PP
+Einige Terminals, die einen echten Insert-Mode besitzen, benutzen
+\fBic\fR nicht (das P8000-Terminal besitzt beide Moeglichkeiten).
+Der Nutzer muss entscheiden, welche Moeglichkeit er in der Datei
+.B termcap
+bevorzugt. Im Insert-Mode muss die Steuersequenz nur zu Beginn und am Ende
+der Einfuegeoperation gesendet werden. Nachteilig dagegen ist, dass
+z.B. bei Editor
+.BR vi (1)
+das Ergebnis erst nach Beendigung des Insert-Mode auf dem Bildschirm
+vollstaendig dargestellt wird.
+Die Funktion
+.B ic
+erfordert die Ausgabe der Steuersequenz vor jedem Zeichen und belastet
+damit die Schnittstelle staerker. Guenstig ist dagegen die sofortige
+richtige Darstellung des Bildschirminhalts, da die bisher vorhandenen Zeichen
+in der Zeile nach rechts verschoben werden.
+.PP
+Ist nach dem Einfuegen eine Verzoegerung erforderlich, muss
+diese als eine Anzahl von Millisekunden in
+\fBip\fR (einer Zeichenkettenfunktion) angegeben werden.
+Jede weitere Sequenz, die nach dem Einfuegen eines einzelnen
+Zeichens gesendet werden muss, kann auch in
+\fBip\fR angegeben werden.
+.PP
+In einigen Faellen ist es erforderlich, dass der Cursor im
+Insert-Mode bewegt werden muss, um Zeichen auf
+derselben Zeile zu loeschen, z.B. wenn nach der Stelle,
+an der die Einfuegung vorgenommen wird, ein Tabulator folgt.
+Gestattet das Terminal, dass im Insert-Mode Bewegungen
+erfolgen koennen, wird die Funktion
+\fBmi\fR
+zur Beschleunigung des Einfuegens
+angegeben.
+Ist \fBmi\fR nicht angegeben, wirkt sich das nur auf die Geschwindigkeit aus.
+Fuer einige Terminals kann
+\fBmi\fR
+aufgrund der Funktionsweise des Insert-Modes
+nicht verwendet werden.
+.PP
+Der Delete-Mode wird durch die Funktionen
+\fBdm\fR und \fBed\fR
+angegeben, die diesen Modus ein- und auszuschalten.
+Die Funktion
+\fBdc\fR wird benutzt, um ein einzelnes Zeichen zu loeschen.
+.sp
+.PP
+.B Hervorhebung, Unterstreichung,
+.B sichtbarer Ton
+.PP
+Besitzt das Terminal Steuersequenzen zum Ein- und Ausschalten des
+Hervorhebungsmodus, werden diese ueber die Funktionen
+\fBso\fR bzw. \fBse\fR angegeben.
+Der Hervorhebungsmodus kann ueber verschiedene Arten realisiert werden:
+.IP - 3
+Inverse Darstellung.
+.PD 0
+.IP - 3
+Blinkende Darstellung.
+.IP - 3
+Unterstreichung.
+.IP - 3
+(halbe Helligkeit, nur zulaessig,
+wenn das Terminal staendig mit inversem Bild
+betrieben wird).
+.PD
+.PP
+Der bevorzugte Modus ist inverse Darstellung.
+Die Funktion
+zum Ein- und Ausschalten des Hervorhebungsmodus
+darf ein oder zwei Leerzeichen auf dem Bildschirm benutzen
+(z.B. benoetigt
+das z.B. beim P8000-Terminal zum Einschalten und Ausschalten je eine
+Zeichenposition).
+.PP
+Die Sequenzen fuer Beginn und Ende einer Unterstreichung werden
+durch die Funktionen \fBus\fR bzw. \fBue\fR angegeben.
+Verarbeitet das Terminal eine Sequenz zur Unterstreichung des aktuellen
+Zeichens und zum anschliesenden Bewegen des Cursors um eine Stelle nach rechts,
+kann die Funktion \fBuc\fR angegeben werden.
+(Wenn die Unterstreichungssequenz den Cursor nicht nach rechts
+bewegt, wird die Sequenz benutzt und danach ein
+nichtzerstoerendes Leerzeichen ausgegeben.)
+.PP
+Kann das Terminal zur lautlosen Anzeige eines Fehlers
+den Bildschirm blinken lassen (anstelle eines
+Tons, Control-G), ist die Funktion
+\fBvb\fR anzugeben. Der Cursor darf dadurch nicht bewegt werden.
+Wenn das Terminal beim Open- und Visuellen Modus des Editors
+.BR ex (1)
+in verschiedene Modi gebracht wird, sind die Funktionen
+\fBvs\fR und \fBve\f zu spezifizieren.
+Sie werden am Anfang bzw. Ende dieser Modi gesendet.
+Diese Funktionen sind guenstig einsetzbar, um z.B.
+die Darstellung des Cursors (Unterstreichung, Block)
+unterschiedlich zu realisieren.
+.PP
+Muss das Terminal bei Ausfuehrung eines Programms, das eine Cursoradressierung
+vornimmt, in einen speziellen Modus eintreten, sind die entsprechenden
+Sequenzen zum Eintritt und Austritt aus diesen Modi
+ueber die Funktionen \fBti\fR bzw. \fBte\fR anzugeben.
+Dieser Zustand tritt zum Beispiel bei verschiedenen Terminals auf,
+die mehr als eine Seite speichen.
+Wenn das Terminal eine Cursoradressierung nur bezueglich des
+Speichers und nicht bezueglich des Bildschirms vornehmen kann,
+muss ein Fenster definiert werden, das die
+Groesse eines Bildschirms hat, damit die Cursoradressierung
+ordnungsgemaess vonstatten gehen kann.
+.PP
+Wenn das Terminal korrekt unterstrichene Zeichen
+erzeugt, obwohl die Funktion Ueberschreiben nicht vorhanden ist,
+wird die Funktion
+\fBul\fR angegeben.
+Wenn Ueberschreibungen durch ein Leerzeichen geloescht werden koennen,
+ist die Funktion \fBeo\fR anzugeben.
+.sp
+.PP
+.B Funktionstasten
+.PP
+Besitzt das Terminal Funktionstasten, koennen die Sequenzen
+spezifiziert werden.
+Die Funktionstasten koennen nur behandelt werden, wenn sie im
+Online-Modus des Terminals die Sequenzen absetzen.
+Kann die Uebertragung der Sequenzen der Funktionstasten
+ein- und ausgeschaltet werden, sind die Funktionen
+\fBks\fR und \fBke\fR anzugeben.
+Im Normalfall wird davon ausgegangen, dass die Funktionstasten
+immer Zeichen uebertragen.
+Die Cursortasten werden durch folgende Funktionen spezifiziert:
+.TP
+.B kl
+Cursor nach links.
+.PD 0
+.TP
+.B kr
+Cursor nach rechts.
+.TP
+.B ku
+Cursor nach oben.
+.TP
+.B kd
+Cursor nach unten.
+.TP
+.B kh
+Cursor "home"
+.PD
+.PP
+Sind Funktionstasten wie
+f0, f1, ..., f9 vorhanden sind, koennen die von ihnen gesendeten Sequenzen
+mit den Funktionen \fBk0, k1, ..., k9\fR angegeben werden.
+Wenn diese Tasten Namen haben, die nicht den standardmaessig
+verwendeten Namen f0 bis f9 entsprechen, werden die Namen (label) mit
+\fBl0, l1, ..., l9\fR angegeben.
+Gibt es andere Tasten, die dieselben Sequenzen uebertragen
+(z.B. Bildschirm loeschen), sind die Namen der entsprechenden Funktionen
+in der Funktion \fBko\fR anzugeben;
+z.B. besagt der Eintrag
+\*(lq:ko=cl,ll,sf,sb:\*(rq, dass das Terminal
+Tasten fuer Loeschen, Cursor-Home, Rollen nach
+unten und Rollen nach oben hat, die die gleichen Sequenzen erzeugen, wie
+die Eintraege von
+.BR  cl ,
+.BR ll ,
+.BR sf
+und
+.BR sb .
+.PP
+Senden die Cursortasten jeweils nur ein Zeichen, koennen diese Tasten
+ueber die Funktion
+\fBma\fR
+beschrieben werden.
+Der Editor
+.BR vi (1)
+benutzt ausschliesslich diesen Eintrag zur Behandlung der Cursortasten
+des Terminals
+(d.h. die Cursortasten des P8000-Terminals koennen nur in der
+ADM31-kompatiblen Version benutzt werden. In der VT100-kompatiblen Version
+bestehen die Steuersequenzen aus mehreren Zeichen).
+Die Funktion
+.B ma
+enthaelt die Informationen, die sonst in den Funktionen
+.BR kl ,
+.BR kr ,
+.BR ku ,
+.BR kd
+und 
+.B kh
+aufgefuehrt werden.
+Der Eintrag
+besteht aus Gruppen von je zwei Zeichen. In jeder Gruppe
+gibt das erste Zeichen an, welches Zeichen die Cursortaste sendet,
+das zweite Zeichen ist das entsprechende Kommando des Editors
+.BR vi (1).
+Es existiert folgende Zuordnung:
+.nf
+.sp
+vi-Kommando    Termcap-Eintrag
+------------------------------
+    h               kl
+    j               kd
+    k               ku
+    l               kr
+    H               kh
+.fi
+.PP
+Zum Beispiel wuerde
+.B ":ma=^Kj^Zk^Xl:"
+Pfeiltasten nach links (^H), nach unten (^K), nach oben (^Z) und nach
+rechts (^X) definieren. Es gibt keine Home-Taste.
+.sp
+.PP
+.B Verschiedenes
+.PP
+Verlangt ein Terminal zum Verzoegern ein anderes Zeichen als Null (00 hex),
+wird die Funktion
+\fBpc\fR
+zur Spezifikation des Fuellzeichens benutzt.
+.PP
+Wird durch Tabulatoren eine Verzoegerung erforderlich oder interpretiert
+das Terminal ein anderes Zeichen als \fB^I\fR als Tabulator, ist das Zeichen
+durch die Funktion
+\fBta\fR anzugeben.
+.PP
+Fuer Terminals, bei denen die Ausgaben des Zeichens ~ nicht
+gestattet ist, muss die Funktion
+\fBhz\fR angegeben werden.
+Terminals,
+die bei CR die Zeichen
+CR und Linefeed zurueckuebertragen
+und dann ein folgendes Linefeed ignorieren, muessen durch die Funktion
+\fBnc\fR gekennzeichnet werden.
+Fuer Modelle, die einen unmittelbar nach
+\fBam\fR kommenden Zeilenvorschub ignorieren, muss
+\fBxn\fR angegeben werden.
+Andere terminalspezifische Probleme koennen durch Hinzufuegen weiterer
+Zeichen der Form
+\fIxx\fR korrigiert werden.
+.PP
+Mit der Funktion \fBis\fR kann eine Initialisierungszeichenkette
+fuer das Terminal angegeben werden.
+Die Funktion \fBif\fR spezifiziert den Namen einer Datei, die
+(evtl. lange) Initialisierungszeichenketten enthaelt.
+Diese Zeichenketten sollen den Bildschirm ordnungsgemaess loeschen
+und vorhandene Hardware-Tabulatoren im Terminal setzen.
+Sind \fBis\fR und \fBif\fR gegeben, wird \fBis\fR vor \fBif\fR
+ausgegeben.
+Dieser Mechanismus ist fuer solche Faelle sinnvoll, wenn \fBif\fR
+die Datei
+.B /usr/lib/tabset/std
+spezifiziert, die Funktion \fBis\fR jedoch
+zuerst die Tabulatoren loescht.
+.sp
+.PP
+.B Aehnliche Terminals
+.PP
+Sind zwei sehr aehnliche Terminals vorhanden, kann eins davon
+so definiert werden, dass es - mit bestimmten Einschraenkungen -
+dem anderen entspricht.
+Die Zeichenkettenfunktion \fBtc\fR kann mit dem
+Namen des aehnlichen Terminals angegeben werden.
+Diese Funktion muss sich auf den letzten Terminaleintrag
+beziehen. Die Gesamtlaenge aus
+diesen zwei Eintraegen darf nicht mehr als
+1024 sein. Da Programme, die die Datei
+.BR termlib
+auswerten, die Eintraege von links nach rechts durchsuchen,
+und da die Funktion \fBtc\fR
+durch den entsprechenden Eintrag ersetzt wird, heben
+die links angegebenen Funktionen die im aehnlichen Terminal
+gegebenen Funktionen auf.
+Eine Funktion kann durch \fBxx@\fR
+aufgehoben werden, wobei xx die Funktion ist.
+Das ist sinnvoll, wenn ein Terminal verschiedene Modi besitzt
+oder wenn verschiedene Nutzerwuensche vorliegen.
+.SH DATEIEN
+.DT
+/etc/termcap    Datei der Terminalbeschreibungen
+.PP
+Der Superuser sollte die Datei
+/etc/termcap
+so anlegen, dass nur solche Terminals in der Datei
+enthalten sind, die an das System angeschlossen sind oder die
+mit groesster Wahrscheinlichkeit an das System angeschlossen
+werden.
+Da die Datei seriell durchsucht wird, ist es sinnvoll die Datei
+so zu ordnen, dass die am haeufigsten verwendeten Terminals am
+Anfang der Datei stehen.
+Es wird empfohlen, dass alle Terminaleintraege, die nicht
+verwendet werden, in einer anderen Datei (z.B.
+.BR /etc/termcap.others )
+abgelegt werden.
+.SH SIEHE AUCH
+ex(1),
+vi(1),
+termcap(3),
+ttytype(5).
+.SH EINSCHRAENKUNGEN
+Der Editor
+.B vi
+laesst nur 256 Zeichen fuer Zeichenkettenfunktionen zu und die Routinen
+in
+.BR termcap (3)
+ueberpruefen nicht, ob dieser Puffer ueberlaeuft.
+Die Gesamtlaenge eines einzelnen Eintrags
+darf 1024 Zeichen nicht ueberschreiten.
+.PP
+Die Eintraege
+.IR ma ,
+.IR vs ,
+und
+.I ve
+werden nur im Programm
+.BR vi (1)
+verwendet.
+.PP
+Nicht alle Programme unterstuetzen alle Eintraege. Es gibt Eintraege,
+die von keinem Programm benutzt werden.

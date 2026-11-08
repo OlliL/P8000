@@ -1,0 +1,91 @@
+.TH CAS 1 WEGA
+.\" @[$]cas.1	1.2
+.ad
+.fi
+.SH NAME
+cas \- cas-Assembler
+.SH SYNTAX
+.B cas
+[
+.B -dlou
+]
+.I file
+.SH BESCHREIBUNG
+.B Cas
+uebersetzt die angegebene Datei
+.B file
+mit U8000-Assemblersprachanweisungen in
+U8000-Maschinenkode.
+.B Cas
+ist sowohl fuer die Uebersetzung von
+segmentierten als auch fuer die Uebersetzung von
+nichtsegmentierten Programmen geeignet.
+Die cas-Assemblersprache ist im Dokumentationsband
+"WEGA-Dienstprogramme" beschrieben.
+.B Cas
+ist nicht fuer die Uebersetzung
+von PLZ/ASM-Assenblerprogrammen geeignet.
+.SH OPTIONEN
+.TP
+.B \-d
+Interne Marken werden in die a.out-Symboltabelle eingetragen.
+.TP
+.B \-l
+Es wird ein Listing des uebersetzten Programmes angelegt.
+Hat die Eingabedatei den Namen
+.I file.s
+wird das Listing mit dem Dateinamen
+.I file.l
+im aktuellen Arbeitsdirectory abgelegt.
+.TP
+.BI \-o " objfile"
+.br
+Das Ergebnis der Uebersetzung wird
+in einer Datei mit dem Namen
+.IR objfile
+abgelegt. Wird diese Option nicht angegeben, wird
+das Ergebnis immer in einer Datei mit dem Namen
+.BR a.out (5)
+abgelegt.
+.TP
+.B \-u
+Alle undefinierten Referenzen im Assemblerquellprogramm
+werden wie Externals behandelt.
+.SH DATEIEN
+/bin/cas	Assembler
+.br
+/tmp/as*	temporaere Dateien bei der Uebersetzung
+.br
+a.out		Objektprogramm
+.SH SIEHE AUCH
+.nf
+ld(1), sld(1), nm(1), objdu(1), objhdr(1), strip(1), a.out(5),
+.br
+"Cas-Assembler" in WEGA-Dienstprogramme
+.fi
+.SH DIAGNOSTIK
+Der Assembler gibt Fehlermeldungen ueber die
+Standardfehlerausgabe aus.
+Wenn Fehler eine weitere Assemblierung verhindern,
+bricht der Assembler die Uebersetzung ab,
+schliesst alle Dateien ab
+und gibt eine entsprechende Fehlermeldung aus.
+Wird die Abarbeitung des Assemblers durch einen externen
+Interrupt unterbrochen, werden alle bis dahin
+angelegten Dateien abgeschlossen.
+.SH EINSCHRAENKUNGEN
+Beim cas-Assembler existieren folgende Einschraenkungen:
+.sp
+- Gleitkommazahlen, Konstanten und Konvertierungsoperatoren
+.br
+  (^F, ^FD, ^FS, .quad, .extend).
+.br
+- Absolute und common Sektionen (.asec und .csec).
+.br
+- Programmsektionen (.psec) im nichtsegmentierten Mode.
+.br
+- \.line directive
+.br
+- Zeilenfortsetzung mit \\.
+.br
+- die einfachen Operatoren ^B (binary coded decimal) und ^C (Einer-Komplement).

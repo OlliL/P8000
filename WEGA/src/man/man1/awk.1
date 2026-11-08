@@ -1,0 +1,282 @@
+.TH AWK 1  WEGA
+.\" @[$]awk.1	1.2
+.ad
+.fi
+.SH NAME
+awk \- Sprache zur Suche und Verarbeitung von Zeichenketten
+.SH SYNTAX
+\fBawk\fR [ \fB\-F \fIc\fR ] [ prog ] [ file ] ...
+.br
+     oder
+.br
+\fBawk\fR [ \fB\-F \fIc\fR ] [ \fB-f\fR progfile ] [ file ] ...
+.SH BESCHREIBUNG
+.ad
+.B Awk
+durchsucht jede Eingangsdatei
+.I file
+nach Zeilen, die einem in
+.I prog
+spezifizierten Satz von Zeichenmustern entsprechen.
+Jedem Muster in
+.I prog
+koennen Aktionen zugeordnet sein.
+Diese werden immer dann ausgefuehrt,
+wenn in
+.I file
+Zeilen mit Mustern aus
+.I prog
+gefunden werden.
+Der Mustersatz kann direkt im Aufruf als
+.I prog
+erscheinen (literal),
+oder er befindet sich in einer Datei,
+die mit
+.B \-f
+.I file
+angegeben wird.
+.PP
+Dateien werden in der angegebenen Reihenfolge gelesen.
+Wurden keine Dateien angegeben, wird von der Standardeingabe
+gelesen.
+Der Dateiname `\-'
+bezeichnet die Standardeingabe.
+Jede Zeile wird mit dem Musterteil jeder
+Muster-Aktions-Anweisung verglichen;
+die entsprechende Aktion wird fuer das passende
+Muster ausgefuehrt.
+.PP
+Eine Eingabezeile besteht aus Feldern, die durch den
+Feldseparator FS (voreingestellt Leerzeichen) getrennt
+sind.
+Die Felder werden mit $1, $2, ... bezeichnet;
+$0 bezieht sich auf die gesamte Zeile.
+.PP
+.PP
+Eine Muster-Aktions-Anweisung hat die Form
+.PP
+	Muster { Aktion }
+.PP
+Fehlt { Aktion }, wird die ganze Zeile ausgegeben.
+Ein fehlendes Muster ist gleichbedeutend mit "immer".
+.PP
+Eine Aktion ist eine Folge von Anweisungen.
+Eine Anweisung kann sein:
+.PP
+.nf
+.na
+	if ( Bedingung ) Anweisung [ else Anweisung ]
+	while ( Bedingung ) Anweisung
+	for ( Ausdruck ; Bedingung ; Ausdruck ) Anweisung
+	break
+	continue
+	{ [ Anweisung ] ... }
+	Variable = Ausdruck
+	print [ Ausdrucks-Liste ] [ >Ausdruck ]
+	printf format [ , Ausdrucks-Liste ] [ >Ausdruck ]
+	next	# ueberspringe die restlichen Musters dieser
+                # Eingabezeile
+	exit	# ueberspringe den Rest der Eingabe
+.ad
+.fi
+.PP
+Anweisungen werden mit einem Semikolon, Newlines oder
+rechten geschweiften Klammern abgeschlossen.
+Eine leere Ausdrucksliste steht fuer eine ganze Zeile.
+Ausdruecke koennen String- oder numerische Werte annehmen
+und werden mit Hilfe der Operatoren
++, \-, *, /, %,  und der Verkettung (durch eine Leerstelle
+gekennzeichnet) zusammengesetzt.
+Die C-Operatoren ++, \-\-, +=, \-=, *=, /=, und %=
+sind ebenfalls in Ausdruecken verwendbar.
+Variablen koennen Zahlen, Feld\%elemente
+(bezeichnet durch x[i]) oder Felder sein.
+Alle Variablen sind zu Beginn mit einer leeren Zeichenkette initialisiert.
+Die Indexgrenzenangabe kann eine beliebige Zeichenkette sein;
+sie muss nicht unbedingt einen numerischen Wert besitzen.
+Damit wird eine Form des Assoziativspeichers moeglich.
+Zeichenkettenkonstanten werden in Anfuehrungszeichen "..." eingeschlossen.
+.PP
+Die 
+.I print
+Anweisung gibt ihre Argumente auf die Standardausgabe aus
+(oder in eine Datei, wenn
+.I >file
+angegeben wurde).
+Sie werden durch den aktuellen Ausgabe-Feldseparator OFS getrennt
+und durch den Datensatz-Ausgabeterminator ORS abgeschlossen.
+Die
+.I printf
+Anweisung gibt die Liste der Ausdruecke entsprechend des angegebenen
+Formats aus
+(siehe
+.BR printf (3)).
+.PP
+Die interne Funktion
+.I length
+gibt die Laenge des Arguments (das als Zeichenkette gewertet wird)
+zurueck. Ist kein Argument gegeben, wird die Laenge der
+ganzen Zeile zurueckgegeben.
+Weitere interne Funktionen sind:
+.I exp,
+.I log,
+.I sqrt,
+.IR int .
+Die Funktion
+.I int
+rundet ihr Argument auf einen Integerwert.
+.IR substr(s,\ m,\ n)
+gibt die Teilzeichenkette mit einer Laenge von
+.I n
+Zeichen aus der Zeichenkette
+.I s
+zurueck, die an der Position
+.I m
+beginnt.
+Die Funktion
+.IR sprintf(fmt,\ expr,\ expr,\ ...)
+ordnet die Ausdruecke
+entsprechend des Formats
+.I fmt
+(siehe
+.BR printf (3))
+und gibt die erzeugte Zeichenkette zurueck.
+.PP
+Muster sind beliebige Boolsche Kombinationen
+(!, \(or\(or, &&, und Klammern)
+regulaerer und relationaler Ausdruecke.
+Regulaere Ausdruecke muessen in "/.../"
+eingeschlossen werden, aehnlich wie in
+.IR egrep .
+Isolierte regulaere Ausdruecke
+in einem Muster werden fuer die ganze Zeile verwendet.
+Regulaere Ausdrucke koennen auch in
+relationalen Ausdruecken auftreten.
+.PP
+Ein Muster kann aus 2 Mustern bestehen, die durch Komma getrennt sind.
+In diesem Fall wird die Aktion ueber alle Zeilen
+zwischen dem Auftreten des ersten Musters
+und dem naechsten Auftreten des zweiten
+ausgefuehrt.
+.PP
+.na
+.nf
+Ein relationaler Ausdruck lautet:
+.PP
+.nf
+	Ausdruck matchop regulaerer-Ausdruck
+	Ausdruck relop Ausdruck
+.PP
+.ad
+.fi
+Dabei ist relop einer der 6 C-Operatoren,
+matchop ist entweder ~ (ist enthalten)
+oder !~ (ist nicht enthalten).
+Eine Bedingung ist ein arithmetischer Ausdruck,
+ein relationaler Ausdruck
+oder eine Boolsche Kombination
+beider.
+.PP
+Die speziellen Muster BEGIN und END
+werden benutzt, um vor dem Lesen der ersten bzw. nach der letzten
+Eingabezeile Steuerkommandos einzubringen.
+BEGIN muss das erste Muster sein, END das letzte.
+.PP
+Als Feldtrenner fuer die Eingabe wird ein einzelnes Zeichen
+.I c
+benutzt, das entweder im Programm mit
+.PP
+	BEGIN { FS = "c" }
+.PP
+angegeben oder ueber die Option
+.BI \-F c
+spezifiziert wird.
+.PP
+Andere Variablen mit spezieller Bedeutung sind:
+.nf
+NF       - Die Anzahl der Felder im Aktuellen Satz;
+NR       - die Ordnungszahl des aktuellen Satzes;
+FILENAME - der Dateiname der aktuellen Eingabedatei;
+OFS      - der Ausgabefeldseparator (Standard ist Leerzeichen);
+ORS      - der Ausgabefeldseparator (Standard ist Newline);
+OFMT     - das Ausgabeformat fuer Zahlen (Standard ist "%.6g");
+.fi
+.PP
+.SH BEISPIELE
+.PP
+Drucke Zeilen aus, die laenger als 72 Zeichen sind:
+.PP
+.nf
+	length > 72
+.fi
+.PP
+Drucke die ersten 2 Felder in umgekehrter Reihenfolge:
+.PP
+.nf
+	{ print $2, $1 }
+.fi
+.PP
+Addiere die 1. Spalte auf, drucke die Summe und den Mittelwert aus:
+.PP
+.na
+.nf
+		{ s += $1 }
+	END	{ print "sum is", s, " Mittelwert ist", s/NR }
+.fi
+.ad
+.PP
+Drucke die Felder in umgekehrter Reihenfolge:
+.PP
+.na
+.nf
+	{ for (i = NF; i > 0; \-\-i) print $i }
+.fi
+.ad
+.PP
+Drucke alle Zeilen zwischen Start/Stop-Paaren:
+.PP
+.nf
+	/start/, /stop/
+.fi
+.PP
+Drucke alle Zeilen, deren erstes Feld sich von dem vorangegangenen
+Feld unterscheidet:
+.PP
+.na
+.nf
+	$1 != prev { print; prev = $1 }
+.fi
+.ad
+.SH SIEHE AUCH
+.PP
+lex(1), sed(1).
+.br
+"Awk \- Eine Sprache zur Mustersuche und -verarbeitung"
+.br
+in  WEGA-Dienstprogramme. 
+.SH EINSCHRAENKUNGEN
+Es existiert keine explizite Konvertierung zwischen
+Zahlen und Zeichen\%ketten. Soll ein
+Ausdruck als Zahl behandelt werden, ist 0 zu addieren;
+soll er als Zeichenkette behandelt werden, ist er mit "" zu verketten.
+.PP
+Treten Muster-Aktionen in der Aufrufzeile als
+.I prog
+auf, muessen sie in einfache Anfuehrungsstriche eingeschlossen werden,
+um eine Interpretation als Shell-Zeichen zu vermeiden.
+.PP
+Zum Beispiel:
+.IP
+awk '{print $2,$1}' test
+.PP
+Es werden die ersten beiden Felder jedes Eintrags in
+.I test
+in umgekehrter Reihenfolge ausgegeben.
+.IP
+awk {print $2,$1} test
+.PP
+oder
+.IP
+awk "{print $2,$1}" test
+.PP
+sind nicht moeglich.

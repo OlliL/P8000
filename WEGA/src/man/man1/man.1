@@ -1,0 +1,115 @@
+.TH MAN 1 WEGA
+.\"@[$]man.1	1.2
+.ad
+.fi
+.SH NAME
+man \- Ausgabe von Abschnitten des WEGA-Programmierhandbuchs
+.SH SYNTAX
+.B man
+[ \fBoption\fR ... ] [ chapter ] title ...
+.SH BESCHREIBUNG
+.B Man
+gibt den mit
+.I title
+bezeichneten Abschnitt des WEGA-Programmierhandbuchs (Online-Handbuch)
+im spezifizierten Kapitel
+.I chapter
+aus.
+.PP
+Das auf Datentraeger ausgelieferte und auf der Systemplatte
+installierbare WEGA-Programmierhandbuch enthaelt stets die
+aktuellsten Informationen ueber die zur entsprechenden
+Auslieferungsversion des WEGA-Betriebssystems gehoerenden Komponenten.
+Sie koennen sich deshalb von der gedruckten Basisdokumentaion
+unterscheiden. In Zweifelsfaellen ist deshalb immer das
+Online-Handbuch zu konsultieren.
+.PP
+Der Titel des gewuenschten Abschnitts
+ist in Kleinbuchstaben einzugeben.
+Der Kapitelnummer
+.I chapter
+muss kein Buchstabennachsatz folgen.
+Ist kein Kapitel
+angegeben, wird die ganze Dokumentation nach dem gewuenschten Titel
+durchsucht, jeder Eintrag dieses Namens wird ausgegeben.
+.SH OPTIONEN
+.TP
+.B \-e
+Der Eintrag wird mit dem Filterprogramm
+.B neqn
+(in Verbindung mit Option
+.BR \-n )
+bzw.
+.BR eqn
+(in Verbindung mit Option
+.B \-t
+oder falls nur die Option
+.B \-e
+angegeben ist)
+vorbehandelt.
+.TP
+.B \-h
+Der Eintrag wird ueber das Programm
+.BR cat (1)
+auf die Ausgabe gegeben (Standard ist das Programm
+.BR more (1)).
+Diese Option ist fuer Hardcopy-Ausgaben sinnvoll.
+.TP
+.B \-n
+Der Eintrag wird ueber das Programm
+.BR nroff (1)
+auf die Standardausgabe geleitet.
+.TP 
+.B \-t
+Der Eintrag wird ueber das Programm
+.BR troff (1)
+auf die Standardausgabe geleitet.
+.TP
+.B \-v
+Der Eintrag wird ueber das Programm
+.BR view (1)
+auf die Ausgabe gegeben (Standard ist das Programm
+.BR more (1)).
+.TP
+.B \-w
+Es werden nur die Pfadnamen der Eintraege ausgegeben,
+die Eintraege selbst nicht.
+.TP
+(Standard)
+Liegt der Eintrag bereits formatiert in der Datenbasis
+.B /tmp/man
+vor, wird er auf die Standardausgabe kopiert.
+Ist kein formatierter Eintrag in der Datenbasis vorhanden,
+wird er mit Hilfe des Programms
+.BR nroff (1)
+erzeugt (siehe auch
+.BR \-n )
+und ausgegeben.
+.PP
+Weitere Optionen werden an die Programme
+.BR troff (1)
+bzw.
+.BR nroff (1)
+uebergeben.
+Die Angaben fuer
+.I option
+und
+.I chapter
+koennen vor jedem Titel geaendert werden.
+.SH BEISPIELE
+.RS
+     man man
+.sp
+Reproduziert den vorliegenden Abschnitt und andere
+Abschnitte mit dem Namen
+.BR man ,
+die in anderen Kapiteln der Dokumentation existieren koennen (z.B.
+.BR man (7)).
+.sp
+     man 1 man
+.sp
+reproduziert nur den vorliegenden Abschnitt.
+.SH DATEIEN
+/usr/man/man?/\(**
+.SH SIEHE AUCH
+INTRO(0).

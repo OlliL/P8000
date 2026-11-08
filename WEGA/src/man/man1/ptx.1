@@ -1,0 +1,110 @@
+.TH PTX 1 WEGA
+.\" @[$]ptx.1	1.2
+.ad
+.fi
+.SH NAME
+ptx \- Generieren eines permutierten Index
+.SH SYNTAX
+.B ptx
+[ \fB-bfgiortw\fR ] ...
+[ \fIinput [ output\fR ] ]
+.SH BESCHREIBUNG
+.B Ptx
+generiert einen permutierten Index fuer die Datei
+.I input
+auf die Datei
+.I output
+(Standardein- und -ausgabe ist Vorgabe).
+.PP
+In einem permutierten Index werden alle Worte eines Titels
+oder Dokuments alphabetisch aufgelistet, so dass
+jedes Wort einmal als erstes Wort in der Zeile auftritt.
+Die anderen Worte folgen in einer ringfoermig
+vertauschten Reihenfolge.
+Der permutierte Index dient dazu, dass man Dokumente
+auch dann auffinden kann, wenn die Worte in vertauschter Reihenfolge
+auftreten.
+.PP
+Bei der Erzeugung des permutierten Index gibt es drei Phasen:
+die erste fuehrt den Tausch aus, wobei eine Zeile
+fuer jedes Schluesselwort in einer Eingabezeile generiert wird.
+Das Schluesselwort wird an den Anfang versetzt.
+Die permutierte Datei wird dann sortiert.
+Schliesslich werden die sortierten Zeilen so versetzt, dass das Schluesselwort
+in die Mitte der Seite kommt.
+.B Ptx
+erzeugt eine Ausgabe in Form von:
+.br
+.IP
+\&.xx "tail" "before keyword" "keyword and after" "head"
+.LP
+wobei .xx ein
+.BR nroff (1)
+oder
+.BR troff (1)
+Makro fuer nutzerdefinierte Formatierung sein kann.
+Die Felder
+.I before keyword
+und
+.I keyword and after
+schliessen soviel von der Zeile ein, wie um das Schluesselwort herum passt,
+wenn es in der Mitte der Seite ausgegeben wird.
+.I Tail
+und
+.I head,
+von denen mindestens eins ein leeres String "" ist, werden um die Teile
+gelagert, die klein genug sind, in den ungenutzten Bereich des
+gegenueberliegenden Endes der Zeile zu passen.
+Das Zeichen `/` markiert die Stelle, wenn der Originaltext
+geteilt werden muss.
+.SH OPTIONEN
+.TP
+.BR \-b " break"
+Die Zeichen in der 
+Datei \fIbreak\fR dienen zur Worttrennung.
+Tabulator, Newline und Leerzeichen werden immer als Break-Zeichen 
+benutzt.
+.TP
+.B \-f
+Gross- und Kleinbuchstaben werden beim Sortieren nicht unterschieden
+.TP
+.BI \-g " n"
+Die Zahl
+.I n
+ist die Anzahl der Zeichen, die fuer jede Luecke zwischen den vier Teilen
+der Zeile erlaubt sind.
+Die Vorgabeluecke betraegt 3 Zeichen.
+.TP
+.BR \-i " ignore"
+Alle in der \fIignore\fR-Datei angegebenen Worte
+sind nicht als Schluesselworte zu benutzen.
+Wenn die \fB-i\fR und \fB-o\fR Optionen fehlen, wird
+/usr/lib/cref/eign als \fIignore\fR-Datei benutzt.
+.TP 
+.BR \-o " only"
+Nur die in der \fIonly\fR Datei angegebenen Worte
+werden als Schluesselworte benutzt.
+.TP
+.B \-r
+Alle vorangestellten Zeichen (ausser Leerzeichen) jeder Eingabezeile
+werden als ein Reference-Identifikator (fuer eine Seite oder ein Kapitel)
+benutzt, der vom Text der Zeile getrennt ist.
+Dieser Identifikator wird als 5. Feld an jede Ausgabezeile angefuegt.
+.TP 
+.B \-t
+Ausgabe fuer Photosatz (Standardzeilenlaenge: 100 Zeichen).
+.TP 
+.BI \-w " n"
+Das Argument
+.I n
+ist die Laenge der Ausgabezeile
+(Standard: 72 Zeichen).
+.SH DATEIEN
+/bin/sort
+.br
+/usr/lib/cref/eign
+.SH SIEHE AUCH
+apropos(1), getname(1), man(1), nroff(1), troff(1).
+.SH EINSCHRAENKUNGEN
+Die Zeilenlaengenangaben beinhalten keine Ueberschreibungen
+und keine proportionalen Leerraeume.

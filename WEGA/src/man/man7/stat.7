@@ -1,0 +1,61 @@
+.TH STAT 7 WEGA
+.\" @[$]stat.7  1.2
+.ad
+.fi
+.SH NAME
+stat \- Rueckgabewerte des Systemrufs stat(2)
+.SH SYNTAX
+.B #include <sys/types.h>
+.br
+.B #include <sys/stat.h>
+.SH BESCHREIBUNG
+In der Deklarationsdatei
+.B <sys/stat.h>
+sind die Struktur und die Definitionen der Daten enthalten,
+die bei den Systemrufen
+.BR stat (2)
+und
+.BR fstat (2)
+zurueckgegeben werden.
+Die Definitionen gelten fuer das Strukturelement
+.BR st_mode .
+.PP
+.nf
+.na
+struct  stat {
+        dev_t   st_dev;
+        ino_t   st_ino;
+        unsigned short st_mode;
+        short   st_nlink;
+        short   st_uid;
+        short   st_gid;
+        dev_t   st_rdev;
+        off_t   st_size;
+        time_t  st_atime;
+        time_t  st_mtime;
+        time_t  st_ctime;
+};
+
+#define S_IFMT   0170000     /* Dateityp */
+#define S_IFDIR  0040000        /* Directory */
+#define S_IFCHR  0020000        /* Character-Special-File */
+#define S_IFBLK  0060000        /* Block-Special-File */
+#define S_IFREG  0100000        /* regulaere Datei */
+#define S_IFMPC  0030000        /* Multiplex-Character-Special-File */
+#define S_IFMPB  0070000        /* Multiplex-Block-Special-File */
+#define S_ISUID  0004000     /* setzt bei Ausfuehrung Nutzer-ID  */
+#define S_ISGID  0002000     /* setzt bei Ausfuehrung Gruppen-ID */
+#define S_ISVTX  0001000     /* speichert ausgelagerten Text
+                                             nach Ausfuehrung */
+#define S_IREAD  0000400     /* Leseerlaubnis fuer Eigentuemer */
+#define S_IWRITE 0000200     /* Schreiberlaubnis fuer Eigentuemer */
+#define S_IEXEC  0000100     /* Ausfuehrungs/Such-Erlaubnis
+                                             fuer Eigentuemer */
+.fi
+.ad
+.SH DATEIEN
+/usr/include/sys/types.h
+.br
+/usr/include/sys/stat.h
+.SH SIEHE AUCH
+stat(2).

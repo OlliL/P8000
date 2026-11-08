@@ -1,0 +1,60 @@
+.TH IOCTL 2 WEGA
+.\"@[$]ioctl.2  1.2
+.ad
+.fi
+.SH NAME
+ioctl \- Ein-/Ausgabe-Steuerung eines Geraetes
+.SH SYNTAX
+.B #include <sys/ioctl.h>
+.PP
+.B ioctl
+.I (fildes, request, arg)
+.SH BESCHREIBUNG
+.B Ioctl
+fuehrt eine Reihe von Funktionen an Character-Special-Files aus.
+Die Anwendung von
+.B ioctl
+fuer die verschiedenen Geraete ist in Kapitel 4 des
+WEGA-Programmierhandbuchs beschrieben.
+.PP
+.B Ioctl
+wird nicht ausgefuehrt, wenn mindestens einer der folgenden Punkte 
+zutrifft:
+.TP 11
+\%[EBADF]
+.I Fildes
+ist kein gueltiger offener Dateidescriptor.
+.PD 0
+.TP 11
+\%[ENOTTY]
+.I Fildes
+ist nicht mit einem Character-Special-File verbunden.
+.TP 11
+\%[EINVAL]
+.I Request
+oder
+.I arg
+sind nicht gueltig (siehe
+.BR tty (4)).
+.PD
+.SH RUECKGABEWERT
+Wenn ein Fehler aufgetreten ist, wird der Wert \-1 zurueckgegeben und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+tty(4).
+.SH ASSEMBLER
+.na
+.nf
+
+     CONSTANT IOCTL := 54
+
+     ...             !* r0 : fildes *!
+                     !* r1 : request *!
+                     !* r2 : argp *!
+     clr    r4
+     sc     #IOCTL
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

@@ -1,0 +1,54 @@
+.TH TAIL 1 WEGA
+.\" @[$]tail.1	1.2
+.ad
+.fi
+.SH NAME
+tail \- Ausgeben der letzten Zeilen einer Datei
+.SH SYNTAX
+\fBtail\fR [ \(+-[number[\fBlbc\fR] [
+.B \-f
+] ] [ file ]
+.SH BESCHREIBUNG
+.B Tail
+kopiert die angegebene Datei auf die Standardausgabe, wobei an einer
+bezeichneten Stelle begonnen wird.
+Ist keine Datei angegeben, wird die Standardeingabe benutzt.
+.PP
+Das Kopieren beginnt in einem Abstand von
+.BI + number
+vom Beginn oder
+.BI \- number
+von Ende der Eingabe
+(Standard fuer
+.IR number :
+10).
+.I Number
+wird entsprechend der angefuegten Option in Einheiten von
+Zeilen, Bloecken oder Zeichen gezaehlt
+(Standard: Zeilen).
+.SH OPTIONEN
+.TP
+.B  b
+\fINumber\fR wird in Bloecken gezaehlt.
+.TP
+.B  c
+\fINumber\fR wird in Zeichen gezaehlt.
+.TP
+.B  l
+\fINumber\fR wird in Zeilen gezaehlt.
+.TP
+.B  \-f
+Folge-Option. 
+Wenn die Eingabedatei kein Pipe ist, wird das Programm 
+nicht beendet, nachdem die Zeile der Eingabedatei 
+kopiert worden ist, sondern tritt in eine endlose Schleife 
+ein. Dabei wird eine Sekunde gewartet und dann versucht, weitere 
+Eintragungen aus der Eingabedatei zu lesen und zu kopieren.
+Somit kann es dafuer benutzt werden, das Anwachsen einer Datei,
+die durch einen anderen Prozess geschrieben wird, zu ueberwachen.
+.SH SIEHE AUCH
+cat(1), dog(1), head(1), more(1), dd(1).
+.SH EINSCHRAENKUNGEN
+Tails, die sich auf das Ende der Datei
+beziehen, werden in einem Puffer aufbewahrt
+und sind somit in ihrer Laenge begrenzt.

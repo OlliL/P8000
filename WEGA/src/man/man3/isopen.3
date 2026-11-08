@@ -1,0 +1,55 @@
+.TH ISOPEN 3 
+.\" @[$]isopen.3        1.2
+.ad
+.fi
+.SH NAME
+isopen \- Oeffnen einer C-ISAM-Datei zur Bearbeitung
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisopen\fI(filename, mode)
+\fBchar \fI*filename;
+\fBint \fImode;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isopen
+oeffnet eine C-ISAM-Datei zur Bearbeitung.
+Sie gibt den C-ISAM-Dateidescriptor fuer spaetere Zugriffe 
+auf die C-ISAM-Datei zurueck.
+.PP
+Der Paramenter
+.I filename
+muss auf eine mit einem Nullbyte endende Zeichenkette
+zeigen, die den Dateinamen der zu bearbeitenden C-ISAM-Datei enthaelt.
+C-ISAM-Dateinamen duerfen nicht laenger als 10 Zeichen sein.
+.PP
+Das Argument
+.I mode
+gibt die Zugriffsart des Nutzers (Eingabe, Ausgabe oder beides)
+sowie die Art der Verriegelung der Datei
+(exclusiv, manuell oder automatisch) an.
+.I Mode
+wird durch arithmetische Addition der Konstanten
+ISEXCLLOCK, ISMANULOCK, oder ISAUTOLOCK
+mit
+ISINPUT, ISOUTPUT, oder ISINOUT
+gebildet.
+.PP
+Dieser Aufruf positioniert automatisch den aktuellen Datensatzpointer
+auf den ersten Datensatz (Reihenfolge nach Primaerindex).
+Wird eine andere Anordnung gewuenscht,
+kann nach Oeffnen der Datei die Funktion
+.B isstart
+benutzt werden, um einen anderen Index zu waehlen.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+isbuild(3),
+isclose(3),
+isstart(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

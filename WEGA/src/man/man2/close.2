@@ -1,0 +1,63 @@
+.TH CLOSE 2 WEGA
+.\"@[$]close.2  1.2
+.ad
+.fi
+.SH NAME
+close  \- Schliessen einer Datei
+.SH SYNTAX
+.B int close
+.I (fildes)
+.br
+.B int
+.I fildes;
+.SH BESCHREIBUNG
+Der Systemruf
+.B close
+schliesst die angegebenen offenen Dateien.
+.I Fildes
+ist ein Dateidescriptor, wie er von einem 
+.BR open (2),
+.BR creat (2),
+.BR dup (2),
+oder
+.BR pipe (2)
+Systemruf zurueckgegeben wird.
+.PP
+Ein Schliessen aller Dateien erfolgt automatisch bei
+.BR exit (2).
+Der Systemruf
+.B close
+ist fuer Programme notwendig, die mit mehreren Dateien arbeiten,
+da die Anzahl der offenen Dateien pro Prozess begrenzt ist.
+.PP
+Bestimmte Dateidescriptoren koennen durch 
+.BR exec (2)
+(\fBioctl\fR (2))
+geschlossen werden.
+.SH SIEHE AUCH
+creat(2), dup(2), open(2), pipe(2), exec(2), fcntl(2), ioctl(2).
+.SH DIAGNOSTIK
+.TP 11
+\%[EBADF]
+.B Close
+wird nicht ausgefuehrt, wenn
+.I fildes
+kein gueltiger Dateidescriptor fuer offene Dateien ist.
+.SH RUECKGABEWERT
+Wurde eine Datei geschlossen,
+wird Null zurueckgegeben.
+Fuer einen unbekannten Dateidescriptor wird \-1 zurueckgegeben und
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT CLOSE  := 6
+
+     ...             !* r0 : fildes *!
+     clr    r4
+     sc     #CLOSE
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

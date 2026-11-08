@@ -1,0 +1,67 @@
+.TH SPLIT 1 WEGA
+.\" @[$]split.1	1.2
+.ad
+.fi
+.SH NAME
+split \- Aufspalten einer Datei in Teildateien
+.SH SYNTAX
+.B split
+[ \fB\-\fIn ] [ \fIfile\fR [ \fIname\fR ] ]
+.SH BESCHREIBUNG
+.B Split
+liest die Datei
+.I file
+und spaltet sie in
+.IR n -zeilige
+Teildateien (Standard 1000),
+oder in Teildateien aus
+.IR n  
+Zeichen, wenn die Nummer auf 'c' endet (Standard 10000).
+Diese Daten der Eingabedatei werden dann in eine oder
+mehrere Ausgabedateien geschrieben.
+Die Anzahl der Teildateien richtet sich nach der
+Groesse der Eingabedatei.
+Der Name der ersten Ausgabedatei ist
+.I name,
+dem
+.B aa
+usw. in lexikographischer Ordnung nachgestellt wird
+(Standard fuer
+.IR name :
+.BR x ).
+Es koennen maximal 676 Dateien angelegt werden.
+Muessen noch mehr Daten von der urspruenglichen Datei
+abgespalten werden und sind alle 676 Dateien besetzt,
+geht der Rest in die letzte Datei, d.h. in
+.I name
+.B zz.
+.PP
+Ist keine Eingabedatei gegeben oder ist an ihrer Stelle
+.B \-
+gegeben, wird die Standard-Eingabedatei verwendet.
+.SH BEISPIEL
+.nf
+% cat liste
+abgeruestet
+abgeschaltet
+abgeschlossen
+abgeschnitten
+abgesehen
+abgesetzt
+abgesetzten
+abgespeichert
+abgesucht
+abgeteilt
+.sp
+% split -5 liste
+.sp
+% ls
+  list xaa xab
+.sp
+.ta 2.5i
+% cat xaa	% cat xab
+abgeruestet	abgesetzt
+abgeschaltet	abgesetzten
+abgeschlossen	abgespeichert
+abgeschnitten	abgesucht
+abgesehen	abgeteilt

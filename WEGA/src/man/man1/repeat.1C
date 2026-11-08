@@ -1,0 +1,25 @@
+.TH REPEAT 1C WEGA
+.\"@[$]repeat.1C	1.2
+.ad
+.fi
+.SH NAME
+repeat \- Wiederholen eines Kommandos
+.SH SYNTAX
+.B repeat
+\fIcount command\fR
+.SH BESCHREIBUNG
+Das spezifizierte 
+.I Kommando
+wird sooft ausgefuehrt, wie in
+.I count
+angegeben.
+Das
+.I Kommando
+wird so ausgefuehrt, als ob
+es in einer einzeiligen Anweisung
+nach dem Prompt angegeben wurde.
+E/A-Umadresssierungen erfolgen genau einmal, auch wenn
+.I count
+0 ist.
+.SH SIEHE AUCH
+"Die C-Shell" in WEGA-Dienstprogramme.

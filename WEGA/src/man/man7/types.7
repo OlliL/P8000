@@ -1,0 +1,57 @@
+.TH TYPES 7 WEGA
+.\" @[$]types.7 1.2
+.ad
+.fi
+.SH NAME
+types \- Grundlegende Datentypen des WEGA-Betriebssystems
+.SH SYNTAX
+.B #include <sys/types.h>
+.SH BESCHREIBUNG
+In dieser Deklarationsdatei
+sind die grundlegenden Datentypen enthalten, die das
+WEGA-Betriebssystem intern benutzt.
+Auf einige dieser Datentypen kann
+in Nutzerprogrammen zugegriffen werden.
+.PP
+.nf
+.RS
+typedef struct { int r[1]; } *  physadr;
+typedef long            daddr_t;
+typedef char *          caddr_t;
+typedef unsigned short  ushort;
+typedef ushort          ino_t;
+typedef char            cnt_t;
+typedef long            saddr_t;
+typedef long            paddr_t;
+typedef long            time_t;
+typedef int             label_t[9];
+typedef int             dev_t;
+typedef long            off_t;
+.RE
+.fi
+.PP
+Die Form
+.B daddr_t
+wird fuer Adressen
+auf dem Winchesterlaufwerk
+verwendet.
+Eine Ausnahme bildet die Angabe der Blockadressen in einem
+.B i-node
+(struct dinode, siehe
+.BR filsys (5));
+hier werden die Blockadressen in einem 3-Byte-Format abgelegt.
+Alle Zeiten werden durch die Anzahl der Sekunden angegeben, die seit dem
+1. Januar 1970
+00:00:00 Weltzeit vergangen sind.
+Major- und Minornummer der Geraetecodierung
+geben den Typ des Geraets und die Geraetenummer an.
+Sie sind abhaengig von der Installation des Betriebssystemkerns.
+Versatzargumente oder
+Offsets werden vom Beginn der Datei an in Bytes gemessen.
+Die Variablen
+.I label_t
+speichern den
+Prozessorstatus fuer einen Prozess, der durch den Prozesswechselmechanismus
+von der weiteren Abarbeitung suspendiert wurde.
+.SH SIEHE AUCH
+filsys(5).

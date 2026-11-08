@@ -1,0 +1,120 @@
+.TH MALLOC 3 WEGA
+.\" @[$]malloc.3        1.2
+.ad
+.fi
+.SH NAME
+malloc, free, realloc, calloc \- Speicherverwaltung
+.SH SYNTAX
+.nf
+\fBchar *malloc\fI(size)
+.br
+\fBunsigned \fIsize;
+.PP
+\fBfree\fI(ptr)
+.br
+\fBchar \fI*ptr;
+.PP
+\fBchar *realloc\fI(ptr, size)
+.br
+\fBchar \fI*ptr;
+.br
+\fBunsigned \fIsize;
+.PP
+\fBchar *calloc\fI(nelem, elsize)
+.br
+\fBunsigned \fInelem, elsize;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktionen
+.B malloc
+und
+.I free
+bilden eine einfache, universell anwendbare Speicherverwaltung.
+.PP
+.B Malloc
+reserviert den ersten
+zusammenhaengenden, freien Speicherbereich (Block)
+von mindestens
+.I size
+Bytes, der bei einer zyklischen Durchsuchung vom letzten
+zugewiesenen oder freigegebenen Block aus gefunden wird
+und gibt einen Pointer auf den Beginn
+dieses Blocks zurueck (Beginn auf Wortgrenze).
+Waehrend der Durchsuchung werden angrenzende freie Bloecke
+zusammengefasst.
+Ist noch kein geeigneter Bereich frei, wird der Systemruf
+.BR sbrk (2)
+benutzt, um vom System mehr Speicher anzufordern.
+.PP
+Das Argument der Funktion
+.I free
+ist ein Pointer auf einen vorher durch
+.BR malloc
+zugewiesenen Block.
+Nach Ausfuehrung wird
+dieser Bereich fuer weitere Zuweisungen bereitgestellt, sein
+Inhalt bleibt jedoch unveraendert.
+.PP
+Undefinierte Resultate treten auf, wenn der durch
+.B malloc
+bereitgestellte Speicherbereich ueberschritten oder wenn
+der an
+.BR free
+uebergebende Parameter
+.I ptr
+einen falschen Wert hat.
+.PP
+.B Realloc
+aendert die Groesse des durch
+.I ptr
+angegebenen Blocks auf
+.I size
+Bytes und gibt einen Pointer auf den (moeglicherweise verschobenen)
+Block neuer Groesse zurueck.
+Der Inhalt des Speicherbereichs, der das gemeinsame Minimum
+aus alter und neuer Groesse darstellt, bleibt unveraendert.
+.PP
+.B Realloc
+funktioniert auch, wenn
+.I ptr
+auf einen Block weist, der seit dem letzten Aufruf von
+.BR malloc ,
+.B realloc
+oder
+.BR calloc
+frei geworden ist.
+Folgen von
+.BR free ,
+.B malloc
+und
+.B realloc
+wenden somit zur Speicherverdichtung die Suchstrategie von
+.B malloc
+an.
+.PP
+.B Calloc
+weist Speicherplatz fuer einen Bereich von
+.I nelem
+Elementen der Groesse
+.I elsize
+zu. Der Speicherbereich wird mit Null initialisiert.
+.PP
+Alle Zuweisungsroutinen geben einen Pointer auf
+einen Bereich zurueck, der
+fuer die Speicherung eines beliebigen Objekttyps ausgerichtet ist.
+.SH DIAGNOSTIK
+.B  Malloc ,
+.B realloc,
+und
+.B calloc
+geben einen Nullpointer zurueck, wenn nicht
+genuegend Speicherplatz zur Verfuegung
+steht oder wenn Fehler auftraten.
+Der Nutzer sollte explizite
+Ueberpruefungen des Rueckgabewertes durchfuehren.
+.SH EINSCHRAENKUNGEN
+Wenn
+.B realloc
+einen Nullpointer zurueckgibt, kann der durch
+.I ptr
+bezeichnete Block zerstoert sein.

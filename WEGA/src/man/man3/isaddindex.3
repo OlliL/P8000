@@ -1,0 +1,42 @@
+.TH ISADDINDEX 3 
+.\" @[$]isaddindex.3    1.1
+.ad
+.fi
+.SH NAME
+isaddindex \- Hinzufuegen eines Index in eine C-ISAM-Datei
+.SH SYNTAX
+.nf
+\fB#include <isam.h>
+.sp
+\fBisaddindex\fI(isfd, keydesc)\fR
+\fBint \fIisfd;\fR
+\fBstruct\fI keydesc *keydesc;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B isadddindex
+fuegt der durch den Dateidescriptor
+.I isfd
+gekennzeichneten C-ISAM-Datei einen Index hinzu.
+Der Index wird in der 
+keydesc-Struktur definiert.
+Diese Funktion wird nur ausgefuehrt, wenn die C-ISAM-Datei
+fuer exklusiven Zugriff und fuer Eingabe und Ausgabe geoeffnet wurde.
+.PP
+Die Anzahl der ueber
+.B isaddindex
+anfuegbaren Indexe ist unbegrenzt.
+Es koennen jedoch nur maximal acht Teile fuer einen Index
+definiert werden und ein Index kann nur maximal 118 Bytes enthalten.
+.SH DATEIEN
+/usr/include/isam.h
+.br
+/usr/lib/libcisam.a
+.SH SIEHE AUCH
+.PP
+isbuild(3),
+isdelindex(3),
+isindexinfo(3),
+isopen(3).
+.br
+"C-ISAM - Indexsequentielle Zugriffsmethode" in WEGA-Dienstprogramme

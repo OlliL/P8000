@@ -1,0 +1,33 @@
+.TH SLEEP 3 WEGA
+.\" @[$]sleep.3 1.2
+.ad
+.fi
+.SH NAME
+sleep \- Unterbrechung der Abarbeitung
+.SH SYNTAX
+.nf
+\fBsleep\fI(seconds)
+.br
+unsigned\fI seconds;\fR
+.fi
+.SH BESCHREIBUNG
+Die Ausfuehrung des aktuellen Prozesses wird fuer die durch das Argument
+.I seconds
+angegebene Anzahl von Sekunden ausgesetzt.
+Die tatsaechliche Pause kann bis zu 1 Sekunde kuerzer sein, als angefordert,
+da der Prozesswechsel (Wecken schlafender Prozesse)
+in festen 1-Sekunden-Intervallen erfolgt.
+Die Pause kann bei starker Systembelastung auch unbestimmte Zeit laenger
+dauern.
+.PP
+Die Funktion setzt ein Alarmsignal
+und wartet anschliessend auf das Eintreffen des Signals.
+Der vorangegangene Status dieses Signals wird gespeichert.
+Trifft das Signal durch einen vorher gesetzten Alarm
+vor Ablauf der im Argument angegebene Aussetzzeit
+des Prozesses ein, wird der Prozess zum Zeitpunkt des Eintreffens
+des Signals geweckt und das
+Signal wird 1 Sekunde spaeter gesendet.
+.SH SIEHE AUCH
+alarm(2),
+pause(2).

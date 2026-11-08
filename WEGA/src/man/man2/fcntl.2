@@ -1,0 +1,139 @@
+.TH FCNTL 2 WEGA
+.ad
+.fi
+.SH NAME
+fcntl \- Dateikontrolle
+.SH SYNTAX
+.B #include <fcntl.h>
+.PP
+.B int fcntl
+.I (fildes, cmd, arg)
+.br
+.B int
+.I fildes, cmd, arg;
+.SH BESCHREIBUNG
+.B Fcntl
+gewaehrleistet die Kontrolle ueber offene Dateien.
+.I Fildes
+ist ein offener Dateidescriptor, der aus einem
+.BR creat (2),
+.BR open (2),
+.BR dup (2),
+.BR fcntl 
+oder
+.BR pipe (2)
+Systemaufruf erzeugt wird.
+.PP
+Die verfuegbaren Kommandos
+.I cmd
+sind:
+.TP 9
+.B F_DUPFD
+.RS 9
+Es wird ein neuer Dateidescriptor mit folgenden
+Eigenschaften zurueckgegeben:
+.IP - 3
+Verfuegbarer Dateidescriptor mit der niedrigsten Nummer, die
+groesser oder gleich 
+.IR arg
+ist.
+.PD 0
+.IP - 3
+Er bezeichnet die gleiche offene Datei (oder Pipe) wie die Originaldatei.
+.IP - 3
+Beide Dateidescriptoren benutzen gemeinsam den
+Dateipointer der Originaldatei.
+.IP - 3
+Gleiche Zugriffsrechte (Lesen, Schreiben oder Lesen/Schreiben).
+.IP - 3
+Beide Dateidescriptoren haben
+gemeinsame Datei-Status-Flags.
+.IP - 3
+Das close-on-exec Flag, das mit dem neuen Dateidescriptor verbunden
+ist, wird so gesetzt, dass es ueber
+.BR exec (2)
+Systemaufrufe offen bleibt.
+.RE
+.PD
+.TP 9
+.B F_GETFD
+Holen des close-on-exec Flag, das mit dem Dateidescriptor 
+.IR fildes 
+verbunden ist.
+Wenn das niederwertige Bit Null ist, bleibt die Datei ueber
+.BR exec
+offen, andernfalls wird die Datei bei Ausfuehrung von
+.BR exec
+geschlossen.
+.TP
+.B F_SETFD
+Setzt das close-on-exec Flag, das mit 
+.I fildes
+verbunden ist, auf das niederwertige Bit von
+.I arg
+.RB ( 0
+oder
+.B 1
+wie oben).
+.TP
+.B F_GETFL
+Holen des Datei-Status-Flags.
+.TP
+.B F_SETFL
+Setzen des
+Datei-Status-Flags auf
+.IR arg .
+Nur bestimmte Flags koennen gesetzt werden (siehe
+.BR fcntl (7)).
+.PP
+.B Fcntl
+wird nicht ausgefuehrt, wenn einer oder mehrere der folgenden Punkte
+zutreffen:
+.TP 11
+\%[EBADF]
+.I Fildes
+ist kein gueltiger offener Dateidescriptor.
+.PD 0
+.TP
+\%[EMFILE]
+.I Cmd
+ist
+.B F_DUPFD
+und 20 Dateidescriptoren sind gegenwaertig offen.
+.TP
+\%[EINVAL]
+.I Cmd
+ist
+.B F_DUPFD
+und
+.I arg
+ist negativ oder groesser als 20.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung,
+haengt der zurueckgegebene Wert von 
+.I cmd
+wie folgt ab:
+.TP 9
+.B F_DUPFD
+Ein neuer Dateidescriptor.
+.PD 0
+.TP
+.B F_GETFD
+Wert des Flags (nur das niederwertige Bit ist definiert).
+.TP
+.B F_SETFD
+Anderer Wert als \-1.
+.TP
+.B F_GETFL
+Wert der Dateiflags.
+.TP
+.B F_SETFL
+Anderer Wert als \-1.
+.PD
+.PP
+Andernfalls wird der Wert \-1 zurueckgegeben und 
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+close(2), exec(2), open(2), fcntl(7).

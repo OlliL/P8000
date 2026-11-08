@@ -1,0 +1,60 @@
+.TH CHKDIFF 1 
+.\" @[$]chkdiff.1	1.2
+.ad
+.fi
+.SH NAME
+chkdiff \- Ausgabe der Unterschiede zwischen Versionen einer Quelldatei
+.SH SYNTAX
+\fBchkdiff \fR[\fB-h\fR] [\fB-v\fI rel.lev\fR] [\fB-v\fI rel.lev\fR] \fIfile\fR
+.SH BESCHREIBUNG
+\fBChkdiff\fR listet die Unterschiede zwischen einer Quelldatei
+und einer anderen Version davon in der zugehoerigen QCV-Steuerdatei
+(einfaches Quellcodeverwaltungssystem qcv(5)) oder
+zwischen zwei Versionen in der
+QCV-Steuerdatei auf.
+Die Unterschiede werden in der von
+.BR diff (1)
+benutzten Form beschrieben.
+.LP
+Das Argument
+.I file
+muss der Name einer Quelldatei,
+nicht der der QCV-Steuerdatei sein.
+Implizit werden die Unterschiede der angegebenen Quelldatei gegenueber der
+letzten Version in der QCV-Steuerdatei aufgelistet.
+.SH OPTIONEN
+.TP
+.B \-h
+Aktiviert die einfache Version von \fBdiff\fR(1) (mit -h Option).
+.TP
+.B \-v
+Listet die Unterschiede zwischen der Quelldatei und der spezifizierten
+Version auf.
+Wenn die -v Option zweimal benutzt wird, werden die Unterschiede
+zwischen den beiden spezifizierten Versionen ausgegeben.
+Jeder -v Option folgt ein Argument der Form
+\fIrel.lev\fR, wobei 
+.I rel
+die Release-Nummer
+und
+.I lev
+die Ausgabenummer ist.
+.SH DATEIEN
+file+           -- QCV-Steuerdatei fuer \fIfile\fR
+.br
+/tmp/chkdiffXXX -- temporaere Datei, die eine Version enthaelt
+.SH SIEHE AUCH
+chkin(1), chkout(1), chkwhat(1), qcv(5), diff(1)
+.SH DIAGNOSTIK
+corrupt chkfile:  die in
+qcv(5) festgelegte Konvention wurde verletzt
+.PP
+diff: files too big, try -h:
+Versionsunterschiede koennen nicht ermittelt werden,
+da die Datei zu gross ist
+.PP
+version rel.lev not found:  benutze chkout -h, um korrekte
+Versionsnummern zu ermitteln
+.SH EINSCHRAENKUNGEN
+Wenn die Dateien zur Ermittlung der Unterschiede zu gross sind,
+wird ein Versionseintrag erstellt, der keine Unterschiede zeigt.

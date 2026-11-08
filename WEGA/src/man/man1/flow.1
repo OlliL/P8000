@@ -1,0 +1,71 @@
+.TH FLOW 1 
+.\" @[$]flow.1	1.2
+.ad
+.fi
+.SH NAME
+flow \- Analyse des Ablaufs von C-Programmen
+.SH SYNTAX
+.B flow
+[
+.B -bcors
+]
+[
+.I output-suffix
+]
+.I files ...
+.SH BESCHREIBUNG
+.B Flow
+fuehrt eine Analyse des Ablaufs der genannten Dateien durch und 
+erstellt drei Tabellen:
+.nf
+- welche Funktionen rufen welche Funktionen auf,
+- welche Funktionen werden durch welche Funktionen aufgerufen,
+- welche Funktionen sind in welchen Quelldateien zu finden.
+.fi
+Die Tabellen werden mit flow.CALLS, flow.CALLEDBY und flow.RESIDES bezeichnet. 
+.PP
+Um diese Tabellen zu erstellen, muessen die C-Quelldateien
+zuerst in Trace-Dateien umgewandelt werden.
+Fuer die Erstellung der benoetigten Tabellen werden die auf der 
+Kommandozeile angegebenen Dateien sowie die erzeugten Trace-Dateien verwendet. 
+Um die Nutzung von flow mit make(1) zu erleichtern, sollten die 
+Trace-Dateien gerettet werden.
+.PP
+Die auf der Kommandozeile angegebenen Dateien koennen eine Mischung
+von C-Quelldateien und Trace-Dateien sein. Es ist zu beachten,
+dass Trace-Dateien mit 
+`file.t' bezeichnet werden.
+.SH OPTIONEN
+Sind keine Optionen angegeben, werden alle Tabellen erzeugt.
+.TP
+.B \-b
+Erzeugt die `CALLEDBY' Tabelle.
+.TP
+.B \-c
+Erzeugt die `CALLS' Tabelle.
+.TP
+.B \-o
+Das naechste Argument ist die vom Nutzer
+festgelegte Vorsilbe fuer die Namen der Ausgabetabellen
+(voreingestellt ist `flow').
+.TP
+.B \-r
+Erzeugt die `RESIDES' Tabelle.
+.TP
+.B \-s
+Rettet die Trace-Dateien. Die Trace-Dateien haben den Pfadnamen der
+der C-Quelldateien.
+.SH DATEIEN
+/tmp/flow[ABCDE]  temporaere Bearbeitungsdateien
+.br
+file.i            die vom C-Preprozessor erzeugten Dateien
+.br
+file.t            Trace-Dateien
+.SH SIEHE AUCH
+cc(1)
+.SH DIAGNOSTIK
+Die Ausschriften sind selbsterklaerend. Bei auftretenden Interrupts
+koennen unlogische Diagnoseausschriften auftreten.
+.SH EINSCHRAENKUNGEN
+Da die Ausgabe der Tabellen mit Hilfe von tbl(1) und
+nroff(1) erzeugt wird, ist der Prozess langsam.

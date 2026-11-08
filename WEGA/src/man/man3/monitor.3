@@ -1,0 +1,92 @@
+.TH MONITOR 3 WEGA
+.\" @[$]monitor.3       1.1
+.ad
+.fi
+.SH NAME
+monitor \- Vorbereitung des Laufzeitprofils
+.SH SYNTAX
+.nf
+\fBmonitor\fI(lowpc, highpc, buffer, bufsize, nfunc)
+\fBint \fI(*lowpc)( ), (*highpc)( );
+\fBshort\fI buffer[ ];\fR
+\fBint\fI bufsiz,nfunc\fR;
+.fi
+.SH BESCHREIBUNG
+.B Monitor
+stellt ein Interface zu dem Systemruf
+.BR profil (2)
+dar.
+Ein ausfuehrbares Programm, das mit der Option
+.B \-p
+des C-Compilers uebersetzt wurde,
+enthaelt automatisch Aufrufe fuer die Funktion
+.B monitor
+mit Standardparametern.
+Die Funktion
+.B monitor
+muss nur bei
+speziellen Anforderungen an das Laufzeitprofil explizit gerufen werden.
+.PP
+Die Argumente
+.I lowpc
+und
+.I highpc
+sind die Adressen zweier Funktionen;
+.I buffer
+ist die Adresse eines (vom Nutzer gelieferten)
+Feldes, das
+.I bufsize
+Integerwerte enthaelt.
+.B Monitor
+sorgt dafuer, dass im Puffer ein Histogramm der
+periodisch abgetasteten Werte des Programmzaehler
+und die Haeufigkeit der Aufrufe bestimmter Funktionen aufgezeichnet wird.
+Die niedrigste abgetastete Adresse ist die von
+.I lowpc
+und die hoechste ist
+die naechste unterhalb von
+.BR highpc.
+Es koennen hoechstens
+.I nfunc
+Aufrufe gezaehlt werden.
+Ausserdem koennen nur Funktionsaufrufe registriert werden,
+die mit der Compiler-Option
+.B \-p
+(siehe
+.BR cc (1))
+uebersetzt wurden.
+Um sinnvolle Ergebnisse zu erhalten (besonders bei der Registrierung
+kurzer, haeufig benutzter Routinen)
+sollte der Puffer nicht wesentlich kleiner sein als die abgetasteten
+Adressbereiche.
+.PP
+Das Laufzeitprofil eines kompletten Programms kann mit folgenden
+Anweisungen erhalten werden.
+Dabei bezeichnet das Argument
+.B etext
+die erste Adresse ueber dem vollstaendigen Programmtext (siehe
+.BR end (3)).
+.PP
+        extern etext();
+.br
+        ...
+.br
+        monitor((int)2, etext, buf, bufsize, nfunc)
+.PP
+Um die Ueberwachung des Programmablaufs zu beenden und die Ergebnisse
+in die Datei
+.I mon.out
+zu schreiben, wird der Funktionsaufruf
+.PP
+        monitor(0)
+.PP
+verwendet. Anschliessend kann
+.BR prof (1)
+zur Untersuchung der Ergebnisse benutzt werden.
+.SH DATEIEN
+mon.out
+.SH SIEHE AUCH
+cc(1),
+prof(1),
+profil(2),
+mon.out(5).

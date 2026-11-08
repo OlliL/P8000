@@ -1,0 +1,20 @@
+.TH BD 1 WEGA
+.\" @[$]bd.1	1.2
+.ad
+.fi
+.SH NAME
+bd \- hexadezimaler Byte-Dump
+.SH SYNTAX
+.B bd
+[ \fIfile\fR ]
+.SH BESCHREIBUNG
+.B Bd
+gibt den Inhalt der angegebenen Datei
+.I file
+byteweise in einem hexadezimalen Format aus.
+Druckbare ASCII-Zeichen werden in einem gesonderten Feld
+am rechten Bildschirmrand dargestellt.
+Ist kein Dateiargument angegeben, wird die Standardeingabe benutzt.
+Die Ausgabe wird bis zum End-Of-File durchgefuehrt.
+.SH SIEHE AUCH
+hd(1), od(1), objdu(1).

@@ -1,0 +1,27 @@
+.TH LOGNAME 3 WEGA
+.\"@[$]logname.3        1.2
+.ad
+.fi
+.SH NAME
+logname \- Ermittlung von Nutzer-Login-Namen
+.SH SYNTAX
+.B "char \(**logname(\|);"\fR
+.SH BESCHREIBUNG
+Die Funktion
+.B logname\^
+gibt einen Pointer auf eine mit einem Nullbyte abgeschlossene
+Zeichenkette mit dem Login-Namen des Nutzers zurueck (die
+Umgebungsvariable
+.B $LOGNAME
+aus der Umgebung des Nutzers wird benutzt).
+.PP
+Diese Funktion ist in der Bibliothek
+.BR /usr/lib/libPW.a 
+enthalten.
+.SH DATEIEN
+/etc/profile
+.SH SIEHE AUCH
+env(1),
+login(1),
+profile(5),
+environ(7).

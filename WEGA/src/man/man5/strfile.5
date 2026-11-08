@@ -1,0 +1,36 @@
+.TH STRFILE 5 
+.\"@[$]strfile.5	1.2
+.ad
+.SH NAME
+strfile \- Datenbasis fuer Software-Fehlermeldungen 
+.SH BESCHREIBUNG
+Die Datei
+.B strfile
+enthaelt folgende Informationen
+ueber Software-Fehlermeldungen:
+.sp
+{Status}
+.br
+{Datum der Suspendierung}
+.br
+{intern zugewiesene Nummer}
+.br
+{Titel}
+.br
+{Eingabedatum}
+.br
+{betreffendes Programm}
+.br
+{Prioritaet}
+.br
+{Name des Verantwortlichen}
+.br
+{geforderte Aktion zum Zeitpunkt der Suspendierung}
+.PP
+Diese ASCII-Datei besitzt variable Felder, die durch Doppelpunkte
+getrennt werden. Zum leichten Sortieren und zur leichteren Auswahl besitzt
+das Datum der Suspendierung die Form MM/DD/YY.
+.SH DATEIEN
+/etc/strfile
+.SH SIEHE AUCH
+str(M).

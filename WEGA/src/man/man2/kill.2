@@ -1,0 +1,104 @@
+.TH KILL 2 WEGA
+.\"@[$]kill.2   1.2
+.ad
+.fi
+.SH NAME
+kill  \- Senden eines Signals an einen Prozess
+.SH SYNTAX
+.B kill
+.I (pid, sig);
+.br
+.B int
+.I pid, sig;
+.SH BESCHREIBUNG
+.B Kill
+sendet das Signal
+.I sig
+an den Prozess oder die Gruppe von Prozessen, die durch die Prozess-ID
+.I pid
+spezifiziert sind.
+Eine Liste der gueltigen Signale ist in
+.BR signal (2)
+angegeben.
+Ist
+.I sig
+Null (Nullsignal), 
+wird die Fehlerkontrolle durchgefuehrt, aber es wird kein Signal tatsaechlich
+gesendet.
+Das kann zur Kontrolle der Gueltigkeit von
+.I pid
+benutzt werden.
+.PP
+Die sendenden und empfangenden Prozesse muessen 
+die gleiche effektive Nutzer-ID haben (ausser wenn der Prozess an
+sich selbst sendet), andernfalls ist dieser Systemruf nur fuer den Superuser
+zugelassen.
+.PP
+Wenn die Prozessnummer Null ist, wird das Signal an alle anderen Prozesse in
+der Prozessgruppe (siehe
+.BR tty (4))
+des Senders gesendet.
+.PP
+Wenn die Prozessnummer \-1 und der Nutzer nicht der Superuser ist,
+wird das Signal an alle anderen Prozesse in der 
+Prozessgruppe des Senders, ausgenommen
+.I Prozess 0
+und 
+.I Prozess 1,
+gesendet.
+.PP
+Wenn die Prozessnummer \-1 und der Nutzer der Superuser ist, 
+wird das Signal an alle gesendet,  
+ausser an die Prozesse 0 und 1, den Scheduler (Steuerprogramm) und die 
+Initialisierungsprozesse (siehe
+.BR init (M)).
+Wenn
+.I pid
+negativ, aber nicht \-1 ist, wird
+.I sig
+an alle Prozesse, deren Prozess-Gruppen-ID
+gleich dem absoluten Wert von
+.IR pid 
+ist, gesendet.
+Prozesse koennen Signale an sich selbst senden.
+.SH DIAGNOSTIK
+.B Kill
+wird nicht ausgefuehrt und es wird kein Signal gesendet,
+wenn mindestens einer der folgenden Punkte zutrifft:
+.TP 11
+\%[EINVAL]
+.I Sig
+ist keine gueltige Signalnummer.
+.PD 0
+.TP 11
+\%[ESRCH]
+Es kann kein Prozess gefunden werden, der dem durch 
+.IR pid 
+spefizierten entspricht.
+.TP 11
+\%[EPERM]
+Der sendende Prozess sendet nicht an sich selbst, seine effektive Nutzer-ID
+ist nicht Superuser und seine effektive Nutzer-ID
+entspricht nicht der realen Nutzer-ID
+des empfangenden Prozesses.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird der Wert Null zurueckgegeben.
+Andernfalls wird der Wert \-1 zurueckgegeben und
+.I errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+kill(1), getpid(2), setpgrp(2), signal(2).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT KILL   := 37
+
+     ...             !* r0 : Prozess-ID *!
+                     !* r1 : Signal *!
+     clr    r4
+     sc     #KILL
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

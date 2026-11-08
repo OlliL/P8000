@@ -1,0 +1,33 @@
+.TH DOG 1 WEGA
+.\" @[$]dog.1	1.2
+.ad
+.fi
+.SH NAME
+dog \- gesteuertes Ausgabefilter fuer das Terminal
+.SH SYNTAX
+.B dog
+[ \fIfile\fR... ]
+.SH BESCHREIBUNG
+.B Dog
+gibt den Inhalt der Dateien
+.I file
+seitenweise auf dem Terminal aus.
+Nach dem Erscheinen der ersten 23 Zeilen auf dem Terminal
+wird die Ausgabe gestoppt.
+Durch Betaetigung der RETURN-Taste
+erscheinen weitere 23 Zeilen auf dem Terminal.
+.PP
+Wird CTRL-D eingegeben, werden weitere 11 Zeilen angezeigt.
+Es ist ebenfalls moeglich, positive Zahlen (fuer die Anzahl
+der folgenden anzuzeigenden Zeilen)
+einzugeben. Die Eingabe einer negativen Zahl bewirkt, dass die eingegebene
+Anzahl von Zeilen
+uebersprungen wird. Anschliessend werden die folgenden 11 Zeilen angezeigt.
+.PP
+Da das Terminal im
+noecho-Modus arbeitet, wird eine fortlaufende Ausgabe realisiert.
+Zahlen und das RETURN erscheinen nicht auf dem Terminal.
+.SH SIEHE AUCH
+cat(1),
+more(1),
+pr(1).

@@ -1,0 +1,77 @@
+.TH AR 5 WEGA
+.\"@[$]ar.5     1.2
+.ad
+.SH NAME
+ar \- Dateiformat fuer Bibliotheken
+.SH SYNTAX
+.B #include <ar.h>
+.SH BESCHREIBUNG
+Das Kommando
+.BR ar (1)
+dient zur Zusammenfassung verschiedener Dateien in Bibliotheken (Archiven).
+Bibliotheken werden vom Lader
+.BR ld (1)
+bzw.
+.RB sld (1)
+verarbeitet.
+.PP
+Eine durch
+.B ar
+angelegte Datei
+beginnt mit einer Magic-Nummer.
+Ihr folgen die
+Dateien, aus denen die angelegte Bibliotheksdatei besteht.
+Diesen Dateien wird jeweils ein Dateikopf vorangestellt.
+In der Datei
+.B <ar.h>
+ist der Aufbau der Magic-Nummer und
+des Dateikopfes beschrieben:
+.RS
+.nf
+
+#define ARMAG   0177545
+struct  ar_hdr {
+        char    ar_name[14];
+        long    ar_date;
+        char    ar_uid;
+        char    ar_gid;
+        int     ar_mode;
+        long    ar_size;
+};
+.fi
+.RE
+.LP
+Der Name
+.I ar_name
+ist eine mit einem Nullbyte abgeschlossene Zeichenkette.
+Das Datum
+.I ar_date
+hat das Format
+.BR time (2).
+Die Nutzer-ID
+.I ar_uid
+und Gruppen-ID
+.I ar_gid
+werden als Zahlenwerte angegeben.
+Der Modus
+.I ar_mode
+ist ein Bit-Muster fuer die Zugriffsrechte.
+Die Groesse
+.I ar_size
+wird in Bytes angegeben.
+.PP
+Jede Datei beginnt an einer Wortgrenze.
+Falls erforderlich, wird ein Nullbyte
+zwischen die Dateien eingefuegt.
+Die angegebene Groesse widerspiegelt jedoch
+die tatsaechliche Groesse der Datei (ohne Auffuellung).
+.PP
+Es ist zu beachten, dass in einer Bibliotheksdatei
+keine leeren Bereiche auftreten koennen.
+.SH SIEHE AUCH
+ar(1),
+ld(1),
+nm(1).
+.SH EINSCHRAENKUNGEN
+Nutzer-ID und Gruppen-ID koennen nicht als ASCII-Zeichenketten
+angegeben werden.

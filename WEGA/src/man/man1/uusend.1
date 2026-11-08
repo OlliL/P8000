@@ -1,0 +1,31 @@
+.TH UUNAME 1 WEGA
+.\" @[$]uusend.1	1.2
+.ad
+.fi
+.SH NAME
+uusend \- Uebertragung einer Datei ueber mehrere Rechner
+.SH SYNTAX
+.B uusend 
+[-r] [-m ooo] file sys1!sys2!...!destfile
+.SH BESCHREIBUNG
+.PP
+.B Uusend
+ubertraegt jeweils eine Datei ueber mehrere Rechner hinweg.
+.SH OPTIONEN
+.TP 6
+.B \-r
+Verhinderung des automatischen Starts des Programms
+.BR uucico (M).
+.TP
+.B \-m
+Auf dem entfernten System werden die Zugriffsrechte ooo (oktal)
+fuer die ubertragene Datei eingestellt.
+.TP
+.SH DATEIEN
+/usr/lib/uucp/USERFILE
+.SH SIEHE AUCH
+uucp(1),
+uucico(M),
+uux(1).
+.br
+"UUCP - Rechnerkopplung" in WEGA-Dienstprogramme

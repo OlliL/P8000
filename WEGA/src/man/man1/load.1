@@ -1,0 +1,90 @@
+.TH LOAD 1
+.\" @[$]load.1  1.2
+.ad
+.fi
+.SH NAME
+LOAD \- Datenuebertragung in den P8000-In-Circuit-Emulator
+.SH SYNTAX
+.B LOAD
+file
+.SH BESCHREIBUNG
+.I LOAD
+uebertraegt ein ausfuehrbares Maschinenprogramm (Lademodul)
+des jeweiligen Mikroprozessortyps in den P8000-In-Circuit-Emulator.
+Die Magic-Nummer des Lademoduls muss
+N_MAGIC1, X_MAGIC1 oder X_MAGIC3 sein (siehe
+.BR a.out (5)).
+Die Ausfuehrungserlaubnis wird ueberprueft,
+um sicherzustellen, dass der Lademodul keine Fehler enthaelt.
+.PP
+.I LOAD
+ermittelt die Ladepunkte der zu uebertragenden
+Text- und Datenbereiche aus dem Dateikopf und der Segmenttabelle
+der Dateien.
+Die Text-, Daten- und BSS-Sektionen
+werden dabei immer auf volle 256-Bytegrenzen geladen.
+.PP
+Sollen Programme fuer den Einchip-Mikrorechner (EMR) U881/882
+in den EMR-Emulator des P8000 geladen werden,
+gelten folgende Festlegungen:
+.TP
+kombinierter Code- und Datenbereich:
+Es werden der Reihenfolge nach der Code- und
+anschliessend der Datenbereich in den EMR-Emulator geladen.
+Dabei wird die Datensektion als Teil des Programmspeichers
+betrachtet.
+.TP
+getrennter Code- und Datenbereich:
+Es wird nur der Codebereich geladen; der Datenbereich bezieht sich auf den
+externen Speicher.
+.TP
+BSS-Bereich:
+Der BSS-Bereich des U881/882 bezieht sich auf die REGISTER-Sektion;
+er wird nicht geladen.
+.PP
+Wird eine Datei fehlerfrei in den EMR-Emulator geladen,
+erscheint das Prompt des EMR-Emulators.
+Das Programm kann mit dem Monitor-JUMP-Kommando
+gestartet werden (siehe Dokumentation zum EMR-Emulator).
+.SH DATEIEN
+a.out           Lademodul
+.SH SIEHE AUCH
+ld(1), send(1), u8send(1), a.out(5)
+.SH LADEPROZEDUR FUER DEN EMR-Emulator
+.IP 1. 4
+Der EMR-Emulator wird zwischen Terminal und P8000 installiert
+(siehe Dokumentation).
+.IP 2. 4
+Der EMR-Emulator und das Terminal werden eingeschaltet.
+.IP 3. 4
+Die RESET-Taste des EMR-Emulators ist zu betaetigen.
+Der EMR-Emulator meldet sich mit dem Prompt auf dem Terminal.
+.IP 4. 4
+Eingabe
+.B quit.
+Damit ist die Verbindung zum P8000 hergestellt (Transparent-Modus).
+.IP 5. 4
+Betaetigen der RETURN-Taste, um eine Login-Anforderung von
+WEGA zu erhalten
+.IP 6. 4
+Das Programm fuer den U881/882 wird mit den Kommandos
+.I u8as(1)
+und
+.I ld(1)
+erzeugt.
+.IP 7. 4
+Betaetigen der RESET-Taste und der MODE-Taste des EMR-Emulators;
+der Monitor meldet sich mit dem Prompt.
+.IP 8. 4
+Das Programm wird mit dem Monitorkommando
+.sp
+.B    LOAD filename
+.sp
+in den Emulator geladen. Der Monitor meldet eine
+fehlerfreie Uebertragung mit dem Prompt.
+.IP 9. 4
+Das Programm kann mit dem Monitorkommando
+.sp
+.B    G 0
+.sp
+gestartet werden.

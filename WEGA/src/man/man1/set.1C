@@ -1,0 +1,30 @@
+.TH SET 1C WEGA
+.\"@[$]set.1C	1.2
+.ad
+.fi
+.SH NAME
+set \- Erzeugen oder Modifizieren einer C-Shell-Variablen
+.SH SYNTAX
+\fBset \fR[\fIname\fB=\fIvalue\fR]
+.SH BESCHREIBUNG
+.B Set
+dient zum Erzeugen, Anzeigen oder Modifizieren von C-Shell-Variablen.
+Ist das \fBSet\fR-Kommando ohne Argument angegeben, werden die
+Werte aller Shell-Variablen angezeigt.
+Variable, die nicht nur ein einzelnes Wort als Wert haben,
+werden als eine (in Klammern eingeschlossene) Wortliste gedruckt.
+.PP
+Das \fBset\fR Kommando mit einem Argument der Form
+\fIname\fB=\fIvalue\fR,
+setzt
+.I name
+auf den einzelnen Wert
+.IR value .
+.PP
+Vor jedem Set-Kommando werden fuer alle Argumente
+die Variablen 
+expandiert.
+.SH SIEHE AUCH
+csh(1), env(1), printenv(1), setenv(1C).
+.br
+"Die C-Shell" in  WEGA-Dienstprogramme

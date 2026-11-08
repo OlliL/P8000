@@ -1,0 +1,25 @@
+.TH RESET 1 WEGA 
+.\" @[$]reset.1	1.2
+.ad
+.fi
+.SH NAME
+reset \- Ruecksetzen der Terminalmodi auf Standardwerte
+.SH SYNTAX
+.B reset<linefeed>
+.SH BESCHREIBUNG
+.B Reset
+setzt die Terminalmodi auf die Standardwerte, die beim
+Login gesetzt werden.
+Das Erase-Zeichen wird auf CTRL-h und das Kill-Zeichen auf CTRL-x
+gesetzt.
+.PP
+.B Reset
+wird fuer die Rueckkehr bei fehlerhafter Abarbeitung von Programmen benutzt,
+die das Terminal in einem
+unbekannten und unbrauchbaren Status gelassen haben.
+Da die Ausgabe von Newline und Linefeed ausgeschaltet
+sein koennen, ist es oft notwendig, Linefeed <LF> einzugeben, um
+alle vorherigen Eingaben zu loeschen und dann das Reset-Kommando zu 
+verwenden.
+.SH SIEHE AUCH
+stty(1), stty(2), gtty(2).

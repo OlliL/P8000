@@ -1,0 +1,680 @@
+.TH FSE 1 WEGA
+.\" @[$]fse.1 1.1
+.ad
+.fi
+
+.SH NAME
+fse          fullscreen \-Editor
+
+.SH SYNTAX
+.B fse [-optionen]  [dateiname]
+
+.SH OPTIONEN
+.TP 5
+.B \-
+Zur Voreinstellung der Optionen  kann die Umgebungsvariable
+.B FSE
+benutzt werden. Die dort spezifizierte Zeichenkette
+wird bei jedem Aufruf von fse vor die in der Kommandozeile
+spezifizierten Optionen gesetzt. Mehrfachangaben von Optionen
+bewirken die Negation des vorhergehenden Wertes. Grossbuchstaben
+bewirken das Aktivsetzen der Option
+.TP 5
+.B r
+Ist diese Option aktiv (Standard), so wird beim Start von fse im aktuellen
+Verzeichnis nach einem Informationsfile (.fse) gesucht.
+Ist in der Kommandozeile kein File spezifiziert worden, und
+ist das zuletzt (in diesem Directory) bearbeitete File wieder ladbar,
+so wird der Zustand des Editors vor dem letzten
+Quit \-Kommando wiederhergestellt.
+Beim Verlassen des Editors wird .fse aktualisiert.
+(dieses File darf jederzeit geloescht werden)
+.TP 5
+.B k
+Ist diese Option aktiv (nicht Standard), so wird beim Start von fse
+im aktuellen Verzeichnis nach einem File .fse gesucht und aus diesem
+die Tabelle der nutzerdefinierten Metakey\'s geladen.
+Beim Verlassen des fse wird der aktuelle Stand der Metakeytabelle im
+File .fse abgelegt.
+Metakey\'s sind Zeichenfolgen (einschliesslich Editorkommandos), die
+durch die Sequenz <ESC> <kleiner Buchstabe> abgerufen werden koennen.
+Es ist eine Standardeinstellung (fuer Modula-2) vorhanden. Diese kann
+zur Laufzeit umdefiniert werden (siehe ^QE und ^QT).
+Dies erscheint besonders dann sinnvoll, wenn bestimmte Zeichenfolgen
+haeufig eingegeben werden muessen.
+.TP 5
+.B y
+Die <Y> und die <Z> \-Tasten werden logisch auf
+der Tastatur vertauscht
+.TP 5
+.B b
+Es werden keine Backup\'s beim Abspeichern 
+eines editierten Files angelegt. 
+(Standard ist, dass Backdateien angelegt werden)
+.TP 5
+.B c
+Unterdrueckt die Eroeffnungsausschrift
+.TP 5
+.B n
+Beim Druecken der <ET> \-Taste wird ^M^J eingefuegt
+(MS \-DOS Standard).
+Die Anzeige des Zeilenendes erfolgt in beiden Faellen
+richtig (d.h. ohne ^M am Zeilenende)
+.TP 5
+.B e
+Ist diese Option spezifiziert, so sucht fse im aktuellen Verzeichnis
+nach einer Datei
+.B errmsg
+(errmsg wird danach geloescht).
+In dieser Datei sind  Fehlerausschriften mit Zeilennummer
+enthalten, die dann durch fse in der
+untersten Bildschirmzeile angezeigt werden,
+sobald sich der Kursor in einer der angegebenen Zeilen befindet.
+(der Kursor befindet sich nach dem Start von fse
+in der ersten fehlerhaften Zeile)
+.TP 5
+.B m
+Fuer das zweite Fenster wird 
+ein neues Hauptspeichersegment verwendet.
+Damit kann in 
+.B jedem 
+Fenster eine bis zu 64 Kbyte grosse Datei bearbeitet werden.
+Im Normalfall muessen sich beide 
+Fenster ein 64 Kbyte-Segment teilen, um ein Swappen der Prozesse
+nach Moeglichkeit zu vermeiden.
+.TP 5
+.B \<Zeilennummer\>
+Der Kursor wird zum  Beginn des Editierens 
+in die entsprechende Zeile gesetzt.
+
+.SH BESCHREIBUNG
+Fse ist ein dialogorientierter fullscreen \-Editor 
+fuer die Bearbeitung  beliebiger Dateien 
+(einschliesslich ausfuehrbarer Programme).
+
+Er besitzt folgende Charakteristika :
+.TP 5
+.B \-
+gleichzeitiges Bearbeiten von 2 Dateien 
+in separaten Fenstern moeglich.
+(Erzeugung 2\.Fenster / Uebergang 
+zum anderen Fenster durch ^W bzw. F14)
+.TP 5
+.B \-
+Darstellung und Bearbeitung des Dateiinhaltes 
+als Hexadezimaldump sowie als Text.
+(Uebergang zwischen beiden Modi durch ^Z)
+.TP 5
+.B \-
+Einfache Elemente der Textverarbeitung realisiert
+(dazu gehoeren Randausrichtung und Wortumbruch)
+.TP 5
+.B \-
+Laenge einer Zeile unbegrenzt
+.TP 5
+.B \-
+Unterstuetzung deutscher Umlaute.
+(Voraussetzung ist die Unterstuetzung der Umlaute durch
+Tastatur und Bildschirm)
+.TP 5
+.B \-
+die maximale Laenge der
+Dateien betraegt ca. 64 Kbyte
+.TP 5
+.B \-
+Verwendung der /etc/termcap fuer die Ermittlung
+von Steuerzeichenfolgen fuer die Bildschirmansteuerung
+(Anpassung geschieht zur Laufzeit)
+.TP 5
+.B \-
+Unterstuetzung von Metakey's (siehe dazu ^QE und ^QT)
+.TP 5
+.B \-
+Verwaltung von Fehlerausschriften (siehe Kommando fsc(1))
+.TP 5
+.B \-
+wahlweise Maskierung der Zeichen mit '01111111' bzw. '11111111'.
+(Einige Textverarbeitungssysteme 
+(z\.B\. WordStar) setzen bei einigen Zeichen 
+das hoechstwertige Bit und wandeln sie damit in nicht
+darstellbare Zeichen um.
+Um auch diese Zeichen sinnvoll darstellen
+zu koennen, muss mit der Maske '01111111' 
+dieses Bit ausgeblendet werden).
+Diese Maske wird auch beim Suchen angewendet, so dass die Zeichenketten
+auch dann gefunden werden, wenn Zeichen in oben genannter Weise
+markiert wurden.
+(Der Wechsel der Maske erfolgt mittels ^QM)
+.TP 5
+.B \-
+Anlegen von Backup's, d.h. wird eine Datei 
+bearbeitet, so wird ihr urspruenglicher
+Zustand unter dem alten Dateinamen,
+gefolgt von einem ~ aufbewahrt.
+Dieser Dienst kann  durch die Option "- b"
+beim Aufruf des Editors unterdrueckt
+oder waehrend des Editierens
+durch den Befehl ^QO geaendert werden
+.TP 5
+.B \-
+wahlweise Darstellung von Controlzeichen
+.nf
+1) keine Darstellung
+2) Darstellung als Leerzeichen
+3) Darstellung als Punkt
+4) Darstellung als ^ und Buchstabe
+.fi
+.TP 5
+.B \-
+Unterstuetzung einiger Systemfunktionen:
+.fi
+File loeschen,
+.fi
+Directory wechseln,
+.fi
+File\- Zugriffsrechte aendern,
+.fi
+aktuelles Directory anzeigen
+.TP 5
+.B \-
+staendig praesente Hilfsfunktion in der untersten Zeile
+.fi
+(abgestimmt auf Text/Dump bzw. insert/overwrite \-Modus des Editors)
+.TP 5
+.B \-
+vollstaendige Hilfsfunktion mit ^QH (oder F 9)
+.TP 5
+.B \-
+Unterstuetzung von Controlzeichen beim Suchen / Suchen und Ersetzen.
+Soll z.B. an den Anfang der folgenden 17 Zeilen ein X gesetzt werden,
+so muss nur das Kommando ^QA ,^J ,^JX ,17n gegeben werden.
+(Eine genaue Beschreibung des Such -und Ersetzbefehls folgt)
+.TP 5
+.B \-
+Suchen von Bytefolgen im Hexdump -Modus
+
+.SH
+.B DER TEXTMODUS
+.PP
+.B Kursorpositionierung
+.PP
+.br
+.TP 5
+.B ^QP  (oder F12)
+setzt den Kursor an den Anfang der Zeile
+mit der angegebenen Zeilennummer
+(bei zu grosser Zeilennummer wird das Dateiende angenommen).
+Ist zuvor durch ^QZ eine Zeilennummer gesichert worden und wird auf
+die Anfrage
+.B Line:
+<ET> gedrueckt, so wird in die Zeile mit ebendieser Nummer gegangen
+.TP 5
+.B ^QZ
+Sicherstellen der Zeilennummer, in der sich der Kursor gerade befindet
+(nach Fenstern getrennt).
+Dieser Befehl ist im Zusammenwirken mit ^QU und ^QP sinnvoll
+.TP 5
+.B ^QU
+bewegt den Kursor in die markierte Zeile und sichert die gerade
+aktuelle Zeilennummer. Dieser Befehl ist sinnvoll, wenn in einem
+Text oft zwischen verschiedenen Stellen hinundhergesprungen
+werden muss
+.TP 5
+.B ^UI
+stellt einen rechten Rand ein.
+Es ist die Nummer der Spalte anzugeben,
+die als Rand gelten soll.
+Damit ist automatisch ein Wotumbruch beim Ueberschreiten
+der ausgezeichneten Spalte verbunden.
+Ist obige Spaltennummer kleiner als 2, so wird die Randeinstellung
+geloescht und der Wortumbruch wird passiv gesetzt.
+Der verbleibende Text wird anschliessend durch Einfuegen von Leerzeichen
+nach dem rechten Rand ausgerichtet
+.TP 5
+.B ^B
+Bewirkt bei gesetztem Rand eine Neuausrichtung des vorliegenden Absatzes
+nach dem rechten Rand. Einrueckungen am Zeilenanfang
+werden davon nicht beruehrt
+.TP 5
+.B ^S
+Kursor nach links
+.TP 5
+.B ^D
+Kursor nach rechts
+.TP 5
+.B ^E
+Kursor eine Zeile hoeher
+.TP 5
+.B ^X
+Kursor eine Zeile tiefer
+.TP 5
+.B ^R
+Kursor an den Anfang des Bildschirms bewegen,
+bei nochmaligem ^R Rollen des Bildes
+.TP 5
+.B ^C
+Kursor an das Ende des Bildschirms bewegen,
+bei nochmaligem ^C Rollen des Bildes
+.TP 5
+.B ^A
+Kursor hinter linksgelegenes Wort (ein Wort rueckwaerts)
+.TP 5
+.B ^F
+Kursor an den Anfang des Wortes rechts
+.TP 5
+.B ^QS
+Kursor an den Anfang der aktuellen Zeile
+.TP 5
+.B ^QD
+Kursor an das Ende der aktuellen Zeile
+.TP 5
+.B ^QB
+Kursor am Blockanfang positionieren
+.TP 5
+.B ^QK
+Kursor am Blockende positionieren
+.TP 5
+.B ^QR
+Kursor an den Dateianfang
+.TP 5
+.B ^QC
+Kursor an das Dateiende
+.TP 5
+.B ^I
+Tabulator (Positionieren des Kursors unter das naechste Wort 
+der vorhergehenden Zeile.
+Enthaelt die vorhergehende Zeile echte Tabulatorzeichen (^I), so
+werden diese uebernommen (guenstig zum Aufbau von Tabellen).
+Anderenfalls werden Leerzeichen eingefuegt.
+(Soll ein harter Tabulator (^I) eingefuegt werden, so ist
+die Kommandofolge ^P^I zu verwenden).
+Ist 'autotab' aktiv, erfolgt diese Funktion nach jedem <RETURN> automatisch
+.TP
+.B ^QJ  (oder F 8)
+Letzten Fehler noch einmal anzeigen
+(nur wenn fse mit der Option -e aufgerufen)
+.TP 5
+.B ^QN  (oder F 13)
+Kursor auf die die naechste fehlerhafte Zeile setzen
+(nur wenn fse mit der Option -e aufgerufen)
+.TP 5
+.B ^QT Anzeige der Metakey's
+Es werden alle die Sequenzen angezeigt, die beim Betaetigen
+der Taste <ESC> <Kleinbuchstabe> in den Eingabestrom der Tastatur
+eingereiht werden. Damit ist klar, dass auch Editorkommandos
+in diesen Zeichenfolgen enthalten sein koennen. Diese werden
+beim Aufruf des Metakey's entsprechend ausgefuehrt.
+.TP 5
+.B ^QE Definition von Metakey's
+Mit Hilfe dieses Kommandos koennen neue Metakey's definiert werden,
+die dann fuer die weitere Benutzung des fse gueltig sind.
+Die alten Vereinbarungen werden dabei ueberschrieben.
+Aus Kompatibilitaetsgruenden sollten Editorkommandos nicht
+als Funktionstaste, sondern als Controlzeichen
+(also nicht F14, sondern ^W ) eingegeben werden.
+Weiter ist zu beachten, dass die <DEL> -Taste nicht auf dem
+Bildschirm dargestellt wird, auch wenn sie in der Zeichenkette vorhanden ist.
+Weiter liefern Kursortasten nur ihren Code und bewirken keine
+Korrektur der Eingabe.
+.fi
+Die Definition wird mit ^D abgeschlosen. Soll die Eingabezeichenkette
+^P oder ^D enthalten, so ist diesen ein ^P bei der Eingabe voranzustellen.
+Ist die Definition beendet, sollte anschliessend zur Kontrolle ^QT
+ausgefuehrt werden.
+Ist fse mit der Option k aufgerufen worden, so ist diese Einstellung
+auch beim naechsten Aufruf des fse von diesem Directory aus
+gueltig (wenn Aufruf mit Option -k). Anderenfalls sind die Definitionen
+nur temporaer fuer den gerade laufenden fse gueltig.
+.TP 5
+.B ^QF
+Suchen einer maximal 30 Zeichen langen Zeichenkette im Text.
+Dabei sind auch Controlzeichen als Suchbegriff zulaessig;
+sie werden mit ^P, gefolgt von dem Controlzeichen eingegeben.
+Speziell ist ^J das Zeilentrennzeichen.
+Sucht man also die Zeichenkette XXX am Ende einer Zeile, so muss der Suchbegriff
+XXX^J heissen (fuer XXX am Zeilenanfang waere es ^JXXX).
+.fi
+Als Optionen koennen eingegeben werden:
+.fi
+.B b
+fuer rueckwaerts suchen
+.fi
+.B u
+Gross -und Kleinschreibung werden nicht unterschieden
+.TP 5
+.B ^QA
+Suchen einer Zeichenkette im Text und Ersetzen durch eine andere.
+In der Such -bzw. Ersetzungszeichenkette sind Controlzeichen zulaessig,
+einschliesslich ^J fuer Zeilentrennzeichen.
+Ihre Eingabe erfolgt ueber ^P gefolgt von dem gewuenschten Zeichen.
+.fi
+.B Optionen:
+.fi
+.B b
+fuer rueckwaerts suchen,
+.fi
+.B u
+Gross \-und Kleinschreibung werden nicht unterschieden,
+.fi
+.B n
+es wird ohne Anfragen ersetzt,
+.fi
+.B anzahl
+bzw
+.B \*
+(Zahl)
+.fi
+fuer Anzahl der durchzufuehrenden Ersetzungen.
+Ein
+.B Stern
+bedeutet Ersetzen bei jedem Vorkommen.
+.fi
+.B d
+fuer Anzeige jeder Ersetzung
+(Standardmaessig wird erst am Ende des Vorgangs oder bei einer
+Anfrage der Bildschirm aktualisiert. Dadurch kann bei 
+haeufig auszufuehrenden Ersetzungen die Zeit fuer das
+Aktualisieren des Bildschirmes gespart werden).
+.fi
+Eine Anfrage
+.B [ replace? (y/n/c/*) ]
+in der obersten Bildschirmzeile kann beantwortet werden mit
+.fi
+.B y
+\- ja, es soll ersetzt werden.
+.fi
+.B n
+\- nein, es soll nicht ersetzt werden.
+.fi
+.B c
+\- Ersetzungsvorgang abbrechen.
+.fi
+.B *
+Ersetzen bei jedem weiteren Auftreten ohne Anfragen
+.fi
+
+.TP 5
+.B ^QQ
+Wiederholung des letzten ^QF bzw. ^QA \-Kommandos
+mit gleichen Parametern
+
+.SH
+.B Einfuege/\-Loeschoperationen
+.PP
+.TP 5
+.B ^V
+Wechsel zwischen insert und overwrite \-Modus.
+.fi
+.B Beachte:
+Am Zeilen \-und Dateienende wird generell eingefuegt
+.TP 5
+.B <DEL>
+Loeschen des Zeichens links vom Kursor 
+(wirkt auch auf Zeilentrennzeichen)
+.TP 5
+.B ^G
+Loeschen des Zeichens am Kursor
+(wirkt nicht auf ein Zeilentrennzeichen)
+.TP 5
+.B ^T 
+Loeschen des (gesamten) Wortes am Kursor
+(steht der Kursor nicht auf einem Wort,
+so bleibt der Befehl wirkungslos)
+.TP 5
+.B ^O
+Loeschen des Bereiches vom Zeilenanfang bis 
+(ausschliesslich) Kursorposition
+.TP 5
+.B ^QY
+Loeschen des Bereiches von (einschliesslich)
+aktueller Kursorposition bis Zeilenende
+.TP 5
+.B ^B
+Loeschen des Bereiches vom Zeilenanfang bis Zeilenende.
+.TP 5
+.B ^Y
+Entfernen der gesamten Zeile
+.TP 5
+.B ^QL
+Widerrufen der letzten Loeschoperation.
+Funktioniert nur, wenn nach dem Loeschkommando 
+noch keine anderen Kommandos gegeben wurden
+.TP 5
+.B ^UY
+markierten Block loeschen
+.TP 5
+.B ^UC
+markierten Block an die Kursorposition kopieren
+.TP 5
+.B ^UF
+Block aus anderem Fenster an Kursorposition kopieren
+.TP 5
+.B ^UV
+markierten Block an die Kursorposition verschieben
+.TP 5
+.B ^UR
+Einfuegen einer Datei ab Kursorposition
+.TP 5
+.B ^UW
+markierten Block in eine Datei schreiben
+
+.SH
+.B Blockmarkierungsbefehle
+.PP
+.TP 5
+.B ^UB,^UK
+Blockmarken setzen (sind bereits zwei Marken gesetzt,
+so werden diese erst geloescht und danach eine neue gesetzt)
+.TP 5
+.B ^UH
+Loeschen der Blockmarken
+.TP 5
+.B ^UJ
+Wort am Kursor markieren
+.TP 5
+.B ^UG
+aktuelle Zeile markieren
+
+
+.TP 5
+.B ^N
+Einfuegen eines ^L (Seitenvorschub).
+( ^L wird auf dem Bildschirm als Zeilenvorschub angezeigt.
+In der folgenden Zeile wird durch ein '>'
+der Beginn einer neuen Seite markiert)
+.TP 5
+.B <RETURN>
+alte Zeile abschliessen und Einfuegen einer neuen Zeile
+(unabhaengig von insert oder overwrite \-Modus)
+.TP 5
+.B ^P
+das folgende Zeichen wird so eingefuegt, wie es von der Tastatur kommt.
+Damit koennen z.B. Control\-Zeichen oder 
+Tabulatoren (^I) eingefuegt werden.
+.fi
+(Einfuegen von ^P^J ist mit dem Betaetigen der <RETURN> -Taste
+aequivalent)
+.TP 5
+.B ^QI (autotab)
+Automatisches Einruecken nach jedem 
+<RETURN> aus, bzw\. wieder einschalten
+
+.SH
+.B sonstige Kommandos
+.PP
+.TP 5
+.B ^W  (oder F 14)
+Wechsel in das andere Fenster bzw. Eroeffnung 2. Fenster
+.TP 5
+.B ^Z
+Wechsel DUMP/TEXT \-Modus
+.TP 5
+.B ^UA
+bearbeitete Kopie der Datei erhaelt einen neuen Namen.
+Dies ist in Faellen noetig, in denen die bearbeitete Version
+der Datei nicht unter dem alten Namen abgespeichert werden
+kann oder soll (z.B. weil die Zugriffsrechte fehlen)
+.TP 5
+.B ^US
+Abspeichern des aktuellen Zustandes der Datei.
+Danach wird die Arbeit an der alten Kursorposition fortgesetzt
+.TP 5
+.B ^UQ
+Verwerfen der bearbeiteten Kopie (d.h. die Datei behaelt den
+Zustand, den sie vor dem Editieren hatte.
+Es wird auch kein Backup angelegt.
+Wurden schon Veraenderungen an der Datei vorgenommen, wird
+zur Sicherheit angefragt 
+.fi
+.B [ \'save before quit ? (y/n/c)\' ]
+.fi
+.B y\:
+es wird erst abgespeichert und danach beendet,
+.fi
+.B n\:
+es wird sofort beendet,
+.fi
+.B c\:
+Kommando wird verworfen und die Arbeit normal fortgesetzt.
+.TP 5
+.B ^UE
+Sofortige Rueckkehr zum Betriebssystem
+.TP 5
+.B ^UZ
+Streichen der abschliessenden Leerzeichen und Tabulatoren 
+in den Zeilen.  (Compress)
+.TP 5
+.B ^UD (oder F10)
+Save und Quit
+.TP 5
+.B ^UX
+Compress und Save
+.TP 5
+.B ^UU
+Compress, Save und Quit (sollte fuer Textdateien Standard sein)
+.TP 5
+.B ^UP
+alte Datei verwerfen, neue laden
+(wenn z.B. die falsche Datei geladen wurde)
+.TP 5
+.B ^UN
+Save (fuer alte Datei) und Load (fuer neue Datei)
+(Uebergang zu einer neuen Datei)
+.TP 5
+.B ^UO
+Compress, Save und Load
+
+
+.TP 5
+.B ^UL
+Loeschen einer Datei im Filesystem
+.TP 5
+.B ^UM
+aktuellen Zugriffspfad (Homedirectory) wechseln
+.TP 5
+.B ^UT
+Filemode aendern
+(macht sich mitunter erforderlich, wenn fuer eigene Files
+die Zugriffsrechte so gesetzt sind, dass das System einen
+Zugriff des Editors auf diese Dateien unterbindet).
+Die neuen Rechte werden oktal eingegeben
+.TP 5
+.B ^QV
+Anzeige des aktuellen Directory. Ist das Directory zu lang,
+so wird geblaettert.
+Das Kommando kann mit <DEL> abgebrochen werden
+.TP 5
+.B ^QX
+Festlegung der Behandlung der nichtdarstellbaren Zeichen\:
+.nf
+1) keine Darstellung
+2) Darstellung als Leerzeichen
+3) Darstellung als Punkt
+4) Darstellung als ^ und Buchstabe (z\.B\. ^C ,^O ,^X )
+.fi
+.TP 5
+.B ^QM
+Festlegen der Maskierung der Zeichen fuer die Darstellung 
+auf dem Bildschirm
+.nf
+1) Maske 01111111 (also hoechstwertiges Bit loeschen)
+2) Maske 11111111 (Zeichen nicht veraendern         )
+.fi
+.SH DUMP \-Modus
+.TP 5
+.B ^V
+Wechsel zwischen ASCII und Hexadezimal \-Darstellung
+.TP 5
+.B ^S
+Kursor nach links
+.TP 5
+.B ^D
+Kursor nach rechts
+.TP 5
+.B ^E
+Kursor eine Zeile tiefer
+.TP 5
+.B ^X
+Kursor eine Zeile hoeher
+.TP 5
+.B ^R
+Kursor an den Bildschirmanfang bewegen,
+bei nochmaligem ^R Rollen des Bildschirmes
+.TP 5
+.B ^C
+Kursor an das Ende des Bildschirmes bewegen,
+bei nochmaligem ^C Rollen des Bildschirmes
+.TP 5
+.B ^QR
+Kursor an den Dateianfang
+.TP 5
+.B ^QC
+Kursor an das Dateiende
+.TP 5
+.B ^QD,^A
+Kursor an den Zeilenanfang
+.TP 5
+.B ^QD,^F
+Kursor an das Zeilenende
+.TP 5
+.B ^QP
+Positionieren des Kursors auf eine beliebige Adresse
+.fi
+(Adresse in hexadezimaler Schreibweise angeben)
+.TP 5
+.B ^QF
+Suchen einer in hexadezimaler Schreibweise einzugebenden Zeichenkette.
+Diese Zeichenkette kann eine Laenge von bis zu 16 Bytes haben
+.TP 5
+.B ^QB
+Kursor am Blockanfang positionieren
+.TP 5
+.B ^QK
+Kursor am Blockende positionieren
+
+Als Blockkommandos sind nur folgende Kommandos zugelassen :
+.TP 5
+.B  ^UW
+Schreiben des Blocks in eine Datei
+.TP 5
+.B ^UB,^UK
+Setzen der Blockmarken
+.TP 5
+.B ^UH
+Loeschen der Blockmarken
+
+.SH BESCHRAENKUNGEN
+Files, die laenger als 64 Kbyte sind, koennen mit fse nicht
+bearbeitet werden. Es erfolgt die Ausschrift
+.B\'File too big,Memoryoverflow\'.
+Gleiches geschieht, wenn waehrend des Editierens die
+angegebenen Grenzen gesprengt werden. Das letzte Kommando
+wird in diesem Fall ignoriert und die Arbeit des Editors
+normal fortgesetzt.
+
+.SH HINWEIS
+Beim Start passt sich fse dem verwendeten Terminal an.
+Dies geschieht durch Auswertung der Umgebungsvariablen
+.B TERM
+und der Eintraege in der Datei /etc/termcap,
+falls das verwendete Terminal nicht mit dem erwarteten uebereinstimmt.

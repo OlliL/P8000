@@ -1,0 +1,32 @@
+.TH TIMEX 1 WEGA
+.\" @[$]timex.1	1.2
+.ad
+.fi
+.SH NAME
+timex \- Dauer einer Kommandoausfuehrung mit Systemreport
+.SH SYNTAX
+\fBtimex \fIcommand\fR
+.SH BESCHREIBUNG
+Das angegebene Kommando 
+wird ausgefuehrt;
+nach seiner Ausfuehrung gibt
+.B timex
+die Zeit, die zur Ausfuehrung des Nutzerkommandos benoetigt wurde,
+die Zeit, in der sich das Kommando im Systemzustand befand sowie
+die Gesamtzeit zur Ausfuehrung des Kommandos bis zu seinem Abschluss
+aus (analog
+.BR time (1C)).
+Es wird ein Bericht ueber Systemaktivitaeten, die
+waehrend der Ausfuehrung der Kommandoausfuehrung
+auftraten, einschliesslich der CPU-Nutzung, E/A-Aktivitaeten,
+Systemumschaltungen und Swap-Vorgaenge sowie Zugriff zum Dateisystem,
+auf die Standardfehlerausgabe ausgegeben.
+Der Bericht umfasst
+.B alle
+Systemaktivitaeten waehrend der Ausfuehrungsdauer,
+nicht nur die, die infolge
+des Kommandos 
+.IR command 
+ablaufen.
+.SH SIEHE AUCH
+time(1C)

@@ -1,0 +1,30 @@
+.TH CHKWHAT 1 
+.\" @[$]chkwhat.1	1.2
+.ad
+.fi
+.SH NAME
+chkwhat \- Ausgabe der QCV-\'what\'-Zeichenketten
+.SH SYNTAX
+chkwhat [ -w ] \fIfile \fR...
+.SH BESCHREIBUNG
+.B Chkwhat
+durchsucht die angegebenen Dateien nach "what"-Zeichenketten
+und gibt die informativen Teile dieser Zeichenketten aus.
+.B Chkwhat
+ist Bestandteil des einfachen Quellcodeverwaltungssystems (siehe
+.BR qcv (5)).
+Ist die
+.I \-w
+Option angegeben, wird die ganze "what"-Zeichenkette ausgegeben.
+Diese Option kann beim Ablegen von "what"-Zeichenketten in Archive 
+hifreich sein.
+Die Datei muss keine Textdatei sein.
+.LP
+Eine "what"-Zeichenkette zeigt an, zu welcher Version
+die angegebene Datei gehoert.
+Die Zeichenkette beginnt mit der Zeichenfolge
+@[$] und endet mit Null, Newline, " oder '.
+Chkwhat gibt die Zeichenkette zwischen @[$] und dem
+Endekennzeichen aus.
+.SH SIEHE AUCH
+qcv(5), chkin(1), chkout(1)

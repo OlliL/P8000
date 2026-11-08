@@ -1,0 +1,82 @@
+.TH SIN 3 WEGA
+.\" @[$]sin.3   1.2
+.ad
+.fi
+.SH NAME
+sin, cos, tan, asin, acos, atan, atan2 \- trigonometrische Funktionen 
+.SH SYNTAX
+.nf
+\fB#include <math.h>
+.PP
+\fBdouble sin\fI(x)
+\fBdouble \fIx;
+.PP
+\fBdouble cos\fI(x)
+\fBdouble \fIx;
+.PP
+\fBdouble tan\fI(x)
+\fBdouble \fIx;
+.PP
+\fBdouble asin\fI(x)
+\fBdouble \fIx;
+.PP
+\fBdouble acos\fI(x)
+\fBdouble \fIx;
+.PP
+\fBdouble atan\fI(x)
+\fBdouble \fIx;
+.PP
+\fBdouble atan2\fI(x, y)
+\fBdouble \fIx, y;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktionen
+.BR sin ,
+.B cos
+und
+.B tan
+berechnen den Wert der
+trigonometrischen Funktionen von Argumenten, die
+im Bogenmass angegeben sind.
+Die Argumente sind vor dem Aufruf der Funktionen zu pruefen,
+um sinnvolle Ergebnisse zu erhalten. Es existieren folgende Umkehrfunktionen:
+.TP 8
+.B Asin
+Arcussinus im Intervall \-pi/2 bis pi/2 .
+.PD 0
+.TP
+.B Acos
+Arcuskosinus im Intervall 0 bis pi .
+.TP
+.B Atan
+Arcustangens von
+.I x
+im Intervall \-p/s bis pi/2 .
+.TP
+.B Atan2
+Arcustangens von
+.I x/y
+im Intervall \-pi bis pi .
+.PD
+.SH DIAGNOSTIK 
+Sind Argumente fuer die Funktionen
+.B asin
+und
+.B acos
+groesser als 1, wird der Wert Null zurueckgegeben.
+Die Variable
+.B errno
+wird auf
+.B EDOM
+gesetzt.
+.PP
+Der Wert der Funktion
+.B tan
+ist in seinen singulaeren Punkten eine sehr grosse Zahl.
+Die Variable
+.I errno
+wird dann auf ERANGE gesetzt.
+.SH EINSCHRAENKUNGEN
+Bei Argumenten groesser als 2**31 liefert
+.B tan
+sinnlose Werte.

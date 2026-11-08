@@ -1,0 +1,44 @@
+.TH FCNTL 7 WEGA
+.\" @[$]fcntl.7	1.2
+.ad
+.fi
+.SH NAME
+fcntl \- Dateiueberwachungsoptionen
+.SH SYNTAX
+.B #include <fcntl.h>
+.SH BESCHREIBUNG
+Der Systemruf
+.BR fcntl (2)
+ermoeglicht die Ueberwachung offener Dateien.
+Die folgende Deklarationsdatei beschreibt die Anforderungen
+und Argumente fuer die Systemrufe
+.BR fcntl (2)
+und
+.BR open (2).
+.PP
+.nf
+/* Flagwerte, auf die open(2) und fcntl(2) Zugriff haben */
+/*  (Die ersten drei koennen nur durch open gesetzt werden) */
+#define    O_RDONLY    0
+#define    O_WRONLY    1
+#define    O_RDWR      2
+#define    O_NDELAY    04       /* Nichtblockierende E/A */
+#define    O_APPEND    010      /* Anfuegen (Schreiben am Ende) */
+                                /*    gewaehrleistet) */
+
+/* Flagwerte, auf die nur open(2) Zugriff hat */
+#define    O_CREAT     00400    /* open mit Erzeugen der Datei */
+                                /*   (benutzt drittes open-Arg.)*/
+#define    O_TRUNC     01000    /* open mit Loeschen des Inhalts */
+#define    O_EXCL      02000    /* exklusiv open */
+
+/* fcntl(2) Anforderungen */
+#define    F_DUPFD     0        /* Duplizieren von fildes */
+#define    F_GETFD     1        /* fildes Flags holen*/
+#define    F_SETFD     2        /* fildes Flags setzen */
+#define    F_GETFL     3        /* file flags holen */
+#define    F_SETFL     4        /* file flags setzen */
+.fi
+.SH SIEHE AUCH
+fcntl(2),
+open(2).

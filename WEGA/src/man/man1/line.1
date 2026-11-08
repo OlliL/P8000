@@ -1,0 +1,23 @@
+.TH LINE 1 WEGA
+.\" @[$]line.1	1.2
+.ad
+.fi
+.SH NAME
+line \- Einlesen einer Zeile vom Terminal
+.SH SYNTAX
+.B line
+.SH BESCHREIBUNG
+.B Line\^
+kopiert eine Zeile (bis zum Newline) von der Standard\%eingabe
+auf die Standardausgabe.
+Bei Erkennen von
+.B EOF
+wird der Reuckkehrwert 1 zurueckgegeben.
+In der Ausgabe wird
+.B EOF
+dann durch ein Newline ersetzt.
+.B Line
+wird oft in Shellskripts benutzt, um eine Eingabe vom
+Nutzerterminal zu realisieren.
+.SH SIEHE AUCH
+gets(1C), sh(1), read(2).

@@ -1,0 +1,363 @@
+.TH SIGNAL 2 WEGA
+.\" @[$]signal.2        1.2
+.ad
+.fi
+.SH NAME
+signal \- Behandeln oder Ignorieren von Signalen
+.SH SYNTAX
+.BR "#include <signal.h>"     (nichtsegmentiert)
+.br
+.BR "#include <ssignal.h>"    (segmentiert)
+.PP
+(\fB*signal\fR
+.I (sig, func))()
+.br
+.I (*func)();
+.SH BESCHREIBUNG
+Bei Eintritt eines abnormalen Ereignisses wird ein
+.B signal
+erzeugt, das entweder vom Nutzer an einem Terminal
+(quit, interrupt),
+durch eine Programmfehler
+oder auf Anforderung eines anderen Programms (\fBkill\fR(2))
+ausgeloest wird.
+Normalerweise fuehren alle Signale zur Beendigung des empfangenden Prozesses.
+Ein Signal kann vom Empfangsprozess ignoriert werden oder
+eine Unterbrechung (Interrupt) zu einem bestimmten Speicherplatz bewirken.
+Die Liste der Signalnamen (siehe auch include-Dateien)
+ist unter
+.B ARGUMENTE
+aufgefuehrt.
+.PP
+Es ist zu beachten, dass fuer
+segmentierte und nichtsegmentierte Programme unterschiedliche
+Include-Dateien existieren.
+Der Rueckgabewert und das zweite Argument von
+.B signal 
+sind im nichtsegmentierten Fall ein Integer-Wert und im segmentierten
+Fall ein Long-Wert.
+.PP
+Nach einem Systemruf
+.BR  fork (2)
+erbt der Child-Prozess alle Signale.
+.BR  Exec (2)
+setzt alle behandelten Signale auf Standardaktion zurueck.
+.SH ARGUMENTE
+.I Sig
+kann mit Ausnahme von 
+.BR SIGKILL  
+jedes der folgenden Signale zugeordnet werden:
+.nf
+.sp
+SIGHUP  1     Unterbrechung der Leitung (Hangup)
+SIGINT  2     Interrupt
+SIGQUIT 3*    Quittierung (Quit)
+SIGILL  4*    Illegaler Befehl (bei Behandeln kein Ruecksetzen)
+SIGTRAP 5*    Trace-Trap (bei Behandeln kein Ruecksetzen)
+SIGIOT  6*    IOT- Befehl
+SIGEMT  7*    EMT-Befehl
+SIGFPE  8*    Gleitkommabehandlung
+SIGKILL 9     Kill (kann nicht behandelt oder ignoriert werden)
+SIGBUS  10*   Busfehler (ist bei P8000 nicht moeglich)
+SIGSEGV 11*   Segmentverletzung
+SIGSYS  12*   falsches Argument bei einem Systemruf
+SIGPIPE 13    Schreiben auf eine Pipe oder ein Link ohne Lesemoeglichkeit
+SIGALRM 14    Alarmclock
+SIGTERM 15    Software Beendigungssignal (Terminate)
+SIGUSR1 16    vom Nutzer definiertes Signal 1
+SIGUSR2 17    vom Nutzer definiertes Signal 1
+SIGCLD  18    Tod eines Childprozesses (siehe \fBWARNUNG\fR)
+SIGPWR  19    Stromausfall (vorbereitet, siehe \fBWARNUNG\fR)
+.fi
+.PP
+Die in oben stehender Liste mit einem Stern gekennzeichneten Signale
+verursachen ein Speicherabbild (core), sofern sie nicht behandelt
+oder ignoriert werden.
+.br
+Die Signale SIGIOT, SIGEMT, SIGBUS, SIGCLD und SIGPWR
+sind nicht portabel und sollten in Anwenderprogrammen nicht benutzt werden.
+.PP
+.I Func
+wird einer der folgenden drei Werte zugeordnet:
+.BR SIG_DFL ,
+.BR SIG_IGN ,
+oder eine
+.IR "Funktionsadresse" .
+.TP 9
+.B SIG_DFL
+Bei Empfang des Signals 
+.IR sig
+wird der Empfangsprozess beendet. Es gilt:
+.RS 9
+.IP - 3
+.PD 0
+Alle offenen Dateidescriptoren des Empfangsprozesses werden geschlossen.
+.IP - 3
+Fuehrt der Parent-Prozess des Empfangsprozesses einen Systemruf
+.BR wait (2)
+aus, wird er von der Beendigung des Empfangsprozesses informiert und
+die Nummer des Beendigungssignal wird dem Parent-Prozess mitgeteilt
+(siehe
+.BR wait (2)).
+.IP - 3
+Fuehrt der Parent-Prozess des Empfangsprozesses keinen Systemruf
+.BR wait (2)
+aus, wird der Empfangsprozess in einen Zombi-Prozess umgewandelt (Definition
+des Zombi-Prozesses siehe 
+.BR exit (2)).
+.IP - 3
+Die Parent-Prozess-ID
+der existierenden Child-Prozesse eines jeden Empfangsprozesses und die
+Zombi-Prozesse werden auf 1 gesetzt.
+Das bedeutet, dass der INIT-Prozess (siehe
+.BR intro (2))
+jeden dieser Prozesse erbt.
+.IP - 3
+In die Abrechnungsdatei wird ein Abrechnungsdatensatz geschrieben, wenn
+die Abrechnungsroutine des Systems aktiviert ist (siehe
+.BR acct (2)).
+.IP - 3
+Stimmen die Prozess-ID,
+die TTY-Gruppen-ID
+und die Prozessgruppen-ID
+des Empfangsprozesses ueberein, wird das Signal
+.B SIGHUP
+an alle Prozesse geschickt, deren Prozessgruppen-ID
+gleich der Prozessgruppen-ID
+des Empfangsprozesses ist.
+.IP - 3
+Im aktuellen Arbeitsdirectory des Empfangsprozesses wird ein 
+Speicherabbild (core) erzeugt, wenn
+.I sig
+zu den Signalen gehoert, die in der obenstehenden Liste durch
+ein Stern markiert sind
+.I und
+wenn ausserdem folgende Bedingungen erfuellt werden:
+.RS 3
+.sp
+.IP + 3
+Die effektive Nutzer-ID
+und die reale Nutzer-ID
+des Empfangsprozesses sind gleich.
+.IP + 3
+Eine als 
+.B core
+bezeichnete regulaere Datei existiert oder kann erstellt werden.
+Muss die Datei erstellt werden, hat sie folgende Eigenschaften:
+.RS 3
+.sp
+.IP \. 3
+Der Modus wird aus 066 und der
+Erstellungsmaske der Datei gebildet
+(siehe
+.BR umask (2)).
+.IP \. 3
+Der Eigner der Datei entspricht der effektiven
+Nutzer-ID des
+Empfangsprozesses.
+.IP \. 3
+Die Gruppen-ID der Datei entspricht der effektiven
+Nutzer-ID des
+Empfangsprozesses.
+.RE
+.RE
+.RE
+.PD
+.TP 9
+.B SIG_IGN
+Das Signal 
+.I sig
+wird ignoriert.
+.br
+.B Achtung:
+Das Signal
+.B SIGKILL
+kann nicht ignoriert werden.
+.TP 9
+.PD 0
+.I Funktionsadresse
+Bei Empfang des Signals
+.IR sig
+fuehrt der Empfangsprozess die durch
+.IR func
+angezeigte Signalbehandlungs-Funktion aus.
+Die Signalnummer
+.I sig
+wird als einziges Argument an die Signalbehandlungs-Funktion weitergegeben.
+.IP
+Nach Rueckkehr aus der Signalbehandlungs-Funktion wird der Empfangsprozess
+dort fortgesetzt, wo er unterbrochen wurde.
+Der Wert von
+.I func
+wird fuer das behandelte Signal auf 
+.B SIG_DFL
+gesetzt, ausser wenn das Signal 
+.BR SIGILL ,
+.BR SIGTRAP ,
+.BR SIGCLD
+oder
+.BR SIGPWR
+empfangen wurde.
+.IP
+Wenn ein zu behandelndes Signal waehrend eines 
+.BR read (2),
+.BR write (2),
+.BR open  (2)
+oder 
+.BR ioctl (2)
+Systemrufs an einem langsamen Geraet auftritt (z.B. an einem Terminal,
+nicht jedoch an einer Datei), und wenn das waehrend eines Systemrufs
+.BR pause (2)
+oder
+.BR wait (2)
+erfolgt, der aufgrund der Existenz eines vorher gestoppten
+oder Zombi-Prozesses nicht sofort zurueckkehrt, wird die 
+Signalbehandlungsfunktion ausgefuehrt und der unterbrochene 
+Systemruf gibt ein \-1 an den Aufrufprozess zurueck.
+.I Errno
+ist dann auf EINTR gesetzt.
+Der Nutzer kann auf Wunsch den Systemruf neu starten.
+.IP
+.B Achtung:
+Das Signal
+.B SIGKILL
+kann nicht behandelt werden.
+.RE
+.PD
+.SH DIAGNOSTIK
+.B Signal
+wird nicht ausgefuehrt, wenn mindestens einer der folgenden Punkte 
+zutrifft:
+.TP 11
+\%[EINVAL]
+.I Sig
+ist eine unzulaessige Signalnummer, einschliesslich
+.BR SIGKILL .
+.PD 0
+.TP
+\%[EFAULT]
+.I Func
+weist auf eine unzulaessige Adresse hin.
+.PD
+.SH RUECKGABEWERT
+Der Wert (int)\-1 wird zurueckgegeben, wenn das Signal ausserhalb des
+zulaessigen Bereiches liegt. Ein -1L wird im segmentierten Fall 
+zurueckgegeben.
+.SH EINSCHRAENKUNGEN
+Wenn ein Signal wiederholt eintrifft, bevor das vorhergehende 
+zurueckgesetzt werden konnte, wird es nicht behandelt.
+.PP
+Die Typspezifikation der Routine und ihr
+.I func
+Argument sind problematisch.
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT SIGNAL := 48
+
+     ...             !* r0 : Signalnummer in r0, Label in r1 *!
+Nichtsegmentiert
+                     !* r1 : Label *!
+Segmentiert
+                     !* rr2 : Label *!
+     sc     #SIGNAL
+     ...             !* r4 : vorhergehendes Label *!
+                     !* bei Fehler: Carry-Bit setzen!
+.fi
+.ad
+.PP
+Ist
+.I label
+0,
+wird die Standardaktion wieder aufgenommen.
+Ist
+.I label
+eine ungerade Zahl, wird das Signal ignoriert.
+Jedes geradzahlige
+.I label
+bezeichnet eine Adresse im Prozess, an der sich eine 
+Signalbehandlungsroutine befindet.
+.SH SIEHE AUCH
+kill(1), kill(2), pause(2), ptrace(2), wait(2). 
+.SH WARNING
+Es existieren in dieser WEGA-Version zwei Signale, die
+sich anders als die oben beschriebenen Signale verhalten:
+.PP
+SIGCLD  18  Tod eines Child-Prozesses
+.br
+SIGPWR  19  Stromausfall (vorbereitet).
+.PP
+Es kann nicht garantiert werden, dass diese Signale sich
+bei spaeteren WEGA-Versionen
+in oben beschriebener Weise verhalten.
+Es wird nachdruecklich davon abgeraten, sie in neuen Programmen zu 
+verwenden.
+.PP
+Fuer diese Signale gilt fuer das Argument
+.I func
+folgendes:
+.TP 9
+.B SIG_DFL
+Das Signal ist zu ignorieren.
+.TP 9
+.B SIG_IGN
+Das Signal ist zu ignorieren.
+Ist 
+.I sig
+ein
+.BR SIGCLD ,
+erstellen die Childprozesse des Aufrufprozesses keine Zombi-Prozesse,
+wenn sie enden (siehe
+.BR exit (2)).
+.TP 9
+.I Funktionsadresse
+Es gilt sinngemaess das oben gesagte.
+Eine Ausnahme tritt ein, wenn
+.SM
+.B SIGCLD
+Signale empfangen werden, waehrend der Prozess die Signalbehandlungsfunktion
+ausfuehrt.
+Diese Signale werden in eine Warteschlange eingereiht.
+Die Signalbehandlungsfunktion wird staendig neu ausgefuehrt, bis die 
+Warteschlange leer ist.
+.PP
+.B SIGCLD
+wirkt sich auf die Systemrufe
+.BR wait (2)
+und
+.BR exit (2)
+in folgender Weise aus:
+.TP 6
+.B wait
+Ist der Wert von
+.I func
+von
+.B SIGCLD
+auf 
+.B SIG_IGN
+gesetzt und wird ein
+.B wait
+ausgefuehrt, blockiert das
+.B wait
+solange, bis alle Child-Prozesse des Aufrufprozesses beendet sind;
+dann wird ein Wert von \-1 zurueckgegeben, wobei
+.I errno
+auf 
+.SM ECHILD
+gesetzt wird.
+.TP 6
+.B exit
+Wird im Parent-Prozess des endenden Prozesses der
+.I func
+Wert von
+.B SIGCLD
+auf 
+.BR SIG_IGN 
+gesetzt, erstellt der endende Prozess keinen Zombi-Prozess.
+.PP
+Bei Bearbeitung einer Pipeline macht die Shell den letzten Prozess
+in der Pipeline zum Parent der vorangegangenen Prozesse.
+Ein Prozess, in den man in dieser Weise eintritt (und der damit
+ein Parent anderer Prozesse wird), darf kein 
+.B SIGCLD
+setzen, wenn er behandelt werden will.

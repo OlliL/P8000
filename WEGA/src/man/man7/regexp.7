@@ -1,0 +1,406 @@
+.TH REGEXP 7 WEGA
+.\" @[$]regexp.7        1.2
+.ad
+.fi
+.SH NAME
+regexp \- Verarbeitung regulaerer Ausdruecke
+.SH SYNTAX
+.B #define INIT
+.I declarations
+.br
+.B #define GETC()
+.I getc code
+.br
+.B #define PEEKC()
+.I peekc code
+.br
+.B #define UNGETC\fR(\fIc)\fR
+.I ungetc code
+.br
+.B #define RETURN
+.I (pointer) return code
+.br
+.B #define ERROR
+.I (val) error code
+.PP
+.B "#include    <regexp.h>"
+.PP
+.B char
+.I \(**compile(instring, expbuf, endbuf, eof)\fR
+.br
+.B "char \fI\(**instring, \(**expbuf, \(**endbuf;"\fR
+.PP
+.B "int \fIstep(string, expbuf)\fR
+.br
+.B "char \fI\(**string, \(**expbuf;\fR
+.SH BESCHREIBUNG
+Diese Funktionen sind allgemeingueltige Funktionen zur Verarbeitung
+regulaerer Ausdruecke.
+Sie sind in der Deklarationsdatei
+.IR /usr/include/regexp.h
+definiert.
+Die Programme
+.BR ed (1),
+.BR sed (1),
+.BR grep (1)
+und
+.BR expr (1)
+benutzen diese Funktionen
+und somit die gleiche Algorithmik
+zur Behandlung regulaerer Ausdruecke.
+.PP
+Programme, die dieses Interface nutzen,
+muessen vor der Anweisung
+.IP
+#include <regexp.h>
+.PP
+folgende fuenf Makros definieren. Diese Makros werden von der
+Uebersetzungsfunktion
+.B compile
+benutzt.
+.TP 14
+.BR GETC (\|)
+Es wird der Wert des naechsten Zeichens des regulaeren Ausdrucks
+zurueckgegeben.
+Aufeinanderfolgende Aufrufe des Makros liefern aufeinanderfolgende
+Zeichen des regulaeren Ausdrucks.
+.TP 14
+.BR PEEKC (\|)
+Es wird das naechste Zeichen des regulaeren Ausdruck zurueckgegeben.
+Unmittelbar aufeinanderfolgende Aufrufe des Makros liefern immer
+das gleiche Zeichen, das auch von
+.BR GETC (\|)
+zurueckgegeben werden wuerde.
+.TP 14
+\fBUNGETC\fR(\fIc\fR)
+Das Makro bewirkt,
+dass das Argument
+.I c
+beim naechsten Aufruf von
+.BR GETC (\|)
+(und
+.BR PEEKC (\|))
+zurueckgegeben wird.
+Es wird nie mehr als ein Zeichen zurueckgespeichert und
+dieses Zeichen ist immer das letzte Zeichen, das vom Makro
+.BR GETC (\|)
+gelesen wurde. Der Wert des Makros
+.B UNGETC
+wird immer ignoriert.
+.TP 14
+\fBRETURN\fR(\fIptr\fR)
+Dieses Makro wird bei normaler Beendigung der Funktion
+.I compile
+verwendet.
+Der Wert des Arguments
+.I pointer
+ist ein Pointer auf das Zeichen, das nach dem letzten Zeichen
+des uebersetzten regulaeren Ausdrucks folgt.
+Das Makro ist fuer solche Programme nuetzlich, die
+eine eigene Speicherverwaltung realisieren.
+.TP 14
+\fBERROR\fR(\fIval\fR)
+Dieses Makro ist der abnormale Austritt aus der Funktion
+.IR compile .
+Das Argument
+.I val
+ist eine Fehlernummer (Bedeutung siehe Tabelle).
+Dieser Aufruf kehrt nie zurueck.
+.PP
+.ne 14
+.RS
+.PD 0
+.TP 1i
+ERROR
+BEDEUTUNG
+.TP
+11
+Endpunkt des Intervalls zu gross.
+.TP
+16
+Unzulaessige Zahl.
+.TP
+25
+"\edigit" liegt ausserhalb des zulaessigen Bereichs.
+.TP
+36
+Unzulaessiges oder fehlendes Begrenzungssymbol.
+.TP
+41
+Kein Rueckbezug auf Suchzeichenkette moeglich.
+.TP
+42
+\fB\e(\| \e)\fR nicht paarweise.
+.TP
+43
+Zu viele \fB\e(\fR.
+.TP
+44
+Mehr als 2 Zahlen in \fB\e{\| \e}\fR gegeben.
+.TP
+45
+\fB}\fR wird nach \fB\e\fR erwartet.
+.TP
+46
+Erste Zahl ist groesser als zweite in \fB\e{\| \e}\fR.
+.TP
+49
+\fB[ ]\fR nicht paarweise.
+.TP
+50
+Ueberlauf des regulaeren Ausdrucks.
+.RE
+.PD
+.PP
+Es folgt die Syntax der Funktion
+.BR compile :
+.IP
+.BR compile (
+.IR instring ,
+.IR expbuf ,
+.IR endbuf ,
+.IR eof )
+.br
+.B "char \fI\(**instring, \(**expbuf, \(**endbuf;"\fR
+.PP
+Der Parameter
+.I instring
+wird von der Funktion
+.B compile
+nie explizit genutzt. Er ist jedoch fuer Programme sinnvoll, die
+verschiedene Pointer auf Eingabezeichen uebergeben.
+Er wird manchmal bei der Deklaration von
+.B INIT
+verwendet (siehe unten).
+Programme, die Funktionen
+zum Einlesen von Zeichen aufrufen oder
+die Zeichen in einem externen Bereich benutzen, koennen einen Wert
+((char \(**) 0) fuer diesen Parameter uebergeben.
+.PP
+Der Parameter
+.I expbuf
+ist ein Zeichenpointer.
+Er enthaelt die Adresse des Bereichs, in dem der uebersetzte regulaere
+Ausdruck gespeichert werden soll.
+.PP
+Der Parameter
+.I endbuf
+ist die hoechste Adresse des Bereichs, in dem
+der uebersetzte regulaere Ausdruck gespeichert werden kann, plus 1.
+Nimmt der uebersetzte Ausdruck mehr als
+.RI ( endbuf \- expbuf )
+Bytes in Anspruch, wird
+.BR ERROR (50)
+aufgerufen.
+.PP
+Der Parameter
+.I eof
+ist das Zeichen, das das Ende des regulaeren Ausdrucks markiert.
+In
+.BR ed (1)
+ist dieses Zeichen normalerweise ein
+.BR / .
+.PP
+Jedes Programm, das die Datei
+.B <regexp.h>
+einbezieht, muss einen Anweisung
+.IP
+\fB#define INIT \fIdeclaration\fR
+.PP
+enthalten.
+Diese Definition folgt gleich nach der Deklaration der Funktion
+.B compile
+und der an den Anfang gestellten geschweiften Klammer
+.RB ( { ).
+Sie wird fuer abhaengige Anweisungen und Initialisierungen benutzt.
+Meist wird eine Registervariable gesetzt, die
+auf den Anfang des regulaeren Ausdrucks zeigt.
+Somit kann diese Registervariable in den Anweisungen fuer
+.BR GETC (\|),
+.BR PEEKC (\|)
+und
+.BR UNGETC (\|)
+benutzt werden.
+Andernfalls koennen mit ihr externe Variable vereinbart werden,
+die von
+.BR GETC (\|),
+.BR PEEKC (\|)
+und
+.BR UNGETC (\|)
+benutzt werden koennen.
+.PP
+Die Funktion
+.IR step
+fuehrt einen Mustervergleich zwischen einer Zeichenkette
+und einem uebersetzten regulaeren Ausdruck durch.
+Diese Funktion wird wie folgt gerufen:
+.IP
+.BR step (
+.IR string ,
+.IR expbuf )
+.br
+.B "char \fI\(**string, \(**expbuf;\fR
+.PP
+Der Parameter
+.I string
+ist ein Pointer auf eine Zeichenkette, die beim Mustervergleich
+benutzt wird.
+Diese Zeichenkette sollte mit einem Nullbyte abgeschlossen sein.
+.PP
+Der Parameter
+.I expbuf
+ist der uebersetzte regulaere Ausdruck, der von der Funktion
+.B compile
+zurueckgegeben wurde.
+.PP
+Die Funktion
+.B step
+gibt den Wert 1 zurueck, wenn die gegebene Zeichenkette mit dem
+regulaeren Ausdruck
+.I expbuf
+uebereinstimmt und Null, wenn keine
+Uebereinstimmung vorliegt.
+Liegt eine Uebereinstimmung vor, werden
+als Nebeneffekt beim Aufruf von
+.IR step
+zwei externe Zeichenpointer gesetzt.
+Die Variable
+.IR loc1
+ist ein Pointer auf das erste Zeichen, das mit dem regulaeren
+Ausdruck uebereinstimmt.
+Die Variable
+.IR loc2 ,
+die von der Funktion
+.IR advance
+gesetzt wird, zeigt auf das Zeichen, das nach dem letzten Zeichen
+folgt, das mit dem regulaeren Ausdruck uebereinstimmt.
+Wenn also der regulaere Ausdruck mit der gesamten Zeile uebereinstimmt,
+zeigt
+\fIloc1\fR auf das erste Zeichen von
+.I string
+und
+.I loc2
+zeigt auf das Nullbyte am Ende
+der Zeichenkette
+.IR string .
+.PP
+Die Funktion
+.B step
+benutzt die externe Variable
+.I circf .
+Sie wird von der Funktion
+.B compile
+gesetzt, wenn der regulaere Ausdruck mit dem Zeichen
+.BR ^ 
+beginnt. Ist sie gesetzt, versucht
+.B step
+nur, den regulaeren Ausdruck mit dem Anfang der Zeichenkette zu vergleichen.
+Soll mehr als ein regulaerer Ausdruck uebersetzt werden, bevor
+der erste regulaere Ausdruck abgearbeitet wird,
+wird der Wert von
+.I circf
+fuer jeden uebersetzten Ausdruck gespeichert und
+.I circf
+wird
+vor jedem Aufruf von
+.B step
+auf diesen gespeicherten Wert gesetzt.
+.PP
+Die Funktion
+.B advance
+wird von der Funktion
+.B step
+mit denselben Argumenten wie
+.IR step
+aufgerufen.
+Die Funktion
+.B step
+ruft fuer jedes Zeichen des Arguments
+.I string
+die Funktion
+.BR advance ,
+bis von der Funktion
+.B advance
+der Wert 1 zurueckgegeben wird. Dadurch wird anzeigt,
+dass eine Uebereinstimmung vorliegt oder das Ende der Zeichenkette
+.I string
+erreicht ist.
+Steht die Zeichenkette
+.I string
+mit Sicherheit am Anfang der Zeile, muss die Funktion
+.B step
+nicht aufgerufen werden, es genuegt der Aufruf der Funktion
+.BR advance .
+.PP
+Findet
+.B advance
+im regulaeren Ausdruck
+eine Sequenz \fB\(**\fR oder \fB\e{\| \e}\fR,
+wird der Pointer auf die zu untersuchende Zeichenkette
+soweit wie moeglich vorgesetzt.
+Die Funktion ruft sich selbst rekursiv auf,
+um den Rest der Zeichenkette mit dem Rest des regulaeren
+Ausdrucks zu vergleichen.
+Solange keine Uebereinstimmung festgestellt wird,
+geht
+.B advance
+in der Zeichenkette zurueck, bis eine Uebereinstimmung gefunden wird
+oder bis der Punkt in der Zeichenkette erreicht ist, der urspruenglich mit
+\fB\(**\fR oder
+\fB\e{\| \e}\fR uebereinstimmte.
+Es ist oft guenstig, wenn der Vorgang des Rueckwaertsdurchsuchens
+der Zeichenkette abgebrochen wird, bevor der Ausgangspunkt in
+ihr erreicht ist.
+Wird im Verlauf des Rueckwaertsdurchsuchens
+der Wert des externen Zeichenpointers
+.I locs
+erreicht, beendet
+.B advance
+diese Schleife und gibt den Wert Null zurueck.
+Dieser Mechanismus wird von den Programmen
+.BR ed (1)
+und
+.BR sed (1)
+fuer globale Ersetzungen genutzt (d.h. nicht nur fuer
+die erste Uebereinstimmung, sondern fuer die ganze Zeile).
+Ausdruecke wie
+.B s/y\(**//g
+fuehren nicht zu einer Endlosschleife.
+.PP
+Die Funktionen
+.BR ecmp 
+und
+.B getrange
+werden von den oben erwaehnten Funktionen aufgerufen.
+.SH BEISPIELE
+Das folgende Beispiel verdeutlicht die Arbeit mit regulaeren Ausdruecken
+im Programm
+.BR grep (1):
+.PP
+.nf
+#define INIT       register char \(**sp = instring;
+#define GETC(\|)     (\(**sp\++)
+#define PEEKC(\|)    (\(**sp)
+#define UNGETC(c)  (\-\-sp)
+#define RETURN(c)  return;
+#define ERROR(c)   regerr(\|)
+.PP
+#include <regexp.h>
+.RI ...
+        compile(\(**argv, expbuf, &expbuf[ESIZE], \(fm\e0\(fm);
+.RI ...
+        if(step(linebuf, expbuf))
+                succeed(\|);
+.fi
+.SH DATEIEN
+/usr/include/regexp.h
+.SH SIEHE AUCH
+ed(1),
+grep(1),
+sed(1).
+.SH EINSCHRAENKUNGEN
+Die Funktion
+.BR ecmp 
+ist aequivalent zur Standard E/A-Funktion
+.B strncmp
+und kann durch diese Funktion ersetzt werden.

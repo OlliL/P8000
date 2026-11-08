@@ -1,0 +1,198 @@
+.TH MAIL 1 WEGA
+.\" @[$]mail.1	1.2
+.ad
+.fi
+.SH NAME
+mail, rmail \- Senden und Empfangen von Post unter Nutzern
+.SH SYNTAX
+\fBmail\fR [\fB\-pqr\fR] [\fB\-f\fI file\fR]
+.PP
+\fBmail\fI persons\fR
+.PP
+\fBrmail\fI persons\fR
+.SH BESCHREIBUNG
+.B Mail\^
+ohne Argumente druckt die Post des Nutzers (Nachricht fuer
+Nachricht) aus. Die zuletzt empfangene Nachricht wird zuerst ausgegeben.
+Bei jeder Nachricht wird der Nutzer durch
+.B ?
+gefragt, wie die Nachricht zu behandeln ist.
+Folgende Moeglichkeiten existieren:
+.TP 11
+.B d
+Loescht die Nachricht und geht zur naechsten ueber.
+.TP
+.B "EOT (control-D)"
+Gibt die ungeloeschte Nachricht zurueck zur Mail-Datei und stoppt.
+.TP
+.BR m [\fIpersons\fR]
+Verschickt die Nachricht an die benannten
+.I Personen\^
+(Standard ist die eigene Person).
+.TP
+<Newline>
+Geht weiter zur naechsten Nachricht.
+.TP
+.B p
+Druckt die Nachricht nocheinmal aus.
+.TP
+.B q
+Entspricht
+.BR EOT .
+.TP
+.BR s [\fIfiles\fR]
+Rettet die Nachricht in die benannten Dateien
+.I files\^
+.RB ( mbox
+ist der Standardfall).
+.TP
+.BR w [\fIfiles\fR]
+Rettet die Nachricht ohne Kopf in die benannten Dateien
+.I files\^
+.RB ( mbox
+ist der Standardfall).
+.TP
+.B x
+Gibt die gesamte Post unveraendert in die Mail-Datei zurueck und stoppt.
+.TP
+.B +
+Entspricht <Newline>.
+.TP
+.B \-
+Geht zur vorherigen Nachricht zurueck.
+.TP
+.BI ! command\^
+Geht zur Shell ueber, um das Kommando
+auszufuehren.
+.TP
+.B \(**
+Druckt eine Kommandozusammenfassung.
+.PP
+Ist das Argument \fIpersons\fR angegeben, liest
+.B mail\^
+die Standard\%eingabe bis zu einem End-of-File 
+(oder einer Zeile mit einem
+.BR \&. )
+und fuegt diese Eingabe zur Mail-Datei jeder angegebenen Person hinzu.
+Der Nachricht geht der Name des Absenders und eine Post\%anmerkung voran.
+Zeilen, die in der Nachricht wie Post\%anmerkungen aussehen
+(d.h., "From\.\.\.")
+werden mit einem
+.B >
+eingeleitet. Eine
+.I person\^
+ist meistens ein Nutzername, wie er bei
+.BR login (1)
+erkannt wird. Wird eine
+.IR Person ,
+an die eine Post gesendet wird, nicht erkannt oder
+die Post waehrend der Eingabe unterbrochen, wird
+der abgebrochene Brief gerettet, um ein Editieren und ein
+erneutes Senden zu ermoeglichen.
+Er wird im aktuellen Arbeitsdirectory abgespeichert.
+.PP
+Um einen Empfaenger in einem Remote-System zu kennzeichnen, ist
+.I person\^
+der Systemname und ein Ausrufezeichen voranzustellen (siehe
+.BR uucp (1)).
+Das Remote-System wertet alle Zeichen aus,
+die nach dem ersten Ausrufezeichen in
+.I persons\^
+stehen.
+Durch zusaetzliche Ausrufezeichen in
+.I persons\^
+wird die Reihe von Maschinen gekennzeichnet, durch die die
+Nachricht bis zu ihrer endgueltigen Adresse zu senden ist.
+So bewirkt z.B. der angegebene Empfaengername
+.B a!b!cde,
+dass die Nachricht zum Nutzer
+.B b!cde
+im System 
+.BR a 
+gesendet wird.
+System
+.B a
+aber interpretiert die Adresse als eine Aufforderung, die Nachricht
+zum Nutzer
+.B cde
+im System
+.BR b 
+zu senden.
+.PP
+Das Zugriffsrecht
+.I other\^
+der Datei kann 'Lesen+Schreiben' sein, 'nur Lesen' oder 'weder Lesen
+noch Schreiben', um verschiedene Grade der Geheimhaltung zu erlauben. 
+Soll einer dieser Zustaende, der von der Standardeinstellung abweicht,
+geaendert werden, ist eine leere Datei aufzubewahren, um die 
+gewuenschten Zustaende fortbestehen zu lassen.
+Die Datei kann zu Beginn folgende Zeile enthalten:
+.PP
+.RS
+Forward to
+.I person\^
+.RE
+.PP
+Dadurch wird die gesamte Post, die zum Eigner der Mail-Datei gesendet
+werden soll, zu
+.IR person 
+befoerdert
+(z.B. um die gesamte Post einer Person
+zu einer Maschine in einer Mehrrechnerkopplung zu befoerdern).
+.PP
+.B Rmail\^
+erlaubt nur das Senden von Post;
+.BR uucp (1)
+verwendet
+.B rmail\^
+als Sicherheitsmassnahme.
+.PP
+Nach der Anmeldung durch login wird der Nutzer ueber 
+eventuell vorhandene Post informiert.
+.SH OPTIONEN
+.TP
+.BI \-f file\^
+Die angegebene Datei
+wird anstelle der Standard-Mail-Datei verwendet.
+.TP
+.B \-p
+Die gesamte Post wird ohne Abfrage gedruckt.
+.TP
+.B \-q
+.B Mail\^
+bricht nach Interrupts ab.
+Normalerweise bewirkt ein Interrupt nur die Beendigung
+der gerade gedruckten Nachricht.
+.TP
+.B \-r
+Die Nachrichten werden in der Reihenfolge 
+ihres Eingangs gedruckt (sonst umgekehrt; die aktuellste zuerst).
+.SH DATEIEN
+.ta  28
+/etc/passwd	zur Identifizierung der Personen
+.br
+/usr/spool/mail/\(**	eintreffende Post fuer Nutzer \(**
+.br
+$HOME/mbox	gerettete Post
+.br
+$MAIL	\fIMail-Datei\fR
+.br
+/tmp/ma\(**	temporaere Datei
+.br
+/usr/spool/mail/\(**.lock	sperren der Mail-Directory
+.br
+dead.letter	nicht sendbarer Text
+.br
+.ta
+.SH SIEHE AUCH
+login(1),
+uucp(1),
+write(1).
+.SH EINSCHRAENKUNGEN
+Zugriffskonflikte resultieren manchmal aus dem fehlerhaften Streichen einer
+Lock-Datei.
+.br
+Nach einem Interrupt kann die naechste Nachricht nicht gedruckt werden;
+ein Druck kann nur durch Eingabe eines
+.BR p 
+erzwungen werden.

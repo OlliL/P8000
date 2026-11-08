@@ -1,0 +1,35 @@
+.TH WHODO 1 WEGA
+.\" @[$]whodo.1	1.2
+.ad
+.fi
+.SH NAME
+whodo \- Ausgabe der aktuellen Nutzernamen mit Prozess-Status
+.SH SYNTAX
+.B whodo
+.SH BESCHREIBUNG
+.B Whodo
+erzeugt eine zusammengefuegte und formatierte Ausgabe der Kommandos
+.BR who (1)
+und
+.BR ps (1),
+aus der alle Aktivitaeten der gegenwaertig im System angemeldeten
+Nutzer zu entnehmen sind.
+.SH BEISPIEL
+.sp
+.nf
+% whodo
+Wed Sep 16 09:00:08 MEZ 1987
+   0    131   0:10 scc
+   5    149   0:17 vi
+0   paul      08:23
+5   heinrich  08:42
+co  hugo      07:52
+  co     31   0:01 dqueuer
+  co     33   0:06 cron
+  co     37   0:05 update
+  co    164   0:01 sh
+  co    168   0:03 ps
+  co    171   0:00 sh
+.fi
+.SH SIEHE AUCH
+ps(1), who(1), whois(1), whoami(1), users(1).

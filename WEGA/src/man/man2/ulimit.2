@@ -1,0 +1,71 @@
+.TH ULIMIT 2 WEGA
+.\" @[$]ulimit.2	1.2
+.SH NAME
+.ad
+.fi
+ulimit \- Erhalten und Setzen von Nutzerlimits
+.SH SYNTAX
+.B long ulimit
+.I (cmd, newlimit)
+.br
+.B int
+.I cmd;
+.br
+.B long
+.I newlimit;
+.SH BESCHREIBUNG
+Der Systemruf
+.B ulimit
+ermoeglicht die Kontrolle ueber Prozesslimits.
+Gueltige Argumente fuer
+.I cmd
+sind:
+.TP 3
+.B 1
+Das Limit der Dateigroesse des Prozesses wird zurueckgegeben.
+Das Limit wird in Einheiten von 512-Byte-Bloecken angegeben.
+Der Child-Prozess erbt dieses Limit.
+Dateien beliebiger Groesse koennen gelesen werden.
+Das Standard-Limit fuer die Groesse
+beschreibbarer Dateien betraegt 5000 Bloecke.
+.TP 3
+.B 2
+Das Limit fuer die Dateigroesse des Prozesses wird auf den Wert
+.IR newlimit
+gesetzt.
+Jeder Prozess kann das Limit erniedrigen.
+Nur ein Prozess mit der effektiven Nutzer-ID des Superusers
+kann das Limit erhoehen.
+.TP 3
+.B 3
+Der maximal moegliche Break-Wert wird zurueckgegeben (siehe
+.BR brk (2)).
+.SH DIAGNOSTIK
+.TP 11
+\%[EPERM]
+.B Ulimit
+meldet Fehler und
+veraendert das Limit des Prozesses nicht, wenn ein Prozess
+mit einem Nutzer-ID, das nicht dem des Superusers entspricht, versucht,
+das Limit zu erhoehen.
+.SH RUECKGABEWERT
+Nach erfolgreicher Ausfuehrung wird ein nichtnegativer Wert zurueckgegeben.
+Sonst wird der Wert \-1 zurueckgegeben und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+brk(2), write(2).
+.SH ASSEMBLER
+.na
+.nf
+     CONSTANT ULIMIT	:= 64
+
+     ...             !* r0 : cmd *!
+                     !* r1 : newlimit (high word) *!
+                     !* r2 : newlimit (low word) *!
+     clr    rr4
+     sc     #ULIMIT
+     ...             !* Rueckgabewert in rr4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

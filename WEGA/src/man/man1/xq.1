@@ -1,0 +1,184 @@
+.TH XQ 1 WEGA
+.\" @[$]xq.1	1.2
+.ad
+.fi
+.SH NAME
+xq  \- Verwaltung von Anforderungen an den Drucker-Spooler
+.SH SYNTAX
+\fBxq [ -q \fIqueue:dev \fB[ -s ] ]\fR   
+.br
+\fBxq [ -d \fISEQN-list\fB ]\fR
+.SH BESCHREIBUNG
+.B Xq
+ermoeglicht die Verwaltung (Uebersicht, Loeschen von Eintraegen,
+Stoppen der Abarbeitung) des allgemeinen Warteschlangensystem.
+Sind keine Optionen angegeben, listet
+.B xq
+Devices, Warteschlangen, Anforderungen und Stati fuer alle
+Eintraege, die im Warteschlangen-System vorgenommen wurden, aus.
+.PP
+Der Superuser besitzt erweiterte Moeglichkeiten des Eingriffs
+in das Warteschlangensystem. Siehe dazu
+.BR xq (M).
+.PP
+Es ist nicht moeglich,
+" \fB-q \fIqueue:dev \fB-s\fR " und " \fB-d \fISEQN-list\fR "  
+in einem Aufruf anzugeben.
+.PP
+Fuer Warteschlangen und Devices werden folgende Informationen ausgegeben:
+.RS 3
+.TP 6
+.B Q:DEV
+Warteschlangenname:Devicename
+(Devicename wird nur fuer Deviceeintraege ausgegeben)
+.TP 6
+.B STATUS
+aktueller Status.  Stati sind:
+.RS 3
+.TP 9
+.B READY
+- Bereit fuer Ausgabe. 
+.TP 9
+.B RUNNING
+- Ausgabe laeuft. 
+.TP 9
+.B OFFLINE
+- Device ist offline und kann nicht verwendet werden. 
+.TP 9
+.B DOWN
+- Warteschlange oder Device sind tot. 
+Fuer tote Warteschlangen werden keine Eintraege akzeptiert
+und es werden keine Dateien an tote Devices ausgegeben.
+.RE
+.TP 6
+.B PRIORITY
+Aktuelle Prioritaet der Warteschlange.
+Anforderungen, die eine geringere Prioritaet als die hier angegebene
+besitzen, werden nicht bearbeitet.
+.TP 6
+.B FORM
+(nicht implementiert).
+.TP 6
+.B ACTIVE
+Sequenznummer des aktiven Eintrags
+.TP 6
+.B PAGES DONE
+Anzahl der bereits ausgegebenen Seiten.
+.TP 6
+.B % DONE
+Anteil der bereits verarbeiteten Datei (in Prozent).
+.RE
+.br
+.sp
+Fuer Anforderungen werden folgende Informationen ausgegeben:
+.RS 3
+.TP 6
+.B SEQN
+Die dieser Anforderung zugeordnete Sequenznummer (bleibt
+konstant bis die Anforderung ausgegeben oder aus der
+Warteschlange geloescht ist).
+.TP 6
+.B USER
+Nutzer, von dem die Anforderung ausging.
+.TP 6
+.B Q:DEV
+Bei der Ausgabe zu verwendende
+Warteschlange (und, falls angegeben, Device).
+.TP 6
+.B REQUEST
+Name der auszugebenden Datei (falls nicht unterdrueckt).
+.TP 6
+.B STATUS
+Status der Anforderung - Stati sind:
+.RS 3
+.TP 9
+.B READY
+- zur Ausgabe bereit, wenn ein Device frei wird.
+.TP 9
+.B DISPCHD
+- Uebersendung an einen Drucker laeuft.
+.TP 9
+.B RUNNING
+- Anforderung wird bearbeitet.
+.RE
+.TP 6
+.B FORM
+(nicht implementiert)
+.TP 6
+.B BLKS
+Laenge der Anforderung (in Bloecken).
+.TP 6
+.B #
+Anzahl der auszugebenden Kopien.
+.TP 6
+.B TIME
+Zeitanforderung erfolgte.
+.TP 6
+.B TO
+Ziel der Anforderung (falls angegeben).
+.RE
+.br
+.SH MODIFIKATOREN
+.TP 3
+.BI \-q " que:dev"  
+.br
+Dieser Modifikator gibt an, auf welche
+Warteschlange und welches Device sich die
+\fB-s\fR Option bezieht. Er muss vor der
+\fB-s\fR Option auf der Kommandozeile stehen.
+.SH OPTIONEN
+.TP 3
+.BI \-d " SEQN-list"  
+Loeschen von Anforderungen, die sich auf Sequenznummern in
+\fISEQN-list\fR beziehen.
+Sequenznummern kann man unter Verwendung des Listingformulars von
+.B xq
+suchen.
+.TP 3
+.B  \-s
+Die Ausgabe an das angegebene Device wird sofort gestoppt.
+Der Modifikator \fB-q \fIque:dev\fR
+muss vorangestellt werden
+und die in Verarbeitung befindliche Anforderung muss
+Eigentum des Nutzers sein, von dem die Stopp-Anforderung ausgeht.
+.sp
+Die \fB\-s\fR und \fB\-d\fR Optionen koennen nicht zusammen 
+verwendet werden.
+.SH BEISPIELE
+Anhalten eines Druckers waehrend der Ausgabe:
+.sp
+               xq -q \fIlpr:1\fR -s
+.sp
+wobei
+.I lpr
+die Warteschlange und
+.I 1
+das Device (den Drucker 1) spezifiziert.
+.sp
+Loeschen einer in der Warteschlange befindliche Anforderung:
+.sp
+                 xq -d \fISEQN\fR
+.sp
+.fi
+wobei \fISEQN\fR
+die Sequenznummer ist, die sich auf die zu loeschende Eintragung bezieht.
+.SH DATEIEN
+.nf
+/usr/spool/queuer/activeconfig	
+.br
+/usr/spool/queuer/logfile
+.br
+/usr/spool/queuer/statusdir	
+.br
+/usr/spool/queuer/requestdir
+.br
+/tmp/queuer
+.fi
+.SH SIEHE AUCH
+pr(1), nq(1), backend(M), dqueuer(M), xq(M).
+.SH DIAGNOSTIK
+Treten in irgendeinem Teil des Spooling-Systems
+Widerspruechlichkeiten auf, gibt
+.BR xq (1)
+einen Fehler aus und erfasst diesen in der Spoolerfehler-Erfassungsdatei
+(logfile).

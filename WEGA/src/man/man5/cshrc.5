@@ -1,0 +1,60 @@
+.TH CSHRC 5
+.\"@[$]cshrc.5  1.2
+.ad
+.fi
+.SH NAME
+cshrc, cshprofile, login \- Errichtung einer Nutzerumgebung
+.SH BESCHREIBUNG
+Mit Hilfe der Dateien
+.BR /etc/cshprofile ,
+.B ".login
+und
+.B ".cshrc
+kann der Nutzer der C-Shell vor Beginn einer Sitzung
+eine gewuenschte Umgebung definieren (siehe
+.BR environ (7)).
+.PP
+Existiert die Datei
+.BR /etc/cshprofile ,
+wird sie fuer
+.I "jeden Nutzer"
+der C-Shell bei der Systemanmeldung (login)
+.I einmalig
+abgearbeitet.
+.PP
+Befindet sich im Home-Directory des Nutzers eine Datei
+.BR ".cshrc" ,
+wird sie bei
+.I "jedem Aufruf"
+einer C-Shell (d.h. auch bei Aufruf
+einer Sub-Shell aus anderen Programmen heraus) ausgefuehrt.
+Diese Datei sollte keine Aktivitaeten enthalten, die Ausgaben
+auf das Terminal bewirken.
+Bei der Systemanmeldung wird die Datei
+.B ".cshrc
+immer nach der Datei
+.B /etc/cshprofile
+ausgefuehrt.
+.PP
+Existiert im Home-Directory des Nutzers die Datei
+.BR ".login" ,
+wird diese Datei zum Zeitpunkt der Systemanmeldung (login)
+einmalig fuer den Nutzer ausgefuehrt.
+Die Ausfuehrung erfolgt nach der der Ausfuehrung der Datei
+.BR ".cshrc
+(falls im Home-Directory des Nutzers vorhanden).
+.SH DATEIEN
+$home/.cshrc
+.br
+$home/.login
+.br
+/etc/cshprofile
+.SH SIEHE AUCH
+csh(1),
+login(1),
+printenv(1),
+sh(1),
+su(1),
+profile(5),
+environ(7),
+term(7).

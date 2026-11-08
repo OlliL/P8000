@@ -1,0 +1,23 @@
+.TH LOGOUT 1C WEGA
+.\"@[$]logout.1C        1.2
+.ad
+.fi
+.SH NAME
+logout \- Beenden der Login-Sitzung
+.SH SYNTAX
+.B logout
+.SH BESCHREIBUNG
+.B Logout
+beendet eine Login-Sitzung (meldet den Nutzer im System ab).
+.B Logout
+wird explizit benoetigt, wenn die Variable
+.I ignoreeof
+gesetzt ist.
+.SH EINSCHRAENKUNGEN
+\fBLogout\fR wird nur von der \fBLogin\fR-Shell ausgefuehrt.
+.sp
+Der \fBlogout\fR Prozess akzeptiert keine Interrupts.
+.SH SIEHE AUCH
+exit(1C), kill(1), onintr(1C).
+.br
+"Die C-Shell" im Dokumentationsband WEGA-Dienstprogramme

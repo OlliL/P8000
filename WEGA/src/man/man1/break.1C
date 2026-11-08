@@ -1,0 +1,45 @@
+.TH BREAK 1C WEGA
+.\"@[$]break.1C  1.2
+.ad
+.fi
+.SH NAME
+break \- C-Shell Steueranweisung fuer Unterbrechungen
+.SH SYNTAX
+.B break
+.SH BESCHREIBUNG
+.B Break
+hat die weitere Abarbeitung eines C-Shellscripts nach
+.B end(1C),
+.B foreach(1C)
+oder
+.B while(1C)
+zur Folge. Dabei werden die restlichen Kommandos der aktuellen
+Zeile noch ausgefuehrt. Breaks aus einer groesseren
+Schachtelungstiefe heraus werden durch mehrfache
+Notation in einer Zeile moeglich.
+.PP
+Das interne C-Shellkommando
+.B continue(1C)
+kann benutzt werden, um eine vorhergehende Schleife
+weiter abzuarbeiten.
+.SH BEISPIEL
+.RS
+.nf
+ # Abbruch einer while-Schleife durch break
+
+ while(1)
+    echo -n 'Eingabe x: '
+    set x = 'gets'
+    if( $x == 'a') then
+	 break
+    else
+	 echo 'kein break'
+    endif
+ end
+ echo 'Abbruch durch break'
+.fi
+.RE
+.SH SIEHE AUCH
+foreach(1C), while(1C), breaksw(1C), continue(1C)
+.br
+"Einfuehrung in die C-Shell" in WEGA-Dienstprogramme

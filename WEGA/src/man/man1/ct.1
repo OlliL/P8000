@@ -1,0 +1,80 @@
+.TH CT 1
+.\" @[$]ct.1	1.1
+.ad
+.fi
+.SH NAME
+ct \- Verbindungsaufbau ueber Modem
+.SH SYNTAX
+.B ct
+[
+.B \-h
+] [
+.BI \-s speed  
+] [
+.B \-v   
+] [
+.BR \-w n   
+] \fItelno\fR 
+.SH BESCHREIBUNG
+.B Ct\^
+waehlt die Telefonnummer eines Modems, an das ein Terminal 
+angeschlossen ist, und erzeugt einen
+.I login\^
+Prozess fuer das Terminal.
+.I Telno\^
+ist die Telefonnummer
+(Minuszeichen an den entsprechenden Stellen charakterisieren Verzoegerungen).
+.PP
+.B Ct\^
+bestimmt die Teilnehmer, die Leitung und die entsprechende
+Uebertragungsgeschwindigkeit aus der Datei
+/usr/lib/uucp/L-devices.
+Sind alle verfuegbaren Teilnehmer besetzt,
+versucht
+.BR ct ,
+die Teilnehmer in einminuetigen Intervallen zu erreichen.
+Die Dauer, die
+.B ct
+versucht, die Verbindung herzustellen,
+kann ueber Dialog oder Optionen eingestellt werden.
+.PP
+Das Zielterminal muss an ein Modem angeschlossen sein,
+das einen Anruf beantworten kann.
+.PP
+Die Verbindung wird getrennt, wenn der Nutzer nicht innerhalb
+von einer Minute auf das "WEGA login:"
+antwortet.
+.SH OPTIONEN
+.PP
+.PD 0
+.TP 8
+.BI \-h\^    
+Verhindert, dass
+.B ct\^
+die aktuelle Verbindung unterbricht, waehrend auf die Antwort gewartet wird.
+.sp
+.TP 8
+.BI \-s speed\^
+Setzt die Datenuebertragungsrate auf den durch
+.I speed\^
+angegebenen Wert (in Baud).
+Der Standardwert ist 300.
+.sp
+.TP 8
+.BI \-v\^
+Sendet eine laufende Nachricht zu "standard error".
+.sp
+.TP 8
+.BI \-w n\^
+Im Standardfall wird der Nutzer gefragt, wie lange
+.B ct
+bei besetzter Leitung die Herstellung der Verbindung versuchen soll
+(Versuche in Intervallen von einer Minute).
+Diese Option uebergeht diesen Dialog und
+setzt 'n' als maximale Versuchszeit zur Herstellung der Verbindung.
+.SH DATEIEN
+/usr/lib/uucp/L-devices
+.SH SIEHE AUCH
+cu(1),
+login(1),
+getty(M).

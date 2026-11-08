@@ -1,0 +1,61 @@
+.TH GETFILE 1 WEGA
+.\" @[$]getfile.1	1.2
+.ad
+.fi
+.SH NAME
+getfile \- Dateiuebertragung von einem lokalen zu einem Remote-System
+.SH SYNTAX
+.B getfile 
+[\fB-qfBb\fR] \fIfile1\fR [ [\fB-b\fR] \fIfile2\fR ... ]
+.SH BESCHREIBUNG
+.B Getfile
+uebertraegt Dateien von einem Remote-System (remote = abgesetzt)
+in das P8000.
+Ein Remote-System kann ein zweites P8000 oder ein anderer Rechner sein,
+auf dem das Kommando
+.BR remote (1)
+implementiert ist.
+Vor einer Dateiuebertragung ist das Kommando
+.BR remote (1)
+auszufuehren.
+Die Dateien werden satzweise mit Pruefsumme uebertragen.
+Die Uebertragung einer Datei kann mit CTRL-X abgebrochen werden,
+die gesamte Uebertragung durch die Eingabe von ESC.
+.SH OPTIONEN
+.TP
+.B \-b
+Nur die naechste Datei ist eine Binaerdatei. Carrige Return wird nicht durch
+Newline ersetzt.
+.TP
+.B \-B
+Alle angegebenen Dateien sind Binaerdateien
+(nuetzlich bei WEGA-WEGA Uebertragungen).
+.TP
+.B \-f
+Alle Fehlernachrichten,
+die nicht zum Abbruch fuehren, werden unterdrueckt.
+.TP
+.B \-q
+Das Programm gibt eine Abfrage aus, bevor es eine existierende Datei
+durch eine zu transferierende Datei gleichen Namens ersetzt.
+.DT
+.SH SIEHE AUCH
+putfile(1), local(1), remote(1).
+.SH DIAGNOSTIK
+"checksum error ... retry" , wird ausgegeben, wenn die berechnete
+Pruefsumme nicht mit der uebertragenen Pruefsumme uebereinstimmt.
+.sp
+"<filename> ... transfer aborted"   , wird nach einer festgelegten
+Anzahl von Wiederholungen ausgegeben, wenn ein CTRL-X oder ein
+ESC eingegeben wurde oder wenn die Uebertragung fehlerhaft war
+(durch Mangel an Speicherplatz oder fehlerhaftes Speichermedium).
+.sp
+"getfile: <n1> successful transfers  <n2> unsuccessful transfers"
+, wird nach Beendigung des Programms ausgegeben.
+.sp
+"<filename> ... unable to open file"   , wird ausgegeben, wenn die
+Datei auf einem System nicht eroeffnet werden kann.
+.sp
+Das Programm gibt fuer jede erfolgreiche Uebertragung eines Records 
+einen einzelnen Punkt (.) aus. Scheint die Uebertragung zu stoppen,
+ist 20 Sekunden bis zu ihrer Wiederholung zu warten.

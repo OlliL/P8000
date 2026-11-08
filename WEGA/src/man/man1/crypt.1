@@ -1,0 +1,74 @@
+.TH CRYPT 1
+.\" @[$]crypt.1	1.2
+.ad
+.fi 
+.SH NAME
+crypt \- Codieren/Decodieren
+.SH SYNTAX
+\fBcrypt \fR[ \fIkey\fR ] < \fIin.file\fR > \fIout.file\fR
+.br
+\fBcrypt \fR[ \fIkey\fR ] < \fIout.file\fR > \fIin.file\fR
+.SH BESCHREIBUNG
+.B Crypt
+liest Daten von der Standardeingabe, codiert sie mit Hilfe
+des angegebenen Schluessels
+.I key
+und schreibt auf die Standardausgabe (Dateizugriff ist
+ueber Umlenkung moeglich).
+Der Schluessel
+.I key
+bestimmt die Transformation.
+Ist kein
+.I key
+angegeben, verlangt
+.B crypt
+einen Schluessel vom Terminal.
+Der Schluessel erscheint waehrend der Eingabe
+nicht auf dem Terminal.
+.B Crypt
+verschluesselt und entschluesselt mit dem gleichen Schluessel.
+Das Kommando
+.sp
+.RS
+\fBcrypt \fIkey < file.1 > file.2\fR
+.RE
+.PP
+verschluesselt die Datei \fIfile.1\fR mit dem Schluessel \fIkey\fR und bringt
+die verschluesselte Ausgabe in die Datei \fIfile.2\fR. Ein nachfolgendes
+Kommando:
+.sp
+.RS
+\fBcrypt \fIkey < file.2 | pr\fR
+.RE
+.PP
+decodiert die verschluesselte Datei \fIfile.2\fR mit dem gleichen
+Schluessel \fIkey\fR und druckt die decodierte \fIDatei\fR.
+.PP
+Dateien, die durch
+.B crypt
+verschluesselt wurden, koennen mit dem Editor
+.B ed
+ohne explizite Decodierung behandelt wurden.
+.PP
+Im Programm
+.B Crypt
+ist eine Ein-Rotor-Maschine mit einem 256-Elemente-Rotor implementiert.
+Versuchsmethoden zur Decodierung von Dateien, die mit dieser
+Methode verschluesselt wurden, erfordern einen hohen Rechenaufwand.
+.PP
+Da der Schluessel ein Argument des Kommandos
+.B crypt
+ist, ist er potentiell durch das Kommando
+.BR ps (1)
+oder Ableitungen davon sichtbar.
+Um diese Moeglichkeit zu minimieren, zerstoert
+.B crypt
+jede Aufzeichnung des Schluessels sofort nach der Eingabe.
+Die Wahl des Schluessels und die Schluesselsicherheit
+sind der verwundbarste Aspekt von
+.B crypt.
+.SH DATEIEN
+/dev/tty	fuer den eingegebenen Schluessel
+.SH SIEHE AUCH
+ed(1),
+makekey(M).

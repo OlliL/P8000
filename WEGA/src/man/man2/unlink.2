@@ -1,0 +1,100 @@
+.TH UNLINK 2 WEGA
+.\"@[$]unlink.2 1.2
+.ad
+.fi
+.SH NAME
+unlink \- Loeschen von Eintraegen in Directorys
+.SH SYNTAX
+.B unlink
+.I (file)
+.br
+.B char
+.I *file;
+.SH BESCHREIBUNG
+Der Systemruf
+.B unlink
+loescht den Eintrag fuer die Datei
+.I file
+(Pointer auf eine mit einem Nullbyte abgeschlossene Zeichenkette)
+aus dem Directory.
+War dieser Eintrag die letzte Verbindung (Link) zu der Datei
+und hat kein Prozess mehr eine offene Referenz auf diese Datei,
+wird der durch die Datei belegte Speicherplatz freigegeben
+und die Datei wird zerstoert.
+Haben ein oder mehrere Prozesse die Datei geoeffnet,
+wenn die letzte Verbindung aufgehoben wird,
+wird die Datei erst dann geloescht, wenn alle offenen Referenzen
+zu ihr geschlossen sind.
+Fuer die Datei selbst ist keine Schreiberlaubnis erforderlich.
+Eintraege von Directories duerfen nur vom Superuser geloescht werden.
+.SH SIEHE AUCH
+rm(1), link(2).
+.SH DIAGNOSTIK
+Der Eintrag fuer die Datei wird nicht geloescht, wenn mindestens einer der
+folgenden Punkte zutrifft:
+.TP 11
+\%[ENOTDIR]
+Eine der vorderen Komponenten des Pfadnamens ist kein Directory.
+.PD 0
+.TP 11
+\%[ENOENT]
+Die angegebene Datei existiert nicht.
+.TP 11
+\%[EACCES]
+Die Sucherlaubnis wird fuer eine der vorderen Komponenten des 
+Pfadnamens verweigert.
+.TP 11
+\%[EACCES]
+Die Schreiberlaubnis wird fuer das Directory verweigert, zu dem 
+die aufzuhebende Verbindung besteht.
+.TP 11
+\%[EPERM]
+Die benannte Datei ist ein Directory und die effektive Nutzer-ID
+des Prozesses entspricht nicht der des Superusers.
+.TP 11
+\%[EBUSY]
+Der zu loeschende Eintrag ist Ansatzpunkt fuer ein ueber
+.BR mount (2)
+einzugliederndes Dateisystem.
+.TP 11
+\%[ETXTBSY]
+Der zu loeschende Eintrag ist die letzte Verbindung zu einer
+Datei mit geteiltem Textsegment, das gerade abgearbeitet wird.
+.TP 11
+\%[EROFS]
+Der zu loeschende Eintrag befindet sich in einem Read-Only-Dateisystem.
+.TP 11
+\%[EFAULT]
+.I File
+verweist auf einen Bereich, der ausserhalb des dem Prozess zugewiesenen
+Adressbereiches liegt.
+.PD
+.SH RUECKGABEWERT
+Nach erfolgreicher Abarbeitung wird der Wert Null zurueckgegeben.
+Der Wert \-1 wird zurueckgegeben, wenn gilt:
+.IP - 3
+Die Datei existiert nicht
+.PD 0
+.IP - 3
+Es besteht keine Schreiberlaubnis fuer das Directory der Datei.
+.IP - 3
+Die Datei enthaelt ein gerade benutztes Textsegment.
+.PD
+.PP
+.B Errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT UNLINK := 10
+
+Nichtsegmentiert
+     ...             !* r0 : Dateiname *!
+Segmentiert
+     ...             !* rr0 : Dateiname *!
+     clr    r4
+     sc     #UNLINK
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.ad
+.fi

@@ -1,0 +1,53 @@
+.TH SETBUF 3 WEGA
+.\" @[$]setbuf.3        1.2
+.ad
+.fi
+.SH NAME
+setbuf \- Zuweisen von Puffern
+.SH SYNTAX
+.nf
+\fB#include <stdio.h>
+.PP
+\fBsetbuf\fI(stream, buf)
+\fBFILE \fI*stream;
+\fBchar \fI*buf;\fR
+.fi
+.SH BESCHREIBUNG
+Die Funktion
+.B setbuf
+kann nach Oeffnen eines Datenstroms, muss jedoch noch
+vor der ersten Lese- oder Schreiboperation auf
+den Datenstrom ausgefuehrt werden.
+Sie bewirkt, dass das Zeichenfeld
+.I buf
+anstelle des sonst automatisch zugewiesenen
+Puffers benutzt wird.
+Ist
+.I buf
+der konstante Pointer
+.BR NULL ,
+erfolgen Eingabe und Ausgabe ungepuffert.
+.PP
+Die Konstante 
+.B BUFSIZ
+gibt die Groesse der benoetigte Puffer an:
+.IP
+char buf[BUFSIZ];
+.PP
+Normalerweise erfolgt die Zuweisung eines Puffer an 
+einen Datenstrom durch die Funktion
+.BR  malloc (3)
+nach dem ersten Zugriff 
+.B getc
+oder
+.BR  putc (3)
+auf die Datei.
+Ausgabestroeme fuer Terminals 
+und der Standardfehlerstrom
+.I stderr
+sind normalerweise nicht gepuffert.
+.SH SIEHE AUCH
+fopen(3),
+getc(3),
+putc(3),
+malloc(3).

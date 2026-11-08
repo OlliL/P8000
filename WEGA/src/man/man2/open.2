@@ -1,0 +1,273 @@
+.TH OPEN 2 WEGA
+.\" @[$]open.2  1.2
+.ad
+.fi
+.SH NAME
+open \- Oeffnen fuer Lesen oder Schreiben.
+.SH SYNTAX
+.B #include <fcntl.h>
+.br
+.B int open
+.I (file, oflag[, mode])
+.br
+.B char
+.I *file;
+.br
+.B int
+.I oflag, mode;
+.SH BESCHREIBUNG
+.B Open
+oeffnet die Datei
+.I file
+zum Lesen
+.RI ( mode =0),
+zum Schreiben
+.RI ( mode =1),
+oder zum Lesen und Schreiben
+.RI ( mode =2).
+.I File
+ist ein Pointer auf einen Pfadnamen.
+.B Open
+setzt die Dateistatusflags entsprechend
+.IR oflag .
+Werte fuer
+.I oflag
+werden gemaess der folgenden Liste durch Oderverknuepfung aufgebaut
+(nur eine der ersten drei unten angefuehrten Flags ist zu verwenden):
+.PP
+.TP 10
+.B O_RDONLY
+Nur offen zum Lesen.
+.TP
+.B O_WRONLY
+Nur offen zum Schreiben.
+.TP
+.B O_RDWR
+Offen fuer Lesen und Schreiben.
+.TP
+.B O_NDELAY
+Dieses Flag kann auf nachfolgendes Lesen bzw. Schreiben einwirken (
+siehe
+.BR read (2)
+und
+.BR write (2)).
+.br
+Wird ein FIFO
+mit den Flags
+.B O_RDONLY
+oder
+.B O_WRONLY
+eroeffnet, gilt:
+.PD
+.IP
+Ist
+.B O_NDELAY
+gesetzt:
+.RS
+.PD 0
+.IP
+Der Systemruf
+.B open
+zum Lesen kehrt sofort zurueck.
+Hat zu diesem Zeitpunkt kein Prozess die Datei geoeffnet,
+meldet ein
+.B open
+zum Schreiben
+einen Fehler.
+.RE
+.PD
+.IP
+Ist
+.B O_NDELAY
+nicht gesetzt:
+.RS
+.PD 0
+.IP
+Ein
+.B open
+zum Lesen wartet solange, bis ein Prozess die Datei zum Schreiben 
+oeffnet.
+Ein
+.B open
+zum Schreiben wartet solange, bis ein Prozess die Datei zum Lesen
+oeffnet.
+.RE
+.PD
+.IP
+Bei Eroeffnen einer mit einer Datenuebertragungsstrecke assoziierten Datei
+gilt:
+.IP
+Ist
+.B O_NDELAY
+gesetzt:
+.RS
+.PD 0
+.IP
+Der Systemruf
+.B open
+kehrt zurueck, ohne dass auf den Traeger gewartet wird.
+.RE
+.PD
+.IP
+Ist
+.B O_NDELAY
+nicht gesetzt:
+.RS
+.PD 0
+.IP
+Der Systemruf
+.B open
+wartet, bis der Traeger vorhanden ist.
+.RE
+.PD
+.TP
+.B O_APPEND
+Vor jedem Schreiben wird der Dateipointer
+ans Ende der Datei gesetzt.
+.TP
+.B O_CREAT
+Existiert die Datei, hat das Flag keine Wirkung.
+Andernfalls wird die Eigentuemer-ID
+auf die effektive Nutzer-ID
+des Prozesses gesetzt.
+Die Gruppen-ID
+der Datei wird auf die effektive Gruppen-ID
+des Prozesses gesetzt und
+die unteren 12 Bits des Dateimodus werden in Abhaengigkeit von
+.I mode
+wie folgt modifiziert
+(siehe 
+.BR creat (2)):
+.RS
+.IP - 3
+Alle Bits, die in der Dateierzeugungsmaske des Prozesses gesetzt sind,
+werden geloescht (siehe
+.BR umask (2)).
+.PD 0
+.IP - 3
+Das Bit zur Sicherung des Textsegments nach der Ausfuehrung
+(sticky-Bit) wird geloescht
+(siehe
+.BR chmod (2)).
+.RE
+.PD
+.IP
+.B Achtung:
+Wird der Parameter
+.I Modus
+nicht angegeben, ist der Modus der neuen Datei nicht
+definiert.
+.TP
+.B O_TRUNC
+Existiert die Datei, wird die Laenge auf 0 gesetzt.
+Modus und Eigner bleiben unveraendert.
+.TP
+.B O_EXCL
+Sind
+.B O_EXCL
+und
+.B O_CREAT
+gesetzt, gibt der Systemruf
+.B open
+dann einen Fehler zurueck, wenn die Datei existiert.
+.PP
+Der Dateipointer wird an den Anfang der Datei gesetzt (Byte 0).
+Der zurueckgegebene Dateidescriptor wird fuer nachfolgende
+Systemrufe anderer E/A-Funktionen der Datei benutzt.
+Der neue Dateidescriptor ist so gesetzt,
+dass die Datei bei folgenden
+.B exec
+Systemrufen geoeffnet bleibt
+(siehe
+.BR fcntl (2)).
+Ein Prozess kann nicht mehr als 20 Dateidescriptoren
+gleichzeitig verwalten.
+.SH DIAGNOSTIK
+Die angegebene Datei wird eroeffnet, wenn keiner der
+folgenden Punkte zutrifft:
+.TP 11
+\%[ENOTDIR]
+Eine Komponente des Pfadnamens ist kein Directory.
+.PD 0
+.TP
+\%[ENOENT]
+.B O_CREAT
+ist nicht gesetzt und die benannte Datei existiert nicht.
+.TP
+\%[EACCES]
+Eine Komponente des Pfadnamens verweigert die Sucherlaubnis.
+.TP
+\%[EACCES]
+Die Zugriffsrechte entsprechend
+.I oflag
+werden fuer die benannte Datei verweigert.
+.TP
+\%[EISDIR]
+Die benannte Datei ist ein Directory und 
+.I oflag
+erlaubt Schreiben oder Lesen/Schreiben.
+.TP
+\%[EROFS]
+Die benannte Datei ist in einem Nur-Lese-Dateisystem gespeichert und
+.I oflag
+erlaubt Schreiben oder Lesen/Schreiben.
+.TP
+\%[EMFILE]
+Im Moment sind zwanzig Dateidescriptoren offen.
+.TP
+\%[ENXIO]
+Die benannte Datei ist eine Character-Special-File oder Block-Special-File
+und das mit dieser Datei verbundene
+Device existiert nicht.
+.TP
+\%[ETXTBSY]
+Die Datei ist eine reine Maschinencodedatei (shared text) und
+.I oflag
+erlaubt Schreiben oder Lesen/Schreiben.
+.TP
+\%[EFAULT]
+Der Pointer
+.I file
+weist auf einen Bereich, der ausserhalb des dem Prozess 
+zugewiesenen Adressbereiches liegt.
+.TP
+\%[EEXIST]
+.B O_CREAT
+und
+.B O_EXCL
+sind gesetzt,
+obwohl die benannte Datei existiert.
+.TP
+\%[ENXIO]
+Es gilt:
+.B O_NDELAY
+ist gesetzt, die benannte Datei ein FIFO,
+.B O_WRONLY
+ist gesetzt und kein Prozess hat die Datei zum Lesen geoeffnet.
+.PD
+.SH RUECKGABEWERT
+Wurde die Datei eroeffnet, wird der Dateidescriptor
+(eine nicht negative ganze Zahl) zurueckgegeben.
+Andernfalls wird ein Wert von \-1 gemeldet und
+.B errno
+wird zur Anzeige des Fehlers gesetzt.
+.SH SIEHE AUCH
+creat(2), read(2), write(2), dup(2), close(2).
+.SH ASSEMBLER
+.nf
+.na
+     CONSTANT OPEN   := 5
+
+Nichtsegmentiert
+     ...             !* r0 : Dateiname *!
+                     !* r1 : oflag *!
+                     !* r2 : mode *!
+Segmentiert
+     ...             !* rr0 : Dateiname *!
+                     !* r2 : oflag *!
+                     !* r3 : mode *!
+     sc     #OPEN
+     ...             !* Rueckgabewert in r4 *!
+                     !* bei Fehler: Carry-Flag gesetzt *!
+.fi
+.ad

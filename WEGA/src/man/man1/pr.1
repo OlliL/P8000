@@ -1,0 +1,199 @@
+.TH PR 1 WEGA
+.\" @[$]pr.1	1.2
+.ad
+.fi
+.SH NAME
+pr \- Ausgabeformatierung
+.SH SYNTAX
+.B pr
+[ \fBadefhilmnoprstw+-]\fR ] [ \fIfiles\fR ]
+.SH BESCHREIBUNG
+.B Pr\^
+gibt die angegebenen Dateien
+.I files
+(Standard: stdin)
+auf die Standardausgabe aus.
+Die Datei wird seitenweise ausgegeben, wobei jeweils im Kopf der Seite
+die Seitennummer, das Datum, die Zeit sowie der Name der Datei 
+angegeben sind.
+.PP
+Standardmaessig sind
+die Spalten  alle gleich breit und werden durch mindestens ein 
+Leerzeichen getrennt.
+Zeilen, die nicht in die Spalten hineinpassen, werden abgeschnitten.
+Wird die
+.B \-s
+Option verwendet, werden die Zeilen nicht abgeschnitten, sondern die
+Spalten werden durch Trennzeichen abgeteilt.
+.PP
+Ist die Standardausgabe mit einem Terminal verbunden, werden 
+Fehlermeldungen erst nach der Dateiausgabe ausgeschrieben.
+Meldungen zwischen den Terminals, die ueber
+.BR write (1)
+erfolgen, sind waehrend 
+.BR pr 
+unzulaessig.
+.SH OPTIONEN
+Die Optionen koennen einzeln oder in beliebiger Reihenfolge auftreten.
+.TP
+.B \-a
+Drucken einer mehrspaltigen Ausgabe ueber die gesamte Seite.
+.TP
+.B \-d
+Drucken in jede zweite Zeile.
+.TP
+.BI \-e ck\^
+Expandieren der gelesenen Tabulatoren auf die Zeichenstellungen
+.IR k "+1, 2\(**" k "+1, 3\(**" k +1,
+usw.
+Ist \fIk\fR=0
+oder nicht angegeben, werden die Tabulatoren
+standardmaessig auf jede
+achte Stelle gesetzt.
+Eingegebene Tabulatoren werden durch die entsprechende
+Anzahl von Leerzeichen ersetzt.
+Das Zeichen
+.I c\^
+(beliebiges nichtnumerisches Zeichen) wird als Eingabetabulator
+gewertet (Standard fuer
+.IR c :
+Tabulator).
+.TP
+.B \-f
+Verwendet Formfeed fuer neue Seiten
+(Standard: vorgegebene Anzahl Linefeeds).
+Ist die Standardausgabe mit einem Terminal verbunden,
+wird vor Anfang der ersten Seite pausiert.
+.TP
+.B \-h
+Naechstes Argument wird  als Seitenueberschrift verwendet.
+Es wird anstelle des Dateinamens gedruckt.
+.TP
+.BI \-i ck\^
+In der
+.IR Ausgabe
+werden Leerraeume (wo moeglich) durch
+Einfuegen von Tabulatoren in die
+Zeichenstellungen
+.IR k "+1, 2\(**" k "+1, 3\(**" k +1,
+etc. ersetzt.
+Ist
+.I k\^
+gleich Null oder wird es nicht angegeben, werden
+die Tabulatoren standardmaessig auf
+jede achte Stelle gesetzt.
+Das Zeichen
+.I c\^
+(beliebiges nichtnumerisches Zeichen)
+wird als Ausgabetabulatorzeichen behandelt
+(Standard fuer
+.IR c :
+Tabulator).
+.TP
+.BI + k\^
+Druckanfang bei Seite
+.I k\^
+(Standard: Seite 1).
+.TP
+.BI \- k\^
+Ausgabe mit
+.IR k -Spalten
+(Standard: 1 Spalte).
+.B \-e
+und
+.B \-i
+sind fuer mehrspaltige Ausgabe vorgesehen.
+.TP
+.BI \-l k\^
+Setzen der Seitenlaenge auf
+.I k\^
+Zeilen (Standard: 66 Zeilen).
+.TP
+.B \-m
+Gleichzeitiges Zusammenfuegen und Drucken aller Dateien,
+wobei jede Datei eine Spalte einnimmt (setzt die Optionen
+\f3\-\fP\fIk\fP und
+.B \-a
+ausser Kraft).
+.TP
+.BI \-n ck\^
+Erstellen einer
+.IR k \-stelligen
+Zeilennummerierung
+(Standard: \fIk\fR=5).
+Die Zahl nimmt die ersten 
+.IR k +1
+Zeichenstellen jeder Spalte bei normaler Ausgabe ein
+oder jeder Zeile bei
+.B \-m
+Ausgabe.
+Das Zeichen
+.I c\^
+(beliebiges nichtnumerisches Zeichen)
+wird als Trennzeichen an die Zeilennummer angefuegt
+(Standard fuer
+.IR c :
+Tabulator).
+.TP
+.BI \-o k\^
+Verschieben aller Zeilen um
+.I k\^
+Zeichenstellen (Standard: 0).
+Die Anzahl der Zeichenstellen pro Zeile ist die Summe
+aus Breite plus der Anzahl der verschobenen Zeichenstellen.
+.TP
+.B \-p
+Pausieren vor jeder Seitenausgabe (nur bei Ausgabe ueber Terminal).
+Vor der Ausgabe einer Seite wird ein akustisches Signal ausgegeben und auf
+Carrige Return gewartet.
+.TP
+.B \-r
+Keine Fehlerausschriften, wenn Dateien nicht eroeffnet werden koennen.
+.TP
+.BI \-s c\^
+Spaltenseparator ist das Zeichen
+.I c\^
+(Standard fuer
+.IR c :
+Tabulator).
+.TP
+.B \-t
+Kein Ausdruck der fuenfzeiligen Seitenueberschrift und
+des fuenfzeiligen Seitennachsatzes, die normalerweise
+bei jeder Seite angegeben sind.
+Druckbeendigung nach der letzten Zeile jeder Datei
+ohne Abstand bis Seitenende.
+.TP
+.BI \-w k\^
+Setzen der Zeilenbreite auf
+.I k\^
+Zeichenstellen (Standard bei mehrspaltiger Ausgabe
+mit Spalten gleicher Breite ist 72,
+ansonsten unbegrenzt).
+.SH BEISPIELE
+Ausgabe von
+.B file1
+und
+.BR file2 ,
+zweizeilig, in drei Spalten mit der Ueberschrift
+"Dateiliste":
+.PP
+.RS
+pr \|\-3dh \|"Dateiliste" \|file1 \|file2
+.RE
+.PP
+.B File1
+wird in
+.BR file2
+geschrieben,
+wobei die Tabulatoren auf die Spalten
+ 10, 19, 28, 37, .\|.\|. :
+gesetzt werden.
+.PP
+.RS
+pr \|\-e9 \|\-t \|<file1 \|>file2
+.RE
+.SH DATEIEN
+/dev/tty\(**	Ausgabe von Meldungen
+.SH SIEHE AUCH
+cat(1), dog(1), mesg(1), more(1), nq(1).

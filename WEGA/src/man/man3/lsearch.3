@@ -1,0 +1,54 @@
+.TH LSEARCH 3 WEGA
+.\" @[$]lsearch.3       1.2
+.ad
+.fi
+.SH NAME
+lsearch \- Lineares Suchen und Aktualisieren
+.SH SYNTAX
+.nf
+\fBchar \(**lsearch \fI(key, base, nelp, width, compar)
+\fBchar \fI\(**key;
+\fBchar \fI\(**base;
+\fBint \fI\(**nelp;
+\fBint \fIwidth;
+\fBint \fI(\(**compar)();\fR
+.fi
+.SH BESCHREIBUNG
+.B Lsearch\^
+ist eine lineare Suchroutine.
+Sie gibt einen Pointer auf eine Tabelle zurueck,
+durch den der Platz angezeigt wird, an dem ein Datenelement zu finden ist.
+Tritt das Datenelement nicht auf, wird es am Ende der Tabelle 
+angefuegt.
+.PP
+Folgende Argumente sind anzugeben:
+.TP 8
+.I key
+Pointer auf das in der Tabelle zu lokalisierende Datenelement.
+.TP 8
+.I base
+Pointer auf die Basis der Tabelle.
+.TP 8
+.I nelp
+Adresse einer ganzen Zahl, die die Anzahl der in der Tabelle 
+befindlichen Datenelemente angibt.
+Sie wird erhoeht, wenn das Datenelement an die Tabelle angefuegt
+wird.
+.TP 8
+.I width
+Breite eines Elementes in Byte.
+.TP 8
+.I compar
+Name der Vergleichsroutine.
+Sie wird mit zwei Argumenten aufgerufen, die Pointer auf die zu
+vergleichenden Elemente sind.
+.PP
+Die Routine gibt Null zurueck, wenn die Datenelemente gleich sind,
+andernfalls wird ein Wert ungleich Null zurueckgegeben.
+.SH EINSCHRAENKUNGEN
+Es koennen unvorhergesehene Ergebnisse auftreten, wenn  zum Hinzufuegen
+eines neuen Datenelementes nicht genuegend Platz in der Tabelle
+vorhanden ist.
+.SH SIEHE AUCH
+bsearch(3),
+qsort(3).

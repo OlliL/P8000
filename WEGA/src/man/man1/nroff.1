@@ -1,0 +1,264 @@
+.TH NROFF 1 WEGA   
+.\" @[$]nroff.1	1.2
+.ad
+.fi
+.SH NAME
+nroff, troff \- Textformatierung
+.SH SYNTAX
+.B nroff
+[ 
+.I options\^ 
+] 
+[ 
+.I files\^ 
+]
+.PP
+.B troff
+[ 
+.I options\^  
+] 
+[ 
+.I files\^  
+]
+.SH BESCHREIBUNG
+.B Nroff
+formatiert einen Text aus den als Argument angegebenen Dateien
+.I files\^
+(Standard: stdin).
+Daten von der Standardeingabe koennen mit Daten aus Argument-Dateien
+durch Angabe eines
+.RB ( \- ) 
+durchsetzt werden.
+Ein eingegebenes CTRL-D zur Beendigung des Datenstroms von der
+Standardeingabe wird von dem naechsten Kommandoargument
+(wenn angegeben) akzeptiert.
+.sp
+\fBNroff\fR ist fuer die Ausgabe auf Terminals
+und Zeilendruckern vorgesehen.
+Das geraeteabhaengige \fBtroff\fR  formatiert einen Text fuer
+Photosatzgeraete.
+.SH OPTIONEN
+.IR Optionen
+koennen in beliebiger Reihenfolge vor dem Dateinamen eingegeben werden.
+.PP
+.PD 0
+.sp
+.TP
+.BI \-c name\^
+Den Eingabedateien
+.na
+.I files\^
+werden die kompakten Makrodateien
+.BR /usr/lib/macros/cmp. [ nt ] .\c
+.RB [ dt ] .\f2name\fP\^
+und
+.BR /usr/lib/macros/ucmp. [ nt ] .\f2name\fP\^
+vorangestellt.
+.ad
+.sp
+.TP
+.B \-i
+Liest die Standardeingabe, nachdem die Eingabedateien
+.I files\^
+erschoepft sind.
+.sp
+.TP
+.BI \-k name\^
+Stellt die in diesem
+.B nroff\^/\^troff-
+Aufruf benutzten Makros zusammen und legt die Ausgabe als Dateien
+.RB [ dt ] .\f2name\fP\^
+im aktuellen Directory ab.
+.sp
+.TP
+.BI \-m name\^
+Den Eingabedateien
+.I files\^
+wird die nicht-kompakte (\s-1ASCII\s+1 Text) Makrodatei
+.BI /usr/lib/tmac/tmac. name\^\fP
+vorangestellt.
+.sp
+.TP
+.BI \-n N
+Seitennummer der ersten generierten Seite ist
+.IR N .
+.sp
+.TP
+.BI \-o list
+Druckt nur Seiten, deren Seitennummer in der Liste
+erscheint. Die Elemente der Liste
+sind mit einem Komma zu trennen. Syntax:
+.br
+.IB N \- M\^
+\ von Seite
+.I N\^
+bis
+.IR M ;
+.br
+.BI \- N\^
+\ \ von Anfang bis Seite
+.IR N ;
+.br
+.IB N \-
+\ \ von Seite
+.I N\^
+bis zum Ende (siehe \fBEINSCHRAENKUNGEN\fR).
+.sp 
+.TP
+.B \-q
+Ruft den simultanen Ein-/ Ausgabemodus des
+.B \&.rd
+Requests auf.
+.sp
+.TP
+.BI \-r aN\^
+Stellt das Register
+.I a\^
+(das einen aus einem Zeichen bestehenden Namen haben muss) auf
+.IR N .
+.sp	
+.TP
+.BI \-s N\^
+.B Nroff
+haelt nach jeder \fIN\fR-ten Seite an (Standard ist
+.IR N =1)
+und erlaubt ein Papiernachladen oder -wechseln.
+Linefeed oder Newline setzt die Ausgabe fort
+(Newline funktioniert nicht in Pipelines, z.B. mit \fBmm\fR(1)).
+Diese Option funktioniert nicht, wenn die Ausgabe von
+.B nroff
+durch \fBcol\fR(1) geschickt (Pipelining) wird.
+Bei einem Halt zwischen den Seiten wird
+bei \fBnroff\fR ein ASCII BEL und
+bei \fBtroff\fR die Meldung "page stop" an das Terminal gesendet.
+.sp 
+.TP
+.B \-z
+Es werden nur Meldungen, die durch
+.B \&.tm
+(terminal message) Requests erzeugt wurden, ausgegeben.
+.PD
+.SS Nur fuer nroff:
+.PP
+.TP
+.B \-e
+Erzeugt gleichgesperrte Woerter in ausgerichteten Zeilen
+unter Verwendung der vollen Terminalaufloesung.
+.TP
+.B \-h
+Verwendet Tabulatoren fuer den horizontalen Abstand,
+um die Ausgabe zu beschleunigen und die Anzahl der
+Ausgabezeichen zu verringern.
+Die Tabulatoreinstellung betraegt 8 Nominalzeichen.
+.TP
+.BI -T name
+Ausgabe fuer das angegebene Ausgabegeraet
+.IR name .
+Zugelassene Namen sind: 37 (Standard), tn300, 300s, 300, 450, lp, 382,
+4000A, 832, X, 2631.
+.TP
+.BI \-u n\^
+Setzt den Fettdruckfaktor (Anzahl der Anschlaege auf eine Zeichenstelle)
+fuer die dritte font-Position (Fettdruck) auf den Wert
+.IR n ,
+oder zu Null, wenn
+.I n\^
+nicht angegeben ist.
+.PD
+.SS Nur fuer troff:
+.TP   
+.B \-a
+Sendet eine druckbare ASCII-Naeherung der Bearbeitung an die Standardausgabe.
+.TP
+.B \-b
+Protokolliert den Busy-Status des
+Photosatzgeraets. Es wird keine Textverarbeitung durch\%gefuehrt.
+.TP
+.B \-f
+Verhindert nach Bearbeitungsende den Papiervorschub und den Stop des
+Photosatzgeraets.
+.TP
+.B \-g
+Erstellt die Ausgabe fuer ein spezielles
+Photosatzgeraet und sendet sie
+zur Standardausgabe.
+Diese Option ist nicht mit der
+.B \-s
+Option kompatibel.
+Wird die \fB-g\fR Option aufgerufen, muessen alle
+.B \&.fp
+(font position)
+Requests in der
+.B troff
+Eingabe, und duerfen keine
+.B \&.tl
+Requests vor dem ersten Break stehen.
+.TP
+.BI \-p N\^
+Druckt alle Zeichen in der Punktgroesse
+.IR N ,
+waehrend alle vorgeschriebenen Abstaende und Bewegungen erhalten bleiben,
+um die Verlustzeit des Photosatzgeraets zu reduzieren.
+.br
+.ne 2
+.TP
+.B \-t
+Ausgabe auf Standardausgabe, nicht zum Photosatzgeraet.
+.TP
+.BI \-T name\^
+Benutzt die font-Weiten-Tabellen fuer den Geraetenamen
+.I name\^
+(die font-Tabellen befinden sich in der Datei
+.BI /usr/lib/font/ name /\(**\f1).
+Gegenwaertig werden keine Geraete
+.IR name s
+unterstuetzt.
+.TP
+.B \-w
+Wartet solange, bis das Photosatzgeraet verfuegbar ist.
+.PD
+.SH DATEIEN
+.ta \w'/usr/lib/tmac/tmac\f3.\fP\(**\ \ 'u
+.PD 0
+/usr/lib/suftab        Suffixtabellen mit Bindestrich 
+.PP
+/tmp/ta$#              temporaere Datei 
+.PP
+/usr/lib/tmac/tmac\f3.\fP\(**   Standardmakrodateien und Zeiger
+.PP
+/usr/lib/macros/\(**      Standardmakrodateien 
+.PP
+/usr/lib/term/\(**        Terminal-Treibertabelle fuer 
+.I nroff\^
+.PP
+/usr/lib/font/\(**        font-Weiten-Tabelle fuer
+.I troff\^
+.PD
+.DT
+.SH SIEHE AUCH
+.PD 0
+eqn(1), tbl(1), mm(7).
+.PP
+col(1), mm(1)
+(nur \fBnroff\fR).
+.PP
+mmt(1)
+(nur \fBtroff\fR).
+.PD
+.SH EINSCHRAENKUNGEN  
+.B Nroff\^/\^troff\^
+benutzen als Grundlage fuer ihre Zeitberechnung die EST.
+Deshalb kann die durch
+.B nroff\^/\^troff\^
+erzeugte Zeit (abhaengig von Jahreszeit und lokalen Zeitzonen)
+um einen Tag abweichen.
+.sp
+Werden
+.B nroff\^/\^troff\^
+innerhalb eines Pipelines mit der
+.BI \-o list\^
+Option benutzt (z.B. mit einem oder mehreren
+Aufrufen von \fBcw\fR(1), \fBeqn\fR(1), und \fBtbl\fR(1)),
+kann es zu einer harmlosen "broken pipe"-Ausschrift kommen,
+wenn die letzte Seite des Dokumentes nicht in der Liste
+der Argumente angegeben ist.

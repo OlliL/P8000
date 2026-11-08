@@ -1,0 +1,86 @@
+.TH BDIFF 1 WEGA
+.\"@[$]bdiff.1	1.2
+.ad
+.fi
+.SH NAME
+bdiff \- diff-Programm fuer sehr grosse Dateien
+.SH SYNTAX
+.B bdiff
+file1 file2 [n]
+.RB [ \-s ]
+.SH BESCHREIBUNG
+.B Bdiff\^
+wird in der gleichen Weise wie
+.BR diff (1)
+benutzt.
+Mit
+.B bdiff\^
+ermittelt man die Zeilen in zwei Dateien, die
+veraendert werden muessen, um beide Dateien
+in Uebereinstimmung zu bringen.
+.B Bdiff\^
+ermoeglicht die Bearbeitung von Dateien, die
+fuer
+.BR diff (1)
+zu gross sind.
+.PP
+.B Bdiff\^
+ignoriert alle identischen Zeilen am Anfang beider Dateien,
+teilt den Rest beider Dateien in
+.IR n -Zeilensegmente
+auf und bearbeitet unter Nutzung von
+.B diff\^
+die korrespondierenden Segmente. Der Standardwert von
+.I n\^
+ist 3500.
+Das optionale dritte Argument im bdiff-Aufruf
+wird als Wert fuer
+.IR n
+eingesetzt, wenn es einen Zahlenwert hat.
+Dies ist vor allem dann sinnvoll, wenn 3500-Zeilen-Segmente
+zu lang fuer die Bearbeitung durch
+.BR diff
+sind und zu Fehlern fuehren wuerden.
+.PP
+Wird fuer
+.I file1\^
+oder fuer
+.RI ( file2 )
+ein \fB\-\fR
+eingegeben, wird die Standard\%eingabe gelesen und verarbeitet.
+.PP
+Das optionale Argument
+.B \-s
+(silent) kennzeichnet, dass keine Fehlermeldungen von
+.B bdiff\^
+ausgegeben werden sollen. (Anmerkung: Moegliche Warnungen
+von
+.BR diff
+werden nicht unterdrueckt.) Sind beide
+optionalen Argumente angegeben,
+muessen sie in der oben genannten Reihenfolge eingegeben werden.
+.PP
+Die Ausgabe von
+.B bdiff\^
+ist identisch mit der von
+.BR diff .
+Die Zeilennummerierung wird unabhaengig von der
+Segmentierung der Dateien fortlaufend gezaehlt (es
+scheint, als ob die beiden Dateien von
+.B bdiff\^
+geschlossen abgearbeitet werden).
+.PP
+\fBAnmerkung:\fR Auf Grund der Segmentierung der Dateien ist
+es nicht sicher, das
+.B bdiff\^
+den kleinsten Satz von Unterschieden der
+beiden Dateien findet.
+.SH DATEIEN
+/tmp/bd?????
+.SH SIEHE AUCH
+diff(1)
+.SH DIAGNOSTIK
+Benutze
+.BR help (1)
+fuer Erlaeuterungen.
+

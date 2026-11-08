@@ -1,0 +1,223 @@
+.TH EDIT 1 WEGA
+.\" @[$]edit.1	1.2
+.ad
+.fi
+.SH NAME
+edit \- Texteditor fuer neue oder gelegentliche Nutzer
+.SH SYNTAX
+.B edit
+[
+.B \-r
+] 
+.I name\fR ...
+.SH BESCHREIBUNG
+.B Edit
+ist eine Variante des Texteditors \fBex\fR(1) und wird neuen oder
+gelegentlichen Nutzers empfohlen, die einen kommandoorientierten
+Editor benutzen moechten.
+Die folgende Beschreibung ist eine kurze Einfuehrung in \fBedit\fR.
+Weitere Hinweise sind \fBex\fR(1) zu entnehmen.
+Unter \fBvi\fR(1) werden Hinweise zu Textmanipulation mit der
+bildschirmorientierten Variante des \fBex\fR-Editors gegeben.
+.SH "KURZE EINFUEHRUNG"
+Das Kommando zum Aufruf des Editors lautet:
+.sp
+.RS
+\fBedit \fIfile\fR
+.RE
+.sp
+Existiert die angegebene Datei
+.I file
+bereits, erzeugt
+.B edit
+eine Kopie der Datei, gibt die
+Zeichen- und Zeilenanzahl aus und erwartet Kommandoeingaben.
+Existiert die Datei
+.I file
+noch nicht, gibt
+.B edit
+eine Fehlermeldung, setzt aber den Editorlauf fort.
+.PP
+.B Edit
+fordert Kommandoeingaben mit dem Doppelpunkt (:) an.
+Die meisten Kommandos von
+.B edit
+benutzen die aktuelle Zeile, wenn keine Zeilennummer spezifiziert wird
+(die aktuelle Zeile ist die letzte durch ein Kommando beeinflusste Zeile).
+Alle Kommandoeingaben sind mit der Taste RETURN abzuschliessen.
+Die aktuelle Zeile
+wird mit dem Kommando \fIp\fR ausgegeben.
+Das Delete-Kommando
+(\fId\fR) loescht die aktuelle Zeile.
+\fBEdit\fR streicht die Zeile und gibt die neue aktuelle Zeile
+(gewoehnlich die nachfolgende Zeile) aus.
+Wurde die letzte Zeile gestrichen, wird die neue letzte Zeile
+zur aktuellen Zeile.
+.PP
+Beim Start mit einer leeren Datei bzw. zum Hinzufuegen von neuen Zeilen muss
+das
+\fBappend\fI (a\fR) Kommando benutzt werden.
+\fBEdit\fR liest solange Zeilen vom Terminal ein, bis eine Zeile erkannt wird,
+die nur aus einem Punkt (.) besteht. Diese Zeilen werden
+.B nach
+der aktuellen
+Zeile eingefuegt.
+Die zuletzt eingegebene Zeile wird die aktuelle Zeile.
+Das Kommando \fBinsert\fR (\fIi\fR) ist aehnlich dem \fBappend\fR Kommando,
+die Zeilen werden aber
+.B vor
+der aktuellen Zeile eingefuegt.
+.PP
+\fBEdit\fR numeriert die Zeilen im Puffer beginnend mit
+Zeile 1.
+Das Kommando \fI1\fR veranlasst \fBedit\fR, die erste Zeile auszugeben.
+.PP
+Um Text in der aktuellen Zeile zu veraendern, ist das Kommando
+\fBsubstitute\fR (\fIs\fR) zu verwenden.
+Die Syntax lautet s/\fIold\fR\|/\fInew\fR/, wobei \fIold\fR die Zeichen
+darstellt, die veraendert werden sollen, und \fInew\fR die neuen Zeichen angibt.
+.PP
+Das \fBfile\fR Kommando (\fIf\fR) gibt an, wieviel Zeilen im Puffer
+gerade editiert werden. Die Ausgabe "[Modified]" gibt an,
+dass die Anzahl veraendert wurde.
+Nach dem Modifizieren einer Datei im Puffer wird die Datei durch Eingabe
+des Kommandos \fBwrite\fR (\fIw\fR) ersetzt.
+Der Editor wird durch das \fBquit\fR (\fIq\fR) Kommando verlassen.
+Wenn \fBedit\fR ohne eine Aenderung der Datei lief, ist es nicht
+notwendig, ein \fBwrite\fR Kommando einzugeben.
+Wird versucht, ohne vorheriges Schreiben
+ein \fBquit\fR Kommando nach Modifizierung des Puffers
+einzugeben,
+erfolgt eine Warnmeldung
+"No \fBwrite\fR since last change" und \fBedit\fR wartet auf ein anderes
+Kommando.
+Die Eingabe eines weiteren \fBquit\fR Kommandos bewirkt, dass der Puffer
+unwiederuflich geloescht wird.
+Danach wird zu Shell zurueckgekehrt.
+.PP
+Durch Benutzung der \fBdelete\fR und \fBappend\fR Kommandos und Angabe von
+Zeilennummern koennen Veraenderungen in der Datei vorgenommen werden.
+Die folgenden Kommandos sind empfehlenswert, wenn \fBedit\fR
+mehrmals benutzt wird.
+.PP
+Das \fBchange\fR Kommando (\fIc\fR) aendert die aktuelle Zeile in eine
+Folge von einzugebenden Zeilen.
+Sollen mehr als eine Zeile geaendert werden, ist die Anzahl
+anzugeben; z.B., "3,5change."
+Auf diese Art koennen auch mehrere Zeilen ausgedruckt werden, z.B. gibt
+"1,23p" die ersten 23 Zeilen der Datei aus.
+.PP
+Das \fBundo\fR Kommando (\fIu\fR) macht die Wirkung des zuletzt
+ausgefuehrten Kommandos wieder rueckgaengig.
+Somit ist es moeglich, wenn ein \fBsubstitute\fR Kommando nicht das
+gewuenschte Ergebnis brachte, durch
+Eingabe von \fIu\fR den alten Inhalt der Zeile wieder herzustellen.
+Ein \fBundo\fR Kommando kann auch auf sich selbst wirken.
+\fBEdit\fR gibt eine Warnmeldung aus, wenn Kommandos mehr als eine
+Zeile im Puffer beeinflussen.
+Wenn die Anzahl der Aenderungen unvernuenftig erscheint, ist ein
+.I undo
+einzugeben.
+Ist die Aenderung in Ordnung, ist wieder ein
+.I undo
+einzugeben, um die Aenderungen vor dem ersten \fIundo\fR 
+zurueckzubekommen.
+Kommandos, wie
+.I write
+und
+.I quit
+koennen nicht rueckgaengig gemacht werden.
+.PP
+Um die naechste Zeile des Puffers zu erhalten ist RETURN einzugeben.
+Um mehrere Zeilen zu sehen, ist CTRL-D (CTRL- und D-Taste gleichzeitig)
+anstelle der RETURN-Taste einzugeben.
+Es wird eine halbe Bildschirmfuellung ausgegeben.
+Der Text um die aktuelle Position herum kann durch Eingabe des
+\fIz.\fR Kommandos angezeigt werden.
+Die aktuelle Zeile ist dann die zuletzt gedruckte.
+Um auf die Zeile vor dem \fIz\fR Kommando zu gelangen, ist \&"
+einzugeben.
+Das \fIz.\fR Kommando kann auch mit den folgenden Zeichen
+angegeben werden:
+z\- gibt eine Bildschirmfuellung aus (24 Zeilen - endend mit der
+aktuellen Zeile).
+z+ gibt den naechsten Bildschirminhalt aus.
+Beim \fIz\fR Kommando kann auch eine Zeilenanzahl spezifiziert werden,
+zum Beispiel gibt "z.12" 12 Zeilen aus.
+Diese Methode der Angabe einer Anzahl ist allgemeingueltig;
+z.B. koennen 5 Textzeilen ab der aktuellen Zeile durch das
+Kommando \fId5\fR gestrichen werden.
+.PP
+Es ist auch moeglich, in der Datei nach Zeichenketten zu suchen. Das
+Kommando
+\fB/text/\fR
+sucht vorwaerts nach der Zeichenkette
+.I text
+oder
+\fB?text?\fR
+sucht rueckwaerts nach
+.I text.
+Wenn die Suche das Dateiende erreicht, ohne die Zeichenkette zu finden,
+wird vom Dateianfang bis zu der Zeile weitergesucht, an der das
+Suchkommando eingegeben wurde.
+Eine sinnvolle Moeglichkeit des Suchens ist die Form
+\fB/^text/\fR,
+die die Zeichenkette
+.I text
+an einem Zeilenbeginn sucht.
+Aehnlich wird durch
+\fB/text$/\fR
+nach
+.I text
+am Ende einer Zeile gesucht.
+Das abschliessende / oder ? kann bei diesen Kommandos weggelassen werden.
+.PP
+Die aktuelle Zeile hat den symbolischen Namen "Punkt"(\fB\&.\fR).
+Punkt kann sinnvoll bei der Angabe eines Bereichs von Zeilen
+benutzt werden. Das Kommando \&.,$print gibt den Rest der
+Zeilen der Datei aus.
+Um die letzte Zeile der Datei zu erreichen, ist der symbolische Name $
+zu verwenden.
+Das Kommando $ delete oder $d streicht die 
+letzte Zeile der Datei.
+Arithmetische Verknuepfungen mit Zeilenverweisen sind ebenfalls moeglich.
+Die Zeile $\-5 ist die fuenfte Zeile vor der letzten, und \&.+20
+ist die 20. Zeile nach der aktuellen Zeile.
+.PP
+Die aktuelle Zeile wird als Antwort auf eine \&.= Eingabe ausgegeben
+(guenstig beim Verschieben oder Kopieren eines Textbereichs
+innerhalb einer Datei oder zwischen Dateien).
+Die erste und die letzte Zeilennummer fuer das Kopieren bzw. Verschieben
+muss bekannt sein (sagen wir 10 bis 20).
+Zum Verschieben ist 10,20move "a
+einzugeben.
+Dadurch werden diese Zeilen in der Datei gestrichen und in einen durch
+.I a benannten Puffer abgelegt.
+.B Edit
+besitzt 26 solcher Puffer, die von
+.I a
+bis
+.I z bezeichnet werden.
+Durch Eingabe von "a move \fB.\fR wird der Pufferinhalt von
+.I a
+im Anschluss an die aktuelle Zeile eingefuegt.
+Um diese Zeilen zwischen Dateien zu kopieren, ist ein \fBedit\fR (\fIe\fR)
+Kommando gefolgt vom Namen einer anderen Datei anzugeben;
+z.B.:  edit Kapitel2.
+Bei einem Wechsel von \fImove\fR zu \fIcopy\fR kann ein Muster fuer
+die zu kopierenden Zeilen angegeben werden.
+Wenn der zu verschiebende oder zu kopierende Text vollstaendig
+in einer Datei vorhanden ist, ist 10,20move $
+einzugeben.
+In diesem Fall ist es  nicht notwendig, einen Puffer zu benennen.
+.SH OPTIONEN
+.TP
+.B \-r
+Wiederherstellen der angegebenen Dateien nach einem Editor-
+oder Systemabsturz.
+Die letzte Version wird gerettet.
+.SH SIEHE AUCH
+ed(1), ex(1), vi(1), sed(1).
+.SH EINSCHRAENKUNGEN
+Siehe
+.BR ex (1).

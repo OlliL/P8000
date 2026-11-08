@@ -1,0 +1,55 @@
+.TH SPROF 1 
+.\" @[$]sprof.1	1.2
+.ad
+.fi
+.SH NAME
+sprof \- Anzeige der Profildaten
+.SH SYNTAX
+.B sprof
+[
+.B \-al
+[ \fIfile\fR ]
+.SH BESCHREIBUNG
+.B Sprof
+interpretiert die Datei
+.BR mon.out ,
+die durch die Subroutine
+.BR segmon (3)
+erzeugt wurde.
+Im Normalfall wird die Symboltabelle der bezeichneten Objektdatei
+(Standard:
+.BR a.out )
+gelesen und zur Profildatei
+.BR mon.out (5)
+in Beziehung gebracht.
+Fuer jedes externe Symbol wird der Prozentsatz der Zeit, die fuer die
+Ausfuehrung zwischen diesem Symbol und dem naechsten benoetigt wird,
+ausgegeben (in abnehmender Reihenfolge).
+Ausserdem wird die Anzahl der Aufrufe dieser Routine
+und die Zeit pro Aufruf (in Millisekunden) ausgegeben.
+.PP
+Um die Anzahl der Aufrufe einer Routine abzurechnen, muss die
+.B \-p
+Option von
+.BR scc (1)
+beim Uebersetzen der entsprechenden Routine angegeben werden.
+Diese Option ermoeglicht auch die automatische Erstellung der
+.BR mon.out (5)
+Datei.
+.SH OPTIONEN
+.TP
+.B \-a
+Es werden nicht nur die externen, sondern alle Symbole gemeldet.
+.TP
+.B \-l
+Es wird die Ausgabe nach Symbolwert und nicht nach fallendem Prozentsatz
+aufgelistet.
+.SH DATEIEN
+.ta \w'mon.out  'u
+mon.out	fuer Profil
+.br
+a.out		fuer Symboltabelle
+.SH SIEHE AUCH
+mon.out(5), segmon(3), sprofil(2), scc(1).
+.SH EINSCHRAENKUNGEN
+Es sind Quantisierungsfehler zu beachten.

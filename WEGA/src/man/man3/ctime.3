@@ -1,0 +1,120 @@
+.TH CTIME 3 WEGA
+.\" @[$]ctime.3 1.2
+.ad
+.fi
+.SH NAME
+ctime, localtime, gmtime, asctime, tzset \- Konvertieren von Datum und Zeit in und aus ASCII-Zeichen
+.SH SYNTAX
+.nf
+\fBchar \(**ctime \fR(\fIclock\fR)
+.br
+\fBlong \(**\fIclock;\fR
+.sp
+#include <time.h>\fR
+.sp
+\fBstruct tm \(**localtime \fR(\fIclock\fR)
+.br
+\fBlong \(**\fIclock;
+.sp
+\fBstruct tm \(**gmtime \fR(\fIclock\fR)
+.br
+\fBlong \(**\fIclock;
+.sp
+\fBchar \(**asctime \fR(tm\fR)
+.br
+\fBstruct \fItm \(**tm;\fR
+.sp
+\fBtzset \fR( )\fR
+.fi
+.SH BESCHREIBUNG
+.B Ctime\^
+konvertiert eine durch den Pointer
+.I clock\^
+bezeichnete Uhrzeit (in der Form, wie durch
+.BR time (2)
+erzeugt) in ASCII-Zeichen und liefert einen Pointer auf eine
+26 Zeichen lange Zeichenkette der folgenden Form
+(alle Felder haben eine konstante Laenge):
+.PP
+.RS
+Wed Nov  4 09:16:34 1987\\n\\0
+.RE
+.PP
+.B Localtime\^
+und
+.B gmtime\^
+liefern Pointer auf Strukturen, die eine aufgeschluesselte Zeitdarstellung
+enthalten.
+.B Localtime\^
+korrigiert die Zeit entsprechend der Zeitzone (und Sommerzeit).
+.B Gmtime\^
+konvertiert direkt in GMT, die vom WEGA-System verwendete Zeit.
+.B Asctime\^
+konvertiert eine aufgeschluesselte Zeitangabe in 
+ASCII-Zeichen und liefert einen Pointer auf eine 26 Zeichen lange Zeichenkette.
+.PP
+Die folgende Strukturdeklaration befindet sich in <time.h> :
+.RS
+.nf
+
+struct  tm {
+        int     tm_sec;      /* 24-Stunden-Zeit */
+        int     tm_min;
+        int     tm_hour;
+        int     tm_mday;     /* Tag des Monats (1-31) */
+        int     tm_mon;      /* Monat des Jahres (0-11) */
+        int     tm_year;     /* Jahr - 1900 */
+        int     tm_wday;     /* Wochentag (Sonntag = 0) */
+        int     tm_yday;     /* Tag des Jahres (0-365) */
+        int     tm_isdst;    /* fuer Sommerzeit != 0 */
+};
+.fi
+.RE
+.PP
+Die externe Variable
+.BI (long) timezone
+gibt den Unterschied (in Sekunden) an, der zwischen
+GMT und der lokalen Standardzeit besteht
+(fuer MEZ besitzt
+.I timezone\^
+den Wert -1\(**60\(**60).
+.PP
+Wenn eine als
+.B TZ
+bezeichnete Umgebungsvariable vorhanden ist, benutzt
+.B asctime\^
+den Inhalt der Variablen, um die angenommene Zeitzone aufzuheben.
+Der Wert von
+.B TZ
+muss ein aus drei Buchstaben bestehender Name einer Zeitzone sein,
+dann eine Zahl, die den Unterschied zwischen Ortszeit und
+Weltzeit (GMT) in Stunden angibt und
+dann gegebenenfalls ein dreibuchstabiger Name fuer eine Sommerzeitzone.
+.PP
+Das Setzen der Umgebungsvariablen
+.B TZ
+ist gleichbedeutend mit der Veraenderung der Werte der externen
+Variablen
+.I timezone
+und
+.IR daylight .
+Zusaetzlich werden die Zeitzonennamen, die in der externen
+Variable
+.IP
+\fBchar \(**tzname[2] = {"MEZ", "MES"};\fR
+.PP
+enthalten sind, durch die Umgebungsvariable gesetzt.
+Die Funktion
+.B tzset
+setzt die externen Variablen in Abhaengigkeit von
+.BR TZ .
+Die Funktion
+.B tzset
+wird von
+.B asctime
+benutzt, kann aber auch explizit vom Nutzer gerufen werden.
+.SH SIEHE AUCH
+time(2), getenv(3), environ(7).
+.SH EINSCHRAENKUNGEN
+Der Rueckgabewerts weist auf statische Daten, deren Inhalt von
+jedem Aufruf ueberschrieben wird.

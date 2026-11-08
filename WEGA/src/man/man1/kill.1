@@ -1,0 +1,60 @@
+.TH KILL 1 WEGA
+.\" @[$]kill.1  1.2
+.ad
+.fi
+.SH NAME
+kill \- Senden eines Signals an einen Prozess
+.SH SYNTAX
+\fBkill\fR [ \fB\-\fIsigno\fR] \fIprocessid ...\fR
+.SH BESCHREIBUNG
+.B Kill
+sendet ein Signal (im Standardfall Signal 15 zur Beendigung)
+an die angegebenen Prozesse.
+Wird als erstes Argument eine Signalnummer
+signo
+mit vorangestelltem '-' spezifiziert, wird diese Signalnummer
+anstelle des Beendigungssignals gesendet (\fIsignal\fR (2)).
+Dadurch koennen auch Prozesse angesprochen werden,
+die das Signal 15 sonst ignorieren wuerden.
+Insbesondere ist
+"kill \-9 ..." ein sicheres Abbruchsignal.
+.PP
+Wurde die Prozessnummer Null verwendet, werden an alle
+Prozesse in der aktuellen Prozessgruppe Signale gesendet
+(d.h. alle Prozesse, die aus dem aktuellen Login resultieren).
+.PP
+Alle abgebrochenen Prozesse muessen dem jeweiligen Nutzer zugeordnet sein
+(gilt nicht fuer den Superuser).
+Um das WEGA-Betriebssystem aus dem Multi-User-Zustand in den
+Single-User-Zustand zu bringen, kann der Superuser das Kommando
+"kill \-1 1" oder \fIinit\fR(M) verwenden.
+.PP
+Die Prozessnummer eines asynchronen Prozesses, der mit '&'
+gestartet wurde, wird durch die C-Shell angezeigt.
+Prozessnummern koennen ausserdem mit dem Kommando
+\fIps\fR(1)
+ermittelt werden.
+.SH BEISPIEL
+.nf
+.sp
+.RS
+     % nroff -man kill.1 > kill.druck &
+     345
+
+     % ps
+        PID TTY TIME CMD
+         24 2   0:12 -csh
+        345 2   0:02 nroff -man kill.1
+        346 2   0:02 ps
+
+     % kill -9 345
+     345: nroff: Killed
+
+     % ps
+        PID TTY TIME CMD
+         24 2   0:12 -csh
+        380 2   0:02 ps
+.RE
+.fi
+.SH SIEHE AUCH
+ps(1), kill(2), signal(2), init(M).

@@ -1,0 +1,54 @@
+.TH RM 1 WEGA
+.\" @[$]rm.1	1.2
+.ad
+.fi
+.SH NAME
+rm, rmdir  \- Entfernen von Links bzw. Loeschen von Dateien
+.SH SYNTAX
+.B rm
+[
+.B \-fir
+] \fIfile\fR ...
+.PP
+.B rmdir
+\fIdir\fR ...
+.PP
+.SH BESCHREIBUNG
+.B Rm
+loescht die Eintraege fuer eine oder mehrere Dateien aus dem Directory.
+Wenn ein Eintrag das letzte Link zu einer Datei war, wird die Datei
+zerstoert.
+Das Loeschen einer Datei erfordert eine Schreiberlaubnis fuer das Directory,
+aber weder Lese- noch Schreiberlaubnis fuer die Datei selbst.
+.PP
+Wenn eine Datei keine Schreiberlaubnis hat und die Standardeingabe ein
+Terminal ist, werden ihre Zugriffsrechte ausgegeben und eine Zeile von der
+Standardeingabe gelesen.
+Beginnt diese Zeile mit y, wird die Datei geloescht, andernfalls
+bleibt die Datei bestehen.
+Ist ein angegebener Dateiname ein Directory, wird ein Fehlerkommentar
+ausgegeben, wenn nicht das optionelle Argument
+.B \-r
+benutzt wurde.
+.PP
+.B Rmdir
+loescht Eintraege fuer die genannten Directories,
+die leer sein muessen.
+.SH OPTIONEN
+.TP
+.B \-f
+Force-Option. Es werden keine Fragen gestellt.
+.TP
+.B \-i
+Interaktives Loeschen. Abfrage fuer jede zu loeschende Datei
+sowie fuer jedes zu untersuchende Directory.
+.TP
+.B \-r
+Rekursives Loeschen des gesamten Inhalts des spezifizierten Directorys
+und des Directorys selbst.
+.SH SIEHE AUCH
+chmod(2), unlink(2).
+.SH DIAGNOSTIK
+Die Ausschriften sind selbsterklaerend.
+Es ist nicht gestattet, die Dateien \&. und \&.. zu loeschen, um die 
+Folgen von unabsichtlichen Aktionen, wie rm \-r *, zu vermeiden.

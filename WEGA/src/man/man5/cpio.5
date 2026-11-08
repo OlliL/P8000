@@ -1,0 +1,81 @@
+.TH CPIO 5 WEGA
+.ad
+.SH NAME
+cpio \- Format des cpio-Archivs
+.SH BESCHREIBUNG
+.PP
+Jedes mit Hilfe des Komandos
+.BR cpio (1)
+erstellte Archiv besitzt einen Dateikopf.
+Ist die Option
+.B c
+des Kommandos
+nicht angegeben, besitzt der Dateikopf folgende Struktur:
+.nf
+
+struct {
+        short h_magic,
+              h_dev,
+              h_ino,
+              h_mode,
+              h_uid,
+              h_gid,
+              h_nlink,
+              h_rdev,
+              h_mtime[2],
+              h_namesize,
+              h_filesize[2];
+        char  h_name[h_namesize];     /* auf Wortgrenze gerundet */
+} Hdr;
+.fi
+.PP
+Wird die Option
+.B c
+verwendet, kann das Format des Dateikopfes wie folgt beschrieben werden:
+.nf
+
+sscanf(Chdr, "%6o%6o%6o%6o%6o%6o%6o%6o%11lo%6o%6o%s",
+        &Hdr.h_magic, &Hdr.h_dev, &Hdr.h_ino, &Hdr.h_mode,
+        &Hdr.h_uid, &Hdr.h_gid, &Hdr.h_nlink, &Hdr.h_rdev,
+        &Longtime, &Hdr.h_namesize, &Longfile, Hdr.h_name);
+.fi
+.PP
+Die Argumente
+.B Longtime\^
+und
+.B Longfile\^
+sind aequivalent zu denen in
+.B Hdr.h_mtime\^
+bzw.
+.BR Hdr.h_filesize\^ .
+Der Inhalt jeder Datei ist in einem
+Element des Feldes mit variabler Laenge
+.B archive
+gemeinsam mit anderen, die Datei
+beschreibenden Feldern aufgezeichnet.
+Jedes Feld
+.B h_magic\^
+enthaelt die oktale Konstante 070707.
+Die Bedeutung der Strukturelemente
+.B h_dev\^
+bis
+.B h_mtime\^
+ist im Eintrag fuer den Systemruf
+.BR  stat (2)
+erklaert.
+Der Wert
+.BR h_namesize
+gibt die Laenge des mit einem Nullbyte abgeschlossenen Pfadnamens
+.BR h_name
+(einschliesslich Nullbyte) an.
+.PP
+Der letzte Datensatz des Archivs
+enthaelt immer den Namen
+.BR "TRAILER!!!" .
+Geraetedateien, Directorys und Trailer werden mit
+.B h_filesize
+gleich Null aufgezeichnet.
+.SH SIEHE AUCH
+cpio(1),
+find(1),
+stat(2).

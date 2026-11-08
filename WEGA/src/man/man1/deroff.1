@@ -1,0 +1,137 @@
+.TH DEROFF 1 WEGA
+.\" @[$]deroff.1	1.2
+.ad
+.fi
+.SH NAME
+deroff \- streicht nroff/troff, tbl, und eqn Anweisungen
+.SH SYNTAX
+.B deroff
+[
+.BR \-m x
+] [
+.B \-w
+] [ files ]
+.SH BESCHREIBUNG
+.B Deroff\^
+liest sequentiell die angegebenen Dateien und streicht alle
+.BR troff (1)
+Befehle, Makroaufrufe, Backslash-Konstruktionen,
+.BR eqn (1)
+Konstruktionen (zwischen
+.SM
+.I \&.EQ
+und
+.SM
+.I \&.EN
+Zeilen und zwischen Begrenzungszeichen) sowie
+.BR tbl (1)
+Konstruktionen, und gibt den Rest
+in einer dem Original aehnlichen Form
+auf die Standardausgabe aus.
+.B Deroff\^
+bezieht auch Dateien ein, die ueber die
+.B troff\^
+Kommandos
+.RI .so
+und
+.RI .nx
+einbezogen werden.
+Wenn eine Datei bereits einbezogen wurde, wird ein weiteres
+.I \&.so
+ignoriert; ein
+.I \&.nx
+beendet die Verarbeitung.
+Wurde keine Eingabedatei angegeben, liest
+.B deroff\^
+von der Standardeingabe.
+.SH OPTIONEN
+.TP
+.B \-m[msl]
+Die Optionen
+.B \-mm
+oder
+.B \-ms
+bewirken, dass die
+.B mm
+oder
+.B ms
+Makros so interpretiert werden, dass nur der laufende Text
+ausgegeben wird (z.B. kein Text aus Makrozeilen). Die
+.B \-ml
+Option erzwingt die
+.B \-mm
+Option und veranlasst die Streichung der Listen, die mit dem
+.B mm
+Makro verbunden sind.
+.TP
+.B \-w
+Die Ausgabe ist eine Wortliste (ein "Wort" pro Zeile), in der
+alle anderen Zeichen gestrichen sind.
+Im Text ist ein "Wort" eine beliebige Zeichenkette,
+die zu Beginn mindestens zwei Buchstaben enthaelt
+und aus Buchstaben, Zahlen, sowie den Sonderzeichen Ampersand
+.RB ( & )
+und Apostroph
+.RB ( \^\(fm\^ )
+besteht.
+Abschliessende Apostroph und Ampersand werden aus dem "Wort" gestrichen.
+.SH BEISPIELE
+.RS
+.nf
+\fB% cat beispiel\fR
+\&.PP
+Das ist eine einfache Datei mit nroff Kommandos.
+Sie wird mit deroff bearbeitet:
+\&.RS
+deroff beispiel
+\&.RE
+um nroff Kommandos fuer Lesezwecke zu entfernen.
+.sp
+\fB% deroff beispiel\fR
+
+Das ist eine einfache Datei mit nroff Kommandos.
+Sie wird mit deroff bearbeitet:
+
+deroff beispiel
+
+um nroff Kommandos fuer Lesezwecke zu entfernen.
+.sp
+\fB% deroff -w beispiel\fR
+Das
+ist
+eine
+einfache
+Datei
+mit
+nroff
+Kommandos
+Sie
+wird
+mit
+deroff
+bearbeitet
+deroff
+beispiel
+um
+nroff
+Kommandos
+fuer
+Lesezwecke
+zu
+entfernen
+.fi
+.RE
+.SH SIEHE AUCH
+eqn(1), tbl(1), troff(1).
+.SH EINSCHRAENKUNGEN
+.B Deroff\^
+ist kein vollstaendiger
+.B troff\^
+Interpreter, so dass nicht alle Konstruktionen
+erkannt werden.
+Die meisten dieser Fehler erzeugen eher eine zu grosse,
+als eine zu kleine Ausgabe.
+.br
+Die
+.B \-ml
+Option verarbeitet vernestete Listen nicht korrekt.

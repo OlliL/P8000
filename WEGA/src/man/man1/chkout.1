@@ -1,0 +1,90 @@
+.TH CHKOUT 1 
+.\" @[$]chkout.1	1.2
+.ad
+.fi
+.SH NAME
+chkout \- Rekonstruieren einer Datei aus der QCV-Steuerdatei
+.SH SYNTAX
+chkout [\fB-d\fI dir\fR] [\fB-e\fR] [\fB-h\fR] [\fB-p\fR] [\fB-v\fI rel.lev\fR] \fIfile \fR...
+.SH BESCHREIBUNG
+.B Chkout
+rekonstruiert eine beliebige Version einer Quelldatei
+aus einer QCV-Steuerdatei (einfaches Quellcodeverwaltungssystem, siehe
+.BR qcv (5)).
+Fuer jede rekonstruierte Datei werden die Versionsnummer und die
+Anzahl der Quellzeilen ausgegeben.
+.LP
+Das Dateinamenargument kann entweder ein Quelldateiname
+(darf nicht mit + enden) oder ein QCV-Steuerdateiname
+(Quelldateiname mit Endung +) sein.
+Ist eine QCV-Steuerdatei angegeben und die -d Option nicht benutzt,
+wird die Quelldatei im aktuellen Directory erzeugt,
+auch wenn die QCV-Steuerdatei nicht dort steht.
+.LP
+Bei einem Aufruf von chkout ohne Angabe von Optionen
+wird die letzte Version der Quelldatei, die mit
+.BR chkin (1)
+in die QCV-Steuerdatei aufgenommen wurde,
+als schreibgeschuetzte Datei im aktuellen Directory angelegt.
+Alle in der Quelldatei enthaltenen
+Schluesselwoerter werden substituiert
+(Schluesselwoerter sind in
+.BR qcv (5)
+beschrieben).
+Die schreibgeschuetzten Dateien koennen zur Ausgabe,
+zur Compilierung oder anderen
+Programmeingaben benutzt werden.
+Eine schreibgeschuetzte Quelldatei muss nicht modifiziert oder wieder in eine
+QCV-Steuerdatei eingebracht werden.
+.SH OPTIONEN
+.TP
+.B \-d \fIdir\fR
+Erzeugt die Quelldatei im angegebenen Directory
+.IR dir .
+.TP
+.B \-e
+Erzeugt eine Quelldatei, die editiert werden kann.
+Die Datei besitzt die ueblichen Modi. Es wird gleichzeitig eine
+Lock-Datei erzeugt.
+Sie verhindert, dass weitere Rekonstruktionen dieser Datei
+erfolgen koennen. Die Lock-Datei muss solange existieren, bis die
+editierte Datei wieder in die QCV-Steuerdatei eingebracht wurde (siehe
+.BR chkin (1)).
+.TP
+.B \-h
+Fuer Versionen einer Quelldatei, die sich in der QCV-Steuerdatei befinden,
+werden die
+Versionsnummer, das Datum des Einbringens, die Kommentare und der
+Urheber ausgegeben. Es wird keine Version erzeugt.
+.TP
+.B \-p
+Die erzeugte Version wird an die Standardausgabe ausgegeben.
+Die Schluesselwoerter werden substituiert.
+.TP
+\fB\-v \fIrel.lev\fR
+Es wird die angegebene Version anstelle der letzten Version erzeugt.
+.SH DATEIEN
+file+ -- QCV-Steuerdatei fuer
+.I file
+.br
+file- -- Lock-Datei fuer eine editierbare Datei
+.SH SIEHE AUCH
+chkin(1), chkdiff(1), chkwhat(1), qcv(5)
+.SH DIAGNOSTIK
+xxxxx checked out by xxxxx at xxxxx:  die Datei wurde zum Editieren
+erzeugt; sie kann nicht noch einmal rekonstruiert werden, solange die neue
+Version nicht wieder eingebracht oder die editierbare Kopie und seine
+Lock-Datei gestrichen wurde
+.LP
+writable xxxxx exists:  ein Erzeugen der Datei wuerde eine Datei
+ueberschreiben, die offensichtlich keine rekonstruierte Datei ist
+.LP
+corrupt chkfile:  die in
+qcv(5) erlaeuterten Konventionen wurden verletzt
+.LP
+version rel.lev not found:  benutze chkout -h, um die korrekte Versionsnummer
+zu finden
+.LP
+no keywords substituted: die "what"-Zeichenkette ist fehlerhaft.
+Diese Fehlermeldung erscheint, wenn eine Datei mit einer zu langen
+"what"-Zeichenkette eingebracht wurde.

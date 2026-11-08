@@ -1,0 +1,111 @@
+.TH TR 1 WEGA
+.\" @[$]tr.1	1.2
+.ad
+.fi
+.SH NAME
+tr \- Umwandeln von Zeichen
+.SH SYNTAX
+.B tr
+[
+.B \-cds
+] [
+.I string1
+[
+.I string2
+] ]
+.SH BESCHREIBUNG
+.B Tr
+Kopiert die Standardeingabe auf die Standardausgabe. Dabei werden
+ausgewaehlte Zeichen ersetzt oder geloescht.
+Eingabezeichen, die in
+.I string1
+erkannt werden, werden in die korrespondierenden Zeichen von
+.IR string2
+umgewandelt.
+.SH OPTIONEN
+.TP
+.B \-c
+Komplementiert den Zeichensatz in
+.I string1
+unter Beruecksichtigung des gesamten
+.SM ASCII
+Zeichensatzes von 0 bis 0x7f.
+.TP
+.B \-d
+Loescht alle Eingabezeichen, die in
+.IR string1
+enthalten sind.
+.TP
+.B \-s
+Komprimiert alle Strings mit sich wiederholenden Zeichen,
+die in
+.I string2
+enthalten sind, in einzelne Zeichen.
+.PP
+Folgende Regeln fuer den Gebrauch von Abkuerzungen
+fuer Zeichen bzw. Zeichenwiederholungen
+koennen verwendet werden:
+.TP 6
+.B [a\-z]
+ASCII-Zeichen zwischen
+.B a
+und
+.BR z .
+.TP
+.BI [a\(** n ]
+Steht fuer die \fIn\fP-fache Wiederholung des Zeichens \fBa\fP
+(Notation von
+.IR n :
+Oktal mit fuehrender Null; sonst dezimal).
+Fehlt
+.I n
+oder ist
+.I n
+gleich Null,
+wird eine sehr grosse Zahl angenommen.
+Dadurch kann
+.B tr
+zum Fuellen von
+.IR string2
+benutzt werden.
+.PP
+Mit einem Backslash
+.B \e
+koennen Shell-Sonderzeichen an
+.B tr
+uebergeben werden.
+Ueber
+.B \e
+und 1 bis 3 Oktalzahlen wird das Zeichen mit dem angegebenen
+.SM ASCII
+Code selektiert.
+.PP
+Das folgende Beispiel erzeugt in \fIfile2\fP eine Liste aller Worte
+(jeweils ein Wort pro Zeile)
+aus \fIfile1\fP,
+wobei ein Wort als eine maximale Zeichenkette von
+Buchstaben angenommen wird.
+Die Anfuehrungszeichen dienen zur Verhinderung
+einer Interpretation durch Shell.
+.PP
+.ti +8
+tr \|\-cs \|"[A\-Z][a\-z]" \|"[\\012\(**]" \|<file1 \|>file2
+.SH SIEHE AUCH
+ed(1),
+sh(1),
+ascii(7).
+.SH EINSCHRAENKUNGEN
+Das
+.B tr
+Kommando behandelt keine
+.SM ASCII
+.SM
+.B NULL
+in
+.I string1
+oder
+.IR string2 ;
+jede
+.SM
+.B NULL
+im Eingabestrom wird geloescht.

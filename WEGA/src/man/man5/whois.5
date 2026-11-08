@@ -1,0 +1,39 @@
+.TH WHOIS 5 WEGA
+.\" @[$]whois.5	1.2
+.ad
+.fi
+.SH NAME
+whois \- Datenbasis fuer whois
+.SH BESCHREIBUNG
+Die ASCII-Datei
+.B /etc/whois
+enthaelt fuer jeden Nutzer einen Eintrag.
+Jeder Eintrag enthaelt folgende Informationen:
+.sp
+.RS
+.IP - 3
+Login-Name
+.PD 0
+.IP - 3
+richtiger Name des Nutzers (vollstaendiger Name)
+.IP - 3
+Telefonnummer im Dienst
+.IP - 3
+Private Telefonnummer
+.IP - 3
+Gruppe, zu der Nutzer gehoert
+.IP - 3
+Bemerkungen
+.PD
+.sp
+.RE
+.PP
+Innerhalb des Nutzereintrags werden die
+einzelnen Felder jeweils durch Doppelpunkte
+getrennt.
+Die Nutzereintraege werden durch Newline-Zeichen voneinander
+getrennt.
+.SH DATEIEN
+\&/etc/whois
+.SH SIEHE AUCH
+whois(1).

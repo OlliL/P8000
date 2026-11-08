@@ -1,0 +1,62 @@
+.TH PROF 1 
+.\" @[$]prof.1	1.2
+.ad
+.fi
+.SH NAME
+prof \- Anzeige der Profildaten
+.SH SYNTAX
+.B prof
+[
+.B \-al
+] [ \fIfile\fR ]
+.SH BESCHREIBUNG
+.B Prof
+interpretiert die Datei
+.I mon.out,
+die von der Subroutine
+.I monitor
+angelegt wird.
+Unter den Standardbedingungen wird die Symboltabelle der genannten
+Objektdatei
+(Standard:
+.BR a.out )
+gelesen und
+mit der Profildatei
+.I mon.out
+in Beziehung gebracht.
+Es wird der Prozentsatz der Zeit,
+die fuer die Programmbearbeitung im Adressbereich
+zwischen zwei aufeinanderfolgenden externen Symbolen
+aufgewendet wird (beginnend mit dem groessten Wert) ausgegeben.
+Ausserdem wird gedruckt, wie oft diese Routine aufgerufen wurde
+und wieviel Millisekunden fuer jeden Aufruf benoetigt wurden.
+.PP
+Um berechnen zu koennen, wie oft eine Routine aufgerufen wird,
+muss beim Uebersetzen des Programms die
+.B \-p
+Option von
+.B cc
+angegeben worden sein.
+Diese Option sorgt auch dafuer, dass die Datei
+.I mon.out
+automatisch angelegt wird.
+.SH OPTIONEN
+.TP
+.B \-a
+Es werden nicht nur externe Symbole aufgezeichnet, 
+sondern alle Symbole.
+.TP
+.B \-l
+Die Ausgabe wird nach Symbolwerten geordnet, nicht nach
+fallendem Prozentsatz.
+.SH DATEIEN
+.nf
+mon.out   fuer die Profilermittlung
+a.out     fuer die Symboltabelle
+.fi
+.SH SIEHE AUCH
+cc(1), profil(2), monitor(3), mon.out(5).
+.SH EINSCHRAENKUNGEN
+Es ist auf Fehler zu achten, die durch
+die Feinstruktur der Profildaten entstehen koennen;
+Symbole sollten nur aus 8 Zeichen bestehen.

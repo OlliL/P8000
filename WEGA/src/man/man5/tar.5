@@ -1,0 +1,67 @@
+.TH TAR 5 WEGA
+.\" @[$]tar.5	1.2
+.ad
+.fi
+.SH NAME
+tar \- tar-Archivformat
+.SH BESCHREIBUNG
+.PP
+In diesem Abschnitt wird der Aufbau
+eines Archivs beschrieben, das mit dem Kommando
+.BR tar (1)
+erzeugt wird.
+Jeder auf dem Archiv befindlichen Datei
+wird ein Kopf mit Informationen vorangestellt.
+Dieser Kopf hat folgende Struktur:
+.nf
+
+struct header
+{
+	char name[NAMSIZ];
+	char mode[8];
+	char uid[8];
+	char gid[8];
+	char size[12];
+	char mtime[12];
+	char chksum[8];
+	char linkflag;
+	char linkname[NAMSIZ];
+};
+
+.fi
+Der Wert NAMSIZ ist auf 100 festgelegt. Jeder
+Kopfblock ist 512 Bytes lang. Diese Struktur nimmt weniger
+als 512 Bytes ein, der Rest wird mit Nullen aufgefuellt.
+Bedeutung der Felder:
+.TP 10
+name
+Der Name der Datei gemaess Kommandozeile.
+.TP
+mode
+Der Modus der Datei, als sie geschrieben wurde.
+Weitere Informationen siehe Beschreibung von st_mode in
+.BR stat (2).
+.TP
+uid
+Eigentuemer der Datei
+.TP
+gid
+Gruppe des Eigentuemers
+.TP
+size
+Dateigroesse in Bytes
+.TP
+mtime
+Zeitpunkt der letzten Modifikation
+.TP
+chksum
+Pruefsumme des Kopfes
+.TP
+linkflag
+Diese Flag wird gesetzt, wenn zwischen dieser Datei und einer anderen
+ein Link besteht.
+.TP
+linkname
+Name der Datei, die durch Link mit dieser verbunden ist.
+.SH SIEHE AUCH
+tar(1).

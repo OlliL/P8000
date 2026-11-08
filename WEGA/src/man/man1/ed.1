@@ -1,0 +1,600 @@
+.TH ED 1 WEGA
+.\" @[$]ed.1	1.2
+.ad
+.fi 
+.if t .ds q \(aa
+.if n .ds q '
+.SH NAME
+ed \- Texteditor
+.SH SYNTAX
+.B ed
+[
+.B \-
+] [
+.B \-x
+] [ file ]
+.SH BESCHREIBUNG
+.B Ed
+ist ein Standardtexteditor.
+.PP
+Wenn ein
+.I file
+Argument angegeben ist, simuliert
+.B ed
+ein
+.I e
+Subkommando mit der angegebenen Datei, deren Inhalt dann in den
+internen Puffer eingelesen wird und editiert werden kann.
+.PP
+.B Ed
+arbeitet mit einer Kopie der zu editierenden Datei im temporaeren
+Dateisystem (Puffer). Aenderungen,
+die in der Kopie vorgenommen werden, haben solange
+keinen Einfluss auf die Datei, bis ein
+.IR w ""
+(write)\|
+Subkommando gegeben wird.
+.PP
+\fBEd\fR-Subkommandos besitzen eine einfache und regulaere Struktur:
+Keine oder mehrere Adressen werden von einem einzelnen Subkommandozeichen
+und moeglicherweise von Parametern gefolgt.
+Die Adressen spezifizieren eine oder mehrere Zeilen im Puffer.
+Pro Zeile kann nur ein Subkommando stehen.
+.PP
+Einige Subkommandos gestatten das Einfuegen
+von Text in den Puffer.
+Im Eingabemodus  akzeptiert
+.B ed
+keine Subkommandos.
+Jedes eingegebene Zeichen wird im Puffer abgelegt.
+Der Eingabemodus wird durch Eingabe eines einzelnen Punktes (\fB\&.\fR)
+am Zeilenanfang verlassen.
+.PP
+.B Ed
+unterstuetzt eine begrenzte Anzahl von regulaeren Ausdruecken.
+Ein regulaerer Ausdruck spezifiziert eine
+Menge von Zeichenketten.
+In der folgenden Beschreibung der regulaeren Ausdruecke
+steht das Wort "Zeichen" fuer jedes Zeichen, ausser Newline.
+.RS
+.IP 1.
+Gewoehnliche Zeichen, ausser Sonderzeichen, entsprechen sich selbst.
+Sonderzeichen sind Begrenzer fuer regulaere Ausdruecke sowie
+.RB \e,  [,
+und manchmal ^, *, $.
+.IP 2.
+Ein
+.B .
+entspricht einem beliebigen Zeichen.
+.IP 3.
+Ein \e gefolgt von einem beliebigen Zeichen
+ausser einer Ziffer oder (\|) entspricht diesem Zeichen.
+.IP 4.
+Eine nichtleere Zeichenkette
+.IR s ,
+die in eckige Klammern eingeschlossen ist
+.RI [ \|s\| ]
+(oder
+.RI [^ s\| ]),
+entspricht einem (oder allen ausser den) Zeichen aus
+.IR s .
+Innerhalb von
+.I s
+hat \e keine besondere Bedeutung und ] kann nur als erstes Zeichen stehen.
+Eine Folge
+.I a\-b,
+mit
+.I a
+und
+.I b
+in steigender ASCII-Folge, bezeichnet die eingeschlossene Folge
+der ASCII-Zeichen (inklusive).
+.IP 5.
+Ein regulaerer Ausdruck gem. Pkt. 1-4, dem ein * folgt,
+entspricht dem n-maligen Vorkommen des regulaeren Ausdrucks.
+.IP 6.
+Ein regulaerer Ausdruck
+.I x,
+gem. Pkt. 1-8, der eingeklammert ist \e(\fIx\fR\e),
+entspricht der Bedeutung von
+.I x .
+.IP 7.
+Ein \e , dem eine Ziffer
+.I n
+folgt, entspricht der Kopie einer Folge eines eingeklammerten
+regulaeren Ausdrucks, der beim n-ten Vorkommen von
+.IR n 
+\e( beginnt.
+.IP 8.
+Ein regulaerer Ausdruck
+.I x 
+gem. Pkt. 1-8,
+dem ein regulaerer Ausdruck
+.I y
+gem. Pkt. 1-7 folgt, entspricht der Existenz von
+.I x
+gefolgt durch die Existenz von
+.I y,
+wobei die Existenz von
+.I x
+so lang wie moeglich ist und trotzdem die Existenz von
+.I y
+zulaesst.
+.IP 9.
+Ein regulaerer Ausdruck gem. Pkt. 1-8 mit vorangestelltem ^
+(oder nachgestelltem $) wird am Beginn (oder am Ende)
+einer Zeile gesucht.
+.IP 10.
+Ein regulaerer Ausdruck gem. Pkt. 1-9 bestimmt das von links aus
+laengstmoegliche Muster dieser Form in einer Zeile.
+.IP 11.
+Ein leerer regulaerer Ausdruck steht fuer eine Kopie des letzten
+vorhandenen regulaeren Ausdrucks.
+.RE
+.DT
+.PP
+Regulaere Ausdruecke werden zur Adressierung von Zeilen
+und in Subkommandos (siehe unten) zur Bestimmung des zu
+ersetzenden Teils einer Zeile verwendet.
+Sollen in einem regulaeren Ausdruck Sonderzeichen als gewoehnliche
+Zeichen benutzt werden, muss ein \e vorangestellt werden.
+Dies bezieht sich auch auf Zeichen, die zur Begrenzung eines
+regulaeren  Ausdrucks (oft /)\| verwendet werden und auf \e selbst.
+.PP
+Fuer die Adressierung bei
+.B ed
+gibt es immer eine aktuelle Zeile.
+Allgemein betrachtet man die letzte Zeile, die durch ein Subkommando
+beeinflusst wurde, als aktuelle Zeile; die Wirkungen auf die
+aktuelle Zeile werden bei der Beschreibung der
+Subkommandos erlaeutert. Die Adressen werden nach folgenden
+Regeln gebildet:
+.RS
+.IP 1.
+Der Punkt (\fB\&.\fR) adressiert die aktuelle Zeile.
+.IP 2.
+Das Dollarzeichen ($) adressiert die letzte Zeile.
+.IP 3.
+Eine Dezimalzahl
+.I n
+adressiert die
+.IR n -te
+Zeile im Puffer.
+.IP 4.
+\(fm\fIx\fR adressiert die durch
+.I x 
+markierte Zeile (
+.I x
+muss ein Kleinbuchstabe sein).
+Zeilen werden durch das weiter unten beschriebene
+.I k
+Subkommando markiert.
+.IP 5.
+Ein in Schraegstriche (/) eingeschlossener regulaerer Ausdruck
+adressiert die Zeile, die durch Vorwaertssuchen von der aktuellen
+Zeilenadresse bis zur ersten Zeile, die den regulaeren Ausdruck
+erfuellt, gefunden wird.
+Wenn noetig erfolgt die Suche ueber das Dateiende hinaus. Es wird dann
+beim Dateianfang weitergemacht.
+.IP 6.
+Bei einem in Fragezeichen (?) eingeschlossenen regulaeren
+Ausdruck erfolgt die Suche rueckwaerts im Text.
+.IP 7.
+Die Adresse kann in der Form
+.br
+Adresse + n
+.br
+Adresse - n
+.br
+angegeben werden. Die Dezimalzahl n gibt die Distanz (in Zeilen)
+zur Adresse an.
+Das Pluszeichen kann entfallen.
+.IP 8.
+Beginnt eine Adresse mit '+' (oder '-'), gilt die
+aktuelle Zeile als Bezugspunkt fuer die Addition
+(bzw. Subtraktion);
+z.B. \-5 bedeutet
+\fB\&.\fR\-5 .
+.IP 9.
+Endet eine Adresse mit '+' (oder '-'), wird 1 addiert
+(bzw. subtrahiert). Als eine Folge dieser Regel und der Regel 8
+bezieht sich - auf die Zeile vor der aktuellen.
+Ferner haben nachfolgende + und \- kummulative Wirkung.
+So bezieht sich \-\- auf die aktuelle Zeile minus 2.
+.IP 10.
+Das Zeichen ^ als Adresse ist aequivalent zu \-.
+.RE
+.DT
+.PP
+Subkommandos koennen keine, eine oder zwei Adressen erfordern.
+Subkommandos, die keine Adressen benoetigen, betrachten das Vorhandensein
+einer Adresse als einen Fehler.
+Subkommandos, die eine oder zwei Adressen akzeptieren, nehmen implizite
+Adressen an, wenn keine spezifiziert sind.
+Werden mehr Adressen angegeben, als ein entsprechendes Subkommando
+akzeptiert, werden die letzte oder die letzten beiden Adressen benutzt.
+.PP
+Adressen werden durch Komma (\fB,\fR) oder
+Semikolon (\fB;\fR) voneinander getrennt.
+Im zweiten Fall wird die aktuelle Zeilenadresse, der Punkt (\fB\&.\fR),
+auf die zuletzt ausgewertete Zeile gesetzt, bevor die naechste
+Adresse interpretiert wird.
+Diese Eigenschaft kann zur Bestimmung der Anfangszeile fuer Vorwaerts-
+oder Rueckwaertssuchen (/ oder ?) benutzt werden.
+Die zweite Adresse jeder Zweiadressenfolge muss eine Zeile bestimmen,
+die der zuerst adressierten folgt.
+.PP
+In der folgenden Liste der
+.B ed
+Subkommandos sind die impliziten Adressen in runden
+Klammern angegeben.
+Die Klammern sind nicht Bestandteil der Adresse.
+.PP
+Es ist i.a. nicht zulaessig, dass mehr als ein Subkommando auf einer
+Zeile erscheint. Es kann jedoch an die meisten Subkommandos ein
+\fIp\fR oder \fIl\fR
+angefuegt werden, wodurch die aktuelle Zeile entweder gedruckt oder
+ausgelistet wird.
+.TP 5
+.PD 0
+.RB (\| .\| )\|a
+.TP 5
+<text>
+.TP 5
+.B .
+.PD 1
+.br
+Das Subkommando append liest den folgenden eingegebenen Text und fuegt ihn
+nach der adressierten Zeile ein.
+Wurde Text eingegeben, wird die aktuelle Zeilenadresse
+auf die letzte Eingabezeile gesetzt, sonst liegt sie auf der
+adressierten Zeile.
+Die Adresse 0 wird von diesem Subkommando akzeptiert; der Text wird in
+diesem Fall am Anfang des Puffers abgelegt.
+.TP 5
+.RB (\| .\| ,\  .\| )\|c
+.br
+.ns
+.TP 5
+<text>
+.br
+.ns
+.TP 5
+.B .
+.br
+Das Subkommando change loescht die adressierten Zeilen und fuegt den
+nachfolgend eingegebenen Text dafuer ein.
+Die aktuelle Zeilenadresse wird auf die letzte Eingabezeile gesetzt.
+Wurde nichts eingegeben, steht sie auf der Zeile, die der
+geloeschten vorangeht.
+.TP 5
+.RB (\| .\| ,\  .\| )\|d
+Das Subkommando delete streicht die adressierten Zeilen aus dem Puffer.
+Die Zeile, die urspruenglich nach der letzten zu entfernenden lag, wird die
+aktuelle Zeile. Lagen die entfernten Zeilen am Ende, wird die neue
+letzte Zeile die aktuelle Zeile.
+.TP 5
+e filename
+Das Subkommando edit bewirkt, dass der vollstaendige Inhalt des Puffers
+gestrichen und danach die angegebene Datei eingelesen wird.
+Die aktuelle Zeile wird auf die letzte Zeile des Puffers gesetzt.
+Die Anzahl der eingelesenen Zeichen wird ausgegeben.
+\fIFilename\fR wird als Standarddateiname fuer
+ein nachfolgendes
+.I r
+oder
+.I w
+Subkommando gemerkt.
+Fehlt \fIfilename\fR, wird der gemerkte Name benutzt.
+.TP 5
+E filename
+Diese Subkommando entspricht dem
+.I e
+Subkommando. Es erfolgt jedoch keine Warnung, wenn nach der letzten
+Pufferaenderung kein
+.I w
+Subkommando eingegeben wurde.
+.TP 5
+f filename
+Das Subkommando filename gibt den zuletzt gemerkten Dateinamen aus.
+Ist \fIfilename\fR angegebenen, wird der zuletzt gemerkte
+aktuelle Dateiname durch
+\fIfilename\fR ersetzt.
+.bp
+.TP 5
+(1,$)\|g/regular expression/command list
+Innerhalb des Subkommandos global wird zuerst jede Zeile markiert,
+die eine Uebereinstimmung mit dem angegebenen regulaeren Ausdruck enthaelt.
+Anschliessend wird jede markierte Zeile
+entsprechend der gegebenen Subkommandofolge
+bearbeitet, nachdem sie zur aktuellen Zeile gemacht wurde.
+Ein einzelnes Subkommando oder das erste von mehreren Subkommandos erscheint
+auf der gleichen Zeile wie das global-Subkommando.
+Alle Zeilen einer mehrzeiligen Subkommandofolge
+(mit Ausnahme der letzten Zeile),
+muessen mit \e abgeschlossen werden.
+Die Subkommandos \fIa, i,\fR und \fIc\fR und die
+dazugehoerende Eingabe sind erlaubt.
+Auf der letzten Zeile einer Subkommandofolge kann der Punkt zur
+Beendigung des Eingabemodus weggelassen werden.
+Die Subkommandos
+.I g
+und
+.I v
+sind in der Subkommandofolge nicht erlaubt.
+.TP 5
+.RB (\| .\| )\|i
+.PD 0
+.TP 5
+<text>
+.TP 5
+.B .
+.PD 1
+.br
+Dieses Subkommando fuegt den eingegebenen Text vor die adressierte
+Zeile ein.
+Die aktuelle Zeile wird auf die letzte Eingabezeile oder, wenn nichts
+eingegeben wurde, auf die Zeile, die der adressierten vorangeht, gesetzt.
+Dieses Subkommando unterscheidet sich vom
+.I a
+Subkommando nur durch die Plazierung des Textes.
+.TP 5
+.RB (\| .\| ,\  . +1)\|j
+Dieses Subkommando verbindet die adressierten Zeilen zu einer Zeile;
+dazwischenliegende Newline verschwinden.
+Die resultierende Zeile stellt die aktuelle Zeile dar.
+.TP 5
+( \fB. \fR)\|k\fIx\fR
+Das Subkommando mark markiert die adressierte Zeile mit dem Namen
+.IR x .
+Dabei muss
+.I x
+ein Kleinbuchstabe sein.
+Das Adressformat \(fm\fIx\fR adressiert diese Zeile.
+.ne 2.5
+.TP 5
+.RB (\| .\| ,\  .\| )\|l
+Das Subkommando list druckt die adressierten Zeilen in folgender
+Form aus:
+Nichtgrafikzeichen werden zweistellig oktal gedruckt,
+lange Zeilen werden geteilt.
+Das
+.I l
+Subkommando kann in jeder Zeile nach einem beliebigen Nicht-E/A-Subkommando
+angefuegt werden.
+.TP 5
+.RB (\| .\| ,\  .\| )\|m\fIa
+Das Subkommando move verlagert die adressierten Zeilen hinter die durch
+.IR a
+adressierte Zeile. Die letzte transportierte Zeile wird die aktuelle Zeile.
+.TP 5
+.RB (\| .\| ,\  .\| )\|p
+Das Subkommando print gibt die adressierten Zeilen aus.
+Die aktuelle Zeile wird auf die zuletzt ausgegebene Zeile gesetzt.
+Das
+.I p
+Subkommando kann in jeder Zeile nach einem Nicht-E/A-Subkommando
+angefuegt werden.
+.TP
+.RB (\| .\| ,\  .\| )\|P
+Dieses Subkommando ist ein Synonym fuer
+.I p.
+.TP 5
+q
+Das Subkommando quit bewirkt das Verlassen von
+.IR ed .
+Es erfolgt kein automatisches Schreiben der Datei!
+.TP 5
+Q
+Dieses Subkommando entspricht
+.I q,
+es erfolgt jedoch keine Warnung, wenn nach der
+letzten Pufferaenderung kein
+.I w
+Subkommando eingegeben wurde.
+.TP 5
+($)\|r filename
+Das Subkommando read liest die angegebene Datei
+hinter der adressierten Zeile ein.
+Falls kein Dateiname angegeben wird, wird der gemerkte
+Dateiname (falls vorhanden) benutzt (siehe
+.I e
+und
+.I f
+Subkommandos)\|.
+Der angegebene Dateiname wird uebernommen.
+Die Adresse 0 ist fuer
+.I r
+gueltig und gibt an, das die einzulesende Datei
+zum Anfang des Puffers abgelegt wird.
+Nach einem erfolgreichen Lesen wird die Anzahl der
+eingelesenen Zeichen ausgegeben.
+Die letzte Zeile der eingelesenen Datei wird zur aktuellen Zeile.
+.TP 5
+(\| \fB.\fR\|, \fB.\fR\|)\|s/regular expression/replacement/       oder,
+.br
+.ns
+.TP 5
+(\| \fB.\fR\|, \fB.\fR\|)\|s/regular expression/replacement/g
+Das Subkommando substitute durchsucht jede adressierte Zeile
+nach dem Auftreten des angegebenen regulaeren Ausdrucks.
+Ist das Kennzeichen fuer eine globale Ersetzung g nachgestellt,
+werden in den Zeilen alle gefundenen Zeichenfolgen durch
+den angegebenen Ersatz ausgetauscht, sonst
+wird nur die jeweils erste Zeichenfolge
+in einer Zeile ausgetauscht.
+Es wird als Fehler betrachtet, wenn eine Substitution
+in keiner angegebenen Zeile ausgefuehrt werden kann.
+Als Begrenzungszeichen fuer den regulaeren Ausdruck und den Ersatz
+kann an Stelle von / auch jedes beliebige Zeichen, ausser Leerzeichen und
+Newline verwendet werden.
+Die letzte veraenderte Zeile wird zur aktuellen Zeile.
+.IP
+Ein Ampersand-Zeichen (&) im Ersatz wird durch die Zeichenfolge ersetzt,
+die dem regulaeren Ausdruck entspricht.
+Die spezielle Bedeutung von & kann durch Voranstellen eines \e
+unterdrueckt werden.
+Die Zeichen
+.I \en
+(
+.I n
+ist eine Ziffer)
+werden durch den Text ersetzt, der dem
+.IR n -ten
+regulaeren Unterausdruck,
+der in \e( und \e) eingeschlossen ist, entspricht.
+Treten verschachtelte Unterausdruecke in Klammern auf,
+wird
+.I n
+durch Zaehlen der Vorhandenen \e( von links beginnend ermittelt.
+.IP
+Zeilen koennen durch Einfuegen von Newline-Zeichen geteilt werden.
+Ein Newline-Zeichen in einem Ersatz muss durch Voranstellen von \e
+gekennzeichnet sein.
+.TP 5
+.RB (\| .\| ,\  .\| )\|t\|\fIa
+Dieses Subkommando wirkt wie das
+.I m
+Subkommando, wobei jedoch die Kopie der adressierten Zeile
+nach der Adresse
+.I a
+plaziert wird, die auch Null sein kann.
+Die letzte Zeilenkopie wird die aktuelle Zeile.
+.TP 5
+.RB (\| .\| ,\  .\| )\|u
+Das Subkommando undo (rueckgaengigmachen)\| gibt den urspruenglichen
+Inhalt der aktuellen Zeile zurueck, wenn in dieser Zeile
+zuletzt eine Substitution ausgefuehrt worden ist.
+.TP 5
+(1, $)\|v/regular expression/command list
+Dieses Subkommando entspricht dem global Subkommando
+.IR g ,
+jedoch wird die Subkommandofolge fuer jede aktuelle Zeile,
+die den regulaeren Ausdruck nicht enthaelt, ausgefuehrt.
+.TP 5
+(1, $)\|w filename
+.br
+Das Subkommando write schreibt die adressierten Zeilen in die
+angegebene Datei.
+Wenn die Datei noch nicht existiert,
+wird sie mit dem Mode 666 (lesbar und beschreibbar fuer jeden)\|
+erzeugt.
+Der angegebene Dateiname wird gemerkt.
+Ist kein Dateiname angegeben, wird der gemerkte Dateiname
+(falls vorhanden) benutzt (siehe
+.I e
+und
+.I f
+Subkommandos)\|.
+Die aktuelle Zeilenadresse bleibt unveraendert.
+Wenn das Subkommando erfolgreich war, wird die Anzahl der geschriebenen
+Zeichen ausgegeben.
+.TP
+(1,$)W filename
+Diese Subkommando entspricht
+.I w,
+nur dass die adressierten Zeilen an die Datei angefuegt werden.
+.TP 5
+x
+Von der Standardeingabe wird die Eingabe eines Schluessels verlangt.
+Spaetere
+.I r, e
+und
+.I w
+Subkommandos verschluesseln bzw. entschluesseln den Text mit diesem Schluessel
+unter Verwendung des Algorithmus von
+.BR crypt (1).
+Ein leerer Schluessel schaltet die Verschluesselung aus.
+.TP 5
+($)\|=
+Die Zeilennummer der adressierten Zeile wird ausgegeben.
+Die aktuelle Zeilenadresse wird nicht veraendert.
+.TP 5
+!<shell command>
+Der Rest der Zeile nach ! wird von
+.BR sh (1)
+als Subkommando interpretiert.
+Die aktuelle Zeilenadresse wird nicht veraendert.
+.TP 5
+.RB (\| . +1)\|<newline>
+Steht eine Adresse allein auf einer Zeile, wird die adressierte
+Zeile ausgegeben.
+Eine Leerzeile ist aequivalent zu \&.+1p.
+Damit ist ein schrittweises Anzeigen des Textes moeglich.
+.PP
+Empfaengt
+.B ed
+ein Interruptsignal (ASCII DEL)\|, gibt das Programm
+ein Fragezeichen (?) aus und kehrt in die Subkommandoeingabe zurueck.
+.SH OPTIONEN
+.TP
+.I \-x
+Ein \fIx\fR Subkommando wird simuliert, um eine verschluesselte Datei
+zu behandeln.
+.TP
+.B \-
+Unterdrueckt die Ausgabe der Zeichenanzahl beim
+.I e,
+.I r,
+und
+.I w
+Subkommando.
+.SH DATEIEN
+/tmp/e*
+.TP
+ed.hup
+Die Arbeit wird hier gerettet, wenn das Terminal abgeschaltet wird.
+.SH SIEHE AUCH
+.br
+edit(1), ex(1), vi(1), sed(1). 
+.SH DIAGNOSTIK
+"?name" fuer eine nichtzugreifbare Datei;
+.br
+"?" fuer Fehler in Subkommandos
+.br
+"?TMP" fuer Uberlauf bei temporaeren Dateien.
+.PP
+Ein
+.I q
+oder
+.I e
+Subkommando bewirkt einen Fehler, wenn nicht ein
+.I w
+seit der letzten Pufferaenderung gegeben wurde.
+Ein zweites
+.I q
+oder
+.I e
+wird immer befolgt!
+.SH EINSCHRAENKUNGEN
+Es existieren folgende Groessenbeschraenkungen: 512 Zeichen pro Zeile,
+256 Zeichen pro globaler Subkommandoliste,
+64 Zeichen pro Dateinamen und 128K Zeichen fuer eine temporaere Datei.
+Die Grenze fuer die Zeilenzahl ist abhaengig von der Groesse des Speichers;
+jede Zeile benoetigt 1 Wort.
+.PP
+Eine Textzeile bei den Subkommandos append ("a"),
+change ("c") oder insert ("i")
+sollte 256 Zeichen nicht ueberschreiten.
+.PP
+Beim Einlesen einer Datei entfernt
+.B ed
+ASCII-NULL-Zeichen
+und alle Zeichen nach dem letzten Newline-Zeichen.
+Es werden keine Dateien eingelesen, die Nicht-ASCII-Zeichen enthalten.
+.PP
+Das
+.I l
+Subkommando veraendert DEL.
+.sp
+Ein
+.I !
+Subkommando kann nicht unter einem
+.I g
+Subkommando abgearbeitet werden.
+.sp
+Da 0 eine ungueltige Adresse fuer das
+.I w
+Subkommando ist, ist es nicht moeglich, eine leere Datei mit
+.B ed
+zu erstellen.

@@ -1,0 +1,46 @@
+.TH CONTINUE 1C WEGA
+.\"@[$]continue.1C	1.2
+.ad
+.fi
+.SH NAME
+continue \- C-SHELL Steueranweisung 
+.SH SYNTAX
+.B continue
+.SH BESCHREIBUNG
+.B Continue
+fuehrt die naechste einschliessende 
+.B while
+oder
+.B foreach
+Anweisung aus (Ueberspringen der naechsten Iteration).
+Die restlichen Kommandos der aktuellen Zeile werden ausgefuehrt.
+.SH BEISPIEL
+.RS
+.nf
+# test
+while ( 1 )
+	echo -n "enter x:"
+	set x=`gets`
+
+	if ( $x == 'a' ) then
+		echo "neuer Schleifendurchlauf"
+		continue
+	endif
+
+	echo "Abbruch"
+	exit
+end
+.fi
+.RE
+.PP
+Dieser SHELL-Script wartet auf die Eingabe und setzt die Variable
+\fIx\fR auf den vom Terminal kommenden Wert. Ist die Eingabe
+"\fBa\fR", so wird durch die \fBcontinue\fR Anweisung zur \fBwhile\fR
+Anweisung am Anfang dieses Programms zurueckgegangen und die Schleife
+wird erneut durchlaufen.
+Bei jeder anderen Eingabe wird die Programmschleife
+verlassen (\fBexit\fR).
+.SH SIEHE AUCH
+foreach(1C), while(1C).
+.br
+"C-SHELL" in WEGA-Dienstprogramme.
