@@ -23,6 +23,7 @@ IFILES = blockdev.c chardev.c lp.c ttydev.c udev1.c udev2.c udev3.c udev4.c \
 	udev5.c udev6.c LIB2
 
 all: LIB2
+	cd wega ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all
 
 LIB2: $(OBJ)
 	rm -f LIB2
@@ -67,5 +68,6 @@ install: LIB2
 
 clean:
 	rm -f $(OBJ) LIB2
+	cd wega ; $(MAKE) clean
 
 .PHONY: all install clean

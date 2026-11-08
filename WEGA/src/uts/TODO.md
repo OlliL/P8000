@@ -28,14 +28,13 @@ without `chmog`/`chmod` (the archive headers: 6.), `uts` in `all` of `src/Makefi
 
 ## 2. The links of `wega` and `boot` (what decides 100% of two files)
 
-1. Finding (measured by `nm -n` and `sdis.py` of the shipped `wega` against the objects of LIB1/LIB2): the text sizes of all members of the shipped
-   `wega` equal those of the shipped LIB1/LIB2 members, except two: `lp.o` (990 in `wega`, 980 in LIB2) and `siok.o` (5070, 4842; its data
-   is 28 bytes larger and has the symbols `_ditab _tabeint _ptab1 _ptab2 _itab1 _btab _stab _pctab2 _mstab`, `_sioxout` is missing). So `wega` was
-   linked from other versions of `lp` and `siok` than the shipped LIB2 contains (`lp.c` differs e.g. in `and r7,#%FF7F` against `#%FF1F` in `lpopen`,
-   and has extra code that sets a field to 5). Reconstruct both (`lp.c`: SYSIII base; `siok.c`: ours) from the `wega` disassembly; the build then has
-   two variants of each (for LIB2 and for `wega`): decide how the Makefile holds them (e.g. `lp.w.c`/`siok.w.c` linked into `wega` beside LIB2,
-   and LIB2 with the shipped members).
-   The link places `tty tt0 md lp cpu2` in segment 2 (first fit of the objects into 64K segments); this follows from the sizes and is proven when the objects are right.
+1. `dev/wega/lp.c` (identical object) and `dev/wega/siok.c` (text size equal, 3 diff hunks left) are reconstructed from the shipped `wega`; `LIB2W`
+   (LIB2 with these two members replaced) is what `wega` links. The shipped LIB2 has other versions of both members. Left in `siok.c`:
+   `sioioctl` has the code blocks of the cases in another order (the orig places the TIOCMCS body before the second comparison: a
+   dispatch at the end of a switch, threaded by popt; the shipped scc does not generate this for the forms tried: if/else chains, switch with
+   break/return/default, while/for, goto); the data of `siok.o` (28 bytes more than LIB2's) is not compared yet. Material from WEGA 3.0
+   (`/home/olivleh1/Downloads/tmp`: LIB1, LIB2, lp.c with `$D$`, wpar.o, ...) shows that 3.0's `lp.o` and `siok.o` are older again (not the ones in `wega`).
+   The link places `tty tt0 md lp cpu2` in segment 2 (first fit); proven when the objects are right.
 2. `wpar.o`: the root copy is from `wpar.c` 3.0; check the `wpar` data part of `wega` against ours (data `_md_flag` ...); the objects of `wpar` have no text.
 3. After 1 and 2: the remaining differences of `wega` are the objects of section 3; the link order and the symbol table (`-X`, `-i`, `-Ms62`) are proven by the identical parts.
 4. `u.o`: still a binary `u.obj` copied (`$ABS` works only in segment 1; `u` must lie at segment 62, `0xf600`). Target: `u.s`/`u.c` that gives the same bytes (README). Until then `u.obj` stays and is documented.

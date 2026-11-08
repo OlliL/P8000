@@ -23,7 +23,7 @@ IDIR = $(PREFIX)/usr/sys/conf
 BL_OBJ = bmch.o boot.o bsys.o bconf.o bmisc.o bmd.o bfd.o bud.o brm.o
 # the objects that go to usr/sys/conf and into the link of wega
 OBJ = bstart.o conf.o event.o fpe.o mch.o u.o wpar.o
-WEGA_OBJ = wpar.o event.o mch.o u.o ver.o fpe.o conf.o ../sys/LIB1 ../dev/LIB2
+WEGA_OBJ = wpar.o event.o mch.o u.o ver.o fpe.o conf.o ../sys/LIB1 ../dev/wega/LIB2W
 
 IFILES = BOOTLIB bstart.c bstart.o conf.o event.o fpe.o make.boot make.wega \
 	mch.o u.o ver.c+ wpar.c wpar.o
@@ -44,8 +44,8 @@ BOOTLIB: $(BL_OBJ)
 ../sys/LIB1:
 	cd ../sys ; $(MAKE) LIB1
 
-../dev/LIB2:
-	cd ../dev ; $(MAKE) LIB2
+../dev/wega/LIB2W:
+	cd ../dev/wega ; $(MAKE) LIB2W
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
