@@ -375,7 +375,7 @@ of the left operand. The shipped atof of /lib/cparse returns in rq4 as well.
 ### D23 Zero addend
 
 v0p `OLD_D23` (codgen, optim, mapregs): the optim of codgen does not take a zero addend away, so `(rv >> 8) - 1 + 1`, which cparse folds to
-`x + 0` in its last step, stays `add r2,#0` (scodgen usable); a member at offset 0 and an index 0 add nothing at once. One witness.
+`x + 0` in its last step, stays `add r2,#0` (scodgen usable); a member at offset 0 and an index 0 add nothing at once. One witness (`usable`, `allo3.c`). No source form replaces the switch: every zero addend that cparse leaves, in whatever form written, is taken away by the optim of codgen (11 forms tried, `OLDCC_LOG.md` 2026-11-08); the zero in the original comes from the older codgen, which has no such rule.
 
 ### Register allocation of the old scc
 

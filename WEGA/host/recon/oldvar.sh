@@ -29,22 +29,23 @@ cd $W/WEGA/src/cmd/$pass || exit 1
 if [ "$patch" != - ]; then
 	python3 $patch || exit 1
 fi
-cd v0p || exit 1
-rm -f *.o $pass
-[ "$pass" = codgen ] && sw=SWITCHES=-DOLD_V0P || sw=
-make CC="$Z /bin/cc" CAS="$Z /bin/cas" AR="$Z /bin/ar" LD="$Z /bin/ld" $sw > $W/build.log 2>&1
-[ -f $pass ] || { echo "$name: build failed"; tail -3 $W/build.log; exit 1; }
+sh $REPO/host/tools/wbin.sh $W/wbin $WEGA_ROOT $OLDROOT $EMU
+rm -rf build/nonsegv0p/*.o build/nonsegv0p/$pass
+PATH=$W/wbin:$PATH make build/nonsegv0p/$pass > $W/build.log 2>&1
+[ -f build/nonsegv0p/$pass ] || { echo "$name: build failed"; tail -3 $W/build.log; exit 1; }
+cd build/nonsegv0p
 
 cp -a $OLDROOT $W/root
-cp $pass $W/root/lib/v0p/$pass
+mkdir -p $W/root/lib/v0p; cp $pass $W/root/lib/v0p/$pass
 printf '#!/bin/sh\nexec %s -r %s /bin/ccv0p "$@"\n' $EMU $W/root > $W/cc
 chmod +x $W/cc
 
-for prog in cparse popt codgen; do
+for prog in cparse popt codgen spopt scparse scodgen; do
 	(
-		cd $REPO/src/cmd/$prog
+		case $prog in spopt) dir=popt ;; scparse) dir=cparse ;; scodgen) dir=codgen ;; *) dir=$prog ;; esac
+		cd $REPO/src/cmd/$dir
 		mkdir -p $W/$prog
-		RECON_PROG=$prog RECON_TMP=$W/$prog CCHOST=$W/cc python3 $REPO/host/recon/d12model.py -q > $W/$prog/model.txt 2>&1
+		RECON_PROG=$prog RECON_TMP=$W/$prog CAS=$REPO/host/cas/casold CCHOST=$W/cc python3 $REPO/host/recon/d12model.py -q > $W/$prog/model.txt 2>&1
 		RECON_PROG=$prog RECON_TMP=$W/$prog python3 $REPO/host/recon/strictcmp.py > $W/$prog/strict.txt 2>&1
 	) &
 done
@@ -60,7 +61,7 @@ def load(f):
         if len(q) >= 4 and re.match(r'^[0-9a-f]{3,4}$', q[1]):
             d[q[0]] = 0 if 'SAME' in l else (int(q[-1]) if q[-1].isdigit() else -1)
     return d
-for p in ('cparse', 'popt', 'codgen'):
+for p in ('cparse', 'popt', 'codgen', 'spopt', 'scparse', 'scodgen'):
     a, b = load('%s/oldcc_model_%s.txt' % (T, p)), load('%s/%s/strict.txt' % (W, p))
     if not b:
         print(p, 'no model, see', '%s/%s/model.txt' % (W, p))
