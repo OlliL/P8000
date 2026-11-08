@@ -5,9 +5,9 @@ import sys,re,json
 sys.path.insert(0,'/mnt/share/cvs/P8000/WEGA/host/tools'); sys.path.insert(0,'/mnt/share/cvs/P8000/WEGA/host/recon')
 from sout import SOut
 import zcode
-W='/mnt/share/cvs/P8000/WEGA/src/cmd/'; R='/mnt/share/cvs/P8000/tmp/wega31_root/lib/'
+W='/mnt/share/cvs/P8000/WEGA/compare/'; R='/mnt/share/cvs/P8000/tmp/wega31_root/lib/'
 def load(prog):
-    F=json.load(open(W+prog+'/tools/findings.json'))['functions']
+    F=json.load(open(W+prog+'/findings.json'))['functions']
     fn=sorted((int(f['orig'],16),f['size_orig'],k,f.get('file')) for k,f in F.items() if isinstance(f.get('orig'),str) and f.get('size_orig') and f.get('status')!='crt0')
     g=SOut(open(R+prog,'rb').read()); gc=bytes(g.image)[:g.segs[0]['code']]
     mods=[]

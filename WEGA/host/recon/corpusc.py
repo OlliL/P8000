@@ -33,10 +33,10 @@ def c_sources():
         fs = []
         for top in ('src/cmd', 'src/lib'):
             for d, dirs, names in os.walk(os.path.join(REPO, top)):
-                dirs[:] = [x for x in dirs if x not in ('build', 'old', 'tools')]
+                dirs[:] = [x for x in dirs if x not in ('build', 'old')]
                 fs += [os.path.join(d, f) for f in names if f.endswith('.c')]
     rel = lambda f: '/' + os.path.relpath(f, REPO)
-    return sorted(f for f in fs if '/tools/' not in rel(f) and '/shipped/' not in rel(f))
+    return sorted(f for f in fs if '/compare/' not in rel(f) and '/shipped/' not in rel(f))
 
 
 def run(argv, work, timeout=120):

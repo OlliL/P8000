@@ -7,7 +7,7 @@ import os,sys,re,json,subprocess
 sys.path.insert(0,'/mnt/share/cvs/P8000/WEGA/host/tools'); sys.path.insert(0,'/mnt/share/cvs/P8000/WEGA/host/recon')
 from sout import SOut
 import zcode
-W='/mnt/share/cvs/P8000/WEGA/src/cmd/'; R='/mnt/share/cvs/P8000/tmp/wega31_root/lib/'; T=os.environ.get('CAST','/mnt/share/cvs/P8000/tmp/tmp/d12model_%s/')
+W='/mnt/share/cvs/P8000/WEGA/compare/'; R='/mnt/share/cvs/P8000/tmp/wega31_root/lib/'; T=os.environ.get('CAST','/mnt/share/cvs/P8000/tmp/tmp/d12model_%s/')
 REG=re.compile(r'^(r[lh]?\d+|rr\d+|rq\d+|f\d+|fp|sp|eq|ne|lt|le|gt|ge|c|nc|ugt|uge|ult|ule|z|nz|mi|pl|ov|nov)$')
 def jumps(gc,lo,hi):
     r=[]
@@ -17,7 +17,7 @@ def jumps(gc,lo,hi):
     return r
 HC=os.environ['HC']
 def load(prog,mod,fl):
-    F=json.load(open(W+prog+'/tools/findings.json'))['functions']
+    F=json.load(open(W+prog+'/findings.json'))['functions']
     g=SOut(open(R+prog,'rb').read()); gc=bytes(g.image)[:g.segs[0]['code']]
     allf=sorted((int(f['orig'],16),f['size_orig'],k,f.get('file')) for k,f in F.items() if isinstance(f.get('orig'),str) and f.get('size_orig') and f.get('status')!='crt0')
     rng=[(l,l+s) for l,s,k,f2 in allf if f2==fl]; lo=rng[0][0]; hi=rng[-1][1]

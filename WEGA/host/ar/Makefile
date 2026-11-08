@@ -3,12 +3,10 @@
 # WEGA/src/cmd/ar.c (port rules: ../HANDOFF_wega_disasm.md).
 #
 #   make                 build ./ar
-#   make check           corpus (progcfg.py, scenarios.sh) against the original /bin/ar under z8k-emu
-#                        (WEGA=<file tree of the original system>)
+#   test                 ../tools/corpus.sh --host ar   (the corpus of ../../compare/ar, no make target)
 
 HOSTCC = cc
 CFLAGS = -O2 -Wall -Wextra
-WEGA = ../../../tmp/wega31_root
 
 all: ar
 
@@ -17,10 +15,7 @@ LIB = ../tools/lib
 ar: ar.c $(LIB)/wctime.c $(LIB)/wctime.h
 	$(HOSTCC) $(CFLAGS) -I$(LIB) -o $@ ar.c $(LIB)/wctime.c
 
-check: ar
-	WEGA_ROOT=$(abspath $(WEGA)) sh ../tools/corpus.sh --host ar $(CURDIR)
-
 clean:
 	rm -f ar
 
-.PHONY: all check clean
+.PHONY: all clean

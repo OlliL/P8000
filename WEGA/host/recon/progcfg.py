@@ -1,6 +1,6 @@
 """progcfg.py - the per-program configuration of the recon toolkit.
 
-A program (codgen, popt, sld, ...) keeps a file `progcfg.py` in its tools directory with plain constants:
+A program (codgen, popt, sld, ...) keeps a file `progcfg.py` in its directory compare/NAME with plain constants:
 
   NAME        program name, e.g. 'codgen'
   ORIG        path of the original below the WEGA root, e.g. 'lib/codgen'
@@ -13,18 +13,18 @@ A program (codgen, popt, sld, ...) keeps a file `progcfg.py` in its tools direct
 Used by strictcmp, fncheck, inventory, own_table, d12model, rename (defaults in brackets):
   SEG         segmented code (False)
   CC          compiler in the emulator ('/bin/cc'; '/bin/scc' for segmented programs)
-  SRCDIR      directory of our sources (the parent of the tools directory)
+  SRCDIR      directory of our sources (src/cmd/NAME; src/cmd for a program of one file)
   LINKED      our linked program with symbols (SRCDIR/NAME, made by the Makefile)
-  FINDINGS    findings.json of the program (tools directory)
+  FINDINGS    findings.json of the program (compare/NAME)
   MODULES     C modules in link order, without .c (for d12model)
   model_link(work, objs)  argv of the link of the d12model objects (objs: our modules' objects in link order)
   D18         treat @r15 and %0000(r15) as equal in the comparisons (the original was compiled by a cc that never
               writes @r15; False)
   MODEL_OUT   output of d12model.py (TMP/d12model_NAME/NAMEm)
   STRICT_INPUT  default input of strictcmp.py (LINKED; MODEL_OUT when our data layout differs only by D12)
-  TABLES, DOCS  extra text files for rename.py (beside the sources, findings.json and the .md files of the tools)
+  TABLES, DOCS  extra text files for rename.py (beside the sources, findings.json and the .md files of compare/NAME)
 
-The directory is taken from the environment variable RECON_PROG: a program name (its src/cmd/NAME/tools) or a
+The directory is taken from the environment variable RECON_PROG: a program name (its compare/NAME) or a
 directory; if it is not set, the current directory is used.
 """
 import importlib.util
@@ -35,10 +35,10 @@ TOOLS = os.path.join(HERE, '..', 'tools')
 
 
 def prog_dir():
-    """the tools directory of the program: RECON_PROG (a directory, or a program name: src/cmd/NAME/tools), else the cwd"""
+    """the directory of the program: RECON_PROG (a directory, or a program name: compare/NAME), else the cwd"""
     p = os.environ.get('RECON_PROG') or os.getcwd()
     if '/' not in p:
-        p = os.path.join(HERE, '..', '..', 'src', 'cmd', p, 'tools')
+        p = os.path.join(HERE, '..', '..', 'compare', p)
     return os.path.abspath(p)
 
 
@@ -55,7 +55,9 @@ def load():
     m.ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
     if not hasattr(m, 'LIBC_FROM'):
         m.LIBC_FROM = getattr(m, 'OWN_LIM', 0)
-    defaults = {'SEG': False, 'CC': '/bin/cc', 'SRCDIR': os.path.normpath(os.path.join(d, '..')),
+    cmd = os.path.join(HERE, '..', '..', 'src', 'cmd')
+    srcdir = os.path.join(cmd, m.NAME)
+    defaults = {'SEG': False, 'CC': '/bin/cc', 'SRCDIR': os.path.normpath(srcdir if os.path.isdir(srcdir) else cmd),
                 'MODULES': [], 'TABLES': [], 'DOCS': [], 'D18': False}
     for k, v in defaults.items():
         if not hasattr(m, k):

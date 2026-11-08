@@ -4,7 +4,7 @@ What is known now about the C compiler revisions that built the WEGA binaries: t
 from the shipped compiler, and which object shows which difference. This file holds current facts only. How they were
 found, attempts, refuted ideas and removed switches are in `OLDCC_LOG.md`; which function needs which switch is in
 `OLDCC_SWITCHES.md` (generated); the evidence per function is in the findings.json of each program
-(`src/cmd/*/tools/findings.json`). The rules for this work are in `HOWTO_reconstruct.md`, "Evidence rules".
+(`compare/*/findings.json`). The rules for this work are in `HOWTO_reconstruct.md`, "Evidence rules".
 
 ## State
 

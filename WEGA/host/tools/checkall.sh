@@ -6,9 +6,9 @@
 #   1. make in src: the old compilers with the shipped tools, the libraries, the old compilers again, cmd/;
 #   2. make install PREFIX=CHECK_TMP/install: every file there against the file of the same name in WEGA with cmp (the
 #      Makefiles strip as the originals are stripped); every member of lib/libc/libc.a against the original;
-#   3. the corpora (host/tools/corpus.sh, inputs made fresh, side by side) of every program with a tools/progcfg.py, built
-#      with the shipped cc (scc) and the libc of its Makefile: the byte-identical builds are proven by 2;
-#   4. make -C host check: the host tools.
+#   3. the corpora (host/tools/corpus.sh, inputs made fresh, side by side) of every program with a compare/NAME/progcfg.py, every candidate: the WEGA program built
+#      with the shipped cc (scc) and the libc of its Makefile (the byte-identical builds are proven by 2) and the host build;
+#   4. make -C host check: the host programs that have no corpus yet.
 # -b: only 1 and 2. Prints one line per check, the logs stay in CHECK_TMP; exit status 0 when all pass.
 # A program joins by its install target (src/cmd/Makefile).
 #
@@ -32,7 +32,7 @@ OPEN='bin/cas'
 copytree() {
 	rm -rf $1
 	mkdir -p $1/WEGA
-	(cd $REPO && git ls-files -co --exclude-standard -- src host | tar cf - -T - 2>/dev/null) | (cd $1/WEGA && tar xf -)
+	(cd $REPO && git ls-files -co --exclude-standard -- src host compare | tar cf - -T - 2>/dev/null) | (cd $1/WEGA && tar xf -)
 	mkdir -p $1/WEGA/host/z8k-emu
 	cp $EMU $1/WEGA/host/z8k-emu/z8k-emu
 }
@@ -97,20 +97,24 @@ result 'libc.a members' ok "$same identical, from source"
 
 [ $BUILDONLY = 1 ] && finish
 
-# 3. the corpora; NAME LOG
+# 3. the corpora; NAME LOG: one line per candidate ("NAME [wega]: 288 of 288 inputs identical", [host] likewise)
 corpus() {
-	line=`sed -n 's/^.*: \([0-9]*\) of \([0-9]*\) inputs identical.*/\1 \2/p' $2 | tail -1`
-	set -- "$1" "$2" $line
-	if [ $# = 4 ] && [ "$3" = "$4" ] && [ "$4" -gt 0 ]; then result "corpus $1" ok "$3 of $4 inputs identical"
-	else result "corpus $1" fail "see $2"; fi
+	sed -n 's/^\(.*\) \[\([a-z]*\)\]: \([0-9]*\) of \([0-9]*\) inputs identical.*/\1 \2 \3 \4/p' $2 > $T/corpus_lines
+	if [ ! -s $T/corpus_lines ]; then result "corpus $1" fail "see $2"; return; fi
+	while read nm cand a b; do
+		if [ "$a" = "$b" ] && [ "$b" -gt 0 ]; then result "corpus $nm [$cand]" ok "$a of $b inputs identical"
+		else result "corpus $nm [$cand]" fail "see $2"; fi
+	done < $T/corpus_lines
 }
 # the shipped build: every program with a corpus built from the same sources by the shipped cc (scc) and the libc of
-# its Makefile; a byte-identical binary cannot show anything in a corpus, this build tests the sources
+# its Makefile; a byte-identical binary cannot show anything in a corpus, this build tests the sources.
+# The host programs (compare/NAME/progcfg.py, CANDIDATES) are built beside them by the compiler of the host.
 copytree $T/shipped
 C=$T/shipped/WEGA/src/cmd
 cp $T/tree/WEGA/src/lib/*.a $T/shipped/WEGA/src/lib/
 (
 	PATH=$T/bin:$PATH; export PATH
+	cd $C && make ar CC=cc
 	cd $C/cpp && make cpp CC=cc
 	cd $C/cparse && make all CC=cc
 	cd $C/codgen && make all CC=cc
@@ -119,25 +123,27 @@ cp $T/tree/WEGA/src/lib/*.a $T/shipped/WEGA/src/lib/
 	cd $C/sld && make sld SCC=scc
 	cd $C/cas && make all SCC=scc
 ) > $T/shipped.log 2>&1
-# the corpora run side by side, each in a work directory of its own
+make -C $T/shipped/WEGA/host cpp ar > $T/hostbuild.log 2>&1
+# the corpora run side by side, each in a work directory of its own; every candidate of a program is tested against the
+# same inputs (the original runs once)
 CS=$T/shipped/WEGA/host/tools/corpus.sh
-CORP='cpp:cpp/cpp cparse:cparse/build/nonseg/cparse scparse:cparse/build/seg/scparse codgen:codgen/build/nonseg/codgen
+CORP='ar:ar cpp:cpp/cpp cparse:cparse/build/nonseg/cparse scparse:cparse/build/seg/scparse codgen:codgen/build/nonseg/codgen
 	scodgen:codgen/build/seg/scodgen popt:popt/build/nonseg/popt spopt:popt/build/seg/spopt ld:ld/ld sld:sld/sld
 	cas:cas/build/cas'
 for p in $CORP; do
 	n=${p%%:*}
-	CORPUS_BIN=$C/${p#*:} STAGE_TMP=$T/stage_$n JOBS=2 WEGA_ROOT=$WEGA sh $CS $n > $T/corpus_$n.log 2>&1 &
+	CORPUS_BIN_WEGA=$C/${p#*:} STAGE_TMP=$T/stage_$n JOBS=2 WEGA_ROOT=$WEGA sh $CS $n > $T/corpus_$n.log 2>&1 &
 done
 wait
 for p in $CORP; do
 	corpus ${p%%:*} $T/corpus_${p%%:*}.log
 done
 
-# 4. the host tools
+# 4. the checks of the host programs that have no corpus yet
 # the corpus of the host popt, made fresh by the original cc
 make -C $T/tree/WEGA/host/popt corpus WEGA=$WEGA CORPUS=$T/popt_corpus > $T/hostcheck.log 2>&1
 if CORPUS=$T/popt_corpus make -C $T/tree/WEGA/host check WEGA=$WEGA >> $T/hostcheck.log 2>&1; then
-	result 'host tools' ok 'cc ar binutils cas ld popt cpp'
+	result 'host tools' ok 'cc binutils cas ld popt'
 else
 	result 'host tools' fail "see $T/hostcheck.log"
 fi

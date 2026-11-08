@@ -1,23 +1,25 @@
 #!/bin/sh
-# corpus.sh [--host BINARY] [PROG ...]: the corpus test of each program: the original and our build on the same inputs, compared
-# (host/recon/stagecorpus.py with src/cmd/PROG/tools/progcfg.py). Without PROG: every program whose progcfg.py has a corpus.
-# Our binary is the one built in the source directory (CORPUS_BINARY of progcfg.py; CORPUS_BIN=file tests another).
-# Environment: WEGA_ROOT (the WEGA 3.1 tree, default as in host/recon/progcfg.py), JOBS, STAGE_TMP.
-# PROG may also be a directory with a progcfg.py (programs that have no src/cmd/PROG: host/ar).
-# --host BINARY: BINARY is a host (Linux) build of PROG, run natively against the original (host/PROG); needs one PROG.
-# Exit status 1 when a program differs.
+# corpus.sh [--wega | --host] [PROG ...]: the corpus test of each program: the original (under z8k-emu) and every candidate of the program
+# (compare/PROG/progcfg.py, CANDIDATES) on the same inputs, compared (host/recon/stagecorpus.py): the WEGA program built from src/cmd
+# ("wega", runs under the emulator) and the host build ("host", runs natively). Without a switch every candidate is tested; --wega or --host
+# restricts the test to one of them. Without PROG: every program whose progcfg.py has a corpus (with a switch: those that have that candidate).
+# The binaries are the ones built by make (progcfg CANDIDATES); CORPUS_BIN_WEGA / CORPUS_BIN_HOST name another file.
+# Environment: WEGA_ROOT (the WEGA 3.1 tree, default as in host/recon/progcfg.py), JOBS, STAGE_TMP, STAGE_OPTS (-k -n N -f FILTER for stagecorpus.py).
+# PROG may also be a directory with a progcfg.py. Exit status 1 when a candidate differs.
 HERE=`cd \`dirname $0\` && pwd`
 REPO=`cd $HERE/../.. && pwd`
-if [ "$1" = --host ]; then
-	[ $# = 3 ] || { echo 'usage: corpus.sh --host BINARY PROG' >&2; exit 2; }
-	CORPUS_HOST=1 CORPUS_BIN=`cd \`dirname "$2"\` && pwd`/`basename "$2"`; export CORPUS_HOST CORPUS_BIN
-	shift 2
-fi
+C=
+case "$1" in
+--wega) C="-c wega"; shift;;
+--host) C="-c host"; shift;;
+esac
+SKIP=
 if [ $# = 0 ]; then
-	set -- `cd $REPO/src/cmd && grep -l '^CORPUS_BINARY' */tools/progcfg.py | sed 's|/tools/progcfg.py||'`
+	set -- `cd $REPO/compare && grep -l '^CORPUS_BINARY\|^CANDIDATES' */progcfg.py | sed 's|/progcfg.py||'`
+	[ -n "$C" ] && SKIP=-s
 fi
 rc=0
 for p in "$@"; do
-	RECON_PROG=$p python3 $REPO/host/recon/stagecorpus.py || rc=1
+	RECON_PROG=$p python3 $REPO/host/recon/stagecorpus.py $C $SKIP $STAGE_OPTS || rc=1
 done
 exit $rc

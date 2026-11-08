@@ -6,13 +6,13 @@ Usage: rename.py OLD NEW [OLD NEW ...] [-n]      (-n: dry run, print the counts 
 OLD is a function (key of findings.json or its address id f<entry>) or any other identifier of the sources. Replaced as a
 whole word in:
   - the sources: SRCDIR/*.c, SRCDIR/*.h (SRCDIR/*.y too)
-  - the tables: progcfg TABLES (files of the tools directory)
+  - the tables: progcfg TABLES (files of compare/NAME)
   - findings.json (keys of functions and manual_classes, and the text of the notes)
-  - every .md of the tools directory, progcfg DOCS, src/TODO.md, host/KNOWLEDGE.md, host/HANDOFF_wega_disasm.md
+  - every .md of compare/NAME, progcfg DOCS, src/TODO.md, host/KNOWLEDGE.md, host/HANDOFF_wega_disasm.md
 then FINDINGS.md is generated again (ld, sld: their findings_md.py; the new form: oldcc.sh findings). A text in KNOWLEDGE.md that belongs to another program with the
 same identifier is changed too: check the diff of the documents (-n first).
 
-Unlike src/cmd/sld/tools/rename.py the documents are changed too. Prose like "NEW (OLD)" or "OLD (NEW)", which the
+Unlike compare/sld/rename.py the documents are changed too. Prose like "NEW (OLD)" or "OLD (NEW)", which the
 replacement turns into "NEW (NEW)", is collapsed to "NEW". External names are significant for 7 characters: NEW must
 not share its first 7 characters with another external name of the sources (checked only when OLD is in the sources;
 an address id f<entry> of a function that has its name already may map onto that name).

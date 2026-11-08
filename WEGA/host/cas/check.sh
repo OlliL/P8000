@@ -5,12 +5,12 @@
 #   no argument: the relative jumps (rel.py) and all opcodes of the three modes (exh.py)
 #   fz fzs:      operand patterns of the mnemonics that z8k.py does not decode (slow)
 #   -- file.s:   the options -l -d -r -t -i -m -v -^ on these sources (opts.py)
-# The programs are the ones of ../../src/cmd/cas/tools/test (see test/README); NATIVE=1 makes them run
+# The programs are the ones of ../../compare/cas/test (see test/README); NATIVE=1 makes them run
 # the program under test directly.
 set -e
 : "${WEGA:?set WEGA=<file tree of the original system>}"
 here=$(cd "$(dirname "$0")" && pwd)
-test=$here/../../src/cmd/cas/tools/test
+test=$here/../../compare/cas/test
 cas=$here/cas
 export WEGA NATIVE=1
 modes=

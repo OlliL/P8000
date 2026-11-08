@@ -30,7 +30,7 @@ VER = 'v0p'
 PASSES = ['codgen', 'cparse', 'popt']
 # the programs measured for this version; add a new program here when it has a model (HOWTO_reconstruct.md, checklist)
 PROGS = ['cparse', 'popt', 'codgen', 'spopt', 'scparse', 'scodgen', 'cpp']
-# programs with a tools/progcfg.py that are not measured, and why
+# programs with a compare/NAME/progcfg.py that are not measured, and why
 NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet'}
 ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
 OLDROOT = os.environ.get('OLDROOT', '/mnt/share/cvs/P8000/tmp/oldroot')
@@ -263,8 +263,9 @@ def check():
         print('in the table but gone from the sources (oldcc.sh matrix): %s' % s)
         bad = 1
     cmd = os.path.join(REPO, 'src', 'cmd')
-    for d in sorted(os.listdir(cmd)):
-        if os.path.exists(os.path.join(cmd, d, 'tools', 'progcfg.py')) and d not in PROGS and d not in NOTPROGS:
+    for d in sorted(os.listdir(os.path.join(REPO, 'compare'))):
+        if os.path.exists(os.path.join(REPO, 'compare', d, 'progcfg.py')) and os.path.isdir(os.path.join(cmd, d)) \
+                and d not in PROGS and d not in NOTPROGS:
             print('program without a decision (add it to PROGS or NOTPROGS in host/recon/switchmatrix.py): %s' % d)
             bad = 1
     stamps = set(re.findall(r'\| (\w+) \|$', '\n'.join(rows.values()), re.M))

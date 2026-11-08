@@ -440,7 +440,7 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   which module owns the code: a global of one module is used by code of another. The SCCS modules of the data (scrt0.s,
   copyname.c, dump.c, ext.c, ld.c, ldm.c, printname.c, swap.c, symbols.c, malloc.c) have no code boundaries yet.
   Correction: an earlier reading "only three direct data addresses" came from decoding with the non-segmented flag.
-- Function boundaries of the own code (`src/cmd/sld/tools/findings.json`): 94 functions, entries = call targets and proven
+- Function boundaries of the own code (`compare/sld/findings.json`): 94 functions, entries = call targets and proven
 - Start-up code of the segmented programs (2026-10-27, measured): the 62 bytes at 0x18..0x55 of `/bin/sld` are the same code as
   the start of `/bin/ps`, `/bin/pstat` and `/usr/bin/yacc` (stamp `@[$]scrt0.s`, revision 3.2). They differ only in the segment of
   `_environ` (sld and yacc: segment 2, byte 0x82; ps and pstat: segment 0, byte 0x80) and in the relocated words. The code takes
@@ -451,7 +451,7 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   starts. The start code 0x18 is not `/lib/scrt0.o`: `scrt0.o` (code 66 bytes) has the word pair `5df8 0000` after its first
   word, which sld lacks; the stack operands are 0x7f04/0x7f06 in sld and 0x0004/0x0006 in scrt0.o (relocated words of the
   stack segment, so the values may differ at link time: guess, not checked).
-- Call form (checked with `src/cmd/sld/tools/fncheck.py`): scc emits `calr` for a callee defined in the same object within
+- Call form (checked with `compare/sld/fncheck.py`): scc emits `calr` for a callee defined in the same object within
   reach, `call` for an undefined callee or one out of reach (the original calls 0x3408 from 0x71c0 with `call`, the distance
   is above the calr range). The form of the final sld is therefore decided by the whole-file compile.
 - Segment operands in the object are `<<0>>` (not linked); the stack is `<<127>>` after the link. Compare without segments.
@@ -501,7 +501,7 @@ the Plexus `pcc` (it prints `csv2`/`cret2`); the Plexus sources only help to rea
 
 ### Status (current)
 
-Status of codgen and scodgen: `src/cmd/codgen/tools/FINDINGS.md`; both are byte-identical with v0p (`OLDCC.md`).
+Status of codgen and scodgen: `compare/codgen/FINDINGS.md`; both are byte-identical with v0p (`OLDCC.md`).
 
 ### codgen fidelity: method and reading rules
 - **Limit of "D only (pattern-verified)"**: `patterns.py` checks the kind of each differing instruction, every extra or missing
@@ -860,17 +860,17 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` | without input files `-o t` writes a 131096-byte file (uninitialised tables) | not reproduced | "sld on the host" |
 | `/bin/sld` | a `-M` that changes between files with large sections gives an extra 256 bytes of padding in some cases, cause not yet understood | not reproduced | "sld on the host", `src/TODO.md` |
 | `/bin/sld` (libc `_atoip`, 0x85f8, number parser of doprnt) | with a leading `-` the digit loop counts the original length (one character more than the rest after the sign), the return value uses the shortened count | kept (old `doprnt` in `src/lib/oldslibc`) | `src/lib/oldslibc/README` |
-| `/bin/sld` (`mlist_add`, 0x410c, insert into the name table) | when the name is already in the list (compare result 0) the attribute words are written at the step counter (0x0e of the frame), not at the index of the entry found (0x0a); with a new name both are the same | kept (`mlist_add` in `src/cmd/sld/ldm.c`) | `src/cmd/sld/tools/findings.json` |
-| `/bin/sld` (`read_words`, 0x0f26) | the test of the read result for -1 is dead: the result is first turned into a flag (`!= 0`) and the flag is tested against -1, so a read error is never reported and the -1 byte goes through as data | kept (`read_words` in `src/cmd/sld/ld.c`) | `src/cmd/sld/tools/findings.json` |
-| `/bin/sld` (`alloc_resv`, 0x4968) | in the second branch the original increments r3 (`inc r3,#10`), the value is overwritten before any use: dead code of the compiler output | kept (not a source form found) | `src/cmd/sld/tools/findings.json` |
-| `/bin/sld` (`lookup_name`, 0x6a58) | two counters (`0x06`, `0x0a` of the frame) are incremented on the name flag and never read: write-only locals of the compiler output | kept (spare locals in `lookup_name`) | `src/cmd/sld/tools/findings.json` |
-| `/bin/sld` (`pack_entry` 0x6866, `walk_entries` 0x01d2, `swab12` 0x3b1e; libc `scanf` 0x7212, `fscanf` 0x724e, one more) | six functions without any caller and without an address reference in the program (dead code); 0x7212 and 0x724e are the library members `scanf`/`fscanf` | rebuilt (kept, as in the original) | `src/cmd/sld/tools/findings.json` |
-| `/bin/sld` (`warn_sym_redef`, 0x3b58) | the test of the symbol type is `!c & 0x20` (the source meant `!(c & 0x20)`): `!c` is 0 or 1, so the test is `(!c) & 0x20` = always 0 and only `c == 0x20` can return | kept (the same expression in `src/cmd/sld/ld.c`) | `src/cmd/sld/tools/findings.json` |
+| `/bin/sld` (`mlist_add`, 0x410c, insert into the name table) | when the name is already in the list (compare result 0) the attribute words are written at the step counter (0x0e of the frame), not at the index of the entry found (0x0a); with a new name both are the same | kept (`mlist_add` in `src/cmd/sld/ldm.c`) | `compare/sld/findings.json` |
+| `/bin/sld` (`read_words`, 0x0f26) | the test of the read result for -1 is dead: the result is first turned into a flag (`!= 0`) and the flag is tested against -1, so a read error is never reported and the -1 byte goes through as data | kept (`read_words` in `src/cmd/sld/ld.c`) | `compare/sld/findings.json` |
+| `/bin/sld` (`alloc_resv`, 0x4968) | in the second branch the original increments r3 (`inc r3,#10`), the value is overwritten before any use: dead code of the compiler output | kept (not a source form found) | `compare/sld/findings.json` |
+| `/bin/sld` (`lookup_name`, 0x6a58) | two counters (`0x06`, `0x0a` of the frame) are incremented on the name flag and never read: write-only locals of the compiler output | kept (spare locals in `lookup_name`) | `compare/sld/findings.json` |
+| `/bin/sld` (`pack_entry` 0x6866, `walk_entries` 0x01d2, `swab12` 0x3b1e; libc `scanf` 0x7212, `fscanf` 0x724e, one more) | six functions without any caller and without an address reference in the program (dead code); 0x7212 and 0x724e are the library members `scanf`/`fscanf` | rebuilt (kept, as in the original) | `compare/sld/findings.json` |
+| `/bin/sld` (`warn_sym_redef`, 0x3b58) | the test of the symbol type is `!c & 0x20` (the source meant `!(c & 0x20)`): `!c` is 0 or 1, so the test is `(!c) & 0x20` = always 0 and only `c == 0x20` can return | kept (the same expression in `src/cmd/sld/ld.c`) | `compare/sld/findings.json` |
 | `/bin/sld` (`put_pad`, 0x64d0) | the function ends without a `return` in the loop path (the value that comes back is not defined); the callers ignore it | kept (`int put_pad` without a final `return`) | `src/cmd/sld/ldm.c` |
 | `/bin/sld` (variables) | the bss has unused gaps and variables never referenced (`spare0`, `spare4b8`, `spare4c4`, `spare4d0`, `sparef314`, `unused15d8`, `unused484`, `unused3be`): they are leftovers of removed code and are rebuilt so that all variable addresses stay equal | kept (`src/cmd/sld/copyname.c`) | "sld: the structs" |
-| `/bin/ld` (`main`, 0x009c) | the option `-v name` is not in the man page: it takes an argument; when the name is an object already in the table, the load is rolled back to that entry (`restore`) after the arguments so far are parsed again, otherwise the name is added as an object (`record`); `-l` writes `-` over the character before the `l` while the library is loaded (`load1arg(s + j - 1)`), and `-e` and `-u` take the symbol from the next argument | kept (main is exact in `src/cmd/ld/ld.c`) | `src/cmd/ld/tools/findings.json` |
-| `/bin/ld` (`middle`, 0x0b6e) | `ldrsym` is called with three arguments (symbol, long value, character) while its definition in symbols.c has four (x is not passed); the callee reads x from the frame | kept (the caller is exact in `src/cmd/ld/ld.c`) | `src/cmd/ld/tools/findings.json` |
-| `/bin/ld` (`readhdr`, 0x1f64) | for objects that are not 8-bit (e707/e711) the text size is rounded to even and stored back, the data size is rounded only for the bss offset (`cbrel`) and not stored back: `filhdr.fdsize` gets the unrounded data size | kept (`readhdr` exact in `src/cmd/ld/ld.c`; the earlier rebuild stored the rounded size) | `src/cmd/ld/tools/findings.json` |
+| `/bin/ld` (`main`, 0x009c) | the option `-v name` is not in the man page: it takes an argument; when the name is an object already in the table, the load is rolled back to that entry (`restore`) after the arguments so far are parsed again, otherwise the name is added as an object (`record`); `-l` writes `-` over the character before the `l` while the library is loaded (`load1arg(s + j - 1)`), and `-e` and `-u` take the symbol from the next argument | kept (main is exact in `src/cmd/ld/ld.c`) | `compare/ld/findings.json` |
+| `/bin/ld` (`middle`, 0x0b6e) | `ldrsym` is called with three arguments (symbol, long value, character) while its definition in symbols.c has four (x is not passed); the callee reads x from the frame | kept (the caller is exact in `src/cmd/ld/ld.c`) | `compare/ld/findings.json` |
+| `/bin/ld` (`readhdr`, 0x1f64) | for objects that are not 8-bit (e707/e711) the text size is rounded to even and stored back, the data size is rounded only for the bss offset (`cbrel`) and not stored back: `filhdr.fdsize` gets the unrounded data size | kept (`readhdr` exact in `src/cmd/ld/ld.c`; the earlier rebuild stored the rounded size) | `compare/ld/findings.json` |
 | `/bin/ld` (`chk_ranlib`, 0x294e) | a register variable is declared and never used (r14 is saved and restored, nothing else) | kept (`register int r;`) | same |
 | `/bin/ld` (`slookup` 0x26ac, `pslookup` 0x26ca) | no return statement: the callers use the value that lookup_name left in r2 | kept (exact) | `src/cmd/ld/symbols.c` |
 | `/bin/ld` (`reg_sect_addr`, 0x0370) | `sscanf(u, "%o%c", &secorg[k])` (and `%d%c`, `%x%c`) passes no pointer for the `%c`; the character after the number is stored through whatever is in the argument slot, and the result is 1 only when nothing follows the number | kept (exact) | same |
@@ -881,8 +881,8 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/gld` | `kind 3`/`4` relocations against external symbols print debug lines ("extern 12bit rel. adr. name") on every use; internal short/relative relocations print "aufgeloeste ..." and are not resolved | kept | "gld on the host" |
 | `/bin/gld` | no object loaded at all: header and segment table are written from unallocated memory; sections of about 50000 bytes: "out of memory(load2td)"; a section near 64K: hangs | not reproduced | "gld on the host" |
 | `/bin/sld`, `/bin/gld` | the code and data of an object are stored entry by entry (not all code first); `tools/sout.py` and `host/ld/sld.c` had assumed all code first | fixed | "gld on the host" |
-| `/lib/codgen` 0x6fca..0x7056 | dead code: a routine that no call, `calr` or table in the binary refers to (checked by `sdis.py -l`, no label, no word 0x6fca outside code); it prints the names of the set bits of its word argument (0x0000 and 0x1000 print fixed texts), with a column counter (0x65a0) and a buffer (0x659e) | not reproduced (`prcookie`, a debug routine named in a comment of `allo3.c`; no counterpart in the rebuild) | `src/cmd/codgen/tools/findings.json` |
-| `/lib/codgen` 0x854c..0x856e | dead code: `fprintf(stderr, "system call error: ")`, then a call with the argument (0xcba0), then `errexit(0x40)`; no call, `calr`, jump or word in the binary refers to it (checked with `sdis.py -l` and a byte search) | not reproduced (no counterpart in the rebuild) | `src/cmd/codgen/tools/findings.json` |
+| `/lib/codgen` 0x6fca..0x7056 | dead code: a routine that no call, `calr` or table in the binary refers to (checked by `sdis.py -l`, no label, no word 0x6fca outside code); it prints the names of the set bits of its word argument (0x0000 and 0x1000 print fixed texts), with a column counter (0x65a0) and a buffer (0x659e) | not reproduced (`prcookie`, a debug routine named in a comment of `allo3.c`; no counterpart in the rebuild) | `compare/codgen/findings.json` |
+| `/lib/codgen` 0x854c..0x856e | dead code: `fprintf(stderr, "system call error: ")`, then a call with the argument (0xcba0), then `errexit(0x40)`; no call, `calr`, jump or word in the binary refers to it (checked with `sdis.py -l` and a byte search) | not reproduced (no counterpart in the rebuild) | `compare/codgen/findings.json` |
 | libc `printf` of the shipped `libc.a` (not in the original codgen/scodgen) | `%s` prints a stray `-` and drops the first character of the string when the stack at the place of its work area holds an old radix -10 with a negative number from an earlier `%d` | not reproduced: codgen and scodgen link the older `printf`/`doprnt` (oldlibc 0_5, cut from the original) | "codgen runs" |
 | `/lib/scodgen` | `conval` folds the difference of two pointer constants as `(a - b) & 0xFF` (the high word is cleared), the sum as `& 0x7F00FFFF`; the mask of MINUS looks like a slip | kept (`-DSEG`), not reached by the test files | "scodgen runs" |
 | `/lib/spopt` | `movedat` starts with `*prev = 0` through a register pointer that is not set, so it clears one byte at the address the caller left in r9, and it does not clear its list head `hd` on the stack, so the test of `hd.forw` reads whatever stands there. The native build keeps this. |
@@ -915,12 +915,12 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/codgen` | `clocal`, a static or extern-like name (`sclass` 3, 6 with bit 2 of `sflags`): `return` without a value (`jp` to the end, r2 holds 1), the caller goes on with that as a node. Not hit on the corpus. | kept (`return;`) | `OLDCC_LOG.md` 2026-11-02 |
 | `/lib/codgen`, `/lib/scodgen` | The rewrite of a field access or an address of a static (`mapregs` in `lcl3.c`, the `STREF` and `UAND` cases) copies only some fields of the replacement node (`op`, `type`, `sname`, `lval`, `rval`). The original's `lval` and `rval` overlay `left` and `right`, so the operands come along by accident. | kept in the original; the host copy copies the whole node | `host/codgen`, `src/TODO.md` (codgen host version) |
 | `/lib/scodgen` | The SEG bar test in `oregput` (the `|` around a stack-segment operand) compares low words: `lval` for the symbol `symtab0`, and `lval + maxoff` (not `frame0`) for `~L1`. | kept: host copy uses the same tests | `host/codgen` (`out3.c`), `src/TODO.md` |
-| popt | `fixldm` looks up the last `#` of an operand with `strrchr` (the original calls 0x548c = strrchr), not the first with `strchr` | kept: `strrchr` (oldlibc 0_1); the difference matters only if `#` occurs twice in an operand | popt-02 in `src/cmd/popt/tools/findings.json`; popt corpus 813 of 816 |
-| popt | `movedat` reads its head node `hd.forw` (`if (hd.forw)`) without setting it when the input has no data section; the original does not clear `hd` (0x2fc8) | kept: no clearing (the original's value comes from the frame); the corpus (272 cases) gives the same output | popt-24 in `src/cmd/popt/tools/findings.json` |
+| popt | `fixldm` looks up the last `#` of an operand with `strrchr` (the original calls 0x548c = strrchr), not the first with `strchr` | kept: `strrchr` (oldlibc 0_1); the difference matters only if `#` occurs twice in an operand | popt-02 in `compare/popt/findings.json`; popt corpus 813 of 816 |
+| popt | `movedat` reads its head node `hd.forw` (`if (hd.forw)`) without setting it when the input has no data section; the original does not clear `hd` (0x2fc8) | kept: no clearing (the original's value comes from the frame); the corpus (272 cases) gives the same output | popt-24 in `compare/popt/findings.json` |
 | popt (z22.c) | rmove stores the current node into a global (0x1846) at the top of its loop; nothing reads it | kept (`rmnode`, name guessed; bss.s) | `host/OLDCC_LOG.md` 2026-11-01 |
-| popt (z23.c) | two more functions that nothing calls (dead code at 0x42f6 and 0x431a, behind ovlap): 1 for an operand that starts with `rh`; 2 for SLONG, else 1 | kept (`ishigh`, `nwords`, names guessed) | `src/cmd/popt/tools/findings.json` |
-| popt (z23.c) | a function that nothing calls (dead code at 0x36a6, behind procopt): the register number of an operand with a leading `@` skipped; it saves r14 without using it | kept (`regof`, name guessed) | `src/cmd/popt/tools/findings.json` |
-| popt (z21.c) | two functions that nothing calls (dead debug code at 0x08f8 and 0x092a, behind `output`): they flush stdout, give it the file number of stderr, print the node list (`dumpnodes`) or one node (`output`) and set stdout back | kept (`dumperr`, `outerr`; names guessed) | `src/cmd/popt/tools/findings.json` |
+| popt (z23.c) | two more functions that nothing calls (dead code at 0x42f6 and 0x431a, behind ovlap): 1 for an operand that starts with `rh`; 2 for SLONG, else 1 | kept (`ishigh`, `nwords`, names guessed) | `compare/popt/findings.json` |
+| popt (z23.c) | a function that nothing calls (dead code at 0x36a6, behind procopt): the register number of an operand with a leading `@` skipped; it saves r14 without using it | kept (`regof`, name guessed) | `compare/popt/findings.json` |
+| popt (z21.c) | two functions that nothing calls (dead debug code at 0x08f8 and 0x092a, behind `output`): they flush stdout, give it the file number of stderr, print the node list (`dumpnodes`) or one node (`output`) and set stdout back | kept (`dumperr`, `outerr`; names guessed) | `compare/popt/findings.json` |
 | `/lib/popt` (`natural`, z22.c) | the end of the operand is found with `while (*s++)` and then one `s--`: s stands on the NUL, so the test for a trailing `)` (and `fp)`) never matches and natural() returns 1 for every operand that does not start with `@` | kept in src/cmd/popt and (since 2026-11-01) in host/popt | `host/OLDCC_LOG.md` 2026-11-01 |
 | `/lib/popt` (`oplook`, z21.c) | the probe loop takes `o = *h` and reads `o->name` without testing o: an empty first slot, or an empty slot reached while the name ends in `b`/`l` (`suffix`), reads the name pointer at address 0 | kept in src/cmd/popt (popt corpus decides) | `host/OLDCC_LOG.md` 2026-11-01 |
 | `/lib/popt` (`equop`, z22.c) | no test of the node pointers: backjmp calls `equop(p1, p2)` also when its `p1 = p1->back` loop ran off the list (p1 = 0), and equop then reads op and subop at address 0 | kept in src/cmd/popt (the corpus decides); our earlier source tested both pointers | `host/OLDCC_LOG.md` 2026-11-01 |
@@ -934,14 +934,14 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/popt` (`rmove`, z22.c) | when a conditional jump is decided at compile time (do_cjp, `r12 == 0`) the scan goes on with `p = p->back->back`; the push test behind push_end looks at `RT2 + 1` | kept in src/cmd/popt; host/popt had `p->back->forw` and `RT1 + 1` until 2026-11-01, now as the original (the popt corpus showed neither) | `host/OLDCC_LOG.md` 2026-11-01 |
 | `/lib/popt` (`adrlen`, z22.c) | the loop over leading blanks tests the copy in a register but increments the parameter (`while (*p == ' ') s++;`): an operand that starts with a blank loops for ever | kept in src/cmd/popt (cc writes no such operand) | `host/OLDCC_LOG.md` 2026-11-01 |
 | popt (src/cmd/popt) | a node without operand text: the original reads through the null pointer (`p->code` is 0) in dualop, ovlap and markregs | src/cmd/popt: the same null pointer read (until 2026-11-01 a copy of the bytes, `nullcode`, still used by host/popt); popt corpus 816 of 816 | `host/OLDCC_LOG.md` 2026-11-01 |
-| `/lib/cparse` (`putsym`) | for a structure that is used but never defined (`struct sgtty *p` when only `sgttyb` exists) the member loop starts at `dimtab[-1]` and writes the `symno` of whatever that word points to into the member list of the .S file | kept (the bss has the original layout) | `src/cmd/cparse/tools/findings.json` |
-| src/lib/oldlibc `endopen/0_4.s` (our cut, not an original) | the errno address of /lib/codgen was written as a number (0x69C8); scodgen, popt and cparse have errno elsewhere | fixed 2026-10-31: `_errno` | `src/cmd/cparse/tools/findings.json` |
-| `/lib/cparse` (`putsym`, `lookup`) | the register byte `sfldb` (+5 of a symbol in the .S file) is set only for register variables and fields: for every other symbol the .S file gets the old contents of the malloc block (heap contents, depend on `_end` and on earlier `free`s) | kept; identical only with the original data size; the corpus masks the byte (`cparse/tools/progcfg.py`, CORPUS_NORMALIZE) | cparse sources |
-| `/lib/cparse` (`lookup`) | returns no value when the name is not found and no entry is to be made (`mk == 0`) | kept | `src/cmd/cparse/tools/findings.json` |
-| `/lib/cparse` (`newsect`) | the section counter starts at 3, so every overflow of a section gives "too many sections"; `defid` prints "ntab_gl obals" | kept | `src/cmd/cparse/tools/findings.json` |
-| `/lib/cparse` (`convert`) | for CVTL the operands of the node change places (harmless for PLUS, the only user) | kept | `src/cmd/cparse/tools/findings.json` |
-| `/lib/cparse` (`lxrdope`, `lxres`) | the reserved word `fortran` has the action 6, for which `lxres` has no case: a program with the word `fortran` stops with "compiler error: bad AR_?? action" (measured) | kept | `src/cmd/cparse/tools/findings.json` |
-| `/lib/cparse` (`clocal` ASSIGN, `chkstr`, `treeeq`) | `clocal` loads two types for an ASSIGN of an SCONV and does not use them; `chkstr` compares a symbol pointer with 500 (signed, so it never fires); `treeeq` returns no value for an operator that is not LTYPE, UTYPE or BITYPE | kept | `src/cmd/cparse/tools/findings.json` |
+| `/lib/cparse` (`putsym`) | for a structure that is used but never defined (`struct sgtty *p` when only `sgttyb` exists) the member loop starts at `dimtab[-1]` and writes the `symno` of whatever that word points to into the member list of the .S file | kept (the bss has the original layout) | `compare/cparse/findings.json` |
+| src/lib/oldlibc `endopen/0_4.s` (our cut, not an original) | the errno address of /lib/codgen was written as a number (0x69C8); scodgen, popt and cparse have errno elsewhere | fixed 2026-10-31: `_errno` | `compare/cparse/findings.json` |
+| `/lib/cparse` (`putsym`, `lookup`) | the register byte `sfldb` (+5 of a symbol in the .S file) is set only for register variables and fields: for every other symbol the .S file gets the old contents of the malloc block (heap contents, depend on `_end` and on earlier `free`s) | kept; identical only with the original data size; the corpus masks the byte (`compare/cparse/progcfg.py`, CORPUS_NORMALIZE) | cparse sources |
+| `/lib/cparse` (`lookup`) | returns no value when the name is not found and no entry is to be made (`mk == 0`) | kept | `compare/cparse/findings.json` |
+| `/lib/cparse` (`newsect`) | the section counter starts at 3, so every overflow of a section gives "too many sections"; `defid` prints "ntab_gl obals" | kept | `compare/cparse/findings.json` |
+| `/lib/cparse` (`convert`) | for CVTL the operands of the node change places (harmless for PLUS, the only user) | kept | `compare/cparse/findings.json` |
+| `/lib/cparse` (`lxrdope`, `lxres`) | the reserved word `fortran` has the action 6, for which `lxres` has no case: a program with the word `fortran` stops with "compiler error: bad AR_?? action" (measured) | kept | `compare/cparse/findings.json` |
+| `/lib/cparse` (`clocal` ASSIGN, `chkstr`, `treeeq`) | `clocal` loads two types for an ASSIGN of an SCONV and does not use them; `chkstr` compares a symbol pointer with 500 (signed, so it never fires); `treeeq` returns no value for an operator that is not LTYPE, UTYPE or BITYPE | kept | `compare/cparse/findings.json` |
 | codgen | `regjam`, case 1: the call `roverlap(1, reg)` for a word node has no third argument, `roverlap` takes whatever is in r5 as the node (the call for a long node passes `n`) | Kept (byte identity) | `src/cmd/codgen/regallo3.c`; found in the original at 0x79fa, no `ld r5,r10` there |
 | codgen | `eread`: `op = dope[op] & 0xE; if (op == 0x73) erflag = 1;` the masked value can never be 0x73, the flag is written nowhere else and never read | Kept (byte identity) | `src/cmd/codgen/rdr3.c`; original at 0x2592 |
 | codgen | `efcode` calls `prolog(a, sz, tot)` with three of five arguments, the third in the place of `b`; `prolog` takes `w` and `tot` from the stack words the call of `epilog` just before left there | Kept (byte identity) | `src/cmd/codgen/local3.c`; original at 0x297c |
@@ -999,7 +999,7 @@ means it does something fixed instead (only possible where the original's result
 ### sld: limits of the old compiler for the work file (2026-10-28)
 
 - Only the first 8 characters of an identifier count; an external name is `_` + 7 characters in the object. Identifiers equal in
-  the first 8 characters are one symbol. `src/cmd/sld/tools/check_names.py` lists such groups (renamed for that:
+  the first 8 characters are one symbol. `compare/sld/check_names.py` lists such groups (renamed for that:
   `table16_index` -> `index16`, `report_limit` -> `limit_msg`; `saved_av`/`saved_argc` are locals and differ at the 8th character).
 - The symbol table of scc is small: a file with more than about 560 global names stops with "Symbol table out of space".
   `sld.c` has about 310 file-scope names and 620 identifiers in total.
@@ -1039,7 +1039,7 @@ means it does something fixed instead (only possible where the original's result
 
 ### sld: names of the libc functions called by the own code (2026-10-28)
 
-`src/cmd/sld/tools/libc_names.txt` maps the 34 call targets above 0x8680 to the members of slibc.a: `exit` 0x8a50 (= cuexit.o:
+`compare/sld/libc_names.txt` maps the 34 call targets above 0x8680 to the members of slibc.a: `exit` 0x8a50 (= cuexit.o:
 `__cleanup`, then `sc #1`; `__callex` calls it), `atoi`, `_cnvt`, `_length`, `malloc`/`free`/`realloc`/`calloc`, `mktemp`,
 `strchr`/`strrchr`/`rindex`, `swab`, `strcat`, `strncmp`, `strcpy`, `swap`, `tolower` and the system call stubs (`access`
 `chmod` `close` `creat` `fstat` `link` `lseek` `open` `read` `signal` `unlink` `write`; the number after `sc` fits the call).
@@ -1337,7 +1337,7 @@ Spare variables that fill gaps of the original layout (not used by any function 
 
 ### sld: C files of the program and the libc objects in the own range (2026-10-28)
 
-`src/cmd/sld/tools/module_map.py` (output `module_map.txt`) assigns every function to a C file by the string literals it uses. The data
+`compare/sld/module_map.py` (output `module_map.txt`) assigns every function to a C file by the string literals it uses. The data
 area starts with the SCCS strings of the files in link order: copyname.c 0x2c, dump.c 0x78, ext.c 0x38a, ld.c 0x448, ldm.c 0xf60,
 printname.c 0x14fe, swap.c 0x156c, symbols.c 0x159a; the code of the files is in the same order and the assignment is monotonic
 (no file after a later one). Code ranges (function boundaries; the cuts at the first function of the next file):
@@ -1357,7 +1357,7 @@ lies in the data area behind the symbols.c data (0x17ba..0x1958 and the objects 
 
 ### sld: the string literals and the data of the C files (2026-10-28)
 
-`src/cmd/sld/tools/fill_strings.py` put the original texts into the C files (the placeholders "x" are gone; every file starts with
+`compare/sld/fill_strings.py` put the original texts into the C files (the placeholders "x" are gone; every file starts with
 `static char sccsid[]`, the SCCS what-string of the binary). Method: the compiler emits the string literals of a file in source
 order into the data and the original keeps that order. (1) The literals of one function are consecutive: the k-th literal of the
 function is the k-th lowest string address among the string references (`#%0100XXXX`) of the original function. (2) A literal that
@@ -1379,7 +1379,7 @@ Findings from the order of the strings (`fill_strings.py` prints them):
 
 ### sld: initialized variables and the data of the files (2026-10-28)
 
-Tools (`src/cmd/sld/tools`): `var_addr.py` (address of each global variable of our sources: the instruction sequences of ours and the
+Tools (`compare/sld`): `var_addr.py` (address of each global variable of our sources: the instruction sequences of ours and the
 original are aligned by mnemonic and the variable operands paired; votes in `var_addr.txt`, per function `var_fn_addr.txt`),
 `data_map.py` (the data area per C file: SCCS string, strings, jump tables, words), `check_data.py` (data section of each compiled C file
 against the original range; relocated words, jump tables and pointers into segment 1/2 are masked). Result: the data of copyname.c,
@@ -1636,7 +1636,7 @@ Plexus is read only where a place in the binary is unclear.
 
 **File.** E611 (segmented, separate I&D), `-e` entry `04000000`, flags STRIP|7FSTK. Segments: 4 code
 (46848 bytes), 5 data (38360) + bss (12328), 7, 8, 9 each 1280 bytes data. Code from `scrt0` (0x0..0x41), the
-modules of cas (`src/cmd/cas/tools/MODULES`), then the libc members (from 0x9694, about 8.3 KB: stdio, `_doprnt`, `sys_errlist`, syscall stubs).
+modules of cas (`compare/cas/MODULES`), then the libc members (from 0x9694, about 8.3 KB: stdio, `_doprnt`, `sys_errlist`, syscall stubs).
 Segment 5 holds the data of all modules in link order (each begins with its SCCS id); segments 7, 8, 9 are
 the three symbol tables `stable.c`, `itable.c`, `ntable.c`: each starts with its SCCS id and has the table
 area at offset 0x30. `ssymtab.c` allocates from them like a bump allocator and grows the segment by 1024
@@ -1757,7 +1757,7 @@ intermediate files: the small functions of `ifile` (0x42-0x1d0) write single byt
 
 ## cas: decompilation (src/cmd/cas)
 
-Method and tools: `src/cmd/cas/tools/check.sh` (compile a module with the original `scc` under the oracle, compare
+Method and tools: `compare/cas/check.sh` (compile a module with the original `scc` under the oracle, compare
 with the range of `/bin/cas` by `tools/cmpmod.py`), `MODULES` (ranges and state), `ADDRESSES` (names against
 addresses), `DATA` (data ranges), `findings.json`/`FINDINGS.md` (the state per function, `host/recon/findings.py cas`), the corpus
 (`host/tools/corpus.sh cas`: the `cc -S -O` and `scc -S -O` output of every C source, assembled by both). The work goes in link order; the
@@ -1856,7 +1856,7 @@ first appearance. yacc reports 3 shift/reduce conflicts (as for the original gra
   indirect `@r`, 0x61 `expr(r)`, 0x62 immediate `#expr`, 0x63 `r(#expr)`, 0x64 `r(r)`; register nodes
   `mknode2(tok, mknode1(1, regnumber), 0)`; the kind byte at offset 6 of a name node (0 extern/common, 2 `::=`, 3 `::`, 4 `:=`, 5 `:`)
   is set before `defsym` (0x3d90) or the label list.
-- Functions of other modules that the actions call (first called by address, now named, see `src/cmd/cas/tools/ADDRESSES`):
+- Functions of other modules that the actions call (first called by address, now named, see `compare/cas/ADDRESSES`):
   `even` / `odd` (4cda, 4dc4), `setsub` (4bb0), `blkopen` / `blkclose` (4a0e, 4a30: `{` / `}`), `jpr` (84fc, jpr / callr), `exprtype`
   (4ecc), the operators of `expr.c` (`opshort opseg opoff opadd opsub opshl opshr opand opor opxor opmul opdiv opneg opplus`), `dotval`
   (4df6, the value of `.`).
@@ -2079,7 +2079,7 @@ yet: `lctab[256][3]` (long, 9634) and `lcaux[256][3]` (struct of two ints, ac26)
 data 38906 / bss 12294 against 38360 / 12328 of the original: the shipped scc lays out strings and alignment differently (D12), no difference in contents.
 
 **Test of the complete cas.** Method: the original `/bin/cas` (z8k-emu) and the rebuilt one assemble the same source, messages (stderr, return code) and object must be equal;
-scripts in `src/cmd/cas/tools/test/` (README there). Used: (1) every opcode that `tools/z8k.py` decodes (37308 nonsegmented, 30444 short segmented, 30388 long segmented), written as
+scripts in `compare/cas/test/` (README there). Used: (1) every opcode that `tools/z8k.py` decodes (37308 nonsegmented, 30444 short segmented, 30388 long segmented), written as
 source; lines that the original refuses are removed and both runs are compared; (2) about 346 000 operand patterns for the mnemonics that z8k.py does not decode (EPU,
 block and flag instructions), nonsegmented and segmented; (3) jr, djnz, dbjnz, calr, ldr/ldar, jpr, callr at 23 distances (0 ... 3000 words) and chains of up to 80
 jpr at the limit of the short form (jpr.c, jpr2.c, optim.c); (4) 228 assembler files made by `cc -S` and `scc -S` from src/cmd and src/lib/libc; (5) the options -l -d -r -t -i -m -v -^
@@ -2103,7 +2103,7 @@ of a file and on some tokens (`<<`, `^$`, `5|3`); the test `exp.py` therefore le
 
 `host/cas` is the cas assembler for Linux: the decompilation of `src/cmd/cas` moved to a 32/64 bit host and to ANSI C (see `host/cas/README` for what changed: 16 bit
 types where the width shows, nodes and symbol tables without pointers in longs, big endian binary files, `mkstemp`). Same options, messages, return codes, objects and
-listings as `/bin/cas`. Checks: `make -C host/cas check WEGA=...` (`check.sh`) runs the scripts of `src/cmd/cas/tools/test/` with `NATIVE=1` (the program under test runs on the
+listings as `/bin/cas`. Checks: `make -C host/cas check WEGA=...` (`check.sh`) runs the scripts of `compare/cas/test/` with `NATIVE=1` (the program under test runs on the
 host, the original under z8k-emu).
 
 Results: `rel.py` 48 files, no difference; `exh.py` ns/ss/sl (all opcodes of the three address modes) no difference; `fz`/`fzs` (about 346 000 operand patterns)
@@ -2217,7 +2217,7 @@ Status (2026-10-27): NOT byte-identical yet. Measured against the original in z8
 - Function level: 68 of 75 functions are paired with the original; 3 are byte-identical (`dumpnodes`, `clearreg`, `comjump`).
   Remaining text is 608 bytes larger than the original (the 68 functions, sum of the instruction ranges).
 - The differences are classified per function (D1, D2, D4, D5, D6, D7, D8, D16, D17; OLDCC.md), and as findings in
-  `src/cmd/popt/tools/findings.json` (popt-01 .. popt-33; open: popt-29 text sum, popt-30 codemove, popt-31 regprefix,
+  `compare/popt/findings.json` (popt-01 .. popt-33; open: popt-29 text sum, popt-30 codemove, popt-31 regprefix,
   popt-32 ovlap, popt-33 call forms = D17). `FINDINGS.md` is generated from findings.json.
 - Open items that need the old compiler: D2, D4, D5, D6, D16 per function. The call form D17 is the old cas (OLDCC.md): popt is byte-identical with it.
 Reproduced quirks: singop reads address 0 when a node has no operand text; conloc is 20 bytes and overwritten into the
@@ -2446,7 +2446,7 @@ values at the same calls.
 
 ## sld: how far the reconstruction is
 
-Byte-identical since 2026-11-07 (`src/cmd/sld/tools/FINDINGS.md`: the odd source forms). What holds for the program:
+Byte-identical since 2026-11-07 (`compare/sld/FINDINGS.md`: the odd source forms). What holds for the program:
 
 - `/bin/sld` is segmented (E611): code 38912 bytes in segment 0, data 7090, bss 31054 + 63488; stripped. Modules from the SCCS strings of the data, in link order: scrt0.s, copyname.c 3.1, dump.c 3.1, ext.c 3.3, ld.c 3.8, ldm.c 3.10, printname.c, swap.c, symbols.c, malloc.c. The sources are `src/cmd/sld/{copyname,dump,ext,ld,ldm,printname,swap,symbols}.c` and `ld.h`; `host/ld/sld.c` is a guide for names only.
 - Own code to 0x71ca, then libc: putchar, scanf, doscan are shipped members of `/lib/slibc.a`; printf and doprnt (0x79ca..0x8682) are another revision and stay cas sources in `src/lib/oldslibc`. `unlink_seg.py` cuts segmented modules (`unlink.py` handles nonsegmented ones only).

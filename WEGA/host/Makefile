@@ -42,14 +42,12 @@ all: cc popt ar binutils cas ld cpp
 cc popt ar binutils cas ld cpp:
 	$(MAKE) -C $@ all
 
-check:
+check: ar
 	$(MAKE) -C cc check WEGA=$(WEGAABS) EMU=$(EMU)
-	$(MAKE) -C ar check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C binutils check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C cas check WEGA=$(WEGAABS)
 	$(MAKE) -C ld check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C popt check WEGA=$(WEGAABS)
-	$(MAKE) -C cpp check WEGA=$(WEGAABS)
 	$(MAKE) -C libc check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C oldcc verify WEGA=$(WEGAABS) EMU=$(EMU)
 

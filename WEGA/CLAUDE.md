@@ -1,7 +1,7 @@
 # WEGA tool chain: instructions for Claude
 
 Project: rebuild the WEGA (Z8000/P8000) tool chain and system sources, output-identical to the
-originals. Branch `toolchain` of github.com/OlliL/P8000. Project dir `WEGA/` (`src/`, `host/`, `contrib/`).
+originals. Branch `toolchain` of github.com/OlliL/P8000. Project dir `WEGA/` (`src/`, `host/`, `compare/`, `contrib/`; `compare/NAME/` holds what belongs to a program besides its source: corpus, `findings.json`, `SYSIII.md`).
 Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md` (facts) and
 `src/TODO.md` (the plan).
 
@@ -59,7 +59,7 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
     make -C WEGA/host check WEGA=<WEGA_ROOT>      # the host tools: cc, ar, binutils, cas, ld, popt, libc, oldcc
     make -C WEGA/host checkall WEGA=<WEGA_ROOT>   # on a copy of the git files: make in src, make install into an empty root,
                                                   # every file there against WEGA; the corpora; check (16 min)
-    host/tools/corpus.sh [PROG ...]               # the corpus of a program (src/cmd/PROG/tools/progcfg.py)
+    host/tools/corpus.sh [--wega|--host] [PROG ...]   # the corpus of a program (compare/PROG/progcfg.py): the original against every candidate
 
 ## Compile with the original tools (z8k-emu)
 

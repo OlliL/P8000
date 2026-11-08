@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""findings.py PROG: brings src/cmd/PROG/tools/findings.json up to the current model and writes FINDINGS.md from it.
+"""findings.py PROG: brings compare/PROG/findings.json up to the current model and writes FINDINGS.md from it.
 
 The status is measured only for the programs with a model of the old compiler v0p (switchmatrix.py PROGS; oldcc.sh model
 PROG first); for the others the json is taken as it is (byte-identical programs: every function exact). The status comes from strictcmp and is never
 edited by hand: exact (strictcmp -c finds no difference), masked (strictly equal, but call against calr differs: the old cas,
 OLDCC.md D17), open (strictly different; lines = differing lines). Written by hand: only note, for an open difference, an odd
 source form, a guessed name, dead code. Which function needs which switch: host/OLDCC_SWITCHES.md.
-A program built by a compiler we do not have (cas: "measure": "check.sh" in its json) is measured by its tools/check.sh
+A program built by a compiler we do not have (cas: "measure": "check.sh" in its json) is measured by its compare/NAME/check.sh
 (host/tools/cmpmod.py, a normal form): same (equal in the normal form), close (same calls, constants and variables),
 open (lines = differing instructions); per module the differing data bytes.
 """
@@ -36,7 +36,7 @@ def measure(tools, opts):
 
 def main():
     prog = sys.argv[1]
-    tools = os.path.join(REPO, 'src', 'cmd', prog, 'tools')
+    tools = os.path.join(REPO, 'compare', prog)
     path = os.path.join(tools, 'findings.json')
     d = json.load(open(path))
     if d.get('measure') == 'check.sh':
@@ -74,7 +74,7 @@ def main():
 
 
 def measure_check(d, tools):
-    """the functions and the data of every module from tools/check.sh"""
+    """the functions and the data of every module from compare/NAME/check.sh"""
     wega = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
     r = subprocess.run(['sh', os.path.join(tools, 'check.sh'), 'WEGA=' + wega], capture_output=True, text=True)
     old = d.get('functions', {})
@@ -161,7 +161,7 @@ def write_md_check(d, path, prog):
                 o.write('| %s | %s | %s | %s | %s | %s |\n' % (k, f['file'], f['orig'], f['instr'], f.get('lines', ''),
                                                            f.get('note', '')))
             o.write('\n')
-        o.write('## Data\n\nDiffering bytes of the data of each module (relocated words skipped; `tools/DATA`):\n\n'
+        o.write('## Data\n\nDiffering bytes of the data of each module (relocated words skipped; `compare/cas/DATA`):\n\n'
                 '| Module | Bytes |\n|---|---|\n')
         for m, n in d['data'].items():
             o.write('| %s | %d |\n' % (m, n))

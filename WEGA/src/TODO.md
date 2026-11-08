@@ -1,7 +1,7 @@
 # WEGA: TODO
 
 The plan and nothing else. What is known goes to `host/KNOWLEDGE.md`, the old compilers to `host/OLDCC.md`, the state per function to
-`tools/FINDINGS.md` of a program. A finished step leaves this file. No new programs before step 9 (owner 2026-11-04).
+`compare/NAME/FINDINGS.md` of a program. A finished step leaves this file. No new programs before step 9 (owner 2026-11-04).
 
 What is byte-identical is checked by `make -C host checkall` (16 minutes): every file that `make install` in `src/` puts below an empty root is compared with the WEGA tree; a program joins by its install target (stripped by `install` when the original is). Run it after every change of a compiler and before a commit of a source of a program. Step 5 (the open programs in `cmd/`) is done; the owner decides on the next. Everything builds with `make` under `src/`: old compilers with the shipped tools and libc, `lib/`, old compilers again with the libc of their time, `cmd/` (7 minutes; `make -C host src` on Linux, `host/tools/wbin.sh` puts the tools under the emulator in the PATH).
 
@@ -32,7 +32,7 @@ Method: the sources are taken over anew from `src/cmd/X` (the exact, byte-identi
    - `printf` formats with `long`, `sizeof` and struct layout assumptions, `strcpy` overlaps and similar are checked on every program.
 4. cparse needs a host yacc (bison `-y` or byacc); the tables differ from the WEGA yacc, so inputs with syntax errors belong to the corpus.
 5. Order: first a small pilot (`ar`) to settle the recipe, shown to the owner; then ranlib, strip, size, cpp, ld, sld, cc, popt, codgen, cparse. One program per commit.
-6. Check per program, against the original under `z8k-emu`, by the corpus only (`host/tools/corpus.sh --host`, see `host/HANDOFF_wega_disasm.md`, "Check of a host program"); the `check.sh` and `check.py` of the host directories are converted into corpus cases and removed (done: `ar`; open: binutils, cc, cas, popt, ld, libc), proved by deliberately broken builds; for the compiler passes also error cases. Codgen, cpp, cparse get a `Makefile` and an entry in `host/Makefile` (`all`, `check`) and in `host/tools/checkall.sh`.
+6. Check per program, against the original under `z8k-emu`, by the corpus only (`host/tools/corpus.sh`, candidates `wega` and `host` of `compare/NAME/progcfg.py`, see `host/HANDOFF_wega_disasm.md`, "Check of a program"); the `check.sh` and `check.py` of the host directories and their `check` targets are converted into corpus cases and removed (done: `ar`, `cpp`; open: binutils, cc, cas, popt, ld, libc), proved by deliberately broken builds; for the compiler passes also error cases. Codgen, cpp, cparse get a `Makefile` and an entry in `host/Makefile` (`all`, `check`) and in `host/tools/checkall.sh`.
 7. The driver: `host/cc/cc.conf.example` points to the host cpp, cparse, codgen instead of the emulator; end-to-end: the same programs compiled with the host chain and with the originals under `z8k-emu`, the objects compared.
 8. Finish: inventory table (column "Host source") and `host/KNOWLEDGE.md` current, `make -C host checkall` including the new programs.
 

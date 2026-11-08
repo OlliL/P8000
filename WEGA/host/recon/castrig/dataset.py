@@ -7,7 +7,7 @@ import os,sys,re,json,subprocess
 sys.path.insert(0,'/mnt/share/cvs/P8000/WEGA/host/tools'); sys.path.insert(0,'/mnt/share/cvs/P8000/WEGA/host/recon')
 from sout import SOut
 import zcode
-W='/mnt/share/cvs/P8000/WEGA/src/cmd/'; R='/mnt/share/cvs/P8000/tmp/wega31_root/lib/'; T='/mnt/share/cvs/P8000/tmp/tmp/d12model_%s/'
+W='/mnt/share/cvs/P8000/WEGA/compare/'; R='/mnt/share/cvs/P8000/tmp/wega31_root/lib/'; T='/mnt/share/cvs/P8000/tmp/tmp/d12model_%s/'
 HC=os.environ['HC']
 PROGS='cparse popt codgen cpp spopt scparse scodgen'.split()
 INDEP={'spopt':'popt','scparse':'cparse','scodgen':'codgen'}
@@ -111,7 +111,7 @@ def module(prog,mod,fl,F,gc):
     return dict(prog=prog,mod=mod,lo=lo,hi=hi,long=LL,short=Sh,rows=rows,end=end,nsites=n,nj=len(J))
 out=[]
 for prog in PROGS:
-    F=json.load(open(W+prog+'/tools/findings.json'))['functions']
+    F=json.load(open(W+prog+'/findings.json'))['functions']
     g=SOut(open(R+prog,'rb').read()); gc=bytes(g.image)[:g.segs[0]['code']]
     for fl in sorted({f.get('file') for f in F.values() if f.get('file') and f.get('file')!='-'}):
         mod=fl.rsplit('.',1)[0]
