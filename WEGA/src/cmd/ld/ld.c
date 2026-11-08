@@ -1583,3 +1583,16 @@ register struct buf *b;
 	b->nleft = 0x100;
 }
 
+
+#ifdef SHIPPED
+/* swap_quad of the old libc (oldlibc/swap/0_1.s): the words 2 to 5 of the structure, each swapped when not zero; the shipped libc.a has no swap_quad */
+swap_quad(p)
+unsigned *p;
+{
+	int i;
+
+	for (i = 2; i < 6; i++)
+		if (p[i])
+			p[i] = swap(p[i]);
+}
+#endif

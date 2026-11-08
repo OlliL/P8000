@@ -41,7 +41,7 @@ dosdir: dosdir.o dosplit.o dosdev.o dosopn.o
 dosls: dosls.o dosplit.o dosdev.o dosopn.o
 	$(CC) dosls.o dosplit.o dosdev.o dosopn.o -o $@
 
-dosmkdir: dosmkdir.o dosplit.o dosdev.o dosopn.o dosdel.o dosfat.o
+dosmkdir: dosmkdir.o dosplit.o dosdev.o dosopn.o dosin.o dosdel.o dosfat.o
 	$(CC) dosmkdir.o dosplit.o dosdev.o dosopn.o dosin.o dosdel.o \
 	dosfat.o -o $@
 

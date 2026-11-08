@@ -8,7 +8,7 @@
 #      Makefiles strip as the originals are stripped); every member of lib/libc/libc.a against the original;
 #   3. the corpora (host/tools/corpus.sh, side by side; the prepared inputs are compare/NAME/corpus.tar of the working tree (made when missing,
 #      host/tools/mkcorpus.sh makes them new) and the results are cached beside them (compare/NAME/cache, key: see stagecorpus.py)) of every program with a compare/NAME/progcfg.py, every candidate: the WEGA program built
-#      with the shipped cc (scc) and the libc of its Makefile (the byte-identical builds are proven by 2) and the host build;
+#      built by make shipped (the shipped cc, scc and libc; the byte-identical builds are proven by 2) and the host build;
 # -b: only 1 and 2. Prints one line per check, the logs stay in CHECK_TMP; exit status 0 when all pass.
 # A program joins by its install target (src/cmd/Makefile).
 #
@@ -141,8 +141,8 @@ corpus() {
 		else result "corpus $nm [$cand]" fail "see $2"; fi
 	done < $T/corpus_lines
 }
-# the shipped build: every program with a corpus built from the same sources by the shipped cc (scc) and the libc of
-# its Makefile; a byte-identical binary cannot show anything in a corpus, this build tests the sources.
+# the shipped build (make shipped in src/cmd): every command built from the same sources by the shipped cc (scc) and the shipped
+# libc, with -DSHIPPED; a byte-identical binary cannot show anything in a corpus, this build tests the sources.
 # The host programs (compare/NAME/progcfg.py, CANDIDATES) are built beside them by the compiler of the host.
 copytree $T/shipped
 cp $T/tree/WEGA/src/lib/*.a $T/shipped/WEGA/src/lib/
@@ -154,15 +154,7 @@ build() {	# build LABEL DIR make-arguments: the program of the shipped build, wi
 	(PATH=$T/bin:$PATH; export PATH; cd $d && make "$@" MAKEARGS="$J") >> $T/shipped.log 2>&1
 	stamp "3 shipped build: $l"
 }
-build 'ar ranlib strip size' $C ar ranlib strip size CC=cc
-build cpp $C/cpp cpp CC=cc
-build 'cparse scparse' $C/cparse all CC=cc
-build 'codgen scodgen' $C/codgen all CC=cc
-build 'popt spopt' $C/popt all CC=cc
-build ld $C/ld ld CC=cc
-build sld $C/sld sld SCC=scc
-build cas $C/cas all SCC=scc
-build 'cc scc' $C/cc all CC=cc
+build 'cmd (make shipped)' $C shipped
 : > $T/hostbuild.log
 for p in cpp ar binutils cc popt codgen cparse cas ld; do
 	make -C $T/shipped/WEGA/host $p >> $T/hostbuild.log 2>&1

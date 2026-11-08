@@ -5,6 +5,13 @@
 #include <ctype.h>
 #include "z2.h"
 
+/* the old libc sprintf returns its first argument, the shipped one a count (KNOWLEDGE.md, quirks) */
+#ifdef SHIPPED
+#define SPRINTFV(b, f, n)	(sprintf(b, f, n), (b))
+#else
+#define SPRINTFV(b, f, n)	sprintf(b, f, n)
+#endif
+
 static char sccsid[] = "@[$]z23.c\t1.6  03/25/83 18:10:30 Copr.1981 87wega3.2.";
 
 static void rename_regs();
@@ -119,12 +126,12 @@ procopt()
 		if ((n & 1) && b[n - 1] && n <= 13) {
 			if ((r14 & 1) || r14 + 1 >= 8 || a[r14 + 1])
 				continue;
-			t[k].len = strlen(sprintf(t[k].s1, "r%d", n - 1));
+			t[k].len = strlen(SPRINTFV(t[k].s1, "r%d", n - 1));
 			sprintf(t[k++].s2, "r%d", r14++);
-			t[k].len = strlen(sprintf(t[k].s1, "r%d", n));
+			t[k].len = strlen(SPRINTFV(t[k].s1, "r%d", n));
 			sprintf(t[k++].s2, "r%d", r14);
 		} else {
-			t[k].len = strlen(sprintf(t[k].s1, "r%d", n));
+			t[k].len = strlen(SPRINTFV(t[k].s1, "r%d", n));
 			sprintf(t[k++].s2, "r%d", r14);
 		}
 	}

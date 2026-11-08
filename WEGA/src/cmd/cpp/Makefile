@@ -47,3 +47,6 @@ clean:
 	rm -f crt0.s cpy.c cpp *.o
 
 .PHONY: all install clean
+
+# the library of /lib is not made here (make shipped)
+/lib/libc.a /lib/slibc.a:

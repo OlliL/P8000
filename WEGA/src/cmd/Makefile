@@ -38,6 +38,28 @@ SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cpp cparse
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 
+# shipped: everything built with the shipped cc and the shipped libc (CC=cc, /lib/libc.a, /lib/slibc.a) and -DSHIPPED, which
+# switches the sources to what the shipped libc and cc need (the old libc's readsym, sprintf value, swap_quad; the exit status
+# of size). Without -DSHIPPED the bytes of the originals are rebuilt. The files of /lib are not made here: empty rules below.
+SHIPFLAGS = -O -DSHIPPED
+SHIPCC = CC=cc CCV0=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a
+
+shipped:
+	$(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $(PROGS) $(FILES) $(SIMPLE) $(SHIPCC) LIBC=/lib/libc.a
+	cd ../lib/oldlibc/printf ; cp 0_5.c s1.c ; cc -O -c s1.c ; rm -f s1.c
+	cd ../lib/oldlibc/doprnt ; $(CAS) -u -o 0_5.o 0_5.s
+	for d in $(SUBDIRS) ; do \
+		case $$d in \
+		sld) X="SCC=scc LIBC=/lib/slibc.a" ;; \
+		codgen|popt) X='LIBC="../../../../lib/oldlibc/printf/s1.o ../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
+		cpp|cparse|cc|dc|ld) X="LIBC=/lib/libc.a" ;; \
+		*) X="" ;; \
+		esac ; \
+		cd $$d ; eval $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all '$(SHIPCC)' $$X ; cd .. ; \
+	done
+
+/lib/libc.a /lib/slibc.a:
+
 subdirs:
 	for d in $(SUBDIRS); do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all ; cd .. ; done
 

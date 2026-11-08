@@ -22,22 +22,7 @@ What is byte-identical is checked by `make -C host checkall` (16 minutes): every
 
 **8.1 `host/recon`.** Done 2026-11-08: `castrig/` removed (the old cas is exact; the references in `host/OLDCC_LOG.md` are history). `blockmap.py` and `callcmp.py` stay: general tools of `host/recon/README.md` for the next binaries; `__pycache__` is ignored.
 
-**8.2 The commands of `cmd/` with the shipped libc.** Every command in `src/cmd` should compile and run with the shipped cc and the shipped `libc.a`. Today three sources need the libc of their time (measured 2026-11-07 with the corpus, shipped cc and shipped libc): popt uses the value of `sprintf` (the buffer; the shipped one returns a count), codgen meets the `%s` defect of the shipped `printf` (KNOWLEDGE.md, quirks), ld calls `swap_quad`, which only the old `swap.o` (`oldlibc/swap/0_1.s`) has. In addition codgen, scodgen and spopt built with the shipped cc and libc plus the old sprintf (stage 1) differ from the originals on the corpora (47, 46, 79 cases; with `libc-v5.a` 0, spopt 2, the `NK core` line); the final programs are identical, which module causes it is not known (probably the same causes; measure).
-- Measured 2026-11-08 (every directory of `cmd/` built with `CC=cc` and the shipped `libc.a`/`slibc.a`, `make -k`; then the corpora, candidate `wega`, on these binaries). Everything compiles and links except `ld` (`_swap_quad`). Corpus, inputs identical:
-
-| Program | Result | Cause / state |
-|---|---|---|
-| cpp, cparse, scparse, sld, cas, cc, scc, ar, strip | all identical | done |
-| codgen, scodgen | 235 of 282 | `%s` defect of the shipped `printf` (open) |
-| popt | 227 of 300 | value of `sprintf` (open) |
-| spopt | 251 of 300 | probably the same (open) |
-| ranlib | 22 of 37 (files of `libc.a`, `libPW.a` differ) | not examined |
-| size | 10 of 12 (messages) | not examined |
-| ld | does not link | `swap_quad` (open) |
-| gld, casold, cchain, scchain | no `wega` candidate | no corpus on the shipped build |
-- The changes go behind a switch (a define, e.g. `-DSHIPPED_LIBC`); without it the bytes stay identical. A new target in the Makefiles of `src/cmd` (e.g. `make shipped`) builds with it.
-- `checkall` uses this target instead of setting `CC=cc` by hand (`host/tools/checkall.sh`, the `build` lines); `LIBC` stays as it is until all commands work with the shipped libc.
-- The goal of `checkall` does not change: the old way stays byte-identical with the originals.
+**8.2 The commands of `cmd/` with the shipped libc.** Done 2026-11-08: `make shipped` in `src/cmd` (`-DSHIPPED`), used by `checkall`; the facts are in `host/KNOWLEDGE.md`. No `wega` candidate is planned for casold, cchain, scchain; gld comes with section 9.
 
 **8.3 The switches of the old compilers (last, the most work).** Switches not in any version (`OLD_D1F`, `OLD_D2D`, `OLD_D3A`, `OLD_D19A`); switches with one witness (`OLDCC.md`, section 5); whether v0 and v0p are two versions; whether v1 had the old cas. `KNOWLEDGE.md`, `HANDOFF_*`, the table in section 4 of `OLDCC.md`.
 

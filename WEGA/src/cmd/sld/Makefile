@@ -59,3 +59,6 @@ scrt0.o: scrt0.s
 
 clean:
 	rm -f *.o scrt0.s sld
+
+# the library of /lib is not made here (make shipped)
+/lib/libc.a /lib/slibc.a:

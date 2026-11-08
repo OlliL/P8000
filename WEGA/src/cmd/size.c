@@ -56,4 +56,8 @@ char **argv;
 		printf("%U = 0x%lx\n", sum, sum);
 		fclose(f);
 	}
+#ifdef SHIPPED
+	/* the original returns 0 (argc is left in the register); the shipped cc leaves another value */
+	return(0);
+#endif
 }

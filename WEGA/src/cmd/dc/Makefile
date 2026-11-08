@@ -40,3 +40,6 @@ clean:
 	rm -f *.o crt0.s dc
 
 .PHONY: all install clean
+
+# the library of /lib is not made here (make shipped)
+/lib/libc.a /lib/slibc.a:

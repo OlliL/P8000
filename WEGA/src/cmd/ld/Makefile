@@ -47,3 +47,6 @@ install: ld
 
 clean:
 	rm -f *.o crt0.s ld
+
+# the library of /lib is not made here (make shipped)
+/lib/libc.a /lib/slibc.a:
