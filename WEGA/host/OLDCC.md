@@ -457,4 +457,8 @@ their marks in the older columns are from comparisons with the shipped compiler.
 - The times of D3 and D20 (no mark read from a binary yet).
 - The rule of the spill of arguments (D4).
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
-- Switches with one witness (a function and its segmented copy): `OLD_D12K`, `OLD_D16A`, `OLD_D2MO`, `OLD_D3L`, `OLD_D5A`, `OLD_D5T`, `OLD_D6D`, `OLD_D6S`, `OLD_D23`.
+- Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
+  - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md` 2026-11-02, 11-03).
+  - Source forms tried 2026-11-08 (and 11-03 for `OLD_D16A`), none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
+  - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
+  - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.

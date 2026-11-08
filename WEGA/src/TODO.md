@@ -18,10 +18,6 @@ What is byte-identical is checked by `make -C host checkall` (16 minutes): every
 - The other files of `/lib` (`crt0.o` is built from `libc/csu/crt0.s` and installed): `scrt0.o`, `mcrt0.o`, `smcrt0.o` (PLZ/ASM
   modules like `crt0.o`), `cnvt.o`, `scnvt.o`, `doprnt.o`, `sdoprnt.o` (not the members of `libc.a`), `slibc.a`: no source yet.
 
-## 8. The switches of the old compilers
-
-Switches with one witness (`OLDCC.md`, section 5); whether v0 and v0p are two versions; whether v1 had the old cas. `KNOWLEDGE.md`, `HANDOFF_*`, the table in section 4 of `OLDCC.md`.
-
 ## 9. New programs
 
 `gld` and everything else under `bin/`, `lib/`, `usr/bin`, ... `host/OLDCC_DATES.md` lists all programs with their time.
