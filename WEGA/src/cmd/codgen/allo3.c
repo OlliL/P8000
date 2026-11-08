@@ -356,22 +356,6 @@ allocreg(p, cookie)
 	if (r != -1 && want == -1 && r < 8 && !d2vfirst(r))
 		r = -1;		/* v0: only when no lighter register is free; r stays busy for the operand */
 #endif
-#ifdef OLD_D2D
-	if (r == -1 && cls == 3 && want == -1 && (p->in.op == DIV || p->in.op == MOD || p->in.op == ASG DIV || p->in.op == ASG MOD)) {
-		register NODE *l = getlr(p, 'L');	/* a word operand in an odd register: its pair */
-
-		if (l->in.op == REG && (l->tn.rval & 1) && l->tn.rval < 8 && szty(l->in.type) == 1) {
-			rfree(l->tn.rval, l->in.type);
-			r = getreg(3, l->tn.rval - 1, 0x1000, p->in.sname);
-			if (r != l->tn.rval - 1) {
-				if (r != -1)
-					rfree(r, p->in.type);
-				r = -1;
-				getreg(2, l->tn.rval, 0x1000, l->in.sname);
-			}
-		}
-	}
-#endif
 #ifdef OLD_D2N
 	if (r == -1 && cls == 2 && (p->in.op == NAME || (p->in.op == OREG && p->tn.rval == 15)))
 		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: a loaded name is not remembered */

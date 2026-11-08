@@ -337,12 +337,6 @@ rallo(p, down)
 			down1 = MUSTDO | 6;
 			down2 = MUSTDO | 2;
 		}
-#ifdef OLD_D2D
-		else if (down == NOPREF)
-			down1 = MUSTDO | 1;		/* the odd half of rr0 */
-		else if (!(down & 1) && down < 8)
-			down1 = MUSTDO | (down + 1);	/* the odd half of the pair of the wanted register */
-#endif
 		break;
 #ifdef OLD_D5T
 	case PLUS:
@@ -933,12 +927,7 @@ argsort()
 	register int r;
 	register NODE *n;
 
-#ifdef OLD_D19A
-	/* v0: a constant argument counts as needing less than any other one (it is loaded after them) */
-#define ARGSU(q)	((q)->in.op == ICON ? -1 : (q)->in.su)
-#else
 #define ARGSU(q)	((q)->in.su)
-#endif
 	for (ai = argl; ai->node; ai++)
 		for (aj = ai + 1; aj->node; aj++)
 			if (ARGSU(ai->node) < ARGSU(aj->node)) {
