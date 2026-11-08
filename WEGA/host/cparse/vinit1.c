@@ -202,8 +202,8 @@ void putstrs(void)
 			} while( *s++ || i < strcur->s_len );
 		fprintf( dfile, "\n" );
 		nextstr = strcur->s_next;	/* the original reads s_next after the free */
-		free( strcur->s_str );
-		free( strcur );
+		zfree( strcur->s_str );
+		zfree( strcur );
 		} while( (strcur = nextstr) );
 	fprintf( dfile, "    .even\n" );
 	strcur = 0;

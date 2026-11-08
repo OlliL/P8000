@@ -125,7 +125,7 @@ int fltlab(double d)
 		}
 	if( fcfail ) fcp = 0;
 	else if( fccnt++ % 50 ) ++fcp;
-	else fcp = (struct fcon *) malloc( 50*sizeof(struct fcon) );
+	else fcp = (struct fcon *) zalloc( 50*Z_FCON, 50*sizeof(struct fcon), 4 );
 	if( fcp == 0 ){
 		if( !fcfail ){
 			werror( "no space for floating constant chain;\t\t\t\t constants duplicated" );

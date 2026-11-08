@@ -360,4 +360,17 @@ extern struct symtab *refsym[551];
 extern int taglist[500];
 
 
+/* the storage allocator of the libc on a model of its heap (zalloc.c): the sizes of the blocks on the Z8000 */
+void *zalloc(size_t modelsize, size_t hostsize, int kind);
+void zfree(void *p);
+# ifdef SEG
+# define Z_SYMTAB 24	/* not measured: sizeof(struct symtab) of scparse; the block has 7 words of 4 bytes (21 to 24 bytes), found with yylex.c */
+# define Z_STRLIST 12
+# define Z_FCON 14
+# else
+# define Z_SYMTAB 26
+# define Z_STRLIST 8
+# define Z_FCON 12
+# endif
+
 # include "cpproto.h"

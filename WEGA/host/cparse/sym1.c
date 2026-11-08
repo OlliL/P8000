@@ -512,7 +512,7 @@ struct symtab *lookup(char *name, int s, int mk, int cls)
 		}
 	if( !mk ) return( 0 );	/* the original returns without a value */
 
-	if( (q = (struct symtab *) calloc( 1, sizeof(struct symtab) )) == 0 )
+	if( (q = (struct symtab *) zalloc( Z_SYMTAB, sizeof(struct symtab), 1 )) == 0 )
 		cerror( "Symbol table out of space" );
 	q->slink = hashtab[i];
 	if( hashtab[i] ) hashtab[i]->slink = (struct symtab *)((uintptr_t)hashtab[i]->slink ^ (uintptr_t)q);
@@ -556,7 +556,7 @@ struct symtab *copysym(struct symtab **pp)
 	char *s;
 	int h;
 
-	if( (q = (struct symtab *) calloc( 1, sizeof(struct symtab) )) == 0 )
+	if( (q = (struct symtab *) zalloc( Z_SYMTAB, sizeof(struct symtab), 1 )) == 0 )
 		cerror( "Symbol table out of space" );
 	*q = **pp;
 	h = hash( &ntab[q->sname] );
@@ -594,7 +594,7 @@ struct symtab *hide(struct symtab *p)
 	register struct symtab *q;
 	int i;
 
-	if( (q = (struct symtab *) calloc( 1, sizeof(struct symtab) )) == 0 )
+	if( (q = (struct symtab *) zalloc( Z_SYMTAB, sizeof(struct symtab), 1 )) == 0 )
 		cerror( "Symbol table out of space" );
 	*q = *p;
 	i = hash( &ntab[p->sname] );
@@ -683,8 +683,8 @@ void clearst(int lev)
 					prev->slink = (struct symtab *)((uintptr_t)prev->slink ^ (uintptr_t)next);
 					}
 				else hashtab[i] = next;
-				/* free( p ): the original reads the entry again through dimtab (a structure tag) after the free; the host keeps it */
-				(void) 0;
+				/* the original reads the entry again through dimtab (a structure tag) after the free: zalloc.c */
+				zfree( p );
 				p = prev;
 				}
 			}

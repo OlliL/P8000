@@ -148,10 +148,9 @@ cp $T/tree/WEGA/src/lib/*.a $T/shipped/WEGA/src/lib/
 stamp '3 copy of the files of git (shipped)'
 C=$T/shipped/WEGA/src/cmd
 : > $T/shipped.log
-PATH=$T/bin:$PATH; export PATH
 build() {	# build LABEL DIR make-arguments: the program of the shipped build, with its time
 	l=$1; d=$2; shift 2
-	(cd $d && make "$@" MAKEARGS="$J") >> $T/shipped.log 2>&1
+	(PATH=$T/bin:$PATH; export PATH; cd $d && make "$@" MAKEARGS="$J") >> $T/shipped.log 2>&1
 	stamp "3 shipped build: $l"
 }
 build 'ar ranlib strip size' $C ar ranlib strip size CC=cc

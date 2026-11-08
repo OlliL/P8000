@@ -26,7 +26,9 @@ CANDIDATES = {'wega': 'src/cmd/cparse/build/nonseg/cparse', 'host': 'host/cparse
 
 def CORPUS_SOURCES():
     import corpusc
-    return corpusc.c_sources()
+    # the sources of the tree and the fixed cases (compare/cparse/cases: a structure declared in a function, whose tag is freed at its end)
+    cases = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'cparse', 'cases')
+    return corpusc.c_sources() + sorted(os.path.join(cases, f) for f in os.listdir(cases) if f.endswith('.c'))
 
 
 def CORPUS_PREPARE(src, work):

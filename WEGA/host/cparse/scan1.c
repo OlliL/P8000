@@ -307,18 +307,18 @@ void savestr(int ct, int lab)
 	char *cp;
 
 	if( !strhead ){
-		if( (strhead = (struct strlist *) malloc( sizeof(struct strlist) )) == 0 ) syserr( "malloc" );
+		if( (strhead = (struct strlist *) zalloc( Z_STRLIST, sizeof(struct strlist), 2 )) == 0 ) syserr( "malloc" );
 		strcur = strhead;
 		}
 	else {
-		if( (strcur->s_next = (struct strlist *) malloc( sizeof(struct strlist) )) == 0 ) syserr( "malloc" );
+		if( (strcur->s_next = (struct strlist *) zalloc( Z_STRLIST, sizeof(struct strlist), 2 )) == 0 ) syserr( "malloc" );
 		strcur = strcur->s_next;
 		}
 	strcur->s_next = 0;
 	strcur->s_lab = lab;
 	lxstr( ct );
 	strcur->s_len = strsize;
-	if( (strcur->s_str = (char *) malloc( strcur->s_len )) == 0 ) syserr( "malloc" );
+	if( (strcur->s_str = (char *) zalloc( strcur->s_len, strcur->s_len, 3 )) == 0 ) syserr( "malloc" );
 	strsize = 0;
 	for( cp = strcur->s_str; strsize < strcur->s_len; ++strsize ) *cp++ = strbuf[strsize];
 	}
