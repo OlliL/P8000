@@ -6,6 +6,7 @@
 #ifdef OLD_VK
 /* vk, the code generator of the kernel objects (scodgen with the shipped scparse and spopt, host/OLDCC.md section 2) */
 #define OLD_D3		/* the registers at the join label of && and || keep their contents */
+#define OLD_D27		/* the register loaded for the compare of a long with 0 (entry 057b) keeps the name of its operand (nx 14, shipped 19) */
 #define OLD_D24		/* a conversion between a pointer and a non-pointer of the same size stays; (long)x & 0x7f00ffff under a pointer conversion drops the AND (optim) */
 #endif
 

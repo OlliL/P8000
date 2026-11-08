@@ -33,14 +33,14 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 
 ## 3. Objects that differ
 
-Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). Differing lines of the disassembly with `vk` (shipped scc): sys1 98 (118), tt0 1 (4), tty 16 (14).
+Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). Differing lines of the disassembly with `vk` (shipped scc): sys1 82 (118), tt0 1 (4), tty 16 (14).
 Each remaining difference is a code generator behaviour to be found as a new switch (witnesses: these objects):
 
 1. switch layout (tty, `sioioctl` in dev/wega/siok.c): the original has the compares of a small switch behind the case bodies (the first one threaded to the
    top by popt); the shipped scodgen puts them in front.
-2. registers: a register that held a frame slot (`!c.l` in `exece`: `ldl rr4,|12|(r15); testl rr4`) stays taken for the next operand of the `&&`/`||`
-   (original: rr6, shipped: rr4 again); tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion; a switch of the template 037 breaks sig, sys2, sys3),
-   tty (`ld r4,...` against `ld r2,...`); sys1.c FIXME "uses different temp regs", "has to be r4+r5 instead of r2+r3"; frame 0x1C0 against 0x1C2 in `exece`.
+2. registers: tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion; swapping the template 037 breaks sig, sys2, sys3), tty (`ld r4,...` against `ld r2,...`),
+   sys1 (82 lines; frame 0x1C0 against 0x1C2 in `exece`, the count register of `cpir` r3 against r6, FIXME "has to be r4+r5 instead of r2+r3"). Method: `nxwork` (regs3.c)
+   nulls or keeps the names of the registers per table entry (field nx); a kept name keeps the register away from the next operand. Print the entry and the lists in `getreg`.
 3. After each new switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already
    before this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 
