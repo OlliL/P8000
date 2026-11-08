@@ -216,6 +216,7 @@ All in codgen.
 - v0 (not v0p, `OLD_D3KC` sets the v0p side): a parameter wanted in its own register (also as the address of a load into it) is taken as it is, no copy (`ld r7,4(r7)`,
   `isatty`: no `ld r2,r7`); otherwise it is copied first (`ld r2,r7; ld r13,2(r2)`); a name in a scratch register is taken only when no lighter one is free (`ld r2,r3; ld r13,2(r2)`, dc 3 places); `&&` and `||` keep long parameters too (fseek); an idle pair
   that holds a parameter is not taken for a new pair; a parameter whose address is taken is forgotten, so it gets its home (swap); a parameter a statement assigns to is forgotten at the start of the statement (scalint `p = removc(p,n)`); behind a conditional jump the idle registers go back, the known parameters stay.
+- v0p `OLD_D3KC`, one witness: `regforsym` (`if (s == fpsym1 || s == fpsym2) return symreg(s, off, type);`): the original reloads the long parameter `off` from its frame home behind the `||` (`ldl rr4,0(r15)`), without the switch it is taken from rr2. 9 source forms tried (a cast, `+ 0L`, `?:`, `!(.. && ..)`, a `goto` label, `|`, ...): none reloads (`OLDCC_LOG.md` 2026-11-08).
 - v0p `OLD_D3J`: at a label that jumps have named, only the parameters known at all those jumps stay known; when the record in
   front of the label is a jump (the record `]` does not count), the parameters known at the jumps come back (tfree1, rmconv); of
   those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
@@ -325,7 +326,7 @@ v0p `OLD_D16A` (codgen, match): `++n` of a frame slot whose value may go to a te
 is `ld A1,n; inc A1,#1; ld n,A1`, not `inc n,#1` (genswitch `p[++n]`); with the value wanted in a register for an address or stored
 it stays in memory. `--` of a frame slot stays in memory under a compare (popt codemove, cpp dodef). "Only `++`" and "not an operand
 of a compare" fit all programs equally; a `++` of a frame slot under a compare or a `--` with this cookie outside one would separate
-them. One witness.
+them. One witness (`genswitch` of cparse, `range = p[++n].sval-p[2].sval;`). No source form replaces the switch: 9 forms tried (`n = n+1`, `n += 1`, `n++` before or after, `(p+(++n))->sval`, ...) leave `inc n,#1` (`OLDCC_LOG.md` 2026-11-08).
 
 ### D17 Jump and call form: the old cas
 
