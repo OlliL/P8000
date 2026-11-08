@@ -13,8 +13,7 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 - LIB1: 22 of 28 members identical. Different: `sig`, `sys1`, `sys2`, `sys3`, `debug`, `ureg` (7 bytes, one register).
 - LIB2: 23 of 25 identical. Different: `tt0` (7 bytes), `tty`. `mt`, `rd`, `udev1..6` are dummies from `*.d.s` (identical).
 - conf: `conf.o`, `event.o`, `fpe.o`, `mch.o`, `u.o`, `bstart.o` identical; `boot` identical; `BOOTLIB` same size, 63 bytes differ (archive headers).
-- `wega` links, but 96628 of 97282 bytes: the shipped `wega` has the symbols `_ditab _tabeint _ptab1 _ptab2 _itab1 _btab _stab _pctab2 _mstab`
-  (data of `siok`), ours has `_sioxout` instead, although our `siok.o` equals the one in LIB2.
+- `wega` links, but 96628 of 97282 bytes: it contains other versions of `lp` and `siok` (2.1).
 - Not built / no source yet: `usr/sys/conf/wpar.o` (root copy is from an older `wpar.c`: no `cpu2_flag`, version " 3.0 (4)"),
   `usr/sys/h/*.h` and `usr/sys/dev/*.c` are only copied (identical to the root files), `bstart.c` differs from the root file.
 
@@ -29,12 +28,16 @@ without `chmog`/`chmod` (the archive headers: 6.), `uts` in `all` of `src/Makefi
 
 ## 2. The links of `wega` and `boot` (what decides 100% of two files)
 
-1. Find the origin of the `siok` data of the shipped `wega` (`_ditab ... _mstab`, `_sioxout` missing): compare the `siok` part of `wega` with `siok.o`
-   (`nm -n`, `sdis.py`); is `siok.o` in the root LIB2 a different build than the one linked into `wega`? If yes: reconstruct that `siok.c`
-   (variables `static` in ours are global there?) and decide what LIB2 gets.
-2. `wpar.o`: the root copy is from `wpar.c` 3.0; the `wega` was linked with another `wpar.o`. Compare the `wpar` part of `wega` with ours (data `_md_flag` ...).
-   Then either `wpar.c` is right (check `wpar.o` against the `wega` part) or there is another `wpar.c` version (`git log` on GitHub master).
-3. After 1 and 2: the remaining differences of `wega` are the objects of 4.; the link order and the symbol table (`-X`, `-i`, `-Ms62`) are proven by the identical parts.
+1. Finding (measured by `nm -n` and `sdis.py` of the shipped `wega` against the objects of LIB1/LIB2): the text sizes of all members of the shipped
+   `wega` equal those of the shipped LIB1/LIB2 members, except two: `lp.o` (990 in `wega`, 980 in LIB2) and `siok.o` (5070, 4842; its data
+   is 28 bytes larger and has the symbols `_ditab _tabeint _ptab1 _ptab2 _itab1 _btab _stab _pctab2 _mstab`, `_sioxout` is missing). So `wega` was
+   linked from other versions of `lp` and `siok` than the shipped LIB2 contains (`lp.c` differs e.g. in `and r7,#%FF7F` against `#%FF1F` in `lpopen`,
+   and has extra code that sets a field to 5). Reconstruct both (`lp.c`: SYSIII base; `siok.c`: ours) from the `wega` disassembly; the build then has
+   two variants of each (for LIB2 and for `wega`): decide how the Makefile holds them (e.g. `lp.w.c`/`siok.w.c` linked into `wega` beside LIB2,
+   and LIB2 with the shipped members).
+   The link places `tty tt0 md lp cpu2` in segment 2 (first fit of the objects into 64K segments); this follows from the sizes and is proven when the objects are right.
+2. `wpar.o`: the root copy is from `wpar.c` 3.0; check the `wpar` data part of `wega` against ours (data `_md_flag` ...); the objects of `wpar` have no text.
+3. After 1 and 2: the remaining differences of `wega` are the objects of section 3; the link order and the symbol table (`-X`, `-i`, `-Ms62`) are proven by the identical parts.
 4. `u.o`: still a binary `u.obj` copied (`$ABS` works only in segment 1; `u` must lie at segment 62, `0xf600`). Target: `u.s`/`u.c` that gives the same bytes (README). Until then `u.obj` stays and is documented.
 
 ## 3. Objects that differ (ordered by effort)
@@ -53,7 +56,7 @@ Rule (owner): a `.s` whose header names a "Bearbeiter" other than O. Lehmann is 
 Checked by the headers:
 
 - Original assembler, stays: `dev/disk.s`, `mt.d.s`, `rd.d.s`, `udev1..6.d.s` (P. Hoge), `dev/koppel.s` (U. Wiesner), `conf/bmch.s`, `brm.s`, `bud.s`
-  `sa.function.s` (P. Hoge), `conf/event.s` (U. Wiesner, P. Hoge), `conf/mch.s` (J. Zabel, P. Hoge).
+  `conf/event.s` (U. Wiesner, P. Hoge), `conf/mch.s` (J. Zabel, P. Hoge).
 - Original assembler (PLZ/ASM `module` syntax, no header): `conf/fpe.s`, `conf/u.s`; stays. `u.s` is wrong in one point (segment 62, see 2.5).
 - Reconstructed by O. Lehmann (candidates for C, check each against the object): `sys/lock.s` (no header, written as C-ASM; README: 9 functions
   `lkdata unlk locked deadlock unlock lockalloc lockfree lockadd lkfront` not yet in C, SYSIII `lock.c` as the base) and `dev/clist.s`
