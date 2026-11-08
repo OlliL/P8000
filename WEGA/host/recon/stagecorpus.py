@@ -28,11 +28,25 @@ The program is described by the functions and values of its progcfg.py (compare/
                                    CORPUS_PREPARE puts the files the case starts with into work; CORPUS_RUN is not used.
   CORPUS_IGNORE                    optional: a regular expression (bytes) of message text that may differ
   CORPUS_NORMALIZE(file, data)     optional: an output file as it is compared (bytes that are known to be undefined)
+The inputs are prepared once and kept in a tar (compare/NAME/corpus.tar, not in git; CORPUS_OF in progcfg.py names another program's
+directory: casold uses the tar of cas): normal runs only unpack it; a missing tar is made (under a lock) first, `--make` makes it new
+(host/tools/mkcorpus.sh does that and removes the cache). Results are cached beside it (compare/NAME/cache/, not in git):
+  - the original's output per case, key = sha1 of tar, of the program code of the corpus (*.py, *.sh of the directory and of host/recon),
+    of the emulator, of the original binary and of the tree ROOT (bin lib usr etc ..., not tmp);
+  - "candidate identical" per candidate, key = that key + sha1 of the candidate binary + progcfg CORPUS_DEPENDS[candidate] (files or
+    directories the candidate runs, relative to the WEGA directory). A hit means the same binary was already tested against the same
+    original on the same inputs: nothing runs. Failures are never cached. CORPUS_NOCACHE=1 ignores the cache (it is still written);
+    `--keys` prints the parts of the keys. CORPUS_STORE: directory that holds the compare/NAME directories (default: beside the progcfg).
 JOBS inputs at a time (default: all cores but one), below STAGE_TMP (default /tmp/wega_stage, a local disk).
 The exit status and the messages (stdout, stderr) are compared too. Result: one line per differing case and the totals;
 exit status 1 when a case differs.
 """
 import concurrent.futures
+import fcntl
+import hashlib
+import io
+import pickle
+import tarfile
 import threading
 import time
 import os
@@ -144,6 +158,174 @@ def run_pass(binary, base, work, variant, tag='', native=False):
     return r.returncode, msg, outs
 
 
+# ---- the tar of the prepared inputs and the cache of the results ------------------------------------------------------------------------
+
+STORE = os.environ.get('CORPUS_STORE') or os.path.dirname(CFG.DIR)
+HOME = os.path.join(STORE, getattr(CFG, 'CORPUS_OF', os.path.basename(CFG.DIR)))
+TAR = os.path.join(HOME, 'corpus.tar')
+CACHE = os.path.join(HOME, 'cache')
+_SHA = {}
+
+
+def sha1file(path):
+    if path not in _SHA:
+        h = hashlib.sha1()
+        with open(path, 'rb') as f:
+            for blk in iter(lambda: f.read(1 << 20), b''):
+                h.update(blk)
+        _SHA[path] = h.hexdigest()
+    return _SHA[path]
+
+
+def sha1tree(path, skip=()):
+    """sha1 of the names and contents of a file or directory (symbolic links by their target, no devices)"""
+    h = hashlib.sha1()
+    if os.path.isfile(path):
+        return sha1file(path)
+    for dp, dn, fn in os.walk(path):
+        dn[:] = sorted(x for x in dn if os.path.relpath(os.path.join(dp, x), path) not in skip)
+        for f in sorted(fn):
+            p = os.path.join(dp, f)
+            h.update(os.path.relpath(p, path).encode() + b'\0')
+            if os.path.islink(p):
+                h.update(b'L' + os.readlink(p).encode())
+            elif os.path.isfile(p):
+                h.update(sha1file(p).encode())
+    return h.hexdigest()
+
+
+def code_key():
+    """the program code of the corpus: *.py and *.sh of the directory of the program, of the one of the tar, and of host/recon"""
+    h = hashlib.sha1()
+    for lab, d in (('prog', CFG.DIR), ('home', HOME), ('recon', os.path.join(CFG.REPO, 'host', 'recon'))):
+        for dp, dn, fn in os.walk(d):
+            dn[:] = sorted(x for x in dn if x not in ('cache', '__pycache__'))
+            for f in sorted(fn):
+                if f.endswith(('.py', '.sh')):
+                    p = os.path.join(dp, f)
+                    h.update(lab.encode() + os.path.relpath(p, d).encode() + b'\0' + sha1file(p).encode())
+    return h.hexdigest()
+
+
+def key_parts(cands):
+    """{part: sha1}: what the cache keys are made of (--keys prints them)"""
+    k = {'tar': sha1file(TAR), 'code': code_key(), 'emulator': sha1file(CFG.EMU),
+         'original': sha1file(os.path.join(CFG.ROOT, CFG.ORIG_BIN)), 'variants': hashlib.sha1(repr(VARIANTS).encode()).hexdigest(),
+         'root': sha1tree(CFG.ROOT, skip=('tmp',))}
+    for name, path in cands.items():
+        k['binary ' + name] = sha1file(path)
+        for dep in getattr(CFG, 'CORPUS_DEPENDS', {}).get(name, []):
+            k['depends %s %s' % (name, dep)] = sha1tree(os.path.join(CFG.REPO, dep))
+    return k
+
+
+def mix(parts):
+    return hashlib.sha1('\n'.join('%s %s' % kv for kv in sorted(parts.items())).encode()).hexdigest()[:20]
+
+
+def make_tar(excl=None):
+    """prepare every input and write HOME/corpus.tar (deterministic: sorted, no times, no owners); under a lock"""
+    os.makedirs(HOME, exist_ok=True)
+    with open(os.path.join(HOME, '.lock'), 'w') as lk:
+        fcntl.flock(lk, fcntl.LOCK_EX)
+        if os.path.exists(TAR) and not excl:
+            return
+        t0 = time.monotonic()
+        srcs = CFG.CORPUS_SOURCES()
+        wk = os.path.join(os.path.dirname(WORK), 'make_' + os.path.basename(WORK))
+        shutil.rmtree(wk, ignore_errors=True)
+        os.makedirs(wk)
+
+        def prep(k, src):
+            work = os.path.join(wk, '%04d' % k)
+            os.makedirs(work)
+            return CFG.CORPUS_PREPARE(src, work)
+
+        def norm(ti):
+            ti.mtime = 0
+            ti.uid = ti.gid = 0
+            ti.uname = ti.gname = ''
+            return ti
+
+        tmp = TAR + '.tmp%d' % os.getpid()
+        jobs = int(os.environ.get('JOBS') or max(1, (os.cpu_count() or 2) - 1))
+        index = []
+        with tarfile.open(tmp, 'w', format=tarfile.GNU_FORMAT) as tf, concurrent.futures.ThreadPoolExecutor(jobs) as ex:
+            futs = [ex.submit(prep, k, src) for k, src in enumerate(srcs)]
+            for k, (src, f) in enumerate(zip(srcs, futs)):
+                base = f.result()
+                work = os.path.join(wk, '%04d' % k)
+                index.append('%d\t%s\t%s' % (k, src, '-' if base is None else base))
+                if base is not None:
+                    names = []
+                    for dp, dn, fn in os.walk(work):
+                        dn.sort()
+                        names += [os.path.join(dp, x) for x in dn + sorted(fn)]
+                    tf.add(work, arcname='%04d' % k, recursive=False, filter=norm)
+                    for p in sorted(names):
+                        tf.add(p, arcname='%04d/%s' % (k, os.path.relpath(p, work)), recursive=False, filter=norm)
+                shutil.rmtree(work, ignore_errors=True)
+            data = ('\n'.join(index) + '\n').encode()
+            ti = tarfile.TarInfo('INDEX')
+            ti.size = len(data)
+            tf.addfile(norm(ti), io.BytesIO(data))
+        os.replace(tmp, TAR)
+        shutil.rmtree(wk, ignore_errors=True)
+        print('%s: corpus.tar made: %d inputs, %.1f s' % (CFG.NAME, len(srcs), time.monotonic() - t0), flush=True)
+
+
+class Tar:
+    """the prepared inputs: cases() = [(k, label, base or None)], unpack(k, dir)"""
+    def __init__(self):
+        self.fd = os.open(TAR, os.O_RDONLY)
+        self.members = {}
+        with tarfile.open(TAR) as tf:
+            for m in tf.getmembers():
+                if m.name == 'INDEX':
+                    self.index = tf.extractfile(m).read().decode().splitlines()
+                else:
+                    self.members.setdefault(int(m.name[:4]), []).append(m)
+
+    def cases(self):
+        out = []
+        for line in self.index:
+            k, label, base = line.split('\t')
+            out.append((int(k), label, None if base == '-' else base))
+        return out
+
+    def unpack(self, k, work):
+        for m in self.members.get(k, []):
+            p = os.path.join(work, m.name[5:]) if len(m.name) > 4 else work
+            if m.isdir():
+                os.makedirs(p, exist_ok=True)
+            elif m.isfile():
+                with open(p, 'wb') as f:
+                    f.write(os.pread(self.fd, m.size, m.offset_data))
+                os.chmod(p, m.mode)
+            elif m.issym():
+                os.symlink(m.linkname, p)
+
+
+def cache_read(path):
+    try:
+        with open(path, 'rb') as f:
+            return pickle.loads(zlib.decompress(f.read()))
+    except (OSError, zlib.error, pickle.PickleError, EOFError):
+        return None
+
+
+def cache_write(path, obj, prefix):
+    """write atomically; older files of the same kind (prefix) go"""
+    os.makedirs(CACHE, exist_ok=True)
+    tmp = path + '.tmp%d' % os.getpid()
+    with open(tmp, 'wb') as f:
+        f.write(zlib.compress(pickle.dumps(obj), 6))
+    os.replace(tmp, path)
+    for f in os.listdir(CACHE):
+        if f.startswith(prefix) and os.path.join(CACHE, f) != path and '.tmp' not in f:
+            os.remove(os.path.join(CACHE, f))
+
+
 def candidates(only, skip=False):
     """{name: path of the binary} of the candidates to test"""
     c = getattr(CFG, 'CANDIDATES', None) or {'wega': os.path.join(CFG.SRCDIR, CFG.CORPUS_BINARY)}
@@ -165,6 +347,18 @@ def main():
     keep = '-k' in a
     a = [x for x in a if x != '-k']
     n = flt = only = None
+    if '--make' in a:
+        if getattr(CFG, 'CORPUS_OF', None):
+            sys.exit('%s: uses the tar of %s' % (CFG.NAME, CFG.CORPUS_OF))
+        shutil.rmtree(CACHE, ignore_errors=True)
+        make_tar(excl=True)
+        return 0
+    if '--ensure' in a:
+        if not os.path.exists(TAR):
+            make_tar()
+        return 0
+    showkeys = '--keys' in a
+    a = [x for x in a if x != '--keys']
     if '-n' in a:
         i = a.index('-n'); n = int(a[i + 1]); del a[i:i + 2]
     if '-f' in a:
@@ -181,34 +375,69 @@ def main():
         if not os.path.exists(path):
             sys.exit('%s: %s (%s) not built' % (CFG.NAME, path, name))
     wall0 = time.monotonic()
-    srcs = CFG.CORPUS_SOURCES()
-    sources_t = time.monotonic() - wall0	# the list of the inputs (fixtures of ld, sld, gld; the directory scan)
+    if not os.path.exists(TAR):
+        if getattr(CFG, 'CORPUS_OF', None):	# the program that owns the tar makes it (it waits for the lock when that is under way)
+            subprocess.run([sys.executable, os.path.abspath(__file__), '--ensure'], env=dict(os.environ, RECON_PROG=CFG.CORPUS_OF), check=True)
+        else:
+            make_tar()
+    tar = Tar()
+    exclude = getattr(CFG, 'CORPUS_EXCLUDE', lambda label: False)
+    cases = [c for c in tar.cases() if not exclude(c[1])]
+    excluded = len(tar.cases()) - len(cases)
+    sources_t = time.monotonic() - wall0	# the tar and its index
+    full = not flt and not n
     if flt:
-        srcs = [s for s in srcs if flt in s]
+        cases = [c for c in cases if flt in c[1]]
     if n:
-        srcs = srcs[:n]
+        cases = cases[:n]
+    parts = key_parts(cands)
+    if showkeys:
+        for kk, v in parts.items():
+            print('%-60s %s' % (kk, v))
+        return 0
+    okey = mix({kk: v for kk, v in parts.items() if not kk.startswith(('binary', 'depends'))})
+    ckey = {c: mix(dict(okey=okey, **{kk: v for kk, v in parts.items() if kk.startswith(('binary %s' % c, 'depends %s ' % c))}))
+            for c in cands}
+    nocache = bool(os.environ.get('CORPUS_NOCACHE'))
+    okfile = {c: os.path.join(CACHE, 'ok-%s-%s.%s' % (CFG.NAME, c, ckey[c])) for c in cands}
+    same = {c: 0 for c in cands}
+    total = len(cases)
+    todo = dict(cands)
+    for c in cands:
+        if not nocache and full and os.path.exists(okfile[c]):
+            print(open(okfile[c]).read().strip() + ' (cached)', flush=True)
+            del todo[c]
+    if not todo:
+        print('TIME %-8s wall %7.1f (cached, key %s)' % (CFG.NAME, time.monotonic() - wall0, okey))
+        return 0
+    cands = todo
+    origfile = os.path.join(CACHE, 'orig-%s.%s' % (CFG.NAME, okey))
+    ocache = None if nocache else cache_read(origfile)
+    ocache_new = {}
     shutil.rmtree(WORK, ignore_errors=True)
     os.makedirs(WORK)
 
-    def case(k, src):
-        """(skipped, {candidate: differences}) of one source, in a directory of its own"""
+    def case(k, label, base):
+        """(skipped, {candidate: differences}) of one input, in a directory of its own"""
         t0 = time.monotonic()
+        if base is None:
+            return True, {}
         work = os.path.join(WORK, '%04d' % k)
         os.makedirs(work)
-        base = CFG.CORPUS_PREPARE(src, work)
+        tar.unpack(k, work)
         t1 = time.monotonic()
         phase_add('prepare', t1 - t0)
-        if base is None:
-            shutil.rmtree(work)
-            return True, {}
         diffs = {c: [] for c in cands}
         for name, path in cands.items():
             shutil.copy(path, os.path.join(work, 'pass_' + name))
             os.makedirs(os.path.join(work, '.prog_' + name))
             shutil.copy(path, os.path.join(work, '.prog_' + name, CFG.NAME))
-        for v in VARIANTS:
+        for vi, v in enumerate(VARIANTS):
             ta = time.monotonic()
-            r1 = run_pass('/' + CFG.ORIG_BIN, base, work, v, 'orig')	# the original once for all candidates
+            r1 = ocache.get((k, vi)) if ocache else None
+            if r1 is None:
+                r1 = run_pass('/' + CFG.ORIG_BIN, base, work, v, 'orig')	# the original once for all candidates
+                ocache_new[(k, vi)] = r1
             phase_add('original', time.monotonic() - ta)
             tag = '' if v is None else '[%s] ' % (' '.join('%s=%s' % kv for kv in v.items()) if isinstance(v, dict) else ' '.join(v))
             for name in cands:
@@ -233,25 +462,36 @@ def main():
     same = {c: 0 for c in cands}
     jobs = int(os.environ.get('JOBS') or max(1, (os.cpu_count() or 2) - 1))
     with concurrent.futures.ThreadPoolExecutor(jobs) as ex:
-        futs = [ex.submit(case, k, src) for k, src in enumerate(srcs)]
-        for src, f in zip(srcs, futs):
+        futs = [ex.submit(case, *c) for c in cases]
+        for c, f in zip(cases, futs):
             skip, diffs = f.result()
             if skip:
                 skipped += 1
                 continue
             total += 1
-            for c in cands:
-                if diffs[c]:
-                    print('DIFF [%s] %s: %s' % (c, src, ', '.join(diffs[c])), flush=True)
+            for cn in cands:
+                if diffs[cn]:
+                    print('DIFF [%s] %s: %s' % (cn, c[1], ', '.join(diffs[cn])), flush=True)
                 else:
-                    same[c] += 1
+                    same[cn] += 1
+    skipped += excluded
     for c in cands:
-        print('%s [%s]: %d of %d inputs identical (%d sources skipped)' % (CFG.NAME, c, same[c], total, skipped))
+        line = '%s [%s]: %d of %d inputs identical (%d sources skipped)' % (CFG.NAME, c, same[c], total, skipped)
+        print(line, flush=True)
+        if full and same[c] == total and total > 0:
+            os.makedirs(CACHE, exist_ok=True)
+            for f in os.listdir(CACHE):
+                if f.startswith('ok-%s-%s.' % (CFG.NAME, c)):
+                    os.remove(os.path.join(CACHE, f))
+            with open(okfile[c], 'w') as f:
+                f.write(line + '\n')
+    if full and ocache_new and ocache is None:
+        cache_write(origfile, ocache_new, 'orig-%s.' % CFG.NAME)
     # TIME: the wall time and the CPU seconds of the phases (over all cases; 'rest' = copies, comparison, clean up)
     ph = lambda n: PHASES.get(n, 0.0)
     used = ph('prepare') + ph('original') + sum(ph(c) for c in cands)
-    print('TIME %-8s wall %7.1f (list of the inputs %5.1f)  cpu: prepare %7.1f original %7.1f %s rest %6.1f   %d cases, %d at a time' % (
-        CFG.NAME, time.monotonic() - wall0, sources_t, ph('prepare'), ph('original'),
+    print('TIME %-8s wall %7.1f (tar %5.1f)  cpu: unpack %7.1f original %7.1f%s %s rest %6.1f   %d cases, %d at a time' % (
+        CFG.NAME, time.monotonic() - wall0, sources_t, ph('prepare'), ph('original'), ' (cache)' if ocache else '',
         ' '.join('%s %7.1f' % (c, ph(c)) for c in cands), max(0.0, ph('total') - used), total + skipped, jobs))
     return 1 if any(same[c] != total for c in cands) else 0
 

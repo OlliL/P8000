@@ -12,7 +12,6 @@ _spec = importlib.util.spec_from_file_location('progcfg_cas', os.path.join(HERE,
 _base = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_base)
 
-_base.OLD = True
 NAME = 'casold'
 ORIG = 'lib/old/cas'
 OWN_LIM = _base.OWN_LIM
@@ -20,6 +19,8 @@ ORIG_LIM = _base.ORIG_LIM
 SEG = True
 CC = _base.CC
 ROOT_ENV = 'OLDROOT'
+CORPUS_OF = 'cas'		# the tar of the inputs is the one of cas (compare/cas/corpus.tar)
+CORPUS_EXCLUDE = lambda label: False	# old_max.s too: the reference is the old cas
 CANDIDATES = {'host': 'host/cas/casold'}
 CORPUS_BINARY = 'old/cas'
 

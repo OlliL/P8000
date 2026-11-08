@@ -26,6 +26,9 @@ def CORPUS_SCRIPT(base):
     return '../binutils/run.sh'
 
 
+CORPUS_DEPENDS = {'host': ['host/ar/ar']}	# the programs the candidate runs (part of the cache key)
+
+
 def CORPUS_HOST_ENV(root):
     """the host ranlib lets the host ar insert the table (RANLIB_AR)"""
     return {'RANLIB_AR': os.path.normpath(os.path.join(HERE, '..', '..', 'host', 'ar', 'ar'))}

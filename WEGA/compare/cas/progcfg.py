@@ -26,14 +26,16 @@ BLOCK = 3000
 OPTS = ['-u -l', '-u -d', '-u -r', '-u -t', '-u -i', '-u -m', '-u -v', '-u -^', '-l', '-u -l -d']
 
 
-OLD = False		# the corpus of the old cas (compare/casold) sets it: the sources old_*.s need its early decision (the shipped cas
-			# stops with "jump optimization: Not enough core" on the 250 undecided entries of old_max.s, the host cas has no such limit)
+def CORPUS_EXCLUDE(label):
+    """the sources for the early decision of the old cas run in both corpora (the tar is one); old_max.s hits the limit of 255 undecided
+    entries of the old cas: the shipped cas stops with "jump optimization: Not enough core", the host cas has no such limit"""
+    return label in ('jpr:old_max', 'opt:old_max')
 
 
 def _jpr_names():
     d = os.path.join(TESTDIR, 'jpr')
     names = sorted(f[:-2] for f in os.listdir(d) if f.endswith('.s')) if os.path.isdir(d) else []
-    return [n for n in names if OLD or not n.startswith('old_')]
+    return names
 
 
 def _blocks(items):

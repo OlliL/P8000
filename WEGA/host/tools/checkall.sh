@@ -6,7 +6,8 @@
 #   1. make in src: the old compilers with the shipped tools, the libraries, the old compilers again, cmd/;
 #   2. make install PREFIX=CHECK_TMP/install: every file there against the file of the same name in WEGA with cmp (the
 #      Makefiles strip as the originals are stripped); every member of lib/libc/libc.a against the original;
-#   3. the corpora (host/tools/corpus.sh, inputs made fresh, side by side) of every program with a compare/NAME/progcfg.py, every candidate: the WEGA program built
+#   3. the corpora (host/tools/corpus.sh, side by side; the prepared inputs are compare/NAME/corpus.tar of the working tree (made when missing,
+#      host/tools/mkcorpus.sh makes them new) and the results are cached beside them (compare/NAME/cache, key: see stagecorpus.py)) of every program with a compare/NAME/progcfg.py, every candidate: the WEGA program built
 #      with the shipped cc (scc) and the libc of its Makefile (the byte-identical builds are proven by 2) and the host build;
 # -b: only 1 and 2. Prints one line per check, the logs stay in CHECK_TMP; exit status 0 when all pass.
 # A program joins by its install target (src/cmd/Makefile).
@@ -175,7 +176,7 @@ CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
 echo "corpora start: load `cut -d' ' -f1-3 /proc/loadavg`" >> $T/timing.log
 for n in $CORP; do
-	STAGE_TMP=$T/stage_$n JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &
+	CORPUS_STORE=$REPO/compare STAGE_TMP=$T/stage_$n JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &
 done
 wait
 stamp '3 all corpora (in parallel)'
