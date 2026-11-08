@@ -968,6 +968,7 @@ means it does something fixed instead (only possible where the original's result
 | codgen | `regjam`, case 1: the call `roverlap(1, reg)` for a word node has no third argument, `roverlap` takes whatever is in r5 as the node (the call for a long node passes `n`) | Kept (byte identity) | `src/cmd/codgen/regallo3.c`; found in the original at 0x79fa, no `ld r5,r10` there |
 | codgen | `eread`: `op = dope[op] & 0xE; if (op == 0x73) erflag = 1;` the masked value can never be 0x73, the flag is written nowhere else and never read | Kept (byte identity) | `src/cmd/codgen/rdr3.c`; original at 0x2592 |
 | codgen | `efcode` calls `prolog(a, sz, tot)` with three of five arguments, the third in the place of `b`; `prolog` takes `w` and `tot` from the stack words the call of `epilog` just before left there | Kept (byte identity) | `src/cmd/codgen/local3.c`; original at 0x297c |
+| `/bin/chkout` | prints the year of `$D$` as `tm_year` (years since 1900, so `126` in 2026; the originals show `89`), and `$D$` is the time of the checkout: `ver.c` of the kernel (`make.wega`, rule `.c+.c`) differs with every build. The guest zone is EST | Not reproduced on the host: the original under `z8k-emu` with `Z8K_TIME=605545021` (10.03.1989 09:57:01 guest time) makes `ver.c` identical to the shipped `wega` | `src/uts/conf/Makefile` |
 
 ## ar (reconstructed, byte-identical)
 

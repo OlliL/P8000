@@ -548,7 +548,9 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 12:	/* chdir */
 		p = a_ptr(&a); gstr(c, p, gp, sizeof gp);
 		return sc_res(c, chdir(hostpath(gp, hb, sizeof hb)));
-	case 13: return sc_long(c, time(NULL));
+	case 13: {	/* time; Z8K_TIME=seconds fixes it (reproducible builds: ver.c is made by chkout from $D$) */
+		const char *ft = getenv("Z8K_TIME");
+		return sc_long(c, ft ? strtol(ft, NULL, 0) : (long)time(NULL)); }
 	case 14:	/* mknod (mkdir uses this for directories) */
 		p = a_ptr(&a); i = a_int(&a); j = a_int(&a); gstr(c, p, gp, sizeof gp);
 		hp = hostpath(gp, hb, sizeof hb);

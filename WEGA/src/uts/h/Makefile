@@ -1,18 +1,19 @@
+# uts/h: the headers of the kernel configuration, installed to usr/sys/h.
+#
+#   make install PREFIX=dir    install below dir (default /)
 
-IFILES=	mdsize.h sysparm.h ver.h
-IDIR=	/usr/sys/h
+PREFIX = /
+IFILES = mdsize.h sysparm.h ver.h
+IDIR = $(PREFIX)/usr/sys/h
 
-OWN=	bin
-GRP=	system
-MOD=	644
+all:
+
+install:
+	test -d $(PREFIX)/usr || mkdir $(PREFIX)/usr
+	test -d $(PREFIX)/usr/sys || mkdir $(PREFIX)/usr/sys
+	test -d $(IDIR) || mkdir $(IDIR)
+	for f in $(IFILES); do cp $$f $(IDIR)/$$f; done
 
 clean:
-	
-all:
-	
-install: all
-	sh -c 'test -d $(IDIR) || mkdir $(IDIR)'
-	sh -c 'for file in $(IFILES) ; do \
-		cp $$file $(IDIR) ; \
-		chmog $(MOD) $(OWN) $(GRP) $(IDIR)/$$file ; \
-	done'
+
+.PHONY: all install clean

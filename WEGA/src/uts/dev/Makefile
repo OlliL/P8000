@@ -1,60 +1,71 @@
+# uts/dev: the device drivers, library LIB2 (usr/sys/dev/LIB2), and the sources shipped beside it.
+# Compiled with the segmented scc. The drivers of the optional devices (mt, rd, udev1 ... udev6) are dummy objects from *.d.s,
+# as in the shipped LIB2. koppel.s, disk.s, the dummies: original assembler (as -u); clist.s: C-ASM (cas -u).
+#
+#   make                       build LIB2
+#   make install PREFIX=dir    install below dir (default /)
+#   make clean                 remove the objects and LIB2
 
-CAS=	cas
-AS=	as
-CC=	scc
-CFLAGS= -O
+AS = as
+CAS = cas
+CC = scc
+CFLAGS = -O
+AR = ar
+PREFIX = /
+IDIR = $(PREFIX)/usr/sys/dev
 
-
-OBJ=	bio.o siok.o koppel.o ud.o fd.o mem.o sys.o tty.o tt0.o partab.o md.o \
+# the order of the members is the order of the shipped LIB2
+OBJ = bio.o siok.o koppel.o ud.o fd.o mem.o sys.o tty.o tt0.o partab.o md.o \
 	disk.o lp.o rd.o mt.o cpu2.o udev1.o udev2.o udev3.o udev4.o udev5.o \
 	udev6.o clist.o dump.o
 
-IFILES=	blockdev.c chardev.c lp.c ttydev.c udev1.c udev2.c udev3.c udev4.c\
+IFILES = blockdev.c chardev.c lp.c ttydev.c udev1.c udev2.c udev3.c udev4.c \
 	udev5.c udev6.c LIB2
-IDIR=	/usr/sys/dev
 
-OWN=	bin
-GRP=	system
-MOD=	644
+all: LIB2
 
-all:	LIB2
+LIB2: $(OBJ)
+	rm -f LIB2
+	$(AR) cr LIB2 $(OBJ)
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+koppel.o: koppel.s
+	$(AS) -u -o $@ koppel.s
+
+disk.o: disk.s
+	$(AS) -u -o $@ disk.s
+
+# dummy objects
+mt.o: mt.d.s
+	$(AS) -u -o $@ mt.d.s
+rd.o: rd.d.s
+	$(AS) -u -o $@ rd.d.s
+udev1.o: udev1.d.s
+	$(AS) -u -o $@ udev1.d.s
+udev2.o: udev2.d.s
+	$(AS) -u -o $@ udev2.d.s
+udev3.o: udev3.d.s
+	$(AS) -u -o $@ udev3.d.s
+udev4.o: udev4.d.s
+	$(AS) -u -o $@ udev4.d.s
+udev5.o: udev5.d.s
+	$(AS) -u -o $@ udev5.d.s
+udev6.o: udev6.d.s
+	$(AS) -u -o $@ udev6.d.s
+
+# C-ASM
+clist.o: clist.s
+	$(CAS) -u -o $@ clist.s
 
 install: LIB2
-	sh -c 'test -d $(IDIR) || mkdir $(IDIR)'
-	sh -c 'for file in $(IFILES) ; do \
-		cp $$file $(IDIR) ; \
-		chmog $(MOD) $(OWN) $(GRP) $(IDIR)/$$file ; \
-	done'
-
-LIB2:	$(OBJ)
-	chmog 666 26 1 koppel.o
-	chmog 666 26 1 fd.o
-	chmog 644 89 0 tty.o
-	chmog 666 26 1 md.o
-	chmog 666 26 1 disk.o
-	ar cr LIB2 $(OBJ)
-
-# use dummy objects
-mt.o:
-	$(AS) -u -o $@ $*.d.s
-rd.o:
-	$(AS) -u -o $@ $*.d.s
-udev1.o:
-	$(AS) -u -o $@ $*.d.s
-udev2.o:
-	$(AS) -u -o $@ $*.d.s
-udev3.o:
-	$(AS) -u -o $@ $*.d.s
-udev4.o:
-	$(AS) -u -o $@ $*.d.s
-udev5.o:
-	$(AS) -u -o $@ $*.d.s
-udev6.o:
-	$(AS) -u -o $@ $*.d.s
-
-# this files are written in C-ASM
-clist.o:
-	$(CAS) -u -o $@ $*.s
+	test -d $(PREFIX)/usr || mkdir $(PREFIX)/usr
+	test -d $(PREFIX)/usr/sys || mkdir $(PREFIX)/usr/sys
+	test -d $(IDIR) || mkdir $(IDIR)
+	for f in $(IFILES); do cp $$f $(IDIR)/$$f; done
 
 clean:
 	rm -f $(OBJ) LIB2
+
+.PHONY: all install clean

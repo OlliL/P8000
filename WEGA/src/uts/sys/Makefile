@@ -1,34 +1,41 @@
+# uts/sys: the kernel proper, library LIB1 (usr/sys/sys/LIB1).
+# Compiled with the segmented scc; lock.o is made from the assembler source lock.s (a disassembly, see ../TODO.md) by cas.
+#
+#   make                       build LIB1
+#   make install PREFIX=dir    install below dir (default /)
+#   make clean                 remove the objects and LIB1
 
-CAS=	cas
-AS=	as
-CC=	scc
-CFLAGS= -O
+CAS = cas
+CC = scc
+CFLAGS = -O
+AR = ar
+PREFIX = /
+IDIR = $(PREFIX)/usr/sys/sys
 
-
-OBJ=	main.o trap.o sig.o iget.o prf.o slp.o subr.o rdwri.o fio.o malloc.o \
+# the order of the members is the order of the shipped LIB1
+OBJ = main.o trap.o sig.o iget.o prf.o slp.o subr.o rdwri.o fio.o malloc.o \
 	alloc.o machdep.o nami.o pipe.o sysent.o sys3.o sys1.o sys4.o sys2.o \
-	acct.o text.o ureg.o break.o lock.o mkseg.o debug.o timer.o 
+	acct.o text.o ureg.o break.o lock.o mkseg.o debug.o timer.o
 
+all: LIB1
 
-IDIR=	/usr/sys/sys
+LIB1: $(OBJ)
+	rm -f LIB1
+	$(AR) cr LIB1 $(OBJ)
 
-OWN=	bin
-GRP=	system
-MOD=	644
+.c.o:
+	$(CC) $(CFLAGS) -c $<
 
-all:	LIB1
+lock.o: lock.s
+	$(CAS) -u -o $@ lock.s
 
 install: LIB1
-	sh -c 'test -d $(IDIR) || mkdir $(IDIR)'
-	cp LIB1 $(IDIR)
-	chmog $(MOD) $(OWN) $(GRP) $(IDIR)/LIB1
-
-LIB1:	$(OBJ)
-	ar cr LIB1 $(OBJ)
-
-# this files are written in C-ASM
-lock.o:
-	$(CAS) -u -o $@ $*.s
+	test -d $(PREFIX)/usr || mkdir $(PREFIX)/usr
+	test -d $(PREFIX)/usr/sys || mkdir $(PREFIX)/usr/sys
+	test -d $(IDIR) || mkdir $(IDIR)
+	cp LIB1 $(IDIR)/LIB1
 
 clean:
 	rm -f $(OBJ) LIB1
+
+.PHONY: all install clean

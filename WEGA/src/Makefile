@@ -6,6 +6,7 @@
 #   make lib              lib/libc/libc.a and lib/libc-vN.a, with the shipped tools and the old compilers
 #   make stage2           the old compilers once more, now with the libc of their time; installed below OLDROOT
 #   make cmds             cmd/
+#   make uts              the kernel (uts/); built by "make", but not by "make install" until it is byte-identical (uts/TODO.md)
 #   make install          the shipped programs and libc.a of cmd/ and lib/, stripped as the originals, below PREFIX
 #   make clean
 #
@@ -17,7 +18,7 @@ OLDROOT = /
 OLDPRINTF = lib/oldlibc/printf/s1.o
 MAKEARGS =
 
-all: stage1 lib stage2 cmds
+all: stage1 lib stage2 cmds uts
 
 stage1: clean
 	cd lib/oldlibc/printf ; cp 0_5.c s1.c ; $(CC) -O -c s1.c ; rm -f s1.c
@@ -46,6 +47,9 @@ stage2:
 cmds:
 	cd cmd ; $(MAKE) all
 
+uts:
+	cd uts ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all
+
 install:
 	cd lib ; $(MAKE) install PREFIX=$(PREFIX)
 	cd cmd ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX)
@@ -54,7 +58,8 @@ install:
 clean:
 	cd lib ; $(MAKE) clean
 	cd cmd ; $(MAKE) clean
+	cd uts ; $(MAKE) clean
 
 FORCE:
 
-.PHONY: all stage1 lib stage2 cmds install clean
+.PHONY: all stage1 lib stage2 cmds uts install clean

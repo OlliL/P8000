@@ -18,21 +18,15 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 - Not built / no source yet: `usr/boot`, `usr/sys/conf/wpar.o` (root copy is from an older `wpar.c`: no `cpu2_flag`, version " 3.0 (4)"),
   `usr/sys/h/*.h` and `usr/sys/dev/*.c` are only copied (identical to the root files), `bstart.c` differs from the root file.
 
-## 1. Build and install (no byte work, unblocks the measuring)
+## 1. Build and install
 
-1. Rules for `.s` with `as -u` / `cas -u` in `conf/Makefile` and `dev/Makefile` (the built-in rule has no `-u`): `koppel`, `disk`, `mch`, `event`, `fpe`, `bmch`, `brm`, `bud`, `sa.function`.
-2. `conf/Makefile`: `ver.c` from `ver.c+` by the `make` rule `.c+.c` (`chkout`); the date is the time of the checkout, so reproducible only with
-   the emulator and `Z8K_TIME=605545021` (10.03.1989 09:57:01 guest time, EST). Decide: set it in the Makefile (as a comment on the build host) or
-   in `host/tools/wbin.sh` for `chkout`. `chkout` is no host tool (HANDOFF inventory); the build needs the emulator as the oracle.
-3. Build `wega` (`sld -Ns -o wega -e start -X -i -Ms62 wpar.o event.o mch.o u.o ver.o fpe.o conf.o ../sys/LIB1 ../dev/LIB2`) and `boot` (`ld -s -e start -b 0x8000`) in `conf/Makefile`; `all` makes them.
-4. Install targets for `boot`, `wega`, `usr/boot` (PREFIX), `usr/sys/conf`, `usr/sys/dev`, `usr/sys/sys`, `usr/sys/h`; plain copies, no chmog (see 6.).
-   The Makefiles must work with WEGA's `make` (`=`, `cd dir ; $(MAKE)`), style as `src/cmd/*/Makefile`; the top `uts/Makefile` joins `src/Makefile` by its install target.
-5. `checkall.sh`: nothing to add (a file joins by its install target); remove entries from OPEN only when identical. Regenerate `COVERAGE.md` (`host/tools/coverage.py`).
-6. Delete from all Makefiles every step that only makes the objects or files look like the original: `chmog`/`chmod`/`touch` before `ar` and in `install`
-   (`dev/Makefile`: `chmog 666 26 1 koppel.o fd.o md.o disk.o`, `chmog 644 89 0 tty.o`; `conf/Makefile`: `chmod 644 libb.a`, `chmog ... bstart.o`;
-   the `chmog` of `install` in all five). `chmog` does not exist on the host and the build does not run as root. The member headers (owner, group, mode, time)
-   are set afterwards by the `fix` of `arhdr.s` as for the libc (6.1); for installed files the owner/mode/time are not compared by `cmp`, the
-   install uses `cp`/`install` as `src/cmd/*/Makefile`. Facts to carry into the archive header table: `koppel`, `fd`, `md`, `disk` = mode 666, owner 26, group 1; `tty` = 644, 89, 0; the rest as measured in the shipped archives.
+Done: Makefiles in the style of `src/cmd` (`all`, `install PREFIX=`, `clean`), `.s` rules with `as -u`/`cas -u`, `ver.c` by `chkout`
+(the wrapper in `host/tools/wbin.sh` fixes the date), `wega` and `boot` built in `conf/`, install into `PREFIX/{boot,wega,usr/sys/...}`
+without `chmog`/`chmod` (the archive headers: 6.), `uts` in `all` of `src/Makefile`, not in `install`.
+
+1. `usr/boot`: target in `conf/Makefile` and install, when 2.4 has found what it is.
+2. `COVERAGE.md`: regenerate (`host/tools/coverage.py`) when files become exact.
+3. The `uts` target in `src/Makefile` has not been run through `checkall.sh -b` yet (it needs a full `make`); do it once.
 
 ## 2. The links of `wega` and `boot` (what decides 100% of two files)
 
