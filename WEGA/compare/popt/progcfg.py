@@ -32,14 +32,15 @@ STATICFUNCS = True  # the static functions get global labels in the model (d12mo
 
 # the corpus: every C source; the input from the original /bin/cc -S (no -O), each run without option, with -l and -d.
 # The line "NK core" of -d may differ: the place of the heap of a build with another libc (OLDCC_LOG.md)
-CORPUS_BINARY = 'build/nonseg/popt'
+CANDIDATES = {'wega': 'src/cmd/popt/build/nonseg/popt', 'host': 'host/popt/popt'}
 CORPUS_VARIANTS = [[], ['-l'], ['-d']]
 CORPUS_IGNORE = rb'\d+K core'
 
 
 def CORPUS_SOURCES():
+    import glob
     import corpusc
-    return corpusc.c_sources()
+    return corpusc.c_sources() + sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cases', '*.c')))
 
 
 def CORPUS_PREPARE(src, work):

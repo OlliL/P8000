@@ -3,24 +3,61 @@
  */
 #include "z2.h"
 
-static struct optab *ophash[OPHS];
-static struct node *labhash[LABHS];
-static char tmpop[32];
-static char tmpcc[32];
+extern char _sobuf[];
 
-static int getln(void);
+static char sccsid[] __attribute__((unused)) = "@[$]z21.c\t1.4  12/21/82 17:58:05 Copr.1981 87wega3.2.";
+
+
+/* hash of the first three characters, read without a test as the original does (names "{" and "}" are padded with a NUL, see z20.c) */
+#define HASHNAME(s) (((((int)(char)(s)[0] << 3) + 2 * (int)(char)(s)[1] + (int)(char)(s)[2]) & 0x7fff) % OPHS)
+
+static int getline_(void);
 static int input(void);
-static void output(struct node *);
-static void prefix(struct node *);
+static void output(struct node *n);
+static void prefix(struct node *n);
 static struct node *jswcheck(void);
-static int cclook(int);
-static void backjmp(struct node *, struct node *);
-static void statline(int, char *);
+static int cclook(int opw);
+static void backjmp(struct node *ap1, struct node *ap2);
+static void statline(char *s, int n);
+int getnum(char *p);
+static void dumpnodes(void);
+char *copy(int na, char *a, char *b);
+void opsetup(void);
+int oplook(void);
+void refcount(void);
+void iterate(void);
+void xjump(struct node *p1);
+struct node *insertl(struct node *oldp);
+struct node *codemove(struct node *p);
+void comjump(void);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int
 main(int argc, char **argv)
 {
-	int niter, maxiter, isend, nflag;
+	register int niter, maxiter, isend;
+	int nflag;
 
 	if (argc > 1 && argv[1][0] == '+') {
 		argc--;
@@ -49,8 +86,10 @@ main(int argc, char **argv)
 		if (freopen(argv[2], "w", stdout) == NULL) {
 			fprintf(stderr, "C2: can't create %s\n", argv[2]);
 			exit(1);
-		}
+		} else
+			setvbuf(stdout, _sobuf, _IOFBF, sizeof _sobuf);
 	}
+	heapreset();
 	maxiter = 0;
 	opsetup();
 	do {
@@ -63,55 +102,84 @@ main(int argc, char **argv)
 				iterate();
 				clearreg();
 				niter++;
+#ifdef TRACE
+				if (debug) {
+					printf("/*TRACE iterate %d*/\n", niter);
+					dumpnodes();
+				}
+#endif
 			} while (nchange);
 			comjump();
+#ifdef TRACE
+			if (debug) {
+				printf("/*TRACE comjump*/\n");
+				dumpnodes();
+			}
+#endif
 			rmove();
 		} while (nchange || jumpsw());
 		shortjump();
 		if (!flag136a)
 			procopt();
-		{
-			struct node *p;
-
-			for (p = first.forw; p; p = p->forw)
-				output(p);
-		}
-		heapreset();
+		dumpnodes();
 		if (niter > maxiter)
 			maxiter = niter;
+		heapreset();
 	} while (isend);
 	if (nflag) {
-		statline(maxiter, "iterations");
-		statline(nrevbr, "branches reversed");
-		statline(nclr, "clears \"simpilified\"");
-		statline(ncmot, "code motions");
-		statline(ncomj, "common seqs before jp's");
-		statline(nxjump, "cross-jumps");
-		statline(nsob, "djnz's added");
-		statline(iaftbr, "inst. after jumps");
-		statline(njp1, "jumps to .+2");
-		statline(nbrbr, "jumps to jumps");
-		statline(nlda, "lda + ld modified");
-		statline(loopiv, "loops inverted");
-		statline(ndirect, "operations made more direct");
-		statline(npushpop, "push and pops generated");
-		statline(npushdirect, "push/pop's made more direct");
-		statline(nredunj, "redundant jumps");
-		statline(nrlab, "redundant labels");
-		statline(redunm, "redundant ld's");
-		statline(nrtst, "redundant test's");
-		statline(nrename, "registers renamed");
-		statline(nshft, "shifts modified");
-		statline(nsaddr, "simplified addresses");
-		statline(nskip, "skips over jumps");
-		fprintf(stderr, "%dK core\n", (int)(((heaplim + 0x3ff) >> 10) & 0x3f));
+		statline("iterations", maxiter);
+		statline("branches reversed", nrevbr);
+		statline("clears \"simpilified\"", nclr);
+		statline("code motions", ncmot);
+		statline("common seqs before jp's", ncomj);
+		statline("cross-jumps", nxjump);
+		statline("djnz's added", nsob);
+		statline("inst. after jumps", iaftbr);
+		statline("jumps to .+2", njp1);
+		statline("jumps to jumps", nbrbr);
+		statline("lda + ld modified", nlda);
+		statline("loops inverted", loopiv);
+		statline("operations made more direct", ndirect);
+		statline("push and pops generated", npushpop);
+		statline("push/pop's made more direct", npushdirect);
+		statline("redundant jumps", nredunj);
+		statline("redundant labels", nrlab);
+		statline("redundant ld's", redunm);
+		statline("redundant test's", nrtst);
+		statline("registers renamed", nrename);
+		statline("shifts modified", nshft);
+		statline("simplified addresses", nsaddr);
+		statline("skips over jumps", nskip);
+		fprintf(stderr, "%dK core\n", heapcore());
 	}
 	exit(0);
+}
+
+/* .word / .addr with an Lnnn operand becomes a JSW node */
+static struct node *
+jswcheck(void)
+{
+	register struct node *n;
+	register char *p;
+
+	for (p = curlp; *p; p++)
+		if (*p == '\n' || *p == 'L')
+			break;
+	if (*p == 'L') {
+		n = (struct node *)alloc(sizeof (struct node));
+		n->labno = getnum(p + 1);
+		if (n->labno) {
+			n->code = 0;
+			n->op = JSW;
+			n->subop = 0;
+			return n;
+		}
+	}
 	return 0;
 }
 
 static void
-statline(int n, char *s)
+statline(char *s, int n)
 {
 	if (n) {
 		fprintf(stderr, "%d ", n);
@@ -127,56 +195,38 @@ statline(int n, char *s)
 static int
 input(void)
 {
-	struct node *p, *lastp;
-	int oper, op, echo;
+	register struct node *p, *lastp;
+	register int oper;
+	char echo;
 
 	echo = 1;
 	lastp = &first;
 	for (;;) {
-		if (echo) {
+		if (echo)
 			for (;;) {
-				oper = getln();
-				op = oper & 0xff;
-				if (op == LABEL) {
+				oper = getline_();
+				switch (oper & 0xff) {
+				case LABEL:
 					printf("%s:\n", line);
-				} else if (op == OBRACE) {
+					continue;
+				case EOFOP:
+					echo = 0;
+					goto sw;
+				case OBRACE:
 					echo = 0;
 					printf("%s\n", line);
-					oper = getln();
 					break;
-				} else if (op == EOFOP) {
-					echo = 0;
-					break;
-				} else
+				default:
 					printf("%s\n", line);
+					continue;
+				}
+				break;
 			}
-		} else
-			oper = getln();
-		op = oper & 0xff;
-		switch (op) {
-		case 0:
-			if (*curlp == 0)
-				continue;
-			p = allocnode();
-			p->op = op;
-			p->code = copy(1, line, 0);
-			p->labno = 0;
-			p->subop = 0;
-			break;
-		case CJP:
-		case JP:
-			p = allocnode();
-			p->op = op;
-			p->subop = oper >> 8;
-			if (*curlp == 'L' && (p->labno = getnum(curlp + 1)) != 0)
-				p->code = 0;
-			else {
-				p->labno = 0;
-				p->code = copy(1, curlp, 0);
-			}
-			break;
+		oper = getline_();
+	sw:
+		switch (oper & 0xff) {
 		case LABEL:
-			p = allocnode();
+			p = (struct node *)alloc(sizeof (struct node));
 			if (line[0] == 'L') {
 				p->op = LABEL;
 				p->subop = 0;
@@ -186,7 +236,7 @@ input(void)
 				p->op = DLABEL;
 				p->subop = 0;
 				p->labno = 0;
-				p->code = copy(1, line, 0);
+				p->code = copy(1, line, (char *)0);
 			}
 			break;
 #ifdef SPOPT
@@ -195,27 +245,44 @@ input(void)
 		case WORD:
 #endif
 		case ADDR:
-			p = jswcheck();
-			if (p == 0)
-				goto dflt;
-			break;
-		case COMMENT:
-			continue;
-		case CBRACE:
-		case KCOMMENT:
-			p = allocnode();
-			p->op = op;
-			p->code = copy(1, line, 0);
-			p->labno = 0;
-			p->subop = 0;
-			break;
+			if ((p = jswcheck()) != 0)
+				break;
+			/* fall through */
 		default:
-		dflt:
-			p = allocnode();
-			p->op = op;
+			p = (struct node *)alloc(sizeof (struct node));
+			p->op = oper & 0xff;
 			p->subop = oper >> 8;
 			p->labno = 0;
-			p->code = copy(1, curlp, 0);
+			p->code = copy(1, curlp, (char *)0);
+			break;
+		case CJP:
+		case JP:
+			p = (struct node *)alloc(sizeof (struct node));
+			p->op = oper & 0xff;
+			p->subop = oper >> 8;
+			if (*curlp == 'L' && (p->labno = getnum(curlp + 1)) != 0)
+				p->code = 0;
+			else {
+				p->labno = 0;
+				p->code = copy(1, curlp, (char *)0);
+			}
+			break;
+		case COMMENT:
+			oper = getline_();
+			goto sw;
+		case 0:
+			if (*curlp == 0) {
+				oper = getline_();
+				goto sw;
+			}
+			/* fall through */
+		case CBRACE:
+		case KCOMMENT:
+			p = (struct node *)alloc(sizeof (struct node));
+			p->op = oper & 0xff;
+			p->code = copy(1, line, (char *)0);
+			p->labno = 0;
+			p->subop = 0;
 			break;
 		}
 		p->forw = 0;
@@ -230,48 +297,19 @@ input(void)
 	}
 }
 
-/* .word / .addr with an Lnnn operand becomes a JSW node */
-static struct node *
-jswcheck(void)
-{
-	char *p;
-	struct node *n;
-
-	for (p = curlp; *p; p++)
-		if (*p == '\n' || *p == 'L')
-			break;
-	if (*p == 'L') {
-		n = allocnode();
-		n->labno = getnum(p + 1);
-		if (n->labno) {
-			n->code = 0;
-			n->op = JSW;
-			n->subop = 0;
-			return n;
-		}
-	}
-	return 0;
-}
-
 static int
-getch(void)
+getline_(void)
 {
-	return getc(stdin);
-}
-
-static int
-getln(void)
-{
-	char *lp;
-	int c;
+	register char *lp;
+	register int c;
 
 	lp = line;
 	do
-		c = getch();
+		c = getc(stdin);
 	while (c == ' ' || c == '\t');
 	for (;;) {
 		if (c == ':') {
-			c = getch();
+			c = getc(stdin);
 			if (c == '\n' || c == ' ' || c == '\t') {
 				*lp++ = 0;
 				return LABEL;
@@ -287,7 +325,7 @@ getln(void)
 			exit(1);
 		}
 		*lp++ = c;
-		c = getch();
+		c = getc(stdin);
 		if (c == EOF) {
 			*lp++ = 0;
 			return EOFOP;
@@ -296,19 +334,52 @@ getln(void)
 }
 
 int
-getnum(char *ap)
+getnum(char *p)
 {
-	char *p;
-	short n;
-	int c;
+	short n;		/* 16 bit as in the original: a long number wraps */
+	register int c;
 
-	p = ap;
 	n = 0;
-	while ((c = (signed char)*p++) >= '0' && c <= '9')
+	while ((c = (char)*p++) >= '0' && c <= '9')
 		n = n * 10 + c - '0';
 	if (*--p != 0)
 		return 0;
 	return n;
+}
+
+static void
+dumpnodes(void)
+{
+	register struct node *p;
+
+	for (p = &first; (p = p->forw) != 0;)
+		output(p);
+}
+
+/*
+ * Print the mnemonic of a jump or call: absolute (jp/call) when the
+ * operand is indirect or indexed, relative (jpr/callr) otherwise.
+ */
+static void
+prefix(struct node *n)
+{
+	register char *p;
+	register int op;
+
+	op = n->op;
+	if (n->code) {
+		if (n->code[0] == '@')
+			printf(op == CALL ? "\tcall\t" : "\tjp\t");
+		else {
+			for (p = n->code; *p && *p != '('; p++)
+				;
+			if (*p)
+				printf(op == CALL ? "\tcall\t" : "\tjp\t");
+			else
+				printf(op == CALL ? "\tcallr\t" : "\tjpr\t");
+		}
+	} else
+		printf(op == CALL ? "\tcallr\t" : "\tjpr\t");
 }
 
 /*
@@ -317,13 +388,12 @@ getnum(char *ap)
 static void
 output(struct node *n)
 {
-	struct optab *t;
-	int sub;
+	register struct optab *t;
+	register int sub;
 
 	switch (n->op) {
-	case 0:
-		if (n->code)
-			printf("\t%s\n", n->code);
+	case CBRACE:
+		printf("\t%s\n", n->code);
 		return;
 	case JP:
 		prefix(n);
@@ -332,11 +402,60 @@ output(struct node *n)
 		else
 			printf("L%d\n", n->labno);
 		return;
+	case CALL:
+		prefix(n);
+		if (n->code)
+			printf("%s\n", n->code);
+		return;
 	case LABEL:
 		printf("L%d:\n", n->labno);
 		return;
 	case DLABEL:
 		printf("%s:\n", n->code);
+		return;
+#ifdef SPOPT
+	case PSEC:
+		n->subop = 0;		/* movedat() leaves the kind of the section here */
+		lastseg = n->op;
+		goto def;
+#endif
+	case CODE:
+	case DATA:
+		lastseg = n->op;
+		/* fall through */
+	default:
+#ifdef SPOPT
+	def:
+#endif
+		sub = n->subop;
+		if (sub == SBYTE || sub == SLONG || sub == SLDK)
+			n->subop = 0;
+		for (t = optab; t->opstring; t++) {
+			if ((t->opcode & 0xff) == n->op &&
+			    (t->opcode >> 8) == n->subop) {
+				if (n->op == CJP) {
+					prefix(n);
+					printf("%s", t->opstring);
+				} else
+					printf("\t%s", t->opstring);
+				if (sub == SBYTE)
+					putchar('b');
+				else if (sub == SLONG)
+					putchar('l');
+				else if (sub == SLDK)
+					putchar('k');
+				break;
+			}
+		}
+		if (n->op == CJP) {
+			if (n->code)
+				printf(",%s", n->code);
+			else
+				printf(",L%d", n->labno);
+		} else if (n->code)
+			printf("\t%s", n->code);
+		putchar('\n');
+		n->subop = sub;
 		return;
 	case JSW:
 #ifdef SPOPT
@@ -345,16 +464,6 @@ output(struct node *n)
 		printf("\t.word\tL%d\n", n->labno);
 #endif
 		return;
-#ifdef SPOPT
-	case PSEC:
-		n->subop = 0;		/* movedat() leaves the kind of the section here */
-		lastseg = n->op;
-		break;
-#endif
-	case CODE:
-	case DATA:
-		lastseg = n->op;
-		break;
 	case SOB:
 		if (n->subop == SBYTE)
 			printf("\tdjnzb");
@@ -365,124 +474,92 @@ output(struct node *n)
 			printf(",L%d", n->labno);
 		putchar('\n');
 		return;
-	case CALL:
-		prefix(n);
-		if (n->code)
-			printf("%s\n", n->code);
-		return;
 	case EOFOP:
-		return;
-	case CBRACE:
-		printf("\t%s\n", n->code);
 		return;
 	case KCOMMENT:
 		printf("%s\n", n->code);
 		return;
-	}
-	sub = n->subop;
-	if (sub == SBYTE || sub == SLONG || sub == SLDK)
-		n->subop = 0;
-	for (t = optab; t->name; t++) {
-		if ((t->opcode & 0xff) == n->op &&
-		    (signed char)(t->opcode >> 8) == n->subop) {
-			if (n->op == CJP) {
-				prefix(n);
-				printf("%s", t->name);
-			} else
-				printf("\t%s", t->name);
-			if (sub == SBYTE)
-				putchar('b');
-			else if (sub == SLONG)
-				putchar('l');
-			else if (sub == SLDK)
-				putchar('k');
-			break;
-		}
-	}
-	if (n->op == CJP) {
+	case 0:
 		if (n->code)
-			printf(",%s", n->code);
-		else
-			printf(",L%d", n->labno);
-	} else if (n->code)
-		printf("\t%s", n->code);
-	putchar('\n');
-	n->subop = sub;
+			printf("\t%s\n", n->code);
+		return;
+	}
 }
 
-/*
- * Print the mnemonic of a jump or call: absolute (jp/call) when the
- * operand is indirect or indexed, relative (jpr/callr) otherwise.
- */
-static void
-prefix(struct node *n)
+/* the node list on stderr (the original lets stdout use the file of stderr for a moment; here the descriptor is changed) */
+void
+dumperr(void)
 {
-	char *s, *p;
-	int call;
+	int fd;
 
-	call = n->op == CALL;
-	if (n->code) {
-		if (n->code[0] == '@')
-			s = call ? "\tcall\t" : "\tjp\t";
-		else {
-			for (p = n->code; *p && *p != '('; p++)
-				;
-			if (*p)
-				s = call ? "\tcall\t" : "\tjp\t";
-			else
-				s = call ? "\tcallr\t" : "\tjpr\t";
-		}
-	} else
-		s = call ? "\tcallr\t" : "\tjpr\t";
-	printf("%s", s);
+	fflush(stdout);
+	fd = dup(1);
+	dup2(2, 1);
+	dumpnodes();
+	fflush(stdout);
+	dup2(fd, 1);
+	close(fd);
+}
+
+/* one node on stderr */
+void
+outerr(struct node *n)
+{
+	int fd;
+
+	fflush(stdout);
+	fd = dup(1);
+	dup2(2, 1);
+	output(n);
+	fflush(stdout);
+	dup2(fd, 1);
+	close(fd);
 }
 
 char *
 copy(int na, char *a, char *b)
 {
-	char *p, *np, *onp;
-	int n;
+	register char *p, *np;
+	register int n;
+	char *onp;
 
-	if (*a == 0)
+	p = a;
+	n = 0;
+	if (*p == 0)
 		return 0;
-	n = strlen(a) + 1;
-	if (na > 1)
-		n += strlen(b);
+	do
+		n++;
+	while (*p++);
+	if (na > 1) {
+		p = b;
+		while (*p++)
+			n++;
+	}
 	onp = np = alloc(n);
 	for (p = a; (*np++ = *p++) != 0;)
 		;
 	if (na > 1) {
+		p = b;
 		np--;
-		for (p = b; (*np++ = *p++) != 0;)
+		while ((*np++ = *p++) != 0)
 			;
 	}
 	return onp;
 }
 
-static int
-hashname(char *s)
-{
-	int c0, c1, c2;
-
-	c0 = (signed char)s[0];
-	c1 = c0 ? (signed char)s[1] : 0;
-	c2 = c1 ? (signed char)s[2] : 0;
-	return (((c0 << 3) + (c1 + c1) + c2) & 0x7fff) % OPHS;
-}
-
 void
 opsetup(void)
 {
-	struct optab *o;
-	int h;
+	register struct optab *o;
+	register struct optab **h;
+	register char *s;
 
-	for (o = optab; o->name; o++) {
-		h = hashname(o->name);
-		while (ophash[h]) {
-			if (++h >= OPHS)
-				h = 0;
-		}
-		ophash[h] = o;
+	for (o = optab; (s = o->opstring) != 0; o++) {
+		h = &ophash[HASHNAME(s)];
+		while (*h++)
+			if (h >= &ophash[OPHS])
+				h = ophash;
+		*--h = o;
 	}
 }
 
@@ -493,10 +570,9 @@ opsetup(void)
 static int
 cclook(int opw)
 {
-	char *p, *q;
-	int h, start;
-	struct optab *o;
-	char *a, *b;
+	register char *p, *q;
+	struct optab **h, *o;
+	static char tmpcc[32];
 
 	q = tmpcc;
 	p = curlp;
@@ -506,18 +582,16 @@ cclook(int opw)
 	if (*p != ',')
 		return opw;
 	curlp = p + 1;
-	h = start = hashname(tmpcc);
-	while ((o = ophash[h]) != 0) {
-		a = o->name;
-		b = tmpcc;
-		while (*a == *b) {
-			if (*b == 0)
+	h = &ophash[HASHNAME(tmpcc)];
+	while ((o = *h) != 0) {
+		q = o->opstring;
+		p = tmpcc;
+		while (*q++ == *p)
+			if (*p++ == 0)
 				return o->opcode;
-			a++;
-			b++;
-		}
-		if (++h >= OPHS)
-			h = 0;
+		h++;
+		if (h >= &ophash[OPHS])
+			h = ophash;
 	}
 	return opw;
 }
@@ -530,9 +604,11 @@ cclook(int opw)
 int
 oplook(void)
 {
-	char *lp, *np, *name, *tp;
-	int h, start, suffix;
-	struct optab *o;
+	register struct optab *o;
+	register char *lp, *np;
+	struct optab **h, **start;
+	int op, suffix;
+	static char tmpop[32];
 
 	if (line[0] == 0) {
 		curlp = line;
@@ -551,35 +627,34 @@ oplook(void)
 			return KCOMMENT;
 		return COMMENT;
 	}
-	h = start = hashname(tmpop);
+	h = &ophash[HASHNAME(tmpop)];
+	start = h;
 	suffix = np[-2] == 'b' || np[-2] == 'l';
 	for (;;) {
-		o = ophash[h];
-		if (o) {
-			name = o->name;
-			tp = tmpop;
-			while (*name == *tp) {
-				if (*tp == 0) {
+		o = *h;
+		if (o) {	/* an empty slot: the original reads address 0 here, without effect */
+			np = o->opstring;
+			lp = tmpop;
+			while (*np++ == *lp)
+				if (*lp++ == 0) {
 					/* exact match */
-					if ((o->opcode & 0xff) == JP)
-						return cclook(o->opcode);
-					if (o->opcode == JPX)
+					if (((op = o->opcode) & 0xff) == JP)
+						return cclook(op);
+					if (op == JPX)
 						return JP;
-					return o->opcode;
+					return op;
 				}
-				name++;
-				tp++;
-			}
-			if (*tp == 'l' && tp[1] == 0 && *name == 0)
+			if (*lp == 'l' && lp[1] == 0 && np[-1] == 0)
 				return o->opcode + 0x1100;
-			if (*tp == 'b' && tp[1] == 0 && *name == 0)
+			if (*lp++ == 'b' && *lp++ == 0 && *--np == 0)
 				return o->opcode + 0x1000;
 		}
-		if (++h >= OPHS)
-			h = 0;
+		h++;
+		if (h >= &ophash[OPHS])
+			h = ophash;
 		if (h == start)
 			break;
-		if (!suffix && ophash[h] == 0)
+		if (!suffix && *h == 0)
 			break;
 	}
 	curlp = line;
@@ -593,18 +668,21 @@ oplook(void)
 void
 refcount(void)
 {
-	struct node *p, *lp, *tp;
-	int i, n;
+	register struct node *p, *lp;
+	register struct node **h;
+	register struct node *tp;
+	register int n;
+	static struct node *labhash[LABHS];
 
-	for (i = 0; i < LABHS; i++)
-		labhash[i] = 0;
+	for (h = labhash; h < &labhash[LABHS]; h++)
+		*h = 0;
 	for (p = first.forw; p; p = p->forw)
 		if (p->op == LABEL) {
 			labhash[p->labno % LABHS] = p;
 			p->refc = 0;
 		}
 	for (p = first.forw; p; p = p->forw) {
-		if (p->op == CJP || p->op == JP || p->op == JSW) {
+		if (p->op == JP || p->op == CJP || p->op == JSW) {
 			p->ref = 0;
 			lp = labhash[p->labno % LABHS];
 			if (lp == 0 || p->labno != lp->labno)
@@ -639,8 +717,7 @@ refcount(void)
 	}
 	for (p = first.forw; p; p = p->forw)
 		if (p->op == LABEL && p->refc == 0) {
-			lp = nonlab(p);
-			if (lp->op == 0 || lp->op == JSW || lp->op == WORD ||
+			if ((lp = nonlab(p))->op == 0 || lp->op == JSW || lp->op == WORD ||
 			    lp->op == LONG)
 				continue;
 			decref(p);
@@ -650,17 +727,18 @@ refcount(void)
 void
 iterate(void)
 {
-	struct node *p, *rp, *p1, *start;
+	register struct node *p, *rp, *p1;
 
 	nchange = 0;
 	for (p = first.forw; p; p = p->forw) {
 		if ((p->op == JP || p->op == CJP || p->op == JSW) && p->ref) {
 			rp = nonlab(p->ref);
-			if (rp->op == JP && rp->labno && p->labno != rp->labno) {
+			if (rp->op == JP && rp->labno && p->labno != rp->labno
+			) {
 				nbrbr++;
 				p->labno = rp->labno;
 				decref(p->ref);
-				rp->ref->refc++;
+				++rp->ref->refc;
 				p->ref = rp->ref;
 				nchange++;
 			}
@@ -687,23 +765,22 @@ iterate(void)
 			}
 		}
 		if (p->op == JP || p->op == RET) {
-			start = p;
+			rp = p;
 			while (p->forw->op == KCOMMENT)
 				p = p->forw;
 			while (p->forw) {
-				p1 = p->forw;
-				if (p1->op == LABEL || p1->op == DLABEL ||
-				    p1->op == OBRACE || p1->op == CBRACE ||
-				    p1->op == 0 || p1->op == DATA)
+				if (p->forw->op == LABEL || p->forw->op == DLABEL ||
+				    p->forw->op == OBRACE || p->forw->op == CBRACE ||
+				    p->forw->op == 0 || p->forw->op == DATA)
 					break;
 				nchange++;
 				iaftbr++;
-				if (p1->ref)
-					decref(p1->ref);
-				p->forw = p1->forw;
+				if (p->forw->ref)
+					decref(p->forw->ref);
+				p->forw = p->forw->forw;
 				p->forw->back = p;
 			}
-			p = start;
+			p = rp;
 		}
 		if (p->op == JP || p->op == CJP) {
 			for (rp = p->forw; rp; rp = rp->forw) {
@@ -727,20 +804,25 @@ iterate(void)
 	}
 }
 
+
+
+
 void
 xjump(struct node *p1)
 {
-	struct node *p2, *p3;
+	register struct node *p2, *p3;
 
 	if ((p2 = p1->ref) == 0)
 		return;
 	for (;;) {
-		do
-			p1 = p1->back;
-		while (p1 && (p1->op == LABEL || p1->op == KCOMMENT));
-		do
-			p2 = p2->back;
-		while (p2 && (p2->op == LABEL || p2->op == KCOMMENT));
+		while ((p1 = p1->back))
+			if (p1->op != LABEL && p1->op != KCOMMENT)
+				break;
+		while ((p2 = p2->back)) {
+			if (p2->op == LABEL || p2->op == KCOMMENT)
+				continue;
+			break;
+		}
 		if (!equop(p1, p2) || p1 == p2)
 			return;
 		p3 = insertl(p2);
@@ -757,7 +839,7 @@ xjump(struct node *p1)
 struct node *
 insertl(struct node *oldp)
 {
-	struct node *lp;
+	register struct node *lp;
 
 	if (oldp->op == LABEL) {
 		oldp->refc++;
@@ -768,7 +850,7 @@ insertl(struct node *oldp)
 		oldp->refc++;
 		return oldp;
 	}
-	lp = allocnode();
+	lp = (struct node *)alloc(sizeof (struct node));
 	lp->op = LABEL;
 	lp->subop = 0;
 	lp->labno = isn++;
@@ -782,11 +864,17 @@ insertl(struct node *oldp)
 	return lp;
 }
 
+
+
 struct node *
 codemove(struct node *p)
 {
-	struct node *p1, *p2, *p3, *t, *tl;
+	register struct node *p1, *p2, *p3;
+	struct node *t, *tl;
 	int n;
+#ifdef OLD_D20
+	struct node *rp;
+#endif
 
 	p1 = p;
 	if (p1->op != JP)
@@ -800,9 +888,51 @@ codemove(struct node *p)
 	if (p2->op == JP || p2->op == RET) {
 		p2 = p2->forw;
 		for (p3 = p1->ref; p3; p3 = p3->forw) {
+#ifdef OLD_D20
+			/* the old popt has removed a jump to the next label already: the block goes on behind it */
+			if (p3->op == JP && p3->ref) {
+				for (rp = p3->forw; rp && (rp->op == LABEL || rp->op == KCOMMENT); rp = rp->forw)
+					if (rp == p3->ref)
+						break;
+				if (rp == p3->ref)
+					continue;
+			}
+#endif
 			if (p3->op == JP) {
 				if (p1 == p3)
 					return p1;
+#ifdef TRACE
+				if (debug) {
+					register struct node *q;
+					int tn, jn, jc, jl, pre, tc;
+
+					tn = tc = 0;
+					for (q = p2; q && q != p3->forw; q = q->forw) {
+						if (q->op != LABEL && q->op != KCOMMENT)
+							tn++;
+						if (q->op == CJP)
+							tc++;
+					}
+					jn = jc = jl = pre = 0;
+					for (q = p1->back; q && q->op != LABEL; q = q->back) {
+						if (q->op == KCOMMENT)
+							continue;
+						jn++;
+						if (q->op == CJP)
+							jc++;
+						if (q->op == JP || q->op == RET || q->op == JSW)
+							break;
+					}
+					if (q && q->op == LABEL) {
+						jl = q->refc;
+						while (q->back && (q->back->op == LABEL || q->back->op == KCOMMENT))
+							q = q->back;
+						pre = q->back && (q->back->op == JP || q->back->op == RET);
+					}
+					printf("/*CM L%d refc %d tlen %d tcjp %d tend %d jlen %d jcjp %d jlabrefc %d jpre %d*/\n", p1->labno,
+					    p1->ref->refc, tn, tc, p3->ref == 0 ? -1 : p3->labno, jn, jc, jl, pre);
+				}
+#endif
 				ncmot++;
 				nchange++;
 				p1->back->forw = p2;
@@ -868,7 +998,7 @@ codemove(struct node *p)
 void
 comjump(void)
 {
-	struct node *p1, *p2, *p3;
+	register struct node *p1, *p2, *p3;
 
 	for (p1 = first.forw; p1; p1 = p1->forw)
 		if (p1->op == JP && (p2 = p1->ref) && p2->refc > 1)
@@ -878,25 +1008,30 @@ comjump(void)
 }
 
 static void
-backjmp(struct node *p1, struct node *p2)
+backjmp(struct node *ap1, struct node *ap2)
 {
-	struct node *p3;
+	register struct node *p1, *p2, *p3;
 
+	p1 = ap1;
+	p2 = ap2;
 	for (;;) {
-		while ((p1 = p1->back) && p1->op == LABEL)
-			;
+		while ((p1 = p1->back)) {
+			if (p1->op == LABEL)
+				continue;
+			break;
+		}
 		p2 = p2->back;
-		if (equop(p1, p2)) {
-			p3 = insertl(p1);
-			p2->back->forw = p2->forw;
-			p2->forw->back = p2->back;
-			p2 = p2->forw;
-			decref(p2->ref);
-			p2->labno = p3->labno;
-			p2->ref = p3;
-			nchange++;
-			ncomj++;
-		} else
+		if (!equop(p1, p2))
 			return;
+		p3 = insertl(p1);
+		p2->back->forw = p2->forw;
+		p2->forw->back = p2->back;
+		p2 = p2->forw;
+		decref(p2->ref);
+		p2->labno = p3->labno;
+		p2->ref = p3;
+		nchange++;
+		ncomj++;
 	}
 }
+

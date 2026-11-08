@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /* node types (the "op" byte of a node, also the low byte of an optab word) */
 #define CJP	1	/* jpr cc,Lnnn  (subop = condition) */
@@ -79,25 +80,26 @@ struct node {
 	struct node *forw;
 	struct node *back;
 	struct node *ref;
-	int labno;
+	short labno;		/* 16 bit as in the original (the label numbers wrap) */
 	char *code;
 	int refc;
 };
 
 struct optab {
-	char *name;
+	char *opstring;
 	int opcode;
 };
 
 extern struct optab optab[];
 extern char revbr[];
-extern int isn, lastseg;
+extern short isn;
+extern int lastseg;
 extern char line[];
 extern char *curlp;
 extern struct node first;
 extern int keepcmt;	/* -l flag: keep the / *~~ lines */
 extern int nchange;
-extern int debug;
+extern char debug;
 extern char flag136a;
 extern char regs[NREGS][32];
 #define RT1 regs[48]
@@ -106,46 +108,86 @@ extern char regs[NREGS][32];
 /* statistics */
 extern int nbrbr, nrevbr, nskip, nrlab, nxjump, ncomj, ncmot, loopiv, nsob;
 extern int iaftbr, njp1, redunm, nredunj, nsaddr, nshft, nrtst, nclr;
-extern int nlda, nrmove, nrename, npushpop, npushdirect, ndirect;
+extern int nlda, nrename, npushpop, npushdirect, ndirect;
 
 /* z21.c */
-int main(int, char **);
+int main(int argc, char **argv);
 void opsetup(void);
 int oplook(void);
-struct node *insertl(struct node *);
-struct node *codemove(struct node *);
-void xjump(struct node *);
+struct node *insertl(struct node *oldp);
+struct node *codemove(struct node *p);
+void xjump(struct node *p1);
 void comjump(void);
 void refcount(void);
 void iterate(void);
-char *copy(int, char *, char *);
-int getnum(char *);
+char *copy(int na, char *a, char *b);
+int getnum(char *p);
 /* z22.c */
-void *alloc(int);
-struct node *allocnode(void);
-extern unsigned short heaplim;
+char *alloc(int n);
+struct node * allocnode();
+extern char nullcode[];	/* what the original reads at address 0 for a node without operand text */
 void heapreset(void);
-#ifndef HEAP0
-#ifdef SPOPT
-#define HEAP0 0x1a4c	/* end of data+bss of the original spopt */
-#else
-#define HEAP0 0x1a48	/* end of data+bss of the original */
-#endif
-#endif
-struct node *nonlab(struct node *);
-void decref(struct node *);
-int equop(struct node *, struct node *);
-int ilen(struct node *);
+int heapcore(void);
+struct node *nonlab(struct node *p);
+void decref(struct node *p);
+int equop(struct node *ap1, struct node *p2);
+int ilen(struct node *p);
 void rmove(void);
 int jumpsw(void);
 void shortjump(void);
 void clearreg(void);
-void dualop(struct node *);
-void singop(struct node *);
-int isreg(char *);
-int equstr(char *, char *);
+void dualop(struct node *ap);
+void singop(struct node *p);
+int isreg(char *s);
+int equstr(char *a, char *b);
 void movedat(void);
 /* z23.c */
 void procopt(void);
-extern char nullcode[];
-int isused(struct node *, char *);
+int isused(struct node *p, char *reg);
+
+/*
+ * The globals in the order of their places in the bss of the original: every module includes this list, the
+ * first one linked gives the commons their order.
+ * Host: defined once, in z20.c (DEFGLOBALS); the other modules see them as extern.
+ */
+#ifdef DEFGLOBALS
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif
+GLOBAL int nchange;
+GLOBAL int nrename;
+GLOBAL int npushpop;
+GLOBAL char conval[32];		/* the original has 20 */
+GLOBAL char debug;
+GLOBAL int nshft;
+GLOBAL int ncmot;
+GLOBAL char ccloc[32];		/* the original has 20 */
+GLOBAL int nredunj;
+GLOBAL int nsaddr;
+GLOBAL int njp1;
+GLOBAL char regs[NREGS][32];
+GLOBAL int nrlab;
+GLOBAL char flag136a;
+GLOBAL char conloc[32];		/* the original has 20; setcon() reproduces the overflow */
+GLOBAL int ndirect;
+GLOBAL int nbrbr;
+GLOBAL int ncomj;
+GLOBAL char line[LSIZE];
+GLOBAL int nskip;
+GLOBAL int nrevbr;
+GLOBAL struct node first;
+GLOBAL int nxjump;
+GLOBAL int npushdirect;
+GLOBAL struct optab *ophash[OPHS];
+GLOBAL int nlda;
+GLOBAL int redunm;
+GLOBAL int nclr;
+GLOBAL int nsob;
+GLOBAL int iaftbr;
+GLOBAL int loopiv;
+GLOBAL char *curlp;
+GLOBAL int nrtst;
+GLOBAL int keepcmt;
+GLOBAL char _sobuf[512];
+GLOBAL struct node *rmnode;

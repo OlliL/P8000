@@ -8,7 +8,7 @@
 #      Makefiles strip as the originals are stripped); every member of lib/libc/libc.a against the original;
 #   3. the corpora (host/tools/corpus.sh, inputs made fresh, side by side) of every program with a compare/NAME/progcfg.py, every candidate: the WEGA program built
 #      with the shipped cc (scc) and the libc of its Makefile (the byte-identical builds are proven by 2) and the host build;
-#   4. make -C host check: the programs that have no corpus yet (cas, ld, popt, libc, oldcc).
+#   4. make -C host check: the programs that have no corpus yet (cas, ld, libc, oldcc).
 # -b: only 1 and 2. Prints one line per check, the logs stay in CHECK_TMP; exit status 0 when all pass.
 # A program joins by its install target (src/cmd/Makefile).
 #
@@ -124,7 +124,7 @@ cp $T/tree/WEGA/src/lib/*.a $T/shipped/WEGA/src/lib/
 	cd $C/cas && make all SCC=scc
 	cd $C/cc && make all CC=cc
 ) > $T/shipped.log 2>&1
-make -C $T/shipped/WEGA/host cpp ar binutils cc > $T/hostbuild.log 2>&1
+make -C $T/shipped/WEGA/host cpp ar binutils cc popt > $T/hostbuild.log 2>&1
 # the corpora run side by side, each in a work directory of its own; every candidate of a program is tested against the
 # same inputs (the original runs once)
 CS=$T/shipped/WEGA/host/tools/corpus.sh
@@ -138,10 +138,8 @@ for n in $CORP; do
 done
 
 # 4. the checks of the host programs that have no corpus yet
-# the corpus of the host popt, made fresh by the original cc
-make -C $T/tree/WEGA/host/popt corpus WEGA=$WEGA CORPUS=$T/popt_corpus > $T/hostcheck.log 2>&1
-if CORPUS=$T/popt_corpus make -C $T/tree/WEGA/host check WEGA=$WEGA >> $T/hostcheck.log 2>&1; then
-	result 'host tools' ok 'cas ld popt'
+if make -C $T/tree/WEGA/host check WEGA=$WEGA > $T/hostcheck.log 2>&1; then
+	result 'host tools' ok 'cas ld'
 else
 	result 'host tools' fail "see $T/hostcheck.log"
 fi

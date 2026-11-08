@@ -45,7 +45,6 @@ cc popt ar binutils cas ld cpp:
 check:
 	$(MAKE) -C cas check WEGA=$(WEGAABS)
 	$(MAKE) -C ld check WEGA=$(WEGAABS) EMU=$(EMU)
-	$(MAKE) -C popt check WEGA=$(WEGAABS)
 	$(MAKE) -C libc check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C oldcc verify WEGA=$(WEGAABS) EMU=$(EMU)
 
