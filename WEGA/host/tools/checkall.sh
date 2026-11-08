@@ -8,7 +8,7 @@
 #      Makefiles strip as the originals are stripped); every member of lib/libc/libc.a against the original;
 #   3. the corpora (host/tools/corpus.sh, inputs made fresh, side by side) of every program with a compare/NAME/progcfg.py, every candidate: the WEGA program built
 #      with the shipped cc (scc) and the libc of its Makefile (the byte-identical builds are proven by 2) and the host build;
-#   4. make -C host check: the programs that have no corpus yet (cas, ld, libc, oldcc).
+#   4. make -C host check: the programs that have no corpus yet (cas, ld).
 # -b: only 1 and 2. Prints one line per check, the logs stay in CHECK_TMP; exit status 0 when all pass.
 # A program joins by its install target (src/cmd/Makefile).
 #

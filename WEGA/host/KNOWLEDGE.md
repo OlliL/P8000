@@ -1558,7 +1558,7 @@ Consequence: not a cause of the length, nlist, swap, malloc differences.
 
 Objects that an older cc revision produced cannot be rebuilt from C with the shipped cc. For those
 we keep `src/lib/libc/oldcc/<member>/<version>.s` (cas syntax) which the original `cas -u` turns into the byte-identical
-original member (`make -C oldcc verify`). They are generated from the original objects with
+original member (step 1 of `checkall`; `host/oldcc` is removed). They are generated from the original objects with
 `tools/sdis.py -a` (all symbols are pre-declared in symbol-table order, otherwise the symbol table
 of the rebuilt object differs). Sources that the shipped cc reproduces byte for byte get NO `.s`
 listing in git.

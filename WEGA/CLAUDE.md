@@ -56,7 +56,7 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
 ## Build the emulator and check
 
     make -C WEGA/host/z8k-emu            # builds z8k-emu
-    make -C WEGA/host check WEGA=<WEGA_ROOT>      # the host tools: cc, ar, binutils, cas, ld, popt, libc, oldcc
+    make -C WEGA/host check WEGA=<WEGA_ROOT>      # the host tools without a corpus: cas, ld
     make -C WEGA/host checkall WEGA=<WEGA_ROOT>   # on a copy of the git files: make in src, make install into an empty root,
                                                   # every file there against WEGA; the corpora; check (16 min)
     host/tools/corpus.sh [--wega|--host] [PROG ...]   # the corpus of a program (compare/PROG/progcfg.py): the original against every candidate

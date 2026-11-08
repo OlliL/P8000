@@ -11,8 +11,6 @@
 #   cparse/    the WEGA front ends cparse and scparse built for Linux (cross tools)
 #   cas/       the WEGA assembler cas built for Linux (cross tool)
 #   ld/        the WEGA loaders ld, sld and gld built for Linux (cross tools)
-#   libc/      check of the libc members in ../src/lib/libc
-#   oldcc/     check of the cas sources in ../src/lib/libc/oldcc
 #
 # The WEGA programs themselves are built from ../src (make -C ../src/cmd);
 # here they are built with the original WEGA tools (under z8k-emu) and
@@ -47,8 +45,6 @@ cc popt codgen cparse ar binutils cas ld cpp:
 check:
 	$(MAKE) -C cas check WEGA=$(WEGAABS)
 	$(MAKE) -C ld check WEGA=$(WEGAABS) EMU=$(EMU)
-	$(MAKE) -C libc check WEGA=$(WEGAABS) EMU=$(EMU)
-	$(MAKE) -C oldcc verify WEGA=$(WEGAABS) EMU=$(EMU)
 
 checkall:
 	WEGA=$(WEGAABS) sh tools/checkall.sh

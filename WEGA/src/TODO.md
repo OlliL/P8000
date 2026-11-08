@@ -42,8 +42,7 @@ To look at: codgen, scodgen and spopt built with the shipped cc and shipped libc
 
 Switches not in any version (`OLD_D1F`, `OLD_D2D`, `OLD_D3A`, `OLD_D19A`); switches with one witness (`OLDCC.md`, section 5); whether v0 and v0p are two versions; whether v1 had the old cas. `KNOWLEDGE.md`, `HANDOFF_*`, the table in section 4 of `OLDCC.md`.
 
-Host side: `host/recon/castrig` (`hostcas.patch`, `triggers.txt`), `host/libc/check.sh` and `host/oldcc` (now doubled by
-`checkall`), the reconstruction scripts of `host/recon` that only served the cutting of objects.
+Host side: `host/recon/castrig` (`hostcas.patch`, `triggers.txt`), the reconstruction scripts of `host/recon` that only served the cutting of objects.
 
 ## 8a. Sources without the old libc
 
