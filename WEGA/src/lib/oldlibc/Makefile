@@ -40,6 +40,7 @@ LIBv1 = fseek/0_2.o ftell/0_1.o readsym/0_1.o rdwr/0_3.o system/0_1.o fopen/0_1.
 	 ../libc/obj/execl.o ../libc/obj/exit.o ../libc/obj/fork.o ../libc/obj/ioctl.o ../libc/obj/lseek.o \
 	 open/0_1.o ../libc/obj/read.o ../libc/obj/signal.o ../libc/obj/time.o ../libc/obj/unlink.o \
 	 ../libc/obj/wait.o ../libc/obj/write.o ../libc/obj/cerror.o
+# ccv0 ccv0p
 ../libc-v1.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv1)
 
@@ -48,6 +49,7 @@ LIBv2 = fopen/0_1.o printf/0_5.o doprnt/0_7.o ffltioc/0_1.o setbuf/0_1.o ../libc
 	 length/0_3.o malloc/0_3.o isatty/0_2.o stty/0_3.o strcat/0_2.o strcmp/0_1.o strcpy/0_2.o strncpy/0_1.o \
 	 ../libc/obj/brk.o ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o \
 	 open/0_1.o ../libc/obj/read.o ../libc/obj/write.o ../libc/obj/cerror.o
+# ccv0p
 ../libc-v2.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv2)
 
@@ -57,6 +59,7 @@ LIBv3 = rdwr/0_1.o ../libc/obj/fopen.o printf/0_1.o doprnt/0_1.o ../libc/obj/ffl
 	 ../libc/obj/swab.o goodmagic/0_1.o swap/0_1.o ../libc/obj/brk.o ../libc/obj/chmod.o ../libc/obj/close.o \
 	 ../libc/obj/creat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/read.o \
 	 ../libc/obj/umask.o ../libc/obj/write.o ../libc/obj/cerror.o
+# ccv1 ccv1q
 ../libc-v3.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv3)
 
@@ -67,6 +70,7 @@ LIBv4 = fseek/0_1.o rdwr/0_2.o ../libc/obj/fopen.o printf/0_2.o doprnt/0_2.o ../
 	 ../libc/obj/access.o ../libc/obj/brk.o ../libc/obj/chmod.o ../libc/obj/close.o ../libc/obj/creat.o \
 	 ../libc/obj/getpid.o ../libc/obj/ioctl.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/read.o \
 	 ../libc/obj/signal.o ../libc/obj/umask.o ../libc/obj/unlink.o ../libc/obj/write.o ../libc/obj/cerror.o
+# ccv1
 ../libc-v4.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv4)
 
@@ -77,6 +81,7 @@ LIBv5 = freopen/0_1.o fseek/0_2.o ftell/0_2.o rdwr/0_3.o fopen/0_1.o printf/0_5.
 	 ../libc/obj/ctype_.o strrchr/0_1.o strcat/0_2.o strncmp/0_1.o strcpy/0_2.o strlen/0_2.o ../libc/obj/brk.o \
 	 ../libc/obj/chmod.o ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o \
 	 ../libc/obj/open.o ../libc/obj/read.o ../libc/obj/umask.o ../libc/obj/write.o ../libc/obj/cerror.o
+# ccv0p
 ../libc-v5.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv5)
 
@@ -89,6 +94,7 @@ LIBv6 = system/0_2.o printf/0_6.o doprnt/0_6.o ../libc/obj/ffltioc.o gets/0_1.o 
 	 ../libc/obj/ioctl.o ../libc/obj/link.o ../libc/obj/open.o ../libc/obj/pause.o ../libc/obj/read.o \
 	 ../libc/obj/signal.o ../libc/obj/setuid.o ../libc/obj/stat.o ../libc/obj/unlink.o ../libc/obj/wait.o \
 	 ../libc/obj/write.o ../libc/obj/cerror.o
+# ccv1
 ../libc-v6.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv6)
 
@@ -100,6 +106,7 @@ LIBv7 = fltioc/0_1.o fseek/0_2.o ftell/0_2.o rdwr/0_3.o fopen/0_1.o fdopen/0_1.o
 	 ../libc/obj/chmod.o ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o \
 	 ../libc/obj/open.o ../libc/obj/read.o ../libc/obj/signal.o ../libc/obj/umask.o ../libc/obj/write.o \
 	 ../libc/obj/cerror.o
+# ccv0p
 ../libc-v7.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv7)
 
@@ -112,6 +119,7 @@ LIBv8 = ../libc/obj/freopen.o ../libc/obj/fopen.o printf/0_4.o doprnt/0_4.o ../l
 	 ../libc/obj/getpid.o ../libc/obj/ioctl.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/signal.o \
 	 ../libc/obj/stat.o ../libc/obj/umask.o ../libc/obj/unlink.o ../libc/obj/wait.o ../libc/obj/write.o \
 	 ../libc/obj/cerror.o
+# ccv1
 ../libc-v8.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv8)
 
@@ -123,6 +131,7 @@ LIBv9 = ../libc/obj/scanf.o doscan/0_1.o printf/0_6.o doprnt/0_6.o ../libc/obj/f
 	 ../libc/obj/chmod.o ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/fstat.o ../libc/obj/getpid.o \
 	 ../libc/obj/ioctl.o ../libc/obj/link.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/read.o \
 	 ../libc/obj/signal.o ../libc/obj/umask.o ../libc/obj/unlink.o ../libc/obj/write.o ../libc/obj/cerror.o
+# ccv0p ccv1
 ../libc-v9.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv9)
 
@@ -134,6 +143,7 @@ LIBv10 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/obj/ffltioc.o 
 	 ../libc/obj/fstat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/read.o \
 	 ../libc/obj/signal.o ../libc/obj/stat.o ../libc/obj/umask.o ../libc/obj/unlink.o ../libc/obj/wait.o \
 	 ../libc/obj/write.o ../libc/obj/cerror.o
+# ccv1r
 ../libc-v10.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv10)
 
