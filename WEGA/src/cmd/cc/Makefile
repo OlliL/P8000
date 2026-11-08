@@ -16,7 +16,7 @@ CRT0 = /lib/crt0.o
 NONSEG_OBJS = cc.o
 SEG_OBJS = cc.o
 ALL_TARGETS = build/nonseg/cc build/seg/scc
-OLD_TARGETS = build/nonsegv0/cc build/nonsegv0p/cc build/nonsegv1/cc build/nonsegv1q/cc build/nonsegv1r/cc build/segv1/scc
+OLD_TARGETS = build/nonsegv0/cc build/nonsegv0p/cc build/nonsegv1/cc build/nonsegv1q/cc build/nonsegv1r/cc build/segv1/scc build/segvk/scc
 
 all: $(ALL_TARGETS)
 
@@ -40,6 +40,9 @@ build/seg/scc: FORCE
 build/segv1/scc: FORCE
 	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSCC -DOLD_V1"
 
+build/segvk/scc: FORCE
+	cd build/segvk ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSCC -DOLD_VK"
+
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
 		dir=`dirname $$d`;\
@@ -59,6 +62,7 @@ oldinstall: $(OLD_TARGETS)
 		cp build/nonseg$$v/cc $(PREFIX)/bin/cc$$v ; \
 	done
 	cp build/segv1/scc $(PREFIX)/bin/sccv1
+	cp build/segvk/scc $(PREFIX)/bin/sccvk
 
 ##################
 # bin targets

@@ -128,6 +128,12 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
   `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L`, `OLD_D23` (codgen). popt needs no switch.
 - The corpus of cparse and scparse holds only with the ccv0p build: the heap contents of the .S file follow the data layout of the pass.
 
+### vk: the code generator of the kernel objects
+
+The objects of `/wega` (`usr/sys/sys/LIB1`, `usr/sys/dev/LIB2`) were made by the shipped scparse and spopt with an older scodgen. `sccvk` (`-DSCC -DOLD_VK`
+in `src/cmd/cc`) runs `/lib/scparse`, `/lib/vk/scodgen` (built in `src/cmd/codgen/build/segvk` with `OLD_VK`, switches in `oldcc.h`) and `/lib/spopt`.
+Switches so far: `OLD_D3`. Witnesses: ureg (identical). Not yet identical: sig, sys1, sys2, sys3, debug, tt0, tty (`src/uts/TODO.md`, section 3).
+
 ### The old scc of cas
 
 cas was built by an older scc (D5 and D13 are only seen there); its parser and `assemble` without `-O`, the other modules

@@ -3,6 +3,11 @@
  * (OLD_V0, OLD_V0P): the native cc takes about 160 characters of -D options (more overwrite the name of its
  * temporary file: "Can't create /tmp/cc.../lib/cpp"). Without a version nothing is set: the shipped codgen.
  */
+#ifdef OLD_VK
+/* vk, the code generator of the kernel objects (scodgen with the shipped scparse and spopt, host/OLDCC.md section 2) */
+#define OLD_D3		/* the registers at the join label of && and || keep their contents */
+#endif
+
 #ifdef OLD_V0P
 /* v0p, the compiler of the passes: v0 and */
 #define OLD_V0

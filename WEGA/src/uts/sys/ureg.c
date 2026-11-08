@@ -150,7 +150,7 @@ segureg()
 		if (u.u_segno[i] & NUSEGS){
 			u.u_segmts[i].sg_base = caddr;
 			if(u.u_segmts[i].sg_limit > 0 || !j)
-				caddr += u.u_segmts[i].sg_limit+1; /*FIXME: r2 gets used here, r3 has to be used here */
+				caddr += u.u_segmts[i].sg_limit+1;
 		} else {
 			u.u_segmts[i].sg_base = addr;
 			if(u.u_segmts[i].sg_limit || !j)

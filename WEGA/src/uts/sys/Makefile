@@ -6,6 +6,7 @@
 #   make clean                 remove the objects and LIB1
 
 CAS = cas
+SCCVK = sccvk
 CC = scc
 CFLAGS = -O
 AR = ar
@@ -25,6 +26,10 @@ LIB1: $(OBJ)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
+
+# compiled by the code generator of the kernel (sccvk, see ../../../host/OLDCC.md)
+ureg.o: ureg.c
+	$(SCCVK) $(CFLAGS) -c ureg.c
 
 lock.o: lock.s
 	$(CAS) -u -o $@ lock.s

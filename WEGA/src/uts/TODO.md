@@ -10,7 +10,7 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 
 ## State
 
-- LIB1: 22 of 28 members identical. Different: `sig`, `sys1`, `sys2`, `sys3`, `debug`, `ureg` (7 bytes, one register).
+- LIB1: 22 of 28 members identical. Different: `sig`, `sys1`, `sys2`, `sys3`, `debug` (`ureg` is identical with sccvk).
 - LIB2: 23 of 25 identical. Different: `tt0` (7 bytes), `tty`. `mt`, `rd`, `udev1..6` are dummies from `*.d.s` (identical).
 - conf: `conf.o`, `event.o`, `fpe.o`, `mch.o`, `u.o`, `bstart.o` identical; `boot` identical; `BOOTLIB` same size, 63 bytes differ (archive headers).
 - `wega` links, but 96628 of 97282 bytes: it contains other versions of `lp` and `siok` (2.1).
@@ -39,15 +39,20 @@ without `chmog`/`chmod` (the archive headers: 6.), `uts` in `all` of `src/Makefi
 3. After 1 and 2: the remaining differences of `wega` are the objects of section 3; the link order and the symbol table (`-X`, `-i`, `-Ms62`) are proven by the identical parts.
 4. `u.o`: still a binary `u.obj` copied (`$ABS` works only in segment 1; `u` must lie at segment 62, `0xf600`). Target: `u.s`/`u.c` that gives the same bytes (README). Until then `u.obj` stays and is documented.
 
-## 3. Objects that differ (ordered by effort)
+## 3. Objects that differ
 
-1. `ureg.o` (7 bytes): in `segureg`, `caddr += u.u_segmts[i].sg_limit+1` uses r2/r3, the original r3/r4 (r2 stays reserved in the whole branch).
-   17 source variants and `sccv1` tried without success; next: other statement order, a different type for `caddr` (`caddr_t`, `unsigned`), a second `register` variable, an older SYSIII `ureg.c`.
-2. `tt0.o` (7 bytes): `sysinfo.outch++` in `tt0.c` (FIXME in the source).
-3. `sig.o`: FIXME `ipc.ip_addr.l = (caddr_t)((long)uap->addr.l & 0x7F00FFFF)` (size 6824 vs 6820).
-4. `sys3.o`, `sys2.o`, `sys1.o`: FIXME comments in the sources; sizes differ by 4 to 8 bytes (nearest-version method: SYSIII `sys1.c` ... `sys4.c`, then `cmpins.py`).
-5. `debug.o` (6868 vs 6836, no FIXME) and `tty.o` (10194 vs 10186, no FIXME): find the first differing instruction with `sdis.py` + `diff`.
-6. For all: also test which compiler made the original (`scc`, `sccv1`, ... ; the ZEUS-origin files may be older); record the result per object in the table "Objects and their differences" in `host/OLDCC.md` and the quirks in `host/KNOWLEDGE.md`.
+The kernel objects are made by the shipped scparse and spopt with an older scodgen: version `vk` (`sccvk`, `src/cmd/cc`, `src/cmd/codgen/build/segvk`,
+switch set in `codgen/oldcc.h` under `OLD_VK`; so far `OLD_D3`). `ureg.o` is identical with it (done, `sys/Makefile`). Measured with `vk` (differing
+lines of the disassembly): sig 4, sys1 98, sys2 7, sys3 4, debug 19, tt0 1, tty 16 (shipped scc: 4, 118, 16, 4, 19, 4, 14); no other existing OLD_Dn switch
+helps (swept alone and on top of D3). The differences are a few code generator behaviours, each to be found as a new switch (witness: the objects):
+
+1. `(caddr_t)(((long)ptr) & 0x7F00FFFF)` (sig, sys2 x2, sys3, debug x3): the original copies the loaded pointer into a new pair and masks it there
+   (`ldl rr6,rr4; and r6,#%7F00`, the SCONV template 040a of `table3_scodgen.c`), the shipped one masks in place. Source forms tried: ten, none changes it.
+2. switch layout (tty, `sioioctl` in dev/wega/siok.c): the original has the compares of a small switch behind the case bodies (the first one threaded to the
+   top by popt); the shipped scodgen puts them in front.
+3. `andb rl6,#%0F` against `and r6,#%000F` (debug): byte operation for `& 0xf` of a char.
+4. scratch register choice: tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion; `sysinfo.outch++` through rr6), tty (`ld r4,...` against `ld r2,...`), sys1 (98 lines).
+5. After each new switch: `host/recon/oldcc.sh matrix check`, tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 
 ## 4. Assembler sources that should be C
 
