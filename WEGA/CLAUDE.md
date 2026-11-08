@@ -62,6 +62,7 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
     host/tools/corpus.sh [--wega|--host] [PROG ...]   # the corpus of a program (compare/PROG/progcfg.py): the original against every candidate
     host/tools/corpusdeps.sh [PROG ...]               # strace of the corpus runs: is every file/program they use in the cache key (CORPUS_ROOT_FILES, CORPUS_DEPENDS)?
     host/tools/mkcorpus.sh [PROG ...]                 # make the prepared inputs (compare/PROG/corpus.tar) and the result cache (compare/PROG/cache) new; both not in git
+    host/tools/coverage.py                            # src/COVERAGE.md: every file of the WEGA root, its source in src/, status (exact, partial, sys3, todo), compiler, libc (needs the install tree of checkall.sh -b)
 
 ## Compile with the original tools (z8k-emu)
 
