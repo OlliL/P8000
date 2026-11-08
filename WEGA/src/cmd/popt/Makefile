@@ -24,18 +24,18 @@ all: $(ALL_TARGETS)
 old: $(OLD_TARGETS)
 
 build/nonseg/popt: FORCE
-	cd build/nonseg    ; $(MAKE) -f ../../Makefile popt
+	cd build/nonseg    ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt
 build/nonsegv0/popt: FORCE
-	cd build/nonsegv0  ; $(MAKE) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS)"
+	cd build/nonsegv0  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS)"
 build/nonsegv0p/popt: FORCE
-	cd build/nonsegv0p ; $(MAKE) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS)"
+	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS)"
 build/nonsegv1/popt: FORCE
-	cd build/nonsegv1  ; $(MAKE) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D20"
+	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D20"
 
 build/seg/spopt: FORCE
-	cd build/seg   ; $(MAKE) -f ../../Makefile spopt CFLAGS="$(CFLAGS) -DSPOPT"
+	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CFLAGS="$(CFLAGS) -DSPOPT"
 build/segv1/spopt: FORCE
-	cd build/segv1 ; $(MAKE) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D20"
+	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D20"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\

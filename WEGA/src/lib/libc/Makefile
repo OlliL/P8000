@@ -23,11 +23,11 @@ obj:
 
 # the members of libc.a: each subdirectory makes its objects into obj/
 objs: obj
-	cd gen ; $(MAKE) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
-	cd stdio ; $(MAKE) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
-	cd sys ; $(MAKE) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
-	cd oldcc ; $(MAKE) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
-	cd crt ; $(MAKE) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
+	cd gen ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
+	cd stdio ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
+	cd sys ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
+	cd oldcc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
+	cd crt ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
 
 libc.a: objs arhdr.s mkar.sh
 	rm -f libc.a
@@ -41,6 +41,6 @@ install: all
 
 clean:
 	rm -rf obj libc.a csu/crt0.o
-	cd crt ; $(MAKE) clean
+	cd crt ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) clean
 
 .PHONY: all install clean objs

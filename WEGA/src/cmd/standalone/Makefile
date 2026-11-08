@@ -24,7 +24,7 @@ SUBDIRS=	sa.diags
 all: $(FILES) subdirs
 
 subdirs:
-	for d in $(SUBDIRS); do cd $$d ; $(MAKE) all ; cd .. ; done
+	for d in $(SUBDIRS); do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all ; cd .. ; done
 
 wdc.o: wdc.s
 	$(AS) -o $@ $<
@@ -95,6 +95,6 @@ install: $(FILES)
 
 clean:
 	rm -f $(FILES) sd41.c ft41.c vf41.c libb.a bmisc.o  ft41.o  sa.cat.o  sa.function.o  sa.inout.o  sa.install.o  sa.mkfs.o  sa.timer.o  sd41.o  vf41.o  wdc.o
-	for d in $(SUBDIRS); do cd $$d ; $(MAKE) clean ; cd .. ; done
+	for d in $(SUBDIRS); do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) clean ; cd .. ; done
 
 .PHONY: all subdirs install clean

@@ -3,10 +3,10 @@
 PBURN_VERSION = 2.1
 
 all:
-	cd $(PBURN_VERSION) ; $(MAKE) $@
+	cd $(PBURN_VERSION) ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $@
 
 clean:
-	cd $(PBURN_VERSION) ; $(MAKE) $@
+	cd $(PBURN_VERSION) ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $@
 
 install:
-	cd $(PBURN_VERSION) ; $(MAKE) $@
+	cd $(PBURN_VERSION) ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $@

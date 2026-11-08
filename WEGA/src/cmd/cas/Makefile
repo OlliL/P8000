@@ -26,10 +26,10 @@ all: build/cas
 oldcas: old/cas
 
 build/cas: FORCE
-	cd build ; $(MAKE) -f ../Makefile cas
+	cd build ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile cas
 
 old/cas: FORCE
-	cd old ; $(MAKE) -f ../Makefile SCCFLAGS="-O -DOLD_CAS" cas
+	cd old ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCCFLAGS="-O -DOLD_CAS" cas
 
 install: build/cas
 	cp build/cas $(PREFIX)/bin/cas

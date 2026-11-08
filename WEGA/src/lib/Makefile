@@ -7,7 +7,8 @@
 PREFIX = /
 
 all:
-	cd libc ; $(MAKE)
+	cd libc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
+	# no make args, not threadsafe
 	cd oldlibc ; $(MAKE)
 	cd oldslibc ; $(MAKE)
 

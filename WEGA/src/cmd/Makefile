@@ -39,7 +39,7 @@ SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cpp cparse
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 
 subdirs:
-	for d in $(SUBDIRS); do cd $$d ; $(MAKE) all ; cd .. ; done
+	for d in $(SUBDIRS); do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all ; cd .. ; done
 
 getud: getud.c
 	$(CC) -o $@ getud.c
@@ -153,7 +153,7 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	rm -f $(PREFIX)/bin/cp $(PREFIX)/bin/ln
 	ln $(PREFIX)/bin/mv $(PREFIX)/bin/cp
 	ln $(PREFIX)/bin/mv $(PREFIX)/bin/ln
-	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done
+	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX) ; cd .. ; done
 
 clean:
 	rm -f $(PROGS) $(FILES) $(CLEANFILES) $(SIMPLE)
@@ -161,6 +161,6 @@ clean:
 	rm -f crt0-ar.o crt0-sync.o crt0-ar.s crt0-sync.s
 	rm -f crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o
 	rm -f crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s
-	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) clean ; cd .. ; done
+	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) clean ; cd .. ; done
 
 .PHONY: all subdirs clean install

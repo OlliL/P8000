@@ -28,18 +28,18 @@ all: $(ALL_TARGETS)
 old: $(OLD_TARGETS)
 
 build/nonseg/cparse: crt0.o FORCE
-	cd build/nonseg    ; $(MAKE) -f ../../Makefile cparse
+	cd build/nonseg    ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cparse
 build/nonsegv0/cparse: crt0.o FORCE
-	cd build/nonsegv0  ; $(MAKE) -f ../../Makefile cparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D"
+	cd build/nonsegv0  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D"
 build/nonsegv0p/cparse: crt0.o FORCE
-	cd build/nonsegv0p ; $(MAKE) -f ../../Makefile cparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D"
+	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D"
 build/nonsegv1/cparse: crt0.o FORCE
-	cd build/nonsegv1  ; $(MAKE) -f ../../Makefile cparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D1"
+	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D1"
 
 build/seg/scparse: crt0.o FORCE
-	cd build/seg ; $(MAKE) -f ../../Makefile scparse CFLAGS="$(CFLAGS) -DSEG"
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CFLAGS="$(CFLAGS) -DSEG"
 build/segv1/scparse: crt0.o FORCE
-	cd build/segv1 ; $(MAKE) -f ../../Makefile scparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D12 -DOLD_D1"
+	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D12 -DOLD_D1"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\

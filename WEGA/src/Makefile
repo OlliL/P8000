@@ -15,38 +15,29 @@ CC = cc
 PREFIX = /
 OLDROOT = /
 OLDPRINTF = lib/oldlibc/printf/s1.o
+MAKEARGS =
 
 all: stage1 lib stage2 cmds
 
 stage1: clean
 	cd lib/oldlibc/printf ; cp 0_5.c s1.c ; $(CC) -O -c s1.c ; rm -f s1.c
-	cd cmd/cas    ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
+	cd cmd/cas    ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT)
 
-	(cd cmd/cparse && $(MAKE) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a') & p1=$$!; \
-	(cd cmd/codgen && $(MAKE) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a') & p2=$$!; \
-	(cd cmd/popt   && $(MAKE) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a') & p3=$$!; \
-	(cd cmd/cc     && $(MAKE) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a') & p4=$$!; \
-	status=0; \
-	wait $$p1 || status=1; \
-	wait $$p2 || status=1; \
-	wait $$p3 || status=1; \
-	wait $$p4 || status=1; \
-	test $$status -eq 0
+	cd cmd/cparse ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/codgen ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/popt   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/cc     ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
 
 lib: FORCE
-	cd lib ; $(MAKE)
+        # not everything in lib/ is threadsafe
+	cd lib ; $(MAKE) MAKEARGS=$(MAKEARGS)
 
 stage2:
-	(cd cmd/cparse && $(MAKE) clean && $(MAKE) old PREFIX=$(OLDROOT)) & p1=$$!; \
-	(cd cmd/codgen && $(MAKE) clean && $(MAKE) old PREFIX=$(OLDROOT)) & p2=$$!; \
-	(cd cmd/popt   && $(MAKE) clean && $(MAKE) old PREFIX=$(OLDROOT)) & p3=$$!; \
-	(cd cmd/cc     && $(MAKE) clean && $(MAKE) old PREFIX=$(OLDROOT)) & p4=$$!; \
-	status=0; \
-	wait $$p1 || status=1; \
-	wait $$p2 || status=1; \
-	wait $$p3 || status=1; \
-	wait $$p4 || status=1; \
-	test $$status -eq 0
+	cd cmd/cparse ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
+	cd cmd/codgen ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
+	cd cmd/popt   ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
+	cd cmd/cc     ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
+
 	cd cmd/cparse ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
 	cd cmd/codgen ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
 	cd cmd/popt   ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
@@ -57,7 +48,7 @@ cmds:
 
 install:
 	cd lib ; $(MAKE) install PREFIX=$(PREFIX)
-	cd cmd ; $(MAKE) install PREFIX=$(PREFIX)
+	cd cmd ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX)
 
 clean:
 	cd lib ; $(MAKE) clean
