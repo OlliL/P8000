@@ -11,7 +11,7 @@
  * archive __.SYMDEF" or "ar rl __.SYMDEF archive". Here that is the host ar (host/ar); the
  * file ranlib.conf next to the executable can name another one:
  *     ar = /path/to/ar
- * Without it ../ar/ar relative to the executable is used.
+ * Without it ../ar/ar relative to the executable is used. The environment variable RANLIB_AR wins over both.
  */
 static char sccsid[] __attribute__((unused)) = "@[$]ranlib.c\t1.1  07/24/82 02:49:23 - 87wega3.2";
 
@@ -272,6 +272,8 @@ findar(const char *argv0)
 	char *path = conf_sibling(argv0, "ranlib.conf"), *a = 0;
 	struct conf *c;
 
+	if (getenv("RANLIB_AR"))		/* the environment wins over ranlib.conf */
+		return strdup(getenv("RANLIB_AR"));
 	if(path) {
 		c = conf_read(path);
 		if(c == 0) {

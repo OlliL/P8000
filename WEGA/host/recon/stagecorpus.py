@@ -57,7 +57,11 @@ def run_script(binary, base, work, variant, tag, native):
     os.makedirs(rd)
     for f in os.listdir(work):
         p = os.path.join(work, f)
-        if os.path.isfile(p) and not f.startswith('pass_'):
+        if f.startswith(('pass_', '.prog_', 'run_')):
+            continue
+        if os.path.isdir(p):
+            shutil.copytree(p, os.path.join(rd, f))
+        elif os.path.isfile(p):
             shutil.copy(p, rd)
     if binary.startswith('pass_'):
         # a candidate under its own name (the messages show argv[0]): <run>/.prog/NAME
@@ -71,6 +75,8 @@ def run_script(binary, base, work, variant, tag, native):
     env.update(var)
     env['CASE'] = base
     if native:
+        env.update(getattr(CFG, 'CORPUS_HOST_ENV', lambda root: {})(CFG.ROOT))
+    if native:
         prog = os.path.join(rd, binary)
     else:
         prog = ' '.join(shlex.quote(x) for x in [CFG.EMU] + sum((['-e', '%s=%s' % kv] for kv in var.items()), [])
@@ -79,11 +85,13 @@ def run_script(binary, base, work, variant, tag, native):
     script = os.path.join(CFG.DIR, CFG.CORPUS_SCRIPT(base))
     r = subprocess.run(['sh', script], cwd=rd, capture_output=True, timeout=1800, env=env)
     lines = []
-    for f in sorted(os.listdir(rd)):
-        p = os.path.join(rd, f)
-        if os.path.isfile(p):
+    for dp, dn, fn in os.walk(rd):
+        dn[:] = [x for x in dn if not (dp == rd and x == '.prog')]
+        for f in fn:
+            p = os.path.join(dp, f)
             d = open(p, 'rb').read()
-            lines.append('%o %d %08x %s' % (os.stat(p).st_mode & 0o7777, len(d), zlib.crc32(d), f))
+            lines.append('%o %d %08x %s' % (os.stat(p).st_mode & 0o7777, len(d), zlib.crc32(d), os.path.relpath(p, rd)))
+    lines.sort(key=lambda l: l.split(' ', 3)[3])
     shutil.rmtree(rd, ignore_errors=True)
     msg = r.stdout + r.stderr
     if NORMALIZE:

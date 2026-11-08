@@ -2,7 +2,7 @@
 # corpus.sh [--wega | --host] [PROG ...]: the corpus test of each program: the original (under z8k-emu) and every candidate of the program
 # (compare/PROG/progcfg.py, CANDIDATES) on the same inputs, compared (host/recon/stagecorpus.py): the WEGA program built from src/cmd
 # ("wega", runs under the emulator) and the host build ("host", runs natively). Without a switch every candidate is tested; --wega or --host
-# restricts the test to one of them. Without PROG: every program whose progcfg.py has a corpus (with a switch: those that have that candidate).
+# restricts the test to one of them. Without PROG: every program listed in compare/CORPORA (with a switch: those that have that candidate).
 # The binaries are the ones built by make (progcfg CANDIDATES); CORPUS_BIN_WEGA / CORPUS_BIN_HOST name another file.
 # Environment: WEGA_ROOT (the WEGA 3.1 tree, default as in host/recon/progcfg.py), JOBS, STAGE_TMP, STAGE_OPTS (-k -n N -f FILTER for stagecorpus.py).
 # PROG may also be a directory with a progcfg.py. Exit status 1 when a candidate differs.
@@ -15,7 +15,7 @@ case "$1" in
 esac
 SKIP=
 if [ $# = 0 ]; then
-	set -- `cd $REPO/compare && grep -l '^CORPUS_BINARY\|^CANDIDATES' */progcfg.py | sed 's|/progcfg.py||'`
+	set -- `grep -v '^#' $REPO/compare/CORPORA`
 	[ -n "$C" ] && SKIP=-s
 fi
 rc=0

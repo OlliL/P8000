@@ -1,0 +1,18 @@
+# The programs that have a corpus (compare/NAME/progcfg.py), one name per line: these are the ones that host/tools/checkall.sh runs and
+# host/tools/corpus.sh runs without a program name. A new corpus joins by a line here; nothing is found by looking at the files.
+ar
+ranlib
+strip
+size
+cc
+scc
+cpp
+cparse
+scparse
+codgen
+scodgen
+popt
+spopt
+ld
+sld
+cas

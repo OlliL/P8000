@@ -3,13 +3,10 @@
 # ../../src/cmd/{ranlib,strip,size}.c; helpers in ../tools/lib (sobj, conf).
 #
 #   make                 build ranlib, strip, size
-#   make check           compare with the originals under z8k-emu
-#                        (WEGA=<file tree of the original system>)
+#   test                 ../tools/corpus.sh --host ranlib strip size   (the corpora of ../../compare/NAME, no make target)
 
 HOSTCC = cc
 CFLAGS = -O2 -Wall -Wextra
-WEGA = ../../../tmp/wega31_root
-EMU  = $(abspath ../z8k-emu/z8k-emu)
 LIB  = ../tools/lib
 
 all: ranlib strip size
@@ -23,13 +20,7 @@ strip: strip.c
 size: size.c
 	$(HOSTCC) $(CFLAGS) -I$(LIB) -o $@ size.c $(LIB)/sobj.c
 
-check: all ../ar/ar
-	WEGA=$(abspath $(WEGA)) E=$(EMU) sh check.sh
-
-../ar/ar:
-	$(MAKE) -C ../ar
-
 clean:
 	rm -f ranlib strip size
 
-.PHONY: all check clean
+.PHONY: all clean
