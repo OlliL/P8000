@@ -38,9 +38,12 @@ Each remaining difference is a code generator behaviour to be found as a new swi
 
 1. switch layout (tty, `sioioctl` in dev/wega/siok.c): the original has the compares of a small switch behind the case bodies (the first one threaded to the
    top by popt); the shipped scodgen puts them in front.
-2. registers: tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion; swapping the template 037 breaks sig, sys2, sys3), tty (`ld r4,...` against `ld r2,...`),
-   sys1 (82 lines; frame 0x1C0 against 0x1C2 in `exece`, the count register of `cpir` r3 against r6, FIXME "has to be r4+r5 instead of r2+r3"). Method: `nxwork` (regs3.c)
-   nulls or keeps the names of the registers per table entry (field nx); a kept name keeps the register away from the next operand. Print the entry and the lists in `getreg`.
+2. registers (all three objects): tt0 (`ld r3,r5` before `ldk r2,#0` in a long conversion; swapping the template 037 breaks sig, sys2, sys3), tty (`ld r4,...`
+   against `ld r2,...`), sys1 (82 lines; frame 0x1C0 against 0x1C2 and the count register of `cpir` r3 against r6 in `getxfile`: the switch value is loaded into r3
+   first, which keeps the name of the frame slot, the original takes the value straight into the TEMP r2). Source forms tried without effect (about 40): casts, operand
+   order, `+ 0`, `& 0xffff`, other types for `chg`/`nseg`, `switch (magic)` in six forms, `if (nseg > NUSEGS)` in six forms, `sysinfo.outch` in four forms. Existing switches
+   on top of vk: only D2L+D2T change sys1 (82 to 37) and worsen tt0 (1 to 24), D2P/D2F/D2R/D3K/D1R/D2N: no use. Method for a new switch: the debug output of
+   `getreg`, `rsreturn`, `nxwork` and the table entry in a scratch copy (see OLDCC_LOG.md, vk D27). New switches only as the last resort (owner).
 3. After each new switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already
    before this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 
