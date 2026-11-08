@@ -28,7 +28,9 @@ def CORPUS_SOURCES():
     import corpusc
     # the sources of the tree and the fixed cases (compare/cparse/cases: a structure declared in a function, whose tag is freed at its end)
     cases = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'cparse', 'cases')
-    return corpusc.c_sources() + sorted(os.path.join(cases, f) for f in os.listdir(cases) if f.endswith('.c'))
+    fixed = sorted(os.path.join(cases, f) for f in os.listdir(cases) if f.endswith('.c'))
+    fixed.append(os.path.join(cases, 'yacc', 'cpy.c'))	# with yylex.c next to it, which it includes
+    return corpusc.c_sources() + fixed
 
 
 def CORPUS_PREPARE(src, work):

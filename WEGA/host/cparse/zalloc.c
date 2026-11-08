@@ -48,7 +48,7 @@ static void need(size_t units)
 #define clearbusy(v) ((unsigned) ((v) >> 1))
 
 /* malloc of the libc: the index of the first unit of the data, or 0 */
-static unsigned model_malloc(unsigned long nbytes)
+static unsigned model_malloc0(unsigned long nbytes)
 {
 	unsigned p, q, last;
 	unsigned long nw;
@@ -113,6 +113,21 @@ found:
 		mem[allocp] = (uint32_t) q << 1;
 	mem[p] = setbusy(allocp);
 	return p + 1;
+}
+
+static unsigned model_malloc(unsigned long nbytes)
+{
+#ifdef SEG
+	static int done;
+
+	/* The segmented program has taken some storage before its first symbol: found by trying (40 to 80 bytes give the output of the
+	   original, 64 is the middle; the three fdopen of openfiles may be it). Without it the blocks are another ones. */
+	if (!done) {
+		done = 1;
+		model_malloc0(64);
+	}
+#endif
+	return model_malloc0(nbytes);
 }
 
 static void model_free(unsigned data)
