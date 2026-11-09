@@ -11,7 +11,6 @@ CAS = cas
 SCCVK = sccvk
 CC = scc
 CFLAGS = -O
-AR = ar
 PREFIX = /
 IDIR = $(PREFIX)/usr/sys/dev
 
@@ -26,9 +25,10 @@ IFILES = blockdev.c chardev.c lp.c ttydev.c udev1.c udev2.c udev3.c udev4.c \
 all: LIB2
 	cd wega ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all
 
-LIB2: $(OBJ)
-	rm -f LIB2
-	$(AR) cr LIB2 $(OBJ)
+# the headers of the shipped archive: arhdr.s, ../mkar.sh
+LIB2: $(OBJ) arhdr.s ../mkar.sh
+	$(CAS) -u -o arhdr.o arhdr.s
+	sh ../mkar.sh LIB2 arhdr.o $(OBJ)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
@@ -75,7 +75,7 @@ install: LIB2
 	for f in $(IFILES); do cp $$f $(IDIR)/$$f; done
 
 clean:
-	rm -f $(OBJ) LIB2
+	rm -f $(OBJ) arhdr.o LIB2
 	cd wega ; $(MAKE) clean
 
 .PHONY: all install clean

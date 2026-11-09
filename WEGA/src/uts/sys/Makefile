@@ -8,7 +8,7 @@
 SCCVK = sccvk
 CC = scc
 CFLAGS = -O
-AR = ar
+CAS = cas
 PREFIX = /
 IDIR = $(PREFIX)/usr/sys/sys
 
@@ -19,9 +19,10 @@ OBJ = main.o trap.o sig.o iget.o prf.o slp.o subr.o rdwri.o fio.o malloc.o \
 
 all: LIB1
 
-LIB1: $(OBJ)
-	rm -f LIB1
-	$(AR) cr LIB1 $(OBJ)
+# the headers of the shipped archive: arhdr.s, ../mkar.sh
+LIB1: $(OBJ) arhdr.s ../mkar.sh
+	$(CAS) -u -o arhdr.o arhdr.s
+	sh ../mkar.sh LIB1 arhdr.o $(OBJ)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
@@ -55,6 +56,6 @@ install: LIB1
 	cp LIB1 $(IDIR)/LIB1
 
 clean:
-	rm -f $(OBJ) LIB1
+	rm -f $(OBJ) arhdr.o LIB1
 
 .PHONY: all install clean

@@ -9,11 +9,11 @@
 #   make clean                 remove the objects and the results
 
 AS = as
+CAS = cas
 CC = cc
 SCC = scc
 CFLAGS = -O
 CHKOUT = chkout
-AR = ar
 LD = ld
 SLD = sld
 PREFIX = /
@@ -36,9 +36,10 @@ wega: $(WEGA_OBJ)
 boot: bstart.o BOOTLIB
 	$(LD) -s -e start -b 0x8000 -o boot bstart.o BOOTLIB
 
-BOOTLIB: $(BL_OBJ)
-	rm -f BOOTLIB
-	$(AR) qc BOOTLIB $(BL_OBJ)
+# the headers of the shipped archive: arhdr.s, ../mkar.sh
+BOOTLIB: $(BL_OBJ) arhdr.s ../mkar.sh
+	$(CAS) -u -o arhdr.o arhdr.s
+	sh ../mkar.sh BOOTLIB arhdr.o $(BL_OBJ)
 
 # ../sys/LIB1 and ../dev/LIB2 are made by "make" in uts
 ../sys/LIB1:
@@ -97,6 +98,6 @@ install: all
 	cp wega $(PREFIX)/wega
 
 clean:
-	rm -f $(BL_OBJ) $(OBJ) ver.c ver.o BOOTLIB wega boot wpar30/wpar.o
+	rm -f $(BL_OBJ) $(OBJ) arhdr.o ver.c ver.o BOOTLIB wega boot wpar30/wpar.o
 
 .PHONY: all install clean

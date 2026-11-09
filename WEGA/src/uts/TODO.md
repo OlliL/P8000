@@ -5,14 +5,13 @@ finds every one of them byte-identical (`cmp`) with the WEGA root. Everything be
 Rule: finished (sub)items are deleted from this file, so it gets shorter with every step.
 `uts` is built by `all` in `src/Makefile` but NOT by `install` (and not added to `checkall.sh`) until `wega`, `LIB1`, `LIB2` and the rest are
 identical: before that `checkall.sh` would stop at the first difference. The install targets in `uts/*/Makefile` are written and tested by hand
-with `make install PREFIX=dir`; they are connected to `src/Makefile install` at the very end (6.).
+with `make install PREFIX=dir`; they are connected to `src/Makefile install` at the very end (4.).
 State measured with the build in a copy of `src/uts` (tools from `checkall.sh`), objects against `tmp/wega31_kernel`.
 
 ## State
 
-- Only one object differs: `tty.o` (LIB2), and there only `TCXONC` in `ttiocom` (section 3).
+- Only one object differs: `tty.o` (LIB2), and there only `TCXONC` in `ttiocom` (section 3). `make install` (by hand) writes 31 files below `usr/sys`, `boot`, `usr/boot` and `wega`: 29 are identical; `LIB2` differs only in the member `tty.o`, `wega` as below. When `tty.o` is identical, set its size in `dev/arhdr.s` to that of the shipped object.
 - `wega`: 97282 bytes like the original, about 9300 bytes differ, all because `tty.o` is 4 bytes short and moves what follows. Linked with the original `tty.o` as a test (copy it over `dev/tty.o`, rebuild `LIB2`, `LIB2W`, `wega`): `cmp` identical, so the link order, the symbol table (`-X`, `-i`, `-Ms62`) and all other members are proven. `boot` is identical.
-- `BOOTLIB`: 63 bytes differ (archive headers).
 
 ## 1. Build and install
 
@@ -33,18 +32,7 @@ Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). 11 differing lines of the di
 5. `vk` still needs `OLD_D3` (without it sys1, sys2, ureg, tt0 differ) and `OLD_D24` with `OLD_D25` (sig, sys2, sys3, debug); seven forms of the mask `(caddr_t)((long)x & 0x7F00FFFF)` in sys3 gave nothing.
 6. After each changed switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already before this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 
-## 4. Text files of the root
-
-1. `usr/sys/dev/*.c`, `usr/sys/h/*.h`, `usr/sys/conf/{make.boot,make.wega,ver.c+,wpar.c}`: identical now; install them, status "todo" in `COVERAGE.md` disappears with the install target.
-2. `bstart.c` (differs from the root file, the header comment): fix the file (it is installed, 666 wega).
-
-## 5. The archives (last, after the objects are identical)
-
-1. `LIB1`, `LIB2`, `BOOTLIB`: contents are the objects; the headers (owner, group, mode, time) are set afterwards with `fix` as for the libc (`src/lib/libc/arhdr.s`).
-   Needs the member list with the shipped headers per archive; `chmog` calls in `dev/Makefile` are then not needed.
-2. Compare the archives member by member first (`ar x` of the original, `cmp`), then as a whole.
-
-## 6. At the end
+## 4. At the end
 
 1. Connect `uts` to `install` in `src/Makefile`; `checkall.sh -b`: `boot`, `wega`, `usr/boot`, `usr/sys/...` all identical, nothing in OPEN for uts.
 2. Update `README.md` (what is still object/assembler: should be only `u.obj`, if any), `COVERAGE.md`, the tables in `host/OLDCC.md` and `host/KNOWLEDGE.md`, `HANDOFF_wega_disasm.md`.
