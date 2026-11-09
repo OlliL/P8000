@@ -50,10 +50,10 @@ wbin:
 	sh tools/wbin.sh $(WBIN) $(WEGAABS) $(OLDROOTABS) $(EMU)
 
 oldroot: wbin
-	$(WPATH) $(MAKE) -C ../src stage1 lib stage2 OLDROOT=$(OLDROOTABS)
+	$(WPATH) $(MAKE) -C ../src MAKEARGS="-j8" stage1 lib stage2 OLDROOT=$(OLDROOTABS)
 
 src: wbin
-	$(WPATH) $(MAKE) -C ../src all OLDROOT=$(OLDROOTABS)
+	$(WPATH) $(MAKE) -C ../src MAKEARGS="-j8" all OLDROOT=$(OLDROOTABS)
 
 clean:
 	$(MAKE) -C cc clean
