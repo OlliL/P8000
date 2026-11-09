@@ -386,8 +386,9 @@ long pc;
 unsigned char cls;
 {
 	register NODE *np;
-	register int idx;
 	register int v;
+	register int x;		/* not used (its register r10 is saved in the original) */
+	register int idx;
 
 	np = ops[i];
 	switch (np->n_type) {
