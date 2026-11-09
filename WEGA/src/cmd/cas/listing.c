@@ -76,7 +76,7 @@ unsigned char c;
 int a;
 {
 	lstloc();
-	fprintf(listf, "%02x", c);
+	fprintf(listf, "%02x", c & 0xFF);
 	lcol += 2;
 	lstflag(a);
 	lstend();

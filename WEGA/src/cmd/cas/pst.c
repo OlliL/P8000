@@ -18,8 +18,10 @@ struct pst *
 pstlook(name)
 char *name;
 {
+	register struct pst *pp;
+	register char *q;
 	register struct pbucket *bp;
-	register int h;
+	int h;
 
 	h = hash(503, name);
 	for (bp = &pbuckets[h]; bp; bp = bp->pb_next) {
