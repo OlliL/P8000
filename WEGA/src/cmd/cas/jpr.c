@@ -199,6 +199,7 @@ NODE *list;
 		return;
 	}
 	putins(op, list);
+	return;
 }
 
 /* the instruction as jr or calr */
@@ -219,4 +220,5 @@ NODE *list;
 		return;
 	}
 	putins(op, list);
+	return;
 }

@@ -208,7 +208,9 @@ unsigned char mode;
 
 	h = hash(1000, name);
 	i = hashtab[h];
-	while ((p = stabp(i)) != 0) {
+	for (;;) {
+		if ((p = stabp(i)) == 0)
+			return (0);
 		if (strcmp(name, (char *)p->s_2) == 0)
 			return (i);
 		if ((p->s_7 & 8) == 8) {
@@ -217,7 +219,6 @@ unsigned char mode;
 		} else
 			i = 0;
 	}
-	return (0);
 }
 
 /* { */

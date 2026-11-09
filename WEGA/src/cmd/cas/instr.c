@@ -25,10 +25,6 @@ NODE *args;
 		if (opmatch(op->p_rows[i].ir_cls, args) == 0) {
 			putrow(&op->p_rows[i], args);
 			switch (op->p_tok) {
-			case 62:
-				iputb(1);
-				iputb(0);
-				break;
 			case 63:
 				iputb(1);
 				iputb(4);
@@ -40,6 +36,10 @@ NODE *args;
 			case 65:
 				iputb(1);
 				iputb(1);
+				break;
+			case 62:
+				iputb(1);
+				iputb(0);
 				break;
 			}
 			return(0);

@@ -33,7 +33,7 @@ struct segt *segtab;
 /* the header and the segment table from the sizes of the sections */
 ohdrinit()
 {
-	register int i;
+	register unsigned i;
 	register int seeksz;
 	register long imsize, bss;
 	register struct segt *p;
@@ -67,7 +67,7 @@ ohdrinit()
 		seektab[i].sk_end += lctab[i][0];
 		if (lctab[i][0] != 0) {
 			p->sg_code = lctab[i][0];
-			p->sg_atr |= SG_CODE;
+			p->sg_atr = p->sg_atr | SG_CODE;
 		}
 		lctab[i][0] = 0;
 		imsize += lctab[i][1];
@@ -75,13 +75,13 @@ ohdrinit()
 			seektab[i + 1].sk_off = lctab[i][1];
 		if (lctab[i][1] != 0) {
 			p->sg_data = lctab[i][1];
-			p->sg_atr |= SG_DATA;
+			p->sg_atr = p->sg_atr | SG_DATA;
 		}
 		lctab[i][1] = 0;
 		bss += lctab[i][2];
 		if (lctab[i][2] != 0) {
 			p->sg_bss = lctab[i][2];
-			p->sg_atr |= SG_BSS;
+			p->sg_atr = p->sg_atr | SG_BSS;
 		}
 		lctab[i][2] = 0;
 		p++;

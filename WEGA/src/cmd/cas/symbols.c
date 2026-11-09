@@ -175,11 +175,11 @@ int idx;
 		if ((sp->s_7 & 1) != 0) {
 			ip = itabp(sp->s_8);
 			switch (ip->s_0 & 0xFF) {
-			case 0:
-				v |= 2;
-				break;
 			case 1:
 				v |= 4;
+				break;
+			case 0:
+				v |= 2;
 				break;
 			case 2:
 				v |= 6;

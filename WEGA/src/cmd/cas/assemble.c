@@ -143,7 +143,7 @@ unsigned char code;
 		break;
 	case 61:
 	case 62:
-		code -= 0x3C;
+		code = code - 0x3C;
 		if ((unsigned long)ops[code]->n_u.l > 7)
 			error(2, "Register must be 0-7\n");
 		asmreg(code);
@@ -151,13 +151,13 @@ unsigned char code;
 	case 21:
 	case 22:
 	case 23:
-		code -= 20;
+		code = code - 20;
 		ops[code]->n_u.l -= 1;
 		asmreg(code);
 		break;
 	case 73:
 	case 74:
-		code -= 0x47;
+		code = code - 0x47;
 		ops[code]->n_u.l = ops[code]->n_u.l * 5;
 		ops[code]->n_u.l -= 1;
 		asmreg(code);

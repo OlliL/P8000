@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "9f1f3ed2",
+ "measured_at": "628b518e",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -109,15 +109,14 @@
   "putins": {
    "file": "instr.c",
    "orig": "0x04f6",
-   "status": "open",
-   "note": "Model: only the registers differ.",
-   "lines": 10
+   "status": "exact",
+   "note": "Source: the cases in the order 63, 64, 65, 62."
   },
   "opmatch": {
    "file": "instr.c",
    "orig": "0x05de",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "The original keeps the register parameter p in the scratch pair rr6 (a leaf function: procopt of popt renames), sccvc in rr12 (cluster K-LEAF).",
    "lines": 18
   },
   "putrow": {
@@ -221,9 +220,8 @@
   "pstlook": {
    "file": "pst.c",
    "orig": "0x3b06",
-   "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 10
+   "status": "exact",
+   "note": "Source: `register int h` between the two pointers, no `q` (r11 in the original)."
   },
   "pstcmp": {
    "file": "pst.c",
@@ -278,8 +276,8 @@
    "file": "symbols.c",
    "orig": "0x41d6",
    "status": "open",
-   "note": "Model: only the registers differ.",
-   "lines": 16
+   "note": "Source: the inner cases in the order 1, 0, 2. Left: the merged tail `v |= ... << 16` stays at the second copy in the original (cluster K-TAIL).",
+   "lines": 8
   },
   "defcomm": {
    "file": "symbols.c",
@@ -357,9 +355,8 @@
   "stlook": {
    "file": "ssymtab.c",
    "orig": "0x4996",
-   "status": "open",
-   "note": "Model: the same instructions with other operands or in another order.",
-   "lines": 14
+   "status": "exact",
+   "note": "Source: `for (;;) { if ((p = stabp(i)) == 0) return (0); ... }`."
   },
   "blkopen": {
    "file": "ssymtab.c",
@@ -532,8 +529,8 @@
    "file": "ofile.c",
    "orig": "0x6394",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 148
+   "note": "Source: `register unsigned i`, `p->sg_atr = p->sg_atr | SG_...` (the original loads, ors and stores). Left: `lctab[i][1]` with the constant offset folded into the address in the original (cluster K-IDX).",
+   "lines": 104
   },
   "ohdrput": {
    "file": "ofile.c",
@@ -633,9 +630,8 @@
   "asmfield": {
    "file": "assemble.c",
    "orig": "0x773a",
-   "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 9
+   "status": "exact",
+   "note": "Source: `code = code - 0x3C` (and 20, 0x47): the original computes in int, `code -= ...` gives a byte subtraction."
   },
   "asmimm": {
    "file": "assemble.c",
@@ -742,15 +738,15 @@
    "file": "jpr.c",
    "orig": "0x893e",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 13
+   "note": "Source: `return;` at the end. Left: the two compares of the switch stand behind the bodies in the original (cluster K-SWB).",
+   "lines": 8
   },
   "jrput": {
    "file": "jpr.c",
    "orig": "0x8980",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 13
+   "note": "As jpput (cluster K-SWB).",
+   "lines": 8
   },
   "jpr2": {
    "file": "jpr2.c",
@@ -844,7 +840,7 @@
    "file": "listing.c",
    "orig": "0x94d4",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Block order of the loop (the lnl branch in front in the original); if/else turned, for: no effect (cluster K-BLK).",
    "lines": 9
   },
   "lstline": {
