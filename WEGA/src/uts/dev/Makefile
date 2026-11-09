@@ -1,6 +1,6 @@
 # uts/dev: the device drivers, library LIB2 (usr/sys/dev/LIB2), and the sources shipped beside it.
 # Compiled with the segmented scc. The drivers of the optional devices (mt, rd, udev1 ... udev6) are dummy objects from *.d.s,
-# as in the shipped LIB2. koppel.s, disk.s, the dummies: original assembler (as -u); clist.s: C-ASM (cas -u).
+# as in the shipped LIB2. koppel.s, disk.s, the dummies: original assembler (as -u); clist.s: assembler for cas (cas -u).
 #
 #   make                       build LIB2
 #   make install PREFIX=dir    install below dir (default /)

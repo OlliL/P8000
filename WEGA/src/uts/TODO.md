@@ -32,11 +32,9 @@ Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). 11 differing lines of the di
 4. `vk` still needs `OLD_D3` (without it sys1, sys2, ureg, tt0 differ) and `OLD_D24` with `OLD_D25` (sig, sys2, sys3, debug); seven forms of the mask `(caddr_t)((long)x & 0x7F00FFFF)` in sys3 gave nothing.
 5. After each changed switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already before this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 
-## 4. Assembler sources that should be C
+## 4. `sys/lock.s` to C
 
-Rule (owner): a `.s` whose header names a "Bearbeiter" other than O. Lehmann is an original assembler source and stays assembler. Candidates for C (check each
-against the object): `sys/lock.s` (README: 9 functions `lkdata unlk locked deadlock unlock lockalloc lockfree lockadd lkfront`, SYSIII `lock.c` as the base) and
-`dev/clist.s` (O. Lehmann, C-ASM; SYSIII `clist` in `tmp/sys3`, traces of the C compiler in the object).
+README: 9 functions `lkdata unlk locked deadlock unlock lockalloc lockfree lockadd lkfront`. Check against the object.
 
 ## 5. Text files of the root
 
