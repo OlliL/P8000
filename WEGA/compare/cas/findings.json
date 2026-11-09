@@ -3,7 +3,7 @@
  "measure": "check.sh",
  "compiler": "sccvc -O (parser.y and assemble.c without -O), the working compiler of cas (OLDCC.md)",
  "binary": "/bin/cas",
- "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 43, 47 and 4900, with the text size of the original. Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
+ "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 45, 49 and 4855, with the text size of the original. Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -868,10 +868,10 @@
   "asmins": {
    "file": "assemble.c",
    "orig": "0x742a",
-   "instr": "133/127",
+   "instr": "129/127",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 110 with the shipped scc, 68 with sccvc). Original shows D8.",
-   "lines": 22
+   "lines": 12
   },
   "asmword": {
    "file": "assemble.c",
@@ -884,10 +884,10 @@
   "asmfield": {
    "file": "assemble.c",
    "orig": "0x773a",
-   "instr": "143/142",
+   "instr": "136/142",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 90 with the shipped scc, 71 with sccvc). Original shows D8.",
-   "lines": 21
+   "lines": 12
   },
   "asmimm": {
    "file": "assemble.c",
@@ -1208,5 +1208,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "50a37dd3"
+ "measured_at": "7addd71a"
 }

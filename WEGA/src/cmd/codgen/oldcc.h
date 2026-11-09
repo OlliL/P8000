@@ -26,6 +26,8 @@
 #define OLD_D6S
 #define OLD_D3J
 #define OLD_D3K
+#define OLD_D2Q
+#define OLD_D2U
 #endif
 
 #ifdef OLD_V0P
