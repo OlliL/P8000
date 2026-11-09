@@ -71,7 +71,14 @@ def build(work, name, pas):
     if pas == 'codgen':
         p = os.path.join(src, 'oldcc.h')
         txt = open(p + '.all').read()
-        new = re.sub(r'^#define %s\b.*\n' % plain, '', txt, count=1, flags=re.M)
+        new = txt
+        # only in the blocks of the version: the same name can stand in the block of another compiler (OLD_VC) in front of them
+        for v in ('OLD_V0P', 'OLD_V0'):
+            m = re.search(r'^#ifdef %s\n(.*?)^#endif' % v, txt, re.M | re.S)
+            part = re.sub(r'^#define %s\b.*\n' % plain, '', m.group(1), count=1, flags=re.M)
+            if part != m.group(1):
+                new = txt[:m.start(1)] + part + txt[m.end(1):]
+                break
         assert new != txt, name
         open(p, 'w').write(new)
     else:
