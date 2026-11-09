@@ -660,6 +660,14 @@ Validation:
 
 ## Tools (tools/)
 
+- `recon/strictcmp.py` (the strict comparison of a model with the original, ranges from findings.json): a function
+  without `-O` (cas parser.y, assemble.c) has its prologue at its end and its entry jumps there; the range of the
+  original then starts with the prologue block of the function in front. strictcmp moves such a range behind its
+  leading prologue block (frame saves up to the jump) and its end behind the next; calls go to the moved entry. An
+  unnamed range of findings.json ("(module addr)") without a symbol of ours is the tail of the function in front.
+  `-V` prints the diffs of all differing functions in one run.
+- `recon/findings.py PROG`: status exact/masked/open from strictcmp for the programs of PROGS and for every program
+  whose findings.json has `comparison` (cas, measured on its model in RECON_TMP); notes only by hand.
 - `sout.py` s.out reader: header, segment table, symbols, relocations
   (`-r`), hex (`-x`).
 - `war.py` ar reader: `list`, `extract`.

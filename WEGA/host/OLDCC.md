@@ -114,7 +114,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
   `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6` (codgen); none in popt. Not `OLD_D1`,
   not `OLD_D3`. cas: the old one (D17).
 - Byte-identical modules of libc-v1.a from C: isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3.
-- Test bench (System III sources of 38 programs of 1982): 125 of 153 functions equal, 219 differing lines.
+- Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 131 of 153 functions equal, 221 differing lines.
 - Byte-identical: `/bin/dc`, `/usr/bin/ranlib`.
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
@@ -139,8 +139,14 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 
 ### The old scc of cas
 
-cas was built by an older scc (D5 and D13 are only seen there); its parser and `assemble` without `-O`, the other modules
-with `-O`. It is not assigned to a version. `sccvc` (`src/cmd/cc/build/segvc`, `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/old/cas`, `/lib/vc/spopt`: the shipped one with `OLD_D13`) is the working compiler of `src/cmd/cas/Makefile`, `old/cas` stays with scc. Measured on the model of cas (`strictcmp.py`): the shipped scc 2 equal, 16 masked, 9228 differing lines; with `OLD_D6C OLD_D6D OLD_D6T` (scparse) and `OLD_D2W OLD_D1R OLD_D2W6 OLD_D2P OLD_D2R OLD_D2F OLD_D2L OLD_D2T OLD_D10 OLD_D3P OLD_D3AW OLD_D6S OLD_D3J OLD_D3K OLD_D2Q OLD_D2U OLD_D5G OLD_D6T OLD_D6J OLD_D2M OLD_D2O OLD_D2PT` (scodgen; `OLD_VC` in `oldcc.h`): `sccvc` and `src/lib/slibc-v11.a`, 101 of 151 functions exact (`findings.py`), 1649 differing lines, the text, data and bss sizes of the original; data 36374 of 38360 bytes equal (the rest: code addresses). These are switches of v0 and v0p, so a segmented compiler of that age is likely (a guess). `/bin/cas` itself is not reached; the notes per function are in `compare/cas/findings.json`.
+cas was built by an older scc, not assigned to a version; its parser and `assemble` without `-O`, the other modules with
+`-O`. Its switches are those of v0 and v0p, partly in a segmented form, so a segmented compiler of that age is likely (a
+guess). The differences only seen there: D5 (address first, index behind it), D13 (bit 31 of addresses), the segmented forms
+of D6 (`OLD_D6T`, `OLD_D6J`) and of `OLD_D2R`. `sccvc` is the working compiler of `src/cmd/cas/Makefile` (`old/cas` stays
+with scc): `src/cmd/cc/build/segvc`, `/lib/vc/scparse` (`OLD_D6C OLD_D6D OLD_D6T`), `/lib/vc/scodgen` (`OLD_VC` in
+`oldcc.h`), `/lib/vc/spopt` (the shipped one with `OLD_D13`), `/lib/old/cas`; linked with `src/lib/slibc-v11.a`. With it the
+text, data and bss of the model have the sizes of the original; `/bin/cas` is not byte-identical yet. The state per function
+is in `compare/cas/FINDINGS.md`.
 
 ### The old libc members inside size, strip, ranlib, cas
 
@@ -178,8 +184,7 @@ Free registers and pairs:
 - v0 `OLD_D2T` (under OLD_D2L): the register of a TEMP (the value of a switch, held from its start to the compares behind
   the bodies) counts as free while idle, so the bodies take r2 again (setreg, prtree, opact).
 - v0 `OLD_D2P`: OLD_D2L for pairs, an idle pair that holds a name counts as free when it weighs less than the first free
-  pair, and only rr0 or rr2 (an idle rr4 stays when rr6 is free: cas opxor, opor, opand, opshl, opshr, opadd, opsub; neutral
-  in the models of v0p and the bench of v0); two idle words of a pair are given back and merge; for a word an idle lighter pair is given back and split.
+  pair, and only rr0 or rr2 (an idle rr4 stays when rr6 is free: cas opxor, opor, opand, opshl, opshr, opadd, opsub); two idle words of a pair are given back and merge; for a word an idle lighter pair is given back and split.
 - v0p `OLD_D2PO`: an idle odd word whose even half is free is given back when a pair is wanted and the even half weighs less
   than the first free pair (refid, dclstruct).
 - v0 `OLD_D2W6`: when a pair is asked for and rr2 and rr0 are taken, rr6 comes before rr4 (refid, argalloc); only the pair
@@ -283,7 +288,7 @@ bodies in source order. The shipped compiler uses `cpir` from 1 or 3 cases on, v
   jp @rr2`; the count of cpir neither in that pair nor in rr0 (r4).
 - vc `OLD_D6J` (codgen gswitch, segmented): a dense jump table loads the target into the pair of the value (`rl r2,#2; ldl rr2,Lt(r2);
   jp @rr2`), as the nonsegmented one into the value register; the shipped one takes another free pair (rr6). Not for a value in
-  rr0. cas: 23 functions (iputexpr, main, defsym, p2tag, asmins, getop, error, ...).
+  rr0. cas: iputexpr, main, defsym, p2tag, asmins, getop, error and others.
 - v0, v0p `OLD_D6D` (cparse genswitch): the limit of the jump table is 3 values per case, `range <= 3*(n-1)` where `n` counts one more than the cases; the shipped one `range <= 3*n` (zzzcode, switch of
   `fldsz`; doprnt 0_5: 4 cases over a range of 14 by cpir).
 - v0p `OLD_D6S` (codgen, match): the value of a switch assigned to its register when it is already there prints no `ld r2,r2`
@@ -323,7 +328,7 @@ Not reproduced in v1: ld load1 (the store behind a dead `ldl rr4,rr2` shared wit
 
 ### D13 Pointer constants (old scc)
 
-The assembler of the old scc keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`) and of every address of an `.addr` (pointer tables, jump tables: `%8400xxxx`, `%8500xxxx`); the shipped one clears both, and both keep it clear in `.long`. vc `OLD_D13`: cas `assemble.c` (a long immediate goes through `genlop` with the flag of an address), `parser.y` and `p2loop.c` (pass 1 marks an `.addr` list by the tags 0xE0 and 0xE1, pass 2 calls `genlop` with the flag between them), and spopt (`popt/z21.c`: a jump table entry is printed as `.addr`, the shipped one prints `.long`; `/lib/vc/spopt`). The cut members of `slibc-v11` (doprnt, cnvt, endopen) have their jump tables as `.long` and bit 31 clear, as in /bin/cas. `/lib/old/cas` (`src/cmd/cas/old`, with `OLD_CAS`; `OLD_D13` acts only in segmented code, so v0 and v0p are not touched), built by scc. cas `ssymtab` and the data of cas: 2044 words with bit 31.
+The assembler of the old scc keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`) and of every address of an `.addr` (pointer tables, jump tables: `%8400xxxx`, `%8500xxxx`); the shipped one clears both, and both keep it clear in `.long`. vc `OLD_D13`: cas `assemble.c` (a long immediate goes through `genlop` with the flag of an address), `parser.y` and `p2loop.c` (pass 1 marks an `.addr` list by the tags 0xE0 and 0xE1, pass 2 calls `genlop` with the flag between them), and spopt (`popt/z21.c`: a jump table entry is printed as `.addr`, the shipped one prints `.long`; `/lib/vc/spopt`). The cut members of `slibc-v11` (doprnt, cnvt, endopen) have their jump tables as `.long` and bit 31 clear, as in /bin/cas. `/lib/old/cas` (`src/cmd/cas/old`, with `OLD_CAS`; `OLD_D13` acts only in segmented code, so v0 and v0p are not touched), built by scc. Witnesses: cas `ssymtab` (immediates), the pointer and jump tables in the data of cas.
 
 ### D14 Varargs prologue and post-increment (old libc members)
 
@@ -432,27 +437,27 @@ their marks in the older columns are from comparisons with the shipped compiler.
 
 | Binary | Object | Ver. | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr | D15 if/else layout | D16 frame operand | D17 call form | D18 0(r15) | D19 operand order | D20 code motion | D22 double rq4 | D23 zero addend | D24 mask | D25 mask | D29 switch |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| cas | ifile.c | old scc | x | x | x |  |  | x |  | x | x | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | instr.c | old scc | x | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | scanner.c | old scc | x | x | x |  |  | ? | ? |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | main.c | old scc |  | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | nodes.c | old scc | x | x |  |  | x | x | ? |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | parser.y (parser.c) | old scc | x | x | x |  | x | x | ? |  |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | expr.c | old scc | x | x | x |  |  | x |  |  |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | p2loop.c | old scc |  | x | x |  |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | ofile.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | gen.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | assemble.c | old scc |  | x | x |  |  | x |  |  |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | getops.c | old scc |  | x | x |  |  | x |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | error.c | old scc |  |  | x |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | ifile.c | old scc | x | x | x |  |  | x |  | x | x | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | instr.c | old scc | x | x |  |  |  | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | scanner.c | old scc | x | x | x |  |  | x | ? |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | main.c | old scc |  | x |  |  |  | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | nodes.c | old scc | x | x |  |  | x | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | parser.y (parser.c) | old scc | x | x | x |  | x | x | ? |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | expr.c | old scc | x | x | x |  |  | x |  |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | p2loop.c | old scc |  | x | x |  |  | x |  | x |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | ofile.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | gen.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | assemble.c | old scc |  | x | x |  |  | x |  |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | getops.c | old scc |  | x | x |  |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | error.c | old scc |  |  | x |  |  | x |  |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | listing.c | old scc |  |  | x |  |  |  | x | x |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | optim.c | old scc |  |  | x | x |  | x | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | jpr2.c | old scc |  |  | x |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | jpr.c | old scc |  |  | x | x |  | x | x | x |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | locntr.c | old scc | x | x | x | x |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | ssymtab.c | old scc |  |  |  |  |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | symbols.c | old scc | x | x |  |  |  | x |  | x |  | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | pst.c | old scc | x | x |  |  |  |  | ? | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | symbols.c | old scc | x | x |  |  |  | x |  | x |  | x | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | pst.c | old scc | x | x |  |  |  |  | ? | x |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | subr.c | old scc |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | ranlib | ranlib.c | v0 | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | strip | strip.c | v1 | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -508,7 +513,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 - The rule of the spill of arguments (D4).
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
 - Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
-  - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md` 2026-11-02, 11-03).
-  - Source forms tried 2026-11-08 (and 11-03 for `OLD_D16A`), none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
+  - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
+  - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.
