@@ -22,10 +22,10 @@ char *s;
 	while (*s) {
 		c = (*s & 0xDF) - 0xDA;
 		s++;
-		if (p == (char *)&k)
-			p++;
-		else
+		if (p != (char *)&k)
 			p = (char *)&k;
+		else
+			p++;
 		*p = c;
 		h += k;
 	}

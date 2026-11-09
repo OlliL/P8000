@@ -69,8 +69,10 @@ jinit()
 struct jrec *
 newrec()
 {
+	long ssgbrk();
 	register int n;
 	struct jrec *p;
+	int unused;
 
 	if (jused >= jcap) {
 		p = jfree;
