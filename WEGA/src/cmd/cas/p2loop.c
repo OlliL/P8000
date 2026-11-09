@@ -79,7 +79,8 @@ unsigned char tag;
 			lstsync(curline);
 		break;
 	case 11:
-		x = igetw() + lcaux[cursec][cursub].la_0;
+		x = igetw();
+		x += lcaux[cursec][cursub].la_0;
 		if (cursub != 2) {
 			if (lflag) {
 				savelflag = lflag;
