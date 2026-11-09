@@ -20,8 +20,8 @@ int ninf = 0;
 int nameflag = 0;		/* a name was read: it is put to the symbol file */
 char errmsg[80] = {0};
 
-NODE *listp;			/* walks over a list of nodes */
-int symmode;			/* how a name is looked up: 6 local, 0 global */
+extern NODE *listp;		/* walks over a list of nodes (pst.c) */
+extern int symmode;		/* how a name is looked up: 6 local, 0 global (pst.c) */
 
 extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring();
 extern NODE *dotval(), *opshort(), *opseg(), *opoff(), *opadd(), *opsub();
