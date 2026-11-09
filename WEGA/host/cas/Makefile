@@ -28,13 +28,13 @@ cas: $(OBJS)
 %.c: %.y
 
 # casold: the early jump optimization of the old cas (../OLDCC.md, D17)
-OLDOBJS = $(filter-out jpr.o ssymtab.o optim.o,$(OBJS)) jpr_old.o ssymtab_old.o optim_old.o
+OLDOBJS = $(filter-out jpr.o ssymtab.o optim.o assemble.o,$(OBJS)) jpr_old.o ssymtab_old.o optim_old.o assemble_old.o
 
 casold: $(OLDOBJS)
 	$(HOSTCC) $(CFLAGS) -o $@ $(OLDOBJS)
 
 %_old.o: %.c cas.h
-	$(HOSTCC) $(CFLAGS) -DOLD_CAS -c -o $@ $<
+	$(HOSTCC) $(CFLAGS) -DOLD_CAS -DOLD_D13 -c -o $@ $<
 
 parser:
 	WEGA=$(abspath $(WEGA)) EMU=$(EMU) sh mkparser.sh

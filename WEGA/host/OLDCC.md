@@ -140,7 +140,7 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 ### The old scc of cas
 
 cas was built by an older scc (D5 and D13 are only seen there); its parser and `assemble` without `-O`, the other modules
-with `-O`. It is not assigned to a version. `sccvc` (`src/cmd/cc/build/segvc`, `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/vc/cas` with `OLD_D13`, the shipped `/lib/spopt`) is the working compiler of `src/cmd/cas/Makefile`, `old/cas` stays with scc. Measured on the model of cas (`strictcmp.py`, 155 functions): the shipped scc 2 equal, 16 masked, 9228 differing lines; with `OLD_D6C OLD_D6D` (scparse) and `OLD_D2W OLD_D1R OLD_D2W6 OLD_D2P OLD_D2R OLD_D2F OLD_D2L OLD_D2T OLD_D10 OLD_D3P OLD_D3AW OLD_D6S OLD_D3J OLD_D3K` (scodgen; `OLD_VC` in `oldcc.h`): `sccvc` and `src/lib/slibc-v11.a`, 43, 47, 5012 and the data and bss sizes of the original (text 46592 against 46848: own code, rounded to pages). These are switches of v0 and v0p, so a segmented compiler of that age is likely (a guess). `/bin/cas` itself is not reached; the notes per function are in `compare/cas/findings.json`.
+with `-O`. It is not assigned to a version. `sccvc` (`src/cmd/cc/build/segvc`, `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/old/cas`, the shipped `/lib/spopt`) is the working compiler of `src/cmd/cas/Makefile`, `old/cas` stays with scc. Measured on the model of cas (`strictcmp.py`, 155 functions): the shipped scc 2 equal, 16 masked, 9228 differing lines; with `OLD_D6C OLD_D6D` (scparse) and `OLD_D2W OLD_D1R OLD_D2W6 OLD_D2P OLD_D2R OLD_D2F OLD_D2L OLD_D2T OLD_D10 OLD_D3P OLD_D3AW OLD_D6S OLD_D3J OLD_D3K` (scodgen; `OLD_VC` in `oldcc.h`): `sccvc` and `src/lib/slibc-v11.a`, 43, 47, 4900 and the text, data and bss sizes of the original. These are switches of v0 and v0p, so a segmented compiler of that age is likely (a guess). `/bin/cas` itself is not reached; the notes per function are in `compare/cas/findings.json`.
 
 ### The old libc members inside size, strip, ranlib, cas
 
@@ -312,7 +312,7 @@ Not reproduced in v1: ld load1 (the store behind a dead `ldl rr4,rr2` shared wit
 
 ### D13 Pointer constants (old scc)
 
-The assembler of the old scc keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`), the shipped one clears it: vc `OLD_D13` (cas assemble.c: a long immediate goes through `genlop` with the flag of an address). `/lib/vc/cas`, built by scc. cas `ssymtab`; 8 more functions of cas equal, 388 lines fewer.
+The assembler of the old scc keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`), the shipped one clears it: vc `OLD_D13` (cas assemble.c: a long immediate goes through `genlop` with the flag of an address). `/lib/old/cas` (`src/cmd/cas/old`, with `OLD_CAS`; `OLD_D13` acts only in segmented code, so v0 and v0p are not touched), built by scc. cas `ssymtab`; 8 more functions of cas equal, 388 lines fewer.
 
 ### D14 Varargs prologue and post-increment (old libc members)
 

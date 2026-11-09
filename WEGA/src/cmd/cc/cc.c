@@ -113,16 +113,11 @@ char	*popt		= SEG("/lib/popt", "/lib/spopt");
 #endif
 #endif
 char	*clist		= "/lib/clist";
-#if defined(OLD_V0) || defined(OLD_V0P)
-/* v0 and v0p: the assembler with the early jump optimization (../cas/old) */
+#if defined(OLD_V0) || defined(OLD_V0P) || defined(OLD_VC)
+/* v0, v0p and sccvc: the assembler with the early jump optimization (../cas/old) */
 char	*cas		= "/lib/old/cas";
 #else
-#ifdef OLD_VC
-/* sccvc: bit 31 of a segmented address constant stays (OLD_D13 in ../cas) */
-char	*cas		= "/lib/vc/cas";
-#else
 char	*cas		= "/bin/cas";
-#endif
 #endif
 char	*ld		= SEG("/bin/ld", "/bin/sld");
 char	*fpf		= "/z/bin/lib/fpf";

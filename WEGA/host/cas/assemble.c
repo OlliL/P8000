@@ -182,7 +182,11 @@ asmfield(int code)
 	case 36:
 	case 37:
 		code -= 0x23;
+#ifdef OLD_D13
+		genlop(ops[code], 1);		/* bit 31 of a segmented address constant stays */
+#else
 		genlop(ops[code], 0);
+#endif
 		break;
 	default:
 		asmimm(code);
