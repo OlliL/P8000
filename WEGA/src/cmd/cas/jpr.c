@@ -29,52 +29,56 @@ NODE *list;
 
 	ncc = 0;
 	for (p = list; p != 0; p = p->n_next) {
-		if (p->n_type == 0x36) {
+		switch (p->n_type) {
+		case 0x36:
 			if (tok == 0x51)
 				error(2, "Invalid operand combination\n");
 			ncc++;
 			continue;
-		}
-		if (p->n_type != 0x56) {
+		case 0x56:
+			break;
+		default:
 			jpput(tok, list);
 			return (0);
 		}
 		e = (NODE *)p->n_u.l;
 		type = exprtype(e);
-		if (e->n_type == 3) {
+		switch (e->n_type) {
+		case 3:
 			jpput(tok, list);
 			return (0);
-		}
-		if (e->n_type == 7) {
+		case 7:
 			sym = e->n_u.pw.w;
 			off = 0;
-			continue;
-		}
-		if (e->n_type != 0x19) {
+			break;
+		case 0x19:
+			if (type != 7 && type != 1) {
+				jpput(tok, list);
+				return (0);
+			}
+			sym = ((NODE *)e->n_u.cc.l1)->n_u.pw.w;
+			off = ((NODE *)e->n_u.cc.l2)->n_u.l;
+			if (e->n_u.cc.c2 == 0x1b)
+				off = -off;
+			break;
+		default:
 			error(2, "Expressions used in jpr must be constant\n");
-			continue;
 		}
-		if (type != 7 && type != 1) {
-			jpput(tok, list);
-			return (0);
-		}
-		sym = ((NODE *)e->n_u.cc.l1)->n_u.pw.w;
-		off = ((NODE *)e->n_u.cc.l2)->n_u.l;
-		if (e->n_u.cc.c2 == 0x1b)
-			off = -off;
 	}
 	if (type == 1) {
 		res = jprange(tok, sym, off);
-		if (res == 0) {
+		switch (res) {
+		case 0:
 			jrput(tok, list);
 			return;
-		}
-		if (res == 1) {
+		case 1:
 			jpput(tok, list);
 			return;
-		}
-		if (res != 2)
+		case 2:
+			break;
+		default:
 			return;
+		}
 	}
 	idx = jprnew(tok, sym, off);
 	jprput(idx, tok, ncc, list);
