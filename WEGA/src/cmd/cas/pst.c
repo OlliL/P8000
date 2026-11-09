@@ -41,14 +41,12 @@ char *t, *s;
 
 	i = 0;
 	do {
-		if (isupper(s[i]))
-			c = tolower(s[i]);
-		else
-			c = s[i];
-		if (c != t[i])
-			return(-1);
+		if ((c = isupper(s[i]) ? tolower(s[i]) : s[i]) != t[i])
+			goto bad;
 	} while (s[i++] != 0);
 	return(0);
+bad:
+	return(-1);
 }
 
 /* -1 when the letters of the name are not all in the same case */
@@ -68,13 +66,8 @@ char *s;
 	for (; s[i]; i++) {
 		if (!isalpha(s[i]))
 			continue;
-		if (upper) {
-			if (islower(s[i]))
-				return(-1);
-		} else {
-			if (isupper(s[i]))
-				return(-1);
-		}
+		if (upper ? islower(s[i]) : isupper(s[i]))
+			return(-1);
 	}
 	return(0);
 }
