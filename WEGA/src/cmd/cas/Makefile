@@ -30,7 +30,7 @@ build/cas: FORCE
 	cd build ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile cas
 
 vc/cas: FORCE
-	cd vc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc SCCFLAGS="-O -DOLD_D13" cas
+	cd vc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc ASMDEFS=-DOLD_D13 cas
 
 old/cas: FORCE
 	cd old ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc SCCFLAGS="-O -DOLD_CAS" cas
@@ -76,8 +76,9 @@ scanner.o: y.tab.h
 
 parser.o: parser.c
 	$(SCC) -c -I../ parser.c
+# without -O, as in /bin/cas; ASMDEFS: the switch of vc/cas
 assemble.o: ../assemble.c
-	$(SCC) -c ../assemble.c
+	$(SCC) $(ASMDEFS) -c ../assemble.c
 
 stable.o: ../stable.c
 	$(SCC) $(SCCFLAGS) -c ../stable.c
