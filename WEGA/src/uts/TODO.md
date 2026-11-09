@@ -19,7 +19,7 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 
 ## 2. `u.o`
 
-1. `u.o`: still a binary `u.obj` copied (`$ABS` works only in segment 1; `u` must lie at segment 62, `0xf600`). Target: `u.s`/`u.c` that gives the same bytes (README). Until then `u.obj` stays and is documented.
+1. `u.o` is still the binary `u.obj`. `as -u -o u.o u.s` gives its 98 bytes except 2: at offset 0x54 and 0x59 the segment of the symbol `_u`, %01 instead of %3E. Measured: the symbols `u_p` and `u_d` are the default sections of a PLZ/ASM module, so the source was for `as`; `cas` writes neither, and `_u ::= <<62>>%f600` there gives type %21 (as `_u` in `mch.o` of ZEUS 3.21), not %61. `$ABS` takes a 16-bit offset (manual `z8000asm.pdf`, 4.3.2 and C.1: a constant expression; a long value is cut), the segment of the symbol is the index of the current section (`$SECTION foo` gives 2). `<<62>>` in `$ABS` or a constant is an error or ignored; `$SECTION` takes no segment; the `as` of ZEUS 3.21 has the same size and gives the same results. `sld -r -M` changes the structure of the object. An index 62 would need 61 more sections, each with a symbol in the table. Not found: an input that gives the original.
 
 ## 3. The object that differs: `tty.o`, `TCXONC`
 
