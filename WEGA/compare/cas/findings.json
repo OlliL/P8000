@@ -3,7 +3,7 @@
  "measure": "check.sh",
  "compiler": "sccvc -O (parser.y and assemble.c without -O), the working compiler of cas (OLDCC.md)",
  "binary": "/bin/cas",
- "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 85 strictly equal, 86 masked, 2113 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36374 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13`; the value lists of a cpir switch right in front of its targets from `OLD_D6T`; the target of a dense jump table in the pair of the value from `OLD_D6J` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
+ "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 86 strictly equal, 87 masked, 1934 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36374 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13`; the value lists of a cpir switch right in front of its targets from `OLD_D6T`; the target of a dense jump table in the pair of the value from `OLD_D6J` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -116,18 +116,18 @@
   "iputexpr": {
    "file": "ifile.c",
    "orig": "0x02e0",
-   "instr": "74/72",
+   "instr": "73/72",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 62 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 45
+   "note": "Model (strictcmp, sccvc): 53 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
+   "lines": 43
   },
   "sputexpr": {
    "file": "ifile.c",
    "orig": "0x03b2",
-   "instr": "74/72",
+   "instr": "73/72",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 62 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 45
+   "note": "Model (strictcmp, sccvc): 53 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
+   "lines": 43
   },
   "iputloc": {
    "file": "ifile.c",
@@ -155,10 +155,10 @@
   "putins": {
    "file": "instr.c",
    "orig": "0x04f6",
-   "instr": "76/75",
+   "instr": "75/75",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 15 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 12
+   "note": "Model (strictcmp, sccvc): 10 lines, only the registers differ.",
+   "lines": 10
   },
   "opmatch": {
    "file": "instr.c",
@@ -265,10 +265,10 @@
   "escape": {
    "file": "nodes.c",
    "orig": "0x1cdc",
-   "instr": "68/57",
+   "instr": "64/57",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 69 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair. The original has the address in rr2, sccvc computes it in rr0 and copies it to rr4 for the base (rr0 is no base); a load through that copy then goes into rl4 (OLD_D2R).",
-   "lines": 48
+   "note": "Model (strictcmp, sccvc): 43 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
+   "lines": 38
   },
   "mkstring": {
    "file": "nodes.c",
@@ -581,18 +581,18 @@
   "exprreloc": {
    "file": "expr.c",
    "orig": "0x4fb2",
-   "instr": "95/85",
+   "instr": "86/85",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 60 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair. As escape: an address computed in rr0 and copied for the base.",
-   "lines": 39
+   "note": "Model (strictcmp, sccvc): 23 lines, other instructions (source form or compiler, not separated).",
+   "lines": 23
   },
   "exprval": {
    "file": "expr.c",
    "orig": "0x50b6",
-   "instr": "166/162",
+   "instr": "159/162",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 34 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair. As escape: an address computed in rr0 and copied for the base.",
-   "lines": 17
+   "note": "Model (strictcmp, sccvc): 5 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
+   "lines": 4
   },
   "opshort": {
    "file": "expr.c",
@@ -738,10 +738,10 @@
   "symtype": {
    "file": "ofile.c",
    "orig": "0x66cc",
-   "instr": "58/55",
+   "instr": "57/55",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 15 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 5
+   "note": "Model (strictcmp, sccvc): 10 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
+   "lines": 3
   },
   "osymout": {
    "file": "ofile.c",
@@ -776,10 +776,10 @@
   "symadjust": {
    "file": "ofile.c",
    "orig": "0x6cb2",
-   "instr": "72/72",
+   "instr": "75/72",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 38 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 12
+   "note": "Model (strictcmp, sccvc): 19 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
+   "lines": 9
   },
   "genb": {
    "file": "gen.c",
@@ -995,7 +995,7 @@
    "orig": "0x8734",
    "instr": "99/101",
    "status": "close",
-   "note": "Model (strictcmp, sccvc): 48 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair."
+   "note": "Model (strictcmp, sccvc): 36 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair."
   },
   "jprput": {
    "file": "jpr.c",
@@ -1060,10 +1060,9 @@
   "jdist": {
    "file": "optim.c",
    "orig": "0x8e72",
-   "instr": "130/128",
-   "status": "open",
-   "note": "Model (strictcmp, sccvc): 6 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 3
+   "instr": "128/128",
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "jiter": {
    "file": "optim.c",
@@ -1185,5 +1184,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "f8e7980c"
+ "measured_at": "23cfcc15"
 }
