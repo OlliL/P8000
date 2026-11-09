@@ -11,6 +11,7 @@ Usage: strictcmp.py [-m] [-c] [-a] [-v NAME] [LINKED]
   -a       as -c, and @r15 and %0000(r15) count as different too (without progcfg D18): as near to the bytes as the
            comparison goes while the code addresses still differ
   -v NAME  print the diff of NAME (original | ours)
+  -V       print the diff of every differing function
 
 Functions and their original ranges: findings.json (functions: name -> orig, size_orig; status crt0 is skipped). Our
 function is the symbol _NAME up to the next text symbol. Strict: the jumps of functions with the same lines must go to the same instruction or known function; only the targets of jr/jp/djnz/call/calr and immediates
@@ -65,9 +66,11 @@ def prologue(code, lo, hi):
     ins = list(zcode.insns(code, lo, hi, CFG.SEG))
     if not ins or not re.match(r'^(dec|sub)\tr15,', ins[0][1]):
         return 0
-    for i, (x, t) in enumerate(ins):
+    for i, (x, t) in enumerate(ins[1:], 1):
         if UNCOND.match(t):
             return (ins[i + 1][0] if i + 1 < len(ins) else hi) - lo
+        if not re.match(r'^(ldm|ld|ldl)\t.*\(r15\)', t):
+            return 0        # not only the saves of a frame: no prologue block
     return 0
 
 
@@ -78,6 +81,9 @@ def main():
     d18 = CFG.D18 and '-a' not in a
     a = [x for x in a if x not in ('-m', '-c', '-a')]
     verbose = None
+    if '-V' in a:
+        verbose = '*'
+        a.remove('-V')
     if '-v' in a:
         i = a.index('-v')
         verbose = a[i + 1]
@@ -120,7 +126,10 @@ def main():
         def n_ours(t):
             return plain(re.sub(r'%([0-9A-F]{4})\b', lambda m: '%%%04X' % (int(m.group(1), 16) + delta)
                                 if lim <= int(m.group(1), 16) < top else m.group(0), t))
-    starts = sorted(orig_fn) + [getattr(CFG, 'OWN_LIM', len(gc))]
+    # an unnamed range of findings.json ("(module addr)") without a symbol of ours: the tail of the function in front
+    # (case blocks behind its ret); it is compared as part of that function
+    tails = {k for k in fn if k.startswith('(') and sym.get('_' + k) is None}
+    starts = sorted(int(f['orig'], 16) for k, f in fn.items() if k not in tails) + [getattr(CFG, 'OWN_LIM', len(gc))]
     for name, f in fn.items():
         # the entry of a function whose prologue stands at its end (see below): calls of the original go there
         lo, s = int(f['orig'], 16), sym.get('_' + name)
@@ -131,7 +140,7 @@ def main():
                 orig_fn.add(lo + p)
     same = diff = 0
     for name, f in sorted(fn.items(), key=lambda x: int(x[1]['orig'], 16)):
-        if f.get('status') == 'crt0':
+        if f.get('status') == 'crt0' or name in tails:
             continue
         lo = int(f['orig'], 16)
         # without size_orig (cas): up to the next function of findings.json
@@ -157,7 +166,7 @@ def main():
         same += not d
         diff += bool(d)
         print('%-16s %04x %4d %4d  %-10s %s' % (name, lo, hi - lo, e - s, f.get('status'), 'SAME' if not d else 'DIFF %d' % len(d)))
-        if verbose == name:
+        if verbose == name or (verbose == '*' and d):
             print('\n'.join(difflib.unified_diff(theirs, mine, 'orig', 'ours', lineterm='', n=int(os.environ.get('STRICT_CTX', '2')))))
     print('same %d, differ %d (%s)' % (same, diff, 'masked' if masked else
                                        'all forms' if '-a' in sys.argv else 'call forms' if callform else 'strict'))
