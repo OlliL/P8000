@@ -14,6 +14,8 @@
  */
 #define _GNU_SOURCE
 #include <errno.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -284,6 +286,36 @@ static int sc_long(Z8K *c, uint32_t v) { c->r[4] = v >> 16; c->r[5] = v; c->fl &
 static int sc_err(Z8K *c, int e) { c->r[4] = e; c->r[5] = 0; c->fl |= F_C; return 0; }
 static int sc_res(Z8K *c, long v) { return v < 0 ? sc_err(c, errno) : sc_ok(c, v); }
 
+/* Z8K_TMPLOG=FILE: one line per event, appended with one write (parallel processes): the pids the guest sees, its
+   programs and what it does below /tmp, to find clashes of temporary files between parallel guest processes */
+static void tmplog(const char *fmt, ...)
+{
+	static int fd = -2;
+	char line[1400];
+	struct timespec ts;
+	va_list ap;
+	int n;
+
+	if (fd == -2) {
+		const char *f = getenv("Z8K_TMPLOG");
+		fd = f ? open(f, O_WRONLY | O_CREAT | O_APPEND, 0644) : -1;
+	}
+	if (fd < 0)
+		return;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	n = snprintf(line, sizeof line, "%ld.%06ld %d ", (long)ts.tv_sec, ts.tv_nsec / 1000, (int)getpid());
+	va_start(ap, fmt);
+	n += vsnprintf(line + n, sizeof line - n - 1, fmt, ap);
+	va_end(ap);
+	if (n > (int)sizeof line - 2)
+		n = sizeof line - 2;
+	line[n++] = '\n';
+	if (write(fd, line, n) < 0)
+		return;
+}
+
+static int istmp(const char *gp) { return strncmp(gp, "/tmp/", 5) == 0; }
+
 /* a host inode as the 16 bits of WEGA; never 0, which marks a free directory slot */
 static unsigned ino16(ino_t ino)
 {
@@ -403,6 +435,7 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 	const char *hp;
 	gstr(c, path, gp, sizeof gp);
 	hp = hostpath(gp, hb, sizeof hb);
+	tmplog("exec %s", gp);
 	if (access(hp, X_OK) < 0) return sc_err(c, errno);
 	e = exec_open(hp, &x);
 	if (e) return sc_err(c, e);
@@ -458,6 +491,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		if (pid < 0) return sc_err(c, errno);
 		if (pid == 0) { c->pc += 0; return sc_ok(c, getppid()); }	/* child runs the following jr */
 		c->pc += 2;						/* parent skips it */
+		tmplog("fork child %d guest %u", (int)pid, (unsigned)(pid & 0xFFFF));
 		return sc_ok(c, pid); }
 	case 3:		/* read */
 		i = a_int(&a); p = a_ptr(&a); j = a_int(&a);
@@ -483,6 +517,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		gstr(c, p, gp, sizeof gp);
 		hp = hostpath(gp, hb, sizeof hb);
 		k = open(hp, i & 3);
+		if (istmp(gp)) tmplog("open %s mode %d -> %d", gp, i & 3, k < 0 ? -errno : k);
 		if (k < 0) return sc_err(c, errno);
 		dirload(k, hp);
 		return sc_ok(c, k);
@@ -490,7 +525,9 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		p = a_ptr(&a); i = a_int(&a);
 		gstr(c, p, gp, sizeof gp);
 		hp = hostpath(gp, hb, sizeof hb);
-		return sc_res(c, open(hp, O_WRONLY | O_CREAT | O_TRUNC, i & 07777));
+		k = open(hp, O_WRONLY | O_CREAT | O_TRUNC, i & 07777);
+		if (istmp(gp)) tmplog("creat %s -> %d", gp, k < 0 ? -errno : k);
+		return sc_res(c, k);
 	case 6: {	/* close */
 		Dir **dp;
 		i = a_int(&a);
@@ -513,6 +550,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		{
 			const char *h1 = hostpath(gp, hb, sizeof hb), *h2 = hostpath(gp2, hb2, sizeof hb2);
 			int r = link(h1, h2);
+			if (istmp(gp) || istmp(gp2)) tmplog("link %s %s -> %d", gp, gp2, r < 0 ? -errno : 0);
 			if (r < 0 && errno == EEXIST) {
 				struct stat s1, s2;
 				/* Linux mkdir has already created the WEGA mkdir "."/".." links. */
@@ -535,7 +573,9 @@ static int sys_call_impl(Z8K *c, unsigned n)
 					return sc_ok(c, 0);
 				return sc_res(c, rmdir(hp));
 			}
-			return sc_res(c, unlink(hp));
+			k = unlink(hp);
+			if (istmp(gp)) tmplog("unlink %s -> %d", gp, k < 0 ? -errno : 0);
+			return sc_res(c, k);
 		}
 	case 11: {	/* exec */
 		Ad pa, pv;
@@ -610,7 +650,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 			return sc_err(c, errno);
 
 		return sc_long(c, r); }
-	case 20: return sc_ok(c, getpid());
+	case 20: tmplog("getpid guest %u", (unsigned)(getpid() & 0xFFFF)); return sc_ok(c, getpid());
 	case 23: case 46: return sc_ok(c, 0);
 	case 24: return sc_ok2(c, getuid(), geteuid());
 	case 47: return sc_ok2(c, getgid(), getegid());
@@ -778,6 +818,10 @@ int main(int argc, char **argv)
 		mkdir(t, 0777);
 	}
 	c->syscall = sys_call;
+	{
+		char cwd[1024];
+		tmplog("start %s root %s cwd %s", argv[i], root, getcwd(cwd, sizeof cwd) ? cwd : "?");
+	}
 	hp = hostpath(argv[i], hb, sizeof hb);
 	err = exec_open(hp, &x);
 	if (err) { fprintf(stderr, "z8k-emu: %s: %s\n", argv[i], strerror(err)); return 126; }

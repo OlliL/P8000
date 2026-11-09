@@ -68,11 +68,22 @@ finish() {
 		echo "time of the corpora (wall; CPU seconds of the phases over all cases: prepare, original, wega, host, rest; cases):"
 		cat $T/timing_corpus.log
 	fi
+	if [ -s $T/tmplog.log ]; then
+		# temporary files of parallel guest processes (host/tools/tmpclash.py): the first clashes and the totals
+		python3 $REPO/host/tools/tmpclash.py $T/tmplog.log > $T/tmpclash.txt 2>&1
+		echo
+		grep -m 5 '^clash\|^same' $T/tmpclash.txt
+		tail -1 $T/tmpclash.txt
+	fi
 	[ $FAIL = 0 ] && echo ALL OK || echo FAILED
 	exit $FAIL
 }
 
 mkdir -p $T
+# every z8k-emu of this run logs its pids and its files below the guest /tmp (wega.c tmplog), for tmpclash.py in finish
+rm -f $T/tmplog.log $T/tmpclash.txt
+Z8K_TMPLOG=$T/tmplog.log
+export Z8K_TMPLOG
 rm -f $T/timing.log $T/timing_corpus.log
 echo "machine: `nproc` cores, load `cut -d' ' -f1-3 /proc/loadavg`, MAKEARGS=$J" >> $T/timing.log
 
