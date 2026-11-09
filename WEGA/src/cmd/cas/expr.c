@@ -123,7 +123,7 @@ NODE *np;
 			if (np->n_u.cc.c2 == 0x1A)
 				v = ((NODE *)np->n_u.cc.l2)->n_u.l;
 			else
-				v = 0 - ((NODE *)np->n_u.cc.l2)->n_u.l;
+				v = -((NODE *)np->n_u.cc.l2)->n_u.l;
 		} else {
 			v = symval(idx);
 			if (np->n_u.cc.c2 == 0x1A)
@@ -251,7 +251,7 @@ NODE *np;
 	if (t == 6)
 		error(2, "Invalid expression type for ^O operator\n");
 	if (t == 3) {
-		p = mknode1(3, np->n_u.l);
+		p = mknode1(3, (unsigned char)np->n_u.l);	/* sic: a byte where mknode1 takes a long (quirk) */
 		nfreed++;
 		return (p);
 	}
@@ -479,10 +479,8 @@ NODE *r;
 	}
 	if (rt == 0 || lt == 0)
 		return (mknode25(0, (unsigned char)0x1B, (long)l, (long)r));
-	if (rt == 3 && lt == 5)
-		return (mknode25(5, (unsigned char)0x1B, (long)l, (long)r));
-	if (rt == 5 && lt == 5)
-		return (mknode25(5, (unsigned char)0x1B, (long)l, (long)r));
+	if (rt == 3 && lt == 5 || rt == 5 && lt == 5)
+		return (mknode25((unsigned char)5, (unsigned char)0x1B, (long)l, (long)r));
 	if (rt == 3 && (lt == 4 || lt == 1 || lt == 7)) {
 		if (l->n_type == 7)
 			return (mknode25(lt, (unsigned char)0x1B, (long)l, (long)r));
@@ -564,10 +562,8 @@ NODE *r;
 	}
 	if (rt == 0 || lt == 0)
 		return (mknode25(0, (unsigned char)0x1A, (long)l, (long)r));
-	if (rt == 3 && lt == 5)
-		return (mknode25(5, (unsigned char)0x1A, (long)l, (long)r));
-	if (rt == 5 && lt == 3)
-		return (mknode25(5, (unsigned char)0x1A, (long)l, (long)r));
+	if (rt == 3 && lt == 5 || rt == 5 && lt == 3)
+		return (mknode25((unsigned char)5, (unsigned char)0x1A, (long)l, (long)r));
 	if ((rt == 4 || rt == 1 || rt == 7) && lt == 3) {
 		if (r->n_type == 7)
 			return (mknode25(rt, (unsigned char)0x1A, (long)r, (long)l));

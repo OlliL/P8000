@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "53838c07",
+ "measured_at": "9f1f3ed2",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -436,9 +436,8 @@
   "exprval": {
    "file": "expr.c",
    "orig": "0x50b6",
-   "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 5
+   "status": "exact",
+   "note": "Source: `v = -x` (unary minus; `0 - x` gives another sequence)."
   },
   "opshort": {
    "file": "expr.c",
@@ -453,9 +452,8 @@
   "opoff": {
    "file": "expr.c",
    "orig": "0x543c",
-   "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 7
+   "status": "exact",
+   "note": "Quirk of the original: `^O` of a constant passes `(unsigned char)value` where mknode1 takes a long (KNOWLEDGE.md, quirks)."
   },
   "opxor": {
    "file": "expr.c",
@@ -500,9 +498,8 @@
   "opsub": {
    "file": "expr.c",
    "orig": "0x59fc",
-   "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 8
+   "status": "exact",
+   "note": "Source: `if (rt == 3 && lt == 5 || rt == 5 && lt == 5)` with `(unsigned char)5` (the original passes the 5 as a byte)."
   },
   "opplus": {
    "file": "expr.c",
@@ -512,9 +509,8 @@
   "opadd": {
    "file": "expr.c",
    "orig": "0x5ccc",
-   "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 10
+   "status": "exact",
+   "note": "Source: as opsub, `if (rt == 3 && lt == 5 || rt == 5 && lt == 3)` with `(unsigned char)5`."
   },
   "pass2": {
    "file": "p2loop.c",
