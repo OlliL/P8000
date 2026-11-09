@@ -7,7 +7,7 @@ static char sccsid[] = "@[$]/as/as/ifile.c\t1.2 05/27/83 15:47:57 - 87wega3.2";
  * trees are written in prefix order.  There are two files with the same set of
  * routines: the intermediate file (i) and the symbol file (s).
  */
-#include <stdio.h>
+#include "stdio.h"
 #include "cas.h"
 
 int curline = 1;			/* line number of the statement */
@@ -29,14 +29,14 @@ char c;
 iputw(w)
 int w;
 {
-	iputb(w >> 8);
-	iputb(w);
+	iputb((unsigned char)((unsigned)w >> 8));
+	iputb((unsigned char)w);
 }
 
 iputl(l)
 long l;
 {
-	iputw((int)(l >> 16));
+	iputw((int)((unsigned long)l >> 16));
 	iputw((int)l);
 }
 
@@ -52,14 +52,14 @@ char c;
 sputw(w)
 int w;
 {
-	sputb(w >> 8);
-	sputb(w);
+	sputb((unsigned char)((unsigned)w >> 8));
+	sputb((unsigned char)w);
 }
 
 sputl(l)
 long l;
 {
-	sputw((int)(l >> 16));
+	sputw((int)((unsigned long)l >> 16));
 	sputw((int)l);
 }
 

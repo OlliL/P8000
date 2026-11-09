@@ -8,7 +8,7 @@ static char sccsid[] = "@[$]scanner.c\t1.2  07/18/83 13:26:36 Copr. 1981 87wega3
  * is left in yylval.  Characters that were read too far are given back with
  * ungetc.
  */
-#include <stdio.h>
+#include "stdio.h"
 #include <ctype.h>
 #include "cas.h"
 #include "y.tab.h"

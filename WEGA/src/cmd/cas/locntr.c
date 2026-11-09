@@ -114,11 +114,11 @@ endpass1()
 	iputb((unsigned char)sec);
 	setsub(sub);
 	switch (sub) {
-	case 0:
-		iputb(12);
-		break;
 	case 1:
 		iputb(13);
+		break;
+	case 0:
+		iputb(12);
 		break;
 	case 2:
 		iputb(14);

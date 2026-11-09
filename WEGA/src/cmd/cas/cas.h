@@ -20,7 +20,7 @@ struct node {
 	} n_u;
 };
 
-#include <stdio.h>
+#include "stdio.h"
 #define NNODES	100			/* size of the node pool */
 
 extern NODE	nodes[NNODES];

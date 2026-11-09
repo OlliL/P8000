@@ -20,6 +20,7 @@ CC = '/bin/scc'
 MODULES = ['ifile', 'instr', 'scanner', 'main', 'nodes', 'parser', 'pst', 'subr', 'symbols', 'ssymtab', 'table1', 'table2', 'locntr',
            'expr', 'p2loop', 'ofile', 'gen', 'assemble', 'getops', 'error', 'pstab', 'jpr', 'jpr2', 'optim', 'listing', 'stable', 'itable', 'ntable']
 NOOPT = ('parser', 'assemble')
+EXTRA_FUNCS = {'yyparse': {'file': 'parser.y', 'orig': '0x1ff6', 'status': 'open'}}    # not listed by check.sh
 STATICFUNCS = True    # static functions (escape, digval) get a symbol, so that strictcmp finds them
 MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_cas', 'casm')
 STRICT_INPUT = MODEL_OUT

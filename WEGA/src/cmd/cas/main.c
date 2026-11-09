@@ -10,7 +10,7 @@ static char sccsid[] = "@[$]/as/as/main.c\t1.2 05/27/83 15:48:39 - 87wega3.2";
  * was opened.  The source is read from stdin; with a file name argument it
  * is reopened as stdin.
  */
-#include <stdio.h>
+#include "stdio.h"
 #include <signal.h>
 #include "cas.h"
 

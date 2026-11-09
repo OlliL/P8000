@@ -79,6 +79,7 @@ def main():
     text = sorted(set(s['value'] for s in o.symbols if s['type'] in TEXT_TYPES and s['value'] < len(oc)))
     ours_fn = set(s['value'] for s in o.symbols if s['type'] == 34)
     fn = {k: f for k, f in json.load(open(CFG.FINDINGS))['functions'].items() if isinstance(f.get('orig'), str)}
+    fn.update(getattr(CFG, 'EXTRA_FUNCS', {}))    # functions the measure of findings.json does not list
     orig_fn = set(int(f['orig'], 16) for f in fn.values())
     sym = {s['name']: s['value'] for s in o.symbols}
     if masked:
