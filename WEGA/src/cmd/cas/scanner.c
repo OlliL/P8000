@@ -93,6 +93,12 @@ again:
 		c = getch();
 		ADD(c);
 		switch (c) {
+		case '/':
+			do
+				c = getch();
+			while (c != '\n' && c != '\r');
+			ADD(c);
+			break;
 		case '*':
 			c1 = ' ';
 			c2 = ' ';
@@ -107,12 +113,6 @@ again:
 				}
 			}
 			goto again;
-		case '/':
-			do
-				c = getch();
-			while (c != '\n' && c != '\r');
-			ADD(c);
-			break;
 		default:
 			UNGET();
 		}
@@ -128,7 +128,7 @@ again:
 		sym = pstlook(tokbuf);
 		if (sym)
 			goto found;
-		idx = stlook(tokbuf, 0);
+		idx = stlook(tokbuf, (unsigned char)0);
 		if ((long)(unsigned)idx == 0) {
 			yylval.p = tokbuf;
 			tok = 0x56;
@@ -348,7 +348,8 @@ again:
 		tp++;
 	}
 done:
-	if (tok == 0x22) {
+	switch (tok) {
+	case 0x22:
 		error(2, "Invalid token\n");
 		do
 			c = getch();
@@ -356,8 +357,7 @@ done:
 		ADD(c);
 		UNGET();
 		return(tok);
-	}
-	if (tok == 0x23) {
+	case 0x23:
 		error(2, "Unknown keyword\n");
 		return(tok);
 	}
