@@ -623,7 +623,7 @@
    "orig": "0x54e0",
    "instr": "53/53",
    "status": "same",
-   "note": "Model (strictcmp, sccvc): strictly equal. Tried without effect: operand order, a long temporary, a cast of the result, `^=`; the pair is chosen by OLD_D2P (now OLD_D2PL)."
+   "note": "Model (strictcmp, sccvc): strictly equal. Tried without effect: operand order, a long temporary, a cast of the result, `^=`; the pair was chosen by OLD_D2P, which now takes only an idle rr0 or rr2."
   },
   "opor": {
    "file": "expr.c",
@@ -1185,5 +1185,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "a5fad71c"
+ "measured_at": "5c5bb6b2"
 }

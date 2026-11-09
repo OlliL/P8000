@@ -140,7 +140,7 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 ### The old scc of cas
 
 cas was built by an older scc (D5 and D13 are only seen there); its parser and `assemble` without `-O`, the other modules
-with `-O`. It is not assigned to a version. `sccvc` (`src/cmd/cc/build/segvc`, `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/old/cas`, `/lib/vc/spopt`: the shipped one with `OLD_D13`) is the working compiler of `src/cmd/cas/Makefile`, `old/cas` stays with scc. Measured on the model of cas (`strictcmp.py`, 155 functions): the shipped scc 2 equal, 16 masked, 9228 differing lines; with `OLD_D6C OLD_D6D OLD_D6T` (scparse) and `OLD_D2W OLD_D1R OLD_D2W6 OLD_D2P OLD_D2R OLD_D2F OLD_D2L OLD_D2T OLD_D10 OLD_D3P OLD_D3AW OLD_D6S OLD_D3J OLD_D3K OLD_D2Q OLD_D2U OLD_D5G OLD_D6T OLD_D6J OLD_D2M OLD_D2O OLD_D2PL` (scodgen; `OLD_VC` in `oldcc.h`): `sccvc` and `src/lib/slibc-v11.a`, 73, 73, 2629 and the text, data and bss sizes of the original; data 36374 of 38360 bytes equal (the rest: code addresses). These are switches of v0 and v0p, so a segmented compiler of that age is likely (a guess). `/bin/cas` itself is not reached; the notes per function are in `compare/cas/findings.json`.
+with `-O`. It is not assigned to a version. `sccvc` (`src/cmd/cc/build/segvc`, `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/old/cas`, `/lib/vc/spopt`: the shipped one with `OLD_D13`) is the working compiler of `src/cmd/cas/Makefile`, `old/cas` stays with scc. Measured on the model of cas (`strictcmp.py`, 155 functions): the shipped scc 2 equal, 16 masked, 9228 differing lines; with `OLD_D6C OLD_D6D OLD_D6T` (scparse) and `OLD_D2W OLD_D1R OLD_D2W6 OLD_D2P OLD_D2R OLD_D2F OLD_D2L OLD_D2T OLD_D10 OLD_D3P OLD_D3AW OLD_D6S OLD_D3J OLD_D3K OLD_D2Q OLD_D2U OLD_D5G OLD_D6T OLD_D6J OLD_D2M OLD_D2O` (scodgen; `OLD_VC` in `oldcc.h`): `sccvc` and `src/lib/slibc-v11.a`, 73, 73, 2629 and the text, data and bss sizes of the original; data 36374 of 38360 bytes equal (the rest: code addresses). These are switches of v0 and v0p, so a segmented compiler of that age is likely (a guess). `/bin/cas` itself is not reached; the notes per function are in `compare/cas/findings.json`.
 
 ### The old libc members inside size, strip, ranlib, cas
 
@@ -178,7 +178,8 @@ Free registers and pairs:
 - v0 `OLD_D2T` (under OLD_D2L): the register of a TEMP (the value of a switch, held from its start to the compares behind
   the bodies) counts as free while idle, so the bodies take r2 again (setreg, prtree, opact).
 - v0 `OLD_D2P`: OLD_D2L for pairs, an idle pair that holds a name counts as free when it weighs less than the first free
-  pair; two idle words of a pair are given back and merge; for a word an idle lighter pair is given back and split.
+  pair, and only rr0 or rr2 (an idle rr4 stays when rr6 is free: cas opxor, opor, opand, opshl, opshr, opadd, opsub; neutral
+  in the models of v0p and the bench of v0); two idle words of a pair are given back and merge; for a word an idle lighter pair is given back and split.
 - v0p `OLD_D2PO`: an idle odd word whose even half is free is given back when a pair is wanted and the even half weighs less
   than the first free pair (refid, dclstruct).
 - v0 `OLD_D2W6`: when a pair is asked for and rr2 and rr0 are taken, rr6 comes before rr4 (refid, argalloc); only the pair

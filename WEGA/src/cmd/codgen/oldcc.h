@@ -32,7 +32,6 @@
 #define OLD_D6T
 #define OLD_D2M
 #define OLD_D2O
-#define OLD_D2PL	/* OLD_D2P: an idle pair only when it is rr0 or rr2 */
 #define OLD_D6J		/* a dense jump table (segmented): the target into the pair of the value */
 #endif
 
@@ -78,7 +77,7 @@
 #define OLD_D3K		/* a parameter stays known in its register at a label a jump has named, and behind && and || */
 #define OLD_D2V		/* OLD_D2R only when no lighter register is free (the address register competes by weight) */
 #define OLD_D2M		/* a word multiplied through a pair: the pair of its even register (allocreg) */
-#define OLD_D2P		/* OLD_D2L for pairs: an idle pair that holds a name is free when it weighs less */
+#define OLD_D2P		/* OLD_D2L for pairs: an idle pair (rr0, rr2) that holds a name is free when it weighs less */
 #define OLD_D2U		/* the right operand of a long multiplication wants no register (rallo) */
 #define OLD_D2G		/* OLD_D2L: an idle word of the same weight as the free one wins */
 #define OLD_D5S		/* an element of a local array: (index + offset) + fp, the frame pointer added last (fixfld) */

@@ -50,11 +50,6 @@ static char rcname[][8] = {
 
 /* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
 
-#ifdef OLD_D2PL
-#define D2PL(t)	((t)->reg < 4)	/* vc: OLD_D2P takes only an idle rr0 or rr2, not rr4 or rr6 */
-#else
-#define D2PL(t)	1
-#endif
 
 #ifdef OLD_D2PT
 #define D2PK(t)	1		/* v0p: OLD_D2P takes the registers of a TEMP too (the value of a switch) */
@@ -651,7 +646,7 @@ getreg(cls, reg, flag, sym)
 	}
 #endif
 #ifdef OLD_D2P
-	if (cls == 3 && reg == -1) {	/* v0: an idle pair that holds a name is free when it weighs less (OLD_D2L for pairs) */
+	if (cls == 3 && reg == -1) {	/* v0: an idle pair that holds a name is free when it weighs less (OLD_D2L for pairs); only rr0, rr2 */
 		for (w = rsfree; w && w->cls != 3; w = w->next)
 			;
 		for (t = rsuse; t; t = t->next)		/* two idle words of a pair: given back, they merge */
@@ -691,9 +686,9 @@ getreg(cls, reg, flag, sym)
 		m = 0;
 		for (t = rsuse; t; t = t->next)
 #ifdef OLD_D3KC
-			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && t->reg < 4 &&
 #else
-			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == 9) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && D2PL(t) &&
+			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == 9) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && t->reg < 4 &&
 #endif
 			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
 				m = t;
