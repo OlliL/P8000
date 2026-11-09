@@ -277,6 +277,7 @@ int sub;
 int sec;
 {
 	register struct sym *sp;
+	register struct sym *xp;
 	register struct sym *ip;
 	unsigned i;
 

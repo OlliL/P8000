@@ -354,7 +354,7 @@ symadjust()
 			ip = itabp(sp->s_8);
 			area = ip->s_0 & 0xFF;
 			sect = (unsigned)ip->s_0 >> 8;
-			switch (area) {
+			switch (ip->s_0 & 0xFF) {
 			case 1:
 				if (segmode != 0)
 					ip->s_2 += lctab[sect][0];
