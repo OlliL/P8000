@@ -150,21 +150,20 @@ unsigned char n;
 	register int idx;
 	unsigned char tag;
 	long v;
-	NODE *np;
 
 	tag = igetb();
 	switch (tag) {
 	case 1:
 		v = igetb();
-		np = mknode1(3, v);
+		ops[n] = mknode1(3, v);
 		break;
 	case 2:
 		v = (unsigned)igetw();
-		np = mknode1(3, v);
+		ops[n] = mknode1(3, v);
 		break;
 	case 3:
 		v = igetl();
-		np = mknode1(3, v);
+		ops[n] = mknode1(3, v);
 		break;
 	case 7:
 	case 8:
@@ -172,20 +171,19 @@ unsigned char n;
 		idx = igetw();
 		if (isdef(idx)) {
 			v = symval(idx);
-			np = mknode1(3, v);
+			ops[n] = mknode1(3, v);
 		} else
-			np = mknode7(idx);
+			ops[n] = mknode7(idx);
 		break;
 	case 23:
 	case 24:
 	case 25:
-		np = igetexpr();
+		ops[n] = igetexpr();
 		break;
 	default:
 		error(2, "Unexpected tag in intermediate file\n");
 		return;
 	}
-	ops[n] = np;
 }
 
 /* a node from the symbol file */
