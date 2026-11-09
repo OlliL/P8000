@@ -49,7 +49,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `bin/bc` | binary E707 | `tmp/sys3/usr/src/cmd/bc.y` | sys3 | D12 old?, D1 tight | - |
 | `bin/bcmp` | binary E711 | - | todo | D12 -, D1 loose | - |
 | `bin/bd` | binary E707 | - | todo | D12 -, D1 loose | - |
-| `bin/cas` | binary E611 | `src/cmd/cas` | partial | scc | slibc.a |
+| `bin/cas` | binary E611 | `src/cmd/cas` | partial | sccvc | slibc.a |
 | `bin/cat` | binary E707 | `tmp/sys3/usr/src/cmd/cat.c` | sys3 | D12 mixed, D1 tight | - |
 | `bin/cc` | binary E707 | `src/cmd/cc` | exact | cc | libc-v8.a |
 | `bin/chgrp` | binary E707 | `tmp/sys3/usr/src/cmd/chgrp.c` | sys3 | D12 old, D1 slots | - |

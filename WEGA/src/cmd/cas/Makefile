@@ -10,7 +10,8 @@
 # and bss to segment 5 and the three tables of the symbol table (stable, itable, ntable) to
 # the segments 7, 8 and 9.
 
-SCC = scc
+# the compiler nearest to /bin/cas (sccvc, host/OLDCC.md); old/cas, built before sccvc exists, by the shipped scc
+SCC = sccvc
 SCCFLAGS = -O
 YACC = yacc
 SLD = sld
@@ -29,7 +30,7 @@ build/cas: FORCE
 	cd build ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile cas
 
 old/cas: FORCE
-	cd old ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCCFLAGS="-O -DOLD_CAS" cas
+	cd old ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc SCCFLAGS="-O -DOLD_CAS" cas
 
 install: build/cas
 	cp build/cas $(PREFIX)/bin/cas

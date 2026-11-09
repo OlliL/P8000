@@ -25,7 +25,7 @@ done
 	echo 'done'
 } > $d/strip
 chmod +x $d/strip
-for t in sccv1 sccvk ccv1 ccv1q ccv1r ccv0 ccv0p; do
+for t in sccv1 sccvk sccvc ccv1 ccv1q ccv1r ccv0 ccv0p; do
 	printf '#!/bin/sh\nexec %s -r %s /bin/%s "$@"\n' $emu $old $t > $d/$t
 	chmod +x $d/$t
 done

@@ -9,6 +9,25 @@
 #define OLD_D24		/* a conversion between a pointer and a non-pointer of the same size stays; (long)x & 0x7f00ffff under a pointer conversion drops the AND (optim) */
 #endif
 
+#ifdef OLD_VC
+/* vc, the working compiler of cas (scodgen, with OLD_D6C and OLD_D6D in scparse and the shipped spopt): the switches of v0 and v0p that bring /bin/cas nearest,
+   found by measuring (host/OLDCC.md section 2, The old scc of cas); not proven to be the compiler of cas */
+#define OLD_D2W
+#define OLD_D1R
+#define OLD_D2W6
+#define OLD_D2P
+#define OLD_D2R
+#define OLD_D2F
+#define OLD_D2L
+#define OLD_D2T
+#define OLD_D10
+#define OLD_D3P
+#define OLD_D3AW
+#define OLD_D6S
+#define OLD_D3J
+#define OLD_D3K
+#endif
+
 #ifdef OLD_V0P
 /* v0p, the compiler of the passes: v0 and */
 #define OLD_V0

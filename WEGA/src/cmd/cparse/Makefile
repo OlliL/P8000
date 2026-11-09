@@ -21,7 +21,7 @@ CRT = ../../lib/libc/crt
 NONSEG_OBJS = cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o sym2.o
 SEG_OBJS = $(NONSEG_OBJS)
 ALL_TARGETS = build/nonseg/cparse build/seg/scparse
-OLD_TARGETS = build/nonsegv0/cparse build/nonsegv0p/cparse build/nonsegv1/cparse build/segv1/scparse build/segvk/scparse
+OLD_TARGETS = build/nonsegv0/cparse build/nonsegv0p/cparse build/nonsegv1/cparse build/segv1/scparse build/segvk/scparse build/segvc/scparse
 
 all: $(ALL_TARGETS)
 
@@ -40,6 +40,9 @@ build/seg/scparse: crt0.o FORCE
 	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CFLAGS="$(CFLAGS) -DSEG"
 build/segv1/scparse: crt0.o FORCE
 	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D12 -DOLD_D1"
+
+build/segvc/scparse: crt0.o FORCE
+	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D6C -DOLD_D6D"
 
 build/segvk/scparse: crt0.o FORCE
 	cd build/segvk ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D25"
@@ -67,6 +70,8 @@ oldinstall: $(OLD_TARGETS)
 	cp build/segv1/scparse $(PREFIX)/lib/v1/scparse
 	[ -d $(PREFIX)/lib/vk ] || mkdir $(PREFIX)/lib/vk
 	cp build/segvk/scparse $(PREFIX)/lib/vk/scparse
+	[ -d $(PREFIX)/lib/vc ] || mkdir $(PREFIX)/lib/vc
+	cp build/segvc/scparse $(PREFIX)/lib/vc/scparse
 
 #################
 # CRT0 Target
