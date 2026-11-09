@@ -6,8 +6,8 @@
 #   make lib              lib/libc/libc.a and lib/libc-vN.a, with the shipped tools and the old compilers
 #   make stage2           the old compilers once more, now with the libc of their time; installed below OLDROOT
 #   make cmds             cmd/
-#   make uts              the kernel (uts/); built by "make", but not by "make install" until it is byte-identical (uts/TODO.md)
-#   make install          the shipped programs and libc.a of cmd/ and lib/, stripped as the originals, below PREFIX
+#   make uts              the kernel (uts/)
+#   make install          the shipped programs and libc.a of cmd/ and lib/, stripped as the originals, and the kernel (uts/), below PREFIX
 #   make clean
 #
 # OLDROOT: where the old compilers go (bin/ccvN, lib/vN/, lib/old/cas). PREFIX: the root of make install.
@@ -54,6 +54,7 @@ install:
 	cd lib ; $(MAKE) install PREFIX=$(PREFIX)
 	cd cmd ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX)
 	cd etc ; $(MAKE) install PREFIX=$(PREFIX)
+	cd uts ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX)
 
 clean:
 	cd lib ; $(MAKE) clean

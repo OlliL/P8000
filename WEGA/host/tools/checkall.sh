@@ -3,7 +3,7 @@
 #
 # Works on copies of the files known to git (also changed and new ones, not the built ones) below CHECK_TMP, so that it
 # proves the repository alone is enough and leaves the working tree alone:
-#   1. make in src: the old compilers with the shipped tools, the libraries, the old compilers again, cmd/;
+#   1. make in src: the old compilers with the shipped tools, the libraries, the old compilers again, cmd/, uts/;
 #   2. make install PREFIX=CHECK_TMP/install: every file there against the file of the same name in WEGA with cmp (the
 #      Makefiles strip as the originals are stripped); every member of lib/libc/libc.a against the original;
 #   3. the corpora (host/tools/corpus.sh, side by side; the prepared inputs are compare/NAME/corpus.tar of the working tree (made when missing,
@@ -83,9 +83,9 @@ rm -rf $OLD $T/bin
 sh $HERE/oldroot.sh $WEGA $OLD
 sh $HERE/wbin.sh $T/bin $WEGA $OLD $EMU
 stamp '1 oldroot.sh, wbin.sh'
-# make all = stage1 lib stage2 cmds, one after the other so that every part is timed
+# make all = stage1 lib stage2 cmds uts, one after the other so that every part is timed
 : > $T/make.log
-for g in stage1 lib stage2 cmds; do
+for g in stage1 lib stage2 cmds uts; do
 	if (cd $T/tree/WEGA/src && PATH=$T/bin:$PATH make $g OLDROOT=$OLD MAKEARGS="$J") >> $T/make.log 2>&1; then
 		stamp "1 make $g in src"
 	else
@@ -94,7 +94,7 @@ for g in stage1 lib stage2 cmds; do
 		finish
 	fi
 done
-result 'make in src' ok 'stage1 lib stage2 cmds'
+result 'make in src' ok 'stage1 lib stage2 cmds uts'
 
 # 2. the bytes: make install into an empty root, every file there against the file of the same name in WEGA
 I=$T/install

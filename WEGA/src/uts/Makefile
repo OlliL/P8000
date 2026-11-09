@@ -3,7 +3,7 @@
 # linked with sld (wega) and ld (boot). ver.c is made from ver.c+ by chkout (the rule .c+.c of make).
 #
 #   make                       build wega, boot and the libraries
-#   make install PREFIX=dir    install below dir (default /); not yet part of "make install" in ../
+#   make install PREFIX=dir    install below dir (default /)
 #   make clean                 remove the objects and the results
 #
 # Order: sys and dev first (LIB1, LIB2), then conf links wega with them.

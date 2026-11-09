@@ -8,17 +8,17 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
-| [root](#root) | 12 | 9 | 0 | 0 | 3 |
+| [root](#root) | 12 | 11 | 0 | 0 | 1 |
 | [bin](#bin) | 111 | 24 | 1 | 54 | 32 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 9 | 0 | 2 | 19 |
 | [usr/bin](#usr-bin) | 145 | 10 | 0 | 81 | 54 |
 | [usr/lib](#usr-lib) | 197 | 0 | 0 | 128 | 69 |
-| [usr/sys](#usr-sys) | 28 | 0 | 0 | 1 | 27 |
-| [usr/other](#usr-other) | 15 | 0 | 0 | 9 | 6 |
+| [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
+| [usr/other](#usr-other) | 15 | 1 | 0 | 9 | 5 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 677 | 1 | 294 | 225 |
+| **all** | 1197 | 708 | 1 | 293 | 195 |
 
 <a id="root"></a>
 ## root
@@ -26,7 +26,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | File | Kind | Source | Status | Compiler | libc |
 |---|---|---|---|---|---|
 | `.cshrc` | text | - | todo | - | - |
-| `boot` | binary E707 | - | todo | - | - |
+| `boot` | binary E707 | `src/?` | exact | - | - |
 | `pb.image` | data | `src/cmd/BOOT0` | exact | - | - |
 | `sa.cat` | binary E707 | `src/cmd/standalone` | exact | cc | - |
 | `sa.diags` | binary E707 | `src/cmd/standalone` | exact | cc | - |
@@ -36,7 +36,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `sa.shipdisk` | binary E707 | `src/cmd/standalone` | exact | cc | - |
 | `sa.timer` | binary E707 | `src/cmd/standalone` | exact | cc | - |
 | `sa.verify` | binary E707 | `src/cmd/standalone` | exact | cc | - |
-| `wega` | binary E611 | - | todo | - | - |
+| `wega` | binary E611 | `src/?` | exact | - | - |
 
 <a id="bin"></a>
 ## bin
@@ -623,41 +623,41 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 
 | File | Kind | Source | Status | Compiler | libc |
 |---|---|---|---|---|---|
-| `usr/sys/conf/BOOTLIB` | archive | - | todo | - | - |
-| `usr/sys/conf/bstart.c` | text | - | todo | - | - |
-| `usr/sys/conf/bstart.o` | binary E711 | - | todo | - | - |
-| `usr/sys/conf/conf.o` | binary E607 | - | todo | - | - |
-| `usr/sys/conf/event.o` | binary E607 | - | todo | - | - |
-| `usr/sys/conf/fpe.o` | binary E607 | - | todo | - | - |
-| `usr/sys/conf/make.boot` | text | - | todo | - | - |
-| `usr/sys/conf/make.wega` | text | - | todo | - | - |
-| `usr/sys/conf/mch.o` | binary E607 | - | todo | - | - |
-| `usr/sys/conf/u.o` | binary E607 | - | todo | - | - |
-| `usr/sys/conf/ver.c+` | text | - | todo | - | - |
-| `usr/sys/conf/wpar.c` | text | - | todo | - | - |
-| `usr/sys/conf/wpar.o` | binary E607 | - | todo | - | - |
-| `usr/sys/dev/LIB2` | archive | - | todo | - | - |
-| `usr/sys/dev/blockdev.c` | text | - | todo | - | - |
-| `usr/sys/dev/chardev.c` | text | - | todo | - | - |
-| `usr/sys/dev/lp.c` | text | `tmp/sys3/usr/src/uts/vax/io/lp.c` | sys3 | - | - |
-| `usr/sys/dev/ttydev.c` | text | - | todo | - | - |
-| `usr/sys/dev/udev1.c` | text | - | todo | - | - |
-| `usr/sys/dev/udev2.c` | text | - | todo | - | - |
-| `usr/sys/dev/udev3.c` | text | - | todo | - | - |
-| `usr/sys/dev/udev4.c` | text | - | todo | - | - |
-| `usr/sys/dev/udev5.c` | text | - | todo | - | - |
-| `usr/sys/dev/udev6.c` | text | - | todo | - | - |
-| `usr/sys/h/mdsize.h` | text | - | todo | - | - |
-| `usr/sys/h/sysparm.h` | text | - | todo | - | - |
-| `usr/sys/h/ver.h` | text | - | todo | - | - |
-| `usr/sys/sys/LIB1` | archive | - | todo | - | - |
+| `usr/sys/conf/BOOTLIB` | archive | `src/?` | exact | - | - |
+| `usr/sys/conf/bstart.c` | text | `src/?` | exact | - | - |
+| `usr/sys/conf/bstart.o` | binary E711 | `src/?` | exact | - | - |
+| `usr/sys/conf/conf.o` | binary E607 | `src/?` | exact | - | - |
+| `usr/sys/conf/event.o` | binary E607 | `src/?` | exact | - | - |
+| `usr/sys/conf/fpe.o` | binary E607 | `src/?` | exact | - | - |
+| `usr/sys/conf/make.boot` | text | `src/?` | exact | - | - |
+| `usr/sys/conf/make.wega` | text | `src/?` | exact | - | - |
+| `usr/sys/conf/mch.o` | binary E607 | `src/?` | exact | - | - |
+| `usr/sys/conf/u.o` | binary E607 | `src/?` | exact | - | - |
+| `usr/sys/conf/ver.c+` | text | `src/?` | exact | - | - |
+| `usr/sys/conf/wpar.c` | text | `src/?` | exact | - | - |
+| `usr/sys/conf/wpar.o` | binary E607 | `src/?` | exact | - | - |
+| `usr/sys/dev/LIB2` | archive | `src/?` | exact | - | - |
+| `usr/sys/dev/blockdev.c` | text | `src/?` | exact | - | - |
+| `usr/sys/dev/chardev.c` | text | `src/?` | exact | - | - |
+| `usr/sys/dev/lp.c` | text | `src/?` | exact | - | - |
+| `usr/sys/dev/ttydev.c` | text | `src/?` | exact | - | - |
+| `usr/sys/dev/udev1.c` | text | `src/?` | exact | - | - |
+| `usr/sys/dev/udev2.c` | text | `src/?` | exact | - | - |
+| `usr/sys/dev/udev3.c` | text | `src/?` | exact | - | - |
+| `usr/sys/dev/udev4.c` | text | `src/?` | exact | - | - |
+| `usr/sys/dev/udev5.c` | text | `src/?` | exact | - | - |
+| `usr/sys/dev/udev6.c` | text | `src/?` | exact | - | - |
+| `usr/sys/h/mdsize.h` | text | `src/?` | exact | - | - |
+| `usr/sys/h/sysparm.h` | text | `src/?` | exact | - | - |
+| `usr/sys/h/ver.h` | text | `src/?` | exact | - | - |
+| `usr/sys/sys/LIB1` | archive | `src/?` | exact | - | - |
 
 <a id="usr-other"></a>
 ## usr/other
 
 | File | Kind | Source | Status | Compiler | libc |
 |---|---|---|---|---|---|
-| `usr/boot` | binary E707 | - | todo | D12 new?, D1 loose | - |
+| `usr/boot` | binary E707 | `src/?` | exact | - | - |
 | `usr/dict/hlista` | data | `tmp/sys3/usr/lib/spell/hlista` | sys3 | - | - |
 | `usr/dict/hlistb` | data | `tmp/sys3/usr/lib/spell/hlistb` | sys3 | - | - |
 | `usr/dict/hstop` | data | `tmp/sys3/usr/lib/spell/hstop` | sys3 | - | - |
