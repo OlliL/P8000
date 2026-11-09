@@ -51,6 +51,7 @@ shipped:
 	for d in $(SUBDIRS) ; do \
 		case $$d in \
 		sld) X="SCC=scc LIBC=/lib/slibc.a" ;; \
+		cas) X="SCC=scc" ;; \
 		codgen|popt) X='LIBC="../../../../lib/oldlibc/printf/s1.o ../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
 		cpp|cparse|cc|dc|ld) X="LIBC=/lib/libc.a" ;; \
 		*) X="" ;; \

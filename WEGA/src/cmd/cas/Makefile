@@ -20,7 +20,7 @@ SCRT0 = /lib/scrt0.o
 SLIBC = /lib/slibc.a
 PREFIX = /
 STRIP = strip
-ALL_OBJS = ifile.o instr.o scanner.o main.o done.o nodes.o parser.o pst.o subr.o symbols.o ssymtab.o table1.o table2.o locntr.o expr.o p2loop.o ofile.o gen.o assemble.o getops.o error.o pstab.o jpr.o jpr2.o optim.o listing.o
+ALL_OBJS = ifile.o instr.o scanner.o main.o nodes.o parser.o pst.o subr.o symbols.o ssymtab.o table1.o table2.o locntr.o expr.o p2loop.o ofile.o gen.o assemble.o getops.o error.o pstab.o jpr.o jpr2.o optim.o listing.o
 
 all: build/cas
 
@@ -95,8 +95,6 @@ scanner.o: ../scanner.c
 	$(SCC) $(SCCFLAGS) -I. -c ../scanner.c
 main.o: ../main.c
 	$(SCC) $(SCCFLAGS) -c ../main.c
-done.o: ../done.c
-	$(SCC) $(SCCFLAGS) -c ../done.c
 nodes.o: ../nodes.c
 	$(SCC) $(SCCFLAGS) -c ../nodes.c
 pst.o: ../pst.c

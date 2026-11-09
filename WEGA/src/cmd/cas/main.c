@@ -189,10 +189,7 @@ char **argv;
 	if (vflag)
 		printf("Pass 1\n");
 	yyparse();
-	if (synerr || semerr) {
-		fprintf(stderr, "Abort because of syntax errors\n");
-		done(-1);
-	}
+	if (synerr == 0 && semerr == 0) {
 	endpass1();
 	for (i = 0; i != nsect; i++) {
 		optim(1, i);
@@ -290,4 +287,28 @@ char **argv;
 		done(-1);
 	} else
 		done(0);
+	} else {
+	fprintf(stderr, "Abort because of syntax errors\n");
+	done(-1);
+	}
+}
+
+extern int (*oldint)(), (*oldquit)(), (*oldterm)();
+
+sigdone()
+{
+	done(-1);
+}
+
+done(code)
+int code;
+{
+	if (vflag && code != -1)
+		printf("Assembly Complete\n");
+	if (code == -1)
+		fprintf(stderr, "Assembler Abort\n");
+	signal(SIGINT, oldint);
+	signal(SIGQUIT, oldquit);
+	signal(SIGTERM, oldterm);
+	exit(code);
 }

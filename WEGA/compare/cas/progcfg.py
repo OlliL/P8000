@@ -17,7 +17,7 @@ ORIG_LIM = 0x10000  # the original is stripped
 SEG = True
 CC = '/bin/scc'
 # the model (host/recon/d12model.py, strictcmp.py): the link order of src/cmd/cas/Makefile; parser and assemble are compiled without -O there
-MODULES = ['ifile', 'instr', 'scanner', 'main', 'done', 'nodes', 'parser', 'pst', 'subr', 'symbols', 'ssymtab', 'table1', 'table2', 'locntr',
+MODULES = ['ifile', 'instr', 'scanner', 'main', 'nodes', 'parser', 'pst', 'subr', 'symbols', 'ssymtab', 'table1', 'table2', 'locntr',
            'expr', 'p2loop', 'ofile', 'gen', 'assemble', 'getops', 'error', 'pstab', 'jpr', 'jpr2', 'optim', 'listing', 'stable', 'itable', 'ntable']
 NOOPT = ('parser', 'assemble')
 STATICFUNCS = True    # static functions (escape, digval) get a symbol, so that strictcmp finds them
