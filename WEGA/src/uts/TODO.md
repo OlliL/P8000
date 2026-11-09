@@ -11,25 +11,16 @@ State measured with the build in a copy of `src/uts` (tools from `checkall.sh`),
 ## State
 
 - Only one object differs: `tty.o` (LIB2), and there only `TCXONC` in `ttiocom` (section 3).
-- `wega`: 97282 bytes like the original, 8866 bytes differ, nearly all because `tty.o` is 4 bytes short and moves what follows. Linked with the original `tty.o` as a test (copy it over `dev/tty.o`, rebuild `LIB2`, `LIB2W`, `wega`): 459 bytes differ, listed in section 2.
+- `wega`: 97282 bytes like the original, about 9300 bytes differ, all because `tty.o` is 4 bytes short and moves what follows. Linked with the original `tty.o` as a test (copy it over `dev/tty.o`, rebuild `LIB2`, `LIB2W`, `wega`): `cmp` identical, so the link order, the symbol table (`-X`, `-i`, `-Ms62`) and all other members are proven. `boot` is identical.
 - `BOOTLIB`: 63 bytes differ (archive headers). `wpar.o` in the root is from an older `wpar.c`.
 
 ## 1. Build and install
 
 1. `COVERAGE.md`: regenerate (`host/tools/coverage.py`) when files become exact.
 
-## 2. The links of `wega` and `boot` (what decides 100% of two files)
+## 2. `u.o`
 
-The shipped `wega` links other versions of some members than the shipped `LIB2`: `dev/wega/{lp,siok}.c`, built into `LIB2W`. What is left in `wega` with the original `tty.o` (the data segment has no other difference, so the data of `siok` and `wpar` are right):
-
-1. `cpu2initram` (`dev/cpu2.c`): a third member whose `wega` version differs from `LIB2`. Original: `ld r7,#%3600; call ramtest; ld cpu2_error,r2; test flag; jr ne,end`: `ramtest` gets one argument (no `ld r6,flag`) and the loop ends on `flag`, not on the result. Not tried yet: `cpu2_error = ramtest(CPU2SEG1<<8); if (flag) return;` in a new `dev/wega/cpu2.c`, added to `LIB2W`. It is 2 bytes shorter: this explains the word of `bdevsw` (%267E against %2680) and the run of 470 bytes behind it in segment 2; the two symbols at file offsets 0x15e53 and 0x17be9 probably too (guess).
-2. `sint` (`dev/wega/siok.c`): the jump behind `c |= OVERRUN` goes behind the `fram_err` test in the original (`L0t_e4f2`), ours to that test. Not tried yet: `if (ovr) c |= OVERRUN; else { if (par) c |= PERROR; if (fram) c |= FRERROR; }`.
-3. `conf/event.s`: the stub that pushes %E348 (`_sioxint`, by the order in the file) jumps to `L0t_033c` in the original, ours to `L0t_02e8`.
-4. Two single bytes at file offsets 0x1461d (%14 against %15) and 0x14775 (%C0 against %C1): not explained yet.
-
-After these, the link order and the symbol table (`-X`, `-i`, `-Ms62`) are proven by `cmp`.
-
-5. `u.o`: still a binary `u.obj` copied (`$ABS` works only in segment 1; `u` must lie at segment 62, `0xf600`). Target: `u.s`/`u.c` that gives the same bytes (README). Until then `u.obj` stays and is documented.
+1. `u.o`: still a binary `u.obj` copied (`$ABS` works only in segment 1; `u` must lie at segment 62, `0xf600`). Target: `u.s`/`u.c` that gives the same bytes (README). Until then `u.obj` stays and is documented.
 
 ## 3. The object that differs: `tty.o`, `TCXONC`
 
@@ -37,7 +28,7 @@ Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). 11 differing lines of the di
 
 1. Original: `L344: rl r2,#2; ldl rr4,table(r2); jp @rr4`, the four case bodies (common tail behind the last), `TCSBRK`, then `L3b0: ld r2,arg; cp r2,#3; jr ule,L344; jp default`. Ours: value, compare and table jump in one piece in front of the bodies, and the common tail behind the first body.
 2. How popt works here (`z21.c`): `codemove` moves the dispatch to the `jpr` of the switch head when a jump stands in front of the dispatch (ours). Only the loop inversion puts a new label inside such a block: it needs `jp T` behind `T`, no jump in front of `T`, and within 24 nodes behind `T` a conditional jump to the label right behind the `jp`. So the raw code of the original should have `cp; cjp ugt,default` before a `jp` which `default` follows, behind `TCSBRK` (deduced from the code of popt, the source that gives it is not found).
-3. Without effect: order of `TCXONC` and `TCSBRK`, place of `default` (first, middle, last), order of the cases, casts of the switch value, `return` for `break`, the form of the end of `TCGETA`, the form of `TCSBRK`; `spopt` with `OLD_D20` is worse. `case 3` without `break` moves the common tail to the last body (2 lines fewer), but it falls into `default`: not usable.
+3. Without effect: order of `TCXONC` and `TCSBRK`, place of `default` (first, middle, last), order of the cases, casts of the switch value, `return` for `break`, the form of the end of `TCGETA`, the form of `TCSBRK`; `spopt` with `OLD_D20` is worse. `case 3` without `break` moves the common tail to the last body (2 lines fewer), but it falls into `default`: not usable. With `default` first, or in front of `case 3`, there is no fall into it, but the tail stays behind the first body (46 lines).
 4. `vk` still needs `OLD_D3` (without it sys1, sys2, ureg, tt0 differ) and `OLD_D24` with `OLD_D25` (sig, sys2, sys3, debug); seven forms of the mask `(caddr_t)((long)x & 0x7F00FFFF)` in sys3 gave nothing.
 5. After each changed switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already before this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 

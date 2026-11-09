@@ -275,10 +275,12 @@ register unsigned rdr1;
 	c = sioinb(addr);
 	if ((rdr1 & ovr_err) != 0)
 		c |= OVERRUN;
-	else if ((rdr1 & par_err) != 0)
-		c |= PERROR;
-	if ((rdr1 & fram_err) != 0)
-		c |= FRERROR;
+	else {
+		if ((rdr1 & par_err) != 0)
+			c |= PERROR;
+		if ((rdr1 & fram_err) != 0)
+			c |= FRERROR;
+	}
 	(*linesw[tp->t_line].l_input)(tp, (long)c, 0);
 	if (addr > 0xff00) {
 		addr = mca(addr);
