@@ -140,7 +140,7 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 ### The old scc of cas
 
 cas was built by an older scc (D5 and D13 are only seen there); its parser and `assemble` without `-O`, the other modules
-with `-O`. It is not assigned to a version. `sccvc` (`src/cmd/cc/build/segvc`, `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/old/cas`, `/lib/vc/spopt`: the shipped one with `OLD_D13`) is the working compiler of `src/cmd/cas/Makefile`, `old/cas` stays with scc. Measured on the model of cas (`strictcmp.py`, 155 functions): the shipped scc 2 equal, 16 masked, 9228 differing lines; with `OLD_D6C OLD_D6D` (scparse) and `OLD_D2W OLD_D1R OLD_D2W6 OLD_D2P OLD_D2R OLD_D2F OLD_D2L OLD_D2T OLD_D10 OLD_D3P OLD_D3AW OLD_D6S OLD_D3J OLD_D3K OLD_D2Q OLD_D2U OLD_D5G` (scodgen; `OLD_VC` in `oldcc.h`): `sccvc` and `src/lib/slibc-v11.a`, 59, 59, 3067 and the text, data and bss sizes of the original; data 36359 of 38360 bytes equal. These are switches of v0 and v0p, so a segmented compiler of that age is likely (a guess). `/bin/cas` itself is not reached; the notes per function are in `compare/cas/findings.json`.
+with `-O`. It is not assigned to a version. `sccvc` (`src/cmd/cc/build/segvc`, `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/old/cas`, `/lib/vc/spopt`: the shipped one with `OLD_D13`) is the working compiler of `src/cmd/cas/Makefile`, `old/cas` stays with scc. Measured on the model of cas (`strictcmp.py`, 155 functions): the shipped scc 2 equal, 16 masked, 9228 differing lines; with `OLD_D6C OLD_D6D OLD_D6T` (scparse) and `OLD_D2W OLD_D1R OLD_D2W6 OLD_D2P OLD_D2R OLD_D2F OLD_D2L OLD_D2T OLD_D10 OLD_D3P OLD_D3AW OLD_D6S OLD_D3J OLD_D3K OLD_D2Q OLD_D2U OLD_D5G OLD_D6T` (scodgen; `OLD_VC` in `oldcc.h`): `sccvc` and `src/lib/slibc-v11.a`, 59, 59, 2917 and the text, data and bss sizes of the original; data 36374 of 38360 bytes equal (the rest: code addresses). These are switches of v0 and v0p, so a segmented compiler of that age is likely (a guess). `/bin/cas` itself is not reached; the notes per function are in `compare/cas/findings.json`.
 
 ### The old libc members inside size, strip, ranlib, cas
 
@@ -273,6 +273,9 @@ bodies in source order. The shipped compiler uses `cpir` from 1 or 3 cases on, v
 - v0 `OLD_D6T` (cparse genswitch, codgen gswitch): the value list stands right in front of its target list, and the target is
   loaded from the pointer cpir leaves behind (`ld r2,%0024(r3)`). Our cparse passes the values to codgen in a record `V swlab dlab
   tlab values` in front of the `C` record; this intermediate form is a guess.
+  Segmented (vc, cas: escape, osymout, genwop, yyparse): the same lists; the target from the offset cpir leaves behind, less that of the
+  second value, rotated, as the index of the targets, into the pair of the value: `ld r2,#Lv+2; sub r7,r2; rl r7,#1; ldl rr2,Lt(r7);
+  jp @rr2`; the count of cpir neither in that pair nor in rr0 (r4).
 - v0, v0p `OLD_D6D` (cparse genswitch): the limit of the jump table is 3 values per case, `range <= 3*(n-1)` where `n` counts one more than the cases; the shipped one `range <= 3*n` (zzzcode, switch of
   `fldsz`; doprnt 0_5: 4 cases over a range of 14 by cpir).
 - v0p `OLD_D6S` (codgen, match): the value of a switch assigned to its register when it is already there prints no `ld r2,r2`

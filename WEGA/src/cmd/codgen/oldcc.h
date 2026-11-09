@@ -10,7 +10,7 @@
 #endif
 
 #ifdef OLD_VC
-/* vc, the working compiler of cas (scodgen, with OLD_D6C and OLD_D6D in scparse and the shipped spopt): the switches of v0 and v0p that bring /bin/cas nearest,
+/* vc, the working compiler of cas (scodgen, with OLD_D6C, OLD_D6D and OLD_D6T in scparse, spopt with OLD_D13): the switches of v0 and v0p that bring /bin/cas nearest,
    found by measuring (host/OLDCC.md section 2, The old scc of cas); not proven to be the compiler of cas */
 #define OLD_D2W
 #define OLD_D1R
@@ -29,6 +29,7 @@
 #define OLD_D2Q
 #define OLD_D2U
 #define OLD_D5G
+#define OLD_D6T
 #endif
 
 #ifdef OLD_V0P

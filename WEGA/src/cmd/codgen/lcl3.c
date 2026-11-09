@@ -99,6 +99,19 @@ gswitch(p)
 			rfree(t, 5);
 		}
 		rb = getreg(2, -1, 0x1000, 0);
+#ifdef OLD_D6T
+		/* the old scc: the count neither in the pair of the value (it takes the target) nor in rr0 */
+		if (((rb | 1) == (reg | 1) || rb <= 1)) {
+			int bad[8], nb = 0;
+
+			while (((rb | 1) == (reg | 1) || rb <= 1) && nb < 8) {
+				bad[nb++] = rb;
+				rb = getreg(2, -1, 0x1000, 0);
+			}
+			while (nb > 0)
+				rfree(bad[--nb], 3);
+		}
+#else
 		if (reg == rb || rb == 0) {
 			t = rb;
 			rb = getreg(2, -1, 0x1000, 0);
@@ -109,14 +122,25 @@ gswitch(p)
 			}
 			rfree(t, 3);
 		}
+#endif
 		printf("\tldl\tr%s,#L%d\n", rnames[a6], tlab);
 		printf("\tld\t%s,#%d\n", rnames[rb], cnt);
 		printf("\tcpir\t%s,@r%s,%s,eq\n", rnames[reg], rnames[a6], rnames[rb]);
 		printf("\tjpr\tne,L%d\n", dlab);
+#ifdef OLD_D6T
+		/* the old scc: the targets follow the values (record V); the offset cpir leaves behind the value found,
+		 * less that of the second value, times 2, indexes the targets; the target goes to the pair of the value */
+		printf("\tld\t%s,#L%d+2\n", rnames[reg], tlab);
+		printf("\tsub\t%s,%s\n", rnames[a6 + 1], rnames[reg]);
+		printf("\trl\t%s,#1\n", rnames[a6 + 1]);
+		printf("\tldl\tr%s,L%d(%s)\n", rnames[reg & ~1], tab, rnames[a6 + 1]);
+		printf("\tjp\t@r%s\n", rnames[reg & ~1]);
+#else
 		printf("\tsll\t%s,#2\n", rnames[rb]);
 		printf("\tneg\t%s\n", rnames[rb]);
 		printf("\tldl\tr%s,L%d+%d(%s)\n", rnames[a6], tab, (cnt - 1) << 2, rnames[rb]);
 		printf("\tjp\t@r%s\n", rnames[a6]);
+#endif
 		rfree(a6, 5);
 		rfree(rb, 3);
 		rfree(reg, 3);
