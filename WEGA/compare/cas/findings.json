@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "628b518e",
+ "measured_at": "18c24070",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -69,7 +69,7 @@
    "file": "ifile.c",
    "orig": "0x0262",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Cluster K2.",
    "lines": 5
   },
   "iputnode": {
@@ -98,7 +98,7 @@
    "file": "ifile.c",
    "orig": "0x0484",
    "status": "open",
-   "note": "Tried: 7 casts, a long, int and register int temporary; the int temporary gives the registers but adds a frame word. Left for the end (a want of an odd word register in OLD_D2O).",
+   "note": "Tried: 7 casts, a long, int and register int temporary; the int temporary gives the registers but adds a frame word. Left for the end (a want of an odd word register in OLD_D2O). Cluster K6.",
    "lines": 4
   },
   "iputline": {
@@ -116,14 +116,14 @@
    "file": "instr.c",
    "orig": "0x05de",
    "status": "open",
-   "note": "The original keeps the register parameter p in the scratch pair rr6 (a leaf function: procopt of popt renames), sccvc in rr12 (cluster K-LEAF).",
+   "note": "The original keeps the register parameter p in the scratch pair rr6 (a leaf function: procopt of popt renames), sccvc in rr12 (cluster K-LEAF). Cluster K11.",
    "lines": 18
   },
   "putrow": {
    "file": "instr.c",
    "orig": "0x0662",
    "status": "open",
-   "note": "Source: `len` is a register variable (r10 in the original). The loop over args keeps its test on top in the original (not rotated; `for`, `while`, `for (;;) { if (!p) break; ...}` are all rotated by spopt, D7). Unexplained: `ldk r2,#4` in front of `iputl(row)` in the original.",
+   "note": "Source: `len` is a register variable (r10 in the original). The loop over args keeps its test on top in the original (not rotated; `for`, `while`, `for (;;) { if (!p) break; ...}` are all rotated by spopt, D7). Unexplained: `ldk r2,#4` in front of `iputl(row)` in the original. Cluster K2, K12.",
    "lines": 6
   },
   "putfill": {
@@ -135,8 +135,8 @@
    "file": "scanner.c",
    "orig": "0x078a",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 431
+   "note": "Cluster K8, K12, K13, K14.",
+   "lines": 306
   },
   "getch": {
    "file": "scanner.c",
@@ -152,8 +152,8 @@
    "file": "main.c",
    "orig": "0x1278",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 97
+   "note": "Cluster K4.",
+   "lines": 9
   },
   "sigdone": {
    "file": "main.c",
@@ -194,8 +194,8 @@
    "file": "nodes.c",
    "orig": "0x1cdc",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 43
+   "note": "Cluster K9.",
+   "lines": 19
   },
   "mkstring": {
    "file": "nodes.c",
@@ -227,14 +227,14 @@
    "file": "pst.c",
    "orig": "0x3b6a",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Cluster K4.",
    "lines": 28
   },
   "casechk": {
    "file": "pst.c",
    "orig": "0x3be0",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Cluster K4.",
    "lines": 66
   },
   "xtol": {
@@ -276,7 +276,7 @@
    "file": "symbols.c",
    "orig": "0x41d6",
    "status": "open",
-   "note": "Source: the inner cases in the order 1, 0, 2. Left: the merged tail `v |= ... << 16` stays at the second copy in the original (cluster K-TAIL).",
+   "note": "Source: the inner cases in the order 1, 0, 2. Left: the merged tail `v |= ... << 16` stays at the second copy in the original (cluster K-TAIL). Cluster K12.",
    "lines": 8
   },
   "defcomm": {
@@ -308,43 +308,43 @@
    "file": "ssymtab.c",
    "orig": "0x457a",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Cluster K1.",
    "lines": 5
   },
   "italloc": {
    "file": "ssymtab.c",
    "orig": "0x4618",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Cluster K1.",
    "lines": 5
   },
   "namalloc": {
    "file": "ssymtab.c",
    "orig": "0x46b6",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Cluster K1.",
    "lines": 9
   },
   "stabp": {
    "file": "ssymtab.c",
    "orig": "0x4772",
    "status": "open",
-   "note": "The original has no register variable and the constant with bit 31: `(char *)STAB + idx` stops sccvc with `register jam`; other forms lose bit 31 of the constant (the cast of a long to a pointer clears it). Compiler.",
+   "note": "The original has no register variable and the constant with bit 31: `(char *)STAB + idx` stops sccvc with `register jam`; other forms lose bit 31 of the constant (the cast of a long to a pointer clears it). Compiler. Cluster K1.",
    "lines": 7
   },
   "itabp": {
    "file": "ssymtab.c",
    "orig": "0x4788",
    "status": "open",
-   "note": "As stabp: the constant with bit 31 is lost by the cast of a long to a pointer in sccvc. Compiler.",
+   "note": "As stabp: the constant with bit 31 is lost by the cast of a long to a pointer in sccvc. Compiler. Cluster K1.",
    "lines": 7
   },
   "stenter": {
    "file": "ssymtab.c",
    "orig": "0x479e",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 58
+   "note": "Cluster K12.",
+   "lines": 51
   },
   "setsym": {
    "file": "ssymtab.c",
@@ -427,8 +427,8 @@
    "file": "expr.c",
    "orig": "0x4fb2",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 23
+   "note": "Cluster K12.",
+   "lines": 17
   },
   "exprval": {
    "file": "expr.c",
@@ -529,7 +529,7 @@
    "file": "ofile.c",
    "orig": "0x6394",
    "status": "open",
-   "note": "Source: `register unsigned i`, `p->sg_atr = p->sg_atr | SG_...` (the original loads, ors and stores). Left: `lctab[i][1]` with the constant offset folded into the address in the original (cluster K-IDX).",
+   "note": "Source: `register unsigned i`, `p->sg_atr = p->sg_atr | SG_...` (the original loads, ors and stores). Left: `lctab[i][1]` with the constant offset folded into the address in the original (cluster K-IDX). Cluster K9.",
    "lines": 104
   },
   "ohdrput": {
@@ -541,7 +541,7 @@
    "file": "ofile.c",
    "orig": "0x66cc",
    "status": "open",
-   "note": "The int value widened to long stays in the pair of its register in the original (`ldk r2,#0` to r3), sccvc takes rr4 (OLD_D2X is for binary operators only; left for the end).",
+   "note": "The int value widened to long stays in the pair of its register in the original (`ldk r2,#0` to r3), sccvc takes rr4 (OLD_D2X is for binary operators only; left for the end). Cluster K5.",
    "lines": 10
   },
   "osymout": {
@@ -553,8 +553,8 @@
    "file": "ofile.c",
    "orig": "0x6952",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 45
+   "note": "Cluster K12.",
+   "lines": 18
   },
   "nlwrite": {
    "file": "ofile.c",
@@ -570,8 +570,8 @@
    "file": "ofile.c",
    "orig": "0x6cb2",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 19
+   "note": "Cluster K1, K9.",
+   "lines": 16
   },
   "genb": {
    "file": "gen.c",
@@ -612,7 +612,7 @@
    "file": "gen.c",
    "orig": "0x7286",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Cluster K4.",
    "lines": 88
   },
   "asmins": {
@@ -624,7 +624,7 @@
    "file": "assemble.c",
    "orig": "0x75da",
    "status": "open",
-   "note": "An indexed byte load `tab(r3)` goes to rl2 in the original (rl3 here); a copy of the parameter to rr6.",
+   "note": "An indexed byte load `tab(r3)` goes to rl2 in the original (rl3 here); a copy of the parameter to rr6. Cluster K4.",
    "lines": 4
   },
   "asmfield": {
@@ -653,8 +653,8 @@
    "file": "assemble.c",
    "orig": "0x7d7c",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 30
+   "note": "Cluster K10.",
+   "lines": 8
   },
   "asmreg": {
    "file": "assemble.c",
@@ -677,57 +677,55 @@
    "file": "getops.c",
    "orig": "0x7fee",
    "status": "open",
-   "note": "`return (opseg(igetexpr()))`: sccvc stores the inner value in a frame temporary, the original not; `l = igetexpr(); return (opseg(l));` copies to rr10. Left for the end.",
+   "note": "`return (opseg(igetexpr()))`: sccvc stores the inner value in a frame temporary, the original not; `l = igetexpr(); return (opseg(l));` copies to rr10. Left for the end. Cluster K3.",
    "lines": 1
   },
   "sgetexpr": {
    "file": "getops.c",
    "orig": "0x8146",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Cluster K3.",
    "lines": 1
   },
   "getop": {
    "file": "getops.c",
    "orig": "0x829e",
-   "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 24
+   "status": "exact"
   },
   "sgetnode": {
    "file": "getops.c",
    "orig": "0x8358",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Cluster K12.",
    "lines": 2
   },
   "error": {
    "file": "error.c",
    "orig": "0x8400",
    "status": "open",
-   "note": "Model: the same instructions with other operands or in another order.",
+   "note": "Cluster K7.",
    "lines": 2
   },
   "jpr": {
    "file": "jpr.c",
    "orig": "0x84fc",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 49
+   "note": "Cluster K8, K12.",
+   "lines": 26
   },
   "jprnew": {
    "file": "jpr.c",
    "orig": "0x8640",
    "status": "open",
-   "note": "Source: `(char *)p - (char *)ITAB` as in setsym; left: the registers of that difference (r3 against r0) and of the address of lcaux.",
+   "note": "Source: `(char *)p - (char *)ITAB` as in setsym; left: the registers of that difference (r3 against r0) and of the address of lcaux. Cluster K4.",
    "lines": 7
   },
   "jprange": {
    "file": "jpr.c",
    "orig": "0x8734",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 24
+   "note": "Cluster K8.",
+   "lines": 14
   },
   "jprput": {
    "file": "jpr.c",
@@ -738,14 +736,14 @@
    "file": "jpr.c",
    "orig": "0x893e",
    "status": "open",
-   "note": "Source: `return;` at the end. Left: the two compares of the switch stand behind the bodies in the original (cluster K-SWB).",
+   "note": "Source: `return;` at the end. Left: the two compares of the switch stand behind the bodies in the original (cluster K-SWB). Cluster K8.",
    "lines": 8
   },
   "jrput": {
    "file": "jpr.c",
    "orig": "0x8980",
    "status": "open",
-   "note": "As jpput (cluster K-SWB).",
+   "note": "As jpput (cluster K-SWB). Cluster K8.",
    "lines": 8
   },
   "jpr2": {
@@ -757,7 +755,7 @@
    "file": "optim.c",
    "orig": "0x8af4",
    "status": "open",
-   "note": "Model: the same instructions with other operands or in another order.",
+   "note": "Cluster K7.",
    "lines": 2
   },
   "jinit": {
@@ -774,7 +772,7 @@
    "file": "optim.c",
    "orig": "0x8cfa",
    "status": "open",
-   "note": "Model: other instructions.",
+   "note": "Cluster K12.",
    "lines": 44
   },
   "jdist": {
@@ -786,7 +784,7 @@
    "file": "optim.c",
    "orig": "0x8ffc",
    "status": "open",
-   "note": "Model: only the registers differ.",
+   "note": "Cluster K4.",
    "lines": 4
   },
   "jsum": {
@@ -798,8 +796,8 @@
    "file": "optim.c",
    "orig": "0x922e",
    "status": "open",
-   "note": "Model: other instructions.",
-   "lines": 19
+   "note": "Cluster K1.",
+   "lines": 3
   },
   "copyfile": {
    "file": "listing.c",
@@ -840,7 +838,7 @@
    "file": "listing.c",
    "orig": "0x94d4",
    "status": "open",
-   "note": "Block order of the loop (the lnl branch in front in the original); if/else turned, for: no effect (cluster K-BLK).",
+   "note": "Block order of the loop (the lnl branch in front in the original); if/else turned, for: no effect (cluster K-BLK). Cluster K12.",
    "lines": 9
   },
   "lstline": {
