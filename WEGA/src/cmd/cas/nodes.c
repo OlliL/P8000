@@ -98,6 +98,19 @@ char **sp;
 	char buf[3];
 
 	switch (**sp) {
+	case '0':
+		return(0);
+	case 'l':
+	case 'n':
+		return(10);
+	case 't':
+		return(9);
+	case 'b':
+		return(8);
+	case 'r':
+		return(13);
+	case 'f':
+		return(12);
 	case '%':
 		(*sp)++;
 		buf[0] = **sp;
@@ -105,19 +118,6 @@ char **sp;
 		buf[1] = **sp;
 		buf[2] = '\0';
 		return(xtol(buf, 16));
-	case '0':
-		return(0);
-	case 'b':
-		return(8);
-	case 'f':
-		return(12);
-	case 'l':
-	case 'n':
-		return(10);
-	case 'r':
-		return(13);
-	case 't':
-		return(9);
 	default:
 		return(**sp);
 	}
