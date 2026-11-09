@@ -3,7 +3,7 @@
  "measure": "check.sh",
  "compiler": "sccvc -O (parser.y and assemble.c without -O), the working compiler of cas (OLDCC.md)",
  "binary": "/bin/cas",
- "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 97 strictly equal, 97 masked, 1670 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36374 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13`; the value lists of a cpir switch right in front of its targets from `OLD_D6T`; the target of a dense jump table in the pair of the value from `OLD_D6J` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
+ "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 100 strictly equal, 100 masked, 1662 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36374 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13`; the value lists of a cpir switch right in front of its targets from `OLD_D6T`; the target of a dense jump table in the pair of the value from `OLD_D6J` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -877,8 +877,8 @@
    "orig": "0x7958",
    "instr": "197/198",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 2 lines, other instructions (source form or compiler, not separated).",
-   "lines": 6
+   "note": "Model (strictcmp, sccvc): strictly equal. Source: `c0` unsigned (the original shifts `c0 >> 4` logically).",
+   "lines": 5
   },
   "asmfix": {
    "file": "assemble.c",
@@ -917,15 +917,15 @@
    "orig": "0x7f1c",
    "instr": "29/32",
    "status": "close",
-   "note": "Model (strictcmp, sccvc): 2 lines, the same instructions with other operands or in another order."
+   "note": "Model (strictcmp, sccvc): strictly equal. Source: the parameter `n` unsigned (the original compares `nbits + n > 16` without sign)."
   },
   "rangechk": {
    "file": "assemble.c",
    "orig": "0x7fa6",
-   "instr": "22/22",
+   "instr": "20/22",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 4 lines, other instructions (source form or compiler, not separated).",
-   "lines": 6
+   "note": "Model (strictcmp, sccvc): strictly equal. Source: one `if` with `||` for both tests (the original has one `return (0)`).",
+   "lines": 3
   },
   "(assemble 7fe4)": {
    "file": "assemble.c",
@@ -1184,5 +1184,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "e86f5ab5"
+ "measured_at": "bf3a188c"
 }

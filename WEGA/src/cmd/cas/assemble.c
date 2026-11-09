@@ -198,7 +198,7 @@ unsigned char code;
 asmimm(code)
 unsigned char code;
 {
-	register int c0;
+	register unsigned c0;
 	register int c1;
 	register unsigned lim;
 	unsigned char t0;
@@ -443,7 +443,7 @@ int i;
 
 /* add n bits to the word; a full word is written */
 putbits(n, v)
-int n;
+unsigned n;
 int v;
 {
 	if (nbits + n > 16)
@@ -462,9 +462,7 @@ rangechk(v, mask)
 long v;
 long mask;
 {
-	if ((v & mask) == 0)
-		return (0);
-	if (((0 - v) & mask) == 0)
+	if ((v & mask) == 0 || ((0 - v) & mask) == 0)
 		return (0);
 	error(1, "Value too large\n");
 }
