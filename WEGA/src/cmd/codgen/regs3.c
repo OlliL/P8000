@@ -368,8 +368,13 @@ fixfld(p)
 		m = a->in.left;
 		a->in.left = p->in.right;
 		a->in.type = p->in.right->in.type;
+#ifdef SEG
+		p->in.left = m;		/* the 32-bit address first, the index behind it: _a(r3) */
+		p->in.right = a;
+#else
 		p->in.left = a;
 		p->in.right = m;
+#endif
 		return;
 	}
 #endif
