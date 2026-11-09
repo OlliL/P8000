@@ -448,6 +448,19 @@ allocreg(p, cookie)
 			if (r == -1)
 				rbusy(q->tn.rval, 4, q->in.sname, q->tn.lval);
 		}
+#ifdef SEG
+		/* segmented: base and index (`rr4(r2)`), the index in an even word register: the pair of the index */
+		else if (q->in.op == OREG && q->tn.rval >= 0x100 && (q->tn.rval & 0xFF) != 0 && ((q->tn.rval & 0xFF) - 1) < 8 &&
+		    !(((q->tn.rval & 0xFF) - 1) & 1) && d2qfree((q->tn.rval & 0xFF) - 1)) {	/* also when another pair is wanted (an argument): a copy follows */
+			register int ix = (q->tn.rval & 0xFF) - 1;
+
+			rfree(ix, 4);
+			rsreturn(2, ix);
+			r = getreg(3, ix, 0, p->in.sname);
+			if (r == -1)
+				rbusy(ix, 4, (struct sym *)0, 0L);
+		}
+#endif
 #ifdef OLD_D2O
 		/* v0p: an odd address register takes its pair too when the even half is free or idle */
 		else if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && (q->tn.rval & 1) &&

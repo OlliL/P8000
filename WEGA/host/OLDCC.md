@@ -213,7 +213,8 @@ Where a value goes:
 - v0p `OLD_D2Q` (allocreg): a long loaded through a pointer goes into the pair of its even address register when the odd half
   is free, also when that pair is the wanted one. `OLD_D2QO`: also when an odd word register is wanted for the value
   (getstr). `OLD_D2O`: a long loaded through an odd address register goes into the pair below it when the even half is
-  free or idle.
+  free or idle. Segmented (vc): through base and index (`ldl rr2,rr4(r2)`) into the pair of an even index, also when another
+  pair is wanted (a copy follows; cas seekout).
 - v0p `OLD_D2X` (allocreg): a long result of a binary operator goes into the pair of its left operand first (defalign); not
   for shifts, whose count register would get the operand's pair.
 
