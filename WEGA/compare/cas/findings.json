@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "9876e602",
+ "measured_at": "53838c07",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -13,9 +13,7 @@
   "iputw": {
    "file": "ifile.c",
    "orig": "0x0080",
-   "status": "open",
-   "lines": 7,
-   "note": "Model: other instructions."
+   "status": "exact"
   },
   "iputl": {
    "file": "ifile.c",
@@ -30,9 +28,7 @@
   "sputw": {
    "file": "ifile.c",
    "orig": "0x00fe",
-   "status": "open",
-   "lines": 7,
-   "note": "Model: other instructions."
+   "status": "exact"
   },
   "sputl": {
    "file": "ifile.c",
@@ -73,8 +69,8 @@
    "file": "ifile.c",
    "orig": "0x0262",
    "status": "open",
-   "lines": 5,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 5
   },
   "iputnode": {
    "file": "ifile.c",
@@ -114,15 +110,15 @@
    "file": "instr.c",
    "orig": "0x04f6",
    "status": "open",
-   "lines": 10,
-   "note": "Model: only the registers differ."
+   "note": "Model: only the registers differ.",
+   "lines": 10
   },
   "opmatch": {
    "file": "instr.c",
    "orig": "0x05de",
    "status": "open",
-   "lines": 18,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 18
   },
   "putrow": {
    "file": "instr.c",
@@ -140,8 +136,8 @@
    "file": "scanner.c",
    "orig": "0x078a",
    "status": "open",
-   "lines": 431,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 431
   },
   "getch": {
    "file": "scanner.c",
@@ -157,8 +153,8 @@
    "file": "main.c",
    "orig": "0x1278",
    "status": "open",
-   "lines": 97,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 97
   },
   "sigdone": {
    "file": "main.c",
@@ -199,8 +195,8 @@
    "file": "nodes.c",
    "orig": "0x1cdc",
    "status": "open",
-   "lines": 43,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 43
   },
   "mkstring": {
    "file": "nodes.c",
@@ -226,22 +222,22 @@
    "file": "pst.c",
    "orig": "0x3b06",
    "status": "open",
-   "lines": 10,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 10
   },
   "pstcmp": {
    "file": "pst.c",
    "orig": "0x3b6a",
    "status": "open",
-   "lines": 28,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 28
   },
   "casechk": {
    "file": "pst.c",
    "orig": "0x3be0",
    "status": "open",
-   "lines": 66,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 66
   },
   "xtol": {
    "file": "pst.c",
@@ -282,8 +278,8 @@
    "file": "symbols.c",
    "orig": "0x41d6",
    "status": "open",
-   "lines": 16,
-   "note": "Model: only the registers differ."
+   "note": "Model: only the registers differ.",
+   "lines": 16
   },
   "defcomm": {
    "file": "symbols.c",
@@ -314,22 +310,22 @@
    "file": "ssymtab.c",
    "orig": "0x457a",
    "status": "open",
-   "lines": 5,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 5
   },
   "italloc": {
    "file": "ssymtab.c",
    "orig": "0x4618",
    "status": "open",
-   "lines": 5,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 5
   },
   "namalloc": {
    "file": "ssymtab.c",
    "orig": "0x46b6",
    "status": "open",
-   "lines": 9,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 9
   },
   "stabp": {
    "file": "ssymtab.c",
@@ -349,8 +345,8 @@
    "file": "ssymtab.c",
    "orig": "0x479e",
    "status": "open",
-   "lines": 58,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 58
   },
   "setsym": {
    "file": "ssymtab.c",
@@ -362,8 +358,8 @@
    "file": "ssymtab.c",
    "orig": "0x4996",
    "status": "open",
-   "lines": 14,
-   "note": "Model: the same instructions with other operands or in another order."
+   "note": "Model: the same instructions with other operands or in another order.",
+   "lines": 14
   },
   "blkopen": {
    "file": "ssymtab.c",
@@ -434,15 +430,15 @@
    "file": "expr.c",
    "orig": "0x4fb2",
    "status": "open",
-   "lines": 23,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 23
   },
   "exprval": {
    "file": "expr.c",
    "orig": "0x50b6",
    "status": "open",
-   "lines": 5,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 5
   },
   "opshort": {
    "file": "expr.c",
@@ -458,8 +454,8 @@
    "file": "expr.c",
    "orig": "0x543c",
    "status": "open",
-   "lines": 7,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 7
   },
   "opxor": {
    "file": "expr.c",
@@ -505,8 +501,8 @@
    "file": "expr.c",
    "orig": "0x59fc",
    "status": "open",
-   "lines": 8,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 8
   },
   "opplus": {
    "file": "expr.c",
@@ -517,8 +513,8 @@
    "file": "expr.c",
    "orig": "0x5ccc",
    "status": "open",
-   "lines": 10,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 10
   },
   "pass2": {
    "file": "p2loop.c",
@@ -540,8 +536,8 @@
    "file": "ofile.c",
    "orig": "0x6394",
    "status": "open",
-   "lines": 148,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 148
   },
   "ohdrput": {
    "file": "ofile.c",
@@ -564,8 +560,8 @@
    "file": "ofile.c",
    "orig": "0x6952",
    "status": "open",
-   "lines": 45,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 45
   },
   "nlwrite": {
    "file": "ofile.c",
@@ -581,8 +577,8 @@
    "file": "ofile.c",
    "orig": "0x6cb2",
    "status": "open",
-   "lines": 19,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 19
   },
   "genb": {
    "file": "gen.c",
@@ -607,9 +603,7 @@
   "genwop": {
    "file": "gen.c",
    "orig": "0x70b0",
-   "status": "open",
-   "lines": 4,
-   "note": "Model: only the registers differ."
+   "status": "exact"
   },
   "genaddr": {
    "file": "gen.c",
@@ -625,8 +619,8 @@
    "file": "gen.c",
    "orig": "0x7286",
    "status": "open",
-   "lines": 88,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 88
   },
   "asmins": {
    "file": "assemble.c",
@@ -644,8 +638,8 @@
    "file": "assemble.c",
    "orig": "0x773a",
    "status": "open",
-   "lines": 9,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 9
   },
   "asmimm": {
    "file": "assemble.c",
@@ -667,8 +661,8 @@
    "file": "assemble.c",
    "orig": "0x7d7c",
    "status": "open",
-   "lines": 30,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 30
   },
   "asmreg": {
    "file": "assemble.c",
@@ -698,36 +692,36 @@
    "file": "getops.c",
    "orig": "0x8146",
    "status": "open",
-   "lines": 1,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 1
   },
   "getop": {
    "file": "getops.c",
    "orig": "0x829e",
    "status": "open",
-   "lines": 24,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 24
   },
   "sgetnode": {
    "file": "getops.c",
    "orig": "0x8358",
    "status": "open",
-   "lines": 2,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 2
   },
   "error": {
    "file": "error.c",
    "orig": "0x8400",
    "status": "open",
-   "lines": 2,
-   "note": "Model: the same instructions with other operands or in another order."
+   "note": "Model: the same instructions with other operands or in another order.",
+   "lines": 2
   },
   "jpr": {
    "file": "jpr.c",
    "orig": "0x84fc",
    "status": "open",
-   "lines": 49,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 49
   },
   "jprnew": {
    "file": "jpr.c",
@@ -740,8 +734,8 @@
    "file": "jpr.c",
    "orig": "0x8734",
    "status": "open",
-   "lines": 24,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 24
   },
   "jprput": {
    "file": "jpr.c",
@@ -752,15 +746,15 @@
    "file": "jpr.c",
    "orig": "0x893e",
    "status": "open",
-   "lines": 13,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 13
   },
   "jrput": {
    "file": "jpr.c",
    "orig": "0x8980",
    "status": "open",
-   "lines": 13,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 13
   },
   "jpr2": {
    "file": "jpr2.c",
@@ -771,8 +765,8 @@
    "file": "optim.c",
    "orig": "0x8af4",
    "status": "open",
-   "lines": 2,
-   "note": "Model: the same instructions with other operands or in another order."
+   "note": "Model: the same instructions with other operands or in another order.",
+   "lines": 2
   },
   "jinit": {
    "file": "optim.c",
@@ -788,8 +782,8 @@
    "file": "optim.c",
    "orig": "0x8cfa",
    "status": "open",
-   "lines": 44,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 44
   },
   "jdist": {
    "file": "optim.c",
@@ -800,8 +794,8 @@
    "file": "optim.c",
    "orig": "0x8ffc",
    "status": "open",
-   "lines": 4,
-   "note": "Model: only the registers differ."
+   "note": "Model: only the registers differ.",
+   "lines": 4
   },
   "jsum": {
    "file": "optim.c",
@@ -812,8 +806,8 @@
    "file": "optim.c",
    "orig": "0x922e",
    "status": "open",
-   "lines": 19,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 19
   },
   "copyfile": {
    "file": "listing.c",
@@ -854,8 +848,8 @@
    "file": "listing.c",
    "orig": "0x94d4",
    "status": "open",
-   "lines": 9,
-   "note": "Model: other instructions."
+   "note": "Model: other instructions.",
+   "lines": 9
   },
   "lstline": {
    "file": "listing.c",

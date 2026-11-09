@@ -145,13 +145,13 @@ int flag;
 		r = symreloc(idx);
 		v = symval(idx);
 		if (segmode != 0 && flag != 0)
-			v |= 0x8000;
+			v |= 0x80000000L;
 		break;
 	case 0x18:
 	case 0x19:
 		v = exprval(np);
 		if (segmode != 0 && flag != 0)
-			v |= 0x8000;
+			v |= 0x80000000L;
 		r = exprreloc(np);
 		break;
 	default:

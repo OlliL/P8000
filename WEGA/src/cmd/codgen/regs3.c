@@ -154,7 +154,11 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 #define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 
 #ifdef OLD_D3P
+#ifdef SEG
+#define D3PWORD(t)	(((t) & 0x30) == 0x10)	/* segmented (vc): a cast between pointers only, not int against unsigned */
+#else
 #define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
+#endif
 #endif
 
 

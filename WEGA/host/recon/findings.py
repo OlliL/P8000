@@ -94,4 +94,5 @@ def write_md(d, path, prog):
             o.write('| %s | %s | %s |\n' % (k, fn[k]['orig'], fn[k]['note']))
 
 
-
+if __name__ == '__main__':
+    main()

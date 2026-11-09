@@ -227,7 +227,8 @@ All in codgen.
 - v1 `OLD_D3` (cbranch): at the join label of `&&` and `||` the shipped codgen gives the idle registers back, the old one keeps
   them with their contents. ld init_entry, dseek.
 - v0 `OLD_D3P` (regforsym): a name that lives in a register is taken from it also when the node wants another register, also
-  under a cast between int, unsigned and pointers (argdebug, rstruct).
+  under a cast between int, unsigned and pointers (argdebug, rstruct). Segmented (vc): under a cast between pointers only;
+  `(unsigned)w` of an int parameter loads it from its frame home again (cas iputw, sputw).
 - v0 `OLD_D3K`: a parameter stays known in its register at a label a jump has already named and behind `&&`, `||` and the `?:` of
   codgen (there word registers only); at a label only a later jump names, or none, it is forgotten (twords), unless the
   function ends right behind that label. Such a register is not a scratch one for the tree (tshape, istnode): an operator
