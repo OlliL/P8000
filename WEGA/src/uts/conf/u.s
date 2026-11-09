@@ -5,7 +5,7 @@ constant
 	BASE := %f600
 
 global
-	$abs BASE ! how the hell segment 62 can be adressed here?? !
+	$abs BASE		! the segment of _u (62) is set by mku.sh !
 	_u array [%572 byte]
 
 

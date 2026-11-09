@@ -2,7 +2,7 @@
 # bstart.o and BOOTLIB) and the files that sysgen needs in usr/sys/conf. make.wega and make.boot are the shipped files that sysgen
 # uses; this Makefile does the same steps.
 # ver.c is made from ver.c+ by chkout (the rule .c+.c of the native make); its text contains the date of the checkout.
-# u.o is the shipped object u.obj (see TODO.md); the boot loader is compiled with cc (non-segmented), the kernel part with scc.
+# u.o is made from u.s by as and mku.sh (the segment of _u); the boot loader is compiled with cc (non-segmented), the kernel part with scc.
 #
 #   make                       build wega, boot and the objects
 #   make install PREFIX=dir    install below dir (default /)
@@ -84,8 +84,11 @@ fpe.o: fpe.s
 mch.o: mch.s
 	$(AS) -u -o $@ mch.s
 
-u.o: u.obj
-	cp u.obj u.o
+# as cannot give _u its segment: mku.sh sets it
+u.o: u.s mku.sh
+	$(AS) -u -o u1.o u.s
+	sh mku.sh u1.o u.o
+	rm -f u1.o
 
 install: all
 	test -d $(PREFIX)/usr || mkdir $(PREFIX)/usr

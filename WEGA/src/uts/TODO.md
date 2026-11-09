@@ -5,23 +5,19 @@ finds every one of them byte-identical (`cmp`) with the WEGA root. Everything be
 Rule: finished (sub)items are deleted from this file, so it gets shorter with every step.
 `uts` is built by `all` in `src/Makefile` but NOT by `install` (and not added to `checkall.sh`) until `wega`, `LIB1`, `LIB2` and the rest are
 identical: before that `checkall.sh` would stop at the first difference. The install targets in `uts/*/Makefile` are written and tested by hand
-with `make install PREFIX=dir`; they are connected to `src/Makefile install` at the very end (4.).
+with `make install PREFIX=dir`; they are connected to `src/Makefile install` at the very end (3.).
 State measured with the build in a copy of `src/uts` (tools from `checkall.sh`), objects against `tmp/wega31_kernel`.
 
 ## State
 
-- Only one object differs: `tty.o` (LIB2), and there only `TCXONC` in `ttiocom` (section 3). `make install` (by hand) writes 31 files below `usr/sys`, `boot`, `usr/boot` and `wega`: 29 are identical; `LIB2` differs only in the member `tty.o`, `wega` as below. When `tty.o` is identical, set its size in `dev/arhdr.s` to that of the shipped object.
+- Only one object differs: `tty.o` (LIB2), and there only `TCXONC` in `ttiocom` (section 2). `make install` (by hand) writes 31 files below `usr/sys`, `boot`, `usr/boot` and `wega`: 29 are identical; `LIB2` differs only in the member `tty.o`, `wega` as below. When `tty.o` is identical, set its size in `dev/arhdr.s` to that of the shipped object.
 - `wega`: 97282 bytes like the original, about 9300 bytes differ, all because `tty.o` is 4 bytes short and moves what follows. Linked with the original `tty.o` as a test (copy it over `dev/tty.o`, rebuild `LIB2`, `LIB2W`, `wega`): `cmp` identical, so the link order, the symbol table (`-X`, `-i`, `-Ms62`) and all other members are proven. `boot` is identical.
 
 ## 1. Build and install
 
 1. `COVERAGE.md`: regenerate (`host/tools/coverage.py`) when files become exact.
 
-## 2. `u.o`
-
-1. `u.o` is still the binary `u.obj`. `as -u -o u.o u.s` gives its 98 bytes except 2: at offset 0x54 and 0x59 the segment of the symbol `_u`, %01 instead of %3E. Measured: the symbols `u_p` and `u_d` are the default sections of a PLZ/ASM module, so the source was for `as`; `cas` writes neither, and `_u ::= <<62>>%f600` there gives type %21 (as `_u` in `mch.o` of ZEUS 3.21), not %61. `$ABS` takes a 16-bit offset (manual `z8000asm.pdf`, 4.3.2 and C.1: a constant expression; a long value is cut), the segment of the symbol is the index of the current section (`$SECTION foo` gives 2). `<<62>>` in `$ABS` or a constant is an error or ignored; `$SECTION` takes no segment; the `as` of ZEUS 3.21 has the same size and gives the same results. `sld -r -M` changes the structure of the object. An index 62 would need 61 more sections, each with a symbol in the table. Not found: an input that gives the original.
-
-## 3. The object that differs: `tty.o`, `TCXONC`
+## 2. The object that differs: `tty.o`, `TCXONC`
 
 Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). 11 differing lines of the disassembly (one is the size line). Look for the source form first: `sys1`, `tt0`, `sioioctl` and the removal of `OLD_D27` all came from the source, not from the compiler: the place of statements in or behind a `switch`, the number of `return`s, the block of a declaration, `!x` against `x == 0` of a long (entry 057b forgets the name of the operand, 054a with 043 keeps it), the order of the tails of a block, a mask `& 0xffffL`. Method: `sccvk -S` without `-O` shows the table entry of each line; `host/recon/poptrace.sh` shows popt.
 
@@ -32,7 +28,7 @@ Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). 11 differing lines of the di
 5. `vk` still needs `OLD_D3` (without it sys1, sys2, ureg, tt0 differ) and `OLD_D24` with `OLD_D25` (sig, sys2, sys3, debug); seven forms of the mask `(caddr_t)((long)x & 0x7F00FFFF)` in sys3 gave nothing.
 6. After each changed switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already before this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 
-## 4. At the end
+## 3. At the end
 
 1. Connect `uts` to `install` in `src/Makefile`; `checkall.sh -b`: `boot`, `wega`, `usr/boot`, `usr/sys/...` all identical, nothing in OPEN for uts.
-2. Update `README.md` (what is still object/assembler: should be only `u.obj`, if any), `COVERAGE.md`, the tables in `host/OLDCC.md` and `host/KNOWLEDGE.md`, `HANDOFF_wega_disasm.md`.
+2. Update `README.md` (what is still object/assembler), `COVERAGE.md`, the tables in `host/OLDCC.md` and `host/KNOWLEDGE.md`, `HANDOFF_wega_disasm.md`.
