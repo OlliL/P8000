@@ -30,6 +30,7 @@
 #define OLD_D2U
 #define OLD_D5G
 #define OLD_D6T
+#define OLD_D6J		/* a dense jump table (segmented): the target into the pair of the value */
 #endif
 
 #ifdef OLD_V0P

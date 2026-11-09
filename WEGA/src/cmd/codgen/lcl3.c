@@ -68,6 +68,12 @@ gswitch(p)
 			rmove(reg, save, 3);
 			rfree(save, 3);
 		}
+#ifdef OLD_D6J
+		if ((reg & ~1) != 0)
+			a6 = reg & ~1;		/* the old scc: the target into the pair of the value (rr0 is no base) */
+		else
+#endif
+		{
 		a6 = getreg(3, -1, 0x1000, 0);
 		if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
 			save = a6;
@@ -78,6 +84,7 @@ gswitch(p)
 				rfree(t2, 5);
 			}
 			rfree(save, 5);
+		}
 		}
 		printf("\trl\t%s,#2\n", rnames[reg]);
 		printf("\tldl\tr%s,L%d(%s)\n", rnames[a6], tab, rnames[reg]);
