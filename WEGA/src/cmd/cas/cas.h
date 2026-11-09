@@ -104,7 +104,7 @@ extern long symval();			/* value of a defined symbol */
 extern long symreloc();			/* its relocation information */
 extern struct sym *stalloc(), *italloc();	/* room in the symbol table and the itable (ssymtab.c) */
 extern char *namalloc();
-extern long ssgbrk(), mkseg();		/* system calls 45 and 55 (libc) */
+extern long mkseg();		/* system calls 45 and 55 (libc) */
 extern long xtol();			/* digits, base -> long */
 extern int isdef();			/* is the symbol defined */
 

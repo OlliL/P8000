@@ -3,7 +3,7 @@
  "measure": "check.sh",
  "compiler": "sccvc -O (parser.y and assemble.c without -O), the working compiler of cas (OLDCC.md)",
  "binary": "/bin/cas",
- "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 45, 49 and 4855, with the text size of the original. Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
+ "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 49, 53 and 3503, with the text size of the original. Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -15,18 +15,17 @@
   "iputw": {
    "file": "ifile.c",
    "orig": "0x0080",
-   "instr": "11/12",
+   "instr": "13/12",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 9 with the shipped scc, 11 with sccvc). Original shows D8.",
-   "lines": 6
+   "note": "`(unsigned char)((unsigned)w >> 8)` and `(unsigned char)w` give the logical shift and the zero extension; 7 lines left: the register of the shifted value.",
+   "lines": 4
   },
   "iputl": {
    "file": "ifile.c",
    "orig": "0x009e",
    "instr": "12/12",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 6 with the shipped scc, 4 with sccvc).",
-   "lines": 2
+   "status": "same",
+   "note": "`(unsigned long)l >> 16`: the logical shift of the original (sdll); identical."
   },
   "sputb": {
    "file": "ifile.c",
@@ -38,18 +37,17 @@
   "sputw": {
    "file": "ifile.c",
    "orig": "0x00fe",
-   "instr": "11/12",
+   "instr": "13/12",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 9 with the shipped scc, 11 with sccvc). Original shows D8.",
-   "lines": 6
+   "note": "As iputw.",
+   "lines": 4
   },
   "sputl": {
    "file": "ifile.c",
    "orig": "0x011c",
    "instr": "12/12",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 6 with the shipped scc, 4 with sccvc).",
-   "lines": 2
+   "status": "same",
+   "note": "As iputl."
   },
   "sgetb": {
    "file": "ifile.c",
@@ -134,10 +132,9 @@
   "iputloc": {
    "file": "ifile.c",
    "orig": "0x0484",
-   "instr": "12/11",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 13 with the shipped scc, 11 with sccvc).",
-   "lines": 7
+   "instr": "11/11",
+   "status": "close",
+   "note": "8 source forms of `lctab[cursec][cursub]` (pointer arithmetic, pointer variable, one index) do not give the form of the original; `OLD_D5G` gives (index + index) + address, the registers still differ (rr0 against rr2)."
   },
   "iputline": {
    "file": "ifile.c",
@@ -197,10 +194,9 @@
   "getch": {
    "file": "scanner.c",
    "orig": "0x11b2",
-   "instr": "35/35",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 48 with the shipped scc, 42 with sccvc).",
-   "lines": 18
+   "instr": "37/35",
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 48 with the shipped scc, 42 with sccvc)."
   },
   "ungetch": {
    "file": "scanner.c",
@@ -359,10 +355,10 @@
   "defsym": {
    "file": "symbols.c",
    "orig": "0x3d90",
-   "instr": "218/217",
+   "instr": "217/217",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 158 with the shipped scc, 35 with sccvc). Original shows D8.",
-   "lines": 9
+   "lines": 6
   },
   "defalias": {
    "file": "symbols.c",
@@ -382,8 +378,8 @@
    "file": "symbols.c",
    "orig": "0x4184",
    "instr": "25/25",
-   "status": "close",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 10 with the shipped scc, 8 with sccvc)."
+   "status": "same",
+   "note": "An unused second register variable (frame and saved registers of the original): identical; an odd form."
   },
   "symreloc": {
    "file": "symbols.c",
@@ -403,10 +399,9 @@
   "deflabels": {
    "file": "symbols.c",
    "orig": "0x4368",
-   "instr": "32/30",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 10 with sccvc).",
-   "lines": 7
+   "instr": "30/30",
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 10 with sccvc)."
   },
   "putstabn": {
    "file": "symbols.c",
@@ -435,33 +430,33 @@
   "stalloc": {
    "file": "ssymtab.c",
    "orig": "0x457a",
-   "instr": "36/37",
+   "instr": "38/37",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 11 with sccvc).",
-   "lines": 5
+   "lines": 3
   },
   "italloc": {
    "file": "ssymtab.c",
    "orig": "0x4618",
-   "instr": "36/37",
+   "instr": "38/37",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 11 with sccvc).",
-   "lines": 5
+   "lines": 3
   },
   "namalloc": {
    "file": "ssymtab.c",
    "orig": "0x46b6",
-   "instr": "43/44",
+   "instr": "45/44",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 39 with the shipped scc, 15 with sccvc).",
-   "lines": 7
+   "lines": 5
   },
   "stabp": {
    "file": "ssymtab.c",
    "orig": "0x4772",
    "instr": "10/9",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 8 with the shipped scc, 7 with sccvc).",
+   "note": "The original has no register variable and the constant with bit 31: `(char *)STAB + idx` stops sccvc with `register jam`; other forms lose bit 31 of the constant (the cast of a long to a pointer clears it). A compiler difference.",
    "lines": 2
   },
   "itabp": {
@@ -469,7 +464,7 @@
    "orig": "0x4788",
    "instr": "10/9",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 8 with the shipped scc, 7 with sccvc).",
+   "note": "As stabp.",
    "lines": 2
   },
   "stenter": {
@@ -512,7 +507,7 @@
   "locadv": {
    "file": "locntr.c",
    "orig": "0x4b3e",
-   "instr": "32/34",
+   "instr": "34/34",
    "status": "close",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 44 with the shipped scc, 46 with sccvc)."
   },
@@ -540,33 +535,30 @@
   "even": {
    "file": "locntr.c",
    "orig": "0x4cda",
-   "instr": "15/14",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 15 with sccvc).",
-   "lines": 7
+   "instr": "14/14",
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 15 with sccvc)."
   },
   "endpass1": {
    "file": "locntr.c",
    "orig": "0x4d10",
    "instr": "58/58",
-   "status": "close",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 26 with the shipped scc, 4 with sccvc). Original shows D8."
+   "status": "same",
+   "note": "The cases of the last switch in the order 1, 0: identical."
   },
   "odd": {
    "file": "locntr.c",
    "orig": "0x4dc4",
-   "instr": "15/14",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 15 with sccvc).",
-   "lines": 7
+   "instr": "14/14",
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 15 with sccvc)."
   },
   "dotval": {
    "file": "locntr.c",
    "orig": "0x4df6",
    "instr": "31/31",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 28 with the shipped scc, 18 with sccvc).",
-   "lines": 9
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 28 with the shipped scc, 18 with sccvc)."
   },
   "setdot": {
    "file": "locntr.c",
@@ -574,7 +566,7 @@
    "instr": "28/28",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 27 with the shipped scc, 12 with sccvc).",
-   "lines": 9
+   "lines": 5
   },
   "exprtype": {
    "file": "expr.c",
@@ -722,10 +714,10 @@
   "p2tag": {
    "file": "p2loop.c",
    "orig": "0x5fc2",
-   "instr": "166/165",
+   "instr": "167/165",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 90 with the shipped scc, 43 with sccvc). Original shows D8.",
-   "lines": 27
+   "lines": 20
   },
   "p2rep": {
    "file": "p2loop.c",
@@ -800,10 +792,9 @@
   "genb": {
    "file": "gen.c",
    "orig": "0x6da6",
-   "instr": "62/61",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 37 with the shipped scc, 25 with sccvc). Original shows D8.",
-   "lines": 7
+   "instr": "61/61",
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 37 with the shipped scc, 25 with sccvc). Original shows D8."
   },
   "genw": {
    "file": "gen.c",
@@ -852,10 +843,10 @@
   "seekout": {
    "file": "gen.c",
    "orig": "0x7286",
-   "instr": "103/7",
+   "instr": "101/7",
    "status": "open",
    "note": "Calls 0 in the original, 10 in ours (conditional jumps 2 against 6): check the source or the end of the function in findings.json (strict differing lines 100 with the shipped scc, 96 with sccvc).",
-   "lines": 96
+   "lines": 94
   },
   "(gen 729e)": {
    "file": "gen.c",
@@ -871,15 +862,15 @@
    "instr": "129/127",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 110 with the shipped scc, 68 with sccvc). Original shows D8.",
-   "lines": 12
+   "lines": 9
   },
   "asmword": {
    "file": "assemble.c",
    "orig": "0x75da",
-   "instr": "101/104",
+   "instr": "99/104",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 88 with the shipped scc, 73 with sccvc). Original shows D8.",
-   "lines": 16
+   "lines": 12
   },
   "asmfield": {
    "file": "assemble.c",
@@ -1002,18 +993,17 @@
   "jprnew": {
    "file": "jpr.c",
    "orig": "0x8640",
-   "instr": "79/72",
+   "instr": "78/72",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 100 with the shipped scc, 59 with sccvc). Original shows D8.",
-   "lines": 43
+   "lines": 22
   },
   "jprange": {
    "file": "jpr.c",
    "orig": "0x8734",
-   "instr": "101/101",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 82 with the shipped scc, 56 with sccvc).",
-   "lines": 35
+   "instr": "99/101",
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 82 with the shipped scc, 56 with sccvc)."
   },
   "jprput": {
    "file": "jpr.c",
@@ -1041,18 +1031,17 @@
   "jpr2": {
    "file": "jpr2.c",
    "orig": "0x89c2",
-   "instr": "80/82",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 51 with the shipped scc, 34 with sccvc).",
-   "lines": 19
+   "instr": "82/82",
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 51 with the shipped scc, 34 with sccvc)."
   },
   "optim": {
    "file": "optim.c",
    "orig": "0x8af4",
-   "instr": "88/86",
+   "instr": "86/86",
    "status": "open",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 104 with the shipped scc, 98 with sccvc).",
-   "lines": 45
+   "lines": 21
   },
   "jinit": {
    "file": "optim.c",
@@ -1064,7 +1053,7 @@
   "newrec": {
    "file": "optim.c",
    "orig": "0x8c6e",
-   "instr": "32/33",
+   "instr": "34/33",
    "status": "close",
    "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 35 with the shipped scc, 27 with sccvc)."
   },
@@ -1123,10 +1112,9 @@
   "lstloc": {
    "file": "listing.c",
    "orig": "0x93ac",
-   "instr": "15/13",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 20 with the shipped scc, 14 with sccvc).",
-   "lines": 8
+   "instr": "13/13",
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 20 with the shipped scc, 14 with sccvc)."
   },
   "lstw": {
    "file": "listing.c",
@@ -1167,18 +1155,16 @@
   "lstline": {
    "file": "listing.c",
    "orig": "0x9534",
-   "instr": "71/71",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 97 with the shipped scc, 74 with sccvc).",
-   "lines": 65
+   "instr": "72/71",
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 97 with the shipped scc, 74 with sccvc)."
   },
   "lstrest": {
    "file": "listing.c",
    "orig": "0x9638",
-   "instr": "23/23",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 24 with the shipped scc, 22 with sccvc).",
-   "lines": 9
+   "instr": "24/23",
+   "status": "close",
+   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 24 with the shipped scc, 22 with sccvc)."
   }
  },
  "data": {
@@ -1208,5 +1194,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "7addd71a"
+ "measured_at": "e1cf5c7f"
 }

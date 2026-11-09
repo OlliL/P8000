@@ -137,7 +137,7 @@ int idx;
 isdef(idx)
 int idx;
 {
-	register struct sym *sp;
+	register struct sym *sp, *sp2;
 
 	sp = stabp(idx);
 	if (sp->s_type == 1 && (sp->s_7 & 6) != 0 && (sp->s_7 & 1) == 0)
