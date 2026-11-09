@@ -3,8 +3,8 @@
 #   make		 build/cas
 #   make install PREFIX=dir
 #   make clean
-#   make oldcas	  old/cas: the cas of the old compilers v0 and v0p, -DOLD_CAS (the early jump optimization)
-#   make oldinstall PREFIX=dir  dir/lib/old/cas
+#   make oldcas	  old/cas: the cas of the old compilers v0 and v0p, -DOLD_CAS (the early jump optimization); vc/cas: the cas of sccvc, -DOLD_D13
+#   make oldinstall PREFIX=dir  dir/lib/old/cas, dir/lib/vc/cas
 #
 # The modules are linked in the order of MODULES. As in /bin/cas, text goes to segment 4, data
 # and bss to segment 5 and the three tables of the symbol table (stable, itable, ntable) to
@@ -24,10 +24,13 @@ ALL_OBJS = ifile.o instr.o scanner.o main.o done.o nodes.o parser.o pst.o subr.o
 
 all: build/cas
 
-oldcas: old/cas
+oldcas: old/cas vc/cas
 
 build/cas: FORCE
 	cd build ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile cas
+
+vc/cas: FORCE
+	cd vc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc SCCFLAGS="-O -DOLD_D13" cas
 
 old/cas: FORCE
 	cd old ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc SCCFLAGS="-O -DOLD_CAS" cas
@@ -36,12 +39,14 @@ install: build/cas
 	cp build/cas $(PREFIX)/bin/cas
 	$(STRIP) $(PREFIX)/bin/cas
 
-oldinstall: old/cas
+oldinstall: old/cas vc/cas
 	[ -d $(PREFIX)/lib/old ] ||  mkdir $(PREFIX)/lib/old
 	cp old/cas $(PREFIX)/lib/old/cas
+	[ -d $(PREFIX)/lib/vc ] || mkdir $(PREFIX)/lib/vc
+	cp vc/cas $(PREFIX)/lib/vc/cas
 
 clean:
-	for dir in build old ; do\
+	for dir in build old vc ; do\
 		FILES="$$dir/cas $$dir/parser.c $$dir/y.tab.c $$dir/y.tab.h";\
 		for f in $(ALL_OBJS) stable.o itable.o ntable.o; do FILES="$$FILES $$dir/$$f"; done;\
 		rm -f $$FILES;\

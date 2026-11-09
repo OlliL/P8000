@@ -117,7 +117,12 @@ char	*clist		= "/lib/clist";
 /* v0 and v0p: the assembler with the early jump optimization (../cas/old) */
 char	*cas		= "/lib/old/cas";
 #else
+#ifdef OLD_VC
+/* sccvc: bit 31 of a segmented address constant stays (OLD_D13 in ../cas) */
+char	*cas		= "/lib/vc/cas";
+#else
 char	*cas		= "/bin/cas";
+#endif
 #endif
 char	*ld		= SEG("/bin/ld", "/bin/sld");
 char	*fpf		= "/z/bin/lib/fpf";

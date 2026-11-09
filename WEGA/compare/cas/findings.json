@@ -3,7 +3,7 @@
  "measure": "check.sh",
  "compiler": "sccvc -O (parser.y and assemble.c without -O), the working compiler of cas (OLDCC.md)",
  "binary": "/bin/cas",
- "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` 16, 47 and 5808, with the text size of the original. Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. Still counted as differences: the data addresses of the model (its data has another layout) and bit 31 of address constants (D13).",
+ "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` 24, 47 and 5420, with the text size of the original. Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. Still counted as differences: the data addresses of the model (its data has another layout).",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -1208,5 +1208,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "ab03061f"
+ "measured_at": "eb971124"
 }
