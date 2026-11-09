@@ -144,13 +144,15 @@ char **argv;
 	}
 
 	/* the intermediate file */
-	if (iflag && nfiles) {
+	if (!iflag || !nfiles) {
+		if (iflag)
+			strcpy(ifname, "i.out");
+		else
+			ifname = mktemp(itmpl);
+	} else {
 		strcpy(ifname, srcname);
 		ifname[strlen(ifname) - 1] = 'i';
-	} else if (iflag)
-		strcpy(ifname, "i.out");
-	else
-		ifname = mktemp(itmpl);
+	}
 	unlink(ifname);
 	ifile = fopen(ifname, "w+");
 	if (ifile == 0) {
@@ -165,13 +167,15 @@ char **argv;
 	}
 
 	/* the symbol file */
-	if (tflag && nfiles) {
+	if (!tflag || !nfiles) {
+		if (tflag)
+			strcpy(sfname, "sym.out");
+		else
+			sfname = mktemp(stmpl);
+	} else {
 		strcpy(sfname, srcname);
 		sfname[strlen(sfname) - 1] = 't';
-	} else if (tflag)
-		strcpy(sfname, "sym.out");
-	else
-		sfname = mktemp(stmpl);
+	}
 	unlink(sfname);
 	sfile = fopen(sfname, "w+");
 	if (sfile == 0) {
@@ -223,13 +227,15 @@ char **argv;
 	}
 
 	/* the relocation file */
-	if (rflag && nfiles) {
+	if (!rflag || !nfiles) {
+		if (rflag)
+			strcpy(rfname, "r.out");
+		else
+			rfname = mktemp(rtmpl);
+	} else {
 		strcpy(rfname, srcname);
 		rfname[strlen(rfname) - 1] = 'r';
-	} else if (rflag)
-		strcpy(rfname, "r.out");
-	else
-		rfname = mktemp(rtmpl);
+	}
 	unlink(rfname);
 	relf = fopen(rfname, "w+");
 	if (relf == 0) {
@@ -248,13 +254,15 @@ char **argv;
 	}
 
 	/* the output symbols */
-	if (mflag && nfiles) {
+	if (!mflag || !nfiles) {
+		if (mflag)
+			strcpy(ofname, "osym.out");
+		else
+			ofname = mktemp(otmpl);
+	} else {
 		strcpy(ofname, srcname);
 		ofname[strlen(ofname) - 1] = 'm';
-	} else if (mflag)
-		strcpy(ofname, "osym.out");
-	else
-		ofname = mktemp(otmpl);
+	}
 	unlink(ofname);
 	osymf = fopen(ofname, "w+");
 	if (osymf == 0) {
