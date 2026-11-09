@@ -296,6 +296,21 @@ d2qfree(r)
 }
 #endif
 
+#if defined(OLD_D2R) && defined(SEG)
+/* the pair r is busy once (the address of the load) */
+static int
+d2rpair(r)
+	register int r;
+{
+	register struct rs *n;
+
+	for (n = rsuse; n; n = n->next)
+		if (n->reg == r && n->cls == 3)
+			return n->busy == 1;
+	return 0;
+}
+#endif
+
 #if defined(OLD_D2O) || defined(OLD_D2MO)
 /* the odd word register r is busy once and its partner r - 1 is free, or idle and then given back */
 static int
@@ -351,6 +366,26 @@ allocreg(p, cookie)
 	else
 		cls = rclass(p->in.type, want);
 #ifdef OLD_D2R
+#ifdef SEG
+	r = -1;
+	if (cls == 2 && (p->in.op == STAR || p->in.op == OREG) && want == -1) {
+		register NODE *q = getlr(p, 'L');	/* segmented: a pair address without index, used only here, gives its even half */
+		register int pr = -1;
+
+		if (q->in.op == STAR)
+			q = q->in.left;
+		if (q->in.op == OREG && q->tn.rval >= 0x100 && (q->tn.rval & 0xFF) == 0)
+			pr = (q->tn.rval >> 8) - 1;
+		else if (q->in.op == REG && szty(q->in.type) == 2)
+			pr = q->tn.rval;
+		if (pr > 0 && pr < 8 && !(pr & 1) && d2rpair(pr)) {
+			rfree(pr, 5);		/* LONG: the pair */
+			rsreturn(3, pr);
+			r = getreg(2, pr, 0, p->in.sname);
+		}
+	}
+	if (r == -1)
+#endif
 	r = cls == 2 && (p->in.op == STAR || p->in.op == OREG) ? freereg(p, want, cookie) : -1;	/* a load through a pointer: its register */
 #ifdef OLD_D2V
 	if (r != -1 && want == -1 && r < 8 && !d2vfirst(r))
