@@ -137,40 +137,41 @@ unsigned char mode;
 	register struct sym *p;
 	register struct sym *p2;
 
-	if (*name) {
-		h = hash(1000, name);
-		if (hashtab[h] == 0L && (mode & 6) != 6) {
-			p = stalloc(10);
-			p->s_2 = (long)namalloc(name);
-			p->s_type = 0;
-			p->s_7 = 0;
-			p->s_8 = 0;
-			hashtab[h] = (int)p - 0x30;
-			return (hashtab[h]);
-		}
-		p2 = stalloc(16);
-		p2->s_2 = (long)namalloc(name);
-		p2->s_type = 0;
-		p2->s_8 = 0;
-		if (hashtab[h] != 0L) {
-			p2->s_14 = hashtab[h];
-			p2->s_7 = 8;
-		}
-		if ((mode & 6) == 6) {
-			p2->s_10 = blkstack[blklevel - 1];
-			blkstack[blklevel - 1] = (int)p2 - 0x30;
-			p2->s_7 = p2->s_7 | 6;
-			p2->s_12 = blklevel;
-		}
-		hashtab[h] = (int)p2 - 0x30;
+	if (*name == 0) {
+		p = stalloc(10);
+		p->s_2 = 0;
+		p->s_type = 0;
+		p->s_7 = 0;
+		p->s_8 = 0;
+		return (((char *)p - (char *)STAB));
+	}
+	h = hash(1000, name);
+	if (hashtab[h] == 0L && (mode & 6) != 6) {
+		p = stalloc(10);
+		p->s_2 = (long)namalloc(name);
+		p->s_type = 0;
+		p->s_7 = 0;
+		p->s_8 = 0;
+		hashtab[h] = ((char *)p - (char *)STAB);
 		return (hashtab[h]);
 	}
-	p = stalloc(10);
-	p->s_2 = 0;
-	p->s_type = 0;
-	p->s_7 = 0;
-	p->s_8 = 0;
-	return ((int)p - 0x30);
+	p2 = stalloc(16);
+	p2->s_2 = (long)namalloc(name);
+	p2->s_type = 0;
+	p2->s_8 = 0;
+	if (hashtab[h] != 0L) {
+		p2->s_14 = hashtab[h];
+		p2->s_7 = 8;
+	}
+	if ((mode & 6) == 6) {
+		p2->s_10 = blkstack[blklevel - 1];
+		blkstack[blklevel - 1] = ((char *)p2 - (char *)STAB);
+		p2->s_7 = p2->s_7 | 6;
+		p2->s_12 = blklevel;
+	}
+	hashtab[h] = ((char *)p2 - (char *)STAB);
+	return (hashtab[h]);
+
 }
 
 /* set the type and the kind of a symbol and give it an entry in the information table */
