@@ -3,21 +3,21 @@
  "measure": "check.sh",
  "compiler": "sccvc -O (parser.y and assemble.c without -O), the working compiler of cas (OLDCC.md)",
  "binary": "/bin/cas",
- "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 49, 53 and 3503, with the text size of the original. Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
+ "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 59 strictly equal, 59 masked, 3067 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36359 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code) and 34 words of `yyparse` (the value lists of its cpir switches in front of their target lists in the original, OLD_D6T-like). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
  "functions": {
   "iputb": {
    "file": "ifile.c",
    "orig": "0x0042",
    "instr": "16/16",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 6 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "iputw": {
    "file": "ifile.c",
    "orig": "0x0080",
    "instr": "13/12",
    "status": "open",
-   "note": "`(unsigned char)((unsigned)w >> 8)` and `(unsigned char)w` give the logical shift and the zero extension; 7 lines left: the register of the shifted value.",
+   "note": "Model (strictcmp, sccvc): 7 lines, other instructions (source form or compiler, not separated).",
    "lines": 4
   },
   "iputl": {
@@ -25,21 +25,21 @@
    "orig": "0x009e",
    "instr": "12/12",
    "status": "same",
-   "note": "`(unsigned long)l >> 16`: the logical shift of the original (sdll); identical."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "sputb": {
    "file": "ifile.c",
    "orig": "0x00c0",
    "instr": "16/16",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 6 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "sputw": {
    "file": "ifile.c",
    "orig": "0x00fe",
    "instr": "13/12",
    "status": "open",
-   "note": "As iputw.",
+   "note": "Model (strictcmp, sccvc): 7 lines, other instructions (source form or compiler, not separated).",
    "lines": 4
   },
   "sputl": {
@@ -47,56 +47,56 @@
    "orig": "0x011c",
    "instr": "12/12",
    "status": "same",
-   "note": "As iputl."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "sgetb": {
    "file": "ifile.c",
    "orig": "0x013e",
    "instr": "16/16",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 10 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "sgetw": {
    "file": "ifile.c",
    "orig": "0x017c",
    "instr": "14/14",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only. Original shows D8."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "sgetl": {
    "file": "ifile.c",
    "orig": "0x01a0",
    "instr": "16/16",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "igetb": {
    "file": "ifile.c",
    "orig": "0x01d0",
    "instr": "16/16",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 10 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "igetw": {
    "file": "ifile.c",
    "orig": "0x020e",
    "instr": "14/14",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only. Original shows D8."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "igetl": {
    "file": "ifile.c",
    "orig": "0x0232",
    "instr": "16/16",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "igetaddr": {
    "file": "ifile.c",
    "orig": "0x0262",
    "instr": "3/6",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 7 with the shipped scc, 5 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 5 lines, other instructions (source form or compiler, not separated).",
    "lines": 3
   },
   "iputnode": {
@@ -104,21 +104,21 @@
    "orig": "0x0270",
    "instr": "22/22",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only. Original shows D8."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "sputnode": {
    "file": "ifile.c",
    "orig": "0x02a8",
    "instr": "22/22",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only. Original shows D8."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "iputexpr": {
    "file": "ifile.c",
    "orig": "0x02e0",
    "instr": "74/72",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 63 with the shipped scc, 68 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 66 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6). sccvc takes rr0 where the original takes another pair.",
    "lines": 46
   },
   "sputexpr": {
@@ -126,22 +126,22 @@
    "orig": "0x03b2",
    "instr": "74/72",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 63 with the shipped scc, 68 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 66 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6). sccvc takes rr0 where the original takes another pair.",
    "lines": 46
   },
   "iputloc": {
    "file": "ifile.c",
    "orig": "0x0484",
    "instr": "11/11",
-   "status": "close",
-   "note": "8 source forms of `lctab[cursec][cursub]` (pointer arithmetic, pointer variable, one index) do not give the form of the original; `OLD_D5G` gives (index + index) + address, the registers still differ (rr0 against rr2)."
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ. sccvc takes rr0 where the original takes another pair."
   },
   "iputline": {
    "file": "ifile.c",
    "orig": "0x04aa",
    "instr": "22/15",
    "status": "open",
-   "note": "Calls 2 in the original, 3 in ours (conditional jumps 3 against 3): check the source or the end of the function in findings.json (strict differing lines 30 with the shipped scc, 7 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 7 lines, other instructions (source form or compiler, not separated).",
    "lines": 7
   },
   "(ifile 04e2)": {
@@ -149,7 +149,7 @@
    "orig": "0x04e2",
    "instr": "0/7",
    "status": "open",
-   "note": "A piece of the text range of the module without a function name in the comparison of `cmpmod.py`: not measured with sccvc.",
+   "note": "A static function without a name: no symbol in the model, not compared by strictcmp.",
    "lines": 7
   },
   "putins": {
@@ -157,7 +157,7 @@
    "orig": "0x04f6",
    "instr": "76/75",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 53 with the shipped scc, 29 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 25 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6). sccvc takes rr0 where the original takes another pair.",
    "lines": 16
   },
   "opmatch": {
@@ -165,7 +165,7 @@
    "orig": "0x05de",
    "instr": "40/40",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 38 with the shipped scc, 18 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 18 lines, other instructions (source form or compiler, not separated).",
    "lines": 10
   },
   "putrow": {
@@ -173,7 +173,7 @@
    "orig": "0x0662",
    "instr": "65/68",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 65 with the shipped scc, 39 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 35 lines, other instructions (source form or compiler, not separated).",
    "lines": 13
   },
   "putfill": {
@@ -181,14 +181,14 @@
    "orig": "0x075e",
    "instr": "13/13",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "yylex": {
    "file": "scanner.c",
    "orig": "0x078a",
    "instr": "785/790",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 743 with the shipped scc, 489 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 451 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 170
   },
   "getch": {
@@ -196,21 +196,21 @@
    "orig": "0x11b2",
    "instr": "37/35",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 48 with the shipped scc, 42 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 18 lines, other instructions (source form or compiler, not separated)."
   },
   "ungetch": {
    "file": "scanner.c",
    "orig": "0x1240",
    "instr": "14/14",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 7 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "main": {
    "file": "main.c",
    "orig": "0x1278",
    "instr": "486/484",
    "status": "open",
-   "note": "Calls 100 in the original, 102 in ours (conditional jumps 54 against 54): check the source or the end of the function in findings.json (strict differing lines 704 with the shipped scc, 394 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 106 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 84
   },
   "sigdone": {
@@ -218,56 +218,56 @@
    "orig": "0x1a88",
    "instr": "3/3",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "done": {
    "file": "main.c",
    "orig": "0x1a90",
    "instr": "26/26",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 14 with the shipped scc, 12 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "chknodes": {
    "file": "nodes.c",
    "orig": "0x1b02",
    "instr": "10/10",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 10 with the shipped scc, 2 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "mknode1": {
    "file": "nodes.c",
    "orig": "0x1b2e",
    "instr": "28/28",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 30 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "mknode6": {
    "file": "nodes.c",
    "orig": "0x1b96",
    "instr": "31/31",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 34 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "mknode7": {
    "file": "nodes.c",
    "orig": "0x1c06",
    "instr": "27/27",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 30 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "mknode2": {
    "file": "nodes.c",
    "orig": "0x1c6a",
    "instr": "32/32",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 95 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "escape": {
    "file": "nodes.c",
    "orig": "0x1cdc",
    "instr": "65/57",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines ? with the shipped scc, 68 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 64 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6). sccvc takes rr0 where the original takes another pair.",
    "lines": 43
   },
   "mkstring": {
@@ -275,21 +275,21 @@
    "orig": "0x1d78",
    "instr": "77/77",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 53 with the shipped scc, 12 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ."
   },
   "mknode25": {
    "file": "nodes.c",
    "orig": "0x1e74",
    "instr": "39/39",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 42 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "yyerror": {
    "file": "parser.y",
    "orig": "0x1ef8",
    "instr": "43/42",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 38 with the shipped scc, 31 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 3 lines, other instructions (source form or compiler, not separated).",
    "lines": 2
   },
   "synrecover": {
@@ -297,7 +297,7 @@
    "orig": "0x1fbe",
    "instr": "9/13",
    "status": "open",
-   "note": "Calls 273 in the original, 1 in ours (conditional jumps 79 against 1): check the source or the end of the function in findings.json (strict differing lines 1603 with the shipped scc, 1593 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 3 lines, other instructions (source form or compiler, not separated).",
    "lines": 4
   },
   "(parser 3af4)": {
@@ -305,22 +305,22 @@
    "orig": "0x3af4",
    "instr": "0/3",
    "status": "close",
-   "note": "A piece of the text range of the module without a function name in the comparison of `cmpmod.py`: not measured with sccvc."
+   "note": "A static function without a name: no symbol in the model, not compared by strictcmp."
   },
   "pstlook": {
    "file": "pst.c",
    "orig": "0x3b06",
    "instr": "31/31",
    "status": "open",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 22 with the shipped scc, 20 with sccvc).",
-   "lines": 7
+   "note": "Model (strictcmp, sccvc): 10 lines, other instructions (source form or compiler, not separated).",
+   "lines": 1
   },
   "pstcmp": {
    "file": "pst.c",
    "orig": "0x3b6a",
    "instr": "39/39",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 48 with the shipped scc, 32 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 32 lines, other instructions (source form or compiler, not separated).",
    "lines": 12
   },
   "casechk": {
@@ -328,7 +328,7 @@
    "orig": "0x3be0",
    "instr": "68/58",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 83 with the shipped scc, 86 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 86 lines, other instructions (source form or compiler, not separated).",
    "lines": 49
   },
   "xtol": {
@@ -336,57 +336,57 @@
    "orig": "0x3c8e",
    "instr": "26/26",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 40 with the shipped scc, 6 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "digval": {
    "file": "pst.c",
    "orig": "0x3cdc",
    "instr": "26/26",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines ? with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "hash": {
    "file": "subr.c",
    "orig": "0x3d1e",
    "instr": "35/35",
-   "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 20 with sccvc)."
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): 10 lines, only the registers differ."
   },
   "defsym": {
    "file": "symbols.c",
    "orig": "0x3d90",
    "instr": "217/217",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 158 with the shipped scc, 35 with sccvc). Original shows D8.",
-   "lines": 6
+   "note": "Model (strictcmp, sccvc): 16 lines, only the registers differ. The register of the table jump differs (original jp @rr2, sccvc @rr6).",
+   "lines": 2
   },
   "defalias": {
    "file": "symbols.c",
    "orig": "0x4084",
    "instr": "29/29",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only. Original shows D8."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "symval": {
    "file": "symbols.c",
    "orig": "0x40f4",
    "instr": "43/43",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 27 with the shipped scc, 2 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "isdef": {
    "file": "symbols.c",
    "orig": "0x4184",
    "instr": "25/25",
    "status": "same",
-   "note": "An unused second register variable (frame and saved registers of the original): identical; an odd form."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "symreloc": {
    "file": "symbols.c",
    "orig": "0x41d6",
    "instr": "95/95",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 107 with the shipped scc, 26 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 20 lines, only the registers differ. The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 18
   },
   "defcomm": {
@@ -394,45 +394,42 @@
    "orig": "0x4312",
    "instr": "24/24",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 4 with the shipped scc, 2 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "deflabels": {
    "file": "symbols.c",
    "orig": "0x4368",
    "instr": "30/30",
-   "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 10 with sccvc)."
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "putstabn": {
    "file": "symbols.c",
    "orig": "0x43d4",
    "instr": "37/37",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 16 with the shipped scc, 6 with sccvc).",
-   "lines": 2
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ."
   },
   "putstabp": {
    "file": "symbols.c",
    "orig": "0x4472",
    "instr": "30/30",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 14 with the shipped scc, 6 with sccvc).",
-   "lines": 2
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ."
   },
   "putstabr": {
    "file": "symbols.c",
    "orig": "0x44ee",
    "instr": "35/35",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 16 with the shipped scc, 6 with sccvc).",
-   "lines": 2
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ."
   },
   "stalloc": {
    "file": "ssymtab.c",
    "orig": "0x457a",
    "instr": "38/37",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 11 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 5 lines, other instructions (source form or compiler, not separated).",
    "lines": 3
   },
   "italloc": {
@@ -440,7 +437,7 @@
    "orig": "0x4618",
    "instr": "38/37",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 11 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 5 lines, other instructions (source form or compiler, not separated).",
    "lines": 3
   },
   "namalloc": {
@@ -448,7 +445,7 @@
    "orig": "0x46b6",
    "instr": "45/44",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 39 with the shipped scc, 15 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 9 lines, other instructions (source form or compiler, not separated).",
    "lines": 5
   },
   "stabp": {
@@ -456,7 +453,7 @@
    "orig": "0x4772",
    "instr": "10/9",
    "status": "open",
-   "note": "The original has no register variable and the constant with bit 31: `(char *)STAB + idx` stops sccvc with `register jam`; other forms lose bit 31 of the constant (the cast of a long to a pointer clears it). A compiler difference.",
+   "note": "Model (strictcmp, sccvc): 7 lines, other instructions (source form or compiler, not separated). The original has no register variable and the constant with bit 31: `(char *)STAB + idx` stops sccvc with `register jam`; other forms lose bit 31 of the constant (the cast of a long to a pointer clears it). Compiler.",
    "lines": 2
   },
   "itabp": {
@@ -464,7 +461,7 @@
    "orig": "0x4788",
    "instr": "10/9",
    "status": "open",
-   "note": "As stabp.",
+   "note": "Model (strictcmp, sccvc): 7 lines, other instructions (source form or compiler, not separated). As stabp: the constant with bit 31 is lost by the cast of a long to a pointer in sccvc. Compiler.",
    "lines": 2
   },
   "stenter": {
@@ -472,7 +469,7 @@
    "orig": "0x479e",
    "instr": "141/145",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 192 with the shipped scc, 72 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 58 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 42
   },
   "setsym": {
@@ -480,7 +477,7 @@
    "orig": "0x4926",
    "instr": "38/39",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 32 with the shipped scc, 7 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 7 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 4
   },
   "stlook": {
@@ -488,106 +485,105 @@
    "orig": "0x4996",
    "instr": "36/36",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 13 with the shipped scc, 16 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 14 lines, the same instructions with other operands or in another order."
   },
   "blkopen": {
    "file": "ssymtab.c",
    "orig": "0x4a0e",
    "instr": "8/8",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 6 with the shipped scc, 2 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "blkclose": {
    "file": "ssymtab.c",
    "orig": "0x4a30",
    "instr": "84/84",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 44 with the shipped scc, 10 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "locadv": {
    "file": "locntr.c",
    "orig": "0x4b3e",
    "instr": "34/34",
-   "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 44 with the shipped scc, 46 with sccvc)."
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "setsub": {
    "file": "locntr.c",
    "orig": "0x4bb0",
    "instr": "4/4",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "secname": {
    "file": "locntr.c",
    "orig": "0x4bbc",
    "instr": "68/68",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 29 with the shipped scc, 2 with sccvc). Original shows D8."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "setsec": {
    "file": "locntr.c",
    "orig": "0x4cb4",
    "instr": "11/11",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 5 with the shipped scc, 2 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "even": {
    "file": "locntr.c",
    "orig": "0x4cda",
    "instr": "14/14",
-   "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 15 with sccvc)."
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): 8 lines, only the registers differ. sccvc takes rr0 where the original takes another pair."
   },
   "endpass1": {
    "file": "locntr.c",
    "orig": "0x4d10",
    "instr": "58/58",
    "status": "same",
-   "note": "The cases of the last switch in the order 1, 0: identical."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "odd": {
    "file": "locntr.c",
    "orig": "0x4dc4",
    "instr": "14/14",
-   "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 15 with sccvc)."
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): 8 lines, only the registers differ. sccvc takes rr0 where the original takes another pair."
   },
   "dotval": {
    "file": "locntr.c",
    "orig": "0x4df6",
-   "instr": "31/31",
+   "instr": "30/31",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 28 with the shipped scc, 18 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 9 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair."
   },
   "setdot": {
    "file": "locntr.c",
    "orig": "0x4e6a",
    "instr": "28/28",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 27 with the shipped scc, 12 with sccvc).",
-   "lines": 5
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "exprtype": {
    "file": "expr.c",
    "orig": "0x4ecc",
    "instr": "46/45",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 51 with the shipped scc, 21 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 19 lines, other instructions (source form or compiler, not separated)."
   },
   "evalint": {
    "file": "expr.c",
    "orig": "0x4f52",
    "instr": "32/32",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 39 with the shipped scc, 2 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "exprreloc": {
    "file": "expr.c",
    "orig": "0x4fb2",
    "instr": "92/85",
    "status": "open",
-   "note": "Conditional jumps 12 in the original, 13 in ours, calls equal: check the source (strict differing lines 131 with the shipped scc, 43 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 41 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 32
   },
   "exprval": {
@@ -595,7 +591,7 @@
    "orig": "0x50b6",
    "instr": "160/162",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 188 with the shipped scc, 44 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 36 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6). sccvc takes rr0 where the original takes another pair.",
    "lines": 14
   },
   "opshort": {
@@ -603,7 +599,7 @@
    "orig": "0x52c6",
    "instr": "59/59",
    "status": "open",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 46 with the shipped scc, 6 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ. The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 2
   },
   "opseg": {
@@ -611,7 +607,7 @@
    "orig": "0x538a",
    "instr": "51/51",
    "status": "open",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 33 with the shipped scc, 6 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ. The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 2
   },
   "opoff": {
@@ -619,7 +615,7 @@
    "orig": "0x543c",
    "instr": "46/47",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 36 with the shipped scc, 13 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 11 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 6
   },
   "opxor": {
@@ -627,7 +623,7 @@
    "orig": "0x54e0",
    "instr": "53/53",
    "status": "open",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 19 with the shipped scc, 14 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 8 lines, only the registers differ. sccvc takes rr0 where the original takes another pair.",
    "lines": 3
   },
   "opor": {
@@ -635,7 +631,7 @@
    "orig": "0x5598",
    "instr": "53/53",
    "status": "open",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 19 with the shipped scc, 14 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 8 lines, only the registers differ. sccvc takes rr0 where the original takes another pair.",
    "lines": 3
   },
   "opand": {
@@ -643,7 +639,7 @@
    "orig": "0x5650",
    "instr": "53/53",
    "status": "open",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 19 with the shipped scc, 14 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 8 lines, only the registers differ. sccvc takes rr0 where the original takes another pair.",
    "lines": 3
   },
   "opshr": {
@@ -651,42 +647,42 @@
    "orig": "0x5708",
    "instr": "53/53",
    "status": "close",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 20 with the shipped scc, 10 with sccvc). Original shows D8."
+   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ. sccvc takes rr0 where the original takes another pair."
   },
   "opshl": {
    "file": "expr.c",
    "orig": "0x57c0",
    "instr": "52/52",
    "status": "close",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 20 with the shipped scc, 10 with sccvc). Original shows D8."
+   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ. sccvc takes rr0 where the original takes another pair."
   },
   "opmul": {
    "file": "expr.c",
    "orig": "0x5876",
    "instr": "51/51",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 20 with the shipped scc, 12 with sccvc). Original shows D8."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "opdiv": {
    "file": "expr.c",
    "orig": "0x5928",
    "instr": "52/52",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 14 with the shipped scc, 6 with sccvc). Original shows D8."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "opneg": {
    "file": "expr.c",
    "orig": "0x59dc",
    "instr": "11/11",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "opsub": {
    "file": "expr.c",
    "orig": "0x59fc",
    "instr": "190/192",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 129 with the shipped scc, 38 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 32 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 14
   },
   "opplus": {
@@ -694,14 +690,14 @@
    "orig": "0x5cac",
    "instr": "11/11",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "opadd": {
    "file": "expr.c",
    "orig": "0x5ccc",
    "instr": "171/171",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 83 with the shipped scc, 32 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 26 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 12
   },
   "pass2": {
@@ -709,22 +705,22 @@
    "orig": "0x5f32",
    "instr": "31/31",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only. Original shows D8."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "p2tag": {
    "file": "p2loop.c",
    "orig": "0x5fc2",
-   "instr": "167/165",
+   "instr": "166/165",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 90 with the shipped scc, 43 with sccvc). Original shows D8.",
-   "lines": 20
+   "note": "Model (strictcmp, sccvc): 23 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6). sccvc takes rr0 where the original takes another pair.",
+   "lines": 7
   },
   "p2rep": {
    "file": "p2loop.c",
    "orig": "0x6262",
    "instr": "87/87",
    "status": "open",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 33 with the shipped scc, 14 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 12 lines, only the registers differ. The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 6
   },
   "ohdrinit": {
@@ -732,7 +728,7 @@
    "orig": "0x6394",
    "instr": "208/195",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 244 with the shipped scc, 235 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 197 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 104
   },
   "ohdrput": {
@@ -740,14 +736,14 @@
    "orig": "0x6634",
    "instr": "33/33",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 18 with the shipped scc, 12 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "symtype": {
    "file": "ofile.c",
    "orig": "0x66cc",
    "instr": "58/55",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 73 with the shipped scc, 15 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 15 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 5
   },
   "osymout": {
@@ -755,7 +751,7 @@
    "orig": "0x676a",
    "instr": "136/137",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 69 with the shipped scc, 45 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 39 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 11
   },
   "stabout": {
@@ -763,66 +759,65 @@
    "orig": "0x6952",
    "instr": "104/107",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 83 with the shipped scc, 55 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 45 lines, other instructions (source form or compiler, not separated).",
    "lines": 40
   },
   "nlwrite": {
    "file": "ofile.c",
    "orig": "0x6ad6",
-   "instr": "51/49",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 40 with the shipped scc, 28 with sccvc). Original shows D8.",
-   "lines": 4
+   "instr": "49/49",
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "ofinish": {
    "file": "ofile.c",
    "orig": "0x6b96",
    "instr": "71/71",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 32 with the shipped scc, 22 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "symadjust": {
    "file": "ofile.c",
    "orig": "0x6cb2",
    "instr": "73/72",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 60 with the shipped scc, 39 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 39 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 13
   },
   "genb": {
    "file": "gen.c",
    "orig": "0x6da6",
    "instr": "61/61",
-   "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 37 with the shipped scc, 25 with sccvc). Original shows D8."
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): 8 lines, only the registers differ. sccvc takes rr0 where the original takes another pair."
   },
   "genw": {
    "file": "gen.c",
    "orig": "0x6e9a",
    "instr": "50/50",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 20 with the shipped scc, 10 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "genl": {
    "file": "gen.c",
    "orig": "0x6f66",
    "instr": "27/27",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "genlop": {
    "file": "gen.c",
    "orig": "0x6fba",
    "instr": "74/74",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 52 with the shipped scc, 12 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 6 lines, only the registers differ."
   },
   "genwop": {
    "file": "gen.c",
    "orig": "0x70b0",
    "instr": "62/63",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 49 with the shipped scc, 29 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 23 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 7
   },
   "genaddr": {
@@ -830,14 +825,14 @@
    "orig": "0x7192",
    "instr": "15/15",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "genbop": {
    "file": "gen.c",
    "orig": "0x71c2",
    "instr": "55/56",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 41 with the shipped scc, 25 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 19 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 5
   },
   "seekout": {
@@ -845,7 +840,7 @@
    "orig": "0x7286",
    "instr": "101/7",
    "status": "open",
-   "note": "Calls 0 in the original, 10 in ours (conditional jumps 2 against 6): check the source or the end of the function in findings.json (strict differing lines 100 with the shipped scc, 96 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 94 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 94
   },
   "(gen 729e)": {
@@ -853,7 +848,7 @@
    "orig": "0x729e",
    "instr": "0/94",
    "status": "open",
-   "note": "A piece of the text range of the module without a function name in the comparison of `cmpmod.py`: not measured with sccvc.",
+   "note": "A static function without a name: no symbol in the model, not compared by strictcmp.",
    "lines": 94
   },
   "asmins": {
@@ -861,23 +856,23 @@
    "orig": "0x742a",
    "instr": "129/127",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 110 with the shipped scc, 68 with sccvc). Original shows D8.",
-   "lines": 9
+   "note": "Model (strictcmp, sccvc): 36 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6). sccvc takes rr0 where the original takes another pair.",
+   "lines": 5
   },
   "asmword": {
    "file": "assemble.c",
    "orig": "0x75da",
-   "instr": "99/104",
+   "instr": "101/104",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 88 with the shipped scc, 73 with sccvc). Original shows D8.",
-   "lines": 12
+   "note": "Model (strictcmp, sccvc): 49 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6). sccvc takes rr0 where the original takes another pair.",
+   "lines": 10
   },
   "asmfield": {
    "file": "assemble.c",
    "orig": "0x773a",
    "instr": "136/142",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 90 with the shipped scc, 71 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 20 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 12
   },
   "asmimm": {
@@ -885,7 +880,7 @@
    "orig": "0x7958",
    "instr": "197/198",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 167 with the shipped scc, 81 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 17 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 8
   },
   "asmfix": {
@@ -893,7 +888,7 @@
    "orig": "0x7c18",
    "instr": "59/63",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 42 with the shipped scc, 42 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 20 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 8
   },
   "asmfix2": {
@@ -901,7 +896,7 @@
    "orig": "0x7cde",
    "instr": "49/51",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 96 with the shipped scc, 28 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 10 lines, only the registers differ. The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 4
   },
   "asmrel": {
@@ -909,7 +904,7 @@
    "orig": "0x7d7c",
    "instr": "90/87",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 99 with the shipped scc, 45 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 33 lines, other instructions (source form or compiler, not separated).",
    "lines": 20
   },
   "asmreg": {
@@ -917,7 +912,7 @@
    "orig": "0x7ea0",
    "instr": "34/36",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 28 with the shipped scc, 14 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 8 lines, other instructions (source form or compiler, not separated).",
    "lines": 4
   },
   "putbits": {
@@ -925,14 +920,14 @@
    "orig": "0x7f1c",
    "instr": "29/32",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 19 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 9 lines, other instructions (source form or compiler, not separated)."
   },
   "rangechk": {
    "file": "assemble.c",
    "orig": "0x7fa6",
    "instr": "22/22",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 24 with the shipped scc, 12 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 10 lines, other instructions (source form or compiler, not separated).",
    "lines": 6
   },
   "(assemble 7fe4)": {
@@ -940,14 +935,14 @@
    "orig": "0x7fe4",
    "instr": "0/3",
    "status": "close",
-   "note": "A piece of the text range of the module without a function name in the comparison of `cmpmod.py`: not measured with sccvc."
+   "note": "A static function without a name: no symbol in the model, not compared by strictcmp."
   },
   "igetexpr": {
    "file": "getops.c",
    "orig": "0x7fee",
    "instr": "119/118",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 18 with the shipped scc, 13 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 5 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 3
   },
   "sgetexpr": {
@@ -955,7 +950,7 @@
    "orig": "0x8146",
    "instr": "119/118",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 18 with the shipped scc, 13 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 5 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 3
   },
   "getop": {
@@ -963,7 +958,7 @@
    "orig": "0x829e",
    "instr": "58/54",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 44 with the shipped scc, 30 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 28 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6). sccvc takes rr0 where the original takes another pair.",
    "lines": 17
   },
   "sgetnode": {
@@ -971,7 +966,7 @@
    "orig": "0x8358",
    "instr": "50/48",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 31 with the shipped scc, 8 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 6 lines, other instructions (source form or compiler, not separated). The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 4
   },
   "error": {
@@ -979,7 +974,7 @@
    "orig": "0x8400",
    "instr": "53/53",
    "status": "open",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 52 with the shipped scc, 30 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 6 lines, the same instructions with other operands or in another order. The register of the table jump differs (original jp @rr2, sccvc @rr6).",
    "lines": 3
   },
   "jpr": {
@@ -987,37 +982,37 @@
    "orig": "0x84fc",
    "instr": "96/101",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 69 with the shipped scc, 55 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 53 lines, other instructions (source form or compiler, not separated).",
    "lines": 44
   },
   "jprnew": {
    "file": "jpr.c",
    "orig": "0x8640",
-   "instr": "78/72",
+   "instr": "76/72",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 100 with the shipped scc, 59 with sccvc). Original shows D8.",
-   "lines": 22
+   "note": "Model (strictcmp, sccvc): 36 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
+   "lines": 15
   },
   "jprange": {
    "file": "jpr.c",
    "orig": "0x8734",
    "instr": "99/101",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 82 with the shipped scc, 56 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 52 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair."
   },
   "jprput": {
    "file": "jpr.c",
    "orig": "0x88ac",
    "instr": "39/39",
    "status": "same",
-   "note": "Identical with sccvc: a compiler difference only."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "jpput": {
    "file": "jpr.c",
    "orig": "0x893e",
    "instr": "18/19",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 15 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 13 lines, other instructions (source form or compiler, not separated).",
    "lines": 13
   },
   "jrput": {
@@ -1025,44 +1020,44 @@
    "orig": "0x8980",
    "instr": "18/19",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 15 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 13 lines, other instructions (source form or compiler, not separated).",
    "lines": 13
   },
   "jpr2": {
    "file": "jpr2.c",
    "orig": "0x89c2",
    "instr": "82/82",
-   "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 51 with the shipped scc, 34 with sccvc)."
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "optim": {
    "file": "optim.c",
    "orig": "0x8af4",
    "instr": "86/86",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 104 with the shipped scc, 98 with sccvc).",
-   "lines": 21
+   "note": "Model (strictcmp, sccvc): 36 lines, the same instructions with other operands or in another order. sccvc takes rr0 where the original takes another pair.",
+   "lines": 1
   },
   "jinit": {
    "file": "optim.c",
    "orig": "0x8c26",
    "instr": "22/22",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 10 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "newrec": {
    "file": "optim.c",
    "orig": "0x8c6e",
-   "instr": "34/33",
+   "instr": "32/33",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 35 with the shipped scc, 27 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 9 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair."
   },
   "jdeps": {
    "file": "optim.c",
    "orig": "0x8cfa",
    "instr": "120/118",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 147 with the shipped scc, 126 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 116 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 40
   },
   "jdist": {
@@ -1070,7 +1065,7 @@
    "orig": "0x8e72",
    "instr": "129/128",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 108 with the shipped scc, 37 with sccvc).",
+   "note": "Model (strictcmp, sccvc): 35 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 10
   },
   "jiter": {
@@ -1078,21 +1073,21 @@
    "orig": "0x8ffc",
    "instr": "107/107",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 104 with the shipped scc, 32 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 12 lines, only the registers differ."
   },
   "jsum": {
    "file": "optim.c",
    "orig": "0x916a",
    "instr": "63/63",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 55 with the shipped scc, 20 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "jsymadj": {
    "file": "optim.c",
    "orig": "0x922e",
    "instr": "64/62",
    "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 51 with the shipped scc, 34 with sccvc). Original shows D8.",
+   "note": "Model (strictcmp, sccvc): 32 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 11
   },
   "copyfile": {
@@ -1100,71 +1095,70 @@
    "orig": "0x92f6",
    "instr": "37/37",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 6 with the shipped scc, 6 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "listhead": {
    "file": "listing.c",
    "orig": "0x9398",
    "instr": "4/4",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 4 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "lstloc": {
    "file": "listing.c",
    "orig": "0x93ac",
-   "instr": "13/13",
+   "instr": "14/13",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 20 with the shipped scc, 14 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 3 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair."
   },
   "lstw": {
    "file": "listing.c",
    "orig": "0x93ec",
    "instr": "13/13",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 6 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "lstb": {
    "file": "listing.c",
    "orig": "0x941c",
-   "instr": "14/15",
-   "status": "open",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 9 with the shipped scc, 7 with sccvc).",
-   "lines": 7
+   "instr": "15/15",
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "lstflag": {
    "file": "listing.c",
    "orig": "0x9452",
    "instr": "19/19",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 16 with the shipped scc, 12 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "lstend": {
    "file": "listing.c",
    "orig": "0x949c",
    "instr": "12/12",
    "status": "same",
-   "note": "With sccvc the same instruction sequence: only registers, offsets or constants differ (strict differing lines 12 with the shipped scc, 4 with sccvc)."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "lstsync": {
    "file": "listing.c",
    "orig": "0x94d4",
    "instr": "22/23",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 21 with the shipped scc, 13 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 9 lines, other instructions (source form or compiler, not separated)."
   },
   "lstline": {
    "file": "listing.c",
    "orig": "0x9534",
    "instr": "72/71",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 97 with the shipped scc, 74 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 19 lines, other instructions (source form or compiler, not separated)."
   },
   "lstrest": {
    "file": "listing.c",
    "orig": "0x9638",
    "instr": "24/23",
    "status": "close",
-   "note": "With sccvc the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 24 with the shipped scc, 22 with sccvc)."
+   "note": "Model (strictcmp, sccvc): 11 lines, other instructions (source form or compiler, not separated)."
   }
  },
  "data": {
@@ -1194,5 +1188,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "e1cf5c7f"
+ "measured_at": "c58e0558"
 }

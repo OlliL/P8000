@@ -70,8 +70,8 @@ parser.c: ../parser.y
 scanner.o: y.tab.h
 
 parser.o: parser.c
-	$(SCC) -c -I../ parser.c
-# without -O, as in /bin/cas; ASMDEFS: the switch of old/cas
+	$(SCC) $(ASMDEFS) -c -I../ parser.c
+# without -O, as in /bin/cas; ASMDEFS: the switch of old/cas (also in parser.c and p2loop.c)
 assemble.o: ../assemble.c
 	$(SCC) $(ASMDEFS) -c ../assemble.c
 
@@ -109,7 +109,7 @@ locntr.o: ../locntr.c
 expr.o: ../expr.c
 	$(SCC) $(SCCFLAGS) -c ../expr.c
 p2loop.o: ../p2loop.c
-	$(SCC) $(SCCFLAGS) -c ../p2loop.c
+	$(SCC) $(SCCFLAGS) $(ASMDEFS) -c ../p2loop.c
 ofile.o: ../ofile.c
 	$(SCC) $(SCCFLAGS) -c ../ofile.c
 gen.o: ../gen.c

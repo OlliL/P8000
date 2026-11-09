@@ -470,7 +470,11 @@ register struct node *n;
 		return;
 	case JSW:
 #ifdef SPOPT
+#ifdef OLD_D13
+		printf("\t.addr\tL%d\n", n->labno);	/* old cas: bit 31 of the address */
+#else
 		printf("\t.long\tL%d\n", n->labno);
+#endif
 #else
 		printf("\t.word\tL%d\n", n->labno);
 #endif

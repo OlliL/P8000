@@ -144,7 +144,7 @@ extern short yyerrflag;
 YYSTYPE yylval, yyval;
 # define YYERRCODE 256
 
-# line 1279 "parser.y"
+# line 1285 "parser.y"
 
 
 /* the messages of the parser itself; the others are made by SYNERR() */
@@ -1093,29 +1093,35 @@ case 119:
 case 120:
 # line 561 "parser.y"
 {
+#ifdef OLD_D13
+		iputb(0xE0);
+#endif
 		for (listp = yypvt[-0].np; listp != 0; listp = listp->n_next)
 			iputnode(listp);
+#ifdef OLD_D13
+		iputb(0xE1);
+#endif
 		} break;
 case 121:
-# line 566 "parser.y"
+# line 572 "parser.y"
 {
 		locadv(1);
 		iputloc();
 		} break;
 case 122:
-# line 571 "parser.y"
+# line 577 "parser.y"
 {
 		locadv(2);
 		iputloc();
 		} break;
 case 123:
-# line 576 "parser.y"
+# line 582 "parser.y"
 {
 		locadv(4);
 		iputloc();
 		} break;
 case 124:
-# line 581 "parser.y"
+# line 587 "parser.y"
 {
 		if (segmode != 0)
 			locadv(4);
@@ -1124,7 +1130,7 @@ case 124:
 		iputloc();
 		} break;
 case 125:
-# line 589 "parser.y"
+# line 595 "parser.y"
 {
 		deflabels();
 		if (exprtype(yypvt[-0].np) == 3)
@@ -1135,12 +1141,12 @@ case 125:
 		iputloc();
 		} break;
 case 126:
-# line 599 "parser.y"
+# line 605 "parser.y"
 {
 		SYNERR("Expecting numeric expression in .blkb statement");
 		} break;
 case 127:
-# line 603 "parser.y"
+# line 609 "parser.y"
 {
 		even();
 		deflabels();
@@ -1152,12 +1158,12 @@ case 127:
 		iputloc();
 		} break;
 case 128:
-# line 614 "parser.y"
+# line 620 "parser.y"
 {
 		SYNERR("Expecting numeric expression in .blkw statement");
 		} break;
 case 129:
-# line 618 "parser.y"
+# line 624 "parser.y"
 {
 		even();
 		deflabels();
@@ -1169,148 +1175,148 @@ case 129:
 		iputloc();
 		} break;
 case 130:
-# line 629 "parser.y"
+# line 635 "parser.y"
 {
 		SYNERR("Expecting numeric expression in .blkl statement");
 		} break;
 case 131:
-# line 633 "parser.y"
+# line 639 "parser.y"
 {
 		putstabn(yypvt[-6].np, yypvt[-4].np, yypvt[-2].np, yypvt[-0].p);
 		} break;
 case 132:
-# line 637 "parser.y"
+# line 643 "parser.y"
 {
 		SYNERR("Expecting first argument in .stabn statement");
 		} break;
 case 133:
-# line 641 "parser.y"
+# line 647 "parser.y"
 {
 		SYNERR("Expecting comma after first argument in .stabn statement");
 		} break;
 case 134:
-# line 645 "parser.y"
+# line 651 "parser.y"
 {
 		SYNERR("Expecting second argument in .stabn statement");
 		} break;
 case 135:
-# line 649 "parser.y"
+# line 655 "parser.y"
 {
 		SYNERR("Expecting comma after second argument in .stabn statement");
 		} break;
 case 136:
-# line 653 "parser.y"
+# line 659 "parser.y"
 {
 		SYNERR("Expecting third argument in .stabn statement");
 		} break;
 case 137:
-# line 657 "parser.y"
+# line 663 "parser.y"
 {
 		SYNERR("Expecting comma after third argument in .stabn statement");
 		} break;
 case 138:
-# line 661 "parser.y"
+# line 667 "parser.y"
 {
 		SYNERR("Expecting fourth argument in .stabn statement. Must be a string");
 		} break;
 case 139:
-# line 665 "parser.y"
+# line 671 "parser.y"
 {
 		putstabr(yypvt[-4].np, yypvt[-2].np, yypvt[-0].p);
 		} break;
 case 140:
-# line 669 "parser.y"
+# line 675 "parser.y"
 {
 		SYNERR("Expecting first argument in .stabr statement");
 		} break;
 case 141:
-# line 673 "parser.y"
+# line 679 "parser.y"
 {
 		SYNERR("Expecting comma after first argument in .stabr statement");
 		} break;
 case 142:
-# line 677 "parser.y"
+# line 683 "parser.y"
 {
 		SYNERR("Expecting second argument in .stabr statement");
 		} break;
 case 143:
-# line 681 "parser.y"
+# line 687 "parser.y"
 {
 		SYNERR("Expecting comma after second argument in .stabr statement");
 		} break;
 case 144:
-# line 685 "parser.y"
+# line 691 "parser.y"
 {
 		SYNERR("Expecting third argument in .stabr statement. Must be a string");
 		} break;
 case 145:
-# line 689 "parser.y"
+# line 695 "parser.y"
 {
 		putstabp(yypvt[-8].np, yypvt[-6].np, yypvt[-4].np, yypvt[-2].np, yypvt[-0].p);
 		} break;
 case 146:
-# line 693 "parser.y"
+# line 699 "parser.y"
 {
 		SYNERR("Expecting first argument in .stabp statement");
 		} break;
 case 147:
-# line 697 "parser.y"
+# line 703 "parser.y"
 {
 		SYNERR("Expecting comma after first argument in .stabp statement");
 		} break;
 case 148:
-# line 701 "parser.y"
+# line 707 "parser.y"
 {
 		SYNERR("Expecting second argument in .stabp statement");
 		} break;
 case 149:
-# line 705 "parser.y"
+# line 711 "parser.y"
 {
 		SYNERR("Expecting comma after second argument in .stabp statement");
 		} break;
 case 150:
-# line 709 "parser.y"
+# line 715 "parser.y"
 {
 		SYNERR("Expecting third argument in .stabp statement");
 		} break;
 case 151:
-# line 713 "parser.y"
+# line 719 "parser.y"
 {
 		SYNERR("Expecting comma after third argument in .stabp statement");
 		} break;
 case 152:
-# line 717 "parser.y"
+# line 723 "parser.y"
 {
 		SYNERR("Expecting fourth argument in .stabp statement");
 		} break;
 case 153:
-# line 721 "parser.y"
+# line 727 "parser.y"
 {
 		SYNERR("Expecting comma after fourth argument in .stabp statement");
 		} break;
 case 154:
-# line 725 "parser.y"
+# line 731 "parser.y"
 {
 		SYNERR("Expecting fifth argument in .stabp statement. Must be a string");
 		} break;
 case 155:
-# line 729 "parser.y"
+# line 735 "parser.y"
 {
 		iputb(0x2c);
 		iputw((int)yypvt[-0].l);
 		} break;
 case 156:
-# line 734 "parser.y"
+# line 740 "parser.y"
 {
 		SYNERR("Expecting line number in .stabl statement");
 		} break;
 case 157:
-# line 739 "parser.y"
+# line 745 "parser.y"
 {
 		deflabels();
 		} break;
 case 158:
-# line 744 "parser.y"
+# line 750 "parser.y"
 {
 		switch (yypvt[-2].np->n_type) {
 		case 6:
@@ -1329,12 +1335,12 @@ case 158:
 		}
 		} break;
 case 159:
-# line 762 "parser.y"
+# line 768 "parser.y"
 {
 		SYNERR("Expecting address expression after comma in .byte statement");
 		} break;
 case 160:
-# line 766 "parser.y"
+# line 772 "parser.y"
 {
 		switch (yypvt[-0].np->n_type) {
 		case 6:
@@ -1353,7 +1359,7 @@ case 160:
 		}
 		} break;
 case 161:
-# line 785 "parser.y"
+# line 791 "parser.y"
 {
 		if (yypvt[-1].np->n_type == 3)
 			yypvt[-1].np->n_type = 1;
@@ -1365,17 +1371,17 @@ case 161:
 		nfreed++;
 		} break;
 case 162:
-# line 796 "parser.y"
+# line 802 "parser.y"
 {
 		SYNERR("Expecting address expression in repeat count in .byte statement");
 		} break;
 case 163:
-# line 800 "parser.y"
+# line 806 "parser.y"
 {
 		SYNERR("Expecting right parenthesis after repeat count in .byte statement");
 		} break;
 case 164:
-# line 804 "parser.y"
+# line 810 "parser.y"
 {
 		if (yypvt[-0].np->n_type == 3)
 			yypvt[-0].np->n_type = 1;
@@ -1385,17 +1391,17 @@ case 164:
 			yypvt[-0].np->n_type = 23;
 		} break;
 case 165:
-# line 813 "parser.y"
+# line 819 "parser.y"
 {
 		yyval.np = mkstring(yypvt[-0].p);
 		} break;
 case 166:
-# line 818 "parser.y"
+# line 824 "parser.y"
 {
 		even(); deflabels();
 		} break;
 case 167:
-# line 823 "parser.y"
+# line 829 "parser.y"
 {
 		if (yypvt[-2].np->n_type == 6)
 			locadv(yypvt[-2].np->n_w * 2);
@@ -1404,12 +1410,12 @@ case 167:
 		yypvt[-2].np->n_next = yypvt[-0].np;
 		} break;
 case 168:
-# line 831 "parser.y"
+# line 837 "parser.y"
 {
 		SYNERR("Expecting address expression after comma in .word statement");
 		} break;
 case 169:
-# line 835 "parser.y"
+# line 841 "parser.y"
 {
 		if (yypvt[-0].np->n_type == 6)
 			locadv(yypvt[-0].np->n_w * 2);
@@ -1418,7 +1424,7 @@ case 169:
 		yypvt[-0].np->n_next = 0L;
 		} break;
 case 170:
-# line 844 "parser.y"
+# line 850 "parser.y"
 {
 		if (yypvt[-1].np->n_type == 3)
 			yypvt[-1].np->n_type = 2;
@@ -1430,17 +1436,17 @@ case 170:
 		nfreed++;
 		} break;
 case 171:
-# line 855 "parser.y"
+# line 861 "parser.y"
 {
 		SYNERR("Expecting address expression in repeat count in .word statement");
 		} break;
 case 172:
-# line 859 "parser.y"
+# line 865 "parser.y"
 {
 		SYNERR("Expecting right parenthesis after repeat count in .word statement");
 		} break;
 case 173:
-# line 863 "parser.y"
+# line 869 "parser.y"
 {
 		if (yypvt[-0].np->n_type == 3)
 			yypvt[-0].np->n_type = 2;
@@ -1450,12 +1456,12 @@ case 173:
 			yypvt[-0].np->n_type = 24;
 		} break;
 case 174:
-# line 873 "parser.y"
+# line 879 "parser.y"
 {
 		even(); deflabels();
 		} break;
 case 175:
-# line 878 "parser.y"
+# line 884 "parser.y"
 {
 		if (yypvt[-2].np->n_type == 6) {
 			if (segmode != 0)
@@ -1471,12 +1477,12 @@ case 175:
 		yypvt[-2].np->n_next = yypvt[-0].np;
 		} break;
 case 176:
-# line 893 "parser.y"
+# line 899 "parser.y"
 {
 		SYNERR("Expecting address expression after comma in .addr statement");
 		} break;
 case 177:
-# line 897 "parser.y"
+# line 903 "parser.y"
 {
 		if (yypvt[-0].np->n_type == 6) {
 			if (segmode != 0)
@@ -1492,7 +1498,7 @@ case 177:
 		yypvt[-0].np->n_next = 0L;
 		} break;
 case 178:
-# line 913 "parser.y"
+# line 919 "parser.y"
 {
 		if (segmode == 0) {
 			if (yypvt[-1].np->n_type == 3)
@@ -1506,17 +1512,17 @@ case 178:
 		nfreed++;
 		} break;
 case 179:
-# line 926 "parser.y"
+# line 932 "parser.y"
 {
 		SYNERR("Expecting address expression in repeat count in .addr statement");
 		} break;
 case 180:
-# line 930 "parser.y"
+# line 936 "parser.y"
 {
 		SYNERR("Expecting right parenthesis after repeat count in .addr statement");
 		} break;
 case 181:
-# line 934 "parser.y"
+# line 940 "parser.y"
 {
 		if (segmode == 0) {
 			if (yypvt[-0].np->n_type == 3)
@@ -1528,12 +1534,12 @@ case 181:
 		}
 		} break;
 case 182:
-# line 946 "parser.y"
+# line 952 "parser.y"
 {
 		even(); deflabels();
 		} break;
 case 183:
-# line 951 "parser.y"
+# line 957 "parser.y"
 {
 		if (yypvt[-2].np->n_type == 6)
 			locadv(yypvt[-2].np->n_w * 4);
@@ -1542,12 +1548,12 @@ case 183:
 		yypvt[-2].np->n_next = yypvt[-0].np;
 		} break;
 case 184:
-# line 959 "parser.y"
+# line 965 "parser.y"
 {
 		SYNERR("Expecting address expression after comma in .long statement");
 		} break;
 case 185:
-# line 963 "parser.y"
+# line 969 "parser.y"
 {
 		if (yypvt[-0].np->n_type == 6)
 			locadv(yypvt[-0].np->n_w * 4);
@@ -1556,268 +1562,268 @@ case 185:
 		yypvt[-0].np->n_next = 0L;
 		} break;
 case 186:
-# line 972 "parser.y"
+# line 978 "parser.y"
 {
 		yyval.np = mknode6((int16_t)yypvt[-3].np->n_val, yypvt[-1].np);
 		nfreed++;
 		} break;
 case 187:
-# line 977 "parser.y"
+# line 983 "parser.y"
 {
 		SYNERR("Expecting address expression in repeat count in .long statement");
 		} break;
 case 188:
-# line 981 "parser.y"
+# line 987 "parser.y"
 {
 		SYNERR("Expecting right parenthesis after repeat count in .long statement");
 		} break;
 case 190:
-# line 987 "parser.y"
+# line 993 "parser.y"
 {
 		deflabels();
 		yypvt[-2].np->n_c1 = 2;
 		defsym(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 191:
-# line 993 "parser.y"
+# line 999 "parser.y"
 {
 		SYNERR("Expecting address expression in global assignment statement");
 		} break;
 case 192:
-# line 997 "parser.y"
+# line 1003 "parser.y"
 {
 		deflabels();
 		yypvt[-2].np->n_c1 = 4;
 		defsym(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 193:
-# line 1003 "parser.y"
+# line 1009 "parser.y"
 {
 		SYNERR("Expecting address expression or reserved word in local assignment statement");
 		} break;
 case 194:
-# line 1007 "parser.y"
+# line 1013 "parser.y"
 {
 		deflabels();
 		yypvt[-2].np->n_c1 = 4;
 		defalias(yypvt[-2].np, yypvt[-0].pp);
 		} break;
 case 195:
-# line 1013 "parser.y"
+# line 1019 "parser.y"
 {
 		SYNERR("Expecting := , ::= , :: or : after identifier");
 		} break;
 case 196:
-# line 1017 "parser.y"
+# line 1023 "parser.y"
 {
 		deflabels();
 		setdot(yypvt[-0].np);
 		} break;
 case 197:
-# line 1022 "parser.y"
+# line 1028 "parser.y"
 {
 		SYNERR("Expecting = after . for assignment of pc.");
 		} break;
 case 198:
-# line 1026 "parser.y"
+# line 1032 "parser.y"
 {
 		SYNERR("Expecting numeric expression after .=");
 		} break;
 case 237:
-# line 1070 "parser.y"
+# line 1076 "parser.y"
 {
 		yyval.np = opshort(yypvt[-1].np);
 		shortaddr++;
 		} break;
 case 238:
-# line 1075 "parser.y"
+# line 1081 "parser.y"
 {
 		SYNERR("Expecting numeric expression after short segmented address operator");
 		} break;
 case 239:
-# line 1079 "parser.y"
+# line 1085 "parser.y"
 {
 		SYNERR("Expecting | at end of expression");
 		} break;
 case 240:
-# line 1083 "parser.y"
+# line 1089 "parser.y"
 {
 		yyval.np = opseg(yypvt[-0].np);
 		shortaddr++;
 		} break;
 case 241:
-# line 1088 "parser.y"
+# line 1094 "parser.y"
 {
 		SYNERR("Expecting numeric expression after ^S operator");
 		} break;
 case 242:
-# line 1092 "parser.y"
+# line 1098 "parser.y"
 {
 		yyval.np = opoff(yypvt[-0].np);
 		shortaddr++;
 		} break;
 case 243:
-# line 1097 "parser.y"
+# line 1103 "parser.y"
 {
 		SYNERR("Expecting numeric expression after ^O operator");
 		} break;
 case 245:
-# line 1103 "parser.y"
+# line 1109 "parser.y"
 {
 		yyval.np = opadd(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 246:
-# line 1107 "parser.y"
+# line 1113 "parser.y"
 {
 		SYNERR("Expecting expression to add");
 		} break;
 case 247:
-# line 1111 "parser.y"
+# line 1117 "parser.y"
 {
 		yyval.np = opsub(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 248:
-# line 1115 "parser.y"
+# line 1121 "parser.y"
 {
 		SYNERR("Expecting expression to subtract");
 		} break;
 case 250:
-# line 1121 "parser.y"
+# line 1127 "parser.y"
 {
 		yyval.np = opshl(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 251:
-# line 1125 "parser.y"
+# line 1131 "parser.y"
 {
 		SYNERR("Expecting numeric expression after ^< (shift left)");
 		} break;
 case 252:
-# line 1129 "parser.y"
+# line 1135 "parser.y"
 {
 		yyval.np = opshr(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 253:
-# line 1133 "parser.y"
+# line 1139 "parser.y"
 {
 		SYNERR("Expecting numeric expression after ^> (shift right)");
 		} break;
 case 254:
-# line 1137 "parser.y"
+# line 1143 "parser.y"
 {
 		yyval.np = opand(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 255:
-# line 1141 "parser.y"
+# line 1147 "parser.y"
 {
 		SYNERR("Expecting numeric expression after ^& (and)");
 		} break;
 case 256:
-# line 1145 "parser.y"
+# line 1151 "parser.y"
 {
 		yyval.np = opor(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 257:
-# line 1149 "parser.y"
+# line 1155 "parser.y"
 {
 		SYNERR("Expecting numeric expression after ^| (or)");
 		} break;
 case 258:
-# line 1153 "parser.y"
+# line 1159 "parser.y"
 {
 		yyval.np = opxor(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 259:
-# line 1157 "parser.y"
+# line 1163 "parser.y"
 {
 		SYNERR("Expecting numeric expression after ^X (exclusive-or)");
 		} break;
 case 261:
-# line 1163 "parser.y"
+# line 1169 "parser.y"
 {
 		yyval.np = opmul(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 262:
-# line 1167 "parser.y"
+# line 1173 "parser.y"
 {
 		SYNERR("Expecting multiplier expression");
 		} break;
 case 263:
-# line 1171 "parser.y"
+# line 1177 "parser.y"
 {
 		yyval.np = opdiv(yypvt[-2].np, yypvt[-0].np);
 		} break;
 case 264:
-# line 1175 "parser.y"
+# line 1181 "parser.y"
 {
 		SYNERR("Expecting divisor expression");
 		} break;
 case 266:
-# line 1181 "parser.y"
+# line 1187 "parser.y"
 {
 		yyval.np = opneg(yypvt[-0].np);
 		} break;
 case 267:
-# line 1185 "parser.y"
+# line 1191 "parser.y"
 {
 		SYNERR("Expecting numeric expression after unary minus");
 		} break;
 case 268:
-# line 1189 "parser.y"
+# line 1195 "parser.y"
 {
 		yyval.np = opplus(yypvt[-0].np);
 		} break;
 case 269:
-# line 1193 "parser.y"
+# line 1199 "parser.y"
 {
 		SYNERR("Expecting numeric expression after unary plus");
 		} break;
 case 271:
-# line 1199 "parser.y"
+# line 1205 "parser.y"
 {
 		yyval.np = mknode1(3, yypvt[-0].l);
 		} break;
 case 272:
-# line 1203 "parser.y"
+# line 1209 "parser.y"
 {
 		yyval.np = mknode1(3, ((uint32_t)yypvt[-2].l << 24) | yypvt[-0].l);
 		} break;
 case 273:
-# line 1207 "parser.y"
+# line 1213 "parser.y"
 {
 		SYNERR("Expecting segment number after <<");
 		} break;
 case 274:
-# line 1211 "parser.y"
+# line 1217 "parser.y"
 {
 		SYNERR("Expecting >> after segment number");
 		} break;
 case 275:
-# line 1215 "parser.y"
+# line 1221 "parser.y"
 {
 		SYNERR("Expecting segment offset number");
 		} break;
 case 276:
-# line 1219 "parser.y"
+# line 1225 "parser.y"
 {
 		yyval.np = dotval();
 		} break;
 case 277:
-# line 1223 "parser.y"
+# line 1229 "parser.y"
 {
 		yyval.np = yypvt[-1].np;
 		} break;
 case 278:
-# line 1227 "parser.y"
+# line 1233 "parser.y"
 {
 		SYNERR("Expecting numeric expression after left parenthesis");
 		} break;
 case 279:
-# line 1231 "parser.y"
+# line 1237 "parser.y"
 {
 		SYNERR("Expecting right parenthesis in expression");
 		} break;
 case 281:
-# line 1237 "parser.y"
+# line 1243 "parser.y"
 {
 		if (nameflag != 0) {
 			sputb(0x15);
@@ -1826,21 +1832,21 @@ case 281:
 		}
 		} break;
 case 282:
-# line 1246 "parser.y"
+# line 1252 "parser.y"
 {
 		yypvt[-1].np->n_c1 = 3;
 		yypvt[-1].np->n_next = plist;
 		plist = yypvt[-1].np;
 		} break;
 case 283:
-# line 1252 "parser.y"
+# line 1258 "parser.y"
 {
 		yypvt[-1].np->n_c1 = 5;
 		yypvt[-1].np->n_next = plist;
 		plist = yypvt[-1].np;
 		} break;
 case 284:
-# line 1259 "parser.y"
+# line 1265 "parser.y"
 {
 		nameflag = 0;
 		symmode = 6;
@@ -1848,7 +1854,7 @@ case 284:
 		nameflag++;
 		} break;
 case 285:
-# line 1266 "parser.y"
+# line 1272 "parser.y"
 {
 		nameflag = 0;
 		symmode = 0;
@@ -1856,7 +1862,7 @@ case 285:
 		nameflag++;
 		} break;
 case 286:
-# line 1273 "parser.y"
+# line 1279 "parser.y"
 {
 		nameflag = 0;
 		yyval.np = mknode7(yypvt[-0].i);

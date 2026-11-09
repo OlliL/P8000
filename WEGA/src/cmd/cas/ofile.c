@@ -26,7 +26,7 @@ struct {
 	long	v;
 	char	t;
 	char	s;
-	char	name[128];
+	char	name[136];
 } nl;
 struct segt *segtab;
 

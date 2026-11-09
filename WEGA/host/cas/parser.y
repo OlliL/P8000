@@ -559,8 +559,14 @@ datalist	: bytedir blist
 		}
 	| adrdir alist
 		{
+#ifdef OLD_D13
+		iputb(0xE0);
+#endif
 		for (listp = $2; listp != 0; listp = listp->n_next)
 			iputnode(listp);
+#ifdef OLD_D13
+		iputb(0xE1);
+#endif
 		}
 	| bytedir
 		{

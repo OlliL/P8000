@@ -9,6 +9,14 @@ static char sccsid[] = "@[$]p2loop.c\t1.2 05/17/83 17:30:47 - 87wega3.2";
  */
 #include "cas.h"
 
+#ifdef OLD_D13
+/* the old cas: bit 31 of a segmented address in .addr stays (pass 1 marks the list by 0xE0 and 0xE1), not in .long */
+static int addrdir = 0;
+#define LADDR	addrdir
+#else
+#define LADDR	0
+#endif
+
 int subsw = 0;				/* the subsection was changed (gen.c) */
 int savelflag = 0;
 
@@ -117,7 +125,7 @@ unsigned char tag;
 		break;
 	case 7:
 		np = mknode7(igetw());
-		genlop(np, 0);
+		genlop(np, LADDR);
 		nfreed++;
 		break;
 	case 8:
@@ -142,12 +150,20 @@ unsigned char tag;
 		break;
 	case 25:
 		np = igetexpr();
-		genlop(np, 0);
+		genlop(np, LADDR);
 		nfreed++;
 		break;
 	case 20:
 		igetw();
 		break;
+#ifdef OLD_D13
+	case 0xE0:
+		addrdir = 1;
+		break;
+	case 0xE1:
+		addrdir = 0;
+		break;
+#endif
 	case 38:
 	case 39:
 		jpr2(tag);
@@ -214,7 +230,7 @@ unsigned n;
 				break;
 			case 7:
 			case 25:
-				genlop(np, 0);
+				genlop(np, LADDR);
 				break;
 			case 9:
 			case 23:

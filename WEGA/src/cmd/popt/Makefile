@@ -17,7 +17,7 @@ CRT0 = /lib/crt0.o
 NONSEG_OBJS = z20.o z21.o z22.o z23.o
 SEG_OBJS = $(NONSEG_OBJS)
 ALL_TARGETS = build/nonseg/popt build/seg/spopt
-OLD_TARGETS = build/nonsegv0/popt build/nonsegv0p/popt build/nonsegv1/popt build/segv1/spopt build/segvk/spopt
+OLD_TARGETS = build/nonsegv0/popt build/nonsegv0p/popt build/nonsegv1/popt build/segv1/spopt build/segvk/spopt build/segvc/spopt
 
 all: $(ALL_TARGETS)
 
@@ -38,6 +38,8 @@ build/segv1/spopt: FORCE
 	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D20"
 build/segvk/spopt: FORCE
 	cd build/segvk ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D29"
+build/segvc/spopt: FORCE
+	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D13"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
@@ -62,6 +64,8 @@ oldinstall: $(OLD_TARGETS)
 	cp build/segv1/spopt $(PREFIX)/lib/v1/spopt
 	[ -d $(PREFIX)/lib/vk ] || mkdir $(PREFIX)/lib/vk
 	cp build/segvk/spopt $(PREFIX)/lib/vk/spopt
+	[ -d $(PREFIX)/lib/vc ] || mkdir $(PREFIX)/lib/vc
+	cp build/segvc/spopt $(PREFIX)/lib/vc/spopt
 
 ##################
 # bin targets

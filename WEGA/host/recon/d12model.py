@@ -164,14 +164,20 @@ def main():
     o = SOut(open(CFG.MODEL_OUT, 'rb').read())
     g = SOut(open(os.path.join(CFG.ROOT, CFG.ORIG_BIN), 'rb').read())
 
+    def dseg(x):
+        # the first segment with data (segmented: a segment of its own, nonsegmented: segs[0])
+        return next((s for s in x.segs if s['data']), x.segs[0])
+
     def data(x):
-        c = x.segs[0]['code']
-        return bytes(x.image)[c:c + x.segs[0]['data']]
+        for i, kind, off, size in x.section_ranges():
+            if kind == 'data' and x.segs[i] is dseg(x):
+                return bytes(x.image)[off:off + size]
+        return b''
     a, b = data(g), data(o)
     eq = sum(1 for k in range(min(len(a), len(b))) if a[k] == b[k])
     print('data: original %d, model %d bytes; equal at the same address: %d' % (len(a), len(b), eq))
     print('code: original %d, model %d; bss: original %d, model %d' % (
-        g.segs[0]['code'], o.segs[0]['code'], g.segs[0]['bss'], o.segs[0]['bss']))
+        g.segs[0]['code'], o.segs[0]['code'], dseg(g)['bss'], dseg(o)['bss']))
     if quiet:
         return
     sm = difflib.SequenceMatcher(None, a, b, autojunk=False)

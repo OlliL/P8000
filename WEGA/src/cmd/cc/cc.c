@@ -88,11 +88,11 @@ char	*codgen		= SEG("/lib/v1/codgen", "/lib/v1/scodgen");
 char	*popt		= SEG("/lib/v1/popt", "/lib/v1/spopt");
 #else
 #ifdef OLD_VC
-/* sccvc (segvc/Makefile): the passes of cas are in /lib/vc, with the shipped spopt */
+/* sccvc (segvc/Makefile): the passes of cas are in /lib/vc (spopt: shipped with OLD_D13) */
 char	*cparse		= "/lib/vc/scparse";
 char	*gopt		= "/lib/gopt";
 char	*codgen		= "/lib/vc/scodgen";
-char	*popt		= "/lib/spopt";
+char	*popt		= "/lib/vc/spopt";
 #else
 #ifdef OLD_VK
 /* sccvk (segvk/Makefile): the passes of the kernel objects are in /lib/vk (spopt: shipped with OLD_D29) */

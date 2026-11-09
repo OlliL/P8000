@@ -13,7 +13,7 @@ static char sccsid[] = "@[$]assemble.c\t1.1 03/16/83 19:16:17 - 87wega3.2";
 
 int nbits = 0;				/* bits of the word that are filled */
 unsigned word;				/* the word being assembled */
-NODE *ops[4];				/* the operands of the instruction */
+NODE *ops[5];				/* the operands of the instruction */
 
 
 

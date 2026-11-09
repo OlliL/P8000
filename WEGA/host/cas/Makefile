@@ -28,7 +28,7 @@ cas: $(OBJS)
 %.c: %.y
 
 # casold: the early jump optimization of the old cas (../OLDCC.md, D17)
-OLDOBJS = $(filter-out jpr.o ssymtab.o optim.o assemble.o,$(OBJS)) jpr_old.o ssymtab_old.o optim_old.o assemble_old.o
+OLDOBJS = $(filter-out jpr.o ssymtab.o optim.o assemble.o p2loop.o parser.o,$(OBJS)) jpr_old.o ssymtab_old.o optim_old.o assemble_old.o p2loop_old.o parser_old.o
 
 casold: $(OLDOBJS)
 	$(HOSTCC) $(CFLAGS) -o $@ $(OLDOBJS)

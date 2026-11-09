@@ -7,6 +7,14 @@
  */
 #include "cas.h"
 
+#ifdef OLD_D13
+/* the old cas: bit 31 of a segmented address in .addr stays (pass 1 marks the list by 0xE0 and 0xE1), not in .long */
+static int addrdir = 0;
+#define LADDR	addrdir
+#else
+#define LADDR	0
+#endif
+
 int subsw = 0;				/* the subsection was changed (gen.c) */
 static int savelflag = 0;
 
@@ -114,7 +122,7 @@ p2tag(int tag)
 		break;
 	case 7:
 		np = mknode7(igetw());
-		genlop(np, 0);
+		genlop(np, LADDR);
 		nfreed++;
 		break;
 	case 8:
@@ -139,12 +147,20 @@ p2tag(int tag)
 		break;
 	case 25:
 		np = igetexpr();
-		genlop(np, 0);
+		genlop(np, LADDR);
 		nfreed++;
 		break;
 	case 20:
 		igetw();
 		break;
+#ifdef OLD_D13
+	case 0xE0:
+		addrdir = 1;
+		break;
+	case 0xE1:
+		addrdir = 0;
+		break;
+#endif
 	case 38:
 	case 39:
 		jpr2(tag);
@@ -191,7 +207,7 @@ p2rep(unsigned n)
 				break;
 			case 7:
 			case 25:
-				genlop(np, 0);
+				genlop(np, LADDR);
 				break;
 			case 9:
 			case 23:
