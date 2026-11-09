@@ -222,7 +222,8 @@ unsigned char tag;
 			break;
 		p++;
 	}
-	if (tag == 0x2a) {
+	switch (tag) {
+	case 0x2a:
 		np = sgetnode();
 		if (exprtype(np) != 3)
 			error(2, "Stab field must be constant\n");
@@ -237,7 +238,8 @@ unsigned char tag;
 			v |= np->n_u.l;
 			nfreed++;
 		}
-	} else if (tag == 0x2b) {
+		break;
+	case 0x2b:
 		np = sgetnode();
 		switch (np->n_type) {
 		case 3:
@@ -251,6 +253,7 @@ unsigned char tag;
 			break;
 		}
 		nfreed++;
+		break;
 	}
 	np = sgetnode();
 	if (exprtype(np) != 3)
