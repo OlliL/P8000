@@ -19,20 +19,17 @@ igetexpr()
 	register NODE *l;
 	register NODE *r;
 	unsigned char tag;
-	long v;
 
 	tag = igetb();
 	switch (tag) {
 	case 7:
 		idx = igetw();
 		if (isdef(idx)) {
-			v = symval(idx);
-			return (mknode1(3, v));
+			return (mknode1(3, symval(idx)));
 		}
 		return (mknode7(idx));
 	case 3:
-		v = igetl();
-		return (mknode1(3, v));
+		return (mknode1(3, igetl()));
 	case 26:
 		l = igetexpr();
 		r = igetexpr();
@@ -88,20 +85,17 @@ sgetexpr()
 	register NODE *l;
 	register NODE *r;
 	unsigned char tag;
-	long v;
 
 	tag = sgetb();
 	switch (tag) {
 	case 7:
 		idx = sgetw();
 		if (isdef(idx)) {
-			v = symval(idx);
-			return (mknode1(3, v));
+			return (mknode1(3, symval(idx)));
 		}
 		return (mknode7(idx));
 	case 3:
-		v = sgetl();
-		return (mknode1(3, v));
+		return (mknode1(3, sgetl()));
 	case 26:
 		l = sgetexpr();
 		r = sgetexpr();

@@ -371,6 +371,9 @@ fixfld(p)
 #ifdef SEG
 		p->in.left = m;		/* the 32-bit address first, the index behind it: _a(r3) */
 		p->in.right = a;
+		m = a->in.left;		/* the outer index is computed first */
+		a->in.left = a->in.right;
+		a->in.right = m;
 #else
 		p->in.left = a;
 		p->in.right = m;

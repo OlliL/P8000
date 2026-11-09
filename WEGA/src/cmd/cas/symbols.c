@@ -244,8 +244,8 @@ char *s;
 
 	sputb(0x2a);
 	ch = *s++;
-	while (*s != ch)
-		sputb(*s++);
+	for (; *s != ch; s++)
+		sputb(*s);
 	sputb(0);
 	sputnode(a);
 	sputnode(b);
@@ -266,8 +266,8 @@ char *s;
 
 	sputb(0x2a);
 	ch = *s++;
-	while (*s != ch)
-		sputb(*s++);
+	for (; *s != ch; s++)
+		sputb(*s);
 	sputb(0);
 	sputnode(a);
 	sputnode(b);
@@ -286,8 +286,8 @@ char *s;
 
 	sputb(0x2b);
 	ch = *s++;
-	while (*s != ch)
-		sputb(*s++);
+	for (; *s != ch; s++)
+		sputb(*s);
 	sputb(0);
 	sputnode(a);
 	np = mknode1(3, (long)(unsigned)cursec);

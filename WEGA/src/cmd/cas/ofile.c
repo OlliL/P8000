@@ -282,7 +282,6 @@ char *name;
 	register int n;
 	register unsigned len;
 	register unsigned i;
-	char *dest;
 
 	nl.v = v;
 	nl.t = t;
@@ -292,13 +291,12 @@ char *name;
 	len = strlen(name);
 	if (len <= 8) {
 		n = 1;
-		dest = nl.name;
+		strncpy(nl.name, name, len);
 	} else {
 		n = (len - 7) / 14 + 2;
 		nl.name[0] = (len + 1) | 0x80;
-		dest = nl.name + 1;
+		strncpy(nl.name + 1, name, len);
 	}
-	strncpy(dest, name, len);
 	if (fwrite(&nl, 14, n, osymf) != n) {
 		perror(ofname);
 		done(-1);
