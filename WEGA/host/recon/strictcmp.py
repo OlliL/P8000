@@ -55,6 +55,22 @@ def wrong_targets(gc, lo, hi, oc, s, e, orig_names, ours_names):
     return d
 
 
+UNCOND = re.compile(r'^(jr|jp|jpr)\t[^,]*$')
+
+
+def prologue(code, lo, hi):
+    """the bytes of a prologue block at lo (dec/sub r15, the saves, a jump to the body), else 0"""
+    if hi <= lo:
+        return 0
+    ins = list(zcode.insns(code, lo, hi, CFG.SEG))
+    if not ins or not re.match(r'^(dec|sub)\tr15,', ins[0][1]):
+        return 0
+    for i, (x, t) in enumerate(ins):
+        if UNCOND.match(t):
+            return (ins[i + 1][0] if i + 1 < len(ins) else hi) - lo
+    return 0
+
+
 def main():
     a = sys.argv[1:]
     masked = '-m' in a
@@ -105,6 +121,14 @@ def main():
             return plain(re.sub(r'%([0-9A-F]{4})\b', lambda m: '%%%04X' % (int(m.group(1), 16) + delta)
                                 if lim <= int(m.group(1), 16) < top else m.group(0), t))
     starts = sorted(orig_fn) + [getattr(CFG, 'OWN_LIM', len(gc))]
+    for name, f in fn.items():
+        # the entry of a function whose prologue stands at its end (see below): calls of the original go there
+        lo, s = int(f['orig'], 16), sym.get('_' + name)
+        if s is not None and lo in starts and UNCOND.match(next(iter(zcode.insns(oc, s, len(oc), CFG.SEG)), (0, ''))[1]):
+            p = prologue(gc, lo, starts[starts.index(lo) + 1])
+            if p:
+                orig_names[lo + p] = name
+                orig_fn.add(lo + p)
     same = diff = 0
     for name, f in sorted(fn.items(), key=lambda x: int(x[1]['orig'], 16)):
         if f.get('status') == 'crt0':
@@ -118,6 +142,13 @@ def main():
             diff += 1
             continue
         e = min([t for t in text if t > s] + [len(oc)])
+        first = next(iter(zcode.insns(oc, s, e, CFG.SEG)), (0, ''))[1]
+        if UNCOND.match(first):
+            # the entry jumps to the prologue at the end of the function (no popt: cas parser, assemble): the range of
+            # the original from findings.json starts behind the ret of the function in front, with its prologue
+            nxt = starts[starts.index(lo) + 1] if lo in starts else hi
+            lo += prologue(gc, lo, hi)
+            hi += prologue(gc, hi, starts[starts.index(nxt) + 1] if nxt in starts and nxt != starts[-1] else hi)
         mine = [n_ours(t) for _, t in zcode.insns(oc, s, e, CFG.SEG)]
         theirs = [n_orig(t) for _, t in zcode.insns(gc, lo, hi, CFG.SEG)]
         d = [l for l in difflib.unified_diff(theirs, mine, lineterm='', n=0) if l[:1] in '+-' and l[:3] not in ('---', '+++')]
