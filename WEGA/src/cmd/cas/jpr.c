@@ -136,10 +136,10 @@ long off;
 	here = lctab[cursec][cursub];
 	n1 = lcaux[cursec][cursub].la_0;
 	d1 = target - here + off;
-	if (segmode == 0)
-		grow = (unsigned)((n1 - n0) << 1);
-	else
+	if (segmode)
 		grow = (unsigned)((n1 - n0) << 2);
+	else
+		grow = (unsigned)((n1 - n0) << 1);
 	d2 = d1 - grow;
 	switch (tok) {
 	case 0x50:
