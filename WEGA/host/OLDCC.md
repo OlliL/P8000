@@ -272,7 +272,9 @@ All in codgen, fixfld, mapregs, rallo.
   r2,#%0006; add r2,r15; ld r2,@r2`); not for a constant index.
 - v0 (with `OLD_D5S`, not v0p): an element of a member array is base + (index + offset) (`s->name[i]`: `ld r2,i; inc r2,#6; ld r3,s; add r3,r2`); of a global array of structures (index*size + member + index) + address (`tab[t].n[i]`). ranlib.
 - v0 `OLD_D5A`: the address of such an element whose value goes to a given register gets no register preference (dclargs).
-- v0p `OLD_D5G`: an element of a global array of arrays is `(index + index) + address`, the address added last (newsect).
+- v0p `OLD_D5G`: an element of a global array of arrays is `(index + index) + address`, the address added last (newsect). Segmented
+  (vc): the address first, the index behind it (`_a(r3)`); a constant second index is folded into the address (`lctab[i][1]` as
+  `_lctab+4(r3)`; cas ohdrinit, symadjust, also `buf[1]` of a local array as a frame operand: escape).
 - v0p `OLD_D5T`: the STREF form of OLD_D5S: a member of an element of a local array of structures is `(index + offset + member) +
   fp`; as an address wanted in a given register it gets no preference (popt procopt).
 

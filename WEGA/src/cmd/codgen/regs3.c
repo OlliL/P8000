@@ -365,6 +365,23 @@ fixfld(p)
 		return;
 	}
 #endif
+#if defined(OLD_D5G) && defined(SEG)
+	/* vc: a constant second index of a global array of arrays is folded into the address (_lctab+4(r3)) */
+	if (subsr && a->in.op == PLUS && p->in.right->in.op == ICON && !p->in.right->in.sname &&
+	    ((a->in.left->in.op == ICON && a->in.left->in.sname) ||
+	     (a->in.left->in.op == UAND && a->in.left->in.left->in.op == NAME))) {
+		if (a->in.left->in.op == ICON)
+			a->in.left->tn.lval += p->in.right->tn.lval;
+		else
+			a->in.left->in.left->tn.lval += p->in.right->tn.lval;
+		m = p->in.right;
+		p->in.left = a->in.left;
+		p->in.right = a->in.right;
+		a->in.op = FREE;
+		m->in.op = FREE;
+		return;
+	}
+#endif
 #ifdef OLD_D5G
 	/* v0p: an element of a global array of arrays is (index + index) + address, the address added last */
 	if (subsr && a->in.op == PLUS && (a->in.left->in.op == UAND || (a->in.left->in.op == ICON && a->in.left->in.sname)) &&
