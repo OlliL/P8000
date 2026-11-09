@@ -76,7 +76,7 @@ NODE *args;
 {
 	register NODE *p;
 	register int j;
-	int len;
+	register int len;
 
 	len = 0;
 	iputb(10);

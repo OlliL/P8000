@@ -30,6 +30,9 @@
 #define OLD_D2U
 #define OLD_D5G
 #define OLD_D6T
+#define OLD_D2M
+#define OLD_D2O
+#define OLD_D2PL	/* OLD_D2P: an idle pair only when it is rr0 or rr2 */
 #define OLD_D6J		/* a dense jump table (segmented): the target into the pair of the value */
 #endif
 

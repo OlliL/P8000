@@ -50,6 +50,12 @@ static char rcname[][8] = {
 
 /* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
 
+#ifdef OLD_D2PL
+#define D2PL(t)	((t)->reg < 4)	/* vc: OLD_D2P takes only an idle rr0 or rr2, not rr4 or rr6 */
+#else
+#define D2PL(t)	1
+#endif
+
 #ifdef OLD_D2PT
 #define D2PK(t)	1		/* v0p: OLD_D2P takes the registers of a TEMP too (the value of a switch) */
 #else
@@ -687,7 +693,7 @@ getreg(cls, reg, flag, sym)
 #ifdef OLD_D3KC
 			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
 #else
-			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == 9) && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == 9) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && D2PL(t) &&
 #endif
 			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
 				m = t;
