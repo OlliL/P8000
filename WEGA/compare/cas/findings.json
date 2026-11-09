@@ -3,7 +3,7 @@
  "measure": "check.sh",
  "compiler": "sccvc -O (parser.y and assemble.c without -O), the working compiler of cas (OLDCC.md)",
  "binary": "/bin/cas",
- "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 74 strictly equal, 75 masked, 2314 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36374 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13`; the value lists of a cpir switch right in front of its targets from `OLD_D6T`; the target of a dense jump table in the pair of the value from `OLD_D6J` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
+ "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 85 strictly equal, 86 masked, 2113 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36374 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13`; the value lists of a cpir switch right in front of its targets from `OLD_D6T`; the target of a dense jump table in the pair of the value from `OLD_D6J` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -188,15 +188,15 @@
    "orig": "0x078a",
    "instr": "785/790",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 435 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
+   "note": "Model (strictcmp, sccvc): 431 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
    "lines": 170
   },
   "getch": {
    "file": "scanner.c",
    "orig": "0x11b2",
-   "instr": "37/35",
-   "status": "close",
-   "note": "Model (strictcmp, sccvc): 18 lines, other instructions (source form or compiler, not separated)."
+   "instr": "35/35",
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "ungetch": {
    "file": "scanner.c",
@@ -208,10 +208,10 @@
   "main": {
    "file": "main.c",
    "orig": "0x1278",
-   "instr": "486/484",
+   "instr": "485/484",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 102 lines, other instructions (source form or compiler, not separated).",
-   "lines": 83
+   "note": "Model (strictcmp, sccvc): 97 lines, other instructions (source form or compiler, not separated).",
+   "lines": 82
   },
   "sigdone": {
    "file": "main.c",
@@ -265,17 +265,17 @@
   "escape": {
    "file": "nodes.c",
    "orig": "0x1cdc",
-   "instr": "66/57",
+   "instr": "68/57",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 51 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 40
+   "note": "Model (strictcmp, sccvc): 69 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair. The original has the address in rr2, sccvc computes it in rr0 and copies it to rr4 for the base (rr0 is no base); a load through that copy then goes into rl4 (OLD_D2R).",
+   "lines": 48
   },
   "mkstring": {
    "file": "nodes.c",
    "orig": "0x1d78",
    "instr": "77/77",
    "status": "same",
-   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "mknode25": {
    "file": "nodes.c",
@@ -320,7 +320,7 @@
    "orig": "0x3b6a",
    "instr": "39/39",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 32 lines, other instructions (source form or compiler, not separated).",
+   "note": "Model (strictcmp, sccvc): 28 lines, other instructions (source form or compiler, not separated).",
    "lines": 12
   },
   "casechk": {
@@ -328,7 +328,7 @@
    "orig": "0x3be0",
    "instr": "68/58",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 86 lines, other instructions (source form or compiler, not separated).",
+   "note": "Model (strictcmp, sccvc): 66 lines, other instructions (source form or compiler, not separated).",
    "lines": 49
   },
   "xtol": {
@@ -350,7 +350,7 @@
    "orig": "0x3d1e",
    "instr": "35/35",
    "status": "same",
-   "note": "Model (strictcmp, sccvc): 10 lines, only the registers differ."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "defsym": {
    "file": "symbols.c",
@@ -408,21 +408,21 @@
    "orig": "0x43d4",
    "instr": "37/37",
    "status": "same",
-   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "putstabp": {
    "file": "symbols.c",
    "orig": "0x4472",
    "instr": "30/30",
    "status": "same",
-   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "putstabr": {
    "file": "symbols.c",
    "orig": "0x44ee",
    "instr": "35/35",
    "status": "same",
-   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ."
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "stalloc": {
    "file": "ssymtab.c",
@@ -475,10 +475,10 @@
   "setsym": {
    "file": "ssymtab.c",
    "orig": "0x4926",
-   "instr": "38/39",
+   "instr": "39/39",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 3 lines, other instructions (source form or compiler, not separated).",
-   "lines": 3
+   "note": "Model (strictcmp, sccvc): strictly equal. Source: `(char *)italloc(n) - (char *)ITAB` in both cases (the original subtracts the offset of ITAB through a register, `ld r2,#%30; sub r3,r2`; the two cases share their tail).",
+   "lines": 1
   },
   "stlook": {
    "file": "ssymtab.c",
@@ -567,9 +567,9 @@
   "exprtype": {
    "file": "expr.c",
    "orig": "0x4ecc",
-   "instr": "46/45",
-   "status": "close",
-   "note": "Model (strictcmp, sccvc): 3 lines, other instructions (source form or compiler, not separated)."
+   "instr": "45/45",
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "evalint": {
    "file": "expr.c",
@@ -581,18 +581,18 @@
   "exprreloc": {
    "file": "expr.c",
    "orig": "0x4fb2",
-   "instr": "92/85",
+   "instr": "95/85",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 41 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 32
+   "note": "Model (strictcmp, sccvc): 60 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair. As escape: an address computed in rr0 and copied for the base.",
+   "lines": 39
   },
   "exprval": {
    "file": "expr.c",
    "orig": "0x50b6",
-   "instr": "163/162",
+   "instr": "166/162",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 17 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 10
+   "note": "Model (strictcmp, sccvc): 34 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair. As escape: an address computed in rr0 and copied for the base.",
+   "lines": 17
   },
   "opshort": {
    "file": "expr.c",
@@ -748,8 +748,8 @@
    "orig": "0x676a",
    "instr": "137/137",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 26 lines, only the registers differ.",
-   "lines": 8
+   "note": "Model (strictcmp, sccvc): strictly equal.",
+   "lines": 2
   },
   "stabout": {
    "file": "ofile.c",
@@ -861,8 +861,8 @@
    "orig": "0x75da",
    "instr": "102/104",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 22 lines, the same instructions with other operands or in another order. An indexed byte load `tab(r3)` goes to rl2 in the original (rl3 here); a copy of the parameter to rr6.",
-   "lines": 8
+   "note": "Model (strictcmp, sccvc): 20 lines, the same instructions with other operands or in another order. An indexed byte load `tab(r3)` goes to rl2 in the original (rl3 here); a copy of the parameter to rr6.",
+   "lines": 7
   },
   "asmfield": {
    "file": "assemble.c",
@@ -985,10 +985,10 @@
   "jprnew": {
    "file": "jpr.c",
    "orig": "0x8640",
-   "instr": "77/72",
+   "instr": "78/72",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 27 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 13
+   "note": "Model (strictcmp, sccvc): 28 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair. Source: `(char *)p - (char *)ITAB` as in setsym; left: the registers of that difference (r3 against r0) and of the address of lcaux.",
+   "lines": 10
   },
   "jprange": {
    "file": "jpr.c",
@@ -1032,7 +1032,7 @@
    "orig": "0x8af4",
    "instr": "86/86",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 36 lines, the same instructions with other operands or in another order. sccvc takes rr0 where the original takes another pair.",
+   "note": "Model (strictcmp, sccvc): 14 lines, the same instructions with other operands or in another order. sccvc takes rr0 where the original takes another pair.",
    "lines": 1
   },
   "jinit": {
@@ -1082,10 +1082,10 @@
   "jsymadj": {
    "file": "optim.c",
    "orig": "0x922e",
-   "instr": "64/62",
+   "instr": "63/62",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 32 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 11
+   "note": "Model (strictcmp, sccvc): 19 lines, other instructions (source form or compiler, not separated).",
+   "lines": 8
   },
   "copyfile": {
    "file": "listing.c",
@@ -1146,16 +1146,16 @@
   "lstline": {
    "file": "listing.c",
    "orig": "0x9534",
-   "instr": "72/71",
-   "status": "close",
-   "note": "Model (strictcmp, sccvc): 19 lines, other instructions (source form or compiler, not separated)."
+   "instr": "71/71",
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   },
   "lstrest": {
    "file": "listing.c",
    "orig": "0x9638",
-   "instr": "24/23",
-   "status": "close",
-   "note": "Model (strictcmp, sccvc): 11 lines, other instructions (source form or compiler, not separated)."
+   "instr": "23/23",
+   "status": "same",
+   "note": "Model (strictcmp, sccvc): strictly equal."
   }
  },
  "data": {
@@ -1185,5 +1185,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "abbc022a"
+ "measured_at": "f8e7980c"
 }

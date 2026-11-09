@@ -12,6 +12,8 @@ static char sccsid[] = "@[$]jpr.c\t1.2 03/24/83 15:48:01 - 87wega3.2";
  */
 #include "cas.h"
 
+#define ITAB	0x88000030L		/* the information table (ssymtab.c) */
+
 jpr(tok, list)
 int tok;
 NODE *list;
@@ -99,8 +101,8 @@ long off;
 	p->j_13 = tok;
 	lcaux[cursec][cursub].la_0++;
 	p->j_10 = lcaux[cursec][cursub].la_1;
-	lcaux[cursec][cursub].la_1 = (int)p - 0x30;
-	return ((int)p - 0x30);
+	lcaux[cursec][cursub].la_1 = (char *)p - (char *)ITAB;
+	return ((char *)p - (char *)ITAB);
 }
 
 /*

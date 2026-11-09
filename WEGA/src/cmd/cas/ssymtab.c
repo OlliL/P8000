@@ -188,10 +188,10 @@ unsigned char kind;
 	case 1:
 	case 3:
 	case 4:
-		sp->s_8 = (int)italloc(6) - 0x30;
+		sp->s_8 = (char *)italloc(6) - (char *)ITAB;
 		break;
 	case 2:
-		sp->s_8 = (int)italloc(12) - 0x30;
+		sp->s_8 = (char *)italloc(12) - (char *)ITAB;
 		break;
 	}
 }

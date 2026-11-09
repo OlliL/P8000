@@ -27,14 +27,16 @@ def main():
             r = parent[r]
         return r
 
-    for line in open(sys.argv[1], errors='replace'):
-        f = line.split()
+    lines = [l.split() for l in open(sys.argv[1], errors='replace')]
+    for f in lines:                 # first all forks: a child may log before its parent logs the fork
+        if len(f) >= 5 and f[2] == 'fork':
+            parent[int(f[4])] = int(f[1])
+    lines.sort(key=lambda f: float(f[0]) if f else 0)
+    for f in lines:
         if len(f) < 3:
             continue
         n += 1
         t, pid, ev = float(f[0]), int(f[1]), f[2]
-        if ev == 'fork' and len(f) >= 5:
-            parent[int(f[4])] = pid
         tr = tree(pid)
         lf = life.setdefault(tr, [t, t])
         lf[1] = t

@@ -368,7 +368,7 @@ allocreg(p, cookie)
 #ifdef OLD_D2R
 #ifdef SEG
 	r = -1;
-	if (cls == 2 && (p->in.op == STAR || p->in.op == OREG) && want == -1) {
+	if (cls == 2 && (p->in.op == STAR || p->in.op == OREG)) {
 		register NODE *q = getlr(p, 'L');	/* segmented: a pair address without index, used only here, gives its even half */
 		register int pr = -1;
 
@@ -376,9 +376,9 @@ allocreg(p, cookie)
 			q = q->in.left;
 		if (q->in.op == OREG && q->tn.rval >= 0x100 && (q->tn.rval & 0xFF) == 0)
 			pr = (q->tn.rval >> 8) - 1;
-		else if (q->in.op == REG && szty(q->in.type) == 2)
-			pr = q->tn.rval;
-		if (pr > 0 && pr < 8 && !(pr & 1) && d2rpair(pr)) {
+		else if (q->in.op == OREG && q->tn.rval < 8)
+			pr = q->tn.rval;	/* @rr2, rr2(#n): a pair base below 0x100 */
+		if ((pr == 2 || pr == 4) && (want == -1 || want == pr) && d2rpair(pr)) {	/* rr2, rr4 */
 			rfree(pr, 5);		/* LONG: the pair */
 			rsreturn(3, pr);
 			r = getreg(2, pr, 0, p->in.sname);
