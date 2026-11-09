@@ -26,9 +26,9 @@ OBJ = bstart.o conf.o event.o fpe.o mch.o u.o wpar.o
 WEGA_OBJ = wpar.o ../dev/wega/event.o mch.o u.o ver.o fpe.o conf.o ../sys/LIB1 ../dev/wega/LIB2W
 
 IFILES = BOOTLIB bstart.c bstart.o conf.o event.o fpe.o make.boot make.wega \
-	mch.o u.o ver.c+ wpar.c wpar.o
+	mch.o u.o ver.c+ wpar.c
 
-all: wega boot
+all: wega boot event.o wpar30/wpar.o
 
 wega: $(WEGA_OBJ)
 	$(SLD) -Ns -o wega -e start -X -i -Ms62 $(WEGA_OBJ)
@@ -59,6 +59,10 @@ conf.o: conf.c
 wpar.o: wpar.c ../h/sysparm.h ../h/mdsize.h ../h/ver.h
 	$(SCC) $(CFLAGS) -c wpar.c
 
+# the wpar.o installed in usr/sys/conf is older than wpar.c and the wega linked here: its own source and configuration
+wpar30/wpar.o: wpar30/wpar.c wpar30/sysparm.h wpar30/mdsize.h wpar30/ver.h
+	cd wpar30 ; $(SCC) $(CFLAGS) -c wpar.c
+
 ver.c: ver.c+
 	$(CHKOUT) ver.c+
 
@@ -87,11 +91,12 @@ install: all
 	test -d $(PREFIX)/usr/sys || mkdir $(PREFIX)/usr/sys
 	test -d $(IDIR) || mkdir $(IDIR)
 	for f in $(IFILES); do cp $$f $(IDIR)/$$f; done
+	cp wpar30/wpar.o $(IDIR)/wpar.o
 	cp boot $(PREFIX)/boot
 	cp boot $(PREFIX)/usr/boot
 	cp wega $(PREFIX)/wega
 
 clean:
-	rm -f $(BL_OBJ) $(OBJ) ver.c ver.o BOOTLIB wega boot
+	rm -f $(BL_OBJ) $(OBJ) ver.c ver.o BOOTLIB wega boot wpar30/wpar.o
 
 .PHONY: all install clean
