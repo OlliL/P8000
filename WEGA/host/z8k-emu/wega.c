@@ -485,6 +485,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	switch (n) {
 	case 1:		/* exit */
 		i = a_int(&a);
+		tmplog("exit %d", i & 0xFF);
 		exit(i & 0xFF);
 	case 2: {	/* fork */
 		pid_t pid = fork();
@@ -526,7 +527,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		gstr(c, p, gp, sizeof gp);
 		hp = hostpath(gp, hb, sizeof hb);
 		k = open(hp, O_WRONLY | O_CREAT | O_TRUNC, i & 07777);
-		if (istmp(gp)) tmplog("creat %s -> %d", gp, k < 0 ? -errno : k);
+		tmplog("creat %s -> %d", gp, k < 0 ? -errno : k);
 		return sc_res(c, k);
 	case 6: {	/* close */
 		Dir **dp;
@@ -574,7 +575,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 				return sc_res(c, rmdir(hp));
 			}
 			k = unlink(hp);
-			if (istmp(gp)) tmplog("unlink %s -> %d", gp, k < 0 ? -errno : 0);
+			tmplog("unlink %s -> %d", gp, k < 0 ? -errno : 0);
 			return sc_res(c, k);
 		}
 	case 11: {	/* exec */

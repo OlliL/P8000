@@ -44,6 +44,8 @@ def main():
             gpids[f[4]].append((tr, t))
         elif ev == 'creat' and len(f) >= 4 and f[-1] != '->' and not f[-1].startswith('-'):
             path = f[3]
+            if not path.startswith('/tmp/'):
+                continue
             if path in live and live[path][0] != tr:
                 o, ot = live[path]
                 print('clash creat %s: tree %d at %.6f, held by tree %d since %.6f' % (path, tr, t, o, ot))
@@ -51,6 +53,8 @@ def main():
             live[path] = (tr, t)
         elif ev == 'unlink' and len(f) >= 4:
             path = f[3]
+            if not path.startswith('/tmp/'):
+                continue
             if path in live and live[path][0] != tr:
                 o, ot = live[path]
                 print('clash unlink %s: tree %d at %.6f, created by tree %d at %.6f' % (path, tr, t, o, ot))

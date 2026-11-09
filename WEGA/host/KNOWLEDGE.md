@@ -1030,11 +1030,13 @@ means it does something fixed instead (only possible where the original's result
   "coloring failed" for one function of ranlib.c (line 188) and falls back.
 - z8k-emu debugging aids: `Z8K_EXEC_TRACE=1` prints every exec,
   `Z8K_SC_TRACE=FILE` logs system calls to a host file (guest may close fd 2).
-  `Z8K_TMPLOG=FILE` appends one line per event of every emulator process (start, exec, fork, getpid with the 16-bit pid
-  the guest sees, creat/open/unlink/link below the guest /tmp); `host/tools/tmpclash.py FILE` finds two process trees
+  `Z8K_TMPLOG=FILE` appends one line per event of every emulator process (start, exec, fork, exit with its status,
+  getpid with the 16-bit pid the guest sees, creat and unlink of every file, open/link below the guest /tmp); `host/tools/tmpclash.py FILE` finds two process trees
   using the same /tmp file or getting the same guest pid while both live. checkall sets it ($T/tmplog.log) and prints
-  the result at the end: the search for the occasional "cannot open" of an object in the parallel builds (guess: the
-  guest cc names its files /tmp/cc.<pid>.x by the host pid cut to 16 bits, all parallel builds share one guest /tmp).
+  the result at the end: the search for the occasional "cannot open" of an object in the parallel builds. A failure
+  of 2026-11-10 (`make oldroot`, codgen nonsegv1r, `ld: match3.o: cannot open`; the compile of match3.c ran in stage2
+  without a message) showed no clash in /tmp: not the guessed clash of /tmp/cc.<pid>.x. Open; the creat, unlink and exit
+  lines of the next failure show who wrote or removed the object.
 - `WEGA/src/lib/libc/csu/crt0.s` (PLZ/ASM, Rev 3.2 09/12/83) matches the shipped
   `/lib/crt0.o` (42 bytes text, data `.word 0`). The ar/ranlib binaries use a
   later crt0 variant (version string in the text; ar also has the SCCS stamp in the data,
