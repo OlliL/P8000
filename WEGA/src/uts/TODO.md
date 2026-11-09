@@ -5,7 +5,7 @@ finds every one of them byte-identical (`cmp`) with the WEGA root. Everything be
 Rule: finished (sub)items are deleted from this file, so it gets shorter with every step.
 `uts` is built by `all` in `src/Makefile` but NOT by `install` (and not added to `checkall.sh`) until `wega`, `LIB1`, `LIB2` and the rest are
 identical: before that `checkall.sh` would stop at the first difference. The install targets in `uts/*/Makefile` are written and tested by hand
-with `make install PREFIX=dir`; they are connected to `src/Makefile install` at the very end (7.).
+with `make install PREFIX=dir`; they are connected to `src/Makefile install` at the very end (6.).
 State measured with the build in a copy of `src/uts` (tools from `checkall.sh`), objects against `tmp/wega31_kernel`.
 
 ## State
@@ -32,23 +32,19 @@ Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). 11 differing lines of the di
 4. `vk` still needs `OLD_D3` (without it sys1, sys2, ureg, tt0 differ) and `OLD_D24` with `OLD_D25` (sig, sys2, sys3, debug); seven forms of the mask `(caddr_t)((long)x & 0x7F00FFFF)` in sys3 gave nothing.
 5. After each changed switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already before this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
 
-## 4. `sys/lock.s` to C
-
-README: 9 functions `lkdata unlk locked deadlock unlock lockalloc lockfree lockadd lkfront`. Check against the object.
-
-## 5. Text files of the root
+## 4. Text files of the root
 
 1. `usr/sys/dev/*.c`, `usr/sys/h/*.h`, `usr/sys/conf/{make.boot,make.wega,ver.c+,wpar.c}`: identical now; install them, status "todo" in `COVERAGE.md` disappears with the install target.
 2. `bstart.c` (differs from the root file, the header comment): fix the file (it is installed, 666 wega).
 3. `usr/sys/conf/wpar.o`: not linked into `wega` in this form (the `wpar` part of `wega` has no difference); build it from the `wpar.c` of that time (find the source) or install the shipped bytes (as a documented binary `.obj` like `u.obj`).
 
-## 6. The archives (last, after the objects are identical)
+## 5. The archives (last, after the objects are identical)
 
 1. `LIB1`, `LIB2`, `BOOTLIB`: contents are the objects; the headers (owner, group, mode, time) are set afterwards with `fix` as for the libc (`src/lib/libc/arhdr.s`).
    Needs the member list with the shipped headers per archive; `chmog` calls in `dev/Makefile` are then not needed.
 2. Compare the archives member by member first (`ar x` of the original, `cmp`), then as a whole.
 
-## 7. At the end
+## 6. At the end
 
 1. Connect `uts` to `install` in `src/Makefile`; `checkall.sh -b`: `boot`, `wega`, `usr/boot`, `usr/sys/...` all identical, nothing in OPEN for uts.
 2. Update `README.md` (what is still object/assembler: should be only `u.obj`, if any), `COVERAGE.md`, the tables in `host/OLDCC.md` and `host/KNOWLEDGE.md`, `HANDOFF_wega_disasm.md`.

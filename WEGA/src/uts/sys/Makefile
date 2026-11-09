@@ -1,11 +1,10 @@
 # uts/sys: the kernel proper, library LIB1 (usr/sys/sys/LIB1).
-# Compiled with the segmented scc; lock.o is made from the assembler source lock.s (a disassembly, see ../TODO.md) by cas.
+# Compiled with the segmented scc.
 #
 #   make                       build LIB1
 #   make install PREFIX=dir    install below dir (default /)
 #   make clean                 remove the objects and LIB1
 
-CAS = cas
 SCCVK = sccvk
 CC = scc
 CFLAGS = -O
@@ -46,8 +45,8 @@ debug.o: debug.c
 ureg.o: ureg.c
 	$(SCCVK) $(CFLAGS) -c ureg.c
 
-lock.o: lock.s
-	$(CAS) -u -o $@ lock.s
+lock.o: lock.c
+	$(SCCVK) $(CFLAGS) -c lock.c
 
 install: LIB1
 	test -d $(PREFIX)/usr || mkdir $(PREFIX)/usr
