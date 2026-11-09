@@ -195,8 +195,8 @@ Where a value goes:
 
 - v0 `OLD_D2R` (allocreg): a load through a pointer goes into the register of its address first (`ld r7,@r7`), word
   registers only. `OLD_D2V`: only when that register weighs no more than the one getreg would take (main `argv[i]`, argalloc).
-  Segmented (vc): a byte or word through rr2 or rr4 (`rr2(#4)`, `@rr2`, no index) that only this load uses goes into the even
-  half, also when that half is wanted (`ldb rl2,rr2(#4)`; a return value); the pointer is loaded again when needed (cas putrow,
+  Segmented (vc): a byte or word through rr2 or rr4 (`rr2(#4)`, `@rr2`, `rr2(r1)`) that only this load uses goes into the even
+  half, also when that half is wanted (`ldb rl2,rr2(#4)`; a return value), or into the odd half when that is wanted (an argument in r3); the pointer is loaded again when needed (cas putrow,
   jdeps, yyparse, asmins, mkstring, putstab*, osymout and others). Not through rr6 (a parameter there stays: evalint). An index in an odd word register (`tab(r3)`): the value goes into the even half of
   its pair when that is free (`ld r2,tab(r3)`; cas optim, defsym, asmins, jprnew).
 - v0 `OLD_D2C` (match, allocreg): a name found in a scratch register by fixname is that register, the tree takes it over and

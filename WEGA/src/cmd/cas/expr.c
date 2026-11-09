@@ -251,7 +251,11 @@ NODE *np;
 	if (t == 6)
 		error(2, "Invalid expression type for ^O operator\n");
 	if (t == 3) {
+#ifdef OLD_CAS
+		p = mknode1(3, np->n_u.l);	/* the old cas (of the old compilers) gives the offset */
+#else
 		p = mknode1(3, (unsigned char)np->n_u.l);	/* sic: a byte where mknode1 takes a long (quirk) */
+#endif
 		nfreed++;
 		return (p);
 	}

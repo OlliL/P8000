@@ -369,19 +369,19 @@ allocreg(p, cookie)
 #ifdef SEG
 	r = -1;
 	if (cls == 2 && (p->in.op == STAR || p->in.op == OREG)) {
-		register NODE *q = getlr(p, 'L');	/* segmented: a pair address without index, used only here, gives its even half */
+		register NODE *q = getlr(p, 'L');	/* segmented: a pair address, used only here, gives its even half */
 		register int pr = -1;
 
 		if (q->in.op == STAR)
 			q = q->in.left;
-		if (q->in.op == OREG && q->tn.rval >= 0x100 && (q->tn.rval & 0xFF) == 0)
-			pr = (q->tn.rval >> 8) - 1;
+		if (q->in.op == OREG && q->tn.rval >= 0x100)
+			pr = (q->tn.rval >> 8) - 1;	/* rr2(#n), and rr2(r1) with an index */
 		else if (q->in.op == OREG && q->tn.rval < 8)
 			pr = q->tn.rval;	/* @rr2, rr2(#n): a pair base below 0x100 */
-		if ((pr == 2 || pr == 4) && (want == -1 || want == pr) && d2rpair(pr)) {	/* rr2, rr4 */
+		if ((pr == 2 || pr == 4) && (want == -1 || want == pr || want == pr + 1) && d2rpair(pr)) {	/* rr2, rr4 */
 			rfree(pr, 5);		/* LONG: the pair */
 			rsreturn(3, pr);
-			r = getreg(2, pr, 0, p->in.sname);
+			r = getreg(2, want == pr + 1 ? pr + 1 : pr, 0, p->in.sname);	/* the odd half when it is wanted */
 		}
 		/* an index in an odd word register (tab(r3)): the even half of its pair, when free */
 		if (r == -1 && q->in.op == OREG && q->tn.rval < 8 && (q->tn.rval & 1) && (want == -1 || want == q->tn.rval - 1))
