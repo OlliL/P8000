@@ -1,5 +1,5 @@
 /*
- * lp.c as it is linked into the shipped wega (not the one in LIB2, see ../../TODO.md):
+ * lp.c as it is linked into the shipped wega (not the one in LIB2):
  * reconstructed from the disassembly of /wega; byte-identical text and data of lp.o.
  * Differences to ../lp.c: the device number is masked with 0x7f, lpopen sets the
  * modes (OPOST|ONLCR) and calls sioparam only on the first open, lpclose and lpwrite

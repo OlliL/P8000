@@ -25,7 +25,7 @@ _arhdr::
 // sys.o
 	.byte	%73,%79,%73,%2e,%6f,%00,%00,%00,%00,%00,%00,%00,%00
 	.byte	%00,%19,%ae,%7d,%95,%00,%00,%81,%b6,%00,%00,%02,%da
-// tty.o: the size is that of our object, 10190; the shipped object has 10194 (../TODO.md, section 2)
+// tty.o: the size is that of our object, 10190; the shipped object has 10194 (to be set to that size when tty.o is identical)
 	.byte	%74,%74,%79,%2e,%6f,%00,%00,%00,%00,%00,%00,%00,%00
 	.byte	%00,%1a,%87,%d0,%c4,%59,%00,%81,%a4,%00,%00,%27,%ce
 // tt0.o

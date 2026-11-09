@@ -1,7 +1,6 @@
 /*
- * siok.c as it is linked into the shipped wega (not the one in LIB2, see ../../TODO.md):
- * reconstructed from the disassembly of /wega; text and data of siok.o are meant to be identical
- * (sioioctl: the order of the code blocks is not reproduced yet).
+ * siok.c as it is linked into the shipped wega (not the one in LIB2):
+ * reconstructed from the disassembly of /wega; text and data of siok.o are identical.
  * Differences to ../siok.c: sioxout is part of sioproc (T_XOUTPUT), the tables ditab, tabeint, ptab1,
  * ptab2, itab1, btab, stab, pctab2 and mstab are global, the modem control and open logic is older.
  * ptab1[2] and ptab2[2] are written where the original writes (one byte behind the tables).
