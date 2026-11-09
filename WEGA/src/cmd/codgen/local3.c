@@ -1332,6 +1332,11 @@ conput(p)
 			oregput(p);
 		else
 #ifdef SEG
+#ifdef OLD_D14Q
+			if (p->tn.rval == 15)	/* the temporary of a ?: at the start of the frame, in the stack segment */
+				printf("|_stkseg|(fp)");
+			else
+#endif
 			printf("@r%s", rnames[p->tn.rval]);
 #else
 			printf("@%s", rnames[p->tn.rval]);
@@ -1496,6 +1501,11 @@ adrput(p)
 			}
 		} else if (p->tn.lval == 0 && p->in.sname == 0 && p->stn.stsize == 0)
 #ifdef SEG
+#ifdef OLD_D14Q
+			if (r == 15)		/* the temporary of a ?: at the start of the frame, in the stack segment */
+				printf("|_stkseg|(fp)");
+			else
+#endif
 			printf("@r%s", rnames[r]);
 #else
 			printf("@%s", rnames[r]);

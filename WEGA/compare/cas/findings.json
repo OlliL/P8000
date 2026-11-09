@@ -3,7 +3,7 @@
  "measure": "check.sh",
  "compiler": "shipped scc -O (parser.y and assemble.c without -O)",
  "binary": "/bin/cas",
- "about": "/bin/cas was built by an older scc than the shipped one, which we do not have (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; with the switches `OLD_D6C OLD_D6D` (scparse) and `OLD_D2W OLD_D1R OLD_D2W6 OLD_D2P OLD_D2R OLD_D2F OLD_D2L OLD_D2T OLD_D10 OLD_D3P` (scodgen) 13, 36 and 5943, with the text size of the original. These are switches of the old compilers v0/v0p (`OLDCC.md`, section 2), so /bin/cas was probably built by a segmented compiler of that age (a guess). v0, v0p, v1q and v1r as a whole do not build valid segmented code here. The notes below are measured with these switches.",
+ "about": "/bin/cas was built by an older scc than the shipped one, which we do not have (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; with the switches `OLD_D6C OLD_D6D` (scparse) and `OLD_D2W OLD_D1R OLD_D2W6 OLD_D2P OLD_D2R OLD_D2F OLD_D2L OLD_D2T OLD_D10 OLD_D3P OLD_D3AW OLD_D6S OLD_D3J OLD_D3K` (scodgen) 16, 47 and 5827, with the text size of the original. These are switches of the old compilers v0/v0p (`OLDCC.md`, section 2), so /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with these switches. Still counted as differences: the data addresses of the model (its data has another layout) and bit 31 of address constants (D13).",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -17,7 +17,7 @@
    "orig": "0x0080",
    "instr": "9/12",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 9 with the shipped scc, 9 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 9 with the shipped scc, 11 with the switches). Original shows D8.",
    "lines": 5
   },
   "iputl": {
@@ -25,7 +25,7 @@
    "orig": "0x009e",
    "instr": "8/12",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 6 with the shipped scc, 8 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 6 with the shipped scc, 4 with the switches).",
    "lines": 5
   },
   "sputb": {
@@ -40,7 +40,7 @@
    "orig": "0x00fe",
    "instr": "9/12",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 9 with the shipped scc, 9 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 9 with the shipped scc, 11 with the switches). Original shows D8.",
    "lines": 5
   },
   "sputl": {
@@ -48,7 +48,7 @@
    "orig": "0x011c",
    "instr": "8/12",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 6 with the shipped scc, 8 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 6 with the shipped scc, 4 with the switches).",
    "lines": 5
   },
   "sgetb": {
@@ -124,7 +124,7 @@
    "orig": "0x02e0",
    "instr": "71/72",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 63 with the shipped scc, 56 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 63 with the shipped scc, 68 with the switches). Original shows D8.",
    "lines": 40
   },
   "sputexpr": {
@@ -132,7 +132,7 @@
    "orig": "0x03b2",
    "instr": "71/72",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 63 with the shipped scc, 56 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 63 with the shipped scc, 68 with the switches). Original shows D8.",
    "lines": 40
   },
   "iputloc": {
@@ -148,7 +148,7 @@
    "orig": "0x04aa",
    "instr": "25/15",
    "status": "open",
-   "note": "Calls 2 in the original, 3 in ours (conditional jumps 3 against 3): check the source or the range of the function (strict differing lines 30 with the shipped scc, 7 with the switches).",
+   "note": "Calls 2 in the original, 3 in ours (conditional jumps 3 against 3): check the source or the end of the function in findings.json (strict differing lines 30 with the shipped scc, 7 with the switches).",
    "lines": 19
   },
   "(ifile 04e2)": {
@@ -211,7 +211,7 @@
    "orig": "0x1240",
    "instr": "15/14",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 7 with the shipped scc, 7 with the switches).",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 7 with the shipped scc, 4 with the switches).",
    "lines": 2
   },
   "main": {
@@ -219,7 +219,7 @@
    "orig": "0x1278",
    "instr": "466/484",
    "status": "open",
-   "note": "Calls 100 in the original, 102 in ours (conditional jumps 54 against 54): check the source or the range of the function (strict differing lines 704 with the shipped scc, 394 with the switches).",
+   "note": "Calls 100 in the original, 102 in ours (conditional jumps 54 against 54): check the source or the end of the function in findings.json (strict differing lines 704 with the shipped scc, 394 with the switches).",
    "lines": 131
   },
   "sigdone": {
@@ -269,14 +269,14 @@
    "orig": "0x1c6a",
    "instr": "32/32",
    "status": "same",
-   "note": "Calls 1 in the original, 2 in ours (conditional jumps 1 against 2): check the source or the range of the function (strict differing lines 95 with the shipped scc, 69 with the switches)."
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 95 with the shipped scc, 4 with the switches)."
   },
   "escape": {
    "file": "nodes.c",
    "orig": "0x1cdc",
    "instr": "61/57",
    "status": "open",
-   "note": "A static function: it has no symbol in the link of the model, so not measured with the switches.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines ? with the shipped scc, 68 with the switches). Original shows D8.",
    "lines": 48
   },
   "mkstring": {
@@ -298,7 +298,7 @@
    "orig": "0x1ef8",
    "instr": "44/42",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 38 with the shipped scc, 34 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 38 with the shipped scc, 31 with the switches).",
    "lines": 4
   },
   "synrecover": {
@@ -306,7 +306,7 @@
    "orig": "0x1fbe",
    "instr": "9/13",
    "status": "open",
-   "note": "Calls 273 in the original, 1 in ours (conditional jumps 79 against 1): check the source or the range of the function (strict differing lines 1603 with the shipped scc, 1593 with the switches). Original shows D8.",
+   "note": "Calls 273 in the original, 1 in ours (conditional jumps 79 against 1): check the source or the end of the function in findings.json (strict differing lines 1603 with the shipped scc, 1593 with the switches). Original shows D8.",
    "lines": 4
   },
   "(parser 3af4)": {
@@ -345,7 +345,7 @@
    "orig": "0x3c8e",
    "instr": "26/26",
    "status": "open",
-   "note": "Conditional jumps 1 in the original, 3 in ours, calls equal: check the source (strict differing lines 40 with the shipped scc, 32 with the switches).",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 40 with the shipped scc, 6 with the switches).",
    "lines": 1
   },
   "digval": {
@@ -353,7 +353,7 @@
    "orig": "0x3cdc",
    "instr": "26/26",
    "status": "open",
-   "note": "A static function: it has no symbol in the link of the model, so not measured with the switches.",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines ? with the shipped scc, 4 with the switches).",
    "lines": 9
   },
   "hash": {
@@ -369,7 +369,7 @@
    "orig": "0x3d90",
    "instr": "205/217",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 158 with the shipped scc, 37 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 158 with the shipped scc, 35 with the switches). Original shows D8.",
    "lines": 37
   },
   "defalias": {
@@ -377,7 +377,7 @@
    "orig": "0x4084",
    "instr": "32/29",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 17 with the shipped scc, 7 with the switches). Original shows D8.",
+   "note": "Identical with the old-compiler switches (see the head of this file): a compiler difference only. Original shows D8.",
    "lines": 5
   },
   "symval": {
@@ -385,7 +385,7 @@
    "orig": "0x40f4",
    "instr": "40/43",
    "status": "open",
-   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 27 with the shipped scc, 4 with the switches).",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 27 with the shipped scc, 2 with the switches).",
    "lines": 6
   },
   "isdef": {
@@ -393,7 +393,7 @@
    "orig": "0x4184",
    "instr": "25/25",
    "status": "open",
-   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 10 with the shipped scc, 10 with the switches).",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 10 with the shipped scc, 8 with the switches).",
    "lines": 3
   },
   "symreloc": {
@@ -401,7 +401,7 @@
    "orig": "0x41d6",
    "instr": "98/95",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 107 with the shipped scc, 28 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 107 with the shipped scc, 26 with the switches). Original shows D8.",
    "lines": 61
   },
   "defcomm": {
@@ -409,7 +409,7 @@
    "orig": "0x4312",
    "instr": "24/24",
    "status": "open",
-   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 4 with the shipped scc, 4 with the switches).",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 4 with the shipped scc, 2 with the switches).",
    "lines": 1
   },
   "deflabels": {
@@ -449,7 +449,7 @@
    "orig": "0x457a",
    "instr": "35/37",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 16 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 11 with the switches).",
    "lines": 8
   },
   "italloc": {
@@ -457,7 +457,7 @@
    "orig": "0x4618",
    "instr": "35/37",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 16 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 11 with the switches).",
    "lines": 8
   },
   "namalloc": {
@@ -465,7 +465,7 @@
    "orig": "0x46b6",
    "instr": "43/44",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 39 with the shipped scc, 17 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 39 with the shipped scc, 15 with the switches).",
    "lines": 8
   },
   "stabp": {
@@ -473,7 +473,7 @@
    "orig": "0x4772",
    "instr": "11/9",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 8 with the shipped scc, 8 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 8 with the shipped scc, 7 with the switches).",
    "lines": 3
   },
   "itabp": {
@@ -481,7 +481,7 @@
    "orig": "0x4788",
    "instr": "11/9",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 8 with the shipped scc, 8 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 8 with the shipped scc, 7 with the switches).",
    "lines": 3
   },
   "stenter": {
@@ -497,7 +497,7 @@
    "orig": "0x4926",
    "instr": "37/39",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 32 with the shipped scc, 9 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 32 with the shipped scc, 7 with the switches).",
    "lines": 9
   },
   "stlook": {
@@ -527,7 +527,7 @@
    "orig": "0x4b3e",
    "instr": "32/34",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 44 with the shipped scc, 40 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 44 with the shipped scc, 46 with the switches).",
    "lines": 17
   },
   "setsub": {
@@ -535,7 +535,7 @@
    "orig": "0x4bb0",
    "instr": "5/4",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 3 with the shipped scc, 1 with the switches).",
+   "note": "Identical with the old-compiler switches (see the head of this file): a compiler difference only.",
    "lines": 1
   },
   "secname": {
@@ -543,7 +543,7 @@
    "orig": "0x4bbc",
    "instr": "69/68",
    "status": "open",
-   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 29 with the shipped scc, 4 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 29 with the shipped scc, 2 with the switches). Original shows D8.",
    "lines": 2
   },
   "setsec": {
@@ -551,7 +551,7 @@
    "orig": "0x4cb4",
    "instr": "12/11",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 5 with the shipped scc, 5 with the switches).",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 5 with the shipped scc, 2 with the switches).",
    "lines": 2
   },
   "even": {
@@ -591,7 +591,7 @@
    "orig": "0x4e6a",
    "instr": "29/28",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 27 with the shipped scc, 13 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 27 with the shipped scc, 12 with the switches).",
    "lines": 10
   },
   "exprtype": {
@@ -631,7 +631,7 @@
    "orig": "0x52c6",
    "instr": "55/59",
    "status": "open",
-   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 46 with the shipped scc, 8 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 46 with the shipped scc, 6 with the switches). Original shows D8.",
    "lines": 14
   },
   "opseg": {
@@ -639,7 +639,7 @@
    "orig": "0x538a",
    "instr": "50/51",
    "status": "open",
-   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 33 with the shipped scc, 8 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 33 with the shipped scc, 6 with the switches). Original shows D8.",
    "lines": 6
   },
   "opoff": {
@@ -647,7 +647,7 @@
    "orig": "0x543c",
    "instr": "47/47",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 36 with the shipped scc, 15 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 36 with the shipped scc, 13 with the switches). Original shows D8.",
    "lines": 7
   },
   "opxor": {
@@ -748,7 +748,7 @@
    "orig": "0x5fc2",
    "instr": "167/165",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 90 with the shipped scc, 47 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 90 with the shipped scc, 43 with the switches). Original shows D8.",
    "lines": 32
   },
   "p2rep": {
@@ -779,7 +779,7 @@
    "orig": "0x66cc",
    "instr": "60/55",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 73 with the shipped scc, 24 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 73 with the shipped scc, 15 with the switches).",
    "lines": 58
   },
   "osymout": {
@@ -865,7 +865,7 @@
    "orig": "0x7192",
    "instr": "15/15",
    "status": "open",
-   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 8 with the shipped scc, 2 with the switches).",
+   "note": "Identical with the old-compiler switches (see the head of this file): a compiler difference only.",
    "lines": 1
   },
   "genbop": {
@@ -881,7 +881,7 @@
    "orig": "0x7286",
    "instr": "103/7",
    "status": "open",
-   "note": "Calls 0 in the original, 10 in ours (conditional jumps 2 against 6): check the source or the range of the function (strict differing lines 100 with the shipped scc, 96 with the switches).",
+   "note": "Calls 0 in the original, 10 in ours (conditional jumps 2 against 6): check the source or the end of the function in findings.json (strict differing lines 100 with the shipped scc, 96 with the switches).",
    "lines": 96
   },
   "(gen 729e)": {
@@ -897,7 +897,7 @@
    "orig": "0x742a",
    "instr": "125/127",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 110 with the shipped scc, 69 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 110 with the shipped scc, 68 with the switches). Original shows D8.",
    "lines": 34
   },
   "asmword": {
@@ -905,7 +905,7 @@
    "orig": "0x75da",
    "instr": "104/104",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 88 with the shipped scc, 74 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 88 with the shipped scc, 73 with the switches). Original shows D8.",
    "lines": 30
   },
   "asmfield": {
@@ -913,7 +913,7 @@
    "orig": "0x773a",
    "instr": "136/142",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 90 with the shipped scc, 75 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 90 with the shipped scc, 71 with the switches). Original shows D8.",
    "lines": 21
   },
   "asmimm": {
@@ -921,7 +921,7 @@
    "orig": "0x7958",
    "instr": "199/198",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 167 with the shipped scc, 115 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 167 with the shipped scc, 81 with the switches). Original shows D8.",
    "lines": 30
   },
   "asmfix": {
@@ -929,7 +929,7 @@
    "orig": "0x7c18",
    "instr": "59/63",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 42 with the shipped scc, 46 with the switches). Original shows D8.",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 42 with the shipped scc, 42 with the switches). Original shows D8.",
    "lines": 21
   },
   "asmfix2": {
@@ -937,7 +937,7 @@
    "orig": "0x7cde",
    "instr": "49/51",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 96 with the shipped scc, 32 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 96 with the shipped scc, 28 with the switches).",
    "lines": 16
   },
   "asmrel": {
@@ -945,7 +945,7 @@
    "orig": "0x7d7c",
    "instr": "90/87",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 99 with the shipped scc, 50 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 99 with the shipped scc, 45 with the switches).",
    "lines": 37
   },
   "asmreg": {
@@ -953,7 +953,7 @@
    "orig": "0x7ea0",
    "instr": "34/36",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 28 with the shipped scc, 16 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 28 with the shipped scc, 14 with the switches).",
    "lines": 10
   },
   "putbits": {
@@ -961,7 +961,7 @@
    "orig": "0x7f1c",
    "instr": "28/32",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 24 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 34 with the shipped scc, 19 with the switches).",
    "lines": 8
   },
   "rangechk": {
@@ -969,7 +969,7 @@
    "orig": "0x7fa6",
    "instr": "22/22",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 24 with the shipped scc, 24 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 24 with the shipped scc, 12 with the switches).",
    "lines": 15
   },
   "(assemble 7fe4)": {
@@ -1079,7 +1079,7 @@
    "orig": "0x8af4",
    "instr": "86/86",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 104 with the shipped scc, 97 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 104 with the shipped scc, 98 with the switches).",
    "lines": 43
   },
   "jinit": {
@@ -1109,7 +1109,7 @@
    "orig": "0x8e72",
    "instr": "128/128",
    "status": "open",
-   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 108 with the shipped scc, 39 with the switches).",
+   "note": "With the old-compiler switches the same number of calls and conditional jumps as the original; the instruction sequences differ (compiler or statement form, not separated; strict differing lines 108 with the shipped scc, 37 with the switches).",
    "lines": 12
   },
   "jiter": {
@@ -1177,7 +1177,7 @@
    "orig": "0x9452",
    "instr": "19/19",
    "status": "open",
-   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 16 with the shipped scc, 14 with the switches).",
+   "note": "With the old-compiler switches the same instruction sequence: only registers, offsets or constants differ (strict differing lines 16 with the shipped scc, 12 with the switches).",
    "lines": 1
   },
   "lstend": {
@@ -1238,5 +1238,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "34b2ff45"
+ "measured_at": "0059acf7"
 }

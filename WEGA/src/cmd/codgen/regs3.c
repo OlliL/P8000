@@ -338,7 +338,7 @@ fixfld(p)
 		return;
 	}
 #endif
-#if defined(OLD_D5S) && !defined(OLD_D3KC)
+#if defined(OLD_D5S) && !defined(OLD_D3KC) && !defined(SEG)
 	/* v0: so also an element of an array that is a member: (index + offset) + the rest, which comes last */
 	if (subsr && a->in.op == PLUS && a->in.right->in.op == ICON && !a->in.right->in.sname && p->in.right->in.op != ICON) {
 		m = a->in.left;
@@ -349,7 +349,7 @@ fixfld(p)
 		return;
 	}
 #endif
-#if defined(OLD_D5S) && !defined(OLD_D3KC)
+#if defined(OLD_D5S) && !defined(OLD_D3KC) && !defined(SEG)
 	/* v0: a member of an element of a global array: (index*size + member + index) + address, the address last */
 	if (subsr && a->in.op == PLUS && a->in.left->in.op == UAND && a->in.right->in.op == PLUS && p->in.right->in.op != ICON) {
 		m = a->in.left;

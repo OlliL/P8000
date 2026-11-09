@@ -988,10 +988,14 @@ again:
 			long t = freeparm(1) / 8;
 
 			d14qarm(p1, t, 4);
+#ifdef SEG
+			printf("\ttest\t|_stkseg+%ld|(fp)\n", t);
+#else
 			if (t)
 				printf("\ttest\t%ld(fp)\n", t);
 			else
 				printf("\ttest\t@fp\n");
+#endif
 			printf("\tjpr\teq,L%d\n", m = getlab());
 			d14qarm(p2, t, 4);
 			deflab(m);
