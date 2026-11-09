@@ -17,7 +17,7 @@ YACC = yacc
 SLD = sld
 SLDFLAGS = -i -e start -z -Mt4 -Md5 -Mb5
 SCRT0 = /lib/scrt0.o
-SLIBC = /lib/slibc.a
+SLIBC = ../../../lib/slibc-v11.a
 PREFIX = /
 STRIP = strip
 ALL_OBJS = ifile.o instr.o scanner.o main.o nodes.o parser.o pst.o subr.o symbols.o ssymtab.o table1.o table2.o locntr.o expr.o p2loop.o ofile.o gen.o assemble.o getops.o error.o pstab.o jpr.o jpr2.o optim.o listing.o
@@ -30,10 +30,10 @@ build/cas: FORCE
 	cd build ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile cas
 
 vc/cas: FORCE
-	cd vc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc ASMDEFS=-DOLD_D13 cas
+	cd vc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc SLIBC=/lib/slibc.a ASMDEFS=-DOLD_D13 cas
 
 old/cas: FORCE
-	cd old ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc SCCFLAGS="-O -DOLD_CAS" cas
+	cd old ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc SLIBC=/lib/slibc.a SCCFLAGS="-O -DOLD_CAS" cas
 
 install: build/cas
 	cp build/cas $(PREFIX)/bin/cas

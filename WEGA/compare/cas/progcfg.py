@@ -36,12 +36,15 @@ def model_prepare(work):
     import subprocess
     subprocess.check_call(_emu() + ['/usr/bin/yacc', '-d', 'parser.y'], cwd=work, stdout=subprocess.DEVNULL)
     os.rename(os.path.join(work, 'y.tab.c'), os.path.join(work, 'parser.c'))
+    here = os.path.dirname(os.path.abspath(__file__))
+    import shutil
+    shutil.copy(os.path.join(here, '..', '..', 'src', 'lib', 'slibc-v11.a'), work)
 
 
 def model_link(work, objs):
     """the link of src/cmd/cas/Makefile: the tables of the symbol table in the segments 7, 8 and 9"""
     return _emu() + ['/bin/sld', '-i', '-e', 'start', '-z', '-Mt4', '-Md5', '-Mb5', '/lib/scrt0.o'] + objs[:-3] + \
-        ['-Md7', objs[-3], '-Md8', objs[-2], '-Md9', objs[-1], '-Md5', '/lib/slibc.a', '-o', 'casm']
+        ['-Md7', objs[-3], '-Md8', objs[-2], '-Md9', objs[-1], '-Md5', 'slibc-v11.a', '-o', 'casm']
 
 CANDIDATES = {'wega': 'src/cmd/cas/build/cas', 'host': 'host/cas/cas'}
 CORPUS_BINARY = 'build/cas'

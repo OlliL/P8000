@@ -34,3 +34,7 @@ Update 2026-10-28: only printf and doprnt are linked from here (the Makefile of 
 now: doprnt has its strings, letter tables and the 36 jump table entries (labels L<addr> in the code) as .data, printf refers to __iob+12, written by
 host/tools/oldslibc_doprnt_data.py. The directories of the other objects were deleted (they were cut by oldslibc_cut.py and are
 not needed: the members of slibc.a are identical).
+
+slibc-v11.a (cas): the members of /bin/cas that are not equal to the member of /lib/slibc.a are <object>/0_2.s, cut by host/tools/oldslibc_cas.py
+from text and data of /bin/cas (fseek rdwr printf doprnt filbuf flsbuf endopen findiop perror cnvt length malloc mktemp strcpy strncpy strlen); shared data and
+calls go by name. Assembled by sccvc (bit 31 of an address constant). The other members come from /lib/slibc.a, in the order of /bin/cas.

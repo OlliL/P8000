@@ -42,11 +42,14 @@ def decode_range(code, seg, a, b):
     return out
 
 
+CODESEG = 0		# the segment of the code in the program (sld 0, cas 4)
+
+
 def target_of(i):
     for o in i.ops:
         if o.kind == 'rel':
             return ('rel', o.a)
-        if o.kind in ('da', 'x') and o.a[0] == 0:
+        if o.kind in ('da', 'x') and o.a[0] == CODESEG:
             return ('abs', o.a[1])
     return (None, None)
 
@@ -56,12 +59,12 @@ def sym(n):
     return n if n.startswith('_') else '_' + n
 
 
-def write_source(prog, seg, a, b, name, outdir, extnames, exports=None):
+def write_source(prog, seg, a, b, name, outdir, extnames, exports=None, extra_labels=()):
     code = prog[:]
     insns = decode_range(code, seg, a, b)
     internal = {pc for pc, _ in insns}
     exports = exports or {}
-    labels = set()
+    labels = set(extra_labels)
     for pc, i in insns:
         k, t = target_of(i)
         # a jump or call to a fixed address inside the module is a label, too
@@ -88,11 +91,11 @@ def write_source(prog, seg, a, b, name, outdir, extnames, exports=None):
                 text = '%s\t%s' % (i.mn, esym)
             else:
                 # jp keeps its condition code: the target is the only address in the text
-                text = re.sub(r'<<0>>%[0-9A-F]{4}', esym, text, count=1)
+                text = re.sub(r'<<%d>>%%[0-9A-F]{4}' % CODESEG, esym, text, count=1)
         elif i.mn in ('calr', 'jr', 'jpr', 'djnz', 'dbjnz') and k == 'rel' and t in internal:
             text = re.sub(r'%[0-9A-F]{4}', 'L%x' % t, text, count=1)
         elif i.mn in ('call', 'jp', 'lda') and k == 'abs' and t in internal:
-            text = re.sub(r'<<0>>%[0-9A-F]{4}', 'L%x' % t, text, count=1)
+            text = re.sub(r'<<%d>>%%[0-9A-F]{4}' % CODESEG, 'L%x' % t, text, count=1)
         # the stack segment (127) is the symbol _stkseg of the libc: the original writes _stkseg+N
         if '<<127>>' in text:
             # keep the bars the instruction has: ldb uses |..| around the stack address, ldm does not
