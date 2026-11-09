@@ -3,7 +3,7 @@
  "measure": "check.sh",
  "compiler": "sccvc -O (parser.y and assemble.c without -O), the working compiler of cas (OLDCC.md)",
  "binary": "/bin/cas",
- "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 88 strictly equal, 89 masked, 1828 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36374 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13`; the value lists of a cpir switch right in front of its targets from `OLD_D6T`; the target of a dense jump table in the pair of the value from `OLD_D6J` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
+ "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 89 strictly equal, 90 masked, 1759 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36374 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13`; the value lists of a cpir switch right in front of its targets from `OLD_D6T`; the target of a dense jump table in the pair of the value from `OLD_D6J` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -357,7 +357,7 @@
    "orig": "0x3d90",
    "instr": "217/217",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 4 lines, only the registers differ.",
+   "note": "Model (strictcmp, sccvc): strictly equal.",
    "lines": 1
   },
   "defalias": {
@@ -853,7 +853,7 @@
    "orig": "0x742a",
    "instr": "129/127",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 16 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
+   "note": "Model (strictcmp, sccvc): 4 lines, other instructions (source form or compiler, not separated).",
    "lines": 4
   },
   "asmword": {
@@ -861,7 +861,7 @@
    "orig": "0x75da",
    "instr": "102/104",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 20 lines, the same instructions with other operands or in another order. An indexed byte load `tab(r3)` goes to rl2 in the original (rl3 here); a copy of the parameter to rr6.",
+   "note": "Model (strictcmp, sccvc): 12 lines, the same instructions with other operands or in another order. An indexed byte load `tab(r3)` goes to rl2 in the original (rl3 here); a copy of the parameter to rr6.",
    "lines": 7
   },
   "asmfield": {
@@ -985,17 +985,17 @@
   "jprnew": {
    "file": "jpr.c",
    "orig": "0x8640",
-   "instr": "78/72",
+   "instr": "79/72",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 28 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair. Source: `(char *)p - (char *)ITAB` as in setsym; left: the registers of that difference (r3 against r0) and of the address of lcaux.",
-   "lines": 10
+   "note": "Model (strictcmp, sccvc): 7 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair. Source: `(char *)p - (char *)ITAB` as in setsym; left: the registers of that difference (r3 against r0) and of the address of lcaux.",
+   "lines": 7
   },
   "jprange": {
    "file": "jpr.c",
    "orig": "0x8734",
    "instr": "99/101",
    "status": "close",
-   "note": "Model (strictcmp, sccvc): 36 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair."
+   "note": "Model (strictcmp, sccvc): 24 lines, other instructions (source form or compiler, not separated)."
   },
   "jprput": {
    "file": "jpr.c",
@@ -1032,7 +1032,7 @@
    "orig": "0x8af4",
    "instr": "86/86",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 14 lines, the same instructions with other operands or in another order. sccvc takes rr0 where the original takes another pair.",
+   "note": "Model (strictcmp, sccvc): 2 lines, the same instructions with other operands or in another order.",
    "lines": 1
   },
   "jinit": {
@@ -1184,5 +1184,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "88008b9d"
+ "measured_at": "d6569287"
 }

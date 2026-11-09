@@ -383,6 +383,9 @@ allocreg(p, cookie)
 			rsreturn(3, pr);
 			r = getreg(2, pr, 0, p->in.sname);
 		}
+		/* an index in an odd word register (tab(r3)): the even half of its pair, when free */
+		if (r == -1 && q->in.op == OREG && q->tn.rval < 8 && (q->tn.rval & 1) && (want == -1 || want == q->tn.rval - 1))
+			r = getreg(2, q->tn.rval - 1, 0, p->in.sname);
 	}
 	if (r == -1)
 #endif
