@@ -68,6 +68,11 @@ def main():
         del a[i:i + 2]
     path = a[0] if a else CFG.STRICT_INPUT
     o = SOut(open(path, 'rb').read())
+    for x in o.symbols:
+        if x['type'] == 98 and x.get('segt') == o.segs[0]['segno']:
+            # a global text symbol of a segmented program (cas: text in segment 4): its offset, as the type of a nonsegmented one
+            x['type'] = 34
+            x['value'] &= 0xFFFF
     oc = bytes(o.image)[:o.segs[0]['code']]
     g = SOut(open(os.path.join(CFG.ROOT, CFG.ORIG_BIN), 'rb').read())
     gc = bytes(g.image)[:g.segs[0]['code']]
@@ -98,12 +103,14 @@ def main():
         def n_ours(t):
             return plain(re.sub(r'%([0-9A-F]{4})\b', lambda m: '%%%04X' % (int(m.group(1), 16) + delta)
                                 if lim <= int(m.group(1), 16) < top else m.group(0), t))
+    starts = sorted(orig_fn) + [getattr(CFG, 'OWN_LIM', len(gc))]
     same = diff = 0
     for name, f in sorted(fn.items(), key=lambda x: int(x[1]['orig'], 16)):
         if f.get('status') == 'crt0':
             continue
         lo = int(f['orig'], 16)
-        hi = lo + f['size_orig']
+        # without size_orig (cas): up to the next function of findings.json
+        hi = lo + f['size_orig'] if 'size_orig' in f else starts[starts.index(lo) + 1]
         s = sym.get('_' + name)
         if s is None:
             print('%-16s %04x  missing in %s' % (name, lo, path))

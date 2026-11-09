@@ -16,6 +16,31 @@ OWN_LIM = 0x9694    # the own code of /bin/cas ends here (listing.c); the member
 ORIG_LIM = 0x10000  # the original is stripped
 SEG = True
 CC = '/bin/scc'
+# the model (host/recon/d12model.py, strictcmp.py): the link order of src/cmd/cas/Makefile; parser and assemble are compiled without -O there
+MODULES = ['ifile', 'instr', 'scanner', 'main', 'done', 'nodes', 'parser', 'pst', 'subr', 'symbols', 'ssymtab', 'table1', 'table2', 'locntr',
+           'expr', 'p2loop', 'ofile', 'gen', 'assemble', 'getops', 'error', 'pstab', 'jpr', 'jpr2', 'optim', 'listing', 'stable', 'itable', 'ntable']
+NOOPT = ('parser', 'assemble')
+MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_cas', 'casm')
+STRICT_INPUT = MODEL_OUT
+
+
+def _emu():
+    here = os.path.dirname(os.path.abspath(__file__))
+    root = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
+    return [os.path.normpath(os.path.join(here, '..', '..', 'host', 'z8k-emu', 'z8k-emu')), '-r', root]
+
+
+def model_prepare(work):
+    """parser.c and y.tab.h from parser.y, as in src/cmd/cas/Makefile"""
+    import subprocess
+    subprocess.check_call(_emu() + ['/usr/bin/yacc', '-d', 'parser.y'], cwd=work, stdout=subprocess.DEVNULL)
+    os.rename(os.path.join(work, 'y.tab.c'), os.path.join(work, 'parser.c'))
+
+
+def model_link(work, objs):
+    """the link of src/cmd/cas/Makefile: the tables of the symbol table in the segments 7, 8 and 9"""
+    return _emu() + ['/bin/sld', '-i', '-e', 'start', '-z', '-Mt4', '-Md5', '-Mb5', '/lib/scrt0.o'] + objs[:-3] + \
+        ['-Md7', objs[-3], '-Md8', objs[-2], '-Md9', objs[-1], '-Md5', '/lib/slibc.a', '-o', 'casm']
 
 CANDIDATES = {'wega': 'src/cmd/cas/build/cas', 'host': 'host/cas/cas'}
 CORPUS_BINARY = 'build/cas'

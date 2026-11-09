@@ -7,7 +7,7 @@ The shipped cc (cparse) puts the string literals of a function in front of the f
 address. The old cc (measured on /bin/ld) puts initialised data and switch tables in
 source order and all string literals of a file at the end of the file's data, unpadded (the pool starts and ends even).
 
-The modules progcfg MODULES (in SRCDIR; the include files without extension, like mfile1, are copied too; a module
+The modules progcfg MODULES (without -O those in NOOPT; progcfg model_prepare(work) makes generated sources first) (in SRCDIR; the include files without extension, like mfile1, are copied too; a module
 with only a .s file, cut from the original, is assembled as it is) are compiled with progcfg CC -O -S, every .s is rewritten into that layout (a
 label Lnnn whose body is only .byte lines ending in a zero byte and that is referenced in the file is a string literal;
 a static array has a name, so it stays), assembled with cas -u and linked by progcfg model_link(work, objs). The data
@@ -142,12 +142,15 @@ def main():
         p = os.path.join(CFG.SRCDIR, f)
         if os.path.isfile(p) and not f.endswith(('.o', '.py')) and f != 'Makefile':
             shutil.copy(p, work)
+    if hasattr(CFG, 'model_prepare'):
+        CFG.model_prepare(work)
     for m in CFG.MODULES:
         if not os.path.exists(os.path.join(work, m + '.c')) and os.path.exists(os.path.join(work, m + '.s')):
             # an assembler module (cut from the original): its data layout is the original's already
             run([CAS, '-u', '-o', m + '.o', m + '.s'], work)
             continue
-        run([CCHOST, '-O', '-S'] + list(getattr(CFG, 'CCFLAGS', [])) + [m + '.c'], work)
+        opt = [] if m in getattr(CFG, 'NOOPT', ()) else ['-O']
+        run([CCHOST] + opt + ['-S'] + list(getattr(CFG, 'CCFLAGS', [])) + [m + '.c'], work)
         src = open(os.path.join(work, m + '.s')).read().split('\n')
         if getattr(CFG, 'D6TABLES', False):
             src = d6tables(src, m)
