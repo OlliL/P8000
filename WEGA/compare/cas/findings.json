@@ -3,7 +3,7 @@
  "measure": "check.sh",
  "compiler": "sccvc -O (parser.y and assemble.c without -O), the working compiler of cas (OLDCC.md)",
  "binary": "/bin/cas",
- "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 86 strictly equal, 87 masked, 1934 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36374 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13`; the value lists of a cpir switch right in front of its targets from `OLD_D6T`; the target of a dense jump table in the pair of the value from `OLD_D6J` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
+ "about": "/bin/cas was built by an older scc than the shipped one, which we do not have as such; sccvc is the nearest found (src/TODO.md, step 10): byte identity is not reached. The behaviour is the same: the corpus (`host/tools/corpus.sh cas`) and the tests of tools/test. The differences that are not differences of the source are the classes D1 ... D13 of `host/OLDCC.md`.\n\nThe compiler (measured 2026-11-09, the model in `progcfg.py`, `strictcmp.py` over the 155 functions): the shipped scc gives 2 functions strictly equal, 16 masked, 9228 differing lines; `sccvc` with `slibc-v11` 88 strictly equal, 89 masked, 1828 lines (2026-11-09), with the text, data and bss sizes of the original. Data: 36374 of 38360 bytes equal at the same address; the rest are code addresses in jump and pointer tables (they follow the code). Bit 31 of the addresses in `.addr` (also the jump tables, which the spopt of sccvc writes as `.addr`) comes from `OLD_D13`; the value lists of a cpir switch right in front of its targets from `OLD_D6T`; the target of a dense jump table in the pair of the value from `OLD_D6J` (`OLDCC.md`). Its switches are those of the old compilers v0/v0p (`OLDCC.md`, section 2): /bin/cas was probably built by a segmented compiler of that age (a guess). The notes below are measured with sccvc. The data and bss sizes are those of the original since `slibc-v11` (the members that differ from the shipped slibc are cut from /bin/cas: `src/lib/oldslibc/*/0_2.s`, `host/tools/oldslibc_cas.py`).",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -116,18 +116,18 @@
   "iputexpr": {
    "file": "ifile.c",
    "orig": "0x02e0",
-   "instr": "73/72",
+   "instr": "72/72",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 53 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 43
+   "note": "Model (strictcmp, sccvc): strictly equal. Source: the tag written by a switch with three cases (23, 24, 25: c2; default: the type), compared one after the other (OLD_D6C), not by `?:`; the cases of the second switch in the order 6, 7-9, 1, 2, 3, 23-25.",
+   "lines": 1
   },
   "sputexpr": {
    "file": "ifile.c",
    "orig": "0x03b2",
-   "instr": "73/72",
+   "instr": "72/72",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 53 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
-   "lines": 43
+   "note": "Model (strictcmp, sccvc): strictly equal. As iputexpr.",
+   "lines": 1
   },
   "iputloc": {
    "file": "ifile.c",
@@ -740,7 +740,7 @@
    "orig": "0x66cc",
    "instr": "57/55",
    "status": "open",
-   "note": "Model (strictcmp, sccvc): 10 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair.",
+   "note": "Model (strictcmp, sccvc): 10 lines, other instructions (source form or compiler, not separated). sccvc takes rr0 where the original takes another pair. The int value widened to long stays in the pair of its register in the original (`ldk r2,#0` to r3), sccvc takes rr4 (OLD_D2X is for binary operators only; left for the end).",
    "lines": 3
   },
   "osymout": {
@@ -1184,5 +1184,5 @@
   "optim": 0,
   "listing": 19
  },
- "measured_at": "23cfcc15"
+ "measured_at": "88008b9d"
 }

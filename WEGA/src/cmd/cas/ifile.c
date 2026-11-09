@@ -167,17 +167,16 @@ NODE *np;
 {
 	if (np == 0)
 		return(0);
-	iputb((np->n_type == 23 || np->n_type == 24 || np->n_type == 25) ? np->n_u.cc.c2 : np->n_type);
 	switch (np->n_type) {
-	case 1:
-		iputb((unsigned char)np->n_u.l);
+	case 23:
+	case 24:
+	case 25:
+		iputb(np->n_u.cc.c2);
 		break;
-	case 2:
-		iputw((int)np->n_u.l);
-		break;
-	case 3:
-		iputl(np->n_u.l);
-		break;
+	default:
+		iputb(np->n_type);
+	}
+	switch (np->n_type) {
 	case 6:
 		iputw(np->n_u.wl.w);
 		iputnode((NODE *)np->n_u.wl.l);
@@ -186,6 +185,15 @@ NODE *np;
 	case 8:
 	case 9:
 		iputw(np->n_u.pw.w);
+		break;
+	case 1:
+		iputb((unsigned char)np->n_u.l);
+		break;
+	case 2:
+		iputw((int)np->n_u.l);
+		break;
+	case 3:
+		iputl(np->n_u.l);
 		break;
 	case 23:
 	case 24:
@@ -204,17 +212,16 @@ NODE *np;
 {
 	if (np == 0)
 		return(0);
-	sputb((np->n_type == 23 || np->n_type == 24 || np->n_type == 25) ? np->n_u.cc.c2 : np->n_type);
 	switch (np->n_type) {
-	case 1:
-		sputb((unsigned char)np->n_u.l);
+	case 23:
+	case 24:
+	case 25:
+		sputb(np->n_u.cc.c2);
 		break;
-	case 2:
-		sputw((int)np->n_u.l);
-		break;
-	case 3:
-		sputl(np->n_u.l);
-		break;
+	default:
+		sputb(np->n_type);
+	}
+	switch (np->n_type) {
 	case 6:
 		sputw(np->n_u.wl.w);
 		sputnode((NODE *)np->n_u.wl.l);
@@ -223,6 +230,15 @@ NODE *np;
 	case 8:
 	case 9:
 		sputw(np->n_u.pw.w);
+		break;
+	case 1:
+		sputb((unsigned char)np->n_u.l);
+		break;
+	case 2:
+		sputw((int)np->n_u.l);
+		break;
+	case 3:
+		sputl(np->n_u.l);
 		break;
 	case 23:
 	case 24:
