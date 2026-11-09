@@ -368,7 +368,11 @@ cand:
 #ifdef OLD_D10
 		/* the old codgen v0 shifts a long by a constant through a register (ld A1,#n; sdal): no OIZB AL,#n */
 		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (r->in.type == 5 || l->in.type == 15) &&
-		    (p->in.op == LS || p->in.op == RS || p->in.op == ASG LS || p->in.op == ASG RS))
+		    (p->in.op == LS || p->in.op == RS || p->in.op == ASG LS || p->in.op == ASG RS)
+#ifdef SEG
+		    && !(p->in.right->in.op == ICON && p->in.right->tn.lval == 1)	/* vc: a shift by one stays immediate */
+#endif
+		    )
 			goto next;
 #endif
 		r = getlr(p, 'R');
