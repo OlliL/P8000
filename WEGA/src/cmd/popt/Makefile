@@ -2,7 +2,7 @@
 # seg. Byte-identical with the originals.
 #
 #   make              build/nonseg/popt, build/seg/spopt
-#   make old          the passes of the old compilers in build/nonsegVER, build/segv1 (the switches: in the rules)
+#   make old          the passes of the old compilers in build/nonsegVER, build/segv1, build/segvk (the switches: in the rules)
 #   make install PREFIX=dir, make oldinstall PREFIX=dir (dir/lib/VER/)
 #   make clean
 
@@ -17,7 +17,7 @@ CRT0 = /lib/crt0.o
 NONSEG_OBJS = z20.o z21.o z22.o z23.o
 SEG_OBJS = $(NONSEG_OBJS)
 ALL_TARGETS = build/nonseg/popt build/seg/spopt
-OLD_TARGETS = build/nonsegv0/popt build/nonsegv0p/popt build/nonsegv1/popt build/segv1/spopt
+OLD_TARGETS = build/nonsegv0/popt build/nonsegv0p/popt build/nonsegv1/popt build/segv1/spopt build/segvk/spopt
 
 all: $(ALL_TARGETS)
 
@@ -36,6 +36,8 @@ build/seg/spopt: FORCE
 	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CFLAGS="$(CFLAGS) -DSPOPT"
 build/segv1/spopt: FORCE
 	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D20"
+build/segvk/spopt: FORCE
+	cd build/segvk ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D29"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
@@ -58,6 +60,8 @@ oldinstall: $(OLD_TARGETS)
 		cp build/nonseg$$v/popt $(PREFIX)/lib/$$v/popt ; \
 	done
 	cp build/segv1/spopt $(PREFIX)/lib/v1/spopt
+	[ -d $(PREFIX)/lib/vk ] || mkdir $(PREFIX)/lib/vk
+	cp build/segvk/spopt $(PREFIX)/lib/vk/spopt
 
 ##################
 # bin targets

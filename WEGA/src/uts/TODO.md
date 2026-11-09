@@ -5,30 +5,18 @@ finds every one of them byte-identical (`cmp`) with the WEGA root. Everything be
 Rule: finished (sub)items are deleted from this file, so it gets shorter with every step.
 `uts` is built by `all` in `src/Makefile` but NOT by `install` (and not added to `checkall.sh`) until `wega`, `LIB1`, `LIB2` and the rest are
 identical: before that `checkall.sh` would stop at the first difference. The install targets in `uts/*/Makefile` are written and tested by hand
-with `make install PREFIX=dir`; they are connected to `src/Makefile install` at the very end (3.).
+with `make install PREFIX=dir`; they are connected to `src/Makefile install` at the very end (2.).
 State measured with the build in a copy of `src/uts` (tools from `checkall.sh`), objects against `tmp/wega31_kernel`.
 
 ## State
 
-- Only one object differs: `tty.o` (LIB2), and there only `TCXONC` in `ttiocom` (section 2). `make install` (by hand) writes 31 files below `usr/sys`, `boot`, `usr/boot` and `wega`: 29 are identical; `LIB2` differs only in the member `tty.o`, `wega` as below. When `tty.o` is identical, set its size in `dev/arhdr.s` to that of the shipped object.
-- `wega`: 97282 bytes like the original, about 9300 bytes differ, all because `tty.o` is 4 bytes short and moves what follows. Linked with the original `tty.o` as a test (copy it over `dev/tty.o`, rebuild `LIB2`, `LIB2W`, `wega`): `cmp` identical, so the link order, the symbol table (`-X`, `-i`, `-Ms62`) and all other members are proven. `boot` is identical.
+`make install PREFIX=dir` (by hand) writes 31 files below `usr/sys`, `boot`, `usr/boot` and `wega`: all identical with the root (`cmp`). The compiler of the kernel objects is `sccvk` (`host/OLDCC.md`, section 2).
 
 ## 1. Build and install
 
 1. `COVERAGE.md`: regenerate (`host/tools/coverage.py`) when files become exact.
 
-## 2. The object that differs: `tty.o`, `TCXONC`
-
-Compiler `vk` (`sccvk`, `host/OLDCC.md` section 2). 11 differing lines of the disassembly (one is the size line). Look for the source form first: `sys1`, `tt0`, `sioioctl` and the removal of `OLD_D27` all came from the source, not from the compiler: the place of statements in or behind a `switch`, the number of `return`s, the block of a declaration, `!x` against `x == 0` of a long (entry 057b forgets the name of the operand, 054a with 043 keeps it), the order of the tails of a block, a mask `& 0xffffL`. Method: `sccvk -S` without `-O` shows the table entry of each line; `host/recon/poptrace.sh` shows popt.
-
-1. Original: `L344: rl r2,#2; ldl rr4,table(r2); jp @rr4`, the four case bodies (common tail behind the last), `TCSBRK`, then `L3b0: ld r2,arg; cp r2,#3; jr ule,L344; jp default`. Ours: value, compare and table jump in one piece in front of the bodies, and the common tail behind the first body.
-2. How popt works here (`codemove` in `z21.c`): for a `jp T` whose target has a `JP` or `RET` in front, the block from `T` to the next `JP` moves to the jump (ours). In every other case (also a table jump `jp @rr4` in front of `T`) the loop inversion runs: it needs a conditional jump, within 24 nodes behind `T`, to the label right behind the `jp`, and moves `T` up to that conditional jump to the place of the `jp`. Only this can split the dispatch. So the code before popt should have, behind `TCSBRK`, a `jp` to the head of `TCXONC` followed by the label of the default (`ld; cp; cjp ugt,D; ...` at the head); deduced from the code of popt, the source that gives it is not found. The parser (`swend`, `gswitch`) always puts the dispatch behind the bodies.
-3. Measured with the shipped `/lib/spopt` on hand-edited `sccvk -S` output of `ttiocom`: this raw code gives `tty.o` identical to the original (`cmp`): `L344: rl r2,#2; ldl rr4,table(r2); jp @rr4`, the bodies of cases 0 to 2 each ending in `jpr L131`, the body of case 3 without a jump, `L131: sub r2,r2; jpr L105` (the code of `return(0)`), `TCSBRK`, `L130: ld r2,arg; cp r2,#3; jpr ule,L344`, `L137: ldb u_error,#22; jpr L131`. So two things are missing. (a) The common tail behind the last body comes from `xjump` (`z21.c`): it needs the label the bodies jump to right behind the last body and no `jp` right behind that label (else the jump chain is resolved first). `sub r2,r2` fulfils this, also a removable `ld r2,r2`. (b) The dispatch is split and its head stands behind `TCSBRK`. The parser always writes the dispatch behind the bodies, and `codemove` takes the code behind `jp @rr4` along up to the next `jp`, so `return(0)` behind the switch alone moves away with it. The C form is not found; the source in System III and Plexus is the plain `switch` with a `default` and `break`.
-4. Without effect: order of `TCXONC` and `TCSBRK`, place of `default` (first, middle, last), order of the cases, casts of the switch value, `return` for `break`, the form of the end of `TCGETA`, the form of `TCSBRK`; `spopt` with `OLD_D20` is worse. `case 3` without `break` moves the common tail to the last body (2 lines fewer), but it falls into `default`: not usable. With `default` first, or in front of `case 3`, there is no fall into it, but the tail stays behind the first body (46 lines). `goto` from the inner `default` to the outer one, and `TCXONC` as first case or behind `TCFLSH`: no improvement. Also without success: all 720 orders of the raw blocks (head, bodies, default, dispatch, break label, `TCSBRK`), with and without `return(0)` behind the label; the `popt`s of v0, v0p, v1, v1 segmented and ZEUS 3.21 on the raw code; in C the grid of `break`, `return`, `goto` for the case ends with `default` first, last or none and `TCXONC` before or behind `TCSBRK`, a range check in front of the switch, harmless statements around it, the code of `TCSBRK` inside the inner switch by `goto`. No existing `OLD_D` switch added singly to vk gives the split (`host/OLDCC_LOG.md`, 2026-11-09).
-5. `vk` still needs `OLD_D3` (without it sys1, sys2, ureg, tt0 differ) and `OLD_D24` with `OLD_D25` (sig, sys2, sys3, debug); seven forms of the mask `(caddr_t)((long)x & 0x7F00FFFF)` in sys3 gave nothing.
-6. After each changed switch: `host/recon/oldcc.sh matrix check` (it reports `cas`, `cc` without decision and changed pass files since 3ea37915 and a1e60f58 already before this work), tables in `host/OLDCC.md`, entry in `host/OLDCC_LOG.md`.
-
-## 3. At the end
+## 2. At the end
 
 1. Connect `uts` to `install` in `src/Makefile`; `checkall.sh -b`: `boot`, `wega`, `usr/boot`, `usr/sys/...` all identical, nothing in OPEN for uts.
 2. Update `README.md` (what is still object/assembler), `COVERAGE.md`, the tables in `host/OLDCC.md` and `host/KNOWLEDGE.md`, `HANDOFF_wega_disasm.md`.

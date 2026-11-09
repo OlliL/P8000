@@ -31,6 +31,9 @@ void xjump();
 struct node * insertl();
 struct node * codemove();
 void comjump();
+#ifdef OLD_D29
+void d29switch();
+#endif
 
 
 
@@ -98,6 +101,9 @@ char **argv;
 	do {
 		isend = input();
 		movedat();
+#ifdef OLD_D29
+		d29switch();
+#endif
 		niter = 0;
 		do {
 			refcount();
@@ -810,6 +816,161 @@ iterate()
 
 
 
+
+#ifdef OLD_D29
+/* The next and the previous node that is not a kept comment */
+static struct node *
+d29nx(p)
+register struct node *p;
+{
+	while ((p = p->forw) && p->op == KCOMMENT)
+		;
+	return p;
+}
+
+static struct node *
+d29pv(p)
+register struct node *p;
+{
+	while ((p = p->back) && p->op == KCOMMENT)
+		;
+	return p;
+}
+
+static struct node *
+d29lab(n)
+int n;
+{
+	register struct node *p;
+
+	for (p = first.forw; p; p = p->forw)
+		if (p->op == LABEL && p->labno == n)
+			return p;
+	return 0;
+}
+
+/* Take the nodes a .. b out of the list */
+static void
+d29cut(a, b)
+struct node *a, *b;
+{
+	a->back->forw = b->forw;
+	b->forw->back = a->back;
+}
+
+/* Put the nodes a .. b behind q */
+static void
+d29put(q, a, b)
+struct node *q, *a, *b;
+{
+	a->back = q;
+	b->forw = q->forw;
+	q->forw->back = b;
+	q->forw = a;
+}
+
+/*
+ * vk: a table switch whose default stands in front of the dispatch and which is left by a jump to the next statement. The head goes
+ * behind the block that follows the switch, the rest of the dispatch to the place of the head, the default behind the head; the break
+ * label gets the code of the target of its jump. Only the layout changes. The raw code of the old compiler is not known: this is the
+ * layout from which the shipped spopt makes ttiocom (TCXONC) of tty.o; the other objects of vk are unchanged by it.
+ *
+ *	Lh: ld r,x; jp Ld; ...bodies; jp Lb; Ldf: ...; jp Lb; Ld: cp r,#n; cjp ugt,Ldf; rl r,#2; ldl rr,t(r); jp @rr; Lb: jp Lo; Lk: ...; jp Y
+ * becomes
+ *	Lt: rl r,#2; ldl rr,t(r); jp @rr; ...bodies; Lb: (the code at Lo); Lk: ...; jp Y; Lh: ld r,x; cp r,#n; cjp ule,Lt; Ldf: ...; jp Lb
+ */
+void
+d29switch()
+{
+	register struct node *p, *q;
+	struct node *x, *lh, *ld, *cp, *cj, *r1, *r2, *r3, *lb, *jb, *lk, *ke, *ldf, *jd, *jl, *lo, *lt, *n;
+	int i;
+
+	for (p = first.forw; p; p = p->forw) {
+		if (p->op != JP || p->labno == 0)
+			continue;
+		if ((x = d29pv(p)) == 0 || x->op != LD || (lh = d29pv(x)) == 0 || lh->op != LABEL)
+			continue;
+		if ((ld = d29lab(p->labno)) == 0)
+			continue;
+		if ((cp = d29nx(ld)) == 0 || cp->op != CP || (cj = d29nx(cp)) == 0 || cj->op != CJP ||
+		    (r1 = d29nx(cj)) == 0 || r1->op != RL || (r2 = d29nx(r1)) == 0 || r2->op != LD ||
+		    (r3 = d29nx(r2)) == 0 || r3->op != JP || r3->labno != 0)
+			continue;
+		if ((lb = d29nx(r3)) == 0 || lb->op != LABEL || (jb = d29nx(lb)) == 0 || jb->op != JP || jb->labno == 0)
+			continue;
+		if ((lk = d29nx(jb)) == 0 || lk->op != LABEL)
+			continue;
+		for (ke = lk; ke && (ke->op != JP || ke->labno == 0); ke = ke->forw)
+			;
+		if (ke == 0 || ke->forw == 0)
+			continue;
+		if ((ldf = d29lab(cj->labno)) == 0)
+			continue;
+		for (jd = ldf; jd && jd != ld && jd->op != JP; jd = jd->forw)
+			;
+		if (jd == 0 || jd->op != JP || jd->labno != lb->labno || d29nx(jd) != ld)
+			continue;
+		if ((jl = d29pv(ldf)) == 0 || jl->op != JP || jl->labno != lb->labno)
+			continue;
+		if ((lo = d29lab(jb->labno)) == 0)
+			continue;
+		/* the code at Lo: at most 3 instructions up to a jump */
+		for (q = lo, i = 0; q && (q->op != JP || q->labno == 0) && i < 5; q = q->forw)
+			i++;
+		if (q == 0 || q->op != JP || q->labno == 0)
+			continue;
+
+		/* the head and the dispatch out of the list; the rest of the dispatch to the place of the head */
+		n = lh->back;
+		d29cut(lh, p);
+		d29cut(ld, r3);
+		lt = (struct node *)alloc(14);
+		lt->op = LABEL;
+		lt->subop = 0;
+		lt->labno = isn++;
+		lt->ref = 0;
+		lt->code = 0;
+		lt->refc = 0;
+		lt->back = n;
+		lt->forw = n->forw;
+		n->forw->back = lt;
+		n->forw = lt;
+		d29put(lt, r1, r3);
+		/* the default out of the list, the jump of the last body away */
+		d29cut(ldf, jd);
+		d29cut(jl, jl);
+		/* the code at Lo in place of the jump at Lb */
+		for (q = lo->forw, n = lb; ; q = q->forw) {
+			register struct node *c;
+
+			if (q->op == KCOMMENT || q->op == LABEL)
+				continue;
+			c = (struct node *)alloc(14);
+			c->op = q->op;
+			c->subop = q->subop;
+			c->ref = 0;
+			c->labno = q->labno;
+			c->code = q->code;
+			c->refc = 0;
+			d29put(n, c, c);
+			n = c;
+			if (q->op == JP)
+				break;
+		}
+		d29cut(jb, jb);
+		/* behind the block: the head, the compare, the default */
+		x->forw = cp;
+		cp->back = x;
+		cj->labno = lt->labno;
+		cj->subop = revbr[(int)cj->subop];
+		cj->forw = ldf;
+		ldf->back = cj;
+		d29put(ke, lh, jd);
+		return;
+	}
+}
+#endif
 
 void
 xjump(p1)

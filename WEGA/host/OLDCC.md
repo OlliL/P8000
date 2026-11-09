@@ -132,12 +132,13 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 The objects of `/wega` (`usr/sys/sys/LIB1`, `usr/sys/dev/LIB2`) were made by an older scc. `sccvk` (`-DSCC -DOLD_VK` in `src/cmd/cc`) runs `/lib/vk/scparse`
 (built in `src/cmd/cparse/build/segvk`, `OLD_D25`), `/lib/vk/scodgen` (`src/cmd/codgen/build/segvk`, `OLD_VK` in `oldcc.h` = `OLD_D3` and `OLD_D24`) and the
-shipped `/lib/spopt`. Source forms did not help (20 forms of the statements tried); sccv1 (v1 scparse and spopt) is further away. Witnesses (identical):
-ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (identical with vk also without D3). Not yet identical: tty.
+`/lib/vk/spopt` (`src/cmd/popt/build/segvk`: the shipped spopt with `OLD_D29`). Source forms did not help (20 forms of the statements tried); sccv1 (v1 scparse and spopt) is further away. Witnesses (identical):
+ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). The `make install` of `src/uts` is identical in all 31 files, `wega` and `LIB2` included.
 
 - `OLD_D25` (cparse local1.c, SEG, PCONV): a cast of a long to a pointer stays a conversion (SCONV), the shipped scparse paints the type.
 - `OLD_D24` (codgen optim3.c): `convelim` keeps a conversion between a pointer and a non-pointer of the same size; the SCONV of a long to a pointer then
   uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`, a copy and the mask of the segmented address); an `& 0x7f00ffff` under it is dropped.
+- `OLD_D29` (popt z21.c, `d29switch`, on the raw nodes before the first pass): a table switch with its default in front of the dispatch, left by a jump to the next statement, is laid out as `Lt: rl; ldl; jp @`, the bodies, the break label with the code of the target of its jump, the next block up to its jump, the head with `cp; cjp ule,Lt`, the default. Only the layout changes. One witness (tty, `TCXONC`); the raw code of the old compiler is not known, this is the layout that gives the bytes (owner decision 2026-11-09; the evidence rule of two functions is not met).
 
 ### The old scc of cas
 
