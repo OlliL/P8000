@@ -8,7 +8,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 
 - Compiler: sccvc (`OLD_VC` in `src/cmd/codgen/oldcc.h`, the `segvc` rules of cparse and popt, `/lib/vc/*` of OLDROOT),
   linked with `src/lib/slibc-v11.a`, assembled by `/lib/old/cas`. `old/cas` is built by the shipped scc with `OLD_CAS`.
-- Model (d12model + strictcmp): 138 of 151 functions strictly exact, 13 open, 118 differing lines. Text, data and bss
+- Model (d12model + strictcmp): 142 of 151 functions strictly exact, 9 open (2026-11-10, after the vc switches D2S, D4A, D2CV). Text, data and bss
   have the original sizes; `/bin/cas` is not byte-identical because the open functions have other lengths and every
   address behind them moves.
 - Open functions (strictcmp: original size, model size, lines):
@@ -19,15 +19,12 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 | jpr | 324 | 328 | 22 | popt: which tail copy stays, place of the loop step |
 | stabout | 388 | 388 | 18 | popt: split dispatch |
 | exprreloc | 260 | 258 | 11 | popt: which `return (0L)` copy stays |
-| stenter | 392 | 392 | 11 | codgen: reload of `name`, registers of `p2->s_12 = blklevel` |
-| symtype | 158 | 162 | 7 | codgen K5: widening into the pair of the register |
+| stenter | 392 | 392 | 9 | codgen: registers of `p2->s_12 = blklevel` (the reload of `name`: OLD_D2CV) |
 | putrow | 252 | 252 | 6 | K2 (1 line) + loop inversion order (5) |
 | main | 2064 | 2064 | 6 | only the address of `sigdone` (lengths in front) |
-| asmword | 352 | 352 | 4 | codgen K14: copy of the parameter `row` |
 | sgetnode | 168 | 172 | 2 | popt (tail copy, `ldl rr2,rr10` not removed) |
 | yyparse | 6928 | 6928 | 2 | data / D6T switch table (`cparse:OLD_D6T` witness) |
 | igetaddr | 14 | 12 | 1 | K2: `ldk r2,#4` |
-| igetexpr, sgetexpr | 344 | 348 | 1 each | K3: frame temporary in `opseg(igetexpr())` |
 
 - Commands (from WEGA, `O=/mnt/share/cvs/P8000/tmp/oldroot`, `T` a scratch directory, wrappers `cc_vc` = `z8k-emu -r $O
   /bin/sccvc`, `cas_old` = `z8k-emu -r $O /lib/old/cas`):
@@ -237,7 +234,12 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - `jprange`: no `return` behind the switch, returns tok by chance (r2).
 - `exprreloc` case 0x24: an empty `if ((v & 8) == 0) ;` (kept as the source form that gives the compare).
 
-## 5 Open decisions
+## 5 Solved by vc switches with the owner's exception (2026-11-10)
+
+- `OLD_D2S`: symtype (K5). `OLD_D4A`: igetexpr, sgetexpr (K3). `OLD_D2CV` (the allo3.c part of v0's OLD_D2C): asmword
+  (K14) and the reload of `name` in stenter. See host/OLDCC.md, D2 and D4.
+
+## 6 Open decisions
 
 - The rest needs compiler or popt changes with one witness each (popt order: yylex, jpr, stabout, exprreloc,
   sgetnode; codgen: stenter, symtype K5, asmword K14, K3) or with an unexplained mechanism (K2, two witnesses).

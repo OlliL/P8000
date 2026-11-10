@@ -221,6 +221,13 @@ Where a value goes:
 Open: ld place_sec (`r8 = (secorg[j] - q->tsize) & 0xff00`: a new register for the `and`), chk_ranlib; register variables of
 leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (cas).
 
+- vc `OLD_D2S` (allo3.c): a word in r3 widened to long (SCONV) takes the pair rr2, the first pair of the order, with r3 in
+  it (`ldk r2,#0`); a word in another register gets a new pair as before (locadv: r7 into rr2). cas symtype (`unsigned n;
+  ip->s_2 = n;`). One witness.
+- vc `OLD_D2CV` (allo3.c): the copy of a name in a register holds no name, the allo3.c part of v0's `OLD_D2C` (whose
+  match3.c part needs `OLD_D2V`): the original loads the parameter again instead of taking the copy. cas asmword (`row`),
+  stenter (`name` for `hash(1000, name)`).
+
 ### D3 Register contents
 
 All in codgen.
@@ -260,6 +267,9 @@ followed by `ld r7,S0`.
   home in the frame; those between other parameters keep theirs (block: the spill `ldm` is contiguous).
 - v0 `OLD_D4O` (codgen, stmt): the parameter list is walked from its end, so the register parameters are copied in the order of
   their declaration (`ld r14,r7; ld r13,r6`).
+- vc `OLD_D4A` (reader3.c store): in `return (f(g()))` the only argument of the returned call is not stored in a
+  temporary, also when it holds a call (`call g; ldl rr6,rr2; call f`); as a statement (`p2rep(igetw());`, p2tag,
+  yyparse) and with two arguments (`mknode1(3, igetl())`) it is, as in the shipped compiler. cas igetexpr, sgetexpr.
 - Open: the rule of the spill itself (libc swap: the home of `x`, whose address is taken, written as `0(r15)`, of `l` as `@r15`;
   sld: a long parameter cast to a pointer read from its spill slot).
 
@@ -453,7 +463,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cas | ofile.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | gen.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | assemble.c | old scc |  | x | x |  |  | x |  |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | getops.c | old scc |  | x | x |  |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | getops.c | old scc |  | x | x | x |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | error.c | old scc |  |  | x |  |  | x |  |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | listing.c | old scc |  |  | x |  |  |  | x | x |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | optim.c | old scc |  |  | x | x |  | x | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -519,6 +529,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
 - Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
   - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
+  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype), `OLD_D4A` (igetexpr and sgetexpr, copies of each other); `OLD_D2CV` has two (asmword, stenter).
   - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.
