@@ -8,7 +8,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 
 - Compiler: sccvc (`OLD_VC` in `src/cmd/codgen/oldcc.h`, the `segvc` rules of cparse and popt, `/lib/vc/*` of OLDROOT),
   linked with `src/lib/slibc-v11.a`, assembled by `/lib/old/cas`. `old/cas` is built by the shipped scc with `OLD_CAS`.
-- Model (d12model + strictcmp): 144 of 152 functions strictly exact, 8 open (2026-11-10, after the vc switches D2S, D4A, D2CV and the source form of K2). Text, data and bss
+- Model (d12model + strictcmp): 145 of 152 functions strictly exact, 7 open (2026-11-10, after the vc switches D2S, D4A, D2CV and the source forms of K2 and sgetnode). Text, data and bss
   have the original sizes; `/bin/cas` is not byte-identical because the open functions have other lengths and every
   address behind them moves.
 - Open functions (strictcmp: original size, model size, lines):
@@ -18,10 +18,9 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 | yylex | 2600 | 2588 | 26 | popt: place of the `done` block |
 | jpr | 324 | 328 | 22 | popt: which tail copy stays, place of the loop step |
 | stabout | 388 | 388 | 18 | popt: split dispatch |
-| exprreloc | 260 | 258 | 11 | popt: which `return (0L)` copy stays |
+| exprreloc | 260 | 258 | 3 | popt: the `return (0L)` of the outer default is moved to the dispatch |
 | stenter | 392 | 392 | 9 | codgen: registers of `p2->s_12 = blklevel` (the reload of `name`: OLD_D2CV) |
 | main | 2064 | 2064 | 6 | only the address of `sigdone` (lengths in front) |
-| sgetnode | 168 | 172 | 2 | popt (tail copy, `ldl rr2,rr10` not removed) |
 | yyparse | 6928 | 6928 | 2 | data / D6T switch table (`cparse:OLD_D6T` witness) |
 
 - Commands (from WEGA, `O=/mnt/share/cvs/P8000/tmp/oldroot`, `T` a scratch directory, wrappers `cc_vc` = `z8k-emu -r $O
@@ -154,14 +153,18 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
   inverted, 16 combinations; split-dispatch rules in popt (D38/D39): worse.
 - Assessment: popt order; one witness.
 
-### exprreloc (expr.c), 11 lines
+### exprreloc (expr.c), 3 lines
 
-- Forms found: inner cases ascending (0x23, 0x24, 0x25), each `if (v & 8) X else Y` (17 > 11).
-- Left: two equal tails `return (0L)` (`subl rr2,rr2; jpr exit`: inner default and outer default); ours moves the
-  outer one to the dispatch (from inside the dispatch it just moved) and merges the inner onto it; the original keeps
-  the copy at the end, falling into the exit. The case 0x24 (`cpl rr2,#0` without jump) follows from that.
-- Tried: all orders and forms of the inner cases, `return (v)` in the cases (worse), the outer default as break /
-  return behind the switch, the forms of the empty if of 0x24; popt D41 (11 > 9 but many losses), D20 (9, losses).
+- Forms found: inner cases ascending (0x23, 0x24, 0x25), each `if (v & 8) X else Y`; case 0x24 with `v |= 0` on both
+  sides (11 > 3: the compare without a jump of the original is an if/else whose two stores vanish).
+- Left: the outer `default: return (0L)` (`subl rr2,rr2`) stands at the end in front of the exit in the original and
+  both dispatches jump to it; ours moves it to the outer dispatch.
+- Measured on the raw code: the original comes out exactly when, at the time codemove looks at the jump of the
+  dispatch, the `subl` block has no `jpr` to the exit behind it. `OLD_D20` does that and gives exprreloc exactly, but
+  loses 9 exact functions (exprtype, evalint, exprval, opshort, opseg, opoff, symtype, genlop, jdist: their blocks in
+  front of the exit are moved in the original). A D20 only for a jump over another label: no effect.
+- Tried on the new form: `return (0L)` behind the switch, with `break` (3); case 5 falling into the default (6); `v`
+  declared in a block (same).
 
 ### stenter (ssymtab.c), 9 lines
 
@@ -178,11 +181,10 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - Only the address of `sigdone` in the `signal` calls; follows from the lengths of the functions in front. Expected
   to vanish when the others are exact.
 
-### sgetnode (getops.c), 2 lines
+### sgetnode (getops.c): solved
 
-- `ldl rr10,rr2; ldl rr2,rr10; jr` (ours) against `ldl rr10,rr2; jr` (original), and the default (error) falls into
-  the exit in the original without loading np. Tried: `return (np)` in every case (worse), `default: ...; return;`
-  (8), `return (np)` in default (9). popt order (the `return (np)` block).
+- No `return (np)` behind the switch (the value is still in rr2). Lesson: a missing load of the return value at the
+  exit is a missing `return`, not a popt question (jprange was the first).
 
 ### yyparse (parser.y), 2 lines
 
@@ -203,7 +205,9 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - `opoff`: `mknode1(3, (unsigned char)value)` passes a word where a long is wanted.
 - `genwop`: dead branch `if (segmode != 0 && flag != 0) v |= 0x80000000L`.
 - `jprange`: no `return` behind the switch, returns tok by chance (r2).
-- `exprreloc` case 0x24: an empty `if ((v & 8) == 0) ;` (kept as the source form that gives the compare).
+- `exprreloc` case 0x24: `if (v & 8) v |= 0; else v |= 0;` (a compare whose result nothing uses).
+- `sgetnode`: no `return (np)`.
+- `igetaddr`, `putrow`: `switch (sizeof(pointer))`, a dead case for a pointer of 2 bytes.
 
 ## 5 Solved by vc switches with the owner's exception (2026-11-10)
 
@@ -224,5 +228,5 @@ Descriptions in host/OLDCC.md (D2, D4); the attempts in OLDCC_LOG.md 2026-11-10.
 ## 6 Open decisions
 
 - codgen: stenter (`p2->s_12 = blklevel`, one witness), next to be built under the owner's exception.
-- popt order: yylex, jpr, stabout, exprreloc, sgetnode; no mechanism found (section 2).
+- popt order: yylex, jpr, stabout, exprreloc; no mechanism found (section 2).
 - main follows from the lengths in front; yyparse is the D6T/data witness.

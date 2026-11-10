@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "ca53de4a",
+ "measured_at": "9473e7dc",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -413,8 +413,8 @@
    "file": "expr.c",
    "orig": "0x4fb2",
    "status": "open",
-   "note": "Cluster K12. Cluster K12.",
-   "lines": 11
+   "note": "Source: case 0x24 as `if (v & 8) v |= 0; else v |= 0;` (the compare without a jump: both bits are 0, likely macros). Left (3 lines): the `return (0L)` of the outer default stays at the end in front of the exit in the original, ours moves it to the dispatch; the layout of the original comes out when the block has no jump to the exit behind it while codemove looks at it (spopt with OLD_D20 gives exactly the original for this function, but loses 9 others).",
+   "lines": 3
   },
   "exprval": {
    "file": "expr.c",
@@ -673,9 +673,8 @@
   "sgetnode": {
    "file": "getops.c",
    "orig": "0x8358",
-   "status": "open",
-   "note": "Cluster K12. Cluster K12.",
-   "lines": 2
+   "status": "exact",
+   "note": "Source: no `return (np)` behind the switch (quirk: the value of the last call is still in rr2; in the default case, after error, np is not returned at all)."
   },
   "error": {
    "file": "error.c",

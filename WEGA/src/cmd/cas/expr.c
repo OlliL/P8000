@@ -91,8 +91,10 @@ NODE *np;
 				v |= 0x20;
 			break;
 		case 0x24:
-			if ((v & 8) == 0)
-				;
+			if (v & 8)
+				v |= 0;
+			else
+				v |= 0;
 			break;
 		case 0x25:
 			if (v & 8)

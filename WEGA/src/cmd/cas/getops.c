@@ -227,5 +227,4 @@ sgetnode()
 	default:
 		error(2, "Unexpected tag in symbol file\n");
 	}
-	return (np);
 }
