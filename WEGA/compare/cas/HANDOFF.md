@@ -97,6 +97,9 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 | D36/D37 (CJP to a loop exit not shortened; inversion takes the last CJP) | 132 | jdeps only, later solved by source |
 | features of the 19 jump sites of yylex `done` as a rule (D40) | 21-131 | - |
 | `OLD_D29` (vk) | 134 | no change |
+| `OLD_D20` on the sources of 2026-11-10 (exprreloc pre-check form) | 137 of 152 | exprreloc exact; exprtype, evalint, exprval, opshort, opseg, opoff, symtype, genlop, jdist lost |
+| D20 only for a jump over another label | 145 | no effect |
+| a target behind a jump to itself counts as fallen into (D44) | 134 | jpr unchanged, 11 lost |
 
 - Per module (spopt variants against each source file): no module fits another popt any more (symbols.c did, until
   symreloc's source form). symbols.c built by sccv1 or sccvk differs in codgen: cas is one compiler.
