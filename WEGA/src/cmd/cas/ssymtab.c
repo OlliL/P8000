@@ -126,23 +126,24 @@ unsigned char mode;
 	register struct sym *p;
 	register struct sym *p2;
 
-	if (*name == 0) {
+	if (*name != 0) {
+		h = hash(1000, name);
+		if (hashtab[h] == 0L && (mode & 6) != 6) {
+			p = stalloc(10);
+			p->s_2 = (long)namalloc(name);
+			p->s_type = 0;
+			p->s_7 = 0;
+			p->s_8 = 0;
+			hashtab[h] = ((char *)p - (char *)STAB);
+			return (hashtab[h]);
+		}
+	} else {
 		p = stalloc(10);
 		p->s_2 = 0;
 		p->s_type = 0;
 		p->s_7 = 0;
 		p->s_8 = 0;
 		return (((char *)p - (char *)STAB));
-	}
-	h = hash(1000, name);
-	if (hashtab[h] == 0L && (mode & 6) != 6) {
-		p = stalloc(10);
-		p->s_2 = (long)namalloc(name);
-		p->s_type = 0;
-		p->s_7 = 0;
-		p->s_8 = 0;
-		hashtab[h] = ((char *)p - (char *)STAB);
-		return (hashtab[h]);
 	}
 	p2 = stalloc(16);
 	p2->s_2 = (long)namalloc(name);

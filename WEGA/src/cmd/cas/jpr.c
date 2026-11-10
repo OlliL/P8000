@@ -195,15 +195,13 @@ NODE *list;
 	switch (tok) {
 	case 0x50:
 		op = pstlook("jp");
+		putins(op, list);
 		break;
 	case 0x51:
 		op = pstlook("call");
+		putins(op, list);
 		break;
-	default:
-		return;
 	}
-	putins(op, list);
-	return;
 }
 
 /* the instruction as jr or calr */
@@ -216,13 +214,11 @@ NODE *list;
 	switch (tok) {
 	case 0x50:
 		op = pstlook("jr");
+		putins(op, list);
 		break;
 	case 0x51:
 		op = pstlook("calr");
+		putins(op, list);
 		break;
-	default:
-		return;
 	}
-	putins(op, list);
-	return;
 }
