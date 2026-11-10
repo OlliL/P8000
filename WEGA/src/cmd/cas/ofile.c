@@ -109,6 +109,7 @@ ohdrput()
 }
 
 /* the type of a symbol table entry */
+unsigned char
 symtype(flags, ip, n)
 unsigned char flags;
 struct sym *ip;
