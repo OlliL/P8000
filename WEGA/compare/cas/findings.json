@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "391cb149",
+ "measured_at": "cfa4055b",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -69,7 +69,7 @@
    "file": "ifile.c",
    "orig": "0x0262",
    "status": "open",
-   "note": "Cluster K2.",
+   "note": "Cluster K2. Cluster K2.",
    "lines": 5
   },
   "iputnode": {
@@ -133,7 +133,7 @@
    "file": "scanner.c",
    "orig": "0x078a",
    "status": "open",
-   "note": "Cluster K8, K12, K13, K14.",
+   "note": "Cluster K8, K12, K13, K14. Cluster K8, K12, K13, K14.",
    "lines": 306
   },
   "getch": {
@@ -150,7 +150,7 @@
    "file": "main.c",
    "orig": "0x1278",
    "status": "open",
-   "note": "Cluster K4.",
+   "note": "Cluster K4. Left: the address of sigdone, which follows from the lengths of the functions in front.",
    "lines": 6
   },
   "sigdone": {
@@ -271,7 +271,7 @@
    "file": "symbols.c",
    "orig": "0x41d6",
    "status": "open",
-   "note": "Source: the inner cases in the order 1, 0, 2. Left: the merged tail `v |= ... << 16` stays at the second copy in the original (cluster K-TAIL). Cluster K12.",
+   "note": "Source: the inner cases in the order 1, 0, 2. Left: the merged tail `v |= ... << 16` stays at the second copy in the original (cluster K-TAIL).",
    "lines": 8
   },
   "defcomm": {
@@ -333,7 +333,7 @@
    "file": "ssymtab.c",
    "orig": "0x479e",
    "status": "open",
-   "note": "Cluster K12.",
+   "note": "Cluster K12. Cluster K12.",
    "lines": 51
   },
   "setsym": {
@@ -417,7 +417,7 @@
    "file": "expr.c",
    "orig": "0x4fb2",
    "status": "open",
-   "note": "Cluster K12.",
+   "note": "Cluster K12. Cluster K12.",
    "lines": 17
   },
   "exprval": {
@@ -542,7 +542,7 @@
    "file": "ofile.c",
    "orig": "0x6952",
    "status": "open",
-   "note": "Cluster K12.",
+   "note": "Cluster K12. Cluster K12.",
    "lines": 18
   },
   "nlwrite": {
@@ -611,7 +611,7 @@
    "file": "assemble.c",
    "orig": "0x75da",
    "status": "open",
-   "note": "An indexed byte load `tab(r3)` goes to rl2 in the original (rl3 here); a copy of the parameter to rr6. Cluster K4.",
+   "note": "An indexed byte load `tab(r3)` goes to rl2 in the original (rl3 here); a copy of the parameter to rr6. Cluster K14.",
    "lines": 4
   },
   "asmfield": {
@@ -670,7 +670,7 @@
    "file": "getops.c",
    "orig": "0x8146",
    "status": "open",
-   "note": "Cluster K3.",
+   "note": "Cluster K3. Cluster K3.",
    "lines": 1
   },
   "getop": {
@@ -682,35 +682,34 @@
    "file": "getops.c",
    "orig": "0x8358",
    "status": "open",
-   "note": "Cluster K12.",
+   "note": "Cluster K12. Cluster K12.",
    "lines": 2
   },
   "error": {
    "file": "error.c",
    "orig": "0x8400",
    "status": "open",
-   "note": "Cluster K7.",
+   "note": "Cluster K7. Cluster K7.",
    "lines": 2
   },
   "jpr": {
    "file": "jpr.c",
    "orig": "0x84fc",
    "status": "open",
-   "note": "Cluster K8, K12.",
+   "note": "Cluster K8, K12. Cluster K8, K12.",
    "lines": 26
   },
   "jprnew": {
    "file": "jpr.c",
    "orig": "0x8640",
-   "status": "open",
-   "note": "Source: `(char *)p - (char *)ITAB` as in setsym; left: the registers of that difference (r3 against r0) and of the address of lcaux. Cluster K4.",
-   "lines": 7
+   "status": "exact",
+   "note": "Source: `(char *)p - (char *)ITAB` as in setsym; left: the registers of that difference (r3 against r0) and of the address of lcaux."
   },
   "jprange": {
    "file": "jpr.c",
    "orig": "0x8734",
    "status": "open",
-   "note": "Cluster K8.",
+   "note": "Cluster K8. Cluster K8.",
    "lines": 14
   },
   "jprput": {
@@ -741,7 +740,7 @@
    "file": "optim.c",
    "orig": "0x8af4",
    "status": "open",
-   "note": "Cluster K7.",
+   "note": "Cluster K7. Cluster K7.",
    "lines": 2
   },
   "jinit": {
@@ -758,7 +757,7 @@
    "file": "optim.c",
    "orig": "0x8cfa",
    "status": "open",
-   "note": "Cluster K12.",
+   "note": "Cluster K12. Cluster K12.",
    "lines": 44
   },
   "jdist": {
