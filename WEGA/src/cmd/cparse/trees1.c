@@ -621,7 +621,11 @@ chkpun(p) register NODE *p; {
 			werror( "illegal combination of pointer and integer");
 			}
 #ifdef SEG
+#ifdef OLD_D13
+		if( q->in.op == ICON ) q->tn.lval &= 0xff00ffffL;	/* vc: bit 31 stays */
+#else
 		if( q->in.op == ICON ) q->tn.lval &= 0x7f00ffffL;
+#endif
 #endif
 		}
 	else {

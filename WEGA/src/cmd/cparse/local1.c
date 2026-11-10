@@ -79,7 +79,11 @@ clocal(p) NODE *p; {
 			p->in.op = o = SCONV;
 			break;
 			}
+#ifdef OLD_D13
+		if( l->in.op == ICON ) l->tn.lval &= 0xff00ffffL;	/* vc: bit 31 of a segmented address constant stays */
+#else
 		if( l->in.op == ICON ) l->tn.lval &= 0x7f00ffffL;
+#endif
 	paint:
 		l->in.type = p->in.type;
 		l->fn.cdim = p->fn.cdim;
