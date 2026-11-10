@@ -1,0 +1,39 @@
+diff --git a/WEGA/src/cmd/popt/z21.c b/WEGA/src/cmd/popt/z21.c
+index aebb13c0..e0bec63d 100644
+--- a/WEGA/src/cmd/popt/z21.c
++++ b/WEGA/src/cmd/popt/z21.c
+@@ -761,6 +761,34 @@ iterate()
+ 			p1 = p->forw;
+ 			while (p1->op == KCOMMENT)
+ 				p1 = p1->forw;
++#ifdef OLD_D45
++			/* a straight block behind a jump that ends in a jump to another such block (a switch head) is taken by codemove first */
++			if (p1->op == JP && p1->ref) {
++				rp = p1->ref;
++				do
++					rp = rp->back;
++				while (rp && (rp->op == LABEL || rp->op == KCOMMENT));
++				if (rp && rp != p1 && (rp->op == JP || rp->op == RET)) {
++					int n45 = 0;
++					for (rp = p1->ref->forw; rp; rp = rp->forw) {
++						if (rp->op == KCOMMENT)
++							continue;
++						if (rp->op == LABEL || rp->op == CJP || rp->op == RET || rp->op == JSW || rp->op == JP)
++							break;
++						n45++;
++					}
++					if (rp && rp->op == JP && rp->ref && n45 > 0) {
++						struct node *q45 = rp;
++						rp = rp->ref;
++						do
++							rp = rp->back;
++						while (rp && (rp->op == LABEL || rp->op == KCOMMENT));
++						if (rp && rp != q45 && (rp->op == JP || rp->op == RET))
++							p1 = p;
++					}
++				}
++			}
++#endif
+ 			if (p1->op == JP) {
+ 				rp = p->ref;
+ 				do

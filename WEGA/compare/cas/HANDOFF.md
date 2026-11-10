@@ -100,6 +100,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 | `OLD_D20` on the sources of 2026-11-10 (exprreloc pre-check form) | 137 of 152 | exprreloc exact; exprtype, evalint, exprval, opshort, opseg, opoff, symtype, genlop, jdist lost |
 | D20 only for a jump over another label | 145 | no effect |
 | a target behind a jump to itself counts as fallen into (D44) | 134 | jpr unchanged, 11 lost |
+| no turn of a conditional jump when codemove can take the straight block of the jump behind it and that block ends in a jump to a block behind a jump (D45, `tries/popt_D45.patch`) | 146 | stabout exact, nothing lost; jpr 24 (size as the original); one witness |
 
 - Per module (spopt variants against each source file): no module fits another popt any more (symbols.c did, until
   symreloc's source form). symbols.c built by sccv1 or sccvk differs in codgen: cas is one compiler.
@@ -146,15 +147,17 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - Assessment: popt order (which copy of a tail stays, block moved out of a moved dispatch); same kind as exprreloc.
   jpr is no witness of a split dispatch: our spopt splits its dispatch too.
 
-### stabout (ofile.c), 18 lines
+### stabout (ofile.c), 18 lines; exact with the popt try D45
 
 - Original: behind the entry jump `jr X` stand the second half of the tag dispatch (`cp r2,#2b; jr eq,C2b`) and the
   test with the error branch of the first check behind the switch (sect); the name loop (rotated) follows, at its exit
   only `ld tag; cp r2,#2a; jr ne,REST` and case 0x2a. Ours: the whole dispatch at the loop exit.
-- Tried: loop forms (`for (;;)`, `while ((*p = sgetb()) != 0)`, `for (p = ...; ...; p++)`), case order, `default`,
-  no break, if/else-if instead of switch (worse: the original compares r2, a switch), both checks behind the switch
-  inverted, 16 combinations; split-dispatch rules in popt (D38/D39): worse.
-- Assessment: popt order; one witness.
+- Mechanism (measured on the raw code): at `jpr ne,L183; jpr L181; L183:` of `if (*p == 0) break; p++;` the original
+  does not turn the conditional jump; codemove takes the head of `switch (tag)` to the `break` first. Our iterate turns
+  the jump before codemove sees it.
+- D45 (OLDCC_LOG 2026-11-10, `compare/cas/tries/popt_D45.patch`) writes that as a rule: stabout exact, no function
+  lost (146 of 152). One witness; jpr is touched by it but not solved. Decision of the owner.
+- Tried as source: nine more loop forms, the switch inside the loop (34), case order, `default`, if/else-if.
 
 ### exprreloc (expr.c), 3 lines
 
@@ -231,5 +234,5 @@ Descriptions in host/OLDCC.md (D2, D4); the attempts in OLDCC_LOG.md 2026-11-10.
 ## 6 Open decisions
 
 - codgen: stenter (`p2->s_12 = blklevel`, one witness), next to be built under the owner's exception.
-- popt order: yylex, jpr, stabout, exprreloc; no mechanism found (section 2).
+- popt order: yylex, jpr, exprreloc; no mechanism found (section 2). stabout: D45 fits with one witness, owner's exception needed.
 - main follows from the lengths in front; yyparse is the D6T/data witness.
