@@ -103,7 +103,7 @@ long off;
 	p->j_6 = off;
 	p->j_12 = 0;
 	p->j_13 = tok;
-	lcaux[cursec][cursub].la_0++;
+	++lcaux[cursec][cursub].la_0;
 	p->j_10 = lcaux[cursec][cursub].la_1;
 	lcaux[cursec][cursub].la_1 = (char *)p - (char *)ITAB;
 	return ((char *)p - (char *)ITAB);
