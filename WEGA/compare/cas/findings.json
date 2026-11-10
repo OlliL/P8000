@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "cfa4055b",
+ "measured_at": "d13f4379",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -271,7 +271,7 @@
    "file": "symbols.c",
    "orig": "0x41d6",
    "status": "open",
-   "note": "Source: the inner cases in the order 1, 0, 2. Left: the merged tail `v |= ... << 16` stays at the second copy in the original (cluster K-TAIL).",
+   "note": "Source: the inner cases in the order 1, 0, 2. Left: the merged tail `v |= ... << 16` stays at the second copy in the original. Cluster K12.",
    "lines": 8
   },
   "defcomm": {
