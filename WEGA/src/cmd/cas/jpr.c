@@ -145,17 +145,17 @@ long off;
 	case 0x50:
 		if (d1 <= 256L && d1 >= -254L && d2 <= 256L && d2 >= -254L)
 			return (0);
-		if ((d1 <= 256L && d1 >= -254L) || (d2 <= 256L && d2 >= -254L))
-			return (2);
-		return (1);
+		if ((d1 > 256L || d1 < -254L) && (d2 > 256L || d2 < -254L))
+			return (1);
+		return (2);
 	case 0x51:
 		if (d1 <= 4098L && d1 >= -4092L && d2 <= 4098L && d2 >= -4092L)
 			return (0);
-		if ((d1 <= 4098L && d1 >= -4092L) || (d2 <= 4098L && d2 >= -4092L))
-			return (2);
-		return (1);
+		if ((d1 > 4098L || d1 < -4092L) && (d2 > 4098L || d2 < -4092L))
+			return (1);
+		return (2);
 	}
-	return (tok);
+	/* no return: r2 still holds tok (sic) */
 }
 
 /* the record of the jpr for the second pass: tag 38 (jpr) or 39 (callr), entry, number of conditions, operands */

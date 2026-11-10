@@ -984,6 +984,7 @@ means it does something fixed instead (only possible where the original's result
 | `usr/sys/conf/u.o` | `as` gives 96 of its 98 bytes from a plain `$ABS` source; the segment 62 of `_u` (2 bytes) cannot be given to `as`: patched after assembling (guess: also in the original) | kept (`src/uts/conf/u.s`, `mku.sh`) | `src/uts/conf/mku.sh` |
 | `/bin/cas` (`genwop`) | dead branch: `if (segmode != 0 && flag != 0) v |= 0x80000000L;` (copied from genlop); genwop gets flag 1 only from genaddr when segmode is 0, and `v` is a word value | kept (src/cmd/cas/gen.c) | compare/cas/findings.json |
 | `/bin/cas` (`opoff`) | `^O` of a constant calls `mknode1(3, (unsigned char)value)`: a word in r6 where mknode1 takes a long in rr4, so the node gets what rr4 holds | kept in src/cmd/cas (expr.c); not in old/cas (`OLD_CAS`: the assembler of the old compilers gives the offset, /bin/cas itself has `ld r2,#%0030` for `#^o 48`) nor host/cas | compare/cas/findings.json |
+| `/bin/cas` (`jprange`) | no `return` behind the `switch (tok)`: for a tok other than 0x50 and 0x51 the function falls off its end and returns what r2 holds, the switch value tok (the dispatch stands in front of the exit) | kept in src/cmd/cas (jpr.c); host/cas returns tok | compare/cas/findings.json |
 
 ## ar (reconstructed, byte-identical)
 
