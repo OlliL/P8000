@@ -38,6 +38,7 @@
 #define OLD_D24		/* a long cast to a pointer is masked through a copy (with OLD_D25 of scparse): yylex, igetaddr of cas */
 #define OLD_D2S		/* a word in r3 widened to long takes the pair rr2 (allo3.c; cas symtype, one witness) */
 #define OLD_D4A		/* return (f(g())): the only argument not stored in a temporary (reader3.c store; cas igetexpr, sgetexpr) */
+#define OLD_D2CV	/* the copy of a name in a register holds no name (the allo3.c part of OLD_D2C of v0; cas asmword, stenter) */
 #endif
 
 #ifdef OLD_V0P
