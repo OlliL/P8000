@@ -172,7 +172,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 
 ### stenter (ssymtab.c): solved
 
-- `OLD_D2PO` (the switch of v0p) in vc with the limit `OLD_D2POV` (not for a word that holds a parameter: symtype).
+- `OLD_D2PO` (the switch of v0p) in vc with the limit `OLD_D2PV` (not for a word that holds a parameter: symtype).
   The cause was the constant 0x30 of `(char *)p2 - (char *)STAB` two statements above, idle in r3.
 - Lesson: a register difference in one statement can come from what an earlier statement left idle; replace the
   statements in front one by one.

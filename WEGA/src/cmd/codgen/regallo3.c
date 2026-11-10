@@ -672,7 +672,7 @@ getreg(cls, reg, flag, sym)
 			}
 #ifdef OLD_D2PO
 		for (t = rsuse; t; t = t->next)		/* an idle odd word whose even half is free: given back */
-#ifdef OLD_D2POV
+#ifdef OLD_D2PV
 			/* vc: not a word that holds a parameter */
 			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == 9) &&
 			    (w == 0 || rweight[t->reg - 1] < rweight[w->reg])) {
