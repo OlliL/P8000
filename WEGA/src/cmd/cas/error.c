@@ -15,7 +15,7 @@ error(n, msg)
 int n;
 char *msg;
 {
-	switch (n) {
+	switch ((unsigned)n) {
 	case 1:
 		fprintf(stderr, "Warning: line %d: ", curline);
 		fprintf(stderr, msg);
