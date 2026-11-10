@@ -36,6 +36,8 @@
 #define OLD_D13		/* a constant address stays on the left of a + (optim3.c), host/OLDCC.md D13 */
 #define OLD_D6J		/* a dense jump table (segmented): the target into the pair of the value */
 #define OLD_D24		/* a long cast to a pointer is masked through a copy (with OLD_D25 of scparse): yylex, igetaddr of cas */
+#define OLD_D2S		/* a word in r3 widened to long takes the pair rr2 (allo3.c; cas symtype, one witness) */
+#define OLD_D4A		/* return (f(g())): the only argument not stored in a temporary (reader3.c store; cas igetexpr, sgetexpr) */
 #endif
 
 #ifdef OLD_V0P

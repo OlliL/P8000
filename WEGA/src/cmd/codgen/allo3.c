@@ -428,6 +428,18 @@ allocreg(p, cookie)
 	}
 #endif
 #endif
+#ifdef OLD_D2S
+	/* vc: a word in r3 widened to long (SCONV) takes the pair rr2, the first pair of the order, with r3 in it
+	 * (cas symtype); a word in another register gets a new pair as before (locadv: r7, rr2) */
+	if (r == -1 && cls == 3 && want == -1 && p->in.op == 110 && p->in.left->in.op == REG &&
+	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval == 3 && d2ofree(p->in.left->tn.rval)) {
+		rfree(p->in.left->tn.rval, 4);
+		rsreturn(2, p->in.left->tn.rval);
+		r = getreg(3, p->in.left->tn.rval - 1, 0, p->in.sname);
+		if (r == -1)
+			rbusy(p->in.left->tn.rval, 4, p->in.left->in.sname, p->in.left->tn.lval);
+	}
+#endif
 #ifdef OLD_D2Q
 	if (r == -1 && cls == 3 && (p->in.op == STAR || p->in.op == OREG)) {
 		register NODE *q = getlr(p, 'L');	/* a long through a pointer: the pair of its even register */

@@ -113,12 +113,12 @@ unsigned char
 symtype(flags, ip, n)
 unsigned char flags;
 struct sym *ip;
-int n;
+unsigned n;
 {
 	unsigned char t;
 
 	if ((flags & 6) == 0) {
-		ip->s_2 = (long)(unsigned)n;
+		ip->s_2 = n;
 		return (0x20);
 	}
 	if ((flags & 1) == 0)
