@@ -464,7 +464,12 @@ allocreg(p, cookie)
 #ifdef OLD_D2O
 		/* v0p: an odd address register takes its pair too when the even half is free or idle */
 		else if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && (q->tn.rval & 1) &&
+#ifdef SEG
+		    /* vc: also when an odd word register is wanted (the low half of the value, an argument), as OLD_D2QO */
+		    (want == -1 || want == q->tn.rval - 1 || (want >= 0 && want < 8 && (want & 1))) && d2ofree(q->tn.rval)) {
+#else
 		    (want == -1 || want == q->tn.rval - 1) && d2ofree(q->tn.rval)) {
+#endif
 			rfree(q->tn.rval, 4);
 			rsreturn(2, q->tn.rval);
 			r = getreg(3, q->tn.rval - 1, 0, p->in.sname);
