@@ -171,9 +171,9 @@ tilde:
 		p = stabp(idx);
 		if (p->s_type == 3)
 			goto alias;
-		if (isdef(idx) == 0)
-			goto symidx;
-		goto value;
+		if (isdef(idx))
+			goto value;
+		goto symidx;
 	}
 	yylval.p = tokbuf;
 	tok = 0x57;
