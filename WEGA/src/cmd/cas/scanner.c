@@ -357,10 +357,10 @@ done:
 		while (c != ' ' && c != '\t' && c != ';');
 		ADD(c);
 		UNGET();
-		return(tok);
+		break;
 	case 0x23:
 		error(2, "Unknown keyword\n");
-		return(tok);
+		break;
 	}
 	return(tok);
 }
