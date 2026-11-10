@@ -81,7 +81,14 @@ NODE *args;
 
 	len = 0;
 	iputb(10);
-	iputl(row);
+	switch (sizeof(row)) {
+	case 4:
+		iputl(row);
+		break;
+	case 2:
+		iputw(row);
+		break;
+	}
 	for (p = args; p; p = p->n_next) {
 		iputnode(p->n_u.pp.p1);
 		iputnode(p->n_u.pp.p2);

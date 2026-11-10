@@ -8,7 +8,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 
 - Compiler: sccvc (`OLD_VC` in `src/cmd/codgen/oldcc.h`, the `segvc` rules of cparse and popt, `/lib/vc/*` of OLDROOT),
   linked with `src/lib/slibc-v11.a`, assembled by `/lib/old/cas`. `old/cas` is built by the shipped scc with `OLD_CAS`.
-- Model (d12model + strictcmp): 142 of 151 functions strictly exact, 9 open (2026-11-10, after the vc switches D2S, D4A, D2CV). Text, data and bss
+- Model (d12model + strictcmp): 144 of 152 functions strictly exact, 8 open (2026-11-10, after the vc switches D2S, D4A, D2CV and the source form of K2). Text, data and bss
   have the original sizes; `/bin/cas` is not byte-identical because the open functions have other lengths and every
   address behind them moves.
 - Open functions (strictcmp: original size, model size, lines):
@@ -20,11 +20,9 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 | stabout | 388 | 388 | 18 | popt: split dispatch |
 | exprreloc | 260 | 258 | 11 | popt: which `return (0L)` copy stays |
 | stenter | 392 | 392 | 9 | codgen: registers of `p2->s_12 = blklevel` (the reload of `name`: OLD_D2CV) |
-| putrow | 252 | 252 | 6 | K2 (1 line) + loop inversion order (5) |
 | main | 2064 | 2064 | 6 | only the address of `sigdone` (lengths in front) |
 | sgetnode | 168 | 172 | 2 | popt (tail copy, `ldl rr2,rr10` not removed) |
 | yyparse | 6928 | 6928 | 2 | data / D6T switch table (`cparse:OLD_D6T` witness) |
-| igetaddr | 14 | 12 | 1 | K2: `ldk r2,#4` |
 
 - Commands (from WEGA, `O=/mnt/share/cvs/P8000/tmp/oldroot`, `T` a scratch directory, wrappers `cc_vc` = `z8k-emu -r $O
   /bin/sccvc`, `cas_old` = `z8k-emu -r $O /lib/old/cas`):
@@ -175,13 +173,6 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - Tried: `name[0]`, `'\0'`, casts of the argument, `(unsigned char)*name`, `|=`, the order of the two assignments.
 - Assessment: codgen, the pair for the address of a member store when r2 is free; one witness, not built yet.
 
-### putrow (instr.c), 6 lines
-
-- 1 line K2 (below); 5 lines loop inversion: the original leaves the first loop (`for (p = args; p; p = p->n_next)`)
-  top-tested and enters the second (`while (args)`) at its bottom test from the exit of the first; ours rotates the
-  first. Only `goto test; do { ... test: ; } while (args);` for the second loop gives it (6 > 1); not taken (odd form).
-  Tried: while/for/break/continue forms of both loops, `if (args)` around the second.
-
 ### main (main.c), 6 lines
 
 - Only the address of `sigdone` in the `signal` calls; follows from the lengths of the functions in front. Expected
@@ -198,17 +189,14 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - Witness of `cparse:OLD_D6T` (with it exact up to 2 lines); the rest is data / the switch table, not looked at
   further.
 
-### igetaddr (ifile.c), 1 line; putrow, 1 line (K2)
+### igetaddr (ifile.c), putrow (instr.c): solved (K2)
 
-- `ldk r2,#4` in front of `calr igetl` (igetaddr, first instruction, the caller calls it there) and in front of `ldl
-  rr6,row; call iputl` (putrow). The only two in /bin/cas; the other calls of igetl have none; igetl and iputl do not
-  read r2. Searched in all 22 segmented files of WEGA 3.1 (cas, fc, fsc, fse, gld, pburn, ps, pstat, sld, gopt, yacc,
-  the kernel and its objects): `ldk r3,#k`/`ldk r2,#k` in front of a call are always arguments (r3 the third, r2 the
-  fourth, behind rr6/rr4), or the value of a `?:` that jumps on; no third case like K2.
-- igetaddr is `struct irow *igetaddr() { return ((struct irow *)igetl()); }` (D25 mask, caller `asmins(igetaddr())`).
-- Guess, not taken: a dead register variable (`n = sizeof (long);`) gives `ldk r13,#4`; our popt deletes the dead
-  load (rmove) and keeps the save of r13; the original would have it renamed into r2 without the save, which our
-  procopt does only in functions without a call (it stops at CALL). Two popt changes and an odd form.
+- `ldk r2,#4` is the value of a constant switch: `switch (sizeof(struct irow *)) { case 4: ...igetl()...; case 2:
+  ...igetw()...; }`. sccvc forces the value into r2, drops the dispatch and keeps the matching case. Both places pass
+  a pointer through the long routines of the intermediate file. putrow is exact as a whole with it (the loop order
+  too). The bodies of `case 2` are dead and guessed.
+- Lesson: an unexplained constant load into r2 is a switch value; a layout difference near it can follow from the
+  blocks of that switch.
 
 ## 4 Quirks of the original found in cas (host/KNOWLEDGE.md, quirks table)
 
@@ -236,6 +224,5 @@ Descriptions in host/OLDCC.md (D2, D4); the attempts in OLDCC_LOG.md 2026-11-10.
 ## 6 Open decisions
 
 - codgen: stenter (`p2->s_12 = blklevel`, one witness), next to be built under the owner's exception.
-- popt order: yylex, jpr, stabout, exprreloc, sgetnode, the loop inversion of putrow; no mechanism found (section 2).
-- K2 (`ldk r2,#4`, igetaddr and putrow): two witnesses, mechanism unexplained.
+- popt order: yylex, jpr, stabout, exprreloc, sgetnode; no mechanism found (section 2).
 - main follows from the lengths in front; yyparse is the D6T/data witness.

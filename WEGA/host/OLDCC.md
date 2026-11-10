@@ -148,6 +148,10 @@ with scc; sccvc passes `-DSCCVC` to cpp, for the one form of cas the shipped scc
 text, data and bss of the model have the sizes of the original; `/bin/cas` is not byte-identical yet. The state per function
 is in `compare/cas/FINDINGS.md`.
 
+A switch on a constant (`switch (sizeof(char *)) { case 4: ...; case 2: ...; }`): sccvc, ccv0 and the shipped cc load the
+value into r2 and keep only the matching case, without a dispatch (`ldk r2,#4; calr igetl`); the shipped scc keeps the jump
+and both compares. Witnesses in /bin/cas: igetaddr, putrow (the only two `ldk r2,#4` without a use).
+
 ### The old libc members inside size, strip, ranlib, cas
 
 The Jan 1983 libc linked into these binaries shows D14 and differs from the shipped members by its source and by the

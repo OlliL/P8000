@@ -125,11 +125,16 @@ igetl()
 	return(l);
 }
 
-/* the address of an instruction row, as written by the segmented address code */
+/* the address of an instruction row: a long or a word, by the size of a pointer */
 struct irow *
 igetaddr()
 {
-	return((struct irow *)igetl());
+	switch (sizeof(struct irow *)) {
+	case 4:
+		return((struct irow *)igetl());
+	case 2:
+		return((struct irow *)igetw());
+	}
 }
 
 /* write a node: the operator nodes get their type first */
