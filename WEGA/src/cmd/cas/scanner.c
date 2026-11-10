@@ -128,10 +128,16 @@ again:
 		sym = pstlook(tokbuf);
 		if (sym)
 			goto found;
-		idx = stlook(tokbuf, (unsigned char)0);
-		if ((long)(unsigned)idx == 0) {
+		if ((long)(unsigned)(idx = stlook(tokbuf, (unsigned char)0)) == 0) {
 			yylval.p = tokbuf;
 			tok = 0x56;
+			goto done;
+		alias:
+			q = itabp(p->s_8);
+			sym = (struct pst *)(q->s_2 & 0x7F00FFFFL);
+		found:
+			yylval.p = (char *)sym;
+			tok = sym->p_tok;
 			goto done;
 		}
 		p = stabp(idx);
@@ -139,14 +145,6 @@ again:
 			goto alias;
 		if (isdef(idx) == 0)
 			goto symidx;
-		goto value;
-	alias:
-		q = itabp(p->s_8);
-		sym = (struct pst *)(q->s_2 & 0x7F00FFFFL);
-	found:
-		yylval.p = (char *)sym;
-		tok = sym->p_tok;
-		goto done;
 	value:
 		yylval.l = symval(idx);
 		tok = 0x55;
@@ -169,8 +167,7 @@ tilde:
 	} while (isalnum(c) || c == '_' || c == '?');
 	UNGET();
 	TERM();
-	idx = stlook(tokbuf, 6);
-	if ((long)(unsigned)idx == 0) {
+	if ((long)(unsigned)(idx = stlook(tokbuf, 6)) == 0) {
 		yylval.p = tokbuf;
 		tok = 0x57;
 		goto done;
