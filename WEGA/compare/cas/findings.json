@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "f25802fc",
+ "measured_at": "391cb149",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -97,9 +97,7 @@
   "iputloc": {
    "file": "ifile.c",
    "orig": "0x0484",
-   "status": "open",
-   "note": "Tried: 7 casts, a long, int and register int temporary; the int temporary gives the registers but adds a frame word. Left for the end (a want of an odd word register in OLD_D2O). Cluster K6.",
-   "lines": 4
+   "status": "exact"
   },
   "iputline": {
    "file": "ifile.c",
@@ -304,37 +302,32 @@
   "stalloc": {
    "file": "ssymtab.c",
    "orig": "0x457a",
-   "status": "open",
-   "note": "Cluster K1.",
-   "lines": 3
+   "status": "exact",
+   "note": "Source: the address as one expression `(char *)TAB + offset`."
   },
   "italloc": {
    "file": "ssymtab.c",
    "orig": "0x4618",
-   "status": "open",
-   "note": "Cluster K1.",
-   "lines": 3
+   "status": "exact",
+   "note": "Source: the address as one expression `(char *)TAB + offset`."
   },
   "namalloc": {
    "file": "ssymtab.c",
    "orig": "0x46b6",
-   "status": "open",
-   "note": "Cluster K1.",
-   "lines": 7
+   "status": "exact",
+   "note": "Source: the address as one expression `(char *)TAB + offset`."
   },
   "stabp": {
    "file": "ssymtab.c",
    "orig": "0x4772",
-   "status": "open",
-   "note": "The original has no register variable and the constant with bit 31: `(char *)STAB + idx` stops sccvc with `register jam`; other forms lose bit 31 of the constant (the cast of a long to a pointer clears it). Compiler. Cluster K1.",
-   "lines": 7
+   "status": "exact",
+   "note": "Source: `return ((struct sym *)((char *)STAB + idx));` (one expression; sccvc needs OLD_D13 of scodgen for it)."
   },
   "itabp": {
    "file": "ssymtab.c",
    "orig": "0x4788",
-   "status": "open",
-   "note": "As stabp: the constant with bit 31 is lost by the cast of a long to a pointer in sccvc. Compiler. Cluster K1.",
-   "lines": 7
+   "status": "exact",
+   "note": "Source: `return ((struct sym *)((char *)ITAB + idx));` (one expression; sccvc needs OLD_D13 of scodgen for it)."
   },
   "stenter": {
    "file": "ssymtab.c",
@@ -538,7 +531,7 @@
    "orig": "0x66cc",
    "status": "open",
    "note": "The int value widened to long stays in the pair of its register in the original (`ldk r2,#0` to r3), sccvc takes rr4 (OLD_D2X is for binary operators only; left for the end). Cluster K5.",
-   "lines": 10
+   "lines": 7
   },
   "osymout": {
    "file": "ofile.c",
@@ -565,9 +558,8 @@
   "symadjust": {
    "file": "ofile.c",
    "orig": "0x6cb2",
-   "status": "open",
-   "note": "Cluster K1, K9.",
-   "lines": 3
+   "status": "exact",
+   "note": "Source: the address as one expression `(char *)TAB + offset`."
   },
   "genb": {
    "file": "gen.c",
@@ -607,9 +599,8 @@
   "seekout": {
    "file": "gen.c",
    "orig": "0x7286",
-   "status": "open",
-   "note": "Cluster K4.",
-   "lines": 6
+   "status": "exact",
+   "note": "Source: the relocation offset of subsection 0 without the even mask (case 0), as in /bin/cas."
   },
   "asmins": {
    "file": "assemble.c",
@@ -789,9 +780,8 @@
   "jsymadj": {
    "file": "optim.c",
    "orig": "0x922e",
-   "status": "open",
-   "note": "Cluster K1.",
-   "lines": 3
+   "status": "exact",
+   "note": "Source: the address as one expression `(char *)TAB + offset`."
   },
   "copyfile": {
    "file": "listing.c",
