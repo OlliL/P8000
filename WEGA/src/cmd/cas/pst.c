@@ -13,7 +13,7 @@ static char sccsid[] = "@[$]/as/as/pst.c\t1.2 05/27/83 15:56:58 - 87wega3.2";
 
 #include "pstdata.h"
 
-NODE *listp;			/* walks over a list of nodes (parser.y): in the bss behind yyv */
+struct lwalk lwalk;		/* listp (parser.y) is its second member; the first word is never used */
 int symmode;			/* how a name is looked up: 6 local, 0 global (not used) */
 
 /* the permanent symbol with this name (letters in either case) */

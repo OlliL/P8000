@@ -7,6 +7,12 @@
 
 /* expression and statement nodes, allocated by nodes.c (16 bytes) */
 typedef struct node NODE;
+
+/* the walker of the parser over a list of nodes: in /bin/cas the pointer has an unused word in front of it */
+struct lwalk {
+	int w_0;
+	NODE *w_p;
+};
 struct node {
 	unsigned char n_type;		/* 0: node type */
 	char	n_pad;			/* 1 */

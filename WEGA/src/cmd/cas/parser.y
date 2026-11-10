@@ -20,7 +20,8 @@ int ninf = 0;
 int nameflag = 0;		/* a name was read: it is put to the symbol file */
 char errmsg[80] = {0};
 
-extern NODE *listp;		/* walks over a list of nodes (pst.c) */
+extern struct lwalk lwalk;	/* pst.c */
+#define listp	lwalk.w_p	/* walks over a list of nodes */
 extern int symmode;		/* how a name is looked up: 6 local, 0 global (pst.c) */
 
 extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring();
@@ -1295,5 +1296,3 @@ synrecover()
 	yyerrflag = 0;
 	nfreed = nalloc;
 }
-
-int lcpad;
