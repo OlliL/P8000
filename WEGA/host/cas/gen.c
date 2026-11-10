@@ -216,7 +216,8 @@ seekout(void)
 		perror(outname);
 		done(-1);
 	}
-	if (fseek(relf, base + (lctab[cursec][cursub] & ~1L), SEEK_SET) == -1) {
+	/* /bin/cas: the relocation offset is made even for the subsection 1 only (src/cmd/cas/gen.c) */
+	if (fseek(relf, base + (cursub == 1 ? lctab[cursec][cursub] & ~1L : lctab[cursec][cursub]), SEEK_SET) == -1) {
 		perror(rfname);
 		done(-1);
 	}

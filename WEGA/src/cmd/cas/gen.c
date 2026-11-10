@@ -228,7 +228,7 @@ seekout()
 			perror(outname);
 			done(-1);
 		}
-		if (fseek(relf, seektab[cursec].sk_off + (lctab[cursec][cursub] & ~1L), 0) == -1) {
+		if (fseek(relf, seektab[cursec].sk_off + lctab[cursec][cursub], 0) == -1) {
 			perror(rfname);
 			done(-1);
 		}
