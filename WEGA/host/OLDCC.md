@@ -144,7 +144,7 @@ cas was built by an older scc, not assigned to a version; its parser and `assemb
 guess). The differences only seen there: D5 (address first, index behind it), D13 (bit 31 of addresses), the segmented forms
 of D6 (`OLD_D6T`, `OLD_D6J`) and of `OLD_D2R`. `sccvc` is the working compiler of `src/cmd/cas/Makefile` (`old/cas` stays
 with scc; sccvc passes `-DSCCVC` to cpp, for the one form of cas the shipped scc cannot compile: `TABADDR` in cas.h): `src/cmd/cc/build/segvc`, `/lib/vc/scparse` (`OLD_D6C OLD_D6D OLD_D6T OLD_D13 OLD_D25`), `/lib/vc/scodgen` (`OLD_VC` in
-`oldcc.h`), `/lib/vc/spopt` (the shipped one with `OLD_D13`), `/lib/old/cas`; linked with `src/lib/slibc-v11.a`. With it the
+`oldcc.h`), `/lib/vc/spopt` (the shipped one with `OLD_D13` and `OLD_D45`), `/lib/old/cas`; linked with `src/lib/slibc-v11.a`. With it the
 text, data and bss of the model have the sizes of the original; `/bin/cas` is not byte-identical yet. The state per function
 is in `compare/cas/FINDINGS.md`.
 
@@ -443,6 +443,16 @@ vk `OLD_D29` (popt z21.c, `d29switch`, on the raw nodes of a function before the
 
 Only the layout changes, what runs is the same. From this the shipped optimizer makes `TCXONC` in `ttiocom` of `tty.o`: the dispatch in two parts (`rl; ldl; jp @rr` in front of the bodies, `ld; cp; jr ule; jp default` behind `TCSBRK`) and the common tail behind the last body. The tail comes from `xjump`, which needs the label the bodies jump to right behind the last body and no `jp` right behind that label. One witness (`tty`, the source is the plain `switch` of System III); the evidence rule of two functions is not met. The raw code of the old compiler is not known, this is the layout that gives the bytes (owner decision 2026-11-09). `/lib/vk/spopt` is the shipped spopt with this switch; the other objects of vk stay identical.
 
+### D45 A conditional jump over a jump, and codemove
+
+vc `OLD_D45` (popt z21.c, iterate). At `cjp c,L1; jp L2; L1:` iterate turns the conditional jump (`cjp !c,L2`) before codemove
+sees the `jp`. The spopt of vc does not turn it when codemove can take the block at L2 and that block is a head: it stands behind a
+jump, is straight (no label, no conditional jump, at least one instruction), ends in a jump, and the target of that jump stands
+behind another jump. codemove then puts the block behind the conditional jump. Witness: stabout of cas (`if (*p == 0) break; p++;`
+in the name loop, the block at the `break` is the head of `switch (tag)`: the second half of the dispatch and the check behind the
+switch land behind the entry jump of the loop). One witness, the owner's exception; without the limits other functions of cas
+change (`OLDCC_LOG.md`, 2026-11-10).
+
 ### Register allocation of the old scc
 
 The register variables are assigned in declaration order from r13 downwards; an int or char takes one register, a pointer or long the highest
@@ -533,7 +543,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
 - Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
   - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
-  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype), `OLD_D4A` (igetexpr and sgetexpr, copies of each other); `OLD_D2CV` has two (asmword, stenter).
+  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype), `OLD_D4A` (igetexpr and sgetexpr, copies of each other); `OLD_D2CV` has two (asmword, stenter). `OLD_D45` (popt, stabout): one witness, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
   - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.

@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "9473e7dc",
+ "measured_at": "0e4d95ba",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -536,9 +536,8 @@
   "stabout": {
    "file": "ofile.c",
    "orig": "0x6952",
-   "status": "open",
-   "note": "Cluster K12. Cluster K12.",
-   "lines": 18
+   "status": "exact",
+   "note": "Cluster K12. Cluster K12."
   },
   "nlwrite": {
    "file": "ofile.c",
@@ -687,7 +686,7 @@
    "orig": "0x84fc",
    "status": "open",
    "note": "Cluster K8, K12. Cluster K8, K12.",
-   "lines": 22
+   "lines": 24
   },
   "jprnew": {
    "file": "jpr.c",

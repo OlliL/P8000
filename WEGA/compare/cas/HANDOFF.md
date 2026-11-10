@@ -8,7 +8,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 
 - Compiler: sccvc (`OLD_VC` in `src/cmd/codgen/oldcc.h`, the `segvc` rules of cparse and popt, `/lib/vc/*` of OLDROOT),
   linked with `src/lib/slibc-v11.a`, assembled by `/lib/old/cas`. `old/cas` is built by the shipped scc with `OLD_CAS`.
-- Model (d12model + strictcmp): 145 of 152 functions strictly exact, 7 open (2026-11-10, after the vc switches D2S, D4A, D2CV and the source forms of K2 and sgetnode). Text, data and bss
+- Model (d12model + strictcmp): 146 of 152 functions strictly exact, 6 open (2026-11-10, after the vc switches D2S, D4A, D2CV, D45 and the source forms of K2 and sgetnode). Text, data and bss
   have the original sizes; `/bin/cas` is not byte-identical because the open functions have other lengths and every
   address behind them moves.
 - Open functions (strictcmp: original size, model size, lines):
@@ -16,8 +16,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 | Function | Orig | Model | Lines | Kind |
 |---|---|---|---|---|
 | yylex | 2600 | 2588 | 26 | popt: place of the `done` block |
-| jpr | 324 | 328 | 22 | popt: which tail copy stays, place of the loop step |
-| stabout | 388 | 388 | 18 | popt: split dispatch |
+| jpr | 324 | 324 | 24 | popt: place of the `plain` block and of the loop step |
 | exprreloc | 260 | 258 | 3 | popt: the `return (0L)` of the outer default is moved to the dispatch |
 | stenter | 392 | 392 | 9 | codgen: registers of `p2->s_12 = blklevel` (the reload of `name`: OLD_D2CV) |
 | main | 2064 | 2064 | 6 | only the address of `sigdone` (lengths in front) |
@@ -100,7 +99,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 | `OLD_D20` on the sources of 2026-11-10 (exprreloc pre-check form) | 137 of 152 | exprreloc exact; exprtype, evalint, exprval, opshort, opseg, opoff, symtype, genlop, jdist lost |
 | D20 only for a jump over another label | 145 | no effect |
 | a target behind a jump to itself counts as fallen into (D44) | 134 | jpr unchanged, 11 lost |
-| no turn of a conditional jump when codemove can take the straight block of the jump behind it and that block ends in a jump to a block behind a jump (D45, `tries/popt_D45.patch`) | 146 | stabout exact, nothing lost; jpr 24 (size as the original); one witness |
+| no turn of a conditional jump when codemove can take the straight block of the jump behind it and that block ends in a jump to a block behind a jump (D45, taken as `OLD_D45`) | 146 | stabout exact, nothing lost; jpr 24 (size as the original); one witness |
 
 - Per module (spopt variants against each source file): no module fits another popt any more (symbols.c did, until
   symreloc's source form). symbols.c built by sccv1 or sccvk differs in codgen: cas is one compiler.
@@ -147,7 +146,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - Assessment: popt order (which copy of a tail stays, block moved out of a moved dispatch); same kind as exprreloc.
   jpr is no witness of a split dispatch: our spopt splits its dispatch too.
 
-### stabout (ofile.c), 18 lines; exact with the popt try D45
+### stabout (ofile.c): exact with `popt:OLD_D45` (one witness, provisional)
 
 - Original: behind the entry jump `jr X` stand the second half of the tag dispatch (`cp r2,#2b; jr eq,C2b`) and the
   test with the error branch of the first check behind the switch (sect); the name loop (rotated) follows, at its exit
@@ -155,8 +154,9 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - Mechanism (measured on the raw code): at `jpr ne,L183; jpr L181; L183:` of `if (*p == 0) break; p++;` the original
   does not turn the conditional jump; codemove takes the head of `switch (tag)` to the `break` first. Our iterate turns
   the jump before codemove sees it.
-- D45 (OLDCC_LOG 2026-11-10, `compare/cas/tries/popt_D45.patch`) writes that as a rule: stabout exact, no function
-  lost (146 of 152). One witness; jpr is touched by it but not solved. Decision of the owner.
+- D45 (`popt:OLD_D45`, OLDCC.md) writes that as a rule: stabout exact, no function
+  lost (146 of 152). One witness; jpr is touched by it but not solved. Taken on 2026-11-10 (owner: switches and
+  source forms until byte identity, then every switch of vc with one or two witnesses is checked again).
 - Tried as source: nine more loop forms, the switch inside the loop (34), case order, `default`, if/else-if.
 
 ### exprreloc (expr.c), 3 lines
@@ -234,5 +234,8 @@ Descriptions in host/OLDCC.md (D2, D4); the attempts in OLDCC_LOG.md 2026-11-10.
 ## 6 Open decisions
 
 - codgen: stenter (`p2->s_12 = blklevel`, one witness), next to be built under the owner's exception.
-- popt order: yylex, jpr, exprreloc; no mechanism found (section 2). stabout: D45 fits with one witness, owner's exception needed.
+- popt order: yylex, jpr, exprreloc; no mechanism found (section 2).
+- Plan of the owner (2026-11-10): switches and source forms until /bin/cas is byte-identical; checkall; then the vc
+  switches with one or two witnesses (`OLDCC_SWITCHES_VC.md`) against source forms again. checkall of 2026-11-10 on
+  the sources of commit 0e4d95ba: ALL OK, corpus cas 657 of 657 (host and wega).
 - main follows from the lengths in front; yyparse is the D6T/data witness.
