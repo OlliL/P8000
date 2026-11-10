@@ -120,8 +120,10 @@ int n;
 				lcol = 1;
 			}
 			lnl--;
-		} else
-			lstline();
+			lline++;
+			continue;
+		}
+		lstline();
 		lline++;
 	}
 }
