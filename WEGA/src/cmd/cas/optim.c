@@ -34,7 +34,7 @@ int sec;
 	register int size;
 
 	jn = lcaux[sec][sub].la_0;
-	jlist = (struct jent *)itabp(lcaux[sec][sub].la_1);
+	jlist = (struct jent *)itabp(lcaux[sec][(unsigned)sub].la_1);
 	jcap = jn * 2;
 	if (jn == 0)
 		return (0);
