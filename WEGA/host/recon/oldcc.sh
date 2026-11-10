@@ -12,6 +12,7 @@
 #   oldcc.sh findings [PROG]             findings.json (status from the last model) and FINDINGS.md of PROG
 #   oldcc.sh matrix [-j N] [SWITCH ...]  each switch of v0p taken out alone, N at a time, all programs measured: host/OLDCC_SWITCHES.md
 #   oldcc.sh matrix check                no measurement: switches and programs of the sources against that table
+#   MATRIX_VER=vc oldcc.sh matrix ...     the same for the switches of sccvc (OLD_VC, the segvc rules), measured on cas: host/OLDCC_SWITCHES_VC.md
 #
 # Environment (defaults as in host/recon/progcfg.py): WEGA_ROOT (the WEGA 3.1 tree), OLDROOT (the tree with
 # bin/ccv0, ccv0p and lib/v0, lib/v0p; made by `make -C host oldroot`), RECON_TMP (scratch), SYS3SRC (usr/src/cmd of

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """switchmatrix.py - the switches of an old compiler version and the functions that need them (host/OLDCC_SWITCHES.md).
 
-Usage (through host/recon/oldcc.sh):
+Usage (through host/recon/oldcc.sh; MATRIX_VER selects the version: v0p (default) or vc):
   switchmatrix.py run [-j N] [SWITCH ...]
                                      build the passes in a scratch copy, once without each switch (default: all, else only the
                                      named rows are replaced), measure every program of PROGS, write the table. N switches at
@@ -25,13 +25,26 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, '..', '..'))
 OLDCC = os.path.join(HERE, 'oldcc.sh')
-OUT = os.path.join(REPO, 'host', 'OLDCC_SWITCHES.md')
-VER = 'v0p'
 PASSES = ['codgen', 'cparse', 'popt']
-# the programs measured for this version; add a new program here when it has a model (HOWTO_reconstruct.md, checklist)
-PROGS = ['cparse', 'popt', 'codgen', 'spopt', 'scparse', 'scodgen', 'cpp']
+# the versions: the table, the programs measured (add a new program here when it has a model, HOWTO_reconstruct.md,
+# checklist), the blocks of oldcc.h that hold the codgen switches, the build directory and the names of the passes
+VERS = {
+    'v0p': {'out': 'OLDCC_SWITCHES.md', 'progs': ['cparse', 'popt', 'codgen', 'spopt', 'scparse', 'scodgen', 'cpp'],
+            'blocks': ('OLD_V0P', 'OLD_V0'), 'dir': 'nonsegv0p',
+            'bin': {'codgen': 'codgen', 'cparse': 'cparse', 'popt': 'popt'}},
+    # sccvc builds /bin/cas only: its model (d12model with sccvc and /lib/old/cas of the work root) is the measure
+    'vc': {'out': 'OLDCC_SWITCHES_VC.md', 'progs': ['cas'], 'blocks': ('OLD_VC',), 'dir': 'segvc',
+           'bin': {'codgen': 'scodgen', 'cparse': 'scparse', 'popt': 'spopt'}},
+}
+VER = os.environ.get('MATRIX_VER', 'v0p')
+if VER not in VERS:
+    sys.exit('MATRIX_VER: one of ' + ' '.join(VERS))
+CFGV = VERS[VER]
+OUT = os.path.join(REPO, 'host', CFGV['out'])
+PROGS = CFGV['progs']
+BIN = CFGV['bin']
 # programs with a compare/NAME/progcfg.py that are not measured, and why
-NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet', 'cas': 'an older scc, which one is open; its model is for finding it', 'cc': 'built by the shipped cc, no model'}
+NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet', 'cas': 'built by sccvc: MATRIX_VER=vc', 'cc': 'built by the shipped cc, no model'}
 ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
 OLDROOT = os.environ.get('OLDROOT', '/mnt/share/cvs/P8000/tmp/oldroot')
 # the work directories: on a local disk, a network share makes the many small files of the builds slow
@@ -44,7 +57,7 @@ def switches():
     """{switch: pass} of the version, from the sources"""
     sw = {}
     txt = open(os.path.join(REPO, 'src', 'cmd', 'codgen', 'oldcc.h')).read()
-    for name in ('OLD_V0P', 'OLD_V0'):
+    for name in CFGV['blocks']:
         m = re.search(r'^#ifdef %s\n(.*?)^#endif' % name, txt, re.M | re.S)
         for s in re.findall(r'^#define (OLD_D\w+)', m.group(1), re.M):
             sw[s] = 'codgen'
@@ -57,7 +70,7 @@ def switches():
 
 def vline(mk, pas):
     """the rule of the version in the Makefile of a pass: group 2 holds its CFLAGS (the switches)"""
-    return re.search(r'^(build/nonseg%s/%s:.*\n\tcd .*CFLAGS="\$\(CFLAGS\))([^"]*)"' % (VER, pas), mk, re.M)
+    return re.search(r'^(build/%s/%s:.*\n\tcd .*CFLAGS="\$\(CFLAGS\))([^"]*)"' % (CFGV['dir'], BIN[pas]), mk, re.M)
 
 
 def commit():
@@ -73,7 +86,7 @@ def build(work, name, pas):
         txt = open(p + '.all').read()
         new = txt
         # only in the blocks of the version: the same name can stand in the block of another compiler (OLD_VC) in front of them
-        for v in ('OLD_V0P', 'OLD_V0'):
+        for v in CFGV['blocks']:
             m = re.search(r'^#ifdef %s\n(.*?)^#endif' % v, txt, re.M | re.S)
             part = re.sub(r'^#define %s\b.*\n' % plain, '', m.group(1), count=1, flags=re.M)
             if part != m.group(1):
@@ -94,16 +107,17 @@ def build(work, name, pas):
 def make(work, pas):
     """the pass of the version, built by its Makefile with the tools of WEGA (wbin of the work copy)"""
     src = os.path.join(work, 'src', 'cmd', pas)
-    d = os.path.join(src, 'build', 'nonseg' + VER)
+    b = BIN[pas]
+    d = os.path.join(src, 'build', CFGV['dir'])
     for f in os.listdir(d):
-        if f.endswith('.o') or f == pas:
+        if f.endswith('.o') or f == b:
             os.remove(os.path.join(d, f))
     env = dict(os.environ, PATH=os.path.join(work, 'wbin') + ':' + os.environ['PATH'])
-    r = subprocess.run(['make', 'build/nonseg%s/%s' % (VER, pas)], cwd=src, env=env, capture_output=True, text=True,
+    r = subprocess.run(['make', 'build/%s/%s' % (CFGV['dir'], b)], cwd=src, env=env, capture_output=True, text=True,
                        timeout=TIMEOUT)
-    if r.returncode or not os.path.exists(os.path.join(d, pas)):
+    if r.returncode or not os.path.exists(os.path.join(d, b)):
         return (r.stdout + r.stderr)[-300:]
-    shutil.copy(os.path.join(d, pas), os.path.join(work, 'root', 'lib', VER, pas))
+    shutil.copy(os.path.join(d, b), os.path.join(work, 'root', 'lib', VER, b))
     return None
 
 
@@ -114,7 +128,22 @@ def measure(work, prog):
     if os.path.exists(res):
         os.remove(res)
     try:
-        subprocess.run(['sh', OLDCC, 'model', prog], env=env, capture_output=True, text=True, timeout=TIMEOUT)
+        if VER == 'vc':
+            # the compiler and the old assembler of the work root, as in the build of /bin/cas
+            env.update(RECON_PROG=prog, CCHOST=os.path.join(work, 'cc_vc'), CAS=os.path.join(work, 'cas_old'))
+            m = subprocess.run(['python3', os.path.join(HERE, 'd12model.py'), '-q'], env=env, capture_output=True,
+                               text=True, timeout=TIMEOUT)
+            # the data bytes equal at the same address: what a switch changes in the data (OLD_D13: .addr) shows here
+            dm = re.search(r'equal at the same address: (\d+)', m.stdout + m.stderr)
+            if dm:
+                open(os.path.join(work, 'tmp', 'data_%s.txt' % prog), 'w').write(dm.group(1))
+            elif not (m.stdout + m.stderr).count('code:'):
+                open(os.path.join(work, 'tmp', 'err_%s.txt' % prog), 'w').write((m.stdout + m.stderr)[-400:])
+            r = subprocess.run(['python3', os.path.join(HERE, 'strictcmp.py')], env=env, capture_output=True,
+                               text=True, timeout=TIMEOUT)
+            open(res, 'w').write(r.stdout)
+        else:
+            subprocess.run(['sh', OLDCC, 'model', prog], env=env, capture_output=True, text=True, timeout=TIMEOUT)
     except subprocess.TimeoutExpired:
         return None
     if not os.path.exists(res):
@@ -127,12 +156,27 @@ def measure(work, prog):
         if len(f) > 2 and f[-2] == 'DIFF':
             d[f[0]] = int(f[-1])
             seen = True
+    if seen:
+        dp = os.path.join(work, 'tmp', 'data_%s.txt' % prog)
+        if os.path.exists(dp):
+            d[' data'] = -int(open(dp).read())
+            os.remove(dp)
     return d if seen else None
 
 
+def why(work, prog):
+    """the last lines of a failed model (vc), shortened to the first error line"""
+    p = os.path.join(work, 'tmp', 'err_%s.txt' % prog)
+    if not os.path.exists(p):
+        return ''
+    t = [l for l in open(p).read().split('\n') if re.search(r'rror|jam|cannot|failed', l)]
+    os.remove(p)
+    return t[0].strip()[:120].replace('|', '/') if t else ''
+
+
 def setup():
-    shutil.rmtree(os.path.join(TMP, 'matrix'), ignore_errors=True)
-    work = os.path.join(TMP, 'matrix', 'w0')
+    shutil.rmtree(os.path.join(TMP, 'matrix_' + VER), ignore_errors=True)
+    work = os.path.join(TMP, 'matrix_' + VER, 'w0')
     os.makedirs(os.path.join(work, 'tmp'))
     os.makedirs(os.path.join(work, 'src', 'cmd'))
     os.symlink(os.path.join(REPO, 'src', 'lib'), os.path.join(work, 'src', 'lib'))
@@ -144,14 +188,23 @@ def setup():
     for f in ('codgen/oldcc.h', 'cparse/Makefile', 'popt/Makefile'):
         p = os.path.join(work, 'src', 'cmd', f)
         shutil.copy(p, p + '.all')
+    wrappers(work)
     return work
+
+
+def wrappers(work):
+    """vc: sccvc and /lib/old/cas of the work root for the model of cas"""
+    for name, prog in (('cc_vc', '/bin/sccvc'), ('cas_old', '/lib/old/cas')):
+        p = os.path.join(work, name)
+        open(p, 'w').write('#!/bin/sh\nexec %s -r %s %s "$@"\n' % (EMU, os.path.join(work, 'root'), prog))
+        os.chmod(p, 0o755)
 
 
 def restore(work, pas):
     src = os.path.join(work, 'src', 'cmd', pas)
     f = 'oldcc.h' if pas == 'codgen' else 'Makefile'
     shutil.copy(os.path.join(src, f + '.all'), os.path.join(src, f))
-    shutil.copy(os.path.join(work, 'base', pas), os.path.join(work, 'root', 'lib', VER, pas))
+    shutil.copy(os.path.join(work, 'base', pas), os.path.join(work, 'root', 'lib', VER, BIN[pas]))
 
 
 def read_rows():
@@ -184,18 +237,30 @@ def one(work, name, pas, base, stamp):
     """the row of one switch, measured in the work directory work (left as it was)"""
     err = build(work, name, pas)
     if err:
-        row = '| %s | no build | | | %s |' % (name, stamp)
+        e = [l for l in err.split('\n') if re.search(r'rror|undefined|jam', l)]
+        row = '| %s | no build%s | | | %s |' % (name, (': ' + e[0].strip()[:120].replace('|', '/')) if e else '', stamp)
     else:
         res = {p: measure(work, p) for p in PROGS}
         if None in res.values():
-            row = '| %s | no model (%s) | | | %s |' % (name, ' '.join(p for p in PROGS if res[p] is None), stamp)
+            bad = [p for p in PROGS if res[p] is None]
+            row = '| %s | no model (%s%s) | | | %s |' % (name, ' '.join(bad), ''.join(': ' + why(work, p) for p in bad if VER == 'vc'),
+                                                         stamp)
         else:
-            lost, gained, lines = [], [], 0
+            lost, gained, lines, moved, data = [], [], 0, [], 0
             for p in PROGS:
-                lost += ['%s %s' % (p, f) for f in sorted(res[p]) if f not in base[p]]
-                gained += ['%s %s' % (p, f) for f in sorted(base[p]) if f not in res[p]]
-                lines += sum(res[p].values()) - sum(base[p].values())
-            row = '| %s | %s | %s | %+d | %s |' % (name, ', '.join(lost) or '-', ', '.join(gained) or '-', lines, stamp)
+                b = {k: v for k, v in base[p].items() if k != ' data'}		# base is shared by the threads: not changed
+                r = {k: v for k, v in res[p].items() if k != ' data'}
+                data += res[p].get(' data', 0) - base[p].get(' data', 0)
+                lost += ['%s %s' % (p, f) for f in sorted(r) if f not in b]
+                gained += ['%s %s' % (p, f) for f in sorted(b) if f not in r]
+                lines += sum(r.values()) - sum(b.values())
+                moved += ['%s %+d' % (f, r[f] - b[f]) for f in sorted(r) if f in b and r[f] != b[f]]
+            ltxt = '%+d' % lines
+            if not lost and moved:
+                ltxt += ' (' + ', '.join(moved) + ')'
+            if data:
+                ltxt += ', data %+d bytes not equal' % data
+            row = '| %s | %s | %s | %s | %s |' % (name, ', '.join(lost) or '-', ', '.join(gained) or '-', ltxt, stamp)
     restore(work, pas)
     return row
 
@@ -206,6 +271,7 @@ def clone(work, n):
     subprocess.run(['cp', '-a', work, new], check=True)
     shutil.rmtree(os.path.join(new, 'tmp'))
     os.makedirs(os.path.join(new, 'tmp'))
+    wrappers(new)
     return new
 
 
@@ -228,12 +294,13 @@ def run(args):
         e = make(work, p)
         if e:
             sys.exit('baseline build of %s failed: %s' % (p, e))
-        shutil.copy(os.path.join(work, 'src', 'cmd', p, 'build', 'nonseg' + VER, p), os.path.join(work, 'base', p))
+        shutil.copy(os.path.join(work, 'src', 'cmd', p, 'build', CFGV['dir'], BIN[p]), os.path.join(work, 'base', p))
     base = {p: measure(work, p) for p in PROGS}
     if None in base.values():
         sys.exit('baseline model failed')
     stamp = commit()
-    btxt = ', '.join('%s %d differing functions, %d lines' % (p, len(base[p]), sum(base[p].values())) for p in PROGS)
+    btxt = ', '.join('%s %d differing functions, %d lines' % (p, len([f for f in base[p] if f != ' data']),
+                                                              sum(v for f, v in base[p].items() if f != ' data')) for p in PROGS)
     print('baseline', btxt, flush=True)
     rows = {} if not names else {k: v for k, v in read_rows().items() if k in sw}
     free = queue.Queue()
@@ -256,7 +323,7 @@ def run(args):
             rows[name] = row		# only this loop writes the table
             write(rows, btxt, stamp)
             print('%d/%d %.0fs %s' % (i + 1, len(todo), secs, row), flush=True)
-    shutil.rmtree(os.path.join(TMP, 'matrix'), ignore_errors=True)
+    shutil.rmtree(os.path.join(TMP, 'matrix_' + VER), ignore_errors=True)
 
 
 def check():
@@ -270,7 +337,7 @@ def check():
         print('in the table but gone from the sources (oldcc.sh matrix): %s' % s)
         bad = 1
     cmd = os.path.join(REPO, 'src', 'cmd')
-    for d in sorted(os.listdir(os.path.join(REPO, 'compare'))):
+    for d in sorted(os.listdir(os.path.join(REPO, 'compare'))) if VER == 'v0p' else []:
         if os.path.exists(os.path.join(REPO, 'compare', d, 'progcfg.py')) and os.path.isdir(os.path.join(cmd, d)) \
                 and d not in PROGS and d not in NOTPROGS:
             print('program without a decision (add it to PROGS or NOTPROGS in host/recon/switchmatrix.py): %s' % d)
