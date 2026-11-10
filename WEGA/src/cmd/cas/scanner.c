@@ -167,17 +167,17 @@ tilde:
 	} while (isalnum(c) || c == '_' || c == '?');
 	UNGET();
 	TERM();
-	if ((long)(unsigned)(idx = stlook(tokbuf, 6)) == 0) {
-		yylval.p = tokbuf;
-		tok = 0x57;
-		goto done;
+	if ((long)(unsigned)(idx = stlook(tokbuf, 6)) != 0) {
+		p = stabp(idx);
+		if (p->s_type == 3)
+			goto alias;
+		if (isdef(idx) == 0)
+			goto symidx;
+		goto value;
 	}
-	p = stabp(idx);
-	if (p->s_type == 3)
-		goto alias;
-	if (isdef(idx) == 0)
-		goto symidx;
-	goto value;
+	yylval.p = tokbuf;
+	tok = 0x57;
+	goto done;
 dot:
 	/* the location counter, a number .5 or a directive */
 	c = getch();
