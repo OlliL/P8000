@@ -51,14 +51,15 @@ NODE *args;
 }
 
 /* does the template at opcls[a] fit the operands p? */
-opmatch(a, p)
+opmatch(a, q)
 int a;
-register NODE *p;
+NODE *q;
 {
+	register NODE *p;
 	register int j;
 	unsigned char c;
 
-	for (j = 0; p; j++, p = p->n_next) {
+	for (j = 0, p = q; p; j++, p = p->n_next) {
 		c = opcls[a + j];
 		if (clstype[c] != p->n_type)
 			if (p->n_type != '4' || c != 0x14)
