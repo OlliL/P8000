@@ -38,23 +38,20 @@ NODE *list;
 		case 0x56:
 			break;
 		default:
-			jpput(tok, list);
-			return (0);
+			goto plain;
 		}
 		e = (NODE *)p->n_u.l;
 		type = exprtype(e);
 		switch (e->n_type) {
 		case 3:
-			jpput(tok, list);
-			return (0);
+			goto plain;
 		case 7:
 			sym = e->n_u.pw.w;
 			off = 0;
 			break;
 		case 0x19:
 			if (type != 7 && type != 1) {
-				jpput(tok, list);
-				return (0);
+				goto plain;
 			}
 			sym = ((NODE *)e->n_u.cc.l1)->n_u.pw.w;
 			off = ((NODE *)e->n_u.cc.l2)->n_u.l;
@@ -82,6 +79,10 @@ NODE *list;
 	}
 	idx = jprnew(tok, sym, off);
 	jprput(idx, tok, ncc, list);
+	return;
+plain:
+	jpput(tok, list);
+	return (0);
 }
 
 /* a new entry of the itable for a jpr that is not decided yet; returns its index */
