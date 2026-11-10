@@ -8,7 +8,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 
 - Compiler: sccvc (`OLD_VC` in `src/cmd/codgen/oldcc.h`, the `segvc` rules of cparse and popt, `/lib/vc/*` of OLDROOT),
   linked with `src/lib/slibc-v11.a`, assembled by `/lib/old/cas`. `old/cas` is built by the shipped scc with `OLD_CAS`.
-- Model (d12model + strictcmp): 146 of 152 functions strictly exact, 6 open (2026-11-10, after the vc switches D2S, D4A, D2CV, D45 and the source forms of K2 and sgetnode). Text, data and bss
+- Model (d12model + strictcmp): 147 of 152 functions strictly exact, 5 open (2026-11-10, after the vc switches D2S, D4A, D2CV, D45 and the source forms of K2 and sgetnode). Text, data and bss
   have the original sizes; `/bin/cas` is not byte-identical because the open functions have other lengths and every
   address behind them moves.
 - Open functions (strictcmp: original size, model size, lines):
@@ -20,7 +20,6 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 | exprreloc | 260 | 258 | 3 | popt: the `return (0L)` of the outer default is moved to the dispatch |
 | stenter | 392 | 392 | 9 | codgen: registers of `p2->s_12 = blklevel` (the reload of `name`: OLD_D2CV) |
 | main | 2064 | 2064 | 6 | only the address of `sigdone` (lengths in front) |
-| yyparse | 6928 | 6928 | 2 | data / D6T switch table (`cparse:OLD_D6T` witness) |
 
 - Commands (from WEGA, `O=/mnt/share/cvs/P8000/tmp/oldroot`, `T` a scratch directory, wrappers `cc_vc` = `z8k-emu -r $O
   /bin/sccvc`, `cas_old` = `z8k-emu -r $O /lib/old/cas`):
@@ -192,10 +191,11 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - No `return (np)` behind the switch (the value is still in rr2). Lesson: a missing load of the return value at the
   exit is a missing `return`, not a popt question (jprange was the first).
 
-### yyparse (parser.y), 2 lines
+### yyparse (parser.y): solved
 
-- Witness of `cparse:OLD_D6T` (with it exact up to 2 lines); the rest is data / the switch table, not looked at
-  further.
+- The two lines were the address `&yyv[-1]`: the unused word of the bss stands behind yyv, in front of listp. listp is
+  now the second member of `struct lwalk` (pst.c, a guess: only the layout is known). Witness of `cparse:OLD_D6T` as
+  before.
 
 ### igetaddr (ifile.c), putrow (instr.c): solved (K2)
 
