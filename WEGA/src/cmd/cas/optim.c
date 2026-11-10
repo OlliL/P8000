@@ -282,8 +282,7 @@ int sec;
 	unsigned i;
 
 	for (i = 2; i < stoff; ) {
-		sp = (struct sym *)0x87000030L;
-		sp = (struct sym *)((char *)sp + i);
+		sp = (struct sym *)((char *)0x87000030L + i);
 		if (sp->s_type == 1 && (sp->s_7 & 1) == 1 && sp->s_0 != 0) {
 			ip = itabp(sp->s_8);
 			if (((unsigned)ip->s_0 >> 8) == sec && (ip->s_0 & 0xFF) == sub)

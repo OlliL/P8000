@@ -349,8 +349,7 @@ symadjust()
 	int sect, area;
 
 	for (i = 2; i < stoff; ) {
-		sp = (struct sym *)0x87000030L;
-		sp = (struct sym *)((char *)sp + i);
+		sp = (struct sym *)((char *)0x87000030L + i);
 		if (sp->s_type == 1 && (sp->s_7 & 1) == 1) {
 			ip = itabp(sp->s_8);
 			area = ip->s_0 & 0xFF;

@@ -138,6 +138,16 @@ optim(p)
 			p->in.left = p->in.right;
 			p->in.right = sp;
 		}
+#if defined(OLD_D13) && defined(SEG)
+		/* vc: int + constant address: the address goes to the left (ldl rr2,#addr; add r3,i); the shipped codgen
+		   makes an int register the target of the pointer and jams */
+		if (o == PLUS && (p->in.type & 0x30) == 0x10 && p->in.right->in.op == ICON && (p->in.right->in.type & 0x30) == 0x10 &&
+		    (p->in.left->in.type & 0x30) != 0x10) {
+			sp = p->in.left;
+			p->in.left = p->in.right;
+			p->in.right = sp;
+		}
+#endif
 #ifndef OLD_D23
 		if ((o == MINUS || o == PLUS) && nncon(p->in.right) && p->in.right->tn.lval == 0)
 			goto zapright;

@@ -45,8 +45,7 @@ int n;
 		}
 		stlim += 0x400;
 	}
-	p = (struct sym *)STAB;
-	p = (struct sym *)((char *)p + stoff);
+	p = (struct sym *)((char *)STAB + stoff);
 	stoff += n;
 	return (p);
 }
@@ -69,8 +68,7 @@ int n;
 		}
 		itlim += 0x400;
 	}
-	p = (struct sym *)ITAB;
-	p = (struct sym *)((char *)p + itoff);
+	p = (struct sym *)((char *)ITAB + itoff);
 	itoff += n;
 	return (p);
 }
@@ -93,8 +91,7 @@ char *s;
 		}
 		nmlim += 0x400;
 	}
-	p = (char *)NTAB;
-	p += ntoff;
+	p = (char *)NTAB + ntoff;
 	strcpy(p, s);
 	ntoff += strlen(s) + 1;
 	return (p);
@@ -105,12 +102,8 @@ struct sym *
 stabp(idx)
 int idx;
 {
-	register char *p;
-
-	if (idx) {
-		p = (char *)STAB;
-		return ((struct sym *)(p + idx));
-	}
+	if (idx)
+		return ((struct sym *)((char *)STAB + idx));
 	return (0);
 }
 
@@ -119,12 +112,8 @@ struct sym *
 itabp(idx)
 int idx;
 {
-	register char *p;
-
-	if (idx) {
-		p = (char *)ITAB;
-		return ((struct sym *)(p + idx));
-	}
+	if (idx)
+		return ((struct sym *)((char *)ITAB + idx));
 	return (0);
 }
 
