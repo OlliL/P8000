@@ -107,7 +107,9 @@ jdeps()
 			if (v < loc) {
 				q = (struct jent *)itabp(p->j_10);
 				j = i + 1;
-				while (q != 0 && (unsigned long)v <= (unsigned long)(unsigned)q->j_2) {
+				while (q != 0) {
+					if ((unsigned long)v > (unsigned long)(unsigned)q->j_2)
+						break;
 					r = newrec();
 					r->jr_0 = i;
 					r->jr_2 = jtab[j].jr_2;
