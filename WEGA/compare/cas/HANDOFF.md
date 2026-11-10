@@ -1,6 +1,6 @@
 # cas: handoff
 
-State of the reconstruction of `/bin/cas` (src/cmd/cas) on 2026-11-10, branch toolchain, commit range up to 4a24673f
+State of the reconstruction of `/bin/cas` (src/cmd/cas) on 2026-11-10, branch toolchain, up to commit ffaf62d9
 and the commit of this file. Extract of `host/OLDCC_LOG.md` (entries 2026-11-09 and 2026-11-10), `compare/cas/findings.json`
 and the working knowledge of the sessions. What is fact is measured; guesses are marked as such.
 
@@ -165,20 +165,15 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - Tried: all orders and forms of the inner cases, `return (v)` in the cases (worse), the outer default as break /
   return behind the switch, the forms of the empty if of 0x24; popt D41 (11 > 9 but many losses), D20 (9, losses).
 
-### stenter (ssymtab.c), 11 lines
+### stenter (ssymtab.c), 9 lines
 
-- Form found: `if (*name != 0) { ... } else { ... }` (51 > 11).
-- Left: (a) `hash(1000, name)`: the original reloads `name` from its home (`ldl rr4,|2|(r15)`), sccvc takes the copy
-  in rr2 already in the raw code; (b) `p2->s_12 = blklevel`: original `ldl rr2,rr8; inc r3,#12; ld r0,blklevel; ld
-  @rr2,r0`, ours through rr0/rr6.
+- Form found: `if (*name != 0) { ... } else { ... }` (51 > 11). `OLD_D2CV` (vc) gives the reload of `name` for
+  `hash(1000, name)` (11 > 9).
+- Left: `p2->s_12 = blklevel`: original `ldl rr2,rr8; inc r3,#12; ld r0,blklevel; ld @rr2,r0` (the address in the free
+  pair rr2, the value in r0); sccvc `ldl rr0,rr8; inc r1,#12; ldl rr6,rr0; ld r2,blklevel; ld @rr6,r2`, already in the
+  raw code. The statement before (`p2->s_7 |= 6`, value in r2) takes rr0/rr6 in both.
 - Tried: `name[0]`, `'\0'`, casts of the argument, `(unsigned char)*name`, `|=`, the order of the two assignments.
-- Assessment: codgen register rules (parameter copies after a conditional jump; the address pair of a member store).
-
-### symtype (ofile.c), 7 lines (K5)
-
-- `unsigned n; ip->s_2 = n;` takes n from r3 (with `(long)(unsigned)n` the D3P rule reloads it), but the long goes
-  into a new pair rr4; the original widens in the pair of r3 (`ldk r2,#0`, r3 = n). A codgen rule for a widening
-  (like OLD_D2X for binary operators), one witness. Casts of n tried.
+- Assessment: codgen, the pair for the address of a member store when r2 is free; one witness, not built yet.
 
 ### putrow (instr.c), 6 lines
 
@@ -191,12 +186,6 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 
 - Only the address of `sigdone` in the `signal` calls; follows from the lengths of the functions in front. Expected
   to vanish when the others are exact.
-
-### asmword (assemble.c, built without -O), 4 lines (K14)
-
-- sccvc copies the parameter `row` (`ldl rr2,rr6; ld r13,@rr2; ldl rr6,rr2; ldb rl2,rr6(#4)`), the original reloads
-  `ldl rr2,rr6` for the second access; already in the raw code (no popt). Tried: order of the two loads, casts,
-  `*(unsigned *)row`.
 
 ### sgetnode (getops.c), 2 lines
 
@@ -221,12 +210,6 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
   load (rmove) and keeps the save of r13; the original would have it renamed into r2 without the save, which our
   procopt does only in functions without a call (it stops at CALL). Two popt changes and an odd form.
 
-### igetexpr, sgetexpr (getops.c), 1 line each (K3)
-
-- `return (opseg(igetexpr()))`: sccvc keeps the inner value in a frame temporary (`ldl |2|(r15),rr2`), the original
-  passes it directly. Tried: casts, an assignment inside the call, a register temporary (copy to rr10), the other
-  cases nested, case orders, a final `return (0)`. The two functions are copies of each other: one witness.
-
 ## 4 Quirks of the original found in cas (host/KNOWLEDGE.md, quirks table)
 
 - `opoff`: `mknode1(3, (unsigned char)value)` passes a word where a long is wanted.
@@ -236,12 +219,23 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 
 ## 5 Solved by vc switches with the owner's exception (2026-11-10)
 
-- `OLD_D2S`: symtype (K5). `OLD_D4A`: igetexpr, sgetexpr (K3). `OLD_D2CV` (the allo3.c part of v0's OLD_D2C): asmword
-  (K14) and the reload of `name` in stenter. See host/OLDCC.md, D2 and D4.
+All three measured on the whole model (no exact function lost), the matrix confirms the witnesses, checkall ALL OK.
+Descriptions in host/OLDCC.md (D2, D4); the attempts in OLDCC_LOG.md 2026-11-10.
+
+- symtype (K5), `OLD_D2S` (allo3.c): a word in r3 widened to long takes the pair rr2 (`ldk r2,#0`). Source form with it:
+  `unsigned n; ip->s_2 = n;` (with `(long)(unsigned)n` the D3P rule reloads n). The first version for any odd
+  register cost locadv (r7 is widened into a new rr2 in the original), opshort, asmins; restricted to r3.
+- igetexpr, sgetexpr (K3), `OLD_D4A` (reader3.c store): in `return (f(g()))` the only argument is not stored in a frame
+  temporary. As a statement (`p2rep(igetw());`: p2tag, yyparse) and with two arguments (`mknode1(3, igetl())`) the
+  original does store, so the rule is limited to RET. The first try in argplace had no effect (the temporary comes
+  from stoarg).
+- asmword (K14) and the reload of `name` in stenter, `OLD_D2CV` (allo3.c): the copy of a name in a register holds no
+  name, the allo3.c part of v0's `OLD_D2C` (the whole of D2C does not build in vc: its match3.c part needs OLD_D2V).
+  Two witnesses.
 
 ## 6 Open decisions
 
-- The rest needs compiler or popt changes with one witness each (popt order: yylex, jpr, stabout, exprreloc,
-  sgetnode; codgen: stenter, symtype K5, asmword K14, K3) or with an unexplained mechanism (K2, two witnesses).
-  Byte identity of /bin/cas is not reachable without exceptions to the two-witness rule, or without the mechanism of
-  the old popt.
+- codgen: stenter (`p2->s_12 = blklevel`, one witness), next to be built under the owner's exception.
+- popt order: yylex, jpr, stabout, exprreloc, sgetnode, the loop inversion of putrow; no mechanism found (section 2).
+- K2 (`ldk r2,#4`, igetaddr and putrow): two witnesses, mechanism unexplained.
+- main follows from the lengths in front; yyparse is the D6T/data witness.
