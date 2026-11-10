@@ -84,21 +84,21 @@ NODE *np;
 			v = symreloc((np->n_u.cp.p1)->n_u.pw.w);
 		shortop++;
 		switch (np->n_u.cc.c2) {
-		case 0x25:
-			if ((v & 8) == 0)
-				v |= 0x10;
+		case 0x23:
+			if (v & 8)
+				v |= 2;
 			else
-				v |= 1;
+				v |= 0x20;
 			break;
 		case 0x24:
 			if ((v & 8) == 0)
 				;
 			break;
-		case 0x23:
-			if ((v & 8) == 0)
-				v |= 0x20;
+		case 0x25:
+			if (v & 8)
+				v |= 1;
 			else
-				v |= 2;
+				v |= 0x10;
 			break;
 		}
 		return (v);
