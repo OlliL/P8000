@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """d12model.py - our program linked under the data layout of the old cc (D12), compared with the original data.
 
-Usage: d12model.py [-q]      (-q: only the summary lines)
+Usage: d12model.py [-q]      (-q: only the summary lines; D12_ONLY=mod,mod: only these modules again)
 
 The shipped cc (cparse) puts the string literals of a function in front of the function and pads each one to an even
 address. The old cc (measured on /bin/ld) puts initialised data and switch tables in
@@ -136,15 +136,22 @@ def run(cmd, cwd):
 def main():
     quiet = '-q' in sys.argv
     work = os.path.dirname(CFG.MODEL_OUT)
-    shutil.rmtree(work, ignore_errors=True)
-    os.makedirs(work)
-    for f in os.listdir(CFG.SRCDIR):
-        p = os.path.join(CFG.SRCDIR, f)
+    # D12_ONLY=mod,mod: keep the objects of the last model and compile only these modules again (a fast loop on one function)
+    only = [x for x in os.environ.get('D12_ONLY', '').split(',') if x]
+    if not only or not os.path.isdir(work):
+        only = []
+        shutil.rmtree(work, ignore_errors=True)
+        os.makedirs(work)
+    srcdir = os.environ.get('D12_SRC', CFG.SRCDIR)    # D12_SRC: another copy of the sources (parallel tries)
+    for f in os.listdir(srcdir):
+        p = os.path.join(srcdir, f)
         if os.path.isfile(p) and not f.endswith(('.o', '.py')) and f != 'Makefile':
             shutil.copy(p, work)
     if hasattr(CFG, 'model_prepare'):
         CFG.model_prepare(work)
     for m in CFG.MODULES:
+        if only and m not in only and os.path.exists(os.path.join(work, m + '.o')):
+            continue
         if not os.path.exists(os.path.join(work, m + '.c')) and os.path.exists(os.path.join(work, m + '.s')):
             # an assembler module (cut from the original): its data layout is the original's already
             run([CAS, '-u', '-o', m + '.o', m + '.s'], work)
