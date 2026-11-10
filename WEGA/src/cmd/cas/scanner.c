@@ -156,57 +156,61 @@ again:
 		tok = 0x24;
 		goto done;
 	}
-	if (c == '~') {
-		/* a local name */
+	goto other;
+tilde:
+	/* a local name */
+	c = getch();
+	ADD(c);
+	if (!(isalpha(c) || c == '?' || c == '_'))
+		goto done;
+	do {
 		c = getch();
 		ADD(c);
-		if (!(isalpha(c) || c == '?' || c == '_'))
-			goto done;
+	} while (isalnum(c) || c == '_' || c == '?');
+	UNGET();
+	TERM();
+	idx = stlook(tokbuf, 6);
+	if ((long)(unsigned)idx == 0) {
+		yylval.p = tokbuf;
+		tok = 0x57;
+		goto done;
+	}
+	p = stabp(idx);
+	if (p->s_type == 3)
+		goto alias;
+	if (isdef(idx) == 0)
+		goto symidx;
+	goto value;
+dot:
+	/* the location counter, a number .5 or a directive */
+	c = getch();
+	ADD(c);
+	if (isdigit(c)) {
+		UNGET();
+		tok = 2;
+		goto fraction;
+	}
+	if (isalpha(c) || c == '?' || c == '_') {
 		do {
 			c = getch();
 			ADD(c);
 		} while (isalnum(c) || c == '_' || c == '?');
 		UNGET();
 		TERM();
-		idx = stlook(tokbuf, 6);
-		if ((long)(unsigned)idx == 0) {
-			yylval.p = tokbuf;
-			tok = 0x57;
-			goto done;
-		}
-		p = stabp(idx);
-		if (p->s_type == 3)
-			goto alias;
-		if (isdef(idx) == 0)
-			goto symidx;
-		goto value;
-	}
-	if (c == '.') {
-		/* the location counter, a number .5 or a directive */
-		c = getch();
-		ADD(c);
-		if (isdigit(c)) {
-			UNGET();
-			tok = 2;
-			goto fraction;
-		}
-		if (isalpha(c) || c == '?' || c == '_') {
-			do {
-				c = getch();
-				ADD(c);
-			} while (isalnum(c) || c == '_' || c == '?');
-			UNGET();
-			TERM();
-			sym = pstlook(tokbuf);
-			if (sym)
-				goto found;
-			tok = 0x23;
-			goto done;
-		}
-		UNGET();
-		tok = 3;
+		sym = pstlook(tokbuf);
+		if (sym)
+			goto found;
+		tok = 0x23;
 		goto done;
 	}
+	UNGET();
+	tok = 3;
+	goto done;
+other:
+	if (c == '~')
+		goto tilde;
+	if (c == '.')
+		goto dot;
 	if (c == '%') {
 		/* a hexadecimal number %1F or a number of base 2 or 8: %(2)101, %(8)17 */
 		c = getch();
@@ -264,41 +268,41 @@ again:
 			c = getch();
 			ADD(c);
 		} while (isdigit(c));
-		if (c != '.' && c != 'e' && c != 'E') {
-			UNGET();
-			TERM();
-			yylval.l = xtol(tokbuf, 10);
-			tok = 0x55;
-			goto done;
-		}
-		if (c == '.') {
-			tok = 2;
-		fraction:
+		if (c == '.' || c == 'e' || c == 'E') {
+			if (c == '.') {
+				tok = 2;
+			fraction:
+				do {
+					c = getch();
+					ADD(c);
+				} while (isdigit(c));
+				UNGET();
+				TERM();
+			}
+			if (c != 'e' && c != 'E')
+				goto done;
+			c = getch();
+			ADD(c);
+			if (c == '+' || c == '-') {
+				c = getch();
+				ADD(c);
+			}
+			if (!isdigit(c)) {
+				tok = 0x22;
+				goto done;
+			}
 			do {
 				c = getch();
 				ADD(c);
 			} while (isdigit(c));
 			UNGET();
 			TERM();
-		}
-		if (c != 'e' && c != 'E')
-			goto done;
-		c = getch();
-		ADD(c);
-		if (c == '+' || c == '-') {
-			c = getch();
-			ADD(c);
-		}
-		if (!isdigit(c)) {
-			tok = 0x22;
 			goto done;
 		}
-		do {
-			c = getch();
-			ADD(c);
-		} while (isdigit(c));
 		UNGET();
 		TERM();
+		yylval.l = xtol(tokbuf, 10);
+		tok = 0x55;
 		goto done;
 	}
 	if (c == '\n' || c == '\r') {
