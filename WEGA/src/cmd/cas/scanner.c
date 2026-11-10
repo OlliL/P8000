@@ -284,16 +284,16 @@ other:
 				c = getch();
 				ADD(c);
 			}
-			if (!isdigit(c)) {
-				tok = 0x22;
+			if (isdigit(c)) {
+				do {
+					c = getch();
+					ADD(c);
+				} while (isdigit(c));
+				UNGET();
+				TERM();
 				goto done;
 			}
-			do {
-				c = getch();
-				ADD(c);
-			} while (isdigit(c));
-			UNGET();
-			TERM();
+			tok = 0x22;
 			goto done;
 		}
 		UNGET();
