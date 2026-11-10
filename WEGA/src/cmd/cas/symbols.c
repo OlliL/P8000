@@ -167,7 +167,7 @@ int idx;
 		v = (ip->s_2 << 4) | 8;
 		if (segmode != 0)
 			v |= ((ip->s_2 << 4) | 9) << 16;
-		break;
+		return (v);
 	case 2:
 	case 4:
 	case 6:
@@ -194,7 +194,7 @@ int idx;
 			v |= (unsigned)(seg << 8) | 1;
 			v |= (v | 0x10) << 16;
 		}
-		break;
+		return (v);
 	default:
 		error(2, "Unknown scope\n");
 	}
