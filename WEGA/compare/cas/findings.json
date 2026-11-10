@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "ca20fadf",
+ "measured_at": "ee972e17",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -328,9 +328,8 @@
   "stenter": {
    "file": "ssymtab.c",
    "orig": "0x479e",
-   "status": "open",
-   "note": "Cluster K12. Cluster K12.",
-   "lines": 9
+   "status": "exact",
+   "note": "Cluster K12. Cluster K12."
   },
   "setsym": {
    "file": "ssymtab.c",

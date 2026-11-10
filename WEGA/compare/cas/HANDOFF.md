@@ -8,7 +8,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 
 - Compiler: sccvc (`OLD_VC` in `src/cmd/codgen/oldcc.h`, the `segvc` rules of cparse and popt, `/lib/vc/*` of OLDROOT),
   linked with `src/lib/slibc-v11.a`, assembled by `/lib/old/cas`. `old/cas` is built by the shipped scc with `OLD_CAS`.
-- Model (d12model + strictcmp): 147 of 152 functions strictly exact, 5 open (2026-11-10, after the vc switches D2S, D4A, D2CV, D45 and the source forms of K2 and sgetnode). Text, data and bss
+- Model (d12model + strictcmp): 148 of 152 functions strictly exact, 4 open (2026-11-10, after the vc switches D2S, D4A, D2CV, D45 and the source forms of K2 and sgetnode). Text, data and bss
   have the original sizes; `/bin/cas` is not byte-identical because the open functions have other lengths and every
   address behind them moves.
 - Open functions (strictcmp: original size, model size, lines):
@@ -18,7 +18,6 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 | yylex | 2600 | 2588 | 26 | popt: place of the `done` block |
 | jpr | 324 | 324 | 24 | popt: place of the `plain` block and of the loop step |
 | exprreloc | 260 | 258 | 3 | popt: the `return (0L)` of the outer default is moved to the dispatch |
-| stenter | 392 | 392 | 9 | codgen: registers of `p2->s_12 = blklevel` (the reload of `name`: OLD_D2CV) |
 | main | 2064 | 2064 | 6 | only the address of `sigdone` (lengths in front) |
 
 - Commands (from WEGA, `O=/mnt/share/cvs/P8000/tmp/oldroot`, `T` a scratch directory, wrappers `cc_vc` = `z8k-emu -r $O
@@ -171,15 +170,12 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 - Tried on the new form: `return (0L)` behind the switch, with `break` (3); case 5 falling into the default (6); `v`
   declared in a block (same).
 
-### stenter (ssymtab.c), 9 lines
+### stenter (ssymtab.c): solved
 
-- Form found: `if (*name != 0) { ... } else { ... }` (51 > 11). `OLD_D2CV` (vc) gives the reload of `name` for
-  `hash(1000, name)` (11 > 9).
-- Left: `p2->s_12 = blklevel`: original `ldl rr2,rr8; inc r3,#12; ld r0,blklevel; ld @rr2,r0` (the address in the free
-  pair rr2, the value in r0); sccvc `ldl rr0,rr8; inc r1,#12; ldl rr6,rr0; ld r2,blklevel; ld @rr6,r2`, already in the
-  raw code. The statement before (`p2->s_7 |= 6`, value in r2) takes rr0/rr6 in both.
-- Tried: `name[0]`, `'\0'`, casts of the argument, `(unsigned char)*name`, `|=`, the order of the two assignments.
-- Assessment: codgen, the pair for the address of a member store when r2 is free; one witness, not built yet.
+- `OLD_D2PO` (the switch of v0p) in vc with the limit `OLD_D2POV` (not for a word that holds a parameter: symtype).
+  The cause was the constant 0x30 of `(char *)p2 - (char *)STAB` two statements above, idle in r3.
+- Lesson: a register difference in one statement can come from what an earlier statement left idle; replace the
+  statements in front one by one.
 
 ### main (main.c), 6 lines
 
@@ -233,7 +229,6 @@ Descriptions in host/OLDCC.md (D2, D4); the attempts in OLDCC_LOG.md 2026-11-10.
 
 ## 6 Open decisions
 
-- codgen: stenter (`p2->s_12 = blklevel`, one witness), next to be built under the owner's exception.
 - popt order: yylex, jpr, exprreloc; no mechanism found (section 2).
 - Plan of the owner (2026-11-10): switches and source forms until /bin/cas is byte-identical; checkall; then the vc
   switches with one or two witnesses (`OLDCC_SWITCHES_VC.md`) against source forms again. checkall of 2026-11-10 on
