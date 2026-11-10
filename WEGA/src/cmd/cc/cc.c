@@ -591,7 +591,12 @@ char	*f;
 		*lastchar(t_p) = 'i';
 	}
 	dbg("CPP.");
+#ifdef OLD_VC
+	/* sccvc: SCCVC tells a source that the old scc of cas compiles it (cas.h, TABADDR) */
+	sprintf(cmd, "%s -DNULL=0L -DSCCVC %s %s  %s %s", cpp, cppflags, cppbuf, cfile, t_p);
+#else
 	sprintf(cmd, SEG("%s %s %s  %s %s", "%s -DNULL=0L %s %s  %s %s"), cpp, cppflags, cppbuf, cfile, t_p);
+#endif
 	if (callsys(cmd) != 0)
 		goto err;
 	if (Pflag)

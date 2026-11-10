@@ -45,7 +45,7 @@ int n;
 		}
 		stlim += 0x400;
 	}
-	p = (struct sym *)((char *)STAB + stoff);
+	p = (struct sym *)TABADDR(STAB, stoff);
 	stoff += n;
 	return (p);
 }
@@ -68,7 +68,7 @@ int n;
 		}
 		itlim += 0x400;
 	}
-	p = (struct sym *)((char *)ITAB + itoff);
+	p = (struct sym *)TABADDR(ITAB, itoff);
 	itoff += n;
 	return (p);
 }
@@ -91,7 +91,7 @@ char *s;
 		}
 		nmlim += 0x400;
 	}
-	p = (char *)NTAB + ntoff;
+	p = TABADDR(NTAB, ntoff);
 	strcpy(p, s);
 	ntoff += strlen(s) + 1;
 	return (p);
@@ -103,7 +103,7 @@ stabp(idx)
 int idx;
 {
 	if (idx)
-		return ((struct sym *)((char *)STAB + idx));
+		return ((struct sym *)(TABADDR(STAB, idx)));
 	return (0);
 }
 
@@ -113,7 +113,7 @@ itabp(idx)
 int idx;
 {
 	if (idx)
-		return ((struct sym *)((char *)ITAB + idx));
+		return ((struct sym *)(TABADDR(ITAB, idx)));
 	return (0);
 }
 

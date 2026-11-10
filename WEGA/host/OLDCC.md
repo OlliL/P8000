@@ -143,7 +143,7 @@ cas was built by an older scc, not assigned to a version; its parser and `assemb
 `-O`. Its switches are those of v0 and v0p, partly in a segmented form, so a segmented compiler of that age is likely (a
 guess). The differences only seen there: D5 (address first, index behind it), D13 (bit 31 of addresses), the segmented forms
 of D6 (`OLD_D6T`, `OLD_D6J`) and of `OLD_D2R`. `sccvc` is the working compiler of `src/cmd/cas/Makefile` (`old/cas` stays
-with scc): `src/cmd/cc/build/segvc`, `/lib/vc/scparse` (`OLD_D6C OLD_D6D OLD_D6T`), `/lib/vc/scodgen` (`OLD_VC` in
+with scc; sccvc passes `-DSCCVC` to cpp, for the one form of cas the shipped scc cannot compile: `TABADDR` in cas.h): `src/cmd/cc/build/segvc`, `/lib/vc/scparse` (`OLD_D6C OLD_D6D OLD_D6T`), `/lib/vc/scodgen` (`OLD_VC` in
 `oldcc.h`), `/lib/vc/spopt` (the shipped one with `OLD_D13`), `/lib/old/cas`; linked with `src/lib/slibc-v11.a`. With it the
 text, data and bss of the model have the sizes of the original; `/bin/cas` is not byte-identical yet. The state per function
 is in `compare/cas/FINDINGS.md`.

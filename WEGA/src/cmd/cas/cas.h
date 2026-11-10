@@ -45,6 +45,17 @@ struct ilen {				/* length of an instruction and what the code generator needs *
 };
 extern struct ilen instlen[];
 
+/*
+ * The address of an entry of the tables of the symbol table (segments 7, 8, 9: STAB, ITAB, NTAB): /bin/cas
+ * has the form of the old scc of cas (ldl rr2,#%87000030; add r3,off); the shipped scc stops on it with
+ * "register jam" (old/cas, make shipped), so for it the same sum is written as a long.
+ */
+#ifdef SCCVC
+#define TABADDR(t, off)	((char *)(t) + (off))
+#else
+#define TABADDR(t, off)	((char *)((long)(t) + (unsigned)(off)))
+#endif
+
 extern int segmode;			/* set by .seg, cleared by .nonseg */
 extern int shortaddr;			/* a short segmented address was seen */
 
