@@ -125,11 +125,11 @@ igetl()
 	return(l);
 }
 
-/* a long without the segment bits, as written by the segmented address code */
-long
+/* the address of an instruction row, as written by the segmented address code */
+struct irow *
 igetaddr()
 {
-	return(igetl() & 0x7F00FFFFL);
+	return((struct irow *)igetl());
 }
 
 /* write a node: the operator nodes get their type first */
@@ -179,7 +179,7 @@ NODE *np;
 	switch (np->n_type) {
 	case 6:
 		iputw(np->n_u.wl.w);
-		iputnode((NODE *)np->n_u.wl.l);
+		iputnode(np->n_u.wp.p);
 		break;
 	case 7:
 	case 8:
@@ -198,8 +198,8 @@ NODE *np;
 	case 23:
 	case 24:
 	case 25:
-		iputexpr((NODE *)np->n_u.cc.l1);
-		iputexpr((NODE *)np->n_u.cc.l2);
+		iputexpr(np->n_u.cp.p1);
+		iputexpr(np->n_u.cp.p2);
 		break;
 	default:
 		error(2, "Unknown expression type\n");
@@ -224,7 +224,7 @@ NODE *np;
 	switch (np->n_type) {
 	case 6:
 		sputw(np->n_u.wl.w);
-		sputnode((NODE *)np->n_u.wl.l);
+		sputnode(np->n_u.wp.p);
 		break;
 	case 7:
 	case 8:
@@ -243,8 +243,8 @@ NODE *np;
 	case 23:
 	case 24:
 	case 25:
-		sputexpr((NODE *)np->n_u.cc.l1);
-		sputexpr((NODE *)np->n_u.cc.l2);
+		sputexpr(np->n_u.cp.p1);
+		sputexpr(np->n_u.cp.p2);
 		break;
 	default:
 		error(2, "Unknown expression type\n");

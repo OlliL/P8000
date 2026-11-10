@@ -35,6 +35,7 @@
 #define OLD_D2PT
 #define OLD_D13		/* a constant address stays on the left of a + (optim3.c), host/OLDCC.md D13 */
 #define OLD_D6J		/* a dense jump table (segmented): the target into the pair of the value */
+#define OLD_D24		/* a long cast to a pointer is masked through a copy (with OLD_D25 of scparse): yylex, igetaddr of cas */
 #endif
 
 #ifdef OLD_V0P

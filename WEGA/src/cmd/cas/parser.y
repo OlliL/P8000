@@ -741,7 +741,7 @@ blist	: belem COMMA blist
 			locadv(1);
 			break;
 		case 0x16:
-			((NODE *)$1->n_u.l)->n_next = $3;
+			($1->n_u.p)->n_next = $3;
 			$$ = $1->n_next;
 			nfreed++;
 			break;
@@ -763,7 +763,7 @@ blist	: belem COMMA blist
 			locadv(1);
 			break;
 		case 0x16:
-			((NODE *)$1->n_u.l)->n_next = 0L;
+			($1->n_u.p)->n_next = 0L;
 			$$ = $1->n_next;
 			nfreed++;
 			break;

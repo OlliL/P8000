@@ -143,7 +143,7 @@ cas was built by an older scc, not assigned to a version; its parser and `assemb
 `-O`. Its switches are those of v0 and v0p, partly in a segmented form, so a segmented compiler of that age is likely (a
 guess). The differences only seen there: D5 (address first, index behind it), D13 (bit 31 of addresses), the segmented forms
 of D6 (`OLD_D6T`, `OLD_D6J`) and of `OLD_D2R`. `sccvc` is the working compiler of `src/cmd/cas/Makefile` (`old/cas` stays
-with scc; sccvc passes `-DSCCVC` to cpp, for the one form of cas the shipped scc cannot compile: `TABADDR` in cas.h): `src/cmd/cc/build/segvc`, `/lib/vc/scparse` (`OLD_D6C OLD_D6D OLD_D6T`), `/lib/vc/scodgen` (`OLD_VC` in
+with scc; sccvc passes `-DSCCVC` to cpp, for the one form of cas the shipped scc cannot compile: `TABADDR` in cas.h): `src/cmd/cc/build/segvc`, `/lib/vc/scparse` (`OLD_D6C OLD_D6D OLD_D6T OLD_D13 OLD_D25`), `/lib/vc/scodgen` (`OLD_VC` in
 `oldcc.h`), `/lib/vc/spopt` (the shipped one with `OLD_D13`), `/lib/old/cas`; linked with `src/lib/slibc-v11.a`. With it the
 text, data and bss of the model have the sizes of the original; `/bin/cas` is not byte-identical yet. The state per function
 is in `compare/cas/FINDINGS.md`.
@@ -415,7 +415,7 @@ The kernel masks a user address with `(caddr_t)((long)x & 0x7F00FFFF)`. Original
 - vk `OLD_D25` (cparse local1.c, SEG, PCONV): a cast of a long to a pointer stays a conversion (SCONV); the shipped scparse paints the type.
 - vk `OLD_D24` (codgen optim3.c): `convelim` keeps a conversion between a pointer and a non-pointer of the same size. The SCONV of a long to a pointer then uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`: the copy and the mask), and an `& 0x7f00ffff` under it is dropped.
 
-The two work only together: each alone gives the code of the shipped compiler. Witnesses: `sig`, `sys2`, `sys3`, `debug` of the kernel. No source form replaces them: 25 forms of the statement in `sig` (casts, `L` constants, order of the operands, `~`, `+ 0`, `| 0`, a long lvalue, parentheses) give the same code, temporaries are worse.
+The two work only together: each alone gives the code of the shipped compiler. Witnesses: `sig`, `sys2`, `sys3`, `debug` of the kernel. vc has both too (`OLD_D24` in `OLD_VC`, `OLD_D25` in the segvc rule of scparse): cas `yylex` (`(struct pst *)(q->s_2 & 0x7F00FFFFL)`: `ldl rr2,rr0; and r2,#%7F00`) and `igetaddr` (`return ((struct irow *)igetl());`: `ldl rr0,rr2; and r0,#%7F00; ldl rr2,rr0`). In cas a node holds its operands in pointer members of its union and a symbol its name in `s_name` (a union with the value `s_2`), so that only these two casts of a long to a pointer are left; with a cast at every node operand D25 would mask them all. No source form replaces them: 25 forms of the statement in `sig` (casts, `L` constants, order of the operands, `~`, `+ 0`, `| 0`, a long lvalue, parentheses) give the same code, temporaries are worse.
 
 ### D29 Layout of a table switch
 
@@ -442,9 +442,9 @@ their marks in the older columns are from comparisons with the shipped compiler.
 
 | Binary | Object | Ver. | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr | D15 if/else layout | D16 frame operand | D17 call form | D18 0(r15) | D19 operand order | D20 code motion | D22 double rq4 | D23 zero addend | D24 mask | D25 mask | D29 switch |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| cas | ifile.c | old scc | x | x | x |  |  | x |  | x | x | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | ifile.c | old scc | x | x | x |  |  | x |  | x | x | x |  | x | x |  |  |  |  |  |  |  |  |  | x | x |  |
 | cas | instr.c | old scc | x | x |  |  |  | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | scanner.c | old scc | x | x | x |  |  | x | ? |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | scanner.c | old scc | x | x | x |  |  | x | ? |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  | x | x |  |
 | cas | main.c | old scc |  | x |  |  |  | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | nodes.c | old scc | x | x |  |  | x | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | parser.y (parser.c) | old scc | x | x | x |  | x | x | ? |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |

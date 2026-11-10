@@ -71,7 +71,7 @@ NODE *val;
 		sp = stabp(np->n_u.pw.w);
 		ip = itabp(sp->s_8);
 		if (val->n_type == 0x19) {
-			q = stabp(((NODE *)val->n_u.cc.l1)->n_u.pw.w);
+			q = stabp((val->n_u.cp.p1)->n_u.pw.w);
 			nfreed += 4;
 		} else {
 			q = stabp(val->n_u.pw.w);

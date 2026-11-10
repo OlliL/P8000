@@ -17,6 +17,10 @@ struct node {
 		struct { int pad; int w; } pw;
 		struct { long l1; long l2; } ll;
 		struct { unsigned char c1; unsigned char c2; long l1; long l2; } cc;
+		NODE	*p;
+		struct { int w; NODE *p; } wp;
+		struct { NODE *p1; NODE *p2; } pp;
+		struct { unsigned char c1; unsigned char c2; NODE *p1; NODE *p2; } cp;
 	} n_u;
 };
 
@@ -78,7 +82,10 @@ struct pbucket {			/* the hash table of the permanent symbols (503 entries) */
 /* an entry of the user symbol table (segment 7) */
 struct sym {
 	int	s_0;
-	long	s_2;
+	union {
+		long	s_l;
+		char	*s_p;
+	} s_u;
 	unsigned char s_type;		/* 3: alias of an entry of the itable */
 	unsigned char s_7;		/* flags: bit 0, bits 1 and 2 (scope) */
 	int	s_8;
@@ -86,6 +93,8 @@ struct sym {
 	int	s_12;			/* block level of the definition */
 	int	s_14;			/* next symbol with the same hash value */
 };
+#define s_2	s_u.s_l			/* the value */
+#define s_name	s_u.s_p			/* the name (stable) */
 
 extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring(), *mknode25();	/* nodes.c */
 extern NODE *opadd(), *opsub(), *opmul(), *opdiv(), *opshl(), *opshr();	/* expr.c */
@@ -94,7 +103,8 @@ extern unsigned char exprtype();	/* expr.c: the type of an expression */
 extern int evalint();			/* its value as an int */
 extern long exprval(), exprreloc();	/* its value and relocation (pass 2) */
 extern unsigned char igetb(), sgetb();		/* ifile.c */
-extern long igetl(), igetaddr(), sgetl();
+extern long igetl(), sgetl();
+extern struct irow *igetaddr();
 extern int igetw(), sgetw();
 extern NODE *igetexpr(), *sgetexpr(), *sgetnode();	/* getops.c */
 extern int subsw;			/* the subsection was changed (p2loop.c, gen.c) */
@@ -115,7 +125,7 @@ extern long symval();			/* value of a defined symbol */
 extern long symreloc();			/* its relocation information */
 extern struct sym *stalloc(), *italloc();	/* room in the symbol table and the itable (ssymtab.c) */
 extern char *namalloc();
-extern long mkseg();		/* system calls 45 and 55 (libc) */
+extern char *mkseg();		/* system calls 45 and 55 (libc) */
 extern long xtol();			/* digits, base -> long */
 extern int isdef();			/* is the symbol defined */
 

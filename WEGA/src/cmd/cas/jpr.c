@@ -40,7 +40,7 @@ NODE *list;
 		default:
 			goto plain;
 		}
-		e = (NODE *)p->n_u.l;
+		e = p->n_u.p;
 		type = exprtype(e);
 		switch (e->n_type) {
 		case 3:
@@ -53,8 +53,8 @@ NODE *list;
 			if (type != 7 && type != 1) {
 				goto plain;
 			}
-			sym = ((NODE *)e->n_u.cc.l1)->n_u.pw.w;
-			off = ((NODE *)e->n_u.cc.l2)->n_u.l;
+			sym = (e->n_u.cp.p1)->n_u.pw.w;
+			off = (e->n_u.cp.p2)->n_u.l;
 			if (e->n_u.cc.c2 == 0x1b)
 				off = -off;
 			break;

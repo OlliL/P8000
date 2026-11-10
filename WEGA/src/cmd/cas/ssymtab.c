@@ -202,7 +202,7 @@ unsigned char mode;
 	for (;;) {
 		if ((p = stabp(i)) == 0)
 			return (0);
-		if (strcmp(name, (char *)p->s_2) == 0)
+		if (strcmp(name, p->s_name) == 0)
 			return (i);
 		if ((p->s_7 & 8) == 8) {
 			q = p;
@@ -254,7 +254,7 @@ blkclose()
 				b = q->s_14;
 				sp->s_14 = 0;
 			}
-			h = hash(1000, (char *)sp->s_2);
+			h = hash(1000, sp->s_name);
 			i = hashtab[h];
 			if (i == n)
 				hashtab[h] = b;

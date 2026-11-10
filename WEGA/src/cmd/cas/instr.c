@@ -82,8 +82,8 @@ NODE *args;
 	iputb(10);
 	iputl(row);
 	for (p = args; p; p = p->n_next) {
-		iputnode((NODE *)p->n_u.ll.l1);
-		iputnode((NODE *)p->n_u.ll.l2);
+		iputnode(p->n_u.pp.p1);
+		iputnode(p->n_u.pp.p2);
 	}
 	while (args) {
 		args = args->n_next;

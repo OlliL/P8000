@@ -50,7 +50,7 @@ NODE *np;
 	case 7:
 		return ((int)symval(np->n_u.pw.w));
 	case 0x19:
-		return ((int)(symval(((NODE *)np->n_u.cc.l1)->n_u.pw.w) + ((NODE *)np->n_u.cc.l2)->n_u.l));
+		return ((int)(symval((np->n_u.cp.p1)->n_u.pw.w) + (np->n_u.cp.p2)->n_u.l));
 	default:
 		error(2, "Must be simple expression\n");
 	}
@@ -67,7 +67,7 @@ NODE *np;
 	switch (np->n_u.cc.c1) {
 	case 1:
 	case 4:
-		idx = ((NODE *)np->n_u.cc.l1)->n_u.pw.w;
+		idx = (np->n_u.cp.p1)->n_u.pw.w;
 		return (symreloc(idx));
 	case 5:
 		switch (np->n_u.cc.c2) {
@@ -78,10 +78,10 @@ NODE *np;
 		default:
 			return (0L);
 		}
-		if (((NODE *)np->n_u.cc.l1)->n_type == 0x19)
+		if ((np->n_u.cp.p1)->n_type == 0x19)
 			v = exprreloc(np->n_u.cc.l1);
 		else
-			v = symreloc(((NODE *)np->n_u.cc.l1)->n_u.pw.w);
+			v = symreloc((np->n_u.cp.p1)->n_u.pw.w);
 		shortop++;
 		switch (np->n_u.cc.c2) {
 		case 0x25:
@@ -118,18 +118,18 @@ NODE *np;
 	switch (np->n_u.cc.c1) {
 	case 1:
 	case 4:
-		idx = ((NODE *)np->n_u.cc.l1)->n_u.pw.w;
+		idx = (np->n_u.cp.p1)->n_u.pw.w;
 		if (np->n_u.cc.c1 == 4) {
 			if (np->n_u.cc.c2 == 0x1A)
-				v = ((NODE *)np->n_u.cc.l2)->n_u.l;
+				v = (np->n_u.cp.p2)->n_u.l;
 			else
-				v = -((NODE *)np->n_u.cc.l2)->n_u.l;
+				v = -(np->n_u.cp.p2)->n_u.l;
 		} else {
 			v = symval(idx);
 			if (np->n_u.cc.c2 == 0x1A)
-				v += ((NODE *)np->n_u.cc.l2)->n_u.l;
+				v += (np->n_u.cp.p2)->n_u.l;
 			else
-				v -= ((NODE *)np->n_u.cc.l2)->n_u.l;
+				v -= (np->n_u.cp.p2)->n_u.l;
 		}
 		nfreed += 2;
 		break;
@@ -140,26 +140,26 @@ NODE *np;
 	case 5:
 		switch (np->n_u.cc.c2) {
 		case 0x23:
-			if (((NODE *)np->n_u.cc.l1)->n_type == 0x19)
+			if ((np->n_u.cp.p1)->n_type == 0x19)
 				v = exprval(np->n_u.cc.l1);
 			else
-				v = symval(((NODE *)np->n_u.cc.l1)->n_u.pw.w);
+				v = symval((np->n_u.cp.p1)->n_u.pw.w);
 			if (((unsigned long)v & 0xFFFF) > 0xFF)
 				error(1, "Value too large\n");
 			v = (((unsigned long)v >> 16) & 0xFF00) | (v & 0xFF);
 			break;
 		case 0x24:
-			if (((NODE *)np->n_u.cc.l1)->n_type == 0x19)
+			if ((np->n_u.cp.p1)->n_type == 0x19)
 				v = exprval(np->n_u.cc.l1);
 			else
-				v = symval(((NODE *)np->n_u.cc.l1)->n_u.pw.w);
+				v = symval((np->n_u.cp.p1)->n_u.pw.w);
 			v = v & 0xFFFF;
 			break;
 		case 0x25:
-			if (((NODE *)np->n_u.cc.l1)->n_type == 0x19)
+			if ((np->n_u.cp.p1)->n_type == 0x19)
 				v = exprval(np->n_u.cc.l1);
 			else
-				v = symval(((NODE *)np->n_u.cc.l1)->n_u.pw.w);
+				v = symval((np->n_u.cp.p1)->n_u.pw.w);
 			v = (unsigned long)v >> 16;
 			break;
 		default:
@@ -488,7 +488,7 @@ NODE *r;
 	if (rt == 3 && (lt == 4 || lt == 1 || lt == 7)) {
 		if (l->n_type == 7)
 			return (mknode25(lt, (unsigned char)0x1B, (long)l, (long)r));
-		lv = ((NODE *)l->n_u.cc.l2)->n_u.l;
+		lv = (l->n_u.cp.p2)->n_u.l;
 		rv = r->n_u.l;
 		if (l->n_u.cc.c2 == 0x1A) {
 			if ((unsigned long)lv > rv)
@@ -509,21 +509,21 @@ NODE *r;
 		if (r->n_type == 7)
 			rv = symval(r->n_u.pw.w);
 		else {
-			rv = symval(((NODE *)r->n_u.cc.l1)->n_u.pw.w);
+			rv = symval((r->n_u.cp.p1)->n_u.pw.w);
 			if (r->n_u.cc.c2 == 0x1A)
-				rv += ((NODE *)r->n_u.cc.l2)->n_u.l;
+				rv += (r->n_u.cp.p2)->n_u.l;
 			else
-				rv -= ((NODE *)r->n_u.cc.l2)->n_u.l;
+				rv -= (r->n_u.cp.p2)->n_u.l;
 			nfreed += 2;
 		}
 		if (l->n_type == 7)
 			lv = symval(l->n_u.pw.w);
 		else {
-			lv = symval(((NODE *)l->n_u.cc.l1)->n_u.pw.w);
+			lv = symval((l->n_u.cp.p1)->n_u.pw.w);
 			if (l->n_u.cc.c2 == 0x1A)
-				lv += ((NODE *)l->n_u.cc.l2)->n_u.l;
+				lv += (l->n_u.cp.p2)->n_u.l;
 			else
-				lv -= ((NODE *)l->n_u.cc.l2)->n_u.l;
+				lv -= (l->n_u.cp.p2)->n_u.l;
 			nfreed += 2;
 		}
 		nfreed += 2;
@@ -572,7 +572,7 @@ NODE *r;
 		if (r->n_type == 7)
 			return (mknode25(rt, (unsigned char)0x1A, (long)r, (long)l));
 		lv = l->n_u.l;
-		rv = ((NODE *)r->n_u.cc.l2)->n_u.l;
+		rv = (r->n_u.cp.p2)->n_u.l;
 		if (r->n_u.cc.c2 == 0x1A)
 			np = mknode1(3, lv + rv);
 		else if ((unsigned long)lv > rv) {
@@ -588,7 +588,7 @@ NODE *r;
 		if (l->n_type == 7)
 			return (mknode25(lt, (unsigned char)0x1A, (long)l, (long)r));
 		rv = r->n_u.l;
-		lv = ((NODE *)l->n_u.cc.l2)->n_u.l;
+		lv = (l->n_u.cp.p2)->n_u.l;
 		if (l->n_u.cc.c2 == 0x1A)
 			np = mknode1(3, lv + rv);
 		else if ((unsigned long)lv > rv)
