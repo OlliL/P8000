@@ -76,6 +76,13 @@ src/cmd/popt/z21.c, called from `iterate`).
   earlier "D41 without D45" had D45 in (bv.sh cannot remove it; `pb.sh` in poptveto replaces the defines); alone it leaves
   stabout open, exprval only with an odd string order, symtype at 5 (OLDCC_LOG 2026-11-11).
 
+### jpr: state of 2026-11-11 evening
+
+- Every search (parallel veto search with forward inversions as extra events, depth 3, three source forms) ends at 10
+  lines, always the same: plain stands in front of the body of case 0x36, the original has it behind. OLDCC_LOG
+  2026-11-11 has the layout of the original block by block and what was tried.
+- Tools: `pveto.py` (8 slots), `vpatchF.py` (forward inversion as event F); poptveto/README.
+
 ### jpr (24 lines; 22 with other forms)
 
 - The original read as a loop inversion with the far conditional jump `cp r2,#0x36`: behind the entry jump stand the
