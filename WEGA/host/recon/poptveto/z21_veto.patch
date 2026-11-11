@@ -1,0 +1,118 @@
+--- src/cmd/popt/z21.c	2026-11-11 03:58:16.698419000 +0100
++++ src/cmd/popt/z21.c	2026-11-11 03:59:03.949753826 +0100
+@@ -57,6 +57,10 @@
+ 
+ 
+ 
++#ifdef VETO
++int vfidx = -1, vevent;
++#endif
++
+ int
+ main(argc, argv)
+ int argc;
+@@ -100,6 +104,10 @@
+ 	opsetup();
+ 	do {
+ 		isend = input();
++#ifdef VETO
++		vfidx++;
++		vevent = 0;
++#endif
+ 		movedat();
+ #ifdef OLD_D29
+ 		d29switch();
+@@ -794,6 +802,10 @@
+ 				do
+ 					rp = rp->back;
+ 				while (rp->op == LABEL || rp->op == KCOMMENT);
++#ifdef VETO
++				if (rp == p1 && vetoed('S', p1->labno))
++					rp = 0;
++#endif
+ 				if (rp == p1) {
+ 					decref(p->ref);
+ 					p->ref = p1->ref;
+@@ -1065,6 +1077,60 @@
+ 
+ 
+ 
++#ifdef VETO
++static int vlist[64], vn = -1, vf;
++int
++vetoed(type, lab)
++int type, lab;
++{
++	register int i, k;
++	FILE *f;
++
++	if (vn < 0) {
++		vn = 0;
++		vf = -2;
++		if ((f = fopen("/tmp/veto.txt", "r")) != NULL) {
++			register int c, v, any, first;
++
++			first = 1;
++			v = 0;
++			any = 0;
++			for (;;) {
++				c = getc(f);
++				if (c >= '0' && c <= '9') {
++					v = v * 10 + c - '0';
++					any = 1;
++					continue;
++				}
++				if (any) {
++					if (first) {
++						vf = v;
++						first = 0;
++					} else if (vn < 64)
++						vlist[vn++] = v;
++				}
++				v = 0;
++				any = 0;
++				if (c == EOF)
++					break;
++			}
++			fclose(f);
++		}
++	}
++	k = vevent++;
++	if ((f = fopen("/tmp/veto.log", "a")) != NULL) {
++		fprintf(f, "%d %d %c %d\n", vfidx, k, type, lab);
++		fclose(f);
++	}
++	if (vfidx != vf)
++		return 0;
++	for (i = 0; i < vn; i++)
++		if (vlist[i] == k)
++			return 1;
++	return 0;
++}
++#endif
++
+ struct node *
+ codemove(p)
+ struct node *p;
+@@ -1133,6 +1199,10 @@
+ 					    p1->ref->refc, tn, tc, p3->ref == 0 ? -1 : p3->labno, jn, jc, jl, pre);
+ 				}
+ #endif
++#ifdef VETO
++				if (vetoed('M', p1->labno))
++					return p1;
++#endif
+ 				ncmot++;
+ 				nchange++;
+ 				p1->back->forw = p2;
+@@ -1170,6 +1240,10 @@
+ 		if ((p1 = p1->back) == 0)
+ 			return p;
+ 	while (p1 != p3);
++#ifdef VETO
++	if (vetoed('I', p->labno))
++		return p;
++#endif
+ 	p1 = p;
+ 	tl = insertl(p1);
+ 	p3->subop = revbr[(int)p3->subop];
