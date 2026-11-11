@@ -148,7 +148,7 @@ neutral on cas when added, alone and all together), with these differences:
   (the mask of a long cast to a pointer, as vk) and `OLD_D2S` (symtype, one witness);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
   `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
-- spopt: the shipped one with `OLD_D13`, `OLD_D45` and `OLD_D20S` (v0p has no switch in popt).
+- spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S` and `OLD_D49` (v0p has no switch in popt).
 
 Which switch has which witness in cas: `OLDCC_SWITCHES_VC.md` (all blocks of v0p are measured there; a switch without a
 witness in cas is in vc because it is in v0p). `sccvc` is the compiler of `src/cmd/cas/Makefile` (`old/cas` stays with scc;
@@ -459,6 +459,17 @@ in the name loop, the block at the `break` is the head of `switch (tag)`: the se
 switch land behind the entry jump of the loop). One witness, the owner's exception; without the limits other functions of cas
 change (`OLDCC_LOG.md`, 2026-11-10).
 
+### D49 Labels no jump names, and the loop inversion
+
+vc `OLD_D49` (popt z21.c, refcount). refcount of the shipped popt deletes every label that no jump names, also one in a
+run of labels. The spopt of vc keeps a label that no jump names when another label follows it (not when the exit code
+follows, label L1xxxx). The loop inversion of codemove asks whether the label behind the jump is the one a conditional
+jump in the loop names; such a kept label (the break label of a `switch` whose cases all end in a jump) stands in
+between and the inversion is not made. Witness: yylex of cas (the done switch behind `tok = 3`: the `goto done` of the
+default of `switch (c)` at the end of the `%` block is not taken as the back jump of a loop over done and the character
+tests). One witness, provisional. Labels made unnamed by refcount itself (a jump moved to the last label of a run) go as
+before: with them kept, genb, genw and 14 more lose their `for` inversion.
+
 ### Register allocation of the old scc
 
 The register variables are assigned in declaration order from r13 downwards; an int or char takes one register, a pointer or long the highest
@@ -549,7 +560,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
 - Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
   - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
-  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout) and `OLD_D20S` (popt, exprreloc): one witness each, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
+  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout), `OLD_D20S` (popt, exprreloc) and `OLD_D49` (popt, yylex): one witness each, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
   - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.

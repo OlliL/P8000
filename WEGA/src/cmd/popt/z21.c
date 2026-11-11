@@ -694,6 +694,9 @@ refcount()
 		if (p->op == LABEL) {
 			labhash[p->labno % LABHS] = p;
 			p->refc = 0;
+#ifdef OLD_D49
+			p->subop = 0;
+#endif
 		}
 	for (p = first.forw; p; p = p->forw) {
 		if (p->op == JP || p->op == CJP || p->op == JSW) {
@@ -704,6 +707,9 @@ refcount()
 					if (lp->op == LABEL && p->labno == lp->labno)
 						break;
 			if (lp) {
+#ifdef OLD_D49
+				lp->subop = 1;	/* a jump names this label */
+#endif
 				tp = nonlab(lp)->back;
 				while (tp->back && tp->op == KCOMMENT)
 					tp = tp->back;
@@ -731,6 +737,13 @@ refcount()
 	}
 	for (p = first.forw; p; p = p->forw)
 		if (p->op == LABEL && p->refc == 0) {
+#ifdef OLD_D49
+			/* vc: a label no jump names stays in front of another label (not in front of the exit code, L1xxxx) */
+			for (lp = p->forw; lp && lp->op == KCOMMENT; lp = lp->forw)
+				;
+			if (p->subop == 0 && lp && lp->op == LABEL && !(lp->labno >= 10000 && lp->labno < 20000))
+				continue;
+#endif
 			if ((lp = nonlab(p))->op == 0 || lp->op == JSW || lp->op == WORD ||
 			    lp->op == LONG)
 				continue;

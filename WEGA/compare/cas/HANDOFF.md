@@ -6,24 +6,22 @@ What is fact is measured; guesses are marked. The history of every attempt: `hos
 
 ## 1 State
 
-- Goal: `/bin/cas` byte-identical. Not reached. Model: 149 of 152 functions strictly exact. The real build (`make` in
+- Goal: `/bin/cas` byte-identical. Not reached. Model: 151 of 152 functions strictly exact. The real build (`make` in
   src/cmd/cas, stripped) has the size of the original (89152); 42524 bytes differ, all behind the first open function.
 - Open:
 
 | Function | File | Orig | Model | Lines | What differs |
 |---|---|---|---|---|---|
-| yylex | scanner.c | 2600 | 2588 | 26 | place of the `done` block (popt) |
 | jpr | jpr.c | 324 | 324 | 24 | the `plain` block and the loop step are moved (popt) |
-| main | main.c | 2064 | 2064 | 6 | only the address of `sigdone`; follows from the lengths in front |
 
 - Compiler: `sccvc` = v0p compiled for segmented code. `OLD_VC` in `src/cmd/codgen/oldcc.h` defines `OLD_V0P`, takes
   `OLD_D3KC` out and adds `OLD_D13`, `OLD_D6J`, `OLD_D24`, `OLD_D2S`. scparse (segvc rule of `src/cmd/cparse/Makefile`):
   the switches of v0p with `OLD_D13`, `OLD_D25`. spopt (segvc rule of `src/cmd/popt/Makefile`): the shipped one with
-  `OLD_D13`, `OLD_D45` and `OLD_D20S`. Assembler `/lib/old/cas`, library `src/lib/slibc-v11.a`. parser.y and assemble.c without -O.
+  `OLD_D13`, `OLD_D45`, `OLD_D20S` and `OLD_D49`. Assembler `/lib/old/cas`, library `src/lib/slibc-v11.a`. parser.y and assemble.c without -O.
   Description: `host/OLDCC.md`, "The old scc of cas"; witnesses per switch: `host/OLDCC_SWITCHES_VC.md` (generated).
 - checkall on commit 46dc9d17 (with `OLD_D20S`): ALL OK (covers the `default:` first forms too).
 - Switches with one witness in cas, provisional (`host/OLDCC.md` section 5): `OLD_D2S` (symtype), `popt:OLD_D45`
-  (stabout), `popt:OLD_D20S` (exprreloc).
+  (stabout), `popt:OLD_D20S` (exprreloc), `popt:OLD_D49` (yylex).
 
 ## 2 Tools
 
@@ -68,7 +66,7 @@ Rules that cost time when forgotten:
 
 ## 3 The open functions: what is known
 
-jpr and yylex: the same question: our spopt moves a block that the original leaves where it stands (`codemove` in
+jpr: the same question: our spopt moves a block that the original leaves where it stands (`codemove` in
 src/cmd/popt/z21.c, called from `iterate`).
 
 ### exprreloc: solved by `OLD_D20S`; D41 dropped
@@ -92,24 +90,11 @@ src/cmd/popt/z21.c, called from `iterate`).
 - Same kind as exprreloc: a default block that ends in `return (0)` is not moved to the end of its dispatch. `OLD_D20S`
   does not reach it: 48 forms (each plain site inline or `goto plain`, all orders of the first switch) give 22 at best.
 
-### yylex (26 lines)
+### yylex: solved by `OLD_D49` and a source form
 
-- Only difference: the done head (`ld r2,r13; cp r13,#0x22; jp eq; cp r13,#0x23; jp eq; ld r2,r13; jp exit`, the head
-  of `switch (tok)` with dispatch and `return (tok)`) stands behind `tok = 3` (end of the `.` body, original 0x0C08);
-  ours puts it at the first `goto done` (tok 0x56). The other lines are jump lengths.
-- The natural form (the done switch written behind `tok = 3` with `goto invalid` / `goto unknown`, the two bodies at
-  the end with `return (tok)`) gives the done block byte for byte, but 671 lines: our loop inversion takes the `goto
-  done` at the end of the `%` block (the default of its `switch (c)`) as a back jump and moves done and the three
-  character tests away. Under D41: 103. A scratch copy of that form is not kept; it is described in OLDCC_LOG.
-- Tried: stopping the inversion scan at a jump (136 exact) or at a return (140), smaller windows, vetoing the move at
-  the first sites (35 at best).
-- Lead (2026-11-11, not taken, OLDCC_LOG): the inversion that spoils the natural form fails when refcount keeps a label no
-  jump names in front of another label (not in front of an L1xxxx label): natural form 43, model unchanged. The natural
-  form is not the original's (its head lacks the first `ld r2,r13`; the original's bodies jump back into the head), so the
-  open question stays why codemove takes the done head at `tok = 3` and not at the first `goto done`.
-- jpr under `OLD_D20S`: the veto search gives the same plateau of 10 (moves of 116 and 129, inversion at 107).
-- The present source has many gotos (`goto other; tilde: ... dot: ... other:`); they were found under the shipped popt
-  and may hide the natural form.
+- The done switch behind `tok = 3` (`goto invalid` / `goto unknown`, `ret: return (tok);`), the two bodies at the end of
+  the function ending in `goto ret`. `OLD_D49` (OLDCC.md): refcount keeps an unnamed label in front of another label, so
+  the loop inversion at the `%` block is not made. main follows.
 
 ## 4 What is settled (do not search again)
 

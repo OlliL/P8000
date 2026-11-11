@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "4c5ae426",
+ "measured_at": "7cc35ba8",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -129,9 +129,8 @@
   "yylex": {
    "file": "scanner.c",
    "orig": "0x078a",
-   "status": "open",
-   "note": "Cluster K8, K12, K13, K14. Cluster K8, K12, K13, K14.",
-   "lines": 26
+   "status": "exact",
+   "note": "Cluster K8, K12, K13, K14. Exact under popt OLD_D49 (vc). Odd form: the done switch stands behind `tok = 3` with `goto invalid` / `goto unknown` and `ret: return (tok);`, the two bodies at the end of the function end in `goto ret` (the original's bodies jump back to the `ld r2,r13; jp exit` of the head; with `return (tok)` in the last body xjump joins the head to it)."
   },
   "getch": {
    "file": "scanner.c",
@@ -146,9 +145,8 @@
   "main": {
    "file": "main.c",
    "orig": "0x1278",
-   "status": "open",
-   "note": "Cluster K4. Left: the address of sigdone, which follows from the lengths of the functions in front.",
-   "lines": 6
+   "status": "exact",
+   "note": "Cluster K4."
   },
   "sigdone": {
    "file": "main.c",
@@ -412,7 +410,7 @@
    "file": "expr.c",
    "orig": "0x4fb2",
    "status": "exact",
-   "note": "Source: case 0x24 as `if (v & 8) v |= 0; else v |= 0;` (the compare without a jump: both bits are 0, likely macros). Left (3 lines): the `return (0L)` of the outer default stays at the end in front of the exit in the original, ours moves it to the dispatch; the layout of the original comes out when the block has no jump to the exit behind it while codemove looks at it (spopt with OLD_D20 gives exactly the original for this function, but loses 9 others)."
+   "note": "Source: case 0x24 as `if (v & 8) v |= 0; else v |= 0;` (the compare without a jump: both bits are 0, likely macros). Exact under popt OLD_D20S (vc): the `return (0L)` of the outer default stays in front of the exit."
   },
   "exprval": {
    "file": "expr.c",

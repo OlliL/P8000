@@ -202,7 +202,15 @@ dot:
 	}
 	UNGET();
 	tok = 3;
-	goto done;
+done:
+	switch (tok) {
+	case 0x22:
+		goto invalid;
+	case 0x23:
+		goto unknown;
+	}
+ret:
+	return (tok);
 other:
 	if (c == '~')
 		goto tilde;
@@ -348,21 +356,17 @@ other:
 		}
 		tp++;
 	}
-done:
-	switch (tok) {
-	case 0x22:
-		error(2, "Invalid token\n");
-		do
-			c = getch();
-		while (c != ' ' && c != '\t' && c != ';');
-		ADD(c);
-		UNGET();
-		break;
-	case 0x23:
-		error(2, "Unknown keyword\n");
-		break;
-	}
-	return(tok);
+invalid:
+	error(2, "Invalid token\n");
+	do
+		c = getch();
+	while (c != ' ' && c != '\t' && c != ';');
+	ADD(c);
+	UNGET();
+	goto ret;
+unknown:
+	error(2, "Unknown keyword\n");
+	goto ret;
 }
 
 /* the next character of the source (stdin); with the option -^ it is echoed */
