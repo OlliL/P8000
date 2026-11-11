@@ -42,7 +42,7 @@ build/segv1/scparse: crt0.o FORCE
 	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D12 -DOLD_D1"
 
 build/segvc/scparse: crt0.o FORCE
-	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D6C -DOLD_D6D -DOLD_D6T -DOLD_D13 -DOLD_D25"
+	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D -DOLD_D13 -DOLD_D25"
 
 build/segvk/scparse: crt0.o FORCE
 	cd build/segvk ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D25"

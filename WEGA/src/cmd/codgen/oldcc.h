@@ -10,35 +10,14 @@
 #endif
 
 #ifdef OLD_VC
-/* vc, the working compiler of cas (scodgen, with OLD_D6C, OLD_D6D and OLD_D6T in scparse, spopt with OLD_D13): the switches of v0 and v0p that bring /bin/cas nearest,
-   found by measuring (host/OLDCC.md section 2, The old scc of cas); not proven to be the compiler of cas */
-#define OLD_D2W
-#define OLD_D1R
-#define OLD_D2W6
-#define OLD_D2P
-#define OLD_D2R
-#define OLD_D2F
-#define OLD_D2L
-#define OLD_D2T
-#define OLD_D10
-#define OLD_D3P
-#define OLD_D3AW
-#define OLD_D6S
-#define OLD_D3J
-#define OLD_D3K
-#define OLD_D2Q
-#define OLD_D2U
-#define OLD_D5G
-#define OLD_D6T
-#define OLD_D2M
-#define OLD_D2O
-#define OLD_D2PT
+/* vc, the working compiler of cas (scodgen; scparse and spopt: the segvc rules of their Makefiles): v0p compiled for segmented
+   code, without OLD_D3KC (undefined behind the block of v0p), and with the switches below. Found by measuring on /bin/cas
+   (host/OLDCC.md section 2, The old scc of cas); not proven to be the compiler of cas */
+#define OLD_V0P
 #define OLD_D13		/* a constant address stays on the left of a + (optim3.c), host/OLDCC.md D13 */
 #define OLD_D6J		/* a dense jump table (segmented): the target into the pair of the value */
 #define OLD_D24		/* a long cast to a pointer is masked through a copy (with OLD_D25 of scparse): yylex, igetaddr of cas */
 #define OLD_D2S		/* a word in r3 widened to long takes the pair rr2 (allo3.c; cas symtype, one witness) */
-#define OLD_D2CV	/* the copy of a name in a register holds no name (the allo3.c part of OLD_D2C of v0; cas asmword, stenter) */
-#define OLD_D2PO	/* OLD_D2P: an idle odd word whose even half is free is given back for a pair (as v0; cas stenter) */
 #endif
 
 #ifdef OLD_V0P
@@ -90,6 +69,10 @@
 #define OLD_D2W6	/* a pair asked for when rr2 and rr0 are taken: rr6 before rr4 (getreg) */
 #define OLD_D5A		/* the address of a local array element whose value goes to a given register: no preference (rallo) */
 #define OLD_D22		/* a double argument, parameter and result in rq4 (r4..r7); a floating compare without rounding */
+#endif
+
+#ifdef OLD_VC
+#undef OLD_D3KC	/* vc takes a parameter wanted in its register as it is (cas copyfile), as v0 */
 #endif
 
 /* d2qfree (allo3.c) serves OLD_D2Q and OLD_D2M */

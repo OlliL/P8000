@@ -33,7 +33,7 @@ VERS = {
             'blocks': ('OLD_V0P', 'OLD_V0'), 'dir': 'nonsegv0p',
             'bin': {'codgen': 'codgen', 'cparse': 'cparse', 'popt': 'popt'}},
     # sccvc builds /bin/cas only: its model (d12model with sccvc and /lib/old/cas of the work root) is the measure
-    'vc': {'out': 'OLDCC_SWITCHES_VC.md', 'progs': ['cas'], 'blocks': ('OLD_VC',), 'dir': 'segvc',
+    'vc': {'out': 'OLDCC_SWITCHES_VC.md', 'progs': ['cas'], 'blocks': ('OLD_VC', 'OLD_V0P', 'OLD_V0'), 'dir': 'segvc',
            'bin': {'codgen': 'scodgen', 'cparse': 'scparse', 'popt': 'spopt'}},
 }
 VER = os.environ.get('MATRIX_VER', 'v0p')
