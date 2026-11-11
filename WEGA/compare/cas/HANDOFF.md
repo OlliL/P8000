@@ -21,8 +21,10 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 | exprreloc | 260 | 258 | 3 | popt: the `return (0L)` of the outer default is moved to the dispatch |
 | main | 2064 | 2064 | 6 | only the address of `sigdone` (lengths in front) |
 
-- checkall of 2026-11-11 (commit f2471806): ALL OK, corpus cas 657 of 657. A second run on the state with vc as v0p
-  was started; its result is in `tmp/tmp/checkall_n2.log` (see OLDCC_LOG for the outcome).
+- checkall of 2026-11-11 on commit 1da06ff8 (vc as v0p): ALL OK, corpus cas 657 of 657.
+- Best lead for the popt functions: D41 (the sweep of iterate goes on behind a moved block, not for the entry code;
+  `host/recon/poptveto/popt_D41.patch`): exprreloc and stabout exact without D45, but exprval, osymout, symtype then
+  need other source forms (not found), yylex and jpr stay open (OLDCC_LOG 2026-11-11).
 - Commands (from WEGA, `O=/mnt/share/cvs/P8000/tmp/oldroot`, `T` a scratch directory, wrappers `cc_vc` = `z8k-emu -r $O
   /bin/sccvc`, `cas_old` = `z8k-emu -r $O /lib/old/cas`):
 
