@@ -221,9 +221,7 @@ Descriptions in host/OLDCC.md (D2, D4); the attempts in OLDCC_LOG.md 2026-11-10.
   register cost locadv (r7 is widened into a new rr2 in the original), opshort, asmins; restricted to r3.
 - igetexpr, sgetexpr (K3): `OLD_D4A` is removed again (2026-11-11); the source form `l = igetexpr(); return (opseg(l));`
   is exact without a switch.
-- asmword (K14) and the reload of `name` in stenter, `OLD_D2CV` (allo3.c): the copy of a name in a register holds no
-  name, the allo3.c part of v0's `OLD_D2C` (the whole of D2C does not build in vc: its match3.c part needs OLD_D2V).
-  Two witnesses.
+- asmword (K14) and the reload of `name` in stenter: `OLD_D2C` of v0 (vc is v0p now; `OLD_D2CV` is gone).
 
 ## 6 Open decisions
 

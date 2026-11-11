@@ -139,14 +139,23 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 
 ### The old scc of cas
 
-cas was built by an older scc, not assigned to a version; its parser and `assemble` without `-O`, the other modules with
-`-O`. Its switches are those of v0 and v0p, partly in a segmented form, so a segmented compiler of that age is likely (a
-guess). The differences only seen there: D5 (address first, index behind it), D13 (bit 31 of addresses), the segmented forms
-of D6 (`OLD_D6T`, `OLD_D6J`) and of `OLD_D2R`. `sccvc` is the working compiler of `src/cmd/cas/Makefile` (`old/cas` stays
-with scc; sccvc passes `-DSCCVC` to cpp, for the one form of cas the shipped scc cannot compile: `TABADDR` in cas.h): `src/cmd/cc/build/segvc`, `/lib/vc/scparse` (`OLD_D6C OLD_D6D OLD_D6T OLD_D13 OLD_D25`), `/lib/vc/scodgen` (`OLD_VC` in
-`oldcc.h`), `/lib/vc/spopt` (the shipped one with `OLD_D13` and `OLD_D45`), `/lib/old/cas`; linked with `src/lib/slibc-v11.a`. With it the
-text, data and bss of the model have the sizes of the original; `/bin/cas` is not byte-identical yet. The state per function
-is in `compare/cas/FINDINGS.md`.
+cas was built by an older scc; its parser and `assemble` without `-O`, the other modules with `-O`. The working compiler
+`sccvc` is v0p compiled for segmented code (measured 2026-11-11: every switch of v0 and v0p that vc did not have is
+neutral on cas when added, alone and all together), with these differences:
+
+- codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
+  taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
+  (the mask of a long cast to a pointer, as vk) and `OLD_D2S` (symtype, one witness);
+- scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
+  `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
+- spopt: the shipped one with `OLD_D13` and `OLD_D45` (v0p has no switch in popt).
+
+Which switch has which witness in cas: `OLDCC_SWITCHES_VC.md` (all blocks of v0p are measured there; a switch without a
+witness in cas is in vc because it is in v0p). `sccvc` is the compiler of `src/cmd/cas/Makefile` (`old/cas` stays with scc;
+sccvc passes `-DSCCVC` to cpp, for the one form of cas the shipped scc cannot compile: `TABADDR` in cas.h):
+`src/cmd/cc/build/segvc`, `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/vc/spopt`, `/lib/old/cas`; linked with
+`src/lib/slibc-v11.a`. The model and the real build (`make` in `src/cmd/cas`, stripped) have the sizes of the original;
+`/bin/cas` is not byte-identical yet. The state per function is in `compare/cas/FINDINGS.md`.
 
 A switch on a constant (`switch (sizeof(char *)) { case 4: ...; case 2: ...; }`): sccvc, ccv0 and the shipped cc load the
 value into r2 and keep only the matching case, without a dispatch (`ldk r2,#4; calr igetl`); the shipped scc keeps the jump
@@ -232,14 +241,6 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - vc `OLD_D2S` (allo3.c): a word in r3 widened to long (SCONV) takes the pair rr2, the first pair of the order, with r3 in
   it (`ldk r2,#0`); a word in another register gets a new pair as before (locadv: r7 into rr2). cas symtype (`unsigned n;
   ip->s_2 = n;`). One witness.
-- vc `OLD_D2CV` (allo3.c): the copy of a name in a register holds no name, the allo3.c part of v0's `OLD_D2C` (whose
-  match3.c part needs `OLD_D2V`): the original loads the parameter again instead of taking the copy. cas asmword (`row`),
-  stenter (`name` for `hash(1000, name)`).
-
-### D3 Register contents
-
-All in codgen.
-
 - v1 `OLD_D3` (cbranch): at the join label of `&&` and `||` the shipped codgen gives the idle registers back, the old one keeps
   them with their contents. ld init_entry, dseek.
 - v0 `OLD_D3P` (regforsym): a name that lives in a register is taken from it also when the node wants another register, also
@@ -544,7 +545,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
 - Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
   - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
-  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype); `OLD_D2CV` has two (asmword, stenter). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout): one witness, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
+  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout): one witness, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
   - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.
