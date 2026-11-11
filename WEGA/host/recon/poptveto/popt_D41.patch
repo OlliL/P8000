@@ -1,16 +1,18 @@
 diff --git a/WEGA/src/cmd/popt/z21.c b/WEGA/src/cmd/popt/z21.c
-index e0bec63d..ec0266cc 100644
+index e0bec63d..d83d8815 100644
 --- a/WEGA/src/cmd/popt/z21.c
 +++ b/WEGA/src/cmd/popt/z21.c
-@@ -1142,7 +1142,11 @@ struct node *p;
+@@ -1141,6 +1141,13 @@ struct node *p;
+ 				p3->forw->back = p2->back;
  				p2->back = p1->back;
  				p3->forw = p1->forw;
- 				decref(p1->ref);
 +#ifdef OLD_D41
-+				return p3;	/* vc: the sweep goes on behind the moved block */
-+#else
- 				return p2;
++				/* vc: the sweep goes on behind the moved block (not for the entry code of the function, label L1xxxx) */
++				if (!(p1->labno >= 10000 && p1->labno < 20000)) {
++					decref(p1->ref);
++					return p3;
++				}
 +#endif
+ 				decref(p1->ref);
+ 				return p2;
  			}
- 		}
- 		return p1;
