@@ -1,0 +1,16 @@
+diff --git a/WEGA/src/cmd/popt/z21.c b/WEGA/src/cmd/popt/z21.c
+index e0bec63d..ec0266cc 100644
+--- a/WEGA/src/cmd/popt/z21.c
++++ b/WEGA/src/cmd/popt/z21.c
+@@ -1142,7 +1142,11 @@ struct node *p;
+ 				p2->back = p1->back;
+ 				p3->forw = p1->forw;
+ 				decref(p1->ref);
++#ifdef OLD_D41
++				return p3;	/* vc: the sweep goes on behind the moved block */
++#else
+ 				return p2;
++#endif
+ 			}
+ 		}
+ 		return p1;
