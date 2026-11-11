@@ -56,7 +56,7 @@ that session (`S=/tmp/claude-1000/...`): set `S` in each script before use.**
 | `par.py` | eight work copies of the model; `run(tasks)` measures source variants in parallel under any private root |
 | `jgen_jpr.py` | generates source forms of jpr (case orders, nested or flat, places of the plain code) for `par.py` |
 | `z21_veto.patch`, `veto.py` | popt with `-DVETO`: every block move (M), loop inversion (I) and jump turn (S) has a number; single ones can be left out. Finds which decisions of popt lead to the original |
-| `popt_D41.patch` | the D41 change (section 3), against src/cmd/popt/z21.c |
+| `popt_D41.patch` | the D41 change (dropped, section 3), against src/cmd/popt/z21.c |
 
 A TRACE build of spopt (`-DTRACE`, run as `spopt + in.s out.s` on the raw code of one function, `sccvc -S` without -O)
 prints every block codemove moves (`/*CM L.. refc ..*/`) and the nodes after each pass.
