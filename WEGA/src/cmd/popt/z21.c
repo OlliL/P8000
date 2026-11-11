@@ -1075,6 +1075,10 @@ struct node *p;
 #ifdef OLD_D20
 	struct node *rp;
 #endif
+#ifdef OLD_D20S
+	struct node *rp;
+	int ncjp = 0;
+#endif
 
 	p1 = p;
 	if (p1->op != JP)
@@ -1091,6 +1095,18 @@ struct node *p;
 #ifdef OLD_D20
 			/* the old popt has removed a jump to the next label already: the block goes on behind it */
 			if (p3->op == JP && p3->ref) {
+				for (rp = p3->forw; rp && (rp->op == LABEL || rp->op == KCOMMENT); rp = rp->forw)
+					if (rp == p3->ref)
+						break;
+				if (rp == p3->ref)
+					continue;
+			}
+#endif
+#ifdef OLD_D20S
+			/* vc: as D20, only for a straight block (no conditional jump) that no other jump names */
+			if (p3->op == CJP)
+				ncjp++;
+			if (p3->op == JP && p3->ref && ncjp == 0 && p1->ref->refc == 1) {
 				for (rp = p3->forw; rp && (rp->op == LABEL || rp->op == KCOMMENT); rp = rp->forw)
 					if (rp == p3->ref)
 						break;

@@ -11,3 +11,6 @@ set before use.
 - `par.py`, `jgen_jpr.py`: eight parallel work copies of the model, generated source forms of jpr.
 - `bv.sh`, `cgb.sh`, `cpb.sh`: spopt, scodgen, scparse of vc with other switches into a private copy of OLDROOT.
 - `realcas.sh`: the real build of src/cmd/cas with such a root, stripped, compared with /bin/cas.
+- `pb.sh NAME "DEFINES"`: spopt of vc with the defines of the segvc rule replaced by DEFINES (so a switch can also be left
+  out, which `bv.sh` cannot), into `o_NAME`; `PSED` (a sed script) or `PPY` (a python script taking the file) change z21.c
+  of the copy first. `par.py` takes the base model from `$S/$PBASE` (default `t`).

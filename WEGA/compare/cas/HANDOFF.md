@@ -6,7 +6,7 @@ What is fact is measured; guesses are marked. The history of every attempt: `hos
 
 ## 1 State
 
-- Goal: `/bin/cas` byte-identical. Not reached. Model: 148 of 152 functions strictly exact. The real build (`make` in
+- Goal: `/bin/cas` byte-identical. Not reached. Model: 149 of 152 functions strictly exact. The real build (`make` in
   src/cmd/cas, stripped) has the size of the original (89152); 42524 bytes differ, all behind the first open function.
 - Open:
 
@@ -14,18 +14,17 @@ What is fact is measured; guesses are marked. The history of every attempt: `hos
 |---|---|---|---|---|---|
 | yylex | scanner.c | 2600 | 2588 | 26 | place of the `done` block (popt) |
 | jpr | jpr.c | 324 | 324 | 24 | the `plain` block and the loop step are moved (popt) |
-| exprreloc | expr.c | 260 | 258 | 3 | `return (0L)` of the outer default is moved to the dispatch (popt) |
 | main | main.c | 2064 | 2064 | 6 | only the address of `sigdone`; follows from the lengths in front |
 
 - Compiler: `sccvc` = v0p compiled for segmented code. `OLD_VC` in `src/cmd/codgen/oldcc.h` defines `OLD_V0P`, takes
   `OLD_D3KC` out and adds `OLD_D13`, `OLD_D6J`, `OLD_D24`, `OLD_D2S`. scparse (segvc rule of `src/cmd/cparse/Makefile`):
   the switches of v0p with `OLD_D13`, `OLD_D25`. spopt (segvc rule of `src/cmd/popt/Makefile`): the shipped one with
-  `OLD_D13` and `OLD_D45`. Assembler `/lib/old/cas`, library `src/lib/slibc-v11.a`. parser.y and assemble.c without -O.
+  `OLD_D13`, `OLD_D45` and `OLD_D20S`. Assembler `/lib/old/cas`, library `src/lib/slibc-v11.a`. parser.y and assemble.c without -O.
   Description: `host/OLDCC.md`, "The old scc of cas"; witnesses per switch: `host/OLDCC_SWITCHES_VC.md` (generated).
 - checkall on commit 1da06ff8: ALL OK, corpus cas 657 of 657. Not run again after the source commits behind it
   (`default:` first in five functions); run it before anything is called done.
 - Switches with one witness in cas, provisional (`host/OLDCC.md` section 5): `OLD_D2S` (symtype), `popt:OLD_D45`
-  (stabout). D45 is to be replaced by D41 if D41 works out (section 3).
+  (stabout), `popt:OLD_D20S` (exprreloc).
 
 ## 2 Tools
 
@@ -50,6 +49,7 @@ that session (`S=/tmp/claude-1000/...`): set `S` in each script before use.**
 | File | What it does |
 |---|---|
 | `bv.sh "CFLAGS"` | spopt of vc with other switches, built in a copy of src/cmd/popt, into a private copy of OLDROOT |
+| `pb.sh NAME "DEFINES"` | spopt of vc with the segvc defines replaced (a switch can be left out), `PSED`/`PPY` patch z21.c first, into `o_NAME` |
 | `cgb.sh NAME "SW +SW"` | scodgen of vc without (or with, `+`) switches into the private root `o_NAME` |
 | `cpb.sh NAME "FLAGS"` | scparse of vc with other flags into `o_NAME` |
 | `realcas.sh NAME` | the real build of src/cmd/cas with the root `o_NAME` (`cur`: OLDROOT), stripped, `cmp` with /bin/cas |
@@ -69,38 +69,15 @@ Rules that cost time when forgotten:
 
 ## 3 The open functions: what is known
 
-All three are one question: our spopt moves a block that the original leaves where it stands (`codemove` in
+jpr and yylex: the same question: our spopt moves a block that the original leaves where it stands (`codemove` in
 src/cmd/popt/z21.c, called from `iterate`).
 
-### The lead: D41
+### exprreloc: solved by `OLD_D20S`; D41 dropped
 
-- Rule: after codemove has moved a block to a jump, the sweep of iterate goes on behind the moved block; the jumps
-  inside the moved block are not looked at in the same pass (`return p3` in place of `return p2`). Exception: the
-  entry code of the function (label L1xxxx), moved as shipped (witness lstrest).
-- Measured without D45, sources as committed: exprreloc and stabout exact (the two functions without a source form),
-  lstrest, lstsync exact; then open: exprval 30, osymout 17, symtype 18, yylex 34, jpr 36 (26 with the best form), main.
-- Why it is plausible: it explains "a block moved out of a block just moved" (the dispatch goes to the switch head, and
-  the default at its end is then not taken in the same pass) with one change, and it needs no D45.
-- What speaks against it so far: exprval, osymout, symtype were exact and are not under D41. Their source forms were
-  found under the shipped popt; they have to be searched again under D41. symtype: 30 orders of its inner switch, best
-  5 (order 2, 0, 1; left: the body of case 2 stands at the end of the dispatch, the original has the bodies of 1 and 2
-  behind the return). exprval and osymout: not looked at.
-- Already done for D41: `default:` is the first case in exprtype, evalint, genlop, iputline, symreloc (inner switch:
-  default, 1, 0, 2). These are exact under the committed spopt and under D41. With the default last they were exact
-  only under the committed one. Guess: the author of cas wrote `default:` first; try that first in every switch.
-- How to go on: apply `popt_D41.patch` behind a switch `OLD_D41` (8 characters) in the segvc rule in place of
-  `OLD_D45`, build a private root (`bv.sh "-DOLD_D41"`), and search exprval, osymout, symtype with `par.py` (module
-  runs, 7 s each). Then jpr and yylex under it. Take D41 only when no exact function is lost; then matrix, checkall,
-  `OLDCC.md` (D45 section and section 5).
-
-### exprreloc (3 lines)
-
-- Source found: inner cases ascending; case 0x24 is `if (v & 8) v |= 0; else v |= 0;` (the compare without a jump).
-- Left: `subl rr2,rr2` of the outer `default: return (0L)` stands at the end in front of the exit in the original, both
-  dispatches jump to it; ours moves it to the outer dispatch. 40 source forms: all 3 or more.
-- On the raw code: the original comes out when the block has no jump to the exit behind it while codemove looks at the
-  jump of the dispatch. D41 gives it exactly. Also exact, but with losses: `OLD_D20` (9 lost), D20 for a block of one
-  instruction (exprval lost), D20 for a jump left by a block move (exprtype, evalint, genlop lost with default last).
+- `OLD_D20S` (OLDCC.md, D20): a straight block whose label only one jump names and that ends in a jump to the label right
+  behind it is not moved. exprreloc exact, nothing lost. D41 (the sweep goes on behind a moved block) is dropped: the
+  earlier "D41 without D45" had D45 in (bv.sh cannot remove it; `pb.sh` in poptveto replaces the defines); alone it leaves
+  stabout open, exprval only with an odd string order, symtype at 5 (OLDCC_LOG 2026-11-11).
 
 ### jpr (24 lines; 22 with other forms)
 
@@ -113,7 +90,8 @@ src/cmd/popt/z21.c, called from `iterate`).
   helps, so the original makes a move ours does not make.
 - Tried without success: about 1500 generated forms under the committed spopt (best 22), 72 under D41 (best 26), if
   chains in place of the switches (28 to 48), three plain copies (26), the second switch nested in case 0x56.
-- Same kind as exprreloc: a default block that ends in `return (0)` is not moved to the end of its dispatch.
+- Same kind as exprreloc: a default block that ends in `return (0)` is not moved to the end of its dispatch. `OLD_D20S`
+  does not reach it: 48 forms (each plain site inline or `goto plain`, all orders of the first switch) give 22 at best.
 
 ### yylex (26 lines)
 

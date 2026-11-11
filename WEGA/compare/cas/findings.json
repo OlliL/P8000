@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "e59459a3",
+ "measured_at": "4c5ae426",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -411,9 +411,8 @@
   "exprreloc": {
    "file": "expr.c",
    "orig": "0x4fb2",
-   "status": "open",
-   "note": "Source: case 0x24 as `if (v & 8) v |= 0; else v |= 0;` (the compare without a jump: both bits are 0, likely macros). Left (3 lines): the `return (0L)` of the outer default stays at the end in front of the exit in the original, ours moves it to the dispatch; the layout of the original comes out when the block has no jump to the exit behind it while codemove looks at it (spopt with OLD_D20 gives exactly the original for this function, but loses 9 others).",
-   "lines": 3
+   "status": "exact",
+   "note": "Source: case 0x24 as `if (v & 8) v |= 0; else v |= 0;` (the compare without a jump: both bits are 0, likely macros). Left (3 lines): the `return (0L)` of the outer default stays at the end in front of the exit in the original, ours moves it to the dispatch; the layout of the original comes out when the block has no jump to the exit behind it while codemove looks at it (spopt with OLD_D20 gives exactly the original for this function, but loses 9 others)."
   },
   "exprval": {
    "file": "expr.c",

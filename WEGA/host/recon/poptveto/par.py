@@ -1,7 +1,7 @@
 """par.py: parallel tries. run(tasks) with tasks = [(name, module, {file: text}, popt)], returns {name: (lines of FUNCS..., others)}"""
 import os, re, shutil, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
-S='/tmp/claude-1000/-mnt-share-cvs-P8000/6b8d4c9d-ace2-40e9-b4e5-33a880fd019b/scratchpad'
+S='/tmp/SCRATCH'
 W='/mnt/share/cvs/P8000/WEGA'
 E=W+'/host/z8k-emu/z8k-emu'
 N=8
@@ -10,7 +10,7 @@ def setup():
     for i in range(N):
         d='%s/w%d'%(S,i)
         shutil.rmtree(d,ignore_errors=True); os.makedirs(d)
-        shutil.copytree(S+'/t/d12model_cas', d+'/d12model_cas')
+        shutil.copytree(S+'/'+os.environ.get('PBASE','t')+'/d12model_cas', d+'/d12model_cas')
         shutil.copytree(W+'/src/cmd/cas', d+'/src', ignore=shutil.ignore_patterns('build','old','*.o'))
         for b in ('d45','A','B','cur'):
             root = '/mnt/share/cvs/P8000/tmp/oldroot' if b=='cur' else '%s/o_%s'%(S,b)

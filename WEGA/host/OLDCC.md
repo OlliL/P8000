@@ -148,7 +148,7 @@ neutral on cas when added, alone and all together), with these differences:
   (the mask of a long cast to a pointer, as vk) and `OLD_D2S` (symtype, one witness);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
   `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
-- spopt: the shipped one with `OLD_D13` and `OLD_D45` (v0p has no switch in popt).
+- spopt: the shipped one with `OLD_D13`, `OLD_D45` and `OLD_D20S` (v0p has no switch in popt).
 
 Which switch has which witness in cas: `OLDCC_SWITCHES_VC.md` (all blocks of v0p are measured there; a switch without a
 witness in cas is in vc because it is in v0p). `sccvc` is the compiler of `src/cmd/cas/Makefile` (`old/cas` stays with scc;
@@ -407,6 +407,10 @@ write these operands in the order that gives the bytes (`argregs`, `rmconv`, `cl
 - v0p: no old popt. The models built with the original /lib/popt as the pass of ccv0p are byte-identical to those with our popt.
 - v1 `OLD_D20` (popt): a `jpr` to the label right behind it does not end a block to be moved, so short blocks in front of the function
   exit stay (ld ensure_buf, load1).
+- vc `OLD_D20S` (popt): the same, but only for a straight block (no conditional jump in front of that `jpr`) whose label no other
+  jump names. Witness: exprreloc of cas (the outer `default: return (0L);`, `subl rr2,rr2` in front of the exit, stays behind the
+  dispatch codemove has moved; both dispatches jump to it). Without the limits exprval loses (its `return (v)`, refc 7, and the
+  inner default are moved in the original); symtype and jdist need the limit to straight blocks. One witness, provisional.
 - How popt places a block, and so what the source must look like: `codemove` moves a block behind a jump to the site of a jump to it. What
   decides is whether the node in front of a target is a jump: `if (c) goto L; L:` leaves `jpr L2; L:` and codemove takes the block,
   `if (!c) { L: ... }` does not. `xjump` in iterate looks one hop along a chain of jumps, and `comjump` runs before `rmove`: how many jumps
@@ -474,7 +478,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cas | main.c | old scc |  | x |  |  |  | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | nodes.c | old scc | x | x |  |  | x | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | parser.y (parser.c) | old scc | x | x | x |  | x | x | ? |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | expr.c | old scc | x | x | x |  |  | x |  |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | expr.c | old scc | x | x | x |  |  | x |  |  |  | x |  | x | x |  |  |  |  |  |  | x |  |  |  |  |  |
 | cas | p2loop.c | old scc |  | x | x |  |  | x |  | x |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | ofile.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | gen.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -545,7 +549,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
 - Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
   - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
-  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout): one witness, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
+  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout) and `OLD_D20S` (popt, exprreloc): one witness each, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
   - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.
