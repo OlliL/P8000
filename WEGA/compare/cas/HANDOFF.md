@@ -1,43 +1,50 @@
 # cas: handoff
 
-State of the reconstruction of `/bin/cas` (src/cmd/cas) on 2026-11-10, branch toolchain, up to commit ffaf62d9
-and the commit of this file. Extract of `host/OLDCC_LOG.md` (entries 2026-11-09 and 2026-11-10), `compare/cas/findings.json`
+State of the reconstruction of `/bin/cas` (src/cmd/cas) on 2026-11-11, branch toolchain, up to the commit of this file. Extract of `host/OLDCC_LOG.md` (entries 2026-11-09 and 2026-11-10), `compare/cas/findings.json`
 and the working knowledge of the sessions. What is fact is measured; guesses are marked as such.
 
-## 1 State
+## 1 State (2026-11-11)
 
-- Compiler: sccvc (`OLD_VC` in `src/cmd/codgen/oldcc.h`, the `segvc` rules of cparse and popt, `/lib/vc/*` of OLDROOT),
-  linked with `src/lib/slibc-v11.a`, assembled by `/lib/old/cas`. `old/cas` is built by the shipped scc with `OLD_CAS`.
-- Model (d12model + strictcmp): 148 of 152 functions strictly exact, 4 open (2026-11-10, after the vc switches D2S, D4A, D2CV, D45 and the source forms of K2 and sgetnode). Text, data and bss
-  have the original sizes; `/bin/cas` is not byte-identical because the open functions have other lengths and every
-  address behind them moves.
+- Compiler: sccvc = v0p compiled for segmented code (`OLD_VC` in `src/cmd/codgen/oldcc.h` defines `OLD_V0P`, takes
+  `OLD_D3KC` out and adds `OLD_D13`, `OLD_D6J`, `OLD_D24`, `OLD_D2S`; scparse: the switches of v0p with `OLD_D13`,
+  `OLD_D25`; spopt: the shipped one with `OLD_D13`, `OLD_D45`), `/lib/vc/*` of OLDROOT; linked with
+  `src/lib/slibc-v11.a`, assembled by `/lib/old/cas`. `old/cas` is built by the shipped scc with `OLD_CAS`.
+- Model (d12model + strictcmp): 148 of 152 functions strictly exact. The real build (`make` in src/cmd/cas, stripped)
+  has the size of /bin/cas (89152) since scparse of vc has `OLD_D12`; 42524 bytes differ, all behind the first open
+  function. `/bin/cas` is not byte-identical.
 - Open functions (strictcmp: original size, model size, lines):
 
 | Function | Orig | Model | Lines | Kind |
 |---|---|---|---|---|
 | yylex | 2600 | 2588 | 26 | popt: place of the `done` block |
-| jpr | 324 | 324 | 24 | popt: place of the `plain` block and of the loop step |
+| jpr | 324 | 324 | 24 | popt: the `plain` block is moved, the original leaves it |
 | exprreloc | 260 | 258 | 3 | popt: the `return (0L)` of the outer default is moved to the dispatch |
 | main | 2064 | 2064 | 6 | only the address of `sigdone` (lengths in front) |
 
+- checkall of 2026-11-11 (commit f2471806): ALL OK, corpus cas 657 of 657. A second run on the state with vc as v0p
+  was started; its result is in `tmp/tmp/checkall_n2.log` (see OLDCC_LOG for the outcome).
 - Commands (from WEGA, `O=/mnt/share/cvs/P8000/tmp/oldroot`, `T` a scratch directory, wrappers `cc_vc` = `z8k-emu -r $O
   /bin/sccvc`, `cas_old` = `z8k-emu -r $O /lib/old/cas`):
 
       RECON_PROG=cas RECON_TMP=$T/t CCHOST=$T/cc_vc CAS=$T/cas_old python3 host/recon/d12model.py -q
+      D12_ONLY=jpr ... d12model.py -q            # only this module again: 7 s instead of 90
       RECON_PROG=cas RECON_TMP=$T/t python3 host/recon/strictcmp.py [-v FUNC]      # STRICT_CTX=n for context
       MATRIX_VER=vc sh host/recon/oldcc.sh matrix [-j N] [SWITCH ...]               # host/OLDCC_SWITCHES_VC.md
       MATRIX_VER=vc sh host/recon/oldcc.sh matrix check
       make -C host oldroot ; make -C host checkall WEGA=<WEGA_ROOT>
 
-- Scratch tools used in the sessions (not in git; worth putting into host/recon when cas is taken up again):
-  - `vmodel.py FILE FUNC OLD NEW...`: each NEW in place of OLD in src/cmd/cas/FILE, model, strictcmp line of FUNC,
-    file restored. The workhorse of the source form search (about 1.5 minutes per variant).
-  - `pt.sh FUNC [spopt]`: the raw code of FUNC from `sccvc -S` without -O, run through a TRACE build of spopt (built
-    from a copy of src/cmd/popt with `-DSPOPT -DOLD_D13 -DTRACE` by ccv0p); prints `/*CM ...*/` for every block codemove
-    moves and the nodes after each iteration. Needs y.tab.h of the model for scanner.c.
-  - `bv.sh "CFLAGS"`: spopt of vc with test switches into OLDROOT/lib/vc/spopt, whole model, better/worse list.
-    Always copy the original spopt back afterwards.
-  - `cgb.sh`, `cpb.sh`: the same for scodgen (switches out of / into `OLD_VC`) and scparse.
+- Tools of the night in `host/recon/poptveto` (README there): private roots with other passes (`bv.sh`, `cgb.sh`,
+  `cpb.sh`), parallel models (`par.py`), the real build (`realcas.sh`), and the veto popt (`veto.py`).
+
+### Switch review of 2026-11-11 (owner's mandate: switches with 1 to 3 witnesses)
+
+- Removed: `OLD_D4A` (igetexpr, sgetexpr: the source form `l = igetexpr(); return (opseg(l));`), `OLD_D2PV` (now part
+  of `OLD_D2PO` in every version), `OLD_D2CV` (v0's `OLD_D2C` does it), and the whole list of 27 codgen switches of vc
+  (vc is v0p; only D13, D6J, D24, D2S and the missing D3KC are its own).
+- Kept with one witness: `OLD_D2S` (symtype, seven source forms tried), `popt:OLD_D45` (stabout), `OLD_D2PO` (stenter;
+  the switch is v0p's). Kept with two or three: `OLD_D2C` (asmword, stenter), `OLD_D2U` (opmul, xtol), `OLD_D3J`
+  (locadv, lstflag, setsec); all three are switches of v0 or v0p with their own witnesses there.
+- Not looked at for source forms yet: `cparse:OLD_D6T` (yyparse only), `OLD_D2M` (4 witnesses now).
 
 ## 2 What we learned in general
 
