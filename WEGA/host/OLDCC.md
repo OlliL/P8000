@@ -191,9 +191,10 @@ Free registers and pairs:
   pair, and only rr0 or rr2 (an idle rr4 stays when rr6 is free: cas opxor, opor, opand, opshl, opshr, opadd, opsub); two idle words of a pair are given back and merge; for a word an idle lighter pair is given back and split.
 - v0p `OLD_D2PO`: an idle odd word whose even half is free is given back when a pair is wanted and the even half weighs less
   than the first free pair (refid, dclstruct).
-- vc `OLD_D2PO` with `OLD_D2PV`: as v0p, but not for a word that holds a parameter. Witness of `OLD_D2PO`: stenter of cas
-  (`p2->s_12 = blklevel` behind `... = (char *)p2 - (char *)STAB`: r3 still holds the constant 0x30, r2 is free, the address
-  takes rr2 and the value r0). Witness of the limit: symtype of cas (r3 holds the parameter `n`, the address goes to rr0).
+- `OLD_D2PO` leaves a word that holds a parameter (in every version: the passes built by v0p do not change with the limit).
+  vc has `OLD_D2PO` too. Witness in cas: stenter (`p2->s_12 = blklevel` behind `... = (char *)p2 - (char *)STAB`: r3 still holds
+  the constant 0x30, r2 is free, the address takes rr2 and the value r0); witness of the limit: symtype of cas (r3 holds the
+  parameter `n`, the address goes to rr0).
 - v0 `OLD_D2W6`: when a pair is asked for and rr2 and rr0 are taken, rr6 comes before rr4 (refid, argalloc); only the pair
   request, not the free list.
 - v0p `OLD_D2PT`: OLD_D2P also takes the idle registers of a TEMP (conval).
@@ -274,9 +275,6 @@ followed by `ld r7,S0`.
   home in the frame; those between other parameters keep theirs (block: the spill `ldm` is contiguous).
 - v0 `OLD_D4O` (codgen, stmt): the parameter list is walked from its end, so the register parameters are copied in the order of
   their declaration (`ld r14,r7; ld r13,r6`).
-- vc `OLD_D4A` (reader3.c store): in `return (f(g()))` the only argument of the returned call is not stored in a
-  temporary, also when it holds a call (`call g; ldl rr6,rr2; call f`); as a statement (`p2rep(igetw());`, p2tag,
-  yyparse) and with two arguments (`mknode1(3, igetl())`) it is, as in the shipped compiler. cas igetexpr, sgetexpr.
 - Open: the rule of the spill itself (libc swap: the home of `x`, whose address is taken, written as `0(r15)`, of `l` as `@r15`;
   sld: a long parameter cast to a pointer read from its spill slot).
 
@@ -546,7 +544,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
 - Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
   - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
-  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype), `OLD_D4A` (igetexpr and sgetexpr, copies of each other); `OLD_D2CV` has two (asmword, stenter). `OLD_D2PO` in vc (stenter) and its limit `OLD_D2PV` (symtype): one witness each. `OLD_D45` (popt, stabout): one witness, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
+  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype); `OLD_D2CV` has two (asmword, stenter). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout): one witness, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
   - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.

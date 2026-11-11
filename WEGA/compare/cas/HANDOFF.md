@@ -172,7 +172,7 @@ and the working knowledge of the sessions. What is fact is measured; guesses are
 
 ### stenter (ssymtab.c): solved
 
-- `OLD_D2PO` (the switch of v0p) in vc with the limit `OLD_D2PV` (not for a word that holds a parameter: symtype).
+- `OLD_D2PO` (the switch of v0p) in vc; its limit (not for a word that holds a parameter: symtype) is part of D2PO in every version.
   The cause was the constant 0x30 of `(char *)p2 - (char *)STAB` two statements above, idle in r3.
 - Lesson: a register difference in one statement can come from what an earlier statement left idle; replace the
   statements in front one by one.
@@ -219,10 +219,8 @@ Descriptions in host/OLDCC.md (D2, D4); the attempts in OLDCC_LOG.md 2026-11-10.
 - symtype (K5), `OLD_D2S` (allo3.c): a word in r3 widened to long takes the pair rr2 (`ldk r2,#0`). Source form with it:
   `unsigned n; ip->s_2 = n;` (with `(long)(unsigned)n` the D3P rule reloads n). The first version for any odd
   register cost locadv (r7 is widened into a new rr2 in the original), opshort, asmins; restricted to r3.
-- igetexpr, sgetexpr (K3), `OLD_D4A` (reader3.c store): in `return (f(g()))` the only argument is not stored in a frame
-  temporary. As a statement (`p2rep(igetw());`: p2tag, yyparse) and with two arguments (`mknode1(3, igetl())`) the
-  original does store, so the rule is limited to RET. The first try in argplace had no effect (the temporary comes
-  from stoarg).
+- igetexpr, sgetexpr (K3): `OLD_D4A` is removed again (2026-11-11); the source form `l = igetexpr(); return (opseg(l));`
+  is exact without a switch.
 - asmword (K14) and the reload of `name` in stenter, `OLD_D2CV` (allo3.c): the copy of a name in a register holds no
   name, the allo3.c part of v0's `OLD_D2C` (the whole of D2C does not build in vc: its match3.c part needs OLD_D2V).
   Two witnesses.

@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "ee972e17",
+ "measured_at": "e59459a3",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -655,13 +655,13 @@
    "file": "getops.c",
    "orig": "0x7fee",
    "status": "exact",
-   "note": "`return (opseg(igetexpr()))`: sccvc stores the inner value in a frame temporary, the original not; `l = igetexpr(); return (opseg(l));` copies to rr10. Left for the end. Cluster K3."
+   "note": "Source: case 37 as the cases 35 and 36, `l = igetexpr(); return (opseg(l));` (the copy to rr10 is dead in front of the exit and goes)."
   },
   "sgetexpr": {
    "file": "getops.c",
    "orig": "0x8146",
    "status": "exact",
-   "note": "Cluster K3. Cluster K3."
+   "note": "As igetexpr."
   },
   "getop": {
    "file": "getops.c",

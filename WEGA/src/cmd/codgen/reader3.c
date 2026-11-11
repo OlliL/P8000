@@ -1160,18 +1160,6 @@ store(p)
 	if (ty == LTYPE)
 		return;
 	switch (o) {
-#ifdef OLD_D4A
-	case RET:
-		/* vc: return (f(g())): the only argument of the returned call is not stored in a temporary, also when it
-		   holds a call (cas igetexpr, sgetexpr); as a statement it is (p2tag, yyparse) */
-		if ((p->in.left->in.op == CALL || p->in.left->in.op == FCALL) && p->in.left->in.right->in.op != CM) {
-			store(p->in.left->in.left);
-			store(p->in.left->in.right);
-			callflag++;
-			return;
-		}
-		break;
-#endif
 	case UCALL:
 	case UFCALL:
 	case USTCALL:

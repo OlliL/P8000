@@ -73,7 +73,8 @@ igetexpr()
 		l = igetexpr();
 		return (opoff(l));
 	case 37:
-		return (opseg(igetexpr()));
+		l = igetexpr();
+		return (opseg(l));
 	}
 }
 
@@ -139,7 +140,8 @@ sgetexpr()
 		l = sgetexpr();
 		return (opoff(l));
 	case 37:
-		return (opseg(sgetexpr()));
+		l = sgetexpr();
+		return (opseg(l));
 	}
 }
 
