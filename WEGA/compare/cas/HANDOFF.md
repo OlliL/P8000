@@ -103,6 +103,11 @@ src/cmd/popt/z21.c, called from `iterate`).
   character tests away. Under D41: 103. A scratch copy of that form is not kept; it is described in OLDCC_LOG.
 - Tried: stopping the inversion scan at a jump (136 exact) or at a return (140), smaller windows, vetoing the move at
   the first sites (35 at best).
+- Lead (2026-11-11, not taken, OLDCC_LOG): the inversion that spoils the natural form fails when refcount keeps a label no
+  jump names in front of another label (not in front of an L1xxxx label): natural form 43, model unchanged. The natural
+  form is not the original's (its head lacks the first `ld r2,r13`; the original's bodies jump back into the head), so the
+  open question stays why codemove takes the done head at `tok = 3` and not at the first `goto done`.
+- jpr under `OLD_D20S`: the veto search gives the same plateau of 10 (moves of 116 and 129, inversion at 107).
 - The present source has many gotos (`goto other; tilde: ... dot: ... other:`); they were found under the shipped popt
   and may hide the natural form.
 
