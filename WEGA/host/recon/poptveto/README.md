@@ -28,3 +28,11 @@ set before use.
   conditional jumps of the block), `jn`, `jc`, `jl`, `pre` (in front of the site), `lr` (refc of the block's label).
 - `pveto.py` also checks a pattern in the produced code (`pat`: in jpr, plain behind the body of case 0x36) and prints the
   veto sets that have it; `bfs(..., start=[...])` goes on from given sets.
+- `vpatchX.py`: as `vpatchF.py`, and also the chain rule of iterate (R), the removal of a jump to the next label (N), each
+  step of xjump (X) and each pair of comjump/backjmp (B) can be vetoed. `s2.py`: test rule S2 (see OLDCC_LOG 2026-11-12).
+- Pitfalls of the veto search (2026-11-12): a vetoed set can make spopt loop for ever. Then (a) the emulator keeps running
+  after d12model's timeout (it kills only the wrapper; the guest's children are host processes): the slot wrappers run the
+  compiler under `timeout -s KILL 20`, which kills the whole process group; (b) the old model stayed in the slot and
+  strictcmp reported the value of the run before: `run` removes the module's .o/.s and the model first, a failed run is
+  None; (c) the looping spopt writes millions of events to veto.log: only the first 300 lines are read (a run of 42 GB was
+  killed by the kernel). Results of veto searches before these fixes can hold single wrong values.

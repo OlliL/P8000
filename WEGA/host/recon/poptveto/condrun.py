@@ -11,7 +11,7 @@ def one(arg):
     r=subprocess.run(['sh',S+'/tools/pb.sh',name,DEF],env=env,capture_output=True,text=True)
     if 'built' not in r.stdout: return name,cond,'NOBUILD '+r.stdout[-200:]
     cc=S+'/cc_'+name
-    open(cc,'w').write('#!/bin/sh\nexec %s -r %s/o_%s /bin/sccvc "$@"\n'%(E,S,name)); os.chmod(cc,0o755)
+    open(cc,'w').write('#!/bin/sh\nexec timeout -s KILL 60 %s -r %s/o_%s /bin/sccvc "$@"\n'%(E,S,name)); os.chmod(cc,0o755)
     env=dict(os.environ,RECON_PROG='cas',RECON_TMP=S+'/t_'+name,CCHOST=cc,CAS=S+'/cas_old')
     subprocess.run(['python3',W+'/host/recon/d12model.py','-q'],env=env,capture_output=True,cwd=W)
     out=subprocess.run(['python3',W+'/host/recon/strictcmp.py'],env=env,capture_output=True,text=True,cwd=W).stdout
