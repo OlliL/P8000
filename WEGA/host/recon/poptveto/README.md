@@ -21,3 +21,10 @@ set before use.
 - `vpatch.py`, `vpatchF.py`: `PPY` scripts for `pb.sh` that apply `z21_veto.patch`; `vpatchF.py` also offers a forward loop
   inversion (the conditional jump stands behind the jump) as event `F`, done only when listed in `/tmp/veto.txt`.
 - `pb.sh` replaces whatever defines the segvc rule has (`-DSPOPT ...`).
+- `condrun.py NAME=COND ...`: spopt with a patch (`CPPY`, default `d41c.py`) whose C condition is COND, built and measured on
+  the whole model, eight at a time. `d41c.py`: the sweep goes on behind a moved block when COND holds; `refuse.py`:
+  codemove refuses the move when COND holds; `refuse2.py`: the same with a helper `backloop(p1, p3)` (the block ends in a
+  jump back to a loop head that is fallen into). COND may use the TRACE features of the move: `tn`, `tc` (instructions and
+  conditional jumps of the block), `jn`, `jc`, `jl`, `pre` (in front of the site), `lr` (refc of the block's label).
+- `pveto.py` also checks a pattern in the produced code (`pat`: in jpr, plain behind the body of case 0x36) and prints the
+  veto sets that have it; `bfs(..., start=[...])` goes on from given sets.

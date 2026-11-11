@@ -38,23 +38,41 @@ def run(module, func, fidx, V):
                     if int(f)==fidx: ev.append((int(k),t,int(lab)))
                 except ValueError: pass
         except OSError: pass
-        return tuple(V), lines, ev
+        return tuple(V), lines, ev, pat(d)
     finally:
         free.put(i)
-def bfs(module, func, fidx, depth, keep=None):
+def bfs(module, func, fidx, depth, keep=None, start=None):
     seen={}
-    front=[()]
+    front=start or [()]
     with ThreadPoolExecutor(N) as ex:
         for d in range(depth+1):
             res=list(ex.map(lambda V: run(module,func,fidx,list(V)), front))
-            for V,l,ev in res: seen[V]=(l,ev)
-            best=sorted((l if l is not None else 9999,V) for V,l,ev in res)
+            for V,l,ev,pp in res: seen[V]=(l,ev,pp)
+            best=sorted((l if l is not None else 9999,V) for V,l,ev,pp in res)
+            pb=sorted((l if l is not None else 9999,V) for V,l,ev,pp in res if pp)
+            print('   plain-behind-A:',len(pb),pb[:6],flush=True)
             print('depth',d,'runs',len(res),'best',best[:5],flush=True)
             if best and best[0][0]==0: return best[0]
             nxt=set()
-            for V,l,ev in res:
+            for V,l,ev,pp in res:
                 if keep and l is not None and l>keep: continue
                 for k,t,lab in ev:
                     if (not V or k>max(V)) and k not in V: nxt.add(tuple(sorted(V+(k,))))
             front=sorted(nxt)
     return None
+
+def pat(d):
+    """plain behind A in jpr: first jpput after the tok==0x51 compare and before the cp 0x19 (25) of the second dispatch"""
+    L=open(d+'/d12model_cas/jpr.s').read().split('\n')
+    try:
+        a=next(i for i,l in enumerate(L) if '#81' in l and 'stkseg' in l)
+    except StopIteration: return None
+    j=[i for i,l in enumerate(L) if '_jpput' in l]
+    c=[i for i,l in enumerate(L) if 'cp\tr2,#25' in l]
+    if not j or not c: return None
+    first=j[0]
+    return a < first < c[0]
+def runp(module, func, fidx, V):
+    i=free.get(); free.put(i)
+    r=run(module,func,fidx,V)
+    return r
