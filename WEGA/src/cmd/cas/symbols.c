@@ -175,6 +175,9 @@ int idx;
 		if ((sp->s_7 & 1) != 0) {
 			ip = itabp(sp->s_8);
 			switch (ip->s_0 & 0xFF) {
+			default:
+				error(2, "Unknown area\n");
+				break;
 			case 1:
 				v |= 4;
 				break;
@@ -184,8 +187,6 @@ int idx;
 			case 2:
 				v |= 6;
 				break;
-			default:
-				error(2, "Unknown area\n");
 			}
 		}
 		if (segmode != 0) {

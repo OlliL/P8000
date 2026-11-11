@@ -92,6 +92,9 @@ int flag;
 	register long r;
 
 	switch (np->n_type) {
+	default:
+		error(2, "Must be number or expression\n");
+		break;
 	case 3:
 		if (segmode != 0 && addrflag != 0)
 			np->n_u.l |= 0x80000000L;
@@ -116,8 +119,6 @@ int flag;
 			genw((int)v, (int)r, 1);
 		shortop = 0;
 		break;
-	default:
-		error(2, "Must be number or expression\n");
 	}
 }
 

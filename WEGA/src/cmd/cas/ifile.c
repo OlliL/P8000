@@ -268,6 +268,10 @@ iputloc()
 iputline()
 {
 	switch (curline - lastline) {
+	default:
+		iputb(15);
+		iputw(curline);
+		break;
 	case 1:
 		iputb(16);
 		break;
@@ -277,9 +281,6 @@ iputline()
 	case 3:
 		iputb(18);
 		break;
-	default:
-		iputb(15);
-		iputw(curline);
 	}
 	lastline = curline;
 }

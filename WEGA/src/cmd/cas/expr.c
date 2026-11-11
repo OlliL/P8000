@@ -24,6 +24,9 @@ NODE *np;
 	struct sym *sp;
 
 	switch (np->n_type) {
+	default:
+		error(2, "Cannot determine expression type\n");
+		break;
 	case 3:
 		return (3);
 	case 7:
@@ -37,8 +40,6 @@ NODE *np;
 		return (1);
 	case 0x19:
 		return (np->n_u.cc.c1);
-	default:
-		error(2, "Cannot determine expression type\n");
 	}
 }
 
@@ -47,12 +48,13 @@ evalint(np)
 NODE *np;
 {
 	switch (np->n_type) {
+	default:
+		error(2, "Must be simple expression\n");
+		break;
 	case 7:
 		return ((int)symval(np->n_u.pw.w));
 	case 0x19:
 		return ((int)(symval((np->n_u.cp.p1)->n_u.pw.w) + (np->n_u.cp.p2)->n_u.l));
-	default:
-		error(2, "Must be simple expression\n");
 	}
 }
 
