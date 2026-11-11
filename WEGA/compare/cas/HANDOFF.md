@@ -1,241 +1,155 @@
 # cas: handoff
 
-State of the reconstruction of `/bin/cas` (src/cmd/cas) on 2026-11-11, branch toolchain, up to the commit of this file. Extract of `host/OLDCC_LOG.md` (entries 2026-11-09 and 2026-11-10), `compare/cas/findings.json`
-and the working knowledge of the sessions. What is fact is measured; guesses are marked as such.
+State of the reconstruction of `/bin/cas` (src/cmd/cas) on 2026-11-11, branch toolchain, up to the commit of this file.
+What is fact is measured; guesses are marked. The history of every attempt: `host/OLDCC_LOG.md` (entries 2026-11-09 to
+2026-11-11, search for "cas"). Per function: `compare/cas/findings.json`, `FINDINGS.md`.
 
-## 1 State (2026-11-11)
+## 1 State
 
-- Compiler: sccvc = v0p compiled for segmented code (`OLD_VC` in `src/cmd/codgen/oldcc.h` defines `OLD_V0P`, takes
-  `OLD_D3KC` out and adds `OLD_D13`, `OLD_D6J`, `OLD_D24`, `OLD_D2S`; scparse: the switches of v0p with `OLD_D13`,
-  `OLD_D25`; spopt: the shipped one with `OLD_D13`, `OLD_D45`), `/lib/vc/*` of OLDROOT; linked with
-  `src/lib/slibc-v11.a`, assembled by `/lib/old/cas`. `old/cas` is built by the shipped scc with `OLD_CAS`.
-- Model (d12model + strictcmp): 148 of 152 functions strictly exact. The real build (`make` in src/cmd/cas, stripped)
-  has the size of /bin/cas (89152) since scparse of vc has `OLD_D12`; 42524 bytes differ, all behind the first open
-  function. `/bin/cas` is not byte-identical.
-- Open functions (strictcmp: original size, model size, lines):
+- Goal: `/bin/cas` byte-identical. Not reached. Model: 148 of 152 functions strictly exact. The real build (`make` in
+  src/cmd/cas, stripped) has the size of the original (89152); 42524 bytes differ, all behind the first open function.
+- Open:
 
-| Function | Orig | Model | Lines | Kind |
-|---|---|---|---|---|
-| yylex | 2600 | 2588 | 26 | popt: place of the `done` block |
-| jpr | 324 | 324 | 24 | popt: the `plain` block is moved, the original leaves it |
-| exprreloc | 260 | 258 | 3 | popt: the `return (0L)` of the outer default is moved to the dispatch |
-| main | 2064 | 2064 | 6 | only the address of `sigdone` (lengths in front) |
+| Function | File | Orig | Model | Lines | What differs |
+|---|---|---|---|---|---|
+| yylex | scanner.c | 2600 | 2588 | 26 | place of the `done` block (popt) |
+| jpr | jpr.c | 324 | 324 | 24 | the `plain` block and the loop step are moved (popt) |
+| exprreloc | expr.c | 260 | 258 | 3 | `return (0L)` of the outer default is moved to the dispatch (popt) |
+| main | main.c | 2064 | 2064 | 6 | only the address of `sigdone`; follows from the lengths in front |
 
-- checkall of 2026-11-11 on commit 1da06ff8 (vc as v0p): ALL OK, corpus cas 657 of 657.
-- Best lead for the popt functions: D41 (the sweep of iterate goes on behind a moved block, not for the entry code;
-  `host/recon/poptveto/popt_D41.patch`): exprreloc and stabout exact without D45, but exprval, osymout, symtype then
-  need other source forms (not found), yylex and jpr stay open (OLDCC_LOG 2026-11-11).
-- Commands (from WEGA, `O=/mnt/share/cvs/P8000/tmp/oldroot`, `T` a scratch directory, wrappers `cc_vc` = `z8k-emu -r $O
-  /bin/sccvc`, `cas_old` = `z8k-emu -r $O /lib/old/cas`):
+- Compiler: `sccvc` = v0p compiled for segmented code. `OLD_VC` in `src/cmd/codgen/oldcc.h` defines `OLD_V0P`, takes
+  `OLD_D3KC` out and adds `OLD_D13`, `OLD_D6J`, `OLD_D24`, `OLD_D2S`. scparse (segvc rule of `src/cmd/cparse/Makefile`):
+  the switches of v0p with `OLD_D13`, `OLD_D25`. spopt (segvc rule of `src/cmd/popt/Makefile`): the shipped one with
+  `OLD_D13` and `OLD_D45`. Assembler `/lib/old/cas`, library `src/lib/slibc-v11.a`. parser.y and assemble.c without -O.
+  Description: `host/OLDCC.md`, "The old scc of cas"; witnesses per switch: `host/OLDCC_SWITCHES_VC.md` (generated).
+- checkall on commit 1da06ff8: ALL OK, corpus cas 657 of 657. Not run again after the source commits behind it
+  (`default:` first in five functions); run it before anything is called done.
+- Switches with one witness in cas, provisional (`host/OLDCC.md` section 5): `OLD_D2S` (symtype), `popt:OLD_D45`
+  (stabout). D45 is to be replaced by D41 if D41 works out (section 3).
 
-      RECON_PROG=cas RECON_TMP=$T/t CCHOST=$T/cc_vc CAS=$T/cas_old python3 host/recon/d12model.py -q
-      D12_ONLY=jpr ... d12model.py -q            # only this module again: 7 s instead of 90
-      RECON_PROG=cas RECON_TMP=$T/t python3 host/recon/strictcmp.py [-v FUNC]      # STRICT_CTX=n for context
-      MATRIX_VER=vc sh host/recon/oldcc.sh matrix [-j N] [SWITCH ...]               # host/OLDCC_SWITCHES_VC.md
-      MATRIX_VER=vc sh host/recon/oldcc.sh matrix check
-      make -C host oldroot ; make -C host checkall WEGA=<WEGA_ROOT>
+## 2 Tools
 
-- Tools of the night in `host/recon/poptveto` (README there): private roots with other passes (`bv.sh`, `cgb.sh`,
-  `cpb.sh`), parallel models (`par.py`), the real build (`realcas.sh`), and the veto popt (`veto.py`).
+All commands from `WEGA/`. `O=/mnt/share/cvs/P8000/tmp/oldroot` (made by `make -C host oldroot`), `T` a scratch
+directory with two wrappers: `cc_vc` = `z8k-emu -r $O /bin/sccvc "$@"`, `cas_old` = `z8k-emu -r $O /lib/old/cas "$@"`.
 
-### Switch review of 2026-11-11 (owner's mandate: switches with 1 to 3 witnesses)
+| Command | What it does |
+|---|---|
+| `RECON_PROG=cas RECON_TMP=$T/t CCHOST=$T/cc_vc CAS=$T/cas_old python3 host/recon/d12model.py -q` | the model: all modules compiled, linked under the data layout of the original (90 s) |
+| the same with `D12_ONLY=jpr` (comma list) | only these modules again, the rest from the last model (7 s); `D12_SRC=dir` takes the sources from a copy |
+| `RECON_PROG=cas RECON_TMP=$T/t python3 host/recon/strictcmp.py [-v FUNC]` | every function against the original; `STRICT_CTX=n` lines of context for `-v` |
+| `RECON_PROG=cas python3 host/recon/odis.py LO HI` | disassemble a range of the original (hex addresses; `findings.json` has them) |
+| `RECON_PROG=cas RECON_TMP=$T/t python3 host/recon/findings.py cas` | status into `findings.json`, writes `FINDINGS.md` |
+| `MATRIX_VER=vc sh host/recon/oldcc.sh matrix [-j N] [SWITCH ...]` | each switch of vc taken out alone: `host/OLDCC_SWITCHES_VC.md` |
+| `MATRIX_VER=vc sh host/recon/oldcc.sh matrix check` | the table against the sources; before a commit that touches a switch |
+| `make -C host oldroot WEGA=<WEGA_ROOT>` | the old compilers into OLDROOT, from the working tree (2.5 min) |
+| `make -C host checkall WEGA=<WEGA_ROOT>` | everything (20 min); builds from a copy, do not change OLDROOT while it runs |
 
-- Removed: `OLD_D4A` (igetexpr, sgetexpr: the source form `l = igetexpr(); return (opseg(l));`), `OLD_D2PV` (now part
-  of `OLD_D2PO` in every version), `OLD_D2CV` (v0's `OLD_D2C` does it), and the whole list of 27 codgen switches of vc
-  (vc is v0p; only D13, D6J, D24, D2S and the missing D3KC are its own).
-- Kept with one witness: `OLD_D2S` (symtype, seven source forms tried), `popt:OLD_D45` (stabout), `OLD_D2PO` (stenter;
-  the switch is v0p's). Kept with two or three: `OLD_D2C` (asmword, stenter), `OLD_D2U` (opmul, xtol), `OLD_D3J`
-  (locadv, lstflag, setsec); all three are switches of v0 or v0p with their own witnesses there.
-- Not looked at for source forms yet: `cparse:OLD_D6T` (yyparse only), `OLD_D2M` (4 witnesses now).
+`host/recon/poptveto/` (README there) holds the scratch tools of 2026-11-11. **Their paths name a scratch directory of
+that session (`S=/tmp/claude-1000/...`): set `S` in each script before use.**
 
-## 2 What we learned in general
+| File | What it does |
+|---|---|
+| `bv.sh "CFLAGS"` | spopt of vc with other switches, built in a copy of src/cmd/popt, into a private copy of OLDROOT |
+| `cgb.sh NAME "SW +SW"` | scodgen of vc without (or with, `+`) switches into the private root `o_NAME` |
+| `cpb.sh NAME "FLAGS"` | scparse of vc with other flags into `o_NAME` |
+| `realcas.sh NAME` | the real build of src/cmd/cas with the root `o_NAME` (`cur`: OLDROOT), stripped, `cmp` with /bin/cas |
+| `par.py` | eight work copies of the model; `run(tasks)` measures source variants in parallel under any private root |
+| `jgen_jpr.py` | generates source forms of jpr (case orders, nested or flat, places of the plain code) for `par.py` |
+| `z21_veto.patch`, `veto.py` | popt with `-DVETO`: every block move (M), loop inversion (I) and jump turn (S) has a number; single ones can be left out. Finds which decisions of popt lead to the original |
+| `popt_D41.patch` | the D41 change (section 3), against src/cmd/popt/z21.c |
 
-### Method
+A TRACE build of spopt (`-DTRACE`, run as `spopt + in.s out.s` on the raw code of one function, `sccvc -S` without -O)
+prints every block codemove moves (`/*CM L.. refc ..*/`) and the nodes after each pass.
 
-- Source forms first, for the whole program; switches only for what no form explains; an existing switch (also one of
-  another version) before a new one. The two-witness rule holds; a switch with one witness is not taken.
-- The open clusters of the night (K1 .. K14) turned out to be source forms in most cases, also those that looked like
-  popt differences. Before a layout difference is called a compiler difference, try:
-  - `if (c) A else B` against early `return`/`goto` and the inverted condition (`if (v & 8) X else Y`);
-  - how a case or a block ends: `break`, `return (v)`, `continue`, a fall into the code behind the switch;
-  - the order of the cases (codgen emits the bodies in source order, the dispatch sorted by value);
-  - `while (a && b)` against `while (a) { if (!b) break; ...}`;
-  - a missing `return` at the end (the value left in r2: jprange, a quirk);
-  - one shared tail by `goto` (jpr `plain`);
-  - for registers: a plain parameter walked by a register copy (`opmatch`), a cast of an int parameter (the vc rule of
-    D3P reloads it from its home: error, optim), the declaration order of register variables.
-- Measure every variant on the whole model (vmodel.py); the effect is often in other functions of the same file.
-- Check for "hidden" witnesses: a source form found under the present popt can hide a switch, and a switch can make a
-  form unnecessary (symreloc first looked like a D20 witness, then `return (v)` in the cases made it exact without D20).
-- `MATRIX_VER=vc oldcc.sh matrix` measures every switch of vc on cas (lost / gained functions, changed lines, data
-  bytes). On 2026-11-10 no vc switch was without effect; D2M, D2U have two witnesses, D3J three; `popt:OLD_D13` changes
-  only data (the `.addr` jump tables, 382 bytes); `cparse:OLD_D6T` only yyparse and data; D3K, D6T (codgen) and D13
-  (codgen) cannot be taken out alone (no build / intermediate file / register jam).
+Rules that cost time when forgotten:
+- The cpp of the old compilers reads 8 characters of a macro name (`OLD_D2POV` was `OLD_D2PO`).
+- Measure on the whole model: a change of popt or of a source form shows in other functions of the same file.
+- Print little: filter the output of searches (`sort -n | head`), long lists are expensive.
+- Commit every finding at once (the owner's wish), with a dated entry in `host/OLDCC_LOG.md`.
 
-### Compiler facts found for cas (now in host/OLDCC.md)
+## 3 The open functions: what is known
 
-- vc has `OLD_D24` and `OLD_D25` of vk: a long cast to a pointer is masked through a copy (`ldl rr2,rr0; and r2,#%7F00`).
-  Witnesses yylex (`alias`) and igetaddr. This needs the node union of cas with pointer members (`n_u.p`, `cp.p1`, ...)
-  and the symbol name as `s_name` (a union with `s_2`), else every node operand gets a mask.
-- `OLD_D13` in scparse, scodgen, spopt and cas: bit 31 of segmented address constants and `.addr` lists stays.
-- vc rule of `OLD_D3P`: a cast of an int parameter loads it from its frame home (iputw, sputw, error, optim); for a
-  widening to long the original takes the register (symtype), see K5.
+All three are one question: our spopt moves a block that the original leaves where it stands (`codemove` in
+src/cmd/popt/z21.c, called from `iterate`).
 
-### popt (spopt of vc = the shipped one with OLD_D13)
+### The lead: D41
 
-- The remaining layout differences are all of one kind: our codemove moves a block out of a block it has just moved,
-  before the jump of that block to the label behind it (now adjacent) is taken away; and xjump/comjump then keep
-  another copy of a common tail. The original does this in some functions (exprtype: default moved out of the moved
-  dispatch) and not in others (exprreloc, jpr, yylex, stabout). No rule separates them.
-- Measured and dropped (whole model, `/lib/vc/spopt`; details in OLDCC_LOG 2026-11-10):
+- Rule: after codemove has moved a block to a jump, the sweep of iterate goes on behind the moved block; the jumps
+  inside the moved block are not looked at in the same pass (`return p3` in place of `return p2`). Exception: the
+  entry code of the function (label L1xxxx), moved as shipped (witness lstrest).
+- Measured without D45, sources as committed: exprreloc and stabout exact (the two functions without a source form),
+  lstrest, lstsync exact; then open: exprval 30, osymout 17, symtype 18, yylex 34, jpr 36 (26 with the best form), main.
+- Why it is plausible: it explains "a block moved out of a block just moved" (the dispatch goes to the switch head, and
+  the default at its end is then not taken in the same pass) with one change, and it needs no D45.
+- What speaks against it so far: exprval, osymout, symtype were exact and are not under D41. Their source forms were
+  found under the shipped popt; they have to be searched again under D41. symtype: 30 orders of its inner switch, best
+  5 (order 2, 0, 1; left: the body of case 2 stands at the end of the dispatch, the original has the bodies of 1 and 2
+  behind the return). exprval and osymout: not looked at.
+- Already done for D41: `default:` is the first case in exprtype, evalint, genlop, iputline, symreloc (inner switch:
+  default, 1, 0, 2). These are exact under the committed spopt and under D41. With the default last they were exact
+  only under the committed one. Guess: the author of cas wrote `default:` first; try that first in every switch.
+- How to go on: apply `popt_D41.patch` behind a switch `OLD_D41` (8 characters) in the segvc rule in place of
+  `OLD_D45`, build a private root (`bv.sh "-DOLD_D41"`), and search exprval, osymout, symtype with `par.py` (module
+  runs, 7 s each). Then jpr and yylex under it. Take D41 only when no exact function is lost; then matrix, checkall,
+  `OLDCC.md` (D45 section and section 5).
 
-| Variant | Exact | Effect |
-|---|---|---|
-| codemove from the last jump backwards | 105 | - |
-| a block ending in a jump to a jump stays (R1, R1b) | 131 | only jpput/jrput, which then went by source form |
-| CJP skip before jump chain shortening | 128 | jpr2 lost |
-| loop inversion also behind a jump (D32) | 128 | blkclose lost |
-| smaller window of loop inversion (n 20/16/12) | 123-128 | - |
-| inversion tried first for a block behind a jump (D38/D39, split dispatch) | 107 / 131 | stabout worse |
-| codemove goes on behind the moved block (D41) | 126 | exprreloc 11 > 9, exprtype etc. lost |
-| comjump once before the first iterate (D43) | 128 | - |
-| `OLD_D20` (v1) on the present sources | 127 | symreloc (since solved by source), sgetnode 1 |
-| D36/D37 (CJP to a loop exit not shortened; inversion takes the last CJP) | 132 | jdeps only, later solved by source |
-| features of the 19 jump sites of yylex `done` as a rule (D40) | 21-131 | - |
-| `OLD_D29` (vk) | 134 | no change |
-| `OLD_D20` on the sources of 2026-11-10 (exprreloc pre-check form) | 137 of 152 | exprreloc exact; exprtype, evalint, exprval, opshort, opseg, opoff, symtype, genlop, jdist lost |
-| D20 only for a jump over another label | 145 | no effect |
-| a target behind a jump to itself counts as fallen into (D44) | 134 | jpr unchanged, 11 lost |
-| no turn of a conditional jump when codemove can take the straight block of the jump behind it and that block ends in a jump to a block behind a jump (D45, taken as `OLD_D45`) | 146 | stabout exact, nothing lost; jpr 24 (size as the original); one witness |
+### exprreloc (3 lines)
 
-- Per module (spopt variants against each source file): no module fits another popt any more (symbols.c did, until
-  symreloc's source form). symbols.c built by sccv1 or sccvk differs in codgen: cas is one compiler.
-- Without `-O` is excluded for the open functions: they all show popt work (moved dispatch, rotated loops, merged
-  tails, `testl`); only `assemble.c` is built without -O (as in the original).
+- Source found: inner cases ascending; case 0x24 is `if (v & 8) v |= 0; else v |= 0;` (the compare without a jump).
+- Left: `subl rr2,rr2` of the outer `default: return (0L)` stands at the end in front of the exit in the original, both
+  dispatches jump to it; ours moves it to the outer dispatch. 40 source forms: all 3 or more.
+- On the raw code: the original comes out when the block has no jump to the exit behind it while codemove looks at the
+  jump of the dispatch. D41 gives it exactly. Also exact, but with losses: `OLD_D20` (9 lost), D20 for a block of one
+  instruction (exprval lost), D20 for a jump left by a block move (exprtype, evalint, genlop lost with default last).
 
-### The old codgen, what the raw code shows
+### jpr (24 lines; 22 with other forms)
 
-- `ldk Rn,#k` comes only from templates 004 (`x = k` into a register variable) and 053 (a constant as the value of an
-  expression). Before a call r7/rr6, r5/rr4, r3, r2 are the argument registers (kernel `physio(..., dev, 1)`:
-  `ld r3,dev; ldk r2,#1`).
+- The original read as a loop inversion with the far conditional jump `cp r2,#0x36`: behind the entry jump stand the
+  body of case 0x36, the plain block (`jpput(tok, list); return (0);`), the second half of the second dispatch with
+  the error, the loop step and the test; the rest of the body follows.
+- With the veto popt and `default: plain: jpput(tok, list); return (0);` in the first switch (`goto plain` in case 3
+  and at the type test): leaving out the two moves of the plain block (label 115) gives 10 lines, for every order of
+  the first switch. The 10 left are the order of the plain block and the body of case 0x36; no further veto pair
+  helps, so the original makes a move ours does not make.
+- Tried without success: about 1500 generated forms under the committed spopt (best 22), 72 under D41 (best 26), if
+  chains in place of the switches (28 to 48), three plain copies (26), the second switch nested in case 0x56.
+- Same kind as exprreloc: a default block that ends in `return (0)` is not moved to the end of its dispatch.
 
-## 3 Per open function
+### yylex (26 lines)
 
-### yylex (scanner.c), 26 lines
+- Only difference: the done head (`ld r2,r13; cp r13,#0x22; jp eq; cp r13,#0x23; jp eq; ld r2,r13; jp exit`, the head
+  of `switch (tok)` with dispatch and `return (tok)`) stands behind `tok = 3` (end of the `.` body, original 0x0C08);
+  ours puts it at the first `goto done` (tok 0x56). The other lines are jump lengths.
+- The natural form (the done switch written behind `tok = 3` with `goto invalid` / `goto unknown`, the two bodies at
+  the end with `return (tok)`) gives the done block byte for byte, but 671 lines: our loop inversion takes the `goto
+  done` at the end of the `%` block (the default of its `switch (c)`) as a back jump and moves done and the three
+  character tests away. Under D41: 103. A scratch copy of that form is not kept; it is described in OLDCC_LOG.
+- Tried: stopping the inversion scan at a jump (136 exact) or at a return (140), smaller windows, vetoing the move at
+  the first sites (35 at best).
+- The present source has many gotos (`goto other; tilde: ... dot: ... other:`); they were found under the shipped popt
+  and may hide the natural form.
 
-- Source forms found (306 > 26): `~` and `.` bodies as goto targets behind the names with their tests behind them
-  (`goto other; tilde: ... dot: ... other: if (c == '~') goto tilde; ...`); decimal number: test `c == '.' || c == 'e'
-  || c == 'E'` first, the plain number behind; `(long)(unsigned)(idx = stlook(...)) == 0`; `alias:`/`found:` inside the
-  block of an unknown name; local name looked up when stlook finds it, 0x57 behind; `if (isdef(idx)) goto value;`;
-  exponent digits first; the cases of `done` end with `break`.
-- Left: the place of the `done` block (`ld r2,r13; cp r13,#0x22; jp eq; cp r13,#0x23; jp eq; ld r2,r13; jp exit`, its
-  content is now the original's). Original: behind `tok = 3` at the end of the `.` body (all six jumps of the names go
-  to `%0C08`); ours: at the first `goto done` of the list (tok 0x56). About 15 of the 26 lines are jr/jp lengths behind
-  it. 5 lines were the mask of `alias` (now D24/D25).
-- Tried without success: `done` written behind the `.` body (with its switch 104 lines: the case bodies come along,
-  the original has them at the end of the function; with `goto invalid/unknown` 671: xjump turns the fall into done into
-  a jump and our spopt moves done away; without xjump 646); bodies of `~`/`.` at the end before done (364/378); the
-  ends of done (`default: break/return`, `return (tok)` in cases: 26/29); the features of the 19 jump sites (the
-  original's site is the first whose block is reached only by its label and whose following label no jump names) as a
-  popt rule: all worse.
-- Assessment: a popt order question (where codemove puts a block reached by 24 jumps); one witness, no mechanism.
+## 4 What is settled (do not search again)
 
-### jpr (jpr.c), 22 lines
+- `ldk r2,#4` (igetaddr, putrow): `switch (sizeof(pointer)) { case 4: ...; case 2: ...; }`; the compiler keeps the load
+  of the constant and only the matching case.
+- sgetnode, jprange: no `return` behind the switch (r2 holds the value by chance).
+- yyparse: listp is the second member of `struct lwalk` (the unused word behind yyv); a guess, only the layout is known.
+- igetexpr, sgetexpr: `l = igetexpr(); return (opseg(l));`, no switch.
+- stenter: `OLD_D2PO` of v0p. symtype: `OLD_D2S` (seven source forms without it failed).
+- stabout: exact with `popt:OLD_D45` or with D41. The mechanism: at `jpr ne,L183; jpr L181; L183:` of `if (*p == 0)
+  break; p++;` the original lets codemove take the head of `switch (tag)` before the conditional jump is turned.
+- The quirks of the original: `host/KNOWLEDGE.md`, "Bugs and quirks", rows `/bin/cas`.
+- Not exact but by design: escape and digval are static (no symbol in the real build; the model gives them one).
 
-- Forms found: switches on `p->n_type`, `e->n_type` and `res`; the three `jpput(tok, list); return (0)` as `goto plain`
-  with `plain:` at the end (26 > 22).
-- Left: (a) the `plain` block: original behind the body of case 0x36, ours right behind the entry; (b) the loop step
-  `p = p->n_next` with the test: in the original the default (error) falls into it, ours has it behind case 0x19;
-  (c) which copy of `ldl off,rr2` stays (original: in case 7, case 0x19 jumps to it).
-- Tried: all 24 orders of the cases 3, 7, 0x19, default (before and with `goto plain`), `continue` instead of `break`,
-  0x36 as `if ... continue`, the e-switch nested in case 0x56, `default: plain:` inside the first switch, `res` switch
-  variants; none below 22.
-- Assessment: popt order (which copy of a tail stays, block moved out of a moved dispatch); same kind as exprreloc.
-  jpr is no witness of a split dispatch: our spopt splits its dispatch too.
+## 5 Lessons for the search
 
-### stabout (ofile.c): exact with `popt:OLD_D45` (one witness, provisional)
-
-- Original: behind the entry jump `jr X` stand the second half of the tag dispatch (`cp r2,#2b; jr eq,C2b`) and the
-  test with the error branch of the first check behind the switch (sect); the name loop (rotated) follows, at its exit
-  only `ld tag; cp r2,#2a; jr ne,REST` and case 0x2a. Ours: the whole dispatch at the loop exit.
-- Mechanism (measured on the raw code): at `jpr ne,L183; jpr L181; L183:` of `if (*p == 0) break; p++;` the original
-  does not turn the conditional jump; codemove takes the head of `switch (tag)` to the `break` first. Our iterate turns
-  the jump before codemove sees it.
-- D45 (`popt:OLD_D45`, OLDCC.md) writes that as a rule: stabout exact, no function
-  lost (146 of 152). One witness; jpr is touched by it but not solved. Taken on 2026-11-10 (owner: switches and
-  source forms until byte identity, then every switch of vc with one or two witnesses is checked again).
-- Tried as source: nine more loop forms, the switch inside the loop (34), case order, `default`, if/else-if.
-
-### exprreloc (expr.c), 3 lines
-
-- Forms found: inner cases ascending (0x23, 0x24, 0x25), each `if (v & 8) X else Y`; case 0x24 with `v |= 0` on both
-  sides (11 > 3: the compare without a jump of the original is an if/else whose two stores vanish).
-- Left: the outer `default: return (0L)` (`subl rr2,rr2`) stands at the end in front of the exit in the original and
-  both dispatches jump to it; ours moves it to the outer dispatch.
-- Measured on the raw code: the original comes out exactly when, at the time codemove looks at the jump of the
-  dispatch, the `subl` block has no `jpr` to the exit behind it. `OLD_D20` does that and gives exprreloc exactly, but
-  loses 9 exact functions (exprtype, evalint, exprval, opshort, opseg, opoff, symtype, genlop, jdist: their blocks in
-  front of the exit are moved in the original). A D20 only for a jump over another label: no effect.
-- Tried on the new form: `return (0L)` behind the switch, with `break` (3); case 5 falling into the default (6); `v`
-  declared in a block (same).
-
-### stenter (ssymtab.c): solved
-
-- `OLD_D2PO` (the switch of v0p) in vc; its limit (not for a word that holds a parameter: symtype) is part of D2PO in every version.
-  The cause was the constant 0x30 of `(char *)p2 - (char *)STAB` two statements above, idle in r3.
-- Lesson: a register difference in one statement can come from what an earlier statement left idle; replace the
+- A supposed compiler difference was a source form five times on 2026-11-10/11 (constant switch, missing return,
+  `v |= 0`, a struct member, the uniform `l = ...; return (f(l));`). Try forms first; but a form found under one popt
+  can hide a rule of popt, and a rule can make an odd form unnecessary.
+- A register difference in one statement can come from what an earlier statement left idle in a register: replace the
   statements in front one by one.
-
-### main (main.c), 6 lines
-
-- Only the address of `sigdone` in the `signal` calls; follows from the lengths of the functions in front. Expected
-  to vanish when the others are exact.
-
-### sgetnode (getops.c): solved
-
-- No `return (np)` behind the switch (the value is still in rr2). Lesson: a missing load of the return value at the
-  exit is a missing `return`, not a popt question (jprange was the first).
-
-### yyparse (parser.y): solved
-
-- The two lines were the address `&yyv[-1]`: the unused word of the bss stands behind yyv, in front of listp. listp is
-  now the second member of `struct lwalk` (pst.c, a guess: only the layout is known). Witness of `cparse:OLD_D6T` as
-  before.
-
-### igetaddr (ifile.c), putrow (instr.c): solved (K2)
-
-- `ldk r2,#4` is the value of a constant switch: `switch (sizeof(struct irow *)) { case 4: ...igetl()...; case 2:
-  ...igetw()...; }`. sccvc forces the value into r2, drops the dispatch and keeps the matching case. Both places pass
-  a pointer through the long routines of the intermediate file. putrow is exact as a whole with it (the loop order
-  too). The bodies of `case 2` are dead and guessed.
-- Lesson: an unexplained constant load into r2 is a switch value; a layout difference near it can follow from the
-  blocks of that switch.
-
-## 4 Quirks of the original found in cas (host/KNOWLEDGE.md, quirks table)
-
-- `opoff`: `mknode1(3, (unsigned char)value)` passes a word where a long is wanted.
-- `genwop`: dead branch `if (segmode != 0 && flag != 0) v |= 0x80000000L`.
-- `jprange`: no `return` behind the switch, returns tok by chance (r2).
-- `exprreloc` case 0x24: `if (v & 8) v |= 0; else v |= 0;` (a compare whose result nothing uses).
-- `sgetnode`: no `return (np)`.
-- `igetaddr`, `putrow`: `switch (sizeof(pointer))`, a dead case for a pointer of 2 bytes.
-
-## 5 Solved by vc switches with the owner's exception (2026-11-10)
-
-All three measured on the whole model (no exact function lost), the matrix confirms the witnesses, checkall ALL OK.
-Descriptions in host/OLDCC.md (D2, D4); the attempts in OLDCC_LOG.md 2026-11-10.
-
-- symtype (K5), `OLD_D2S` (allo3.c): a word in r3 widened to long takes the pair rr2 (`ldk r2,#0`). Source form with it:
-  `unsigned n; ip->s_2 = n;` (with `(long)(unsigned)n` the D3P rule reloads n). The first version for any odd
-  register cost locadv (r7 is widened into a new rr2 in the original), opshort, asmins; restricted to r3.
-- igetexpr, sgetexpr (K3): `OLD_D4A` is removed again (2026-11-11); the source form `l = igetexpr(); return (opseg(l));`
-  is exact without a switch.
-- asmword (K14) and the reload of `name` in stenter: `OLD_D2C` of v0 (vc is v0p now; `OLD_D2CV` is gone).
-
-## 6 Open decisions
-
-- popt order: yylex, jpr, exprreloc; no mechanism found (section 2).
-- Plan of the owner (2026-11-10): switches and source forms until /bin/cas is byte-identical; checkall; then the vc
-  switches with one or two witnesses (`OLDCC_SWITCHES_VC.md`) against source forms again. checkall of 2026-11-10 on
-  the sources of commit 0e4d95ba: ALL OK, corpus cas 657 of 657 (host and wega).
-- main follows from the lengths in front; yyparse is the D6T/data witness.
+- When a function resists every form, find the single decisions of popt that differ (`veto.py`), then look for the
+  rule or the form behind them.
+- Evidence rules: `host/HOWTO_reconstruct.md`. Natural form before switch, switch before odd form; a new switch with
+  one witness is provisional and listed in `OLDCC.md` section 5.
