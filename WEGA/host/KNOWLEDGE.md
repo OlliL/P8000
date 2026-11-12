@@ -1522,7 +1522,8 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   `src/lib/libc/oldcc`, see "oldlibc":
   - `malloc`: one instruction, `mult rr2,r6` against `mult rr2,0(r15)`. `swap`: `0(r15)` against `@r15`, a register known in the shipped cc.
     `symscan`: `ld r3,..; lda r4,..` where the shipped cc takes r2, r3. `nlist`: only the frame, 2 bytes less. These look like a
-    compiler between ccv1 and the shipped cc (a guess); the frame of `nlist` not understood.
+    compiler between ccv1 and the shipped cc (a guess); the frame of `nlist` not understood. The segmented twins in slibc show the
+    same differences; measured there and the C source of symscan: `src/lib/libc/HANDOFF.md`, `src/lib/slibc/HANDOFF.md`.
 - `printf` needs the stdio.h of `src/cmd/cparse` with the shipped cc: `char *_ptr`, so `extsb` behind putc. check.sh tries it.
 - Source forms that gave these members (2026-11-04):
   - Arguments come in registers: printf and scanf copy them into a local array `regs[5]` and hand it over beside the address of the first

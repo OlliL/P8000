@@ -42,8 +42,8 @@ purpose:
   `regs[5]`/`regs[3]`, the flag of `_doprnt` 1 and 3), `stdio/doprnt.c` (revision 2.8 against 2.9 of libc, `%s` a 4 byte
   pointer, see the open members).
 - C, own for slibc: `gen/malloc.c` (the arena is a segment: `mkseg`/`ssgbrk`, BLOCK 2048, maxblocks 32, `INT long`),
-  `gen/segmon.c` (instead of `mon.c`), `gen/symscan.c` (libc has no C source of symscan, only `../libc/oldcc/symscan`;
-  whether this one fits libc is not measured).
+  `gen/segmon.c` (instead of `mon.c`), `gen/symscan.c` (also in `../libc/gen`: there the same one block differs, the member
+  comes from `../libc/oldcc/symscan`).
 - Assembler: every PLZ/ASM source has `$segmented` and segmented instructions; only in slibc: `sys/` chkseg, mkseg, sgbrk,
   sgstat, sprofil, ssgbrk, `csu/scrt0.s`; `crt/mcount.s` is another program; `sys/ulimit.s` another system call number;
   `gen/stfl.s` (cas) segmented; only in libc: `brk.s`, `mon.c`, `csu/crt0.s`.
@@ -131,4 +131,5 @@ roots).
    members again with it (`vl.sh`) and drop `oldcc/` for those that are identical.
 2. `checkall` once with slibc (owner).
 3. Later the merge of slibc into libc (section "Differences to libc").
-4. The other start-up files and objects of `/lib` (`mcrt0.o`, `smcrt0.o`, `cnvt.o`, `scnvt.o`, `doprnt.o`, `sdoprnt.o`), `slibm.a` and the other `s*` libraries.
+4. The other segmented files of `/lib` (`smcrt0.o`, `scnvt.o`, `sdoprnt.o`), `slibm.a` and the other `s*` libraries
+   (the nonsegmented ones: `../libc/HANDOFF.md`).
