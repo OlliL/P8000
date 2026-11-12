@@ -1,0 +1,42 @@
+/* @[$] system.c	2.1  09/12/83 11:17:51 - 87wega3.2 */
+
+#include	<signal.h>
+
+system(s)
+char *s;
+{
+	int i;
+	_system(s,1);
+}
+
+csystem(s)
+char *s;
+{
+	int i;
+	_system(s,0);
+}
+
+_system(s,mode)
+char *s;
+int mode;
+{
+	int status, pid, w;
+	register int (*istat)(), (*qstat)();
+
+	if ((pid = fork()) == 0) {
+		if(!mode)
+			execl("/bin/csh", "csh", "-c", s, (char *)0);
+		else
+			execl("/bin/sh", "sh", "-c", s, (char *)0);
+		_exit(127);
+	}
+	istat = signal(SIGINT, SIG_IGN);
+	qstat = signal(SIGQUIT, SIG_IGN);
+	while ((w = wait(&status)) != pid && w != -1)
+		;
+	if (w == -1)
+		status = -1;
+	signal(SIGINT, istat);
+	signal(SIGQUIT, qstat);
+	return(status);
+}
