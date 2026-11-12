@@ -20,10 +20,19 @@ Members and how they are made (the rules in Makefile):
   first mention, the data psec opened first, the jump table of doprnt as .long): nlist, scanf, printf, swap, segmon, malloc,
   doprnt, symscan. The C sources next to them (gen/, stdio/) are the best known form:
   - scanf, printf, swap: frame and types fit; the code differs in what an older scc does: a[k] of a local array addressed
-    directly (OLDCC.md D5), a parameter taken from its register or its spill slot.
-  - segmon (new, reconstructed): the same, and a long cast to a pointer masked through a copy (D24 with D25).
-  - malloc (segmented: the arena is a segment, mkseg/ssgbrk, BLOCK 2048, maxblocks 32): setbusy/clearbusy masked through a copy.
+    directly (OLDCC.md D5; OLD_D5G does it, but also where the original computes the address: popt p[1], cnvt &buf[9]),
+    a parameter taken from its register or its spill slot. scanf is identical with OLD_D5G.
+  - segmon (new, reconstructed): left are a parameter taken from its register, ++i through a register (as D16A), a long
+    cast to a pointer masked through a copy (D24 with D25).
+  - malloc (segmented: the arena is a segment, mkseg/ssgbrk, BLOCK 2048, maxblocks 32): setbusy/clearbusy masked through a
+    copy (D24 with D25), parameter registers.
   - nlist: the frame 2 bytes smaller than the shipped scc makes it (as in libc); OLD_D1R gives this frame but changes readby.
-  - doprnt: doprnt.c 2.8 (libc has 2.9), not reconstructed yet. symscan: no C source yet.
+  - symscan (new, reconstructed): identical with OLD_D3 (registers kept at the join of &&), which loses getopt, doscan,
+    fltioc, fseek; with the shipped scc one block takes rr2 where the original keeps it.
+  - doprnt: doprnt.c 2.8 (libc has 2.9): %l as an if chain into the cases O X U D behind lng, the minus sign in conv_int,
+    %s a 4 byte pointer, _cnvt an int; left: the same register choice as symscan (rr4 for rr2), two places.
+  Trials with the existing switches (a scratch tree with the passes and the driver sccvk in an own root): no set of them
+  gives all members; vk and vc are further away.
 
-Quirk: ulimit calls system call 65 (nosys in uts/sys/sysent.c); libc calls 54 (ioctl). Kept.
+Quirks: symscan compares a long name by its length only (while (*s++ && *t++ && *t), no compare of the
+characters). ulimit calls system call 65 (nosys in uts/sys/sysent.c); libc calls 54 (ioctl). Kept.

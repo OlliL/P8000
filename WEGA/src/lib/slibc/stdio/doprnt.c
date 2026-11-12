@@ -13,7 +13,6 @@ union lw {
 	unsigned w[2];
 };
 
-char	*_cnvt();
 char	*_fegcvt();
 
 /*
@@ -68,9 +67,9 @@ FILE *file;
 	fpn = 0;
 	count = 0;
 	fpap = fbuf;
+	fldone = 0;
 	ap = argp;
 	fmtlen = _length(fmt);
-	fldone = 0;
 	while (fmtlen--) {
 		if ((c = *fmt++) != '%') {
 			putc(c, file);
@@ -185,28 +184,6 @@ FILE *file;
 			if (++nreg == 5)
 				ap = stkap;
 			goto conv_int;
-		case 'l':
-			if (fmtlen == 0)
-				goto fin;
-			fmtlen--;
-			if ((c = *fmt++) == 'o') {
-		case 'O':
-				base = 8;
-			} else if (c == 'x') {
-		case 'X':
-				base = 16;
-			} else if (c == 'd') {
-		case 'D':
-				base = -10;
-			} else if (c == 'u') {
-		case 'U':
-				base = 10;
-			} else {
-				putc('l', file);
-				putc(c, file);
-				count += 2;
-				goto fin;
-			}
 		lng:
 			if (nreg < 5)
 				_align(&nreg, &ap, stkap);
@@ -216,6 +193,42 @@ FILE *file;
 			if (nreg == 5)
 				ap = stkap;
 			goto conv_int;
+		case 'O':
+			base = 8;
+			goto lng;
+		case 'X':
+			base = 16;
+			goto lng;
+		case 'U':
+			base = 10;
+			goto lng;
+		case 'D':
+			base = -10;
+			goto lng;
+		case 'l':
+			if (fmtlen == 0)
+				goto fin;
+			fmtlen--;
+			if ((c = *fmt++) == 'o') {
+				base = 8;
+				goto lng;
+			}
+			if (c == 'x') {
+				base = 16;
+				goto lng;
+			}
+			if (c == 'd') {
+				base = -10;
+				goto lng;
+			}
+			if (c == 'u') {
+				base = 10;
+				goto lng;
+			}
+			putc('l', file);
+			putc(c, file);
+			count += 2;
+			goto fin;
 		case 'd':
 			base = -10;
 			val.l = *ap++;
@@ -234,16 +247,27 @@ FILE *file;
 				p = buf + (n = 2);
 			} else
 				p = buf;
+			if (base == -10 && val.l < 0) {
+				if (val.l == 0x80000000)
+					base = 10;
+				val.l *= -1;
+				putc('-', file);
+				count++;
+			}
 			str = buf;
-			len = (int) _cnvt(p, base, val.l) + n;
+			len = _cnvt(p, base, val.l) + n;
 			break;
 		case 's':
 			fill = ' ';
-			str = (char *)*ap++;
+			if (nreg < 5)
+				_align(&nreg, &ap, stkap);
+			str = *(char **)ap;
+			ap += 2;
 			if (str == 0)
 				str = nullstr;
 			len = _length(str);
-			if (++nreg == 5)
+			nreg += 2;
+			if (nreg == 5)
 				ap = stkap;
 			break;
 		case 'c':
@@ -262,7 +286,7 @@ FILE *file;
 				ap = (int *)fpap;
 				fpap += 8;
 				fpn++;
-			} else if (fpn == 4) {
+			} else {
 				sap = 0;
 				ap = stkap;
 				nreg += 5;
@@ -364,14 +388,6 @@ FILE *file;
 				putc(fill, file);
 				count++;
 			}
-		if (base == -10 && val.l < 0) {
-			base = 10;
-			val.l *= -1;
-			putc('-', file);
-			count++;
-			str++;
-			len--;
-		}
 		while (len--) {
 			putc((int)*str++, file);
 			count++;

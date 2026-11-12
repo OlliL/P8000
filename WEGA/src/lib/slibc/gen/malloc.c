@@ -88,7 +88,7 @@ register unsigned nbytes;
 	if(temp > maxblocks)
 		return(NULL);
 	nbytes = temp*BLOCK - 1;
-	p = (union store *)ssgbrk(*segbase, nbytes);
+	p = (union store *)ssgbrk(*(char *)&segbase, nbytes);
 	if((INT)p == -1) {
 		temp = ((long)(nw + 1)*WORD + BLOCK-1)/BLOCK;
 		nbytes = temp*BLOCK - 1;

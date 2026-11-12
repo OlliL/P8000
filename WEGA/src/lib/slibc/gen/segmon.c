@@ -59,7 +59,7 @@ struct segrange *sr;
 	for (i = 0; i < 10; i++)
 		segsiz[i] = sr[i].sr_high - sr[i].sr_low;
 	i = (hsize = (cntsiz + 2) << 3) + 160;
-	if ((hdr = (long *)mkseg(0, i)) == (long *)-1) {
+	if ((long)(hdr = (long *)mkseg(0, i)) == -1) {
 		printf("system error %d while doing mkseg\n", errno);
 		return(-1);
 	}
@@ -70,11 +70,12 @@ struct segrange *sr;
 	nsegs = &hdr[3];
 	ctbase = hdr + 4;
 	*nsegs = 0;
-	for (i = 0; sr[i].sr_seg != 0377; i++) {
+	for (i = 0; sr[i].sr_seg != 0377; i++, sh++) {
 		if (i >= 11)
 			return;
 		(*nsegs)++;
-		if ((segbuf[i] = (char *)mkseg(0, segsiz[i])) == (char *)-1) {
+		segbuf[i] = (char *)mkseg(0, segsiz[i]);
+		if ((long)segbuf[i] == -1) {
 			printf("system error %d while doing mkseg\n", errno);
 			return(-1);
 		}
@@ -89,6 +90,5 @@ struct segrange *sr;
 			o = 077777;
 		*sp = o << 1;
 		sprofil(sr[i].sr_seg, segbuf[i], segsiz[i], sr[i].sr_low, o << 1);
-		sh++;
 	}
 }
