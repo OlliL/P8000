@@ -100,9 +100,22 @@ Worked back from the original:
 - On the raw forms these rules give 22 to 24; veto searches with them (fixed, or as events E and V, `evopt.py`), depth
   3, six forms: 10.
 
-## 6 Next
+## 6 Source form `goto done` (2026-11-12, night)
 
-1. Source forms that leave a label between the end of the loop and I (`goto done`/`done:`, labelled empty statement,
-   break label of a switch), each with the entry rule through `jfast.py`.
-2. In the trace of the raw forms: is there a label in front of I in round 2 that D49 should keep and does not?
-3. The way from the raw code to Q4d (plain right in front of init).
+- The unnamed label in front of I comes from the natural form `for (p = list; ; p = p->n_next) { if (p == 0) goto
+  done; ... } done:` (`poptveto/jpr_adb_plain_goto_done.c.txt`, generator `loopforms.py`): the break label of the
+  loop is named by nobody, stands in front of `done:`, D49 keeps it. Shipped vc spopt: 12 (was 24); with D45 without
+  exit (`d45x.py`): 10 on all plain sites, only the place of plain left. This form is the base from now on.
+- Veto search (shipped spopt, all events, depth 3) on it: 8 lines with three vetoes: entry move in pass 1, E to the
+  switch head, step to A's `continue`. The 8 lines: the exit code stands behind plain (codemove moved exit + prologue
+  behind plain's jump because the block runs over `ret`, then init behind the prologue). The original keeps
+  `plain: ...; jr exit`. With `retstop.py` that path is gone (best 10).
+- So the open question is narrow: what puts init (or prologue + init) behind plain, or init with `jp T` behind the
+  prologue (Q6, then rule iv), without moving the exit; and which rule replaces the three vetoes.
+
+## 7 Next
+
+1. Trace the 8-line path (`trsa.sh`-style dump with a TRACE veto spopt) and look for a variant where only the prologue
+   (not the exit) goes behind plain, or init leaves T by a first inversion.
+2. Turn the three vetoes into rules (features of the moves) and check them on the model (`condrun.py`).
+3. Then switch(es) in vc, checkall, matrix.
