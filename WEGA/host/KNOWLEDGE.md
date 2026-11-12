@@ -989,8 +989,8 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/cas` (`sgetnode`) | no `return (np)` behind the switch: the node is returned because rr2 still holds the value of the last call (`mknode1`, `mknode7`, `sgetexpr`); after the error of the default case np is not loaded | kept in src/cmd/cas (getops.c) | compare/cas/findings.json |
 | `/bin/cas` (`exprreloc`) | case 0x24 (`^O`) tests `v & 8` and does nothing with the result (`cpl rr2,#0` without a jump): an if/else that ors 0 in both branches, where 0x23 ors 2 or 0x20 and 0x25 ors 1 or 0x10 | kept in src/cmd/cas (expr.c): `if (v & 8) v |= 0; else v |= 0;` | compare/cas/findings.json |
 | `/bin/cas` (`igetaddr`, `putrow`) | the row address goes through `switch (sizeof(pointer))` with a case for 4 (igetl, iputl) and one for 2; the compiler keeps the load of the constant (`ldk r2,#4`, never read) and drops the case for 2, whose body is not in the binary | kept in src/cmd/cas (ifile.c, instr.c); the body of case 2 (igetw, iputw) is a guess | compare/cas/findings.json |
-| `/lib/libc.a`, `/lib/slibc.a` (`ulimit`) | the system call number of `ulimit` is 54 in libc (that is `ioctl` in `uts/sys/sysent.c`) and 65 in slibc (`nosys`); neither reaches a ulimit | kept (`src/lib/libc/sys/ulimit.s`, `src/lib/slibc/sys/ulimit.s`) | `src/lib/slibc/README` |
-| `/lib/slibc.a` (`symscan`) | a name of more than 8 characters is found by its length only: the loop `while (*s++ && *t++ && *t)` compares no characters | kept (`src/lib/slibc/gen/symscan.c`; the member from `oldcc/symscan`) | `src/lib/slibc/README` |
+| `/lib/libc.a`, `/lib/slibc.a` (`ulimit`) | the system call number of `ulimit` is 54 in libc (that is `ioctl` in `uts/sys/sysent.c`) and 65 in slibc (`nosys`); neither reaches a ulimit | kept (`src/lib/libc/sys/ulimit.s`, `src/lib/slibc/sys/ulimit.s`) | `src/lib/slibc/HANDOFF.md` |
+| `/lib/slibc.a` (`symscan`) | a name of more than 8 characters is found by its length only: the loop `while (*s++ && *t++ && *t)` compares no characters | kept (`src/lib/slibc/gen/symscan.c`; the member from `oldcc/symscan`) | `src/lib/slibc/HANDOFF.md` |
 
 ## ar (reconstructed, byte-identical)
 
@@ -1613,7 +1613,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v9 | ld (07/83); its order conflicts with v6, its versions do not |
 | libc-v10 | write, rmdir (01/83) |
 
-The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see `src/lib/slibc/README`.
+The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see `src/lib/slibc/HANDOFF.md`.
 A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.
 
 `popt` (`z23.c`) uses the value of `sprintf`, the buffer: `strlen(sprintf(t[k].s1, "r%d", n))`. The `sprintf` of the shipped libc returns a count; popt then silently loses its register substitution (r1 becomes r14 without being saved) and the code it makes is wrong. So stage 1 links the old `printf` in front of the shipped libc.
