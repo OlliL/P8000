@@ -60,6 +60,10 @@ Ours (committed form): A, C', E, F, G, H with plain inside H (at the type test),
   stand wrong: the original splits the second dispatch after `cp 7` (`cp 7; jr ne C'`, then G), ours after `cp 0x19`.
   Two more vetoes of any event: no better.
 
+- The split after `cp 7` is the mark of a loop inversion that reached `cp 7` (~35 nodes from the loop head; our window
+  is 24). With u1 and a window of 40 (comment nodes not counted) pass 1 gives `jr T; C'; D; T; E(..jpr plain); A; plain;
+  F(..cp 7; jne C'); ..; H`: the original except that A and plain stand between E and F instead of in front of C'.
+
 ## 4 Ruled out (details in OLDCC_LOG)
 
 D41 and partial D41; chain rule before the sweep; no codemove after a chain retarget; S2 (swap targets of `cjp; jp`);
@@ -67,8 +71,14 @@ two sweeps in iterate; inversion window 12 to 64, with or without comment nodes;
 vc switch (only D45 helps, 24 -> 22, veto search the same); plain inline at each site, as copies, at case 3, at the type
 test; `while` loop with the step in case 0x36; second switch nested in case 0x56 (432 forms); pcc `for` layout by hand.
 
+- Nearest so far (2026-11-12): form `jpr_copy_adb.c.txt` (poptveto; plain as a copy in the default behind A, `goto plain`
+  from the other two users to a copy at the end), the move of E to the switch head left out and the first forward
+  inversion done: 10 lines, only plain stands wrong (at the end of the function instead of behind A). The copy behind A
+  is moved to the end of E and xjump joins it to the end copy.
+
 ## 5 Next
 
-Why the original splits the second dispatch after `cp 7`: trace the u1 path with the three vetoes pass by pass
-(`one.py`, a TRACE build of `vpatchX.py` + u1) and compare the moment the dispatch `cp 3; jeq; cp 7; jeq G; cp 0x19; jeq H;
-jp C` is split with what the original needs (`cp 7; jne C'` with G behind it).
+Rules LJ + rt + u1(b) (OLDCC_LOG 2026-11-12, "plain behind A by rule") with the form `poptveto/jpr_pl1.c.txt` give after
+pass 1 `T E A plain F+dispatch C D jpr-T G H`: the original's prefix except F, which must stand behind the back jump of
+D (then the ordinary inversion at D's back jump gives the original). Open: the move that puts F (with the head of the
+second dispatch, `cp 3; cp 7`) behind D's back jump. LJ alone is neutral on the model.

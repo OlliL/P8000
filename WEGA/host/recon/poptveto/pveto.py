@@ -16,8 +16,8 @@ def setup(files=None, base='t', root='o_veto'):
         for f,t in (files or {}).items(): open(d+'/src/'+f,'w').write(t)
         open(d+'/cc','w').write('#!/bin/sh\nexec timeout -s KILL 20 %s -r %s/root /bin/sccvc "$@"\n'%(E,d)); os.chmod(d+'/cc',0o755)
     for i in range(N): free.put(i)
-def run(module, func, fidx, V):
-    i=free.get()
+def run(module, func, fidx, V, slot=None):
+    i=free.get() if slot is None else slot
     try:
         d='%s/pv%d'%(S,i)
         open(d+'/root/tmp/veto.txt','w').write(' '.join(str(x) for x in [fidx]+sorted(V))+'\n')
@@ -44,7 +44,7 @@ def run(module, func, fidx, V):
         except OSError: pass
         return tuple(V), lines, ev, pat(d)
     finally:
-        free.put(i)
+        if slot is None: free.put(i)
 def bfs(module, func, fidx, depth, keep=None, start=None, expand=None, anyk=False):
     seen={}
     front=start or [()]
