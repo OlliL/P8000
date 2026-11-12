@@ -144,3 +144,7 @@ Worked back from the original:
   prologue (or init) behind plain without the exit code: e.g. the exit code as one node, a block that stops at `ret`
   but is moved with the prologue, or the entry move taking the block from the exit label. Test each as a variant of
   codemove with `jfast.py` on `gd`-like raw code (raw: `sccvc -S` of src/cmd/cas/jpr.c).
+- Natural loop forms instead of `goto done` (do-while in an if, for in an if): 24 to 60, no help.
+- Pass 1 as the original needs it: rules turnable (`poptveto/turnable.py`) + LJ + u1(b) give after pass 1
+  `T(jp E); A; plain; E(jne plain) F d2 C D(jp T); G; H; I` (form `default: plain:` + `goto done`); pass 2 then moves
+  E..D whole to T (62). Veto search on that base running (scratch fvz4.txt).
