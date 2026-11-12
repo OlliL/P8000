@@ -82,3 +82,9 @@ Rules LJ + rt + u1(b) (OLDCC_LOG 2026-11-12, "plain behind A by rule") with the 
 pass 1 `T E A plain F+dispatch C D jpr-T G H`: the original's prefix except F, which must stand behind the back jump of
 D (then the ordinary inversion at D's back jump gives the original). Open: the move that puts F (with the head of the
 second dispatch, `cp 3; cp 7`) behind D's back jump. LJ alone is neutral on the model.
+
+Nearest by rule (2026-11-12, committed): M1 + FW (OLDCC_LOG "the 10-line path by rule") give 10 lines on the
+committed form with nothing lost; the 10 lines are the place of plain. `OLD_D45` skips the turn at the type test of
+case 0x19 (the original has `cp 1; jr ne plain` there); with the exit excluded from D45 the turn happens and nothing is
+lost, but plain is then taken to the end of E (pass 1 or 2) and lands in front of A. Open: why the original never moves
+plain to the end of E while still making the split after `cp 7`.
