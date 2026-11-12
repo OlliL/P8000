@@ -71,10 +71,13 @@ two sweeps in iterate; inversion window 12 to 64, with or without comment nodes;
 vc switch (only D45 helps, 24 -> 22, veto search the same); plain inline at each site, as copies, at case 3, at the type
 test; `while` loop with the step in case 0x36; second switch nested in case 0x56 (432 forms); pcc `for` layout by hand.
 
+- Nearest so far (2026-11-12): form `jpr_copy_adb.c.txt` (poptveto; plain as a copy in the default behind A, `goto plain`
+  from the other two users to a copy at the end), the move of E to the switch head left out and the first forward
+  inversion done: 10 lines, only plain stands wrong (at the end of the function instead of behind A). The copy behind A
+  is moved to the end of E and xjump joins it to the end copy.
+
 ## 5 Next
 
-Traced (OLDCC_LOG 2026-11-12, "A and plain to the front"): with plain never moved, pass 1 moves the step to A's
-`continue` (M105), so the inversion that makes the `cp 7` split puts C' and the step between A and plain. The original
-needs the step (and C') behind plain: `T E A plain C' D jpr-T F ...`; from there our ordinary inversion at D's back jump
-gives the original exactly. Open: which rule (or source form) keeps the step from A's `continue` but lets it land
-behind plain. Tools: `invdump.py` (state after each move and inversion), `pclass.py` (vetoes by event class).
+Two ways from the nearest path: (a) a rule that makes the move of E to the switch head (M109) not happen and the
+forward inversion happen, then plain; (b) why the copy behind A is moved (refc 1, block ending in a jump to the exit).
+The step lands behind C' on that path already.
