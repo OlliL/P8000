@@ -60,6 +60,10 @@ Ours (committed form): A, C', E, F, G, H with plain inside H (at the type test),
   stand wrong: the original splits the second dispatch after `cp 7` (`cp 7; jr ne C'`, then G), ours after `cp 0x19`.
   Two more vetoes of any event: no better.
 
+- The split after `cp 7` is the mark of a loop inversion that reached `cp 7` (~35 nodes from the loop head; our window
+  is 24). With u1 and a window of 40 (comment nodes not counted) pass 1 gives `jr T; C'; D; T; E(..jpr plain); A; plain;
+  F(..cp 7; jne C'); ..; H`: the original except that A and plain stand between E and F instead of in front of C'.
+
 ## 4 Ruled out (details in OLDCC_LOG)
 
 D41 and partial D41; chain rule before the sweep; no codemove after a chain retarget; S2 (swap targets of `cjp; jp`);
@@ -69,6 +73,5 @@ test; `while` loop with the step in case 0x36; second switch nested in case 0x56
 
 ## 5 Next
 
-Why the original splits the second dispatch after `cp 7`: trace the u1 path with the three vetoes pass by pass
-(`one.py`, a TRACE build of `vpatchX.py` + u1) and compare the moment the dispatch `cp 3; jeq; cp 7; jeq G; cp 0x19; jeq H;
-jp C` is split with what the original needs (`cp 7; jne C'` with G behind it).
+Find the move that takes A and plain from behind E to the front (between the entry jump and C'); then E turns to
+`jne plain` by itself. Tools: `invtrace.py` (prints inversions), `one.py`, the veto popt with u1 and window 40.
