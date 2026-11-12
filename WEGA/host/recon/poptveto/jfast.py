@@ -53,7 +53,7 @@ def ours(spopt, raw, func='jpr', verbose=False):
     rel = os.path.relpath(os.path.abspath(spopt), root)
     with tempfile.TemporaryDirectory() as d:
         open(d + '/in.s', 'w').write(open(raw).read())
-        subprocess.run(['timeout', '-s', 'KILL', '20', EMU, '-r', root, '/' + rel, 'in.s', 'out.s'], cwd=d,
+        subprocess.run(['timeout', '-s', 'KILL', os.environ.get('JFAST_TIMEOUT', '3'), EMU, '-r', root, '/' + rel, 'in.s', 'out.s'], cwd=d,
                        capture_output=True)
         if not os.path.exists(d + '/out.s'):
             return None, []

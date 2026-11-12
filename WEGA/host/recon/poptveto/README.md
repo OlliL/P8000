@@ -41,3 +41,11 @@ set before use.
 - `winc.py` (window of the loop inversion, comment nodes not counted; COND@N), `u1win.py` (u1 and a window), `jn.py` (jpr
   with the second switch nested in case 0x56). `bfs(..., anyk=True)` adds any further event to the start sets, not only
   later ones.
+
+## Fast check without the model (2026-11-12)
+
+`jfast.py` runs one spopt on the raw code of a module (`sccvc -S`, no -O), assembles with the host cas and compares one
+function with the original (`compare/cas/FUNC_orig.txt`, made by `jfast.py ref FUNC LO HI`): 0.2 s instead of 15 s for a
+model run; the count equals strictcmp's for jpr. `fveto.py SPOPT RAW.s DEPTH` is the veto search on top of it (8 small
+roots holding only `lib/vc/spopt` and `tmp/`; set `FVETO_DIR`). The full model (`condrun.py`) is still needed to see
+whether a rule loses other functions.
