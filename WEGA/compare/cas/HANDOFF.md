@@ -160,3 +160,6 @@ Worked back from the original:
   inversion with an unlimited window at the `jp exit` of the jprange switch and a move bring exit + prologue + init
   to the end again; the entry move takes prologue + init up. The last two steps are not possible with a real window;
   constrained searches (no block over `ret`, window 24/40) running.
+- With real limits (no block over `ret`, window 24) the primitive search exhausts the state space without reaching
+  the original: our primitives cannot reach it in any order. A primitive of the old spopt is missing or different.
+  Testing candidates one by one in the model (forward inversion first).
