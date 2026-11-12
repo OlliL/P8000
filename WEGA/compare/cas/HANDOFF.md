@@ -128,4 +128,5 @@ Worked back from the original:
 
 - Raw end variants of the `goto done` form (`poptveto/tailvar.py`): prologue in front of the exit code (T1), prologue
   at the top without entry jump (T2, T3): shipped 12, D45 without exit 10, rules 10 to 12, as the raw layout.
-  Veto searches on T1/T2 running.
+  Veto searches on T1/T2 (depth 3, with and without E/V and retstop): 10. Point 1 gives nothing; point 2
+  (scodgen) has no trace pointing to it; going on with point 3 (goto done form + D45 without exit on the model).
