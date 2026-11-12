@@ -19,7 +19,7 @@ What is fact is measured; guesses are marked. The history of every attempt: `hos
   the switches of v0p with `OLD_D13`, `OLD_D25`. spopt (segvc rule of `src/cmd/popt/Makefile`): the shipped one with
   `OLD_D13`, `OLD_D45`, `OLD_D20S` and `OLD_D49`. Assembler `/lib/old/cas`, library `src/lib/slibc-v11.a`. parser.y and assemble.c without -O.
   Description: `host/OLDCC.md`, "The old scc of cas"; witnesses per switch: `host/OLDCC_SWITCHES_VC.md` (generated).
-- checkall on commit e08eefd2 (with `OLD_D20S`, `OLD_D49`): ALL OK, corpus cas 657 of 657.
+- checkall on commit 5e3e1c96 (2026-11-12): ALL OK, corpus cas 657 of 657 (a stale cache entry of scchain renewed first, OLDCC_LOG).
 - Switches with one witness in cas, provisional (`host/OLDCC.md` section 5): `OLD_D2S` (symtype), `popt:OLD_D45`
   (stabout), `popt:OLD_D20S` (exprreloc), `popt:OLD_D49` (yylex).
 
