@@ -9,7 +9,7 @@
 
 static	char shell[] =	"/bin/sh";
 static	char cshell[] =	"/bin/csh";
-char	*execat(), *getenv(), *index();
+char	*execat(), *getenv();
 char	*whichshell();
 extern	errno;
 

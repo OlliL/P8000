@@ -1531,7 +1531,11 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   - The place of a `register` declaration in the list of locals moves the others: a `register` variable has a slot in the frame in the
     old compilers (doprnt 0_6: `int fpn; int *ap, *sap;` first, then `register c, fmtlen, len;`).
   - Spare locals that fit only the frame of the original, no other reason known: `long l` in `sprintf`, `int unused` in `_instr`, `long l` in
-    `_getccl`. The original may have had a `register` there; odd forms until then.
+    `_getccl`. The original may have had a `register` there; odd forms until then. The segmented member of `_instr` (slibc) has no such
+    slot (a guess: a `register` that gets a frame slot in nonsegmented code only); the spare locals of `ctime.c` are `char *`, which the
+    segmented member shows (the nonsegmented one cannot tell). Further forms that only the segmented members show and that keep libc
+    identical: `execvp` (`index()` not declared `char *`), `popen`/`system` (`execl(..., (char *)0)`), `fltioc` (`char c` before the
+    register variables).
   - `fltioc` (`stdio/fltioc.c`): the digit copying of `_fegcvt` is written with `goto` into the `if` chain: the plain forms all gave another block order in popt; odd form.
   - `endopen` 0_3: `mode[0] = 'a'` for `rw` and `wr` (the shipped one has `'r'`).
 - Findings while fixing sources: getpass uses `struct termio` (`c_lflag`, ioctl 0x5401/0x5404/0x5403);

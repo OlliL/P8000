@@ -24,7 +24,7 @@ char	*mode;
 		close(myside);
 		dup2(hisside, tst(0, 1));
 		close(hisside);
-		execl("/bin/sh", "sh", "-c", cmd, 0);
+		execl("/bin/sh", "sh", "-c", cmd, (char *)0);
 		_exit(1);
 	}
 	if(pid == -1)

@@ -15,8 +15,8 @@ int *eofptr;
 FILE *iop;
 {
 	register char *np, *q;
-	register ndigit, expseen, dotseen;
 	char c;
+	register ndigit, expseen, dotseen;
 	char numbuf[128];
 
 	np = numbuf;

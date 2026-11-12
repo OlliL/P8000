@@ -31,19 +31,27 @@ Read first: [`../../../CLAUDE.md`](../../../CLAUDE.md) (rules), [`../../../host/
 | `oldcc/NAME/0_1.s` (cut from the original) | 8 | nlist, scanf, printf, swap, segmon, malloc, doprnt, symscan |
 | `csu/scrt0.s` | 1 | PLZ/ASM, identical |
 
-### C members: source forms found
+### Differences to libc (for a later merge into one tree)
 
-The segmented code shows what the nonsegmented one hides (int and pointer are both 2 bytes there). These forms are in
-slibc and keep the libc member identical too (checked with cc), candidates for `../libc`:
+The forms that the segmented members showed and that keep libc identical (execvp, ctime, popen, system, fltioc) are in
+`../libc` too (2026-11-12, `libc.a` built and compared: identical); those files are now equal in both trees. What differs on
+purpose:
 
-- `gen/execvp.c`: `index()` is not declared `char *`.
-- `gen/ctime.c`: the spare local `foo2` of gmtime is a `char *`.
-- `stdio/popen.c`, `stdio/system.c`: `execl(..., (char *)0)`.
-- `stdio/fltioc.c`: `char c;` before `register ndigit, expseen, dotseen;`.
+- C, the segmented calling convention (pointer arguments in rr6, rr4, rr2, then the stack): `stdio/doscan.c`
+  (`++nreg == 2`, no spare local `unused` in `_instr`), `stdio/scanf.c` and `stdio/printf.c` (2 or 4 register arguments,
+  `regs[5]`/`regs[3]`, the flag of `_doprnt` 1 and 3), `stdio/doprnt.c` (revision 2.8 against 2.9 of libc, `%s` a 4 byte
+  pointer, see the open members).
+- C, own for slibc: `gen/malloc.c` (the arena is a segment: `mkseg`/`ssgbrk`, BLOCK 2048, maxblocks 32, `INT long`),
+  `gen/segmon.c` (instead of `mon.c`), `gen/symscan.c` (libc has no C source of symscan, only `../libc/oldcc/symscan`;
+  whether this one fits libc is not measured).
+- Assembler: every PLZ/ASM source has `$segmented` and segmented instructions; only in slibc: `sys/` chkseg, mkseg, sgbrk,
+  sgstat, sprofil, ssgbrk, `csu/scrt0.s`; `crt/mcount.s` is another program; `sys/ulimit.s` another system call number;
+  `gen/stfl.s` (cas) segmented; only in libc: `brk.s`, `mon.c`, `csu/crt0.s`.
+- The headers of the sources are those of libc, except the files rewritten for slibc (their SCCS line is that of
+  `Library.SC` of slibc).
 
-Only for slibc (the segmented calling convention: pointer arguments in rr6, rr4, rr2, then the stack):
-`stdio/doscan.c` (`++nreg == 2`, no spare local `unused` in `_instr`), `stdio/scanf.c` and `stdio/printf.c` (2 or 4 register
-arguments, `regs[5]`/`regs[3]`, the flag of `_doprnt` is 1 and 3).
+Open question (a guess): libc's `int unused` in `_instr` (doscan) may be a `register` that gets a frame slot only in
+nonsegmented code; `host/KNOWLEDGE.md`, "libc check against the original library".
 
 ### Assembler members
 
@@ -122,5 +130,5 @@ roots).
 1. Owner's decision on a narrower D5 / D3 / D1R (or a new version for slibc) in the compiler session; then measure the 8
    members again with it (`vl.sh`) and drop `oldcc/` for those that are identical.
 2. `checkall` once with slibc (owner).
-3. The forms of "C members: source forms found" into `../libc` (they keep libc identical); later the merge of slibc into libc.
+3. Later the merge of slibc into libc (section "Differences to libc").
 4. The other start-up files and objects of `/lib` (`mcrt0.o`, `smcrt0.o`, `cnvt.o`, `scnvt.o`, `doprnt.o`, `sdoprnt.o`), `slibm.a` and the other `s*` libraries.
