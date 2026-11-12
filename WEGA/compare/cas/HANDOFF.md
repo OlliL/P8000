@@ -133,3 +133,8 @@ Worked back from the original:
 - Taken (point 3): `OLD_D45` without the exit as the head's target (z21.c), jpr.c in the `goto done` form; model: only
   jpr open, 10 lines (the place of plain). So the base in git is now the 10-line state; the tools' forms in
   `poptveto/` still use the old loop unless their name says `goto_done`.
+- checkall on 5013824b ALL OK; vc matrix measured again (0285fbbd).
+- New base (git): the 10 lines are only the order of A and plain: ours `init; jr T; plain; A; C' ...`, original
+  `init; jr T; A; plain; C' ...`. Path: E is moved to the switch head in pass 1 and takes plain to its end (via the
+  lone `default: goto plain` jump), the inversion at D's back jump then leaves plain in front of A. Wanted: E turned to
+  `cp 0x56; jne plain` with plain staying behind A. M1 on this base: 24; M1 + FW: 10. Veto searches running.
