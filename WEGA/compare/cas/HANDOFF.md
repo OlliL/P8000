@@ -138,3 +138,9 @@ Worked back from the original:
   `init; jr T; A; plain; C' ...`. Path: E is moved to the switch head in pass 1 and takes plain to its end (via the
   lone `default: goto plain` jump), the inversion at D's back jump then leaves plain in front of A. Wanted: E turned to
   `cp 0x56; jne plain` with plain staying behind A. M1 on this base: 24; M1 + FW: 10. Veto searches running.
+- Veto searches on the new base (depth 3): 10 / 10 / 8 (with M1). The 8 is the exit-code path again. Every path below
+  10 needs prologue + init right behind plain when the inversion after `cp 7` comes; with our codemove the prologue
+  only gets there together with the exit code. Open question for the next session: how the old spopt gets the
+  prologue (or init) behind plain without the exit code: e.g. the exit code as one node, a block that stops at `ret`
+  but is moved with the prologue, or the entry move taking the block from the exit label. Test each as a variant of
+  codemove with `jfast.py` on `gd`-like raw code (raw: `sccvc -S` of src/cmd/cas/jpr.c).
