@@ -123,3 +123,9 @@ Worked back from the original:
    (not the exit) goes behind plain, or init leaves T by a first inversion.
 2. Turn the three vetoes into rules (features of the moves) and check them on the model (`condrun.py`).
 3. Then switch(es) in vc, checkall, matrix.
+
+## 8 Night 2026-11-12/13 (mandate: memory project_cas_jpr_night_20261113)
+
+- Raw end variants of the `goto done` form (`poptveto/tailvar.py`): prologue in front of the exit code (T1), prologue
+  at the top without entry jump (T2, T3): shipped 12, D45 without exit 10, rules 10 to 12, as the raw layout.
+  Veto searches on T1/T2 running.
