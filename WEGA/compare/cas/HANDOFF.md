@@ -76,15 +76,33 @@ test; `while` loop with the step in case 0x36; second switch nested in case 0x56
   inversion done: 10 lines, only plain stands wrong (at the end of the function instead of behind A). The copy behind A
   is moved to the end of E and xjump joins it to the end copy.
 
-## 5 Next
+## 5 The state before the last steps (2026-11-12, evening)
 
-Rules LJ + rt + u1(b) (OLDCC_LOG 2026-11-12, "plain behind A by rule") with the form `poptveto/jpr_pl1.c.txt` give after
-pass 1 `T E A plain F+dispatch C D jpr-T G H`: the original's prefix except F, which must stand behind the back jump of
-D (then the ordinary inversion at D's back jump gives the original). Open: the move that puts F (with the head of the
-second dispatch, `cp 3; cp 7`) behind D's back jump. LJ alone is neutral on the model.
+Fast tools: `poptveto/jfast.py` (spopt on the raw code of jpr.c and the host cas, jpr against `compare/cas/jpr_orig.txt`,
+0.2 s a run), `fveto.py` (veto search on it), `mkstate.py` (a hand-built state: blocks of the raw code in another order,
+spec files `jpr_Q*.spec.txt`; base: the raw code of the form `default: plain:`, `poptveto/jpr_adb_plain`).
 
-Nearest by rule (2026-11-12, committed): M1 + FW (OLDCC_LOG "the 10-line path by rule") give 10 lines on the
-committed form with nothing lost; the 10 lines are the place of plain. `OLD_D45` skips the turn at the type test of
-case 0x19 (the original has `cp 1; jr ne plain` there); with the exit excluded from D45 the turn happens and nothing is
-lost, but plain is then taken to the end of E (pass 1 or 2) and lands in front of A. Open: why the original never moves
-plain to the end of E while still making the split after `cp 7`.
+Worked back from the original:
+- The split after `cp 7` is a loop inversion at D's back jump (next label G, found `cp 7; jeq G`). Our ivloop needs an
+  instruction falling into the loop head; the jump it leaves behind lands in front of C' and is dead in the original.
+  The only block of the original that ends in `jr T` is init, so init fell into T at that time and plain stood right in
+  front of init.
+- State Q4d (`poptveto/jpr_Q4d.spec.txt`): entry jump, A, plain, init, T E F (second dispatch up to `cp 0x19`), C, D
+  with its back jump, G, H, an unnamed label, I. It gives the original exactly (0 lines, all targets) with one change to
+  spopt: the entry jump (`jpr L10001`, prologue to the top) is not taken before the first comjump
+  (`poptveto/entry2.py`), plus no block over a `ret` (`retstop.py`). The inversion at D's back jump leaves
+  `init; jp T` behind plain; the entry move in the second round takes the prologue to the top and init with it.
+- The unnamed label in front of I is needed: without it (Q4b) the inversion at H's back jump (next label I, found T's
+  `jeq I`) puts the test at the bottom again (12 lines). This is the D49 mechanism (refcount keeps an unnamed label in
+  front of another label). Q4 (H's tail already joined to G's store by comjump, no extra label) also gives 0.
+- Q6 (`jpr_Q6.spec.txt`, init with `jp T` behind the prologue) gives 0 with the entry rule and rule iv
+  (`iv.py`: codemove does the loop inversion when the block of the target ends in the jump itself).
+- On the raw forms these rules give 22 to 24; veto searches with them (fixed, or as events E and V, `evopt.py`), depth
+  3, six forms: 10.
+
+## 6 Next
+
+1. Source forms that leave a label between the end of the loop and I (`goto done`/`done:`, labelled empty statement,
+   break label of a switch), each with the entry rule through `jfast.py`.
+2. In the trace of the raw forms: is there a label in front of I in round 2 that D49 should keep and does not?
+3. The way from the raw code to Q4d (plain right in front of init).
