@@ -117,6 +117,8 @@ Worked back from the original:
 
 0. State after the first moves of the 8-line path: `entry; A; plain; exit; prologue; init; T(..; jp E); E ...`; the
    original would need the same without the exit between plain and the prologue.
+   Veto search depth 4 (141705 runs) with no block over `ret`, entry and iv as events, D45 without exit, form
+   `default: plain:` + `goto done`: 10 at best. So without the exit move nothing comes below 10.
 1. Trace the 8-line path (`trsa.sh`-style dump with a TRACE veto spopt) and look for a variant where only the prologue
    (not the exit) goes behind plain, or init leaves T by a first inversion.
 2. Turn the three vetoes into rules (features of the moves) and check them on the model (`condrun.py`).
