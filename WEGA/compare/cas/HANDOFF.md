@@ -148,3 +148,6 @@ Worked back from the original:
 - Pass 1 as the original needs it: rules turnable (`poptveto/turnable.py`) + LJ + u1(b) give after pass 1
   `T(jp E); A; plain; E(jne plain) F d2 C D(jp T); G; H; I` (form `default: plain:` + `goto done`); pass 2 then moves
   E..D whole to T (62). Veto search on that base running (scratch fvz4.txt).
+- The original layout is a fixpoint of our spopt: `poptveto/jpr_OS.spec.txt` (the original's block order built from the
+  raw code of the form `default: plain:` + `goto done`, prologue at the top via `tailvar.py` T2) gives 0 lines with the
+  committed spopt. Only the path to it is missing.
