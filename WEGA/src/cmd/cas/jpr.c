@@ -28,7 +28,9 @@ NODE *list;
 	long off;
 
 	ncc = 0;
-	for (p = list; p != 0; p = p->n_next) {
+	for (p = list; ; p = p->n_next) {
+		if (p == 0)
+			goto done;
 		switch (p->n_type) {
 		case 0x36:
 			if (tok == 0x51)
@@ -62,6 +64,7 @@ NODE *list;
 			error(2, "Expressions used in jpr must be constant\n");
 		}
 	}
+done:
 	if (type == 1) {
 		res = jprange(tok, sym, off);
 		switch (res) {

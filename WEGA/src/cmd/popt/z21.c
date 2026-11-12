@@ -790,7 +790,8 @@ iterate()
 							break;
 						n45++;
 					}
-					if (rp && rp->op == JP && rp->ref && n45 > 0) {
+					/* not when the head's jump goes to the exit code (L1xxxx): jpr of cas */
+					if (rp && rp->op == JP && rp->ref && n45 > 0 && !(rp->labno >= 10000 && rp->labno < 20000)) {
 						struct node *q45 = rp;
 						rp = rp->ref;
 						do

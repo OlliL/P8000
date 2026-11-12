@@ -454,10 +454,13 @@ Only the layout changes, what runs is the same. From this the shipped optimizer 
 vc `OLD_D45` (popt z21.c, iterate). At `cjp c,L1; jp L2; L1:` iterate turns the conditional jump (`cjp !c,L2`) before codemove
 sees the `jp`. The spopt of vc does not turn it when codemove can take the block at L2 and that block is a head: it stands behind a
 jump, is straight (no label, no conditional jump, at least one instruction), ends in a jump, and the target of that jump stands
-behind another jump. codemove then puts the block behind the conditional jump. Witness: stabout of cas (`if (*p == 0) break; p++;`
+behind another jump, and that jump does not go to the exit code (an L1xxxx label). codemove then puts the block behind the
+conditional jump. Witness: stabout of cas (`if (*p == 0) break; p++;`
 in the name loop, the block at the `break` is the head of `switch (tag)`: the second half of the dispatch and the check behind the
 switch land behind the entry jump of the loop). One witness, the owner's exception; without the limits other functions of cas
-change (`OLDCC_LOG.md`, 2026-11-10).
+change (`OLDCC_LOG.md`, 2026-11-10). The exit limit: jpr of cas (the type test of case 0x19, `cp 1; jr ne plain` in
+the original, where plain ends in the jump to the exit); without it jpr has 24 lines instead of 10, nothing else changes
+(2026-11-13).
 
 ### D49 Labels no jump names, and the loop inversion
 

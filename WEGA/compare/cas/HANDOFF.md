@@ -130,3 +130,6 @@ Worked back from the original:
   at the top without entry jump (T2, T3): shipped 12, D45 without exit 10, rules 10 to 12, as the raw layout.
   Veto searches on T1/T2 (depth 3, with and without E/V and retstop): 10. Point 1 gives nothing; point 2
   (scodgen) has no trace pointing to it; going on with point 3 (goto done form + D45 without exit on the model).
+- Taken (point 3): `OLD_D45` without the exit as the head's target (z21.c), jpr.c in the `goto done` form; model: only
+  jpr open, 10 lines (the place of plain). So the base in git is now the 10-line state; the tools' forms in
+  `poptveto/` still use the old loop unless their name says `goto_done`.

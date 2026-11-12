@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "7cc35ba8",
+ "measured_at": "f00201b1",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -681,8 +681,8 @@
    "file": "jpr.c",
    "orig": "0x84fc",
    "status": "open",
-   "note": "Cluster K8, K12. Cluster K8, K12.",
-   "lines": 24
+   "note": "Cluster K8, K12. Loop written as `for (p = list; ; p = p->n_next) { if (p == 0) goto done; ... } done:` (the unnamed break label in front of done keeps the test out of the bottom); 10 lines left: the place of the jpput/return block (original: behind the body of case 0x36). See compare/cas/HANDOFF.md.",
+   "lines": 10
   },
   "jprnew": {
    "file": "jpr.c",
