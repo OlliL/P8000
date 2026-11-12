@@ -20,7 +20,7 @@ Members and how they are made (the rules in Makefile):
   first mention, the data psec opened first, the jump table of doprnt as .long): nlist, scanf, printf, swap, segmon, malloc,
   doprnt, symscan. The C sources next to them (gen/, stdio/) are the best known form:
   - scanf, printf, swap: frame and types fit; the code differs in what an older scc does: a[k] of a local array addressed
-    directly (OLDCC.md D5; OLD_D5G does it, but also where the original computes the address: popt p[1], cnvt &buf[9]),
+    directly (OLDCC.md D5; OLD_D5G does it, but also where the original computes the address: popen p[1], cnvt &buf[9]),
     a parameter taken from its register or its spill slot. scanf is identical with OLD_D5G.
   - segmon (new, reconstructed): left are a parameter taken from its register, ++i through a register (as D16A), a long
     cast to a pointer masked through a copy (D24 with D25).
