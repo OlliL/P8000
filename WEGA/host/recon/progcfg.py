@@ -52,7 +52,7 @@ def load():
         m.ORIG_LIM = getattr(m, 'OWN_LIM', 0)
     if not hasattr(m, 'ORIG_BIN'):
         m.ORIG_BIN = m.ORIG
-    m.ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
+    m.ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/home/olivleh1/git/P8000/tmp/wega31_root'
     if getattr(m, 'ROOT_ENV', None):
         # a program whose reference is not in the WEGA tree (the old cas of the old compilers: OLDROOT, host/Makefile `oldroot`)
         m.ROOT = os.environ.get(m.ROOT_ENV) or os.path.normpath(os.path.join(HERE, '..', '..', '..', 'tmp', 'oldroot'))
@@ -68,7 +68,7 @@ def load():
     if not hasattr(m, 'LINKED'):
         m.LINKED = os.path.join(m.SRCDIR, m.NAME)
     if not hasattr(m, 'MODEL_OUT'):
-        m.MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_' + m.NAME, m.NAME + 'm')
+        m.MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'd12model_' + m.NAME, m.NAME + 'm')
     if not hasattr(m, 'STRICT_INPUT'):
         m.STRICT_INPUT = m.LINKED
     if not hasattr(m, 'FINDINGS'):

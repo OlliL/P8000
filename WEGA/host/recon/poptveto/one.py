@@ -1,5 +1,5 @@
 import sys,os,re,subprocess
-S='/tmp/SCRATCH'; W='/mnt/share/cvs/P8000/WEGA'
+S='/tmp/SCRATCH'; W='/home/olivleh1/git/P8000/WEGA'
 d=S+'/pq0'; V=sys.argv[1:]
 open(d+'/root/tmp/veto.txt','w').write(' '.join(['0']+V)+'\n')
 for f in ('casm','jpr.o','jpr.s'):

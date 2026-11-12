@@ -21,7 +21,7 @@ sys.path.insert(0, HERE)
 from sout import SOut  # noqa: E402
 import unlink_seg as U  # noqa: E402
 
-PROG = '/mnt/share/cvs/P8000/tmp/wega31_root/bin/sld'
+PROG = '/home/olivleh1/git/P8000/tmp/wega31_root/bin/sld'
 A, B = 0x7bbc, 0x8682
 DATA = 0x186a
 TABLE = 0x189e

@@ -17,7 +17,7 @@ REPO = os.path.normpath(os.path.join(HERE, '..', '..'))     # the WEGA directory
 
 
 def root():
-    return os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
+    return os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/home/olivleh1/git/P8000/tmp/wega31_root'
 
 
 def emu():

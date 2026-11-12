@@ -9,9 +9,9 @@
 
 HERE=`cd \`dirname $0\` && pwd`
 REPO=`cd $HERE/../.. && pwd`
-WEGA_ROOT=${WEGA_ROOT:-${WEGA:-/mnt/share/cvs/P8000/tmp/wega31_root}}
-OLDROOT=${OLDROOT:-/mnt/share/cvs/P8000/tmp/oldroot}
-RECON_TMP=${RECON_TMP:-/mnt/share/cvs/P8000/tmp/tmp}
+WEGA_ROOT=${WEGA_ROOT:-${WEGA:-/home/olivleh1/git/P8000/tmp/wega31_root}}
+OLDROOT=${OLDROOT:-/home/olivleh1/git/P8000/tmp/oldroot}
+RECON_TMP=${RECON_TMP:-/home/olivleh1/git/P8000/tmp/tmp}
 EMU=$REPO/host/z8k-emu/z8k-emu
 Z="$EMU -r $WEGA_ROOT"
 prog=$1 func=$2

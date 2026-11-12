@@ -28,7 +28,7 @@ from sout import SOut  # noqa: E402
 
 
 def compile_obj(src):
-    tmp = tempfile.mkdtemp(prefix='fncheck', dir=os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'))
+    tmp = tempfile.mkdtemp(prefix='fncheck', dir=os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'))
     base = os.path.splitext(os.path.basename(src))[0]
     shutil.copy(src, os.path.join(tmp, base + '.c'))
     for f in os.listdir(CFG.SRCDIR):

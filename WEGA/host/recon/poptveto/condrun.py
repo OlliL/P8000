@@ -2,7 +2,7 @@
 import os, subprocess, sys, re
 from concurrent.futures import ThreadPoolExecutor
 S='/tmp/SCRATCH'
-W='/mnt/share/cvs/P8000/WEGA'; E=W+'/host/z8k-emu/z8k-emu'
+W='/home/olivleh1/git/P8000/WEGA'; E=W+'/host/z8k-emu/z8k-emu'
 DEF="-DOLD_D13 -DOLD_D45 -DOLD_D20S -DOLD_D49"
 PPY=os.environ.get('CPPY', S+'/d41c.py')
 def one(arg):

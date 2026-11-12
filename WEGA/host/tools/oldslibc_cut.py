@@ -23,8 +23,8 @@ sys.path.insert(0, HERE)
 import unlink_seg as U  # noqa: E402
 from sout import SOut  # noqa: E402
 
-EMU = '/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu'
-WEGA = '/mnt/share/cvs/P8000/tmp/wega31_root'
+EMU = '/home/olivleh1/git/P8000/WEGA/host/z8k-emu/z8k-emu'
+WEGA = '/home/olivleh1/git/P8000/tmp/wega31_root'
 PROG = os.path.join(WEGA, 'bin', 'sld')
 SLIBC = os.path.join(WEGA, 'lib', 'slibc.a')
 
@@ -88,7 +88,7 @@ def main():
     s = SOut(open(PROG, 'rb').read())
     prog = bytes(s.image[0:s.segs[0]['code']])
     seg = (s.magic >> 8) == 0xE6
-    tmp = tempfile.mkdtemp(prefix='oldslibc', dir='/mnt/share/cvs/P8000/tmp/tmp')
+    tmp = tempfile.mkdtemp(prefix='oldslibc', dir='/home/olivleh1/git/P8000/tmp/tmp')
     extract_members(tmp)
     syms = {}
     for obj, a, b, kind in OBJECTS:

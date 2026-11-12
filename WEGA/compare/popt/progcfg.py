@@ -21,11 +21,11 @@ def model_link(work, objs):
     src = os.path.normpath(os.path.join(here, '..', '..', 'src', 'cmd', 'popt'))
     hostld = os.path.normpath(os.path.join(src, '..', '..', '..', 'host', 'ld', 'ld'))
     libc = [os.path.join(src, '..', '..', 'lib', 'libc-v5.a')]
-    return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', os.path.join(os.environ.get('WEGA', '/mnt/share/cvs/P8000/tmp/wega31_root'), 'lib', 'crt0.o')] + objs + libc + \
+    return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', os.path.join(os.environ.get('WEGA', '/home/olivleh1/git/P8000/tmp/wega31_root'), 'lib', 'crt0.o')] + objs + libc + \
         ['-o', 'poptm']
 
 
-MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_popt', 'poptm')
+MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'd12model_popt', 'poptm')
 STRICT_INPUT = MODEL_OUT
 STATICFUNCS = True  # the static functions get global labels in the model (d12model.py), so that strictcmp finds them
 

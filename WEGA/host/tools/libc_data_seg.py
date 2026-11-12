@@ -15,7 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from sout import SOut  # noqa: E402
 
-PROG = '/mnt/share/cvs/P8000/tmp/wega31_root/bin/sld'
+PROG = '/home/olivleh1/git/P8000/tmp/wega31_root/bin/sld'
 GAP = 0x10
 REF = re.compile(r'<<1>>%([0-9A-F]{4})')
 

@@ -1,6 +1,6 @@
 import os,re,subprocess,sys,collections
 S='/tmp/claude-1000/-mnt-share-cvs-P8000/6b8d4c9d-ace2-40e9-b4e5-33a880fd019b/scratchpad'
-W='/mnt/share/cvs/P8000/WEGA'; E=W+'/host/z8k-emu/z8k-emu'
+W='/home/olivleh1/git/P8000/WEGA'; E=W+'/host/z8k-emu/z8k-emu'
 R=S+'/o_veto'
 cc=S+'/cc_veto'
 open(cc,'w').write('#!/bin/sh\nexec %s -r %s /bin/sccvc "$@"\n'%(E,R)); os.chmod(cc,0o755)

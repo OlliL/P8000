@@ -16,7 +16,7 @@ CC = '/bin/cc'
 MODULES = ['cgram1', 'xdefs1', 'scan1', 'pftn1', 'trees1', 'optim1', 'code1', 'local1', 'comm1', 'vinit1', 'sym1', 'sym2']
 TABLES = []
 
-ROOTDIR = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
+ROOTDIR = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/home/olivleh1/git/P8000/tmp/wega31_root'
 REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
 
 
@@ -83,7 +83,7 @@ def model_link(work, objs):
 
 # the strict comparison runs on the d12model link (our data layout differs from the original only by D12)
 import os as _os  # noqa: E402
-MODEL_OUT = _os.path.join(_os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_cparse', 'cparsem')
+MODEL_OUT = _os.path.join(_os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'd12model_cparse', 'cparsem')
 STRICT_INPUT = MODEL_OUT
 
 # D6: the switch tables of the model in the layout of the old cc (host/recon/d12model.py d6tables)

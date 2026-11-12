@@ -34,7 +34,7 @@ from sout import SOut  # noqa: E402
 
 def build(mod):
     base = os.path.splitext(mod)[0]
-    work = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'modcheck_' + CFG.NAME)
+    work = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'modcheck_' + CFG.NAME)
     shutil.rmtree(work, ignore_errors=True)
     os.makedirs(work)
     for f in os.listdir(CFG.SRCDIR):

@@ -1,5 +1,5 @@
 import sys,subprocess
-subprocess.run(['patch','-s','-p0',sys.argv[1]],stdin=open('/mnt/share/cvs/P8000/WEGA/host/recon/poptveto/z21_veto.patch'),check=True)
+subprocess.run(['patch','-s','-p0',sys.argv[1]],stdin=open('/home/olivleh1/git/P8000/WEGA/host/recon/poptveto/z21_veto.patch'),check=True)
 p=sys.argv[1]; s=open(p).read()
 old='''	do
 		if ((p1 = p1->back) == 0)
