@@ -1,0 +1,45 @@
+L110
+L111
+L114
+L115
+L10002
+-L107
+	cp	r2,#54
+	jpr	eq,L110
+	cp	r2,#86
+	jpr	ne,L115
+-L108
+	cp	r2,#3
+	jpr	eq,L115
+	cp	r2,#7
+	jpr	eq,L121
+	cp	r2,#25
+	jpr	eq,L122
+-L125
+L118
+L105
+L121:
+	ld	r2,rr10(#8)
+	ld	|_stkseg+~L1+8|(fp),r2
+	subl	rr2,rr2
+L150:
+	ldl	|_stkseg+~L1+14|(fp),rr2
+	jpr	L118
+L122:
+	cp	r8,#7
+	jpr	eq,L123
+	cp	r8,#1
+	jpr	ne,L115
+L123:
+	ldl	rr2,rr10(#8)
+	ld	r2,rr2(#8)
+	ld	|_stkseg+~L1+8|(fp),r2
+	ldl	rr2,rr10(#12)
+	ldl	rr0,rr2(#6)
+	ldl	|_stkseg+~L1+14|(fp),rr0
+	ldb	rl2,rr10(#7)
+	cpb	rl2,#27
+	jpr	ne,L118
+	subl	rr2,rr2
+	subl	rr2,|_stkseg+~L1+14|(fp)
+	jpr	L150
