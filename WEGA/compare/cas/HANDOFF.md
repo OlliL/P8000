@@ -78,6 +78,7 @@ test; `while` loop with the step in case 0x36; second switch nested in case 0x56
 
 ## 5 Next
 
-Two ways from the nearest path: (a) a rule that makes the move of E to the switch head (M109) not happen and the
-forward inversion happen, then plain; (b) why the copy behind A is moved (refc 1, block ending in a jump to the exit).
-The step lands behind C' on that path already.
+Rules LJ + rt + u1(b) (OLDCC_LOG 2026-11-12, "plain behind A by rule") with the form `poptveto/jpr_pl1.c.txt` give after
+pass 1 `T E A plain F+dispatch C D jpr-T G H`: the original's prefix except F, which must stand behind the back jump of
+D (then the ordinary inversion at D's back jump gives the original). Open: the move that puts F (with the head of the
+second dispatch, `cp 3; cp 7`) behind D's back jump. LJ alone is neutral on the model.
