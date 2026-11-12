@@ -73,5 +73,8 @@ test; `while` loop with the step in case 0x36; second switch nested in case 0x56
 
 ## 5 Next
 
-Find the move that takes A and plain from behind E to the front (between the entry jump and C'); then E turns to
-`jne plain` by itself. Tools: `invtrace.py` (prints inversions), `one.py`, the veto popt with u1 and window 40.
+Traced (OLDCC_LOG 2026-11-12, "A and plain to the front"): with plain never moved, pass 1 moves the step to A's
+`continue` (M105), so the inversion that makes the `cp 7` split puts C' and the step between A and plain. The original
+needs the step (and C') behind plain: `T E A plain C' D jpr-T F ...`; from there our ordinary inversion at D's back jump
+gives the original exactly. Open: which rule (or source form) keeps the step from A's `continue` but lets it land
+behind plain. Tools: `invdump.py` (state after each move and inversion), `pclass.py` (vetoes by event class).
