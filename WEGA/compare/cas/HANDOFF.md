@@ -76,12 +76,21 @@ src/cmd/popt/z21.c, called from `iterate`).
   earlier "D41 without D45" had D45 in (bv.sh cannot remove it; `pb.sh` in poptveto replaces the defines); alone it leaves
   stabout open, exprval only with an odd string order, symtype at 5 (OLDCC_LOG 2026-11-11).
 
-### jpr: state of 2026-11-11 evening
+### jpr: state of 2026-11-12 morning (night search, OLDCC_LOG 2026-11-12)
 
-- Every search (parallel veto search with forward inversions as extra events, depth 3, three source forms) ends at 10
-  lines, always the same: plain stands in front of the body of case 0x36, the original has it behind. OLDCC_LOG
-  2026-11-11 has the layout of the original block by block and what was tried.
-- Tools: `pveto.py` (8 slots), `vpatchF.py` (forward inversion as event F); poptveto/README.
+- The original never moves the plain block (`jpput(); return (0);`): it stays where `default: plain:` puts it in the raw
+  code, behind the body of case 0x36 (order 0x36, default, 0x56 in the first switch). Our spopt moves it at three sites
+  (end of the first dispatch, the type test of case 0x19, case 3 of the second dispatch).
+- The original also does not move the step block (`p = p->n_next; jpr test`) to the `continue` of case 0x36; the error
+  default of the second switch falls into it (C' = `cp 0x19; jr eq; error`, then step, then the test).
+- Rule u1 (`refuse2.py`): codemove refuses (a) a block that ends in a jump to the exit, is named by more than one jump and
+  has more than two instructions, (b) a block that ends in the jump back to a loop head that is fallen into, at a site of
+  one instruction. With the form `default: plain:` pass 1 then gives A, plain, F with the second dispatch, C', step, as
+  wanted except F; jpr 50, model loses iputline, symreloc, stlook, exprreloc, opshort, opseg, opoff, genbop.
+  The veto search on top of u1 (all iterate decisions as events) ends at 30 lines (depth 2); the loop test is then
+  inverted to the end again.
+- Not found: the rule that puts the step and the test in front of the first dispatch (the original rotates the loop so that
+  the dispatch E is entered from the test). Tools: poptveto/README (pveto.py with pattern search, condrun.py, one.py).
 
 ### jpr (24 lines; 22 with other forms)
 

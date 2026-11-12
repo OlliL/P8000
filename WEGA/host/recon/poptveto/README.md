@@ -36,3 +36,5 @@ set before use.
   strictcmp reported the value of the run before: `run` removes the module's .o/.s and the model first, a failed run is
   None; (c) the looping spopt writes millions of events to veto.log: only the first 300 lines are read (a run of 42 GB was
   killed by the kernel). Results of veto searches before these fixes can hold single wrong values.
+- `one.py V...`: one veto run in an extra slot `pq0` (made by hand like a pveto slot), prints the jpr diff; for looking at
+  single paths while a search uses the eight slots. `twosweep.py`: test variant (iterate in two sweeps), dropped.

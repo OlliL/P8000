@@ -5,7 +5,12 @@ exec(open('/tmp/SCRATCH/d41c.py').read().split("old2=")[0].split("p=sys.argv[1];
 old='''				ncmot++;
 				nchange++;
 				p1->back->forw = p2;'''
-s=s.replace(old,'''				if (%s)
+s=s.replace(old,'''				if (%s) {
+#ifdef TRACE
+					if (debug)
+						printf("/*REFUSED*/\\n");
+#endif
 					return p1;
+				}
 '''%os.environ['D41C']+old,1)
 open(p,'w').write(s)
