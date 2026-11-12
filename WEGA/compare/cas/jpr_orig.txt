@@ -1,0 +1,101 @@
+sub	r15,#%001E
+ldm	<<S>>%0012(r15),r8,#6
+ldm	|<<S>>%0000|(r15),r4,#4
+ldk	r9,#0
+ldl	rr12,rr4
+jr	@5a
+cp	|<<S>>%0006|(r15),#%0051
+jr	ne,@2e
+ldk	r7,#2
+ldl	rr4,#ADDR
+call
+inc	r9,#1
+jr	@54
+ld	r7,|<<S>>%0006|(r15)
+ldl	rr4,|<<S>>%0000|(r15)
+calr
+sub	r2,r2
+jr	@136
+cp	r2,#%0019
+jr	eq,@a0
+ldk	r7,#2
+ldl	rr4,#ADDR
+call
+ldl	rr2,rr12(#%0002)
+ldl	rr12,rr2
+testl	rr12
+jr	eq,@d4
+ldk	r2,#0
+ldb	rl2,@rr12
+cp	r2,#%0036
+jr	eq,@18
+cp	r2,#%0056
+jr	ne,@32
+ldl	rr2,rr12(#%0006)
+ldl	rr10,rr2
+ldl	rr6,rr2
+call
+subb	rh2,rh2
+ld	r8,r2
+ldk	r2,#0
+ldb	rl2,@rr10
+cp	r2,#%0003
+jr	eq,@32
+cp	r2,#%0007
+jr	ne,@40
+ld	r2,rr10(#%0008)
+ld	|<<S>>%0008|(r15),r2
+subl	rr2,rr2
+ldl	|<<S>>%000E|(r15),rr2
+jr	@54
+cp	r8,#%0007
+jr	eq,@ac
+cp	r8,#%0001
+jr	ne,@32
+ldl	rr2,rr10(#%0008)
+ld	r2,rr2(#%0008)
+ld	|<<S>>%0008|(r15),r2
+ldl	rr2,rr10(#%000C)
+ldl	rr0,rr2(#%0006)
+ldl	|<<S>>%000E|(r15),rr0
+ldb	rl2,rr10(#%0007)
+cpb	rl2,#%1B
+jr	ne,@54
+subl	rr2,rr2
+subl	rr2,rr0
+jr	@9a
+cp	r8,#%0001
+jr	ne,@116
+ld	r7,|<<S>>%0006|(r15)
+ld	r6,|<<S>>%0008|(r15)
+ldl	rr4,|<<S>>%000E|(r15)
+calr
+ld	|<<S>>%000C|(r15),r2
+test	r2
+jr	eq,@fe
+cp	r2,#%0001
+jr	eq,@10a
+cp	r2,#%0002
+jr	eq,@116
+jr	@136
+ld	r7,|<<S>>%0006|(r15)
+ldl	rr4,|<<S>>%0000|(r15)
+calr
+jr	@136
+ld	r7,|<<S>>%0006|(r15)
+ldl	rr4,|<<S>>%0000|(r15)
+calr
+jr	@136
+ld	r7,|<<S>>%0006|(r15)
+ld	r6,|<<S>>%0008|(r15)
+ldl	rr4,|<<S>>%000E|(r15)
+calr
+ld	|<<S>>%000A|(r15),r2
+ld	r7,r2
+ld	r6,|<<S>>%0006|(r15)
+ld	r5,r9
+ldl	rr2,|<<S>>%0000|(r15)
+calr
+ldm	r8,<<S>>%0012(r15),#6
+add	r15,#%001E
+ret
