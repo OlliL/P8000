@@ -45,7 +45,7 @@ def run(module, func, fidx, V):
         return tuple(V), lines, ev, pat(d)
     finally:
         free.put(i)
-def bfs(module, func, fidx, depth, keep=None, start=None, expand=None):
+def bfs(module, func, fidx, depth, keep=None, start=None, expand=None, anyk=False):
     seen={}
     front=start or [()]
     with ThreadPoolExecutor(N) as ex:
@@ -63,7 +63,7 @@ def bfs(module, func, fidx, depth, keep=None, start=None, expand=None):
                 if l is None: continue
                 if expand and not expand(l, pp, d): continue
                 for k,t,lab in ev:
-                    if (not V or k>max(V)) and k not in V: nxt.add(tuple(sorted(V+(k,))))
+                    if (anyk or not V or k>max(V)) and k not in V and tuple(sorted(V+(k,))) not in seen: nxt.add(tuple(sorted(V+(k,))))
             front=sorted(nxt)
     return None
 

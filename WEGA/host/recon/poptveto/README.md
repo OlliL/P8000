@@ -38,3 +38,6 @@ set before use.
   killed by the kernel). Results of veto searches before these fixes can hold single wrong values.
 - `one.py V...`: one veto run in an extra slot `pq0` (made by hand like a pveto slot), prints the jpr diff; for looking at
   single paths while a search uses the eight slots. `twosweep.py`: test variant (iterate in two sweeps), dropped.
+- `winc.py` (window of the loop inversion, comment nodes not counted; COND@N), `u1win.py` (u1 and a window), `jn.py` (jpr
+  with the second switch nested in case 0x56). `bfs(..., anyk=True)` adds any further event to the start sets, not only
+  later ones.

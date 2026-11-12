@@ -89,6 +89,8 @@ src/cmd/popt/z21.c, called from `iterate`).
   wanted except F; jpr 50, model loses iputline, symreloc, stlook, exprreloc, opshort, opseg, opoff, genbop.
   The veto search on top of u1 (all iterate decisions as events) ends at 30 lines (depth 2); the loop test is then
   inverted to the end again.
+- Best so far: u1 with three vetoes, 20 lines (OLDCC_LOG 2026-11-12, end of the night): only C (error default) and G (case 7)
+  stand wrong, because the second dispatch is split after `cp 0x19` instead of after `cp 7`.
 - Not found: the rule that puts the step and the test in front of the first dispatch (the original rotates the loop so that
   the dispatch E is entered from the test). Tools: poptveto/README (pveto.py with pattern search, condrun.py, one.py).
 
