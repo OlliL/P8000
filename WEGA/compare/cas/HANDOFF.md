@@ -153,3 +153,10 @@ Worked back from the original:
   committed spopt. Only the path to it is missing.
 - 1728 generated natural forms (`jgen3.py`): 10 at best. Now `poptveto/pathsearch.py`: search over the spopt
   primitives in any order from the raw code to the original layout (the order of steps the old spopt must take).
+- `pathsearch.py` (unlimited window, blocks over `ret` allowed) finds a 13-step path from the raw code of
+  `default: plain:` + `goto done` to the original's loop layout (`replay2.py` prints it): d2 to F's end; E turned in
+  place (`cp 0x56; jne plain`, no move to the switch head); C to d2's end; D to C's end; exit + prologue behind
+  plain; init + T behind the prologue; inversion at D's back jump (next label G, `cp 7`); T's `jp E` gone; then an
+  inversion with an unlimited window at the `jp exit` of the jprange switch and a move bring exit + prologue + init
+  to the end again; the entry move takes prologue + init up. The last two steps are not possible with a real window;
+  constrained searches (no block over `ret`, window 24/40) running.

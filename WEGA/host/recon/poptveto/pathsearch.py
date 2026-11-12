@@ -2,6 +2,9 @@
 to the target layout. Nodes: ('L',n) label, ('J',n) jump, ('C',cond,n) conditional jump, ('R',) ret, ('I',text) other."""
 import sys, re, heapq, difflib, itertools
 
+import os
+RETSTOP = os.environ.get('RETSTOP') == '1'
+WIN = int(os.environ.get('WIN', '1000'))
 REV = {'eq': 'ne', 'ne': 'eq', 'lt': 'ge', 'ge': 'lt', 'le': 'gt', 'gt': 'le', 'ult': 'uge', 'uge': 'ult',
        'ule': 'ugt', 'ugt': 'ule', 'z': 'nz', 'nz': 'z', 'c': 'nc', 'nc': 'c', 'mi': 'pl', 'pl': 'mi'}
 
@@ -136,7 +139,7 @@ def moves(st, newlab):
             e = L
             while e < len(st) and st[e][0] != 'J':
                 e += 1
-            if e < len(st) and e != i and not (k <= i <= e):
+            if e < len(st) and e != i and not (k <= i <= e) and not (RETSTOP and any(x[0] == 'R' for x in st[k:e + 1])):
                 blk = st[k:e + 1]
                 s2 = list(st)
                 if i < k:
@@ -160,6 +163,8 @@ def ivloop(st, i, k, newlab, kind):
     N = after[0]
     out = []
     for c in range(k, i):
+        if sum(1 for x in st[k:c + 1] if x[0] != 'L') > WIN:
+            break
         if st[c][0] == 'C' and st[c][2] == N:
             seg = list(st[k:c + 1])
             seg[-1] = ('C', REV[st[c][1]], newlab)
@@ -172,22 +177,31 @@ def ivloop(st, i, k, newlab, kind):
 
 
 def key(st):
-    """layout key: instruction texts with jump targets as index of the target instruction"""
+    """layout key: instruction texts; a jump is shown with the text of the first instructions at its target"""
     lp = labpos(st)
-    idx = {}
-    ins = [n for n in st if n[0] != 'L']
-    pos = 0
+    def at(lab, d=0):
+        if lab not in lp:
+            return '?'
+        k = nonlab(st, lp[lab])
+        if k >= len(st):
+            return 'END'
+        n = st[k]
+        if n[0] == 'I':
+            nx = nonlab(st, k + 1)
+            return n[1] + ('|' + (st[nx][1] if nx < len(st) and st[nx][0] == 'I' else st[nx][0] if nx < len(st) else 'END'))
+        if n[0] == 'R':
+            return 'R'
+        if d < 2:
+            return n[0] + '>' + at(tgt(n), d + 1)
+        return n[0]
+    out = []
     for n in st:
         if n[0] == 'L':
-            idx[n[1]] = pos
-        else:
-            pos += 1
-    out = []
-    for n in ins:
+            continue
         if n[0] == 'J':
-            out.append('J%d' % idx.get(n[1], -1))
+            out.append('J>' + at(n[1]))
         elif n[0] == 'C':
-            out.append('C%s%d' % (n[1], idx.get(n[2], -1)))
+            out.append('C' + n[1] + '>' + at(n[2]))
         elif n[0] == 'R':
             out.append('R')
         else:
@@ -216,7 +230,7 @@ def main():
         if h < best[0]:
             best = (h, path)
             print('best', h, 'depth', len(path), path[-6:], flush=True)
-        if h == 0:
+        if dist(key(st), goal) == 0:
             print('FOUND', path)
             return
         for kind, i, s2 in moves(st, 30000 + len(path)):
@@ -225,7 +239,7 @@ def main():
                 continue
             seen.add(s2)
             h2 = dist(key(s2), goal)
-            heapq.heappush(pq, (h2 + 0.5 * (len(path) + 1), len(path) + 1, next(cnt), s2, path + ((kind, i),)))
+            heapq.heappush(pq, (h2 + float(__import__('os').environ.get('PEN','0.2')) * (len(path) + 1), len(path) + 1, next(cnt), s2, path + ((kind, i),)))
     print('END', exp, 'best', best)
 
 
