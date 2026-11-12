@@ -71,8 +71,11 @@ main()
 	}
 
 	/* function pointer assigned? => RTC found?*/
+	if (clock_found == 1 && clock_finit() != 0) {
+		printf("Timer not available\n");
+		exit(1);
+	}
 	if (clock_found == 1) {
-		clock_finit();
 		time = clock_fget();
 		outtime(time);
 		settimer(time);

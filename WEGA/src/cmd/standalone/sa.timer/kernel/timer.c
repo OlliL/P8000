@@ -67,8 +67,8 @@ gettime()
 
 	/* function pointer assigned? => RTC found?*/
 	if (clock_found == 1) {
-		clock_finit();
-		time = clock_fget();
+		if (clock_finit() == 0)
+			time = clock_fget();
 	}
 
 	return(time);
