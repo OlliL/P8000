@@ -151,3 +151,5 @@ Worked back from the original:
 - The original layout is a fixpoint of our spopt: `poptveto/jpr_OS.spec.txt` (the original's block order built from the
   raw code of the form `default: plain:` + `goto done`, prologue at the top via `tailvar.py` T2) gives 0 lines with the
   committed spopt. Only the path to it is missing.
+- 1728 generated natural forms (`jgen3.py`): 10 at best. Now `poptveto/pathsearch.py`: search over the spopt
+  primitives in any order from the raw code to the original layout (the order of steps the old spopt must take).
