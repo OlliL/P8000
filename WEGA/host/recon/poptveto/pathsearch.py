@@ -4,6 +4,9 @@ import sys, re, heapq, difflib, itertools
 
 import os
 RETSTOP = os.environ.get('RETSTOP') == '1'
+COMJ = os.environ.get('COMJ', '1') == '1'
+NOENTRY = os.environ.get('NOENTRY') == '1'
+FWD = os.environ.get('FWD') == '1'
 WIN = int(os.environ.get('WIN', '1000'))
 REV = {'eq': 'ne', 'ne': 'eq', 'lt': 'ge', 'ge': 'lt', 'le': 'gt', 'gt': 'le', 'ult': 'uge', 'uge': 'ult',
        'ule': 'ugt', 'ugt': 'ule', 'z': 'nz', 'nz': 'z', 'c': 'nc', 'nc': 'c', 'mi': 'pl', 'pl': 'mi'}
@@ -112,7 +115,60 @@ def cleanup(st):
     return tuple(st)
 
 
+def prev_ins(st, i):
+    j = i - 1
+    while j >= 0 and st[j][0] == 'L':
+        j -= 1
+    return j
+
+
+def label_before(st, q, newlab):
+    """label in front of node q: reuse one if there, else insert newlab; returns (state, label, shift)"""
+    if q > 0 and st[q - 1][0] == 'L':
+        return list(st), st[q - 1][1], 0
+    s2 = list(st[:q]) + [('L', newlab)] + list(st[q:])
+    return s2, newlab, 1
+
+
+def xmoves(st, newlab):
+    res = []
+    lp = labpos(st)
+    for i, n in enumerate(st):
+        if n[0] != 'J' or n[1] not in lp:
+            continue
+        j = prev_ins(st, i)
+        q = prev_ins(st, lp[n[1]])
+        if j < 0 or q < 0 or j == q or st[j][0] != 'I' or st[q][0] != 'I' or st[j][1] != st[q][1]:
+            continue
+        s2, X, sh = label_before(st, q, newlab)
+        jj = j + (sh if q <= j else 0)
+        s2[jj] = ('J', X)
+        res.append(('xjump', i, tuple(s2)))
+    if COMJ:
+        js = [(i, n[1]) for i, n in enumerate(st) if n[0] == 'J']
+        for a in range(len(js)):
+            for b in range(a + 1, len(js)):
+                i, t = js[a]
+                m, t2 = js[b]
+                if t != t2:
+                    continue
+                pa = prev_ins(st, i)
+                pb = m - 1
+                if pa < 0 or st[pa][0] != 'I' or st[pb][0] != 'I' or st[pa][1] != st[pb][1]:
+                    continue
+                s2, X, sh = label_before(st, pa, newlab)
+                pb2 = pb + sh
+                del s2[pb2]
+                s2[pb2] = ('J', X)
+                res.append(('comj', m, tuple(s2)))
+    return res
+
+
 def moves(st, newlab):
+    return moves0(st, newlab) + xmoves(st, newlab + 5000)
+
+
+def moves0(st, newlab):
     lp = labpos(st)
     res = []
     for i, n in enumerate(st):
@@ -127,7 +183,7 @@ def moves(st, newlab):
             s2 = list(st)
             del s2[i]
             res.append(('jnext', i, tuple(s2)))
-        if n[0] != 'J' or n[1] not in lp:
+        if n[0] != 'J' or n[1] not in lp or (NOENTRY and n[1] == 10001):
             continue
         L = lp[n[1]]
         k = L
@@ -152,6 +208,8 @@ def moves(st, newlab):
         else:
             if L < i:
                 res += ivloop(st, i, k, newlab, 'inv')
+            elif FWD:
+                res += fwloop(st, i, k, newlab)
     return res
 
 
@@ -174,6 +232,26 @@ def ivloop(st, i, k, newlab, kind):
             out.append((kind, i, tuple(s2)))
             break
     return out
+
+
+def fwloop(st, i, k, newlab):
+    """forward inversion: jump i to a label after it (block at k is fallen into); next label N after i; find C to N in
+    the stretch from k (window WIN); the stretch takes the jump's place, the jump the stretch's"""
+    after = labels_after(st, i)
+    if not after:
+        return []
+    N = after[0]
+    for c in range(k, len(st)):
+        if sum(1 for x in st[k:c + 1] if x[0] != 'L') > WIN:
+            break
+        if st[c][0] in 'JR':
+            pass
+        if st[c][0] == 'C' and st[c][2] == N:
+            seg = list(st[k:c + 1])
+            seg[-1] = ('C', REV[st[c][1]], newlab)
+            s2 = list(st[:i]) + seg + list(st[i + 1:k]) + [st[i], ('L', newlab)] + list(st[c + 1:])
+            return [('fw', i, tuple(s2))]
+    return []
 
 
 def key(st):
