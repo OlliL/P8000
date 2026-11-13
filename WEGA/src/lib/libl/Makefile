@@ -12,58 +12,60 @@ CCV1 = ccv1
 SCCV1 = sccv1
 CAS = cas
 PREFIX = /
+CFLAGS = -O
+ALLOBJS = main.o reject.o yyless.o yywrap.o
+LOBJS = allprint.o $(ALLOBJS)
+SOBJS = allprint.s.o $(ALLOBJS)
 
-all: libl.a slibl.a
+all: build/nonseg/libl.a build/seg/slibl.a
 
-obj:
-	-mkdir obj
-sobj:
-	-mkdir sobj
+build/nonseg/libl.a: FORCE
+	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CCV1) -f ../../Makefile libl.a
 
-LOBJS = obj/allprint.o obj/main.o obj/reject.o obj/yyless.o obj/yywrap.o
-SOBJS = sobj/allprint.s.o sobj/main.s.o sobj/reject.s.o sobj/yyless.s.o sobj/yywrap.s.o
-
-libl.a: obj $(LOBJS) arhdr_libl.s mkar.sh Library.SC
-	rm -f libl.a
-	cp Library.SC obj/Library.SC
-	$(CAS) -u -o obj/arhdr.o arhdr_libl.s
-	cd obj ; sh ../mkar.sh ../libl.a arhdr.o allprint.o main.o reject.o yyless.o yywrap.o Library.SC
-
-slibl.a: sobj $(SOBJS) arhdr_slibl.s mkar.sh Library.SC
-	rm -f slibl.a
-	cp Library.SC sobj/Library.SC
-	$(CAS) -u -o sobj/arhdr.o arhdr_slibl.s
-	cd sobj ; sh ../mkar.sh ../slibl.a arhdr.o allprint.s.o main.s.o reject.s.o yyless.s.o yywrap.s.o Library.SC
-
-obj/allprint.o: oldcc/allprint/0_1.s
-	cd oldcc/allprint ; $(CAS) -u -o ../../obj/allprint.o 0_1.s
-obj/main.o: main.c
-	$(CCV1) -O -c main.c ; mv main.o obj/main.o
-obj/reject.o: reject.c
-	$(CCV1) -O -c reject.c ; mv reject.o obj/reject.o
-obj/yyless.o: yyless.c
-	$(CCV1) -O -c yyless.c ; mv yyless.o obj/yyless.o
-obj/yywrap.o: yywrap.c
-	$(CCV1) -O -c yywrap.c ; mv yywrap.o obj/yywrap.o
-
-sobj/allprint.s.o: oldcc/allprint.s/0_1.s
-	cd oldcc/allprint.s ; $(CAS) -u -o ../../sobj/allprint.s.o 0_1.s
-sobj/main.s.o: main.c
-	$(SCCV1) -O -c main.c ; mv main.o sobj/main.s.o
-sobj/reject.s.o: reject.c
-	$(SCCV1) -O -c reject.c ; mv reject.o sobj/reject.s.o
-sobj/yyless.s.o: yyless.c
-	$(SCCV1) -O -c yyless.c ; mv yyless.o sobj/yyless.s.o
-sobj/yywrap.s.o: yywrap.c
-	$(SCCV1) -O -c yywrap.c ; mv yywrap.o sobj/yywrap.s.o
+build/seg/slibl.a: FORCE
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCCV1) -f ../../Makefile slibl.a
 
 install: all
-	cp libl.a $(PREFIX)/lib/libl.a
-	cp slibl.a $(PREFIX)/lib/slibl.a
+	cp build/nonseg/libl.a $(PREFIX)/lib/libl.a
+	cp build/seg/slibl.a $(PREFIX)/lib/slibl.a
 	-mkdir $(PREFIX)/usr/lib $(PREFIX)/usr/lib/lex
 	cp ncform $(PREFIX)/usr/lib/lex/ncform
 
 clean:
-	rm -rf obj sobj libl.a slibl.a
+	cd build/nonseg ; rm -f libl.a  arhdr.o $(LOBJS) Library.SC
+	cd build/seg    ; rm -f slibl.a arhdr.o $(SOBJS) Library.SC
+
+##################
+# bin targets
+##################
+
+libl.a: $(LOBJS) ../../arhdr_libl.s ../../mkar.sh ../../Library.SC
+	cp ../../Library.SC ./Library.SC
+	$(CAS) -u -o arhdr.o ../../arhdr_libl.s
+	sh ../../mkar.sh libl.a arhdr.o $(LOBJS) Library.SC
+
+slibl.a: $(SOBJS) ../../arhdr_slibl.s ../../mkar.sh ../../Library.SC
+	cp ../../Library.SC ./Library.SC
+	$(CAS) -u -o arhdr.o ../../arhdr_slibl.s
+	sh ../../mkar.sh slibl.a arhdr.o $(SOBJS) Library.SC
+
+###################
+# obj targets
+###################
+
+allprint.o: ../../oldcc/allprint/0_1.s
+	$(CAS) -u -o allprint.o ../../oldcc/allprint/0_1.s
+allprint.s.o: ../../oldcc/allprint.s/0_1.s
+	$(CAS) -u -o allprint.s.o ../../oldcc/allprint.s/0_1.s
+main.o: ../../main.c
+	$(CC) $(CFLAGS) -c ../../main.c
+reject.o: ../../reject.c
+	$(CC) $(CFLAGS) -c ../../reject.c
+yyless.o: ../../yyless.c
+	$(CC) $(CFLAGS) -c ../../yyless.c
+yywrap.o: ../../yywrap.c
+	$(CC) $(CFLAGS) -c ../../yywrap.c
+
+FORCE:
 
 .PHONY: all install clean
