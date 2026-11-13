@@ -13,21 +13,24 @@
 # OLDROOT: where the old compilers go (bin/ccvN, lib/vN/, lib/old/cas). PREFIX: the root of make install.
 
 CC = cc
+CAS = cas
 PREFIX = /
 OLDROOT = /
-OLDPRINTF = lib/oldlibc/printf/s1.o
+#OLDPRINTF = ../../../../lib/oldlibc/printf/s1p.o ../../../../lib/oldlibc/doprnt/s1d.o
+OLDPRINTF = ../../../../lib/oldlibc/printf/s1p.o
 MAKEARGS =
 
 all: stage1 lib stage2 cmds uts
 
-stage1: clean
-	cd lib/oldlibc/printf ; cp 0_5.c s1.c ; $(CC) -O -c s1.c ; rm -f s1.c
+stage1: #clean
+	cd lib/oldlibc/printf ; cp 0_5.c s1p.c ; $(CC) -O -c s1p.c ; rm -f s1p.c
+#	cd lib/oldlibc/doprnt ; cp 0_5.s s1d.s ; $(CAS) -o s1d.o s1d.s ; rm -f s1d.s
 	cd cmd/cas    ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT)
 
-	cd cmd/cparse ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
-	cd cmd/codgen ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
-	cd cmd/popt   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
-	cd cmd/cc     ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/cparse ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF) /lib/libc.a'
+	cd cmd/codgen ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF) /lib/libc.a'
+	cd cmd/popt   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF) /lib/libc.a'
+	cd cmd/cc     ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF) /lib/libc.a'
 
 lib: FORCE
         # not everything in lib/ is threadsafe
