@@ -1,0 +1,25 @@
+/* @[$] fgets.c	2.1  09/06/83 10:15:27 - 87wega3.2 */
+
+/* @[$] fgets.c	2.1  09/06/83 10:15:27 - 87wega3.2 */
+
+#include	<stdio.h>
+
+char *
+fgets(s, n, iop)
+char *s;
+register FILE *iop;
+{
+	register c;
+	register char *cs;
+
+	cs = s;
+	while (--n>0 && (c = getc(iop))>=0) {
+		*cs++ = c;
+		if (c=='\n')
+			break;
+	}
+	if (c<0 && cs==s)
+		return(NULL);
+	*cs++ = '\0';
+	return(s);
+}

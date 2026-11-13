@@ -3,7 +3,7 @@ setup(module_src_overrides) ; bfs(module, func, fidx, depth)"""
 import os, re, shutil, subprocess, collections, queue, sys, itertools
 from concurrent.futures import ThreadPoolExecutor
 S='/tmp/SCRATCH'
-W='/mnt/share/cvs/P8000/WEGA'; E=W+'/host/z8k-emu/z8k-emu'
+W='/home/olivleh1/git/P8000/WEGA'; E=W+'/host/z8k-emu/z8k-emu'
 N=8
 free=queue.Queue()
 def setup(files=None, base='t', root='o_veto'):

@@ -39,17 +39,17 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 
 | Path                                             | Content                                              | Use                                                 |
 | ------------------------------------------------ | ---------------------------------------------------- | --------------------------------------------------- |
-| `/mnt/share/cvs/P8000/tmp/wega31_root`           | extracted WEGA 3.1 file tree (`bin/ etc/ lib/ usr/`) | ROOT for `z8k-emu -r`; originals to compare against |
-| `/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu` | z8k Emulator (oracle)                                | run original WEGA binaries                          |
-| `/mnt/share/cvs/P8000/tmp/wega31_root/usr/man`   | man pages                                            | read with `pcat` under the emulator                 |
-| `/mnt/share/cvs/P8000/tmp/wega31_books`          | WEGA manuals and handbooks (scans, OCR text)         | lookup                                              |
-| `/mnt/share/cvs/P8000/tmp/cpu_docs`              | Z8000/Z8001/Z8002 CPU manuals (PDF + OCR text)       | instruction sets, formats                           |
-| `/mnt/share/cvs/P8000/tmp/wega31_kernel`         | original kernel objects / libraries                  | compare, disassemble                                |
-| `/mnt/share/cvs/P8000/tmp/plexus`                | Plexus sources, private reference only               | read for ideas, never copy                          |
-| `/mnt/share/cvs/P8000/tmp/sys3`                  | SYS III sources                                      | use as a starting point for source reconstruction   |
-| `/mnt/share/cvs/P8000/tmp/wega31_disks`          | WEGA 3.1 floppy images and raw conversions           | extract originals                                   |
+| `/home/olivleh1/git/P8000/tmp/wega31_root`           | extracted WEGA 3.1 file tree (`bin/ etc/ lib/ usr/`) | ROOT for `z8k-emu -r`; originals to compare against |
+| `/home/olivleh1/git/P8000/WEGA/host/z8k-emu/z8k-emu` | z8k Emulator (oracle)                                | run original WEGA binaries                          |
+| `/home/olivleh1/git/P8000/tmp/wega31_root/usr/man`   | man pages                                            | read with `pcat` under the emulator                 |
+| `/home/olivleh1/git/P8000/tmp/wega31_books`          | WEGA manuals and handbooks (scans, OCR text)         | lookup                                              |
+| `/home/olivleh1/git/P8000/tmp/cpu_docs`              | Z8000/Z8001/Z8002 CPU manuals (PDF + OCR text)       | instruction sets, formats                           |
+| `/home/olivleh1/git/P8000/tmp/wega31_kernel`         | original kernel objects / libraries                  | compare, disassemble                                |
+| `/home/olivleh1/git/P8000/tmp/plexus`                | Plexus sources, private reference only               | read for ideas, never copy                          |
+| `/home/olivleh1/git/P8000/tmp/sys3`                  | SYS III sources                                      | use as a starting point for source reconstruction   |
+| `/home/olivleh1/git/P8000/tmp/wega31_disks`          | WEGA 3.1 floppy images and raw conversions           | extract originals                                   |
 | `/mnt/share/git/mame/`                           | MAME fork with P8000 machines (`p8000`, `p8000_16`)  | real-system tests, boot WEGA                        |
-| `/mnt/share/cvs/P8000/tmp/tmp`                   | temp directory                                       | intermediate files, build logs                      |
+| `/home/olivleh1/git/P8000/tmp/tmp`                   | temp directory                                       | intermediate files, build logs                      |
 
 Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do not copy them into documents.
 

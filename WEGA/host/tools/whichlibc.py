@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 import zcode  # noqa: E402
 from sout import SOut  # noqa: E402
 
-WEGA = os.environ.get('WEGA', '/mnt/share/cvs/P8000/tmp/wega31_root')
+WEGA = os.environ.get('WEGA', '/home/olivleh1/git/P8000/tmp/wega31_root')
 HERE = os.path.dirname(os.path.abspath(__file__))
 EMU = os.path.normpath(os.path.join(HERE, '..', 'z8k-emu', 'z8k-emu'))
 

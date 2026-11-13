@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Disassemble a (nonsegmented, text+data) s.out object into PLZ/ASM (`as`)
-source: s2as.py [-n modname] file.o
+source: s2as.py [-s] [-n modname] file.o (-s: a segmented object, the module gets `$segmented`)
 
 The module has one `global` procedure per global text symbol, local labels
 L1.., data labels D<off> in an `internal` block, EPU instructions with their
@@ -18,10 +18,13 @@ import epu  # noqa: E402
 CC = {"eq": "z", "ne": "nz"}
 
 
+SEG = False
+
+
 def conv_line(line):
     m = re.match(r"\t\.word\t%([0-9A-F]{4}),%([0-9A-F]{4})\t// EPU", line)
     if m:
-        t = epu.decode(int(m.group(1), 16), int(m.group(2), 16))
+        t = epu.decode(int(m.group(1), 16), int(m.group(2), 16), SEG)
         if t is None:
             raise SystemExit("undecoded EPU %s" % line)
         return "\t" + t
@@ -42,10 +45,16 @@ def conv_line(line):
 
 def main(argv):
     name = None
+    seg = False
     files = []
     i = 0
     while i < len(argv):
-        if argv[i] == "-n":
+        if argv[i] == "-s":
+            seg = True
+            global SEG
+            SEG = True
+            i += 1
+        elif argv[i] == "-n":
             name = argv[i + 1]
             i += 2
         else:
@@ -91,6 +100,8 @@ def main(argv):
         return s
 
     out = ["%s module" % name, ""]
+    if seg:
+        out += ["$segmented", ""]
     if ext:
         out.append("  external")
         for e in ext:
@@ -98,15 +109,28 @@ def main(argv):
         out.append("")
     if data:
         out.append("  internal")
+        if seg:
+            # a segmented address in the data: the segment word (relocated, shown as L0t_8000) and the offset
+            d2 = []
+            k = 0
+            while k < len(data):
+                mm = re.match(r"\t\.word\tL\d+t_8000\b", data[k])
+                if mm and k + 1 < len(data) and data[k + 1].startswith("\t.word\tL"):
+                    d2.append("\t.long\t" + data[k + 1].split("\t")[2])
+                    k += 2
+                else:
+                    d2.append(data[k])
+                    k += 1
+            data = d2
         for l in data:
             if l.endswith(":") and not l.endswith("::"):
                 out.append("    %s" % rn(l))
             else:
-                mm = re.match(r"\t\.word\t(.*)$", l)
-                v = rn(mm.group(1).split("//")[0].strip())
+                mm = re.match(r"\t\.(word|long)\t(.*)$", l)
+                v = rn(mm.group(2).split("//")[0].strip())
                 if v.startswith("%"):
                     v = "%" + v[1:].lower()
-                out.append("\tWORD := %s" % v)
+                out.append("\t%s := %s" % (mm.group(1).upper(), v))
         out.append("")
     out.append("  global")
     procs = []

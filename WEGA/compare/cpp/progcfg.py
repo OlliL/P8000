@@ -23,7 +23,7 @@ def model_link(work, objs):
     return [os.environ.get('LDBIN', hostld), '-e', 'start', os.path.join(src, 'crt0.o')] + objs + libc + ['-o', 'cppm']
 
 
-MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_cpp', 'cppm')
+MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'd12model_cpp', 'cppm')
 STRICT_INPUT = MODEL_OUT
 
 CORPUS_BINARY = 'cpp'

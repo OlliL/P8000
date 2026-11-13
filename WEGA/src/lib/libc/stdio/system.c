@@ -25,9 +25,9 @@ int mode;
 
 	if ((pid = fork()) == 0) {
 		if(!mode)
-			execl("/bin/csh", "csh", "-c", s, 0);
+			execl("/bin/csh", "csh", "-c", s, (char *)0);
 		else
-			execl("/bin/sh", "sh", "-c", s, 0);
+			execl("/bin/sh", "sh", "-c", s, (char *)0);
 		_exit(127);
 	}
 	istat = signal(SIGINT, SIG_IGN);

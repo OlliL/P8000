@@ -26,7 +26,7 @@ def model_link(work, objs):
     return [os.environ.get('LDBIN', hostld), '-X', '-e', 'start', '-i', crt] + objs + libc + ['-o', 'codgenm']
 
 
-MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_codgen', 'codgenm')
+MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'd12model_codgen', 'codgenm')
 STRICT_INPUT = MODEL_OUT
 
 

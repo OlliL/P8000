@@ -157,7 +157,7 @@ long *tim;
 	long hms, day;
 	register int *tp;
 	static struct tm xtime;
-	int foo2;
+	char *foo2;
 
 	/*
 	 * break initial number into days
@@ -218,7 +218,7 @@ struct tm *t;
 {
 	register char *cp, *ncp;
 	register int *tp;
-	int foo;
+	char *foo;
 
 	cp = cbuf;
 	for(ncp = "Day Mon 00 00:00:00 1900\n"; *cp++ = *ncp++;);
@@ -270,7 +270,7 @@ tzset()
 {
 	register char *p, *q;
 	register int n;
-	int foo;
+	char *foo;
 	int sign;
 	char *getenv();
 

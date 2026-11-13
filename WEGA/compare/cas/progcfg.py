@@ -22,13 +22,13 @@ MODULES = ['ifile', 'instr', 'scanner', 'main', 'nodes', 'parser', 'pst', 'subr'
 NOOPT = ('parser', 'assemble')
 EXTRA_FUNCS = {'yyparse': {'file': 'parser.y', 'orig': '0x1ff6', 'status': 'open'}}    # not listed by check.sh
 STATICFUNCS = True    # static functions (escape, digval) get a symbol, so that strictcmp finds them
-MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_cas', 'casm')
+MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'd12model_cas', 'casm')
 STRICT_INPUT = MODEL_OUT
 
 
 def _emu():
     here = os.path.dirname(os.path.abspath(__file__))
-    root = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
+    root = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/home/olivleh1/git/P8000/tmp/wega31_root'
     return [os.path.normpath(os.path.join(here, '..', '..', 'host', 'z8k-emu', 'z8k-emu')), '-r', root]
 
 

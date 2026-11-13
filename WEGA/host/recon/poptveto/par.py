@@ -2,7 +2,7 @@
 import os, re, shutil, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
 S='/tmp/SCRATCH'
-W='/mnt/share/cvs/P8000/WEGA'
+W='/home/olivleh1/git/P8000/WEGA'
 E=W+'/host/z8k-emu/z8k-emu'
 N=8
 BASE=None
@@ -13,7 +13,7 @@ def setup():
         shutil.copytree(S+'/'+os.environ.get('PBASE','t')+'/d12model_cas', d+'/d12model_cas')
         shutil.copytree(W+'/src/cmd/cas', d+'/src', ignore=shutil.ignore_patterns('build','old','*.o'))
         for b in ('d45','A','B','cur'):
-            root = '/mnt/share/cvs/P8000/tmp/oldroot' if b=='cur' else '%s/o_%s'%(S,b)
+            root = '/home/olivleh1/git/P8000/tmp/oldroot' if b=='cur' else '%s/o_%s'%(S,b)
             open('%s/cc_%s'%(d,b),'w').write('#!/bin/sh\nexec %s -r %s /bin/sccvc "$@"\n'%(E,root)); os.chmod('%s/cc_%s'%(d,b),0o755)
 import queue
 free=queue.Queue()
@@ -28,7 +28,7 @@ def one(task):
             saved[f]=open(d+'/src/'+f).read(); open(d+'/src/'+f,'w').write(t)
         cc='%s/cc_%s'%(d,popt)
         if not os.path.exists(cc):
-            root = '/mnt/share/cvs/P8000/tmp/oldroot' if popt=='cur' else '%s/o_%s'%(S,popt)
+            root = '/home/olivleh1/git/P8000/tmp/oldroot' if popt=='cur' else '%s/o_%s'%(S,popt)
             open(cc,'w').write('#!/bin/sh\nexec %s -r %s /bin/sccvc "$@"\n'%(E,root)); os.chmod(cc,0o755)
         env=dict(os.environ, RECON_PROG='cas', RECON_TMP=d, CCHOST=cc, CAS=S+'/cas_old', D12_SRC=d+'/src')
         if module: env['D12_ONLY']=module

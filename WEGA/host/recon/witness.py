@@ -22,7 +22,7 @@ import sys, os, re, subprocess, difflib, shutil
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'tools')); sys.path.insert(0, HERE)
 from sout import SOut; import zcode
-S3 = os.environ.get('SYS3SRC') or '/mnt/share/cvs/P8000/tmp/sys3/usr/src/cmd'
+S3 = os.environ.get('SYS3SRC') or '/home/olivleh1/git/P8000/tmp/sys3/usr/src/cmd'
 R = os.path.abspath(os.environ.get('WEGA', os.path.join(HERE, '..', '..', '..', 'tmp', 'wega31_root')))
 OLDROOT = os.path.abspath(os.environ.get('OLDROOT', os.path.join(HERE, '..', '..', '..', 'tmp', 'oldroot')))
 EMU = os.path.join(HERE, '..', 'z8k-emu', 'z8k-emu')
@@ -62,7 +62,7 @@ def main():
     if '-c' in a:
         i=a.index('-c'); cc=a[i+1].split(); del a[i:i+2]
     sel=set(a)
-    work=os.path.join(os.environ.get('RECON_TMP','/mnt/share/cvs/P8000/tmp/tmp'),'w3'); os.makedirs(work,exist_ok=True)
+    work=os.path.join(os.environ.get('RECON_TMP','/home/olivleh1/git/P8000/tmp/tmp'),'w3'); os.makedirs(work,exist_ok=True)
     tot_same=tot=0; tot_d=0
     for b,src in progs:
         name=os.path.basename(b)

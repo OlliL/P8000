@@ -24,8 +24,8 @@ sys.path.insert(0, HERE)
 import z8k  # noqa: E402
 from sout import SOut  # noqa: E402
 
-EMU = '/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu'
-WEGA = '/mnt/share/cvs/P8000/tmp/wega31_root'
+EMU = '/home/olivleh1/git/P8000/WEGA/host/z8k-emu/z8k-emu'
+WEGA = '/home/olivleh1/git/P8000/tmp/wega31_root'
 
 
 def decode_range(code, seg, a, b):

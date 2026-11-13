@@ -45,8 +45,8 @@ PROGS = CFGV['progs']
 BIN = CFGV['bin']
 # programs with a compare/NAME/progcfg.py that are not measured, and why
 NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet', 'cas': 'built by sccvc: MATRIX_VER=vc', 'cc': 'built by the shipped cc, no model'}
-ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
-OLDROOT = os.environ.get('OLDROOT', '/mnt/share/cvs/P8000/tmp/oldroot')
+ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/home/olivleh1/git/P8000/tmp/wega31_root'
+OLDROOT = os.environ.get('OLDROOT', '/home/olivleh1/git/P8000/tmp/oldroot')
 # the work directories: on a local disk, a network share makes the many small files of the builds slow
 TMP = os.environ.get('MATRIX_TMP', '/tmp/wega_matrix')
 EMU = os.path.join(REPO, 'host', 'z8k-emu', 'z8k-emu')

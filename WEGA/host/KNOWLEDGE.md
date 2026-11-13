@@ -989,6 +989,8 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/cas` (`sgetnode`) | no `return (np)` behind the switch: the node is returned because rr2 still holds the value of the last call (`mknode1`, `mknode7`, `sgetexpr`); after the error of the default case np is not loaded | kept in src/cmd/cas (getops.c) | compare/cas/findings.json |
 | `/bin/cas` (`exprreloc`) | case 0x24 (`^O`) tests `v & 8` and does nothing with the result (`cpl rr2,#0` without a jump): an if/else that ors 0 in both branches, where 0x23 ors 2 or 0x20 and 0x25 ors 1 or 0x10 | kept in src/cmd/cas (expr.c): `if (v & 8) v |= 0; else v |= 0;` | compare/cas/findings.json |
 | `/bin/cas` (`igetaddr`, `putrow`) | the row address goes through `switch (sizeof(pointer))` with a case for 4 (igetl, iputl) and one for 2; the compiler keeps the load of the constant (`ldk r2,#4`, never read) and drops the case for 2, whose body is not in the binary | kept in src/cmd/cas (ifile.c, instr.c); the body of case 2 (igetw, iputw) is a guess | compare/cas/findings.json |
+| `/lib/libc.a`, `/lib/slibc.a` (`ulimit`) | the system call number of `ulimit` is 54 in libc (that is `ioctl` in `uts/sys/sysent.c`) and 65 in slibc (`nosys`); neither reaches a ulimit | kept (`src/lib/libc/sys/ulimit.s`, `src/lib/slibc/sys/ulimit.s`) | `src/lib/slibc/HANDOFF.md` |
+| `/lib/slibc.a` (`symscan`) | a name of more than 8 characters is found by its length only: the loop `while (*s++ && *t++ && *t)` compares no characters | kept (`src/lib/slibc/gen/symscan.c`; the member from `oldcc/symscan`) | `src/lib/slibc/HANDOFF.md` |
 
 ## ar (reconstructed, byte-identical)
 
@@ -1520,7 +1522,8 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   `src/lib/libc/oldcc`, see "oldlibc":
   - `malloc`: one instruction, `mult rr2,r6` against `mult rr2,0(r15)`. `swap`: `0(r15)` against `@r15`, a register known in the shipped cc.
     `symscan`: `ld r3,..; lda r4,..` where the shipped cc takes r2, r3. `nlist`: only the frame, 2 bytes less. These look like a
-    compiler between ccv1 and the shipped cc (a guess); the frame of `nlist` not understood.
+    compiler between ccv1 and the shipped cc (a guess); the frame of `nlist` not understood. The segmented twins in slibc show the
+    same differences; measured there and the C source of symscan: `src/lib/libc/HANDOFF.md`, `src/lib/slibc/HANDOFF.md`.
 - `printf` needs the stdio.h of `src/cmd/cparse` with the shipped cc: `char *_ptr`, so `extsb` behind putc. check.sh tries it.
 - Source forms that gave these members (2026-11-04):
   - Arguments come in registers: printf and scanf copy them into a local array `regs[5]` and hand it over beside the address of the first
@@ -1529,7 +1532,11 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   - The place of a `register` declaration in the list of locals moves the others: a `register` variable has a slot in the frame in the
     old compilers (doprnt 0_6: `int fpn; int *ap, *sap;` first, then `register c, fmtlen, len;`).
   - Spare locals that fit only the frame of the original, no other reason known: `long l` in `sprintf`, `int unused` in `_instr`, `long l` in
-    `_getccl`. The original may have had a `register` there; odd forms until then.
+    `_getccl`. The original may have had a `register` there; odd forms until then. The segmented member of `_instr` (slibc) has no such
+    slot (a guess: a `register` that gets a frame slot in nonsegmented code only); the spare locals of `ctime.c` are `char *`, which the
+    segmented member shows (the nonsegmented one cannot tell). Further forms that only the segmented members show and that keep libc
+    identical: `execvp` (`index()` not declared `char *`), `popen`/`system` (`execl(..., (char *)0)`), `fltioc` (`char c` before the
+    register variables).
   - `fltioc` (`stdio/fltioc.c`): the digit copying of `_fegcvt` is written with `goto` into the `if` chain: the plain forms all gave another block order in popt; odd form.
   - `endopen` 0_3: `mode[0] = 'a'` for `rw` and `wr` (the shipped one has `'r'`).
 - Findings while fixing sources: getpass uses `struct termio` (`c_lflag`, ioctl 0x5401/0x5404/0x5403);
@@ -1611,7 +1618,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v9 | ld (07/83); its order conflicts with v6, its versions do not |
 | libc-v10 | write, rmdir (01/83) |
 
-The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. Not looked at: `slibc.a` and the segmented programs.
+The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see `src/lib/slibc/HANDOFF.md`.
 A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.
 
 `popt` (`z23.c`) uses the value of `sprintf`, the buffer: `strlen(sprintf(t[k].s1, "r%d", n))`. The `sprintf` of the shipped libc returns a count; popt then silently loses its register substitution (r1 becomes r14 without being saved) and the code it makes is wrong. So stage 1 links the old `printf` in front of the shipped libc.

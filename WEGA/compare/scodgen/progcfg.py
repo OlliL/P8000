@@ -15,7 +15,7 @@ SRCDIR = os.path.normpath(os.path.join(HERE, '..', '..', 'src', 'cmd', 'codgen')
 CCFLAGS = ['-DSEG']
 MODULES = [m.replace('table3_codgen', 'table3_scodgen') for m in _p.MODULES]
 model_link = _p.model_link
-MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_scodgen', os.path.basename(_p.MODEL_OUT))
+MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'd12model_scodgen', os.path.basename(_p.MODEL_OUT))
 STRICT_INPUT = MODEL_OUT
 
 

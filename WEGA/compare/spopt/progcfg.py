@@ -19,7 +19,7 @@ D18 = True
 D6TABLES = True
 CCFLAGS = ['-DSPOPT']
 model_link = _p.model_link
-MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_spopt', 'poptm')
+MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'd12model_spopt', 'poptm')
 STRICT_INPUT = MODEL_OUT
 STATICFUNCS = True
 

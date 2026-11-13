@@ -1,2 +1,2 @@
-export PATH="/mnt/share/cvs/P8000/tmp/wbin:${PATH}"
+export PATH="/home/olivleh1/git/P8000/tmp/wbin:${PATH}"
 make $*

@@ -10,6 +10,6 @@ programs, and for each module how it is made:
     <module>/0_<n>.s     assembler (cas syntax), where a compiler we do not have made the module, or it was assembler in the original;
                          a 0_<n>.c beside it is a draft
 
-The version numbers are invented (0_1, 0_2, ...); the same bytes have the same number. Which is open and why: ../../TODO.md, step 2.
+The version numbers are invented (0_1, 0_2, ...); the same bytes have the same number. Which is open and why: ../libc/HANDOFF.md.
 A program finds its library with host/tools/whichlibc.py. host/tools/libctable.py measures which source and compiler give which of the
 .s, host/tools/libcfit.py tries one source. How a library was found: the members of programs whose versions and order do not conflict.

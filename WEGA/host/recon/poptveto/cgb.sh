@@ -2,13 +2,13 @@
 # cgb.sh NAME "SW1 SW2 ...": scodgen of vc without the given switches of the OLD_VC block (taken from the working tree),
 # installed into a private root $S/o_NAME (copy of OLDROOT). Also +SW adds a define.
 S=/tmp/claude-1000/-mnt-share-cvs-P8000/6b8d4c9d-ace2-40e9-b4e5-33a880fd019b/scratchpad
-O=/mnt/share/cvs/P8000/tmp/oldroot; W=/mnt/share/cvs/P8000/tmp/wega31_root; E=/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu
+O=/home/olivleh1/git/P8000/tmp/oldroot; W=/home/olivleh1/git/P8000/tmp/wega31_root; E=/home/olivleh1/git/P8000/WEGA/host/z8k-emu/z8k-emu
 name=$1; sw=$2
 B=$S/cb_$name
 rm -rf $B $S/o_$name; mkdir -p $B/src/cmd $B/src/lib/libc
-[ -d $S/wbin ] || sh /mnt/share/cvs/P8000/WEGA/host/tools/wbin.sh $S/wbin $W $O $E
-cp -r /mnt/share/cvs/P8000/WEGA/src/cmd/codgen $B/src/cmd/codgen
-cp /mnt/share/cvs/P8000/WEGA/src/lib/libc-v5.a $B/src/lib/; cp -r /mnt/share/cvs/P8000/WEGA/src/lib/libc/crt $B/src/lib/libc/crt; cp /mnt/share/cvs/P8000/WEGA/src/lib/libc/* $B/src/lib/libc/ 2>/dev/null
+[ -d $S/wbin ] || sh /home/olivleh1/git/P8000/WEGA/host/tools/wbin.sh $S/wbin $W $O $E
+cp -r /home/olivleh1/git/P8000/WEGA/src/cmd/codgen $B/src/cmd/codgen
+cp /home/olivleh1/git/P8000/WEGA/src/lib/libc-v5.a $B/src/lib/; cp -r /home/olivleh1/git/P8000/WEGA/src/lib/libc/crt $B/src/lib/libc/crt; cp /home/olivleh1/git/P8000/WEGA/src/lib/libc/* $B/src/lib/libc/ 2>/dev/null
 python3 - "$B/src/cmd/codgen/oldcc.h" $sw <<'PY'
 import re,sys
 p=sys.argv[1]; s=open(p).read()

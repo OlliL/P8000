@@ -19,8 +19,8 @@ import z8k  # noqa: E402
 from sout import SOut  # noqa: E402
 
 U.CODESEG = 4
-WEGA = os.environ.get('WEGA', '/mnt/share/cvs/P8000/tmp/wega31_root')
-OLDROOT = os.environ.get('OLDROOT', '/mnt/share/cvs/P8000/tmp/oldroot')
+WEGA = os.environ.get('WEGA', '/home/olivleh1/git/P8000/tmp/wega31_root')
+OLDROOT = os.environ.get('OLDROOT', '/home/olivleh1/git/P8000/tmp/oldroot')
 EMU = U.EMU
 
 # (object, text start, text end, data start, data end, {entry: names})
@@ -67,7 +67,7 @@ def main():
     for o in OBJ:
         for a, ns in o[5].items():
             ext['0x%x' % a] = ns[0]
-    work = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'oldslibc_cas')
+    work = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'oldslibc_cas')
     os.makedirs(work, exist_ok=True)
     bad = 0
     for name, a, b, da, db, exports in OBJ:
