@@ -9,7 +9,7 @@ against the original, without the model link (0.2 s instead of 15 s).
 Normalized: jump targets inside the function as offsets, calls and segment numbers masked, 32-bit immediates masked.
 The layout of the code is compared exactly; constants that the link sets are not (use strictcmp for the final check)."""
 import difflib, os, re, subprocess, sys, tempfile
-W = '/mnt/share/cvs/P8000/WEGA'
+W = '/home/olivleh1/git/P8000/WEGA'
 sys.path.insert(0, W + '/host/tools'); sys.path.insert(0, W + '/host/recon')
 from sout import SOut  # noqa: E402
 import unlink_seg as U  # noqa: E402

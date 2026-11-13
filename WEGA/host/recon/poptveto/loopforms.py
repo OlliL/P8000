@@ -21,6 +21,6 @@ for f in sys.argv[1:]:
         if not os.path.exists(d+'/jpr.s'): print('FAIL',d,r.stderr[:200]); continue
         res=[]
         for b in ('w24','ec1','eri','erid'):
-            o=subprocess.run(['python3','/mnt/share/cvs/P8000/WEGA/host/recon/poptveto/jfast.py',S+'o_%s/lib/vc/spopt'%b,d+'/jpr.s'],capture_output=True,text=True).stdout.split()
+            o=subprocess.run(['python3','/home/olivleh1/git/P8000/WEGA/host/recon/poptveto/jfast.py',S+'o_%s/lib/vc/spopt'%b,d+'/jpr.s'],capture_output=True,text=True).stdout.split()
             res.append('%s:%s'%(b,o[0] if o else '?'))
         print('%-40s'%(f[:-2]+'_'+k),' '.join(res),flush=True)

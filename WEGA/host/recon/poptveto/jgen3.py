@@ -88,7 +88,7 @@ def run(j):
     if not os.path.exists(d+'/jpr.s'): return name,['FAIL']
     r=[]
     for bb in builds:
-        o=subprocess.run(['python3','/mnt/share/cvs/P8000/WEGA/host/recon/poptveto/jfast.py',S+'o_%s/lib/vc/spopt'%bb,d+'/jpr.s'],capture_output=True,text=True).stdout.split()
+        o=subprocess.run(['python3','/home/olivleh1/git/P8000/WEGA/host/recon/poptveto/jfast.py',S+'o_%s/lib/vc/spopt'%bb,d+'/jpr.s'],capture_output=True,text=True).stdout.split()
         r.append(o[0] if o else '?')
     return name,r
 out=open(S+'g3.txt','w')
