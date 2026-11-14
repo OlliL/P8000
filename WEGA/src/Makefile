@@ -2,7 +2,12 @@
 #
 #   make                  everything, in this order:
 #   make stage1           the old compilers including their cas, with the shipped tools and the shipped /lib/libc.a; installed below OLDROOT.
-#                         Only sprintf comes from the old printf: popt uses the value of sprintf, the buffer; the shipped one returns a count.
+#                         printf, fprintf, sprintf and _doprnt come from the old libc (OLDPRINTF): popt uses the value of sprintf, the
+#                         buffer (the shipped one returns a count); the shipped _doprnt reads base and val of the last conversion
+#                         for a %s (uninitialised: "r2" came out as "-2" behind the old printf, libl reject.c). With the old
+#                         _doprnt the dummy _fegcvt of ffltioc.o (from /lib/libc.a) is linked in front of libc.a, otherwise the
+#                         first _fegcvt of libc.a, the real fltioc.o with the floating point output, comes in (text overflow of
+#                         the vc scodgen); the shipped _doprnt.o stands behind fltioc.o in libc.a and gets them from ffltioc.o.
 #   make lib              lib/libc/libc.a and lib/libc-vN.a, with the shipped tools and the old compilers
 #   make stage2           the old compilers once more, now with the libc of their time; installed below OLDROOT
 #   make cmds             cmd/
@@ -16,15 +21,15 @@ CC = cc
 CAS = cas
 PREFIX = /
 OLDROOT = /
-#OLDPRINTF = ../../../../lib/oldlibc/printf/s1p.o ../../../../lib/oldlibc/doprnt/s1d.o
-OLDPRINTF = ../../../../lib/oldlibc/printf/s1p.o
+OLDPRINTF = ../../../../lib/oldlibc/printf/s1p.o ../../../../lib/oldlibc/doprnt/s1d.o ../../../../lib/oldlibc/doprnt/s1f.o
 MAKEARGS =
 
 all: stage1 lib stage2 cmds uts
 
-stage1: #clean
+stage1: clean
 	cd lib/oldlibc/printf ; cp 0_5.c s1p.c ; $(CC) -O -c s1p.c ; rm -f s1p.c
-#	cd lib/oldlibc/doprnt ; cp 0_5.s s1d.s ; $(CAS) -o s1d.o s1d.s ; rm -f s1d.s
+	cd lib/oldlibc/doprnt ; cp 0_5.s s1d.s ; $(CAS) -u -o s1d.o s1d.s ; rm -f s1d.s
+	cd lib/oldlibc/doprnt ; ar x /lib/libc.a ffltioc.o ; mv ffltioc.o s1f.o
 	cd cmd/cas    ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT)
 
 	cd cmd/cparse ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF) /lib/libc.a'

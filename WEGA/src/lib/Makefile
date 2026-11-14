@@ -9,7 +9,7 @@ PREFIX = /
 all:
 	cd libc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
 	cd slibc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
-#	cd libl ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
+	cd libl ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
 	# no make args, not threadsafe
 	cd oldlibc ; $(MAKE)
 	cd oldslibc ; $(MAKE)
@@ -17,12 +17,12 @@ all:
 install:
 	cd libc ; $(MAKE) install PREFIX=$(PREFIX)
 	cd slibc ; $(MAKE) install PREFIX=$(PREFIX)
-#	cd libl ; $(MAKE) install PREFIX=$(PREFIX)
+	cd libl ; $(MAKE) install PREFIX=$(PREFIX)
 
 clean:
 	cd libc ; $(MAKE) clean
 	cd slibc ; $(MAKE) clean
-#	cd libl ; $(MAKE) clean
+	cd libl ; $(MAKE) clean
 	cd oldlibc ; $(MAKE) clean
 	cd oldslibc ; $(MAKE) clean
 

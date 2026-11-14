@@ -8,7 +8,7 @@ State of 2026-11-12, branch `libs` (rules for working beside the compiler sessio
 
 - `make` builds `libl.a` and `slibl.a`, both **byte-identical**; `make install PREFIX=dir` also installs `ncform` (identical)
   to `usr/lib/lex/` (it makes `usr/lib` and `usr/lib/lex`, which the empty root of checkall does not have). `../Makefile`
-  builds and installs it. `checkall` has not run with libl yet.
+  builds and installs it (switched off on 2026-11-13, on again since 2026-11-14: stage 1 links the old `_doprnt`, `../../Makefile`, see `host/OLDCC_LOG.md`).
 - Sources: System III `tmp/sys3/usr/src/lib/libl/lib/*.c` unchanged (allprint, main, reject, yyless, yywrap). `ncform` is the
   WEGA file: the System III one plus the line `/* @[$]ncform 2.1 */` and a tab before a comment. `nrform` (System III) is not
   in WEGA.
