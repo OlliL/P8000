@@ -1187,6 +1187,85 @@ register struct node *a;
 }
 #endif
 
+#ifdef OLD_D52
+/*
+ * v1: a conditional expression in front of the function exit, `cjp M; A; jp T; M: Y; T:`: M is a label of the compiler
+ * (L1xxxx), a conditional jump of the jump's block names it, Y (the straight code from M to T) falls into T, T is the
+ * exit code (straight to ret), and the block of the jump is one stretch with that one conditional jump behind another
+ * jump to T. The block goes in front of T and the jump stays behind Y: `M: Y; jp T; cjp M; A; T:`. Returns the jump,
+ * or 0 when the form is not there.
+ */
+static struct node *
+d52move(p1)
+register struct node *p1;
+{
+	register struct node *b, *q, *m, *l0, *y;
+	int found, n;
+
+	if (p1->ref == 0)
+		return 0;
+	for (m = p1->forw; m && m->op == KCOMMENT; m = m->forw)
+		;
+	if (m == 0 || m->op != LABEL || !(m->labno >= 10000 && m->labno < 20000))
+		return 0;
+	/* the block of the jump: one label at its head, one conditional jump, and that names M */
+	found = n = 0;
+	for (b = p1->back; b; b = b->back) {
+		if (b == &first || b->op == OBRACE || b->op == DLABEL || b->op == 0)
+			return 0;
+		if (b->op == JP || b->op == RET)
+			break;
+		if (b == p1->ref)
+			return 0;
+		if (b->op == LABEL && b->back && b->back->op != JP && b->back->op != LABEL && b->back->op != KCOMMENT)
+			return 0;
+		if (b->op == CJP) {
+			if (n++ || b->ref != m)
+				return 0;
+			found = 1;
+		}
+	}
+	if (b == 0 || !found || b->op != JP || b->ref != p1->ref)
+		return 0;
+	/* the target: the first label of its run, fallen into, the exit code */
+	for (l0 = p1->ref; l0->back && (l0->back->op == LABEL || l0->back->op == KCOMMENT); l0 = l0->back)
+		;
+	y = l0->back;
+	if (y == 0 || y->op == JP || y->op == RET || y->op == JSW || y == p1)
+		return 0;
+	n = 0;
+	for (q = l0; q && q->op != RET; q = q->forw) {
+		if (q->op == LABEL || q->op == KCOMMENT)
+			continue;
+		if (q->op == JP || q->op == CJP || q->op == JSW || ++n > 4)
+			return 0;
+	}
+	if (q == 0)
+		return 0;
+	/* Y: straight code, no label, no jump */
+	for (q = m->forw; q && q != l0; q = q->forw)
+		if (q->op == JP || q->op == CJP || q->op == RET || q->op == JSW || q->op == LABEL)
+			return 0;
+	if (q != l0)
+		return 0;
+	q = p1->back;		/* the last node of the block */
+	b = b->forw;		/* its first node */
+	if (b == p1)
+		return 0;
+	b->back->forw = p1->forw;
+	p1->forw->back = b->back;
+	y->forw = p1;
+	p1->back = y;
+	p1->forw = b;
+	b->back = p1;
+	q->forw = l0;
+	l0->back = q;
+	ncmot++;
+	nchange++;
+	return p1;
+}
+#endif
+
 struct node *
 codemove(p)
 struct node *p;
@@ -1302,6 +1381,10 @@ struct node *p;
 		}
 		return p1;
 	}
+#ifdef OLD_D52
+	if ((p3 = d52move(p1)) != 0)
+		return p3;
+#endif
 	/* loop inversion */
 	p3 = p1;
 	while (p3->forw->op == KCOMMENT)

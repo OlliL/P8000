@@ -1,8 +1,8 @@
 # libl: /lib/libl.a and /lib/slibl.a (the lex library, nonsegmented and segmented) and /usr/lib/lex/ncform, from the
 # System III sources (tmp/sys3/usr/src/lib/libl). Both libraries are made from the same sources (their Library.SC are equal,
 # 02/11/83) by the compiler of that time, v1 (ccv1, sccv1 from OLDROOT); the archives are byte-identical (headers:
-# arhdr_libl.s, arhdr_slibl.s, mkar.sh). oldcc/allprint, oldcc/allprint.s: allprint cut from the original members
-# (HANDOFF.md).
+# arhdr_libl.s, arhdr_slibl.s, mkar.sh). allprint needs stdio.h of this directory (putc with char *_ptr) and the
+# popt of v1 with OLD_D52 (HANDOFF.md).
 #
 #   make        libl.a slibl.a
 #   make install PREFIX=dir   dir/lib/libl.a, dir/lib/slibl.a, dir/usr/lib/lex/ncform
@@ -53,10 +53,11 @@ slibl.a: $(SOBJS) ../../arhdr_slibl.s ../../mkar.sh ../../Library.SC
 # obj targets
 ###################
 
-allprint.o: ../../oldcc/allprint/0_1.s
-	$(CAS) -u -o allprint.o ../../oldcc/allprint/0_1.s
-allprint.s.o: ../../oldcc/allprint.s/0_1.s
-	$(CAS) -u -o allprint.s.o ../../oldcc/allprint.s/0_1.s
+allprint.o: ../../allprint.c ../../stdio.h
+	$(CC) $(CFLAGS) -I../.. -c ../../allprint.c
+allprint.s.o: ../../allprint.c ../../stdio.h
+	$(CC) $(CFLAGS) -I../.. -c ../../allprint.c
+	mv allprint.o allprint.s.o
 main.o: ../../main.c
 	$(CC) $(CFLAGS) -c ../../main.c
 reject.o: ../../reject.c

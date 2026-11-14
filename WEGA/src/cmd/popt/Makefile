@@ -30,12 +30,12 @@ build/nonsegv0/popt: FORCE
 build/nonsegv0p/popt: FORCE
 	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS)"
 build/nonsegv1/popt: FORCE
-	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D20"
+	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D20 -DOLD_D52"
 
 build/seg/spopt: FORCE
 	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CFLAGS="$(CFLAGS) -DSPOPT"
 build/segv1/spopt: FORCE
-	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D20"
+	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D20 -DOLD_D52"
 build/segvk/spopt: FORCE
 	cd build/segvk ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D29"
 build/segvc/spopt: FORCE

@@ -84,7 +84,7 @@ the doscopy programs, the standalone programs (`make -C host checkall`). All of 
 
 ### v1 (01/83 .. 07/83)
 
-- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D3` (codgen), `OLD_D20` (popt).
+- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D3` (codgen), `OLD_D20` and `OLD_D52` (popt).
 - Byte-identical: `/bin/size`, `/usr/bin/strip`, `/bin/mv` (also cp, ln), `/bin/rm`.
 - ld: 55 of 59 functions strictly exact, data equal, corpus 146 of 146; open: place_sec, chk_ranlib, load2td, load1.
 - Own code equal, the libc part not linked yet: write (all 5 functions). rmdir: its main differs by D4 and D18.
@@ -505,6 +505,20 @@ turned where it stands (`cp 0x56; jne plain`, F behind it) and D50 finds the str
 lines without a, b, c); without the limits other functions change: (a) without the window stops the dispatch of
 `switch (res)` in jpr itself, (c) without the one instruction changes p2loop and eight more modules, (c) with any loop
 head in the window changes yyparse. Every other module of cas is byte-identical with and without the switch. One witness.
+
+
+### D52 A conditional expression in front of the function exit
+
+v1 `OLD_D52` (popt z21.c, codemove; popt and spopt of v1). For `c ? a : b` as the last code in front of the function exit
+the raw code is `cjp M; A; jp T; M: Y; T:` with T the exit code. The shipped popt leaves it. The popt of v1 puts the
+block of the jump (the test and A) in front of T and leaves the jump behind Y: `M: Y; jp T; test; cjp M; A; T:`, so Y
+stands in front of the test and A falls into the exit. Limits (each from the measurements, not from a second
+witness): M is a compiler label (L1xxxx), the block of the jump is one stretch with that one conditional jump and stands
+behind another jump to T, Y is straight code, T runs straight to `ret`. Witness: allprint of libl.a and slibl.a
+(`putc(c, yyout)` as the else part of the last `if` of the switch: the store arm stands in front of the `--_cnt`
+test, the `_flsbuf` arm falls into the exit). Without the limits the rule changes other objects of v1 (the plain form 63
+of 142 translations of libc, oldlibc, ld and cmd sources by ccv1; with all limits one, strncmp of the shipped libc,
+which v1 does not build). One witness (one source, two objects).
 
 ### Register allocation of the old scc
 
