@@ -1,0 +1,3 @@
+#!/bin/sh
+# sub.sh ROOT: quick subset of members
+for x in libc/gen/symscan libc/gen/nlist libc/stdio/fltioc libc/stdio/fseek libc/stdio/doprnt libc/gen/getopt libc/stdio/doscan slibc/gen/symscan slibc/stdio/fseek; do lib=${x%%/*}; m=$(basename $x); c=cc; [ $lib = slibc ] && c=scc; d=/tmp/SCRATCH/sub_$(basename $1)/$lib; mkdir -p $d; cp /home/olivleh1/git/P8000/WEGA/src/lib/$(dirname $x)/*.h $d/ 2>/dev/null; cp /home/olivleh1/git/P8000/WEGA/src/lib/$x.c $d/; (cd $d && rm -f $m.o && timeout -s KILL 60 /home/olivleh1/git/P8000/WEGA/host/z8k-emu/z8k-emu -r $1 /bin/$c -O -c $m.c >/dev/null 2>&1; printf '%s:%s ' $lib/$m $(cmp -l $m.o /home/olivleh1/git/P8000/WEGA/src/lib/$lib/obj/$m.o 2>/dev/null | wc -l)); done; echo
