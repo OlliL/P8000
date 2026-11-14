@@ -8,7 +8,7 @@
 #   make clean
 
 CC = scc
-SCCVK = sccvk
+SCCVL = sccvl
 CAS = cas
 AS = as
 PREFIX = /
@@ -140,9 +140,9 @@ obj/ftell.o: stdio/ftell.c
 obj/rew.o: stdio/rew.c
 	cd stdio ; $(CC) -O -c rew.c ; mv rew.o ../obj/rew.o
 
-# symscan: the scc of the kernel (vk, OLDROOT) gives the member; the shipped scc takes rr2 for rr4 in one block
+# symscan, nlist: by the compiler of the library, vl (OLDROOT; host/OLDCC.md, D53, D54)
 obj/symscan.o: gen/symscan.c
-	cd gen ; $(SCCVK) -O -c symscan.c ; mv symscan.o ../obj/symscan.o
+	cd gen ; $(SCCVL) -O -c symscan.c ; mv symscan.o ../obj/symscan.o
 
 obj/readsym.o: gen/readsym.c
 	cd gen ; $(CC) -O -c readsym.c ; mv readsym.o ../obj/readsym.o
@@ -318,8 +318,8 @@ obj/mktemp.o: gen/mktemp.c
 obj/mpx.o: gen/mpx.c
 	cd gen ; $(CC) -O -c mpx.c ; mv mpx.o ../obj/mpx.o
 
-obj/nlist.o: oldcc/nlist/0_1.s
-	cd oldcc/nlist ; $(CAS) -u -o ../../obj/nlist.o 0_1.s
+obj/nlist.o: gen/nlist.c
+	cd gen ; $(SCCVL) -O -c nlist.c ; mv nlist.o ../obj/nlist.o
 
 obj/qsort.o: gen/qsort.c
 	cd gen ; $(CC) -O -c qsort.c ; mv qsort.o ../obj/qsort.o

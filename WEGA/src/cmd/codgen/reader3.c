@@ -159,6 +159,27 @@ int eflag = 0;
 int unused4[3] = { 0 };
 int oflag = 0;
 int unused5 = 0;
+#ifdef OLD_D54
+static int d54depth;	/* the && and || whose operands are being compiled */
+
+/* the tree holds a function call */
+static int
+d54call(q)
+register NODE *q;
+{
+	register int ty;
+
+	if (q->in.op == CALL || q->in.op == UCALL || q->in.op == STCALL || q->in.op == USTCALL)
+		return 1;
+	ty = optype(q->in.op);
+	if (ty == LTYPE)
+		return 0;
+	if (d54call(q->in.left))
+		return 1;
+	return ty == BITYPE ? d54call(q->in.right) : 0;
+}
+#endif
+
 long baseoff = 0;
 long maxtemp = 0;
 
@@ -630,6 +651,10 @@ delay(p)
 			ret++;
 			sz = szty(p->in.type);
 #ifndef OLD_D1R
+#ifdef OLD_D53
+			/* vl: none in a function with more than 10000 bits (1250 bytes) of automatic variables (nlist) */
+			if (baseoff <= 10000L)
+#endif
 			off = freetemp(sz) / 8;
 #endif
 		}
@@ -1417,6 +1442,21 @@ cbranch(p, true, false)
 		return;
 	case ANDAND:
 		lab = false < 0 ? getlab() : false;
+#ifdef OLD_D54
+		{
+			/* vl: the outermost && of a branch (no join label) whose left operand holds a call: nothing is forgotten */
+			int keep = d54depth == 0 && false >= 0 && d54call(p->in.left);
+
+			d54depth++;
+			cbranch(p->in.left, -1, lab);
+			cbranch(p->in.right, true, false);
+			d54depth--;
+			p->in.op = FREE;
+			if (!keep)
+				rfreeall(1);
+			return;
+		}
+#endif
 		cbranch(p->in.left, -1, lab);
 		cbranch(p->in.right, true, false);
 		if (false < 0)
@@ -1432,6 +1472,17 @@ cbranch(p, true, false)
 		return;
 	case OROR:
 		lab = true < 0 ? getlab() : true;
+#ifdef OLD_D54
+		d54depth++;
+		cbranch(p->in.left, lab, -1);
+		cbranch(p->in.right, true, false);
+		d54depth--;
+		if (true < 0)
+			deflab(lab);
+		p->in.op = FREE;
+		rfreeall(1);
+		return;
+#endif
 		cbranch(p->in.left, lab, -1);
 		cbranch(p->in.right, true, false);
 		if (true < 0)

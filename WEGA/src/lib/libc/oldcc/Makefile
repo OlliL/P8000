@@ -1,6 +1,7 @@
 # Objects of libc/oldcc for ../obj, called by ../Makefile (target objs). WEGA make compatible.
 
 CC = cc
+CCVL = ccvl
 CAS = cas
 AS = as
 
@@ -9,14 +10,15 @@ OBJS = \
 
 objs: $(OBJS)
 
-../obj/symscan.o: symscan/0_1.s
-	cd symscan ; $(CAS) -u -o ../../obj/symscan.o 0_1.s
+# symscan, nlist: from ../gen by the compiler of the library, vl (OLDROOT; host/OLDCC.md, D53, D54)
+../obj/symscan.o: ../gen/symscan.c
+	cd ../gen ; $(CCVL) -O -c symscan.c ; mv symscan.o ../obj/symscan.o
 
 ../obj/malloc.o: malloc/3_3.s
 	cd malloc ; $(CAS) -u -o ../../obj/malloc.o 3_3.s
 
-../obj/nlist.o: nlist/0_1.s
-	cd nlist ; $(CAS) -u -o ../../obj/nlist.o 0_1.s
+../obj/nlist.o: ../gen/nlist.c
+	cd ../gen ; $(CCVL) -O -c nlist.c ; mv nlist.o ../obj/nlist.o
 
 ../obj/swap.o: swap/0_1.s
 	cd swap ; $(CAS) -u -o ../../obj/swap.o 0_1.s

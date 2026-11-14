@@ -21,21 +21,19 @@ original library", "oldlibc: libc versions ...", "The libraries of the old progr
   them in the order of the original.
 - 175 members from source with the shipped tools: C with `cc -O` (printf with `-I../../../cmd/cparse`: the stdio.h with
   `char *_ptr`), PLZ/ASM with `as` (`-f` for atof, ecvt, pow10), cas sources with `cas`.
-- 4 members from `oldcc/NAME/VER.s` (cas sources cut from the original, `cas -u`): malloc (`3_3`), nlist, swap, symscan.
+- 2 members from `oldcc/NAME/VER.s` (cas sources cut from the original, `cas -u`): malloc (`3_3`), swap. nlist and symscan are built from `gen/` by `ccvl` (the compiler of the library, `host/OLDCC.md` "vl", D53, D54) since 2026-11-14.
 - Forms found on the segmented members (slibc) are in: execvp, ctime, popen, system, fltioc (see
   [`../slibc/HANDOFF.md`](../slibc/HANDOFF.md), "Differences to libc"). The segmented members show types and declaration
   orders that the nonsegmented ones cannot tell (int and pointer are both 2 bytes); they are the best evidence for libc
   sources too.
 
-### The 4 open members (`oldcc/`)
+### The 2 open members (`oldcc/`)
 
 Each has a C source in `gen/` that the shipped cc compiles to all but the difference below. Each difference has a twin in
 the segmented member of slibc, where the switches were measured (`../slibc/HANDOFF.md`, "The 8 open members"):
 
 | Member | Left with the shipped cc | Twin in slibc | Hint (guess where marked) |
 |---|---|---|---|
-| symscan | one block: `ld r3,..; lda r4,..` where the shipped cc takes r2, r3 (r2 still holds `n`) | the same block (rr4 for rr2) | `OLD_D3` (registers kept at the join of `&&`) makes the slibc member identical but loses others; source `gen/symscan.c` (new, from slibc, 8 diff lines here) |
-| nlist | the frame of `nlist()` 2 bytes smaller | the same | `OLD_D1R` (no temporary for the value of a return) gives this frame, but also takes 2 bytes from `readby` |
 | swap | `ld 0(r15),r7` where the shipped cc writes `@r15` | a parameter from the spill slot, `a[1]` addressed directly (D5) | guess: `OLD_D18` (frame operand with offset 0 written `0(fp)`, a v0 switch); not measured |
 | malloc 3_3 | `mult rr2,r6` (the parameter still in its register) against `mult rr2,0(r15)` in calloc | calloc: the same; setbusy/clearbusy masks | a parameter taken from its register (as `OLD_D3P`); guess, not measured on libc |
 

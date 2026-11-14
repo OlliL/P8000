@@ -28,7 +28,7 @@ Read first: [`../../../CLAUDE.md`](../../../CLAUDE.md) (rules), [`../../../host/
 |---|---|---|
 | C with the shipped scc | 95 | identical |
 | PLZ/ASM and cas | 81 | identical |
-| `oldcc/NAME/0_1.s` (cut from the original) | 7 | nlist, scanf, printf, swap, segmon, malloc, doprnt |
+| `oldcc/NAME/0_1.s` (cut from the original) | 6 | scanf, printf, swap, segmon, malloc, doprnt |
 | `csu/scrt0.s` | 1 | PLZ/ASM, identical |
 
 ### Differences to libc (for a later merge into one tree)
@@ -64,15 +64,13 @@ stack segment is `|_stkseg+n|(r15)` with `_stkseg` external.
 Tools: `host/tools/s2as.py -s` (draft of a segmented member, `-n` module name), `host/tools/epu.py` (`@rrN` in segmented
 mode). The scripts that merged the drafts into the libc sources are not kept (scratch); the result is in the sources.
 
-### The 7 open members (`oldcc/`)
+### The 6 open members (`oldcc/`)
 
-symscan is built from `gen/symscan.c` by `sccvk` (the scc of the kernel, OLDROOT) since 2026-11-14: byte-identical, measured
-with every scc (scc 6 bytes, sccv1 18, sccvc 338, sccvk 0). The same measurement for the others, best compiler and bytes
-that differ: nlist scc 4, swap sccvc 228, scanf sccvc 316, printf sccvc 445, malloc sccvk 580, segmon scc 1250, doprnt scc
-1324.
-
-The C source next to each (`gen/`, `stdio/`) is the best known form; with the shipped scc these differences are left
-(diff lines of the disassembly against the original):
+symscan and nlist are built from `gen/` by `sccvl`, the compiler of the library (`host/OLDCC.md` "vl": the shipped passes
+with `OLD_D53` and `OLD_D54` in scodgen), since 2026-11-14. vl gives all other C members of slibc and libc unchanged
+(`host/recon/poptveto/s1114/cg/libtest.sh`); a rule for one of the six below belongs to vl and has to pass that test.
+Best existing compiler and bytes that differ: swap sccvc 228, scanf sccvc 316, printf sccvc 445, malloc sccvk 580, segmon
+scc 1250, doprnt scc 1324.
 
 | Member | Lines | Left | Existing switch that gives it | Too broad: loses |
 |---|---|---|---|---|
@@ -82,7 +80,6 @@ The C source next to each (`gen/`, `stdio/`) is the best known form; with the sh
 | doprnt | 93 | the same register choice as symscan, two places | `OLD_D3`: 656 (worse) | |
 | segmon | 61 | parameter taken from its register (`ldl rr2,rr6`), `++i` through a register (as `OLD_D16A`), long cast to pointer masked through a copy | `OLD_D3P` partly (no loss); `OLD_D24` + `OLD_D25` for the mask | |
 | malloc | ~190 | setbusy/clearbusy masked through a copy, parameter registers | `OLD_D24` (codgen) + `OLD_D25` (scparse) | none alone |
-| nlist | 8 | frame of `nlist()` 2 bytes smaller (also in libc, `../libc/oldcc/nlist`) | `OLD_D1R`: right frame, but `readby` 2 bytes too small | 78 members |
 
 Conclusion (measured): no set of existing switches gives all members; slibc (sources 08/17/83, the shipped scc is from
 09/83) was made by an older scc whose rules are narrower than `OLD_D5G`, `OLD_D3`, `OLD_D1R`. A new or narrower switch is a

@@ -137,6 +137,18 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 
 - Switches: `OLD_D3`, `OLD_D24` (codgen), `OLD_D25` (cparse), `OLD_D29` (popt); section 3.
 
+### vl: the compiler of libc.a and slibc.a
+
+The C members of `/lib/libc.a` and `/lib/slibc.a` (sources 08/83 and 09/83) come out of the shipped cc and scc except a few;
+their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_VL` in `src/cmd/cc`, built in
+`build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (scparse, spopt) and `/lib/vl/codgen`,
+`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` and `OLD_D54`).
+Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped compilers give
+193, vl gives 197 (nlist and symscan of both libraries added) and changes no other member. Built by vl: only these four
+(`src/lib/libc/oldcc/Makefile`, `src/lib/slibc/Makefile`); the others by cc and scc, which give the same bytes. Still from
+`oldcc/NAME/*.s`: malloc, swap (libc); malloc, swap, segmon, doprnt, printf, scanf (slibc); their rules, when found, belong
+to vl.
+
 ### The old scc of cas
 
 cas was built by an older scc; its parser and `assemble` without `-O`, the other modules with `-O`. The working compiler
@@ -519,6 +531,26 @@ behind another jump to T, Y is straight code, T runs straight to `ret`. Witness:
 test, the `_flsbuf` arm falls into the exit). Without the limits the rule changes other objects of v1 (the plain form 63
 of 142 translations of libc, oldlibc, ld and cmd sources by ccv1; with all limits one, strncmp of the shipped libc,
 which v1 does not build). One witness (one source, two objects).
+
+
+### D53 No temporary for a return value in a function with a large frame
+
+vl `OLD_D53` (codgen reader3.c, `delay`). The shipped codgen takes a temporary of the frame for the value of every
+`return (e)` (it holds the value while a delayed `x++` runs). The codgen of vl takes none in a function whose automatic
+variables fill more than 10000 bits (1250 bytes). Witness: nlist of libc.a and slibc.a (`nlist()`: 1592 and 1602 bytes of
+automatic variables, the frame 2 bytes smaller than the shipped one's; `readby` in the same file has the temporary). The
+bound is only known to lie above 1170 bytes (execvp of slibc keeps the temporary) and at or below 1592; why the old
+compiler does so is not known. Other conditions tried and refuted: a constant value, register variables, `OLD_D1R`
+(`OLDCC_LOG.md`, 2026-11-14). One source, two objects.
+
+### D54 The registers behind an `&&` with a call
+
+vl `OLD_D54` (codgen reader3.c, `cbranch`). The shipped codgen forgets what the idle registers hold behind every `&&` and
+`||`. The codgen of vl keeps it behind an `&&` that is not inside another `&&` or `||`, has no join label (a branch
+context: `if`, `while`) and holds a function call in its left operand. Witness: symscan of libc.a and slibc.a (`if ((n =
+readsym(&sym, stream)) == k && sym.sn_name[0] == c)`: r2 still holds `sym.sn_name[0]`, the body starts with r3 and r4).
+Without the limits other members change: any `&&` without a join label: nlist, doprnt, fltioc, fseek; only the outermost:
+nlist, doprnt; `OLD_D3` (never forgets): getopt, doprnt, doscan, fltioc, fseek, nlist. One source, two objects.
 
 ### Register allocation of the old scc
 

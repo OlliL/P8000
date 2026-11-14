@@ -3,6 +3,13 @@
  * (OLD_V0, OLD_V0P): the native cc takes about 160 characters of -D options (more overwrite the name of its
  * temporary file: "Can't create /tmp/cc.../lib/cpp"). Without a version nothing is set: the shipped codgen.
  */
+#ifdef OLD_VL
+/* vl, the code generator of libc.a and slibc.a (08/83, 09/83): the shipped one with the two switches below (codgen and scodgen;
+   cparse and popt are the shipped ones). Found by measuring on the members of the two libraries (host/OLDCC.md section 2) */
+#define OLD_D53		/* no temporary for the value of a return in a function with more than 10000 bits of automatic variables */
+#define OLD_D54		/* behind an outermost && without a join label whose left operand holds a call the idle registers keep their contents */
+#endif
+
 #ifdef OLD_VK
 /* vk, the code generator of the kernel objects (scodgen with the shipped scparse and spopt, host/OLDCC.md section 2) */
 #define OLD_D3		/* the registers at the join label of && and || keep their contents */
