@@ -1451,6 +1451,8 @@ cbranch(p, true, false)
 			cbranch(p->in.left, -1, lab);
 			cbranch(p->in.right, true, false);
 			d54depth--;
+			if (false < 0)
+				deflab(lab);
 			p->in.op = FREE;
 			if (!keep)
 				rfreeall(1);

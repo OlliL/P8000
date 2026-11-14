@@ -7,7 +7,8 @@
 #   make install PREFIX=dir   dir/lib/slibc.a, dir/lib/scrt0.o
 #   make clean
 
-CC = scc
+# the compiler of the library: vl (sccvl from OLDROOT: the shipped passes with the code generator of the time, host/OLDCC.md)
+CC = sccvl
 SCCVL = sccvl
 CAS = cas
 AS = as

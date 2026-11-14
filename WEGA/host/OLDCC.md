@@ -144,8 +144,10 @@ their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_
 `build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (scparse, spopt) and `/lib/vl/codgen`,
 `/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` and `OLD_D54`).
 Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped compilers give
-193, vl gives 197 (nlist and symscan of both libraries added) and changes no other member. Built by vl: only these four
-(`src/lib/libc/oldcc/Makefile`, `src/lib/slibc/Makefile`); the others by cc and scc, which give the same bytes. Still from
+193, vl gives 197 (nlist and symscan of both libraries added) and changes no other member. Both libraries are built by vl
+(`CC = ccvl` in `src/lib/libc/Makefile`, `CC = sccvl` in `src/lib/slibc/Makefile`; owner's decision 2026-11-14), so
+checkall measures every rule of vl on all their members. vl itself is compiled by the shipped cc: in stage 1 linked with
+the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). Still from
 `oldcc/NAME/*.s`: malloc, swap (libc); malloc, swap, segmon, doprnt, printf, scanf (slibc); their rules, when found, belong
 to vl.
 

@@ -1,11 +1,12 @@
-# libc: /lib/libc.a from its sources, with the shipped tools, the whole file byte-identical (headers: arhdr.s, mkar.sh). Each object is identical with the member of the original.
-# The members of oldcc/ were made by an older cc that we do not have yet.
+# libc: /lib/libc.a from its sources, with the compiler vl and the shipped assemblers, the whole file byte-identical (headers: arhdr.s, mkar.sh). Each object is identical with the member of the original.
+# The members of oldcc/ are not reproduced by vl yet (cas sources cut from the original).
 #
 #   make        libc.a and obj/*.o, the members for ../oldlibc; csu/crt0.o (/lib/crt0.o)
 #   make install PREFIX=dir   dir/lib/libc.a, dir/lib/crt0.o
 #   make clean
 
-CC = cc
+# the compiler of the library: vl (ccvl from OLDROOT: the shipped passes with the code generator of the time, host/OLDCC.md)
+CC = ccvl
 CAS = cas
 AS = as
 AR = ar
