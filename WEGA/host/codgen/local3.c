@@ -831,7 +831,8 @@ zzzcode(NODE *p, char c)
 		k2 = szty(rg->in.type) == 2 ? 5 : 4;
 		cls = rclass(rg->in.type, -1);
 		rp2 = rfind(rn, cls);
-		rp2->busy = 1;
+		if (rp2)	/* the original writes through a null pointer (data byte 3, inside sccsid of reader3.c) */
+			rp2->busy = 1;
 		if (n2 <= 4) {
 			tmp = 0;
 			if (r2->in.op == ICON) {

@@ -255,8 +255,10 @@ NODE *np;
 	if (t == 6)
 		error(2, "Invalid expression type for ^O operator\n");
 	if (t == 3) {
-#ifdef OLD_CAS
-		p = mknode1(3, np->n_u.l);	/* the old cas (of the old compilers) gives the offset */
+#if defined(OLD_CAS) || defined(SHIPPED)
+		/* the old cas (of the old compilers) gives the offset; so does the shipped build: /bin/cas gets what rr4
+		   holds, the long argument of the last mknode1, that is the value of the constant (KNOWLEDGE.md, quirks) */
+		p = mknode1(3, np->n_u.l);
 #else
 		p = mknode1(3, (unsigned char)np->n_u.l);	/* sic: a byte where mknode1 takes a long (quirk) */
 #endif

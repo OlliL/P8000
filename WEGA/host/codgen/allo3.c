@@ -146,7 +146,8 @@ allo(NODE *p, struct optab *q)
 		b--;
 		k0--;
 		s = rfind(resc[k0].tn.rval, cls);
-		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
+		if (s)		/* the original does not test: it writes through a null pointer (data byte 3, inside sccsid of reader3.c) */
+			s->busy = 0;
 	}
 	while (need & 0x30) {			/* B registers */
 		resc[k].in.op = REG;
@@ -163,7 +164,8 @@ allo(NODE *p, struct optab *q)
 		b -= 16;
 		k0--;
 		s = rfind(resc[k0].tn.rval, cls);
-		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
+		if (s)		/* the original does not test: it writes through a null pointer (data byte 3, inside sccsid of reader3.c) */
+			s->busy = 0;
 	}
 	if (need & 0x300) {			/* a temporary in the frame */
 		resc[k].in.op = OREG;
