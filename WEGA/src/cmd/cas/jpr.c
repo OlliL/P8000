@@ -37,10 +37,12 @@ NODE *list;
 				error(2, "Invalid operand combination\n");
 			ncc++;
 			continue;
+		default:
+		plain:
+			jpput(tok, list);
+			return (0);
 		case 0x56:
 			break;
-		default:
-			goto plain;
 		}
 		e = p->n_u.p;
 		type = exprtype(e);
@@ -83,9 +85,6 @@ done:
 	idx = jprnew(tok, sym, off);
 	jprput(idx, tok, ncc, list);
 	return;
-plain:
-	jpput(tok, list);
-	return (0);
 }
 
 /* a new entry of the itable for a jpr that is not decided yet; returns its index */

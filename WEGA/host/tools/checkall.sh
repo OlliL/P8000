@@ -37,8 +37,8 @@ stamp() {
 	LAST=$n
 }
 
-# not byte-identical yet: reported, not counted
-OPEN='bin/cas'
+# not byte-identical yet: reported, not counted (none now)
+OPEN=''
 
 # the files known to git, in DIR/WEGA; the emulator is not rebuilt here
 copytree() {

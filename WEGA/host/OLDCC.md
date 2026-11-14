@@ -148,14 +148,18 @@ neutral on cas when added, alone and all together), with these differences:
   (the mask of a long cast to a pointer, as vk) and `OLD_D2S` (symtype, one witness);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
   `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
-- spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S` and `OLD_D49` (v0p has no switch in popt).
+- spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S`, `OLD_D49`, `OLD_D50` and `OLD_D51` (v0p has no switch in popt).
 
 Which switch has which witness in cas: `OLDCC_SWITCHES_VC.md` (all blocks of v0p are measured there; a switch without a
 witness in cas is in vc because it is in v0p). `sccvc` is the compiler of `src/cmd/cas/Makefile` (`old/cas` stays with scc;
 sccvc passes `-DSCCVC` to cpp, for the one form of cas the shipped scc cannot compile: `TABADDR` in cas.h):
 `src/cmd/cc/build/segvc`, `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/vc/spopt`, `/lib/old/cas`; linked with
-`src/lib/slibc-v11.a`. The model and the real build (`make` in `src/cmd/cas`, stripped) have the sizes of the original;
-`/bin/cas` is not byte-identical yet. The state per function is in `compare/cas/FINDINGS.md`.
+`src/lib/slibc-v11.a`. The real build (`make` in `src/cmd/cas`, stripped) is byte-identical with `/bin/cas`; the state
+per function is in `compare/cas/FINDINGS.md`. The libc part of /bin/cas was not made by the tools of its own modules: its
+address constants have bit 31 clear (the shipped assembler; the cut members `NAME/0_2.s` of `src/lib/oldslibc` are assembled
+by `cas`, not by the assembler of sccvc), `errlst` has the data order of the old compiler (both tables, then the strings:
+`../slibc/gen/errlst.c` by sccvc), and in `printf` the common `_rc` stands in front of the reference to `__pfile` (the
+linker places commons in the order of the symbols, `_rc` in front of `__pfile` of doprnt).
 
 A switch on a constant (`switch (sizeof(char *)) { case 4: ...; case 2: ...; }`): sccvc, ccv0 and the shipped cc load the
 value into r2 and keep only the matching case, without a dispatch (`ldk r2,#4; calr igetl`); the shipped scc keeps the jump
@@ -473,6 +477,35 @@ default of `switch (c)` at the end of the `%` block is not taken as the back jum
 tests). One witness, provisional. Labels made unnamed by refcount itself (a jump moved to the last label of a run) go as
 before: with them kept, genb, genw and 14 more lose their `for` inversion.
 
+
+### D50 The loop inversion goes on at the target of a jump
+
+vc `OLD_D50` (popt z21.c, codemove, loop inversion). At a jump back to a label that is fallen into, the shipped popt
+scans 24 nodes from that label for the conditional jump that names the label behind the back jump; the stretch from the
+loop head to that conditional jump is exchanged with the back jump. The spopt of vc goes on with the scan at the target of
+an unconditional jump it meets (once per inversion) when that target stands behind another jump and in front of the back
+jump: the loop head and the code the jump leads to count as one stretch. The jump and the blocks between it and its target
+are taken out and put behind the jump that the inversion leaves at the old loop head (there the followed jump is dead
+code). Witness: jpr of cas. The loop head `T: test; load; jpr E` jumps over the bodies of case 0x36 (A) and of the
+default (plain) to the dispatch E, which falls into case 0x56 (F) and the dispatch of the second switch; the scan reaches
+`cp 7; jeq G` as node 22 (straight through A and plain it is about node 35) and the inversion at the back jump of the
+step gives `init; jr T; A; plain; C'; step; T; E; F (.. cp 7; jne C'); G; H`. Alone the switch changes no other function
+of cas. One witness.
+
+### D51 Block moves that codemove leaves out in front of a loop inversion
+
+vc `OLD_D51` (popt z21.c, codemove, block move). The spopt of vc does not move the block of a jump's target to the jump
+(a) when the jump stands within 24 nodes behind a loop head (a label that is fallen into and named by a jump further on)
+and the block ends in a pair `cjp L; jp X; L:` that iterate turns (L reached directly or through a lone jump); (b) when
+the jump stands alone behind its label; (c) when the jump has one instruction in front of it behind its label, the block
+ends in the jump back to a label that is fallen into, and the jump stands within 24 nodes behind that label. Witness: jpr
+of cas, one move each: (a) the first dispatch E to the switch head in the loop head, (b) the block of case 0x56 to the
+lone jump of `case 0x56: break`, (c) the step block to the `continue` of case 0x36. With these three left in place, E is
+turned where it stands (`cp 0x56; jne plain`, F behind it) and D50 finds the stretch. Each part is needed (jpr 42, 42, 54
+lines without a, b, c); without the limits other functions change: (a) without the window stops the dispatch of
+`switch (res)` in jpr itself, (c) without the one instruction changes p2loop and eight more modules, (c) with any loop
+head in the window changes yyparse. Every other module of cas is byte-identical with and without the switch. One witness.
+
 ### Register allocation of the old scc
 
 The register variables are assigned in declaration order from r13 downwards; an int or char takes one register, a pointer or long the highest
@@ -502,7 +535,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cas | listing.c | old scc |  |  | x |  |  |  | x | x |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | optim.c | old scc |  |  | x | x |  | x | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | jpr2.c | old scc |  |  | x |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | jpr.c | old scc |  |  | x | x |  | x | x | x |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | jpr.c | old scc |  |  | x | x |  | x | x | x |  |  |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |
 | cas | locntr.c | old scc | x | x | x | x |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | ssymtab.c | old scc |  |  |  |  |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | symbols.c | old scc | x | x |  |  |  | x |  | x |  | x | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -563,7 +596,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
 - Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
   - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
-  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout), `OLD_D20S` (popt, exprreloc) and `OLD_D49` (popt, yylex): one witness each, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
+  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout), `OLD_D20S` (popt, exprreloc), `OLD_D49` (popt, yylex), `OLD_D50` and `OLD_D51` (popt, jpr): one witness each, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
   - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.

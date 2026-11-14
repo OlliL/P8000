@@ -2159,6 +2159,15 @@ whose low word is whatever `r3` held (the original) or `curline` (the shipped sc
 past the end of the string, the original ends with `Out of nodes`, the memory behind `nodes[]` differs; (c) the original itself does not terminate on a syntax error in the last statement
 of a file and on some tokens (`<<`, `^$`, `5|3`); the test `exp.py` therefore leaves out the statements that hang the original.
 
+### /bin/cas byte-identical (2026-11-14)
+
+`make` in `src/cmd/cas` (sccvc, `src/lib/slibc-v11.a`), stripped, is byte-identical with `/bin/cas`; checkall counts it (`OPEN` is
+empty). What the last steps were: jpr by two switches of the vc spopt (`OLD_D50`, `OLD_D51`, `host/OLDCC.md`); the libc part
+by the way its members were made: the cut members `src/lib/oldslibc/NAME/0_2.s` are assembled by the shipped `cas` (the libc of
+/bin/cas has bit 31 of its address constants clear, the modules of cas itself have it set), `errlst` is compiled by sccvc (both
+pointer tables in front of the strings), and the commons `_rc` (printf) and `__pfile` (doprnt) get their addresses in the order
+of the symbols of printf.o (`.comm 2,_rc` first). The way to jpr is written down in `compare/cas/HANDOFF.md`, sections 10 and 11.
+
 ## cas on the host (`host/cas`)
 
 `host/cas` is the cas assembler for Linux: the decompilation of `src/cmd/cas` moved to a 32/64 bit host and to ANSI C (see `host/cas/README` for what changed: 16 bit

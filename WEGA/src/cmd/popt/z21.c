@@ -1079,6 +1079,114 @@ register struct node *oldp;
 
 
 
+#ifdef OLD_D51
+/*
+ * vc: codemove and the window of the loop inversion (24 nodes behind a loop head). The helpers of the three refusals.
+ */
+#define D51WIN	24
+
+/* a stands within the window behind the label h */
+static int
+d51behind(a, h)
+register struct node *a, *h;
+{
+	register struct node *q;
+	register int n;
+
+	n = 0;
+	for (q = a->back; q && n < D51WIN; q = q->back) {
+		n++;
+		if (q == h)
+			return 1;
+	}
+	return 0;
+}
+
+/* a stands within the window behind a loop head: a label that is fallen into and named by a jump further on */
+static int
+d51inwin(a)
+register struct node *a;
+{
+	register struct node *q, *r, *t;
+	register int n;
+
+	n = 0;
+	for (q = a->back; q && n < D51WIN; q = q->back) {
+		n++;
+		if (q->op != LABEL || q->refc <= 0)
+			continue;
+		for (r = q->back; r && (r->op == LABEL || r->op == KCOMMENT); r = r->back)
+			;
+		if (r == 0 || r->op == JP || r->op == RET || r->op == JSW || r->op == 0 || r->op == OBRACE)
+			continue;
+		for (t = a->forw; t; t = t->forw)
+			if (t->op == JP && t->ref == q)
+				return 1;
+	}
+	return 0;
+}
+
+/* the block ends in `cjp L; jp X; L:` (b is the jp; L reached directly or through a lone jump): iterate would turn it */
+static int
+d51turnable(b)
+register struct node *b;
+{
+	register struct node *q, *r, *t;
+
+	for (q = b->back; q && q->op == KCOMMENT; q = q->back)
+		;
+	if (q == 0 || q->op != CJP || q->ref == 0)
+		return 0;
+	t = q->ref;
+	r = nonlab(t);
+	if (r && r->op == JP && r->ref)
+		t = r->ref;
+	for (r = b->forw; r && (r->op == KCOMMENT || r->op == LABEL); r = r->forw)
+		if (r == t)
+			return 1;
+	return 0;
+}
+
+/* the jump b at the end of the block of a's target goes back to a label in front of that block that is fallen into */
+static int
+d51backloop(a, b)
+register struct node *a, *b;
+{
+	register struct node *q;
+
+	if (b->ref == 0 || (b->labno >= 10000 && b->labno < 20000))
+		return 0;
+	for (q = a->ref; q; q = q->back)
+		if (q == b->ref)
+			break;
+	if (q == 0)
+		return 0;
+	do
+		q = q->back;
+	while (q && (q->op == LABEL || q->op == KCOMMENT));
+	return q && q->op != JP && q->op != RET && q->op != JSW;
+}
+
+/* the instructions in front of the jump a up to its label (or the jump in front) */
+static int
+d51jn(a)
+register struct node *a;
+{
+	register struct node *q;
+	register int n;
+
+	n = 0;
+	for (q = a->back; q && q->op != LABEL; q = q->back) {
+		if (q->op == KCOMMENT)
+			continue;
+		n++;
+		if (q->op == JP || q->op == RET || q->op == JSW)
+			break;
+	}
+	return n;
+}
+#endif
+
 struct node *
 codemove(p)
 struct node *p;
@@ -1086,6 +1194,9 @@ struct node *p;
 	register struct node *p1, *p2, *p3;
 	struct node *t, *tl;
 	int n;
+#ifdef OLD_D50
+	struct node *jf, *ml, *q50, *w50;
+#endif
 #ifdef OLD_D20
 	struct node *rp;
 #endif
@@ -1163,6 +1274,20 @@ struct node *p;
 					    p1->ref->refc, tn, tc, p3->ref == 0 ? -1 : p3->labno, jn, jc, jl, pre);
 				}
 #endif
+#ifdef OLD_D51
+				/*
+				 * vc: no block move that would spoil a loop inversion: (a) not to a jump within the window behind a loop
+				 * head when the block ends in a pair iterate turns; (b) not to a jump that stands alone behind its label;
+				 * (c) not, to a site of one instruction within the window behind a loop head, the block that ends in
+				 * the jump back to that head.
+				 */
+				if (d51turnable(p3) && d51inwin(p1))
+					return p1;
+				if (d51jn(p1) == 0)
+					return p1;
+				if (d51backloop(p1, p3) && d51jn(p1) == 1 && d51behind(p1, p3->ref))
+					return p1;
+#endif
 				ncmot++;
 				nchange++;
 				p1->back->forw = p2;
@@ -1190,17 +1315,47 @@ struct node *p;
 	p2 = p2->forw;
 	p3 = p2;
 	n = 24;
+#ifdef OLD_D50
+	/*
+	 * vc: the scan for the conditional jump goes on at the target of an unconditional jump it meets (once), when that
+	 * target stands behind another jump and in front of the back jump: the loop head and the code the jump leads to are
+	 * one stretch. The jump and the blocks between it and its target (jf .. ml) are taken out and put behind the jump
+	 * that the inversion leaves at the old loop head.
+	 */
+	jf = 0;
+#endif
 	for (;;) {
 		if ((p3 = p3->forw) == 0 || p3 == p1 || --n == 0)
 			return p1;
 		if (p3->op == CJP && p3->labno == p1->forw->labno)
 			break;
+#ifdef OLD_D50
+		if (p3->op == JP && p3->ref && jf == 0) {
+			for (q50 = p3->ref; q50->back && (q50->back->op == LABEL || q50->back->op == KCOMMENT); q50 = q50->back)
+				;
+			if (q50->back && (q50->back->op == JP || q50->back->op == RET) && q50->back != p3) {
+				for (w50 = p3; w50 && w50 != p1 && w50 != q50; w50 = w50->forw)
+					;
+				if (w50 == q50) {
+					jf = p3;
+					ml = q50->back;
+					p3 = ml;
+				}
+			}
+		}
+#endif
 	}
 	do
 		if ((p1 = p1->back) == 0)
 			return p;
 	while (p1 != p3);
 	p1 = p;
+#ifdef OLD_D50
+	if (jf) {
+		jf->back->forw = ml->forw;
+		ml->forw->back = jf->back;
+	}
+#endif
 	tl = insertl(p1);
 	p3->subop = revbr[(int)p3->subop];
 	decref(p3->ref);
@@ -1217,6 +1372,14 @@ struct node *p;
 	p2 = insertl(p1->forw);
 	p3->labno = p2->labno;
 	p3->ref = p2;
+#ifdef OLD_D50
+	if (jf) {
+		ml->forw = p1->forw;
+		p1->forw->back = ml;
+		p1->forw = jf;
+		jf->back = p1;
+	}
+#endif
 	decref(tl);
 	if (tl->refc <= 0)
 		nrlab--;

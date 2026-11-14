@@ -14,7 +14,10 @@ CAS = cas
 AR = ar
 
 LIBS =  ../slibc-v9.a ../slibc-v11.a
-# slibc-v11.a: cas; NAME/0_2.s are cut from /bin/cas (host/tools/oldslibc_cas.py), the other members are those of /lib/slibc.a
+# slibc-v11.a: cas; NAME/0_2.s are cut from /bin/cas (host/tools/oldslibc_cas.py), the other members are those of /lib/slibc.a.
+# The members were made by the shipped assembler (bit 31 of an address constant clear, not as the modules of cas itself): the
+# 0_2.s go through $(CAS), not through the assembler of sccvc. errlst is ../slibc/gen/errlst.c by sccvc (the strings behind
+# both tables, the data order of the old compiler), assembled by $(CAS) too.
 SCCVC = sccvc
 
 all: $(LIBS)
@@ -35,7 +38,7 @@ LIBv9 = tmp/putchar.o tmp/scanf.o tmp/doscan.o printf/0_1.o \
 
 LIBv11 = tmp/freopen.o fseek/0_2.o rdwr/0_2.o tmp/fopen.o printf/0_2.o doprnt/0_2.o tmp/ungetc.o \
 	 filbuf/0_2.o flsbuf/0_2.o endopen/0_2.o tmp/data.o findiop/0_2.o tmp/__callex.o tmp/cuexit.o \
-	 perror/0_2.o cnvt/0_2.o tmp/decimal.o length/0_2.o malloc/0_2.o tmp/errlst.o tmp/isatty.o \
+	 perror/0_2.o cnvt/0_2.o tmp/decimal.o length/0_2.o malloc/0_2.o errlst/0_2.o tmp/isatty.o \
 	 mktemp/0_2.o tmp/ctype_.o tmp/stty.o tmp/strcmp.o strcpy/0_2.o strncpy/0_2.o strlen/0_2.o \
 	 tmp/access.o tmp/tolower.o tmp/chmod.o tmp/close.o tmp/creat.o tmp/getpid.o tmp/ioctl.o tmp/lseek.o \
 	 tmp/mkseg.o tmp/open.o tmp/read.o tmp/ssgbrk.o tmp/signal.o tmp/umask.o tmp/unlink.o tmp/write.o \
@@ -56,55 +59,59 @@ printf/0_1.o: printf/0_1.s
 	cd printf ; $(CAS) -o 0_1.o -u 0_1.s
 
 fseek/0_2.o: fseek/0_2.s
-	cd fseek ; $(SCCVC) -c 0_2.s
+	cd fseek ; $(CAS) -o 0_2.o -u 0_2.s
 
 rdwr/0_2.o: rdwr/0_2.s
-	cd rdwr ; $(SCCVC) -c 0_2.s
+	cd rdwr ; $(CAS) -o 0_2.o -u 0_2.s
 
 printf/0_2.o: printf/0_2.s
-	cd printf ; $(SCCVC) -c 0_2.s
+	cd printf ; $(CAS) -o 0_2.o -u 0_2.s
 
 doprnt/0_2.o: doprnt/0_2.s
-	cd doprnt ; $(SCCVC) -c 0_2.s
+	cd doprnt ; $(CAS) -o 0_2.o -u 0_2.s
 
 filbuf/0_2.o: filbuf/0_2.s
-	cd filbuf ; $(SCCVC) -c 0_2.s
+	cd filbuf ; $(CAS) -o 0_2.o -u 0_2.s
 
 flsbuf/0_2.o: flsbuf/0_2.s
-	cd flsbuf ; $(SCCVC) -c 0_2.s
+	cd flsbuf ; $(CAS) -o 0_2.o -u 0_2.s
 
 endopen/0_2.o: endopen/0_2.s
-	cd endopen ; $(SCCVC) -c 0_2.s
+	cd endopen ; $(CAS) -o 0_2.o -u 0_2.s
 
 findiop/0_2.o: findiop/0_2.s
-	cd findiop ; $(SCCVC) -c 0_2.s
+	cd findiop ; $(CAS) -o 0_2.o -u 0_2.s
 
 perror/0_2.o: perror/0_2.s
-	cd perror ; $(SCCVC) -c 0_2.s
+	cd perror ; $(CAS) -o 0_2.o -u 0_2.s
 
 cnvt/0_2.o: cnvt/0_2.s
-	cd cnvt ; $(SCCVC) -c 0_2.s
+	cd cnvt ; $(CAS) -o 0_2.o -u 0_2.s
 
 length/0_2.o: length/0_2.s
-	cd length ; $(SCCVC) -c 0_2.s
+	cd length ; $(CAS) -o 0_2.o -u 0_2.s
 
 malloc/0_2.o: malloc/0_2.s
-	cd malloc ; $(SCCVC) -c 0_2.s
+	cd malloc ; $(CAS) -o 0_2.o -u 0_2.s
 
 mktemp/0_2.o: mktemp/0_2.s
-	cd mktemp ; $(SCCVC) -c 0_2.s
+	cd mktemp ; $(CAS) -o 0_2.o -u 0_2.s
 
 strcpy/0_2.o: strcpy/0_2.s
-	cd strcpy ; $(SCCVC) -c 0_2.s
+	cd strcpy ; $(CAS) -o 0_2.o -u 0_2.s
 
 strncpy/0_2.o: strncpy/0_2.s
-	cd strncpy ; $(SCCVC) -c 0_2.s
+	cd strncpy ; $(CAS) -o 0_2.o -u 0_2.s
 
 strlen/0_2.o: strlen/0_2.s
-	cd strlen ; $(SCCVC) -c 0_2.s
+	cd strlen ; $(CAS) -o 0_2.o -u 0_2.s
+
+errlst/0_2.o: errlst/0_2.c
+	cd errlst ; $(SCCVC) -S -O 0_2.c
+	cd errlst ; $(CAS) -o 0_2.o -u 0_2.s
 
 clean:
-	rm -f */0_*.o */*.o $(LIBS)
+	rm -f */0_*.o */*.o $(LIBS) errlst/0_2.s
 	rm -rf *.d
 	rm -f tmp/*.o tmp/created tmp/Library.SC
 

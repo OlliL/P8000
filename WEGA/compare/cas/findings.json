@@ -3,7 +3,7 @@
  "compiler": "sccvc (scparse, scodgen with OLD_VC, spopt with OLD_D13, /lib/old/cas), -O except parser.y and assemble.c; src/lib/slibc-v11.a",
  "binary": "/bin/cas",
  "comparison": "strictcmp on the d12model link (RECON_PROG=cas, CCHOST=sccvc, CAS=/lib/old/cas); -c for call against calr",
- "measured_at": "f00201b1",
+ "measured_at": "2d75c764",
  "functions": {
   "iputb": {
    "file": "ifile.c",
@@ -680,9 +680,8 @@
   "jpr": {
    "file": "jpr.c",
    "orig": "0x84fc",
-   "status": "open",
-   "note": "Cluster K8, K12. Loop written as `for (p = list; ; p = p->n_next) { if (p == 0) goto done; ... } done:` (the unnamed break label in front of done keeps the test out of the bottom); 10 lines left: the place of the jpput/return block (original: behind the body of case 0x36). See compare/cas/HANDOFF.md.",
-   "lines": 10
+   "status": "exact",
+   "note": "Cluster K8, K12. Exact under popt OLD_D50 and OLD_D51 (vc; host/OLDCC.md). Form: first switch `case 0x36`, `default: plain: jpput(tok, list); return (0);`, `case 0x56: break;`, `goto plain` in case 3 and at the type test of case 0x19. Odd form: the loop is `for (p = list; ; p = p->n_next) { if (p == 0) goto done; ... } done:` (the unnamed break label in front of done keeps the test out of the bottom, OLD_D49); with `for (p = list; p; p = p->n_next)` 12 lines are left (the step and the test go behind case 0x19)."
   },
   "jprnew": {
    "file": "jpr.c",

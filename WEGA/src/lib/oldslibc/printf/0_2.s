@@ -2,9 +2,9 @@
 	.extern	_stkseg
 	.extern	__doprnt
 	.extern	__flsbuf
+	.comm	2,_rc
 	.extern	__pfile
 	.extern	__iob
-	.comm	2,_rc
 	.psec
 	.code
 

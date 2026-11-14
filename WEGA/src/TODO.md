@@ -18,5 +18,5 @@ The state, the open members and the next steps:
 
 ## 10. Last, when all other binaries stand
 
-- `/bin/cas`: built by an older scc that we do not have.
+- `/bin/cas`: done, byte-identical (sccvc, `host/OLDCC.md` "The old scc of cas"; `compare/cas/HANDOFF.md`). Left there: the natural `for` loop of jpr.
 - `/bin/as`, `/lib/as*`: PLZ/ASM. All of PLZ: `/usr/bin/plzsys`, `plz`, `/usr/lib/plzcg*`. To be learned from the literature of the owner first.

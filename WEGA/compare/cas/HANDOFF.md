@@ -1,8 +1,9 @@
-# cas: handoff — jpr
+# cas: handoff
 
-`/bin/cas` (src/cmd/cas, compiler `sccvc`): 151 of 152 functions strictly exact in the model; checkall ALL OK. The one open
-function is **jpr** (jpr.c, original 0x84fc, 324 bytes, 24 lines). Every attempt is logged in `host/OLDCC_LOG.md`
-(search "jpr"); this file holds only what is needed to go on with jpr.
+State 2026-11-14: `/bin/cas` (src/cmd/cas, compiler `sccvc`) is byte-identical in the real build (checkall); all 152
+functions are exact in the model. The last open function was **jpr** (jpr.c, original 0x84fc); sections 1 to 9 are the
+history of the search, section 10 says how jpr got exact, section 11 what the libc part needed, section 12 what is left.
+Every attempt is logged in `host/OLDCC_LOG.md` (search "cas jpr").
 
 ## 1 Setup
 
@@ -163,3 +164,89 @@ Worked back from the original:
 - With real limits (no block over `ret`, window 24) the primitive search exhausts the state space without reaching
   the original: our primitives cannot reach it in any order. A primitive of the old spopt is missing or different.
   Testing candidates one by one in the model (forward inversion first).
+
+## 9 Session 2026-11-14 (details: OLDCC_LOG, "cas jpr (2026-11-14)")
+
+- Read all `cas jpr` entries of OLDCC_LOG first; section 4 here is only a summary.
+- The ZEUS 3.21 spopt (8/84) decides like the shipped one on all of cas: no old rule to be read out of that binary.
+- Refuted on the whole model: backward sweep, turns first, jump-to-next removal first, a codemove-only first sweep,
+  "codemove before the turn, turn only when nothing moved" (`poptveto/s1114/`).
+- stabout's original has the shape of jpr's (`init; jr T; dispatch tail; step; T; ...; first compare reversed`).
+- `poptveto/jpr_Qinv.spec.txt`: a second pre-state that gives 0 with the committed spopt and the normal entry jump; the last
+  step is then the ordinary inversion at `cp 0x36` (D's back jump followed by the `cp 0x56` half of the first dispatch).
+- Not followed up: the raw code of vc itself (scodgen/scparse) as the cause. All four popt witnesses (stabout, exprreloc,
+  yylex, jpr) are switch code; popt of 12/82 and 8/84 agree, and v0p needs no popt switch.
+- `tmp/oldroot` must be rebuilt after the checkout moved (`make -C host oldroot`), else `sccvc` cannot load `/lib/cpp`.
+
+## 10 jpr at 0 lines (2026-11-14, later the same day): how to repeat it
+
+Result: with one new rule in the loop inversion (LIV) and three block moves of pass 1 left out, jpr is exact (jfast 0: same
+lines, same jump targets). With a second rule in place of the three vetoes (WIN) jpr is exact without any veto; that rule
+still loses other functions and is being narrowed.
+
+Source form: `poptveto/jpr_adb_plain_goto_done.c.txt` (first switch `case 0x36`, `default: plain: jpput(tok, list); return (0);`,
+`case 0x56: break;`; `goto plain` in case 3 and at the type test; loop `for (p = list; ; p = p->n_next) { if (p == 0) goto done;`).
+Raw code: `sccvc -S jpr.c`. The natural loop `for (p = list; p; p = p->n_next)` with the same switches gives 0 as well when
+the three moves and every classic inversion at the step label (I105, three times) are left out; with LIV + WIN alone it has 12.
+
+Scripts: `poptveto/s1114/` (set the scratch path, written `/tmp/SCRATCH`). `pb.sh NAME "DEFINES"` with `PPY=` one of:
+- `liv.py` (`-DLIV`): rule LIV in the loop inversion of codemove.
+- `win.py` (`-DRJ_WIN=24`, optional `-DRJ_INSIDE`, `-DRJ_DBG`): rule WIN in the block move of codemove.
+- `all.py` (`-DVETO -DLIV`): `vpatchX.py` (veto popt, all events) and `liv.py`; `lw.py`: `liv.py` and `win.py`.
+- `ev.py SPOPT RAW.s [n ...]`: one veto run, prints the lines and the event list; `lab.py SPOPT RAW.s M111 M105 ...`: vetoes
+  by event type and label (first occurrence each); `zeros.py SPOPT RAW.s DEPTH`: every veto set that gives 0.
+
+Steps:
+1. `PPY=s1114/all.py pb.sh vx "-DOLD_D13 -DOLD_D45 -DOLD_D20S -DOLD_D49 -DVETO -DLIV"`.
+2. `ev.py o_vx/lib/vc/spopt gd/jpr.s 3 4 5` prints `lines 0`. The three events (numbers of that form): M111, the first
+   dispatch E to the switch head `ldk; ldb; jpr E`; M105, the step block to the `continue` of case 0x36; M110, the block
+   of case 0x56 (F) to the lone `jpr F` of `case 0x56: break`. `zeros.py ... 3`: this is the only set up to depth 3
+   (1431 runs); LIV alone or any two vetoes: 10.
+3. Without vetoes: `PPY=s1114/lw.py pb.sh w24 "-DOLD_D13 -DOLD_D45 -DOLD_D20S -DOLD_D49 -DLIV -DRJ_WIN=24"`,
+   `jfast.py o_w24/lib/vc/spopt gd/jpr.s jpr` prints 0 (the same with 22 to 30 as the window).
+
+Rule LIV (loop inversion follows a jump). The scan of the loop inversion (from the loop head, 24 nodes, for the conditional
+jump that names the label behind the back jump) goes on at the target of an unconditional jump it meets, when that target
+stands behind another jump and in front of the back jump (once per inversion). The stretch that is moved is then the two
+pieces (head up to that jump, target up to the conditional jump); the jump and the blocks between them (here `jpr E`, A,
+plain) stay behind the jump left at the old loop head, where the `jpr E` is dead code. In jpr: back jump of D, next label
+G, scan T, `cpl`, `jeq I`, `ldk`, `ldb`, `jpr E`, E (`cp 0x36`, `jeq A`, `cp 0x56`, `jne plain`), F (8), `cp 3`, `jeq`,
+`cp 7`, `jeq G`: node 22 of 24; straight through A and plain it would be about 35. Result: `init; jr T; A; plain; C'; D;
+T; E; F(..cp 7; jne C'); G; H; I`, the original. LIV alone leaves the whole cas model as it is (only jpr open, 10).
+
+Rule WIN (first form). codemove takes no block to a jump that stands within 24 nodes behind a loop head (a label that is
+fallen into and named by a jump further on). It refuses exactly the three moves in jpr (sites 5, 14 and 22 nodes behind
+T; the moves it keeps, the second dispatch to F's end and its default to the dispatch's end, lie outside). On the whole
+model it loses iputexpr, sputexpr, putrow, casechk, exprreloc, exprval, p2rep, symtype, osymout, stabout, ofinish: labels
+that only cross jumps name count as loop heads, and stabout's move (the `break` block to a site 5 nodes behind its loop
+head, D45) is refused though the original makes it. In stabout the target lies behind the loop, in jpr all three targets
+lie inside the loop (`-DRJ_INSIDE`); that limit is not yet measured cleanly.
+
+Open: the exact condition of WIN that keeps the 151 others; the natural `for` loop (the classic inversion at the step label
+must not be made; `goto done` and D49 do that now); then the switches in `src/cmd/popt/z21.c`, jpr.c in the form above,
+checkall and the vc matrix.
+
+## 11 The switches and the libc part (2026-11-14)
+
+- In the tree: `OLD_D50` (rule LIV) and `OLD_D51` (the three refusals) in `src/cmd/popt/z21.c`, both in the segvc rule of
+  `src/cmd/popt/Makefile`; described in `host/OLDCC.md` (D50, D51). D51 is narrower than rule WIN of section 10:
+  (a) no block that ends in a turnable pair `cjp L; jp X; L:` to a jump within 24 nodes behind a loop head (E to the switch
+  head); (b) no block to a jump that stands alone behind its label (F to `case 0x56: break`); (c) no block that ends in
+  the jump back to a loop head to a site of one instruction within 24 nodes behind that head (the step to the `continue`
+  of case 0x36). Each part is needed; every other module of cas gives the same object with and without both switches.
+- jpr.c: the form of section 10 (`default: plain:` as the second case, `goto plain` twice, `goto done`).
+- Fast test used for the narrowing: spopt of a variant on the raw code (`sccvc -S`) of all 28 modules, assembled with
+  `host/cas/casold`, objects compared with those of the committed spopt (10 s; `rawcmp.sh` in the scratch, the idea is in
+  `s1114/model.sh`).
+- The libc part of /bin/cas (784 bytes were left after jpr): `src/lib/oldslibc`: the cut members `NAME/0_2.s` are assembled
+  by the shipped `cas` (bit 31 of address constants clear); `errlst/0_2.c` (= `slibc/gen/errlst.c`) by `sccvc -S -O` and
+  `cas` (both tables in front of the strings); `.comm 2,_rc` in front of `.extern __pfile` in `printf/0_2.s` (order of
+  the commons). `OPEN` of `host/tools/checkall.sh` is empty now.
+
+## 12 Left
+
+- The loop of jpr is still `for (p = list; ; p = p->n_next) { if (p == 0) goto done; ... } done:`. The natural
+  `for (p = list; p; p = p->n_next)` has 12 lines under D50/D51: the classic inversion at the step label (back jump of
+  case 0x19, next label the code behind the loop) must not be made; `goto done` with D49 prevents it now. Two limits of
+  the inversion tried, both change other modules (OLDCC_LOG 2026-11-14).
+- D45, D20S, D49, D50, D51 have one witness each; the owner's rule for such switches (OLDCC.md, section 5) stands.
