@@ -8,6 +8,7 @@
 #   make clean
 
 CC = scc
+SCCVK = sccvk
 CAS = cas
 AS = as
 PREFIX = /
@@ -139,8 +140,9 @@ obj/ftell.o: stdio/ftell.c
 obj/rew.o: stdio/rew.c
 	cd stdio ; $(CC) -O -c rew.c ; mv rew.o ../obj/rew.o
 
-obj/symscan.o: oldcc/symscan/0_1.s
-	cd oldcc/symscan ; $(CAS) -u -o ../../obj/symscan.o 0_1.s
+# symscan: the scc of the kernel (vk, OLDROOT) gives the member; the shipped scc takes rr2 for rr4 in one block
+obj/symscan.o: gen/symscan.c
+	cd gen ; $(SCCVK) -O -c symscan.c ; mv symscan.o ../obj/symscan.o
 
 obj/readsym.o: gen/readsym.c
 	cd gen ; $(CC) -O -c readsym.c ; mv readsym.o ../obj/readsym.o

@@ -28,7 +28,7 @@ Read first: [`../../../CLAUDE.md`](../../../CLAUDE.md) (rules), [`../../../host/
 |---|---|---|
 | C with the shipped scc | 95 | identical |
 | PLZ/ASM and cas | 81 | identical |
-| `oldcc/NAME/0_1.s` (cut from the original) | 8 | nlist, scanf, printf, swap, segmon, malloc, doprnt, symscan |
+| `oldcc/NAME/0_1.s` (cut from the original) | 7 | nlist, scanf, printf, swap, segmon, malloc, doprnt |
 | `csu/scrt0.s` | 1 | PLZ/ASM, identical |
 
 ### Differences to libc (for a later merge into one tree)
@@ -64,7 +64,12 @@ stack segment is `|_stkseg+n|(r15)` with `_stkseg` external.
 Tools: `host/tools/s2as.py -s` (draft of a segmented member, `-n` module name), `host/tools/epu.py` (`@rrN` in segmented
 mode). The scripts that merged the drafts into the libc sources are not kept (scratch); the result is in the sources.
 
-### The 8 open members (`oldcc/`)
+### The 7 open members (`oldcc/`)
+
+symscan is built from `gen/symscan.c` by `sccvk` (the scc of the kernel, OLDROOT) since 2026-11-14: byte-identical, measured
+with every scc (scc 6 bytes, sccv1 18, sccvc 338, sccvk 0). The same measurement for the others, best compiler and bytes
+that differ: nlist scc 4, swap sccvc 228, scanf sccvc 316, printf sccvc 445, malloc sccvk 580, segmon scc 1250, doprnt scc
+1324.
 
 The C source next to each (`gen/`, `stdio/`) is the best known form; with the shipped scc these differences are left
 (diff lines of the disassembly against the original):
@@ -74,7 +79,6 @@ The C source next to each (`gen/`, `stdio/`) is the best known form; with the sh
 | scanf | 44 | `a[k]` of a local array addressed directly (D5) | `OLD_D5G`: identical | popen (`p[1]` in `?:`), cnvt (`&buf[9]`), crypt, execvp, where the original computes the address |
 | printf | 100 | D5, register choice | `OLD_D5G`: 41 | as above |
 | swap | 32 | D5 (`a[1]` load), a parameter from the spill slot | `OLD_D5G`: 28 | as above |
-| symscan | 12 | one block takes rr4 where the shipped scc takes rr2 (r2 still holds `n`) | `OLD_D3`: identical | getopt, doscan, fltioc, fseek (= what vk loses) |
 | doprnt | 93 | the same register choice as symscan, two places | `OLD_D3`: 656 (worse) | |
 | segmon | 61 | parameter taken from its register (`ldl rr2,rr6`), `++i` through a register (as `OLD_D16A`), long cast to pointer masked through a copy | `OLD_D3P` partly (no loss); `OLD_D24` + `OLD_D25` for the mask | |
 | malloc | ~190 | setbusy/clearbusy masked through a copy, parameter registers | `OLD_D24` (codgen) + `OLD_D25` (scparse) | none alone |
