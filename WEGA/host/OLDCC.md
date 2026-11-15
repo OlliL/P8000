@@ -142,9 +142,9 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 The C members of `/lib/libc.a` and `/lib/slibc.a` (sources 08/83 and 09/83) come out of the shipped cc and scc except a few;
 their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_VL` in `src/cmd/cc`, built in
 `build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (spopt), `/lib/vl/scparse` (the shipped one with `OLD_D25`) and `/lib/vl/codgen`,
-`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` to `OLD_D55`, `OLD_D57`, `OLD_D58` and `OLD_D24`).
+`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` to `OLD_D55`, `OLD_D57` and `OLD_D24`).
 Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped compilers give
-193, vl gives 204 (nlist, symscan and swap of both libraries, malloc of both libraries, scanf, segmon and doprnt of slibc added; the printf of both libraries is exact only with its `-I`, so all 206 in the build; doprnt needs two source forms: `_pfile != NULL && ferror(_pfile)`, and the block `lng:` behind the cases `O X U D l`; segmon needs `char *mkseg()` (with `long mkseg()` D25 masks its casts), `sr[0].sr_seg` and `(i = i + 1) <= *nsegs`; slibc malloc also needs two forms of its source: `union store *r` declared in front of `register unsigned onw` in realloc, an unused `int spare` in calloc, whose frame is 2 bytes larger without a found cause, as the spare word of ld in D1) and changes no other member. Both libraries are built by vl
+193, vl gives 204 (nlist, symscan and swap of both libraries, malloc of both libraries (calloc: `unsigned num; int size;`), scanf, segmon and doprnt of slibc added; the printf of both libraries is exact only with its `-I`, so all 206 in the build; doprnt needs two source forms: `_pfile != NULL && ferror(_pfile)`, and the block `lng:` behind the cases `O X U D l`; segmon needs `char *mkseg()` (with `long mkseg()` D25 masks its casts), `sr[0].sr_seg` and `(i = i + 1) <= *nsegs`; slibc malloc also needs two forms of its source: `union store *r` declared in front of `register unsigned onw` in realloc, an unused `int spare` in calloc, whose frame is 2 bytes larger without a found cause, as the spare word of ld in D1) and changes no other member. Both libraries are built by vl
 (`CC = ccvl` in `src/lib/libc/Makefile`, `CC = sccvl` in `src/lib/slibc/Makefile`; owner's decision 2026-11-14), so
 checkall measures every rule of vl on all their members. vl itself is compiled by the shipped cc: in stage 1 linked with
 the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). No member of the two libraries is left in `oldcc/`.
@@ -644,8 +644,8 @@ their marks in the older columns are from comparisons with the shipped compiler.
   - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
   - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout), `OLD_D20S` (popt, exprreloc), `OLD_D49` (popt, yylex), `OLD_D50` and `OLD_D51` (popt, jpr): one witness each, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
   - Owner's exception for vl (2026-11-15, provisional until each is checked against source forms): `OLD_D53` (nlist),
-    `OLD_D54` (symscan), `OLD_D55` (scanf), `OLD_D57` (swap), `OLD_D58` (calloc). Removed after such a check:
-    `OLD_D59`, `OLD_D60` (segmon, source forms), `OLD_D56` (printf of slibc: `regs` of the size used).
+    `OLD_D54` (symscan), `OLD_D55` (scanf), `OLD_D57` (swap). Removed after such a check:
+    `OLD_D59`, `OLD_D60` (segmon, source forms), `OLD_D56` (printf of slibc: `regs` of the size used), `OLD_D58` (calloc: `unsigned num; int size;`).
   - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.
@@ -671,12 +671,3 @@ from the frame (`ld r14,0(r15)`), the functions behind that one are as usual. Wi
 The mark of a state that the old compiler keeps over the end of a function (the register file). Limits from the
 measurements: not for a parameter that arrives on the stack (`&args` of scanf, printf); by the register, not by the frame
 offset (doprnt: `&nreg` in `_doprnt`, the parameters of `_atoip` behind it stay known). One source, two objects.
-
-### D58 An unsigned name in a register is taken from it also as an int
-
-vl `OLD_D58` (codgen regs3.c, `regforsym`). The shipped codgen takes a name from the register that holds it only when the
-type of the use is the type of the name. The codgen of vl takes an `unsigned` name from its register also where it is used
-as an `int` (`mult rr2,r6` in calloc of libc.a: `num *= size` with `unsigned num, size`; the shipped codgen loads size
-from the frame again). Not the other direction: an `int` used as `unsigned` changes fputc. With the word types of
-`OLD_D3P` (every pair of word types) lsearch, symscan, fputc and malloc itself change. Witness: malloc of libc.a. One
-witness.

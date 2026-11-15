@@ -10,7 +10,6 @@
 #define OLD_D54		/* behind an outermost && without a join label whose left operand holds a call the idle registers keep their contents */
 #define OLD_D55		/* segmented: a constant index of a local array is folded into the frame offset when the element is an operand of a plain assignment (fixfld, d55scan) */
 #define OLD_D57		/* a register parameter used as memory (its address taken): its entry store is written off(fp); the parameter of the next function in that register is not known in it */
-#define OLD_D58		/* an unsigned name known in a register is taken from it also where it is used as an int (regforsym) */
 #define OLD_D24		/* a long cast to a pointer is masked through a copy (with OLD_D25 of scparse): realloc of slibc malloc */
 #endif
 

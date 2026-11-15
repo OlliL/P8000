@@ -194,7 +194,8 @@ unsigned nbytes;
 
 char *
 calloc(num, size)
-unsigned num, size;
+unsigned num;
+int size;
 {
 	register int *q;
 	register m;

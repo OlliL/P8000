@@ -939,14 +939,8 @@ regforsym(reg, s, type, off)
 	if (type != s->stype && !(D3PWORD(type) && D3PWORD(s->stype)))
 		return -1;
 #else
-#ifdef OLD_D58
-	/* vl: an unsigned used as an int (calloc: num *= size) is taken from its register too; not an int used as unsigned (fputc) */
-	if (type != s->stype && !(type == 4 && s->stype == 14))
-		return -1;
-#else
 	if (type != s->stype)
 		return -1;
-#endif
 #endif
 #ifndef OLD_D3P
 	if (reg != -1 && reg != s->sbyte5)
