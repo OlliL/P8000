@@ -101,7 +101,11 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
 
 - Owner 2026-11-15: write the design down as a draft; the owner's own questions come first, then the open ones below.
 - Owner 2026-11-15: one mode of running a case (steps as data, Design 1); no separate run and script modes.
-- Open (owner): the run time budget of checkall for all corpora.
+- Owner 2026-11-15, run time: no fixed limit per corpus. `checkall` uses the cache and runs everything whose key changed (after
+  a change of the emulator or of the runner core that is everything: a cold run, accepted up to about 2 hours); a checkall
+  after a change of one program stays as short as today (goal under 20 minutes). Cases are chosen for coverage, not by
+  count; a corpus that takes more than some minutes cold is looked at for cases that test the same twice.
+  `checkall-nocache` ignores every cache (today `CORPUS_NOCACHE=1`): now and then, to check the cache itself.
 - Open: where the shared store of derived inputs and the caches live (not in git; today beside each corpus in compare/NAME).
 - Open: how a hand-written case is written (one file per case, or a table per program) and how a script (sh) is a case.
 - Open: the order of moving the existing 22 corpora; whether the reconstruction settings of progcfg.py move now or later.
