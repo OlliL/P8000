@@ -133,6 +133,19 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
   `progcfg.py` is split while a corpus moves: `compare/NAME/corpus.py` (generators, normalisation, candidates); `progcfg.py`
   keeps only the settings of the reconstruction tools and goes where no tool reads it.
 
+- Owner 2026-11-15, for working on 105 and 110 alone: (1) details not discussed (case file syntax, generator interface, store
+  layout, what the tree comparison takes as owner and time, how checkall chooses the old or new runner while corpora move)
+  are decided by Claude and recorded here as "decided by Claude (date), for review"; the owner reviews them later.
+  (2) The original is always right, also in its bugs: a difference found by a corpus is fixed on our side until our build
+  behaves as the original. A source has to give two builds: the byte-identical one with the compiler of its time (unchanged,
+  checkall) and the shipped build with cc/scc and /lib/libc.a, /lib/slibc.a (behaves as the original); a change only the
+  shipped build needs goes behind `#ifdef` (`-DSHIPPED` of `make shipped` in src/cmd), so the byte-identical build does not
+  see it. Host variants (compiler chain only) need functional equality only. A difference whose cause is not found is
+  written down here and the other corpora go on. (3) "The same cases as before": derived inputs come from the sources of
+  today, so their number changes; the old corpus is made new on the same tree state and the numbers are compared and
+  recorded. (4) The existing corpora get simple expectations when they move (e.g. a compiler: exit status 0 and an object
+  for chosen cases), not complete ones. (5) Coverage measurement waits; after 110 the work stops (no 120 without the owner).
+
 ## Not part of it
 
 The corpora themselves for the programs not yet covered: increment 120.
