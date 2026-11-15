@@ -116,6 +116,14 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
   in order), `stdin:`, `env:`, later `user:`, `terminal:`, `device:` when their model exists, `variants:` (a list of options,
   each run), `expect:` (expectations on the original, Design 9); an unknown field is an error. Derived cases are made by a
   generator in the same form in `.corpus/inputs`; the runner knows only this one form.
+- Owner 2026-11-15, how cases are made: (1) derived cases by a generator in the corpus definition (e.g. cc: every `.c`
+  known to git with its headers, step `cc -c -O X.c`); key = hash of its source files + the generator code (+ the binaries
+  of preparing steps that run original tools, e.g. cpp and cparse for codgen); made only when the key is missing from the
+  store: a changed source makes exactly its case again (this replaces mkcorpus and the tars). (2) Hand-written cases from
+  the man page (every option, every documented error) and the System III tests where there are some; `newcase.py NAME CASE`
+  makes the frame; `variants:` for option combinations; a task for a subagent (140): the expectations come from the man
+  page, never from a run of the original (that would be circular). (3) Coverage: the emulator logs the code addresses of the
+  original a corpus runs; with the function bounds of `findings.json` it shows per function run or never run.
 - Open: the order of moving the existing 22 corpora; whether the reconstruction settings of progcfg.py move now or later.
 
 ## Not part of it
