@@ -106,7 +106,11 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
   after a change of one program stays as short as today (goal under 20 minutes). Cases are chosen for coverage, not by
   count; a corpus that takes more than some minutes cold is looked at for cases that test the same twice.
   `checkall-nocache` ignores every cache (today `CORPUS_NOCACHE=1`): now and then, to check the cache itself.
-- Open: where the shared store of derived inputs and the caches live (not in git; today beside each corpus in compare/NAME).
+- Owner 2026-11-15, the store: `WEGA/.corpus/` (in .gitignore): `inputs/` (derived inputs) and `results/` (results of the
+  originals and the candidates), each by the hash of its key; its place can be set by an environment variable (as
+  `CORPUS_STORE` today) so that checkall and the runs in the working tree share one store. `compare/NAME/` keeps only what
+  belongs to git (corpus definition, hand-written cases, findings). Entries no key has used for long are removed by date of
+  last use.
 - Open: how a hand-written case is written (one file per case, or a table per program) and how a script (sh) is a case.
 - Open: the order of moving the existing 22 corpora; whether the reconstruction settings of progcfg.py move now or later.
 
