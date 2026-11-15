@@ -5,7 +5,7 @@
 # proves the repository alone is enough and leaves the working tree alone:
 #   1. make in src: the old compilers with the shipped tools, the libraries, the old compilers again, cmd/, uts/;
 #   2. make install PREFIX=CHECK_TMP/install: every file there against the file of the same name in WEGA with cmp (the
-#      Makefiles strip as the originals are stripped); every member of lib/libc/libc.a against the original;
+#      Makefiles strip as the originals are stripped);
 #   3. the corpora (host/tools/corpus.sh, side by side; the prepared inputs are compare/NAME/corpus.tar of the working tree (made when missing,
 #      host/tools/mkcorpus.sh makes them new) and the results are cached beside them (compare/NAME/cache, key: see stagecorpus.py)) of every program with a compare/NAME/progcfg.py, every candidate: the WEGA program built
 #      built by make shipped (the shipped cc, scc and libc; the byte-identical builds are proven by 2) and the host build;
