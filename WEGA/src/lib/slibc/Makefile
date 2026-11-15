@@ -166,8 +166,8 @@ obj/fopen.o: stdio/fopen.c
 obj/fdopen.o: stdio/fdopen.c
 	cd stdio ; $(CC) -O -c fdopen.c ; mv fdopen.o ../obj/fdopen.o
 
-obj/scanf.o: oldcc/scanf/0_1.s
-	cd oldcc/scanf ; $(CAS) -u -o ../../obj/scanf.o 0_1.s
+obj/scanf.o: stdio/scanf.c
+	cd stdio ; $(CC) -O -c scanf.c ; mv scanf.o ../obj/scanf.o
 
 obj/doscan.o: stdio/doscan.c
 	cd stdio ; $(CC) -O -c doscan.c ; mv doscan.o ../obj/doscan.o

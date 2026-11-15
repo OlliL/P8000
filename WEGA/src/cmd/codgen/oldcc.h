@@ -8,6 +8,7 @@
    cparse and popt are the shipped ones). Found by measuring on the members of the two libraries (host/OLDCC.md section 2) */
 #define OLD_D53		/* no temporary for the value of a return in a function with more than 10000 bits of automatic variables */
 #define OLD_D54		/* behind an outermost && without a join label whose left operand holds a call the idle registers keep their contents */
+#define OLD_D55		/* segmented: a constant index of a local array is folded into the frame offset when the element is an operand of a plain assignment (fixfld, d55scan) */
 #endif
 
 #ifdef OLD_VK

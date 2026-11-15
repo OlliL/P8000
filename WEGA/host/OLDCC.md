@@ -142,14 +142,14 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 The C members of `/lib/libc.a` and `/lib/slibc.a` (sources 08/83 and 09/83) come out of the shipped cc and scc except a few;
 their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_VL` in `src/cmd/cc`, built in
 `build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (scparse, spopt) and `/lib/vl/codgen`,
-`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` and `OLD_D54`).
+`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53`, `OLD_D54`, `OLD_D55`).
 Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped compilers give
-193, vl gives 197 (nlist and symscan of both libraries added) and changes no other member. Both libraries are built by vl
+193, vl gives 198 (nlist and symscan of both libraries and scanf of slibc added) and changes no other member. Both libraries are built by vl
 (`CC = ccvl` in `src/lib/libc/Makefile`, `CC = sccvl` in `src/lib/slibc/Makefile`; owner's decision 2026-11-14), so
 checkall measures every rule of vl on all their members. vl itself is compiled by the shipped cc: in stage 1 linked with
 the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). Still from
-`oldcc/NAME/*.s`: malloc, swap (libc); malloc, swap, segmon, doprnt, printf, scanf (slibc); their rules, when found, belong
-to vl.
+`oldcc/NAME/*.s`: malloc, swap (libc); malloc, swap, segmon, doprnt, printf (slibc); their rules, when found, belong to vl
+(`src/lib/HANDOFF.md`).
 
 ### The old scc of cas
 
@@ -648,3 +648,13 @@ their marks in the older columns are from comparisons with the shipped compiler.
   - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.
+
+### D55 A constant index of a local array in a plain assignment (segmented)
+
+vl `OLD_D55` (scodgen regs3.c, `fixfld`, `d55scan`; reader3.c). For `a[k]` of a local array with a constant k the shipped
+scodgen computes the address (`ldl rr0,#_stkseg+16; add r1,r15; inc r1,#4; ldl @rr6,rr2`). The scodgen of vl folds k into
+the frame offset (`ldl |_stkseg+20|(r15),rr2`) when the element is the left or the right operand of a plain assignment
+and the other operand is a name, a register or a value through one (not a constant, not an address). Witness: scanf of
+slibc.a (`regs[1] = a2;` in scanf, fscanf, sscanf). Without the limits other members change: every constant index (the
+first clause of `OLD_D5G`): cnvt (`&tmp[9]`), symscan (`sym.sn_name[8] = 0`), popen (`p[1]` inside `?:`), execvp
+(`newargs[1] = fname`), nlist (`&space[SPACE]`); with a constant as the other operand: symscan. One witness.

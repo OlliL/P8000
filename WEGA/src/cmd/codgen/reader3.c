@@ -670,6 +670,15 @@ delay(p)
 				n->sym = 0;
 	}
 #endif
+#if defined(OLD_D55) && defined(SEG)
+	{
+		extern int d55nmark;
+		extern void d55scan();
+
+		d55nmark = 0;
+		d55scan(p);
+	}
+#endif
 	walkf(p, mapregs);
 	canon2(p);
 	while (delay1(p))
