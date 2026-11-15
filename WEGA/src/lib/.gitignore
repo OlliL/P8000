@@ -2,3 +2,4 @@
 *.d/
 obj/
 oldslibc/tmp
+oldslibc/errlst/0_2.s

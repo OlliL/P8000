@@ -23,7 +23,8 @@ LIBOBJS = \
 	../obj/ctype_.o ../obj/index.o ../obj/rindex.o ../obj/toupper.o ../obj/tolower.o ../obj/strcat.o \
 	../obj/strncat.o ../obj/strcmp.o ../obj/strncmp.o ../obj/strcpy.o ../obj/strncpy.o ../obj/strlen.o \
 	../obj/strtok.o ../obj/strchr.o ../obj/strcspn.o ../obj/strpbrk.o ../obj/strrchr.o ../obj/strspn.o \
-	../obj/goodmagic.o ../obj/a64l.o ../obj/l64a.o
+	../obj/goodmagic.o ../obj/a64l.o ../obj/l64a.o ../obj/symscan.o ../obj/malloc.o ../obj/nlist.o \
+	../obj/swap.o
 
 objs: $(LIBOBJS)
 
@@ -233,5 +234,17 @@ objs: $(LIBOBJS)
 
 ../obj/l64a.o: l64a.c
 	$(CC) -O -c l64a.c ; mv l64a.o ../obj/l64a.o
+
+../obj/symscan.o: symscan.c
+	$(CC) -O -c symscan.c ; mv symscan.o ../obj/symscan.o
+
+../obj/malloc.o: malloc.c
+	$(CC) -O -c malloc.c ; mv malloc.o ../obj/malloc.o
+
+../obj/nlist.o: nlist.c
+	$(CC) -O -c nlist.c ; mv nlist.o ../obj/nlist.o
+
+../obj/swap.o: swap.c
+	$(CC) -O -c swap.c ; mv swap.o ../obj/swap.o
 
 .PHONY: objs

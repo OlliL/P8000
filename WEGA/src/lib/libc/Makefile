@@ -1,5 +1,4 @@
 # libc: /lib/libc.a from its sources, with the compiler vl and the shipped assemblers, the whole file byte-identical (headers: arhdr.s, mkar.sh). Each object is identical with the member of the original.
-# The members of oldcc/ are not reproduced by vl yet (cas sources cut from the original).
 #
 #   make        libc.a and obj/*.o, the members for ../oldlibc; csu/crt0.o (/lib/crt0.o)
 #   make install PREFIX=dir   dir/lib/libc.a, dir/lib/crt0.o
@@ -12,7 +11,7 @@ AS = as
 AR = ar
 PREFIX = /
 
-SUBDIRS = gen stdio sys oldcc crt
+SUBDIRS = gen stdio sys crt
 
 all: libc.a csu/crt0.o
 
@@ -27,7 +26,6 @@ objs: obj
 	cd gen ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
 	cd stdio ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
 	cd sys ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
-	cd oldcc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
 	cd crt ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC='$(CC)' CAS='$(CAS)' AS='$(AS)' objs
 
 libc.a: objs arhdr.s mkar.sh

@@ -4,7 +4,7 @@
  * symscan(p, stream): read the symbol table of an s.out file from stream (readsym) up to the symbol named
  * p->nl_name, set nl_value and nl_type from it. A name of more than 8 characters is stored as a long
  * name: its first byte is 0200 | (length + 1), the name follows over (length + 6) / 14 more entries.
- * Reconstructed from the member of /lib/slibc.a; the names are guesses. Compiled by ccvl (../oldcc/Makefile).
+ * Reconstructed from the member of /lib/slibc.a; the names are guesses.
  */
 #include <s.out.h>
 #include <nlist.h>
