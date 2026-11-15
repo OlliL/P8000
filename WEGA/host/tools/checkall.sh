@@ -64,6 +64,9 @@ snapshot() {
 			patch -p1 -s -d $T/snap --batch < "$PATCH" > $T/patch.log 2>&1 || return 1
 		fi
 	fi
+	# the list of the files of the snapshot: the corpora take their sources from it (host/recon/corpusc.py, tree_files), not
+	# from what the builds add (cpy.c of cpp.y, ...)
+	(cd $T/snap/WEGA && find src host compare -type f | sort) > $T/snap/WEGA/.files
 }
 
 # a copy of the snapshot in DIR/WEGA; the emulator is not rebuilt here
@@ -133,6 +136,8 @@ if snapshot; then :; else
 	result 'snapshot' fail "the variant $PATCH does not apply, see $T/patch.log"
 	finish
 fi
+# the emulator, copied once too: a rebuild in the working tree during the run does not reach it
+cp $EMU $T/z8k-emu && EMU=$T/z8k-emu
 copytree $T/tree
 stamp '1 copy of the files of git (tree)'
 rm -rf $OLD $T/bin

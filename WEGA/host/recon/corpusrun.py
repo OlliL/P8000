@@ -2,12 +2,14 @@
 """corpusrun.py - the corpus test of a program (increment 110): the original of the WEGA tree and every candidate on the same
 cases, compared. Usage: corpusrun.py [-c CANDIDATE[,CANDIDATE]] [-k] [-f FILTER] [--nocache] NAME|DIR   (normally host/tools/corpus.sh)
 
-A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, DEPENDS, generate(), normalize()) and
+A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, ROOT_ENV, DEPENDS, HOST_ENV, host_setup(),
+generate(), normalize(), after_step()) and
 the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting files in `in/`). The case file (one field per line,
 # a comment line):
   step: WORDS         a run of a WEGA program under the emulator; first word PROG: the program under test (the original, or
                       a candidate), another: /bin/WORD of the WEGA tree (the original for both sides); shell-like words, no
-                      shell operators
+                      shell operators; a word with * ? [ is expanded in the case directory as by the shell, $V by the
+                      words of the variant
   stdin: FILE         stdin of the step before (a file of the case directory after in/)
   env: NAME=VALUE     environment of the step before, or of every step when it comes before the first one
   host: LINE          a line of the host shell between the steps (preparation; WEGA_ROOT is set; each line its own shell)
@@ -15,7 +17,8 @@ Every step and host line runs with umask 022.
   variant: N=V ...    the case runs once per variant line with that environment (default: once, none)
   expect: exit N | output contains TEXT | file PATH contains TEXT | file PATH same-as in/FILE | missing PATH
                       checked on the original's run
-Compared: per step its output (stdout, stderr) and exit status, afterwards every entry of the directory: type, mode, size,
+Compared: per step its output (stdout, then stderr apart; after_step(argv, rc, out, err, dir) of the corpus may cut what the
+original leaves undefined) and exit status, afterwards every entry of the directory: type, mode, size,
 checksum, link count (not owner and times).
 
 Store (WEGA/.corpus, or CORPUS_DB): results/orig/KEY (the original's result; computed twice, kept only when both are
@@ -26,8 +29,10 @@ Output: one line per differing case (with the differing lines), then per candida
 exit status 1 when a case differs, an expectation fails or the original is unstable.
 """
 import base64
+import re
 import concurrent.futures
 import fcntl
+import glob
 import hashlib
 import importlib.util
 import json
@@ -47,6 +52,7 @@ EMU = os.environ.get('EMU') or os.path.join(REPO, 'host', 'z8k-emu', 'z8k-emu')
 STORE = os.environ.get('CORPUS_DB') or os.path.join(REPO, '.corpus')
 WORK = os.path.join(os.environ.get('STAGE_TMP', '/tmp/wega_stage'), 'corpusrun')
 os.environ.setdefault('WEGA_ROOT', ROOT)
+RUNROOT = ROOT		# the tree the original and the WEGA programs of the steps run in (ROOT_ENV of the corpus, else ROOT)
 
 _SHA = {}
 
@@ -114,7 +120,9 @@ def parse_case(text, where):
             else:
                 c['env'][name] = val
         elif k == 'variant':
-            c['variants'].append(dict(w.split('=', 1) for w in shlex.split(v)))
+            ws = shlex.split(v)
+            env = [w for w in ws if re.match(r'[A-Za-z_][A-Za-z0-9_]*=', w)]
+            c['variants'].append({'env': dict(w.split('=', 1) for w in env), 'words': [w for w in ws if w not in env]})
         elif k == 'expect':
             c['expect'].append(shlex.split(v))
         else:
@@ -149,18 +157,23 @@ SPAWN = threading.Lock()
 def spawn(args, cwd, env, stdin=None, timeout=600):
     with SPAWN:
         p = subprocess.Popen(args, cwd=cwd, env=env, stdin=stdin or subprocess.DEVNULL, stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
+                             stderr=subprocess.PIPE)
     try:
-        out, _ = p.communicate(timeout=timeout)
+        out, err = p.communicate(timeout=timeout)
     except subprocess.TimeoutExpired:
         p.kill()
         p.communicate()
-        return -999, b'timeout\n'
-    return p.returncode, out
+        return -999, b'timeout\n', b''
+    return p.returncode, out, err
 
 
-def listing(d):
-    """every entry below d (not .prog): type, mode, size, checksum, link count"""
+def joined(out, err):
+    """stdout, then stderr apart (the order of the two in one pipe depends on the buffering of the C library)"""
+    return out + ('-- stderr\n' + err if err else '')
+
+
+def listing(d, norm=None):
+    """every entry below d (not .prog): type, mode, size, checksum (of the file as norm(name, data) gives it), link count"""
     out = []
     for dp, dn, fn in os.walk(d):
         if dp == d:
@@ -176,15 +189,18 @@ def listing(d):
                 out.append('d %o %s' % (st.st_mode & 0o7777, rel))
             else:
                 data = open(p, 'rb').read()
+                if norm:
+                    data = norm(rel, data)
                 out.append('f %o %d %08x %d %s' % (st.st_mode & 0o7777, len(data), zlib.crc32(data), st.st_nlink, rel))
     return '\n'.join(out)
 
 
-def run_case(cfg, cdir, case, variant, side, binary, rd):
-    """one run of the case: side 'orig', or a candidate name with its binary; the result as a dict of strings"""
+def run_case(cfg, indir, case, variant, side, binary, rd):
+    """one run of the case (its starting files in indir): side 'orig', or a candidate name with its binary; the result as a
+    dict of strings"""
     shutil.rmtree(rd, ignore_errors=True)
-    if os.path.isdir(os.path.join(cdir, 'in')):
-        shutil.copytree(os.path.join(cdir, 'in'), rd, symlinks=True)
+    if os.path.isdir(indir):
+        shutil.copytree(indir, rd, symlinks=True)
     else:
         os.makedirs(rd)
     native = side == 'host'
@@ -192,26 +208,37 @@ def run_case(cfg, cdir, case, variant, side, binary, rd):
         os.makedirs(os.path.join(rd, '.prog'))
         with SPAWN:
             shutil.copy(binary, os.path.join(rd, '.prog', cfg.PROG))
+        if native and hasattr(cfg, 'host_setup'):
+            cfg.host_setup(os.path.join(rd, '.prog'))
     env = dict(os.environ)
     env.pop('TZ', None)
     env['LC_ALL'] = 'C'
     genv = dict(case['env'])
-    genv.update(variant)
+    genv.update(variant['env'])
     res = {'steps': []}
     for i, st in enumerate(case['steps']):
         if st['kind'] == 'host':
             e = dict(env)
             e['WEGA_ROOT'] = ROOT
-            rc, out = spawn(['sh', '-c', 'umask 022; ' + st['line']], rd, e)
-            res['steps'].append('host %d: exit=%d\n%s' % (i, rc, out.decode('latin-1')))
+            rc, out, err = spawn(['sh', '-c', 'umask 022; ' + st['line']], rd, e)
+            res['steps'].append('host %d: exit=%d\n%s' % (i, rc, joined(out.decode('latin-1'), err.decode('latin-1'))))
             continue
-        argv = st['argv']
+        argv = []
+        for w in st['argv']:
+            if w == '$V':
+                argv += variant['words']
+            elif any(c in w for c in '*?['):	# a pattern is expanded in the case directory as the shell does it
+                m = sorted(os.path.relpath(x, rd) for x in glob.glob(os.path.join(rd, w)))
+                argv += m or [w]
+            else:
+                argv.append(w)
         senv = dict(genv)
         senv.update(st['env'])
         if argv[0] == cfg.PROG and native:
             e = dict(env)
             e.update(senv)
-            e.update(getattr(cfg, 'HOST_ENV', {}))
+            he = getattr(cfg, 'HOST_ENV', {})
+            e.update(he(ROOT) if callable(he) else he)
             args = [os.path.join(rd, '.prog', cfg.PROG)] + argv[1:]
         else:
             if argv[0] == cfg.PROG:
@@ -221,21 +248,24 @@ def run_case(cfg, cdir, case, variant, side, binary, rd):
             args = [EMU]
             for k, v in senv.items():
                 args += ['-e', '%s=%s' % (k, v)]
-            args += ['-r', ROOT, prog] + argv[1:]
+            args += ['-r', RUNROOT, prog] + argv[1:]
             e = env
         args = ['sh', '-c', 'umask 022; exec "$@"', 'sh'] + args	# every step with umask 022 (the modes of new files)
         fin = open(os.path.join(rd, st['stdin']), 'rb') if st['stdin'] else None
         try:
-            rc, out = spawn(args, rd, e, fin)
+            rc, out, err = spawn(args, rd, e, fin)
         finally:
             if fin:
                 fin.close()
-        text = out.decode('latin-1')
+        out, err = out.decode('latin-1'), err.decode('latin-1')
+        if hasattr(cfg, 'after_step'):
+            out, err = cfg.after_step(argv, rc, out, err, rd)
+        text = joined(out, err)
         norm = getattr(cfg, 'normalize', None)
         if norm:
-            text = norm(case, 'output', text)
+            text = norm('output', text)
         res['steps'].append('step %d %s: exit=%d\n%s' % (i, argv[0], rc, text))
-    res['tree'] = listing(rd)
+    res['tree'] = listing(rd, getattr(cfg, 'normalize', None))
     return res
 
 
@@ -335,6 +365,85 @@ def cases(cfg):
     return out
 
 
+class Generated:
+    """a derived case: its name, the source files it is made from, the preparation prep(src, work) -> base or None (made with
+    the original tools; None: the original cannot make it, the case is skipped), the text of the case"""
+
+    def __init__(self, cfg, name, src, sources, prep, text, prep_files=()):
+        self.cfg, self.name, self.src, self.sources, self.prep, self.text = cfg, name, src, sources, prep, text
+        self.prep_files = prep_files
+        self._key = None
+
+    def key(self):
+        if self._key is None:
+            pr = self.prep
+            if pr is None:
+                pn = 'none'
+            elif hasattr(pr, 'func'):	# functools.partial: the function and its arguments (no addresses)
+                pn = '%s %r %r' % (pr.func.__name__, pr.args, sorted(pr.keywords.items()))
+            else:
+                pn = pr.__name__
+            parts = ['in', pn, 'src ' + (os.path.basename(self.src) if self.src else '-'), sha1file(EMU)]	# which file of the directory the case is made from
+            parts += [os.path.basename(f) + ' ' + sha1file(f) for f in sorted(self.sources)]
+            parts += [f + ' ' + sha1tree(os.path.join(ROOT, f)) for f in self.prep_files if os.path.exists(os.path.join(ROOT, f))]
+            self._key = mix(*parts)
+        return self._key
+
+    def indir(self):
+        """the prepared starting files in the store (made when missing), or None when the original cannot make them"""
+        k = self.key()
+        d = os.path.join(STORE, 'inputs', k[:2], k)
+        if os.path.isdir(d):
+            return d
+        if os.path.exists(d + '.skip'):
+            return None
+        with KeyLock('in' + k):
+            if os.path.isdir(d):
+                return d
+            if os.path.exists(d + '.skip'):
+                return None
+            tmp = '%s.tmp%d.%d' % (d, os.getpid(), threading.get_ident())
+            shutil.rmtree(tmp, ignore_errors=True)
+            os.makedirs(tmp)
+            r = self.prep(self.src, tmp) if self.prep else True
+            if r is None:
+                shutil.rmtree(tmp, ignore_errors=True)
+                open(d + '.skip', 'w').close()
+                return None
+            os.replace(tmp, d)
+            return d
+
+
+class Gen:
+    """what a generator of corpus.py gets: the sources of the tree and how a case is made of them"""
+
+    def __init__(self, cfg):
+        self.cfg = cfg
+
+    def c_sources(self):
+        import corpusc
+        return corpusc.c_sources()
+
+    def dir_files(self, src):
+        """the files git knows in the directory of src (what corpusc.copy_dir copies)"""
+        import corpusc
+        d = os.path.dirname(src)
+        names = corpusc.dir_names(d)
+        names = os.listdir(d) if names is None else sorted(names)
+        return [os.path.join(d, f) for f in names if os.path.isfile(os.path.join(d, f))]
+
+    def name(self, src):
+        return os.path.relpath(src, REPO)
+
+    def case(self, src, prep, text, prep_files=(), name=None, sources=None):
+        """a case made from the file src of the tree (with the files of its directory), or with src None from nothing
+        (an empty directory; name needed); sources: the files the preparation reads, when not those of src's directory
+        (cases with the same preparation and sources share one prepared directory)"""
+        if sources is None:
+            sources = self.dir_files(src) if src else []
+        return Generated(self.cfg, name or self.name(src), src, sources, prep, text, prep_files)
+
+
 def runner_key():
     return mix(sha1file(os.path.abspath(__file__)))
 
@@ -368,8 +477,14 @@ def main():
             print('%s: %s (%s) not built' % (cfg.NAME, path, c))
             return 1
         cands[c] = path
-    base = [sha1file(os.path.join(ROOT, cfg.ORIG)), sha1file(EMU), runner_key()]
-    base += [f + ' ' + (sha1tree(os.path.join(ROOT, f)) if os.path.exists(os.path.join(ROOT, f)) else 'missing')
+    global RUNROOT
+    if getattr(cfg, 'ROOT_ENV', None):
+        RUNROOT = os.environ.get(cfg.ROOT_ENV)
+        if not RUNROOT or not os.path.isdir(RUNROOT):
+            print('%s: the tree of the original (%s) is not set' % (cfg.NAME, cfg.ROOT_ENV))
+            return 1
+    base = [sha1file(os.path.join(RUNROOT, cfg.ORIG)), sha1file(EMU), runner_key()]
+    base += [f + ' ' + (sha1tree(os.path.join(RUNROOT, f)) if os.path.exists(os.path.join(RUNROOT, f)) else 'missing')
              for f in getattr(cfg, 'ROOT_FILES', [])]
     work = os.path.join(WORK, cfg.NAME)
     shutil.rmtree(work, ignore_errors=True)
@@ -385,24 +500,45 @@ def main():
             return 1
         case['_dir'] = cdir
         ch = case_hash(cdir)
-        for vi, var in enumerate(case['variants'] or [{}]):
-            jobs.append((cname, cdir, case, vi, var, mix(*([ch, json.dumps(var, sort_keys=True)] + base))))
+        indir = os.path.join(cdir, 'in')
+        for vi, var in enumerate(case['variants'] or [{'env': {}, 'words': []}]):
+            jobs.append((cname, (lambda d=indir: d), case, vi, var, mix(*([ch, json.dumps(var, sort_keys=True)] + base))))
+    if hasattr(cfg, 'generate'):
+        gen = Gen(cfg)
+        for g in cfg.generate(gen):
+            if filt and filt not in g.name:
+                continue
+            try:
+                case = parse_case(g.text, '%s (generated)' % g.name)
+            except CaseError as e:
+                print('CASE %s' % e)
+                return 1
+            case['_dir'] = None
+            pkey = g.key()
+            ch = mix(pkey, g.text)
+            for vi, var in enumerate(case['variants'] or [{'env': {}, 'words': []}]):
+                jobs.append((g.name, g.indir, case, vi, var, mix(*([ch, json.dumps(var, sort_keys=True)] + base))))
     t0 = time.monotonic()
     same = {c: 0 for c in cands}
     bad = []
+    skipped = []
 
     def one(job):
-        cname, cdir, case, vi, var, okey = job
-        label = cname + ('[%s]' % ' '.join('%s=%s' % kv for kv in var.items()) if var else '')
-        rdir = os.path.join(work, '%s.%d' % (cname, vi))
+        cname, getin, case, vi, var, okey = job
+        vt = ' '.join(['%s=%s' % kv for kv in var['env'].items()] + var['words'])
+        label = cname + ('[%s]' % vt if vt else '')
+        rdir = os.path.join(work, '%s.%d' % (cname.replace('/', '_'), vi))
         msgs = []
         r1 = None if nocache else store_read('orig', okey)
         if r1 is None:
             with KeyLock(okey):
                 r1 = None if nocache else store_read('orig', okey)
                 if r1 is None:
-                    ra = run_case(cfg, cdir, case, var, 'orig', None, rdir + '.orig')
-                    rb = run_case(cfg, cdir, case, var, 'orig', None, rdir + '.orig2')
+                    indir = getin()
+                    if indir is None:
+                        return label, None, {}
+                    ra = run_case(cfg, indir, case, var, 'orig', None, rdir + '.orig')
+                    rb = run_case(cfg, indir, case, var, 'orig', None, rdir + '.orig2')
                     if ra != rb:
                         return label, ['UNSTABLE original: ' + explain(ra, rb)[0]], {c: False for c in cands}
                     shutil.rmtree(rdir + '.orig2', ignore_errors=True)
@@ -417,7 +553,10 @@ def main():
             if not nocache and os.path.exists(store_path('ok', ckey)):
                 res[c] = not msgs
                 continue
-            r2 = run_case(cfg, cdir, case, var, c, path, rdir + '.' + c)
+            indir = getin()
+            if indir is None:
+                return label, None, {}
+            r2 = run_case(cfg, indir, case, var, c, path, rdir + '.' + c)
             r1c = {'steps': r1['steps'], 'tree': r1['tree']}
             if r1c == r2:
                 store_write('ok', ckey, 1)
@@ -434,6 +573,9 @@ def main():
     n = int(os.environ.get('JOBS') or max(1, (os.cpu_count() or 2) - 1))
     with concurrent.futures.ThreadPoolExecutor(n) as ex:
         for label, msgs, res in ex.map(one, jobs):
+            if msgs is None:
+                skipped.append(label)
+                continue
             for c, ok in res.items():
                 if ok:
                     same[c] += 1
@@ -441,9 +583,10 @@ def main():
                 bad.append(label)
                 print('DIFF %s: %s' % (label, '\n    '.join(msgs)), flush=True)
     for c in cands:
-        print('%s [%s]: %d of %d inputs identical (0 sources skipped)' % (cfg.NAME, c, same[c], len(jobs)), flush=True)
+        print('%s [%s]: %d of %d inputs identical (%d sources skipped)' % (cfg.NAME, c, same[c], len(jobs) - len(skipped),
+                                                                           len(skipped)), flush=True)
     print('TIME %-8s wall %7.1f   %d cases' % (cfg.NAME, time.monotonic() - t0, len(jobs)))
-    return 1 if bad or any(same[c] != len(jobs) for c in cands) else 0
+    return 1 if bad or any(same[c] != len(jobs) - len(skipped) for c in cands) else 0
 
 
 if __name__ == '__main__':

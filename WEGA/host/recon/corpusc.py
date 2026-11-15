@@ -24,12 +24,28 @@ def emu():
     return os.environ.get('EMU', os.path.join(REPO, 'host', 'z8k-emu', 'z8k-emu'))
 
 
+def tree_files(d):
+    """the files of the tree below the directory d (absolute), relative to REPO: the list .files of a checkall snapshot, or
+    what git knows (tracked and untracked, not ignored); None without either"""
+    rel = os.path.relpath(d, REPO)
+    if rel.startswith('..'):
+        return None
+    pre = '' if rel == '.' else rel + '/'
+    lst = os.path.join(REPO, '.files')
+    if os.path.exists(lst):
+        return [f for f in open(lst).read().split('\n') if f and f.startswith(pre)]
+    r = subprocess.run(['git', '-C', REPO, 'ls-files', '-co', '--exclude-standard', '--', rel], capture_output=True, text=True)
+    if r.returncode == 0 and r.stdout:
+        return [f for f in r.stdout.split('\n') if f]
+    return None
+
+
 def c_sources():
     """the C sources of src/cmd and src/lib, sorted"""
-    r = subprocess.run(['git', '-C', REPO, 'ls-files', '--', 'src/cmd', 'src/lib'], capture_output=True, text=True)
-    if r.returncode == 0 and r.stdout:
-        fs = [os.path.join(REPO, f) for f in r.stdout.split('\n') if f.endswith('.c')]
-    else:
+    fs = None
+    if tree_files(os.path.join(REPO, 'src')) is not None:
+        fs = [os.path.join(REPO, f) for t in ('src/cmd', 'src/lib') for f in tree_files(os.path.join(REPO, t)) or [] if f.endswith('.c')]
+    if fs is None:
         fs = []
         for top in ('src/cmd', 'src/lib'):
             for d, dirs, names in os.walk(os.path.join(REPO, top)):
@@ -46,15 +62,22 @@ def run(argv, work, timeout=120):
 _GITFILES = {}
 
 
+def dir_names(d):
+    """the names of the files of the tree directly in the directory d (tree_files), None when unknown"""
+    d = os.path.abspath(d)
+    if d not in _GITFILES:
+        fs = tree_files(d)
+        n = len(os.path.relpath(d, REPO)) + 1
+        _GITFILES[d] = None if fs is None else set(f[n:] for f in fs if '/' not in f[n:])
+    return _GITFILES[d]
+
+
 def copy_dir(src, work):
     """the source and the other files of its directory (headers, included .c files): the files git knows there (tracked or
     not ignored, as the copy of checkall.sh), not what a build has left (objects, programs: they would make the inputs depend
     on the state of the tree when the tar was made)"""
     d = os.path.dirname(src)
-    if d not in _GITFILES:
-        r = subprocess.run(['git', '-C', d, 'ls-files', '-co', '--exclude-standard', '--', '.'], capture_output=True, text=True)
-        _GITFILES[d] = None if r.returncode != 0 else set(f for f in r.stdout.split('\n') if f and '/' not in f)
-    keep = _GITFILES[d]
+    keep = dir_names(d)
     for f in os.listdir(d):
         p = os.path.join(d, f)
         if os.path.isfile(p) and (keep is None or f in keep):

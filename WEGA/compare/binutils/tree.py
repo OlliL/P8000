@@ -1,7 +1,7 @@
-"""The corpus of ranlib, strip and size (compare/{ranlib,strip,size}/progcfg.py): objects, executables and libraries of the WEGA tree,
+"""The cases of ranlib, strip and size (compare/{ranlib,strip,size}/corpus.py, host/recon/corpusrun.py): objects, executables and libraries of the WEGA tree,
 copies with swapped bytes, damaged files, archives that are swapped, stripped, mixed or with too many symbols. A case is one command
-line (the program and its arguments, relative to the corpus tree); the program runs in a copy of the tree (run.sh), the output, the
-exit status and every file afterwards are compared with the original. The inputs are made by the original ar and strip (z8k-emu)."""
+line (the program and its arguments, relative to the corpus tree); the program runs in a copy of the tree (one prepared
+directory for all cases), the output, the exit status and every file afterwards are compared with the original. The inputs are made by the original ar and strip (z8k-emu)."""
 import glob
 import os
 import shutil
@@ -121,3 +121,25 @@ def prepare(label, work, tree):
     shutil.copytree(tree, work, dirs_exist_ok=True)
     open(os.path.join(work, '.args'), 'w').write(label.split(' ', 1)[1] + '\n')
     return label
+
+
+def prepare_tree(src, work):
+    """the prepared directory of the cases: the corpus tree, made by the original ar and strip"""
+    build(work)
+    return 'tree'
+
+
+def generate(g, prog, expect=None):
+    """the cases of prog for corpusrun.py: one step each, on the shared tree; expect: {number of a case: its expectations}"""
+    srcs = [os.path.abspath(__file__)]
+    pf = ['bin/ar', 'usr/bin/strip', 'lib/libc.a', 'lib/slibc.a', 'usr/lib', 'lib', 'bin/cc', 'bin/size', 'bin/cas', 'bin/ld',
+          'bin/sld', 'bin/gld', 'usr/bin/ranlib']
+    # cases() needs the tree (strip splits the lists of objects into calls of 16 files): the prepared directory, which every
+    # case shares, is made (or found in the store) first
+    tree = g.case(None, prepare_tree, '', name='tree', sources=srcs, prep_files=pf).indir()
+    if tree is None:
+        raise SystemExit('the corpus tree of ranlib, strip, size cannot be made')
+    for i, line in enumerate(cases(prog, tree)):
+        text = 'step: %s\n' % line
+        text += (expect or {}).get(i, '')
+        yield g.case(None, prepare_tree, text, name='%03d' % i, sources=srcs, prep_files=pf)

@@ -264,6 +264,31 @@ static const char *guesttmp(void)
 	return t;
 }
 
+/* Z8K_ROOTLOG=FILE: every guest path looked up below ROOT (not /tmp, not /dev), one line each, appended (the files of the
+   tree a run depends on: the corpus runner takes them into its cache key). The file is opened for every line and closed
+   again, so that the guest never sees a file descriptor of its own taken; a relative name is made absolute at the start. */
+static char rootlogf[1100];
+
+static void rootlog(const char *g)
+{
+	char line[1100];
+	int fd, n;
+
+	if (!*rootlogf)
+		return;
+	n = snprintf(line, sizeof line - 1, "%s\n", g);
+	if (n > (int)sizeof line - 2)
+		return;
+	fd = open(rootlogf, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (fd < 0)
+		return;
+	if (write(fd, line, n) < 0) {
+		close(fd);
+		return;
+	}
+	close(fd);
+}
+
 static const char *hostpath(const char *g, char *buf, size_t n)
 {
 	if (g[0] != '/' || !*root) return g;
@@ -272,6 +297,7 @@ static const char *hostpath(const char *g, char *buf, size_t n)
 		snprintf(buf, n, "%s%s", guesttmp(), g + 4);
 		return buf;
 	}
+	rootlog(g);
 	snprintf(buf, n, "%s%s", root, g);
 	return buf;
 }
@@ -873,6 +899,16 @@ int main(int argc, char **argv)
 		else
 			snprintf(t, sizeof t, "%s/tmp", root);
 		mkdir(t, 0777);
+	}
+	{
+		const char *f = getenv("Z8K_ROOTLOG");
+		char cwd[1024];
+		if (f && *f) {
+			if (f[0] == '/' || !getcwd(cwd, sizeof cwd))
+				snprintf(rootlogf, sizeof rootlogf, "%s", f);
+			else
+				snprintf(rootlogf, sizeof rootlogf, "%s/%s", cwd, f);
+		}
 	}
 	c->syscall = sys_call;
 	{

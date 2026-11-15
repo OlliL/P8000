@@ -26,37 +26,4 @@ def model_link(work, objs):
 MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'd12model_cpp', 'cppm')
 STRICT_INPUT = MODEL_OUT
 
-CORPUS_BINARY = 'cpp'
-CANDIDATES = {'wega': 'src/cmd/cpp/cpp', 'host': 'host/cpp/cpp'}
 
-
-def CORPUS_SOURCES():
-    import corpusc
-    return corpusc.c_sources()
-
-
-def CORPUS_PREPARE(src, work):
-    import corpusc
-    return corpusc.prepare_cpp(src, work)
-
-
-def CORPUS_RUN(binary, base, work):
-    return [binary, '-I.', base, 't.i'], None
-
-
-def CORPUS_OUTPUTS(base):
-    return ['t.i']
-
-
-def CORPUS_HOST_ENV(root):
-    """the host cpp (host/cpp) reads the include directory of the system from CPP_INCLUDE"""
-    return {'CPP_INCLUDE': os.path.join(root, 'usr', 'include')}
-
-
-def CORPUS_NORMALIZE(name, data):
-    """the host cpp names the include directory of the system as it was given (CPP_INCLUDE), the original as /usr/include"""
-    import corpusc
-    return data.replace(os.path.join(corpusc.root(), 'usr', 'include').encode(), b'/usr/include')
-
-# files of the tree the runs read (part of the cache key; host/tools/corpusdeps.sh checks the list)
-CORPUS_ROOT_FILES = ['usr/include']

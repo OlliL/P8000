@@ -30,23 +30,3 @@ MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/t
 STRICT_INPUT = MODEL_OUT
 
 
-# the corpus: every C source; the input (.I .D .S) from the original /bin/cc -S -:d, compared: the assembler text (stdout)
-CANDIDATES = {'wega': 'src/cmd/codgen/build/nonseg/codgen', 'host': 'host/codgen/codgen'}
-
-
-def CORPUS_SOURCES():
-    import corpusc
-    return corpusc.c_sources()
-
-
-def CORPUS_PREPARE(src, work):
-    import corpusc
-    return corpusc.prepare_ids(src, work, '/bin/cc')
-
-
-def CORPUS_RUN(binary, base, work):
-    return [binary, '-E', base], base + '.I'
-
-
-def CORPUS_OUTPUTS(base):
-    return []

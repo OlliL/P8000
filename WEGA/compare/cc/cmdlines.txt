@@ -1,18 +1,3 @@
-# the case of compare/cc and compare/scc (script mode of host/recon/stagecorpus.py): the driver PROG with the command lines below; nothing is executed
-# (-:n -:z): compared are the command lines it builds, its messages, its exit status and the files afterwards (the process id in the names of the
-# temporary files is normalized in progcfg.py).
-umask 022
-echo 'main(){}' > a.c; echo 'f(){}' > b.c; : > x.s; : > y.o; : > z.f
-# pass paths that exist in both worlds, so the access() tests agree
-P="-TO/bin/ld -TP/bin/ld"
-while IFS= read -r args; do
-	[ -z "$args" ] && continue
-	rm -f *.o
-	echo "\$ cc $args"
-	$PROG -:n -:z $P $args 2>&1
-	echo "exit=$?"
-	ls
-done <<'EOS'
 a.c
 -c a.c
 -S a.c
@@ -87,4 +72,3 @@ x.s nonexist.s
 -Sc a.c
 -E -c a.c
 -P -S a.c
-EOS

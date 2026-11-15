@@ -20,51 +20,6 @@ ROOTDIR = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/home/olivle
 REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
 
 
-CORPUS_BINARY = 'build/nonseg/cparse'
-CANDIDATES = {'wega': 'src/cmd/cparse/build/nonseg/cparse', 'host': 'host/cparse/cparse'}
-
-
-def CORPUS_SOURCES():
-    import corpusc
-    # the sources of the tree and the fixed cases (compare/cparse/cases: a structure declared in a function, whose tag is freed at its end)
-    cases = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'cparse', 'cases')
-    fixed = sorted(os.path.join(cases, f) for f in os.listdir(cases) if f.endswith('.c'))
-    fixed.append(os.path.join(cases, 'yacc', 'cpy.c'))	# with yylex.c next to it, which it includes
-    return corpusc.c_sources() + fixed
-
-
-def CORPUS_PREPARE(src, work):
-    """the original cpp makes the input of cparse (t.i)"""
-    import corpusc
-    return corpusc.prepare_i(src, work)
-
-
-def CORPUS_NORMALIZE(f, data):
-    """the .S file without the register byte (+5) of the symbols that are no register variable and no field: cparse sets
-    it only for these, else the byte is what the heap held before (KNOWLEDGE.md, quirks of /lib/cparse); it differs in a
-    build with another data layout"""
-    import struct
-    if not f.endswith('.S'):
-        return data
-    d = bytearray(data)
-    pos = 4
-    while pos + 14 <= len(d):
-        ns, na = struct.unpack('>II', bytes(d[pos + 2:pos + 10]))
-        nn, nm = struct.unpack('>HH', bytes(d[pos + 10:pos + 14]))
-        for k in range(pos + 14, pos + 14 + ns, 22):
-            if k + 5 < len(d) and d[k + 4] != 4 and d[k + 4] < 0x40:
-                d[k + 5] = 0
-        pos += 14 + ns + na + nn + nm
-    return bytes(d)
-
-
-def CORPUS_RUN(binary, base, work):
-    return [binary, '-E', base], base + '.i'
-
-
-def CORPUS_OUTPUTS(base):
-    return [base + '.I', base + '.D', base + '.S']
-
 # D18: the cc that built /lib/cparse never writes @r15 (506 times %0000(r15), 0 times @r15; ld and codgen use @r15);
 # the comparisons treat the two forms as equal
 D18 = True

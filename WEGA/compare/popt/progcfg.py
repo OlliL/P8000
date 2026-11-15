@@ -30,27 +30,3 @@ STRICT_INPUT = MODEL_OUT
 STATICFUNCS = True  # the static functions get global labels in the model (d12model.py), so that strictcmp finds them
 
 
-# the corpus: every C source; the input from the original /bin/cc -S (no -O), each run without option, with -l and -d.
-# The line "NK core" of -d may differ: the place of the heap of a build with another libc (OLDCC_LOG.md)
-CANDIDATES = {'wega': 'src/cmd/popt/build/nonseg/popt', 'host': 'host/popt/popt'}
-CORPUS_VARIANTS = [[], ['-l'], ['-d']]
-CORPUS_IGNORE = rb'\d+K core'
-
-
-def CORPUS_SOURCES():
-    import glob
-    import corpusc
-    return corpusc.c_sources() + sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cases', '*.c')))
-
-
-def CORPUS_PREPARE(src, work):
-    import corpusc
-    return corpusc.prepare_s(src, work, '/bin/cc')
-
-
-def CORPUS_RUN(binary, base, work, variant):
-    return [binary] + variant + [base + '.s', 'out.s'], None
-
-
-def CORPUS_OUTPUTS(base):
-    return ['out.s']

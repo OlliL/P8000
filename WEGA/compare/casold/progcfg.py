@@ -1,9 +1,5 @@
-"""Corpus of the old cas (host/cas/casold, -DOLD_CAS: the early decision of jpr and callr, host/OLDCC.md D17) against the old cas of
-src/cmd/cas (make oldcas, installed as /lib/old/cas of the OLDROOT). There is no original binary of the old cas: the reference
-is the build from src/cmd/cas/old, run by the emulator; the candidate is the host build.
-
-The inputs are the ones of the corpus of cas (compare/cas): the same test sources, among them the fixed sources
-compare/cas/test/jpr/old_*.s for the special rules of the old cas (undecided entries at a {, the limit of 255 entries, a jpr at its label)."""
+"""Configuration of the recon toolkit (host/recon/progcfg.py) for the old cas (src/cmd/cas/old, /lib/old/cas of the OLDROOT);
+the corpus: compare/casold/corpus.py."""
 import importlib.util
 import os
 
@@ -19,14 +15,3 @@ ORIG_LIM = _base.ORIG_LIM
 SEG = True
 CC = _base.CC
 ROOT_ENV = 'OLDROOT'
-CORPUS_OF = 'cas'		# the tar of the inputs is the one of cas (compare/cas/corpus.tar)
-CORPUS_EXCLUDE = lambda label: False	# old_max.s too: the reference is the old cas
-CANDIDATES = {'host': 'host/cas/casold'}
-CORPUS_BINARY = 'old/cas'
-
-CORPUS_SOURCES = _base.CORPUS_SOURCES
-CORPUS_PREPARE = _base.CORPUS_PREPARE
-
-
-def CORPUS_SCRIPT(base):
-    return os.path.join('..', 'cas', 'case.sh')
