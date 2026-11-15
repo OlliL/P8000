@@ -142,13 +142,13 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 The C members of `/lib/libc.a` and `/lib/slibc.a` (sources 08/83 and 09/83) come out of the shipped cc and scc except a few;
 their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_VL` in `src/cmd/cc`, built in
 `build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (spopt), `/lib/vl/scparse` (the shipped one with `OLD_D25`) and `/lib/vl/codgen`,
-`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` to `OLD_D58` and `OLD_D24`).
+`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` to `OLD_D60` and `OLD_D24`).
 Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped compilers give
-193, vl gives 202 (nlist, symscan and swap of both libraries, malloc of both libraries, scanf of slibc added; the printf of both libraries is exact only with its `-I`, so 204 in the build; slibc malloc also needs two forms of its source: `union store *r` declared in front of `register unsigned onw` in realloc, an unused `int spare` in calloc, whose frame is 2 bytes larger without a found cause, as the spare word of ld in D1) and changes no other member. Both libraries are built by vl
+193, vl gives 203 (nlist, symscan and swap of both libraries, malloc of both libraries, scanf and segmon of slibc added; the printf of both libraries is exact only with its `-I`, so 205 in the build; segmon needs `char *mkseg()`, with `long mkseg()` D25 masks its casts; slibc malloc also needs two forms of its source: `union store *r` declared in front of `register unsigned onw` in realloc, an unused `int spare` in calloc, whose frame is 2 bytes larger without a found cause, as the spare word of ld in D1) and changes no other member. Both libraries are built by vl
 (`CC = ccvl` in `src/lib/libc/Makefile`, `CC = sccvl` in `src/lib/slibc/Makefile`; owner's decision 2026-11-14), so
 checkall measures every rule of vl on all their members. vl itself is compiled by the shipped cc: in stage 1 linked with
 the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). Still from
-`oldcc/NAME/*.s`: segmon, doprnt (slibc); their rules, when found, belong to vl
+`oldcc/NAME/*.s`: doprnt (slibc); their rules, when found, belong to vl
 (`src/lib/HANDOFF.md`).
 
 ### The old scc of cas
@@ -685,4 +685,22 @@ type of the use is the type of the name. The codgen of vl takes an `unsigned` na
 as an `int` (`mult rr2,r6` in calloc of libc.a: `num *= size` with `unsigned num, size`; the shipped codgen loads size
 from the frame again). Not the other direction: an `int` used as `unsigned` changes fputc. With the word types of
 `OLD_D3P` (every pair of word types) lsearch, symscan, fputc and malloc itself change. Witness: malloc of libc.a. One
+witness.
+
+### D59 A pointer to a structure in a register is taken from it also as a pointer to a scalar
+
+vl `OLD_D59` (codgen regs3.c, `regforsym`). A member at offset 0 reached through a pointer to a structure (`sr->sr_seg`)
+reaches the code generator as the pointer name with the type of a pointer to the member's type (18, pointer to char) where
+the name has the type 24 (pointer to a structure). The shipped codgen then loads the parameter from the frame
+(`ldl rr2,|_stkseg+4|(r15)`), the codgen of vl copies it from its register (`ldl rr2,rr6`; behind it the clear of r2 for
+the next call becomes `sub r2,r6`, r2 holding the high word of rr6). Limits from the measurements: every pair of pointer
+types changes malloc and symscan of both libraries and printf of slibc (a pointer to a pointer from a pointer to a
+structure: symscan; a pointer to char used as a pointer to a union: malloc; char and unsigned char: printf). Witness:
+segmon of slibc.a. One witness.
+
+### D60 `++` of a frame slot whose value is wanted in a register
+
+vl `OLD_D60` (codgen match3.c). Beside D16: `++i` of a frame slot whose value is wanted in a register (cookie INAREG:
+`while (++i <= *nsegs)`, the value widened to long for the compare) is `ld r4,i; inc r4,#1; ld i,r4`, the shipped codgen
+writes `inc i,#1` and loads i after it. Witness: segmon of slibc.a. No other member of the two libraries changes. One
 witness.

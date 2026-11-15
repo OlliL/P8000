@@ -939,9 +939,17 @@ regforsym(reg, s, type, off)
 	if (type != s->stype && !(D3PWORD(type) && D3PWORD(s->stype)))
 		return -1;
 #else
-#ifdef OLD_D58
+#if defined(OLD_D58) || defined(OLD_D59)
 	/* vl: an unsigned used as an int (calloc: num *= size) is taken from its register too; not an int used as unsigned (fputc) */
-	if (type != s->stype && !(type == 4 && s->stype == 14))
+	/* vl OLD_D59: a pointer to a structure used as a pointer to a scalar (its member at offset 0: segmon sr->sr_seg) too */
+	if (type != s->stype
+#ifdef OLD_D58
+	    && !(type == 4 && s->stype == 14)
+#endif
+#ifdef OLD_D59
+	    && !(s->stype == 24 && (type & ~15) == 16)	/* 24: pointer to a structure; 16 + a basic type: a pointer to it */
+#endif
+	    )
 		return -1;
 #else
 	if (type != s->stype)

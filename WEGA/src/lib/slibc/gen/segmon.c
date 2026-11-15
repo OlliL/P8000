@@ -23,7 +23,7 @@ struct seghdr {
 extern	cntno;
 extern	errno;
 long	*ctbase;
-long	mkseg();
+char	*mkseg();	/* a pointer: the casts of its value are not masked (D24, D25) */
 
 segmon(sr, cntsiz)
 struct segrange *sr;

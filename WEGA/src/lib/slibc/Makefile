@@ -72,8 +72,8 @@ obj/getgrgid.o: gen/getgrgid.c
 obj/getopt.o: gen/getopt.c
 	cd gen ; $(CC) -O -c getopt.c ; mv getopt.o ../obj/getopt.o
 
-obj/segmon.o: oldcc/segmon/0_1.s
-	cd oldcc/segmon ; $(CAS) -u -o ../../obj/segmon.o 0_1.s
+obj/segmon.o: gen/segmon.c
+	cd gen ; $(CC) -O -c segmon.c ; mv segmon.o ../obj/segmon.o
 
 obj/ctermid.o: stdio/ctermid.c
 	cd stdio ; $(CC) -O -c ctermid.c ; mv ctermid.o ../obj/ctermid.o
