@@ -33,116 +33,116 @@ LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-
 all: $(LIBS)
 
 LIBv1 = fseek/0_2.o ftell/0_1.o readsym/0_1.o rdwr/0_3.o system/0_1.o fopen/0_1.o printf/0_3.o doprnt/0_3.o \
-	 ../libc/obj/ffltioc.o ungetc/0_1.o filbuf/0_3.o setbuf/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o \
-	 ../libc/obj/data.o ../libc/obj/__callex.o ../libc/obj/cuexit.o ../libc/obj/abort.o cnvt/0_2.o \
-	 ../libc/obj/decimal.o length/0_2.o malloc/0_3.o isatty/0_1.o stty/0_1.o swab/0_1.o strncmp/0_1.o \
-	 strncpy/0_1.o goodmagic/0_2.o swap/0_2.o ../libc/obj/brk.o ../libc/obj/close.o ../libc/obj/creat.o \
-	 ../libc/obj/execl.o ../libc/obj/exit.o ../libc/obj/fork.o ../libc/obj/ioctl.o ../libc/obj/lseek.o \
-	 open/0_1.o ../libc/obj/read.o ../libc/obj/signal.o ../libc/obj/time.o ../libc/obj/unlink.o \
-	 ../libc/obj/wait.o ../libc/obj/write.o ../libc/obj/cerror.o
+	 ../libc/build/nonseg/ffltioc.o ungetc/0_1.o filbuf/0_3.o setbuf/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o \
+	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ../libc/build/nonseg/abort.o cnvt/0_2.o \
+	 ../libc/build/nonseg/decimal.o length/0_2.o malloc/0_3.o isatty/0_1.o stty/0_1.o swab/0_1.o strncmp/0_1.o \
+	 strncpy/0_1.o goodmagic/0_2.o swap/0_2.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o \
+	 ../libc/build/nonseg/execl.o ../libc/build/nonseg/exit.o ../libc/build/nonseg/fork.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o \
+	 open/0_1.o ../libc/build/nonseg/read.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/time.o ../libc/build/nonseg/unlink.o \
+	 ../libc/build/nonseg/wait.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
 # ccv0 ccv0p
 ../libc-v1.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv1)
 
-LIBv2 = fopen/0_1.o printf/0_5.o doprnt/0_7.o ffltioc/0_1.o setbuf/0_1.o ../libc/obj/data.o flsbuf/0_2.o \
-	 endopen/0_3.o findiop/0_2.o ../libc/obj/__callex.o ../libc/obj/cuexit.o cnvt/0_2.o ../libc/obj/decimal.o \
+LIBv2 = fopen/0_1.o printf/0_5.o doprnt/0_7.o ffltioc/0_1.o setbuf/0_1.o ../libc/build/nonseg/data.o flsbuf/0_2.o \
+	 endopen/0_3.o findiop/0_2.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o cnvt/0_2.o ../libc/build/nonseg/decimal.o \
 	 length/0_3.o malloc/0_3.o isatty/0_2.o stty/0_3.o strcat/0_2.o strcmp/0_1.o strcpy/0_2.o strncpy/0_1.o \
-	 ../libc/obj/brk.o ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o \
-	 open/0_1.o ../libc/obj/read.o ../libc/obj/write.o ../libc/obj/cerror.o
+	 ../libc/build/nonseg/brk.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o \
+	 open/0_1.o ../libc/build/nonseg/read.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
 # ccv0p
 ../libc-v2.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv2)
 
-LIBv3 = rdwr/0_1.o ../libc/obj/fopen.o printf/0_1.o doprnt/0_1.o ../libc/obj/ffltioc.o filbuf/0_1.o flsbuf/0_1.o \
-	 endopen/0_1.o findiop/0_1.o ../libc/obj/data.o ../libc/obj/__callex.o ../libc/obj/cuexit.o cnvt/0_1.o \
-	 ../libc/obj/decimal.o length/0_1.o malloc/0_1.o ../libc/obj/isatty.o ../libc/obj/stty.o \
-	 ../libc/obj/swab.o goodmagic/0_1.o swap/0_1.o ../libc/obj/brk.o ../libc/obj/chmod.o ../libc/obj/close.o \
-	 ../libc/obj/creat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/read.o \
-	 ../libc/obj/umask.o ../libc/obj/write.o ../libc/obj/cerror.o
+LIBv3 = rdwr/0_1.o ../libc/build/nonseg/fopen.o printf/0_1.o doprnt/0_1.o ../libc/build/nonseg/ffltioc.o filbuf/0_1.o flsbuf/0_1.o \
+	 endopen/0_1.o findiop/0_1.o ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o cnvt/0_1.o \
+	 ../libc/build/nonseg/decimal.o length/0_1.o malloc/0_1.o ../libc/build/nonseg/isatty.o ../libc/build/nonseg/stty.o \
+	 ../libc/build/nonseg/swab.o goodmagic/0_1.o swap/0_1.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o \
+	 ../libc/build/nonseg/creat.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o \
+	 ../libc/build/nonseg/umask.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
 # ccv1 ccv1q
 ../libc-v3.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv3)
 
-LIBv4 = fseek/0_1.o rdwr/0_2.o ../libc/obj/fopen.o printf/0_2.o doprnt/0_2.o ../libc/obj/ffltioc.o filbuf/0_2.o \
-	 flsbuf/0_1.o endopen/0_2.o findiop/0_1.o ../libc/obj/data.o ../libc/obj/__callex.o ../libc/obj/cuexit.o \
-	 cnvt/0_1.o ../libc/obj/decimal.o length/0_1.o malloc/0_2.o ../libc/obj/isatty.o mktemp/0_1.o \
-	 ../libc/obj/stty.o ../libc/obj/swab.o ../libc/obj/strcmp.o strcpy/0_1.o goodmagic/0_1.o swap/0_1.o \
-	 ../libc/obj/access.o ../libc/obj/brk.o ../libc/obj/chmod.o ../libc/obj/close.o ../libc/obj/creat.o \
-	 ../libc/obj/getpid.o ../libc/obj/ioctl.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/read.o \
-	 ../libc/obj/signal.o ../libc/obj/umask.o ../libc/obj/unlink.o ../libc/obj/write.o ../libc/obj/cerror.o
+LIBv4 = fseek/0_1.o rdwr/0_2.o ../libc/build/nonseg/fopen.o printf/0_2.o doprnt/0_2.o ../libc/build/nonseg/ffltioc.o filbuf/0_2.o \
+	 flsbuf/0_1.o endopen/0_2.o findiop/0_1.o ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o \
+	 cnvt/0_1.o ../libc/build/nonseg/decimal.o length/0_1.o malloc/0_2.o ../libc/build/nonseg/isatty.o mktemp/0_1.o \
+	 ../libc/build/nonseg/stty.o ../libc/build/nonseg/swab.o ../libc/build/nonseg/strcmp.o strcpy/0_1.o goodmagic/0_1.o swap/0_1.o \
+	 ../libc/build/nonseg/access.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o \
+	 ../libc/build/nonseg/getpid.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o \
+	 ../libc/build/nonseg/signal.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
 # ccv1
 ../libc-v4.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv4)
 
 LIBv5 = freopen/0_1.o fseek/0_2.o ftell/0_2.o rdwr/0_3.o fopen/0_1.o printf/0_5.o doprnt/0_5.o \
-	 ../libc/obj/ffltioc.o getw/0_1.o ungetc/0_1.o filbuf/0_3.o setbuf/0_1.o flsbuf/0_2.o endopen/0_4.o \
-	 findiop/0_2.o ../libc/obj/data.o ../libc/obj/__callex.o ../libc/obj/cuexit.o perror/0_1.o atoi/0_1.o \
-	 cnvt/0_2.o ../libc/obj/decimal.o length/0_3.o malloc/0_3.o errlst/0_1.o isatty/0_2.o stty/0_3.o \
-	 ../libc/obj/ctype_.o strrchr/0_1.o strcat/0_2.o strncmp/0_1.o strcpy/0_2.o strlen/0_2.o ../libc/obj/brk.o \
-	 ../libc/obj/chmod.o ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o \
-	 ../libc/obj/open.o ../libc/obj/read.o ../libc/obj/umask.o ../libc/obj/write.o ../libc/obj/cerror.o
+	 ../libc/build/nonseg/ffltioc.o getw/0_1.o ungetc/0_1.o filbuf/0_3.o setbuf/0_1.o flsbuf/0_2.o endopen/0_4.o \
+	 findiop/0_2.o ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o perror/0_1.o atoi/0_1.o \
+	 cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_3.o malloc/0_3.o errlst/0_1.o isatty/0_2.o stty/0_3.o \
+	 ../libc/build/nonseg/ctype_.o strrchr/0_1.o strcat/0_2.o strncmp/0_1.o strcpy/0_2.o strlen/0_2.o ../libc/build/nonseg/brk.o \
+	 ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o \
+	 ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
 # ccv0p
 ../libc-v5.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv5)
 
-LIBv6 = system/0_2.o printf/0_6.o doprnt/0_6.o ../libc/obj/ffltioc.o gets/0_1.o filbuf/0_2.o flsbuf/0_1.o \
-	 ../libc/obj/data.o ../libc/obj/__callex.o ../libc/obj/cuexit.o perror/0_2.o ../libc/obj/sleep.o \
-	 cnvt/0_1.o ../libc/obj/decimal.o length/0_1.o malloc/0_2.o errlst/0_2.o ../libc/obj/isatty.o \
-	 ../libc/obj/stty.o strrchr/0_2.o ../libc/obj/strcmp.o strcpy/0_1.o strncpy/0_2.o strlen/0_1.o \
-	 ../libc/obj/access.o ../libc/obj/alarm.o ../libc/obj/brk.o ../libc/obj/chmod.o ../libc/obj/close.o \
-	 ../libc/obj/execl.o ../libc/obj/creat.o ../libc/obj/exit.o ../libc/obj/getuid.o ../libc/obj/fork.o \
-	 ../libc/obj/ioctl.o ../libc/obj/link.o ../libc/obj/open.o ../libc/obj/pause.o ../libc/obj/read.o \
-	 ../libc/obj/signal.o ../libc/obj/setuid.o ../libc/obj/stat.o ../libc/obj/unlink.o ../libc/obj/wait.o \
-	 ../libc/obj/write.o ../libc/obj/cerror.o
+LIBv6 = system/0_2.o printf/0_6.o doprnt/0_6.o ../libc/build/nonseg/ffltioc.o gets/0_1.o filbuf/0_2.o flsbuf/0_1.o \
+	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o perror/0_2.o ../libc/build/nonseg/sleep.o \
+	 cnvt/0_1.o ../libc/build/nonseg/decimal.o length/0_1.o malloc/0_2.o errlst/0_2.o ../libc/build/nonseg/isatty.o \
+	 ../libc/build/nonseg/stty.o strrchr/0_2.o ../libc/build/nonseg/strcmp.o strcpy/0_1.o strncpy/0_2.o strlen/0_1.o \
+	 ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o \
+	 ../libc/build/nonseg/execl.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/exit.o ../libc/build/nonseg/getuid.o ../libc/build/nonseg/fork.o \
+	 ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/link.o ../libc/build/nonseg/open.o ../libc/build/nonseg/pause.o ../libc/build/nonseg/read.o \
+	 ../libc/build/nonseg/signal.o ../libc/build/nonseg/setuid.o ../libc/build/nonseg/stat.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/wait.o \
+	 ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
 # ccv1
 ../libc-v6.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv6)
 
 LIBv7 = fltioc/0_1.o fseek/0_2.o ftell/0_2.o rdwr/0_3.o fopen/0_1.o fdopen/0_1.o printf/0_5.o doprnt/0_5.o \
-	 ungetc/0_1.o ../libc/obj/atof.o ecvt/0_1.o ../libc/obj/pow10.o filbuf/0_3.o data/0_1.o setbuf/0_1.o \
-	 flsbuf/0_2.o endopen/0_4.o findiop/0_2.o ../libc/obj/__callex.o ../libc/obj/cuexit.o perror/0_1.o \
-	 cnvt/0_2.o ../libc/obj/decimal.o length/0_3.o malloc/0_3.o errlst/0_1.o isatty/0_2.o stty/0_3.o \
-	 strcat/0_2.o strcmp/0_1.o strcpy/0_2.o strlen/0_2.o ../libc/obj/ctype_.o ../libc/obj/brk.o \
-	 ../libc/obj/chmod.o ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o \
-	 ../libc/obj/open.o ../libc/obj/read.o ../libc/obj/signal.o ../libc/obj/umask.o ../libc/obj/write.o \
-	 ../libc/obj/cerror.o
+	 ungetc/0_1.o ../libc/build/nonseg/atof.o ecvt/0_1.o ../libc/build/nonseg/pow10.o filbuf/0_3.o data/0_1.o setbuf/0_1.o \
+	 flsbuf/0_2.o endopen/0_4.o findiop/0_2.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o perror/0_1.o \
+	 cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_3.o malloc/0_3.o errlst/0_1.o isatty/0_2.o stty/0_3.o \
+	 strcat/0_2.o strcmp/0_1.o strcpy/0_2.o strlen/0_2.o ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/brk.o \
+	 ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o \
+	 ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/write.o \
+	 ../libc/build/nonseg/cerror.o
 # ccv0p
 ../libc-v7.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv7)
 
-LIBv8 = ../libc/obj/freopen.o ../libc/obj/fopen.o printf/0_4.o doprnt/0_4.o ../libc/obj/ffltioc.o \
-	 ../libc/obj/flsbuf.o ../libc/obj/endopen.o ../libc/obj/findiop.o ../libc/obj/data.o \
-	 ../libc/obj/__callex.o ../libc/obj/cuexit.o ../libc/obj/abort.o cnvt/0_1.o ../libc/obj/decimal.o \
-	 length/0_1.o malloc/0_4.o ../libc/obj/ctype_.o ../libc/obj/isatty.o ../libc/obj/stty.o strcat/0_1.o \
-	 ../libc/obj/strcmp.o strcpy/0_1.o strlen/0_1.o ../libc/obj/access.o ../libc/obj/brk.o ../libc/obj/chmod.o \
-	 ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/execl.o ../libc/obj/execv.o ../libc/obj/fork.o \
-	 ../libc/obj/getpid.o ../libc/obj/ioctl.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/signal.o \
-	 ../libc/obj/stat.o ../libc/obj/umask.o ../libc/obj/unlink.o ../libc/obj/wait.o ../libc/obj/write.o \
-	 ../libc/obj/cerror.o
+LIBv8 = ../libc/build/nonseg/freopen.o ../libc/build/nonseg/fopen.o printf/0_4.o doprnt/0_4.o ../libc/build/nonseg/ffltioc.o \
+	 ../libc/build/nonseg/flsbuf.o ../libc/build/nonseg/endopen.o ../libc/build/nonseg/findiop.o ../libc/build/nonseg/data.o \
+	 ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ../libc/build/nonseg/abort.o cnvt/0_1.o ../libc/build/nonseg/decimal.o \
+	 length/0_1.o malloc/0_4.o ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/isatty.o ../libc/build/nonseg/stty.o strcat/0_1.o \
+	 ../libc/build/nonseg/strcmp.o strcpy/0_1.o strlen/0_1.o ../libc/build/nonseg/access.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chmod.o \
+	 ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/execl.o ../libc/build/nonseg/execv.o ../libc/build/nonseg/fork.o \
+	 ../libc/build/nonseg/getpid.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/open.o ../libc/build/nonseg/signal.o \
+	 ../libc/build/nonseg/stat.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/wait.o ../libc/build/nonseg/write.o \
+	 ../libc/build/nonseg/cerror.o
 # ccv1
 ../libc-v8.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv8)
 
-LIBv9 = ../libc/obj/scanf.o doscan/0_1.o printf/0_6.o doprnt/0_6.o ../libc/obj/ffltioc.o ../libc/obj/ungetc.o \
-	 filbuf/0_2.o data/0_1.o flsbuf/0_1.o ../libc/obj/__callex.o ../libc/obj/cuexit.o cnvt/0_1.o \
-	 ../libc/obj/decimal.o length/0_1.o malloc/0_2.o ../libc/obj/isatty.o mktemp/0_1.o ../libc/obj/ctype_.o \
-	 ../libc/obj/stty.o ../libc/obj/swab.o rindex/0_1.o ../libc/obj/tolower.o strcat/0_1.o \
-	 ../libc/obj/strncmp.o strcpy/0_1.o strncpy/0_2.o swap/0_1.o ../libc/obj/access.o ../libc/obj/brk.o \
-	 ../libc/obj/chmod.o ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/fstat.o ../libc/obj/getpid.o \
-	 ../libc/obj/ioctl.o ../libc/obj/link.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/read.o \
-	 ../libc/obj/signal.o ../libc/obj/umask.o ../libc/obj/unlink.o ../libc/obj/write.o ../libc/obj/cerror.o
+LIBv9 = ../libc/build/nonseg/scanf.o doscan/0_1.o printf/0_6.o doprnt/0_6.o ../libc/build/nonseg/ffltioc.o ../libc/build/nonseg/ungetc.o \
+	 filbuf/0_2.o data/0_1.o flsbuf/0_1.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o cnvt/0_1.o \
+	 ../libc/build/nonseg/decimal.o length/0_1.o malloc/0_2.o ../libc/build/nonseg/isatty.o mktemp/0_1.o ../libc/build/nonseg/ctype_.o \
+	 ../libc/build/nonseg/stty.o ../libc/build/nonseg/swab.o rindex/0_1.o ../libc/build/nonseg/tolower.o strcat/0_1.o \
+	 ../libc/build/nonseg/strncmp.o strcpy/0_1.o strncpy/0_2.o swap/0_1.o ../libc/build/nonseg/access.o ../libc/build/nonseg/brk.o \
+	 ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/fstat.o ../libc/build/nonseg/getpid.o \
+	 ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/link.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o \
+	 ../libc/build/nonseg/signal.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
 # ccv0p ccv1
 ../libc-v9.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv9)
 
-LIBv10 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/obj/ffltioc.o filbuf/0_4.o flsbuf/0_3.o endopen/0_5.o \
-	 findiop/0_3.o ../libc/obj/data.o ../libc/obj/__callex.o ../libc/obj/cuexit.o ttyname/0_1.o cnvt/0_3.o \
-	 ../libc/obj/decimal.o length/0_4.o malloc/0_6.o isatty/0_3.o stty/0_4.o strcat/0_3.o strcmp/0_2.o \
-	 strcpy/0_3.o strlen/0_3.o strrchr/0_3.o ../libc/obj/access.o ../libc/obj/alarm.o ../libc/obj/brk.o \
-	 ../libc/obj/chmod.o ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/execl.o ../libc/obj/fork.o \
-	 ../libc/obj/fstat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/read.o \
-	 ../libc/obj/signal.o ../libc/obj/stat.o ../libc/obj/umask.o ../libc/obj/unlink.o ../libc/obj/wait.o \
-	 ../libc/obj/write.o ../libc/obj/cerror.o
+LIBv10 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/build/nonseg/ffltioc.o filbuf/0_4.o flsbuf/0_3.o endopen/0_5.o \
+	 findiop/0_3.o ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ttyname/0_1.o cnvt/0_3.o \
+	 ../libc/build/nonseg/decimal.o length/0_4.o malloc/0_6.o isatty/0_3.o stty/0_4.o strcat/0_3.o strcmp/0_2.o \
+	 strcpy/0_3.o strlen/0_3.o strrchr/0_3.o ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o ../libc/build/nonseg/brk.o \
+	 ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/execl.o ../libc/build/nonseg/fork.o \
+	 ../libc/build/nonseg/fstat.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o \
+	 ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/wait.o \
+	 ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
 # ccv1r
 ../libc-v10.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv10)

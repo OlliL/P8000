@@ -16,7 +16,7 @@ CFLAGS = -O -I../../../../head/oldv7
 PREFIX = /
 STRIP = strip
 LIBC = ../../../../lib/libc-v7.a
-CRT = ../../lib/libc/crt
+CRT = ../../lib/libc/nonseg/crt
 
 NONSEG_OBJS = cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o sym2.o
 SEG_OBJS = $(NONSEG_OBJS)

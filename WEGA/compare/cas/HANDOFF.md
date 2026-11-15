@@ -239,7 +239,7 @@ checkall and the vc matrix.
   `host/cas/casold`, objects compared with those of the committed spopt (10 s; `rawcmp.sh` in the scratch, the idea is in
   `s1114/model.sh`).
 - The libc part of /bin/cas (784 bytes were left after jpr): `src/lib/oldslibc`: the cut members `NAME/0_2.s` are assembled
-  by the shipped `cas` (bit 31 of address constants clear); `errlst/0_2.c` (= `slibc/gen/errlst.c`) by `sccvc -S -O` and
+  by the shipped `cas` (bit 31 of address constants clear); `errlst/0_2.c` (= `libc/common/gen/errlst.c`) by `sccvc -S -O` and
   `cas` (both tables in front of the strings); `.comm 2,_rc` in front of `.extern __pfile` in `printf/0_2.s` (order of
   the commons). `OPEN` of `host/tools/checkall.sh` is empty now.
 

@@ -10,10 +10,10 @@ CAS = cas
 
 objs: 0_1.o 0_2.o
 
-0_1.o: ../../libc/gen/goodmagic.c
-	$(CCV1) -O -I../../libc/gen -c ../../libc/gen/goodmagic.c ; mv goodmagic.o 0_1.o
+0_1.o: ../../libc/common/gen/goodmagic.c
+	$(CCV1) -O -I../../libc/common/gen -c ../../libc/common/gen/goodmagic.c ; mv goodmagic.o 0_1.o
 
-0_2.o: ../../libc/gen/goodmagic.c
-	$(CCV0P) -O -I../../libc/gen -c ../../libc/gen/goodmagic.c ; mv goodmagic.o 0_2.o
+0_2.o: ../../libc/common/gen/goodmagic.c
+	$(CCV0P) -O -I../../libc/common/gen -c ../../libc/common/gen/goodmagic.c ; mv goodmagic.o 0_2.o
 
 .PHONY: objs

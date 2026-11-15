@@ -35,7 +35,7 @@ SOURCE = {'bin/cc': 'cmd/cc', 'bin/scc': 'cmd/cc', 'bin/cas': 'cmd/cas', 'bin/ld
           'usr/bin/strip': 'cmd/strip.c', 'usr/bin/ranlib': 'cmd/ranlib.c', 'bin/size': 'cmd/size.c',
           'lib/cpp': 'cmd/cpp', 'lib/cparse': 'cmd/cparse', 'lib/scparse': 'cmd/cparse', 'lib/codgen': 'cmd/codgen',
           'lib/scodgen': 'cmd/codgen', 'lib/popt': 'cmd/popt', 'lib/spopt': 'cmd/popt', 'pb.image': 'cmd/BOOT0',
-          'lib/libc.a': 'lib/libc', 'lib/crt0.o': 'lib/libc/csu', 'etc/dump': 'cmd/dump.c', 'etc/dumpdir': 'cmd/dumpdir.c',
+          'lib/libc.a': 'lib/libc', 'lib/crt0.o': 'lib/libc/nonseg/csu', 'lib/slibc.a': 'lib/libc', 'lib/scrt0.o': 'lib/libc/seg/csu', 'etc/dump': 'cmd/dump.c', 'etc/dumpdir': 'cmd/dumpdir.c',
           'etc/restor': 'cmd/restor.c', 'etc/umfs': 'cmd/mfs.sh', 'etc/mlf': 'cmd/makelost+found.sh'}
 # Makefile variable -> name of the compiler
 CCNAME = {'CC': 'cc', 'SCC': 'scc', 'CCV0': 'ccv0', 'CCV1': 'ccv1', 'CCV1R': 'ccv1r', 'CCV1Q': 'ccv1q', 'CCV0P': 'ccv0p'}

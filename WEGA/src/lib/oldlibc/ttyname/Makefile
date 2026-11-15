@@ -10,7 +10,7 @@ CAS = cas
 
 objs: 0_1.o
 
-0_1.o: ../../libc/gen/ttyname.c
-	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/gen/ttyname.c ; mv ttyname.o 0_1.o
+0_1.o: ../../libc/common/gen/ttyname.c
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/common/gen/ttyname.c ; mv ttyname.o 0_1.o
 
 .PHONY: objs

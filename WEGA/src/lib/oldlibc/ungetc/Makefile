@@ -10,7 +10,7 @@ CAS = cas
 
 objs: 0_1.o
 
-0_1.o: ../../libc/stdio/ungetc.c
-	$(CCV0P) -O -I../../libc/stdio -c ../../libc/stdio/ungetc.c ; mv ungetc.o 0_1.o
+0_1.o: ../../libc/common/stdio/ungetc.c
+	$(CCV0P) -O -I../../libc/common/stdio -c ../../libc/common/stdio/ungetc.c ; mv ungetc.o 0_1.o
 
 .PHONY: objs

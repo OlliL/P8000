@@ -9,7 +9,7 @@ start-up) that differs in three places only: the 21 characters of the text behin
 revision and the date/time of the SCCS stamp in the data (`@[$]crt0.s <tab><tab>Rev : x <tab> date`).
 The stamp is the build time of the program, so it differs from program to program. Some programs have the
 code but no stamp (revision and stamp empty in the list). The list is
-read by src/lib/libc/crt/mkcrt0.sh together with crt0.s.in.
+read by src/lib/libc/nonseg/crt/mkcrt0.sh together with crt0.s.in.
 """
 import os
 import re
@@ -22,7 +22,7 @@ import libcver  # noqa: E402
 
 STAMP = re.compile(rb"^\x00\x00@\[\$\]crt0\.s\t\tRev : (\S+)\t(\d\d/\d\d/\d\d \d\d:\d\d:\d\d)\x00")
 STAMP_S = re.compile(rb"^\x00\x00@\[\$\]scrt0\.s\t\tRev : (\S+)\t(\d\d/\d\d/\d\d \d\d:\d\d:\d\d)\x00")
-# start-up code of the segmented programs (src/lib/libc/crt/scrt0.s.in): a jump and the text as in crt0, the code
+# start-up code of the segmented programs (src/lib/libc/nonseg/crt/scrt0.s.in): a jump and the text as in crt0, the code
 # starts at 0x18 with dec r15,#4; the byte at 0x3c is the segment of _environ (0x82: segment 2, 0x80: segment 0)
 SCRT0_HEAD = b"\xab\xf3\x61\xf7"
 

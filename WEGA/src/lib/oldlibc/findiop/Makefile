@@ -10,13 +10,13 @@ CAS = cas
 
 objs: 0_1.o 0_2.o 0_3.o
 
-0_1.o: ../../libc/stdio/findiop.c
-	$(CCV1) -O -I../../libc/stdio -c ../../libc/stdio/findiop.c ; mv findiop.o 0_1.o
+0_1.o: ../../libc/common/stdio/findiop.c
+	$(CCV1) -O -I../../libc/common/stdio -c ../../libc/common/stdio/findiop.c ; mv findiop.o 0_1.o
 
-0_2.o: ../../libc/stdio/findiop.c
-	$(CCV0P) -O -I../../libc/stdio -c ../../libc/stdio/findiop.c ; mv findiop.o 0_2.o
+0_2.o: ../../libc/common/stdio/findiop.c
+	$(CCV0P) -O -I../../libc/common/stdio -c ../../libc/common/stdio/findiop.c ; mv findiop.o 0_2.o
 
-0_3.o: ../../libc/stdio/findiop.c
-	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/stdio/findiop.c ; mv findiop.o 0_3.o
+0_3.o: ../../libc/common/stdio/findiop.c
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/common/stdio/findiop.c ; mv findiop.o 0_3.o
 
 .PHONY: objs

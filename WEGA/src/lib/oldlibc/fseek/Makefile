@@ -10,8 +10,8 @@ CAS = cas
 
 objs: 0_1.o 0_2.o
 
-0_1.o: ../../libc/stdio/fseek.c
-	$(CCV1) -O -I../../libc/stdio -c ../../libc/stdio/fseek.c ; mv fseek.o 0_1.o
+0_1.o: ../../libc/common/stdio/fseek.c
+	$(CCV1) -O -I../../libc/common/stdio -c ../../libc/common/stdio/fseek.c ; mv fseek.o 0_1.o
 
 0_2.o: 0_2.s
 	$(CAS) -u -o 0_2.o 0_2.s

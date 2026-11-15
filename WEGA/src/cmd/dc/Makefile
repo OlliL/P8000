@@ -11,7 +11,7 @@ CFLAGS = -O -I../../head/oldv7
 PREFIX = /
 STRIP = strip
 LIBC = ../../lib/libc-v1.a
-CRT = ../../lib/libc/crt
+CRT = ../../lib/libc/nonseg/crt
 
 all: dc
 

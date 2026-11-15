@@ -10,10 +10,10 @@ CAS = cas
 
 objs: 0_1.o 0_2.o
 
-0_1.o: ../../libc/stdio/fopen.c
-	$(CCV0P) -O -I../../libc/stdio -c ../../libc/stdio/fopen.c ; mv fopen.o 0_1.o
+0_1.o: ../../libc/common/stdio/fopen.c
+	$(CCV0P) -O -I../../libc/common/stdio -c ../../libc/common/stdio/fopen.c ; mv fopen.o 0_1.o
 
-0_2.o: ../../libc/stdio/fopen.c
-	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/stdio/fopen.c ; mv fopen.o 0_2.o
+0_2.o: ../../libc/common/stdio/fopen.c
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/common/stdio/fopen.c ; mv fopen.o 0_2.o
 
 .PHONY: objs

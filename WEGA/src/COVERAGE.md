@@ -242,7 +242,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `lib/codgen` | binary E711 | `src/cmd/codgen` | exact | ccv0p | libc-v5.a |
 | `lib/cparse` | binary E711 | `src/cmd/cparse` | exact | ccv0p | libc-v7.a |
 | `lib/cpp` | binary E707 | `src/cmd/cpp` | exact | ccv0p | libc-v2.a |
-| `lib/crt0.o` | binary E711 | `src/lib/libc/csu` | exact | - | - |
+| `lib/crt0.o` | binary E711 | `src/lib/libc/nonseg/csu` | exact | - | - |
 | `lib/doprnt.o` | binary E711 | - | todo | - | - |
 | `lib/ex2.13strings` | text | - | todo | - | - |
 | `lib/gopt` | binary E611 | - | todo | D12 old, D1 - | - |
@@ -255,9 +255,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `lib/scnvt.o` | binary E607 | - | todo | - | - |
 | `lib/scodgen` | binary E711 | `src/cmd/codgen` | exact | ccv0p | libc-v5.a |
 | `lib/scparse` | binary E711 | `src/cmd/cparse` | exact | ccv0p | libc-v7.a |
-| `lib/scrt0.o` | binary E607 | `src/lib/slibc` | exact | sccvl | - |
+| `lib/scrt0.o` | binary E607 | `src/lib/libc/seg/csu` | exact | - | - |
 | `lib/sdoprnt.o` | binary E607 | - | todo | - | - |
-| `lib/slibc.a` | archive | `src/lib/slibc` | exact | sccvl | - |
+| `lib/slibc.a` | archive | `src/lib/libc` | exact | sccvl | - |
 | `lib/slibl.a` | archive | `src/lib/libl` | exact | - | - |
 | `lib/slibm.a` | archive | - | todo | - | - |
 | `lib/sliby.a` | archive | - | todo | - | - |

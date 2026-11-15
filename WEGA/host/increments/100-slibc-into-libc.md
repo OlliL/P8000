@@ -2,7 +2,7 @@
 
 ## Status
 
-active (2026-11-15)
+done (2026-11-15)
 
 ## Goal
 
@@ -45,10 +45,11 @@ where the segmented member differs; the PLZ/ASM and cas sources stay separate fi
 
 - Owner 2026-11-15: the cpp symbol is `-DSEG`. File names stay as they are. The segmented assembler sources go to separate
   directories where they overlap with the nonsegmented ones (crt, gen, sys); csu need not be split (crt0.s, scrt0.s).
-- Open (owner): the layout. Proposed: one tree `libc/seg/` that mirrors the layout and holds every file that is only
-  segmented or differs there (`seg/Library.SC`, `seg/arhdr.s`, `seg/crt/`, `seg/gen/`, `seg/sys/`); the C files stay in `gen`
-  and `stdio` with `#ifdef SEG` (also around the `sccsid` of malloc.c); mon.c and segmon.c stay in `gen`; scrt0.s in `csu`.
-  Alternatives: `seg/` inside each directory (`gen/seg/`, ...), or siblings `sgen`, `scrt`, `ssys`.
+- Owner 2026-11-15, the layout: `libc/common/{gen,stdio}` (used by both, C with `#ifdef SEG` where they differ),
+  `libc/nonseg/{crt,csu,gen,sys}` (only libc.a: its .s, mon.c, crt0.s, Library.SC, arhdr.s, the crt0 tools of the programs),
+  `libc/seg/{crt,csu,gen,sys}` (only slibc.a: its .s, segmon.c, scrt0.s, Library.SC, arhdr.s). File names unchanged.
+- Owner 2026-11-15, the build: as `src/cmd/codgen`: one Makefile, `build/nonseg` (libc.a, crt0.o) and `build/seg`
+  (slibc.a, scrt0.o), each built in its directory by `$(MAKE) -f ../../Makefile`; objects made in place (no mv); safe with -j.
 
 ## Not part of it
 
@@ -57,3 +58,7 @@ The other segmented files of `/lib` (`smcrt0.o`, `scnvt.o`, `sdoprnt.o`, `slibm.
 ## Log
 
 - 2026-11-15: plan written.
+- 2026-11-15: done. Files moved by script (equal: common/, only one archive: nonseg/ or seg/), the 6 differing C files
+  merged with `diff -D SEG` (malloc.c: the `#ifdef` inside the head comment rewritten as text: cpp cannot see directives in a
+  comment); one Makefile generated from the rules of the two old ones; references in src/, host/ and the documents moved;
+  libtest.sh for the new layout 206 of 206; checkall ALL OK (built with -j8).

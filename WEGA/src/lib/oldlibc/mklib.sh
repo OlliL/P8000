@@ -7,7 +7,7 @@ mkdir $d
 names=
 for o in "$@"; do
 	case $o in
-	../libc/obj/*) n=`basename $o` ;;
+	../libc/build/nonseg/*) n=`basename $o` ;;
 	*) n=`dirname $o`.o ;;
 	esac
 	cp $o $d/$n

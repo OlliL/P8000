@@ -5,7 +5,7 @@
 #   make clean
 
 CC = ccv1
-CRT = ../../lib/libc/crt
+CRT = ../../lib/libc/nonseg/crt
 LDBIN = ld
 CAS = cas
 LIBC = ../../lib/libc-v9.a

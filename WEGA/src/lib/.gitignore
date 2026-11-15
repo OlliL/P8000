@@ -2,4 +2,4 @@
 *.d/
 obj/
 oldslibc/tmp
-oldslibc/errlst/0_2.s
+oldslibc/errlst/0_2.slibc/build/*/Library.SC

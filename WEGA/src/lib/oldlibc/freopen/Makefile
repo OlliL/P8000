@@ -10,7 +10,7 @@ CAS = cas
 
 objs: 0_1.o
 
-0_1.o: ../../libc/stdio/freopen.c
-	$(CCV0P) -O -I../../libc/stdio -c ../../libc/stdio/freopen.c ; mv freopen.o 0_1.o
+0_1.o: ../../libc/common/stdio/freopen.c
+	$(CCV0P) -O -I../../libc/common/stdio -c ../../libc/common/stdio/freopen.c ; mv freopen.o 0_1.o
 
 .PHONY: objs

@@ -10,13 +10,13 @@ CAS = cas
 
 objs: 0_1.o 0_2.o 0_3.o
 
-0_1.o: ../../libc/gen/strcpy.c
-	$(CCV1) -O -I../../libc/gen -c ../../libc/gen/strcpy.c ; mv strcpy.o 0_1.o
+0_1.o: ../../libc/common/gen/strcpy.c
+	$(CCV1) -O -I../../libc/common/gen -c ../../libc/common/gen/strcpy.c ; mv strcpy.o 0_1.o
 
-0_2.o: ../../libc/gen/strcpy.c
-	$(CCV0P) -O -I../../libc/gen -c ../../libc/gen/strcpy.c ; mv strcpy.o 0_2.o
+0_2.o: ../../libc/common/gen/strcpy.c
+	$(CCV0P) -O -I../../libc/common/gen -c ../../libc/common/gen/strcpy.c ; mv strcpy.o 0_2.o
 
-0_3.o: ../../libc/gen/strcpy.c
-	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/gen/strcpy.c ; mv strcpy.o 0_3.o
+0_3.o: ../../libc/common/gen/strcpy.c
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/common/gen/strcpy.c ; mv strcpy.o 0_3.o
 
 .PHONY: objs

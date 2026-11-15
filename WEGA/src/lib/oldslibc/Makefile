@@ -15,7 +15,7 @@ AR = ar
 LIBS =  ../slibc-v9.a ../slibc-v11.a
 # slibc-v11.a: cas; NAME/0_2.s are cut from /bin/cas (host/tools/oldslibc_cas.py), the other members are those of /lib/slibc.a.
 # The members were made by the shipped assembler (bit 31 of an address constant clear, not as the modules of cas itself): the
-# 0_2.s go through $(CAS), not through the assembler of sccvc. errlst is ../slibc/gen/errlst.c by sccvc (the strings behind
+# 0_2.s go through $(CAS), not through the assembler of sccvc. errlst is ../libc/common/gen/errlst.c by sccvc (the strings behind
 # both tables, the data order of the old compiler), assembled by $(CAS) too.
 SCCVC = sccvc
 

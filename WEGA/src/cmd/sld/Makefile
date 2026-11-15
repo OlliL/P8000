@@ -5,7 +5,7 @@
 #   make clean
 
 SCC = scc
-CRT = ../../lib/libc/crt
+CRT = ../../lib/libc/nonseg/crt
 LDBIN = sld
 CAS = cas
 LIBC = ../../lib/slibc-v9.a

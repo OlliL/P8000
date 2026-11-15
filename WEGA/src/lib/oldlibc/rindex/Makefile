@@ -10,7 +10,7 @@ CAS = cas
 
 objs: 0_1.o
 
-0_1.o: ../../libc/gen/rindex.c
-	$(CCV1) -O -I../../libc/gen -c ../../libc/gen/rindex.c ; mv rindex.o 0_1.o
+0_1.o: ../../libc/common/gen/rindex.c
+	$(CCV1) -O -I../../libc/common/gen -c ../../libc/common/gen/rindex.c ; mv rindex.o 0_1.o
 
 .PHONY: objs

@@ -8,7 +8,7 @@ B=$S/cb_$name
 rm -rf $B $S/o_$name; mkdir -p $B/src/cmd $B/src/lib/libc
 [ -d $S/wbin ] || sh /home/olivleh1/git/P8000/WEGA/host/tools/wbin.sh $S/wbin $W $O $E
 cp -r /home/olivleh1/git/P8000/WEGA/src/cmd/codgen $B/src/cmd/codgen
-cp /home/olivleh1/git/P8000/WEGA/src/lib/libc-v5.a $B/src/lib/; cp -r /home/olivleh1/git/P8000/WEGA/src/lib/libc/crt $B/src/lib/libc/crt; cp /home/olivleh1/git/P8000/WEGA/src/lib/libc/* $B/src/lib/libc/ 2>/dev/null
+cp /home/olivleh1/git/P8000/WEGA/src/lib/libc-v5.a $B/src/lib/; mkdir -p $B/src/lib/libc/nonseg; cp -r /home/olivleh1/git/P8000/WEGA/src/lib/libc/nonseg/crt $B/src/lib/libc/nonseg/crt; cp /home/olivleh1/git/P8000/WEGA/src/lib/libc/* $B/src/lib/libc/ 2>/dev/null
 python3 - "$B/src/cmd/codgen/oldcc.h" $sw <<'PY'
 import re,sys
 p=sys.argv[1]; s=open(p).read()

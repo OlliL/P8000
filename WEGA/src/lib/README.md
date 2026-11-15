@@ -1,13 +1,12 @@
 # lib - the libraries of WEGA
 
 `make` builds the shipped libraries from their sources, each byte-identical with the file of the WEGA 3.1 tree, and the libraries of
-the time of the old programs; `make install PREFIX=dir` installs the shipped ones. Every directory has a Makefile that names its
-members in the order of the original archive (`arhdr*.s`: the member headers of the original, `mkar.sh` joins them).
+the time of the old programs; `make install PREFIX=dir` installs the shipped ones. Each Makefile names the members in the order of the original archive
+(`arhdr*.s`: the member headers of the original, `mkar.sh` joins them).
 
 | Directory | Builds | Compiler | Notes |
 |---|---|---|---|
-| `libc` | `/lib/libc.a`, `/lib/crt0.o` | ccvl (vl, `host/OLDCC.md`) | C, PLZ/ASM (`as`), cas sources |
-| `slibc` | `/lib/slibc.a`, `/lib/scrt0.o` | sccvl | a tree of its own (from `libc`): `host/KNOWLEDGE.md`, "slibc: its sources against those of libc" |
+| `libc` | `/lib/libc.a`, `/lib/crt0.o` (`build/nonseg`); `/lib/slibc.a`, `/lib/scrt0.o` (`build/seg`) | ccvl, sccvl (vl, `host/OLDCC.md`) | one tree: `common/` both, `nonseg/` only libc.a, `seg/` only slibc.a (C with `#ifdef SEG`; PLZ/ASM and cas sources); `host/KNOWLEDGE.md`, "libc.a and slibc.a: one tree" |
 | `libl` | `/lib/libl.a`, `/lib/slibl.a`, `/usr/lib/lex/ncform` | ccv1, sccv1 | System III sources: `host/KNOWLEDGE.md`, "libl.a, slibl.a, ncform" |
 | `oldlibc` | `libc-v1.a` .. `libc-v10.a` | several | the libc of the old programs: [`oldlibc/README.md`](oldlibc/README.md) |
 | `oldslibc` | `slibc-v9.a`, `slibc-v11.a` | shipped cas, sccvc | the slibc of sld and cas: [`oldslibc/README.md`](oldslibc/README.md) |
@@ -21,7 +20,7 @@ libc.a, crt0.o, slibc.a, scrt0.o, libl.a, slibl.a, ncform: every member from sou
 
 ## Open
 
-The plan: `host/increments/` (100 slibc into libc, 150 the other libraries and objects). vl keeps two switches with one witness
+The plan: `host/increments/` (150 the other libraries and objects). vl keeps two switches with one witness
 (`OLD_D53`, `OLD_D57`; owner's exception, `host/OLDCC.md` section 5).
 
 ## Measuring a member
@@ -29,7 +28,7 @@ The plan: `host/increments/` (100 slibc into libc, 150 the other libraries and o
 - Bench: `host/recon/poptveto/s1114/cg/`. `cg.sh NAME "DEFINES"` (with `PPY=patch.py`: a trial patch of the codgen sources)
   builds codgen and scodgen with DEFINES (`-DOLD_VL` and the trial macro) into a copy of OLDROOT (`/tmp/SCRATCH/c_NAME`) as
   `/lib/codgen`, `/lib/scodgen`; for vl the scparse with `OLD_D25` (`rm -f ROOT/lib/scparse` first: in a copy it is a symbolic link
-  to the original; then `cp OLDROOT/lib/vk/scparse`). `libtest.sh ROOT` compiles the 206 C members of libc (cc) and slibc (scc)
+  to the original; then `cp OLDROOT/lib/vk/scparse`). `libtest.sh ROOT` compiles the 206 C members of libc (cc) and slibc (scc -DSEG)
   (with the `-I` of `src/head/oldv7` where the Makefile has it) and lists those whose object differs from the member of the
   original library (extracted to `/tmp/SCRATCH/orig/LIB`); all 206 are identical. After a reboot: `host/tools/wbin.sh /tmp/SCRATCH/wbin WEGA_ROOT OLDROOT EMU`.
 - One member: compile in a scratch copy (a compile with `-S` in the source directory can overwrite a tracked `NAME.s`), then

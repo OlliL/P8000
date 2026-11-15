@@ -12,7 +12,7 @@ YACC = yacc
 CFLAGS = -O -I../../head/oldv7
 PREFIX = /
 STRIP = strip
-CRT = ../../lib/libc/crt
+CRT = ../../lib/libc/nonseg/crt
 LIBC = ../../lib/libc-v2.a
 COBJS = cpp.o cpy.o
 

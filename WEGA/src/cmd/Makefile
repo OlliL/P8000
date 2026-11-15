@@ -2,7 +2,7 @@
 # file is a file here (ar.c, mv.c, size.c, ...); a command with several files, several versions or its own
 # libc has its own subdirectory with its own Makefile (BOOT0, doscopy, pburn, standalone, dc, cc, cas,
 # cpp, cparse, codgen, popt, ld, sld, verify, copydisk, format). Start-up variants of the commands live in
-# ../lib/libc/crt (crt0.s.in + crt0.list, made into crt0-<command>.s by mkcrt0.sh).
+# ../lib/libc/nonseg/crt (crt0.s.in + crt0.list, made into crt0-<command>.s by mkcrt0.sh).
 # cc/cc.c is the source of both drivers, cc and scc (scc is cc.c compiled with -DSCC).
 #
 #   make                       build everything (with the WEGA cc/scc/cas/as/ld/sld/gld/yacc)
@@ -19,7 +19,7 @@ STRIP = strip
 CFLAGS = -O
 PREFIX = /
 LIBC = /lib/libc.a
-CRT = ../lib/libc/crt
+CRT = ../lib/libc/nonseg/crt
 # the libc of each single-file command (the one of its time, as in its own Makefile before)
 LIBC_V1 = ../lib/libc-v1.a
 LIBC_V3 = ../lib/libc-v3.a

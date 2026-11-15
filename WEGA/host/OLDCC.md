@@ -49,7 +49,7 @@ peephole optimizer (descends from the Plexus `c2`); cas decides the jump forms.
 ### Dating
 
 Most programs carry the stamp of their start-up file, `@[$]crt0.s Rev : 3.x <date>`, made at the build
-(`src/lib/libc/crt/mkcrt0.sh`, `crt0.list`); the libc members linked into a program date it too. The passes cparse,
+(`src/lib/libc/nonseg/crt/mkcrt0.sh`, `crt0.list`); the libc members linked into a program date it too. The passes cparse,
 codgen, popt and cas have no stamp; their newest source dates are cparse 10/06/83, codgen 08/24/83, popt 03/25/83,
 cas 07/83. The date of a source does not date the compiler that built it.
 
@@ -145,7 +145,7 @@ their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_
 `/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53`, `OLD_D57` and `OLD_D24`).
 Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped compilers give
 193, vl gives 204 (nlist, symscan and swap of both libraries, malloc of both libraries (calloc: `unsigned num; int size;`), scanf, segmon and doprnt of slibc added; the printf of both libraries is exact only with its `-I`, so all 206 in the build; doprnt needs two source forms: `_pfile != NULL && ferror(_pfile)`, and the block `lng:` behind the cases `O X U D l`; segmon needs `char *mkseg()` (with `long mkseg()` D25 masks its casts), `sr[0].sr_seg` and `(i = i + 1) <= *nsegs`; slibc malloc also needs two forms of its source: `union store *r` declared in front of `register unsigned onw` in realloc, an unused `int spare` in calloc, whose frame is 2 bytes larger without a found cause, as the spare word of ld in D1) and changes no other member. Both libraries are built by vl
-(`CC = ccvl` in `src/lib/libc/Makefile`, `CC = sccvl` in `src/lib/slibc/Makefile`; owner's decision 2026-11-14), so
+(`CC = ccvl`, `SCC = sccvl` in `src/lib/libc/Makefile`; owner's decision 2026-11-14), so
 checkall measures every rule of vl on all their members. vl itself is compiled by the shipped cc: in stage 1 linked with
 the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). No member of the two libraries is left in `oldcc/`.
 
@@ -170,7 +170,7 @@ sccvc passes `-DSCCVC` to cpp, for the one form of cas the shipped scc cannot co
 per function is in `compare/cas/FINDINGS.md`. The libc part of /bin/cas was not made by the tools of its own modules: its
 address constants have bit 31 clear (the shipped assembler; the cut members `NAME/0_2.s` of `src/lib/oldslibc` are assembled
 by `cas`, not by the assembler of sccvc), `errlst` has the data order of the old compiler (both tables, then the strings:
-`../slibc/gen/errlst.c` by sccvc), and in `printf` the common `_rc` stands in front of the reference to `__pfile` (the
+`../libc/common/gen/errlst.c` by sccvc), and in `printf` the common `_rc` stands in front of the reference to `__pfile` (the
 linker places commons in the order of the symbols, `_rc` in front of `__pfile` of doprnt).
 
 A switch on a constant (`switch (sizeof(char *)) { case 4: ...; case 2: ...; }`): sccvc, ccv0 and the shipped cc load the

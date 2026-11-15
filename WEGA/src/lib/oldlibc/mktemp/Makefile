@@ -10,7 +10,7 @@ CAS = cas
 
 objs: 0_1.o
 
-0_1.o: ../../libc/gen/mktemp.c
-	$(CCV1) -O -I../../libc/gen -c ../../libc/gen/mktemp.c ; mv mktemp.o 0_1.o
+0_1.o: ../../libc/common/gen/mktemp.c
+	$(CCV1) -O -I../../libc/common/gen -c ../../libc/common/gen/mktemp.c ; mv mktemp.o 0_1.o
 
 .PHONY: objs

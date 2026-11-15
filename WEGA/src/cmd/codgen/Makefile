@@ -14,7 +14,7 @@ CFLAGS = -O -I../../../../head/oldv7
 PREFIX = /
 STRIP = strip
 LIBC = ../../../../lib/libc-v5.a
-CRT = ../../lib/libc/crt
+CRT = ../../lib/libc/nonseg/crt
 
 NONSEG_OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3_codgen.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
 SEG_OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3_scodgen.o wrt3.o regs3.o lcl3.o tr3.o optim3.o

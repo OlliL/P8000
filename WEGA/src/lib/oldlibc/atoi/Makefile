@@ -10,7 +10,7 @@ CAS = cas
 
 objs: 0_1.o
 
-0_1.o: ../../libc/gen/atoi.c
-	$(CCV0P) -O -I../../libc/gen -c ../../libc/gen/atoi.c ; mv atoi.o 0_1.o
+0_1.o: ../../libc/common/gen/atoi.c
+	$(CCV0P) -O -I../../libc/common/gen -c ../../libc/common/gen/atoi.c ; mv atoi.o 0_1.o
 
 .PHONY: objs

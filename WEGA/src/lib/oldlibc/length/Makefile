@@ -10,16 +10,16 @@ CAS = cas
 
 objs: 0_1.o 0_2.o 0_3.o 0_4.o
 
-0_1.o: ../../libc/gen/length.c
-	$(CCV1) -O -I../../libc/gen -c ../../libc/gen/length.c ; mv length.o 0_1.o
+0_1.o: ../../libc/common/gen/length.c
+	$(CCV1) -O -I../../libc/common/gen -c ../../libc/common/gen/length.c ; mv length.o 0_1.o
 
 0_2.o: 0_2.c
 	$(CCV0P) -O -c 0_2.c
 
-0_3.o: ../../libc/gen/length.c
-	$(CCV0P) -O -I../../libc/gen -c ../../libc/gen/length.c ; mv length.o 0_3.o
+0_3.o: ../../libc/common/gen/length.c
+	$(CCV0P) -O -I../../libc/common/gen -c ../../libc/common/gen/length.c ; mv length.o 0_3.o
 
-0_4.o: ../../libc/gen/length.c
-	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/gen/length.c ; mv length.o 0_4.o
+0_4.o: ../../libc/common/gen/length.c
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/common/gen/length.c ; mv length.o 0_4.o
 
 .PHONY: objs
