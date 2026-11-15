@@ -7,14 +7,14 @@ int rc;
 printf(fmt, a1, a2, a3, a4, args)
 char *fmt;
 {
-	int regs[4];
+	struct { int r0, r1, r2, r3; } regs;
 
-	regs[0] = a1;
-	regs[1] = a2;
-	regs[2] = a3;
-	regs[3] = a4;
+	regs.r0 = a1;
+	regs.r1 = a2;
+	regs.r2 = a3;
+	regs.r3 = a4;
 	_pfile = stdout;
-	rc = _doprnt(fmt, regs, &args, 1, stdout);
+	rc = _doprnt(fmt, &regs, &args, 1, stdout);
 	return(rc);
 }
 
@@ -22,12 +22,12 @@ fprintf(iop, fmt, a1, a2, args)
 FILE *iop;
 char *fmt;
 {
-	int regs[2];
+	struct { int r0, r1; } regs;
 
-	regs[0] = a1;
-	regs[1] = a2;
+	regs.r0 = a1;
+	regs.r1 = a2;
 	_pfile = iop;
-	rc = _doprnt(fmt, regs, &args, 3, iop);
+	rc = _doprnt(fmt, &regs, &args, 3, iop);
 	return(rc);
 }
 
@@ -36,15 +36,15 @@ char *str;
 char *fmt;
 {
 	FILE _strbuf;
-	int regs[2];
+	struct { int r0, r1; } regs;
 
 	_strbuf._flag = _IOWRT+_IOSTRG;
 	_strbuf._ptr = str;
 	_strbuf._cnt = 32767;
-	regs[0] = a1;
-	regs[1] = a2;
+	regs.r0 = a1;
+	regs.r1 = a2;
 	_pfile = &_strbuf;
-	rc = _doprnt(fmt, regs, &args, 3, &_strbuf);
+	rc = _doprnt(fmt, &regs, &args, 3, &_strbuf);
 	putc('\0', &_strbuf);
 	return(rc);
 }

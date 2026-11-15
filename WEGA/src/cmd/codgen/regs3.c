@@ -310,61 +310,6 @@ tmpdump()
 	}
 }
 
-#if defined(OLD_D55) && defined(SEG)
-/*
- * vl: the elements of local arrays with a constant index that are addressed directly: the element stands (under its STAR) as
- * the left or the right operand of a plain assignment and the other operand is a name, a register or a value through a
- * register or a name (not a constant, not an address). d55scan marks them for one statement, fixfld folds the index.
- */
-static NODE *d55mark[32];
-int d55nmark;
-
-static int
-d55marked(p)
-NODE *p;
-{
-	register int i;
-
-	for (i = 0; i < d55nmark; i++)
-		if (d55mark[i] == p)
-			return 1;
-	return 0;
-}
-
-static int
-d55simple(x)
-register NODE *x;
-{
-	if (x->in.op == NAME || x->in.op == REG || x->in.op == OREG)
-		return 1;
-	return x->in.op == STAR && (x->in.left->in.op == REG || x->in.left->in.op == NAME);
-}
-
-void
-d55scan(p)
-register NODE *p;
-{
-	register int kind;
-	register NODE *l, *r;
-
-	if (p == 0)
-		return;
-	kind = optype(p->in.op);
-	if (p->in.op == ASSIGN) {
-		l = p->in.left;
-		r = p->in.right;
-		if (l->in.op == STAR && l->in.left->in.op == 120 && d55simple(r) && d55nmark < 32)
-			d55mark[d55nmark++] = l->in.left;
-		if (r->in.op == STAR && r->in.left->in.op == 120 && d55simple(l) && d55nmark < 32)
-			d55mark[d55nmark++] = r->in.left;
-	}
-	if (kind != LTYPE)
-		d55scan(p->in.left);
-	if (kind == BITYPE)
-		d55scan(p->in.right);
-}
-#endif
-
 /* a field: the address of the member is added to the address of the structure */
 void
 fixfld(p)
@@ -372,7 +317,7 @@ fixfld(p)
 {
 	register NODE *a, *m;
 	register int ismember;
-#if defined(OLD_D5S) || defined(OLD_D5G) || defined(OLD_D55)
+#if defined(OLD_D5S) || defined(OLD_D5G)
 	int subsr = p->in.op == 120;
 #endif
 
@@ -417,23 +362,6 @@ fixfld(p)
 		a->in.type = p->in.right->in.type;
 		p->in.left = a;
 		p->in.right = m;
-		return;
-	}
-#endif
-#if defined(OLD_D55) && defined(SEG)
-	/* vl: the constant index of an element that d55scan has marked goes into the address of the array (the frame offset) */
-	if (subsr && a->in.op == PLUS && p->in.right->in.op == ICON && !p->in.right->in.sname && d55marked(p) &&
-	    ((a->in.left->in.op == ICON && a->in.left->in.sname) ||
-	     (a->in.left->in.op == UAND && a->in.left->in.left->in.op == NAME))) {
-		if (a->in.left->in.op == ICON)
-			a->in.left->tn.lval += p->in.right->tn.lval;
-		else
-			a->in.left->in.left->tn.lval += p->in.right->tn.lval;
-		m = p->in.right;
-		p->in.left = a->in.left;
-		p->in.right = a->in.right;
-		a->in.op = FREE;
-		m->in.op = FREE;
 		return;
 	}
 #endif

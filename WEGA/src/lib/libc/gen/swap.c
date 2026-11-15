@@ -2,6 +2,10 @@
 
 #include <s.out.h>
 
+struct bytes {
+	char	b0, b1;
+};
+
 swap(x)
 int x;
 {
@@ -9,8 +13,8 @@ int x;
 	register char *p;
 
 	p = (char *)&tmp;
-	*p = ((char *)&x)[1];
-	p[1] = ((char *)&x)[0];
+	*p = ((struct bytes *)&x)->b1;
+	p[1] = ((struct bytes *)&x)->b0;
 	return(*(int *)p);
 }
 

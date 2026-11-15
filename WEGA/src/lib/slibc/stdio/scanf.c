@@ -6,11 +6,11 @@ scanf(fmt, a1, a2, args)
 char *fmt;
 int *a1, *a2;
 {
-	int *regs[5];
+	struct { int *r0, *r1, *r2, *r3, *r4; } regs;
 
-	regs[0] = a1;
-	regs[1] = a2;
-	return(_doscan(stdin, fmt, regs, &args));
+	regs.r0 = a1;
+	regs.r1 = a2;
+	return(_doscan(stdin, fmt, &regs, &args));
 }
 
 fscanf(iop, fmt, a1, a2, args)
@@ -18,11 +18,11 @@ FILE *iop;
 char *fmt;
 int *a1, *a2;
 {
-	int *regs[5];
+	struct { int *r0, *r1, *r2, *r3, *r4; } regs;
 
-	regs[0] = a1;
-	regs[1] = a2;
-	return(_doscan(iop, fmt, regs, &args));
+	regs.r0 = a1;
+	regs.r1 = a2;
+	return(_doscan(iop, fmt, &regs, &args));
 }
 
 sscanf(str, fmt, a1, a2, args)
@@ -31,14 +31,14 @@ char *fmt;
 int *a1, *a2;
 {
 	FILE _strbuf;
-	int *regs[5];
+	struct { int *r0, *r1, *r2, *r3, *r4; } regs;
 
 	_strbuf._flag = _IOREAD|_IOSTRG;
 	_strbuf._ptr = (unsigned char *)(_strbuf._base = str);
 	_strbuf._cnt = 0;
 	while (*str++)
 		_strbuf._cnt++;
-	regs[0] = a1;
-	regs[1] = a2;
-	return(_doscan(&_strbuf, fmt, regs, &args));
+	regs.r0 = a1;
+	regs.r1 = a2;
+	return(_doscan(&_strbuf, fmt, &regs, &args));
 }
