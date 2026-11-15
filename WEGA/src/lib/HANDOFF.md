@@ -35,7 +35,7 @@ Trace patches used (scratch, rebuild them as needed): a dump of rsuse/rsfree at 
 - Test bench: `host/recon/poptveto/s1114/cg/`. `cg.sh NAME "DEFINES"` (with `PPY=patch.py` for a trial patch of the codgen
   sources) builds codgen and scodgen from the tree with DEFINES (use `-DOLD_VL` plus the trial macro) into a copy of
   OLDROOT as `/lib/codgen`, `/lib/scodgen`; `libtest.sh ROOT` compiles all 206 C members of libc (cc) and slibc (scc) with
-  that root and lists the members whose object differs from `obj/NAME.o`. A rule counts only when the wanted member gets
+  that root and lists the members whose object differs from the member of the original library (extracted to `/tmp/SCRATCH/orig/LIB`; `src/lib/LIB/obj` is the build target and goes with `make clean`). A rule counts only when the wanted member gets
   exact and no other member changes. libc printf and slibc printf show as different there (the bench compiles without
   their `-I`); they are exact in the real build.
 - For one member: compile with the root, `host/tools/sdis.py` on both objects, diff. Then print the facts at the place in
@@ -46,7 +46,6 @@ Trace patches used (scratch, rebuild them as needed): a dump of rsuse/rsfree at 
   removed, checkall, `host/OLDCC.md` (a section per switch, the vl paragraph), `host/OLDCC_LOG.md`, commit.
 
 - Bench setup after a reboot (`/tmp/SCRATCH` gone): `sh host/tools/wbin.sh /tmp/SCRATCH/wbin <WEGA_ROOT> <OLDROOT> host/z8k-emu/z8k-emu`;
-  `src/lib/libc/obj` (not in git) may be missing: `python3 host/tools/war.py extract <WEGA_ROOT>/lib/libc.a src/lib/libc/obj`.
   A vl root needs the vl scparse: `rm -f ROOT/lib/scparse; cp OLDROOT/lib/vk/scparse ROOT/lib/scparse` (same sources and
   switch as `/lib/vl/scparse`). `-I` for the guest: a relative directory below the working directory.
 
@@ -68,6 +67,6 @@ Trace patches used (scratch, rebuild them as needed): a dump of rsuse/rsfree at 
 ## Next steps
 
 1. doprnt place 2 (above), then `OLD_D61` + the second rule, libtest, the Makefile rule from C, checkall, `host/OLDCC.md`.
-2. `slibc/HANDOFF.md` and `libc/HANDOFF.md`: bring the member tables to the state of this file.
+2. `slibc/HANDOFF.md`: bring the member tables to the state of this file (libc has nothing open and no handoff).
 3. Open questions of vl that stay: the bound of D53 (between 1170 and 1592 bytes), why D56 holds only segmented, the
    spare word of calloc. Each switch of vl has one source as its witness.
