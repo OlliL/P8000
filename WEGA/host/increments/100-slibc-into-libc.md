@@ -1,4 +1,4 @@
-# 01 slibc into the tree of libc
+# 100 slibc into the tree of libc
 
 ## Status
 
@@ -27,7 +27,11 @@ where the segmented member differs; the PLZ/ASM and cas sources stay separate fi
 - Both libraries are built by vl (`ccvl`, `sccvl`), every C member from source; no member from `oldcc/`.
 - scc and cc share no cpp symbol except `NULL` (`0L` in scc). A symbol for `#ifdef` must come from the Makefile (`-D...`), and
   the line numbers and the bytes must not change: test every changed file with both compilers (libtest).
-- Many C files are already equal in both trees; the differing C files and the assembler differences are listed in KNOWLEDGE.md.
+- The files (2026-11-15): csu: crt0.s only libc, scrt0.s only slibc. crt: cerror.s, mcount.s differ. gen: 61 C and 1 .h
+  equal; malloc.c, symscan.c differ (symscan only in its SCCS comment line, malloc also in the `sccsid` string); mon.c only
+  libc, segmon.c only slibc; all 9 .s differ. stdio: 35 C equal, doprnt.c, doscan.c, printf.c, scanf.c differ. sys: all 64
+  common .s differ, brk.s only libc, chkseg, mkseg, sgbrk, sgstat, sprofil, ssgbrk only slibc. Top: Library.SC, arhdr.s differ.
+- The member order of the two archives differs: two member lists, two object directories.
 - PLZ/ASM (`as`) and cas sources have no conditional assembly that we know of: separate files for the segmented version.
 
 ## Steps
@@ -39,12 +43,16 @@ where the segmented member differs; the PLZ/ASM and cas sources stay separate fi
 
 ## Decisions
 
-- Open (owner): the name of the cpp symbol (e.g. `-DSEG` as in the compiler sources) and where the segmented assembler sources
-  live (e.g. `NAME.s` beside `sNAME.s`, or a subdirectory `seg/`).
+- Owner 2026-11-15: the cpp symbol is `-DSEG`. File names stay as they are. The segmented assembler sources go to separate
+  directories where they overlap with the nonsegmented ones (crt, gen, sys); csu need not be split (crt0.s, scrt0.s).
+- Open (owner): the layout. Proposed: one tree `libc/seg/` that mirrors the layout and holds every file that is only
+  segmented or differs there (`seg/Library.SC`, `seg/arhdr.s`, `seg/crt/`, `seg/gen/`, `seg/sys/`); the C files stay in `gen`
+  and `stdio` with `#ifdef SEG` (also around the `sccsid` of malloc.c); mon.c and segmon.c stay in `gen`; scrt0.s in `csu`.
+  Alternatives: `seg/` inside each directory (`gen/seg/`, ...), or siblings `sgen`, `scrt`, `ssys`.
 
 ## Not part of it
 
-The other segmented files of `/lib` (`smcrt0.o`, `scnvt.o`, `sdoprnt.o`, `slibm.a`): increment 06.
+The other segmented files of `/lib` (`smcrt0.o`, `scnvt.o`, `sdoprnt.o`, `slibm.a`): increment 150.
 
 ## Log
 

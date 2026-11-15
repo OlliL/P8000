@@ -21,7 +21,7 @@ libc.a, crt0.o, slibc.a, scrt0.o, libl.a, slibl.a, ncform: every member from sou
 
 ## Open
 
-The plan: `host/increments/` (01 slibc into libc, 06 the other libraries and objects). vl keeps two switches with one witness
+The plan: `host/increments/` (100 slibc into libc, 150 the other libraries and objects). vl keeps two switches with one witness
 (`OLD_D53`, `OLD_D57`; owner's exception, `host/OLDCC.md` section 5).
 
 ## Measuring a member

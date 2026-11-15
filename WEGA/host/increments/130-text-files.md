@@ -1,8 +1,8 @@
-# 04 Text and data files (etc, usr/lib, usr/other)
+# 130 Text and data files (etc, usr/lib, usr/other)
 
 ## Status
 
-open (can run beside 02, 03)
+open (can run beside 110, 120)
 
 ## Goal
 
@@ -37,6 +37,6 @@ Every file of the WEGA tree that is text or data (no program to compile) comes f
 
 ## Not part of it
 
-Programs and scripts that need a compiler or are tested by a corpus: 03, 07.
+Programs and scripts that need a compiler or are tested by a corpus: 120, 160.
 
 ## Log

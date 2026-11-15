@@ -1,4 +1,4 @@
-# 05 Subagents: the workflow, on a pilot program
+# 140 Subagents: the workflow, on a pilot program
 
 ## Status
 
@@ -40,6 +40,6 @@ which stay with the main session; proven on one pilot program from `bin` that ne
 
 ## Not part of it
 
-The other programs: 06, 07.
+The other programs: 150, 160.
 
 ## Log

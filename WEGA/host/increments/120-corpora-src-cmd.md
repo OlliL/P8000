@@ -1,8 +1,8 @@
-# 03 Corpora for every program and script of src/cmd
+# 120 Corpora for every program and script of src/cmd
 
 ## Status
 
-open (after 02)
+open (after 110)
 
 ## Goal
 
@@ -13,11 +13,11 @@ change (a port to the host, a fix the owner allows) is checked against an expect
 
 - Every installed file of `src/cmd` that is a program or a script has a corpus in `compare/NAME` (or is listed here with the
   reason why not, e.g. needs real hardware).
-- checkall runs them; ALL OK within the budget decided in 02.
+- checkall runs them; ALL OK within the budget decided in 110.
 
 ## Read first
 
-- This increment's design from 02 (`host/increments/02-corpus-architecture.md`, then `host/HOWTO_reconstruct.md` step 9).
+- This increment's design from 110 (`host/increments/110-corpus-architecture.md`, then `host/HOWTO_reconstruct.md` step 9).
 - `src/COVERAGE.md` (what `src/cmd` installs, status exact).
 
 ## Known
@@ -35,6 +35,6 @@ change (a port to the host, a fix the owner allows) is checked against an expect
 
 ## Not part of it
 
-Programs not yet rebuilt (increment 07 adds their corpus when it rebuilds them).
+Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them).
 
 ## Log

@@ -1,4 +1,4 @@
-# 02 Corpus architecture and the emulator as oracle
+# 110 Corpus architecture and the emulator as oracle
 
 ## Status
 
@@ -6,7 +6,7 @@ open
 
 ## Goal
 
-A corpus design that scales to every program and script of `src/cmd` (increment 03): the original under z8k-emu and our
+A corpus design that scales to every program and script of `src/cmd` (increment 120): the original under z8k-emu and our
 build on the same inputs, outputs compared; cheap to add a program, fast enough for checkall, deterministic.
 
 ## Done when
@@ -47,6 +47,6 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
 
 ## Not part of it
 
-The corpora themselves for the programs not yet covered: increment 03.
+The corpora themselves for the programs not yet covered: increment 120.
 
 ## Log

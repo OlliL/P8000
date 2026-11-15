@@ -1,8 +1,8 @@
-# 06 The libraries and objects of /lib and /usr/lib
+# 150 The libraries and objects of /lib and /usr/lib
 
 ## Status
 
-open (after 05)
+open (after 140)
 
 ## Goal
 
@@ -30,13 +30,13 @@ libraries of the old programs from C where a compiler gives them.
 ## Steps
 
 1. The list from COVERAGE; date each (`host/OLDCC_DATES.md`) to find its compiler.
-2. With the agents of 05: per library its sources (System III, libc), compiled with the compiler of its time.
+2. With the agents of 140: per library its sources (System III, libc), compiled with the compiler of its time.
 3. oldlibc, oldslibc: the `.s` from C (source forms first, a new switch last).
 
 ## Decisions
 
 ## Not part of it
 
-PLZ libraries and objects made by `as`: 08 when they need the PLZ compiler.
+PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 
 ## Log
