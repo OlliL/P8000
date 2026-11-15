@@ -124,7 +124,14 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
   makes the frame; `variants:` for option combinations; a task for a subagent (140): the expectations come from the man
   page, never from a run of the original (that would be circular). (3) Coverage: the emulator logs the code addresses of the
   original a corpus runs; with the function bounds of `findings.json` it shows per function run or never run.
-- Open: the order of moving the existing 22 corpora; whether the reconstruction settings of progcfg.py move now or later.
+- Owner 2026-11-15, the move: (1) the new runner beside the old one (store, cache per case, the original run twice); checkall
+  calls the one each corpus uses. (2) A pilot in script form (size or ar), hand-written cases only. (3) The group with the C
+  sources as input: cc, scc, cpp, cparse, scparse, codgen, scodgen, popt, spopt, cchain, scchain (the first generator, with
+  preparing steps; the shared store). (4) ld, sld, gld (their fixtures.py become generators). (5) cas, casold. (6) The old
+  runner, the tars and mkcorpus.sh removed. checkall after each of these six points; inside a point after each corpus only
+  that corpus (`corpus.sh NAME`). A moved corpus passes the same cases as before (the number of cases is compared).
+  `progcfg.py` is split while a corpus moves: `compare/NAME/corpus.py` (generators, normalisation, candidates); `progcfg.py`
+  keeps only the settings of the reconstruction tools and goes where no tool reads it.
 
 ## Not part of it
 
