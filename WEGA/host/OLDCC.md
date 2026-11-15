@@ -144,12 +144,10 @@ their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_
 `build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (spopt), `/lib/vl/scparse` (the shipped one with `OLD_D25`) and `/lib/vl/codgen`,
 `/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` to `OLD_D60` and `OLD_D24`).
 Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped compilers give
-193, vl gives 203 (nlist, symscan and swap of both libraries, malloc of both libraries, scanf and segmon of slibc added; the printf of both libraries is exact only with its `-I`, so 205 in the build; segmon needs `char *mkseg()`, with `long mkseg()` D25 masks its casts; slibc malloc also needs two forms of its source: `union store *r` declared in front of `register unsigned onw` in realloc, an unused `int spare` in calloc, whose frame is 2 bytes larger without a found cause, as the spare word of ld in D1) and changes no other member. Both libraries are built by vl
+193, vl gives 204 (nlist, symscan and swap of both libraries, malloc of both libraries, scanf, segmon and doprnt of slibc added; the printf of both libraries is exact only with its `-I`, so all 206 in the build; doprnt needs two source forms: `_pfile != NULL && ferror(_pfile)`, and the block `lng:` behind the cases `O X U D l`; segmon needs `char *mkseg()`, with `long mkseg()` D25 masks its casts; slibc malloc also needs two forms of its source: `union store *r` declared in front of `register unsigned onw` in realloc, an unused `int spare` in calloc, whose frame is 2 bytes larger without a found cause, as the spare word of ld in D1) and changes no other member. Both libraries are built by vl
 (`CC = ccvl` in `src/lib/libc/Makefile`, `CC = sccvl` in `src/lib/slibc/Makefile`; owner's decision 2026-11-14), so
 checkall measures every rule of vl on all their members. vl itself is compiled by the shipped cc: in stage 1 linked with
-the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). Still from
-`oldcc/NAME/*.s`: doprnt (slibc); their rules, when found, belong to vl
-(`src/lib/HANDOFF.md`).
+the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). No member of the two libraries is left in `oldcc/`.
 
 ### The old scc of cas
 

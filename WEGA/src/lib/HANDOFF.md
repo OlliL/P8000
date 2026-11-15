@@ -12,23 +12,13 @@ State 2026-11-15, evening. Read first: `host/OLDCC.md` ("vl: the compiler of lib
   `OLD_D24` + vl scparse with `OLD_D25`, slibc malloc from C (two source forms: `union store *r` in front of `onw`,
   `int spare` in calloc); c63feb89: `OLD_D59` (regforsym: a pointer to a structure in a register is taken from it as a
   pointer to a scalar), `OLD_D60` (match: `++` of a frame slot wanted in a register through it), slibc segmon from C
-  (`char *mkseg()`). `libtest.sh`: 203 of 206 (printf of both libraries differ only on the bench: no `-I`).
-- libc has no `oldcc` member. slibc: only doprnt is left in `oldcc/`.
+  (`char *mkseg()`). `libtest.sh`: 204 of 206 (printf of both libraries differ only on the bench: no `-I`).
+- libc and slibc have no `oldcc` member; doprnt of slibc from C with two source forms.
 
-## slibc doprnt: open (1324 bytes with vl)
+## slibc doprnt: from C (source forms, no new switch)
 
-The stdio.h of the time changes nothing. Two places, both a register choice that avoids rr2 (details and measurements:
-`host/OLDCC_LOG.md`, entry "vl, slibc doprnt"):
-1. `if (_pfile && ferror(_pfile))`: solved in the measurement, not built in. Probe `host/recon/poptveto/s1114/cg/d61.py`
-   (PPY for `cg.sh`): when the left operand of an outermost `&&` is a bare name, the registers it takes stay busy through
-   the right operand. doprnt 1324 -> 22 bytes, no other member changes. Build in as `OLD_D61` only together with place 2
-   (a rule counts when the member gets exact).
-2. case 'l' (`if ((c = *fmt++) == 'o')`): the original takes rr4 for the copy of fmt and r3 for c, as if r2 were taken.
-   The getreg trace shows r2 as the TEMP (kind 6) of the first switch (`if (prec < 0) switch (c)`), removed from the
-   register file when the call `_align(&nreg, &ap, stkap)` in `lng:` wants rr2 by number (regjam). Next: what regjam
-   does with a kind-6 node; whether vl keeps it (or the word r2) taken afterwards.
-Trace patches used (scratch, rebuild them as needed): a dump of rsuse/rsfree at every getreg (`GR` lines), markers at
-`gswitch` and at `L` labels in reader3.c main loop.
+`_pfile != NULL && ferror(_pfile)` and the block `lng:` behind the cases `O X U D l` (`host/OLDCC_LOG.md`, entry "slibc
+doprnt from C"). libc and slibc have no `oldcc/` member left.
 
 ## Method (what worked for every member so far)
 
@@ -66,7 +56,7 @@ Trace patches used (scratch, rebuild them as needed): a dump of rsuse/rsfree at 
 
 ## Next steps
 
-1. doprnt place 2 (above), then `OLD_D61` + the second rule, libtest, the Makefile rule from C, checkall, `host/OLDCC.md`.
-2. `slibc/HANDOFF.md`: bring the member tables to the state of this file (libc has nothing open and no handoff).
-3. Open questions of vl that stay: the bound of D53 (between 1170 and 1592 bytes), why D56 holds only segmented, the
-   spare word of calloc. Each switch of vl has one source as its witness.
+1. `slibc/HANDOFF.md`: bring the member tables to the state of this file.
+2. Open questions of vl that stay: the bound of D53 (between 1170 and 1592 bytes), why D56 holds only segmented, the
+   spare word of calloc. Each switch of vl has one source as its witness; before a new switch, try source forms that fit
+   the existing ones (doprnt).

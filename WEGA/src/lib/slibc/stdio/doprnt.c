@@ -184,15 +184,6 @@ FILE *file;
 			if (++nreg == 5)
 				ap = stkap;
 			goto conv_int;
-		lng:
-			if (nreg < 5)
-				_align(&nreg, &ap, stkap);
-			val.l = *(long *)ap;
-			ap += 2;
-			nreg += 2;
-			if (nreg == 5)
-				ap = stkap;
-			goto conv_int;
 		case 'O':
 			base = 8;
 			goto lng;
@@ -229,6 +220,15 @@ FILE *file;
 			putc(c, file);
 			count += 2;
 			goto fin;
+		lng:
+			if (nreg < 5)
+				_align(&nreg, &ap, stkap);
+			val.l = *(long *)ap;
+			ap += 2;
+			nreg += 2;
+			if (nreg == 5)
+				ap = stkap;
+			goto conv_int;
 		case 'd':
 			base = -10;
 			val.l = *ap++;
@@ -398,7 +398,7 @@ FILE *file;
 				count++;
 			}
 	}
-	if (_pfile && ferror(_pfile))
+	if (_pfile != NULL && ferror(_pfile))
 		return(EOF);
 	return(count);
 }

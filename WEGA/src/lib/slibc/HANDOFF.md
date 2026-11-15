@@ -88,7 +88,7 @@ Compiler terms: [`../../../host/OLDCC.md`](../../../host/OLDCC.md), section 2 (v
 (~282), D16 (~369), D24/D25 (~431); the switches and their meaning: `../../cmd/codgen/oldcc.h`.
 
 Source details still open (guesses marked):
-- doprnt (`doprnt.c 2.8 08/17/83`): the cases `O X U D` stand behind `lng:` (an odd order, found by trying all orders; popt keeps other copies otherwise).
+- doprnt (`doprnt.c 2.8 08/17/83`): the block `lng:` stands behind the cases `O X U D` and `l` (found by trying all orders of these blocks with vl; in front of `l` the call of `_align` takes r2 away from the value of the switch, which case `l` must avoid); `_pfile != NULL && ferror(_pfile)` (the bare `_pfile &&` lets the codgen take rr2 again for the second load).
 - segmon: names are guesses (`struct segrange`, `struct seghdr`, `sp`); the use of `sp` (a pointer to `sh_scale`, set
   before `sh_seg` is stored) follows the code, the form may be another.
 - symscan: names are guesses; quirk below.

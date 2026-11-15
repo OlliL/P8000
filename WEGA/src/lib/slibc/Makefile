@@ -176,8 +176,8 @@ obj/doscan.o: stdio/doscan.c
 obj/printf.o: stdio/printf.c
 	cd stdio ; $(CC) -O -I../../../cmd/cparse -c printf.c ; mv printf.o ../obj/printf.o
 
-obj/doprnt.o: oldcc/doprnt/0_1.s
-	cd oldcc/doprnt ; $(CAS) -u -o ../../obj/doprnt.o 0_1.s
+obj/doprnt.o: stdio/doprnt.c
+	cd stdio ; $(CC) -O -c doprnt.c ; mv doprnt.o ../obj/doprnt.o
 
 obj/stfl.o: gen/stfl.s
 	cd gen ; $(CAS) -o ../obj/stfl.o stfl.s
