@@ -380,20 +380,6 @@ cand:
 			goto next;
 		if (!ttype(r->in.type, q->rtype))
 			goto next;
-#ifdef OLD_D60
-		/* vl: a frame slot incremented by a constant whose value is wanted in a register (segmon: while (++i <= *nsegs))
-		   is loaded, incremented in the register and stored, not incremented in memory */
-		if (p->in.op == ASG PLUS && cookie == INAREG && l->in.op == OREG && l->tn.rval == 15 &&
-		    r->in.op == ICON && r->in.sname == 0) {
-			if (q->rshape == 0x8002)
-				goto next;
-			if (q->needs == 1 && q->rewrite == 0x804 && allo(p, q)) {
-				expand(p, cookie, "\tldZB\tA1,AL\n\tZi\tA1,AR\n\tldZB\tAL,A1\n");
-				reclaim(p, q->rewrite, cookie);
-				return MDONE;
-			}
-		}
-#endif
 #ifdef OLD_D16A
 		/* v0p: a frame slot incremented by a constant whose value may go to a temporary is loaded, incremented in
 		   the register and stored (ld A1,AL; Zi A1,AR; ld AL,A1), not incremented in memory */

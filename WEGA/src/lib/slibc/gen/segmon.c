@@ -38,7 +38,7 @@ struct segrange *sr;
 	long *sp;
 
 	cntno = cntsiz;
-	if (sr->sr_seg == 0377) {
+	if (sr[0].sr_seg == 0377) {
 		sprofil(0, (char *)0, 0, 0, 0);
 		o = creat("mon.out", 0666);
 		i = 0;
@@ -52,7 +52,7 @@ struct segrange *sr;
 				printf("system error %d on write to mon.out\n", errno);
 				return(-1);
 			}
-		} while (++i <= *nsegs);
+		} while ((i = i + 1) <= *nsegs);
 		close(o);
 		return;
 	}

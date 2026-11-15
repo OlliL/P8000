@@ -21,7 +21,7 @@ libc.a, crt0.o, slibc.a, scrt0.o, libl.a, slibl.a, ncform: every member from sou
 
 ## Open
 
-- vl: each switch (`OLD_D53` .. `OLD_D60`) has one source as witness; check whether source forms that fit the existing switches
+- vl: each switch (`OLD_D53` .. `OLD_D58`) has one source as witness; check whether source forms that fit the existing switches
   replace it (as for doprnt: `host/OLDCC_LOG.md`, "slibc doprnt from C").
 - slibc into the tree of libc (one tree with `#ifdef`).
 - The other segmented files of `/lib` (`smcrt0.o`, `scnvt.o`, `sdoprnt.o`), `slibm.a` and the other `s*` libraries.
