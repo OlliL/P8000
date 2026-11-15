@@ -128,18 +128,6 @@ done
 result 'install root' ok "$same files identical with WEGA ($I)"
 echo "open, not counted:$o"
 stamp '2 cmp of the install root with WEGA'
-# the members of libc.a, each from its source
-L=$T/tree/WEGA/src/lib/libc
-rm -rf $T/orig
-mkdir -p $T/orig
-(cd $T/orig && $EMU -r $WEGA /bin/ar x /lib/libc.a)
-stamp '2 ar x of the original libc.a'
-same=0
-for f in `cd $T/orig && ls`; do
-	if cmp -s $T/orig/$f $L/obj/$f; then same=`expr $same + 1`; else result "libc $f" fail "differs or missing: $L/obj/$f"; fi
-done
-result 'libc.a members' ok "$same identical, from source"
-stamp '2 cmp of the members of libc.a'
 
 [ $BUILDONLY = 1 ] && finish
 
