@@ -44,13 +44,15 @@ lname:
 	k = (c + 5) / 14;
 	c |= 0200;
 	do {
-		if ((n = readsym(&sym, stream)) == k && sym.sn_name[0] == c) {
-			s = p->nl_name;
-			t = &sym.sn_name[1];
-			while (*s++ && *t++ && *t)
-				;
-			if (*t == 0)
-				goto found;
+		if ((n = readsym(&sym, stream)) == k) {
+			if (sym.sn_name[0] == c) {
+				s = p->nl_name;
+				t = &sym.sn_name[1];
+				while (*s++ && *t++ && *t)
+					;
+				if (*t == 0)
+					goto found;
+			}
 		}
 	} while (n >= 0);
 found:
