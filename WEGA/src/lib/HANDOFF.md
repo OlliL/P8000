@@ -9,13 +9,11 @@ State 2026-11-15, morning. Read first: `host/OLDCC.md` ("vl: the compiler of lib
   `/lib/vl/codgen`, `/lib/vl/scodgen` (`OLD_VL` in `src/cmd/codgen/oldcc.h`).
 - Committed, each with checkall ALL OK (122 files): D53, D54 (nlist, symscan of both), D55 (slibc scanf), D56 (slibc
   printf, with `-I../../../cmd/cparse`), D57 (swap of both). Last commit: 35a63432.
-- **Committed without a finished checkall (commit after dcc48ac1):** `OLD_D58` (regs3.c `regforsym`: an unsigned name known in a register is taken
-  from it also where it is used as an int; calloc `num *= size`), `oldcc.h`, libc malloc from `gen/malloc.c`
-  (`src/lib/libc/oldcc/Makefile`, `oldcc/malloc` removed). `libtest.sh`: 201 of 206, libc malloc exact, nothing else
-  changes (`int` used as `unsigned` must not be taken: fputc). A checkall of this state was started at the end of the
-  session (`tmp/tmp/checkall_d58.log`); read its result first; if it is not ALL OK, find the cause before going on. The two runs before it are void
-  (see "Slip" below).
-- Left in `oldcc/`: slibc malloc, segmon, doprnt. libc has none left once D58 is committed.
+- Also committed and confirmed (12b9c7fb; checkall ALL OK, 122 files, with the restored original scparse): `OLD_D58`
+  (regs3.c `regforsym`: an unsigned name known in a register is taken from it also where it is used as an int; calloc
+  `num *= size`) and libc malloc from `gen/malloc.c`. `libtest.sh`: 201 of 206. An `int` used as `unsigned` must not be
+  taken (fputc). libc has no `oldcc` member left.
+- Left in `oldcc/`: slibc malloc, segmon, doprnt.
 
 ## slibc malloc: solved in the measurement, not built in
 
@@ -73,8 +71,8 @@ the block order.
 
 ## Next steps
 
-1. Result of the checkall for D58 + libc malloc; commit (`host/OLDCC.md`: add D58 and libc malloc to the vl paragraph,
-   D53 to D58; `libc/HANDOFF.md`: no open member left).
+1. `host/OLDCC.md`: add a section D58 and libc malloc to the vl paragraph (D53 to D58, 202 members);
+   `libc/HANDOFF.md`: no open member left.
 2. slibc malloc as above (vl scparse with D25, D24 in vl, the two source forms), libtest, checkall, commit.
 3. segmon, doprnt with the method above.
 4. `slibc/HANDOFF.md` and `libc/HANDOFF.md`: bring the member tables to the state of this file.
