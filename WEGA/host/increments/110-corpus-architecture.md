@@ -111,7 +111,11 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
   `CORPUS_STORE` today) so that checkall and the runs in the working tree share one store. `compare/NAME/` keeps only what
   belongs to git (corpus definition, hand-written cases, findings). Entries no key has used for long are removed by date of
   last use.
-- Open: how a hand-written case is written (one file per case, or a table per program) and how a script (sh) is a case.
+- Owner 2026-11-15, a hand-written case: a directory `compare/NAME/cases/CASE/` with a text file `case` and the files the
+  case starts with in `in/` (none needed for pure command lines). `case`: `step:` (a run, words as in the shell; several run
+  in order), `stdin:`, `env:`, later `user:`, `terminal:`, `device:` when their model exists, `variants:` (a list of options,
+  each run), `expect:` (expectations on the original, Design 9); an unknown field is an error. Derived cases are made by a
+  generator in the same form in `.corpus/inputs`; the runner knows only this one form.
 - Open: the order of moving the existing 22 corpora; whether the reconstruction settings of progcfg.py move now or later.
 
 ## Not part of it
