@@ -172,8 +172,9 @@ obj/scanf.o: stdio/scanf.c
 obj/doscan.o: stdio/doscan.c
 	cd stdio ; $(CC) -O -c doscan.c ; mv doscan.o ../obj/doscan.o
 
-obj/printf.o: oldcc/printf/0_1.s
-	cd oldcc/printf ; $(CAS) -u -o ../../obj/printf.o 0_1.s
+# printf: the stdio.h of the time (char *_ptr, putc with the store arm first), as in ../libc/stdio
+obj/printf.o: stdio/printf.c
+	cd stdio ; $(CC) -O -I../../../cmd/cparse -c printf.c ; mv printf.o ../obj/printf.o
 
 obj/doprnt.o: oldcc/doprnt/0_1.s
 	cd oldcc/doprnt ; $(CAS) -u -o ../../obj/doprnt.o 0_1.s

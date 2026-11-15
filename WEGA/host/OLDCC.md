@@ -142,13 +142,13 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 The C members of `/lib/libc.a` and `/lib/slibc.a` (sources 08/83 and 09/83) come out of the shipped cc and scc except a few;
 their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_VL` in `src/cmd/cc`, built in
 `build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (scparse, spopt) and `/lib/vl/codgen`,
-`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53`, `OLD_D54`, `OLD_D55`).
+`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` to `OLD_D56`).
 Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped compilers give
-193, vl gives 198 (nlist and symscan of both libraries and scanf of slibc added) and changes no other member. Both libraries are built by vl
+193, vl gives 199 (nlist and symscan of both libraries, scanf and printf of slibc added) and changes no other member. Both libraries are built by vl
 (`CC = ccvl` in `src/lib/libc/Makefile`, `CC = sccvl` in `src/lib/slibc/Makefile`; owner's decision 2026-11-14), so
 checkall measures every rule of vl on all their members. vl itself is compiled by the shipped cc: in stage 1 linked with
 the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). Still from
-`oldcc/NAME/*.s`: malloc, swap (libc); malloc, swap, segmon, doprnt, printf (slibc); their rules, when found, belong to vl
+`oldcc/NAME/*.s`: malloc, swap (libc); malloc, swap, segmon, doprnt (slibc); their rules, when found, belong to vl
 (`src/lib/HANDOFF.md`).
 
 ### The old scc of cas
@@ -658,3 +658,10 @@ and the other operand is a name, a register or a value through one (not a consta
 slibc.a (`regs[1] = a2;` in scanf, fscanf, sscanf). Without the limits other members change: every constant index (the
 first clause of `OLD_D5G`): cnvt (`&tmp[9]`), symscan (`sym.sn_name[8] = 0`), popen (`p[1]` inside `?:`), execvp
 (`newargs[1] = fname`), nlist (`&space[SPACE]`); with a constant as the other operand: symscan. One witness.
+
+### D56 No temporary for a returned global variable (segmented)
+
+vl `OLD_D56` (scodgen reader3.c, `delay`). Beside D53: the scodgen of vl takes no temporary for `return (v)` when v is a
+global variable. Witness: printf of slibc.a (`rc = _doprnt(...); return (rc);` in printf, fprintf, sprintf: each frame 2
+bytes smaller). The member also needs the stdio.h of the time (`-I../../../cmd/cparse`, as libc's printf: `char *_ptr`,
+putc with the store arm first). Nonsegmented the temporary is there (printf of libc.a). One witness.
