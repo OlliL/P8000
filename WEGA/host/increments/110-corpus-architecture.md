@@ -12,8 +12,9 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
 ## Done when
 
 - A written design (in this file, then `host/HOWTO_reconstruct.md`, step 9) the owner has agreed to.
-- The emulator runs what the programs of `src/cmd` need (at least: guest signal handlers, `alarm`, the system calls that the
-  programs use; a list of what is still missing).
+- The case format has the fields for the surroundings (terminal, devices, user, time, file systems, signals), the tree
+  comparison and expectations; the runner passes them on (a field the emulator cannot serve yet is an error, not ignored).
+- The inventory: per program what it needs of its surroundings (for 120).
 - The existing corpora (`compare/CORPORA`) run under the new design; checkall ALL OK.
 
 ## Read first
@@ -29,7 +30,7 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
 - Inputs are prepared once into `compare/NAME/corpus.tar` (not in git), results of the original are cached by a key of
   binaries, tar, code, emulator. Inputs come only from files git knows (2026-11-15).
 - A differing case prints its differing lines and, with `-k` (checkall sets it), keeps its run directories.
-- Emulator limits: guest signal handlers do not run, a floating point trap stops it, `ioctl` is always ENOTTY.
+- Emulator limits (models built on demand, see Steps 5): guest signal handlers do not run, a floating point trap stops it, `ioctl` is always ENOTTY.
 - Fixed 2026-11-15: guest pids (a cut host pid of 0 broke fork); kill maps guest pids back.
 
 ## Assessment of the current design (2026-11-15)
@@ -65,7 +66,20 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
    unstable and nothing is cached.
 5. The files of ROOT a run reads are measured, not kept by hand: the emulator logs the files it opens (tmplog); the runner
    takes that list into the key.
-6. Run time: a cold run stays expensive (the originals under the emulator) but is rare; a checkall after a small change runs
+6. Candidates (owner 2026-11-15, a ground rule): every corpus compares the original of the shipped root (`wega31_root`)
+   with the program we build with the shipped cc/scc and the shipped libc (`make shipped`, candidate `wega`); both run under
+   the emulator on the same case. A host candidate exists only for the C compiler chain (cc, cpp, cparse, codgen, popt, cas,
+   ld, ...). So everything a program needs of its surroundings comes from the emulator alone, the same for both sides.
+7. The surroundings of a case, beside argv, stdin and files: terminal (type, size, the keys as a byte stream), devices
+   (name, model, image file), user and group, the time, more file systems, signals at defined points. All of it goes into
+   the cache key. The format has room for them from the start; the runner passes them to the emulator.
+8. Compared beside output, exit status and files: the whole directory tree with its metadata (also empty directories,
+   link count, mode, owner) and the terminal output.
+9. Expectations against empty tests: when the emulator lacks something, original and candidate fail the same way and the
+   comparison is green although nothing was tested (`ioctl` gives ENOTTY: vi stops on both sides alike). So a corpus also
+   checks expectations for chosen cases: that the original really does what the case is for (e.g. the file after `:s/a/b/`
+   holds the new text). A corpus is added only when its expectations hold.
+10. Run time: a cold run stays expensive (the originals under the emulator) but is rare; a checkall after a small change runs
    only the affected cases, also with 100 and more corpora.
 
 ## Steps
@@ -75,7 +89,9 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
    definitions).
 3. Case format, generators, the shared store of derived inputs; move the existing corpora one by one (checkall after each).
 4. Measured ROOT dependencies (emulator).
-5. Inventory of src/cmd (kind of input, what it needs of the emulator) and the emulator gaps (guest signal handlers, alarm, ...).
+5. Inventory of src/cmd and of the programs still to come: per program the kind of input and what it needs of its
+   surroundings (terminal, devices, user, time, file systems, signals); the list goes to 120. The models themselves are not
+   built here (owner 2026-11-15: a model is built when the first program needs it, with that program, in 120 or 160).
 
 ## Decisions
 

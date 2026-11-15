@@ -22,6 +22,13 @@ change (a port to the host, a fix the owner allows) is checked against an expect
 
 ## Known
 
+- Ground rule (owner 2026-11-15): each corpus compares the original of `wega31_root` with our build by the shipped cc/scc and
+  libc (`make shipped`); host candidates only for the C compiler chain.
+- A model of the emulator (terminal, a device such as `/dev/ud`, user, a second file system, guest signal handlers) is built
+  when the first program needs it, together with that program's corpus (owner 2026-11-15), with tests of its own; the
+  inventory of 110 says which program needs which.
+- A corpus is added only when its expectations show that the original really does what its cases are for (110, Design 9).
+
 - Today corpora exist for the tool chain only (cc, cpp, cparse, codgen, popt and their segmented twins, cas, ld, sld, gld,
   ar, ranlib, strip, size, cchain, scchain).
 
@@ -29,7 +36,8 @@ change (a port to the host, a fix the owner allows) is checked against an expect
 
 1. The list of programs and scripts (from COVERAGE: source in `src/cmd`, status exact), grouped by the kind of input.
 2. Per group a corpus pattern; then per program its inputs (System III tests, man pages, own cases for every option).
-3. Add them in batches, each batch with checkall.
+3. Add them in batches, each batch with checkall; a batch that needs a new model of the emulator builds it first, with
+   tests of its own, and records it in `host/z8k-emu/README.md`.
 
 ## Decisions
 
