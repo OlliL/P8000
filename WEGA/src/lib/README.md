@@ -21,10 +21,8 @@ libc.a, crt0.o, slibc.a, scrt0.o, libl.a, slibl.a, ncform: every member from sou
 
 ## Open
 
-- vl: each switch (`OLD_D53`, `OLD_D57`) has one source as witness; check whether source forms that fit the existing switches
-  replace it (as for doprnt: `host/OLDCC_LOG.md`, "slibc doprnt from C").
-- slibc into the tree of libc (one tree with `#ifdef`).
-- The other segmented files of `/lib` (`smcrt0.o`, `scnvt.o`, `sdoprnt.o`), `slibm.a` and the other `s*` libraries.
+The plan: `host/increments/` (01 slibc into libc, 06 the other libraries and objects). vl keeps two switches with one witness
+(`OLD_D53`, `OLD_D57`; owner's exception, `host/OLDCC.md` section 5).
 
 ## Measuring a member
 

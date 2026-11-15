@@ -8,7 +8,7 @@ whole word in:
   - the sources: SRCDIR/*.c, SRCDIR/*.h (SRCDIR/*.y too)
   - the tables: progcfg TABLES (files of compare/NAME)
   - findings.json (keys of functions and manual_classes, and the text of the notes)
-  - every .md of compare/NAME, progcfg DOCS, src/TODO.md, host/KNOWLEDGE.md, host/HANDOFF_wega_disasm.md
+  - every .md of compare/NAME, progcfg DOCS, host/KNOWLEDGE.md, host/HANDOFF_wega_disasm.md
 then FINDINGS.md is generated again (ld, sld: their findings_md.py; the new form: oldcc.sh findings). A text in KNOWLEDGE.md that belongs to another program with the
 same identifier is changed too: check the diff of the documents (-n first).
 
@@ -33,7 +33,7 @@ SOURCES = [os.path.join(LD, f) for f in sorted(os.listdir(LD)) if f.endswith(('.
 TABLES = [os.path.join(HERE, f) for f in list(CFG.TABLES)]
 DOCS = [os.path.join(HERE, f) for f in sorted(os.listdir(HERE)) if f.endswith('.md') and f != 'FINDINGS.md']
 DOCS += [os.path.join(HERE, f) for f in CFG.DOCS]
-DOCS += [os.path.join(WEGA, 'src', 'TODO.md'), os.path.join(WEGA, 'host', 'KNOWLEDGE.md'),
+DOCS += [os.path.join(WEGA, 'host', 'KNOWLEDGE.md'),
          os.path.join(WEGA, 'host', 'HANDOFF_wega_disasm.md')]
 FINDINGS = CFG.FINDINGS
 

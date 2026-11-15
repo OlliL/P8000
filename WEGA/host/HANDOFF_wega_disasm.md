@@ -26,8 +26,8 @@ file: the inventory and the decisions of the whole project. The state of a progr
 | `gld`                     | `/bin/gld`                                       | -                                               | **missing**                           | `host/ld/gld`                                    | exact             |
 | `ar`                      | `/bin/ar`                                        | `src/cmd/ar.c`                                  | exact                                 | `host/ar/ar`                                     | exact                     |
 | `ranlib`, `strip`, `size` | `/usr/bin/ranlib`, `/usr/bin/strip`, `/bin/size` | `src/cmd/ranlib.c` `src/cmd/strip.c` `src/cmd/size.c` | exact                     | `host/binutils`                                  | exact                     |
-| `libc`, `slibc`           | `/lib/libc.a`, `/lib/slibc.a`                    | `src/lib/libc`                                  | **libc: see TODO.md**; **slibc: missing** | -                                                | not needed |
-| `crt0` (start-up files)   | `/lib/crt0.o`, `scrt0.o`, `mcrt0.o`, `smcrt0.o ` | `src/lib/libc/csu` (`crt0.o`), `src/lib/libc/crt` (the start-up files of the programs)  | crt0.o and those of the programs: exact; **scrt0, mcrt0, smcrt0: missing** | - | not needed |
+| `libc`, `slibc`           | `/lib/libc.a`, `/lib/slibc.a`                    | `src/lib/libc`                                  | exact (both, from C by vl) | -                                                | not needed |
+| `crt0` (start-up files)   | `/lib/crt0.o`, `scrt0.o`, `mcrt0.o`, `smcrt0.o ` | `src/lib/libc/csu` (`crt0.o`), `src/lib/libc/crt` (the start-up files of the programs)  | crt0.o, scrt0.o (`src/lib/slibc/csu`) and those of the programs: exact; **mcrt0, smcrt0: missing** (increment 06) | - | not needed |
 | `chkout`                  | `/bin/chkout`                                    | -                                               | **missing**                           | -                                                | **missing**: the build of the kernel needs it (`ver.c+` to `ver.c`, `make` rule `.c+.c`); the original under `z8k-emu` with `Z8K_TIME` serves as oracle |
 | `yacc`                    | `/usr/bin/yacc`                                  | -                                               | **missing**                           | -                                                | **missing**               |
 
@@ -38,7 +38,7 @@ Not a tool of the chain but the oracle: `host/z8k-emu` (runs the original binari
 ## Decided: equality criteria per code base
 
 - `src/cmd` (K&R C, WEGA `cc`): byte identity with the original is the top priority. Original defects are rebuilt first and recorded in the quirks table in `KNOWLEDGE.md`; a fix needs the owner's decision. Second priority to keep the sources as equal to its SYSIII counterparts as possible (Copy&Paste is allowed).
-- `host/` (ANSI C, gcc): functional equality only. Fixing defects of the original is allowed where the original's result is undefined or wrong; the fix is documented in the quirks table and in `src/TODO.md`. Functional equality with the original is the top goal here and has to be assured by corpus runs.
+- `host/` (ANSI C, gcc): functional equality only. Fixing defects of the original is allowed where the original's result is undefined or wrong; the fix is documented in the quirks table. Functional equality with the original is the top goal here and has to be assured by corpus runs.
 
 ## Check of a program: one mechanism, the corpus
 
@@ -55,7 +55,7 @@ Decided (owner, 2026-11-08): every program is checked by the corpus runner (`hos
 
 ## Port rules: `src/cmd/X` to `host/X`
 
-How a host version is made from the exact WEGA source (TODO.md item 7). Goal: whoever repeats the port reaches the state of `host/` without trial and error. The list holds rules, not code lines; **every time a check or corpus fails and the cause is a difference between Z8000/K&R and host/ANSI, the rule that would have prevented it is added here (what to replace, what to look out for, how it shows, how to find it).** A rule has: *Rule*, *Why*, *Find*.
+How a host version is made from the exact WEGA source . Goal: whoever repeats the port reaches the state of `host/` without trial and error. The list holds rules, not code lines; **every time a check or corpus fails and the cause is a difference between Z8000/K&R and host/ANSI, the rule that would have prevented it is added here (what to replace, what to look out for, how it shows, how to find it).** A rule has: *Rule*, *Why*, *Find*.
 
 Steps of a port:
 
@@ -148,4 +148,4 @@ State: the check scripts are converted (`cas`: `compare/cas` 643 of 643 and `com
 
 ## Next steps
 
-A more detailed plan (steps) is in `../src/TODO.md`
+The plan: `increments/README.md` (the increments and which is active).

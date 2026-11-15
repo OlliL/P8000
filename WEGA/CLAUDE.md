@@ -2,14 +2,14 @@
 
 Project: rebuild the WEGA (Z8000/P8000) tool chain and system sources, output-identical to the
 originals. Branch `toolchain` of github.com/OlliL/P8000. Project dir `WEGA/` (`src/`, `host/`, `compare/`, `contrib/`; `compare/NAME/` holds what belongs to a program besides its source: corpus, `findings.json`, `SYSIII.md`).
-Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md` (facts) and
-`src/TODO.md` (the plan).
+Read `host/HANDOFF_wega_disasm.md` (inventory, decisions), then `host/increments/README.md` (the plan: the increments, which is
+active) and only the file of the active increment; `host/KNOWLEDGE.md` (facts) where that file points.
 
 ## Rules
 
 - Conversation in German, short messages. Git content (files, commits) in English.
 - Commits are allowed, but pushes are not. Only allowed branch to work on is `toolchain`.
-- `src/TODO.md` holds only the plan; keep `host/KNOWLEDGE.md` current and say which files changed.
+- `host/increments/` holds only the plan (one file per increment, kept current while working); keep `host/KNOWLEDGE.md` current and say which files changed.
 - Facts only from documents or measurements; mark guesses as guesses.
 - Always keep two tables current while working: "Objects and their differences" in `host/OLDCC.md`
   (which object shows which difference D1 ... D23) and "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`

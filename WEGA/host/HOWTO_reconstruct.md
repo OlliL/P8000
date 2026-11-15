@@ -1,6 +1,6 @@
 # HOWTO: reconstructing a WEGA binary
 
-Goal: `make install` gives the original, `cmp` is the only proof (`checkall`). Bugs of the original are rebuilt and listed in `KNOWLEDGE.md`, "Bugs and quirks". Rules of the project: `../CLAUDE.md`. The plan: `../src/TODO.md` (new programs: step 9).
+Goal: `make install` gives the original, `cmp` is the only proof (`checkall`). Bugs of the original are rebuilt and listed in `KNOWLEDGE.md`, "Bugs and quirks". Rules of the project: `../CLAUDE.md`. The plan: `increments/README.md` (new programs: increments 05 to 07).
 
 Two models, one handoff per program. Phase A is cheap and mechanical: a tool answers yes or no. Phase B needs understanding.
 
