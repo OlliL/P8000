@@ -7,7 +7,7 @@ int rc;
 printf(fmt, a1, a2, a3, a4, args)
 char *fmt;
 {
-	int regs[5];
+	int regs[4];
 
 	regs[0] = a1;
 	regs[1] = a2;
@@ -22,7 +22,7 @@ fprintf(iop, fmt, a1, a2, args)
 FILE *iop;
 char *fmt;
 {
-	int regs[3];
+	int regs[2];
 
 	regs[0] = a1;
 	regs[1] = a2;
@@ -36,7 +36,7 @@ char *str;
 char *fmt;
 {
 	FILE _strbuf;
-	int regs[3];
+	int regs[2];
 
 	_strbuf._flag = _IOWRT+_IOSTRG;
 	_strbuf._ptr = str;

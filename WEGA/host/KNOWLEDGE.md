@@ -1625,7 +1625,7 @@ a tree of its own. Files equal in both trees where the bytes allow it (execvp, c
 segmented members needed keep libc identical). Different on purpose:
 - C, the segmented calling convention (pointer arguments in rr6, rr4, rr2, then the stack): `stdio/doscan.c`
   (`++nreg == 2`, no spare local `unused` in `_instr`), `stdio/scanf.c`, `stdio/printf.c` (2 or 4 register arguments,
-  `regs[5]`/`regs[3]`, the flag of `_doprnt` 1 and 3), `stdio/doprnt.c` (revision 2.8 against 2.9 of libc, `%s` a 4 byte
+  `regs[4]`/`regs[2]` in printf (scanf `regs[5]`/`regs[3]`), the flag of `_doprnt` 1 and 3), `stdio/doprnt.c` (revision 2.8 against 2.9 of libc, `%s` a 4 byte
   pointer, `_pfile != NULL`, the block `lng:` behind the cases `O X U D l`).
 - C, own: `gen/malloc.c` (the arena a segment: `mkseg`/`ssgbrk`, BLOCK 2048, maxblocks 32, `INT long`), `gen/segmon.c`
   (instead of `mon.c`; names guessed).

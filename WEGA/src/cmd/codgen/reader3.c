@@ -180,9 +180,6 @@ register NODE *q;
 }
 #endif
 
-#if defined(OLD_D56) && defined(SEG)
-static int d56want;
-#endif
 #ifdef OLD_D57
 /*
  * vl: the register (d57reg) and the frame offset (d57off, bits) of a register parameter that the function uses as memory,
@@ -672,25 +669,11 @@ delay(p)
 			/* vl: none in a function with more than 10000 bits (1250 bytes) of automatic variables (nlist) */
 			if (baseoff <= 10000L)
 #endif
-#if defined(OLD_D56) && defined(SEG)
-				d56want = 1;	/* decided below, when the names are mapped */
-#else
 			off = freetemp(sz) / 8;
-#endif
 #endif
 		}
 	}
 	fwalk(p, mapnm, 0);
-#if defined(OLD_D56) && defined(SEG)
-	/* vl: no temporary when the value is a global variable (printf, fprintf, sprintf of slibc: return (rc)) */
-	if (d56want) {
-		register NODE *l = p->in.left;
-
-		d56want = 0;
-		if (!(l->in.op == NAME && l->in.sname && l->in.sname->sclass == 2))
-			off = freetemp(sz) / 8;
-	}
-#endif
 #if defined(OLD_D3K) && !defined(OLD_D3KC)
 	/* v0: a parameter the statement assigns to is not known in its register from its start on */
 	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname && p->in.left->in.sname->sclass == 9) {
