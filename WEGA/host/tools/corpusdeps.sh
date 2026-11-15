@@ -7,6 +7,7 @@ REPO=`cd $HERE/../.. && pwd`
 D=${DEPS_TMP:-/tmp/wega_deps}
 rm -rf $D
 for n in "$@"; do
+	[ -f $REPO/compare/$n/corpus.py ] && continue	# new form: its dependencies are measured by the emulator (increment 110)
 	STAGE_STRACE=$D CORPUS_NOCACHE=1 STAGE_TMP=$D.stage_$n STAGE_OPTS="${STAGE_OPTS:--n 30}" JOBS=${JOBS:-4} sh $HERE/corpus.sh $n > $D.$n.log 2>&1 &
 done
 wait

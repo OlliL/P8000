@@ -2246,7 +2246,7 @@ Findings of this work:
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),
 options (`cuvnbail`), messages, exit codes and archives. `make -C host/ar check` runs 79 commands
-(`scenarios.sh`: create, replace, update, delete, move, extract, print, list, quick append, position
+(`compare/ar/cases/scenario`: create, replace, update, delete, move, extract, print, list, quick append, position
 options, error cases) with the original `/bin/ar` under z8k-emu and with `host/ar/ar`, in five time
 zone settings, and compares output, exit codes, archives and extracted files; also `tv` of the
 shipped `libc.a` and `slibc.a`. All identical.

@@ -1,0 +1,10 @@
+# ar: the table of contents of slibc.a of the system
+host: cp $WEGA_ROOT/lib/slibc.a .
+step: ar tv slibc.a
+variant:
+variant: TZ=MET-1MEST
+variant: TZ=PST8PDT
+variant: TZ=JST-9
+variant: TZ=GMT0
+expect: exit 0
+expect: output contains doprnt.o

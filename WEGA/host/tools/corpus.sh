@@ -20,6 +20,12 @@ if [ $# = 0 ]; then
 fi
 rc=0
 for p in "$@"; do
-	RECON_PROG=$p python3 $REPO/host/recon/stagecorpus.py $C $SKIP $STAGE_OPTS || rc=1
+	if [ -f $REPO/compare/$p/corpus.py ] || [ -f $p/corpus.py ]; then
+		# a corpus of the new form (increment 110): host/recon/corpusrun.py
+		CC=; [ -n "$C" ] && CC="-c ${C#-c }"
+		python3 $REPO/host/recon/corpusrun.py $CC $STAGE_OPTS $p || rc=1
+	else
+		RECON_PROG=$p python3 $REPO/host/recon/stagecorpus.py $C $SKIP $STAGE_OPTS || rc=1
+	fi
 done
 exit $rc

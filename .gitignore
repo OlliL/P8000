@@ -5,3 +5,4 @@
 **/__pycache__
 **/*.o
 **/a.out
+/WEGA/.corpus/

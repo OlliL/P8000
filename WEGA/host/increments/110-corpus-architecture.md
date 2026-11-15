@@ -2,7 +2,7 @@
 
 ## Status
 
-open: design agreed with the owner (2026-11-15); after 105
+active (2026-11-15)
 
 ## Goal
 
@@ -86,6 +86,35 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
 10. Run time: a cold run stays expensive (the originals under the emulator) but is rare; a checkall after a small change runs
    only the affected cases, also with 100 and more corpora.
 
+## Detailed design (decided by Claude 2026-11-15, for review)
+
+- Files: `compare/NAME/corpus.py` (the new definition; a corpus with it runs on the new runner `host/recon/corpusrun.py`,
+  one without on the old one), `compare/NAME/cases/CASE/{case,in/}` (hand-written cases). `corpus.py`: `NAME`, `ORIG`
+  (path in the WEGA tree), `PROG` (the name of the program in the steps), `CANDIDATES` ({'wega': path of the shipped build,
+  'host': ... only for the compiler chain}), `ROOT_FILES` (until they are measured), optional `generate(tree)` (derived cases)
+  and `normalize(case, what, data)`.
+- The case file: one field per line, `#` starts a comment line. `step: WORDS` runs a WEGA program under the emulator: the
+  first word `PROG` is the program under test (the original or a candidate), another first word a program of the WEGA tree
+  (`/bin/NAME`, the original for both sides); words are split as by the shell (`shlex`), no shell operators. `stdin: FILE`
+  and `env: NAME=VALUE` belong to the step before them; a line `env: ...` before the first step holds for all steps.
+  `host: SHELL-LINE` runs a line of the host shell between steps (preparation that has no WEGA program, e.g. `touch -d` for
+  fixed times; `$WEGA_ROOT` is set). `variant: NAME=VALUE ...` (several lines): the case runs once per variant with that
+  environment. `expect: exit N` (the last step), `expect: output contains TEXT`, `expect: file PATH contains TEXT`,
+  `expect: file PATH same-as in/FILE`, `expect: missing PATH`; checked on the original's run only.
+- argv[0]: the program under test runs with the same argv[0] on both sides (its name), so that messages that name it are
+  equal; the emulator gets an option for argv[0].
+- Compared per case: for every step its output (stdout and stderr) and exit status; afterwards the directory tree: per
+  entry type, mode, size, checksum (files), link count; not owner and times (the emulator runs as the host user on both
+  sides; times are those of the host).
+- Store `.corpus/`: `inputs/HASH/` (derived cases, the same form as a hand-written case), `results/orig/KEY` (the original's
+  result, computed twice, cached only when both are equal), `results/ok/KEY` (a candidate was identical), `locks/`.
+  Keys: case = sha1 of the case file and the files of `in/` (names and contents); original = case + variant + sha1 of the
+  original binary + of the ROOT_FILES + of the emulator + of the runner core (`corpusrun.py` and the case module); candidate
+  = original key + sha1 of the candidate binary + of its dependencies. Written to a temporary file and renamed; a key is
+  computed by one run at a time (flock).
+- checkall: a corpus with `corpus.py` runs on corpusrun.py, the others on stagecorpus.py; the result line has the same form
+  (`NAME [cand]: N of M inputs identical`).
+
 ## Steps
 
 1. The owner's questions on the design first, then the open questions below; this section rewritten to the agreed design.
@@ -151,3 +180,12 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
 The corpora themselves for the programs not yet covered: increment 120.
 
 ## Log
+
+- 2026-11-15: move points 1 and 2 done. `host/recon/corpusrun.py` (the new runner: case format, store `.corpus/`, keys, the
+  original twice, flock per key, tree comparison, expectations) beside stagecorpus.py; `corpus.sh` takes a corpus with
+  `corpus.py` to it, `mkcorpus.sh` and `corpusdeps.sh` leave it out, checkall passes `CORPUS_DB`. Pilot ar: `compare/ar/cases/`
+  (scenario from scenarios.sh, libc.a, slibc.a), five variants of TZ each (the old corpus: 3 inputs with 5 variants inside, now
+  15 cases); the expectations found a fault of my conversion at once (a loop line without `;`: dates.a was not made on either
+  side, so the two sides were equal although nothing was tested). Decided by Claude: every step and host line with umask 022;
+  argv[0] stays the path until a corpus needs the emulator option (ar does not). checkall ALL OK, ar 15 of 15 on both
+  candidates; the old progcfg.py, scenarios.sh, lib.sh of ar removed.

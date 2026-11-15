@@ -1,0 +1,122 @@
+# ar: the scenario of the old corpus (scenarios.sh): every command with its output and exit status, the files afterwards
+# (the old corpus also printed '$ ar ARGS' before each run; the step header shows it now)
+host: mkdir sub
+host: printf 'hello\n' > a            # odd size
+host: printf 'world!\n' > b           # even size
+host: : > empty
+host: printf '0123456789abcdefghijklmnopqrstuvwxyz\n' > averyveryverylongfilename.c
+host: head -c 1500 /dev/zero | tr '\0' 'x' > big
+host: printf 'in sub\n' > sub/c
+host: printf 'x\n' > ex.sh; chmod 755 ex.sh
+host: printf 'y\n' > ro; chmod 444 ro
+host: for f in a b empty averyveryverylongfilename.c big sub/c ex.sh ro; do touch -d '2020-03-04 05:06:07 UTC' $f; done
+host: touch -d '2021-01-02 03:04:05 UTC' b
+step: ar r l.a a b
+host: for f in l.a; do [ -f "$f" ] && { echo "[$f] $(wc -c < $f) $(cksum < $f)"; }; done
+step: ar rv l.a a b empty
+step: ar rc l.a empty
+step: ar rv n.a a b big averyveryverylongfilename.c sub/c ex.sh ro
+host: for f in n.a; do [ -f "$f" ] && { echo "[$f] $(wc -c < $f) $(cksum < $f)"; }; done
+step: ar t n.a
+step: ar tv n.a
+step: ar t n.a a ex.sh
+step: ar tv n.a ro
+step: ar p n.a a
+step: ar pv n.a a b
+step: ar x n.a
+host: touch -d '2019-05-05 05:05:05 UTC' a b big averyveryvery c ex.sh ro 2>/dev/null; true
+host: for f in a b big averyveryverylongfilename.c c ex.sh ro; do [ -f "$f" ] && { echo "[$f] $(wc -c < $f) $(cksum < $f)"; }; done
+host: ls -l a b ex.sh ro c 2>/dev/null | awk '{print $1,$5}'
+host: rm -f a b big c ex.sh ro averyveryverylongfilename.c averyveryvery
+step: ar xv n.a b ex.sh
+host: touch -d '2019-05-05 05:05:05 UTC' a b ex.sh 2>/dev/null; true
+host: ls -l b ex.sh | awk '{print $1,$5}'
+step: ar d n.a b
+step: ar dv n.a ro
+step: ar t n.a
+step: ar ma n.a a ex.sh
+step: ar t n.a
+step: ar mb n.a a big
+step: ar t n.a
+step: ar mi n.a sub/c
+step: ar t n.a
+step: ar ra n.a a b
+step: ar rb n.a a empty
+step: ar ri n.a a ex.sh
+step: ar t n.a
+host: touch -d '2022-02-02 02:02:02 UTC' b
+step: ar ru n.a a b
+step: ar ruv n.a a b
+step: ar t n.a
+step: ar rv n.a nothere
+step: ar rc n.a nothere
+step: ar q q.a a b
+host: for f in q.a; do [ -f "$f" ] && { echo "[$f] $(wc -c < $f) $(cksum < $f)"; }; done
+step: ar qv q.a empty big
+step: ar qc q2.a a
+step: ar q n.a ex.sh
+step: ar t n.a
+step: ar rl l2.a a
+host: for f in l2.a; do [ -f "$f" ] && { echo "[$f] $(wc -c < $f) $(cksum < $f)"; }; done
+step: ar rv n.a
+step: ar rua n.a a
+step: ar d n.a nothere
+step: ar dv n.a
+step: ar x n.a nothere
+step: ar t nonexist.a
+step: ar x nonexist.a
+step: ar p nonexist.a
+step: ar d nonexist.a
+step: ar m nonexist.a a
+step: ar r new.a
+step: ar r new2.a nothere
+step: ar
+step: ar r
+step: ar r x.a
+step: ar zz x.a a
+step: ar rd x.a a
+step: ar mq x.a a
+step: ar a n.a
+step: ar ra n.a
+step: ar rb n.a a
+step: ar qa n.a a
+step: ar xx n.a
+step: ar u n2.a a b
+host: for f in n2.a; do [ -f "$f" ] && { echo "[$f] $(wc -c < $f) $(cksum < $f)"; }; done
+host: printf 'not an archive\n' > bad.a
+step: ar t bad.a
+step: ar r bad.a a
+step: ar q bad.a a
+step: ar x bad.a
+host: : > zero.a
+step: ar t zero.a
+step: ar r zero.a a
+host: printf 'AB' > two.a
+step: ar t two.a
+step: ar vr v.a a
+step: ar rvv v.a a b
+step: ar tvv v.a
+step: ar r dir/../s.a a
+host: mkdir dd
+step: ar r dd/d.a a
+step: ar t dd/d.a
+step: ar t dd//d.a
+step: ar r sub/ a
+step: ar t sub/
+host: cp n.a n3.a; chmod 444 n3.a
+step: ar r n3.a a
+host: # dates for tv: daylight saving rules, 1974/1975, before the epoch, after 2000
+host: i=0
+host: for d in '1969-12-31 12:00:00' '1974-01-10 12:00:00' '1974-07-01 12:00:00' '1974-11-30 12:00:00' '1975-03-01 12:00:00' '1975-10-20 12:00:00' '1983-04-24 06:59:59' '1983-04-24 07:00:00' '1983-04-30 12:00:00' '1983-10-30 05:59:59' '1983-10-30 06:00:00' '2000-02-29 23:59:59' '2001-07-15 12:00:00' '2030-07-15 12:00:00' '2037-12-31 23:59:59'; do i=$((i+1)); echo $i > dt$i; touch -d "$d UTC" dt$i; done
+step: ar r dates.a dt1 dt2 dt3 dt4 dt5 dt6 dt7 dt8 dt9 dt10 dt11 dt12 dt13 dt14 dt15
+step: ar tv dates.a
+host: echo end
+variant:
+variant: TZ=MET-1MEST
+variant: TZ=PST8PDT
+variant: TZ=JST-9
+variant: TZ=GMT0
+expect: file l.a contains hello
+expect: file q.a contains world!
+expect: file dates.a contains dt15
+expect: missing averyveryverylongfilename.c

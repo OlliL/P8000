@@ -8,6 +8,7 @@ REPO=`cd $HERE/../.. && pwd`
 [ $# = 0 ] && set -- `grep -v '^#' $REPO/compare/CORPORA`
 rc=0
 for p in "$@"; do
+	[ -f $REPO/compare/$p/corpus.py ] && continue	# new form: its inputs are made by itself (corpusrun.py)
 	RECON_PROG=$p python3 $REPO/host/recon/stagecorpus.py --make || rc=1
 done
 exit $rc
