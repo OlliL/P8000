@@ -1,13 +1,12 @@
-# oldlibc: the libraries libc-vN.a of the time of the old programs, in ..
+# oldslibc: the libraries slibc-vN.a of the time of the old segmented programs, in .. (README.md)
 #
-# Each original program was linked from a libc of its time. Their modules are here in the versions the originals hold:
-# NAME/0_n, from C with the compiler of the rule (a source of ../libc or NAME/...) or, where a compiler or a source is still
-# missing, from NAME/0_n.s; the other members are those of ../libc. The order of a library is the order of the members in
-# the original programs, ld takes what is referenced. Version numbers of the modules are invented.
+# NAME/0_n.s cut from the original program, NAME/0_n.c a source; the other members are those of /lib/slibc.a (tmp/). The order
+# of a library is the order of the members in the original program. Version numbers of the modules are invented.
 #
-#   libc-v9.a  sld (07/83)
+#   slibc-v9.a   sld (07/83)
+#   slibc-v11.a  cas
 #
-#   make        (needs ../libc made, and ccv1, ccv0, ccv0p)
+#   make        (needs sccvc in OLDROOT for errlst)
 #   make clean
 
 CAS = cas

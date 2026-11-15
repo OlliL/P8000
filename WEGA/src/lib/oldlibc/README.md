@@ -15,9 +15,12 @@ A program finds its library with `host/tools/whichlibc.py`. `host/tools/libctabl
 
 ## State
 
-72 of 85 modules from C. Which program uses which library: `host/KNOWLEDGE.md`, "The libraries of the old programs";
-how a module is made: [`../oldlibc/README`](../oldlibc/README). Open (`.s`), waiting for a compiler or a source form
-(`host/tools/libcfit.py`, `libctable.py`; what was tried: `host/OLDCC_LOG.md`):
+90 of 103 modules from C. Which program uses which library: `host/KNOWLEDGE.md`, "The libraries of the old programs".
+
+## Open
+
+The 13 `.s`, waiting for a compiler or a source form (`host/tools/libcfit.py`, `libctable.py`; what was tried:
+`host/OLDCC_LOG.md`):
 
 - With v1q (size): `doprnt` 0_1.
 - With v0: `fseek` 0_2 (one statement: the registers at the label of an else, `OLD_D3J` fits it and not dc), `doprnt` 0_3.

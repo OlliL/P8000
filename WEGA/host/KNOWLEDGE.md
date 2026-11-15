@@ -494,8 +494,8 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   printer 0x79ca, the message with the words (`r5` = the word from `r3`, `r4` = from `r2`, `r3` and `r2` from the stack, one more on
   the stack), a closing line, then calls `delexit` for level above 1 and stores the level in `errlev`.
 - 0x85f8 (last own function) has no `ret`: it falls into the shipped ffltioc, whose first word 9e08 is a `ret`.
-- libc part 0x8680..0x9800: 14 modules cut and verified (`src/lib/oldslibc`, README there); shipped members of `/lib/slibc.a`
-  ffltioc, getpid, umask are identical to the original code.
+- libc part 0x8680..0x9800: the members of `/lib/slibc.a` except printf and doprnt, another revision
+  (`src/lib/oldslibc`, `slibc-v9.a`; README.md there).
 - Sources of the cut use the names of `host/tools/link_libc_seg.py` (module starts by module name, others `f<addr>`).
 
 ## codgen / scodgen (`/lib/codgen`, `/lib/scodgen`): reconstruction status
@@ -1116,7 +1116,7 @@ relocated words masked: they are the shipped objects, not an older revision. (3)
 `__fegcvt`, `__inflt`) lies at 0x8682..0x8688, not at 0x8680: the `ret` at 0x8680 ends the own code (function 0x85f8), `sld_own.s`
 is 0x56..0x8682; `__fegcvt` = 0x8684 (printf), `__inflt` = 0x8686 (scanf). `ungetc.o` starts at 0x8688. (4) The earlier module
 split (filbuf, flsbuf, cnvt, decimal, stty, swab, swap, signal, stubs) had wrong boundaries and placeholder labels; the
-directories `src/lib/oldslibc/<object>/0_1.s` now follow the objects (README there). The code of the link is right: `make link`
+directories `src/lib/oldslibc/<object>/0_1.s` followed the objects (now only printf and doprnt are kept: README.md there). The code of the link is right: `make link`
 in `src/cmd/sld` gives a code segment that differs from /bin/sld in 78 bytes, all data addresses (the data of sld is not cut).
 
 ### sld: layout of data and bss (2026-10-28)
