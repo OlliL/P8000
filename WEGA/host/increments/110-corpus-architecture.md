@@ -50,8 +50,12 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
 
 ## Design (draft, to be refined with the owner)
 
-1. One case format, as data. A case: its input files, the command (argv, stdin, environment), what is compared (output,
-   exit status, files afterwards, with mode). The runner knows only this format. A program's corpus definition gives
+1. One case format, as data, one mode (owner 2026-11-15). A case: its input files and a sequence of steps on that directory
+   (each step: argv, stdin, environment); compared: output, exit status, every file afterwards (no list of outputs: a stray
+   file shows too). A single run is a case of one step. The runner makes the script of the steps itself; a free shell script
+   (run on the host, the programs in it under the emulator) only as an exception for what steps cannot express. A WEGA shell
+   script under test is an ordinary step (WEGA's sh under the emulator). The run mode of today (`CORPUS_RUN`,
+   `CORPUS_OUTPUTS`, 12 corpora) goes when the corpora move (Steps 3). The runner knows only this format. A program's corpus definition gives
    case generators and, where needed, a normalisation of an output; the settings of the reconstruction move to a file of
    their own (not read by the runner).
 2. Two kinds of input. Hand-written cases: small, in git, per program. Derived cases: made from the sources of the tree
@@ -96,6 +100,7 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
 ## Decisions
 
 - Owner 2026-11-15: write the design down as a draft; the owner's own questions come first, then the open ones below.
+- Owner 2026-11-15: one mode of running a case (steps as data, Design 1); no separate run and script modes.
 - Open (owner): the run time budget of checkall for all corpora.
 - Open: where the shared store of derived inputs and the caches live (not in git; today beside each corpus in compare/NAME).
 - Open: how a hand-written case is written (one file per case, or a table per program) and how a script (sh) is a case.
