@@ -9,11 +9,11 @@ State 2026-11-15, morning. Read first: `host/OLDCC.md` ("vl: the compiler of lib
   `/lib/vl/codgen`, `/lib/vl/scodgen` (`OLD_VL` in `src/cmd/codgen/oldcc.h`).
 - Committed, each with checkall ALL OK (122 files): D53, D54 (nlist, symscan of both), D55 (slibc scanf), D56 (slibc
   printf, with `-I../../../cmd/cparse`), D57 (swap of both). Last commit: 35a63432.
-- **Not committed, in the working tree:** `OLD_D58` (regs3.c `regforsym`: an unsigned name known in a register is taken
+- **Committed without a finished checkall (commit after dcc48ac1):** `OLD_D58` (regs3.c `regforsym`: an unsigned name known in a register is taken
   from it also where it is used as an int; calloc `num *= size`), `oldcc.h`, libc malloc from `gen/malloc.c`
   (`src/lib/libc/oldcc/Makefile`, `oldcc/malloc` removed). `libtest.sh`: 201 of 206, libc malloc exact, nothing else
   changes (`int` used as `unsigned` must not be taken: fputc). A checkall of this state was started at the end of the
-  session (`tmp/tmp/checkall_d58.log`); read its result first. If it is ALL OK: commit. The two runs before it are void
+  session (`tmp/tmp/checkall_d58.log`); read its result first; if it is not ALL OK, find the cause before going on. The two runs before it are void
   (see "Slip" below).
 - Left in `oldcc/`: slibc malloc, segmon, doprnt. libc has none left once D58 is committed.
 
