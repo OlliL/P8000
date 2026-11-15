@@ -126,7 +126,12 @@ def run_script(binary, base, work, variant, tag, native):
             d = open(p, 'rb').read()
             lines.append('%o %d %08x %s' % (os.stat(p).st_mode & 0o7777, len(d), zlib.crc32(d), os.path.relpath(p, rd)))
     lines.sort(key=lambda l: l.split(' ', 3)[3])
-    shutil.rmtree(rd, ignore_errors=True)
+    # the run directory stays beside the work directory (run_TAG.1, .2, ... one per variant): case() removes the work directory
+    # with it unless the case differs and -k keeps it, so that a difference can be looked at as the program left it
+    n = 1
+    while os.path.exists('%s.%d' % (rd, n)):
+        n += 1
+    os.rename(rd, '%s.%d' % (rd, n))
     msg = r.stdout + r.stderr
     if NORMALIZE:
         msg = NORMALIZE('messages', msg)
@@ -327,6 +332,22 @@ class Tar:
                 os.symlink(m.linkname, p)
 
 
+def explain(tag, r1, r2, n=12):
+    """the lines that differ (original -, candidate +), at most n per part: messages, every file of the result"""
+    import difflib
+    out = []
+    parts = [('exit', str(r1[0]).encode(), str(r2[0]).encode()), ('messages', r1[1], r2[1])]
+    parts += [(f, r1[2][f], r2[2].get(f)) for f in r1[2]]
+    for name, a, b in parts:
+        if a == b:
+            continue
+        a = (a or b'').decode('latin-1').split('\n')
+        b = (b or b'').decode('latin-1').split('\n')
+        dl = [l for l in difflib.unified_diff(a, b, lineterm='', n=0) if l[:1] in '-+' and l[:3] not in ('---', '+++')]
+        out.append('%s%s: %s' % (tag, name, ' | '.join(dl[:n]) + (' ...' if len(dl) > n else '')))
+    return out
+
+
 def cache_read(path):
     try:
         with open(path, 'rb') as f:
@@ -450,6 +471,7 @@ def main():
         t1 = time.monotonic()
         phase_add('prepare', t1 - t0)
         diffs = {c: [] for c in cands}
+        detail = {}
         for name, path in cands.items():
             shutil.copy(path, os.path.join(work, 'pass_' + name))
             os.makedirs(os.path.join(work, '.prog_' + name))
@@ -467,6 +489,8 @@ def main():
                 r2 = run_pass('pass_' + name, base, work, v, name, native=(name == 'host'))
                 phase_add(name, time.monotonic() - ta)
                 d = diffs[name]
+                if r1 != r2:
+                    detail.setdefault(name, []).extend(explain(tag, r1, r2))
                 if r1[0] != r2[0]:
                     d.append('%src %d/%d' % (tag, r1[0], r2[0]))
                 if r1[1] != r2[1]:
@@ -478,6 +502,9 @@ def main():
         if not (any(diffs.values()) and keep):
             shutil.rmtree(work)
         phase_add('total', time.monotonic() - t0)
+        for name in diffs:
+            if diffs[name]:
+                diffs[name].append('\n' + '\n'.join('    ' + l for l in detail.get(name, [])))
         return False, diffs
 
     total = skipped = 0

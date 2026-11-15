@@ -43,12 +43,21 @@ def run(argv, work, timeout=120):
     return subprocess.run([emu(), '-r', root()] + argv, cwd=work, capture_output=True, timeout=timeout)
 
 
+_GITFILES = {}
+
+
 def copy_dir(src, work):
-    """the source and the other files of its directory (headers, included .c files)"""
+    """the source and the other files of its directory (headers, included .c files): the files git knows there (tracked or
+    not ignored, as the copy of checkall.sh), not what a build has left (objects, programs: they would make the inputs depend
+    on the state of the tree when the tar was made)"""
     d = os.path.dirname(src)
+    if d not in _GITFILES:
+        r = subprocess.run(['git', '-C', d, 'ls-files', '-co', '--exclude-standard', '--', '.'], capture_output=True, text=True)
+        _GITFILES[d] = None if r.returncode != 0 else set(f for f in r.stdout.split('\n') if f and '/' not in f)
+    keep = _GITFILES[d]
     for f in os.listdir(d):
         p = os.path.join(d, f)
-        if os.path.isfile(p):
+        if os.path.isfile(p) and (keep is None or f in keep):
             shutil.copy(p, work)
 
 

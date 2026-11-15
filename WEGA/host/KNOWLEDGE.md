@@ -1038,12 +1038,22 @@ means it does something fixed instead (only possible where the original's result
 - z8k-emu debugging aids: `Z8K_EXEC_TRACE=1` prints every exec,
   `Z8K_SC_TRACE=FILE` logs system calls to a host file (guest may close fd 2).
   `Z8K_TMPLOG=FILE` appends one line per event of every emulator process (start, exec, fork, exit with its status,
-  getpid with the 16-bit pid the guest sees, creat and unlink of every file, open/link below the guest /tmp); `host/tools/tmpclash.py FILE` finds two process trees
+  getpid with the pid the guest sees, creat and unlink of every file, open/link below the guest /tmp); `host/tools/tmpclash.py FILE` finds two process trees
   using the same /tmp file or getting the same guest pid while both live. checkall sets it ($T/tmplog.log) and prints
-  the result at the end: the search for the occasional "cannot open" of an object in the parallel builds. A failure
-  of 2026-11-10 (`make oldroot`, codgen nonsegv1r, `ld: match3.o: cannot open`; the compile of match3.c ran in stage2
-  without a message) showed no clash in /tmp: not the guessed clash of /tmp/cc.<pid>.x. Open; the creat, unlink and exit
-  lines of the next failure show who wrote or removed the object.
+  the result at the end.
+- z8k-emu, the guest pid (found 2026-11-15, fixed): the guest sees a pid as a 16-bit int, and the emulator handed it the
+  host pid, cut to 16 bits. A host pid that is a multiple of 65536 (pid_max 4194304) gave the parent of a fork the child
+  pid 0: the libc `fork` returns the child's pid to the parent, so the parent took itself for the child. Seen in the
+  tmplog of checkall (cchain corpus, case dosfat.c -O: `fork child 196608 guest 0`): the original cc ran popt itself in
+  place of mv and cas, ended with popt's status 0 and no message, the object was not written. The same explains the
+  occasional "cannot open" of an object in the parallel builds (2026-11-10, `make oldroot`, `ld: match3.o: cannot open`
+  after a compile of match3.c without a message, no clash in /tmp). Also: a pid above 32767 was negative for the guest
+  (`cc.-8.s`; `fork() < 0` would read as a failure), and kill passed the cut value to the host (another host process
+  with that pid could get the signal). Now (`wega.c` gpid, hostpid): the guest pid is `(hostpid - 1) % 32767 + 1`
+  (1 .. 32767, pids up to 32767 unchanged) for getpid, the result of fork, of wait and the parent pid of a child; kill
+  maps it back to the host pid of the process itself, a child, the parent or another z8k-emu of the same session
+  (`/proc`: candidates g + k*32767). Processes alive at the same time have near pids, so the mapping gives them
+  different guest pids as before (tmpclash).
 - `WEGA/src/lib/libc/csu/crt0.s` (PLZ/ASM, Rev 3.2 09/12/83) matches the shipped
   `/lib/crt0.o` (42 bytes text, data `.word 0`). The ar/ranlib binaries use a
   later crt0 variant (version string in the text; ar also has the SCCS stamp in the data,

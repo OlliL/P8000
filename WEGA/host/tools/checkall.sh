@@ -179,7 +179,7 @@ CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
 echo "corpora start: load `cut -d' ' -f1-3 /proc/loadavg`" >> $T/timing.log
 for n in $CORP; do
-	CORPUS_STORE=$REPO/compare STAGE_TMP=$T/stage_$n JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &
+	CORPUS_STORE=$REPO/compare STAGE_TMP=$T/stage_$n STAGE_OPTS="-k $STAGE_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &
 done
 wait
 stamp '3 all corpora (in parallel)'

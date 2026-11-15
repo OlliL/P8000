@@ -124,7 +124,9 @@ unlink, exec, exece, chdir, time, mknod (directories via host `mkdir`),
 chmod, chown (no-op), break, ssgbrk, stat,
 fstat, fcntl, lseek, getpid, getuid/getgid, alarm, pause, utime, access, nice
 (no-op), sync, kill, dup/dup2, pipe, times, signal (SIG_DFL/SIG_IGN only),
-ioctl (always ENOTTY), umask. Anything else prints
+ioctl (always ENOTTY), umask. Process ids: the guest sees `(hostpid - 1) % 32767 + 1`
+(never 0 or negative: a cut host pid of 0 made the parent of a fork take itself for the child) in getpid, fork, wait;
+kill maps such a pid back to the host process (itself, a child, the parent, another z8k-emu of the session). Anything else prints
 `unimplemented system call N` and fails with EINVAL.
 Directory reads are translated to WEGA's fixed-size `struct direct` records,
 and directory `lseek` positions are logical byte offsets in those records;

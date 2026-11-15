@@ -280,6 +280,41 @@ static Ad a_ptr(Args *a)
 	return p;
 }
 
+/*
+ * The guest sees a process id as a 16-bit int: the host pid itself would be cut to 16 bits, so a host pid that is a multiple
+ * of 65536 became 0 (the parent of a fork took itself for the child: cc ran popt in place of the rest of the chain) and one
+ * above 32767 negative (fork() < 0). gpid maps a host pid to 1..32767, the same in every emulator process (getpid, the
+ * result of fork and wait); pids up to 32767 stay as they are. kill maps back through the processes this one knows.
+ */
+static int gpid(pid_t pid) { return pid <= 0 ? (int)pid : (int)((pid - 1) % 32767) + 1; }
+#define NKIDS 64
+static pid_t kids[NKIDS];	/* the children forked by this process and not yet waited for */
+static void kidadd(pid_t pid) { for (int i = 0; i < NKIDS; i++) if (kids[i] == 0) { kids[i] = pid; return; } }
+static void kiddel(pid_t pid) { for (int i = 0; i < NKIDS; i++) if (kids[i] == pid) kids[i] = 0; }
+static pid_t hostpid(int g)
+{
+	if (g <= 0) return g;	/* a process group, all processes */
+	if (g == gpid(getpid())) return getpid();
+	for (int i = 0; i < NKIDS; i++) if (kids[i] && g == gpid(kids[i])) return kids[i];
+	if (g == gpid(getppid())) return getppid();
+	{	/* another emulator of this session: the host pids g + k*32767 (/proc: the same program, the same session) */
+		char self[512], exe[512], path[64];
+		ssize_t n = readlink("/proc/self/exe", self, sizeof self - 1);
+		pid_t sid = getsid(0);
+		if (n > 0) {
+			self[n] = 0;
+			for (long h = g; h <= 4194304; h += 32767) {
+				ssize_t m;
+				snprintf(path, sizeof path, "/proc/%ld/exe", h);
+				if ((m = readlink(path, exe, sizeof exe - 1)) <= 0) continue;
+				exe[m] = 0;
+				if (strcmp(exe, self) == 0 && getsid((pid_t)h) == sid) return (pid_t)h;
+			}
+		}
+	}
+	return -1;
+}
+
 static int sc_ok(Z8K *c, uint32_t v) { c->r[4] = v; c->fl &= ~F_C; return 0; }
 static int sc_ok2(Z8K *c, uint16_t a, uint16_t b) { c->r[4] = a; c->r[5] = b; c->fl &= ~F_C; return 0; }
 static int sc_long(Z8K *c, uint32_t v) { c->r[4] = v >> 16; c->r[5] = v; c->fl &= ~F_C; return 0; }
@@ -490,10 +525,11 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 2: {	/* fork */
 		pid_t pid = fork();
 		if (pid < 0) return sc_err(c, errno);
-		if (pid == 0) { c->pc += 0; return sc_ok(c, getppid()); }	/* child runs the following jr */
+		if (pid == 0) { c->pc += 0; memset(kids, 0, sizeof kids); return sc_ok(c, gpid(getppid())); }	/* child runs the following jr */
 		c->pc += 2;						/* parent skips it */
-		tmplog("fork child %d guest %u", (int)pid, (unsigned)(pid & 0xFFFF));
-		return sc_ok(c, pid); }
+		kidadd(pid);
+		tmplog("fork child %d guest %u", (int)pid, (unsigned)gpid(pid));
+		return sc_ok(c, gpid(pid)); }
 	case 3:		/* read */
 		i = a_int(&a); p = a_ptr(&a); j = a_int(&a);
 		if (j > (int)sizeof buf) j = sizeof buf;
@@ -544,7 +580,8 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 7: {	/* wait */
 		int st; pid_t pid = wait(&st);
 		if (pid < 0) return sc_err(c, errno);
-		return sc_ok2(c, pid, st & 0xFFFF); }
+		kiddel(pid);
+		return sc_ok2(c, gpid(pid), st & 0xFFFF); }
 	case 9:		/* link */
 		p = a_ptr(&a); p2 = a_ptr(&a);
 		gstr(c, p, gp, sizeof gp); gstr(c, p2, gp2, sizeof gp2);
@@ -651,7 +688,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 			return sc_err(c, errno);
 
 		return sc_long(c, r); }
-	case 20: tmplog("getpid guest %u", (unsigned)(getpid() & 0xFFFF)); return sc_ok(c, getpid());
+	case 20: tmplog("getpid guest %u", (unsigned)gpid(getpid())); return sc_ok(c, gpid(getpid()));
 	case 23: case 46: return sc_ok(c, 0);
 	case 24: return sc_ok2(c, getuid(), geteuid());
 	case 47: return sc_ok2(c, getgid(), getegid());
@@ -669,7 +706,11 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		return sc_res(c, access(hostpath(gp, hb, sizeof hb), i & 7));
 	case 34: return sc_ok(c, 0);
 	case 36: sync(); return sc_ok(c, 0);
-	case 37: i = a_int(&a); j = a_int(&a); return sc_res(c, kill(i, j));
+	case 37: {	/* kill: the guest pid back to the host pid */
+		pid_t hp;
+		i = a_int(&a); j = a_int(&a);
+		if ((hp = hostpid((int16_t)i)) == -1) return sc_err(c, ESRCH);
+		return sc_res(c, kill(hp, j)); }
 	case 41:	/* dup */
 		i = a_int(&a); j = a_int(&a);
 		if (i & 0x40) return sc_res(c, dup2(i & 0x3F, j));
