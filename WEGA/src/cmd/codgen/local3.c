@@ -232,6 +232,10 @@ eobl2(a, b)
 }
 
 /* the end of the function: entry and exit code with the frame sizes now known */
+#ifdef OLD_D57
+extern long d57off;
+#endif
+
 void
 efcode()
 {
@@ -497,7 +501,11 @@ regargs(tot)
 		printf("\tldm\t|_stkseg+~L1+%u|(fp),r%d,#%d\n", t, lo, hi - lo + 1);
 #else
 	if (hi == lo) {
+#ifdef OLD_D57
+		if ((long)(unsigned)t + maxoff || d57off == (long)t * 8)	/* vl: a parameter used as memory: with its offset */
+#else
 		if ((long)(unsigned)t + maxoff)
+#endif
 			printf("\tld\t~L1+%u(fp),r%d\n", t, lo);
 		else
 #ifdef OLD_D18

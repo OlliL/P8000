@@ -49,6 +49,10 @@ static char sccsid[] = "@[$]wrt3.c\t2.4  08/24/83 14:01:53 Copr. 1981 87wega3.2.
 #endif
 
 /* the header of the assembler text */
+#ifdef OLD_D57
+extern int d57prev;
+#endif
+
 void
 hdrout()
 {
@@ -137,6 +141,13 @@ parminit(p)
 	}
 #endif
 	if ((s->sclass == 9 && p->tn.lval < 0) || s->sclass == 4) {
+#ifdef OLD_D57
+		/* vl: the register held a parameter that the function before used as memory: this parameter is not known in it */
+		if (s->sclass == 9 && d57prev >= 0 && (r == d57prev || (sz == 2 && r + 1 == d57prev))) {
+			d57prev = -1;
+			goto got;
+		}
+#endif
 		for (q = rsuse; q; q = q->next)
 			if (q->reg == r) {
 				q->busy = 0;

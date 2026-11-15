@@ -277,6 +277,11 @@ chk()
 }
 #endif
 
+#ifdef OLD_D57
+extern long d57off;
+extern int d57reg;
+#endif
+
 /* the node p after the conversions: names to addresses of their class, conversions of constants */
 NODE *
 clocal(p)
@@ -294,6 +299,13 @@ clocal(p)
 		s = p->in.sname;
 		switch (s->sclass) {
 		case 9:
+#ifdef OLD_D57
+			/* vl: a register parameter is used as memory (its address is taken): remembered for efcode and the next function */
+			if (!(s->sflags >> 3 & 1)) {
+				d57off = s->soffset;
+				d57reg = s->sbyte5;
+			}
+#endif
 #ifdef OLD_D3K
 #ifndef OLD_D3KC
 			/* v0: a parameter whose address is taken is not known in its register: it needs its home */

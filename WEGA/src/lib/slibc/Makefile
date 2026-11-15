@@ -395,8 +395,8 @@ obj/strlen.o: gen/strlen.c
 obj/goodmagic.o: gen/goodmagic.c
 	cd gen ; $(CC) -O -c goodmagic.c ; mv goodmagic.o ../obj/goodmagic.o
 
-obj/swap.o: oldcc/swap/0_1.s
-	cd oldcc/swap ; $(CAS) -u -o ../../obj/swap.o 0_1.s
+obj/swap.o: gen/swap.c
+	cd gen ; $(CC) -O -c swap.c ; mv swap.o ../obj/swap.o
 
 obj/a64l.o: gen/a64l.c
 	cd gen ; $(CC) -O -c a64l.c ; mv a64l.o ../obj/a64l.o

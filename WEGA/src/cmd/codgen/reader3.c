@@ -183,6 +183,15 @@ register NODE *q;
 #if defined(OLD_D56) && defined(SEG)
 static int d56want;
 #endif
+#ifdef OLD_D57
+/*
+ * vl: the register (d57reg) and the frame offset (d57off, bits) of a register parameter that the function uses as memory,
+ * -1 when there is none; d57prev is d57reg of the function before. swap of libc.a and slibc.a: swap(x) takes &x, the
+ * entry store of x is written with its offset (0(r15)), and longswap behind it loads its parameter from the frame.
+ */
+long d57off = -1;
+int d57reg = -1, d57prev = -1;
+#endif
 long baseoff = 0;
 long maxtemp = 0;
 
@@ -378,6 +387,11 @@ reread:
 #endif
 		switch (c) {
 		case '{':
+#ifdef OLD_D57
+			d57prev = d57reg;
+			d57off = -1;
+			d57reg = -1;
+#endif
 #ifdef OLD_D14Q
 			tmpoff = 0;
 #endif

@@ -10,6 +10,7 @@
 #define OLD_D54		/* behind an outermost && without a join label whose left operand holds a call the idle registers keep their contents */
 #define OLD_D55		/* segmented: a constant index of a local array is folded into the frame offset when the element is an operand of a plain assignment (fixfld, d55scan) */
 #define OLD_D56		/* segmented: no temporary for the value of a return that is a global variable (delay) */
+#define OLD_D57		/* a register parameter used as memory (its address taken): its entry store is written off(fp); the parameter of the next function in that register is not known in it */
 #endif
 
 #ifdef OLD_VK

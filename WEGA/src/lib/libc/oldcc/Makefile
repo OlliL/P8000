@@ -20,7 +20,7 @@ objs: $(OBJS)
 ../obj/nlist.o: ../gen/nlist.c
 	cd ../gen ; $(CCVL) -O -c nlist.c ; mv nlist.o ../obj/nlist.o
 
-../obj/swap.o: swap/0_1.s
-	cd swap ; $(CAS) -u -o ../../obj/swap.o 0_1.s
+../obj/swap.o: ../gen/swap.c
+	cd ../gen ; $(CCVL) -O -c swap.c ; mv swap.o ../obj/swap.o
 
 .PHONY: objs
