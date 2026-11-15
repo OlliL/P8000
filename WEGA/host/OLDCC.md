@@ -644,20 +644,17 @@ their marks in the older columns are from comparisons with the shipped compiler.
   - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
   - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout), `OLD_D20S` (popt, exprreloc), `OLD_D49` (popt, yylex), `OLD_D50` and `OLD_D51` (popt, jpr): one witness each, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
   - Owner's exception for vl (2026-11-15, provisional until each is checked against source forms): `OLD_D53` (nlist),
-    `OLD_D54` (symscan), `OLD_D57` (swap). Removed after such a check:
+    `OLD_D54` (symscan), `OLD_D57` (swap of libc, the entry store only; its second part, the parameter of the next function not known in its register, was replaced by `longswap(l) long *l; p = (int *)l;`). Removed after such a check:
     `OLD_D59`, `OLD_D60` (segmon, source forms), `OLD_D56` (printf of slibc: `regs` of the size used), `OLD_D58` (calloc: `unsigned num; int size;`), `OLD_D55` (scanf, printf, swap: the register arguments in a structure, the bytes of `x` through `struct bytes`).
   - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.
 
-### D57 A register parameter used as memory, and the function behind it
+### D57 The entry store of a register parameter used as memory
 
-vl `OLD_D57` (codgen lcl3.c clocal, wrt3.c, local3.c efcode, reader3.c). When a function uses a register parameter as
-memory (its address is taken), (a) the store of that parameter in the entry code is written with its offset also at
-offset 0 (`ld 0(r15),r7`, the shipped codgen writes `@r15`), and (b) in the function that follows in the file the
-parameter that arrives in the same register (or in the pair that holds it) is not known in it: its first use loads it
-from the frame (`ld r14,0(r15)`), the functions behind that one are as usual. Witness: swap of libc.a and slibc.a
-(`swap(x)` takes `&x`; `longswap(l)` behind it has `p = l` from the frame; `swapsegt(s)`, the third, from the register).
-The mark of a state that the old compiler keeps over the end of a function (the register file). Limits from the
-measurements: not for a parameter that arrives on the stack (`&args` of scanf, printf); by the register, not by the frame
-offset (doprnt: `&nreg` in `_doprnt`, the parameters of `_atoip` behind it stay known). One source, two objects.
+vl `OLD_D57` (codgen lcl3.c clocal, local3.c efcode, reader3.c). When a function takes the address of a register parameter,
+the store of that parameter in the entry code is written with its offset also at offset 0 (`ld 0(r15),r7`); the shipped
+codgen writes `@r15` there as for every other parameter (a narrower form of `OLD_D18` of v0, which writes every offset 0
+so). Visible only nonsegmented (the segmented store always names `|_stkseg+...|`). Witness: swap of libc.a (`swap(x)`
+takes the bytes of `&x`). No form of the body of swap gives it without the switch (the entry code prints `@fp` for the
+first parameter whatever the body: `t + maxoff` is 0 there). One witness.

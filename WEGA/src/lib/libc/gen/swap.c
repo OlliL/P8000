@@ -19,11 +19,11 @@ int x;
 }
 
 longswap(l)
-int *l;
+long *l;
 {
 	register int *p;
 
-	p = l;
+	p = (int *)l;
 	if(*p)
 		*p = swap(*p);
 	p++;

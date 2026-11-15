@@ -279,7 +279,6 @@ chk()
 
 #ifdef OLD_D57
 extern long d57off;
-extern int d57reg;
 #endif
 
 /* the node p after the conversions: names to addresses of their class, conversions of constants */
@@ -300,11 +299,9 @@ clocal(p)
 		switch (s->sclass) {
 		case 9:
 #ifdef OLD_D57
-			/* vl: a register parameter is used as memory (its address is taken): remembered for efcode and the next function */
-			if (!(s->sflags >> 3 & 1)) {
+			/* vl: a register parameter is used as memory (its address is taken): remembered for efcode */
+			if (!(s->sflags >> 3 & 1))
 				d57off = s->soffset;
-				d57reg = s->sbyte5;
-			}
 #endif
 #ifdef OLD_D3K
 #ifndef OLD_D3KC
