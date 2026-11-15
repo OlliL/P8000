@@ -21,7 +21,8 @@ Numbered in steps of ten, so that an increment can be put in between (e.g. 105).
 | # | Increment | Status |
 |---|---|---|
 | 100 | [slibc into the tree of libc](100-slibc-into-libc.md) | done |
-| 110 | [Corpus architecture and the emulator as oracle](110-corpus-architecture.md) | active |
+| 105 | [Parallel checkall runs with variants](105-parallel-checkall.md) | active |
+| 110 | [Corpus architecture and the emulator as oracle](110-corpus-architecture.md) | open (design agreed, 2026-11-15) |
 | 120 | [Corpora for every program and script of src/cmd](120-corpora-src-cmd.md) | open |
 | 130 | [Text and data files (etc, usr/lib, usr/other)](130-text-files.md) | open |
 | 140 | [Subagents: the workflow, on a pilot program](140-subagent-pilot.md) | open |

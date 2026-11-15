@@ -2,7 +2,7 @@
 
 ## Status
 
-active (2026-11-15)
+open: design agreed with the owner (2026-11-15); after 105
 
 ## Goal
 
