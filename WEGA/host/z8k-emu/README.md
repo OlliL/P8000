@@ -33,6 +33,7 @@ part of this repository; see `../KNOWLEDGE.md`, section "Inputs".
 | `-T` | like `-t`, and also every instruction of the floating point emulator (`fpe.s` line, r0-r15, flags) |
 | `-v` | report lazily allocated memory segments |
 | `Z8K_TMPDIR=DIR` (host environment) | the guest `/tmp` is DIR instead of `ROOT/tmp` (checkall gives each run its own, so that parallel runs do not share it) |
+| `Z8K_ROOTLOG=FILE` (host environment) | every guest path looked up below ROOT (not `/tmp`, `/dev`) is appended to FILE, one per line (a relative FILE is taken from the starting directory; opened per line, so the guest never sees its descriptor): the files of the tree a run depends on, measured by the corpus runner |
 | `Z8K_TIME=SECONDS` (host environment) | the system call `time` returns this value (reproducible `$D$` of `chkout`; the guest zone is EST) |
 | `-e NAME=VALUE` | add a variable to the guest environment (default: `PATH=/bin:/usr/bin`, `HOME=/`) |
 

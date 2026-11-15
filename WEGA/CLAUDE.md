@@ -1,7 +1,7 @@
 # WEGA tool chain: instructions for Claude
 
 Project: rebuild the WEGA (Z8000/P8000) tool chain and system sources, output-identical to the
-originals. Branch `toolchain` of github.com/OlliL/P8000. Project dir `WEGA/` (`src/`, `host/`, `compare/`, `contrib/`; `compare/NAME/` holds what belongs to a program besides its source: corpus, `findings.json`, `SYSIII.md`).
+originals. Branch `toolchain` of github.com/OlliL/P8000. Project dir `WEGA/` (`src/`, `host/`, `compare/`, `contrib/`; `compare/NAME/` holds what belongs to a program besides its source: corpus (`corpus.py`, `cases/`), `findings.json`, `SYSIII.md`).
 Read `host/HANDOFF_wega_disasm.md` (inventory, decisions), then `host/increments/README.md` (the plan: the increments, which is
 active) and only the file of the active increment; `host/KNOWLEDGE.md` (facts) where that file points.
 
@@ -61,9 +61,8 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
                                                   # every file there against WEGA; the corpora; check (16 min)
     make -C WEGA/host checkall WEGA=<WEGA_ROOT> NAME=x PATCH=/abs/file.diff   # a variant (patch on the git files, or a git ref
                                                   # from "git stash create") in /tmp/wega_check.x; runs with other names in parallel
-    host/tools/corpus.sh [--wega|--host] [PROG ...]   # the corpus of a program (compare/PROG/progcfg.py): the original against every candidate
-    host/tools/corpusdeps.sh [PROG ...]               # strace of the corpus runs: is every file/program they use in the cache key (CORPUS_ROOT_FILES, CORPUS_DEPENDS)?
-    host/tools/mkcorpus.sh [PROG ...]                 # make the prepared inputs (compare/PROG/corpus.tar) and the result cache (compare/PROG/cache) new; both not in git
+    make -C WEGA/host checkall-nocache WEGA=<WEGA_ROOT>   # the same, the corpora without their store (WEGA/.corpus)
+    host/tools/corpus.sh [--wega|--host] [PROG ...]   # the corpus of a program (compare/PROG/corpus.py, host/recon/corpusrun.py): the original against every candidate
     host/tools/coverage.py                            # src/COVERAGE.md: every file of the WEGA root, its source in src/, status (exact, partial, sys3, todo), compiler, libc (needs the install tree of checkall.sh -b)
 
 ## Compile with the original tools (z8k-emu)

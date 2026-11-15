@@ -6,8 +6,8 @@
 #   1. make in src: the old compilers with the shipped tools, the libraries, the old compilers again, cmd/, uts/;
 #   2. make install PREFIX=CHECK_TMP/install: every file there against the file of the same name in WEGA with cmp (the
 #      Makefiles strip as the originals are stripped);
-#   3. the corpora (host/tools/corpus.sh, side by side; the prepared inputs are compare/NAME/corpus.tar of the working tree (made when missing,
-#      host/tools/mkcorpus.sh makes them new) and the results are cached beside them (compare/NAME/cache, key: see stagecorpus.py)) of every program with a compare/NAME/progcfg.py, every candidate: the WEGA program built
+#   3. the corpora of compare/CORPORA (host/tools/corpus.sh, side by side; host/recon/corpusrun.py: the prepared inputs and the
+#      results are kept in the store WEGA/.corpus of the working tree, by keys of their contents), every candidate: the WEGA program
 #      built by make shipped (the shipped cc, scc and libc; the byte-identical builds are proven by 2) and the host build;
 # -b: only 1 and 2. Prints one line per check, the logs stay in CHECK_TMP; exit status 0 when all pass.
 # A program joins by its install target (src/cmd/Makefile).
@@ -20,7 +20,7 @@
 # its keys are by content). A second run in a directory that a living run uses stops with exit status 2.
 #
 # Environment: WEGA (the WEGA 3.1 tree), CHECK_TMP (default /tmp/wega_check, or /tmp/wega_check.NAME, a local disk),
-# CHECK_NAME, CHECK_PATCH, MAKEJOBS (default -j<cores>).
+# CHECK_NAME, CHECK_PATCH, MAKEJOBS (default -j<cores>), CORPUS_NOCACHE=1 (the corpora ignore the store: make checkall-nocache).
 
 HERE=`cd \`dirname $0\` && pwd`
 REPO=`cd $HERE/../.. && pwd`
@@ -192,7 +192,7 @@ corpus() {
 }
 # the shipped build (make shipped in src/cmd): every command built from the same sources by the shipped cc (scc) and the shipped
 # libc, with -DSHIPPED; a byte-identical binary cannot show anything in a corpus, this build tests the sources.
-# The host programs (compare/NAME/progcfg.py, CANDIDATES) are built beside them by the compiler of the host.
+# The host programs (compare/NAME/corpus.py, CANDIDATES) are built beside them by the compiler of the host.
 copytree $T/shipped
 cp $T/tree/WEGA/src/lib/*.a $T/shipped/WEGA/src/lib/
 stamp '3 copy of the files of git (shipped)'
@@ -217,7 +217,7 @@ CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
 echo "corpora start: load `cut -d' ' -f1-3 /proc/loadavg`" >> $T/timing.log
 for n in $CORP; do
-	CORPUS_STORE=$REPO/compare CORPUS_DB=$REPO/.corpus STAGE_TMP=$T/stage_$n STAGE_OPTS="-k $STAGE_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &
+	CORPUS_DB=$REPO/.corpus CORPUS_TMP=$T/corpus_$n CORPUS_OPTS="-k $CORPUS_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &
 done
 wait
 stamp '3 all corpora (in parallel)'

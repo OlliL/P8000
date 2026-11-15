@@ -2,7 +2,7 @@
 
 Used by the programs of `src/cmd` with a `tools/` directory. The layout of such a directory is the same for all of them:
 
-- `progcfg.py`: the configuration (NAME, ORIG, OWN_LIM, ... see `progcfg.py` here) and the corpus (CORPUS_*);
+- `progcfg.py`: the configuration (NAME, ORIG, OWN_LIM, ... see `progcfg.py` here); the corpus is `corpus.py` beside it;
 - `findings.json`: per function file, orig, size_orig, status, and a note only for an odd source form, a guessed name,
   dead code; `FINDINGS.md` is generated from it (`findings.py NAME`);
 - `SYSIII.md` (where it exists): what the source has that System III has not, what is WEGA's.
@@ -27,7 +27,7 @@ Makefile of `src` refers to `tools/` or `host/`, so `src` can go to a WEGA syste
 | `witness.py [-c ARGS] [PROG ...]` | test bench of the old compiler v1: the System III sources (SYS3SRC, not in git) of 26 WEGA programs of the v1 time compiled with ccv1 (or another compiler) and aligned with the originals; equal functions per program, compared with and without a switch |
 | `oldvar.sh NAME PATCH.py [PASS]` | a change of a pass of ccv0p measured in a copy: the three models with it, the functions that changed against the last `oldcc.sh model` |
 | `poptrace.sh PROG FUNC` | what popt does with one function: the nodes after each iteration, the blocks moved by codemove |
-| `stagecorpus.py` | corpus test of a program (through `host/tools/corpus.sh NAME`): original and ours on the same inputs, made fresh by `corpusc.py` from the C sources (or the command lines of `host/ld/check.py` for ld, sld); outputs, exit status, messages |
+| `corpusrun.py` | corpus test of a program (through `host/tools/corpus.sh NAME`): the original and every candidate on the cases of `compare/NAME/corpus.py` and `compare/NAME/cases/`; the store `WEGA/.corpus` (head comment: the case format) |
 | `corpusc.py` | the inputs of the corpus of the compiler passes: the C sources and what the original earlier passes make of them |
 | `oldcc.sh` | the work on the old compilers: model, lines, findings, matrix, bench |
 

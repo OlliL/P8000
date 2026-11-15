@@ -2,7 +2,7 @@
 
 ## Status
 
-active (2026-11-15)
+done (2026-11-16); the decisions marked "decided by Claude" wait for the owner's review
 
 ## Goal
 
@@ -112,10 +112,41 @@ build on the same inputs, outputs compared; cheap to add a program, fast enough 
   original binary + of the ROOT_FILES + of the emulator + of the runner core (`corpusrun.py` and the case module); candidate
   = original key + sha1 of the candidate binary + of its dependencies. Written to a temporary file and renamed; a key is
   computed by one run at a time (flock).
-- checkall: a corpus with `corpus.py` runs on corpusrun.py, the others on stagecorpus.py; the result line has the same form
-  (`NAME [cand]: N of M inputs identical`).
+- checkall: every corpus runs on corpusrun.py (stagecorpus.py, the tars and mkcorpus.sh are gone); the result line keeps its
+  form (`NAME [cand]: N of M inputs identical`).
+
+Decided by Claude 2026-11-15 while moving (points 3 to 6, steps 4, 5), for review:
+
+- stdout and stderr of a step are kept apart (stdout, then `-- stderr` and stderr): in one pipe their order depends on the
+  buffering of the C library, which the host build does not share.
+- `after_step(argv, rc, out, err, dir)` of a corpus cuts what the original leaves undefined (cas: after an error the warnings
+  and the files it leaves; `normalize()` for the intermediate file of `-i`, size only), as the old case.sh did.
+- `$V` in a step: the words of the variant (popt, spopt: `-l`, `-d`); a word with `* ? [` is expanded in the case directory.
+- `ROOT_ENV` of a corpus: the original runs in the tree of that variable (casold: `OLDROOT`, its original is `/lib/old/cas`
+  of our build); the preparations stay in `WEGA_ROOT`.
+- The key of a prepared input holds the name of its source file (the files of one directory had shared one input), the
+  function of the preparation with its arguments (no addresses), the source files, the emulator.
+- The sources of the derived cases: the files git knows (tracked and untracked, not ignored), in a checkall copy the list
+  `.files` its snapshot writes; before, the builds of the copy added cpy.c and three standalone files (cpp: 299 in checkall
+  against 295 in the working tree).
+- checkall copies the emulator once per run (a rebuild in the working tree during a run had reached its later parts).
+- Measured dependencies (step 4): the emulator writes every guest path it looks up below its ROOT (not /tmp, /dev) to
+  `Z8K_ROOTLOG`; the runner sets it to a file of the starting directory, collects it after a run or a preparation and keeps
+  the state of these files (contents of a file, names of a directory, missing) with the result, the "identical" mark of a
+  candidate and the prepared input; on use they are checked, a change makes it again; the candidate key holds the original's
+  dependencies (a host candidate reads the same headers natively). Measured at once: the preparation of codgen runs
+  `/bin/mv`, which the hand list did not have. `ROOT_FILES` and `prep_files` stay for what is read outside the emulator
+  (host lines such as the copy of /lib/libc.a in ar, native host candidates); the existing lists stay until checked.
+- The fields of the surroundings are reserved in the case format (`user:`, `terminal:`, `device:`, `time:`, `fs:`,
+  `signal:`): each is an error naming what it will mean, until the emulator serves it (120). argv[0] stays the path until a
+  corpus needs the emulator option.
+- `make checkall-nocache` (`CORPUS_NOCACHE=1`); `corpus.sh` takes `CORPUS_TMP`, `CORPUS_OPTS` (were `STAGE_TMP`, `STAGE_OPTS`).
+- Expectations: one or two chosen cases per corpus (e.g. abs.c: exit 0 and the expected name in the output file), strip:
+  case 3 reports `unable to open`; not every case (some originals fail on purpose, e.g. strip of a stripped file).
 
 ## Steps
+
+Done: 1 to 5 (2026-11-15, see Log).
 
 1. The owner's questions on the design first, then the open questions below; this section rewritten to the agreed design.
 2. Cache per case and candidate, narrow code key, the original run twice (on the existing corpora, without changing their
@@ -189,3 +220,13 @@ The corpora themselves for the programs not yet covered: increment 120.
   side, so the two sides were equal although nothing was tested). Decided by Claude: every step and host line with umask 022;
   argv[0] stays the path until a corpus needs the emulator option (ar does not). checkall ALL OK, ar 15 of 15 on both
   candidates; the old progcfg.py, scenarios.sh, lib.sh of ar removed.
+- 2026-11-15: points 3, 4, 5 done (commit 31350742): the C-source group, ld, sld, gld, size, strip, ranlib (compare/binutils/tree.py
+  as a shared prepared tree), cas, casold on corpusrun.py; checkall ALL OK after point 3 (covered 4) and after 5. Case counts
+  against the old corpora: ld 146, sld 91, gld 106, ar 15, size 12, strip 62, ranlib 37, cc/scc 1 as before; cas 766 -> 664 (+6
+  skipped) and the C group: the old tars were made before libc and slibc were merged (397 C sources then, 295 now: the 102
+  duplicates); cpp 295, cparse/scparse 297, codgen/scodgen 289, popt/spopt 921, cchain/scchain 602, casold 666.
+- 2026-11-16: point 6 and steps 4, 5 done: stagecorpus.py, mkcorpus.sh, corpusdeps.sh/.py, the tars and caches removed;
+  corpus.sh only corpusrun.py; make checkall-nocache; measured ROOT dependencies (Z8K_ROOTLOG); reserved fields of the
+  surroundings; the inventory of src/cmd in 120; HANDOFF, HOWTO step 9, CLAUDE.md, host/recon/README.md,
+  host/z8k-emu/README.md. checkall ALL OK, cold (new emulator and runner): corpora 15 minutes in parallel (cas 15, casold 13,
+  cchain/scchain 9 minutes), the whole run 19 minutes; warm: cpp 0.1 s, cas 0.3 s.

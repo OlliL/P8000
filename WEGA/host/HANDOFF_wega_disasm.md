@@ -42,16 +42,30 @@ Not a tool of the chain but the oracle: `host/z8k-emu` (runs the original binari
 
 ## Check of a program: one mechanism, the corpus
 
-Decided (owner, 2026-11-08): every program is checked by the corpus runner (`host/tools/corpus.sh`, `host/recon/stagecorpus.py`), not by an own `check.sh`, and there is no `check` target in a Makefile. The original (under `z8k-emu`) runs on the cases once; every candidate is compared with it: output files, messages, exit status.
+Decided (owner, 2026-11-08): every program is checked by its corpus, not by an own `check.sh`, and there is no `check`
+target in a Makefile. Design and decisions (owner 2026-11-15): `host/increments/110-corpus-architecture.md`; the runner and the
+case format: the head comment of `host/recon/corpusrun.py`.
 
-- `WEGA/compare/NAME/` holds, for every program, what belongs to it besides its source (`src/cmd` has only sources and Makefiles): `progcfg.py` (the corpus), `findings.json`, `FINDINGS.md` (generated), `SYSIII.md`, test data. Programs of one file (ar, ranlib, strip, size) and those without a `src/cmd` directory have one too.
-- `CANDIDATES` in `progcfg.py`: a dict, `wega` (the program built from `src/cmd`, runs under the emulator) and/or `host` (the host build, runs natively), each the path of the binary relative to `WEGA/`. A program without a host counterpart (dc, perhaps others in future) has only `wega`. The corpus is the same for all candidates by construction (one preparation of the inputs, one run of the original).
-- Call: `host/tools/corpus.sh [--wega | --host] [PROG ...]`. Without a switch every candidate is tested, without PROG every program with a corpus; `--wega` / `--host` test only that candidate (with the switch and no PROG: the programs that have it). The binaries are those made by `make` (`CORPUS_BIN_WEGA`, `CORPUS_BIN_HOST` name another file); `checkall` runs it in its copy of the tree, where `CANDIDATES` points to the programs it built there.
-- Chain (owner, 2026-11-08): `compare/cchain` and `compare/scchain` run the whole driver, `cc -c` / `cc -c -O` on every C source of src/cmd and src/lib and a two-step and a stripped link of six small programs (`compare/cchain/link`): the original driver with the original passes under the emulator against the host driver whose `cc.conf` (made by the case, `CORPUS_HOST_ENV`) names the host passes. Objects and programs identical. The link uses the shipped libc, so the cmd sources are only compiled, never linked.
-- Inputs and cache (owner, 2026-11-08): the prepared inputs of a corpus are `compare/NAME/corpus.tar` (not in git; `corpus.sh` makes a missing one, `host/tools/mkcorpus.sh [PROG]` makes it new on purpose and removes the cache; `casold` uses the tar of `cas` (`CORPUS_OF`), one source set for both, `CORPUS_EXCLUDE` leaves out `old_max.s` for cas). The results are cached in `compare/NAME/cache/` (not in git): the output of the original per case, and "candidate identical" per candidate. Key = sha1 of the tar, of the `*.py`/`*.sh` of the corpus and of `host/recon`, of the emulator, of the original and of the files of `WEGA_ROOT` the runs read (`CORPUS_ROOT_FILES`: cpp `usr/include`, ld/sld/gld the crt0 and libc files, ranlib `bin/ar` `bin/sh`), plus for a candidate its binary and `CORPUS_DEPENDS[candidate]` (programs it runs, ranlib host: `host/ar/ar`). Measured with strace (first 30 inputs), no other corpus reads or starts anything: cc/scc run with `-:n -:z`, they start no other program. `host/tools/corpusdeps.sh [PROG]` repeats the measurement and fails when a run reads a file or starts a program the declaration does not cover; run it when a corpus is new or changed. A hit runs nothing; failures are never cached; `CORPUS_NOCACHE=1` ignores it; `RECON_PROG=NAME python3 host/recon/stagecorpus.py --keys` lists the parts. A new corpus whose candidate runs other programs must name them in `CORPUS_DEPENDS`. checkall uses the tars and caches of the working tree (`CORPUS_STORE`).
-- Two shapes of a case: a *run* (an input file, `CORPUS_PREPARE`, `CORPUS_RUN`, `CORPUS_OUTPUTS`; cpp, cparse, codgen, popt, cas, ld) and a *script* (`CORPUS_SCRIPT`: a shell script with many commands and `PROG` as the program, for tools that are driven by commands: ar; its output, exit status and the files left behind are compared; variants are environments such as `TZ`). `CORPUS_VARIANTS` runs every case once per variant.
-- A host build writes host paths (the include directory) or program names: `CORPUS_HOST_ENV`, `CORPUS_NORMALIZE`, and in script mode the files of the case are copied with their directories and a candidate is run under its own name (`.prog/NAME`).
-- Converting a `check.sh` or `check.py`: the new cases must find everything the old script finds. Prove it with deliberately broken builds (change an output format, a comparison, a constant in the host source, run the old and the new check): the new check finds at least the same ones; then remove the old script and the `check` target. Done for `ar`, ranlib, strip, size, `cc`, `scc` (every mutant of the host source that was tried is found; the old `binutils/check.sh` expanded its globs in the wrong directory and tested nothing of the many-file cases). Converted since: `cas` (`compare/cas`, `compare/casold`), `ld`, `sld`, `gld` (`fixtures.py` of each); `host/libc` and `host/oldcc` are removed.
+- `WEGA/compare/NAME/` holds what belongs to a program besides its source: `corpus.py` (the corpus), `cases/CASE/{case,in/}`
+  (hand-written cases), `progcfg.py` (the settings of the reconstruction tools only), `findings.json`, `FINDINGS.md`
+  (generated), `SYSIII.md`, test data.
+- Candidates (owner, a ground rule): the original of `wega31_root` against the program of the shipped build (`make shipped`:
+  cc/scc and /lib/libc.a, /lib/slibc.a; `wega`); a host build (`host`) only for the compiler chain. `CANDIDATES` in
+  `corpus.py`; `CORPUS_BIN_WEGA`, `CORPUS_BIN_HOST` name another file.
+- Call: `host/tools/corpus.sh [--wega | --host] [PROG ...]` (without PROG: `compare/CORPORA`); checkall runs every corpus.
+- A case is data: steps (`step:`, a WEGA program under the emulator; `host:` a line of the host shell), `stdin:`, `env:`,
+  `variant:`, `expect:` (checked on the original). Compared: per step stdout, stderr and exit status, then the whole directory
+  (type, mode, size, checksum, link count). Derived cases come from `generate()` of `corpus.py` (e.g. every C source of the
+  tree, prepared by the original earlier passes); the prepared inputs and the results live in the store `WEGA/.corpus` (not
+  in git) by keys of their contents; the original runs twice before a result is kept; the files of the WEGA tree a run reads
+  through the emulator are measured (`Z8K_ROOTLOG`) and checked on every use. `CORPUS_NOCACHE=1` (`make checkall-nocache`)
+  ignores the store.
+- Chain (owner, 2026-11-08): `compare/cchain` and `compare/scchain` run the whole driver, `cc -c` / `cc -c -O` on every C
+  source of src/cmd and src/lib and a two-step and a stripped link of six small programs (`compare/cchain/link`): the original
+  driver with the original passes against the host driver whose `cc.conf` (`host_setup` of the corpus) names the host passes.
+- Converting a `check.sh` or `check.py`: the new cases must find everything the old script finds (prove it with deliberately
+  broken builds). Done for ar, ranlib, strip, size, cc, scc, cas, casold, ld, sld, gld; `host/libc` and `host/oldcc` are
+  removed.
 
 ## Port rules: `src/cmd/X` to `host/X`
 

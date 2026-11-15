@@ -14,6 +14,7 @@ the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting fil
   env: NAME=VALUE     environment of the step before, or of every step when it comes before the first one
   host: LINE          a line of the host shell between the steps (preparation; WEGA_ROOT is set; each line its own shell)
 Every step and host line runs with umask 022.
+  user: terminal: device: time: fs: signal:   reserved for the surroundings; an error until the emulator serves them
   variant: N=V ...    the case runs once per variant line with that environment (default: once, none)
   expect: exit N | output contains TEXT | file PATH contains TEXT | file PATH same-as in/FILE | missing PATH
                       checked on the original's run
@@ -21,6 +22,9 @@ Compared: per step its output (stdout, then stderr apart; after_step(argv, rc, o
 original leaves undefined) and exit status, afterwards every entry of the directory: type, mode, size,
 checksum, link count (not owner and times).
 
+The files of the tree (ROOT) a run or a preparation reads through the emulator are measured (Z8K_ROOTLOG) and kept with
+the result: a result or prepared input whose files have changed since is made again; the candidate's key holds them too.
+ROOT_FILES and prep_files remain for files read outside the emulator.
 Store (WEGA/.corpus, or CORPUS_DB): results/orig/KEY (the original's result; computed twice, kept only when both are
 equal), results/ok/KEY (a candidate was identical), locks/. Keys: case (case file and in/ by names and contents) + variant +
 original binary + ROOT_FILES + emulator + this runner -> original; + candidate binary + DEPENDS -> candidate. Written by rename;
@@ -50,8 +54,12 @@ REPO = os.path.normpath(os.path.join(HERE, '..', '..'))
 ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or os.path.normpath(os.path.join(REPO, '..', 'tmp', 'wega31_root'))
 EMU = os.environ.get('EMU') or os.path.join(REPO, 'host', 'z8k-emu', 'z8k-emu')
 STORE = os.environ.get('CORPUS_DB') or os.path.join(REPO, '.corpus')
-WORK = os.path.join(os.environ.get('STAGE_TMP', '/tmp/wega_stage'), 'corpusrun')
+WORK = os.path.join(os.environ.get('CORPUS_TMP', '/tmp/wega_corpus'), 'corpusrun')
 os.environ.setdefault('WEGA_ROOT', ROOT)
+# every emulator writes the guest paths it looks up below its ROOT to this file of its starting directory (Z8K_ROOTLOG):
+# the measured dependencies of a run or a preparation on the WEGA tree
+ROOTLOG = '.z8k_rootlog'
+os.environ['Z8K_ROOTLOG'] = ROOTLOG
 RUNROOT = ROOT		# the tree the original and the WEGA programs of the steps run in (ROOT_ENV of the corpus, else ROOT)
 
 _SHA = {}
@@ -87,6 +95,17 @@ def mix(*parts):
 
 class CaseError(Exception):
     pass
+
+
+# the fields of the surroundings of a case the format reserves; each is an error until the emulator serves it
+LATER = {
+    'user': 'the user and group ids the program runs as (and the files of /etc/passwd, /etc/group it sees)',
+    'terminal': 'a terminal: type, size, the keys as a byte stream (stdin and stdout of the step are the terminal)',
+    'device': 'a device file of /dev and its model (e.g. a tape, a floppy, a line printer)',
+    'time': 'the time the guest sees (the emulator has Z8K_TIME for a fixed time; the field comes with the first program that needs it)',
+    'fs': 'a file system of its own (mount, a block device with a WEGA file system)',
+    'signal': 'a signal sent to the step after N seconds or at a text of its output',
+}
 
 
 def parse_case(text, where):
@@ -125,6 +144,9 @@ def parse_case(text, where):
             c['variants'].append({'env': dict(w.split('=', 1) for w in env), 'words': [w for w in ws if w not in env]})
         elif k == 'expect':
             c['expect'].append(shlex.split(v))
+        elif k in LATER:
+            raise CaseError('%s:%d: %s: %s; not served yet (the emulator has no model of it; increment 120 builds it with the '
+                            'first program that needs it)' % (where, n, k, LATER[k]))
         else:
             raise CaseError('%s:%d: unknown field %s' % (where, n, k))
     if not c['steps']:
@@ -149,8 +171,8 @@ def case_hash(d):
 
 # ---- running ------------------------------------------------------------------------------------------------------------
 
-# copying a program and starting a process exclude each other (see stagecorpus.py: ETXTBSY of a copy whose write
-# descriptor a fork of another thread holds until its exec)
+# copying a program and starting a process exclude each other (ETXTBSY: a fork of another thread holds the write descriptor
+# of a copy until its exec)
 SPAWN = threading.Lock()
 
 
@@ -193,6 +215,54 @@ def listing(d, norm=None):
                     data = norm(rel, data)
                 out.append('f %o %d %08x %d %s' % (st.st_mode & 0o7777, len(data), zlib.crc32(data), st.st_nlink, rel))
     return '\n'.join(out)
+
+
+def collect_rootlog(d):
+    """the guest paths the emulators started below d looked up in their ROOT (the log files are removed); not /tmp, /dev"""
+    paths = set()
+    for dp, dn, fn in os.walk(d):
+        if ROOTLOG in fn:
+            p = os.path.join(dp, ROOTLOG)
+            paths.update(l for l in open(p, encoding='latin-1').read().split('\n')
+                         if l and not l.startswith(('/tmp/', '/dev/')) and l != '/tmp')
+            os.remove(p)
+    return paths
+
+
+_DEPMEMO = {}
+_DEPLOCK = threading.Lock()
+
+
+def dep_hash(root, g):
+    """the state of the guest path g of the tree root: a file by its contents, a directory by its names, '-' when missing"""
+    p = root + g
+    try:
+        st = os.stat(p)
+    except OSError:
+        return '-'
+    k = (p, st.st_ino, st.st_mtime_ns, st.st_size)
+    with _DEPLOCK:
+        if k in _DEPMEMO:
+            return _DEPMEMO[k]
+    if os.path.isdir(p):
+        h = 'd' + hashlib.sha1('\n'.join(sorted(os.listdir(p))).encode('latin-1', 'replace')).hexdigest()
+    else:
+        try:
+            h = sha1file(p)
+        except OSError:
+            h = '?'
+    with _DEPLOCK:
+        _DEPMEMO[k] = h
+    return h
+
+
+def deps_of(root, paths):
+    return {g: dep_hash(root, g) for g in sorted(paths)}
+
+
+def deps_ok(root, deps):
+    """the files of the tree a result was made from are as they were"""
+    return all(dep_hash(root, g) == h for g, h in (deps or {}).items())
 
 
 def run_case(cfg, indir, case, variant, side, binary, rd):
@@ -265,7 +335,9 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         if norm:
             text = norm('output', text)
         res['steps'].append('step %d %s: exit=%d\n%s' % (i, argv[0], rc, text))
+    used = collect_rootlog(rd)
     res['tree'] = listing(rd, getattr(cfg, 'normalize', None))
+    res['deps'] = deps_of(RUNROOT, used)
     return res
 
 
@@ -365,6 +437,9 @@ def cases(cfg):
     return out
 
 
+_VALID = set()	# prepared inputs checked in this run
+
+
 class Generated:
     """a derived case: its name, the source files it is made from, the preparation prep(src, work) -> base or None (made with
     the original tools; None: the original cannot make it, the case is skipped), the text of the case"""
@@ -393,25 +468,52 @@ class Generated:
         """the prepared starting files in the store (made when missing), or None when the original cannot make them"""
         k = self.key()
         d = os.path.join(STORE, 'inputs', k[:2], k)
-        if os.path.isdir(d):
-            return d
-        if os.path.exists(d + '.skip'):
-            return None
+        r = self._valid(d)
+        if r is not False:
+            return r
         with KeyLock('in' + k):
-            if os.path.isdir(d):
-                return d
-            if os.path.exists(d + '.skip'):
-                return None
+            r = self._valid(d)
+            if r is not False:
+                return r
+            for old in (d, d + '.skip'):	# made from files of the tree that have changed since (rare: the tree is fixed)
+                if os.path.isdir(old):
+                    gone = '%s.old%d.%d' % (old, os.getpid(), threading.get_ident())
+                    os.rename(old, gone)
+                    shutil.rmtree(gone, ignore_errors=True)
+                elif os.path.exists(old):
+                    os.remove(old)
             tmp = '%s.tmp%d.%d' % (d, os.getpid(), threading.get_ident())
             shutil.rmtree(tmp, ignore_errors=True)
             os.makedirs(tmp)
             r = self.prep(self.src, tmp) if self.prep else True
+            deps = json.dumps(deps_of(ROOT, collect_rootlog(tmp)))
             if r is None:
                 shutil.rmtree(tmp, ignore_errors=True)
-                open(d + '.skip', 'w').close()
+                with open(d + '.skip', 'w') as f:
+                    f.write(deps)
                 return None
+            with open(d + '.deps.tmp', 'w') as f:
+                f.write(deps)
+            os.replace(d + '.deps.tmp', d + '.deps')
             os.replace(tmp, d)
             return d
+
+    def _valid(self, d):
+        """d when the prepared input is there and its files of the tree are unchanged, None for a valid skip, else False"""
+        for p, val in ((d, d), (d + '.skip', None)):
+            if os.path.exists(p):
+                if p in _VALID:
+                    return val
+                dp = d + '.deps' if val else p
+                try:
+                    deps = json.loads(open(dp).read() or '{}')
+                except (OSError, ValueError):
+                    return False
+                if deps_ok(ROOT, deps):
+                    _VALID.add(p)
+                    return val
+                return False
+        return False
 
 
 class Gen:
@@ -529,10 +631,13 @@ def main():
         label = cname + ('[%s]' % vt if vt else '')
         rdir = os.path.join(work, '%s.%d' % (cname.replace('/', '_'), vi))
         msgs = []
-        r1 = None if nocache else store_read('orig', okey)
+        def cached():
+            r = None if nocache else store_read('orig', okey)
+            return r if r is not None and deps_ok(RUNROOT, r.get('deps')) else None
+        r1 = cached()
         if r1 is None:
             with KeyLock(okey):
-                r1 = None if nocache else store_read('orig', okey)
+                r1 = cached()
                 if r1 is None:
                     indir = getin()
                     if indir is None:
@@ -549,8 +654,10 @@ def main():
             msgs.append('EXPECT failed on the original: ' + '; '.join(r1['expect']))
         res = {}
         for c, path in cands.items():
-            ckey = mix(okey, sha1file(path), *[sha1tree(os.path.join(REPO, d)) for d in getattr(cfg, 'DEPENDS', {}).get(c, [])])
-            if not nocache and os.path.exists(store_path('ok', ckey)):
+            ckey = mix(okey, json.dumps(r1.get('deps', {}), sort_keys=True), sha1file(path),
+                       *[sha1tree(os.path.join(REPO, d)) for d in getattr(cfg, 'DEPENDS', {}).get(c, [])])
+            ok = None if nocache else store_read('ok', ckey)
+            if isinstance(ok, dict) and deps_ok(RUNROOT, ok.get('deps')):
                 res[c] = not msgs
                 continue
             indir = getin()
@@ -558,14 +665,14 @@ def main():
                 return label, None, {}
             r2 = run_case(cfg, indir, case, var, c, path, rdir + '.' + c)
             r1c = {'steps': r1['steps'], 'tree': r1['tree']}
-            if r1c == r2:
-                store_write('ok', ckey, 1)
+            if r1c == {'steps': r2['steps'], 'tree': r2['tree']}:
+                store_write('ok', ckey, {'deps': r2['deps']})
                 res[c] = not msgs
                 if not keep:
                     shutil.rmtree(rdir + '.' + c, ignore_errors=True)
             else:
                 res[c] = False
-                msgs.append('[%s] %s' % (c, explain(r1c, r2)[0]))
+                msgs.append('[%s] %s' % (c, explain(r1c, {'steps': r2['steps'], 'tree': r2['tree']})[0]))
         if not keep:
             shutil.rmtree(rdir + '.orig', ignore_errors=True)
         return label, msgs, res

@@ -29,6 +29,31 @@ change (a port to the host, a fix the owner allows) is checked against an expect
   inventory of 110 says which program needs which.
 - A corpus is added only when its expectations show that the original really does what its cases are for (110, Design 9).
 
+- Inventory (110 step 5, 2026-11-15; by grep of the sources, a first hint, to be confirmed per program): what a program uses of
+  its surroundings. Markers: terminal (ioctl, stty/gtty, isatty, ttyname; scripts: stty, tty, read), user (uid calls,
+  getpw*, utmp; scripts: passwd, chown, su), device (a path in /dev), time (time, ctime, utime; scripts: date, touch),
+  signal (signal, kill, alarm; scripts: kill, trap), fs (mount, ustat; scripts: mount, mkfs, fsck), exec (fork, exec),
+  processes (scripts: ps, who, utmp). The emulator serves today: argv, environment, files below ROOT and the working
+  directory, fork/exec/wait, pipes, a fixed time on request (Z8K_TIME); not: a terminal, devices, other users, a second file
+  system, guest signal handlers.
+
+  | Program (src/cmd) | Uses | Program (src/cmd) | Uses |
+  |---|---|---|---|
+  | ar, size, strip, ranlib | (corpus exists) | cc, scc, cpp, cparse, codgen, popt, cas, ld, sld, gld | (corpus exists) |
+  | sync, rmdir | nothing | rm | terminal (-i), exec |
+  | mv (cp, ln) | terminal (prompt), user | dc | signal, exec |
+  | tar | terminal, user, device, time, signal, exec | write | terminal, user, device, signal, exec |
+  | dump, restor | terminal, device, time, signal | dumpdir | terminal, device, time |
+  | getud, putud | device, signal | copydisk, format, verify | terminal, device, signal |
+  | doscopy | device, time, signal | pburn | device |
+  | BOOT0, standalone | the bare machine (no WEGA system): MAME (180), not a corpus | | |
+  | chkdiff, uuclear, down, makelost+found, makewhatis, mvdir | nothing marked | halt | time, signal, processes |
+  | adduser, rmuser | user, device, processes (rmuser: signal) | install, man.dbmgr, sysgen, UGETT1 | device (install: user) |
+  | mfs, new.install | device, fs | killall, whodo | terminal, time, signal, processes (killall: device) |
+
+  So the first batch needs no model (sync, rmdir, rm without -i, mv, dc, the scripts without a marker); devices are the
+  largest group (a file standing in for the device is the likely first model: getud/putud, dump/restor, tar f).
+
 - Today corpora exist for the tool chain only (cc, cpp, cparse, codgen, popt and their segmented twins, cas, ld, sld, gld,
   ar, ranlib, strip, size, cchain, scchain).
 

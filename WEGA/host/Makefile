@@ -18,6 +18,7 @@
 #
 #   make checkall [NAME=n] [PATCH=file|ref]  everything that is byte-identical (a variant: increment 105), each program with its compiler, on a copy of the
 #                        files in git, and the corpora (tools/checkall.sh): the check to run before a commit
+#   make checkall-nocache  the same, the corpora without their store (now and then: checks the cache itself)
 #   make oldroot         the old compilers and libraries from the sources, into OLDROOT: a WEGA tree of symbolic links to WEGA
 #                        (tools/oldroot.sh) with bin/ccvN and lib/vN/{cparse,codgen,popt}, and src/lib: stage1 lib stage2 of ../src/Makefile;
 #                        then: z8k-emu -r OLDROOT /bin/ccv1 -c -O foo.c
@@ -45,6 +46,9 @@ cc popt codgen cparse ar binutils cas ld cpp:
 checkall:
 	WEGA=$(WEGAABS) CHECK_NAME="$(NAME)" CHECK_PATCH="$(PATCH)" sh tools/checkall.sh
 
+checkall-nocache:
+	WEGA=$(WEGAABS) CHECK_NAME="$(NAME)" CHECK_PATCH="$(PATCH)" CORPUS_NOCACHE=1 sh tools/checkall.sh
+
 wbin:
 	sh tools/oldroot.sh $(WEGAABS) $(OLDROOTABS)
 	sh tools/wbin.sh $(WBIN) $(WEGAABS) $(OLDROOTABS) $(EMU)
@@ -65,4 +69,4 @@ clean:
 	$(MAKE) -C cas clean
 	$(MAKE) -C cpp clean
 
-.PHONY: all checkall wbin oldroot src clean cc popt codgen cparse ar binutils cas ld cpp
+.PHONY: all checkall checkall-nocache wbin oldroot src clean cc popt codgen cparse ar binutils cas ld cpp
