@@ -141,14 +141,14 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 
 The C members of `/lib/libc.a` and `/lib/slibc.a` (sources 08/83 and 09/83) come out of the shipped cc and scc except a few;
 their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_VL` in `src/cmd/cc`, built in
-`build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (scparse, spopt) and `/lib/vl/codgen`,
-`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` to `OLD_D57`).
+`build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (spopt), `/lib/vl/scparse` (the shipped one with `OLD_D25`) and `/lib/vl/codgen`,
+`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53` to `OLD_D58` and `OLD_D24`).
 Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped compilers give
-193, vl gives 201 (nlist, symscan and swap of both libraries, scanf and printf of slibc added) and changes no other member. Both libraries are built by vl
+193, vl gives 202 (nlist, symscan and swap of both libraries, malloc of both libraries, scanf of slibc added; the printf of both libraries is exact only with its `-I`, so 204 in the build; slibc malloc also needs two forms of its source: `union store *r` declared in front of `register unsigned onw` in realloc, an unused `int spare` in calloc, whose frame is 2 bytes larger without a found cause, as the spare word of ld in D1) and changes no other member. Both libraries are built by vl
 (`CC = ccvl` in `src/lib/libc/Makefile`, `CC = sccvl` in `src/lib/slibc/Makefile`; owner's decision 2026-11-14), so
 checkall measures every rule of vl on all their members. vl itself is compiled by the shipped cc: in stage 1 linked with
 the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). Still from
-`oldcc/NAME/*.s`: malloc (libc); malloc, segmon, doprnt (slibc); their rules, when found, belong to vl
+`oldcc/NAME/*.s`: segmon, doprnt (slibc); their rules, when found, belong to vl
 (`src/lib/HANDOFF.md`).
 
 ### The old scc of cas
@@ -285,7 +285,7 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 Popt, not a difference of the compiler: `rmove` replaces the load of the slot stored last, so `fprintf(..., l)` behind
 `l = lab = getlab()` takes r2 (prtdcon); where comjump merged two arms first, rmove no longer knows the slot and the load stays.
 
-Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after: guess, a parameter of another type, see longswap in OLDCC_LOG.md), libc malloc (`mult rr2,r6`); cas: `ld S0,r7`
+Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after: guess, a parameter of another type, see longswap in OLDCC_LOG.md); cas: `ld S0,r7`
 followed by `ld r7,S0`.
 
 ### D4 Spill of arguments
@@ -453,7 +453,7 @@ The kernel masks a user address with `(caddr_t)((long)x & 0x7F00FFFF)`. Original
 - vk `OLD_D25` (cparse local1.c, SEG, PCONV): a cast of a long to a pointer stays a conversion (SCONV); the shipped scparse paints the type.
 - vk `OLD_D24` (codgen optim3.c): `convelim` keeps a conversion between a pointer and a non-pointer of the same size. The SCONV of a long to a pointer then uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`: the copy and the mask), and an `& 0x7f00ffff` under it is dropped.
 
-The two work only together: each alone gives the code of the shipped compiler. Witnesses: `sig`, `sys2`, `sys3`, `debug` of the kernel. vc has both too (`OLD_D24` in `OLD_VC`, `OLD_D25` in the segvc rule of scparse): cas `yylex` (`(struct pst *)(q->s_2 & 0x7F00FFFFL)`: `ldl rr2,rr0; and r2,#%7F00`) and `igetaddr` (`return ((struct irow *)igetl());`: `ldl rr0,rr2; and r0,#%7F00; ldl rr2,rr0`). In cas a node holds its operands in pointer members of its union and a symbol its name in `s_name` (a union with the value `s_2`), so that only these two casts of a long to a pointer are left; with a cast at every node operand D25 would mask them all. No source form replaces them: 25 forms of the statement in `sig` (casts, `L` constants, order of the operands, `~`, `+ 0`, `| 0`, a long lvalue, parentheses) give the same code, temporaries are worse.
+The two work only together: each alone gives the code of the shipped compiler. Witnesses: `sig`, `sys2`, `sys3`, `debug` of the kernel. vc has both too (`OLD_D24` in `OLD_VC`, `OLD_D25` in the segvc rule of scparse): cas `yylex` (`(struct pst *)(q->s_2 & 0x7F00FFFFL)`: `ldl rr2,rr0; and r2,#%7F00`) and `igetaddr` (`return ((struct irow *)igetl());`: `ldl rr0,rr2; and r0,#%7F00; ldl rr2,rr0`). In cas a node holds its operands in pointer members of its union and a symbol its name in `s_name` (a union with the value `s_2`), so that only these two casts of a long to a pointer are left; with a cast at every node operand D25 would mask them all. vl has both too (`OLD_D24` in `OLD_VL`, `OLD_D25` in the segvl rule of scparse, `/lib/vl/scparse`): slibc malloc (`setbusy`, `clearbusy` with `INT` = `long`: `(union store *)((long)(p)|BUSY)`; the first call sets `allocs[0].ptr = setbusy(&allocs[1])`: `ldl rr4,rr2; and r4,#%7f00`); D24 alone changes nothing there, nonsegmented D24 changes no libc member. No source form replaces them: 25 forms of the statement in `sig` (casts, `L` constants, order of the operands, `~`, `+ 0`, `| 0`, a long lvalue, parentheses) give the same code, temporaries are worse.
 
 ### D29 Layout of a table switch
 
@@ -592,10 +592,10 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | ranlib | ranlib.c | v0 | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | strip | strip.c | v1 | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | size | size.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | malloc.o (gen/malloc.c) | open |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | nlist.o (gen/nlist.c) | open | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | malloc.o (gen/malloc.c) | vl |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | nlist.o (gen/nlist.c) | vl | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | libc.a | length.o (gen/length.c) | open | x |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | swap.o (gen/swap.c) | open |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | swap.o (gen/swap.c) | vl |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | size | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
 | size | libc: rdwr.o (fread, fwrite) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
 | size | libc: doprnt.o (_doprnt) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |
@@ -677,3 +677,12 @@ from the frame (`ld r14,0(r15)`), the functions behind that one are as usual. Wi
 The mark of a state that the old compiler keeps over the end of a function (the register file). Limits from the
 measurements: not for a parameter that arrives on the stack (`&args` of scanf, printf); by the register, not by the frame
 offset (doprnt: `&nreg` in `_doprnt`, the parameters of `_atoip` behind it stay known). One source, two objects.
+
+### D58 An unsigned name in a register is taken from it also as an int
+
+vl `OLD_D58` (codgen regs3.c, `regforsym`). The shipped codgen takes a name from the register that holds it only when the
+type of the use is the type of the name. The codgen of vl takes an `unsigned` name from its register also where it is used
+as an `int` (`mult rr2,r6` in calloc of libc.a: `num *= size` with `unsigned num, size`; the shipped codgen loads size
+from the frame again). Not the other direction: an `int` used as `unsigned` changes fputc. With the word types of
+`OLD_D3P` (every pair of word types) lsearch, symscan, fputc and malloc itself change. Witness: malloc of libc.a. One
+witness.

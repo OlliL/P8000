@@ -102,8 +102,9 @@ char	*codgen		= "/lib/vk/scodgen";
 char	*popt		= "/lib/vk/spopt";
 #else
 #ifdef OLD_VL
-/* ccvl, sccvl (nonsegvl, segvl): the shipped passes with the code generator of libc.a and slibc.a in /lib/vl */
-char	*cparse		= SEG("/lib/cparse", "/lib/scparse");
+/* ccvl, sccvl (nonsegvl, segvl): the shipped passes with the code generator of libc.a and slibc.a in /lib/vl
+   (and the scparse of the time: the shipped one with OLD_D25) */
+char	*cparse		= SEG("/lib/cparse", "/lib/vl/scparse");
 char	*gopt		= "/lib/gopt";
 char	*codgen		= SEG("/lib/vl/codgen", "/lib/vl/scodgen");
 char	*popt		= SEG("/lib/popt", "/lib/spopt");

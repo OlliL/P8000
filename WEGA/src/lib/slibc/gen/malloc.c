@@ -172,8 +172,8 @@ unsigned nbytes;
 	register unsigned nw;
 	register union store *b;
 	register union store *q;
+	union store *r;		/* declared in front of onw: the frame order of the original */
 	register unsigned onw;
-	union store *r;
 
 	b = p - 1;
 	onw = clearbusy(b->ptr) - p;
@@ -208,6 +208,7 @@ unsigned num, size;
 	register long *q;
 	register m;
 	register char *mp;
+	int spare;		/* unused: the frame of the original is 2 bytes larger (cause not found) */
 	char *malloc();
 
 	num *= size;

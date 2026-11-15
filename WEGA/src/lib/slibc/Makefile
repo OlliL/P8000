@@ -296,8 +296,8 @@ obj/length.o: gen/length.c
 obj/crypt.o: gen/crypt.c
 	cd gen ; $(CC) -O -c crypt.c ; mv crypt.o ../obj/crypt.o
 
-obj/malloc.o: oldcc/malloc/0_1.s
-	cd oldcc/malloc ; $(CAS) -u -o ../../obj/malloc.o 0_1.s
+obj/malloc.o: gen/malloc.c
+	cd gen ; $(CC) -O -c malloc.c ; mv malloc.o ../obj/malloc.o
 
 obj/errlst.o: gen/errlst.c
 	cd gen ; $(CC) -O -c errlst.c ; mv errlst.o ../obj/errlst.o
