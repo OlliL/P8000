@@ -7,10 +7,11 @@ What is byte-identical is checked by `make -C host checkall` (16 minutes): every
 
 ## 2. `lib/` from C, what is left
 
-The state, the open members and the next steps: 
-- [`lib/libc/HANDOFF.md`](lib/libc/HANDOFF.md) (libc.a, crt0.o)
-- [`lib/slibc/HANDOFF.md`](lib/slibc/HANDOFF.md) (slibc.a, scrt0.o)
-- [`lib/libl/HANDOFF.md`](lib/libl/HANDOFF.md) (libl.a, slibl.a, ncform)
+libc.a, crt0.o, slibc.a, scrt0.o: every member from source (C by vl, `host/OLDCC.md`). Open:
+- The switches of vl: each has one source as witness; check whether source forms with the existing switches replace them
+  ([`lib/HANDOFF.md`](lib/HANDOFF.md)).
+- slibc into the tree of libc (one tree with `#ifdef`; the differences: `host/KNOWLEDGE.md`, "slibc: its sources against those of libc").
+- The other segmented files of `/lib` (`smcrt0.o`, `scnvt.o`, `sdoprnt.o`), `slibm.a` and the other `s*` libraries.
 
 ## 9. New programs
 

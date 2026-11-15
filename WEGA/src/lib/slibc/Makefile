@@ -1,7 +1,5 @@
 # slibc: /lib/slibc.a (the libc of the segmented compiler scc) from its sources, with the shipped tools, the whole file byte-identical
 # (headers: arhdr.s, mkar.sh, as in ../libc); csu/scrt0.o is /lib/scrt0.o. The sources start from those of ../libc.
-# oldcc/NAME/0_1.s: members whose C source is not reproduced by the shipped scc yet (cut from the original member; the C source is next
-# to it in gen/ or stdio/).
 #
 #   make        slibc.a and obj/*.o; csu/scrt0.o
 #   make install PREFIX=dir   dir/lib/slibc.a, dir/lib/scrt0.o

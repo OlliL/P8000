@@ -56,7 +56,6 @@ doprnt from C"). libc and slibc have no `oldcc/` member left.
 
 ## Next steps
 
-1. `slibc/HANDOFF.md`: bring the member tables to the state of this file.
-2. Open questions of vl that stay: the bound of D53 (between 1170 and 1592 bytes), why D56 holds only segmented, the
+1. Open questions of vl that stay: the bound of D53 (between 1170 and 1592 bytes), why D56 holds only segmented, the
    spare word of calloc. Each switch of vl has one source as its witness; before a new switch, try source forms that fit
    the existing ones (doprnt).

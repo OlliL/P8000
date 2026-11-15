@@ -989,8 +989,8 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/cas` (`sgetnode`) | no `return (np)` behind the switch: the node is returned because rr2 still holds the value of the last call (`mknode1`, `mknode7`, `sgetexpr`); after the error of the default case np is not loaded | kept in src/cmd/cas (getops.c) | compare/cas/findings.json |
 | `/bin/cas` (`exprreloc`) | case 0x24 (`^O`) tests `v & 8` and does nothing with the result (`cpl rr2,#0` without a jump): an if/else that ors 0 in both branches, where 0x23 ors 2 or 0x20 and 0x25 ors 1 or 0x10 | kept in src/cmd/cas (expr.c): `if (v & 8) v |= 0; else v |= 0;` | compare/cas/findings.json |
 | `/bin/cas` (`igetaddr`, `putrow`) | the row address goes through `switch (sizeof(pointer))` with a case for 4 (igetl, iputl) and one for 2; the compiler keeps the load of the constant (`ldk r2,#4`, never read) and drops the case for 2, whose body is not in the binary | kept in src/cmd/cas (ifile.c, instr.c); the body of case 2 (igetw, iputw) is a guess | compare/cas/findings.json |
-| `/lib/libc.a`, `/lib/slibc.a` (`ulimit`) | the system call number of `ulimit` is 54 in libc (that is `ioctl` in `uts/sys/sysent.c`) and 65 in slibc (`nosys`); neither reaches a ulimit | kept (`src/lib/libc/sys/ulimit.s`, `src/lib/slibc/sys/ulimit.s`) | `src/lib/slibc/HANDOFF.md` |
-| `/lib/slibc.a` (`symscan`) | a name of more than 8 characters is found by its length only: the loop `while (*s++ && *t++ && *t)` compares no characters | kept (`src/lib/slibc/gen/symscan.c`; the member from `oldcc/symscan`) | `src/lib/slibc/HANDOFF.md` |
+| `/lib/libc.a`, `/lib/slibc.a` (`ulimit`) | the system call number of `ulimit` is 54 in libc (that is `ioctl` in `uts/sys/sysent.c`) and 65 in slibc (`nosys`); neither reaches a ulimit | kept (`src/lib/libc/sys/ulimit.s`, `src/lib/slibc/sys/ulimit.s`) | `src/lib/slibc/sys/ulimit.s` |
+| `/lib/slibc.a` (`symscan`) | a name of more than 8 characters is found by its length only: the loop `while (*s++ && *t++ && *t)` compares no characters | kept (`src/lib/slibc/gen/symscan.c`; the member from `oldcc/symscan`) | `src/lib/slibc/gen/symscan.c` |
 
 ## ar (reconstructed, byte-identical)
 
@@ -1529,11 +1529,8 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   Module names matter: they appear as `<module>_p`/`<module>_d` symbols
   (abort.s is module `abort_s`).
 - The archive as a whole is byte-identical too (2026-11-05, `arhdr.s`, `mkar.sh`). Result: 175 of the 179 members identical (`/lib/libc.a` holds 179 objects and `Library.SC`); the 4 others are kept as cas sources in
-  `src/lib/libc/oldcc`, see "oldlibc":
-  - `malloc`: one instruction, `mult rr2,r6` against `mult rr2,0(r15)`. `swap`: `0(r15)` against `@r15`, a register known in the shipped cc.
-    `symscan`: `ld r3,..; lda r4,..` where the shipped cc takes r2, r3. `nlist`: only the frame, 2 bytes less. These look like a
-    compiler between ccv1 and the shipped cc (a guess); the frame of `nlist` not understood. The segmented twins in slibc show the
-    same differences; measured there and the C source of symscan: `src/lib/libc/HANDOFF.md`, `src/lib/slibc/HANDOFF.md`.
+  the compiler vl (a little older than the shipped cc; `host/OLDCC.md`, "vl: the compiler of libc.a and slibc.a"); since
+  2026-11-15 every C member of libc.a and slibc.a is built from C by vl.
 - `printf` needs the stdio.h of `src/cmd/cparse` with the shipped cc: `char *_ptr`, so `extsb` behind putc. check.sh tries it.
 - Source forms that gave these members (2026-11-04):
   - Arguments come in registers: printf and scanf copy them into a local array `regs[5]` and hand it over beside the address of the first
@@ -1603,13 +1600,43 @@ Consequence: not a cause of the length, nlist, swap, malloc differences.
 ## oldlibc: libc versions and assembler sources of objects made by the old cc
 
 Objects that an older cc revision produced cannot be rebuilt from C with the shipped cc. For those
-we keep `src/lib/libc/oldcc/<member>/<version>.s` (cas syntax) which the original `cas -u` turns into the byte-identical
-original member (step 1 of `checkall`; `host/oldcc` is removed). They are generated from the original objects with
+a directory `oldcc/<member>/<version>.s` (cas syntax) can hold the cut member, which the original `cas -u` turns into the
+byte-identical original member (step 1 of `checkall`). libc.a and slibc.a have none since 2026-11-15 (all from C by vl). They are generated from the original objects with
 `tools/sdis.py -a` (all symbols are pre-declared in symbol-table order, otherwise the symbol table
 of the rebuilt object differs). Sources that the shipped cc reproduces byte for byte get NO `.s`
 listing in git.
 
-Covered (4, all verify, directory `src/lib/libc/oldcc/`, version 3_3 for malloc (SCCS id malloc.c 3.3), 0_1 for the others (no id, invented)): malloc, nlist, swap, symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`.
+Formerly covered so (libc: malloc, nlist, swap, symscan; slibc: those and scanf, printf, segmon, doprnt), now from C. `ecvt` is
+PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`.
+
+### libl.a, slibl.a, ncform
+
+From System III `usr/src/lib/libl/lib/*.c` unchanged (allprint, main, reject, yyless, yywrap), one source for both libraries
+(the two `Library.SC` are byte-equal, all files `1.1 02/11/83`). Compiler v1 (`ccv1 -O`, `sccv1 -O`): main is identical with
+every compiler, reject, yyless, yywrap only with v1; allprint needs the popt switch `OLD_D52` of v1 (`host/OLDCC.md`) and the
+`stdio.h` of `src/lib/libl` (`char *_ptr`). `ncform` is the System III file plus `/* @[$]ncform 2.1 */` and a tab before a
+comment; `nrform` is not in WEGA. Archives: `arhdr_libl.s`, `arhdr_slibl.s` (member headers of the originals; slibl names
+its members `NAME.s.o`), `mkar.sh` without a padding byte.
+
+### slibc: its sources against those of libc (for a later merge into one tree)
+
+`src/lib/slibc` started as a copy of `src/lib/libc`; no cpp symbol tells scc from cc except `NULL` (`0L` in scc), so it is
+a tree of its own. Files equal in both trees where the bytes allow it (execvp, ctime, popen, system, fltioc: the forms the
+segmented members needed keep libc identical). Different on purpose:
+- C, the segmented calling convention (pointer arguments in rr6, rr4, rr2, then the stack): `stdio/doscan.c`
+  (`++nreg == 2`, no spare local `unused` in `_instr`), `stdio/scanf.c`, `stdio/printf.c` (2 or 4 register arguments,
+  `regs[5]`/`regs[3]`, the flag of `_doprnt` 1 and 3), `stdio/doprnt.c` (revision 2.8 against 2.9 of libc, `%s` a 4 byte
+  pointer, `_pfile != NULL`, the block `lng:` behind the cases `O X U D l`).
+- C, own: `gen/malloc.c` (the arena a segment: `mkseg`/`ssgbrk`, BLOCK 2048, maxblocks 32, `INT long`), `gen/segmon.c`
+  (instead of `mon.c`; names guessed).
+- Assembler: every PLZ/ASM source has `$segmented` and segmented instructions; only in slibc: `sys/` chkseg, mkseg, sgbrk,
+  sgstat, sprofil, ssgbrk, `csu/scrt0.s`; `crt/mcount.s` another program (`_ctbase`, `_cntno`); `sys/ulimit.s` another
+  system call number; `gen/stfl.s` (cas) segmented; `gen/atof.s`: the jump table `LONG := label`, the state table bytes
+  doubled (offsets into 4-byte entries); only in libc: `brk.s`, `mon.c`, `csu/crt0.s`. PLZ/ASM: `out` is a mnemonic, a
+  segmented address constant is `LONG := label`, the stack segment `|_stkseg+n|(r15)` with `_stkseg` external.
+  `host/tools/s2as.py -s` drafts a segmented member.
+- The headers of the sources are those of libc, except the files rewritten for slibc (SCCS line of `Library.SC` of slibc).
+- Guess: libc's `int unused` in `_instr` (doscan) may be a `register` that gets a frame slot only in nonsegmented code.
 
 ### The libraries of the old programs (2026-11-04)
 
@@ -1628,7 +1655,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v9 | ld (07/83); its order conflicts with v6, its versions do not |
 | libc-v10 | write, rmdir (01/83) |
 
-The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see `src/lib/slibc/HANDOFF.md`.
+The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see "slibc: its sources against those of libc".
 A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.
 
 `popt` (`z23.c`) uses the value of `sprintf`, the buffer: `strlen(sprintf(t[k].s1, "r%d", n))`. The `sprintf` of the shipped libc returns a count; popt then silently loses its register substitution (r1 becomes r14 without being saved) and the code it makes is wrong. So stage 1 links the old `printf` in front of the shipped libc.
