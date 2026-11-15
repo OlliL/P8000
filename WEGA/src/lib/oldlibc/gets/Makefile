@@ -11,6 +11,6 @@ CAS = cas
 objs: 0_1.o
 
 0_1.o: ../../libc/stdio/gets.c
-	$(CCV1) -O -I.. -I../../libc/stdio -c ../../libc/stdio/gets.c ; mv gets.o 0_1.o
+	$(CCV1) -O -I../../../head/oldv7 -I../../libc/stdio -c ../../libc/stdio/gets.c ; mv gets.o 0_1.o
 
 .PHONY: objs

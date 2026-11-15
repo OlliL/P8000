@@ -28,7 +28,7 @@ def compile_all(src):
                 shutil.copy(f, w)
             shutil.copy(src, w)
             if h == 'cparse':
-                shutil.copy(os.path.join(L.REPO, 'src/cmd/cparse/stdio.h'), w)
+                shutil.copy(os.path.join(L.REPO, 'src/head/oldv7/stdio.h'), w)
             b = os.path.basename(src)
             r = subprocess.run([L.EMU, '-r', root, cc, '-O', '-I.', '-c', b], cwd=w, capture_output=True, timeout=120)
             p = os.path.join(w, b[:-2] + '.o')

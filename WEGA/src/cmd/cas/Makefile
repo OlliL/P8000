@@ -12,7 +12,7 @@
 
 # the compiler nearest to /bin/cas (sccvc, host/OLDCC.md); old/cas, built before sccvc exists, by the shipped scc
 SCC = sccvc
-SCCFLAGS = -O
+SCCFLAGS = -O -I../../../head/oldv7
 YACC = yacc
 SLD = sld
 SLDFLAGS = -i -e start -z -Mt4 -Md5 -Mb5
@@ -30,7 +30,7 @@ build/cas: FORCE
 	cd build ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile cas
 
 old/cas: FORCE
-	cd old ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc SLIBC=/lib/slibc.a SCCFLAGS="-O -DOLD_CAS" ASMDEFS=-DOLD_D13 cas
+	cd old ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../Makefile SCC=scc SLIBC=/lib/slibc.a SCCFLAGS="-O -I../../../head/oldv7 -DOLD_CAS" ASMDEFS=-DOLD_D13 cas
 
 install: build/cas
 	cp build/cas $(PREFIX)/bin/cas
@@ -70,10 +70,10 @@ parser.c: ../parser.y
 scanner.o: y.tab.h
 
 parser.o: parser.c
-	$(SCC) $(ASMDEFS) -c -I../ parser.c
+	$(SCC) $(ASMDEFS) -c -I../ -I../../../head/oldv7 parser.c
 # without -O, as in /bin/cas; ASMDEFS: the switch of old/cas (also in parser.c and p2loop.c)
 assemble.o: ../assemble.c
-	$(SCC) $(ASMDEFS) -c ../assemble.c
+	$(SCC) $(ASMDEFS) -c -I../../../head/oldv7 ../assemble.c
 
 stable.o: ../stable.c
 	$(SCC) $(SCCFLAGS) -c ../stable.c

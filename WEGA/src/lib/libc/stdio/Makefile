@@ -85,7 +85,7 @@ objs: $(OBJS)
 	$(CC) -O -c doscan.c ; mv doscan.o ../obj/doscan.o
 
 ../obj/printf.o: printf.c
-	$(CC) -O -I../../../cmd/cparse -c printf.c ; mv printf.o ../obj/printf.o
+	$(CC) -O -I../../../head/oldv7 -c printf.c ; mv printf.o ../obj/printf.o
 
 ../obj/doprnt.o: doprnt.c
 	$(CC) -O -c doprnt.c ; mv doprnt.o ../obj/doprnt.o

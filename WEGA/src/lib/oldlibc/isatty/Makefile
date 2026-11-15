@@ -17,6 +17,6 @@ objs: 0_1.o 0_2.o 0_3.o
 	$(CCV0P) -O -I../../libc/gen -c ../../libc/gen/isatty.c ; mv isatty.o 0_2.o
 
 0_3.o: ../../libc/gen/isatty.c
-	$(CCV1R) -O -I.. -c ../../libc/gen/isatty.c ; mv isatty.o 0_3.o
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/gen/isatty.c ; mv isatty.o 0_3.o
 
 .PHONY: objs

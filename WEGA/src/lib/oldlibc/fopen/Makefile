@@ -14,6 +14,6 @@ objs: 0_1.o 0_2.o
 	$(CCV0P) -O -I../../libc/stdio -c ../../libc/stdio/fopen.c ; mv fopen.o 0_1.o
 
 0_2.o: ../../libc/stdio/fopen.c
-	$(CCV1R) -O -I.. -c ../../libc/stdio/fopen.c ; mv fopen.o 0_2.o
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/stdio/fopen.c ; mv fopen.o 0_2.o
 
 .PHONY: objs

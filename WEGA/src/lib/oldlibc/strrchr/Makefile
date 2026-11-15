@@ -17,6 +17,6 @@ objs: 0_1.o 0_2.o 0_3.o
 	$(CCV1) -O -I../../libc/gen -c ../../libc/gen/strrchr.c ; mv strrchr.o 0_2.o
 
 0_3.o: ../../libc/gen/strrchr.c
-	$(CCV1R) -O -I.. -c ../../libc/gen/strrchr.c ; mv strrchr.o 0_3.o
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/gen/strrchr.c ; mv strrchr.o 0_3.o
 
 .PHONY: objs

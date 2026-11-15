@@ -32,8 +32,8 @@ libc.a, crt0.o, slibc.a, scrt0.o, libl.a, slibl.a, ncform: every member from sou
   builds codgen and scodgen with DEFINES (`-DOLD_VL` and the trial macro) into a copy of OLDROOT (`/tmp/SCRATCH/c_NAME`) as
   `/lib/codgen`, `/lib/scodgen`; for vl the scparse with `OLD_D25` (`rm -f ROOT/lib/scparse` first: in a copy it is a symbolic link
   to the original; then `cp OLDROOT/lib/vk/scparse`). `libtest.sh ROOT` compiles the 206 C members of libc (cc) and slibc (scc)
-  and lists those whose object differs from the member of the original library (extracted to `/tmp/SCRATCH/orig/LIB`); printf
-  of both differs there only for the missing `-I`. After a reboot: `host/tools/wbin.sh /tmp/SCRATCH/wbin WEGA_ROOT OLDROOT EMU`.
+  (with the `-I` of `src/head/oldv7` where the Makefile has it) and lists those whose object differs from the member of the
+  original library (extracted to `/tmp/SCRATCH/orig/LIB`); all 206 are identical. After a reboot: `host/tools/wbin.sh /tmp/SCRATCH/wbin WEGA_ROOT OLDROOT EMU`.
 - One member: compile in a scratch copy (a compile with `-S` in the source directory can overwrite a tracked `NAME.s`), then
   `host/tools/sdis.py` on both objects and `diff`. For `-I` the guest needs a relative directory below the working directory.
 - A rule counts when the wanted member gets exact and no other member changes; try source forms first (by script: statement

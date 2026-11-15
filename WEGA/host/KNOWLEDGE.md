@@ -1531,7 +1531,7 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
 - The archive as a whole is byte-identical too (2026-11-05, `arhdr.s`, `mkar.sh`). Result: 175 of the 179 members identical (`/lib/libc.a` holds 179 objects and `Library.SC`); the 4 others are kept as cas sources in
   the compiler vl (a little older than the shipped cc; `host/OLDCC.md`, "vl: the compiler of libc.a and slibc.a"); since
   2026-11-15 every C member of libc.a and slibc.a is built from C by vl.
-- `printf` needs the stdio.h of `src/cmd/cparse` with the shipped cc: `char *_ptr`, so `extsb` behind putc. check.sh tries it.
+- `printf` needs the stdio.h of `src/head/oldv7` with the shipped cc: `char *_ptr`, so `extsb` behind putc. check.sh tries it.
 - Source forms that gave these members (2026-11-04):
   - Arguments come in registers: printf and scanf copy them into a local array `regs[5]` and hand it over beside the address of the first
     argument on the stack; `_doprnt(fmt, regs, &args, flag, file)`, `_doscan(iop, fmt, regs, &args)`. With doubles also the four
@@ -1614,7 +1614,7 @@ PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`.
 From System III `usr/src/lib/libl/lib/*.c` unchanged (allprint, main, reject, yyless, yywrap), one source for both libraries
 (the two `Library.SC` are byte-equal, all files `1.1 02/11/83`). Compiler v1 (`ccv1 -O`, `sccv1 -O`): main is identical with
 every compiler, reject, yyless, yywrap only with v1; allprint needs the popt switch `OLD_D52` of v1 (`host/OLDCC.md`) and the
-`stdio.h` of `src/lib/libl` (`char *_ptr`). `ncform` is the System III file plus `/* @[$]ncform 2.1 */` and a tab before a
+`stdio.h` of `src/head/oldcptr` (`char *_ptr`). `ncform` is the System III file plus `/* @[$]ncform 2.1 */` and a tab before a
 comment; `nrform` is not in WEGA. Archives: `arhdr_libl.s`, `arhdr_slibl.s` (member headers of the originals; slibl names
 its members `NAME.s.o`), `mkar.sh` without a padding byte.
 

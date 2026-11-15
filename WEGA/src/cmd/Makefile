@@ -119,25 +119,25 @@ sync: crt0-sync.o sync.o
 	$(LD) -o $@ -e start crt0-sync.o sync.o -lc
 
 # The single-file commands: each with its own compiler (as before in their own Makefiles), its own libc
-# and its own start-up file crt0-NAME.o. -Icparse: the stdio.h of the time (as ../cparse before).
+# and its own start-up file crt0-NAME.o. -I../head/oldv7: the stdio.h of the time.
 # mv: also cp and ln (hard links), byte-identical with the originals
 mv.o: mv.c
-	$(CCV1) $(CFLAGS) -Icparse -c mv.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c mv.c
 mv: crt0-mv.o mv.o $(LIBC_V6)
 	$(LD) -e start -o $@ crt0-mv.o mv.o $(LIBC_V6)
 
 rm.o: rm.c
-	$(CCV1) $(CFLAGS) -Icparse -c rm.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c rm.c
 rm: crt0-rm.o rm.o $(LIBC_V6)
 	$(LD) -e start -o $@ crt0-rm.o rm.o $(LIBC_V6)
 
 rmdir.o: rmdir.c
-	$(CCV1R) $(CFLAGS) -Icparse -c rmdir.c
+	$(CCV1R) $(CFLAGS) -I../head/oldv7 -c rmdir.c
 rmdir: crt0-rmdir.o rmdir.o $(LIBC_V10)
 	$(LD) -e start -o $@ crt0-rmdir.o rmdir.o $(LIBC_V10)
 
 write.o: write.c
-	$(CCV1R) $(CFLAGS) -Icparse -c write.c
+	$(CCV1R) $(CFLAGS) -I../head/oldv7 -c write.c
 write: crt0-write.o write.o $(LIBC_V10)
 	$(LD) -e start -o $@ crt0-write.o write.o $(LIBC_V10)
 
@@ -152,7 +152,7 @@ strip: crt0-strip.o strip.o $(LIBC_V4)
 	$(LD) -e start -o $@ crt0-strip.o strip.o $(LIBC_V4)
 
 ranlib.o: ranlib.c
-	$(CCV0) $(CFLAGS) -Icparse -c ranlib.c
+	$(CCV0) $(CFLAGS) -I../head/oldv7 -c ranlib.c
 ranlib: crt0-ranlib.o ranlib.o $(LIBC_V1)
 	$(LD) -e start -o $@ crt0-ranlib.o ranlib.o $(LIBC_V1)
 

@@ -7,7 +7,7 @@
 CC = ccv0
 CAS = cas
 LD = ld
-CFLAGS = -O -I../cparse
+CFLAGS = -O -I../../head/oldv7
 PREFIX = /
 STRIP = strip
 LIBC = ../../lib/libc-v1.a

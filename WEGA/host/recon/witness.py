@@ -6,7 +6,7 @@ Usage: witness.py [-t v1|v0] [-c "EMUARGS"] [-s N] [-v FUNC] [PROG ...]
            host/OLDCC.md section 2)
   -s N     also print the N most frequent differing hunks (registers hidden where only they differ)
   -v FUNC  print the hunks of the function FUNC (prog:func or func)
-  -n       use the stdio.h of the WEGA tree (default: the stdio.h of the v1 time, src/cmd/cparse/stdio.h: char *_ptr,
+  -n       use the stdio.h of the WEGA tree (default: the stdio.h of the v1 time, src/head/oldv7/stdio.h: char *_ptr,
            the V7 getc and putc)
 
 The single-file System III sources (SYS3SRC: the directory usr/src/cmd of a System III tree, not in git) of WEGA
@@ -73,7 +73,7 @@ def main():
         if os.path.exists(os.path.join(work,obj)): os.remove(os.path.join(work,obj))
         hdr=os.path.join(work,'stdio.h')
         if oldhdr:
-            shutil.copy(os.path.join(HERE,'..','..','src','cmd','cparse','stdio.h'),hdr)
+            shutil.copy(os.path.join(HERE,'..','..','src','head','oldv7','stdio.h'),hdr)
         elif os.path.exists(hdr):
             os.remove(hdr)
         r=subprocess.run(['timeout','300',EMU]+cc+['-O']+(['-I.'] if oldhdr else [])+['-c',src],cwd=work,capture_output=True,text=True)

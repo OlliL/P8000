@@ -12,7 +12,7 @@ objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_5.o
 
 0_1.o: 0_5.c
 	-@mkdir 0_1.d 2>/dev/null
-	cd 0_1.d ; $(CCV1Q) -O -I../.. -c ../0_5.c ; mv 0_5.o ../0_1.o
+	cd 0_1.d ; $(CCV1Q) -O -I../../../../head/oldv7 -c ../0_5.c ; mv 0_5.o ../0_1.o
 
 0_2.o: ../../libc/stdio/endopen.c
 	$(CCV1) -O -I../../libc/stdio -c ../../libc/stdio/endopen.c ; mv endopen.o 0_2.o
@@ -24,6 +24,6 @@ objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_5.o
 	$(CCV0P) -O -I../../libc/stdio -c ../../libc/stdio/endopen.c ; mv endopen.o 0_4.o
 
 0_5.o: 0_5.c
-	$(CCV1R) -O -I.. -c 0_5.c
+	$(CCV1R) -O -I../../../head/oldv7 -c 0_5.c
 
 .PHONY: objs

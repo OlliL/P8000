@@ -1,7 +1,8 @@
-/* stdio.h of the time popt was compiled (the same as ../cparse/stdio.h, reconstruction): char *_ptr and the V7
-   forms of getc and putc (--_cnt >= 0 first). The code of /lib/popt shows the old putc (extsb of the stored byte,
-   the store path first). */
-
+/* stdio.h of the old programs and passes (reconstruction): char *_ptr and the V7 forms of getc and putc (--_cnt >= 0
+   first; putc stores (unsigned)(x), the byte is sign-extended). The code of cparse, codgen, popt, cpp, cas, dc, ranlib,
+   mv, rm, rmdir, write and of the printf of libc.a and slibc.a shows these forms; the shipped stdio.h (../stdio.h) has
+   unsigned char *_ptr and --_cnt < 0 first. Used by -I.../head/oldv7 in the Makefiles. */
+#define	_PTRCHAR	/* _ptr is char *: lets the sources of ../libc/stdio keep the plain assignments */
 #define	BUFSIZ	512
 #define	_NFILE	20
 #ifndef FILE

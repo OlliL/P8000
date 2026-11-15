@@ -172,7 +172,7 @@ obj/doscan.o: stdio/doscan.c
 
 # printf: the stdio.h of the time (char *_ptr, putc with the store arm first), as in ../libc/stdio
 obj/printf.o: stdio/printf.c
-	cd stdio ; $(CC) -O -I../../../cmd/cparse -c printf.c ; mv printf.o ../obj/printf.o
+	cd stdio ; $(CC) -O -I../../../head/oldv7 -c printf.c ; mv printf.o ../obj/printf.o
 
 obj/doprnt.o: stdio/doprnt.c
 	cd stdio ; $(CC) -O -c doprnt.c ; mv doprnt.o ../obj/doprnt.o

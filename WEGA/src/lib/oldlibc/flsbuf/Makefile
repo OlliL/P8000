@@ -17,6 +17,6 @@ objs: 0_1.o 0_2.o 0_3.o
 	$(CCV0P) -O -c flsbuf.c ; mv flsbuf.o 0_2.o
 
 0_3.o: flsbuf.c
-	$(CCV1R) -O -I.. -c flsbuf.c ; mv flsbuf.o 0_3.o
+	$(CCV1R) -O -I../../../head/oldv7 -c flsbuf.c ; mv flsbuf.o 0_3.o
 
 .PHONY: objs

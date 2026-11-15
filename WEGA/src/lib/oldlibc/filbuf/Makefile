@@ -11,15 +11,15 @@ CAS = cas
 objs: 0_1.o 0_2.o 0_3.o 0_4.o
 
 0_1.o: ../../libc/stdio/filbuf.c
-	$(CCV1Q) -O -I.. -I../../libc/stdio -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_1.o
+	$(CCV1Q) -O -I../../../head/oldv7 -I../../libc/stdio -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_1.o
 
 0_2.o: ../../libc/stdio/filbuf.c
-	$(CCV1) -O -I.. -I../../libc/stdio -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_2.o
+	$(CCV1) -O -I../../../head/oldv7 -I../../libc/stdio -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_2.o
 
 0_3.o: ../../libc/stdio/filbuf.c
-	$(CCV0P) -O -I.. -I../../libc/stdio -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_3.o
+	$(CCV0P) -O -I../../../head/oldv7 -I../../libc/stdio -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_3.o
 
 0_4.o: ../../libc/stdio/filbuf.c
-	$(CCV1R) -O -I.. -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_4.o
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_4.o
 
 .PHONY: objs

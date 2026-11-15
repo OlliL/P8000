@@ -2,7 +2,7 @@
 """libctable.py [-o OUT] [SOURCE ...]: which C source and which compiler give which libc object.
 
 Every SOURCE (default: the C files of src/lib/libc and of the System III libc, SYS3LIBC) is compiled with every compiler
-(shipped cc, ccv1, ccv0, ccv0p; with and without -O; with the headers of the guest and with the stdio.h of cparse). The
+(shipped cc, ccv1, ccv0, ccv0p; with and without -O; with the headers of the guest and with the stdio.h of src/head/oldv7). The
 object is compared with the members of the shipped /lib/libc.a (cmp) and with the versions in src/lib/oldlibc and
 src/lib/libc/oldcc (instructions with addresses masked, size of data; a module of oldlibc is cut from a program and has
 no relocation, so this is a fit, and the bytes of code and data that differ are printed: 0 0 is the best); the external
@@ -94,7 +94,7 @@ def compile_one(src, tag, comp, flags, headers, T, shipped):
         shutil.copy(f, work)
     shutil.copy(src, work)
     if headers == 'cparse':
-        shutil.copy(os.path.join(REPO, 'src/cmd/cparse/stdio.h'), work)
+        shutil.copy(os.path.join(REPO, 'src/head/oldv7/stdio.h'), work)
     argv = [EMU, '-r', root, cc] + ([flags] if flags else []) + ['-I.', '-c', base]
     out = []
     try:

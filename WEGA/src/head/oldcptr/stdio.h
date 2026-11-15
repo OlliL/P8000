@@ -1,11 +1,18 @@
-/* stdio.h of the time cas was compiled (as in cparse, codgen, popt): char *_ptr and the V7 forms of getc and putc. /bin/cas shows the getc of this form. */
+/* stdio.h of libl (02/83, reconstruction): the shipped stdio.h (../stdio.h) with char *_ptr. allprint shows it: putc
+   tests --_cnt < 0 first (the _flsbuf arm), and the stored byte is sign-extended. Used by -I.../head/oldcptr. */
+/* stdio.h */
 
 #define	BUFSIZ	512
 #define	_NFILE	20
 #ifndef FILE
 extern	struct	_iobuf {
+#ifdef vax
+	int	_cnt;
+	char	*_ptr;
+#else
 	char	*_ptr;
 	int	_cnt;
+#endif
 	char	*_base;
 	char	_flag;
 	char	_file;
@@ -31,9 +38,9 @@ extern	struct	_iobuf {
 #define	stdin	(&_iob[0])
 #define	stdout	(&_iob[1])
 #define	stderr	(&_iob[2])
-#define	getc(p)		(--(p)->_cnt>=0? *(p)->_ptr++&0377:_filbuf(p))
+#define	getc(p)		(--(p)->_cnt<0? _filbuf(p):*(p)->_ptr++)
 #define	getchar()	getc(stdin)
-#define putc(x,p) (--(p)->_cnt>=0? ((int)(*(p)->_ptr++=(unsigned)(x))):_flsbuf((unsigned)(x),p))
+#define putc(x,p) (--(p)->_cnt<0? _flsbuf((unsigned)(x),p):((int)(*(p)->_ptr++=(x))))
 #define	putchar(x)	putc(x,stdout)
 #define	feof(p)		(((p)->_flag&_IOEOF)!=0)
 #define	ferror(p)	(((p)->_flag&_IOERR)!=0)

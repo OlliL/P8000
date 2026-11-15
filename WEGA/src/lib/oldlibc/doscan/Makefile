@@ -11,6 +11,6 @@ CAS = cas
 objs: 0_1.o
 
 0_1.o: 0_1.c
-	$(CCV1) -O -I.. -c 0_1.c
+	$(CCV1) -O -I../../../head/oldv7 -c 0_1.c
 
 .PHONY: objs

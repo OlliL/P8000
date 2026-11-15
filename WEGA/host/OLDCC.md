@@ -89,7 +89,7 @@ the doscopy programs, the standalone programs (`make -C host checkall`). All of 
 - ld: 55 of 59 functions strictly exact, data equal, corpus 146 of 146; open: place_sec, chk_ranlib, load2td, load1.
 - Own code equal, the libc part not linked yet: write (all 5 functions). rmdir: its main differs by D4 and D18.
 - Test bench (System III sources of 26 programs from 01/83 .. 07/83): 89 of 121 functions equal, the shipped cc 27.
-- stdio of the time: `char *_ptr` and the V7 forms of getc/putc (`--_cnt >= 0` first); the stdio.h of the WEGA tree has
+- stdio of the time (`src/head/oldv7/stdio.h`): `char *_ptr` and the V7 forms of getc/putc (`--_cnt >= 0` first); the stdio.h of the WEGA tree has
   `unsigned char *_ptr` and the other order.
 
 ### v1q (before v1)

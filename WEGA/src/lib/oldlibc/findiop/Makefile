@@ -17,6 +17,6 @@ objs: 0_1.o 0_2.o 0_3.o
 	$(CCV0P) -O -I../../libc/stdio -c ../../libc/stdio/findiop.c ; mv findiop.o 0_2.o
 
 0_3.o: ../../libc/stdio/findiop.c
-	$(CCV1R) -O -I.. -c ../../libc/stdio/findiop.c ; mv findiop.o 0_3.o
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/stdio/findiop.c ; mv findiop.o 0_3.o
 
 .PHONY: objs

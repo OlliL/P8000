@@ -12,7 +12,7 @@ CC = ccv0p
 CAS = cas
 LD = ld
 YACC = yacc
-CFLAGS = -O
+CFLAGS = -O -I../../../../head/oldv7
 PREFIX = /
 STRIP = strip
 LIBC = ../../../../lib/libc-v7.a
@@ -101,7 +101,7 @@ scparse: $(SEG_OBJS) ../../crt0.o
 # obj targets
 ###################
 
-$(NONSEG_OBJS): ../../mfile1 ../../manifest ../../macdefs ../../stdio.h
+$(NONSEG_OBJS): ../../mfile1 ../../manifest ../../macdefs ../../../../head/oldv7/stdio.h
 
 cgram1.c: ../../cgram1.y
 	$(YACC) ../../cgram1.y

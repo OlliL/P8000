@@ -20,6 +20,6 @@ objs: 0_1.o 0_2.o 0_3.o 0_4.o
 	$(CCV0P) -O -I../../libc/gen -c ../../libc/gen/length.c ; mv length.o 0_3.o
 
 0_4.o: ../../libc/gen/length.c
-	$(CCV1R) -O -I.. -c ../../libc/gen/length.c ; mv length.o 0_4.o
+	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/gen/length.c ; mv length.o 0_4.o
 
 .PHONY: objs
