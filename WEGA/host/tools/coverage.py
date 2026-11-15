@@ -94,6 +94,44 @@ def sys3_candidate(idx, rel, k):
     return cands[0] if cands else None
 
 
+_INSTALLS = None
+
+
+def installed_by(rel):
+    """the directory below src/ whose Makefile installs the root file rel ($(PREFIX)/rel, also through a variable that
+    names a directory below $(PREFIX)), or None"""
+    global _INSTALLS
+    if _INSTALLS is None:
+        _INSTALLS = []
+        for dp, dn, fn in os.walk(SRC):
+            if 'Makefile' not in fn:
+                continue
+            try:
+                text = open(os.path.join(dp, 'Makefile'), errors='replace').read()
+            except OSError:
+                continue
+            if '$(PREFIX)' not in text:
+                continue
+            for var, val in re.findall(r'^(\w+)\s*=\s*(\$\(PREFIX\)\S*)\s*$', text, re.M):
+                text = text.replace('$(%s)' % var, val)
+            _INSTALLS.append((os.path.relpath(dp, SRC), text))
+    name = os.path.basename(rel)
+    d = os.path.dirname(rel)
+    for src, text in _INSTALLS:
+        if re.search(r'\$\(PREFIX\)/+%s(\s|$)' % re.escape(rel), text):
+            return src
+        if d and re.search(r'^\s*-?cp\b[^\n]*\b%s\b[^\n]*\$\(PREFIX\)/+%s/?\s*$' % (re.escape(name), re.escape(d)), text, re.M):
+            return src
+        # for f in $(LIST); do cp $$f $(PREFIX)/d/$$f; done
+        for var, line in re.findall(r'for\s+\w+\s+in\s+\$\((\w+)\)(.*)$', text, re.M):
+            if not re.search(r'\$\(PREFIX\)/+%s/\$\$' % re.escape(d), line):
+                continue
+            m = re.search(r'^%s\s*=((?:.*\\\n)*.*)$' % var, text, re.M)
+            if m and name in m.group(1).replace('\\\n', ' ').split():
+                return src
+    return None
+
+
 def find_source(rel):
     """the path below src/ of the source of a root file, or None"""
     if rel in SOURCE:
@@ -215,7 +253,7 @@ def main():
         if os.path.exists(built):
             status = 'exact' if filecmp.cmp(orig, built, shallow=False) else 'partial'
             if not src:
-                src = '?'
+                src = installed_by(rel) or '?'
         elif rel.startswith(('usr/include/', 'usr/man/')) and src:
             status = 'exact' if filecmp.cmp(orig, os.path.join(SRC, src), shallow=False) else 'partial'
         elif src:
