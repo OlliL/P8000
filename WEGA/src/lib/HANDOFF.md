@@ -1,43 +1,34 @@
 # Handoff: the `oldcc/` members of libc and slibc, compiler vl
 
-State 2026-11-15, morning. Read first: `host/OLDCC.md` ("vl: the compiler of libc.a and slibc.a", D53 to D57),
+State 2026-11-15, evening. Read first: `host/OLDCC.md` ("vl: the compiler of libc.a and slibc.a", D53 to D60),
 `host/OLDCC_LOG.md` (entries of 2026-11-14 and 2026-11-15), then this file.
 
 ## State
 
-- libc and slibc are built by vl throughout (`CC = ccvl`, `CC = sccvl`): the shipped cparse, gopt, popt with
-  `/lib/vl/codgen`, `/lib/vl/scodgen` (`OLD_VL` in `src/cmd/codgen/oldcc.h`).
-- Committed, each with checkall ALL OK (122 files): D53, D54 (nlist, symscan of both), D55 (slibc scanf), D56 (slibc
-  printf, with `-I../../../cmd/cparse`), D57 (swap of both). Last commit: 35a63432.
-- Also committed and confirmed (12b9c7fb; checkall ALL OK, 122 files, with the restored original scparse): `OLD_D58`
-  (regs3.c `regforsym`: an unsigned name known in a register is taken from it also where it is used as an int; calloc
-  `num *= size`) and libc malloc from `gen/malloc.c`. `libtest.sh`: 201 of 206. An `int` used as `unsigned` must not be
-  taken (fputc). libc has no `oldcc` member left.
-- Left in `oldcc/`: slibc malloc, segmon, doprnt.
+- libc and slibc are built by vl throughout (`CC = ccvl`, `CC = sccvl`): the shipped cparse, gopt, popt (spopt),
+  `/lib/vl/scparse` (the shipped one with `OLD_D25`, `src/cmd/cparse` rule `build/segvl/scparse`), `/lib/vl/codgen`,
+  `/lib/vl/scodgen` (`OLD_VL` in `src/cmd/codgen/oldcc.h` = `OLD_D53` to `OLD_D60` and `OLD_D24`).
+- Committed, each with checkall ALL OK (122 files): D53 to D58 (see `host/OLDCC.md`), then (2026-11-15) 8b78f08d:
+  `OLD_D24` + vl scparse with `OLD_D25`, slibc malloc from C (two source forms: `union store *r` in front of `onw`,
+  `int spare` in calloc); c63feb89: `OLD_D59` (regforsym: a pointer to a structure in a register is taken from it as a
+  pointer to a scalar), `OLD_D60` (match: `++` of a frame slot wanted in a register through it), slibc segmon from C
+  (`char *mkseg()`). `libtest.sh`: 203 of 206 (printf of both libraries differ only on the bench: no `-I`).
+- libc has no `oldcc` member. slibc: only doprnt is left in `oldcc/`.
 
-## slibc malloc: solved in the measurement, not built in
+## slibc doprnt: open (1324 bytes with vl)
 
-`gen/malloc.c` gives the member exactly (0 bytes) with three things:
-1. scodgen with `OLD_D24` (a conversion between a pointer and a non-pointer of the same size stays; the switch of vk) and
-   scparse with `OLD_D25` (a cast of a long to a pointer stays a conversion; `/lib/vk/scparse` is the shipped scparse with
-   it). D24 alone changes nothing (1657 bytes), both together leave 13.
-2. In `realloc` the declaration `union store *r;` in front of `register unsigned onw;` (4 bytes left).
-3. In `calloc` an unused `int spare;` (the frame is 2 bytes larger than ours; the cause is not found, as the spare word
-   of ld in `host/OLDCC.md` D1).
-To build in: vl needs a scparse of its own (`src/cmd/cparse`: a rule `build/segvl/scparse` with `-DSEG -DOLD_D25`,
-installed as `/lib/vl/scparse`; `sccvl` in `src/cmd/cc/cc.c` then names it), `OLD_D24` into the `OLD_VL` block of
-`oldcc.h`. Then `libtest.sh` with such a root (the root must get the vl scparse as `/lib/scparse`: **remove the symbolic
-link first**, see "Slip"). One contaminated run suggests D24 + D25 change no other member (201 of 206); measure it again
-cleanly, then checkall. nonsegmented: D24 on libc changed nothing in that run either.
-
-## slibc segmon, doprnt: open
-
-Bytes that differ with vl: segmon 1250 (object 2410 against 2422), doprnt 1324 (6200 against 6204). With D24 segmon gets
-worse (1326, 2446 bytes); D24 + D25 not measured cleanly for them. Known from `slibc/HANDOFF.md`: segmon: a parameter
-taken from its register (`ldl rr2,rr6`; compare D58 and `OLD_D3P`), `++i` through a register (as `OLD_D16A`), the long
-cast to a pointer masked through a copy (D24/D25); doprnt: a register choice as in symscan at two places (compare D54).
-Check first whether doprnt needs the stdio.h of the time (`-I../../../cmd/cparse`) as printf did: the putc form changes
-the block order.
+The stdio.h of the time changes nothing. Two places, both a register choice that avoids rr2 (details and measurements:
+`host/OLDCC_LOG.md`, entry "vl, slibc doprnt"):
+1. `if (_pfile && ferror(_pfile))`: solved in the measurement, not built in. Probe `host/recon/poptveto/s1114/cg/d61.py`
+   (PPY for `cg.sh`): when the left operand of an outermost `&&` is a bare name, the registers it takes stay busy through
+   the right operand. doprnt 1324 -> 22 bytes, no other member changes. Build in as `OLD_D61` only together with place 2
+   (a rule counts when the member gets exact).
+2. case 'l' (`if ((c = *fmt++) == 'o')`): the original takes rr4 for the copy of fmt and r3 for c, as if r2 were taken.
+   The getreg trace shows r2 as the TEMP (kind 6) of the first switch (`if (prec < 0) switch (c)`), removed from the
+   register file when the call `_align(&nreg, &ap, stkap)` in `lng:` wants rr2 by number (regjam). Next: what regjam
+   does with a kind-6 node; whether vl keeps it (or the word r2) taken afterwards.
+Trace patches used (scratch, rebuild them as needed): a dump of rsuse/rsfree at every getreg (`GR` lines), markers at
+`gswitch` and at `L` labels in reader3.c main loop.
 
 ## Method (what worked for every member so far)
 
@@ -53,6 +44,11 @@ the block order.
   this way (the log has the steps).
 - Then: the switch in the tree (`OLD_Dnn` in the `OLD_VL` block), `libtest.sh` again, the Makefile rule from C, the `.s`
   removed, checkall, `host/OLDCC.md` (a section per switch, the vl paragraph), `host/OLDCC_LOG.md`, commit.
+
+- Bench setup after a reboot (`/tmp/SCRATCH` gone): `sh host/tools/wbin.sh /tmp/SCRATCH/wbin <WEGA_ROOT> <OLDROOT> host/z8k-emu/z8k-emu`;
+  `src/lib/libc/obj` (not in git) may be missing: `python3 host/tools/war.py extract <WEGA_ROOT>/lib/libc.a src/lib/libc/obj`.
+  A vl root needs the vl scparse: `rm -f ROOT/lib/scparse; cp OLDROOT/lib/vk/scparse ROOT/lib/scparse` (same sources and
+  switch as `/lib/vl/scparse`). `-I` for the guest: a relative directory below the working directory.
 
 ## Slip of this session (repaired; what to watch)
 
@@ -71,10 +67,7 @@ the block order.
 
 ## Next steps
 
-1. `host/OLDCC.md`: add a section D58 and libc malloc to the vl paragraph (D53 to D58, 202 members);
-   `libc/HANDOFF.md`: no open member left.
-2. slibc malloc as above (vl scparse with D25, D24 in vl, the two source forms), libtest, checkall, commit.
-3. segmon, doprnt with the method above.
-4. `slibc/HANDOFF.md` and `libc/HANDOFF.md`: bring the member tables to the state of this file.
-5. Open questions of vl that stay: the bound of D53 (between 1170 and 1592 bytes), why D56 holds only segmented, the
+1. doprnt place 2 (above), then `OLD_D61` + the second rule, libtest, the Makefile rule from C, checkall, `host/OLDCC.md`.
+2. `slibc/HANDOFF.md` and `libc/HANDOFF.md`: bring the member tables to the state of this file.
+3. Open questions of vl that stay: the bound of D53 (between 1170 and 1592 bytes), why D56 holds only segmented, the
    spare word of calloc. Each switch of vl has one source as its witness.
