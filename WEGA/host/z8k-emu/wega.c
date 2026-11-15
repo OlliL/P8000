@@ -256,10 +256,22 @@ static void exec_map(Z8K *c, Exec *x, char **argv, char **envp)
 
 /* ------------------------------------------------------------ path mapping */
 
+/* the guest /tmp: ROOT/tmp, or the directory Z8K_TMPDIR (one per checkall run, so that parallel runs do not share it) */
+static const char *guesttmp(void)
+{
+	static const char *t;
+	if (!t) { t = getenv("Z8K_TMPDIR"); if (!t || !*t) t = ""; }
+	return t;
+}
+
 static const char *hostpath(const char *g, char *buf, size_t n)
 {
 	if (g[0] != '/' || !*root) return g;
 	if (!strncmp(g, "/dev/", 5)) return g;
+	if (*guesttmp() && !strncmp(g, "/tmp", 4) && (g[4] == 0 || g[4] == '/')) {
+		snprintf(buf, n, "%s%s", guesttmp(), g + 4);
+		return buf;
+	}
 	snprintf(buf, n, "%s%s", root, g);
 	return buf;
 }
@@ -856,7 +868,10 @@ int main(int argc, char **argv)
 	if (i >= argc) { fprintf(stderr, "usage: z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]\n"); return 2; }
 	if (*root) {
 		char t[1100];
-		snprintf(t, sizeof t, "%s/tmp", root);
+		if (*guesttmp())
+			snprintf(t, sizeof t, "%s", guesttmp());
+		else
+			snprintf(t, sizeof t, "%s/tmp", root);
 		mkdir(t, 0777);
 	}
 	c->syscall = sys_call;

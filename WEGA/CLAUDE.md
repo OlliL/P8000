@@ -59,6 +59,8 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
     make -C WEGA/host check WEGA=<WEGA_ROOT>      # the host tools without a corpus: cas, ld
     make -C WEGA/host checkall WEGA=<WEGA_ROOT>   # on a copy of the git files: make in src, make install into an empty root,
                                                   # every file there against WEGA; the corpora; check (16 min)
+    make -C WEGA/host checkall WEGA=<WEGA_ROOT> NAME=x PATCH=/abs/file.diff   # a variant (patch on the git files, or a git ref
+                                                  # from "git stash create") in /tmp/wega_check.x; runs with other names in parallel
     host/tools/corpus.sh [--wega|--host] [PROG ...]   # the corpus of a program (compare/PROG/progcfg.py): the original against every candidate
     host/tools/corpusdeps.sh [PROG ...]               # strace of the corpus runs: is every file/program they use in the cache key (CORPUS_ROOT_FILES, CORPUS_DEPENDS)?
     host/tools/mkcorpus.sh [PROG ...]                 # make the prepared inputs (compare/PROG/corpus.tar) and the result cache (compare/PROG/cache) new; both not in git

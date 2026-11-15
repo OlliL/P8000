@@ -2,7 +2,7 @@
 
 ## Status
 
-open
+done (2026-11-15)
 
 ## Goal
 
@@ -57,3 +57,10 @@ The new corpus runner (110); several agents working on different programs at the
 ## Log
 
 - 2026-11-15: written.
+- 2026-11-15: done. checkall: CHECK_NAME, CHECK_PATCH (patch file or git ref), one snapshot for the build and the shipped build,
+  a lock per directory (a second run in it stops with exit status 2), guest /tmp per run; make checkall NAME= PATCH=. Emulator:
+  Z8K_TMPDIR. stagecorpus: a flock per key of the original's results (a missing key is computed by one run), copying a program
+  and starting a process exclude each other (ETXTBSY seen in the first test: gld under three parallel runs), WEGA_ROOT passed to
+  the candidates also when corpus.sh is called by hand (the host linkers found no /lib without it). Test: three runs at once,
+  no patch ALL OK, a comment patch ALL OK, a patch of abs.c FAILED with exactly lib/libc.a and lib/slibc.a; 22 minutes for the
+  three together. Not done: a limit of jobs per run (MAKEJOBS exists; not needed so far).

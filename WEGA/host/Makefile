@@ -16,7 +16,7 @@
 # here they are built with the original WEGA tools (under z8k-emu) and
 # compared with the originals:
 #
-#   make checkall        everything that is byte-identical, each program with its compiler, on a copy of the
+#   make checkall [NAME=n] [PATCH=file|ref]  everything that is byte-identical (a variant: increment 105), each program with its compiler, on a copy of the
 #                        files in git, and the corpora (tools/checkall.sh): the check to run before a commit
 #   make oldroot         the old compilers and libraries from the sources, into OLDROOT: a WEGA tree of symbolic links to WEGA
 #                        (tools/oldroot.sh) with bin/ccvN and lib/vN/{cparse,codgen,popt}, and src/lib: stage1 lib stage2 of ../src/Makefile;
@@ -43,7 +43,7 @@ cc popt codgen cparse ar binutils cas ld cpp:
 	$(MAKE) -C $@ all
 
 checkall:
-	WEGA=$(WEGAABS) sh tools/checkall.sh
+	WEGA=$(WEGAABS) CHECK_NAME="$(NAME)" CHECK_PATCH="$(PATCH)" sh tools/checkall.sh
 
 wbin:
 	sh tools/oldroot.sh $(WEGAABS) $(OLDROOTABS)

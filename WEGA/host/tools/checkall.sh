@@ -12,13 +12,25 @@
 # -b: only 1 and 2. Prints one line per check, the logs stay in CHECK_TMP; exit status 0 when all pass.
 # A program joins by its install target (src/cmd/Makefile).
 #
-# Environment: WEGA (the WEGA 3.1 tree), CHECK_TMP (default /tmp/wega_check, a local disk).
+# Variants (increment 105): CHECK_PATCH=FILE checks the files git knows plus that patch (git diff of the repository, applied
+# with patch -p1), CHECK_PATCH=REF the tree of a git commit (e.g. from "git stash create": the working tree with its changes,
+# without new files). The tree is copied once at the start (snapshot) and every part uses that copy; the working tree is not
+# read again, so it may change while the run goes on. CHECK_NAME=NAME runs in /tmp/wega_check.NAME; runs with different names
+# can run at the same time (each has its own copies, OLDROOT, guest /tmp (Z8K_TMPDIR) and logs; the corpus cache is shared,
+# its keys are by content). A second run in a directory that a living run uses stops with exit status 2.
+#
+# Environment: WEGA (the WEGA 3.1 tree), CHECK_TMP (default /tmp/wega_check, or /tmp/wega_check.NAME, a local disk),
+# CHECK_NAME, CHECK_PATCH, MAKEJOBS (default -j<cores>).
 
 HERE=`cd \`dirname $0\` && pwd`
 REPO=`cd $HERE/../.. && pwd`
 WEGA=${WEGA:-$REPO/../tmp/wega31_root}
 WEGA=`cd $WEGA && pwd`
-T=${CHECK_TMP:-/tmp/wega_check}
+if [ -n "$CHECK_TMP" ]; then T=$CHECK_TMP
+elif [ -n "$CHECK_NAME" ]; then T=/tmp/wega_check.$CHECK_NAME
+else T=/tmp/wega_check; fi
+PATCH=$CHECK_PATCH
+case "$PATCH" in ''|/*) ;; *) [ -f "$PATCH" ] && PATCH=`pwd`/$PATCH ;; esac
 EMU=$REPO/host/z8k-emu/z8k-emu
 OLD=$T/oldroot
 FAIL=0
@@ -40,11 +52,25 @@ stamp() {
 # not byte-identical yet: reported, not counted (none now)
 OPEN=''
 
-# the files known to git, in DIR/WEGA; the emulator is not rebuilt here
+# the snapshot, made once: the files known to git (or the tree of the git commit CHECK_PATCH), the patch CHECK_PATCH applied
+snapshot() {
+	rm -rf $T/snap
+	mkdir -p $T/snap/WEGA
+	if [ -n "$PATCH" ] && [ ! -f "$PATCH" ]; then
+		(cd $REPO && git archive "$PATCH" -- src host compare) | (cd $T/snap && tar xf -) || return 1
+	else
+		(cd $REPO && git ls-files -co --exclude-standard -- src host compare | tar cf - -T - 2>/dev/null) | (cd $T/snap/WEGA && tar xf -)
+		if [ -n "$PATCH" ]; then
+			patch -p1 -s -d $T/snap --batch < "$PATCH" > $T/patch.log 2>&1 || return 1
+		fi
+	fi
+}
+
+# a copy of the snapshot in DIR/WEGA; the emulator is not rebuilt here
 copytree() {
 	rm -rf $1
-	mkdir -p $1/WEGA
-	(cd $REPO && git ls-files -co --exclude-standard -- src host compare | tar cf - -T - 2>/dev/null) | (cd $1/WEGA && tar xf -)
+	mkdir -p $1
+	cp -a $T/snap/WEGA $1/WEGA
 	mkdir -p $1/WEGA/host/z8k-emu
 	cp $EMU $1/WEGA/host/z8k-emu/z8k-emu
 }
@@ -75,11 +101,26 @@ finish() {
 		grep -m 5 '^clash\|^same' $T/tmpclash.txt
 		tail -1 $T/tmpclash.txt
 	fi
+	rm -f $LOCK
 	[ $FAIL = 0 ] && echo ALL OK || echo FAILED
 	exit $FAIL
 }
 
 mkdir -p $T
+# one run per directory: the lock holds the pid of the run
+LOCK=$T.lock
+if [ -f $LOCK ] && kill -0 `cat $LOCK` 2>/dev/null; then
+	echo "checkall: $T is used by the run with pid `cat $LOCK`; give another CHECK_NAME" >&2
+	exit 2
+fi
+echo $$ > $LOCK
+trap 'rm -f $LOCK' INT TERM
+echo "checkall ${CHECK_NAME:-(no name)} in $T${PATCH:+, variant $PATCH}"
+# the guest /tmp of every emulator of this run (not the /tmp of the WEGA tree, which parallel runs would share)
+rm -rf $T/guesttmp
+mkdir -p $T/guesttmp
+Z8K_TMPDIR=$T/guesttmp
+export Z8K_TMPDIR
 # every z8k-emu of this run logs its pids and its files below the guest /tmp (wega.c tmplog), for tmpclash.py in finish
 rm -f $T/tmplog.log $T/tmpclash.txt
 Z8K_TMPLOG=$T/tmplog.log
@@ -88,6 +129,10 @@ rm -f $T/timing.log $T/timing_corpus.log
 echo "machine: `nproc` cores, load `cut -d' ' -f1-3 /proc/loadavg`, MAKEARGS=$J" >> $T/timing.log
 
 # 1. everything from the sources
+if snapshot; then :; else
+	result 'snapshot' fail "the variant $PATCH does not apply, see $T/patch.log"
+	finish
+fi
 copytree $T/tree
 stamp '1 copy of the files of git (tree)'
 rm -rf $OLD $T/bin
@@ -167,7 +212,7 @@ CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
 echo "corpora start: load `cut -d' ' -f1-3 /proc/loadavg`" >> $T/timing.log
 for n in $CORP; do
-	CORPUS_STORE=$REPO/compare STAGE_TMP=$T/stage_$n STAGE_OPTS="-k $STAGE_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &
+	CORPUS_STORE=$REPO/compare CORPUS_DB=$REPO/.corpus STAGE_TMP=$T/stage_$n STAGE_OPTS="-k $STAGE_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &
 done
 wait
 stamp '3 all corpora (in parallel)'

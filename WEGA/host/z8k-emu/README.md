@@ -32,6 +32,7 @@ part of this repository; see `../KNOWLEDGE.md`, section "Inputs".
 | `-t` | trace every instruction (address, opcode word, r0-r7, SP, flags) on stderr |
 | `-T` | like `-t`, and also every instruction of the floating point emulator (`fpe.s` line, r0-r15, flags) |
 | `-v` | report lazily allocated memory segments |
+| `Z8K_TMPDIR=DIR` (host environment) | the guest `/tmp` is DIR instead of `ROOT/tmp` (checkall gives each run its own, so that parallel runs do not share it) |
 | `Z8K_TIME=SECONDS` (host environment) | the system call `time` returns this value (reproducible `$D$` of `chkout`; the guest zone is EST) |
 | `-e NAME=VALUE` | add a variable to the guest environment (default: `PATH=/bin:/usr/bin`, `HOME=/`) |
 

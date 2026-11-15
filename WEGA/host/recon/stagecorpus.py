@@ -43,6 +43,7 @@ The exit status and the messages (stdout, stderr) are compared too. Result: one 
 exit status 1 when a case differs.
 """
 import concurrent.futures
+import errno
 import fcntl
 import hashlib
 import io
@@ -61,6 +62,9 @@ import zlib
 import progcfg
 
 CFG = progcfg.load()
+# the host programs (ld, sld, gld, ...) find the original tree by WEGA_ROOT (their ld.conf is not next to the copy a case runs):
+# the same root for every run, also when corpus.sh is called by hand
+os.environ.setdefault('WEGA_ROOT', CFG.ROOT)
 WORK = os.path.join(os.environ.get('STAGE_TMP', '/tmp/wega_stage'), 'corpus_' + CFG.NAME)
 
 
@@ -85,6 +89,34 @@ def strace_prefix(tag):
     return ['strace', '-f', '-qq', '-e', 'trace=openat,open,execve,access,stat,newfstatat', '-o', os.path.join(d, '%s.%s.%d' % (CFG.NAME, tag, n))]
 
 
+# Copying a program and starting a process exclude each other: a fork while another thread holds a copy of a program open
+# for writing would hand that descriptor to the child until its exec, and an exec of the copy meanwhile fails with ETXTBSY
+# ("Text file busy"; seen with three parallel checkall runs, gld). Popen returns after the exec of the child, so the lock is
+# held only for that moment; a shell started by the case gets no descriptors opened later.
+SPAWN = threading.Lock()
+
+
+def copyprog(src, dst):
+    with SPAWN:
+        shutil.copy(src, dst)
+
+
+def run_retry(args, timeout=None, **kw):
+    """subprocess.run with the start of the process under SPAWN"""
+    kw.setdefault('stdout', subprocess.PIPE)
+    kw.setdefault('stderr', subprocess.PIPE)
+    kw.pop('capture_output', None)
+    with SPAWN:
+        p = subprocess.Popen(args, **kw)
+    try:
+        out, err = p.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        p.kill()
+        p.communicate()
+        raise
+    return subprocess.CompletedProcess(args, p.returncode, out, err)
+
+
 def run_script(binary, base, work, variant, tag, native):
     """script mode: the script of the case with PROG = the program; the result as of run_pass"""
     rd = os.path.join(work, 'run_' + tag)
@@ -100,7 +132,7 @@ def run_script(binary, base, work, variant, tag, native):
     if binary.startswith('pass_'):
         # a candidate under its own name (the messages show argv[0]): <run>/.prog/NAME
         os.makedirs(os.path.join(rd, '.prog'))
-        shutil.copy(os.path.join(work, binary), os.path.join(rd, '.prog', PROG_NAME))
+        copyprog(os.path.join(work, binary), os.path.join(rd, '.prog', PROG_NAME))
         binary = '.prog/' + PROG_NAME
     env = dict(os.environ)
     env.pop('TZ', None)
@@ -117,7 +149,7 @@ def run_script(binary, base, work, variant, tag, native):
                         + ['-r', CFG.ROOT, binary])
     env['PROG'] = prog
     script = os.path.join(CFG.DIR, CFG.CORPUS_SCRIPT(base))
-    r = subprocess.run(['sh', script], cwd=rd, capture_output=True, timeout=1800, env=env)
+    r = run_retry(['sh', script], cwd=rd, capture_output=True, timeout=1800, env=env)
     lines = []
     for dp, dn, fn in os.walk(rd):
         dn[:] = [x for x in dn if not (dp == rd and x == '.prog')]
@@ -161,10 +193,10 @@ def run_pass(binary, base, work, variant, tag='', native=False):
         # a host build: runs natively; the environment from CORPUS_HOST_ENV(root) of progcfg.py
         env = dict(os.environ)
         env.update(getattr(CFG, 'CORPUS_HOST_ENV', lambda root: {})(CFG.ROOT))
-        r = subprocess.run(strace_prefix(tag) + [os.path.join(work, argv[0])] + argv[1:], cwd=work, stdin=fin, capture_output=True,
+        r = run_retry(strace_prefix(tag) + [os.path.join(work, argv[0])] + argv[1:], cwd=work, stdin=fin, capture_output=True,
                            timeout=600, env=env)
     else:
-        r = subprocess.run(strace_prefix(tag) + [CFG.EMU, '-r', CFG.ROOT] + argv, cwd=work, stdin=fin, capture_output=True, timeout=600)
+        r = run_retry(strace_prefix(tag) + [CFG.EMU, '-r', CFG.ROOT] + argv, cwd=work, stdin=fin, capture_output=True, timeout=600)
     outs = {}
     for f in CFG.CORPUS_OUTPUTS(base):
         p = os.path.join(work, f)
@@ -364,7 +396,7 @@ def cache_write(path, obj, prefix):
         f.write(zlib.compress(pickle.dumps(obj), 6))
     os.replace(tmp, path)
     for f in os.listdir(CACHE):
-        if f.startswith(prefix) and os.path.join(CACHE, f) != path and '.tmp' not in f:
+        if f.startswith(prefix) and os.path.join(CACHE, f) != path and '.tmp' not in f and not f.endswith('.lock'):
             os.remove(os.path.join(CACHE, f))
 
 
@@ -456,6 +488,17 @@ def main():
     cands = todo
     origfile = os.path.join(CACHE, 'orig-%s.%s' % (CFG.NAME, okey))
     ocache = None if nocache else cache_read(origfile)
+    olock = None
+    if ocache is None and full and not nocache:
+        # parallel checkall runs (increment 105): one run computes the original's results of this key, the others wait for
+        # them (flock: the kernel releases it when a run dies) and then read the cache
+        os.makedirs(CACHE, exist_ok=True)
+        olock = open(origfile + '.lock', 'w')
+        fcntl.flock(olock, fcntl.LOCK_EX)
+        ocache = cache_read(origfile)
+        if ocache is not None:
+            olock.close()
+            olock = None
     ocache_new = {}
     shutil.rmtree(WORK, ignore_errors=True)
     os.makedirs(WORK)
@@ -473,9 +516,9 @@ def main():
         diffs = {c: [] for c in cands}
         detail = {}
         for name, path in cands.items():
-            shutil.copy(path, os.path.join(work, 'pass_' + name))
+            copyprog(path, os.path.join(work, 'pass_' + name))
             os.makedirs(os.path.join(work, '.prog_' + name))
-            shutil.copy(path, os.path.join(work, '.prog_' + name, CFG.NAME))
+            copyprog(path, os.path.join(work, '.prog_' + name, CFG.NAME))
         for vi, v in enumerate(VARIANTS):
             ta = time.monotonic()
             r1 = ocache.get((k, vi)) if ocache else None
@@ -536,6 +579,12 @@ def main():
                 f.write(line + '\n')
     if full and ocache_new and ocache is None:
         cache_write(origfile, ocache_new, 'orig-%s.' % CFG.NAME)
+    if olock is not None:
+        olock.close()
+        try:
+            os.remove(origfile + '.lock')
+        except OSError:
+            pass
     # TIME: the wall time and the CPU seconds of the phases (over all cases; 'rest' = copies, comparison, clean up)
     ph = lambda n: PHASES.get(n, 0.0)
     used = ph('prepare') + ph('original') + sum(ph(c) for c in cands)
