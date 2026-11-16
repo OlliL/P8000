@@ -447,7 +447,11 @@ Ein Feld pro Zeile; eine Zeile, die mit `#` beginnt, ist ein Kommentar.
 | `expect: file PFAD contains TEXT` | Die Datei existiert hinterher und enthält TEXT (`''`: sie existiert einfach). |
 | `expect: file PFAD same-as ANDERE` | Zwei Dateien des Verzeichnisses sind gleich (oder `in/DATEI` eines handgeschriebenen Falls). |
 | `expect: missing PFAD` | Die Datei ist hinterher weg. |
-| `user:` `terminal:` `device:` `time:` `fs:` `signal:` | Reserviert für spätere Emulator-Modelle; sie zu benutzen ist ein Fehler, bis das Modell existiert. |
+| `terminal: console` | Das minimale Terminal: stdin und stdout jedes Schritts sind die Konsole (`isatty`, `ttyname` liefern `/dev/console`, die tty-ioctls funktionieren). Nötig für Programme, die nur an der Systemkonsole laufen (getud, putud, format). |
+| `device: driveN DATEI` | Diskettenlaufwerk N (0..3) ist das Image DATEI im Fallverzeichnis: jedes `/dev/fd*`, `/dev/rfd*` dieses Laufwerks liest und schreibt es. Eine UDOS-Diskette macht `host: python3 $WEGA_HOST/tools/udosfs.py format DATEI` (gefüllt mit `udosfs.py put`). |
+| `device: ud` | `/dev/ud` ist der 8-Bit-Teil des P8000 (`host/z8k-emu/models/ud8.py`) mit den Laufwerken des Falls; was er auf seiner eigenen Konsole ausgibt, steht am Ende des Protokolls als `8-bit console:`. Braucht `terminal: console` (wie unter WEGA). |
+| `device: NAME ART:ARG [excl] [console]` | Ein beliebiges Gerät aus WEGAs `/dev` mit einem Modell des Emulators (`image:`, `host:`, `proc:`, `console`; `host/z8k-emu/README.md`). |
+| `user:` `time:` `fs:` `signal:` | Reserviert für spätere Emulator-Modelle; sie zu benutzen ist ein Fehler, bis das Modell existiert. |
 
 Erwartungen werden am **Original** geprüft. Sie belegen, dass ein Fall wirklich testet, was er behauptet (mehr in
 Abschnitt 11).
@@ -652,12 +656,14 @@ aus:
 
 **Er bietet:** Argumente, Umgebung, Dateien unterhalb des WEGA-Baums und des Arbeitsverzeichnisses,
 `fork`/`exec`/`wait`, Pipes, Verzeichnisse im WEGA-Format, auf Wunsch eine feste Uhrzeit (`Z8K_TIME`), das `/tmp` des
-Gasts als eigenes Verzeichnis und einige für Korpora gebaute Modelle: einen Link auf ein Verzeichnis (`mv dir1 dir2`)
-und das `/tmp` des Gasts als eingehängtes Dateisystem, damit `/bin/pwd` funktioniert (`IN_TMP`).
+Gasts als eigenes Verzeichnis und einige für Korpora gebaute Modelle: einen Link auf ein Verzeichnis (`mv dir1 dir2`),
+das `/tmp` des Gasts als eingehängtes Dateisystem, damit `/bin/pwd` funktioniert (`IN_TMP`), WEGAs `/dev` mit
+Disketten-Images und dem 8-Bit-Teil hinter `/dev/ud` (`device:`) und eine minimale Konsole (`terminal: console`).
 
-**Er bietet (noch) nicht:** ein Terminal (`isatty` ist immer falsch – `rm` verhält sich deshalb immer wie mit `-f`),
-Geräte (`/dev/...` geht an den Linux-Host), andere Benutzer (alles läuft als man selbst, nicht als root), das Einhängen
-von Dateisystemen, Signal-Handler des Gasts. Ein Programm, das so etwas braucht, braucht zuerst ein **Modell** im
+**Er bietet (noch) nicht:** ein Terminal, das seine Einstellungen umsetzt (Echo, Raw-Modus, Bildschirm: vi), den
+EPROM-Programmer und die Disketten-Requests format/verify/copydisk des 8-Bit-Teils (Inkrement 117 läuft weiter), andere
+Benutzer (alles läuft als man selbst, nicht als root), das Einhängen von Dateisystemen, Signal-Handler des Gasts. Ohne
+`terminal: console` ist `isatty` falsch – `rm` verhält sich deshalb wie mit `-f`. Ein Programm, das so etwas braucht, braucht zuerst ein **Modell** im
 Emulator. Nach der Regel des Projekts wird ein Modell gebaut, wenn das erste Programm es braucht, mit eigenen Tests. Die
 Falldatei reserviert die Felder dafür schon (`terminal:`, `device:`, …).
 

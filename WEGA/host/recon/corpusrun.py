@@ -17,7 +17,8 @@ the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting fil
                       words of the variant
   stdin: FILE         stdin of the step before (a file of the case directory after in/)
   env: NAME=VALUE     environment of the step before, or of every step when it comes before the first one
-  host: LINE          a line of the host shell between the steps (preparation; WEGA_ROOT is set; each line its own shell)
+  host: LINE          a line of the host shell between the steps (preparation; WEGA_ROOT and WEGA_HOST (WEGA/host) are
+                      set; each line its own shell)
 Every step and host line runs with umask 022.
   terminal: console   the minimal terminal (z8k-emu Z8K_CONSOLE): stdin/out of the steps are the console for isatty,
                       ttyname, the tty ioctls; /dev/console and /dev/tty are it
@@ -375,6 +376,7 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         if st['kind'] == 'host':
             e = dict(env)
             e['WEGA_ROOT'] = ROOT
+            e['WEGA_HOST'] = os.path.join(REPO, 'host')	# the tools of the repository (e.g. $WEGA_HOST/tools/udosfs.py)
             rc, out, err = spawn(['sh', '-c', 'umask 022; ' + st['line']], rd, e)
             res['steps'].append('host %d: exit=%d\n%s' % (i, rc, joined(out.decode('latin-1'), err.decode('latin-1'))))
             continue

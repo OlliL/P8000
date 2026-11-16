@@ -157,3 +157,15 @@ corpora of format, verify, copydisk, doscopy beyond the proof cases (120).
   Open, to be measured in MAME: on which drive NDOS creates a file for a name without a drive (`*`: putud never sends
   one); how NDOS chooses free sectors (seen on the samples: around the directory on track 22, outwards; sector 0/0 kept
   free on system disks, used on a data disk); the 8-bit console messages as the real 8-bit part prints them.
+- 2026-11-16: steps 3, 4 (L, S) and 5 done: udosfs.py writes NDOS (write_file: a new file, or an existing one cleared as
+  OPEN for OUTPUT; format_disk: an empty data disk whose directory is byte-identical with that of the sample irts34; put);
+  `host/z8k-emu/models/ud8.py`, the 8-bit part, serves L and S as K.ACT.S does (the flag byte, the name with its
+  checksum, ISNAME and its NAMLEN, OPNFIL with the type check 48H, the blocks with ACK/NAK/CAN, the descriptor transfer
+  with MAGIC, the end mark of ASCII files, the buffer preset with FFH, the segment and HIGADR of the descriptor, the 8-bit
+  console "File NAME Error XX"); a file written by the model through the original putud has the form of the files
+  putud wrote on src.cqm. Corpora putud (18 cases) and getud (15), every case with an expectation from the man pages,
+  putud.c/getud.c or K.ACT.S; a mutant of each is found. Bugs found: getud waits for ever when it cannot make the file
+  (one ACK, two reads), putud -f without -b converts newline bytes, the NAMLEN of the error message (KNOWLEDGE.md).
+  Emulator: the model line of Z8K_DEVTAB takes a command with blanks. Runner: WEGA_HOST in host lines. Measured on the
+  sample disks, not used: NDOS places the records of a file with a stagger of about 6 sectors in a track (8, 14, 20, 26,
+  0, 10, ...); the writer's own rule is simpler (to be compared in MAME).

@@ -1,0 +1,179 @@
+# The cases of the corpus of getud (compare/getud/corpus.py); the format: host/recon/casefile.py. As for putud: the
+# console, UDOS disks made by host/tools/udosfs.py, the model of the 8-bit part behind /dev/ud. The UDOS files are put
+# onto the disk by udosfs.py (put), not by putud, so that getud is tested alone.
+# Where an expectation comes from: man = /usr/man/man1/getud.1, src = src/cmd/getud.c, k = the coupling software
+# (UDOS/WEGA/K.ACT.S: request S).
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== ascii
+# man: getud reads a UDOS file; src: returns become newlines; k: an ASCII file ends at its end mark FFH
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'one\rtwo\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk.img TEXT A 100 t
+step: getud TEXT
+host: od -c TEXT
+expect: output contains 'o   n   e  \n   t   w   o  \n'
+
+== binary
+# man: -b the next file is binary: no conversion
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'a\rb\n\377c' > b && python3 $WEGA_HOST/tools/udosfs.py put disk.img BIN B 100 b
+step: getud -b BIN
+host: cmp BIN b && echo same
+expect: output contains 'same'
+
+== all-binary
+# man: -B all files are binary; -b only the next one
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'x\r' > b && python3 $WEGA_HOST/tools/udosfs.py put disk.img B1 B 100 b && python3 $WEGA_HOST/tools/udosfs.py put disk.img B2 B 100 b
+step: getud -B B1 B2
+step: getud -b B1 B2
+host: od -c B1 B2
+expect: output contains 'File B2 Error 48'
+
+== verbose
+# man: -v prints the names of the files
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'x\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk.img TEXT A 100 t
+step: getud -v TEXT
+expect: output contains 'file TEXT is read from udos-disk'
+
+== not-found
+# man: "File ... error ...": a UDOS error; k: FILE NOT FOUND C7, the next file is still read
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'x\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk.img TEXT A 100 t
+step: getud NOSUCH TEXT
+expect: output contains 'File NOSUCH Error C7'
+expect: file TEXT contains x
+
+== unable-to-create
+# man: "unable to open file": the file cannot be made under WEGA (here a directory of that name); src: the rest of the
+# first block is read, CAN, one byte read; then, after the file, one more byte is read: but the coupling software answers
+# the CAN with one ACK only (K.ACT.S SNDREC: WAITAK, CLOSE, SNDACK): getud waits for ever (a bug of getud, from the
+# sources and the model; the step ends by the TIMEOUT, its message is still in the buffer of stdio and is lost)
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'x\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk.img TEXT A 100 t
+host: mkdir TEXT
+step: getud TEXT
+expect: exit -999
+
+== no-console
+# man: only on the system console
+-- case
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img
+step: getud TEXT
+expect: output contains 'unable to open /dev/ud'
+
+# ---- what the source has besides (src, k) -------------------------------------------------------------------------
+
+== type-mismatch
+# k (OPNFIL): an ASCII request for a binary file, and a binary one for an ASCII file: 48H (invalid file type)
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'x' > b && python3 $WEGA_HOST/tools/udosfs.py put disk.img BIN B 100 b && python3 $WEGA_HOST/tools/udosfs.py put disk.img TEXT A 100 b
+step: getud BIN
+step: getud -b TEXT
+expect: output contains 'File BIN Error 48'
+expect: output contains 'File TEXT Error 48'
+
+== drive-1
+# k: a name without a drive is searched on every drive (here only drive 1 has the file)
+-- case
+terminal: console
+device: drive0 disk0.img
+device: drive1 disk1.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk0.img && python3 $WEGA_HOST/tools/udosfs.py format disk1.img && printf 'on one\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk1.img TEXT A 100 t
+step: getud TEXT
+expect: file TEXT contains 'on one'
+
+== record-lengths
+# k: files of record length 80H, 100H, 200H, 400H, several records, the last one partly used
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && python3 -c "import sys; sys.stdout.buffer.write(bytes(i * 37 % 256 for i in range(3000)))" > r && for l in 80 100 200 400; do python3 $WEGA_HOST/tools/udosfs.py put disk.img R$l B $l r; done
+step: getud -B R80 R100 R200 R400
+host: for l in 80 100 200 400; do cmp R$l r && echo R$l same; done
+expect: output contains 'R80 same'
+expect: output contains 'R400 same'
+
+== empty
+# k: a file without records: EOT at once; src: an empty file is made
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && : > e && python3 $WEGA_HOST/tools/udosfs.py put disk.img EMPTY B 100 e
+step: getud -b EMPTY
+expect: file EMPTY contains ''
+
+== end-mark-inside
+# k (ASCEOF): an FFH inside an ASCII file ends it there
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'before\377after\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk.img TEXT A 100 t
+step: getud TEXT
+host: od -c TEXT
+expect: output contains 'b   e   f   o   r   e'
+expect: output contains '0000006'
+
+== descriptor
+# src: -f with -b: the file begins with the descriptor (k: 6 times MAGIC 0D607H, then the attributes from 0CH of the
+# descriptor, 80H bytes together); -f without -b is error 48H (OPN3)
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'code' > p && python3 $WEGA_HOST/tools/udosfs.py put disk.img PROG P 100 p
+step: getud -f -b PROG
+host: od -A d -t x1 PROG | head -3
+host: mv PROG PROG.1
+step: getud -f PROG
+expect: output contains '0000000 d6 07 d6 07 d6 07 d6 07 d6 07 d6 07 80 01 00 00'
+expect: output contains 'File PROG Error 48'
+
+== path
+# src: a directory part is left away for the UDOS name, the file is made in the current directory
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'x\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk.img TEXT A 100 t
+step: getud some/dir/TEXT
+expect: file TEXT contains x
+
+== invalid-name
+# k (ISNAME): a name with a blank: 46H; NAMLEN is that of the last good name
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'x\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk.img AB A 100 t
+step: getud AB 'x y z'
+expect: output contains 'File x  Error 46'

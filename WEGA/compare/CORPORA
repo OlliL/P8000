@@ -25,3 +25,5 @@ rm
 rmdir
 mv
 tar
+putud
+getud

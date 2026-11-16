@@ -532,15 +532,24 @@ static void devtab_load(void)
 			}
 			continue;
 		}
-		if (!strncmp(line, "model ", 6)) {
-			char opt1[32] = "", opt2[32] = "";
-			if (sscanf(line + 6, "%63s %599s %31s %31s", n, m, opt1, opt2) < 2) continue;
+		if (!strncmp(line, "model ", 6)) {	/* model NAME KIND[:ARG with blanks] [excl] [console] */
+			int ex = 0, con = 0, k;
+			char *q;
+			if (sscanf(line + 6, "%63s %n", n, &k) < 1) continue;
+			snprintf(m, sizeof m, "%s", line + 6 + k);
+			for (q = m + strlen(m); q > m && (q[-1] == '\n' || q[-1] == ' '); ) *--q = 0;
+			for (;;) {	/* the options at the end */
+				q = strrchr(m, ' ');
+				if (q && !strcmp(q + 1, "excl")) { ex = 1; *q = 0; }
+				else if (q && !strcmp(q + 1, "console")) { con = 1; *q = 0; }
+				else break;
+			}
 			for (i = 0; i < ndevname; i++)
 				if (!strcmp(devname[i].name, n)) {
 					DevEnt *e = &devent[devname[i].ent];
 					snprintf(e->model, sizeof e->model, "%s", m);
-					e->excl = !strcmp(opt1, "excl") || !strcmp(opt2, "excl");
-					e->needcon = !strcmp(opt1, "console") || !strcmp(opt2, "console");
+					e->excl = ex;
+					e->needcon = con;
 				}
 			continue;
 		}

@@ -436,7 +436,11 @@ One field per line; a line starting with `#` is a comment.
 | `expect: file PATH contains TEXT` | The file exists afterwards and contains TEXT (`''`: it just exists). |
 | `expect: file PATH same-as OTHER` | Two files of the directory are equal (or `in/FILE` of a hand-written case). |
 | `expect: missing PATH` | The file is gone afterwards. |
-| `user:` `terminal:` `device:` `time:` `fs:` `signal:` | Reserved for later emulator models; using them is an error until the model exists. |
+| `terminal: console` | The minimal terminal: stdin and stdout of every step are the console (`isatty`, `ttyname` give `/dev/console`, the tty ioctls work). Needed by programs that run only on the system console (getud, putud, format). |
+| `device: driveN FILE` | Floppy drive N (0..3) is the image FILE of the case directory: every `/dev/fd*`, `/dev/rfd*` of that drive reads and writes it. A UDOS disk is made by `host: python3 $WEGA_HOST/tools/udosfs.py format FILE` (and filled with `udosfs.py put`). |
+| `device: ud` | `/dev/ud` is the 8-bit part of the P8000 (`host/z8k-emu/models/ud8.py`) with the drives of the case; what it prints on its own console appears at the end of the record as `8-bit console:`. Needs `terminal: console` (as on WEGA). |
+| `device: NAME KIND:ARG [excl] [console]` | Any device of WEGA's `/dev` with a model of the emulator (`image:`, `host:`, `proc:`, `console`; `host/z8k-emu/README.md`). |
+| `user:` `time:` `fs:` `signal:` | Reserved for later emulator models; using them is an error until the model exists. |
 
 Expectations are checked on the **original**. They prove that a case really tests what it claims (more in section 11).
 
@@ -633,12 +637,14 @@ The emulator (`host/z8k-emu/`, details in its `README.md`) runs a WEGA program a
 
 **It provides:** arguments, environment, files below the WEGA tree and the working directory, `fork`/`exec`/`wait`,
 pipes, directories in the WEGA format, a fixed time on request (`Z8K_TIME`), the guest `/tmp` as its own directory,
-and some models built for corpora: a link to a directory (`mv dir1 dir2`), and the guest `/tmp` as a mount so that
-`/bin/pwd` works (`IN_TMP`).
+and some models built for corpora: a link to a directory (`mv dir1 dir2`), the guest `/tmp` as a mount so that
+`/bin/pwd` works (`IN_TMP`), WEGA's `/dev` with floppy images and the 8-bit part behind `/dev/ud` (`device:`), and a
+minimal console (`terminal: console`).
 
-**It does not provide (yet):** a terminal (`isatty` is always false – `rm` therefore always acts as with `-f`), devices
-(`/dev/...` goes to the Linux host), other users (everything runs as you, not as root), mounting file systems, guest
-signal handlers. A program that needs one of these needs a **model** in the emulator first. Following the project's
+**It does not provide (yet):** a terminal that acts on its settings (echo, raw mode, a screen: vi), the EPROM
+programmer and the floppy requests format/verify/copydisk of the 8-bit part (increment 117 goes on), other users
+(everything runs as you, not as root), mounting file systems, guest signal handlers. Without `terminal: console`,
+`isatty` is false – `rm` therefore acts as with `-f`. A program that needs one of these needs a **model** in the emulator first. Following the project's
 rule, a model is built when the first program needs it, with tests of its own. The case file already reserves the
 fields for it (`terminal:`, `device:`, …).
 
