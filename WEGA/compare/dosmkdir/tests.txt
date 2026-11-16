@@ -1,0 +1,267 @@
+# The cases of the corpus of dosmkdir (compare/dosmkdir/corpus.py); the format: host/recon/casefile.py. Every case starts with
+# a floppy in drive 1 formatted by the original dosformat (host/recon/dospre.py) and the guest clock at 600000000
+# (1989-01-05; the guest zone is EST: 5:39, see dosdir). The disk: 713 clusters of 1024 bytes, all free. What a case reads
+# back it reads with the original dosls, dosdir and with host/tools/dcpimg.py (free clusters, the raw entries).
+# Where an expectation comes from: man = /usr/man/man1/dos.1, src = dosmkdir.c.
+
+== simple
+# man: dosmkdir makes a directory on the DCP disk: the entry has the directory attribute (10), a cluster of its own and the
+# size 0, the time of the clock; the cluster holds the entries . and .. (the first with the cluster of the directory itself,
+# the second with 0, the cluster of the root)
+-- case
+step: dosmkdir /dev/rfd1:sub
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1) && python3 $WEGA_HOST/tools/dcpimg.py entries d1 && python3 $WEGA_HOST/tools/dcpimg.py entries d1 sub
+expect: exit 0
+expect: output contains 'free=712'
+expect: output contains "'SUB        ' 10 2 0"
+expect: output contains "'.          ' 10 2 0"
+expect: output contains "'..         ' 10 0 0"
+
+== listing
+# man: the new directory is listed by dosls and dosdir with the date and time of the clock; . and .. year: see dosdir
+-- case
+step: dosmkdir /dev/rfd1:sub
+step: /usr/bin/dosls /dev/rfd1:
+step: /usr/bin/dosdir /dev/rfd1:
+expect: output contains 'drw-rw-rw- 1 dcp             0  1  5  5:39 SUB'
+expect: output contains 'SUB           <DIR>    1-05-89  5:39'
+
+== lower-case
+# man: names in a DCP path are converted to upper case
+-- case
+step: dosmkdir /dev/rfd1:MixedCase
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains 'MIXEDCAS'
+
+== long-name
+# src: a name has 8 characters; a longer one is cut (no error)
+-- case
+step: dosmkdir /dev/rfd1:longdirectoryname
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' LONGDIRE '
+
+== extension
+# src: a dot in the name gives an extension of 3 characters; longer parts are cut
+-- case
+step: dosmkdir /dev/rfd1:a.b /dev/rfd1:abcdefghij.klmnop
+host: python3 $WEGA_HOST/tools/dcpimg.py entries d1
+expect: output contains "'A       B  ' 10"
+expect: output contains "'ABCDEFGHKLM' 10"
+
+== nested
+# man: dosmkdir /dev/fd0:usr/docs makes a directory of a directory: its . and .. point to the directory above
+-- case
+step: dosmkdir /dev/rfd1:usr
+step: dosmkdir /dev/rfd1:usr/docs
+host: python3 $WEGA_HOST/tools/dcpimg.py entries d1 usr; python3 $WEGA_HOST/tools/dcpimg.py entries d1 usr
+step: /usr/bin/dosls /dev/rfd1:usr/docs
+expect: output contains '/dev/rfd1:/USR/DOCS'
+
+== nested-entries
+# src: in usr/docs (cluster 3) the entries are . (cluster 3) and .. (cluster 2, the cluster of usr)
+-- case
+step: dosmkdir /dev/rfd1:usr
+step: dosmkdir /dev/rfd1:usr/docs
+host: python3 $WEGA_HOST/tools/dcpimg.py entries d1 usr
+expect: output contains "'DOCS       ' 10 3 0"
+expect: output contains "'.          ' 10 2 0"
+expect: output contains "'..         ' 10 0 0"
+
+== several
+# src: every argument is done, in the order
+-- case
+step: dosmkdir /dev/rfd1:a /dev/rfd1:b /dev/rfd1:c
+step: /usr/bin/dosls /dev/rfd1:
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+expect: output contains 'free=710'
+
+== exists
+# src: a name that is a directory already: message, status 2
+-- case
+step: dosmkdir /dev/rfd1:a
+step: dosmkdir /dev/rfd1:a
+expect: exit 2
+expect: output is '-- stderr\ndosmkdir: A - existiert bereits\n'
+
+== exists-file
+# src: a name that is a file counts as existing
+-- case
+host: echo x > f && touch -d '1989-03-05 08:07:06 UTC' f
+step: /usr/bin/doscp f /dev/rfd1:
+step: dosmkdir /dev/rfd1:f
+expect: exit 2
+expect: output is '-- stderr\ndosmkdir: F - existiert bereits\n'
+
+== exists-goes-on
+# src: after an error the next arguments are still done
+-- case
+step: dosmkdir /dev/rfd1:a
+step: dosmkdir /dev/rfd1:a /dev/rfd1:b
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' B   '
+
+== no-parent
+# src: the directory above does not exist: message, status 2, nothing made
+-- case
+step: dosmkdir /dev/rfd1:a/b
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+expect: output contains 'free=713'
+
+== no-parent-message
+# src: the message for a missing directory above
+-- case
+step: dosmkdir /dev/rfd1:a/b
+expect: exit 2
+expect: output is '-- stderr\ndosmkdir: uebergeordnetes Verzeichnis fehlt\n'
+
+== parent-is-file
+# src: the "directory" above is a file: the same message
+-- case
+host: echo x > f && touch -d '1989-03-05 08:07:06 UTC' f
+step: /usr/bin/doscp f /dev/rfd1:
+step: dosmkdir /dev/rfd1:f/b
+expect: exit 2
+expect: output is '-- stderr\ndosmkdir: uebergeordnetes Verzeichnis fehlt\n'
+
+== no-name
+# src: the root of the disk (no name after the colon): message, status 2
+-- case
+step: dosmkdir /dev/rfd1:
+step: dosmkdir /dev/rfd1:/
+expect: exit 2
+expect: output is '-- stderr\ndosmkdir: kein DCP-Pfad angegeben\n'
+
+== native
+# man: an argument without a colon is a WEGA name: /bin/mkdir makes the directory; for an existing one it reports and the
+# status of dosmkdir is still 0 (system() shifted by 8 bits, as in doscat)
+-- case
+step: dosmkdir wd
+step: dosmkdir wd
+expect: exit 0
+expect: output is '-- stderr\nmkdir: cannot make directory wd\n'
+
+== deleted-slot
+# src: the first deleted entry of a directory is used for the new one (the entry of the removed file)
+-- case
+host: echo one > f1 && echo two > f2 && echo three > f3 && touch -d '1989-03-05 08:07:06 UTC' f1 f2 f3
+step: /usr/bin/doscp f1 f2 f3 /dev/rfd1:
+step: /usr/bin/dosrm /dev/rfd1:f2
+step: dosmkdir /dev/rfd1:new
+host: python3 $WEGA_HOST/tools/dcpimg.py entries d1 | sed -n 2p
+expect: output contains "'NEW        ' 10"
+
+== root-full
+# src: the root directory has 112 entries: with all of them in use the new directory cannot be made (Schreibfehler)
+-- case
+host: for i in $(seq 1 112); do echo $i > f$i; done; touch -d '1989-03-05 08:07:06 UTC' f*
+step: /usr/bin/doscp f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 f24 f25 f26 f27 f28 f29 f30 f31 f32 f33 f34 f35 f36 f37 f38 f39 f40 f41 f42 f43 f44 f45 f46 f47 f48 f49 f50 f51 f52 f53 f54 f55 f56 f57 f58 f59 f60 f61 f62 f63 f64 f65 f66 f67 f68 f69 f70 f71 f72 f73 f74 f75 f76 f77 f78 f79 f80 f81 f82 f83 f84 f85 f86 f87 f88 f89 f90 f91 f92 f93 f94 f95 f96 f97 f98 f99 f100 f101 f102 f103 f104 f105 f106 f107 f108 f109 f110 f111 f112 /dev/rfd1:
+step: dosmkdir /dev/rfd1:d
+expect: exit 2
+expect: output is '-- stderr\ndosmkdir: /dev/rfd1 - Schreibfehler\n'
+
+== root-last-entry
+# src: with 111 entries in use the last one is still free: the directory is made
+-- case
+host: for i in $(seq 1 111); do echo $i > f$i; done; touch -d '1989-03-05 08:07:06 UTC' f*
+step: /usr/bin/doscp f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 f20 f21 f22 f23 f24 f25 f26 f27 f28 f29 f30 f31 f32 f33 f34 f35 f36 f37 f38 f39 f40 f41 f42 f43 f44 f45 f46 f47 f48 f49 f50 f51 f52 f53 f54 f55 f56 f57 f58 f59 f60 f61 f62 f63 f64 f65 f66 f67 f68 f69 f70 f71 f72 f73 f74 f75 f76 f77 f78 f79 f80 f81 f82 f83 f84 f85 f86 f87 f88 f89 f90 f91 f92 f93 f94 f95 f96 f97 f98 f99 f100 f101 f102 f103 f104 f105 f106 f107 f108 f109 f110 f111 /dev/rfd1:
+step: dosmkdir /dev/rfd1:d
+expect: exit 0
+step: /usr/bin/dosls /dev/rfd1:d
+
+== subdir-grows
+# src: a directory of 32 entries per cluster that is full (. and .. and 30 files): the new directory needs a second cluster
+# for the directory above, chained after the first
+-- case
+host: for i in $(seq 1 30); do echo $i > g$i; done; touch -d '1989-03-05 08:07:06 UTC' g*
+step: dosmkdir /dev/rfd1:d
+step: /usr/bin/doscp g1 g2 g3 g4 g5 g6 g7 g8 g9 g10 g11 g12 g13 g14 g15 g16 g17 g18 g19 g20 g21 g22 g23 g24 g25 g26 g27 g28 g29 g30 /dev/rfd1:d
+host: echo chain=$(python3 $WEGA_HOST/tools/dcpimg.py chain d1 D)
+step: dosmkdir /dev/rfd1:d/new
+host: echo chain=$(python3 $WEGA_HOST/tools/dcpimg.py chain d1 D) free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+step: /usr/bin/dosls /dev/rfd1:d/new
+expect: output contains '/dev/rfd1:/D/NEW'
+
+== disk-full
+# src: no free cluster (fatfree gives -3): Schreibfehler, status 2, no entry
+-- case
+host: python3 $WEGA_HOST/tools/dcpimg.py fillfat d1
+step: dosmkdir /dev/rfd1:d
+expect: exit 2
+expect: output is '-- stderr\ndosmkdir: /dev/rfd1 - Schreibfehler\n'
+
+== one-cluster
+# src: exactly one free cluster: the first directory fits, the second does not
+-- case
+host: python3 $WEGA_HOST/tools/dcpimg.py fillfat d1; python3 $WEGA_HOST/tools/dcpimg.py setfat d1 100 0
+step: dosmkdir /dev/rfd1:d
+step: dosmkdir /dev/rfd1:e
+host: python3 $WEGA_HOST/tools/dcpimg.py entries d1
+expect: output contains "'D          ' 10 100 0"
+
+== subdir-full-disk
+# src (a quirk): the directory above is full and one cluster is free: the extension cluster is chained, then the cluster of
+# the new directory is missing: Schreibfehler, but the directory above keeps its second cluster
+-- case
+host: for i in $(seq 1 30); do echo $i > g$i; done; touch -d '1989-03-05 08:07:06 UTC' g*
+step: dosmkdir /dev/rfd1:d
+step: /usr/bin/doscp g1 g2 g3 g4 g5 g6 g7 g8 g9 g10 g11 g12 g13 g14 g15 g16 g17 g18 g19 g20 g21 g22 g23 g24 g25 g26 g27 g28 g29 g30 /dev/rfd1:d
+host: python3 $WEGA_HOST/tools/dcpimg.py fillfat d1; python3 $WEGA_HOST/tools/dcpimg.py setfat d1 2 0xfff; for n in $(seq 3 32); do python3 $WEGA_HOST/tools/dcpimg.py setfat d1 $n 0xfff; done; python3 $WEGA_HOST/tools/dcpimg.py setfat d1 33 0
+step: dosmkdir /dev/rfd1:d/new
+host: echo chain=$(python3 $WEGA_HOST/tools/dcpimg.py chain d1 D)
+expect: output contains 'chain=2 33'
+
+== drive-letter
+# man: a drive letter of /etc/default/dos (B: is drive 1)
+-- case
+step: dosmkdir B:sub b:/sub2
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' SUB '
+expect: output contains ' SUB2 '
+
+== drive-undefined
+# src: a letter that is not defined: the message of dosplit, status 2
+-- case
+step: dosmkdir Q:sub
+expect: exit 2
+expect: output is '-- stderr\nLaufwerk Q: nicht definiert\n'
+
+== dot-dos
+# man: $HOME/.dos defines the drive letters first
+-- .dos
+Z=/dev/rfd1
+-- case
+step: dosmkdir z:sub
+env: HOME=.
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' SUB '
+
+== no-device
+# src: a device that cannot be opened (opened for reading and writing)
+-- case
+step: dosmkdir /dev/rfd2:sub
+expect: exit 2
+expect: output is '-- stderr\ndosmkdir: Fehler in /dev/rfd2\n'
+
+== usage
+# src: no argument: usage, status 1
+-- case
+step: dosmkdir
+expect: exit 1
+expect: output is '-- stderr\nusage: dosmkdir dosdev:dirname\n'
+
+== hd-fat12
+# src: a hard disk with a FAT12 partition: the new directory is made behind the offset of the partition
+-- case
+host: printf 'hello\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 1 A.DAT=a.dat
+step: dosmkdir /dev/rfd1:sub
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' SUB '
+expect: output contains ' A        DAT'
+
+== hd-fat16
+# src: a hard disk with a FAT16 partition (16 bit FAT entries: fatfree and fatput have their own branch)
+-- case
+host: printf 'hello\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 4 A.DAT=a.dat
+step: dosmkdir /dev/rfd1:sub /dev/rfd1:sub/in
+step: /usr/bin/dosls /dev/rfd1:sub
+expect: output contains ' IN '

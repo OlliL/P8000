@@ -126,7 +126,7 @@ inf+inf and sqrt(inf) are invalid and give NaN), no traps.
 `sc #n` uses the numbers of `sys/sysent.c`. Arguments are read from r0, r1, ...
 (16-bit value: one register, 32-bit value: two, pointer: one or two in
 segmented mode); results are returned in r4 (r5), carry set and errno in r4 on
-error. Implemented: exit, fork, read, write, open, close, wait, creat, link,
+error. Implemented: exit, fork, read, write, open (with the kernel's FCREAT 0400, FTRUNC 01000, FEXCL 02000 and the mode as third argument, `sys2.c copen`: dosformat opens its image so; test `tests/openflags.c`), close, wait, creat, link,
 unlink, exec, exece, chdir, time, mknod (directories via host `mkdir`),
 chmod, chown (no-op), break, ssgbrk, stat,
 fstat, fcntl, lseek, getpid, getuid/getgid, alarm, pause, utime, access, nice

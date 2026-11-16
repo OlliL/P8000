@@ -1,0 +1,128 @@
+# The cases of the corpus of mvdir (compare/mvdir/corpus.py); the format: host/recon/casefile.py. Every case runs as root
+# (the link of a directory is for the super-user) with the clock at 600000000. Where an expectation comes from: src =
+# src/cmd/mvdir.sh (the original has the same text: the corpus decides).
+
+== usage
+# src: not exactly two arguments: the usage line on the standard output, status 2
+-- case
+step: /etc/mvdir
+step: /etc/mvdir a
+step: /etc/mvdir a b c
+expect: exit 2
+expect: output is 'Usage: mvdir fromdir newname\n'
+
+== dot
+# src (a quirk, KNOWLEDGE.md): the message of the first argument ".": the echo has an unbalanced ` in "cannot move `.'": the
+# shell makes a command of the rest of the line and reports it; the status is 2
+-- case
+step: /etc/mvdir . x
+expect: exit 2
+expect: output contains 'mvdir: cannot move'
+
+== rename
+# src: a directory is renamed (a link of the new name, the unlink of the old one): the files in it are there
+-- case
+host: mkdir a && echo f > a/f
+step: /etc/mvdir a b
+expect: exit 0
+expect: file b/f contains 'f'
+expect: missing a
+
+== into-dir
+# src: the new name is a directory: the directory is moved into it, under its own name
+-- case
+host: mkdir a b && echo f > a/f
+step: /etc/mvdir a b
+expect: exit 0
+expect: file b/a/f contains 'f'
+expect: missing a
+
+== exists-file
+# src: the new name is a file: "NAME exists", status 1, nothing moved
+-- case
+host: mkdir a && echo x > b
+step: /etc/mvdir a b
+expect: exit 1
+host: test -d a && echo a-stays
+expect: output is 'b exists\n'
+expect: output contains 'a-stays'
+
+== exists-in-dir
+# src: the new name is a directory with an entry of the same name as the directory: "DIR/NAME exists"
+-- case
+host: mkdir a b b/a
+step: /etc/mvdir a b
+expect: exit 1
+expect: output is 'b/a exists\n'
+
+== not-a-directory
+# src: the first argument is not a directory (a file, or not there): the message, status 1
+-- case
+host: echo x > f
+step: /etc/mvdir f g
+step: /etc/mvdir nof g
+expect: exit 1
+expect: output is 'nof must be a directory\n'
+
+== not-a-directory-file
+# src: a file as first argument
+-- case
+host: echo x > f
+step: /etc/mvdir f g
+expect: exit 1
+expect: output is 'f must be a directory\n'
+
+== common-path
+# src: the new name lies below the directory: "arguments have common path", status 1
+-- case
+host: mkdir a
+step: /etc/mvdir a a/b
+expect: exit 1
+expect: output is 'arguments have common path\n'
+
+== other-parent
+# src: the new name in another directory (T: its parent): the directory moves there
+-- case
+host: mkdir a d && echo f > a/f
+step: /etc/mvdir a d/z
+expect: exit 0
+expect: file d/z/f contains 'f'
+expect: missing a
+
+== deep
+# src: a directory in a directory moves to the top
+-- case
+host: mkdir -p a/b && echo f > a/b/f
+step: /etc/mvdir a/b top
+expect: exit 0
+expect: file top/f contains 'f'
+expect: missing a/b
+
+== no-parent
+# src: the parent of the new name does not exist: link fails, "Cannot link to NAME", status 2
+-- case
+host: mkdir a
+step: /etc/mvdir a nodir/x
+expect: exit 2
+host: test -d a && echo a-stays
+expect: output contains 'Cannot link to nodir/x'
+expect: output contains 'a-stays'
+
+== user
+# src: /etc/mvdir has the mode 700 (root): a user cannot run it
+-- case
+user: 100 100
+host: mkdir a && chmod 777 .
+step: /etc/mvdir a b
+expect: exit 1
+expect: output is '-- stderr\n/etc/mvdir: /etc/mvdir: cannot open\n'
+
+== parents-dotdot
+# src: after the move the entry .. of the moved directory is the new parent: a directory below it is found through it
+-- case
+host: mkdir -p a/inner d && echo f > a/f
+step: /etc/mvdir a d/n
+step: /bin/ls d/n/inner
+step: /bin/ls d/n/..
+expect: exit 0
+expect: output contains 'n'

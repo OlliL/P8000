@@ -2,7 +2,7 @@
 1.0, src/cmd/doscopy/Makefile), on the cases of compare/doscp/tests.txt (host/recon/casefile.py). The proof that the
 floppy model carries the dos programs (increment 117): they read and write /dev/rfd* (image files of the case);
 dosformat runs /bin/format and with it the 8-bit part behind /dev/ud. The other dos programs run as the originals of the
-tree (by their paths); their own corpora are increment 120."""
+tree (by their paths); their own corpora are compare/dosls, dosdir, doscat, dosmkdir, dosrm, dosrmdir, dosformat."""
 import os
 import sys
 

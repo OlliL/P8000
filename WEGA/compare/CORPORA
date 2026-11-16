@@ -34,3 +34,15 @@ copydisk
 doscp
 mfs
 sync
+doscat
+dosls
+dosdir
+dosmkdir
+dosrm
+dosrmdir
+dosformat
+mvdir
+write
+dump
+dumpdir
+restor

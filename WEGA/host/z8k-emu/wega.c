@@ -860,6 +860,12 @@ static void devexit(void)
 }
 
 /* open of a device entry: the host fd, or -errno */
+/* the access mode of the host's open for the flags of a guest open: O_TRUNC (FTRUNC) of a read-only open needs write access */
+static int open_acc(int i)
+{
+	return (i & 3) == 0 && (i & 01000) ? O_RDWR : (i & 3);
+}
+
 static int devopen(int e, int mode)
 {
 	DevEnt *d = &devent[e];
@@ -1295,10 +1301,21 @@ static int um_call(Z8K *c, unsigned n)
 		p = a_ptr(&a); i = a_int(&a); gstr(c, p, gp, sizeof gp);
 		if (devlookup(gp) != -2) return -2;
 		hp = hostpath(gp, hb, sizeof hb);
-		if (stat(hp, &st) < 0) return sc_err(c, errno);
+		int cm = (i & 0400) ? a_int(&a) : 0;	/* FCREAT: the mode of a new file is the third argument */
+		if (stat(hp, &st) < 0) {
+			if (!(i & 0400) || errno != ENOENT) return sc_err(c, errno);
+			um_parent(hp, dir, sizeof dir);
+			if ((e = um_perm(dir, 2, um_euid, um_egid))) return sc_err(c, e);
+			k = UM_RETRY(dir, S_IWUSR | S_IXUSR, open(hp, open_acc(i) | O_CREAT | O_EXCL, cm & 0777));
+			if (k < 0) return sc_err(c, errno);
+			if (fstat(k, &st) == 0) um_setown(&st, um_euid, um_egid);
+			return sc_ok(c, k);
+		}
+		if ((i & 0400) && (i & 02000)) return sc_err(c, EEXIST);	/* FEXCL */
 		if ((i & 3) != 1 && (e = um_perm(hp, 4, um_euid, um_egid))) return sc_err(c, e);
-		if ((i & 3) != 0 && (e = um_perm(hp, 2, um_euid, um_egid))) return sc_err(c, e);
-		k = UM_RETRY(hp, (i & 3) == 0 ? S_IRUSR : (i & 3) == 1 ? S_IWUSR : S_IRUSR | S_IWUSR, open(hp, i & 3));
+		if (((i & 3) != 0 || (i & 01000)) && (e = um_perm(hp, 2, um_euid, um_egid))) return sc_err(c, e);
+		k = UM_RETRY(hp, (i & 3) == 0 && !(i & 01000) ? S_IRUSR : (i & 3) == 1 ? S_IWUSR : S_IRUSR | S_IWUSR,
+			     open(hp, open_acc(i) | ((i & 01000) ? O_TRUNC : 0)));
 		if (k < 0) return sc_err(c, errno);
 		dirload(k, hp);
 		return sc_ok(c, k);
@@ -1469,7 +1486,11 @@ static int sys_call_impl(Z8K *c, unsigned n)
 			return k < 0 ? sc_err(c, -k) : sc_ok(c, k);
 		}
 		hp = hostpath(gp, hb, sizeof hb);
-		k = open(hp, i & 3);
+		if (i & 0400) {		/* FCREAT, FEXCL, FTRUNC of the kernel's open (sys2.c copen); the mode is the third argument */
+			int cm = a_int(&a);
+			k = open(hp, open_acc(i) | O_CREAT | ((i & 02000) ? O_EXCL : 0) | ((i & 01000) ? O_TRUNC : 0), cm & 0777);
+		} else
+			k = open(hp, open_acc(i) | ((i & 01000) ? O_TRUNC : 0));
 		if (istmp(gp)) tmplog("open %s mode %d -> %d", gp, i & 3, k < 0 ? -errno : k);
 		if (k < 0) return sc_err(c, errno);
 		dirload(k, hp);
@@ -1867,7 +1888,15 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "-t")) c->trace = 1;
 		else if (!strcmp(argv[i], "-T")) c->trace = 2;
 		else if (!strcmp(argv[i], "-v")) c->verbose = 1;
-		else if (!strcmp(argv[i], "-e") && i + 1 < argc && nenv < 62) envv[nenv++] = argv[++i];
+		else if (!strcmp(argv[i], "-e") && i + 1 < argc && nenv < 62) {
+			/* a name that is there already (PATH, HOME) is replaced: getenv of the guest takes the first */
+			const char *e = argv[++i], *q = strchr(e, '=');
+			int k, n = q ? (int)(q - e) : (int)strlen(e);
+			for (k = 0; k < nenv; k++)
+				if (!strncmp(envv[k], e, n) && envv[k][n] == '=') break;
+			if (k < nenv) envv[k] = (char *)e;
+			else envv[nenv++] = (char *)e;
+		}
 		else if (!strcmp(argv[i], "-0") && i + 1 < argc) argv0 = argv[++i];
 		else if (!strcmp(argv[i], "--")) { i++; break; }
 		else { fprintf(stderr, "usage: z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] [-0 ARGV0] PROGRAM [ARG...]\n"); return 2; }

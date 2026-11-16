@@ -142,3 +142,32 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   name in the super block is not that of the directory; the /etc/mnttab of the shipped tree lists z, tmp, usr as
   mounted; smount of this kernel does not check for the super-user.
 - 2026-11-16: corpus sync (manM/sync.M, src/cmd/sync.c): plain, arguments, stdin, user.
+- 2026-11-16: the corpora of the other doscopy programs (version 1.0, man page dos.1): dosls (25 cases), dosdir (25),
+  doscat (32), dosmkdir (30), dosrm (24), dosrmdir (26), dosformat (25), in `compare/NAME/tests.txt`, the floppy prefix in
+  `host/recon/dospre.py` (the disk of doscp: formatted by the original dosformat). New: `host/tools/dcpimg.py` (free
+  clusters, FAT chain and entries, attribute, volume label, a full FAT, and `mkhd`: an image with a DCP file system of
+  small clusters, as a floppy or behind a partition table of type 1 or 4: the hard disk path and the FAT16 branch of
+  dosdev.c); its hash and that of udosfs.py, wegafs.py are now part of the runner key of the store (a change of a tool of
+  the host: lines made the stored results stale before). Emulator: `-e` replaces HOME=/ and PATH of its own (`$HOME/.dos`
+  could not be set), open knows FCREAT, FTRUNC, FEXCL and the third argument (dosformat writes its image so), with the
+  tests `env` and `openflags`. Each expectation was derived from the source before the original's output was looked at;
+  what differed is in the table of KNOWLEDGE.md: the time of an entry (2045 for 2048), the year of `.` and `..`,
+  `-1` for the first entry of a second listing (bytefree's fdopen), control-Z and the chunk-end CR of doscat, dosrmdir in
+  the second cluster of the parent (writes E5 into the data behind the cluster) and its empty check running past the
+  cluster, dosformat choosing the format by a substring of the device name. A mutant of each program (a letter of the
+  output, the control-Z byte, the month, the read-only test, the dot of the empty check, a FAT byte) is found.
+- 2026-11-16: write (20 cases), dump (18), dumpdir (9), restor (18), and mvdir (14; not asked for, kept apart in its own
+  commit). write: `/etc/utmp` made by `host/tools/mkutmp.py` in the layer over the tree, the terminals of the other users are
+  `device: ttyN image:FILE`, the own one the console; an unopenable terminal (a FIFO nobody reads) gives the 5 second alarm.
+  dump, dumpdir, restor: `host/recon/dumppre.py` (a WEGA file system image of `host/tools/wegafs.py` as /dev/rz = rmd4, two
+  floppies, /etc/ddate in the layer, a level 0 dump by the original as the prefix of dumpdir and restor); the archive of two
+  disks with the operator (`insert disk 2: `); restor r into an image, read back with wegafs.py ls and cat. Found on the way
+  (KNOWLEDGE.md, table): the steps of a corpus that name the program under test must be the bare name (`dump`), not the path
+  (`/etc/dump` runs the original on both sides); restor x finds nothing (direq's dangling else); dump u appends a new entry
+  every time. Mutants of dump, dumpdir, restor, write are found. Not modelled, so no cases: the permissions of a raw device
+  for a user (the user cases of dump), and a restor x that extracts (it cannot: see the quirk).
+- 2026-11-16: left of the inventory, with the reason: the csh scripts (adduser, down, chkdiff, makelost+found, makewhatis,
+  man.dbmgr, UGETT1: the runner starts scripts with /bin/sh only, a csh option is the first step; makewhatis writes into
+  the tree below /usr/man), rmuser (passwd on the terminal, find /), halt, killall, whodo (the process table), install,
+  new.install, sysgen (floppies and the system), BOOT0 and standalone (MAME, 180). Next by the owner's order.
+

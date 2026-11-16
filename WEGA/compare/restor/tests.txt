@@ -1,0 +1,207 @@
+# The cases of the corpus of restor (compare/restor/corpus.py); the format: host/recon/casefile.py. Every case starts as the
+# cases of dump (host/recon/dumppre.py: the file system /dev/rz with /a (i-node 5), /dir (3), /dir/b (6), /dir/sub (4),
+# /dir/sub/c (7), /big (8); the floppies of drive 0 and 1; the clock at 600000000) and with a level 0 dump of it by the original
+# /etc/dump on drive 1. What a restored file system holds is read with host/tools/wegafs.py ls and cat. Where an expectation
+# comes from: man = /usr/man/manM/restor.M, src = src/cmd/restor.c.
+
+== t
+# man: t prints the date of the dump and the date it was dumped from
+-- case
+step: restor t
+expect: exit 0
+expect: output is 'Dump   date: Thu Jan  5 05:40:00 1989\nDumped from: Wed Dec 31 19:00:00 1969\n'
+
+== t-f-key
+# man: f: the archive is the next argument (drive 0)
+-- case
+step: /etc/dump 0f /dev/rfd0
+step: restor tf /dev/rfd0
+expect: output is 'Dump   date: Thu Jan  5 05:40:00 1989\nDumped from: Wed Dec 31 19:00:00 1969\n'
+
+== t-not-a-dump
+# src: a medium without a dump header: "Not a dump-archiv", status 1
+-- case
+host: python3 -c "open('d0','wb').write(bytes(737280))"
+step: restor tf /dev/rfd0
+expect: exit 1
+expect: output is 'Not a dump-archiv\n'
+
+== version
+# src: d prints the version and the capacity of the floppy on the diagnostic output
+-- case
+step: restor td
+expect: output contains 'restor: Version 25.11.87'
+expect: output contains 'tar: disk capacity 1440 blocks'
+
+== usage
+# src: no argument: the usage, status 1
+-- case
+step: restor
+expect: exit 1
+expect: output is "restor: usage  restor [-][frRxt] [archivdev] [filesystem] [name]\n     give archiv device _/ ||| \\_ display date of archiv\n        give filesystem __/ | \\__ extract named files\n          'r' with start from any archiv-volume\n"
+
+== bad-key
+# src: an unknown key: the message (the format has the % behind the quote: it prints the character and a stray) and the usage
+-- case
+step: restor z
+expect: exit 1
+expect: output contains "bad key 'z'"
+
+== no-archive
+# src: the archive cannot be opened: for the default /dev/dumpdev /dev/rfd1 is tried next, with f only the one named
+-- case
+step: restor tf /dev/nonex
+expect: exit 1
+expect: output is 'restor: cannot open /dev/nonex\n'
+
+== x-nothing
+# src (a quirk, KNOWLEDGE.md): the search in the directory file of x compares names with direq, which has a dangling else:
+# the first entry of every directory ends the search ("/" is taken as found), so no name is found: "not on the archiv"; then
+# restor asks for the volume to read the files from: 1; there is nothing to extract
+-- one
+1
+-- case
+step: restor x /a /dir/b big nonex
+stdin: one
+host: rm -f rst*
+expect: exit 0
+expect: output contains '/a: not on the archiv'
+expect: output contains 'big: not on the archiv'
+expect: output contains 'Mount desired archiv volume: Specify volume #: '
+
+== x-volume-zero
+# src: a volume number that is not positive is asked again; the end of the input ends restor
+-- zero
+0
+-- case
+step: restor x /a
+stdin: zero
+host: rm -f rst*
+expect: exit 0
+expect: output contains 'Volume numbers are positive numerics'
+
+== x-wrong-volume
+# src: another volume than the one in the drive: "Wrong volume (1)" (the number on the disk), then it asks again; the end of the
+# input ends it
+-- two
+2
+-- case
+step: restor x /a
+stdin: two
+host: rm -f rst*
+expect: output contains 'Wrong volume (1)'
+
+== x-not-volume-1
+# src: x wants volume 1 of the dump first: a disk that is a later one: "Not volume 1 of the dump"
+-- case
+host: python3 -c "print('x' * 1000000)" > big2 && python3 $WEGA_HOST/tools/wegafs.py format z.img 3000 500000000 && python3 $WEGA_HOST/tools/wegafs.py put z.img /big2 big2 644 3 3 500000000; : > d2; : > d1
+device: drive2 d2
+step: /etc/dump 0
+operator: at 'insert disk 2: ' insert drive1 d2 type '\n'
+step: restor x /big2
+host: rm -f rst*
+expect: exit 1
+expect: output is 'Not volume 1 of the dump\n'
+
+== r
+# man: r reads the dump and loads it into the file system of the argument (an empty one, made by mkfs): directories, files, modes,
+# owners and sizes are those of the dump; "Last chance" waits for return, "One moment please." follows the list of the cleared
+# i-nodes, "End of archiv" ends
+-- go
+go
+-- case
+host: python3 $WEGA_HOST/tools/wegafs.py format z.img 400 500000000
+step: restor r /dev/rz
+stdin: go
+host: python3 $WEGA_HOST/tools/wegafs.py scrub z.img; python3 $WEGA_HOST/tools/wegafs.py ls z.img /; python3 $WEGA_HOST/tools/wegafs.py ls z.img /dir; python3 $WEGA_HOST/tools/wegafs.py ls z.img /dir/sub; python3 $WEGA_HOST/tools/wegafs.py cat z.img /dir/sub/c; python3 $WEGA_HOST/tools/wegafs.py cat z.img /big | wc -c; rm -f rst*
+expect: exit 0
+expect: output contains 'Last chance before scribbling on /dev/rz : '
+expect: output contains 'One moment please.'
+expect: output contains 'End of archiv'
+expect: output contains '-rw-r--r--   1     3     3        6'
+expect: output contains '-rw-r-----   1     3     3     3001'
+expect: output contains '6000'
+
+== r-f-key
+# man: f: the dump is read from the medium of the next argument (drive 0), the file system is the one after it (/dev/rmd2)
+-- go
+go
+-- case
+host: python3 $WEGA_HOST/tools/wegafs.py format z2.img 400 500000000
+device: rmd2 image:z2.img
+step: /etc/dump 0f /dev/rfd0
+step: restor rf /dev/rfd0 /dev/rmd2
+stdin: go
+host: python3 $WEGA_HOST/tools/wegafs.py scrub z2.img; python3 $WEGA_HOST/tools/wegafs.py ls z2.img /dir; rm -f rst*
+expect: exit 0
+expect: output contains 'End of archiv'
+expect: output contains ' b'
+
+== r-incremental
+# man: a full dump and then an incremental one (a file made after the first dump) are restored one after the other into the
+# same empty file system: the new file is there as well
+-- go
+go
+-- case
+host: python3 $WEGA_HOST/tools/wegafs.py format z2.img 400 500000000
+device: rmd2 image:z2.img
+step: /etc/dump 0uf /dev/rfd0
+host: python3 -c "open('n','w').write('new\n')" && python3 $WEGA_HOST/tools/wegafs.py put z.img /newfile n 644 3 3 600000100; : > d1
+step: /etc/dump 9
+step: restor rf /dev/rfd0 /dev/rmd2
+stdin: go
+step: restor r /dev/rmd2
+stdin: go
+host: python3 $WEGA_HOST/tools/wegafs.py scrub z2.img; python3 $WEGA_HOST/tools/wegafs.py ls z2.img /; rm -f rst*
+expect: exit 0
+expect: output contains 'newfile'
+
+== r-R
+# man: R asks which part (disk) of the dump set to start with: 1 is the first
+-- one
+1
+go
+-- case
+host: python3 $WEGA_HOST/tools/wegafs.py format z.img 400 500000000
+step: restor R /dev/rz
+stdin: one
+host: python3 $WEGA_HOST/tools/wegafs.py scrub z.img; python3 $WEGA_HOST/tools/wegafs.py ls z.img /dir; rm -f rst*
+expect: exit 0
+expect: output contains 'Enter starting volume number: '
+expect: output contains 'End of archiv'
+
+== r-wrong-volume
+# src: R with a volume that is not the one in the drive: "Archiv is not volume 2", status 1
+-- two
+2
+go
+-- case
+host: python3 $WEGA_HOST/tools/wegafs.py format z.img 400 500000000
+step: restor R /dev/rz
+stdin: two
+host: rm -f rst*
+expect: exit 1
+expect: output contains 'Archiv is not volume 2'
+
+== r-no-device
+# src: the file system cannot be opened: the message with its name, status 1
+-- go
+go
+-- case
+step: restor r /dev/nonex
+stdin: go
+expect: exit 1
+expect: output is '/dev/nonex: cannot open\n'
+
+== r-over-old
+# man: the file system of r should be empty; with an older content the dump replaces files of the same i-number (the i-nodes
+# of the clear map are emptied first: "One moment please.")
+-- go
+go
+-- case
+host: python3 -c "open('o','w').write('old\n')" && python3 $WEGA_HOST/tools/wegafs.py format z2.img 400 500000000 && python3 $WEGA_HOST/tools/wegafs.py put z2.img /old o 644 1 1 500000000 && python3 $WEGA_HOST/tools/wegafs.py put z2.img /old2 o 644 1 1 500000000 && python3 $WEGA_HOST/tools/wegafs.py put z2.img /old3 o 644 1 1 500000000
+device: rmd2 image:z2.img
+step: restor r /dev/rmd2
+stdin: go
+host: python3 $WEGA_HOST/tools/wegafs.py scrub z2.img; python3 $WEGA_HOST/tools/wegafs.py ls z2.img /; rm -f rst*
+expect: exit 0

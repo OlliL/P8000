@@ -938,8 +938,13 @@ class Gen:
         return Generated(self.cfg, name or self.name(src), src, sources, prep, text, prep_files)
 
 
+HOST_TOOLS = ('dcpimg.py', 'udosfs.py', 'wegafs.py')	# what the host: lines of the cases run (WEGA_HOST/tools)
+
+
 def runner_key():
-    return mix(sha1file(os.path.abspath(__file__)))
+    """the runner and the tools of the cases' host: lines: a change of one of them makes the stored results stale"""
+    tools = [sha1file(os.path.join(REPO, 'host', 'tools', t)) for t in HOST_TOOLS if os.path.exists(os.path.join(REPO, 'host', 'tools', t))]
+    return mix(sha1file(os.path.abspath(__file__)), *tools)
 
 
 def main():

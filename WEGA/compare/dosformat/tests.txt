@@ -1,0 +1,212 @@
+# The cases of the corpus of dosformat (compare/dosformat/corpus.py); the format: host/recon/casefile.py. Where an
+# expectation comes from: man = /usr/man/man1/dos.1, src = src/cmd/doscopy/1.0/dosformat.c. A name that is not a device
+# (no /dev/ in it) is an image: dosformat writes the boot sector, the FATs and the directory into the file and nothing
+# else (the size is those sectors); on a floppy device it runs /bin/format first (the question on the console).
+
+== image-48ds9
+# man: -48ds9: src: 720 sectors, 2 sectors per cluster, 112 entries, 2 FATs of 2 sectors: 1 + 4 + 7 = 12 sectors
+-- case
+step: dosformat -48ds9 img
+host: echo size=$(stat -c %s img) boot=$(od -An -tx1 -N32 img | tr -d '\n') sig=$(od -An -tx1 -j510 -N2 img | tr -d '\n') fat=$(od -An -tx1 -j512 -N3 img | tr -d '\n')
+expect: exit 0
+expect: output contains 'size=6144 boot= eb 34 90 57 45 47 41 2d 44 4f 53 00 02 02 01 00 02 70 00 d0 02 fd 02 00 09 00 02 00 00 00 00 00 sig= 55 aa fat= f9 ff ff'
+
+== image-96ds9
+# man: -96ds9: 1440 sectors, 2 sectors per cluster, 112 entries, 2 FATs of 3 sectors: 1 + 6 + 7 = 14 sectors
+-- case
+step: dosformat -96ds9 img
+host: echo size=$(stat -c %s img) boot=$(od -An -tx1 -N32 img | tr -d '\n') fat=$(od -An -tx1 -j512 -N3 img | tr -d '\n')
+expect: output contains 'size=7168 boot= eb 34 90 57 45 47 41 2d 44 4f 53 00 02 02 01 00 02 70 00 a0 05 f9 03 00 09 00 02 00 00 00 00 00 fat= f9 ff ff'
+
+== image-96ds15
+# man: -96ds15: 2400 sectors of 1 sector per cluster, 224 entries, 2 FATs of 7 sectors: 1 + 14 + 14 = 29 sectors
+-- case
+step: dosformat -96ds15 img
+host: echo size=$(stat -c %s img) boot=$(od -An -tx1 -N32 img | tr -d '\n') fat=$(od -An -tx1 -j512 -N3 img | tr -d '\n')
+expect: output contains 'size=14848 boot= eb 34 90 57 45 47 41 2d 44 4f 53 00 02 01 01 00 02 e0 00 60 09 f9 07 00 0f 00 02 00 00 00 00 00 fat= f9 ff ff'
+
+== image-default
+# man: dosformat NAME without a format is -96ds9
+-- case
+step: dosformat img
+host: cp img img2
+step: dosformat -96ds9 img2
+host: cmp img img2 && echo same size=$(stat -c %s img)
+expect: output contains 'same size=7168'
+
+== image-truncated
+# src: the file is opened O_TRUNC: a longer file becomes the image only, no rest of the old content stays
+-- case
+host: head -c 100000 /dev/zero | tr '\0' 'x' > img
+step: dosformat -48ds9 img
+host: echo size=$(stat -c %s img) mode=$(stat -c %a img)
+expect: output contains 'size=6144 mode=644'
+
+== image-new-mode
+# src: a new file is made with the mode 0664 (the umask of the host shell: 022)
+-- case
+step: dosformat -96ds9 img
+host: echo mode=$(stat -c %a img)
+expect: output contains 'mode=644'
+
+== image-option-substring
+# src: cmp() looks for the format name anywhere in the option: -x48ds9y is the 48ds9 format
+-- case
+step: dosformat -x48ds9y img
+host: echo size=$(stat -c %s img) media=$(od -An -tx1 -j21 -N1 img)
+expect: exit 0
+expect: output contains 'size=6144 media= fd'
+
+== image-48ss9
+# src: 48ss9 is a format of the devices only (dev && ...): for an image it is a wrong format
+-- case
+step: dosformat -48ss9 img
+expect: exit 1
+expect: output is '-- stderr\ndosformat: falsches DCP-Format\n'
+expect: missing img
+
+== image-wrong-format
+# src: a format that is none of the four: message, status 1, no file
+-- case
+step: dosformat -77ds9 img
+step: dosformat -ds img
+expect: exit 1
+expect: output is '-- stderr\ndosformat: falsches DCP-Format\n'
+expect: missing img
+
+== usage-three
+# man: dosformat [[-48ds9|-96ds9|-96ds15] device]: more than two arguments is a usage error
+-- case
+step: dosformat -48ds9 img extra
+expect: exit 1
+expect: output is '-- stderr\nusage: dosformat [[-96ds15|-96ds9|-48ds9] dosdev]\n'
+
+== usage-no-dash
+# src: the first of two arguments must begin with - (the type), the second not
+-- case
+step: dosformat 48ds9 img
+step: dosformat -48ds9 -img
+expect: exit 1
+expect: output is '-- stderr\nusage: dosformat [[-96ds15|-96ds9|-48ds9] dosdev]\n'
+
+== usage-dash-name
+# src: one argument that begins with - is taken as the name and is refused
+-- case
+step: dosformat -48ds9
+expect: exit 1
+expect: output is '-- stderr\nusage: dosformat [[-96ds15|-96ds9|-48ds9] dosdev]\n'
+
+== usage-dev-path
+# src: a name with /dev/ in it that is not a device (the file does not exist) is refused, the check is a substring search:
+# an image in a directory named dev is refused too
+-- case
+host: mkdir dev
+step: dosformat -96ds9 /dev/nonexistent
+step: dosformat -96ds9 x/dev/img
+step: dosformat -96ds9 dev/img
+expect: exit 0
+expect: file dev/img contains ''
+expect: missing x
+
+== usage-dev-path-error
+# src: the refusal gives the usage message, status 1
+-- case
+step: dosformat -96ds9 /dev/nonexistent
+expect: exit 1
+expect: output is '-- stderr\nusage: dosformat [[-96ds15|-96ds9|-48ds9] dosdev]\n'
+
+== open-fails
+# src: the image cannot be made: the message names the file, status 1
+-- case
+step: dosformat -96ds9 nodir/img
+expect: exit 1
+expect: output is '-- stderr\ndosformat: kann nodir/img nicht oeffnen\n'
+
+== drive-undefined
+# src: a drive letter that is not defined: the message of dosplit, status 1
+-- case
+step: dosformat -96ds9 Q:
+expect: exit 1
+expect: output is '-- stderr\nLaufwerk Q: nicht definiert\n'
+
+== drive-letter
+# man: a drive letter of /etc/default/dos for the device: B is /dev/fd196ds9, a device: the option is ignored and the name
+# of the device decides (96ds9 in it: the format 96ds9); /bin/format asks on the console
+-- case
+step: dosformat B:
+stdin: y
+expect: exit 0
+expect: output contains 'Format /dev/fd196ds9, ready ?'
+
+== device-default
+# man: without an argument the device is /dev/rfd196ds9 (drive 1, 96ds9); format asks, y formats, then the DCP structure is written
+-- case
+step: dosformat
+stdin: y
+host: echo boot=$(od -An -tx1 -N16 d1 | tr -d '\n') fat=$(od -An -tx1 -j512 -N3 d1 | tr -d '\n')
+expect: output contains 'Format /dev/rfd196ds9, ready ?'
+expect: output contains 'boot= eb 34 90 57 45 47 41 2d 44 4f 53 00 02 02 01 00 fat= f9 ff ff'
+
+== device-answer-no
+# src: format ends with a status other than 0 when the answer is not y: dosformat ends with 1 and writes no DCP structure
+-- n
+n
+-- case
+host: python3 -c "open('d1','wb').write(bytes([0xe5]) * 737280)"
+step: dosformat /dev/rfd1
+stdin: n
+host: echo first=$(od -An -tx1 -N2 d1)
+expect: exit 1
+expect: output contains 'first= e5 e5'
+
+== device-option-ignored
+# src: on a device the option is ignored (fdtyp = the device name): -48ds9 on /dev/rfd1 writes the 96ds9 boot sector
+# (neither ss nor ds in the name)
+-- case
+step: dosformat -48ds9 /dev/rfd1
+stdin: y
+host: echo media=$(od -An -tx1 -j21 -N1 d1)
+expect: output contains 'media= f9'
+
+== device-name-48ds9
+# src: the name of the device decides: 48ds9 in it gives the 48ds9 boot sector
+-- case
+step: dosformat /dev/rfd148ds9
+stdin: y
+host: echo media=$(od -An -tx1 -j21 -N1 d1) total=$(od -An -tx1 -j19 -N2 d1)
+expect: output contains 'media= fd total= d0 02'
+
+== device-name-48ss9
+# src: 48ss9 in the name of a device: the 48ss9 boot sector (360 sectors, 64 entries, media fc)
+-- case
+step: dosformat /dev/rfd148ss9
+stdin: y
+host: echo media=$(od -An -tx1 -j21 -N1 d1) total=$(od -An -tx1 -j19 -N2 d1) dir=$(od -An -tx1 -j17 -N2 d1)
+expect: output contains 'media= fc total= 68 01 dir= 40 00'
+
+== device-name-96ds15
+# src: there is no device /dev/rfd196ds15 in the shipped /dev: the name is refused as a name that is no device
+-- case
+step: dosformat /dev/rfd196ds15
+expect: exit 1
+expect: output is '-- stderr\nusage: dosformat [[-96ds15|-96ds9|-48ds9] dosdev]\n'
+
+== device-name-96ss9
+# src: a device whose name has ss or ds in it but none of the formats (the last branch wants neither): wrong format, before
+# format is run
+-- case
+step: dosformat /dev/rfd196ss9
+step: dosformat /dev/rfd148ds16
+stdin: y
+expect: exit 1
+expect: output is '-- stderr\ndosformat: falsches DCP-Format\n'
+host: echo first=$(od -An -tx1 -N2 d1)
+expect: output contains 'first= e5 e5'
+
+== device-path-colon
+# src: dosplit splits at the colon: a DCP path after it is ignored, the device is formatted
+-- case
+step: dosformat /dev/rfd1:foo
+stdin: y
+expect: exit 0
+expect: output contains 'Format /dev/rfd1, ready ?'

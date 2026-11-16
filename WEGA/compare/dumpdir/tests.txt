@@ -1,0 +1,84 @@
+# The cases of the corpus of dumpdir (compare/dumpdir/corpus.py); the format: host/recon/casefile.py. Every case starts as the
+# cases of dump (host/recon/dumppre.py: the file system /dev/rz with /a (i-node 5), /dir (3), /dir/b (6), /dir/sub (4),
+# /dir/sub/c (7), /big (8); drive 0 and 1 are empty floppies) and with a level 0 dump of it by the original /etc/dump on drive 1.
+# Where an expectation comes from: man = /usr/man/manM/dumpdir.M, src = src/cmd/dumpdir.c.
+
+== list
+# man: dumpdir lists the names and i-node numbers of all files and directories of a dump, from /dev/dumpdev (drive 1); the
+# dump date and the date it was dumped from head the list; the directories are listed with . and ..
+-- case
+step: dumpdir
+expect: exit 0
+expect: output is 'Dump   date: Thu Jan  5 05:40:00 1989\nDumped from: Wed Dec 31 19:00:00 1969\n    2\t/.\n    2\t/..\n    3\t/dir/.\n    2\t/dir/..\n    4\t/dir/sub/.\n    3\t/dir/sub/..\n    7\t/dir/sub/c\n    6\t/dir/b\n    5\t/a\n    8\t/big\n'
+
+== f-key
+# man: f: the archive is read from the medium of the next argument
+-- case
+step: /etc/dump 0f /dev/rfd0
+step: dumpdir f /dev/rfd0
+expect: output contains '/dir/sub/c'
+
+== version
+# src: d prints the version, and the capacity of the floppy (ioctl SHOWFD) on the diagnostic output
+-- case
+step: dumpdir d
+expect: output contains 'dumpdir: Version 6.11.87'
+expect: output contains 'tar: disk capacity 1440 blocks'
+
+== bad-key
+# src: an unknown key: "bad key" and the usage, status 1
+-- case
+step: dumpdir x
+expect: exit 1
+expect: output is "bad key 'x'\ndumpdir: usage dumpdir [f archivdev]\n"
+
+== no-archive
+# src: the archive cannot be opened: the message, status 1 (with the default name /dev/rfd1 is tried next)
+-- case
+step: dumpdir f /dev/nonex
+expect: exit 1
+expect: output is 'dumpdir: cannot open /dev/nonex\n'
+
+== not-a-dump
+# src: a medium with no dump header: "Not a dump-archiv", status 1
+-- case
+host: python3 -c "open('d0','wb').write(bytes(737280))"
+step: dumpdir f /dev/rfd0
+expect: exit 1
+expect: output is 'Not a dump-archiv\n'
+
+== incremental
+# src: a level 9 dump holds only what changed: the new file is listed with the directories above it
+-- case
+host: python3 -c "open('n','w').write('new\n')" && python3 $WEGA_HOST/tools/wegafs.py put z.img /newfile n 644 3 3 600000100; : > d0
+step: /etc/dump 0uf /dev/rfd0
+host: : > d1
+step: /etc/dump 9
+step: dumpdir
+expect: output contains 'newfile'
+
+== second-disk-only
+# src: the first disk of a dump of several is expected: another one gives "Tape is not volume 1 of the dump", status 1
+-- case
+host: python3 -c "print('x' * 1000000)" > big2 && python3 $WEGA_HOST/tools/wegafs.py format z.img 3000 500000000 && python3 $WEGA_HOST/tools/wegafs.py put z.img /big2 big2 644 3 3 500000000; : > d2; : > d1
+device: drive2 d2
+step: /etc/dump 0
+operator: at 'insert disk 2: ' insert drive1 d2 type '\n'
+step: dumpdir
+host: rm -f rst*
+expect: exit 1
+expect: output contains 'Tape is not volume 1 of the dump'
+
+== two-disks
+# src: the list is made from the directories, which come first in the dump: of a dump on two disks the first one is
+# enough (no "insert disk 2 : "), the files of the second disk are listed too
+-- case
+host: python3 -c "print('x' * 1000000)" > big2 && python3 $WEGA_HOST/tools/wegafs.py format z.img 3000 500000000 && python3 $WEGA_HOST/tools/wegafs.py put z.img /big2 big2 644 3 3 500000000; : > d2; : > d1
+device: drive2 d2
+step: /etc/dump 0
+operator: at 'insert disk 2: ' insert drive1 d2 type '\n'
+step: dumpdir
+operator: insert drive1 d1
+host: rm -f rst*
+expect: exit 0
+expect: output contains '/big2'

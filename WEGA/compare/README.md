@@ -70,6 +70,7 @@ The state today (the number of cases changes when sources change):
 | `ld`, `sld`, `gld` | generated from `fixtures.py` and `test/` | wega, host (gld: host) |
 | `cas`, `casold` | generated: C sources, opcode tables, jump tests | wega, host (casold: host) |
 | `dc`, `rm`, `rmdir`, `mv` (with `cp`, `ln`), `tar` | `tests.txt` | wega |
+| `doscp`, `doscat`, `dosls`, `dosdir`, `dosmkdir`, `dosrm`, `dosrmdir`, `dosformat` | `tests.txt` with the floppy prefix of `host/recon/dospre.py`; images made or patched by `host/tools/dcpimg.py` (a DCP file system with small clusters, a hard disk with a partition table, attribute, label, full FAT) | wega |
 
 ---
 
@@ -432,7 +433,7 @@ One field per line; a line starting with `#` is a comment.
 |---|---|
 | `step: WORDS` | Run a WEGA program in the emulator. Words are split like a shell does (quotes work), but there is **no shell**: no `>`, `|`, `;`, `$(...)`. A word with `*`, `?`, `[` is expanded in the case directory. `$V` is the words of the variant. The first word is `PROG` (the program under test) or a name of `ALIASES`; any other first word runs the original `/bin/WORD` on every side. |
 | `stdin: FILE` | The standard input of the step before (a file of the case directory). Without it, stdin is empty. |
-| `env: NAME=VALUE` | Environment of the step before; before the first step: of every step. |
+| `env: NAME=VALUE` | Environment of the step before; before the first step: of every step. (A corpus whose prefix has steps, like the dos corpora, has no such place: put the `env:` line after each step that needs it. `HOME=.` makes `./.dos` of the case directory the drive file of the dos programs.) |
 | `host: LINE` | A line of the Linux shell between steps (`sh -c`): preparation, `chmod`, `touch -d`, `ln`. `$WEGA_ROOT` is set. Its output and exit status are recorded too. |
 | `variant: NAME=VALUE … WORD …` | The case runs once per `variant:` line: `NAME=VALUE` pairs go into the environment, other words into `$V`. No `variant:` line: the case runs once. |
 | `expect: exit N` | The last step ends with status N. |

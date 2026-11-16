@@ -7,6 +7,8 @@
   wegafs.py extract IMAGE DIR        the whole tree into DIR (made): directories, files, links (a second name of an
                                      i-node is a hard link again), modes, times; the owners and what the host cannot
                                      make (device files) are listed in DIR.owners: uid gid mode path
+  wegafs.py scrub IMAGE              zero the bytes of the super block behind the structure (s_mach and on): what a program leaves there
+                                     is leftover memory (restor: digits of its process number), not part of the file system
   wegafs.py format IMAGE BLOCKS [TIME]   an empty file system of BLOCKS blocks, byte for byte as WEGA's /etc/mkfs
                                      IMAGE BLOCKS makes it (format_fs; TIME the clock, seconds since 1970)
   wegafs.py put IMAGE PATH FILE [MODE [UID GID [TIME]]]   a file into the file system (made or replaced; MODE octal,
@@ -431,6 +433,11 @@ def main():
         else:
             disk.make(sys.argv[3], IFDIR | mode, uid, gid, t)
         disk.save()
+        return 0
+    if sys.argv[1] == 'scrub':
+        d = bytearray(open(sys.argv[2], 'rb').read())
+        d[512 + 441:1024] = bytes(1024 - 512 - 441)
+        open(sys.argv[2], 'wb').write(d)
         return 0
     img = Image(sys.argv[2])
     if sys.argv[1] == 'info':

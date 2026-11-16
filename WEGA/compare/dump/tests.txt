@@ -1,0 +1,159 @@
+# The cases of the corpus of dump (compare/dump/corpus.py); the format: host/recon/casefile.py. The prefix: host/recon/dumppre.py
+# (the file system /dev/rz = an image of 400 blocks with /a, /dir/b, /dir/sub/c, /big, all of the time 500000000; the
+# floppies of drive 0 and 1, the archives; /etc/ddate, empty; the clock at 600000000; the console). The archive written is
+# read back with the original /etc/dumpdir. Where an expectation comes from: man = /usr/man/manM/dump.M, src = src/cmd/dump.c.
+
+== default
+# man: without arguments the key is 9u (level 9, the date is entered), the file system /dev/rz, the archive /dev/dumpdev
+# (drive 1); a level 9 dump with no earlier dump dumps everything since the epoch
+-- case
+step: dump
+step: /etc/dumpdir
+expect: output contains 'dumping /dev/rz to /dev/dumpdev'
+expect: output contains 'dump date = the epoch'
+expect: output contains '     date = Thu Jan  5 05:40:00 1989'
+expect: output contains 'level 9 dump on Thu Jan  5 05:40:00 1989'
+expect: output contains 'DONE'
+expect: output contains 'dir/sub/c'
+expect: output contains 'big'
+
+== passes
+# src: the passes are named I, II, III, IV; the estimate and the count of the blocks written are printed
+-- case
+step: dump 0
+expect: output contains 'estimated 28'
+expect: output contains 'IV'
+expect: output contains 'estimated 28 disk blocks on 1 disk'
+expect: output contains '40 diskblocks on 1 disk'
+
+== ddate-entry
+# man: with u the start time of the dump is entered in /etc/ddate for the file system (its name as given: rz) and the level
+-- case
+step: dump 0u
+host: python3 -c "d=open('$Z8K_OVERLAY/etc/ddate','rb').read(); print(len(d), d[:3], d[16:17], d[20:24].hex())" 
+expect: output contains "level 0 dump on Thu Jan  5 05:40:00 1989"
+
+== no-u
+# man: without u /etc/ddate is not changed
+-- case
+step: dump 0
+host: wc -c < $Z8K_OVERLAY/etc/ddate
+expect: output contains '0'
+
+== ddate-twice
+# src (a quirk, KNOWLEDGE.md): putitime counts the entry it finds (n++ before the compare) and then writes at the index n: an entry
+# of the same file system and level is not replaced but a new one follows it (22 bytes per entry: 44 after two dumps); an
+# entry of the same level does not give the date of the next dump (only a lower level does): the last dump is a full one
+-- case
+step: dump 0u
+step: dump 0u
+host: wc -c < $Z8K_OVERLAY/etc/ddate
+step: dump 0
+expect: output is '     date = Thu Jan  5 05:40:00 1989\ndump date = the epoch\ndumping /dev/rz to /dev/dumpdev\nI\nII\nestimated 28 disk blocks on 1 disk\nIII\nIV\nDONE\n40 diskblocks on 1 disk\n'
+
+== name-of-fs
+# man: /dev/rmd4 and /dev/rz are two file systems for ddate (the name as given): entries for both
+-- case
+step: dump 0u /dev/rz
+step: dump 0u /dev/rmd4
+host: wc -c < $Z8K_OVERLAY/etc/ddate
+expect: output contains 'dumping /dev/rmd4 to /dev/dumpdev'
+
+== level-chain
+# man: level N dumps what changed since the last dump of a lower level: after a level 0 dump a new file (time after the dump) is the
+# only file of the level 9 dump
+-- case
+step: dump 0u
+host: python3 -c "open('n','w').write('new\n')" && python3 $WEGA_HOST/tools/wegafs.py put z.img /newfile n 644 3 3 600000100; : > d1
+step: dump 9u
+step: /etc/dumpdir
+expect: output contains 'dump date = Thu Jan  5 05:40:00 1989'
+expect: output contains 'newfile'
+
+== level-lower-only
+# man: a level 5 dump uses the date of the last dump of a level below 5, not of level 9
+-- case
+step: dump 0u
+host: : > d1
+step: dump 9u
+host: : > d1
+step: dump 5
+expect: output contains 'dump date = Thu Jan  5 05:40:00 1989'
+
+== f-key
+# man: f: the dump goes to the medium of the next argument (drive 0), not to /dev/dumpdev
+-- case
+step: dump 0f /dev/rfd0
+host: echo d0=$(wc -c < d0) d1=$(wc -c < d1)
+step: /etc/dumpdir f /dev/rfd0
+expect: output contains 'dumping /dev/rz to /dev/rfd0'
+expect: output contains 'dir/sub/c'
+
+== filesystem-argument
+# man: the file system is the last argument: here /dev/rmd4 (the same image as /dev/rz)
+-- case
+step: dump 0 /dev/rmd4
+expect: output contains 'dumping /dev/rmd4 to /dev/dumpdev'
+
+== no-file-system
+# src: the file system cannot be opened: the message, status 1 (the archive is opened afterwards, so nothing is written)
+-- case
+step: dump 0 /dev/nonex
+expect: exit 1
+expect: output contains 'dump: cannot open /dev/nonex'
+
+== no-archive
+# src: the archive cannot be opened: for /dev/dumpdev /dev/rfd1 is tried next; with f only that one
+-- case
+step: dump 0f /dev/nonex
+expect: exit 1
+expect: output contains 'dump: cannot open /dev/nonex'
+
+== no-dumpdev
+# man: there is no drive 1: /dev/dumpdev cannot be opened, /dev/rfd1 is tried, status 1
+-- case
+host: true
+step: dump 0f /dev/rfd3
+expect: exit 1
+expect: output contains 'dump: cannot open /dev/rfd3'
+
+== bad-key
+# src: an unknown key: "bad key" (the format has a % before the quote: the character is printed, then the usage; status 1
+-- case
+step: dump x
+expect: exit 1
+expect: output contains "bad key 'x'"
+expect: output contains 'dump: usage  dump [Lufs] [archivdev] [archivsize] [filesystem]'
+
+== version
+# src: d prints the version of the program first
+-- case
+step: dump 0d
+expect: output contains 'dump: Version 25.11.87'
+
+== disk-capacity
+# src: for a floppy the capacity is asked of the driver (ioctl SHOWFD): 1440 blocks of the format 96ds9 (tsize = 4 times)
+-- case
+step: dump 0d
+expect: output contains 'disk capacity 1440 blocks'
+
+== second-disk
+# man: when the capacity is reached dump waits for the next medium ("insert disk 2: "); the operator puts the second disk
+# into the drive and presses return; the estimate says 2 disks
+-- case
+host: python3 -c "print('x' * 1000000)" > big2 && python3 $WEGA_HOST/tools/wegafs.py format z.img 3000 500000000 && python3 $WEGA_HOST/tools/wegafs.py put z.img /big2 big2 644 3 3 500000000; : > d2; : > d1
+device: drive2 d2
+step: dump 0
+operator: at 'insert disk 2: ' insert drive1 d2 type '\n'
+step: /etc/dumpdir
+host: rm -f rst*
+expect: output contains 'Tape is not volume 1 of the dump'
+
+== interrupt
+# src: the signal while the dump waits for the next disk ends it without the date entry (no handler: the default action)
+-- case
+host: python3 -c "print('x' * 1000000)" > big2 && python3 $WEGA_HOST/tools/wegafs.py format z.img 3000 500000000 && python3 $WEGA_HOST/tools/wegafs.py put z.img /big2 big2 644 3 3 500000000
+step: dump 0u
+signal: INT at 'insert disk 2: '
+host: wc -c < $Z8K_OVERLAY/etc/ddate
+expect: output contains '0'

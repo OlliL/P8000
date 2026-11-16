@@ -1,0 +1,245 @@
+# The cases of the corpus of dosls (compare/dosls/corpus.py); the format: host/recon/casefile.py. Every case starts with a
+# floppy in drive 1 formatted by the original dosformat (host/recon/dospre.py) and the guest clock at 600000000 (1989).
+# The files on the disk are put there by the original doscp and dosmkdir (their time: the doscp time of a WEGA file; the
+# guest zone is EST, so 1990-12-31 23:59:58 UTC is 18:59:58 and shows as 18:58 (the 2045 in putdir of doscp, dosmkdir; the
+# listing prints what stands in the entry). Where an expectation comes from: man = /usr/man/man1/dos.1, src = dosls.c.
+
+== empty
+# src: the root directory of an empty disk: the header (a blank line, device:/) and no entry
+-- case
+step: dosls /dev/rfd1:
+expect: exit 0
+expect: output is '\n/dev/rfd1:/\n'
+
+== root
+# man: dosls lists files and directories in the WEGA format (ls -l); d for a directory, the owner is dcp, the link count 1
+-- case
+host: echo one > f1 && echo two > f2 && touch -d '1990-12-31 23:59:58 UTC' f1 f2
+step: /usr/bin/doscp f1 f2 /dev/rfd1:
+step: /usr/bin/dosmkdir /dev/rfd1:sub
+step: dosls /dev/rfd1:
+expect: exit 0
+expect: output is '\n/dev/rfd1:/\n-rw-rw-rw- 1 dcp             5 12 31 18:58 F1          \n-rw-rw-rw- 1 dcp             5 12 31 18:58 F2          \ndrw-rw-rw- 1 dcp             0  1  5  5:39 SUB         \n'
+
+== lower
+# man: names in the DCP path are converted to upper case: dosls /dev/rfd1:Sub = SUB; the header shows the name as given
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/dosmkdir /dev/rfd1:sub
+step: /usr/bin/doscp f1 /dev/rfd1:sub
+step: dosls /dev/rfd1:Sub
+expect: output is '\n/dev/rfd1:/SUB\ndrw-rw-rw- 1 dcp             0  1  5  5:39 .           \ndrw-rw-rw- 1 dcp             0  1  5  5:39 ..          \n-rw-rw-rw- 1 dcp             5  3  5  3: 6 F1          \n'
+
+== file
+# man: dosls on a file prints that file's line only, without the header
+-- case
+host: echo one > f1 && echo two > f2 && touch -d '1989-03-05 08:07:06 UTC' f1 f2
+step: /usr/bin/doscp f1 f2 /dev/rfd1:
+step: dosls /dev/rfd1:f2
+expect: output is '-rw-rw-rw- 1 dcp             5  3  5  3: 6 F2          \n'
+
+== extension
+# src: the name is printed as 8 characters, a blank, 3 characters of the extension
+-- case
+host: echo x > abcdefgh.xyz && echo y > a.b && touch -d '1989-03-05 08:07:06 UTC' abcdefgh.xyz a.b
+step: /usr/bin/doscp abcdefgh.xyz a.b /dev/rfd1:
+step: dosls /dev/rfd1:
+expect: output is '\n/dev/rfd1:/\n-rw-rw-rw- 1 dcp             3  3  5  3: 6 ABCDEFGH XYZ\n-rw-rw-rw- 1 dcp             3  3  5  3: 6 A        B  \n'
+
+== attrs
+# src: the read-only attribute gives r--r--r--; a hidden or system file is listed as an ordinary one; a volume label entry
+# is listed too (as a file with the date 0 0 and the time 0: 0)
+-- case
+host: echo one > f1 && echo two > f2 && echo three > f3 && echo four > f4 && touch -d '1990-12-31 23:59:58 UTC' f1 f2 f3 f4
+step: /usr/bin/doscp f1 f2 f3 f4 /dev/rfd1:
+host: for a in f1:01 f2:02 f3:04; do python3 $WEGA_HOST/tools/dcpimg.py attr d1 ${a%:*} ${a#*:}; done; python3 $WEGA_HOST/tools/dcpimg.py label d1 MYDISK
+step: dosls /dev/rfd1:
+expect: output is '\n/dev/rfd1:/\n-r--r--r-- 1 dcp             5 12 31 18:58 F1          \n-rw-rw-rw- 1 dcp             5 12 31 18:58 F2          \n-rw-rw-rw- 1 dcp             7 12 31 18:58 F3          \n-rw-rw-rw- 1 dcp             6 12 31 18:58 F4          \n-rw-rw-rw- 1 dcp             0  0  0  0: 0 MYDISK      \n'
+
+== deleted
+# src: a deleted entry (first byte E5) is not listed, the next one is
+-- case
+host: echo one > f1 && echo two > f2 && echo three > f3 && touch -d '1989-03-05 08:07:06 UTC' f1 f2 f3
+step: /usr/bin/doscp f1 f2 f3 /dev/rfd1:
+step: /usr/bin/dosrm /dev/rfd1:f2
+step: dosls /dev/rfd1:
+expect: output is '\n/dev/rfd1:/\n-rw-rw-rw- 1 dcp             5  3  5  3: 6 F1          \n-rw-rw-rw- 1 dcp             7  3  5  3: 6 F3          \n'
+
+== deleted-first
+# src: the first entry deleted: listing goes on after it (the end of the directory is a first byte 0, not E5)
+-- case
+host: echo one > f1 && echo two > f2 && touch -d '1989-03-05 08:07:06 UTC' f1 f2
+step: /usr/bin/doscp f1 f2 /dev/rfd1:
+step: /usr/bin/dosrm /dev/rfd1:f1
+step: dosls /dev/rfd1:
+expect: output is '\n/dev/rfd1:/\n-rw-rw-rw- 1 dcp             5  3  5  3: 6 F2          \n'
+
+== nested
+# man: the names in a DCP path are separated by /; the directory of a directory
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/dosmkdir /dev/rfd1:a /dev/rfd1:a/b
+step: /usr/bin/doscp f1 /dev/rfd1:a/b
+step: dosls /dev/rfd1:a/b
+step: dosls /dev/rfd1:/a/b/f1
+step: dosls /dev/rfd1:a
+expect: output contains '/dev/rfd1:/A/B'
+expect: output contains '-rw-rw-rw- 1 dcp             5  3  5  3: 6 F1          '
+expect: output contains '/dev/rfd1:/A'
+
+== slash
+# src: a leading slash after the colon is skipped; a trailing slash stays in the header and in the name that is looked for
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/dosmkdir /dev/rfd1:d
+step: /usr/bin/doscp f1 /dev/rfd1:d
+step: dosls /dev/rfd1:/d/
+expect: output is '\n/dev/rfd1:/D/\ndrw-rw-rw- 1 dcp             0  1  5  5:39 .           \ndrw-rw-rw- 1 dcp             0  1  5  5:39 ..          \n-rw-rw-rw- 1 dcp             5  3  5  3: 6 F1          \n'
+
+== dotdot
+# src (a quirk, KNOWLEDGE.md): the entry looked for is d/.. : dosopn's name compare treats the second component (an empty
+# name, the extension '.') as matching the first entry '.', which is the directory d itself: d/.. lists d
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/dosmkdir /dev/rfd1:d
+step: /usr/bin/doscp f1 /dev/rfd1:d
+step: dosls /dev/rfd1:d/..
+expect: output contains '/dev/rfd1:/D/..'
+expect: output contains 'F1  '
+
+== several
+# man: dosls dir ...: one listing after the other, in the order of the arguments
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/dosmkdir /dev/rfd1:d
+step: /usr/bin/doscp f1 /dev/rfd1:d
+step: dosls /dev/rfd1:d /dev/rfd1: /dev/rfd1:d/f1
+expect: output is '\n/dev/rfd1:/D\ndrw-rw-rw- 1 dcp             0  1  5  5:39 .           \ndrw-rw-rw- 1 dcp             0  1  5  5:39 ..          \n-rw-rw-rw- 1 dcp             5  3  5  3: 6 F1          \n\n/dev/rfd1:/\ndrw-rw-rw- 1 dcp             0  1  5  5:39 D           \n-rw-rw-rw- 1 dcp             5  3  5  3: 6 F1          \n'
+
+== two-clusters
+# src: a directory of two clusters (32 entries of 32 bytes per cluster of 1024 bytes; . and .. and 34 files): the loop over
+# the chain lists all of them; dosdir and the other dos programs read the same chain
+-- case
+host: for i in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34; do echo $i > g$i.txt; done; touch -d '1989-03-05 08:07:06 UTC' g*.txt
+step: /usr/bin/dosmkdir /dev/rfd1:d
+step: /usr/bin/doscp g*.txt /dev/rfd1:d
+step: dosls /dev/rfd1:d
+host: echo chain=$(python3 $WEGA_HOST/tools/dcpimg.py chain d1 D)
+expect: output contains 'chain=2 3'
+expect: output contains 'G01      TXT'
+expect: output contains 'G30      TXT'
+expect: output contains 'G31      TXT'
+expect: output contains 'G34      TXT'
+
+== drive-letter
+# man: a drive letter defined in /etc/default/dos stands for the device (B=/dev/fd196ds9 is drive 1); lower case is read as upper
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: dosls B:
+step: dosls b:f1
+step: dosls b:/f1
+expect: output contains '/dev/fd196ds9:/'
+expect: output contains '-rw-rw-rw- 1 dcp             5  3  5  3: 6 F1          '
+
+== drive-undefined
+# src: a letter that the file does not define: message, exit status 2, and the other arguments are still done
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: dosls Q: /dev/rfd1:
+expect: exit 2
+expect: output contains 'Laufwerk Q: nicht definiert'
+expect: output contains '/dev/rfd1:/'
+
+== dot-dos
+# man: $HOME/.dos defines the drives first (/etc/default/dos only when it does not exist): Z is defined there, B is not
+-- .dos
+# own drives
+Z=/dev/rfd1
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: dosls z:
+env: HOME=.
+step: dosls B:
+env: HOME=.
+expect: exit 2
+expect: output contains 'Laufwerk B: nicht definiert'
+
+== dot-dos-first
+# src: only the line that starts with the letter counts, and only when it is longer than 3 characters: "A=\n" is not found
+-- .dos
+A=
+Z=/dev/rfd1
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: dosls A:
+env: HOME=.
+step: dosls Z:
+env: HOME=.
+expect: output contains 'Laufwerk A: nicht definiert'
+expect: output contains '/dev/rfd1:/'
+
+== no-device
+# src: a device that cannot be opened: the message, status 2
+-- case
+step: dosls /dev/rfd2:
+expect: exit 2
+expect: output is '-- stderr\ndosls: Fehler in /dev/rfd2\n'
+
+== not-found
+# src: a name that is not on the disk
+-- case
+step: dosls /dev/rfd1:nonex
+expect: exit 2
+expect: output is '-- stderr\ndosls: NONEX nicht gefunden\n'
+
+== not-found-sub
+# src: a directory of the path that does not exist: not found with the whole DCP path
+-- case
+step: dosls /dev/rfd1:a/b/c
+expect: exit 2
+expect: output is '-- stderr\ndosls: A/B/C nicht gefunden\n'
+
+== not-dcp
+# src: a disk that does not start with the jump byte EB (a blank one): taken for a hard disk, no partition found: error
+-- case
+host: python3 -c "open('d1','wb').write(bytes(737280))"
+step: dosls /dev/rfd1:
+expect: exit 2
+expect: output is '-- stderr\ndosls: Fehler in /dev/rfd1\n'
+
+== usage
+# src: without an argument: usage on the diagnostic output, status 1
+-- case
+step: dosls
+expect: exit 1
+expect: output is '-- stderr\nusage: dosls dosdev:[dirname] [dosdev:[dirname]] [...]\n'
+
+== native
+# man: an argument without a colon is a WEGA file: dosls hands it to /bin/ls -l
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: dosls f1
+expect: exit 0
+expect: output contains ' f1'
+
+== native-missing
+# src: the status of dosls here is that of system(): WEGA's ls -l says 'nofile not found' and ends with 0
+-- case
+step: dosls nofile
+expect: exit 0
+expect: output is 'nofile not found\n'
+
+== error-goes-on
+# src: after an error the next arguments are still done; the status is that of the last error (2)
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: dosls /dev/rfd1:nonex /dev/rfd1:f1 /dev/rfd2:
+expect: exit 2
+expect: output contains 'NONEX nicht gefunden'
+expect: output contains ' F1  '
+expect: output contains 'Fehler in /dev/rfd2'

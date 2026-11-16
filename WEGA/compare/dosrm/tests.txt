@@ -1,0 +1,233 @@
+# The cases of the corpus of dosrm (compare/dosrm/corpus.py); the format: host/recon/casefile.py. Every case starts with a
+# floppy in drive 1 formatted by the original dosformat (host/recon/dospre.py) and the guest clock at 600000000 (1989).
+# The disk: 713 clusters of 1024 bytes, all free at the start. The files are put there by the original doscp and dosmkdir;
+# what a case reads back it reads with the original dosls, dosdir and host/tools/dcpimg.py (free clusters, the raw
+# entries: the name of a deleted entry starts with E5). Where an expectation comes from: man = /usr/man/man1/dos.1,
+# src = dosrm.c, dosdel.c.
+
+== simple
+# man: dosrm removes a file of the DCP disk: the entry is marked deleted (first byte E5), the cluster is free again
+-- case
+host: echo one > f1 && echo two > f2 && touch -d '1989-03-05 08:07:06 UTC' f1 f2
+step: /usr/bin/doscp f1 f2 /dev/rfd1:
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+step: dosrm /dev/rfd1:f1
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1); python3 $WEGA_HOST/tools/dcpimg.py entries d1
+step: /usr/bin/dosls /dev/rfd1:
+expect: exit 0
+expect: output contains 'free=711'
+expect: output contains 'free=712'
+expect: output contains "'\\xe51         ' 20 2 5"
+expect: output contains ' F2 '
+
+== gone
+# man: the file is not listed afterwards, the other stays
+-- case
+host: echo one > f1 && echo two > f2 && touch -d '1989-03-05 08:07:06 UTC' f1 f2
+step: /usr/bin/doscp f1 f2 /dev/rfd1:
+step: dosrm /dev/rfd1:f1
+step: /usr/bin/dosls /dev/rfd1:
+expect: output is '\n/dev/rfd1:/\n-rw-rw-rw- 1 dcp             5  3  5  3: 6 F2          \n'
+
+== chain
+# src: the clusters of a file of 3 clusters are all freed
+-- case
+host: python3 -c "print('x' * 2499)" > f; touch -d '1989-03-05 08:07:06 UTC' f
+step: /usr/bin/doscp -r f /dev/rfd1:
+host: echo chain=$(python3 $WEGA_HOST/tools/dcpimg.py chain d1 f) free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+step: dosrm /dev/rfd1:f
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1) f2=$(python3 $WEGA_HOST/tools/dcpimg.py fatentry d1 2) f3=$(python3 $WEGA_HOST/tools/dcpimg.py fatentry d1 3) f4=$(python3 $WEGA_HOST/tools/dcpimg.py fatentry d1 4)
+expect: output contains 'chain=2 3 4 free=710'
+expect: output contains 'free=713 f2=0x0 f3=0x0 f4=0x0'
+
+== fragmented
+# src: a chain that is not in order (2 6 7: a file made in the holes) is followed and freed
+-- case
+host: for i in 1 2 3 4; do echo $i > f$i; done; python3 -c "print('x' * 2499)" > big; touch -d '1989-03-05 08:07:06 UTC' f1 f2 f3 f4 big
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: /usr/bin/doscp f2 f3 f4 /dev/rfd1:
+step: dosrm /dev/rfd1:f1 /dev/rfd1:f3
+step: /usr/bin/doscp -r big /dev/rfd1:
+host: echo chain=$(python3 $WEGA_HOST/tools/dcpimg.py chain d1 big) free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+step: dosrm /dev/rfd1:big
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+expect: output contains 'chain=2 4 6 free=708'
+expect: output contains 'free=711'
+
+== nested
+# man: dosrm /dev/fd0:docs/memo.txt removes a file in a directory
+-- case
+host: echo x > memo.txt && echo y > other.txt && touch -d '1989-03-05 08:07:06 UTC' memo.txt other.txt
+step: /usr/bin/dosmkdir /dev/rfd1:docs
+step: /usr/bin/doscp memo.txt other.txt /dev/rfd1:docs
+step: dosrm /dev/rfd1:docs/memo.txt
+step: /usr/bin/dosls /dev/rfd1:docs
+expect: output contains 'OTHER'
+expect: output contains '/dev/rfd1:/DOCS'
+
+== second-cluster
+# src: a file in the second cluster of a directory (32 entries per cluster) is found and removed
+-- case
+host: for i in $(seq 1 34); do echo $i > g$i; done; touch -d '1989-03-05 08:07:06 UTC' g*
+step: /usr/bin/dosmkdir /dev/rfd1:d
+step: /usr/bin/doscp g1 g2 g3 g4 g5 g6 g7 g8 g9 g10 g11 g12 g13 g14 g15 g16 g17 g18 g19 g20 g21 g22 g23 g24 g25 g26 g27 g28 g29 g30 g31 g32 g33 g34 /dev/rfd1:d
+step: dosrm /dev/rfd1:d/g34
+step: /usr/bin/dosdir /dev/rfd1:d
+expect: output contains '       35 Datei(en)'
+
+== several
+# src: every argument is done, in the order; the status is 2 when one failed (also when the last one went well)
+-- case
+host: for i in 1 2 3; do echo $i > f$i; done; touch -d '1989-03-05 08:07:06 UTC' f1 f2 f3
+step: /usr/bin/doscp f1 f2 f3 /dev/rfd1:
+step: dosrm /dev/rfd1:f1 /dev/rfd1:nonex /dev/rfd1:f3
+step: /usr/bin/dosls /dev/rfd1:
+host: true
+expect: output contains ' F2 '
+
+== several-status
+# src: a failed argument gives status 2 for the call
+-- case
+host: for i in 1 2 3; do echo $i > f$i; done; touch -d '1989-03-05 08:07:06 UTC' f1 f2 f3
+step: /usr/bin/doscp f1 f2 f3 /dev/rfd1:
+step: dosrm /dev/rfd1:f1 /dev/rfd1:nonex /dev/rfd1:f3
+expect: exit 2
+expect: output is '-- stderr\ndosrm: NONEX nicht gefunden\n'
+
+== directory
+# src: a directory is not removed by dosrm (that is dosrmdir): the message, status 2
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:d
+step: dosrm /dev/rfd1:d
+expect: exit 2
+expect: output is '-- stderr\ndosrm: D ist Verzeichnis oder schreibgeschuetzt\n'
+
+== read-only
+# src: a file with the read-only attribute is not removed
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+host: python3 $WEGA_HOST/tools/dcpimg.py attr d1 f1 01
+step: dosrm /dev/rfd1:f1
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' F1 '
+
+== read-only-message
+# src: the message for a read-only file is that of a directory
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+host: python3 $WEGA_HOST/tools/dcpimg.py attr d1 f1 01
+step: dosrm /dev/rfd1:f1
+expect: exit 2
+expect: output is '-- stderr\ndosrm: F1 ist Verzeichnis oder schreibgeschuetzt\n'
+
+== hidden-system
+# src: hidden and system files are removed (only read-only files and directories are refused)
+-- case
+host: echo one > f1 && echo two > f2 && touch -d '1989-03-05 08:07:06 UTC' f1 f2
+step: /usr/bin/doscp f1 f2 /dev/rfd1:
+host: python3 $WEGA_HOST/tools/dcpimg.py attr d1 f1 02; python3 $WEGA_HOST/tools/dcpimg.py attr d1 f2 04
+step: dosrm /dev/rfd1:f1 /dev/rfd1:f2
+expect: exit 0
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+expect: output contains 'free=713'
+
+== not-found
+# src: a name that is not on the disk: message, status 2
+-- case
+step: dosrm /dev/rfd1:nonex
+expect: exit 2
+expect: output is '-- stderr\ndosrm: NONEX nicht gefunden\n'
+
+== no-wildcard
+# man: no wild cards in DCP names: f* is a name that is not there
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: dosrm '/dev/rfd1:f*'
+expect: exit 2
+expect: output is '-- stderr\ndosrm: F* nicht gefunden\n'
+
+== no-name
+# src: the root of the disk or a WEGA name (no colon): no DCP path
+-- case
+step: dosrm /dev/rfd1:
+step: dosrm somefile
+expect: exit 2
+expect: output is '-- stderr\ndosrm: somefile kein DCP-Pfad\n'
+
+== no-name-root
+# src: the root of a disk: the message names the device
+-- case
+step: dosrm /dev/rfd1:
+expect: exit 2
+expect: output is '-- stderr\ndosrm: /dev/rfd1 kein DCP-Pfad\n'
+
+== first-cluster-zero
+# src (a quirk): a file without a cluster (size 0, first cluster 0, made by another system): fatdel writes FAT entry 0, the
+# first byte of the FAT (the media descriptor), as free: 0
+-- case
+host: : > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:512 A.DAT=a.dat
+step: dosrm /dev/rfd1:a.dat
+host: echo fat0=$(python3 $WEGA_HOST/tools/dcpimg.py fatentry d1 0)
+expect: output contains 'fat0=0x0'
+
+== drive-letter
+# man: a drive letter of /etc/default/dos (B: is drive 1)
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: dosrm B:f1
+step: /usr/bin/dosls /dev/rfd1:
+expect: output is '\n/dev/rfd1:/\n'
+
+== drive-undefined
+# src: a letter that is not defined: the message of dosplit, status 2
+-- case
+step: dosrm Q:f1
+expect: exit 2
+expect: output is '-- stderr\nLaufwerk Q: nicht definiert\n'
+
+== dot-dos
+# man: $HOME/.dos defines the drive letters first
+-- .dos
+Z=/dev/rfd1
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: dosrm z:f1
+env: HOME=.
+step: /usr/bin/dosls /dev/rfd1:
+expect: output is '\n/dev/rfd1:/\n'
+
+== no-device
+# src: a device that cannot be opened (for reading and writing)
+-- case
+step: dosrm /dev/rfd2:f1
+expect: exit 2
+expect: output is '-- stderr\ndosrm: Fehler in /dev/rfd2\n'
+
+== usage
+# src: no argument: usage, status 1
+-- case
+step: dosrm
+expect: exit 1
+expect: output is '-- stderr\nusage: dosrm dosdev:filename [dosdev:filename] [...]\n'
+
+== hd-fat12
+# src: a hard disk with a FAT12 partition
+-- case
+host: printf 'hello\r\n' > a.dat; printf 'world\r\n' > b.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 1 A.DAT=a.dat B.DAT=b.dat
+step: dosrm /dev/rfd1:a.dat
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' B        DAT'
+
+== hd-fat16
+# src: a hard disk with a FAT16 partition: the chain is freed with 16 bit FAT entries
+-- case
+host: python3 -c "print('x' * 700)" > a.dat; printf 'world\r\n' > b.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 4:128 A.DAT=a.dat B.DAT=b.dat
+step: dosrm /dev/rfd1:a.dat
+step: /usr/bin/dosdir /dev/rfd1:
+expect: output contains 'B        DAT        7'
+expect: output contains '1 Datei(en)'

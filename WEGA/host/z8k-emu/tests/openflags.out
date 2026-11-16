@@ -1,0 +1,6 @@
+create: ok
+size 6 mode 664
+excl: fd -1 errno 17
+read 6
+trunc: size 0
+no create: fd -1 errno 2

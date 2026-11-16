@@ -1,0 +1,258 @@
+# The cases of the corpus of dosrmdir (compare/dosrmdir/corpus.py); the format: host/recon/casefile.py. Every case starts with a
+# floppy in drive 1 formatted by the original dosformat (host/recon/dospre.py) and the guest clock at 600000000 (1989).
+# The disk: 713 clusters of 1024 bytes, all free at the start. The directories and files are put there by the original
+# dosmkdir and doscp; what a case reads back it reads with the original dosls, dosdir and host/tools/dcpimg.py (free
+# clusters, the raw entries: the name of a deleted entry starts with E5). Where an expectation comes from: man =
+# /usr/man/man1/dos.1, src = dosrmdir.c, dosdel.c.
+
+== simple
+# man: dosrmdir removes a directory of the DCP disk: the entry is marked deleted (E5), the cluster of the directory is free
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:d
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+step: dosrmdir /dev/rfd1:d
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1); python3 $WEGA_HOST/tools/dcpimg.py entries d1
+step: /usr/bin/dosls /dev/rfd1:
+expect: exit 0
+expect: output contains 'free=712'
+expect: output contains 'free=713'
+expect: output contains "'\\xe5          ' 10 2 0"
+expect: output is '\n/dev/rfd1:/\n'
+
+== others-stay
+# src: the other entries of the directory above stay
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/dosmkdir /dev/rfd1:a /dev/rfd1:b /dev/rfd1:c
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: dosrmdir /dev/rfd1:b
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' A  '
+expect: output contains ' C  '
+expect: output contains ' F1 '
+
+== not-empty-file
+# src: a directory with a file in it is not removed: message, status 2, nothing changed
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/dosmkdir /dev/rfd1:d
+step: /usr/bin/doscp f1 /dev/rfd1:d
+step: dosrmdir /dev/rfd1:d
+expect: exit 2
+expect: output is '-- stderr\ndosrmdir: D ist nicht leer\n'
+
+== not-empty-dir
+# src: a directory in it counts too
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:d /dev/rfd1:d/e
+step: dosrmdir /dev/rfd1:d
+expect: exit 2
+expect: output is '-- stderr\ndosrmdir: D ist nicht leer\n'
+
+== emptied
+# src: a directory whose files were removed is empty (entries . and .. and deleted ones are not counted)
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/dosmkdir /dev/rfd1:d
+step: /usr/bin/doscp f1 /dev/rfd1:d
+step: /usr/bin/dosrm /dev/rfd1:d/f1
+step: dosrmdir /dev/rfd1:d
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+expect: exit 0
+expect: output contains 'free=713'
+
+== nested
+# man: dosrmdir /dev/fd0:usr/docs removes a directory of a directory: usr stays
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:usr /dev/rfd1:usr/docs
+step: dosrmdir /dev/rfd1:usr/docs
+step: /usr/bin/dosls /dev/rfd1:usr
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+expect: output contains 'free=712'
+
+== nested-then-parent
+# src: after the directory in it is gone the one above can be removed
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:usr /dev/rfd1:usr/docs
+step: dosrmdir /dev/rfd1:usr/docs /dev/rfd1:usr
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+expect: exit 0
+expect: output contains 'free=713'
+
+== second-cluster
+# src (a quirk, KNOWLEDGE.md): a directory in the second cluster of the directory above (30 files make the first one full):
+# the search for the entry reads the first cluster again (nxt is 0 after the count of the clusters), finds nothing and
+# marks as deleted the 32-byte entry that follows the cluster on the disk: the first byte of the data of the first file
+# (cluster 3). The directory is still listed, its cluster is free, status 0.
+-- case
+host: for i in $(seq 1 30); do echo $i > g$i; done; touch -d '1989-03-05 08:07:06 UTC' g*
+step: /usr/bin/dosmkdir /dev/rfd1:p
+step: /usr/bin/doscp g1 g2 g3 g4 g5 g6 g7 g8 g9 g10 g11 g12 g13 g14 g15 g16 g17 g18 g19 g20 g21 g22 g23 g24 g25 g26 g27 g28 g29 g30 /dev/rfd1:p
+host: echo g1=$(od -An -tx1 -j8192 -N3 d1) free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+step: /usr/bin/dosmkdir /dev/rfd1:p/q
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+step: dosrmdir /dev/rfd1:p/q
+host: echo g1=$(od -An -tx1 -j8192 -N3 d1) free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+step: /usr/bin/dosdir /dev/rfd1:p
+expect: exit 0
+expect: output contains 'g1= 31 0d 0a free=682'
+expect: output contains 'free=680'
+expect: output contains 'g1= e5 0d 0a free=681'
+expect: output contains 'Q             <DIR>'
+
+== directory-of-two-clusters
+# src (a quirk): the check "is it empty" reads on past the end of the cluster of the directory (not along the chain): a
+# directory whose first cluster is full of entries is searched into the data behind it: here the first file's data, so p is
+# "not empty" though every file is removed
+-- case
+host: for i in $(seq 1 30); do echo $i > g$i; done; touch -d '1989-03-05 08:07:06 UTC' g*
+step: /usr/bin/dosmkdir /dev/rfd1:p
+step: /usr/bin/doscp g1 g2 g3 g4 g5 g6 g7 g8 g9 g10 g11 g12 g13 g14 g15 g16 g17 g18 g19 g20 g21 g22 g23 g24 g25 g26 g27 g28 g29 g30 /dev/rfd1:p
+step: /usr/bin/dosrm /dev/rfd1:p/g1 /dev/rfd1:p/g2 /dev/rfd1:p/g3 /dev/rfd1:p/g4 /dev/rfd1:p/g5 /dev/rfd1:p/g6 /dev/rfd1:p/g7 /dev/rfd1:p/g8 /dev/rfd1:p/g9 /dev/rfd1:p/g10 /dev/rfd1:p/g11 /dev/rfd1:p/g12 /dev/rfd1:p/g13 /dev/rfd1:p/g14 /dev/rfd1:p/g15 /dev/rfd1:p/g16 /dev/rfd1:p/g17 /dev/rfd1:p/g18 /dev/rfd1:p/g19 /dev/rfd1:p/g20 /dev/rfd1:p/g21 /dev/rfd1:p/g22 /dev/rfd1:p/g23 /dev/rfd1:p/g24 /dev/rfd1:p/g25 /dev/rfd1:p/g26 /dev/rfd1:p/g27 /dev/rfd1:p/g28 /dev/rfd1:p/g29 /dev/rfd1:p/g30
+step: dosrmdir /dev/rfd1:p
+expect: exit 2
+expect: output is '-- stderr\ndosrmdir: P ist nicht leer\n'
+
+== directory-of-two-clusters-ok
+# src: the same with the data behind the directory freed (the files removed: their clusters are zeros): the check ends at the
+# first cluster that is all zero: p is removed
+-- case
+host: for i in $(seq 1 30); do echo $i > g$i; done; touch -d '1989-03-05 08:07:06 UTC' g*
+step: /usr/bin/dosmkdir /dev/rfd1:p
+step: /usr/bin/doscp g1 g2 g3 g4 g5 g6 g7 g8 g9 g10 g11 g12 g13 g14 g15 g16 g17 g18 g19 g20 g21 g22 g23 g24 g25 g26 g27 g28 g29 g30 /dev/rfd1:p
+step: /usr/bin/dosrm /dev/rfd1:p/g1 /dev/rfd1:p/g2 /dev/rfd1:p/g3 /dev/rfd1:p/g4 /dev/rfd1:p/g5 /dev/rfd1:p/g6 /dev/rfd1:p/g7 /dev/rfd1:p/g8 /dev/rfd1:p/g9 /dev/rfd1:p/g10 /dev/rfd1:p/g11 /dev/rfd1:p/g12 /dev/rfd1:p/g13 /dev/rfd1:p/g14 /dev/rfd1:p/g15 /dev/rfd1:p/g16 /dev/rfd1:p/g17 /dev/rfd1:p/g18 /dev/rfd1:p/g19 /dev/rfd1:p/g20 /dev/rfd1:p/g21 /dev/rfd1:p/g22 /dev/rfd1:p/g23 /dev/rfd1:p/g24 /dev/rfd1:p/g25 /dev/rfd1:p/g26 /dev/rfd1:p/g27 /dev/rfd1:p/g28 /dev/rfd1:p/g29 /dev/rfd1:p/g30
+host: python3 -c "d=bytearray(open('d1','rb').read()); d[8192:8192+30*1024]=bytes(30*1024); open('d1','wb').write(d)"
+step: dosrmdir /dev/rfd1:p
+host: echo free=$(python3 $WEGA_HOST/tools/dcpimg.py free d1)
+expect: exit 0
+expect: output contains 'free=713'
+
+== file
+# src: a file is not a directory: the message, status 2, the file stays
+-- case
+host: echo one > f1 && touch -d '1989-03-05 08:07:06 UTC' f1
+step: /usr/bin/doscp f1 /dev/rfd1:
+step: dosrmdir /dev/rfd1:f1
+expect: exit 2
+expect: output is '-- stderr\ndosrmdir: F1 ist kein Verzeichnis oder schreibgeschuetzt\n'
+
+== read-only
+# src: a directory with the read-only attribute (11 hex) is not removed
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:d
+host: python3 $WEGA_HOST/tools/dcpimg.py attr d1 d 11
+step: dosrmdir /dev/rfd1:d
+expect: exit 2
+expect: output is '-- stderr\ndosrmdir: D ist kein Verzeichnis oder schreibgeschuetzt\n'
+
+== not-found
+# src: a name that is not on the disk
+-- case
+step: dosrmdir /dev/rfd1:nonex
+expect: exit 2
+expect: output is '-- stderr\ndosrmdir: NONEX nicht gefunden\n'
+
+== not-found-parent
+# src: the directory above does not exist
+-- case
+step: dosrmdir /dev/rfd1:a/b
+expect: exit 2
+expect: output is '-- stderr\ndosrmdir: A/B nicht gefunden\n'
+
+== root
+# src: the root of the disk cannot be removed
+-- case
+step: dosrmdir /dev/rfd1:
+step: dosrmdir /dev/rfd1:/
+expect: exit 2
+expect: output is '-- stderr\ndosrmdir: falsches Verzeichnis angegeben\n'
+
+== several
+# src: every argument is done; a failed one gives status 2, the rest is still done
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:a /dev/rfd1:b /dev/rfd1:c
+step: dosrmdir /dev/rfd1:a /dev/rfd1:nonex /dev/rfd1:c
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' B  '
+
+== several-status
+# src: the status of the call
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:a /dev/rfd1:b /dev/rfd1:c
+step: dosrmdir /dev/rfd1:a /dev/rfd1:nonex /dev/rfd1:c
+expect: exit 2
+
+== lower-case
+# man: names in a DCP path are converted to upper case
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:Mixed
+step: dosrmdir /dev/rfd1:mIXED
+step: /usr/bin/dosls /dev/rfd1:
+expect: output is '\n/dev/rfd1:/\n'
+
+== native
+# man: an argument without a colon is a WEGA name: /bin/rmdir removes it (the status of system(): 0, as in doscat)
+-- case
+host: mkdir wd
+step: dosrmdir wd
+step: dosrmdir wd
+expect: exit 0
+expect: missing wd
+
+== drive-letter
+# man: a drive letter of /etc/default/dos (B: is drive 1)
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:d
+step: dosrmdir B:d
+step: /usr/bin/dosls /dev/rfd1:
+expect: output is '\n/dev/rfd1:/\n'
+
+== drive-undefined
+# src: a letter that is not defined: the message of dosplit, status 2
+-- case
+step: dosrmdir Q:d
+expect: exit 2
+expect: output is '-- stderr\nLaufwerk Q: nicht definiert\n'
+
+== dot-dos
+# man: $HOME/.dos defines the drive letters first
+-- .dos
+Z=/dev/rfd1
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:d
+step: dosrmdir z:d
+env: HOME=.
+step: /usr/bin/dosls /dev/rfd1:
+expect: output is '\n/dev/rfd1:/\n'
+
+== no-device
+# src: a device that cannot be opened (for reading and writing)
+-- case
+step: dosrmdir /dev/rfd2:d
+expect: exit 2
+expect: output is '-- stderr\ndosrmdir: Fehler in /dev/rfd2\n'
+
+== usage
+# src: no argument: usage, status 1
+-- case
+step: dosrmdir
+expect: exit 1
+expect: output is '-- stderr\nusage: dosrmdir dosdev:dirname\n'
+
+== hd-fat12
+# src: a hard disk with a FAT12 partition: made by dosmkdir, removed by dosrmdir
+-- case
+host: printf 'hello\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 1 A.DAT=a.dat
+step: /usr/bin/dosmkdir /dev/rfd1:sub
+step: dosrmdir /dev/rfd1:sub
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' A        DAT'
+
+== hd-fat16
+# src: a hard disk with a FAT16 partition
+-- case
+host: printf 'hello\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 4 A.DAT=a.dat
+step: /usr/bin/dosmkdir /dev/rfd1:sub /dev/rfd1:sub2
+step: dosrmdir /dev/rfd1:sub
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains ' SUB2 '

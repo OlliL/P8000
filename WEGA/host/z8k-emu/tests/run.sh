@@ -10,9 +10,10 @@ fail=0
 for t in "$HERE"/*.c; do
 	n=$(basename "$t" .c)
 	cp "$t" "$W/$n.c"
+	args=; [ -f "$HERE/$n.args" ] && args=$(cat "$HERE/$n.args")	# options of the emulator for the run (NAME.args)
 	for cc in cc scc; do
 		( cd "$W" && rm -f a.out && "$EMU" -r "$ROOT" /bin/$cc -o a.out "$n.c" > cc.log 2>&1 &&
-		  timeout 60 "$EMU" -r "$ROOT" ./a.out > "$n.$cc" 2>&1 )
+		  timeout 60 "$EMU" -r "$ROOT" $args ./a.out > "$n.$cc" 2>&1 )
 		if cmp -s "$W/$n.$cc" "$HERE/$n.out"; then echo "ok   $n ($cc)"; else echo "FAIL $n ($cc)"; diff "$HERE/$n.out" "$W/$n.$cc"; fail=1; fi
 	done
 done

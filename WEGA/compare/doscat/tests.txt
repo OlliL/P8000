@@ -1,0 +1,261 @@
+# The cases of the corpus of doscat (compare/doscat/corpus.py); the format: host/recon/casefile.py. Every case starts with
+# a floppy in drive 1 formatted by the original dosformat (host/recon/dospre.py) and the guest clock at 600000000 (1989).
+# Most cases put an own image there: host/tools/dcpimg.py mkhd d1 0:32 ... is a file system with clusters of 32 bytes
+# (BPS 32, one sector per cluster), so that the chunks doscat copies (the size of a cluster, at most 1024) are short and
+# the files are small. Where an expectation comes from: man = /usr/man/man1/dos.1, src = doscat.c, dosout.c.
+
+== text
+# man: doscat copies DCP files to the standard output; a text file has CR LF for the newline, the CR is taken away
+-- a.dat
+one\r
+two\r
+-- case
+host: printf 'one\r\ntwo\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+expect: exit 0
+expect: output is 'one\ntwo\n'
+
+== raw
+# man: -r copies without the newline conversion: byte for byte
+-- case
+host: printf 'one\r\ntwo\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat -r /dev/rfd1:a.dat
+expect: output is 'one\r\ntwo\r\n'
+
+== lone-cr
+# src: only a CR followed by LF is taken away; a CR alone (or before a CR) stays
+-- case
+host: printf 'a\rb\r\nc\n\r\r\nd' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:512 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+expect: output is 'a\rb\nc\n\r\nd'
+
+== ctrl-z
+# man: control-Z (1A hex) ends a DCP text file; src: in a chunk, the rest of the chunk is dropped
+-- case
+host: printf 'abc\r\n\032def\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:512 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+step: doscat -r /dev/rfd1:a.dat
+expect: output is 'abc\r\n\032def\r\n'
+
+== ctrl-z-text
+# man: the text conversion stops at control-Z (the file of ctrl-z, without the second step)
+-- case
+host: printf 'abc\r\n\032def\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:512 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+expect: output is 'abc\n'
+
+== ctrl-z-chunk
+# src (a quirk): control-Z ends the conversion of one chunk only: the next chunk (here the cluster of 32 bytes) is copied;
+# the first chunk gives ab, the second 56789ABCDEFGH and the newline
+-- case
+host: printf 'ab\032cdefghijklmnopqrstuvwxyz0123456789ABCDEFGH\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+expect: output is 'ab56789ABCDEFGH\n'
+
+== chunk-end-cr
+# src (a quirk): a CR that is the last byte of a chunk is replaced by a blank (the LF that follows in the next chunk stays):
+# the cluster of 32 bytes: 31 characters and the CR, then LF and the rest
+-- case
+host: printf 'abcdefghijklmnopqrstuvwxyz01234\r\nyz\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+step: doscat -r /dev/rfd1:a.dat
+expect: output is 'abcdefghijklmnopqrstuvwxyz01234\r\nyz\r\n'
+
+== chunk-end-cr-text
+# the text conversion of chunk-end-cr: the CR at the end of the chunk becomes a blank before the newline
+-- case
+host: printf 'abcdefghijklmnopqrstuvwxyz01234\r\nyz\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+expect: output is 'abcdefghijklmnopqrstuvwxyz01234 \nyz\n'
+
+== chunk-cr-inside
+# src: a CR LF that does not cross a chunk (CR at index 30) is converted
+-- case
+host: printf 'abcdefghijklmnopqrstuvwxyz0123\r\nyz\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+expect: output is 'abcdefghijklmnopqrstuvwxyz0123\nyz\n'
+
+== chunk-shrunk
+# src: after a CR LF was shortened to LF in a chunk, a CR at the end of that chunk: j is behind i, the blank is not
+# written where the CR was (the byte at j stays what it was)
+-- case
+host: printf 'a\r\nbcdefghijklmnopqrstuvwxyz01234\r\nyz\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+
+== empty
+# src: a file of size 0 (first cluster 0): nothing is output, status 0
+-- case
+host: : > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+expect: exit 0
+expect: output is ''
+
+== chain
+# src: a file of several clusters is followed along the FAT chain: 5 clusters of 32 bytes (one line each, no CR)
+-- case
+host: python3 -c "print(''.join('line %03d xxxxxxxxxxxxxxxxxxxx\n' % i for i in range(6)), end='')" > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat -r /dev/rfd1:a.dat
+expect: output is 'line 000 xxxxxxxxxxxxxxxxxxxx\nline 001 xxxxxxxxxxxxxxxxxxxx\nline 002 xxxxxxxxxxxxxxxxxxxx\nline 003 xxxxxxxxxxxxxxxxxxxx\nline 004 xxxxxxxxxxxxxxxxxxxx\nline 005 xxxxxxxxxxxxxxxxxxxx\n'
+
+== chain-big
+# man: a file of several 1024 byte clusters of a real floppy, put there by doscp -r: back byte for byte (3 clusters)
+-- case
+host: python3 -c "print(''.join('row %04d ....................\n' % i for i in range(120)), end='')" > f; touch -d '1989-03-05 08:07:06 UTC' f
+step: /usr/bin/doscp -r f /dev/rfd1:big.txt
+step: doscat -r /dev/rfd1:big.txt
+host: echo chain=$(python3 $WEGA_HOST/tools/dcpimg.py chain d1 big.txt)
+expect: exit 0
+expect: output contains 'row 0000 ....................'
+expect: output contains 'row 0042 ....................'
+expect: output contains 'row 0119 ....................'
+expect: output contains 'chain=2 3 4 5'
+
+== two-files
+# man: several files are copied one after the other, WEGA files too (through /bin/cat), in the order of the arguments
+-- a.txt
+from wega
+-- case
+host: printf 'dcp one\r\n' > a.dat; printf 'dcp two\r\n' > b.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat B.DAT=b.dat
+step: doscat /dev/rfd1:b.dat a.txt /dev/rfd1:a.dat
+expect: exit 0
+expect: output is 'dcp two\nfrom wega\ndcp one\n'
+
+== lower-case
+# man: names in a DCP path are converted to upper case
+-- case
+host: printf 'x\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:a.DAT
+step: doscat /dev/rfd1:/A.dat
+expect: output is 'x\n'
+
+== nested
+# man: a file in a directory: /dev/fd0:docs/memo.txt
+-- case
+host: printf 'memo\n' > memo.txt && touch -d '1989-03-05 08:07:06 UTC' memo.txt
+step: /usr/bin/dosmkdir /dev/rfd1:docs
+step: /usr/bin/doscp memo.txt /dev/rfd1:docs
+step: doscat /dev/rfd1:docs/memo.txt
+expect: output is 'memo\n'
+
+== directory
+# src: a directory has size 0: doscat of it outputs nothing, status 0
+-- case
+step: /usr/bin/dosmkdir /dev/rfd1:docs
+step: doscat /dev/rfd1:docs
+expect: exit 0
+expect: output is ''
+
+== not-found
+# src: a name that is not on the disk: message, status 2; the next arguments are still copied
+-- case
+host: printf 'x\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:nonex /dev/rfd1:a.dat
+expect: exit 2
+expect: output contains 'doscat: NONEX nicht gefunden'
+expect: output contains 'x'
+
+== status-two
+# src: the status is 2 when an argument failed, also when the last one was copied
+-- case
+host: printf 'x\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:nonex /dev/rfd1:a.dat
+step: doscat /dev/rfd1:a.dat /dev/rfd1:nonex
+expect: exit 2
+
+== no-device
+# src: a device that cannot be opened: the message, status 2
+-- case
+step: doscat /dev/rfd2:a
+expect: exit 2
+expect: output is '-- stderr\ndoscat: Fehler in /dev/rfd2\n'
+
+== wega-missing
+# src: a WEGA file that does not exist: cat reports, the status of system() is shifted: doscat ends with 0 (the low byte of 256)
+-- case
+step: doscat nofile
+expect: exit 0
+
+== usage
+# src: no file: usage, status 1; a missing file after the options too
+-- case
+step: doscat
+step: doscat -r
+step: doscat -
+expect: exit 1
+expect: output is '-- stderr\nusage: doscat [-r] dosdev:filename [dosdev:filename] [...]\n'
+
+== bad-option
+# src: an option other than -r: message with the letter, status 1
+-- case
+step: doscat -x /dev/rfd1:a
+expect: exit 1
+expect: output is '-- stderr\ndoscat: falsche Option x\n'
+
+== dash
+# src: a single - is taken away like an option and ignored; -r and -r again are fine
+-- a.txt
+plain
+-- case
+step: doscat - -r -r a.txt
+expect: output is 'plain\n'
+
+== drive-letter
+# man: a drive letter of /etc/default/dos (B: is drive 1)
+-- case
+host: printf 'x\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat B:a.dat b:/a.dat
+expect: output is 'x\nx\n'
+
+== drive-undefined
+# src: a letter that is not defined: the message of dosplit, status 2, the next arguments still done
+-- case
+host: printf 'x\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat Q:a /dev/rfd1:a.dat
+expect: output contains 'Laufwerk Q: nicht definiert'
+expect: output contains 'x'
+
+== dot-dos
+# man: $HOME/.dos defines the drive letters first
+-- .dos
+Z=/dev/rfd1
+-- case
+host: printf 'x\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat Z:a.dat
+env: HOME=.
+expect: output is 'x\n'
+
+== hd-fat12
+# src: a hard disk (the first byte is not EB): the partition table is read, partition type 1 is a FAT12 DCP partition
+-- case
+host: printf 'hello\r\nworld\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 1 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+expect: output is 'hello\nworld\n'
+
+== hd-fat16
+# src: partition type 4 is a FAT16 partition (16 bit FAT entries)
+-- case
+host: printf 'hello\r\nworld\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 4:32 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+expect: output is 'hello\nworld\n'
+
+== hd-fat16-chain
+# src: a chain of FAT16 entries
+-- case
+host: python3 -c "print(''.join('line %03d xxxxxxxxxxxxxxxxxxxx\n' % i for i in range(6)), end='')" > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 4:32 A.DAT=a.dat
+step: doscat -r /dev/rfd1:a.dat
+expect: output contains 'line 005'
+
+== hd-no-partition
+# src: a hard disk without a partition of type 1 or 4: error
+-- case
+host: printf 'x\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 6 A.DAT=a.dat
+step: doscat /dev/rfd1:a.dat
+expect: exit 2
+expect: output is '-- stderr\ndoscat: Fehler in /dev/rfd1\n'
+
+== device-root
+# src (a quirk): a DCP path without a name (the root of the disk) is handed to /bin/cat as the device: the raw disk
+-- case
+host: printf 'x\r\n' > a.dat; python3 $WEGA_HOST/tools/dcpimg.py mkhd d1 0:32 A.DAT=a.dat
+step: doscat /dev/rfd1:
+expect: exit 0

@@ -1,0 +1,242 @@
+# The cases of the corpus of write (compare/write/corpus.py); the format: host/recon/casefile.py. Every case has the guest
+# clock at 600000000. /etc/utmp is made by the case in the layer over the tree (host/tools/mkutmp.py: LINE:NAME), the terminals of
+# the other users are image files (device: ttyN image:tN), the own terminal is the console (terminal: console, ttyname
+# /dev/console). Where an expectation comes from: man = /usr/man/man1/write.1, src = src/cmd/write.c.
+
+== message
+# man: write copies what is typed to the terminal of the user, after a head "Message from NAME TTY..." and three bells;
+# at the end of the input the other side gets EOF
+-- hi
+hello there
+-- case
+terminal: console
+host: : > t2; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob
+device: tty2 image:t2
+step: write bob
+stdin: hi
+host: cat -v t2
+expect: exit 0
+expect: output contains 'Message from me console...'
+expect: output contains '^G^G^Ghello there'
+expect: output contains 'EOF'
+
+== name-unknown
+# src: the own name comes from the entry of the own terminal in utmp; without one it is ???
+-- hi
+hi
+-- case
+terminal: console
+host: : > t2; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp tty2:bob
+device: tty2 image:t2
+step: write bob
+stdin: hi
+host: cat -v t2
+expect: output contains 'Message from ??? console...'
+
+== no-terminal
+# src: without a terminal (ttyname gives nothing) the terminal is called tty??? and the name stays ???
+-- hi
+hi
+-- case
+host: : > t2; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp tty2:bob
+device: tty2 image:t2
+step: write bob
+stdin: hi
+host: cat -v t2
+expect: output contains 'Message from ??? tty???...'
+
+== usage
+# src: no user: usage on the diagnostic output, status 2
+-- case
+step: write
+expect: exit 2
+expect: output is '-- stderr\nusage: write user [ttyname]\n'
+
+== not-logged-in
+# src: a name that is not in utmp
+-- case
+terminal: console
+host: mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob
+step: write alice
+expect: exit 2
+expect: output is '-- stderr\nalice is not logged in.\n'
+
+== no-utmp
+# src: without /etc/utmp: the message, then the same "not logged in" (the loop is skipped)
+-- case
+terminal: console
+step: write bob
+expect: exit 2
+expect: output is '-- stderr\nwrite: cannot open /etc/utmp\nbob is not logged in.\n'
+
+== no-utmp-tty
+# src (a quirk): without /etc/utmp the terminal on the command line does not help: the test for "not logged in" looks at the
+# terminal only after the loop over utmp has set it (strcpy of /dev/ and the name is done there): write ends as without
+-- case
+terminal: console
+host: : > t2
+device: tty2 image:t2
+step: write bob tty2
+expect: exit 2
+expect: output is '-- stderr\nwrite: cannot open /etc/utmp\nbob is not logged in.\n'
+
+== twice
+# src: a user who is logged in twice: the message names the first terminal, the message goes there
+-- hi
+hi
+-- case
+terminal: console
+host: : > t2; : > t3; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob tty3:bob
+device: tty2 image:t2
+device: tty3 image:t3
+step: write bob
+stdin: hi
+host: echo t2=$(wc -c < t2) t3=$(wc -c < t3)
+expect: output contains 'bob is logged in more than once'
+expect: output contains 'writing to tty2.'
+expect: output contains 't2=37 t3=0'
+
+== twice-named
+# src: the terminal on the command line selects one of the two, without the remark
+-- hi
+hi
+-- case
+terminal: console
+host: : > t2; : > t3; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob tty3:bob
+device: tty2 image:t2
+device: tty3 image:t3
+step: write bob tty3
+stdin: hi
+host: echo t2=$(wc -c < t2) t3=$(wc -c < t3)
+expect: output contains 't2=0 t3=37'
+
+== other-tty
+# src: the terminal named is not one of the user (and the user is logged in): the message of the terminal that does not
+# exist as a device or has no model
+-- case
+terminal: console
+host: mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob
+step: write bob tty5
+expect: exit 2
+
+== no-such-tty
+# src: access to /dev/NAME fails: 'write: "/dev/nosuch" -- no such tty.'
+-- case
+terminal: console
+host: mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob
+step: write bob nosuch
+expect: exit 2
+expect: output is '-- stderr\nwrite: "/dev/nosuch" -- no such tty.\n'
+
+== no-permission
+# src: the terminal cannot be opened for writing (no model: ENXIO): permission denied
+-- case
+terminal: console
+host: mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob
+step: write bob
+expect: exit 2
+expect: output is '-- stderr\nwrite: permission denied.\n'
+
+== dash
+# src: the name - is every user: the first entry of utmp (here console, the own terminal)
+-- hi
+hi
+-- case
+terminal: console
+host: mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp tty2:bob console:me
+host: : > t2
+device: tty2 image:t2
+step: write - 
+stdin: hi
+host: cat -v t2
+expect: output contains 'Message from me console...'
+
+== padded-name
+# src: utmp names padded with blanks (as login writes them) match the name
+-- hi
+hi
+-- case
+terminal: console
+host: : > t2; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp 'tty2:bob     ' 'console:me      '
+device: tty2 image:t2
+step: write bob
+stdin: hi
+host: cat -v t2
+expect: output contains 'Message from me console...'
+
+== long-name
+# src (a quirk): only 8 characters of the names are compared: a longer name matches the entry that begins like it
+-- hi
+hi
+-- case
+terminal: console
+host: : > t2; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bobbybob
+device: tty2 image:t2
+step: write bobbybobXY
+stdin: hi
+host: wc -c < t2
+expect: exit 0
+expect: output contains '37'
+
+== shell
+# man: a message that begins with ! is given to the shell (the whole block that was read: one read of up to 128 bytes);
+# its output stays on the own terminal, then "!" is printed
+-- in
+!echo from the shell
+-- case
+terminal: console
+host: : > t2; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob
+device: tty2 image:t2
+step: write bob
+stdin: in
+expect: exit 0
+expect: output is 'from the shell\n!\n'
+
+== shell-not-first
+# src: only a read that begins with ! is a command: here the first read is the whole input, the ! stands in the second line
+-- in
+before
+!echo from the shell
+-- case
+terminal: console
+host: : > t2; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob
+device: tty2 image:t2
+step: write bob
+stdin: in
+host: cat -v t2
+expect: output contains '!echo from the shell'
+
+== interrupt
+# man: the interrupt (also hangup, quit) ends write as the end of the input does: EOF to the other terminal, status 0
+-- case
+terminal: console
+host: : > t2; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob
+device: tty2 image:t2
+step: write bob
+signal: INT after 1
+host: cat -v t2
+expect: output contains 'EOF'
+
+== timeout
+# src: the terminal of the other user does not open (a FIFO nobody reads) for 5 seconds: alarm, the message, status 2
+-- case
+terminal: console
+host: mkfifo t2; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:bob
+device: tty2 image:t2
+step: write bob
+expect: exit 2
+expect: output is '-- stderr\nwrite: timeout opening their tty.\n'
+
+== eight-chars
+# src: the first 8 characters of a name count: abcdefgx is not abcdefgh
+-- hi
+hi
+-- case
+terminal: console
+host: : > t2; : > t3; mkdir -p $Z8K_OVERLAY/etc && python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty2:abcdefgh tty3:abcdefgx
+device: tty2 image:t2
+device: tty3 image:t3
+step: write abcdefgx
+stdin: hi
+host: echo t2=$(wc -c < t2) t3=$(wc -c < t3)
+expect: output contains 't2=0 t3=37'
