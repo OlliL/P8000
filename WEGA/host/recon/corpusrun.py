@@ -304,10 +304,20 @@ def spawn_signal(args, cwd, env, stdin, timeout, sig, ops=()):
     seconds or None, text or None): after the seconds, or when the text has appeared in stdout or stderr. Stdin (the
     file's bytes) stays open until the signal is sent: a program that reads on waits for it."""
     w, secs, text = sig or (None, None, None)
+    ops = list(ops)
+    pre = b''
+    while ops and not ops[0]['at']:	# the actions when the step starts: before it starts (a disk in the drive before
+        op = ops.pop(0)		# the program opens it)
+        if op['insert']:
+            n, f = op['insert']
+            link = cwd + '.drive%d' % n
+            os.symlink(os.path.join(cwd, f), link + '.new')
+            os.replace(link + '.new', link)
+        pre += op['type'] or b''
     with SPAWN:
         p = subprocess.Popen(args, cwd=cwd, env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE, start_new_session=True)
-    data = stdin.read() if stdin else b''
+    data = (stdin.read() if stdin else b'') + pre
     bufs = {p.stdout: bytearray(), p.stderr: bytearray()}
     cond = threading.Condition()
 
