@@ -860,9 +860,14 @@ Sources: `UDOS/WEGA/koppeldoc` and `K.*.S` (beside `WEGA/`: the coupling softwar
   digits YYMMDD and two filler bytes), 80/81 the first pointer sector. A pointer sector: two-byte addresses of the data
   records (in the first one bytes 00/01 are the address of the descriptor), FA/FB the offset of the last entry, FC/FD
   the previous pointer sector (the first one: the descriptor), FE/FF the next one (FFFFH: none). A record longer than
-  256 bytes occupies consecutive sectors from its address. There is no table of free sectors on the disk (none found on
-  the two sample disks; unused sectors still hold the formatting pattern E5H): the allocation follows from the
-  directory and the pointer sectors. Measured: `udossys.cqm` (UDOS system disk, 75 files) and `w31start.cqm` (WEGA start
+  256 bytes occupies consecutive sectors from its address. The allocation map is on the disk (UDOS Systemhandbuch, FORMAT: 9 sectors are
+  always used, 7 for the directory and 2 for the allocation map and the usage statistics), in track 17H: sector 0
+  holds the disk name (24 bytes, CR filled; NDOS uses it to tell whether the map in memory belongs to the disk) and from
+  18H the map, sector 1 the rest of the map (88 bytes), from 5CH 27 bytes 77H, at 77H/78H the number of used sectors, at
+  79H-7BH 01 20H 50H (32 sectors per track, 80 tracks), at 7CH/7DH the number of free sectors. The map has one bit per
+  sector, track by track, the high bit first, 1 used; on a system disk it also holds the 38 sectors of the system (the
+  boot loader and the GET/SAVE package of the monitor) that belong to no file. Checked on 8 sample disks (the map equals
+  the sectors of the files on every data disk) and with UDOS in MAME (STATUS shows the two counts). Measured: `udossys.cqm` (UDOS system disk, 75 files) and `w31start.cqm` (WEGA start
   disk, 57 files), converted with `dskconv -itype copyqm -otype raw`; the lists agree with `mame/LOG.md` section 8, and
   `MON8_1_3.1`, `MON16_1H_3.1_UDOS`, `MON8_1_3.1_UDOS` read from them are byte-identical with the ROM dumps of MAME,
   `sa.install` (records of 200H) with `/sa.install` of the WEGA tree.
@@ -883,6 +888,18 @@ Sources: `UDOS/WEGA/koppeldoc` and `K.*.S` (beside `WEGA/`: the coupling softwar
   at most 64 bytes as STX, count high, count low, the data, ETX, xor checksum; ACK or NAK; WEGA ends with CAN (ESC: abort
   everything); the 8-bit part closes the file (an ASCII file gets FFH as its end mark) and answers ACK. putud turns
   newlines into returns for ASCII files and sets the executable flag from the Unix mode.
+- Measured with UDOS and WEGA in MAME (`/mnt/share/git/mame/mame`, `host/tools/mamerun.py`, 2026-11-16):
+  `format_disk` of udosfs.py is byte-identical with a disk formatted by `FORMAT D=1` (the filler of its dates 00 00);
+  UDOS reads disks written by udosfs.py (STATUS, CAT, PRINT, COPY of a file with 2 pointer sectors: equal); NDOS
+  places a file on a fresh disk from track 13H on, downwards, the records of a track staggered by about 5 to 6 sectors
+  (not modelled). Under WEGA (start disk, single-user mode): putud makes a new file on the last drive with a disk
+  (drive 1 with disks in 0 and 1, also when drive 0 has more room); putud onto an existing file replaces it with the
+  type and record length asked for, without error 48, the date of creation stays; getud of a file of the other kind is
+  error 48; getud changes the date of last change of the file it read; the 8-bit part prints "File NAME Error XX" on
+  the console; the descriptor of a file written by putud is the one of the model (record length 200H, counts,
+  segment, HIGADR, 30H-79H FFH, the last record filled with FFH); the system date of the 8-bit part was 890706, the
+  filler of the dates 00 00. The EPROM programmer is not emulated by MAME (nothing on PIO1): pburn is checked against
+  the sources only.
 - Further sample floppies (owner, 2026-11-16; shipped disks and one of sources): `irts14/24/34`, `src`, `udosprog`,
   `wgaend12` (`.cqm` beside the others). Read by udosfs.py without a fault (record count = pointer entries on all 8
   disks); chains of 2 and 3 pointer sectors (`FORTRAN`, `FORLIB.OBJ` on udosprog, `LIB1`, `wega` on wgaend12 and the
@@ -1091,7 +1108,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/tar` (`putfile`) | the last data block of a file is written from a stack buffer filled only as far as the file goes: the rest of the block is leftover memory (it holds e.g. a piece of the working directory) | kept; the corpus runs every side in a directory of the same name | `compare/tar/tests.txt` (x-named) |
 | `/bin/tar` (`readarchiv`, `dorep`) | the first read of an archive asks for 20 blocks: a shorter archive is reported as "tar: blocksize = N"; c writes the last record a second time after the end | kept; corpus case small-archive | `compare/tar/tests.txt` |
 | `/bin/tar` (`getwdir`, `dorep`) | the working directory is read from /bin/pwd into `wdir[60]` with a read of 50 bytes and searched for its newline without a bound; for u, `strcat` writes into the uninitialised `buf` before sprintf fills it | kept; the corpus keeps the directory short (/tmp/CASE) | `src/cmd/tar.c` |
-| `/bin/getud` (`main`) | when the file cannot be made under WEGA, getud reads the rest of the first block, sends CAN, reads one byte, and after the file one more byte; the coupling software answers the CAN with one ACK only (K.ACT.S SNDREC, CLOSE): getud waits for ever (from the sources and the model of the 8-bit part; to be confirmed on the real machine) | kept; corpus case unable-to-create | `compare/getud/tests.txt` |
+| `/bin/getud` (`main`) | when the file cannot be made under WEGA, getud reads the rest of the first block, sends CAN, reads one byte, and after the file one more byte; the coupling software answers the CAN with one ACK only (K.ACT.S SNDREC, CLOSE): getud waits for ever (from the sources, the model, and measured in MAME with the real coupling software: "unable to open file", no return) | kept; corpus case unable-to-create | `compare/getud/tests.txt` |
 | `/bin/getud` (`main`) | a block with a wrong checksum is answered with CAN, not NAK: the 8-bit part ends the file instead of sending the block again | kept; not a corpus case (the model sends no wrong checksums) | `src/cmd/getud.c` |
 | `/bin/putud`, `/bin/getud` (`main`) | STX, the name and ETX are built in `bufw[20]`: a name longer than 18 characters is written behind it (UDOS allows 32) | kept; not a corpus case (layout) | `src/cmd/putud.c` |
 | `/bin/putud` (`main`) | -f without -b turns every newline byte of the data into a return, also in a procedure file sent with its descriptor | kept; the corpus case descriptor uses -f -b | `compare/putud/tests.txt` |

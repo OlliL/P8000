@@ -20,8 +20,11 @@ The UDOS file system (NDOS) is host/tools/udosfs.py on the image files of the dr
 console (the errors: "File NAME Error XX") goes to the file of --console. The system date of UDOS is --date (default
 890509, the date of the directory of the WEGA start disk; UDOS asks for it when it starts).
 
-Not measured, the model's own choice (host/increments/117-device-models.md): a new file without a drive (putud never
-sends one) is made on the lowest drive that has a disk; NDOS's choice of free sectors is the writer's rule of udosfs.py.
+Measured in MAME (the real coupling software and UDOS, increment 117): a new file without a drive (putud never sends
+one) is made on the last drive that has a disk (with disks in drives 0 and 1: drive 1, also when drive 0 has more
+room); putud onto an existing file replaces it with the type and record length asked for (no type check: OPNFIL sets
+the attributes before OPEN), its date of creation stays; getud changes the date of last change of the file it read
+(CLOSE writes the descriptor back). Not modelled: NDOS's choice of free sectors (the writer's own rule of udosfs.py).
 """
 import argparse
 import os
@@ -67,6 +70,7 @@ class Part8:
         self.drives = {n: getattr(args, 'drive%d' % n) for n in range(4) if getattr(args, 'drive%d' % n)}
         self.console = args.console
         self.date = args.date
+        self.filler = b'\x00\x00'	# the two bytes behind the date (measured in MAME: 00 00; the system's memory)
         self.namlen = 0
         self.eprom = args.eprom
         self.eprom_type = {'e2708': 0, 'e2716': 1, 'e2732': 7, 'e2732a': 8, 'e2764': 9, 'e2764a': 10, 'e27128': 11,
@@ -134,7 +138,7 @@ class Part8:
                 return d, da
         if not output:
             return 0xC7		# FILE NOT FOUND
-        return disks[0][1], None
+        return disks[-1][1], None	# measured: the last drive with a disk
 
     # ---- L: receive a UDOS file (putud)
     def load(self):
@@ -157,14 +161,12 @@ class Part8:
         if not err:
             disk, da = r
             rl, ftype, tail = RL, flp, None
-            if da is not None:		# OPEN for OUTPUT of an existing file: its records go now, its attributes stay
-                od = disk.sector(da)
-                rl, ftype = udosfs.le(od, 0x0F), od[0x0C]
+            if da is not None:		# OPEN for OUTPUT of an existing file: its records go now; it takes the type and the
+                od = disk.sector(da)	# record length asked for (measured in MAME), the date of creation stays
                 tail = bytearray(od[0x28:0x80])
-                disk.write_file(name.decode('latin-1'), ftype, rl, b'', 0, self.date, desc_tail=bytes(tail))
+                disk.write_file(name.decode('latin-1'), ftype, rl, b'', 0, self.date, filler=self.filler,
+                                desc_tail=bytes(tail))
                 disk.save()
-                if (ftype & T_A) != (flp & T_A):
-                    err = 0x48		# INVALID FILE TYPE (OPN3)
         if err:
             self.error(err)
             return self.cancel()
@@ -218,7 +220,8 @@ class Part8:
         udosfs.put_le(tail, 0x54, (n - 1) & 0xFFFF)	# HIGADR
         udosfs.put_le(tail, 0x56, 0)			# STKSIZ
         try:
-            disk.write_file(name.decode('latin-1'), ftype, rl, padded, count, self.date, desc_tail=bytes(tail))
+            disk.write_file(name.decode('latin-1'), ftype, rl, padded, count, self.date, filler=self.filler,
+                            desc_tail=bytes(tail))
         except OSError as e:
             return e.errno or 0xD3
         disk.save()
@@ -298,6 +301,14 @@ class Part8:
             self.error(e.errno or 0xD3)
         self.ack()
 
+    def touch(self, disk, da):
+        """CLOSE of a file read: NDOS writes the descriptor back with the date of last change set to the system date
+        (measured in MAME: getud changes it)"""
+        d = bytearray(disk.sector(da))
+        d[0x20:0x28] = self.date.encode('latin-1')[:6] + self.filler
+        disk.put(da, d)
+        disk.save()
+
     def cancel(self):		# CANCEL: CAN, wait for the answer, CLOSE, ACK
         self.link.send(CAN)
         self.waitak()
@@ -368,10 +379,12 @@ class Part8:
                     break
                 if a == NAK:
                     continue
+                self.touch(disk, da)
                 self.ack()		# CLOSE
                 return
             i += XFERSZ
         self.link.send(EOT)		# DONRED
+        self.touch(disk, da)
         self.ack()			# CLOSE
 
     # ---- P: the EPROM programmer (pburn)

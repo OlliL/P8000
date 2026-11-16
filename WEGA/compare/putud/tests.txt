@@ -39,8 +39,8 @@ expect: output contains 'bin                              B0   -          1 0200
 expect: output contains 'a  \n   b  \n 001 377'
 
 == b-only-next
-# man: -b holds for the next file only, -B for all files; k: the second call meets t2 as an existing ASCII file: -B makes
-# it binary, error 48H, and t2 has lost its records (OPEN for OUTPUT)
+# man: -b holds for the next file only, -B for all files; the second call replaces t2 (ASCII) by a binary file (measured
+# in MAME: an existing file takes the type asked for)
 -- t1
 one
 -- t2
@@ -54,8 +54,7 @@ step: putud -b t1 t2
 step: putud -B t1 t2
 host: python3 $WEGA_HOST/tools/udosfs.py ls disk.img
 expect: output contains 't1                               B0'
-expect: output contains 'File t2 Error 48'
-expect: output contains 't2                               A0   -          0'
+expect: output contains 't2                               B0'
 
 == b-then-ascii
 # src: the flags are reset after every file (BINARY, EXEC): the second file is ASCII again
@@ -163,7 +162,8 @@ expect: output contains 'prog                             P0'
 expect: output contains 'prog2                            A0'
 
 == replace
-# k: an existing file is opened for OUTPUT: its records are deleted and written again (type and record length stay)
+# k: an existing file is opened for OUTPUT: its records are deleted and written again; measured in MAME: it takes the
+# record length 200H of the coupling software, its date of creation stays
 -- text
 new contents
 -- case
@@ -174,12 +174,12 @@ host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'old\r' > old
 step: putud text
 host: python3 $WEGA_HOST/tools/udosfs.py ls disk.img
 host: python3 $WEGA_HOST/tools/udosfs.py cat disk.img text
-expect: output contains 'text                             A0   -          1 0100    13 870101   890509'
+expect: output contains 'text                             A0   -          1 0200    13 870101   890509'
 expect: output contains 'new contents'
 
-== type-mismatch
-# k (OPNFIL): an existing file of the other kind (ASCII against binary): error 48H (invalid file type) on the 8-bit
-# console, the transfer is cancelled; the file has lost its records already (OPEN for OUTPUT deletes them first)
+== replace-type
+# measured in MAME (the real coupling software): an existing binary file is replaced by an ASCII file without an error
+# (OPNFIL sets the attributes asked for before OPEN, the type check after it finds them equal)
 -- text
 x
 -- case
@@ -189,8 +189,7 @@ device: ud
 host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'bin' > b && python3 $WEGA_HOST/tools/udosfs.py put disk.img text B 100 b
 step: putud text
 host: python3 $WEGA_HOST/tools/udosfs.py ls disk.img
-expect: output contains 'File text Error 48'
-expect: output contains 'text                             B0   -          0'
+expect: output contains 'text                             A0   -          1 0200'
 
 == invalid-name
 # k (ISNAME): a name with a blank or ';' is error 46H; the message shows NAMLEN of the last good name (ISNAME sets it only
@@ -215,15 +214,15 @@ step: putud text
 expect: output contains 'File text Error C2'
 
 == disk-full
-# k: no room on the disk: DISK FULL D3 (the model's writer; the disk is filled first: 2553 sectors are free after
-# formatting, BIG takes 2530 records, its descriptor and 21 pointer sectors; one sector is left, a file needs three)
+# k: no room on the disk: DISK FULL D3 (the model's writer; the disk is filled first: 2551 sectors are free after
+# formatting, BIG takes 2528 records, its descriptor and 21 pointer sectors; one sector is left, a file needs three)
 -- text
 x
 -- case
 terminal: console
 device: drive0 disk.img
 device: ud
-host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && head -c 647680 /dev/zero > big && python3 $WEGA_HOST/tools/udosfs.py put disk.img BIG B 100 big
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && head -c 647168 /dev/zero > big && python3 $WEGA_HOST/tools/udosfs.py put disk.img BIG B 100 big
 step: putud text
 expect: output contains 'Error D3'
 
@@ -255,3 +254,19 @@ device: ud
 host: python3 $WEGA_HOST/tools/udosfs.py format disk.img
 step: putud -f text
 expect: output contains 'INVALID DESCRIPTOR'
+
+== two-drives
+# measured in MAME: a new file goes onto the last drive that has a disk (drive 1), also when drive 0 has more room
+-- text
+x
+-- case
+terminal: console
+device: drive0 disk0.img
+device: drive1 disk1.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk0.img && python3 $WEGA_HOST/tools/udosfs.py format disk1.img
+step: putud text
+host: python3 $WEGA_HOST/tools/udosfs.py ls disk1.img | grep -q '^text ' && echo on-drive-1
+host: python3 $WEGA_HOST/tools/udosfs.py ls disk0.img | grep -q '^text ' || echo not-on-drive-0
+expect: output contains 'on-drive-1'
+expect: output contains 'not-on-drive-0'

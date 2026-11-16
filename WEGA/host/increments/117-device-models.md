@@ -182,3 +182,12 @@ corpora of format, verify, copydisk, doscopy beyond the proof cases (120).
   EPROM. A bug of pburn found: a byte entered in bytemode or modify becomes 00 (sscanf %x into a char on the big-endian
   Z8000). Two mutants found (one in the board-1 check, one in a message of both). Copy runs with one EPROM in the socket
   (changing it is the operator's).
+- 2026-11-16: the measurements in MAME (`host/tools/mamerun.py`: MAME without picture, the console on a socket, floppies
+  RAW -> IMD (`host/tools/imd.py`) -> MFI and back; boot of WEGA from the start disk: RETURN, RETURN, at "Press NMI"
+  RETURN, `O U`, `boot`, `md(0,16000)wega`, single-user mode). Found: the allocation map and the statistics in track
+  17H (the earlier note "no table of free sectors" was wrong; the writer keeps them now; format_disk is byte-identical
+  with UDOS FORMAT); UDOS reads the disks of the writer; putud makes a new file on the last drive with a disk and
+  replaces an existing one with the type and record length asked for (no error 48: the model had it wrong, corrected,
+  putud cases replace, replace-type, b-only-next, two-drives); getud sets the date of last change (model corrected);
+  the 8-bit console message as the model prints it; getud waits for ever when it cannot make its file (confirmed). Not
+  modelled: NDOS's choice of free sectors. pburn: MAME has no EPROM programmer; checked against the sources only.

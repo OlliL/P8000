@@ -3,7 +3,7 @@
 
   udosfs.py ls IMAGE                 the directory: name, type, properties, records, record length, dates
   udosfs.py cat IMAGE NAME           the data of a file on stdout (records, the last one cut to its byte count)
-  udosfs.py format IMAGE [YYMMDD]    an empty UDOS data disk (format_disk)
+  udosfs.py format IMAGE [YYMMDD [NAME]]   an empty UDOS data disk (format_disk)
   udosfs.py put IMAGE NAME TYPE RL FILE [YYMMDD]   a file onto the disk: TYPE A, B or P (A: an end mark FFH is added),
                                      RL the record length (hex), the last record filled with FFH (as the coupling
                                      software writes); an existing file of that name is replaced
@@ -96,11 +96,11 @@ class Image:
 
 
 # ---- writing (the model of the 8-bit part, increment 117) -------------------------------------------------------------
-# What NDOS does on a disk is known from the handbook and the sample disks; how it chooses free sectors is not (no table of
-# free sectors on the disk: NDOS keeps the allocation in memory). The writer's own rule, documented as such: free sectors
-# by the distance of their track from the directory's track 16H (16H, 15H, 17H, 14H, ...; on the samples files lie around
-# it), within a track in ascending order; a record longer than 256 bytes takes consecutive free sectors; sector 0 of track
-# 0 is not used when it holds something (the boot sector of a system disk).
+# The used sectors are those of the allocation map in track 17H (map_get; the writer keeps it and its counts). How NDOS
+# chooses free sectors is not modelled (measured in MAME: a new file on a fresh disk from track 13H on, downwards, the
+# records of a track staggered by 5 to 6 sectors); the writer's own rule: free sectors by the distance of their track
+# from the directory's track 16H (16H, 15H, 17H, 14H, ...), within a track in ascending order; a record longer than 256
+# bytes takes consecutive free sectors. UDOS reads the result (checked in MAME).
 
 DIR_TRACK = 0x16
 
@@ -108,6 +108,31 @@ DIR_TRACK = 0x16
 def put_le(b, o, v):
     b[o] = v & 0xFF
     b[o + 1] = (v >> 8) & 0xFF
+
+
+MAP_ID = (0, 0x17)		# sector 0 of track 23: the disk name (24 bytes, CR filled), then the allocation map
+MAP_2 = (1, 0x17)		# sector 1: the rest of the map (88 bytes), then the statistics
+
+
+def map_get(img):
+    """the allocation map: the set of used sectors (one bit per sector, track by track, the high bit first, 1 used)"""
+    bm = img.sector(MAP_ID)[0x18:] + img.sector(MAP_2)[:0x58]
+    return {(k % NSECT, k // NSECT) for k in range(80 * NSECT) if (bm[k // 8] >> (7 - k % 8)) & 1}
+
+
+def map_put(sector_of, used):
+    """the two sectors of track 23 with the map and the counts of used and free sectors (77H, 7CH of sector 1)"""
+    bm = bytearray(320)
+    for s, t in used:
+        k = t * NSECT + s
+        bm[k // 8] |= 0x80 >> (k % 8)
+    s0 = bytearray(sector_of(MAP_ID))
+    s1 = bytearray(sector_of(MAP_2))
+    s0[0x18:] = bm[:0xE8]
+    s1[:0x58] = bm[0xE8:]
+    put_le(s1, 0x77, len(used))
+    put_le(s1, 0x7C, 80 * NSECT - len(used))
+    return bytes(s0), bytes(s1)
 
 
 class Disk(Image):
@@ -143,12 +168,14 @@ class Disk(Image):
         return out
 
     def used(self):
-        u = set()
-        for name, secret, da in self.directory():
-            u.update(self.file_sectors(da))
-        if self.sector((0, 0)) != b'\xe5' * SECT:
-            u.add((0, 0))
-        return u
+        """the used sectors as NDOS sees them: the allocation map of track 23 (it also holds the 38 sectors of the system
+        on a system disk, which belong to no file)"""
+        return map_get(self)
+
+    def save_map(self, used):
+        s0, s1 = map_put(self.sector, used)
+        self.put(MAP_ID, s0)
+        self.put(MAP_2, s1)
 
     def alloc(self, n, run, used):
         """n groups of `run` consecutive sectors not in used (the writer's rule above); [] when there are not enough"""
@@ -235,6 +262,8 @@ class Disk(Image):
             ps[0xFE], ps[0xFF] = ptrs[j + 1] if j + 1 < len(ptrs) else (0xFF, 0xFF)
             self.put(p, ps)
         old_desc = self.sector(old) if old is not None else None
+        self.save_map(used | set(da for da in [da]) | set(ptrs) |
+                      {((s + k) % NSECT, t + (s + k) // NSECT) for s, t in recs for k in range(run)})
         dirrec = self.add_entry(name, da) if old is None else tuple(old_desc[6:8])
         d = bytearray(SECT)
         d[6], d[7] = dirrec
@@ -258,12 +287,12 @@ class Disk(Image):
         return da
 
 
-def format_disk(path, date):
-    """an empty UDOS data disk (no system: sector 0 of track 0 is not written): every sector E5H as after formatting, the
-    directory as on every sample disk: descriptor 0/16H, pointer sector 2/16H, 5 records on the sectors 5, 10, 1, 6, 11 of
-    track 16H, the first with the entry DIRECTORY, the others empty (FFH, then zeros), type D, properties SLEW, record
-    length and block length 100H, dates DATE with the filler FF 00. Modelled on the samples; a disk freshly formatted by
-    UDOS has not been compared yet (increment 117)."""
+def format_disk(path, date, ident=''):
+    """an empty UDOS data disk as UDOS FORMAT makes it (byte-identical with a disk formatted by FORMAT D=1 under UDOS in
+    MAME, increment 117): every sector E5H; the directory: descriptor 0/16H, pointer sector 2/16H, 5 records on the sectors
+    5, 10, 1, 6, 11 of track 16H, the first with the entry DIRECTORY, the others empty, type D, properties SLEW, record
+    and block length 100H, dates DATE with the filler 00 00; track 17H sector 0: the disk name IDENT (24 bytes, CR filled)
+    and the allocation map, sector 1: the rest of the map and the statistics (the counts of used and free sectors)."""
     data = bytearray(b'\xe5' * (80 * NSECT * SECT))
     recs = [(5, 0x16), (10, 0x16), (1, 0x16), (6, 0x16), (11, 0x16)]
 
@@ -279,7 +308,7 @@ def format_disk(path, date):
     put_le(d, 0x0F, 0x100)
     put_le(d, 0x11, 0x100)
     d[0x13] = 0xF0
-    dt = date.encode('latin-1')[:6] + b'\xff\x00'
+    dt = date.encode('latin-1')[:6] + b'\x00\x00'
     d[0x18:0x20] = dt
     d[0x20:0x28] = dt
     d[0x80], d[0x81] = 2, 0x16
@@ -295,6 +324,15 @@ def format_disk(path, date):
     put(recs[0], b'\x89DIRECTORY' + bytes(DIR_DESC) + b'\xff')
     for a in recs[1:]:
         put(a, b'\xff')
+    s0 = bytearray(SECT)
+    s0[:24] = ident.encode('latin-1')[:24].ljust(24, b'\r')
+    s1 = bytearray(SECT)
+    s1[0x5C:0x77] = b'\x77' * 27			# the usage statistics as FORMAT writes them (measured, meaning unknown)
+    s1[0x79:0x7C] = b'\x01\x20\x50'		# 01, 32 sectors per track, 80 tracks
+    used = {DIR_DESC, (2, 0x16)} | set(recs) | {MAP_ID, MAP_2}
+    s0, s1 = map_put(lambda a: s0 if a == MAP_ID else s1, used)
+    put(MAP_ID, s0)
+    put(MAP_2, s1)
     with open(path, 'wb') as f:
         f.write(data)
 
@@ -320,7 +358,7 @@ def main():
         print(__doc__)
         return 2
     if sys.argv[1] == 'format':
-        format_disk(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else '890509')
+        format_disk(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else '890509', sys.argv[4] if len(sys.argv) > 4 else '')
         return 0
     if sys.argv[1] == 'put':
         disk = Disk(sys.argv[2])
