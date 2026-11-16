@@ -893,6 +893,17 @@ Sources: `UDOS/WEGA/koppeldoc` and `K.*.S` (beside `WEGA/`: the coupling softwar
   record length 200H (the RL of K.ACT.S), ASCII with CR line ends, binary with LF, block length 0, properties 0, the
   rest of the last record filled with FFH (CLRBUF of K.ACT.S presets the buffer with FFH; a file written under UDOS
   keeps other bytes there). Disks without a system have no boot sector: track 0 holds file data.
+- Request P (pburn 2.1 `pb.devud.c`, `K.PROM.S` prom, `K.P8000.S`): every action opens /dev/ud anew. The header: `P`,
+  the action (1 read, 2 write, 3 erase check, 4 CRC, 5 board), the EPROM type (0 2708, 1 2716, 7 2732, 8 2732A, 9 2764,
+  10 2764A, 11 27128, 12 27128A, 13 27256, 15 27512), start address and length (high byte first), Vpp (1 25 V, 2 21 V,
+  3 12.5 V), the program mode (1 standard speed: read back after writing, 0 high speed); the 8-bit part answers `q`.
+  Write: the data in blocks of 64 bytes, each answered `q`; a byte that does not take its value (an EPROM bit goes
+  only from 1 to 0) is status 3 and a question (`n` stops); FFH bytes are not programmed; then the status (0, or 1 the
+  card does not take the type, 2 short circuit), in standard speed mode the result of the read back. Read: the status,
+  then the data in blocks of 64, each answered by one byte. Erase check: 0 or 3 (not erased). CRC: 0, 3 (not empty) or
+  the error, then the two bytes of the CRC (the SDLC polynomial, start FFFFH: CRC-CCITT; `sdlc` of K.P8000.S checked on
+  "123456789" = 29B1H). Board: `1` (the old card: types 0, 1, 7-9) or `2` (the new card: 1, 7-13, 15); the card tells
+  itself by its PIO (FFH old, 00H new).
 - NDOS OPEN (UDOS Systemhandbuch 5.3.4): modes INPUT 0 (C7 file not found), OUTPUT 1 (an existing file is cleared),
   NEW 2 (D0 duplicate file), APPEND 3, UPDATE 4; errors C2 not ready, C3 protection, CC unit already open, D1 wrong
   disk, CA pointer error, D2 invalid attribute, D3 disk full, D6 file already open, D8 properties protection, D9 invalid

@@ -10,6 +10,12 @@ It is the coupling software of the 8-bit part (UDOS/WEGA/K.*.S beside WEGA/, kop
 request letter and serves it (an unknown letter is dropped, as the request dispatch of K.NEU.S does):
   L  LOAD: receive a UDOS file (putud)        K.ACT.S LOAD
   S  SEND: send a UDOS file (getud)           K.ACT.S SEND
+  P  PROM: the EPROM programmer (pburn)       K.PROM.S prom, K.P8000.S
+The EPROM programmer (--eprom FILE --eprom-type TYPE [--board 1|2] [--short]): the EPROM in the socket is the file
+FILE (its size that of TYPE; made erased, all FFH, when it is missing); board 1 is the old programmer card, board 2 the
+new one (K.P8000.S: the types each card takes); --short: the card reports a short circuit (error 2). Programming
+behaves as an EPROM: a bit can go from 1 to 0 only; a byte that does not take its value is a programming error (3).
+Erasing is done by the case (the file set to FFH: UV light).
 The UDOS file system (NDOS) is host/tools/udosfs.py on the image files of the drives. What the 8-bit part prints on its
 console (the errors: "File NAME Error XX") goes to the file of --console. The system date of UDOS is --date (default
 890509, the date of the directory of the WEGA start disk; UDOS asks for it when it starts).
@@ -61,7 +67,12 @@ class Part8:
         self.drives = {n: getattr(args, 'drive%d' % n) for n in range(4) if getattr(args, 'drive%d' % n)}
         self.console = args.console
         self.date = args.date
-        self.namlen = 0		# NAMLEN keeps its value from one request to the next (ISNAME sets it only for a good name)
+        self.namlen = 0
+        self.eprom = args.eprom
+        self.eprom_type = {'e2708': 0, 'e2716': 1, 'e2732': 7, 'e2732a': 8, 'e2764': 9, 'e2764a': 10, 'e27128': 11,
+                           'e27128a': 12, 'e27256': 13, 'e27512': 15}.get(args.eprom_type or 'e2764', 9)
+        self.board = args.board
+        self.short = args.short		# NAMLEN keeps its value from one request to the next (ISNAME sets it only for a good name)
         self.nambuf = b''
 
     # ---- the console of the 8-bit part
@@ -363,6 +374,129 @@ class Part8:
         self.link.send(EOT)		# DONRED
         self.ack()			# CLOSE
 
+    # ---- P: the EPROM programmer (pburn)
+    SIZES = {0: 0x400, 1: 0x800, 7: 0x1000, 8: 0x1000, 9: 0x2000, 10: 0x2000, 11: 0x4000, 12: 0x4000, 13: 0x8000,
+             15: 0x10000}		# the EPROM types of pburn (pb.cmdline.c): 2708 ... 27512
+
+    def type_ok(self, t):
+        """K.P8000.S typ/ntyp: the types the card takes"""
+        if self.board == 1:
+            return t in (0, 1, 7, 8, 9)
+        return t in (1, 7, 8, 9, 10, 11, 12, 13, 15)
+
+    def chip(self):
+        size = self.SIZES.get(self.eprom_type, 0x2000)
+        if self.eprom and not os.path.exists(self.eprom):
+            with open(self.eprom, 'wb') as f:
+                f.write(b'\xff' * size)
+        return bytearray(open(self.eprom, 'rb').read()) if self.eprom else bytearray(b'\xff' * size)
+
+    def save_chip(self, c):
+        if self.eprom:
+            with open(self.eprom, 'wb') as f:
+                f.write(c)
+
+    @staticmethod
+    def sdlc(ch, d, e):
+        """K.P8000.S sdlc: one step of the CRC (the SDLC polynomial) over the byte ch, with d (high) and e (low)"""
+        def rrca(a):
+            return ((a >> 1) | (a << 7)) & 0xFF
+        a = ch ^ d
+        d = a
+        a = rrca(rrca(rrca(rrca(a))))
+        a = (a & 0x0F) ^ d
+        d = a
+        a = rrca(rrca(rrca(a)))
+        saved = a
+        e = (a & 0x1F) ^ e
+        a = rrca(saved) & 0xF0
+        e = a ^ e
+        a = (saved & 0xE0) ^ d
+        return e, a		# ld d,e; ld e,a
+
+    def prom(self):
+        rw = self.link.recv()
+        ptype = self.link.recv()
+        begadr = self.link.recv() << 8
+        begadr |= self.link.recv()
+        nbytes = self.link.recv() << 8
+        nbytes |= self.link.recv()
+        self.link.recv()		# Vpp
+        pm = self.link.recv()		# program mode: 1 standard speed (read back), 0 high speed
+        self.link.send(ord('q'))
+        n = nbytes or 0x10000
+        if rw == 2:			# write: the data first, 64 bytes and a 'q' each time
+            buf = bytearray()
+            while len(buf) < n:
+                for _ in range(min(64, n - len(buf))):
+                    buf.append(self.link.recv())
+                self.link.send(ord('q'))
+            err = self.check(ptype)
+            if not err:
+                c = self.chip()
+                size = len(c)
+                for i, b in enumerate(buf):
+                    a = (begadr + i) % size
+                    if b == 0xFF:
+                        continue		# nwbyte: FF is not programmed
+                    c[a] &= b
+                    if c[a] != b:
+                        err = 3
+                        self.link.send(3)	# writeprom: the question
+                        if self.link.recv() == ord('n'):
+                            break
+                        err = 0
+                self.save_chip(c)
+            if err != 3:
+                self.link.send(err)
+            if not err and pm == 1:		# standard speed: read back
+                c = self.chip()
+                for i, b in enumerate(buf):
+                    if c[(begadr + i) % len(c)] != b:
+                        err = 3
+                        break
+                self.link.send(err)
+        elif rw == 1:			# read
+            err = self.check(ptype)
+            self.link.send(err)
+            if not err:
+                c = self.chip()
+                data = bytes(c[(begadr + i) % len(c)] for i in range(n))
+                for i in range(0, n, 64):
+                    self.link.send(*data[i:i + 64])
+                    self.link.recv()
+        elif rw == 3:			# is it erased?
+            err = self.check(ptype)
+            if not err:
+                c = self.chip()
+                if any(c[(begadr + i) % len(c)] != 0xFF for i in range(n)):
+                    err = 3
+            self.link.send(err)
+        elif rw == 4:			# CRC
+            err = self.check(ptype)
+            k = err
+            d = e = 0xFF
+            if not err:
+                c = self.chip()
+                for i in range(n):
+                    ch = c[(begadr + i) % len(c)]
+                    if ch != 0xFF:
+                        k = 3
+                    d, e = self.sdlc(ch, d, e)
+            self.link.send(k)
+            if not err:
+                self.link.send(d, e)
+        elif rw == 5:			# the board
+            self.link.send(ord('2') if self.board == 2 else ord('1'))
+
+    def check(self, ptype):
+        """intppb: the type the card takes (1), a short circuit (2)"""
+        if not self.type_ok(ptype):
+            return 1
+        if self.short:
+            return 2
+        return 0
+
     def run(self):
         try:
             while True:
@@ -371,6 +505,8 @@ class Part8:
                     self.load()
                 elif c == ord('S'):
                     self.send_file()
+                elif c == ord('P'):
+                    self.prom()
                 # any other byte: no request (RSTART is reset), dropped
         except Stop:
             return 0
@@ -382,6 +518,10 @@ def main():
         ap.add_argument('--drive%d' % n)
     ap.add_argument('--console')
     ap.add_argument('--date', default='890509')
+    ap.add_argument('--eprom')
+    ap.add_argument('--eprom-type')
+    ap.add_argument('--board', type=int, default=2)
+    ap.add_argument('--short', action='store_true')
     return Part8(ap.parse_args()).run()
 
 

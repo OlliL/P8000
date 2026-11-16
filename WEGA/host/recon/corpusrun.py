@@ -159,8 +159,9 @@ def parse_case(text, where):
         elif k == 'device':
             ws = shlex.split(v)
             if not ws or not (re.match(r'drive[0-3]$', ws[0]) and len(ws) == 2 or ws[0] == 'ud' and len(ws) == 1 or
-                              len(ws) >= 2 and ':' in ws[1]):
-                raise CaseError('%s:%d: device: driveN FILE | ud | NAME KIND:ARG [excl] [console]' % (where, n))
+                              ws[0] == 'eprom' and len(ws) >= 3 or len(ws) >= 2 and ':' in ws[1]):
+                raise CaseError('%s:%d: device: driveN FILE | ud | eprom FILE TYPE [board=N] [short] | NAME KIND:ARG '
+                                '[excl] [console]' % (where, n))
             c['devices'].append(ws)
         elif k in LATER:
             raise CaseError('%s:%d: %s: %s; not served yet (the emulator has no model of it; increment 120 builds it with the '
@@ -248,6 +249,9 @@ def write_devtab(case, rd):
     device: driveN FILE   every floppy device of drive N (fd(4): minor & 3) reads and writes the image FILE
     device: ud            /dev/ud is the 8-bit part (models/ud8.py) with the drives of the case; what the 8-bit part
                           prints on its console is recorded as part of the result
+    device: eprom FILE TYPE [board=N] [short]   the EPROM programmer of the 8-bit part: the EPROM of TYPE (e2708 ..
+                          e27512) in its socket is FILE (made erased when missing), the card board 1 (old) or 2 (new,
+                          default), short: the card reports a short circuit
     device: NAME KIND:ARG [excl] [console]   any device with a model of z8k-emu (image:, host:, proc:, console)
     terminal: console     the minimal terminal: fds 0-2, /dev/console and /dev/tty are the console"""
     tab = open(DEVTAB).read()
@@ -264,7 +268,15 @@ def write_devtab(case, rd):
             ents.append(last)
         elif len(w) == 2 and w[0] == 'l' and last:
             ents.append([w[1], last[1], last[2]])
+    eprom = []
+    for ws in case.get('devices', []):	# the EPROM of the programmer first: the line of ud needs it
+        if ws[0] == 'eprom':
+            eprom = ['--eprom', os.path.join(rd, ws[1]), '--eprom-type', ws[2]]
+            for w in ws[3:]:
+                eprom += ['--board', w[6:]] if w.startswith('board=') else ['--short'] if w == 'short' else []
     for ws in case.get('devices', []):
+        if ws[0] == 'eprom':
+            continue
         if ws[0].startswith('drive'):
             n = int(ws[0][5:])
             img = os.path.join(rd, ws[1])
@@ -272,6 +284,7 @@ def write_devtab(case, rd):
             lines += ['model %s image:%s' % (name, img) for name, ma, mi in ents if ma == 1 and mi & 3 == n]
         elif ws[0] == 'ud':
             args = ''.join(' --drive%d %s' % (n, shlex.quote(p)) for n, p in sorted(drives.items()))
+            args += ''.join(' ' + shlex.quote(w) for w in eprom)
             lines.append('model ud proc:%s %s%s --console %s excl console' % (sys.executable, UD8, args,
                                                                              shlex.quote(rd + '.udcon')))
         else:

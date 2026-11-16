@@ -169,3 +169,8 @@ corpora of format, verify, copydisk, doscopy beyond the proof cases (120).
   Emulator: the model line of Z8K_DEVTAB takes a command with blanks. Runner: WEGA_HOST in host lines. Measured on the
   sample disks, not used: NDOS places the records of a file with a stagger of about 6 sectors in a track (8, 14, 20, 26,
   0, 10, ...); the writer's own rule is simpler (to be compared in MAME).
+- 2026-11-16: step 6 done: request P in ud8.py (K.PROM.S prom, K.P8000.S): header and `q`, write with programming as
+  an EPROM (1 to 0 only, FFH not programmed, error 3 and the question), read back in standard speed mode, read, erase
+  check, CRC (sdlc transcribed, checked: CRC-CCITT), board 1/2 with the types each card takes, short circuit; the case
+  field `device: eprom FILE TYPE [board=N] [short]`. The original pburn 2.1 runs against it (board query, menu, listing
+  of an EPROM range). Next: the corpus of pburn (step 7).
