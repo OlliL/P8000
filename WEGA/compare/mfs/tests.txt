@@ -1,0 +1,38 @@
+# The cases of the corpus of mfs (compare/mfs/corpus.py); the format: host/recon/casefile.py. Every case runs as root
+# with three file systems: /dev/z (the file zfile), /dev/tmp (empty), /dev/usr (lib/ufile), made by the prefix of
+# corpus.py. mount warns when the name in the super block (empty after mkfs) is not that of the directory: as on
+# WEGA. The /etc/mnttab of the tree lists z, tmp, usr as mounted already (the state of the shipped disk). Where an
+# expectation comes from: src = src/cmd/mfs.sh, mount = the original /etc/mount, /etc/umount.
+
+== mount
+# src: mfs mounts z, tmp, usr ("mounting:"), then lists the mounted file systems (mount without arguments)
+-- case
+step: /etc/mfs
+step: ls /z /usr/lib /tmp
+step: cat /usr/lib/ufile
+expect: output contains 'mounting:'
+expect: output contains 'zfile'
+expect: output contains 'in usr'
+
+== umount
+# src: umfs lists what is mounted but root, then unmounts z, tmp, usr; the directories show the tree again
+-- case
+step: /etc/mfs
+step: /etc/umfs
+step: ls /z
+expect: output contains 'un-mounting:'
+expect: exit 0
+
+== umount-not-mounted
+# mount: umount of a device that is not mounted (the kernel: EINVAL)
+-- case
+step: /etc/umfs
+expect: output contains 'un-mounting:'
+expect: output contains 'umount: cannot unmount /dev/z'
+
+== mount-twice
+# the kernel (smount): a device that is mounted already: EBUSY
+-- case
+step: /etc/mfs
+step: /etc/mfs
+expect: output contains 'mount: Mount device busy'

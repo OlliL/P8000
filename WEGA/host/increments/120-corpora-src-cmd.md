@@ -135,3 +135,9 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
 - 2026-11-16: step b for mfs: host/tools/wegafs.py format (byte-identical with WEGA's /etc/mkfs for 100, 360, 720, 1440,
   2880, 5000, 20000, 65000 blocks; mkfs measured under z8k-emu: BLOCKS/25 i-node blocks, m/n 1 72, s_tfree one too high,
   a quirk), put and mkdir (direct, single and double indirect blocks; WEGA's /etc/fsck passes the result). Next: c.
+- 2026-11-16: step c for mfs: z8k-emu mount and umount, read only (Z8K_MOUNTS: the image unpacked by wegafs.py, the
+  paths below the directory there; the kernel's errors from sys3.c); the runner: Z8K_MOUNTS per case, ROOT_COPY (a copy
+  of a file of the tree in the case's layer: /etc/mnttab). Corpus mfs (mfs, umfs; the script at /etc/mfs): mount,
+  umount, umount-not-mounted, mount-twice: 4 of 4 identical, a changed copy is found. Found: WEGA's mount warns when the
+  name in the super block is not that of the directory; the /etc/mnttab of the shipped tree lists z, tmp, usr as
+  mounted; smount of this kernel does not check for the super-user.

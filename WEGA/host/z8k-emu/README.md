@@ -151,6 +151,16 @@ exists in DIR is made there (not in ROOT). The corpus runner gives every case su
 the tree (a candidate of `INSTALLED`), what a case writes there (`/etc/mnttab` of mount). Not modelled: a directory of the guest
 that is in both shows only the ROOT one in a listing.
 
+## Mounted file systems
+
+With `Z8K_MOUNTS=FILE` (the table, shared by the processes of a run) mount and umount (sc 21, 22) follow the kernel
+(`src/uts/sys/sys3.c` smount, sumount, getmdev: ENOTBLK for a device that is not a block device, ENXIO without a
+model, EBUSY for a device or directory mounted already, EINVAL for umount of a device not mounted; no check for the
+super-user in this kernel: /etc/mount is set-user-id root). The block device must have an `image:` model with a WEGA
+file system: mount unpacks it (`host/tools/wegafs.py extract`, `Z8K_WEGAFS` its path) into FILE.ENTRY, and the guest
+paths below the directory are those below it; with `Z8K_UID` the owners come from the file system. Read only: what is
+written there is lost at umount, the image does not change. Not modelled: ".." above the mounted directory.
+
 ## Floppies
 
 A floppy device of the guest /dev (major 1: fd, rfd) is the image file of its drive (devtab model line `image:`; the

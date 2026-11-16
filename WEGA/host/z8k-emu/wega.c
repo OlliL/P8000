@@ -366,6 +366,66 @@ static const char *dotdot(const char *g, char *buf, size_t n)
 
 static int devtab_active(void);
 
+/* ---------------------------------------------------------------- mounted file systems
+ * Z8K_MOUNTS=FILE: the table of the file systems mounted by the guest (shared by the processes of a run): a line
+ * "ENTRY GUESTDIR HOSTDIR". mount (sys3.c smount) unpacks the WEGA file system of the image of a block device of the
+ * guest /dev (host/tools/wegafs.py extract; Z8K_WEGAFS its path) into HOSTDIR (FILE.ENTRY); the guest paths below
+ * GUESTDIR are then those below HOSTDIR. Read only: what is written there is lost at umount (the image is not changed).
+ * Not modelled: ".." above the mounted directory (the host goes to the parent of HOSTDIR). */
+typedef struct { int ent; char g[1024]; char h[1200]; } Mnt;
+static Mnt mnts[16];
+static int nmnt;
+static char mntf[1100];
+
+static void mnt_load(void)
+{
+	static struct stat last;
+	struct stat st;
+	FILE *f;
+	if (!*mntf) {
+		const char *e = getenv("Z8K_MOUNTS");
+		char cwd[1024];
+		if (!e || !*e) return;
+		if (e[0] == '/' || !getcwd(cwd, sizeof cwd)) snprintf(mntf, sizeof mntf, "%s", e);
+		else snprintf(mntf, sizeof mntf, "%s/%s", cwd, e);
+	}
+	if (stat(mntf, &st) < 0) { nmnt = 0; memset(&last, 0, sizeof last); return; }
+	if (st.st_mtim.tv_sec == last.st_mtim.tv_sec && st.st_mtim.tv_nsec == last.st_mtim.tv_nsec &&
+	    st.st_size == last.st_size && st.st_ino == last.st_ino) return;
+	last = st;
+	nmnt = 0;
+	if ((f = fopen(mntf, "r")) == NULL) return;
+	while (nmnt < 16 && fscanf(f, "%d %1023s %1199s", &mnts[nmnt].ent, mnts[nmnt].g, mnts[nmnt].h) == 3)
+		nmnt++;
+	fclose(f);
+}
+
+static void mnt_save(void)
+{
+	char t[1200];
+	FILE *f;
+	int i;
+	snprintf(t, sizeof t, "%s.new%d", mntf, (int)getpid());
+	if ((f = fopen(t, "w")) == NULL) return;
+	for (i = 0; i < nmnt; i++) fprintf(f, "%d %s %s\n", mnts[i].ent, mnts[i].g, mnts[i].h);
+	fclose(f);
+	rename(t, mntf);
+}
+
+static const char *mnt_path(const char *g, char *buf, size_t n)	/* a guest path below a mounted directory */
+{
+	int i, best = -1;
+	size_t bl = 0;
+	mnt_load();
+	for (i = 0; i < nmnt; i++) {
+		size_t l = strlen(mnts[i].g);
+		if (!strncmp(g, mnts[i].g, l) && (g[l] == 0 || g[l] == '/') && l > bl) { best = i; bl = l; }
+	}
+	if (best < 0) return NULL;
+	snprintf(buf, n, "%s%s", mnts[best].h, g + bl);
+	return buf;
+}
+
 static const char *hostpath(const char *g, char *buf, size_t n)
 {
 	const char *dd;
@@ -374,6 +434,10 @@ static const char *hostpath(const char *g, char *buf, size_t n)
 		return dd;
 	}
 	if (g[0] != '/' || !*root) return g;
+	{
+		const char *mp = mnt_path(g, buf, n);
+		if (mp) return mp;
+	}
 	if (!strncmp(g, "/dev/", 5) && !(devtab_active() && (!g[5] || !strcmp(g + 5, "."))))
 		return g;	/* the host /dev, unless the guest /dev is a table (then /dev itself is ROOT/dev, listed from it) */
 	if (*guesttmp() && !strncmp(g, "/tmp", 4) && (g[4] == 0 || g[4] == '/')) {
@@ -1567,6 +1631,67 @@ static int sys_call_impl(Z8K *c, unsigned n)
 
 		return sc_long(c, r); }
 	case 20: tmplog("getpid guest %u", (unsigned)gpid(getpid())); return sc_ok(c, gpid(getpid()));
+	case 21: {	/* mount(spec, dir, ronly) (sys3.c smount: getmdev, then EBUSY for a device or directory in use) */
+		struct stat st;
+		pid_t pid;
+		int w;
+		char hd[1200], img[1100];
+		p = a_ptr(&a); p2 = a_ptr(&a); gstr(c, p, gp, sizeof gp); gstr(c, p2, gp2, sizeof gp2);
+		mnt_load();
+		if (!*mntf) return sc_err(c, EBUSY);
+		if ((k = devlookup(gp)) < 0) return sc_err(c, ENOENT);
+		if (devent[k].type != 'b') return sc_err(c, ENOTBLK);
+		if (strncmp(devent[k].model, "image:", 6)) return sc_err(c, ENXIO);
+		hp = hostpath(gp2, hb, sizeof hb);
+		if (stat(hp, &st) < 0) return sc_err(c, errno);
+		for (i = 0; i < nmnt; i++)
+			if (mnts[i].ent == k || !strcmp(mnts[i].g, gp2)) return sc_err(c, EBUSY);
+		if (nmnt >= 16) return sc_err(c, EBUSY);
+		snprintf(hd, sizeof hd, "%s.%d", mntf, k);
+		snprintf(img, sizeof img, "%s", devent[k].model + 6);
+		if ((pid = fork()) == 0) {	/* the file system unpacked (wegafs.py; an old one removed first) */
+			const char *t = getenv("Z8K_WEGAFS");
+			execlp("sh", "sh", "-c", "rm -rf \"$1\" \"$1.owners\" && exec python3 \"$2\" extract \"$3\" \"$1\"", "sh", hd,
+			       t && *t ? t : "wegafs.py", img, (char *)0);
+			_exit(127);
+		}
+		if (pid < 0 || waitpid(pid, &w, 0) < 0 || !WIFEXITED(w) || WEXITSTATUS(w)) return sc_err(c, EINVAL);
+		if (um_on) {	/* the owners of the files: from the file system */
+			char ol[1300], hp2[2300];
+			FILE *f;
+			unsigned uid, gid, mode;
+			snprintf(ol, sizeof ol, "%s.owners", hd);
+			if ((f = fopen(ol, "r")) != NULL) {
+				while (fscanf(f, "%u %u %o %1023s", &uid, &gid, &mode, gp) == 4) {
+					snprintf(hp2, sizeof hp2, "%s%s", hd, strcmp(gp, "/") ? gp : "");
+					if (lstat(hp2, &st) == 0) um_setown(&st, uid, gid);
+				}
+				fclose(f);
+			}
+		}
+		mnts[nmnt].ent = k;
+		snprintf(mnts[nmnt].g, sizeof mnts[nmnt].g, "%s", gp2);
+		snprintf(mnts[nmnt].h, sizeof mnts[nmnt].h, "%s", hd);
+		nmnt++;
+		mnt_save();
+		return sc_ok(c, 0); }
+	case 22: {	/* umount(spec): EINVAL when the device is not mounted; the unpacked tree is removed */
+		pid_t pid;
+		int w;
+		p = a_ptr(&a); gstr(c, p, gp, sizeof gp);
+		mnt_load();
+		if ((k = devlookup(gp)) < 0) return sc_err(c, ENOENT);
+		if (devent[k].type != 'b') return sc_err(c, ENOTBLK);
+		for (i = 0; i < nmnt && mnts[i].ent != k; i++) ;
+		if (i == nmnt) return sc_err(c, EINVAL);
+		if ((pid = fork()) == 0) {
+			execlp("sh", "sh", "-c", "chmod -R u+rwx \"$1\" 2>/dev/null; rm -rf \"$1\" \"$1.owners\"", "sh", mnts[i].h, (char *)0);
+			_exit(127);
+		}
+		if (pid > 0) waitpid(pid, &w, 0);
+		mnts[i] = mnts[--nmnt];
+		mnt_save();
+		return sc_ok(c, 0); }
 	case 23: case 46: return sc_ok(c, 0);
 	case 24: return sc_ok2(c, getuid(), geteuid());
 	case 47: return sc_ok2(c, getgid(), getegid());

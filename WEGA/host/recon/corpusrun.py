@@ -4,7 +4,8 @@ cases, compared. Usage: corpusrun.py [-c CANDIDATE[,CANDIDATE]] [-k] [-f FILTER]
 host/tools/corpus.sh). --show: only the original, every case printed (steps with output and exit status, the files
 afterwards, the expectations that fail); no store, no candidate: for writing cases.
 
-A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), INSTALLED (the candidate lies at its place in the tree, ORIG and
+A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), ROOT_COPY (files of the tree a case may change: each case gets a copy in its layer, e.g.
+etc/mnttab), INSTALLED (the candidate lies at its place in the tree, ORIG and
 the paths of ALIASES, in the case's layer over ROOT, z8k-emu Z8K_OVERLAY; the steps call it by that path; a shell script
 is run by /bin/sh with $0 that path), IN_TMP (the case
 directory is the guest's /tmp/CASE.N.SIDE, its parent the guest /tmp: for programs that find their directory by pwd), host_setup(),
@@ -570,8 +571,20 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
             os.makedirs(os.path.dirname(dest), exist_ok=True)
             os.link(os.path.join(progdir, a), dest)
         os.chmod(os.path.join(progdir, cfg.PROG), os.stat(os.path.join(RUNROOT, cfg.ORIG)).st_mode & 0o7777)
+    for f in getattr(cfg, 'ROOT_COPY', []):	# files of the tree a case changes: a copy of its own in the layer
+        dest = os.path.join(overlay, f)
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        shutil.copy2(os.path.join(RUNROOT, f), dest)
+    for old in glob.glob(rd + '.mounts*'):	# the file systems mounted by a run before (z8k-emu Z8K_MOUNTS)
+        if os.path.isdir(old):
+            subprocess.run(['chmod', '-R', 'u+rwx', old], stderr=subprocess.DEVNULL)
+            shutil.rmtree(old, ignore_errors=True)
+        else:
+            os.remove(old)
     env = dict(os.environ)
     env['Z8K_OVERLAY'] = overlay
+    env['Z8K_MOUNTS'] = rd + '.mounts'
+    env['Z8K_WEGAFS'] = os.path.join(REPO, 'host', 'tools', 'wegafs.py')
     env['Z8K_ROOTLOG'] = rd + '.rootlog'	# beside the case directory: a program that reads its directory must not see it
     if case.get('user'):	# the user model of the emulator: the ids, the owners of the files (a table beside the case)
         env['Z8K_UID'], env['Z8K_GID'] = str(case['user'][0]), str(case['user'][1])
