@@ -2,7 +2,7 @@
 
 ## Status
 
-open (before 120 goes on; owner 2026-11-16)
+active (2026-11-16)
 
 ## Goal
 
@@ -148,3 +148,12 @@ corpora of format, verify, copydisk, doscopy beyond the proof cases (120).
 ## Log
 
 - 2026-11-16: written; the owner's decisions on UDOS (a real file system) and the minimal terminal; pburn target 2.1.
+- 2026-11-16: step 1 in part: `host/tools/udosfs.py` reads NDOS (8 sample disks of the owner, files equal to the ROM
+  dumps of MAME and to the WEGA tree; chains of pointer sectors; the ASCII end mark; src.cqm holds files written by putud:
+  the reference for the model of L); WEGA's /dev from CONTENTS of root1 (`host/z8k-emu/devtab.wega`); the ud driver, the
+  requests L and S, NDOS OPEN in KNOWLEDGE.md. Step 2 done (commit 90307db3): the device layer of z8k-emu (Z8K_DEVTAB:
+  image, host, proc, console; excl, console), the minimal terminal (Z8K_CONSOLE; ttyname finds /dev/console), the
+  corpus fields `terminal:` and `device:`; tested with tar on /dev/rfd1 (an image) and an echo model behind /dev/ud.
+  Open, to be measured in MAME: on which drive NDOS creates a file for a name without a drive (`*`: putud never sends
+  one); how NDOS chooses free sectors (seen on the samples: around the directory on track 22, outwards; sector 0/0 kept
+  free on system disks, used on a data disk); the 8-bit console messages as the real 8-bit part prints them.
