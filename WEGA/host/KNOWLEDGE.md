@@ -671,6 +671,10 @@ Validation:
   (`-r`), hex (`-x`).
 - `war.py` ar reader: `list`, `extract`.
 - `cpio_be.py` reader for big-endian binary cpio archives.
+- `wegafs.py` the WEGA file system (System III) in an image (floppy, partition): info, ls, cat, extract (the owners in
+  DIR.owners); built like `udosfs.py`; the same trees as `mame/tools/wegafs.py` on all 17 WEGA 3.1 disks. The
+  installation floppies are such file systems; their files carry the owners of the original (e.g. uucp: uid 2,
+  set-user-id).
 - `sstrings.py` NUL-terminated strings from the data sections.
 - `z8k.py` Z8000 decoder.
 - `check_reloc.py` decoder self-check against relocations.
