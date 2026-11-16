@@ -1,0 +1,76 @@
+# The /dev of WEGA 3.1, as the installation makes it: the /dev section of the file CONTENTS of the installation
+# floppy root1 (tmp/wega31_disks/w31root1.raw), copied unchanged. A line: TYPE (b block, c character) and MODE,
+# OWNER, GROUP, MAJOR, MINOR, NAME; "l NAME": another name (a link) of the entry before it.
+# z8k-emu reads it as the guest's /dev (Z8K_DEVTAB, host/z8k-emu/README.md); the models of the devices come from the
+# case (corpus field device:, terminal:).
+b---640 3 0 0 0 md0
+l usr
+b---644 3 0 0 1 swap
+b---640 3 0 0 2 md2
+l root
+b---640 3 0 0 3 md3
+l tmp
+b---640 3 0 0 4 md4
+l z
+c---640 3 0 0 0 rmd0
+l rusr
+c---640 3 0 0 2 rmd2
+l rroot
+c---640 3 0 0 3 rmd3
+l rtmp
+c---640 3 0 0 4 rmd4
+l rz
+b---666 0 0 1 96 fd096ds9
+l fd0
+b---666 0 0 1 97 fd196ds9
+l fd1
+b---666 0 0 1 32 fd048ds16
+b---666 0 0 1 33 fd148ds16
+b---666 0 0 1 48 fd048ss16
+b---666 0 0 1 49 fd148ss16
+b---666 0 0 1 80 fd096ds16
+b---666 0 0 1 81 fd196ds16
+b---666 0 0 1 128 fd048ds9
+b---666 0 0 1 129 fd148ds9
+b---666 0 0 1 144 fd048ss9
+b---666 0 0 1 145 fd148ss9
+b---666 0 0 1 160 fd096ss9
+b---666 0 0 1 161 fd196ss9
+c---666 0 0 1 96 rfd096ds9
+l rfd0
+c---666 0 0 1 97 rfd196ds9
+l rfd1
+l tardev
+l dumpdev
+c---666 0 0 1 32 rfd048ds16
+c---666 0 0 1 33 rfd148ds16
+c---666 0 0 1 48 rfd048ss16
+c---666 0 0 1 49 rfd148ss16
+c---666 0 0 1 64 rfd048ds5
+c---666 0 0 1 65 rfd148ds5
+c---666 0 0 1 80 rfd096ds16
+c---666 0 0 1 81 rfd196ds16
+c---666 0 0 1 112 rfd096ds5
+c---666 0 0 1 113 rfd196ds5
+c---666 0 0 1 128 rfd048ds9
+c---666 0 0 1 129 rfd148ds9
+c---666 0 0 1 144 rfd048ss9
+c---666 0 0 1 145 rfd148ss9
+c---666 0 0 1 160 rfd096ss9
+c---666 0 0 1 161 rfd196ss9
+c---666 0 0 2 0 ud
+c---644 3 0 6 0 mem
+c---666 0 0 9 3 lp
+c---666 0 0 9 67 rlp
+c---644 3 0 6 1 kmem
+c---666 3 0 6 2 null
+c---666 0 0 7 0 tty
+c---622 0 0 8 0 tty0
+c---622 0 0 8 1 console
+l tty1
+c---622 0 0 8 2 tty2
+c---622 0 0 8 3 tty3
+c---622 0 0 8 4 tty4
+c---622 0 0 8 5 tty5
+c---622 0 0 8 6 tty6
+c---622 0 0 8 7 tty7

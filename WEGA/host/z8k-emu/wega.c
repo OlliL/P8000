@@ -27,6 +27,8 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
 #include <utime.h>
 #include "z8k.h"
 
@@ -358,6 +360,8 @@ static const char *dotdot(const char *g, char *buf, size_t n)
 	return buf;
 }
 
+static int devtab_active(void);
+
 static const char *hostpath(const char *g, char *buf, size_t n)
 {
 	const char *dd;
@@ -366,7 +370,8 @@ static const char *hostpath(const char *g, char *buf, size_t n)
 		return dd;
 	}
 	if (g[0] != '/' || !*root) return g;
-	if (!strncmp(g, "/dev/", 5)) return g;
+	if (!strncmp(g, "/dev/", 5) && !(devtab_active() && (!g[5] || !strcmp(g + 5, "."))))
+		return g;	/* the host /dev, unless the guest /dev is a table (then /dev itself is ROOT/dev, listed from it) */
 	if (*guesttmp() && !strncmp(g, "/tmp", 4) && (g[4] == 0 || g[4] == '/')) {
 		snprintf(buf, n, "%s%s", guesttmp(), g + 4);
 		return buf;
@@ -478,6 +483,243 @@ static Dir *dirof(int fd)
 	return d;
 }
 
+/* ------------------------------------------------------------ devices (increment 117) */
+
+/*
+ * The guest /dev (Z8K_DEVTAB=FILE): a table in the form of devtab.wega (TYPE+MODE OWNER GROUP MAJOR MINOR NAME, "l NAME"
+ * another name of the entry before), followed by lines "model NAME KIND[:ARG] [excl] [console]" that give a device its
+ * model:
+ *   image:FILE   a floppy image: read, write, lseek on FILE
+ *   host:PATH    a host file (e.g. /dev/null)
+ *   proc:CMD     a byte stream to the model program CMD (sh -c), its stdin and stdout one socket: read waits for one byte
+ *                and returns what is there (the ud driver), close shuts the stream and waits until the model has ended it
+ *   console      the console of the minimal terminal (opened: the step's stdin for reading, stdout for writing)
+ *   excl         a second open while it is open: ENXIO (udopen); console: only with Z8K_CONSOLE (the controlling
+ *                terminal is the console)
+ * Without a model an open gives ENXIO; a name not in the table does not exist. Without Z8K_DEVTAB /dev/ is the host's.
+ * Z8K_CONSOLE=1: fds 0, 1, 2 are the console (isatty, the tty ioctls, fstat gives its numbers: ttyname finds it).
+ */
+#define NDEV 160
+typedef struct { char name[64]; int ent; } DevName;
+typedef struct { char type; unsigned mode, uid, gid, major, minor, ino, nlink; char model[600]; int excl, needcon, opens; } DevEnt;
+static DevEnt devent[NDEV];
+static DevName devname[NDEV];
+static int ndevent, ndevname, devtab_on = -1;
+static int devof[256];			/* per fd: 1 + the entry of a device fd, 0 */
+static int devproc[256];		/* per fd: a proc model's socket */
+static pid_t devpid[256];		/* per fd: the process that opened the proc model (only it ends the stream) */
+#define DEVDEV 0x0101			/* st_dev of the guest /dev */
+
+static void devtab_load(void)
+{
+	const char *f = getenv("Z8K_DEVTAB");
+	FILE *fp;
+	char line[800], t[16], n[64], m[600];
+	unsigned mo, u, g, ma, mi;
+	int i, last = -1;
+
+	devtab_on = 0;
+	if (!f || !*f || !(fp = fopen(f, "r")))
+		return;
+	devtab_on = 1;
+	while (fgets(line, sizeof line, fp)) {
+		if (line[0] == '#' || line[0] == '\n') continue;
+		if (sscanf(line, "l %63s", n) == 1 && line[1] == ' ') {
+			if (last >= 0 && ndevname < NDEV) {
+				snprintf(devname[ndevname].name, sizeof devname[0].name, "%s", n);
+				devname[ndevname++].ent = last;
+				devent[last].nlink++;
+			}
+			continue;
+		}
+		if (!strncmp(line, "model ", 6)) {
+			char opt1[32] = "", opt2[32] = "";
+			if (sscanf(line + 6, "%63s %599s %31s %31s", n, m, opt1, opt2) < 2) continue;
+			for (i = 0; i < ndevname; i++)
+				if (!strcmp(devname[i].name, n)) {
+					DevEnt *e = &devent[devname[i].ent];
+					snprintf(e->model, sizeof e->model, "%s", m);
+					e->excl = !strcmp(opt1, "excl") || !strcmp(opt2, "excl");
+					e->needcon = !strcmp(opt1, "console") || !strcmp(opt2, "console");
+				}
+			continue;
+		}
+		if (sscanf(line, "%15s %u %u %u %u %63s", t, &u, &g, &ma, &mi, n) == 6 && (t[0] == 'b' || t[0] == 'c') &&
+		    ndevent < NDEV && ndevname < NDEV) {
+			mo = strtoul(t + 4, NULL, 8);
+			last = ndevent++;
+			devent[last] = (DevEnt){ t[0], mo, u, g, ma, mi, 100 + last, 1, "", 0, 0, 0 };
+			snprintf(devname[ndevname].name, sizeof devname[0].name, "%s", n);
+			devname[ndevname++].ent = last;
+		}
+	}
+	fclose(fp);
+}
+
+static int devtab_active(void)
+{
+	if (devtab_on < 0) devtab_load();
+	return devtab_on;
+}
+
+/* the entry of a guest path /dev/NAME (with the table), -1 for none, -2 when the path is no /dev name */
+static int devlookup(const char *g)
+{
+	int i;
+	if (!devtab_active() || strncmp(g, "/dev/", 5) || !g[5] || strchr(g + 5, '/'))
+		return -2;
+	for (i = 0; i < ndevname; i++)
+		if (!strcmp(devname[i].name, g + 5)) return devname[i].ent;
+	return -1;
+}
+
+static int console_on(void)
+{
+	static int on = -1;
+	if (on < 0) { const char *s = getenv("Z8K_CONSOLE"); on = s && *s == '1'; }
+	return on;
+}
+
+static int console_ent(void)
+{
+	int i;
+	if (!devtab_active()) return -1;
+	for (i = 0; i < ndevname; i++)
+		if (!strcmp(devname[i].name, "console")) return devname[i].ent;
+	return -1;
+}
+
+static void dev_stat(int e, struct stat *st)
+{
+	DevEnt *d = &devent[e];
+	memset(st, 0, sizeof *st);
+	st->st_dev = DEVDEV;
+	st->st_ino = d->ino;
+	st->st_mode = (d->type == 'b' ? S_IFBLK : S_IFCHR) | d->mode;
+	st->st_nlink = d->nlink;
+	st->st_uid = d->uid;
+	st->st_gid = d->gid;
+	st->st_rdev = (d->major << 8) | d->minor;
+}
+
+/* the fd is a device: its entry, or -1 */
+static int devfd(int fd)
+{
+	if (fd >= 0 && fd < 256 && devof[fd]) return devof[fd] - 1;
+	if (fd >= 0 && fd <= 2 && console_on()) return console_ent();
+	return -1;
+}
+
+static void devfd_set(int fd, int e)
+{
+	if (fd >= 0 && fd < 256) { devof[fd] = e + 1; devproc[fd] = 0; }
+}
+
+/* close of a proc model's socket: end the stream and wait until the model has ended its side (its files are written) */
+static void devproc_end(int fd)
+{
+	char b[256];
+	shutdown(fd, SHUT_WR);
+	while (read(fd, b, sizeof b) > 0)
+		;
+}
+
+static void devclose(int fd)
+{
+	if (fd < 0 || fd >= 256 || !devof[fd]) return;
+	if (devproc[fd] && devpid[fd] == getpid()) devproc_end(fd);
+	if (devent[devof[fd] - 1].opens > 0) devent[devof[fd] - 1].opens--;
+	devof[fd] = 0;
+	devproc[fd] = 0;
+}
+
+static void devexit(void)
+{
+	int fd;
+	for (fd = 0; fd < 256; fd++)
+		if (devproc[fd] && devpid[fd] == getpid()) devproc_end(fd);
+}
+
+/* open of a device entry: the host fd, or -errno */
+static int devopen(int e, int mode)
+{
+	DevEnt *d = &devent[e];
+	const char *m = d->model;
+	int fd = -1;
+
+	if (!*m) return -ENXIO;
+	if (d->excl && d->opens > 0) return -ENXIO;
+	if (d->needcon && !console_on()) return -ENXIO;
+	if (!strncmp(m, "image:", 6) || !strncmp(m, "host:", 5)) {
+		fd = open(strchr(m, ':') + 1, mode & 3);
+		if (fd < 0) return -errno;
+	} else if (!strcmp(m, "console")) {
+		fd = dup((mode & 3) == 1 ? 1 : 0);
+		if (fd < 0) return -errno;
+	} else if (!strncmp(m, "proc:", 5)) {
+		int sv[2];
+		pid_t pid;
+		static int atex;
+		if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv) < 0) return -errno;
+		pid = fork();
+		if (pid < 0) { close(sv[0]); close(sv[1]); return -EAGAIN; }
+		if (pid == 0) {		/* the model is a grandchild: the guest's wait never sees it */
+			if (fork() != 0) _exit(0);
+			close(sv[0]);
+			dup2(sv[1], 0);
+			dup2(sv[1], 1);
+			if (sv[1] > 1) close(sv[1]);
+			execl("/bin/sh", "sh", "-c", m + 5, (char *)0);
+			_exit(127);
+		}
+		waitpid(pid, NULL, 0);
+		close(sv[1]);
+		fd = sv[0];
+		if (!atex) { atexit(devexit); atex = 1; }
+		devfd_set(fd, e);
+		devproc[fd] = 1;
+		devpid[fd] = getpid();
+		d->opens++;
+		return fd;
+	} else
+		return -ENXIO;
+	devfd_set(fd, e);
+	d->opens++;
+	return fd;
+}
+
+/* the guest /dev as a directory: "." and ".." then every name with the inode of its entry */
+static int devdir(const char *path)
+{
+	char rp[PATH_MAX], want[PATH_MAX];
+	if (!devtab_active() || !*root || !realpath(path, rp)) return 0;
+	snprintf(want, sizeof want, "%s/dev", realroot());
+	return !strcmp(rp, want);
+}
+
+/* the tty ioctls of the console: the settings are kept (the minimal terminal does not act on them yet) */
+static uint8_t con_sgtty[6] = { 13, 13, '#', '@', 0, 010 | 020 };	/* B9600, erase #, kill @, ECHO|CRMOD */
+static uint8_t con_tchars[6] = { 0177, 034, 021, 023, 004, 0377 };
+static uint8_t con_termio[18] = { 0x05, 0x26, 0x00, 0x05, 0x00, 0xbd, 0x00, 0x3b, 0, 0177, 034, '#', '@', 004, 0, 0, 0, 0 };
+
+static int devioctl(Z8K *c, int fd, unsigned cmd, Ad p)
+{
+	int e = devfd(fd);
+	if (e < 0 || e != console_ent())
+		return -ENOTTY;
+	switch (cmd) {
+	case ('t' << 8) | 8: gwrite(c, p, con_sgtty, 6); return 0;			/* TIOCGETP */
+	case ('t' << 8) | 9: case ('t' << 8) | 10: gread(c, p, con_sgtty, 6); return 0;	/* TIOCSETP, TIOCSETN */
+	case ('t' << 8) | 18: gwrite(c, p, con_tchars, 6); return 0;			/* TIOCGETC */
+	case ('t' << 8) | 17: gread(c, p, con_tchars, 6); return 0;			/* TIOCSETC */
+	case ('t' << 8) | 16: case ('t' << 8) | 2: return 0;				/* TIOCFLUSH, TIOCHPCL */
+	case ('T' << 8) | 1: gwrite(c, p, con_termio, 18); return 0;			/* TCGETA */
+	case ('T' << 8) | 2: case ('T' << 8) | 3: case ('T' << 8) | 4: gread(c, p, con_termio, 18); return 0;
+	case ('T' << 8) | 5: case ('T' << 8) | 6: case ('T' << 8) | 7: return 0;	/* TCSBRK, TCXONC, TCFLSH */
+	}
+	return -EINVAL;
+}
+
 /* fd was opened on path: when it is a directory, build its WEGA image, "." and ".." first */
 static void dirload(int fd, const char *path)
 {
@@ -493,6 +735,33 @@ static void dirload(int fd, const char *path)
 		return;
 	if (!(d = calloc(1, sizeof *d))) {
 		closedir(dp);
+		return;
+	}
+	if (devdir(path)) {	/* the guest /dev from the table */
+		int n;
+		for (k = 0; k < 2 + ndevname; k++) {
+			unsigned ino;
+			if (k < 2) {
+				snprintf(sub, sizeof sub, "%s/%s", path, k ? ".." : ".");
+				if (stat(sub, &st) < 0) continue;
+				ino = ino16(st.st_ino);
+				name = k ? ".." : ".";
+			} else {
+				ino = devent[devname[k - 2].ent].ino;
+				name = devname[k - 2].name;
+			}
+			if (!(d->buf = realloc(d->buf, d->len + 16))) break;
+			memset(d->buf + d->len, 0, 16);
+			d->buf[d->len] = ino >> 8;
+			d->buf[d->len + 1] = ino;
+			n = strlen(name);
+			memcpy(d->buf + d->len + 2, name, n < 14 ? n : 14);
+			d->len += 16;
+		}
+		closedir(dp);
+		d->fd = fd;
+		d->next = dirs;
+		dirs = d;
 		return;
 	}
 	for (k = 0; ; k++) {
@@ -675,6 +944,11 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 5:		/* open */
 		p = a_ptr(&a); i = a_int(&a);
 		gstr(c, p, gp, sizeof gp);
+		if ((k = devlookup(gp)) != -2) {	/* the guest /dev */
+			if (k == -1) return sc_err(c, ENOENT);
+			k = devopen(k, i);
+			return k < 0 ? sc_err(c, -k) : sc_ok(c, k);
+		}
 		hp = hostpath(gp, hb, sizeof hb);
 		k = open(hp, i & 3);
 		if (istmp(gp)) tmplog("open %s mode %d -> %d", gp, i & 3, k < 0 ? -errno : k);
@@ -684,6 +958,11 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 8:		/* creat */
 		p = a_ptr(&a); i = a_int(&a);
 		gstr(c, p, gp, sizeof gp);
+		if ((k = devlookup(gp)) != -2) {	/* a device is opened for writing; no new name in /dev */
+			if (k == -1) return sc_err(c, EACCES);
+			k = devopen(k, 1);
+			return k < 0 ? sc_err(c, -k) : sc_ok(c, k);
+		}
 		hp = hostpath(gp, hb, sizeof hb);
 		k = open(hp, O_WRONLY | O_CREAT | O_TRUNC, i & 07777);
 		tmplog("creat %s -> %d", gp, k < 0 ? -errno : k);
@@ -699,6 +978,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 				free(d);
 				break;
 			}
+		devclose(i);
 		return sc_res(c, close(i)); }
 	case 7: {	/* wait */
 		int st; pid_t pid = wait(&st);
@@ -772,8 +1052,9 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		return sc_res(c, (i & S_IFMT) == S_IFDIR
 			? mkdir(hp, i & 07777)
 			: mknod(hp, i, j));
-	case 15:	/* chmod */
+	case 15:	/* chmod (of a device of the guest /dev: taken as done) */
 		p = a_ptr(&a); i = a_int(&a); gstr(c, p, gp, sizeof gp);
+		if (devlookup(gp) >= 0) return sc_ok(c, 0);
 		return sc_res(c, chmod(hostpath(gp, hb, sizeof hb), i & 07777));
 	case 16:	/* chown: ignored */
 		return sc_ok(c, 0);
@@ -798,10 +1079,15 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 18:	/* stat */
 		{ struct stat st; p = a_ptr(&a); p2 = a_ptr(&a);
 		  gstr(c, p, gp, sizeof gp);
+		  if ((k = devlookup(gp)) != -2) {
+			if (k == -1) return sc_err(c, ENOENT);
+			dev_stat(k, &st); put_stat(c, p2, &st); return sc_ok(c, 0);
+		  }
 		  if (stat(hostpath(gp, hb, sizeof hb), &st) < 0) return sc_err(c, errno);
 		  put_stat(c, p2, &st); return sc_ok(c, 0); }
 	case 28:	/* fstat */
 		{ struct stat st; i = a_int(&a); p = a_ptr(&a);
+		  if ((k = devfd(i)) >= 0) { dev_stat(k, &st); put_stat(c, p, &st); return sc_ok(c, 0); }
 		  if (fstat(i, &st) < 0) return sc_err(c, errno);
 		  put_stat(c, p, &st); return sc_ok(c, 0); }
 	case 19: {	/* lseek */
@@ -840,6 +1126,10 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		return sc_res(c, utime(hostpath(gp, hb, sizeof hb), &ub)); }
 	case 33:	/* access */
 		p = a_ptr(&a); i = a_int(&a); gstr(c, p, gp, sizeof gp);
+		if ((k = devlookup(gp)) != -2) {	/* the permission of "others" (the guest is not the owner of /dev) */
+			if (k == -1) return sc_err(c, ENOENT);
+			return ((i & 7) & ~(devent[k].mode & 7)) ? sc_err(c, EACCES) : sc_ok(c, 0);
+		}
 		return sc_res(c, access(hostpath(gp, hb, sizeof hb), i & 7));
 	case 34: return sc_ok(c, 0);
 	case 36: sync(); return sc_ok(c, 0);
@@ -850,8 +1140,15 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		return sc_res(c, kill(hp, j)); }
 	case 41:	/* dup */
 		i = a_int(&a); j = a_int(&a);
-		if (i & 0x40) return sc_res(c, dup2(i & 0x3F, j));
-		return sc_res(c, dup(i));
+		if (i & 0x40) {
+			devclose(j);
+			k = dup2(i & 0x3F, j);
+			if (k >= 0 && devof[i & 0x3F]) devof[k] = devof[i & 0x3F];	/* a copy: only the opener ends a proc model */
+			return sc_res(c, k);
+		}
+		k = dup(i);
+		if (k >= 0 && k < 256 && i >= 0 && i < 256 && devof[i]) devof[k] = devof[i];
+		return sc_res(c, k);
 	case 42: {	/* pipe */
 		int fd[2];
 		if (pipe(fd) < 0) return sc_err(c, errno);
@@ -891,8 +1188,11 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		sig_kernel[sig] = h;
 		signal(sig, h == 1 ? SIG_IGN : SIG_DFL);
 		return sc_ok(c, old); }
-	case 54:	/* ioctl */
-		return sc_err(c, ENOTTY);
+	case 54: {	/* ioctl: the tty ioctls of the console (Z8K_CONSOLE), else ENOTTY */
+		int fd = a_int(&a); unsigned cmd = (uint16_t)a_int(&a);
+		p = a_ptr(&a);
+		k = devioctl(c, fd, cmd, p);
+		return k < 0 ? sc_err(c, -k) : sc_ok(c, 0); }
 	case 60: i = a_int(&a); return sc_ok(c, umask(i));
 	case 61: return sc_err(c, EPERM);
 	default:

@@ -867,6 +867,38 @@ Sources: `UDOS/WEGA/koppeldoc` and `K.*.S` (beside `WEGA/`: the coupling softwar
   `MON8_1_3.1`, `MON16_1H_3.1_UDOS`, `MON8_1_3.1_UDOS` read from them are byte-identical with the ROM dumps of MAME,
   `sa.install` (records of 200H) with `/sa.install` of the WEGA tree.
 
+- The `ud` driver (`src/uts/dev/ud.c`): open fails with ENXIO unless WEGA was started from the start disk (`udos ==
+  2`), the controlling terminal is the console, and no other process has a coupling device open (`ksflag`); read waits
+  for one byte and returns every byte that has arrived; write passes the bytes on.
+- WEGA's `/dev` (the file CONTENTS of the installation floppy root1, copied to `host/z8k-emu/devtab.wega`): `md*`/`rmd*`
+  (major 0), the floppies `fd*`/`rfd*` (major 1; `fd0`, `rfd0`, `fd1`, `rfd1` are links to the 96ds9 devices, `tardev`
+  and `dumpdev` to `rfd196ds9`), `ud` (c 2 0), `mem`, `kmem`, `null` (c 6 0..2), `lp`, `rlp` (c 9 3, 67), `tty` (c 7 0),
+  `tty0`..`tty7` (c 8 0..7) with `console` = c 8 1 (`tty1` another name of it).
+- Requests L and S (the remote telegram, `K.ACT.S`; the WEGA side `putud.c`, `getud.c`): the request letter, the 8-bit
+  part answers ACK; the flag byte (WEGA: 01H binary, 04H descriptor transfer (putud -f, a UDOS procedure file), 08H all
+  binary, 10H executable; the 8-bit part makes the UDOS type P for binary+exec, B for binary, A otherwise), ACK; the
+  file name as STX NAME ETX and the xor of the name as checksum (a wrong checksum: NAK, the name again; the 8-bit part
+  keeps 32 characters; a name with ';', blank, tab or empty is error 46H). L (putud, the 8-bit part writes): the file is
+  opened for output with record length 200H (an error: "File NAME Error XX" on the 8-bit console, CAN); ACK; blocks of
+  at most 64 bytes as STX, count high, count low, the data, ETX, xor checksum; ACK or NAK; WEGA ends with CAN (ESC: abort
+  everything); the 8-bit part closes the file (an ASCII file gets FFH as its end mark) and answers ACK. putud turns
+  newlines into returns for ASCII files and sets the executable flag from the Unix mode.
+- Further sample floppies (owner, 2026-11-16; shipped disks and one of sources): `irts14/24/34`, `src`, `udosprog`,
+  `wgaend12` (`.cqm` beside the others). Read by udosfs.py without a fault (record count = pointer entries on all 8
+  disks); chains of 2 and 3 pointer sectors (`FORTRAN`, `FORLIB.OBJ` on udosprog, `LIB1`, `wega` on wgaend12 and the
+  start disk); every directory has 5 records, 2 to 4 of them start with FFH (all entries deleted). An ASCII file ends
+  with FFH directly behind its byte count (the FFH is not counted). `src.cqm` holds the sources of the coupling
+  software (`K.*.S`, `koppeldoc`: equal to `UDOS/WEGA/` of the repository, with CR line ends) and files written from
+  WEGA with putud (Unix names `p8t.5.*.s`, `p8tld`, `readme` type A, `makefile`, `s.menu.c`, `udosprom.o` type B):
+  record length 200H (the RL of K.ACT.S), ASCII with CR line ends, binary with LF, block length 0, properties 0, the
+  rest of the last record filled with FFH (CLRBUF of K.ACT.S presets the buffer with FFH; a file written under UDOS
+  keeps other bytes there). Disks without a system have no boot sector: track 0 holds file data.
+- NDOS OPEN (UDOS Systemhandbuch 5.3.4): modes INPUT 0 (C7 file not found), OUTPUT 1 (an existing file is cleared),
+  NEW 2 (D0 duplicate file), APPEND 3, UPDATE 4; errors C2 not ready, C3 protection, CC unit already open, D1 wrong
+  disk, CA pointer error, D2 invalid attribute, D3 disk full, D6 file already open, D8 properties protection, D9 invalid
+  open request, DA insufficient memory ("Belegungsplaene": NDOS keeps the allocation of a disk in memory); warnings 81,
+  82, 84.
+
 ## Open questions
 
 - Is `src/uts/conf/fpe.s` the floating point emulator of the shipped kernel?

@@ -19,7 +19,11 @@ the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting fil
   env: NAME=VALUE     environment of the step before, or of every step when it comes before the first one
   host: LINE          a line of the host shell between the steps (preparation; WEGA_ROOT is set; each line its own shell)
 Every step and host line runs with umask 022.
-  user: terminal: device: time: fs: signal:   reserved for the surroundings; an error until the emulator serves them
+  terminal: console   the minimal terminal (z8k-emu Z8K_CONSOLE): stdin/out of the steps are the console for isatty,
+                      ttyname, the tty ioctls; /dev/console and /dev/tty are it
+  device: driveN FILE | ud | NAME KIND:ARG [excl] [console]   the guest /dev (z8k-emu Z8K_DEVTAB; write_devtab below):
+                      a floppy image of the case directory as drive N, the 8-bit part behind /dev/ud, any device model
+  user: time: fs: signal:   reserved for the surroundings; an error until the emulator serves them
   variant: N=V ...    the case runs once per variant line with that environment (default: once, none)
   expect: exit N | output contains TEXT | output is TEXT (the whole output of the last step, \n a newline) | file PATH contains TEXT | file PATH same-as in/FILE|PATH | missing PATH
                       checked on the original's run
@@ -105,8 +109,6 @@ class CaseError(Exception):
 # the fields of the surroundings of a case the format reserves; each is an error until the emulator serves it
 LATER = {
     'user': 'the user and group ids the program runs as (and the files of /etc/passwd, /etc/group it sees)',
-    'terminal': 'a terminal: type, size, the keys as a byte stream (stdin and stdout of the step are the terminal)',
-    'device': 'a device file of /dev and its model (e.g. a tape, a floppy, a line printer)',
     'time': 'the time the guest sees (the emulator has Z8K_TIME for a fixed time; the field comes with the first program that needs it)',
     'fs': 'a file system of its own (mount, a block device with a WEGA file system)',
     'signal': 'a signal sent to the step after N seconds or at a text of its output',
@@ -115,7 +117,7 @@ LATER = {
 
 def parse_case(text, where):
     """{'env': {..}, 'steps': [{'kind': 'step'|'host', 'argv'|'line', 'stdin', 'env'}], 'variants': [{..}], 'expect': [..]}"""
-    c = {'env': {}, 'steps': [], 'variants': [], 'expect': []}
+    c = {'env': {}, 'steps': [], 'variants': [], 'expect': [], 'devices': [], 'terminal': None}
     for n, line in enumerate(text.split('\n'), 1):
         line = line.rstrip()
         if not line.strip() or line.lstrip().startswith('#'):
@@ -149,6 +151,16 @@ def parse_case(text, where):
             c['variants'].append({'env': dict(w.split('=', 1) for w in env), 'words': [w for w in ws if w not in env]})
         elif k == 'expect':
             c['expect'].append(shlex.split(v))
+        elif k == 'terminal':
+            if v != 'console':
+                raise CaseError('%s:%d: terminal: only "console" (the minimal terminal) so far' % (where, n))
+            c['terminal'] = v
+        elif k == 'device':
+            ws = shlex.split(v)
+            if not ws or not (re.match(r'drive[0-3]$', ws[0]) and len(ws) == 2 or ws[0] == 'ud' and len(ws) == 1 or
+                              len(ws) >= 2 and ':' in ws[1]):
+                raise CaseError('%s:%d: device: driveN FILE | ud | NAME KIND:ARG [excl] [console]' % (where, n))
+            c['devices'].append(ws)
         elif k in LATER:
             raise CaseError('%s:%d: %s: %s; not served yet (the emulator has no model of it; increment 120 builds it with the '
                             'first program that needs it)' % (where, n, k, LATER[k]))
@@ -226,6 +238,52 @@ def _read_rootlog(p, paths):
     os.remove(p)
 
 
+DEVTAB = os.path.join(REPO, 'host', 'z8k-emu', 'devtab.wega')
+UD8 = os.path.join(REPO, 'host', 'z8k-emu', 'models', 'ud8.py')
+
+
+def write_devtab(case, rd):
+    """the guest /dev of a run (z8k-emu Z8K_DEVTAB): WEGA's /dev (devtab.wega) and the models the case names:
+    device: driveN FILE   every floppy device of drive N (fd(4): minor & 3) reads and writes the image FILE
+    device: ud            /dev/ud is the 8-bit part (models/ud8.py) with the drives of the case; what the 8-bit part
+                          prints on its console is recorded as part of the result
+    device: NAME KIND:ARG [excl] [console]   any device with a model of z8k-emu (image:, host:, proc:, console)
+    terminal: console     the minimal terminal: fds 0-2, /dev/console and /dev/tty are the console"""
+    tab = open(DEVTAB).read()
+    lines = ['model null host:/dev/null']
+    if case.get('terminal') == 'console':
+        lines += ['model console console', 'model tty console']
+    drives = {}
+    ents = []
+    last = None
+    for l in tab.split('\n'):
+        w = l.split()
+        if len(w) == 6 and w[0][0] in 'bc':
+            last = [w[5], int(w[3]), int(w[4])]
+            ents.append(last)
+        elif len(w) == 2 and w[0] == 'l' and last:
+            ents.append([w[1], last[1], last[2]])
+    for ws in case.get('devices', []):
+        if ws[0].startswith('drive'):
+            n = int(ws[0][5:])
+            img = os.path.join(rd, ws[1])
+            drives[n] = img
+            lines += ['model %s image:%s' % (name, img) for name, ma, mi in ents if ma == 1 and mi & 3 == n]
+        elif ws[0] == 'ud':
+            args = ''.join(' --drive%d %s' % (n, shlex.quote(p)) for n, p in sorted(drives.items()))
+            lines.append('model ud proc:%s %s%s --console %s excl console' % (sys.executable, UD8, args,
+                                                                             shlex.quote(rd + '.udcon')))
+        else:
+            kind, _, arg = ws[1].partition(':')
+            if kind == 'image':
+                arg = os.path.join(rd, arg)
+            lines.append('model %s %s:%s %s' % (ws[0], kind, arg, ' '.join(ws[2:])))
+    p = rd + '.devtab'
+    with open(p, 'w') as f:
+        f.write(tab + '\n'.join(lines) + '\n')
+    return p
+
+
 def collect_rootlog(d, extra=None):
     """the guest paths the emulators started below d (or writing to the file extra) looked up in their ROOT (the log
     files are removed); not /tmp, /dev"""
@@ -300,6 +358,10 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
             cfg.host_setup(progdir)
     env = dict(os.environ)
     env['Z8K_ROOTLOG'] = rd + '.rootlog'	# beside the case directory: a program that reads its directory must not see it
+    if case.get('devices') or case.get('terminal'):
+        env['Z8K_DEVTAB'] = write_devtab(case, rd)
+        if case.get('terminal') == 'console':
+            env['Z8K_CONSOLE'] = '1'
     if getattr(cfg, 'IN_TMP', False):	# the case directory is /tmp/NAME of the guest (pwd works: z8k-emu, Z8K_TMPDIR)
         env['Z8K_TMPDIR'] = os.path.dirname(rd)
     if os.path.exists(rd + '.rootlog'):
@@ -358,6 +420,9 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         if norm:
             text = norm('output', text)
         res['steps'].append('step %d %s: exit=%d\n%s' % (i, argv[0], rc, text))
+    if os.path.exists(rd + '.udcon'):	# what the 8-bit part printed on its console
+        res['steps'].append('8-bit console:\n' + open(rd + '.udcon', encoding='latin-1').read())
+        os.remove(rd + '.udcon')
     used = collect_rootlog(rd, rd + '.rootlog')
     res['tree'] = listing(rd, getattr(cfg, 'normalize', None))
     res['deps'] = deps_of(RUNROOT, used)

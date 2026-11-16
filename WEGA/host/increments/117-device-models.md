@@ -112,6 +112,34 @@ them (owner 2026-11-16: they are to be written by a simpler AI).
   questions of format, verify, copydisk, pburn's console). Designed so that it can grow into the full terminal later
   (vi and the other screen programs: termio/sgtty modes, the keys as a byte stream, the screen as output).
 
+## Design (decided by Claude 2026-11-16, for review)
+
+- One device layer in z8k-emu, driven by a table (`Z8K_DEVTAB=FILE`, written by the corpus runner from the case's
+  `device:` and `terminal:` lines; a default table without it): per guest name below `/dev` its type (`c`/`b`), major,
+  minor, an inode number, and a model. The guest `/dev` is that table: a directory read of `/dev` lists it (ttyname
+  scans it), `stat` of a name gives the type, `st_rdev`, `st_ino`; a name not in the table does not exist (ENOENT), the
+  host `/dev` is never reached (except `/dev/null` and `/dev/tty` mapped by the table).
+- Models, two kinds:
+  - `image:FILE` – a floppy: `read`, `write`, `lseek` on a RAW image file (geometry from the minor, fd(4)); block and raw
+    device the same bytes.
+  - `proc:PROGRAM` – a byte stream to a model program on the host (a pipe pair): `write` sends the bytes, `read` waits
+    for at least one byte and returns what is there (the semantics of the `ud` driver: udread). `/dev/ud` is such a
+    model: `host/z8k-emu/models/ud8.py`, the 8-bit part (the coupling software K.*.S and the NDOS calls it makes,
+    transcribed; the UDOS file system through `host/tools/udosfs.py`; the floppies of the drives are the same image files
+    as the `image:` devices; the EPROM programmer with its EPROM contents as files; what the 8-bit part prints on its
+    console goes to a file of the case). One process per open of `/dev/ud`; its exit status and files are part of the
+    result.
+- The console: `terminal: console` (the minimal terminal) makes fds 0, 1, 2 the device `/dev/console` (char, the major
+  and minor of WEGA's console): `isatty` and the sgtty ioctls (TIOCGETP, TIOCSETP, TIOCSETN, the tchars/ltchars ones)
+  succeed and keep their settings, `fstat` gives the console's type and numbers (ttyname finds `/dev/console`), the
+  bytes still come from the step's stdin and go to its output. It grows later (vi): the settings will then act on the
+  byte stream (echo, raw/cbreak, erase/kill), a screen model can be put behind it.
+- `/dev/ud` opens only as on WEGA: the controlling terminal is the console (`terminal: console`) and no other process
+  has it open (ENXIO otherwise; udopen).
+- Why a separate model program and not C in the emulator: the 8-bit side is a protocol machine with a file system
+  behind it (much logic, no speed need); Python reads like the sources it transcribes, and the UDOS reader exists
+  already. The emulator gets only the generic layer (table, image, pipe, console).
+
 ## Not part of it
 
 Timing of the hardware (the model answers at once), the terminal model in general (120 or its own increment), the
