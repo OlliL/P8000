@@ -627,3 +627,25 @@ a
 b
 !
 3
+
+== interrupt
+# src (dc1.c main, onintr): dc catches INT (unless it is ignored): the input it was reading from is dropped and it
+# reads on from stdin; here stdin then ends: exit status 0, what was printed before stays
+-- i
+1p
+-- case
+step: dc
+stdin: i
+signal: INT after 1
+expect: output contains '1'
+expect: exit 0
+
+== sigquit
+# src: QUIT is not caught: dc dies by it (the WEGA number 3)
+-- i
+2p
+-- case
+step: dc
+stdin: i
+signal: QUIT after 1
+expect: exit -3

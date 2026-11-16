@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <sys/resource.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
@@ -39,7 +40,7 @@ static char rootlogf[1100];	/* Z8K_ROOTLOG, absolute (see rootlog) */
 static char dirmoved[1100];	/* the old name of a directory given a new one by link (renamed) */
 static char **envv;			/* guest default environment */
 static int nenv;
-static uint32_t sig_kernel[32];		/* kernel-level handler values per signal */
+static uint32_t sig_kernel[32];		/* u.u_signal: the handler of each WEGA signal (0 default, odd ignore) */
 static int plexus;			/* current program uses the Plexus system call ABI */
 static uint8_t  segused[128];		/* segment exists (program image or mkseg) */
 static uint32_t segsz[128];		/* current size in bytes of each program segment (segmented mode) */
@@ -383,6 +384,124 @@ static const char *hostpath(const char *g, char *buf, size_t n)
 
 static uint16_t rdw_pl(Z8K *c, Ad a) { uint8_t b[2]; gread(c, a, b, 2); return (b[0] << 8) | b[1]; }
 
+/* ---------------------------------------------------------------- signals
+ * The model of the kernel (src/uts/sys/sig.c psig, sys4.c ssig, machdep.c sendsig, sysiret): a signal with a handler
+ * of the guest is taken by a host handler that only marks it pending; between two instructions (after a system call:
+ * with its error, EINTR for an interrupted one, as trap.c) the lowest pending signal is delivered: PC and FCW are put
+ * on the guest stack like an interrupt (stack - 6: the PC segment word, the PC, the FCW), the PC is set to the handler,
+ * the handler goes back to the default (not for SIGILL, SIGTRAP). The libc stub (signal.s) saves the registers, calls
+ * the function of the program, and returns by sc 0 (sysiret: PC segment, PC, the flags of the FCW from the stack).
+ * Default and ignore are the host's own (the host process dies by the signal; its parent maps the number back).
+ * The numbers of WEGA (System III) are not those of the host: sig_host. */
+static const int sig_host_fixed[20] = { 0, SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, 0, SIGFPE, SIGKILL,
+	SIGBUS, SIGSEGV, SIGSYS, SIGPIPE, SIGALRM, SIGTERM, SIGUSR1, SIGUSR2, SIGCHLD, SIGPWR };
+static volatile sig_atomic_t sig_pend[20], sig_any;
+
+static int sig_host(int w)	/* WEGA number -> host number; SIGEMT (7) has none on the host: a real-time signal */
+{
+	if (w <= 0 || w >= 20) return 0;
+	return w == 7 ? SIGRTMIN + 7 : sig_host_fixed[w];
+}
+
+static int sig_wega(int h)	/* host number -> WEGA number (0: none) */
+{
+	int w;
+	for (w = 1; w < 20; w++)
+		if (sig_host(w) == h) return w;
+	return 0;
+}
+
+static void sig_catch(int h)
+{
+	int w = sig_wega(h);
+	if (w) { sig_pend[w] = 1; sig_any = 1; }
+}
+
+static void sig_disp(int w, uint32_t h)	/* the host disposition for the handler h of WEGA signal w */
+{
+	struct sigaction sa;
+	if (w == 9) return;
+	memset(&sa, 0, sizeof sa);
+	sigemptyset(&sa.sa_mask);
+	sa.sa_handler = h == 0 ? SIG_DFL : (h & 1) ? SIG_IGN : sig_catch;
+	sa.sa_flags = 0;	/* no restart: an interrupted system call ends with EINTR */
+	sigaction(sig_host(w), &sa, NULL);
+}
+
+static void sig_start(void)	/* at the start: what the host process inherits as ignored is ignored for the guest */
+{
+	int w;
+	struct sigaction sa;
+	struct rlimit rl;
+	sigset_t none;
+	sigemptyset(&none);	/* WEGA has no signal mask: a mask the host process inherits (e.g. QUIT blocked) is dropped */
+	sigprocmask(SIG_SETMASK, &none, NULL);
+	/* no host core dump when the guest dies by QUIT, ILL, FPE, SEGV ...: the kernel's core() (a WEGA core file, status
+	   | 0200) is not modelled; a core limit of 1 makes Linux skip also a piped core_pattern (systemd-coredump) */
+	if (getrlimit(RLIMIT_CORE, &rl) == 0 && (rl.rlim_max == RLIM_INFINITY || rl.rlim_max >= 1)) {
+		rl.rlim_cur = 1;
+		setrlimit(RLIMIT_CORE, &rl);
+	}
+	for (w = 1; w < 20; w++) {
+		sig_pend[w] = 0;
+		sig_kernel[w] = sigaction(sig_host(w), NULL, &sa) == 0 && sa.sa_handler == SIG_IGN;
+	}
+	sig_any = 0;
+}
+
+static void sig_exec(void)	/* exec: caught signals go back to the default, ignored ones stay (sys1.c setregs) */
+{
+	int w;
+	for (w = 1; w < 20; w++)
+		if (sig_kernel[w] && !(sig_kernel[w] & 1)) { sig_kernel[w] = 0; sig_disp(w, 0); }
+}
+
+static int wstat(int st)	/* a host wait status with the WEGA number of the signal */
+{
+	if (WIFSIGNALED(st)) {
+		int w = sig_wega(WTERMSIG(st));
+		return (st & ~0x7F) | (w ? w : WTERMSIG(st));
+	}
+	return st;
+}
+
+static void sig_deliver(Z8K *c)	/* psig + sendsig: the lowest pending signal */
+{
+	int w;
+	uint32_t h;
+	uint16_t fcw;
+	Ad sp;
+	sig_any = 0;
+	for (w = 1; w < 20; w++) {
+		if (!sig_pend[w]) continue;
+		sig_pend[w] = 0;
+		h = sig_kernel[w];
+		if (h == 0 || (h & 1)) continue;	/* changed meanwhile: ssig clears what is pending */
+		if (w != 4 && w != 5) { sig_kernel[w] = 0; sig_disp(w, 0); }
+		for (; ++w < 20;) if (sig_pend[w]) sig_any = 1;	/* the rest after the next instruction */
+		sp.seg = c->segmode ? (c->r[14] >> 8) & 0x7F : 0;
+		sp.off = c->r[15] - 6;
+		fcw = (c->segmode ? 0x8000 : 0) | 0x1800 | c->fl;	/* the high byte: user mode, interrupts on (a guess:
+									   no program reads it) */
+		gputw(c, sp, c->segmode ? c->pcseg << 8 : 0);
+		sp.off += 2; gputw(c, sp, c->pc);
+		sp.off += 2; gputw(c, sp, fcw);
+		c->r[15] -= 6;
+		if (c->segmode) c->pcseg = (h >> 24) & 0x7F;
+		c->pc = h & 0xFFFF;
+		return;
+	}
+}
+
+/* a trap of the CPU (the EPU emulation: SIGFPE): 0 when the guest catches it (delivered after the instruction) */
+static int sig_trap(Z8K *c, int w)
+{
+	(void)c;
+	if (!sig_kernel[w] || (sig_kernel[w] & 1)) return -1;
+	sig_pend[w] = 1; sig_any = 1;
+	return 0;
+}
+
 /* ---------------------------------------------------------------- syscalls */
 
 typedef struct { Z8K *c; int i; } Args;
@@ -674,6 +793,7 @@ static int devopen(int e, int mode)
 		if (pid < 0) { close(sv[0]); close(sv[1]); return -EAGAIN; }
 		if (pid == 0) {		/* the model is a grandchild: the guest's wait never sees it */
 			if (fork() != 0) _exit(0);
+			setsid();	/* a device, not a part of the job: a signal to the process group (^C) does not reach it */
 			close(sv[0]);
 			dup2(sv[1], 0);
 			dup2(sv[1], 1);
@@ -901,6 +1021,7 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 		return 0;
 	}
 	exec_map(c, &x, av, ev);
+	sig_exec();
 	free(x.file);
 	for (i = 0; i < na; i++) free(av[i]);
 	free(av);
@@ -919,6 +1040,16 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	static unsigned char buf[65536];
 
 	switch (n) {
+	case 0: {	/* sysiret: the return of a signal handler (machdep.c) */
+		Ad sp;
+		sp.seg = c->segmode ? (c->r[14] >> 8) & 0x7F : 0;
+		sp.off = c->r[15];
+		i = gw(c, sp);
+		sp.off += 2; c->pc = gw(c, sp);
+		sp.off += 2; c->fl = gw(c, sp) & 0xFC;
+		if (c->segmode) c->pcseg = (i >> 8) & 0x7F;
+		c->r[15] += 6;
+		return 0; }
 	case 1:		/* exit */
 		i = a_int(&a);
 		tmplog("exit %d", i & 0xFF);
@@ -926,7 +1057,11 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 2: {	/* fork */
 		pid_t pid = fork();
 		if (pid < 0) return sc_err(c, errno);
-		if (pid == 0) { c->pc += 0; memset(kids, 0, sizeof kids); return sc_ok(c, gpid(getppid())); }	/* child runs the following jr */
+		if (pid == 0) {	/* the child: nothing pending (a new process) */
+			for (i = 1; i < 20; i++) sig_pend[i] = 0;
+			sig_any = 0;
+			memset(kids, 0, sizeof kids);
+			return sc_ok(c, gpid(getppid())); }	/* child runs the following jr */
 		c->pc += 2;						/* parent skips it */
 		kidadd(pid);
 		tmplog("fork child %d guest %u", (int)pid, (unsigned)gpid(pid));
@@ -993,7 +1128,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		int st; pid_t pid = wait(&st);
 		if (pid < 0) return sc_err(c, errno);
 		kiddel(pid);
-		return sc_ok2(c, gpid(pid), st & 0xFFFF); }
+		return sc_ok2(c, gpid(pid), wstat(st) & 0xFFFF); }
 	case 9:		/* link */
 		p = a_ptr(&a); p2 = a_ptr(&a);
 		gstr(c, p, gp, sizeof gp); gstr(c, p2, gp2, sizeof gp2);
@@ -1146,7 +1281,8 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		pid_t hp;
 		i = a_int(&a); j = a_int(&a);
 		if ((hp = hostpid((int16_t)i)) == -1) return sc_err(c, ESRCH);
-		return sc_res(c, kill(hp, j)); }
+		if (j < 0 || j >= 20) return sc_err(c, EINVAL);
+		return sc_res(c, kill(hp, j ? sig_host(j) : 0)); }
 	case 41:	/* dup */
 		i = a_int(&a); j = a_int(&a);
 		if (i & 0x40) {
@@ -1189,14 +1325,14 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		if (old + ncl * 256 > 0x10000) return sc_err(c, ENOMEM);
 		segsz[sno] = old + ncl * 256;
 		return sc_ok2(c, sno << 8, old & 0xFFFF); }
-	case 48: {	/* signal(sig, kernel handler) */
-		int sig = a_int(&a); uint32_t h = a_int(&a), old;
-		if (c->segmode) h = 0;
-		if (sig <= 0 || sig >= 20 || sig == SIGKILL) return sc_err(c, EINVAL);
+	case 48: {	/* signal(sig, handler): ssig (sys4.c); segmented: the handler is a long (segment word, offset) */
+		int sig = a_int(&a); uint32_t h = c->segmode ? a_long(&a) : a_int(&a), old;
+		if (sig <= 0 || sig >= 20 || sig == 9) return sc_err(c, EINVAL);
 		old = sig_kernel[sig];
 		sig_kernel[sig] = h;
-		signal(sig, h == 1 ? SIG_IGN : SIG_DFL);
-		return sc_ok(c, old); }
+		sig_pend[sig] = 0;
+		sig_disp(sig, h);
+		return c->segmode ? sc_ok2(c, old >> 16, old & 0xFFFF) : sc_ok(c, old & 0xFFFF); }
 	case 54: {	/* ioctl: the tty ioctls of the console (Z8K_CONSOLE), else ENOTTY */
 		int fd = a_int(&a); unsigned cmd = (uint16_t)a_int(&a);
 		p = a_ptr(&a);
@@ -1320,6 +1456,8 @@ int main(int argc, char **argv)
 		}
 	}
 	c->syscall = sys_call;
+	c->trap = sig_trap;
+	sig_start();
 	{
 		char cwd[1024];
 		tmplog("start %s root %s cwd %s", argv[i], root, getcwd(cwd, sizeof cwd) ? cwd : "?");
@@ -1338,5 +1476,6 @@ int main(int argc, char **argv)
 		}
 		if (r) { z8k_dump(c, stderr); return 255; }
 		if (c->halted) return 0;
+		if (sig_any) sig_deliver(c);
 	}
 }

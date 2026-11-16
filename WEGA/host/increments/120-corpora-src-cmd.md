@@ -100,3 +100,7 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
 - 2026-11-16: 117 done: corpora putud, getud, pburn, format, verify, copydisk, doscp exist (the device fields
   `device:`, `terminal:`, `time:`); left with devices: dosformat, doscat, dosls, dosdir, dosmkdir, dosrm, dosrmdir (the
   pattern: compare/doscp), tar on a floppy.
+- 2026-11-16: the signal model of the emulator (owner): handlers of the guest run (host/z8k-emu/README.md, "Signals";
+  own test host/z8k-emu/tests, run by checkall); the case field `signal: SIG after SECONDS | at 'TEXT'` (to the process
+  group of the step); dc has the cases interrupt and sigquit. Left of the surroundings: user, fs, processes, a terminal
+  that acts on its settings; a core file is not modelled.

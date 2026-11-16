@@ -217,6 +217,13 @@ for p in cpp ar binutils cc popt codgen cparse cas ld; do
 done
 make -C $T/shipped/WEGA/host/cas casold >> $T/hostbuild.log 2>&1
 stamp '3 host build: casold'
+# the own tests of the emulator (host/z8k-emu/tests: the signal model)
+if TMPDIR=$T sh $T/shipped/WEGA/host/z8k-emu/tests/run.sh $EMU $WEGA > $T/emutest.log 2>&1; then
+	result "z8k-emu tests" ok "`grep -c '^ok' $T/emutest.log` hold"
+else
+	result "z8k-emu tests" fail "see $T/emutest.log"
+fi
+stamp '3 emulator tests'
 # the corpora run side by side, each in a work directory of its own; every candidate of a program is tested against the
 # same inputs (the original runs once)
 CS=$T/shipped/WEGA/host/tools/corpus.sh

@@ -266,13 +266,16 @@ int z8k_epu(Z8K *c, uint16_t w0)
 	c->pc = rdw(k, (Ad){ 0, K_STATE + S_PC });
 	memcpy(c->fps, km + K_FPS, sizeof c->fps);
 
-	/* signals are not delivered: both are fatal, like their default action */
+	/* SIGFPE goes to a handler of the program when it has one (c->trap; the PC is the next instruction: a guess, the
+	   kernel's fpe.s is not modelled there); otherwise both are fatal, like their default action */
 	if (rc & 0x00FF) {
 		fprintf(stderr, "z8k: EPU operand address fault (SIGSEG) at %02x:%04x\n",
 			c->cur_seg, c->cur_pc);
 		return -1;
 	}
 	if (rc & 0xFF00) {
+		if (c->trap && c->trap(c, 8) == 0)
+			return 0;
 		fprintf(stderr, "z8k: floating point exception (SIGFPE, %02x) at %02x:%04x\n",
 			rc >> 8, c->cur_seg, c->cur_pc);
 		return -1;

@@ -36,6 +36,8 @@ struct Z8K {
 	void    *user;
 	/* returns 0 normally; non-zero stops the interpreter loop */
 	int    (*syscall)(Z8K *c, unsigned n);
+	/* a trap of the CPU with the WEGA signal number (8 SIGFPE): 0 when the program catches it (it then runs on) */
+	int    (*trap)(Z8K *c, int sig);
 };
 
 uint8_t *z8k_block(Z8K *c, int space, unsigned seg); /* space 0 = I, 1 = D */

@@ -441,7 +441,8 @@ One field per line; a line starting with `#` is a comment.
 | `device: ud` | `/dev/ud` is the 8-bit part of the P8000 (`host/z8k-emu/models/ud8.py`) with the drives of the case; what it prints on its own console appears at the end of the record as `8-bit console:`. Needs `terminal: console` (as on WEGA). |
 | `device: NAME KIND:ARG [excl] [console]` | Any device of WEGA's `/dev` with a model of the emulator (`image:`, `host:`, `proc:`, `console`; `host/z8k-emu/README.md`). |
 | `time: SECONDS` | The clock of the guest stands at SECONDS since 1970: times a program writes or prints do not change between the runs. |
-| `user:` `fs:` `signal:` | Reserved for later emulator models; using them is an error until the model exists. |
+| `signal: SIG after SECONDS` / `signal: SIG at 'TEXT'` | (after a `step:`) The signal SIG (a WEGA name: `HUP INT QUIT ILL TRAP IOT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM USR1 USR2 CLD PWR`, or its number) goes to the process group of the step, as ^C of a terminal: after SECONDS, or as soon as TEXT has appeared in its output (stdout through a pipe is buffered: TEXT is found only when the program flushes it). The step's stdin stays open until then, so a program that reads waits. The program's handlers run as on WEGA. A step killed by a signal records `exit=-N` with the WEGA number N (`expect: exit -3`). Example: `compare/dc/tests.txt`, cases `interrupt` and `sigquit`. |
+| `user:` `fs:` | Reserved for later emulator models; using them is an error until the model exists. |
 
 Expectations are checked on the **original**. They prove that a case really tests what it claims (more in section 11).
 
@@ -642,9 +643,9 @@ and some models built for corpora: a link to a directory (`mv dir1 dir2`), the g
 `/bin/pwd` works (`IN_TMP`), WEGA's `/dev` with floppy images and the 8-bit part behind `/dev/ud` (`device:`), and a
 minimal console (`terminal: console`).
 
-**It does not provide (yet):** a terminal that acts on its settings (echo, raw mode, a screen: vi), the EPROM
-programmer and the floppy requests format/verify/copydisk of the 8-bit part (increment 117 goes on), other users
-(everything runs as you, not as root), mounting file systems, guest signal handlers. Without `terminal: console`,
+**It does not provide (yet):** a terminal that acts on its settings (echo, raw mode, a screen: vi), other users
+(everything runs as you, not as root), mounting file systems, a core file when a program dies by QUIT, SEGV and the
+like. Without `terminal: console`,
 `isatty` is false – `rm` therefore acts as with `-f`. A program that needs one of these needs a **model** in the emulator first. Following the project's
 rule, a model is built when the first program needs it, with tests of its own. The case file already reserves the
 fields for it (`terminal:`, `device:`, …).

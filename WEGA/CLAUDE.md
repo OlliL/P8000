@@ -98,8 +98,8 @@ use the plain names. Make itself runs on the host, not in the emulator. The old 
 then `z8k-emu -r <OLDROOT> /bin/ccv1 ...`); `make install PREFIX=DIR` in `src/` installs the shipped programs and libraries, stripped as the originals.
 
 Limits: EPU (floating point) instructions run through a C port of the kernel's `fpe.s`
-(`host/z8k-emu/README.md`); a floating point trap (SIGFPE) stops the emulator. Guest signal
-handlers do not run.
+(`host/z8k-emu/README.md`); a floating point trap (SIGFPE) without a handler stops the emulator. Guest
+signal handlers run (`host/z8k-emu/README.md`, "Signals"); no core file is written.
 
 ## Compare
 

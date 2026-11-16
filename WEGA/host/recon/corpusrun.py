@@ -26,7 +26,13 @@ Every step and host line runs with umask 022.
                       a floppy image of the case directory as drive N, the 8-bit part behind /dev/ud, any device model
   time: SECONDS       the clock of the guest stands at SECONDS since 1970 (z8k-emu Z8K_TIME): times written to files or
                       printed do not change between the runs
-  user: fs: signal:   reserved for the surroundings; an error until the emulator serves them
+  signal: SIG after SECONDS | signal: SIG at 'TEXT'
+                      (after a step) the signal SIG (a WEGA name: INT QUIT ... USR1, or a number) to the process group
+                      of the step, as ^C of a terminal: after SECONDS, or when TEXT has appeared in its output; the
+                      stdin of the step stays open until then (a program that reads waits). A step killed by a signal
+                      has exit=-N with the WEGA number N
+                      (every step starts with INT and QUIT at their default, as from a terminal)
+  user: fs:           reserved for the surroundings; an error until the emulator serves them
   variant: N=V ...    the case runs once per variant line with that environment (default: once, none)
   expect: exit N | output contains TEXT | output is TEXT (the whole output of the last step, \n a newline) | file PATH contains TEXT | file PATH same-as in/FILE|PATH | missing PATH
                       checked on the original's run
@@ -55,6 +61,7 @@ import json
 import os
 import shlex
 import shutil
+import signal
 import subprocess
 import sys
 import threading
@@ -113,8 +120,24 @@ class CaseError(Exception):
 LATER = {
     'user': 'the user and group ids the program runs as (and the files of /etc/passwd, /etc/group it sees)',
     'fs': 'a file system of its own (mount, a block device with a WEGA file system)',
-    'signal': 'a signal sent to the step after N seconds or at a text of its output',
 }
+
+# the signals of WEGA (System III) by name, and the host's number of each (z8k-emu wega.c sig_host)
+WSIG = ['HUP', 'INT', 'QUIT', 'ILL', 'TRAP', 'IOT', 'EMT', 'FPE', 'KILL', 'BUS', 'SEGV', 'SYS', 'PIPE', 'ALRM', 'TERM',
+        'USR1', 'USR2', 'CLD', 'PWR']
+
+
+def host_signal(w):
+    if w == 7:
+        return signal.SIGRTMIN + 7
+    return getattr(signal, 'SIG' + {'IOT': 'ABRT', 'CLD': 'CHLD', 'SEGV': 'SEGV'}.get(WSIG[w - 1], WSIG[w - 1]))
+
+
+def wega_signal(h):
+    for w in range(1, 20):
+        if host_signal(w) == h:
+            return w
+    return h
 
 
 def parse_case(text, where):
@@ -132,9 +155,19 @@ def parse_case(text, where):
             argv = shlex.split(v)
             if not argv:
                 raise CaseError('%s:%d: empty step' % (where, n))
-            c['steps'].append({'kind': 'step', 'argv': argv, 'stdin': None, 'env': {}})
+            c['steps'].append({'kind': 'step', 'argv': argv, 'stdin': None, 'env': {}, 'signal': None})
         elif k == 'host':
             c['steps'].append({'kind': 'host', 'line': v})
+        elif k == 'signal':
+            m = re.match(r"([A-Z0-9]+)\s+(after\s+(\d+(?:\.\d+)?)|at\s+'([^']*)')$", v)
+            if not c['steps'] or c['steps'][-1]['kind'] != 'step':
+                raise CaseError('%s:%d: signal without a step' % (where, n))
+            w = m and (int(m.group(1)) if m.group(1).isdigit() else (WSIG.index(m.group(1)) + 1 if m.group(1) in WSIG
+                                                                     else 0))
+            if not m or not 1 <= w <= 19:
+                raise CaseError("%s:%d: signal: NAME|NUMBER after SECONDS, or NAME|NUMBER at 'TEXT' (NAME: %s)"
+                                % (where, n, ' '.join(WSIG)))
+            c['steps'][-1]['signal'] = (w, float(m.group(3)) if m.group(3) else None, m.group(4))
         elif k == 'stdin':
             if not c['steps'] or c['steps'][-1]['kind'] != 'step':
                 raise CaseError('%s:%d: stdin without a step' % (where, n))
@@ -201,7 +234,66 @@ def case_hash(d):
 SPAWN = threading.Lock()
 
 
-def spawn(args, cwd, env, stdin=None, timeout=600):
+def spawn_signal(args, cwd, env, stdin, timeout, sig):
+    """spawn with a signal to the step's process group (as ^C of a terminal reaches the job): sig = (WEGA number,
+    seconds or None, text or None): after the seconds, or when the text has appeared in stdout or stderr. Stdin (the
+    file's bytes) stays open until the signal is sent: a program that reads on waits for it."""
+    w, secs, text = sig
+    with SPAWN:
+        p = subprocess.Popen(args, cwd=cwd, env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, start_new_session=True)
+    data = stdin.read() if stdin else b''
+    bufs = {p.stdout: bytearray(), p.stderr: bytearray()}
+    cond = threading.Condition()
+
+    def reader(f):
+        while True:
+            d = os.read(f.fileno(), 65536)
+            with cond:
+                if not d:
+                    bufs[f] = bytes(bufs[f])
+                    cond.notify_all()
+                    return
+                bufs[f] += d
+                cond.notify_all()
+    ts = [threading.Thread(target=reader, args=(f,), daemon=True) for f in bufs]
+    for t in ts:
+        t.start()
+    try:
+        p.stdin.write(data)
+        p.stdin.flush()
+    except BrokenPipeError:
+        pass
+    end = time.time() + timeout
+    with cond:
+        if secs is not None:
+            cond.wait_for(lambda: p.poll() is not None, secs)
+        else:
+            cond.wait_for(lambda: p.poll() is not None or any(text.encode('latin-1') in bytes(b) for b in bufs.values()),
+                          max(end - time.time(), 0))
+    if p.poll() is None:
+        try:
+            os.killpg(p.pid, host_signal(w))
+        except ProcessLookupError:
+            pass
+    try:
+        p.stdin.close()
+    except BrokenPipeError:
+        pass
+    try:
+        p.wait(max(end - time.time(), 1))
+    except subprocess.TimeoutExpired:
+        os.killpg(p.pid, signal.SIGKILL)
+        p.wait()
+        return -999, b'timeout\n', b''
+    for t in ts:
+        t.join(10)
+    return p.returncode, bytes(bufs[p.stdout]), bytes(bufs[p.stderr])
+
+
+def spawn(args, cwd, env, stdin=None, timeout=600, sig=None):
+    if sig:
+        return spawn_signal(args, cwd, env, stdin, timeout, sig)
     with SPAWN:
         p = subprocess.Popen(args, cwd=cwd, env=env, stdin=stdin or subprocess.DEVNULL, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
@@ -438,7 +530,9 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         args = ['sh', '-c', 'umask 022; exec "$@"', 'sh'] + args	# every step with umask 022 (the modes of new files)
         fin = open(os.path.join(rd, st['stdin']), 'rb') if st['stdin'] else None
         try:
-            rc, out, err = spawn(args, rd, e, fin, getattr(cfg, 'TIMEOUT', 600))
+            rc, out, err = spawn(args, rd, e, fin, getattr(cfg, 'TIMEOUT', 600), st.get('signal'))
+            if rc < 0 and rc != -999:	# killed by a signal: its WEGA number (the host's numbers differ)
+                rc = -wega_signal(-rc)
         finally:
             if fin:
                 fin.close()
@@ -677,6 +771,10 @@ def runner_key():
 
 
 def main():
+    # the steps start as from a terminal: INT and QUIT at their default, whatever the runner inherits (a corpus started
+    # with & by a shell script has them ignored, and an ignored signal stays ignored through exec, for the guest too)
+    signal.signal(signal.SIGINT, signal.default_int_handler)
+    signal.signal(signal.SIGQUIT, signal.SIG_DFL)
     a = sys.argv[1:]
     cands_only = None
     keep = nocache = show = False

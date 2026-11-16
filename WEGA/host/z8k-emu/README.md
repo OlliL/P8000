@@ -107,8 +107,10 @@ emulator does the same with a C port of that file:
   implemented in C; counts are in words, as in `mch.s`.
 - The EPU state (`u.u_fpstate`: 8 registers of 80 bits, control registers)
   lives in `Z8K.fps`; exec sets all registers to 1.0 like `setregs()`.
-- A trap enabled exception (SIGFPE) or a bad operand address (SIGSEG) stops
-  the emulator with a message, like the default action of the signal.
+- A trap enabled exception (SIGFPE) goes to the program's handler when it has
+  one (the PC then is the next instruction: a guess); otherwise it, and a bad
+  operand address (SIGSEG), stop the emulator with a message, like the default
+  action of the signal.
 
 Results are those of `fpe.s`, not of IEEE hardware. Checked with random
 operands against exact arithmetic: add, sub, div and sqrt are correctly
@@ -128,7 +130,7 @@ error. Implemented: exit, fork, read, write, open, close, wait, creat, link,
 unlink, exec, exece, chdir, time, mknod (directories via host `mkdir`),
 chmod, chown (no-op), break, ssgbrk, stat,
 fstat, fcntl, lseek, getpid, getuid/getgid, alarm, pause, utime, access, nice
-(no-op), sync, kill, dup/dup2, pipe, times, signal (SIG_DFL/SIG_IGN only),
+(no-op), sync, kill, dup/dup2, pipe, times, signal (handlers run: see Signals),
 ioctl (always ENOTTY), umask. Process ids: the guest sees `(hostpid - 1) % 32767 + 1`
 (never 0 or negative: a cut host pid of 0 made the parent of a fork take itself for the child) in getpid, fork, wait;
 kill maps such a pid back to the host process (itself, a child, the parent, another z8k-emu of the session). Anything else prints
@@ -142,9 +144,29 @@ of /) is ROOT, and ROOT lists `tmp` with its inode, so that pwd (and tar, which 
 directory below it (without `Z8K_TMPDIR` pwd walks the host tree and prints a wrong path). Details: `../KNOWLEDGE.md`,
 section "Oracle: z8k-emu".
 
+## Signals
+
+The model of the kernel (`src/uts/sys/sig.c` psig, `sys4.c` ssig, `machdep.c` sendsig and sysiret), in `wega.c`:
+
+- `signal(sig, f)` (sc 48; segmented: `f` is a long, segment word and offset) stores the handler; 0 is the default, an
+  odd value ignore; what was pending of that signal is dropped. The host disposition follows: default and ignore are
+  the host's own (the emulator dies by the signal), a handler is a host handler that only marks the signal pending.
+- Between two instructions the lowest pending signal is delivered: the PC segment word, the PC and the FCW go on the
+  guest stack (stack - 6), the PC is the handler; the handler goes back to the default first (not for ILL, TRAP). The
+  libc stub (`signal.s`) saves the registers, calls the function and returns by sc 0 (sysiret: PC and the flags back).
+  A system call interrupted by a caught signal (read of a pipe or terminal, pause, wait) ends with EINTR, then the
+  handler runs (`trap.c`). The high byte of the FCW on the stack is a guess (no program reads it).
+- The numbers of WEGA (System III) are not the host's: kill, the wait status and the host dispositions map them
+  (EMT, which the host lacks, is a real-time signal). fork: nothing pending in the child; exec: caught signals go back to
+  the default, ignored ones stay (also what the emulator inherits as ignored is ignored for the guest).
+- At the start the emulator clears the host signal mask (WEGA has none) and sets the core limit to 1: no host core
+  dump (also not by a piped `core_pattern`). The kernel's `core()` (a file `core`, status | 0200) is not modelled.
+- Device models (`proc:`) run in a session of their own: a signal to the process group of a step does not reach them.
+- Test: `tests/signal.c` (built with cc and scc, compared with `tests/signal.out`; `tests/run.sh`, run by checkall).
+
 ## Limitations
 
-- Guest signal handlers are not run.
+- No core file when the guest dies by a signal (see Signals).
 - Some flags that nothing in the tool chain evaluates are approximate (V after
   shifts/rotates, C/V after `div`, DA/H except after byte add/sub).
 - Whether `fpe.s` in the tree is the code of the shipped kernel is not
