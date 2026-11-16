@@ -380,6 +380,30 @@ static const char *hostpath(const char *g, char *buf, size_t n)
 		snprintf(buf, n, "%s%s", guesttmp(), g + 4);
 		return buf;
 	}
+	{	/* Z8K_OVERLAY: a layer over ROOT (the files of a case: a program at its place in the tree, /etc/mtab): a path
+		   that is in the layer is taken from there, and a new name whose directory is in the layer is made there */
+		static const char *ov;
+		if (!ov) ov = getenv("Z8K_OVERLAY") ? getenv("Z8K_OVERLAY") : "";
+		if (*ov) {
+			struct stat st;
+			char par[1100];
+			const char *sl;
+			snprintf(buf, n, "%s%s", ov, g);
+			if (lstat(buf, &st) == 0)
+				return buf;
+			snprintf(par, sizeof par, "%s", buf);
+			sl = strrchr(par, '/');
+			if (sl && sl > par + strlen(ov)) {
+				par[sl - par] = 0;
+				if (stat(par, &st) == 0 && S_ISDIR(st.st_mode)) {
+					char rp[1100];
+					snprintf(rp, sizeof rp, "%s%s", root, g);
+					if (lstat(rp, &st) < 0)
+						return buf;	/* a new name: in the layer */
+				}
+			}
+		}
+	}
 	rootlog(g);
 	snprintf(buf, n, "%s%s", root, g);
 	return buf;

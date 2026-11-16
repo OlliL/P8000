@@ -144,6 +144,13 @@ of /) is ROOT, and ROOT lists `tmp` with its inode, so that pwd (and tar, which 
 directory below it (without `Z8K_TMPDIR` pwd walks the host tree and prints a wrong path). Details: `../KNOWLEDGE.md`,
 section "Oracle: z8k-emu".
 
+## The layer over ROOT
+
+With `Z8K_OVERLAY=DIR` an absolute guest path that exists in DIR is taken from there, and a new name whose directory
+exists in DIR is made there (not in ROOT). The corpus runner gives every case such a layer: a program at its place in
+the tree (a candidate of `INSTALLED`), what a case writes there (`/etc/mnttab` of mount). Not modelled: a directory of the guest
+that is in both shows only the ROOT one in a listing.
+
 ## Floppies
 
 A floppy device of the guest /dev (major 1: fd, rfd) is the image file of its drive (devtab model line `image:`; the

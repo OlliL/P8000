@@ -127,3 +127,8 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   runner makes every drive a link to the disk in it and has the field `operator: [at 'TEXT'] [insert driveN FILE]
   [type 'TEXT']` (the disk changed, the answer typed when the program asks). tar: disks-write-read (an archive over two
   disks of 360 blocks: c, t, x), disks-capacity, disks-default-device (/dev/tardev, the keys 0 and 1).
+- 2026-11-16: for the scripts and mfs (owner, step a of three: a layer over ROOT and script candidates; b: wegafs.py
+  format/put; c: mount/umount read-only, then the corpus of mfs): z8k-emu Z8K_OVERLAY (a layer over ROOT), the runner
+  gives every case one; corpus option INSTALLED (the candidate at its place in the tree, ALIASES too); a step whose
+  program is a shell script runs it with /bin/sh ($0 the path). Checked with a corpus made for it (mfs.sh at /etc/mfs,
+  /etc/umfs; a changed copy is found). Measured on the way: WEGA's mount keeps its table in /etc/mnttab (in the tree; /etc/mtab is not used).

@@ -4,7 +4,9 @@ cases, compared. Usage: corpusrun.py [-c CANDIDATE[,CANDIDATE]] [-k] [-f FILTER]
 host/tools/corpus.sh). --show: only the original, every case printed (steps with output and exit status, the files
 afterwards, the expectations that fail); no store, no candidate: for writing cases.
 
-A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), IN_TMP (the case
+A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), INSTALLED (the candidate lies at its place in the tree, ORIG and
+the paths of ALIASES, in the case's layer over ROOT, z8k-emu Z8K_OVERLAY; the steps call it by that path; a shell script
+is run by /bin/sh with $0 that path), IN_TMP (the case
 directory is the guest's /tmp/CASE.N.SIDE, its parent the guest /tmp: for programs that find their directory by pwd), host_setup(),
 generate(), normalize(), after_step()) and
 the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting files in `in/`). The case file (one field per line,
@@ -407,6 +409,20 @@ DEVTAB = os.path.join(REPO, 'host', 'z8k-emu', 'devtab.wega')
 UD8 = os.path.join(REPO, 'host', 'z8k-emu', 'models', 'ud8.py')
 
 
+def is_script(prog, rd, overlay):
+    """the program of a step (a guest path, or a path relative to the case) is a text, not an s.out: run by /bin/sh"""
+    if prog.startswith('/'):
+        p = overlay + prog if os.path.exists(overlay + prog) else RUNROOT + prog
+    else:
+        p = os.path.join(rd, prog)
+    try:
+        with open(p, 'rb') as f:
+            m = f.read(2)
+    except OSError:
+        return False
+    return len(m) == 2 and m[0] not in (0xE6, 0xE7) and m != b'\x01\x07' and m != b'\x01\x08'
+
+
 def write_devtab(case, rd):
     """the guest /dev of a run (z8k-emu Z8K_DEVTAB): WEGA's /dev (devtab.wega) and the models the case names:
     device: driveN FILE [ro]   every floppy device of drive N (fd(4): minor & 3) reads and writes the image FILE; ro: the
@@ -543,7 +559,19 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
                 os.link(os.path.join(progdir, cfg.PROG), os.path.join(progdir, a))
         if native and hasattr(cfg, 'host_setup'):
             cfg.host_setup(progdir)
+    # the layer over the tree (z8k-emu Z8K_OVERLAY): what a case writes below a directory of it stays there; a program of
+    # INSTALLED lies there at its place in the tree (the candidate, under every name of ALIASES), the original in ROOT
+    overlay = rd + '.overlay'
+    shutil.rmtree(overlay, ignore_errors=True)
+    os.makedirs(overlay)
+    if getattr(cfg, 'INSTALLED', False) and side != 'orig':
+        for a, path in aliases.items():
+            dest = os.path.join(overlay, path)
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            os.link(os.path.join(progdir, a), dest)
+        os.chmod(os.path.join(progdir, cfg.PROG), os.stat(os.path.join(RUNROOT, cfg.ORIG)).st_mode & 0o7777)
     env = dict(os.environ)
+    env['Z8K_OVERLAY'] = overlay
     env['Z8K_ROOTLOG'] = rd + '.rootlog'	# beside the case directory: a program that reads its directory must not see it
     if case.get('user'):	# the user model of the emulator: the ids, the owners of the files (a table beside the case)
         env['Z8K_UID'], env['Z8K_GID'] = str(case['user'][0]), str(case['user'][1])
@@ -606,7 +634,10 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
             args = [EMU]
             for k, v in senv.items():
                 args += ['-e', '%s=%s' % (k, v)]
-            args += ['-r', RUNROOT, '-0', argv[0], prog] + argv[1:]	# argv[0] the word, as the shell gives it
+            if is_script(prog, rd, overlay):	# a shell script: the shell runs it, $0 the name (as sh does when exec fails)
+                args += ['-r', RUNROOT, '-0', 'sh', '/bin/sh', prog] + argv[1:]
+            else:
+                args += ['-r', RUNROOT, '-0', argv[0], prog] + argv[1:]	# argv[0] the word, as the shell gives it
             e = env
         args = ['sh', '-c', 'umask 022; exec "$@"', 'sh'] + args	# every step with umask 022 (the modes of new files)
         fin = open(os.path.join(rd, st['stdin']), 'rb') if st['stdin'] else None
