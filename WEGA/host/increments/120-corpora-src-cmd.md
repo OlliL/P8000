@@ -95,3 +95,5 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   ar's host candidate differed); now only a ".." that leaves the guest /tmp or would go above ROOT is the model's. And a
   file of a tar case was made without the fixed time (its time is in the archive: equal only when both sides ran in the
   same second).
+- 2026-11-16: the programs with devices wait for 117 (owner): getud, putud, pburn first, then format, verify, copydisk,
+  doscopy, tar on a floppy.

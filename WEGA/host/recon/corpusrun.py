@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """corpusrun.py - the corpus test of a program (increment 110): the original of the WEGA tree and every candidate on the same
-cases, compared. Usage: corpusrun.py [-c CANDIDATE[,CANDIDATE]] [-k] [-f FILTER] [--nocache] NAME|DIR   (normally host/tools/corpus.sh)
+cases, compared. Usage: corpusrun.py [-c CANDIDATE[,CANDIDATE]] [-k] [-f FILTER] [--nocache] [--show] NAME|DIR   (normally
+host/tools/corpus.sh). --show: only the original, every case printed (steps with output and exit status, the files
+afterwards, the expectations that fail); no store, no candidate: for writing cases.
 
 A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), IN_TMP (the case
 directory is the guest's /tmp/CASE.N.SIDE, its parent the guest /tmp: for programs that find their directory by pwd), host_setup(),
@@ -582,7 +584,7 @@ def runner_key():
 def main():
     a = sys.argv[1:]
     cands_only = None
-    keep = nocache = False
+    keep = nocache = show = False
     filt = None
     while a and a[0].startswith('-'):
         o = a.pop(0)
@@ -594,6 +596,8 @@ def main():
             filt = a.pop(0)
         elif o == '--nocache':
             nocache = True
+        elif o == '--show':
+            show = True
         else:
             print(__doc__)
             return 2
@@ -601,7 +605,7 @@ def main():
     cfg = load(a[0])
     cands = {}
     for c, p in cfg.CANDIDATES.items():
-        if cands_only and c not in cands_only:
+        if show or (cands_only and c not in cands_only):
             continue
         path = os.environ.get('CORPUS_BIN_' + c.upper()) or os.path.join(REPO, p)
         if not os.path.exists(path):
@@ -649,6 +653,23 @@ def main():
             ch = mix(pkey, g.text)
             for vi, var in enumerate(case['variants'] or [{'env': {}, 'words': []}]):
                 jobs.append((g.name, g.indir, case, vi, var, mix(*([ch, json.dumps(var, sort_keys=True)] + base))))
+    if show:
+        for cname, getin, case, vi, var, okey in jobs:
+            vt = ' '.join(['%s=%s' % kv for kv in var['env'].items()] + var['words'])
+            indir = getin()
+            print('=== %s%s' % (cname, ' [%s]' % vt if vt else ''))
+            if indir is None:
+                print('    skipped: the original tools cannot prepare it')
+                continue
+            rdir = os.path.join(work, 'show', '%s.%d' % (cname.replace('/', '_'), vi))
+            r = run_case(cfg, indir, case, var, 'orig', None, rdir)
+            for st in r['steps']:
+                print('    ' + st.rstrip('\n').replace('\n', '\n    '))
+            print('    files afterwards:\n      ' + (r['tree'].replace('\n', '\n      ') or '(none)'))
+            bad = check_expect(case, r, rdir)
+            print('    expectations: ' + ('FAILED: ' + '; '.join(bad) if bad else 'all hold (%d)' % len(case['expect'])))
+            shutil.rmtree(rdir, ignore_errors=True)
+        return 0
     t0 = time.monotonic()
     same = {c: 0 for c in cands}
     bad = []

@@ -1,4 +1,4 @@
-Test inputs of the corpus of cas (compare/cas/progcfg.py, compare/casold/progcfg.py)
+Test inputs of the corpus of cas (compare/cas/corpus.py, compare/casold/corpus.py)
 ====================================================================================
 
 The corpus runs the original /bin/cas (under z8k-emu), the build of src/cmd/cas and the host build on the same inputs; messages, exit
