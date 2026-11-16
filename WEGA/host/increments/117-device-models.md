@@ -174,3 +174,11 @@ corpora of format, verify, copydisk, doscopy beyond the proof cases (120).
   check, CRC (sdlc transcribed, checked: CRC-CCITT), board 1/2 with the types each card takes, short circuit; the case
   field `device: eprom FILE TYPE [board=N] [short]`. The original pburn 2.1 runs against it (board query, menu, listing
   of an EPROM range). Next: the corpus of pburn (step 7).
+- 2026-11-16: step 7 done: corpus pburn (version 2.1, `src/cmd/pburn/2.1/pburn`): 29 blocks, every one run for board 1 and
+  board 2 alike (the generator; 49 cases; the blocks of one card only where the card differs: -V/-S, the types, the
+  2708, the 27512), every menu function (program from a binary and from an a.out file, byte and word mode, the program
+  modes and voltages, list, CRC, bytemode, EPROM to file, copy and verify, modify), the dialogue answers (r, s, the
+  warnings), the errors (invalid types on either card, short circuit, options), the programming error of a non-erased
+  EPROM. A bug of pburn found: a byte entered in bytemode or modify becomes 00 (sscanf %x into a char on the big-endian
+  Z8000). Two mutants found (one in the board-1 check, one in a message of both). Copy runs with one EPROM in the socket
+  (changing it is the operator's).

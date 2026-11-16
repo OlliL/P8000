@@ -1095,6 +1095,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/getud` (`main`) | a block with a wrong checksum is answered with CAN, not NAK: the 8-bit part ends the file instead of sending the block again | kept; not a corpus case (the model sends no wrong checksums) | `src/cmd/getud.c` |
 | `/bin/putud`, `/bin/getud` (`main`) | STX, the name and ETX are built in `bufw[20]`: a name longer than 18 characters is written behind it (UDOS allows 32) | kept; not a corpus case (layout) | `src/cmd/putud.c` |
 | `/bin/putud` (`main`) | -f without -b turns every newline byte of the data into a return, also in a procedure file sent with its descriptor | kept; the corpus case descriptor uses -f -b | `compare/putud/tests.txt` |
+| `/bin/pburn` (`modprog`: bytemode, modify) | the new value of a byte is read with `sscanf(buf, "%x", &zei)` into a `char`: `%x` stores an int; on the big-endian Z8000 the char gets its high byte (00), the value lands behind it: every byte entered becomes 00 | kept; corpus cases bytemode, modify | `compare/pburn/tests.txt` |
 | 8-bit coupling software (`K.ACT.S` ISNAME, ERROR) | NAMLEN is set only for a good name: the message of error 46H (invalid name) shows the new name cut to the length of the last good one | kept in the model (`host/z8k-emu/models/ud8.py`); corpus cases invalid-name of putud and getud | `UDOS/WEGA/K.ACT.S` |
 
 ## ar (reconstructed, byte-identical)

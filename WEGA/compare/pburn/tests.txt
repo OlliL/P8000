@@ -1,0 +1,653 @@
+# The cases of the corpus of pburn (compare/pburn/corpus.py: every block for board 1 and board 2); the format:
+# host/recon/casefile.py. The answers of the dialogue are the file `a` (stdin). The EPROM is chip.bin; $MK makes its
+# contents: python3 -c "..." (a pattern, or erased: FFH).
+# Where an expectation comes from: man = /usr/man/man1/pburn.1, src = src/cmd/pburn/2.1, k = the coupling software
+# (UDOS/WEGA/K.PROM.S, K.P8000.S: request P).
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== menu
+# man: pburn shows the board it found and its menu; q leaves it
+-- a
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+step: pburn
+stdin: a
+expect: output contains 'pburn - prom programmer board {board}'
+expect: output contains 'q - quit'
+
+== list
+# man: l lists an EPROM; src: "promtype [-ol hex]", the range from -o for -l bytes, "?(y/r/s/q)", y lists it
+-- a
+l
+e2716 -o 10 -l 20
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(i % 256 for i in range(0x800)))" > chip.bin
+step: pburn
+stdin: a
+expect: output contains '10 11 12 13 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f'
+expect: output contains '20 21 22 23 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f'
+
+== program
+# man: p programs a file into an EPROM; -B a binary file; src (progprom): erase check, write, CRC; k: the data go into the
+# EPROM (an erased one)
+-- a
+p
+data -B
+e2716 -o 0 -l 100
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(i * 7 % 256 for i in range(0x100)))" > data
+step: pburn
+stdin: a
+host: head -c 256 chip.bin | cmp - data && echo programmed
+expect: output contains 'program file data to prom e2716'
+expect: output contains 'programmed'
+expect2: output contains '(High Speed Program Mode Vpp=25 V)'
+
+== program-standard-speed-2
+# man: -S standard speed program mode, -V the programming voltage (board 2 only); k: in standard speed mode the EPROM is
+# read back after writing
+-- a
+p
+data -B
+e2732a -o 0 -l 100 -V 21 -S
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2732a board=2
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(i * 7 % 256 for i in range(0x100)))" > data
+step: pburn
+stdin: a
+host: head -c 256 chip.bin | cmp - data && echo programmed
+expect: output contains '(Standard Speed Program Mode Vpp=21 V)'
+expect: output contains 'programmed'
+
+== options-board-1-1
+# man: -V and -S belong to board 2; src (plpepr): on board 1 they are invalid options
+-- a
+l
+e2716 -S
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board=1
+step: pburn
+stdin: a
+expect: output contains '*** error - invalid options'
+
+== voltages-2
+# src (plpepr): -V 25, 21, 12 (12.5 V) and f (free); another value is an invalid option
+-- a
+p
+data -B
+e2716 -V 25
+q
+p
+data -B
+e2716 -V 12
+q
+p
+data -B
+e2716 -V f
+q
+p
+data -B
+e2716 -V 30
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board=2
+host: printf 'x' > data
+step: pburn
+stdin: a
+expect: output contains 'Vpp=25 V)'
+expect: output contains 'Vpp=12.5 V)'
+expect: output contains 'Vpp=free V)'
+expect: output contains '*** error - invalid options'
+
+== not-erased
+# src (progprom): the EPROM is checked first; k: erase check; not erased: warning "prom not erased", n: nothing written
+-- a
+p
+data -B
+e2716 -o 0 -l 10
+y
+n
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes([0x0f]) * 0x800)" > chip.bin
+host: printf 'abcdefghijklmnop' > data
+step: pburn
+stdin: a
+host: head -c 4 chip.bin | od -An -tx1
+expect: output contains '*** warning - prom not erased'
+expect: output contains '0f 0f 0f 0f'
+
+== program-error
+# k: a bit cannot go from 0 to 1 (the EPROM holds 00H): every byte is a program error (3) and a question; src: the
+# EPROM is not erased (warning, y), "program error Vcc=6 V" (y goes on, 4 times), then "display program error's
+# Vcc=5 V" (y reads the EPROM back and lists the differences)
+-- a
+p
+data -B
+e2716 -o 0 -l 4
+y
+y
+y
+y
+y
+y
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(0x800))" > chip.bin
+host: printf '\001\002\003\004' > data
+step: pburn
+stdin: a
+expect: output contains '*** warning - program error Vcc=6 V'
+expect: output contains "*** warning - display program error's Vcc=5 V"
+expect: output contains '0000:  01'
+
+== invalid-type-1
+# src (plpepr): board 1 takes the types up to e2764 (2708, 2716, 2732, 2732A, 2764): e27128 is an invalid prom type
+-- a
+l
+e27128
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board=1
+step: pburn
+stdin: a
+expect: output contains '*** error - invalid prom type'
+
+== invalid-type-2
+# k (ntyp): the new card does not take the 2708: the 8-bit part answers 1, src: "invalid prom type"
+-- a
+l
+e2708
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2708 board=2
+step: pburn
+stdin: a
+expect: output contains '*** error - invalid prom type'
+
+== short-circuit
+# k: the card reports a short circuit (2); src: "short-circuit prom"
+-- a
+l
+e2716 -l 10
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board} short
+step: pburn
+stdin: a
+expect: output contains 'short-circuit prom'
+
+== really
+# src (plpepr): e2732, e2764, e27128 when programming: "is prom really e2764, not e2764a ?", y goes on
+-- a
+p
+data -B
+e2764 -l 10
+y
+q
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2764 board={board}
+host: printf 'x' > data
+step: pburn
+stdin: a
+expect: output contains '*** warning - is prom really e2764, not e2764a ?'
+
+== bad-options
+# src (inopte, plpepr): an unknown option, an option twice, a range beyond the EPROM, an unknown type
+-- a
+l
+e2716 -x 1
+e2716 -o 1 -o 2
+e2716 -o 900
+e9999
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+step: pburn
+stdin: a
+expect: output contains '*** error - multiple defined'
+expect: output contains '*** error - invalid options'
+
+== crc
+# man: t, the CRC of an EPROM; src: "crc_checksum:" and whether it is erased
+-- a
+t
+e2716
+y
+q
+t
+e2716 -l 10
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes([0xff]) * 0x10 + bytes(range(256)) * 7 + bytes(0xf0))" > chip.bin
+step: pburn
+stdin: a
+expect: output contains 'prom not erased'
+expect: output contains 'prom erased'
+expect: output contains 'crc_checksum:'
+
+== bytemode
+# man: b, bytemode: one byte at a time; src (modprog): "address to program ?", the byte read from the EPROM, a new value
+# is programmed, q ends; then the CRC. A bug of pburn: the value is read by sscanf("%x") into a char, the Z8000 is
+# big-endian: the high byte of the int (00) lands in the char, the 55 behind it; 00 is programmed
+-- a
+b
+e2716
+y
+10
+55
+q
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+step: pburn
+stdin: a
+host: od -An -tx1 -j 16 -N 2 chip.bin
+expect: output contains 'address to program ?'
+expect: output contains '0010:	ff'
+expect: output contains ' 00 ff'
+
+== bytemode-2708
+# src (plpepr): bytemode with the 2708 is not possible
+-- a
+b
+e2708
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2708 board={board}
+step: pburn
+stdin: a
+expect: output contains 'bytemode prom e2708 not possible'
+
+== file
+# man: f, an EPROM into a file; -B a binary file; src: "?(y/m/l/q)", after the file "change to next prom?"
+-- a
+f
+e2716 -o 0 -l 20
+out -B
+y
+n
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(i % 256 for i in range(0x800)))" > chip.bin
+step: pburn
+stdin: a
+host: od -An -tx1 out | head -2
+expect: output contains '00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f'
+expect: output contains 'change to next prom?'
+
+== program-aout
+# man: a file of the types S_MAGIC1 ... X_MAGIC4 (a.out; here /bin/sync of the tree, a file that does not change); without
+# -B the code section of segment 0 is programmed; a Z8000 program is word-oriented: -w (src readfile: in byte mode "break word-oriented files"), the low bytes first
+-- a
+p
+prog -w
+e2716
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: cp $WEGA_ROOT/bin/sync prog
+step: pburn
+stdin: a
+expect: output contains 'program file prog to prom e2716'
+expect: output contains 'low byte'
+
+== aout-bytes
+# src (readfile): a Z8000 a.out file (not an 8-bit one, X_MAGIC) in byte mode: warning "break word-oriented files"
+-- a
+p
+prog
+e2716
+y
+n
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: cp $WEGA_ROOT/bin/sync prog
+step: pburn
+stdin: a
+expect: output contains '*** warning - break word-oriented files'
+
+== verify
+# src (program, ready): v compares the file with the EPROM
+-- a
+p
+data -B
+e2716 -l 10
+v
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(range(16)) + bytes([0xff]) * 0x7f0)" > chip.bin
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(range(8)) + bytes([9]) * 8)" > data
+step: pburn
+stdin: a
+expect: output contains 'verify e2716 and data'
+expect: output contains '0008:  09'
+expect: output contains '000f:  09'
+
+== word
+# man: -w a word-oriented file: the even bytes into one EPROM (2.1: low byte, high byte)
+-- a
+p
+data -B -w
+e2716 -l 4
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: printf 'AaBbCcDd' > data
+step: pburn
+stdin: a
+host: head -c 4 chip.bin; echo
+expect: output contains 'low byte'
+expect: output contains 'abcd'
+
+== copy
+# man: c copies EPROMs (source, then destination in the same socket); here one EPROM: it is copied onto itself (the
+# change of the EPROM is the operator's); src (copy): read the source, "change to destination", erase check
+-- a
+c
+e2716 -l 10
+e2716 -l 10
+y
+y
+y
+n
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(range(16)) + bytes([0xff]) * 0x7f0)" > chip.bin
+step: pburn
+stdin: a
+expect: output contains 'read source promtyp'
+expect: output contains 'change to destination promtyp'
+expect: output contains '*** warning - prom not erased'
+
+== copy-verify
+# src (copy): v compares source and destination (here the same EPROM: no difference)
+-- a
+c
+e2716 -l 10
+e2716 -l 10
+v
+y
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(range(16)) + bytes([0xff]) * 0x7f0)" > chip.bin
+step: pburn
+stdin: a
+expect: output contains 'ready to verify?'
+
+== types-1
+# k (typ): the old card takes 2708, 2716, 2732, 2732A, 2764; src: the others are invalid prom types on board 1
+-- a
+l
+e2708 -l 10
+y
+q
+l
+e2716 -l 10
+y
+q
+l
+e2732 -l 10
+y
+q
+l
+e2732a -l 10
+y
+q
+l
+e2764 -l 10
+y
+q
+l
+e2764a
+l
+e27128a
+l
+e27256
+l
+e27512
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board=1
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(i % 256 for i in range(0x800)))" > chip.bin
+step: pburn
+stdin: a
+expect: output contains 'listing prom e2708'
+expect: output contains 'listing prom e2764'
+expect: output contains '*** error - invalid prom type'
+
+== types-2
+# k (ntyp): the new card takes every type but the 2708
+-- a
+l
+e2716 -l 10
+y
+q
+l
+e2732 -l 10
+y
+q
+l
+e2732a -l 10
+y
+q
+l
+e2764a -l 10
+y
+q
+l
+e27128 -l 10
+y
+q
+l
+e27128a -l 10
+y
+q
+l
+e27256 -l 10
+y
+q
+l
+e27512 -l 10
+y
+q
+l
+e2708 -l 10
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e27512 board=2
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(i % 256 for i in range(0x10000)))" > chip.bin
+step: pburn
+stdin: a
+expect: output contains 'listing prom e27128a'
+expect: output contains 'listing prom e27512'
+expect: output contains '*** error - invalid prom type'
+
+== e27512-2
+# src (readprom, promcrc): a whole 27512 (64K) is handled as FFFFH bytes and the byte at FFFFH alone (kffff); the CRC
+# of a whole erased 27512
+-- a
+t
+e27512
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e27512 board=2
+step: pburn
+stdin: a
+expect: output contains 'prom erased'
+expect: output contains 'end ffff'
+
+== e2708-1
+# src (plpepr): programming a 2708 takes the whole EPROM: another range gives the warning and is set to 0, 400H;
+# k: the 2708 only on the old card
+-- a
+p
+data -B
+e2708 -o 10 -l 10
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2708 board=1
+host: printf 'abc' > data
+step: pburn
+stdin: a
+host: head -c 3 chip.bin; echo
+expect: output contains '*** warning - set address to 0x0000 and set length to 0x0400 for prom e2708'
+expect: output contains 'abc'
+
+== modify
+# src (program, ready: m; modprog): the buffer of the file is changed before programming ("address to modify ?"; q at
+# the value goes back to the address, q at the address ends it); the bug of sscanf("%x") into a char: 41 becomes 00
+-- a
+p
+data -B
+e2716 -l 4
+m
+2
+41
+q
+q
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: printf 'wxyz' > data
+step: pburn
+stdin: a
+host: od -An -tx1 -N 4 chip.bin
+expect: output contains 'address to modify ?'
+expect: output contains '77 78 00 7a'
+
+== list-repeat-skip
+# src (ready): after a listing the next range is offered; r goes back and lists the same range again, s skips the
+# offered range
+-- a
+l
+e2716 -l 10
+y
+r
+y
+s
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(i % 256 for i in range(0x800)))" > chip.bin
+step: pburn
+stdin: a
+expect: output contains '0000:	00 01 02'
+expect: output contains '0020:	20 21 22'
