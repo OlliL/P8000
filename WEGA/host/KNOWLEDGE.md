@@ -672,7 +672,9 @@ Validation:
 - `war.py` ar reader: `list`, `extract`.
 - `cpio_be.py` reader for big-endian binary cpio archives.
 - `wegafs.py` the WEGA file system (System III) in an image (floppy, partition): info, ls, cat, extract (the owners in
-  DIR.owners); built like `udosfs.py`; the same trees as `mame/tools/wegafs.py` on all 17 WEGA 3.1 disks. The
+  DIR.owners), format (byte for byte WEGA's /etc/mkfs, measured for 100 ... 65000 blocks: BLOCKS/25 i-node blocks, m/n
+  1 72, s_tfree one too high), put, mkdir (valid: WEGA's fsck finds nothing; not the kernel's choice of blocks); built
+  like `udosfs.py`; the same trees as `mame/tools/wegafs.py` on all 17 WEGA 3.1 disks. The
   installation floppies are such file systems; their files carry the owners of the original (e.g. uucp: uid 2,
   set-user-id).
 - `sstrings.py` NUL-terminated strings from the data sections.
@@ -1132,6 +1134,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/tar` (`main`) | catching TERM is commented out (`/* WOFUER ??? */`): c, r, u end cleanly on HUP, INT, QUIT (the archive closed), TERM kills tar and leaves the archive without its end | kept; corpus case signal-term | `src/cmd/tar.c` |
 | `/bin/tar` (`doxtract`) | x as a user who is not root: the file is made, then `chown` to the owner of the archive (allowed: the owner may give a file away), then `utime` fails (not the owner any more): the file belongs to the other user and keeps the time of its extraction | kept; corpus case user-extract-gives-away | `src/cmd/tar.c` |
 | `/bin/ar` (`ar.h`) | `ar_uid`, `ar_gid` of the member header are `char`: a uid or gid above 127 is kept modulo 256 and printed negative by tv (uid 200: `-56`) | kept (the format of the archive); corpus case user | `src/head/ar.h`, `src/cmd/ar.c` |
+| `/etc/mkfs` (1.5, no source; measured under z8k-emu) | the block it takes for the root directory is not subtracted from s_tfree: the super block counts one free block too many (System III mkfs.c subtracts it in alloc) | kept in `host/tools/wegafs.py` format (byte-identical with mkfs for 100 ... 65000 blocks) | `host/tools/wegafs.py` |
 | `/bin/pburn` (2.1, `pb.devud.c`) | `del_pro` sets `del`, which nothing reads; INT during a request only prints "not interruption, ... please wait", but the read of /dev/ud it interrupts ends with EINTR (at the start: `header` fails, pburn ends without its menu) | kept; corpus case signal-int-in-work | `src/cmd/pburn/2.1/pb.devud.c` |
 | `/bin/format`, `verify`, `copydisk` (1.5) | `(st_mode & (S_IFCHR \| S_IFBLK)) == 0` takes a directory (S_IFDIR shares a bit with S_IFBLK) for a special file; only the major number then refuses it | kept | `src/cmd/format/1.5/format.c` |
 | 8-bit coupling software (`K.BLK.S` BLKFO) | COPYDISK formats every destination track before it reads the source track: when the source cannot be read, the first destination track is formatted already | kept in the model; corpus case source-not-ready of copydisk | `compare/copydisk/tests.txt` |

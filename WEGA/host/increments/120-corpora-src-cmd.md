@@ -132,3 +132,6 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   gives every case one; corpus option INSTALLED (the candidate at its place in the tree, ALIASES too); a step whose
   program is a shell script runs it with /bin/sh ($0 the path). Checked with a corpus made for it (mfs.sh at /etc/mfs,
   /etc/umfs; a changed copy is found). Measured on the way: WEGA's mount keeps its table in /etc/mnttab (in the tree; /etc/mtab is not used).
+- 2026-11-16: step b for mfs: host/tools/wegafs.py format (byte-identical with WEGA's /etc/mkfs for 100, 360, 720, 1440,
+  2880, 5000, 20000, 65000 blocks; mkfs measured under z8k-emu: BLOCKS/25 i-node blocks, m/n 1 72, s_tfree one too high,
+  a quirk), put and mkdir (direct, single and double indirect blocks; WEGA's /etc/fsck passes the result). Next: c.
