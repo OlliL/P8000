@@ -834,9 +834,18 @@ static uint8_t con_sgtty[6] = { 13, 13, '#', '@', 0, 010 | 020 };	/* B9600, eras
 static uint8_t con_tchars[6] = { 0177, 034, 021, 023, 004, 0377 };
 static uint8_t con_termio[18] = { 0x05, 0x26, 0x00, 0x05, 0x00, 0xbd, 0x00, 0x3b, 0, 0177, 034, '#', '@', 004, 0, 0, 0, 0 };
 
+/* the blocks of 512 bytes of a floppy by its format (src/uts/dev/fd.c fdblocks: the upper 4 bits of the minor) */
+static const int fdblocks[16] = { 0, 500, 640, 320, 800, 1280, 1440, 1600, 720, 360, 720 };
+
 static int devioctl(Z8K *c, int fd, unsigned cmd, Ad p)
 {
 	int e = devfd(fd);
+	if (e >= 0 && devent[e].major == 1) {	/* the floppy driver (fd.c fdioctl): SHOWFD, else EINVAL */
+		int b = fdblocks[(devent[e].minor >> 4) & 15];
+		if (cmd != (('f' << 8) | 0) || !b) return -EINVAL;
+		gputw(c, p, b);
+		return 0;
+	}
 	if (e < 0 || e != console_ent())
 		return -ENOTTY;
 	switch (cmd) {

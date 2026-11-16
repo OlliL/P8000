@@ -33,6 +33,12 @@ Every step and host line runs with umask 022.
                       has exit=-N with the WEGA number N
                       (every step starts with INT and QUIT at their default and no signal blocked, as from a
                       terminal)
+  operator: [at 'TEXT'] [insert driveN FILE] [type 'TEXT']
+                      (after a step, any number, in order) what the operator does when TEXT has appeared in the
+                      output of the step (after the text of the action before; without at: when the step starts):
+                      puts the disk FILE into drive N (the disk stays in it for the next steps),
+                      types TEXT (\n a newline) on the standard input; the stdin of the step stays open until the
+                      last action (then a signal: comes, if any)
   user: UID GID       the steps run as the WEGA user UID, group GID (z8k-emu Z8K_UID: the kernel's permission rules,
                       root is 0; the owners of the files: those of the case belong to UID, GID, those of ROOT to root;
                       host/z8k-emu/README.md, "Users"); the candidate belongs to root as the original in the tree; a
@@ -161,9 +167,27 @@ def parse_case(text, where):
             argv = shlex.split(v)
             if not argv:
                 raise CaseError('%s:%d: empty step' % (where, n))
-            c['steps'].append({'kind': 'step', 'argv': argv, 'stdin': None, 'env': {}, 'signal': None})
+            c['steps'].append({'kind': 'step', 'argv': argv, 'stdin': None, 'env': {}, 'signal': None, 'ops': []})
         elif k == 'host':
             c['steps'].append({'kind': 'host', 'line': v})
+        elif k == 'operator':
+            ws = shlex.split(v)
+            op = {'at': None, 'insert': None, 'type': None}
+            ok = len(ws) >= 2
+            i = 2 if ws and ws[0] == 'at' else 0
+            while ok and i < len(ws):
+                if ws[i] == 'insert' and i + 2 < len(ws) + 0 and re.match(r'drive[0-3]$', ws[i + 1]):
+                    op['insert'] = (int(ws[i + 1][5:]), ws[i + 2])
+                    i += 3
+                elif ws[i] == 'type' and i + 1 < len(ws):
+                    op['type'] = ws[i + 1].encode('latin-1').decode('unicode_escape').encode('latin-1')
+                    i += 2
+                else:
+                    ok = False
+            if not ok or not c['steps'] or c['steps'][-1]['kind'] != 'step':
+                raise CaseError("%s:%d: operator: [at 'TEXT'] [insert driveN FILE] [type 'TEXT'] (after a step)" % (where, n))
+            op['at'] = ws[1] if ws[0] == 'at' else None
+            c['steps'][-1]['ops'].append(op)
         elif k == 'signal':
             m = re.match(r"([A-Z0-9]+)\s+(after\s+(\d+(?:\.\d+)?)|at\s+'([^']*)')$", v)
             if not c['steps'] or c['steps'][-1]['kind'] != 'step':
@@ -244,11 +268,12 @@ def case_hash(d):
 SPAWN = threading.Lock()
 
 
-def spawn_signal(args, cwd, env, stdin, timeout, sig):
-    """spawn with a signal to the step's process group (as ^C of a terminal reaches the job): sig = (WEGA number,
+def spawn_signal(args, cwd, env, stdin, timeout, sig, ops=()):
+    """spawn with the operator's actions (ops: in order, each when its text has appeared in stdout or stderr after the
+    one before: a disk inserted into a drive, text typed) and then a signal to the step's process group (as ^C of a terminal reaches the job): sig = (WEGA number,
     seconds or None, text or None): after the seconds, or when the text has appeared in stdout or stderr. Stdin (the
     file's bytes) stays open until the signal is sent: a program that reads on waits for it."""
-    w, secs, text = sig
+    w, secs, text = sig or (None, None, None)
     with SPAWN:
         p = subprocess.Popen(args, cwd=cwd, env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE, start_new_session=True)
@@ -275,13 +300,41 @@ def spawn_signal(args, cwd, env, stdin, timeout, sig):
     except BrokenPipeError:
         pass
     end = time.time() + timeout
+    pos = {f: 0 for f in bufs}
+    for op in ops:
+        t = (op['at'] or '').encode('latin-1')
+        with cond:
+            def seen():
+                for f in bufs:
+                    i = bytes(bufs[f]).find(t, pos[f])
+                    if i >= 0:
+                        pos[f] = i + len(t)
+                        return True
+                return p.poll() is not None
+            if op['at']:
+                cond.wait_for(seen, max(end - time.time(), 0))
+        if p.poll() is not None or time.time() >= end:
+            break
+        if op['insert']:	# the disk changed: the drive's link points to the new one
+            n, f = op['insert']
+            link = cwd + '.drive%d' % n
+            os.symlink(os.path.join(cwd, f), link + '.new')
+            os.replace(link + '.new', link)
+        if op['type']:
+            try:
+                p.stdin.write(op['type'])
+                p.stdin.flush()
+            except BrokenPipeError:
+                pass
     with cond:
-        if secs is not None:
+        if w is None:
+            pass
+        elif secs is not None:
             cond.wait_for(lambda: p.poll() is not None, secs)
         else:
             cond.wait_for(lambda: p.poll() is not None or any(text.encode('latin-1') in bytes(b) for b in bufs.values()),
                           max(end - time.time(), 0))
-    if p.poll() is None:
+    if w is not None and p.poll() is None:
         try:
             os.killpg(p.pid, host_signal(w))
         except ProcessLookupError:
@@ -301,9 +354,9 @@ def spawn_signal(args, cwd, env, stdin, timeout, sig):
     return p.returncode, bytes(bufs[p.stdout]), bytes(bufs[p.stderr])
 
 
-def spawn(args, cwd, env, stdin=None, timeout=600, sig=None):
-    if sig:
-        return spawn_signal(args, cwd, env, stdin, timeout, sig)
+def spawn(args, cwd, env, stdin=None, timeout=600, sig=None, ops=()):
+    if sig or ops:
+        return spawn_signal(args, cwd, env, stdin, timeout, sig, ops)
     with SPAWN:
         p = subprocess.Popen(args, cwd=cwd, env=env, stdin=stdin or subprocess.DEVNULL, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
@@ -393,7 +446,10 @@ def write_devtab(case, rd):
             continue
         if ws[0].startswith('drive'):
             n = int(ws[0][5:])
-            img = os.path.join(rd, ws[1])
+            img = rd + '.drive%d' % n	# the drive: a symbolic link to the disk in it (operator: insert changes it)
+            if os.path.lexists(img):
+                os.remove(img)
+            os.symlink(os.path.join(rd, ws[1]), img)
             drives[n] = img
             if ws[2:] == ['ro']:
                 ro.append(n)
@@ -555,7 +611,8 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         args = ['sh', '-c', 'umask 022; exec "$@"', 'sh'] + args	# every step with umask 022 (the modes of new files)
         fin = open(os.path.join(rd, st['stdin']), 'rb') if st['stdin'] else None
         try:
-            rc, out, err = spawn(args, rd, e, fin, getattr(cfg, 'TIMEOUT', 600), st.get('signal'))
+            rc, out, err = spawn(args, rd, e, fin, getattr(cfg, 'TIMEOUT', 600), st.get('signal'),
+                                 st.get('ops', ()))
             if rc < 0 and rc != -999:	# killed by a signal: its WEGA number (the host's numbers differ)
                 rc = -wega_signal(-rc)
         finally:

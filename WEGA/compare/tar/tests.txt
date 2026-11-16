@@ -1,9 +1,7 @@
 # The cases of the corpus of tar (compare/tar/corpus.py); the format: host/recon/casefile.py. Every case starts with
 # all its files at the time 1988-03-04 05:06:07 UTC (the archive holds the time of change). The case directory is the
 # guest's /tmp/NAME (corpus.py, IN_TMP): tar finds it by /bin/pwd. Where an expectation comes from: man =
-# /usr/man/man1/tar.1, src = src/cmd/tar.c. Not cases: the default device /dev/tardev and the drives 0 and 1 (need a
-# device model), the change of disks (ioctl SHOWFD; the emulator has none: BLOCKS 0), a name that is no file
-# or directory (a device: the emulator has no /dev of the guest).
+# /usr/man/man1/tar.1, src = src/cmd/tar.c. The devices: the cases disks-* (the floppy model of the emulator).
 
 # ---- the public interface (man page) ----------------------------------------------------------------------------
 
@@ -518,4 +516,60 @@ host: chmod 644 f1 && echo changed > f1 && chmod 444 f1
 step: tar xf a.tar
 host: cat f1
 expect: output contains 'one'
+
+# ---- the disks (src: inBL, diskend, readarchiv; the driver: ioctl SHOWFD, src/uts/dev/fd.c fdblocks) ----------------
+# On a floppy device tar asks the driver for the size of the disk (SHOWFD: 360 blocks for format 9, 48ss9) and spreads
+# the archive over several disks: at the end of one it waits 2 seconds (reading away what was typed), prints "insert
+# next disk : ", waits for a newline and opens the device again. The operator (operator:) puts the next disk in and
+# types the newline.
+
+== disks-write-read
+# src: c of 500 blocks of data onto disks of 360: two disks; the blocks used are counted at the end; t and x read them
+# back with the same change of disks
+-- case
+user: 100 10
+device: drive1 d1
+host: python3 -c "open('big','wb').write(bytes(i % 251 for i in range(250000)))" && : > d1 && : > d2 && touch -d '1988-03-04 05:06:07 UTC' big
+step: tar cvf /dev/rfd148ss9 big
+operator: at 'insert next disk : ' insert drive1 d2 type '\n'
+host: wc -c < d1; wc -c < d2; mv big big.orig
+step: tar tvf /dev/rfd148ss9
+operator: insert drive1 d1
+operator: at 'insert next disk : ' insert drive1 d2 type '\n'
+step: tar xf /dev/rfd148ss9
+operator: insert drive1 d1
+operator: at 'insert next disk : ' insert drive1 d2 type '\n'
+host: cmp big big.orig && echo same
+expect: output contains 'insert next disk : '
+expect: output contains 'allocated space on  2 disks'
+expect: output contains 'same'
+
+== disks-capacity
+# src (inBL, dflag): the capacity the driver gives, by the format of the device (fd.c fdblocks)
+-- f1
+one
+-- case
+user: 100 10
+device: drive1 d1
+host: : > d1
+step: tar cvdf /dev/rfd148ss9 f1
+step: tar cvdf /dev/rfd196ds9 f1
+expect: output contains 'tar: disk capacity 360 blocks'
+expect: output contains 'tar: disk capacity 1440 blocks'
+
+== disks-default-device
+# man, src: without f the archive is /dev/tardev (WEGA's /dev: drive 1, 96ds9); the key 0 or 1 is /dev/rfd0, /dev/rfd1
+-- f1
+one
+-- case
+user: 100 10
+device: drive0 d0
+device: drive1 d1
+host: : > d0 && : > d1
+step: tar cv f1
+step: tar tv
+step: tar cv0 f1
+step: tar tv0
+host: wc -c < d0; wc -c < d1
+expect: output contains 'free    space on disk: 1436 from 1440 blocks'
 

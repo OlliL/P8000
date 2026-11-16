@@ -123,3 +123,7 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   The runner: the candidate belongs to root (as the original in the tree); a native candidate does not run user cases.
   The emulator: set-id also for the first program of a step, link and the rename of a directory with the rights given
   for the moment.
+- 2026-11-16: the floppy for tar (owner): z8k-emu answers ioctl SHOWFD for the floppy devices (fd.c fdblocks); the
+  runner makes every drive a link to the disk in it and has the field `operator: [at 'TEXT'] [insert driveN FILE]
+  [type 'TEXT']` (the disk changed, the answer typed when the program asks). tar: disks-write-read (an archive over two
+  disks of 360 blocks: c, t, x), disks-capacity, disks-default-device (/dev/tardev, the keys 0 and 1).

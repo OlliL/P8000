@@ -144,6 +144,13 @@ of /) is ROOT, and ROOT lists `tmp` with its inode, so that pwd (and tar, which 
 directory below it (without `Z8K_TMPDIR` pwd walks the host tree and prints a wrong path). Details: `../KNOWLEDGE.md`,
 section "Oracle: z8k-emu".
 
+## Floppies
+
+A floppy device of the guest /dev (major 1: fd, rfd) is the image file of its drive (devtab model line `image:`; the
+corpus runner makes it a symbolic link to the disk in the drive, which the operator changes). ioctl SHOWFD
+(('f'<<8)|0) gives the blocks of 512 bytes of the format in the minor (src/uts/dev/fd.c fdblocks: 500, 640, 320, 800,
+1280, 1440, 1600, 720, 360, 720 for the formats 1 ... 10), another ioctl or format 0 EINVAL (tar: the size of a disk).
+
 ## Signals
 
 The model of the kernel (`src/uts/sys/sig.c` psig, `sys4.c` ssig, `machdep.c` sendsig and sysiret), in `wega.c`:
