@@ -58,9 +58,16 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
     make -C WEGA/host/z8k-emu            # builds z8k-emu
     make -C WEGA/host check WEGA=<WEGA_ROOT>      # the host tools without a corpus: cas, ld
     make -C WEGA/host checkall WEGA=<WEGA_ROOT>   # on a copy of the git files: make in src, make install into an empty root,
-                                                  # every file there against WEGA; the corpora; check (16 min)
-    make -C WEGA/host checkall WEGA=<WEGA_ROOT> NAME=x PATCH=/abs/file.diff   # a variant (patch on the git files, or a git ref
-                                                  # from "git stash create") in /tmp/wega_check.x; runs with other names in parallel
+                                                  # every file there against WEGA; the corpora; check (about 20 min; in /tmp/wega_check)
+    make -C WEGA/host checkall WEGA=<WEGA_ROOT> NAME=x                        # the same in /tmp/wega_check.x: runs with other
+                                                  # names (and with the unnamed run) at the same time; same as CHECK_NAME=x
+    make -C WEGA/host checkall WEGA=<WEGA_ROOT> NAME=x PATCH=/abs/file.diff   # a variant: the git files plus a patch, or a git
+                                                  # ref (e.g. from "git stash create"); same as CHECK_PATCH=...; the
+                                                  # working tree is copied once at the start and may change during the run
+                                                  # Calling host/tools/checkall.sh directly: WEGA=, CHECK_NAME=, CHECK_PATCH=.
+                                                  # One run per directory (a second one in it stops with exit status 2).
+                                                  # A run that passed removes its directory; a failed one keeps it with the
+                                                  # logs (CHECK_KEEP=1 keeps it always; -b keeps the install tree for coverage.py)
     make -C WEGA/host checkall-nocache WEGA=<WEGA_ROOT>   # the same, the corpora without their store (WEGA/.corpus)
     host/tools/corpus.sh [--wega|--host] [PROG ...]   # the corpus of a program (compare/PROG/corpus.py, host/recon/corpusrun.py): the original against every candidate
     host/tools/coverage.py                            # src/COVERAGE.md: every file of the WEGA root, its source in src/, status (exact, partial, sys3, todo), compiler, libc (needs the install tree of checkall.sh -b)

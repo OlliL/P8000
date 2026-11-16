@@ -20,7 +20,8 @@
 # its keys are by content). A second run in a directory that a living run uses stops with exit status 2.
 #
 # Environment: WEGA (the WEGA 3.1 tree), CHECK_TMP (default /tmp/wega_check, or /tmp/wega_check.NAME, a local disk),
-# CHECK_NAME, CHECK_PATCH, MAKEJOBS (default -j<cores>), CORPUS_NOCACHE=1 (the corpora ignore the store: make checkall-nocache).
+# CHECK_NAME, CHECK_PATCH, MAKEJOBS (default -j<cores>), CORPUS_NOCACHE=1 (the corpora ignore the store: make checkall-nocache),
+# CHECK_KEEP=1 (keep CHECK_TMP after a run that passed; it is removed then, and kept after a failure or with -b).
 
 HERE=`cd \`dirname $0\` && pwd`
 REPO=`cd $HERE/../.. && pwd`
@@ -105,7 +106,12 @@ finish() {
 		tail -1 $T/tmpclash.txt
 	fi
 	rm -f $LOCK
-	[ $FAIL = 0 ] && echo ALL OK || echo FAILED
+	# a run that passed leaves nothing behind (not with -b: coverage.py reads its install tree; not with CHECK_KEEP=1);
+	# a run that failed keeps CHECK_TMP for the logs
+	if [ $FAIL = 0 ] && [ $BUILDONLY = 0 ] && [ -z "$CHECK_KEEP" ]; then
+		rm -rf $T
+	fi
+	[ $FAIL = 0 ] && echo ALL OK || echo "FAILED (the logs are in $T)"
 	exit $FAIL
 }
 
