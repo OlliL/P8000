@@ -252,6 +252,11 @@ if one of those files changes, the result is made again.
 The original is always run **twice**; only if both runs agree is the result kept. A case whose original gives different
 results each time is reported as `UNSTABLE` — it would not be a fair test.
 
+A change of the emulator or the runner changes every key, so old entries would pile up. Every use of an entry sets its
+time; a `checkall` that passed removes everything its corpora did not use (`host/tools/corpus_prune.py`; not while
+another corpus run is going on, not with `checkall-nocache`). By hand: `corpus_prune.py STAMPFILE -n` counts what is
+older than STAMPFILE.
+
 ---
 
 ## 6. How a case runs, step by step

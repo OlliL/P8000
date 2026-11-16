@@ -258,6 +258,11 @@ Abhängigkeiten**); ändert sich eine davon, wird das Ergebnis neu gemacht.
 Das Original läuft immer **zweimal**; nur wenn beide Läufe übereinstimmen, wird das Ergebnis behalten. Ein Fall, dessen
 Original jedes Mal etwas anderes liefert, wird als `UNSTABLE` gemeldet – er wäre kein fairer Test.
 
+Eine Änderung am Emulator oder am Runner ändert jeden Schlüssel, alte Einträge würden sich ansammeln. Jede Benutzung
+setzt die Zeit eines Eintrags; ein `checkall`, der durchläuft, löscht alles, was seine Korpora nicht benutzt haben
+(`host/tools/corpus_prune.py`; nicht, solange ein anderer Korpuslauf läuft, nicht bei `checkall-nocache`). Von Hand:
+`corpus_prune.py STEMPELDATEI -n` zählt, was älter als STEMPELDATEI ist.
+
 ---
 
 ## 6. Wie ein Fall abläuft, Schritt für Schritt

@@ -68,6 +68,8 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
                                                   # One run per directory (a second one in it stops with exit status 2).
                                                   # A run that passed removes its directory; a failed one keeps it with the
                                                   # logs (CHECK_KEEP=1 keeps it always; -b keeps the install tree for coverage.py)
+                                                  # A run that passed prunes the corpus store WEGA/.corpus: what its
+                                                  # corpora did not use goes (host/tools/corpus_prune.py)
     make -C WEGA/host checkall-nocache WEGA=<WEGA_ROOT>   # the same, the corpora without their store (WEGA/.corpus)
     host/tools/corpus.sh [--wega|--host] [PROG ...]   # the corpus of a program (compare/PROG/corpus.py, host/recon/corpusrun.py): the original against every candidate
     host/tools/coverage.py                            # src/COVERAGE.md: every file of the WEGA root, its source in src/, status (exact, partial, sys3, todo), compiler, libc (needs the install tree of checkall.sh -b)

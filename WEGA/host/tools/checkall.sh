@@ -106,6 +106,11 @@ finish() {
 		tail -1 $T/tmpclash.txt
 	fi
 	rm -f $LOCK
+	# a run that passed has used every entry of the store that is still made: the rest goes (host/tools/corpus_prune.py;
+	# not without the store, CORPUS_NOCACHE: it uses none; not while another run's corpusrun.py runs)
+	if [ $FAIL = 0 ] && [ $BUILDONLY = 0 ] && [ -z "$CORPUS_NOCACHE" ] && [ -f $T/store.stamp ]; then
+		python3 $REPO/host/tools/corpus_prune.py $T/store.stamp --store $REPO/.corpus
+	fi
 	# a run that passed leaves nothing behind (not with -b: coverage.py reads its install tree; not with CHECK_KEEP=1);
 	# a run that failed keeps CHECK_TMP for the logs
 	if [ $FAIL = 0 ] && [ $BUILDONLY = 0 ] && [ -z "$CHECK_KEEP" ]; then
@@ -228,6 +233,7 @@ stamp '3 emulator tests'
 # same inputs (the original runs once)
 CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
+touch $T/store.stamp	# the store: what the corpora of this run do not use is older than this (corpus_prune.py in finish)
 echo "corpora start: load `cut -d' ' -f1-3 /proc/loadavg`" >> $T/timing.log
 for n in $CORP; do
 	CORPUS_DB=$REPO/.corpus CORPUS_TMP=$T/corpus_$n CORPUS_OPTS="-k $CORPUS_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &

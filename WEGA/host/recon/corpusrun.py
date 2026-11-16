@@ -31,7 +31,9 @@ Every step and host line runs with umask 022.
                       printed do not change between the runs
   signal: SIG after SECONDS | signal: SIG at 'TEXT'
                       (after a step) the signal SIG (a WEGA name: INT QUIT ... USR1, or a number) to the process group
-                      of the step, as ^C of a terminal: after SECONDS, or when TEXT has appeared in its output; the
+                      of the step, as ^C of a terminal: after SECONDS (and when every process of the step is
+                      blocked, asleep in a system call: not while it starts under load), or when TEXT has
+                      appeared in its output; the
                       stdin of the step stays open until then (a program that reads waits). A step killed by a signal
                       has exit=-N with the WEGA number N
                       (every step starts with INT and QUIT at their default and no signal blocked, as from a
@@ -58,7 +60,8 @@ The files of the tree (ROOT) a run or a preparation reads through the emulator a
 the result: a result or prepared input whose files have changed since is made again; the candidate's key holds them too.
 ROOT_FILES and prep_files remain for files read outside the emulator.
 Store (WEGA/.corpus, or CORPUS_DB): results/orig/KEY (the original's result; computed twice, kept only when both are
-equal), results/ok/KEY (a candidate was identical), locks/. Keys: case (case file and in/ by names and contents) + variant +
+equal), results/ok/KEY (a candidate was identical), inputs/KEY (prepared starting files), locks/. Every use sets the
+time of an entry: host/tools/corpus_prune.py removes what a full run of checkall has not used. Keys: case (case file and in/ by names and contents) + variant +
 original binary + ROOT_FILES + emulator + this runner -> original; + candidate binary + DEPENDS -> candidate. Written by rename;
 one run computes a key at a time (flock).
 Output: one line per differing case (with the differing lines), then per candidate "NAME [CAND]: N of M inputs identical";
@@ -271,6 +274,30 @@ def case_hash(d):
 SPAWN = threading.Lock()
 
 
+def group_waiting(pgid):
+    """every process of the process group sleeps (blocked in a system call: an open of a FIFO, a read, a wait)"""
+    states = []
+    for d in os.listdir('/proc'):
+        if d.isdigit():
+            try:
+                f = open('/proc/%s/stat' % d).read()
+            except OSError:
+                continue
+            w = f[f.rindex(')') + 2:].split()
+            if int(w[2]) == pgid:
+                states.append(w[0])
+    return bool(states) and all(x in 'SDtT' for x in states)
+
+
+def wait_blocked(p, end):
+    """until the step's process group has been asleep twice 0.2 s apart (a signal then meets the program where it
+    waits, not while it starts under load)"""
+    calm = 0
+    while time.time() < end and p.poll() is None and calm < 2:
+        calm = calm + 1 if group_waiting(p.pid) else 0
+        time.sleep(0.2)
+
+
 def spawn_signal(args, cwd, env, stdin, timeout, sig, ops=()):
     """spawn with the operator's actions (ops: in order, each when its text has appeared in stdout or stderr after the
     one before: a disk inserted into a drive, text typed) and then a signal to the step's process group (as ^C of a terminal reaches the job): sig = (WEGA number,
@@ -334,6 +361,11 @@ def spawn_signal(args, cwd, env, stdin, timeout, sig, ops=()):
             pass
         elif secs is not None:
             cond.wait_for(lambda: p.poll() is not None, secs)
+    if w is not None and secs is not None:
+        wait_blocked(p, end)
+    with cond:
+        if w is None or secs is not None:
+            pass
         else:
             cond.wait_for(lambda: p.poll() is not None or any(text.encode('latin-1') in bytes(b) for b in bufs.values()),
                           max(end - time.time(), 0))
@@ -857,6 +889,10 @@ class Generated:
                     return False
                 if deps_ok(ROOT, deps):
                     _VALID.add(p)
+                    try:	# used: the time of use (host/tools/corpus_prune.py keeps what a run has used)
+                        os.utime(p)
+                    except OSError:
+                        pass
                     return val
                 return False
         return False
