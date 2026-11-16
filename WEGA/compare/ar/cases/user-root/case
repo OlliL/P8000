@@ -1,0 +1,9 @@
+# ar: root (user: 0 0) replaces a member in an archive of mode 444 (fio.c access: root may write every file)
+user: 0 0
+host: printf 'hello\n' > a && printf 'world\n' > b && touch -d '2020-03-04 05:06:07 UTC' a b
+step: ar r ro.a a
+host: chmod 444 ro.a
+step: ar rv ro.a b
+step: ar tv ro.a
+expect: output contains '  0/0'
+expect: output contains 'a - b'

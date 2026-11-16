@@ -42,6 +42,7 @@ static char **envv;			/* guest default environment */
 static int nenv;
 static int um_on, um_ruid, um_euid, um_rgid, um_egid, um_fuid, um_fgid;	/* the user model (see um_start) */
 static void um_owner(const char *hp, struct stat *st);
+static void um_exec(const char *hp);
 static uint32_t sig_kernel[32];		/* u.u_signal: the handler of each WEGA signal (0 default, odd ignore) */
 static int plexus;			/* current program uses the Plexus system call ABI */
 static uint8_t  segused[128];		/* segment exists (program image or mkseg) */
@@ -1022,14 +1023,7 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 		if (haveenv) { for (i = 0; i < ne; i++) free(ev[i]); free(ev); }
 		return 0;
 	}
-	if (um_on) {	/* set-user-id, set-group-id: the effective ids become the owner's (sys1.c exec) */
-		struct stat st;
-		if (stat(hp, &st) == 0) {
-			um_owner(hp, &st);
-			if (st.st_mode & S_ISUID) um_euid = st.st_uid;
-			if (st.st_mode & S_ISGID) um_egid = st.st_gid;
-		}
-	}
+	um_exec(hp);
 	exec_map(c, &x, av, ev);
 	sig_exec();
 	free(x.file);
@@ -1150,6 +1144,15 @@ static int um_isowner(const char *hp, struct stat *st)	/* fio.c owner: the owner
 	return (um_euid == (int)st->st_uid || um_euid == 0) ? 0 : EPERM;
 }
 
+static void um_exec(const char *hp)	/* set-user-id, set-group-id: the effective ids become the owner's (sys1.c) */
+{
+	struct stat st;
+	if (!um_on || stat(hp, &st) < 0) return;
+	um_owner(hp, &st);
+	if (st.st_mode & S_ISUID) um_euid = st.st_uid;
+	if (st.st_mode & S_ISGID) um_egid = st.st_gid;
+}
+
 static int sc_ok(Z8K *c, uint32_t v);
 static int sc_ok2(Z8K *c, uint16_t a, uint16_t b);
 static int sc_err(Z8K *c, int e);
@@ -1251,7 +1254,18 @@ static int um_call(Z8K *c, unsigned n)
 		if (S_ISDIR(st.st_mode) && um_euid != 0) return sc_err(c, EPERM);
 		um_parent(hp2, dir, sizeof dir);
 		if ((e = um_perm(dir, 2, um_euid, um_egid))) return sc_err(c, e);
-		return -2;	/* the normal code (directory links: a rename) */
+		if (S_ISDIR(st.st_mode)) {	/* a directory link: a rename (as the normal code), both directories given */
+			char dir1[1100];
+			struct stat s2;
+			if (lstat(hp2, &s2) == 0 || errno != ENOENT) return -2;
+			um_parent(hp, dir1, sizeof dir1);
+			k = UM_RETRY(dir, S_IWUSR | S_IXUSR, UM_RETRY(dir1, S_IWUSR | S_IXUSR, rename(hp, hp2)));
+			if (k < 0) return sc_err(c, errno);
+			snprintf(dirmoved, sizeof dirmoved, "%s", hp);
+			return sc_ok(c, 0);
+		}
+		k = UM_RETRY(dir, S_IWUSR | S_IXUSR, link(hp, hp2));
+		return k < 0 ? sc_err(c, errno) : sc_ok(c, 0);
 	case 15:	/* chmod: the owner or the super-user; the sticky bit for the super-user only */
 		p = a_ptr(&a); i = a_int(&a); gstr(c, p, gp, sizeof gp);
 		if (devlookup(gp) != -2) return -2;
@@ -1731,6 +1745,7 @@ int main(int argc, char **argv)
 	err = exec_open(hp, &x);
 	if (err) { fprintf(stderr, "z8k-emu: %s: %s\n", argv[i], strerror(err)); return 126; }
 	if (argv0) argv[i] = (char *)argv0;	/* -0: the guest's argv[0] (as a shell would give it), not the path */
+	um_exec(hp);
 	exec_map(c, &x, argv + i, envv);
 	free(x.file);
 	for (;;) {

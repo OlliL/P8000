@@ -117,3 +117,9 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   user-extract-gives-away, user-read-only, user-root-read-only. Left for the model: mv (setuid(getuid()), access),
   rm, rmdir (access: root may write), ar (the uid in the archive); mv's candidate lies outside ROOT, so its set-user-id
   bit would not make it root as /bin/mv is (to be solved with mv).
+- 2026-11-16: the user cases of mv (cp, ln), rm, rmdir, ar (owner): mv's question and root's overwrite, mvdir as
+  set-user-id root, cp's creat, ln as root; rm's question on the terminal, rm -r, unlink in an unwritable directory;
+  rmdir set-user-id root with access of the parent; ar's uid/gid in the member header (chars: 200 is -56, a quirk).
+  The runner: the candidate belongs to root (as the original in the tree); a native candidate does not run user cases.
+  The emulator: set-id also for the first program of a step, link and the rename of a directory with the rights given
+  for the moment.

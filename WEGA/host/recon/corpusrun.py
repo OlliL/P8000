@@ -35,7 +35,8 @@ Every step and host line runs with umask 022.
                       terminal)
   user: UID GID       the steps run as the WEGA user UID, group GID (z8k-emu Z8K_UID: the kernel's permission rules,
                       root is 0; the owners of the files: those of the case belong to UID, GID, those of ROOT to root;
-                      host/z8k-emu/README.md, "Users")
+                      host/z8k-emu/README.md, "Users"); the candidate belongs to root as the original in the tree; a
+                      native candidate (host) does not run the case
   fs:                 reserved for the surroundings; an error until the emulator serves them
   variant: N=V ...    the case runs once per variant line with that environment (default: once, none)
   expect: exit N | output contains TEXT | output is TEXT (the whole output of the last step, \n a newline) | file PATH contains TEXT | file PATH same-as in/FILE|PATH | missing PATH
@@ -493,6 +494,12 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         env['Z8K_OWNERS'] = rd + '.owners'
         if os.path.exists(env['Z8K_OWNERS']):
             os.remove(env['Z8K_OWNERS'])
+        if side != 'orig':	# the candidate belongs to root as the original in the tree does, with the original's
+            cand = os.path.join(progdir, cfg.PROG)	# mode (its set-user-id bit: mv, rmdir; the build does not set it)
+            os.chmod(cand, os.stat(os.path.join(RUNROOT, cfg.ORIG)).st_mode & 0o7777)
+            st = os.stat(cand)
+            with open(env['Z8K_OWNERS'], 'a') as f:
+                f.write('%d %d 0 0\n' % (st.st_dev, st.st_ino))
     if case.get('time'):	# the clock of the guest (z8k-emu Z8K_TIME): file times and dates do not change between runs
         env['Z8K_TIME'] = case['time']
     if case.get('devices') or case.get('terminal'):
@@ -887,6 +894,7 @@ def main():
     same = {c: 0 for c in cands}
     bad = []
     skipped = []
+    native_na = {}	# per candidate: the cases with user: (not for a native program)
 
     def one(job):
         cname, getin, case, vi, var, okey = job
@@ -920,6 +928,9 @@ def main():
             msgs.append('EXPECT failed on the original: ' + '; '.join(r1['expect']))
         res = {}
         for c, path in cands.items():
+            if c == 'host' and case.get('user'):	# a native program runs as the host user: user: is the emulator's
+                res[c] = 'n/a'
+                continue
             ckey = mix(okey, json.dumps(r1.get('deps', {}), sort_keys=True), sha1file(path),
                        *[sha1tree(os.path.join(REPO, d)) for d in getattr(cfg, 'DEPENDS', {}).get(c, [])])
             ok = None if nocache else store_read('ok', ckey)
@@ -950,16 +961,20 @@ def main():
                 skipped.append(label)
                 continue
             for c, ok in res.items():
-                if ok:
+                if ok == 'n/a':
+                    native_na[c] = native_na.get(c, 0) + 1
+                elif ok:
                     same[c] += 1
             if msgs:
                 bad.append(label)
                 print('DIFF %s: %s' % (label, '\n    '.join(msgs)), flush=True)
     for c in cands:
-        print('%s [%s]: %d of %d inputs identical (%d sources skipped)' % (cfg.NAME, c, same[c], len(jobs) - len(skipped),
-                                                                           len(skipped)), flush=True)
+        na = native_na.get(c, 0)
+        print('%s [%s]: %d of %d inputs identical (%d sources skipped%s)' % (
+            cfg.NAME, c, same[c], len(jobs) - len(skipped) - na, len(skipped),
+            ', %d with user: not for a native program' % na if na else ''), flush=True)
     print('TIME %-8s wall %7.1f   %d cases' % (cfg.NAME, time.monotonic() - t0, len(jobs)))
-    return 1 if bad or any(same[c] != len(jobs) - len(skipped) for c in cands) else 0
+    return 1 if bad or any(same[c] != len(jobs) - len(skipped) - native_na.get(c, 0) for c in cands) else 0
 
 
 if __name__ == '__main__':

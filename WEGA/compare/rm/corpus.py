@@ -1,7 +1,8 @@
 """Corpus of rm (host/recon/corpusrun.py): the original /bin/rm against the shipped build, on the cases of
 compare/rm/tests.txt (host/recon/casefile.py): every option of the man page and what the source has besides (rm -i
 alone, the count of errors as exit status, the status of rmdir added to it). rm -r runs /bin/rmdir of the tree (the
-original on both sides). Not in the corpus: what needs a terminal (the emulator has none: rm sets -f itself), a
+original on both sides). Without a terminal rm sets -f itself; the cases with terminal: console and user: ask
+(the user cases). Not in the corpus: a
 directory in rm -i alone (its question is printf without its argument), names longer than the buffer of 100."""
 import os
 import sys

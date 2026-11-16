@@ -1,0 +1,14 @@
+# ar: the users (user:). The member header holds the owner of the file (ar.c: ar_uid, ar_gid from stat); tv prints
+# uid/gid. They are chars in the header (ar.h): uid 200 is -56. An archive the user may not write: "ar: cannot create"
+# (it is made anew), the archive stays; root may (case user-root).
+user: 100 10
+host: printf 'hello\n' > a && printf 'world\n' > b && touch -d '2020-03-04 05:06:07 UTC' a b
+step: chown 200 b
+step: ar rv l.a a b
+step: ar tv l.a
+host: cp l.a ro.a && chmod 444 ro.a && cksum < ro.a
+step: ar rv ro.a a
+host: cksum < ro.a
+expect: output contains '100/10'
+expect: output contains '-56/10'
+expect: output contains 'ar: cannot create ro.a'

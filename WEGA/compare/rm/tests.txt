@@ -238,3 +238,91 @@ step: rm -i a b
 stdin: answers
 expect: file a contains ''
 expect: missing b
+
+# ---- the users and the terminal (user:, terminal: console) ------------------------------------------------------------
+# On a terminal rm asks before it removes a file the user may not write (src: access with the real user); root may
+# write every file (fio.c access): no question. Removing a name needs write permission on the directory.
+
+== user-question
+# src: "rm: b 444 mode " and an answer; n keeps the file
+-- b
+x
+-- n
+n
+-- case
+terminal: console
+user: 100 10
+host: chmod 444 b
+step: rm b
+stdin: n
+host: ls
+expect: output contains 'rm: b 444 mode '
+expect: output contains 'b'
+
+== user-question-yes
+# src: y removes it
+-- b
+x
+-- y
+y
+-- case
+terminal: console
+user: 100 10
+host: chmod 444 b
+step: rm b
+stdin: y
+expect: output contains 'rm: b 444 mode '
+expect: missing b
+
+== user-root-no-question
+# fio.c access: root may write it: no question
+-- b
+x
+-- case
+terminal: console
+user: 0 0
+host: chmod 444 b
+step: rm b
+expect: output is ''
+expect: missing b
+
+== user-unwritable-dir
+# src: the unlink fails (the directory is not writable for the user): perror; root removes it
+-- case
+terminal: console
+user: 100 10
+host: mkdir d && echo x > d/a && chmod 555 d
+step: rm d/a
+host: chmod 755 d; ls d
+expect: output contains 'rm: cannot remove d/a: Permission denied'
+expect: output contains 'step 1 rm: exit=1'
+
+== user-root-unwritable-dir
+# fio.c access: root may remove from it
+-- case
+terminal: console
+user: 0 0
+host: mkdir d && echo x > d/a && chmod 555 d
+step: rm d/a
+host: chmod 755 d
+expect: missing d/a
+
+== user-r-unwritable
+# src: rm -r of a directory the user may not write: "d not changed" (on a terminal; without one rm is quiet as with -f)
+-- case
+terminal: console
+user: 100 10
+host: mkdir d && echo x > d/a && chmod 555 d
+step: rm -r d
+host: chmod 755 d
+expect: output contains 'd not changed'
+
+== user-root-r-unwritable
+# fio.c access: root may write it: rm -r empties it and removes it (with /bin/rmdir)
+-- case
+terminal: console
+user: 0 0
+host: mkdir d && echo x > d/a && chmod 555 d
+step: rm -r d
+expect: missing d
+

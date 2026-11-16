@@ -117,3 +117,35 @@ expect: exit 2
 host: mkdir d
 step: rmdir d/
 expect: missing d
+
+# ---- the users (user:) -----------------------------------------------------------------------------------------------
+# rmdir is set-user-id root (it unlinks the directory, which only the super-user may); it asks access() with the real
+# user whether it may write the parent (NAME/..).
+
+== user-own
+# src: a user removes a directory in a directory he may write
+-- case
+user: 100 10
+host: mkdir d
+step: rmdir d
+expect: missing d
+expect: exit 0
+
+== user-parent-unwritable
+# src: the parent is not writable for the user: "rmdir: p/d: no permission"
+-- case
+user: 100 10
+host: mkdir p p/d && chmod 555 p
+step: rmdir p/d
+host: chmod 755 p
+expect: output contains 'rmdir: p/d: no permission'
+
+== user-root-parent-unwritable
+# fio.c access: root may
+-- case
+user: 0 0
+host: mkdir p p/d && chmod 555 p
+step: rmdir p/d
+host: chmod 755 p
+expect: missing p/d
+

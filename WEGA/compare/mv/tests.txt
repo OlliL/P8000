@@ -1,8 +1,8 @@
 # The cases of the corpus of mv, cp and ln: one program (src/cmd/mv.c) under three names, chosen by argv[0]
 # (compare/mv/corpus.py, ALIASES); the format: host/recon/casefile.py. Where an expectation comes from: man =
-# /usr/man/man1/mv.1, cp.1, ln.1, src = src/cmd/mv.c. Without a terminal (the emulator has none) mv does not ask before
-# it replaces a target without write permission (src: isatty); the question needs the terminal model (120, not yet).
-# mv dir1 dir2 links the directory (mv is set-uid root on WEGA): the emulator renames it (host/z8k-emu/README.md).
+# /usr/man/man1/mv.1, cp.1, ln.1, src = src/cmd/mv.c. Without a terminal mv does not ask before it replaces a target
+# without write permission (src: isatty); the question: the user cases (terminal: console). mv dir1 dir2 links the
+# directory (mv is set-uid root on WEGA): the emulator renames it (host/z8k-emu/README.md).
 
 # ---- mv: the public interface (man page) ------------------------------------------------------------------------
 
@@ -389,3 +389,138 @@ step: copy a b
 expect: output contains "copy: command must be named cp | mv | ln -- defaults to `cp'"
 expect: file a contains x
 expect: file b contains x
+
+# ---- the users (user:; the kernel's rules in the emulator) ------------------------------------------------------------
+# mv is set-user-id root: it keeps root only to move a directory (src: mvdir: link of a directory, for the super-user
+# only); for files it gives it up at once (setuid(getuid())). access() asks with the real user.
+
+== user-mv-question
+# src: a target the user may not write, on a terminal: "mv: b: 444 mode " and an answer; n keeps both files
+-- a
+new
+-- b
+old
+-- n
+n
+-- case
+terminal: console
+user: 100 10
+host: chmod 444 b
+step: mv a b
+stdin: n
+host: cat b; ls
+expect: output contains 'mv: b: 444 mode '
+expect: output contains 'old'
+expect: output contains 'step 1 mv: exit=2'
+
+== user-mv-question-yes
+# src: y: the target is replaced (unlink: the directory is writable)
+-- a
+new
+-- b
+old
+-- y
+y
+-- case
+terminal: console
+user: 100 10
+host: chmod 444 b
+step: mv a b
+stdin: y
+host: cat b; ls
+expect: output contains 'mv: b: 444 mode '
+expect: output contains 'new'
+
+== user-mv-root-no-question
+# src, fio.c access: root may write every file: no question, the target is replaced
+-- a
+new
+-- b
+old
+-- case
+terminal: console
+user: 0 0
+host: chmod 444 b
+step: mv a b
+host: cat b
+expect: output is ''
+expect: output contains 'new'
+
+== user-mv-root-unwritable-dir
+# fio.c access: root may unlink from a directory without write permission
+-- case
+user: 0 0
+host: mkdir p && echo x > p/a && chmod 555 p
+step: mv p/a b
+host: chmod 755 p; ls p; cat b
+expect: output contains 'x'
+expect: exit 0
+
+== user-mvdir
+# src (mvdir): a user moves his directory: mv is root for it (set-user-id); the directory stays his
+-- case
+user: 100 10
+host: mkdir d1 && echo x > d1/f
+step: mv d1 d2
+step: sh -c "ls -ld d2 > l"
+host: cut -c1-30 l && rm l
+expect: output contains ' 100 '
+
+== user-mvdir-root-parent
+# src (mvdir): access of the parent with the real user: root may (a user may not: the case mvdir-parent)
+-- case
+user: 0 0
+host: mkdir p p/d1 && chmod 555 p
+step: mv p/d1 p/d2
+host: chmod 755 p; ls p
+expect: output contains 'd2'
+
+== user-cp-read-only
+# src (cp: creat of the target): a target the user may not write: "cp: cannot create b"
+-- a
+new
+-- b
+old
+-- case
+user: 100 10
+host: chmod 444 b
+step: cp a b
+host: cat b
+expect: output contains 'cp: cannot create b'
+expect: output contains 'old'
+
+== user-cp-root-read-only
+# fio.c access: root writes it
+-- a
+new
+-- b
+old
+-- case
+user: 0 0
+host: chmod 444 b
+step: cp a b
+host: cat b
+expect: output contains 'new'
+
+== user-cp-owner
+# a new copy belongs to the user who makes it
+-- a
+x
+-- case
+user: 100 10
+step: cp a b
+step: sh -c "ls -l b > l"
+host: cut -c1-30 l && rm l
+expect: output contains ' 100 '
+
+== user-ln-root
+# fio.c access: root links into a directory without write permission
+-- a
+-- case
+user: 0 0
+host: mkdir d && chmod 555 d
+step: ln a d/b
+host: chmod 755 d; ls d
+expect: output contains 'b'
+expect: exit 0
+
