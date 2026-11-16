@@ -164,6 +164,26 @@ The model of the kernel (`src/uts/sys/sig.c` psig, `sys4.c` ssig, `machdep.c` se
 - Device models (`proc:`) run in a session of their own: a signal to the process group of a step does not reach them.
 - Test: `tests/signal.c` (built with cc and scc, compared with `tests/signal.out`; `tests/run.sh`, run by checkall).
 
+## Users
+
+With `Z8K_UID=UID` (and `Z8K_GID`, `Z8K_OWNERS=FILE`) the guest runs as that WEGA user (0: root) whatever the host user
+is; without it the guest sees the host's ids and the host decides (as before). The model (`wega.c` um_*), from the
+kernel (`src/uts/sys/fio.c` access, owner, suser; `sys4.c` getuid, setuid, getgid, setgid, chmod, chown, utime,
+saccess; a new name needs write permission on its directory; mknod and the unlink or link of a directory only for the
+super-user):
+
+- The owners: a table host (device, inode) -> uid, gid in `Z8K_OWNERS` (appended to by every process of the run);
+  creat and mknod enter the effective ids, chown the new ones. A file without an entry belongs to root (0, 0) below
+  ROOT outside the guest /tmp, to `Z8K_UID`, `Z8K_GID` elsewhere (a model choice: the owners of the original tree are
+  not known to the emulator). stat and fstat show these owners.
+- The permissions: open, creat, access (with the real ids), unlink, link, mknod, chmod, chown, chdir, utime are decided
+  by the kernel's rules on the owners of the model and the host mode. The host operation runs as the host user, who
+  owns the files; where the host mode is in the way of what the guest may (root writes a file of mode 444), the right
+  is given to the host user for the moment and taken back.
+- exec: a set-user-id or set-group-id program makes its owner the effective user or group (mkdir: root, then it gives
+  the new directory to the real user with chown, as on WEGA).
+- Not modelled: the search permission of the directories along a path; exec permission (the host decides).
+
 ## Limitations
 
 - No core file when the guest dies by a signal (see Signals).

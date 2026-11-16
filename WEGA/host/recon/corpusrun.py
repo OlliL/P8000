@@ -33,7 +33,10 @@ Every step and host line runs with umask 022.
                       has exit=-N with the WEGA number N
                       (every step starts with INT and QUIT at their default and no signal blocked, as from a
                       terminal)
-  user: fs:           reserved for the surroundings; an error until the emulator serves them
+  user: UID GID       the steps run as the WEGA user UID, group GID (z8k-emu Z8K_UID: the kernel's permission rules,
+                      root is 0; the owners of the files: those of the case belong to UID, GID, those of ROOT to root;
+                      host/z8k-emu/README.md, "Users")
+  fs:                 reserved for the surroundings; an error until the emulator serves them
   variant: N=V ...    the case runs once per variant line with that environment (default: once, none)
   expect: exit N | output contains TEXT | output is TEXT (the whole output of the last step, \n a newline) | file PATH contains TEXT | file PATH same-as in/FILE|PATH | missing PATH
                       checked on the original's run
@@ -120,7 +123,6 @@ class CaseError(Exception):
 
 # the fields of the surroundings of a case the format reserves; each is an error until the emulator serves it
 LATER = {
-    'user': 'the user and group ids the program runs as (and the files of /etc/passwd, /etc/group it sees)',
     'fs': 'a file system of its own (mount, a block device with a WEGA file system)',
 }
 
@@ -144,7 +146,8 @@ def wega_signal(h):
 
 def parse_case(text, where):
     """{'env': {..}, 'steps': [{'kind': 'step'|'host', 'argv'|'line', 'stdin', 'env'}], 'variants': [{..}], 'expect': [..]}"""
-    c = {'env': {}, 'steps': [], 'variants': [], 'expect': [], 'devices': [], 'terminal': None, 'time': None}
+    c = {'env': {}, 'steps': [], 'variants': [], 'expect': [], 'devices': [], 'terminal': None, 'time': None,
+         'user': None}
     for n, line in enumerate(text.split('\n'), 1):
         line = line.rstrip()
         if not line.strip() or line.lstrip().startswith('#'):
@@ -188,6 +191,10 @@ def parse_case(text, where):
             c['variants'].append({'env': dict(w.split('=', 1) for w in env), 'words': [w for w in ws if w not in env]})
         elif k == 'expect':
             c['expect'].append(shlex.split(v))
+        elif k == 'user':
+            if not re.match(r'\d+\s+\d+$', v):
+                raise CaseError('%s:%d: user: UID GID (the ids of WEGA the steps run with)' % (where, n))
+            c['user'] = tuple(int(x) for x in v.split())
         elif k == 'time':
             if not re.match(r'\d+$', v):
                 raise CaseError('%s:%d: time: SECONDS since 1970 (the clock of the guest stands still there)' % (where, n))
@@ -481,6 +488,11 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
             cfg.host_setup(progdir)
     env = dict(os.environ)
     env['Z8K_ROOTLOG'] = rd + '.rootlog'	# beside the case directory: a program that reads its directory must not see it
+    if case.get('user'):	# the user model of the emulator: the ids, the owners of the files (a table beside the case)
+        env['Z8K_UID'], env['Z8K_GID'] = str(case['user'][0]), str(case['user'][1])
+        env['Z8K_OWNERS'] = rd + '.owners'
+        if os.path.exists(env['Z8K_OWNERS']):
+            os.remove(env['Z8K_OWNERS'])
     if case.get('time'):	# the clock of the guest (z8k-emu Z8K_TIME): file times and dates do not change between runs
         env['Z8K_TIME'] = case['time']
     if case.get('devices') or case.get('terminal'):

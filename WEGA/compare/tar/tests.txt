@@ -443,3 +443,79 @@ host: mkfifo p
 step: tar xf p
 signal: INT after 2
 expect: exit -2
+
+# ---- the users (src: putfile, gethead, doxtract; the kernel's rules: z8k-emu, user:) --------------------------------
+# A case with `user: UID GID` runs as that user of WEGA (0 is root); its files belong to it. ls -n is not in WEGA's ls:
+# the owners are shown by tar tv (uid/gid) and ls -l (the name from /etc/passwd, or the number).
+
+== user-ids
+# src (putfile): the archive holds the owner of every file; tv prints uid/gid
+-- f1
+one
+-- case
+user: 100 10
+step: tar cf a.tar f1
+step: tar tvf a.tar
+expect: output contains '100/10'
+
+== user-root-extract
+# src (doxtract): the owner of the archive is given back by chown; root may (fio.c owner): f1 belongs to 100 again
+-- f1
+one
+-- case
+user: 0 0
+step: chown 100 f1
+step: chgrp 10 f1
+step: tar cf a.tar f1
+step: rm f1
+step: tar xf a.tar
+step: ls -l f1
+step: tar tvf a.tar
+expect: output contains '100/10'
+expect: output contains ' 100 '
+
+== user-extract-gives-away
+# src (doxtract): a user who is not root: tar makes the file (its owner), then chown to the owner of the archive; the
+# owner of a file may give it away (sys4.c chown, fio.c owner): f1 belongs to 100 afterwards. X: tar takes the ids of
+# its user instead (gethead: getuid, getgid). The time of f1 is not set back after the chown (utime: not the owner any
+# more): ls shows only mode and owner (the time is that of the run)
+-- f1
+one
+-- case
+user: 200 20
+step: chown 100 f1
+step: tar cf a.tar f1
+step: rm f1
+step: tar xf a.tar
+step: sh -c "ls -l f1 > l"
+host: cut -c1-30 l && rm l
+step: rm f1
+step: tar Xf a.tar
+step: ls -l f1
+expect: output contains ' 100 '
+expect: output contains ' 200 '
+
+== user-read-only
+# src (doxtract): creat of a file the user may not write: "f1 - cannot create"; root may write it (fio.c access)
+-- f1
+one
+-- case
+user: 100 10
+host: chmod 444 f1
+step: tar cf a.tar f1
+step: tar xf a.tar
+expect: output contains 'tar: f1 - cannot create'
+
+== user-root-read-only
+# src (doxtract): root overwrites a file of mode 444
+-- f1
+one
+-- case
+user: 0 0
+host: chmod 444 f1
+step: tar cf a.tar f1
+host: chmod 644 f1 && echo changed > f1 && chmod 444 f1
+step: tar xf a.tar
+host: cat f1
+expect: output contains 'one'
+

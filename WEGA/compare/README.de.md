@@ -454,7 +454,8 @@ Ein Feld pro Zeile; eine Zeile, die mit `#` beginnt, ist ein Kommentar.
 | `device: NAME ART:ARG [excl] [console]` | Ein beliebiges Gerät aus WEGAs `/dev` mit einem Modell des Emulators (`image:`, `host:`, `proc:`, `console`; `host/z8k-emu/README.md`). |
 | `time: SEKUNDEN` | Die Uhr des Gasts steht auf SEKUNDEN seit 1970: Zeiten, die ein Programm schreibt oder ausgibt, ändern sich zwischen den Läufen nicht. |
 | `signal: SIG after SEKUNDEN` / `signal: SIG at 'TEXT'` | (nach einem `step:`) Das Signal SIG (ein WEGA-Name: `HUP INT QUIT ILL TRAP IOT EMT FPE KILL BUS SEGV SYS PIPE ALRM TERM USR1 USR2 CLD PWR`, oder seine Nummer) geht an die Prozessgruppe des Schritts, wie ^C eines Terminals: nach SEKUNDEN, oder sobald TEXT in seiner Ausgabe erschienen ist (stdout in eine Pipe ist gepuffert: TEXT wird erst gefunden, wenn das Programm ihn ausschreibt). Die Standardeingabe des Schritts bleibt bis dahin offen, ein lesendes Programm wartet also. Die Handler des Programms laufen wie unter WEGA. Ein durch ein Signal beendeter Schritt steht mit `exit=-N` und der WEGA-Nummer N im Protokoll (`expect: exit -3`). Beispiel: `compare/dc/tests.txt`, Fälle `interrupt` und `sigquit`. |
-| `user:` `fs:` | Reserviert für spätere Emulator-Modelle; sie zu benutzen ist ein Fehler, bis das Modell existiert. |
+| `user: UID GID` | Die Schritte laufen als WEGA-Benutzer UID mit Gruppe GID (0 ist root), egal welcher Host-Benutzer: der Emulator entscheidet die Rechte nach den Regeln des Kernels, die Dateien des Falls gehören UID, GID, die des Baums root (`host/z8k-emu/README.md`, "Users"). Beispiel: `compare/tar/tests.txt`, die user-Fälle. |
+| `fs:` | Reserviert für ein späteres Emulator-Modell; es zu benutzen ist ein Fehler, bis das Modell existiert. |
 
 Erwartungen werden am **Original** geprüft. Sie belegen, dass ein Fall wirklich testet, was er behauptet (mehr in
 Abschnitt 11).
@@ -663,8 +664,8 @@ Gasts als eigenes Verzeichnis und einige für Korpora gebaute Modelle: einen Lin
 das `/tmp` des Gasts als eingehängtes Dateisystem, damit `/bin/pwd` funktioniert (`IN_TMP`), WEGAs `/dev` mit
 Disketten-Images und dem 8-Bit-Teil hinter `/dev/ud` (`device:`) und eine minimale Konsole (`terminal: console`).
 
-**Er bietet (noch) nicht:** ein Terminal, das seine Einstellungen umsetzt (Echo, Raw-Modus, Bildschirm: vi), andere
-Benutzer (alles läuft als man selbst, nicht als root), das Einhängen von Dateisystemen, eine Core-Datei, wenn ein
+**Er bietet (noch) nicht:** ein Terminal, das seine Einstellungen umsetzt (Echo, Raw-Modus, Bildschirm: vi), die
+Besitzer des Original-Baums (mit `user:` gehören seine Dateien root), das Einhängen von Dateisystemen, eine Core-Datei, wenn ein
 Programm durch QUIT, SEGV und ähnliche stirbt. Ohne
 `terminal: console` ist `isatty` falsch – `rm` verhält sich deshalb wie mit `-f`. Ein Programm, das so etwas braucht, braucht zuerst ein **Modell** im
 Emulator. Nach der Regel des Projekts wird ein Modell gebaut, wenn das erste Programm es braucht, mit eigenen Tests. Die

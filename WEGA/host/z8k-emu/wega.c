@@ -40,6 +40,8 @@ static char rootlogf[1100];	/* Z8K_ROOTLOG, absolute (see rootlog) */
 static char dirmoved[1100];	/* the old name of a directory given a new one by link (renamed) */
 static char **envv;			/* guest default environment */
 static int nenv;
+static int um_on, um_ruid, um_euid, um_rgid, um_egid, um_fuid, um_fgid;	/* the user model (see um_start) */
+static void um_owner(const char *hp, struct stat *st);
 static uint32_t sig_kernel[32];		/* u.u_signal: the handler of each WEGA signal (0 default, odd ignore) */
 static int plexus;			/* current program uses the Plexus system call ABI */
 static uint8_t  segused[128];		/* segment exists (program image or mkseg) */
@@ -1020,6 +1022,14 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 		if (haveenv) { for (i = 0; i < ne; i++) free(ev[i]); free(ev); }
 		return 0;
 	}
+	if (um_on) {	/* set-user-id, set-group-id: the effective ids become the owner's (sys1.c exec) */
+		struct stat st;
+		if (stat(hp, &st) == 0) {
+			um_owner(hp, &st);
+			if (st.st_mode & S_ISUID) um_euid = st.st_uid;
+			if (st.st_mode & S_ISGID) um_egid = st.st_gid;
+		}
+	}
 	exec_map(c, &x, av, ev);
 	sig_exec();
 	free(x.file);
@@ -1027,6 +1037,258 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 	free(av);
 	if (haveenv) { for (i = 0; i < ne; i++) free(ev[i]); free(ev); }
 	return 0;
+}
+
+
+/* ---------------------------------------------------------------- users
+ * The model of the kernel's users (Z8K_UID set; without it the guest sees the host's ids and the host decides): the
+ * real and effective ids of the guest (sys4.c getuid, setuid, getgid, setgid), the owner of every file as the guest
+ * sees it, and the permissions decided as the kernel does (fio.c access, owner, suser; sys4.c chmod, chown, utime;
+ * namei: a new name needs write permission on its directory; mknod only for the super-user). The host operation runs
+ * with the rights of the host user, who owns every file of the case and of ROOT: where the host mode is in the way of
+ * what the guest may do (root writes a file of mode 444), the emulator gives the host user the right for the moment.
+ * The owners: a table of host (device, inode) -> uid, gid in the file Z8K_OWNERS (shared by the processes of a run,
+ * appended to); a file without an entry belongs to root (0, 0) below ROOT outside the guest /tmp (a model choice: the
+ * owners of the original tree are not in it), to the user of the case (Z8K_UID, Z8K_GID) elsewhere. setuid and setgid
+ * of a program take effect at exec. Not modelled: the search permission of the directories of a path. */
+static char um_ownf[1100];
+
+static void um_start(void)
+{
+	const char *u = getenv("Z8K_UID"), *g = getenv("Z8K_GID"), *o = getenv("Z8K_OWNERS");
+	char cwd[1024];
+	if (!u || !*u) return;
+	um_on = 1;
+	um_ruid = um_euid = um_fuid = atoi(u);
+	um_rgid = um_egid = um_fgid = g ? atoi(g) : 0;
+	if (o && *o) {
+		if (o[0] == '/' || !getcwd(cwd, sizeof cwd)) snprintf(um_ownf, sizeof um_ownf, "%s", o);
+		else snprintf(um_ownf, sizeof um_ownf, "%s/%s", cwd, o);
+	}
+}
+
+static int um_inroot(const char *hp)	/* below ROOT and not in the guest /tmp */
+{
+	char r[PATH_MAX];
+	size_t n;
+	if (!*root || !realpath(hp, r)) return 0;
+	n = strlen(realroot());
+	if (strncmp(r, realroot(), n) || (r[n] && r[n] != '/')) return 0;
+	{
+		char t[PATH_MAX];
+		snprintf(t, sizeof t, "%s", *guesttmp() ? realtmp() : "");
+		if (!*t) snprintf(t, sizeof t, "%s/tmp", realroot());
+		n = strlen(t);
+		if (!strncmp(r, t, n) && (!r[n] || r[n] == '/')) return 0;
+	}
+	return 1;
+}
+
+static void um_owner(const char *hp, struct stat *st)	/* st_uid, st_gid as the guest sees them */
+{
+	FILE *f;
+	unsigned long d, i;
+	int u, g, found = 0;
+	if (*um_ownf && (f = fopen(um_ownf, "r")) != NULL) {
+		while (fscanf(f, "%lu %lu %d %d", &d, &i, &u, &g) == 4)
+			if (d == (unsigned long)st->st_dev && i == (unsigned long)st->st_ino) {
+				found = u >= 0;
+				st->st_uid = u; st->st_gid = g;
+			}
+		fclose(f);
+	}
+	if (found) return;
+	if (hp && um_inroot(hp)) { st->st_uid = 0; st->st_gid = 0; }
+	else { st->st_uid = um_fuid; st->st_gid = um_fgid; }
+}
+
+static void um_setown(const struct stat *st, int u, int g)	/* u < 0: the inode is gone */
+{
+	char l[100];
+	int fd, n;
+	if (!*um_ownf) return;
+	n = snprintf(l, sizeof l, "%lu %lu %d %d\n", (unsigned long)st->st_dev, (unsigned long)st->st_ino, u, g);
+	if ((fd = open(um_ownf, O_WRONLY | O_APPEND | O_CREAT, 0644)) >= 0) {
+		if (write(fd, l, n) < 0) {}
+		close(fd);
+	}
+}
+
+static int um_perm(const char *hp, int m, int uid, int gid)	/* fio.c access: m 4 read, 2 write, 1 exec; 0 or EACCES */
+{
+	struct stat st;
+	int mm = m << 6;
+	if (stat(hp, &st) < 0) return errno;
+	if (uid == 0) return 0;
+	um_owner(hp, &st);
+	if (uid != (int)st.st_uid) {
+		mm >>= 3;
+		if (gid != (int)st.st_gid) mm >>= 3;
+	}
+	return (st.st_mode & mm) ? 0 : EACCES;
+}
+
+static void um_parent(const char *hp, char *dir, size_t n)
+{
+	const char *sl = strrchr(hp, '/');
+	if (!sl) snprintf(dir, n, ".");
+	else if (sl == hp) snprintf(dir, n, "/");
+	else snprintf(dir, n, "%.*s", (int)(sl - hp), hp);
+}
+
+/* the host operation; when the host refuses it (EACCES) what the guest may do, once more with the right given to the
+   host user on `on` for the moment (its mode afterwards as before) */
+#define UM_RETRY(on, bits, expr) ({ long _r = (expr); \
+	if (_r < 0 && errno == EACCES) { struct stat _s; \
+		if (stat(on, &_s) == 0 && chmod(on, (_s.st_mode | (bits)) & 07777) == 0) { \
+			_r = (expr); int _e = errno; chmod(on, _s.st_mode & 07777); errno = _e; } } _r; })
+
+static int um_isowner(const char *hp, struct stat *st)	/* fio.c owner: the owner or the super-user; else EPERM */
+{
+	if (stat(hp, st) < 0) return errno;
+	um_owner(hp, st);
+	return (um_euid == (int)st->st_uid || um_euid == 0) ? 0 : EPERM;
+}
+
+static int sc_ok(Z8K *c, uint32_t v);
+static int sc_ok2(Z8K *c, uint16_t a, uint16_t b);
+static int sc_err(Z8K *c, int e);
+
+/* the calls the model changes; -2: not one of them (the normal code runs) */
+static int um_call(Z8K *c, unsigned n)
+{
+	Args a = { c, 0 };
+	char gp[1024], hb[1100], gp2[1024], hb2[1100], dir[1100];
+	const char *hp, *hp2;
+	struct stat st;
+	Ad p, p2;
+	int i, j, k, e;
+	switch (n) {
+	case 24: return sc_ok2(c, um_ruid, um_euid);
+	case 47: return sc_ok2(c, um_rgid, um_egid);
+	case 23:	/* setuid */
+		i = a_int(&a);
+		if (um_ruid == i || um_euid == 0) { um_ruid = um_euid = i; return sc_ok(c, 0); }
+		return sc_err(c, EPERM);
+	case 46:	/* setgid */
+		i = a_int(&a);
+		if (um_rgid == i || um_euid == 0) { um_rgid = um_egid = i; return sc_ok(c, 0); }
+		return sc_err(c, EPERM);
+	case 18:	/* stat: the owner of the model */
+		p = a_ptr(&a); p2 = a_ptr(&a); gstr(c, p, gp, sizeof gp);
+		if (devlookup(gp) != -2) return -2;
+		hp = hostpath(gp, hb, sizeof hb);
+		if (stat(hp, &st) < 0) return sc_err(c, errno);
+		um_owner(hp, &st);
+		put_stat(c, p2, &st);
+		return sc_ok(c, 0);
+	case 28:	/* fstat */
+		i = a_int(&a); p = a_ptr(&a);
+		if (devfd(i) >= 0 || fstat(i, &st) < 0) return -2;
+		snprintf(gp, sizeof gp, "/proc/self/fd/%d", i);
+		k = readlink(gp, hb, sizeof hb - 1);
+		if (k > 0) hb[k] = 0;
+		um_owner(k > 0 ? hb : NULL, &st);
+		put_stat(c, p, &st);
+		return sc_ok(c, 0);
+	case 5:		/* open: read and write permission */
+		p = a_ptr(&a); i = a_int(&a); gstr(c, p, gp, sizeof gp);
+		if (devlookup(gp) != -2) return -2;
+		hp = hostpath(gp, hb, sizeof hb);
+		if (stat(hp, &st) < 0) return sc_err(c, errno);
+		if ((i & 3) != 1 && (e = um_perm(hp, 4, um_euid, um_egid))) return sc_err(c, e);
+		if ((i & 3) != 0 && (e = um_perm(hp, 2, um_euid, um_egid))) return sc_err(c, e);
+		k = UM_RETRY(hp, (i & 3) == 0 ? S_IRUSR : (i & 3) == 1 ? S_IWUSR : S_IRUSR | S_IWUSR, open(hp, i & 3));
+		if (k < 0) return sc_err(c, errno);
+		dirload(k, hp);
+		return sc_ok(c, k);
+	case 8:		/* creat: an existing file needs write permission, a new name write permission on its directory */
+		p = a_ptr(&a); i = a_int(&a); gstr(c, p, gp, sizeof gp);
+		if (devlookup(gp) != -2) return -2;
+		hp = hostpath(gp, hb, sizeof hb);
+		if (stat(hp, &st) == 0) {
+			if ((e = um_perm(hp, 2, um_euid, um_egid))) return sc_err(c, e);
+			k = UM_RETRY(hp, S_IWUSR, open(hp, O_WRONLY | O_TRUNC));
+			return k < 0 ? sc_err(c, errno) : sc_ok(c, k);
+		}
+		um_parent(hp, dir, sizeof dir);
+		if ((e = um_perm(dir, 2, um_euid, um_egid))) return sc_err(c, e);
+		k = UM_RETRY(dir, S_IWUSR | S_IXUSR, open(hp, O_WRONLY | O_CREAT | O_TRUNC, i & 07777));
+		if (k < 0) return sc_err(c, errno);
+		if (fstat(k, &st) == 0) um_setown(&st, um_euid, um_egid);
+		return sc_ok(c, k);
+	case 14:	/* mknod: the super-user only; the new name needs write permission on its directory */
+		p = a_ptr(&a); i = a_int(&a); j = a_int(&a); gstr(c, p, gp, sizeof gp);
+		if (um_euid != 0) return sc_err(c, EPERM);
+		hp = hostpath(gp, hb, sizeof hb);
+		um_parent(hp, dir, sizeof dir);
+		k = UM_RETRY(dir, S_IWUSR | S_IXUSR, (i & S_IFMT) == S_IFDIR ? mkdir(hp, i & 07777) : mknod(hp, i, j));
+		if (k < 0) return sc_err(c, errno);
+		if (stat(hp, &st) == 0) um_setown(&st, um_euid, um_egid);
+		return sc_ok(c, 0);
+	case 10:	/* unlink: write permission on the directory */
+		p = a_ptr(&a); gstr(c, p, gp, sizeof gp);
+		if (*dirmoved) return -2;
+		hp = hostpath(gp, hb, sizeof hb);
+		if (lstat(hp, &st) < 0) return sc_err(c, errno);
+		um_parent(hp, dir, sizeof dir);
+		if ((e = um_perm(dir, 2, um_euid, um_egid))) return sc_err(c, e);
+		if (S_ISDIR(st.st_mode)) {
+			const char *b = strrchr(hp, '/');
+			b = b ? b + 1 : hp;
+			if (um_euid != 0) return sc_err(c, EPERM);	/* a directory: the super-user only (sys2.c unlink) */
+			if (!strcmp(b, ".") || !strcmp(b, "..")) return sc_ok(c, 0);
+			k = UM_RETRY(dir, S_IWUSR | S_IXUSR, rmdir(hp));
+		} else
+			k = UM_RETRY(dir, S_IWUSR | S_IXUSR, unlink(hp));
+		if (k < 0) return sc_err(c, errno);
+		if (st.st_nlink <= 1 || S_ISDIR(st.st_mode)) um_setown(&st, -1, -1);
+		return sc_ok(c, 0);
+	case 9:		/* link: write permission on the directory of the new name; a directory: the super-user only */
+		p = a_ptr(&a); p2 = a_ptr(&a); gstr(c, p, gp, sizeof gp); gstr(c, p2, gp2, sizeof gp2);
+		hp = hostpath(gp, hb, sizeof hb); hp2 = hostpath(gp2, hb2, sizeof hb2);
+		if (stat(hp, &st) < 0) return sc_err(c, errno);
+		if (S_ISDIR(st.st_mode) && um_euid != 0) return sc_err(c, EPERM);
+		um_parent(hp2, dir, sizeof dir);
+		if ((e = um_perm(dir, 2, um_euid, um_egid))) return sc_err(c, e);
+		return -2;	/* the normal code (directory links: a rename) */
+	case 15:	/* chmod: the owner or the super-user; the sticky bit for the super-user only */
+		p = a_ptr(&a); i = a_int(&a); gstr(c, p, gp, sizeof gp);
+		if (devlookup(gp) != -2) return -2;
+		hp = hostpath(gp, hb, sizeof hb);
+		if ((e = um_isowner(hp, &st))) return sc_err(c, e);
+		if (um_euid) i &= ~S_ISVTX;
+		return chmod(hp, i & 07777) < 0 ? sc_err(c, errno) : sc_ok(c, 0);
+	case 16:	/* chown: the owner or the super-user; set-id bits cleared unless the super-user */
+		p = a_ptr(&a); i = a_int(&a); j = a_int(&a); gstr(c, p, gp, sizeof gp);
+		if (devlookup(gp) != -2) return -2;
+		hp = hostpath(gp, hb, sizeof hb);
+		if ((e = um_isowner(hp, &st))) return sc_err(c, e);
+		um_setown(&st, (uint16_t)i, (uint16_t)j);
+		if (um_euid && (st.st_mode & (S_ISUID | S_ISGID))) chmod(hp, st.st_mode & 07777 & ~(S_ISUID | S_ISGID));
+		return sc_ok(c, 0);
+	case 33:	/* access: with the real ids (sys4.c saccess) */
+		p = a_ptr(&a); i = a_int(&a); gstr(c, p, gp, sizeof gp);
+		if (devlookup(gp) != -2) return -2;
+		hp = hostpath(gp, hb, sizeof hb);
+		if (stat(hp, &st) < 0) return sc_err(c, errno);
+		for (k = 4; k; k >>= 1)
+			if ((i & k) && (e = um_perm(hp, k, um_ruid, um_rgid))) return sc_err(c, e);
+		return sc_ok(c, 0);
+	case 12:	/* chdir: search permission */
+		p = a_ptr(&a); gstr(c, p, gp, sizeof gp);
+		hp = hostpath(gp, hb, sizeof hb);
+		if (stat(hp, &st) < 0) return sc_err(c, errno);
+		if (!S_ISDIR(st.st_mode)) return sc_err(c, ENOTDIR);
+		if ((e = um_perm(hp, 1, um_euid, um_egid))) return sc_err(c, e);
+		return -2;
+	case 30:	/* utime: the owner or the super-user (or, for the time now, who may write) */
+		p = a_ptr(&a); p2 = a_ptr(&a); gstr(c, p, gp, sizeof gp);
+		hp = hostpath(gp, hb, sizeof hb);
+		if ((e = um_isowner(hp, &st))) return sc_err(c, e);
+		return -2;
+	}
+	return -2;
 }
 
 static int sys_call_impl(Z8K *c, unsigned n)
@@ -1039,6 +1301,8 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	Dir *d;
 	static unsigned char buf[65536];
 
+	if (um_on && (k = um_call(c, n)) != -2)
+		return k;
 	switch (n) {
 	case 0: {	/* sysiret: the return of a signal handler (machdep.c) */
 		Ad sp;
@@ -1458,6 +1722,7 @@ int main(int argc, char **argv)
 	c->syscall = sys_call;
 	c->trap = sig_trap;
 	sig_start();
+	um_start();
 	{
 		char cwd[1024];
 		tmplog("start %s root %s cwd %s", argv[i], root, getcwd(cwd, sizeof cwd) ? cwd : "?");

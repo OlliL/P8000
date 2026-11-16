@@ -112,3 +112,8 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   format, verify, copydisk, doscp; gld, casold, cchain, scchain have the host candidate only and share the code of ld,
   cas, cc (their signal cases are in those corpora). The runner: "files afterwards" lists a FIFO without reading it;
   the steps start with no signal blocked.
+- 2026-11-16: the user model of the emulator (owner: first with the corpus of widest use, tar): `user: UID GID`
+  (z8k-emu Z8K_UID, host/z8k-emu/README.md "Users"); tar has the cases user-ids, user-root-extract,
+  user-extract-gives-away, user-read-only, user-root-read-only. Left for the model: mv (setuid(getuid()), access),
+  rm, rmdir (access: root may write), ar (the uid in the archive); mv's candidate lies outside ROOT, so its set-user-id
+  bit would not make it root as /bin/mv is (to be solved with mv).
