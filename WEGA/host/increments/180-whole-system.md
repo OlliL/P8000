@@ -18,10 +18,40 @@ same bytes; (2) a disk image of the install tree boots in the MAME P8000 machine
 
 - `CLAUDE.md` (MAME fork, `mame/LOG.md` in the repository beside `WEGA/`).
 - `host/tools/checkall.sh` (the install tree).
+- `host/tools/mamerun.py` (MAME driven from Python: console on a socket, floppies in and out, NMI, exit), `mame/LOG.md`
+  section 7 (the installation of WEGA in MAME), section 14 (tools, cautions).
 
 ## Known
 
 - The install tree of checkall is byte-identical with the WEGA tree in every file `make install` puts there.
+- How WEGA boots in MAME (measured 2026-11-16, increment 117; the owner's hint for the single-user mode):
+  - MAME: `/mnt/share/git/mame/mame` (the fork with the P8000 machines), `floptool` beside it. Machine `p8000_16` (with
+    the 16-bit board); ROMs in `/mnt/share/git/mame/roms/p8000_16`. The machine `p8000` (8-bit board only, UDOS) needs
+    the `*_nur8bit` ROMs, which are in the owner's directory `~/Downloads/P8000/mame/roms` (flat; mamerun.py links them
+    into `WORK/roms/p8000`).
+  - A WEGA hard disk ready to boot: the owner's `~/Downloads/P8000/mame/harddisks/wega31_fresh_install_45MB.chd` (work on
+    a copy, MAME writes into it). The WEGA start disk `w31start.cqm` (`~/Downloads/P8000/mame/floppies`) always in the
+    first drive (`-flop1`).
+  - Start without picture: `mame p8000_16 -rompath ... -video none -sound none -nothrottle -rs232 null_modem -bitb
+    socket.127.0.0.1:PORT -flop1 w31start(.mfi) -hard wega.chd -autoboot_script ctl.lua` (mamerun.py does it; the
+    console is a TCP connection to PORT).
+  - The dialogue, from power on to the single-user shell: "U880-Softwaremonitor Version 3.1 - Press RETURN": RETURN;
+    the 8-bit prompt `>`: RETURN (the start disk is booted); "U8000-Softwaremonitor Version 3.1 - Press NMI": no NMI
+    (NMI would start the hardware test and the autoboot), RETURN instead: the 16-bit monitor answers `?` and its prompt
+    `*`; `O U`: "BOOTING FROM UDOS FLOPPY", the prompt `> ` of the primary boot loader; `boot`: "Boot" and `: `;
+    `md(0,16000)wega`: the kernel starts, prints the layout of the disk and "P8000 WEGA / Single-User Mode", the shell
+    prompt is `#1 ` (a counter: csh).
+  - Booted this way, the system was started from the start disk: the coupling software of the 8-bit part is loaded
+    and `/dev/ud` works (getud, putud, format; fd(4), ud(4): not after a start by the monitor command `X`).
+  - Input to WEGA (shell, login) needs 7E1, every character with even parity (`send(..., parity=True)`); the monitors
+    and the boot loader take plain characters.
+  - Multi-user mode (mame/LOG.md section 7, step 9): RETURN at the 8-bit monitor, then only NMI: after the hardware test
+    the boot program starts the kernel from md(0,16000) by itself; login `wega`, password `root`.
+  - A UDOS disk in the second drive at boot time makes UDOS stop (error C4, or C2 for an empty one): put it in after the
+    boot (mamerun.py `insert`, the Lua command `swap`).
+  - MAME writes the floppies back when it ends (MFI); `exit` through the Lua control lets it end properly. Never `pkill
+    -f` (it kills the calling shell); stale MAME processes with a `ps | grep "[m]ame p8000"` loop in a script file.
+  - The csh of the single-user shell: `$status`, not `$?`.
 
 ## Steps
 
