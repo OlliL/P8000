@@ -1,0 +1,240 @@
+# The cases of the corpus of rm (compare/rm/corpus.py); the format: host/recon/casefile.py. Compared: the output, the exit
+# status and the directory afterwards. Where an expectation comes from: man = /usr/man/man1/rm.1, src = src/cmd/rm.c.
+# Without a terminal on the standard input rm sets -f itself (src: !isatty(0)); the emulator has no terminal, so every
+# case runs as with -f: "x nonexistent" and the question for a file without write permission ("rm: x 444 mode") need the
+# terminal model (increment 120, not yet).
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== files
+# man: rm removes the entries of the files named
+-- a
+-- b
+-- c
+-- case
+step: rm a b
+expect: exit 0
+expect: missing a
+expect: missing b
+expect: file c contains ''
+
+== last-link
+# man: the file goes when its last link goes: another link keeps it
+-- a
+data
+-- case
+host: ln a b
+step: rm a
+expect: missing a
+expect: file b contains data
+
+== no-write-permission
+# man: removing needs write permission on the directory, not on the file (-f, no terminal: no question)
+-- ro
+x
+-- case
+host: chmod 444 ro
+step: rm ro
+expect: missing ro
+
+== no-dir-permission
+# man: without write permission on the directory the entry stays (with -f no message, src: no message without -i)
+-- d/f
+x
+-- case
+host: chmod 555 d
+step: rm d/f
+host: chmod 755 d
+expect: file d/f contains x
+expect: exit 0
+
+== directory
+# man: a directory is an error without -r
+-- d/f
+-- case
+step: rm d
+expect: output is 'rm: d directory\n'
+expect: exit 1
+
+== recursive
+# man: -r removes the whole contents of the directory and the directory itself (src: also entries starting with a point)
+-- d/f
+-- d/.hidden
+-- d/sub/g
+-- d/sub/deeper/h
+-- keep
+-- case
+step: rm -r d
+expect: missing d
+expect: exit 0
+
+== force
+# man: -f asks nothing; a name that does not exist is no error with -f
+-- a
+-- case
+step: rm -f a nosuch
+expect: missing a
+expect: exit 0
+
+== interactive
+# man: -i asks for every file; a line starting with y removes it (src: also Y, blanks and tabs before it: \040 \011)
+-- a
+-- b
+-- c
+-- d
+-- e
+-- answers
+y
+n
+Y
+\040\040\011y
+
+-- case
+step: rm -i a b c d e
+stdin: answers
+expect: output is 'a: b: c: d: e: '
+expect: missing a
+expect: file b contains ''
+expect: missing c
+expect: missing d
+expect: file e contains ''
+
+== interactive-recursive
+# man: -i with -r asks for every directory to be examined and every file; src: the directory named itself is not asked
+# before it is examined, only before rmdir; the answers go in the order of the questions (the order of the entries is the
+# one of the directory: g is removed either way)
+-- d/f
+-- d/sub/g
+-- answers
+y
+y
+y
+n
+-- case
+step: rm -ri d
+stdin: answers
+expect: output contains 'directory d/sub: '
+expect: missing d/sub/g
+
+== dotdot
+# man (DIAGNOSTIK): . and .. cannot be removed; src: ".." is refused with a message on the standard error
+-- case
+step: rm ..
+expect: output contains "cannot remove `..'"
+
+== recursive-dot
+# src: rm -r . removes everything below the current directory, but not "." itself (rmdir is not run for a name . or ..)
+-- a
+-- d/f
+-- case
+step: rm -r .
+expect: missing a
+expect: missing d
+
+# ---- what the source has besides (src) ---------------------------------------------------------------------------
+
+== usage
+# src: an unknown option: the usage, exit status 1
+-- case
+step: rm -x a
+expect: exit 1
+expect: output contains 'usage: rm [-fir] file ...'
+
+== no-arguments
+# src: rm without a file prints the usage too, but ends with 0
+-- case
+step: rm
+expect: exit 0
+expect: output contains 'OR     rm -i'
+
+== options-only
+# src: only the first argument is read for options; a second "-f" is a file name
+-- -f
+-- a
+-- case
+step: rm -i -f a
+stdin: answers
+expect: output is '-f: a: '
+expect: missing -f
+expect: file a contains ''
+-- answers
+y
+n
+
+== exit-count
+# src: the exit status counts the errors (here two directories without -r)
+-- d1/f
+-- d2/f
+-- case
+step: rm d1 d2
+expect: exit 2
+
+== rmdir-status
+# src: rm -r adds the status of rmdir as wait() gives it (rmdir exits with 2: 512) to the count of errors: one error of
+# rm (the directory without write permission) and the failed rmdir give 513, of which exit keeps 1
+-- d/sub/f
+-- case
+host: chmod 555 d/sub
+step: rm -r d
+host: chmod 755 d/sub
+expect: exit 1
+expect: output contains 'rmdir: d not empty'
+
+== interactive-unlink-error
+# src: with -i an unlink that fails is reported by perror ("rm: cannot remove NAME: message")
+-- d/f
+-- answers
+y
+-- case
+host: chmod 555 d
+step: rm -i d/f
+stdin: answers
+host: chmod 755 d
+expect: output contains 'rm: cannot remove d/f'
+expect: exit 1
+
+== interact-all
+# src: rm -i without a file asks for every entry of the current directory (not . and ..): " [removed]" or " [untouched]".
+# A directory among them is not a case: its question is printf("%s--directory: ") without its argument.
+-- a
+-- b
+-- c
+-- answers
+y
+n
+y
+-- case
+step: rm -i
+stdin: answers
+expect: output contains '[removed]'
+expect: output contains '[untouched]'
+
+== interact-eof
+# src: rm -i without a file, the standard input at its end: every entry is left
+-- a
+-- b
+-- case
+step: rm -i
+expect: file a contains ''
+expect: exit 0
+
+== long-name
+# src: names of 14 characters (the length of a directory entry) below a directory removed with -r
+-- d/abcdefghijklmn
+-- d/abcdefghijklm
+-- case
+step: rm -r d
+expect: missing d
+
+== empty-answer
+# src (yes): an empty line is no; blanks before the answer are skipped (\040: a blank)
+-- a
+-- b
+-- answers
+
+\040\040\040y
+-- case
+step: rm -i a b
+stdin: answers
+expect: file a contains ''
+expect: missing b

@@ -2,7 +2,7 @@
 
 ## Status
 
-open (after 110)
+active (2026-11-16)
 
 ## Goal
 
@@ -71,3 +71,27 @@ change (a port to the host, a fix the owner allows) is checked against an expect
 Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them).
 
 ## Log
+- 2026-11-16: dc: `compare/dc/corpus.py`, the cases in `compare/dc/tests.txt` (47: every command of the man page, the
+  example, the diagnostics; from the source Y, Q, K, !< !> !=, x of a number, p of a string, the output bases above 16 and
+  1/0/-1, the registers of 0241 and above, the limits, the syntax of numbers, the line continuation, the order of ! output).
+  Every case has an expectation written from the man page or the source; 17 of my first expectations were wrong and each
+  was explained by the source before it was changed (e.g. 10i in base 2 is 2, k stays set, the remainder of % at scale k).
+  Bugs of the original: the endless loop on a second point (a case, ended by `TIMEOUT`), and three of memory behind arrays
+  (not cases: their result depends on the layout); `host/KNOWLEDGE.md`. Two mutants of the shipped dc (line length 69, a
+  digit format) are found. Runner: `expect: output is`, `TIMEOUT` of a corpus. 47 of 47 identical.
+- 2026-11-16: rm (21 cases), rmdir (13), mv with cp and ln (41; one program under three names: `ALIASES` of the corpus,
+  argv[0] = the word of the step, z8k-emu `-0`), tar (34). The cases in `compare/NAME/tests.txt`, read by
+  `host/recon/casefile.py` (the format of dc, now shared). Each case's original output was read against the source before
+  it was kept; a mutant of each program (rm: Y no longer yes; rmdir: exit 1; mv: no chmod of a new copy; tar: "A" for
+  "a") is found. Emulator models, built with the first program that needs them: a link to a directory is a rename (mv dir1
+  dir2); the guest /tmp of `Z8K_TMPDIR` is a mount (pwd, which tar runs, finds /tmp/CASE); the log of `Z8K_ROOTLOG` is left
+  out of directory reads. Runner: the candidate lies beside the case directory (rm -i alone lists its directory), every
+  side runs in a directory of the same name (tar writes leftover memory holding it into an archive), `IN_TMP`, `TIMEOUT`,
+  `same-as` of a file of the run. Not cases, until their model exists: what needs a terminal (rm -i questions about modes,
+  mv's question), devices (tar's default device, a device as a name), signals. Bugs of the originals:
+  `host/KNOWLEDGE.md`, "Bugs and quirks".
+- 2026-11-16: the first checkall of the batch failed twice, both on my side: the ".." of the /tmp model had first been
+  resolved by name for every path (dir/../s.a with dir a file then worked, where the host and the WEGA kernel say no:
+  ar's host candidate differed); now only a ".." that leaves the guest /tmp or would go above ROOT is the model's. And a
+  file of a tar case was made without the fixed time (its time is in the archive: equal only when both sides ran in the
+  same second).

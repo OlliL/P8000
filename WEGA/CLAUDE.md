@@ -67,7 +67,7 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
 
 ## Compile with the original tools (z8k-emu)
 
-    z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]
+    z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] [-0 ARGV0] PROGRAM [ARG...]
 
 - `ROOT` = `<WEGA_ROOT>`. Absolute guest paths are looked up below ROOT (guest `/tmp` = `ROOT/tmp`);
   relative paths refer to the host working directory. A file outside ROOT and the working

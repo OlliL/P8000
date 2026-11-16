@@ -1,0 +1,629 @@
+# The cases of the corpus of dc (compare/dc/corpus.py); the format: host/recon/casefile.py (the default file is t.dc, the
+# default step dc t.dc).
+# Where an expectation comes from: man = /usr/man/man1/dc.1, src = src/cmd/dc (function or command of the switch).
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== man-example
+# man: BEISPIELE, the example session, typed on the standard input
+-- case
+step: dc
+stdin: s.in
+-- s.in
+2.05
+156.35
++ p
+2.05
++ p
+6
+* p
+14
+/ p
+-- expect
+158.40
+160.45
+962.70
+68
+
+== man-factorial
+# man: "the first ten values of n!"
+[la1+dsa*pla10>y]sy 0sa1 lyx
+-- expect
+1
+2
+6
+24
+120
+720
+5040
+40320
+362880
+3628800
+
+== arith-int
+# man: + - * / % ^; _ before a number: negative
+2 3+p
+10 4-p
+6 7*p
+17 5/p
+17 5%p
+2 10^p
+_3 4*p
+_17 5/p
+_17 5%p
+3 _2-p
+_5 _5*p
+0 7-p
+-- expect
+5
+6
+42
+3
+2
+1024
+-12
+-3
+-2
+5
+25
+-7
+
+== arith-dec
+# man: numbers with a decimal point; src: + takes the larger scale (eqk), * keeps max(scale of the factors, k) when the
+# sum of the scales is larger, / and % compute with k
+1.5 2.25+p
+3.75 1.25-p
+1.5 2.25*p
+1.25 4*p
+.5 .5+p
+1.0 3/p
+-- expect
+3.75
+2.50
+3.37
+5.00
+1.0
+0
+
+== arith-big
+# man: arbitrary precision
+2 100^p
+99999999999999999999 99999999999999999999*p
+123456789012345678901234567890 987654321/p
+123456789012345678901234567890 987654321%p
+_2 63^p
+-- expect
+1267650600228229401496703205376
+9999999999999999999800000000000000000001
+124999998873437499901
+574845669
+-9223372036854775808
+
+== scale-k
+# man: k sets the scale of * / ^ (and v); K (src) pushes it; src (tenot): a value below 1 of an odd scale is printed with
+# 0 in front (the half-filled first byte)
+5k 1 3/p
+K p
+2k 10 3/p
+_10 3/p
+0k 1 3/p
+-- expect
+0.33333
+5
+3.33
+-3.33
+0
+
+== sqrt
+# man: v, the scale is the larger of k and the scale of the argument
+2vp
+20k 2vp
+0k 2.0000vp
+144vp
+0vp
+1000000000000vp
+-- expect
+1
+1.41421356237309504880
+1.4142
+12
+0
+1000000
+
+== power
+# man: ^; src: an exponent with a scale is an error; the result keeps scale*exponent digits, cut to max(k, scale of the
+# base); a negative exponent gives 1/x^n with the scale k (k stays set for the lines after it); a value below 1 of an even
+# scale is printed without a 0 in front (tenot; see scale-k for an odd one)
+2 0^p
+_2 3^p
+1.5 2^p
+4k 2 _2^p
+10 _1^p
+-- expect
+1
+-8
+2.2
+.2500
+.1000
+
+== inbase
+# man: i (the input base), I (it is pushed); src: a number is read in the current base, also the one given to i
+# (10i in base 2 is base 2 again): A (ten in every base) sets the base back; the digits A-F are read in every base
+2i 1010p
+I p
+10i 11p
+Ai
+16i FFp
+Ai 1Ap
+8i 777p
+Ai 1Ap
+-- expect
+10
+2
+3
+255
+20
+511
+20
+
+== outbase
+# man: o (the output base), O (it is pushed)
+2o 10p
+8o 64p
+16o 255p 4095p
+O p
+A o
+-- expect
+1010
+100
+FF
+FFF
+10
+
+== outbase-big
+# src (bigot): an output base above 16 prints each digit as a decimal field of the width of the largest digit, each
+# with a space in front of it (the digits are collected backwards)
+100o 123456p
+1000o 1234567890p
+17o 16p 300p
+_123456p
+-- expect
+ 12 34 56
+ 001 234 567 890
+ 16
+ 01 00 11
+- 01 08 02 03 02
+
+== outbase-frac
+# src: the fraction is printed in the output base, as many digits as the scale needs
+2o 4k 1 3/p
+16o .5p
+8o 1.5p
+-- expect
+.0101010101010
+.8
+1.4
+
+== outbase-odd
+# src: output base 1 prints a number as a row of 1, _1 as a row of d (oneot); 0o gives the base 1 (measured: o reads
+# no digit of the zero)
+1o 5p
+0o 3p
+_1o 4p
+-- expect
+11111
+111
+dddd
+
+== print
+# man: p prints the top and keeps it, P prints a string and pops it, f prints all
+[hello]P [ world
+]P
+1 2 3 f
+[a string]p
+c f
+-- expect
+hello world
+3
+2
+1
+a string
+empty stack
+
+== stack-ops
+# man: c clears, d duplicates, z the depth, Z the length (digits), X the scale; src: Z of zero is 0, Z of a string counts
+# its bytes as digits of base 100
+1 2 3 zp
+c zp
+5 d*p
+12345 Zp
+_12345 Zp
+123.45 Xp
+123.45 Zp
+0 Zp
+[abc] Zp
+-- expect
+3
+0
+25
+5
+5
+2
+5
+0
+4
+
+== registers
+# man: s, l: a register; S, L: a register as a stack; a register not yet set loads 0
+5 sa la la+p
+lz p
+1 Sb 2 Sb 3 Sb
+Lb p Lb p lb p
+7 sc 8 Sc lc p Lc p lc p
+-- expect
+10
+0
+3
+2
+1
+8
+8
+7
+
+== strings
+# man: [ ] a string, x executes it, strings nest; src (print): p prints a string as a number when none of its bytes is
+# above 99 (the digits of a number are base 100): "1 [2] 3" is a number of scale 51 ('3')
+[2 3+p]x
+[[inner]P]x
+[1 [2] 3]p
+[[[deep]]]p
+-- expect
+5
+inner.000000000000000000000000000000000000000329350913249
+[[deep]]
+
+== execute-number
+# src: x of a number runs its bytes (base-100 digits and the scale) as commands
+5x
+-- expect
+5 is unimplemented
+0 is unimplemented
+
+== compare
+# man: <x >x =x: the two top values are compared, x executed when the relation holds (the second against the top)
+[[yes]P]sy [[no]P]sn
+1 2<y
+2 1<y
+2 1>y
+1 2>y
+3 3=y
+3 4=y
+[
+]P
+-- expect
+yesyesyes
+
+== compare-not
+# src: !<x !>x !=x, the negated relations
+[[y]P]sy
+1 2!<y
+2 1!<y
+2 1!>y
+1 2!>y
+3 3!=y
+3 4!=y
+[
+]P
+-- expect
+yyy
+
+== quit
+# man: q leaves the program; in a string it leaves two levels
+1p q 2p
+-- expect
+1
+
+== quit-string
+# man: q in a string returns two levels: the rest of the string and of the string that ran it
+[[1p q 2p]x 3p]x 4p
+-- expect
+1
+4
+
+== quit-Q
+# man: Q pops the number of levels to leave
+[[[1p 3Q 2p]x 5p]x 6p]x 7p
+[[8p 1Q 9p]x 10p]x
+-- expect
+1
+7
+8
+10
+
+== arrays
+# man: ; : (for bc); src: :x stores the second at the index of the top, ;x loads, an index not set loads 0
+7 3:a 3;ap
+9 0:a 0;ap 3;ap
+5;ap
+1;bp
+-- expect
+7
+9
+7
+0
+0
+
+== shell
+# man: ! the rest of the line is a WEGA command (here: /bin/sh -c); dc prints ! after it
+1p
+!echo from sh
+2p
+-- expect
+1
+from sh
+!
+2
+
+== question
+# man: ? reads a line from the input source and executes it (the standard input here, after the file)
+1p ? 3p
+-- case
+step: dc t.dc
+stdin: s.in
+-- s.in
+2p
+-- expect
+1
+2
+3
+
+== file-then-stdin
+# man: a file is read to its end, then the standard input
+1p
+-- case
+step: dc t.dc
+stdin: s.in
+-- s.in
+2p
+-- expect
+1
+2
+
+== no-file
+# src: a file that cannot be opened
+-- case
+step: dc nosuchfile
+expect: exit 1
+-- expect
+can't open file nosuchfile
+
+== diagnostics
+# man: DIAGNOSTIK: x is unimplemented (octal), stack empty
+a
++
+1 +p
+p
+-- expect
+141 is unimplemented
+stack empty
+stack empty
+1
+1
+
+# ---- what the source has besides (src) ---------------------------------------------------------------------------
+
+== errors
+# src: the messages of the switch of commnds and of dscale, div; / by 0 leaves the divisor on the stack, the dividend is lost;
+# : and ; check the index before they read the register: after such an error the register letter runs as a command (a:
+# 141 is unimplemented), as the v after s does
+c 1 0/ p
+c 2 _1v
+c 2 1.5^
+c 2 10000^
+c 100k
+c _1Q
+c 1 :a
+c 5 _1:a
+c 5 3000:a
+c 3000;a
+c sv
+-- expect
+divide by 0
+0
+sqrt of neg number
+exp not an integer
+exp too big
+scale too big
+neg Q
+stack empty
+neg index
+141 is unimplemented
+index too big
+141 is unimplemented
+index too big
+141 is unimplemented
+save:args
+stack empty
+
+== errors-2
+# src: L of an empty register stack, S without a value; Q beyond the levels: error() continues the loop of Q, so the
+# message comes once per level asked for
+LZ
+S
+5Qp
+-- expect
+L?
+save: args
+readstk?
+readstk?
+readstk?
+readstk?
+readstk?
+empty stack
+
+== empty-ops
+# src: every command that needs one or two values, on an empty stack
++-*/%^vix
+o k : ; P Z X Q s S
+-- case
+step: dc t.dc
+expect: output contains 'stack empty'
+
+== number-syntax
+# src (readin): A-F are digits in every base, \ skips the character after it (a line break inside a number), at most 99
+# digits behind the point (the others are skipped)
+1Ap
+FFp
+12\
+34p
+1.12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890 Xp
+-- expect
+20
+165
+1234
+99
+
+== two-points
+# src (readin), a bug of the original: a second point in a number: unreadc and break, which leaves the switch, not the
+# loop: the point is read again for ever (the step ends by the TIMEOUT of the corpus)
+1.2.3p
+-- case
+step: dc t.dc
+expect: exit -999
+
+== long-lines
+# src (OUTC, TEST2): a line of more than 70 characters is continued with \ and a new line
+2 300^p
+16o 2 300^p
+2o 2 100^p
+100o 2 200^p
+-- case
+step: dc t.dc
+expect: output contains '\'
+
+== print-number-P
+# src: P of a number prints its digits in base 100, one byte each (4290: 90 'Z', 42 '*', then the scale 0 ends it)
+[A]P 65 66*P
+[
+]P
+-- expect
+AZ*
+
+== deep-stack
+# src: the stack holds 100 values (STKSZ): the 101st is lost with "out of stack space"; z of 100 and more prints
+# two base-100 digits
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+z p c
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+2
+zp
+-- expect
+99
+out of stack space
+out of stack space
+1
+-- case
+step: dc t.dc
+expect: output contains 'out of stack space'
+
+== deep-nesting
+# src: strings nest (readstk); x at the end of a string does not nest (the string is released first: [lyx]sy lyx loops
+# for ever), so the string goes on after x. 98 levels; above 99 the original writes behind readstk (readptr is counted up
+# before the check fails): not a case, its result depends on the layout of the binary
+[lx1+dsx 98>y 0]sy 0sx lyx zp
+-- case
+step: dc t.dc
+expect: output contains '98'
+
+== high-registers
+# src: a register of 0241 and above holds an array as its value: l and s copy the array with every element (S and L of
+# such a register take a number for an array: not a case)
+5 0:\344 6 1:\344 l\344 s\345 1;\345p 0;\345p
+7 2:\345 2;\345p 2;\344p
+-- expect
+6
+5
+7
+0
+
+== debug-Y
+# src: Y dumps the top of the stack and the counts of the allocator (the addresses are made equal by normalize())
+1 2 3 Y
+[ab]Y
+-- case
+step: dc t.dc
+expect: output contains 'all '
+
+== option
+# src: any option sets only the debug flag; the file follows
+1p
+-- case
+step: dc -x t.dc
+expect: output is '1\n'
+
+== option-dash
+# src: "-" alone is an option too, then the standard input is read
+-- case
+step: dc - t.dc
+stdin: s.in
+-- s.in
+3p
+-- expect
+3
+
+== eof-question
+# src (readc): ? at the end of the standard input ends dc
+1p ? 2p
+-- expect
+1
+
+== modulo-scale
+# src: % is the remainder of the quotient computed with the scale k (with 2k, 7.5/2 = 3.75 leaves 0)
+2k 10 3%p
+7.5 2%p
+_7 2%p
+0k 7.5 2%p
+_7 2%p
+-- expect
+.01
+0
+0
+1.5
+-1
+
+== sqrt-scale
+# src (v): the larger of k*2-scale and the scale of the argument is used for the root
+3k 2vp
+2vp
+.25vp
+_0vp
+0k .25vp
+-- expect
+1.414
+1.414
+0.500
+0
+.50
+
+== factorial-100
+# a long computation (the allocator: more, seekc, garbage)
+[la1+dsa*la100>y]sy 0sa1 lyx p
+-- case
+step: dc t.dc
+expect: output contains '93326215443944152681'
+
+== interleave
+# src: the output is unbuffered (setbuf): the text of a ! command and of dc stay in order
+1p !echo a
+2p !echo b
+3p
+-- expect
+1
+a
+!
+2
+b
+!
+3

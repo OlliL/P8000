@@ -1,0 +1,391 @@
+# The cases of the corpus of mv, cp and ln: one program (src/cmd/mv.c) under three names, chosen by argv[0]
+# (compare/mv/corpus.py, ALIASES); the format: host/recon/casefile.py. Where an expectation comes from: man =
+# /usr/man/man1/mv.1, cp.1, ln.1, src = src/cmd/mv.c. Without a terminal (the emulator has none) mv does not ask before
+# it replaces a target without write permission (src: isatty); the question needs the terminal model (120, not yet).
+# mv dir1 dir2 links the directory (mv is set-uid root on WEGA): the emulator renames it (host/z8k-emu/README.md).
+
+# ---- mv: the public interface (man page) ------------------------------------------------------------------------
+
+== mv-rename
+# man: mv file1 file2 renames file1
+-- a
+data
+-- case
+host: chmod 640 a
+step: mv a b
+expect: missing a
+expect: file b contains data
+expect: exit 0
+
+== mv-replace
+# man: an existing file2 is removed first
+-- a
+new
+-- b
+old
+-- case
+step: mv a b
+expect: file b contains new
+expect: missing a
+
+== mv-replace-protected
+# man: a target without write permission: mv asks on the standard input (only with a terminal, src); without one it is
+# replaced
+-- a
+new
+-- b
+old
+-- case
+host: chmod 444 b
+step: mv a b
+expect: file b contains new
+
+== mv-into-dir
+# man: mv file ... directory keeps the names
+-- a
+-- b
+-- case
+host: mkdir d
+step: mv a b d
+expect: missing a
+expect: file d/a contains ''
+expect: file d/b contains ''
+
+== mv-itself
+# man: a file is not moved onto itself; src: "mv: a and a are identical", exit status 2
+-- a
+-- case
+step: mv a a
+expect: output contains 'mv: a and a are identical'
+expect: exit 2
+
+== mv-itself-link
+# src: the same file under another name (a link) is identical too
+-- a
+-- case
+host: ln a b
+step: mv a b
+expect: output contains 'are identical'
+expect: exit 2
+
+== mv-dir
+# man: mv dir1 dir2 (SYNTAX of the usage); src: a directory is renamed in its parent
+-- d1/f
+-- case
+step: mv d1 d2
+expect: missing d1
+expect: file d2/f contains ''
+expect: exit 0
+
+# ---- mv: what the source has besides ------------------------------------------------------------------------------
+
+== mv-dir-exists
+# src (mvdir): the target directory exists
+-- d1/f
+-- d2/g
+-- case
+step: mv d1 d2
+expect: output contains 'mv: directory d2 exists'
+expect: exit 2
+
+== mv-dir-dot
+# src (mvdir): . and .. cannot be renamed; perror adds the message of the last error (the failed stat of the target)
+-- case
+step: mv . x
+step: mv .. y
+expect: output contains 'mv: cannot rename .'
+
+== mv-dir-trailing-slash
+# src (mvdir): a name ending in / cannot be renamed
+-- d/f
+-- case
+step: mv d/ e
+expect: output contains 'mv: cannot rename d/'
+
+== mv-dir-other-parent
+# src (mvdir): only a rename in the same directory
+-- d/sub/f
+-- case
+host: mkdir e
+step: mv d/sub e/sub
+expect: output contains 'mv: directory rename only'
+expect: exit 2
+
+== mv-dir-no-parent
+# src (mvdir): the parent of the target does not exist
+-- d/f
+-- case
+step: mv d nosuch/d
+expect: output contains 'mv: cannot locate parent'
+
+== mv-dir-no-write
+# src (mvdir): the parent without write permission
+-- p/d/f
+-- case
+host: chmod 555 p
+step: mv p/d p/e
+host: chmod 755 p
+expect: output contains 'mv: no write access to p'
+expect: exit 2
+
+== mv-dir-many
+# src: a directory as the first of more than two names: the usage
+-- d/f
+-- a
+-- case
+host: mkdir e
+step: mv d a e
+expect: output contains 'Usage: mv file1 file2'
+expect: exit 2
+
+== mv-nonexistent
+# src: a source that does not exist: perror "mv: cannot access NAME"
+-- case
+step: mv nosuch b
+expect: output contains 'mv: cannot access nosuch'
+expect: exit 2
+
+== mv-target-not-found
+# src: more than two names and the last one does not exist
+-- a
+-- b
+-- case
+step: mv a b nosuch
+expect: output contains 'mv: nosuch not found'
+expect: exit 2
+
+== mv-target-not-dir
+# src: more than two names and the last one is no directory: the usage
+-- a
+-- b
+-- c
+-- case
+step: mv a b c
+expect: output contains 'Usage: mv file1 file2'
+expect: exit 2
+
+== mv-dir-among-files
+# src: a directory among the files moved into a directory: "mv: NAME directory", the others are moved
+-- a
+-- d1/f
+-- case
+host: mkdir dest
+step: mv a d1 dest
+expect: output contains 'mv: d1 directory'
+expect: file dest/a contains ''
+expect: exit 2
+
+== mv-source-no-write
+# src: the directory of the source without write permission: "mv: cannot unlink NAME"
+-- p/a
+-- case
+host: chmod 555 p
+step: mv p/a b
+host: chmod 755 p
+expect: output contains 'mv: cannot unlink p/a'
+expect: exit 2
+
+== mv-force
+# src: -f as the first argument (no question; without a terminal there is none anyway)
+-- a
+x
+-- b
+-- case
+host: chmod 444 b
+step: mv -f a b
+expect: file b contains x
+
+== mv-usage
+# src: fewer than two names
+-- a
+-- case
+step: mv a
+expect: output contains 'Usage: mv file1 file2'
+expect: exit 2
+
+== mv-target-dir-no-write
+# src: the target directory without write permission: link fails, the copy cannot create the file
+-- a
+x
+-- case
+host: mkdir d && chmod 555 d
+step: mv a d
+host: chmod 755 d
+expect: output contains 'mv: cannot create d/a'
+expect: file a contains x
+
+# ---- cp -------------------------------------------------------------------------------------------------------------
+
+== cp-new
+# man: cp file1 file2; a new file2 gets the mode of file1
+-- a
+data
+-- case
+host: chmod 751 a
+step: cp a b
+expect: file b contains data
+expect: file a contains data
+expect: exit 0
+
+== cp-existing
+# man: an existing file2 keeps its mode (and owner)
+-- a
+new
+-- b
+old
+-- case
+host: chmod 755 a && chmod 600 b
+step: cp a b
+expect: file b contains new
+
+== cp-into-dir
+# man: cp file ... directory keeps the names
+-- a
+1
+-- b
+2
+-- case
+host: mkdir d
+step: cp a b d
+expect: file d/a contains 1
+expect: file d/b contains 2
+
+== cp-itself
+# man: a file is not copied onto itself
+-- a
+-- case
+step: cp a a
+expect: output contains 'cp: a and a are identical'
+expect: exit 2
+
+== cp-directory
+# src: a directory as the source: the usage of cp
+-- d/f
+-- case
+step: cp d e
+expect: output contains 'Usage: cp file1 file2'
+expect: exit 2
+
+== cp-big
+# src: the copy goes in blocks of 512 bytes (here 5 blocks and a rest, and exactly 2 blocks)
+-- case
+host: head -c 2600 /dev/zero | tr '\0' 'x' > a && head -c 1024 /dev/zero | tr '\0' 'y' > b
+step: cp a a2
+step: cp b b2
+expect: file a2 same-as a
+
+== cp-empty
+# src: an empty file
+-- a
+-- case
+step: cp a b
+expect: file b contains ''
+
+== cp-unreadable
+# src: a source that cannot be read: "cp: cannot open NAME"
+-- a
+-- case
+host: chmod 000 a
+step: cp a b
+host: chmod 644 a
+expect: output contains 'cp: cannot open a'
+expect: exit 2
+
+== cp-cannot-create
+# src: a target in a directory without write permission: "cp: cannot create NAME"
+-- a
+-- case
+host: mkdir d && chmod 555 d
+step: cp a d/b
+host: chmod 755 d
+expect: output contains 'cp: cannot create d/b'
+
+== cp-protected-target
+# src: cp does not unlink an existing target: one without write permission cannot be created
+-- a
+new
+-- b
+old
+-- case
+host: chmod 444 b
+step: cp a b
+expect: output contains 'cp: cannot create b'
+expect: file b contains old
+
+== cp-nonexistent
+# src: a source that does not exist
+-- case
+step: cp nosuch b
+expect: output contains 'cp: cannot access nosuch'
+
+# ---- ln -------------------------------------------------------------------------------------------------------------
+
+== ln-link
+# man: ln name1 name2 makes name2 a second name of the same file
+-- a
+data
+-- case
+step: ln a b
+expect: file b contains data
+expect: exit 0
+
+== ln-into-dir
+# src: ln file directory: the link gets the name of the file
+-- a
+-- case
+host: mkdir d
+step: ln a d
+expect: file d/a contains ''
+
+== ln-replace
+# src: an existing name2 is removed first
+-- a
+new
+-- b
+old
+-- case
+step: ln a b
+expect: file b contains new
+
+== ln-directory
+# man: directories cannot be linked; src: the usage of ln
+-- d/f
+-- case
+step: ln d e
+expect: output contains 'Usage: ln name1 name2'
+expect: exit 2
+
+== ln-itself
+# src: the same file
+-- a
+-- case
+step: ln a a
+expect: output contains 'ln: a and a are identical'
+
+== ln-no-permission
+# src: a link that fails: "ln: no permission for NAME" (EXDEV, another file system, is not a case: one file system here)
+-- a
+-- case
+host: mkdir d && chmod 555 d
+step: ln a d/b
+host: chmod 755 d
+expect: output contains 'ln: no permission for d/b'
+expect: exit 2
+
+== ln-nonexistent
+# src: a name1 that does not exist
+-- case
+step: ln nosuch b
+expect: output contains 'ln: cannot access nosuch'
+
+# ---- the name (argv[0]) --------------------------------------------------------------------------------------------
+
+== other-name
+# src: another name than cp, mv, ln: a message, then the work of cp
+-- a
+x
+-- case
+step: copy a b
+expect: output contains "copy: command must be named cp | mv | ln -- defaults to `cp'"
+expect: file a contains x
+expect: file b contains x

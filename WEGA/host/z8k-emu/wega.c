@@ -33,6 +33,8 @@
 typedef struct { uint8_t seg; uint16_t off; } Ad;
 
 static const char *root = "";
+static char rootlogf[1100];	/* Z8K_ROOTLOG, absolute (see rootlog) */
+static char dirmoved[1100];	/* the old name of a directory given a new one by link (renamed) */
 static char **envv;			/* guest default environment */
 static int nenv;
 static uint32_t sig_kernel[32];		/* kernel-level handler values per signal */
@@ -267,7 +269,7 @@ static const char *guesttmp(void)
 /* Z8K_ROOTLOG=FILE: every guest path looked up below ROOT (not /tmp, not /dev), one line each, appended (the files of the
    tree a run depends on: the corpus runner takes them into its cache key). The file is opened for every line and closed
    again, so that the guest never sees a file descriptor of its own taken; a relative name is made absolute at the start. */
-static char rootlogf[1100];
+
 
 static void rootlog(const char *g)
 {
@@ -289,8 +291,80 @@ static void rootlog(const char *g)
 	close(fd);
 }
 
+/* The guest /tmp as a mount (Z8K_TMPDIR): its parent is ROOT ("/"), the parent of ROOT is ROOT, and ROOT lists tmp with
+   the inode of the Z8K_TMPDIR directory (dirload), so that a program that walks up with ".." (pwd, getcwd: tar) finds
+   "/tmp/NAME" for a working directory below Z8K_TMPDIR. realroot, realtmp: the canonical host paths, for comparisons. */
+static const char *realroot(void)
+{
+	static char r[PATH_MAX];
+	if (!*r && *root && !realpath(root, r)) snprintf(r, sizeof r, "%s", root);
+	return r;
+}
+
+static const char *realtmp(void)
+{
+	static char t[PATH_MAX];
+	if (!*t && *guesttmp() && !realpath(guesttmp(), t)) snprintf(t, sizeof t, "%s", guesttmp());
+	return t;
+}
+
+/* a guest path whose ".." leaves the guest /tmp (to ROOT) or would go above ROOT, resolved by the guest's rules above;
+   NULL for every other path (the host resolves it as the WEGA kernel does: a ".." after a name that is no directory is
+   an error) */
+static const char *dotdot(const char *g, char *buf, size_t n)
+{
+	char cur[PATH_MAX], comp[256];
+	const char *p = g, *q, *rr = realroot(), *rt = realtmp();
+	size_t k;
+	char *e;
+	int jump = 0;
+
+	if (!*root || !strstr(g, ".."))
+		return NULL;
+	for (q = g; *q; ) {		/* only for a component that is exactly ".." */
+		const char *s2 = strchr(q, '/');
+		k = s2 ? (size_t)(s2 - q) : strlen(q);
+		if (k == 2 && q[0] == '.' && q[1] == '.') break;
+		q += k;
+		while (*q == '/') q++;
+	}
+	if (!*q)
+		return NULL;
+	if (g[0] == '/')
+		snprintf(cur, sizeof cur, "%s", rr);
+	else if (!getcwd(cur, sizeof cur))
+		return NULL;
+	while (*p) {
+		while (*p == '/') p++;
+		if (!*p) break;
+		for (k = 0; *p && *p != '/' && k < sizeof comp - 1; ) comp[k++] = *p++;
+		comp[k] = 0;
+		if (!strcmp(comp, "."))
+			continue;
+		if (!strcmp(comp, "..")) {
+			if (*rt && !strcmp(cur, rt)) { snprintf(cur, sizeof cur, "%s", rr); jump = 1; }
+			else if (!strcmp(cur, rr)) jump = 1;
+			else if ((e = strrchr(cur, '/')) != NULL) { if (e == cur) e[1] = 0; else *e = 0; }
+			continue;
+		}
+		if (*rt && !strcmp(cur, rr) && !strcmp(comp, "tmp")) { snprintf(cur, sizeof cur, "%s", rt); jump = 1; continue; }
+		if (strlen(cur) + k + 2 >= sizeof cur) return NULL;
+		strcat(cur, "/");
+		strcat(cur, comp);
+	}
+	if (!jump)
+		return NULL;
+	snprintf(buf, n, "%s", cur);
+	return buf;
+}
+
 static const char *hostpath(const char *g, char *buf, size_t n)
 {
+	const char *dd;
+	if ((dd = dotdot(g, buf, n)) != NULL) {
+		if (g[0] == '/') rootlog(g);
+		return dd;
+	}
 	if (g[0] != '/' || !*root) return g;
 	if (!strncmp(g, "/dev/", 5)) return g;
 	if (*guesttmp() && !strncmp(g, "/tmp", 4) && (g[4] == 0 || g[4] == '/')) {
@@ -407,12 +481,12 @@ static Dir *dirof(int fd)
 /* fd was opened on path: when it is a directory, build its WEGA image, "." and ".." first */
 static void dirload(int fd, const char *path)
 {
-	struct stat st;
+	struct stat st, st2;
 	struct dirent *de;
 	DIR *dp;
 	Dir *d;
-	const char *name;
-	char sub[PATH_MAX];
+	const char *name, *dd;
+	char sub[PATH_MAX], ddb[PATH_MAX], rp[PATH_MAX];
 	int k;
 
 	if (fstat(fd, &st) < 0 || !S_ISDIR(st.st_mode) || !(dp = opendir(path)))
@@ -425,12 +499,23 @@ static void dirload(int fd, const char *path)
 		if (k < 2) {
 			name = k ? ".." : ".";
 			snprintf(sub, sizeof sub, "%s/%s", path, name);
-			if (stat(sub, &st) < 0) continue;
+			if (k && (dd = dotdot(sub, ddb, sizeof ddb)) != NULL && sub[0] != '/') ;	/* relative: the guest's .. */
+			else dd = sub;
+			if (k && realpath(path, rp) && ((*realtmp() && !strcmp(rp, realtmp())) || !strcmp(rp, realroot())))
+				dd = realroot();	/* the parent of the guest /tmp and of / is / */
+			if (stat(dd, &st) < 0) continue;
 		} else {
 			if (!(de = readdir(dp))) break;
 			name = de->d_name;
 			if (!strcmp(name, ".") || !strcmp(name, "..")) continue;
+			if (*rootlogf) {	/* the log of Z8K_ROOTLOG is not part of the guest's directory */
+				snprintf(sub, sizeof sub, "%s/%s", path, name);
+				if (!strcmp(sub, rootlogf)) continue;
+			}
 			st.st_ino = de->d_ino;
+			if (*realtmp() && !strcmp(name, "tmp") && realpath(path, rp) && !strcmp(rp, realroot()) &&
+			    stat(realtmp(), &st2) == 0)
+				st.st_ino = st2.st_ino;	/* / lists tmp with the inode of the guest /tmp */
 		}
 		if (!(d->buf = realloc(d->buf, d->len + 16)))
 			break;
@@ -625,7 +710,17 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		gstr(c, p, gp, sizeof gp); gstr(c, p2, gp2, sizeof gp2);
 		{
 			const char *h1 = hostpath(gp, hb, sizeof hb), *h2 = hostpath(gp2, hb2, sizeof hb2);
-			int r = link(h1, h2);
+			struct stat sd;
+			int r;
+			/* a link to a directory (mv dir1 dir2 as root: link, then unlink of the old name): the host cannot link a
+			   directory, it is renamed, and the unlink of the old name that follows is taken as done (dirmoved) */
+			if (lstat(h1, &sd) == 0 && S_ISDIR(sd.st_mode) && lstat(h2, &sd) < 0 && errno == ENOENT) {
+				if (rename(h1, h2) < 0)
+					return sc_err(c, errno);
+				snprintf(dirmoved, sizeof dirmoved, "%s", h1);
+				return sc_ok(c, 0);
+			}
+			r = link(h1, h2);
 			if (istmp(gp) || istmp(gp2)) tmplog("link %s %s -> %d", gp, gp2, r < 0 ? -errno : 0);
 			if (r < 0 && errno == EEXIST) {
 				struct stat s1, s2;
@@ -643,6 +738,10 @@ static int sys_call_impl(Z8K *c, unsigned n)
 			struct stat st;
 			const char *base = strrchr(hp, '/');
 			base = base ? base + 1 : hp;
+			if (*dirmoved && !strcmp(hp, dirmoved)) {	/* the old name of a directory link (case 9) */
+				*dirmoved = 0;
+				return sc_ok(c, 0);
+			}
 			if (lstat(hp, &st) == 0 && S_ISDIR(st.st_mode)) {
 				/* WEGA rmdir unlinks dir/.. and dir/. first; the host removes them with the directory */
 				if (!strcmp(base, ".") || !strcmp(base, ".."))
@@ -877,7 +976,7 @@ int main(int argc, char **argv)
 	int i, err;
 	Exec x;
 	char hb[1100];
-	const char *hp;
+	const char *hp, *argv0 = NULL;
 
 	envv = calloc(64, sizeof *envv);
 	envv[nenv++] = "PATH=/bin:/usr/bin";
@@ -888,10 +987,11 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "-T")) c->trace = 2;
 		else if (!strcmp(argv[i], "-v")) c->verbose = 1;
 		else if (!strcmp(argv[i], "-e") && i + 1 < argc && nenv < 62) envv[nenv++] = argv[++i];
+		else if (!strcmp(argv[i], "-0") && i + 1 < argc) argv0 = argv[++i];
 		else if (!strcmp(argv[i], "--")) { i++; break; }
-		else { fprintf(stderr, "usage: z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]\n"); return 2; }
+		else { fprintf(stderr, "usage: z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] [-0 ARGV0] PROGRAM [ARG...]\n"); return 2; }
 	}
-	if (i >= argc) { fprintf(stderr, "usage: z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]\n"); return 2; }
+	if (i >= argc) { fprintf(stderr, "usage: z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] [-0 ARGV0] PROGRAM [ARG...]\n"); return 2; }
 	if (*root) {
 		char t[1100];
 		if (*guesttmp())
@@ -918,6 +1018,7 @@ int main(int argc, char **argv)
 	hp = hostpath(argv[i], hb, sizeof hb);
 	err = exec_open(hp, &x);
 	if (err) { fprintf(stderr, "z8k-emu: %s: %s\n", argv[i], strerror(err)); return 126; }
+	if (argv0) argv[i] = (char *)argv0;	/* -0: the guest's argv[0] (as a shell would give it), not the path */
 	exec_map(c, &x, argv + i, envv);
 	free(x.file);
 	for (;;) {

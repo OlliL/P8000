@@ -722,12 +722,16 @@ executables on Linux. It is the reference ("oracle") for everything we
 reconstruct: run the original tool, run our rebuilt tool, compare the output
 byte for byte.
 
-    z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]
+    z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] [-0 ARGV0] PROGRAM [ARG...]
 
 `ROOT` is the extracted WEGA disk image; absolute guest paths are looked up
 below it (`/dev/*` goes to the host, `ROOT/tmp` is created). `-t` traces every
 instruction (`-T` also those of the floating point emulator), `-v` reports
-lazily allocated segments.
+lazily allocated segments, `-0` gives the guest another argv[0].
+Models built for the corpora (increment 120, `z8k-emu/README.md`): a link to a
+directory renames it (mv dir1 dir2); the guest /tmp of `Z8K_TMPDIR` is a mount
+whose `..` is ROOT, so that /bin/pwd finds /tmp/NAME (without it pwd walks the
+host tree with 14-character names and 16-bit inodes and prints a wrong path).
 
 Results (all byte-identical to the objects shipped with WEGA, see
 `z8k-emu/selftest.sh`, `make check-oracle`):
@@ -990,6 +994,23 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/cas` (`igetaddr`, `putrow`) | the row address goes through `switch (sizeof(pointer))` with a case for 4 (igetl, iputl) and one for 2; the compiler keeps the load of the constant (`ldk r2,#4`, never read) and drops the case for 2, whose body is not in the binary | kept in src/cmd/cas (ifile.c, instr.c); the body of case 2 (igetw, iputw) is a guess | compare/cas/findings.json |
 | `/lib/libc.a`, `/lib/slibc.a` (`ulimit`) | the system call number of `ulimit` is 54 in libc (that is `ioctl` in `uts/sys/sysent.c`) and 65 in slibc (`nosys`); neither reaches a ulimit | kept (`src/lib/libc/nonseg/sys/ulimit.s`, `src/lib/libc/seg/sys/ulimit.s`) | `src/lib/libc/seg/sys/ulimit.s` |
 | `/lib/slibc.a` (`symscan`) | a name of more than 8 characters is found by its length only: the loop `while (*s++ && *t++ && *t)` compares no characters | kept (`src/lib/libc/common/gen/symscan.c`; the member from `oldcc/symscan`) | `src/lib/libc/common/gen/symscan.c` |
+| `/bin/dc` (`readin`) | a number with a second point loops for ever: `unreadc(c); break;` leaves the switch, not the loop, and the point is read again | kept (the source is the original); corpus case two-points | `compare/dc/tests.txt` |
+| `/bin/dc` (`init`) | the free list of the symbol table links 257 entries of `symlst[256]`: the last `next = 0` is written behind the array; the 257th S (or s, :) takes memory of another variable, and after "symbol table overflow" the next one follows a null pointer | kept; not a corpus case (the result depends on the layout of the binary) | `compare/dc/corpus.py` |
+| `/bin/dc` (`x`, `?`) | the check of the nesting depth counts `readptr` up before it fails: at the 100th level the string is stored behind `readstk` | kept; not a corpus case (layout) | `compare/dc/tests.txt` (deep-nesting) |
+| `/bin/dc` (`S`, `L`, `s` of a register of 0241 and above) | such a register is taken for an array: S, L and a second s treat the bytes of a number as pointers to elements | kept; not a corpus case (layout) | `compare/dc/tests.txt` (high-registers) |
+| `/bin/dc` (`Q`, `:`, `;`, `s`) | `error()` ends in `continue`: inside the loop of Q it continues that loop ("readstk?" once per level asked for); after a wrong index of `:`/`;` or an empty `s` the register letter is not read and runs as a command | kept; corpus cases errors, errors-2 | `compare/dc/tests.txt` |
+| `/bin/dc` (`print`, `Z`, `x`) | a string is a number when none of its bytes is above 99 (p prints `[1 [2] 3]` as a number of scale 51); Z counts the bytes of a string as base-100 digits; x of a number runs its digit bytes | kept; corpus cases strings, stack-ops, execute-number | `compare/dc/tests.txt` |
+| `/bin/dc` (`o`) | `0o` gives the output base 1 (o finds no digit in the zero) | kept; corpus case outbase-odd | `compare/dc/tests.txt` |
+| `/bin/dc` (`readc`) | `readptr != &readptr[0]` compares readptr with itself (meant: `&readstk[0]`): the branch never runs | kept; at the end of the standard input dc ends (case eof-question) | `src/cmd/dc/dc2.c` |
+| `/bin/dc` (`Y`) | the debug dump prints addresses in octal; on an empty stack it dumps the header at address 0 of the data | kept; the addresses are normalized in the corpus, Y on an empty stack is not a case | `compare/dc/corpus.py` |
+| `/bin/rm` (`rmdir`) | rm -r adds the status of /bin/rmdir as wait() gives it (exit 2: 512) to its count of errors; exit keeps the low byte (513 gives 1, 512 alone gives 0) | kept; corpus case rmdir-status | `compare/rm/tests.txt` |
+| `/bin/rm` (`interact`) | rm -i without a file asks for a directory with `printf("%s--directory: ")`, the argument missing | kept; not a corpus case (prints whatever lies on the stack) | `compare/rm/corpus.py` |
+| `/bin/rm` (`main`) | without a terminal on the standard input rm sets -f itself: no message for a missing name, no question for a file without write permission | kept; the emulator has no terminal, so every corpus case runs this way | `compare/rm/tests.txt` |
+| `/bin/rmdir` (`rmdir`) | the test for "." and ".." looks at `strrchr(name, '/')`, which points at the slash: `rmdir d/.` is not refused and unlinks d/./.., d/./. and d/. | kept; corpus case slash-dot | `compare/rmdir/tests.txt` |
+| `/bin/mv` (`mvdir`) | "source == target" is never reached (an existing target is reported first); "cannot rename" is reported with perror, whose text is the error of the last failed call (the stat of the target) | kept; corpus case mv-dir-dot | `compare/mv/tests.txt` |
+| `/bin/tar` (`putfile`) | the last data block of a file is written from a stack buffer filled only as far as the file goes: the rest of the block is leftover memory (it holds e.g. a piece of the working directory) | kept; the corpus runs every side in a directory of the same name | `compare/tar/tests.txt` (x-named) |
+| `/bin/tar` (`readarchiv`, `dorep`) | the first read of an archive asks for 20 blocks: a shorter archive is reported as "tar: blocksize = N"; c writes the last record a second time after the end | kept; corpus case small-archive | `compare/tar/tests.txt` |
+| `/bin/tar` (`getwdir`, `dorep`) | the working directory is read from /bin/pwd into `wdir[60]` with a read of 50 bytes and searched for its newline without a bound; for u, `strcat` writes into the uninitialised `buf` before sprintf fills it | kept; the corpus keeps the directory short (/tmp/CASE) | `src/cmd/tar.c` |
 
 ## ar (reconstructed, byte-identical)
 

@@ -24,7 +24,7 @@ part of this repository; see `../KNOWLEDGE.md`, section "Inputs".
 
 ## Usage
 
-    z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]
+    z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] [-0 ARGV0] PROGRAM [ARG...]
 
 | option | meaning |
 |---|---|
@@ -36,6 +36,7 @@ part of this repository; see `../KNOWLEDGE.md`, section "Inputs".
 | `Z8K_ROOTLOG=FILE` (host environment) | every guest path looked up below ROOT (not `/tmp`, `/dev`) is appended to FILE, one per line (a relative FILE is taken from the starting directory; opened per line, so the guest never sees its descriptor): the files of the tree a run depends on, measured by the corpus runner |
 | `Z8K_TIME=SECONDS` (host environment) | the system call `time` returns this value (reproducible `$D$` of `chkout`; the guest zone is EST) |
 | `-e NAME=VALUE` | add a variable to the guest environment (default: `PATH=/bin:/usr/bin`, `HOME=/`) |
+| `-0 ARGV0` | the guest gets ARGV0 as `argv[0]` instead of the path of the program (as a shell gives the name typed; mv, cp, ln choose their work by it) |
 
 `PROGRAM` is a guest path (looked up below `ROOT`) or, without `-r`, a host
 path. Relative paths in the guest refer to the current host directory. The
@@ -132,7 +133,11 @@ kill maps such a pid back to the host process (itself, a child, the parent, anot
 `unimplemented system call N` and fails with EINVAL.
 Directory reads are translated to WEGA's fixed-size `struct direct` records,
 and directory `lseek` positions are logical byte offsets in those records;
-unlinking a directory uses the host `rmdir`. Details: `../KNOWLEDGE.md`,
+unlinking a directory uses the host `rmdir` (the unlink of DIR/. and DIR/.. is taken as done; the log file of
+`Z8K_ROOTLOG` is left out of a directory read); a link to a directory (mv dir1 dir2, as root on WEGA) renames it and
+takes the unlink of the old name that follows as done. The guest /tmp of `Z8K_TMPDIR` is a mount: `..` of it (and
+of /) is ROOT, and ROOT lists `tmp` with its inode, so that pwd (and tar, which runs it) finds /tmp/NAME for a working
+directory below it (without `Z8K_TMPDIR` pwd walks the host tree and prints a wrong path). Details: `../KNOWLEDGE.md`,
 section "Oracle: z8k-emu".
 
 ## Limitations

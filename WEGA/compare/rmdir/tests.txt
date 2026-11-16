@@ -1,0 +1,119 @@
+# The cases of the corpus of rmdir (compare/rmdir/corpus.py); the format: host/recon/casefile.py. Where an expectation
+# comes from: man = /usr/man/man1/rm.1 (rmdir is described there), src = src/cmd/rmdir.c. The emulator removes a
+# directory when its name is unlinked and takes the unlink of DIR/. and DIR/.. as done (host/z8k-emu/wega.c): rmdir runs
+# as on WEGA, where it is set-uid root.
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== empty
+# man: rmdir removes the named directories, which must be empty
+-- case
+host: mkdir a b
+step: rmdir a b
+expect: missing a
+expect: missing b
+expect: exit 0
+
+== not-empty
+# man: a directory must be empty; src: "rmdir: NAME not empty" on the standard error, exit status 2
+-- d/f
+-- case
+step: rmdir d
+expect: output contains 'rmdir: d not empty'
+expect: exit 2
+expect: file d/f contains ''
+
+== nested
+# man: an empty directory below another one
+-- case
+host: mkdir -p a/b/c
+step: rmdir a/b/c a/b
+expect: missing a/b
+expect: exit 0
+
+# ---- what the source has besides (src) ---------------------------------------------------------------------------
+
+== usage
+# src: no argument: the usage, exit status 2
+-- case
+step: rmdir
+expect: output contains 'rmdir: usage: rmdir dirname ...'
+expect: exit 2
+
+== nonexistent
+# src: a name that does not exist
+-- case
+step: rmdir nosuch
+expect: output contains 'rmdir: nosuch non-existent'
+expect: exit 2
+
+== not-a-directory
+# src: a file
+-- f
+-- case
+step: rmdir f
+expect: output contains 'rmdir: f not a directory'
+expect: exit 2
+
+== current
+# src: the current directory, also as ./
+-- case
+host: mkdir d
+step: rmdir .
+step: rmdir ./
+expect: output contains 'rmdir: cannot remove current directory'
+expect: exit 2
+
+== dot-dot
+# src: ".." is the parent (not empty here), d/.. the current directory
+-- case
+host: mkdir d
+step: rmdir ..
+step: rmdir d/..
+expect: output contains 'rmdir: .. not empty'
+expect: exit 2
+
+== slash-dot
+# src, a bug of the original: the test for "." and ".." looks at strrchr(name, '/'), which points at the slash, not after
+# it: "d/." is not refused; rmdir unlinks d/./.., d/./. and d/. (on WEGA as root: d loses its entries . and ..; the
+# emulator takes the unlink of a name ending in . or .. as done): no message, exit status 0, d stays
+-- case
+host: mkdir d
+step: rmdir d/.
+expect: exit 0
+expect: output is ''
+
+== no-permission
+# src: the parent directory without write permission: "rmdir: NAME: no permission"
+-- case
+host: mkdir -p p/d && chmod 555 p
+step: rmdir p/d
+host: chmod 755 p
+expect: output contains 'rmdir: p/d: no permission'
+expect: exit 2
+
+== mixed
+# src: every name is tried; the exit status is 2 when one of them failed
+-- f
+-- case
+host: mkdir a b
+step: rmdir a nosuch f b
+expect: missing a
+expect: missing b
+expect: exit 2
+
+== unreadable
+# src: a directory that cannot be read: "rmdir: NAME unreadable"
+-- case
+host: mkdir d && chmod 311 d
+step: rmdir d
+host: chmod 755 d
+expect: output contains 'rmdir: d unreadable'
+expect: exit 2
+
+== trailing-slash
+# src: a name with a slash at the end
+-- case
+host: mkdir d
+step: rmdir d/
+expect: missing d

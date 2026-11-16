@@ -1,0 +1,383 @@
+# The cases of the corpus of tar (compare/tar/corpus.py); the format: host/recon/casefile.py. Every case starts with
+# all its files at the time 1988-03-04 05:06:07 UTC (the archive holds the time of change). The case directory is the
+# guest's /tmp/NAME (corpus.py, IN_TMP): tar finds it by /bin/pwd. Where an expectation comes from: man =
+# /usr/man/man1/tar.1, src = src/cmd/tar.c. Not cases: the default device /dev/tardev and the drives 0 and 1 (need a
+# device model), the change of disks (ioctl SHOWFD; the emulator has none: BLOCKS 0), the signals, a name that is no file
+# or directory (a device: the emulator has no /dev of the guest).
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== c-files
+# man: c writes a new archive, f the archive file (made when it does not exist), t lists the names
+-- f1
+one
+-- f2
+two
+-- case
+step: tar cf a.tar f1 f2
+step: tar tf a.tar
+expect: output is 'f1\nf2\n-- stderr\ntar: blocksize = 6\n'
+
+== c-verbose
+# man: v prints every name with the function letter; src: "a NAME N blocks" on the standard error
+-- f1
+one
+-- case
+host: head -c 1300 /dev/zero | tr '\0' 'b' > big && touch -d '1988-03-04 05:06:07 UTC' big
+step: tar cvf a.tar f1 big
+expect: output contains 'a f1 1 blocks'
+expect: output contains 'a big 3 blocks'
+
+== c-dir
+# man: a directory is archived with everything below it
+-- d/f
+x
+-- d/sub/g
+y
+-- d/sub/deep/h
+z
+-- case
+step: tar cf a.tar d
+step: tar tf a.tar
+expect: output contains 'd/sub/deep/h'
+
+== t-verbose
+# man: t with v prints more of every file (src longt: mode, uid/gid, size, the time of change)
+-- f1
+one
+-- case
+host: chmod 4751 f1
+step: tar cf a.tar f1
+step: tar tvf a.tar
+expect: output contains 'rwsr-x--x'
+expect: output contains 'Mar  4'
+expect: output contains '1988'
+
+== t-names
+# man: t with names lists only those
+-- f1
+-- f2
+-- f3
+-- case
+step: tar cf a.tar f1 f2 f3
+step: tar tf a.tar f2
+expect: output is 'f1\nf2\nf3\n-- stderr\ntar: blocksize = 5\n'
+
+== x-all
+# man: x reads every file of the archive, with its mode and its time of change (src: utime)
+-- f1
+one
+-- d/f2
+two
+-- case
+host: chmod 640 f1
+step: tar cf a.tar f1 d
+host: rm -rf f1 d
+step: tar xf a.tar
+host: stat -c '%Y %a %n' f1 d/f2
+expect: output contains '573455167 640 f1'
+
+== x-named
+# man: x with names reads only those; src: a name not in the archive: "tar: NAME not in archiv"
+-- f1
+one
+-- f2
+two
+-- case
+step: tar cf a.tar f1 f2
+host: rm f1 f2
+step: tar xf a.tar f2 nosuch
+expect: output contains 'tar: nosuch not in archiv'
+expect: missing f1
+expect: file f2 contains two
+
+== x-mkdir
+# man: directories are read recursively; src (checkdir): missing directories are made by /bin/mkdir
+-- d/sub/f
+deep
+-- case
+step: tar cf a.tar d
+host: rm -rf d
+step: tar xvf a.tar
+expect: file d/sub/f contains deep
+expect: output contains 'x d/sub/f, 5 bytes, 1 archiv blocks'
+
+== x-modtime
+# man: m sets the time of reading as the time of change (only the contents are compared here)
+-- f1
+one
+-- case
+step: tar cf a.tar f1
+host: rm f1
+step: tar xmf a.tar
+expect: file f1 contains one
+
+== x-own-ids
+# man: X takes the ids of the user, x those of the archive (both are the host user here)
+-- f1
+one
+-- case
+step: tar cf a.tar f1
+host: rm f1
+step: tar Xf a.tar
+expect: file f1 contains one
+
+== x-last-wins
+# man: a name that is in the archive more than once: the last one is read last
+-- f1
+first
+-- case
+step: tar cf a.tar f1
+host: echo second > f1 && touch -d '1988-03-05 05:06:07 UTC' f1
+step: tar rf a.tar f1
+host: rm f1
+step: tar xf a.tar
+step: tar tf a.tar
+expect: file f1 contains second
+
+== r-append
+# man: r writes the files at the end of the archive
+-- f1
+-- f2
+-- case
+step: tar cf a.tar f1
+step: tar rf a.tar f2
+step: tar tf a.tar
+expect: output is 'f1\nf2\n-- stderr\ntar: blocksize = 4\n'
+
+== u-update
+# man: u adds a file that is not in the archive or is newer than its copy there; src: the list of the archive in
+# /tmp/tarXXXXXX, sorted by sort and awk (/bin/sh, sort, awk of the tree)
+-- f1
+-- f2
+-- case
+step: tar cf a.tar f1 f2
+host: echo new > f2 && touch -d '1988-04-01 00:00:00 UTC' f2 && echo f3 > f3 && touch -d '1988-04-01 00:00:00 UTC' f3
+step: tar uvf a.tar f1 f2 f3
+step: tar tf a.tar
+expect: output is 'f1\nf2\nf2\nf3\n-- stderr\ntar: blocksize = 8\n'
+
+== links
+# src: a file with more than one link is archived once, the other names as links ("linked to"); x makes the link again
+-- f
+data
+-- case
+host: ln f g
+step: tar cvf a.tar f g
+step: tar tf a.tar
+host: rm f g
+step: tar xvf a.tar
+expect: output contains 'g linked to f'
+expect: file g contains data
+
+== links-missing
+# man: l reports when not every link of a file was archived
+-- f
+-- case
+host: ln f g
+step: tar clf a.tar f
+expect: output contains 'Missing links to f'
+
+== stdout-stdin
+# man: f - is the standard output (c) or input (x, t): tar as a filter
+-- f1
+one
+-- case
+step: tar cf - f1
+step: tar cf a.tar f1
+step: tar tf -
+stdin: a.tar
+expect: output is 'f1\n'
+
+== blocked
+# man: b sets the blocking factor (1 to 20); f and b take their arguments in their order; src: an archive read is
+# reported with its blocking ("tar: blocksize = N")
+-- f1
+one
+-- case
+step: tar cbf 20 a.tar f1
+step: tar cfb b.tar 20 f1
+step: tar tf a.tar
+step: tar tvbf 20 b.tar
+expect: file a.tar same-as b.tar
+
+== interactive
+# man: w asks before every file ("y" does it); with x a new name can follow the y
+-- f1
+one
+-- f2
+two
+-- answers
+y
+n
+-- answers2
+y renamed
+-- case
+step: tar cwf a.tar f1 f2
+stdin: answers
+step: tar tf a.tar
+host: rm f1 f2
+step: tar xwf a.tar
+stdin: answers2
+expect: file renamed contains one
+expect: missing f1
+
+== path-names
+# man: a name with a directory part; src: tar goes into the directory and back to the working directory (wdir of
+# /bin/pwd) after every name
+-- d/sub/f
+x
+-- e/g
+y
+-- case
+step: tar cvf a.tar d/sub e/g
+step: tar tf a.tar
+expect: output contains 'd/sub/f'
+expect: output contains 'e/g'
+
+== absolute
+# man: a full path name is kept in the archive (only listed here: x would write into the tree)
+-- case
+step: tar cf a.tar /etc/group
+step: tar tf a.tar
+expect: output is '/etc/group\n-- stderr\ntar: blocksize = 4\n'
+
+# ---- what the source has besides (src) ---------------------------------------------------------------------------
+
+== usage
+# src: no argument, or an unknown option: the usage, exit status 1
+-- case
+step: tar
+step: tar zf a.tar
+expect: output contains 'tar: z: unknown option'
+expect: exit 1
+
+== no-names
+# src: c without a name: "tar: no write-arguments", exit status 3
+-- case
+step: tar cf a.tar
+expect: output contains 'tar: no write-arguments'
+expect: exit 3
+
+== cannot-open-file
+# src: a name that cannot be opened
+-- f1
+-- case
+step: tar cf a.tar nosuch f1
+step: tar tf a.tar
+expect: output contains 'tar: nosuch: cannot open file'
+
+== cannot-open-archive
+# src: an archive that does not exist (t, x, r)
+-- case
+step: tar tf nosuch
+step: tar xf nosuch
+step: tar rf nosuch f
+expect: output contains 'tar: cannot open nosuch'
+expect: exit 1
+
+== stdout-only-create
+# src: r, u to the standard output
+-- f1
+-- case
+step: tar rf - f1
+expect: output contains 'Can only create standard output archives'
+expect: exit 1
+
+== blocked-update
+# src: a blocked archive cannot be updated; b out of range
+-- f1
+-- case
+step: tar rbf 20 a.tar f1
+step: tar cbf 21 a.tar f1
+step: tar cuf a.tar f1
+expect: output contains 'tar: Blocked archiv cannot be updated (yet)'
+expect: output contains 'Invalid blocksize (Max 20)'
+
+== small-archive
+# src (readarchiv): the first read of an archive asks for 20 blocks; a shorter archive is taken as blocked with the
+# number of blocks it has: "tar: blocksize = 4" for one small file (header, data, the empty block, and the last record
+# written once more by dorep: write(fd, tbuf, ...) after putempty)
+-- f1
+one
+-- case
+step: tar cf a.tar f1
+step: tar tf a.tar
+expect: output contains 'tar: blocksize = 4'
+
+== checksum-error
+# src (gethead): a header whose checksum does not match: the message and the question to go on; n stops (exit 2), y
+# reads the next blocks as headers
+-- f1
+one
+-- f2
+two
+-- no
+n
+-- yes
+y
+-- case
+step: tar cf a.tar f1 f2
+host: printf X | dd of=a.tar bs=1 seek=0 conv=notrunc 2>/dev/null
+step: tar tf a.tar
+stdin: no
+step: tar tf a.tar
+stdin: yes
+expect: output contains 'headblock checksum error'
+expect: output contains 'test next blocks ? (y/n) : '
+
+== debug
+# src: d prints the version (a test option)
+-- f1
+-- case
+step: tar cdf a.tar f1
+expect: output contains 'tar: Version 1.8.88'
+
+== name-too-long
+# src: a name of 100 characters or more is not archived (here 7 directories of 14 characters below each other)
+-- abcdefghijklmn/abcdefghijklmn/abcdefghijklmn/abcdefghijklmn/abcdefghijklmn/abcdefghijklmn/abcdefghijklmn/f
+-- short
+-- case
+step: tar cf a.tar abcdefghijklmn short
+step: tar tf a.tar
+expect: output contains 'file name too long'
+
+== x-cannot-create
+# src: a file that cannot be made: "tar: NAME - cannot create"
+-- d/f
+one
+-- case
+step: tar cf a.tar d
+host: rm d/f && chmod 555 d
+step: tar xf a.tar
+host: chmod 755 d
+expect: output contains 'tar: d/f - cannot create'
+
+== x-cannot-link
+# src: a link whose target is not there
+-- f
+-- case
+host: ln f g
+step: tar cf a.tar f g
+host: rm f g
+step: tar xf a.tar g
+expect: output contains 'g: cannot link'
+
+== x-overwrite
+# man: x writes over existing files
+-- f1
+archived
+-- case
+step: tar cf a.tar f1
+host: echo changed > f1
+step: tar xf a.tar
+expect: file f1 contains archived
+
+== empty-file
+# src: an empty file (no data block) and a file of exactly one block
+-- e
+-- case
+host: head -c 512 /dev/zero | tr '\0' 'z' > one && touch -d '1988-03-04 05:06:07 UTC' one
+step: tar cvf a.tar e one
+step: tar tvf a.tar
+expect: output contains 'a e 0 blocks'

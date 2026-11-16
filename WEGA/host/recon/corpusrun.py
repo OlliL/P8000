@@ -2,12 +2,15 @@
 """corpusrun.py - the corpus test of a program (increment 110): the original of the WEGA tree and every candidate on the same
 cases, compared. Usage: corpusrun.py [-c CANDIDATE[,CANDIDATE]] [-k] [-f FILTER] [--nocache] NAME|DIR   (normally host/tools/corpus.sh)
 
-A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, ROOT_ENV, DEPENDS, HOST_ENV, host_setup(),
+A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), IN_TMP (the case
+directory is the guest's /tmp/CASE.N.SIDE, its parent the guest /tmp: for programs that find their directory by pwd), host_setup(),
 generate(), normalize(), after_step()) and
 the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting files in `in/`). The case file (one field per line,
 # a comment line):
-  step: WORDS         a run of a WEGA program under the emulator; first word PROG: the program under test (the original, or
-                      a candidate), another: /bin/WORD of the WEGA tree (the original for both sides); shell-like words, no
+  step: WORDS         a run of a WEGA program under the emulator; first word PROG (or a name of ALIASES of the corpus, e.g.
+                      cp, ln for mv: {word: path of the original}): the program under test (the original, or the candidate
+                      under that name, beside the case directory), another: /bin/WORD of the WEGA tree (the original for
+                      both sides); argv[0] is the word (z8k-emu -0), as a shell gives it; shell-like words, no
                       shell operators; a word with * ? [ is expanded in the case directory as by the shell, $V by the
                       words of the variant
   stdin: FILE         stdin of the step before (a file of the case directory after in/)
@@ -16,7 +19,7 @@ the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting fil
 Every step and host line runs with umask 022.
   user: terminal: device: time: fs: signal:   reserved for the surroundings; an error until the emulator serves them
   variant: N=V ...    the case runs once per variant line with that environment (default: once, none)
-  expect: exit N | output contains TEXT | file PATH contains TEXT | file PATH same-as in/FILE | missing PATH
+  expect: exit N | output contains TEXT | output is TEXT (the whole output of the last step, \n a newline) | file PATH contains TEXT | file PATH same-as in/FILE|PATH | missing PATH
                       checked on the original's run
 Compared: per step its output (stdout, then stderr apart; after_step(argv, rc, out, err, dir) of the corpus may cut what the
 original leaves undefined) and exit status, afterwards every entry of the directory: type, mode, size,
@@ -152,7 +155,7 @@ def parse_case(text, where):
     if not c['steps']:
         raise CaseError('%s: no step' % where)
     for e in c['expect']:
-        ok = (e[:1] == ['exit'] and len(e) == 2) or (e[:2] == ['output', 'contains'] and len(e) == 3) or \
+        ok = (e[:1] == ['exit'] and len(e) == 2) or (e[:1] == ['output'] and e[1:2] in (['contains'], ['is']) and len(e) == 3) or \
              (e[:1] == ['file'] and len(e) == 4 and e[2] in ('contains', 'same-as')) or (e[:1] == ['missing'] and len(e) == 2)
         if not ok:
             raise CaseError('%s: unknown expect %s' % (where, ' '.join(e)))
@@ -195,11 +198,9 @@ def joined(out, err):
 
 
 def listing(d, norm=None):
-    """every entry below d (not .prog): type, mode, size, checksum (of the file as norm(name, data) gives it), link count"""
+    """every entry below d: type, mode, size, checksum (of the file as norm(name, data) gives it), link count"""
     out = []
     for dp, dn, fn in os.walk(d):
-        if dp == d:
-            dn[:] = [x for x in dn if x != '.prog']
         dn.sort()
         for name in sorted(dn) + sorted(fn):
             p = os.path.join(dp, name)
@@ -217,15 +218,21 @@ def listing(d, norm=None):
     return '\n'.join(out)
 
 
-def collect_rootlog(d):
-    """the guest paths the emulators started below d looked up in their ROOT (the log files are removed); not /tmp, /dev"""
+def _read_rootlog(p, paths):
+    paths.update(l for l in open(p, encoding='latin-1').read().split('\n')
+                 if l and not l.startswith(('/tmp/', '/dev/')) and l != '/tmp')
+    os.remove(p)
+
+
+def collect_rootlog(d, extra=None):
+    """the guest paths the emulators started below d (or writing to the file extra) looked up in their ROOT (the log
+    files are removed); not /tmp, /dev"""
     paths = set()
     for dp, dn, fn in os.walk(d):
         if ROOTLOG in fn:
-            p = os.path.join(dp, ROOTLOG)
-            paths.update(l for l in open(p, encoding='latin-1').read().split('\n')
-                         if l and not l.startswith(('/tmp/', '/dev/')) and l != '/tmp')
-            os.remove(p)
+            _read_rootlog(os.path.join(dp, ROOTLOG), paths)
+    if extra and os.path.exists(extra):
+        _read_rootlog(extra, paths)
     return paths
 
 
@@ -274,13 +281,27 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
     else:
         os.makedirs(rd)
     native = side == 'host'
+    # the candidate lies beside the case directory, not in it (a program that reads its directory must not see it), under
+    # every name of ALIASES (one binary, several names: mv, cp, ln)
+    aliases = dict(getattr(cfg, 'ALIASES', {}))
+    aliases.setdefault(cfg.PROG, cfg.ORIG)
+    progdir = rd + '.prog'
+    shutil.rmtree(progdir, ignore_errors=True)
     if side != 'orig':
-        os.makedirs(os.path.join(rd, '.prog'))
+        os.makedirs(progdir)
         with SPAWN:
-            shutil.copy(binary, os.path.join(rd, '.prog', cfg.PROG))
+            shutil.copy(binary, os.path.join(progdir, cfg.PROG))
+        for a in aliases:
+            if a != cfg.PROG:
+                os.link(os.path.join(progdir, cfg.PROG), os.path.join(progdir, a))
         if native and hasattr(cfg, 'host_setup'):
-            cfg.host_setup(os.path.join(rd, '.prog'))
+            cfg.host_setup(progdir)
     env = dict(os.environ)
+    env['Z8K_ROOTLOG'] = rd + '.rootlog'	# beside the case directory: a program that reads its directory must not see it
+    if getattr(cfg, 'IN_TMP', False):	# the case directory is /tmp/NAME of the guest (pwd works: z8k-emu, Z8K_TMPDIR)
+        env['Z8K_TMPDIR'] = os.path.dirname(rd)
+    if os.path.exists(rd + '.rootlog'):
+        os.remove(rd + '.rootlog')
     env.pop('TZ', None)
     env['LC_ALL'] = 'C'
     genv = dict(case['env'])
@@ -304,26 +325,26 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
                 argv.append(w)
         senv = dict(genv)
         senv.update(st['env'])
-        if argv[0] == cfg.PROG and native:
+        if argv[0] in aliases and native:
             e = dict(env)
             e.update(senv)
             he = getattr(cfg, 'HOST_ENV', {})
             e.update(he(ROOT) if callable(he) else he)
-            args = [os.path.join(rd, '.prog', cfg.PROG)] + argv[1:]
+            args = [os.path.join(progdir, argv[0])] + argv[1:]
         else:
-            if argv[0] == cfg.PROG:
-                prog = '/' + cfg.ORIG if side == 'orig' else '.prog/' + cfg.PROG
+            if argv[0] in aliases:
+                prog = '/' + aliases[argv[0]] if side == 'orig' else os.path.relpath(os.path.join(progdir, argv[0]), rd)
             else:
                 prog = '/bin/' + argv[0]
             args = [EMU]
             for k, v in senv.items():
                 args += ['-e', '%s=%s' % (k, v)]
-            args += ['-r', RUNROOT, prog] + argv[1:]
+            args += ['-r', RUNROOT, '-0', argv[0], prog] + argv[1:]	# argv[0] the word, as the shell gives it
             e = env
         args = ['sh', '-c', 'umask 022; exec "$@"', 'sh'] + args	# every step with umask 022 (the modes of new files)
         fin = open(os.path.join(rd, st['stdin']), 'rb') if st['stdin'] else None
         try:
-            rc, out, err = spawn(args, rd, e, fin)
+            rc, out, err = spawn(args, rd, e, fin, getattr(cfg, 'TIMEOUT', 600))
         finally:
             if fin:
                 fin.close()
@@ -335,9 +356,10 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         if norm:
             text = norm('output', text)
         res['steps'].append('step %d %s: exit=%d\n%s' % (i, argv[0], rc, text))
-    used = collect_rootlog(rd)
+    used = collect_rootlog(rd, rd + '.rootlog')
     res['tree'] = listing(rd, getattr(cfg, 'normalize', None))
     res['deps'] = deps_of(RUNROOT, used)
+    shutil.rmtree(progdir, ignore_errors=True)
     return res
 
 
@@ -348,6 +370,10 @@ def check_expect(case, res, rd):
         if e[0] == 'exit':
             if not last or not last[-1].split('\n', 1)[0].endswith('exit=%s' % e[1]):
                 bad.append('exit %s' % e[1])
+        elif e[0] == 'output' and e[1] == 'is':	# the whole output of the last step; \n is a newline
+            want = e[2].encode('latin-1').decode('unicode_escape')
+            if not last or last[-1].split('\n', 1)[1] != want:
+                bad.append('output is %s' % e[2])
         elif e[0] == 'output':
             if not any(e[2] in s for s in res['steps']):
                 bad.append('output contains %s' % e[2])
@@ -359,7 +385,10 @@ def check_expect(case, res, rd):
                 if e[3].encode() not in open(p, 'rb').read():
                     bad.append('file %s contains %s' % (e[1], e[3]))
             else:
-                ref = os.path.join(case['_dir'], e[3])
+                if case.get('_dir') and e[3].startswith('in/'):	# a starting file of a hand-written case
+                    ref = os.path.join(case['_dir'], e[3])
+                else:	# another file of the directory after the run
+                    ref = os.path.join(rd, e[3])
                 if not os.path.isfile(ref) or open(ref, 'rb').read() != open(p, 'rb').read():
                     bad.append('file %s same-as %s' % (e[1], e[3]))
         elif e[0] == 'missing':
@@ -629,7 +658,10 @@ def main():
         cname, getin, case, vi, var, okey = job
         vt = ' '.join(['%s=%s' % kv for kv in var['env'].items()] + var['words'])
         label = cname + ('[%s]' % vt if vt else '')
-        rdir = os.path.join(work, '%s.%d' % (cname.replace('/', '_'), vi))
+        base = '%s.%d' % (cname.replace('/', '_'), vi)
+        # every side runs in a directory of the same name (WORK/NAME/SIDE/CASE.N): a program that writes its working
+        # directory or leftover memory holding it (tar) gives the same bytes on every side
+        rd = lambda side: os.path.join(work, side, base)
         msgs = []
         def cached():
             r = None if nocache else store_read('orig', okey)
@@ -642,13 +674,13 @@ def main():
                     indir = getin()
                     if indir is None:
                         return label, None, {}
-                    ra = run_case(cfg, indir, case, var, 'orig', None, rdir + '.orig')
-                    rb = run_case(cfg, indir, case, var, 'orig', None, rdir + '.orig2')
+                    ra = run_case(cfg, indir, case, var, 'orig', None, rd('orig'))
+                    rb = run_case(cfg, indir, case, var, 'orig', None, rd('orig2'))
                     if ra != rb:
                         return label, ['UNSTABLE original: ' + explain(ra, rb)[0]], {c: False for c in cands}
-                    shutil.rmtree(rdir + '.orig2', ignore_errors=True)
+                    shutil.rmtree(rd('orig2'), ignore_errors=True)
                     r1 = ra
-                    r1['expect'] = check_expect(case, ra, rdir + '.orig')
+                    r1['expect'] = check_expect(case, ra, rd('orig'))
                     store_write('orig', okey, r1)
         if r1.get('expect'):
             msgs.append('EXPECT failed on the original: ' + '; '.join(r1['expect']))
@@ -663,18 +695,18 @@ def main():
             indir = getin()
             if indir is None:
                 return label, None, {}
-            r2 = run_case(cfg, indir, case, var, c, path, rdir + '.' + c)
+            r2 = run_case(cfg, indir, case, var, c, path, rd(c))
             r1c = {'steps': r1['steps'], 'tree': r1['tree']}
             if r1c == {'steps': r2['steps'], 'tree': r2['tree']}:
                 store_write('ok', ckey, {'deps': r2['deps']})
                 res[c] = not msgs
                 if not keep:
-                    shutil.rmtree(rdir + '.' + c, ignore_errors=True)
+                    shutil.rmtree(rd(c), ignore_errors=True)
             else:
                 res[c] = False
                 msgs.append('[%s] %s' % (c, explain(r1c, {'steps': r2['steps'], 'tree': r2['tree']})[0]))
         if not keep:
-            shutil.rmtree(rdir + '.orig', ignore_errors=True)
+            shutil.rmtree(rd('orig'), ignore_errors=True)
         return label, msgs, res
 
     n = int(os.environ.get('JOBS') or max(1, (os.cpu_count() or 2) - 1))
