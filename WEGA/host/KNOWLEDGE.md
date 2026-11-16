@@ -830,6 +830,43 @@ written in C. Details and limits: `z8k-emu/README.md`.
   shifts and rotates, C/V after `div`, DA/H after anything but byte add/sub.
   The `cpir`/`cpsir` family sets Z = condition true, P/V = counter reached zero.
 
+## The 8-bit part and /dev/ud (increment 117)
+
+Sources: `UDOS/WEGA/koppeldoc` and `K.*.S` (beside `WEGA/`: the coupling software of the 8-bit part, version 3.1,
+1989), `src/uts/dev/ud.c`, `koppel.s`, `src/man/man4/fd.4`, `ud.4`, `devnames.4`, the UDOS Systemhandbuch chapter 5.
+
+- The P8000 has two computer boards: the 16-bit one (U8000, WEGA) and the 8-bit one (U880, UDOS, the floppy drives,
+  the EPROM programmer). The coupling software runs on the 8-bit board; it is the UDOS procedure file `WEGA` of the WEGA
+  start disk (ud(4)). WEGA reaches it through the driver `ud` (character device, major 2): `/dev/ud`.
+- Requests (koppeldoc 1.2 b, ud(4)): `L` LOAD (receive a UDOS file: getud), `S` SEND (send a UDOS file: putud), `P`
+  PROM (pburn), `R`/`W` READ/WRITE floppy blocks (the kernel's floppy driver), `F` FORMAT, `V` VERIFY, `C` COPYDISK.
+- Floppies (fd(4)): driver `fd`, major 1, block (`/dev/fd*`) and raw character (`/dev/rfd*`) devices. Minor: bits 4-7
+  the format number, bits 0-1 the drive (0, 1 built in; 2, 3 an external unit). Formats: 1 = 48ss26 (77 tracks, 26 x
+  128, 8 inch, drives 2, 3 only), 2 = 48ds16, 3 = 48ss16, 4 = 48ds5 (raw only), 5 = 96ds16, 6 = 96ds9 (standard, `fdx`),
+  7 = 96ds5 (raw only), 8 = 48ds9, 9 = 48ss9, 10 = 96ss9 (48/96: 40/80 tracks; ss/ds: sides; N: sectors per track; 9 x
+  512, 16 x 256, 5 x 1024). Example of fd(4): `mknod fd296ds9 b 1 98` (6 << 4 | 2). `/dev/tardev`, `/dev/dumpdev` are
+  links to raw floppy devices; without them tar uses `/dev/rfd1` (devnames(4)).
+- The floppy commands (format, verify, copydisk, tar on a floppy, dump, restor) are meant for the system console only
+  (fd(4)).
+- The UDOS file system (NDOS; `host/tools/udosfs.py` reads it): UDOS floppies are 96ds16 (80 cylinders, 2 sides, 16
+  sectors of 256 bytes: 655360 bytes). A disk address is two bytes, (sector, track): the sector 0..31 counted over both
+  sides (16..31: side 1), the track the cylinder. Numbers of two bytes are low byte first (the record length 100H is
+  stored 00 01). Sector 0 of track 0 holds the boot code and the volume label (offset 90H, e.g. "P8000SYS"). The
+  directory is a file with its descriptor at (0, 16H): records of entries (a byte: bits 0-5 the length of the name, bit
+  7 secret; the name; the address of the descriptor), FFH after the last entry. The descriptor (256 bytes): 06/07 back
+  to the directory record, 08/09 first and 0A/0B last data record, 0C type (bit 4 B, 5 A, 6 D, 7 P, bits 0-3 subtype),
+  0D/0E number of records, 0F/10 record length (80H to 1000H), 11/12 block length, 13 properties (bit 2 F, 3 R, 4 S, 5
+  L, 6 E, 7 W), 14/15 entry point, 16/17 bytes in the last record, 18-1F and 20-27 dates of creation and change (6
+  digits YYMMDD and two filler bytes), 80/81 the first pointer sector. A pointer sector: two-byte addresses of the data
+  records (in the first one bytes 00/01 are the address of the descriptor), FA/FB the offset of the last entry, FC/FD
+  the previous pointer sector (the first one: the descriptor), FE/FF the next one (FFFFH: none). A record longer than
+  256 bytes occupies consecutive sectors from its address. There is no table of free sectors on the disk (none found on
+  the two sample disks; unused sectors still hold the formatting pattern E5H): the allocation follows from the
+  directory and the pointer sectors. Measured: `udossys.cqm` (UDOS system disk, 75 files) and `w31start.cqm` (WEGA start
+  disk, 57 files), converted with `dskconv -itype copyqm -otype raw`; the lists agree with `mame/LOG.md` section 8, and
+  `MON8_1_3.1`, `MON16_1H_3.1_UDOS`, `MON8_1_3.1_UDOS` read from them are byte-identical with the ROM dumps of MAME,
+  `sa.install` (records of 200H) with `/sa.install` of the WEGA tree.
+
 ## Open questions
 
 - Is `src/uts/conf/fpe.s` the floating point emulator of the shipped kernel?
