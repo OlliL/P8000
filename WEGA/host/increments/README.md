@@ -23,8 +23,8 @@ Numbered in steps of ten, so that an increment can be put in between (e.g. 105).
 | 100 | [slibc into the tree of libc](100-slibc-into-libc.md) | done |
 | 105 | [Parallel checkall runs with variants](105-parallel-checkall.md) | done |
 | 110 | [Corpus architecture and the emulator as oracle](110-corpus-architecture.md) | done (Claude's decisions for review) |
-| 117 | [Device models: /dev/ud, floppies, the EPROM programmer](117-device-models.md) | next |
-| 120 | [Corpora for every program and script of src/cmd](120-corpora-src-cmd.md) | active (waits for 117) |
+| 117 | [Device models: /dev/ud, floppies, the EPROM programmer](117-device-models.md) | done |
+| 120 | [Corpora for every program and script of src/cmd](120-corpora-src-cmd.md) | active |
 | 130 | [Text and data files (etc, usr/lib, usr/other)](130-text-files.md) | open |
 | 140 | [Subagents: the workflow, on a pilot program](140-subagent-pilot.md) | open |
 | 150 | [The libraries and objects of /lib and /usr/lib](150-libraries.md) | open |

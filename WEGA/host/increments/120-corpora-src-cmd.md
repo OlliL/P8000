@@ -97,3 +97,6 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   same second).
 - 2026-11-16: the programs with devices wait for 117 (owner): getud, putud, pburn first, then format, verify, copydisk,
   doscopy, tar on a floppy.
+- 2026-11-16: 117 done: corpora putud, getud, pburn, format, verify, copydisk, doscp exist (the device fields
+  `device:`, `terminal:`, `time:`); left with devices: dosformat, doscat, dosls, dosdir, dosmkdir, dosrm, dosrmdir (the
+  pattern: compare/doscp), tar on a floppy.

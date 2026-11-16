@@ -11,8 +11,8 @@ the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting fil
 # a comment line):
   step: WORDS         a run of a WEGA program under the emulator; first word PROG (or a name of ALIASES of the corpus, e.g.
                       cp, ln for mv: {word: path of the original}): the program under test (the original, or the candidate
-                      under that name, beside the case directory), another: /bin/WORD of the WEGA tree (the original for
-                      both sides); argv[0] is the word (z8k-emu -0), as a shell gives it; shell-like words, no
+                      under that name, beside the case directory), another: /bin/WORD of the WEGA tree, or the path when
+                      the word is one (/usr/bin/NAME); the original for both sides; argv[0] is the word (z8k-emu -0), as a shell gives it; shell-like words, no
                       shell operators; a word with * ? [ is expanded in the case directory as by the shell, $V by the
                       words of the variant
   stdin: FILE         stdin of the step before (a file of the case directory after in/)
@@ -24,7 +24,9 @@ Every step and host line runs with umask 022.
                       ttyname, the tty ioctls; /dev/console and /dev/tty are it
   device: driveN FILE | ud | NAME KIND:ARG [excl] [console]   the guest /dev (z8k-emu Z8K_DEVTAB; write_devtab below):
                       a floppy image of the case directory as drive N, the 8-bit part behind /dev/ud, any device model
-  user: time: fs: signal:   reserved for the surroundings; an error until the emulator serves them
+  time: SECONDS       the clock of the guest stands at SECONDS since 1970 (z8k-emu Z8K_TIME): times written to files or
+                      printed do not change between the runs
+  user: fs: signal:   reserved for the surroundings; an error until the emulator serves them
   variant: N=V ...    the case runs once per variant line with that environment (default: once, none)
   expect: exit N | output contains TEXT | output is TEXT (the whole output of the last step, \n a newline) | file PATH contains TEXT | file PATH same-as in/FILE|PATH | missing PATH
                       checked on the original's run
@@ -110,7 +112,6 @@ class CaseError(Exception):
 # the fields of the surroundings of a case the format reserves; each is an error until the emulator serves it
 LATER = {
     'user': 'the user and group ids the program runs as (and the files of /etc/passwd, /etc/group it sees)',
-    'time': 'the time the guest sees (the emulator has Z8K_TIME for a fixed time; the field comes with the first program that needs it)',
     'fs': 'a file system of its own (mount, a block device with a WEGA file system)',
     'signal': 'a signal sent to the step after N seconds or at a text of its output',
 }
@@ -118,7 +119,7 @@ LATER = {
 
 def parse_case(text, where):
     """{'env': {..}, 'steps': [{'kind': 'step'|'host', 'argv'|'line', 'stdin', 'env'}], 'variants': [{..}], 'expect': [..]}"""
-    c = {'env': {}, 'steps': [], 'variants': [], 'expect': [], 'devices': [], 'terminal': None}
+    c = {'env': {}, 'steps': [], 'variants': [], 'expect': [], 'devices': [], 'terminal': None, 'time': None}
     for n, line in enumerate(text.split('\n'), 1):
         line = line.rstrip()
         if not line.strip() or line.lstrip().startswith('#'):
@@ -152,13 +153,18 @@ def parse_case(text, where):
             c['variants'].append({'env': dict(w.split('=', 1) for w in env), 'words': [w for w in ws if w not in env]})
         elif k == 'expect':
             c['expect'].append(shlex.split(v))
+        elif k == 'time':
+            if not re.match(r'\d+$', v):
+                raise CaseError('%s:%d: time: SECONDS since 1970 (the clock of the guest stands still there)' % (where, n))
+            c['time'] = v
         elif k == 'terminal':
             if v != 'console':
                 raise CaseError('%s:%d: terminal: only "console" (the minimal terminal) so far' % (where, n))
             c['terminal'] = v
         elif k == 'device':
             ws = shlex.split(v)
-            if not ws or not (re.match(r'drive[0-3]$', ws[0]) and len(ws) == 2 or ws[0] == 'ud' and len(ws) == 1 or
+            if not ws or not (re.match(r'drive[0-3]$', ws[0]) and len(ws) == 2 or
+                              re.match(r'drive[0-3]$', ws[0]) and len(ws) == 3 and ws[2] == 'ro' or ws[0] == 'ud' and len(ws) == 1 or
                               ws[0] == 'eprom' and len(ws) >= 3 or len(ws) >= 2 and ':' in ws[1]):
                 raise CaseError('%s:%d: device: driveN FILE | ud | eprom FILE TYPE [board=N] [short] | NAME KIND:ARG '
                                 '[excl] [console]' % (where, n))
@@ -246,7 +252,8 @@ UD8 = os.path.join(REPO, 'host', 'z8k-emu', 'models', 'ud8.py')
 
 def write_devtab(case, rd):
     """the guest /dev of a run (z8k-emu Z8K_DEVTAB): WEGA's /dev (devtab.wega) and the models the case names:
-    device: driveN FILE   every floppy device of drive N (fd(4): minor & 3) reads and writes the image FILE
+    device: driveN FILE [ro]   every floppy device of drive N (fd(4): minor & 3) reads and writes the image FILE; ro: the
+                          disk is write protected for the 8-bit part (FORMAT, COPYDISK, W: error C3)
     device: ud            /dev/ud is the 8-bit part (models/ud8.py) with the drives of the case; what the 8-bit part
                           prints on its console is recorded as part of the result
     device: eprom FILE TYPE [board=N] [short]   the EPROM programmer of the 8-bit part: the EPROM of TYPE (e2708 ..
@@ -269,6 +276,7 @@ def write_devtab(case, rd):
         elif len(w) == 2 and w[0] == 'l' and last:
             ents.append([w[1], last[1], last[2]])
     eprom = []
+    ro = []
     for ws in case.get('devices', []):	# the EPROM of the programmer first: the line of ud needs it
         if ws[0] == 'eprom':
             eprom = ['--eprom', os.path.join(rd, ws[1]), '--eprom-type', ws[2]]
@@ -281,10 +289,13 @@ def write_devtab(case, rd):
             n = int(ws[0][5:])
             img = os.path.join(rd, ws[1])
             drives[n] = img
+            if ws[2:] == ['ro']:
+                ro.append(n)
             lines += ['model %s image:%s' % (name, img) for name, ma, mi in ents if ma == 1 and mi & 3 == n]
         elif ws[0] == 'ud':
             args = ''.join(' --drive%d %s' % (n, shlex.quote(p)) for n, p in sorted(drives.items()))
             args += ''.join(' ' + shlex.quote(w) for w in eprom)
+            args += ''.join(' --ro %d' % n for n in ro)
             lines.append('model ud proc:%s %s%s --console %s excl console' % (sys.executable, UD8, args,
                                                                              shlex.quote(rd + '.udcon')))
         else:
@@ -372,6 +383,8 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
             cfg.host_setup(progdir)
     env = dict(os.environ)
     env['Z8K_ROOTLOG'] = rd + '.rootlog'	# beside the case directory: a program that reads its directory must not see it
+    if case.get('time'):	# the clock of the guest (z8k-emu Z8K_TIME): file times and dates do not change between runs
+        env['Z8K_TIME'] = case['time']
     if case.get('devices') or case.get('terminal'):
         env['Z8K_DEVTAB'] = write_devtab(case, rd)
         if case.get('terminal') == 'console':
@@ -413,6 +426,8 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         else:
             if argv[0] in aliases:
                 prog = '/' + aliases[argv[0]] if side == 'orig' else os.path.relpath(os.path.join(progdir, argv[0]), rd)
+            elif argv[0].startswith('/'):
+                prog = argv[0]		# a program of the tree by its path (e.g. /usr/bin/dosls)
             else:
                 prog = '/bin/' + argv[0]
             args = [EMU]

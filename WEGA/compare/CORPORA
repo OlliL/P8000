@@ -28,3 +28,7 @@ tar
 putud
 getud
 pburn
+format
+verify
+copydisk
+doscp

@@ -11,6 +11,13 @@ request letter and serves it (an unknown letter is dropped, as the request dispa
   L  LOAD: receive a UDOS file (putud)        K.ACT.S LOAD
   S  SEND: send a UDOS file (getud)           K.ACT.S SEND
   P  PROM: the EPROM programmer (pburn)       K.PROM.S prom, K.P8000.S
+  R  READ, W  WRITE: floppy blocks of 512 bytes (the kernel's floppy driver)   K.BLK.S RBLOCK/BLKRD, WBLOCK/BLKWT
+  F  FORMAT, V  VERIFY, C  COPYDISK (format, verify, copydisk)                  K.BLK.S BLKFO
+The floppies of the 8-bit part (F V C R W) are the same image files as the drives of the case; the format of a disk is
+the one of the minor number of the request (fd(4): the upper 4 bits; K.BLK.S TYP: types 8, 9, 10 by table 6, the
+types above 10 as 6). FORMAT writes the disk anew in that format, every sector E5H (the pattern of formatted sectors);
+a disk whose image does not have the size of the format cannot be read in it: C4 (sector error). No disk: C2 (not
+ready), a drive given read-only (--ro N): C3 (write protected); errors of the source of COPYDISK with bit 5 (E2).
 The EPROM programmer (--eprom FILE --eprom-type TYPE [--board 1|2] [--short]): the EPROM in the socket is the file
 FILE (its size that of TYPE; made erased, all FFH, when it is missing); board 1 is the old programmer card, board 2 the
 new one (K.P8000.S: the types each card takes); --short: the card reports a short circuit (error 2). Programming
@@ -76,6 +83,7 @@ class Part8:
         self.eprom_type = {'e2708': 0, 'e2716': 1, 'e2732': 7, 'e2732a': 8, 'e2764': 9, 'e2764a': 10, 'e27128': 11,
                            'e27128a': 12, 'e27256': 13, 'e27512': 15}.get(args.eprom_type or 'e2764', 9)
         self.board = args.board
+        self.ro = set(args.ro or [])
         self.short = args.short		# NAMLEN keeps its value from one request to the next (ISNAME sets it only for a good name)
         self.nambuf = b''
 
@@ -510,6 +518,98 @@ class Part8:
             return 2
         return 0
 
+    # ---- F V C R W: the floppies as blocks (K.BLK.S)
+    GEOMETRY = {1: (77, 1, 26, 128), 2: (40, 2, 16, 256), 3: (40, 1, 16, 256), 4: (40, 2, 5, 1024),
+                5: (80, 2, 16, 256), 6: (80, 2, 9, 512), 7: (80, 2, 5, 1024), 8: (40, 2, 9, 512), 9: (40, 1, 9, 512),
+                10: (80, 1, 9, 512)}	# fd(4): tracks, sides, sectors per side, bytes per sector
+
+    def geometry(self, minor):
+        t = minor >> 4
+        return self.GEOMETRY.get(t, self.GEOMETRY[6])		# TYP: the types above 10 as 6
+
+    def drive_image(self, minor):
+        """(path, size of the format) or an error: C2 when the drive has no disk"""
+        n = minor & 3
+        p = self.drives.get(n)
+        tr, sd, ns, sl = self.geometry(minor)
+        if not p or not os.path.exists(p):
+            return 0xC2
+        return p, tr * sd * ns * sl
+
+    def read_disk(self, minor):
+        r = self.drive_image(minor)
+        if isinstance(r, int):
+            return r
+        p, size = r
+        data = open(p, 'rb').read()
+        if len(data) != size:
+            return 0xC4		# not formatted in this format: sector error
+        return data
+
+    def write_disk(self, minor, data):
+        r = self.drive_image(minor)
+        if isinstance(r, int):
+            return r
+        if (minor & 3) in self.ro:
+            return 0xC3
+        with open(r[0], 'wb') as f:
+            f.write(data)
+        return 0
+
+    def blkfo(self, req):
+        """BLKFO: F formats and verifies, V verifies, C formats the destination, copies the source onto it and verifies;
+        the answer ACK or the error code (of the source with bit 5)"""
+        smin = self.link.recv() if req == 'C' else None
+        dmin = self.link.recv()
+        tr, sd, ns, sl = self.geometry(dmin)
+        size = tr * sd * ns * sl
+        err = 0
+        if req in 'FC':
+            r = self.drive_image(dmin)
+            err = r if isinstance(r, int) else self.write_disk(dmin, b'\xe5' * size)
+        if not err and req == 'C':
+            src = self.read_disk(smin)
+            if isinstance(src, int):
+                err = src | 0x20
+            else:
+                err = self.write_disk(dmin, src)
+        if not err:
+            d = self.read_disk(dmin)
+            if isinstance(d, int):
+                err = d
+        self.link.send(err or ACK)
+
+    def block_header(self):
+        """KOPF: the minor number, the block number (512 bytes a block), the length; the offset in the image"""
+        minor = self.link.recv()
+        blk = self.link.recv() << 8
+        blk |= self.link.recv()
+        n = self.link.recv() << 8
+        n |= self.link.recv()
+        return minor, blk * 512, n
+
+    def block_read(self):
+        minor, off, n = self.block_header()
+        d = self.read_disk(minor)
+        if isinstance(d, int):
+            self.link.send(d)
+            return
+        self.link.send(ACK)
+        self.link.send(*d[off:off + n].ljust(n, b'\0'))
+        self.link.recv()		# WATACK
+
+    def block_write(self):
+        minor, off, n = self.block_header()
+        data = bytes(self.link.recv() for _ in range(n))
+        d = self.read_disk(minor)
+        if isinstance(d, int):
+            self.link.send(d)
+            return
+        d = bytearray(d)
+        d[off:off + n] = data
+        err = self.write_disk(minor, bytes(d))
+        self.link.send(err or ACK)
+
     def run(self):
         try:
             while True:
@@ -520,6 +620,12 @@ class Part8:
                     self.send_file()
                 elif c == ord('P'):
                     self.prom()
+                elif c in b'FVC':
+                    self.blkfo(chr(c))
+                elif c == ord('R'):
+                    self.block_read()
+                elif c == ord('W'):
+                    self.block_write()
                 # any other byte: no request (RSTART is reset), dropped
         except Stop:
             return 0
@@ -535,6 +641,7 @@ def main():
     ap.add_argument('--eprom-type')
     ap.add_argument('--board', type=int, default=2)
     ap.add_argument('--short', action='store_true')
+    ap.add_argument('--ro', type=int, action='append')
     return Part8(ap.parse_args()).run()
 
 

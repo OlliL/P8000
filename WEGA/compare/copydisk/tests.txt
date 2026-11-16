@@ -1,0 +1,134 @@
+# The cases of the corpus of copydisk (compare/copydisk/corpus.py); the format: host/recon/casefile.py. Where an
+# expectation comes from: man = /usr/man/man1/copydisk.1, src = src/cmd/copydisk/1.5/copydisk.c, k = UDOS/WEGA/K.BLK.S
+# (request C).
+
+== default
+# man: copydisk copies the floppy in drive 0 (/dev/rfd0) onto the one in drive 1 (/dev/rfd1); k: the destination is
+# formatted track by track, the source track read, written and read back; src: a bell, exit status 0
+-- y
+y
+-- case
+terminal: console
+device: drive0 d0
+device: drive1 d1
+device: ud
+host: python3 -c "open('d0','wb').write(bytes(i * 7 % 256 for i in range(737280))); open('d1','wb').write(b'old')"
+step: copydisk
+stdin: y
+host: cmp d0 d1 && echo copied
+expect: output contains 'Copydisk /dev/rfd0 to /dev/rfd1, ready? '
+expect: output contains 'copied'
+expect: exit 0
+
+== udos
+# man: the devices of another format: a UDOS disk (96ds16)
+-- y
+y
+-- case
+terminal: console
+device: drive0 d0
+device: drive1 d1
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format d0 && printf 'x\r' > t && python3 $WEGA_HOST/tools/udosfs.py put d0 TEXT A 100 t && python3 -c "open('d1','wb').write(b'')"
+step: copydisk /dev/rfd096ds16 /dev/rfd196ds16
+stdin: y
+host: python3 $WEGA_HOST/tools/udosfs.py ls d1
+expect: output contains 'TEXT                             A0'
+
+== same-drive
+# src: source and destination in the same drive
+-- case
+terminal: console
+device: ud
+step: copydisk /dev/rfd0 /dev/rfd096ds16
+expect: output contains 'source and destination is the same drive'
+expect: exit 1
+
+== other-format
+# src: source and destination of different formats
+-- case
+terminal: console
+device: ud
+step: copydisk /dev/rfd0 /dev/rfd196ds16
+expect: output contains 'source and destination have not the same floppy format'
+
+== source-not-ready
+# k: no disk in the source drive: C2 with bit 5 (E2); src: "source drive not ready" (the code printed & DFH: c2)
+-- y
+y
+-- case
+terminal: console
+device: drive1 d1
+device: ud
+host: python3 -c "open('d1','wb').write(b'x')"
+step: copydisk
+stdin: y
+expect: output contains 'ERROR c2 - source drive not ready'
+expect: exit 2
+
+== source-error
+# k: the source cannot be read in the format (C4 with bit 5: E4); src: "source disk read error"
+-- y
+y
+-- case
+terminal: console
+device: drive0 d0
+device: drive1 d1
+device: ud
+host: python3 -c "open('d0','wb').write(b'short'); open('d1','wb').write(b'x')"
+step: copydisk
+stdin: y
+expect: output contains 'ERROR c4 - source disk read error'
+
+== destination-not-ready
+# k: no disk in the destination drive: C2
+-- y
+y
+-- case
+terminal: console
+device: drive0 d0
+device: ud
+host: python3 -c "open('d0','wb').write(b'\xe5' * 737280)"
+step: copydisk
+stdin: y
+expect: output contains 'ERROR c2 - destination drive not ready'
+
+== destination-protected
+# k: the destination write protected: C3; src: "destination disk is write protected"
+-- y
+y
+-- case
+terminal: console
+device: drive0 d0
+device: drive1 d1 ro
+device: ud
+host: python3 -c "open('d0','wb').write(b'\xe5' * 737280); open('d1','wb').write(b'x')"
+step: copydisk
+stdin: y
+expect: output contains 'ERROR c3 - destination disk is write protected'
+
+== usage
+# src: one argument, or more than two
+-- case
+terminal: console
+device: ud
+step: copydisk /dev/rfd0
+step: copydisk a b c
+step: copydisk /dev/rfd9 /dev/rfd1
+expect: output contains 'Usage: copydisk [/dev/rfd... /dev/rfd...] (source to destination)'
+expect: output contains 'unable to open /dev/rfd9'
+
+== no
+# src: any answer but y
+-- n
+n
+-- case
+terminal: console
+device: drive0 d0
+device: drive1 d1
+device: ud
+host: python3 -c "open('d0','wb').write(b'\xe5' * 737280); open('d1','wb').write(b'x')"
+step: copydisk
+stdin: n
+host: wc -c < d1
+expect: exit 1

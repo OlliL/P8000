@@ -1,0 +1,68 @@
+# The cases of the corpus of doscp (compare/doscp/corpus.py); the format: host/recon/casefile.py. Every case starts with a
+# floppy in drive 1 formatted by the original dosformat (the prefix of corpus.py; `y` answers format's question) and the
+# clock of the guest standing at 600000000 (1989). Where an expectation comes from: man = /usr/man/man1/dos.1.
+
+== text
+# man: doscp WEGA-file device:name; a text file gets CR LF on the DCP disk; doscat gives it back without the CR
+-- y
+y
+-- text
+line one
+line two
+-- case
+step: doscp text /dev/rfd1:memo.txt
+step: /usr/bin/dosls /dev/rfd1:
+step: /usr/bin/doscat /dev/rfd1:memo.txt
+step: /usr/bin/doscat -r /dev/rfd1:memo.txt
+host: echo crlf=$(od -c d1 | grep -c 'l   i   n   e       o   n   e  \\r  \\n')
+expect: output contains 'crlf=1'
+expect: output contains 'MEMO     TXT'
+expect: output contains 'line two'
+
+== raw
+# man: -r copies byte for byte (no CR is added)
+-- y
+y
+-- case
+host: printf 'a\nb\n' > f && touch -d '1989-01-05 05:39:00 UTC' f
+step: doscp -r f /dev/rfd1:f.bin
+step: /usr/bin/doscat -r /dev/rfd1:f.bin
+host: echo lf=$(od -c d1 | grep -c ' a  \\n   b  \\n')
+expect: output contains 'lf=1'
+
+== back
+# man: doscp device:name WEGA-file copies from the DCP disk; the CR is taken away
+-- y
+y
+-- text
+alpha
+beta
+-- case
+step: doscp text /dev/rfd1:t.txt
+step: doscp /dev/rfd1:t.txt copy
+host: cmp text copy && echo same
+expect: output contains 'same'
+
+== directory
+# man: doscp file ... directory: into a directory of the DCP disk (names in upper case, as dosmkdir makes them)
+-- y
+y
+-- case
+host: echo one > f1 && echo two > f2 && touch -d '1989-01-05 05:39:00 UTC' f1 f2
+step: /usr/bin/dosmkdir /dev/rfd1:sub
+step: doscp f1 f2 /dev/rfd1:SUB
+step: /usr/bin/dosls /dev/rfd1:SUB
+step: /usr/bin/dosdir /dev/rfd1:
+expect: output contains 'F1'
+expect: output contains 'F2'
+
+== remove
+# man: dosrm removes a file of the DCP disk
+-- y
+y
+-- case
+host: echo x > f && touch -d '1989-01-05 05:39:00 UTC' f
+step: doscp f /dev/rfd1:f.txt
+step: /usr/bin/dosrm /dev/rfd1:f.txt
+step: /usr/bin/dosls /dev/rfd1:
+expect: output contains '/dev/rfd1:/'

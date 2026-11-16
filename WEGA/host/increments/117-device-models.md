@@ -2,7 +2,7 @@
 
 ## Status
 
-active (2026-11-16)
+done (2026-11-16)
 
 ## Goal
 
@@ -191,3 +191,12 @@ corpora of format, verify, copydisk, doscopy beyond the proof cases (120).
   putud cases replace, replace-type, b-only-next, two-drives); getud sets the date of last change (model corrected);
   the 8-bit console message as the model prints it; getud waits for ever when it cannot make its file (confirmed). Not
   modelled: NDOS's choice of free sectors. pburn: MAME has no EPROM programmer; checked against the sources only.
+- 2026-11-16: step 8 done: requests F, V, C, R, W in ud8.py (K.BLK.S BLKFO, RBLOCK/BLKRD, WBLOCK/BLKWT): the format
+  from the minor (TYP), every formatted sector E5H, an image not of the size of the format reads as C4, no disk C2, a
+  drive `ro` (case field `device: driveN FILE ro`, model `--ro N`) C3, errors of the source of C with bit 5. Case field
+  `time: SECONDS` (Z8K_TIME); a step may name a program by its path (`/usr/bin/dosls`). Corpora format (11), verify
+  (6), copydisk (10), doscp (5, the proof for doscopy: dosformat runs /bin/format through /dev/ud; doscp, doscat,
+  dosls, dosdir, dosmkdir, dosrm on the formatted image): all identical; a mutant of each program is caught. R and W
+  checked on the model alone (no program of the tree sends them; the kernel driver does). Not measured in MAME: the
+  error codes of a real damaged disk. Step 9: compare/README (device ro, time), KNOWLEDGE (requests F V C R W, quirks).
+  Increment done; 120 continues.

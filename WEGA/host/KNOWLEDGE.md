@@ -921,6 +921,16 @@ Sources: `UDOS/WEGA/koppeldoc` and `K.*.S` (beside `WEGA/`: the coupling softwar
   the error, then the two bytes of the CRC (the SDLC polynomial, start FFFFH: CRC-CCITT; `sdlc` of K.P8000.S checked on
   "123456789" = 29B1H). Board: `1` (the old card: types 0, 1, 7-9) or `2` (the new card: 1, 7-13, 15); the card tells
   itself by its PIO (FFH old, 00H new).
+- Requests F, V, C (format, verify, copydisk 1.5; `K.BLK.S` BLKFO), R, W (`K.BLK.S` RBLOCK/BLKRD, WBLOCK/BLKWT; the kernel's
+  floppy driver): F, V: the minor number of the device; C: the minors of source and destination. TYP takes the format
+  from the upper 4 bits of the minor (the table of the monitor; types 8, 9, 10 by table 6 with another geometry, types
+  above 10 as 6), the drive from the low bits. Track by track: F formats (side 0, and side 1 of a double sided format)
+  and reads back; C formats the destination track, reads the source track, writes it and reads it back (so the
+  destination is formatted even when the source cannot be read); V reads. The answer: ACK, or the error code of the
+  floppy routine (C2 not ready, C3 write protected, C4 sector error, C5 track error, C6 data transfer error; UDOS
+  Systemhandbuch); an error of the source of C with bit 5 (E2, E4 ...: copydisk prints the code & DFH). R, W: the
+  minor, a block number (blocks of 512 bytes; the position in the disk is linear: cylinder by cylinder, side 0 then 1)
+  and a length, both high byte first; R: ACK, the data, then one byte from WEGA; W: the data, then ACK or the error.
 - NDOS OPEN (UDOS Systemhandbuch 5.3.4): modes INPUT 0 (C7 file not found), OUTPUT 1 (an existing file is cleared),
   NEW 2 (D0 duplicate file), APPEND 3, UPDATE 4; errors C2 not ready, C3 protection, CC unit already open, D1 wrong
   disk, CA pointer error, D2 invalid attribute, D3 disk full, D6 file already open, D8 properties protection, D9 invalid
@@ -1113,6 +1123,9 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/putud`, `/bin/getud` (`main`) | STX, the name and ETX are built in `bufw[20]`: a name longer than 18 characters is written behind it (UDOS allows 32) | kept; not a corpus case (layout) | `src/cmd/putud.c` |
 | `/bin/putud` (`main`) | -f without -b turns every newline byte of the data into a return, also in a procedure file sent with its descriptor | kept; the corpus case descriptor uses -f -b | `compare/putud/tests.txt` |
 | `/bin/pburn` (`modprog`: bytemode, modify) | the new value of a byte is read with `sscanf(buf, "%x", &zei)` into a `char`: `%x` stores an int; on the big-endian Z8000 the char gets its high byte (00), the value lands behind it: every byte entered becomes 00 | kept; corpus cases bytemode, modify | `compare/pburn/tests.txt` |
+| `/bin/verify` (1.5, `main`) | for a device that is not a floppy, `fprintf("stderr,%s: %s is not a floppy device\n", progname, fdname)`: the text is taken for the FILE | kept; not a corpus case (what it writes depends on the layout) | `src/cmd/verify/1.5/verify.c` |
+| `/bin/format`, `verify`, `copydisk` (1.5) | `(st_mode & (S_IFCHR \| S_IFBLK)) == 0` takes a directory (S_IFDIR shares a bit with S_IFBLK) for a special file; only the major number then refuses it | kept | `src/cmd/format/1.5/format.c` |
+| 8-bit coupling software (`K.BLK.S` BLKFO) | COPYDISK formats every destination track before it reads the source track: when the source cannot be read, the first destination track is formatted already | kept in the model; corpus case source-not-ready of copydisk | `compare/copydisk/tests.txt` |
 | 8-bit coupling software (`K.ACT.S` ISNAME, ERROR) | NAMLEN is set only for a good name: the message of error 46H (invalid name) shows the new name cut to the length of the last good one | kept in the model (`host/z8k-emu/models/ud8.py`); corpus cases invalid-name of putud and getud | `UDOS/WEGA/K.ACT.S` |
 
 ## ar (reconstructed, byte-identical)

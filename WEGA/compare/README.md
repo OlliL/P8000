@@ -437,10 +437,11 @@ One field per line; a line starting with `#` is a comment.
 | `expect: file PATH same-as OTHER` | Two files of the directory are equal (or `in/FILE` of a hand-written case). |
 | `expect: missing PATH` | The file is gone afterwards. |
 | `terminal: console` | The minimal terminal: stdin and stdout of every step are the console (`isatty`, `ttyname` give `/dev/console`, the tty ioctls work). Needed by programs that run only on the system console (getud, putud, format). |
-| `device: driveN FILE` | Floppy drive N (0..3) is the image FILE of the case directory: every `/dev/fd*`, `/dev/rfd*` of that drive reads and writes it. A UDOS disk is made by `host: python3 $WEGA_HOST/tools/udosfs.py format FILE` (and filled with `udosfs.py put`). |
+| `device: driveN FILE [ro]` | Floppy drive N (0..3) is the image FILE of the case directory (`ro`: write protected for the 8-bit part): every `/dev/fd*`, `/dev/rfd*` of that drive reads and writes it. A UDOS disk is made by `host: python3 $WEGA_HOST/tools/udosfs.py format FILE` (and filled with `udosfs.py put`). |
 | `device: ud` | `/dev/ud` is the 8-bit part of the P8000 (`host/z8k-emu/models/ud8.py`) with the drives of the case; what it prints on its own console appears at the end of the record as `8-bit console:`. Needs `terminal: console` (as on WEGA). |
 | `device: NAME KIND:ARG [excl] [console]` | Any device of WEGA's `/dev` with a model of the emulator (`image:`, `host:`, `proc:`, `console`; `host/z8k-emu/README.md`). |
-| `user:` `time:` `fs:` `signal:` | Reserved for later emulator models; using them is an error until the model exists. |
+| `time: SECONDS` | The clock of the guest stands at SECONDS since 1970: times a program writes or prints do not change between the runs. |
+| `user:` `fs:` `signal:` | Reserved for later emulator models; using them is an error until the model exists. |
 
 Expectations are checked on the **original**. They prove that a case really tests what it claims (more in section 11).
 

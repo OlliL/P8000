@@ -1,0 +1,77 @@
+# The cases of the corpus of verify (compare/verify/corpus.py); the format: host/recon/casefile.py. Where an expectation
+# comes from: man = /usr/man/man1/verify.1, src = src/cmd/verify/1.5/verify.c, k = UDOS/WEGA/K.BLK.S (request V).
+# Not a case: a device that is not a floppy (src: fprintf("stderr,%s: ...") takes the text for the FILE: what it writes
+# depends on the layout of the binary).
+
+== good
+# man: verify reads the whole floppy; k: every track read; src: a bell, exit status 0
+-- y
+y
+-- case
+terminal: console
+device: drive1 d1
+device: ud
+host: python3 -c "open('d1','wb').write(b'\xe5' * 737280)"
+step: verify
+stdin: y
+expect: output contains 'Verify /dev/rfd1, ready ? '
+expect: exit 0
+
+== wrong-format
+# k: a disk not in the format of the device (a UDOS disk, 96ds16, read as 96ds9): sector error C4; src: "disk
+# verification error", exit status 2
+-- y
+y
+-- case
+terminal: console
+device: drive1 d1
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format d1
+step: verify
+stdin: y
+step: verify /dev/rfd196ds16
+stdin: y
+expect: output contains 'ERROR c4 - disk verification error'
+expect: exit 0
+
+== not-ready
+# k: no disk: C2
+-- y
+y
+-- case
+terminal: console
+device: ud
+step: verify
+stdin: y
+expect: output contains 'ERROR c2 - drive not ready'
+expect: exit 2
+
+== no
+# src: any answer but y
+-- n
+n
+-- case
+terminal: console
+device: drive1 d1
+device: ud
+host: python3 -c "open('d1','wb').write(b'\xe5' * 737280)"
+step: verify
+stdin: n
+expect: exit 1
+
+== usage
+# src: more than one argument; a name that does not exist
+-- case
+terminal: console
+device: ud
+step: verify a b
+step: verify /dev/rfd9
+expect: output contains 'Usage: verify [/dev/rfd...]'
+expect: output contains 'unable to open /dev/rfd9'
+
+== no-console
+# src: /dev/ud cannot be opened without the console
+-- case
+device: ud
+step: verify
+expect: output contains 'unable to work with floppy'

@@ -1,0 +1,163 @@
+# The cases of the corpus of format (compare/format/corpus.py); the format: host/recon/casefile.py. The disks are image
+# files of the case (`d1`, `d0`); a disk is made by python3 (the bytes) or udosfs.py. The answer to "ready ?" is the file
+# `y` or `n`. Where an expectation comes from: man = /usr/man/man1/format.1, src = src/cmd/format/1.5/format.c, k = the
+# coupling software (UDOS/WEGA/K.BLK.S: request F).
+
+== default
+# man: format formats the floppy in drive 1 (/dev/rfd1: 96ds9); src: the question on the console, y; k: every track
+# formatted (E5H) and read back, ACK; src: a bell, exit status 0
+-- y
+y
+-- case
+terminal: console
+device: drive1 d1
+device: ud
+host: python3 -c "open('d1','wb').write(b'x' * 1000)"
+step: format
+stdin: y
+host: wc -c < d1; od -An -tx1 -N 4 d1
+expect: output contains 'Format /dev/rfd1, ready ? '
+expect: output contains '737280'
+expect: output contains 'e5 e5 e5 e5'
+expect: exit 0
+
+== udos-format
+# man: another device: /dev/rfd196ds16 (format 5: 80 tracks, 2 sides, 16 sectors of 256 bytes, the UDOS format)
+-- y
+y
+-- case
+terminal: console
+device: drive1 d1
+device: ud
+host: python3 -c "open('d1','wb').write(b'x')"
+step: format /dev/rfd196ds16
+stdin: y
+host: wc -c < d1
+expect: output contains '655360'
+
+== formats
+# fd(4): the formats of the 5.25 inch drives: 48ds16 (40 x 2 x 16 x 256), 48ss16, 48ds5, 96ds5, 48ds9, 48ss9, 96ss9
+-- y
+y
+-- case
+terminal: console
+device: drive0 d0
+device: ud
+host: python3 -c "open('d0','wb').write(b'x')"
+step: format /dev/rfd048ds16
+stdin: y
+host: wc -c < d0
+step: format /dev/rfd048ss16
+stdin: y
+host: wc -c < d0
+step: format /dev/rfd048ds5
+stdin: y
+host: wc -c < d0
+step: format /dev/rfd096ds5
+stdin: y
+host: wc -c < d0
+step: format /dev/rfd048ds9
+stdin: y
+host: wc -c < d0
+step: format /dev/rfd048ss9
+stdin: y
+host: wc -c < d0
+step: format /dev/rfd096ss9
+stdin: y
+host: wc -c < d0
+expect: output contains '327680'
+expect: output contains '163840'
+expect: output contains '409600'
+expect: output contains '819200'
+expect: output contains '368640'
+expect: output contains '184320'
+
+== no
+# src: any answer but y: nothing is done, exit status 1
+-- n
+n
+-- case
+terminal: console
+device: drive1 d1
+device: ud
+host: python3 -c "open('d1','wb').write(b'x' * 10)"
+step: format
+stdin: n
+host: wc -c < d1
+expect: exit 1
+
+== usage
+# src: more than one argument
+-- case
+terminal: console
+device: ud
+step: format /dev/rfd0 /dev/rfd1
+expect: output contains 'Usage: format [/dev/rfd...]'
+expect: exit 1
+
+== not-a-floppy
+# src: a device of another driver (/dev/null: major 6) and a plain file are not floppy devices
+-- case
+terminal: console
+device: ud
+step: format /dev/null
+step: format /etc/passwd
+expect: output contains '/dev/null is not a floppy device'
+expect: output contains '/etc/passwd is not a floppy device'
+
+== nonexistent
+# src: a name that does not exist
+-- case
+terminal: console
+device: ud
+step: format /dev/rfd9
+expect: output contains 'unable to open /dev/rfd9'
+
+== no-console
+# man: only on the system console; src: /dev/ud cannot be opened: "unable to work with floppy"
+-- case
+device: drive1 d1
+device: ud
+step: format
+expect: output contains 'unable to work with floppy'
+expect: exit 1
+
+== not-ready
+# k: no disk in the drive: C2; src: "ERROR c2 - drive not ready", exit status 2
+-- y
+y
+-- case
+terminal: console
+device: ud
+step: format
+stdin: y
+expect: output contains 'ERROR c2 - drive not ready'
+expect: exit 2
+
+== protected
+# k: a write protected disk: C3; src: "disk is write protected"
+-- y
+y
+-- case
+terminal: console
+device: drive1 d1 ro
+device: ud
+host: python3 -c "open('d1','wb').write(b'x' * 10)"
+step: format
+stdin: y
+expect: output contains 'ERROR c3 - disk is write protected'
+
+== drive0
+# man: the drive is that of the device: /dev/rfd0 is drive 0
+-- y
+y
+-- case
+terminal: console
+device: drive0 d0
+device: drive1 d1
+device: ud
+host: python3 -c "open('d0','wb').write(b'x'); open('d1','wb').write(b'y')"
+step: format /dev/rfd0
+stdin: y
+host: wc -c < d0; wc -c < d1
+expect: output contains '737280'

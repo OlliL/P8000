@@ -448,10 +448,11 @@ Ein Feld pro Zeile; eine Zeile, die mit `#` beginnt, ist ein Kommentar.
 | `expect: file PFAD same-as ANDERE` | Zwei Dateien des Verzeichnisses sind gleich (oder `in/DATEI` eines handgeschriebenen Falls). |
 | `expect: missing PFAD` | Die Datei ist hinterher weg. |
 | `terminal: console` | Das minimale Terminal: stdin und stdout jedes Schritts sind die Konsole (`isatty`, `ttyname` liefern `/dev/console`, die tty-ioctls funktionieren). Nötig für Programme, die nur an der Systemkonsole laufen (getud, putud, format). |
-| `device: driveN DATEI` | Diskettenlaufwerk N (0..3) ist das Image DATEI im Fallverzeichnis: jedes `/dev/fd*`, `/dev/rfd*` dieses Laufwerks liest und schreibt es. Eine UDOS-Diskette macht `host: python3 $WEGA_HOST/tools/udosfs.py format DATEI` (gefüllt mit `udosfs.py put`). |
+| `device: driveN DATEI [ro]` | Diskettenlaufwerk N (0..3) ist das Image DATEI im Fallverzeichnis (`ro`: für den 8-Bit-Teil schreibgeschützt): jedes `/dev/fd*`, `/dev/rfd*` dieses Laufwerks liest und schreibt es. Eine UDOS-Diskette macht `host: python3 $WEGA_HOST/tools/udosfs.py format DATEI` (gefüllt mit `udosfs.py put`). |
 | `device: ud` | `/dev/ud` ist der 8-Bit-Teil des P8000 (`host/z8k-emu/models/ud8.py`) mit den Laufwerken des Falls; was er auf seiner eigenen Konsole ausgibt, steht am Ende des Protokolls als `8-bit console:`. Braucht `terminal: console` (wie unter WEGA). |
 | `device: NAME ART:ARG [excl] [console]` | Ein beliebiges Gerät aus WEGAs `/dev` mit einem Modell des Emulators (`image:`, `host:`, `proc:`, `console`; `host/z8k-emu/README.md`). |
-| `user:` `time:` `fs:` `signal:` | Reserviert für spätere Emulator-Modelle; sie zu benutzen ist ein Fehler, bis das Modell existiert. |
+| `time: SEKUNDEN` | Die Uhr des Gasts steht auf SEKUNDEN seit 1970: Zeiten, die ein Programm schreibt oder ausgibt, ändern sich zwischen den Läufen nicht. |
+| `user:` `fs:` `signal:` | Reserviert für spätere Emulator-Modelle; sie zu benutzen ist ein Fehler, bis das Modell existiert. |
 
 Erwartungen werden am **Original** geprüft. Sie belegen, dass ein Fall wirklich testet, was er behauptet (mehr in
 Abschnitt 11).
