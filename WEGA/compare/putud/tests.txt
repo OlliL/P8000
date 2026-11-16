@@ -270,3 +270,38 @@ host: python3 $WEGA_HOST/tools/udosfs.py ls disk1.img | grep -q '^text ' && echo
 host: python3 $WEGA_HOST/tools/udosfs.py ls disk0.img | grep -q '^text ' || echo not-on-drive-0
 expect: output contains 'on-drive-1'
 expect: output contains 'not-on-drive-0'
+
+# ---- the signals (src: main, del_pro) -----------------------------------------------------------------------------
+# putud catches INT (del_pro: caught again, the flag del set); HUP, QUIT, ILL, TRAP, IOT, SEGV, SYS, PIPE, ALRM, TERM
+# are ignored. `p` is a FIFO: putud waits in its open until the signal comes.
+
+== signal-int
+# src: INT while p is opened: the open ends with EINTR ("p unable to open file"); del is set, so for the next file the
+# answer to its first block is taken for ESC: CAN, the whole run ends (exit status 1: one file not sent); k: the 8-bit
+# part has the block already and closes the file with it (text has its one block)
+-- text
+first line
+second line
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && mkfifo p
+step: putud p text
+signal: INT after 2
+host: python3 $WEGA_HOST/tools/udosfs.py ls disk.img
+expect: output contains 'p unable to open file'
+expect: output contains 'step 1 putud: exit=1'
+expect: output contains 'text                             A0'
+
+== signal-quit-ignored
+# src: QUIT is ignored: putud goes on waiting in the open (the step ends by its TIMEOUT)
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && mkfifo p
+step: putud p
+signal: QUIT after 2
+expect: exit -999
+

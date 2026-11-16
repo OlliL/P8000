@@ -1,7 +1,6 @@
 """Corpus of getud (host/recon/corpusrun.py): the original /bin/getud against the shipped build, on the cases of
 compare/getud/tests.txt (host/recon/casefile.py): the console and a UDOS disk in drive 0, the 8-bit part behind /dev/ud as
-the model host/z8k-emu/models/ud8.py (increment 117). Not in the corpus: an interrupt (DEL: the guest has no signal
-handlers), names longer than 18 characters (getud builds STX name ETX in bufw[20]: a longer one writes behind it), a block with a wrong checksum (getud answers it with CAN, not NAK: the 8-bit part ends the file)."""
+the model host/z8k-emu/models/ud8.py (increment 117). Not in the corpus: names longer than 18 characters (getud builds STX name ETX in bufw[20]: a longer one writes behind it), a block with a wrong checksum (getud answers it with CAN, not NAK: the 8-bit part ends the file)."""
 import os
 import sys
 

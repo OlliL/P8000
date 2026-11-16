@@ -1,7 +1,6 @@
 """Corpus of putud (host/recon/corpusrun.py): the original /bin/putud against the shipped build, on the cases of
 compare/putud/tests.txt (host/recon/casefile.py): the console and a UDOS disk in drive 0, the 8-bit part behind /dev/ud as
-the model host/z8k-emu/models/ud8.py (increment 117). Not in the corpus: an interrupt (DEL: the guest has no signal
-handlers), names longer than 18 characters (putud builds STX name ETX in bufw[20]: a longer one writes behind it)."""
+the model host/z8k-emu/models/ud8.py (increment 117). Not in the corpus: names longer than 18 characters (putud builds STX name ETX in bufw[20]: a longer one writes behind it)."""
 import os
 import sys
 

@@ -4,7 +4,7 @@ shipped build, on the cases of compare/pburn/tests.txt (host/recon/casefile.py).
 case. Every block runs twice, with the old programmer card (board 1) and the new one (board 2): the generator puts the
 board for {board} and keeps the lines "expect1:" for board 1 and "expect2:" for board 2 (owner 2026-11-16: both cards
 tested alike). A block whose name ends in "-1" or "-2" runs for that card only.
-Not in the corpus: an interrupt (DEL), the change of the EPROM in the socket between source and destination of copy
+Not in the corpus: the change of the EPROM in the socket between source and destination of copy
 (the operator; copy runs with one EPROM), hardware timing."""
 import functools
 import os

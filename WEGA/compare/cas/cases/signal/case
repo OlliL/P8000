@@ -1,0 +1,16 @@
+# cas: the signals (main.c main: INT, TERM, QUIT to sigdone unless ignored; sigdone: done(-1): "Assembler Abort", exit
+# status 255). The source `p.s` is a FIFO: cas waits in its open until the signal comes. HUP is not caught: cas dies
+host: mkfifo p.s
+step: cas -o p.o p.s
+signal: INT after 1
+step: cas -o p.o p.s
+signal: QUIT after 1
+step: cas -o p.o p.s
+signal: HUP after 1
+step: cas -o p.o p.s
+signal: TERM after 1
+expect: output contains 'step 1 cas: exit=255'
+expect: output contains 'step 2 cas: exit=255'
+expect: output contains 'step 3 cas: exit=-1'
+expect: output contains 'Assembler Abort'
+expect: exit 255

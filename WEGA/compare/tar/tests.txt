@@ -2,7 +2,7 @@
 # all its files at the time 1988-03-04 05:06:07 UTC (the archive holds the time of change). The case directory is the
 # guest's /tmp/NAME (corpus.py, IN_TMP): tar finds it by /bin/pwd. Where an expectation comes from: man =
 # /usr/man/man1/tar.1, src = src/cmd/tar.c. Not cases: the default device /dev/tardev and the drives 0 and 1 (need a
-# device model), the change of disks (ioctl SHOWFD; the emulator has none: BLOCKS 0), the signals, a name that is no file
+# device model), the change of disks (ioctl SHOWFD; the emulator has none: BLOCKS 0), a name that is no file
 # or directory (a device: the emulator has no /dev of the guest).
 
 # ---- the public interface (man page) ----------------------------------------------------------------------------
@@ -381,3 +381,65 @@ host: head -c 512 /dev/zero | tr '\0' 'z' > one && touch -d '1988-03-04 05:06:07
 step: tar cvf a.tar e one
 step: tar tvf a.tar
 expect: output contains 'a e 0 blocks'
+
+# ---- the signals (src: main, onintr, onhup, onquit, putfile) ----------------------------------------------------------
+# For c, r, u tar catches INT, HUP and QUIT (unless ignored): the handler ignores the signal from then on and counts it
+# (term); the loop over the names stops after the current one, the archive is ended as always (putempty), the exit
+# status is 0. TERM is not caught (src: commented out, "WOFUER ???"). `p` is a FIFO between two files: tar waits in its
+# open until the signal comes.
+
+== signal-int
+# src: INT while p is opened: p cannot be opened, f2 is not written; the archive holds f1 and its end
+-- f1
+one
+-- f2
+two
+-- case
+host: mkfifo p
+step: tar cvf a.tar f1 p f2
+signal: INT after 2
+step: tar tf a.tar
+expect: output contains 'step 2 tar: exit=0'
+expect: output contains 'tar: p: cannot open file'
+expect: output is 'f1\n-- stderr\ntar: blocksize = 4\n'
+
+== signal-hup-quit
+# src: HUP and QUIT act as INT
+-- f1
+one
+-- f2
+two
+-- case
+host: mkfifo p
+step: tar cf a.tar f1 p f2
+signal: HUP after 2
+step: tar tf a.tar
+step: tar cf b.tar f1 p f2
+signal: QUIT after 2
+step: tar tf b.tar
+expect: output contains 'step 2 tar: exit=0'
+expect: output contains 'step 4 tar: exit=0'
+expect: output is 'f1\n-- stderr\ntar: blocksize = 4\n'
+
+== signal-term
+# src: TERM is not caught: tar dies by it; the archive stays as far as it was written (1024 bytes), without its end
+# (tar t on it does not end: not a step)
+-- f1
+one
+-- f2
+two
+-- case
+host: mkfifo p
+step: tar cf a.tar f1 p f2
+signal: TERM after 2
+host: wc -c < a.tar
+expect: output contains 'step 2 tar: exit=-15'
+expect: output contains '1024'
+
+== signal-x
+# src: x and t do not catch signals: INT kills tar while it reads the archive from a FIFO
+-- case
+host: mkfifo p
+step: tar xf p
+signal: INT after 2
+expect: exit -2

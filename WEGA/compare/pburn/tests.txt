@@ -651,3 +651,65 @@ step: pburn
 stdin: a
 expect: output contains '0000:	00 01 02'
 expect: output contains '0020:	20 21 22'
+
+# ---- the signals (src: pb.devud.c set_del, res_del, del_pro) -------------------------------------------------------
+# While pburn works with the programmer (set_del ... res_del) INT goes to del_pro: the message "not interruption, ...
+# please wait", INT ignored from then on, the flag del set (which nothing reads); HUP, QUIT, TERM and others are
+# ignored there. Outside, at its questions, the signals are at their default. busy=3: the card works 3 seconds on
+# every request (host/z8k-emu/models/ud8.py --busy): the first one is the question for the board at the start of
+# pburn (pb.c main: set_del, header(5, ...), read of the board, res_del); pburn waits in its read of /dev/ud
+# (interruptible: UDPRI 45 > PZERO).
+
+== signal-int-in-work
+# src: INT while the card works on the question for the board: the message of del_pro; the read of header ends with
+# EINTR, header sets errflag, main returns (status 0) before its menu; nothing was programmed
+-- a
+p
+data -B
+e2716 -o 0 -l 100
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board} busy=3
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(i * 7 % 256 for i in range(0x100)))" > data
+step: pburn
+stdin: a
+signal: INT after 1
+expect: output is '\nnot interruption, execution of read or write prom, please wait\n'
+expect: exit 0
+
+== signal-quit-in-work
+# src: QUIT while the card works: ignored (the read is not interrupted), pburn goes on as without it
+-- a
+p
+data -B
+e2716 -o 0 -l 100
+y
+q
+q
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board} busy=3
+host: python3 -c "import sys; sys.stdout.buffer.write(bytes(i * 7 % 256 for i in range(0x100)))" > data
+step: pburn
+stdin: a
+signal: QUIT after 1
+host: head -c 256 chip.bin | cmp - data && echo programmed
+expect: output contains 'programmed'
+
+== signal-at-question
+# src: at its first question (the menu) the signals are at their default: INT kills pburn
+-- a
+-- case
+terminal: console
+device: ud
+device: eprom chip.bin e2716 board={board}
+step: pburn
+stdin: a
+signal: INT after 2
+expect: exit -2
+

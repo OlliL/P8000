@@ -1,0 +1,11 @@
+# strip: the signals (strip.c copy, rcopy: HUP, INT, QUIT ignored while a file is copied, the default again after it).
+# `p` is a FIFO without a writer: strip waits in its first open, where the signals are at their default: INT kills it.
+# Not a case: a signal inside copy or rcopy. They copy between files; a FIFO cannot hold strip there (strip seeks back
+# to the start of its input after the magic number, which a pipe cannot do), so no moment inside them can be hit.
+host: mkfifo p
+step: strip p
+signal: INT after 1
+step: strip p
+signal: QUIT after 1
+expect: output contains 'step 1 strip: exit=-2'
+expect: exit -3

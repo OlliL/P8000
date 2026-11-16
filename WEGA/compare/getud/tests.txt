@@ -177,3 +177,34 @@ device: ud
 host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'x\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk.img AB A 100 t
 step: getud AB 'x y z'
 expect: output contains 'File x  Error 46'
+
+# ---- the signals (src: main, del_pro) -----------------------------------------------------------------------------
+# getud catches INT (del_pro: caught again, the flag del set); HUP, QUIT, ILL, TRAP, IOT, SEGV, SYS, PIPE, ALRM, TERM
+# are ignored. The read of /dev/ud is interruptible (src/uts/dev/ud.c: UDPRI 45 > PZERO): a signal ends it with EINTR.
+
+== signal-int-waiting
+# src: the case unable-to-create, where getud waits for a byte that does not come; INT ends that read (EINTR): getud
+# ends as after the file, the message is printed, the exit status is the count of files not got (1)
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'x\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk.img TEXT A 100 t
+host: mkdir TEXT
+step: getud TEXT
+signal: INT after 2
+expect: output contains 'unable to open file'
+expect: exit 1
+
+== signal-term-ignored
+# src: TERM is ignored: getud goes on waiting (the step ends by its TIMEOUT)
+-- case
+terminal: console
+device: drive0 disk.img
+device: ud
+host: python3 $WEGA_HOST/tools/udosfs.py format disk.img && printf 'x\r' > t && python3 $WEGA_HOST/tools/udosfs.py put disk.img TEXT A 100 t
+host: mkdir TEXT
+step: getud TEXT
+signal: TERM after 2
+expect: exit -999
+

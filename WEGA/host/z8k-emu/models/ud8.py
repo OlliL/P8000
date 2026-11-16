@@ -18,9 +18,10 @@ the one of the minor number of the request (fd(4): the upper 4 bits; K.BLK.S TYP
 types above 10 as 6). FORMAT writes the disk anew in that format, every sector E5H (the pattern of formatted sectors);
 a disk whose image does not have the size of the format cannot be read in it: C4 (sector error). No disk: C2 (not
 ready), a drive given read-only (--ro N): C3 (write protected); errors of the source of COPYDISK with bit 5 (E2).
-The EPROM programmer (--eprom FILE --eprom-type TYPE [--board 1|2] [--short]): the EPROM in the socket is the file
+The EPROM programmer (--eprom FILE --eprom-type TYPE [--board 1|2] [--short] [--busy S]): the EPROM in the socket is the file
 FILE (its size that of TYPE; made erased, all FFH, when it is missing); board 1 is the old programmer card, board 2 the
-new one (K.P8000.S: the types each card takes); --short: the card reports a short circuit (error 2). Programming
+new one (K.P8000.S: the types each card takes); --short: the card reports a short circuit (error 2); --busy: after
+the header of a request the card works S seconds before it goes on (a time for a signal to WEGA while it waits). Programming
 behaves as an EPROM: a bit can go from 1 to 0 only; a byte that does not take its value is a programming error (3).
 Erasing is done by the case (the file set to FFH: UV light).
 The UDOS file system (NDOS) is host/tools/udosfs.py on the image files of the drives. What the 8-bit part prints on its
@@ -36,6 +37,7 @@ the attributes before OPEN), its date of creation stays; getud changes the date 
 import argparse
 import os
 import sys
+import time
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
 import udosfs  # noqa: E402
@@ -84,7 +86,8 @@ class Part8:
                            'e27128a': 12, 'e27256': 13, 'e27512': 15}.get(args.eprom_type or 'e2764', 9)
         self.board = args.board
         self.ro = set(args.ro or [])
-        self.short = args.short		# NAMLEN keeps its value from one request to the next (ISNAME sets it only for a good name)
+        self.short = args.short
+        self.busy = args.busy		# NAMLEN keeps its value from one request to the next (ISNAME sets it only for a good name)
         self.nambuf = b''
 
     # ---- the console of the 8-bit part
@@ -445,6 +448,8 @@ class Part8:
         self.link.recv()		# Vpp
         pm = self.link.recv()		# program mode: 1 standard speed (read back), 0 high speed
         self.link.send(ord('q'))
+        if self.busy:			# the card at work (programming takes its time): WEGA waits in its read of /dev/ud
+            time.sleep(self.busy)
         n = nbytes or 0x10000
         if rw == 2:			# write: the data first, 64 bytes and a 'q' each time
             buf = bytearray()
@@ -641,6 +646,7 @@ def main():
     ap.add_argument('--eprom-type')
     ap.add_argument('--board', type=int, default=2)
     ap.add_argument('--short', action='store_true')
+    ap.add_argument('--busy', type=float, default=0)
     ap.add_argument('--ro', type=int, action='append')
     return Part8(ap.parse_args()).run()
 

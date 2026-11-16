@@ -1,0 +1,20 @@
+# scparse: the signals (code1.c main: HUP, INT, TERM to dexit unless ignored; dexit(v): stdout flushed, exit(v): the
+# handler gets the number of the signal, so that is the exit status). scparse reads its input from stdin, which stays open
+# (the input is not complete): it waits until the signal comes. QUIT is not caught
+step: scparse -E t
+stdin: i
+signal: INT after 1
+step: scparse -E t
+stdin: i
+signal: HUP after 1
+step: scparse -E t
+stdin: i
+signal: QUIT after 1
+step: scparse -E t
+stdin: i
+signal: TERM after 1
+host: ls
+expect: output contains 'step 0 scparse: exit=2'
+expect: output contains 'step 1 scparse: exit=1'
+expect: output contains 'step 2 scparse: exit=-3'
+expect: exit 15

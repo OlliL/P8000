@@ -1,0 +1,14 @@
+# sld: the signals (ld.c main: INT and TERM to delexit unless ignored; delexit: l.out removed, the output removed when
+# delarg is set, exit status delarg). The object `p.o` is a FIFO: sld waits in its open until the signal comes. QUIT is
+# not caught: sld dies
+host: mkfifo p.o
+step: sld -o out p.o
+signal: INT after 1
+host: ls
+step: sld -o out p.o
+signal: QUIT after 1
+step: sld -o out p.o
+signal: TERM after 1
+host: ls
+expect: output contains 'step 3 sld: exit=-3'
+expect: output contains 'step 1 sld: exit=4'

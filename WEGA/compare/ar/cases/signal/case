@@ -1,0 +1,23 @@
+# ar: the signals (ar.c main: HUP, INT, QUIT to sigdone unless ignored; sigdone: done(100), the temporary files
+# removed). The member `p` is a FIFO: ar waits in its open until the signal comes (no writer); the archive stays as it
+# was (r) and ar ends with status 100. TERM is not caught: ar dies by it; q has appended b already
+host: printf 'hello\n' > a && printf 'world\n' > b && mkfifo p && touch -d '2020-03-04 05:06:07 UTC' a b
+step: ar r l.a a b
+host: cksum < l.a
+step: ar r l.a a p
+signal: INT after 1
+host: cksum < l.a
+step: ar q l.a b p
+signal: TERM after 1
+host: cksum < l.a
+step: ar r l.a p
+signal: QUIT after 1
+host: cksum < l.a
+step: ar r l.a p
+signal: HUP after 1
+host: cksum < l.a; ls
+expect: output contains 'step 3 ar: exit=100'
+expect: output contains 'step 5 ar: exit=-15'
+expect: output contains 'step 7 ar: exit=100'
+expect: output contains 'step 9 ar: exit=100'
+expect: output contains '3759108073 66'

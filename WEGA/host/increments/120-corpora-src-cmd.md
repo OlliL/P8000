@@ -104,3 +104,11 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   own test host/z8k-emu/tests, run by checkall); the case field `signal: SIG after SECONDS | at 'TEXT'` (to the process
   group of the step); dc has the cases interrupt and sigquit. Left of the surroundings: user, fs, processes, a terminal
   that acts on its settings; a core file is not modelled.
+- 2026-11-16: signal cases in every existing corpus whose source handles signals (owner): ar, cas, ld, sld, cparse,
+  scparse, cc, scc, strip (cases/signal), tar, getud, putud, pburn (tests.txt), dc (before). The program waits at a
+  fixed point (a FIFO in its open, stdin left open, getud's endless wait, the EPROM card busy: `busy=S`) and gets the
+  signal there. Not a case: strip's window with ignored signals (pure file copies; strip seeks on its input, a FIFO
+  cannot hold it there). Without signal handling in their sources (no cases): rm, rmdir, mv/cp/ln, cpp, codgen, popt,
+  format, verify, copydisk, doscp; gld, casold, cchain, scchain have the host candidate only and share the code of ld,
+  cas, cc (their signal cases are in those corpora). The runner: "files afterwards" lists a FIFO without reading it;
+  the steps start with no signal blocked.

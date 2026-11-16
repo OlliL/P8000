@@ -31,7 +31,8 @@ Every step and host line runs with umask 022.
                       of the step, as ^C of a terminal: after SECONDS, or when TEXT has appeared in its output; the
                       stdin of the step stays open until then (a program that reads waits). A step killed by a signal
                       has exit=-N with the WEGA number N
-                      (every step starts with INT and QUIT at their default, as from a terminal)
+                      (every step starts with INT and QUIT at their default and no signal blocked, as from a
+                      terminal)
   user: fs:           reserved for the surroundings; an error until the emulator serves them
   variant: N=V ...    the case runs once per variant line with that environment (default: once, none)
   expect: exit N | output contains TEXT | output is TEXT (the whole output of the last step, \n a newline) | file PATH contains TEXT | file PATH same-as in/FILE|PATH | missing PATH
@@ -62,6 +63,7 @@ import os
 import shlex
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import threading
@@ -199,7 +201,7 @@ def parse_case(text, where):
             if not ws or not (re.match(r'drive[0-3]$', ws[0]) and len(ws) == 2 or
                               re.match(r'drive[0-3]$', ws[0]) and len(ws) == 3 and ws[2] == 'ro' or ws[0] == 'ud' and len(ws) == 1 or
                               ws[0] == 'eprom' and len(ws) >= 3 or len(ws) >= 2 and ':' in ws[1]):
-                raise CaseError('%s:%d: device: driveN FILE | ud | eprom FILE TYPE [board=N] [short] | NAME KIND:ARG '
+                raise CaseError('%s:%d: device: driveN FILE | ud | eprom FILE TYPE [board=N] [short] [busy=S] | NAME KIND:ARG '
                                 '[excl] [console]' % (where, n))
             c['devices'].append(ws)
         elif k in LATER:
@@ -324,6 +326,8 @@ def listing(d, norm=None):
                 out.append('l %s -> %s' % (rel, os.readlink(p)))
             elif os.path.isdir(p):
                 out.append('d %o %s' % (st.st_mode & 0o7777, rel))
+            elif not stat.S_ISREG(st.st_mode):	# a FIFO (a program waits at it in a case of signals): not read
+                out.append('%s %o %s' % ('p' if stat.S_ISFIFO(st.st_mode) else '?', st.st_mode & 0o7777, rel))
             else:
                 data = open(p, 'rb').read()
                 if norm:
@@ -348,9 +352,10 @@ def write_devtab(case, rd):
                           disk is write protected for the 8-bit part (FORMAT, COPYDISK, W: error C3)
     device: ud            /dev/ud is the 8-bit part (models/ud8.py) with the drives of the case; what the 8-bit part
                           prints on its console is recorded as part of the result
-    device: eprom FILE TYPE [board=N] [short]   the EPROM programmer of the 8-bit part: the EPROM of TYPE (e2708 ..
+    device: eprom FILE TYPE [board=N] [short] [busy=S]   the EPROM programmer of the 8-bit part: the EPROM of TYPE (e2708 ..
                           e27512) in its socket is FILE (made erased when missing), the card board 1 (old) or 2 (new,
-                          default), short: the card reports a short circuit
+                          default), short: the card reports a short circuit, busy=S: the card works S seconds on
+                          every request (WEGA waits in its read: a time for a signal)
     device: NAME KIND:ARG [excl] [console]   any device with a model of z8k-emu (image:, host:, proc:, console)
     terminal: console     the minimal terminal: fds 0-2, /dev/console and /dev/tty are the console"""
     tab = open(DEVTAB).read()
@@ -373,7 +378,8 @@ def write_devtab(case, rd):
         if ws[0] == 'eprom':
             eprom = ['--eprom', os.path.join(rd, ws[1]), '--eprom-type', ws[2]]
             for w in ws[3:]:
-                eprom += ['--board', w[6:]] if w.startswith('board=') else ['--short'] if w == 'short' else []
+                eprom += (['--board', w[6:]] if w.startswith('board=') else ['--short'] if w == 'short' else
+                          ['--busy', w[5:]] if w.startswith('busy=') else [])
     for ws in case.get('devices', []):
         if ws[0] == 'eprom':
             continue
@@ -775,6 +781,8 @@ def main():
     # with & by a shell script has them ignored, and an ignored signal stays ignored through exec, for the guest too)
     signal.signal(signal.SIGINT, signal.default_int_handler)
     signal.signal(signal.SIGQUIT, signal.SIG_DFL)
+    signal.pthread_sigmask(signal.SIG_SETMASK, [])	# and no blocked signal (QUIT may come blocked): the threads and
+    # the steps inherit the mask
     a = sys.argv[1:]
     cands_only = None
     keep = nocache = show = False

@@ -1,0 +1,17 @@
+# scc: the signals (cc.c main: setsigs(idexit) for HUP, INT, QUIT, TERM unless ignored at the start; idexit: the
+# signals ignored, dexit(2): the temporary files removed, exit status 2). The source `p.c` is a FIFO: the
+# preprocessor waits in its open; the signal goes to the whole process group (the passes die by their default)
+host: mkfifo p.c
+step: scc -c p.c
+signal: INT after 2
+step: scc -c p.c
+signal: QUIT after 2
+step: scc -c p.c
+signal: HUP after 2
+step: scc -c p.c
+signal: TERM after 2
+host: ls
+expect: output contains 'step 1 scc: exit=2'
+expect: output contains 'step 2 scc: exit=2'
+expect: output contains 'step 3 scc: exit=2'
+expect: exit 2
