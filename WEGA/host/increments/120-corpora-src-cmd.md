@@ -141,3 +141,4 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   umount, umount-not-mounted, mount-twice: 4 of 4 identical, a changed copy is found. Found: WEGA's mount warns when the
   name in the super block is not that of the directory; the /etc/mnttab of the shipped tree lists z, tmp, usr as
   mounted; smount of this kernel does not check for the super-user.
+- 2026-11-16: corpus sync (manM/sync.M, src/cmd/sync.c): plain, arguments, stdin, user.

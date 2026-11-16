@@ -1,0 +1,37 @@
+# The cases of the corpus of sync (compare/sync/corpus.py); the format: host/recon/casefile.py. Where an expectation
+# comes from: man = /usr/man/manM/sync.M ("sync" without arguments: the system call sync), src = src/cmd/sync.c
+# (sync(), exit(0)).
+
+== plain
+# man: sync runs the system call sync; src: no output, exit status 0, the files unchanged
+-- f
+data
+-- case
+step: sync
+expect: output is ''
+expect: exit 0
+expect: file f contains data
+
+== arguments
+# src: main takes no arguments: they are ignored
+-- case
+step: sync -x a b c
+expect: output is ''
+expect: exit 0
+
+== stdin
+# src: the standard input is not read
+-- i
+input
+-- case
+step: sync
+stdin: i
+expect: output is ''
+expect: exit 0
+
+== user
+# src: sync needs no rights (a user who is not root)
+-- case
+user: 100 10
+step: sync
+expect: exit 0
