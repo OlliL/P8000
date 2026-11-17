@@ -12,13 +12,13 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [bin](#bin) | 111 | 27 | 5 | 50 | 29 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 14 | 0 | 2 | 14 |
-| [usr/bin](#usr-bin) | 145 | 28 | 7 | 63 | 47 |
+| [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
 | [usr/lib](#usr-lib) | 197 | 105 | 2 | 57 | 33 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 854 | 14 | 191 | 138 |
+| **all** | 1197 | 855 | 13 | 191 | 138 |
 
 <a id="root"></a>
 ## root
@@ -290,7 +290,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/bin/col` | binary E707 | `tmp/sys3/usr/src/cmd/col.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/comb` | binary E707 | `tmp/sys3/usr/src/cmd/sccs/src/comb.c` | sys3 | D12 old, D1 slots | - |
 | `usr/bin/comm` | binary E707 | `tmp/sys3/usr/src/cmd/comm.c` | sys3 | D12 -, D1 loose | - |
-| `usr/bin/cpio` | binary E707 | `src/cmd/cpio.c` | partial | cc | libc.a |
+| `usr/bin/cpio` | binary E707 | `src/cmd/cpio.c` | exact | cc | libc.a |
 | `usr/bin/cref` | binary E707 | `src/cmd/cref` | partial | cc | - |
 | `usr/bin/crypt` | binary E707 | `tmp/sys3/usr/src/cmd/crypt.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/csplit` | binary E707 | `tmp/sys3/usr/src/cmd/csplit.c` | sys3 | D12 new?, D1 loose | - |
