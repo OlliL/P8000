@@ -9,16 +9,16 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 25 | 5 | 52 | 29 |
+| [bin](#bin) | 111 | 27 | 5 | 50 | 29 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 14 | 0 | 2 | 14 |
-| [usr/bin](#usr-bin) | 145 | 28 | 6 | 64 | 47 |
+| [usr/bin](#usr-bin) | 145 | 28 | 7 | 63 | 47 |
 | [usr/lib](#usr-lib) | 197 | 105 | 2 | 57 | 33 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 852 | 13 | 194 | 138 |
+| **all** | 1197 | 854 | 14 | 191 | 138 |
 
 <a id="root"></a>
 ## root
@@ -110,7 +110,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `bin/page` | binary E707 | - | todo | D12 old, D1 slots | - |
 | `bin/passwd` | binary E707 | `tmp/sys3/usr/src/cmd/passwd.c` | sys3 | D12 old, D1 slots | - |
 | `bin/pburn` | binary E611 | `src/cmd/pburn` | exact | cc | - |
-| `bin/pr` | binary E707 | `tmp/sys3/usr/src/cmd/pr.c` | sys3 | D12 new?, D1 loose | - |
+| `bin/pr` | binary E707 | `src/cmd/pr.c` | exact | cc | libc.a |
 | `bin/printenv` | binary E707 | - | todo | D12 -, D1 tight | - |
 | `bin/ps` | binary E607 | `tmp/sys3/usr/src/cmd/ps.c` | sys3 | D12 new, D1 - | - |
 | `bin/pstat` | binary E607 | - | todo | D12 new, D1 - | - |
@@ -131,7 +131,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `bin/sort` | binary E707 | `tmp/sys3/usr/src/cmd/sort.c` | sys3 | D12 old?, D1 slots | - |
 | `bin/stty` | binary E707 | `tmp/sys3/usr/src/cmd/stty.c` | sys3 | D12 old, D1 loose | - |
 | `bin/su` | binary E707 | `tmp/sys3/usr/src/cmd/su.c` | sys3 | D12 old?, D1 slots | - |
-| `bin/sum` | binary E707 | `tmp/sys3/usr/src/cmd/sum.c` | sys3 | D12 -, D1 tight | - |
+| `bin/sum` | binary E707 | `src/cmd/sum.c` | exact | ccv0 | libc-v1.a |
 | `bin/sync` | binary E707 | `src/cmd/sync.c` | exact | cc | libc.a |
 | `bin/tail` | binary E707 | `tmp/sys3/usr/src/cmd/tail.c` | sys3 | D12 -, D1 tight | - |
 | `bin/tar` | binary E707 | `src/cmd/tar.c` | exact | cc | libc.a |
@@ -290,7 +290,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/bin/col` | binary E707 | `tmp/sys3/usr/src/cmd/col.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/comb` | binary E707 | `tmp/sys3/usr/src/cmd/sccs/src/comb.c` | sys3 | D12 old, D1 slots | - |
 | `usr/bin/comm` | binary E707 | `tmp/sys3/usr/src/cmd/comm.c` | sys3 | D12 -, D1 loose | - |
-| `usr/bin/cpio` | binary E707 | `tmp/sys3/usr/src/cmd/cpio.c` | sys3 | D12 new, D1 loose | - |
+| `usr/bin/cpio` | binary E707 | `src/cmd/cpio.c` | partial | cc | libc.a |
 | `usr/bin/cref` | binary E707 | `src/cmd/cref` | partial | cc | - |
 | `usr/bin/crypt` | binary E707 | `tmp/sys3/usr/src/cmd/crypt.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/csplit` | binary E707 | `tmp/sys3/usr/src/cmd/csplit.c` | sys3 | D12 new?, D1 loose | - |

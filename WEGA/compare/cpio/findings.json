@@ -44,7 +44,7 @@
    "callers": [
     "0x0000"
    ],
-   "note": "main: err() calls are fprintf(stderr,...) directly (no err function in the original)."
+   "note": "WEGA calls fprintf(stderr, ...) where System III calls err(); err() is gone from the program (compare/cpio/SYSIII.md)"
   },
   "usage": {
    "file": "src/cmd/cpio.c",
@@ -68,10 +68,9 @@
    "file": "src/cmd/cpio.c",
    "orig": "0x0998",
    "size_orig": 118,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
-   "callers": [],
-   "note": "open: 16 bytes, only the scratch registers: the original stores strlen(Hdr.h_name)+1 at 0x18(r15) and loads the globals into r3, the value back into r2, &Hdr.h_name into r3; ours (a local int n assigned before the sprintf: frame and size right) r2, r3, r0. As an argument ((short)strlen()+1, casts int/unsigned/short/char, 1+strlen, (short)(strlen()+1), strlen()+(short)1) the value stays in r2 and the function is 4 bytes short; an assignment inside the argument is worse (49 bytes). The local n is a guess. 2026-11-18"
+   "callers": []
   },
   "chartobin": {
    "file": "src/cmd/cpio.c",
@@ -80,7 +79,7 @@
    "status": "exact",
    "kind": "proven",
    "callers": [],
-   "note": "chartobin: kept bug: sscanf format ends in %s (12 conversions) with 11 pointers; %6o into short fields."
+   "note": "the sscanf format has 12 conversions (the last %s) but 11 pointers: the name goes through whatever word follows on the stack (kept, KNOWLEDGE.md quirks)"
   },
   "gethdr": {
    "file": "src/cmd/cpio.c",
@@ -168,7 +167,8 @@
    "size_orig": 178,
    "status": "exact",
    "kind": "proven",
-   "callers": []
+   "callers": [],
+   "note": "the frame of the original has 6 bytes more than System III gmatch needs: three unused locals \"int i, j, k;\" give them (an odd form; what was really declared is not known); \"register short\" for three of the locals does not change the frame (measured)"
   },
   "umatch": {
    "file": "src/cmd/cpio.c",
@@ -217,7 +217,7 @@
    "status": "exact",
    "kind": "proven",
    "callers": [],
-   "note": "missdir: odd form: spare unused local \"short spare;\" added; orig frame is 2 bytes larger (dec r15,#12)."
+   "note": "the frame of the original has 2 bytes more than System III missdir needs: an unused local \"int i;\" gives them (an odd form); \"register short ct\" does not change the frame (measured)"
   },
   "pwd": {
    "file": "src/cmd/cpio.c",

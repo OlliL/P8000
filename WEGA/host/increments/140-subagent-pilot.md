@@ -61,6 +61,22 @@ Second run, bin/pr (shipped cc, /lib/libc.a; real agent types with the self-cont
 The main session: choice of compiler and library, the Makefile hook, the objects row (ccv0 against cc on sum.c: D2, D12,
 D18), the quirks, checkall. Its tokens are not separable from the rest of the session (not measured).
 
+Third run, usr/bin/cpio (21 kB, 1051 lines of System III): the agents against one fresh session without agents
+(`claude -p --model opus` in a worktree at d1889ace, the same task: HOWTO phase A steps 1 to 5, no checkall, no commit).
+
+| Way | Part | Turns | Output | Cache read | Cache written | Time | Result |
+|---|---|---|---|---|---|---|---|
+| agents | setup.py | - | - | - | - | 1 s | ok |
+| agents | recon-match, sonnet | 35 | 24.6k | 1.02M | 51k | 4 min | 4 bytes short: it had removed the `& 00000177777` of System III |
+| agents | recon-corpus, sonnet | 35 | 21.2k | 1.32M | 50k | 3.3 min | 55 cases equal |
+| agents | main session, opus (context about 370k) | 37 | 27.6k | 13.8M | 49k | | 10 attempts on the wrong block; left partial |
+| fresh | one session, opus, no agents | 65 | 39.0k | 4.62M | 109k | 9.2 min | IDENTICAL; 37 cases equal; $2.58 (+$0.22 for a first try that broke off) |
+
+Reading: the main session of the agent way cost more than the whole fresh session (its large context is read again in
+every turn), and the cheap model made a wrong change that the main session then chased. The fresh session found the
+forms (the mask kept, unused locals in gmatch and missdir). The source of the fresh session is the one taken
+(byte-identical); the corpus of the agent way (55 cases) is kept. Not measured: agents with a fresh, small main session.
+
 ## Decisions
 
 - 2026-11-17 (owner): the models per agent as proposed: recon-setup haiku (commands and copying, a fixed report),
@@ -81,11 +97,16 @@ D18), the quirks, checkall. Its tokens are not separable from the rest of the se
   (`claude -p --model opus --output-format json` in a git worktree at the commit before cpio; its result is thrown away).
   The cheaper way is the one for 160.
 
+- Open (owner): the way for 160, from the table above (my proposal: one fresh session per program, without agents).
+
 ## Not part of it
 
 The other programs: 150, 160.
 
 ## Log
+
+- 2026-11-18: cpio: agents against one fresh session (table under Steps); cpio IDENTICAL by the source of the fresh session;
+  host scparse: the heap of cparse (51730576); COVERAGE.md was not generated after sum and pr: now step 5 of the HOWTO.
 
 - 2026-11-18: pr by setup.py and the agents: IDENTICAL, corpus 44 of 44; whichlibc.py and setup.py tried the shipped libc
   at a path gone since 100 (afa3f9b7).

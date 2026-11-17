@@ -1,3 +1,4 @@
+static char sccsid[] = "@[$]cpio.c\t2.4  11/18/83 12:56:19 - 87wega3.2";
 /*	cpio	COMPILE:	cc -O cpio.c -s -i -o cpio 
 	cpio -- copy file collections
 
@@ -25,8 +26,6 @@
 #define MERT 1	/* yes = 1 ;  no = 0 */
 extern long filespace;
 #endif
-
-static char sccsid[] = "@[$]cpio.c\t2.4  11/18/83 12:56:19 - 87wega3.2";
 
 struct	stat	Statb, Xstatb;
 
@@ -448,13 +447,10 @@ getname()
 bintochar(t)
 long t;
 {
-	int n;
-
-	n = strlen(Hdr.h_name) + 1;
 	sprintf(Chdr,"%6o%6o%6o%6o%6o%6o%6o%6o%11lo%6o%11lo%s",
 		MAGIC,Statb.st_dev,Statb.st_ino,Statb.st_mode,Statb.st_uid,
-		Statb.st_gid,Statb.st_nlink,Statb.st_rdev,
-		Statb.st_mtime,n,t,Hdr.h_name);
+		Statb.st_gid,Statb.st_nlink,Statb.st_rdev & 00000177777,
+		Statb.st_mtime,(short)strlen(Hdr.h_name)+1,t,Hdr.h_name);
 }
 
 chartobin()
@@ -841,6 +837,7 @@ register char *s, *p;
 {
 	register int c;
 	register cc, ok, lc, scc;
+	int i, j, k;
 
 	scc = *s;
 	lc = 077777;
@@ -971,7 +968,7 @@ register char *namep;
 {
 	register char *np;
 	register ct = 0;
-	short spare;
+	int i;
 
 	if(!Dir)
 		return 0;
