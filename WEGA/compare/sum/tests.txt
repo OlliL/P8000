@@ -1,0 +1,150 @@
+# The cases of the corpus of sum (compare/sum/corpus.py); the format: host/recon/casefile.py. Where an expectation
+# comes from: man = /usr/man/man1/sum.1, src = src/cmd/sum/sum.c.
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== file
+# man: a 16-bit checksum and the number of blocks of the file
+-- t.in
+hello world
+-- case
+step: sum t.in
+
+== option-r
+# man: -r uses another algorithm for the checksum
+-- t.in
+hello world
+-- case
+step: sum -r t.in
+
+== both-algorithms-differ
+# man: -r: another algorithm; the same file, both runs
+-- t.in
+abcdefghij
+-- case
+step: sum t.in
+step: sum -r t.in
+
+== blocks-512
+# man: the block count; a file of 512 bytes is one block, 513 bytes two (src: (nbytes+BUFSIZ-1)/BUFSIZ)
+-- case
+host: awk 'BEGIN{for(i=0;i<511;i++)printf "a"; printf "\n"}' > f512
+host: awk 'BEGIN{for(i=0;i<512;i++)printf "a"; printf "\n"}' > f513
+step: sum f512 f513
+
+== blocks-r
+# man: the block count with -r
+-- case
+host: awk 'BEGIN{for(i=0;i<1025;i++)printf "b"}' > big
+step: sum -r big
+
+== large-sum
+# src: the sum of 16 bits wraps (carry added back); many 0377 bytes
+-- case
+host: awk 'BEGIN{for(i=0;i<3000;i++)printf "\377"}' > ff
+step: sum ff
+step: sum -r ff
+
+== binary
+# src: all byte values, high bytes included
+-- case
+host: awk 'BEGIN{for(j=0;j<4;j++)for(i=0;i<256;i++)printf "%c", i}' > bin
+step: sum bin
+step: sum -r bin
+
+# ---- what the source has besides (src) ---------------------------------------------------------------------------
+
+== several
+# src: several files: one line per file, the name after the numbers
+-- t.in
+one
+-- b
+two two
+-- case
+step: sum t.in b
+step: sum -r t.in b
+
+== stdin
+# src: no file: the standard input, no name in the line
+-- t.in
+from stdin
+-- case
+step: sum
+stdin: t.in
+expect: exit 0
+
+== stdin-r
+# src: -r alone: the standard input; argc>1 so the name argv[2] is NULL and the line ends in "(null)" (a bug of the original)
+-- t.in
+from stdin
+-- case
+step: sum -r
+stdin: t.in
+expect: output contains '(null)'
+
+== empty-file
+# src: an empty file: sum 0, 0 blocks
+-- e
+-- case
+step: sum e
+step: sum -r e
+expect: output contains '0 0 e'
+
+== empty-stdin
+# src: empty standard input
+-- t.in
+-- case
+step: sum
+stdin: t.in
+
+== missing
+# src: "sum: Can't open NAME" on the standard error, exit status 10
+-- case
+step: sum nofile
+expect: output contains "sum: Can't open nofile"
+expect: exit 10
+
+== missing-r
+# src: the same with -r
+-- case
+step: sum -r nofile
+expect: exit 10
+
+== missing-and-ok
+# src: a missing file among others: the others are summed, the status counts 10 per failure
+-- t.in
+data
+-- case
+step: sum nofile t.in
+expect: output contains "Can't open nofile"
+expect: exit 10
+
+== two-missing
+# src: errflg += 10 per missing file: 20
+-- case
+step: sum n1 n2
+expect: exit 20
+
+== dash-name
+# src: the name "-" is a file, not the standard input
+-- t.in
+x
+-- case
+step: sum -
+expect: exit 10
+
+== r-second
+# src: -r only as the first argument; later it is a file name
+-- t.in
+x
+-- case
+step: sum t.in -r
+expect: exit 10
+
+== r-twice
+# src: -r only once is the option; the second -r is a file name
+-- t.in
+x
+-- case
+step: sum -r -r t.in
+expect: exit 10

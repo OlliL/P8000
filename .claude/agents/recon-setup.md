@@ -20,7 +20,9 @@ You prepare the reconstruction of ONE original WEGA program. The repository is /
 3. Dating: the line of the program in `host/OLDCC_DATES.md` (grep). The compiler of that time from `host/OLDCC.md`, section 2
    (grep the section, do not read the file). Name the candidate and its neighbours; you do not choose between them.
 4. `compare/NAME/progcfg.py` after the pattern of `compare/ld/progcfg.py` (only the plain constants NAME, ORIG, OWN_LIM, CC;
-   SEG only for a segmented program). OWN_LIM: first run inventory with a guess (the size of the text), then the start of the
+   SEG only for a segmented program). Stripped or not: `python3 host/tools/sout.py WEGA_ROOT/ORIG | head -3` (flag STRIP);
+   stripped: `ORIG_LIM = 0x10000`. CC: the candidate compiler (`/bin/ccv0`, `/bin/ccv1`, ... below `$OLDROOT`, `/bin/cc` for
+   the shipped one); set `"compiler"` in findings.json to the same name. OWN_LIM: first run inventory with a guess (the size of the text), then the start of the
    first libc function: `host/tools/whichlibc.py` and the inventory show it (crt0 + own code). Then
    `RECON_PROG=NAME python3 host/recon/inventory.py > $T/inv.json` and `python3 host/recon/own_table.py $T/inv.json`
    (writes `compare/NAME/findings.json`).
@@ -43,10 +45,10 @@ Temporary files only in `$T = /home/olivleh1/git/P8000/tmp/tmp/NAME` (mkdir -p).
 RESULT: ok | stopped: <reason in one line>
 SCCS: <file version date>; ...
 SOURCE: <sys3 path> -> src/cmd/NAME/<file> | none
-SYSIII_DIFF: same date as System III | WEGA date <date> differs (the file changed)
+SYSIII_DIFF: same date as System III | WEGA date <date> differs (the file changed) | unknown (no SCCS id in System III)
 DATE: <line fields of OLDCC_DATES.md: crt0 stamp, D12, D1>
 COMPILER: candidate <ver> (<reason>), neighbours <ver>, <ver>
-OWN_LIM: 0x....  (functions own: <n>)
+OWN_LIM: 0x....  (functions own: <n>); stripped: yes | no
 LIBC: best <lib> covers <n> of <m> bytes; gaps: <none | addr size, ...>
 FILES: <files written>
 QUESTIONS: <for the main session, or ->

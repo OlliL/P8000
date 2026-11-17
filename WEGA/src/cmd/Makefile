@@ -34,7 +34,7 @@ SIMPLE=		mv rm rmdir write size strip ranlib
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o
-SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cpp cparse codgen popt dc ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
+SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cpp cparse codgen popt dc sum ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 
@@ -53,7 +53,7 @@ shipped:
 		sld) X="SCC=scc LIBC=/lib/slibc.a" ;; \
 		cas) X="SCC=scc SLIBC=/lib/slibc.a SCCFLAGS=\"$(SHIPFLAGS)\"" ;; \
 		codgen|popt) X='LIBC="../../../../lib/oldlibc/printf/s1.o ../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
-		cpp|cparse|cc|dc|ld) X="LIBC=/lib/libc.a" ;; \
+		cpp|cparse|cc|dc|sum|ld) X="LIBC=/lib/libc.a" ;; \
 		*) X="" ;; \
 		esac ; \
 		cd $$d ; eval $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all '$(SHIPCC)' $$X ; cd .. ; \

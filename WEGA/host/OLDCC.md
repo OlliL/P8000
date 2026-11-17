@@ -115,7 +115,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
   not `OLD_D3`. cas: the old one (D17).
 - Byte-identical modules of libc-v1.a from C: isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3.
 - Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 131 of 153 functions equal, 221 differing lines.
-- Byte-identical: `/bin/dc`, `/usr/bin/ranlib`.
+- Byte-identical: `/bin/dc`, `/usr/bin/ranlib`, `/bin/sum`.
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
   renaming of register variables into low registers is done by popt `procopt`, in the shipped compiler too).
@@ -579,6 +579,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cas | pst.c | old scc | x | x |  |  |  |  | ? | x |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | subr.c | old scc |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | ranlib | ranlib.c | v0 | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| sum | sum.c | v0 |  | x |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |
 | strip | strip.c | v1 | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | size | size.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | libc.a | malloc.o (gen/malloc.c) | vl |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
