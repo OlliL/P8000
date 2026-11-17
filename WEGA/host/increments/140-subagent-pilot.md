@@ -76,6 +76,11 @@ D18), the quirks, checkall. Its tokens are not separable from the rest of the se
 - 2026-11-18 (owner): `bin/pr` instead of `bin/ls`: ls needs libc members that no libc-vN has yet (setup.py: libc-v4 covers
   2780 of 5382 bytes); that is library work (150). pr: shipped cc, `/lib/libc.a` without a gap.
 
+- 2026-11-18 (owner): measure the token cost: `usr/bin/cpio` with the agents (agents and main session counted apart, the
+  main session from the usage lines of its transcript), then the same task by one fresh session without the agents
+  (`claude -p --model opus --output-format json` in a git worktree at the commit before cpio; its result is thrown away).
+  The cheaper way is the one for 160.
+
 ## Not part of it
 
 The other programs: 150, 160.
