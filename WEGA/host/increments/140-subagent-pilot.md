@@ -30,13 +30,18 @@ which stay with the main session; proven on one pilot program from `bin` that ne
 
 ## Steps
 
-1. Pick the pilot (from COVERAGE: `sys3`, small, a compiler that exists).
-2. Write the agent definitions; run the pilot; measure.
+1. [x] Pick the pilot (from COVERAGE: `sys3`, small, a compiler that exists): `bin/sum` (5060 bytes, `sum.c 2.1 07/28/82`,
+   D1 tight: ccv0 like dc; stdio, long arithmetic, a union).
+2. Write the agent definitions (drafts: `.claude/agents/recon-setup.md`, `recon-match.md`, `recon-corpus.md`; the main
+   session keeps the choice of compiler and library, the Makefile hook in `src/cmd/Makefile`, checkall, the two tables,
+   the commit); run the pilot; measure.
 3. Adjust, write down.
 
 ## Decisions
 
-- Open (owner): the models per agent.
+- 2026-11-17 (owner): the models per agent as proposed: recon-setup haiku (commands and copying, a fixed report),
+  recon-match sonnet (source forms need reading of code), recon-corpus sonnet (expectations from the man page and the source).
+- 2026-11-17 (owner): the three definitions agreed; pilot `bin/sum` agreed.
 
 ## Not part of it
 
