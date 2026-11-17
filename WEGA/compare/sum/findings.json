@@ -1,33 +1,9 @@
 {
- "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code). exact_removed: the exact functions without a note that left the list at the end (findings.py --done).",
  "compiler": "ccv0",
  "binary": "/bin/sum",
  "functions": {
-  "f0000": {
-   "file": "",
-   "orig": "0x0000",
-   "size_orig": 16,
-   "status": "open",
-   "kind": "proven",
-   "callers": []
-  },
-  "f0010": {
-   "file": "",
-   "orig": "0x0010",
-   "size_orig": 8,
-   "status": "open",
-   "kind": "candidate",
-   "callers": []
-  },
-  "f0018": {
-   "file": "",
-   "orig": "0x0018",
-   "size_orig": 42,
-   "status": "open",
-   "kind": "candidate",
-   "callers": []
-  },
-  "f0042": {
+  "main": {
    "file": "src/cmd/sum.c",
    "orig": "0x0042",
    "size_orig": 492,
@@ -36,7 +12,8 @@
    "callers": [
     "0x0000"
    ],
-   "note": "main; globals declared \"} suma, tempa;\" (System III: tempa, suma) for the original order in bss"
+   "note": "the globals are declared \"} suma, tempa;\" (System III: tempa, suma): the order of the two unions in the bss of the original"
   }
- }
+ },
+ "exact_removed": 0
 }
