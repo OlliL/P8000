@@ -190,6 +190,14 @@ for f in `cd $I && find . -type f | sed 's|^\./||' | sort`; do
 	if cmp -s $I/$f $WEGA/$f; then same=`expr $same + 1`; else result "$f" fail "python3 host/tools/bincmp.py $WEGA/$f $I/$f"; fi
 done
 result 'install root' ok "$same files identical with WEGA ($I)"
+# the directories: the same names with the same modes (the guest's /tmp below tmp is not part of it)
+(cd $WEGA && find . -mindepth 1 -type d ! -path './tmp/*' -printf '%m %P\n' | sort -k2) > $T/dirs.wega
+(cd $I && find . -mindepth 1 -type d -printf '%m %P\n' | sort -k2) > $T/dirs.install
+if cmp -s $T/dirs.wega $T/dirs.install; then
+	result 'install directories' ok "`wc -l < $T/dirs.wega` directories, names and modes as in WEGA"
+else
+	result 'install directories' fail "`diff $T/dirs.wega $T/dirs.install | head -6 | tr '\n' ' '`"
+fi
 echo "open, not counted:$o"
 stamp '2 cmp of the install root with WEGA'
 

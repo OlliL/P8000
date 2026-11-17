@@ -25,6 +25,12 @@ install:
 	cp mnttab $(PREFIX)/etc/mnttab ; chmod 666 $(PREFIX)/etc/mnttab
 	cp dot.cshrc $(PREFIX)/.cshrc ; chmod 640 $(PREFIX)/.cshrc
 
+# the directories of the WEGA root with their modes (the list dirs), the last step of make install (src/Makefile): the other Makefiles make the
+# directories their files need (mkdir -p, with the mode of the umask), the empty ones (usr/spool/queuer/requestdir, ...) only exist here
+dirs:
+	while read m d ; do case $$m in \#*) ;; *) mkdir -p $(PREFIX)/$$d ;; esac ; done < dirs
+	while read m d ; do case $$m in \#*) ;; *) chmod $$m $(PREFIX)/$$d ;; esac ; done < dirs
+
 clean:
 
-.PHONY: all install clean
+.PHONY: all install dirs clean
