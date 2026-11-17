@@ -47,6 +47,10 @@ SRCDIR = [('usr/lib/help/term', 'text/shells.d/term'), ('usr/lib/help/text', 'te
           ('usr/lib/help/', 'sccs/help.d/%(b)s'), ('usr/lib/tmac/', 'text/macros.d/%(b)s'), ('usr/lib/yaccpar', 'yacc/yaccpar'),
           ('usr/lib/uucp/', 'uucp/%(b)s'), ('usr/lib/llib-lc', 'lint/llib-lc'), ('usr/lib/llib-port', 'lint/llib-port'),
           ('usr/bin/sccsdiff', 'sccs/src/sccsdiff'), ('usr/lib/spell', 'spell/%(b)s')]
+# generators that were run: the result (2026-11-17); a prefix that did not reproduce the WEGA file falls back to C with the reason
+CHECKED = {'usr/lib/macros/': ('G', 'macrunch (option -r, WEGA\'s addition): the .src files are the WEGA packages; the .src of System III are another version, '
+                                     'so macrunch/ntar of System III do not give the WEGA bytes (checked 2026-11-17)')}
+ZIELDIR = []
 NOGEN = {'usr/lib/term/tab-12', 'usr/lib/term/tab630wp-12'}	# no System III source for these
 
 
@@ -83,6 +87,9 @@ def main():
             if f.startswith(pre) and f not in NOGEN:
                 bb = b.lower() if b.startswith('tab300S') else b	# the table of tab300S is made as tab300s (a link)
                 rule, gen, note = 'G', [x % {'b': bb} for x in files], n
+                for cp, (cr, cn) in CHECKED.items():
+                    if f.startswith(cp):
+                        rule, note = cr, cn
                 break
         sys3 = []
         srcrel = None
@@ -98,6 +105,9 @@ def main():
                 cand = tpl % {'b': b}
                 if os.path.isfile(os.path.join(S, SC, cand)):
                     srcrel = cand
+        for zp, zd in ZIELDIR:
+            if f.startswith(zp):
+                srcrel = zd + b
         if script:
             ziel = 'src/cmd/%s.sh' % b
             korpus = 'ja (Vorgabe: Skript nach usr/bin)' if f.startswith('usr/bin/') else 'offen'

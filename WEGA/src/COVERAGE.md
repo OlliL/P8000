@@ -13,12 +13,12 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 13 | 0 | 2 | 15 |
 | [usr/bin](#usr-bin) | 145 | 10 | 0 | 81 | 54 |
-| [usr/lib](#usr-lib) | 197 | 27 | 2 | 107 | 61 |
+| [usr/lib](#usr-lib) | 197 | 31 | 2 | 103 | 61 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 1 | 0 | 9 | 5 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 740 | 2 | 272 | 183 |
+| **all** | 1197 | 744 | 2 | 268 | 183 |
 
 <a id="root"></a>
 ## root
@@ -524,9 +524,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/lp` | binary E711 | `tmp/sys3/usr/src/uts/vax/io/lp.c` | sys3 | D12 old?, D1 tight | - |
 | `usr/lib/lp_ban` | binary E711 | - | todo | D12 old?, D1 tight | - |
 | `usr/lib/lp_nf` | binary E711 | - | todo | D12 old?, D1 slots | - |
-| `usr/lib/macros/mmn` | text | `tmp/sys3/usr/lib/macros/mmn` | sys3 | - | - |
-| `usr/lib/macros/mmt` | text | `tmp/sys3/usr/bin/mmt` | sys3 | - | - |
-| `usr/lib/macros/vmca` | text | `tmp/sys3/usr/lib/macros/vmca` | sys3 | - | - |
+| `usr/lib/macros/mmn` | text | `src/cmd/text/macros.d` | exact | - | - |
+| `usr/lib/macros/mmt` | text | `src/cmd/text/macros.d` | exact | - | - |
+| `usr/lib/macros/vmca` | text | `src/cmd/text/macros.d` | exact | - | - |
 | `usr/lib/makekey` | binary E707 | `tmp/sys3/usr/src/cmd/makekey.c` | sys3 | D12 -, D1 - | - |
 | `usr/lib/me/acm.me` | text | - | todo | - | - |
 | `usr/lib/me/chars.me` | text | - | todo | - | - |
@@ -562,7 +562,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/slibtermlib.a` | archive | - | todo | - | - |
 | `usr/lib/slibu8000.a` | archive | - | todo | - | - |
 | `usr/lib/spell` | binary E707 | `tmp/sys3/usr/src/cmd/spell/spell.sh` | sys3 | D12 old?, D1 tight | - |
-| `usr/lib/suftab` | data | `tmp/sys3/usr/lib/suftab` | sys3 | - | - |
+| `usr/lib/suftab` | data | `src/cmd/text/roff.d` | exact | cc | - |
 | `usr/lib/tabset/std` | data | - | todo | - | - |
 | `usr/lib/tabset/vt100` | data | - | todo | - | - |
 | `usr/lib/term/tab-12` | data | `src/cmd/text/roff.d/terms.d` | exact | cc | - |

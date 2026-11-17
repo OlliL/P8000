@@ -12,8 +12,8 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | C | script | 33 |
 | C | text | 65 |
 | G | data | 5 |
-| G | text | 7 |
-| **all** | | 112 |
+| G | text | 3 |
+| **all** | | 108 |
 
 
 ## root
@@ -80,7 +80,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `llib-port.ln` | data | G | 1846 | `made by the build from src/cmd/lint/` | nein | usr/lib/llib-port.ln image ~ | lint1 -vxp over cpp -C llib-port: lint/lint.mk, lint/lint.c, lint/llib-port - check: offen |
 | `more.help` | text | C | 1173 | `src/usr/lib/more.help` | nein | - |  |
 | `plzcg.errs` | text | C | 784 | `src/usr/lib/plzcg.errs` | nein | - |  |
-| `suftab` | text | G | 2184 | `made by the build from src/cmd/text/roff.d/` | nein | usr/lib/suftab image ~ | suftabmake.c writes suftab: text/roff.d/makefile, text/roff.d/suftabmake.c, text/roff.d/suftab.c - check: offen |
 | `units` | text | C | 7732 | `src/usr/lib/units` | nein | usr/games/units image ?<br>usr/bin/units image ~ |  |
 | `whatis` | text | C | 32923 | `src/usr/lib/whatis` | nein | - |  |
 | `yaccpar` | text | C | 3300 | `src/cmd/yacc/yaccpar` | nein | usr/lib/yaccpar image ~<br>usr/src/cmd/yacc/yaccpar source ~ |  |
@@ -134,14 +133,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `text` | text | C | 2165 | `src/cmd/text/shells.d/text` | nein | usr/lib/help/text image =<br>usr/src/cmd/text/shells.d/text source = |  |
 | `un` | text | C | 603 | `src/cmd/sccs/help.d/un` | nein | usr/lib/help/un image ~<br>usr/src/cmd/sccs/help.d/un source ~ |  |
 | `ut` | text | C | 1949 | `src/cmd/sccs/help.d/ut` | nein | usr/lib/help/ut image ~<br>usr/src/cmd/sccs/help.d/ut source ~ |  |
-
-## usr/lib/macros
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `mmn` | text | G | 40368 | `made by the build from src/cmd/text/macros.d/` | nein | usr/lib/macros/mmn image ~ | macrunch (sed, ntar -g) makes the macro package from NAME.src: text/macros.d/macros.mk, text/macros.d/macrunch, text/macros.d/ntar.c, text/macros.d/mmn.src - check: offen |
-| `mmt` | text | G | 101090 | `made by the build from src/cmd/text/macros.d/` | nein | usr/bin/mmt image ~<br>usr/lib/macros/mmt image ~<br>usr/src/man/docs/sh_tut/ex1/mmt image ~<br>usr/src/man/docs/sh_tut/ex/mmt image ~ | macrunch (sed, ntar -g) makes the macro package from NAME.src: text/macros.d/macros.mk, text/macros.d/macrunch, text/macros.d/ntar.c, text/macros.d/mmt.src - check: offen |
-| `vmca` | text | G | 13767 | `made by the build from src/cmd/text/macros.d/` | nein | usr/lib/macros/vmca image ~ | macrunch (sed, ntar -g) makes the macro package from NAME.src: text/macros.d/macros.mk, text/macros.d/macrunch, text/macros.d/ntar.c, text/macros.d/vmca.src - check: offen |
 
 ## usr/lib/me
 
