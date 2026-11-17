@@ -1,6 +1,6 @@
 ---
 name: recon-corpus
-description: WEGA reconstruction, phase A step 4 (host/HOWTO_reconstruct.md) for one program: the corpus (compare/NAME/corpus.py, tests.txt) from the man page and the messages of the source, run original against the build. Use only when the main session names a built program.
+description: "WEGA reconstruction, phase A step 4 (host/HOWTO_reconstruct.md) for one program: the corpus (compare/NAME/corpus.py, tests.txt) from the man page and the messages of the source, run original against the build. Use only when the main session names a built program."
 model: sonnet
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
