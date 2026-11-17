@@ -233,8 +233,9 @@ groups of 8192 i-nodes, and two of them often agreed in the low 16 bits; rmdir t
   "PID SIGNAL" and granted (signal 0 only asks); without it ESRCH as before.
 - The process table: `/bin/ps` reads `_Nproc`, `_proc`, `_swplo` of `/wega` (0x01000034, 0x0300df58, 0x010005c0) in /dev/kmem, and for a
   process in core the user structure (1394 bytes) in /dev/mem at p_addr * 256. `host/tools/mkproc.py` makes the three images (`device:
-  kmem image:km.img` etc.): it is all that ps needs (the layout measured with the compiler of the kernel, sccvk). The arguments of a
-  process are not modelled: ps -f shows `[ name ]`.
+  kmem image:km.img` etc.): it is all that ps needs (the layout measured with the compiler of the kernel, sccvk). The command line of a
+  process (ps -f) is the optional 9th field of a PROC (`...:S:cron:599990000:0:/etc/cron`, words separated by commas): mkproc.py puts it where
+  ps looks for it (the last block of the process image); without it ps -f shows `[ name ]`.
 - `lkdata` and `unlk` (record locks, sys/lock.c) are granted (passwd locks /etc/passwd); test `tests/lkdata.c`.
 - The layer: a removed name that the tree has too is hidden (an empty `.wh.NAME` in the layer: passwd removes /etc/passwd and links a new
   one); a relative name after an absolute chdir is resolved as that directory's name (gcwd: so that find, which changes into the

@@ -211,7 +211,7 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   the process number: the numbers of the guest are fixed now), whodo (5) and killall (6) on the process table of the kernel as the
   original ps reads it (mkproc.py makes /dev/kmem, /dev/mem, /dev/swap; the kill log). On the way: lkdata, whiteouts and the guest's
   working directory in the layer, relative names in /dev, the numbers of the processes by the tree of forks (see host/z8k-emu/README.md).
-  Open (for the owner): the arguments of a process in the ps model (ps -ef then shows /etc/cron etc., killall's second group would be
+  Open (for the owner): [the arguments of a process in the ps model: done later the same day, see the last entry] (killall second group would be
   tested), find's "cannot read" of the last entry (emulator or program?), unpack of packed pages in new.install, the vi question of
   sysgen (answered n), GETTY on a line that is no device waits for ever (UGETT1 cases left out), the pack of the corpora under a
   pool of CHECK_CORPORA.
@@ -222,4 +222,8 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   numbers are the host's: a low one changed csh's). z8k-emu: stat/fstat of a directory give its WEGA size (16 bytes per entry), which
   solved find's "cannot read" (checked in MAME: find and unpack are fine there); du, makewhatis and mandbmgr cases follow the real sizes
   (51200-byte files, whiteouts for removed pages). newinstall `packed-pages` checks unpack in the mounted /usr.
-
+- 2026-11-17 (evening): ps -ef with command lines: mkproc.py takes ARGS as the 9th field and writes them into the last block of the
+  process image where the original ps looks for them (found by the system call trace of /bin/ps; the end of the string must be at a multiple
+  of 4). killall: three more cases (second group, second group with a signal, first group with command lines), mutant found. The open point
+  about the arguments in the ps model is closed.
+- sysgen with vi (the answer y): left out until the real vi is in the tree (owner's decision); the writing mount stays postponed until mount itself is rebuilt.
