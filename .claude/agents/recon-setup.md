@@ -15,8 +15,8 @@ You prepare the reconstruction of ONE original WEGA program. The repository is /
 ## Steps (`host/HOWTO_reconstruct.md`, phase A, steps 1, 2, 3, 5; read only those)
 
 1. SCCS strings of the original: `strings -n4 ORIG | grep '@\[\$\]'` (file, version, date per own source file).
-2. System III source: `tmp/sys3/usr/src/cmd/NAME.c` or `.../cmd/NAME/` (relative to the repository root). Copy it to
-   `src/cmd/NAME/` unchanged (`cp`, no edits). None: report `SOURCE: none` and stop after step 4.
+2. System III source: `tmp/sys3/usr/src/cmd/NAME.c` or `.../cmd/NAME/` (relative to the repository root). Copy it unchanged
+   (`cp`, no edits) to the same place in V7 layout: a single file `NAME.c` to `src/cmd/NAME.c`, a directory to `src/cmd/NAME/`. None: report `SOURCE: none` and stop after step 4.
 3. Dating: the line of the program in `host/OLDCC_DATES.md` (grep). The compiler of that time from `host/OLDCC.md`, section 2
    (grep the section, do not read the file). Name the candidate and its neighbours; you do not choose between them.
 4. `compare/NAME/progcfg.py` after the pattern of `compare/ld/progcfg.py` (only the plain constants NAME, ORIG, OWN_LIM, CC;
@@ -44,7 +44,7 @@ Temporary files only in `$T = /home/olivleh1/git/P8000/tmp/tmp/NAME` (mkdir -p).
 ```
 RESULT: ok | stopped: <reason in one line>
 SCCS: <file version date>; ...
-SOURCE: <sys3 path> -> src/cmd/NAME/<file> | none
+SOURCE: <sys3 path> -> src/cmd/NAME.c | src/cmd/NAME/ | none
 SYSIII_DIFF: same date as System III | WEGA date <date> differs (the file changed) | unknown (no SCCS id in System III)
 DATE: <line fields of OLDCC_DATES.md: crt0 stamp, D12, D1>
 COMPILER: candidate <ver> (<reason>), neighbours <ver>, <ver>

@@ -28,7 +28,7 @@
    "callers": []
   },
   "f0042": {
-   "file": "src/cmd/sum/sum.c",
+   "file": "src/cmd/sum.c",
    "orig": "0x0042",
    "size_orig": 492,
    "status": "exact",

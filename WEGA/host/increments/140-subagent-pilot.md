@@ -34,8 +34,24 @@ which stay with the main session; proven on one pilot program from `bin` that ne
    D1 tight: ccv0 like dc; stdio, long arithmetic, a union).
 2. Write the agent definitions (drafts: `.claude/agents/recon-setup.md`, `recon-match.md`, `recon-corpus.md`; the main
    session keeps the choice of compiler and library, the Makefile hook in `src/cmd/Makefile`, checkall, the two tables,
-   the commit); run the pilot; measure.
-3. Adjust, write down.
+   the commit); [x] run the pilot; [x] measure.
+3. [x] Adjust (recon-setup: stripped check, CC and compiler field; recon-corpus: `sh corpus.sh`, man page without pcat),
+   [x] write down (`host/HOWTO_reconstruct.md`).
+
+### Cost of the pilot (bin/sum)
+
+Measured from the usage of each subagent (the task notification and the usage lines of its transcript). The agents ran as
+`general-purpose` with the model override and the definition file as the brief (new agent types are loaded at the start
+of a session only).
+
+| Step | Agent, model | subagent_tokens (notification) | Output | Cache read | Cache written | Tool calls | Time | Result |
+|---|---|---|---|---|---|---|---|---|
+| 1, 2, 3, 5 | recon-setup, haiku | 57k | 12.0k | 669k | 55k | 19 | 64 s | ccv0 candidate, libc-v1 without gaps; missed: stripped, CC |
+| 4, 6, 7 | recon-match, sonnet | 47k | 5.0k | 442k | 47k | 12 | 45 s | IDENTICAL after 2 attempts (SCCS string, order of two unions) |
+| 9 | recon-corpus, sonnet | 46k | 4.7k | 421k | 25k | 12 | 42 s | 19 cases, all equal; 2 quirks |
+
+The main session: choice of compiler and library, the Makefile hook, the objects row (ccv0 against cc on sum.c: D2, D12,
+D18), the quirks, checkall. Its tokens are not separable from the rest of the session (not measured).
 
 ## Decisions
 
@@ -48,3 +64,8 @@ which stay with the main session; proven on one pilot program from `bin` that ne
 The other programs: 150, 160.
 
 ## Log
+
+- 2026-11-17: agent definitions agreed and committed (b8865603).
+- 2026-11-17: pilot sum by the agents: IDENTICAL, corpus 19 of 19 (2ddd31ec); checkall.sh fixed for a git ref as CHECK_PATCH (45d6a086).
+- 2026-11-17 (owner): a program of one C file goes to `src/cmd/NAME.c` with its rules in `src/cmd/Makefile` (V7 layout), not to
+  `src/cmd/NAME/`; sum moved, recon-setup, recon-match, recon-corpus and the HOWTO say so.

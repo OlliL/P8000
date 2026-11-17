@@ -10,7 +10,7 @@ import casefile  # noqa: E402
 NAME = 'sum'
 ORIG = 'bin/sum'
 PROG = 'sum'
-CANDIDATES = {'wega': 'src/cmd/sum/sum'}
+CANDIDATES = {'wega': 'src/cmd/sum'}
 TIMEOUT = 60
 
 

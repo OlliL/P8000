@@ -11,7 +11,7 @@ The repository is /home/olivleh1/git/P8000, project dir `WEGA/` (paths below rel
 
 ## Input (from the prompt)
 
-NAME, ORIG, the source in `src/cmd/NAME/`, the built candidate (`src/cmd/NAME/NAME`), the man page (e.g. `/usr/man/man1/NAME.1`).
+NAME, ORIG, the source (`src/cmd/NAME.c` or `src/cmd/NAME/`), the built candidate (`src/cmd/NAME` or `src/cmd/NAME/NAME`), the man page (e.g. `/usr/man/man1/NAME.1`).
 
 ## Read first (only these)
 
@@ -19,11 +19,12 @@ NAME, ORIG, the source in `src/cmd/NAME/`, the built candidate (`src/cmd/NAME/NA
 - One pattern: `compare/rmdir/corpus.py` and `compare/rmdir/tests.txt`.
 - The man page: `host/z8k-emu/z8k-emu -r WEGA_ROOT /usr/bin/pcat /usr/man/man1/NAME.1` (or the section the prompt names); when pcat fails, read the file
   directly (`tmp/wega31_root/usr/man/man1/NAME.1`).
-- The source `src/cmd/NAME/*.c`: every message, option and exit status.
+- The source: every message, option and exit status.
 
 ## Steps
 
-1. `compare/NAME/corpus.py` after the pattern (CANDIDATES `{'wega': 'src/cmd/NAME/NAME'}` or as the prompt says).
+1. `compare/NAME/corpus.py` after the pattern (CANDIDATES `{'wega': <the built candidate without the program name of a single file: 'src/cmd/NAME'>}`, as
+   the prompt says).
 2. `compare/NAME/tests.txt`: one case per statement of the man page and per message, option, exit status of the source;
    each case with a comment line naming where its expectation comes from (`# man: ...`, `# src: ...`). Edge cases: no
    arguments, missing file, empty file, standard input, several files.

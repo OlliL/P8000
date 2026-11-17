@@ -10,7 +10,7 @@ it must not decide; the main session reads the report, decides and starts the ne
 | Agent | Steps | Model | The main session after it |
 |---|---|---|---|
 | `recon-setup` | 1, 2, 3, 5 | haiku | fixes compiler and library (`progcfg.py` CC, `findings.json` compiler) |
-| `recon-match` | 4, 6, 7 (and `SYSIII.md`) | sonnet | checks `bincmp.py`, hooks the program into `src/cmd/Makefile` (SUBDIRS, `shipped`) |
+| `recon-match` | 4, 6, 7 (and `SYSIII.md`) | sonnet | checks `bincmp.py`, hooks the program into `src/cmd/Makefile` (a single file: the SIMPLE rules from its report; a directory: SUBDIRS, `shipped`) |
 | `recon-corpus` | 9 | sonnet | runs the corpus, enters the QUIRKS in `KNOWLEDGE.md`, the object in `OLDCC.md`, section 4 |
 
 Step 10, checkall, the two tables, a compiler question and phase B stay with the main session. The agents are found by
@@ -21,7 +21,7 @@ the definition file as the brief.
 
 Never in phase A: change a compiler pass or a switch, change cas, edit a shipped header, write odd forms to force bytes, spend more than 6 attempts on one function. When stuck: note it and go on. A function left open is a normal result.
 
-1. **Source from System III first** (`recon-setup`). Look in `/home/olivleh1/git/P8000/tmp/sys3/usr/src/cmd` (`NAME.c` or a directory `NAME/`; libraries: `usr/src/lib`). If it is there, copy it to `src/cmd/NAME/` unchanged and start from it; the Makefile in the V7 layout (`size/Makefile` is the pattern). The SCCS strings of the binary (`strings | grep '@\[\$\]'`) name the files, their order and dates; several strings mean several files, a date other than System III's means WEGA changed it. What WEGA changed against System III goes to `compare/NAME/SYSIII.md`. For what is specific to the Z8000 the Plexus sources (`tmp/plexus`) may be read, not copied. Without a source: step 8 first.
+1. **Source from System III first** (`recon-setup`). Look in `/home/olivleh1/git/P8000/tmp/sys3/usr/src/cmd` (`NAME.c` or a directory `NAME/`; libraries: `usr/src/lib`). If it is there, copy it unchanged to the same place in the V7 layout and start from it: a single file to `src/cmd/NAME.c` with its rules in `src/cmd/Makefile` (SIMPLE; `ranlib`, `size` are the pattern), a directory to `src/cmd/NAME/` with its own Makefile (`dc/Makefile` is the pattern). The SCCS strings of the binary (`strings | grep '@\[\$\]'`) name the files, their order and dates; several strings mean several files, a date other than System III's means WEGA changed it. What WEGA changed against System III goes to `compare/NAME/SYSIII.md`. For what is specific to the Z8000 the Plexus sources (`tmp/plexus`) may be read, not copied. Without a source: step 8 first.
 2. **Date it** (`recon-setup`). `OLDCC_DATES.md` gives the time, the time gives the compiler (`OLDCC.md`, section 2): v0 1982, v1r 01/83, v1q and v1 01/83 .. 07/83, shipped cc (scc) from 09/83. Measure the neighbours too ("Evidence rules").
 3. **compare/NAME/** (`recon-setup`). `compare/NAME/progcfg.py` with NAME, ORIG, OWN_LIM (the end of the own code; whichlibc.py shows it), SEG and CC for a segmented program (`compare/sld`, `compare/ld` are patterns). `RECON_PROG=NAME python3 host/recon/inventory.py > inv.json`, then `own_table.py inv.json`: the first `findings.json` (every function start `f<entry>` with orig, size_orig, status open). Names later with `rename.py`.
 4. **Build the own code** (`recon-match`), with the stdio.h of the time for ccv0 and ccv1 (`src/head/oldv7`: `-I../head/oldv7` for a file in `src/cmd`, `-I../../head/oldv7` in a subdirectory):

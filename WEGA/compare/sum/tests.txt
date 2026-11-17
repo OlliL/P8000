@@ -1,5 +1,5 @@
 # The cases of the corpus of sum (compare/sum/corpus.py); the format: host/recon/casefile.py. Where an expectation
-# comes from: man = /usr/man/man1/sum.1, src = src/cmd/sum/sum.c.
+# comes from: man = /usr/man/man1/sum.1, src = src/cmd/sum.c.
 
 # ---- the public interface (man page) ----------------------------------------------------------------------------
 
