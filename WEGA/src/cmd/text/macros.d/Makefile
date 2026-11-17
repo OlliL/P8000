@@ -1,10 +1,10 @@
 # macros.d: the nroff macro packages. /usr/lib/tmac (tmac.an, tmac.e, ...): copied as they are in the WEGA root (System III copies
 # tmac.an, tmac.m and tmac.v from here too; tmac.e, tmac.s and the tmac.s* files have no System III source).
-# /usr/lib/macros (mmn, mmt, vmca): made from NAME.src by macrunch, as in System III. The .src files of System III are another version
-# than the packages of the WEGA root (checked: macrunch and ntar of System III under the emulator give other bytes and 100 to 4000
-# other lines), and the WEGA files keep their comments and the NOCOMPACT part with its markers. So here the .src files are the packages
-# of the WEGA root, and macrunch has the option -r (WEGA's addition) that takes the .src as it is: no sed, no ntar. (ntar.c and the
-# compaction by nroff -k of System III are not used and not here.)
+# /usr/lib/macros (mmn, mmt, vmca): made from NAME.src by macrunch with the calls of System III's macros.mk (-n m mmn, -t m mmt, vmca).
+# The .src files are those of System III with the lines changed that the packages of the WEGA root show differently (the names of the
+# company and of the Tektronix scope taken out: 12, 14 and 6 lines); macrunch is changed as its head says: the packages of the WEGA root
+# are the .src as they are (mmt, vmca) or without comment lines (mmn); nothing of what System III's macrunch does beyond that (sed, ntar,
+# nroff -k) shows in them.
 #
 #   make install PREFIX=dir    copy the files to dir/usr/lib/tmac (mode 644) and dir/usr/lib/macros (mode 664)
 
@@ -15,11 +15,11 @@ TMAC = tmac.an tmac.e tmac.m tmac.s tmac.scover tmac.sdisp tmac.skeep tmac.srefs
 all: $(MACROS)
 
 mmn: mmn.src macrunch
-	sh ./macrunch -r mmn
+	sh ./macrunch -n m mmn
 mmt: mmt.src macrunch
-	sh ./macrunch -r mmt
+	sh ./macrunch -t m mmt
 vmca: vmca.src macrunch
-	sh ./macrunch -r vmca
+	sh ./macrunch vmca
 
 install: all
 	mkdir -p $(PREFIX)/usr/lib/tmac $(PREFIX)/usr/lib/macros
@@ -27,6 +27,6 @@ install: all
 	for f in $(MACROS) ; do cp $$f $(PREFIX)/usr/lib/macros/$$f ; chmod 664 $(PREFIX)/usr/lib/macros/$$f ; done
 
 clean:
-	rm -f $(MACROS) NOCOMPACT*
+	rm -f $(MACROS)
 
 .PHONY: all install clean

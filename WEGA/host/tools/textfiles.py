@@ -48,8 +48,8 @@ SRCDIR = [('usr/lib/help/term', 'text/shells.d/term'), ('usr/lib/help/text', 'te
           ('usr/lib/uucp/', 'uucp/%(b)s'), ('usr/lib/llib-lc', 'lint/llib-lc'), ('usr/lib/llib-port', 'lint/llib-port'),
           ('usr/bin/sccsdiff', 'sccs/src/sccsdiff'), ('usr/lib/spell', 'spell/%(b)s')]
 # generators that were run: the result (2026-11-17); a prefix that did not reproduce the WEGA file falls back to C with the reason
-CHECKED = {'usr/lib/macros/': ('G', 'macrunch (option -r, WEGA\'s addition): the .src files are the WEGA packages; the .src of System III are another version, '
-                                     'so macrunch/ntar of System III do not give the WEGA bytes (checked 2026-11-17)')}
+CHECKED = {'usr/lib/macros/': ('G', 'macrunch of System III with the calls of macros.mk; .src of System III with 12/14/6 lines changed (names of the '
+                                     'company and of Tektronix taken out); macrunch changed: -n strips comments, else cat (checked 2026-11-17: byte-identical)')}
 ZIELDIR = []
 NOGEN = {'usr/lib/term/tab-12', 'usr/lib/term/tab630wp-12'}	# no System III source for these
 

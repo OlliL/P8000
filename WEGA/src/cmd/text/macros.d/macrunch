@@ -1,10 +1,9 @@
 #	macros crunch procedure
-#	(System III 1.17; the option -r is WEGA's: see macros.mk)
+#	(System III 1.17, changed for WEGA: see below)
 #
 # SCCS: @(#)macrunch	1.17
 
 move=n
-raw=n
 roff=
 pname=
 name=
@@ -12,7 +11,7 @@ path=/usr
 
 
 if [ $# -lt 1 ]
-	then echo usage: macrunch [-m] [-r] [-d path] [{-n _o_r -t} "package name"] ".src name" 
+	then echo usage: macrunch [-m] [-d path] [{-n _o_r -t} "package name"] ".src name" 
 	exit 1
 fi
 
@@ -21,7 +20,6 @@ do
     case $1 in
 
 	-m)	move=y;;
-	-r)	raw=y;;
 	-n)	roff=n; pname=$2; shift;;
 	-t)	roff=t; pname=$2; shift;;
 	-d)	path=$2; shift;;
@@ -31,56 +29,13 @@ do
     shift
 done
 
-rm -f NOCOMPACT${name}
-
-# -r (WEGA): the .src is the package as it is in the WEGA root (with its comments and its NOCOMPACT part with the markers): copied as it is
-if [ "${raw}" = y ]
-then
-	cp ${name}.src ${name}
-else
-
-sed -e "3,\${
-		/^''*\\\\\"/d
-		s/	*\\\\\".*//
-		s/@//g
-		s/^\(['.]\)[ 	]*/\1/
-		s/^\\([.'][a-z][a-z]\\)  */\\1/
-		s/\\\\{[ 	]*/\\\\{/g
-		s/<<name>>/${name}/g
-	    } " \
-	${name}.src | ./ntar -h "'''>S>" -t "'''>E>" -g  >  ${name}
-
-if [ -r NOCOMPACT${name} ]
-then
-	if [ -n "${roff}" ]
-	then
-		mv NOCOMPACT${name} ucmp.${roff}.${pname}
-		${path}/bin/${roff}roff -kTMP ${name} - <<!
-.co
-!
-		mv d.TMP cmp.${roff}.d.${pname}
-		mv t.TMP cmp.${roff}.t.${pname}
-		cat ucmp.${roff}.${pname} >> ${name}
-		if [ $move = "y" ]
-		then
-		    cp cmp.${roff}.[dt].${pname} ucmp.${roff}.${pname} ${path}/lib/macros
-		    ( cd ${path}/lib/macros
-			chmod 644 cmp.${roff}.[dt].${pname} ucmp.${roff}.${pname} )
-		    if [ "${path}" = "/usr" ]
-			then ( cd ${path}/lib/macros
-			  chown bin cmp.${roff}.[dt].${pname} ucmp.${roff}.${pname}
-			  chgrp bin cmp.${roff}.[dt].${pname} ucmp.${roff}.${pname} )
-			else true
-		    fi
-		    rm -f cmp.${roff}.[dt].${pname} ucmp.${roff}.${pname}
-		fi
-	else
-		cat NOCOMPACT${name} >> ${name}
-		rm NOCOMPACT${name}
-	fi
-fi
-
-fi
+# WEGA: the packages of the WEGA root are the .src files with their lines as they are (mmt, vmca), the nroff package (-n) without its comment
+# lines and without the comments at the end of a line. System III's sed (compaction of blanks, <<name>>, @) and ntar (the NOCOMPACT part,
+# nroff -k) are not used: the files of the WEGA root show nothing of them.
+case ${roff} in
+n)	sed -e "/^''*\\\\\"/d" -e 's/\\".*//' ${name}.src > ${name} ;;
+*)	cat ${name}.src > ${name} ;;
+esac
 
 if [ $move = "y" ] 
 then
