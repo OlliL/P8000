@@ -69,6 +69,9 @@ The other programs: 150, 160.
 
 ## Log
 
+- 2026-11-17: checkall ALL OK on 50d4434d (sum in the install tree and its corpus; host cparse fixed: dimtab[-1] is lregvar,
+  the corpus input ex/printf.c failed on c1b7ea71 already).
+
 - 2026-11-17: setup.py (checked on sum, dc, rmdir, cp, size, mv, write, ranlib: OWN_LIM and library as in their Makefiles),
   HOWTO phase A renumbered around it (1 setup, 2 build and compare, 3 no source, 4 corpus, 5 handoff); recon-setup removed.
 
