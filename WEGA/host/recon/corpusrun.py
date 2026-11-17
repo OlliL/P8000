@@ -981,6 +981,9 @@ def main():
     # with & by a shell script has them ignored, and an ignored signal stays ignored through exec, for the guest too)
     signal.signal(signal.SIGINT, signal.default_int_handler)
     signal.signal(signal.SIGQUIT, signal.SIG_DFL)
+    # HUP: nohup leaves it ignored, and the steps would not die by it (the case signal of cas waited for ever). A handler of
+    # the runner that does nothing: the runner lives on when the terminal goes, and exec gives the steps the default
+    signal.signal(signal.SIGHUP, lambda s, f: None)
     signal.pthread_sigmask(signal.SIG_SETMASK, [])	# and no blocked signal (QUIT may come blocked): the threads and
     # the steps inherit the mask
     a = sys.argv[1:]
