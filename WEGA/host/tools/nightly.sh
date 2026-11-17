@@ -9,8 +9,7 @@
 #
 # Per program: the session does steps 1 to 5 and commits (it does not run checkall: one command may run 10 minutes at
 # most); then this script runs checkall on HEAD. It stops at the first program that leaves the working tree changed
-# (no commit, or an unfinished one) or whose checkall fails, so that the next program does not build on it; a checkall
-# that fails only in host builds of the tools ([host] corpora: the WEGA tree is right) is noted and the run goes on.
+# (no commit, or an unfinished one) or whose checkall fails, so that the next program does not build on it.
 # Logs in tmp/tmp/nightly/: NAME.json (the result of the session: report, turns, cost), NAME.checkall, summary.txt.
 # Environment: WEGA (the WEGA root, default tmp/wega31_root of the repository). Run it under nohup or tmux.
 REPO=`cd \`dirname $0\`/../../.. && pwd`
@@ -68,15 +67,7 @@ except Exception as e:
 	echo "`date '+%F %T'` $name: $info; commit $after; checkall: $res" >> $S
 	case "$res" in
 	*ALL\ OK*) ;;
-	*)	# only the host builds of the tools failed (a new source of the tree as a corpus input, e.g. a constant the host's
-		# atof rounds otherwise): the WEGA tree is right; noted for the day, the next one goes on
-		other=`grep ' FAIL ' $L/$name.checkall | grep -v '^corpus [a-z0-9_]* \[host\]'`
-		if [ -z "$other" ]; then
-			echo "`date '+%F %T'` $name: only host builds failed, going on: `grep ' FAIL ' $L/$name.checkall | awk '{print $2}' | tr '\n' ' '`" >> $S
-		else
-			echo "`date '+%F %T'` stop after $name (checkall failed: $L/$name.checkall)" >> $S
-			exit 1
-		fi ;;
+	*) echo "`date '+%F %T'` stop after $name (checkall failed: $L/$name.checkall)" >> $S; exit 1 ;;
 	esac
 done
 # COVERAGE.md once for all of them

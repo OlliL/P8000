@@ -45,9 +45,6 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 
 ## Log
 
-- 2026-11-18: nightly: liby identical (f28ae9f1), libm committed not identical (65bb1d9c); its sources showed a host
-  difference (atof of cparse, KNOWLEDGE.md quirks): nightly.sh now goes on when only [host] corpora fail.
-
 - 2026-11-17: libm.a, slibm.a from source (System III, v1; fputil.s PLZ/ASM from the original by s2as.py, which now writes
   fsetmode and fldctl with a pair), not identical: fputil.o exact, the 15 C members open for the compiler (floating compare
   without rounding, EPU temporaries; `compare/libm/findings.json`, `OLDCC_LOG.md`); WEGA's exp.c, jn.c, pow.c; archives in OPEN.
