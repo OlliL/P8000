@@ -1,0 +1,64 @@
+# The cases of the corpus of killall (compare/killall/corpus.py); the format: host/recon/casefile.py. Every case runs as root with the clock
+# at 600000000 and the console as terminal (the user me at the console, bob at tty3, amy at tty4: utmp in the layer). The original ps -ef
+# reads the process table of the case (host/tools/mkproc.py: PID:PPID:UID:TTY:STATE:COMMAND, a login shell leads its group); a kill to
+# one of those numbers is written to the log of the emulator ($Z8K_KILLLOG: "PID SIGNAL") and granted: the case reads what killall
+# killed. The script's own shell has the number 100 (z8k-emu Z8K_PIDDIR). Where an expectation comes from: src = src/cmd/killall.sh
+# (a sh script): the first group of the processes of ps -ef without the header line, init, the ones on the own terminal, the script
+# itself, /etc/rc, ps and sed; the second group: cron, update and dqueuer.
+
+== init-second
+# src (a quirk, KNOWLEDGE.md): the header of the kill command is made of line 2 of the ps list (2s/.*/kill -9 \\/), but line 2 of the
+# real list is init and /INIT/d deletes it before: the first group is never started as a command. The second group (cron, update,
+# dqueuer) is found with fgrep on the names /etc/cron ...: the ps of the model does not know the arguments of a process and says
+# [ cron ]: not found either, so nothing is killed (the arguments are not part of the model, see the log of 120)
+-- case
+host: python3 $WEGA_HOST/tools/mkproc.py 1:0:0:?:R:INIT 20:1:0:?:S:cron 22:1:0:?:S:update 25:1:0:?:S:dqueuer 101:1:0:co:S:-sh 130:1:3:3:S:-csh 131:130:3:3:S:vi 150:1:3:4:S:-sh
+step: /etc/killall
+host: test -e $Z8K_KILLLOG && echo logged || echo no-log
+expect: exit 0
+expect: output contains 'no-log'
+
+== first-group
+# src: when line 2 is a process of its own (init later in the list), it becomes the header "kill -9" and the following processes are
+# killed in one command; the own terminal (co) and the script are not among them, bob's and amy's processes are (cron too: the group
+# takes every line); the process of line 2 (here bob's login shell, 130) is not killed: its line became the header
+-- case
+host: python3 $WEGA_HOST/tools/mkproc.py 130:1:3:3:S:-csh 1:0:0:?:R:INIT 20:1:0:?:S:cron 101:1:0:co:S:-sh 131:130:3:3:S:vi 150:1:3:4:S:-sh
+step: /etc/killall
+host: sort -n $Z8K_KILLLOG | tr '\n' ' '
+expect: output contains '20 9 131 9 150 9'
+
+== signal
+# src (observed): with an argument (killall 15) nothing is killed in the model: the same on both sides (kill -15 itself works)
+-- case
+host: python3 $WEGA_HOST/tools/mkproc.py 130:1:3:3:S:-csh 1:0:0:?:R:INIT 20:1:0:?:S:cron 131:130:3:3:S:vi
+step: /etc/killall 15
+host: test -e $Z8K_KILLLOG && echo logged || echo no-log
+expect: output contains 'no-log'
+
+== own-terminal
+# src: who am i gives the own terminal (co): its processes are not killed, bob's are; without an entry of the console in utmp the name
+# noterm matches no line and the own processes are killed too
+-- case
+host: python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp tty3:bob tty4:amy; python3 $WEGA_HOST/tools/mkproc.py 130:1:3:3:S:-csh 1:0:0:?:R:INIT 101:1:0:co:S:-sh 131:130:3:3:S:vi
+step: /etc/killall
+host: sort -n $Z8K_KILLLOG | tr '\n' ' '
+expect: output contains '101 9 131 9'
+
+== nothing
+# src: a list with init only: nothing is killed, no log is made
+-- case
+host: python3 $WEGA_HOST/tools/mkproc.py 1:0:0:?:R:INIT
+step: /etc/killall
+host: test -e $Z8K_KILLLOG && echo logged || echo no-log
+expect: exit 0
+expect: output contains 'no-log'
+
+== user
+# src: /etc/killall has the mode 744: a user may run it (nice -20 is for the super-user)
+-- case
+user: 100 10
+host: python3 $WEGA_HOST/tools/mkproc.py 130:1:3:3:S:-csh 1:0:0:?:R:INIT 20:1:0:?:S:cron
+step: /etc/killall
+host: test -e $Z8K_KILLLOG && echo logged || echo no-log
+expect: exit 0

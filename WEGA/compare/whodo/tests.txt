@@ -1,0 +1,52 @@
+# The cases of the corpus of whodo (compare/whodo/corpus.py); the format: host/recon/casefile.py. Every case runs as root with the clock at
+# 600000000 (Thu Jan 5 05:40:00 EST 1989) and the console as terminal. who reads /etc/utmp of the layer (host/tools/mkutmp.py), the
+# original ps -a reads the process table of the case (host/tools/mkproc.py: PID:PPID:UID:TTY:STATE:COMMAND; a login shell, whose name
+# begins with -, leads a process group, ps -a leaves leaders out); the other commands are the originals. Where an expectation comes
+# from: man = /usr/man/man1/whodo.1 and src = src/cmd/whodo.sh (the output of who and ps put together by ed and sort).
+
+== list
+# man: for every logged in user the line of who (terminal, name, time), the other processes of the terminal below (indented)
+-- case
+host: python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp console:me tty3:bob tty4:amy
+host: python3 $WEGA_HOST/tools/mkproc.py 1:0:0:?:R:INIT 101:1:0:co:S:-sh 117:101:0:co:R:ps 130:1:3:3:S:-csh 131:130:3:3:S:vi 150:1:3:4:S:-rsh
+step: /bin/whodo
+expect: exit 0
+expect: output contains 'Thu Jan  5 05:40:00 EST 1989'
+expect: output contains '3   bob       05:40'
+expect: output contains '  3    131   0:00 vi'
+expect: output contains '4   amy       05:40'
+expect: output contains 'co  me        05:40'
+expect: output contains '  co    117   0:00 ps'
+
+== no-process
+# src: a user without a process of ps -a (a login shell leads its group and is left out): his line only
+-- case
+host: python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp tty3:bob
+host: python3 $WEGA_HOST/tools/mkproc.py 1:0:0:?:R:INIT 130:1:3:3:S:-csh
+step: /bin/whodo
+expect: output contains '3   bob       05:40'
+
+== not-logged-in
+# src: a process on a terminal that nobody is logged in at is listed with its terminal
+-- case
+host: python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp tty3:bob
+host: python3 $WEGA_HOST/tools/mkproc.py 1:0:0:?:R:INIT 130:1:3:3:S:-csh 140:130:3:5:S:sh
+step: /bin/whodo
+expect: output contains '3   bob       05:40'
+expect: output contains '5    140   0:00 sh'
+
+== no-terminal
+# src: ps -a does not list a process without a terminal
+-- case
+host: python3 $WEGA_HOST/tools/mkutmp.py $Z8K_OVERLAY/etc/utmp tty3:bob
+host: python3 $WEGA_HOST/tools/mkproc.py 1:0:0:?:R:INIT 130:1:3:3:S:-csh 160:130:3:?:S:daemon
+step: /bin/whodo
+expect: output contains '3   bob       05:40'
+
+== no-utmp
+# src: without /etc/utmp who has nothing to say: the processes alone, the date first
+-- case
+host: python3 $WEGA_HOST/tools/mkproc.py 1:0:0:?:R:INIT 101:1:0:co:S:-sh 117:101:0:co:R:ps
+step: /bin/whodo
+expect: output contains 'Thu Jan  5 05:40:00 EST 1989'
+expect: output contains '  co    117   0:00 ps'

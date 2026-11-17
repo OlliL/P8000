@@ -633,6 +633,7 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
     env['Z8K_OVERLAY'] = overlay
     env['Z8K_MOUNTS'] = rd + '.mounts'
     env['Z8K_WEGAFS'] = os.path.join(REPO, 'host', 'tools', 'wegafs.py')
+    env['Z8K_KILLLOG'] = rd + '.kill.log'	# the signals to the numbers of a process table model (z8k-emu); the host: lines read it
     env['Z8K_ROOTLOG'] = rd + '.rootlog'	# beside the case directory: a program that reads its directory must not see it
     if case.get('user'):	# the user model of the emulator: the ids, the owners of the files (a table beside the case)
         env['Z8K_UID'], env['Z8K_GID'] = str(case['user'][0]), str(case['user'][1])
@@ -653,8 +654,15 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
             env['Z8K_CONSOLE'] = '1'
     if getattr(cfg, 'IN_TMP', False):	# the case directory is /tmp/NAME of the guest (pwd works: z8k-emu, Z8K_TMPDIR)
         env['Z8K_TMPDIR'] = os.path.dirname(rd)
+    else:	# the guest /tmp of this run only: the process numbers are the same in every run (Z8K_PIDDIR), so the temporary names
+        td = rd + '.gtmp'	# of the programs (cc.100.s) would be the same in parallel runs that share a /tmp
+        shutil.rmtree(td, ignore_errors=True)
+        os.makedirs(td)
+        env['Z8K_TMPDIR'] = td
     if os.path.exists(rd + '.rootlog'):
         os.remove(rd + '.rootlog')
+    if os.path.exists(rd + '.kill.log'):
+        os.remove(rd + '.kill.log')
     env.pop('TZ', None)
     env['LC_ALL'] = 'C'
     genv = dict(case['env'])
@@ -700,7 +708,12 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
                 args += ['-r', RUNROOT, '-0', os.path.basename(shell), shell, prog] + argv[1:]
             else:
                 args += ['-r', RUNROOT, '-0', argv[0], prog] + argv[1:]	# argv[0] the word, as the shell gives it
-            e = env
+            e = dict(env)
+            if getattr(cfg, 'PIDS', False):	# PIDS = True: the guest's process numbers of a step are the same in every run (z8k-emu Z8K_PIDDIR:
+                pd = '%s.pids%d' % (rd, i)	# 100, then by the tree of forks). Only for the corpora that need it (passwd's salt, the model of
+                shutil.rmtree(pd, ignore_errors=True)	# the process table): the names of temporary files (/tmp/cc.100.s) are then the same
+                os.makedirs(pd)	# in every run, too, and runs that share a /tmp (IN_TMP) clash
+                e['Z8K_PIDDIR'] = pd
         args = ['sh', '-c', 'umask 022; exec "$@"', 'sh'] + args	# every step with umask 022 (the modes of new files)
         fin = open(os.path.join(rd, st['stdin']), 'rb') if st['stdin'] else None
         try:

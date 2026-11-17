@@ -1,0 +1,4 @@
+parent 100
+forked 7051 7209
+wait gave 7209 status 3
+wait gave 7051 signal 15

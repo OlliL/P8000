@@ -28,6 +28,10 @@ def main():
         return r
 
     lines = [l.split() for l in open(sys.argv[1], errors='replace')]
+    tmpdir = {}                     # tree -> the host directory of its guest /tmp (the "tmp DIR" of its start line): the names
+    for f in lines:                 # and the guest pids of trees with different ones do not clash
+        if len(f) >= 9 and f[2] == 'start' and f[-2] == 'tmp':
+            tmpdir.setdefault(int(f[1]), f[-1])
     for f in lines:                 # first all forks: a child may log before its parent logs the fork
         if len(f) >= 5 and f[2] == 'fork':
             parent[int(f[4])] = int(f[1])
@@ -41,11 +45,12 @@ def main():
         lf = life.setdefault(tr, [t, t])
         lf[1] = t
         if ev == 'getpid' and len(f) >= 5:
-            gpids[f[4]].append((tr, t))
+            gpids[(tmpdir.get(tr, ''), f[4])].append((tr, t))
         elif ev == 'creat' and len(f) >= 4 and f[-1] != '->' and not f[-1].startswith('-'):
             path = f[3]
             if not path.startswith('/tmp/'):
                 continue
+            path = tmpdir.get(tr, '') + path
             if path in live and live[path][0] != tr:
                 o, ot = live[path]
                 print('clash creat %s: tree %d at %.6f, held by tree %d since %.6f' % (path, tr, t, o, ot))
@@ -55,13 +60,14 @@ def main():
             path = f[3]
             if not path.startswith('/tmp/'):
                 continue
+            path = tmpdir.get(tr, '') + path
             if path in live and live[path][0] != tr:
                 o, ot = live[path]
                 print('clash unlink %s: tree %d at %.6f, created by tree %d at %.6f' % (path, tr, t, o, ot))
                 clashes += 1
             live.pop(path, None)
         elif ev == 'open' and len(f) >= 4:
-            path = f[3]
+            path = tmpdir.get(tr, '') + f[3]
             if path in live and live[path][0] != tr:
                 o, ot = live[path]
                 print('clash open %s: tree %d at %.6f, created by tree %d at %.6f' % (path, tr, t, o, ot))
@@ -76,7 +82,7 @@ def main():
         ts = sorted(trees.items(), key=lambda x: x[1])
         for (a, ta), (b, tb) in zip(ts, ts[1:]):
             if life[a][1] >= tb:     # tree a still alive when b got the same guest pid
-                print('same guest pid %s: tree %d (%.6f..%.6f) and tree %d (from %.6f)' % (g, a, life[a][0], life[a][1], b, tb))
+                print('same guest pid %s: tree %d (%.6f..%.6f) and tree %d (from %.6f)' % (g[1], a, life[a][0], life[a][1], b, tb))
                 same += 1
     print('tmpclash: %d lines, %d trees, %d clashes, %d guest pids shared by living trees' % (n, len(life), clashes, same))
 

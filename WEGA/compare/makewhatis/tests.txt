@@ -28,7 +28,7 @@ expect: output contains 'cat (1)                 - a changed text'
 == removed-page
 # src: a page that is not there gives no entry
 -- case
-host: rm $Z8K_OVERLAY/usr/man/man1/cat.1
+host: cd $Z8K_OVERLAY/usr/man/man1; rm cat.1; : > .wh.cat.1
 step: /etc/makewhatis
 host: grep -c "^cat " $Z8K_OVERLAY/usr/lib/whatis; grep -c . $Z8K_OVERLAY/usr/lib/whatis
 expect: output contains '504'
@@ -49,9 +49,9 @@ expect: output contains '0'
 
 == empty-section
 # src: a section without pages: the temporary file of the script ($$.7) is the only match of *.*, getNAME takes nothing from it:
-# no message, no entries of that section (10 fewer)
+# no message, no entries of that section (10 fewer); a page removed from the layer is hidden by a whiteout (.wh.NAME), or the tree's page shows through
 -- case
-host: rm $Z8K_OVERLAY/usr/man/man7/*
+host: cd $Z8K_OVERLAY/usr/man/man7; for f in *; do rm $f; : > .wh.$f; done
 step: /etc/makewhatis
 host: grep -c . $Z8K_OVERLAY/usr/lib/whatis
 expect: exit 0

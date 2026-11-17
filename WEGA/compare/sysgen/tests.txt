@@ -1,0 +1,137 @@
+# The cases of the corpus of sysgen (compare/sysgen/corpus.py); the format: host/recon/casefile.py. Every case runs as root with the clock
+# at 600000000. /usr/sys is a copy in the layer; the answers are the standard input (gets). After a run the kernel (wega.out), the boot
+# program (boot.out) and the headers it wrote (headers.out) are copied to the case directory and compared. The link of the kernel ends
+# with "Undefined: _cpu2_fl" in the emulator (make -i ignores it): the same on both sides. Where an expectation comes from: src =
+# src/cmd/sysgen.sh (a csh script).
+
+== nothing
+# src: n to every question: the headers stay (mdsize.h, ver.h as the tree has them), the kernel and the boot program are built
+-- a
+n
+n
+n
+n
+-- case
+step: /etc/sysgen
+stdin: a
+host: cd $Z8K_OVERLAY/usr/sys && for f in conf/wega conf/boot; do [ -f $f ] && cp $f $OLDPWD/$(basename $f).out; done; cat h/mdsize.h h/ver.h > $OLDPWD/headers.out
+expect: exit 0
+expect: output contains '---- sysgen ----'
+expect: output contains '#define SYSNAME		"P8000"'
+expect: output contains 'New wega is building now ! Wait a minute !'
+expect: output contains 'New boot is building now !'
+
+== layout
+# src: y for the layout: the sizes of usr, swap, root, tmp, z and md5 (0 ends the list), no second disk; the sum is printed and
+# mdsize.h is written (the second disk with zeros)
+-- a
+n
+y
+100
+50
+70
+20
+60
+0
+n
+n
+n
+-- case
+step: /etc/sysgen
+stdin: a
+host: cd $Z8K_OVERLAY/usr/sys && for f in conf/wega conf/boot; do [ -f $f ] && cp $f $OLDPWD/$(basename $f).out; done; cat h/mdsize.h h/ver.h > $OLDPWD/headers.out
+expect: output contains 'size of all file systems on 1. disk : 300'
+expect: output contains '#define USR	100'
+expect: output contains '#define Z	60'
+
+== layout-md
+# src: more file systems of the first disk (md5 to md9) and a second disk (md10 ...); a 0 ends a list; the sums are printed
+-- a
+n
+y
+100
+50
+70
+20
+60
+10
+20
+0
+y
+30
+40
+0
+n
+n
+-- case
+step: /etc/sysgen
+stdin: a
+host: cd $Z8K_OVERLAY/usr/sys && for f in conf/wega conf/boot; do [ -f $f ] && cp $f $OLDPWD/$(basename $f).out; done; cat h/mdsize.h h/ver.h > $OLDPWD/headers.out
+expect: output contains 'size of all file systems on 1. disk : 330'
+expect: output contains 'size of all file systems on 2. disk : 70'
+expect: output contains '#define MD6	20'
+expect: output contains '#define MD11	40'
+
+== version
+# src: y for the version parameters: system name, node name and version go to ver.h and into the kernel
+-- a
+n
+n
+y
+TESTSYS
+NODE1
+9.9
+n
+-- case
+step: /etc/sysgen
+stdin: a
+host: cd $Z8K_OVERLAY/usr/sys && for f in conf/wega conf/boot; do [ -f $f ] && cp $f $OLDPWD/$(basename $f).out; done; cat h/mdsize.h h/ver.h > $OLDPWD/headers.out
+expect: output contains '#define SYSNAME		"TESTSYS"'
+expect: output contains '#define NODENAME	"NODE1"'
+expect: output contains '#define VERSION		" 9.9"'
+
+== driver
+# src: y for a new driver: the object (a file of /usr/sys/conf: here a copy of bstart.o) is added to ../dev/LIB2 with ar rv
+-- a
+n
+n
+n
+y
+drv.o
+-- case
+host: cp $Z8K_OVERLAY/usr/sys/conf/bstart.o $Z8K_OVERLAY/usr/sys/conf/drv.o
+step: /etc/sysgen
+stdin: a
+host: cd $Z8K_OVERLAY/usr/sys && for f in conf/wega conf/boot; do [ -f $f ] && cp $f $OLDPWD/$(basename $f).out; done; cat h/mdsize.h h/ver.h > $OLDPWD/headers.out
+expect: output contains 'a - drv.o'
+expect: output contains 'New wega is building now ! Wait a minute !'
+
+== driver-missing
+# src: a driver object that is not there: "no object file", then the question again; the second name is there
+-- a
+n
+n
+n
+y
+nosuch.o
+drv.o
+-- case
+host: cp $Z8K_OVERLAY/usr/sys/conf/bstart.o $Z8K_OVERLAY/usr/sys/conf/drv.o
+step: /etc/sysgen
+stdin: a
+host: cd $Z8K_OVERLAY/usr/sys && for f in conf/wega conf/boot; do [ -f $f ] && cp $f $OLDPWD/$(basename $f).out; done; cat h/mdsize.h h/ver.h > $OLDPWD/headers.out
+expect: output contains 'nosuch.o no object file'
+expect: output contains 'a - drv.o'
+
+== user
+# src: /etc/sysgen has the mode 751: a user may run it but not write /usr/sys/h
+-- a
+n
+n
+n
+n
+-- case
+user: 100 10
+step: /etc/sysgen
+stdin: a
+expect: output contains 'sysgen'

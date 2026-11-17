@@ -1,0 +1,80 @@
+# The cases of the corpus of rmuser (compare/rmuser/corpus.py); the format: host/recon/casefile.py. Every case runs as root with the clock
+# at 600000000 and the console as terminal; /etc/passwd, /etc/group, /etc/whois are copies in the layer to which the prefix adds the user
+# zed (uid 50): in the groups adm (zed,bin), other (bin,zed,adm) and system (alone), in whois, and his mail file. The standard input has
+# the password for passwd (twice, 6 characters). The diagnostics of find are not compared (see corpus.py). rmuser has no man page in
+# the tree: src = src/cmd/rmuser.sh (a sh script).
+
+== remove
+# src: passwd is called for the user, he is deleted from the groups (in the middle, at the end, alone in a group), from whois, his
+# mail file is removed; the list of his files is made (files.zed, empty: none belongs to him)
+-- pw
+secret1
+secret1
+-- case
+step: /etc/rmuser zed
+stdin: pw
+host: cat $Z8K_OVERLAY/etc/group; cat $Z8K_OVERLAY/etc/whois; ls $Z8K_OVERLAY/usr/spool/mail | wc -l; wc -c < files.zed; grep -c "^zed" $Z8K_OVERLAY/etc/passwd; stat -c '%a %n' $Z8K_OVERLAY/etc/group $Z8K_OVERLAY/etc/whois | sed "s#$Z8K_OVERLAY##"
+expect: exit 0
+expect: output contains '644 /etc/group'
+expect: output contains '666 /etc/whois'
+expect: output contains 'deleting zed from groups in /etc/group'
+expect: output contains 'listing all files owned by zed on files.zed (this will take a while)'
+expect: output contains 'system::0:'
+expect: output contains 'adm::4:bin'
+expect: output contains 'other::1:bin,adm'
+
+== files
+# src: the files of the user are listed with ls -ld into files.NAME (find / -user): a file that belongs to him (chown by the original)
+-- pw
+secret1
+secret1
+-- thing
+x
+-- case
+host: cp thing $Z8K_OVERLAY/usr/spool/mail/owned; touch -d '1989-01-04 12:00 UTC' $Z8K_OVERLAY/usr/spool/mail/owned
+step: /bin/chown zed /usr/spool/mail/owned
+step: /etc/rmuser zed
+stdin: pw
+host: cat files.zed | sed 's/ [A-Z][a-z][a-z] [ 0-9][0-9] .*[0-9] /  /'
+expect: output contains 'owned'
+
+== unknown
+# src (a quirk): a name that is not in /etc/passwd: "NAME is not in the passwd file."; the status is 0 although the script says exit 1:
+# the trap on exit (trap "rm -f ...;exit" 0 ...) ends it with the status of its own exit; nothing is changed
+-- case
+step: /etc/rmuser nobody1
+expect: exit 0
+expect: output is 'nobody1 is not in the passwd file.\n'
+
+== no-argument
+# src: without a name the test egrep "^:" finds nothing: the same message (echo drops the empty name)
+-- case
+step: /etc/rmuser
+expect: exit 0
+expect: output is 'is not in the passwd file.\n'
+
+== prefix-name
+# src: egrep "^zed:" needs the whole name: z is not in the passwd file though zed begins with it
+-- case
+step: /etc/rmuser z
+expect: exit 0
+expect: output is 'z is not in the passwd file.\n'
+
+== passwd-mismatch
+# src: passwd is called as it is: when the two passwords differ it says so (and the groups are edited all the same)
+-- pw
+secret1
+secret2
+-- case
+step: /etc/rmuser zed
+stdin: pw
+host: grep -c zed $Z8K_OVERLAY/etc/group
+expect: output contains 'deleting zed from groups in /etc/group'
+
+== user
+# src: /etc/rmuser has the mode 700: a user cannot run it
+-- case
+user: 100 10
+step: /etc/rmuser zed
+expect: exit 1
+expect: output is '-- stderr\n/etc/rmuser: /etc/rmuser: cannot open\n'

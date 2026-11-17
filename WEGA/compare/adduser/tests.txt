@@ -1,0 +1,272 @@
+# The cases of the corpus of adduser (compare/adduser/corpus.py); the format: host/recon/casefile.py. Every case runs as root with the
+# clock at 600000000 and the console as terminal. The standard input holds the answers of the operator (read by gets) and at the end the
+# password twice (read by passwd; it must have 6 characters). /etc/passwd, /etc/group, /etc/whois are copies in the layer; home
+# directories are made in usr/home of the layer, the mail files in usr/spool/mail. The salt of the password is made of the process
+# number and the time: both are fixed. adduser has no man page in the tree: src = src/cmd/adduser.sh (a csh script).
+
+== add
+# src: a new user: the next free uid (below 20 the loop takes the first free number above the ones in use), the group number of the
+# default group (other), the home directory is made, the line goes to /etc/passwd with the password from passwd, the user is added
+# to the other group, whois gets a line, the mail file is made (owner and group by chmog)
+-- in
+newguy
+/usr/home/newguy
+
+
+adm
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+host: grep "^newguy" $Z8K_OVERLAY/etc/passwd $Z8K_OVERLAY/etc/whois | sed "s#$Z8K_OVERLAY##"; grep "^adm" $Z8K_OVERLAY/etc/group; stat -c '%a %n' $Z8K_OVERLAY/usr/home/newguy $Z8K_OVERLAY/usr/spool/mail/newguy | sed "s#$Z8K_OVERLAY##"
+expect: exit 0
+expect: output contains 'Uid:             25'
+expect: output contains 'newguy: Added'
+expect: output contains '/etc/passwd:newguy:'
+expect: output contains ':25:1::/usr/home/newguy:/bin/csh'
+expect: output contains '/etc/whois:newguy:::::'
+expect: output contains 'adm::4:newguy'
+
+== defaults
+# src: RETURN for the shell and the group: /bin/csh and other; no further groups
+-- in
+plain
+/usr/home/plain
+
+
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+host: grep "^plain" $Z8K_OVERLAY/etc/passwd | sed "s#$Z8K_OVERLAY##"
+expect: output contains ':25:1::/usr/home/plain:/bin/csh'
+
+== shell
+# src: an existing shell is taken; one that does not exist is replaced by /bin/csh with a message
+-- in
+shuser
+/usr/home/shuser
+/bin/sh
+
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+host: grep "^shuser" $Z8K_OVERLAY/etc/passwd | sed "s#$Z8K_OVERLAY##"
+expect: output contains ':/usr/home/shuser:/bin/sh'
+
+== no-shell
+# src: a login shell that is not there: "'NAME' does not exist. Substituting /bin/csh."
+-- in
+nosh
+/usr/home/nosh
+/bin/nonexistent
+
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+expect: output contains "'/bin/nonexistent' does not exist. Substituting /bin/csh."
+
+== long-name
+# src: a name of more than 8 characters is refused and the question is asked again
+-- in
+toolongname
+okname
+/usr/home/okname
+
+
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+expect: output contains "'toolongname': User names limited to 8 characters maximum; Try again"
+expect: output contains 'okname: Added'
+
+== name-in-use
+# src: a name that is in /etc/passwd already: the message, the question again
+-- in
+bin
+other1
+/usr/home/other1
+
+
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+expect: output contains 'bin: already in use. Please use another name.'
+expect: output contains 'other1: Added'
+
+== empty-name
+# src: RETURN alone: asked again, no message
+-- in
+
+another
+/usr/home/another
+
+
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+expect: output contains 'another: Added'
+
+== home-relative
+# src: the home directory must begin with a slash: the message with an example, the question again
+-- in
+reluser
+home/reluser
+/usr/home/reluser
+
+
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+expect: output contains 'A full explict pathname must be used for the home directory'
+expect: output contains 'e.g. /z/reluser'
+
+== home-empty
+# src: no home directory: "You must specify a home directory"
+-- in
+nohome
+
+/usr/home/nohome
+
+
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+expect: output contains 'You must specify a home directory'
+
+== home-exists-yes
+# src: a directory that is there: the warning and the question; y uses it (no mkdir, no removal on an interrupt)
+-- in
+exuser
+/usr/home/exuser
+yes
+
+
+
+yes
+secret1
+secret1
+-- case
+host: mkdir $Z8K_OVERLAY/usr/home/exuser
+step: /etc/adduser
+stdin: in
+expect: output contains 'Okay to use it? (y/n)'
+expect: output contains 'exuser: Added'
+
+== home-exists-no
+# src: n: "Please use another directory", the question for the directory again
+-- in
+exuser
+/usr/home/exuser
+no
+/usr/home/exuser2
+
+
+
+yes
+secret1
+secret1
+-- case
+host: mkdir $Z8K_OVERLAY/usr/home/exuser
+step: /etc/adduser
+stdin: in
+expect: output contains 'Please use another directory'
+expect: output contains 'Dir:             /usr/home/exuser2'
+
+== group-unknown
+# src: a default group that is not in /etc/group: the message and the question again
+-- in
+gruser
+/usr/home/gruser
+
+nogroup
+adm
+
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+expect: output contains "'nogroup' not found in group file. Please try again."
+expect: output contains 'Gid:             4'
+
+== group-members
+# src: groups other than the default one: in a group with members the name is added after a comma, in one without after the colon;
+# an unknown group is said not to be found
+-- in
+grpuser
+/usr/home/grpuser
+
+
+adm
+nosuchgrp
+system
+
+yes
+secret1
+secret1
+-- case
+step: /etc/adduser
+stdin: in
+host: grep "^adm\|^system" $Z8K_OVERLAY/etc/group
+expect: output contains 'nosuchgrp was not found in /etc/group. Please try again.'
+expect: output contains 'adm::4:grpuser'
+
+== refuse
+# src: anything but yes (y) at the last question: "No action taken", nothing is changed (the home directory made before stays)
+-- in
+refuser
+/usr/home/refuser
+
+
+
+no
+-- case
+step: /etc/adduser
+stdin: in
+host: grep -c "^refuser" $Z8K_OVERLAY/etc/passwd; ls $Z8K_OVERLAY/usr/home
+expect: output contains 'No action taken'
+
+== user
+# src: /etc/adduser has the mode 700: a user cannot run it
+-- case
+user: 100 10
+step: /etc/adduser
+expect: exit 1
+expect: output is '-- stderr\n/etc/adduser: Permission denied\n'

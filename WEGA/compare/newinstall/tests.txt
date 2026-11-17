@@ -1,0 +1,124 @@
+# The cases of the corpus of new.install (compare/newinstall/corpus.py); the format: host/recon/casefile.py. Every case runs as root with
+# the clock at 600000000 and starts with four file systems of 400 blocks as images (usr, root, tmp, z: see corpus.py), the layer's
+# lost+found of / and /usr and the man pages of man0 to man5 as links. The answers of the operator are the standard input (gets). The
+# original mkfs, labelit, dd, mfs, makelost+found and unpack run in it. Where an expectation comes from: src = src/cmd/new.install.sh
+# (a csh script, run by /bin/csh); wegafs.py info reads the super block (the name written by labelit, the size made by mkfs).
+
+== no
+# src: the answer n: the file systems /tmp and /z are not made again; root and /usr are named (labelit: root, /usr), the boot block
+# (pb.image, 464 bytes) is written to /dev/rmd0 (the first block of the image of /usr), /etc/mfs mounts, lost+found of / and /usr
+-- a
+n
+-- case
+step: /etc/new.install
+stdin: a
+host: for f in usr root tmp z; do python3 $WEGA_HOST/tools/wegafs.py info $f.img | grep "fname" | tr '\n' ' '; echo; done; cmp -n 464 usr.img $WEGA_ROOT/pb.image && echo boot-same
+expect: exit 0
+expect: output contains 'Benennen der Dateisysteme'
+expect: output contains 'NEW fsname = root, NEW volname = 1 -- DEL if wrong!!'
+expect: output contains 'NEW fsname = /usr, NEW volname = 1 -- DEL if wrong!!'
+expect: output contains 'dd if=/pb.image of=/dev/rmd0 conv=sync count=1'
+expect: output contains 'make lost+found runs about 3 minutes for /usr'
+expect: output contains 'fname  /usr'
+expect: output contains 'boot-same'
+
+== no-tmp-z-untouched
+# src: with n /dev/tmp and /dev/z are not named (the images keep their empty names) and not made again
+-- a
+n
+-- case
+step: /etc/new.install
+stdin: a
+host: for f in tmp z; do python3 $WEGA_HOST/tools/wegafs.py info $f.img | grep "fname" | tr '\n' '|'; done
+expect: output contains 'fname  |fname  |'
+
+== yes-small
+# src: j and two sizes: mkfs makes the two file systems of that size, labelit names them /tmp and /z, root and /usr as before,
+# lost+found also for /tmp and /z (the mounted ones; what is written there is not kept)
+-- a
+j
+300
+500
+-- case
+step: /etc/new.install
+stdin: a
+host: for f in tmp z; do python3 $WEGA_HOST/tools/wegafs.py info $f.img | grep "fsize\|fname" | tr '\n' ' '; done; ls -l tmp.img z.img | cut -c20-45
+expect: output contains '/etc/mkfs /dev/rtmp 300'
+expect: output contains '/etc/mkfs /dev/rz 500'
+expect: output contains 'NEW fsname = /tmp, NEW volname = 1 -- DEL if wrong!!'
+expect: output contains 'NEW fsname = /z, NEW volname = 1 -- DEL if wrong!!'
+expect: output contains 'make lost+found runs about 3 minutes for /tmp'
+expect: output contains 'make lost+found runs about 3 minutes for /z'
+expect: output contains 'fsize  300'
+expect: output contains 'fsize  500'
+
+== yes-default
+# src: j and RETURN twice: the standard sizes 4000 (/dev/tmp) and 60732 (/dev/z); isize is the number of blocks of the i-list
+-- a
+j
+
+
+-- case
+step: /etc/new.install
+stdin: a
+host: for f in tmp z; do python3 $WEGA_HOST/tools/wegafs.py info $f.img | grep "fsize" | tr '\n' ' '; done
+expect: output contains '/etc/mkfs /dev/rtmp 4000'
+expect: output contains 'isize = 1296'
+expect: output contains '/etc/mkfs /dev/rz 60732'
+expect: output contains 'isize = 19448'
+expect: output contains 'fsize  4000'
+expect: output contains 'fsize  60732'
+
+== other-answer
+# src: any answer but j is taken as n (the test is $i != "j")
+-- a
+yes
+-- case
+step: /etc/new.install
+stdin: a
+expect: output contains 'Benennen der Dateisysteme'
+
+== empty-answer
+# src: RETURN alone is not j either
+-- a
+
+-- case
+step: /etc/new.install
+stdin: a
+expect: output contains 'make lost+found runs about 3 minutes for /usr'
+
+== too-small
+# src: j with a size mkfs cannot use (3 blocks): the message of mkfs, the script goes on (labelit, boot block, mfs)
+-- a
+j
+3
+3
+-- case
+step: /etc/new.install
+stdin: a
+expect: output contains '/etc/mkfs /dev/rtmp 3'
+expect: output contains 'Schreiben des Boot-Blocks'
+
+== packed-pages
+# src: the manual pages are unpacked (/usr/bin/unpack) at the end. After /etc/mfs /usr is the mounted image: the page packed by the
+# original pack is put into the image of /usr (man/man0/INTRO.0.z, and bin/unpack: the mounted /usr has nothing else) and unpack finds it (it is unpacked in the mounted file system, which
+# is not kept: only the message shows it); the other directories of the pages are not there, unpack says so on the diagnostic output
+-- a
+n
+-- case
+host: cp $WEGA_ROOT/usr/man/man0/INTRO.0 INTRO.0
+step: /usr/bin/pack INTRO.0
+host: python3 $WEGA_HOST/tools/wegafs.py mkdir usr.img /bin 755 0 0 500000000; python3 $WEGA_HOST/tools/wegafs.py put usr.img /bin/unpack $WEGA_ROOT/usr/bin/unpack 755 0 0 500000000; python3 $WEGA_HOST/tools/wegafs.py mkdir usr.img /man 755 0 0 500000000; python3 $WEGA_HOST/tools/wegafs.py mkdir usr.img /man/man0 755 0 0 500000000; python3 $WEGA_HOST/tools/wegafs.py put usr.img /man/man0/INTRO.0.z INTRO.0.z 644 0 0 500000000
+step: /etc/new.install
+stdin: a
+expect: output contains 'Expandieren der Handbucheintraege in man0'
+host: find $Z8K_MOUNTS* -name 'INTRO*' | sed 's#.*/man/#man/#'
+expect: output contains 'man/man0/INTRO.0'
+
+== user
+# src: /etc/new.install has the mode 700: a user cannot run it (csh: Permission denied)
+-- case
+user: 100 10
+step: /etc/new.install
+expect: exit 1
+expect: output is '-- stderr\n/etc/new.install: Permission denied\n'

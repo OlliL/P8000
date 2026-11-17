@@ -1,10 +1,9 @@
 # The cases of the corpus of man.dbmgr (compare/mandbmgr/corpus.py); the format: host/recon/casefile.py. Every case runs as root with the
 # clock at 600000000 (1989-01-05 05:39 EST); /dev/tmp is a file system of 1200 blocks (about 1180 free: the largest size of the
 # database is 100 blocks of du -s, it is 2 up to 1000 free blocks and 500 above 5000), the database is /tmp/man in the layer. The
-# files are made in the case; the access times with touch -a. du -s of the empty database is 8, of a file of 10240 bytes 164 more, of
-# one of 2048 bytes 32 more. Where an expectation comes from: src = src/cmd/man.dbmgr.sh (csh script, run by /bin/csh).
-# find of the original says "find: cannot read NAME" for the last name of a directory it walks (the same in the original on
-# both sides); those lines are on the diagnostic output.
+# files are made in the case; the access times with touch -a. Where an expectation comes from: src = src/cmd/man.dbmgr.sh (csh script, run by /bin/csh).
+# du counts the size of a file in blocks of 512 bytes with its indirect blocks, and a directory by its entries (16 bytes each, up to 32
+# of them in a block): a file of 51200 bytes is 101, one of 2048 bytes 4, the database with only those two and the directory 1 + 105.
 
 == create
 # src: without /tmp/man it is made (mkdir, then chmog 777 bin 0: mode 777), the size is taken as 0 and nothing is removed
@@ -24,7 +23,7 @@ expect: exit 0
 expect: output contains 'x'
 
 == under-limit
-# src: a database of 72 (two files of 2048 bytes) is under the largest size of 100: nothing is removed
+# src: a database of 9 (two files of 2048 bytes) is under the largest size of 100: nothing is removed
 -- case
 host: mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 2048 /dev/zero > a; head -c 2048 /dev/zero > b; touch -a -d '1988-12-20' a
 step: /etc/man.dbmgr
@@ -34,18 +33,18 @@ expect: output contains 'a b'
 == old-removed
 # src: over the limit: the files that were not used for more than 3 days (find -atime +3) go; the database is then small enough
 -- case
-host: mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 10240 /dev/zero > old; head -c 2048 /dev/zero > new; head -c 2048 /dev/zero > mid; touch -a -d '1988-12-20' old; touch -a -d '1989-01-03' mid; touch -a -d '1989-01-05 05:39' new
+host: mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 51200 /dev/zero > old; head -c 2048 /dev/zero > new; head -c 2048 /dev/zero > mid; touch -a -d '1988-12-20' old; touch -a -d '1989-01-03' mid; touch -a -d '1989-01-05 05:39' new
 step: /etc/man.dbmgr
 host: ls $Z8K_OVERLAY/tmp/man | tr '\n' ' '
 step: /bin/du -s /tmp/man
 expect: output contains 'mid new'
-expect: output contains '72'
+expect: output contains '9'
 
 == second-round
 # src: still over the limit after the first round: the age is made 1 day less and the files that were not used for more than that go
 # (mid, last used 2 days ago, goes in the third round, +1)
 -- case
-host: mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 10240 /dev/zero > old; head -c 10240 /dev/zero > mid; head -c 2048 /dev/zero > new; touch -a -d '1988-12-20' old; touch -a -d '1989-01-03' mid; touch -a -d '1989-01-05 05:39' new
+host: mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 51200 /dev/zero > old; head -c 51200 /dev/zero > mid; head -c 2048 /dev/zero > new; touch -a -d '1988-12-20' old; touch -a -d '1989-01-03' mid; touch -a -d '1989-01-05 05:39' new
 step: /etc/man.dbmgr
 host: ls $Z8K_OVERLAY/tmp/man | tr '\n' ' '
 expect: output contains 'new'
@@ -53,7 +52,7 @@ expect: output contains 'new'
 == all-recent
 # src: over the limit with files that are all new: the age goes down until every file is removed; the loop ends when the database is empty
 -- case
-host: mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 10240 /dev/zero > a; head -c 10240 /dev/zero > b; touch -a -d '1989-01-05 05:39' a b
+host: mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 51200 /dev/zero > a; head -c 51200 /dev/zero > b; touch -a -d '1989-01-05 05:39' a b
 step: /etc/man.dbmgr
 host: ls $Z8K_OVERLAY/tmp/man | wc -l
 expect: output contains '0'
@@ -68,9 +67,9 @@ host: ls $Z8K_OVERLAY/tmp/man | wc -l
 expect: output contains '0'
 
 == big-fs
-# src: with more than 5000 free blocks the largest size is 500: a database of 240 stays whole
+# src: with more than 5000 free blocks the largest size is 500: a database of 110 (above 100) stays whole
 -- case
-host: python3 $WEGA_HOST/tools/wegafs.py format tmp.img 6000 500000000; mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 10240 /dev/zero > old; head -c 2048 /dev/zero > new; head -c 2048 /dev/zero > mid; touch -a -d '1988-12-20' old
+host: python3 $WEGA_HOST/tools/wegafs.py format tmp.img 6000 500000000; mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 51200 /dev/zero > old; head -c 2048 /dev/zero > new; head -c 2048 /dev/zero > mid; touch -a -d '1988-12-20' old
 step: /etc/man.dbmgr
 host: ls $Z8K_OVERLAY/tmp/man | tr '\n' ' '
 expect: output contains 'mid new old'
@@ -78,7 +77,7 @@ expect: output contains 'mid new old'
 == middle-fs
 # src: with more than 1000 and at most 5000 free blocks the largest size is 100 (the cases above with 1200 blocks); with 4000 the same
 -- case
-host: python3 $WEGA_HOST/tools/wegafs.py format tmp.img 4000 500000000; mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 10240 /dev/zero > old; head -c 2048 /dev/zero > new; head -c 2048 /dev/zero > mid; touch -a -d '1988-12-20' old; touch -a -d '1989-01-03' mid
+host: python3 $WEGA_HOST/tools/wegafs.py format tmp.img 4000 500000000; mkdir -p $Z8K_OVERLAY/tmp/man; cd $Z8K_OVERLAY/tmp/man; head -c 51200 /dev/zero > old; head -c 2048 /dev/zero > new; head -c 2048 /dev/zero > mid; touch -a -d '1988-12-20' old; touch -a -d '1989-01-03' mid
 step: /etc/man.dbmgr
 host: ls $Z8K_OVERLAY/tmp/man | tr '\n' ' '
 expect: output contains 'mid new'
@@ -87,10 +86,10 @@ expect: output contains 'mid new'
 # src: files in a directory of the database are found by find and removed, the directory itself stays (! -d): the loop goes on
 # (the size of the directories counts) until the files are all gone, and sub is left
 -- case
-host: mkdir -p $Z8K_OVERLAY/tmp/man/sub; cd $Z8K_OVERLAY/tmp/man; head -c 10240 /dev/zero > sub/old; head -c 2048 /dev/zero > new; touch -a -d '1988-12-20' sub/old; touch -a -d '1989-01-05 05:39' new
+host: mkdir -p $Z8K_OVERLAY/tmp/man/sub; cd $Z8K_OVERLAY/tmp/man; head -c 51200 /dev/zero > sub/old; head -c 2048 /dev/zero > new; touch -a -d '1988-12-20' sub/old; touch -a -d '1989-01-05 05:39' new
 step: /etc/man.dbmgr
 host: ls -R $Z8K_OVERLAY/tmp/man | tr '\n' ' ' | sed "s#$Z8K_OVERLAY##g"
-expect: output contains '/tmp/man: sub'
+expect: output contains '/tmp/man: new sub'
 
 == user
 # src: /etc/man.dbmgr has the mode 700: a user cannot run it

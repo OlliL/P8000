@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <sys/times.h>
 #include <sys/wait.h>
+#include <sys/file.h>
 #include <time.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -426,9 +427,67 @@ static const char *mnt_path(const char *g, char *buf, size_t n)	/* a guest path 
 	return buf;
 }
 
+/* Whiteouts of the Z8K_OVERLAY layer: when a program removes a name that the layer holds and the tree holds too (passwd removes /etc/passwd and
+   links a new one), the tree's file must not show through: the layer gets an empty file .wh.NAME beside it. hostpath then takes the name
+   as not there (a new name is made in the layer), a listing hides the tree's entry. */
+static void wh_name(const char *lp, char *out, size_t n)
+{
+	const char *b = strrchr(lp, '/');
+	size_t d = b ? (size_t)(b - lp + 1) : 0;
+	snprintf(out, n, "%.*s.wh.%s", (int)d, lp, b ? b + 1 : lp);
+}
+
+static void layer_whiteout(const char *hp)	/* after the removal of hp: a mark when hp is in the layer and the tree has the name */
+{
+	const char *ov = getenv("Z8K_OVERLAY");
+	size_t ol = ov ? strlen(ov) : 0;
+	struct stat st;
+	char rp[1100], wh[1100];
+	int fd;
+	if (!ol || strncmp(hp, ov, ol) || hp[ol] != '/') return;
+	snprintf(rp, sizeof rp, "%s%s", root, hp + ol);
+	if (lstat(rp, &st) < 0) return;
+	wh_name(hp, wh, sizeof wh);
+	if ((fd = open(wh, O_WRONLY | O_CREAT, 0600)) >= 0) close(fd);
+}
+
+/* The working directory as the guest knows it (an absolute guest path after a chdir to one), for the layer: the host's working directory
+   is the layer's directory then, and a name that exists only in the tree (the entries a listing shows from both) is not found by a
+   relative name. With Z8K_OVERLAY set a relative name is resolved as gcwd/name by the same rules as an absolute one. */
+static char gcwd[1100];
+
+static void gcwd_normalize(char *out, size_t n, const char *abs)	/* a/b/../c -> a/c */
+{
+	char tmp[1100], *seg, *save, *parts[128];
+	int np = 0, i;
+	size_t l = 0;
+	snprintf(tmp, sizeof tmp, "%s", abs);
+	for (seg = strtok_r(tmp, "/", &save); seg; seg = strtok_r(NULL, "/", &save)) {
+		if (!strcmp(seg, ".")) continue;
+		if (!strcmp(seg, "..")) { if (np) np--; continue; }
+		if (np < 128) parts[np++] = seg;
+	}
+	out[0] = 0;
+	for (i = 0; i < np; i++) l += snprintf(out + l, n - l, "/%s", parts[i]);
+	if (!np) snprintf(out, n, "/");
+}
+
+static const char *hostpath(const char *g, char *buf, size_t n);
+
+static const char *hostpath_rel(const char *g, char *buf, size_t n)	/* NULL: not to be taken from gcwd */
+{
+	static int on = -1;
+	char abs[1500];
+	if (on < 0) { const char *o = getenv("Z8K_OVERLAY"); on = o && *o; }
+	if (!on || !gcwd[0] || g[0] == '/') return NULL;
+	snprintf(abs, sizeof abs, "%s/%s", gcwd, g);
+	return hostpath(abs, buf, n);
+}
+
 static const char *hostpath(const char *g, char *buf, size_t n)
 {
 	const char *dd;
+	{ const char *r = hostpath_rel(g, buf, n); if (r) return r; }
 	if (!g[0]) return ".";	/* the empty name is the current directory (nami.c: no component, flag 0): the glob of csh opens it */
 	if (g[0] == '/' && *root && !strncmp(g, "/tmp", 4) && (g[4] == 0 || g[4] == '/')) {	/* a /tmp in the layer is the whole /tmp (before dotdot and the mount of Z8K_TMPDIR: /tmp/man/.. is then in the layer too) */
 		const char *ov = getenv("Z8K_OVERLAY");
@@ -468,6 +527,12 @@ static const char *hostpath(const char *g, char *buf, size_t n)
 			snprintf(buf, n, "%s%s", ov, g);
 			if (lstat(buf, &st) == 0)
 				return buf;
+			{	/* removed from the layer, and the tree has the name: it is not there (a new name is made in the layer) */
+				char wh[1100];
+				wh_name(buf, wh, sizeof wh);
+				if (lstat(wh, &st) == 0)
+					return buf;
+			}
 			snprintf(par, sizeof par, "%s", buf);
 			sl = strrchr(par, '/');
 			if (sl && sl > par + strlen(ov)) {
@@ -626,7 +691,97 @@ static Ad a_ptr(Args *a)
  * above 32767 negative (fork() < 0). gpid maps a host pid to 1..32767, the same in every emulator process (getpid, the
  * result of fork and wait); pids up to 32767 stay as they are. kill maps back through the processes this one knows.
  */
-static int gpid(pid_t pid) { return pid <= 0 ? (int)pid : (int)((pid - 1) % 32767) + 1; }
+static int gpid_host(pid_t pid) { return pid <= 0 ? (int)pid : (int)((pid - 1) % 32767) + 1; }
+
+/*
+ * Z8K_PIDDIR=DIR: numbers of the guest's own, the same in every run (the corpus runner gives each step a new, empty directory): the
+ * first process the guest asks about gets 100, each fork the next number (taken by the parent before the fork, so that the order of
+ * the numbers is the order of the forks). DIR/next is the counter (locked), DIR/hPID holds the guest number of a host process,
+ * DIR/gNUM the host pid of a guest number (kill). passwd makes its salt of the pid: without this adduser could not be compared.
+ */
+static const char *piddir(void)
+{
+	static const char *d;
+	static int done;
+	if (!done) { done = 1; d = getenv("Z8K_PIDDIR"); if (d && !*d) d = NULL; }
+	return d;
+}
+
+static int my_g, fork_k;	/* the guest number of this process (0: not known yet) and how many times it has forked */
+
+/* The number of a child is made of the parent's number and the count of its forks, not of a counter that all processes share: which
+   process forks first is a matter of timing, the path in the tree of forks is not. A number in use (the file DIR/gNUM exists) is
+   passed over to the next; collisions of two paths are rare (the numbers go from 100 to 32767). */
+static int pid_child(int parent, int k)
+{
+	char f[1100];
+	int fd, g = 100 + (int)(((unsigned)parent * 2654435761u + (unsigned)k * 40503u + 17u) >> 8) % 32000;
+	for (;;) {
+		snprintf(f, sizeof f, "%s/g%d", piddir(), g);
+		if ((fd = open(f, O_WRONLY | O_CREAT | O_EXCL, 0600)) >= 0) { close(fd); return g; }
+		if (++g > 32767) g = 100;
+	}
+}
+
+static void pid_file(const char *f, const char *b, int n)	/* made whole at once (rename): a reader never sees a half written number */
+{
+	char t[1200];
+	int fd;
+	snprintf(t, sizeof t, "%s.%ld", f, (long)getpid());
+	if ((fd = open(t, O_WRONLY | O_CREAT | O_TRUNC, 0600)) < 0) return;
+	if (write(fd, b, n) < 0) {}
+	close(fd);
+	rename(t, f);
+}
+
+static void pid_set(pid_t host, int g)
+{
+	char f[1100], b[16];
+	int n;
+	snprintf(f, sizeof f, "%s/h%ld", piddir(), (long)host);
+	n = snprintf(b, sizeof b, "%d", g);
+	pid_file(f, b, n);
+	snprintf(f, sizeof f, "%s/g%d", piddir(), g);
+	n = snprintf(b, sizeof b, "%ld", (long)host);
+	pid_file(f, b, n);
+}
+
+static void pidlog(const char *fmt, ...)	/* DIR/log: what the guest's processes did, one line each (to see why numbers differ) */
+{
+	char f[1100], line[300];
+	int fd, n;
+	va_list ap;
+	if (!piddir()) return;
+	va_start(ap, fmt);
+	n = vsnprintf(line, sizeof line - 2, fmt, ap);
+	va_end(ap);
+	line[n++] = '\n';
+	snprintf(f, sizeof f, "%s/log", piddir());
+	if ((fd = open(f, O_WRONLY | O_CREAT | O_APPEND, 0600)) >= 0) { if (write(fd, line, n) < 0) {} close(fd); }
+}
+
+static int gpid(pid_t pid)
+{
+	char f[1100], b[16];
+	int fd, g;
+	ssize_t n;
+	if (pid <= 0 || !piddir()) return gpid_host(pid);
+	if (pid == getpid() && my_g) return my_g;
+	snprintf(f, sizeof f, "%s/h%ld", piddir(), (long)pid);
+	if ((fd = open(f, O_RDONLY)) >= 0) {
+		n = read(fd, b, sizeof b - 1);
+		close(fd);
+		if (n > 0) { b[n] = 0; return atoi(b); }
+	}
+	if (pid == getpid()) {	/* this process, not told of yet: the first one of the step */
+		if (!my_g) { my_g = 100; fork_k = 0; }
+		pid_set(pid, my_g);
+		return my_g;
+	}
+	g = pid_child(1, (int)(pid & 0xFFFF));	/* an unknown process (not forked by the guest): a number of its own */
+	pid_set(pid, g);
+	return g;
+}
 #define NKIDS 64
 static pid_t kids[NKIDS];	/* the children forked by this process and not yet waited for */
 static void kidadd(pid_t pid) { for (int i = 0; i < NKIDS; i++) if (kids[i] == 0) { kids[i] = pid; return; } }
@@ -634,6 +789,18 @@ static void kiddel(pid_t pid) { for (int i = 0; i < NKIDS; i++) if (kids[i] == p
 static pid_t hostpid(int g)
 {
 	if (g <= 0) return g;	/* a process group, all processes */
+	if (piddir()) {		/* the numbers of Z8K_PIDDIR: the host pid of the guest number, when it still lives */
+		char f[1100], b[16];
+		int fd;
+		ssize_t n;
+		snprintf(f, sizeof f, "%s/g%d", piddir(), g);
+		if ((fd = open(f, O_RDONLY)) >= 0) {
+			n = read(fd, b, sizeof b - 1);
+			close(fd);
+			if (n > 0) { b[n] = 0; if (kill((pid_t)atol(b), 0) == 0) return (pid_t)atol(b); }
+		}
+		return -1;
+	}
 	if (g == gpid(getpid())) return getpid();
 	for (int i = 0; i < NKIDS; i++) if (kids[i] && g == gpid(kids[i])) return kids[i];
 	if (g == gpid(getppid())) return getppid();
@@ -674,6 +841,11 @@ static void tmplog(const char *fmt, ...)
 	if (fd == -2) {
 		const char *f = getenv("Z8K_TMPLOG");
 		fd = f ? open(f, O_WRONLY | O_CREAT | O_APPEND, 0644) : -1;
+		if (fd >= 0) {	/* the guest's descriptor numbers are the host's: this one must not take a low number (csh counts on 3, 4, ...) */
+			int hi = fcntl(fd, F_DUPFD_CLOEXEC, 500);
+			close(fd);
+			fd = hi;
+		}
 	}
 	if (fd < 0)
 		return;
@@ -802,9 +974,17 @@ static int devtab_active(void)
 }
 
 /* the entry of a guest path /dev/NAME (with the table), -1 for none, -2 when the path is no /dev name */
-static int devlookup(const char *g)
+static int devlookup(const char *g0)
 {
 	int i;
+	char abs[1500], norm[1500];
+	const char *g = g0;
+	/* a relative name after chdir("/dev") (ps goes to /dev and stats the names of the listing): gcwd/name */
+	if (g0[0] && g0[0] != '/' && gcwd[0] && devtab_active()) {
+		snprintf(abs, sizeof abs, "%s/%s", gcwd, g0);
+		gcwd_normalize(norm, sizeof norm, abs);
+		g = norm;
+	}
 	if (!devtab_active() || strncmp(g, "/dev/", 5) || !g[5] || strchr(g + 5, '/'))
 		return -2;
 	for (i = 0; i < ndevname; i++)
@@ -978,6 +1158,49 @@ static int devioctl(Z8K *c, int fd, unsigned cmd, Ad p)
 }
 
 /* fd was opened on path: when it is a directory, build its WEGA image, "." and ".." first */
+/* The size of a directory as stat gives it: the entries of its WEGA image (16 bytes each: . and .., the names of dirload), not the host's
+   4096. find reads a directory in blocks up to st_size and reports "cannot read" at the end of the real entries. */
+static long dirlen(const char *path)
+{
+	DIR *dp;
+	struct dirent *de;
+	char *names[2048], lp[1100], wh[1100], rd[1100];
+	int nn = 0, i;
+	long n = 2;
+	const char *ov = getenv("Z8K_OVERLAY");
+	size_t ol = ov ? strlen(ov) : 0;
+	if (devdir(path)) return (2 + ndevname) * 16L;
+	if (!(dp = opendir(path))) return 0;
+	while ((de = readdir(dp)) != NULL && nn < 2048) {
+		if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..") || !strncmp(de->d_name, ".wh.", 4)) continue;
+		if (*rootlogf) {
+			snprintf(lp, sizeof lp, "%s/%s", path, de->d_name);
+			if (!strcmp(lp, rootlogf)) continue;
+		}
+		names[nn++] = strdup(de->d_name);
+		n++;
+	}
+	closedir(dp);
+	if (ol && !strncmp(path, ov, ol) && path[ol] == '/') {	/* a directory of the layer that is in the tree too: its names are added */
+		snprintf(rd, sizeof rd, "%s%s", root, path + ol);
+		if ((dp = opendir(rd)) != NULL) {
+			while ((de = readdir(dp)) != NULL) {
+				int have = 0;
+				if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..")) continue;
+				snprintf(lp, sizeof lp, "%s/%s", path, de->d_name);
+				wh_name(lp, wh, sizeof wh);
+				if (access(wh, F_OK) == 0) continue;
+				for (i = 0; i < nn; i++)
+					if (!strncmp(names[i], de->d_name, 14) && strlen(de->d_name) <= 14) { have = 1; break; }
+				if (!have) n++;
+			}
+			closedir(dp);
+		}
+	}
+	for (i = 0; i < nn; i++) free(names[i]);
+	return n * 16;
+}
+
 static void dirload(int fd, const char *path)
 {
 	struct stat st, st2;
@@ -1034,6 +1257,7 @@ static void dirload(int fd, const char *path)
 			if (!(de = readdir(dp))) break;
 			name = de->d_name;
 			if (!strcmp(name, ".") || !strcmp(name, "..")) continue;
+			if (!strncmp(name, ".wh.", 4)) continue;	/* a whiteout of the layer (layer_whiteout) */
 			if (*rootlogf) {	/* the log of Z8K_ROOTLOG is not part of the guest's directory */
 				snprintf(sub, sizeof sub, "%s/%s", path, name);
 				if (!strcmp(sub, rootlogf)) continue;
@@ -1064,6 +1288,12 @@ static void dirload(int fd, const char *path)
 					int i, have = 0;
 					name = de->d_name;
 					if (!strcmp(name, ".") || !strcmp(name, "..")) continue;
+					{	/* removed in the layer: the tree's entry is hidden */
+						char wh[1100], lp[1100];
+						snprintf(lp, sizeof lp, "%s/%s", path, name);
+						wh_name(lp, wh, sizeof wh);
+						if (access(wh, F_OK) == 0) continue;
+					}
 					for (i = 0; i + 16 <= d->len; i += 16)
 						if (!strncmp((char *)d->buf + i + 2, name, 14) && strlen(name) <= 14) { have = 1; break; }
 					if (have || !(d->buf = realloc(d->buf, d->len + 16))) continue;
@@ -1145,6 +1375,7 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 	gstr(c, path, gp, sizeof gp);
 	hp = hostpath(gp, hb, sizeof hb);
 	tmplog("exec %s", gp);
+	if (piddir()) pidlog("exec %d %s", gpid(getpid()), gp);
 	if (access(hp, X_OK) < 0) return sc_err(c, errno);
 	e = exec_open(hp, &x);
 	if (e) return sc_err(c, e);
@@ -1333,6 +1564,7 @@ static int um_call(Z8K *c, unsigned n)
 		hp = hostpath(gp, hb, sizeof hb);
 		if (stat(hp, &st) < 0) return sc_err(c, errno);
 		um_owner(hp, &st);
+		if (S_ISDIR(st.st_mode)) st.st_size = dirlen(hp);
 		put_stat(c, p2, &st);
 		return sc_ok(c, 0);
 	case 28:	/* fstat */
@@ -1342,6 +1574,7 @@ static int um_call(Z8K *c, unsigned n)
 		k = readlink(gp, hb, sizeof hb - 1);
 		if (k > 0) hb[k] = 0;
 		um_owner(k > 0 ? hb : NULL, &st);
+		if (S_ISDIR(st.st_mode)) { Dir *dd = dirof(i); if (dd) st.st_size = dd->len; }
 		put_stat(c, p, &st);
 		return sc_ok(c, 0);
 	case 5:		/* open: read and write permission */
@@ -1406,6 +1639,7 @@ static int um_call(Z8K *c, unsigned n)
 		} else
 			k = UM_RETRY(dir, S_IWUSR | S_IXUSR, unlink(hp));
 		if (k < 0) return sc_err(c, errno);
+		layer_whiteout(hp);
 		if (st.st_nlink <= 1 || S_ISDIR(st.st_mode)) um_setown(&st, -1, -1);
 		return sc_ok(c, 0);
 	case 9:		/* link: write permission on the directory of the new name; a directory: the super-user only */
@@ -1494,17 +1728,22 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		tmplog("exit %d", i & 0xFF);
 		exit(i & 0xFF);
 	case 2: {	/* fork */
-		pid_t pid = fork();
+		int ng = 0;
+		pid_t pid;
+		if (piddir()) { gpid(getpid()); ng = pid_child(my_g, ++fork_k); }	/* the parent has its number, then the child's */
+		pid = fork();
 		if (pid < 0) return sc_err(c, errno);
 		if (pid == 0) {	/* the child: nothing pending (a new process) */
+			if (ng) { my_g = ng; fork_k = 0; pid_set(getpid(), ng); }
 			for (i = 1; i < 20; i++) sig_pend[i] = 0;
 			sig_any = 0;
 			memset(kids, 0, sizeof kids);
 			return sc_ok(c, gpid(getppid())); }	/* child runs the following jr */
 		c->pc += 2;						/* parent skips it */
+		if (ng) { pid_set(pid, ng); pidlog("fork %d by %d", ng, gpid(getpid())); }
 		kidadd(pid);
 		tmplog("fork child %d guest %u", (int)pid, (unsigned)gpid(pid));
-		return sc_ok(c, gpid(pid)); }
+		return sc_ok(c, ng ? ng : gpid(pid)); }
 	case 3:		/* read */
 		i = a_int(&a); p = a_ptr(&a); j = a_int(&a);
 		if (j > (int)sizeof buf) j = sizeof buf;
@@ -1614,10 +1853,13 @@ static int sys_call_impl(Z8K *c, unsigned n)
 				/* WEGA rmdir unlinks dir/.. and dir/. first; the host removes them with the directory */
 				if (!strcmp(base, ".") || !strcmp(base, ".."))
 					return sc_ok(c, 0);
-				return sc_res(c, rmdir(hp));
+				k = rmdir(hp);
+				if (k == 0) layer_whiteout(hp);
+				return sc_res(c, k);
 			}
 			k = unlink(hp);
 			tmplog("unlink %s -> %d", gp, k < 0 ? -errno : 0);
+			if (k == 0) layer_whiteout(hp);
 			return sc_res(c, k);
 		}
 	case 11: {	/* exec */
@@ -1628,9 +1870,16 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		Ad pa, pv, pe;
 		pa = a_ptr(&a); pv = a_ptr(&a); pe = a_ptr(&a);
 		return do_exec(c, pa, pv, 1, pe); }
-	case 12:	/* chdir */
+	case 12: {	/* chdir */
+		int r;
 		p = a_ptr(&a); gstr(c, p, gp, sizeof gp);
-		return sc_res(c, chdir(hostpath(gp, hb, sizeof hb)));
+		r = chdir(hostpath(gp, hb, sizeof hb));
+		if (r == 0 && ((getenv("Z8K_OVERLAY") && *getenv("Z8K_OVERLAY")) || devtab_active())) {	/* the guest's idea of the directory (see gcwd) */
+			char abs[1500];
+			if (gp[0] == '/') gcwd_normalize(gcwd, sizeof gcwd, gp);
+			else if (gcwd[0]) { snprintf(abs, sizeof abs, "%s/%s", gcwd, gp); gcwd_normalize(gcwd, sizeof gcwd, abs); }
+		}
+		return sc_res(c, r); }
 	case 13: {	/* time; Z8K_TIME=seconds fixes it (reproducible builds: ver.c is made by chkout from $D$) */
 		const char *ft = getenv("Z8K_TIME");
 		return sc_long(c, ft ? strtol(ft, NULL, 0) : (long)time(NULL)); }
@@ -1671,12 +1920,15 @@ static int sys_call_impl(Z8K *c, unsigned n)
 			if (k == -1) return sc_err(c, ENOENT);
 			dev_stat(k, &st); put_stat(c, p2, &st); return sc_ok(c, 0);
 		  }
-		  if (stat(hostpath(gp, hb, sizeof hb), &st) < 0) return sc_err(c, errno);
+		  hp = hostpath(gp, hb, sizeof hb);
+		  if (stat(hp, &st) < 0) return sc_err(c, errno);
+		  if (S_ISDIR(st.st_mode)) st.st_size = dirlen(hp);
 		  put_stat(c, p2, &st); return sc_ok(c, 0); }
 	case 28:	/* fstat */
 		{ struct stat st; i = a_int(&a); p = a_ptr(&a);
 		  if ((k = devfd(i)) >= 0) { dev_stat(k, &st); put_stat(c, p, &st); return sc_ok(c, 0); }
 		  if (fstat(i, &st) < 0) return sc_err(c, errno);
+		  if (S_ISDIR(st.st_mode) && (d = dirof(i)) != NULL) st.st_size = d->len;
 		  put_stat(c, p, &st); return sc_ok(c, 0); }
 	case 19: {	/* lseek */
 		int fd = a_int(&a); int32_t off = a_long(&a); int wh = a_int(&a);
@@ -1699,7 +1951,18 @@ static int sys_call_impl(Z8K *c, unsigned n)
 			return sc_err(c, errno);
 
 		return sc_long(c, r); }
-	case 20: tmplog("getpid guest %u", (unsigned)gpid(getpid())); return sc_ok(c, gpid(getpid()));
+	case 20: {	/* getpid: r4 the pid, r5 the parent's (getppid of the libc); a parent that has no number yet is process 1 */
+		int me = gpid(getpid()), par = 1;
+		tmplog("getpid guest %u", (unsigned)me);
+		if (piddir()) {
+			char f[1100], b[16];
+			int fd;
+			ssize_t n;
+			snprintf(f, sizeof f, "%s/h%ld", piddir(), (long)getppid());
+			if ((fd = open(f, O_RDONLY)) >= 0) { n = read(fd, b, sizeof b - 1); close(fd); if (n > 0) { b[n] = 0; par = atoi(b); } }
+		} else
+			par = gpid(getppid());
+		return sc_ok2(c, me, par); }
 	case 21: {	/* mount(spec, dir, ronly) (sys3.c smount: getmdev, then EBUSY for a device or directory in use) */
 		struct stat st;
 		pid_t pid;
@@ -1785,7 +2048,21 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 37: {	/* kill: the guest pid back to the host pid */
 		pid_t hp;
 		i = a_int(&a); j = a_int(&a);
-		if ((hp = hostpid((int16_t)i)) == -1) return sc_err(c, ESRCH);
+		if ((hp = hostpid((int16_t)i)) == -1) {
+			/* Z8K_KILLLOG=FILE: the processes of the process table model (the kmem image of ps) are no host processes: a signal to a
+			   number that no guest process has is written to FILE ("PID SIG") and granted; kill with the signal 0 only asks */
+			const char *kl = getenv("Z8K_KILLLOG");
+			if (kl && *kl && (int16_t)i > 0 && j >= 0 && j < 20) {
+				if (j) {
+					int fd = open(kl, O_WRONLY | O_CREAT | O_APPEND, 0600);
+					char ln[40];
+					int n = snprintf(ln, sizeof ln, "%d %d\n", (int)(int16_t)i, j);
+					if (fd >= 0) { if (write(fd, ln, n) < 0) {} close(fd); }
+				}
+				return sc_ok(c, 0);
+			}
+			return sc_err(c, ESRCH);
+		}
 		if (j < 0 || j >= 20) return sc_err(c, EINVAL);
 		return sc_res(c, kill(hp, j ? sig_host(j) : 0)); }
 	case 41:	/* dup */
@@ -1848,6 +2125,9 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		p = a_ptr(&a);
 		k = devioctl(c, fd, cmd, p);
 		return k < 0 ? sc_err(c, -k) : sc_ok(c, 0); }
+	case 49: case 50:	/* lkdata, unlk (record locks, lock.c): taken as granted. The processes of a case do not compete for a region;
+				   passwd locks /etc/passwd with them */
+		return sc_ok(c, 0);
 	case 60: i = a_int(&a); return sc_ok(c, umask(i));
 	case 61: return sc_err(c, EPERM);
 	default:
@@ -1979,7 +2259,12 @@ int main(int argc, char **argv)
 	um_start();
 	{
 		char cwd[1024];
-		tmplog("start %s root %s cwd %s", argv[i], root, getcwd(cwd, sizeof cwd) ? cwd : "?");
+		const char *ov = getenv("Z8K_OVERLAY");
+		char od[1100];
+		struct stat ost;
+		snprintf(od, sizeof od, "%s/tmp", ov ? ov : "");	/* the host directory of the guest /tmp (tmpclash.py: names in different ones do not clash) */
+		tmplog("start %s root %s cwd %s tmp %s", argv[i], root, getcwd(cwd, sizeof cwd) ? cwd : "?",
+		       ov && *ov && stat(od, &ost) == 0 && S_ISDIR(ost.st_mode) ? od : *guesttmp() ? guesttmp() : "-");
 	}
 	hp = hostpath(argv[i], hb, sizeof hb);
 	err = exec_open(hp, &x);

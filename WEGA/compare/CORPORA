@@ -19,6 +19,12 @@ putud
 cparse
 scparse
 halt
+newinstall
+sysgen
+adduser
+rmuser
+whodo
+killall
 restor
 pburn
 dump

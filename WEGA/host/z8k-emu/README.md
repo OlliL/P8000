@@ -220,3 +220,24 @@ super-user):
 
 The i-node numbers of the guest are 16 bits: a hash of the host's number (not its low bits: ext4 puts the directories of a tree into
 groups of 8192 i-nodes, and two of them often agreed in the low 16 bits; rmdir then took the directory for the current one).
+
+## Process numbers, the process table, locks (increment 120)
+
+- `Z8K_PIDDIR=DIR` (the runner gives every step of a corpus with `PIDS = True` a new directory): the guest's process numbers are the same in every run. The first
+  process is 100, the number of a child is made of its parent's number and the count of the parent's forks (not of a counter that all
+  processes share: which process forks first is a matter of timing), a number in use is passed over. `DIR/hPID` holds the number of a
+  host process, `DIR/gNUM` the host pid of a number (kill); `DIR/log` lists forks and execs (to see why numbers differ). Without the
+  variable the numbers are the host pids as before. passwd makes its salt of the process number: adduser needs this. getpid also gives
+  the parent's number in r5 (getppid of the libc); test `tests/pidfork.c`.
+- `Z8K_KILLLOG=FILE`: a kill to a number that no guest process has (a process of the model of the process table) is appended to FILE as
+  "PID SIGNAL" and granted (signal 0 only asks); without it ESRCH as before.
+- The process table: `/bin/ps` reads `_Nproc`, `_proc`, `_swplo` of `/wega` (0x01000034, 0x0300df58, 0x010005c0) in /dev/kmem, and for a
+  process in core the user structure (1394 bytes) in /dev/mem at p_addr * 256. `host/tools/mkproc.py` makes the three images (`device:
+  kmem image:km.img` etc.): it is all that ps needs (the layout measured with the compiler of the kernel, sccvk). The arguments of a
+  process are not modelled: ps -f shows `[ name ]`.
+- `lkdata` and `unlk` (record locks, sys/lock.c) are granted (passwd locks /etc/passwd); test `tests/lkdata.c`.
+- The layer: a removed name that the tree has too is hidden (an empty `.wh.NAME` in the layer: passwd removes /etc/passwd and links a new
+  one); a relative name after an absolute chdir is resolved as that directory's name (gcwd: so that find, which changes into the
+  directories, finds the entries the listing shows from both); after chdir("/dev") a relative name is a device (ps stats the names of the
+  listing).
+

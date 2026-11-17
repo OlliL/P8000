@@ -205,4 +205,21 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   emulator gave the guest the low 16 bits of the host's i-node numbers, and two directories of a tree often agree in them on ext4
   (groups of 8192 i-nodes); rmdir compares the i-nodes of "." and of the argument. It is a hash of the number now. This had
   passed by luck in the runs before.
+- 2026-11-17: every program and script of src/cmd now has a corpus (not BOOT0, standalone and the old compilers, as agreed): new.install
+  (9 cases: images of the file systems, mkfs, labelit, dd, mfs, lost+found, unpack), sysgen (7: /usr/sys is a copy in the layer, the
+  kernel and the boot program are built and compared), adduser (15) and rmuser (7) with passwd (the salt of its password is made of
+  the process number: the numbers of the guest are fixed now), whodo (5) and killall (6) on the process table of the kernel as the
+  original ps reads it (mkproc.py makes /dev/kmem, /dev/mem, /dev/swap; the kill log). On the way: lkdata, whiteouts and the guest's
+  working directory in the layer, relative names in /dev, the numbers of the processes by the tree of forks (see host/z8k-emu/README.md).
+  Open (for the owner): the arguments of a process in the ps model (ps -ef then shows /etc/cron etc., killall's second group would be
+  tested), find's "cannot read" of the last entry (emulator or program?), unpack of packed pages in new.install, the vi question of
+  sysgen (answered n), GETTY on a line that is no device waits for ever (UGETT1 cases left out), the pack of the corpora under a
+  pool of CHECK_CORPORA.
+- 2026-11-17 (later): checkall found, and the owner's "things running since 8:33" confirmed: with fixed guest pids the temporary names
+  (/tmp/cc.100.s) are the same in every run, parallel runs sharing a /tmp clashed and cas looped for ever. Now: `PIDS = True` in
+  corpus.py (adduser, rmuser, whodo, killall only), every case has a /tmp of its own (rd.gtmp) unless IN_TMP, tmpclash.py keys the names
+  by the host directory of the guest /tmp (z8k-emu logs it in "start"), the Z8K_TMPLOG descriptor is >= 500 (the guest's descriptor
+  numbers are the host's: a low one changed csh's). z8k-emu: stat/fstat of a directory give its WEGA size (16 bytes per entry), which
+  solved find's "cannot read" (checked in MAME: find and unpack are fine there); du, makewhatis and mandbmgr cases follow the real sizes
+  (51200-byte files, whiteouts for removed pages). newinstall `packed-pages` checks unpack in the mounted /usr.
 
