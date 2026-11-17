@@ -4,7 +4,8 @@
  *
  * Why: cparse frees the symbols of an inner scope (clearst) and the entries of dimtab keep pointing to a structure tag that was freed. The
  * original reads it afterwards, and the next malloc (a new symbol) has taken its block by then: the output depends on which block that is.
- * The model holds the links of the blocks (in words of the Z8000: 2 bytes, 4 in the segmented libc) and nothing else. The data of a block is a host object
+ * The model holds the links of the blocks (in words of the Z8000: 2 bytes) and nothing else. scparse is a nonsegmented program as
+ * cparse (E711, the same cc, -DSEG only for its output): the same libc, the same heap. The data of a block is a host object
  * that stays where it is; when the model gives the same block again for the same kind of object (a symbol for a symbol), the host object is
  * given again with its old contents, as the original does.
  */
@@ -12,11 +13,7 @@
 #include <stdlib.h>
 #include "mfile1"
 
-#ifdef SEG
-#define WORD 4		/* sizeof(union store) of the segmented libc (malloc.o of slibc.a: nw = (nbytes + 7) / 4) */
-#else
-#define WORD 2
-#endif
+#define WORD 2		/* the libc of cparse and scparse (both nonsegmented programs) */
 #define BLOCK 1024
 #define MAXBYTES 0xFFF8u
 #define MAXBLOCKS 64
@@ -117,16 +114,6 @@ found:
 
 static unsigned model_malloc(unsigned long nbytes)
 {
-#ifdef SEG
-	static int done;
-
-	/* The segmented program has taken some storage before its first symbol: found by trying (40 to 80 bytes give the output of the
-	   original, 64 is the middle; the three fdopen of openfiles may be it). Without it the blocks are another ones. */
-	if (!done) {
-		done = 1;
-		model_malloc0(64);
-	}
-#endif
 	return model_malloc0(nbytes);
 }
 
