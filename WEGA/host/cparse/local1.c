@@ -1,4 +1,5 @@
 # include "mfile1"
+#include <string.h>
 
 static char sccsid[] __attribute__((unused)) = "@[$]local1.c\t2.7  08/24/83 14:27:54 Copr. 1981 87wega3.2.";
 
@@ -463,10 +464,90 @@ void commdec(struct symtab *q)
 	if( sz > 0xfffe ) uerror( "size too large" );
 	}
 
+/* The atof of the WEGA libc (src/lib/libc/nonseg/gen/atof.s, pow10.s), which the original reads its floating constants with:
+   up to 19 significant digits as an integer M (the BCD operand of fldbcd), the exponent E normalized as atof.s does
+   (E > 0: M times 10 while its 19th digit is 0; E < 0: M by 10 while its last digit is 0), then in the extended format of
+   the EPU (64-bit mantissa, round to nearest) M times 10^E or M by 10^-E, 10^n made as __pow10 makes it, and rounded to
+   double at the end. The host's long double (x87) has the same format: the double rounding of the original, which does not
+   always give the nearest double (0.1013863514358673989967045588e10 of libm/j1.c: ...e907, the nearest is ...e908). */
+static long double ext(unsigned short se, unsigned short m0, unsigned short m1, unsigned short m2, unsigned short m3)
+{
+	unsigned long long m = (unsigned long long) m0 << 48 | (unsigned long long) m1 << 32 | (unsigned long long) m2 << 16 | m3;
+	unsigned char b[16] = { 0 };
+	long double x;
+
+	memcpy( b, &m, 8 );		/* x87: the mantissa, then sign and exponent (little endian) */
+	memcpy( b + 8, &se, 2 );
+	memcpy( &x, b, sizeof x < sizeof b ? sizeof x : sizeof b );
+	return( x );
+	}
+
+static long double pow10x(int n)
+{ /* __pow10 of pow10.s: n >= 5000 overflows; above 27 the constants of MAP, the rest by squaring 10 */
+	static const unsigned short map[8][6] = {
+		{ 3456, 0x6cd7, 0xbfce, 0x0f5a, 0xb8a6, 0x761e }, { 1728, 0x555d, 0x9cb0, 0x0bfd, 0x6f02, 0x5339 },
+		{ 864, 0x4b25, 0x8d9e, 0x89d1, 0x1346, 0xbda5 }, { 432, 0x459a, 0x86a3, 0x364e, 0xa62c, 0x672d },
+		{ 216, 0x42cc, 0xb9a7, 0x4a06, 0x37ce, 0x2ee1 }, { 108, 0x4165, 0xda01, 0xee64, 0x1a70, 0x8dea },
+		{ 54, 0x40b2, 0xa70c, 0x3c40, 0xa64e, 0x6c52 }, { 27, 0x4058, 0xcecb, 0x8f27, 0xf420, 0x0f3a } };
+	volatile long double f0 = 1.0L, f1 = 1.0L, f2 = 10.0L;
+	int i;
+
+	if( n >= 5000 ) return( ext( 0x7fff, 0x8000, 0, 0, 0 ) );
+	if( n > 27 )
+		for( i = 0; i < 8; ++i )
+			if( n >= map[i][0] ){
+				f0 = f0 * ext( map[i][1], map[i][2], map[i][3], map[i][4], map[i][5] );
+				n -= map[i][0];
+				}
+	while( n ){
+		if( n & 1 ) f1 = f1 * f2;
+		f2 = f2 * f2;
+		n >>= 1;
+		}
+	return( f0 * f1 );
+	}
+
+static double wega_atof(char *s)
+{
+	unsigned long long m = 0;
+	int nd = 0, e = 0, x = 0, xs = 1, neg = 0, seen = 0;
+	volatile long double f;
+
+	while( *s == ' ' || *s == '\t' ) ++s;
+	if( *s == '-' ){ neg = 1; ++s; }
+	else if( *s == '+' ) ++s;
+	for( ; *s >= '0' && *s <= '9'; ++s ){
+		if( *s == '0' && !seen ) continue;
+		seen = 1;
+		if( nd < 19 ){ m = m * 10 + (*s - '0'); ++nd; }
+		else ++e;			/* a digit of the integer part behind the 19th: the exponent */
+		}
+	if( *s == '.' )
+		for( ++s; *s >= '0' && *s <= '9'; ++s ){
+			if( *s == '0' && !seen ){ --e; continue; }
+			seen = 1;
+			if( nd < 19 ){ m = m * 10 + (*s - '0'); ++nd; --e; }
+			}
+	if( *s == 'e' || *s == 'E' ){
+		++s;
+		if( *s == '-' ){ xs = -1; ++s; }
+		else if( *s == '+' ) ++s;
+		while( *s >= '0' && *s <= '9' ) x = x * 10 + (*s++ - '0');
+		}
+	e += xs * x;
+	if( e > 0 )
+		while( e && m < 1000000000000000000ULL ){ m *= 10; --e; }
+	else
+		while( e && m % 10 == 0 ){ m /= 10; ++e; }
+	f = (long double) m;
+	if( e < 0 ) f = f / pow10x( -e );
+	else f = pow10x( e ) * f;
+	return( neg ? -(double) f : (double) f );
+	}
+
 int isitfloat(char *s)
 {
-	double atof();
-	dcon = atof(s);
+	dcon = wega_atof(s);
 	return( FCON );
 	}
 
