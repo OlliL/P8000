@@ -2,23 +2,20 @@
 
 Goal: `make install` gives the original, `cmp` is the only proof (`checkall`). Bugs of the original are rebuilt and listed in `KNOWLEDGE.md`, "Bugs and quirks". Rules of the project: `../CLAUDE.md`. The plan: `increments/README.md` (new programs: increments 140 to 160).
 
-Two models, one handoff per program. Phase A is cheap and mechanical: a tool answers yes or no. Phase B needs understanding.
+One program per session: a fresh session (opus) with the short start message below does phase A for one program, from
+`setup.py` to the commit; a long session that carries other work costs more in every turn than the whole program
+(increment 140, measured on cpio). Subagents are not used: the cheaper model made wrong source changes that cost more to
+find than it saved (the definitions in `.claude/agents/` stay, used only when the owner names them). Phase B (an open
+block that needs the compiler) is a session of its own, for the open blocks of several programs with the same mechanism.
 
-Phase A is a script and two subagents (`.claude/agents/`, increment 140), each with a fixed input, a fixed report and a list of
-what it must not decide; the main session reads each report, decides and starts the next step:
+Start message of a session (NAME, ORIG and the increment filled in):
 
-| Step | Done by | The main session after it |
-|---|---|---|
-| 1 Setup | `host/recon/setup.py` (no model) | fixes compiler and library (`progcfg.py` CC, `findings.json` compiler); a library gap |
-| 2 Build and compare | agent `recon-match` (sonnet) | checks `bincmp.py`; hooks the program into `src/cmd/Makefile` (one file: SIMPLE rules as `ranlib`; a directory: SUBDIRS, `shipped`) |
-| 4 Corpus | agent `recon-corpus` (sonnet) | runs the corpus; the QUIRKS to `KNOWLEDGE.md`, the object to `OLDCC.md`, section 4 |
+    WEGA, increment 160: rebuild /ORIG (NAME) by WEGA/host/HOWTO_reconstruct.md, phase A, steps 1 to 5.
+    Read WEGA/CLAUDE.md and the HOWTO first. No subagents. A block still open after 6 attempts: note it in findings.json,
+    put the file in OPEN of host/tools/checkall.sh, do not go deeper. At the end: checkall, the two tables, COVERAGE.md,
+    commit; a short report (bincmp, corpus, changed files).
 
-Step 5, checkall, the two tables, a compiler question and phase B stay with the main session. The prompt of an agent gives
-every known value (NAME, ORIG, the source and its System III file, COMPILER, LIBC, stripped, OWN_LIM, the built candidate),
-so that the agent looks nothing up. Agents of the same model run one after the other: the second reads the common start
-of the context from the cache. New agent definitions are found by Claude Code at the start of a session only.
-
-## Phase A (cheap model)
+## Phase A
 
 Never in phase A: change a compiler pass or a switch, change cas, edit a shipped header, write odd forms to force bytes, spend more than 6 attempts on one function. When stuck: note it and go on. A function left open is a normal result.
 
@@ -42,17 +39,17 @@ Never in phase A: change a compiler pass or a switch, change cas, edit a shipped
       starts at the first member of at least 32 bytes (with the members right before it); the best library covers the most
       bytes from there. No gap: that library is LIBC. A gap is a module of another version, or a program of another library: the
       main session decides. `ld` takes from an archive what is referenced, in its order. `crt0.list` must have the program.
-2. **Build and compare** (`recon-match`). The own code with the stdio.h of the time for ccv0 and ccv1 (`src/head/oldv7`), the
+2. **Build and compare**. The own code with the stdio.h of the time for ccv0 and ccv1 (`src/head/oldv7`), the
    start-up file from `crt0.list`, linked with LIBC (`E="z8k-emu -r $OLDROOT"; $E /bin/ccv1 -O -I../head/oldv7 -c x.c`; the old
    compilers need `make -C host oldroot` once; the emulator sees only paths below its root and the working directory). Then
    `host/tools/bincmp.py ORIG NEW -v` (NEW stripped when ORIG is), in this order; each one moves the rest:
    - Data size, then data bytes: strings stand in the order of the statements of each function; equal strings are not merged.
    - Bss: commons are allocated in the order of first mention in link order. Reorder the declarations; array sizes are address distances (`-v` shows new -> original).
    - Code: the blocks of `bincmp.py`, per block at most 6 attempts with the forms below. Then record it in `findings.json` (per function a `note`, only for an open difference, an odd form, a guessed name, dead code) and go on. `odis.py NAME` shows the original of a function of findings.json, `odis.py LO HI` any range.
-   The Makefile rules (an `install` target that strips when the original is stripped; `make install` of `src/cmd` must reach it) are written by the main session.
+   The Makefile rules: an `install` target that strips when the original is stripped; `make install` of `src/cmd` must reach it (one file: SIMPLE rules as `ranlib`, `pr`; a directory: SUBDIRS, `shipped`). A file not yet identical goes to `OPEN` of `host/tools/checkall.sh`.
 3. **No source.** One C file per module, K&R, a draft per function from `odis.py`, compared by `fncheck.py DRAFT LO HI` (compiled with progcfg CC under `WEGA_ROOT`; for an old compiler: `CC = '/bin/ccv1'` and `WEGA_ROOT=$OLDROOT`). Names from messages, system calls, strings. The source carries no status; findings go to `findings.json` only.
-4. **Corpus** (`recon-corpus`). The bytes do not prove a draft while it is open. The original and ours run under the emulator on the same cases; outputs, messages, exit codes and the files left behind are compared: `compare/NAME/corpus.py` and `compare/NAME/cases/` or the blocks of `compare/NAME/tests.txt` (`host/recon/casefile.py`; dc, rm, mv, tar, sum are patterns: every case with an expectation from the man page or the source) (the case format: head comment of `host/recon/corpusrun.py`; `--show` runs the original alone; the C sources as inputs: `host/recon/corpusc.py`; design: `host/increments/110-corpus-architecture.md`), run by `host/tools/corpus.sh NAME` (`CORPUS_BIN_WEGA=FILE`: a build outside the tree). Run it after each batch; `checkall` runs it on a build by the shipped cc.
-5. **Handoff or done** (main session). `IDENTICAL`: the install target lets `checkall` compare it. When `checkall` is ALL OK: the functions of `findings.json` get their names (`f<entry>` -> the name: `nm -n` of the unstripped build, or `rename.py` where the sources must change too; the start-up code has status `crt0`) and status `exact`; `findings.py NAME` writes `FINDINGS.md`, which lists only the open and masked functions and the exact ones with a note (odd forms, guessed names, dead code, a kept bug); `findings.json` keeps every function. Then `src/COVERAGE.md` again: `WEGA=<WEGA_ROOT> CHECK_NAME=cov sh host/tools/checkall.sh -b` (build and install only, the install tree stays in /tmp/wega_check.cov/install), `INSTALL=/tmp/wega_check.cov/install python3 host/tools/coverage.py`. Report. Otherwise a section "Current work" in `HANDOFF_wega_disasm.md`, as short as possible: compiler, the output of `bincmp.py`, per open function what was tried (the functions themselves: `findings.json`). Commit.
+4. **Corpus**. The bytes do not prove a draft while it is open. The original and ours run under the emulator on the same cases; outputs, messages, exit codes and the files left behind are compared: `compare/NAME/corpus.py` and `compare/NAME/cases/` or the blocks of `compare/NAME/tests.txt` (`host/recon/casefile.py`; dc, rm, mv, tar, sum are patterns: every case with an expectation from the man page or the source) (the case format: head comment of `host/recon/corpusrun.py`; `--show` runs the original alone; the C sources as inputs: `host/recon/corpusc.py`; design: `host/increments/110-corpus-architecture.md`), run by `host/tools/corpus.sh NAME` (`CORPUS_BIN_WEGA=FILE`: a build outside the tree). Run it after each batch; `checkall` runs it on a build by the shipped cc.
+5. **Handoff or done.** `IDENTICAL`: the install target lets `checkall` compare it. When `checkall` is ALL OK: the functions of `findings.json` get their names (`f<entry>` -> the name: `nm -n` of the unstripped build, or `rename.py` where the sources must change too; the start-up code has status `crt0`) and status `exact`; `findings.py NAME` writes `FINDINGS.md`, which lists only the open and masked functions and the exact ones with a note (odd forms, guessed names, dead code, a kept bug); `findings.json` keeps every function. Then `src/COVERAGE.md` again: `WEGA=<WEGA_ROOT> CHECK_NAME=cov sh host/tools/checkall.sh -b` (build and install only, the install tree stays in /tmp/wega_check.cov/install), `INSTALL=/tmp/wega_check.cov/install python3 host/tools/coverage.py`. Report. Otherwise a section "Current work" in `HANDOFF_wega_disasm.md`, as short as possible: compiler, the output of `bincmp.py`, per open function what was tried (the functions themselves: `findings.json`). Commit.
 
 ### Forms that often decide (in this order)
 
@@ -64,7 +61,7 @@ More, found on sld: `KNOWLEDGE.md`, "what fixed the findings functions".
 - Plain forms first. `goto`, unused labels and spare locals only when nothing plain fits; mark them in `findings.json` as odd forms.
 - `call` where `calr` reaches: the callee is in another file, or the old cas decided it long (`OLDCC.md`, D17). A backward `call` in reach always means another file.
 
-## Phase B (better model)
+## Phase B
 
 For what is left: finding the source form of a hard function, and changing the compiler.
 

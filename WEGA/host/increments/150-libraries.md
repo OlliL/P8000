@@ -2,7 +2,7 @@
 
 ## Status
 
-open (after 140)
+active (2026-11-18)
 
 ## Goal
 

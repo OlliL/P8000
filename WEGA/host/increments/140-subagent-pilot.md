@@ -2,7 +2,7 @@
 
 ## Status
 
-active (2026-11-17)
+done (2026-11-18): subagents are not used; one fresh session per program (HOWTO)
 
 ## Goal
 
@@ -97,13 +97,16 @@ forms (the mask kept, unused locals in gmatch and missdir). The source of the fr
   (`claude -p --model opus --output-format json` in a git worktree at the commit before cpio; its result is thrown away).
   The cheaper way is the one for 160.
 
-- Open (owner): the way for 160, from the table above (my proposal: one fresh session per program, without agents).
+- 2026-11-18 (owner): the agents are dropped. One fresh session (opus) per program, without agents, with a short start
+  message (HOWTO); the definitions stay in `.claude/agents/`, used only when the owner names them.
 
 ## Not part of it
 
 The other programs: 150, 160.
 
 ## Log
+
+- 2026-11-18: done: HOWTO without the agents, the start message in it; 150 active.
 
 - 2026-11-18: cpio: agents against one fresh session (table under Steps); cpio IDENTICAL by the source of the fresh session;
   host scparse: the heap of cparse (51730576); COVERAGE.md was not generated after sum and pr: now step 5 of the HOWTO.

@@ -26,8 +26,8 @@ Numbered in steps of ten, so that an increment can be put in between (e.g. 105).
 | 117 | [Device models: /dev/ud, floppies, the EPROM programmer](117-device-models.md) | done |
 | 120 | [Corpora for every program and script of src/cmd](120-corpora-src-cmd.md) | done |
 | 130 | [Text and data files (etc, usr/lib, usr/other)](130-text-files.md) | done |
-| 140 | [Subagents: the workflow, on a pilot program](140-subagent-pilot.md) | active |
-| 150 | [The libraries and objects of /lib and /usr/lib](150-libraries.md) | open |
+| 140 | [Subagents: the workflow, on a pilot program](140-subagent-pilot.md) | done (agents dropped: one session per program) |
+| 150 | [The libraries and objects of /lib and /usr/lib](150-libraries.md) | active |
 | 160 | [The programs of bin, usr/bin, etc, usr/lib](160-programs.md) | open |
 | 170 | [PLZ: /bin/as, /lib/as*, plz](170-plz.md) | open |
 | 180 | [Whole system: self-hosted build, boot in MAME](180-whole-system.md) | open |

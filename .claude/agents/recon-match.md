@@ -1,6 +1,6 @@
 ---
 name: recon-match
-description: "WEGA reconstruction, phase A step 2 (host/HOWTO_reconstruct.md) for one program whose source, compiler and library the main session has fixed: build, bincmp, source forms (at most 6 attempts per block). Never touches the compiler. Use only when the main session names a program with its setup."
+description: "Not in use (increment 140): only when the owner names this agent. WEGA reconstruction, phase A step 2 (host/HOWTO_reconstruct.md) for one program whose source, compiler and library the main session has fixed: build, bincmp, source forms (at most 6 attempts per block). Never touches the compiler. Use only when the main session names a program with its setup."
 model: sonnet
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
