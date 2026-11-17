@@ -58,7 +58,7 @@ snapshot() {
 	rm -rf $T/snap
 	mkdir -p $T/snap/WEGA
 	if [ -n "$PATCH" ] && [ ! -f "$PATCH" ]; then
-		(cd $REPO && git archive "$PATCH" -- src host compare) | (cd $T/snap && tar xf -) || return 1
+		(cd $REPO && git archive "$PATCH" -- src host compare) | (cd $T/snap/WEGA && tar xf -) || return 1
 	else
 		(cd $REPO && git ls-files -co --exclude-standard -- src host compare | tar cf - -T - 2>/dev/null) | (cd $T/snap/WEGA && tar xf -)
 		if [ -n "$PATCH" ]; then

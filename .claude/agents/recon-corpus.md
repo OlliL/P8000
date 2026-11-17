@@ -17,7 +17,8 @@ NAME, ORIG, the source in `src/cmd/NAME/`, the built candidate (`src/cmd/NAME/NA
 
 - `host/recon/casefile.py` (head comment: the block format), the head comment of `host/recon/corpusrun.py` (case lines).
 - One pattern: `compare/rmdir/corpus.py` and `compare/rmdir/tests.txt`.
-- The man page: `host/z8k-emu/z8k-emu -r WEGA_ROOT /usr/bin/pcat /usr/man/man1/NAME.1` (or the section the prompt names).
+- The man page: `host/z8k-emu/z8k-emu -r WEGA_ROOT /usr/bin/pcat /usr/man/man1/NAME.1` (or the section the prompt names); when pcat fails, read the file
+  directly (`tmp/wega31_root/usr/man/man1/NAME.1`).
 - The source `src/cmd/NAME/*.c`: every message, option and exit status.
 
 ## Steps
@@ -27,7 +28,7 @@ NAME, ORIG, the source in `src/cmd/NAME/`, the built candidate (`src/cmd/NAME/NA
    each case with a comment line naming where its expectation comes from (`# man: ...`, `# src: ...`). Edge cases: no
    arguments, missing file, empty file, standard input, several files.
 3. Add NAME to `compare/CORPORA` (keep its order).
-4. `host/tools/corpus.sh --wega NAME 2>&1 | tail -20`. A case where the original differs from its expectation: the original
+4. `sh host/tools/corpus.sh --wega NAME 2>&1 | tail -20`. A case where the original differs from its expectation: the original
    is right; fix the expectation and record it under QUIRKS (a bug of the original), never change the program for it.
 5. A difference between original and build: report it under DIFFS with the case; do not change the C source.
 
