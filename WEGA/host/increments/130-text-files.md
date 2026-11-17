@@ -2,7 +2,7 @@
 
 ## Status
 
-active (2026-11-17)
+done (2026-11-17)
 
 ## Goal
 
@@ -58,3 +58,4 @@ Programs and scripts that need a compiler or are tested by a corpus: 120, 160.
 - 2026-11-17: the directories (owner: the build must make the same structure, with all files and directories): src/etc/dirs lists the 62 directories of the WEGA root with their modes (not what is below tmp), make install ends with make dirs in src/etc (all made, then the modes set); checkall compares the directories of the install root with those of WEGA (names and modes, both ways): 'install directories'. Owners and groups are not made (no root) for files either. checkall ALL OK.
 - 2026-11-17: usr/lib/problems and usr/lib/screen (the five files: WEGA, nothing elsewhere) and the 15 scripts of usr/lib/acct (System III's acct.mk: cp NAME.sh NAME; install -f /usr/lib/acct; WEGA contents, mode 750). Left of the text, data and script files: the 18 scripts of usr/bin (corpus required). checkall ALL OK.
 - 2026-11-17: the 18 scripts of usr/bin (basename, calendar, cxref, diff3, diffmk, dircmp, dirname, false, lint, lorder, mkmenu, mm, mmt (mvt: link), sccsdiff, spell, strprint, true): the WEGA files in src/cmd/NAME.sh, installed to usr/bin (mmt and mvt: a link), each with a corpus (compare/NAME, mutants found). The emulator and the runner run a text file that starts with #!NAME with that program (MAME: sccsdiff works, csh fails): tests/shebang.c.
+- 2026-11-17: done. Open by agreement: the 15 scripts of usr/lib/acct have no corpus (they need the accounting programs); small tests for the generator programs (maketerms, spellin, mkstr, ...) are not made; fse stays as it is (fse.doc and the Makefile) until the sources of fse are there. Left in the root: the binaries and archives (351), not part of 130.

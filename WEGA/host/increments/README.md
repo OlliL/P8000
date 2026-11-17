@@ -25,8 +25,8 @@ Numbered in steps of ten, so that an increment can be put in between (e.g. 105).
 | 110 | [Corpus architecture and the emulator as oracle](110-corpus-architecture.md) | done (Claude's decisions for review) |
 | 117 | [Device models: /dev/ud, floppies, the EPROM programmer](117-device-models.md) | done |
 | 120 | [Corpora for every program and script of src/cmd](120-corpora-src-cmd.md) | done |
-| 130 | [Text and data files (etc, usr/lib, usr/other)](130-text-files.md) | active |
-| 140 | [Subagents: the workflow, on a pilot program](140-subagent-pilot.md) | open |
+| 130 | [Text and data files (etc, usr/lib, usr/other)](130-text-files.md) | done |
+| 140 | [Subagents: the workflow, on a pilot program](140-subagent-pilot.md) | active |
 | 150 | [The libraries and objects of /lib and /usr/lib](150-libraries.md) | open |
 | 160 | [The programs of bin, usr/bin, etc, usr/lib](160-programs.md) | open |
 | 170 | [PLZ: /bin/as, /lib/as*, plz](170-plz.md) | open |
