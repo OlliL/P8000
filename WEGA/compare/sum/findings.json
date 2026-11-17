@@ -1,8 +1,32 @@
 {
- "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code). exact_removed: the exact functions without a note that left the list at the end (findings.py --done).",
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
  "compiler": "ccv0",
  "binary": "/bin/sum",
  "functions": {
+  "f0000": {
+   "file": "crt0",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
   "main": {
    "file": "src/cmd/sum.c",
    "orig": "0x0042",
@@ -14,6 +38,5 @@
    ],
    "note": "the globals are declared \"} suma, tempa;\" (System III: tempa, suma): the order of the two unions in the bss of the original"
   }
- },
- "exact_removed": 0
+ }
 }

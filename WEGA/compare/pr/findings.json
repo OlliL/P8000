@@ -1,7 +1,226 @@
 {
- "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code). exact_removed: the exact functions without a note that left the list at the end (findings.py --done).",
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
  "compiler": "cc",
  "binary": "/bin/pr",
- "functions": {},
- "exact_removed": 19
+ "functions": {
+  "f0000": {
+   "file": "crt0",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "fixtty": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0042",
+   "size_orig": 104,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ]
+  },
+  "GETDATE": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x00aa",
+   "size_orig": 84,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0562"
+   ]
+  },
+  "ffiler": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x00fe",
+   "size_orig": 28,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0d5c"
+   ]
+  },
+  "main": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x011a",
+   "size_orig": 162,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "findopt": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x01bc",
+   "size_orig": 866,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x011a"
+   ]
+  },
+  "intopt": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x051e",
+   "size_orig": 68,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "print": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0562",
+   "size_orig": 398,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x011a"
+   ]
+  },
+  "putpage": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x06f0",
+   "size_orig": 402,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0562"
+   ]
+  },
+  "nexbuf": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0882",
+   "size_orig": 318,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0562"
+   ]
+  },
+  "balance": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x09c0",
+   "size_orig": 148,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0882"
+   ]
+  },
+  "get": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0a54",
+   "size_orig": 322,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0562",
+    "0x06f0"
+   ]
+  },
+  "put": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0b96",
+   "size_orig": 244,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x06f0"
+   ]
+  },
+  "putspace": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0c8a",
+   "size_orig": 160,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0562",
+    "0x06f0",
+    "0x0b96"
+   ]
+  },
+  "atoix": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0d2a",
+   "size_orig": 50,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ]
+  },
+  "mustopen": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0d5c",
+   "size_orig": 316,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x011a",
+    "0x0562"
+   ]
+  },
+  "getspace": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0e98",
+   "size_orig": 32,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc",
+    "0x0d5c"
+   ]
+  },
+  "die": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0eb8",
+   "size_orig": 76,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x011a",
+    "0x01bc",
+    "0x0882",
+    "0x0e98"
+   ]
+  },
+  "onintr": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0f04",
+   "size_orig": 14,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "errprint": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0f12",
+   "size_orig": 102,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x011a",
+    "0x0eb8"
+   ]
+  }
+ }
 }

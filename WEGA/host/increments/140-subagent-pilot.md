@@ -71,8 +71,8 @@ D18), the quirks, checkall. Its tokens are not separable from the rest of the se
   repository documents to read).
 - 2026-11-17 (owner): the revised definitions (recon-match, recon-corpus, self-contained; setup by setup.py) agreed.
 - 2026-11-17 (owner): a second, larger run after the checkall of sum: `bin/ls` (02/83, D1 slots: v1 time, 539 lines of System III).
-- 2026-11-18 (owner): at the end of a program its functions in findings.json carry their names; exact functions without a
-  note leave findings.json; FINDINGS.md is generated (`findings.py --done`, HOWTO step 5).
+- 2026-11-18 (owner): at the end of a program its functions in findings.json carry their names and every function stays
+  there; FINDINGS.md (`findings.py NAME`) leaves out the exact ones without a note (HOWTO step 5).
 - 2026-11-18 (owner): `bin/pr` instead of `bin/ls`: ls needs libc members that no libc-vN has yet (setup.py: libc-v4 covers
   2780 of 5382 bytes); that is library work (150). pr: shipped cc, `/lib/libc.a` without a gap.
 
