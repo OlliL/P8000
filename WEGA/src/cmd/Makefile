@@ -34,7 +34,7 @@ SIMPLE=		mv rm rmdir write size strip ranlib
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o
-SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cpp cparse codgen popt dc ld sld text sccs cref
+SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cpp cparse codgen popt dc ld sld text sccs cref spell lint
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 

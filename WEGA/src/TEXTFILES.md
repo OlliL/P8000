@@ -8,11 +8,9 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 
 | Rule | Art | files |
 |---|---|---|
-| C | data | 2 |
 | C | script | 33 |
-| C | text | 49 |
-| G | data | 5 |
-| **all** | | 89 |
+| C | text | 46 |
+| **all** | | 79 |
 
 
 ## root
@@ -50,16 +48,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `strprint` | script | C | 245 | `src/cmd/strprint.sh` | ja (Vorgabe: Skript nach usr/bin) | - |  |
 | `true` | script | C | 55 | `src/cmd/true.sh` | ja (Vorgabe: Skript nach usr/bin) | bin/true image ~ |  |
 
-## usr/dict
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `hlista` | data | G | 50000 | `made by the build from src/cmd/spell/` | nein | usr/lib/spell/hlista image ~ | spellin over american, local: spell/spell.mk, spell/spellin.c, spell/american, spell/local, spell/list - check: offen |
-| `hlistb` | data | G | 50000 | `made by the build from src/cmd/spell/` | nein | usr/lib/spell/hlistb image ~ | spellin over british, local: spell/spell.mk, spell/spellin.c, spell/british, spell/local, spell/list - check: offen |
-| `hstop` | data | G | 50000 | `made by the build from src/cmd/spell/` | nein | usr/lib/spell/hstop image ~ | spellin over stop: spell/spell.mk, spell/spellin.c, spell/stop - check: offen |
-| `spellhist` | data | C | 0 | `src/usr/dict/spellhist` | nein | usr/lib/spell/spellhist image = |  |
-| `words` | data | C | 63798 | `src/usr/dict/words` | nein | usr/games/words image ? |  |
-
 ## usr/doc
 
 | File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
@@ -72,11 +60,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 |---|---|---|---|---|---|---|---|
 | `crontab` | text | C | 134 | `src/usr/lib/crontab` | nein | usr/lib/crontab image ~ |  |
 | `lib.b` | text | C | 1609 | `src/usr/lib/lib.b` | nein | usr/lib/lib.b image = |  |
-| `llib-lc` | text | C | 8996 | `src/cmd/lint/llib-lc` | nein | usr/lib/llib-lc image ~<br>usr/src/cmd/lint/llib-lc source ~ |  |
-| `llib-lc.ln` | data | G | 7738 | `made by the build from src/cmd/lint/` | nein | usr/lib/llib-lc.ln image ~ | lint1 -vx over cpp -C llib-lc: lint/lint.mk, lint/lint.c, lint/llib-lc - check: offen |
-| `llib-lm` | text | C | 1120 | `src/usr/lib/llib-lm` | nein | - |  |
-| `llib-port` | text | C | 2122 | `src/cmd/lint/llib-port` | nein | usr/lib/llib-port image ~<br>usr/src/cmd/lint/llib-port source ~ |  |
-| `llib-port.ln` | data | G | 1846 | `made by the build from src/cmd/lint/` | nein | usr/lib/llib-port.ln image ~ | lint1 -vxp over cpp -C llib-port: lint/lint.mk, lint/lint.c, lint/llib-port - check: offen |
 | `more.help` | text | C | 1173 | `src/usr/lib/more.help` | nein | - |  |
 | `plzcg.errs` | text | C | 784 | `src/usr/lib/plzcg.errs` | nein | - |  |
 | `units` | text | C | 7732 | `src/usr/lib/units` | nein | usr/games/units image ?<br>usr/bin/units image ~ |  |

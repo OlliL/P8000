@@ -12,13 +12,13 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [bin](#bin) | 111 | 25 | 0 | 54 | 32 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 13 | 0 | 2 | 15 |
-| [usr/bin](#usr-bin) | 145 | 10 | 1 | 81 | 53 |
-| [usr/lib](#usr-lib) | 197 | 50 | 1 | 85 | 61 |
+| [usr/bin](#usr-bin) | 145 | 10 | 3 | 79 | 53 |
+| [usr/lib](#usr-lib) | 197 | 55 | 2 | 80 | 60 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
-| [usr/other](#usr-other) | 15 | 1 | 0 | 9 | 5 |
+| [usr/other](#usr-other) | 15 | 6 | 0 | 4 | 5 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 763 | 2 | 250 | 182 |
+| **all** | 1197 | 773 | 5 | 238 | 181 |
 
 <a id="root"></a>
 ## root
@@ -334,7 +334,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/bin/join` | binary E707 | `tmp/sys3/usr/src/cmd/join.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/lex` | binary E711 | `tmp/sys3/usr/src/cmd/efl/lex.l` | sys3 | D12 old, D1 slots | - |
 | `usr/bin/line` | binary E707 | `tmp/sys3/usr/src/cmd/line.c` | sys3 | D12 -, D1 - | - |
-| `usr/bin/lint` | text | `tmp/sys3/usr/bin/lint` | sys3 | - | - |
+| `usr/bin/lint` | text | `src/cmd/lint` | partial | - | - |
 | `usr/bin/logname` | binary E707 | `tmp/sys3/usr/src/cmd/logname.c` | sys3 | D12 -, D1 slots | - |
 | `usr/bin/look` | binary E707 | - | todo | D12 -, D1 slots | - |
 | `usr/bin/lorder` | text | `tmp/sys3/usr/bin/lorder` | sys3 | - | - |
@@ -376,7 +376,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/bin/script` | binary E707 | - | todo | D12 old?, D1 tight | - |
 | `usr/bin/sdiff` | binary E707 | `tmp/sys3/usr/src/cmd/sdiff.c` | sys3 | D12 old?, D1 tight | - |
 | `usr/bin/sed` | binary E707 | - | todo | D12 new, D1 loose | - |
-| `usr/bin/spell` | text | `tmp/sys3/usr/bin/spell` | sys3 | - | - |
+| `usr/bin/spell` | text | `src/cmd/spell` | partial | cc | - |
 | `usr/bin/spellin` | binary E707 | `tmp/sys3/usr/src/cmd/spell/spellin.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/spellout` | binary E707 | `tmp/sys3/usr/src/cmd/spell/spellout.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/split` | binary E707 | `tmp/sys3/usr/src/cmd/split.c` | sys3 | D12 -, D1 tight | - |
@@ -516,11 +516,11 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/libu8000.a` | archive | - | todo | - | - |
 | `usr/lib/lint1` | binary E711 | - | todo | D12 old, D1 slots | - |
 | `usr/lib/lint2` | binary E711 | - | todo | D12 old, D1 slots | - |
-| `usr/lib/llib-lc` | text | `tmp/sys3/usr/src/cmd/lint/llib-lc` | sys3 | - | - |
-| `usr/lib/llib-lc.ln` | data | `tmp/sys3/usr/lib/llib-lc.ln` | sys3 | - | - |
-| `usr/lib/llib-lm` | text | - | todo | - | - |
-| `usr/lib/llib-port` | text | `tmp/sys3/usr/src/cmd/lint/llib-port` | sys3 | - | - |
-| `usr/lib/llib-port.ln` | data | `tmp/sys3/usr/lib/llib-port.ln` | sys3 | - | - |
+| `usr/lib/llib-lc` | text | `src/cmd/lint` | exact | - | - |
+| `usr/lib/llib-lc.ln` | data | `src/cmd/lint` | exact | - | - |
+| `usr/lib/llib-lm` | text | `src/cmd/lint` | exact | - | - |
+| `usr/lib/llib-port` | text | `src/cmd/lint` | exact | - | - |
+| `usr/lib/llib-port.ln` | data | `src/cmd/lint` | exact | - | - |
 | `usr/lib/lp` | binary E711 | `tmp/sys3/usr/src/uts/vax/io/lp.c` | sys3 | D12 old?, D1 tight | - |
 | `usr/lib/lp_ban` | binary E711 | - | todo | D12 old?, D1 tight | - |
 | `usr/lib/lp_nf` | binary E711 | - | todo | D12 old?, D1 slots | - |
@@ -561,7 +561,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/slibscreen.a` | archive | - | todo | - | - |
 | `usr/lib/slibtermlib.a` | archive | - | todo | - | - |
 | `usr/lib/slibu8000.a` | archive | - | todo | - | - |
-| `usr/lib/spell` | binary E707 | `tmp/sys3/usr/src/cmd/spell/spell.sh` | sys3 | D12 old?, D1 tight | - |
+| `usr/lib/spell` | binary E707 | `src/cmd/spell` | partial | cc | - |
 | `usr/lib/suftab` | data | `src/cmd/text/roff.d` | exact | cc | - |
 | `usr/lib/tabset/std` | data | - | todo | - | - |
 | `usr/lib/tabset/vt100` | data | - | todo | - | - |
@@ -658,11 +658,11 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | File | Kind | Source | Status | Compiler | libc |
 |---|---|---|---|---|---|
 | `usr/boot` | binary E707 | `src/uts/conf` | exact | cc | - |
-| `usr/dict/hlista` | data | `tmp/sys3/usr/lib/spell/hlista` | sys3 | - | - |
-| `usr/dict/hlistb` | data | `tmp/sys3/usr/lib/spell/hlistb` | sys3 | - | - |
-| `usr/dict/hstop` | data | `tmp/sys3/usr/lib/spell/hstop` | sys3 | - | - |
-| `usr/dict/spellhist` | data | `tmp/sys3/usr/lib/spell/spellhist` | sys3 | - | - |
-| `usr/dict/words` | text | `tmp/sys3/usr/games/words` | sys3 | - | - |
+| `usr/dict/hlista` | data | `src/cmd/spell` | exact | cc | - |
+| `usr/dict/hlistb` | data | `src/cmd/spell` | exact | cc | - |
+| `usr/dict/hstop` | data | `src/cmd/spell` | exact | cc | - |
+| `usr/dict/spellhist` | data | `src/cmd/spell` | exact | cc | - |
+| `usr/dict/words` | text | `src/cmd/spell` | exact | cc | - |
 | `usr/doc/fse.doc` | text | - | todo | - | - |
 | `usr/pub/ascii` | text | `tmp/sys3/usr/pub/ascii` | sys3 | - | - |
 | `usr/pub/dmalias` | text | - | todo | - | - |
