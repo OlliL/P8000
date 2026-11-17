@@ -1,0 +1,4 @@
+DIR tty4 tty4 9600
+DIR tty5 tty6 2400
+DIR tty6 tty6 2400
+DIR tty7 tty7 9600

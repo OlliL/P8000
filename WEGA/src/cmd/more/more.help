@@ -1,0 +1,25 @@
+
+
+Den meisten Kommandos kann optional das Argument k vorangestellt werden. Stan-
+dard steht in [ ]. Bei *-Kommandos wird k zum neuen Standard. 
+-------------------------------------------------------------------------------
+<space>			Anzeige der naechsten k Zeilen [akt. Bildsch.groesse] 
+z			Anzeige der naechsten k Zeilen [akt. Bildsch.groesse]*
+<return>		Anzeige der naechsten k Zeilen [1]*
+d oder ctrl-D		Text rollt k Zeilen weiter [11]*
+q oder Q 		Beenden von more
+s			Ueberspringt k Zeilen [1]
+f			Ueberspringt k Bildsch.anzeigen [1]
+'			Zurueck zum Start des letzten Suchkommandos
+=			Anzeige der akt. Zeilennummer
+/string  		Sucht nach dem k-ten Auftreten von 'string' [1]
+n			Sucht nach dem k-ten Auftreten des letzten 'string' [1]
+!cmd oder :!cmd		Fuehrt Kommando 'cmd' in einer Subshell aus
+v			Startet /bin/vi ab akt. Zeile
+h			Zeigt diese Kommandobeschreibung an
+ctrl-l			Akt. Bildsch.anzeige wiederholen
+:n			Geht zur k-ten nachfolgenden Datei [1]
+:p			Geht zur k-ten vorhergehenden Datei [1]
+:f			Anzeige des akt. Dateinamens und Zeilennummer
+.			Wiederholt das letzte Kommando
+-------------------------------------------------------------------------------

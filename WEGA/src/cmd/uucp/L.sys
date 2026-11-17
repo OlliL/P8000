@@ -1,0 +1,4 @@
+WEGA_A Any tty7 9600 tty7 "" NL login:-NL-login: uucp ssword: lan
+K1840 Any tty4 9600 tty4 ""  login:--login: uucp
+K1630 Any tty5 2400 tty5 ""  login:--login: uucp
+A7100 Any tty6 2400 tty6 ""  login:--login: uucp

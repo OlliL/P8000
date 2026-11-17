@@ -9,8 +9,8 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | Rule | Art | files |
 |---|---|---|
 | C | script | 33 |
-| C | text | 44 |
-| **all** | | 77 |
+| C | text | 19 |
+| **all** | | 52 |
 
 
 ## root
@@ -53,11 +53,8 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
 |---|---|---|---|---|---|---|---|
 | `crontab` | text | C | 134 | `src/usr/lib/crontab` | nein | usr/lib/crontab image ~ |  |
-| `lib.b` | text | C | 1609 | `src/usr/lib/lib.b` | nein | usr/lib/lib.b image = |  |
-| `more.help` | text | C | 1173 | `src/usr/lib/more.help` | nein | - |  |
 | `plzcg.errs` | text | C | 784 | `src/usr/lib/plzcg.errs` | nein | - |  |
 | `units` | text | C | 7732 | `src/usr/lib/units` | nein | usr/games/units image ?<br>usr/bin/units image ~ |  |
-| `yaccpar` | text | C | 3300 | `src/cmd/yacc/yaccpar` | nein | usr/lib/yaccpar image ~<br>usr/src/cmd/yacc/yaccpar source ~ |  |
 
 ## usr/lib/acct
 
@@ -66,7 +63,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `chargefee` | script | C | 593 | `src/cmd/chargefee.sh` | offen | usr/lib/acct/chargefee image ~ |  |
 | `ckpacct` | script | C | 705 | `src/cmd/ckpacct.sh` | offen | usr/lib/acct/ckpacct image ~ |  |
 | `dodisk` | script | C | 371 | `src/cmd/dodisk.sh` | offen | usr/lib/acct/dodisk image ~ |  |
-| `holidays` | text | C | 44 | `src/usr/lib/acct/holidays` | nein | - |  |
 | `lastlogin` | script | C | 1584 | `src/cmd/lastlogin.sh` | offen | usr/lib/acct/lastlogin image ~ |  |
 | `monacct` | script | C | 996 | `src/cmd/monacct.sh` | offen | usr/lib/acct/monacct image ~ |  |
 | `nulladm` | script | C | 214 | `src/cmd/nulladm.sh` | offen | usr/lib/acct/nulladm image ~ |  |
@@ -79,24 +75,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `shutacct` | script | C | 319 | `src/cmd/shutacct.sh` | offen | usr/lib/acct/shutacct image ~ |  |
 | `startup` | script | C | 272 | `src/cmd/startup.sh` | offen | usr/lib/acct/startup image ~ |  |
 | `turnacct` | script | C | 774 | `src/cmd/turnacct.sh` | offen | usr/lib/acct/turnacct image ~ |  |
-
-## usr/lib/me
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `acm.me` | text | C | 506 | `src/usr/lib/me/acm.me` | nein | - |  |
-| `chars.me` | text | C | 1446 | `src/usr/lib/me/chars.me` | nein | - |  |
-| `deltext.me` | text | C | 239 | `src/usr/lib/me/deltext.me` | nein | - |  |
-| `eqn.me` | text | C | 943 | `src/usr/lib/me/eqn.me` | nein | - |  |
-| `float.me` | text | C | 597 | `src/usr/lib/me/float.me` | nein | - |  |
-| `footnote.me` | text | C | 865 | `src/usr/lib/me/footnote.me` | nein | - |  |
-| `index.me` | text | C | 612 | `src/usr/lib/me/index.me` | nein | - |  |
-| `local.me` | text | C | 412 | `src/usr/lib/me/local.me` | nein | - |  |
-| `null.me` | text | C | 154 | `src/usr/lib/me/null.me` | nein | - |  |
-| `revisions` | text | C | 2691 | `src/usr/lib/me/revisions` | nein | - |  |
-| `sh.me` | text | C | 1463 | `src/usr/lib/me/sh.me` | nein | - |  |
-| `tbl.me` | text | C | 879 | `src/usr/lib/me/tbl.me` | nein | - |  |
-| `thesis.me` | text | C | 425 | `src/usr/lib/me/thesis.me` | nein | - |  |
 
 ## usr/lib/news
 
@@ -120,30 +98,17 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `vlshelp` | text | C | 411 | `src/usr/lib/screen/vlshelp` | nein | - |  |
 | `vnewshelp` | text | C | 256 | `src/usr/lib/screen/vnewshelp` | nein | - |  |
 
-## usr/lib/tabset
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `std` | text | C | 135 | `src/usr/lib/tabset/std` | nein | - |  |
-| `vt100` | text | C | 159 | `src/usr/lib/tabset/vt100` | nein | - |  |
-
 ## usr/lib/uucp
 
 | File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
 |---|---|---|---|---|---|---|---|
-| `L-cmd` | text | C | 46 | `src/usr/lib/uucp/L-cmd` | nein | - |  |
-| `L-devices` | text | C | 76 | `src/usr/lib/uucp/L-devices` | nein | usr/lib/uucp/L-devices image ~ |  |
-| `L.sys` | text | C | 219 | `src/usr/lib/uucp/L.sys` | nein | usr/lib/uucp/L.sys image ~ |  |
 | `SQFILE` | text | C | 7 | `src/usr/lib/uucp/SQFILE` | nein | - |  |
-| `USERFILE` | text | C | 4 | `src/cmd/uucp/USERFILE` | nein | usr/lib/uucp/USERFILE image ~<br>usr/src/cmd/uucp/USERFILE source ~ |  |
 
 ## usr/pub
 
 | File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
 |---|---|---|---|---|---|---|---|
-| `ascii` | text | C | 1068 | `src/usr/pub/ascii` | nein | usr/pub/ascii image ~ |  |
 | `dmalias` | text | C | 263 | `src/usr/pub/dmalias` | nein | - |  |
-| `eqnchar` | text | C | 2969 | `src/usr/pub/eqnchar` | nein | usr/pub/eqnchar image = |  |
 | `greek` | text | C | 475 | `src/usr/pub/greek` | nein | usr/bin/greek image ~<br>usr/pub/greek image ~ |  |
 | `termlist` | text | C | 9297 | `src/usr/pub/termlist` | nein | - |  |
 

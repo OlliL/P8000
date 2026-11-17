@@ -56,6 +56,8 @@ CHECKED.update({
     'usr/lib/llib-port.ln': ('G', 'cpp -C | lint1 of the WEGA root; headers of the time made from src/head (include/): byte-identical, see src/cmd/lint/Makefile')})
 GEN.append(('lib/ex2.13strings', ['plexus cmd/plx/ex: vi.mk, mkstr.c, ex*.c'], 'mkstr over the sources of ex (Plexus); ex_subr.c changed in one string'))
 CHECKED.update({'lib/ex2.13strings': ('G', 'mkstr (src/cmd/mkstr.c) over src/cmd/ex as in vi.mk: byte-identical')})
+GEN.append(('usr/lib/me/', ['4.4BSD-Lite share/me: Makefile, strip.sed, NAME.me'], 'sed -f strip.sed over the .me sources (4.4BSD-Lite), revisions copied'))
+CHECKED.update({'usr/lib/me/': ('G', 'strip.sed over the 4.4BSD-Lite sources adapted to the WEGA files (src/cmd/me): byte-identical; revisions is copied (BSD copies it too)')})
 ZIELDIR = []
 NOGEN = {'usr/lib/term/tab-12', 'usr/lib/term/tab630wp-12'}	# no System III source for these
 
