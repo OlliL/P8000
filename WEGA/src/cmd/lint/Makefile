@@ -34,7 +34,8 @@ llib-lc.ln: llib-lc headers
 	cd ln ; $(RUN) /lib/cpp -C -I../include llib-lc | $(RUN) /usr/lib/lint1 -vx -H../hlint > ../llib-lc.ln
 	rm -f hlint
 
-llib-port.ln: llib-port headers
+# after llib-lc.ln: both rules use and remove the file hlint of lint1 (in parallel one removes it while the other reads it)
+llib-port.ln: llib-port headers llib-lc.ln
 	mkdir -p ln
 	cp llib-port ln/llib-port
 	cd ln ; $(RUN) /lib/cpp -C -I../include llib-port | $(RUN) /usr/lib/lint1 -vxp -H../hlint > ../llib-port.ln
