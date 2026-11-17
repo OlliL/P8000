@@ -67,7 +67,8 @@ Without a `step:` the default step `NAME t.in` runs. `\ooo` in a file line is th
 
 1. Write corpus.py and tests.txt: one case per statement of the man page and per message, option, exit status of the
    source, each with its `# man:` or `# src:` line; also no arguments, missing file, empty file, standard input, several
-   files. A case whose output has the current time gets `time:`; no case that depends on the directory order of the host or on
+   files. A case whose output has a time gets it fixed: the current time by `time:`, the date of a file by
+   `host: touch -d '2020-01-02 03:04:05' FILE` (otherwise original and build run in different minutes); no case that depends on the directory order of the host or on
    process ids.
 2. The original alone, to check the expectations: `cd $W && python3 host/recon/corpusrun.py --show NAME 2>&1 | tail -40`
    (filter with `grep`, it prints every case). The original is always right: correct a failing expectation; where the

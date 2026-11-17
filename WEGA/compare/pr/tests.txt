@@ -88,6 +88,7 @@ expect: exit 0
 # man: -h header text
 x
 -- case
+host: touch -d '2020-01-02 03:04:05' t.in
 step: pr -h HEAD t.in
 expect: exit 0
 
@@ -469,6 +470,7 @@ line3
 line4
 line5
 -- case
+time: 437000000
 step: pr
 stdin: t.in
 expect: exit 0
