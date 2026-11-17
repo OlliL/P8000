@@ -45,6 +45,9 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 
 ## Log
 
+- 2026-11-17: libm.a, slibm.a from source (System III, v1; fputil.s PLZ/ASM from the original by s2as.py, which now writes
+  fsetmode and fldctl with a pair), not identical: fputil.o exact, the 15 C members open for the compiler (floating compare
+  without rounding, EPU temporaries; `compare/libm/findings.json`, `OLDCC_LOG.md`); WEGA's exp.c, jn.c, pow.c; archives in OPEN.
 - 2026-11-18: libsetup.py (tried on liby, libtermlib, libmp: every member has a source), HOWTO "Libraries", nightly.sh lib:.
 - 2026-11-17: liby.a, sliby.a byte-identical (System III sources, v1; WEGA's main.c returns yyparse()). libsetup.py: one
   source tree after the other, by name then by content (it took 4.4BSD's main.c before System III's libmai.c); the padding

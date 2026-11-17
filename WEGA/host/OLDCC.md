@@ -621,6 +621,21 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | kernel | tt0.c | vk |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | kernel | lock.c | vk |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | kernel | tty.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
+| libm.a, slibm.a | asin.o (asin.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | atan.o (atan.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | fmod.o (fmod.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | gamma.o (gamma.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | hypot.o (hypot.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | jn.o (jn.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | j0.o (j0.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | j1.o (j1.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | pow.o (pow.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | log.o (log.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | sin.o (sin.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | tan.o (tan.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | tanh.o (tanh.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | sinh.o (sinh.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| libm.a, slibm.a | exp.o (exp.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
 
 ## 5 Open questions
 

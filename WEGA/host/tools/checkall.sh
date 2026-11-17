@@ -50,8 +50,8 @@ stamp() {
 	LAST=$n
 }
 
-# not byte-identical yet: reported, not counted (none now)
-OPEN=''
+# not byte-identical yet: reported, not counted (libm: compare/libm/findings.json)
+OPEN='lib/libm.a lib/slibm.a'
 
 # the snapshot, made once: the files known to git (or the tree of the git commit CHECK_PATCH), the patch CHECK_PATCH applied
 snapshot() {

@@ -962,6 +962,7 @@ means it does something fixed instead (only possible where the original's result
 
 | Program | Bug or quirk | Rebuild | Details |
 |---------|--------------|---------|---------|
+| `/lib/libm.a`, `/lib/slibm.a` (`exp`) | WEGA set `maxf` to 709 (System III: 10000): `exp(x)` for 709 < x <= 709.78 sets ERANGE and returns HUGE although the result is representable | kept | "libm.a, slibm.a" |
 | `/bin/cas` (`jdeps`) | for a forward jump a jpr that stands exactly at the label counts as growth of the distance (`>=`), so a jump at distance 256 whose target is a long jpr becomes long; the old cas has `>` | kept (`host/cas`), `OLD_CAS` for the old one | `OLDCC.md`, D17 |
 | `/bin/cas` | with many undecided jpr/callr entries (about 250 jprs that jump to one label) `optim` runs out of memory: `jump optimization: Not enough core` (`newrec`, `ssgbrk`); the old cas stops at 255 entries before it | not reproduced: the host takes the records from `malloc` and has no limit; the sources of the corpus stay below it (`old_max.s` only for the old cas) | `compare/cas/progcfg.py` |
 | `/bin/cas` against its manual | manual 3.4.5 says `.=` and a difference of labels force jump optimization before the end of pass 1; the shipped cas does neither (nor does the ZEUS cas): an old text | kept | `OLDCC.md`, D17 |
@@ -1821,6 +1822,19 @@ members are the same with v1, v1q, v1r and the shipped cc). `yyerror.c` unchange
 `return(yyparse());` (the original reserves the 2-byte return slot, `dec r15,#2`; System III's `yyparse();` gives none). The
 4.4BSD `main.c` (`exit(yyparse())` with a sccsid string) is not the base. Archives: `arhdr_liby.s`, `arhdr_sliby.s` with the
 padding byte of the odd last member `Library.SC` (103 bytes; `%79` and `%28`, what was in ar's buffer), the `mkar.sh` of libc.
+
+### libm.a, slibm.a
+
+From System III `usr/src/lib/libm` (15 C members; the two `Library.SC` byte-equal, 01/18/83 and jn.c 2.1 of 01/19/83), one
+source for both libraries, compiler v1 (`ccv1 -O`, `sccv1 -O`). `fputil.s` (frexp, ldexp, modf, initfp, floor, ceil, fabs,
+sqrt) has no source in System III or BSD: written by `host/tools/s2as.py` from the original members (`fputil.s`,
+`sfputil.s`, module `fputil`), byte-identical with `as -f`. WEGA changed `exp.c` (`maxf` 709), `jn.c` (`sign`: jn of a
+negative x), `pow.c` (only the form `(l & 1) != 0`): `compare/libm/SYSIII.md`. The C members are not yet identical: v1 rounds
+the left operand of a floating compare, and the original keeps EPU intermediates in frame temporaries
+(`compare/libm/findings.json`, `OLDCC_LOG.md` 2026-11-17); both archives are in OPEN of `checkall.sh`.
+EPU control instructions of `as -f` not in `epu_data.py` (measured): `fsetmode rn|rz|rp|rm` = `%8E04,%C640+2*mode`;
+`fldctl CTL,rrN` = `%8F<c>8,%C<N>01`, `fldctl rrN,CTL` = `%8F<c>0,%C<N>01` (c: scon 0, fflags 4, user 5; memory form
+`fldctl @r15,fflags` = `%0FFC,%C401`); `s2as.py` writes them.
 
 ### libc.a and slibc.a: one tree (since 2026-11-15)
 

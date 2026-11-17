@@ -16,6 +16,11 @@ import sdis  # noqa: E402
 import epu  # noqa: E402
 
 CC = {"eq": "z", "ne": "nz"}
+# fsetmode (not in the generated epu_data): measured with as -f, %8E04 and %C640 + 2 * mode
+FSETMODE = {0xC640: "rn", 0xC642: "rz", 0xC644: "rp", 0xC646: "rm"}
+# fldctl between a control register and a pair, %8F<c><8: to the pair>,%C<rr>01 (measured: scon 0, fflags 4, user 5;
+# the others in the order of the names in /bin/as)
+CTL = ["scon", "pc1", "pc2", "traps", "fflags", "user", "fop1", "fop2"]
 
 
 SEG = False
@@ -23,6 +28,12 @@ SEG = False
 
 def conv_line(line):
     m = re.match(r"\t\.word\t%([0-9A-F]{4}),%([0-9A-F]{4})\t// EPU", line)
+    if m and m.group(1) == "8E04" and int(m.group(2), 16) in FSETMODE:
+        return "\tfsetmode\t" + FSETMODE[int(m.group(2), 16)]
+    if m and (int(m.group(1), 16) & 0xFF87) == 0x8F00 and (int(m.group(2), 16) & 0xF0FF) == 0xC001:
+        w1, w2 = int(m.group(1), 16), int(m.group(2), 16)
+        c, r = CTL[(w1 >> 4) & 7], "rr%d" % ((w2 >> 8) & 15)
+        return "\tfldctl\t" + (c + "," + r if w1 & 8 else r + "," + c)
     if m:
         t = epu.decode(int(m.group(1), 16), int(m.group(2), 16), SEG)
         if t is None:
