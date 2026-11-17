@@ -56,6 +56,7 @@ step: NAME -x t.in        a run (first word NAME: the program under test; anothe
 stdin: FILE               the standard input of the step before
 env: N=V                  environment of the step before
 host: mkdir -p a/b        a host shell line before the next step (preparation)
+time: 437000000           the guest clock stands at these seconds since 1970 (dates in output: headers, ls -l)
 expect: exit 0            | output contains 'TEXT' | output is 'TEXT' | file PATH contains 'TEXT' | missing PATH
 ```
 
@@ -66,7 +67,8 @@ Without a `step:` the default step `NAME t.in` runs. `\ooo` in a file line is th
 
 1. Write corpus.py and tests.txt: one case per statement of the man page and per message, option, exit status of the
    source, each with its `# man:` or `# src:` line; also no arguments, missing file, empty file, standard input, several
-   files. No case whose result depends on the time, the directory order of the host or process ids.
+   files. A case whose output has the current time gets `time:`; no case that depends on the directory order of the host or on
+   process ids.
 2. The original alone, to check the expectations: `cd $W && python3 host/recon/corpusrun.py --show NAME 2>&1 | tail -40`
    (filter with `grep`, it prints every case). The original is always right: correct a failing expectation; where the
    original contradicts the man page or is a bug, that is a QUIRK (never change the program).

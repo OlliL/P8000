@@ -43,7 +43,8 @@ def sccs(path):
         t = m.group(1).decode('latin-1')
         f = t.split()
         if f and not f[0].startswith('crt0'):
-            out.append(' '.join(f[:3]))
+            lib = any(glob.glob(os.path.join(W, 'src', 'lib', d, '**', f[0]), recursive=True) for d in ('libc', 'oldlibc'))
+            out.append(' '.join(f[:3]) + (' (libc)' if lib else ''))
     return out
 
 

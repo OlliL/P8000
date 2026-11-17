@@ -1,0 +1,569 @@
+# pr: man = pr.1, src = src/cmd/pr.c. Cases use -t (no header: the date is not reproducible) except one with touch -d.
+== plain
+# man: default one column
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t t.in
+expect: output contains 'line3'
+
+== columns3
+# man: -k k columns
+line1
+line2
+line3
+line4
+line5
+line6
+line7
+-- case
+step: pr -t -3 t.in
+expect: exit 0
+
+== columns2a
+# man: -a multi column across
+line1
+line2
+line3
+line4
+line5
+line6
+line7
+-- case
+step: pr -t -a -3 t.in
+expect: exit 0
+
+== double
+# man: -d double space
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t -d t.in
+expect: exit 0
+
+== expand
+# man: -e expand tabs
+a\tb\tc
+-- case
+step: pr -t -e t.in
+expect: exit 0
+
+== expandk
+# man: -eck char c as tab, k=3
+xaybyc
+-- case
+step: pr -t -ey3 t.in
+expect: exit 0
+
+== insert
+# man: -i insert tabs
+a       b          c
+-- case
+step: pr -t -i t.in
+expect: exit 0
+
+== insertc
+# man: -ick
+a       b          c
+-- case
+step: pr -t -ix4 t.in
+expect: exit 0
+
+== formfeed
+# man: -f formfeed
+line1
+line2
+line3
+-- case
+step: pr -f -t t.in
+expect: exit 0
+
+== head
+# man: -h header text
+x
+-- case
+step: pr -h HEAD t.in
+expect: exit 0
+
+== headnoarg
+# src: -h without argument
+x
+-- case
+step: pr -t -h
+expect: exit 1
+expect: output contains 'empty file'
+
+== startpage
+# man: +k start page
+line1
+line2
+line3
+line4
+line5
+line6
+line7
+line8
+line9
+line10
+line11
+line12
+line13
+line14
+line15
+line16
+line17
+line18
+line19
+line20
+line21
+line22
+line23
+line24
+line25
+line26
+line27
+line28
+line29
+line30
+line31
+line32
+line33
+line34
+line35
+line36
+line37
+line38
+line39
+line40
+line41
+line42
+line43
+line44
+line45
+line46
+line47
+line48
+line49
+line50
+line51
+line52
+line53
+line54
+line55
+line56
+line57
+line58
+line59
+line60
+line61
+line62
+line63
+line64
+line65
+line66
+line67
+line68
+line69
+line70
+line71
+line72
+line73
+line74
+line75
+line76
+line77
+line78
+line79
+line80
+line81
+line82
+line83
+line84
+line85
+line86
+line87
+line88
+line89
+line90
+line91
+line92
+line93
+line94
+line95
+line96
+line97
+line98
+line99
+line100
+line101
+line102
+line103
+line104
+line105
+line106
+line107
+line108
+line109
+line110
+line111
+line112
+line113
+line114
+line115
+line116
+line117
+line118
+line119
+line120
+line121
+line122
+line123
+line124
+line125
+line126
+line127
+line128
+line129
+line130
+-- case
+step: pr -t -l10 +3 t.in
+expect: exit 0
+
+== startpage0
+# src: +0 treated as 1
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t +0 t.in
+expect: exit 0
+
+== length
+# man: -lk page length
+line1
+line2
+line3
+line4
+line5
+line6
+line7
+line8
+line9
+line10
+line11
+line12
+-- case
+step: pr -l5 t.in -t
+expect: exit 0
+
+== lengthsmall
+# src: length <= margin: margin 0
+line1
+line2
+line3
+line4
+line5
+line6
+line7
+line8
+-- case
+step: pr -l3 t.in
+expect: exit 0
+
+== merge
+# man: -m merges files, one column each
+a1
+a2
+a3
+-- f2
+b1
+b2
+-- case
+step: pr -t -m t.in f2
+expect: exit 0
+== mergemissing
+# src: -m with a missing file
+a1
+-- case
+step: pr -t -m t.in nofile
+expect: exit 1
+== mergeempty
+# src: -m with an empty file is allowed
+a1
+-- f2
+-- case
+step: pr -t -m t.in f2
+expect: exit 0
+== number
+# man: -n numbering
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t -n t.in
+expect: exit 0
+
+== numberk
+# man: -nck: width 3, separator :
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t -n:3 t.in
+expect: exit 0
+
+== numbercols
+# man: numbering with columns
+line1
+line2
+line3
+line4
+line5
+line6
+-- case
+step: pr -t -2 -n t.in
+expect: exit 0
+
+== offset
+# man: -ok offset
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t -o5 t.in
+expect: exit 0
+
+== pause
+# man: -p pause only on terminal; not a tty here
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t -p t.in
+expect: exit 0
+
+== report
+# man: -r no error message for unopenable files
+-- case
+step: pr -t -r nofile t.in
+expect: exit 1
+
+== noreport
+# src: can't open message
+x
+-- case
+step: pr -t nofile t.in
+expect: output contains "can't open nofile"
+expect: exit 1
+
+== sep
+# man: -sc column separator
+line1
+line2
+line3
+line4
+line5
+line6
+-- case
+step: pr -t -2 -s: t.in
+expect: exit 0
+
+== septab
+# man: -s default tab
+line1
+line2
+line3
+line4
+line5
+line6
+-- case
+step: pr -t -2 -s t.in
+expect: exit 0
+
+== width
+# man: -wk line width
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyz
+-- case
+step: pr -t -2 -w20 t.in
+expect: exit 0
+
+== widthsmall
+# src: width too small
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t -5 -w3 t.in
+expect: output contains 'width too small'
+expect: exit 1
+
+== truncate
+# man: lines truncated in columns
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+-- case
+step: pr -t -2 t.in
+expect: exit 0
+
+== empty
+# src: empty file diagnostic
+-- case
+step: pr -t t.in
+expect: output contains 'empty file'
+expect: exit 1
+
+== stdin
+# man: default stdin
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t
+stdin: t.in
+expect: output contains 'line5'
+
+== stdindash
+# src: option - alone is a file-less arg
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t -
+stdin: t.in
+expect: exit 0
+
+== noargs
+# src: no args, no stdin file
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr
+stdin: t.in
+expect: exit 0
+
+== several
+# man: several files
+a
+-- case
+step: pr -t t.in t.in
+expect: exit 0
+
+== nopages
+# src: header page 1 without -t; mtime fixed by touch
+line1
+line2
+line3
+line4
+line5
+-- case
+host: touch -d '2020-01-02 03:04:05' t.in
+step: pr -h H t.in
+expect: exit 0
+
+== noopen
+# src: only missing file
+-- case
+step: pr -t nofile
+expect: exit 1
+
+== ignored
+# src: -b -q -j -x ignored options
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t -b -q -j -x t.in
+expect: exit 0
+
+== badopt
+# src: unknown option
+line1
+line2
+line3
+line4
+line5
+-- case
+step: pr -t -Z t.in
+expect: exit 1
+expect: output contains 'bad option'
+
+== example1
+# man: example -3dh
+line1
+line2
+line3
+line4
+line5
+line6
+line7
+line8
+line9
+-- case
+step: pr -t -3d -h Dateiliste t.in
+expect: exit 0
+
+== example2
+# man: example -e9 -t
+a\tb\tc
+-- case
+step: pr -e9 -t
+stdin: t.in
+expect: exit 0
+
+== backspace
+# src: backspace and CR handling
+ab\bc\rd
+-- case
+step: pr -t t.in
+expect: exit 0
+
+== longlines
+# src: long lines unlimited in one column
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+-- case
+step: pr -t t.in
+expect: exit 0
+
+
+== stdin-header
+# man: without -t a header of five lines (with the date) and a trailer; the standard input has the current time and no name
+a
+b
+-- case
+time: 437000000
+step: pr -l15
+stdin: t.in

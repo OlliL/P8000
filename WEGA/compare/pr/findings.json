@@ -1,0 +1,226 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/pr",
+ "functions": {
+  "f0000": {
+   "file": "",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "open",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0042": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0042",
+   "size_orig": 104,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ]
+  },
+  "f00aa": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x00aa",
+   "size_orig": 84,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0562"
+   ]
+  },
+  "f00fe": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x00fe",
+   "size_orig": 28,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0d5c"
+   ]
+  },
+  "f011a": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x011a",
+   "size_orig": 162,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "f01bc": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x01bc",
+   "size_orig": 866,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x011a"
+   ]
+  },
+  "f051e": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x051e",
+   "size_orig": 68,
+   "status": "open",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0562": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0562",
+   "size_orig": 398,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x011a"
+   ]
+  },
+  "f06f0": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x06f0",
+   "size_orig": 402,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0562"
+   ]
+  },
+  "f0882": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0882",
+   "size_orig": 318,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0562"
+   ]
+  },
+  "f09c0": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x09c0",
+   "size_orig": 148,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0882"
+   ]
+  },
+  "f0a54": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0a54",
+   "size_orig": 322,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0562",
+    "0x06f0"
+   ]
+  },
+  "f0b96": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0b96",
+   "size_orig": 244,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x06f0"
+   ]
+  },
+  "f0c8a": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0c8a",
+   "size_orig": 160,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0562",
+    "0x06f0",
+    "0x0b96"
+   ]
+  },
+  "f0d2a": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0d2a",
+   "size_orig": 50,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ]
+  },
+  "f0d5c": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0d5c",
+   "size_orig": 316,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x011a",
+    "0x0562"
+   ]
+  },
+  "f0e98": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0e98",
+   "size_orig": 32,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x01bc",
+    "0x0d5c"
+   ]
+  },
+  "f0eb8": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0eb8",
+   "size_orig": 76,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x011a",
+    "0x01bc",
+    "0x0882",
+    "0x0e98"
+   ]
+  },
+  "f0f04": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0f04",
+   "size_orig": 14,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0f12": {
+   "file": "src/cmd/pr.c",
+   "orig": "0x0f12",
+   "size_orig": 102,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x011a",
+    "0x0eb8"
+   ]
+  }
+ }
+}

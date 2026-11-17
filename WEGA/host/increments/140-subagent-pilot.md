@@ -50,6 +50,14 @@ of a session only).
 | 4, 6, 7 | recon-match, sonnet | 47k | 5.0k | 442k | 47k | 12 | 45 s | IDENTICAL after 2 attempts (SCCS string, order of two unions) |
 | 9 | recon-corpus, sonnet | 46k | 4.7k | 421k | 25k | 12 | 42 s | 19 cases, all equal; 2 quirks |
 
+Second run, bin/pr (shipped cc, /lib/libc.a; real agent types with the self-contained definitions, setup by setup.py):
+
+| Step | Done by | subagent_tokens (notification) | Output | Cache read | Cache written | Tool calls | Time | Result |
+|---|---|---|---|---|---|---|---|---|
+| 1 | setup.py | 0 | - | - | - | - | seconds | ok, libc.a without a gap |
+| 2 | recon-match, sonnet | 11k | 1.5k | 27k | 11k | 3 | 16 s | IDENTICAL after 1 attempt (SCCS line) |
+| 4 | recon-corpus, sonnet | 20k | 4.7k | 92k | 16k | 6 | 38 s | 43 cases, all equal; 1 case by the main session (`time:`) |
+
 The main session: choice of compiler and library, the Makefile hook, the objects row (ccv0 against cc on sum.c: D2, D12,
 D18), the quirks, checkall. Its tokens are not separable from the rest of the session (not measured).
 
@@ -63,12 +71,17 @@ D18), the quirks, checkall. Its tokens are not separable from the rest of the se
   repository documents to read).
 - 2026-11-17 (owner): the revised definitions (recon-match, recon-corpus, self-contained; setup by setup.py) agreed.
 - 2026-11-17 (owner): a second, larger run after the checkall of sum: `bin/ls` (02/83, D1 slots: v1 time, 539 lines of System III).
+- 2026-11-18 (owner): `bin/pr` instead of `bin/ls`: ls needs libc members that no libc-vN has yet (setup.py: libc-v4 covers
+  2780 of 5382 bytes); that is library work (150). pr: shipped cc, `/lib/libc.a` without a gap.
 
 ## Not part of it
 
 The other programs: 150, 160.
 
 ## Log
+
+- 2026-11-18: pr by setup.py and the agents: IDENTICAL, corpus 44 of 44; whichlibc.py and setup.py tried the shipped libc
+  at a path gone since 100 (afa3f9b7).
 
 - 2026-11-17: checkall ALL OK on 50d4434d (sum in the install tree and its corpus; host cparse fixed: dimtab[-1] is lregvar,
   the corpus input ex/printf.c failed on c1b7ea71 already).
