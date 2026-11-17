@@ -10,9 +10,11 @@ CC = cc
 PREFIX = /
 FILES = tab2631 tab2631-e tab300 tab300-12 tab300s tab300s-12 tab37 tab382 tab4000A tab450 tab450-12 tab832 taba1 tablp tabtn300 tabX
 
-all: $(FILES)
+all: tables
 
-$(FILES): maketerms.c terms.hd tab2631.c tab2631-c.c tab2631-e.c tab300.c tab300-12.c tab300s.c tab300s-12.c tab37.c tab382.c tab4000A.c \
+# one rule for all the files, made by one run of maketerms (a rule with several targets would run its commands once for each of them under make -j);
+# tables is the stamp
+tables: maketerms.c terms.hd tab2631.c tab2631-c.c tab2631-e.c tab300.c tab300-12.c tab300s.c tab300s-12.c tab37.c tab382.c tab4000A.c \
 	tab450.c tab450-12.c tab832.c taba1.c tablp.c tabtn300.c tabX.c
 	$(CC) -DPART1 -o maketerms maketerms.c
 	$(RUN) ./maketerms
@@ -21,6 +23,7 @@ $(FILES): maketerms.c terms.hd tab2631.c tab2631-c.c tab2631-e.c tab300.c tab300
 	$(CC) -DPART3 -o maketerms maketerms.c
 	$(RUN) ./maketerms
 	rm -f maketerms
+	touch tables
 
 install: all
 	mkdir -p $(PREFIX)/usr/lib/term
@@ -32,6 +35,6 @@ install: all
 	cp tab630wp-12 $(PREFIX)/usr/lib/term/tab630wp-12 ; chmod 644 $(PREFIX)/usr/lib/term/tab630wp-12
 
 clean:
-	rm -f maketerms $(FILES) tab2631-c
+	rm -f maketerms tables $(FILES) tab2631-c
 
 .PHONY: all install clean

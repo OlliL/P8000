@@ -4,7 +4,7 @@
 #   make install PREFIX=dir    install below dir/usr/lib
 
 PREFIX = /
-SUBDIRS = macros.d roff.d
+SUBDIRS = macros.d roff.d shells.d
 
 all:
 	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) all ; cd .. ; done

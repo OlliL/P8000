@@ -12,13 +12,13 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [bin](#bin) | 111 | 25 | 0 | 54 | 32 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 13 | 0 | 2 | 15 |
-| [usr/bin](#usr-bin) | 145 | 10 | 0 | 81 | 54 |
-| [usr/lib](#usr-lib) | 197 | 31 | 2 | 103 | 61 |
+| [usr/bin](#usr-bin) | 145 | 10 | 1 | 81 | 53 |
+| [usr/lib](#usr-lib) | 197 | 50 | 1 | 85 | 61 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 1 | 0 | 9 | 5 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 744 | 2 | 268 | 183 |
+| **all** | 1197 | 763 | 2 | 250 | 182 |
 
 <a id="root"></a>
 ## root
@@ -291,7 +291,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/bin/comb` | binary E707 | `tmp/sys3/usr/src/cmd/sccs/src/comb.c` | sys3 | D12 old, D1 slots | - |
 | `usr/bin/comm` | binary E707 | `tmp/sys3/usr/src/cmd/comm.c` | sys3 | D12 -, D1 loose | - |
 | `usr/bin/cpio` | binary E707 | `tmp/sys3/usr/src/cmd/cpio.c` | sys3 | D12 new, D1 loose | - |
-| `usr/bin/cref` | binary E707 | - | todo | D12 new, D1 loose | - |
+| `usr/bin/cref` | binary E707 | `src/cmd/cref` | partial | cc | - |
 | `usr/bin/crypt` | binary E707 | `tmp/sys3/usr/src/cmd/crypt.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/csplit` | binary E707 | `tmp/sys3/usr/src/cmd/csplit.c` | sys3 | D12 new?, D1 loose | - |
 | `usr/bin/ct` | binary E707 | `tmp/sys3/usr/src/cmd/ct.c` | sys3 | D12 old, D1 slots | - |
@@ -450,10 +450,10 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/acct/wtmpfix` | binary E707 | `tmp/sys3/usr/src/cmd/acct/wtmpfix.c` | sys3 | D12 -, D1 loose | - |
 | `usr/lib/atrun` | binary E707 | - | todo | D12 old?, D1 tight | - |
 | `usr/lib/calprog` | binary E707 | `tmp/sys3/usr/src/cmd/calprog.c` | sys3 | D12 old?, D1 tight | - |
-| `usr/lib/cref/cign` | data | `tmp/sys3/usr/lib/cref/cign` | sys3 | - | - |
+| `usr/lib/cref/cign` | data | `src/cmd/cref` | exact | cc | - |
 | `usr/lib/cref/crpost` | binary E707 | `tmp/sys3/usr/src/cmd/cref/crpost.c` | sys3 | D12 -, D1 tight | - |
-| `usr/lib/cref/ctab` | data | `tmp/sys3/usr/lib/cref/ctab` | sys3 | - | - |
-| `usr/lib/cref/eign` | text | `tmp/sys3/usr/lib/eign` | sys3 | - | - |
+| `usr/lib/cref/ctab` | data | `src/cmd/cref` | exact | cc | - |
+| `usr/lib/cref/eign` | text | `src/cmd/cref` | exact | cc | - |
 | `usr/lib/cref/upost` | binary E707 | `tmp/sys3/usr/src/cmd/cref/upost.c` | sys3 | D12 -, D1 tight | - |
 | `usr/lib/crontab` | text | `tmp/sys3/usr/lib/crontab` | sys3 | - | - |
 | `usr/lib/diff3prog` | binary E707 | `tmp/sys3/usr/src/cmd/diff3prog.c` | sys3 | D12 -, D1 tight | - |
@@ -488,22 +488,22 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/font/ftSM` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/fonts.d/ftSM.c` | sys3 | D12 -, D1 - | - |
 | `usr/lib/font/ftUD` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/fonts.d/ftUD.c` | sys3 | D12 -, D1 - | - |
 | `usr/lib/font/ftXM` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/fonts.d/ftXM.c` | sys3 | D12 -, D1 - | - |
-| `usr/lib/help/ad` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/ad` | sys3 | - | - |
-| `usr/lib/help/bd` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/bd` | sys3 | - | - |
-| `usr/lib/help/cb` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/cb` | sys3 | - | - |
-| `usr/lib/help/cm` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/cm` | sys3 | - | - |
-| `usr/lib/help/cmds` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/cmds` | sys3 | - | - |
-| `usr/lib/help/co` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/co` | sys3 | - | - |
-| `usr/lib/help/de` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/de` | sys3 | - | - |
-| `usr/lib/help/default` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/default` | sys3 | - | - |
-| `usr/lib/help/ge` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/ge` | sys3 | - | - |
-| `usr/lib/help/he` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/he` | sys3 | - | - |
-| `usr/lib/help/prs` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/prs` | sys3 | - | - |
-| `usr/lib/help/rc` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/rc` | sys3 | - | - |
-| `usr/lib/help/term` | text | `tmp/sys3/usr/src/cmd/text/shells.d/term` | sys3 | - | - |
-| `usr/lib/help/text` | text | `src/cmd/text` | partial | - | - |
-| `usr/lib/help/un` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/un` | sys3 | - | - |
-| `usr/lib/help/ut` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/ut` | sys3 | - | - |
+| `usr/lib/help/ad` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/bd` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/cb` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/cm` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/cmds` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/co` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/de` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/default` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/ge` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/he` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/prs` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/rc` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/term` | text | `src/cmd/text/shells.d` | exact | - | - |
+| `usr/lib/help/text` | text | `src/cmd/text` | exact | - | - |
+| `usr/lib/help/un` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/ut` | text | `src/cmd/sccs/help.d` | exact | - | - |
 | `usr/lib/lex/ncform` | text | `src/lib/libl` | exact | - | - |
 | `usr/lib/lib.b` | text | `tmp/sys3/usr/lib/lib.b` | sys3 | - | - |
 | `usr/lib/libPW.a` | archive | - | todo | - | - |

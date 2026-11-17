@@ -10,10 +10,9 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 |---|---|---|
 | C | data | 2 |
 | C | script | 33 |
-| C | text | 65 |
+| C | text | 49 |
 | G | data | 5 |
-| G | text | 3 |
-| **all** | | 108 |
+| **all** | | 89 |
 
 
 ## root
@@ -104,35 +103,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `shutacct` | script | C | 319 | `src/cmd/shutacct.sh` | offen | usr/lib/acct/shutacct image ~ |  |
 | `startup` | script | C | 272 | `src/cmd/startup.sh` | offen | usr/lib/acct/startup image ~ |  |
 | `turnacct` | script | C | 774 | `src/cmd/turnacct.sh` | offen | usr/lib/acct/turnacct image ~ |  |
-
-## usr/lib/cref
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `cign` | text | G | 5024 | `made by the build from src/cmd/cref/` | nein | usr/lib/cref/cign image ~ | mign over csym: cref/cref.mk, cref/mign.c, cref/csym - check: offen |
-| `ctab` | text | G | 768 | `made by the build from src/cmd/cref/` | nein | usr/lib/cref/ctab image ~ | mtab over ctable: cref/cref.mk, cref/mtab.c, cref/ctable - check: offen |
-| `eign` | text | G | 706 | `made by the build from src/cmd/cref/` | nein | usr/lib/eign image =<br>usr/lib/cref/eign image = | copy of esym: cref/cref.mk, cref/esym - check: offen |
-
-## usr/lib/help
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `ad` | text | C | 4188 | `src/cmd/sccs/help.d/ad` | nein | usr/lib/help/ad image ~<br>usr/src/cmd/sccs/help.d/ad source ~ |  |
-| `bd` | text | C | 1007 | `src/cmd/sccs/help.d/bd` | nein | usr/lib/help/bd image ~<br>usr/src/cmd/sccs/help.d/bd source ~ |  |
-| `cb` | text | C | 692 | `src/cmd/sccs/help.d/cb` | nein | usr/bin/cb image ~<br>usr/lib/help/cb image ~<br>usr/src/cmd/sccs/help.d/cb source ~ |  |
-| `cm` | text | C | 2009 | `src/cmd/sccs/help.d/cm` | nein | usr/lib/help/cm image ~<br>usr/src/cmd/sccs/help.d/cm source ~ |  |
-| `cmds` | text | C | 6106 | `src/cmd/sccs/help.d/cmds` | nein | usr/lib/help/cmds image ~<br>usr/src/cmd/sccs/help.d/cmds source ~ |  |
-| `co` | text | C | 3356 | `src/cmd/sccs/help.d/co` | nein | usr/lib/help/co image ~<br>usr/src/cmd/sccs/help.d/co source ~ |  |
-| `de` | text | C | 3082 | `src/cmd/sccs/help.d/de` | nein | usr/lib/help/de image ~<br>usr/src/cmd/sccs/help.d/de source ~ |  |
-| `default` | text | C | 200 | `src/cmd/sccs/help.d/default` | nein | usr/lib/help/default image ~<br>usr/src/cmd/sccs/help.d/default source ~ |  |
-| `ge` | text | C | 2043 | `src/cmd/sccs/help.d/ge` | nein | usr/lib/help/ge image ~<br>usr/src/cmd/sccs/help.d/ge source ~ |  |
-| `he` | text | C | 353 | `src/cmd/sccs/help.d/he` | nein | usr/lib/help/he image ~<br>usr/src/cmd/sccs/help.d/he source ~ |  |
-| `prs` | text | C | 517 | `src/cmd/sccs/help.d/prs` | nein | usr/bin/prs image ~<br>usr/lib/help/prs image ~<br>usr/src/cmd/sccs/help.d/prs source ~ |  |
-| `rc` | text | C | 2305 | `src/cmd/sccs/help.d/rc` | nein | etc/rc image ~<br>usr/lib/help/rc image ~<br>usr/src/cmd/sccs/help.d/rc source ~ |  |
-| `term` | text | C | 1696 | `src/cmd/text/shells.d/term` | nein | usr/lib/help/term image =<br>usr/src/cmd/text/shells.d/term source = |  |
-| `text` | text | C | 2165 | `src/cmd/text/shells.d/text` | nein | usr/lib/help/text image =<br>usr/src/cmd/text/shells.d/text source = |  |
-| `un` | text | C | 603 | `src/cmd/sccs/help.d/un` | nein | usr/lib/help/un image ~<br>usr/src/cmd/sccs/help.d/un source ~ |  |
-| `ut` | text | C | 1949 | `src/cmd/sccs/help.d/ut` | nein | usr/lib/help/ut image ~<br>usr/src/cmd/sccs/help.d/ut source ~ |  |
 
 ## usr/lib/me
 
