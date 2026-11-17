@@ -121,6 +121,7 @@ void sinit(void);
 void sheader(void);
 void putrefsyms(void);
 void putsym(struct symtab *p);
+int origword(int a);
 void putnames(void);
 void puttags(void);
 void putrefs(void);

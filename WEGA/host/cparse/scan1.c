@@ -235,14 +235,11 @@ void sfinit(void)
 	if( ferror( sfile ) ) syserr( spath );
 	}
 
-static struct symtab before_dimtab;
-
 void dimtinit(void)
 { /* dimension table initialization */
 
-	/* dimtab[-1]: putsym reads it for a structure tag without members; in the original it points to a word (symno) that holds 0x3020 */
-	dimtabx[0] = (intptr_t) &before_dimtab;
-	before_dimtab.symno = 0x3020;
+	/* dimtab[-1]: lregvar in the original; putsym models its read (origword), instk tests the index */
+	dimtabx[0] = 0;
 	dimtab[0] = 0;
 	dimtab[CHAR] = SZCHAR;
 	dimtab[INT] = SZINT;

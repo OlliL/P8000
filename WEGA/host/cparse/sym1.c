@@ -767,6 +767,13 @@ void putsym(struct symtab *p)
 	else if( x.s_class == STNAME ){
 		i = dimtab[p->sizoff+1];
 		x.s_tag = ntaglist;
+		if( i == -1 ){
+			/* a structure that is never defined: the original reads dimtab[-1], the word in front of the table, which
+			   is lregvar (the bss order of xdefs1.c), takes it for a symbol and writes its symno, the word at data
+			   address lregvar+24: a piece of the SCCS line at the start of the data (KNOWLEDGE.md, quirks) */
+			if( lregvar ) taglist[ntaglist++] = origword( lregvar + 24 );
+			i = 0;
+			}
 		while( dimtab[i] ) taglist[ntaglist++] = ((struct symtab *) dimtab[i++])->symno;
 		taglist[ntaglist++] = dimtab[i];
 		}
@@ -782,6 +789,14 @@ void putsym(struct symtab *p)
 	put16( sfile, x.s_tag );
 	put16( sfile, x.s_x );
 	shdr.h_syms += 22;
+	}
+
+int origword(int a)
+{ /* the word at data address a of the original /lib/cparse (and /lib/scparse): the start of its data */
+	static const unsigned char d[] = "\0\0@[$]cgram1.y\t2.5  10/06/83 12:58:30 Copr. 1981 87wega3.2.";
+
+	if( a < 0 || a + 1 >= (int) sizeof(d) ) cerror( "origword: address %d outside the start of the data", a );
+	return( (d[a] << 8) | d[a+1] );
 	}
 
 void putnames(void)

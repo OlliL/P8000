@@ -161,7 +161,7 @@ extern struct symtab *hashtab[];
 extern struct symtab *curftn;
 extern int curclass;
 extern int curdim;
-/* dimtab has one element in front of it: putsym reads dimtab[-1] for a structure tag without members (the original finds a zero there) */
+/* dimtab has one element in front of it: the original reads dimtab[-1] (lregvar) for a structure tag without members (putsym: origword) */
 extern OFFSZ dimtabx[];
 # define dimtab (dimtabx + 1)
 extern intptr_t paramstk[];	/* WEGA: int (PCC OFFSZ) */
