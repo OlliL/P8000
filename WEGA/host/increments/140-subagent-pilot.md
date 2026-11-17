@@ -61,6 +61,7 @@ D18), the quirks, checkall. Its tokens are not separable from the rest of the se
 - 2026-11-17 (owner): the setup is a script, `host/recon/setup.py` (no model), step 1 of the HOWTO; the agent recon-setup is
   removed. The prompt of an agent gives every known value (no looking up). The definitions are self-contained (no
   repository documents to read).
+- 2026-11-17 (owner): the revised definitions (recon-match, recon-corpus, self-contained; setup by setup.py) agreed.
 - 2026-11-17 (owner): a second, larger run after the checkall of sum: `bin/ls` (02/83, D1 slots: v1 time, 539 lines of System III).
 
 ## Not part of it
