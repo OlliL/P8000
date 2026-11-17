@@ -1,0 +1,17 @@
+		Cursor Movement
+		_______________
+
+f or w			forward (to the right) one word
+b			backward (to the left) one word
+j or down arrow		down
+k or up arrow		up
+
+
+		Commands
+		________
+
+l or right arrow	display the news item
+
+:q			quit
+
+?<CR>			display help file

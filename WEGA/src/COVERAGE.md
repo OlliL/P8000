@@ -13,12 +13,12 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 14 | 0 | 2 | 14 |
 | [usr/bin](#usr-bin) | 145 | 10 | 8 | 77 | 50 |
-| [usr/lib](#usr-lib) | 197 | 85 | 2 | 72 | 38 |
+| [usr/lib](#usr-lib) | 197 | 105 | 2 | 57 | 33 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 814 | 15 | 222 | 146 |
+| **all** | 1197 | 834 | 15 | 207 | 141 |
 
 <a id="root"></a>
 ## root
@@ -430,23 +430,23 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/acct/acctprc1` | binary E707 | `tmp/sys3/usr/src/cmd/acct/acctprc1.c` | sys3 | D12 old?, D1 loose | - |
 | `usr/lib/acct/acctprc2` | binary E707 | `tmp/sys3/usr/src/cmd/acct/acctprc2.c` | sys3 | D12 -, D1 slots | - |
 | `usr/lib/acct/acctwtmp` | binary E707 | `tmp/sys3/usr/src/cmd/acct/acctwtmp.c` | sys3 | D12 -, D1 slots | - |
-| `usr/lib/acct/chargefee` | text | `tmp/sys3/usr/lib/acct/chargefee` | sys3 | - | - |
-| `usr/lib/acct/ckpacct` | text | `tmp/sys3/usr/lib/acct/ckpacct` | sys3 | - | - |
-| `usr/lib/acct/dodisk` | text | `tmp/sys3/usr/lib/acct/dodisk` | sys3 | - | - |
+| `usr/lib/acct/chargefee` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/ckpacct` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/dodisk` | text | `src/?` | exact | - | - |
 | `usr/lib/acct/fwtmp` | binary E707 | `tmp/sys3/usr/src/cmd/acct/fwtmp.c` | sys3 | D12 -, D1 loose | - |
 | `usr/lib/acct/holidays` | text | `src/cmd/acct` | exact | - | - |
-| `usr/lib/acct/lastlogin` | text | `tmp/sys3/usr/lib/acct/lastlogin` | sys3 | - | - |
-| `usr/lib/acct/monacct` | text | `tmp/sys3/usr/lib/acct/monacct` | sys3 | - | - |
-| `usr/lib/acct/nulladm` | text | `tmp/sys3/usr/lib/acct/nulladm` | sys3 | - | - |
-| `usr/lib/acct/prctmp` | text | `tmp/sys3/usr/lib/acct/prctmp` | sys3 | - | - |
-| `usr/lib/acct/prdaily` | text | `tmp/sys3/usr/lib/acct/prdaily` | sys3 | - | - |
-| `usr/lib/acct/prtacct` | text | `tmp/sys3/usr/lib/acct/prtacct` | sys3 | - | - |
-| `usr/lib/acct/remove` | text | `tmp/sys3/usr/lib/acct/remove` | sys3 | - | - |
-| `usr/lib/acct/runacct` | text | `tmp/sys3/usr/lib/acct/runacct` | sys3 | - | - |
-| `usr/lib/acct/sdisk` | text | `tmp/sys3/usr/lib/acct/sdisk` | sys3 | - | - |
-| `usr/lib/acct/shutacct` | text | `tmp/sys3/usr/lib/acct/shutacct` | sys3 | - | - |
-| `usr/lib/acct/startup` | text | `tmp/sys3/usr/lib/acct/startup` | sys3 | - | - |
-| `usr/lib/acct/turnacct` | text | `tmp/sys3/usr/lib/acct/turnacct` | sys3 | - | - |
+| `usr/lib/acct/lastlogin` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/monacct` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/nulladm` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/prctmp` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/prdaily` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/prtacct` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/remove` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/runacct` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/sdisk` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/shutacct` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/startup` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/turnacct` | text | `src/?` | exact | - | - |
 | `usr/lib/acct/wtmpfix` | binary E707 | `tmp/sys3/usr/src/cmd/acct/wtmpfix.c` | sys3 | D12 -, D1 loose | - |
 | `usr/lib/atrun` | binary E707 | - | todo | D12 old?, D1 tight | - |
 | `usr/lib/calprog` | binary E707 | `tmp/sys3/usr/src/cmd/calprog.c` | sys3 | D12 old?, D1 tight | - |
@@ -549,11 +549,11 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/plzcg2d` | binary E705 | - | todo | D12 old, D1 - | - |
 | `usr/lib/plzcg3` | binary E705 | - | todo | D12 -, D1 tight | - |
 | `usr/lib/plzcg3d` | binary E705 | - | todo | D12 old, D1 - | - |
-| `usr/lib/problems/scrb_date` | data | - | todo | - | - |
-| `usr/lib/problems/seqno` | text | - | todo | - | - |
-| `usr/lib/problems/strfile` | data | - | todo | - | - |
-| `usr/lib/screen/vlshelp` | text | - | todo | - | - |
-| `usr/lib/screen/vnewshelp` | text | - | todo | - | - |
+| `usr/lib/problems/scrb_date` | data | `src/cmd/problems` | exact | - | - |
+| `usr/lib/problems/seqno` | text | `src/cmd/problems` | exact | - | - |
+| `usr/lib/problems/strfile` | data | `src/cmd/problems` | exact | - | - |
+| `usr/lib/screen/vlshelp` | text | `src/cmd/screen` | exact | - | - |
+| `usr/lib/screen/vnewshelp` | text | `src/cmd/screen` | exact | - | - |
 | `usr/lib/slibPW.a` | archive | - | todo | - | - |
 | `usr/lib/slibcisam.a` | archive | - | todo | - | - |
 | `usr/lib/slibcurses.a` | archive | - | todo | - | - |

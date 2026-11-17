@@ -1,0 +1,21 @@
+		Cursor Movement
+		_______________
+
+f or w			forward (to the right) one word
+b			backward (to the left) one word
+j or down arrow		down
+k or up arrow		up
+
+
+		Commands
+		________
+
+l or right arrow	list and change to "cursored" directory
+h or left arrow		list and change to directory "../"
+
+L			give "long" format listing
+
+:n			list the next item(s) given on the command line
+:q			quit
+
+?<CR>			display help file

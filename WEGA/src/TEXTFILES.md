@@ -8,9 +8,8 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 
 | Rule | Art | files |
 |---|---|---|
-| C | script | 33 |
-| C | text | 5 |
-| **all** | | 38 |
+| C | script | 18 |
+| **all** | | 18 |
 
 
 ## usr/bin
@@ -35,38 +34,3 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `spell` | script | C | 621 | `src/cmd/spell.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/spell image ~ |  |
 | `strprint` | script | C | 245 | `src/cmd/strprint.sh` | ja (Vorgabe: Skript nach usr/bin) | - |  |
 | `true` | script | C | 55 | `src/cmd/true.sh` | ja (Vorgabe: Skript nach usr/bin) | bin/true image ~ |  |
-
-## usr/lib/acct
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `chargefee` | script | C | 593 | `src/cmd/chargefee.sh` | offen | usr/lib/acct/chargefee image ~ |  |
-| `ckpacct` | script | C | 705 | `src/cmd/ckpacct.sh` | offen | usr/lib/acct/ckpacct image ~ |  |
-| `dodisk` | script | C | 371 | `src/cmd/dodisk.sh` | offen | usr/lib/acct/dodisk image ~ |  |
-| `lastlogin` | script | C | 1584 | `src/cmd/lastlogin.sh` | offen | usr/lib/acct/lastlogin image ~ |  |
-| `monacct` | script | C | 996 | `src/cmd/monacct.sh` | offen | usr/lib/acct/monacct image ~ |  |
-| `nulladm` | script | C | 214 | `src/cmd/nulladm.sh` | offen | usr/lib/acct/nulladm image ~ |  |
-| `prctmp` | script | C | 287 | `src/cmd/prctmp.sh` | offen | usr/lib/acct/prctmp image ~ |  |
-| `prdaily` | script | C | 438 | `src/cmd/prdaily.sh` | offen | usr/lib/acct/prdaily image ~ |  |
-| `prtacct` | script | C | 404 | `src/cmd/prtacct.sh` | offen | usr/lib/acct/prtacct image ~ |  |
-| `remove` | script | C | 147 | `src/cmd/remove.sh` | offen | usr/lib/acct/remove image ~ |  |
-| `runacct` | script | C | 11618 | `src/cmd/runacct.sh` | offen | usr/lib/acct/runacct image ~ |  |
-| `sdisk` | script | C | 147 | `src/cmd/sdisk.sh` | offen | usr/lib/acct/sdisk image ~ |  |
-| `shutacct` | script | C | 319 | `src/cmd/shutacct.sh` | offen | usr/lib/acct/shutacct image ~ |  |
-| `startup` | script | C | 272 | `src/cmd/startup.sh` | offen | usr/lib/acct/startup image ~ |  |
-| `turnacct` | script | C | 774 | `src/cmd/turnacct.sh` | offen | usr/lib/acct/turnacct image ~ |  |
-
-## usr/lib/problems
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `scrb_date` | text | C | 0 | `src/usr/lib/problems/scrb_date` | nein | - |  |
-| `seqno` | text | C | 7 | `src/usr/lib/problems/seqno` | nein | - |  |
-| `strfile` | text | C | 0 | `src/usr/lib/problems/strfile` | nein | - |  |
-
-## usr/lib/screen
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `vlshelp` | text | C | 411 | `src/usr/lib/screen/vlshelp` | nein | - |  |
-| `vnewshelp` | text | C | 256 | `src/usr/lib/screen/vnewshelp` | nein | - |  |
