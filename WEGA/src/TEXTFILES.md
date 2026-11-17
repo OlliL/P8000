@@ -9,15 +9,9 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | Rule | Art | files |
 |---|---|---|
 | C | script | 33 |
-| C | text | 15 |
-| **all** | | 48 |
+| C | text | 5 |
+| **all** | | 38 |
 
-
-## root
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `.cshrc` | text | C | 738 | `src/.cshrc` | nein | - |  |
 
 ## usr/bin
 
@@ -42,12 +36,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `strprint` | script | C | 245 | `src/cmd/strprint.sh` | ja (Vorgabe: Skript nach usr/bin) | - |  |
 | `true` | script | C | 55 | `src/cmd/true.sh` | ja (Vorgabe: Skript nach usr/bin) | bin/true image ~ |  |
 
-## usr/lib
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `crontab` | text | C | 134 | `src/usr/lib/crontab` | nein | usr/lib/crontab image ~ |  |
-
 ## usr/lib/acct
 
 | File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
@@ -68,13 +56,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `startup` | script | C | 272 | `src/cmd/startup.sh` | offen | usr/lib/acct/startup image ~ |  |
 | `turnacct` | script | C | 774 | `src/cmd/turnacct.sh` | offen | usr/lib/acct/turnacct image ~ |  |
 
-## usr/lib/news
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `news` | text | C | 643 | `src/usr/lib/news/news` | nein | usr/bin/news image ~ |  |
-| `wega` | text | C | 375 | `src/usr/lib/news/wega` | nein | - |  |
-
 ## usr/lib/problems
 
 | File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
@@ -89,29 +70,3 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 |---|---|---|---|---|---|---|---|
 | `vlshelp` | text | C | 411 | `src/usr/lib/screen/vlshelp` | nein | - |  |
 | `vnewshelp` | text | C | 256 | `src/usr/lib/screen/vnewshelp` | nein | - |  |
-
-## usr/lib/uucp
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `SQFILE` | text | C | 7 | `src/usr/lib/uucp/SQFILE` | nein | - |  |
-
-## usr/pub
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `dmalias` | text | C | 263 | `src/usr/pub/dmalias` | nein | - |  |
-| `termlist` | text | C | 9297 | `src/usr/pub/termlist` | nein | - |  |
-
-## usr/spool/queuer
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `config` | text | C | 215 | `src/usr/spool/queuer/config` | nein | etc/config image ~ |  |
-| `logfile` | text | C | 0 | `src/usr/spool/queuer/logfile` | nein | - |  |
-
-## usr/spool/uucp
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `remotelines` | text | C | 22 | `src/usr/spool/uucp/remotelines` | nein | - |  |

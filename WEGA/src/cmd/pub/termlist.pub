@@ -1,0 +1,247 @@
+
+
+This is a list of terminals supported in /etc/termcap and /etc/termcap.others.
+
+Under the heading "Terminal" is the manufacturer and model of the terminal and
+under "Code" are the possible codes that can be specified when setting up the
+terminal environment.  To set up the terminal environment, use the following
+command:
+
+	setenv TERM code
+
+For example, for a Vtz-2/10 terminal, the possible codes are "vz", "vtz",
+"mcz-2/60" and "vtz-2/10"; therefore, any one of these codes can be used in
+the "setenv" command.
+
+In the following list, an asterisk (*) following the terminal name indicates
+that the terminal description is in /etc/termcap.others.  If this is the case,
+the termcap entry must be moved to /etc/termcap, or, the following command
+must be specified:
+
+	setenv TERMCAP /etc/termcap.others
+
+Otherwise, if no asterisk is indicated following the terminal name, the terminal
+description is in /etc/termcap.
+
+
+Terminal			Code
+--------			----
+
+Act5 (skinny)*			| mS | act5s
+Addrinfo*			| ia | addrinfo
+Addrinfo			| si
+Adds Regent 25			| cR | regent 25 | adds25
+Adds Regent 25*			| a3 | regent25
+Adds Regent 60*			| a6 | regent60 | regent200
+Adds consul 980*		| ac | a980
+Adds regent 100*		| a1 | regent100
+Adds regent 20*			| a2 | regent20
+Adds regent 40*			| a4 | regent40
+Adds regent series*		| a0 | regent
+Adds Viewpoint*			| a7 | viewpoint
+Ampex Dialogue 80*		| MA | ampex | d80 | dialogue | dialogue80
+Anderson Jacobson*		| Mc | aj830 | aj832 | aj
+Ann Arbor*			| Ma | aa | annarbor
+Ann Arbor Ambassador 48		| MB | aaadb
+	(destructive backspace)*
+Ann Arbor Ambassador/48 lines*	| Mb | aaa | ambas | ambassador
+Arpanet network*		| sa | arpanet | network
+Beehive IIIm			| bh | bh3m | beehiveIIIm
+Beehive super bee*		| bs | sb1 | superbee | superb
+Beehive super bee (fixed)*	| b2 | sb2 | sb3
+Beehive super Bee w/insert char*| bi | superbeeic
+Bill Croft homebrew*		| qB | bc
+Bussiplexer*			| sb | bussiplexer
+C. Itoh 101 w/initialization	| cs | cit | cit101 | c101 | cit-101
+C. Itoh 101 for 132-column	| cw | citw | cit101w | c101w | cit-101w
+C. Itoh 101 w/o initialization	| cn | citn | cit101n | c101n
+Carlock*			| qc | carlock | klc
+Carlock				| cc | klc | carlock
+Cdc456*				| Ca | cdc456 | cdc
+Cdc456tst			| Cc | cdc456tst
+Cdi1203*			| Mi | cdi | cdi1203
+CompucolorII*			| MC | compucolor | compucolorII
+Concept 100			| c1 | c100 | concept100
+Concept 100*			| co | c100 | concept | concept100
+Concept 100 slow*		| cs | c100s | slowconcept | slowconcept100
+Concept 100 rev slow*		| cd | c100rvs
+Concept 100 rev video*		| cr | c100rv
+Concept 100 rev video		| cr | c100rv | concept100rv
+Concept 100 rev w/o arrows*	| cn | c100rv4pna
+Concept 100 w/4 pages*		| cR | c100rv4p
+Concept 100 with 4 pages*	| c4 | c1004p
+Ct82				| c8 | swtp | ct82
+Data General 6053*		| Mg | dg | dg6053
+Datagraphix 132a*		| MD | d132 | datagraphix
+Datamedia 1520*			| D0 | dm1520 | 1520
+Datamedia 1520			| cm | dm1520
+Datamedia 1521*			| D1 | dm1521 | 1521
+Datamedia 2500*			| D2 | dm2500 | datamedia2500 | 2500
+Datamedia 2500			| c2 | dm2500
+Datamedia 3025a*		| D3 | dm3025
+Datamedia 3025a			| c3 | dm3025
+Datamedia 3045a*		| D4 | 3045 | dm3045
+Datamedia dt80/1*		| D5 | dt80 | dmdt80 | dm80
+Datamedia dt80/1 with 132 char*	| D6 | dt80132 | dmdt80132
+Datapoint 3360*			| Md | datapoint | dp3 | dp3360
+Dec gt40*			| d4 | gt40
+Dec gt40			| g0 | gt40
+Dec gt42*			| d2 | gt42
+Dec gt42			| g2 | gt42
+Dec vt100			| d1 | vt100 | vt-100 | pt100 | pt-100
+Dec vt100 132 cols*		| dt | vt100w | vt-100w | pt100w | pt-100w
+Dec vt100/132 cols 14 lines*	| ds | vt100s | vt-100s | pt100s | pt-100s
+Dec vt100 w/o initialization	| d0 | vt100n
+Dec vt132*			| d3 | vt132 | vt-132
+Dec vt50*			| d5 | vt50
+Dec vt50			| v0 | vt50
+Dec vt50h*			| dh | vt50h
+Dec vt50h			| vh | vt50h
+Dec vt52*			| dv | vt52
+Dec vt52			| v2 | vt52
+Decwriter I*			| dI | dw1
+Decwriter I			| dw | dw1
+Decwriter II*			| dw | dw2 | dw3 | dw4
+Decwriter II			| td | dw2
+Delta Data 5000*		| ED | delta | dd5000
+Diablo 1620*			| A6 | 1620 | 450
+Diablo 1640*			| A7 | 1640
+Diablo 300s			| pd | dtc300s | dtc
+Dialup*				| sd | du | dialup
+Digilog 333*			| L3 | digilog | 333
+Dtc 300s*			| Ad | dtc300s | 300 | 300s | gsi | dtc
+Ex3000*				| qb | ex3000
+Execuport 4000*			| e2 | ep40 | ep4000
+Execuport 4080*			| e1 | ep48 | ep4080
+Exidy smart*			| qs | sexidy
+Exidy sorcerer as dm2500*	| qe | exidy | exidy2500
+Fox 1100			| cf | fox
+General Terminal 100A*		| i1 | i100 | gt100 | gt100a
+Gsi*				| Gs | gsi
+Gsi or pg			| pg | gsi
+Hazeltine 1500*			| H5 | h1500
+Hazeltine 1500			| h5 | h1500
+Hazeltine 1510*			| H6 | h1510
+Hazeltine 1510			| h6 | h1510
+Hazeltine 1520*			| H8 | h1520
+Hazeltine 2000*			| H7 | h2000
+Hazeltine 2000			| h7 | h2000
+Hazeltine Esprit I*		| H9 | esprit | hazeltine esprit
+Heathkit h19			| kb | h19 | heath | h19b | heathkit
+Heathkit w/keypad shifted	| kB | h19bs
+Heathkit w/keypad shifted	| kU | h19us
+	and underscore cursor
+Heathkit with underscore cursor	| ku | h19u
+Hewlett-Packard 2621*		| h2 | 2621 | hp2621 | hp2621a | hp2621p
+				| 2621a | 2621p
+Hewlett-Packard 2621 with	| h3 | 2621k45 | hp2621k45 | k45
+	45 keyboard*
+Hewlett-Packard 2621 w/labels*	| hw | 2621wl | hp2621wl | 2621
+Hewlett-Packard 2621 w/o labels*| hn | 2621nl | hp2621nl | 2621
+Hewlett-Packard 2626*		| h6 | hp2626 | hp2626a | hp2626p | 2626 | 2626p
+				| 2626a
+Hewlett-Packard 2640a*		| ha | 2640 | hp2640a | 2640a
+Hewlett-Packard 2645		| cH | 2645 | hp2645
+Hewlett-Packard 2648a		| h8 | hp2648 | hp2648a | 2648a | 2648
+	graphics terminal*
+Hewlett-Packard 264x series*	| h4 | hp | hp2645 | 2645 | hp2640b | 2640b
+Hewlett-Packard 48 line 2621*	| hb | big2621
+IBM 3101-10*			| I9 | ibm | ibm3101 | 3101 | i3101
+ISC 8001*			| I8 | 8001 | ISC8001
+ISC modified owl 1200*		| It | intext
+Infoton 100			| cl | i100
+Infoton 200			| i2 | i200
+Infoton 400			| i4 | i400 | 400
+InfotonKAS			| ci | InfotonKAS
+InfotonKAS*			| ik | infotonKAS
+Lear Siegler adm3		| cl | adm3 | 3
+Lear Siegler adm3*		| l3 | adm3 | 3
+Lear Siegler adm31		| C1 | adm31 | 31
+Lear Siegler adm31*		| l1 | adm31 | 31
+Lear Siegler adm3a		| ca | adm3a | 3a
+Lear Siegler adm3a*		| la | adm3a | 3a
+Lear Siegler adm3b		| cb | adm3b | 3b
+Lear Siegler adm42*		| l4 | adm42 | 42
+Mcz vdb				| mz | mcz
+Mcz vdb*			| mz | mcz
+Micro bee series*		| bm | microb | microbee
+Microterm			| c4 | act4 | microterm
+Microterm Mime2a (emulating	| ms | mime2as
+	enhanced soroc iq120)*
+Microterm Mime2a (emulating	| mv | mime2a | mime2av
+	enhanced vt52)*
+Microterm act iv*		| m4 | microterm | act4
+Microterm act v*		| m5 | microterm5 | act5
+Microterm mime1*		| mm | mime | mime1 | mime2 | mimei | mimeii
+Microterm5			| c5 | act5 | microterm5
+Mime1				| c6 | mime | mime1 | mimei | mimeii
+Mime1 emulating 3a*		| m3 | mime3a
+Mime1 emulating enhanced 3a*	| mx | mime3ax
+Mime1 (half bright)*		| mh | mimehb
+Model 33 teletype*		| T3 | 33 | tty33 | tty
+Model 37 teletype*		| T7 | 37 | tty37
+Model 43 teletype*		| T4 | 43 | tty43
+NUC homebrew*			| qN | nucterm
+Netronics*			| qn | netx | netronics
+Omron 8025AG*			| Mo | omron
+Owl 1200			| co | owl
+Perkin Elmer 1100*		| pf | fox
+Perkin Elmer 1200*		| po | owl
+Plasma panel*			| Mp | plasma
+Plugboard*			| sp | plugboard
+Qume Sprint 5*			| Aq | qume5 | qume
+Sol*				| Ml
+Soroc 120*			| MS | soroc
+Southwest Technical Products	| Ms | swtp | ct82
+	ct82*
+Special*			| qq | ccncrt | special
+TI silent 700*			| t3 | ti | ti700 | ti733 | 735 | ti735
+TI silent 700			| ti | ti700 | ti733
+TI silent 745*			| t4 | ti745 | 745 | 743
+TI silent 745			| tI | ti745
+Tektronix 4012*			| X1 | tek | tek4012 | 4012 | tek4013 | 4013
+Tektronix 4014*			| X2 | tek4014 | tek4015 | 4014 | 4015
+Tektronix 4014			| gk | tk4014 | 4014
+Tektronix 4014 in small font*	| X3 | tek4014sm | tek4015sm | 4014sm | 4015sm
+Tektronix 4023*			| X4 | tek4023 | 4023
+Tektronix 4024/4025/4027*	| X5 | tek4027 | 4025 | 4027 | 4024 | tek4025
+				| tek4024 | 4025cu | 4027cu
+Tektronix 4025 17 line window	| X8 | 4025-17ws | 4027-17ws
+	in workspace*
+Tektronix 4025 with "!"*	| Xe | 4025ex | 4027ex
+Tektronix 4025 w/17 line window*| X7 | 4025-17 | 4027-17
+Teleray 1061			| ct | t1061
+Teleray 1061*			| y6 | t1061 | t10 | teleray
+Teleray 1061 with fast PROMs*	| yf | t1061f
+Teleray 3700 (dumb)*		| y1 | t3700 | teleray
+Teleray 3800 series*		| y3 | t3800
+Teletec Datascreen*		| Mk | teletec | tec
+Televideo 			| cT | tvi920 | tvi912 | tvisp | tvi
+Televideo (new)*		| v2 | 912b | 912c | 920b | 920c | tvi
+Televideo (old)*		| v1 | tvi912 | 912 | 920 | tvi920
+Televideo 925*			| v3 | 925 | tvi925
+Televideo 950*			| v5 | tvi950 |950
+Terak emulating Datamedia 1520*	| Mt | terak
+Terminet 1200			| T2 | 1200
+Terminet 1200*			| g2 | 1200 | tn1200
+Terminet 300			| T3 | 300
+Terminet 300*			| g3 | 300 | tn300
+Tty33				| t3 | 33 | tty33
+Tty37				| t7 | 37 | tty37
+Tty43				| t4 | 43 | tty43
+TtyWilliams			| dp
+TtyWilliams*			| qw | ttyWilliams
+Ubellchar*			| qu | ubell
+Ubellchar			| tu | ubell | ubellchar
+Unknown*			| su | dumb | un | unknown
+Unknown				| un | pb | dumb | unknown
+Visual 200*			| V2 | vi200 | visual
+Visual 200 reverse video*	| Vr | vi200rv
+Visual 200 reverse video using	| VR | vi200rvic
+	insert char*
+Visual 200 using insert char*	| Vt | vi200ic
+Vtz-2/10 or mcz-2/60		| vz | vtz | mcz-2/60 | vtz-2/10
+Xerox 1720*			| x1 | x1720
+Xitex sct-100			| cx | xitex
+Xitex sct-100*			| qx | xitex
+Zentec 30*			| Mz | zen30 | z30

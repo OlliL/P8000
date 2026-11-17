@@ -1,4 +1,4 @@
-# uucp: the files of uucp in /usr/lib/uucp that System III's uucp.mk copies (cp $(UPATH)/L* $(UPATH)/USERFILE $(INSDIR); chmod 400 L.sys USERFILE); the files are those of the WEGA root. The programs of uucp are not here yet.
+# uucp: SQFILE (/usr/lib/uucp) and remotelines (/usr/spool/uucp) of the WEGA root, and the files of uucp in /usr/lib/uucp that System III's uucp.mk copies (cp $(UPATH)/L* $(UPATH)/USERFILE $(INSDIR); chmod 400 L.sys USERFILE); the files are those of the WEGA root. The programs of uucp are not here yet.
 #
 #   make install PREFIX=dir    install below dir/ (the modes of the WEGA root)
 
@@ -12,6 +12,9 @@ install:
 	rm -f $(PREFIX)/usr/lib/uucp/L-devices ; cp L-devices $(PREFIX)/usr/lib/uucp/L-devices ; chmod 400 $(PREFIX)/usr/lib/uucp/L-devices
 	rm -f $(PREFIX)/usr/lib/uucp/L.sys ; cp L.sys $(PREFIX)/usr/lib/uucp/L.sys ; chmod 400 $(PREFIX)/usr/lib/uucp/L.sys
 	rm -f $(PREFIX)/usr/lib/uucp/USERFILE ; cp USERFILE $(PREFIX)/usr/lib/uucp/USERFILE ; chmod 400 $(PREFIX)/usr/lib/uucp/USERFILE
+	rm -f $(PREFIX)/usr/lib/uucp/SQFILE ; cp SQFILE $(PREFIX)/usr/lib/uucp/SQFILE ; chmod 440 $(PREFIX)/usr/lib/uucp/SQFILE
+	mkdir -p $(PREFIX)/usr/spool/uucp
+	cp remotelines $(PREFIX)/usr/spool/uucp/remotelines ; chmod 664 $(PREFIX)/usr/spool/uucp/remotelines
 
 clean:
 

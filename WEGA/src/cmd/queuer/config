@@ -1,0 +1,12 @@
+#
+# first queue ... lpr has the line printer
+#
+Qlpr,R,N,S
+# line printer 1
+D1,R,/dev/lp,/usr/lib/lp
+#
+# second queue ... text has the spinwriter
+#
+Qtext,R,N,S
+# spinwriter
+D1,R,/dev/tty6,/usr/lib/text -T "9600 -nl"

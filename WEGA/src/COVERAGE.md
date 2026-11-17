@@ -8,24 +8,24 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
-| [root](#root) | 12 | 11 | 0 | 0 | 1 |
+| [root](#root) | 12 | 12 | 0 | 0 | 0 |
 | [bin](#bin) | 111 | 25 | 5 | 52 | 29 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 14 | 0 | 2 | 14 |
-| [usr/bin](#usr-bin) | 145 | 10 | 7 | 78 | 50 |
-| [usr/lib](#usr-lib) | 197 | 81 | 2 | 74 | 40 |
+| [usr/bin](#usr-bin) | 145 | 10 | 8 | 77 | 50 |
+| [usr/lib](#usr-lib) | 197 | 85 | 2 | 72 | 38 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
-| [usr/other](#usr-other) | 15 | 10 | 0 | 1 | 4 |
+| [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 804 | 14 | 226 | 153 |
+| **all** | 1197 | 814 | 15 | 222 | 146 |
 
 <a id="root"></a>
 ## root
 
 | File | Kind | Source | Status | Compiler | libc |
 |---|---|---|---|---|---|
-| `.cshrc` | text | - | todo | - | - |
+| `.cshrc` | text | `src/etc` | exact | - | - |
 | `boot` | binary E707 | `src/uts/conf` | exact | cc | - |
 | `pb.image` | data | `src/cmd/BOOT0` | exact | - | - |
 | `sa.cat` | binary E707 | `src/cmd/standalone` | exact | cc | - |
@@ -349,7 +349,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/bin/mmt` | text | `tmp/sys3/usr/bin/mmt` | sys3 | - | - |
 | `usr/bin/mvt` | text | `tmp/sys3/usr/bin/mvt` | sys3 | - | - |
 | `usr/bin/neqn` | binary E711 | - | todo | D12 old, D1 tight | - |
-| `usr/bin/news` | binary E707 | `tmp/sys3/usr/src/cmd/news.c` | sys3 | D12 new?, D1 loose | - |
+| `usr/bin/news` | binary E707 | `src/cmd/news` | partial | - | - |
 | `usr/bin/nq` | binary E711 | - | todo | D12 new, D1 loose | - |
 | `usr/bin/nroff` | binary E711 | - | todo | D12 new, D1 loose | - |
 | `usr/bin/nroffv7` | binary E711 | - | todo | D12 new, D1 loose | - |
@@ -455,7 +455,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/cref/ctab` | data | `src/cmd/cref` | exact | cc | - |
 | `usr/lib/cref/eign` | text | `src/cmd/cref` | exact | cc | - |
 | `usr/lib/cref/upost` | binary E707 | `tmp/sys3/usr/src/cmd/cref/upost.c` | sys3 | D12 -, D1 tight | - |
-| `usr/lib/crontab` | text | `tmp/sys3/usr/lib/crontab` | sys3 | - | - |
+| `usr/lib/crontab` | text | `src/cmd/crontab.sh` | exact | - | - |
 | `usr/lib/diff3prog` | binary E707 | `tmp/sys3/usr/src/cmd/diff3prog.c` | sys3 | D12 -, D1 tight | - |
 | `usr/lib/diffh` | binary E707 | `tmp/sys3/usr/src/cmd/diffh.c` | sys3 | D12 old?, D1 slots | - |
 | `usr/lib/ex2.13preserve` | binary E707 | - | todo | D12 old, D1 tight | - |
@@ -542,8 +542,8 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/me/tbl.me` | text | `src/cmd/me` | exact | - | - |
 | `usr/lib/me/thesis.me` | text | `src/cmd/me` | exact | - | - |
 | `usr/lib/more.help` | text | `src/cmd/more` | exact | - | - |
-| `usr/lib/news/news` | text | `tmp/sys3/usr/bin/news` | sys3 | - | - |
-| `usr/lib/news/wega` | text | - | todo | - | - |
+| `usr/lib/news/news` | text | `src/cmd/news` | exact | - | - |
+| `usr/lib/news/wega` | text | `src/?` | exact | - | - |
 | `usr/lib/plzcg.errs` | text | `src/cmd/plzcg` | exact | - | - |
 | `usr/lib/plzcg2` | binary E705 | - | todo | D12 -, D1 loose | - |
 | `usr/lib/plzcg2d` | binary E705 | - | todo | D12 old, D1 - | - |
@@ -609,7 +609,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/uucp/L-cmd` | text | `src/cmd/uucp` | exact | - | - |
 | `usr/lib/uucp/L-devices` | text | `src/cmd/uucp` | exact | - | - |
 | `usr/lib/uucp/L.sys` | text | `src/cmd/uucp` | exact | - | - |
-| `usr/lib/uucp/SQFILE` | text | - | todo | - | - |
+| `usr/lib/uucp/SQFILE` | text | `src/cmd/uucp` | exact | - | - |
 | `usr/lib/uucp/USERFILE` | text | `src/cmd/uucp` | exact | - | - |
 | `usr/lib/uucp/uucico` | binary E707 | - | todo | D12 new, D1 loose | - |
 | `usr/lib/uucp/uuclean` | binary E707 | `tmp/sys3/usr/src/cmd/uucp/uuclean.c` | sys3 | D12 new?, D1 loose | - |
@@ -665,13 +665,13 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/dict/words` | text | `src/cmd/spell` | exact | cc | - |
 | `usr/doc/fse.doc` | text | `src/cmd/fse` | exact | - | - |
 | `usr/pub/ascii` | text | `src/?` | exact | - | - |
-| `usr/pub/dmalias` | text | - | todo | - | - |
+| `usr/pub/dmalias` | text | `src/?` | exact | - | - |
 | `usr/pub/eqnchar` | text | `src/?` | exact | - | - |
 | `usr/pub/greek` | data | `src/?` | exact | - | - |
-| `usr/pub/termlist` | text | - | todo | - | - |
-| `usr/spool/queuer/config` | text | `tmp/sys3/etc/config` | sys3 | - | - |
-| `usr/spool/queuer/logfile` | data | - | todo | - | - |
-| `usr/spool/uucp/remotelines` | text | - | todo | - | - |
+| `usr/pub/termlist` | text | `src/?` | exact | - | - |
+| `usr/spool/queuer/config` | text | `src/cmd/queuer` | exact | - | - |
+| `usr/spool/queuer/logfile` | data | `src/cmd/queuer` | exact | - | - |
+| `usr/spool/uucp/remotelines` | text | `src/cmd/uucp` | exact | - | - |
 
 <a id="usr-include"></a>
 ## usr/include

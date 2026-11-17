@@ -1,0 +1,14 @@
+
+Welcome to the WEGA News system!
+
+The news command has been set up to give system personnel an easy
+and efficient way of informing users of any items of current interest.
+The news package is often used to inform users of scheduled shutdown
+periods, changes in software, and other information necessary to use
+the system.
+
+To use this package, simply enter your information into a file in the 
+/usr/lib/news directory.  Then edit /etc/motd and insert a message to
+be used at login time to inform users of the news item.  The key word
+preceding the message should be the name of the file you created in
+/usr/lib/news.  Give it a try, its easy!

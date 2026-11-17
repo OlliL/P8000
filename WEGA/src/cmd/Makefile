@@ -34,7 +34,7 @@ SIMPLE=		mv rm rmdir write size strip ranlib
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o
-SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cpp cparse codgen popt dc ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units
+SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cpp cparse codgen popt dc ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 
@@ -192,6 +192,8 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	cp rmuser.sh $(PREFIX)/etc/rmuser ; chmod 700 $(PREFIX)/etc/rmuser
 	cp sysgen.sh $(PREFIX)/etc/sysgen ; chmod 751 $(PREFIX)/etc/sysgen
 	cp UGETT1.sh $(PREFIX)/etc/UGETT1 ; chmod 700 $(PREFIX)/etc/UGETT1
+	mkdir -p $(PREFIX)/usr/lib
+	cp crontab.sh $(PREFIX)/usr/lib/crontab ; chmod 644 $(PREFIX)/usr/lib/crontab
 	rm -f $(PREFIX)/etc/umfs $(PREFIX)/etc/mlf
 	ln $(PREFIX)/etc/mfs $(PREFIX)/etc/umfs
 	ln $(PREFIX)/etc/makelost+found $(PREFIX)/etc/mlf

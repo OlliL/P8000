@@ -1,0 +1,10 @@
+# "@[$]dmalias	1.2  10/01/82 16:37:52 - 87wega3.2"
+# This file sets up Cshell aliases for the commands that 87wega3.2elopment
+# modules send to the host when downloading.
+#
+# To use these aliases, type:
+#
+#	source /usr/pub/dmalias
+#
+alias B test
+alias LOAD LOAD

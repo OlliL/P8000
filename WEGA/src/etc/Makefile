@@ -1,4 +1,4 @@
-# etc: the files of /etc that no program owns (configuration of the system: passwd, group, inittab, rc, profile, ...), as they
+# etc: the files of /etc (and the .cshrc of the root directory: dot.cshrc) that no program owns (configuration of the system: passwd, group, inittab, rc, profile, ...), as they
 # are in the WEGA root (mnttab comes from the installation floppies and is kept as it is there). The commands of /etc are in ../cmd (scripts as NAME.sh, as in System III).
 #
 #   make install PREFIX=dir    copy them below dir/etc with the modes of the originals
@@ -23,6 +23,7 @@ install:
 	cp ttytype $(PREFIX)/etc/ttytype ; chmod 644 $(PREFIX)/etc/ttytype
 	cp whois $(PREFIX)/etc/whois ; chmod 666 $(PREFIX)/etc/whois
 	cp mnttab $(PREFIX)/etc/mnttab ; chmod 666 $(PREFIX)/etc/mnttab
+	cp dot.cshrc $(PREFIX)/.cshrc ; chmod 640 $(PREFIX)/.cshrc
 
 clean:
 
