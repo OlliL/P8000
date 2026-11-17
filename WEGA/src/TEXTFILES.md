@@ -9,8 +9,8 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | Rule | Art | files |
 |---|---|---|
 | C | script | 33 |
-| C | text | 46 |
-| **all** | | 79 |
+| C | text | 44 |
+| **all** | | 77 |
 
 
 ## root
@@ -18,12 +18,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
 |---|---|---|---|---|---|---|---|
 | `.cshrc` | text | C | 738 | `src/.cshrc` | nein | - |  |
-
-## lib
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `ex2.13strings` | text | C | 5833 | `src/lib/ex2.13strings` | nein | - |  |
 
 ## usr/bin
 
@@ -63,7 +57,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `more.help` | text | C | 1173 | `src/usr/lib/more.help` | nein | - |  |
 | `plzcg.errs` | text | C | 784 | `src/usr/lib/plzcg.errs` | nein | - |  |
 | `units` | text | C | 7732 | `src/usr/lib/units` | nein | usr/games/units image ?<br>usr/bin/units image ~ |  |
-| `whatis` | text | C | 32923 | `src/usr/lib/whatis` | nein | - |  |
 | `yaccpar` | text | C | 3300 | `src/cmd/yacc/yaccpar` | nein | usr/lib/yaccpar image ~<br>usr/src/cmd/yacc/yaccpar source ~ |  |
 
 ## usr/lib/acct

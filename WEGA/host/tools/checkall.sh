@@ -157,6 +157,7 @@ sh $HERE/wbin.sh $T/bin $WEGA $OLD $EMU
 RUN=wrun	# $(RUN) ./generator in the Makefiles (wbin.sh: wrun)
 export RUN
 stamp '1 oldroot.sh, wbin.sh'
+touch $T/tree.stamp	# tree.stamp: nothing of the build and of the corpora may write into the original tree (see the end of the corpora)
 # make all = stage1 lib stage2 cmds uts, one after the other so that every part is timed
 : > $T/make.log
 for g in stage1 lib stage2 cmds uts; do
@@ -236,7 +237,7 @@ stamp '3 emulator tests'
 # 2 jobs), in the order of compare/CORPORA (the slowest first): the next one starts when one is done.
 CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
-touch $T/tree.stamp $T/store.stamp	# tree.stamp: see the end of the corpora; the store: what the corpora of this run do not use is older than this (corpus_prune.py in finish)
+touch $T/store.stamp	# the store: what the corpora of this run do not use is older than this (corpus_prune.py in finish)
 NC=${CHECK_CORPORA:-`expr \( \`nproc\` + 1 \) / 2`}
 echo "corpora start: load `cut -d' ' -f1-3 /proc/loadavg`, $NC at a time" >> $T/timing.log
 export CS T REPO WEGA OLD CORPUS_OPTS
@@ -247,7 +248,7 @@ grep -h '^TIME ' $T/corpus_*.log | sed 's/^TIME //' | sort >> $T/timing_corpus.l
 for n in $CORP; do
 	corpus $n $T/corpus_$n.log
 done
-# the original tree (WEGA) must not be written by a corpus (a program that makes a name in a directory that the case's layer over
+# the original tree (WEGA) must not be written by the build or by a corpus (a program that makes a name in a directory that the case's layer over
 # the tree does not hold writes it into the tree: etc/utmp by getty, ...); its tmp is the guest's /tmp of older runs
 W=`find $WEGA -newer $T/tree.stamp ! -path "$WEGA/tmp" ! -path "$WEGA/tmp/*" 2>/dev/null | head -5 | tr '\n' ' '`
 if [ -n "$W" ]; then

@@ -9,16 +9,16 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 11 | 0 | 0 | 1 |
-| [bin](#bin) | 111 | 25 | 0 | 54 | 32 |
+| [bin](#bin) | 111 | 25 | 1 | 54 | 31 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
-| [lib](#lib) | 30 | 13 | 0 | 2 | 15 |
-| [usr/bin](#usr-bin) | 145 | 10 | 3 | 79 | 53 |
-| [usr/lib](#usr-lib) | 197 | 55 | 2 | 80 | 60 |
+| [lib](#lib) | 30 | 14 | 0 | 2 | 14 |
+| [usr/bin](#usr-bin) | 145 | 10 | 4 | 79 | 52 |
+| [usr/lib](#usr-lib) | 197 | 56 | 2 | 80 | 59 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 6 | 0 | 4 | 5 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 773 | 5 | 238 | 181 |
+| **all** | 1197 | 775 | 7 | 238 | 177 |
 
 <a id="root"></a>
 ## root
@@ -76,7 +76,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `bin/edit` | binary E711 | - | todo | D12 old, D1 tight | - |
 | `bin/egrep` | binary E707 | `tmp/sys3/usr/src/cmd/egrep.y` | sys3 | D12 new?, D1 loose | - |
 | `bin/env` | binary E707 | `tmp/sys3/usr/src/cmd/env.c` | sys3 | D12 old, D1 tight | - |
-| `bin/ex` | binary E711 | - | todo | D12 old, D1 tight | - |
+| `bin/ex` | binary E711 | `src/cmd/ex` | partial | cc | - |
 | `bin/fc` | binary E607 | - | todo | D12 new?, D1 - | - |
 | `bin/file` | binary E707 | `tmp/sys3/usr/src/cmd/file.c` | sys3 | D12 old, D1 tight | - |
 | `bin/find` | binary E707 | `tmp/sys3/usr/src/cmd/find.c` | sys3 | D12 old, D1 tight | - |
@@ -244,7 +244,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `lib/cpp` | binary E707 | `src/cmd/cpp` | exact | ccv0p | libc-v2.a |
 | `lib/crt0.o` | binary E711 | `src/lib/libc/nonseg/csu` | exact | - | - |
 | `lib/doprnt.o` | binary E711 | - | todo | - | - |
-| `lib/ex2.13strings` | text | - | todo | - | - |
+| `lib/ex2.13strings` | text | `src/?` | exact | - | - |
 | `lib/gopt` | binary E611 | - | todo | D12 old, D1 - | - |
 | `lib/libc.a` | archive | `src/lib/libc` | exact | ccvl | - |
 | `lib/libl.a` | archive | `src/lib/libl` | exact | - | - |
@@ -343,7 +343,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/bin/man` | binary E707 | `tmp/sys3/usr/src/cmd/text/shells.d/man.sh` | sys3 | D12 new, D1 loose | - |
 | `usr/bin/mesg` | binary E707 | `tmp/sys3/usr/src/cmd/mesg.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/mkmenu` | text | - | todo | - | - |
-| `usr/bin/mkstr` | binary E707 | - | todo | D12 old, D1 tight | - |
+| `usr/bin/mkstr` | binary E707 | `src/cmd/mkstr.c` | partial | cc | libc.a |
 | `usr/bin/mm` | text | `tmp/sys3/usr/bin/mm` | sys3 | - | - |
 | `usr/bin/mmchek` | binary E711 | - | todo | D12 new?, D1 loose | - |
 | `usr/bin/mmt` | text | `tmp/sys3/usr/bin/mmt` | sys3 | - | - |
@@ -615,7 +615,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/uucp/uuclean` | binary E707 | `tmp/sys3/usr/src/cmd/uucp/uuclean.c` | sys3 | D12 new?, D1 loose | - |
 | `usr/lib/uucp/uusetty` | binary E707 | - | todo | D12 new?, D1 loose | - |
 | `usr/lib/uucp/uuxqt` | binary E707 | `tmp/sys3/usr/src/cmd/uucp/uuxqt.c` | sys3 | D12 new, D1 loose | - |
-| `usr/lib/whatis` | text | - | todo | - | - |
+| `usr/lib/whatis` | text | `src/man` | exact | - | - |
 | `usr/lib/yaccpar` | text | `tmp/sys3/usr/src/cmd/yacc/yaccpar` | sys3 | - | - |
 
 <a id="usr-sys"></a>

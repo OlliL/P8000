@@ -1,0 +1,501 @@
+menu (5)                - Format der Menue-Spezifikationsdatei
+alias (1C)              - ersetzt ein Wort durch ein Kommado oder eine Kommandokette
+zmprint (1)             - Menuedokumentation
+getpid (2)              - Erhalten der Process-ID 
+getpgrp (2)             - Erhalten der Gruppen-Prozess-ID 
+getppid                 - Erhalten der Parent-Prozess-ID
+ulimit (2)              - Erhalten und Setzen von Nutzerlimits
+GETTY (M)               - Setzen des Terminal-Modus
+INIT (M)                - Initialisierung der Prozesssteuerung
+INTRO (1)               - Beschreibung der Kommandos (Sektion 1)
+LOAD (1)                - Datenuebertragung in den P8000-In-Circuit-Emulator
+SEND (1)                - Auslagern aus dem P8000-Emulator
+sld (1)                 - Segmentierter U8001-Lader
+a.out (5)               - Ausgabedatei des P8000-Laders
+a64l, l64a (3)          - Konvertierung zwischen long und ASCII-Darstellung
+abort (3)               - Erzeugen eines Fehlers durch IOT-Trap
+abs (3)                 - Absoluter Betrag ganzer Zahlen
+access (2)              - Bestimmung der Zugriffsrechte und Verfuegbarkeit
+acct (2)                - Ein- bzw. Ausschalten der Abrechnung
+acct (5)                - Dateiformat fuer Prozessabrechnung
+acct (M)                - Ueberblick ueber die Systembuchhaltung und deren Kommandos
+acctcms (M)             - Summierung der Kommandos aus den Prozessdatensaetzen
+acctcom (M)             - Suchen und Ausgeben von Prozessabrechnungsdateien
+acctcon (M)             - Login-Zeitabrechnung
+acctmerg (M)            - Kombinieren oder Addieren von Gesamtabrechnungsdatensaetzen
+acctprc (M)             - Prozessabrechnung
+acctsh (M)              - Shell-Prozeduren fuer die Abrechnung
+adb (1)                 - debugger
+adduser (M)             - Benutzer im System einrichten
+admin (1)               - Erzeugen und Verwalten von SCCS-Dateien
+alarm (2)               - Eintragen des Signals nach einer angegebenen Zeit
+any, anystr, balbrk, cat, clean_up, curdir, dname, fatal, fdfopen, giveup, imatch, index, lockit, move, patoi , patol, rename, repeat, satoi, setsig1, setsig, sname, strend, substr, trnslat, unlockit , userdir, userexit, username, verify, xalloc, xcreat, xfree, xfreeall, xlink,  xmsg, xopen, xpipe, xunlink, xwrite, zero, zeropad (3)          - Funktionen der pwb-Bibliothek
+apropos (1)             - sucht Kommando-Beschreibungen mittels Schluesselwort
+ar (1)                  - Archiv- und Bibliotheksverwalter
+ar (5)                  - Dateiformat fuer Bibliotheken
+as (1)                  - PLZ/ASM Assembler
+assert (3)              - Programmverifikation
+at (1)                  - Kommandoausfuehrung zu einem angegebenen Zeitpunkt
+atof, atofs, atofd, _atof, atoi, atol (3)   - Konvertierung ASCII in Zahlen
+awk (1)                 - Sprache zur Suche und Verarbeitung von Zeichenketten
+banner (1)              - Herstellung von Deckblaettern
+basename, dirname (1)   - Abtrennen von Teilen von Dateinamen
+bc (1)                  - Arithmetiksprache mit waehlbarer Genauigkeit
+bcmp (1)                - Vergleich zweier Dateien
+bd (1)                  - hexadezimaler Byte-Dump
+bdiff (1)               - diff-Programm fuer sehr grosse Dateien
+boot  (M)               - sekundaeres Bootstrap-Programm
+break (1C)              - C-Shell Steueranweisung fuer Unterbrechungen
+breaksw (1C)            - C-Shell Steueranweisung fuer Unterbrechung
+brk, sbrk (2)           - Veraendern der Speicherzuweisung
+bsearch (3)             - Binaere Suche
+cal (1)                 - Kalenderausgabe
+calendar (1)            - Terminkalender
+cas (1)                 - cas-Assembler
+cat (1)                 - Verketten und Ausgeben von Dateien
+cb (1)                  - C-Programm Formatierer
+cc (1)                  - C-Compiler
+cd (1C)                 - Wechsel des Arbeitsdirectorys
+cdc (1)                 - Aendern des Delta-Kommentars eines SCCS-Deltas
+chdir (2)               - Aenderung des Standarddirectory
+chgrp (1)               - Aendern der Gruppenzugehoerigkeit
+chkdiff (1)             - Ausgabe der Unterschiede zwischen Versionen einer Quelldatei
+chkin (1)               - Aufnahme einer Datei in die QCV-Steuerdatei
+chkout (1)              - Rekonstruieren einer Datei aus der QCV-Steuerdatei
+chkwhat (1)             - Ausgabe der QCV-"what"-Zeichenketten
+chmod (1)               - Aendern der Dateizugriffsrechte
+chmod (2)               - Aendern des Dateimodus
+chmog, chog (M)         - Zugriffsrechte / Eigner / Gruppe einer Datei aendern
+chown (1)               - Aendern des Eigentuemers einer Datei
+chown (2)               - Veraendern des Eigentuemers und der Gruppe einer Datei
+chown, chgrp (M)        - Eigner / Gruppe einer Datei aendern
+chroot (2)              - Veraendern des Root-Directory
+chroot (M)              - Wechseln des root-Directorys fuer ein Kommando
+close  (2)              - Schliessen einer Datei
+clri (M)                - Loeschen eines Inodes
+cmp (1)                 - Vergleich zweier Dateien
+code (1)                - Ausgabe der Zeichen und ihres hexadezimalen Aequivalents
+col (1)                 - Filter fuer die Druckerausgabe nach Bearbeitung mit nroff
+col (1)                 - Filter fuer die Druckerausgabe nach Bearbeitung mit nroff
+comb (1)                - Reorganisation von SCCS-Dateien
+comm (1)                - Vergleich zweier sortierter Dateien
+continue (1C)           - C-SHELL Steueranweisung 
+core (5)                - Format der Speicherabbilddatei
+cp (1)                  - Kopieren einer Datei in eine andere oder in ein Directory
+cpio (1)                - Schreiben/Lesen von Dateien in/aus Dateiarchiven
+cpio (5)                - Format des cpio-Archivs
+creat  (2)              - Erzeugen einer neuen Datei
+cref (1)                - Erstellung einer Quellverweisliste
+cron (M)                - Uhr-Daemon
+crypt (1)               - Codieren/Decodieren
+crypt, setkey, encrypt (3)  - Verschluesseln und Entschluesseln
+csh, (1)                - Kommandointerpreter mit C-aehnlicher Syntax
+cshrc, cshprofile, login (5)    - Errichtung einer Nutzerumgebung
+csplit (1)              - zerteilt eine Datei entsprechend den angegebenen Argumenten
+ct (1)                  - Verbindungsaufbau ueber Modem
+ctags (1)               - Funktionsliste fuer C- oder FORTRAN-Programme erstellen
+ctermid (3)             - Erzeugen von Dateinamen fuer Terminals
+ctime, localtime, gmtime, asctime, tzset (3)    - Konvertieren von Datum und Zeit in und aus ASCII-Zeichen
+cu (1)                  - ruft ein anderes WEGA System
+curses (3)              - Bildschirmfunktionen mit "optimaler" Cursorbewegung
+cuserid (3)             - Zeichenkette fuer Login-Namen des Nutzers
+cut (1)                 - Ausgabe selektierter Felder aus jeder Zeile einer Datei
+cw, checkcw (1)         - bereitet Text konstanter Groesse fuer troff(1) auf
+cxref (1)               - Ausgabe der Routinen in C-Programmen
+date (1)                - Ausgabe von Datum und Uhrzeit
+date (M)                - Datum anzeigen und setzen
+datem (M)               - Benutzerfreudliche Eingabe von Datum / Zeit
+daytime (1)             - Ausgabe der Uhrzeit in umgangssprachlicher Form
+dc (1)                  - Tischrechner
+dcheck (M)              - Directory-Konsistenz eines Dateisystems pruefen
+dd (1)                  - konvertiert und kopiert Dateien
+delta (1)               - Erstellen eines Deltas fuer eine SCCS-Datei
+deroff (1)              - streicht nroff/troff, tbl, und eqn Anweisungen
+devnm (M)               - Geraetenamen ermitteln
+df (M)                  - Anzahl der freien Diskbloecke ermitteln
+diff (1)                - vergleicht zwei Textdateien auf Unterschiede
+diff3 (1)               - 3-Wege Vergleich unterschiedlicher Dateien
+diffmk (1)              - Kennzeichnung von Differenzen zwischen Dateien
+dir (5)                 - Directory-Format
+dircmp (1)              - Directoryvergleich
+disasm, disinit (3)     - Rueckuebersetzen von U8000-Assemblerbefehlen 
+dog (1)                 - gesteuertes Ausgabefilter fuer das Terminal
+down (M)                - Abfahren des Systems
+dqueuer (M)             - Ausfuehren der Warteschlangenauftraege von nq
+du (1)                  - Uebersicht ueber die Plattenbelegung
+dump (M)                - inkrementaler Dateisystemabzug
+dump, ddate (5)         - Inkrementelles Dump-Format
+dumpdir (M)             - Anzeige des Inhaltes eines Dump-Abzugs 
+dup, dup2 (2)           - Duplizieren eines offenen Dateidescriptors
+echo (1C)               - Ausgabe der Argumente an die Standardausgabe (Terminal)
+echo2 (1)               - Ausgabe der Argumente an die Standardfehlerausgabe
+ecvt, _ecvt, fcvt, _fcvt, gcvt, _gcvt (3)   - Ausgabekonvertierung 
+ed (1)                  - Texteditor
+edit (1)                - Texteditor fuer neue oder gelegentliche Nutzer
+end, etext, edata (3)   - letzte Speicherplaetze im Programm 
+env (1)                 - setzt die Umgebung fuer eine Kommandoausfuehrung
+environ (5)             - Nutzerumgebung
+environ (7)             - Nutzerumgebung
+eqn, neqn, checkeq (1)  - Typensatz von mathematischen Ausdruecken
+error (1)               - analysiert und kommentiert Compiler-Fehlernachrichten
+ex, edit (1)            - Texteditor
+execl, execv, execle, execve, execlp, execvp  (2)   - Ausfuehren einer Datei
+exit (1C)               - Verlassen einer Shell
+exit (2)                - Beenden eines Prozesses
+exp, log, log10, pow, sqrt (3)  - Exponentialfunktionen 
+expand (1)              - Aufloesen von Tabulatoren durch Leerzeichen
+expr (1)                - Berechnung von Ausdruecken
+fclose, fflush (3)      - Schliessen oder Leeren eines Stream 
+fcntl (2)               - Dateikontrolle
+fcntl (7)               - Dateiueberwachungsoptionen
+fd (4)                  - 5.25" Floppy-Disk-Treiber
+ferror, feof, clearerr, fileno (3)  - Stream-Statusabfragen
+file (1)                - Bestimmen des Dateityps
+filsys, flblk, ino (5)  - Format eines Dateisystems
+find (1)                - Finden von Dateien
+floor, fabs, ceil, fmod (3) - Absoluter Wert, Ganzzahl-Funktionen
+flow (1)                - Analyse des Ablaufs von C-Programmen
+fopen, freopen, fdopen (3)  - Eroeffnen eines Stream
+foreach (1C)            - Schleifensteueranweisung fuer C-Shell Anweisungen
+fork  (2)               - Erzeugen eines neuen Prozesses
+format (1)              - Formatieren einer Diskette im angegebenen Format
+fread, fwrite (3)       - gepufferte binaere Ein-/Ausgabe
+frexp, ldexp, modf (3)  - Aufspalten in Mantisse und Exponent 
+fsck (M)                - Konsistenzpruefung und Reparatur von Dateisystemen
+fsdb (M)                - Dateisystem-Debugger
+fseek, ftell, rewind (3)    - Repositionieren eines Streams
+fwtmp, wtmpfix (M)      - Manipulieren von wtmp-Datensaetzen
+gamma (3)               - Gamma-Funktion
+get (1)                 - Rekonstruieren einer Version aus einer SCCS-Datei
+getNAME (1)             - Ausgabe der Abschnitte NAME des Online-Manuals fuer whatis/apropos Datenbanken
+getc, getchar, fgetc, getw (3)  - Zeichen oder Wort aus einem Stream holen
+getenv (3)              - Wert fuer Namen von Umgebungsvariablen
+getfile (1)             - Dateiuebertragung von einem lokalen zu einem Remote-System
+getgrent, getgrgid, getgrnam, setgrent, endgrent (3)    - Informationen aus der Gruppendatei 
+getkey, gonormal, goraw, wbackspace, wbackword, wcolon, wforspace, wforword, wgetword, whelp, whighlight, wleft, wmesg, wmvcursor, wpageback, wpagefor, wresscrn, wright, wsavescrn, wscrolb, wscrolf (3) - Screen-Interface-Bibliothek
+getlogin (3)            - Ermitteln des Login-Namens
+getopt (1C)             - Ueberpruefen von Kommandooptionen
+getopt (3)              - Ermitteln von Optionsbuchstaben aus argv
+getpass (3)             - Lesen eines Passwortes
+getpw (3)               - Ermittlung des Namens zu einem Nutzer-ID
+getpwent, getpwuid, getpwnam, setpwent, endpwent (3)    - Bereitstellen eines Eintrags aus der Passwort-Datei
+gets (1C)               - Uebernahme einer Zeichenkette von der Standardeingabe
+gets, fgets (3)         - Einlesen einer Zeichenkette aus einem Stream
+getud (1)               - Einlesen von Dateien im P8000-UDOS-Format von den Floppy-Disk-Laufwerken des Grundgeraetes
+getuid (2)              - Erhalten der Nutzeridentifikation 
+getgid (2)              - Erhalten der Gruppenidentifikation 
+geteuid (2)             - Erhalten der effektiven Nutzeridentifikation 
+getegid (2)             - Erhalten der effektiven Gruppenidentifikation
+glob (1C)               - Ausgabe von Zeichenketten auf dem Terminal ohne Leerzeichen
+goodmagic (3)           - Bestimmung der Gueltigkeit der Magic-Nummer
+gpasswd (1)             - Veraenderung des Gruppenpassworts
+grep, egrep, fgrep (1)  - Durchmustern einer Datei nach einem Zeichenmuster
+group (5)               - Datei fuer Gruppeneintraege
+halt (M)                - schnelles Abfahren des Systems
+head (1)                - Ausgabe der ersten Zeilen eines Datenstromes
+help (1)                - Hilfeanforderung
+history (1C)            - Ausgabe der Liste vorher benutzter Kommandos
+hyphen (1)              - Finden von Worten mit Bindestrichen
+hypot, cabs (3M)        - Euklidischer Abstand
+icheck (M)              - Speicherkonsistenz eines Dateisystems ueberpruefen
+id (1)                  - Ausgabe der Nutzer, Nutzergruppen-ID's und Nutzernamen
+if (1C)                 - C-Shell-Steueranweisung fuer Verzweigungen
+inittab (5)             - Steuerinformationen fuer init
+install (M)             - Installieren von Kommandos
+intro (3)               - Einfuehrung in die Bibliotheksfunktionen
+intro, errno (2)        - Einfuehrung in die Systemrufe und Fehlernummern
+ioctl (2)               - Ein-/Ausgabe-Steuerung eines Geraetes
+isaddindex (3)          - Hinzufuegen eines Index in eine C-ISAM-Datei
+isalpha, isupper, islower, isdigit, isxdigit, isalnum, isspace , ispunct, isprint, isgraph, iscntrl, isascii (3) - Zeichenklassifizierung
+isaudit (3)             - Aktionsreport (audit trail) fuer eine C-ISAM-Datei
+isbuild (3)             - Definition und Erzeugen einer C-ISAM-Datei
+isclose (3)             - Schliessen einer C-ISAM-Datei
+isdelete, isdelcurr (3) - Loeschen des aktuellen Datensatzes einer C-ISAM-Datei
+isdelindex (3)          - Loeschen eines Index aus einer C-ISAM-Datei
+iserase (3)             - Loeschen von C-ISAM- sowie zugeordneter Aktionsreportdateien
+isindexinfo (3)         - Zugriff auf Informationen einer C-ISAM-Datei
+islock (3)              - Verriegelung einer C-ISAM-Datei
+isopen (3)              - Oeffnen einer C-ISAM-Datei zur Bearbeitung
+isread (3)              - Lesen von Datensaetzen aus einer C-ISAM-Datei
+isrelease (3)           - Entriegeln von Datensaetzen einer C-ISAM-Datei
+isrename (3)            - Umbenennen einer C-ISAM-Datei
+isrewcurr (3)           - Ueberschreiben des aktuellen Datensatzes einer C-ISAM-Datei
+isrewrite (3)           - Ueberschreiben eines Records in einer C-ISAM-Datei
+isstart (3)             - Selektieren eines Index
+isuniqueid (3)          - Ermittlung einer eindeutigen ID fuer eine C-ISAM-Datei
+isunlock (3)            - Aufheben der Verriegelung einer C-ISAM-Datei
+iswrite (3)             - Schreiben eines Datensatzes in eine C-ISAM-Datei
+itom, madd, msub, mult, mdiv, min, mout, pow, gcd, rpow (3) - Integer-Arithmetik waehlbarer Genauigkeit
+j0, j1, jn, y0, y1, yn (3M) - Bessel-Funktionen
+join (1)                - Verbindung zweier sortierter Dateien nach gleichen Schluesseln
+kill (2)                - Senden eines Signals an einen Prozess
+kill (1)                - Senden eines Signals an einen Prozess
+l3tol, ltol3 (3)        - Konvertieren zwischen 3-Byte-Integer und long Integer
+labelit (M)             - Dateisystem mit Namen versehen
+ld (1)                  - nichtsegmentierter U8000 und 8-bit Lader
+lddbl, ldfloat, ldint, ldlong (3)   - C-ISAM - Laderoutinen
+lex (1)                 - Generierung einfacher lexikalischer Analysatoren
+line (1)                - Einlesen einer Zeile vom Terminal
+link (2)                - Link (Verbindung) zu einer Datei
+link, unlink (M)        - Systemrufe link und unlink ausfuehren
+lint (1)                - Ein Syntax-Tester fuer C-Programme
+lkdata, unlk (2)        - Verriegeln von Daten gegen gleichzeitigen Zugriff
+ln (1)                  - Erzeugen eines Links auf eine vorhandene Datei
+local (1)               - Rueckgabe der Kontrolle an ein lokales System
+lock (2)                - Verriegeln eines Prozesses im Primaerspeicher
+login  (1)              - Benutzeranmeldung und Setzen der Nutzerumgebung
+logname (1)             - Ausgabe Login-Name
+logname (3)             - Ermittlung von Nutzer-Login-Namen
+logout (1C)             - Beenden der Login-Sitzung
+look (1)                - Suchen von Zeilen in einer sortierten Datei
+lorder (1)              - Bestimmt Ordnungsrelationen in Objektbibliotheken
+lp (4)                  - Zeilendruckertreiber
+lp, text (M)            - Ausgabeprogramme fuer den Spooler 
+lpr  (1)                - Drucker-Spooler
+ls  (1)                 - Ausgabe des Inhaltes eines Directory
+lsearch (3)             - Lineares Suchen und Aktualisieren
+lseek (2)               - Setzen des Lese/Schreib-Pointers
+m4 (1)                  - Makroprozessor
+mail, rmail (1)         - Senden und Empfangen von Post unter Nutzern
+make (1)                - Wartung und Aktualisierung von Programmen
+makekey (M)             - Verschluesselungskode generieren
+makewhatis (M)          - Erstellung der Datenbasis fuer whatis und apropos
+malloc, free, realloc, calloc (3)   - Speicherverwaltung
+man (1)                 - Ausgabe von Abschnitten des WEGA-Programmierhandbuchs
+man (7)                 - Nroff-Makros fuer WEGA-Programmierhandbuch (Online-Handbuch)
+md (4)                  - 5.25" Winchester-Treiber
+mdmctl (2)              - Konfigurieren eines Datenkanals fuer Modem- oder Terminalleitungen
+me (7)                  - Makropaket zur Textformatierung mit nroff/troff
+mem, kmem  (4)          - Speicher
+menupath (5)            - Pfadname fuer Menue-Directory
+mesg (1)                - Ermoeglicht oder verbietet Mitteilungen
+mfs, umfs  (M)          - mount-Verbindung  aller Dateisysteme herstellen / loesen
+mkdir  (1)              - Anlegen von Directories
+mkfs (M)                - Konstruieren eines Dateisystems
+mkmenu (1)              - Erzeugung eines Menues
+mknod (1)               - Erstellung eines Special-File
+mknod (2)               - Erstellen eines Directory oder eines Special-File
+mknod (M)               - Erstellen einer Geraetedatei (special file)
+mkseg (2)               - Erzeugen eines Segmentes
+mkstr (1)               - Fehlernachrichten aus C-Quellen eliminieren
+mktemp (3)              - Erzeugen eines eindeutigen Dateinamens
+mlf  (M)                - Directorys lost+found anlegen
+mm (1)                  - Erzeugung von Dokumenten mit MM-Makropaket mit nroff
+mm (7)                  - Das MM-Makropaket zur Formatierung von Dokumenten
+mmchek (1)              - Kontrolle der Verwendung von mm Makros und der eqn Trennzeichen
+mmt, mvt (1)            - Erstellung von Dokumenten mit MM-Makropaket mit troff
+mnttab (5)              - Tabelle der ueber mount eingebundenen Dateisysteme
+mon.out (5)             - Informationen ueber das Laufzeitprofil
+monitor (3)             - Vorbereitung des Laufzeitprofils
+more, page (1)          - Filter zur Ausgabe von Dateien auf dem Terminal
+mount, umount (2)       - Eingliedern oder Entfernen eines Dateisystems
+mount, umount (M)       - Einbinden und Loesen eines Dateisystems
+ms (7)                  - Makropaket zur Textformatierung mit nroff/troff
+mv  (1)                 - Umlagern oder Umbenennen von Dateien und Directorys
+mvdir (M)               - Directory umbenennen bzw. verschieben
+ncheck  (M)             - Dateinamen aus Inode-Nummer ermitteln
+newgrp (1)              - Aenderung der Gruppenzugehoerigkeit
+news (1)                - Ausgabe der neuesten Systemnachrichten
+nice (1C)               - setzt die Prioritaet eines Kommandos
+nice (2)                - Setzen der Programmprioritaet
+nice, nohup (1)         - Veraenderung der Prioritaet eines Kommandos
+nl (1)                  - Filter zur Zeilennummerierung
+nlist (3)               - Lesen von Eintraegen in der Symboltabelle
+nm (1)                  - Ausgabe der Symboltabelle
+nohup (1C)              - Verhindert Programmabbruch bei HANGUP- und QUIT-Signalen
+nq (1)                  - Ausdruck von Dateien ueber Warteschlangen (spooler)
+nroff, troff (1)        - Textformatierung
+null (4)                - Datensenke
+objdu (1)               - Ausgabe von Objekt- und Lademodulen hexadezimal
+objhdr (1)              - Ausgabe des Dateikopfes fuer Objekt- und Lademodule
+objsu (1)               - Loeschen von Unterstrichen in Symboltabellen von Objektmodulen
+od, hd  (1)             - oktaler oder hexadezimaler Dump (Ausgabe)
+onintr (1C)             - Steuerung der Reaktion auf Interrupts in Shell-Scripts
+open (2)                - Oeffnen fuer Lesen oder Schreiben.
+pack, pcat, unpack (1)  - Komprimieren, Anzeigen und Dekomprimieren von Dateien
+passwd (1)              - Veraendern des Login-Passwortes
+passwd (5)              - Passwortdatei
+paste (1)               - Zusammenfuegen von gleichen Zeilen mehrerer Dateien oder nachfolgender Zeilen einer Datei
+pause (2)               - Anhalten bis zum Signal
+pburn (1)               - EPROM-Programmer
+perror, deverr, sys_errlist, sys_nerr, errno (3)    - System-Fehlermeldungen
+pipe (2)                - Erzeugen eines Kanals zwischen Prozessen
+plz (1)                 - plz/sys Compiler-Treiber
+plzcg (1)               - plz/sys Code-Generator
+plzsys (1)              - plz/sys-Compiler
+popen, pclose (3)       - Errichten von Pipes von/zu einem Prozess
+pr (1)                  - Ausgabeformatierung
+printenv (1)            - Ausgabe der Umgebungsvariablen
+printf, fprintf, sprintf (3)    - Ausgabeformatierung
+printf, fprintf, sprintf (3X)   - Ausgabeformatierung
+prof (1)                - Anzeige der Profildaten
+profil (2)              - Profil der Ausfuehrungszeit
+profile (5)             - Setzen der Nutzerumgebung bei Login
+prs (1)                 - Ausgabe einer SCCS-Datei
+ps (1)                  - Anzeigen des Prozess-Status
+pstat (M)               - Ausgabe von Systemfakten
+ptrace (2)              - Prozessverfolgung
+ptx (1)                 - Generieren eines permutierten Index
+putc, putchar, fputc, putw (3)  - Ausgabe eines Zeichens oder Worts an ein Stream
+putfile (1)             - Dateitransfer von einem Remote-System zum lokalen System
+putpwent (3)            - Schreiben eines Passwortdateieintrags
+puts, fputs (3)         - Schreiben einer Zeichenkette in einen Stream
+putud (1)               - Auslagern von Dateien im P8000-UDOS-Format auf die Floppy-Disk-Laufwerke des Grundgeraetes
+pwck, grpck (1)         - Passwort-/Gruppendateikontrolle
+pwd (1)                 - Ausgabe des Namens des aktuellen Directorys
+qcv (5)                 - Quellcodeverwaltungssystem
+qsort (3)               - Schnelles Sortieren
+quot (M)                - Summieren der Dateisystembelegung durch die Benutzer
+rand, srand (3)         - Zufallszahlengenerator
+ranlib (1)              - Sortierung von Bibliotheken
+rc     (M)              - "read command" WEGA-Startskript rc_csh - "read command" C-Shell-Multi-User-Startskript
+read (2)                - Lesen aus einer Datei
+readsym (3)             - Lesen des naechsten Symbols aus der Symboltabelle
+regcmp (1)              - Uebersetzung regulaerer Ausdruecke in C-Quellcode
+regex, regcmp (3)       - Uebersetzen/Abarbeiten eines regulaeren Ausdrucks
+regexp (7)              - Verarbeitung regulaerer Ausdruecke
+rehash (1C)             - Wiederherstellen der Kommando-Hash-Tabelle
+remote (1)              - Kopplung mit einem abgesetzten WEGA-System
+remotelines, LCK (5)    - Dateien zur Steuerung von Remote-Leitungen
+repeat (1C)             - Wiederholen eines Kommandos
+reset (1)               - Ruecksetzen der Terminalmodi auf Standardwerte
+restor (M)              - Rueckspeichern eines Dateisystemabzugs
+rm, rmdir  (1)          - Entfernen von Links bzw. Loeschen von Dateien
+rmdel (1)               - Loeschen eines Delta aus einer SCCS Datei
+rmuser (M)              - Loeschen eines Benutzers aus dem System
+root, rroot, usr, rusr, tmp, rtmp, z, rz, tardev, dumpdev und resdev(4) 
+rsh (1)                 - Shell mit eingeschraenktem Funktionsumfang
+runacct (M)             - Ausfuehren der Tagesabrechnung
+sact (1)                - Ausgabe der laufenden Aktivitaeten zur Bearbeitung von SCCS-Dateien
+scanf, fscanf, sscanf (3)   - Formatierte Eingabekonvertierung
+scc (1)                 - segmentierter C-Compiler
+sccsdiff (1)            - Vergleich von zwei Versionen einer SCCS-Datei
+sccsfile (5)            - Format einer SCCS-Datei
+script (1)              - Anfertigen einer Dateikopie von allen Terminaldialogen
+sdiff (1)               - Seitenweises Vergleichsprogramm
+sed (1)                 - Streameditor
+segmon (3)              - Vorbereiten des Laufzeitprofils fuer segmentierte Programme
+set (1C)                - Erzeugen oder Modifizieren einer C-Shell-Variablen
+setbuf (3)              - Zuweisen von Puffern
+setenv (1C)             - Definieren oder Aendern einer Umgebungsvariablen
+setlp (M)               - Druckparameter setzen und anzeigen
+setmnt (M)              - Tabelle mnttab einrichten
+setpgrp (2)             - Setzen der Prozessgruppen-ID
+setret, longret (3)     - Globale Spruenge
+setuid, setgid (2)      - Setzen der Nutzer-ID bzw. Gruppen-ID
+sgbrk (2)               - Aendern der Groesse eines Datensegments
+sgstat (2)              - Ausgabe der hoechsten segmentierten Codeadresse
+sh (1)                  - Shell, die Bourne-Shell Kommando-Programmiersprache
+shut (M)                - Shutdown-Warnung der Benutzer
+signal (2)              - Behandeln oder Ignorieren von Signalen
+sin, cos, tan, asin, acos, atan, atan2 (3)  - trigonometrische Funktionen 
+sinh, cosh, tanh (3)    - hyperbolische Funktionen
+size (1)                - Groesse einer Objektdatei ausgeben
+sleep (1)               - Aussetzen der Programmausfuehrung fuer ein Zeitintervall 
+sleep (3)               - Unterbrechung der Abarbeitung
+slink (1)               - Verbinder fuer auslagerbare Objektmodule
+sort (1)                - Sortieren und/oder Mischen von Dateien
+source (1C)             - Ausfuehren von Shell-Scripts in der aktuellen Shell
+spell, spellin, spellout (1)    - Ermittlung von Rechtschreibfehlern
+split (1)               - Aufspalten einer Datei in Teildateien
+spool (5)               - Aufbau von Backend-Programmen fuer den WEGA-Drucker-Spooler
+sprof (1)               - Anzeige der Profildaten
+ssignal, gsignal (3)    - Softwaresignale
+stat (7)                - Rueckgabewerte des Systemrufs stat(2)
+stat, fstat (2)         - Dateistatus ermitteln
+stdbl, stfloat, stint, stlong, (3)  - C-ISAM - Speicherroutinen
+stdio (3)               - Standardpaket fuer gepufferte Ein-/Ausgabe
+stime (2)               - Setzen der Zeit
+str (M)                 - Eingabeprogramm fuer Software-Fehlerberichte
+strcat, strncat, strcmp, strncmp, strcpy, strncpy, strlen, strchr, strrchr, strpbrk, strspn, strcspn, strtok, index, rindex (3) - Zeichenkettenoperationen
+strfile (5)             - Datenbasis fuer Software-Fehlermeldungen 
+strings (1)             - Zeichenkettenausgabe aus Objekt- oder anderen Binaerdateien
+strip  (1)              - Loeschen von Symbolen, Verschiebungsbits und des Dateikopfes
+strprint (M)            - Listingprogramm fuer Software-Fehlerberichte
+stty (1)                - Setzen von Terminaloptionen
+su  (1)                 - Zeitweiliges Ersetzen der Nutzerumgebung
+sum (1)                 - Summierung und Blockzaehlung in einer Datei
+swab (3)                - Byteaustausch
+swap, longswap, swapsegt (3)    - Austauschroutinen
+switch (1C)             - C-Shell Steueranweisung fuer Entscheidungsfindung
+symscan (3)             - Abfragen der Symboltabelle
+sync (2)                - Aktualisieren des Superblocks
+sync (M)                - Superblock aktualisieren
+sysgen  (M)             - Generierung eines WEGA-Kerns                
+system (3)              - Abarbeiten eines Shell-Kommandos
+tabs (1)                - Setzen von Tabulatoren an einem Terminal
+tail (1)                - Ausgeben der letzten Zeilen einer Datei
+talk  (1)               - Kommunikation mit einem weiteren Nutzer
+tar  (1)                - Dateiarchivierung
+tar (5)                 - tar-Archivformat
+tbl (1)                 - Formatieren von Tabellen fuer nroff oder troff
+tee (1)                 - Vervielfaetigen der Standardeingabedatei
+termcap (5)             - Datenbasis fuer Terminalfunktionen
+test (1)                - Auswertung von Bedingungen
+tgetent, tgetnum, tgetflag, tgetstr, tgoto, tputs (3)   - Terminalunabhaengige Funktionen
+time (1C)               - Ermittlung der Dauer einer Kommandoausfuehrung
+time, ftime (2)         - Erhalten von Datum und Zeit
+times (2)               - Erhalten der Prozesszeiten
+timex (1)               - Dauer einer Kommandoausfuehrung mit Systemreport
+tmpfile (3)             - Anlegen einer temporaeren Datei
+tmpnam (3)              - Bildung von Dateinamen fuer temporaere Dateien
+touch (1)               - Aktualisieren von Zugriffs- und Modifikationszeit von Dateien
+toupper, tolower, toascii (3)   - Zeichenumsetzung
+tr (1)                  - Umwandeln von Zeichen
+true, false (1)         - Wahrheitswerte liefern
+tsort (1)               - Topologisches Sortieren
+tty (1)                 - Ausgabe des Terminalnamens
+tty (4)                 - Allgemeines Terminal-Interface
+ttyconfig (M)           - Konfigurieren der TTY-Kanaele fuer Terminal oder Modem
+ttyname, isatty, ttyslot (3)    - Ermitteln eines Terminalnamens
+ttytype (5)             - Terminal-Typentabelle
+types (7)               - Grundlegende Datentypen des WEGA-Betriebssystems
+ud (4)                  - Treiber zur 8-Bit-Koppelsoftware
+uimage (1)              - Umsetzung von Zobj- in a.out-Format
+umask (1C)              - Setzen der Modus-Maske zur Dateierzeugung 
+umask (2)               - Setzen einer Modusmaske fuer Dateierzeugung
+umount (2)              - Ausgliedern eines Dateisystems
+uname (1)               - Ausgabe des aktuellen Systemnamens
+uname (2)               - Charakteristische Informationen ueber das aktuelle WEGA-System
+unget (1)               - Aufhebung des letzten get-Kommandos einer SCCS-Datei
+ungetc (3)              - Rueckschreiben eines Zeichens in den Eingabestrom
+uniq (1)                - Ausgabe wiederholt auftretender Zeilen in einer Datei
+units (1)               - Einheiten-Umrechnungsprogramm
+unlink (2)              - Loeschen von Eintraegen in Directorys
+unsetenv (1C)           - Loeschen einer Umgebungsvariablen
+update (M)              - periodisches Rueckschreiben der Puffer
+upkeep (M)              - Verwaltung der Directorys
+users (1)               - Ausgabe der Liste aller aktiven Nutzer
+utime (2)               - Setzen der Dateizeiten
+utmp, wtmp (5)          - Login-Datensaetze
+uucico (M)              - uucp-Auftraege ausfuehren
+uuclean (M)             - uucp-Spooler-Directory saeubern
+uucp (1)                - Kopieren unter WEGA-Systemen
+uulog (1)               - Verwaltung der Transaktionen auf einem UUCP-Netz
+uuname (1)              - Ausgabe aller Systemnamen in einem UUCP-Netz
+uux (1)                 - Kommandoausfuehrung zwischen WEGA-Systemen ueber uucp
+val (1)                 - Konsistenzspruefung fuer SCCS-Dateien
+vi (1)                  - Bildschirmorientierter (visueller) Editor
+vls (1)                 - "visuelle" Auflistung von Dateien und Directories
+vnews (1)               - "visuelle" Anzeige von News-Eintraegen
+wait (1C)               - Warten auf Beendigung von Prozessen
+wait (2)                - Warten auf Beendigung eines Prozesses
+wall  (M)               - Schreiben an alle Benutzer
+wc (1)                  - Wortzaehlung
+what (1)                - Identifizieren von SCCS-Dateien
+whatis (1)              - Kurzbeschreibung eines Kommandos
+whereis (1)             - Sucht Quelle, Binaerdatei und Handbucheintrag eines Programms
+while (1C)              - C-Shell Steueranweisung fuer Schleifen
+who  (1)                - Ausgabe der Login-Namen der aktuell angemeldeten Nutzer
+whoami (1)              - Ausgabe des effektiven Nutzer-ID
+whodo (1)               - Ausgabe der aktuellen Nutzernamen mit Prozess-Status
+whois (1)               - Zugriff auf Nutzerdaten
+whois (5)               - Datenbasis fuer whois
+write  (1)              - Schreiben an einen anderen Nutzer
+write (2)               - Schreiben in eine Datei
+xargs (1)               - Aufbauen von Argumentlisten und Ausfuehren von Kommandos
+xq  (1)                 - Verwaltung von Anforderungen an den Drucker-Spooler
+xq  (M)                 - Ausfuehren und Loeschen von Auftraegen des Druckerspoolers
+xstr (1)                - Entfernt Zeichenketten aus C-Programmen fuer gemeinsame Nutzung
+yacc (1)                - Compiler-Compiler
+zmenu (1)               -  Menuetreiber

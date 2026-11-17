@@ -14,9 +14,11 @@ for t in cc scc cas as ld sld gld ar yacc chkout; do
 done
 # wrun PROGRAM [ARG ...]: a program of the WEGA system that a Makefile runs itself (a generator: maketerms), under the emulator;
 # the Makefiles call it as $(RUN) ./PROGRAM with RUN=wrun (exported by the callers: host/Makefile, checkall.sh), RUN empty on WEGA itself
-# the guest's /tmp and /usr/tmp are a directory of their own for each call (Z8K_OVERLAY): lint1 leaves files in /usr/tmp, which must not land in WEGA
+# the guest's /tmp and /usr/tmp are a directory of their own for each call (Z8K_OVERLAY): lint1 leaves files in /usr/tmp, which must not land in WEGA;
+# a caller that sets Z8K_OVERLAY itself (a layer over the root: the install tree) gets that one
 {
 	echo '#!/bin/sh'
+	echo 'if [ -n "$Z8K_OVERLAY" ]; then exec' $emu -r $wega '"$@"; fi'
 	echo 'o=`mktemp -d` || exit 1'
 	echo 'mkdir -p "$o/tmp" "$o/usr/tmp"'
 	echo "Z8K_OVERLAY=\"\$o\" $emu -r $wega \"\$@\""

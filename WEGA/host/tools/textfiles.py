@@ -54,6 +54,8 @@ CHECKED.update({
     'usr/dict/h': ('G', 'spellin as in spell.mk; word lists of System III changed until the tables came out (byte-identical): see src/cmd/spell/Makefile'),
     'usr/lib/llib-lc.ln': ('G', 'cpp -C | lint1 of the WEGA root; headers of the time made from src/head (include/): byte-identical, see src/cmd/lint/Makefile'),
     'usr/lib/llib-port.ln': ('G', 'cpp -C | lint1 of the WEGA root; headers of the time made from src/head (include/): byte-identical, see src/cmd/lint/Makefile')})
+GEN.append(('lib/ex2.13strings', ['plexus cmd/plx/ex: vi.mk, mkstr.c, ex*.c'], 'mkstr over the sources of ex (Plexus); ex_subr.c changed in one string'))
+CHECKED.update({'lib/ex2.13strings': ('G', 'mkstr (src/cmd/mkstr.c) over src/cmd/ex as in vi.mk: byte-identical')})
 ZIELDIR = []
 NOGEN = {'usr/lib/term/tab-12', 'usr/lib/term/tab630wp-12'}	# no System III source for these
 
