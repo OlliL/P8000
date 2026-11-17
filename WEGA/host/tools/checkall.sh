@@ -20,7 +20,7 @@
 # its keys are by content). A second run in a directory that a living run uses stops with exit status 2.
 #
 # Environment: WEGA (the WEGA 3.1 tree), CHECK_TMP (default /tmp/wega_check, or /tmp/wega_check.NAME, a local disk),
-# CHECK_NAME, CHECK_PATCH, MAKEJOBS (default -j<cores>), CORPUS_NOCACHE=1 (the corpora ignore the store: make checkall-nocache),
+# CHECK_NAME, CHECK_PATCH, MAKEJOBS (default -j<cores>), CHECK_CORPORA (how many corpora run at a time, default half the cores), CORPUS_NOCACHE=1 (the corpora ignore the store: make checkall-nocache),
 # CHECK_KEEP=1 (keep CHECK_TMP after a run that passed; it is removed then, and kept after a failure or with -b).
 
 HERE=`cd \`dirname $0\` && pwd`
@@ -230,20 +230,28 @@ else
 fi
 stamp '3 emulator tests'
 # the corpora run side by side, each in a work directory of its own; every candidate of a program is tested against the
-# same inputs (the original runs once)
+# same inputs (the original runs once). At most CHECK_CORPORA corpora run at a time (default: half the cores, each corpus has
+# 2 jobs), in the order of compare/CORPORA (the slowest first): the next one starts when one is done.
 CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
-touch $T/store.stamp	# the store: what the corpora of this run do not use is older than this (corpus_prune.py in finish)
-echo "corpora start: load `cut -d' ' -f1-3 /proc/loadavg`" >> $T/timing.log
-for n in $CORP; do
-	CORPUS_DB=$REPO/.corpus CORPUS_TMP=$T/corpus_$n CORPUS_OPTS="-k $CORPUS_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS $n > $T/corpus_$n.log 2>&1 &
-done
-wait
-stamp '3 all corpora (in parallel)'
+touch $T/tree.stamp $T/store.stamp	# tree.stamp: see the end of the corpora; the store: what the corpora of this run do not use is older than this (corpus_prune.py in finish)
+NC=${CHECK_CORPORA:-`expr \( \`nproc\` + 1 \) / 2`}
+echo "corpora start: load `cut -d' ' -f1-3 /proc/loadavg`, $NC at a time" >> $T/timing.log
+export CS T REPO WEGA OLD CORPUS_OPTS
+echo $CORP | tr ' ' '\n' | xargs -P $NC -I{} sh -c 'CORPUS_DB=$REPO/.corpus CORPUS_TMP=$T/corpus_{} CORPUS_OPTS="-k $CORPUS_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS {} > $T/corpus_{}.log 2>&1'
+stamp '3 all corpora (CHECK_CORPORA at a time)'
 echo "corpora end: load `cut -d' ' -f1-3 /proc/loadavg`" >> $T/timing.log
 grep -h '^TIME ' $T/corpus_*.log | sed 's/^TIME //' | sort >> $T/timing_corpus.log
 for n in $CORP; do
 	corpus $n $T/corpus_$n.log
 done
+# the original tree (WEGA) must not be written by a corpus (a program that makes a name in a directory that the case's layer over
+# the tree does not hold writes it into the tree: etc/utmp by getty, ...); its tmp is the guest's /tmp of older runs
+W=`find $WEGA -newer $T/tree.stamp ! -path "$WEGA/tmp" ! -path "$WEGA/tmp/*" 2>/dev/null | head -5 | tr '\n' ' '`
+if [ -n "$W" ]; then
+	result 'tree not written' fail "files of $WEGA written by the corpora: $W"
+else
+	result 'tree not written' ok 'no file of the tree changed'
+fi
 
 finish

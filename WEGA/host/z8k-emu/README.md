@@ -35,7 +35,7 @@ part of this repository; see `../KNOWLEDGE.md`, section "Inputs".
 | `Z8K_TMPDIR=DIR` (host environment) | the guest `/tmp` is DIR instead of `ROOT/tmp` (checkall gives each run its own, so that parallel runs do not share it) |
 | `Z8K_ROOTLOG=FILE` (host environment) | every guest path looked up below ROOT (not `/tmp`, `/dev`) is appended to FILE, one per line (a relative FILE is taken from the starting directory; opened per line, so the guest never sees its descriptor): the files of the tree a run depends on, measured by the corpus runner |
 | `Z8K_DEVTAB=FILE` (host environment) | the guest `/dev` is the table FILE (increment 117): `devtab.wega` (WEGA's /dev from the installation, names, types, majors, minors) and lines `model NAME KIND[:ARG] [excl] [console]`; a directory read of `/dev` lists the table, `stat`/`fstat` give type and numbers, `open` goes to the model: `image:FILE` (a floppy image), `host:PATH` (a host file such as /dev/null), `proc:CMD` (a byte stream to a model program: write sends, read waits for one byte and returns what is there, as the ud driver; close ends the stream and waits for the model), `console`; `excl` allows one open at a time, `console` only with the console as controlling terminal (udopen); no model: ENXIO; a name not in the table: ENOENT. Without it `/dev/...` is the host's. |
-| `Z8K_CONSOLE=1` (host environment) | the minimal terminal: fds 0, 1, 2 are `/dev/console` (with `Z8K_DEVTAB`): `isatty`, `ttyname` and the tty ioctls (TIOCGETP/SETP/SETN, TIOCGETC/SETC, TCGETA/TCSETA...) work and keep their settings; the bytes are still the step's stdin and output. Default settings are the model's (B9600, erase #, kill @, ECHO|CRMOD; not measured). |
+| `Z8K_CONSOLE=1` (host environment) | the minimal terminal: fds 0, 1, 2 are `/dev/console` (with `Z8K_DEVTAB`): `isatty`, `ttyname` and the tty ioctls (TIOCGETP/SETP/SETN, TIOCGETC/SETC, TCGETA/TCSETA...) work and keep their settings; the bytes are still the step's stdin and output. A descriptor 0, 1, 2 that the guest closes or replaces is no console any more (csh does that); a dup of it is the console. Default settings are the model's (B9600, erase #, kill @, ECHO|CRMOD; not measured). |
 | `Z8K_TIME=SECONDS` (host environment) | the system call `time` returns this value (reproducible `$D$` of `chkout`; the guest zone is EST) |
 | `-e NAME=VALUE` | add a variable to the guest environment (default: `PATH=/bin:/usr/bin`, `HOME=/`) |
 | `-0 ARGV0` | the guest gets ARGV0 as `argv[0]` instead of the path of the program (as a shell gives the name typed; mv, cp, ln choose their work by it) |
@@ -148,8 +148,7 @@ section "Oracle: z8k-emu".
 
 With `Z8K_OVERLAY=DIR` an absolute guest path that exists in DIR is taken from there, and a new name whose directory
 exists in DIR is made there (not in ROOT). The corpus runner gives every case such a layer: a program at its place in
-the tree (a candidate of `INSTALLED`), what a case writes there (`/etc/mnttab` of mount). Not modelled: a directory of the guest
-that is in both shows only the ROOT one in a listing.
+the tree (a candidate of `INSTALLED`), what a case writes there (`/etc/mnttab` of mount). A directory of the guest that is in both lists the names of both (the layer's first). A `/tmp` in the layer is the whole guest /tmp (also with Z8K_TMPDIR): the tree's /tmp does not show through.
 
 ## Mounted file systems
 
@@ -218,3 +217,6 @@ super-user):
 - Files: sources (`z8k.c` CPU core, `wega.c` loader and system calls,
   `epu.c` EPU trap, `fpe_gen.c` generated from `fpe.s` by `fpe2c.py`,
   `z8k.h`, `z8k_int.h` helpers shared by the CPU core and `epu.c`).
+
+The i-node numbers of the guest are 16 bits: a hash of the host's number (not its low bits: ext4 puts the directories of a tree into
+groups of 8192 i-nodes, and two of them often agreed in the low 16 bits; rmdir then took the directory for the current one).

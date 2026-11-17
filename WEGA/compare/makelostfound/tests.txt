@@ -1,0 +1,53 @@
+# The cases of the corpus of makelost+found (compare/makelostfound/corpus.py); the format: host/recon/casefile.py. Every case
+# runs as root. Where an expectation comes from: src = src/cmd/makelost+found.sh (a csh script: the runner starts it with
+# /bin/csh since its first byte is #).
+
+== new
+# src: a directory without lost+found: mkdir, chmog 0750 wega 0, the message, 158 files made and removed again (the entries
+# stay allocated on a real file system: lost+found stays empty but has room for fsck)
+-- case
+host: mkdir fs
+step: /etc/makelost+found fs
+host: ls fs/lost+found | wc -l; ls -ld fs/lost+found | cut -c1-10
+expect: exit 0
+expect: output contains 'make lost+found runs about 3 minutes for fs'
+expect: output contains 'drwxr-x---'
+
+== existing
+# src: an existing lost+found is not made again (and keeps its mode); the files are made and removed in it
+-- case
+host: mkdir -p fs/lost+found && chmod 700 fs/lost+found && echo keep > fs/lost+found/old
+step: /etc/makelost+found fs
+host: ls -ld fs/lost+found | cut -c1-10; ls fs/lost+found
+expect: output contains 'drwx------'
+expect: output contains 'old'
+
+== several
+# src: every argument is done, in the order
+-- case
+host: mkdir fs1 fs2
+step: /etc/makelost+found fs1 fs2
+expect: output is 'make lost+found runs about 3 minutes for fs1\nmake lost+found runs about 3 minutes for fs2\n'
+
+== no-argument
+# src: without arguments the foreach does nothing
+-- case
+step: /etc/makelost+found
+expect: exit 0
+expect: output is ''
+
+== no-directory
+# src: the directory does not exist: mkdir fails, the messages of csh follow (the script goes on to the echo in the loop)
+-- case
+step: /etc/makelost+found nodir
+expect: exit 1
+expect: output is 'make lost+found runs about 3 minutes for nodir\n-- stderr\nmkdir: cannot access nodir/.\nnodir/lost+found: No such file or directory\nnodir/lost+found/Z158: No such file or directory\n'
+
+== user
+# src: a user cannot run it (mode 700, root): the message of the shell
+-- case
+user: 100 10
+host: mkdir fs
+step: /etc/makelost+found fs
+expect: exit 1
+expect: output is '-- stderr\n/etc/makelost+found: Permission denied\n'

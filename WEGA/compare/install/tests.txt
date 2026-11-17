@@ -1,0 +1,182 @@
+# The cases of the corpus of install (compare/install/corpus.py); the format: host/recon/casefile.py. Every case runs as root with the
+# clock at 600000000. What is installed is the file prog of the case (new), into directories of the case (d1, d2) or of the layer
+# over the tree (usr/bin, usr/lib: the places install searches without -i). After an install the times of the files are set
+# (touch) so that ls -l can be compared; ls -l shows the owner and group the script gave (bin, system). install has no man page in
+# the tree: where an expectation comes from: src = src/cmd/install.sh (a sh script).
+
+== usage
+# src: no argument: the usage line (a function of the script, USAGE), status 2
+-- case
+step: /etc/install
+expect: exit 2
+expect: output is 'usage: install [options] file [dir1 ...]\n'
+
+== c-new
+# src: -c dir: the file is copied into the directory when it is not there: mode 751, owner bin, group system; the message
+-- prog
+new
+-- case
+host: mkdir d
+step: /etc/install -c d prog
+host: touch -d '1989-01-01 00:00' d/prog
+step: /bin/ls -l d
+expect: output contains 'prog installed as d/prog'
+expect: output contains '-rwxr-x--x 1 bin      system        4 Dec 31 18:00 prog'
+
+== c-exists
+# src: -c with a file that is there: "already exists", status 2, the old file stays
+-- prog
+new
+-- case
+host: mkdir d; echo old > d/prog
+step: /etc/install -c d prog
+expect: exit 2
+expect: output is 'install: prog already exists in d\n'
+expect: file d/prog contains 'old'
+
+== f-replace
+# src: -f dir replaces the file that is there; owner and mode of the old file stay (cp onto it)
+-- prog
+new
+-- case
+host: mkdir d; echo old > d/prog; chmod 600 d/prog
+step: /etc/install -f d prog
+expect: output is 'prog installed as d/prog\n'
+expect: file d/prog contains 'new'
+
+== f-new
+# src: -f when the file is not there: it is made as with -c (mode, owner, group)
+-- prog
+new
+-- case
+host: mkdir d
+step: /etc/install -f d prog
+host: touch -d '1989-01-01 00:00' d/prog
+step: /bin/ls -l d
+expect: output contains '-rwxr-x--x 1 bin      system        4 Dec 31 18:00 prog'
+
+== f-old
+# src: -o: the file that is there is moved to OLDprog first (and copied back), then replaced
+-- prog
+new
+-- case
+host: mkdir d; echo old > d/prog
+step: /etc/install -o -f d prog
+expect: output contains 'prog moved to d/OLDprog'
+expect: output contains 'prog installed as d/prog'
+expect: file d/OLDprog contains 'old'
+expect: file d/prog contains 'new'
+
+== f-sticky
+# src: a file with the sticky bit (-k): the bit is removed, the file is run with no input (it may be a program in use), copied
+# over and the bit set again
+-- prog
+new
+-- case
+host: mkdir d; printf '#\ntrue\n' > d/prog; chmod 1755 d/prog
+step: /etc/install -f d prog
+host: ls -l d/prog | cut -c1-10
+expect: output contains '-rwxr-xr-t'
+
+== silent
+# src: -s: no messages
+-- prog
+new
+-- case
+host: mkdir d
+step: /etc/install -s -c d prog
+expect: exit 0
+expect: output is ''
+expect: file d/prog contains 'new'
+
+== c-bad-args
+# src: -c needs 3 or 4 arguments (with the directory): otherwise the message, status 2
+-- prog
+new
+-- case
+step: /etc/install -c prog
+expect: exit 2
+expect: output is 'install: -c option must have either 3 or 4 args!\n'
+
+== c-with-f
+# src: -c and -f do not go together: with both and a file there are 5 arguments, more than -c takes
+-- prog
+new
+-- case
+host: mkdir d
+step: /etc/install -c d -f d prog
+expect: exit 2
+expect: output contains 'install: -c option must have either 3 or 4 args!'
+
+== dir-needs-name
+# src: -c followed by another option instead of the directory
+-- prog
+new
+-- case
+host: mkdir d
+step: /etc/install -c -s prog
+expect: exit 2
+
+== search
+# src: without -c, -f the file is searched with find (-type f) in the directories after the name, the first match is replaced
+# (find of the original says "bad status" and "bad directory tree" with a garbled name for a directory given by a relative name:
+# the output of find is a diagnostic only, the result is right; open: the program or the emulator, see the log of 120)
+-- prog
+new
+-- case
+host: mkdir d1 d2; echo old > d2/prog
+step: /etc/install prog d1 d2
+expect: output contains 'prog installed as d2/prog'
+expect: file d2/prog contains 'new'
+
+== not-found
+# src: the name is nowhere in the directories (and -i: not in the default ones): the message, status 2
+-- prog
+new
+-- case
+host: mkdir d1
+step: /etc/install -i prog d1
+expect: exit 2
+expect: output contains 'install: prog was not found anywhere!'
+
+== default-dirs
+# src: without the directories the places /bin /usr/bin /etc /lib /usr/lib are searched: a file of that name in the layer's usr/bin is
+# replaced (the tree is not written: the layer holds the only file of that name)
+-- zzprog
+new
+-- case
+host: mkdir -p $Z8K_OVERLAY/usr/bin; echo old > $Z8K_OVERLAY/usr/bin/zzprog
+step: /etc/install zzprog
+host: cat $Z8K_OVERLAY/usr/bin/zzprog
+expect: output contains 'zzprog installed as /usr/bin/zzprog'
+expect: output contains 'new'
+
+== old-in-default
+# src: -o with a place found by the search: the old file goes to OLDzzprog beside it
+-- zzprog
+new
+-- case
+host: mkdir -p $Z8K_OVERLAY/usr/bin; echo old > $Z8K_OVERLAY/usr/bin/zzprog
+step: /etc/install -o zzprog
+host: ls $Z8K_OVERLAY/usr/bin | grep zz | tr "\n" " "; cat $Z8K_OVERLAY/usr/bin/OLDzzprog
+expect: output contains 'old zzprog moved to /usr/bin/OLDzzprog'
+expect: output contains 'OLDzzprog zzprog'
+
+== default-place
+# src: -n dir: when the file is found nowhere it is put into dir as a default place (with mode, owner, group)
+-- prog
+new
+-- case
+host: mkdir d
+step: /etc/install -n d -i prog d
+host: ls d
+expect: output contains 'prog installed as d/prog by default!'
+
+== option-after-file
+# src: after the file an option is an error (the usage), status 2
+-- prog
+new
+-- case
+host: mkdir d1
+step: /etc/install prog -s d1
+expect: exit 2

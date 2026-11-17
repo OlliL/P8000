@@ -1,0 +1,47 @@
+# The cases of the corpus of halt (compare/halt/corpus.py); the format: host/recon/casefile.py. Every case runs as root with the clock
+# at 600000000; the users me (console) and bob (tty2, the image t2) are logged in (utmp in the layer's /etc), /etc/motd is the
+# case's own copy. Where an expectation comes from: src = src/cmd/halt.sh (csh script, the runner starts it with /bin/csh), man =
+# /usr/man/manM/down.M for the context. sync of the emulator is not implemented (its message is on the diagnostic output of both).
+
+== run
+# src: the message and the time, a warning to all terminals through wall (the other user's terminal gets it), the list of the
+# users (who), 30 seconds, the saved motd back, sync twice, the end message and the kill of init (-1 1)
+-- case
+host: printf 'saved\n' > $Z8K_OVERLAY/etc/motd.save
+step: /etc/halt
+host: cat -v t2; cat $Z8K_OVERLAY/etc/motd; ls $Z8K_OVERLAY/etc | grep -v '^halt$' | tr '\n' ' '
+expect: exit 0
+expect: output contains 'HALT PROCEDURE STARTED AT Thu Jan  5 05:40:00 EST 1989'
+expect: output contains 'Current logged in users:'
+expect: output contains 'bob      tty2    Jan  5 05:40'
+expect: output contains 'Now terminating all processes'
+expect: output contains 'Broadcast Message ...'
+expect: output contains 'System is coming down.  Thirty seconds to forced log-off.'
+expect: output contains 'saved'
+expect: output contains 'motd utmp'
+
+== no-saved-motd
+# src: without /etc/motd.save the motd stays as it is
+-- case
+host: cp $Z8K_OVERLAY/etc/motd motd.before
+step: /etc/halt
+host: cmp $Z8K_OVERLAY/etc/motd motd.before && echo motd-same
+expect: output contains 'motd-same'
+
+== interrupt
+# src: onintr fixer: an interrupt during the 30 seconds restores the saved motd and ends without the sync and the kill
+-- case
+host: printf 'saved\n' > $Z8K_OVERLAY/etc/motd.save
+step: /etc/halt
+signal: INT at 'tty2    Jan'
+host: cat $Z8K_OVERLAY/etc/motd; ls $Z8K_OVERLAY/etc | grep -v '^halt$' | tr '\n' ' '
+expect: output contains 'saved'
+expect: output contains 'motd utmp'
+
+== user
+# src: /etc/halt has the mode 700: a user cannot run it
+-- case
+user: 100 10
+step: /etc/halt
+expect: exit 1
+expect: output is '-- stderr\n/etc/halt: Permission denied\n'

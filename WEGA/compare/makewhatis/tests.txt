@@ -1,0 +1,66 @@
+# The cases of the corpus of makewhatis (compare/makewhatis/corpus.py); the format: host/recon/casefile.py. Every case runs as root
+# with the clock at 600000000. The man pages are those of the tree (symbolic links in the layer's /usr/man/man1 ... manM), a case
+# may replace some by changed copies. Where an expectation comes from: src = src/cmd/makewhatis.sh (csh script, run by /bin/csh):
+# getNAME takes the NAME line of every page, ed makes the entries (name (section) tab text), expand and sort make the file.
+
+== whatis
+# src: the file /usr/lib/whatis is made from the NAME lines of all pages: one line per page, in the form "name (section)" with
+# the text from column 25, sorted; the mode is 0664
+-- case
+step: /etc/makewhatis
+host: cd $Z8K_OVERLAY; grep "^cat \|^dc \|^dump " usr/lib/whatis; sort -c usr/lib/whatis && echo sorted; grep -c . usr/lib/whatis; ls -l usr/lib/whatis | cut -c1-10
+expect: exit 0
+expect: output contains 'cat (1)                 - Verketten und Ausgeben von Dateien'
+expect: output contains 'dc (1)                  - Tischrechner'
+expect: output contains 'dump (M)                - inkrementaler Dateisystemabzug'
+expect: output contains 'sorted'
+expect: output contains '505'
+expect: output contains '-rw-rw-r--'
+
+== changed-page
+# src: a changed NAME line gives a changed entry
+-- case
+host: cd $Z8K_OVERLAY/usr/man/man1 && rm cat.1 && sed 's/^cat .*/cat \\- a changed text/' $WEGA_ROOT/usr/man/man1/cat.1 > cat.1
+step: /etc/makewhatis
+host: grep "^cat " $Z8K_OVERLAY/usr/lib/whatis
+expect: output contains 'cat (1)                 - a changed text'
+
+== removed-page
+# src: a page that is not there gives no entry
+-- case
+host: rm $Z8K_OVERLAY/usr/man/man1/cat.1
+step: /etc/makewhatis
+host: grep -c "^cat " $Z8K_OVERLAY/usr/lib/whatis; grep -c . $Z8K_OVERLAY/usr/lib/whatis
+expect: output contains '504'
+
+== section-letter
+# src: the section of a page (the number or M) is in the parentheses; a page of the section M gets (M)
+-- case
+step: /etc/makewhatis
+host: grep -c "(M)" $Z8K_OVERLAY/usr/lib/whatis; grep -c "(1)" $Z8K_OVERLAY/usr/lib/whatis
+expect: exit 0
+
+== temporary-files
+# src: the temporary files ($$.N in each man directory, /tmp/whatis and /tmp/whatis2) are removed at the end
+-- case
+step: /etc/makewhatis
+host: cd $Z8K_OVERLAY; ls usr/man/man1 usr/man/manM | grep -c '^[0-9]'; ls tmp | wc -l
+expect: output contains '0'
+
+== empty-section
+# src: a section without pages: the temporary file of the script ($$.7) is the only match of *.*, getNAME takes nothing from it:
+# no message, no entries of that section (10 fewer)
+-- case
+host: rm $Z8K_OVERLAY/usr/man/man7/*
+step: /etc/makewhatis
+host: grep -c . $Z8K_OVERLAY/usr/lib/whatis
+expect: exit 0
+expect: output contains '495'
+
+== user
+# src: /etc/makewhatis has the mode 700: a user cannot run it
+-- case
+user: 100 10
+step: /etc/makewhatis
+expect: exit 1
+expect: output is '-- stderr\n/etc/makewhatis: Permission denied\n'

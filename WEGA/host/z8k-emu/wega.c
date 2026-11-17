@@ -429,6 +429,17 @@ static const char *mnt_path(const char *g, char *buf, size_t n)	/* a guest path 
 static const char *hostpath(const char *g, char *buf, size_t n)
 {
 	const char *dd;
+	if (!g[0]) return ".";	/* the empty name is the current directory (nami.c: no component, flag 0): the glob of csh opens it */
+	if (g[0] == '/' && *root && !strncmp(g, "/tmp", 4) && (g[4] == 0 || g[4] == '/')) {	/* a /tmp in the layer is the whole /tmp (before dotdot and the mount of Z8K_TMPDIR: /tmp/man/.. is then in the layer too) */
+		const char *ov = getenv("Z8K_OVERLAY");
+		struct stat ost;
+		char od[1100];
+		snprintf(od, sizeof od, "%s/tmp", ov ? ov : "");
+		if (ov && *ov && stat(od, &ost) == 0 && S_ISDIR(ost.st_mode)) {	/* what is in the tree's /tmp (tmp/man) does not show through */
+			snprintf(buf, n, "%s%s", ov, g);
+			return buf;
+		}
+	}
 	if ((dd = dotdot(g, buf, n)) != NULL) {
 		if (g[0] == '/') rootlog(g);
 		return dd;
@@ -440,9 +451,11 @@ static const char *hostpath(const char *g, char *buf, size_t n)
 	}
 	if (!strncmp(g, "/dev/", 5) && !(devtab_active() && (!g[5] || !strcmp(g + 5, "."))))
 		return g;	/* the host /dev, unless the guest /dev is a table (then /dev itself is ROOT/dev, listed from it) */
-	if (*guesttmp() && !strncmp(g, "/tmp", 4) && (g[4] == 0 || g[4] == '/')) {
-		snprintf(buf, n, "%s%s", guesttmp(), g + 4);
-		return buf;
+	if (!strncmp(g, "/tmp", 4) && (g[4] == 0 || g[4] == '/')) {
+		if (*guesttmp()) {
+			snprintf(buf, n, "%s%s", guesttmp(), g + 4);
+			return buf;
+		}
 	}
 	{	/* Z8K_OVERLAY: a layer over ROOT (the files of a case: a program at its place in the tree, /etc/mtab): a path
 		   that is in the layer is taken from there, and a new name whose directory is in the layer is made there */
@@ -679,9 +692,16 @@ static void tmplog(const char *fmt, ...)
 static int istmp(const char *gp) { return strncmp(gp, "/tmp/", 5) == 0; }
 
 /* a host inode as the 16 bits of WEGA; never 0, which marks a free directory slot */
+/* the i-node number of the guest (16 bit) from the host's: not the low 16 bits (ext4 puts the directories of a tree into groups of
+   8192 i-nodes: two directories of one tree often have the same low bits and rmdir took one for the current directory) but a
+   hash of all of them */
 static unsigned ino16(ino_t ino)
 {
-	unsigned i = (unsigned)(ino & 0xFFFF);
+	uint32_t h;
+	unsigned i;
+	if (ino > 0 && ino < 0x10000) return (unsigned)ino;	/* the numbers of the guest /dev (devtab) and small host numbers stay as they are */
+	h = ((uint32_t)ino ^ (uint32_t)((uint64_t)ino >> 32)) * 2654435761u;
+	i = (unsigned)(h >> 16) & 0xFFFF;
 	return i ? i : 0xFFFF;
 }
 
@@ -822,10 +842,12 @@ static void dev_stat(int e, struct stat *st)
 }
 
 /* the fd is a device: its entry, or -1 */
+static int stdcon[3] = { 1, 1, 1 };	/* fd 0, 1, 2 still are the console (Z8K_CONSOLE): closed, or made a file by dup2 or a new open, they are not */
+
 static int devfd(int fd)
 {
 	if (fd >= 0 && fd < 256 && devof[fd]) return devof[fd] - 1;
-	if (fd >= 0 && fd <= 2 && console_on()) return console_ent();
+	if (fd >= 0 && fd <= 2 && stdcon[fd] && console_on()) return console_ent();
 	return -1;
 }
 
@@ -1030,6 +1052,31 @@ static void dirload(int fd, const char *path)
 		d->len += 16;
 	}
 	closedir(dp);
+	{	/* a directory of the Z8K_OVERLAY layer that is in ROOT too lists both: the names of ROOT it does not hold are added */
+		const char *ov = getenv("Z8K_OVERLAY");
+		size_t ol = ov ? strlen(ov) : 0;
+		if (ol && !strncmp(path, ov, ol) && path[ol] == '/') {
+			char rd[PATH_MAX];
+			DIR *rp2;
+			snprintf(rd, sizeof rd, "%s%s", root, path + ol);
+			if ((rp2 = opendir(rd))) {
+				while ((de = readdir(rp2))) {
+					int i, have = 0;
+					name = de->d_name;
+					if (!strcmp(name, ".") || !strcmp(name, "..")) continue;
+					for (i = 0; i + 16 <= d->len; i += 16)
+						if (!strncmp((char *)d->buf + i + 2, name, 14) && strlen(name) <= 14) { have = 1; break; }
+					if (have || !(d->buf = realloc(d->buf, d->len + 16))) continue;
+					memset(d->buf + d->len, 0, 16);
+					d->buf[d->len] = ino16(de->d_ino) >> 8;
+					d->buf[d->len + 1] = ino16(de->d_ino);
+					memcpy(d->buf + d->len + 2, name, strnlen(name, 14));
+					d->len += 16;
+				}
+				closedir(rp2);
+			}
+		}
+	}
 	d->fd = fd;
 	d->next = dirs;
 	dirs = d;
@@ -1519,6 +1566,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 				break;
 			}
 		devclose(i);
+		if (i >= 0 && i <= 2) stdcon[i] = 0;
 		return sc_res(c, close(i)); }
 	case 7: {	/* wait */
 		int st; pid_t pid = wait(&st);
@@ -1743,13 +1791,18 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 41:	/* dup */
 		i = a_int(&a); j = a_int(&a);
 		if (i & 0x40) {
+			int src = i & 0x3F, con = devfd(src) >= 0 && !devof[src] && devfd(src) == console_ent();
 			devclose(j);
-			k = dup2(i & 0x3F, j);
-			if (k >= 0 && devof[i & 0x3F]) devof[k] = devof[i & 0x3F];	/* a copy: only the opener ends a proc model */
+			k = dup2(src, j);
+			if (k >= 0 && devof[src]) devof[k] = devof[src];	/* a copy: only the opener ends a proc model */
+			else if (k > 2 && k < 256 && con) devof[k] = console_ent() + 1;	/* a copy of fd 0, 1, 2 as the console */
+			if (k >= 0 && k <= 2) stdcon[k] = con || (devof[src] && console_on() && devof[src] - 1 == console_ent());
 			return sc_res(c, k);
 		}
 		k = dup(i);
 		if (k >= 0 && k < 256 && i >= 0 && i < 256 && devof[i]) devof[k] = devof[i];
+		else if (k > 2 && k < 256 && i >= 0 && i <= 2 && devfd(i) >= 0 && devfd(i) == console_ent()) devof[k] = console_ent() + 1;
+		else if (k >= 0 && k <= 2) stdcon[k] = 0;
 		return sc_res(c, k);
 	case 42: {	/* pipe */
 		int fd[2];

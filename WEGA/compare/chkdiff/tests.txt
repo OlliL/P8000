@@ -1,0 +1,221 @@
+# The cases of the corpus of chkdiff (compare/chkdiff/corpus.py); the format: host/recon/casefile.py. Every case runs as root
+# with the clock at 600000000. The versions are made by the original /bin/chkin and /bin/chkout: f has version 1.1 (one, two,
+# three), 1.2 (one, TWO, three, four) and the working file is 1.2 plus a line five. Where an expectation comes from: man =
+# /usr/man/man1/chkdiff.1, src = src/cmd/chkdiff.sh (a csh script, run by /bin/csh as its first byte is #).
+
+== last
+# man: without options the source file is compared with the last version in the control file f+: the line five is new
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff f
+expect: exit 0
+expect: output is '4a5\n> five\n'
+
+== h
+# man: -h gives the diff with its -h option (the same output for this small change)
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff -h f
+expect: exit 0
+expect: output contains '4a5'
+
+== version
+# man: -v rel.lev compares the source file with that version: 1.1 has two, three and no four, five
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff -v 1.1 f
+expect: exit 0
+expect: output is '2c2\n< two\n---\n> TWO\n3a4,5\n> four\n> five\n'
+
+== two-versions
+# man: two -v options compare two versions of the control file (the source file is not read)
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff -v 1.1 -v 1.2 f
+expect: exit 0
+expect: output is '2c2\n< two\n---\n> TWO\n3a4\n> four\n'
+
+== h-version
+# src: -h with -v; the -h diff of the two ways of writing a change
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff -h -v 1.1 f
+expect: exit 0
+expect: output contains '2,$c2,$'
+
+== h-two-versions
+# src: -h with two -v options (the arguments after -h are shifted by one)
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff -h -v 1.1 -v 1.2 f
+expect: exit 0
+
+== unknown-version
+# src: a version that is not in the control file: chkout says so, the diff is against an empty file
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff -v 9.9 f
+expect: output contains 'chkout: f: version 9.9 not found'
+
+== plus
+# src: a file name ending in + (the control file) is refused with the usage, status 1
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff f+
+expect: exit 1
+expect: output is 'Usage: chkdiff [-h] [-v rel.lev] [-v rel.lev] file\n'
+
+== usage-count
+# src: two arguments (or four without -h): the usage, status 1
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff a b
+expect: exit 1
+expect: output is 'Usage: chkdiff [-h] [-v rel.lev] [-v rel.lev] file\n'
+
+== usage-three-v
+# src: a third -v is no valid form (7 arguments)
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff -v 1.1 -v 1.2 -v 1.3 f
+expect: exit 1
+expect: output is 'Usage: chkdiff [-h] [-v rel.lev] [-v rel.lev] file\n'
+
+== usage-none
+# src: no argument: the usage, status 1
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff
+expect: exit 1
+expect: output is 'Usage: chkdiff [-h] [-v rel.lev] [-v rel.lev] file\n'
+
+== usage-h-count
+# src: -h with a wrong number of arguments
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff -h
+expect: exit 1
+expect: output is 'Usage: chkdiff [-h] [-v rel.lev] [-v rel.lev] file\n'
+
+== no-control-file
+# src: a file without a control file: chkout and diff report, the status is the one of the diff (0 after the pipe)
+-- f
+one
+two
+three
+-- case
+step: /bin/chkin -c first f
+step: /bin/chkout -e f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\n' > f
+step: /bin/chkin -c second f
+host: chmod 644 f; printf 'one\nTWO\nthree\nfour\nfive\n' > f
+step: chkdiff nofile
+expect: output contains 'chkout: cannot open nofile+'
+
+== subdirectory
+# src (a quirk): the directory part is split off for the control file (d/f+ is read) but the source file is the plain name f in
+# the current directory (diff - f)
+-- d/f
+one
+-- case
+step: /bin/chkin -d d -c first f
+host: mv f+ d/f+; printf 'one\ntwo\n' > f
+step: chkdiff d/f
+expect: exit 0
+expect: output is '1a2\n> two\n'

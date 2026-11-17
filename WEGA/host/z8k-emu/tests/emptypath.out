@@ -1,0 +1,4 @@
+open: ok
+read: entries
+stat: a directory
+chdir: ok

@@ -170,4 +170,39 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   man.dbmgr, UGETT1: the runner starts scripts with /bin/sh only, a csh option is the first step; makewhatis writes into
   the tree below /usr/man), rmuser (passwd on the terminal, find /), halt, killall, whodo (the process table), install,
   new.install, sysgen (floppies and the system), BOOT0 and standalone (MAME, 180). Next by the owner's order.
+- 2026-11-16: the shell of a script step is chosen as execvp() of the libc does it (`whichshell`: first byte # is /bin/csh,
+  else /bin/sh; the kernel only gives ENOEXEC). Emulator: a directory that is in the layer and in ROOT lists both (csh found no
+  `chmog` of /etc for the candidate, the layer's /etc listed only the script). Corpora makelost+found (6 cases) and chkdiff
+  (14; versions made by the original chkin and chkout), mutants found. Not an increment of its own: the same 120.
+- 2026-11-16: uuclear (7 cases), halt (4), down (4). halt and down need no process table (my earlier note was wrong): halt is
+  wall, who, sleep 30, sync and `kill -1 1`; shut only warns the users (shut.M). The cases work with a utmp in the layer, the
+  second user's terminal an image file, /etc/motd a copy per case (ROOT_COPY); down is ended by the interrupt (shut waits
+  minutes). uuclean removes nothing in any case tried (KNOWLEDGE.md: open whether program or emulator). Emulator: fds 0 to 2 are the
+  console only while they were not closed or replaced (csh closes them and opens its directories on them: every command was
+  "not found" with a terminal; dup of the console is the console again). The csh scripts left: adduser, man.dbmgr, makewhatis
+  (writes /usr/man), UGETT1, sysgen, new.install.
+- 2026-11-16: checkall started every corpus at once (about 65 with 2 jobs each on 8 cores, load 35 with two runs); now
+  `xargs -P` runs at most CHECK_CORPORA corpora at a time (default half the cores) in the order of `compare/CORPORA`, which is
+  sorted by the time of a cold run, the slowest first (the header says how to keep it). A failed run (NAME=y) showed two
+  weaknesses of my cases, both fixed: `signal: after N` is sent when every process of the group sleeps, which under load can be
+  a moment before the program has reached the place (halt, down now send the signal at a text, and down's t2 is removed: it is
+  written a little after the console text); and a case that reads the guest /tmp of the layer found nothing in a checkall
+  run, where Z8K_TMPDIR is set (uuclear): a /tmp in the layer now comes first in the emulator. mfs failed there with a
+  60 second timeout in a run of load 35 (the pool should make that rare; to be seen in the next run).
+- 2026-11-16: makewhatis (7 cases): /usr/man, /tmp and /usr/lib/whatis are directories of the layer (the pages are symbolic links
+  to those of the tree, a case replaces some by changed copies): the script writes there and not into the tree. Found: csh's
+  glob opens the empty name, which is the current directory in the kernel (nami.c: no component, flag 0): the emulator gave
+  ENOENT, every glob of a csh script failed ("No match" was the symptom: 0 words); `hostpath` of "" is now "." (test
+  emptypath). Mutant found (the first tab stop of expand). The csh scripts left: adduser, man.dbmgr, UGETT1, sysgen,
+  new.install.
+- 2026-11-16: man.dbmgr (11 cases): `df -f /dev/tmp` needs /dev/kmem (df reads _Nmount at the address 0x01000032 and counts the free
+  blocks itself): `device: kmem image:km.img` with the file from `host/tools/mkkmem.py` is all the model df needs. The layer's
+  /tmp is now the whole guest /tmp (the tree has an empty tmp/man that would have shown through and been written to). The
+  runner: the work directories of a run no longer count as dependencies (find looks up the path of its working directory, which
+  differs by side and run: UNSTABLE for no reason); `explain` names the dependencies that differ. Mutants found (mode, age step,
+  limit). The csh scripts left: adduser, UGETT1, sysgen, new.install.
+- 2026-11-16: the first checkall with the pool failed in rm and rmdir (UNSTABLE: "cannot remove current directory", at random): the
+  emulator gave the guest the low 16 bits of the host's i-node numbers, and two directories of a tree often agree in them on ext4
+  (groups of 8192 i-nodes); rmdir compares the i-nodes of "." and of the argument. It is a hash of the number now. This had
+  passed by luck in the runs before.
 

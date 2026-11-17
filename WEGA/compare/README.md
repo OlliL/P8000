@@ -444,7 +444,7 @@ One field per line; a line starting with `#` is a comment.
 | `expect: missing PATH` | The file is gone afterwards. |
 | `terminal: console` | The minimal terminal: stdin and stdout of every step are the console (`isatty`, `ttyname` give `/dev/console`, the tty ioctls work). Needed by programs that run only on the system console (getud, putud, format). |
 | (corpus.py) `ROOT_COPY = ['etc/mnttab']` | Files of the tree a case changes: every case gets a copy of its own in its layer over ROOT. |
-| (corpus.py) `INSTALLED = True` | The candidate lies at its place in the tree (`ORIG` and the paths of `ALIASES`) in a layer over ROOT that every case has (z8k-emu `Z8K_OVERLAY`); the steps call it by that path (`step: /etc/mfs`). A shell script is run by `/bin/sh` with `$0` that path, as WEGA's sh does. What a case writes into a directory of the layer stays in the layer (the tree is not changed). |
+| (corpus.py) `INSTALLED = True` | The candidate lies at its place in the tree (`ORIG` and the paths of `ALIASES`) in a layer over ROOT that every case has (z8k-emu `Z8K_OVERLAY`); the steps call it by that path (`step: /etc/mfs`). A shell script is run as `execvp()` of the libc does it (`whichshell`): by `/bin/csh` when its first byte is `#`, else by `/bin/sh`, with `$0` that path. What a case writes into a directory of the layer stays in the layer (the tree is not changed). |
 | `device: driveN FILE [ro]` | Floppy drive N (0..3) is the image FILE of the case directory (`ro`: write protected for the 8-bit part): every `/dev/fd*`, `/dev/rfd*` of that drive reads and writes it. A UDOS disk is made by `host: python3 $WEGA_HOST/tools/udosfs.py format FILE` (and filled with `udosfs.py put`). |
 | `operator: [at 'TEXT'] [insert driveN FILE] [type 'TEXT']` | (after a `step:`, any number, in order) What the operator does when TEXT has appeared in the step's output (after the text of the action before; without `at`: when the step starts): puts the disk FILE of the case into drive N (it stays there for the next steps), types TEXT on the standard input (`\n` a newline). The step's stdin stays open until the last action. Example: `compare/tar/tests.txt`, the disks cases (an archive over two disks). |
 | `device: ud` | `/dev/ud` is the 8-bit part of the P8000 (`host/z8k-emu/models/ud8.py`) with the drives of the case; what it prints on its own console appears at the end of the record as `8-bit console:`. Needs `terminal: console` (as on WEGA). |
@@ -660,6 +660,13 @@ like. Without `terminal: console`,
 `isatty` is false – `rm` therefore acts as with `-f`. A program that needs one of these needs a **model** in the emulator first. Following the project's
 rule, a model is built when the first program needs it, with tests of its own. The case file already reserves the
 fields for it (`terminal:`, `device:`, …).
+
+**Mounting is read only.** `mount` and `umount` of the emulator (`Z8K_MOUNTS`, used by the corpus of `mfs`) unpack a file
+system image and show it; what a program writes there is lost at `umount`, the image does not change. A **writing mount**
+is built when `mount` itself is rebuilt (the program that needs it). Until then a corpus lives with the limit: the corpus of
+`new.install` makes the file systems with the original `mkfs` and `labelit` on images and mounts them with `mfs`, checks the
+images, the boot block, the messages and the files of the layer over the tree, but not what `makelost+found /tmp` and
+`/z` write into the mounted systems (only that the script reports it).
 
 ---
 

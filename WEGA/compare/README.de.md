@@ -679,6 +679,14 @@ Programm durch QUIT, SEGV und ähnliche stirbt. Ohne
 Emulator. Nach der Regel des Projekts wird ein Modell gebaut, wenn das erste Programm es braucht, mit eigenen Tests. Die
 Falldatei reserviert die Felder dafür schon (`terminal:`, `device:`, …).
 
+**Das Einhängen ist nur lesend.** `mount` und `umount` des Emulators (`Z8K_MOUNTS`, vom Korpus von `mfs` benutzt) packen
+ein Dateisystem-Image aus und zeigen es; was ein Programm dort schreibt, geht beim `umount` verloren, das Image ändert sich
+nicht. Ein **schreibendes Einhängen** wird gebaut, wenn `mount` selbst wiederhergestellt wird (das Programm, das es
+braucht). Bis dahin lebt ein Korpus mit der Grenze: Der Korpus von `new.install` legt die Dateisysteme mit dem
+Original-`mkfs` und `labelit` auf Images an und hängt sie mit `mfs` ein; er prüft die Images, den Bootblock, die Meldungen
+und die Dateien im Layer über dem Baum, aber nicht, was `makelost+found /tmp` und `/z` in die eingehängten Systeme
+schreiben (nur, dass das Skript es meldet).
+
 ---
 
 ## 13. Fehlersuche

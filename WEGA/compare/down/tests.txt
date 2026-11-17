@@ -1,0 +1,52 @@
+# The cases of the corpus of down (compare/down/corpus.py); the format: host/recon/casefile.py. Every case runs as root with the
+# clock at 600000000; the users me (console) and bob (tty2, the image t2) are logged in (utmp in the layer's /etc), /etc/motd is the
+# case's own copy. Where an expectation comes from: src = src/cmd/down.sh (csh script, run by /bin/csh), man = /usr/man/manM/down.M
+# and shut.M (shut sends warnings to the logged in users, minimum down time 5 minutes). shut waits minutes of real time: the cases
+# end it by the interrupt (INT, which down catches: onintr fixer).
+
+== interrupt
+# man: down starts shut with the two times (minutes until down and between the warnings); shut warns all users (the console
+# and bob's terminal); the interrupt (sent when the warning has appeared on the console: bob's terminal gets it a little later,
+# so its content is not compared) restores the motd that down saved and ends down
+-- case
+terminal: console
+host: printf 'saved\n' > $Z8K_OVERLAY/etc/motd.save; cp $Z8K_OVERLAY/etc/motd motd.before
+step: /etc/down 1 1
+signal: INT at 'PLEASE FINISH UP'
+host: rm -f t2; cmp $Z8K_OVERLAY/etc/motd motd.before && echo motd-restored; ls $Z8K_OVERLAY/etc | grep -v '^down$' | tr '\n' ' '
+expect: output contains 'DOWN PROCEDURE'
+expect: output contains 'AUTOMATIC SYSTEM SHUTDOWN PROGRAM'
+expect: output contains '5 MINUTE WARNING SENT'
+expect: output contains 'Default minimum down time is 5 minutes'
+expect: output contains 'SYSTEM GOING DOWN IN 5 MINUTES, PLEASE FINISH UP'
+expect: output contains 'motd-restored'
+expect: output contains 'motd utmp'
+
+== no-console
+# src (a quirk, KNOWLEDGE.md): without the console shut cannot start ("Cannot open console") and ends with 1: down leaves at once
+# and the motd keeps the message (the restore is only in the interrupt part)
+-- case
+step: /etc/down 1 1
+host: tail -c 45 $Z8K_OVERLAY/etc/motd; ls $Z8K_OVERLAY/etc | grep -v '^down$' | tr '\n' ' '
+expect: exit 1
+expect: output contains 'Cannot open console'
+expect: output contains '*** THE SYSTEM IS GOING DOWN SOON ***'
+expect: output contains 'motd motd.save utmp'
+
+== old-saved
+# src: an old motd.save is removed first (rm -f) and made again from the current motd
+-- case
+terminal: console
+host: printf 'stale\n' > $Z8K_OVERLAY/etc/motd.save
+step: /etc/down 1 1
+signal: INT at 'PLEASE FINISH UP'
+host: rm -f t2; head -c 20 $Z8K_OVERLAY/etc/motd; grep -c stale $Z8K_OVERLAY/etc/motd
+expect: output contains '0'
+
+== user
+# src: /etc/down has the mode 700: a user cannot run it
+-- case
+user: 100 10
+step: /etc/down 1 1
+expect: exit 1
+expect: output is '-- stderr\n/etc/down: Permission denied\n'

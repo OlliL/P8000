@@ -7,7 +7,7 @@ afterwards, the expectations that fail); no store, no candidate: for writing cas
 A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), ROOT_COPY (files of the tree a case may change: each case gets a copy in its layer, e.g.
 etc/mnttab), INSTALLED (the candidate lies at its place in the tree, ORIG and
 the paths of ALIASES, in the case's layer over ROOT, z8k-emu Z8K_OVERLAY; the steps call it by that path; a shell script
-is run by /bin/sh with $0 that path), IN_TMP (the case
+is run as execvp() of the libc does it: by /bin/csh when its first byte is #, else by /bin/sh, with $0 that path), IN_TMP (the case
 directory is the guest's /tmp/CASE.N.SIDE, its parent the guest /tmp: for programs that find their directory by pwd), host_setup(),
 generate(), normalize(), after_step()) and
 the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting files in `in/`). The case file (one field per line,
@@ -443,8 +443,11 @@ def listing(d, norm=None):
 
 
 def _read_rootlog(p, paths):
+    # not the work directories of the run themselves: a program that finds its working directory by name (find, pwd) looks up
+    # the path of the case directory, which differs by side and run (orig, orig2) and is no file of the tree
+    own = '/' + os.path.basename(os.path.dirname(WORK)) + '/' + os.path.basename(WORK) + '/'
     paths.update(l for l in open(p, encoding='latin-1').read().split('\n')
-                 if l and not l.startswith(('/tmp/', '/dev/')) and l != '/tmp')
+                 if l and not l.startswith(('/tmp/', '/dev/')) and l != '/tmp' and own not in l + '/')
     os.remove(p)
 
 
@@ -452,8 +455,9 @@ DEVTAB = os.path.join(REPO, 'host', 'z8k-emu', 'devtab.wega')
 UD8 = os.path.join(REPO, 'host', 'z8k-emu', 'models', 'ud8.py')
 
 
-def is_script(prog, rd, overlay):
-    """the program of a step (a guest path, or a path relative to the case) is a text, not an s.out: run by /bin/sh"""
+def script_shell(prog, rd, overlay):
+    """None when the program of a step (a guest path, or a path relative to the case) is a binary; else the shell that runs
+    the text: as execvp() of the libc does when exec gives ENOEXEC (whichshell: the first byte # is /bin/csh, else /bin/sh)"""
     if prog.startswith('/'):
         p = overlay + prog if os.path.exists(overlay + prog) else RUNROOT + prog
     else:
@@ -462,8 +466,10 @@ def is_script(prog, rd, overlay):
         with open(p, 'rb') as f:
             m = f.read(2)
     except OSError:
-        return False
-    return len(m) == 2 and m[0] not in (0xE6, 0xE7) and m != b'\x01\x07' and m != b'\x01\x08'
+        return None
+    if len(m) == 2 and m[0] not in (0xE6, 0xE7) and m != b'\x01\x07' and m != b'\x01\x08':
+        return '/bin/csh' if m[:1] == b'#' else '/bin/sh'
+    return None
 
 
 def write_devtab(case, rd):
@@ -689,8 +695,9 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
             args = [EMU]
             for k, v in senv.items():
                 args += ['-e', '%s=%s' % (k, v)]
-            if is_script(prog, rd, overlay):	# a shell script: the shell runs it, $0 the name (as sh does when exec fails)
-                args += ['-r', RUNROOT, '-0', 'sh', '/bin/sh', prog] + argv[1:]
+            shell = script_shell(prog, rd, overlay)
+            if shell:	# a shell script: the shell runs it as execvp() does when exec fails (# first: csh), $0 the name
+                args += ['-r', RUNROOT, '-0', os.path.basename(shell), shell, prog] + argv[1:]
             else:
                 args += ['-r', RUNROOT, '-0', argv[0], prog] + argv[1:]	# argv[0] the word, as the shell gives it
             e = env
@@ -763,6 +770,9 @@ def explain(r1, r2, n=12):
     b = '\n'.join(r2['steps']) + '\n--tree--\n' + r2['tree']
     dl = [l for l in difflib.unified_diff(a.split('\n'), b.split('\n'), lineterm='', n=0) if l[:1] in '-+' and l[:3] not in ('---', '+++')]
     out.append(' | '.join(dl[:n]) + (' ...' if len(dl) > n else ''))
+    d1, d2 = r1.get('deps') or {}, r2.get('deps') or {}
+    if d1 != d2:	# the files of the tree the runs read differ (the measured dependencies)
+        out[0] += ' | deps differ: ' + ' '.join(sorted(set(d1) ^ set(d2))[:8])
     return out
 
 

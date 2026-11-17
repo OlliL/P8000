@@ -1,0 +1,63 @@
+# The cases of the corpus of uuclear (compare/uuclear/corpus.py); the format: host/recon/casefile.py. Every case runs as root
+# with the clock at 600000000; /usr/spool/uucp and /tmp are directories of the layer over the tree (made by the prefix), the
+# case puts the spool files there. Where an expectation comes from: src = src/cmd/uuclear.sh (a sh script, its first byte is c).
+# The original /usr/lib/uucp/uuclean, which the script ends with, removes none of the old files in these cases (measured: not
+# with any age, prefix or option; whether that is the program or the emulator is open: increment 120, log).
+
+== all
+# src: the log is copied to /tmp/uucp.OLOGFILE, LOGFILE and SYSLOG are made empty, AUDIT is removed
+-- case
+host: cd $Z8K_OVERLAY/usr/spool/uucp && printf 'log\n' > LOGFILE && printf 'sys\n' > SYSLOG && printf 'a\n' > AUDIT
+step: /bin/uuclear
+host: cd $Z8K_OVERLAY && echo copy=$(cat tmp/uucp.OLOGFILE) log=$(wc -c < usr/spool/uucp/LOGFILE) sys=$(wc -c < usr/spool/uucp/SYSLOG); ls usr/spool/uucp
+expect: exit 0
+expect: output contains 'copy=log log=0 sys=0'
+
+== audit-gone
+# src: AUDIT is removed (rm -f: no message when it is not there)
+-- case
+host: cd $Z8K_OVERLAY/usr/spool/uucp && : > LOGFILE && : > SYSLOG && : > AUDIT
+step: /bin/uuclear
+host: test -e $Z8K_OVERLAY/usr/spool/uucp/AUDIT && echo audit-there || echo audit-gone
+expect: output contains 'audit-gone'
+
+== no-audit
+# src: without AUDIT nothing is said
+-- case
+host: cd $Z8K_OVERLAY/usr/spool/uucp && : > LOGFILE && : > SYSLOG
+step: /bin/uuclear
+expect: exit 0
+expect: output is ''
+
+== no-logfile
+# src: without LOGFILE the cp reports; the script goes on (LOGFILE and SYSLOG are made, empty)
+-- case
+step: /bin/uuclear
+host: ls $Z8K_OVERLAY/usr/spool/uucp
+expect: output contains 'LOGFILE'
+expect: output contains 'SYSLOG'
+
+== old-copy
+# src: an old /tmp/uucp.OLOGFILE is replaced
+-- case
+host: cd $Z8K_OVERLAY && printf 'old\n' > tmp/uucp.OLOGFILE && printf 'new\n' > usr/spool/uucp/LOGFILE
+step: /bin/uuclear
+host: echo copy=$(cat $Z8K_OVERLAY/tmp/uucp.OLOGFILE)
+expect: output contains 'copy=new'
+
+== spool-files
+# src: the files that uuclean is asked to remove (TM., C., D., X., ST, GET, LCK. older than 12 hours) are old here; the
+# measurement: they all stay
+-- case
+host: cd $Z8K_OVERLAY/usr/spool/uucp && : > LOGFILE && : > SYSLOG && touch -d '1989-01-01' TM.1 C.a D.a X.a STa GETa LCK.a keep
+step: /bin/uuclear
+host: ls $Z8K_OVERLAY/usr/spool/uucp | tr '\n' ' '
+expect: exit 0
+
+== user
+# src: a user can run the script (the mode of /bin/uuclear) but cannot write the root-owned spool files
+-- case
+user: 100 10
+host: cd $Z8K_OVERLAY/usr/spool/uucp && printf 'log\n' > LOGFILE
+step: /bin/uuclear
+expect: exit 0

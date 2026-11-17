@@ -1,0 +1,43 @@
+# The cases of the corpus of UGETT1 (compare/UGETT1/corpus.py); the format: host/recon/casefile.py. Every case runs as root with the
+# clock at 600000000. The line is an image file of the case (device: tty5 image:t5): what the original /etc/GETTY writes to it (its
+# "login:" prompt) is in the files after the run; /etc, /usr/adm and /usr/spool/uucp are directories of the layer (getty writes
+# utmp and wtmp). UGETT1 has no man page: src = src/cmd/UGETT1.sh (two lines: GETTY with the arguments, the empty file GET.LINE).
+
+== line
+# src: GETTY is started on the line with the speed argument, and then the lock file GET.tty5 of the spool directory is emptied
+-- case
+host: printf 'lock\n' > $Z8K_OVERLAY/usr/spool/uucp/GET.tty5; : > t5
+device: tty5 image:t5
+step: /etc/UGETT1 tty5 9600
+host: echo get=$(wc -c < $Z8K_OVERLAY/usr/spool/uucp/GET.tty5)
+expect: exit 0
+expect: output contains 'get=0'
+
+== made
+# src: without the file GET.tty5 it is made, empty
+-- case
+host: : > t5
+device: tty5 image:t5
+step: /etc/UGETT1 tty5 9600
+host: ls $Z8K_OVERLAY/usr/spool/uucp
+expect: output contains 'GET.tty5'
+
+== speed-only
+# src: a second argument that is not a speed is given on to GETTY
+-- case
+host: : > t5
+device: tty5 image:t5
+step: /etc/UGETT1 tty5 x
+host: ls $Z8K_OVERLAY/usr/spool/uucp
+expect: output contains 'GET.tty5'
+
+== user
+# src: /etc/UGETT1 has the mode 700: a user cannot run it (the sh says it cannot open the script)
+-- case
+user: 100 10
+step: /etc/UGETT1 tty5 9600
+expect: exit 1
+expect: output is '-- stderr\n/etc/UGETT1: /etc/UGETT1: cannot open\n'
+
+# Not cases: a line that is no device, and no argument at all. The original /etc/GETTY then waits for ever (the run did not end in
+# 250 seconds), so the script never gets to empty GET.LINE.
