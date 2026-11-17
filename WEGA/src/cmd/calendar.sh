@@ -1,0 +1,20 @@
+: "@[$]calendar	2.1  08/19/82 17:18:15 - 87wega3.2"
+PATH=/bin:/usr/bin
+tmp=/tmp/cal$$
+trap "rm $tmp; exit" 0 1 2 13 15
+/usr/lib/calprog >$tmp
+case $1 in
+-)
+	sed '
+		s/\([^:]*\):.*:\(.*\):[^:]*$/y=\2 z=\1/
+	' /etc/passwd \
+	| while read x
+	do
+		eval $x
+		if test -r $y/calendar; then
+			egrep -f $tmp $y/calendar 2>/dev/null  | mail $z
+		fi
+	done;;
+*)
+	egrep -f $tmp calendar
+esac

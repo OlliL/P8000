@@ -465,6 +465,12 @@ def script_shell(prog, rd, overlay):
     try:
         with open(p, 'rb') as f:
             m = f.read(2)
+            if m == b'#!':	# the kernel runs the program named on the first line (z8k-emu do_exec): no path: /bin, then /usr/bin
+                w = f.readline().decode('latin-1').split()
+                if w:
+                    if '/' in w[0]:
+                        return w[0]
+                    return '/bin/' + w[0] if os.path.exists(os.path.join(RUNROOT, 'bin', w[0])) else '/usr/bin/' + w[0]
     except OSError:
         return None
     if len(m) == 2 and m[0] not in (0xE6, 0xE7) and m != b'\x01\x07' and m != b'\x01\x08':

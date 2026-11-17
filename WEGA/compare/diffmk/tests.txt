@@ -1,0 +1,81 @@
+# The cases of the corpus of diffmk (compare/diffmk/corpus.py); the format: host/recon/casefile.py. Where an expectation comes from: src =
+# src/cmd/diffmk.sh (the file name3 must be given and differ from name1 and name2; diff -e of name1 and name2 goes through sed, which wraps
+# the added/changed lines in .mc | ... .mc and marks the deleted ones with .mc *, and ed edits name1 and writes name3).
+
+== change
+# src: a changed line is marked with .mc |
+-- old
+a
+b
+c
+-- new
+a
+B
+c
+-- case
+step: /usr/bin/diffmk old new marked
+host: cat marked
+expect: exit 1
+expect: output contains '.mc |'
+
+== delete
+# src: a deleted line becomes a change with .mc *
+-- old
+a
+b
+c
+-- new
+a
+c
+-- case
+step: /usr/bin/diffmk old new marked
+host: cat marked
+expect: output contains '.mc *'
+
+== add
+# src: added lines are in .mc |
+-- old
+a
+c
+-- new
+a
+b
+c
+-- case
+step: /usr/bin/diffmk old new marked
+host: cat marked
+expect: output contains '.mc |'
+
+== same
+# src: equal files: ed gets only the write command, the file is the old one; the status is 0 (with a change it is 1: the status of ed)
+-- old
+a
+b
+-- new
+a
+b
+-- case
+step: /usr/bin/diffmk old new marked
+host: cat marked
+expect: exit 0
+
+== no-third-name
+# src: without the third name the usage is printed (on the output), the status is 0
+-- old
+a
+-- new
+b
+-- case
+step: /usr/bin/diffmk old new
+expect: exit 0
+expect: output is 'usage: name1 name2 name3 -- name3 must be different from name1 and name2\n'
+
+== third-is-first
+# src: the third name must differ from the first
+-- old
+a
+-- new
+b
+-- case
+step: /usr/bin/diffmk old new old
+expect: output is 'usage: name1 name2 name3 -- name3 must be different from name1 and name2\n'

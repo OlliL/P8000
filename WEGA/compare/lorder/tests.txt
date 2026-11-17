@@ -1,0 +1,35 @@
+# The cases of the corpus of lorder (compare/lorder/corpus.py); the format: host/recon/casefile.py. The object files are members of the libc of
+# the tree (ar x /lib/libc.a: printf.o uses doprnt.o, flsbuf.o and data.o, puts.o uses flsbuf.o and data.o, flsbuf.o uses data.o). Where an
+# expectation comes from: src = src/cmd/lorder.sh (nm -g, sed makes a list of the symbols each file defines (symdef) and uses (symref), sort, join:
+# the pairs "file-that-uses file-that-defines"; every file also stands with itself).
+
+== pairs
+# src: each file with itself, then the pairs of use and definition
+-- case
+step: /bin/ar x /lib/libc.a printf.o doprnt.o flsbuf.o data.o puts.o
+step: /usr/bin/lorder printf.o doprnt.o flsbuf.o data.o puts.o
+expect: exit 0
+expect: output contains 'printf.o printf.o'
+expect: output contains 'printf.o doprnt.o'
+expect: output contains 'puts.o flsbuf.o'
+expect: output contains 'flsbuf.o data.o'
+
+== two-files
+-- case
+step: /bin/ar x /lib/libc.a puts.o flsbuf.o
+step: /usr/bin/lorder puts.o flsbuf.o
+expect: output contains 'puts.o flsbuf.o'
+
+== one-file
+# src: with one file ending in .o it is given twice, so that nm prints its name
+-- case
+step: /bin/ar x /lib/libc.a printf.o
+step: /usr/bin/lorder printf.o
+expect: output contains 'printf.o printf.o'
+
+== no-argument
+# src: without arguments the usage is printed, status 0
+-- case
+step: /usr/bin/lorder
+expect: exit 0
+expect: output is 'usage: lorder file ...\n'

@@ -1,0 +1,125 @@
+# The cases of the corpus of mkmenu (compare/mkmenu/corpus.py); the format: host/recon/casefile.py. The case directory is the guest's /tmp/CASE
+# (pwd). HOME is /. Where an expectation comes from: src = src/cmd/mkmenu.sh (a csh script; gets reads one line of the standard input): with the
+# name as argument "Menu is NAME" is printed and it is not asked for it; the four header lines and then the entries (0 next menu, 1 sh command,
+# 2 csh command, 3 exit entry; another key: "Are you done?" y ends, else the entry number goes on) are written as lines to the file; at most
+# 16 entries; the file gets mode 644.
+
+== menu-by-name
+-- in
+Acme
+Sys
+Div
+Title
+1
+ls
+List files
+2
+date
+Show date
+q
+y
+-- case
+step: /usr/bin/mkmenu mymenu
+stdin: in
+host: cat mymenu; stat -c %a mymenu
+expect: exit 0
+expect: output contains 'Menu is mymenu'
+expect: output contains 'ls:1:List files'
+expect: output contains 'date:2:Show date'
+
+== menu-asked
+# src: without the argument the name is asked for (gets)
+-- in
+asked
+Acme
+Sys
+Div
+Title
+0
+sub
+Submenu
+3
+Leave
+x
+y
+-- case
+step: /usr/bin/mkmenu
+stdin: in
+host: cat asked
+expect: output contains 'Enter menu name:'
+expect: output contains 'sub:0:Submenu'
+expect: output contains ':0:Leave'
+
+== empty-name
+# src: an empty name is refused, then it is asked again
+-- in
+
+second
+A
+B
+C
+D
+x
+y
+-- case
+step: /usr/bin/mkmenu
+stdin: in
+expect: output contains 'You must enter a name; try again ...'
+
+== overwrite-no
+# src: the menu exists: asked whether it is to be overwritten; n: the name is asked for again
+-- old
+old content
+-- in
+old
+n
+fresh
+A
+B
+C
+D
+x
+y
+-- case
+step: /usr/bin/mkmenu
+stdin: in
+host: cat old fresh
+expect: output contains 'exists; overwrite it (y/n)?'
+
+== overwrite-yes
+-- old
+old content
+-- in
+old
+y
+A
+B
+C
+D
+x
+y
+-- case
+step: /usr/bin/mkmenu
+stdin: in
+host: cat old
+expect: output contains 'A:'
+
+== not-done
+# src: x and then n: the entry number goes on (the same entry is asked again)
+-- in
+A
+B
+C
+D
+x
+n
+1
+cmd
+prompt
+x
+y
+-- case
+step: /usr/bin/mkmenu m
+stdin: in
+host: cat m
+expect: output contains 'cmd:1:prompt'

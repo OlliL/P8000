@@ -1,0 +1,81 @@
+# The cases of the corpus of spell (compare/spell/corpus.py); the format: host/recon/casefile.py. H (the history file) is a file of the case in
+# every step. Where an expectation comes from: src = src/cmd/spell.sh (a sh script: deroff -w takes the words, sort -u, the first
+# /usr/lib/spell pass with the stop list (hstop), the second with the dictionary (hlista, with -b hlistb), the result sorted
+# (sort -u +0f +0) and appended to the history file (tee -a $H), then who am i; -v lists the derivations too, -x the possible roots).
+
+== misspelled
+-- t.txt
+This is a tset of teh spellng checker.
+Color and colour are both fine.
+-- case
+step: /usr/bin/spell t.txt
+expect: exit 0
+expect: output contains 'spellng'
+expect: output contains 'teh'
+expect: output contains 'tset'
+expect: output contains 'colour'
+
+== british
+# src: -b takes the british dictionary: colour is a word, Color is not
+-- t.txt
+This is a tset of teh spellng checker.
+Color and colour are both fine.
+-- case
+step: /usr/bin/spell -b t.txt
+expect: output contains 'Color'
+expect: output contains 'spellng'
+
+== verbose
+# src: -v adds the derivations ("+er checker": the word is checker with the suffix er)
+-- t.txt
+This is a tset of teh spellng checker.
+Color and colour are both fine.
+-- case
+step: /usr/bin/spell -v t.txt
+expect: output contains '+er'
+
+== all-right
+-- ok.txt
+This is a simple text with words that are in the dictionary.
+-- case
+step: /usr/bin/spell ok.txt
+expect: exit 0
+expect: output is ''
+
+== two-files
+-- a.txt
+firstt
+-- b.txt
+secondd
+-- case
+step: /usr/bin/spell a.txt b.txt
+expect: output contains 'firstt'
+expect: output contains 'secondd'
+
+== standard-input
+# src: without a file deroff reads the standard input
+-- in
+standard inputt text
+-- case
+step: /usr/bin/spell
+stdin: in
+expect: output contains 'inputt'
+
+== history
+# src: the words are appended to the history file
+-- t.txt
+This is a tset of teh spellng checker.
+Color and colour are both fine.
+-- case
+step: /usr/bin/spell t.txt
+host: grep -c spellng hist
+expect: output contains '1'
+
+== all-and-extra
+# src: -a is accepted and ignored
+-- t.txt
+This is a tset of teh spellng checker.
+Color and colour are both fine.
+-- case
+step: /usr/bin/spell -a t.txt
+expect: output contains 'tset'

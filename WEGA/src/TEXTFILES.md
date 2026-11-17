@@ -8,29 +8,5 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 
 | Rule | Art | files |
 |---|---|---|
-| C | script | 18 |
-| **all** | | 18 |
+| **all** | | 0 |
 
-
-## usr/bin
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `basename` | script | C | 209 | `src/cmd/basename.sh` | ja (Vorgabe: Skript nach usr/bin) | bin/basename image ~ |  |
-| `calendar` | script | C | 380 | `src/cmd/calendar.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/calendar image ~ |  |
-| `cxref` | script | C | 644 | `src/cmd/cxref.sh` | ja (Vorgabe: Skript nach usr/bin) | - |  |
-| `diff3` | script | C | 342 | `src/cmd/diff3.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/diff3 image ~ |  |
-| `diffmk` | script | C | 368 | `src/cmd/diffmk.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/diffmk image ~ |  |
-| `dircmp` | script | C | 1454 | `src/cmd/dircmp.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/dircmp image ~ |  |
-| `dirname` | script | C | 209 | `src/cmd/dirname.sh` | ja (Vorgabe: Skript nach usr/bin) | bin/dirname image ~ |  |
-| `false` | script | C | 58 | `src/cmd/false.sh` | ja (Vorgabe: Skript nach usr/bin) | bin/false image ~ |  |
-| `lint` | script | C | 989 | `src/cmd/lint.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/lint image ~<br>usr/src/man/docs/lint image ~ |  |
-| `lorder` | script | C | 450 | `src/cmd/lorder.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/lorder image ~ |  |
-| `mkmenu` | script | C | 4591 | `src/cmd/mkmenu.sh` | ja (Vorgabe: Skript nach usr/bin) | - |  |
-| `mm` | script | C | 1705 | `src/cmd/mm.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/mm image ~ |  |
-| `mmt` | script | C | 824 | `src/cmd/mmt.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/mmt image ~<br>usr/lib/macros/mmt image ~<br>usr/src/man/docs/sh_tut/ex1/mmt image ~<br>usr/src/man/docs/sh_tut/ex/mmt image ~ |  |
-| `mvt` | script | C | 824 | `src/cmd/mvt.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/mvt image ~ |  |
-| `sccsdiff` | script | C | 1281 | `src/cmd/sccsdiff.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/sccsdiff image ~<br>usr/src/cmd/sccs/src/sccsdiff source ~ |  |
-| `spell` | script | C | 621 | `src/cmd/spell.sh` | ja (Vorgabe: Skript nach usr/bin) | usr/bin/spell image ~ |  |
-| `strprint` | script | C | 245 | `src/cmd/strprint.sh` | ja (Vorgabe: Skript nach usr/bin) | - |  |
-| `true` | script | C | 55 | `src/cmd/true.sh` | ja (Vorgabe: Skript nach usr/bin) | bin/true image ~ |  |

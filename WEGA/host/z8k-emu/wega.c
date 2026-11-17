@@ -1378,9 +1378,39 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 	if (piddir()) pidlog("exec %d %s", gpid(getpid()), gp);
 	if (access(hp, X_OK) < 0) return sc_err(c, errno);
 	e = exec_open(hp, &x);
+	av = NULL;
+	for (i = 0; e == ENOEXEC && i < 4; i++) {	/* a text file that starts with #!: the kernel runs the program named there, with the file as its argument */
+		char l[256], ip[256], *q, *arg = NULL, **nv;
+		size_t n;
+		FILE *f = fopen(hp, "rb");
+		if (!f) break;
+		n = fread(l, 1, sizeof l - 1, f);
+		fclose(f);
+		l[n] = 0;
+		if (n < 3 || l[0] != '#' || l[1] != '!') break;
+		if ((q = strchr(l, '\n')) != NULL) *q = 0;
+		for (q = l + 2; *q == ' ' || *q == '\t'; q++) ;
+		{ char *w = q; while (*w && *w != ' ' && *w != '\t') w++; if (*w) { *w++ = 0; while (*w == ' ' || *w == '\t') w++; if (*w) arg = w; } }
+		if (!*q) break;
+		if (!strchr(q, '/')) {	/* no path: /bin, then /usr/bin (seen on the real system: #!sh in /usr/bin/sccsdiff) */
+			char t[300];
+			snprintf(t, sizeof t, "/bin/%s", q);
+			if (access(hostpath(t, hb, sizeof hb), X_OK) < 0) snprintf(t, sizeof t, "/usr/bin/%s", q);
+			snprintf(ip, sizeof ip, "%s", t);
+		} else
+			snprintf(ip, sizeof ip, "%s", q);
+		if (!av) av = gvec(c, argvp, &na);
+		nv = malloc((na + 4) * sizeof *nv);
+		nv[0] = strdup(ip);
+		{ int k = 1; if (arg) nv[k++] = strdup(arg); nv[k++] = strdup(gp); for (int j = 1; j < na; j++) nv[k++] = av[j]; free(av[0]); free(av); nv[k] = NULL; av = nv; na = k; }
+		snprintf(gp, sizeof gp, "%s", ip);
+		hp = hostpath(gp, hb, sizeof hb);
+		if (access(hp, X_OK) < 0) { e = errno; break; }
+		e = exec_open(hp, &x);
+	}
 	if (e) return sc_err(c, e);
 	/* copy argument and environment strings out of the old image */
-	av = gvec(c, argvp, &na);
+	if (!av) av = gvec(c, argvp, &na);
 	if (getenv("Z8K_EXEC_TRACE")) {
 		fprintf(stderr, "exec %s", gp);
 		for (i = 0; i < na; i++) fprintf(stderr, " %s", av[i]);

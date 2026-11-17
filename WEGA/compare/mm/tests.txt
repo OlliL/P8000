@@ -1,0 +1,96 @@
+# The cases of the corpus of mm (compare/mm/corpus.py); the format: host/recon/casefile.py. Where an expectation comes from: src = src/cmd/mm.sh (a sh
+# script: the options (-T term, -12, -e neqn, -t tbl, -c, -E, -y: -mm instead of -cm, -: standard input; others go to nroff) are taken off while
+# the argument is not a readable file; then nroff -cm -Tterm over the files; for some terminals the output goes through col and greek).
+
+== plain
+-- t.mm
+.P
+Hello world.
+.P
+Second paragraph.
+-- case
+step: /usr/bin/mm t.mm
+expect: exit 0
+expect: output contains 'Hello world.'
+expect: output contains 'Second paragraph.'
+
+== macros-mm
+# src: -y selects the macro package mm (-mm) instead of the compacted one
+-- t.mm
+.P
+Hello world.
+-- case
+step: /usr/bin/mm -y t.mm
+expect: output contains 'Hello world.'
+
+== terminal-lp
+# src: a terminal that is not in the list (lp): the output goes through col, nroff -Tlp
+-- t.mm
+.P
+Hello world.
+-- case
+step: /usr/bin/mm -Tlp t.mm
+expect: output contains 'Hello world.'
+
+== terminal-300
+# src: 300: col -f and greek -T300; greek is not in the tree (the original says so: a missing command in a pipe, no output, status 0)
+-- t.mm
+.P
+Hello world.
+-- case
+step: /usr/bin/mm -c -T300 t.mm
+expect: exit 0
+expect: output is '-- stderr\n/usr/bin/mm: greek: not found\n'
+
+== twelve
+# src: -12 with the default terminal 450 selects 450-12 (12 pitch)
+-- t.mm
+.P
+Hello world.
+-- case
+step: /usr/bin/mm -12 t.mm
+expect: output contains 'Hello world.'
+
+== tbl
+# src: -t puts the files through tbl first
+-- tb.mm
+.TS
+l l.
+a	b
+.TE
+-- case
+step: /usr/bin/mm -t tb.mm
+expect: output contains 'a'
+
+== neqn
+# src: -e puts the files through neqn first
+-- eq.mm
+.EQ
+x sup 2
+.EN
+-- case
+step: /usr/bin/mm -e eq.mm
+expect: output contains 'x'
+
+== standard-input
+# src: the argument - is the standard input
+-- in
+.P
+from the standard input.
+-- case
+step: /usr/bin/mm -
+stdin: in
+expect: output contains 'standard input.'
+
+== no-input-file
+# src: only options: "mm: no input file", status 1
+-- case
+step: /usr/bin/mm -c
+expect: exit 1
+expect: output is 'mm: no input file\n'
+
+== no-argument
+# src: without an argument the script calls help text3 and ends with status 1
+-- case
+step: /usr/bin/mm
+expect: exit 1

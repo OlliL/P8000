@@ -1,0 +1,83 @@
+# The cases of the corpus of cxref (compare/cxref/corpus.py); the format: host/recon/casefile.py. Where an expectation comes from: src =
+# src/cmd/cxref.sh (a csh script: grep -n of the lines that start with a letter, ex removes everything that is not a function head
+# (not ending in ")", with static, long, short, line, switch, unsigned, return, break, bool, boolean, case, struct, int, char, extern,
+# a trailing colon or a backslash), turns "line:text" into "text ... line:" and sorts).
+
+== functions
+-- a.c
+main()
+{
+	foo(1);
+}
+foo(a)
+int a;
+{
+	return bar(a);
+}
+static int hidden()
+{
+}
+long x(y)
+{
+}
+-- case
+step: /usr/bin/cxref a.c
+expect: exit 0
+expect: output contains 'foo(a)'
+expect: output contains 'main()'
+
+== static-and-types
+# src: lines with static, long, int... are taken out
+-- a.c
+static int hidden()
+{
+}
+int f()
+{
+}
+long g()
+{
+}
+h()
+{
+}
+-- case
+step: /usr/bin/cxref a.c
+expect: output contains 'h()'
+
+== keyword-names
+# src (a quirk, KNOWLEDGE.md): the words of the deleted lines are taken as words anywhere: a function called line or switch is not listed
+-- a.c
+line()
+{
+}
+switch()
+{
+}
+plain()
+{
+}
+-- case
+step: /usr/bin/cxref a.c
+expect: output contains 'plain()'
+
+== two-files
+# src: with several files grep puts the file name in front of the line number
+-- a.c
+fa()
+{
+}
+-- b.c
+fb()
+{
+}
+-- case
+step: /usr/bin/cxref a.c b.c
+expect: output contains 'fa()'
+expect: output contains 'fb()'
+expect: output contains 'a.c:'
+
+== no-file
+# src: a file that does not exist: grep says so
+-- case
+step: /usr/bin/cxref nofile.c

@@ -1,0 +1,24 @@
+# The cases of the corpus of strprint (compare/strprint/corpus.py); the format: host/recon/casefile.py. The problem files are in the layer
+# (/usr/lib/problems) and, with the same names, in the working directory: the names are taken from the working directory (ls *.prob* | sort
+# -n), pr prints the files of /usr/lib/problems. Where an expectation comes from: src = src/cmd/strprint.sh.
+
+== print
+# src: sort -n: 1, 2, 10 (not 1, 10, 2)
+-- 1.prob
+-- 2.prob
+-- 10.prob
+-- case
+host: printf 'first problem\n' > $Z8K_OVERLAY/usr/lib/problems/1.prob; printf 'second problem\n' > $Z8K_OVERLAY/usr/lib/problems/2.prob; printf 'tenth problem\n' > $Z8K_OVERLAY/usr/lib/problems/10.prob; touch -d '1989-01-04 12:00' $Z8K_OVERLAY/usr/lib/problems/*
+step: /usr/bin/strprint
+expect: exit 0
+expect: output contains 'first problem'
+expect: output contains 'second problem'
+expect: output contains 'tenth problem'
+
+== no-problem-files
+# src: no *.prob* in the working directory: the shell says "No match", the sorted list is empty and the script goes on: lpr gets a file that is
+# not there (the lpr of the case says so; the number is the process number of the script, fixed: PIDS)
+-- case
+step: /usr/bin/strprint
+expect: exit 0
+expect: output contains 'No match.'

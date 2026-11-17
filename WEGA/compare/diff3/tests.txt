@@ -1,0 +1,72 @@
+# The cases of the corpus of diff3 (compare/diff3/corpus.py); the format: host/recon/casefile.py. Where an expectation comes from: src =
+# src/cmd/diff3.sh (three files that exist, else the usage; the options of diff3prog, -e: ed script, come first).
+
+== all-different
+# src: the three files differ
+-- a
+one
+two
+three
+-- b
+one
+2
+three
+-- c
+one
+two
+3
+-- case
+step: /usr/bin/diff3 a b c
+expect: exit 0
+expect: output contains '===='
+
+== ed-script
+# src: -e makes an ed script of the differences
+-- a
+one
+two
+three
+-- b
+one
+2
+three
+-- c
+one
+two
+3
+-- case
+step: /usr/bin/diff3 -e a b c
+expect: exit 0
+
+== same
+# src: three equal files: no output
+-- a
+x
+-- b
+x
+-- c
+x
+-- case
+step: /usr/bin/diff3 a b c
+expect: exit 0
+expect: output is ''
+
+== two-files
+# src (a quirk, KNOWLEDGE.md): with two arguments the test of the third (-f $3) has no argument: the sh says "test: argument expected" and
+# the script ends with status 1; the usage message is not printed (the usage is only reached when the test is well formed)
+-- a
+x
+-- case
+step: /usr/bin/diff3 a b
+expect: exit 1
+expect: output is '-- stderr\n/usr/bin/diff3: test: argument expected\n'
+
+== missing-file
+-- a
+x
+-- b
+x
+-- case
+step: /usr/bin/diff3 a b nofile
+expect: exit 0
+expect: output is '-- stderr\nUsage: diff3 file1 file2 file3\n'

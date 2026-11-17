@@ -192,6 +192,26 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	cp rmuser.sh $(PREFIX)/etc/rmuser ; chmod 700 $(PREFIX)/etc/rmuser
 	cp sysgen.sh $(PREFIX)/etc/sysgen ; chmod 751 $(PREFIX)/etc/sysgen
 	cp UGETT1.sh $(PREFIX)/etc/UGETT1 ; chmod 700 $(PREFIX)/etc/UGETT1
+	mkdir -p $(PREFIX)/usr/bin
+	cp basename.sh $(PREFIX)/usr/bin/basename ; chmod 755 $(PREFIX)/usr/bin/basename
+	cp calendar.sh $(PREFIX)/usr/bin/calendar ; chmod 755 $(PREFIX)/usr/bin/calendar
+	cp cxref.sh $(PREFIX)/usr/bin/cxref ; chmod 755 $(PREFIX)/usr/bin/cxref
+	cp diff3.sh $(PREFIX)/usr/bin/diff3 ; chmod 755 $(PREFIX)/usr/bin/diff3
+	cp diffmk.sh $(PREFIX)/usr/bin/diffmk ; chmod 755 $(PREFIX)/usr/bin/diffmk
+	cp dircmp.sh $(PREFIX)/usr/bin/dircmp ; chmod 755 $(PREFIX)/usr/bin/dircmp
+	cp dirname.sh $(PREFIX)/usr/bin/dirname ; chmod 755 $(PREFIX)/usr/bin/dirname
+	cp false.sh $(PREFIX)/usr/bin/false ; chmod 755 $(PREFIX)/usr/bin/false
+	cp lint.sh $(PREFIX)/usr/bin/lint ; chmod 755 $(PREFIX)/usr/bin/lint
+	cp lorder.sh $(PREFIX)/usr/bin/lorder ; chmod 755 $(PREFIX)/usr/bin/lorder
+	cp mkmenu.sh $(PREFIX)/usr/bin/mkmenu ; chmod 755 $(PREFIX)/usr/bin/mkmenu
+	cp mm.sh $(PREFIX)/usr/bin/mm ; chmod 755 $(PREFIX)/usr/bin/mm
+	cp mmt.sh $(PREFIX)/usr/bin/mmt ; chmod 755 $(PREFIX)/usr/bin/mmt
+	cp sccsdiff.sh $(PREFIX)/usr/bin/sccsdiff ; chmod 755 $(PREFIX)/usr/bin/sccsdiff
+	cp spell.sh $(PREFIX)/usr/bin/spell ; chmod 755 $(PREFIX)/usr/bin/spell
+	cp strprint.sh $(PREFIX)/usr/bin/strprint ; chmod 755 $(PREFIX)/usr/bin/strprint
+	cp true.sh $(PREFIX)/usr/bin/true ; chmod 755 $(PREFIX)/usr/bin/true
+	rm -f $(PREFIX)/usr/bin/mvt
+	ln $(PREFIX)/usr/bin/mmt $(PREFIX)/usr/bin/mvt
 	mkdir -p $(PREFIX)/usr/lib
 	cp crontab.sh $(PREFIX)/usr/lib/crontab ; chmod 644 $(PREFIX)/usr/lib/crontab
 	rm -f $(PREFIX)/etc/umfs $(PREFIX)/etc/mlf

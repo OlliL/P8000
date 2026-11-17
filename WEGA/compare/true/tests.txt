@@ -1,0 +1,15 @@
+# The cases of the corpus of true (compare/true/corpus.py); the format: host/recon/casefile.py. Where an expectation comes from: src = src/cmd/true.sh
+# (exit 0).
+
+== plain
+-- case
+step: /usr/bin/true
+expect: exit 0
+expect: output is ''
+
+== arguments
+# src: the arguments are not looked at
+-- case
+step: /usr/bin/true a b -x
+expect: exit 0
+expect: output is ''

@@ -1,0 +1,48 @@
+# The cases of the corpus of basename (compare/basename/corpus.py); the format: host/recon/casefile.py. The script (a sh script, `: "@[$]basename`
+# on its first line) is called as /usr/bin/basename: its $0 is that path, so the first branch (basename) runs. Where an expectation comes
+# from: src = src/cmd/basename.sh (expr on the argument: the trailing slashes are cut off, then what follows the last slash, without the
+# suffix of the second argument).
+
+== plain
+# src: the last component
+-- case
+step: /usr/bin/basename /a/b/c
+expect: exit 0
+expect: output is 'c\n'
+
+== suffix
+# src: the suffix of the second argument is cut off
+-- case
+step: /usr/bin/basename /a/b/c.o .o
+expect: output is 'c\n'
+
+== suffix-is-a-pattern
+# src (a quirk, KNOWLEDGE.md): the suffix goes into the regular expression of expr as it is, the dot matches any character: with .c the
+# pattern ".*/\(.*\).c" matches "/c" of "/a/b/c.o" and what is left of the path in front of it is the answer: b
+-- case
+step: /usr/bin/basename /a/b/c.o .c
+expect: output is 'b\n'
+
+== trailing-slash
+# src: trailing slashes are cut off first
+-- case
+step: /usr/bin/basename /a/b/c//
+expect: output is 'c\n'
+
+== no-slash
+-- case
+step: /usr/bin/basename name
+expect: output is 'name\n'
+
+== no-argument
+# src: without an argument the name is .
+-- case
+step: /usr/bin/basename
+expect: output is '.\n'
+
+== root
+# src: the argument is cut to nothing, expr has no match: an empty line, status 1
+-- case
+step: /usr/bin/basename /
+expect: exit 1
+expect: output is '\n'

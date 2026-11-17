@@ -1,0 +1,105 @@
+# The cases of the corpus of dircmp (compare/dircmp/corpus.py); the format: host/recon/casefile.py. The clock is 600000000 (the heads of pr show
+# its date). Where an expectation comes from: src = src/cmd/dircmp.sh (find . of both directories sorted and compared with comm: the names
+# only in the first, only in the second (pr -m side by side), and for the names in both: directory, same, different (cmp -s), special; -d
+# adds the diff of the different files, -s leaves out the same ones and the directories).
+
+== list
+-- d1/same
+equal
+-- d1/diff
+one
+-- d1/only1
+x
+-- d1/sub/f
+y
+-- d2/same
+equal
+-- d2/diff
+two
+-- d2/only2
+z
+-- d2/sub/f
+y
+-- case
+step: /usr/bin/dircmp d1 d2
+expect: exit 0
+expect: output contains 'same     	./same'
+expect: output contains 'different	./diff'
+expect: output contains 'directory	./sub'
+
+== only-lists
+-- d1/a
+1
+-- d1/b
+1
+-- d2/b
+1
+-- d2/c
+1
+-- case
+step: /usr/bin/dircmp d1 d2
+expect: output contains './a'
+expect: output contains './c'
+
+== short
+# src: -s leaves out the same files and the directories
+-- d1/same
+equal
+-- d1/diff
+one
+-- d2/same
+equal
+-- d2/diff
+two
+-- case
+step: /usr/bin/dircmp -s d1 d2
+expect: output contains 'different	./diff'
+
+== with-diff
+# src: -d adds the diff of every different file (headed by pr)
+-- d1/f
+one
+-- d2/f
+two
+-- case
+step: /usr/bin/dircmp -d d1 d2
+expect: output contains 'diff of ./f in d1 and d2'
+expect: output contains '< one'
+expect: output contains '> two'
+
+== not-a-directory
+# src: the first argument is not a directory: the message, status 2
+-- d2/f
+x
+-- case
+step: /usr/bin/dircmp nodir d2
+expect: exit 2
+expect: output is 'nodir not a directory !\n'
+
+== second-not-a-directory
+-- d1/f
+x
+-- case
+step: /usr/bin/dircmp d1 nodir
+expect: exit 2
+expect: output is 'nodir not a directory !\n'
+
+== one-argument
+# src: fewer than two arguments: the usage, status 1 ($0 is the path of the script)
+-- d1/f
+x
+-- case
+step: /usr/bin/dircmp d1
+expect: exit 1
+expect: output is '/usr/bin/dircmp: usage: /usr/bin/dircmp -s -d directory directory\n'
+
+== unknown-option
+# src: an option other than -d and -s: "unknown option", status 3
+-- d1/f
+x
+-- d2/f
+x
+-- case
+step: /usr/bin/dircmp -x d1 d2
+expect: exit 3
+expect: output is 'unknown option\n'

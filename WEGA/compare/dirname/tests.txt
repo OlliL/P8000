@@ -1,0 +1,38 @@
+# The cases of the corpus of dirname (compare/dirname/corpus.py); the format: host/recon/casefile.py. The script is the text of basename: called as
+# /usr/bin/dirname its $0 is that path, so the second branch runs: expr takes what stands before the last slash. Where an expectation comes
+# from: src = src/cmd/dirname.sh.
+
+== plain
+-- case
+step: /usr/bin/dirname /a/b/c
+expect: exit 0
+expect: output is '/a/b\n'
+
+== relative
+-- case
+step: /usr/bin/dirname a/b/c
+expect: output is 'a/b\n'
+
+== trailing-slash
+# src: trailing slashes are cut off first
+-- case
+step: /usr/bin/dirname /a/b/c/
+expect: output is '/a/b\n'
+
+== no-slash
+# src: no slash: expr does not match and prints an empty line, status 1
+-- case
+step: /usr/bin/dirname name
+expect: exit 1
+
+== no-argument
+-- case
+step: /usr/bin/dirname
+expect: exit 1
+
+== root
+# src: the argument is cut to nothing and expr is called with an empty expression: syntax error, status 2
+-- case
+step: /usr/bin/dirname /
+expect: exit 2
+expect: output is '-- stderr\nsyntax error\n'

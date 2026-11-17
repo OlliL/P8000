@@ -1,0 +1,89 @@
+# The cases of the corpus of mmt (compare/mmt/corpus.py); the format: host/recon/casefile.py. Where an expectation comes from: src = src/cmd/mmt.sh (a sh
+# script; the options -a (troff -a: the text for the terminal), -e (eqn), -t (tbl), -y, - and others for troff are taken off while the
+# argument is not a readable file; then troff -cm (or -mm; mvt: -mv) over the files). mvt is the same file under another name.
+
+== terminal
+# src: -a gives the text on the terminal
+-- t.mm
+.P
+Hello world.
+.P
+Second paragraph.
+-- case
+step: /usr/bin/mmt -a t.mm
+expect: exit 0
+expect: output contains 'Hello world.'
+
+== no-typesetter
+# src: without -a troff tries the typesetter of the system: not there, "Typesetter busy."
+-- t.mm
+.P
+Hello world.
+-- case
+step: /usr/bin/mmt t.mm
+expect: output contains 'Typesetter busy.'
+
+== tbl
+-- tb.mm
+.TS
+l l.
+a	b
+.TE
+-- case
+step: /usr/bin/mmt -a -t tb.mm
+expect: output contains 'a'
+
+== eqn
+-- eq.mm
+.EQ
+x sup 2
+.EN
+-- case
+step: /usr/bin/mmt -a -e eq.mm
+expect: output contains 'x'
+
+== macros-mm
+# src: -y selects -mm when the macros are -cm (the default)
+-- t.mm
+.P
+Hello world.
+-- case
+step: /usr/bin/mmt -a -y t.mm
+expect: output contains 'Hello world.'
+
+== standard-input
+-- in
+.P
+from the standard input.
+-- case
+step: /usr/bin/mmt -a -
+stdin: in
+expect: output contains 'from the standard input.'
+
+== no-input-file
+# src: only options: the message with $0 (the path), status 1
+-- case
+step: /usr/bin/mmt -a
+expect: exit 1
+expect: output is '/usr/bin/mmt: no input file\n'
+
+== no-argument
+# src: without an argument the script calls help text1, status 1
+-- case
+step: /usr/bin/mmt
+expect: exit 1
+expect: output contains 'Usage:'
+
+== viewgraphs
+# src: called as mvt (basename $0): the viewgraph macros -mv instead of -cm
+-- t.mm
+.P
+Hello world.
+-- case
+step: /usr/bin/mvt -a t.mm
+expect: exit 0
+
+== viewgraphs-no-argument
+-- case
+step: /usr/bin/mvt
+expect: exit 1

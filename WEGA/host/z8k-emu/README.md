@@ -242,3 +242,9 @@ groups of 8192 i-nodes, and two of them often agreed in the low 16 bits; rmdir t
   directories, finds the entries the listing shows from both); after chdir("/dev") a relative name is a device (ps stats the names of the
   listing).
 
+## Scripts with #! (increment 130)
+
+A text file that starts with `#!NAME` is run by the program NAME with the file as its first argument (do_exec): the kernel of WEGA does it
+(seen in MAME: /usr/bin/sccsdiff starts with `#!sh` and works, with csh it does not). NAME without a path: /bin, then /usr/bin. The corpus
+runner does the same (script_shell); test `tests/shebang.c`.
+

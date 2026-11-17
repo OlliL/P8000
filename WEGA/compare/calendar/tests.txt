@@ -1,0 +1,51 @@
+# The cases of the corpus of calendar (compare/calendar/corpus.py); the format: host/recon/casefile.py. The clock is 600000000 (Thu Jan 5 05:40:00
+# EST 1989). Where an expectation comes from: src = src/cmd/calendar.sh (egrep -f of the patterns of /usr/lib/calprog over the file calendar of the
+# working directory; with the argument - over the file calendar in the home directory of every user of /etc/passwd, the lines go to the mail
+# of that user: a script mail in the layer prints who gets what).
+
+== today
+# src: the lines with today's and tomorrow's date, not the others
+-- calendar
+Jan 4 yesterday
+Jan 5 meeting today
+1/5 same day
+Jan 6 tomorrow
+Jan 9 later
+-- case
+step: /usr/bin/calendar
+expect: exit 0
+expect: output contains 'meeting today'
+expect: output contains 'same day'
+expect: output contains 'tomorrow'
+
+== no-file
+# src: no file calendar: egrep has nothing to read
+-- case
+step: /usr/bin/calendar
+expect: exit 0
+expect: output is "-- stderr\negrep: can't open calendar\n"
+
+== all-users
+# src: with the argument - the file calendar of the home directory of each user of /etc/passwd goes into the mail of that user
+-- case
+host: mkdir -p $Z8K_OVERLAY/etc $Z8K_OVERLAY/bin $Z8K_OVERLAY/h/u1 $Z8K_OVERLAY/h/u2 $Z8K_OVERLAY/h/u3
+host: printf 'u1::100:10:one:/h/u1:/bin/sh\nu2::101:10:two:/h/u2:/bin/sh\nu3::102:10:three:/h/u3:/bin/sh\n' > $Z8K_OVERLAY/etc/passwd
+host: printf 'Jan 5 dentist\nJan 20 holiday\n' > $Z8K_OVERLAY/h/u1/calendar
+host: printf 'Jan 6 report due\n' > $Z8K_OVERLAY/h/u2/calendar
+host: printf '#!/bin/sh\necho "MAIL TO $*"\ncat\n' > $Z8K_OVERLAY/bin/mail; chmod 755 $Z8K_OVERLAY/bin/mail
+step: /usr/bin/calendar -
+expect: exit 0
+expect: output contains 'MAIL TO u1'
+expect: output contains 'dentist'
+expect: output contains 'MAIL TO u2'
+expect: output contains 'report due'
+
+== nothing-today
+# src: no line of the file is of today or tomorrow: no output
+-- calendar
+Jan 20 later
+Feb 1 much later
+-- case
+step: /usr/bin/calendar
+expect: exit 0
+expect: output is ''

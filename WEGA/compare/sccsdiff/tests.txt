@@ -1,0 +1,83 @@
+# The cases of the corpus of sccsdiff (compare/sccsdiff/corpus.py); the format: host/recon/casefile.py. The SCCS file s.a (versions 1.1 "one two" and
+# 1.2 "one TWO three") is made in each case by admin, get -e and delta of the tree. The script starts with "#!sh": the
+# kernel runs the program named there (sh); the emulator does that too (do_exec) since it was seen on the real system (MAME: the call
+# works, with csh it does not). Where an expectation comes from: src = src/cmd/sccsdiff.sh.
+
+== versions
+-- a
+one
+two
+-- case
+step: /usr/bin/admin -n -ia s.a
+host: rm a
+step: /usr/bin/get -e s.a
+host: printf 'one\nTWO\nthree\n' > a
+step: /usr/bin/delta -y"second" s.a
+step: /usr/bin/sccsdiff -r1.1 -r1.2 s.a
+expect: output contains 'TWO'
+
+== piped
+-- a
+one
+two
+-- case
+step: /usr/bin/admin -n -ia s.a
+host: rm a
+step: /usr/bin/get -e s.a
+host: printf 'one\nTWO\nthree\n' > a
+step: /usr/bin/delta -y"second" s.a
+step: /usr/bin/sccsdiff -r1.1 -r1.2 -p s.a
+expect: output contains 's.a: 1.1 vs. 1.2'
+
+== same-version
+-- a
+one
+two
+-- case
+step: /usr/bin/admin -n -ia s.a
+host: rm a
+step: /usr/bin/get -e s.a
+host: printf 'one\nTWO\nthree\n' > a
+step: /usr/bin/delta -y"second" s.a
+step: /usr/bin/sccsdiff -r1.2 -r1.2 s.a
+expect: output is 's.a: No differences\n'
+
+== segment-size
+-- a
+one
+two
+-- case
+step: /usr/bin/admin -n -ia s.a
+host: rm a
+step: /usr/bin/get -e s.a
+host: printf 'one\nTWO\nthree\n' > a
+step: /usr/bin/delta -y"second" s.a
+step: /usr/bin/sccsdiff -r1.1 -r1.2 -s2 s.a
+expect: output contains '> three'
+
+== two-arguments
+-- case
+step: /usr/bin/sccsdiff -r1.1 -r1.2
+expect: exit 1
+expect: output is '-- stderr\nUsage: sccsdiff -r<sid1> -r<sid2> [-p] [-s<num-arg>] sccsfile ...\n'
+
+== unknown-argument
+-- a
+one
+two
+-- case
+step: /usr/bin/admin -n -ia s.a
+host: rm a
+step: /usr/bin/get -e s.a
+host: printf 'one\nTWO\nthree\n' > a
+step: /usr/bin/delta -y"second" s.a
+step: /usr/bin/sccsdiff -r1.1 -r1.2 -z s.a
+expect: exit 1
+expect: output is '-- stderr\n/usr/bin/sccsdiff: unknown argument: -z\n'
+== not-an-sccs-file
+-- a
+x
+-- case
+step: /usr/bin/sccsdiff -r1.1 -r1.2 a
+expect: exit 0
+expect: output is '-- stderr\n/usr/bin/sccsdiff: a not an SCCS file\n'

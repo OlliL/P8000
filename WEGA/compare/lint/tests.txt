@@ -1,0 +1,139 @@
+# The cases of the corpus of lint (compare/lint/corpus.py); the format: host/recon/casefile.py. Where an expectation comes from: src =
+# src/cmd/lint.sh (a sh script: for every argument that is not an option the file goes through /lib/cpp -C -Dlint and /usr/lib/lint1
+# (-I, -D, -U for cpp; -l: a library /usr/lib/llib<name>.ln; -p, -n and other letters to lint1: -p: portability and llib-port.ln, -n: no
+# library); at the end the library llib-lc.ln (or llib-port.ln, none with -n) and lint2 -T over all of it).
+
+== warnings
+-- a.c
+#include <stdio.h>
+int f(a, b)
+int a;
+{
+	int unused;
+	return a;
+}
+main()
+{
+	int x;
+	x = f(1, 2);
+	printf("%d\n", x);
+	f(3, 4);
+}
+-- case
+step: /usr/bin/lint a.c
+expect: output contains 'unused unused in function f'
+expect: output contains 'function returns value which is always ignored'
+expect: output contains 'printf'
+
+== portable
+# src: -p: the check for portability (llib-port.ln instead of llib-lc.ln)
+-- a.c
+#include <stdio.h>
+int f(a, b)
+int a;
+{
+	int unused;
+	return a;
+}
+main()
+{
+	int x;
+	x = f(1, 2);
+	printf("%d\n", x);
+	f(3, 4);
+}
+-- case
+step: /usr/bin/lint -p a.c
+expect: output contains 'unused unused in function f'
+
+== no-library
+# src: -n: no library, so no check of the library functions
+-- a.c
+#include <stdio.h>
+int f(a, b)
+int a;
+{
+	int unused;
+	return a;
+}
+main()
+{
+	int x;
+	x = f(1, 2);
+	printf("%d\n", x);
+	f(3, 4);
+}
+-- case
+step: /usr/bin/lint -n a.c
+expect: output contains 'unused unused in function f'
+
+== library-lc
+# src: uname is in llib-lc.ln (the library of the system) but not in llib-port.ln
+-- u.c
+main()
+{
+	uname(0);
+	return 0;
+}
+-- case
+step: /usr/bin/lint u.c
+expect: output contains 'llib-lc(172)'
+
+== library-port
+-- u.c
+main()
+{
+	uname(0);
+	return 0;
+}
+-- case
+step: /usr/bin/lint -p u.c
+expect: exit 0
+expect: output is ''
+
+== clean
+-- b.c
+main()
+{
+	return 0;
+}
+-- case
+step: /usr/bin/lint b.c
+expect: exit 0
+
+== define
+# src: -D goes to cpp: with -DX the function is there
+-- c.c
+main()
+{
+#ifdef X
+	return 1;
+#else
+	int y;
+#endif
+}
+-- case
+step: /usr/bin/lint -DX c.c
+expect: exit 0
+
+== two-files
+# src: a function defined in one file and called with another number of arguments in the other (lint2)
+-- p.c
+int g(a)
+int a;
+{
+	return a;
+}
+-- q.c
+main()
+{
+	g(1, 2);
+}
+-- case
+step: /usr/bin/lint p.c q.c
+expect: output contains 'g'
+
+== missing-file
+# src: a file that does not exist: the error of cpp (on the output of the call: 2>&1)
+-- case
+step: /usr/bin/lint nofile.c
