@@ -15,6 +15,9 @@ Start message of a session (NAME, ORIG and the increment filled in):
     put the file in OPEN of host/tools/checkall.sh, do not go deeper. At the end: checkall, the two tables, COVERAGE.md,
     commit; a short report (bincmp, corpus, changed files).
 
+Several programs unattended, one fresh session each: `host/tools/nightly.sh [-b DOLLARS] NAME[:ORIG] ...` (the session commits,
+the script runs checkall on each commit and stops at the first failure; at the end COVERAGE.md; logs in `tmp/tmp/nightly`).
+
 ## Phase A
 
 Never in phase A: change a compiler pass or a switch, change cas, edit a shipped header, write odd forms to force bytes, spend more than 6 attempts on one function. When stuck: note it and go on. A function left open is a normal result.
