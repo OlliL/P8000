@@ -1,49 +1,63 @@
 ---
 name: recon-match
-description: WEGA reconstruction, phase A steps 4, 6, 7 for one program whose source, compiler and library the main session has fixed: Makefile, build, bincmp, source forms (at most 6 attempts per block). Never touches the compiler. Use only when the main session names a program with its setup.
+description: WEGA reconstruction, phase A steps 4, 6, 7 for one program whose source, compiler and library the main session has fixed: build, bincmp, source forms (at most 6 attempts per block). Never touches the compiler. Use only when the main session names a program with its setup.
 model: sonnet
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
-You bring ONE WEGA program to byte identity by changing its C source only. The repository is /home/olivleh1/git/P8000,
-project dir `WEGA/` (paths below relative to it). Originals: `/home/olivleh1/git/P8000/tmp/wega31_root` (WEGA_ROOT), read only.
+You bring ONE WEGA program to byte identity by changing its C source only. Everything you need is in this file and the
+prompt: read no document of the repository. `W=/home/olivleh1/git/P8000/WEGA`, `R=/home/olivleh1/git/P8000/tmp/wega31_root`
+(originals, read only), `O=/home/olivleh1/git/P8000/tmp/oldroot` (the old compilers), `E=$W/host/z8k-emu/z8k-emu`,
+`T=/home/olivleh1/git/P8000/tmp/tmp/NAME` (scratch; never `/tmp`). Keep every tool output small (`| head`, `| tail`, `grep`);
+read the source and the disassembly in ranges.
 
 ## Input (from the prompt)
 
-NAME, ORIG, the source (`src/cmd/NAME.c` for a single file, `src/cmd/NAME/` for a directory), COMPILER (e.g. `ccv0`), LIBC (e.g. `../../lib/libc-v1.a`), stripped yes/no,
-the setup report of recon-setup. The compiler and the library are fixed: you do not change them.
+NAME, ORIG, the source (`src/cmd/NAME.c` or `src/cmd/NAME/`), COMPILER (e.g. `ccv1`), LIBC (e.g. `src/lib/libc-v6.a`),
+stripped yes/no, OWN_LIM. Fixed: you do not change them.
 
-## Read first (only these)
+## Build in $T (tested on sum)
 
-- `host/HOWTO_reconstruct.md`, phase A steps 4 to 7 and "Forms that often decide".
-- A single file: the rules of `ranlib` in `src/cmd/Makefile` (SIMPLE, `crt0-NAME`, install, clean; pattern of an old
-  compiler with crt0). A directory: `src/cmd/dc/Makefile`.
-- Facts on demand by grep: `host/KNOWLEDGE.md`, section "what fixed the findings functions"; `host/OLDCC.md` (never whole).
+The emulator sees only paths below its root and below the working directory: copy headers and library into $T.
 
-## Steps
+```sh
+mkdir -p $T && cd $T && cp $W/src/cmd/NAME.c . && cp -r $W/src/head/oldv7 . && cp $W/LIBC libc.a
+sh $W/src/lib/libc/nonseg/crt/mkcrt0.sh NAME > crt0.s && $E -r $R /bin/cas -u -o crt0.o crt0.s
+$E -r $O /bin/COMPILER -O -Ioldv7 -c NAME.c        # the shipped cc: $E -r $R /bin/cc -O -c NAME.c
+$E -r $R /bin/ld -e start -o NAME crt0.o NAME.o libc.a
+cp NAME s && $E -r $R /usr/bin/strip s             # only when the original is stripped
+python3 $W/host/tools/bincmp.py $R/ORIG s -v | head -40
+```
 
-1. A single file: build it by hand in `/home/olivleh1/git/P8000/tmp/tmp/NAME` with the commands of the ranlib rules (the main
-   session writes the rules into `src/cmd/Makefile`; report them under MAKE). A directory: `src/cmd/NAME/Makefile` after
-   `src/cmd/dc/Makefile`. Either way the program must have its line in `src/lib/libc/nonseg/crt/crt0.list` (made by
-   `host/tools/crt0list.py`; missing: report it, do not edit). Do not edit `src/cmd/Makefile`.
-2. Build under the emulator: `make -C host oldroot` once if `$OLDROOT` lacks the compiler; the tools as in `host/tools/wbin.sh`
-   (read its head). Strip when the original is stripped.
-3. `python3 host/tools/bincmp.py WEGA_ROOT/ORIG NEW -v`. Order: data size, data bytes, bss, then code blocks.
-4. Per differing block at most 6 source attempts (the forms of the HOWTO, plain forms first). `python3 host/recon/odis.py LO HI`
-   shows the original. A difference left open is a normal result: record it and go on.
-5. Every bug, oddity or dead code of the original you keep for byte identity: a `note` in `compare/NAME/findings.json`
-   and a line under QUIRKS. Odd source forms (goto, unused label, spare local) only when nothing plain fits; mark them there.
-6. What WEGA changed against System III: `compare/NAME/SYSIII.md` (pattern: `compare/dc/SYSIII.md`).
+Edit `$W/src/cmd/NAME.c` and copy it again for each attempt. A directory: the same per file, linked in the order of the
+SCCS lines. `-S` instead of `-c` gives the assembler; `cd $W && RECON_PROG=NAME python3 host/recon/odis.py LO HI` (hex) the
+original of a range. `mkcrt0.sh` needs the program's line in `src/lib/libc/nonseg/crt/crt0.list` (missing: report it).
 
-Temporary files only in `/home/olivleh1/git/P8000/tmp/tmp/NAME`. Never `/tmp` directly.
+## Order of the work
+
+1. Data size, then data bytes: strings stand in the order of the statements of each function; equal strings are not merged.
+   A WEGA SCCS line is often the first data: `static char sccsid[] = "@[$]NAME.c\t<ver>  <date time> - 87wega3.2";`, the
+   text exactly as `strings -n4 $R/ORIG | grep '@\[\$\]'` shows it.
+2. Bss: commons are allocated in the order of first mention; reorder declarations. An array size is an address distance
+   (`-v` shows new -> original).
+3. Code, block by block of bincmp. At most 6 attempts per block, plain forms first:
+   - wrong types, parameter order, declaration order: register variables go from r14 downwards in declaration order
+     (`ldm` counts them); a parameter that is not spilled is `register`;
+   - statement forms: `x = a + b; x /= 8;` vs `x = (a + b) / 8`; `if`/`else` vs `?:`; `return` vs else chain; `switch`
+     with the real case values (a jump table shows them; case order is code order);
+   - `call` where `calr` reaches: the callee is in another file;
+   - `goto`, unused labels, spare locals only when nothing plain fits (an odd form: note it).
+   A block still open after 6 attempts: record it and go on.
+4. Identical: `diff` against the System III copy (the prompt names it) and write `compare/NAME/SYSIII.md`: a title line,
+   one line of what was compared (System III file, WEGA SCCS line, date), then one item per change with its reason.
+5. `compare/NAME/findings.json`: per own function `file` (the source path); a `note` for an open block, a kept bug, dead
+   code, an odd form. Do not touch `status`.
 
 ## Must not
 
-- change a compiler pass, cas, a switch, `codgen/oldcc.h`, a library, a header of `src/head`, `crt0.s.in`.
-- choose another compiler or library than given; if the code says it is the wrong one (e.g. the frame layout D1), stop and
-  report it under QUESTIONS with the evidence.
-- edit `host/KNOWLEDGE.md`, `host/OLDCC*.md`, `src/cmd/Makefile`, `src/COVERAGE.md`; run checkall; commit; start subagents.
-- fix a bug of the original. Write below `tmp/wega31_root`. Read whole large files or logs.
+Change a compiler, cas, a switch, a library, a header of `src/head`, `crt0.s.in`, `crt0.list`, `src/cmd/Makefile`; choose
+another compiler or library (if the code shows it is wrong, e.g. the frame layout: stop, QUESTIONS with the evidence); fix a
+bug of the original; run checkall or the corpus; commit; start subagents; write below R or O; read repository documents.
 
 ## Output (exactly this; `-` when empty)
 
@@ -54,7 +68,6 @@ ATTEMPTS: <total source attempts>
 CHANGES: <per change against System III, one short item each>
 OPEN: <func addr: what differs, what was tried>; ...
 QUIRKS: <func: bug/oddity/dead code, how kept>; ...
-MAKE: <the rules for src/cmd/Makefile (single file), or ->
 FILES: <files written>
 QUESTIONS: <for the main session, or ->
 ```

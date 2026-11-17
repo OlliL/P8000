@@ -5,41 +5,78 @@ model: sonnet
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
-You write and run the corpus of ONE WEGA program: the original and our build run under the emulator on the same cases.
-The repository is /home/olivleh1/git/P8000, project dir `WEGA/` (paths below relative to it). Originals:
-`/home/olivleh1/git/P8000/tmp/wega31_root` (WEGA_ROOT), read only.
+You write and run the corpus of ONE WEGA program: the original and our build run under the emulator on the same cases;
+outputs, exit status and the files left behind are compared. Everything you need is in this file and the prompt: read no
+document or tool source of the repository. `W=/home/olivleh1/git/P8000/WEGA`, `R=/home/olivleh1/git/P8000/tmp/wega31_root`
+(read only), `T=/home/olivleh1/git/P8000/tmp/tmp/NAME` (scratch; never `/tmp`). Keep tool output small.
 
 ## Input (from the prompt)
 
-NAME, ORIG, the source (`src/cmd/NAME.c` or `src/cmd/NAME/`), the built candidate (`src/cmd/NAME` or `src/cmd/NAME/NAME`), the man page (e.g. `/usr/man/man1/NAME.1`).
+NAME, ORIG, the source, the built candidate (a file, e.g. `$T/NAME`), the man page path below R.
 
-## Read first (only these)
+## Read
 
-- `host/recon/casefile.py` (head comment: the block format), the head comment of `host/recon/corpusrun.py` (case lines).
-- One pattern: `compare/rmdir/corpus.py` and `compare/rmdir/tests.txt`.
-- The man page: `host/z8k-emu/z8k-emu -r WEGA_ROOT /usr/bin/pcat /usr/man/man1/NAME.1` (or the section the prompt names); when pcat fails, read the file
-  directly (`tmp/wega31_root/usr/man/man1/NAME.1`).
-- The source: every message, option and exit status.
+- The man page: `cat $R/usr/man/man1/NAME.1` (nroff source, often German; a packed page needs `pcat` under the emulator:
+  `$W/host/z8k-emu/z8k-emu -r $R /usr/bin/pcat /usr/man/man1/NAME.1`).
+- The source: every message, option, exit status (`grep -n 'printf\|exit\|argv' SOURCE`, then the ranges you need).
+
+## compare/NAME/corpus.py (template; CANDIDATES: `src/cmd/NAME` for one file, `src/cmd/NAME/NAME` for a directory)
+
+```python
+"""Corpus of NAME (host/recon/corpusrun.py): the original ORIG against the shipped build, on the cases of
+compare/NAME/tests.txt (host/recon/casefile.py): the man page (NAME.1) and every message of the source."""
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'host', 'recon'))
+import casefile  # noqa: E402
+
+NAME = 'NAME'
+ORIG = 'ORIG'
+PROG = 'NAME'
+CANDIDATES = {'wega': 'src/cmd/NAME'}
+TIMEOUT = 60
+
+
+def generate(g):
+    return casefile.generate(g, os.path.join(HERE, 'tests.txt'), 'NAME t.in')
+```
+
+## compare/NAME/tests.txt (the format)
+
+```
+# head: what the cases are, where expectations come from (man = ..., src = ...)
+
+== CASENAME               a case; the lines up to the next "-- " line are the file t.in (the default input)
+# man: the statement of the man page this case checks   (or # src: the message / exit of the source)
+-- FILE                   the following lines are the file FILE of the case (d/f: in a subdirectory); no lines: empty
+-- case                   the following lines are case lines, in order:
+step: NAME -x t.in        a run (first word NAME: the program under test; another word: /bin/WORD of the tree); no shell operators
+stdin: FILE               the standard input of the step before
+env: N=V                  environment of the step before
+host: mkdir -p a/b        a host shell line before the next step (preparation)
+expect: exit 0            | output contains 'TEXT' | output is 'TEXT' | file PATH contains 'TEXT' | missing PATH
+```
+
+Without a `step:` the default step `NAME t.in` runs. `\ooo` in a file line is that byte; a file line cannot start with `#`
+(write `\043`). Expectations are checked on the original only; output and files are compared between both anyway.
 
 ## Steps
 
-1. `compare/NAME/corpus.py` after the pattern (CANDIDATES `{'wega': <the built candidate without the program name of a single file: 'src/cmd/NAME'>}`, as
-   the prompt says).
-2. `compare/NAME/tests.txt`: one case per statement of the man page and per message, option, exit status of the source;
-   each case with a comment line naming where its expectation comes from (`# man: ...`, `# src: ...`). Edge cases: no
-   arguments, missing file, empty file, standard input, several files.
-3. Add NAME to `compare/CORPORA` (keep its order).
-4. `sh host/tools/corpus.sh --wega NAME 2>&1 | tail -20`. A case where the original differs from its expectation: the original
-   is right; fix the expectation and record it under QUIRKS (a bug of the original), never change the program for it.
-5. A difference between original and build: report it under DIFFS with the case; do not change the C source.
-
-Temporary files only in `/home/olivleh1/git/P8000/tmp/tmp/NAME` (CORPUS_TMP there). Never `/tmp` directly.
+1. Write corpus.py and tests.txt: one case per statement of the man page and per message, option, exit status of the
+   source, each with its `# man:` or `# src:` line; also no arguments, missing file, empty file, standard input, several
+   files. No case whose result depends on the time, the directory order of the host or process ids.
+2. The original alone, to check the expectations: `cd $W && python3 host/recon/corpusrun.py --show NAME 2>&1 | tail -40`
+   (filter with `grep`, it prints every case). The original is always right: correct a failing expectation; where the
+   original contradicts the man page or is a bug, that is a QUIRK (never change the program).
+3. Both: `cd $W && CORPUS_BIN_WEGA=<candidate> CORPUS_TMP=$T sh host/tools/corpus.sh --wega NAME 2>&1 | tail -5`.
+4. Append NAME to `compare/CORPORA` (one name per line).
 
 ## Must not
 
-- change the program's source, its Makefile, the compiler, a library, the emulator, `host/recon/*.py`.
-- edit `host/KNOWLEDGE.md`, `host/OLDCC*.md`; run checkall; commit; start subagents.
-- write below `tmp/wega31_root`. Read whole large files or logs.
+Change the program's source, a Makefile, a compiler, a library, the emulator, `host/recon/*.py`; run checkall; commit; start
+subagents; write below R; read repository documents.
 
 ## Output (exactly this; `-` when empty)
 

@@ -58,6 +58,7 @@ D18), the quirks, checkall. Its tokens are not separable from the rest of the se
 - 2026-11-17 (owner): the models per agent as proposed: recon-setup haiku (commands and copying, a fixed report),
   recon-match sonnet (source forms need reading of code), recon-corpus sonnet (expectations from the man page and the source).
 - 2026-11-17 (owner): the three definitions agreed; pilot `bin/sum` agreed.
+- 2026-11-17 (owner): a second, larger run after the checkall of sum: `bin/ls` (02/83, D1 slots: v1 time, 539 lines of System III).
 
 ## Not part of it
 
