@@ -6,6 +6,7 @@
 # files in cmd itself
 /ar
 /dump
+/cpio
 /dumpdir
 /getud
 /mv

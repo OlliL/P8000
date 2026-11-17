@@ -140,11 +140,12 @@ def libc_end(path, starts):
                 m = re.match(r'(\S+)\t# ([0-9a-f]+), (\d+) bytes', r)
                 walk.append((int(m.group(2), 16), int(m.group(3)), m.group(1)))
         # the libc starts at the first member of at least 32 bytes (smaller fits inside the own code are stray: a ret, a
-        # stub), together with the members right before it without a gap between
+        # stub), together with the members right before it without a gap between (not a member of 2 bytes: a lone ret, the end
+        # of the own function before, as fakcu)
         k = next((n for n, w in enumerate(walk) if w[2] and w[1] >= 32), None)
         if k is None:
             continue
-        while k > 0 and walk[k - 1][2] and walk[k - 1][0] + walk[k - 1][1] == walk[k][0]:
+        while k > 0 and walk[k - 1][2] and walk[k - 1][1] > 2 and walk[k - 1][0] + walk[k - 1][1] == walk[k][0]:
             k -= 1
         lim = walk[k][0]
         cov = sum(w[1] for w in walk[k:] if w[2])

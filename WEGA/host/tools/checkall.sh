@@ -50,8 +50,8 @@ stamp() {
 	LAST=$n
 }
 
-# not byte-identical yet: reported, not counted (none now)
-OPEN=''
+# not byte-identical yet: reported, not counted (usr/bin/cpio: 16 bytes of scratch registers in bintochar, compare/cpio/findings.json)
+OPEN='usr/bin/cpio'
 
 # the snapshot, made once: the files known to git (or the tree of the git commit CHECK_PATCH), the patch CHECK_PATCH applied
 snapshot() {

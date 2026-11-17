@@ -1019,7 +1019,8 @@ def main():
         if not RUNROOT or not os.path.isdir(RUNROOT):
             print('%s: the tree of the original (%s) is not set' % (cfg.NAME, cfg.ROOT_ENV))
             return 1
-    base = [sha1file(os.path.join(RUNROOT, cfg.ORIG)), sha1file(EMU), runner_key()]
+    # corpus.py too: its normalize() and after_step() shape the stored result (a change of them made stored results stale)
+    base = [sha1file(os.path.join(RUNROOT, cfg.ORIG)), sha1file(EMU), runner_key(), sha1file(os.path.abspath(cfg.__file__))]
     base += [f + ' ' + (sha1tree(os.path.join(RUNROOT, f)) if os.path.exists(os.path.join(RUNROOT, f)) else 'missing')
              for f in getattr(cfg, 'ROOT_FILES', [])]
     work = os.path.join(WORK, cfg.NAME)
