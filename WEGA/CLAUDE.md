@@ -21,6 +21,7 @@ active) and only the file of the active increment; `host/KNOWLEDGE.md` (facts) w
 - Notes on findings only in the program's `findings.json`.
 - Byte identity with the original has priority over fixing a bug found in the original: rebuild the bug first, record it in the quirks table, and fix it only when the owner says so.
 - SYSIII sources (tmp/sys3) can and should be the base for reconstructing the WEGA sources. They are allowed to be copied from. The Plexus sources can be consulted for Z8000 specific stuff.
+  For a library without a System III source, 2.11BSD and 4.4BSD-Lite (see Local directories) may be copied from too (owner 2026-11-18).
 - V7 layout in `src/cmd`. Makefiles must also work with WEGA's native `make`:
   use `=` not `?=`, `cd dir ; $(MAKE)`.
 
@@ -48,6 +49,7 @@ active) and only the file of the active increment; `host/KNOWLEDGE.md` (facts) w
 | `/home/olivleh1/git/P8000/tmp/plexus`                | Plexus sources, private reference only               | read for ideas, never copy                          |
 | `/home/olivleh1/git/P8000/tmp/sys3`                  | SYS III sources                                      | use as a starting point for source reconstruction   |
 | `/home/olivleh1/git/P8000/tmp/wega31_disks`          | WEGA 3.1 floppy images and raw conversions           | extract originals                                   |
+| `/mnt/users/olivleh1/BACKUPs/Operating_Systems`  | 2.11BSD and 4.4BSD-Lite trees                        | library sources where System III has none           |
 | `/mnt/share/git/mame/`                           | MAME fork with P8000 machines (`p8000`, `p8000_16`)  | real-system tests, boot WEGA                        |
 | `/home/olivleh1/git/P8000/tmp/tmp`                   | temp directory                                       | intermediate files, build logs                      |
 

@@ -64,6 +64,26 @@ More, found on sld: `KNOWLEDGE.md`, "what fixed the findings functions".
 - Plain forms first. `goto`, unused labels and spare locals only when nothing plain fits; mark them in `findings.json` as odd forms.
 - `call` where `calr` reaches: the callee is in another file, or the old cas decided it long (`OLDCC.md`, D17). A backward `call` in reach always means another file.
 
+## Libraries (increment 150)
+
+A library of `/lib` or `/usr/lib` (`libX.a` and its segmented `slibX.a`) the same way, one fresh session per library; the
+pattern is `src/lib/libl` (Makefile with build/nonseg and build/seg, `mkar.sh`, `arhdr_*.s`, `Library.SC`).
+
+1. **Setup: `python3 host/recon/libsetup.py libX`.** For every member of `libX.a` and `slibX.a` the source, from System III
+   (`tmp/sys3/usr/src/lib/libX`), else 2.11BSD (`usr.lib/libX`), else 4.4BSD-Lite (`usr/src/lib/libX`); a file WEGA renamed is
+   found by its object (liby: `libmai.c` is `main.c`). It copies the sources to `src/lib/libX/` under WEGA's names (`Library.SC`
+   names them), writes `mkar.sh`, `arhdr_libX.s`, `arhdr_slibX.s` (the member headers of the originals) and `Library.SC`, and
+   reports per member the best compiler (every compiler of its kind, with and without -O, with the headers of the guest,
+   `src/head/oldv7`, `src/head/oldcptr`): EXACT or the bytes that differ. A library without any source directory is skipped.
+2. **Makefile** after `src/lib/libl/Makefile`: the compiler of the time (`Library.SC` dates the sources; `OLDCC.md`, section
+   2), the members in the order of the archive; `install` to `lib` or `usr/lib`; `src/lib/Makefile` must reach it.
+3. **Members:** each member to EXACT as in phase A, step 2 (source forms, at most 6 attempts per member, a member that stays
+   open: `findings.json` of `compare/libX`, the archive in `OPEN` of checkall). A member without a source: note it.
+4. **Done:** the archive byte-identical (`cmp`), the two tables, `COVERAGE.md`, commit. A library has no corpus of its own:
+   the programs that link it are its test.
+
+Unattended: `host/tools/nightly.sh lib:libX ...` (one session per library, the start message of a library).
+
 ## Phase B
 
 For what is left: finding the source form of a hard function, and changing the compiler.

@@ -30,13 +30,19 @@ libraries of the old programs from C where a compiler gives them.
 ## Steps
 
 1. The list from COVERAGE; date each (`host/OLDCC_DATES.md`) to find its compiler.
-2. With the agents of 140: per library its sources (System III, libc), compiled with the compiler of its time.
+2. One fresh session per library (HOWTO, "Libraries"; `host/tools/nightly.sh lib:libX`): `host/recon/libsetup.py` finds the
+   sources (System III, 2.11BSD, 4.4BSD-Lite) and the compiler of each member; the session builds and matches them.
 3. oldlibc, oldslibc: the `.s` from C (source forms first, a new switch last).
 
 ## Decisions
+
+- 2026-11-18 (owner): sources of libraries also from 2.11BSD and 4.4BSD-Lite when System III has none (copied as System III);
+  libl is the pattern; one fresh session per library, as for the programs.
 
 ## Not part of it
 
 PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 
 ## Log
+
+- 2026-11-18: libsetup.py (tried on liby, libtermlib, libmp: every member has a source), HOWTO "Libraries", nightly.sh lib:.

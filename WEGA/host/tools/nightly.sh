@@ -1,8 +1,10 @@
 #!/bin/sh
-# nightly.sh [-b DOLLARS] NAME[:ORIG] ...: rebuild programs one after the other, each in a fresh claude session
-# (host/HOWTO_reconstruct.md, phase A), then checkall on its commit; at the end src/COVERAGE.md again.
+# nightly.sh [-b DOLLARS] NAME[:ORIG] | lib:LIBNAME ...: rebuild programs and libraries one after the other, each in a fresh
+# claude session (host/HOWTO_reconstruct.md, phase A, or "Libraries"), then checkall on its commit; at the end
+# src/COVERAGE.md again.
 #
 #   ORIG is the path below the WEGA root (default bin/NAME), e.g. nl  cmp  csplit:usr/bin/csplit
+#   lib:LIBNAME a library and its segmented one (libm: lib/libm.a, lib/slibm.a), e.g. lib:libm  lib:libPW
 #   -b DOLLARS   the most one session may spend (claude --max-budget-usd; default 5)
 #
 # Per program: the session does steps 1 to 5 and commits (it does not run checkall: one command may run 10 minutes at
@@ -20,20 +22,31 @@ cd $REPO
 S=$L/summary.txt
 echo "`date '+%F %T'` start: $*" >> $S
 for a in "$@"; do
-	name=${a%%:*}
-	orig=${a#*:}
-	[ "$orig" = "$a" ] && orig=bin/$name
+	case "$a" in
+	lib:*) name=${a#lib:}; orig= ;;
+	*) name=${a%%:*}; orig=${a#*:}; [ "$orig" = "$a" ] && orig=bin/$name ;;
+	esac
 	if [ -n "`git status --porcelain`" ]; then
 		echo "`date '+%F %T'` $name: the working tree is not clean, stop" >> $S
 		exit 1
 	fi
 	before=`git rev-parse --short HEAD`
+	if [ -z "$orig" ]; then
+	msg="WEGA, increment 150: rebuild the library $name (and its segmented one) by WEGA/host/HOWTO_reconstruct.md, section
+\"Libraries\" (host/recon/libsetup.py $name first; the pattern: src/lib/libl). Read WEGA/CLAUDE.md and the HOWTO first.
+No subagents. A member still open after 6 attempts: note it in compare/$name/findings.json, put the archive in OPEN of
+host/tools/checkall.sh, do not go deeper. A library without any source: write that down in the log of increment 150,
+commit only that. Do not run checkall and do not regenerate COVERAGE.md: the script that started you runs checkall on
+your commit. Keep the two tables current. Nothing may stay uncommitted.
+At the end a short report: per archive identical or not, members open, sources used (System III or BSD), changed files."
+	else
 	msg="WEGA, increment 160: rebuild /$orig ($name) by WEGA/host/HOWTO_reconstruct.md, phase A, steps 1 to 5.
 Read WEGA/CLAUDE.md and the HOWTO first. No subagents. A block still open after 6 attempts: note it in findings.json,
 put the file in OPEN of host/tools/checkall.sh, do not go deeper. Do not run checkall and do not regenerate COVERAGE.md:
 the script that started you runs checkall on your commit. Keep the two tables current. Commit when the program is
 byte-identical (bincmp IDENTICAL) or its open blocks are noted; nothing may stay uncommitted.
 At the end a short report: bincmp, corpus (cases, equal), changed files, open points."
+	fi
 	claude -p "$msg" --model opus --output-format json --max-budget-usd $BUDGET \
 		--permission-mode acceptEdits --allowedTools "Bash Read Edit Write Grep Glob" --disallowedTools "Agent" \
 		> $L/$name.json 2> $L/$name.err
