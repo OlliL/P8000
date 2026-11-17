@@ -1,6 +1,6 @@
 ---
 name: recon-match
-description: WEGA reconstruction, phase A steps 4, 6, 7 for one program whose source, compiler and library the main session has fixed: build, bincmp, source forms (at most 6 attempts per block). Never touches the compiler. Use only when the main session names a program with its setup.
+description: WEGA reconstruction, phase A step 2 (host/HOWTO_reconstruct.md) for one program whose source, compiler and library the main session has fixed: build, bincmp, source forms (at most 6 attempts per block). Never touches the compiler. Use only when the main session names a program with its setup.
 model: sonnet
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
@@ -14,7 +14,7 @@ read the source and the disassembly in ranges.
 ## Input (from the prompt)
 
 NAME, ORIG, the source (`src/cmd/NAME.c` or `src/cmd/NAME/`), COMPILER (e.g. `ccv1`), LIBC (e.g. `src/lib/libc-v6.a`),
-stripped yes/no, OWN_LIM. Fixed: you do not change them.
+stripped yes/no, OWN_LIM (the report of host/recon/setup.py and the decisions of the main session). Fixed: you do not change them.
 
 ## Build in $T (tested on sum)
 

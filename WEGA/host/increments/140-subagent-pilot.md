@@ -58,6 +58,9 @@ D18), the quirks, checkall. Its tokens are not separable from the rest of the se
 - 2026-11-17 (owner): the models per agent as proposed: recon-setup haiku (commands and copying, a fixed report),
   recon-match sonnet (source forms need reading of code), recon-corpus sonnet (expectations from the man page and the source).
 - 2026-11-17 (owner): the three definitions agreed; pilot `bin/sum` agreed.
+- 2026-11-17 (owner): the setup is a script, `host/recon/setup.py` (no model), step 1 of the HOWTO; the agent recon-setup is
+  removed. The prompt of an agent gives every known value (no looking up). The definitions are self-contained (no
+  repository documents to read).
 - 2026-11-17 (owner): a second, larger run after the checkall of sum: `bin/ls` (02/83, D1 slots: v1 time, 539 lines of System III).
 
 ## Not part of it
@@ -65,6 +68,9 @@ D18), the quirks, checkall. Its tokens are not separable from the rest of the se
 The other programs: 150, 160.
 
 ## Log
+
+- 2026-11-17: setup.py (checked on sum, dc, rmdir, cp, size, mv, write, ranlib: OWN_LIM and library as in their Makefiles),
+  HOWTO phase A renumbered around it (1 setup, 2 build and compare, 3 no source, 4 corpus, 5 handoff); recon-setup removed.
 
 - 2026-11-17: agent definitions agreed and committed (b8865603).
 - 2026-11-17: pilot sum by the agents: IDENTICAL, corpus 19 of 19 (2ddd31ec); checkall.sh fixed for a git ref as CHECK_PATCH (45d6a086).
