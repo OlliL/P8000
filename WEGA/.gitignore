@@ -1,2 +1,9 @@
 /compare/*/.lock
 /src/cmd/cparse/cgram1.c
+/src/uts/conf/BOOTLIB
+/src/uts/conf/boot
+/src/uts/conf/ver.c
+/src/uts/conf/wega
+/src/uts/dev/LIB2
+/src/uts/dev/wega/LIB2W
+/src/uts/sys/LIB1
