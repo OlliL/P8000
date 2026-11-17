@@ -658,9 +658,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | File | Kind | Source | Status | Compiler | libc |
 |---|---|---|---|---|---|
 | `usr/boot` | binary E707 | `src/uts/conf` | exact | cc | - |
-| `usr/dict/hlista` | data | `src/cmd/spell` | exact | cc | - |
-| `usr/dict/hlistb` | data | `src/cmd/spell` | exact | cc | - |
-| `usr/dict/hstop` | data | `src/cmd/spell` | exact | cc | - |
+| `usr/dict/hlista` | data | `src/?` | exact | - | - |
+| `usr/dict/hlistb` | data | `src/?` | exact | - | - |
+| `usr/dict/hstop` | data | `src/?` | exact | - | - |
 | `usr/dict/spellhist` | data | `src/cmd/spell` | exact | cc | - |
 | `usr/dict/words` | text | `src/cmd/spell` | exact | cc | - |
 | `usr/doc/fse.doc` | text | - | todo | - | - |
