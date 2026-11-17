@@ -70,8 +70,8 @@ def skip(dp):
     return any(x in dp for x in ('/pdp11', '/vax', '/hp300', '/i386', '/sparc', '/mips', '/luna68k', '/news3400', '/tahoe'))
 
 
-def find_source(name, stem):
-    for base in roots(name):
+def find_source(name, stem, bases=None):
+    for base in bases or roots(name):
         for ext in ('.c', '.s'):
             p = os.path.join(base, stem + ext)
             if os.path.exists(p):
@@ -133,8 +133,8 @@ def best(src, body, seg, tmp):
     return res
 
 
-def sources(name):
-    for base in roots(name):
+def sources(name, bases=None):
+    for base in bases or roots(name):
         for dp, dn, fn in os.walk(base):
             if skip(dp):
                 continue
@@ -143,11 +143,11 @@ def sources(name):
                     yield os.path.join(dp, f)
 
 
-def by_content(name, body, seg, tmp, used):
+def by_content(name, body, seg, tmp, used, bases=None):
     """the free source whose object (the first compiler of its kind, -O) is nearest to the member: at most half of it differs"""
     comp, root = (SEG if seg else NONSEG)[0]
     res = []
-    for src in sources(name):
+    for src in sources(name, bases):
         if src in used:
             continue
         d = try_one(src, body, comp, root, True, HEADERS[0], tmp)
@@ -157,7 +157,7 @@ def by_content(name, body, seg, tmp, used):
     return res[0][1] if res and res[0][0] <= len(body) // 2 else None
 
 
-def arhdr(arname, mems):
+def arhdr(arname, mems, pad=None):
     lines = ['// arhdr_%s.s: the magic and the member headers of the shipped %s, in the order of the archive (ar(5): name 14,'
              % (arname, arname), '// date 4, uid, gid, mode 2, size 4 bytes); mkar.sh joins them with the members. Written by'
              ' host/recon/libsetup.py.', '\t.psec', '\t.data', '_arhdr::', '\t.byte\t%ff,%65']
@@ -169,6 +169,9 @@ def arhdr(arname, mems):
         lines.append('// ' + m['name'])
         lines.append('\t.byte\t' + ','.join('%%%02x' % x for x in h[:13]))
         lines.append('\t.byte\t' + ','.join('%%%02x' % x for x in h[13:26]))
+    if pad is not None:		# an odd last member: the padding byte of the original (what was in ar's buffer), mkar.sh appends it
+        lines.append('// padding')
+        lines.append('\t.byte\t%%%02x' % pad)
     return '\n'.join(lines) + '\n'
 
 
@@ -198,7 +201,12 @@ def main():
         print('== %s (%s, %d members)' % (path, 'segmented' if seg else 'nonsegmented', len(mems)))
         for m in mems:
             m['raw'] = data[m['off'] - 26:m['off']]
-        open(os.path.join(dst, 'arhdr_%s.s' % arname), 'w').write(arhdr(arname, mems))
+        last = mems[-1]
+        pad = data[last['off'] + last['size']] if last['size'] % 2 else None
+        libl_mkar = open(os.path.join(W, 'src', 'lib', 'libl', 'mkar.sh')).read()
+        if pad is not None and open(os.path.join(dst, 'mkar.sh')).read() == libl_mkar:
+            shutil.copy(os.path.join(W, 'src', 'lib', 'libc', 'mkar.sh'), dst)		# the one that appends the padding byte
+        open(os.path.join(dst, 'arhdr_%s.s' % arname), 'w').write(arhdr(arname, mems, pad))
         tally = {}
         used = set()
         for m in mems:
@@ -208,11 +216,16 @@ def main():
             stem = m['name'][:-2]
             if stem.endswith('.s'):
                 stem = stem[:-2]
-            src = find_source(name, stem)
-            how = ''
-            if not src:		# WEGA renamed some files (liby: libmai.c is main.c): the free source whose object is nearest
-                src = by_content(name, m['body'], seg, tmp, used)
-                how = ' (by content)'
+            # one source tree after the other (System III first): by name, else by content; WEGA renamed some files
+            # (liby: libmai.c is main.c), which 4.4BSD has under the name of the member
+            src, how = None, ''
+            for base in roots(name):
+                src = find_source(name, stem, [base])
+                if not src:
+                    src = by_content(name, m['body'], seg, tmp, used, [base])
+                    how = ' (by content)' if src else ''
+                if src:
+                    break
             if not src:
                 nosrc.add(stem)
                 print('  %-14s no System III source' % m['name'])

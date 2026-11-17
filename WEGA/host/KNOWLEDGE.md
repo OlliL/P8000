@@ -1813,6 +1813,15 @@ every compiler, reject, yyless, yywrap only with v1; allprint needs the popt swi
 comment; `nrform` is not in WEGA. Archives: `arhdr_libl.s`, `arhdr_slibl.s` (member headers of the originals; slibl names
 its members `NAME.s.o`), `mkar.sh` without a padding byte.
 
+### liby.a, sliby.a
+
+From System III `usr/src/lib/liby` (`libmai.c` is `main.c`, `libzer.c` is `yyerror.c`; the names of WEGA's `Library.SC`, both
+`1.1 02/10/83`, the two `Library.SC` byte-equal), one source for both libraries, compiler v1 (`ccv1 -O`, `sccv1 -O`; both
+members are the same with v1, v1q, v1r and the shipped cc). `yyerror.c` unchanged; WEGA changed `main.c` to
+`return(yyparse());` (the original reserves the 2-byte return slot, `dec r15,#2`; System III's `yyparse();` gives none). The
+4.4BSD `main.c` (`exit(yyparse())` with a sccsid string) is not the base. Archives: `arhdr_liby.s`, `arhdr_sliby.s` with the
+padding byte of the odd last member `Library.SC` (103 bytes; `%79` and `%28`, what was in ar's buffer), the `mkar.sh` of libc.
+
 ### libc.a and slibc.a: one tree (since 2026-11-15)
 
 `src/lib/libc` builds both: `common/` (the sources of both; C with `#ifdef SEG` where the segmented member differs, the

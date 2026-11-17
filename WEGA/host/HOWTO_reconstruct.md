@@ -70,8 +70,8 @@ A library of `/lib` or `/usr/lib` (`libX.a` and its segmented `slibX.a`) the sam
 pattern is `src/lib/libl` (Makefile with build/nonseg and build/seg, `mkar.sh`, `arhdr_*.s`, `Library.SC`).
 
 1. **Setup: `python3 host/recon/libsetup.py libX`.** For every member of `libX.a` and `slibX.a` the source, from System III
-   (`tmp/sys3/usr/src/lib/libX`), else 2.11BSD (`usr.lib/libX`), else 4.4BSD-Lite (`usr/src/lib/libX`); a file WEGA renamed is
-   found by its object (liby: `libmai.c` is `main.c`). It copies the sources to `src/lib/libX/` under WEGA's names (`Library.SC`
+   (`tmp/sys3/usr/src/lib/libX`), else 2.11BSD (`usr.lib/libX`), else 4.4BSD-Lite (`usr/src/lib/libX`), in each tree by name,
+   else by its object (a file WEGA renamed; liby: `libmai.c` is `main.c`); an odd last member: its padding byte in `arhdr_*.s`. It copies the sources to `src/lib/libX/` under WEGA's names (`Library.SC`
    names them), writes `mkar.sh`, `arhdr_libX.s`, `arhdr_slibX.s` (the member headers of the originals) and `Library.SC`, and
    reports per member the best compiler (every compiler of its kind, with and without -O, with the headers of the guest,
    `src/head/oldv7`, `src/head/oldcptr`): EXACT or the bytes that differ. A library without any source directory is skipped.

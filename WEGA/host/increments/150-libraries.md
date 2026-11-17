@@ -46,3 +46,6 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 ## Log
 
 - 2026-11-18: libsetup.py (tried on liby, libtermlib, libmp: every member has a source), HOWTO "Libraries", nightly.sh lib:.
+- 2026-11-17: liby.a, sliby.a byte-identical (System III sources, v1; WEGA's main.c returns yyparse()). libsetup.py: one
+  source tree after the other, by name then by content (it took 4.4BSD's main.c before System III's libmai.c); the padding
+  byte of an odd last member goes into arhdr_*.s, with the mkar.sh of libc.

@@ -8,6 +8,7 @@ the time of the old programs; `make install PREFIX=dir` installs the shipped one
 |---|---|---|---|
 | `libc` | `/lib/libc.a`, `/lib/crt0.o` (`build/nonseg`); `/lib/slibc.a`, `/lib/scrt0.o` (`build/seg`) | ccvl, sccvl (vl, `host/OLDCC.md`) | one tree: `common/` both, `nonseg/` only libc.a, `seg/` only slibc.a (C with `#ifdef SEG`; PLZ/ASM and cas sources); `host/KNOWLEDGE.md`, "libc.a and slibc.a: one tree" |
 | `libl` | `/lib/libl.a`, `/lib/slibl.a`, `/usr/lib/lex/ncform` | ccv1, sccv1 | System III sources: `host/KNOWLEDGE.md`, "libl.a, slibl.a, ncform" |
+| `liby` | `/lib/liby.a`, `/lib/sliby.a` | ccv1, sccv1 | System III sources: `host/KNOWLEDGE.md`, "liby.a, sliby.a" |
 | `oldlibc` | `libc-v1.a` .. `libc-v10.a` | several | the libc of the old programs: [`oldlibc/README.md`](oldlibc/README.md) |
 | `oldslibc` | `slibc-v9.a`, `slibc-v11.a` | shipped cas, sccvc | the slibc of sld and cas: [`oldslibc/README.md`](oldslibc/README.md) |
 
@@ -15,7 +16,7 @@ The old compilers come from OLDROOT (`make -C host oldroot`); the libraries of t
 
 ## State
 
-libc.a, crt0.o, slibc.a, scrt0.o, libl.a, slibl.a, ncform: every member from source; every C member of libc.a and slibc.a by vl
+libc.a, crt0.o, slibc.a, scrt0.o, libl.a, slibl.a, ncform, liby.a, sliby.a: every member from source; every C member of libc.a and slibc.a by vl
 (`host/OLDCC.md`, "vl: the compiler of libc.a and slibc.a"). The old libraries: see their README.
 
 ## Open
