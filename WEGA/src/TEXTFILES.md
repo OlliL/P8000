@@ -9,8 +9,8 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | Rule | Art | files |
 |---|---|---|
 | C | script | 33 |
-| C | text | 19 |
-| **all** | | 52 |
+| C | text | 15 |
+| **all** | | 48 |
 
 
 ## root
@@ -42,19 +42,11 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | `strprint` | script | C | 245 | `src/cmd/strprint.sh` | ja (Vorgabe: Skript nach usr/bin) | - |  |
 | `true` | script | C | 55 | `src/cmd/true.sh` | ja (Vorgabe: Skript nach usr/bin) | bin/true image ~ |  |
 
-## usr/doc
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `fse.doc` | text | C | 33794 | `src/usr/doc/fse.doc` | nein | - |  |
-
 ## usr/lib
 
 | File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
 |---|---|---|---|---|---|---|---|
 | `crontab` | text | C | 134 | `src/usr/lib/crontab` | nein | usr/lib/crontab image ~ |  |
-| `plzcg.errs` | text | C | 784 | `src/usr/lib/plzcg.errs` | nein | - |  |
-| `units` | text | C | 7732 | `src/usr/lib/units` | nein | usr/games/units image ?<br>usr/bin/units image ~ |  |
 
 ## usr/lib/acct
 
@@ -109,7 +101,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 | File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
 |---|---|---|---|---|---|---|---|
 | `dmalias` | text | C | 263 | `src/usr/pub/dmalias` | nein | - |  |
-| `greek` | text | C | 475 | `src/usr/pub/greek` | nein | usr/bin/greek image ~<br>usr/pub/greek image ~ |  |
 | `termlist` | text | C | 9297 | `src/usr/pub/termlist` | nein | - |  |
 
 ## usr/spool/queuer

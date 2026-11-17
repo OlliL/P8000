@@ -1,0 +1,679 @@
+ Ein moderner Editor fu"r UNIX -kompatible Betriebssysteme
+============================================================
+
+
+1. Einleitung
+
+Dies ist eine  Beschreibung  des  1988  von  Jens  -Peter  Redlich
+entwickelten Editor fse (full-screen-editor).
+Er ist voll- sta"ndig in C implementiert und mit  relativ  geringem
+Aufwand auf UNIX-kompatible Betriebssysteme portierbar.
+
+Bei seiner Entwicklung wurden folgende Schwerpunkte gesetzt:
+
+ - Ausnutzung des gesamten Bildschirmes  fu"r  die  Textdarstellung
+   (d.h. 24x80 bzw. 25x80 Zeichen)
+
+ - A"nderungen am Text mu"ssen sofort auf  dem  Bildschirm  sichtbar
+   werden
+
+ - die  Grundfunktionen  mu"ssen  leicht  erlernbar  sein,  so  daPp
+   bereits nach kurzer Einarbeitungszeit alle anfallenden Aufgaben
+   bearbeitet werden ko"nnen
+
+ - parallele Verarbeitung von 2 Dateien in 2 Fenstern
+
+ - keine Forderungen an die Struktur der Datei. Das bedeutet,  daPp
+   Texte mit beliebig langen Zeilen, sowie  beliebige  Nicht-ASCII
+   Dateien bearbeitet werden ko"nnen
+
+Weiter war  eine  relative  Hardwareunabha"ngigkeit  bezu"glich  des
+verwendeten  Bildschirms  und  der  Tastatur  gefordert.   Derzeit
+erfolgt die Anpassung beim Programmstart,  so  daPp  fse  auch  auf
+Rechnern mit mehreren verschiedenen Terminals problemlos arbeitet.
+Obwohl vorrangig fu"r die Bearbeitung von  Quelltexten  und  Nicht-
+ASCII-Dateien vorgesehen, la"Ppt sich  fse  auch  sinnvoll  fu"r  die
+Textverarbeitung einsetzen. Zusa"tzlich  wird  dem  Anwender  durch
+eine Vielzahl praktischer  Standardaktionen  die  Arbeit  mit  dem
+Editor erleichtert (z.B. automatisches Einru"cken, Wiederladen  der
+zuletzt bearbeiteten Datei usw.).
+
+
+
+
+2. U"bersicht
+
+fse stellt Funktionen zum  Editieren  beliebiger  Dateien  bereit.
+Elementare  Textverarbeitung  wird  ebenso  unterstu"tzt,  wie  die
+Verarbeitung von  Nicht-ASCII-Dateien  oder  die  Bearbeitung  von
+Quelltexten. Es ist jederzeit mo"glich, ein  zweites  Editorfenster
+fu"r eine weitere Datei zu ero"ffnen und  beide  Dateien  unabha"ngig
+voneinander zu bearbeiten.  Umfangreiche  Blockkommandos  und  die
+Mo"glichkeit der Definition von Metakeys helfen die Arbeit mit  dem
+Editor zu vereinfachen. Fu"r die  Korrektur  von  Syntaxfehlern  in
+Quelltexten stehen fu"r die Sprachen C und Modula-2 Kopplungen  von
+Compiler und Editor zur  Verfu"gung,  so  daPp  dem  Anwender  beide
+Programme als eine Einheit erscheinen.
+
+
+Zusammenstellung wichtiger Kommandos in der Helpfunktion (^QH)
++------------------------------------------------------------------------------+
+| ^E up      ^R start of page      ^QS start of line     ^QP goto line         |
+| ^S left    ^C end of page        ^QD end of line       ^QU exchange location |
+| ^X down    ^QR start of file     ^A word left          ^QB goto blkbegin     |
+| ^D right   ^QC end of file       ^F word right         ^QK goto blkend       |
+|                                                                              |
+| ^QE def  metakey  ^QJ goto last error   ^QZ save linenumber ^W change window |
+| ^QT help metakey  ^QN goto next error   ^I  tabulator       ^Z dump/text     |
+| ^UI set margin    ^B  format paragraph  ^QI autotab on/off  ^N new page      |
+| ^QF find string   ^UL delete file       ^QL retake          ^QB backup       |
+| ^QA replace       ^UM change directory  ^QV view current directory           |
+| ^QQ repeat ^QF    ^UT change filemode   ^V insert/overwrite | ascii/hex      |
+|                                                                              |
+| ^UA new filename          ^T  del word            ^UB,^UK set blockmark      |
+| ^US save                  ^O  del start of line   ^UH     del blockmark      |
+| ^UQ quit,not save         ^QY del end of line     ^UC     copy block         |
+| ^UZ compress                                      ^UF     copy from window   |
+| ^UD save,quit             ^Y  del line            ^UY     del block          |
+| ^UX compr,save          <DEL> del left            ^UV     move block         |
+| ^UU compr,save,quit       ^G  del right           ^UR     read block         |
+| ^UP forget old,load new   ^P  ins control         ^UW     write block        |
+| ^UN save,load             ^QM bytemask            ^UJ     mark word          |
+| ^UE return to system      ^QX displaymode         ^UG     mark line          |
++------------------------------------------------------------------------------+
+
+
+
+
+3. Fenster
+
+Durch ^W kann zur Bearbeitung  einer  zweiten  Datei  u"bergegangen
+werden. Beide Fenster teilen  sich  den  Bildschirm  und  arbeiten
+vollsta"ndig  unabha"ngig  voneinander.  AnschliePpend  kann  mit  ^W
+zwischen den Fenstern gewechselt werden.
+
+  ^UD, ^UQ usw. schliePpen das Fenster,  in  dem  sich  der  Kursor
+gerade befindet (Es ist auch mo"glich, das  zuerst  vorhandene  vor
+dem  zuletzt  ero"ffneten  Fenster  zu  schliePpen.  Dann  u"bernimmt
+letzteres die Rolle des ersten Fensters.)
+
+U"brigens wird, wenn fse mit der Option  -m  aufgerufen  wird,  fu"r
+jedes Fenster ein 64 KByte groPper Puffer  angelegt.  Standardgema"Pp
+mu"ssen sich  beide  Dateien  einen  64  KByte  umfassenden  Puffer
+teilen. Die Dateila"nge ist durch die Gro"Ppe des  Puffers  begrenzt.
+Das heiPpt, daPp fse nur Dateien mit einer maximalen  La"nge  von  64
+KByte bearbeitet.
+
+
+
+4. Bearbeitung von Quelltextdateien
+
+Bearbeitungen von  Quelltextdateien  stellen  mit  Sicherheit  die
+ha"ufigste  Anwendung  des  fse  dar.  Deshalb  wird  hierfu"r  eine
+Vielzahl,  in  ihrer  Leistungsfa"higkeit   stark   differenzierter
+Kommandos bereitgestellt. Die einfachsten unter ihnen  dienen  der
+Kursorpositionierung, dem Einfu"gen und dem Lo"schen von Text.
+
+     Die  Positionierung  des  Kursors  erfolgt  direkt  u"ber  die
+Kursortasten  oder  die  dazu  a"quivalenten  Controltasten  (siehe
+Helpmenu"). Hinzu kommen Kommandos zur Positionierung  des  Kursors
+auf das na"chste Wort links (^A) oder das na"chste Wort rechts (^F),
+den Beginn einer Zeile (^QS), das  Ende  einer  Zeile  (^QD),  den
+Beginn eines markierten Blockes  (^QB),  das  Ende  eines  Blockes
+(^QK), den Beginn einer Seite (^R), das Ende einer Seite (^C), den
+Beginn der Datei (^QR) sowie das  Ende  der  Datei  (^QC).  Weiter
+existieren Kommandos zur Positionierung des Kursors auf eine Zeile
+mit einer dezimal anzugebenden Zeilennummer (^QP).
+
+  ^QZ schreibt die aktuelle Zeilennummer (nach Fenstern  getrennt)
+in einen Puffer.
+
+  ^QU legt die Nummer der aktuellen Zeile im Puffer ab und  bewegt
+anschliePpend den Kursor in die Zeile  mit  der  Zeilennummer,  die
+zuvor  im  Puffer  stand.  War  der  Puffer  leer,  so  wird   ^QP
+ausgefu"hrt. Die Befehle ^QZ und ^QU sind besonders wertvoll,  wenn
+bei  der  Bearbeitung  des  Textes  oft   zwischen   verschiedenen
+Textstellen gewechselt werden muPp (z.B. zwischen Deklarations- und
+Anweisungsteil in einem Quelltext). Desweiteren sind sie sinnvoll,
+wenn  durch  ^QF  oder  ^QA  Zeichenketten  gesucht  werden,  denn
+anschliePpend befindet sich der Kursor an einer anderen  Textstelle
+und  die  alte  Ausgangsposition  ist  oft  nicht  sofort  wieder-
+auffindbar. Hier hilft ^QZ vor und ^QU nach dem Suchkommando. (Wem
+die Kommandofolge zu lang  erscheint,  kann  sich  dafu"r  Metakeys
+definieren.)
+
+  ^QF ist ein weiteres nutzliches Positionierkommando.  Es  bietet
+die Mo"glichkeit bis zu 30 Zeichen lange Zeichenketten im  Text  zu
+suchen. Die Ausfu"hrung kann durch Optionen beeinfluPpt werden.  Als
+solche sind b fu"r ru"ckwa"rts suchen  (standardma"Ppig  wird  im  Text
+vorwa"rts gesucht) und u fu"r upcase mo"glich. (letzteres besagt, daPp
+beim Suchen einer Zeichenfolge zwischen GroPpbuchstaben und  Klein-
+buchstaben nicht unterschieden wird.)
+
+  ^QA  (Suchen  und  Ersetzen)  wertet  zusa"tzlich  noch  folgende
+Optionen aus: Eine Zahl, die angibt wie oft der Befehl automatisch
+zu wiederholen ist. Wird ein Stern angegeben, so wird  der  Befehl
+so oft ausgefu"hrt, bis das Dateiende erreicht wird. Die  Option  n
+bewirkt die Unterdru"ckung von Anfragen vor jedem Austauschvorgang.
+Ansonsten ist auf  diese  Fragen  mit  y  (ja,  Zeichenkette  soll
+ausgetauscht werden), n (nein, Zeichenkette soll  nicht  getauscht
+werden), c (cancel, fu"r Abbruch des Kommandos)  oder  einem  Stern
+(fu"r Ersetzen ohne  Anfragen  bei  jedem  weiteren  Auftreten  der
+Zeichenkette im Text) zu antworten.
+
+  ^QQ  wiederholt  das  letzte  Suchkommando  (bzw.   Suchen   und
+Ersetzen).
+
+Wichtig ist in diesem Zusammenhang, daPp beim Suchen eine Bytemaske
+(siehe ^QM) u"ber die Zeichen gelegt wird,  so  daPp  gegebenenfalls
+auch die Zeichen gefunden werden, die einen internen  Code  gro"Pper
+als 127 haben (diese treten z.B bei Texten auf, die durch WordStar
+bearbeitet wurden; dort dient das ho"chstwertige Bit der Markierung
+von Textstellen).
+
+
+     Das Einfu"gen von Text geschieht in recht einfacher Weise. Das
+Einfu"gen einzelner Zeichen wird  durch  Beta"tigen  der  jeweiligen
+Taste bewirkt. Standardgema"Pp wird  das  Zeichen  so  in  den  Text
+eingefu"gt, daPp der Text ab  Kursorposition  um  eine  Spalte  nach
+rechts ru"ckt und das neue Zeichen dort  erscheint,  wo  zuvor  der
+Kursor stand.
+
+  ^V schaltet zwischen overwrite -Modus (das heiPpt, daPp von diesem
+Kommando  an  der  eingegebene  Text  den  bereits  in  der  Zeile
+vorhandenen u"berschreibt) und insert -Modus (der neue Text wird in
+den alten eingefu"gt) um.
+
+  ^P   einer   beliebigen   Taste   (z.B.   einer    Controltaste)
+vorangestellt,  verhindert  deren   Interpretation   als   Editor-
+kommando. Stattdessen wird das ihr zugeordnete  Byte  unvermittelt
+in den laufenden Text  eingefu"gt.  Insbesondere  werden  mit  ^P^I
+'harte Tabulatoren' in  den  Text  geschrieben.  Sie  eignen  sich
+hervorragend zum Aufbau von Tabellen.  Beim  Einru"cken  nach  <ET>
+oder ^I werden sie an den entsprechenden Stellen aus  der  vorher-
+gehenden Zeile u"bernommen, so daPp sie nur in der  1.  Zeile  einer
+Tabelle eingegeben werden mu"ssen.
+     Werden nicht direkt angebbare Zeichen (z.B. solche mit  einem
+Code gro"Pper 127) beno"tigt, so kann  mit  ^Z  in  den  Hexadezimal-
+Modus  gewechselt  und  dort  das  gewu"nschte  Zeichen  eingegeben
+werden. Mit ^Z gelangt man wieder in den Ausgangszustand zuru"ck.
+
+  ^I stellt einen Pseudotabulator  dar  (meist  ist  hierfu"r  eine
+spezielle Taste auf der Tastatur vorhanden). Durch dieses Kommando
+werden soviele Leerzeichen vor dem Kursor eingefu"gt, daPp er  unter
+dem na"chsten Wort  der  daru"berliegenden  Zeile  zu  stehen  kommt
+(geeignet  zum  Aufbau  von  Tabellen).  Befinden  sich   in   der
+daru"berliegenden  Zeile  'harte  Tabulatoren',  so  werden   diese
+anstelle der Leerzeichen eingefu"gt. Es erfolgt  standardma"Ppig  ein
+Aufruf dieses  Kommandos  nach  jedem  <ET>,  so  daPp  fortlaufend
+geschriebener Text (z.B. Quelltext) automatisch eingeru"ckt wird.
+
+  ^QI unterdru"ckt oder aktiviert (im Wechsel)  diesen  Dienst.  Es
+ist unbedingt zu beachten, daPp durch das Kommando ^I im Normalfall
+keine echten  ('harten')  Tabulatoren  eingefu"gt  werden,  sondern
+Leerzeichen.
+
+  ^QL sei hier noch als ein weiteres Einfu"gekommando  genannt.  Es
+kann immer direkt nach einem Lo"schkommando ausgefu"hrt  werden  und
+holt den gelo"schten Text wieder zuru"ck.
+
+
+     Zuletzt  seien  noch  einige  Blockkommandos   erwa"hnt,   die
+ebenfalls Text einfu"gen ko"nnen.
+
+  ^UB definiert den Beginn und ^UK das Ende eines  Textabschnittes
+als  Block.  Um  diesen   Arbeitsgang   fu"r   ha"ufig   auftretende
+Anwendungsfa"lle zu vereinfachen, sind noch die Kommandos
+
+  ^UG zum Markieren der Zeile und
+
+  ^UJ zum Markieren des Wortes, auf dem der Kursor  gerade  steht,
+vorhanden.
+
+  ^UH lo"scht Blockmarken im aktuellen Fenster. Blockmarken  ko"nnen
+auch neu gesetzt werden, ohne die alten explizit zu  lo"schen  (sie
+werden dann entsprechend verschoben).
+
+  ^UC   kopiert   einen   markierten   Block   an   die   aktuelle
+Kursorposition.
+
+  ^UV ebenfalls, jedoch  wird  anschliePpend  der  markierte  Block
+gelo"scht.
+
+  ^UR  fu"gt  ganze  Dateien  in  den  Text   ein   (ab   aktueller
+Kursorposition). Dies ist besonders sinnvoll fu"r  Textverarbeitung
+in  Verbindung  mit  Metakey,  z.B.  fu"r  Briefko"pfe,   Vordrucke,
+Formulare.
+
+  ^UF transportiert einen Block aus dem jeweils anderen Fenster in
+das aktuelle. Dieses ist  die  einzige  Mo"glichkeit  des  direkten
+Datenaustausches  zwischen  den  Fenstern,  wenn  einmal  von  der
+Mo"glichkeit auf externe Dateien zu schreiben und wieder von  ihnen
+zu lesen, abgesehen wird.
+
+     Die dritte Gruppe der  simplen  Editierkommandos  bilden  die
+Lo"schbefehle. Durch sie  werden  einzelne  Zeichen,  Zeichenfolgen
+oder gro"Ppere Textabschnitte aus der Datei  entfernt  (wird  direkt
+anschliePpend ^QL ausgefu"hrt, so kann  der  gelo"schte  Text  wieder
+zuru"ckerhalten werden).
+
+  Durch <DEL> wird das Zeichen vor dem Kursor gelo"scht;  es  wirkt
+auch u"ber Zeilenenden hinweg (die verbleibende Zeile wird  an  die
+vorangehende angefu"gt).
+
+  ^G lo"scht das Zeichen am  Kursor,  wirkt  aber  nicht  u"ber  das
+Zeilenenden hinaus.
+
+  ^T lo"scht das Wort, auf dem der Kursor  gerade  steht.  Befindet
+sich der Kursor auf einem Sonderzeichen, so wird dieses  gelo"scht.
+Befindet er sich auf einem Leerzeichen, so werden alle Leerzeichen
+bis an das na"chste Wort heran gelo"scht.
+
+  ^O  lo"scht  den  Text  vom   Zeilenanfang   bis   ausschliePplich
+Kursorposition.
+
+  ^QY lo"scht  den  Text  von  (einschliePplich)  aktueller  Kursor-
+position bis Zeilenende.
+
+  ^UY lo"scht einen markierten Block.
+
+  ^UW schreibt einen  markierten  Textabschnitt  in  ein  externes
+File. Durch Schreiben eines Blockes auf das File /dev/lp kann ohne
+groPpen Aufwand ein Teil einer Datei ausgedruckt werden.
+
+
+
+
+
+5. Textverarbeitung
+
+Auch fu"r elementare Textverarbeitung la"Ppt sich  der  fse  sinnvoll
+einsetzen.
+
+  ^UI gestattet das Festlegen eines rechten Randes.  Die  mo"gliche
+Spaltenanzahl ist nicht begrenzt, muPp aber gro"Pper als 2 sein.  Ein
+Wert kleiner als 3 schaltet  den  Rand  aus.  Bei  gu"ltiger  Rand-
+einstellung erfolgt ein automatischer Wortumbruch  beim  Erreichen
+des Zeilenendes. Dabei werden Leerzeichen so in  den  Text  einge-
+fu"gt, daPp ein gerader rechter Rand entsteht. Einru"ckungen  bleiben
+erhalten.
+
+  ^B wird  verwendet,  um  gro"Ppere  Textabschnitte  neu  nach  dem
+rechten Rand auszurichten. Durch dieses Kommando wird der  gesamte
+Absatz, in dem sich  der  Kursor  befindet,  neu  formatiert.  Zur
+eindeutigen Kennzeichnung eines neuen Absatzes sollte entweder das
+erste Wort eingeru"ckt werden oder die  Zeile  mit  einem  Control-
+zeichen beginnen, welches von dem Drucker (oder dem Druckprogramm)
+ignoriert wird. Oft ist es no"tig, bestimmte Controlzeichen in  den
+Text einzufu"gen, die dann auf dem Bildschirm fu"r Verwirrung sorgen
+ko"nnen.
+
+  ^QX gestattet das Festlegen eines Textdarstellungmodus,  in  dem
+Controlzeichen nicht angezeigt werden (mit demselben Kommando kann
+diese Einstellung auch wieder ru"ckga"ngig gemacht werden).
+
+     Sind bestimmte Textabschnitte ha"ufiger zu schreiben,  so  hat
+sich die Benutzung von Metakeys bewa"hrt. Entweder  wird  der  Text
+direkt eingefu"gt, oder aber fu"r  la"ngere  Abschnitte  durch  einen
+Metakey das Einfu"gen einer Datei veranlaPpt,  die  den  gewu"nschten
+Text beinhaltet.
+
+  ^N fu"gt ein ^L (Seitenvorschub) in den Text  ein,  so  daPp  beim
+spa"teren Ausdrucken eine neue  Seite  begonnen  wird.  Es  ist  zu
+beachten, daPp ein Seitenvorschubsteuerzeichen bei der  Darstellung
+auf dem Bildschirm den U"bergang zu einer neuen Zeile bewirkt, aber
+von der Zeilenza"hlung des fse ignoriert wird.
+
+
+
+
+6. Arbeit im Hexadezimaldump -Modus
+
+Wie  schon  erwa"hnt,  stellt  der  Editor  fse  keine   speziellen
+Anforderungen an die Struktur der zu bearbeitenden Datei.  Handelt
+es sich  um  Nicht-ASCII-Dateien,  so  wird  die  Darstellung  des
+Dateiinhaltes als Text wenig Information bieten.
+
+  ^Z gestattet es darum, den fse in einen Modus  umzuschalten,  in
+dem der Dateiinhalt als Hexadezimaldump dargestellt wird.
+
+ Beispiel: (Ausschnitt aus einem Verzeichnis)
++----------------------------------------------------------------------------+
+| File: /bin                                                    Line:    1   |
++----------------------------------------------------------------------------+
+|0000 | 00 03 2E 00 00 00 00 00 00 00 00 00 00 00 00 00 | >................< |
+|0010 | 00 02 2E 2E 00 00 00 00 00 00 00 00 00 00 00 00 | >................< |
+|0020 | 00 40 61 64 62 00 00 00 00 00 00 00 00 00 00 00 | >.@adb...........< |
+|0030 | 00 00 67 65 6C 6F 65 73 63 68 74 00 00 00 00 00 | >..geloescht1....< |
+|0040 | 00 42 61 73 00 00 00 00 00 00 00 00 00 00 00 00 | >.Bas............< |
+|0050 | 00 43 62 63 00 00 00 00 00 00 00 00 00 00 00 00 | >.Cbc............< |
+|0060 | 00 00 62 63 6D 70 00 00 00 00 00 00 00 00 00 00 | >..bcmp..........< |
+|0070 | 00 45 62 64 00 00 00 00 00 00 00 00 00 00 00 00 | >.Ebd............< |
+|0080 | 00 46 63 61 73 00 00 00 00 00 00 00 00 00 00 00 | >.Fcas...........< |
+|0090 | 00 47 63 61 74 00 00 00 00 00 00 00 00 00 00 00 | >.Gcat...........< |
++----------------------------------------------------------------------------+
+| ^QH help ^Z text ^V ascii/hex ^QP position ^W window ^UD save,quit         |
++----------------------------------------------------------------------------+
+
+     Durch ^V kann der Kursor zwischen der  Hexadezimal-  und  der
+ASCII-Darstellung bewegt werden. Ansonsten funktioniert alles  wie
+im Textmodus. Speziell sind alle Kommandos  zur  Kursorpositionie-
+rung wirksam; mit folgenden Ausnahmen:
+
+  ^QP positioniert nicht auf eine Zeile, sondern auf eine  Adresse
+innerhalb der Datei (hexadezimal anzugeben).
+
+  ^QF sucht nicht  Zeichenketten,  sondern  Bytefolgen  (ebenfalls
+hexadezimal anzugeben).
+
+Desweiteren kann jederzeit Text u"berschrieben oder  an  die  Datei
+angefu"gt werden. Soll eine Zeichenfolge innerhalb der Datei einge-
+fu"gt werden, so ist ein Wechsel in den Textmodus  gestattet.  Dort
+ko"nnen diese Aufgaben erledigt und anschliePpend wieder durch ^Z in
+den  Ausgangszustand  zuru"ckgekehrt  werden.  Es   ist   jederzeit
+mo"glich, den Darstellungsmodus der Datei zu a"ndern.
+
+     Im obigen Beispiel  ist  ein  Verzeichnis  dargestellt.  Jede
+Zeile stellt einen Eintrag dar.  Die  ersten  beiden  Bytes  einer
+Zeile bilden die Inode-Nummer der Datei. Ist sie  0,  so  ist  der
+Eintrag ungu"ltig. Die folgenden 14 Bytes  stellen  den  Dateinamen
+dar. Innerhalb des Editors  kann  die  Datei  beliebig  bearbeitet
+werden, jedoch gestattet der fse kein Ru"ckschreiben von  Verzeich-
+nissen. (Eine Ausnahme gilt fu"r den Superuser.  Es  ist  dabei  zu
+beachten, daPp  beim  Ru"ckschreiben  keine  Backupdateien  angelegt
+werden  du"rfen.  Allgemein  sollte  diese  Mo"glichkeit   nur   von
+erfahrenen Systemprogrammierern genutzt werden, da  durch  unsach-
+gema"Ppe Eingriffe groPpe Scha"den am Dateisystem entstehen ko"nnen.)
+
+
+
+
+7. Abspeichern der Datei und Beenden des Editierens
+
+Der fse legt beim Laden eine Kopie der Datei im  Hauptspeicher  an
+und nimmt alle Vera"nderungen vorerst nur an dieser Kopie vor.  Das
+heiPpt, daPp sich wa"hrend der Arbeit mit dem fse  das  Aussehen  der
+Datei auf dem externen Datentra"ger nicht vera"ndert.
+
+  Durch  ^US  kann  ein  Abspeichern  der  Kopie  bewirkt  werden.
+Gewo"hnlich wird dabei eine Backupdatei angelegt (alte Datei erha"lt
+am Namensende eine Tilde). Letzteres kann jedoch durch die  Option
+-b beim Editoraufruf oder durch  das  Kommando  ^QO  zur  Laufzeit
+abgestellt werden.
+
+  ^UQ verwirft die im Hauptspeicher befindliche Kopie  und  bela"Ppt
+die Datei in ihrem urspru"nglichen Zustand.  Wurden  Modifikationen
+am  Text  vorgenommem,  so  wird  zur  Vergewisserung   angefragt:
+workfile has been modified, save before quit ?  Als  Antwort  sind
+hierauf  n  fu"r  nein  (d.h.  nicht  Abspeichern,   Editierfenster
+schliePpen), y fu"r ja (d.h. Abspeichern  und  anschliePpend  Fenster
+schliePpen) und c fu"r Abbruch  des  Kommandos  (d.h.  es  geschieht
+nichts und fse arbeitet normal weiter) mo"glich. Sind alle  Fenster
+geschlossen worden, so beendet fse seine Arbeit.
+
+  ^UD speichert die im  Hauptspeicher  befindliche  Datei  ab  und
+schliePpt das Fenster. Wurde durch ^W ein zweites Fenster ero"ffnet,
+so bleibt dieses erhalten. Treten wa"hrend des Abspeicherns  Fehler
+auf (z.B. Gera"tefehler oder fehlende Zugriffsrechte) so  wird  der
+Editor  nicht  verlassen,  sondern  es  erscheint   eine   Fehler-
+ausschrift; anschliePpend wird die Arbeit fortgesetzt.
+
+  ^UA bietet die Mo"glichkeit, der  im  Hauptspeicher  befindlichen
+Dateikopie einen anderen  Namen  zu  geben,  unter  dem  sie  beim
+na"chsten  Savekommando  abgespeichert  wird.  Dabei   wird   nicht
+u"berpru"ft, ob der Name gu"ltig ist oder ob Zugriffsrechte  auf  die
+im Pfadnamen enthaltenen Verzeichnisse bestehen.
+
+     Nach Beenden  der  Eingabe  einer  Zeile  durch  <ET>  werden
+gewo"hnlich  am  unmittelbaren  Zeilenende   stehende   Leerzeichen
+gelo"scht, da sie an dieser Stelle  u"berflu"ssig  sind.  Werden  sie
+jedoch nachtra"glich  in  eine  Zeile  eingefu"gt,  so  bleiben  sie
+erhalten und machen die Dateien la"nger als no"tig.
+
+  ^UZ entfernt u"berflu"ssige  Leerzeichen  am  Zeilenende  aus  der
+Datei. Dieses Kommando tritt noch in folgenden Modifikationen auf:
+
+  ^UX : Leerzeichen am Zeilenende streichen und Datei abspeichern;
+
+  ^UU : wie ^UX, jedoch danach das  Fenster  schliePpen.
+
+Bisweilen geschieht es, daPp ein anderer Dateiname als beabsichtigt
+in der Kommandozeile oder  beim  Neuladen  einer  Datei  angegeben
+wird. In diesem Fall ist es nicht no"tig den fse zu beenden und er-
+neut aufzurufen.
+
+  ^UP ermo"glicht jederzeit das Verwerfen der Kopie und  das  Laden
+einer neuen Datei. Dabei werden alle Parameter fu"r  das  jeweilige
+Fenster zuru"ckgesetzt (z.B. Randeinstellung  etc.).  Wurden  schon
+Vera"nderungen am Text vorgenommen, so vergewissert sich der Editor
+mit der Frage  'save  before  quit  ?'  analog  zu  ^UQ  u"ber  die
+Ernsthaftigkeit  dieses  Kommandos.  Soll  die  bearbeitete  Datei
+abgespeichert und anschliePpend eine  neue  Datei  in  das  Fenster
+geladen werden, so kann dafu"r das Kommando ^UN  verwendet  werden.
+Auch hier erfolgt ein Ru"cksetzen aller fu"r  das  Fenster  gu"ltigen
+Parameter auf ihren Standardwert.
+
+  ^UE ist ein weiteres Kommando zum Beenden des Editors, ohne  die
+Datei abzuspeichern. Der fse kehrt dabei  mit  einem  Ru"ckkehrcode
+von 1 zum Betriebssystem zuru"ck. Ein make, das den fse  aufgerufen
+hat wird dadurch abgebrochen. So bietet dieses Kommando  auch  die
+Mo"glichkeit,  fsc  abzubrechen  und  damit  aus  dem  Zyklus   von
+U"bersetzen und Editieren auszutreten (s. Abschn. 10).
+
+
+
+
+8. Metakey
+
+Ein <ESC> gefolgt von einem Kleinbuchstaben ist ein  Metakey.  Fu"r
+jeden  Kleinbuchstaben  des  Alphabets  befindet  sich  in   einem
+fse-internen Puffer eine Folge von Zeichen,  die  nach  Beta"tigung
+des entsprechenden Metakey  in  den  Eingabestrom  eingefu"gt  wird
+(auch Editorkommandos sind zula"ssig). Ein U"berblick u"ber  die  Be-
+legung ist durch das Kommando ^QT abrufbar.
+
+  ^QE gestattet es dem Nutzer, eigene  Sequenzen  als  Metakey  zu
+definieren. Diese  sind  aber  lediglich  im  gerade  aktiven  fse
+gu"ltig. Sollen die Definitionen fu"r spa"tere fse-Aufrufe  verfu"gbar
+bleiben, so ist der Editor  mit  der  Option  -k  aufzurufen.  Die
+aktuellen Definitionen werden dann beim Verlassen des fse  in  dem
+File .fse abgelegt (dieses File darf jederzeit gelo"scht werden).
+
+Bei der Definition sind folgende Besonderheiten zu beachten:
+
+ - Zuerst wird ein Kleinbuchstabe zur  Kennzeichnung  des  Metakey
+eingegeben. Ihm folgt die gewu"nschte Tastenfolge.
+
+ - <DEL>-Taste und Kursortasten liefern nur ihren  internen  Code,
+bewirken aber keine Korrektur der Eingabe. Bei Fehlern  muPp  darum
+die gesamte Definition wiederholt werden. Aus Portabilita"tsgru"nden
+sollten Aufrufe von Editorfunktionen als Controlsequenz und  nicht
+als Funktionstaste eingegeben werden, denn der Code von Funktions-
+tasten kann von Rechner zu Rechner verschieden sein.
+
+ - Beendet wird die Definition mit ^D. Soll ein ^D oder ein ^P  in
+der Sequenz enthalten sein, so ist ihnen ein ^P voranzustellen.
+
+
+
+
+
+9. Weitere Editorkommandos und Optionen
+
+Durch eine Vielzahl von Optionen ko"nnen Parameter des fse  gezielt
+voreingestellt werden. Sie werden beim Aufruf des fse  als  erstes
+Argument  in  der  Kommandozeile,  (als  mit  einem   Minuszeichen
+beginnende Zeichenfolge) angegeben.  Bei  Mehrfachkodierungen  der
+gleichen Option wird ihr Wert bei  jedem  Auftreten  negiert.  Die
+Reihenfolge der Optionen ist ohne Bedeutung.
+
+ Beispiel: fse -bm100 testfile
+
+Folgende  Buchstaben  sind   zula"ssig   und   werden   wie   folgt
+ausgewertet:
+ a: setzt eine Randmarkierung auf die  Spaltenposition  66  (siehe
+    Textverarbeitung)
+ b: unterdru"ckt das Anlegen von Backupdateien
+ c: unterdru"ckt die Ausgabe der Ero"ffnungsausschrift
+ e: sucht beim Programmstart im aktuellen Verzeichnis  nach  einem
+    File 'errmsg' und benutzt die Eintra"ge fu"r die  Zuordnung  von
+    Fehlerausschriften zu den betreffenden Textstellen (siehe  ^QJ
+    und ^QN)
+ k: bewirkt das Laden und nach Beendigung des fse das Sichern  der
+    Metakeytabelle (benutzt File .fse im aktuellen Verzeichnis)
+ m: legt einen gro"Pperen Puffer an (fu"r jedes Fenster 64 Kbyte)
+ n: fu"gt bei <ET> CR LF in den Text ein (MS-DOS  Zeilenende).  Auf
+    Unixsystemen  wird  gewo"hnlich  nur  LF  zur   Zeilenendekenn-
+    zeichnung verwendet.
+ r: unterdru"ckt explizit das Laden der zuletzt bearbeiteten  Datei
+    (im Falle daPp kein Dateiname in  der  Kommandozeile  angegeben
+    war).
+ y: tauscht logisch die <Y> und die <Z> -Taste  auf  der  Tastatur
+    aus.
+
+Die Angabe einer Zahl  in  der  Optionenzeichenkette  bewirkt  die
+sofortige  Positionierung  des  Kursors  in  die  Zeile  mit   der
+entsprechenden Zeilennummer.
+
+     Um  sta"ndig  benutzte  Optionenfolgen  nicht  immer  in   der
+Kommandozeile angeben zu mu"ssen,  besteht  die  Mo"glichkeit,  eine
+Umgebungsvariable FSE zu definieren (mit setenv in  der  C-Shell),
+die als Wert eine Zeichenkette hat. Soweit vorhanden, wird sie bei
+jedem Start von  fse  vor  die  in  der  Kommandozeile  angegebene
+Optionenzeichenfolge gesetzt. Es ist  mo"glich,  durch  Angabe  der
+entsprechenden  Option  in  der  Kommandozeile  eine   durch   die
+Umgebungsvariable FSE voreingestellte Option zu neutralisieren.
+
+     Einige Parameter  des  fse  ko"nnen  auch  zur  Laufzeit  noch
+vera"ndert werden. Hier seien die wichtigsten aufgeza"hlt:
+
+  ^QX legt die Darstellungsweise von Zeichen fest, die laut  ASCII
+nicht darstellbar sind (z.B.  Steuerzeichen).  Dabei  stehen  vier
+Mo"glichkeiten zur Auswahl: (1) keine Darstellung, (2)  Darstellung
+als Leerzeichen, (3) Darstellung als Punkt,  (4)  Darstellung  als
+^Buchstabe fu"r Controlzeichen und als Punkt sonst.
+
+  ^QM wa"hlt eine Maske aus, mit der die Bytes einer Datei vor  der
+Ausgabe auf dem Bildschirm oder  beim  Suchen  einer  Zeichenkette
+u"berdeckt werden. Als Masken werden (1) 01111111 und (2)  11111111
+angeboten. Standardma"Ppig ist die erste Maske  aktiv.  Sie  bewirkt
+(im Gegensatz zur Maske 2, die keine Wirkung  auf  die  Bytes  der
+Datei hat) die Ausblendung des ho"chstwertigen Bits eines Zeichens.
+Dieses  Bit  wird  von  einigen  Textverarbeitungsprogrammen   zur
+Kennzeichnung  markanter  Textstellen  benutzt.  Damit  ist   aber
+genaugenommen das Zeichen laut ASCII nicht  mehr  darstellbar  und
+wu"rde auch beim Suchen von Zeichenketten (^QF bzw. ^QA)  sich  vom
+urspru"nglichen Zeichen unterscheiden, und die  Zeichenkette  wu"rde
+nicht gefunden werden. Die Maske (1) schafft hier Abhilfe. Es  sei
+noch einmal erwa"hnt, daPp durch die Maske die Bytes im  Text  nicht
+vera"ndert  werden.  Vielmehr  wird  diese  Maske   nur   bei   der
+Interpretation des Dateiinhaltes durch den fse angewendet.
+
+  ^QO legt fest, ob beim U"berschreiben bereits vorhandener Dateien
+durch den fse  Backupdateien  angelegt  werden  sollen  (das  sind
+Dateien mit einem  Dateinamen  bestehend  aus  dem  urspru"nglichen
+Namen, gefolgt von einer Tilde; so wird z.B. aus dem  File  test.c
+eine Backupdatei test.c~, die den alten Text beinhaltet und test.c
+ist die Datei mit dem neuen Text). Es wird dabei der  gerade  ein-
+gestellte Modus angezeigt.
+
+  ^UL bewirkt das Lo"schen einer Datei.
+
+  ^UM wechelt das  aktuelle  Arbeitsverzeichnis  des  fse.  Dieser
+Befehl hat keinen EinfluPp auf das  Arbeitsverzeichnis  der  Shell,
+von der aus fse aufgerufen wurde. Dort ist nach Beendigung des fse
+die urspru"ngliche Einstellung gu"ltig.
+
+  ^UT  bietet  die  Mo"glichkeit,  Zugriffsrechte  fu"r  Dateien  zu
+a"ndern. Dieses Kommando ist dann sinnvoll,  wenn  z.B.  durch  das
+Nichtvorhandensein von Schreibrechten das  Abspeichern  der  Datei
+durch das Betriebssystem unterbunden wird.  Dieses  Kommando  wird
+jedoch nur dann abgearbeitet, wenn der Ausfu"hrende auch Eigentu"mer
+der Datei ist. Anderenfalls sollte mit ^UA dem  File  ein  anderer
+Name gegeben werden, so daPp  es  in  ein  Verzeichnis  geschrieben
+wird, fu"r das  die  Schreiberlaubnis  vorhanden  ist.  (Die  neuen
+Zugriffsrechte werden oktal angegeben (siehe UNIX-Kommando chmod).
+Durch zweimaliges Beta"tigen  der  <ESC>-Taste  kann  das  Kommando
+abgebrochen werden)
+
+  ^QH listet eine Zusammenstellung der wichtigsten Editorkommandos
+mit kurzer Bedeutungsangabe auf. Sind zwei Fenster aktiv, so  wird
+der Text auf zwei kleineren Seiten dargestellt,  die  umgebla"ttert
+werden.  Durch  <DEL>  kann  das  Kommando   abgebrochen   werden.
+Ansonsten ist durch das Dru"cken einer beliebigen Taste  die  Help-
+funktion fortzusetzen bzw. zu beenden.
+
+  ^QT  stellt  eine  Liste  der   aktuellen   Metakey-Definitionen
+zusammen.
+
+     Beim Beenden des fse wird das im aktuellen Arbeitsverzeichnis
+befindliche File .fse aktualisiert oder angelegt. Dieses File darf
+jederzeit gelo"scht werden. Es beinhaltet  Informationen  u"ber  den
+Namen und die Position des Kursors der zuletzt bearbeiteten Datei.
+Wird fse ohne Spezifikation eines Filenamens in der  Kommandozeile
+aufgerufen, so wird versucht, die zuletzt bearbeitete Datei wieder
+zu laden und den Kursor in die Zeile zu setzen, in der er vor  dem
+letzten Verlassen des  fse  stand.  Die  Zeilennummer  kann  durch
+explizite Angabe in der Kommandozeile u"berschrieben werden.  Wurde
+fse mit der Option -k aufgerufen, so wird zusa"tzlich aus .fse  die
+Tabelle der Metakeydefinitionen geladen und  nach  Beendigung  des
+fse wieder in diesem File abgelegt.
+
+
+
+
+10. Die Zusatzkomponente fsc
+
+Jedem Programmierer ist wohl der oft  erhebliche  Zeitaufwand  fu"r
+die Korrektur von Syntaxfehlern in Quelltexten  bekannt.  Und  wer
+hat noch nicht mit den zeitraubenden und sta"ndig  wiederkehrenden,
+oft zeilenfu"llenden Kommandofolgen fu"r  Aufruf  von  Compiler  und
+Editor  Bekanntschaft  gemacht;  vom  umsta"ndlichen  Zuordnen  der
+Fehlerausschriften  zu  den  betreffenden  Textstellen   ganz   zu
+schweigen. Dies sollte endlich der Vergangenheit angeho"ren.
+fse stellt deshalb einen besonderen Dienst zur Fehlerkorrektur  in
+Quelltexten bereit, der von beliebigen Programmen  genutzt  werden
+kann.
+Derzeit existiert Software zur Kopplung von  C-  Sprachu"bersetzer,
+sowie eine Kopplung mit einem an der Humboldt- Universita"t  Berlin
+entwickelten Modula-2-System. Die Kopplung mit dem C-Compiler soll
+hier als Beispiel vorgestellt werden.
+fsc  ist  ein  selbsta"ndiges  Programm,  das  die  oben   erwa"hnte
+Schnittstelle  des  fse  nutzt  und  die  Zusammenarbeit  und  den
+Datenaustausch zwischen Compiler und Editor organisiert.
+Nach  dem  Start  wird  eine  erste  U"bersetzung  des  Quelltextes
+vorgenommen (die Kommandozeile des fsc wird dabei vollsta"ndig  dem
+Compiler u"bergeben). Verla"uft  die  U"bersetzung  fehlerfrei,  dann
+endet fsc. Treten Syntaxfehler auf, so wird sofort der Editor  fse
+gestartet. Dort entha"lt die unterste  Bildschirmzeile  eine  kurze
+Fehlermeldung und der Kursor befindet  sich  in  der  betreffenden
+Zeile. Zusa"tzlich zum normalen Befehlssatz des fse  kann  nun  mit
+^QJ zur vorhergegangenen und mit  ^QN  zur  na"chsten  fehlerhaften
+Zeile gegangen werden.
+      Die zugeho"rige Fehlermeldung befindet sich immer dann in der
+untersten  Bildschirmzeile,  wenn  der   Kursor   in   einer   der
+fehlerhaften Zeilen positioniert  ist.  Eventuelle  Verschiebungen
+der Textstellen durch Einfu"gen oder Lo"schen von Text werden  durch
+den fse beru"cksichtigt. Nach Beendigung des Editiervorganges  wird
+erneut  der  Compiler   gestartet.   Dieser   Arbeitsablauf   wird
+wiederholt, bis die  U"bersetzung  fehlerfrei  verla"uft.  Ist  dies
+nicht erwu"nscht, so ist fse mit dem Kommando ^UE zu verlassen oder
+fsc mit <DEL> abzubrechen.
+     Ko"nnen Fehler nicht behoben werden,  so  endet  fsc  mit  dem
+Ru"ckkehrcode  1,  so  daPp  ein  make  ordnungsgema"Pp  abbricht.  In
+Verbindung mit  dem  Hilfsprogramm  make  la"Ppt  sich  der  gesamte
+Arbeitsablauf weitestgehend  automatisieren  und  kann  hier  sehr
+empfohlen werden.
+
+ Beispiel fu"r ein makefile:
+
+ CC=fsc
+ beispiel:    beispiel1.o beispiel2.o beispiel3.o
+ beispiel1.o: beispiel1.c beispiel.h
+
+
+     U"brigens speichert fse nach dem Kommando ^UD  die  Datei  nur
+dann ab, wenn der Text wirklich modifiziert wurde,  so  daPp  durch
+make fu"r eine Datei, die zwar geladen, aber nicht vera"ndert wurde,
+keine erneute U"bersetzung gestartet wird.
+

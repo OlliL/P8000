@@ -9,16 +9,16 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 11 | 0 | 0 | 1 |
-| [bin](#bin) | 111 | 25 | 4 | 52 | 30 |
+| [bin](#bin) | 111 | 25 | 5 | 52 | 29 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 14 | 0 | 2 | 14 |
-| [usr/bin](#usr-bin) | 145 | 10 | 5 | 79 | 51 |
-| [usr/lib](#usr-lib) | 197 | 79 | 2 | 75 | 41 |
+| [usr/bin](#usr-bin) | 145 | 10 | 7 | 78 | 50 |
+| [usr/lib](#usr-lib) | 197 | 81 | 2 | 74 | 40 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
-| [usr/other](#usr-other) | 15 | 8 | 0 | 2 | 5 |
+| [usr/other](#usr-other) | 15 | 10 | 0 | 1 | 4 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 800 | 11 | 229 | 157 |
+| **all** | 1197 | 804 | 14 | 226 | 153 |
 
 <a id="root"></a>
 ## root
@@ -82,7 +82,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `bin/find` | binary E707 | `tmp/sys3/usr/src/cmd/find.c` | sys3 | D12 old, D1 tight | - |
 | `bin/format` | binary E707 | `src/cmd/format` | exact | cc | - |
 | `bin/fsc` | binary E611 | - | todo | D12 new?, D1 - | - |
-| `bin/fse` | binary E607 | - | todo | D12 new, D1 - | - |
+| `bin/fse` | binary E607 | `src/cmd/fse` | partial | - | - |
 | `bin/getfile` | binary E707 | `tmp/sys3/usr/src/graf/src/dev.d/tek4000.d/ged.d/getfile.c` | sys3 | D12 -, D1 loose | - |
 | `bin/gets` | binary E707 | `tmp/sys3/usr/src/lib/libc/vax/stdio/gets.c` | sys3 | D12 -, D1 tight | - |
 | `bin/getud` | binary E707 | `src/cmd/getud.c` | exact | cc | libc.a |
@@ -360,7 +360,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/bin/paste` | binary E707 | `tmp/sys3/usr/src/cmd/paste.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/pcat` | binary E707 | `tmp/sys3/usr/src/cmd/pcat.c` | sys3 | D12 old?, D1 tight | - |
 | `usr/bin/plz` | binary E707 | - | todo | D12 old, D1 loose | - |
-| `usr/bin/plzcg` | binary E711 | - | todo | D12 old, D1 loose | - |
+| `usr/bin/plzcg` | binary E711 | `src/cmd/plzcg` | partial | - | - |
 | `usr/bin/plzsys` | binary E711 | - | todo | D12 new?, D1 - | - |
 | `usr/bin/prof` | binary E707 | `tmp/sys3/usr/src/cmd/prof.c` | sys3 | D12 old?, D1 tight | - |
 | `usr/bin/prs` | binary E707 | `tmp/sys3/usr/src/cmd/sccs/src/prs.c` | sys3 | D12 old, D1 slots | - |
@@ -397,7 +397,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/bin/uimage` | binary E707 | - | todo | D12 old, D1 tight | - |
 | `usr/bin/unget` | binary E707 | `tmp/sys3/usr/src/cmd/sccs/src/unget.c` | sys3 | D12 old, D1 slots | - |
 | `usr/bin/uniq` | binary E707 | `tmp/sys3/usr/src/cmd/uniq.c` | sys3 | D12 -, D1 loose | - |
-| `usr/bin/units` | binary E707 | `tmp/sys3/usr/src/cmd/units.c` | sys3 | D12 old?, D1 slots | - |
+| `usr/bin/units` | binary E707 | `src/cmd/units` | partial | - | - |
 | `usr/bin/unpack` | binary E707 | `tmp/sys3/usr/src/cmd/unpack.c` | sys3 | D12 old?, D1 tight | - |
 | `usr/bin/users` | binary E707 | - | todo | D12 -, D1 tight | - |
 | `usr/bin/val` | binary E707 | `tmp/sys3/usr/src/cmd/sccs/src/val.c` | sys3 | D12 -, D1 slots | - |
@@ -544,7 +544,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/more.help` | text | `src/cmd/more` | exact | - | - |
 | `usr/lib/news/news` | text | `tmp/sys3/usr/bin/news` | sys3 | - | - |
 | `usr/lib/news/wega` | text | - | todo | - | - |
-| `usr/lib/plzcg.errs` | text | - | todo | - | - |
+| `usr/lib/plzcg.errs` | text | `src/cmd/plzcg` | exact | - | - |
 | `usr/lib/plzcg2` | binary E705 | - | todo | D12 -, D1 loose | - |
 | `usr/lib/plzcg2d` | binary E705 | - | todo | D12 old, D1 - | - |
 | `usr/lib/plzcg3` | binary E705 | - | todo | D12 -, D1 tight | - |
@@ -605,7 +605,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/tmac/tmac.skeep` | text | `src/cmd/text/macros.d` | exact | - | - |
 | `usr/lib/tmac/tmac.srefs` | text | `src/cmd/text/macros.d` | exact | - | - |
 | `usr/lib/tmac/tmac.v` | text | `src/cmd/text/macros.d` | exact | - | - |
-| `usr/lib/units` | text | `tmp/sys3/usr/bin/units` | sys3 | - | - |
+| `usr/lib/units` | text | `src/cmd/units` | exact | - | - |
 | `usr/lib/uucp/L-cmd` | text | `src/cmd/uucp` | exact | - | - |
 | `usr/lib/uucp/L-devices` | text | `src/cmd/uucp` | exact | - | - |
 | `usr/lib/uucp/L.sys` | text | `src/cmd/uucp` | exact | - | - |
@@ -663,11 +663,11 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/dict/hstop` | data | `src/?` | exact | - | - |
 | `usr/dict/spellhist` | data | `src/cmd/spell` | exact | cc | - |
 | `usr/dict/words` | text | `src/cmd/spell` | exact | cc | - |
-| `usr/doc/fse.doc` | text | - | todo | - | - |
-| `usr/pub/ascii` | text | `src/cmd/pub` | exact | - | - |
+| `usr/doc/fse.doc` | text | `src/cmd/fse` | exact | - | - |
+| `usr/pub/ascii` | text | `src/?` | exact | - | - |
 | `usr/pub/dmalias` | text | - | todo | - | - |
-| `usr/pub/eqnchar` | text | `src/cmd/pub` | exact | - | - |
-| `usr/pub/greek` | data | `tmp/sys3/usr/bin/greek` | sys3 | - | - |
+| `usr/pub/eqnchar` | text | `src/?` | exact | - | - |
+| `usr/pub/greek` | data | `src/?` | exact | - | - |
 | `usr/pub/termlist` | text | - | todo | - | - |
 | `usr/spool/queuer/config` | text | `tmp/sys3/etc/config` | sys3 | - | - |
 | `usr/spool/queuer/logfile` | data | - | todo | - | - |
