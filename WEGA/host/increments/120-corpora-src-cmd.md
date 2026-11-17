@@ -2,7 +2,7 @@
 
 ## Status
 
-active (2026-11-16)
+done (2026-11-17)
 
 ## Goal
 
@@ -227,3 +227,4 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   of 4). killall: three more cases (second group, second group with a signal, first group with command lines), mutant found. The open point
   about the arguments in the ps model is closed.
 - sysgen with vi (the answer y): left out until the real vi is in the tree (owner's decision); the writing mount stays postponed until mount itself is rebuilt.
+- 2026-11-17: done. Without a corpus by agreement: BOOT0, the standalone programs, the old compilers and their passes, the crt0-* start files (not programs); sysgen with vi (until the real vi is in the tree); writing mount (until mount itself is rebuilt). Every other installed program and script has its corpus; checkall ALL OK (commit 42f4a18e).
