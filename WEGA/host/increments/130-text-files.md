@@ -46,3 +46,4 @@ Every file of the WEGA tree that is text or data (no program to compile) comes f
 Programs and scripts that need a compiler or are tested by a corpus: 120, 160.
 
 ## Log
+- 2026-11-17: usr/lib/tmac (9 files, copies of the WEGA files) and usr/lib/term (16 tables made by maketerms.c in three passes from the System III sources, byte-identical; tab630wp-12 copied): src/cmd/text/{macros.d,roff.d/terms.d}. maketerms is a WEGA program that make runs itself: $(RUN) ./maketerms, RUN=wrun (wbin.sh; exported by host/Makefile and checkall.sh), empty on WEGA. The WEGA names differ from System III (tab300-12 -> tab-12, tab300s -> tab300S, tab300s-12 -> tab300S-12; tab2631-c is not installed). usr/lib/acct: no corpus (owner). checkall ALL OK.

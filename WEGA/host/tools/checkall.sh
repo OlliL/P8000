@@ -154,6 +154,8 @@ stamp '1 copy of the files of git (tree)'
 rm -rf $OLD $T/bin
 sh $HERE/oldroot.sh $WEGA $OLD
 sh $HERE/wbin.sh $T/bin $WEGA $OLD $EMU
+RUN=wrun	# $(RUN) ./generator in the Makefiles (wbin.sh: wrun)
+export RUN
 stamp '1 oldroot.sh, wbin.sh'
 # make all = stage1 lib stage2 cmds uts, one after the other so that every part is timed
 : > $T/make.log

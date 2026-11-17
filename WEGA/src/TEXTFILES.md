@@ -8,12 +8,12 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 
 | Rule | Art | files |
 |---|---|---|
-| C | data | 4 |
+| C | data | 2 |
 | C | script | 33 |
-| C | text | 74 |
-| G | data | 20 |
+| C | text | 65 |
+| G | data | 5 |
 | G | text | 7 |
-| **all** | | 138 |
+| **all** | | 112 |
 
 
 ## root
@@ -189,42 +189,6 @@ A file System III only copies, or has nothing for, is **C**: the WEGA original. 
 |---|---|---|---|---|---|---|---|
 | `std` | text | C | 135 | `src/usr/lib/tabset/std` | nein | - |  |
 | `vt100` | text | C | 159 | `src/usr/lib/tabset/vt100` | nein | - |  |
-
-## usr/lib/term
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `tab-12` | data | C | 1269 | `src/usr/lib/term/tab-12` | nein | - |  |
-| `tab2631` | data | G | 956 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab2631 image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab2631.c - check: offen |
-| `tab2631-e` | data | G | 964 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab2631-e image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab2631-e.c - check: offen |
-| `tab300` | data | G | 1271 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab300 image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab300.c - check: offen |
-| `tab300S` | data | G | 1264 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab300S image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab300s.c - check: offen |
-| `tab300S-12` | data | G | 1258 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab300S-12 image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab300s-12.c - check: offen |
-| `tab37` | data | G | 1115 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab37 image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab37.c - check: offen |
-| `tab382` | data | G | 1270 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab382 image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab382.c - check: offen |
-| `tab4000A` | data | G | 1300 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab4000A image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab4000A.c - check: offen |
-| `tab450` | data | G | 1265 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab450 image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab450.c - check: offen |
-| `tab450-12` | data | G | 1277 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab450-12 image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab450-12.c - check: offen |
-| `tab630wp-12` | data | C | 1322 | `src/usr/lib/term/tab630wp-12` | nein | - |  |
-| `tab832` | data | G | 1267 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tab832 image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tab832.c - check: offen |
-| `tabX` | data | G | 1232 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tabX image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tabX.c - check: offen |
-| `taba1` | data | G | 1267 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/taba1 image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/taba1.c - check: offen |
-| `tablp` | data | G | 956 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tablp image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tablp.c - check: offen |
-| `tabtn300` | data | G | 948 | `made by the build from src/cmd/text/roff.d/terms.d/` | nein | usr/lib/term/tabtn300 image ~ | maketerms.c (three passes: -DPART1 .. 3) writes the tables; tab300S, tab300S-12 are links to tab300s, tab300s-12: text/roff.d/terms.d/terms.mk, text/roff.d/terms.d/maketerms.c, text/roff.d/terms.d/terms.hd, text/roff.d/terms.d/tabtn300.c - check: offen |
-
-## usr/lib/tmac
-
-| File | Art | Rule | Bytes | Ziel in src/ | Korpus | System III | Generator (usr/src/cmd/) |
-|---|---|---|---|---|---|---|---|
-| `tmac.an` | text | C | 3542 | `src/cmd/text/macros.d/tmac.an` | nein | usr/lib/tmac/tmac.an image ~<br>usr/src/cmd/text/macros.d/tmac.an source ~ |  |
-| `tmac.e` | text | C | 11972 | `src/usr/lib/tmac/tmac.e` | nein | - |  |
-| `tmac.m` | text | C | 91 | `src/cmd/text/macros.d/tmac.m` | nein | usr/lib/tmac/tmac.m image =<br>usr/src/cmd/text/macros.d/tmac.m source = |  |
-| `tmac.s` | text | C | 19864 | `src/usr/lib/tmac/tmac.s` | nein | - |  |
-| `tmac.scover` | text | C | 3946 | `src/usr/lib/tmac/tmac.scover` | nein | - |  |
-| `tmac.sdisp` | text | C | 809 | `src/usr/lib/tmac/tmac.sdisp` | nein | - |  |
-| `tmac.skeep` | text | C | 1190 | `src/usr/lib/tmac/tmac.skeep` | nein | - |  |
-| `tmac.srefs` | text | C | 2405 | `src/usr/lib/tmac/tmac.srefs` | nein | - |  |
-| `tmac.v` | text | C | 56 | `src/cmd/text/macros.d/tmac.v` | nein | usr/lib/tmac/tmac.v image =<br>usr/src/cmd/text/macros.d/tmac.v source = |  |
 
 ## usr/lib/uucp
 

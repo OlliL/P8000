@@ -12,6 +12,10 @@ for t in cc scc cas as ld sld gld ar yacc chkout; do
 	esac
 	chmod +x $d/$t
 done
+# wrun PROGRAM [ARG ...]: a program of the WEGA system that a Makefile runs itself (a generator: maketerms), under the emulator;
+# the Makefiles call it as $(RUN) ./PROGRAM with RUN=wrun (exported by the callers: host/Makefile, checkall.sh), RUN empty on WEGA itself
+printf '#!/bin/sh\nexec %s -r %s "$@"\n' $emu $wega > $d/wrun
+chmod +x $d/wrun
 # strip [-h] FILE ...: each file by its name in its own directory (the guest sees only WEGA and the working directory;
 # make install strips below PREFIX)
 {

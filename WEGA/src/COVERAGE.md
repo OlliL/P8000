@@ -13,12 +13,12 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 13 | 0 | 2 | 15 |
 | [usr/bin](#usr-bin) | 145 | 10 | 0 | 81 | 54 |
-| [usr/lib](#usr-lib) | 197 | 1 | 0 | 127 | 69 |
+| [usr/lib](#usr-lib) | 197 | 27 | 2 | 107 | 61 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 1 | 0 | 9 | 5 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 714 | 0 | 292 | 191 |
+| **all** | 1197 | 740 | 2 | 272 | 183 |
 
 <a id="root"></a>
 ## root
@@ -501,7 +501,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/help/prs` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/prs` | sys3 | - | - |
 | `usr/lib/help/rc` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/rc` | sys3 | - | - |
 | `usr/lib/help/term` | text | `tmp/sys3/usr/src/cmd/text/shells.d/term` | sys3 | - | - |
-| `usr/lib/help/text` | text | `tmp/sys3/usr/src/cmd/text/shells.d/text` | sys3 | - | - |
+| `usr/lib/help/text` | text | `src/cmd/text` | partial | - | - |
 | `usr/lib/help/un` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/un` | sys3 | - | - |
 | `usr/lib/help/ut` | text | `tmp/sys3/usr/src/cmd/sccs/help.d/ut` | sys3 | - | - |
 | `usr/lib/lex/ncform` | text | `src/lib/libl` | exact | - | - |
@@ -565,23 +565,23 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/suftab` | data | `tmp/sys3/usr/lib/suftab` | sys3 | - | - |
 | `usr/lib/tabset/std` | data | - | todo | - | - |
 | `usr/lib/tabset/vt100` | data | - | todo | - | - |
-| `usr/lib/term/tab-12` | data | - | todo | - | - |
-| `usr/lib/term/tab2631` | data | `tmp/sys3/usr/lib/term/tab2631` | sys3 | - | - |
-| `usr/lib/term/tab2631-e` | data | `tmp/sys3/usr/lib/term/tab2631-e` | sys3 | - | - |
-| `usr/lib/term/tab300` | data | `tmp/sys3/usr/lib/term/tab300` | sys3 | - | - |
-| `usr/lib/term/tab300S` | data | `tmp/sys3/usr/lib/term/tab300S` | sys3 | - | - |
-| `usr/lib/term/tab300S-12` | data | `tmp/sys3/usr/lib/term/tab300S-12` | sys3 | - | - |
-| `usr/lib/term/tab37` | data | `tmp/sys3/usr/lib/term/tab37` | sys3 | - | - |
-| `usr/lib/term/tab382` | data | `tmp/sys3/usr/lib/term/tab382` | sys3 | - | - |
-| `usr/lib/term/tab4000A` | data | `tmp/sys3/usr/lib/term/tab4000A` | sys3 | - | - |
-| `usr/lib/term/tab450` | data | `tmp/sys3/usr/lib/term/tab450` | sys3 | - | - |
-| `usr/lib/term/tab450-12` | data | `tmp/sys3/usr/lib/term/tab450-12` | sys3 | - | - |
-| `usr/lib/term/tab630wp-12` | data | - | todo | - | - |
-| `usr/lib/term/tab832` | data | `tmp/sys3/usr/lib/term/tab832` | sys3 | - | - |
-| `usr/lib/term/tabX` | data | `tmp/sys3/usr/lib/term/tabX` | sys3 | - | - |
-| `usr/lib/term/taba1` | data | `tmp/sys3/usr/lib/term/taba1` | sys3 | - | - |
-| `usr/lib/term/tablp` | data | `tmp/sys3/usr/lib/term/tablp` | sys3 | - | - |
-| `usr/lib/term/tabtn300` | data | `tmp/sys3/usr/lib/term/tabtn300` | sys3 | - | - |
+| `usr/lib/term/tab-12` | data | `src/cmd/text/roff.d/terms.d` | exact | cc | - |
+| `usr/lib/term/tab2631` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tab2631-e` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tab300` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tab300S` | data | `src/cmd/text/roff.d/terms.d` | exact | cc | - |
+| `usr/lib/term/tab300S-12` | data | `src/cmd/text/roff.d/terms.d` | exact | cc | - |
+| `usr/lib/term/tab37` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tab382` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tab4000A` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tab450` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tab450-12` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tab630wp-12` | data | `src/cmd/text/roff.d/terms.d` | exact | cc | - |
+| `usr/lib/term/tab832` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tabX` | data | `src/?` | exact | - | - |
+| `usr/lib/term/taba1` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tablp` | data | `src/?` | exact | - | - |
+| `usr/lib/term/tabtn300` | data | `src/?` | exact | - | - |
 | `usr/lib/termv7/tab300` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/terms.d/tab300.c` | sys3 | D12 -, D1 - | - |
 | `usr/lib/termv7/tab300-12` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/terms.d/tab300-12.c` | sys3 | D12 -, D1 - | - |
 | `usr/lib/termv7/tab300s` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/terms.d/tab300s.c` | sys3 | D12 -, D1 - | - |
@@ -594,17 +594,17 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/termv7/taba1` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/terms.d/taba1.c` | sys3 | D12 -, D1 - | - |
 | `usr/lib/termv7/tablp` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/terms.d/tablp.c` | sys3 | D12 -, D1 - | - |
 | `usr/lib/termv7/tabtn300` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/terms.d/tabtn300.c` | sys3 | D12 -, D1 - | - |
-| `usr/lib/text` | binary E711 | `tmp/sys3/usr/src/uts/vax/os/text.c` | sys3 | D12 old?, D1 slots | - |
+| `usr/lib/text` | binary E711 | `src/cmd/text` | partial | - | - |
 | `usr/lib/text_nf` | binary E711 | - | todo | D12 old?, D1 slots | - |
-| `usr/lib/tmac/tmac.an` | text | `tmp/sys3/usr/src/cmd/text/macros.d/tmac.an` | sys3 | - | - |
-| `usr/lib/tmac/tmac.e` | text | - | todo | - | - |
-| `usr/lib/tmac/tmac.m` | text | `tmp/sys3/usr/src/cmd/text/macros.d/tmac.m` | sys3 | - | - |
-| `usr/lib/tmac/tmac.s` | text | - | todo | - | - |
-| `usr/lib/tmac/tmac.scover` | text | - | todo | - | - |
-| `usr/lib/tmac/tmac.sdisp` | text | - | todo | - | - |
-| `usr/lib/tmac/tmac.skeep` | text | - | todo | - | - |
-| `usr/lib/tmac/tmac.srefs` | text | - | todo | - | - |
-| `usr/lib/tmac/tmac.v` | text | `tmp/sys3/usr/src/cmd/text/macros.d/tmac.v` | sys3 | - | - |
+| `usr/lib/tmac/tmac.an` | text | `src/cmd/text/macros.d` | exact | - | - |
+| `usr/lib/tmac/tmac.e` | text | `src/cmd/text/macros.d` | exact | - | - |
+| `usr/lib/tmac/tmac.m` | text | `src/cmd/text/macros.d` | exact | - | - |
+| `usr/lib/tmac/tmac.s` | text | `src/cmd/text/macros.d` | exact | - | - |
+| `usr/lib/tmac/tmac.scover` | text | `src/cmd/text/macros.d` | exact | - | - |
+| `usr/lib/tmac/tmac.sdisp` | text | `src/cmd/text/macros.d` | exact | - | - |
+| `usr/lib/tmac/tmac.skeep` | text | `src/cmd/text/macros.d` | exact | - | - |
+| `usr/lib/tmac/tmac.srefs` | text | `src/cmd/text/macros.d` | exact | - | - |
+| `usr/lib/tmac/tmac.v` | text | `src/cmd/text/macros.d` | exact | - | - |
 | `usr/lib/units` | text | `tmp/sys3/usr/bin/units` | sys3 | - | - |
 | `usr/lib/uucp/L-cmd` | text | - | todo | - | - |
 | `usr/lib/uucp/L-devices` | text | `tmp/sys3/usr/lib/uucp/L-devices` | sys3 | - | - |

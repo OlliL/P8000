@@ -36,7 +36,7 @@ OLDROOTABS = $(abspath $(OLDROOT))
 
 # the original tools under the emulator, for the PATH of make (tools/wbin.sh); the Makefiles of src use the plain names
 WBIN = $(abspath ../../tmp/wbin)
-WPATH = PATH=$(WBIN):$$PATH
+WPATH = RUN=wrun PATH=$(WBIN):$$PATH
 
 all: cc popt codgen cparse ar binutils cas ld cpp
 
