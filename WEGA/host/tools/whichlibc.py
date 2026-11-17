@@ -2,7 +2,7 @@
 """whichlibc.py PROGRAM OWNEND [LIBDIR]: which library a linked WEGA program was linked from.
 
 Walks through the text of PROGRAM from OWNEND (hex: the end of the own code) and takes at each place the member of a library whose
-code fits (addresses masked, the most equal bytes win), for each of LIBDIR/libc-vN.a and LIBDIR/libc/libc.a (default: src/lib of this
+code fits (addresses masked, the most equal bytes win), for each of LIBDIR/libc-vN.a and the shipped /lib/libc.a of the WEGA tree (default: src/lib of this
 tree; make -C host oldroot builds them). Prints per library the bytes of the libc part it covers, best last, and for the best one
 the walk: the members in order and each gap with its size, the place of a module this library does not have. A library with no gap is
 the one to link: LIBC in the Makefile, then compare (bincmp.py). `fakcu` beside a gap is a false fit, a stray `ret`. WEGA=dir: the original tree.
@@ -85,7 +85,7 @@ def main():
     NA = [norm(t) for _, t in A]
     i = next(k for k, a in enumerate(addr) if a >= pos)
     res = []
-    for lib in sorted(glob.glob(d + '/libc-v*.a')) + [d + '/libc/libc.a']:
+    for lib in sorted(glob.glob(d + '/libc-v*.a')) + [os.path.join(WEGA, 'lib', 'libc.a')]:
         cov, rows = walk(gc, A, NA, addr, members(lib), i)
         res.append((cov, sum(r.startswith('#') for r in rows), lib, rows))
     res.sort(key=lambda r: (r[0], -r[1]))

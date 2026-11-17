@@ -122,7 +122,7 @@ def libc_end(path, starts):
     A = list(zcode.insns(gc, 0, cg, False))
     addr = [a for a, _ in A]
     NA = [whichlibc.norm(t) for _, t in A]
-    libs = sorted(glob.glob(LIBDIR + '/libc-v*.a')) + [LIBDIR + '/libc/libc.a']
+    libs = sorted(glob.glob(LIBDIR + '/libc-v*.a')) + [os.path.join(ROOT, 'lib', 'libc.a')]   # the shipped libc (src/lib/libc builds it identical)
     mem = {lib: whichlibc.members(lib) for lib in libs}
     first = next(k for k, a in enumerate(addr) if a >= 0x10)      # behind the jump of crt0
     res = []

@@ -38,7 +38,7 @@ Never in phase A: change a compiler pass or a switch, change cas, edit a shipped
    4. **compare/NAME/.** `progcfg.py` (NAME, ORIG, OWN_LIM, ORIG_LIM when stripped, CC; for a segmented program SEG and CC by
       hand, `compare/sld` is the pattern), the inventory (`inventory.py`, kept in `tmp/tmp/NAME/inv.json`) and the first
       `findings.json` (`own_table.py`: every function start `f<entry>` with orig, size_orig, status open). Names later with `rename.py`.
-   5. **Library and OWN_LIM.** The walk of `host/tools/whichlibc.py` over every `src/lib/libc-vN.a` and `libc/libc.a`: the libc
+   5. **Library and OWN_LIM.** The walk of `host/tools/whichlibc.py` over every `src/lib/libc-vN.a` and the shipped `/lib/libc.a`: the libc
       starts at the first member of at least 32 bytes (with the members right before it); the best library covers the most
       bytes from there. No gap: that library is LIBC. A gap is a module of another version, or a program of another library: the
       main session decides. `ld` takes from an archive what is referenced, in its order. `crt0.list` must have the program.
