@@ -1468,3 +1468,18 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - itpress, the leading compression loop: v1 and shipped popt give the same code from the raw code (test at the head); the
   original has `jr T; C: inc; T: tests; jne out; jr C`. A source form gives it exactly with either popt:
   `i = 0; goto t; n: i++; t: if (i < ... && ...) goto n;` (not taken: a compiler cause is not ruled out).
+- Owner 2026-11-18: source forms first, then existing switches (also adjusted), new switches last. Taken: itpress as a
+  goto loop (item 60/96 > 4/40), btdelitem with the `bad:` label inside the error branch (btree 41/29 > 12/0).
+- itpress `bycmpr(..., kp->k_len)`: the original copies the parameter kp (r5) into r4, which held kp from its frame home
+  for the `k_flags` test; v1 takes r2. Source forms tried (`!bycmpr`, parentheses, `(*kp)`, `&it_key[0]`): no change.
+- itunpack, segmented: the original stores `it_leadcnt` and `it_trailcnt` through rr2 after the `?:` arm has loaded the old
+  `p` into rr2 (`ldl rr2,rr8; ... ld @rr2,r4`): the value goes into the buffer, not into the item (a bug of the old scodgen,
+  the address pair is taken as free in the arm). v1 takes rr4. No source form.
+- btsearch `openp->o_flags |= 020` behind `r == 0 && mode == 2 && bp->bf_level == 0`: the original takes r2 (holding bp) as
+  free, as the shipped codgen does at the end of `&&` (v1 OLD_D3 keeps it). codgen v1 without OLD_D3 on libcisam
+  (lines nonseg/seg): btree 12/0 > 4/221, open 17/267 > 267/34, item 4/40 > 93/134, key 0/0 > 4/4, lock 0/0 > 8/8;
+  total 207/811 > 550/905. Source forms of the condition (nested if, `!bp->bf_level`, statements swapped): no change.
+- isopen `if (ldint(dictp) != 0xfe53 ...)`: the original loads dictp again into the register that holds it (nonseg
+  `ld r5,_dictp`, r2 openp and r7 filep stay known; seg `ldl rr2,_dictp`), v1 copies it. A label in front of the `if`:
+  segmented exact (267 > 0), nonsegmented 17 > 285 (all names forgotten). `dictp + 0`, `&dictp[0]`, casts, constant
+  forms: no change.
