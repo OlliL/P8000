@@ -234,7 +234,8 @@ def main():
             # the source under WEGA's name (the member's: Library.SC names them so), and compiled under it (the object holds it)
             local = os.path.join(dst, stem + src[-2:])
             if not os.path.exists(local):
-                shutil.copy(src, local)
+                shutil.copyfile(src, local)		# not the mode: the BSD trees are read-only
+                os.chmod(local, 0o644)
             res = best(local, m['body'], seg, tmp)
             if not res:
                 print('  %-14s %s: no compiler made an object' % (m['name'], short(src)))

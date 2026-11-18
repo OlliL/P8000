@@ -1,0 +1,41 @@
+{
+ "schema": "members: name -> file, status (exact: byte-identical member; open), note. The same for libmp.a (ccv1 -O) and slibmp.a (sccv1 -O), both with src/head/oldv7.",
+ "compiler": "v1 (ccv1, sccv1), dated 02/11/83 by Library.SC",
+ "binary": "/usr/lib/libmp.a, /usr/lib/slibmp.a",
+ "members": {
+  "pow.o": {
+   "file": "pow.c",
+   "status": "exact"
+  },
+  "gcd.o": {
+   "file": "gcd.c",
+   "status": "exact",
+   "note": "WEGA: xalloc(1) in invert without the name string of 2.11BSD."
+  },
+  "msqrt.o": {
+   "file": "msqrt.c",
+   "status": "exact"
+  },
+  "mdiv.o": {
+   "file": "mdiv.c",
+   "status": "exact"
+  },
+  "mout.o": {
+   "file": "mout.c",
+   "status": "exact",
+   "note": "WEGA (the older form): sdiv tests qval[qlen-1]==0 without qlen && (KNOWLEDGE.md); m_out declares char *obuf without *malloc() (seg: the int result widened); the stdio.h of V7."
+  },
+  "mult.o": {
+   "file": "mult.c",
+   "status": "exact"
+  },
+  "madd.o": {
+   "file": "madd.c",
+   "status": "exact"
+  },
+  "util.o": {
+   "file": "util.c",
+   "status": "exact"
+  }
+ }
+}

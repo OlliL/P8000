@@ -58,3 +58,5 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   (register arguments), xalloc (seg: ssgbrk), fatal, setsig, xcreat, xmsg; move.c after pdp11/move.c. Compiler: OLD_D24, OLD_D25 and
   OLD_D2CW (new) into the segmented v1, OLD_D20 (block label named by at most 3 jumps) and OLD_D52 (A more than one instruction)
   narrowed (`OLDCC_LOG.md`).
+- 2026-11-18: libmp.a, slibmp.a byte-identical (no System III source: 2.11BSD usr.lib/libmp without sccsid, v1 with the V7
+  stdio.h; WEGA forms in gcd.c and mout.c). libsetup.py copies the sources writable.
