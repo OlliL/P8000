@@ -13,12 +13,12 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 18 | 0 | 2 | 10 |
 | [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
-| [usr/lib](#usr-lib) | 197 | 105 | 2 | 57 | 33 |
+| [usr/lib](#usr-lib) | 197 | 107 | 2 | 57 | 31 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 859 | 13 | 191 | 134 |
+| **all** | 1197 | 861 | 13 | 191 | 132 |
 
 <a id="root"></a>
 ## root
@@ -506,7 +506,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/help/ut` | text | `src/cmd/sccs/help.d` | exact | - | - |
 | `usr/lib/lex/ncform` | text | `src/lib/libl` | exact | - | - |
 | `usr/lib/lib.b` | text | `src/cmd/bc` | exact | - | - |
-| `usr/lib/libPW.a` | archive | - | todo | - | - |
+| `usr/lib/libPW.a` | archive | `src/lib/libPW` | exact | - | - |
 | `usr/lib/libcisam.a` | archive | - | todo | - | - |
 | `usr/lib/libcurses.a` | archive | - | todo | - | - |
 | `usr/lib/libmp.a` | archive | - | todo | - | - |
@@ -554,7 +554,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/problems/strfile` | data | `src/cmd/problems` | exact | - | - |
 | `usr/lib/screen/vlshelp` | text | `src/cmd/screen` | exact | - | - |
 | `usr/lib/screen/vnewshelp` | text | `src/cmd/screen` | exact | - | - |
-| `usr/lib/slibPW.a` | archive | - | todo | - | - |
+| `usr/lib/slibPW.a` | archive | `src/lib/libPW` | exact | - | - |
 | `usr/lib/slibcisam.a` | archive | - | todo | - | - |
 | `usr/lib/slibcurses.a` | archive | - | todo | - | - |
 | `usr/lib/slibmp.a` | archive | - | todo | - | - |
