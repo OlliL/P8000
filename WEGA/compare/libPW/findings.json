@@ -1,0 +1,184 @@
+{
+ "schema": "members: name -> file, status (exact: byte-identical member; open), note. The same for libPW.a (ccv1 -O) and slibPW.a (sccv1 -O -DSEG).",
+ "compiler": "v1 (ccv1, sccv1) with OLD_D24, OLD_D2CW (scodgen) and OLD_D25 (scparse) and the narrowed OLD_D20 and OLD_D52 of popt (host/OLDCC.md), dated 07/22/83 by Library.SC",
+ "binary": "/usr/lib/libPW.a, /usr/lib/slibPW.a",
+ "members": {
+  "anystr.o": {
+   "file": "anystr.c",
+   "status": "exact"
+  },
+  "bal.o": {
+   "file": "bal.c",
+   "status": "exact"
+  },
+  "curdir.o": {
+   "file": "curdir.c",
+   "status": "exact"
+  },
+  "fdfopen.o": {
+   "file": "fdfopen.c",
+   "status": "exact"
+  },
+  "giveup.o": {
+   "file": "giveup.c",
+   "status": "exact"
+  },
+  "imatch.o": {
+   "file": "imatch.c",
+   "status": "exact"
+  },
+  "index.o": {
+   "file": "index.c",
+   "status": "exact"
+  },
+  "lockit.o": {
+   "file": "lockit.c",
+   "status": "exact"
+  },
+  "logname.o": {
+   "file": "logname.c",
+   "status": "exact"
+  },
+  "move.o": {
+   "file": "move.c",
+   "status": "exact",
+   "note": "No source in System III for the Z8000: written after pdp11/move.c (the x.ip forms as int pointers xi, yi; register order x, y, xi, yi, m). slibPW.a needs OLD_D2CW: the copy (int)x of the pointer in rr12 holds no name, the byte copy takes rl2."
+  },
+  "patoi.o": {
+   "file": "patoi.c",
+   "status": "exact"
+  },
+  "patol.o": {
+   "file": "patol.c",
+   "status": "exact"
+  },
+  "regcmp.o": {
+   "file": "regcmp.c",
+   "status": "exact",
+   "note": "WEGA form: regs[6] (seg: a struct of 3) declared first, a counter n and a flag f as register variables; after NREGS arguments adx goes to &regs[5] (nonseg) or &cs4 (seg). PINT (int, seg long) for __sp_, adx, __rpop. The nonseg target &regs[5] is a quirk of the original (KNOWLEDGE.md)."
+  },
+  "regex.o": {
+   "file": "regex.c",
+   "status": "exact",
+   "note": "WEGA form: regex() copies the register arguments into regs[NREGS] (4, seg 1) and calls _zregex(addrc, addrl, regs, &args); in _zregex a register declaration stands between in and cur (frame slot order). The third argument of __cclass is cast to char at the three compares ((char)(ep[-1]==(CCL|RNGE)), (char)(ep[-1]==(CCL|PLUS))): an odd form that fits (extsb in the original). PINT for the stack pointers and the returns; seg __advance has long i behind gflg."
+  },
+  "rename.o": {
+   "file": "rename.c",
+   "status": "exact"
+  },
+  "repeat.o": {
+   "file": "repeat.c",
+   "status": "exact"
+  },
+  "repl.o": {
+   "file": "repl.c",
+   "status": "exact"
+  },
+  "satoi.o": {
+   "file": "satoi.c",
+   "status": "exact"
+  },
+  "setsig.o": {
+   "file": "setsig.c",
+   "status": "exact",
+   "note": "WEGA: \"Segmentation violation\" for \"Memory fault\"; n is int (*n)() (the seg member keeps the long)."
+  },
+  "sname.o": {
+   "file": "sname.c",
+   "status": "exact"
+  },
+  "strend.o": {
+   "file": "strend.c",
+   "status": "exact"
+  },
+  "substr.o": {
+   "file": "substr.c",
+   "status": "exact"
+  },
+  "trnslat.o": {
+   "file": "trnslat.c",
+   "status": "exact"
+  },
+  "userdir.o": {
+   "file": "userdir.c",
+   "status": "exact"
+  },
+  "username.o": {
+   "file": "username.c",
+   "status": "exact"
+  },
+  "verify.o": {
+   "file": "verify.c",
+   "status": "exact"
+  },
+  "any.o": {
+   "file": "any.c",
+   "status": "exact"
+  },
+  "xcreat.o": {
+   "file": "xcreat.c",
+   "status": "exact",
+   "note": "WEGA: xalloc and xfree for alloca."
+  },
+  "xlink.o": {
+   "file": "xlink.c",
+   "status": "exact"
+  },
+  "xopen.o": {
+   "file": "xopen.c",
+   "status": "exact"
+  },
+  "xpipe.o": {
+   "file": "xpipe.c",
+   "status": "exact"
+  },
+  "xunlink.o": {
+   "file": "xunlink.c",
+   "status": "exact"
+  },
+  "xwrite.o": {
+   "file": "xwrite.c",
+   "status": "exact"
+  },
+  "xmsg.o": {
+   "file": "xmsg.c",
+   "status": "exact",
+   "note": "WEGA: xalloc for alloca."
+  },
+  "cat.o": {
+   "file": "cat.c",
+   "status": "exact",
+   "note": "WEGA form: cat() copies the register arguments into regs[] (nonseg 5: char *regs[5]; seg 2: struct { char *r0, *r1; } as printf of slibc) and calls _cat(dest, regs, &args), which takes the registers first and then the stack."
+  },
+  "dname.o": {
+   "file": "dname.c",
+   "status": "exact"
+  },
+  "xalloc.o": {
+   "file": "xalloc.c",
+   "status": "exact",
+   "note": "WEGA: printf(\"out of space \\n\"); return((int)cp); for fatal(); the second coalesce test of xfree repeats the first (nonseg, KNOWLEDGE.md); seg: Lastbrk long, ssgbrk on the segment of end through a static union, pointer arithmetic on struct fb (Lastbrk = cp + SIZINCRO)."
+  },
+  "fatal.o": {
+   "file": "fatal.c",
+   "status": "exact",
+   "note": "WEGA: longret(Fjmp, 1) for longjmp(Fjmp)."
+  },
+  "clean.o": {
+   "file": "clean.c",
+   "status": "exact"
+  },
+  "userexit.o": {
+   "file": "userexit.c",
+   "status": "exact"
+  },
+  "zero.o": {
+   "file": "zero.c",
+   "status": "exact"
+  },
+  "zeropad.o": {
+   "file": "zeropad.c",
+   "status": "exact"
+  }
+ }
+}

@@ -494,6 +494,13 @@ allocreg(p, cookie)
 	if (r == -1)
 		r = getreg(cls, want, 0x1000, p->in.sname);
 #else
+#ifdef OLD_D2CW
+	/* v1 (segmented): the copy of a word of a register variable pair (`(int)x` of a pointer in rr12) holds no name
+	   (libPW move: the byte behind it takes r2 again) */
+	r = p->in.op == REG && p->tn.rval >= 8 && p->tn.rval < 14 && szty(p->in.type) == 1 && p->in.sname &&
+	    szty(p->in.sname->stype) == 2 ? getreg(cls, want, 0x1000, (struct sym *)0) : -1;
+	if (r == -1)
+#endif
 	r = getreg(cls, want, 0x1000, p->in.sname);
 #endif
 	if (r == -1) {

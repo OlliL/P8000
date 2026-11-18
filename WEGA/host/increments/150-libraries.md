@@ -52,3 +52,9 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 - 2026-11-17: liby.a, sliby.a byte-identical (System III sources, v1; WEGA's main.c returns yyparse()). libsetup.py: one
   source tree after the other, by name then by content (it took 4.4BSD's main.c before System III's libmai.c); the padding
   byte of an odd last member goes into arhdr_*.s, with the mkar.sh of libc.
+- 2026-11-18: libm.a, slibm.a byte-identical (v1 with OLD_D61, OLD_D62; the host cparse reads floating constants with a
+  port of the WEGA atof).
+- 2026-11-18: libPW.a, slibPW.a byte-identical. WEGA forms in cat, regcmp, regex
+  (register arguments), xalloc (seg: ssgbrk), fatal, setsig, xcreat, xmsg; move.c after pdp11/move.c. Compiler: OLD_D24, OLD_D25 and
+  OLD_D2CW (new) into the segmented v1, OLD_D20 (block label named by at most 3 jumps) and OLD_D52 (A more than one instruction)
+  narrowed (`OLDCC_LOG.md`).

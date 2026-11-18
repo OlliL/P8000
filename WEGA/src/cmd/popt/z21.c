@@ -1227,6 +1227,14 @@ register struct node *p1;
 	}
 	if (b == 0 || !found || b->op != JP || b->ref != p1->ref)
 		return 0;
+	/* A, the code between the conditional jump and the jump, is more than one instruction (libPW regex __cclass,
+	   `return(!af)`: A and Y one constant each, stays) */
+	n = 0;
+	for (q = p1->back; q && q->op != CJP; q = q->back)
+		if (q->op != KCOMMENT && q->op != LABEL)
+			n++;
+	if (n < 2)
+		return 0;
 	/* the target: the first label of its run, fallen into, the exit code */
 	for (l0 = p1->ref; l0->back && (l0->back->op == LABEL || l0->back->op == KCOMMENT); l0 = l0->back)
 		;
@@ -1297,8 +1305,9 @@ struct node *p;
 		p2 = p2->forw;
 		for (p3 = p1->ref; p3; p3 = p3->forw) {
 #ifdef OLD_D20
-			/* the old popt has removed a jump to the next label already: the block goes on behind it */
-			if (p3->op == JP && p3->ref) {
+			/* the old popt has removed a jump to the next label already: the block goes on behind it; only for a
+			   block whose label at most 3 jumps name (libPW xmsg 6, regcmp 21: the common tail moves) */
+			if (p3->op == JP && p3->ref && p1->ref->refc <= 3) {
 				for (rp = p3->forw; rp && (rp->op == LABEL || rp->op == KCOMMENT); rp = rp->forw)
 					if (rp == p3->ref)
 						break;

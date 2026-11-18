@@ -1416,3 +1416,31 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   (rule 052/047a), and store/reload pairs every third operation of a left-deep float expression.
 - Tried: `ffregs` 3 and 2 (no); the float need in the last case of sucomp by `fr == fl` or never the special case: the
   store/reload pairs exactly (both the same bytes); with the compare without `fld ZR`: 15 of 15 members exact.
+
+## 2026-11-18 libPW: OLD_D24, OLD_D25 into the segmented v1; OLD_D20 and OLD_D52 narrowed
+
+- libPW.a, slibPW.a (System III sources, Library.SC 07/22/83): with v1 as it was 78 of 86 members exact (after the WEGA
+  source forms: compare/libPW/SYSIII.md). Open were xmsg (n, s), regcmp (n, s), regex (n, s), xalloc (s), move (s).
+- Measured on a copy of OLDROOT: the shipped popt/spopt (neither D20 nor D52) for the v1 one: xmsg, regcmp n exact. scparse
+  of v1 with OLD_D25 alone or scodgen of v1 with OLD_D24 alone (also the vk scodgen): the mask `ldl rr4,rr2; and r4,#%7f00`
+  of a long cast to a pointer does not come (xalloc, regcmp s); both together: it comes, and the compare `u.s.off > MAX_PAGE`
+  gives `ugt` as the original. With D24, D25 and the shipped popt: 85 of 86. A version of its own (v1 with D24, D25, without
+  D20, D52) would contradict ld and csh (D20, 07/83 and 08/83) and libl (D52): owner: check whether the switches are too wide.
+- OLD_D20: trace (popt -DTRACE, CM lines) with and without it. The moves it stops: allprint L21 (block label named by 3
+  jumps when met, block 1 instruction), ld ensure_buf L232 (2, 2), load1 L337 (2, 2), and in ld main the block of L230 goes
+  on behind the jump (1, 9 instructions). The moves libPW needs: xmsg L17 (6 names, 3 instructions: the `fatal(str)` tail),
+  regcmp L23 (21, 4). Limits tried: only a straight block (as OLD_D20S of vc): allprint lost, xmsg and regcmp not freed;
+  only a block label named once (D20S's other limit): xmsg, regcmp freed, allprint lost (3 names); at most 2 names: allprint
+  lost; the block at most 2 instructions: ld main changes; the label behind the jump named once: ld main, ensure_buf, load1
+  lost. Taken: at most 3 names; ld.c, symbols.c, copyname.c, printname.c give the same popt output as before.
+- OLD_D52: regex `__cclass`, `return(!af)` (`cp; jpr ne,M; ldk r2,#1; jpr T; M: ldk r2,#0; T:`) takes the form; the original
+  leaves it. Taken: A (between the conditional jump and the jump) more than one instruction; allprint (A: the `_flsbuf` call,
+  4) stays exact; strncmp of the shipped libc (A `sub r2,r2`) falls out too.
+- OLD_D25 into build/segv1 of scparse, OLD_D24 into build/segv1 of scodgen. Result: libPW.a identical, slibPW.a 42 of 43
+  (move: the byte copy behind the odd-address test in rl0, the original rl2; seven forms of the test, the vk passes: no change).
+- move (s): the byte copy behind `if ((int)x&1)` takes rl0 because r2, `ld r2,r13` (the low word of x in rr12), keeps the
+  name. v0's `OLD_D2C` copy rule (a register copy holds no name) in the v1 branch of allocreg: move exact, but regex, xalloc,
+  xlink, xwrite (s) lost (copies of parameter registers r6/r7, of the int register variable usize); only register variables
+  r8..r13: xalloc lost (usize); only a word of a register variable pair (the symbol long or pointer): 86 of 86, slibl,
+  sliby, slibm members unchanged. Taken as `OLD_D2CW` (segmented v1). First checkall with D20, D52, D24, D25: 774 files
+  identical, only slibPW.a open, corpora equal.

@@ -2,9 +2,8 @@
 # (tmp/sys3/usr/src/lib/libm) and fputil.s (PLZ/ASM, no source in System III or BSD: written from the original members,
 # fputil.s nonsegmented, sfputil.s segmented; both identical with the shipped as -f). Both libraries are made from the
 # same sources (their Library.SC are equal, 01/18/83 and 01/19/83) by the compiler of that time, v1 (ccv1, sccv1 from
-# OLDROOT). WEGA changed exp.c (maxf 709), jn.c (sign of jn for a negative x), pow.c (only the form): compare/libm/SYSIII.md.
-# Not yet identical: the C members (the floating compare and temporaries of the compiler, compare/libm/findings.json);
-# the archives are in OPEN of host/tools/checkall.sh.
+# OLDROOT; with OLD_D61 and OLD_D62, host/OLDCC.md). WEGA changed exp.c (maxf 709), jn.c (sign of jn for a negative x),
+# pow.c (only the form): compare/libm/SYSIII.md. Both archives are byte-identical.
 #
 #   make        libm.a slibm.a
 #   make install PREFIX=dir   dir/lib/libm.a, dir/lib/slibm.a

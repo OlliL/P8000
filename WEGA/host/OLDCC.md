@@ -84,8 +84,16 @@ the doscopy programs, the standalone programs (`make -C host checkall`). All of 
 
 ### v1 (01/83 .. 07/83)
 
-- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D3`, `OLD_D61` and `OLD_D62` (codgen, scodgen), `OLD_D20` and `OLD_D52` (popt).
-- Byte-identical: `/bin/size`, `/usr/bin/strip`, `/bin/mv` (also cp, ln), `/bin/rm`, `/lib/libm.a`, `/lib/slibm.a` (Library.SC 01/83).
+- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D25` (scparse), `OLD_D3`, `OLD_D61` and `OLD_D62` (codgen, scodgen), `OLD_D24`
+  (scodgen), `OLD_D2CW` (scodgen), `OLD_D20` and `OLD_D52` (popt).
+- `OLD_D24` and `OLD_D25` (a long cast to a pointer is masked through a copy) are in the segmented v1 since slibPW (07/83):
+  xalloc (`(char *)((long)np + usize)`, `(char *)Lastbrk`), regcmp (`sp = (char *)*adx++` through a `long *`), regex.
+- `OLD_D2CW` (scodgen, allo3.c allocreg, segmented v1): the copy of a word of a register variable pair (`(int)x` of a
+  pointer in rr12: `ld r2,r13`) holds no name, so the next value takes r2 again (slibPW move: `ldb rl2,@rr12`). The
+  narrow form of v0's `OLD_D2C` copy rule: for every register copy it costs slibPW regex, xalloc, xlink, xwrite (copies of
+  parameters, of an int register variable). One witness (move), limits from the measurements.
+- Byte-identical: `/bin/size`, `/usr/bin/strip`, `/bin/mv` (also cp, ln), `/bin/rm`, `/lib/libm.a`, `/lib/slibm.a` (Library.SC 01/83),
+  `/usr/lib/libPW.a`, `/usr/lib/slibPW.a` (Library.SC 07/22/83).
 - ld: 55 of 59 functions strictly exact, data equal, corpus 146 of 146; open: place_sec, chk_ranlib, load2td, load1.
 - Own code equal, the libc part not linked yet: write (all 5 functions). rmdir: its main differs by D4 and D18.
 - Test bench (System III sources of 26 programs from 01/83 .. 07/83): 89 of 121 functions equal, the shipped cc 27.
@@ -422,7 +430,9 @@ write these operands in the order that gives the bytes (`argregs`, `rmconv`, `cl
 
 - v0p: no old popt. The models built with the original /lib/popt as the pass of ccv0p are byte-identical to those with our popt.
 - v1 `OLD_D20` (popt): a `jpr` to the label right behind it does not end a block to be moved, so short blocks in front of the function
-  exit stay (ld ensure_buf, load1).
+  exit stay (ld ensure_buf, load1, main; libl allprint). Only for a block whose label at most 3 jumps name when codemove
+  meets it: a common tail that many jumps name moves as in the shipped popt (libPW xmsg: the `fatal(str)` tail, 6;
+  regcmp: 21). The bound lies between 3 (allprint) and 6 (xmsg), taken from the measurements.
 - vc `OLD_D20S` (popt): the same, but only for a straight block (no conditional jump in front of that `jpr`) whose label no other
   jump names. Witness: exprreloc of cas (the outer `default: return (0L);`, `subl rr2,rr2` in front of the exit, stays behind the
   dispatch codemove has moved; both dispatches jump to it). Without the limits exprval loses (its `return (v)`, refc 7, and the
@@ -530,7 +540,8 @@ behind another jump to T, Y is straight code, T runs straight to `ret`. Witness:
 (`putc(c, yyout)` as the else part of the last `if` of the switch: the store arm stands in front of the `--_cnt`
 test, the `_flsbuf` arm falls into the exit). Without the limits the rule changes other objects of v1 (the plain form 63
 of 142 translations of libc, oldlibc, ld and cmd sources by ccv1; with all limits one, strncmp of the shipped libc,
-which v1 does not build). One witness (one source, two objects).
+which v1 does not build). Another limit: A is more than one instruction (regex of libPW, `return(!af)`: A `ldk r2,#1` and Y `ldk r2,#0` stay;
+strncmp of the shipped libc, A `sub r2,r2`, falls out too). One witness (one source, two objects).
 
 
 ### D53 No temporary for a return value in a function with a large frame
@@ -655,9 +666,17 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | libm.a, slibm.a | tanh.o (tanh.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
 | libm.a, slibm.a | sinh.o (sinh.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
 | libm.a, slibm.a | exp.o (exp.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| slibPW.a | xalloc.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
+| slibPW.a | regcmp.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  | x | x |  |
+| slibPW.a | regex.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
+| libPW.a, slibPW.a | xmsg.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libPW.a | regcmp.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| slibPW.a | move.c | v1 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
-fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough).
+fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`
+of v1: allprint of `/lib/libl.a` and `/lib/slibl.a`; its limit "A more than one instruction": regex of `/usr/lib/libPW.a` and
+`slibPW.a` (`__cclass`). The D20 rows of libPW: the limit of `OLD_D20` (a block label named by more than 3 jumps moves). `OLD_D2CW` (D2) of v1: move of `/usr/lib/slibPW.a`.
 
 ## 5 Open questions
 
