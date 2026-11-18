@@ -1483,3 +1483,14 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   `ld r5,_dictp`, r2 openp and r7 filep stay known; seg `ldl rr2,_dictp`), v1 copies it. A label in front of the `if`:
   segmented exact (267 > 0), nonsegmented 17 > 285 (all names forgotten). `dictp + 0`, `&dictp[0]`, casts, constant
   forms: no change.
+- D3 per join (a codgen that frees the idle registers at chosen ends of `&&`/`||`): libcisam wants them kept at every
+  inner end (item, key, lock, open: the left operand of another `&&`/`||`) and, nonsegmented, the idle word registers given
+  back at the end of the whole condition (btsearch); segmented the pair (rr2, bp) stays there. The same at the end of
+  `!(openp->o_mode & ISEXCLLOCK)` in isexit (nonseg r2 free, seg rr2 kept). As a rule on top of OLD_D3 ("at the end of a
+  whole condition of `&&`, `||`, `!` the idle word registers go back, pairs stay"): libcisam 207/811 > 69/251 lines
+  (normalized: label addresses masked; btree exact, open 17 > 13), nothing worse. Under OLD_D3 itself it breaks the kernel
+  (vk has OLD_D3: sys1.o, break.o); as a v1-only switch checkall fails on cp, ln, mv, rm, ld, strip, libl.a, slibl.a,
+  libPW.a. Taken out. Guess: libcisam was built by a compiler between v1 and the shipped one, not by v1.
+- Source forms tried without result: read (`if (lock) ... else if (openp->o_mode & ISAUTOLOCK)`: branches swapped,
+  `&&` forms, a goto form), isopen (labels in front of each of the three statements before the `if`, statements swapped),
+  isexit (`== 0`; `if (x) ; else {...}` fixes it nonsegmented but not segmented).
