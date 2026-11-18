@@ -13,12 +13,12 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 18 | 0 | 2 | 10 |
 | [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
-| [usr/lib](#usr-lib) | 197 | 111 | 2 | 57 | 27 |
+| [usr/lib](#usr-lib) | 197 | 113 | 2 | 57 | 25 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 865 | 13 | 191 | 128 |
+| **all** | 1197 | 867 | 13 | 191 | 126 |
 
 <a id="root"></a>
 ## root
@@ -508,7 +508,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/lib.b` | text | `src/cmd/bc` | exact | - | - |
 | `usr/lib/libPW.a` | archive | `src/lib/libPW` | exact | - | - |
 | `usr/lib/libcisam.a` | archive | - | todo | - | - |
-| `usr/lib/libcurses.a` | archive | - | todo | - | - |
+| `usr/lib/libcurses.a` | archive | `src/lib/libcurses` | exact | cc | - |
 | `usr/lib/libmp.a` | archive | `src/lib/libmp` | exact | - | - |
 | `usr/lib/libp.a` | archive | - | todo | - | - |
 | `usr/lib/libscreen.a` | archive | - | todo | - | - |
@@ -556,7 +556,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/screen/vnewshelp` | text | `src/cmd/screen` | exact | - | - |
 | `usr/lib/slibPW.a` | archive | `src/lib/libPW` | exact | - | - |
 | `usr/lib/slibcisam.a` | archive | - | todo | - | - |
-| `usr/lib/slibcurses.a` | archive | - | todo | - | - |
+| `usr/lib/slibcurses.a` | archive | `src/lib/libcurses` | exact | scc | - |
 | `usr/lib/slibmp.a` | archive | `src/lib/libmp` | exact | - | - |
 | `usr/lib/slibscreen.a` | archive | - | todo | - | - |
 | `usr/lib/slibtermlib.a` | archive | `src/lib/libtermlib` | exact | - | - |
