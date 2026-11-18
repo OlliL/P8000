@@ -1,0 +1,27 @@
+{
+ "schema": "members: name -> file, status (exact: byte-identical member; open), note. The same for libscreen.a (ccv1 -O) and slibscreen.a (sccv1 -O), V7 stdio.h (src/head/oldv7).",
+ "compiler": "v1 (ccv1, sccv1), dated 01/30/83 by Library.SC",
+ "binary": "/usr/lib/libscreen.a, /usr/lib/slibscreen.a",
+ "members": {
+  "io.o": {
+   "file": "io.c",
+   "status": "exact",
+   "note": "written from the object; goraw, gonormal, getkey (CRMOD off around getchar; the vi keys and ^H, ^J, ^K, ^L, space), wgetword."
+  },
+  "mesg.o": {
+   "file": "mesg.c",
+   "status": "exact",
+   "note": "written from the object; wmesg(win, s, d), char *d."
+  },
+  "mvcursor.o": {
+   "file": "mvcursor.c",
+   "status": "exact",
+   "note": "written from the object; wmvcursor and the word and space moves, whighlight."
+  },
+  "scrn.o": {
+   "file": "scrn.c",
+   "status": "exact",
+   "note": "written from the object; wsavescrn, wresscrn, the empty wscrolf, wscrolb, wpageback, wpagefor, wcolon, whelp, goback, bs; crmsg, pgmsg, qmsg."
+  }
+ }
+}

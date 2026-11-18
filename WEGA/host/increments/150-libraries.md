@@ -66,3 +66,6 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   usr.lib/libcurses from TUHS (unix-history-repo, owner), initscr.c and scroll.c of 4.1cBSD; the shipped cc, scc without -O;
   WEGA forms in cr_tty, getstr, newwin and the printw/scanw family). libsetup.py copies the headers of the source tree
   (`.h`, `.ext`) with it.
+- 2026-11-18: libscreen.a, slibscreen.a byte-identical: no source anywhere (web, local backups), io.c, mesg.c, mvcursor.c,
+  scrn.c written from the members (v1 -O, V7 stdio.h). libsetup.py takes src/lib/NAME as the source directory when no tree
+  has one. Web search for C-ISAM 1.03 (libcisam): nothing; libu8000 (disasm.c, the disassembler of adb) from the object.

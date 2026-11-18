@@ -45,6 +45,9 @@ def roots(name):
                   os.path.join(BSD, '4.4BSD-Lite', 'usr', 'src', 'lib', n)):
             if os.path.isdir(d) and d not in out:
                 out.append(d)
+    own = os.path.join(W, 'src', 'lib', name)		# no tree has one: the sources written from the objects (libscreen)
+    if not out and os.path.isdir(own) and any(f.endswith('.c') for f in os.listdir(own)):
+        out.append(own)
     return out
 EMU = os.path.join(W, 'host', 'z8k-emu', 'z8k-emu')
 NONSEG = [('cc', ROOT), ('ccv1', OLD), ('ccv1q', OLD), ('ccv1r', OLD), ('ccv0', OLD), ('ccv0p', OLD), ('ccvl', OLD)]
@@ -188,7 +191,7 @@ def main():
     if not ars:
         sys.exit('no archive %s.a in lib or usr/lib of %s' % (name, ROOT))
     if not roots(name):
-        print('RESULT:   skipped: no source directory for %s (System III, 2.11BSD, 4.4BSD-Lite)' % name)
+        print('RESULT:   skipped: no source directory for %s (System III, 2.11BSD, 4.4BSD-Lite, src/lib/%s)' % (name, name))
         return
     print('SOURCES:  ' + ', '.join(roots(name)))
     os.makedirs(dst, exist_ok=True)

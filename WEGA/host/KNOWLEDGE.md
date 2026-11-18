@@ -962,6 +962,9 @@ means it does something fixed instead (only possible where the original's result
 
 | Program | Bug or quirk | Rebuild | Details |
 |---------|--------------|---------|---------|
+| `/usr/lib/libscreen.a`, `slibscreen.a` (`wpagefor`) | the line read when the page is full is dropped: after `^f` the next page starts with the line behind it; any other key returns without clearing the rest of the page | kept | `compare/libscreen/SYSIII.md` |
+| `/usr/lib/libscreen.a`, `slibscreen.a` (`wscrolf`, `wscrolb`, `wpageback`) | empty functions (screen.h names them as the macros scrolf, scrolb, pageback); `qmsg` ("Type ?<CR> for help") is defined but not used in the library | kept | `compare/libscreen/SYSIII.md` |
+| `/usr/lib/libscreen.a`, `slibscreen.a` (`whelp`) | when `wresscrn` fails (no saved screen, or a smaller window) it returns 0 without `goback`: the prompt line is not cleared and the cursor not put back | kept | `compare/libscreen/SYSIII.md` |
 | `/usr/lib/libcurses.a`, `slibcurses.a` (`_sprintw`) | `char *fmt, *a1, a2, ..., a10`: from the second argument after the format every one is cut to a byte with its sign (`printw("%d %d", 1, 300)` gives `1 44`, from the code, not run); in slibcurses `printw` passes 4-byte values and `_sprintw` reads them from 2-byte slots | kept | `compare/libcurses/SYSIII.md` |
 | `/usr/lib/libcurses.a`, `slibcurses.a` (`printw`, `scanw` and the mv and w forms) | at most ten arguments after the format; `scanw` returns OK, not the count of `sscanf` | kept | `compare/libcurses/SYSIII.md` |
 | `/usr/lib/libcurses.a`, `slibcurses.a` (`subwin`) | a window that does not fit writes "returning ERR (1)" and a SUBWIN line of numbers to stderr (debug output outside `# ifdef DEBUG`) | kept | `compare/libcurses/SYSIII.md` |
