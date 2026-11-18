@@ -1,0 +1,158 @@
+diff --git a/WEGA/src/cmd/codgen/Makefile b/WEGA/src/cmd/codgen/Makefile
+index 14034138..84f36a1f 100644
+--- a/WEGA/src/cmd/codgen/Makefile
++++ b/WEGA/src/cmd/codgen/Makefile
+@@ -32,7 +32,7 @@ build/nonsegv0/codgen: crt0.o FORCE
+ build/nonsegv0p/codgen: crt0.o FORCE
+ 	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V0P"
+ build/nonsegv1/codgen: crt0.o FORCE
+-	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63"
++	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D3H -DOLD_D2CT"
+ build/nonsegv1q/codgen: crt0.o FORCE
+ 	cd build/nonsegv1q ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q"
+ build/nonsegv1r/codgen: crt0.o FORCE
+@@ -41,7 +41,7 @@ build/nonsegv1r/codgen: crt0.o FORCE
+ build/seg/scodgen: crt0.o FORCE
+ 	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
+ build/segv1/scodgen: crt0.o FORCE
+-	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D24 -DOLD_D2CW"
++	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D3H -DOLD_D2CT -DOLD_D24 -DOLD_D2CW"
+ 
+ build/segvc/scodgen: crt0.o FORCE
+ 	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_VC"
+diff --git a/WEGA/src/cmd/codgen/allo3.c b/WEGA/src/cmd/codgen/allo3.c
+index 99ba4cd7..07791407 100644
+--- a/WEGA/src/cmd/codgen/allo3.c
++++ b/WEGA/src/cmd/codgen/allo3.c
+@@ -36,6 +36,9 @@ extern void recl2();
+ extern void rmove();
+ extern struct rs *rsfree;
+ extern void rsreturn();
++#ifdef OLD_D3H
++extern int d3hdepth;
++#endif
+ extern struct rs *rsuse;
+ extern void rwprint();
+ extern int rwtab[][2];
+@@ -508,6 +511,49 @@ allocreg(p, cookie)
+ 		if (r == -1)
+ 			cerror("register jam");
+ 	}
++#ifdef OLD_D2CT
++#ifdef SEG
++	/* OLD_D2CT (libcisam, segmented; needs OLD_D3H): the copy of a pair that holds a name and was given out in the last
++	   condition into the pair of a wanted odd word register: the pair itself is taken, no copy
++	   (host/libcisam_switches/OLD_D2CT.md) */
++	if (p->in.op == 96 && cls == 3 && want >= 0 && want < 8 && (want & 1) && p->tn.rval >= 0 && p->tn.rval < 8 && !(p->tn.rval & 1)) {
++		register struct rs *q;
++
++		for (q = rsuse; q; q = q->next)
++			if (q->cls == 3 && q->reg == p->tn.rval)
++				break;
++		if (q && q->sym && q->sym->sclass != 9 && q->busy == 1 && q->kind != 6 && (q->flags & 0x2000)) {
++			if (r != -1 && r != p->tn.rval)
++				rsreturn(3, r);
++			r = p->tn.rval;
++			q->busy++;
++		}
++	}
++#endif
++	/* OLD_D2CT (needs OLD_D3H): the copy into the wanted register of a scratch word that holds a name (not a parameter)
++	   and was given out in the last condition: the name goes with the copy, the source register is free */
++	if (p->in.op == 96 && cls == 2 && want >= 0 && r == want && p->tn.rval >= 0 && p->tn.rval < 8 && p->tn.rval != r) {
++		register struct rs *q;
++
++		for (q = rsuse; q; q = q->next)
++			if (q->cls == 2 && q->reg == p->tn.rval)
++				break;
++		if (q && q->sym && q->sym->sclass != 9 && q->busy == 1 && q->kind != 6 && (q->flags & 0x2000)) {
++			q->sym = 0;
++			q->busy = 0;
++			rsreturn(2, p->tn.rval);
++		}
++	}
++#endif
++#ifdef OLD_D3H
++	if (d3hdepth > 0) {	/* OLD_D3H: given out inside a condition */
++		register struct rs *q;
++
++		for (q = rsuse; q; q = q->next)
++			if (q->reg == r && q->cls == cls)
++				q->flags |= 0x2000;
++	}
++#endif
+ 	return r;
+ }
+ 
+diff --git a/WEGA/src/cmd/codgen/reader3.c b/WEGA/src/cmd/codgen/reader3.c
+index 3cc0ae74..21ae109d 100644
+--- a/WEGA/src/cmd/codgen/reader3.c
++++ b/WEGA/src/cmd/codgen/reader3.c
+@@ -854,6 +854,8 @@ prcook(cookie)
+ 	printf(" [%%%0.2x]", cookie);
+ }
+ 
++
++
+ /* generate code for p; cook says in which form the result is wanted */
+ void
+ order(p, cook)
+@@ -1363,11 +1365,58 @@ stoarg(p, calltype)
+ 	}
+ }
+ 
++
+ /* evaluate p for the truth value and jump to true or false; a label < 0 means to fall through */
+ int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE, FLT, FLE };	/* 0x274 */
+ 
++#ifdef OLD_D3H
++static void cbranch1();
++extern struct sym *fpsym1, *fpsym2;
++int d3hdepth;	/* OLD_D3H (libcisam): cbranch nesting; allo3.c marks (0x2000) the registers it gives out meanwhile.
++			   At the end of a whole condition an idle register given out inside it that holds the frame home of
++			   a parameter goes back (host/libcisam_switches/OLD_D3H.md) */
++
++/* OLD_D3H: does the node hold the frame home of a parameter */
++static int
++d3hparm(n)
++	register struct rs *n;
++{
++	register int i;
++
++	if (n->sym == 0 || (n->sym != fpsym1 && n->sym != fpsym2))
++		return 0;
++	for (i = 0; i < nparmtab; i++)
++		if (parmtab[i].sym && parmtab[i].sym->soffset / 8 == n->off)
++			return 1;
++	return 0;
++}
++
++void
++cbranch(p, true, false)
++	NODE *p;
++	int true, false;
++{
++	register struct rs *n, *next;
++
++	if (d3hdepth == 0)
++		for (n = rsuse; n; n = n->next)
++			n->flags &= ~0x2000;
++	d3hdepth++;
++	cbranch1(p, true, false);
++	if (--d3hdepth == 0)
++		for (n = rsuse; n; n = next) {
++			next = n->next;
++			if (n->cls <= 3 && n->busy <= 0 && n->kind != 6 && n->reg < 8 && (n->flags & 0x2000) && d3hparm(n))
++				rsreturn(n->cls, n->reg);
++		}
++}
++
++static void
++cbranch1(p, true, false)
++#else
+ void
+ cbranch(p, true, false)
++#endif
+ 	register NODE *p;
+ 	int true, false;
+ {

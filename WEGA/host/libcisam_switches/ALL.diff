@@ -1,5 +1,5 @@
 diff --git a/WEGA/src/cmd/codgen/Makefile b/WEGA/src/cmd/codgen/Makefile
-index 14034138..7ab57da8 100644
+index 14034138..c9cf7ef7 100644
 --- a/WEGA/src/cmd/codgen/Makefile
 +++ b/WEGA/src/cmd/codgen/Makefile
 @@ -32,7 +32,7 @@ build/nonsegv0/codgen: crt0.o FORCE
@@ -7,7 +7,7 @@ index 14034138..7ab57da8 100644
  	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V0P"
  build/nonsegv1/codgen: crt0.o FORCE
 -	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63"
-+	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D3W -DOLD_D2PW -DOLD_D3Q -DOLD_D3H"
++	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D3W -DOLD_D2PW -DOLD_D3Q -DOLD_D3H -DOLD_D2CT"
  build/nonsegv1q/codgen: crt0.o FORCE
  	cd build/nonsegv1q ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q"
  build/nonsegv1r/codgen: crt0.o FORCE
@@ -16,12 +16,12 @@ index 14034138..7ab57da8 100644
  	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
  build/segv1/scodgen: crt0.o FORCE
 -	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D24 -DOLD_D2CW"
-+	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D3W -DOLD_D2PW -DOLD_D3Q -DOLD_D3H -DOLD_D24 -DOLD_D2CW"
++	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D3W -DOLD_D2PW -DOLD_D3Q -DOLD_D3H -DOLD_D2CT -DOLD_D24 -DOLD_D2CW"
  
  build/segvc/scodgen: crt0.o FORCE
  	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_VC"
 diff --git a/WEGA/src/cmd/codgen/allo3.c b/WEGA/src/cmd/codgen/allo3.c
-index 99ba4cd7..3139bb11 100644
+index 99ba4cd7..cc95dc21 100644
 --- a/WEGA/src/cmd/codgen/allo3.c
 +++ b/WEGA/src/cmd/codgen/allo3.c
 @@ -36,6 +36,9 @@ extern void recl2();
@@ -64,12 +64,46 @@ index 99ba4cd7..3139bb11 100644
  #ifdef OLD_D2CW
  	/* v1 (segmented): the copy of a word of a register variable pair (`(int)x` of a pointer in rr12) holds no name
  	   (libPW move: the byte behind it takes r2 again) */
-@@ -508,6 +534,18 @@ allocreg(p, cookie)
+@@ -508,6 +534,52 @@ allocreg(p, cookie)
  		if (r == -1)
  			cerror("register jam");
  	}
 +#ifdef OLD_D2PW
 +d2pw:
++#endif
++#ifdef OLD_D2CT
++#ifdef SEG
++	/* OLD_D2CT (libcisam, segmented; needs OLD_D3H): the copy of a pair that holds a name and was given out in the last
++	   condition into the pair of a wanted odd word register: the pair itself is taken, no copy
++	   (host/libcisam_switches/OLD_D2CT.md) */
++	if (p->in.op == 96 && cls == 3 && want >= 0 && want < 8 && (want & 1) && p->tn.rval >= 0 && p->tn.rval < 8 && !(p->tn.rval & 1)) {
++		register struct rs *q;
++
++		for (q = rsuse; q; q = q->next)
++			if (q->cls == 3 && q->reg == p->tn.rval)
++				break;
++		if (q && q->sym && q->sym->sclass != 9 && q->busy == 1 && q->kind != 6 && (q->flags & 0x2000)) {
++			if (r != -1 && r != p->tn.rval)
++				rsreturn(3, r);
++			r = p->tn.rval;
++			q->busy++;
++		}
++	}
++#endif
++	/* OLD_D2CT (needs OLD_D3H): the copy into the wanted register of a scratch word that holds a name (not a parameter)
++	   and was given out in the last condition: the name goes with the copy, the source register is free */
++	if (p->in.op == 96 && cls == 2 && want >= 0 && r == want && p->tn.rval >= 0 && p->tn.rval < 8 && p->tn.rval != r) {
++		register struct rs *q;
++
++		for (q = rsuse; q; q = q->next)
++			if (q->cls == 2 && q->reg == p->tn.rval)
++				break;
++		if (q && q->sym && q->sym->sclass != 9 && q->busy == 1 && q->kind != 6 && (q->flags & 0x2000)) {
++			q->sym = 0;
++			q->busy = 0;
++			rsreturn(2, p->tn.rval);
++		}
++	}
 +#endif
 +#ifdef OLD_D3H
 +	if (d3hdepth > 0) {	/* OLD_D3H: given out inside a condition */
