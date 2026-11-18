@@ -1,6 +1,6 @@
 {
  "schema": "members: name -> file, status nonsegmented (ccv1 -O) and segmented (sccv1 -O), note",
- "compiler": "v1 (02/11/83) with OLD_D63; v1 with OLD_D2N, D2L, D2F or D2W (each alone) is not nearer (measured 2026-11-18). The rest differs where the original frees an idle word register at the end of a condition (shipped-like) and keeps pairs (v1-like); see host/OLDCC_LOG.md 2026-11-18.",
+ "compiler": "v1 (02/11/83) with OLD_D63; v1 with OLD_D2N, D2L, D2F or D2W (each alone) is not nearer (measured 2026-11-18). The rest differs where the original frees an idle word register at the end of a condition (shipped-like) and keeps pairs (v1-like); see host/OLDCC_LOG.md 2026-11-18. Switch diffs for the rest: host/libcisam_switches (not applied; with all three 12/20 lines left: audit, item seg, read, supp).",
  "binary": "/usr/lib/libcisam.a, /usr/lib/slibcisam.a",
  "members": {
   "isdef.o": {
@@ -67,19 +67,19 @@
    "file": "open.c",
    "status_nonseg": "open: 10 lines",
    "status_seg": "exact",
-   "note": "isopen: the magic read as `(char)*(unsigned char *)dictp` and `(char)((unsigned char *)dictp)[1]` (the cast makes v1 load dictp again, as the original). Nonsegmented open: isexit takes rr2 for `filep->f_fileid` behind `!(openp->o_mode & ISEXCLLOCK)` and r3 for the ?: of isstat2 (the original frees the word register at the end of the condition, segmented it keeps the pair). Forms tried: host/OLDCC_LOG.md."
+   "note": "isopen: the magic read as `(char)*(unsigned char *)dictp` and `(char)((unsigned char *)dictp)[1]` (the cast makes v1 load dictp again, as the original). Nonsegmented open: isexit takes rr2 for `filep->f_fileid` behind `!(openp->o_mode & ISEXCLLOCK)` and r3 for the ?: of isstat2 (the original frees the word register at the end of the condition, segmented it keeps the pair). Forms tried: host/OLDCC_LOG.md. OLD_D3W (host/libcisam_switches) makes it exact."
   },
   "btree.o": {
    "file": "btree.c",
    "status_nonseg": "open: 12 lines",
    "status_seg": "exact",
-   "note": "btdelitem: `bad:` inside the error branch. Nonsegmented open: btsearch `openp->o_flags |= 020` behind `r == 0 && mode == 2 && bp->bf_level == 0` takes r2 (bp) as free in the original, v1 keeps it (OLD_D3); segmented the original keeps the pair. No source form found (host/OLDCC_LOG.md 2026-11-18)."
+   "note": "btdelitem: `bad:` inside the error branch. Nonsegmented open: btsearch `openp->o_flags |= 020` behind `r == 0 && mode == 2 && bp->bf_level == 0` takes r2 (bp) as free in the original, v1 keeps it (OLD_D3); segmented the original keeps the pair. No source form found; OLD_D3W (host/libcisam_switches) makes it exact."
   },
   "item.o": {
    "file": "item.c",
    "status_nonseg": "open: 4 lines",
-   "status_seg": "open: 40 lines",
-   "note": "itcompare FLOATTYPE: OLD_D63. itpress: the leading compression loop as a goto loop; `(int)it_dupnum` for stint. Nonsegmented open: `bycmpr(..., kp->k_len)` copies kp into r4 in the original (v1 r2). Segmented open: itunpack `it_leadcnt`/`it_trailcnt = ... ? *p++ & 0377 : 0` stores through rr2 after the arm loaded the old p into rr2 (a bug of the old scodgen: the value goes into the buffer); itpress takes rr2 (kp) as free behind the bit tests."
+   "status_seg": "open: 34 lines",
+   "note": "itcompare FLOATTYPE: OLD_D63. itpress: the leading compression loop as a goto loop; `(int)it_dupnum` for stint; `i = ...;` in front of its test. Nonsegmented open: `bycmpr(..., kp->k_len)` copies kp into r4 in the original (v1 r2): OLD_D2PW. Segmented open: itunpack `it_leadcnt`/`it_trailcnt = ... ? *p++ & 0377 : 0` stores through rr2 after the arm loaded the old p into rr2 (a bug of the old scodgen: the value goes into the buffer): OLD_D3Q; itpress takes rr2 (kp from its frame home) as free behind `if (kp->k_flags & TCOMPRESS)` and `if (kp->k_flags & ISDUPS)` (10 lines with all switches): not explained."
   },
   "build.o": {
    "file": "build.c",

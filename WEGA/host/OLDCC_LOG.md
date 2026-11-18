@@ -1501,3 +1501,17 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   `(unsigned char *)dictp` cast back to `char`: a cast to another pointer type makes regforsym miss, so dictp is loaded
   again, as in the original; as in ld chk_ranlib). Total 207/811 > 38/50. A script tried `!= 0` on every plain `if`
   condition of read, open, audit, supp, item, btree, build: nothing else gained.
+- D3 split (owner's plan, 2026-11-18): `OLD_D3E` ("keep also at the end of the whole condition") for vk, v1q, v1r, v1
+  without it. checkall d3a (only `&&`/`||`) and d3b (also `!`): cp, ln, mv, rm, ld, strip, libl.a, slibl.a, libPW.a
+  differ in both. Not a narrowing of OLD_D3; taken out. Following the owner, new v1 switches as diffs only:
+  host/libcisam_switches (OLD_D3W, OLD_D2PW, OLD_D3Q; descriptions there). Segmented sweep of the existing switches
+  (23 runs, each alone on v1 with OLD_D63): none nearer for audit, item, read. Tried and dropped: a D3J-like restore of
+  names at a label behind dead code for all names (OLD_D3X: libcisam 193/80, read unchanged: v1 compares `lock` from
+  memory, r2 holds no name); a LIFO order of free words (D2LIFO: worse); freeing idle pairs at the end of a plain
+  condition (much worse; only the pairs of frame slots: item 10 > 6 but btree, buf, node, open worse).
+- itpress `if ((i = kp->k_len - it1->it_trailcnt) < it2->it_leadcnt)` as `i = ...; if (i < ...)`: segmented 6 lines
+  less, nonsegmented unchanged (source form, committed).
+- Left with all three switches: audit 4/4 (close(filep->f_audfd): nonseg temp r3, seg `ld r7,rr4(#20)` direct), read
+  4/6 (isread: r3/rr4 for openp at the else label), supp 4/0 (freefile: the three `close` take r6, r3, r6), item 0/10
+  (itpress: rr2 with kp free behind two bit tests). A codgen trace of register choices (allocreg: want, result, free
+  and use lists as comments) was the tool; it is not in the tree.
