@@ -962,6 +962,9 @@ means it does something fixed instead (only possible where the original's result
 
 | Program | Bug or quirk | Rebuild | Details |
 |---------|--------------|---------|---------|
+| `/usr/lib/libcisam.a`, `slibcisam.a` (`error`) | writes `sizeof` of the message, its NUL byte too | kept | `compare/libcisam/findings.json` |
+| `/usr/lib/libcisam.a`, `slibcisam.a` (`freeopen`, `freefile`) | `freeopen(op)` clears the flags of the global `openp`, not of `op`; `freefile(fp)` drops the buffers of `filep`, not of `fp` (the same file in the callers) | kept | `compare/libcisam/findings.json` |
+| `/usr/lib/libcisam.a`, `slibcisam.a` (`isperror`) | `is_errlist` has 14 messages: EFNAME (114) and ENOLOK (115) print "Unknown error" | kept | `compare/libcisam/findings.json` |
 | `/usr/lib/libscreen.a`, `slibscreen.a` (`wpagefor`) | the line read when the page is full is dropped: after `^f` the next page starts with the line behind it; any other key returns without clearing the rest of the page | kept | `compare/libscreen/SYSIII.md` |
 | `/usr/lib/libscreen.a`, `slibscreen.a` (`wscrolf`, `wscrolb`, `wpageback`) | empty functions (screen.h names them as the macros scrolf, scrolb, pageback); `qmsg` ("Type ?<CR> for help") is defined but not used in the library | kept | `compare/libscreen/SYSIII.md` |
 | `/usr/lib/libscreen.a`, `slibscreen.a` (`whelp`) | when `wresscrn` fails (no saved screen, or a smaller window) it returns 0 without `goback`: the prompt line is not cleared and the cursor not put back | kept | `compare/libscreen/SYSIII.md` |

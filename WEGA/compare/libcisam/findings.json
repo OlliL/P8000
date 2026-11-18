@@ -1,0 +1,91 @@
+{
+ "schema": "members: name -> file, status nonsegmented (ccv1 -O) and segmented (sccv1 -O), note",
+ "compiler": "v1 nearest (02/11/83); v1 with OLD_D2N, D2L, D2F or D2W (each alone) is not nearer (measured 2026-11-18)",
+ "binary": "/usr/lib/libcisam.a, /usr/lib/slibcisam.a",
+ "members": {
+  "isdef.o": {
+   "file": "isdef.c",
+   "status_nonseg": "exact",
+   "status_seg": "exact",
+   "note": ""
+  },
+  "isperror.o": {
+   "file": "isperror.c",
+   "status_nonseg": "exact",
+   "status_seg": "exact",
+   "note": ""
+  },
+  "util.o": {
+   "file": "util.c",
+   "status_nonseg": "exact",
+   "status_seg": "exact",
+   "note": "error() writes sizeof(\"\\r\\nFatal system error: \") bytes: the NUL too."
+  },
+  "key.o": {
+   "file": "key.c",
+   "status_nonseg": "exact",
+   "status_seg": "exact",
+   "note": "kycopy needs the casts (int *) in wdcopy (the reload of the parameters)."
+  },
+  "lock.o": {
+   "file": "lock.c",
+   "status_nonseg": "exact",
+   "status_seg": "exact",
+   "note": ""
+  },
+  "node.o": {
+   "file": "node.c",
+   "status_nonseg": "exact",
+   "status_seg": "open: 4 lines",
+   "note": "segmented: a scratch register (r2 against r6) in btremove."
+  },
+  "buf.o": {
+   "file": "buf.c",
+   "status_nonseg": "exact",
+   "status_seg": "open: 108 lines",
+   "note": "segmented: scratch registers in bfread/bfwrite (the node trailer bytes)."
+  },
+  "supp.o": {
+   "file": "supp.c",
+   "status_nonseg": "open: 4 lines",
+   "status_seg": "exact",
+   "note": "nonsegmented: freefile, close(fp->f_audfd): the original keeps the parameter fp in r2 (temp r6), v1 takes r3."
+  },
+  "read.o": {
+   "file": "read.c",
+   "status_nonseg": "open: 4 lines",
+   "status_seg": "open: 6 lines",
+   "note": "isread: the original takes r3 for openp (r2 holds lock), v1 r2."
+  },
+  "audit.o": {
+   "file": "audit.c",
+   "status_nonseg": "open: 4 lines",
+   "status_seg": "open: 98 lines",
+   "note": "isaudit AUDSTOP, close(filep->f_audfd): the original reloads filep (temp r3), v1 reuses r3 (temp r6)."
+  },
+  "open.o": {
+   "file": "open.c",
+   "status_nonseg": "open: 17 lines",
+   "status_seg": "open: 267 lines",
+   "note": "nonsegmented: scratch register choices in isopen (ldint of dictp), isflush, isexit."
+  },
+  "btree.o": {
+   "file": "btree.c",
+   "status_nonseg": "open: 41 lines",
+   "status_seg": "open: 29 lines",
+   "note": "btsearch: scratch register after the dup test; btdelitem: the original popt keeps the loop test at the head, v1 popt inverts it."
+  },
+  "item.o": {
+   "file": "item.c",
+   "status_nonseg": "open: 68 lines",
+   "status_seg": "open: 106 lines",
+   "note": "itcompare FLOATTYPE: the original compares two floats in single precision register against register (fld F1; 8E00,4120), v1 converts f2 from memory (4021) and compares double; itpress: a register (r4/r2) and the loop of the leading compression (not inverted in the original)."
+  },
+  "build.o": {
+   "file": "build.c",
+   "status_nonseg": "open: 162 lines",
+   "status_seg": "open: 288 lines",
+   "note": "isaddindex: the loop and its error block laid out differently by popt; isbuild: register use in the dictionary init."
+  }
+ }
+}

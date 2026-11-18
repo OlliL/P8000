@@ -72,3 +72,8 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 - 2026-11-18: libu8000.a, slibu8000.a byte-identical: disasm.c (disasm(3)) written from the member, ccv1/sccv1 without -O;
   the two Library.SC differ (Library_libu8000.SC, Library_slibu8000.SC). libsetup.py: a compiler that runs past 300 s
   counts as no object (scc -O on disasm.c).
+- 2026-11-18: libcisam (C-ISAM 1.03): the 14 sources and isint.h written from the members (src/lib/libcisam, not built).
+  Exact with v1: isdef, isperror, util, key, lock (both), node, buf (nonseg), supp (seg). The rest differs in scratch
+  register choices, one float compare (single precision, register against register) and popt loop layout: a compiler
+  beside v1 (compare/libcisam/findings.json). v1 frame fact: the slot words of the register variables stand where the
+  `register` declarations stand among the automatic ones.
