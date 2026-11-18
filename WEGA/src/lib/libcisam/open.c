@@ -48,7 +48,7 @@ badarg:
 	openp->o_mode += lmode;
 	filep->f_nodsiz = ldint(dictp + 6);
 	filep->f_recsize = ldint(dictp + 13);
-	if (ldint(dictp) != 0xfe53 || filep->f_nodsiz != 511 || (dictp[11] & 0377) != 2 || kysearch(&openp->o_key, 1) < 0) {
+	if ((((char)*(unsigned char *)dictp << 8) + ((char)((unsigned char *)dictp)[1] & 0377)) != 0xfe53 || filep->f_nodsiz != 511 || (dictp[11] & 0377) != 2 || kysearch(&openp->o_key, 1) < 0) {
 		iserrno = EBADFILE;
 		goto unlock;
 	}
