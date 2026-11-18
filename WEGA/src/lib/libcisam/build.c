@@ -70,8 +70,7 @@ badarg:
 	if (lkopenlock(lmode))
 		goto bad;
 	filep->f_dictbp = bfgetclr(1L);
-	dictp = filep->f_dictbp->bf_buf;
-	dictp[0] = 0376;
+	*(dictp = filep->f_dictbp->bf_buf) = 0376;
 	dictp[1] = 0123;
 	dictp[2] = 2;
 	dictp[3] = 2;
@@ -123,23 +122,29 @@ register struct keydesc	*kp;
 		iserrno = ENOTEXCL;
 		goto out;
 	}
-	if (kylegal(kp, filep->f_recsize) || ~((dictp[10] & 0377) << 1) & kp->k_flags & COMPRESS || kyadd(kp)) {
-		if (iserrno == 0)
-			iserrno = EBADKEY;
-		goto out;
-	}
+	if (kylegal(kp, filep->f_recsize) || ~((dictp[10] & 0377) << 1) & kp->k_flags & COMPRESS || kyadd(kp))
+		goto bad;
 	nrec = ldlong(dictp + 33);
-	for (recnum = 1; recnum <= nrec && iserrno == 0; recnum++) {
+	for (recnum = 1; ; recnum++) {
+		if (recnum > nrec) {
+		done:
+			if (iserrno) {
+				btrecover(kp->k_rootnode, kp);
+				kydelete(kp);
+			}
+			goto out;
+		}
+		if (iserrno)
+			goto done;
 		if (dataread(temprecord, recnum) < 0)
 			continue;
 		itmake(temprecord, &it, kp);
 		it.it_ptr = recnum;
 		btadditem(&it, kp);
 	}
-	if (iserrno) {
-		btrecover(kp->k_rootnode, kp);
-		kydelete(kp);
-	}
+bad:
+	if (iserrno == 0)
+		iserrno = EBADKEY;
 out:
 	return(isexit());
 }
@@ -221,7 +226,9 @@ register struct keydesc	*kp;
 	register struct item	*ip;
 	register int	off, end;
 
-	if (blk == 0 || (bp = bfread(blk)) == 0)
+	if (blk == 0)
+		return;
+	if ((bp = bfread(blk)) == 0)
 		return;
 	p = bp->bf_buf + 2;
 	ip = &tempitem;
