@@ -297,7 +297,9 @@ loop:
 		goto bad;
 	if (treeflags & 02 || itcompare(it, &treeitem, kp, 0) != 0) {
 		iserrno = 111;
-		goto bad;
+bad:
+		treelev = -1;
+		return(-1);
 	}
 	if (it->it_ptr == treeitem.it_ptr) {
 		btremove(kp);
@@ -306,7 +308,4 @@ loop:
 	}
 	btnext(kp);
 	goto loop;
-bad:
-	treelev = -1;
-	return(-1);
 }
