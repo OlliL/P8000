@@ -12,13 +12,17 @@ register int	mode;
 	if (isenter(isfd, 0) == -1)
 		return(-1);
 	lock = mode & 0177400;
-	if (lock) {
-		if (lock != ISLOCK) {
-			iserrno = EBADARG;
-			goto out;
-		}
-	} else if (openp->o_mode & ISAUTOLOCK)
-		lock = ISLOCK;
+	switch (lock) {
+	case 0:
+		if (openp->o_mode & ISAUTOLOCK)
+			lock = ISLOCK;
+		break;
+	case ISLOCK:
+		break;
+	default:
+		iserrno = EBADARG;
+		goto out;
+	}
 	mode &= 0377;
 	kp = &openp->o_key;
 	switch (mode) {
