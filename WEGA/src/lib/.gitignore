@@ -4,3 +4,4 @@ obj/
 oldslibc/tmp
 oldslibc/errlst/0_2.slibc/build/*/Library.SC
 libc/build/*/Library.SC
+*/build/*/Library.SC

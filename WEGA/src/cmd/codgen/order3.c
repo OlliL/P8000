@@ -245,7 +245,11 @@ sucomp(p)
 		}
 		else {
 		p->in.su = max(nr + nr, min(max(sul, nr + sur), max(sur, nr + sul)));
+#ifdef OLD_D61
+		if (fr == fl)		/* the float need from the float needs of the operands (v1: libm, host/OLDCC.md D61) */
+#else
 		if (sur == sul)
+#endif
 			p->in.fsu = max(nf + nf, min(max(fl, nf + fr), max(fr, nf + fl)));
 		else
 			p->in.fsu = max(nf + nf, max(max(fl, nf + fr), max(fr, nf + fl)));

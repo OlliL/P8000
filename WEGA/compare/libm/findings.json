@@ -1,82 +1,69 @@
 {
  "schema": "members: name -> file, status (exact: byte-identical member; open), note. The same for libm.a (ccv1 -O) and slibm.a (sccv1 -O).",
- "compiler": "v1 (ccv1, sccv1), dated 01/18/83 by Library.SC",
+ "compiler": "v1 (ccv1, sccv1) with OLD_D61 and OLD_D62 (host/OLDCC.md), dated 01/18/83 by Library.SC",
  "binary": "/lib/libm.a, /lib/slibm.a",
  "members": {
   "asin.o": {
    "file": "asin.c",
-   "status": "open",
-   "note": "Only difference: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original."
+   "status": "exact"
   },
   "fmod.o": {
    "file": "fmod.c",
-   "status": "open",
-   "note": "Only difference: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original."
+   "status": "exact"
   },
   "hypot.o": {
    "file": "hypot.c",
-   "status": "open",
-   "note": "Only difference: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original."
+   "status": "exact"
   },
   "tanh.o": {
    "file": "tanh.c",
-   "status": "open",
-   "note": "Only difference: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original."
+   "status": "exact"
   },
   "pow.o": {
    "file": "pow.c",
-   "status": "open",
-   "note": "Only difference: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original. Source form (l & 1) != 0: if(l & 1) loads the long into another pair (nonsegmented)."
+   "status": "exact",
+   "note": "Source form (l & 1) != 0 for if (l & 1): the bytes of the nonsegmented member (compare/libm/SYSIII.md)."
   },
   "jn.o": {
    "file": "jn.c",
-   "status": "open",
-   "note": "Only difference: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original. WEGA added sign (jn of a negative x); return(sign ? -t*j0(x)/b : t*j0(x)/b) gives the common /b of the original."
+   "status": "exact",
+   "note": "WEGA added sign (jn of a negative x): compare/libm/SYSIII.md."
   },
   "atan.o": {
    "file": "atan.c",
-   "status": "open",
-   "note": "Differences: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original; the original keeps intermediate EPU values in frame temporaries (store and load at once, or an operand from the temporary) where v1 keeps them in EPU registers."
+   "status": "exact"
   },
   "exp.o": {
    "file": "exp.c",
-   "status": "open",
-   "note": "Differences: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original; the original keeps intermediate EPU values in frame temporaries (store and load at once, or an operand from the temporary) where v1 keeps them in EPU registers."
+   "status": "exact"
   },
   "gamma.o": {
    "file": "gamma.c",
-   "status": "open",
-   "note": "Differences: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original; the original keeps intermediate EPU values in frame temporaries (store and load at once, or an operand from the temporary) where v1 keeps them in EPU registers."
+   "status": "exact"
   },
   "j0.o": {
    "file": "j0.c",
-   "status": "open",
-   "note": "Differences: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original; the original keeps intermediate EPU values in frame temporaries (store and load at once, or an operand from the temporary) where v1 keeps them in EPU registers."
+   "status": "exact"
   },
   "j1.o": {
    "file": "j1.c",
-   "status": "open",
-   "note": "Differences: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original; the original keeps intermediate EPU values in frame temporaries (store and load at once, or an operand from the temporary) where v1 keeps them in EPU registers."
+   "status": "exact"
   },
   "log.o": {
    "file": "log.c",
-   "status": "open",
-   "note": "Differences: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original; the original keeps intermediate EPU values in frame temporaries (store and load at once, or an operand from the temporary) where v1 keeps them in EPU registers."
+   "status": "exact"
   },
   "sin.o": {
    "file": "sin.c",
-   "status": "open",
-   "note": "Differences: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original; the original keeps intermediate EPU values in frame temporaries (store and load at once, or an operand from the temporary) where v1 keeps them in EPU registers."
+   "status": "exact"
   },
   "sinh.o": {
    "file": "sinh.c",
-   "status": "open",
-   "note": "Differences: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original; the original keeps intermediate EPU values in frame temporaries (store and load at once, or an operand from the temporary) where v1 keeps them in EPU registers. jp where v1 has jr (guess: the longer code)."
+   "status": "exact"
   },
   "tan.o": {
    "file": "tan.c",
-   "status": "open",
-   "note": "Differences: the left operand of each floating compare with memory is rounded by v1 (fld dbl), not in the original; the original keeps intermediate EPU values in frame temporaries (store and load at once, or an operand from the temporary) where v1 keeps them in EPU registers. jp where v1 has jr (guess: the longer code)."
+   "status": "exact"
   },
   "fputil.o": {
    "file": "fputil.s, sfputil.s",

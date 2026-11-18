@@ -1408,3 +1408,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   temporary and loads it back at once (`%4FFC,%8x03,off` `%4FF4,%8x03,off`, the frame larger by 8 per temporary), or takes an
   operand from such a temporary where v1 keeps it in an EPU register (log, atan, tan, j1); jp where v1 has jr in sinh and tan
   (guess: the longer code). No source form tried: both are compiler behaviour (phase B).
+
+## 2026-11-18 libm: OLD_D61, OLD_D62 (v1)
+
+- libm.a, slibm.a (System III sources, Library.SC 01/83): every compiler (cc, ccv1, ccv1q, ccv1r, ccvl) gave the same float
+  code, none the original; v0, v0p take the parameters otherwise. Two differences: `fld dbl` before a compare with memory
+  (rule 052/047a), and store/reload pairs every third operation of a left-deep float expression.
+- Tried: `ffregs` 3 and 2 (no); the float need in the last case of sucomp by `fr == fl` or never the special case: the
+  store/reload pairs exactly (both the same bytes); with the compare without `fld ZR`: 15 of 15 members exact.

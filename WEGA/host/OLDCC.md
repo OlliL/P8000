@@ -84,8 +84,8 @@ the doscopy programs, the standalone programs (`make -C host checkall`). All of 
 
 ### v1 (01/83 .. 07/83)
 
-- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D3` (codgen), `OLD_D20` and `OLD_D52` (popt).
-- Byte-identical: `/bin/size`, `/usr/bin/strip`, `/bin/mv` (also cp, ln), `/bin/rm`.
+- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D3`, `OLD_D61` and `OLD_D62` (codgen, scodgen), `OLD_D20` and `OLD_D52` (popt).
+- Byte-identical: `/bin/size`, `/usr/bin/strip`, `/bin/mv` (also cp, ln), `/bin/rm`, `/lib/libm.a`, `/lib/slibm.a` (Library.SC 01/83).
 - ld: 55 of 59 functions strictly exact, data equal, corpus 146 of 146; open: place_sec, chk_ranlib, load2td, load1.
 - Own code equal, the libc part not linked yet: write (all 5 functions). rmdir: its main differs by D4 and D18.
 - Test bench (System III sources of 26 programs from 01/83 .. 07/83): 89 of 121 functions equal, the shipped cc 27.
@@ -548,6 +548,25 @@ compiler does so is not known. Other conditions tried and refuted: a constant va
 The register variables are assigned in declaration order from r13 downwards; an int or char takes one register, a pointer or long the highest
 free aligned pair; a `register` parameter comes first. A leaf function puts them into scratch registers. (Nonsegmented cc: from r14 downwards.)
 
+
+### D61 The float need of a binary node
+
+v1 `OLD_D61` (codgen, scodgen; order3.c sucomp). The last case of sucomp takes the float need `fsu` of a binary node by
+`fr == fl` (the float needs of its operands); the shipped codgen asks `sur == sul` (the word needs) there. In a left-deep
+float expression whose right operands are in memory (`(p4*x+p3)*x+p2 ...`) the shipped need stays 2, the v1 need grows by 1
+per level: at 5 (above `ffregs`, 4) store() writes the subtree of need 4 to a temporary and loads it again (`fldd t,f3;
+fldd f3,t`), every third operation, and the right operand of a division goes to a temporary first. Witnesses: the members
+of libm.a and slibm.a (atan xatan, exp, gamma, j0, j1, log, sin, sinh, tan; System III sources). `if (0)` (never the
+special case) gives the same bytes on libm; `fr == fl` is the plainer form.
+
+### D62 A float compare with memory without rounding
+
+v1 `OLD_D62` (table3_codgen.c rule 052, table3_scodgen.c rule 047a). A float register compared with a memory operand: the
+shipped rule rounds the register first (`fld dbl, f2,f2` before `fcpd f2,mem`), v1 compares it as it is. Witnesses: every
+float compare with memory of libm.a and slibm.a (asin, fmod, hypot, tanh, pow, jn and the rest).
+
+Neither switch changes a program of v1 that was byte-identical before (checkall). Measured 2026-11-18 with a copy of the v1
+codgen per variant: libm 15 of 15 C members exact.
 ## 4 Objects and their differences
 
 `x` = the difference was seen in this object; `?` = the construct is in the source but the difference was not separated; empty = not seen (no proof
@@ -636,6 +655,9 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | libm.a, slibm.a | tanh.o (tanh.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
 | libm.a, slibm.a | sinh.o (sinh.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
 | libm.a, slibm.a | exp.o (exp.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+
+Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
+fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough).
 
 ## 5 Open questions
 
