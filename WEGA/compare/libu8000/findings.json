@@ -1,0 +1,12 @@
+{
+ "schema": "members: name -> file, status (exact: byte-identical member; open), note. The same for libu8000.a (ccv1) and slibu8000.a (sccv1), without -O.",
+ "compiler": "v1 (ccv1, sccv1), dated 01/29/83 by Library.SC",
+ "binary": "/usr/lib/libu8000.a, /usr/lib/slibu8000.a",
+ "members": {
+  "disasm.o": {
+   "file": "disasm.c",
+   "status": "exact",
+   "note": "written from the object; disinit, disasm and 30 static functions; the data area in the object's order."
+  }
+ }
+}

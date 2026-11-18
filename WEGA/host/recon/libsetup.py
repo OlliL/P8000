@@ -110,7 +110,10 @@ def try_one(src, body, comp, root, opt, hdr, tmp):
                     shutil.copy(os.path.join(W, hdr[1], f), w)
         b = os.path.basename(src)
         args = [EMU, '-r', root, '/bin/' + comp] + (['-O'] if opt else []) + ['-I.', '-c', b]
-        subprocess.run(args, cwd=w, capture_output=True, timeout=300)
+        try:
+            subprocess.run(args, cwd=w, capture_output=True, timeout=300)
+        except subprocess.TimeoutExpired:		# scc -O on libu8000's disasm.c runs on and on
+            return None
         o = os.path.join(w, b[:-2] + '.o')
         if not os.path.exists(o):
             return None

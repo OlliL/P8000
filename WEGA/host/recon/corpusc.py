@@ -40,8 +40,15 @@ def tree_files(d):
     return None
 
 
+# sources the compiler corpora leave out (owner 2026-11-18), with the reason
+EXCLUDE = {
+    'src/lib/libu8000/disasm.c': 'scc -O of the original does not end; the original spopt stops with "C2: can\'t find 2,_word" '
+                                 '(the member is built without -O)',
+}
+
+
 def c_sources():
-    """the C sources of src/cmd and src/lib, sorted"""
+    """the C sources of src/cmd and src/lib, sorted, without EXCLUDE"""
     fs = None
     if tree_files(os.path.join(REPO, 'src')) is not None:
         fs = [os.path.join(REPO, f) for t in ('src/cmd', 'src/lib') for f in tree_files(os.path.join(REPO, t)) or [] if f.endswith('.c')]
@@ -52,7 +59,7 @@ def c_sources():
                 dirs[:] = [x for x in dirs if x not in ('build', 'old')]
                 fs += [os.path.join(d, f) for f in names if f.endswith('.c')]
     rel = lambda f: '/' + os.path.relpath(f, REPO)
-    return sorted(f for f in fs if '/compare/' not in rel(f) and '/shipped/' not in rel(f))
+    return sorted(f for f in fs if '/compare/' not in rel(f) and '/shipped/' not in rel(f) and rel(f)[1:] not in EXCLUDE)
 
 
 def run(argv, work, timeout=120):

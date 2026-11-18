@@ -69,3 +69,6 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 - 2026-11-18: libscreen.a, slibscreen.a byte-identical: no source anywhere (web, local backups), io.c, mesg.c, mvcursor.c,
   scrn.c written from the members (v1 -O, V7 stdio.h). libsetup.py takes src/lib/NAME as the source directory when no tree
   has one. Web search for C-ISAM 1.03 (libcisam): nothing; libu8000 (disasm.c, the disassembler of adb) from the object.
+- 2026-11-18: libu8000.a, slibu8000.a byte-identical: disasm.c (disasm(3)) written from the member, ccv1/sccv1 without -O;
+  the two Library.SC differ (Library_libu8000.SC, Library_slibu8000.SC). libsetup.py: a compiler that runs past 300 s
+  counts as no object (scc -O on disasm.c).

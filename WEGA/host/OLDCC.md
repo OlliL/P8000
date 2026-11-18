@@ -93,7 +93,8 @@ the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibc
   narrow form of v0's `OLD_D2C` copy rule: for every register copy it costs slibPW regex, xalloc, xlink, xwrite (copies of
   parameters, of an int register variable). One witness (move), limits from the measurements.
 - Byte-identical: `/bin/size`, `/usr/bin/strip`, `/bin/mv` (also cp, ln), `/bin/rm`, `/lib/libm.a`, `/lib/slibm.a` (Library.SC 01/83),
-  `/usr/lib/libPW.a`, `/usr/lib/slibPW.a` (Library.SC 07/22/83).
+  `/usr/lib/libPW.a`, `/usr/lib/slibPW.a` (Library.SC 07/22/83), `/usr/lib/libscreen.a`, `slibscreen.a` (01/30/83),
+  `/usr/lib/libu8000.a`, `slibu8000.a` (01/29/83, without -O).
 - ld: 55 of 59 functions strictly exact, data equal, corpus 146 of 146; open: place_sec, chk_ranlib, load2td, load1.
 - Own code equal, the libc part not linked yet: write (all 5 functions). rmdir: its main differs by D4 and D18.
 - Test bench (System III sources of 26 programs from 01/83 .. 07/83): 89 of 121 functions equal, the shipped cc 27.
