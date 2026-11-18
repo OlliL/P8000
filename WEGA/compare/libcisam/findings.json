@@ -1,6 +1,6 @@
 {
  "schema": "members: name -> file, status nonsegmented (ccv1 -O) and segmented (sccv1 -O), note",
- "compiler": "v1 nearest (02/11/83); v1 with OLD_D2N, D2L, D2F or D2W (each alone) is not nearer (measured 2026-11-18)",
+ "compiler": "v1 (02/11/83) with OLD_D63; v1 with OLD_D2N, D2L, D2F or D2W (each alone) is not nearer (measured 2026-11-18). The rest differs where the original frees an idle word register at the end of a condition (shipped-like) and keeps pairs (v1-like); see host/OLDCC_LOG.md 2026-11-18.",
  "binary": "/usr/lib/libcisam.a, /usr/lib/slibcisam.a",
  "members": {
   "isdef.o": {
@@ -36,56 +36,56 @@
   "node.o": {
    "file": "node.c",
    "status_nonseg": "exact",
-   "status_seg": "open: 4 lines",
-   "note": "segmented: a scratch register (r2 against r6) in btremove."
+   "status_seg": "exact",
+   "note": "btremove: `tp->t_off != 0 ? ip2 : ip1` (the plain `tp->t_off ?` takes r6 for the test, segmented)."
   },
   "buf.o": {
    "file": "buf.c",
    "status_nonseg": "exact",
-   "status_seg": "open: 108 lines",
-   "note": "segmented: scratch registers in bfread/bfwrite (the node trailer bytes)."
+   "status_seg": "exact",
+   "note": "bfwrite: `if (off != 0)` (with `if (off)` the segmented code takes rr2 for the trailer bytes)."
   },
   "supp.o": {
    "file": "supp.c",
    "status_nonseg": "open: 4 lines",
    "status_seg": "exact",
-   "note": "nonsegmented: freefile, close(fp->f_audfd): the original keeps the parameter fp in r2 (temp r6), v1 takes r3."
+   "note": "nonsegmented: freefile, close(fp->f_audfd): the original takes r6 for the value, v1 r3. Forms tried: != 0, (*fp), register fp, bfignor(fp->f_fileid)."
   },
   "read.o": {
    "file": "read.c",
    "status_nonseg": "open: 4 lines",
    "status_seg": "open: 6 lines",
-   "note": "isread: the original takes r3 for openp (r2 holds lock), v1 r2."
+   "note": "isread: the original keeps lock in r2 at the else label and takes r3 (rr4) for openp, v1 forgets at the label. Forms tried: branches swapped, && forms, goto, != 0."
   },
   "audit.o": {
    "file": "audit.c",
    "status_nonseg": "open: 4 lines",
-   "status_seg": "open: 98 lines",
-   "note": "isaudit AUDSTOP, close(filep->f_audfd): the original reloads filep (temp r3), v1 reuses r3 (temp r6)."
+   "status_seg": "open: 4 lines",
+   "note": "isaudit AUDSTOP, close(filep->f_audfd): nonsegmented the original takes r3 for the value (v1 r6), segmented it loads into r7 through rr4 directly (v1 copies). Forms tried: one && condition, != 0, < 0, a cast."
   },
   "open.o": {
    "file": "open.c",
-   "status_nonseg": "open: 17 lines",
-   "status_seg": "open: 267 lines",
-   "note": "nonsegmented: scratch register choices in isopen (ldint of dictp), isflush, isexit."
+   "status_nonseg": "open: 10 lines",
+   "status_seg": "exact",
+   "note": "isopen: the magic read as `(char)*(unsigned char *)dictp` and `(char)((unsigned char *)dictp)[1]` (the cast makes v1 load dictp again, as the original). Nonsegmented open: isexit takes rr2 for `filep->f_fileid` behind `!(openp->o_mode & ISEXCLLOCK)` and r3 for the ?: of isstat2 (the original frees the word register at the end of the condition, segmented it keeps the pair). Forms tried: host/OLDCC_LOG.md."
   },
   "btree.o": {
    "file": "btree.c",
-   "status_nonseg": "open: 41 lines",
-   "status_seg": "open: 29 lines",
-   "note": "btsearch: scratch register after the dup test; btdelitem: the original popt keeps the loop test at the head, v1 popt inverts it."
+   "status_nonseg": "open: 12 lines",
+   "status_seg": "exact",
+   "note": "btdelitem: `bad:` inside the error branch. Nonsegmented open: btsearch `openp->o_flags |= 020` behind `r == 0 && mode == 2 && bp->bf_level == 0` takes r2 (bp) as free in the original, v1 keeps it (OLD_D3); segmented the original keeps the pair. No source form found (host/OLDCC_LOG.md 2026-11-18)."
   },
   "item.o": {
    "file": "item.c",
-   "status_nonseg": "open: 68 lines",
-   "status_seg": "open: 106 lines",
-   "note": "itcompare FLOATTYPE: the original compares two floats in single precision register against register (fld F1; 8E00,4120), v1 converts f2 from memory (4021) and compares double; itpress: a register (r4/r2) and the loop of the leading compression (not inverted in the original)."
+   "status_nonseg": "open: 4 lines",
+   "status_seg": "open: 40 lines",
+   "note": "itcompare FLOATTYPE: OLD_D63. itpress: the leading compression loop as a goto loop; `(int)it_dupnum` for stint. Nonsegmented open: `bycmpr(..., kp->k_len)` copies kp into r4 in the original (v1 r2). Segmented open: itunpack `it_leadcnt`/`it_trailcnt = ... ? *p++ & 0377 : 0` stores through rr2 after the arm loaded the old p into rr2 (a bug of the old scodgen: the value goes into the buffer); itpress takes rr2 (kp) as free behind the bit tests."
   },
   "build.o": {
    "file": "build.c",
-   "status_nonseg": "open: 162 lines",
-   "status_seg": "open: 288 lines",
-   "note": "isaddindex: the loop and its error block laid out differently by popt; isbuild: register use in the dictionary init."
+   "status_nonseg": "exact",
+   "status_seg": "exact",
+   "note": "isaddindex in the original's order (the .extern order shows it): the recovery block inside the loop head (`done:`), `bad:` at the end; isbuild stores the magic through `(unsigned char *)dictp` (the original loads dictp again for the second byte); btrecover with two `if`s."
   }
  }
 }

@@ -1494,3 +1494,10 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - Source forms tried without result: read (`if (lock) ... else if (openp->o_mode & ISAUTOLOCK)`: branches swapped,
   `&&` forms, a goto form), isopen (labels in front of each of the three statements before the `if`, statements swapped),
   isexit (`== 0`; `if (x) ; else {...}` fixes it nonsegmented but not segmented).
+- Source forms, round 2 (owner: source first, big members first; lines with label addresses masked): build 40/118 > 0/0
+  (isaddindex in the order the `.extern` list shows: the recovery block inside the loop head, `bad:` at the end;
+  isbuild `*(unsigned char *)dictp = 0376; ((unsigned char *)dictp)[1] = 0123;`; btrecover two `if`s); buf 0/50 > 0/0
+  (bfwrite `if (off != 0)`); node 0/4 > 0/0 (`tp->t_off != 0 ? ip2 : ip1`); open 17/29 > 10/0 (the magic read through
+  `(unsigned char *)dictp` cast back to `char`: a cast to another pointer type makes regforsym miss, so dictp is loaded
+  again, as in the original; as in ld chk_ranlib). Total 207/811 > 38/50. A script tried `!= 0` on every plain `if`
+  condition of read, open, audit, supp, item, btree, build: nothing else gained.
