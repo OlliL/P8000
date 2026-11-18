@@ -84,7 +84,7 @@ the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibc
 
 ### v1 (01/83 .. 07/83)
 
-- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D25` (scparse), `OLD_D3`, `OLD_D61` and `OLD_D62` (codgen, scodgen), `OLD_D24`
+- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D25` (scparse), `OLD_D3`, `OLD_D61`, `OLD_D62` and `OLD_D63` (codgen, scodgen), `OLD_D24`
   (scodgen), `OLD_D2CW` (scodgen), `OLD_D20` and `OLD_D52` (popt).
 - `OLD_D24` and `OLD_D25` (a long cast to a pointer is masked through a copy) are in the segmented v1 since slibPW (07/83):
   xalloc (`(char *)((long)np + usize)`, `(char *)Lastbrk`), regcmp (`sp = (char *)*adx++` through a `long *`), regex.
@@ -579,6 +579,15 @@ float compare with memory of libm.a and slibm.a (asin, fmod, hypot, tanh, pow, j
 
 Neither switch changes a program of v1 that was byte-identical before (checkall). Measured 2026-11-18 with a copy of the v1
 codgen per variant: libm 15 of 15 C members exact.
+### D63 A float widened to double stays a conversion
+
+v1 `OLD_D63` (codgen, scodgen; optim3.c convelim). The shipped codgen drops a conversion float to double over an operand
+(`SCONV` double of a float), so `f1 < f2` of two floats compares `flds f0,f1; fcpxs f0,f2` (rule 052, register against
+memory). The v1 codgen keeps the conversion: both operands have the float need 1, each is loaded into a register
+(`flds f0,f1; flds f1,f2`) and rule 051 compares the registers (`fcpx f0,f1`). A double operand has no conversion and still
+goes against memory. Witness: itcompare of libcisam.a (FLOATTYPE, `if (f1 < f2) ... else if (f1 > f2)`). One witness.
+Changes no program of v1 that was byte-identical before (checkall 2026-11-18).
+
 ## 4 Objects and their differences
 
 `x` = the difference was seen in this object; `?` = the construct is in the source but the difference was not separated; empty = not seen (no proof
@@ -677,7 +686,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
 fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`
 of v1: allprint of `/lib/libl.a` and `/lib/slibl.a`; its limit "A more than one instruction": regex of `/usr/lib/libPW.a` and
-`slibPW.a` (`__cclass`). The D20 rows of libPW: the limit of `OLD_D20` (a block label named by more than 3 jumps moves). `OLD_D2CW` (D2) of v1: move of `/usr/lib/slibPW.a`.
+`slibPW.a` (`__cclass`). The D20 rows of libPW: the limit of `OLD_D20` (a block label named by more than 3 jumps moves). `OLD_D2CW` (D2) of v1: move of `/usr/lib/slibPW.a`. `OLD_D63` (D63) of v1: item of `/usr/lib/libcisam.a` and `slibcisam.a`.
 
 ## 5 Open questions
 

@@ -416,8 +416,12 @@ convelim(p, c)
 			if (!(isint(q->in.type) ^ isint(q->in.left->in.type)))
 				goto remove;
 		test:
+#ifdef OLD_D63
+			return p;	/* v1: a float widened to double stays a conversion (host/OLDCC.md D63) */
+#else
 			if (q->in.type != 7 || q->in.left->in.type != 6)
 				return p;
+#endif
 		}
 	remove:
 		n = tcopy(q->in.left);
@@ -438,8 +442,12 @@ convelim(p, c)
 			if (!(isint(q->in.type) ^ isint(q->in.left->in.type)))
 				goto lremove;
 		ltest:
+#ifdef OLD_D63
+			return p;	/* v1: a float widened to double stays a conversion (host/OLDCC.md D63) */
+#else
 			if (q->in.type != 7 || q->in.left->in.type != 6)
 				return p;
+#endif
 		}
 	lremove:
 		n = tcopy(q->in.left);

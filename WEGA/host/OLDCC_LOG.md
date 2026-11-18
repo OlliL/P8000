@@ -1444,3 +1444,19 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   r8..r13: xalloc lost (usize); only a word of a register variable pair (the symbol long or pointer): 86 of 86, slibl,
   sliby, slibm members unchanged. Taken as `OLD_D2CW` (segmented v1). First checkall with D20, D52, D24, D25: 774 files
   identical, only slibPW.a open, corpora equal.
+
+## 2026-11-18 libcisam (increment 150)
+
+- itcompare (item.o), FLOATTYPE: the original loads both floats (`4FF4,8001` into F0, `4FF4,8101` into F1) and compares
+  register against register (`8E00,4120`, rule 051); v1 compares F0 against f2 in memory (rule 052). Tried first: rule 052
+  only with a double in memory (table3): codgen loops ("expression causes compiler loop"), setbin never loads the right
+  operand of a compare whose su and fsu are 0. Then convelim (optim3.c) keeping the conversion float to double: both
+  operands get fsu 1, setbin loads left then right, rule 051. item.o nonsegmented 70 > 62 lines, segmented 106 > 98,
+  no other member changes. As `OLD_D63` in codgen and scodgen v1; checkall ALL OK.
+- item.c `stint(it->it_dupnum, p)`: the original shifts signed (`extsb r2`); `it_dupnum` is compared unsigned in btree.c
+  (`jr nc`, `jr ule`), so it stays `unsigned` and item.c casts `(int)`. item 62 > 60.
+- Register switches of v1 tried each alone on top of `OLD_D63` (all members, nonsegmented lines; base 292): D2T, D2M, D2Q
+  no change; D2P, D2P+D2PO 400; D2W6 542; D2R 2780, D2R+D2V 2705.
+- btdelitem (btree.o): the raw code is the same, the shipped popt gives the original's layout (no loop inversion, the
+  `bad` block moved behind `iserrno = 111`); the v1 popt (`OLD_D20`) lets the block run on behind `jpr L139` to the next
+  label, so it does not move and the loop is inverted. btree with the shipped popt: 41 > 12 lines (btsearch registers).

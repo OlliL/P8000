@@ -95,7 +95,7 @@ register struct keydesc	*kp;
 	} else if (off)
 		p[-4] |= 0200;
 	if (kp->k_flags & ISDUPS) {
-		stint(it->it_dupnum, p);
+		stint((int)it->it_dupnum, p);
 		p += 2;
 	}
 	stlong(it->it_ptr, p);
