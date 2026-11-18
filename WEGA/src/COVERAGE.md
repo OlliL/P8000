@@ -11,14 +11,14 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
 | [bin](#bin) | 111 | 27 | 5 | 50 | 29 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
-| [lib](#lib) | 30 | 14 | 0 | 2 | 14 |
+| [lib](#lib) | 30 | 18 | 0 | 2 | 10 |
 | [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
 | [usr/lib](#usr-lib) | 197 | 105 | 2 | 57 | 33 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 855 | 13 | 191 | 138 |
+| **all** | 1197 | 859 | 13 | 191 | 134 |
 
 <a id="root"></a>
 ## root
@@ -248,8 +248,8 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `lib/gopt` | binary E611 | - | todo | D12 old, D1 - | - |
 | `lib/libc.a` | archive | `src/lib/libc` | exact | ccvl | - |
 | `lib/libl.a` | archive | `src/lib/libl` | exact | - | - |
-| `lib/libm.a` | archive | - | todo | - | - |
-| `lib/liby.a` | archive | - | todo | - | - |
+| `lib/libm.a` | archive | `src/lib/libm` | exact | - | - |
+| `lib/liby.a` | archive | `src/lib/liby` | exact | - | - |
 | `lib/mcrt0.o` | binary E711 | - | todo | - | - |
 | `lib/popt` | binary E711 | `src/cmd/popt` | exact | ccv0p | libc-v5.a |
 | `lib/scnvt.o` | binary E607 | - | todo | - | - |
@@ -259,8 +259,8 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `lib/sdoprnt.o` | binary E607 | - | todo | - | - |
 | `lib/slibc.a` | archive | `src/lib/libc` | exact | sccvl | - |
 | `lib/slibl.a` | archive | `src/lib/libl` | exact | - | - |
-| `lib/slibm.a` | archive | - | todo | - | - |
-| `lib/sliby.a` | archive | - | todo | - | - |
+| `lib/slibm.a` | archive | `src/lib/libm` | exact | - | - |
+| `lib/sliby.a` | archive | `src/lib/liby` | exact | - | - |
 | `lib/smcrt0.o` | binary E607 | - | todo | - | - |
 | `lib/spopt` | binary E711 | `src/cmd/popt` | exact | ccv0p | libc-v5.a |
 
