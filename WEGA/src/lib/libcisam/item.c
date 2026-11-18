@@ -168,10 +168,15 @@ struct keydesc	*kp;
 		} else
 			it2->it_trailcnt = 0;
 		if (kp->k_flags & LCOMPRESS) {
-			if (it1 != it2)
-				for (i = 0; i < it2->it_totlen - 1 && it2->it_key[i] == it1->it_key[i]; i++)
-					;
-			else
+			if (it1 != it2) {
+				i = 0;
+				goto lead;
+			next:
+				i++;
+			lead:
+				if (i < it2->it_totlen - 1 && it2->it_key[i] == it1->it_key[i])
+					goto next;
+			} else
 				i = 0;
 			it2->it_leadcnt = i;
 			if ((i = kp->k_len - it1->it_trailcnt) < it2->it_leadcnt)
