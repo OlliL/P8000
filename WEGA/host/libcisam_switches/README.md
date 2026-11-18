@@ -5,14 +5,16 @@ existing switch (also narrowed) gives the original, a new v1 switch is worked ou
 The diffs are NOT applied in the tree: v1 stays as it is and the libcisam members stay "open" in
 `compare/libcisam/findings.json`. A later session tries to get rid of them (source forms, narrowing existing switches).
 
-Each diff applies alone to the tree it was made on (git apply); together they apply too (separate `#ifdef`s).
+Each diff applies alone to the tree it was made on (git apply). They overlap in reader3.c, so together use `ALL.diff`
+(all four switches, the Makefile lines included).
 
 | Switch | File | Effect alone (libcisam lines nonseg/seg, label addresses masked) |
 |---|---|---|
 | `OLD_D3W` | reader3.c cbranch, QUEST | 38/44 > 16/44 (btree, open) |
 | `OLD_D2PW` | allo3.c allocreg | 38/44 > 34/44 (item) |
 | `OLD_D3Q` | reader3.c QUEST | 38/44 > 38/20 (item itunpack) |
-| all three | | 12/20: audit 4/4, item 0/10, read 4/6, supp 4/0 |
+| `OLD_D3H` | reader3.c cbranch, allo3.c allocreg | 38/44 > 34/34 (supp, item itpress) |
+| all four (`ALL.diff`) | | 8/10: audit 4/4, read 4/6 |
 
 `OLD_D63` (float compare) is in the tree already (checkall green).
 
