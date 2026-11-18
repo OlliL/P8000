@@ -130,7 +130,7 @@ struct keydesc	*kp;
 	off = tp->t_off;
 	if (tp->t_next != tp->t_used) {
 		off2 = itunpack(p, tp->t_next, ip1, kp);
-		itpress(tp->t_off ? ip2 : ip1, ip1, kp);
+		itpress(tp->t_off != 0 ? ip2 : ip1, ip1, kp);
 		off = itpack(ip1, p, off, kp);
 		bycopy(p + off2, p + off, tp->t_used - off2);
 		off += tp->t_used - off2;
