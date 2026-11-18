@@ -1,0 +1,87 @@
+diff --git a/WEGA/src/cmd/codgen/Makefile b/WEGA/src/cmd/codgen/Makefile
+index 14034138..81708fed 100644
+--- a/WEGA/src/cmd/codgen/Makefile
++++ b/WEGA/src/cmd/codgen/Makefile
+@@ -32,7 +32,7 @@ build/nonsegv0/codgen: crt0.o FORCE
+ build/nonsegv0p/codgen: crt0.o FORCE
+ 	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V0P"
+ build/nonsegv1/codgen: crt0.o FORCE
+-	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63"
++	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D2PW"
+ build/nonsegv1q/codgen: crt0.o FORCE
+ 	cd build/nonsegv1q ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q"
+ build/nonsegv1r/codgen: crt0.o FORCE
+@@ -41,7 +41,7 @@ build/nonsegv1r/codgen: crt0.o FORCE
+ build/seg/scodgen: crt0.o FORCE
+ 	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
+ build/segv1/scodgen: crt0.o FORCE
+-	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D24 -DOLD_D2CW"
++	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D2PW -DOLD_D24 -DOLD_D2CW"
+ 
+ build/segvc/scodgen: crt0.o FORCE
+ 	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_VC"
+diff --git a/WEGA/src/cmd/codgen/allo3.c b/WEGA/src/cmd/codgen/allo3.c
+index 99ba4cd7..661b8f84 100644
+--- a/WEGA/src/cmd/codgen/allo3.c
++++ b/WEGA/src/cmd/codgen/allo3.c
+@@ -494,6 +494,29 @@ allocreg(p, cookie)
+ 	if (r == -1)
+ 		r = getreg(cls, want, 0x1000, p->in.sname);
+ #else
++#ifdef OLD_D2PW
++	/* OLD_D2PW (libcisam): the copy of a register that is wanted in a busy register goes into the other half of that
++	   pair when the half is idle and holds a name, not a parameter (host/libcisam_switches/OLD_D2PW.md) */
++	if (p->in.op == 96 && cls == 2 && want >= 0 && want < 8) {
++		register struct rs *q;
++
++		for (q = rsuse; q; q = q->next)
++			if (q->cls == 2 && q->reg == want && q->busy > 0)
++				break;
++		if (q) {
++			for (q = rsuse; q; q = q->next)
++				if (q->cls == 2 && q->reg == (want ^ 1) && q->busy <= 0 && q->kind != 6 && q->sym &&
++				    q->sym->sclass != 9)
++					break;
++			if (q) {
++				rsreturn(2, want ^ 1);
++				r = getreg(cls, want ^ 1, 0x1000, p->in.sname);
++				if (r != -1)
++					goto d2pw;
++			}
++		}
++	}
++#endif
+ #ifdef OLD_D2CW
+ 	/* v1 (segmented): the copy of a word of a register variable pair (`(int)x` of a pointer in rr12) holds no name
+ 	   (libPW move: the byte behind it takes r2 again) */
+@@ -508,6 +531,9 @@ allocreg(p, cookie)
+ 		if (r == -1)
+ 			cerror("register jam");
+ 	}
++#ifdef OLD_D2PW
++d2pw:
++#endif
+ 	return r;
+ }
+ 
+diff --git a/WEGA/src/cmd/codgen/reader3.c b/WEGA/src/cmd/codgen/reader3.c
+index 3cc0ae74..5c3ed061 100644
+--- a/WEGA/src/cmd/codgen/reader3.c
++++ b/WEGA/src/cmd/codgen/reader3.c
+@@ -854,6 +854,8 @@ prcook(cookie)
+ 	printf(" [%%%0.2x]", cookie);
+ }
+ 
++
++
+ /* generate code for p; cook says in which form the result is wanted */
+ void
+ order(p, cook)
+@@ -1363,6 +1365,7 @@ stoarg(p, calltype)
+ 	}
+ }
+ 
++
+ /* evaluate p for the truth value and jump to true or false; a label < 0 means to fall through */
+ int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE, FLT, FLE };	/* 0x274 */
+ 

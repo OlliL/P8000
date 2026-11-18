@@ -1,0 +1,80 @@
+diff --git a/WEGA/src/cmd/codgen/Makefile b/WEGA/src/cmd/codgen/Makefile
+index 14034138..6f2357da 100644
+--- a/WEGA/src/cmd/codgen/Makefile
++++ b/WEGA/src/cmd/codgen/Makefile
+@@ -32,7 +32,7 @@ build/nonsegv0/codgen: crt0.o FORCE
+ build/nonsegv0p/codgen: crt0.o FORCE
+ 	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V0P"
+ build/nonsegv1/codgen: crt0.o FORCE
+-	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63"
++	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D3Q"
+ build/nonsegv1q/codgen: crt0.o FORCE
+ 	cd build/nonsegv1q ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q"
+ build/nonsegv1r/codgen: crt0.o FORCE
+@@ -41,7 +41,7 @@ build/nonsegv1r/codgen: crt0.o FORCE
+ build/seg/scodgen: crt0.o FORCE
+ 	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
+ build/segv1/scodgen: crt0.o FORCE
+-	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D24 -DOLD_D2CW"
++	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D3Q -DOLD_D24 -DOLD_D2CW"
+ 
+ build/segvc/scodgen: crt0.o FORCE
+ 	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_VC"
+diff --git a/WEGA/src/cmd/codgen/reader3.c b/WEGA/src/cmd/codgen/reader3.c
+index 3cc0ae74..420c7508 100644
+--- a/WEGA/src/cmd/codgen/reader3.c
++++ b/WEGA/src/cmd/codgen/reader3.c
+@@ -854,6 +854,26 @@ prcook(cookie)
+ 	printf(" [%%%0.2x]", cookie);
+ }
+ 
++#ifdef OLD_D3Q
++/* OLD_D3Q: does the tree p hold a ++ or -- of a pointer */
++static int
++d3qincr(p)
++	register NODE *p;
++{
++	register int t;
++
++	if ((p->in.op == INCR || p->in.op == DECR) && (p->in.type & 0x30) == 0x10)
++		return 1;
++	t = optype(p->in.op);
++	if (t == BITYPE && d3qincr(p->in.right))
++		return 1;
++	if (t != LTYPE)
++		return d3qincr(p->in.left);
++	return 0;
++}
++#endif
++
++
+ /* generate code for p; cook says in which form the result is wanted */
+ void
+ order(p, cook)
+@@ -942,6 +962,18 @@ again:
+ 		goto cleanup;
+ 	case QUEST:
+ 		cbranch(p1, -1, m = getlab());
++#ifdef OLD_D3Q
++		if (d3qincr(p2)) {	/* OLD_D3Q (libcisam): behind the condition of a ?: whose arm increments a
++					   pointer the scratch pairs are free, also a busy one (host/libcisam_switches/OLD_D3Q.md) */
++			register struct rs *n, *next;
++
++			for (n = rsuse; n; n = next) {
++				next = n->next;
++				if (n->cls == 3 && n->kind != 6 && n->reg < 8 && n->busy > 0)
++					rsreturn(n->cls, n->reg);
++			}
++		}
++#endif
+ #ifdef OLD_D14Q
+ 		if (cookie == INTEMP_ && p->in.type != 6 && p->in.type != 7) {
+ 			long t = freeparm(szty(p->in.type)) / 8;
+@@ -1363,6 +1395,7 @@ stoarg(p, calltype)
+ 	}
+ }
+ 
++
+ /* evaluate p for the truth value and jump to true or false; a label < 0 means to fall through */
+ int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE, FLT, FLE };	/* 0x274 */
+ 
