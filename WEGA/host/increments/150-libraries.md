@@ -60,3 +60,5 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   narrowed (`OLDCC_LOG.md`).
 - 2026-11-18: libmp.a, slibmp.a byte-identical (no System III source: 2.11BSD usr.lib/libmp without sccsid, v1 with the V7
   stdio.h; WEGA forms in gcd.c and mout.c). libsetup.py copies the sources writable.
+- 2026-11-18: libtermlib.a, slibtermlib.a byte-identical (no System III source: 2.11BSD usr.lib/libtermlib with its CM_
+  options, the older forms of tgetent, tnchktc, tgoto, tputs; v1).

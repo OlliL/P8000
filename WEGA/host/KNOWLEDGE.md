@@ -962,6 +962,8 @@ means it does something fixed instead (only possible where the original's result
 
 | Program | Bug or quirk | Rebuild | Details |
 |---------|--------------|---------|---------|
+| `/usr/lib/libtermlib.a`, `slibtermlib.a` (`tnchktc`) | `while (q && *q != ':')` tests the pointer, not the character: a tc= name without a following `:` runs on behind the name buffer | kept | `compare/libtermlib/SYSIII.md` |
+| `/usr/lib/libtermlib.a`, `slibtermlib.a` (`tnchktc`) | `hopcount` is never set back: after 32 tc= indirections in all calls of a program together, every further one fails with "Infinite tc= loop" | kept | `compare/libtermlib/SYSIII.md` |
 | `/usr/lib/libmp.a`, `slibmp.a` (`sdiv`) | `if(qval[qlen-1]==0) qlen--;` reads `qval[-1]` for a zero-length dividend (2.11BSD tests `qlen &&` first) | kept | `compare/libmp/SYSIII.md` |
 | `/usr/lib/libPW.a` (`xfree`) | the second coalesce test (with the block in front) repeats the first, `ptr + ptr->f_size == np`, instead of `cp + cp->f_size == ptr`: a freed block is joined with the one in front only when it is also joined with the one behind, and then wrongly | kept | `compare/libPW/SYSIII.md` |
 | `/usr/lib/slibPW.a` (`xalloc`) | `Lastbrk = cp + SIZINCRO` and `cp + asize` add on a `struct fb *` (6 bytes a unit): Lastbrk stands 6 times too far; `xfree` compares `ptr + ptr->f_size` and `cp + cp->f_size` in the same unit | kept | `compare/libPW/SYSIII.md` |

@@ -1,7 +1,7 @@
-# lib: libc/build/nonseg/libc.a, libc/build/seg/slibc.a, libl/libl.a, libl/slibl.a, liby/liby.a, liby/sliby.a, libm/libm.a, libm/slibm.a, libPW/libPW.a, libPW/slibPW.a, libmp/libmp.a, libmp/slibmp.a (the shipped libraries, from their sources) and libc-vN.a (the libraries of the old programs, oldlibc/).
+# lib: libc/build/nonseg/libc.a, libc/build/seg/slibc.a, libl/libl.a, libl/slibl.a, liby/liby.a, liby/sliby.a, libm/libm.a, libm/slibm.a, libPW/libPW.a, libPW/slibPW.a, libmp/libmp.a, libmp/slibmp.a, libtermlib/libtermlib.a, libtermlib/slibtermlib.a (the shipped libraries, from their sources) and libc-vN.a (the libraries of the old programs, oldlibc/).
 #
 #   make
-#   make install PREFIX=dir   the shipped libraries (libc.a, crt0.o, slibc.a, scrt0.o, libl.a, slibl.a, usr/lib/lex/ncform, liby.a, sliby.a, libm.a, slibm.a, usr/lib/libPW.a, usr/lib/slibPW.a, usr/lib/libmp.a, usr/lib/slibmp.a) below dir
+#   make install PREFIX=dir   the shipped libraries (libc.a, crt0.o, slibc.a, scrt0.o, libl.a, slibl.a, usr/lib/lex/ncform, liby.a, sliby.a, libm.a, slibm.a, usr/lib/libPW.a, usr/lib/slibPW.a, usr/lib/libmp.a, usr/lib/slibmp.a, usr/lib/libtermlib.a, usr/lib/slibtermlib.a) below dir
 #   make clean
 
 PREFIX = /
@@ -13,6 +13,7 @@ all:
 	cd libm ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
 	cd libPW ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
 	cd libmp ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
+	cd libtermlib ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
 	# no make args, not threadsafe
 	cd oldlibc ; $(MAKE)
 	cd oldslibc ; $(MAKE)
@@ -24,6 +25,7 @@ install:
 	cd libm ; $(MAKE) install PREFIX=$(PREFIX)
 	cd libPW ; $(MAKE) install PREFIX=$(PREFIX)
 	cd libmp ; $(MAKE) install PREFIX=$(PREFIX)
+	cd libtermlib ; $(MAKE) install PREFIX=$(PREFIX)
 
 clean:
 	cd libc ; $(MAKE) clean
@@ -32,6 +34,7 @@ clean:
 	cd libm ; $(MAKE) clean
 	cd libPW ; $(MAKE) clean
 	cd libmp ; $(MAKE) clean
+	cd libtermlib ; $(MAKE) clean
 	cd oldlibc ; $(MAKE) clean
 	cd oldslibc ; $(MAKE) clean
 

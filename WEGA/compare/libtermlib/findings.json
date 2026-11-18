@@ -1,0 +1,22 @@
+{
+ "schema": "members: name -> file, status (exact: byte-identical member; open), note. The same for libtermlib.a (ccv1 -O) and slibtermlib.a (sccv1 -O), both with -DCM_N -DCM_GT -DCM_B -DCM_D.",
+ "compiler": "v1 (ccv1, sccv1), dated 01/23/83 by Library.SC",
+ "binary": "/usr/lib/libtermlib.a, /usr/lib/slibtermlib.a",
+ "members": {
+  "termcap.o": {
+   "file": "termcap.c",
+   "status": "exact",
+   "note": "WEGA has the older tgetent (TERMCAP used when TERM is unset or equals the name, strcmp; tf starts at 0) and tnchktc (while (q && *q != ':'); hopcount never reset): KNOWLEDGE.md."
+  },
+  "tgoto.o": {
+   "file": "tgoto.c",
+   "status": "exact",
+   "note": "MAXRETURNSIZE 16; the tab test which == '\\t' is in (2.11BSD comments it out); built with -DCM_N -DCM_GT -DCM_B -DCM_D."
+  },
+  "tputs.o": {
+   "file": "tputs.c",
+   "status": "exact",
+   "note": "tmspc10 has 14 entries (2.11BSD adds 5 for 38400)."
+  }
+ }
+}
