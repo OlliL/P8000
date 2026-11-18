@@ -13,12 +13,12 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 18 | 0 | 2 | 10 |
 | [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
-| [usr/lib](#usr-lib) | 197 | 109 | 2 | 57 | 29 |
+| [usr/lib](#usr-lib) | 197 | 111 | 2 | 57 | 27 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 863 | 13 | 191 | 130 |
+| **all** | 1197 | 865 | 13 | 191 | 128 |
 
 <a id="root"></a>
 ## root
@@ -512,7 +512,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/libmp.a` | archive | `src/lib/libmp` | exact | - | - |
 | `usr/lib/libp.a` | archive | - | todo | - | - |
 | `usr/lib/libscreen.a` | archive | - | todo | - | - |
-| `usr/lib/libtermlib.a` | archive | - | todo | - | - |
+| `usr/lib/libtermlib.a` | archive | `src/lib/libtermlib` | exact | - | - |
 | `usr/lib/libu8000.a` | archive | - | todo | - | - |
 | `usr/lib/lint1` | binary E711 | - | todo | D12 old, D1 slots | - |
 | `usr/lib/lint2` | binary E711 | - | todo | D12 old, D1 slots | - |
@@ -559,7 +559,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).
 | `usr/lib/slibcurses.a` | archive | - | todo | - | - |
 | `usr/lib/slibmp.a` | archive | `src/lib/libmp` | exact | - | - |
 | `usr/lib/slibscreen.a` | archive | - | todo | - | - |
-| `usr/lib/slibtermlib.a` | archive | - | todo | - | - |
+| `usr/lib/slibtermlib.a` | archive | `src/lib/libtermlib` | exact | - | - |
 | `usr/lib/slibu8000.a` | archive | - | todo | - | - |
 | `usr/lib/spell` | binary E707 | `src/cmd/spell.sh` | partial | - | - |
 | `usr/lib/suftab` | data | `src/cmd/text/roff.d` | exact | cc | - |
