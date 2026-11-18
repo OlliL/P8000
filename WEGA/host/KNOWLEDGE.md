@@ -962,6 +962,9 @@ means it does something fixed instead (only possible where the original's result
 
 | Program | Bug or quirk | Rebuild | Details |
 |---------|--------------|---------|---------|
+| `/usr/lib/libcurses.a`, `slibcurses.a` (`_sprintw`) | `char *fmt, *a1, a2, ..., a10`: from the second argument after the format every one is cut to a byte with its sign (`printw("%d %d", 1, 300)` gives `1 44`, from the code, not run); in slibcurses `printw` passes 4-byte values and `_sprintw` reads them from 2-byte slots | kept | `compare/libcurses/SYSIII.md` |
+| `/usr/lib/libcurses.a`, `slibcurses.a` (`printw`, `scanw` and the mv and w forms) | at most ten arguments after the format; `scanw` returns OK, not the count of `sscanf` | kept | `compare/libcurses/SYSIII.md` |
+| `/usr/lib/libcurses.a`, `slibcurses.a` (`subwin`) | a window that does not fit writes "returning ERR (1)" and a SUBWIN line of numbers to stderr (debug output outside `# ifdef DEBUG`) | kept | `compare/libcurses/SYSIII.md` |
 | `/usr/lib/libtermlib.a`, `slibtermlib.a` (`tnchktc`) | `while (q && *q != ':')` tests the pointer, not the character: a tc= name without a following `:` runs on behind the name buffer | kept | `compare/libtermlib/SYSIII.md` |
 | `/usr/lib/libtermlib.a`, `slibtermlib.a` (`tnchktc`) | `hopcount` is never set back: after 32 tc= indirections in all calls of a program together, every further one fails with "Infinite tc= loop" | kept | `compare/libtermlib/SYSIII.md` |
 | `/usr/lib/libmp.a`, `slibmp.a` (`sdiv`) | `if(qval[qlen-1]==0) qlen--;` reads `qval[-1]` for a zero-length dividend (2.11BSD tests `qlen &&` first) | kept | `compare/libmp/SYSIII.md` |

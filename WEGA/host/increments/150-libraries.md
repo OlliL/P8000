@@ -62,3 +62,7 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   stdio.h; WEGA forms in gcd.c and mout.c). libsetup.py copies the sources writable.
 - 2026-11-18: libtermlib.a, slibtermlib.a byte-identical (no System III source: 2.11BSD usr.lib/libtermlib with its CM_
   options, the older forms of tgetent, tnchktc, tgoto, tputs; v1).
+- 2026-11-18: libcurses.a, slibcurses.a byte-identical (no System III source, 2.11BSD's is the later 4.3BSD one: 4.2BSD
+  usr.lib/libcurses from TUHS (unix-history-repo, owner), initscr.c and scroll.c of 4.1cBSD; the shipped cc, scc without -O;
+  WEGA forms in cr_tty, getstr, newwin and the printw/scanw family). libsetup.py copies the headers of the source tree
+  (`.h`, `.ext`) with it.

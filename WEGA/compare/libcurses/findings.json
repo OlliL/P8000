@@ -1,0 +1,177 @@
+{
+ "schema": "members: name -> file, status (exact: byte-identical member; open), note. The same for libcurses.a (cc) and slibcurses.a (scc), both without -O, curses.h of src/head.",
+ "compiler": "shipped (cc, scc), members dated 02/18/88 and 02/19/88",
+ "binary": "/usr/lib/libcurses.a, /usr/lib/slibcurses.a",
+ "members": {
+  "box.o": {
+   "file": "box.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "clear.o": {
+   "file": "clear.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "clrtobot.o": {
+   "file": "clrtobot.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "delch.o": {
+   "file": "delch.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "deleteln.o": {
+   "file": "deleteln.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "endwin.o": {
+   "file": "endwin.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "initscr.o": {
+   "file": "initscr.c",
+   "status": "exact",
+   "note": "4.1cBSD initscr.c (no SIGTSTP, no _FULLLINE)."
+  },
+  "cr_tty.o": {
+   "file": "cr_tty.c",
+   "status": "exact",
+   "note": "LINES <= 48, COLS <= 1000; SG/UG form of 4.1cBSD with > 0 and <= 0."
+  },
+  "delwin.o": {
+   "file": "delwin.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "insch.o": {
+   "file": "insch.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "insertln.o": {
+   "file": "insertln.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "longname.o": {
+   "file": "longname.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "mvprintw.o": {
+   "file": "mvprintw.c",
+   "status": "exact",
+   "note": "WEGA form: ten arguments passed to _sprintw."
+  },
+  "mvscanw.o": {
+   "file": "mvscanw.c",
+   "status": "exact",
+   "note": "WEGA form: ten arguments passed to _sscans."
+  },
+  "mvwin.o": {
+   "file": "mvwin.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "newwin.o": {
+   "file": "newwin.c",
+   "status": "exact",
+   "note": "the subwin messages to stderr outside # ifdef DEBUG."
+  },
+  "overlay.o": {
+   "file": "overlay.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "overwrite.o": {
+   "file": "overwrite.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "printw.o": {
+   "file": "printw.c",
+   "status": "exact",
+   "note": "WEGA form: ten arguments passed one by one, sprintf into buf[256]; _sprintw has char a2..a10 (KNOWLEDGE.md)."
+  },
+  "addstr.o": {
+   "file": "addstr.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "scanw.o": {
+   "file": "scanw.c",
+   "status": "exact",
+   "note": "WEGA form: ten arguments passed one by one, wgetstr into buf[100], sscanf, return OK."
+  },
+  "getstr.o": {
+   "file": "getstr.c",
+   "status": "exact",
+   "note": "also stops at '\\r'."
+  },
+  "getch.o": {
+   "file": "getch.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "addch.o": {
+   "file": "addch.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "clrtoeol.o": {
+   "file": "clrtoeol.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "move.o": {
+   "file": "move.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "standout.o": {
+   "file": "standout.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "unctrl.o": {
+   "file": "unctrl.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "refresh.o": {
+   "file": "refresh.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "cr_put.o": {
+   "file": "cr_put.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "erase.o": {
+   "file": "erase.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "scroll.o": {
+   "file": "scroll.c",
+   "status": "exact",
+   "note": "4.1cBSD scroll.c 1.2 (no touchwin)."
+  },
+  "curses.o": {
+   "file": "curses.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  },
+  "touchwin.o": {
+   "file": "touchwin.c",
+   "status": "exact",
+   "note": "4.2BSD source unchanged."
+  }
+ }
+}

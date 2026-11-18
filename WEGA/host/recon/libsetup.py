@@ -10,7 +10,8 @@ many of them as the WEGA root has (WEGA=dir names the root; OLDROOT the old comp
   3. per member every compiler of its kind (nonsegmented: cc, ccv1, ccv1q, ccv1r, ccv0, ccv0p, ccvl; segmented: scc, sccv1,
      sccvk, sccvl, sccvc), with and without -O, with the guest's headers and with the stdio.h of src/head/oldv7 and
      src/head/oldcptr: the object against the member (EXACT, or the bytes that differ); the best one is reported;
-  4. src/lib/NAME/ after the pattern of src/lib/libl: the sources (copied unchanged; an existing file is kept), mkar.sh, for
+  4. src/lib/NAME/ after the pattern of src/lib/libl: the sources and the headers of their tree (.h, .ext; copied unchanged; an
+     existing file is kept), mkar.sh, for
      each archive arhdr_ARCHIVE.s (the magic and the member headers of the original) and Library.SC (taken from the
      original; Library_ARCHIVE.SC when the archives have different ones).
 The Makefile is not written (the pattern: src/lib/libl/Makefile). Writes only src/lib/NAME/ and tmp/tmp/NAME/.
@@ -48,6 +49,7 @@ def roots(name):
 EMU = os.path.join(W, 'host', 'z8k-emu', 'z8k-emu')
 NONSEG = [('cc', ROOT), ('ccv1', OLD), ('ccv1q', OLD), ('ccv1r', OLD), ('ccv0', OLD), ('ccv0p', OLD), ('ccvl', OLD)]
 SEG = [('scc', ROOT), ('sccv1', OLD), ('sccvk', OLD), ('sccvl', OLD), ('sccvc', OLD)]
+INCLUDES = ('.h', '.ext')		# the files a source of the library includes from its own directory
 HEADERS = [('guest', None), ('oldv7', 'src/head/oldv7'), ('oldcptr', 'src/head/oldcptr')]
 
 
@@ -96,7 +98,7 @@ def try_one(src, body, comp, root, opt, hdr, tmp):
     w = tempfile.mkdtemp(dir=tmp)
     try:
         for f in os.listdir(os.path.dirname(src)):
-            if f.endswith('.h'):
+            if f.endswith(INCLUDES):
                 shutil.copy(os.path.join(os.path.dirname(src), f), w)
         shutil.copy(src, w)
         if hdr[1]:
@@ -231,6 +233,10 @@ def main():
                 print('  %-14s no System III source' % m['name'])
                 continue
             used.add(src)
+            for f in os.listdir(os.path.dirname(src)):		# the headers of the source tree go with it (curses.h, curses.ext)
+                if f.endswith(INCLUDES) and not os.path.exists(os.path.join(dst, f)):
+                    shutil.copyfile(os.path.join(os.path.dirname(src), f), os.path.join(dst, f))
+                    os.chmod(os.path.join(dst, f), 0o644)
             # the source under WEGA's name (the member's: Library.SC names them so), and compiled under it (the object holds it)
             local = os.path.join(dst, stem + src[-2:])
             if not os.path.exists(local):
