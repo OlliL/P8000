@@ -179,7 +179,8 @@ struct keydesc	*kp;
 			} else
 				i = 0;
 			it2->it_leadcnt = i;
-			if ((i = kp->k_len - it1->it_trailcnt) < it2->it_leadcnt)
+			i = kp->k_len - it1->it_trailcnt;
+			if (i < it2->it_leadcnt)
 				it2->it_leadcnt = i;
 			it2->it_totlen -= it2->it_leadcnt - 1;
 		} else
