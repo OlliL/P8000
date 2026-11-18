@@ -70,8 +70,9 @@ badarg:
 	if (lkopenlock(lmode))
 		goto bad;
 	filep->f_dictbp = bfgetclr(1L);
-	*(dictp = filep->f_dictbp->bf_buf) = 0376;
-	dictp[1] = 0123;
+	dictp = filep->f_dictbp->bf_buf;
+	*(unsigned char *)dictp = 0376;
+	((unsigned char *)dictp)[1] = 0123;
 	dictp[2] = 2;
 	dictp[3] = 2;
 	dictp[4] = 4;
