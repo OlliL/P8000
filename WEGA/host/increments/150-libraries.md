@@ -77,3 +77,8 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   register choices, one float compare (single precision, register against register) and popt loop layout: a compiler
   beside v1 (compare/libcisam/findings.json). v1 frame fact: the slot words of the register variables stand where the
   `register` declarations stand among the automatic ones.
+- 2026-11-19: libcisam byte-identical (all 14 members of libcisam.a and slibcisam.a, cmp of the objects) with the
+  sources (source forms: OLDCC_LOG.md 2026-11-18/19) and v1 plus `OLD_D63` (in the tree, checkall green) plus five more
+  v1 switches kept as diffs outside the tree (host/libcisam_switches: OLD_D3W, OLD_D2PW, OLD_D3Q, OLD_D3H, OLD_D2CT;
+  owner 2026-11-18). Without them 34/38 lines left (findings.json); libcisam not in src/lib/Makefile yet (the owner
+  decides how the switches go in). Not checked yet: the archives (arhdr, Library.SC) with the diffs applied.
