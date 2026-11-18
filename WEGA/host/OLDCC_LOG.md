@@ -1460,3 +1460,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - btdelitem (btree.o): the raw code is the same, the shipped popt gives the original's layout (no loop inversion, the
   `bad` block moved behind `iserrno = 111`); the v1 popt (`OLD_D20`) lets the block run on behind `jpr L139` to the next
   label, so it does not move and the loop is inverted. btree with the shipped popt: 41 > 12 lines (btsearch registers).
+- v1 popt variants on libcisam (codgen with OLD_D63; lines nonsegmented/segmented, total of all members): v1 292/896;
+  shipped popt 558/920; without OLD_D20 550/920 (btree 12/0, open 304/320); without OLD_D52 292/896. D20 fires in
+  btdelitem (L142, refc 2, straight block) and isopen (L85, refc 2, the block holds `jpr eq` of the lksemaphore test).
+  OLD_D20C (D20 only for a block with a conditional jump in front of the `jpr`): 263/867, btree 12/0, open unchanged.
+  Refuted by checkall (bin/ld, lib/libl.a, lib/slibl.a differ: the D20 witnesses have straight blocks); taken out.
+- itpress, the leading compression loop: v1 and shipped popt give the same code from the raw code (test at the head); the
+  original has `jr T; C: inc; T: tests; jne out; jr C`. A source form gives it exactly with either popt:
+  `i = 0; goto t; n: i++; t: if (i < ... && ...) goto n;` (not taken: a compiler cause is not ruled out).
