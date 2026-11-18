@@ -137,7 +137,7 @@ register struct buf	*bp;
 
 	off = (bp->bf_blkno - 1) << 9;
 	p = bp->bf_buf;
-	if (off) {
+	if (off != 0) {
 		((p)[0]=(bp->bf_used)>>8,(p)[1]=(bp->bf_used));
 		*(p + filep->f_nodsiz - 2) = bp->bf_type;
 		*(p + filep->f_nodsiz - 1) = bp->bf_level;
