@@ -15,9 +15,11 @@ Each diff applies alone to the tree it was made on (git apply). They overlap in 
 | `OLD_D3Q` | reader3.c QUEST | 38/44 > 38/20 (item itunpack) |
 | `OLD_D3H` | reader3.c cbranch, allo3.c allocreg | 38/44 > 34/34 (supp, item itpress) |
 | `OLD_D2CT` (with OLD_D3H: `OLD_D3H+OLD_D2CT.diff`) | allo3.c allocreg | 34/34 > 30/30 (audit) |
-| all five (`ALL.diff`) | | 4/6: read |
+| all five (`ALL.diff`) | | 0/0: with the sources of 2026-11-19 every object of libcisam.a and slibcisam.a is byte-identical (cmp) |
 
-`OLD_D63` (float compare) is in the tree already (checkall green).
+`OLD_D63` (float compare) is in the tree already (checkall green). Each of the five is needed: left out alone, OLD_D3W
+leaves btree 12/0 and open 10/0, OLD_D2PW item 4/0, OLD_D3Q item 0/24, OLD_D2CT audit 4/4, OLD_D3H (with OLD_D2CT)
+audit 4/4, item 0/10, supp 4/0.
 
 ## Measuring
 

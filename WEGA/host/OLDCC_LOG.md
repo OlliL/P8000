@@ -1515,3 +1515,26 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   4/6 (isread: r3/rr4 for openp at the else label), supp 4/0 (freefile: the three `close` take r6, r3, r6), item 0/10
   (itpress: rr2 with kp free behind two bit tests). A codgen trace of register choices (allocreg: want, result, free
   and use lists as comments) was the tool; it is not in the tree.
+
+## 2026-11-19 libcisam: byte-identical with five v1 switches as diffs
+
+- Other compiler states (step 1 of the owner's plan): all libcisam members with the sources of today. Whole compilers,
+  lines nonseg (label addresses masked): ccv1 38, ccv1q 542, ccv1r 815, ccvl and cc 1216, ccv0 3439, ccv0p 3663;
+  segmented sccv1 44, sccvk 1337, sccvl and scc 1379, sccvc 4612. Mixed into the v1 chain: codgen v1q 542, v1r 815,
+  vl 71, shipped 71; scodgen vk 56, vl and shipped 98; shipped cparse 1154; shipped or v0p popt 71. audit, read and supp
+  have the same 4 lines with every codgen: none of the known states has the original's register choice.
+- A trace of allocreg (want, result, free and use lists as comments in the -S output) showed the cases. Found:
+  OLD_D3H (frame homes of parameters given out inside a condition go back at its end: supp freefile's three `close`
+  r6/r3/r6 that look alike to v1, item itpress segmented), OLD_D2CT (a copy takes over a register given out in the last
+  condition: audit AUDSTOP, nonsegmented and segmented). Descriptions in host/libcisam_switches.
+- Tried and dropped on the way: freeing the parameter registers too (allocrec keeps `type` in r7), freeing at every
+  level of a condition (util longmult keeps the long b in rr4), freeing all named words given out in a condition (audit
+  keeps dictp in r2 across the nested `if`), the copy rule without the condition mark (audit write, lock), the copy rule
+  for pairs with an even want (open: a long), the address pair of a STAR without the register wish (open), keeping or
+  restoring the registers at a label behind dead code (all labels: 168/137 and 370/527 lines), assignment names.
+- read isread: a source form. `switch (lock) { case 0: ...; case ISLOCK: break; default: ... goto out; }` instead of
+  `if (lock) { if (lock != ISLOCK) ... } else if (...)` gives the original's code in both versions (the case 0 arm
+  stands where the else part stood; the register r2 with the switch value stays busy across it).
+- Result: the sources of today plus host/libcisam_switches/ALL.diff (OLD_D3W, OLD_D2PW, OLD_D3Q, OLD_D3H, OLD_D2CT):
+  all 14 members of libcisam.a and slibcisam.a byte-identical (cmp of the objects). Each switch is needed (one left
+  out: OLD_D3W btree 12/0 and open 10/0; OLD_D2PW item 4/0; OLD_D3Q item 0/24; OLD_D2CT audit 4/4).
