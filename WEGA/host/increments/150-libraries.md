@@ -175,3 +175,6 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   operand, cmwalk, prquad, mkleaf). The statement `p->in.op == FREE;` of cleartrees is in the original. Source forms found: `++r` in a
   for loop keeps the loop body in place, `*(ctpos + i) -= 1` as a statement. Still missing: 4:4a8e (writeil, a switch up to
   4:53ea), 4:53f0 (1114 bytes), 4:5d0e (554 bytes).
+- 2026-11-19: gopt, wrtil2.c: mktree (4:53f0 .. 4:5f38, the 4:5d0e is its case block for the CBRANCH: cleartrees) written complete (807
+  instructions against 806); open: the block order of the switch (case 0x7b + common code first, the other cases inside) and one reload.
+  A bug of the original: GE of floating operands becomes FGT. Still missing in wrtil2.c: 4:4a8e (writeil).

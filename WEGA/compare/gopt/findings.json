@@ -1197,98 +1197,126 @@
    "size_orig": 1114,
    "status": "open",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "mktree(q): a quad is added to the tree (4:53f0 .. 4:5f38: the cases 4:584a ... 4:5d0e are blocks of it). Written complete; open: (1) the layout: in the original the case 0x7b stands right behind the dispatch and the common code of the switch (4:5872 ..) follows it, the other cases lie between its parts (after the unconditional jump at 4:593e), ours has the cases in a block (jump forms jp against jr, 283 lines of moved blocks; popt code motion, phase B); (2) `if (p->in.op == 0x7e)` reloads p from the frame in the original, ours forwards it. The float compares: GE of a float becomes FGT (0x5f, not FGE 0x5e: the original bug, kept); ctpos[c]-- <= 2 decides if the result is assigned to a temporary; 0 - x becomes unary minus; pend (4:3812) is a static pointer"
   },
   "f4_584a": {
    "orig": "4:584a",
    "size_orig": 250,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_5944": {
    "orig": "4:5944",
    "size_orig": 62,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_5982": {
    "orig": "4:5982",
    "size_orig": 54,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_59b8": {
    "orig": "4:59b8",
    "size_orig": 54,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_59ee": {
    "orig": "4:59ee",
    "size_orig": 132,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_5a72": {
    "orig": "4:5a72",
    "size_orig": 132,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_5af6": {
    "orig": "4:5af6",
    "size_orig": 132,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_5b7a": {
    "orig": "4:5b7a",
    "size_orig": 120,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_5bf2": {
    "orig": "4:5bf2",
    "size_orig": 74,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_5c3c": {
    "orig": "4:5c3c",
    "size_orig": 76,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_5c88": {
    "orig": "4:5c88",
    "size_orig": 78,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_5cd6": {
    "orig": "4:5cd6",
    "size_orig": 56,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "f4_5d0e": {
    "orig": "4:5d0e",
    "size_orig": 554,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mktree"
   },
   "addrof": {
    "orig": "4:5f38",

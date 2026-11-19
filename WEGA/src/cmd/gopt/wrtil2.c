@@ -367,3 +367,207 @@ wrtree(p)
 	if (kind == BITYPE)
 		wrtree(p->in.right);
 }
+
+extern int qdop[];
+extern void prquad();
+extern NODE *mkleaf();
+extern int needustar();
+extern void addrof(), asgfold(), cleartrees();
+static NODE *pend = 0;
+
+#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
+
+/* a quad is added to the tree (names guessed, written from /lib/gopt) */
+void
+mktree(q)
+	struct quad *q;
+{
+	NODE *p, *n;
+	int u;
+	NODE *l, *r, *t;
+	int fl;
+
+	if (qflag > 1) {
+		printf("// mktree: adding quad to tree\n");
+		prquad(q);
+	}
+	p = talloc();
+	p->in.rall = 0;
+	p->in.op = qdop[q->op];
+	fl = 0;
+	if (p->in.op == 0x7e) {
+		p->in.op = STAR;
+		if (q->c.b2 == 8 && q->a.b2 == 8)
+			fl = (ptbl9c[q->a.w4].p8 >> 10) & 1;
+	}
+	if (q->op == 0x3c && q->a.b2 == 4 && q->c.b2 == 8 && (q->a.w0 & 0x30) == 0x10)
+		ptbl9c[q->c.w4].p8 |= 1 << 10;
+	if (q->op == 7) {
+		q->c = q->b;
+		q->b.b2 = 0;
+	}
+	if (q->a.b2 == 8) {
+		q->a.b2 = 3;
+		q->a.w4 = ptbl9c[q->a.w4].x4;
+	} else if (q->a.b2 == 6 && ptbl9c[q->a.w4].p6 < 0) {
+		if (qflag > 2)
+			printf("// assigning S%d to offset %d\n", q->a.w4, tmpoff);
+		ptbl9c[q->a.w4].p6 = tmpoff;
+		tmpoff += szty(q->a.w0) * 2;
+	}
+	if (q->b.b2 == 8) {
+		q->b.b2 = 3;
+		q->b.w4 = ptbl9c[q->b.w4].x4;
+	} else if (q->b.b2 == 6 && ptbl9c[q->b.w4].p6 < 0) {
+		if (qflag > 2)
+			printf("// assigning S%d to offset %d\n", q->b.w4, tmpoff);
+		ptbl9c[q->b.w4].p6 = tmpoff;
+		tmpoff += szty(q->b.w0) * 2;
+	}
+	if (q->c.b2 == 8) {
+		q->c.b2 = 3;
+		q->c.w4 = ptbl9c[q->c.w4].x4;
+	} else if (q->c.b2 == 6 && ptbl9c[q->c.w4].p6 < 0) {
+		if (qflag > 2)
+			printf("// assigning S%d to offset %d\n", q->c.w4, tmpoff);
+		ptbl9c[q->c.w4].p6 = tmpoff;
+		tmpoff += szty(q->c.w0) * 2;
+	}
+	if (p->in.op != 0x7b) {
+		l = mkleaf(&q->a);
+		r = q->b.b2 ? mkleaf(&q->b) : 0;
+		p->in.left = l;
+		if (p->in.op == STAR)
+			p->in.left->tn.w6 = fl;
+		p->in.right = r;
+	}
+	p->in.type = q->c.w0;
+	switch (p->in.op) {
+	case 0x7b:
+		p->tn.lval = q->a.w4;
+		p->tn.rval = q->b.w4;
+		break;
+	case 0x46:
+		if (pend == 0)
+			p->in.op = p->in.op + 2;
+		p->in.right = pend;
+		pend = 0;
+		addrof(p);
+		break;
+	case 0x50:
+		if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+			p->in.op = 0x5a;
+		break;
+	case 0x51:
+		if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+			p->in.op = 0x5b;
+		break;
+	case 0x53:
+		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
+			p->in.op = 0x57;
+		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+			p->in.op = 0x5d;
+		break;
+	case 0x52:
+		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
+			p->in.op = 0x56;
+		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+			p->in.op = 0x5c;
+		break;
+	case 0x55:
+		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
+			p->in.op = 0x59;
+		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+			p->in.op = 0x5f;
+		break;
+	case 0x54:
+		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
+			p->in.op = 0x58;
+		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+			p->in.op = 0x5f;
+		break;
+	case 0x8:
+		if (q->a.b2 == 1 && q->a.w4 == 0) {
+			p->in.op = 0xa;
+			p->in.left->in.op = FREE;
+			p->in.left = p->in.right;
+		}
+		break;
+	case 0x7a:
+		n = talloc();
+		n->in.rall = 0;
+		n->in.op = CM;
+		n->in.left = p->in.right;
+		n->in.right = mkleaf(&q->c);
+		p->in.right = n;
+		break;
+	case 0x65:
+		p->stn.stsize = q->b.w0;
+		p->stn.stalign = q->b.w4;
+		p->in.right = p->in.left;
+		p->in.left = mkleaf(&q->c);
+		break;
+	case 0x3a:
+		p->in.right = p->in.left;
+		p->in.left = mkleaf(&q->c);
+		asgfold(&p);
+		break;
+	case 0x73:
+		cleartrees();
+		break;
+	}
+	if (asgop(p->in.op))
+		goto asg;
+	if (q->c.b2 != 6) {
+		if (q->c.b2 != 3 || p->in.op == 0x7a || ctpos[q->c.w4]-- <= 2)
+			goto asg;
+	}
+	t = talloc();
+	t->in.rall = 0;
+	t->in.op = ASSIGN;
+	t->in.type = p->in.type;
+	t->in.right = p;
+	p = mkleaf(&q->c);
+	if (q->c.b2 == 3)
+		*(ctpos + q->c.w4) += 1;
+	else
+		*(ctneg + q->c.w4) += 1;
+	t->in.left = p;
+	asgfold(&t);
+	wrline(t);
+	tfree(t->in.right);
+	t->in.op = FREE;
+	return;
+asg:
+	if (q->c.b2 == 3 && !asgop(p->in.op) && p->in.op != 0x7a) {
+		p->in.rall = q->c.w4;
+		return;
+	}
+	if (q->op == 0x3c) {
+		if (q->a.b2 == 4 && q->c.b2 == 3)
+			p->tn.w6 = 1;
+	} else if (asgop(p->in.op) && q->c.b2 != 6 && needustar(p)) {
+		t = talloc();
+		t->in.rall = 0;
+		t->in.op = STAR;
+		t->in.left = p->in.left;
+		t->in.type = DECREF(p->in.left->in.type);
+		p->in.type = t->in.type;
+		p->in.left = t;
+	}
+	if (p->in.op == 0x65) {
+		t = talloc();
+		t->in.rall = 0;
+		t->in.left = p;
+		t->in.op = STAR;
+		t->in.type = p->in.type;
+		wrline(t);
+		t->in.op = FREE;
+	} else
+		wrline(p);
+	if (p->in.left->in.op == TEMP && asgop(p->in.op)) {
+		tfree(p->in.right);
+		p->in.op = FREE;
+	} else
+		tfree(p);
+}
