@@ -147,6 +147,7 @@ flow	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/flow
 get	COPR. 1981 87wega3.2.	3.2	07/01/83 00:05:05	usr/bin/get
 getopt	COPR. 1981 87wega3.2.			usr/bin/getopt
 grpck	COPR. 1981 87wega3.2.			usr/bin/grpck
+gopt	-			lib/gopt	scrt0	8
 head	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/head
 help	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/help
 hyphen	COPR. 1981 87wega3.2.	3.1	01/24/83 00:05:06	usr/bin/hyphen

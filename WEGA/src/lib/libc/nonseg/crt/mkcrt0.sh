@@ -25,6 +25,11 @@ if [ "$kind" = "scrt0" ]
 then
 	# segmented start-up code: the same jump and pad text as crt0.s.in (field 2), the segment of _environ (field 7)
 	src=`sed -e "s/PADTEXT/$pad/" -e "s/ENVSEG/$envseg/" $dir/scrt0.s.in`
+	if [ "$pad" = "-" ]
+	then
+		# no jump and no text (gopt): the program starts with the code
+		src=`echo "$src" | sed -e '/^	jr	L1$/d' -e '/^	.byte	"PADTEXT"/d' -e '/^L1:$/d' -e '/^	.byte	"-",/d'`
+	fi
 elif [ "$pad" = "-" ]
 then
 	# no pad text: the jump over the text (and the text) is dropped, the program starts with the code
