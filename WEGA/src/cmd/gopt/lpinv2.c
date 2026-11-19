@@ -470,3 +470,45 @@ struct loop *lp;
 	if (s4d86 > 3)
 		printf("\n");
 }
+
+struct dnode { struct dnode *next; struct dnode *down; int dblkno; };	/* the dominator tree (see dom2.c) */
+
+/* the subtree of the dominator tree n with the block blk (name from the debug output) */
+struct dnode *
+findsubdtree(n, blk)
+struct dnode *n;
+int blk;
+{
+	struct dnode *r;
+
+	if (s4d86 > 2)
+		printf("findsubdtree(hdr=%d,blkno=%d)\n", n->dblkno, blk);
+	if (n->dblkno == blk)
+		return n;
+	for (n = n->down; n != 0; n = n->next) {
+		if (n->dblkno == blk)
+			return n;
+		if (n->down != 0) {
+			r = findsubdtree(n, blk);
+			if (r != 0)
+				return r;
+		}
+	}
+	return 0;
+}
+
+/* blk1 is the root of a subtree that contains blk2: the root is returned (name from the debug output) */
+struct dnode *
+isdom(hdr, blk1, blk2)
+struct dnode *hdr;
+int blk1, blk2;
+{
+	struct dnode *x;
+
+	if (s4d86 > 2)
+		printf("isdom(hdr=%d,blk1=%d,blk2=%d)\n", hdr->dblkno, blk1, blk2);
+	x = findsubdtree(hdr, blk1);
+	if (findsubdtree(x, blk2))
+		return x;
+	return 0;
+}

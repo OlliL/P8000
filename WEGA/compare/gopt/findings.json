@@ -3661,14 +3661,14 @@
    "file": "lpinv2.c",
    "note": "open (DIFF 5): displacement form (cause 4): y->w12 after y = QHREC(...): the original ldl rr2,rr0; ld r2,rr2(#12), ours inc r1,#12 first (the same in clearblocks, marklpblocks)"
   },
-  "f5_3448": {
+  "findsubdtree": {
    "orig": "5:3448",
    "size_orig": 138,
    "status": "open",
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_34d2": {
+  "isdom": {
    "orig": "5:34d2",
    "size_orig": 82,
    "status": "open",
