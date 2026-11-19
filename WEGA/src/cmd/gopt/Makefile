@@ -37,7 +37,7 @@ all: gopt
 gopt: scrt0.o $(OBJS) $(LIBC)
 	$(SLD) $(SLDFLAGS) -Mt4 scrt0.o $(OBJS4) -Mt5 $(OBJS5) $(LIBC) -o $@
 
-part: comm2.o rdr2.o reader2.o quads2.o debug2.o wrtil2.o alias2.o flow2.o dom2.o
+part: comm2.o rdr2.o reader2.o quads2.o debug2.o wrtil2.o alias2.o flow2.o dom2.o init2.o
 
 install: gopt
 	cp gopt $(PREFIX)/lib/gopt

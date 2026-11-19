@@ -1,9 +1,10 @@
 {
-"dfs": "OK",
-"compress": "DIFF 11 (object 82 instructions, original 82)",
-"eval": "DIFF 15 (object 55 instructions, original 55)",
-"linkp": "DIFF 34 (object 196 instructions, original 195)",
-"addbucket": "OK",
-"delbucket": "DIFF 22 (object 65 instructions, original 64)",
-"dominators": "DIFF 17 (object 504 instructions, original 504)"
+"main": "DIFF 428 (object 473 instructions, original 48)",
+"dotree": "DIFF 12 (object 44 instructions, original 43)",
+"dotree2": "OK",
+"cutree": "OK",
+"pr": "DIFF 15 (object 92 instructions, original 90)",
+"abortpass": "OK",
+"passes": "OK",
+"prtbl": "OK"
 }

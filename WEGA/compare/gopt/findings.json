@@ -2347,145 +2347,184 @@
    "kind": "proven",
    "module": "dom2.c|init2.c"
   },
-  "f4_c69e": {
+  "initopts": {
    "orig": "4:c69e",
    "size_orig": 74,
    "status": "open",
    "kind": "proven",
-   "module": "init2.c"
+   "module": "init2.c",
+   "file": "init2.c"
   },
   "f4_c6e8": {
    "orig": "4:c6e8",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c6f4": {
    "orig": "4:c6f4",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c700": {
    "orig": "4:c700",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c70c": {
    "orig": "4:c70c",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c718": {
    "orig": "4:c718",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c724": {
    "orig": "4:c724",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c730": {
    "orig": "4:c730",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c73c": {
    "orig": "4:c73c",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c748": {
    "orig": "4:c748",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c754": {
    "orig": "4:c754",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c760": {
    "orig": "4:c760",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c76c": {
    "orig": "4:c76c",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c778": {
    "orig": "4:c778",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c784": {
    "orig": "4:c784",
    "size_orig": 362,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c8ee": {
    "orig": "4:c8ee",
    "size_orig": 10,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c8f8": {
    "orig": "4:c8f8",
    "size_orig": 10,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c902": {
    "orig": "4:c902",
    "size_orig": 10,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c90c": {
    "orig": "4:c90c",
    "size_orig": 10,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c916": {
    "orig": "4:c916",
    "size_orig": 94,
    "status": "open",
    "kind": "candidate",
-   "module": "init2.c"
+   "module": "init2.c",
+   "note": "case block of initopts",
+   "file": "init2.c"
   },
   "f4_c974": {
    "orig": "4:c974",

@@ -35,7 +35,7 @@ extern NODE *tcopy();
 extern long addquad();
 extern int constlook();
 extern void genquads(), aliasm(), prquads(), fnf5fe(), fn5_0000(), fn5_6eda(), writeil(), mapall();
-extern int fn9108(), fn927e(), fnc65a(), fnc69e(), rdsym();
+extern int aliasmat(), flow_graph(), domloops(), initopts(), rdsym();
 extern int dope[];
 
 static void dotree(), dotree2(), cutree(), passes(), abortpass(), prtbl();
@@ -60,7 +60,7 @@ main(argc, argv)
 	p1 = &s1;
 	p2 = &s2;
 	p3 = &s3;
-	fnc69e(argc, argv);
+	initopts(argc, argv);
 	tinit();
 	for (;;) {
 		c = getc(infile);
@@ -329,13 +329,13 @@ passes()
 			printf("// quads before aliasm\n");
 			prquads();
 		}
-		if (fn9108() && qflag > 4)
+		if (aliasmat() && qflag > 4)
 			prquads();
-		if (fn927e()) {
+		if (flow_graph()) {
 			fnf5fe();
 			if (vb5e > 1)
 				fn5_0000();
-			if (vb5e >= 3 && fnc65a() == 0)
+			if (vb5e >= 3 && domloops() == 0)
 				;
 			if (vb5e == 3 || vb5e > 4)
 				fn5_6eda();
