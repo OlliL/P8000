@@ -28,5 +28,5 @@ Next (in this order):
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
 TASK: alias2.c: 4:9062 (92, 'affect matrix overflow'), 4:90be (74, prints the matrix sizes), 4:9108 (374, the driver: initaffect, closure, matmul ...), then 4:7088 (736 bytes, aliasm's neighbour).
-START: fnc.py -a alias2.c (open and left: checkops 25, addaffect 3, initaffect 11, initallist 2, addallist 2, pralvars 2); odisc.py -o f4_9062.
+START: fnc.py -a alias2.c (open and left: checkops 25, addaffect 3, initaffect 11, initallist 2, addallist 2, pralvars 2); odisc.py -o affsize.
 STOP WHEN: 4:9108 is written and checked (4:7088 if there is room), or at 70% of the context.

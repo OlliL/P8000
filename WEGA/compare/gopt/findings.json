@@ -1940,26 +1940,32 @@
    "file": "alias2.c",
    "note": "checkalias(q, ot): the first parameter is the pointer (rr6, ot in r5); rtab (0xb9c) is a pointer to 10 byte entries (guessed)"
   },
-  "f4_9062": {
+  "affsize": {
    "orig": "4:9062",
    "size_orig": 92,
    "status": "open",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "open (DIFF 3, 4 attempts): the original copies nal from r2 (ld r3,r2) for the division, ours loads it again (ld r3,nal); with matw = affdim / 16 + 1 the pair is rr0 and affdim is compared from r2 (DIFF 13); name guessed (the affect matrix: rows affdim <= 225, matw words per row)"
   },
-  "f4_90be": {
+  "praldim": {
    "orig": "4:90be",
    "size_orig": 74,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "name guessed"
   },
-  "f4_9108": {
+  "aliasmat": {
    "orig": "4:9108",
    "size_orig": 374,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "name guessed (the driver of the alias analysis: matrix, closure, product, alias lists); tmp 1800 words; s4d92 the statistics flag"
   },
   "f4_927e": {
    "orig": "4:927e",

@@ -9,7 +9,7 @@ static char sccsid[] = "@[$]alias2.c\t1.5  02/07/83 15:50:16 Copr. 1981 87wega3.
 #define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 
 extern int aflag;
-extern int nadr, nptr, nal, s4d7a;
+extern int nadr, nptr, nal, s4d7a, s4d92;
 extern struct { int tag; int x; } numtab[];
 extern struct sym *mapn();
 extern int tagfind(), itfind();
@@ -972,4 +972,61 @@ checkalias(q, ot)
 	if (aflag > 3)
 		printf("checkalias, returning %s\n", ascii + symtab[altab[n->x0]].nameoff);
 	return n->next;
+}
+
+/* the size of the affect matrix (affdim bits per row, matw words) from the number of the aliased variables; the table area is made available (name guessed) */
+int
+affsize()
+{
+	affdim = nal;
+	matw = nal / 16 + 1;
+	if (affdim > 225)
+		cerror("affect matrix overflow");
+	return tabavail(affdim * 4 * matw + affdim * 3, 6);
+}
+
+/* the statistics of the alias analysis (debug; name guessed) */
+void
+praldim()
+{
+	printf("//\n//Alias matrix size (bits) = %d\n", affdim);
+	printf("//Alias matrix size (words) = %d\n", matw);
+	printf("//Number of variables aliased = %d\n", nlist);
+	printf("//Number of different aliases = %d\n", ndist);
+}
+
+/* the alias analysis: the affect matrix, its closure, the alias lists; 0 when the matrix cannot be made (name guessed) */
+int
+aliasmat()
+{
+	int tmp[1800];
+
+	if (!affsize())
+		return 0;
+	initaffect();
+	diag(affect, affdim, matw);
+	if (aflag > 1) {
+		printf("\n// initial values of affect matrix\n");
+		prmat(affect, affdim, matw);
+	}
+	closure(affect, affdim, matw);
+	if (aflag > 2) {
+		printf("\n// affect after closure:\n");
+		prmat(affect, affdim, matw);
+	}
+	clrmat(tmp, affdim, matw);
+	matmul(tmp, affect, affect, affdim, matw);
+	if (aflag > 2) {
+		printf("\n// affect after multiplication:\n");
+		prmat(tmp, affdim, matw);
+	}
+	copymat(affect, tmp, affdim, matw);
+	if (aflag > 1) {
+		printf("\n// alias matrix:\n");
+		prmat(affect, affdim, matw);
+	}
+	mkallist();
+	if (s4d92)
+		praldim();
+	return 1;
 }
