@@ -3610,14 +3610,14 @@
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_2ad2": {
+  "alloclpdef": {
    "orig": "5:2ad2",
    "size_orig": 248,
    "status": "open",
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_2bca": {
+  "skiphdrs": {
    "orig": "5:2bca",
    "size_orig": 190,
    "status": "open",

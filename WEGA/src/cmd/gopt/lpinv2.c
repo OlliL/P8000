@@ -66,7 +66,7 @@ struct quad *q;
 	return q;
 }
 
-struct dl { int x0; struct quad *q; char x6[18]; struct dl *next; };	/* a node of the list of the definitions (28 bytes, guessed) */
+struct dl { int x0; struct quad *q; long l6; long l10; int x14[4]; unsigned f15:1, f14:1, f13:1, f12:1, rest:12; struct dl *next; };	/* a node of the list of the definitions (28 bytes, guessed) */
 extern struct dl *a0e0;
 extern int sameopnd();
 
@@ -213,4 +213,63 @@ struct quad *q;
 		if (s4d86 > 2)
 			printf("setopt(), qparv beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->a.w4].x1].nameoff, (symtab[betatbl[q->a.w4].x1].sflags >> 1) & 1);
 	}
+}
+
+extern struct dl *a0f8;
+extern char *taballoc();
+
+/* a node of the list of the definitions of the loops is made for q (name from the debug output) */
+void
+alloclpdef(q, n)
+struct quad *q;
+int n;
+{
+	struct dl *p, *x;
+
+	if (a0f8 != 0) {
+		p = a0f8;
+		a0f8 = a0f8->next;
+	} else
+		p = (struct dl *)taballoc(28, 7);
+	p->x0 = n;
+	p->q = q;
+	p->l6 = 0;
+	p->l10 = 0;
+	p->f15 = 1;
+	p->f14 = 0;
+	p->f13 = 0;
+	p->f12 = 0;
+	if (s4d86 > 2) {
+		printf("alloclpdef(), q=%X, lpdefs=%X\n", p, a0e0);
+		prquad(p->q);
+		if (a0e0 != 0)
+			prquad(a0e0->q);
+	}
+	x = a0e0;
+	a0e0 = p;
+	p->next = x;
+}
+
+struct pr { int x; int y; };
+extern struct pr *a70aa;
+
+/* the header quads in front of q that only lead to q are skipped (name guessed) */
+struct quad *
+skiphdrs(q)
+struct quad *q;
+{
+	struct quad *x, *y;
+
+	while (q->op == 59) {
+		if (q->a.w4 < 0 || a70aa[q->a.w4].x != -1)
+			break;
+		y = blks[a70aa[q->a.w4].y];
+		for (x = y->next; x != 0; x = x->next)
+			if (x->op == 59)
+				break;
+		if (x != q)
+			break;
+		q = y;
+	}
+	return q;
 }
