@@ -19,7 +19,7 @@ assignment to a local only in ours (genquads, fndparm, tmpsearch, checkops): pha
 (mktree, genquads); (4) displacement form `ld r2,rr2(#4)` after p = p->next (writeil, tmpsearch).
 
 Next (in this order):
-1. flow2.c (4:927e ..): written flow_graph (masked), blkof, marklab, addedge (DIFF 4); next 4:98a6 (438, the call after the graph: fn98a6 placeholder in flow2.c), 4:9c58 (1252), 4:a13c, 4:a198 (866), then dom2 ...
+1. flow2.c (4:927e ..): written flow_graph (masked), blkof, marklab, addedge (DIFF 4); next 4:98a6 (438, the call after the graph: optflow placeholder in flow2.c), 4:9c58 (1252), 4:a13c, 4:a198 (866), then dom2 ...
 2. (fn5_2bca of alias2 and the segment 5 functions: with the libc part, item 4.)
 3. quads2.c 4:1c88 (floating compare, EPU words in the listing); then flow2 (4:927e ..), dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2,
    reg2 (data order, host/recon/modmap.py gave the module of every function in findings.json).
@@ -28,5 +28,5 @@ Next (in this order):
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
 TASK: flow2.c: 4:98a6 (438 bytes: prints 'flow graph before optimizations', calls 4:9c58, 4:a198, 4:a4fa, 4:a9ac), then 4:9c58 (1252 bytes, the largest of flow2).
-START: fnc.py -a flow2.c alias2.c (flow_graph masked; open: addedge 4); odisc.py -o f4_98a6; the placeholder fn98a6 in flow2.c gets its name by rename.py -m. The structs: struct edge, blks/edges/blkno/nedge/maxblk are declared in flow2.c; a block is a quad of the op 0x3b (a.w4 predecessors, b.w4 successors).
+START: fnc.py -a flow2.c alias2.c (flow_graph masked; open: addedge 4); odisc.py -o optflow; the placeholder optflow in flow2.c gets its name by rename.py -m. The structs: struct edge, blks/edges/blkno/nedge/maxblk are declared in flow2.c; a block is a quad of the op 0x3b (a.w4 predecessors, b.w4 successors).
 STOP WHEN: 4:9c58 is written and checked, or at 70% of the context.

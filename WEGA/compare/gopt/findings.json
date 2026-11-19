@@ -2032,13 +2032,14 @@
    "note": "case block of flow_graph",
    "file": "flow2.c"
   },
-  "f4_98a6": {
+  "optflow": {
    "orig": "4:98a6",
    "size_orig": 438,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "flow2.c",
-   "file": "flow2.c"
+   "file": "flow2.c",
+   "note": "name guessed (the optimizations of the flow graph with the debug output); an unused local j (the pad before q)"
   },
   "blkof": {
    "orig": "4:9a5c",
@@ -2074,19 +2075,23 @@
    "kind": "proven",
    "module": "flow2.c"
   },
-  "f4_9c58": {
+  "rmlabels": {
    "orig": "4:9c58",
    "size_orig": 1252,
    "status": "open",
    "kind": "proven",
-   "module": "flow2.c"
+   "module": "flow2.c",
+   "file": "flow2.c",
+   "note": "open (DIFF 13, 6 attempts): (1) blks[pi]->next->c.w4 |= blks[pj]->next->c.w4: the original uses rr6 for the left side, ours rr4 (2 lines); (2) delquad(p) after nx = p->next: the original keeps p in rr2 over the store to the local nx, ours loads it again (cause 5, as pralvars). Names guessed; fna66e(a, b, c) a placeholder (4:a66e), params: y, x, 2 / pj, pi, 1 (the first argument goes to r7)"
   },
-  "f4_a13c": {
+  "blkempty": {
    "orig": "4:a13c",
    "size_orig": 92,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "flow2.c"
+   "module": "flow2.c",
+   "file": "flow2.c",
+   "note": "name guessed: the block has only labels and the ops 6, 0xf"
   },
   "f4_a198": {
    "orig": "4:a198",

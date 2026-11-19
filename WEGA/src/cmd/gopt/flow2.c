@@ -15,10 +15,13 @@ extern struct quad **blks;
 extern struct edge *edges;
 extern int cerror();
 extern char *taballoc();
-extern void tabfree(), prquads(), fn98a6();
+extern void tabfree(), prquads(), optflow();
 extern struct quad *qhead;
 extern struct quad *delquad(), *insertquad();
-extern int s4d88, maxblk;
+extern int s4d88, maxblk, s70e6;
+extern void rmlabels(), fna198(), fna4fa(), fna9ac(), prstats(), fna66e(), delrun();
+extern int blkempty();
+extern int s4d74;
 
 /* the number of the basic block of the label l in the table t */
 int
@@ -184,11 +187,156 @@ flow_graph()
 			}
 		}
 	}
-	fn98a6();
+	optflow();
 	n = ((struct edge *)taballoc(0, 8) - edges) * 4;
 	if (n < 10)
 		taballoc(40, 8);
 	else
 		taballoc(n * 4, 8);
 	return ret;
+}
+
+/* the optimizations of the flow graph (redundant labels, jumps, dead blocks) with the debug output; name guessed */
+void
+optflow()
+{
+	int tab[512];
+	int i, j;
+	struct quad *q;
+
+	if (s4d88) {
+		if (s4d88 > 2)
+			prquads();
+		printf("// flow graph before optimizations:\n");
+		fna9ac();
+		prstats();
+	}
+	for (i = 0; i < blkno; i++)
+		if (blks[i] != 0 && blks[i]->next->op == 0x1c)
+			tab[i] = blks[i]->next->a.w4;
+		else
+			tab[i] = -1;
+	rmlabels(tab);
+	if (s4d88 > 4) {
+		printf("// after redundant labels are removed:\n");
+		prquads();
+	}
+	fna198(tab);
+	if (s4d88 > 4) {
+		printf("// after jumps are removed:\n");
+		prquads();
+	}
+	for (q = qhead; q->op != 0x3b; q = q->next)
+		;
+	s70e6 = q->a.w0;
+	fna4fa();
+	if (s4d88) {
+		if (s4d88 > 2) {
+			printf("// after dead blocks are removed: \n");
+			prquads();
+		}
+		printf("// flow graph after optimizations:\n");
+		fna9ac();
+		prstats();
+	}
+}
+
+/* redundant labels: a label that nothing jumps to is deleted, blocks are joined; tab: the label of every block (name guessed) */
+void
+rmlabels(tab)
+	int *tab;
+{
+	int i, j, e, pi, pj, x, y;
+	struct quad *p, *nx;
+
+	for (i = 0; i < blkno - 1; i++) {
+		if (blks[i] == 0)
+			continue;
+		if (blks[i]->next->op != 0x1c)
+			continue;
+		if (blks[i]->next->c.w4 == 0) {
+			x = blks[i]->a.w4;
+			if (x < 0)
+				continue;
+			x = edges[x].blk;
+			y = blks[i]->a.w0;
+			delquad(blks[i]->next);
+			for (p = blks[x]->next; p->op != 0x3b; p = p->next)
+				if (p->op == 0x1b || p->op == 0xb)
+					x = -1;
+			if (x >= 0) {
+				delquad(blks[i]);
+				fna66e(y, x, 2);
+				blks[i] = 0;
+			}
+			s4d74++;
+			continue;
+		}
+		if (!blkempty(blks[i]))
+			continue;
+		for (j = i + 1; j < blkno; j++)
+			if (blks[j] != 0)
+				break;
+		if (j >= blkno)
+			return;
+		if (blks[i]->next->c.w0 == 1) {
+			if (blkempty(blks[j]))
+				continue;
+			if (blks[j]->next->c.w0 == 1)
+				continue;
+			e = blks[j]->a.w4;
+			pi = i;
+			pj = j;
+			i--;
+		} else {
+			e = blks[i]->a.w4;
+			pi = j;
+			pj = i;
+		}
+		blks[pi]->next->c.w4 |= blks[pj]->next->c.w4;
+		for (; e >= 0; e = edges[e].next)
+			for (p = blks[edges[e].blk]->next; p != 0 && p->op != 0x3b; p = p->next) {
+				switch (p->op) {
+				case 0x1a:
+					p->a.w4 = tab[pi];
+					break;
+				case 0x1b:
+					if (p->next != blks[pj])
+						p->b.w4 = tab[pi];
+					break;
+				}
+			}
+		if (blkempty(blks[pj])) {
+			delrun(blks[pj]);
+		} else {
+			for (p = blks[pj]; p != 0 && (p->op == 0x3b || p->op == 0x1c); p = nx) {
+				nx = p->next;
+				delquad(p);
+			}
+		}
+		fna66e(pj, pi, 1);
+		s4d74++;
+		blks[pj] = 0;
+		tab[pj] = -1;
+	}
+}
+
+/* 1: the block of the header quad q contains no quad that does something (only the ops 6, 0xf and the labels); name guessed */
+int
+blkempty(q)
+	struct quad *q;
+{
+	for (q = q->next; q != 0; q = q->next) {
+		if (q->op == 0x3b)
+			return 1;
+		switch (q->op) {
+		case 6:
+		case 0xf:
+		case 0x1c:
+			break;
+		default:
+			return 0;
+		}
+	}
+	return 1;
 }
