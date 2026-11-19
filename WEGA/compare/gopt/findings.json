@@ -2882,14 +2882,14 @@
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_f128": {
+  "solvereach": {
    "orig": "4:f128",
    "size_orig": 274,
    "status": "open",
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_f23a": {
+  "solvelive": {
    "orig": "4:f23a",
    "size_orig": 274,
    "status": "open",
@@ -2917,14 +2917,14 @@
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_f504": {
+  "livevars": {
    "orig": "4:f504",
    "size_orig": 142,
    "status": "open",
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_f592": {
+  "reachdefs": {
    "orig": "4:f592",
    "size_orig": 108,
    "status": "open",

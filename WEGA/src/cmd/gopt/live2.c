@@ -37,11 +37,16 @@ extern struct rn *reachmap;
 extern struct quad **defs;
 extern int ndefs;
 extern int *srchdef();
+#define QLREC(q)	(*(struct lrec **)((char *)(q) + 6))
 #define MASK(p)	((struct quad *)((long)(p) & ~1L))
 extern void clrvec(), copyvec(), orvec(), andnotvec();
 struct edge { int next; int blk; };
 extern struct edge *edges;
 extern unsigned *tmpv;
+extern int eqvec();
+extern int s4f20, s4f22, s4d92;
+extern void tabfree();
+extern void initlive(), initreach(), setwords(), prqall();
 extern char *livevecs, *reachvecs;
 extern struct quad **defs;
 extern struct quad *qhead;
@@ -1150,4 +1155,116 @@ prlivestat()
 {
 	printf("//\n//Number of vars. used in live var. analysis = %d\n", nlv);
 	printf("//Size of live variable vector \t= %d (16 bit words)\n", lvwords);
+}
+
+/* the reaching definitions: the vectors are iterated until nothing changes (name guessed) */
+void
+solvereach()
+{
+	struct quad *q;
+	struct lrec *r;
+	int i, change;
+
+	initvecs(2);
+	change = 1;
+	while (change) {
+		change = 0;
+		for (i = 0; i < blkno; i++) {
+			if (idfn[i] < 0)
+				continue;
+			q = blks[i];
+			r = QLREC(q);
+			confluence(2, i);
+			if (!eqvec(tmpv, r->f18, dfwords)) {
+				copyvec(r->f18, tmpv, dfwords);
+				transfer(2, r);
+				change = 1;
+			}
+			if (s4d84 > 1) {
+				printf("block=%d, change=%s\n", i, change == 1 ? "true" : "false");
+				prvec(r->f18, 3, 2);
+				prvec(r->f8, 4, 2);
+				printf("\n");
+			}
+		}
+	}
+}
+
+/* the live variables: the vectors are iterated backwards until nothing changes (name guessed) */
+void
+solvelive()
+{
+	struct quad *q;
+	struct lrec *r;
+	int i, change;
+
+	initvecs(1);
+	change = 1;
+	while (change) {
+		change = 0;
+		for (i = blkno; i >= 0; i--) {
+			if (idfn[i] < 0)
+				continue;
+			q = blks[i];
+			r = QLREC(q);
+			confluence(1, i);
+			if (!eqvec(tmpv, r->f0, lvwords)) {
+				copyvec(r->f0, tmpv, lvwords);
+				transfer(1, r);
+				change = 1;
+			}
+			if (s4d84 > 1) {
+				printf("block=%d, change=%s\n", i, change == 1 ? "true" : "false");
+				prvec(r->f4, 3, 1);
+				prvec(r->f0, 4, 1);
+				printf("\n");
+			}
+		}
+	}
+}
+
+/* the live variable analysis of the program (name guessed) */
+void
+livevars()
+{
+	if (s4d84)
+		prqall();
+	lvwords = 0;
+	if (s4f20 == 0)
+		tabfree(2, (char *)0);
+	nlv = 0;
+	s4f20 = 0;
+	lvtab = (struct lv *)taballoc(0, 2);
+	s715e = 1;
+	if (!marklpvar())
+		cerror("out of live var space");
+	s715e = 0;
+	setwords(1);
+	initlive(1);
+	solvelive();
+	if (s4d92)
+		prlivestat();
+	tabfree(2, livevecs);
+}
+
+/* the reaching definitions of the program (name guessed) */
+void
+reachdefs()
+{
+	ndefs = 0;
+	dfwords = 0;
+	if (s4f22 == 0)
+		tabfree(3, (char *)0);
+	s4f22 = 0;
+	defs = (struct quad **)taballoc(0, 3);
+	if (countreachdefs()) {
+		if (ndefs > 0) {
+			setwords(2);
+			initreach(2);
+			solvereach();
+		}
+	} else
+		cerror("out of reaching def space");
+	if (s4d92)
+		prreachstat();
 }
