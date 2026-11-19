@@ -7,6 +7,16 @@ NO STOP RULE: work without a context limit and without stopping after a function
 (no pushes, only branch `toolchain`), keep this file, findings.json and the log current as you go. Ask the owner only for a decision that is
 really his (the ladder below answers most questions). Rules of the project: CLAUDE.md (German in conversation, English in git).
 
+## Owner decisions (2026-11-19, before the overnight run)
+- STEP 4 OF THE LADDER: when at the end only DIFFs are left that need a new compiler, build it but do NOT commit it: write
+  compare/gopt/compiler_changes.diff (against the current compiler; it may break other users, therefore only as a diff) and
+  compare/gopt/COMPILER.md (as src/lib/libcisam/COMPILER.md: the switches, what each does, the witnesses).
+- SLD / STACK SEGMENT: first analyse src/cmd/sld (ldm.c ...) for a hidden way to get the original header (no -z flag, no 5th table
+  entry, _stkseg 63). If there is none, an "old" sld version may be invented (own -D switches, built beside sld) and used to link gopt.
+- CPARSE IN CHECKALL: may be fixed by the session (the shipped cparse did not cope with alias2.c: /tmp/wega_check/corpus_cparse.log,
+  "DIFF src/cmd/gopt/alias2.c" in the corpus); if there is no fix, alias2.c may be left out of the (s)cparse corpus. Then run checkall.
+- SLIBC-V12: gopt is its only user (made for gopt); build it in src/lib/oldslibc as an archive of its own and change it in any way needed.
+
 ## Priority ladder for every DIFF (strict order; go down only when the step above is really hopeless)
 1. SOURCE FORMS (highest priority, applies before everything else): try other C forms of the same function (statement order, `if` chains vs
    `switch`, `a = a | x` vs `|=`, temporaries, `register`, parameter order and types, declaration order, goto, comma, pointer vs index form,
