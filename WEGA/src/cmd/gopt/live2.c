@@ -31,7 +31,7 @@ extern int tstlbit();
 #define BOPT(j)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> 13) & 1)
 struct lrec { unsigned *f0, *f4, *f8, *fc, *f10, *f14, *f18; };	/* the bit vectors of a block: 28 bytes, stored in the header quad at 6 (guessed) */
 extern int lvwords, dfwords, s4d86;
-extern void fnec68();
+extern void clrvec();
 extern char *livevecs, *reachvecs;
 extern struct quad **defs;
 extern struct quad *qhead;
@@ -540,8 +540,8 @@ allocvec(q, kind, field)
 			p->f14 = (unsigned *)taballoc(dfwords * 2, 3);
 			p->f10 = (unsigned *)taballoc(dfwords * 2, 3);
 			p->f18 = (unsigned *)taballoc(dfwords * 2, 3);
-			fnec68(p->f14, dfwords);
-			fnec68(p->f10, dfwords);
+			clrvec(p->f14, dfwords);
+			clrvec(p->f10, dfwords);
 		}
 	}
 }
@@ -787,4 +787,77 @@ sameopnd(p, q, pw, qw)
 	if (s4d84 > 5)
 		printf("sameopnd, returning FALSE\n");
 	return 0;
+}
+
+/* the number of words of the bit vectors: kind 1 for the live vectors, else for the reach vectors (name guessed) */
+void
+setwords(kind)
+	int kind;
+{
+	if (kind == 1)
+		lvwords = nlv / 16 + 1;
+	else
+		dfwords = ndefs / 16 + 1;
+}
+
+/* the vector v of n words is cleared */
+void
+clrvec(v, n)
+	unsigned *v;
+	int n;
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		*v++ = 0;
+}
+
+/* a := b (n words) */
+void
+copyvec(a, b, n)
+	unsigned *a, *b;
+	int n;
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		*a++ = *b++;
+}
+
+/* 1 when the vectors a and b (n words) are equal */
+int
+eqvec(a, b, n)
+	unsigned *a, *b;
+	int n;
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		if (*a++ != *b++)
+			return 0;
+	return 1;
+}
+
+/* a := b and not c (n words) */
+void
+andnotvec(a, b, c, n)
+	unsigned *a, *b, *c;
+	int n;
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		*a++ = *b++ & ~*c++;
+}
+
+/* a := a or b (n words) */
+void
+orvec(a, b, n)
+	unsigned *a, *b;
+	int n;
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		*a++ |= *b++;
 }

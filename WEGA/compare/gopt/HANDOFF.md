@@ -19,7 +19,7 @@ assignment to a local only in ours (genquads, fndparm, tmpsearch, checkops): pha
 (mktree, genquads); (4) displacement form `ld r2,rr2(#4)` after p = p->next (writeil, tmpsearch).
 
 Next (in this order):
-1. live2.c written up to 4:d868: prqflags, prqall, islive .. tstlbit (the table of the live variables, the marking of the symbols, the bit vector functions); next 4:d868 (390), 4:d9ee (436), 4:dba2 (200), 4:dc6a (458), 4:de34 (724) ... see findings.json (module live2.c, about 30 open entries), then ebbo2 (segment 5?). New recurring causes: (7) the choice of the second pointer register pair (rr4 against rr6) goes the other way in different functions; (8) the address betatbl[j].x: the original adds the constant offset to the index first.
+1. live2.c written up to 4:e400 and the vector functions 4:ec32..4:ed82 (prvec .. orvec); next 4:e400 (802: linkreachdefs, the tagged pointers in defs: (long)p & 1, & 0x7F00FFFE), 4:e722 (560), 4:e952 (248), 4:ea4a (488), 4:ed82 (294), 4:eea8 (484), 4:f08c .. (see findings.json, module live2.c), then ebbo2.
 2. (fn5_2bca of alias2 and the segment 5 functions: with the libc part, item 4.)
 3. quads2.c 4:1c88 (floating compare, EPU words in the listing); then flow2 (4:927e ..), dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2,
    reg2 (data order, host/recon/modmap.py gave the module of every function in findings.json).
@@ -27,6 +27,6 @@ Next (in this order):
 
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
-TASK: live2.c: 4:d868 (390 bytes), 4:d9ee (436), 4:dba2 (200), 4:dc6a (458) and the next functions of live2 (findings.json, module live2.c).
-START: fnc.py -a live2.c (open: islive 4, settmptable 64, insrtlive 7, setsymtable 69, setsym 20, issym 31, setlbit 9, clrlbit 9, tstlbit 3: layout, register pairs, address form: leave them); odisc.py -o prvec; regdiff.py FILE.diff. The names: setlbit, clrlbit, tstlbit are the bit vector functions of live2 (v[i / 16] with i % 16).
+TASK: live2.c: 4:e400 (802 bytes, linkreachdefs), 4:e722 (560), 4:e952 (248), 4:ea4a (488), 4:ed82 (294), 4:eea8 (484) and the next ones of live2.
+START: fnc.py -a live2.c (open: islive 4, settmptable 80, insrtlive 7, setsymtable 69, setsym 20, setlbit 9, clrlbit 9, tstlbit 3: leave them); odisc.py -o f4_e400; regdiff.py FILE.diff.
 STOP WHEN: 12 functions of live2 are written and checked, or at 70% of the context.

@@ -2579,7 +2579,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 64): layout: the original puts the block of the if/while (bopt = 1; islive) behind the switch dispatch, before the case blocks (popt block order); the address of betatbl[t].x is formed as (t*10 + 8) first, then added to the base (the same in issym); betatbl a table of 10 byte entries (guessed)"
+   "note": "open (DIFF 64): layout: the original puts the block of the if/while (bopt = 1; islive) behind the switch dispatch, before the case blocks (popt block order); the address of betatbl[t].x is formed as (t*10 + 8) first, then added to the base (the same in issym); betatbl a table of 10 byte entries (guessed) (BOPT form: only one jr of the block order is left, DIFF 80 because of the layout)"
   },
   "insrtlive": {
    "orig": "4:cd58",
@@ -2638,11 +2638,11 @@
   "issym": {
    "orig": "4:d408",
    "size_orig": 36,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 31): only the form of the address betatbl[j].bopt: the original computes j*10 + 8 first (inc r3,#8) then adds the base, ours adds 8 behind the base; the rest equal (regdiff: 0 structural); name from the string"
+   "note": "BOPT form (see initlive); name from the string"
   },
   "f4_d42c": {
    "orig": "4:d42c",
@@ -2719,51 +2719,65 @@
   "prvec": {
    "orig": "4:d868",
    "size_orig": 390,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed (debug print of a bit vector)"
   },
   "allocvec": {
    "orig": "4:d9ee",
    "size_orig": 436,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name from the string; struct lrec (7 pointers, 28 bytes) in the header quad at 6, guessed"
   },
   "alloclivevecs": {
    "orig": "4:dba2",
    "size_orig": 200,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name from the string"
   },
   "bitpos": {
    "orig": "4:dc6a",
    "size_orig": 458,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name from the strings; case 3 uses t before it is set (a bug of the original, kept)"
   },
   "initlive": {
    "orig": "4:de34",
    "size_orig": 724,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name from the string; BOPT(j) = (*(int *)((char *)betatbl + (j * 10 + 8)) >> 13) & 1 gives the address form of the original (the offset is added to the index before the base): issym and initlive masked with it"
   },
   "allocreachvecs": {
    "orig": "4:e108",
    "size_orig": 200,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name from the string"
   },
   "sameopnd": {
    "orig": "4:e1d0",
    "size_orig": 560,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "odd form: (long)(checkalias(p, pw) == a1) (the original tests the comparison as a long value: tcc, exts, testl); the switches over pw and qw in the order 2, 3, 1; name from the strings"
   },
   "f4_e400": {
    "orig": "4:e400",
@@ -2793,47 +2807,59 @@
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_ec32": {
+  "setwords": {
    "orig": "4:ec32",
    "size_orig": 54,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed"
   },
-  "f4_ec68": {
+  "clrvec": {
    "orig": "4:ec68",
    "size_orig": 42,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed (placeholder fnec68 renamed)"
   },
-  "f4_ec92": {
+  "copyvec": {
    "orig": "4:ec92",
    "size_orig": 54,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed"
   },
-  "f4_ecc8": {
+  "eqvec": {
    "orig": "4:ecc8",
    "size_orig": 62,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed"
   },
-  "f4_ed06": {
+  "andnotvec": {
    "orig": "4:ed06",
    "size_orig": 68,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed"
   },
-  "f4_ed4a": {
+  "orvec": {
    "orig": "4:ed4a",
    "size_orig": 56,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed"
   },
   "f4_ed82": {
    "orig": "4:ed82",
