@@ -28,6 +28,7 @@ extern int blkno;
 extern struct quad *qhead;
 extern int ndefs;
 extern int tstlbit();
+#define BOPT(j)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> 13) & 1)
 struct lrec { unsigned *f0, *f4, *f8, *fc, *f10, *f14, *f18; };	/* the bit vectors of a block: 28 bytes, stored in the header quad at 6 (guessed) */
 extern int lvwords, dfwords, s4d86;
 extern void fnec68();
@@ -125,14 +126,13 @@ settmptable(q, which)
 		break;
 	}
 	if (s4d84 > 3)
-		printf("settmptable(), i=%d, betatbl[i].bopt=%d\n", t, betatbl[t].bopt);
-	while (!betatbl[t].bopt) {
+		printf("settmptable(), i=%d, betatbl[i].bopt=%d\n", t, BOPT(t));
+	if (!BOPT(t)) {
 		betatbl[t].bopt = 1;
 		if (islive(t, 0, 0))
 			return 1;
 		if (nlv > 480)
 			return 0;
-		return 1;
 	}
 	return 1;
 }
@@ -364,13 +364,13 @@ issym(q, flag)
 			if (symtab[j].sflags & 1)
 				r = 4;
 		} else if (q->c.b2 == 6) {
-			if (betatbl[j].bopt)
+			if (BOPT(j))
 				r = 6;
 		} else if (q->c.b2 == 8) {
 			if (q->op == 0x2f) {
 				if (symtab[betatbl[j].x1].sflags & 1)
 					r = 4;
-			} else if (betatbl[j].bopt)
+			} else if (BOPT(j))
 				r = 6;
 		}
 		break;
@@ -380,13 +380,13 @@ issym(q, flag)
 			if (symtab[j].sflags & 1)
 				r = 4;
 		} else if (q->a.b2 == 6) {
-			if (betatbl[j].bopt)
+			if (BOPT(j))
 				r = 6;
 		} else if (q->a.b2 == 8) {
 			if (q->op == 0x18 || q->op == 0x1e) {
 				if (symtab[betatbl[j].x1].sflags & 1)
 					r = 4;
-			} else if (betatbl[j].bopt)
+			} else if (BOPT(j))
 				r = 6;
 		}
 		break;
@@ -396,7 +396,7 @@ issym(q, flag)
 			if (symtab[j].sflags & 1)
 				r = 4;
 		} else if (q->b.b2 == 6 || q->b.b2 == 8) {
-			if (betatbl[j].bopt)
+			if (BOPT(j))
 				r = 6;
 		}
 		break;
@@ -616,4 +616,73 @@ bitpos(q, which, kind)
 	if (s4d84 > 2)
 		printf("bitpos=%d\n", lvidx);
 	return lvidx;
+}
+
+/* the gen and kill vectors of every block from its quads (name from the string) */
+void
+initlive()
+{
+	struct quad *q;
+	int i, k;
+	struct lrec *p;
+	int bp;
+
+	if (s4d84 > 2)
+		printf("initlive()\n");
+	alloclivevecs();
+	if (s4d84)
+		printf("\n");
+	for (i = 0; i < blkno; i++) {
+		q = blks[i];
+		if (s4d84 > 3)
+			prquad(q);
+		if (idfn[i] < 0)
+			continue;
+		if (s4d84 > 3)
+			prquad(q);
+		p = *(struct lrec **)&q->c;
+		for (q = q->next; q != 0; q = q->next) {
+			if (q->op == 0x3b)
+				break;
+			if (s4d84 > 3) {
+				printf("initlive: processing quad:\n");
+				prquad(q);
+			}
+			if (q->f6) {
+				k = issym(q, 2);
+				if (k) {
+					bp = bitpos(q, 2, k);
+					setlbit(p->f14, bp);
+					if (k == 4 && q->a.b2 == 8 && BOPT(q->a.w4)) {
+						bp = bitpos(q, 2, 6);
+						setlbit(p->f14, bp);
+					}
+				}
+			}
+			if (q->f5) {
+				k = issym(q, 3);
+				if (k) {
+					bp = bitpos(q, 3, k);
+					setlbit(p->f14, bp);
+				}
+			}
+			if (q->f7) {
+				k = issym(q, 4);
+				if (k) {
+					bp = bitpos(q, 1, k);
+					setlbit(p->f10, bp);
+					if (k == 4 && q->c.b2 == 8 && BOPT(q->c.w4)) {
+						bp = bitpos(q, 1, 6);
+						setlbit(p->f10, bp);
+					}
+				}
+			}
+		}
+		if (s4d84 > 1) {
+			printf("block=%d\n", i);
+			prvec(p->f10, 1, 1);
+			prvec(p->f14, 2, 1);
+			printf("\n");
+		}
+	}
 }

@@ -2744,7 +2744,7 @@
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_de34": {
+  "initlive": {
    "orig": "4:de34",
    "size_orig": 724,
    "status": "open",
