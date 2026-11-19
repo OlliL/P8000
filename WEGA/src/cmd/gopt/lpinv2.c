@@ -215,11 +215,11 @@ struct quad *q;
 	}
 }
 
-extern struct dl *a0f8;
+extern struct dl *a0f8, *alloclpdef(), *srchdflist();
 extern char *taballoc();
 
 /* a node of the list of the definitions of the loops is made for q (name from the debug output) */
-void
+struct dl *
 alloclpdef(q, n)
 struct quad *q;
 int n;
@@ -272,4 +272,47 @@ struct quad *q;
 		q = y;
 	}
 	return q;
+}
+
+extern struct quad *skiphdrs();
+
+/* the definition q in the block is entered in the list of the definitions of the loops (name from the debug output) */
+void
+addlpdef(q, block)
+struct quad *q;
+int block;
+{
+	struct dl *p, *r;
+	int fl;
+	struct quad *x;
+
+	if (s4d86 > 1) {
+		printf("addlpdef(block=%d), loop def found:\n", block);
+		prquad(q);
+	}
+	fl = 0;
+	r = srchdflist(q, &fl);
+	if (r == 0) {
+		p = alloclpdef(q, block);
+		x = skiphdrs(blks[block]);
+		clropt(q, x);
+		if (fl)
+			p->f15 = 0;
+		if (s4d86 > 2)
+			printf("\tonedef=%d\n", p->f15);
+	} else {
+		if (r->q->op != 47 && q->op == 47)
+			r->q = q;
+		if (r->x0 == block) {
+			r->f15 = 0;
+			if (s4d86 > 2) {
+				printf("\t\tonedef=%d, same quad:\n", r->f15);
+				prquad(r->q);
+			}
+		} else {
+			r->f15 = 0;
+			if (s4d86 > 2)
+				printf("\tr->onedef=%d\n", r->f15);
+		}
+	}
 }
