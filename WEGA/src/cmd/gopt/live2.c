@@ -217,3 +217,48 @@ setsymtable(q, which)
 		return 0;
 	return 1;
 }
+
+/* the symbols of the operand flag (1: the result, 2: the operand a, 3: the operand b) of the quad q are entered (name from the string); 0 when the table is full */
+int
+setsym(q, flag)
+	struct quad *q;
+	int flag;
+{
+	int x;
+
+	switch (flag) {
+	case 1:
+		if (s4d84 > 3)
+			printf("setsym(GENRBIT)\n");
+		if (q->c.b2 == 4 || q->c.b2 == 8)
+			if (!setsymtable(q, 1))
+				return 0;
+		if (q->c.b2 == 6 || q->c.b2 == 8)
+			if (!settmptable(q, 1))
+				return 0;
+		return 1;
+	case 2:
+		if (s4d84 > 3)
+			printf("setsym(GENL1BIT)\n");
+		if (q->a.b2 == 4 || q->a.b2 == 8)
+			if (!setsymtable(q, 2))
+				return 0;
+		if (q->a.b2 == 6 || q->a.b2 == 8)
+			if (!settmptable(q, 2))
+				return 0;
+		return 1;
+	case 3:
+		if (s4d84 > 3)
+			printf("setsym(GENL2BIT)\n");
+		if (q->b.b2 == 4 || q->b.b2 == 8)
+			if (!setsymtable(q, 3))
+				return 0;
+		if (q->b.b2 == 6 || q->b.b2 == 8)
+			if (!settmptable(q, 3))
+				return 0;
+		return 1;
+	default:
+		cerror("setsym: illegal flag");
+		return 1;
+	}
+}
