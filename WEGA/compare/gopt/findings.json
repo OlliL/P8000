@@ -2568,63 +2568,81 @@
    "size_orig": 452,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "open (DIFF 4, 2 attempts): the field stores lvtab[i].var/kind/alias = v: the original masks the value (sla r0,#0; and r0,#mask), ours emits no and (3 lines); the types unsigned did not change it; names from the string (the table of the live variables: struct lv {kind:1, alias:1, var:14}, guessed)"
   },
   "settmptable": {
    "orig": "4:cc4c",
    "size_orig": 268,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "open (DIFF 64): layout: the original puts the block of the if/while (bopt = 1; islive) behind the switch dispatch, before the case blocks (popt block order); the address of betatbl[t].x is formed as (t*10 + 8) first, then added to the base (the same in issym); betatbl a table of 10 byte entries (guessed)"
   },
   "insrtlive": {
    "orig": "4:cd58",
    "size_orig": 290,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "open (DIFF 7): the original has the block return 1 inline at the first almap test (the other returns jump to it), ours has it at the end"
   },
   "setsymtable": {
    "orig": "4:ce7a",
    "size_orig": 580,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "open (DIFF 69): (1) tq.op = 0x2f etc. is a byte store to the frame slot in the original (ldb 0x10(r15),#2F), ours forms the address (ldl rr2,#; add; inc #4; ldb @rr2): the local struct quad bit field store; (2) block order; the local struct quad tq with a.b2 = 4, tq.a.w4 = t = betatbl[..].x1; name from the strings"
   },
   "setsym": {
    "orig": "4:d0be",
    "size_orig": 374,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "open (DIFF 20): the branches of if (!setsymtable(...)) return 0: the original shares one return 0 block, ours uses other jumps; an unused local x; the explicit return 1 in the cases"
   },
   "markblkvar": {
    "orig": "4:d234",
    "size_orig": 272,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name from the string"
   },
   "markall": {
    "orig": "4:d344",
    "size_orig": 64,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed; falls off the end without a return value (as the original)"
   },
   "marklpvar": {
    "orig": "4:d384",
    "size_orig": 132,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name from the string"
   },
   "issym": {
    "orig": "4:d408",
    "size_orig": 36,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "open (DIFF 31): only the form of the address betatbl[j].bopt: the original computes j*10 + 8 first (inc r3,#8) then adds the base, ours adds 8 behind the base; the rest equal (regdiff: 0 structural); name from the string"
   },
   "f4_d42c": {
    "orig": "4:d42c",
@@ -2653,40 +2671,50 @@
    "note": "case block of issym",
    "file": "live2.c"
   },
-  "f4_d6e8": {
+  "adddef": {
    "orig": "4:d6e8",
    "size_orig": 90,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed"
   },
-  "f4_d742": {
+  "countreachdefs": {
    "orig": "4:d742",
    "size_orig": 152,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name from the string; two unused locals (the frame is 4 bytes bigger)"
   },
-  "f4_d7da": {
+  "setlbit": {
    "orig": "4:d7da",
    "size_orig": 44,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "open (DIFF 9): the original spills i (r5) and keeps v in rr6 with rr4 as the second pointer register, ours spills v and uses rr6 (the choice of the register pair, as rmlabels/joinblk the other way round); names guessed"
   },
-  "f4_d806": {
+  "clrlbit": {
    "orig": "4:d806",
    "size_orig": 46,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "open (DIFF 9): as setlbit"
   },
-  "f4_d834": {
+  "tstlbit": {
    "orig": "4:d834",
    "size_orig": 52,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "open (DIFF 3): as setlbit"
   },
   "f4_d868": {
    "orig": "4:d868",

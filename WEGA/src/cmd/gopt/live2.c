@@ -26,6 +26,9 @@ extern struct loop *loops;
 extern int *idfn;
 extern int blkno;
 extern struct quad *qhead;
+extern int ndefs;
+extern struct quad **defs;
+extern struct quad *qhead;
 extern void prquad(), prqflags();
 
 /* the flags of the quad q (debug; name guessed) */
@@ -400,4 +403,68 @@ issym(q, flag)
 		prquad(q);
 	}
 	return r;
+}
+
+/* the quad q is entered in the table of the definitions (name guessed) */
+void
+adddef(q)
+	struct quad *q;
+{
+	if (s4d84 > 1) {
+		printf("defno=%d\n", ndefs);
+		prquad(q);
+	}
+	taballoc(4, 3);
+	defs[ndefs] = q;
+	ndefs++;
+}
+
+/* the definitions that reach: the quads that set a marked symbol are entered (name from the string); 0 when the table is full */
+int
+countreachdefs()
+{
+	struct quad *q;
+	int x, y;
+
+	if (s4d84 > 2)
+		printf("countreachdefs()\n");
+	for (q = qhead; q != 0; q = q->next) {
+		if (q->op == 0x3b || q->op == 7)
+			continue;
+		if (!q->f4)
+			continue;
+		if (!issym(q, 1))
+			continue;
+		adddef(q);
+		if (ndefs > 480)
+			return 0;
+	}
+	return 1;
+}
+
+/* bit i of the bit vector v is set (names of the three bit functions guessed) */
+void
+setlbit(v, i)
+	unsigned *v;
+	int i;
+{
+	v[i / 16] |= 1 << (i % 16);
+}
+
+void
+clrlbit(v, i)
+	unsigned *v;
+	int i;
+{
+	v[i / 16] &= ~(1 << (i % 16));
+}
+
+int
+tstlbit(v, i)
+	unsigned *v;
+	int i;
+{
+	if ((v[i / 16] >> (i % 16)) & 1)
+		return 1;
+	return 0;
 }
