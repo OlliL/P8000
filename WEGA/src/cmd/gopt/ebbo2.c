@@ -15,6 +15,10 @@ extern struct hent *htab[32];
 extern char a050e[], a0010[];
 extern int fn4_faa4();
 extern long lconst[];
+extern struct aln *usetbl[];
+extern int fn5_1ef2(), canopt();
+extern int a70ce, a70c6;
+extern struct { struct quad *q; struct sym *s; } a71ec[];
 extern struct aln *killtbl[];
 extern struct sym *symtab;
 extern int fn4_fc06(), killed();
@@ -30,7 +34,7 @@ extern struct quad *checkalias();
 extern void tabfree(), prqall();
 extern struct quad *vnumber();
 extern void ebbfix(), fn5_1ffc(), fn5_206c();
-extern void fn5_1cd0(), clear(), fn5_1f2c(), exprenter(), fn5_1bc0(), prquad();
+extern void checkuse(), clear(), fn5_1f2c(), exprenter(), ebbcall(), prquad();
 extern int identop(), nostore();
 extern unsigned a0d0;
 extern struct qa *fn5_1068();
@@ -226,7 +230,7 @@ struct quad *q;
 			q->op = 60;
 			q->a = tmp;
 L392:			q->b.b2 = 0;
-L39c:			fn5_1cd0(q);
+L39c:			checkuse(q);
 			if (q->c.b2 != 8 && q->c.b2 != 6)
 				continue;
 L3c6:			clear(q, 1);
@@ -264,7 +268,7 @@ L44c:			if (identop(q))
 				updateopnd(vc->val, &q->c, 0);
 				vc = vnfind(&q->c);
 			}
-			fn5_1cd0(q);
+			checkuse(q);
 			vc->cst = va->cst;
 			if (q->c.b2 != 8)
 				vc->dead = va->cst;
@@ -294,7 +298,7 @@ L44c:			if (identop(q))
 				} else
 					exprenter(q);
 			}
-			fn5_1cd0(q);
+			checkuse(q);
 			if (q->c.b2 == 8)
 				goto L3c6;
 			continue;
@@ -304,14 +308,14 @@ L44c:			if (identop(q))
 			va = vnfind(&q->a);
 			if (va->dead)
 				updateopnd(va->val, &q->a, 1);
-			fn5_1cd0(q);
+			checkuse(q);
 			continue;
 		case 7:
 			va = vnfind(&q->a);
 			if (va->dead)
 				updateopnd(va->val, &q->a, 1);
-			fn5_1cd0(q);
-			fn5_1bc0(q, stk, n);
+			checkuse(q);
+			ebbcall(q, stk, n);
 			n = 0;
 			q->f7 = 1;
 			a0d2 = 1;
@@ -320,14 +324,14 @@ L44c:			if (identop(q))
 			va = vnfind(&q->a);
 			if (va->dead)
 				updateopnd(va->val, &q->a, 1);
-			fn5_1cd0(q);
+			checkuse(q);
 			fn5_1ffc();
 			continue;
 		case 42:
 			va = vnfind(&q->a);
 			if (va != 0 && va->dead)
 				updateopnd(va->val, &q->a, 1);
-			fn5_1cd0(q);
+			checkuse(q);
 			continue;
 		case 60:
 			va = vnfind(&q->a);
@@ -342,10 +346,10 @@ L44c:			if (identop(q))
 				goto L35a;
 			}
 			if (q->c.b2 != 3) {
-				fn5_1cd0(q);
+				checkuse(q);
 				goto L3c6;
 			}
-			fn5_1cd0(q);
+			checkuse(q);
 			continue;
 		}
 	}
@@ -617,4 +621,67 @@ struct qa *p;
 	if (p->b2 == 4 && ((symtab[p->w4].sflags >> 2) & 1) && a0d2)
 		return 0;
 	return 1;
+}
+
+/* at a call: the table entries of the variables that the callee may change are invalid (name guessed) */
+void
+ebbcall(q, stk, n)
+struct quad *q;
+struct quad **stk;
+int n;
+{
+	struct vn *e;
+	int i;
+
+	e = (struct vn *)a0cc;
+	while (e != 0) {
+		if (e->al == 0 || e->al == a70ce || e->al == a70c6)
+			e->val = 0;
+		e = e->next;
+	}
+	for (i = 0; i < s71e6; i++) {
+		if (a71ec[i].q->c.b2 == 4 && ((symtab[a71ec[i].q->c.w4].sflags >> 2) & 1)) {
+			a71ec[i].q = q;
+			a71ec[i].s = symtab;
+		}
+	}
+	for (i = 0; i < n; i++)
+		clear(stk[i], 2);
+}
+
+/* the operands a and b of q that are variables get into the use table (name guessed from the debug output) */
+void
+checkuse(q)
+struct quad *q;
+{
+	struct aln *p;
+
+	if (s4d80 > 3) {
+		printf("// in checkuse ---");
+		prquad(q);
+	}
+	if (!fn4_fbe8(q->a.b2) && q->a.b2 != 3 && q->a.b2 != 5) {
+		if (q->a.b2 == 8 || q->a.b2 == 6)
+			p = (struct aln *)&betatbl[q->a.w4];
+		else if (q->a.b2 == 4 && (p = (struct aln *)checkalias(q, 2)) == 0)
+			p = (struct aln *)&symtab[q->a.w4];
+		if (!killed(p) && !fn5_1ef2(p) && canopt(&q->a)) {
+			q->f6 = 1;
+			usetbl[s71ea++] = p;
+			if (s71ea >= 1000)
+				cerror("use_tbl overflow");
+		}
+	}
+	if (!fn4_fbe8(q->b.b2) && q->b.b2 != 3 && q->b.b2 != 0) {
+		if (q->b.b2 == 8 || q->b.b2 == 6)
+			p = (struct aln *)&betatbl[q->b.w4];
+		else if (q->b.b2 == 4 && (p = (struct aln *)checkalias(q, 3)) == 0)
+			p = (struct aln *)&symtab[q->b.w4];
+		if (!killed(p) && !fn5_1ef2(p) && canopt(&q->b)) {
+			q->f5 = 1;
+			usetbl[s71ea++] = p;
+			if (s71ea >= 1000)
+				cerror("use_tbl overflow");
+		}
+	}
 }

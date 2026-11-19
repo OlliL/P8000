@@ -3471,14 +3471,14 @@
    "file": "ebbo2.c",
    "note": "open (DIFF 1): the frame has 4 bytes in both, but the original does not store the parameter (rr6 stays in use), ours spills it (ldl 0(r15),rr6): cause 1 (parameter handling)"
   },
-  "f5_1bc0": {
+  "ebbcall": {
    "orig": "5:1bc0",
    "size_orig": 272,
    "status": "open",
    "kind": "proven",
    "module": "ebbo2.c"
   },
-  "f5_1cd0": {
+  "checkuse": {
    "orig": "5:1cd0",
    "size_orig": 546,
    "status": "open",
