@@ -1290,19 +1290,22 @@
    "kind": "candidate",
    "module": "wrtil2.c"
   },
-  "f4_5f38": {
+  "addrof": {
    "orig": "4:5f38",
    "size_orig": 154,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c"
   },
-  "f4_5fd2": {
+  "needustar": {
    "orig": "4:5fd2",
    "size_orig": 126,
    "status": "open",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "open: the original has one `ldk r2,#1` for all returns of 1 (a jr eq to it) and the test of q->tn.w6 inline behind the debug print; ours returns 1 in several places and moves the w6 block. Tried: nested ifs, `!` before the test, early return of the TEMP case; names guessed (the string says needustar)"
   },
   "f4_6050": {
    "orig": "4:6050",
@@ -1360,12 +1363,13 @@
    "kind": "candidate",
    "module": "wrtil2.c"
   },
-  "f4_65a2": {
+  "tlfind": {
    "orig": "4:65a2",
    "size_orig": 66,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c"
   },
   "f4_65e4": {
    "orig": "4:65e4",
@@ -1374,12 +1378,13 @@
    "kind": "proven",
    "module": "wrtil2.c"
   },
-  "f4_6818": {
+  "wrline": {
    "orig": "4:6818",
    "size_orig": 102,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c"
   },
   "f4_687e": {
    "orig": "4:687e",
@@ -1402,33 +1407,41 @@
    "kind": "candidate",
    "module": "wrtil2.c"
   },
-  "f4_6a36": {
+  "treeeq": {
    "orig": "4:6a36",
    "size_orig": 136,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "the cases BITYPE (falls into UTYPE) LTYPE in that order; LTYPE returns the && expression"
   },
-  "f4_6abe": {
+  "asgfold": {
    "orig": "4:6abe",
    "size_orig": 168,
    "status": "open",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "open: one instruction: `p->in.right->in.op` is loaded by the original with ldl rr0,rr2(#0x12) (displacement), ours with add r1,#0x12 and an indirect load; x = x op y becomes x op= y (op + 1); tried `op = (p = *pp)->in.right->in.op` and other orders"
   },
-  "f4_6b66": {
+  "prtcounts": {
    "orig": "4:6b66",
    "size_orig": 96,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "prints ctpos[i], ctneg[i] of the 1000 temporaries (debug)"
   },
-  "f4_6bc6": {
+  "itfind": {
    "orig": "4:6bc6",
    "size_orig": 68,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "wrtil2.c|alias2.c"
+   "module": "wrtil2.c|alias2.c",
+   "file": "wrtil2.c",
+   "note": "names guessed (a table at the pointer 0x70da, 0x70de entries)"
   },
   "f4_6c0a": {
    "orig": "4:6c0a",

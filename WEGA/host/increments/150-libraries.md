@@ -161,3 +161,12 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   assignment (the original has none: a finding for phase B, hidden for the check by fncheck.py FNC_DROP), `p3->b2 = 0` (rr0 against
   rr2) and the last copy of the tree (one shared ldir in the original). Frame equal. make part builds comm2, rdr2, reader2, quads2.
   Still missing in quads2.c: 4:1c88 (floating compare, EPU words) and debug2.c (4:2c10 ...), the modules after it.
+- 2026-11-19: gopt, debug2.c (4:2c10 .. 4:2ec6): mkqnames, prquads, propnd, prstats masked equal, prquad open (the reload of the
+  parameter behind the first conditional jump, as cmwalk and operand: one popt finding, phase B). The table qtab (84 quad operators)
+  is read from the data; qop[] and qdop[] come from it. propnd prints floating constants with %f from a double of the table: the
+  EPU words of the disassembly are `printf("%f", d)`. make part builds debug2.o too.
+- 2026-11-19: gopt, wrtil2.c started (4:4a8e .. 4:6c0a, 49 starts): addrof, tlfind, wrline, treeeq, prtcounts, itfind masked equal;
+  needustar and asgfold open (one return of 1 shared in the original / one displacement load). Not yet: 4:4a8e (writeil, a switch of
+  about 3.4 KB up to 4:53ea), 4:53f0 (1114 bytes), 4:5d0e, the operand to leaf function 4:6050 with its blocks up to 4:657c, 4:65e4,
+  4:687e, 4:6c0a is alias2. The strings of the module: "// writeil : quads to be converted to trees", "// mktree: adding quad to
+  tree", "cleartrees: emitting tree", "cannot recreate tree (%d, %d)".
