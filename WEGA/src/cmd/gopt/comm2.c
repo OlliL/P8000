@@ -354,7 +354,7 @@ int
 plainicon(p)
 	register NODE *p;
 {
-	return p->in.op == ICON && p->tn.lval == 0 && p->tn.rval >= 0;
+	return p->in.op == ICON && p->in.sname == 0 && p->tn.rval >= 0;
 }
 
 /* the areas of the tables: each has a segment of its own (area 1 may move to another one) */

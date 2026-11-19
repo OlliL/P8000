@@ -129,3 +129,10 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   tprint (shared fprintf call, popt), ispow2 (`sdal` by -1 against `sral`). Not drafted yet: the area allocator of the module
   (4:4738, 4:4934, 4:4a48, strings "C Optimizer: out of space", "deallocation error in table area %d", "// sgbrk(%X)", the
   flag at 4d7c) and 4:3edc. fncheck.py: FNC_ROOT, FNC_CC, FNC_FLAGS (-Dstatic= for the static functions), FNC_EXTRA, FNC_OLDV7.
+- 2026-11-19: gopt, the area allocator (taballoc, tabfree, tabavail in comm2.c: ssgbrk/mkseg/sgbrk of slibc, 11 areas, names guessed;
+  tabfree open: one register/frame reload) and rdr2.c (the symbol table and intermediate file readers, relative codgen/rdr3.c, rdr 2.5:
+  rdsym, readsyms, readtab, readnums, readmems, sortsyms, prtags, tagfind, mapn, mapsym, mapnm, mkhash, nlcheck, eread, rdin,
+  rdin2; with the debug prints; mkhash open: one reload). 63 of the 599 starts have a source (masked equal with sccvc, 5 open: tprint,
+  ispow2, tabfree, mkhash; 36 equal). The compiler is sccvc: 34 of 40 drafted functions equal, every other segmented compiler 6 or fewer.
+  Not an own module: 5:9bc0 on (slibc: _doscan, printf ..., ssgbrk at 5:c3a2) and probably 4:f5fe..4:ff78 (fread, fseek, getw): the libc
+  members are at the end of both code segments; the data of gopt's last SCCS line (alias2.c 1.3 08/30/82) lies in front of the libc data.

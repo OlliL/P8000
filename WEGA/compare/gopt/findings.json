@@ -549,117 +549,139 @@
    "kind": "proven",
    "module": "debug2.c"
   },
-  "f4_2ec6": {
+  "rdsym": {
    "orig": "4:2ec6",
    "size_orig": 482,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c"
   },
-  "f4_30a8": {
+  "readsyms": {
    "orig": "4:30a8",
    "size_orig": 624,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c",
+   "note": "the debug print \"index = %d\" prints the pointer tab with %d (kept)"
   },
-  "f4_3318": {
+  "readtab": {
    "orig": "4:3318",
    "size_orig": 168,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c"
   },
-  "f4_33c0": {
+  "readnums": {
    "orig": "4:33c0",
    "size_orig": 296,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c"
   },
-  "f4_34e8": {
+  "readmems": {
    "orig": "4:34e8",
    "size_orig": 814,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c",
+   "note": "`top:` label at the start (without it n is compared in r7, not in the frame); fseek whence 0 (int) here, 0L in rdsym; mem[550] static in data"
   },
-  "f4_3816": {
+  "sortsyms": {
    "orig": "4:3816",
    "size_orig": 240,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c"
   },
-  "f4_3906": {
+  "prtags": {
    "orig": "4:3906",
    "size_orig": 94,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c",
+   "note": "name guessed"
   },
-  "f4_3964": {
+  "tagfind": {
    "orig": "4:3964",
    "size_orig": 312,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c"
   },
-  "f4_3a9c": {
+  "mapn": {
    "orig": "4:3a9c",
    "size_orig": 56,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c"
   },
-  "f4_3ad4": {
+  "mapsym": {
    "orig": "4:3ad4",
    "size_orig": 82,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c"
   },
-  "f4_3b26": {
+  "mapnm": {
    "orig": "4:3b26",
    "size_orig": 88,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c"
   },
-  "f4_3b7e": {
+  "mkhash": {
    "orig": "4:3b7e",
    "size_orig": 44,
    "status": "open",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c",
+   "note": "open: the original reloads symtab after `symtab->nameoff = 0` (ldl rr2,symtab before inc r3,#16), ours keeps rr2; one instruction; not tried further (popt: knowledge of a register after a store through it)"
   },
-  "f4_3baa": {
+  "nlcheck": {
    "orig": "4:3baa",
    "size_orig": 78,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c"
   },
-  "f4_3bf8": {
+  "eread": {
    "orig": "4:3bf8",
    "size_orig": 740,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c",
+   "note": "an unused local int x (frame); the test `op == 0x73` after optype() is dead (erflag is never set), as in codgen/rdr3.c; the file position of the input after an erflag is kept in ifpos"
   },
-  "f4_3edc": {
+  "rdin": {
    "orig": "4:3edc",
    "size_orig": 22,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c|comm2.c"
+   "module": "rdr2.c|comm2.c",
+   "file": "rdr2.c"
   },
-  "f4_3ef2": {
+  "rdin2": {
    "orig": "4:3ef2",
    "size_orig": 236,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c"
+   "module": "rdr2.c",
+   "file": "rdr2.c",
+   "note": "the bad character: `if (c >= 0 && c <= 9) {...; continue;}` first, the error after it (other forms put the error block inline)"
   },
   "uerror": {
    "orig": "4:3fde",
@@ -2394,105 +2416,105 @@
    "size_orig": 260,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_f702": {
    "orig": "4:f702",
    "size_orig": 426,
    "status": "open",
    "kind": "candidate",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_f8ac": {
    "orig": "4:f8ac",
    "size_orig": 206,
    "status": "open",
    "kind": "candidate",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_f97a": {
    "orig": "4:f97a",
    "size_orig": 206,
    "status": "open",
    "kind": "candidate",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_fa48": {
    "orig": "4:fa48",
    "size_orig": 92,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_faa4": {
    "orig": "4:faa4",
    "size_orig": 98,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_fb06": {
    "orig": "4:fb06",
    "size_orig": 226,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_fbe8": {
    "orig": "4:fbe8",
    "size_orig": 30,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_fc06": {
    "orig": "4:fc06",
    "size_orig": 52,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_fc3a": {
    "orig": "4:fc3a",
    "size_orig": 352,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_fd9a": {
    "orig": "4:fd9a",
    "size_orig": 182,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_fe50": {
    "orig": "4:fe50",
    "size_orig": 128,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_fed0": {
    "orig": "4:fed0",
    "size_orig": 132,
    "status": "open",
    "kind": "candidate",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_ff54": {
    "orig": "4:ff54",
    "size_orig": 36,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f4_ff78": {
    "orig": "4:ff78",
    "size_orig": 134,
    "status": "open",
    "kind": "proven",
-   "module": "live2.c|ebbo2.c"
+   "module": "libc?"
   },
   "f5_0000": {
    "orig": "5:0000",
@@ -3612,637 +3634,637 @@
    "size_orig": 830,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_9efe": {
    "orig": "5:9efe",
    "size_orig": 46,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_9f2c": {
    "orig": "5:9f2c",
    "size_orig": 50,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_9f5e": {
    "orig": "5:9f5e",
    "size_orig": 530,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_a170": {
    "orig": "5:a170",
    "size_orig": 58,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_a1aa": {
    "orig": "5:a1aa",
    "size_orig": 64,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_a1ea": {
    "orig": "5:a1ea",
    "size_orig": 122,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_a264": {
    "orig": "5:a264",
    "size_orig": 54,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_a29a": {
    "orig": "5:a29a",
    "size_orig": 512,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_a49a": {
    "orig": "5:a49a",
    "size_orig": 754,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_a78c": {
    "orig": "5:a78c",
    "size_orig": 338,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_a8de": {
    "orig": "5:a8de",
    "size_orig": 112,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_a94e": {
    "orig": "5:a94e",
    "size_orig": 98,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_a9b0": {
    "orig": "5:a9b0",
    "size_orig": 86,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_aa06": {
    "orig": "5:aa06",
    "size_orig": 132,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_aa8a": {
    "orig": "5:aa8a",
    "size_orig": 124,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_ab06": {
    "orig": "5:ab06",
    "size_orig": 440,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_acbe": {
    "orig": "5:acbe",
    "size_orig": 6,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_acc4": {
    "orig": "5:acc4",
    "size_orig": 52,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_acf8": {
    "orig": "5:acf8",
    "size_orig": 8,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_ad00": {
    "orig": "5:ad00",
    "size_orig": 8,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_ad08": {
    "orig": "5:ad08",
    "size_orig": 58,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_ad42": {
    "orig": "5:ad42",
    "size_orig": 8,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_ad4a": {
    "orig": "5:ad4a",
    "size_orig": 8,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_ad52": {
    "orig": "5:ad52",
    "size_orig": 8,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_ad5a": {
    "orig": "5:ad5a",
    "size_orig": 8,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_ad62": {
    "orig": "5:ad62",
    "size_orig": 280,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_ae7a": {
    "orig": "5:ae7a",
    "size_orig": 222,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_af58": {
    "orig": "5:af58",
    "size_orig": 112,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_afc8": {
    "orig": "5:afc8",
    "size_orig": 50,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_affa": {
    "orig": "5:affa",
    "size_orig": 546,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b21c": {
    "orig": "5:b21c",
    "size_orig": 158,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b2ba": {
    "orig": "5:b2ba",
    "size_orig": 108,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b326": {
    "orig": "5:b326",
    "size_orig": 8,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b32e": {
    "orig": "5:b32e",
    "size_orig": 8,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b336": {
    "orig": "5:b336",
    "size_orig": 72,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b37e": {
    "orig": "5:b37e",
    "size_orig": 66,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b3c0": {
    "orig": "5:b3c0",
    "size_orig": 4,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b3c4": {
    "orig": "5:b3c4",
    "size_orig": 6,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b3ca": {
    "orig": "5:b3ca",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b3d8": {
    "orig": "5:b3d8",
    "size_orig": 10,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b3e2": {
    "orig": "5:b3e2",
    "size_orig": 4,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b3e6": {
    "orig": "5:b3e6",
    "size_orig": 4,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b3ea": {
    "orig": "5:b3ea",
    "size_orig": 6,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b3f0": {
    "orig": "5:b3f0",
    "size_orig": 10,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b3fa": {
    "orig": "5:b3fa",
    "size_orig": 6,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b400": {
    "orig": "5:b400",
    "size_orig": 24,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b418": {
    "orig": "5:b418",
    "size_orig": 20,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b42c": {
    "orig": "5:b42c",
    "size_orig": 20,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b440": {
    "orig": "5:b440",
    "size_orig": 94,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b49e": {
    "orig": "5:b49e",
    "size_orig": 22,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b4b4": {
    "orig": "5:b4b4",
    "size_orig": 24,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b4cc": {
    "orig": "5:b4cc",
    "size_orig": 444,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b688": {
    "orig": "5:b688",
    "size_orig": 20,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b69c": {
    "orig": "5:b69c",
    "size_orig": 118,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b712": {
    "orig": "5:b712",
    "size_orig": 268,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b81e": {
    "orig": "5:b81e",
    "size_orig": 276,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b932": {
    "orig": "5:b932",
    "size_orig": 106,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b99c": {
    "orig": "5:b99c",
    "size_orig": 44,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_b9c8": {
    "orig": "5:b9c8",
    "size_orig": 140,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_ba54": {
    "orig": "5:ba54",
    "size_orig": 304,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_bb84": {
    "orig": "5:bb84",
    "size_orig": 124,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_bc00": {
    "orig": "5:bc00",
    "size_orig": 42,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_bc2a": {
    "orig": "5:bc2a",
    "size_orig": 8,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_bc32": {
    "orig": "5:bc32",
    "size_orig": 12,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_bc3e": {
    "orig": "5:bc3e",
    "size_orig": 282,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_bd58": {
    "orig": "5:bd58",
    "size_orig": 158,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_bdf6": {
    "orig": "5:bdf6",
    "size_orig": 42,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_be20": {
    "orig": "5:be20",
    "size_orig": 644,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c0a4": {
    "orig": "5:c0a4",
    "size_orig": 48,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c0d4": {
    "orig": "5:c0d4",
    "size_orig": 224,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c1b4": {
    "orig": "5:c1b4",
    "size_orig": 40,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c1dc": {
    "orig": "5:c1dc",
    "size_orig": 30,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c1fa": {
    "orig": "5:c1fa",
    "size_orig": 30,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c218": {
    "orig": "5:c218",
    "size_orig": 58,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c252": {
    "orig": "5:c252",
    "size_orig": 48,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c282": {
    "orig": "5:c282",
    "size_orig": 38,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c2a8": {
    "orig": "5:c2a8",
    "size_orig": 40,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c2d0": {
    "orig": "5:c2d0",
    "size_orig": 16,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c2e0": {
    "orig": "5:c2e0",
    "size_orig": 38,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c306": {
    "orig": "5:c306",
    "size_orig": 24,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c31e": {
    "orig": "5:c31e",
    "size_orig": 20,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c332": {
    "orig": "5:c332",
    "size_orig": 16,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c342": {
    "orig": "5:c342",
    "size_orig": 40,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c36a": {
    "orig": "5:c36a",
    "size_orig": 40,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c392": {
    "orig": "5:c392",
    "size_orig": 16,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c3a2": {
    "orig": "5:c3a2",
    "size_orig": 22,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c3b8": {
    "orig": "5:c3b8",
    "size_orig": 8,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c3c0": {
    "orig": "5:c3c0",
    "size_orig": 40,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c3e8": {
    "orig": "5:c3e8",
    "size_orig": 44,
    "status": "open",
    "kind": "proven",
-   "module": "alias2b.c"
+   "module": "libc"
   },
   "f5_c414": {
    "orig": "5:c414",
    "size_orig": 236,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2b.c"
+   "module": "libc"
   }
  },
  "status_note": "masked = the function equals the original under fncheck.py (segment numbers and addresses masked), compiler sccvc under OLDROOT; exact only after the link with segcmp.py"

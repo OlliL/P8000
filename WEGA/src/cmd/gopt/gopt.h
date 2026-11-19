@@ -106,10 +106,10 @@ union ndu {
 		int	type;
 		char	su;
 		char	fsu;
-		long	lval;		/* 8 */
-		int	pad1;		/* 0xC */
-		int	pad2;		/* 0xE */
-		int	pad3;		/* 0x10 */
+		int	pad1;		/* 8 */
+		int	pad2;		/* 0xA */
+		int	temp;		/* 0xC: the number of a TEMP */
+		long	lval;		/* 0xE */
 		int	rval;		/* 0x12 */
 		int	pad4;		/* 0x14 */
 	}tn;
@@ -120,13 +120,15 @@ union ndu {
 		char	su;
 		char	fsu;
 		int	stsize;		/* 8 */
-		int	stalign;
+		int	stalign;	/* 0xA */
 	}stn;
 };
 
+#define MAXASCII	0x1194
+
 struct sym {
 	int	nameoff;
-	int	stype;
+	unsigned stype;
 	char	sclass;
 	char	sbyte5;
 	int	sx6;

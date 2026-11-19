@@ -1207,6 +1207,7 @@ means it does something fixed instead (only possible where the original's result
 | `/etc/restor` | `direq` has a dangling else (`if (*s1++ == *s2) if (*s2++ == 0) return(1); else return(0);`): the search of `x` stops at the first entry of every directory, so no name is found ("not on the archiv") and nothing is extracted; the files of `x` would be named by their i-node numbers | kept | `compare/restor` |
 | `/etc/mvdir` | `echo "mvdir: cannot move \`.'"` has an unbalanced backquote: the shell reports a failed command ".'" instead of the message (status 2) | kept | `compare/mvdir` |
 | `/lib/gopt` (`tfree1`, `bsize`, `szty`, `tbytes`) | the message of `tfree1` starts with a blank (" freeing blank tree!"); `bsize` returns 16 for a pointer also in the segmented program; the pointer tests in `szty` and `tbytes` have no effect (both outcomes give the same value) | kept (comm2.c, status masked) | `compare/gopt/findings.json` |
+| `/lib/gopt` (`readsyms`, `eread`, `mkhash`) | the debug print "index = %d" prints the pointer to the symbol with %d; `eread` tests `op == 0x73` after `optype()` (dead, `erflag` is never set; as codgen's rdr3.c); `mkhash` sets `sflags |= 4` on the first symbol only | kept (rdr2.c) | `compare/gopt/findings.json` |
 
 ## ar (reconstructed, byte-identical)
 
