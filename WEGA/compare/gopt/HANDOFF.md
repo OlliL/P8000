@@ -27,6 +27,6 @@ Next (in this order):
 
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
-TASK: ebbo2.c (segment 5: 5:0000 ebbopt (192), 5:00c0 (84), 5:0114 (188), 5:01d0 (260), 5:02d4 (472) ...): create src/cmd/gopt/ebbo2.c (SCCS line ebbo2.c 1.8 03/04/83 15:54:14, like live2.c) and write the functions in address order; add ebbo2.o to `part` in the Makefile.
-START: fnc.py -a live2.c flow2.c dom2.c (open: the register cache ones and the layout ones, see findings.json: leave them); odisc.py -o ebbopt (RECON_PROG=gopt; the keys of segment 5 are f5_XXXX); regdiff.py FILE.diff. Forms that helped: BOPT/BBIT (address of the 10 byte entries of betatbl: index first), (long)(a == b), chains p = darr[d] = ..., unused locals to get the frame size.
-STOP WHEN: 12 functions of ebbo2 are written and checked, or at 70% of the context.
+TASK: ebbo2.c (segment 5), after ebbinit (5:00c0) and ebbopt (5:0000), written and masked: 5:0114 (188 bytes + its case blocks 5:01d0, 5:02d4, 5:04ac, 5:05fe, 5:06c6, 5:06e4/5:0718, 5:0778, 5:07b4, 5:07d2: one function of about 1900 bytes up to 5:0894: a switch on q->op with 59 values and 9 targets, jump table at 5:5704; first set the case blocks' notes to "case block of f5_0114" in findings.json, rename.py f5_0114 NAME), then 5:0894 (420), 5:0a38 (348), 5:0b94 (486: the optimizer of one extended basic block, called by ebbopt).
+START: fnc.py -a ebbo2.c (ebbinit, ebbopt masked); odisc.py -o f5_0114 (RECON_PROG=gopt); the placeholders fn5_0114, fn5_0b94, fn5_1ffc, fn5_206c in ebbo2.c get their names with rename.py -m.
+STOP WHEN: 5:0114 with its case blocks is written and checked, or at 70% of the context.

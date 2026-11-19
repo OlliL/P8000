@@ -214,3 +214,4 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 - 2026-11-19: gopt: live2.c prvec, allocvec, alloclivevecs, bitpos, initlive, allocreachvecs, sameopnd and the vector functions (setwords, clrvec, copyvec, eqvec, andnotvec, orvec); the forms BOPT (address of betatbl[j].x) and (long)(a == b) found. Next: live2 4:e400 ...
 - 2026-11-19: gopt: live2.c finished (4:ca88 .. 4:f5fe: the live variables and the reaching definitions: linkreachdefs, srchdef, killdefs, initreach, initvecs, confluence, transfer, solvereach, solvelive, livevars, reachdefs, clearflags and the debug prints); segment 4 is complete up to the libc part (4:f5fe).
   Next: ebbo2.c (segment 5), then lpinv2, lpind2, reg2, alias2b; the libc.
+- 2026-11-19: gopt: ebbo2.c begun (ebbinit, ebbopt masked); ebbo2.o in `part`. Next: 5:0114 with its case blocks (the scan of the extended basic block), 5:0894, 5:0a38, 5:0b94.

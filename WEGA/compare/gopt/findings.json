@@ -3067,16 +3067,20 @@
   "ebbopt": {
    "orig": "5:0000",
    "size_orig": 192,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c",
+   "note": "name guessed (loop over the extended basic blocks: ebbinit, fn5_0114 finds the end, fn5_0b94 optimizes it)"
   },
   "ebbinit": {
    "orig": "5:00c0",
    "size_orig": 84,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c",
+   "note": "name guessed (the tables of the extended basic block are cleared: htab[32], flags)"
   },
   "f5_0114": {
    "orig": "5:0114",
