@@ -2,9 +2,8 @@
  * flow2.c - gopt: the flow graph (the basic blocks of the quads and the edges between them). Written from /lib/gopt (no source known);
  * names guessed, the callees of other modules by the address (fnXXXX).
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]flow2.c\t1.6  03/04/83 15:55:39 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 struct edge { int next; int blk; };	/* an entry of the edge lists: 4 bytes (guessed) */
 

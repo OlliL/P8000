@@ -2,9 +2,8 @@
  * debug2.c - gopt: the names of the quad operators and the printing of the quads (debug output). Written from /lib/gopt (no source known);
  * names guessed.
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]debug2.c\t1.3  02/07/83 15:51:07 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 extern struct quad *qhead;
 extern char ascii[];

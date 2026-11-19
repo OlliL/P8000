@@ -159,3 +159,5 @@ struct dopest { int dopeop; char opst[8]; int dopeval; };	/* 12 bytes */
 extern struct dopest indope[];
 extern int dope[];
 extern char *opst[];
+
+static char mfile2sccs[] = "@[$]mfile2.h\t1.7  03/04/83 16:06:50 Copr. 1981 87wega3.2.";

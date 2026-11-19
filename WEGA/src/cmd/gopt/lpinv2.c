@@ -2,9 +2,9 @@
  * lpinv2.c - gopt: the loop invariant code motion (segment 5). Written from /lib/gopt (no source known); names guessed, the
  * callees by the address (fnXXXX).
  */
+static char sccsid[] = "@[$]lpinv2.c\t1.10  03/04/83 15:58:16 Copr. 1981 87wega3.2.";
 #include "gopt.h"
 
-static char sccsid[] = "@[$]lpinv2.c\t1.10  03/04/83 15:58:16 Copr. 1981 87wega3.2.";
 static int lblcnt = 15000;
 
 struct bl { struct bl *next; int blk; };	/* a list of blocks */

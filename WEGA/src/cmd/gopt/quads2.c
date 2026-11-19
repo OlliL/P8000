@@ -2,9 +2,10 @@
  * quads2.c - gopt: the quadruples (tree rewriting before them, the list of quads, the tables of constants). Written from /lib/gopt
  * (no source known); names guessed, the callees of other modules by the address (fnXXXX).
  */
+static char sccsid[] = "@[$]quads2.c\t1.8  03/04/83 16:00:29 Copr. 1981 87wega3.2.";
 #include "gopt.h"
 
-static char sccsid[] = "@[$]quads2.c\t1.8  03/04/83 16:00:29 Copr. 1981 87wega3.2.";
+int ntl = 0, ctmpoff = 0, nctmp = 0, nctmpuses = 0, nest = 0;
 
 extern NODE *talloc();
 extern NODE *tcopy();
@@ -1011,3 +1012,5 @@ mapall(p)
 		p->in.op = FREE;
 	}
 }
+
+int tmpno = 25000;

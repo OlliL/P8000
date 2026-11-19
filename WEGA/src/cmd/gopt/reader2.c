@@ -2,9 +2,10 @@
  * reader2.c - gopt: main, the reader of the intermediate file and the pass control. Written from /lib/gopt (no source known);
  * the names of the callees in other modules are placeholders (fnXXXX = the address in /lib/gopt, segment 4) until their modules exist.
  */
+static char sccsid[] = "@[$]reader2.c\t1.5  03/04/83 16:01:42 Copr. 1981 87wega3.2.";
 #include "gopt.h"
 
-static char sccsid[] = "@[$]reader2.c\t1.5  03/04/83 16:01:42 Copr. 1981 87wega3.2.";
+int s0078 = 0;
 
 extern char ifname[];
 extern int ifline;
@@ -326,7 +327,7 @@ passes()
 	if (s0078 == 0) {
 		aliasm();
 		if (qflag > 4) {
-			printf("// quads before aliasm\n");
+			printf("// quads before aliasm");
 			prquads();
 		}
 		if (aliasmat() && qflag > 4)

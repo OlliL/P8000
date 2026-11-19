@@ -2,9 +2,8 @@
  * reg2.c - gopt: the optimizer driver and the register allocation (segment 5). Written from /lib/gopt (no source known);
  * names guessed, the callees by the address (fnXXXX).
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]reg2.c\t1.11  03/04/83 16:04:05 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 struct bl { struct bl *next; int blk; };	/* a list of blocks */
 struct loop { struct bl *bls; int hdr; struct loop *link; struct bl *exits; int tail; int cnt; unsigned b15:1, b14:1, b13:1, b12:1, b11:1, b10:1; };

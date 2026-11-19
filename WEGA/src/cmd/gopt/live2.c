@@ -1,9 +1,8 @@
 /*
  * live2.c - gopt: the live variables. Written from /lib/gopt (no source known); names guessed.
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]live2.c\t1.9  01/07/83 13:42:01 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 extern struct sym *symtab;
 extern char ascii[];
@@ -826,7 +825,7 @@ linkreachdefs()
 				if ((long)defs[j] & 1)
 					continue;
 				if (s4d84 > 5) {
-					printf("// before calling sameopnd, i = %d, reachmap[i] = ", i, defs[i]);
+					printf("// before calling sameopnd, i = %d, reachmap[i] = %X\n", i, defs[i]);
 					prquad(defs[i]);
 				}
 				if (!sameopnd(MASK(defs[i]), defs[j], 1, 1))
@@ -1288,3 +1287,5 @@ reachdefs()
 	if (s4d92)
 		prreachstat();
 }
+
+int s4f20 = 1, s4f22 = 1;

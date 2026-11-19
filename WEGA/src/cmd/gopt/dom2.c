@@ -2,9 +2,8 @@
  * dom2.c - gopt: the dominators of the flow graph (depth first search; the arrays are indexed by the block number + 1). Written from
  * /lib/gopt (no source known); names guessed, the callees of other modules by the address (fnXXXX).
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]dom2.c\t1.2  01/07/83 13:38:58 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 struct edge { int next; int blk; };	/* the edge lists of flow2.c */
 

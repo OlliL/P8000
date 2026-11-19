@@ -3,9 +3,9 @@
  * original by comm2.c 1.1 07/07/82 of the optimizer). Written from /lib/gopt (no source known); the relative is
  * ../codgen/comm3.c (the same file one version later: 2.5 08/24/83).
  */
+static char sccsid[] = "@[$]comm2.c\t1.1  07/07/82 15:54:49 Copr. 1981 87wega3.2.";
 #include "gopt.h"
 
-static char sccsid[] = "@[$]comm2.c\t1.1  07/07/82 15:54:49 Copr. 1981 87wega3.2.";
 static char commsccs[] = "@[$]common\t2.4  03/04/83 15:24:28 Copr. 1981 87wega3.2.";
 
 extern char ifname[];
@@ -292,6 +292,9 @@ tbytes(t)
 	return 2;
 }
 
+/* a table of the relational operators (0x50 .. 0x59) that no function of the pass uses (it is in the data of the original) */
+static int relops[] = { 0x50, 0x51, 0x54, 0x55, 0x52, 0x53, 0x58, 0x59, 0x56, 0x57 };
+
 void
 dexit(n)
 	int n;
@@ -418,7 +421,7 @@ tabfree(a, p)
 		p = (char *)((long)arptr[a] & SEGMASK);
 	else if (s1 != s2) {
 		if (a != 1)
-			cerror("deallocation error in table area %d", a);
+			cerror("deallocation error in table area %d\n", a);
 		else {
 			if (qflag)
 				printf("// sgbrk(%X)\n", (long)arptr[a] & SEGMASK);

@@ -1,9 +1,8 @@
 /*
  * alias2b.c - gopt: a rest of the alias module (segment 5). Written from /lib/gopt (no source known); names guessed.
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]alias2.c\t1.3  08/30/82 17:11:29 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 extern struct quad **blks;
 

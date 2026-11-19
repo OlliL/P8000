@@ -2,9 +2,8 @@
  * wrtil2.c - gopt: the quads are made into trees again and written as the intermediate language. Written from /lib/gopt (no source
  * known); names guessed, the callees of other modules by the address (fnXXXX).
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]wrtil2.c\t1.7  03/04/83 16:06:00 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 #define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
 
@@ -105,7 +104,7 @@ writeil()
 				printf("%d\t", edges[i].val);
 				deledge(&q->b.w4, edges[i].val);
 			}
-			printf("");
+			printf("\0");
 			for (i = q->a.w4; i >= 0; i = edges[i].next)
 				if (*(int *)((char *)blks[edges[i].val] + 0x16) < 0)
 					printf("%d\t", edges[i].val);

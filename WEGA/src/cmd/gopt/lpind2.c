@@ -2,9 +2,8 @@
  * lpind2.c - gopt: the induction variables of the loops (segment 5). Written from /lib/gopt (no source known); names guessed,
  * the callees by the address (fnXXXX).
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]lpind2.c\t1.5  02/07/83 15:54:28 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 extern int s4d86;
 extern long constbl[];
@@ -279,7 +278,7 @@ struct quad *outq;
 	t->e14 = c;
 	outq->a = c;
 	if (s4d86 > 3) {
-		printf("insrtopnd(), ip->opndstmp=");
+		printf("insrtopnd(), ip->opndstmp=\n");
 		propnd(&c);
 		printf("\n");
 	}
@@ -303,7 +302,7 @@ struct quad *outq;
 	     (kind == 3 && (opqd->a.b2 == 1 || opqd->a.b2 == 7) && (opqd->op == 1 || opqd->op == 48)))) {
 		t->e14 = p->e14;
 		if (s4d86 > 3) {
-			printf("copyopndstmp(), copied indopnd: ");
+			printf("copyopndstmp(), copied indopnd: \n");
 			propnd(&p->e14);
 			printf("\n");
 		}

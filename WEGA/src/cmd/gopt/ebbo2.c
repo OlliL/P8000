@@ -2,9 +2,8 @@
  * ebbo2.c - gopt: the optimization of the extended basic blocks (segment 5). Written from /lib/gopt (no source known); names guessed, the
  * callees by the address (fnXXXX).
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]ebbo2.c\t1.8  03/04/83 15:54:14 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 extern int s4d80, s4d94, a0d4, a0d2, s71e4, s71e6, s71e8, s71ea;
 extern struct quad *qhead;

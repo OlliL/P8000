@@ -2,9 +2,8 @@
  * beta2.c - gopt: the beta table (segment 4): every temporary and every alias class gets an entry; the operands of the
  * quads are renumbered to it. Written from /lib/gopt (no source known); names guessed.
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]beta2.c\t1.5  01/07/83 13:38:14 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, b12:1, fl:1, b10:1, rest:10; };	/* an entry of betatbl: 10 bytes (guessed) */
 extern struct bt *betatbl;

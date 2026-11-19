@@ -2,9 +2,8 @@
  * alias2.c - gopt: the alias analysis (the affect matrix, the alias matrix, the bit matrices). Written from /lib/gopt (no source known);
  * names guessed, the callees of other modules by the address (fnXXXX).
  */
-#include "gopt.h"
-
 static char sccsid[] = "@[$]alias2.c\t1.5  02/07/83 15:50:16 Copr. 1981 87wega3.2.";
+#include "gopt.h"
 
 #define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 
@@ -579,7 +578,7 @@ checkops(q, mode)
 			return 1;
 		}
 		if (aflag > 2) {
-			printf("// at the bottom of checkops, p = ");
+			printf("at the bottom of checkops, p = ");
 			prquad(q);
 		}
 	} while (x == 0);

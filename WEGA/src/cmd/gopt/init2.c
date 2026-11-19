@@ -1,14 +1,17 @@
 /*
  * init2.c - gopt: the options and the files of the optimizer pass. Written from /lib/gopt (no source known); names guessed.
  */
+static char sccsid[] = "@[$]init2.c\t1.3  02/07/83 15:53:16 Copr. 1981 87wega3.2.";
 #include "gopt.h"
 
-static char sccsid[] = "@[$]init2.c\t1.3  02/07/83 15:53:16 Copr. 1981 87wega3.2.";
+char ifname[100] = {0};
+int s4d72 = 0, s4d74 = 0, s4d76 = 0, s4d78 = 0, s4d7a = 0, qflag = 0, aflag = 0, s4d80 = 0, s4d82 = 0, s4d84 = 0, s4d86 = 0, s4d88 = 0;
+int dflag = 0, tflag = 0, eflag = 0, s4d90 = 0, s4d92 = 0, s4d94 = 0, s4d96 = 0;
 
 extern int aflag;
 extern int s4d72, qflag, s4d80, s4d82, s4d84, s4d86, s4d88, dflag, tflag, eflag, s4d90, s4d92, s0b5e;
 extern FILE *stfile, *infile, *dfile;
-extern long stg, symoff;
+extern long stg, stpos;
 extern char *strcpy(), *strcat();
 extern int uerror();
 extern void mkdope(), mkqnames();
@@ -74,7 +77,7 @@ initopts(argc, argv)
 					if (stfile == 0)
 						printf("error in opening symbol table file %s\n", argv[i - 1]);
 					fread(&stg, 4, 1, stfile);
-					symoff = ftell(stfile);
+					stpos = ftell(stfile);
 					infile = fopen(strcat(strcpy(buf, argv[i]), ".I"), "r");
 					if (infile == 0)
 						printf("error in opening intermediate file %s\n", argv[i - 1]);
