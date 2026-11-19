@@ -28,5 +28,5 @@ Next (in this order):
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
 TASK: alias2.c: 4:87e6 (initaffect, 474 bytes; calls taballoc, fndcall, fndparm, checkops, addaffect, 5:2bca), then 4:89c0 (94) and 4:8a1e (128).
-START: fnc.py -a alias2.c (almap masked; checkops DIFF 25 and addaffect DIFF 3 are open, leave both); odisc.py -o f4_87e6; the global affdim (70b6) is declared in alias2.c, affect 70d4 and modval 70ae too.
+START: fnc.py -a alias2.c (almap masked; checkops DIFF 25 and addaffect DIFF 3 are open, leave both); odisc.py -o initaffect; the global affdim (70b6) is declared in alias2.c, affect 70d4 and modval 70ae too.
 STOP WHEN: 4:87e6 is written and checked, or at 70% of the context.

@@ -16,7 +16,9 @@ extern int tagfind(), itfind();
 extern char *taballoc();
 extern int *altab;
 extern int *affect, *modval;
-extern int affdim;
+extern int matw, affdim;
+struct aln { int x0; struct aln *next; };	/* a node of the free list of the alias lists: 6 bytes (guessed) */
+extern struct aln *alfree;
 extern int almap();
 extern struct sym *symtab;
 extern char ascii[];
@@ -629,35 +631,35 @@ addaffect(lop, lp, rop, rp)
 		switch (rop) {
 		case 0x2f:
 			d = almap(rp, 0x18);
-			setbit(affect, c, d, affdim);
+			setbit(affect, c, d, matw);
 			d = almap(rp, 0x2f);
-			setbit(modval, a, d, affdim);
+			setbit(modval, a, d, matw);
 			if (aflag > 1)
 				printf("//  p = q \n");
 			break;
 		case 0x18:
 		case 0x1e:
 			b = almap(rp, 0x18);
-			setbit(modval, a, b, affdim);
-			setbit(affect, c, b, affdim);
+			setbit(modval, a, b, matw);
+			setbit(affect, c, b, matw);
 			if (aflag > 1)
 				printf("//  p = *q \n");
 			break;
 		case 3:
 			d = almap(rp, 3);
-			setbit(modval, a, d, affdim);
+			setbit(modval, a, d, matw);
 			d = almap(rp, 0x2f);
-			setbit(affect, c, d, affdim);
+			setbit(affect, c, d, matw);
 			if ((rp->w0 & 0x30) == 0x10) {
 				d = almap(rp, 0x18);
-				setbit(affect, c, d, affdim);
+				setbit(affect, c, d, matw);
 				if (aflag > 1)
 					printf("//  p = &q \n");
 			}
 			break;
 		case 7:
-			setbit(modval, a, 0, affdim);
-			setbit(affect, a, 0, affdim);
+			setbit(modval, a, 0, matw);
+			setbit(affect, a, 0, matw);
 			if (aflag > 1)
 				printf("//  p = f() \n");
 			break;
@@ -671,35 +673,35 @@ addaffect(lop, lp, rop, rp)
 		switch (rop) {
 		case 0x2f:
 			d = almap(rp, 0x18);
-			setbit(affect, a, d, affdim);
+			setbit(affect, a, d, matw);
 			d = almap(rp, 0x2f);
-			setbit(modval, a, d, affdim);
+			setbit(modval, a, d, matw);
 			if (aflag > 1)
 				printf("//  *p = q \n");
 			break;
 		case 0x18:
 		case 0x1e:
 			b = almap(rp, 0x18);
-			setbit(affect, a, b, affdim);
-			setbit(modval, a, b, affdim);
+			setbit(affect, a, b, matw);
+			setbit(modval, a, b, matw);
 			if (aflag > 1)
 				printf("//  *p = *q \n");
 			break;
 		case 3:
 			d = almap(rp, 3);
-			setbit(modval, a, d, affdim);
+			setbit(modval, a, d, matw);
 			d = almap(rp, 0x2f);
-			setbit(affect, a, d, affdim);
+			setbit(affect, a, d, matw);
 			if ((rp->w0 & 0x30) == 0x10) {
 				d = almap(rp, 0x18);
-				setbit(affect, a, d, affdim);
+				setbit(affect, a, d, matw);
 				if (aflag > 1)
 					printf("//  *p = &q \n");
 			}
 			break;
 		case 7:
-			setbit(modval, a, 0, affdim);
-			setbit(affect, a, 0, affdim);
+			setbit(modval, a, 0, matw);
+			setbit(affect, a, 0, matw);
 			if (aflag > 1)
 				printf("//  *p = f() \n");
 			break;
@@ -712,12 +714,87 @@ addaffect(lop, lp, rop, rp)
 			a = almap(lp, 0x18);
 		else
 			a = almap(lp, 0x2f);
-		setbit(modval, a, 0, affdim);
-		setbit(affect, a, 0, affdim);
+		setbit(modval, a, 0, matw);
+		setbit(affect, a, 0, matw);
 		if (aflag > 1)
 			printf("//  f(....,&a,..) \n");
 		break;
 	default:
 		cerror("addaffect: illegal lop\n");
+	}
+}
+
+/* the affect matrix and the modify matrix (affdim rows of matw words) are filled from the quads */
+void
+initaffect()
+{
+	struct quad *q;
+	struct qa s;
+	int cls;
+	int i;
+
+	affect = (int *)taballoc(affdim * 2 * matw, 6);
+	modval = (int *)taballoc(affdim * 2 * matw, 6);
+	if (aflag > 1)
+		printf("// initaffect: affect=%X, modval=%X, affdim=%d\n", affect, modval, affdim);
+	pcur = q = qhead;
+	for (; q != 0; q = q->next) {
+		q = fndcall(q);
+		if (q == 0)
+			break;
+		if (q->op == 0x3b)
+			pcur = fn5_2bca(q);
+		else if (q->op == 0x2f) {
+			if (!checkops(q, 0))
+				continue;
+			cls = op70d8;
+			s = opnd70c8;
+			if (!checkops(q, 1))
+				continue;
+			addaffect(cls, &s, op70d8, &opnd70c8);
+		} else if (q->op == 0x34) {
+			if (q->a.b2 == 3 && fndparm(q))
+				addaffect(0x34, &opnd70c8, 0, (struct qa *)0);
+			else if (q->a.b2 == 4 && (DECREF(q->a.w0) & 0x30) == 0x10)
+				addaffect(0x34, &q->a, 0x18, (struct qa *)0);
+		}
+	}
+}
+
+/* a node of the free list alfree, or a new one */
+struct aln *
+alalloc()
+{
+	struct aln *p;
+
+	if (alfree == 0)
+		p = (struct aln *)taballoc(6, 6);
+	else {
+		p = alfree;
+		alfree = alfree->next;
+		if (aflag > 1)
+			printf("// alalloc(): node  allocated from alfree\n");
+	}
+	p->next = 0;
+	return p;
+}
+
+/* the list p is put on the free list (name guessed) */
+void
+alret(p)
+	struct aln *p;
+{
+	struct aln *q, *last;
+
+	if (alfree == 0) {
+		alfree = p;
+		if (aflag > 1)
+			printf("// nodes put on alfree for first time\n");
+	} else {
+		if (aflag > 1)
+			printf("// more nodes put on alfree\n");
+		for (q = last = alfree; q != 0; q = q->next)
+			last = q;
+		last->next = p;
 	}
 }

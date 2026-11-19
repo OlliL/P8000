@@ -1859,26 +1859,32 @@
    "note": "case block of addaffect",
    "file": "alias2.c"
   },
-  "f4_87e6": {
+  "initaffect": {
    "orig": "4:87e6",
    "size_orig": 474,
    "status": "open",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "open (DIFF 11, 3 attempts): the block `pcur = fn5_2bca(q)` (the 0x3b case, ends in a jump to q = q->next) stands in the original before the loop body (behind the jp to the test), in ours inline: the block order of popt (the same loop as aliasm); the rest equal. An unused local int (frame 0x12) and (struct qa *)0 for the null pointer argument of addaffect (the original passes a long 0). affdim (70b8, rows) and matw (70b6, words per row) guessed"
   },
-  "f4_89c0": {
+  "alalloc": {
    "orig": "4:89c0",
    "size_orig": 94,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "the free list alfree (70bc) of 6 byte nodes; name from the string"
   },
-  "f4_8a1e": {
+  "alret": {
    "orig": "4:8a1e",
    "size_orig": 128,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "name guessed (the strings say: nodes put on alfree)"
   },
   "f4_8a9e": {
    "orig": "4:8a9e",
