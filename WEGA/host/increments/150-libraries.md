@@ -108,3 +108,12 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   optimizer modules stay in the frame (no register variables seen in common). The start-up code at 0 is not the
   scrt0 of the system (`dec r15,#4; ldl ...,rr8`, `_environ` in <<8>>0). Next: setup as compare/sld (SEG, MODULES),
   the tools for two code segments, the compiler on common/rdr (the messages of codgen's rdr3.c, comm3.c are relatives).
+- 2026-11-19: /lib/gopt, session 2 (infrastructure only, no source written): compare/gopt/progcfg.py (CODESEGS: segment 4 at image
+  offset 0, 65534 bytes; segment 5 at 65534, 50432 bytes; addresses SEG:OFFSET), host/recon/own_table_seg2.py makes findings.json
+  (599 starts: 368 call targets = proven, 231 candidates after an unconditional ret/jump, some of them switch-table targets, so
+  a guess), host/recon/odis.py reads SEG:OFFSET (`odis.py f4_0042`, `odis.py 5:0114 0200`). 4:0042 is main (reads <<8>>050A,
+  stdin, calls 4:C69E and 4:4120 = tinit). Module of a function: its data references cluster by a per-module word (4d7c,
+  4d7e, 4d80 ... 4d90 in segment 7: 4:1d22..4:20b6 4d7c; 4:6c0a..4:8ed4 4d7e; 4:aaac..4:c538 4d82; 4:ca88..5:0 4d84; 5:2138..5:6bf2
+  4d86; 5:6eda..5:9adc 4d90; segment 5 from 5:9bc0 reads 75xx..79xx = the late modules), a guess for the module map. Still to do:
+  fncheck.py/bincmp.py/strictcmp for two code segments, the module map by function, then the source per module. Size of the
+  job: about 116 KB of code in 599 starts, nothing to start from but `common` (pcc, System III); it is several sessions, not one.
