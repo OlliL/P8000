@@ -3556,7 +3556,8 @@
    "status": "open",
    "kind": "proven",
    "module": "lpinv2.c",
-   "file": "lpinv2.c"
+   "file": "lpinv2.c",
+   "note": "open (DIFF 3): ours adds the displacement 12 to rr0 before ldl rr2,rr0, the original copies first (inc r3,#12); the same in marklpblocks"
   },
   "marklpblocks": {
    "orig": "5:21a4",
@@ -3564,7 +3565,8 @@
    "status": "open",
    "kind": "proven",
    "module": "lpinv2.c",
-   "file": "lpinv2.c"
+   "file": "lpinv2.c",
+   "note": "open (DIFF 3): ours adds the displacement 12 to rr0 before ldl rr2,rr0, the original copies first (inc r3,#12); the same in marklpblocks"
   },
   "qmkstore": {
    "orig": "5:2212",
@@ -3572,28 +3574,34 @@
    "status": "open",
    "kind": "proven",
    "module": "lpinv2.c",
-   "file": "lpinv2.c"
+   "file": "lpinv2.c",
+   "note": "open (DIFF 19): the original reloads the parameter q from the frame (ldl rr2,0(r15)), ours uses rr6 (cause 1) and the struct copy uses rr4/r2 instead of rr6/r0"
   },
   "srchdflist": {
    "orig": "5:226a",
    "size_orig": 700,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c",
+   "note": "open (DIFF 5): rr4 against rr6 as the pointer temp of the cp (cause 7)"
   },
   "clrsymflag": {
    "orig": "5:2526",
    "size_orig": 350,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_2684": {
+  "clropt": {
    "orig": "5:2684",
    "size_orig": 438,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c",
+   "note": "open (DIFF 33, same instruction count): block order of the a-operand part: the original has the (4,6,8) body at 5:26f2 behind the 3-case and the compare chain after the bodies (jumping back); ours keeps if/else order; switch (a.b2) gives a jump table (worse)"
   },
   "f5_283a": {
    "orig": "5:283a",

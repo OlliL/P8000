@@ -143,3 +143,44 @@ int ot;
 			symtab[betatbl[i].x1].sflags &= ~2;
 	}
 }
+
+extern struct quad *tmpsearch();
+extern void clrsymflag(), cerror();
+
+/* the flags of the operands of q are cleared; a temporary is followed to its definition (name from the debug output) */
+void
+clropt(q, firstq)
+struct quad *q, *firstq;
+{
+	struct quad *p;
+
+	if (s4d86 > 2) {
+		printf("clropt(firstq = %X), quad (%X) = \n", firstq, q);
+		prquad(q);
+	}
+	if (q->a.b2 == 3) {
+		p = tmpsearch(firstq, q->a.w4);
+		clropt(p, firstq);
+		if (q->b.b2 == 0)
+			return;
+	} else if (q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8) {
+		clrsymflag(q, 2);
+		if (q->b.b2 == 0)
+			return;
+	} else if (q->a.b2 == 1 || q->a.b2 == 2 || q->a.b2 == 7 || q->a.b2 == 5) {
+		if (q->b.b2 == 0)
+			return;
+	} else {
+		cerror("clropt(): illegal op1 opnd");
+		return;
+	}
+	if (q->op != 7) {
+		if (q->b.b2 == 3) {
+			p = tmpsearch(firstq, q->b.w4);
+			clropt(p, firstq);
+		} else if (q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8)
+			clrsymflag(q, 3);
+		else if (!(q->b.b2 == 1 || q->b.b2 == 2 || q->b.b2 == 7))
+			cerror("clropt(): illegal op2 opnd");
+	}
+}
