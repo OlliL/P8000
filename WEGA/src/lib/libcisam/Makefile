@@ -8,8 +8,8 @@
 #   make install PREFIX=dir   dir/usr/lib/libcisam.a, dir/usr/lib/slibcisam.a
 #   make clean
 
-CCV1C = ccv1c
-SCCV1C = sccv1c
+CC = ccv1c
+SCC = sccv1c
 CAS = cas
 PREFIX = /
 CFLAGS = -O -I../..
@@ -18,10 +18,10 @@ OBJS = build.o open.o read.o audit.o btree.o node.o item.o key.o lock.o supp.o b
 all: build/nonseg/libcisam.a build/seg/slibcisam.a
 
 build/nonseg/libcisam.a: FORCE
-	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CCV1C) -f ../../Makefile libcisam.a
+	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CC) -f ../../Makefile libcisam.a
 
 build/seg/slibcisam.a: FORCE
-	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCCV1C) -f ../../Makefile slibcisam.a
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCC) -f ../../Makefile slibcisam.a
 
 install: all
 	-mkdir $(PREFIX)/usr $(PREFIX)/usr/lib

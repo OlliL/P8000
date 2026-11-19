@@ -9,8 +9,8 @@
 #   make install PREFIX=dir   dir/lib/libm.a, dir/lib/slibm.a
 #   make clean
 
-CCV1 = ccv1
-SCCV1 = sccv1
+CC = ccv1
+SCC = sccv1
 CAS = cas
 AS = as
 PREFIX = /
@@ -20,10 +20,10 @@ COBJS = asin.o atan.o fmod.o gamma.o hypot.o jn.o j0.o j1.o pow.o log.o sin.o ta
 all: build/nonseg/libm.a build/seg/slibm.a
 
 build/nonseg/libm.a: FORCE
-	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CCV1) FPUTIL=fputil.s -f ../../Makefile libm.a
+	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CC) FPUTIL=fputil.s -f ../../Makefile libm.a
 
 build/seg/slibm.a: FORCE
-	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCCV1) FPUTIL=sfputil.s -f ../../Makefile slibm.a
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCC) FPUTIL=sfputil.s -f ../../Makefile slibm.a
 
 install: all
 	cp build/nonseg/libm.a $(PREFIX)/lib/libm.a

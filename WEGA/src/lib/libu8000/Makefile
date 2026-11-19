@@ -8,8 +8,8 @@
 #   make install PREFIX=dir   dir/usr/lib/libu8000.a, dir/usr/lib/slibu8000.a
 #   make clean
 
-CCV1 = ccv1
-SCCV1 = sccv1
+CC = ccv1
+SCC = sccv1
 CAS = cas
 PREFIX = /
 CFLAGS =
@@ -18,10 +18,10 @@ OBJS = disasm.o
 all: build/nonseg/libu8000.a build/seg/slibu8000.a
 
 build/nonseg/libu8000.a: FORCE
-	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CCV1) -f ../../Makefile libu8000.a
+	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CC) -f ../../Makefile libu8000.a
 
 build/seg/slibu8000.a: FORCE
-	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCCV1) -f ../../Makefile slibu8000.a
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCC) -f ../../Makefile slibu8000.a
 
 install: all
 	-mkdir $(PREFIX)/usr $(PREFIX)/usr/lib

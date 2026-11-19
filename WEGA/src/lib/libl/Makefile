@@ -8,8 +8,8 @@
 #   make install PREFIX=dir   dir/lib/libl.a, dir/lib/slibl.a, dir/usr/lib/lex/ncform
 #   make clean
 
-CCV1 = ccv1
-SCCV1 = sccv1
+CC = ccv1
+SCC = sccv1
 CAS = cas
 PREFIX = /
 CFLAGS = -O
@@ -20,10 +20,10 @@ SOBJS = allprint.s.o $(ALLOBJS)
 all: build/nonseg/libl.a build/seg/slibl.a
 
 build/nonseg/libl.a: FORCE
-	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CCV1) -f ../../Makefile libl.a
+	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CC) -f ../../Makefile libl.a
 
 build/seg/slibl.a: FORCE
-	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCCV1) -f ../../Makefile slibl.a
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCC) -f ../../Makefile slibl.a
 
 install: all
 	cp build/nonseg/libl.a $(PREFIX)/lib/libl.a

@@ -10,6 +10,7 @@ the time of the old programs; `make install PREFIX=dir` installs the shipped one
 | `libl` | `/lib/libl.a`, `/lib/slibl.a`, `/usr/lib/lex/ncform` | ccv1, sccv1 | System III sources: `host/KNOWLEDGE.md`, "libl.a, slibl.a, ncform" |
 | `liby` | `/lib/liby.a`, `/lib/sliby.a` | ccv1, sccv1 | System III sources: `host/KNOWLEDGE.md`, "liby.a, sliby.a" |
 | `libm` | `/lib/libm.a`, `/lib/slibm.a` | ccv1, sccv1; `as -f` | System III sources and `fputil.s`; open (compiler): `host/KNOWLEDGE.md`, "libm.a, slibm.a" |
+| `.` (`build/nonseg`, `build/seg`) | `/lib/cnvt.o`, `doprnt.o`, `mcrt0.o`; `/lib/scnvt.o`, `sdoprnt.o`, `smcrt0.o` | ccv1, sccv1 without -O; `as` | `cnvt.c`, `doprnt.c`: not the members of libc.a (`_hexchar` for `%X`), written from the objects; `mcrt0.s`, `smcrt0.s`: the start-up code for profiling (PLZ/ASM) |
 | `oldlibc` | `libc-v1.a` .. `libc-v10.a` | several | the libc of the old programs: [`oldlibc/README.md`](oldlibc/README.md) |
 | `oldslibc` | `slibc-v9.a`, `slibc-v11.a` | shipped cas, sccvc | the slibc of sld and cas: [`oldslibc/README.md`](oldslibc/README.md) |
 

@@ -293,7 +293,12 @@ def complete(rel, k, src, cc, lib):
                     u.append(x)
         return ', '.join(u) if u else '-'
     if name.endswith('.o'):
-        return join([obj_tools(name)]), 'n/a (object)'
+        t = obj_tools(name)
+        if name.startswith('s') and not mkrule(text, name) and mkrule(text, name[1:]) and 'SCC' in v:
+            # a segmented object made in build/seg under the name without s, by $(SCC) (src/lib: scnvt.o, sdoprnt.o)
+            t = [os.path.basename(v['SCC'].split()[0]) if x == os.path.basename(v.get('CC', '').split()[0] if v.get('CC') else '') else x
+                 for x in obj_tools(name[1:])]
+        return join([t]), 'n/a (object)'
     if k == 'archive':
         if cc == '-' or src.startswith('uts/'):
             objs = re.findall(r'^([\w./]+\.o)\s*:', text, re.M)

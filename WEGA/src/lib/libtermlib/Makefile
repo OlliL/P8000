@@ -7,8 +7,8 @@
 #   make install PREFIX=dir   dir/usr/lib/libtermlib.a, dir/usr/lib/slibtermlib.a
 #   make clean
 
-CCV1 = ccv1
-SCCV1 = sccv1
+CC = ccv1
+SCC = sccv1
 CAS = cas
 PREFIX = /
 CFLAGS = -O -DCM_N -DCM_GT -DCM_B -DCM_D
@@ -17,10 +17,10 @@ OBJS = termcap.o tgoto.o tputs.o
 all: build/nonseg/libtermlib.a build/seg/slibtermlib.a
 
 build/nonseg/libtermlib.a: FORCE
-	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CCV1) -f ../../Makefile libtermlib.a
+	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CC) -f ../../Makefile libtermlib.a
 
 build/seg/slibtermlib.a: FORCE
-	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCCV1) -f ../../Makefile slibtermlib.a
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCC) -f ../../Makefile slibtermlib.a
 
 install: all
 	-mkdir $(PREFIX)/usr $(PREFIX)/usr/lib

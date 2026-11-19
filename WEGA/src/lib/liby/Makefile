@@ -8,8 +8,8 @@
 #   make install PREFIX=dir   dir/lib/liby.a, dir/lib/sliby.a
 #   make clean
 
-CCV1 = ccv1
-SCCV1 = sccv1
+CC = ccv1
+SCC = sccv1
 CAS = cas
 PREFIX = /
 CFLAGS = -O
@@ -19,10 +19,10 @@ SOBJS = main.s.o yyerror.s.o
 all: build/nonseg/liby.a build/seg/sliby.a
 
 build/nonseg/liby.a: FORCE
-	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CCV1) -f ../../Makefile liby.a
+	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CC) -f ../../Makefile liby.a
 
 build/seg/sliby.a: FORCE
-	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCCV1) -f ../../Makefile sliby.a
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCC) -f ../../Makefile sliby.a
 
 install: all
 	cp build/nonseg/liby.a $(PREFIX)/lib/liby.a

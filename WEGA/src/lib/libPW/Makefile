@@ -8,8 +8,8 @@
 #   make install PREFIX=dir   dir/usr/lib/libPW.a, dir/usr/lib/slibPW.a
 #   make clean
 
-CCV1 = ccv1
-SCCV1 = sccv1
+CC = ccv1
+SCC = sccv1
 CAS = cas
 PREFIX = /
 CFLAGS = -O
@@ -21,10 +21,10 @@ OBJS = anystr.o bal.o curdir.o fdfopen.o giveup.o imatch.o index.o lockit.o logn
 all: build/nonseg/libPW.a build/seg/slibPW.a
 
 build/nonseg/libPW.a: FORCE
-	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CCV1) -f ../../Makefile libPW.a
+	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CC) -f ../../Makefile libPW.a
 
 build/seg/slibPW.a: FORCE
-	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCCV1) CFLAGS="$(CFLAGS) -DSEG" -f ../../Makefile slibPW.a
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCC) CFLAGS="$(CFLAGS) -DSEG" -f ../../Makefile slibPW.a
 
 install: all
 	-mkdir $(PREFIX)/usr $(PREFIX)/usr/lib

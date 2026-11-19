@@ -86,3 +86,8 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   arhdr_*.s, Library_*.SC, mkar.sh, COMPILER.md): libcisam.a and slibcisam.a byte-identical, checkall ALL OK. coverage.py:
   compiler and libc also for the libraries (the CCV*/SCCV* variables; libc n/a for an archive or object), the kernel
   parts, standalone and the versioned subdirectories (the rules of the Makefile); no exact binary or archive without both.
+- 2026-11-19: the loose objects of /lib exact: cnvt.o, doprnt.o, scnvt.o, sdoprnt.o (not the members of libc.a: _hexchar
+  for %X; v1 without -O, doprnt with the stdio.h of src/head/oldv7, the segmented doprnt from another revision under
+  `#ifdef SEG`), mcrt0.o, smcrt0.o (PLZ/ASM, as): sources in src/lib, built in src/lib/build/nonseg and build/seg by
+  src/lib/Makefile. The lib Makefiles name their compilers CC and SCC again (no CCV1, SCCV1). oldslibc/errlst/0_2.s is
+  made from 0_2.c (sccvc -S): out of git. checkall ALL OK.

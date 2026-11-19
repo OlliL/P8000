@@ -7,8 +7,8 @@
 #   make install PREFIX=dir   dir/usr/lib/libmp.a, dir/usr/lib/slibmp.a
 #   make clean
 
-CCV1 = ccv1
-SCCV1 = sccv1
+CC = ccv1
+SCC = sccv1
 CAS = cas
 PREFIX = /
 CFLAGS = -O -I../../../../head/oldv7
@@ -17,10 +17,10 @@ OBJS = pow.o gcd.o msqrt.o mdiv.o mout.o mult.o madd.o util.o
 all: build/nonseg/libmp.a build/seg/slibmp.a
 
 build/nonseg/libmp.a: FORCE
-	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CCV1) -f ../../Makefile libmp.a
+	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CC) -f ../../Makefile libmp.a
 
 build/seg/slibmp.a: FORCE
-	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCCV1) -f ../../Makefile slibmp.a
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCC) -f ../../Makefile slibmp.a
 
 install: all
 	-mkdir $(PREFIX)/usr $(PREFIX)/usr/lib
