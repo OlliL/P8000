@@ -2287,73 +2287,92 @@
   "addhdrlist": {
    "orig": "4:c026",
    "size_orig": 576,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name from the string; struct loop {bls, hdr, link, exits, tail, cnt, flag bits b15..b11} 20 bytes guessed"
   },
   "traversefg": {
    "orig": "4:c266",
    "size_orig": 288,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name from the string; the printf of the inner while passes e first, then edges[e].blk"
   },
   "pushblk": {
    "orig": "4:c386",
    "size_orig": 94,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name guessed; an unused local x (the frame is 4 bytes bigger)"
   },
   "checkloop": {
    "orig": "4:c3e4",
    "size_orig": 214,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name from the string; e = blks[b]->b.w4 (the succ list); pb == p->blk; an unused local x"
   },
   "findloop": {
    "orig": "4:c4ba",
    "size_orig": 126,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name from the string"
   },
   "mkloops": {
    "orig": "4:c538",
    "size_orig": 108,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name guessed"
   },
   "domspace": {
    "orig": "4:c5a4",
    "size_orig": 108,
    "status": "open",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "open (DIFF 3): the original adds b from r3 (the cache), ours loads it again from the stack (add r7,b(r15)); an unused local x between b and c; name guessed"
   },
   "prlstats": {
    "orig": "4:c610",
    "size_orig": 74,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name guessed (debug)"
   },
   "domloops": {
    "orig": "4:c65a",
    "size_orig": 68,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c|init2.c"
+   "module": "dom2.c|init2.c",
+   "file": "dom2.c",
+   "note": "name guessed; falls off the end without a return value when s0b5e <= 3 (as the original)"
   },
   "initopts": {
    "orig": "4:c69e",
    "size_orig": 74,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "init2.c",
-   "file": "init2.c"
+   "file": "init2.c",
+   "note": "name guessed (the options of the pass; the case blocks in the address order of the original: y q d l p f e t a b r s Z E 5 4 3 2 1); two more register variables are saved by the original (ldm r8,#6: j, t unused); argv[i - 1] in the messages is the original"
   },
   "f4_c6e8": {
    "orig": "4:c6e8",
@@ -2526,19 +2545,23 @@
    "note": "case block of initopts",
    "file": "init2.c"
   },
-  "f4_c974": {
+  "prqflags": {
    "orig": "4:c974",
    "size_orig": 224,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed (debug)"
   },
-  "f4_ca54": {
+  "prqall": {
    "orig": "4:ca54",
    "size_orig": 52,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "live2.c"
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "name guessed (debug)"
   },
   "f4_ca88": {
    "orig": "4:ca88",
