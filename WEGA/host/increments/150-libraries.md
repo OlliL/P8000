@@ -136,3 +136,12 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   ispow2, tabfree, mkhash). The compiler is sccvc: 34 of 40 drafted functions equal when measured (before eread, rdin, rdin2), every other segmented compiler 6 or fewer.
   Not an own module: 5:9bc0 on (slibc: _doscan, printf ..., ssgbrk at 5:c3a2) and probably 4:f5fe..4:ff78 (fread, fseek, getw): the libc
   members are at the end of both code segments; the data of gopt's last SCCS line (alias2.c 1.3 08/30/82) lies in front of the libc data.
+- 2026-11-19: gopt, Makefile (src/cmd/gopt/Makefile: sccvc, `sld -i -e start -z -Md7 -Mb8`, -Mt4 for the first modules, -Mt5 from ebbo2;
+  measured with synthetic modules: the shipped sld sends an overflowing text to segment 0, not 5, so the second code segment is named;
+  a later `-Mt4` module goes by first fit into the free space of segment 4). The start-up code has an entry in crt0.list (gopt: no jump,
+  no text, _environ in segment 8; mkcrt0.sh drops the jump for pad `-` also in scrt0 files). The link of the whole program is not tried
+  (modules missing): open are the limit between the groups, where the libc members go (fseek, ftell, fread, getw stand at the end of
+  segment 4 in the original), the libc revision (LIBC names slibc-v11.a like cas, not measured). reader2.c: main (the cases
+  { } ] [ . L B C / are the blocks 4:00fc ... 4:0700), dotree, dotree2, cutree, pr, abortpass, passes, prtbl: dotree2, cutree, abortpass,
+  passes, prtbl equal under fncheck (masked), main, dotree, pr open (popt block order and a register, notes in findings.json). quads2.c
+  not started: 44 starts from 4:0b5e, the first (genquads, a switch on the operator) runs to about 4:14a2.
