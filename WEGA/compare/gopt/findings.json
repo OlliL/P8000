@@ -3675,7 +3675,7 @@
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_3524": {
+  "isdefined": {
    "orig": "5:3524",
    "size_orig": 826,
    "status": "open",

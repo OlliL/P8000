@@ -512,3 +512,47 @@ int blk1, blk2;
 		return x;
 	return 0;
 }
+
+/* the operand ot (2 a, 3 b) of q is a variable that is defined in the loop (name from the debug output) */
+int
+isdefined(q, ot)
+struct quad *q;
+int ot;
+{
+	int t, i;
+
+	if (s4d86 > 1) {
+		printf("isdefined(q=%x,opndtype=%s)\n", q, ot == 2 ? "OP1" : "OP2");
+		prquad(q);
+	}
+	if (ot == 2) {
+		if (q->op == 3 && q->a.b2 == 4)
+			return 0;
+		t = q->a.b2;
+		i = q->a.w4;
+	} else {
+		t = q->b.b2;
+		i = q->b.w4;
+	}
+	if (t == 4) {
+		if (s4d86 > 2)
+			printf("isdefined(), symbol=%s, lpopt=%d\n", ascii + symtab[i].nameoff, (symtab[i].sflags >> 1) & 1);
+		return (symtab[i].sflags >> 1) & 1;
+	}
+	if (t == 6) {
+		if (s4d86 > 2)
+			printf("isdefined(), stmp=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
+		return BBIT(i, 12);
+	}
+	if (t == 8) {
+		if ((q->op == 24 || q->op == 47) && ot == 2) {
+			if (s4d86 > 2)
+				printf("isdefined(), op1=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
+			return ((symtab[betatbl[i].x1].sflags >> 1) & 1) || BBIT(i, 12);
+		}
+		if (s4d86 > 2)
+			printf("isdefined(), beta=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
+		return BBIT(i, 12);
+	}
+	cerror("isdefined(): illegal opnd");
+}
