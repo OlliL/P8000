@@ -34,7 +34,7 @@ extern void clrlbit(), setlbit(), setbit();
 extern int s70ea;
 extern unsigned *a10a;
 extern struct quad *fn5_9892();
-extern int fn5_992e(), addpreheader(), nodeno(), insameebbo(), fn5_9472();
+extern int fn5_992e(), addpreheader(), nodeno(), insameebbo(), canshare();
 extern struct quad *findend();
 extern char *addreg();
 extern void addrestore();
@@ -1001,7 +1001,7 @@ struct quad *q;
 		return GF(j, 0, int);
 	for (i = 0; i < a116; i++) {
 		c2 = &GF(i, 2, struct quad *)->c;
-		if (GF(i, 0, int) > 0 && c->b2 == c2->b2 && c->w4 == c2->w4 && i != j && fn5_9472(j, i)) {
+		if (GF(i, 0, int) > 0 && c->b2 == c2->b2 && c->w4 == c2->w4 && i != j && canshare(j, i)) {
 			GF(j, 0, int) = GF(i, 0, int);
 			break;
 		}
@@ -1038,5 +1038,28 @@ struct quad *p, *q;
 	findend(GF(jq, 6, int), &e2);
 	if (e1 == e2)
 		return 1;
+	return 0;
+}
+
+/* the nodes a and b are not alive at the same time and can share a register (name guessed) */
+int
+canshare(a, b)
+int a, b;
+{
+	struct quad *p, *q;
+	int ka, kb, k;
+
+	p = GF(a, 2, struct quad *);
+	q = GF(b, 2, struct quad *);
+	ka = *srchdef(p, 2);
+	kb = *srchdef(q, 2);
+	if (tstlbit(QF(blks[GF(a, 6, int)], 0x18), kb) && !notlive(q, QHREC(blks[GF(a, 6, int)])->f4))
+		return 1;
+	if (tstlbit(QF(blks[GF(b, 6, int)], 0x18), ka) && !notlive(p, QHREC(blks[GF(b, 6, int)])->f4))
+		return 1;
+	for (k = 0; k < blkno; k++) {
+		if (blks[k] != 0 && !notlive(p, QHREC(blks[k])->f4) && !notlive(q, QHREC(blks[k])->f4))
+			return 1;
+	}
 	return 0;
 }

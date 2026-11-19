@@ -4305,12 +4305,14 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_9472": {
+  "canshare": {
    "orig": "5:9472",
    "size_orig": 474,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c",
+   "note": "open (DIFF 14, cause 1): only the first two statements p = a11a[a].q, q = a11a[b].q: the original copies the int parameter (ld r3,r7; mult rr2) and loads through rr0, ours multiplies the parameter register in place with an indexed load; the rest equals"
   },
   "f5_964c": {
    "orig": "5:964c",

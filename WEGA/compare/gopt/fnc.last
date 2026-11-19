@@ -28,5 +28,6 @@
 "findend": "OK",
 "ebbtail": "OK",
 "nodeno": "DIFF 6 (object 115 instructions, original 116)",
-"insameebbo": "OK"
+"insameebbo": "OK",
+"canshare": "DIFF 14 (object 134 instructions, original 137)"
 }
