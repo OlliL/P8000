@@ -10,5 +10,7 @@
 "mergevectors": "OK",
 "updatevector": "DIFF 19 (object 55 instructions, original 55)",
 "setedges": "DIFF 12 (object 145 instructions, original 148)",
-"colorgraph": "OK"
+"colorgraph": "OK",
+"restoredges": "OK",
+"pickcolor": "OK"
 }

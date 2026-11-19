@@ -4159,19 +4159,21 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_7eac": {
+  "restoredges": {
    "orig": "5:7eac",
    "size_orig": 130,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_7f2e": {
+  "pickcolor": {
    "orig": "5:7f2e",
    "size_orig": 258,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_8030": {
    "orig": "5:8030",

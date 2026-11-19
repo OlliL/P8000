@@ -31,8 +31,11 @@ extern struct quad **s7154;
 extern int *srchdef();
 extern int tstlbit(), testbit();
 extern void clrlbit(), setlbit(), setbit();
-extern void clrbit(), fn5_964c(), fn5_7eac(), fn5_8092();
-extern int fn5_7f2e();
+extern void clrbit(), fn5_964c(), restoredges(), fn5_8092();
+extern int fn5_8030();
+extern int werror();
+extern int pickcolor(), fn5_8030();
+extern void restoredges();
 extern void clrmat(), orvec(), mergevectors(), updatevector();
 extern struct gn *setedges();
 extern void colorgraph();
@@ -464,12 +467,63 @@ int flag;
 				p = stack[sp];
 				if (s4d90 > 2)
 					printf("// picking color for node %d\n", p->row);
-				fn5_7eac();
-				p->x12 = fn5_7f2e(p, k);
+				restoredges();
+				p->x12 = pickcolor(p, k);
 			}
 			return;
 		}
 		fn5_8092();
 		again = 1;
 	}
+}
+
+/* the edges of the graph are entered into the matrix again (name guessed) */
+void
+restoredges()
+{
+	struct gn *p;
+	struct edge *r;
+
+	for (p = a11e; p != 0; p = p->link) {
+		for (r = p->edges; r != 0; r = r->next) {
+			setbit(a110, r->k, p->row, a118);
+			setbit(a110, p->row, r->k, a118);
+		}
+	}
+}
+
+/* the color of the node p, the neighbours' colors are avoided; -1 if there is none (name guessed) */
+int
+pickcolor(p, k)
+struct gn *p;
+int k;
+{
+	int x, c, j, again, hi, y;
+
+	if (p->x14 == 2)
+		k = 5;
+	if (k == 4) {
+		k = k + 7;
+		hi = 8;
+	} else
+		hi = 1;
+	again = 1;
+	while (again) {
+		again = 0;
+		for (j = 1; j < a10e; j++) {
+			if (testbit(a110, j, p->row, a118)) {
+				c = fn5_8030(j, &x);
+				if (k == c || (x == 2 && c + 1 == k) || (p->x14 == 2 && k + 1 == c)) {
+					k -= p->x14;
+					if (k < hi) {
+						werror("compiler error: coloring failed");
+						return -1;
+					}
+					again = 1;
+					break;
+				}
+			}
+		}
+	}
+	return k;
 }
