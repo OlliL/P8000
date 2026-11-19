@@ -14,6 +14,7 @@ extern struct quad **blks;
 extern int *idfn;
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };
 extern struct bt *betatbl;
+extern void prquad();
 extern int blkno, s4d86;
 
 /* the loop number of every block is cleared (name from the debug output) */
@@ -106,4 +107,39 @@ int *flag;
 next:		p = p->next;
 	}
 	return 0;
+}
+
+extern struct sym *symtab;
+
+/* the flags of the operand ot (1 c, 2 a, 3 b) of q are cleared (name from the debug output) */
+void
+clrsymflag(q, ot)
+struct quad *q;
+int ot;
+{
+	int i, t;
+
+	if (s4d86 > 2) {
+		printf("clrsymflag(q=%x,opndtype=%s)\n", q, ot == 2 ? "OP1" : "OP2");
+		prquad(q);
+	}
+	if (ot == 2) {
+		i = q->a.w4;
+		t = q->a.b2;
+	} else if (ot == 3) {
+		i = q->b.w4;
+		t = q->b.b2;
+	} else if (ot == 1) {
+		i = q->c.w4;
+		t = q->c.b2;
+	}
+	if (t == 4)
+		symtab[i].sflags &= ~2;
+	else if (t == 6)
+		*(int *)((char *)betatbl + (i * 10 + 8)) &= ~4096;
+	else if (t == 8) {
+		*(int *)((char *)betatbl + (i * 10 + 8)) &= ~4096;
+		if ((ot == 2 && q->op == 24) || (ot == 1 && q->op == 47))
+			symtab[betatbl[i].x1].sflags &= ~2;
+	}
 }
