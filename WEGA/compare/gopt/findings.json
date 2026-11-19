@@ -3862,7 +3862,8 @@
    "status": "open",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of ceval"
+   "note": "case block of ceval",
+   "file": "lpind2.c"
   },
   "f5_560c": {
    "orig": "5:560c",
@@ -3870,7 +3871,8 @@
    "status": "open",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of ceval"
+   "note": "case block of ceval",
+   "file": "lpind2.c"
   },
   "f5_5614": {
    "orig": "5:5614",
@@ -3878,7 +3880,8 @@
    "status": "open",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of ceval"
+   "note": "case block of ceval",
+   "file": "lpind2.c"
   },
   "f5_5622": {
    "orig": "5:5622",
@@ -3886,7 +3889,8 @@
    "status": "open",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of ceval"
+   "note": "case block of ceval",
+   "file": "lpind2.c"
   },
   "f5_5630": {
    "orig": "5:5630",
@@ -3894,7 +3898,8 @@
    "status": "open",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of ceval"
+   "note": "case block of ceval",
+   "file": "lpind2.c"
   },
   "qmove": {
    "orig": "5:567e",
@@ -3945,7 +3950,8 @@
    "status": "open",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of insrtopstmp"
+   "note": "case block of insrtopstmp",
+   "file": "lpind2.c"
   },
   "f5_5c0c": {
    "orig": "5:5c0c",
@@ -3953,7 +3959,8 @@
    "status": "open",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of insrtopstmp"
+   "note": "case block of insrtopstmp",
+   "file": "lpind2.c"
   },
   "f5_5c4c": {
    "orig": "5:5c4c",
@@ -3961,7 +3968,8 @@
    "status": "open",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of insrtopstmp"
+   "note": "case block of insrtopstmp",
+   "file": "lpind2.c"
   },
   "copyopndstmp": {
    "orig": "5:5d74",

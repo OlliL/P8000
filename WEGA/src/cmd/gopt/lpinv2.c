@@ -1160,8 +1160,8 @@ int flag;
 }
 
 extern int *a7124, a0f0, a0da, a0e6, a0ec, a0ee, a0fe;
-extern struct quad *fn5_56cc(), *fn5_567e(), *fn5_6bf2();
-extern void fn5_6614();
+extern struct quad *insrtstmpmove(), *qmove(), *chkfamindvar();
+extern void deltmplpdefs();
 extern char a050e[];
 
 /* the list of blocks is put into the order of the array a7124 (name guessed) */
@@ -1217,17 +1217,17 @@ struct loop *lp;
 				}
 				if (q->f3) {
 					if (q->c.b2 == 3 && a050e[q->c.w4] > 2)
-						q = fn5_56cc(q);
+						q = insrtstmpmove(q);
 					else
-						q = fn5_567e(q);
+						q = qmove(q);
 				} else if (q->c.b2 == 3 || q->c.b2 == 8) {
-					r = fn5_6bf2(q, blk);
+					r = chkfamindvar(q, blk);
 					if (r != 0)
 						q = r;
 				}
 			}
 			if (a0f0)
-				fn5_6614();
+				deltmplpdefs();
 		}
 	}
 }
