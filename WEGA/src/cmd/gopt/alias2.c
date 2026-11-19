@@ -25,7 +25,7 @@ extern void prquad();
 extern int cerror();
 extern int testbit();
 extern struct quad *fn5_2bca();
-extern int fn7c68();
+extern int checkops();
 extern struct quad *fndcall();
 extern int fndparm();
 extern void setbit();
@@ -381,11 +381,11 @@ aliasm()
 			continue;
 		}
 		if (q->op == 0x2f) {
-			if (!fn7c68(q, 0))
+			if (!checkops(q, 0))
 				continue;
 			cls = op70d8;
 			s = opnd70c8;
-			if (!fn7c68(q, 1))
+			if (!checkops(q, 1))
 				continue;
 			setposition(cls, &s, B, A);
 			if (q->a.b2 == 1 || q->a.b2 == 7)
@@ -410,4 +410,133 @@ aliasm()
 		altab[nal++] = A[i];
 	if (aflag)
 		pralias();
+}
+
+/*
+ * follows the definitions of the temporary of q (mode 0: the result operand c, 1: the operand a) back to the operand that is a pointer:
+ * in opnd70c8 and op70d8; returns 1 when found.  hist: the ops passed (the history).
+ */
+int
+checkops(q, mode)
+	struct quad *q;
+	int mode;
+{
+	struct {
+		unsigned fa:1, fb:1, fc:1, fd:1;
+	} fl;
+	struct qa s;
+	int x;
+	int found;
+	struct qa t;
+	int n;
+	int hist[30];
+
+	n = 0;
+	hist[n++] = 0x2f;
+	op70d8 = 0x2f;
+	found = 0;
+	fl.fa = 1;
+	fl.fb = 1;
+	fl.fc = 1;
+	if (mode == 0) {
+		s = q->c;
+		if (s.b2 != 3) {
+			if (s.b2 == 4 && (q->c.w0 & 0x30) == 0x10)
+				goto success;
+			if (aflag > 2) {
+				printf("// Store's result opnd is not a ptr:\n");
+				prquad(q);
+			}
+		fail:
+			if (aflag > 2)
+				printf("//    NULL\n");
+			return 0;
+		} else
+			fl.fd = 0;
+	} else if (mode == 1) {
+		s = q->a;
+		if (s.b2 != 3) {
+			if ((s.b2 == 4 || s.b2 == 1 || s.b2 == 7) && (q->a.w0 & 0x30) == 0x10)
+				goto success;
+			goto fail;
+		} else
+			fl.fd = 1;
+	} else
+		cerror("illegal checkops call");
+	x = 0;
+	do {
+		q = tmpsearch(pcur, s.w4, q);
+		if (n >= 30)
+			cerror("checkops: history exceeded");
+		s = q->a;
+		switch (q->op) {
+		case 0x18:
+		case 0x1e:
+			fl.fb = 1;
+			op70d8 = 0x18;
+			hist[n++] = 0x18;
+		post:
+			if (s.b2 == 3)
+				break;
+			if (s.b2 != 4 || (q->a.w0 & 0x30) != 0x10)
+				goto fail;
+			goto success;
+		case 2:
+			hist[n++] = 2;
+			if (!found) {
+				if (q->b.b2 == 4) {
+					t = q->b;
+					found = 1;
+				} else
+					s = q->b;
+			}
+			if (fl.fb)
+				goto post;
+		default:
+		nonstd:
+			if (aflag > 2) {
+				werror("// chkops: nonstandard aliasing expr:\n");
+				prquad(q);
+			}
+			goto fail;
+		case 0x19:
+			hist[n++] = 0x19;
+			if (!fl.fb)
+				goto nonstd;
+			goto post;
+		case 1:
+		case 0x30:
+			hist[n++] = 1;
+			if (!fl.fb)
+				goto nonstd;
+			goto post;
+		case 3:
+			if (q->a.b2 == 5)
+				goto fail;
+			hist[n++] = 3;
+			if (!fl.fc)
+				goto nonstd;
+			if (op70d8 == 0x2f && mode == 1)
+				op70d8 = 3;
+			if (n > 3 && hist[n - 2] == 0x19 && hist[n - 3] == 0x18)
+				goto nonstd;
+			if (s.b2 == 3)
+				goto post;
+			goto success;
+		case 7:
+			hist[n++] = 7;
+			if (!fl.fd)
+				goto nonstd;
+			op70d8 = 7;
+		success:
+			if (aflag > 2)
+				prquad(q);
+			opnd70c8 = *(found ? &t : &s);
+			return 1;
+		}
+		if (aflag > 2) {
+			printf("// at the bottom of checkops, p = ");
+			prquad(q);
+		}
+	} while (x == 0);
 }

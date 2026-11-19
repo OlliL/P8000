@@ -92,13 +92,13 @@ exact: the program is byte-identical with the original (`host/tools/checkall.sh`
 | testbit | 4:7526 |  | open: the original forms the index in r1 (ld r1,r3; mult rr0,r5) and reads the word with the indexed form ld r2,rr2(r1), then sdl and bit #0; ours adds the address first; tried *(m + ..), other orders, a temporary, & with a mask |
 | tmpsearch | 4:7a7e |  | open: (1) the original reads p->op behind p = p->next with the displacement form (ldl rr2,rr0; ld r2,rr2(#4)), ours increments the address first (the same as writeil case 0x32); (2) the struct assignment s = p->b has the redundant and behind the lda in ours only (see genquads). The original calls prquad("p:\n") and prquad("q:\n") with the strings (the debug call is wrong in the original, kept). tmpsearch(p, tmpno, q): the first int goes to r5, the second pointer to rr2 (r4 stays unused) |
 | fndparm | 4:7bb6 |  | open: the assignment s = q->a of a local structure: the original has lda rr4,..(r15) without the and, with the source in rr2 and ldir @rr4,@rr2,r0; ours has the redundant and r0,#%7f00 and other registers (the compiler finding of genquads, phase B); the rest equal; name guessed (the string says checkand, actual param & op found) |
-| f4_7c68 | 4:7c68 |  |  |
-| f4_7dfc | 4:7dfc |  |  |
-| f4_7e62 | 4:7e62 |  |  |
-| f4_7ef0 | 4:7ef0 |  |  |
-| f4_7f18 | 4:7f18 |  |  |
-| f4_7f44 | 4:7f44 |  |  |
-| f4_7fd8 | 4:7fd8 |  |  |
+| checkops | 4:7c68 |  | open (5 attempts, DIFF 25): (1) first use of q after the prologue: the original copies rr6 to rr2 (ldl rr2,rr6; inc r3,#6) and keeps rr6, ours increments r7 in place (cause 1); (2) four times and r6,#%7f00 after lda in a struct assignment (cause 2, phase B); (3) the block ldl rr2,#t; jp (found ? &t : &s) stands in the original behind the jp success of the post code, in ours inline (popt block order). Odd forms: gotos (fail inside the mode 0 block, success at the end of case 7, post inside case 0x18 and nonstd in the default behind case 2: the block order of the original); x is always 0 (do..while (x == 0), dead variable); the loop falls out at the end without a return value. checkops(q, mode): mode 0 the result operand c, 1 the operand a; result in opnd70c8/op70d8 |
+| f4_7dfc | 4:7dfc |  | case block of checkops |
+| f4_7e62 | 4:7e62 |  | case block of checkops |
+| f4_7ef0 | 4:7ef0 |  | case block of checkops |
+| f4_7f18 | 4:7f18 |  | case block of checkops |
+| f4_7f44 | 4:7f44 |  | case block of checkops |
+| f4_7fd8 | 4:7fd8 |  | case block of checkops |
 | f4_8074 | 4:8074 |  |  |
 | f4_831e | 4:831e |  |  |
 | f4_838c | 4:838c |  |  |

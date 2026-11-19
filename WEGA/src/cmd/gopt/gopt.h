@@ -141,7 +141,7 @@ struct sym {
 	int	sx14;
 };
 
-struct qa { int w0; char b2; unsigned fl:1; int w4; };	/* an operand of a quad: 6 bytes (names guessed) */
+struct qa { unsigned w0; char b2; unsigned fl:1; int w4; };	/* an operand of a quad: 6 bytes (names guessed) */
 
 struct pos { char *name; int line; };
 
