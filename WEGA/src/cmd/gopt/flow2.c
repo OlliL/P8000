@@ -19,7 +19,7 @@ extern void tabfree(), prquads(), optflow();
 extern struct quad *qhead;
 extern struct quad *delquad(), *insertquad();
 extern int s4d88, maxblk, s70e6;
-extern void rmlabels(), rmjumps(), deledge(), rm_deadblks(), fna9ac(), prstats(), fna66e(), delrun();
+extern void rmlabels(), rmjumps(), deledge(), rm_deadblks(), prgraph(), prstats(), joinblk(), delrun();
 extern int blkempty();
 extern int s4d74, s4d76, s4d78;
 
@@ -208,7 +208,7 @@ optflow()
 		if (s4d88 > 2)
 			prquads();
 		printf("// flow graph before optimizations:\n");
-		fna9ac();
+		prgraph();
 		prstats();
 	}
 	for (i = 0; i < blkno; i++)
@@ -236,7 +236,7 @@ optflow()
 			prquads();
 		}
 		printf("// flow graph after optimizations:\n");
-		fna9ac();
+		prgraph();
 		prstats();
 	}
 }
@@ -266,7 +266,7 @@ rmlabels(tab)
 					x = -1;
 			if (x >= 0) {
 				delquad(blks[i]);
-				fna66e(y, x, 2);
+				joinblk(y, x, 2);
 				blks[i] = 0;
 			}
 			s4d74++;
@@ -314,7 +314,7 @@ rmlabels(tab)
 				delquad(p);
 			}
 		}
-		fna66e(pj, pi, 1);
+		joinblk(pj, pi, 1);
 		s4d74++;
 		blks[pj] = 0;
 		tab[pj] = -1;
@@ -394,7 +394,7 @@ rmjumps(tab)
 		if (ok) {
 			delrun(blks[i]);
 			k = blkof(lbl, tab);
-			fna66e(i, k, 3);
+			joinblk(i, k, 3);
 			s4d76++;
 			blks[i] = 0;
 			tab[i] = -1;
@@ -450,5 +450,80 @@ rm_deadblks()
 			s4d78++;
 			blks[i] = 0;
 		}
+	}
+}
+
+/* the block a is joined to the block b: its edges are appended to those of b; mode 1, 2, 3: which edges between them are dropped (name guessed) */
+void
+joinblk(a, b, mode)
+	int a, b, mode;
+{
+	int k;
+
+	for (k = blks[b]->a.w4; k >= 0 && edges[k].next >= 0; k = edges[k].next)
+		;
+	if (k >= 0)
+		edges[k].next = blks[a]->a.w4;
+	else
+		blks[b]->a.w4 = blks[a]->a.w4;
+	for (k = blks[b]->b.w4; k >= 0 && edges[k].next >= 0; k = edges[k].next)
+		;
+	if (k >= 0)
+		edges[k].next = blks[a]->b.w4;
+	else
+		blks[b]->b.w4 = blks[a]->b.w4;
+	if (mode == 2 || mode == 1)
+		deledge(&blks[b]->b.w4, a);
+	deledge(&blks[b]->a.w4, b);
+	if (mode == 3 || mode == 1) {
+		deledge(&blks[b]->b.w4, b);
+		deledge(&blks[b]->a.w4, a);
+	}
+	for (k = 0; k < nedge; k++)
+		if (edges[k].blk == a)
+			edges[k].blk = b;
+	for (k = blks[b]->b.w4; k >= 0; k = edges[k].next)
+		if (edges[k].blk == b)
+			addedge(&blks[b]->a.w4, b);
+}
+
+/* the label of the jump (op 0x1a) the block of the header quad q consists of; 0 when it is something else (name guessed) */
+int
+jmplabel(q)
+	struct quad *q;
+{
+	for (q = q->next; q != 0; q = q->next) {
+		if (q->op == 0x3b)
+			return 0;
+		switch (q->op) {
+		case 6:
+		case 0xf:
+		case 0x1c:
+			continue;
+		case 0x1a:
+			return q->a.w4;
+		default:
+			return 0;
+		}
+	}
+	return 0;
+}
+
+/* the flow graph (debug): the successors and the predecessors of every block */
+void
+prgraph()
+{
+	register int i, e;
+
+	for (i = 0; i < blkno; i++) {
+		if (blks[i] == 0)
+			continue;
+		printf("// block %d\n// \tsuccessors: ", i);
+		for (e = blks[i]->b.w4; e >= 0; e = edges[e].next)
+			printf("%d ", edges[e].blk);
+		printf("\n\tpredecessors: ");
+		for (e = blks[i]->a.w4; e >= 0; e = edges[e].next)
+			printf("%d ", edges[e].blk);
+		printf("\n");
 	}
 }

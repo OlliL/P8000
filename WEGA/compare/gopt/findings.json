@@ -2113,54 +2113,68 @@
    "file": "flow2.c",
    "note": "name from the string; an unused local pp (the original frame is 4 bytes bigger); the check blks[i] != 0 in the debug test is in the original"
   },
-  "f4_a66e": {
+  "joinblk": {
    "orig": "4:a66e",
    "size_orig": 718,
    "status": "open",
    "kind": "proven",
-   "module": "flow2.c"
+   "module": "flow2.c",
+   "file": "flow2.c",
+   "note": "open (DIFF 9, 1 attempt): the right side of blks[b]->a.w4 = blks[a]->a.w4 loads through rr4, the original through rr6 (twice; the same in rmlabels): cause 1 (the original has no cached parameter in r7 there); name guessed: the edges of block a are appended to those of b, mode 1/2/3 drops edges"
   },
   "jmplabel": {
    "orig": "4:a93c",
    "size_orig": 88,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "flow2.c"
+   "module": "flow2.c",
+   "file": "flow2.c",
+   "note": "name guessed: the label of a block that consists only of a jump (op 0x1a) and the ops 6, 0xf, labels"
   },
   "f4_a994": {
    "orig": "4:a994",
    "size_orig": 24,
    "status": "open",
    "kind": "candidate",
-   "module": "flow2.c"
+   "module": "flow2.c",
+   "note": "case block of jmplabel",
+   "file": "flow2.c"
   },
-  "f4_a9ac": {
+  "prgraph": {
    "orig": "4:a9ac",
    "size_orig": 256,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "flow2.c"
+   "module": "flow2.c",
+   "file": "flow2.c",
+   "note": "name guessed: the graph printed (debug); register variables i (r13) and e (r12)"
   },
-  "f4_aaac": {
+  "dfs": {
    "orig": "4:aaac",
    "size_orig": 298,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "dfn[v] = ndfs = ndfs + 1 and vertex[ndfs] = label[v] = v (chains, as the original keeps r2 and r0); the arrays dfn, label, vertex, ancest, child, size, parent indexed by block + 1: names guessed (the dominator algorithm of Lengauer and Tarjan)"
   },
-  "f4_abd6": {
+  "compress": {
    "orig": "4:abd6",
    "size_orig": 260,
    "status": "open",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "open (DIFF 11): the original has no cache of the base address: dfn[label[ancest[v]]] loads each base again (ldl rr6,...), ours keeps label in rr4 and uses r3: a difference of the register cache of the compiler (the same in eval)"
   },
-  "f4_acda": {
+  "eval": {
    "orig": "4:acda",
    "size_orig": 180,
    "status": "open",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "open (DIFF 15): as compress (the nested index cache) plus the block order: the original puts t = label[v] (the test ancest[v] == 0) before the compress call; ?: and a variable t = v tried (not better)"
   },
   "f4_ad8e": {
    "orig": "4:ad8e",

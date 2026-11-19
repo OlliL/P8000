@@ -28,5 +28,5 @@ Next (in this order):
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
 TASK: flow2.c: 4:a66e (called with three ints: fna66e), 4:a93c (jmplabel), 4:a9ac (the print of the graph), then the rest of flow2 up to the first function of dom2.
-START: fnc.py -a flow2.c (open: addedge 4, rmlabels 13, deledge 7; the rest masked); the findings.json keys f4_a66e, f4_a93c, f4_a9ac and the next ones (see modmap: module flow2.c / dom2.c); rename.py -m for the placeholders fna66e, fna9ac.
+START: fnc.py -a flow2.c (open: addedge 4, rmlabels 13, deledge 7; the rest masked); the findings.json keys joinblk, f4_a93c, prgraph and the next ones (see modmap: module flow2.c / dom2.c); rename.py -m for the placeholders fna66e, fna9ac.
 STOP WHEN: flow2 is complete (the last function written and checked), or at 70% of the context.
