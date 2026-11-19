@@ -28,7 +28,8 @@ extern int blkno;
 extern struct quad *qhead;
 extern int ndefs;
 extern int tstlbit();
-#define BOPT(j)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> 13) & 1)
+#define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
+#define BOPT(j)	BBIT(j, 13)
 struct lrec { unsigned *f0, *f4, *f8, *fc, *f10, *f14, *f18; };	/* the bit vectors of a block: 28 bytes, stored in the header quad at 6 (guessed) */
 extern int lvwords, dfwords, s4d86;
 struct rn { struct rn *next; int idx; };	/* a node of the reach map: 6 bytes (guessed) */
@@ -973,4 +974,23 @@ srchdef(q, mode)
 		return pi;
 	}
 	cerror("srchdef: variable not found");
+}
+
+/* the kill vector (field 0x10) of the block r: the definitions of the symbols that are marked (name from the string) */
+void
+killdefs(r)
+	struct lrec *r;
+{
+	int i;
+	struct quad *q;
+
+	for (i = 0; i < ndefs; i++) {
+		q = defs[i];
+		if ((q->c.b2 == 4 && ((symtab[q->c.w4].sflags >> 2) & 1)) ||
+		    (q->c.b2 == 8 && !BBIT(q->c.w4, 11) && ((symtab[betatbl[q->c.w4].x1].sflags >> 2) & 1))) {
+			setlbit(r->f10, i);
+			if (s4d84)
+				printf("kill, i=%d\n", i);
+		}
+	}
 }
