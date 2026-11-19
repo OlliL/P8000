@@ -3838,61 +3838,71 @@
    "module": "lpinv2.c",
    "file": "lpinv2.c"
   },
-  "f5_5534": {
+  "lpow2": {
    "orig": "5:5534",
    "size_orig": 54,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c|lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 4, 14 against 15 instructions): the original shifts by a variable count (ld r0,#1; sdal rr2,r0), ours slal rr2,#1 for r << 1, r <<= 1, r * 2, r << 1L, r << (char)1: no source form found"
   },
-  "f5_556a": {
+  "ceval": {
    "orig": "5:556a",
    "size_orig": 122,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 5): ours has ldl rr2,rr0 after the store of l and m (the long result of the int call) and subl rr2,m from memory where the original uses the cached rr0; the case order of the source is 1, 48, 34, 44, 14/45 (the dispatch list is sorted)"
   },
   "f5_55e4": {
    "orig": "5:55e4",
    "size_orig": 40,
    "status": "open",
    "kind": "candidate",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "note": "case block of ceval"
   },
   "f5_560c": {
    "orig": "5:560c",
    "size_orig": 8,
    "status": "open",
    "kind": "candidate",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "note": "case block of ceval"
   },
   "f5_5614": {
    "orig": "5:5614",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "note": "case block of ceval"
   },
   "f5_5622": {
    "orig": "5:5622",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "note": "case block of ceval"
   },
   "f5_5630": {
    "orig": "5:5630",
    "size_orig": 78,
    "status": "open",
    "kind": "candidate",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "note": "case block of ceval"
   },
-  "f5_567e": {
+  "qmove": {
    "orig": "5:567e",
    "size_orig": 78,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c"
   },
   "f5_56cc": {
    "orig": "5:56cc",
