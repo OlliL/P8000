@@ -804,79 +804,6 @@ sameopnd(p, q, pw, qw)
 	return 0;
 }
 
-/* the number of words of the bit vectors: kind 1 for the live vectors, else for the reach vectors (name guessed) */
-void
-setwords(kind)
-	int kind;
-{
-	if (kind == 1)
-		lvwords = nlv / 16 + 1;
-	else
-		dfwords = ndefs / 16 + 1;
-}
-
-/* the vector v of n words is cleared */
-void
-clrvec(v, n)
-	unsigned *v;
-	int n;
-{
-	int i;
-
-	for (i = 0; i < n; i++)
-		*v++ = 0;
-}
-
-/* a := b (n words) */
-void
-copyvec(a, b, n)
-	unsigned *a, *b;
-	int n;
-{
-	int i;
-
-	for (i = 0; i < n; i++)
-		*a++ = *b++;
-}
-
-/* 1 when the vectors a and b (n words) are equal */
-int
-eqvec(a, b, n)
-	unsigned *a, *b;
-	int n;
-{
-	int i;
-
-	for (i = 0; i < n; i++)
-		if (*a++ != *b++)
-			return 0;
-	return 1;
-}
-
-/* a := b and not c (n words) */
-void
-andnotvec(a, b, c, n)
-	unsigned *a, *b, *c;
-	int n;
-{
-	int i;
-
-	for (i = 0; i < n; i++)
-		*a++ = *b++ & ~*c++;
-}
-
-/* a := a or b (n words) */
-void
-orvec(a, b, n)
-	unsigned *a, *b;
-	int n;
-{
-	int i;
-
-	for (i = 0; i < n; i++)
-		*a++ |= *b++;
-}
-
 /* the definitions are linked: the ones with the same operand form a list (the low bit of the pointer in defs marks a done one); name from the string */
 void
 linkreachdefs()
@@ -1052,6 +979,79 @@ initreach()
 	}
 }
 
+/* the number of words of the bit vectors: kind 1 for the live vectors, else for the reach vectors (name guessed) */
+void
+setwords(kind)
+	int kind;
+{
+	if (kind == 1)
+		lvwords = nlv / 16 + 1;
+	else
+		dfwords = ndefs / 16 + 1;
+}
+
+/* the vector v of n words is cleared */
+void
+clrvec(v, n)
+	unsigned *v;
+	int n;
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		*v++ = 0;
+}
+
+/* a := b (n words) */
+void
+copyvec(a, b, n)
+	unsigned *a, *b;
+	int n;
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		*a++ = *b++;
+}
+
+/* 1 when the vectors a and b (n words) are equal */
+int
+eqvec(a, b, n)
+	unsigned *a, *b;
+	int n;
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		if (*a++ != *b++)
+			return 0;
+	return 1;
+}
+
+/* a := b and not c (n words) */
+void
+andnotvec(a, b, c, n)
+	unsigned *a, *b, *c;
+	int n;
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		*a++ = *b++ & ~*c++;
+}
+
+/* a := a or b (n words) */
+void
+orvec(a, b, n)
+	unsigned *a, *b;
+	int n;
+{
+	int i;
+
+	for (i = 0; i < n; i++)
+		*a++ |= *b++;
+}
+
 /* the vectors in, out: the copies of the gen vectors (kind 2: reach, 1: live); a work vector tmpvec (name guessed) */
 void
 initvecs(kind)
@@ -1141,22 +1141,6 @@ transfer(kind, r)
 	}
 }
 
-/* the sizes of the reach vectors (debug; name guessed) */
-void
-prreachstat()
-{
-	printf("//\n//Number of defs in reaching def. analysis = %d\n", ndefs);
-	printf("//Size of reaching def vector \t\t= %d (16 bit words)\n", dfwords);
-}
-
-/* the sizes of the live vectors (debug; name guessed) */
-void
-prlivestat()
-{
-	printf("//\n//Number of vars. used in live var. analysis = %d\n", nlv);
-	printf("//Size of live variable vector \t= %d (16 bit words)\n", lvwords);
-}
-
 /* the reaching definitions: the vectors are iterated until nothing changes (name guessed) */
 void
 solvereach()
@@ -1223,6 +1207,42 @@ solvelive()
 	}
 }
 
+/* the marks of the symbols of the table of the live variables are cleared again (name guessed) */
+void
+clearflags()
+{
+	int i;
+
+	for (i = 0; i < nlv; i++) {
+		if (lvtab[i].kind == 1) {
+			if (s4d84 > 1)
+				printf("clearing flag for symbol  %s\n", ascii + symtab[lvtab[i].var].nameoff);
+			symtab[lvtab[i].var].sflags &= ~1;
+		} else {
+			if (s4d84 > 1)
+				printf("clearing flag for beta sym %s\n", ascii + symtab[betatbl[lvtab[i].var].x1].nameoff);
+			symtab[betatbl[lvtab[i].var].x1].sflags &= ~1;
+			*(int *)((char *)betatbl + (lvtab[i].var * 10 + 8)) &= ~(1 << 13);
+		}
+	}
+}
+
+/* the sizes of the reach vectors (debug; name guessed) */
+void
+prreachstat()
+{
+	printf("//\n//Number of defs in reaching def. analysis = %d\n", ndefs);
+	printf("//Size of reaching def vector \t\t= %d (16 bit words)\n", dfwords);
+}
+
+/* the sizes of the live vectors (debug; name guessed) */
+void
+prlivestat()
+{
+	printf("//\n//Number of vars. used in live var. analysis = %d\n", nlv);
+	printf("//Size of live variable vector \t= %d (16 bit words)\n", lvwords);
+}
+
 /* the live variable analysis of the program (name guessed) */
 void
 livevars()
@@ -1267,24 +1287,4 @@ reachdefs()
 		cerror("out of reaching def space");
 	if (s4d92)
 		prreachstat();
-}
-
-/* the marks of the symbols of the table of the live variables are cleared again (name guessed) */
-void
-clearflags()
-{
-	int i;
-
-	for (i = 0; i < nlv; i++) {
-		if (lvtab[i].kind == 1) {
-			if (s4d84 > 1)
-				printf("clearing flag for symbol  %s\n", ascii + symtab[lvtab[i].var].nameoff);
-			symtab[lvtab[i].var].sflags &= ~1;
-		} else {
-			if (s4d84 > 1)
-				printf("clearing flag for beta sym %s\n", ascii + symtab[betatbl[lvtab[i].var].x1].nameoff);
-			symtab[betatbl[lvtab[i].var].x1].sflags &= ~1;
-			*(int *)((char *)betatbl + (lvtab[i].var * 10 + 8)) &= ~(1 << 13);
-		}
-	}
 }

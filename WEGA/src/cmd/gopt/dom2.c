@@ -281,32 +281,6 @@ linkdom(q)
 			linkdom(q);
 }
 
-/* the list of blocks (debug) */
-void
-prlist(q)
-	struct bl *q;
-{
-	struct bl *p;
-
-	p = q;
-	printf("list:");
-	for (; p != 0; p = p->next)
-		printf(" %d", p->blk);
-	printf("\n");
-}
-
-/* the loops (debug) */
-void
-prloops()
-{
-	struct loop *q;
-
-	for (q = loops; q != 0; q = q->link) {
-		printf("\nheader blk = %d\nloop ", q->hdr);
-		prlist(q->bls);
-	}
-}
-
 /* the dominator tree: the lists of the children of every block in darr, the root domroot (name guessed) */
 void
 mkdomtree()
@@ -354,6 +328,32 @@ mkdomtree()
 	}
 	if (domroot != 0)
 		linkdom(domroot);
+}
+
+/* the list of blocks (debug) */
+void
+prlist(q)
+	struct bl *q;
+{
+	struct bl *p;
+
+	p = q;
+	printf("list:");
+	for (; p != 0; p = p->next)
+		printf(" %d", p->blk);
+	printf("\n");
+}
+
+/* the loops (debug) */
+void
+prloops()
+{
+	struct loop *q;
+
+	for (q = loops; q != 0; q = q->link) {
+		printf("\nheader blk = %d\nloop ", q->hdr);
+		prlist(q->bls);
+	}
 }
 
 /* the block blk is appended to the list *lp of blocks */

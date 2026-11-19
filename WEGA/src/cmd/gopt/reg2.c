@@ -731,16 +731,6 @@ struct quad *p;
 	insertquad(41, &tmp, &c, (struct qa *)0, p);
 }
 
-/* the register reg is marked in the set of the block x (name from the debug output) */
-void
-markreg(x, reg)
-int x, reg;
-{
-	if (s4d90 > 1)
-		printf("// markreg(%d, %d)\n", x, reg);
-	a10a[x] = a10a[x] | (1 << reg);
-}
-
 /* the quad that saves the register reg is looked for in the block blk or inserted (name guessed) */
 struct quad *
 addsave(reg, blk)
@@ -765,6 +755,16 @@ int reg, blk;
 	p = ebbtail(blk);
 	qq = insertquad(43, &tmp, (struct qa *)0, (struct qa *)0, p);
 	return qq;
+}
+
+/* the register reg is marked in the set of the block x (name from the debug output) */
+void
+markreg(x, reg)
+int x, reg;
+{
+	if (s4d90 > 1)
+		printf("// markreg(%d, %d)\n", x, reg);
+	a10a[x] = a10a[x] | (1 << reg);
 }
 
 /* the save code of the registers that are used in a block is added to the blocks on the path (name from the debug output) */
@@ -1159,23 +1159,6 @@ struct quad *r, *r3;
 	return 0;
 }
 
-/* the quad q is in the set of the quads that reach (name from the debug output) */
-int
-inreach(q)
-struct quad *q;
-{
-	int i;
-
-	for (i = 0; i < ndefs; i++)
-		if (defs[i] == q)
-			return 1;
-	if (s4d90 > 3) {
-		printf("// inreach returning FALSE for quad -");
-		prquad(q);
-	}
-	return 0;
-}
-
 /* the operands of the quad s are used again behind it in the block (name guessed) */
 int
 usedlater(n, u, s)
@@ -1197,6 +1180,23 @@ struct quad *s;
 			if (eqopnd(&s->b, &c->c))
 				return 1;
 		}
+	}
+	return 0;
+}
+
+/* the quad q is in the set of the quads that reach (name from the debug output) */
+int
+inreach(q)
+struct quad *q;
+{
+	int i;
+
+	for (i = 0; i < ndefs; i++)
+		if (defs[i] == q)
+			return 1;
+	if (s4d90 > 3) {
+		printf("// inreach returning FALSE for quad -");
+		prquad(q);
 	}
 	return 0;
 }

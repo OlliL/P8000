@@ -48,11 +48,28 @@ def main():
         print('%s: %d functions, %s' % (base, len(chunks), 'in order' if cur == new else 'reordered'))
         if cur == new or dry:
             continue
-        out, pos = [], 0
-        for (s, e, n), (s2, e2, n2) in zip(chunks, order):
-            out += lines[pos:s] + lines[s2:e2 + 1]
-            pos = e + 1
-        out += lines[pos:]
+        # the text between the chunks (declarations, data) moves up in front of the first chunk: a declaration must come
+        # before the functions that use it, whatever their order
+        head = lines[:chunks[0][0]]
+        end = chunks[-1][1] + 1
+        between, pos = [], chunks[0][0]
+        for s0, e0, _ in chunks:
+            between += [l for l in lines[pos:s0] if l.strip()]
+            pos = e0 + 1
+        htext = '\n'.join(head + between)
+        fwd, seen = [], ''
+        for s2, e2, n2 in order:
+            nl = next(i for i in range(s2, e2 + 1) if re.match(r'%s\(' % n2, lines[i]))
+            if re.search(r'\b%s\(' % n2, seen) and not re.search(r'\b%s\s*\(\s*\)\s*[,;]' % n2, htext):
+                ty = ' '.join(l.strip() for l in lines[s2:nl] if l.strip() and not re.match(r'(/\*|\*|//)', l.strip()))
+                fwd.append('%s %s();' % (ty or 'int', n2) if ty else 'int %s();' % n2)
+            seen += '\n'.join(lines[s2:e2 + 1]) + '\n'
+        out = head + between + (['/* forward declarations (the functions are in the order of the original) */'] + fwd if fwd else []) + ([''] if between or fwd else [])
+        for s2, e2, n2 in order:
+            out += lines[s2:e2 + 1] + ['']
+        while out[-1] == '':
+            out.pop()
+        out += lines[end:]
         open(path, 'w').write('\n'.join(out))
 
 

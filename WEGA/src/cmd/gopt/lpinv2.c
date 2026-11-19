@@ -19,6 +19,54 @@ extern struct bt *betatbl;
 extern void prquad();
 extern int blkno, s4d86;
 
+struct dl { int x0; struct quad *q; long l6; long l10; struct qa e14; int x20; unsigned f15:1, f14:1, f13:1, f12:1, f11:1, f10:1, rest:10; struct dl *next; };	/* a node of the list of the definitions (28 bytes, guessed) */
+extern struct dl *a0e0;
+extern int sameopnd();
+extern int a0e4;
+extern struct sym *symtab;
+extern struct quad *tmpsearch();
+extern void addlpdef(), setopt();
+extern int isglobal(), isdefined();
+extern void clrsymflag(), cerror();
+extern char ascii[];
+extern struct dl *a0f8, *alloclpdef(), *srchdflist();
+extern char *taballoc();
+struct pr { int x; int y; };
+extern struct pr *edges;
+extern struct quad *skiphdrs();
+#define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
+extern int *altab;
+extern struct aln *checkalias();
+extern int lvwords;
+extern unsigned *a0e8;
+extern void clrvec(), orvec();
+struct dnode { struct dnode *next; struct dnode *down; int dblkno; };	/* the dominator tree (see dom2.c) */
+extern struct dnode *a0f4;
+extern int bitpos(), tstlbit();
+extern void prvec();
+extern int issym();
+extern int a0fc, a0f2, vafc;
+extern struct dl *a100;
+extern void chkbscindvar(), marklpinv(), prlpdefs();
+extern int invopnds(), domexits(), notlive(), domuse(), samebetalpdef(), qparvbetalpdef();
+extern struct dnode *domroot;
+extern struct loop *loops;
+extern int maxblk;
+extern int blkno, s4d88, s4d90;
+extern struct quad *qhead, *a0d6;
+extern struct quad *insertquad();
+extern void prgraph(), deledge(), addedge(), updatelooplist();
+extern struct pr *edges;
+extern int *vertex, a0f0, a0da, a0e6, a0ec, a0ee, a0fe;
+extern struct quad *insrtstmpmove(), *qmove(), *chkfamindvar();
+extern void deltmplpdefs();
+extern char ctpos[];
+extern int hdrblk, s4d92, s4d80, s4d94, a0d4;
+extern struct dl *a104;
+extern void freelist(), tabfree(), livevars(), clearflags(), ebbopt(), prquads(), prquad();
+/* forward declarations (the functions are in the order of the original) */
+int inbl();
+
 /* the loop number of every block is cleared (name from the debug output) */
 void
 clearblocks()
@@ -68,11 +116,6 @@ struct quad *q;
 	return q;
 }
 
-struct dl { int x0; struct quad *q; long l6; long l10; struct qa e14; int x20; unsigned f15:1, f14:1, f13:1, f12:1, f11:1, f10:1, rest:10; struct dl *next; };	/* a node of the list of the definitions (28 bytes, guessed) */
-extern struct dl *a0e0;
-extern int sameopnd();
-extern int a0e4;
-
 /* the node of the list a0e0 with the quad of the same operand as q; *flag is set when an operand of a node differs (name from the debug output) */
 struct dl *
 srchdflist(q, flag)
@@ -112,8 +155,6 @@ next:		p = p->next;
 	return 0;
 }
 
-extern struct sym *symtab;
-
 /* the flags of the operand ot (1 c, 2 a, 3 b) of q are cleared (name from the debug output) */
 void
 clrsymflag(q, ot)
@@ -146,11 +187,6 @@ int ot;
 			symtab[betatbl[i].x1].sflags &= ~2;
 	}
 }
-
-extern struct quad *tmpsearch();
-extern void addlpdef(), setopt();
-extern int isglobal(), isdefined();
-extern void clrsymflag(), cerror();
 
 /* the flags of the operands of q are cleared; a temporary is followed to its definition (name from the debug output) */
 void
@@ -190,8 +226,6 @@ struct quad *q, *firstq;
 	}
 }
 
-extern char ascii[];
-
 /* the flags of the operands of q: the symbols and the betatbl entries of c (and of a of a parameter store) are marked (name from the debug output) */
 void
 setopt(q)
@@ -219,9 +253,6 @@ struct quad *q;
 			printf("setopt(), qparv beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->a.w4].x1].nameoff, (symtab[betatbl[q->a.w4].x1].sflags >> 1) & 1);
 	}
 }
-
-extern struct dl *a0f8, *alloclpdef(), *srchdflist();
-extern char *taballoc();
 
 /* a node of the list of the definitions of the loops is made for q (name from the debug output) */
 struct dl *
@@ -255,9 +286,6 @@ int n;
 	p->next = x;
 }
 
-struct pr { int x; int y; };
-extern struct pr *edges;
-
 /* the header quads in front of q that only lead to q are skipped (name guessed) */
 struct quad *
 skiphdrs(q)
@@ -278,8 +306,6 @@ struct quad *q;
 	}
 	return q;
 }
-
-extern struct quad *skiphdrs();
 
 /* the definition q in the block is entered in the list of the definitions of the loops (name from the debug output) */
 void
@@ -321,10 +347,6 @@ int block;
 		}
 	}
 }
-
-#define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
-extern int *altab;
-extern struct aln *checkalias();
 
 /* the operand c of q is a global variable or may be changed by the alias of a global one (name from the debug output) */
 int
@@ -424,10 +446,6 @@ struct loop *lp;
 	}
 }
 
-extern int lvwords;
-extern unsigned *a0e8;
-extern void clrvec(), orvec();
-
 /* the variables that are live on the exits of the loop lp are collected in a0e8 (name from the debug output) */
 void
 liveonexit(lp)
@@ -472,8 +490,6 @@ struct loop *lp;
 	if (s4d86 > 3)
 		printf("\n");
 }
-
-struct dnode { struct dnode *next; struct dnode *down; int dblkno; };	/* the dominator tree (see dom2.c) */
 
 /* the subtree of the dominator tree n with the block blk (name from the debug output) */
 struct dnode *
@@ -559,8 +575,6 @@ int ot;
 	cerror("isdefined(): illegal opnd");
 }
 
-extern struct dnode *a0f4;
-
 /* the block dominates all exits of the loop (name from the debug output) */
 int
 domexits(lp, block)
@@ -626,9 +640,6 @@ struct quad *q, *firstq;
 	cerror("invopnd(): illegal op2 opnd");
 }
 
-extern int bitpos(), tstlbit();
-extern void prvec();
-
 /* the result operand of q is not live in the vector vec (name from the debug output) */
 int
 notlive(q, vec)
@@ -660,8 +671,6 @@ unsigned *vec;
 	}
 	return !tstlbit(vec, k);
 }
-
-extern int issym();
 
 /* the block blk dominates the uses of the variable of q in the loop lp (name from the debug output) */
 int
@@ -728,6 +737,44 @@ struct dl *p;
 		prquad(p->q);
 }
 
+/* the definition d of a quad that adds a constant or an invariant to its own result is a basic induction variable (name from the debug output) */
+void
+chkbscindvar(d)
+struct dl *d;
+{
+	struct quad *s, *x, *h;
+
+	if (s4d86 > 1)
+		printf("//  chkbscindvar: \n");
+	x = d->q;
+	if (x->op == 47 && x->a.b2 == 3) {
+		h = skiphdrs(blks[d->x0]);
+		s = tmpsearch(h, x->a.w4);
+		if (s->op == 1 || s->op == 48) {
+			if (s->b.b2 == 1 || s->b.b2 == 7 || ((s->b.b2 == 4 || s->b.b2 == 6 || s->b.b2 == 8) && !isdefined(s, 3))) {
+				if (sameopnd(s, x, 2, 1)) {
+					if (s4d86 > 1) {
+						printf("found basic induction var:\n");
+						prquad(s);
+					}
+					d->f14 = 1;
+					d->e14 = s->b;
+					if (s->b.b2 == 1 || s->b.b2 == 7)
+						d->f11 = 1;
+					else
+						d->f11 = 0;
+					if (s->op == 1)
+						d->f10 = 1;
+					else
+						d->f10 = 0;
+					a0e4 = 1;
+					x->f2 = 1;
+				}
+			}
+		}
+	}
+}
+
 /* a definition in the list a0e0 has the same result operand as q (name from the debug output) */
 int
 samebetalpdef(q)
@@ -767,49 +814,6 @@ struct quad *q;
 	}
 	return 0;
 }
-
-/* the definition d of a quad that adds a constant or an invariant to its own result is a basic induction variable (name from the debug output) */
-void
-chkbscindvar(d)
-struct dl *d;
-{
-	struct quad *s, *x, *h;
-
-	if (s4d86 > 1)
-		printf("//  chkbscindvar: \n");
-	x = d->q;
-	if (x->op == 47 && x->a.b2 == 3) {
-		h = skiphdrs(blks[d->x0]);
-		s = tmpsearch(h, x->a.w4);
-		if (s->op == 1 || s->op == 48) {
-			if (s->b.b2 == 1 || s->b.b2 == 7 || ((s->b.b2 == 4 || s->b.b2 == 6 || s->b.b2 == 8) && !isdefined(s, 3))) {
-				if (sameopnd(s, x, 2, 1)) {
-					if (s4d86 > 1) {
-						printf("found basic induction var:\n");
-						prquad(s);
-					}
-					d->f14 = 1;
-					d->e14 = s->b;
-					if (s->b.b2 == 1 || s->b.b2 == 7)
-						d->f11 = 1;
-					else
-						d->f11 = 0;
-					if (s->op == 1)
-						d->f10 = 1;
-					else
-						d->f10 = 0;
-					a0e4 = 1;
-					x->f2 = 1;
-				}
-			}
-		}
-	}
-}
-
-extern int a0fc, a0f2, vafc;
-extern struct dl *a100;
-extern void chkbscindvar(), marklpinv(), prlpdefs();
-extern int invopnds(), domexits(), notlive(), domuse(), samebetalpdef(), qparvbetalpdef();
 
 /* the loop invariant definitions are searched in the list of the definitions of the loop lp, moved to the list a100 and marked (name from the debug output) */
 void
@@ -909,10 +913,6 @@ L3:		t = t->next;
 	}
 }
 
-extern struct dnode *domroot;
-extern struct loop *loops;
-extern int maxblk;
-
 /* a node of the dominator tree for the block phblk (the new preheader) is put above the block hblk (name from the debug output) */
 void
 insrtdomnode(hblk, phblk)
@@ -972,24 +972,6 @@ int phblk;
 		}
 	}
 	insrtdomnode(hblk, phblk);
-}
-
-extern int blkno, s4d88, s4d90;
-extern struct quad *qhead, *a0d6;
-extern struct quad *insertquad();
-extern void prgraph(), deledge(), addedge(), updatelooplist();
-extern struct pr *edges;
-
-/* the block list of the loop lp is searched for p (name guessed) */
-int
-inbl(list, p)
-struct bl *list;
-int p;
-{
-	for (; list != 0; list = list->next)
-		if (list->blk == p)
-			return 1;
-	return 0;
 }
 
 /* a preheader block is added in front of the header of the loop lp (name from the debug output); the number of the new block is returned */
@@ -1159,10 +1141,17 @@ int flag;
 	return blkno - 1;
 }
 
-extern int *vertex, a0f0, a0da, a0e6, a0ec, a0ee, a0fe;
-extern struct quad *insrtstmpmove(), *qmove(), *chkfamindvar();
-extern void deltmplpdefs();
-extern char ctpos[];
+/* the block list of the loop lp is searched for p (name guessed) */
+int
+inbl(list, p)
+struct bl *list;
+int p;
+{
+	for (; list != 0; list = list->next)
+		if (list->blk == p)
+			return 1;
+	return 0;
+}
 
 /* the list of blocks is put into the order of the array vertex (name guessed) */
 void
@@ -1261,10 +1250,6 @@ prlpstats()
 	printf("//Number of temps created in loop optimization \t= %d\n", a0ee);
 	printf("//Number of induction vars. eliminated in loop opt. = %d\n", a0fe);
 }
-
-extern int hdrblk, s4d92, s4d80, s4d94, a0d4;
-extern struct dl *a104;
-extern void freelist(), tabfree(), livevars(), clearflags(), ebbopt(), prquads(), prquad();
 
 /* the loop optimization of the program (name guessed) */
 void

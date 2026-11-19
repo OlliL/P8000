@@ -41,21 +41,12 @@ extern struct qa constfold();
 extern struct hent *exprfind();
 extern struct quad *delquad();
 
-/* the tables of the extended basic block are cleared (name guessed) */
-void
-ebbinit()
-{
-	int i;
-
-	a0cc = 0;
-	s71e8 = 1;
-	for (i = 0; i < 32; i++)
-		htab[i] = 0;
-	s71e6 = 0;
-	s71e4 = 0;
-	s71ea = 0;
-	a0d2 = 0;
-}
+extern struct { int rv; double d; } fconsttbl[];
+extern int constlook(), dconstlook();
+/* forward declarations (the functions are in the order of the original) */
+void ebbinit();
+struct vn * vnfind();
+void updateopnd();
 
 /* every extended basic block of the quads is optimized (name guessed) */
 void
@@ -88,86 +79,20 @@ ebbopt()
 	}
 }
 
-/* the entry of the value table for the operand p; made when there is none (name guessed) */
-struct vn *
-vnfind(p)
-struct qa *p;
-{
-	register struct vn *e, *prev;
-
-	if (s4d80 > 2) {
-		printf("// find: ");
-		propnd(p);
-		printf("\n");
-	}
-	for (e = (struct vn *)a0cc; e != 0; prev = e, e = e->next) {
-		if (e->a.b2 == p->b2 && e->a.w4 == p->w4) {
-			if (e->val != 0)
-				goto ret;
-			e->val = s71e8++;
-			e->dead = 0;
-			e->cst = 0;
-			goto ret;
-		}
-	}
-	e = (struct vn *)taballoc(16, 0);
-	if (a0cc == 0)
-		a0cc = (char *)e;
-	else
-		prev->next = e;
-	e->next = 0;
-	e->a = *p;
-	e->val = s71e8++;
-	e->dead = 0;
-	if (p->b2 == 8)
-		e->al = betatbl[p->w4].x0;
-	else if (p->b2 == 3)
-		e->al = -p->w4;
-	else if (p->b2 == 4)
-		e->al = almap(p, 47);
-	else
-		e->al = -9999;
-	if (p->b2 == 7 || p->b2 == 1 || p->b2 == 2)
-		e->cst = 1;
-	else
-		e->cst = 0;
-ret:	return e;
-}
-
-/* the operand p replaced by the one of the value table entry with the value number vn (name from the error message) */
+/* the tables of the extended basic block are cleared (name guessed) */
 void
-updateopnd(vn, p, flag)
-int vn;
-struct qa *p;
-int flag;
+ebbinit()
 {
-	struct vn *e;
+	int i;
 
-	e = (struct vn *)a0cc;
-	while (e != 0) {
-		if (e->val == vn && !e->dead) {
-			if (flag == 1 || (flag == 0 && !isvarty(e->a.b2))) {
-				if (s4d80) {
-					printf("//update ");
-					propnd(p);
-					printf(" to ");
-					propnd(&e->a);
-					printf("(value = %d)\n", vn);
-				}
-				denorm(p);
-				*p = e->a;
-				normop(p);
-			}
-			return;
-		}
-		e = e->next;
-	}
-	if (s4d80 != 0)
-		for (e = (struct vn *)a0cc; e != 0; e = e->next) {
-			propnd(&e->a);
-			printf(" value = %d,alnumber = %d, dead = %s\n", e->val, e->al, e->dead ? "TRUE" : "FALSE");
-		}
-	cerror("error in updateopnd vn - %d", vn);
+	a0cc = 0;
+	s71e8 = 1;
+	for (i = 0; i < 32; i++)
+		htab[i] = 0;
+	s71e6 = 0;
+	s71e4 = 0;
+	s71ea = 0;
+	a0d2 = 0;
 }
 
 /* the quads of one extended basic block, from q up to the next label, value numbered (name guessed); the label quad is returned */
@@ -356,6 +281,88 @@ L44c:			if (identop(q))
 	return q;
 }
 
+/* the entry of the value table for the operand p; made when there is none (name guessed) */
+struct vn *
+vnfind(p)
+struct qa *p;
+{
+	register struct vn *e, *prev;
+
+	if (s4d80 > 2) {
+		printf("// find: ");
+		propnd(p);
+		printf("\n");
+	}
+	for (e = (struct vn *)a0cc; e != 0; prev = e, e = e->next) {
+		if (e->a.b2 == p->b2 && e->a.w4 == p->w4) {
+			if (e->val != 0)
+				goto ret;
+			e->val = s71e8++;
+			e->dead = 0;
+			e->cst = 0;
+			goto ret;
+		}
+	}
+	e = (struct vn *)taballoc(16, 0);
+	if (a0cc == 0)
+		a0cc = (char *)e;
+	else
+		prev->next = e;
+	e->next = 0;
+	e->a = *p;
+	e->val = s71e8++;
+	e->dead = 0;
+	if (p->b2 == 8)
+		e->al = betatbl[p->w4].x0;
+	else if (p->b2 == 3)
+		e->al = -p->w4;
+	else if (p->b2 == 4)
+		e->al = almap(p, 47);
+	else
+		e->al = -9999;
+	if (p->b2 == 7 || p->b2 == 1 || p->b2 == 2)
+		e->cst = 1;
+	else
+		e->cst = 0;
+ret:	return e;
+}
+
+/* the operand p replaced by the one of the value table entry with the value number vn (name from the error message) */
+void
+updateopnd(vn, p, flag)
+int vn;
+struct qa *p;
+int flag;
+{
+	struct vn *e;
+
+	e = (struct vn *)a0cc;
+	while (e != 0) {
+		if (e->val == vn && !e->dead) {
+			if (flag == 1 || (flag == 0 && !isvarty(e->a.b2))) {
+				if (s4d80) {
+					printf("//update ");
+					propnd(p);
+					printf(" to ");
+					propnd(&e->a);
+					printf("(value = %d)\n", vn);
+				}
+				denorm(p);
+				*p = e->a;
+				normop(p);
+			}
+			return;
+		}
+		e = e->next;
+	}
+	if (s4d80 != 0)
+		for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+			propnd(&e->a);
+			printf(" value = %d,alnumber = %d, dead = %s\n", e->val, e->al, e->dead ? "TRUE" : "FALSE");
+		}
+	cerror("error in updateopnd vn - %d", vn);
+}
+
 /* the operands of the quads from first up to last (not included) replaced for the entries of htab that were folded (name guessed) */
 void
 ebbfix(first, last)
@@ -463,6 +470,119 @@ struct quad *q;
 	e->val = s71e8++;
 	e->cst = 0;
 	e->q = q;
+}
+
+/* the value of the operation of q computed at compile time: the operands are constants (name guessed from the error messages); the result is an operand c of the quad */
+struct qa
+constfold(q)
+struct quad *q;
+{
+	struct qa r;
+	long res, op1, op2;
+	double d1, d2, dr;
+	struct vn *e, *x;
+	int found;
+
+	if (s4d80 > 3) {
+		printf("// compute :");
+		prquad(q);
+	}
+	x = vnfind(&q->a);
+	if (!(x->a.b2 == 7 || x->a.b2 == 1 || x->a.b2 == 2)) {
+		found = 0;
+		for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+			if (e->val == x->val && (e->a.b2 == 7 || e->a.b2 == 1 || e->a.b2 == 2) && e->cst) {
+				found = 1;
+				break;
+			}
+		}
+		if (found)
+			x = e;
+		else {
+			if (s4d80)
+				for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+					propnd(&e->a);
+					printf(" value = %d, dead = %s\n", e->val, e->dead ? "TRUE" : "FALSE");
+				}
+			cerror("error in compile time constant propagation (1)");
+		}
+	}
+	if (x->a.b2 == 7)
+		op1 = constbl[x->a.w4];
+	else if (x->a.b2 == 1)
+		op1 = x->a.w4;
+	else if (x->a.b2 == 2)
+		d1 = fconsttbl[x->a.w4].d;
+	if (q->b.b2) {
+		x = vnfind(&q->b);
+		if (!(!x->a.b2 == 7 || x->a.b2 == 1 || x->a.b2 == 2)) {
+			found = 0;
+			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+				if (e->val == x->val && (e->a.b2 == 7 || e->a.b2 == 1 || e->a.b2 == 2) && e->cst) {
+					found = 1;
+					break;
+				}
+			}
+			if (found)
+				x = e;
+			else
+				cerror("error in compile time constant propagation (2)");
+		}
+		if (x->a.b2 == 7)
+			op2 = constbl[x->a.w4];
+		else if (x->a.b2 == 1)
+			op2 = x->a.w4;
+		else if (x->a.b2 == 2)
+			d2 = fconsttbl[x->a.w4].d;
+	}
+	if (x->a.b2 != 2) {
+		if (s4d80 > 1)
+			printf("// compute: op1 = %ld, op2 = %ld\n", op1, op2);
+		switch (q->op) {
+		case 1: res = op1 + op2; break;
+		case 4: res = op1 & op2; break;
+		case 13: res = op1; break;
+		case 14: res = op1 / op2; break;
+		case 19: res = op1 == op2; break;
+		case 22: res = op1 >= op2; break;
+		case 23: res = op1 > op2; break;
+		case 29: res = op1 <= op2; break;
+		case 32: res = op1 < op2; break;
+		case 34: res = op1 * op2; break;
+		case 35: res = op1 != op2; break;
+		case 36: res = !op1; break;
+		case 37: res = op1 | op2; break;
+		case 39: res = op1 % op2; break;
+		case 44: res = op1 << op2; break;
+		case 45: res = op2 >> op2; break;
+		case 48: res = op1 - op2; break;
+		default:
+			cerror("error in compile time constant propagation (3) (%d)", q->op);
+		}
+		r.b2 = 7;
+		r.w4 = constlook(res);
+	} else {
+		switch (q->op) {
+		case 1: dr = d1 + d2; break;
+		case 13: dr = d1; break;
+		case 14: dr = d1 / d2; break;
+		case 19: dr = d1 == d2; break;
+		case 22: dr = d1 >= d2; break;
+		case 23: dr = d1 > d2; break;
+		case 29: dr = d1 <= d2; break;
+		case 32: dr = d1 < d2; break;
+		case 34: dr = d1 * d2; break;
+		case 35: dr = d1 != d2; break;
+		case 36: dr = !d1; break;
+		case 48: dr = d1 - d2; break;
+		default:
+			cerror("error in compile time constant propagation (4) (%d)", q->op);
+		}
+		r.b2 = 2;
+		r.w4 = dconstlook(dr);
+	}
+	r.w0 = q->c.w0;
+	return r;
 }
 
 /* the operation of q does nothing: the second operand is the neutral element (name guessed) */
@@ -772,120 +892,4 @@ L1:				q = delquad(q);
 			}
 		}
 	}
-}
-
-extern struct { int rv; double d; } fconsttbl[];
-extern int constlook(), dconstlook();
-
-/* the value of the operation of q computed at compile time: the operands are constants (name guessed from the error messages); the result is an operand c of the quad */
-struct qa
-constfold(q)
-struct quad *q;
-{
-	struct qa r;
-	long res, op1, op2;
-	double d1, d2, dr;
-	struct vn *e, *x;
-	int found;
-
-	if (s4d80 > 3) {
-		printf("// compute :");
-		prquad(q);
-	}
-	x = vnfind(&q->a);
-	if (!(x->a.b2 == 7 || x->a.b2 == 1 || x->a.b2 == 2)) {
-		found = 0;
-		for (e = (struct vn *)a0cc; e != 0; e = e->next) {
-			if (e->val == x->val && (e->a.b2 == 7 || e->a.b2 == 1 || e->a.b2 == 2) && e->cst) {
-				found = 1;
-				break;
-			}
-		}
-		if (found)
-			x = e;
-		else {
-			if (s4d80)
-				for (e = (struct vn *)a0cc; e != 0; e = e->next) {
-					propnd(&e->a);
-					printf(" value = %d, dead = %s\n", e->val, e->dead ? "TRUE" : "FALSE");
-				}
-			cerror("error in compile time constant propagation (1)");
-		}
-	}
-	if (x->a.b2 == 7)
-		op1 = constbl[x->a.w4];
-	else if (x->a.b2 == 1)
-		op1 = x->a.w4;
-	else if (x->a.b2 == 2)
-		d1 = fconsttbl[x->a.w4].d;
-	if (q->b.b2) {
-		x = vnfind(&q->b);
-		if (!(!x->a.b2 == 7 || x->a.b2 == 1 || x->a.b2 == 2)) {
-			found = 0;
-			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
-				if (e->val == x->val && (e->a.b2 == 7 || e->a.b2 == 1 || e->a.b2 == 2) && e->cst) {
-					found = 1;
-					break;
-				}
-			}
-			if (found)
-				x = e;
-			else
-				cerror("error in compile time constant propagation (2)");
-		}
-		if (x->a.b2 == 7)
-			op2 = constbl[x->a.w4];
-		else if (x->a.b2 == 1)
-			op2 = x->a.w4;
-		else if (x->a.b2 == 2)
-			d2 = fconsttbl[x->a.w4].d;
-	}
-	if (x->a.b2 != 2) {
-		if (s4d80 > 1)
-			printf("// compute: op1 = %ld, op2 = %ld\n", op1, op2);
-		switch (q->op) {
-		case 1: res = op1 + op2; break;
-		case 4: res = op1 & op2; break;
-		case 13: res = op1; break;
-		case 14: res = op1 / op2; break;
-		case 19: res = op1 == op2; break;
-		case 22: res = op1 >= op2; break;
-		case 23: res = op1 > op2; break;
-		case 29: res = op1 <= op2; break;
-		case 32: res = op1 < op2; break;
-		case 34: res = op1 * op2; break;
-		case 35: res = op1 != op2; break;
-		case 36: res = !op1; break;
-		case 37: res = op1 | op2; break;
-		case 39: res = op1 % op2; break;
-		case 44: res = op1 << op2; break;
-		case 45: res = op2 >> op2; break;
-		case 48: res = op1 - op2; break;
-		default:
-			cerror("error in compile time constant propagation (3) (%d)", q->op);
-		}
-		r.b2 = 7;
-		r.w4 = constlook(res);
-	} else {
-		switch (q->op) {
-		case 1: dr = d1 + d2; break;
-		case 13: dr = d1; break;
-		case 14: dr = d1 / d2; break;
-		case 19: dr = d1 == d2; break;
-		case 22: dr = d1 >= d2; break;
-		case 23: dr = d1 > d2; break;
-		case 29: dr = d1 <= d2; break;
-		case 32: dr = d1 < d2; break;
-		case 34: dr = d1 * d2; break;
-		case 35: dr = d1 != d2; break;
-		case 36: dr = !d1; break;
-		case 48: dr = d1 - d2; break;
-		default:
-			cerror("error in compile time constant propagation (4) (%d)", q->op);
-		}
-		r.b2 = 2;
-		r.w4 = dconstlook(dr);
-	}
-	r.w0 = q->c.w0;
-	return r;
 }

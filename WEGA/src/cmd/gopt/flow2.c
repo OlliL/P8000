@@ -23,51 +23,11 @@ extern void rmlabels(), rmjumps(), deledge(), rm_deadblks(), prgraph(), prstats(
 extern int blkempty();
 extern int s4d74, s4d76, s4d78;
 
-/* the number of the basic block of the label l in the table t */
-int
-blkof(l, t)
-	int l;
-	int *t;
-{
-	int i;
-
-	for (i = 0; i < blkno; i++)
-		if (t[i] == l)
-			return i;
-	cerror("cannot find the basic block associated with label %d", l);
-	return -1;
-}
-
-/* the first label quad from q on gets the mark (guessed) */
-void
-marklab(q)
-	struct quad *q;
-{
-	while (q->op != 0x1c)
-		q = q->next;
-	q->c.b2 = 1;
-	q->c.w4 = 1;
-}
-
-/* the block v is appended to the edge list q (a list of entries of edges) */
-void
-addedge(q, v)
-	int *q;
-	int v;
-{
-	int x;
-
-	taballoc(4, 8);
-	edges[nedge].blk = v;
-	edges[nedge].next = -1;
-	if (*q >= 0) {
-		x = *q;
-		while (edges[x].next >= 0)
-			x = edges[x].next;
-		q = &edges[x].next;
-	}
-	*q = nedge++;
-}
+/* forward declarations (the functions are in the order of the original) */
+int blkof();
+void marklab();
+void addedge();
+int jmplabel();
 
 /* the basic blocks of the quads: a quad of the op 0x3b is inserted at the start of every block, the edges between the blocks are collected in its operands a.w4 (the predecessors) and b.w4 (the successors) */
 int
@@ -241,6 +201,77 @@ optflow()
 	}
 }
 
+/* the number of the basic block of the label l in the table t */
+int
+blkof(l, t)
+	int l;
+	int *t;
+{
+	int i;
+
+	for (i = 0; i < blkno; i++)
+		if (t[i] == l)
+			return i;
+	cerror("cannot find the basic block associated with label %d", l);
+	return -1;
+}
+
+/* the first label quad from q on gets the mark (guessed) */
+void
+marklab(q)
+	struct quad *q;
+{
+	while (q->op != 0x1c)
+		q = q->next;
+	q->c.b2 = 1;
+	q->c.w4 = 1;
+}
+
+/* the block v is appended to the edge list q (a list of entries of edges) */
+void
+addedge(q, v)
+	int *q;
+	int v;
+{
+	int x;
+
+	taballoc(4, 8);
+	edges[nedge].blk = v;
+	edges[nedge].next = -1;
+	if (*q >= 0) {
+		x = *q;
+		while (edges[x].next >= 0)
+			x = edges[x].next;
+		q = &edges[x].next;
+	}
+	*q = nedge++;
+}
+
+/* the block v is taken out of the edge list q (name guessed) */
+void
+deledge(q, v)
+	int *q;
+	int v;
+{
+	int x, prev;
+
+	if (*q < 0)
+		return;
+	x = *q;
+	if (edges[x].blk == v)
+		*q = edges[x].next;
+	else {
+		while (v != edges[x].blk) {
+			prev = x;
+			x = edges[x].next;
+			if (x < 0)
+				break;
+		}
+		if (x >= 0)
+			edges[prev].next = edges[x].next;
+	}
+}
+
 /* redundant labels: a label that nothing jumps to is deleted, blocks are joined; tab: the label of every block (name guessed) */
 void
 rmlabels(tab)
@@ -399,31 +430,6 @@ rmjumps(tab)
 			blks[i] = 0;
 			tab[i] = -1;
 		}
-	}
-}
-
-/* the block v is taken out of the edge list q (name guessed) */
-void
-deledge(q, v)
-	int *q;
-	int v;
-{
-	int x, prev;
-
-	if (*q < 0)
-		return;
-	x = *q;
-	if (edges[x].blk == v)
-		*q = edges[x].next;
-	else {
-		while (v != edges[x].blk) {
-			prev = x;
-			x = edges[x].next;
-			if (x < 0)
-				break;
-		}
-		if (x >= 0)
-			edges[prev].next = edges[x].next;
 	}
 }
 
