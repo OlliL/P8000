@@ -1,6 +1,7 @@
 {
 "setposition": "DIFF 18 (object 322 instructions, original 323)",
 "aliasm": "DIFF 17 (object 191 instructions, original 191)",
+"ind": "OK",
 "clrbit": "OK",
 "setbit": "OK",
 "testbit": "DIFF 21 (object 29 instructions, original 29)",
@@ -22,5 +23,11 @@
 "alret": "OK",
 "chkallist": "OK",
 "initallist": "DIFF 2 (object 52 instructions, original 53)",
-"addallist": "DIFF 2 (object 43 instructions, original 44)"
+"addallist": "DIFF 2 (object 43 instructions, original 44)",
+"pralvars": "DIFF 2 (object 76 instructions, original 75)",
+"mkallist": "OK",
+"checkalias": "OK",
+"affsize": "DIFF 3 (object 22 instructions, original 22)",
+"praldim": "OK",
+"aliasmat": "OK"
 }
