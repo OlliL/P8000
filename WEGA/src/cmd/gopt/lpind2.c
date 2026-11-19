@@ -506,3 +506,49 @@ int blk;
 	nq->f4 = 0;
 	return nq;
 }
+
+/* the definitions of the loops with a temporary as the result are moved to the list of the free ones (name from the debug output) */
+void
+deltmplpdefs()
+{
+	struct dl *t, *prev, *u;
+
+	if (s4d86 > 2) {
+		printf("deltmplpdefs(), on entry, lpdefs:\n");
+		for (u = a0e0; u != 0; u = u->next)
+			prquad(u->q);
+		printf("flpdefs:\n");
+		for (u = a0f8; u != 0; u = u->next)
+			prquad(u->q);
+	}
+	a0f0 = 0;
+	prev = t = a0e0;
+	while (t != 0) {
+		if (t->q->c.b2 == 3) {
+			if (t == a0e0)
+				prev = a0e0 = a0e0->next;
+			else
+				prev->next = t->next;
+			if (a0f8 != 0) {
+				u = a0f8;
+				a0f8 = t;
+				t->next = u;
+			} else {
+				a0f8 = t;
+				t->next = 0;
+			}
+			t = prev;
+		} else {
+			prev = t;
+			t = t->next;
+		}
+	}
+	if (s4d86 > 3) {
+		printf("deltmplpdefs(), on exit, lpdefs:\n");
+		for (u = a0e0; u != 0; u = u->next)
+			prquad(u->q);
+		printf("flpdefs:\n");
+		for (u = a0f8; u != 0; u = u->next)
+			prquad(u->q);
+	}
+}

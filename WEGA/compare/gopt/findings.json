@@ -4007,12 +4007,14 @@
    "file": "lpind2.c",
    "note": "open (DIFF 2): cause 2: `and r6,#ADDR` after the lda of a = q->c"
   },
-  "f5_6614": {
+  "deltmplpdefs": {
    "orig": "5:6614",
    "size_orig": 458,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 2): prev = a0e0 = a0e0->next: the original has ldl rr2,rr0 between the two stores, ours not"
   },
   "f5_67de": {
    "orig": "5:67de",

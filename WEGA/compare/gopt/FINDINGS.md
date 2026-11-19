@@ -241,62 +241,62 @@ exact: the program is byte-identical with the original (`host/tools/checkall.sh`
 | addstore | 5:1f2c |  |  |
 | resetbb | 5:1ffc |  |  |
 | ebbclean | 5:206c |  |  |
-| f5_2138 | 5:2138 |  |  |
-| f5_21a4 | 5:21a4 |  |  |
-| f5_2212 | 5:2212 |  |  |
-| f5_226a | 5:226a |  |  |
-| f5_2526 | 5:2526 |  |  |
-| f5_2684 | 5:2684 |  |  |
-| f5_283a | 5:283a |  |  |
-| f5_2ad2 | 5:2ad2 |  |  |
-| f5_2bca | 5:2bca |  |  |
-| f5_2c88 | 5:2c88 |  |  |
-| f5_2df4 | 5:2df4 |  |  |
-| f5_2f9e | 5:2f9e |  |  |
-| f5_3248 | 5:3248 |  |  |
-| f5_3448 | 5:3448 |  |  |
-| f5_34d2 | 5:34d2 |  |  |
-| f5_3524 | 5:3524 |  |  |
-| f5_385e | 5:385e |  |  |
-| f5_38c6 | 5:38c6 |  |  |
-| f5_3b0c | 5:3b0c |  |  |
-| f5_3c12 | 5:3c12 |  |  |
-| f5_3d62 | 5:3d62 |  |  |
-| f5_3e04 | 5:3e04 |  |  |
-| f5_3e34 | 5:3e34 |  |  |
-| f5_4006 | 5:4006 |  |  |
-| f5_409c | 5:409c |  |  |
-| f5_414e | 5:414e |  |  |
-| f5_4578 | 5:4578 |  |  |
-| f5_460c | 5:460c |  |  |
-| f5_4790 | 5:4790 |  |  |
-| f5_4f22 | 5:4f22 |  |  |
-| f5_4f56 | 5:4f56 |  |  |
-| f5_500a | 5:500a |  |  |
-| f5_51cc | 5:51cc |  |  |
-| f5_524e | 5:524e |  |  |
-| f5_5298 | 5:5298 |  |  |
-| f5_5534 | 5:5534 |  |  |
-| f5_556a | 5:556a |  |  |
-| f5_55e4 | 5:55e4 |  |  |
-| f5_560c | 5:560c |  |  |
-| f5_5614 | 5:5614 |  |  |
-| f5_5622 | 5:5622 |  |  |
-| f5_5630 | 5:5630 |  |  |
-| f5_567e | 5:567e |  |  |
-| f5_56cc | 5:56cc |  |  |
-| f5_5860 | 5:5860 |  |  |
-| f5_5a0c | 5:5a0c |  |  |
-| f5_5a86 | 5:5a86 |  |  |
-| f5_5b04 | 5:5b04 |  |  |
-| f5_5c0c | 5:5c0c |  |  |
-| f5_5c4c | 5:5c4c |  |  |
-| f5_5d74 | 5:5d74 |  |  |
-| f5_5ec4 | 5:5ec4 |  |  |
-| f5_62fc | 5:62fc |  |  |
-| f5_6466 | 5:6466 |  |  |
-| f5_6502 | 5:6502 |  |  |
-| f5_6614 | 5:6614 |  |  |
+| clearblocks | 5:2138 |  | open (DIFF 5): displacement form (cause 4): y->w12 after y = QHREC(...): the original ldl rr2,rr0; ld r2,rr2(#12), ours inc r1,#12 first (the same in clearblocks, marklpblocks) |
+| marklpblocks | 5:21a4 |  | open (DIFF 5): displacement form (cause 4): y->w12 after y = QHREC(...): the original ldl rr2,rr0; ld r2,rr2(#12), ours inc r1,#12 first (the same in clearblocks, marklpblocks) |
+| qmkstore | 5:2212 |  | open (DIFF 19): the original reloads the parameter q from the frame (ldl rr2,0(r15)), ours uses rr6 (cause 1) and the struct copy uses rr4/r2 instead of rr6/r0 |
+| srchdflist | 5:226a |  | open (DIFF 5): rr4 against rr6 as the pointer temp of the cp (cause 7) |
+| clrsymflag | 5:2526 |  |  |
+| clropt | 5:2684 |  | open (DIFF 33, same instruction count): block order of the a-operand part: the original has the (4,6,8) body at 5:26f2 behind the 3-case and the compare chain after the bodies (jumping back); ours keeps if/else order; switch (a.b2) gives a jump table (worse) |
+| setopt | 5:283a |  |  |
+| alloclpdef | 5:2ad2 |  |  |
+| skiphdrs | 5:2bca |  |  |
+| addlpdef | 5:2c88 |  |  |
+| isglobal | 5:2df4 |  | open (DIFF 13, 123 against 125 instructions): the original keeps the call printf of the TRUE print in the loop and the first TRUE block jumps to it (jr 2f10), ours the reverse (tail merging, sucomp); the original has `testl rr2; jr ne` after p = checkalias(q, 1) (loop test after the assignment), ours folds it |
+| findlpdefs | 5:2f9e |  |  |
+| liveonexit | 5:3248 |  | open (DIFF 5): displacement form (cause 4): y->w12 after y = QHREC(...): the original ldl rr2,rr0; ld r2,rr2(#12), ours inc r1,#12 first (the same in clearblocks, marklpblocks) |
+| findsubdtree | 5:3448 |  |  |
+| isdom | 5:34d2 |  |  |
+| isdefined | 5:3524 |  |  |
+| domexits | 5:385e |  |  |
+| invopnds | 5:38c6 |  |  |
+| notlive | 5:3b0c |  |  |
+| domuse | 5:3c12 |  |  |
+| marklpinv | 5:3d62 |  |  |
+| prlpdefs | 5:3e04 |  |  |
+| chkbscindvar | 5:3e34 |  |  |
+| samebetalpdef | 5:4006 |  |  |
+| qparvbetalpdef | 5:409c |  |  |
+| lpinv | 5:414e |  |  |
+| insrtdomnode | 5:4578 |  |  |
+| updatelooplist | 5:460c |  | open (DIFF 34, 115 against 114 instructions): popt block order (codemove): ours moves one of the two branch blocks (x == p->bls / else) in front of the loop test jump, the original keeps both behind the loop; for/while and if/else swapped without effect |
+| addpreheader | 5:4790 |  |  |
+| inbl | 5:4f22 |  |  |
+| orderbl | 5:4f56 |  |  |
+| proceslp | 5:500a |  |  |
+| marksloop | 5:51cc |  |  |
+| prlpstats | 5:524e |  |  |
+| loopopt | 5:5298 |  |  |
+| lpow2 | 5:5534 |  | open (DIFF 4, 14 against 15 instructions): the original shifts by a variable count (ld r0,#1; sdal rr2,r0), ours slal rr2,#1 for r << 1, r <<= 1, r * 2, r << 1L, r << (char)1: no source form found |
+| ceval | 5:556a |  | open (DIFF 5): ours has ldl rr2,rr0 after the store of l and m (the long result of the int call) and subl rr2,m from memory where the original uses the cached rr0; the case order of the source is 1, 48, 34, 44, 14/45 (the dispatch list is sorted) |
+| f5_55e4 | 5:55e4 |  | case block of ceval |
+| f5_560c | 5:560c |  | case block of ceval |
+| f5_5614 | 5:5614 |  | case block of ceval |
+| f5_5622 | 5:5622 |  | case block of ceval |
+| f5_5630 | 5:5630 |  | case block of ceval |
+| qmove | 5:567e |  |  |
+| insrtstmpmove | 5:56cc |  | open (DIFF 2): cause 2: ours has `and r6,#ADDR` after the lda of the struct assignment a = q->c (fnc drops only `and r0,..`) |
+| moveindquad | 5:5860 |  |  |
+| mkconstopnd | 5:5a0c |  | open (DIFF 2): the original copies the pointer parameter (ldl rr0,rr6) before the first store, ours does not |
+| insrtopstmp | 5:5a86 |  | open (DIFF 5): cause 2: `and r6,#ADDR` after the lda of every struct assignment (4 places), everything else equal |
+| f5_5b04 | 5:5b04 |  | case block of insrtopstmp |
+| f5_5c0c | 5:5c0c |  | case block of insrtopstmp |
+| f5_5c4c | 5:5c4c |  | case block of insrtopstmp |
+| copyopndstmp | 5:5d74 |  |  |
+| fillindvar | 5:5ec4 |  | open (DIFF 21, 298 against 294 instructions): the 4 `and r6,#ADDR` of cause 2; block order (codemove): the original places the kind == 2 test block (cp kind,2 ..) behind its body (backward jr ne), ours before it; the source has labels LA/LB in the kind == 3 part and gotos from the kind == 2 part; if (ok) {rest} fn5_6466(0, n) puts the fail block last |
+| indupdate | 5:62fc |  | open (DIFF 30, 94 against 95): popt block order: the original puts the `opcode == 1 ? 48 : 1` block and the mkconstopnd(.., 0, ..) call behind the else part, ours in front of it |
+| freelist | 5:6466 |  | open (DIFF 29, same count): the list walk `x = x->next` while x->next: the original loops with the test at the bottom entered by a jump (test, body, test), ours tests rr0 first and stores x; while and for(;;) forms give the same |
+| insrtlpdef | 5:6502 |  | open (DIFF 2): cause 2: `and r6,#ADDR` after the lda of a = q->c |
+| deltmplpdefs | 5:6614 |  | open (DIFF 2): prev = a0e0 = a0e0->next: the original has ldl rr2,rr0 between the two stores, ours not |
 | f5_67de | 5:67de |  |  |
 | f5_68f4 | 5:68f4 |  |  |
 | f5_6bf2 | 5:6bf2 |  |  |
