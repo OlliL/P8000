@@ -4200,19 +4200,21 @@
    "file": "reg2.c",
    "note": "open (DIFF 7, cause 2): `and r6,#ADDR` after lda in the four struct arguments (q->c); one jp instead of jr (layout). Names of the two result pointers and of the callees are guesses"
   },
-  "f5_8500": {
+  "addreg": {
    "orig": "5:8500",
    "size_orig": 320,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_8640": {
+  "addrestore": {
    "orig": "5:8640",
    "size_orig": 230,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_8726": {
    "orig": "5:8726",

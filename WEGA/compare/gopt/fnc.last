@@ -15,5 +15,7 @@
 "pickcolor": "OK",
 "findnode": "OK",
 "rmnode": "OK",
-"savecolors": "DIFF 7 (object 240 instructions, original 236)"
+"savecolors": "DIFF 5 (object 240 instructions, original 236)",
+"addreg": "OK",
+"addrestore": "OK"
 }

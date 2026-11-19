@@ -35,7 +35,11 @@ extern int s70ea;
 extern char *a10a;
 extern struct quad *fn5_9892();
 extern int fn5_992e(), addpreheader();
-extern char *fn5_9020(), *fn5_8500(), *fn5_8640();
+extern char *fn5_9020(), *addreg();
+extern void addrestore();
+extern int fn5_87e4();
+extern struct quad *insertquad();
+extern int fn4_fc06();
 extern void fn5_8ba8(), fn5_8838(), fn5_89ca(), prgraph();
 extern void clrbit(), fn5_964c(), restoredges(), rmnode();
 extern int findnode();
@@ -610,19 +614,19 @@ savecolors()
 				if (s4d90 > 4)
 					printf("// inloop = %x\n", QHREC(blks[GF(i, 6, int)])->w12);
 				r = fn5_9020(blk, &x1);
-				r = fn5_8500(n->x12, q->c, x1, r);
+				r = addreg(n->x12, q->c, x1, r);
 				r2 = fn5_9020(GF(i, 6, int), &x2);
 				if (!fn5_992e(&GF(i, 0, int), r, r2))
 					continue;
-				fn5_8640(n->x12, q->c, blk, r);
+				addrestore(n->x12, q->c, blk, r);
 			} else {
 				r = fn5_9020(GF(i, 6, int), &x1);
-				r = fn5_8500(n->x12, q->c, x1, r);
+				r = addreg(n->x12, q->c, x1, r);
 				if (f)
 					continue;
 				if (!fn5_992e(&GF(i, 0, int), r, r))
 					continue;
-				fn5_8640(n->x12, q->c, x1, r);
+				addrestore(n->x12, q->c, x1, r);
 			}
 		}
 	}
@@ -638,4 +642,81 @@ savecolors()
 	}
 	fn5_8838();
 	fn5_89ca();
+}
+
+/* the quad that loads the register reg for the value c is looked for in the block of x or inserted (name from the debug output) */
+char *
+addreg(reg, c, x, p)
+int reg;
+struct qa c;
+int x;
+struct quad *p;
+{
+	struct quad *qq;
+	struct qa tmp;
+	int out;
+
+	if (s4d90) {
+		printf("addreg : reg = %d rslt = ", reg);
+		propnd(&c);
+		printf("\n");
+	}
+	qq = (struct quad *)fn5_9020(x, &out);
+	for (qq = *(struct quad **)qq; qq != 0; qq = qq->next) {
+		if (qq->op == 28)
+			break;
+		if (qq->op != 40)
+			continue;
+		if (qq->a.w4 != reg)
+			continue;
+		if (!fn4_fc06(&qq->b, &c))
+			continue;
+		if (s4d90) {
+			printf("// addreg (1) returning : ");
+			prquad(qq);
+		}
+		return (char *)qq;
+	}
+	fn5_87e4(x, reg);
+	tmp.b2 = 1;
+	tmp.w4 = reg;
+	tmp.w0 = 4;
+	qq = insertquad(40, &tmp, &c, (struct qa *)0, p);
+	if (s4d90) {
+		printf("// addreg (2) returning : ");
+		prquad(qq);
+	}
+	return (char *)qq;
+}
+
+/* the quad that restores the register reg is looked for in the block of x or inserted (name from the debug output) */
+void
+addrestore(reg, c, x, p)
+int reg;
+struct qa c;
+int x;
+struct quad *p;
+{
+	struct quad *qq;
+	struct qa tmp;
+	int out, y;
+
+	if (s4d90) {
+		printf("addrestore : reg = %d rslt = ", reg);
+		propnd(&c);
+		printf("\n");
+	}
+	qq = (struct quad *)fn5_9020(x, &out);
+	for (qq = *(struct quad **)qq; qq != 0; qq = qq->next) {
+		if (qq->op == 28)
+			break;
+		if (qq->op != 41)
+			continue;
+		if (qq->a.w4 == reg)
+			return;
+	}
+	tmp.b2 = 1;
+	tmp.w4 = reg;
+	tmp.w0 = 4;
+	insertquad(41, &tmp, &c, (struct qa *)0, p);
 }
