@@ -1268,3 +1268,23 @@ reachdefs()
 	if (s4d92)
 		prreachstat();
 }
+
+/* the marks of the symbols of the table of the live variables are cleared again (name guessed) */
+void
+clearflags()
+{
+	int i;
+
+	for (i = 0; i < nlv; i++) {
+		if (lvtab[i].kind == 1) {
+			if (s4d84 > 1)
+				printf("clearing flag for symbol  %s\n", ascii + symtab[lvtab[i].var].nameoff);
+			symtab[lvtab[i].var].sflags &= ~1;
+		} else {
+			if (s4d84 > 1)
+				printf("clearing flag for beta sym %s\n", ascii + symtab[betatbl[lvtab[i].var].x1].nameoff);
+			symtab[betatbl[lvtab[i].var].x1].sflags &= ~1;
+			*(int *)((char *)betatbl + (lvtab[i].var * 10 + 8)) &= ~(1 << 13);
+		}
+	}
+}

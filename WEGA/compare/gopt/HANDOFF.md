@@ -19,7 +19,7 @@ assignment to a local only in ours (genquads, fndparm, tmpsearch, checkops): pha
 (mktree, genquads); (4) displacement form `ld r2,rr2(#4)` after p = p->next (writeil, tmpsearch).
 
 Next (in this order):
-1. live2.c written up to 4:e400 and the vector functions 4:ec32..4:ed82 (prvec .. orvec); next 4:e400 (802: linkreachdefs, the tagged pointers in defs: (long)p & 1, & 0x7F00FFFE), 4:e722 (560), 4:e952 (248), 4:ea4a (488), 4:ed82 (294), 4:eea8 (484), 4:f08c .. (see findings.json, module live2.c), then ebbo2.
+1. Segment 4 is written up to 4:f5fe (reader2 .. live2; the rest of seg. 4 is libc). Segment 5 modules: ebbo2.c (5:0000 .., 59 functions, 8300 bytes), lpinv2.c (35, 13300), lpind2.c (23, 6100), reg2.c (37, 11400), alias2b.c; the libc members from 5:9bc0 (item 4). Write ebbo2.c first (the SCCS line ebbo2.c 1.8); the Makefile `part` needs ebbo2.o then (OBJS5 = ebbo2.o ...).
 2. (fn5_2bca of alias2 and the segment 5 functions: with the libc part, item 4.)
 3. quads2.c 4:1c88 (floating compare, EPU words in the listing); then flow2 (4:927e ..), dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2,
    reg2 (data order, host/recon/modmap.py gave the module of every function in findings.json).
@@ -27,6 +27,6 @@ Next (in this order):
 
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
-TASK: live2.c: 4:e400 (802 bytes, linkreachdefs), 4:e722 (560), 4:e952 (248), 4:ea4a (488), 4:ed82 (294), 4:eea8 (484) and the next ones of live2.
-START: fnc.py -a live2.c (open: islive 4, settmptable 80, insrtlive 7, setsymtable 69, setsym 20, setlbit 9, clrlbit 9, tstlbit 3: leave them); odisc.py -o linkreachdefs; regdiff.py FILE.diff.
-STOP WHEN: 12 functions of live2 are written and checked, or at 70% of the context.
+TASK: ebbo2.c (segment 5: 5:0000 f5_0000 (192), 5:00c0 (84), 5:0114 (188), 5:01d0 (260), 5:02d4 (472) ...): create src/cmd/gopt/ebbo2.c (SCCS line ebbo2.c 1.8 03/04/83 15:54:14, like live2.c) and write the functions in address order; add ebbo2.o to `part` in the Makefile.
+START: fnc.py -a live2.c flow2.c dom2.c (open: the register cache ones and the layout ones, see findings.json: leave them); odisc.py -o f5_0000 (RECON_PROG=gopt; the keys of segment 5 are f5_XXXX); regdiff.py FILE.diff. Forms that helped: BOPT/BBIT (address of the 10 byte entries of betatbl: index first), (long)(a == b), chains p = darr[d] = ..., unused locals to get the frame size.
+STOP WHEN: 12 functions of ebbo2 are written and checked, or at 70% of the context.
