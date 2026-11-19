@@ -182,3 +182,8 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   load in the loop of the call arguments). All of the module is now source: 4 files of the optimizer (comm2, rdr2, reader2, debug2) and
   quads2, wrtil2 almost complete. Next modules: alias2.c (4:6c0a ..), flow2, dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2, reg2,
   alias2b (data order); the libc starts at 5:9bc0.
+- 2026-11-19: gopt, alias2.c started (4:6c0a .. 4:927e, 50 starts): the bit matrix functions clrbit, setbit, clrmat, copymat, matmul, closure,
+  diag, pralias, prmat, fndcall equal under fncheck (masked), testbit (the index form ld r2,rr2(r1)), tmpsearch and fndparm open (the
+  struct assignment to a local: lda without the redundant and in the original). findings.json checked against the sources: every function
+  of src/cmd/gopt/*.c has its entry (mktree was missing the name and was renamed). Not yet: 4:6c0a (834 bytes), 4:7088 (736), 4:77e6.. are
+  done, 4:7c68 (checkops), 4:8074, 4:831e, 4:87e6 and the rest up to 4:9108.

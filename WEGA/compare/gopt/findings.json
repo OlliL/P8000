@@ -1556,96 +1556,120 @@
    "kind": "candidate",
    "module": "alias2.c"
   },
-  "f4_7464": {
+  "clrbit": {
    "orig": "4:7464",
    "size_orig": 98,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "clears bit j of row i of a bit matrix (rows of dim words); debug text says setbit (kept)"
   },
-  "f4_74c6": {
+  "setbit": {
    "orig": "4:74c6",
    "size_orig": 96,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c"
   },
-  "f4_7526": {
+  "testbit": {
    "orig": "4:7526",
    "size_orig": 92,
    "status": "open",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "open: the original forms the index in r1 (ld r1,r3; mult rr0,r5) and reads the word with the indexed form ld r2,rr2(r1), then sdl and bit #0; ours adds the address first; tried *(m + ..), other orders, a temporary, & with a mask"
   },
-  "f4_7582": {
+  "clrmat": {
    "orig": "4:7582",
    "size_orig": 60,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "register variables in r4 r5 r6 (scratch, sccvc)"
   },
-  "f4_75be": {
+  "copymat": {
    "orig": "4:75be",
    "size_orig": 90,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c"
   },
-  "f4_7618": {
+  "matmul": {
    "orig": "4:7618",
    "size_orig": 144,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "names guessed: the boolean product a = b x c over testbit/setbit"
   },
-  "f4_76a8": {
+  "closure": {
    "orig": "4:76a8",
    "size_orig": 132,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "names guessed: transitive closure of the matrix"
   },
-  "f4_772c": {
+  "diag": {
    "orig": "4:772c",
    "size_orig": 50,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "names guessed"
   },
-  "f4_775e": {
+  "pralias": {
    "orig": "4:775e",
    "size_orig": 136,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "names guessed: prints the alias map (debug)"
   },
-  "f4_77e6": {
+  "prmat": {
    "orig": "4:77e6",
    "size_orig": 490,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "names guessed: prints a matrix with the names of the variables; `putchar(' ')` before each bit, if/else for the 1 and 0 (a ?: makes a frame temporary)"
   },
-  "f4_79d0": {
+  "fndcall": {
    "orig": "4:79d0",
    "size_orig": 174,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "names guessed"
   },
-  "f4_7a7e": {
+  "tmpsearch": {
    "orig": "4:7a7e",
    "size_orig": 312,
    "status": "open",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "open: (1) the original reads p->op behind p = p->next with the displacement form (ldl rr2,rr0; ld r2,rr2(#4)), ours increments the address first (the same as writeil case 0x32); (2) the struct assignment s = p->b has the redundant and behind the lda in ours only (see genquads). The original calls prquad(\"p:\\n\") and prquad(\"q:\\n\") with the strings (the debug call is wrong in the original, kept). tmpsearch(p, tmpno, q): the first int goes to r5, the second pointer to rr2 (r4 stays unused)"
   },
-  "f4_7bb6": {
+  "fndparm": {
    "orig": "4:7bb6",
    "size_orig": 178,
    "status": "open",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "open: the assignment s = q->a of a local structure: the original has lda rr4,..(r15) without the and, with the source in rr2 and ldir @rr4,@rr2,r0; ours has the redundant and r0,#%7f00 and other registers (the compiler finding of genquads, phase B); the rest equal; name guessed (the string says checkand, actual param & op found)"
   },
   "f4_7c68": {
    "orig": "4:7c68",
