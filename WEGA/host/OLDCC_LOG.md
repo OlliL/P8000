@@ -1552,3 +1552,18 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   of clist (_sobuf 0x19fe, _sibuf 0x1bfe); cpp stays byte-identical with it (cmp after the rebuild).
 - The source: no source known (the System III uts/vax/io/clist.c is another thing); src/cmd/clist.c written from the
   binary, exact at the first build but for the bss; the getline loop as plain while or as for(;;) with breaks: the same bytes.
+
+## 2026-11-20 gopt: OLD_D2K (vc)
+
+- addallist, initallist (alias2.c of /lib/gopt): after `alast->x0 = v` (a word store through rr2 at offset 0) the original
+  loads the global pointer again, sccvc kept it in rr2. Source forms tried (about 30 in small tests): casts, `*(int *)p`,
+  `p[0].m`, `(*p).m`, `(&*p)`, `p + 0`, comma, `NULL`, a register copy, `(t->next = alast)->x0 = v`: none reloads, only
+  `(p = f())->m = x` (the value of an assignment, which then fits mkhash and mkdomtree) and an `if` around the next statement.
+  A scan of all original functions: no global pointer is used from its register after a store at offset 0 through it
+  (24 uses are inside one getc/putc expression). New switch `OLD_D2K` in the OLD_VC block: matrix vc +0 on cas, real cas
+  build byte-identical; gopt fnc.py 233 -> 237 OK of 322, nothing lost.
+- The vc matrix model of cas compiled with the shipped stdio.h since the headers moved to src/head/oldv7 (baseline showed
+  4 differing functions: getch, main, lstline, lstrest): compare/cas/progcfg.py model_prepare copies the old stdio.h;
+  switchmatrix.py links src/head into its work tree. The old libc archives src/lib/libc-v*.a were incomplete (a parallel
+  make had archived them before the libc objects existed): rebuilt by a plain make in src/lib/oldlibc and oldslibc.
+

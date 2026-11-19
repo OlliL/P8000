@@ -383,8 +383,7 @@ mapnm(p)
 void
 mkhash()
 {
-	symtab = (struct sym *)taballoc(22, 0);
-	symtab->nameoff = 0;
+	(symtab = (struct sym *)taballoc(22, 0))->nameoff = 0;
 	symtab->sflags |= 4;
 	symtab->sx14 = 0;
 }

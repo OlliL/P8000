@@ -775,11 +775,11 @@
   "mkhash": {
    "orig": "4:3b7e",
    "size_orig": 44,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "rdr2.c",
    "file": "rdr2.c",
-   "note": "open: the original reloads symtab after `symtab->nameoff = 0` (ldl rr2,symtab before inc r3,#16), ours keeps rr2; one instruction; not tried further (popt: knowledge of a register after a store through it)"
+   "note": "masked: `(symtab = (struct sym *)taballoc(22, 0))->nameoff = 0;` gives the reload of symtab (the value of an assignment holds no name after the store; with OLD_D2K the split form gives the same)"
   },
   "nlcheck": {
    "orig": "4:3baa",
@@ -1893,20 +1893,20 @@
   "initallist": {
    "orig": "4:8b8c",
    "size_orig": 212,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "open (DIFF 2, 2 attempts incl. unsigned x0): after the word store alcur->x0 = v (alast->x0 in addallist) the original loads the global pointer again (ldl rr2,..) before the next store, ours keeps rr2; the rest equal. The same cause in both: a cache of the pointer after a word store through it (phase B). The goto-free form is plain."
+   "note": "masked with vc OLD_D2K (a store through a scratch register forgets its name: the original loads the global pointer again after the word store at offset 0); about 30 source forms tried before (host/OLDCC_LOG.md 2026-11-20)"
   },
   "addallist": {
    "orig": "4:8c60",
    "size_orig": 182,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "open (DIFF 2, 2 attempts incl. unsigned x0): after the word store alcur->x0 = v (alast->x0 in addallist) the original loads the global pointer again (ldl rr2,..) before the next store, ours keeps rr2; the rest equal. The same cause in both: a cache of the pointer after a word store through it (phase B). The goto-free form is plain."
+   "note": "masked with vc OLD_D2K (a store through a scratch register forgets its name: the original loads the global pointer again after the word store at offset 0); about 30 source forms tried before (host/OLDCC_LOG.md 2026-11-20)"
   },
   "pralvars": {
    "orig": "4:8d16",
@@ -2208,11 +2208,11 @@
   "mkdomtree": {
    "orig": "4:b928",
    "size_orig": 652,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 2): the original loads domroot again (ldl rr2,domroot) between the two stores domroot->next = 0 and domroot->dblkno = ..., ours keeps rr2 (the register cache of the compiler); p = darr[d] = taballoc(..) (chain order); name guessed"
+   "note": "masked: `(domroot = (struct dnode *)taballoc(12, 4))->next = 0;` (the reload of domroot); name guessed"
   },
   "prlist": {
    "orig": "4:bbb4",

@@ -26,6 +26,7 @@
 #define OLD_D6J		/* a dense jump table (segmented): the target into the pair of the value */
 #define OLD_D24		/* a long cast to a pointer is masked through a copy (with OLD_D25 of scparse): yylex, igetaddr of cas */
 #define OLD_D2S		/* a word in r3 widened to long takes the pair rr2 (allo3.c; cas symtype, one witness) */
+#define OLD_D2K		/* a store through a scratch register makes it forget its name (match; gopt: addallist, initallist) */
 #endif
 
 #ifdef OLD_V0P

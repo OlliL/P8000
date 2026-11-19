@@ -312,8 +312,7 @@ mkdomtree()
 		p->down = 0;
 		p->dblkno = i;
 	}
-	domroot = (struct dnode *)taballoc(12, 4);
-	domroot->next = 0;
+	(domroot = (struct dnode *)taballoc(12, 4))->next = 0;
 	domroot->dblkno = s70e6;
 	if (s4d82 > 3) {
 		for (i = 0; i < blkno; i++)

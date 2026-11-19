@@ -34,6 +34,8 @@ def model_prepare(work):
     here = os.path.dirname(os.path.abspath(__file__))
     import shutil
     shutil.copy(os.path.join(here, '..', '..', 'src', 'lib', 'slibc-v11.a'), work)
+    # the old stdio.h (src/head/oldv7, -I of src/cmd/cas/Makefile): #include "stdio.h" finds it in the work directory
+    shutil.copy(os.path.join(here, '..', '..', 'src', 'head', 'oldv7', 'stdio.h'), work)
 
 
 def model_link(work, objs):

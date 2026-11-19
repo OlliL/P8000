@@ -179,7 +179,7 @@ neutral on cas when added, alone and all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk) and `OLD_D2S` (symtype, one witness);
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness) and `OLD_D2K` (gopt; neutral on cas);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
   `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
 - spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S`, `OLD_D49`, `OLD_D50` and `OLD_D51` (v0p has no switch in popt).
@@ -279,6 +279,11 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - vc `OLD_D2S` (allo3.c): a word in r3 widened to long (SCONV) takes the pair rr2, the first pair of the order, with r3 in
   it (`ldk r2,#0`); a word in another register gets a new pair as before (locadv: r7 into rr2). cas symtype (`unsigned n;
   ip->s_2 = n;`). One witness.
+- vc `OLD_D2K` (match3.c, regs3.c d2kforget): an assignment through a scratch register (`p->m = x` at offset 0, `*p = x`) makes
+  the register (pair and words) forget the name it holds; the next statement loads the pointer again (`ldl rr2,_alast`). The
+  shipped and v0p codgen keep it (only an `inc r3,#n` for a nonzero offset loses it). Witnesses in /lib/gopt: addallist,
+  initallist (and mkhash, mkdomtree, which also match with `(p = f())->m = x`); a scan of all of /lib/gopt finds no global
+  pointer used from its register after such a store. Neutral on cas.
 - v1 `OLD_D3` (cbranch): at the join label of `&&` and `||` the shipped codgen gives the idle registers back, the old one keeps
   them with their contents. ld init_entry, dseek.
 - v0 `OLD_D3P` (regforsym): a name that lives in a register is taken from it also when the node wants another register, also

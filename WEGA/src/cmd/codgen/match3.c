@@ -12,6 +12,9 @@ extern int cerror();
 extern void conput();
 extern int dope[];
 extern void expand();
+#ifdef OLD_D2K
+extern void d2kforget();
+#endif
 extern void fixname();
 extern int d2vfirst();
 extern int fldoff;
@@ -253,6 +256,9 @@ match(p, cookie)
 	int x = 0;
 	int t;
 	int y;
+#ifdef OLD_D2K
+	int d2kreg;
+#endif
 
 	rcount();
 	switch optype(p->in.op) {
@@ -419,6 +425,12 @@ cand:
 			return MDONE;
 		}
 #endif
+#ifdef OLD_D2K
+		/* vc (gopt): a store through a scratch register (*p = x, p->m = x at offset 0) makes it forget the name it holds */
+		d2kreg = -1;
+		if (p->in.op == ASSIGN && p->in.left->in.op == OREG && p->in.left->tn.rval >= 0 && p->in.left->tn.rval < 8)
+			d2kreg = p->in.left->tn.rval;
+#endif
 #ifdef OLD_D22
 		/* v0p: a floating compare with memory without the rounding fld of the left operand */
 		if (q->op == 0x100e && q->lshape == 0x18 && q->rshape == 0x2c0)
@@ -427,6 +439,10 @@ cand:
 #endif
 		expand(p, cookie, q->cstring);
 		reclaim(p, q->rewrite, cookie);
+#ifdef OLD_D2K
+		if (d2kreg >= 0)
+			d2kforget(d2kreg);
+#endif
 #ifdef OLD_D2A
 		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
 		if (t == ASSIGN && !(cookie & 01) && p->in.op == REG && (p->in.type == 5 || p->in.type == 15) && p->tn.rval < 8 &&

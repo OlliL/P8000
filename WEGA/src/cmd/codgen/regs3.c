@@ -794,6 +794,22 @@ nxwork(p, nx)
 	}
 }
 
+#ifdef OLD_D2K
+/* OLD_D2K: a store went through the register reg (a pair or its words): they no longer hold a name (not a register variable) */
+void
+d2kforget(reg)
+	register int reg;
+{
+	register struct rs *n;
+
+	for (n = rsuse; n; n = n->next)
+		if (n->cls <= 4 && n->kind != 6 && (n->reg == reg || n->reg == reg + 1)) {
+			n->sym = 0;
+			n->off = 0;
+		}
+}
+#endif
+
 #ifdef OLD_D2C
 /* the register no longer holds its symbol (the tree has taken it over) */
 void

@@ -44,7 +44,7 @@ OUT = os.path.join(REPO, 'host', CFGV['out'])
 PROGS = CFGV['progs']
 BIN = CFGV['bin']
 # programs with a compare/NAME/progcfg.py that are not measured, and why
-NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet', 'cas': 'built by sccvc: MATRIX_VER=vc', 'cc': 'built by the shipped cc, no model'}
+NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet', 'cas': 'built by sccvc: MATRIX_VER=vc', 'gopt': 'built by sccvc (not byte-identical yet, no model)', 'cc': 'built by the shipped cc, no model'}
 ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/home/olivleh1/git/P8000/tmp/wega31_root'
 OLDROOT = os.environ.get('OLDROOT', '/home/olivleh1/git/P8000/tmp/oldroot')
 # the work directories: on a local disk, a network share makes the many small files of the builds slow
@@ -180,6 +180,7 @@ def setup():
     os.makedirs(os.path.join(work, 'tmp'))
     os.makedirs(os.path.join(work, 'src', 'cmd'))
     os.symlink(os.path.join(REPO, 'src', 'lib'), os.path.join(work, 'src', 'lib'))
+    os.symlink(os.path.join(REPO, 'src', 'head'), os.path.join(work, 'src', 'head'))
     subprocess.run(['cp', '-a', OLDROOT, os.path.join(work, 'root')], check=True)
     for p in PASSES:
         subprocess.run(['cp', '-a', os.path.join(REPO, 'src', 'cmd', p), os.path.join(work, 'src', 'cmd', p)], check=True)
