@@ -46,9 +46,9 @@ struct pr { int x; int y; };
 extern struct pr *a70aa;
 extern int blkno;
 #define PY(i)	(*(int *)((char *)a70aa + ((i) * 4 + 2)))
-extern struct quad *fn5_8f5c();
+extern struct quad *rquad();
 extern void addsavequads(), rmrestorequad(), propagate();
-extern int fn5_8df4();
+extern int r_used();
 extern struct quad *delquad();
 extern void clrbit(), fn5_964c(), restoredges(), rmnode();
 extern int findnode();
@@ -786,8 +786,8 @@ addsavequads()
 				for (s = PY(e), c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
 					fn5_9020(s, &out);
 					if (a10a[out] & (1 << r)) {
-						pa = &fn5_8f5c(out, r)->b;
-						pb = &fn5_8f5c(b, r)->b;
+						pa = &rquad(out, r)->b;
+						pb = &rquad(b, r)->b;
 						if (!fn4_fc06(pb, pa))
 							addsave(r, out);
 					}
@@ -827,7 +827,7 @@ rmrestorequad()
 			ok = 1;
 			for (c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
 				fn5_9020(s, &out);
-				t = fn5_8f5c(out, reg);
+				t = rquad(out, reg);
 				if (t == 0 || !fn4_fc06(&q->b, &t->b))
 					ok = 0;
 			}
@@ -855,7 +855,7 @@ propagate()
 		for (r = 1; r <= 11; r++) {
 			for (i = 0; i < blkno; i++)
 				a10a[i] &= ~1;
-			c = fn5_8df4(b, r);
+			c = r_used(b, r);
 			if (c < 0)
 				continue;
 			if (s4d90 > 1)
@@ -864,15 +864,15 @@ propagate()
 				tmp.b2 = 1;
 				tmp.w4 = r;
 				tmp.w0 = 4;
-				t = &fn5_8f5c(c, r)->b;
+				t = &rquad(c, r)->b;
 				insertquad(40, &tmp, t, (struct qa *)0, blks[b]->next);
 				markreg(b, r);
 			} else {
-				pa = &fn5_8f5c(c, r)->b;
-				pb = &fn5_8f5c(b, r)->b;
+				pa = &rquad(c, r)->b;
+				pb = &rquad(b, r)->b;
 				if (!fn4_fc06(pb, pa))
 					continue;
-				q = fn5_8f5c(b, r)->next;
+				q = rquad(b, r)->next;
 				if (s4d90 > 1) {
 					printf("// propagate : check quad -");
 					prquad(q);
@@ -882,4 +882,53 @@ propagate()
 			}
 		}
 	}
+}
+
+/* the register r is used in the block b or in a block on the path to it: the block, else -1 (name from the debug output) */
+int
+r_used(b, r)
+int b, r;
+{
+	int e, s, c, t;
+
+	if (s4d90 > 1)
+		printf("// r_used(%d, %d)\n", b, r);
+	a10a[b] |= 1;
+	e = blks[b]->a.w4;
+	if (e < 0)
+		return -1;
+	s = PY(e);
+	for (c = e; c >= 0; c = a70aa[c].x, s = PY(c))
+		if (a10a[s] & (1 << r))
+			return s;
+	s = PY(e);
+	for (c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
+		if (!(a10a[s] & 1)) {
+			t = r_used(s, r);
+			if (t >= 0)
+				return t;
+		}
+	}
+	return -1;
+}
+
+/* the last quad of the block blk that loads the register reg (name from the debug output) */
+struct quad *
+rquad(blk, reg)
+int blk, reg;
+{
+	struct quad *q, *res;
+
+	if (s4d90 > 1)
+		printf("// rquad(%d, %d)\n", blk, reg);
+	res = 0;
+	if (blks[blk] == 0)
+		cerror("rquad called with bad block");
+	for (q = blks[blk]->next; q != 0; q = q->next) {
+		if (q->op == 59)
+			break;
+		if (q->op == 40 && q->a.w4 == reg)
+			res = q;
+	}
+	return res;
 }

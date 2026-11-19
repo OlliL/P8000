@@ -4256,19 +4256,21 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_8df4": {
+  "r_used": {
    "orig": "5:8df4",
    "size_orig": 360,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_8f5c": {
+  "rquad": {
    "orig": "5:8f5c",
    "size_orig": 196,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_9020": {
    "orig": "5:9020",
