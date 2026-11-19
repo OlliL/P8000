@@ -540,3 +540,69 @@ checkops(q, mode)
 		}
 	} while (x == 0);
 }
+
+/* the position of the operand p in the alias table (0: not tracked, -1: not found); op: the class of the operand (3 address, 0x18 pointer) */
+int
+almap(p, op)
+	struct qa *p;
+	int op;
+{
+	int i;
+	int pos;
+
+	if (aflag > 2)
+		printf("// almap( optr->opnd=%s,op=%d)\n", ascii + symtab[p->w4].nameoff, op);
+	if ((p->w0 & 0x30) == 0x10 && (p->b2 == 1 || p->b2 == 7)) {
+	zero:
+		pos = 0;
+		goto done;
+	neg:
+		pos = -1;
+	done:
+		if (aflag > 2) {
+			if (aflag > 3)
+				printf("// almap: found pos=%d\n", pos);
+			if (pos == -1)
+				printf("warning pos = -1\n");
+		}
+		return pos;
+	}
+	if (p->b2 != 4)
+		goto neg;
+	if (s4d7a && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != 8)
+		goto zero;
+	if (symtab[p->w4].sclass == 9)
+		goto zero;
+	switch (op) {
+	case 0x18:
+	case 0x1e:
+		for (i = nptr; i < nal; i++)
+			if (p->w4 == altab[i]) {
+				pos = i;
+				goto done;
+			}
+		if (aflag > 2)
+			pralias();
+		if (!((symtab[p->w4].sflags >> 2) & 1))
+			goto neg;
+		pos = nptr;
+		goto done;
+	case 3:
+		for (i = nadr; i < nptr; i++)
+			if (p->w4 == altab[i]) {
+				pos = i;
+				goto done;
+			}
+		if (aflag > 2)
+			pralias();
+		if (!((symtab[p->w4].sflags >> 2) & 1))
+			goto neg;
+		pos = nadr;
+		goto done;
+	default:
+		pos = symtab[p->w4].sx14;
+		if (aflag > 1)
+			printf("(almap, symbol=%s, pos=%d)\n", ascii + symtab[p->w4].nameoff, pos);
+		goto done;
+	}
+}

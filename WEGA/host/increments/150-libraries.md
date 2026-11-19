@@ -196,3 +196,5 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   4:8074; named, the placeholder fn7c68 is gone) written, DIFF 92 -> 25 in 5 attempts: what is left is cause (1), cause (2) (four `and r6`)
   and the block order of `found ? &t : &s` (popt, phase B); the form needs gotos (fail in the mode 0 block, success at the end of case 7,
   post in case 0x18, default behind case 2). Still missing in alias2.c: 4:7088 (736 bytes), 4:8074 (682), 4:831e, 4:87e6 .. 4:9108.
+- 2026-11-19: gopt: alias2.c almap (4:8074, the position of an operand in the alias table) written, masked equal at the second attempt after the layout (gotos
+  zero/neg/done inside the first if). Next: 4:831e addaffect (a switch with case blocks up to 4:87e6, about 1000 bytes), then 4:87e6 .. 4:9108.

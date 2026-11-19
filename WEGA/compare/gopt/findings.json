@@ -1742,12 +1742,14 @@
    "note": "case block of checkops",
    "file": "alias2.c"
   },
-  "f4_8074": {
+  "almap": {
    "orig": "4:8074",
    "size_orig": 682,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "odd forms: gotos zero/neg/done, the block `pos = 0; pos = -1; done: debug tail; return` stands inside the first if (the order of the original behind its first test); each loop leaves with goto done. almap(p, op): the position of the operand in the alias table (op 3 addresses nadr..nptr, 0x18/0x1e pointers nptr..nal, else sx14); name from the debug strings. Unlike the other tails the original compares p->w4 == altab[i] in this order."
   },
   "f4_831e": {
    "orig": "4:831e",
