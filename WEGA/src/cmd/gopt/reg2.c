@@ -34,7 +34,7 @@ extern void clrlbit(), setlbit(), setbit();
 extern int s70ea;
 extern unsigned *a10a;
 extern struct quad *fn5_9892();
-extern int fn5_992e(), addpreheader();
+extern int fn5_992e(), addpreheader(), nodeno(), insameebbo(), fn5_9472();
 extern struct quad *findend();
 extern char *addreg();
 extern void addrestore();
@@ -59,7 +59,7 @@ extern void restoredges();
 extern void clrmat(), orvec(), mergevectors(), updatevector();
 extern struct gn *setedges();
 extern void colorgraph(), savecolors();
-extern int fn5_91fc(), fn5_9372();
+extern int nodeno(), insameebbo();
 #define QF(q, o)	(*(unsigned **)(*(char **)((char *)(q) + 6) + (o)))
 extern void propnd();
 extern int a114, a116, a10e;
@@ -403,7 +403,7 @@ unsigned *vec;
 	int j, k, c;
 
 	q = GF(i, 2, struct quad *);
-	c = fn5_91fc(q);
+	c = nodeno(q);
 	for (p = a11e; p != 0; p = p->link)
 		if (p->row == c)
 			break;
@@ -419,11 +419,11 @@ unsigned *vec;
 		p->x14 = GF(i, 8, int);
 	}
 	for (j = 0; j < s714e; j++) {
-		k = fn5_91fc(s7154[j]);
+		k = nodeno(s7154[j]);
 		if (k < 0 || c == k)
 			continue;
 		q2 = s7154[j];
-		if (!tstlbit(vec, j) && !fn5_9372(q, q2))
+		if (!tstlbit(vec, j) && !insameebbo(q, q2))
 			continue;
 		if (s4d90 > 2)
 			printf("// setedge : (%d, %d)\n", c, k);
@@ -979,4 +979,64 @@ int b;
 		last = q;
 	}
 	cerror("error in ebbtail");
+}
+
+/* the node number of the quad q: the nodes of equal values share a number (name guessed) */
+int
+nodeno(q)
+struct quad *q;
+{
+	struct qa *c, *c2;
+	int i, j;
+
+	c = (struct qa *)((char *)q + 6);
+	for (i = 0; i < a116; i++)
+		if (GF(i, 2, struct quad *) == q) {
+			j = i;
+			break;
+		}
+	if (i == a116)
+		return -1;
+	if (GF(j, 0, int) > 0)
+		return GF(j, 0, int);
+	for (i = 0; i < a116; i++) {
+		c2 = &GF(i, 2, struct quad *)->c;
+		if (GF(i, 0, int) > 0 && c->b2 == c2->b2 && c->w4 == c2->w4 && i != j && fn5_9472(j, i)) {
+			GF(j, 0, int) = GF(i, 0, int);
+			break;
+		}
+	}
+	if (GF(j, 0, int) <= 0) {
+		GF(j, 0, int) = a10e;
+		a10e++;
+	}
+	return GF(j, 0, int);
+}
+
+/* the quads p and q are in the same extended basic block (name from the message) */
+int
+insameebbo(p, q)
+struct quad *p, *q;
+{
+	int i, ip, jq, e1, e2;
+
+	for (i = 0; i < a116; i++)
+		if (GF(i, 2, struct quad *) == p) {
+			ip = i;
+			break;
+		}
+	if (i == a116)
+		cerror("insameebbo can't find quad");
+	for (i = 0; i < a116; i++)
+		if (GF(i, 2, struct quad *) == q) {
+			jq = i;
+			break;
+		}
+	if (i == a116)
+		cerror("insameebbo can't find quad");
+	findend(GF(ip, 6, int), &e1);
+	findend(GF(jq, 6, int), &e2);
+	if (e1 == e2)
+		return 1;
+	return 0;
 }

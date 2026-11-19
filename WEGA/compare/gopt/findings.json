@@ -4288,19 +4288,22 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_91fc": {
+  "nodeno": {
    "orig": "5:91fc",
    "size_orig": 374,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c",
+   "note": "open (DIFF 6): `c = &q->c` of the register parameter: the original computes it in rr2 (ldl rr2,rr6; inc r3,#6), ours in rr6 itself (cause 4)"
   },
-  "f5_9372": {
+  "insameebbo": {
    "orig": "5:9372",
    "size_orig": 256,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_9472": {
    "orig": "5:9472",

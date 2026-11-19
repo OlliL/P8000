@@ -26,5 +26,7 @@
 "r_used": "OK",
 "rquad": "OK",
 "findend": "OK",
-"ebbtail": "OK"
+"ebbtail": "OK",
+"nodeno": "DIFF 6 (object 115 instructions, original 116)",
+"insameebbo": "OK"
 }
