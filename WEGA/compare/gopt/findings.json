@@ -3557,7 +3557,7 @@
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 3): ours adds the displacement 12 to rr0 before ldl rr2,rr0, the original copies first (inc r3,#12); the same in marklpblocks"
+   "note": "open (DIFF 5): displacement form (cause 4): y->w12 after y = QHREC(...): the original ldl rr2,rr0; ld r2,rr2(#12), ours inc r1,#12 first (the same in clearblocks, marklpblocks)"
   },
   "marklpblocks": {
    "orig": "5:21a4",
@@ -3566,7 +3566,7 @@
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 3): ours adds the displacement 12 to rr0 before ldl rr2,rr0, the original copies first (inc r3,#12); the same in marklpblocks"
+   "note": "open (DIFF 5): displacement form (cause 4): y->w12 after y = QHREC(...): the original ldl rr2,rr0; ld r2,rr2(#12), ours inc r1,#12 first (the same in clearblocks, marklpblocks)"
   },
   "qmkstore": {
    "orig": "5:2212",
@@ -3649,14 +3649,17 @@
    "size_orig": 682,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_3248": {
+  "liveonexit": {
    "orig": "5:3248",
    "size_orig": 512,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c",
+   "note": "open (DIFF 5): displacement form (cause 4): y->w12 after y = QHREC(...): the original ldl rr2,rr0; ld r2,rr2(#12), ours inc r1,#12 first (the same in clearblocks, marklpblocks)"
   },
   "f5_3448": {
    "orig": "5:3448",

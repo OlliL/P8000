@@ -9,7 +9,7 @@ static char sccsid[] = "@[$]lpinv2.c\t1.10  03/04/83 15:58:16 Copr. 1981 87wega3
 struct bl { struct bl *next; int blk; };	/* a list of blocks */
 struct loop { struct bl *bls; int hdr; struct loop *link; struct bl *exits; int tail; int cnt; unsigned b15:1, b14:1, b13:1, b12:1, b11:1; };
 struct aln { int x0; struct aln *next; struct aln *link; };
-struct hrec { int x[7]; };	/* the record of a block that the header quad points to at 6 (guessed) */
+struct hrec { unsigned *f0; unsigned *f4; unsigned *f8; int w12; };	/* the record of a block that the header quad points to at 6 (guessed) */
 #define QHREC(q)	(*(struct hrec **)((char *)(q) + 6))
 extern struct quad **blks;
 extern int *idfn;
@@ -30,7 +30,7 @@ clearblocks()
 	for (i = 0; i < blkno; i++)
 		if (idfn[i] >= 0) {
 			p = QHREC(blks[i]);
-			p->x[6] = 0;
+			p->w12 = 0;
 		}
 }
 
@@ -48,7 +48,7 @@ int n;
 		printf("marklpblocks(hdr=%d)\n", lp->hdr);
 	for (b = lp->bls; b != 0; b = b->next) {
 		h = QHREC(blks[b->blk]);
-		h->x[6] = n;
+		h->w12 = n;
 	}
 }
 
@@ -420,4 +420,53 @@ struct loop *lp;
 		t->f12 = 0;
 		t = t->next;
 	}
+}
+
+extern int s7158;
+extern unsigned *a0e8;
+extern void clrvec(), orvec();
+
+/* the variables that are live on the exits of the loop lp are collected in a0e8 (name from the debug output) */
+void
+liveonexit(lp)
+struct loop *lp;
+{
+	struct bl *e;
+	struct quad *h;
+	struct hrec *y;
+	int i, s;
+
+	if (s4d86 > 2) {
+		printf("liveonexit(), exit=%x(x)\n", lp->exits);
+		if (lp->exits != 0)
+			printf("lblkno=%d\n", lp->exits->blk);
+	}
+	if (a0e8 == 0)
+		a0e8 = (unsigned *)taballoc(s7158 * 2, 2);
+	clrvec(a0e8, s7158);
+	e = lp->exits;
+	if (s4d86 > 3)
+		printf("liveonexit(), returned from nullvec(), entering while loop\n");
+	while (e != 0) {
+		i = blks[e->blk]->b.w4;
+		if (s4d86 > 3)
+			printf("\nexit block = %d, successors = ", e->blk);
+		while (i >= 0) {
+			s = a70aa[i].y;
+			if (s4d86 > 3)
+				printf(" %d", s);
+			y = QHREC(blks[s]);
+			if (y->w12 == 0) {
+				if (s4d86 > 3) {
+					printf("//calling vecunion(%X, %X, %d),q=%X\n", a0e8, y->f4, s7158, y);
+					prquad(blks[s]);
+				}
+				orvec(a0e8, y->f4, s7158);
+			}
+			i = a70aa[i].x;
+		}
+		e = e->next;
+	}
+	if (s4d86 > 3)
+		printf("\n");
 }
