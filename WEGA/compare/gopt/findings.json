@@ -1307,61 +1307,77 @@
    "file": "wrtil2.c",
    "note": "open: the original has one `ldk r2,#1` for all returns of 1 (a jr eq to it) and the test of q->tn.w6 inline behind the debug print; ours returns 1 in several places and moves the w6 block. Tried: nested ifs, `!` before the test, early return of the TEMP case; names guessed (the string says needustar)"
   },
-  "f4_6050": {
+  "mkleaf": {
    "orig": "4:6050",
    "size_orig": 40,
    "status": "open",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "open: one instruction: the first use of the parameter a (the switch) reads it from the frame in the original (ldl rr2,6(r15)), ours from rr6; the same phenomenon as operand, cmwalk, prquad. The cases stand in the order 4 5 1 7 2 6 3; `for (r = node; ...; ++r)` (r++ moves the body behind the loop), `*(ctpos + a->w4) -= 1` as a statement; the constants of the float table are written to the data file with fprintf (INTERNAL, WORD := ...), flab starts with 9000"
   },
   "f4_6078": {
    "orig": "4:6078",
    "size_orig": 108,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mkleaf"
   },
   "f4_60e4": {
    "orig": "4:60e4",
    "size_orig": 72,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mkleaf"
   },
   "f4_612c": {
    "orig": "4:612c",
    "size_orig": 58,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mkleaf"
   },
   "f4_6166": {
    "orig": "4:6166",
    "size_orig": 68,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mkleaf"
   },
   "f4_61aa": {
    "orig": "4:61aa",
    "size_orig": 376,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mkleaf"
   },
   "f4_6322": {
    "orig": "4:6322",
    "size_orig": 168,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mkleaf"
   },
   "f4_63ca": {
    "orig": "4:63ca",
    "size_orig": 472,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of mkleaf"
   },
   "tlfind": {
    "orig": "4:65a2",
@@ -1371,12 +1387,14 @@
    "module": "wrtil2.c",
    "file": "wrtil2.c"
   },
-  "f4_65e4": {
+  "cleartrees": {
    "orig": "4:65e4",
    "size_orig": 564,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "the second loop has `p->in.op == FREE;` (a compare as a statement: a typo of =, no effect; kept); the temporaries are numbered by tmpoff"
   },
   "wrline": {
    "orig": "4:6818",
@@ -1386,26 +1404,32 @@
    "module": "wrtil2.c",
    "file": "wrtil2.c"
   },
-  "f4_687e": {
+  "wrtree": {
    "orig": "4:687e",
    "size_orig": 270,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "two unused register variables (r10, r11) as in eread; the cases STCALL/USTCALL stand in front of STASG/STARG"
   },
   "f4_698c": {
    "orig": "4:698c",
    "size_orig": 46,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of wrtree"
   },
   "f4_69ba": {
    "orig": "4:69ba",
    "size_orig": 124,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of wrtree"
   },
   "treeeq": {
    "orig": "4:6a36",

@@ -170,3 +170,8 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   about 3.4 KB up to 4:53ea), 4:53f0 (1114 bytes), 4:5d0e, the operand to leaf function 4:6050 with its blocks up to 4:657c, 4:65e4,
   4:687e, 4:6c0a is alias2. The strings of the module: "// writeil : quads to be converted to trees", "// mktree: adding quad to
   tree", "cleartrees: emitting tree", "cannot recreate tree (%d, %d)".
+- 2026-11-19: gopt, wrtil2.c: mkleaf (4:6050 .. 4:65a2: the leaf node of a quad operand, 7 cases; the float constants are written to the data
+  file), cleartrees and wrtree masked equal except the reload of the parameter at the start of mkleaf (the fourth function with it:
+  operand, cmwalk, prquad, mkleaf). The statement `p->in.op == FREE;` of cleartrees is in the original. Source forms found: `++r` in a
+  for loop keeps the loop body in place, `*(ctpos + i) -= 1` as a statement. Still missing: 4:4a8e (writeil, a switch up to
+  4:53ea), 4:53f0 (1114 bytes), 4:5d0e (554 bytes).
