@@ -994,3 +994,52 @@ killdefs(r)
 		}
 	}
 }
+
+/* the gen and kill vectors of the reaching definitions of every block (name guessed) */
+void
+initreach()
+{
+	struct quad *q;
+	int i, j;
+	int *pk;
+	struct lrec *r;
+
+	linkreachdefs();
+	allocreachvecs();
+	for (i = 0; i < blkno; i++) {
+		q = blks[i];
+		if (idfn[i] < 0)
+			continue;
+		r = *(struct lrec **)&q->c;
+		for (q = q->next; q != 0; q = q->next) {
+			if (q->op == 0x3b)
+				break;
+			if (q->op == 7) {
+				killdefs(r);
+				continue;
+			}
+			if (q->f4 && issym(q, 1)) {
+				pk = srchdef(q, 2);
+				setlbit(r->f14, *pk);
+				if (s4d84 > 3)
+					printf("gen, *pk =%d\n", *pk);
+			}
+			if (q->f7 && issym(q, 5)) {
+				pk = srchdef(q, 1);
+				while (*++pk != -1) {
+					if (q == defs[*pk])
+						continue;
+					setlbit(r->f10, *pk);
+					if (s4d84 > 3)
+						printf("kill, *pk =%d\n", *pk);
+				}
+			}
+		}
+		if (s4d84 > 1) {
+			printf("block=%d\n", i);
+			prvec(r->f14, 2, 2);
+			prvec(r->f10, 1, 2);
+			printf("\n");
+		}
+	}
+}
