@@ -1521,26 +1521,32 @@
    "file": "wrtil2.c",
    "note": "names guessed (a table at the pointer 0x70da, 0x70de entries)"
   },
-  "f4_6c0a": {
+  "setposition": {
    "orig": "4:6c0a",
    "size_orig": 834,
    "status": "open",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "setposition(cls, p, X, Y): enters an operand in the list of the addresses X (nadr) and of the pointers Y (nptr), with its structure members (recursive); name from the debug text. Open: one expression: `symtab[p->w4].sclass` as the first argument of the first printf: the original computes the address (mult 22, inc 4, ldb rl3,@rr2), ours reads with the indexed form ldb rl3,rr2(r1); tried (symtab + i)->sclass, (*(..)).sclass, (char *)[4], a cast; the rest equal (323 instructions, ours 322; with FNC_DROP for the redundant and). An unused local pointer before i gives the frame of the original (Y at 0x24(r15)); the array-of-pointer case appends to Y without the search (shared with the cases 0x18 0x1e 0x2f in the original)"
   },
   "f4_6f4c": {
    "orig": "4:6f4c",
    "size_orig": 88,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c|alias2.c"
+   "module": "wrtil2.c|alias2.c",
+   "file": "alias2.c",
+   "note": "case block of setposition"
   },
   "f4_6fa4": {
    "orig": "4:6fa4",
    "size_orig": 228,
    "status": "open",
    "kind": "candidate",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "case block of setposition"
   },
   "f4_7088": {
    "orig": "4:7088",

@@ -84,9 +84,9 @@ exact: the program is byte-identical with the original (`host/tools/checkall.sh`
 | f4_6322 | 4:6322 |  | case block of mkleaf |
 | f4_63ca | 4:63ca |  | case block of mkleaf |
 | asgfold | 4:6abe |  | open: one instruction: `p->in.right->in.op` is loaded by the original with ldl rr0,rr2(#0x12) (displacement), ours with add r1,#0x12 and an indirect load; x = x op y becomes x op= y (op + 1); tried `op = (p = *pp)->in.right->in.op` and other orders |
-| f4_6c0a | 4:6c0a |  |  |
-| f4_6f4c | 4:6f4c |  |  |
-| f4_6fa4 | 4:6fa4 |  |  |
+| setposition | 4:6c0a |  | setposition(cls, p, X, Y): enters an operand in the list of the addresses X (nadr) and of the pointers Y (nptr), with its structure members (recursive); name from the debug text. Open: one expression: `symtab[p->w4].sclass` as the first argument of the first printf: the original computes the address (mult 22, inc 4, ldb rl3,@rr2), ours reads with the indexed form ldb rl3,rr2(r1); tried (symtab + i)->sclass, (*(..)).sclass, (char *)[4], a cast; the rest equal (323 instructions, ours 322; with FNC_DROP for the redundant and). An unused local pointer before i gives the frame of the original (Y at 0x24(r15)); the array-of-pointer case appends to Y without the search (shared with the cases 0x18 0x1e 0x2f in the original) |
+| f4_6f4c | 4:6f4c |  | case block of setposition |
+| f4_6fa4 | 4:6fa4 |  | case block of setposition |
 | f4_7088 | 4:7088 |  |  |
 | f4_7368 | 4:7368 |  |  |
 | testbit | 4:7526 |  | open: the original forms the index in r1 (ld r1,r3; mult rr0,r5) and reads the word with the indexed form ld r2,rr2(r1), then sdl and bit #0; ours adds the address first; tried *(m + ..), other orders, a temporary, & with a mask |

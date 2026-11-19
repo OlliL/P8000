@@ -6,8 +6,14 @@
 
 static char sccsid[] = "@[$]alias2.c\t1.5  02/07/83 15:50:16 Copr. 1981 87wega3.2.";
 
+#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
+
 extern int aflag;
-extern int nadr, nptr, nal;
+extern int nadr, nptr, nal, s4d7a;
+extern struct { int tag; int x; } numtab[];
+extern struct sym *mapn();
+extern int tagfind(), itfind();
+extern char *taballoc();
 extern int *altab;
 extern struct sym *symtab;
 extern char ascii[];
@@ -264,5 +270,81 @@ fndparm(q)
 		}
 		if (s.b2 != 3)
 			return 0;
+	}
+}
+
+/*
+ * the class of an operand is entered in the lists of the addresses (X) and of the pointers (Y), a structure with its members (names
+ * guessed, written from /lib/gopt)
+ */
+void
+setposition(cls, p, X, Y)
+	int cls;
+	struct qa *p;
+	int *X, *Y;
+{
+	struct sym *u;
+	int i;
+	struct sym *v;
+	struct qa t;
+
+	if (aflag > 2) {
+		printf("// entering setposition(), p->opnd = %s, class = %d\n", ascii + symtab[p->w4].nameoff, symtab[p->w4].sclass);
+		printf("// p->att = %d\n", p->b2);
+	}
+	if (p->b2 == 3)
+		return;
+	if (s4d7a && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != 8)
+		return;
+	if (symtab[p->w4].sclass == 9)
+		return;
+	if (symtab[p->w4].stype == 8 && symtab[p->w4].sx12 != -1) {
+		v = mapn(symtab[p->w4].sx12);
+		t.b2 = 4;
+		t.w4 = v - symtab;
+		if (!itfind(&t)) {
+			taballoc(2, 6);
+			v->sx14 = nal;
+			symtab[p->w4].sx14 = nal;
+			altab[nal++] = v - symtab;
+		} else
+			symtab[p->w4].sx14 = v->sx14;
+		for (i = v->sx12; numtab[i].tag > 0; i++) {
+			if (tagfind(numtab[i].tag) != -1) {
+				t.w4 = mapn(numtab[i].tag) - symtab;
+				t.b2 = 4;
+				if (!itfind(&t))
+					setposition(cls, &t, X, Y);
+			}
+		}
+	}
+	if (!itfind(p)) {
+		taballoc(2, 6);
+		symtab[p->w4].sx14 = nal;
+		altab[nal++] = p->w4;
+	}
+	switch (cls) {
+	case 0x18:
+	case 0x1e:
+	case 0x2f:
+		for (i = 0; i < nptr; i++)
+			if (Y[i] == p->w4)
+				return;
+		Y[nptr++] = p->w4;
+		return;
+	case 3:
+	case 0x34:
+		for (i = 0; i < nadr; i++)
+			if (X[i] == p->w4)
+				return;
+		X[nadr++] = p->w4;
+		if (p->b2 == 4 && (symtab[p->w4].stype & 0x30) == 0x30 && (DECREF(symtab[p->w4].stype) & 0x30) == 0x10) {
+			Y[nptr++] = p->w4;
+		}
+		return;
+	case 7:
+		return;
+	default:
+		cerror("setposition: illegal operand\n");
 	}
 }

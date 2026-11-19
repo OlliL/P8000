@@ -187,3 +187,8 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   struct assignment to a local: lda without the redundant and in the original). findings.json checked against the sources: every function
   of src/cmd/gopt/*.c has its entry (mktree was missing the name and was renamed). Not yet: 4:6c0a (834 bytes), 4:7088 (736), 4:77e6.. are
   done, 4:7c68 (checkops), 4:8074, 4:831e, 4:87e6 and the rest up to 4:9108.
+- 2026-11-19: gopt: rename.py checked (it still works; new option -m: OLD is a placeholder for an existing NEW; the placeholders fn0b5e,
+  fn1b28, fn1d22, fn2bcc, fn2c62, fn2c8c, fn4a8e of the sources are renamed to the functions; delquads became delrun because delquad and
+  delquads share the first 7 characters). alias2.c: setposition (4:6c0a .. 4:7088, the lists of the addresses and pointers, recursive for
+  the members of a structure) written, one expression open. FINDINGS.md of gopt written by findings.py. Still missing in alias2.c:
+  4:7088 (736 bytes), 4:7c68 (checkops), 4:8074 (682), 4:831e, 4:87e6 .. 4:9108.
