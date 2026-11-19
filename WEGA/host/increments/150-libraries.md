@@ -145,3 +145,7 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   { } ] [ . L B C / are the blocks 4:00fc ... 4:0700), dotree, dotree2, cutree, pr, abortpass, passes, prtbl: dotree2, cutree, abortpass,
   passes, prtbl equal under fncheck (masked), main, dotree, pr open (popt block order and a register, notes in findings.json). quads2.c
   not started: 44 starts from 4:0b5e, the first (genquads, a switch on the operator) runs to about 4:14a2.
+- 2026-11-19: gopt, quads2.c started with the small functions from 4:14a2: fold1, fold2, asgop2, asgsimp, tlookup, constlook,
+  fconstlook equal under fncheck (masked); cmwalk (one instruction, popt reload of p from the frame) and operand (the first reload,
+  `p->in.sname - symtab` makes scodgen stop with an rbusy error when p is in rr6, so a local is used) open. Not yet: genquads
+  (4:0b5e..4:14a2, a switch), 1c88 (floating compare, EPU words), the quad list functions 1d22 .. 2bcc.

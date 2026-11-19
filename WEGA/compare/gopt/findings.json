@@ -250,110 +250,140 @@
    "kind": "candidate",
    "module": "quads2.c"
   },
-  "f4_14a2": {
+  "fold1": {
    "orig": "4:14a2",
    "size_orig": 70,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "names guessed"
   },
-  "f4_14e8": {
+  "fold2": {
    "orig": "4:14e8",
    "size_orig": 104,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "names guessed; the star nodes on the way get op 126 (an op that is not in the table)"
   },
-  "f4_1550": {
+  "asgop2": {
    "orig": "4:1550",
    "size_orig": 160,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "q = t = talloc(): t is unused (a second local that the original has)"
   },
-  "f4_15f0": {
+  "asgsimp": {
    "orig": "4:15f0",
    "size_orig": 80,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": ""
   },
-  "f4_1640": {
+  "cmwalk": {
    "orig": "4:1640",
    "size_orig": 466,
    "status": "open",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "open: one instruction: the last `else if (optype(p->in.op) != LTYPE)` reads p from the frame in the original (ldl rr2,0(r15)), ours from rr6 (popt forwarding); the locals s1, s2 and the pointers p1, p2 as in main"
   },
-  "f4_1812": {
+  "operand": {
    "orig": "4:1812",
    "size_orig": 46,
    "status": "open",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "open: (1) the first use of p reloads it from the frame in the original (as in cmwalk); (2) `p->in.sname - symtab` does not compile with p in rr6 (rbusy error of scodgen): ours uses a local sp; the original has sub of the two low words, div 22, no store; (3) the else block of the NAME case lies behind the return in the original. Static struct opnd (6 bytes) in the data"
   },
   "f4_1840": {
    "orig": "4:1840",
    "size_orig": 104,
    "status": "open",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "case block of operand"
   },
   "f4_18a8": {
    "orig": "4:18a8",
    "size_orig": 84,
    "status": "open",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "case block of operand"
   },
   "f4_18fc": {
    "orig": "4:18fc",
    "size_orig": 36,
    "status": "open",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "case block of operand"
   },
   "f4_1920": {
    "orig": "4:1920",
    "size_orig": 274,
    "status": "open",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "case block of operand"
   },
   "f4_1a32": {
    "orig": "4:1a32",
    "size_orig": 36,
    "status": "open",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "case block of operand"
   },
   "f4_1a56": {
    "orig": "4:1a56",
    "size_orig": 148,
    "status": "open",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "case block of operand"
   },
-  "f4_1aea": {
+  "tlookup": {
    "orig": "4:1aea",
    "size_orig": 62,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "name guessed"
   },
-  "f4_1b28": {
+  "constlook": {
    "orig": "4:1b28",
    "size_orig": 122,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "name guessed; `ctmp_no`: see operand"
   },
-  "f4_1ba2": {
+  "fconstlook": {
    "orig": "4:1ba2",
    "size_orig": 230,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "name guessed; reads 4 words from the data file with fscanf (the .word lines of the intermediate file)"
   },
   "f4_1c88": {
    "orig": "4:1c88",

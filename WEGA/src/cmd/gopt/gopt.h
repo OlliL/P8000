@@ -67,6 +67,9 @@
 #define REG	96
 #define OREG	97
 #define CCODES	99
+#define PROC	118
+#define UPROC	119
+#define SUBSR	120
 #define TEMP	121
 #define LAB	127
 
@@ -104,8 +107,7 @@ union ndu {
 		int	op;
 		int	rall;
 		int	type;
-		char	su;
-		char	fsu;
+		int	w6;		/* 6: for a TEMP */
 		int	pad1;		/* 8 */
 		int	pad2;		/* 0xA */
 		int	temp;		/* 0xC: the number of a TEMP */
@@ -138,6 +140,8 @@ struct sym {
 	int	sx12;
 	int	sx14;
 };
+
+struct qa { int w0; char b2; int w4; };	/* an operand of a quad: 6 bytes (names guessed) */
 
 struct dopest { int dopeop; char opst[8]; int dopeval; };	/* 12 bytes */
 extern struct dopest indope[];

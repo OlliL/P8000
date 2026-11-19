@@ -19,8 +19,8 @@ extern NODE *saved[];
 extern NODE *curproc;
 extern long **lastp;
 extern long vb64, vb04, v06, vb94;
-extern int vb08, vb60, v0e, vafc, v00, v04, vafe, vb5e;
-extern int s4d7a, s0078, s4d74, s4d76, s023e, s4d78, s4d94, s0240, s0242, s0244;
+extern int nconst, nfconst, v0e, vafc, v00, v04, vafe, vb5e;
+extern int s4d7a, s0078, s4d74, s4d76, ntl, s4d78, s4d94, s0240, nctmp, s0244;
 extern long s4d96;
 extern char arra[], arrb[];
 extern char *opst[];
@@ -39,8 +39,6 @@ extern int fn9108(), fn927e(), fnc65a(), fnc69e(), rdsym();
 extern int dope[];
 
 static void dotree(), dotree2(), cutree(), pr(), passes(), abortpass(), prtbl();
-
-struct qa { int w0; char b2; int w4; };
 
 main(argc, argv)
 	int argc;
@@ -72,21 +70,21 @@ main(argc, argv)
 			s4d7a = 0;
 			s0078 = 0;
 			vb64 = 0;
-			vb08 = 0;
-			vb60 = 0;
+			nconst = 0;
+			nfconst = 0;
 			vb04 = 0;
 			vb64 = 0;
 			v0e = 1;
 			tinit();
 			s4d74 = 0;
 			s4d76 = 0;
-			s023e = 0;
+			ntl = 0;
 			s4d78 = 0;
 			vafc = 0;
 			lno = 1;
 			s4d94 = 0;
 			s0240 = 0;
-			s0242 = 0;
+			nctmp = 0;
 			s0244 = 0;
 			for (i = 0; i <= 1000; i++) {
 				arra[i] = 0;
