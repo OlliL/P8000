@@ -7,8 +7,8 @@ Usage: RECON_PROG=NAME fnc.py [-v] FILE.c FUNC [FUNC ...]     one line each: OK 
        -v   also the first 20 lines of the diff of the first FUNC
 
 The range of FUNC is its start in findings.json up to the end of the case blocks that follow it (notes "case block of FUNC",
-"tail of FUNC"). The compiler: env FNC_CC (default /bin/sccvc), FNC_ROOT (default tmp/oldroot), FNC_DROP (default: the redundant
-`and r0,#%7f00` behind an lda, a known difference of the old compilers: genquads); file level `static` is dropped for the symbols.
+"tail of FUNC"). The compiler: env FNC_CC (default /bin/sccvc), FNC_ROOT (default tmp/oldroot), FNC_DROP (masked lines, default none), FNC_DROPRAW
+(unmasked lines; default: the redundant `and r0,#%7f00` behind an lda; not a field mask as `and r0,#%0800`), a known difference of the old compilers: genquads); file level `static` is dropped for the symbols.
 Replaces the scratch chk.sh/all.sh of the gopt work. The results are written to compare/NAME/fnc.last (name, result) too.
 """
 import json
@@ -52,7 +52,7 @@ def run(src, name):
     env = dict(os.environ, FNC_ROOT=os.environ.get('FNC_ROOT', os.path.join(CFG.REPO, '..', 'tmp', 'oldroot')),
                FNC_CC=os.environ.get('FNC_CC', '/bin/sccvc'), FNC_OLDV7='1',
                FNC_EXTRA=os.environ.get('FNC_EXTRA', ' '.join(f for f in os.listdir(CFG.SRCDIR) if f.startswith('ops_'))),
-               FNC_DROP=os.environ.get('FNC_DROP', r'^and\sr0,#ADDR$'))
+               FNC_DROP=os.environ.get('FNC_DROP', ''), FNC_DROPRAW=os.environ.get('FNC_DROPRAW', r'^and\s+r0,#%7[Ff]00$'))
     r = subprocess.run([sys.executable, os.path.join(HERE, 'fncheck.py'), dd, a, hi, name], env=env, capture_output=True, text=True)
     shutil.rmtree(td, ignore_errors=True)
     out = (r.stdout + r.stderr)

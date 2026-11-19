@@ -179,7 +179,7 @@ neutral on cas when added, alone and all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness) and `OLD_D2K` (gopt; neutral on cas);
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K` and `OLD_D3JL` (gopt; both neutral on cas);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
   `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
 - spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S`, `OLD_D49`, `OLD_D50` and `OLD_D51` (v0p has no switch in popt).
@@ -301,6 +301,10 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   front of the label is a jump (the record `]` does not count), the parameters known at the jumps come back (tfree1, rmconv); of
   those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
   records are forgotten. With two jumps (buildtree, an `&&`) the original reloads.
+- vc `OLD_D3JL` (comm3.c, under `OLD_D3J`): a parameter pair that comes back at a label gets the frame home (d3jmark) only
+  when it is a long, not a pointer (in segmented code every pointer is a pair; the witness of d3jmark, codgen notoff, is a
+  long of nonsegmented code). /lib/gopt canopt, denorm, islive: the frame slot of the pointer is reserved, rr6 is not stored.
+  Neutral on cas.
 - v0p `OLD_D3AW` (argplace): the register of a parameter is forgotten only for an argument that is the parameter itself, uses it
   as an address or goes through +, -, unary -, * or a cast (scmd, readsyms, readtab), or a parameter added to an address constant
   (exname), and only when it lies in the register the argument is wanted in: putbyte `bcon(v)` reloads, popt setcon

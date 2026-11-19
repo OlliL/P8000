@@ -410,7 +410,7 @@
    "kind": "proven",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "quad: 30 bytes: next, op (bit field 8), flag bits f7..f0, three operands c a b (6 bytes each, with a flag bit behind b2), the position (file name, line); returns 0 when taballoc gives 0x7F00FFFF; flags cleared f7 f4 f6 f5 f0; `q->c.fl = 0` only for c"
+   "note": "masked: the DIFF was fnc.py's drop of every `and r0,#ADDR` (the field mask of a bitfield store); FNC_DROPRAW now drops only `and r0,#%7f00`"
   },
   "insertquad": {
    "orig": "4:1f04",
@@ -419,7 +419,7 @@
    "kind": "proven",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "as addquad; the ops 0x28 0x29 0x2b 0x3b are not counted by normop; flags cleared f0 f7 f4 f6 f5"
+   "note": "masked: the DIFF was fnc.py's drop of every `and r0,#ADDR` (the field mask of a bitfield store); FNC_DROPRAW now drops only `and r0,#%7f00`"
   },
   "delquad": {
    "orig": "4:20b6",
@@ -457,11 +457,11 @@
   "denorm": {
    "orig": "4:22b6",
    "size_orig": 102,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "open: one instruction: the original does not store the parameter p to the frame (dead store), ours does; 4 forms tried (if chain with direct *(base + index) -= 1 is the nearest)"
+   "note": "masked with vc OLD_D3JL (OLD_D3J: a pointer parameter that comes back at a label gets no frame home; the original reserves the frame slot but does not store rr6)"
   },
   "map": {
    "orig": "4:231c",
@@ -2550,11 +2550,11 @@
   "islive": {
    "orig": "4:ca88",
    "size_orig": 452,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 4, 2 attempts): the field stores lvtab[i].var/kind/alias = v: the original masks the value (sla r0,#0; and r0,#mask), ours emits no and (3 lines); the types unsigned did not change it; names from the string (the table of the live variables: struct lv {kind:1, alias:1, var:14}, guessed)"
+   "note": "masked with vc OLD_D3JL (OLD_D3J: a pointer parameter that comes back at a label gets no frame home; the original reserves the frame slot but does not store rr6)"
   },
   "settmptable": {
    "orig": "4:cc4c",
@@ -2937,11 +2937,11 @@
   "betainit": {
    "orig": "4:f5fe",
    "size_orig": 260,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "beta2.c",
    "file": "beta2.c",
-   "note": "open (DIFF 2): the store t->fl = flag misses `and r0,#0x0800` after the shift (tried flag unsigned, & 1, signed field); the rest equals; the case blocks f702, f8ac, f97a are inside"
+   "note": "masked: the DIFF was fnc.py's drop of every `and r0,#ADDR` (the field mask of a bitfield store); FNC_DROPRAW now drops only `and r0,#%7f00`"
   },
   "f4_f702": {
    "orig": "4:f702",
@@ -3168,11 +3168,11 @@
   "exprfind": {
    "orig": "5:0d7a",
    "size_orig": 514,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "ebbo2.c",
    "file": "ebbo2.c",
-   "note": "open (DIFF 2): the field assignment e->num = a0d0 (15 bits at offset 0) has `and r0,#7fff` after `sla r0,#0` in the original, ours emits no mask (a0d0 as int or unsigned, with & 32767 worse)"
+   "note": "masked: the DIFF was fnc.py's drop of every `and r0,#ADDR` (the field mask of a bitfield store); FNC_DROPRAW now drops only `and r0,#%7f00`"
   },
   "exprenter": {
    "orig": "5:0f7c",
@@ -3474,11 +3474,11 @@
   "canopt": {
    "orig": "5:1b7e",
    "size_orig": 66,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "ebbo2.c",
    "file": "ebbo2.c",
-   "note": "open (DIFF 1): the frame has 4 bytes in both, but the original does not store the parameter (rr6 stays in use), ours spills it (ldl 0(r15),rr6): cause 1 (parameter handling)"
+   "note": "masked with vc OLD_D3JL (OLD_D3J: a pointer parameter that comes back at a label gets no frame home; the original reserves the frame slot but does not store rr6)"
   },
   "ebbcall": {
    "orig": "5:1bc0",

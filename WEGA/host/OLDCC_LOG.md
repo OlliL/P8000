@@ -1566,4 +1566,10 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   4 differing functions: getch, main, lstline, lstrest): compare/cas/progcfg.py model_prepare copies the old stdio.h;
   switchmatrix.py links src/head into its work tree. The old libc archives src/lib/libc-v*.a were incomplete (a parallel
   make had archived them before the libc objects existed): rebuilt by a plain make in src/lib/oldlibc and oldslibc.
+- gopt, vc `OLD_D3JL`: canopt, denorm (DIFF 2 each) differ by the entry store `ldl 0(r15),rr6` that the original leaves out
+  (its frame slot is reserved). The store comes from d3jmark (OLD_D3J: a pair parameter restored at a label behind a jump);
+  restricted to longs (not pointers) for vc: canopt, denorm, islive exact (masked), nothing lost; matrix vc +0 on cas.
+  Source forms tried before: register p, else, nested if, `return !(...)`, unused locals (the frame stays, the store too).
+- fnc.py dropped every `and r0,#ADDR` of our object (meant for `and r0,#%7f00` behind lda): the field masks of bitfield
+  stores (betainit, addquad, insertquad, exprfind) showed as DIFF. FNC_DROPRAW (unmasked) drops only `#%7f00` now.
 

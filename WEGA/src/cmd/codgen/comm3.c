@@ -541,7 +541,12 @@ d3jlabel(lab, dead)
 			r = getreg(j->cls[i], j->reg[i], 0, j->sym[i]);
 			if (r == j->reg[i]) {
 				rfree(r, j->cls[i] == 3 ? 5 : j->cls[i] == 1 ? 2 : 4);
+#ifdef OLD_D3JL
+				/* vc (gopt): only a long parameter keeps its home, not a pointer (a pair in segmented code) */
+				if (j->cls[i] == 3 && (j->sym[i]->stype & 0x30) != 0x10)
+#else
 				if (j->cls[i] == 3)
+#endif
 					d3jmark(j->cls[i], r);
 			}
 		}
