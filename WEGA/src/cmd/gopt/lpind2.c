@@ -81,7 +81,8 @@ struct quad *q;
 	return q;
 }
 
-extern int s4d94, a0ec;
+extern int s4d94, a0ec, a0ee;
+extern void propnd();
 extern int fn4_faa4();
 extern struct quad *insertquad(), *qmove();
 
@@ -176,4 +177,106 @@ int kind;
 		}
 	}
 	opqd = qmove(opqd);
+}
+
+extern int constlook(), s000e;
+
+/* the operand is set to the integer v (w0 as its first word); t == 1: v is used as it is, else it is negated (name guessed) */
+void
+mkconstopnd(p, v, t, w0)
+struct qa *p;
+long v;
+int t, w0;
+{
+	p->w0 = w0;
+	if (t == 1) {
+		if (v > 32767) {
+			p->b2 = 7;
+			p->w4 = constlook(v);
+		} else {
+			p->b2 = 1;
+			p->w4 = v;
+		}
+	} else if (v < -32767) {
+		p->b2 = 7;
+		p->w4 = constlook(-v);
+	} else {
+		p->b2 = 1;
+		p->w4 = -v;
+	}
+}
+
+/* a new stemp is made for the operation of the definitions p and t (name from the debug output) */
+int
+insrtopstmp(opqd, p, t, kind, outq)
+struct quad *opqd;
+struct dl *p, *t;
+int kind;
+struct quad *outq;
+{
+	static struct qa zero;
+	struct qa a, b, c;
+	int op;
+
+	if (s4d86 > 2) {
+		printf("insrtopstmp(), opqd:, t->dfquad, p->dfquad\n");
+		prquad(opqd);
+		prquad(t->q);
+		prquad(p->q);
+	}
+	switch (opqd->op) {
+	case 1:
+		op = 47;
+		a = p->e14;
+		b = zero;
+		break;
+	case 48:
+		op = 48;
+		mkconstopnd(&a, 0L, 1, p->e14.w0);
+		b = p->e14;
+		break;
+	case 34:
+	case 44:
+		a = p->e14;
+		op = opqd->op;
+		if (kind == 2)
+			b = opqd->b;
+		else
+			b = opqd->a;
+		break;
+	default:
+		if (s4d86 > 3)
+			printf("insrtopstmp(), returning FALSE\n");
+		return 0;
+	}
+	if (op == 34) {
+		c.w0 = 5;
+		c.b2 = 3;
+		c.w4 = s000e++;
+		a0ee++;
+		a0d6 = insertquad(op, &a, &b, &c, a0d6);
+		b.b2 = 0;
+		a.b2 = 6;
+		fn4_faa4(s4d94);
+		a.w4 = s4d94;
+		s4d94++;
+		a0d6 = insertquad(13, &c, &b, &a, a0d6);
+		c = a;
+	} else {
+		c.b2 = 6;
+		fn4_faa4(s4d94);
+		c.w4 = s4d94;
+		s4d94++;
+		c.w0 = a.w0;
+		a0d6 = insertquad(op, &a, &b, &c, a0d6);
+	}
+	a0ec++;
+	t->e14 = c;
+	outq->a = c;
+	if (s4d86 > 3) {
+		printf("insrtopnd(), ip->opndstmp=");
+		propnd(&c);
+		printf("\n");
+	}
+	return 1;
 }

@@ -3918,42 +3918,50 @@
    "size_orig": 428,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c"
   },
-  "f5_5a0c": {
+  "mkconstopnd": {
    "orig": "5:5a0c",
    "size_orig": 122,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 2): the original copies the pointer parameter (ldl rr0,rr6) before the first store, ours does not"
   },
-  "f5_5a86": {
+  "insrtopstmp": {
    "orig": "5:5a86",
    "size_orig": 126,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 5): cause 2: `and r6,#ADDR` after the lda of every struct assignment (4 places), everything else equal"
   },
   "f5_5b04": {
    "orig": "5:5b04",
    "size_orig": 264,
    "status": "open",
    "kind": "candidate",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "note": "case block of insrtopstmp"
   },
   "f5_5c0c": {
    "orig": "5:5c0c",
    "size_orig": 64,
    "status": "open",
    "kind": "candidate",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "note": "case block of insrtopstmp"
   },
   "f5_5c4c": {
    "orig": "5:5c4c",
    "size_orig": 296,
    "status": "open",
    "kind": "candidate",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "note": "case block of insrtopstmp"
   },
   "f5_5d74": {
    "orig": "5:5d74",
