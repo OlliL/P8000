@@ -117,3 +117,7 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   4d86; 5:6eda..5:9adc 4d90; segment 5 from 5:9bc0 reads 75xx..79xx = the late modules), a guess for the module map. Still to do:
   fncheck.py/bincmp.py/strictcmp for two code segments, the module map by function, then the source per module. Size of the
   job: about 116 KB of code in 599 starts, nothing to start from but `common` (pcc, System III); it is several sessions, not one.
+- 2026-11-19: gopt tools for several code segments (progcfg CODESEGS): host/recon/segcmp.py (strictcmp for SEG:OFFSET ranges, our
+  functions by symbol and segment; tested with the original plus a symbol table made from findings.json: 599 SAME, one changed
+  byte shows as DIFF), fncheck.py takes SEG:OFFSET as LO, bincmp.py lists the code of every segment (blocks as SEGNO*0x10000+OFFSET;
+  sld unchanged). Next: the module map per function, then the source per module (`common` first).

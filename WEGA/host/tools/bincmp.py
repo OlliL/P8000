@@ -31,6 +31,12 @@ def main():
         return 0
     a, b = SOut(ra), SOut(rb)
     sa, sb = a.segs[0], b.segs[0]
+    # several code segments (gopt): code = all segments with code in front of the data; addresses of the blocks SEGNO:OFFSET
+    cza, czb = [(g['segno'], g['code']) for g in a.segs if g['code']], [(g['segno'], g['code']) for g in b.segs if g['code']]
+    if len(cza) > 1 or len(czb) > 1:
+        sa, sb = dict(sa, code=sum(c for _, c in cza), data=sum(g['data'] for g in a.segs), bss=sum(g['bss'] for g in a.segs)), \
+            dict(sb, code=sum(c for _, c in czb), data=sum(g['data'] for g in b.segs), bss=sum(g['bss'] for g in b.segs))
+        print('code segments: orig %s, new %s' % (cza, czb))
     print('file %d %d, code %d %d, data %d %d, bss %d %d' % (len(ra), len(rb), sa['code'], sb['code'], sa['data'], sb['data'], sa['bss'], sb['bss']))
     ia, ib = bytes(a.image), bytes(b.image)
     ca, cb = sa['code'], sb['code']
@@ -40,8 +46,15 @@ def main():
     i = next((i for i in range(min(len(da), len(db))) if da[i] != db[i]), None)
     if i is not None:
         print('first data at offset %d:\n  %r\n  %r' % (i, da[max(0, i - 8):i + 40], db[max(0, i - 8):i + 40]))
-    A = list(zcode.insns(ia[:ca], 0, ca, False))
-    B = list(zcode.insns(ib[:cb], 0, cb, False))
+    def listing(img, cz, whole):
+        if len(cz) < 2:
+            return list(zcode.insns(img[:whole], 0, whole, False))
+        out, o = [], 0
+        for sg, n in cz:
+            out += [(sg * 0x10000 + x, t) for x, t in zcode.insns(img[o:o + n], 0, n, True)]
+            o += n
+        return out
+    A, B = listing(ia, cza, ca), listing(ib, czb, cb)
     sm = difflib.SequenceMatcher(None, [norm(t) for _, t in A], [norm(t) for _, t in B], autojunk=False)
     ops = [o for o in sm.get_opcodes() if o[0] != 'equal']
     print('instruction blocks that differ: %d' % len(ops))

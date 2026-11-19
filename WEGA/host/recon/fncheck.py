@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """fncheck.py - compile a C draft alone with the original cc and compare its code with a range of the original.
 
-Usage: fncheck.py DRAFT.c LO HI [NAME]
+Usage: fncheck.py DRAFT.c LO HI [NAME]    (LO as SEG:OFFSET for a program with several code segments, progcfg CODESEGS)
 
   DRAFT.c  one or more K&R functions (no prototypes), compiled alone with progcfg CC -O -c in the emulator (the .h
            files of SRCDIR are copied next to it)
@@ -43,7 +43,13 @@ def compile_obj(src):
 
 
 def main():
-    src, lo, hi = sys.argv[1], int(sys.argv[2], 16), int(sys.argv[3], 16)
+    src, hi = sys.argv[1], int(sys.argv[3], 16)
+    osg = None
+    if ':' in sys.argv[2]:
+        osg, lo = sys.argv[2].split(':')
+        osg, lo = int(osg), int(lo, 16)
+    else:
+        lo = int(sys.argv[2], 16)
     name = sys.argv[4] if len(sys.argv) > 4 else None
     path, err = compile_obj(src)
     if path is None:
@@ -57,7 +63,11 @@ def main():
     e = min([t for t in starts if t > s] + [len(oc)])
     g = SOut(open(os.path.join(CFG.ROOT, CFG.ORIG_BIN), 'rb').read())
     a = [zcode.norm_masked(t) for _, t in zcode.insns(oc, s, e, CFG.SEG)]
-    b = [zcode.norm_masked(t) for _, t in zcode.insns(bytes(g.image)[:g.segs[0]['code']], lo, hi, CFG.SEG)]
+    gcode = bytes(g.image)[:g.segs[0]['code']]
+    if osg is not None:
+        off, n = CFG.CODESEGS[osg]
+        gcode = bytes(g.image)[off:off + n]
+    b = [zcode.norm_masked(t) for _, t in zcode.insns(gcode, lo, hi, CFG.SEG)]
     if a == b:
         print('OK (masked): %d instructions equal (%04x..%04x)' % (len(b), lo, hi))
         return
