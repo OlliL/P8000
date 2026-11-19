@@ -68,6 +68,8 @@ def main():
             for h in os.listdir(os.path.dirname(os.path.abspath(src))):
                 if h.endswith('.h'):
                     shutil.copy(os.path.join(os.path.dirname(os.path.abspath(src)), h), w)
+            if not os.path.exists(os.path.join(w, 'stdio.h')):    # the header of the old programs (char *_ptr)
+                shutil.copy(os.path.join(HERE, '..', '..', 'src', 'head', 'oldv7', 'stdio.h'), w)
             r = subprocess.run([EMU, '-r', root, cc] + ([fl] if fl else []) + defs + ['-c', base + '.c'], cwd=w, capture_output=True, text=True, timeout=600)
             obj = os.path.join(w, base + '.o')
             if not os.path.exists(obj):
