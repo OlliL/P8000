@@ -6,149 +6,186 @@
   "f4_0000": {
    "orig": "4:0000",
    "size_orig": 66,
-   "status": "open",
+   "status": "crt0",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "note": "the start-up code (crt0.list: gopt, scrt0 without jump and text, _environ in segment 8); called main at 4:0042, __callex at 5:bc2a"
   },
-  "f4_0042": {
+  "main": {
    "orig": "4:0042",
    "size_orig": 186,
    "status": "open",
    "kind": "proven",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "open: (1) the loop of case C: the original has the slow path of getc (call _filbuf) in front of the loop top, ours behind it (popt code motion, phase B); (2) the frame is 4 bytes larger (the save area of r8..r13 at 0x3C, not 0x38). The cases { } ] [ . L B C / are the blocks 4:00fc ... 4:0700 (found as candidate starts); `err:` stands inside `if (vafe) {...}` (a label behind a jump moves with codemove, OLDCC.md D20). The case / loops for ever: the putc result is compared with the multi-character constant '/n' (0x6E2F), a typo of '\\n' (kept). The names of the callees of other modules are the addresses (fn1d22 ...)"
   },
   "f4_00fc": {
    "orig": "4:00fc",
    "size_orig": 292,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "a case block of main (not a function)"
   },
   "f4_0220": {
    "orig": "4:0220",
    "size_orig": 124,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "a case block of main (not a function)"
   },
   "f4_029c": {
    "orig": "4:029c",
    "size_orig": 38,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "a case block of main (not a function)"
   },
   "f4_02c2": {
    "orig": "4:02c2",
    "size_orig": 176,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "a case block of main (not a function)"
   },
   "f4_0372": {
    "orig": "4:0372",
    "size_orig": 194,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "a case block of main (not a function)"
   },
   "f4_0434": {
    "orig": "4:0434",
    "size_orig": 60,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "a case block of main (not a function)"
   },
   "f4_0470": {
    "orig": "4:0470",
    "size_orig": 398,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "a case block of main (not a function)"
   },
   "f4_05fe": {
    "orig": "4:05fe",
    "size_orig": 278,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "a case block of main (not a function)"
   },
-  "f4_0714": {
+  "dotree": {
    "orig": "4:0714",
    "size_orig": 166,
    "status": "open",
    "kind": "proven",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "open: same instructions, but the original puts the test for UPROC (0x77) behind the store of curproc, ours behind the PROC block (block order, popt); tried: else-if chain, nested if, switch"
   },
-  "f4_07ba": {
+  "dotree2": {
    "orig": "4:07ba",
    "size_orig": 130,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c"
   },
-  "f4_083c": {
+  "cutree": {
    "orig": "4:083c",
    "size_orig": 64,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c"
   },
   "f4_087c": {
    "orig": "4:087c",
    "size_orig": 10,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "tail of cutree"
   },
   "f4_0886": {
    "orig": "4:0886",
    "size_orig": 110,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "tail of cutree"
   },
-  "f4_08f4": {
+  "pr": {
    "orig": "4:08f4",
    "size_orig": 186,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "open: the original computes down + 1 in r0 and stores through rr2 (`ld r0,r5; inc r0,#1; ldl rr2,..; ld @rr2,r0`), ours r2 and rr6; tried four forms of *down1 = *down2 = down + 1; prints the tag with %% in the format (kept); the test `optype == UTYPE` before \", rval = %d\" is as in the binary"
   },
   "f4_09ae": {
    "orig": "4:09ae",
    "size_orig": 72,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "tail of pr"
   },
   "f4_09f6": {
    "orig": "4:09f6",
    "size_orig": 112,
    "status": "open",
    "kind": "candidate",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "tail of pr"
   },
-  "f4_0a66": {
+  "abortpass": {
    "orig": "4:0a66",
    "size_orig": 22,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c"
   },
-  "f4_0a7c": {
+  "passes": {
    "orig": "4:0a7c",
    "size_orig": 172,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c"
   },
-  "f4_0b28": {
+  "prtbl": {
    "orig": "4:0b28",
    "size_orig": 54,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "reader2.c"
+   "module": "reader2.c",
+   "file": "reader2.c",
+   "note": "prints the pointer arhigh[i] with %d, cast (int) (kept)"
   },
   "f4_0b5e": {
    "orig": "4:0b5e",
