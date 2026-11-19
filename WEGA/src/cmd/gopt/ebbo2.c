@@ -731,7 +731,7 @@ resetbb()
 	s71e4 = 0;
 	s71ea = 0;
 	for (i = 0; i < s71e6; i++) {
-		if (s4d80 > 2) {
+		if (s4d80 > 3) {
 			printf("// resetbasicblock : setting gen_r for ");
 			prquad(a71ec[i].q);
 		}

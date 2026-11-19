@@ -195,25 +195,25 @@ void
 setopt(q)
 struct quad *q;
 {
-	if (s4d86 > 1) {
+	if (s4d86 > 2) {
 		printf("setopt()\n");
 		prquad(q);
 	}
 	if (q->c.b2 == 4) {
 		symtab[q->c.w4].sflags |= 2;
-		if (s4d86 > 2)
+		if (s4d86 > 3)
 			printf("setopt(), rslt sym=%s, lpopt=%d\n", ascii + symtab[q->c.w4].nameoff, (symtab[q->c.w4].sflags >> 1) & 1);
 	} else if (q->c.b2 == 6 || q->c.b2 == 8)
 		*(int *)((char *)betatbl + (q->c.w4 * 10 + 8)) |= 4096;
 	if (q->c.b2 == 8 && q->op == 47) {
 		symtab[betatbl[q->c.w4].x1].sflags |= 2;
-		if (s4d86 > 2)
+		if (s4d86 > 3)
 			printf("setopt(), rslt beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->c.w4].x1].nameoff, (symtab[betatbl[q->c.w4].x1].sflags >> 1) & 1);
 	}
 	if (q->op == 52 && q->a.b2 == 8) {
 		*(int *)((char *)betatbl + (q->a.w4 * 10 + 8)) |= 4096;
 		symtab[betatbl[q->a.w4].x1].sflags |= 2;
-		if (s4d86 > 2)
+		if (s4d86 > 3)
 			printf("setopt(), qparv beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->a.w4].x1].nameoff, (symtab[betatbl[q->a.w4].x1].sflags >> 1) & 1);
 	}
 }
@@ -289,7 +289,7 @@ int block;
 	int fl;
 	struct quad *x;
 
-	if (s4d86 > 1) {
+	if (s4d86 > 2) {
 		printf("addlpdef(block=%d), loop def found:\n", block);
 		prquad(q);
 	}
@@ -301,20 +301,20 @@ int block;
 		clropt(q, x);
 		if (fl)
 			p->f15 = 0;
-		if (s4d86 > 2)
+		if (s4d86 > 3)
 			printf("\tonedef=%d\n", p->f15);
 	} else {
 		if (r->q->op != 47 && q->op == 47)
 			r->q = q;
 		if (r->x0 == block) {
 			r->f15 = 0;
-			if (s4d86 > 2) {
+			if (s4d86 > 3) {
 				printf("\t\tonedef=%d, same quad:\n", r->f15);
 				prquad(r->q);
 			}
 		} else {
 			r->f15 = 0;
-			if (s4d86 > 2)
+			if (s4d86 > 3)
 				printf("\tr->onedef=%d\n", r->f15);
 		}
 	}
@@ -521,7 +521,7 @@ int ot;
 {
 	int t, i;
 
-	if (s4d86 > 1) {
+	if (s4d86 > 2) {
 		printf("isdefined(q=%x,opndtype=%s)\n", q, ot == 2 ? "OP1" : "OP2");
 		prquad(q);
 	}
@@ -535,22 +535,22 @@ int ot;
 		i = q->b.w4;
 	}
 	if (t == 4) {
-		if (s4d86 > 2)
+		if (s4d86 > 3)
 			printf("isdefined(), symbol=%s, lpopt=%d\n", ascii + symtab[i].nameoff, (symtab[i].sflags >> 1) & 1);
 		return (symtab[i].sflags >> 1) & 1;
 	}
 	if (t == 6) {
-		if (s4d86 > 2)
+		if (s4d86 > 3)
 			printf("isdefined(), stmp=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
 		return BBIT(i, 12);
 	}
 	if (t == 8) {
 		if ((q->op == 24 || q->op == 47) && ot == 2) {
-			if (s4d86 > 2)
+			if (s4d86 > 3)
 				printf("isdefined(), op1=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
 			return ((symtab[betatbl[i].x1].sflags >> 1) & 1) || BBIT(i, 12);
 		}
-		if (s4d86 > 2)
+		if (s4d86 > 3)
 			printf("isdefined(), beta=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
 		return BBIT(i, 12);
 	}
@@ -636,7 +636,7 @@ unsigned *vec;
 	int k;
 	char *s;
 
-	if (s4d86 > 1) {
+	if (s4d86 > 2) {
 		printf("notlive(q=%x)\n", q);
 		prquad(q);
 		prvec(vec, 3, 1);
@@ -652,7 +652,7 @@ unsigned *vec;
 			k = bitpos(q, 1, 6);
 	} else
 		cerror("notlive(): illegal rslt opnd");
-	if (s4d86 > 2) {
+	if (s4d86 > 3) {
 		s = (!tstlbit(vec, k) != 0) ? "TRUE" : "FALSE";
 		printf("notlive() = %s\n", s);
 	}
@@ -702,7 +702,7 @@ struct quad *q, *firstq;
 {
 	struct quad *p;
 
-	if (s4d86 > 0) {
+	if (s4d86 > 1) {
 		printf("//  marklpinv: \n");
 		prquad(q);
 	}
