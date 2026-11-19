@@ -13,6 +13,8 @@ SCC = sccv1
 AS = as
 PREFIX = /
 CFLAGS =
+NOBJS = cnvt.o doprnt.o mcrt0.o
+SOBJS = cnvt.o doprnt.o smcrt0.o
 
 all: objs
 	cd libc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
@@ -50,8 +52,8 @@ install: objs
 	cd libu8000 ; $(MAKE) install PREFIX=$(PREFIX)
 
 clean:
-	cd build/nonseg ; rm -f cnvt.o doprnt.o mcrt0.o
-	cd build/seg    ; rm -f cnvt.o doprnt.o smcrt0.o
+	cd build/nonseg ; rm -f $(NOBJS)
+	cd build/seg    ; rm -f $(SOBJS)
 	cd libc ; $(MAKE) clean
 	cd libl ; $(MAKE) clean
 	cd liby ; $(MAKE) clean
@@ -66,13 +68,14 @@ clean:
 	cd oldlibc ; $(MAKE) clean
 	cd oldslibc ; $(MAKE) clean
 
-objs: build/nonseg/doprnt.o build/seg/doprnt.o
+# the loose objects of /lib: NOBJS in build/nonseg, SOBJS in build/seg (installed as scnvt.o, sdoprnt.o, smcrt0.o)
+objs: nonseg seg
 
-build/nonseg/doprnt.o: FORCE
-	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CC) -f ../../Makefile cnvt.o doprnt.o mcrt0.o
+nonseg: FORCE
+	cd build/nonseg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(CC) -f ../../Makefile $(NOBJS)
 
-build/seg/doprnt.o: FORCE
-	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCC) CFLAGS=-DSEG -f ../../Makefile cnvt.o doprnt.o smcrt0.o
+seg: FORCE
+	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) CC=$(SCC) CFLAGS=-DSEG -f ../../Makefile $(SOBJS)
 
 ###################
 # obj targets
@@ -92,4 +95,4 @@ smcrt0.o: ../../smcrt0.s
 
 FORCE:
 
-.PHONY: all objs install clean
+.PHONY: all objs nonseg seg install clean
