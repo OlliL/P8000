@@ -22,7 +22,7 @@ extern long vb64, vb04, v06, vb94;
 extern int nconst, nfconst, v0e, vafc, v00, v04, vafe, vb5e;
 extern int s4d7a, s0078, s4d74, s4d76, ntl, s4d78, s4d94, s0240, nctmp, s0244;
 extern long s4d96;
-extern char arra[], arrb[];
+extern char ctneg[], ctpos[];
 extern char *opst[];
 extern long ftell();
 extern char *taballoc();
@@ -87,8 +87,8 @@ main(argc, argv)
 			nctmp = 0;
 			s0244 = 0;
 			for (i = 0; i <= 1000; i++) {
-				arra[i] = 0;
-				arrb[i] = 0;
+				ctneg[i] = 0;
+				ctpos[i] = 0;
 			}
 			mkhash();
 			v00 = rdin(10);

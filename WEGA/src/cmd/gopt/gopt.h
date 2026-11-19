@@ -141,7 +141,19 @@ struct sym {
 	int	sx14;
 };
 
-struct qa { int w0; char b2; int w4; };	/* an operand of a quad: 6 bytes (names guessed) */
+struct qa { int w0; char b2; unsigned fl:1; int w4; };	/* an operand of a quad: 6 bytes (names guessed) */
+
+struct pos { char *name; int line; };
+
+struct quad {
+	struct quad *next;	/* 0 */
+	unsigned op:8;		/* 4 */
+	unsigned f7:1, f6:1, f5:1, f4:1, f3:1, f2:1, f1:1, f0:1;
+	struct qa c;		/* 6 */
+	struct qa a;		/* 0xC */
+	struct qa b;		/* 0x12 */
+	struct pos pos;		/* 0x18: the file name and the line of the source */
+};
 
 struct dopest { int dopeop; char opst[8]; int dopeval; };	/* 12 bytes */
 extern struct dopest indope[];

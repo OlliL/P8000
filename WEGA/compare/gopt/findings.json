@@ -392,54 +392,65 @@
    "kind": "proven",
    "module": "quads2.c"
   },
-  "f4_1d22": {
+  "addquad": {
    "orig": "4:1d22",
    "size_orig": 482,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "quad: 30 bytes: next, op (bit field 8), flag bits f7..f0, three operands c a b (6 bytes each, with a flag bit behind b2), the position (file name, line); returns 0 when taballoc gives 0x7F00FFFF; flags cleared f7 f4 f6 f5 f0; `q->c.fl = 0` only for c"
   },
-  "f4_1f04": {
+  "insertquad": {
    "orig": "4:1f04",
    "size_orig": 434,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "as addquad; the ops 0x28 0x29 0x2b 0x3b are not counted by normop; flags cleared f0 f7 f4 f6 f5"
   },
-  "f4_20b6": {
+  "delquad": {
    "orig": "4:20b6",
    "size_orig": 168,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "prev is unset when q is the head of the list (kept)"
   },
-  "f4_215e": {
+  "movequad": {
    "orig": "4:215e",
    "size_orig": 94,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c"
   },
-  "f4_21bc": {
+  "delquads": {
    "orig": "4:21bc",
    "size_orig": 80,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c"
   },
-  "f4_220c": {
+  "normop": {
    "orig": "4:220c",
    "size_orig": 170,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c"
   },
-  "f4_22b6": {
+  "denorm": {
    "orig": "4:22b6",
    "size_orig": 102,
    "status": "open",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "open: one instruction: the original does not store the parameter p to the frame (dead store), ours does; 4 forms tried (if chain with direct *(base + index) -= 1 is the nearest)"
   },
   "f4_231c": {
    "orig": "4:231c",
@@ -476,54 +487,63 @@
    "kind": "candidate",
    "module": "quads2.c"
   },
-  "f4_2a48": {
+  "mknode": {
    "orig": "4:2a48",
    "size_orig": 104,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "names guessed (all of 2a48 .. 2bcc)"
   },
-  "f4_2ab0": {
+  "bcon": {
    "orig": "4:2ab0",
    "size_orig": 62,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c"
   },
-  "f4_2aee": {
+  "mktemp2": {
    "orig": "4:2aee",
    "size_orig": 92,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c"
   },
-  "f4_2b4a": {
+  "newtmpno": {
    "orig": "4:2b4a",
    "size_orig": 14,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c"
   },
-  "f4_2b58": {
+  "labquad": {
    "orig": "4:2b58",
    "size_orig": 62,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c|debug2.c"
+   "module": "quads2.c|debug2.c",
+   "file": "quads2.c"
   },
-  "f4_2b96": {
+  "jmpquad": {
    "orig": "4:2b96",
    "size_orig": 54,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c|debug2.c"
+   "module": "quads2.c|debug2.c",
+   "file": "quads2.c"
   },
-  "f4_2bcc": {
+  "mapall": {
    "orig": "4:2bcc",
    "size_orig": 68,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c|debug2.c"
+   "module": "quads2.c|debug2.c",
+   "file": "quads2.c",
+   "note": "the callee 4:231c is `map` (the strings \"// map: ...\" belong to it)"
   },
   "f4_2c10": {
    "orig": "4:2c10",

@@ -149,3 +149,10 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   fconstlook equal under fncheck (masked); cmwalk (one instruction, popt reload of p from the frame) and operand (the first reload,
   `p->in.sname - symtab` makes scodgen stop with an rbusy error when p is in rr6, so a local is used) open. Not yet: genquads
   (4:0b5e..4:14a2, a switch), 1c88 (floating compare, EPU words), the quad list functions 1d22 .. 2bcc.
+- 2026-11-19: gopt, quads2.c: the quad list. struct quad (30 bytes: next, op as a bit field of 8, flag bits, the operands c a b of 6 bytes with
+  a flag bit behind the byte, the position) and struct qa with that bit (gopt.h; the bit fields explain `res @rr2,#7` and the
+  `ldb rl2,rh2` reads). addquad, insertquad, delquad, movequad, delquads, normop equal under fncheck (masked); denorm one dead store
+  open; mknode, bcon, mktemp2, newtmpno, labquad, jmpquad, mapall equal. Compiler facts: an undeclared taballoc is int (conversion
+  code); `p->in.sname - symtab` makes scodgen stop (rbusy) with p in a register; `*(base + i) += 1` gives the original's code where
+  `base[i]++` does not. Not yet: genquads (4:0b5e..4:14a2), map (4:231c..4:2a3a, the strings "// map: ..."), 4:1c88 (floating),
+  the pieces 4:2c10 .. 4:2e8e belong to debug2.c.
