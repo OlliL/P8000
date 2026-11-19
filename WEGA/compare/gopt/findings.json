@@ -3094,72 +3094,81 @@
    "size_orig": 260,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "notes": "case block of f5_0114"
   },
   "f5_02d4": {
    "orig": "5:02d4",
    "size_orig": 472,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "notes": "case block of f5_0114"
   },
   "f5_04ac": {
    "orig": "5:04ac",
    "size_orig": 338,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "notes": "case block of f5_0114"
   },
   "f5_05fe": {
    "orig": "5:05fe",
    "size_orig": 200,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "notes": "case block of f5_0114"
   },
   "f5_06c6": {
    "orig": "5:06c6",
    "size_orig": 82,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "notes": "case block of f5_0114"
   },
   "f5_0718": {
    "orig": "5:0718",
    "size_orig": 96,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "notes": "case block of f5_0114"
   },
   "f5_0778": {
    "orig": "5:0778",
    "size_orig": 60,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "notes": "case block of f5_0114"
   },
   "f5_07b4": {
    "orig": "5:07b4",
    "size_orig": 30,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "notes": "case block of f5_0114"
   },
   "f5_07d2": {
    "orig": "5:07d2",
    "size_orig": 194,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "notes": "case block of f5_0114"
   },
-  "f5_0894": {
+  "vnfind": {
    "orig": "5:0894",
    "size_orig": 420,
    "status": "open",
    "kind": "proven",
    "module": "ebbo2.c"
   },
-  "f5_0a38": {
+  "updateopnd": {
    "orig": "5:0a38",
    "size_orig": 348,
    "status": "open",
