@@ -19,7 +19,7 @@ assignment to a local only in ours (genquads, fndparm, tmpsearch, checkops): pha
 (mktree, genquads); (4) displacement form `ld r2,rr2(#4)` after p = p->next (writeil, tmpsearch).
 
 Next (in this order):
-1. dom2.c: written up to 4:c026 (dfs, compress, eval, linkp, addbucket, delbucket, dominators, linkdom, prlist, prloops, mkdomtree, addblk, deletblk, chkhdr, exitblks); next 4:c026 (576), 4:c266 (288), 4:c386, 4:c3e4, 4:c4ba, 4:c538, 4:c5a4, 4:c610, 4:c65a (dom2 | init2), then init2 (4:c69e ..), live2.
+1. dom2.c and init2.c are complete (initopts masked); live2.c begun: prqflags, prqall (masked); next 4:ca88 (452), 4:cc4c (268), 4:cd58 (290), 4:ce7a (580) ... the end of live2, then ebbo2 (5:..: segment 5 modules).
 2. (fn5_2bca of alias2 and the segment 5 functions: with the libc part, item 4.)
 3. quads2.c 4:1c88 (floating compare, EPU words in the listing); then flow2 (4:927e ..), dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2,
    reg2 (data order, host/recon/modmap.py gave the module of every function in findings.json).
@@ -27,6 +27,6 @@ Next (in this order):
 
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
-TASK: dom2.c: 4:c026 (576 bytes), 4:c266 (288), 4:c386 (94), 4:c3e4 (214), 4:c4ba (126), 4:c538 (108), 4:c5a4 (108), 4:c610 (74), 4:c65a (68, the end of dom2 / the start of init2).
-START: fnc.py -a dom2.c flow2.c (open there: compress, eval, linkp, delbucket, dominators, mkdomtree, addblk and the flow2 ones: all the register cache or cause 1); odisc.py -o addhdrlist. The structs dnode, bl, loop (bit fields at 0x12), the globals loops, freebl, nbl, nbl2, pheaderlist, looplist, domroot, darr are in dom2.c (guessed).
-STOP WHEN: 4:c65a is written and checked, or at 70% of the context.
+TASK: live2.c: 4:ca88 (452 bytes), 4:cc4c (268), 4:cd58 (290), 4:ce7a (580) and the following functions of live2 (see findings.json, module live2.c).
+START: fnc.py -a live2.c dom2.c (open in dom2: compress, eval, linkp, delbucket, dominators, mkdomtree, addblk, domspace: all the register cache); odisc.py -o f4_ca88; regdiff.py shows the structural differences (host/recon/regdiff.py FILE.diff).
+STOP WHEN: 12 functions of live2 are written and checked, or at 70% of the context.
