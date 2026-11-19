@@ -135,7 +135,7 @@ struct quad *q;
 	return q;
 }
 
-struct nd { struct qa c0; unsigned f15:1, f14:15; long v; char xc[6]; struct nd *link; };	/* a node of the induction variable lists: 22 bytes (guessed) */
+struct nd { struct qa c0; unsigned f15:1, f14:15; long v; struct qa c12; struct nd *link; };	/* a node of the induction variable lists: 22 bytes (guessed) */
 struct dl { int x0; struct quad *q; struct nd *l6; struct dl *l10; struct qa e14; int x20; unsigned f15:1, f14:1, f13:1, f12:1, f11:1, f10:1, rest:10; struct dl *next; };
 extern void denorm(), normop();
 
@@ -313,7 +313,8 @@ struct quad *outq;
 }
 
 extern struct nd *a104;
-extern void fn5_6466();
+extern struct dl *a0f8, *a0e0;
+extern void freelist();
 
 /* the stemp of the definition p is used for the operand of opqd of t; a node of the induction variable lists is filled (name from the debug output) */
 struct quad *
@@ -398,6 +399,78 @@ done:
 		opqd = moveindquad(qd, opqd, (struct qa *)n, p, t, kind);
 		return opqd;
 	}
-	fn5_6466(0, n);
+	freelist(0, n);
 	return 0;
+}
+
+extern int a0fe;
+
+/* the induction variable ind is entered in the program by an operation behind opqd (name from the debug output) */
+void
+indupdate(ind, opqd, opcode)
+struct nd *ind;
+struct quad *opqd;
+int opcode;
+{
+	struct qa c;
+
+	if (s4d86 > 2) {
+		printf("indupdate(), opcode=%d, ind->cnst=%d, ind->incsize=%d, q:\n", opcode, ind->f15, ind->v);
+		prquad(opqd);
+	}
+	if (ind->f15) {
+		if (ind->v > 0)
+			mkconstopnd(&c, ind->v, 1, ind->c0.w0);
+		else {
+			if (opcode == 1)
+				opcode = 48;
+			else
+				opcode = 1;
+			mkconstopnd(&c, ind->v, 0, ind->c0.w0);
+		}
+		opqd = insertquad(opcode, &ind->c0, &c, &ind->c0, opqd);
+	} else {
+		opqd = insertquad(opcode, &ind->c0, &ind->c12, &ind->c0, opqd);
+		if (s4d86 > 3) {
+			printf("indupdate(), else clause, ind->stmp, ind->opndstmp\n");
+			propnd(&ind->c0);
+			printf("\n");
+			propnd(&ind->c12);
+			printf("\n");
+		}
+	}
+	opqd->f3 = 0;
+	opqd->f7 = 0;
+	opqd->f4 = 0;
+	a0fe++;
+}
+
+/* the node n is put at the end of the list of the free definitions (flag) or of the free induction nodes (name guessed) */
+void
+freelist(flag, n)
+int flag;
+struct nd *n;
+{
+	struct dl *x;
+	struct nd *y;
+
+	if (flag && a0e0 != 0) {
+		x = a0f8;
+		if (x == 0)
+			a0f8 = a0e0;
+		else {
+			for (; x->next != 0; x = x->next)
+				;
+			x->next = a0e0;
+		}
+	} else if (!flag) {
+		y = a104;
+		if (y == 0)
+			a104 = n;
+		else {
+			for (; y->link != 0; y = y->link)
+				;
+			y->link = n;
+		}
+	}
 }

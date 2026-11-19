@@ -3980,19 +3980,23 @@
    "file": "lpind2.c",
    "note": "open (DIFF 21, 298 against 294 instructions): the 4 `and r6,#ADDR` of cause 2; block order (codemove): the original places the kind == 2 test block (cp kind,2 ..) behind its body (backward jr ne), ours before it; the source has labels LA/LB in the kind == 3 part and gotos from the kind == 2 part; if (ok) {rest} fn5_6466(0, n) puts the fail block last"
   },
-  "f5_62fc": {
+  "indupdate": {
    "orig": "5:62fc",
    "size_orig": 362,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 30, 94 against 95): popt block order: the original puts the `opcode == 1 ? 48 : 1` block and the mkconstopnd(.., 0, ..) call behind the else part, ours in front of it"
   },
-  "f5_6466": {
+  "freelist": {
    "orig": "5:6466",
    "size_orig": 156,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 29, same count): the list walk `x = x->next` while x->next: the original loops with the test at the bottom entered by a jump (test, body, test), ours tests rr0 first and stores x; while and for(;;) forms give the same"
   },
   "f5_6502": {
    "orig": "5:6502",
