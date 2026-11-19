@@ -79,7 +79,7 @@ def main():
             o = SOut(open(obj, 'rb').read())
             code = bytes(o.image[:o.segs[0]['code']])
             mine = listing(code, 0, len(code))
-            orig = listing(img, ad, ad + len(code))
+            orig = listing(img, ad, min(ad + len(code), len(img)))
             sm = difflib.SequenceMatcher(None, [t for _, t in orig], [t for _, t in mine], autojunk=False)
             d = sum(max(i2 - i1, j2 - j1) for tag, i1, i2, j1, j2 in sm.get_opcodes() if tag != 'equal')
             results.append((d, name, fl, '%d bytes' % len(code), orig, mine))
