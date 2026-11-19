@@ -31,5 +31,7 @@
 "insameebbo": "OK",
 "canshare": "DIFF 14 (object 134 instructions, original 137)",
 "decdeg": "OK",
-"prgraph": "DIFF 11 (object 127 instructions, original 127)"
+"prgraph": "DIFF 11 (object 127 instructions, original 127)",
+"getheader": "OK",
+"usefirst": "OK"
 }

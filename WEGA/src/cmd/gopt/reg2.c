@@ -33,8 +33,8 @@ extern int tstlbit(), testbit();
 extern void clrlbit(), setlbit(), setbit();
 extern int s70ea;
 extern unsigned *a10a;
-extern struct quad *fn5_9892();
-extern int fn5_992e(), addpreheader(), nodeno(), insameebbo(), canshare();
+extern struct loop *getheader();
+extern int usefirst(), addpreheader(), nodeno(), insameebbo(), canshare();
 extern struct quad *findend();
 extern char *addreg();
 extern void addrestore();
@@ -600,7 +600,7 @@ savecolors()
 	struct quad *q;
 	char *r, *r2;
 	int i, f, blk, x1, x2;
-	struct quad *hdr;
+	struct loop *hdr;
 
 	a10a = (unsigned *)taballoc(s70ea * 2, 0);
 	for (n = a11e; n != 0; n = n->link) {
@@ -616,7 +616,7 @@ savecolors()
 					prquad(q);
 					printf("before calling getheader, block = %d\n", GF(i, 6, int));
 				}
-				hdr = fn5_9892(GF(i, 6, int));
+				hdr = getheader(GF(i, 6, int));
 				blk = addpreheader(hdr, 1);
 				f = 1;
 			}
@@ -626,7 +626,7 @@ savecolors()
 				r = findend(blk, &x1);
 				r = addreg(n->x12, q->c, x1, r);
 				r2 = findend(GF(i, 6, int), &x2);
-				if (!fn5_992e(&GF(i, 0, int), r, r2))
+				if (!usefirst(&GF(i, 0, int), r, r2))
 					continue;
 				addrestore(n->x12, q->c, blk, r);
 			} else {
@@ -634,7 +634,7 @@ savecolors()
 				r = addreg(n->x12, q->c, x1, r);
 				if (f)
 					continue;
-				if (!fn5_992e(&GF(i, 0, int), r, r))
+				if (!usefirst(&GF(i, 0, int), r, r))
 					continue;
 				addrestore(n->x12, q->c, x1, r);
 			}
@@ -1110,4 +1110,51 @@ prgraph()
 		}
 		putc('\n', stdout);
 	}
+}
+
+/* the loop that has the block n as its header (name from the debug output) */
+struct loop *
+getheader(n)
+int n;
+{
+	struct loop *lp;
+	struct bl *b;
+
+	if (s4d90 > 2)
+		printf("// getheader n = %d\n", n);
+	for (lp = loops; lp != 0; lp = lp->link) {
+		for (b = lp->bls; b != 0; b = b->next) {
+			if (s4d90 > 2)
+				printf("// getheader : lblkno = %d\n", b->blk);
+			if (b->blk == n)
+				return lp;
+		}
+	}
+	cerror("getheader: can't find header");
+}
+
+/* the register of the quad r is used first, before the quad r3 or the end of the block (name from the debug output) */
+int
+usefirst(g, r, r3)
+struct gnn *g;
+struct quad *r, *r3;
+{
+	struct quad *c, *end;
+
+	if (s4d90) {
+		printf("// usefirst: regquad = ");
+		prquad(r);
+	}
+	end = g->q;
+	for (c = r3->next; c != 0; c = c->next) {
+		if (c == end || c->op == 28 || c->op == 17)
+			return 0;
+		if (c->op == 40)
+			continue;
+		if (fn4_fc06(&r->b, &c->a))
+			return 1;
+		if (fn4_fc06(&r->b, &c->b))
+			return 1;
+	}
+	return 0;
 }

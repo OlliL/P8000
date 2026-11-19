@@ -4322,19 +4322,21 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_9892": {
+  "getheader": {
    "orig": "5:9892",
    "size_orig": 156,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_992e": {
+  "usefirst": {
    "orig": "5:992e",
    "size_orig": 212,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_9a02": {
    "orig": "5:9a02",
