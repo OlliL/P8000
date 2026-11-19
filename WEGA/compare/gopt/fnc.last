@@ -17,5 +17,7 @@
 "rmnode": "OK",
 "savecolors": "DIFF 5 (object 240 instructions, original 236)",
 "addreg": "OK",
-"addrestore": "OK"
+"addrestore": "OK",
+"addsave": "OK",
+"markreg": "OK"
 }

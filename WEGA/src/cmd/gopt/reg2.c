@@ -32,12 +32,13 @@ extern int *srchdef();
 extern int tstlbit(), testbit();
 extern void clrlbit(), setlbit(), setbit();
 extern int s70ea;
-extern char *a10a;
+extern unsigned *a10a;
 extern struct quad *fn5_9892();
 extern int fn5_992e(), addpreheader();
 extern char *fn5_9020(), *addreg();
 extern void addrestore();
-extern int fn5_87e4();
+extern void markreg();
+extern struct quad *addsave(), *fn5_913c();
 extern struct quad *insertquad();
 extern int fn4_fc06();
 extern void fn5_8ba8(), fn5_8838(), fn5_89ca(), prgraph();
@@ -592,7 +593,7 @@ savecolors()
 	int i, f, blk, x1, x2;
 	struct quad *hdr;
 
-	a10a = taballoc(s70ea * 2, 0);
+	a10a = (unsigned *)taballoc(s70ea * 2, 0);
 	for (n = a11e; n != 0; n = n->link) {
 		if (n->x12 <= 0)
 			continue;
@@ -677,7 +678,7 @@ struct quad *p;
 		}
 		return (char *)qq;
 	}
-	fn5_87e4(x, reg);
+	markreg(x, reg);
 	tmp.b2 = 1;
 	tmp.w4 = reg;
 	tmp.w0 = 4;
@@ -719,4 +720,40 @@ struct quad *p;
 	tmp.w4 = reg;
 	tmp.w0 = 4;
 	insertquad(41, &tmp, &c, (struct qa *)0, p);
+}
+
+/* the register reg is marked in the set of the block x (name from the debug output) */
+void
+markreg(x, reg)
+int x, reg;
+{
+	if (s4d90 > 1)
+		printf("// markreg(%d, %d)\n", x, reg);
+	a10a[x] = a10a[x] | (1 << reg);
+}
+
+/* the quad that saves the register reg is looked for in the block blk or inserted (name guessed) */
+struct quad *
+addsave(reg, blk)
+int reg, blk;
+{
+	struct quad *qq, *p;
+	struct qa tmp;
+	int out;
+
+	qq = (struct quad *)fn5_9020(blk, &out);
+	for (qq = *(struct quad **)qq; qq != 0; qq = qq->next) {
+		if (qq->op == 28)
+			break;
+		if (qq->op != 43)
+			continue;
+		if (qq->a.w4 == reg)
+			return qq;
+	}
+	tmp.b2 = 1;
+	tmp.w4 = reg;
+	tmp.w0 = 4;
+	p = fn5_913c(blk);
+	qq = insertquad(43, &tmp, (struct qa *)0, (struct qa *)0, p);
+	return qq;
 }

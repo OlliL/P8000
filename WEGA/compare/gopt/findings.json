@@ -4216,19 +4216,21 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_8726": {
+  "addsave": {
    "orig": "5:8726",
    "size_orig": 190,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_87e4": {
+  "markreg": {
    "orig": "5:87e4",
    "size_orig": 84,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_8838": {
    "orig": "5:8838",
