@@ -37,7 +37,7 @@ def span(name):
     ks = key_order()
     i = ks.index(name)
     j = i
-    while j + 1 < len(ks) and re.match(r'(case block|tail) of %s$' % re.escape(name), FN[ks[j + 1]].get('note', '')):
+    while j + 1 < len(ks) and re.match(r'(case block|tail) of %s( |$)' % re.escape(name), FN[ks[j + 1]].get('note', '')):
         j += 1
     return ks[i], ks[j]
 
