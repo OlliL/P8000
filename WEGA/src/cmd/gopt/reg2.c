@@ -41,13 +41,14 @@ extern void markreg();
 extern struct quad *addsave(), *fn5_913c();
 extern struct quad *insertquad();
 extern int fn4_fc06();
-extern void fn5_8ba8(), addsavequads(), rmrestorequad(), prgraph();
+extern void propagate(), addsavequads(), rmrestorequad(), prgraph();
 struct pr { int x; int y; };
 extern struct pr *a70aa;
 extern int blkno;
 #define PY(i)	(*(int *)((char *)a70aa + ((i) * 4 + 2)))
 extern struct quad *fn5_8f5c();
-extern void addsavequads(), rmrestorequad();
+extern void addsavequads(), rmrestorequad(), propagate();
+extern int fn5_8df4();
 extern struct quad *delquad();
 extern void clrbit(), fn5_964c(), restoredges(), rmnode();
 extern int findnode();
@@ -643,7 +644,7 @@ savecolors()
 		prquads();
 		prgraph();
 	}
-	fn5_8ba8();
+	propagate();
 	if (s4d90) {
 		printf("// quads before addsavequads\n");
 		prquads();
@@ -832,6 +833,53 @@ rmrestorequad()
 			}
 			if (ok == 1)
 				q = delquad(q);
+		}
+	}
+}
+
+/* the saves and restores of the registers are propagated through the blocks (name from the debug output) */
+void
+propagate()
+{
+	int b, r, c, i, e;
+	struct quad *q;
+	struct qa tmp;
+	struct qa *t, *pa, *pb;
+
+	for (b = 0; b < blkno; b++) {
+		if (blks[b] == 0 || blks[b]->next->op != 28)
+			continue;
+		e = blks[b]->next->a.w4;
+		if (s4d90 > 1)
+			printf("// propagate : block %d\n", b);
+		for (r = 1; r <= 11; r++) {
+			for (i = 0; i < blkno; i++)
+				a10a[i] &= ~1;
+			c = fn5_8df4(b, r);
+			if (c < 0)
+				continue;
+			if (s4d90 > 1)
+				printf("// propagate : register %d used in block %d\n", r, c);
+			if (!(a10a[b] & (1 << r))) {
+				tmp.b2 = 1;
+				tmp.w4 = r;
+				tmp.w0 = 4;
+				t = &fn5_8f5c(c, r)->b;
+				insertquad(40, &tmp, t, (struct qa *)0, blks[b]->next);
+				markreg(b, r);
+			} else {
+				pa = &fn5_8f5c(c, r)->b;
+				pb = &fn5_8f5c(b, r)->b;
+				if (!fn4_fc06(pb, pa))
+					continue;
+				q = fn5_8f5c(b, r)->next;
+				if (s4d90 > 1) {
+					printf("// propagate : check quad -");
+					prquad(q);
+				}
+				if (q->op == 41 && q->a.w4 == r)
+					delquad(q);
+			}
 		}
 	}
 }

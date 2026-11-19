@@ -4248,12 +4248,13 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_8ba8": {
+  "propagate": {
    "orig": "5:8ba8",
    "size_orig": 588,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_8df4": {
    "orig": "5:8df4",
