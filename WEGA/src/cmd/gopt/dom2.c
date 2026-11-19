@@ -18,12 +18,12 @@ extern void tabfree();
 extern int ndfs;
 struct dnode { struct dnode *next; struct dnode *down; int dblkno; };	/* the dominator tree: 10 bytes (guessed) */
 struct bl { struct bl *next; int blk; };		/* a list of blocks */
-struct loop { struct bl *bls; int hdr; struct loop *link; };	/* a loop: the blocks, the header block, the next loop (6 bytes at 6: guessed) */
+struct loop { struct bl *bls; int hdr; struct loop *link; int x0[3]; int cnt; unsigned b15:1, b14:1, b13:1, b12:1; };	/* a loop: the blocks, the header block, the next loop (6 bytes at 6: guessed) */
 extern struct dnode **darr;
 extern struct loop *loops;
 extern struct dnode *domroot;
 extern struct bl *pheaderlist, *looplist, *freebl;
-extern int nbl;
+extern int nbl, nbl2;
 extern int *bucket;
 extern struct edge *bent;
 extern int nbent;
@@ -402,4 +402,85 @@ deletblk(lp, blk)
 	if (s4d82 > 1)
 		prlist(*lp);
 	nbl--;
+}
+
+/* the loops with the header h: marks (bit 1: the same header twice, bit 0: an outer loop contains it); name guessed */
+int
+chkhdr(h)
+	int h;
+{
+	struct loop *q;
+	struct bl *p;
+	int found;
+
+	q = loops;
+	found = 0;
+	while (q != 0) {
+		if (q->hdr == h) {
+			found |= 2;
+			q->b15 = 1;
+			q->b12 = 0;
+			if (s4d82)
+				printf("common header loop, header=%d\n", h);
+		}
+		for (p = q->bls; p != 0; p = p->next)
+			if (p->blk == h) {
+				q->b13 = 1;
+				q->b12 = 0;
+				found |= 1;
+				++q->cnt;
+				if (s4d82)
+					printf("outer loop found,   header=%d\n", q->hdr);
+				break;
+			}
+		q = q->link;
+	}
+	return found;
+}
+
+/* the blocks of the list l that have a successor outside of it (a new list; name guessed) */
+struct bl *
+exitblks(l)
+	struct bl *l;
+{
+	struct bl *p, *m, *t, *r;
+	int e, b;
+
+	r = 0;
+	for (p = l; p != 0; p = p->next) {
+		e = blks[p->blk]->b.w4;
+		while (e >= 0) {
+			b = edges[e].blk;
+			e = edges[e].next;
+			for (m = l; m != 0; m = m->next)
+				if (b == m->blk)
+					break;
+			if (m != 0)
+				continue;
+			if (s4d82)
+				printf(" %d", p->blk);
+			if (r == 0) {
+				if (freebl != 0) {
+					r = freebl;
+					freebl = freebl->next;
+				} else
+					r = (struct bl *)taballoc(6, 4);
+				r->next = 0;
+			} else {
+				t = r;
+				if (freebl != 0) {
+					r = freebl;
+					freebl = freebl->next;
+				} else
+					r = (struct bl *)taballoc(6, 4);
+				r->next = t;
+			}
+			nbl2++;
+			r->blk = p->blk;
+			break;
+		}
+	}
+	if (s4d82)
+		printf("\n");
+	return r;
 }

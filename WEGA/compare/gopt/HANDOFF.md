@@ -13,13 +13,13 @@ Tools (use these, they print little; never dump disassemblies or diffs into the 
   json by a small script or `rename.py`).
 
 Written: comm2, rdr2, reader2, debug2, wrtil2 (complete), quads2 (not 4:1c88), alias2 (4:6c0a..4:7368, 4:79d0..4:7bb6, checkops 4:7c68..4:8074 DIFF 25, almap 4:8074 masked, addaffect 4:831e..4:87e6 DIFF 3, initaffect DIFF 11, alalloc/alret/chkallist masked, initallist/addallist DIFF 2, pralvars DIFF 2, mkallist/checkalias/aliasmat/praldim/ind masked, affsize DIFF 3 ...; alias2.c is complete except the placeholder fn5_2bca of segment 5).
-Open in the written functions: see the notes; recurring causes ((5) is seen again in rmlabels, deledge: cause 1 and 5 together make most of the DIFFs of flow2; (5): the register cache of a pointer in the original is kept over a store to a local (pralvars: ours loads again) and dropped over a store through the pointer (initallist, addallist: ours keeps it); DIFF 2 each; parameters: the first is the one in rr6/r7, a pointer after an int skips r6, see checkalias): (1) the original reloads a parameter at the first use after the
+Open in the written functions: see the notes; recurring causes ((6) the register cache of a base address (compress, eval, linkp, dominators: the original loads the base of a global array each time, ours keeps it in rr4/r3); tool: python3 regdiff.py (scratchpad) removes register names from tmp/tmp/fnc/FUNC.diff and shows what is structurally different; (5) is seen again in rmlabels, deledge: cause 1 and 5 together make most of the DIFFs of flow2; (5): the register cache of a pointer in the original is kept over a store to a local (pralvars: ours loads again) and dropped over a store through the pointer (initallist, addallist: ours keeps it); DIFF 2 each; parameters: the first is the one in rr6/r7, a pointer after an int skips r6, see checkalias): (1) the original reloads a parameter at the first use after the
 prologue / behind a conditional jump (operand, cmwalk, prquad, mkleaf, mktree, main, checkops); (2) `and r0,#%7f00` after `lda` in a struct
 assignment to a local only in ours (genquads, fndparm, tmpsearch, checkops): phase B, fnc.py hides it; (3) popt block order of a switch
 (mktree, genquads); (4) displacement form `ld r2,rr2(#4)` after p = p->next (writeil, tmpsearch).
 
 Next (in this order):
-1. flow2.c is complete (open: addedge 4, rmlabels 13, deledge 7, joinblk 9, all cause 1 or 5); dom2.c begun: dfs (masked), compress 11, eval 15 (the nested index cache: the original has no cache of the base address, ours keeps it in rr4: one more compiler difference, seen in compress and eval); next 4:ad8e (622), 4:affc (220), 4:b0d8 (230), 4:b1be (1766), then init2 (SCCS 1.3).
+1. dom2.c: written up to 4:c026 (dfs, compress, eval, linkp, addbucket, delbucket, dominators, linkdom, prlist, prloops, mkdomtree, addblk, deletblk, chkhdr, exitblks); next 4:c026 (576), 4:c266 (288), 4:c386, 4:c3e4, 4:c4ba, 4:c538, 4:c5a4, 4:c610, 4:c65a (dom2 | init2), then init2 (4:c69e ..), live2.
 2. (fn5_2bca of alias2 and the segment 5 functions: with the libc part, item 4.)
 3. quads2.c 4:1c88 (floating compare, EPU words in the listing); then flow2 (4:927e ..), dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2,
    reg2 (data order, host/recon/modmap.py gave the module of every function in findings.json).
@@ -27,6 +27,6 @@ Next (in this order):
 
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
-TASK: dom2.c: 4:ad8e (622 bytes, calls eval/compress presumably: the semidominators), 4:affc (220), 4:b0d8 (230), then 4:b1be (1766, the driver) if there is room.
-START: fnc.py -a dom2.c flow2.c (open: compress 11, eval 15, addedge 4, rmlabels 13, deledge 7, joinblk 9); odisc.py -o linkp. The arrays dfn, label, vertex, ancest, child, size, parent, ndfs are declared in dom2.c (names guessed).
-STOP WHEN: 4:b0d8 is written and checked (4:b1be if there is room), or at 70% of the context.
+TASK: dom2.c: 4:c026 (576 bytes), 4:c266 (288), 4:c386 (94), 4:c3e4 (214), 4:c4ba (126), 4:c538 (108), 4:c5a4 (108), 4:c610 (74), 4:c65a (68, the end of dom2 / the start of init2).
+START: fnc.py -a dom2.c flow2.c (open there: compress, eval, linkp, delbucket, dominators, mkdomtree, addblk and the flow2 ones: all the register cache or cause 1); odisc.py -o f4_c026. The structs dnode, bl, loop (bit fields at 0x12), the globals loops, freebl, nbl, nbl2, pheaderlist, looplist, domroot, darr are in dom2.c (guessed).
+STOP WHEN: 4:c65a is written and checked, or at 70% of the context.

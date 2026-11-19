@@ -2215,58 +2215,74 @@
   "linkdom": {
    "orig": "4:b8a4",
    "size_orig": 132,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name from the string; struct dnode {next, down, dblkno} guessed; darr (712e)"
   },
   "mkdomtree": {
    "orig": "4:b928",
    "size_orig": 652,
    "status": "open",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "open (DIFF 2): the original loads domroot again (ldl rr2,domroot) between the two stores domroot->next = 0 and domroot->dblkno = ..., ours keeps rr2 (the register cache of the compiler); p = darr[d] = taballoc(..) (chain order); name guessed"
   },
   "prlist": {
    "orig": "4:bbb4",
    "size_orig": 78,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name guessed (debug)"
   },
   "prloops": {
    "orig": "4:bc02",
    "size_orig": 68,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name guessed (debug); struct loop {bls, hdr, link ...} guessed"
   },
   "addblk": {
    "orig": "4:bc46",
    "size_orig": 214,
    "status": "open",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "open (DIFF 3): the original takes rr2 = lp of the test *lp != 0 as the else value of the target pointer; ours loads lp again (jr; ldl rr2,lp): *(*lp != 0 ? p : lp) = q; the form if/else gives DIFF 4; name from the strings"
   },
   "deletblk": {
    "orig": "4:bd1c",
    "size_orig": 180,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name from the string"
   },
-  "f4_bdd0": {
+  "chkhdr": {
    "orig": "4:bdd0",
    "size_orig": 200,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name guessed (loops with the header h: bit flags found |= 2 / 1); ++q->cnt (q->cnt++ computes the address twice); struct loop bit fields b15..b12 at 0x12"
   },
-  "f4_be98": {
+  "exitblks": {
    "orig": "4:be98",
    "size_orig": 398,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name guessed (blocks of the list with a successor outside it); the two copies of the allocation of a node are in the original; nbl2 (7108) a counter"
   },
   "f4_c026": {
    "orig": "4:c026",
