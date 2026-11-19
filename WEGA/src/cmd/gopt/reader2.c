@@ -32,9 +32,9 @@ extern NODE *eread();
 extern struct sym *mapn();
 extern void mkhash(), nlcheck(), prtags(), fwalk(), mapnm(), ncopy(), tprint();
 extern NODE *tcopy();
-extern long fn1d22();
-extern int fn1b28();
-extern void fn0b5e(), fn7088(), fn2c62(), fnf5fe(), fn5_0000(), fn5_6eda(), fn4a8e(), fn2bcc();
+extern long addquad();
+extern int constlook();
+extern void genquads(), fn7088(), prquads(), fnf5fe(), fn5_0000(), fn5_6eda(), writeil(), mapall();
 extern int fn9108(), fn927e(), fnc65a(), fnc69e(), rdsym();
 extern int dope[];
 
@@ -99,10 +99,10 @@ main(argc, argv)
 			nlcheck();
 			if (!rdsym())
 				cerror("error in reading symbol table file");
-			head = fn1d22(0x2e, 0L, 0L, 0L);
+			head = addquad(0x2e, 0L, 0L, 0L);
 			break;
 		case '}':
-			fn1d22(0x11, 0L, 0L, 0L);
+			addquad(0x11, 0L, 0L, 0L);
 			nlcheck();
 			passes();
 			tabfree(0, 0L);
@@ -116,7 +116,7 @@ main(argc, argv)
 			tabfree(8, 0L);
 			break;
 		case ']':
-			if (!fn1d22(0x0f, 0L, 0L, 0L))
+			if (!addquad(0x0f, 0L, 0L, 0L))
 				goto err;
 			nlcheck();
 			break;
@@ -127,14 +127,14 @@ main(argc, argv)
 			if (vafc == 0)
 				vafc = lno;
 			p1->b2 = 7;
-			p1->w4 = fn1b28(s4d96);
+			p1->w4 = constlook(s4d96);
 			p2->b2 = 1;
 			p2->w4 = v1;
 			p3->b2 = 1;
 			p3->w4 = v2;
 			p1->w0 = lno;
 			lno++;
-			if (!fn1d22(6, p1, p2, p3))
+			if (!addquad(6, p1, p2, p3))
 				goto err;
 			nlcheck();
 			break;
@@ -163,14 +163,14 @@ main(argc, argv)
 		case 'L':
 			p1->b2 = 1;
 			p1->w4 = rdin(10);
-			if (!fn1d22(0x1c, p1, 0L, 0L))
+			if (!addquad(0x1c, p1, 0L, 0L))
 				goto err;
 			nlcheck();
 			break;
 		case 'B':
 			p1->b2 = 1;
 			p1->w4 = rdin(10);
-			if (!fn1d22(0x1a, p1, 0L, 0L))
+			if (!addquad(0x1a, p1, 0L, 0L))
 				goto err;
 			nlcheck();
 			ifpos = ftell(infile);
@@ -181,16 +181,16 @@ main(argc, argv)
 			ungetc(ch, infile);
 			p1->b2 = 1;
 			p1->w4 = rdin(10);
-			if (!fn1d22(9, p1, 0L, 0L))
+			if (!addquad(9, p1, 0L, 0L))
 				goto err;
 			while ((ch = getc(infile)) != '\n') {
 				ungetc(ch, infile);
 				p1->b2 = 1;
 				p1->w4 = rdin(10);
-				if (!fn1d22(10, p1, 0L, 0L))
+				if (!addquad(10, p1, 0L, 0L))
 					goto err;
 			}
-			if (!fn1d22(11, 0L, 0L, 0L))
+			if (!addquad(11, 0L, 0L, 0L))
 				goto err;
 			ifpos = ftell(infile);
 			break;
@@ -222,7 +222,7 @@ dotree(p)
 			fwalk(p, pr, 0);
 		mapnm(p->in.left);
 	} else {
-		fn2bcc(p);
+		mapall(p);
 		dotree2(p);
 		return;
 	}
@@ -240,10 +240,10 @@ dotree2(p)
 		fwalk(p, pr, 0);
 	fwalk(p, mapnm);
 	cutree(p);
-	fn0b5e(p);
+	genquads(p);
 	p->in.op = FREE;
 	for (i = 0; i < ntmp; i++) {
-		fn0b5e(saved[i]);
+		genquads(saved[i]);
 		saved[i]->in.op = FREE;
 	}
 }
@@ -327,10 +327,10 @@ passes()
 		fn7088();
 		if (qflag > 4) {
 			printf("// quads before aliasm\n");
-			fn2c62();
+			prquads();
 		}
 		if (fn9108() && qflag > 4)
-			fn2c62();
+			prquads();
 		if (fn927e()) {
 			fnf5fe();
 			if (vb5e > 1)
@@ -342,7 +342,7 @@ passes()
 		}
 	}
 	if (tflag == 0)
-		fn4a8e();
+		writeil();
 	if (s4d92)
 		prtbl();
 }

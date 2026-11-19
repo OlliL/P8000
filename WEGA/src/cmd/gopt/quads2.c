@@ -14,8 +14,7 @@ extern char *symtab0;
 extern struct sym *symtab;
 extern struct quad *addquad();
 extern char *taballoc();
-extern struct qa *fn1d22();
-extern void cerror(), fn0b5e();
+extern void cerror(), genquads();
 extern FILE *dfile;
 extern int fscanf();
 extern int nconst, nfconst, nctmp, ntl, s4d94, nctmpuses, ctmpoff, v0e;
@@ -170,7 +169,7 @@ operand(p)
 		c.b2 = 3;
 		c.w4 = v0e++;
 		c.w0 = p->in.type;
-		fn1d22(0x3a, &a, &b, &c);
+		addquad(0x3a, &a, &b, &c);
 		opnd = c;
 		break;
 	}
@@ -235,7 +234,7 @@ void
 cmwalk(p)
 	NODE *p;
 {
-	struct qa *q;
+	struct quad *q;
 	struct qa s1, s2;
 	struct qa *r, *p1, *p2;
 
@@ -245,18 +244,18 @@ cmwalk(p)
 		cmwalk(p->in.right);
 		cmwalk(p->in.left);
 		if (p->in.left->in.op != CM) {
-			fn1d22(0x32, 0L, 0L, 0L);
+			addquad(0x32, 0L, 0L, 0L);
 			if (p->in.left->in.op == STARG) {
 				r = operand(p->in.left->in.left);
 				p1->b2 = 1;
 				p1->w4 = p->in.left->stn.stsize;
 				p2->b2 = 1;
 				p2->w4 = p->in.left->stn.stalign;
-				q = fn1d22(0x34, r, p1, p2);
-				q->w4 |= 1;
+				q = addquad(0x34, r, p1, p2);
+				q->f0 = 1;
 			} else {
 				r = operand(p->in.left);
-				fn1d22(0x34, r, 0L, 0L);
+				addquad(0x34, r, 0L, 0L);
 			}
 		}
 		if (p->in.right->in.op == STARG) {
@@ -265,14 +264,14 @@ cmwalk(p)
 			p1->w4 = p->in.right->stn.stsize;
 			p2->b2 = 1;
 			p2->w4 = p->in.right->stn.stalign;
-			q = fn1d22(0x34, r, p1, p2);
-			q->w4 |= 1;
+			q = addquad(0x34, r, p1, p2);
+			q->f0 = 1;
 		} else {
 			r = operand(p->in.right);
-			fn1d22(0x34, r, 0L, 0L);
+			addquad(0x34, r, 0L, 0L);
 		}
 	} else if (optype(p->in.op) != LTYPE)
-		fn0b5e(p);
+		genquads(p);
 }
 
 extern struct quad *qfree, *qtail, *qhead, *lastq;
@@ -280,7 +279,7 @@ extern struct pos curpos;
 extern int qflag;
 extern struct { int p0; int p2; int x4; int p6, p8; } *ptbl9c;
 extern char ctpos[], ctneg[];
-extern void fn2c8c();
+extern void prquad();
 static void normop(), denorm();
 
 /* a new quad at the end of the list (op, the operands a, b, c; 0: none) */
@@ -330,7 +329,7 @@ addquad(op, a, b, c)
 		lastq = q;
 	if (qflag > 1) {
 		printf("// in addquad -- ");
-		fn2c8c(q);
+		prquad(q);
 	}
 	return q;
 }
@@ -383,7 +382,7 @@ insertquad(op, a, b, c, where)
 	}
 	if (qflag > 2) {
 		printf("in insertquad -- ");
-		fn2c8c(q);
+		prquad(q);
 	}
 	return q;
 }
@@ -397,7 +396,7 @@ delquad(q)
 
 	if (qflag) {
 		printf("// removquad : quad = \n");
-		fn2c8c(q);
+		prquad(q);
 	}
 	if (q->op != 0x3b) {
 		denorm(&q->a);
@@ -429,7 +428,7 @@ movequad(a, b)
 
 /* the quads up to the next 0x3b or 0x11 are taken out */
 void
-delquads(q)
+delrun(q)
 	struct quad *q;
 {
 	struct quad *r;

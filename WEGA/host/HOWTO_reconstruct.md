@@ -93,7 +93,7 @@ For what is left: finding the source form of a hard function, and changing the c
 - A change of a pass, measured in a copy: `recon/oldvar.sh NAME PATCH.py [PASS]`. Removing a switch: a patch deleting its `#define`.
 - Compiler changes are in `src/cmd/{cparse,codgen,popt,cas}` behind a switch, set in the version (`codgen/oldcc.h`, the `build/nonsegVER` rules of the pass Makefile). The normal build stays identical.
 - Function-level check for a program with a model: `RECON_PROG=NAME python3 host/recon/strictcmp.py` (`-c` also compares call forms, `STRICT_CTX=12 ... -v FUNC` shows context). A model (`MODULES`, `model_link` in `compare/NAME/progcfg.py` like `compare/cpp` or `popt/tools`) is needed for a program of v0p; add it to PROGS of `recon/switchmatrix.py`.
-- Structs and names when the bytes stand: `rename.py`; sizes from address distances, names from debug strings, then System III, then Plexus for Z8000 parts (the WEGA changes: `compare/NAME/SYSIII.md`). The exact count must not drop.
+- Structs and names when the bytes stand: `rename.py OLD NEW [-n] [-m]` (sources, tables, findings.json, the .md of the program, KNOWLEDGE.md; `-m`: OLD is a placeholder for a function that exists under the name NEW, e.g. `fn1d22` in a module whose neighbour is written later: gopt; the external names must differ in their first 7 characters: delquad and delquads clash); `findings.py PROG` then writes FINDINGS.md; sizes from address distances, names from debug strings, then System III, then Plexus for Z8000 parts (the WEGA changes: `compare/NAME/SYSIII.md`). The exact count must not drop.
 
 ## Evidence rules for the old compilers
 

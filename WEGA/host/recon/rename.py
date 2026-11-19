@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """rename.py - rename an identifier of a program everywhere (sources, tables, notes, documents; configuration: progcfg.py).
 
-Usage: rename.py OLD NEW [OLD NEW ...] [-n]      (-n: dry run, print the counts only)
+Usage: rename.py OLD NEW [OLD NEW ...] [-n] [-m]      (-n: dry run, print the counts only; -m: merge: NEW exists already, OLD is a
+placeholder for it, e.g. fn1d22 for addquad in a program without the sources of all modules: the 7 character and the exists check are skipped)
 
 OLD is a function (key of findings.json or its address id f<entry>) or any other identifier of the sources. Replaced as a
 whole word in:
@@ -59,13 +60,14 @@ def sub(text, old, new):
 def main():
     a = sys.argv[1:]
     dry = '-n' in a
-    a = [x for x in a if x != '-n']
+    merge = '-m' in a
+    a = [x for x in a if x not in ('-n', '-m')]
     if len(a) % 2:
         sys.exit(__doc__)
     pairs = list(zip(a[0::2], a[1::2]))
     ext = externals()
     for old, new in pairs:
-        if old not in ext:
+        if merge or old not in ext:
             continue    # an address id (f<entry>) of an already named function: only the documents and tables change
         clash = [e for e in ext if e != old and e[:7] == new[:7]]
         if clash:

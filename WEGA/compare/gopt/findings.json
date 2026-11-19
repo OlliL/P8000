@@ -18,7 +18,7 @@
    "kind": "proven",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "open: (1) the loop of case C: the original has the slow path of getc (call _filbuf) in front of the loop top, ours behind it (popt code motion, phase B); (2) the frame is 4 bytes larger (the save area of r8..r13 at 0x3C, not 0x38). The cases { } ] [ . L B C / are the blocks 4:00fc ... 4:0700 (found as candidate starts); `err:` stands inside `if (vafe) {...}` (a label behind a jump moves with codemove, OLDCC.md D20). The case / loops for ever: the putc result is compared with the multi-character constant '/n' (0x6E2F), a typo of '\\n' (kept). The names of the callees of other modules are the addresses (fn1d22 ...)"
+   "note": "open: (1) the loop of case C: the original has the slow path of getc (call _filbuf) in front of the loop top, ours behind it (popt code motion, phase B); (2) the frame is 4 bytes larger (the save area of r8..r13 at 0x3C, not 0x38). The cases { } ] [ . L B C / are the blocks 4:00fc ... 4:0700 (found as candidate starts); `err:` stands inside `if (vafe) {...}` (a label behind a jump moves with codemove, OLDCC.md D20). The case / loops for ever: the putc result is compared with the multi-character constant '/n' (0x6E2F), a typo of '\\n' (kept). The names of the callees of other modules are the addresses (addquad ...)"
   },
   "f4_00fc": {
    "orig": "4:00fc",
@@ -445,7 +445,7 @@
    "module": "quads2.c",
    "file": "quads2.c"
   },
-  "delquads": {
+  "delrun": {
    "orig": "4:21bc",
    "size_orig": 80,
    "status": "masked",
