@@ -184,3 +184,33 @@ struct quad *q, *firstq;
 			cerror("clropt(): illegal op2 opnd");
 	}
 }
+
+extern char ascii[];
+
+/* the flags of the operands of q: the symbols and the betatbl entries of c (and of a of a parameter store) are marked (name from the debug output) */
+void
+setopt(q)
+struct quad *q;
+{
+	if (s4d86 > 1) {
+		printf("setopt()\n");
+		prquad(q);
+	}
+	if (q->c.b2 == 4) {
+		symtab[q->c.w4].sflags |= 2;
+		if (s4d86 > 2)
+			printf("setopt(), rslt sym=%s, lpopt=%d\n", ascii + symtab[q->c.w4].nameoff, (symtab[q->c.w4].sflags >> 1) & 1);
+	} else if (q->c.b2 == 6 || q->c.b2 == 8)
+		*(int *)((char *)betatbl + (q->c.w4 * 10 + 8)) |= 4096;
+	if (q->c.b2 == 8 && q->op == 47) {
+		symtab[betatbl[q->c.w4].x1].sflags |= 2;
+		if (s4d86 > 2)
+			printf("setopt(), rslt beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->c.w4].x1].nameoff, (symtab[betatbl[q->c.w4].x1].sflags >> 1) & 1);
+	}
+	if (q->op == 52 && q->a.b2 == 8) {
+		*(int *)((char *)betatbl + (q->a.w4 * 10 + 8)) |= 4096;
+		symtab[betatbl[q->a.w4].x1].sflags |= 2;
+		if (s4d86 > 2)
+			printf("setopt(), qparv beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->a.w4].x1].nameoff, (symtab[betatbl[q->a.w4].x1].sflags >> 1) & 1);
+	}
+}
