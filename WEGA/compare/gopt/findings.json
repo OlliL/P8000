@@ -4142,12 +4142,14 @@
    "file": "reg2.c",
    "note": "open (DIFF 19, cause 3): the block of the clearing is placed in front of the compare in the original (codemove); the swapped form q != s7154[*p] is the nearer one"
   },
-  "f5_7a88": {
+  "setedges": {
    "orig": "5:7a88",
    "size_orig": 556,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c",
+   "note": "open (DIFF 12): only the first statement q = a11a[i].q: the original copies the parameter (ld r3,r7; mult rr2) and loads through rr0, ours multiplies rr6 in place and uses an indexed load (cause 1/4)"
   },
   "f5_7cb4": {
    "orig": "5:7cb4",

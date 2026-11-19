@@ -22,20 +22,23 @@ struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };
 extern int s4d72, s7144, s7158;
 extern int a118, a108;
 extern unsigned *a110;
-struct gn { int row; struct gn *link; int x6, x8, cnt, x12, x14, cost; };
+struct edge { int k; struct edge *next; };
+struct gn { int row; struct gn *link; struct edge *edges; int cnt; int x12; int x14; int cost; unsigned f15:1; };
 extern struct gn *a11e;
 struct gnn { int x0; struct quad *q; int blk; int kind; };
 extern int s714e;
 extern struct quad **s7154;
 extern int *srchdef();
 extern int tstlbit(), testbit();
-extern void clrlbit(), setlbit();
+extern void clrlbit(), setlbit(), setbit();
 extern void clrmat(), orvec(), mergevectors(), updatevector();
-extern struct gn *fn5_7a88();
+extern struct gn *setedges();
+extern int fn5_91fc(), fn5_9372();
 #define QF(q, o)	(*(unsigned **)(*(char **)((char *)(q) + 6) + (o)))
 extern void propnd();
 extern int a114, a116, a10e;
 extern struct gnn *a11a;
+#define GF(i, o, t)	(*(t *)((char *)a11a + ((i) * 10 + (o))))
 extern char *taballoc();
 extern int notlive(), fn5_9adc();
 extern void mergevectors(), updatevector(), degrees();
@@ -272,9 +275,9 @@ buildgraph()
 			for (k = 0; k < s7144; k++)
 				tmp[k] = dfp[k];
 			mergevectors(live, tmp);
-		} else if (q == a11a[i].q) {
+		} else if (q == GF(i, 2, struct quad *)) {
 			updatevector(q, tmp);
-			nd = fn5_7a88(i, tmp);
+			nd = setedges(i, tmp);
 			if (q->c.b2 == 4) {
 				if (symtab[q->c.w4].sbyte5)
 					nd->cost = 999;
@@ -286,7 +289,7 @@ buildgraph()
 				nd->cost = 700;
 			else
 				nd->cost = 0;
-			if (QHREC(blks[a11a[i].blk])->w12)
+			if (QHREC(blks[GF(i, 6, int)])->w12)
 				++nd->cost;
 			i++;
 		}
@@ -360,4 +363,54 @@ unsigned *v;
 			setlbit(v, *p);
 		}
 	}
+}
+
+/* the node of the temporary of the quad number i is looked for in the graph, or entered; the edges to the live temporaries are added (name from the debug output) */
+struct gn *
+setedges(i, vec)
+int i;
+unsigned *vec;
+{
+	struct gn *p;
+	struct edge *e;
+	struct quad *q, *q2;
+	int j, k, c;
+
+	q = GF(i, 2, struct quad *);
+	c = fn5_91fc(q);
+	for (p = a11e; p != 0; p = p->link)
+		if (p->row == c)
+			break;
+	if (p == 0) {
+		p = (struct gn *)taballoc(20, 0);
+		p->link = a11e;
+		a11e = p;
+		p->edges = 0;
+		p->row = c;
+		p->cnt = 0;
+		p->f15 = 0;
+		p->x12 = -1;
+		p->x14 = GF(i, 8, int);
+	}
+	for (j = 0; j < s714e; j++) {
+		k = fn5_91fc(s7154[j]);
+		if (k < 0 || c == k)
+			continue;
+		q2 = s7154[j];
+		if (!tstlbit(vec, j) && !fn5_9372(q, q2))
+			continue;
+		if (s4d90 > 2)
+			printf("// setedge : (%d, %d)\n", c, k);
+		if (!testbit(a110, c, k, a118)) {
+			e = (struct edge *)taballoc(6, 0);
+			e->k = k;
+			e->next = p->edges;
+			p->edges = e;
+			if (s4d90 > 4)
+				printf("// just added edge %d to node %d\n", e->k, p->row);
+			setbit(a110, c, k, a118);
+			setbit(a110, k, c, a118);
+		}
+	}
+	return p;
 }

@@ -8,5 +8,6 @@
 "buildgraph": "DIFF 17 (object 188 instructions, original 188)",
 "degrees": "OK",
 "mergevectors": "OK",
-"updatevector": "DIFF 19 (object 55 instructions, original 55)"
+"updatevector": "DIFF 19 (object 55 instructions, original 55)",
+"setedges": "DIFF 12 (object 145 instructions, original 148)"
 }
