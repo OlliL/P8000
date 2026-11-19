@@ -179,7 +179,7 @@ int kind;
 	opqd = qmove(opqd);
 }
 
-extern int constlook(), s000e;
+extern int constlook(), s000e, insrtopstmp();
 
 /* the operand is set to the integer v (w0 as its first word); t == 1: v is used as it is, else it is negated (name guessed) */
 void
@@ -279,4 +279,30 @@ struct quad *outq;
 		printf("\n");
 	}
 	return 1;
+}
+
+/* the stemp of the definition p is used for t (name from the debug output) */
+int
+copyopndstmp(opqd, p, t, kind, outq)
+struct quad *opqd;
+struct dl *p, *t;
+int kind;
+struct quad *outq;
+{
+	if (s4d86 > 2) {
+		printf("copyopndstmp(), opqd:\n");
+		prquad(opqd);
+	}
+	if (!p->f11 &&
+	    ((kind == 2 && (opqd->b.b2 == 1 || opqd->b.b2 == 7) && (opqd->op == 1 || opqd->op == 48)) ||
+	     (kind == 3 && (opqd->a.b2 == 1 || opqd->a.b2 == 7) && (opqd->op == 1 || opqd->op == 48)))) {
+		t->e14 = p->e14;
+		if (s4d86 > 3) {
+			printf("copyopndstmp(), copied indopnd: ");
+			propnd(&p->e14);
+			printf("\n");
+		}
+		return 1;
+	}
+	return insrtopstmp(opqd, p, t, kind, outq);
 }
