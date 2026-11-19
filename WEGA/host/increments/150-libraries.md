@@ -94,3 +94,17 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 - 2026-11-19: /lib/clist byte-identical: src/cmd/clist.c written from the binary (no source known), ccv0p with the oldv7
   stdio.h, libc-v2 (now also fputs/0_1, filbuf/0_3, atoi/0_1 and data/0_1 instead of data.o; cpp stays identical);
   rules in src/cmd/Makefile (SIMPLE), crt0.list; corpus compare/clist (17 cases, identical).
+- 2026-11-19: /lib/as2, asz2, as2d, asz2d set aside to increment 170 (owner): mostly PLZ/SYS code (170-plz.md, "Known").
+- 2026-11-19: /lib/gopt, start (measured, nothing built): E611 segmented, code in segments 4 (65534 bytes) and 5 (50432),
+  data segment 7 (31232; strings from data offset 0, the file header is 0x58 bytes), bss segment 8 (42496). 20 SCCS
+  lines in link order: reader2.c 1.5, quads2.c 1.8, debug2.c 1.3, rdr2.c 1.3 (with `rdr` 2.4), comm2.c 1.1 (with
+  `common` 2.4), wrtil2.c 1.7, alias2.c 1.5, flow2.c 1.6, dom2.c 1.2, init2.c 1.3, live2.c 1.9, ebbo2.c 1.8, lpinv2.c 1.10,
+  lpind2.c 1.5, beta2.c 1.5, reg2.c 1.11, alias2.c 1.3 08/30/82 (a second module with the SCCS line of alias2), each
+  with mfile2.h 1.7 03/04/83; newest source 03/04/83. No source found (System III, Plexus, System V, by module names and
+  messages). `common` is the pcc file of System III (cmd/cc/pcc/mip/common) in a later form: "cannot recover from
+  earlier errors\n" without "goodbye!", talloc prints the ops of the nodes before "out of tree space" (NODE 22 bytes,
+  op at 0, FREE 100, TREESZ 350; node at <<8>>0x5292, lastfree <<8>>0x528e). tinit (seg 4, 0x4120) is equal with every
+  segmented compiler with -O (scc, sccv1, sccvc, sccvk, sccvl): -O; the version not decided yet. Locals of the
+  optimizer modules stay in the frame (no register variables seen in common). The start-up code at 0 is not the
+  scrt0 of the system (`dec r15,#4; ldl ...,rr8`, `_environ` in <<8>>0). Next: setup as compare/sld (SEG, MODULES),
+  the tools for two code segments, the compiler on common/rdr (the messages of codgen's rdr3.c, comm3.c are relatives).
