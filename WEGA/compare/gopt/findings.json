@@ -3703,7 +3703,7 @@
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_3c12": {
+  "domuse": {
    "orig": "5:3c12",
    "size_orig": 336,
    "status": "open",

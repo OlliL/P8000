@@ -658,3 +658,39 @@ unsigned *vec;
 	}
 	return !tstlbit(vec, k);
 }
+
+extern int issym();
+
+/* the block blk dominates the uses of the variable of q in the loop lp (name from the debug output) */
+int
+domuse(lp, blk, u, q)
+struct loop *lp;
+int blk, u;
+struct quad *q;
+{
+	struct bl *b;
+	struct quad *x;
+	int v, k1, k2, i, s;
+
+	if (s4d86 > 2) {
+		printf("domuse(hdr=%d,blk=%d,q=%X), quad=\n", lp->hdr, blk, q);
+		prquad(q);
+	}
+	s = issym(q, 4);
+	k1 = bitpos(q, 1, s);
+	for (b = lp->bls; b != 0; b = b->next) {
+		i = b->blk;
+		for (x = blks[i]->next; x != 0; x = x->next) {
+			if (x->op == 59)
+				break;
+			v = 0;
+			if (x->f6 && (v = issym(x, 2)))
+				k2 = bitpos(x, 2, v);
+			else if (x->f5 && (v = issym(x, 3)))
+				k2 = bitpos(x, 3, v);
+			if (v && k2 == k1 && !isdom(a0f4, blk, i))
+				return 0;
+		}
+	}
+	return 1;
+}
