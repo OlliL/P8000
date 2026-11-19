@@ -696,6 +696,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | libPW.a, slibPW.a | xmsg.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
 | libPW.a | regcmp.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
 | slibPW.a | move.c | v1 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | comm2.c (common 2.4) | sccvc (measured) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
 fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`

@@ -121,3 +121,11 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   functions by symbol and segment; tested with the original plus a symbol table made from findings.json: 599 SAME, one changed
   byte shows as DIFF), fncheck.py takes SEG:OFFSET as LO, bincmp.py lists the code of every segment (blocks as SEGNO*0x10000+OFFSET;
   sld unchanged). Next: the module map per function, then the source per module (`common` first).
+- 2026-11-19: gopt, comm2.c (src/cmd/gopt/comm2.c, gopt.h, ops_gopt.c; not built, not in src/cmd/Makefile): modmap.py gives every
+  function its module (findings.json `module`, from the strings and tables it reads; 17 modules, alias2.c twice, beta2 and the
+  borders between neighbours are guesses, 15 functions between live2 and ebbo2); comm2.c = pcc `common` 2.4, the relative is
+  codgen/comm3.c; the operator table equals ops_scodgen.c but FLD 8 (ops_gopt.c). 23 functions + 7 tails: 21 equal under fncheck.py
+  (masked) with sccvc (not v1: the register variables of leaf functions differ in every other segmented compiler), open:
+  tprint (shared fprintf call, popt), ispow2 (`sdal` by -1 against `sral`). Not drafted yet: the area allocator of the module
+  (4:4738, 4:4934, 4:4a48, strings "C Optimizer: out of space", "deallocation error in table area %d", "// sgbrk(%X)", the
+  flag at 4d7c) and 4:3edc. fncheck.py: FNC_ROOT, FNC_CC, FNC_FLAGS (-Dstatic= for the static functions), FNC_EXTRA, FNC_OLDV7.

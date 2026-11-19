@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> orig (SEG:OFFSET), size_orig (to the next start), status (open, exact), kind (proven: a call target; candidate: after an unconditional ret/jump, no jump reaches it), module (a guess unless noted), note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "?",
+ "compiler": "sccvc by measurement (comm2.c: the shipped scc, sccv1, sccv1c, sccvk, sccvl differ in the register variables of leaf functions, sccvc is masked-equal); the date (03/83) names v1: not decided, the owner",
  "binary": "/lib/gopt",
  "functions": {
   "f4_0000": {
@@ -661,215 +661,257 @@
    "kind": "proven",
    "module": "rdr2.c"
   },
-  "f4_3fde": {
+  "uerror": {
    "orig": "4:3fde",
    "size_orig": 80,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_402e": {
+  "cerror": {
    "orig": "4:402e",
    "size_orig": 164,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_40d2": {
+  "werror": {
    "orig": "4:40d2",
    "size_orig": 78,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_4120": {
+  "tinit": {
    "orig": "4:4120",
    "size_orig": 62,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "rdr2.c|comm2.c"
+   "module": "rdr2.c|comm2.c",
+   "file": "comm2.c"
   },
-  "f4_415e": {
+  "talloc": {
    "orig": "4:415e",
    "size_orig": 194,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "an unused local int x (frame 10); the second ring walk prints the opcodes (\"talloc: opcode = %d\")"
   },
-  "f4_4220": {
+  "tcheck": {
    "orig": "4:4220",
    "size_orig": 76,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_426c": {
+  "tfree": {
    "orig": "4:426c",
    "size_orig": 30,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_428a": {
+  "tfree1": {
    "orig": "4:428a",
    "size_orig": 30,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "the message of the original starts with a blank: \" freeing blank tree!\" (kept)"
   },
-  "f4_42a8": {
+  "fwalk": {
    "orig": "4:42a8",
    "size_orig": 166,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_434e": {
+  "walkf": {
    "orig": "4:434e",
    "size_orig": 92,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_43aa": {
+  "mkdope": {
    "orig": "4:43aa",
    "size_orig": 62,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_43e8": {
+  "tprint": {
    "orig": "4:43e8",
    "size_orig": 162,
    "status": "open",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "open: all instructions equal but the layout; the original shares one fprintf call of the PTR/FTN/ARY arms (PTR and ARY jump into the call of FTN), ours calls in each arm (popt tail merge, phase B). Tried: if chain in a for(;;t=DECREF), while, break out of the loop, switch (t&060), the first draft. Parameters (t, fp): t in r7, fp in rr4."
   },
-  "f4_448a": {
+  "bsize": {
    "orig": "4:448a",
    "size_orig": 30,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "pointer: returns 16 also in the segmented program (comm3.c: 32 with SEG). The tails 4:44a8, 4:44b2, 4:44b8 are its returns. Dead tests: the original has `(t & 060) == 020` before a return with the same value in szty and tbytes (no jump)."
   },
   "f4_44a8": {
    "orig": "4:44a8",
    "size_orig": 10,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "tail of bsize (a case block behind its ret)"
   },
   "f4_44b2": {
    "orig": "4:44b2",
    "size_orig": 6,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "tail of bsize (a case block behind its ret)"
   },
   "f4_44b8": {
    "orig": "4:44b8",
    "size_orig": 38,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "tail of bsize (a case block behind its ret)"
   },
-  "f4_44de": {
+  "szty": {
    "orig": "4:44de",
    "size_orig": 26,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
   "f4_44f8": {
    "orig": "4:44f8",
    "size_orig": 4,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "tail of szty (a case block behind its ret)"
   },
   "f4_44fc": {
    "orig": "4:44fc",
    "size_orig": 22,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "tail of szty (a case block behind its ret)"
   },
-  "f4_4512": {
+  "argsize": {
    "orig": "4:4512",
    "size_orig": 108,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_457e": {
+  "prline": {
    "orig": "4:457e",
    "size_orig": 44,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_45aa": {
+  "tbytes": {
    "orig": "4:45aa",
    "size_orig": 40,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
   "f4_45d2": {
    "orig": "4:45d2",
    "size_orig": 4,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "tail of tbytes (a case block behind its ret)"
   },
   "f4_45d6": {
    "orig": "4:45d6",
    "size_orig": 22,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "tail of tbytes (a case block behind its ret)"
   },
-  "f4_45ec": {
+  "dexit": {
    "orig": "4:45ec",
    "size_orig": 32,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_460c": {
+  "branch": {
    "orig": "4:460c",
    "size_orig": 34,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_462e": {
+  "ncopy": {
    "orig": "4:462e",
    "size_orig": 44,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_465a": {
+  "tcopy": {
    "orig": "4:465a",
    "size_orig": 106,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
-  "f4_46c4": {
+  "ispow2": {
    "orig": "4:46c4",
    "size_orig": 78,
    "status": "open",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "open: the original shifts c by `ld r2,#1; neg r2; sdal rr4,r2` (a dynamic shift by -1), ours `sral rr4,#1`. Tried: c >>= 1, c = c >> 1, c >>= 1L, c /= 2, the shift in the body, while. A switch or a source form not found."
   },
-  "f4_4712": {
+  "plainicon": {
    "orig": "4:4712",
    "size_orig": 38,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c"
   },
   "f4_4738": {
    "orig": "4:4738",
@@ -4196,5 +4238,6 @@
    "kind": "candidate",
    "module": "alias2b.c"
   }
- }
+ },
+ "status_note": "masked = the function equals the original under fncheck.py (segment numbers and addresses masked), compiler sccvc under OLDROOT; exact only after the link with segcmp.py"
 }

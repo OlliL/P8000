@@ -1206,6 +1206,7 @@ means it does something fixed instead (only possible where the original's result
 | `/etc/restor` | `r` writes the super block as a whole block: the bytes behind the structure (from s_mach on) are leftover memory, here digits of its process number, so the restored image differs from run to run | kept (the cases scrub them: `wegafs.py scrub`) | `compare/restor` |
 | `/etc/restor` | `direq` has a dangling else (`if (*s1++ == *s2) if (*s2++ == 0) return(1); else return(0);`): the search of `x` stops at the first entry of every directory, so no name is found ("not on the archiv") and nothing is extracted; the files of `x` would be named by their i-node numbers | kept | `compare/restor` |
 | `/etc/mvdir` | `echo "mvdir: cannot move \`.'"` has an unbalanced backquote: the shell reports a failed command ".'" instead of the message (status 2) | kept | `compare/mvdir` |
+| `/lib/gopt` (`tfree1`, `bsize`, `szty`, `tbytes`) | the message of `tfree1` starts with a blank (" freeing blank tree!"); `bsize` returns 16 for a pointer also in the segmented program; the pointer tests in `szty` and `tbytes` have no effect (both outcomes give the same value) | kept (comm2.c, status masked) | `compare/gopt/findings.json` |
 
 ## ar (reconstructed, byte-identical)
 

@@ -14,6 +14,7 @@ the whole program. Prints OK or the differing instructions (original | object).
 """
 import difflib
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -31,10 +32,13 @@ def compile_obj(src):
     tmp = tempfile.mkdtemp(prefix='fncheck', dir=os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'))
     base = os.path.splitext(os.path.basename(src))[0]
     shutil.copy(src, os.path.join(tmp, base + '.c'))
-    for f in os.listdir(CFG.SRCDIR):
-        if f.endswith('.h'):
-            shutil.copy(os.path.join(CFG.SRCDIR, f), tmp)
-    r = subprocess.run([CFG.EMU, '-r', CFG.ROOT, CFG.CC, '-O', '-c', base + '.c'], cwd=tmp,
+    for d in [os.path.join(CFG.SRCDIR, '..', '..', 'head', 'oldv7')] * bool(os.environ.get('FNC_OLDV7')) + [CFG.SRCDIR]:
+        for f in os.listdir(d):
+            if f.endswith('.h') or f in os.environ.get('FNC_EXTRA', '').split():    # FNC_EXTRA: files the draft includes
+                shutil.copy(os.path.join(d, f), tmp)
+    # FNC_ROOT / FNC_CC / FNC_FLAGS: another compiler root and compiler (the old compilers: OLDROOT, /bin/sccv1), more switches
+    r = subprocess.run([CFG.EMU, '-r', os.environ.get('FNC_ROOT', CFG.ROOT), os.environ.get('FNC_CC', CFG.CC), '-O']
+                       + os.environ.get('FNC_FLAGS', '').split() + ['-c', base + '.c'], cwd=tmp,
                        capture_output=True, text=True, timeout=900)
     obj = os.path.join(tmp, base + '.o')
     if r.returncode != 0 or not os.path.exists(obj):
@@ -62,12 +66,13 @@ def main():
         s = [x['value'] for x in o.symbols if x['name'] == '_' + name][0]
     e = min([t for t in starts if t > s] + [len(oc)])
     g = SOut(open(os.path.join(CFG.ROOT, CFG.ORIG_BIN), 'rb').read())
-    a = [zcode.norm_masked(t) for _, t in zcode.insns(oc, s, e, CFG.SEG)]
+    nm = (lambda t: zcode.norm_masked(re.sub(r'<<\d+>>', '', t))) if getattr(CFG, 'CODESEGS', None) else zcode.norm_masked   # segment numbers differ in an object
+    a = [nm(t) for _, t in zcode.insns(oc, s, e, CFG.SEG)]
     gcode = bytes(g.image)[:g.segs[0]['code']]
     if osg is not None:
         off, n = CFG.CODESEGS[osg]
         gcode = bytes(g.image)[off:off + n]
-    b = [zcode.norm_masked(t) for _, t in zcode.insns(gcode, lo, hi, CFG.SEG)]
+    b = [nm(t) for _, t in zcode.insns(gcode, lo, hi, CFG.SEG)]
     if a == b:
         print('OK (masked): %d instructions equal (%04x..%04x)' % (len(b), lo, hi))
         return
