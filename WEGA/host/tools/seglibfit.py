@@ -43,7 +43,7 @@ def listing(code, lo, hi):
 def main():
     a = sys.argv[1:]
     verbose = False
-    defs = ['-DSEG']
+    defs = ['-DSEG', '-I.']
     while a and a[0].startswith('-'):
         if a[0] == '-v':
             verbose = True
