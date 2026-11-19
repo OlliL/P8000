@@ -3,5 +3,10 @@
 "marklps": "OK",
 "chkcalls": "DIFF 33 (object 82 instructions, original 88)",
 "symflags": "OK",
-"assignreg": "OK"
+"assignreg": "OK",
+"include": "OK",
+"buildgraph": "DIFF 17 (object 188 instructions, original 188)",
+"degrees": "OK",
+"mergevectors": "OK",
+"updatevector": "DIFF 19 (object 55 instructions, original 55)"
 }

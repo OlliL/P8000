@@ -19,11 +19,27 @@ extern char a0010[];
 extern struct bt *betatbl;
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };
 #define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
+extern int s4d72, s7144, s7158;
+extern int a118, a108;
+extern unsigned *a110;
+struct gn { int row; struct gn *link; int x6, x8, cnt, x12, x14, cost; };
+extern struct gn *a11e;
+struct gnn { int x0; struct quad *q; int blk; int kind; };
+extern int s714e;
+extern struct quad **s7154;
+extern int *srchdef();
+extern int tstlbit(), testbit();
+extern void clrlbit(), setlbit();
+extern void clrmat(), orvec(), mergevectors(), updatevector();
+extern struct gn *fn5_7a88();
+#define QF(q, o)	(*(unsigned **)(*(char **)((char *)(q) + 6) + (o)))
+extern void propnd();
 extern int a114, a116, a10e;
-extern char *a11a;
+extern struct gnn *a11a;
 extern char *taballoc();
 extern int notlive(), fn5_9adc();
-extern void prquad(), prvec(), fn5_73d0(), fn5_75dc(), fn5_7858(), fn5_7cb4(), fn5_8198(), fn5_9698();
+extern void mergevectors(), updatevector(), degrees();
+extern void prquad(), prvec(), include(), buildgraph(), fn5_7cb4(), fn5_8198(), fn5_9698();
 extern void clearflags(), livevars(), reachdefs(), prquads(), ebbopt(), clearblocks(), marklpblocks();
 
 extern void marklps(), symflags(), chkcalls(), assignreg();
@@ -117,7 +133,7 @@ int flag;
 	struct quad *q, *last;
 	unsigned *dfptr;
 
-	a11a = taballoc(0, 0);
+	a11a = (struct gnn *)taballoc(0, 0);
 	a116 = 0;
 	a10e = 1;
 	last = 0;
@@ -147,25 +163,25 @@ int flag;
 			switch (q->c.b2) {
 			case 4:
 				if ((symtab[q->c.w4].sflags & 1) || q->f7)
-					fn5_73d0(flag, q, last);
+					include(flag, q, last);
 				break;
 			case 8:
 				if (BBIT(q->c.w4, 13)) {
 					if ((notlive(q, dfptr) == 0 || q->op == 60) && q->op != 47)
-						fn5_73d0(flag, q, last);
+						include(flag, q, last);
 				}
 				break;
 			case 6:
 				if (BBIT(q->c.w4, 13) && a0010[q->c.w4] > 2 && q->op != 47)
-					fn5_73d0(flag, q, last);
+					include(flag, q, last);
 				break;
 			}
 		}
 		last = q;
 	}
 	if (a116) {
-		fn5_75dc();
-		fn5_7858();
+		buildgraph();
+		degrees();
 		if (s4d90) {
 			printf("// graph before coloring\n");
 			fn5_9698();
@@ -179,6 +195,169 @@ int flag;
 		if (s4d90) {
 			printf("// quads after register allocation\n");
 			prquads();
+		}
+	}
+}
+
+/* the quad q gets an entry in the list of the quads that need a register (name from the debug output) */
+void
+include(flag, q, last)
+int flag;
+struct quad *q, *last;
+{
+	struct { int x0; struct quad *q; int blk; int kind; } *t;
+
+	if (q->op == 7 || q->op == 33)
+		return;
+	if (s4d90 > 4) {
+		printf("// include : called with");
+		propnd(&q->c);
+		printf("\n");
+	}
+	if (flag == 1 && q->c.w0 != 6 && q->c.w0 != 7)
+		return;
+	if (flag == 0 && (q->c.w0 == 6 || q->c.w0 == 7))
+		return;
+	if (flag == 0 && q->c.w0 == 2)
+		return;
+	if (QHREC(blks[a114])->w12 && QHREC(blks[a114])->callfnd && q->c.b2 == 4) {
+		if ((symtab[q->c.w4].sflags >> 2) & 1)
+			return;
+		if (symtab[q->c.w4].sclass == 9)
+			return;
+	}
+	if (s4d90 > 4) {
+		printf("// include :");
+		propnd(&q->c);
+		printf("\n");
+	}
+	t = (void *)taballoc(10, 0);
+	t->q = q;
+	t->x0 = 0;
+	t->blk = a114;
+	if (q->c.w0 == 5 || (s4d72 && (q->c.w0 & 0x30) == 0x10))
+		t->kind = 2;
+	else
+		t->kind = 1;
+	a116++;
+}
+
+/* the graph of the temporaries that are alive at the same time is built (name from the debug output) */
+void
+buildgraph()
+{
+	struct quad *q;
+	struct gn *nd;
+	unsigned *tmp, *dfp, *live, *prev;
+	int i, k;
+
+	i = 0;
+	a118 = (a116 + 16) / 16;
+	a110 = (unsigned *)taballoc((a116 + 1) * 2 * a118, 0);
+	clrmat(a110, a116 + 1, a118);
+	a11e = 0;
+	tmp = (unsigned *)taballoc(s7144 * 2, 0);
+	live = 0;
+	for (q = qhead; q != 0; q = q->next) {
+		if (q->op == 59) {
+			if (s4d90 > 4) {
+				printf("// buildgraph : processing quad -\n");
+				prquad(q);
+			}
+			dfp = QF(q, 0x18);
+			prev = live;
+			live = QF(q, 4);
+			if (q->next->op != 28 && prev != 0)
+				orvec(live, prev, s7158);
+			for (k = 0; k < s7144; k++)
+				tmp[k] = dfp[k];
+			mergevectors(live, tmp);
+		} else if (q == a11a[i].q) {
+			updatevector(q, tmp);
+			nd = fn5_7a88(i, tmp);
+			if (q->c.b2 == 4) {
+				if (symtab[q->c.w4].sbyte5)
+					nd->cost = 999;
+				else if (q->f7)
+					nd->cost = 800;
+				else
+					nd->cost = 0;
+			} else if (q->c.b2 == 6 && q->c.w4 > a108)
+				nd->cost = 700;
+			else
+				nd->cost = 0;
+			if (QHREC(blks[a11a[i].blk])->w12)
+				++nd->cost;
+			i++;
+		}
+	}
+}
+
+/* the number of the neighbours of the nodes of the graph is counted (name guessed) */
+void
+degrees()
+{
+	struct gn *p;
+	int j;
+
+	for (p = a11e; p != 0; p = p->link) {
+		for (j = 1; j < a10e; j++)
+			if (testbit(a110, p->row, j, a118))
+				++p->cnt;
+	}
+}
+
+/* the temporaries that are not live any more are removed from the vector b (name from the debug output) */
+void
+mergevectors(a, b)
+unsigned *a, *b;
+{
+	int i;
+
+	if (s4d90 > 4) {
+		printf("mergevectors(), livev:\n");
+		prvec(a, 3, 1);
+		printf("//\treachv:\n");
+		prvec(b, 3, 2);
+	}
+	for (i = 0; i < s714e; i++) {
+		if (tstlbit(b, i) && notlive(s7154[i], a)) {
+			if (s4d90 > 4) {
+				printf("// mergevectors: clearing bit for i = %d, quad = ", i);
+				prquad(s7154[i]);
+			}
+			clrlbit(b, i);
+		}
+	}
+	if (s4d90 > 4) {
+		printf("// mergevector returning :\n");
+		prvec(b, 3, 2);
+	}
+}
+
+/* the vector v is updated for the quad q (name from the debug output) */
+void
+updatevector(q, v)
+struct quad *q;
+unsigned *v;
+{
+	int *p;
+
+	if (q->op == 7)
+		return;
+	for (p = srchdef(q, 1); *p != -1; p++) {
+		if (q != s7154[*p]) {
+			if (s4d90 > 4) {
+				printf("// updatevector: clearing bit for quad ");
+				prquad(s7154[*p]);
+			}
+			clrlbit(v, *p);
+		} else {
+			if (s4d90 > 1) {
+				printf("// updatevector: setting bit for quad ");
+				prquad(q);
+			}
+			setlbit(v, *p);
 		}
 	}
 }

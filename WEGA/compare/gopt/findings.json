@@ -4100,40 +4100,47 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_73d0": {
+  "include": {
    "orig": "5:73d0",
    "size_orig": 524,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_75dc": {
+  "buildgraph": {
    "orig": "5:75dc",
    "size_orig": 636,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c",
+   "note": "open (DIFF 17, cause 3): the test q->op == 59 is placed in front of its block, and the else-if block order, in the original (popt codemove)"
   },
-  "f5_7858": {
+  "degrees": {
    "orig": "5:7858",
    "size_orig": 102,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_78be": {
+  "mergevectors": {
    "orig": "5:78be",
    "size_orig": 250,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_79b8": {
+  "updatevector": {
    "orig": "5:79b8",
    "size_orig": 208,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c",
+   "note": "open (DIFF 19, cause 3): the block of the clearing is placed in front of the compare in the original (codemove); the swapped form q != s7154[*p] is the nearer one"
   },
   "f5_7a88": {
    "orig": "5:7a88",
