@@ -3998,12 +3998,14 @@
    "file": "lpind2.c",
    "note": "open (DIFF 29, same count): the list walk `x = x->next` while x->next: the original loops with the test at the bottom entered by a jump (test, body, test), ours tests rr0 first and stores x; while and for(;;) forms give the same"
   },
-  "f5_6502": {
+  "insrtlpdef": {
    "orig": "5:6502",
    "size_orig": 274,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 2): cause 2: `and r6,#ADDR` after the lda of a = q->c"
   },
   "f5_6614": {
    "orig": "5:6614",

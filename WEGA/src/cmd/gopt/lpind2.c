@@ -474,3 +474,35 @@ struct nd *n;
 		}
 	}
 }
+
+extern int a0f0;
+extern struct dl *alloclpdef();
+
+/* the result of q is moved to a new temporary: a move quad is inserted behind q and made a loop definition (name guessed) */
+struct quad *
+insrtlpdef(q, blk)
+struct quad *q;
+int blk;
+{
+	struct quad *nq;
+	struct qa a, b, c;
+
+	if (q->op == 34 && q->next->op == 13)
+		q = q->next;
+	a = q->c;
+	denorm(&q->c);
+	b.b2 = 3;
+	b.w4 = s000e++;
+	a0ee++;
+	b.w0 = a.w0;
+	q->c = b;
+	normop(&q->c);
+	c.b2 = 0;
+	nq = insertquad(60, &b, &c, &a, q);
+	a0f0 = 1;
+	alloclpdef(nq, blk);
+	nq->f3 = 0;
+	nq->f7 = 0;
+	nq->f4 = 0;
+	return nq;
+}
