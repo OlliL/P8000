@@ -39,7 +39,9 @@ extern int ndefs;
 extern int *srchdef();
 #define MASK(p)	((struct quad *)((long)(p) & ~1L))
 extern void clrvec(), copyvec(), orvec();
-extern char *tmpvec;
+struct edge { int next; int blk; };
+extern struct edge *edges;
+extern unsigned *tmpv;
 extern char *livevecs, *reachvecs;
 extern struct quad **defs;
 extern struct quad *qhead;
@@ -1055,7 +1057,7 @@ initvecs(kind)
 	int i;
 
 	if (kind == 2) {
-		tmpvec = taballoc(dfwords * 2, 3);
+		tmpv = (unsigned *)taballoc(dfwords * 2, 3);
 		i = 0;
 		while (i < blkno) {
 			q = blks[i];
@@ -1067,7 +1069,7 @@ initvecs(kind)
 			i++;
 		}
 	} else if (kind == 1) {
-		tmpvec = taballoc(lvwords * 2, 2);
+		tmpv = (unsigned *)taballoc(lvwords * 2, 2);
 		for (i = 0; i < blkno; i++) {
 			q = blks[i];
 			if (idfn[i] >= 0) {
@@ -1076,4 +1078,45 @@ initvecs(kind)
 			}
 		}
 	}
+}
+
+/* the confluence: tmpv is the or of the vectors of the predecessors (kind 2: reach) or of the successors (kind 1: live) of the block b; name from the string */
+void
+confluence(kind, b)
+	int kind, b;
+{
+	long z;
+	struct lrec *r;
+	int e, pb;
+
+	if (s4d84 > 2)
+		printf("confluence(block=%d)\n", b);
+	if (kind == 2) {
+		clrvec(tmpv, dfwords);
+		e = blks[b]->a.w4;
+		if (s4d84 > 1)
+			printf("predecessors: ");
+		while (e >= 0) {
+			pb = edges[e].blk;
+			if (s4d84 > 2)
+				printf(" %d", pb);
+			r = *(struct lrec **)&blks[pb]->c;
+			orvec(tmpv, r->f8, dfwords);
+			e = edges[e].next;
+		}
+	} else if (kind == 1) {
+		clrvec(tmpv, lvwords);
+		e = blks[b]->b.w4;
+		if (s4d84 > 2)
+			printf("successors: ");
+		for (; e >= 0; e = edges[e].next) {
+			pb = edges[e].blk;
+			if (s4d84 > 2)
+				printf(" %d", pb);
+			r = *(struct lrec **)&blks[pb]->c;
+			orvec(tmpv, r->f4, lvwords);
+		}
+	}
+	if (s4d84 > 1)
+		printf("\n");
 }
