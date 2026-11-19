@@ -101,6 +101,19 @@ the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibc
 - stdio of the time (`src/head/oldv7/stdio.h`): `char *_ptr` and the V7 forms of getc/putc (`--_cnt >= 0` first); the stdio.h of the WEGA tree has
   `unsigned char *_ptr` and the other order.
 
+### v1c (02/83, libcisam)
+
+- v1 with a code generator of its own: the v1 switches plus `OLD_D3W` (at the end of a whole condition of `&&`, `||`, `!`
+  and behind a `?:` condition the idle word registers go back, pairs stay), `OLD_D2PW` (a register copy wanted in a busy
+  register goes to the other half of its pair), `OLD_D3Q` (behind the condition of a `?:` whose arm increments a pointer
+  the busy pairs are free: the old scodgen stores through the overwritten address pair), `OLD_D3H` (a register given out
+  inside a condition that holds the frame home of a parameter goes back at its end), `OLD_D2CT` (a copy takes over a
+  register given out in the last condition; segmented the address pair is taken as it is). Drivers `ccv1c`, `sccv1c`:
+  `/lib/v1/cparse`, `/lib/v1c/codgen`, `/lib/v1/popt` (segmented the s-passes).
+- Byte-identical: `/usr/lib/libcisam.a`, `slibcisam.a` (Library.SC 02/11/83), the only witness of all five switches;
+  `OLD_D3W` and the others under v1 change cp, ln, mv, rm, ld, strip, libl, libPW. Witnesses, counter-witnesses and what
+  was tried: `src/lib/libcisam/COMPILER.md`.
+
 ### v1q (before v1)
 
 - v1 with `OLD_D14Q` (codgen); cparse and popt are those of v1. Driver `ccv1q`, runs `/lib/v1/cparse`, `/lib/v1q/codgen`, `/lib/v1/popt`.
@@ -686,7 +699,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
 fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`
 of v1: allprint of `/lib/libl.a` and `/lib/slibl.a`; its limit "A more than one instruction": regex of `/usr/lib/libPW.a` and
-`slibPW.a` (`__cclass`). The D20 rows of libPW: the limit of `OLD_D20` (a block label named by more than 3 jumps moves). `OLD_D2CW` (D2) of v1: move of `/usr/lib/slibPW.a`. `OLD_D63` (D63) of v1: item of `/usr/lib/libcisam.a` and `slibcisam.a`.
+`slibPW.a` (`__cclass`). The D20 rows of libPW: the limit of `OLD_D20` (a block label named by more than 3 jumps moves). `OLD_D2CW` (D2) of v1: move of `/usr/lib/slibPW.a`. `OLD_D63` (D63) of v1: item of `/usr/lib/libcisam.a` and `slibcisam.a` (built by v1c).
 
 ## 5 Open questions
 

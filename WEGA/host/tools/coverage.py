@@ -160,7 +160,7 @@ def find_source(rel):
 def makefile_vars(path):
     v = {}
     try:
-        for l in open(path, errors='replace'):
+        for l in open(path, errors='replace').read().replace('\\\n', ' ').split('\n'):	# continuation lines joined
             m = re.match(r'^([A-Z0-9_]+)\s*=\s*(.*?)\s*$', l)
             if m and m.group(1) not in v:
                 v[m.group(1)] = m.group(2)
@@ -188,6 +188,16 @@ def tools(rel, src):
         return cc, lib
     d = os.path.join(SRC, src)
     mk = os.path.join(d, 'Makefile')
+    if src.startswith('lib/') and name.endswith('.o') and src.endswith('/csu'):
+        return 'as', 'n/a (object)'		# crt0.o, scrt0.o: $(AS) in src/lib/libc/Makefile
+    if src.startswith('lib/') and name.endswith('.a') and os.path.exists(mk):
+        # a library: the compiler variables of its Makefile (CC, CCV1, CCV1C ...; the segmented one: SCC, SCCV1 ...);
+        # an archive is not linked, so it has no libc
+        v = makefile_vars(mk)
+        ccs = [k for k in v if re.match(r'^CC(V\w*)?$', k)]
+        sccs = [k for k in v if re.match(r'^SCC(V\w*)?$', k)]
+        pick = sccs if name.startswith('slib') else ccs
+        return (os.path.basename(v[pick[0]]) if len(pick) == 1 else '-'), 'n/a (archive)'
     if os.path.isdir(d) and os.path.exists(mk):
         v = makefile_vars(mk)
         if 'CC' not in v and 'SCC' not in v:
@@ -207,6 +217,118 @@ def tools(rel, src):
     if src.startswith('lib/'):
         return '-', '-'
     return '-', '-'
+
+
+TOOLVARS = re.compile(r'^(CC|SCC|CCV\w*|SCCV\w*|AS|CAS)$')
+
+
+def mkrule(text, t):
+    m = re.search(r'^%s\s*:([^\n]*)\n((?:\t[^\n]*\n)*)' % re.escape(t), text, re.M)
+    return (m.group(1), m.group(2)) if m else None
+
+
+def find_rule(d, name):
+    """(text, vars, rule) of the Makefile below d that makes name (a versioned subdirectory first, then any)"""
+    mks = []
+    top = os.path.join(d, 'Makefile')
+    v = makefile_vars(top)
+    for key, val in v.items():		# COPYDISK_VERSION = 1.5
+        if key.endswith('_VERSION') and os.path.exists(os.path.join(d, val, 'Makefile')):
+            mks.append(os.path.join(d, val, 'Makefile'))
+    mks.append(top)
+    for root, dirs, fs in sorted(os.walk(d)):
+        if 'Makefile' in fs and root.count(os.sep) - d.count(os.sep) <= 2:
+            mks.append(os.path.join(root, 'Makefile'))
+    first = None
+    for mk in mks:
+        try:
+            text = open(mk, errors='replace').read()
+        except OSError:
+            continue
+        v = makefile_vars(mk)
+        if first is None:
+            first = (text, v, None, mk)
+        names = [name] + ['$(%s)' % k for k, val in v.items() if val == name]
+        for n in names:
+            r = mkrule(text, n)
+            if r:
+                return text, v, r, mk
+    return first if first else ('', {}, None, top)
+
+
+def complete(rel, k, src, cc, lib):
+    """compiler and libc of an exact binary or archive from the rules of its Makefile (the rule of the file, the rules of
+    its objects, the .c.o rule, the link line): an archive or an object is not linked; a program linked by cc or scc gets
+    their libc"""
+    d = os.path.join(SRC, src)
+    if not os.path.isdir(d):
+        return cc, lib
+    name = os.path.basename(rel)
+    text, v, r, mkpath = find_rule(d, name)
+
+    def tools_of(cmds):
+        t = []
+        for x in re.findall(r'\$\((\w+)\)', cmds):
+            if TOOLVARS.match(x) and x in v and os.path.basename(v[x].split()[0]) not in t:
+                t.append(os.path.basename(v[x].split()[0]))
+        return t
+    suffix = mkrule(text, '.c.o')
+
+    def obj_tools(o):
+        orule = mkrule(text, o)
+        t = tools_of(orule[1]) if orule else []
+        if not t and suffix:
+            t = tools_of(suffix[1])
+        if not t and 'CC' in v and os.path.exists(os.path.join(os.path.dirname(mkpath), o[:-2] + '.c')):
+            t = [os.path.basename(v['CC'].split()[0])]	# make's default rule: $(CC)
+        if not t and 'AS' in v and os.path.exists(os.path.join(os.path.dirname(mkpath), o[:-2] + '.s')):
+            t = [os.path.basename(v['AS'].split()[0])]
+        return t
+
+    def join(ts):
+        u = []
+        for t in ts:
+            for x in t:
+                if x not in u:
+                    u.append(x)
+        return ', '.join(u) if u else '-'
+    if name.endswith('.o'):
+        return join([obj_tools(name)]), 'n/a (object)'
+    if k == 'archive':
+        if cc == '-' or src.startswith('uts/'):
+            objs = re.findall(r'^([\w./]+\.o)\s*:', text, re.M)
+            cc = join([obj_tools(o) for o in objs] + ([tools_of(suffix[1])] if suffix else []))
+        return cc, 'n/a (archive)'
+    if r:
+        words = (r[0] + ' ' + r[1]).split()
+        if re.search(r'\$\((LD|SLD|GLD)\)', r[1]):	# linked by ld: the tools of its objects
+            deps = []
+            for w in words:
+                m = re.match(r'^\$\((\w+)\)$', w)
+                for x in (v.get(m.group(1), '').split() if m else [w]):
+                    if x.endswith('.o') and '/' not in x:
+                        deps.append(x)
+            if deps:
+                cc = join([obj_tools(o) for o in deps])
+        if lib == '-':
+            libs = []
+            for w in words:
+                m = re.match(r'^\$\((\w+)\)$', w)
+                for x in (v.get(m.group(1), '').split() if m else [w]):
+                    b = os.path.basename(x)
+                    if (b.endswith('.a') or re.match(r'^(LIB\w*|BOOTLIB)$', b)) and b not in libs:
+                        libs.append(b)
+            if libs:
+                lib = ', '.join(libs)
+            else:
+                drv = [x for x in re.findall(r'\$\((\w+)\)', r[1]) if x in ('CC', 'SCC')]
+                if drv:
+                    lib = 'slibc.a' if os.path.basename(v[drv[0]]).startswith('s') else 'libc.a'
+                elif re.search(r'\$\((LD|SLD|GLD)\)', r[1]):
+                    lib = 'none'
+    elif lib == '-' and 'CC' in v:
+        lib = 'libc.a'	# a program made by the default rule of cc
+    return cc, lib
 
 
 def dating():
@@ -265,6 +387,8 @@ def main():
             else:
                 status = 'todo'
         cc, lib = tools(rel, src if status in ('exact', 'partial') else None)
+        if status == 'exact' and (k.startswith('binary') or k == 'archive') and (cc == '-' or lib == '-') and src:
+            cc, lib = complete(rel, k, src, cc, lib)
         if status in ('sys3', 'todo') and k.startswith('binary'):
             cc, lib = dating().get(rel, '-') if False else dates.get(rel, '-'), '-'
         rows[sec].append((rel, k, ('src/' + src) if src and status in ('exact', 'partial') else (cand or '-'), status, cc, lib))
@@ -275,7 +399,7 @@ def main():
          'file of the WEGA 3.1 root and what is still to do. **exact**: a source exists and its product (or copy) is byte-identical;',
          '**partial**: a source exists, the product differs or is not built; **sys3**: no source, a file of the same name is in',
          'the System III tree (a start); **todo**: nothing yet. Compiler and libc: of the build, for a file without source the dating',
-         'of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout).', '',
+         'of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an object is not linked (libc n/a).', '',
          '| Directory | files | exact | partial | sys3 | todo |', '|---|---|---|---|---|---|']
     tot = [0] * 5
     for s in order:

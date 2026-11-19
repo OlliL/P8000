@@ -82,3 +82,7 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   v1 switches kept as diffs outside the tree (host/libcisam_switches: OLD_D3W, OLD_D2PW, OLD_D3Q, OLD_D3H, OLD_D2CT;
   owner 2026-11-18). Without them 34/38 lines left (findings.json); libcisam not in src/lib/Makefile yet (the owner
   decides how the switches go in). Not checked yet: the archives (arhdr, Library.SC) with the diffs applied.
+- 2026-11-19: the switches as the compiler v1c (ccv1c, sccv1c; host/OLDCC.md), libcisam in src/lib/Makefile (Makefile,
+  arhdr_*.s, Library_*.SC, mkar.sh, COMPILER.md): libcisam.a and slibcisam.a byte-identical, checkall ALL OK. coverage.py:
+  compiler and libc also for the libraries (the CCV*/SCCV* variables; libc n/a for an archive or object), the kernel
+  parts, standalone and the versioned subdirectories (the rules of the Makefile); no exact binary or archive without both.

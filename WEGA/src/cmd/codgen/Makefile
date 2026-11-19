@@ -19,7 +19,7 @@ CRT = ../../lib/libc/nonseg/crt
 NONSEG_OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3_codgen.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
 SEG_OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3_scodgen.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
 ALL_TARGETS = build/nonseg/codgen build/seg/scodgen
-OLD_TARGETS = build/nonsegv0/codgen build/nonsegv0p/codgen build/nonsegv1/codgen build/nonsegv1q/codgen build/nonsegv1r/codgen build/segv1/scodgen build/segvk/scodgen build/segvc/scodgen build/nonsegvl/codgen build/segvl/scodgen
+OLD_TARGETS = build/nonsegv0/codgen build/nonsegv0p/codgen build/nonsegv1/codgen build/nonsegv1q/codgen build/nonsegv1r/codgen build/segv1/scodgen build/nonsegv1c/codgen build/segv1c/scodgen build/segvk/scodgen build/segvc/scodgen build/nonsegvl/codgen build/segvl/scodgen
 
 all: $(ALL_TARGETS)
 
@@ -33,6 +33,8 @@ build/nonsegv0p/codgen: crt0.o FORCE
 	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V0P"
 build/nonsegv1/codgen: crt0.o FORCE
 	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63"
+build/nonsegv1c/codgen: crt0.o FORCE
+	cd build/nonsegv1c ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D3W -DOLD_D2PW -DOLD_D3Q -DOLD_D3H -DOLD_D2CT"
 build/nonsegv1q/codgen: crt0.o FORCE
 	cd build/nonsegv1q ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q"
 build/nonsegv1r/codgen: crt0.o FORCE
@@ -42,6 +44,8 @@ build/seg/scodgen: crt0.o FORCE
 	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
 build/segv1/scodgen: crt0.o FORCE
 	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D24 -DOLD_D2CW"
+build/segv1c/scodgen: crt0.o FORCE
+	cd build/segv1c ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3 -DOLD_D61 -DOLD_D62 -DOLD_D63 -DOLD_D3W -DOLD_D2PW -DOLD_D3Q -DOLD_D3H -DOLD_D2CT -DOLD_D24 -DOLD_D2CW"
 
 build/segvc/scodgen: crt0.o FORCE
 	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_VC"
@@ -75,6 +79,9 @@ oldinstall: $(OLD_TARGETS)
 		cp build/nonseg$$v/codgen $(PREFIX)/lib/$$v/codgen ; \
 	done
 	cp build/segv1/scodgen $(PREFIX)/lib/v1/scodgen
+	[ -d $(PREFIX)/lib/v1c ] || mkdir $(PREFIX)/lib/v1c
+	cp build/nonsegv1c/codgen $(PREFIX)/lib/v1c/codgen
+	cp build/segv1c/scodgen $(PREFIX)/lib/v1c/scodgen
 	[ -d $(PREFIX)/lib/vk ] || mkdir $(PREFIX)/lib/vk
 	cp build/segvk/scodgen $(PREFIX)/lib/vk/scodgen
 	[ -d $(PREFIX)/lib/vc ] || mkdir $(PREFIX)/lib/vc

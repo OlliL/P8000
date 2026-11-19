@@ -7,7 +7,7 @@ many of them as the WEGA root has (WEGA=dir names the root; OLDROOT the old comp
   2. the source of each member, from System III (tmp/sys3/usr/src/lib/NAME), else 2.11BSD (usr.lib/NAME), else 4.4BSD-Lite
      (usr/src/lib/NAME; BSD=dir names the directory of both trees): STEM.c or .s (STEM: the member without .o, and without
      the .s of a segmented member such as main.s.o); a member without one is named (it needs a source by hand, or is skipped);
-  3. per member every compiler of its kind (nonsegmented: cc, ccv1, ccv1q, ccv1r, ccv0, ccv0p, ccvl; segmented: scc, sccv1,
+  3. per member every compiler of its kind (nonsegmented: cc, ccv1, ccv1c, ccv1q, ccv1r, ccv0, ccv0p, ccvl; segmented: scc, sccv1, sccv1c,
      sccvk, sccvl, sccvc), with and without -O, with the guest's headers and with the stdio.h of src/head/oldv7 and
      src/head/oldcptr: the object against the member (EXACT, or the bytes that differ); the best one is reported;
   4. src/lib/NAME/ after the pattern of src/lib/libl: the sources and the headers of their tree (.h, .ext; copied unchanged; an
@@ -50,8 +50,8 @@ def roots(name):
         out.append(own)
     return out
 EMU = os.path.join(W, 'host', 'z8k-emu', 'z8k-emu')
-NONSEG = [('cc', ROOT), ('ccv1', OLD), ('ccv1q', OLD), ('ccv1r', OLD), ('ccv0', OLD), ('ccv0p', OLD), ('ccvl', OLD)]
-SEG = [('scc', ROOT), ('sccv1', OLD), ('sccvk', OLD), ('sccvl', OLD), ('sccvc', OLD)]
+NONSEG = [('cc', ROOT), ('ccv1', OLD), ('ccv1c', OLD), ('ccv1q', OLD), ('ccv1r', OLD), ('ccv0', OLD), ('ccv0p', OLD), ('ccvl', OLD)]
+SEG = [('scc', ROOT), ('sccv1', OLD), ('sccv1c', OLD), ('sccvk', OLD), ('sccvl', OLD), ('sccvc', OLD)]
 INCLUDES = ('.h', '.ext')		# the files a source of the library includes from its own directory
 HEADERS = [('guest', None), ('oldv7', 'src/head/oldv7'), ('oldcptr', 'src/head/oldcptr')]
 

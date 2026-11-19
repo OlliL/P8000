@@ -854,6 +854,45 @@ prcook(cookie)
 	printf(" [%%%0.2x]", cookie);
 }
 
+#ifdef OLD_D3Q
+/* OLD_D3Q: does the tree p hold a ++ or -- of a pointer */
+static int
+d3qincr(p)
+	register NODE *p;
+{
+	register int t;
+
+	if ((p->in.op == INCR || p->in.op == DECR) && (p->in.type & 0x30) == 0x10)
+		return 1;
+	t = optype(p->in.op);
+	if (t == BITYPE && d3qincr(p->in.right))
+		return 1;
+	if (t != LTYPE)
+		return d3qincr(p->in.left);
+	return 0;
+}
+#endif
+
+#ifdef OLD_D3W
+static int d3depth;	/* nesting of &&, || and ! in cbranch */
+
+/* OLD_D3W (libcisam, under OLD_D3): at the end of a whole condition of &&, || and ! the idle word registers go back,
+   pairs stay; inside the condition they keep their contents (src/lib/libcisam/COMPILER.md) */
+static void
+d3words()
+{
+	register struct rs *n, *next;
+
+	for (n = rsuse; n; n = next) {
+		next = n->next;
+		if (n->busy > 0 || n->kind == 6)
+			continue;
+		if (n->cls == 2)
+			rsreturn(n->cls, n->reg);
+	}
+}
+#endif
+
 /* generate code for p; cook says in which form the result is wanted */
 void
 order(p, cook)
@@ -942,6 +981,22 @@ again:
 		goto cleanup;
 	case QUEST:
 		cbranch(p1, -1, m = getlab());
+#ifdef OLD_D3W
+		if (d3depth == 0)
+			d3words();
+#endif
+#ifdef OLD_D3Q
+		if (d3qincr(p2)) {	/* OLD_D3Q (libcisam): behind the condition of a ?: whose arm increments a
+					   pointer the scratch pairs are free, also a busy one (src/lib/libcisam/COMPILER.md) */
+			register struct rs *n, *next;
+
+			for (n = rsuse; n; n = next) {
+				next = n->next;
+				if (n->cls == 3 && n->kind != 6 && n->reg < 8 && n->busy > 0)
+					rsreturn(n->cls, n->reg);
+			}
+		}
+#endif
 #ifdef OLD_D14Q
 		if (cookie == INTEMP_ && p->in.type != 6 && p->in.type != 7) {
 			long t = freeparm(szty(p->in.type)) / 8;
@@ -1363,11 +1418,58 @@ stoarg(p, calltype)
 	}
 }
 
+
 /* evaluate p for the truth value and jump to true or false; a label < 0 means to fall through */
 int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE, FLT, FLE };	/* 0x274 */
 
+#ifdef OLD_D3H
+static void cbranch1();
+extern struct sym *fpsym1, *fpsym2;
+int d3hdepth;	/* OLD_D3H (libcisam): cbranch nesting; allo3.c marks (0x2000) the registers it gives out meanwhile.
+			   At the end of a whole condition an idle register given out inside it that holds the frame home of
+			   a parameter goes back (src/lib/libcisam/COMPILER.md) */
+
+/* OLD_D3H: does the node hold the frame home of a parameter */
+static int
+d3hparm(n)
+	register struct rs *n;
+{
+	register int i;
+
+	if (n->sym == 0 || (n->sym != fpsym1 && n->sym != fpsym2))
+		return 0;
+	for (i = 0; i < nparmtab; i++)
+		if (parmtab[i].sym && parmtab[i].sym->soffset / 8 == n->off)
+			return 1;
+	return 0;
+}
+
 void
 cbranch(p, true, false)
+	NODE *p;
+	int true, false;
+{
+	register struct rs *n, *next;
+
+	if (d3hdepth == 0)
+		for (n = rsuse; n; n = n->next)
+			n->flags &= ~0x2000;
+	d3hdepth++;
+	cbranch1(p, true, false);
+	if (--d3hdepth == 0)
+		for (n = rsuse; n; n = next) {
+			next = n->next;
+			if (n->cls <= 3 && n->busy <= 0 && n->kind != 6 && n->reg < 8 && (n->flags & 0x2000) && d3hparm(n))
+				rsreturn(n->cls, n->reg);
+		}
+}
+
+static void
+cbranch1(p, true, false)
+#else
+void
+cbranch(p, true, false)
+#endif
 	register NODE *p;
 	int true, false;
 {
@@ -1431,12 +1533,19 @@ cbranch(p, true, false)
 		reclaim(p, 0, 0);
 		return;
 	case ANDAND:
+#ifdef OLD_D3W
+		d3depth++;
+#endif
 		lab = false < 0 ? getlab() : false;
 		cbranch(p->in.left, -1, lab);
 		cbranch(p->in.right, true, false);
 		if (false < 0)
 			deflab(lab);
 		p->in.op = FREE;
+#ifdef OLD_D3W
+		if (--d3depth == 0)
+			d3words();
+#endif
 #ifndef OLD_D3
 #ifdef OLD_D3K
 		rfreeall(2);	/* v0: a parameter stays known in its register */
@@ -1446,12 +1555,19 @@ cbranch(p, true, false)
 #endif
 		return;
 	case OROR:
+#ifdef OLD_D3W
+		d3depth++;
+#endif
 		lab = true < 0 ? getlab() : true;
 		cbranch(p->in.left, lab, -1);
 		cbranch(p->in.right, true, false);
 		if (true < 0)
 			deflab(lab);
 		p->in.op = FREE;
+#ifdef OLD_D3W
+		if (--d3depth == 0)
+			d3words();
+#endif
 #ifndef OLD_D3
 #ifdef OLD_D3K
 		rfreeall(2);	/* v0: a parameter stays known in its register */
@@ -1480,8 +1596,15 @@ cbranch(p, true, false)
 		p->in.op = FREE;
 		return;
 	case NOT:
+#ifdef OLD_D3W
+		d3depth++;
+#endif
 		cbranch(p->in.left, false, true);
 		p->in.op = FREE;
+#ifdef OLD_D3W
+		if (--d3depth == 0)
+			d3words();
+#endif
 		return;
 	isfalse:
 		if (false >= 0)

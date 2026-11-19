@@ -1,6 +1,6 @@
 {
- "schema": "members: name -> file, status nonsegmented (ccv1 -O) and segmented (sccv1 -O), note",
- "compiler": "v1 (02/11/83) with OLD_D63 (in the tree). The rest needs five more v1 switches, as diffs outside the tree (owner 2026-11-18): host/libcisam_switches/ALL.diff (OLD_D3W, OLD_D2PW, OLD_D3Q, OLD_D3H, OLD_D2CT); with them every member of libcisam.a and slibcisam.a is byte-identical (2026-11-19). Without them: 34/38 lines (audit, btree nonseg, item, open nonseg, supp nonseg).",
+ "schema": "members: name -> file, status nonsegmented (ccv1c -O) and segmented (sccv1c -O), note",
+ "compiler": "v1c (ccv1c, sccv1c): v1 with OLD_D63 and the libcisam switches OLD_D3W, OLD_D2PW, OLD_D3Q, OLD_D3H, OLD_D2CT (src/lib/libcisam/COMPILER.md, host/OLDCC.md v1c). Both archives byte-identical (checkall 2026-11-19).",
  "binary": "/usr/lib/libcisam.a, /usr/lib/slibcisam.a",
  "members": {
   "isdef.o": {
@@ -47,9 +47,9 @@
   },
   "supp.o": {
    "file": "supp.c",
-   "status_nonseg": "open: 4 lines",
+   "status_nonseg": "exact",
    "status_seg": "exact",
-   "note": "freefile: the three `close` take r6, r3, r6 in the original (v1 r3, r3, r6): OLD_D3H (the frame home of fp loaded in the condition goes back at its end) in host/libcisam_switches."
+   "note": "freefile: the three `close` take r6, r3, r6 in the original (v1 r3, r3, r6): OLD_D3H (the frame home of fp loaded in the condition goes back at its end)."
   },
   "read.o": {
    "file": "read.c",
@@ -59,26 +59,26 @@
   },
   "audit.o": {
    "file": "audit.c",
-   "status_nonseg": "open: 4 lines",
-   "status_seg": "open: 4 lines",
-   "note": "isaudit AUDSTOP, close(filep->f_audfd): nonsegmented the original takes r3 for the value (v1 r6), segmented it loads into r7 through rr4 directly (v1 copies). OLD_D2CT (with OLD_D3H) in host/libcisam_switches."
+   "status_nonseg": "exact",
+   "status_seg": "exact",
+   "note": "isaudit AUDSTOP, close(filep->f_audfd): nonsegmented the original takes r3 for the value (v1 r6), segmented it loads into r7 through rr4 directly (v1 copies). OLD_D2CT (with OLD_D3H)."
   },
   "open.o": {
    "file": "open.c",
-   "status_nonseg": "open: 10 lines",
+   "status_nonseg": "exact",
    "status_seg": "exact",
-   "note": "isopen: the magic read as `(char)*(unsigned char *)dictp` and `(char)((unsigned char *)dictp)[1]` (the cast makes v1 load dictp again, as the original). Nonsegmented open: isexit takes rr2 for `filep->f_fileid` behind `!(openp->o_mode & ISEXCLLOCK)` and r3 for the ?: of isstat2 (the original frees the word register at the end of the condition, segmented it keeps the pair). Forms tried: host/OLDCC_LOG.md. OLD_D3W (host/libcisam_switches) makes it exact."
+   "note": "isopen: the magic read as `(char)*(unsigned char *)dictp` and `(char)((unsigned char *)dictp)[1]` (the cast makes v1 load dictp again, as the original). Nonsegmented open: isexit takes rr2 for `filep->f_fileid` behind `!(openp->o_mode & ISEXCLLOCK)` and r3 for the ?: of isstat2 (the original frees the word register at the end of the condition, segmented it keeps the pair). Forms tried: host/OLDCC_LOG.md. OLD_D3W makes it exact."
   },
   "btree.o": {
    "file": "btree.c",
-   "status_nonseg": "open: 12 lines",
+   "status_nonseg": "exact",
    "status_seg": "exact",
-   "note": "btdelitem: `bad:` inside the error branch. Nonsegmented open: btsearch `openp->o_flags |= 020` behind `r == 0 && mode == 2 && bp->bf_level == 0` takes r2 (bp) as free in the original, v1 keeps it (OLD_D3); segmented the original keeps the pair. No source form found; OLD_D3W (host/libcisam_switches) makes it exact."
+   "note": "btdelitem: `bad:` inside the error branch. Nonsegmented open: btsearch `openp->o_flags |= 020` behind `r == 0 && mode == 2 && bp->bf_level == 0` takes r2 (bp) as free in the original, v1 keeps it (OLD_D3); segmented the original keeps the pair. No source form found; OLD_D3W makes it exact."
   },
   "item.o": {
    "file": "item.c",
-   "status_nonseg": "open: 4 lines",
-   "status_seg": "open: 34 lines",
+   "status_nonseg": "exact",
+   "status_seg": "exact",
    "note": "itcompare FLOATTYPE: OLD_D63. itpress: the leading compression loop as a goto loop; `(int)it_dupnum` for stint; `i = ...;` in front of its test. Nonsegmented open: `bycmpr(..., kp->k_len)` copies kp into r4 in the original (v1 r2): OLD_D2PW. Segmented open: itunpack `it_leadcnt`/`it_trailcnt = ... ? *p++ & 0377 : 0` stores through rr2 after the arm loaded the old p into rr2 (a bug of the old scodgen: the value goes into the buffer): OLD_D3Q; itpress takes rr2 (kp from its frame home) as free behind `if (kp->k_flags & TCOMPRESS)` and `if (kp->k_flags & ISDUPS)`: OLD_D3H."
   },
   "build.o": {

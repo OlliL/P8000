@@ -1538,3 +1538,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - Result: the sources of today plus host/libcisam_switches/ALL.diff (OLD_D3W, OLD_D2PW, OLD_D3Q, OLD_D3H, OLD_D2CT):
   all 14 members of libcisam.a and slibcisam.a byte-identical (cmp of the objects). Each switch is needed (one left
   out: OLD_D3W btree 12/0 and open 10/0; OLD_D2PW item 4/0; OLD_D3Q item 0/24; OLD_D2CT audit 4/4).
+- Owner 2026-11-19: the five switches go into the tree as the compiler v1c (ccv1c, sccv1c; codgen build/nonsegv1c,
+  scodgen build/segv1c), the descriptions to src/lib/libcisam/COMPILER.md, the diffs (host/libcisam_switches) removed.
+  libcisam into src/lib/Makefile (ccv1c/sccv1c -O, Library_libcisam.SC and Library_slibcisam.SC differ in the check-out
+  times; arhdr and mkar.sh from libsetup.py). Both archives byte-identical (cmp) in a scratch build.

@@ -36,6 +36,9 @@ extern void recl2();
 extern void rmove();
 extern struct rs *rsfree;
 extern void rsreturn();
+#ifdef OLD_D3H
+extern int d3hdepth;
+#endif
 extern struct rs *rsuse;
 extern void rwprint();
 extern int rwtab[][2];
@@ -494,6 +497,29 @@ allocreg(p, cookie)
 	if (r == -1)
 		r = getreg(cls, want, 0x1000, p->in.sname);
 #else
+#ifdef OLD_D2PW
+	/* OLD_D2PW (libcisam): the copy of a register that is wanted in a busy register goes into the other half of that
+	   pair when the half is idle and holds a name, not a parameter (src/lib/libcisam/COMPILER.md) */
+	if (p->in.op == 96 && cls == 2 && want >= 0 && want < 8) {
+		register struct rs *q;
+
+		for (q = rsuse; q; q = q->next)
+			if (q->cls == 2 && q->reg == want && q->busy > 0)
+				break;
+		if (q) {
+			for (q = rsuse; q; q = q->next)
+				if (q->cls == 2 && q->reg == (want ^ 1) && q->busy <= 0 && q->kind != 6 && q->sym &&
+				    q->sym->sclass != 9)
+					break;
+			if (q) {
+				rsreturn(2, want ^ 1);
+				r = getreg(cls, want ^ 1, 0x1000, p->in.sname);
+				if (r != -1)
+					goto d2pw;
+			}
+		}
+	}
+#endif
 #ifdef OLD_D2CW
 	/* v1 (segmented): the copy of a word of a register variable pair (`(int)x` of a pointer in rr12) holds no name
 	   (libPW move: the byte behind it takes r2 again) */
@@ -508,6 +534,52 @@ allocreg(p, cookie)
 		if (r == -1)
 			cerror("register jam");
 	}
+#ifdef OLD_D2PW
+d2pw:
+#endif
+#ifdef OLD_D2CT
+#ifdef SEG
+	/* OLD_D2CT (libcisam, segmented; needs OLD_D3H): the copy of a pair that holds a name and was given out in the last
+	   condition into the pair of a wanted odd word register: the pair itself is taken, no copy
+	   (src/lib/libcisam/COMPILER.md) */
+	if (p->in.op == 96 && cls == 3 && want >= 0 && want < 8 && (want & 1) && p->tn.rval >= 0 && p->tn.rval < 8 && !(p->tn.rval & 1)) {
+		register struct rs *q;
+
+		for (q = rsuse; q; q = q->next)
+			if (q->cls == 3 && q->reg == p->tn.rval)
+				break;
+		if (q && q->sym && q->sym->sclass != 9 && q->busy == 1 && q->kind != 6 && (q->flags & 0x2000)) {
+			if (r != -1 && r != p->tn.rval)
+				rsreturn(3, r);
+			r = p->tn.rval;
+			q->busy++;
+		}
+	}
+#endif
+	/* OLD_D2CT (needs OLD_D3H): the copy into the wanted register of a scratch word that holds a name (not a parameter)
+	   and was given out in the last condition: the name goes with the copy, the source register is free */
+	if (p->in.op == 96 && cls == 2 && want >= 0 && r == want && p->tn.rval >= 0 && p->tn.rval < 8 && p->tn.rval != r) {
+		register struct rs *q;
+
+		for (q = rsuse; q; q = q->next)
+			if (q->cls == 2 && q->reg == p->tn.rval)
+				break;
+		if (q && q->sym && q->sym->sclass != 9 && q->busy == 1 && q->kind != 6 && (q->flags & 0x2000)) {
+			q->sym = 0;
+			q->busy = 0;
+			rsreturn(2, p->tn.rval);
+		}
+	}
+#endif
+#ifdef OLD_D3H
+	if (d3hdepth > 0) {	/* OLD_D3H: given out inside a condition */
+		register struct rs *q;
+
+		for (q = rsuse; q; q = q->next)
+			if (q->reg == r && q->cls == cls)
+				q->flags |= 0x2000;
+	}
+#endif
 	return r;
 }
 

@@ -40,7 +40,7 @@ chmod +x $d/wrun
 	echo 'done'
 } > $d/strip
 chmod +x $d/strip
-for t in sccv1 sccvk sccvc sccvl ccv1 ccv1q ccv1r ccv0 ccv0p ccvl; do
+for t in sccv1 sccv1c sccvk sccvc sccvl ccv1 ccv1c ccv1q ccv1r ccv0 ccv0p ccvl; do
 	printf '#!/bin/sh\nexec %s -r %s /bin/%s "$@"\n' $emu $old $t > $d/$t
 	chmod +x $d/$t
 done

@@ -1,7 +1,7 @@
 # cc and scc, the drivers. cc.c is the source of both: scc is cc.c compiled with -DSCC.
 #
 #   make              build/nonseg/cc, build/seg/scc
-#   make old          the drivers of the old compilers in build/nonsegVER, build/segv1 (sccv1)
+#   make old          the drivers of the old compilers in build/nonsegVER, build/segv1 (sccv1), build/segv1c (sccv1c)
 #   make install PREFIX=dir, make oldinstall PREFIX=dir (dir/bin/ccVER, sccv1)
 #   make clean
 
@@ -16,7 +16,7 @@ CRT0 = /lib/crt0.o
 NONSEG_OBJS = cc.o
 SEG_OBJS = cc.o
 ALL_TARGETS = build/nonseg/cc build/seg/scc
-OLD_TARGETS = build/nonsegv0/cc build/nonsegv0p/cc build/nonsegv1/cc build/nonsegv1q/cc build/nonsegv1r/cc build/segv1/scc build/segvk/scc build/segvc/scc build/nonsegvl/cc build/segvl/scc
+OLD_TARGETS = build/nonsegv0/cc build/nonsegv0p/cc build/nonsegv1/cc build/nonsegv1q/cc build/nonsegv1r/cc build/nonsegv1c/cc build/segv1/scc build/segv1c/scc build/segvk/scc build/segvc/scc build/nonsegvl/cc build/segvl/scc
 
 all: $(ALL_TARGETS)
 
@@ -34,11 +34,15 @@ build/nonsegv1q/cc: FORCE
 	cd build/nonsegv1q ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V1Q"
 build/nonsegv1r/cc: FORCE
 	cd build/nonsegv1r ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V1R"
+build/nonsegv1c/cc: FORCE
+	cd build/nonsegv1c ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V1C"
 
 build/seg/scc: FORCE
 	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scc CFLAGS="$(CFLAGS) -DSCC"
 build/segv1/scc: FORCE
 	cd build/segv1 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSCC -DOLD_V1"
+build/segv1c/scc: FORCE
+	cd build/segv1c ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSCC -DOLD_V1C"
 
 build/segvc/scc: FORCE
 	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSCC -DOLD_VC"
@@ -66,10 +70,11 @@ install: $(ALL_TARGETS)
 	$(STRIP) $(PREFIX)/bin/scc
 
 oldinstall: $(OLD_TARGETS)
-	for v in v0 v0p v1 v1q v1r; do \
+	for v in v0 v0p v1 v1q v1r v1c; do \
 		cp build/nonseg$$v/cc $(PREFIX)/bin/cc$$v ; \
 	done
 	cp build/segv1/scc $(PREFIX)/bin/sccv1
+	cp build/segv1c/scc $(PREFIX)/bin/sccv1c
 	cp build/segvk/scc $(PREFIX)/bin/sccvk
 	cp build/segvc/scc $(PREFIX)/bin/sccvc
 	cp build/nonsegvl/cc $(PREFIX)/bin/ccvl
