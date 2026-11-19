@@ -2861,7 +2861,7 @@
    "file": "live2.c",
    "note": "name guessed"
   },
-  "f4_ed82": {
+  "initvecs": {
    "orig": "4:ed82",
    "size_orig": 294,
    "status": "open",

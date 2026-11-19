@@ -38,7 +38,8 @@ extern struct quad **defs;
 extern int ndefs;
 extern int *srchdef();
 #define MASK(p)	((struct quad *)((long)(p) & ~1L))
-extern void clrvec();
+extern void clrvec(), copyvec(), orvec();
+extern char *tmpvec;
 extern char *livevecs, *reachvecs;
 extern struct quad **defs;
 extern struct quad *qhead;
@@ -1040,6 +1041,39 @@ initreach()
 			prvec(r->f14, 2, 2);
 			prvec(r->f10, 1, 2);
 			printf("\n");
+		}
+	}
+}
+
+/* the vectors in, out: the copies of the gen vectors (kind 2: reach, 1: live); a work vector tmpvec (name guessed) */
+void
+initvecs(kind)
+	int kind;
+{
+	struct quad *q;
+	struct lrec *r;
+	int i;
+
+	if (kind == 2) {
+		tmpvec = taballoc(dfwords * 2, 3);
+		i = 0;
+		while (i < blkno) {
+			q = blks[i];
+			if (idfn[i] >= 0) {
+				r = *(struct lrec **)&q->c;
+				clrvec(r->f18, dfwords);
+				copyvec(r->f8, r->f14, dfwords);
+			}
+			i++;
+		}
+	} else if (kind == 1) {
+		tmpvec = taballoc(lvwords * 2, 2);
+		for (i = 0; i < blkno; i++) {
+			q = blks[i];
+			if (idfn[i] >= 0) {
+				r = *(struct lrec **)&q->c;
+				copyvec(r->f4, r->f14, lvwords);
+			}
 		}
 	}
 }
