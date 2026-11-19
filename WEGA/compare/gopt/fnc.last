@@ -16,5 +16,11 @@
 "fndparm": "DIFF 14 (object 50 instructions, original 49)",
 "checkops": "DIFF 25 (object 269 instructions, original 265)",
 "almap": "OK",
-"addaffect": "DIFF 3 (object 272 instructions, original 272)"
+"addaffect": "DIFF 3 (object 272 instructions, original 272)",
+"initaffect": "DIFF 11 (object 130 instructions, original 130)",
+"alalloc": "OK",
+"alret": "OK",
+"chkallist": "OK",
+"initallist": "DIFF 2 (object 52 instructions, original 53)",
+"addallist": "DIFF 2 (object 43 instructions, original 44)"
 }

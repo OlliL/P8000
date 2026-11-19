@@ -20,6 +20,7 @@ extern int matw, affdim;
 struct aln { int x0; struct aln *next; struct aln *link; };	/* a node of the alias lists (guessed; link: 6, the list of the lists) */
 extern struct aln *alfree, *allist, *alcur, *alast;
 extern int ndist, nlist;
+extern struct { int pos; int y[4]; } *rtab;	/* a table of 10 byte entries (guessed) */
 extern int almap();
 extern struct sym *symtab;
 extern char ascii[];
@@ -887,4 +888,88 @@ addallist(v)
 	alast->x0 = v;
 	alast->next = 0;
 	nlist++;
+}
+
+/* the lists of the aliased variables (debug; name guessed) */
+void
+pralvars()
+{
+	struct aln *p, *q;
+
+	p = allist;
+	printf("aliased variables:\n");
+	for (; p != 0; p = p->link) {
+		putchar('\n');
+		q = p->next;
+		printf("\n%s\t", ascii + symtab[altab[p->x0]].nameoff);
+		for (; q != 0; q = q->next)
+			printf(" %s", ascii + symtab[altab[q->x0]].nameoff);
+	}
+	putchar('\n');
+}
+
+/* the alias lists (one per variable: the variables its row of the affect matrix names) are built from the matrix; name guessed */
+void
+mkallist()
+{
+	int i, j;
+
+	nlist = 0;
+	ndist = 0;
+	alcur = 0;
+	alast = 0;
+	alfree = 0;
+	for (i = 0; i < affdim; i++) {
+		initallist(i);
+		for (j = 0; j < affdim; j++)
+			if (testbit(affect, i, j, matw))
+				addallist(j);
+	}
+	if (alcur->next != alast)
+		chkallist();
+	if (aflag)
+		pralvars();
+}
+
+/* the alias list of the operand ot (2: a, 1: c, else b) of the quad q; 0 when it has none */
+struct aln *
+checkalias(q, ot)
+	struct quad *q;
+	int ot;
+{
+	int pos;
+	struct aln *n;
+
+	if (aflag > 3)
+		printf("// checkalias opndtype = %d\n", ot);
+	if (ot == 2) {
+		if (q->a.b2 == 8)
+			pos = rtab[q->a.w4].pos;
+		else if (q->op == 3)
+			pos = almap(&q->a, 3);
+		else if (q->op == 0x18 || q->op == 0x1e)
+			pos = almap(&q->a, 0x18);
+		else
+			pos = almap(&q->a, 0x2f);
+	} else if (ot == 1) {
+		if (q->c.b2 == 8)
+			pos = rtab[q->c.w4].pos;
+		else
+			pos = almap(&q->c, 0x2f);
+	} else {
+		if (q->b.b2 == 8)
+			pos = rtab[q->b.w4].pos;
+		else
+			pos = almap(&q->b, 0x2f);
+	}
+	if (pos == -1)
+		return 0;
+	for (n = allist; n != 0; n = n->link)
+		if (pos == n->x0)
+			break;
+	if (n == 0)
+		return 0;
+	if (aflag > 3)
+		printf("checkalias, returning %s\n", ascii + symtab[altab[n->x0]].nameoff);
+	return n->next;
 }

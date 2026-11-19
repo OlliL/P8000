@@ -1913,26 +1913,32 @@
    "file": "alias2.c",
    "note": "open (DIFF 2, 2 attempts incl. unsigned x0): after the word store alcur->x0 = v (alast->x0 in addallist) the original loads the global pointer again (ldl rr2,..) before the next store, ours keeps rr2; the rest equal. The same cause in both: a cache of the pointer after a word store through it (phase B). The goto-free form is plain."
   },
-  "f4_8d16": {
+  "pralvars": {
    "orig": "4:8d16",
    "size_orig": 288,
    "status": "open",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "open (DIFF 2): after q = p->next the original keeps p in rr2 for p->x0, ours loads it again (the reverse of initallist: a cache kept over a store to a local, dropped over a store through a pointer in the original); putchar is the macro; name guessed"
   },
-  "f4_8e36": {
+  "mkallist": {
    "orig": "4:8e36",
    "size_orig": 158,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "name guessed (the alias lists from the rows of the affect matrix)"
   },
-  "f4_8ed4": {
+  "checkalias": {
    "orig": "4:8ed4",
    "size_orig": 398,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "checkalias(q, ot): the first parameter is the pointer (rr6, ot in r5); rtab (0xb9c) is a pointer to 10 byte entries (guessed)"
   },
   "f4_9062": {
    "orig": "4:9062",
