@@ -4191,12 +4191,14 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_8198": {
+  "savecolors": {
    "orig": "5:8198",
    "size_orig": 872,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c",
+   "note": "open (DIFF 7, cause 2): `and r6,#ADDR` after lda in the four struct arguments (q->c); one jp instead of jr (layout). Names of the two result pointers and of the callees are guesses"
   },
   "f5_8500": {
    "orig": "5:8500",

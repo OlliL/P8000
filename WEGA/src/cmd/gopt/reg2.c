@@ -31,6 +31,12 @@ extern struct quad **s7154;
 extern int *srchdef();
 extern int tstlbit(), testbit();
 extern void clrlbit(), setlbit(), setbit();
+extern int s70ea;
+extern char *a10a;
+extern struct quad *fn5_9892();
+extern int fn5_992e(), addpreheader();
+extern char *fn5_9020(), *fn5_8500(), *fn5_8640();
+extern void fn5_8ba8(), fn5_8838(), fn5_89ca(), prgraph();
 extern void clrbit(), fn5_964c(), restoredges(), rmnode();
 extern int findnode();
 extern int werror();
@@ -38,7 +44,7 @@ extern int pickcolor(), findnode();
 extern void restoredges();
 extern void clrmat(), orvec(), mergevectors(), updatevector();
 extern struct gn *setedges();
-extern void colorgraph();
+extern void colorgraph(), savecolors();
 extern int fn5_91fc(), fn5_9372();
 #define QF(q, o)	(*(unsigned **)(*(char **)((char *)(q) + 6) + (o)))
 extern void propnd();
@@ -48,7 +54,7 @@ extern struct gnn *a11a;
 extern char *taballoc();
 extern int notlive(), fn5_9adc();
 extern void mergevectors(), updatevector(), degrees();
-extern void prquad(), prvec(), include(), buildgraph(), colorgraph(), fn5_8198(), fn5_9698();
+extern void prquad(), prvec(), include(), buildgraph(), colorgraph(), savecolors(), fn5_9698();
 extern void clearflags(), livevars(), reachdefs(), prquads(), ebbopt(), clearblocks(), marklpblocks();
 
 extern void marklps(), symflags(), chkcalls(), assignreg();
@@ -200,7 +206,7 @@ int flag;
 			printf("// graph after coloring\n");
 			fn5_9698();
 		}
-		fn5_8198();
+		savecolors();
 		if (s4d90) {
 			printf("// quads after register allocation\n");
 			prquads();
@@ -570,4 +576,66 @@ rmnode()
 			--best->cnt;
 		}
 	}
+}
+
+/* the colored temporaries get their registers and the save/restore code (name guessed) */
+void
+savecolors()
+{
+	struct gn *n;
+	struct quad *q;
+	char *r, *r2;
+	int i, f, blk, x1, x2;
+	struct quad *hdr;
+
+	a10a = taballoc(s70ea * 2, 0);
+	for (n = a11e; n != 0; n = n->link) {
+		if (n->x12 <= 0)
+			continue;
+		for (i = 0; i < a116; i++) {
+			if (GF(i, 0, int) != n->row)
+				continue;
+			q = GF(i, 2, struct quad *);
+			f = 0;
+			if (QHREC(blks[GF(i, 6, int)])->w12) {
+				if (s4d90 > 2) {
+					prquad(q);
+					printf("before calling getheader, block = %d\n", GF(i, 6, int));
+				}
+				hdr = fn5_9892(GF(i, 6, int));
+				blk = addpreheader(hdr, 1);
+				f = 1;
+			}
+			if (f && !notlive(q, QHREC(blks[blk])->f0)) {
+				if (s4d90 > 4)
+					printf("// inloop = %x\n", QHREC(blks[GF(i, 6, int)])->w12);
+				r = fn5_9020(blk, &x1);
+				r = fn5_8500(n->x12, q->c, x1, r);
+				r2 = fn5_9020(GF(i, 6, int), &x2);
+				if (!fn5_992e(&GF(i, 0, int), r, r2))
+					continue;
+				fn5_8640(n->x12, q->c, blk, r);
+			} else {
+				r = fn5_9020(GF(i, 6, int), &x1);
+				r = fn5_8500(n->x12, q->c, x1, r);
+				if (f)
+					continue;
+				if (!fn5_992e(&GF(i, 0, int), r, r))
+					continue;
+				fn5_8640(n->x12, q->c, x1, r);
+			}
+		}
+	}
+	if (s4d90) {
+		printf("// quads before propagation\n");
+		prquads();
+		prgraph();
+	}
+	fn5_8ba8();
+	if (s4d90) {
+		printf("// quads before addsavequads\n");
+		prquads();
+	}
+	fn5_8838();
+	fn5_89ca();
 }
