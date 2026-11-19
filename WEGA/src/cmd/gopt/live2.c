@@ -32,7 +32,7 @@ extern int tstlbit();
 struct lrec { unsigned *f0, *f4, *f8, *fc, *f10, *f14, *f18; };	/* the bit vectors of a block: 28 bytes, stored in the header quad at 6 (guessed) */
 extern int lvwords, dfwords, s4d86;
 extern void fnec68();
-extern char *livevecs;
+extern char *livevecs, *reachvecs;
 extern struct quad **defs;
 extern struct quad *qhead;
 extern void prquad(), prqflags();
@@ -685,4 +685,106 @@ initlive()
 			printf("\n");
 		}
 	}
+}
+
+/* the reach vectors of all blocks that are in the dominator numbering (name from the string) */
+void
+allocreachvecs()
+{
+	int i;
+	struct quad *q;
+
+	if (s4d84 > 2)
+		printf("allocreachvecs()\n");
+	for (i = 0; i < blkno; i++) {
+		q = blks[i];
+		if (idfn[i] >= 0)
+			allocvec(q, 2, 6);
+	}
+	reachvecs = taballoc(0, 3);
+	for (i = 0; i < blkno; i++) {
+		q = blks[i];
+		if (idfn[i] >= 0)
+			allocvec(q, 2, 7);
+	}
+}
+
+/* 1 when the operand pw of the quad p and the operand qw of the quad q are the same operand (name from the strings) */
+int
+sameopnd(p, q, pw, qw)
+	struct quad *p, *q;
+	int pw, qw;
+{
+	struct aln *a1;
+	int t1, t2, v1, v2;
+	char *pn, *qn;
+
+	if (s4d84 > 5) {
+		switch (pw) {
+		case 1:
+			pn = "RSLT";
+			break;
+		case 2:
+			pn = "OP1";
+			break;
+		case 3:
+			pn = "OP2";
+			break;
+		}
+		switch (qw) {
+		case 1:
+			qn = "RSLT";
+			break;
+		case 2:
+			qn = "OP1";
+			break;
+		case 3:
+			qn = "OP2";
+			break;
+		}
+		printf("// sameopnd(), pop=%s, qop=%s\n", pn, qn);
+		printf("//\tp = ");
+		prquad(p);
+		printf("\n//\tq = ");
+		prquad(q);
+		printf("\n");
+	}
+	switch (pw) {
+	case 2:
+		t1 = p->a.b2;
+		v1 = p->a.w4;
+		break;
+	case 3:
+		t1 = p->b.b2;
+		v1 = p->b.w4;
+		break;
+	case 1:
+		t1 = p->c.b2;
+		v1 = p->c.w4;
+		break;
+	}
+	switch (qw) {
+	case 2:
+		t2 = q->a.b2;
+		v2 = q->a.w4;
+		break;
+	case 3:
+		t2 = q->b.b2;
+		v2 = q->b.w4;
+		break;
+	case 1:
+		t2 = q->c.b2;
+		v2 = q->c.w4;
+		break;
+	}
+	if (t2 == t1 && v1 == v2)
+		return 1;
+	if ((t1 == 4 || t1 == 8) && (t2 == 4 || t2 == 8)) {
+		a1 = checkalias(q, qw);
+		if (a1 != 0 && (long)(checkalias(p, pw) == a1))
+			return 1;
+	}
+	if (s4d84 > 5)
+		printf("sameopnd, returning FALSE\n");
+	return 0;
 }
