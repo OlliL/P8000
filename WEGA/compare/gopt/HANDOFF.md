@@ -1,8 +1,26 @@
 # gopt: state for the next session (read this, then compare/gopt/FINDINGS.md only where needed)
 
-Rebuild of /lib/gopt (segmented, code in segments 4 and 5, no source known), increment 160 (host/increments/160-programs.md; the log up to 2026-11-19 is at the end of
-150-libraries.md, new entries go to 160-programs.md). Compiler by measurement: sccvc (host/OLDCC.md); a function is "masked" when `fnc.py` finds it equal (segment numbers and
-addresses masked), `exact` only after the link and `segcmp.py` (not tried yet).
+GOAL: /lib/gopt (segmented, code in segments 4 and 5, no source known) rebuilt from C source, byte-identical to the original after the link
+(`segcmp.py` exact, then `bincmp`). Increment 160 (host/increments/160-programs.md; new log entries go there). Compiler by measurement: sccvc
+(host/OLDCC.md). A function is "masked" when `fnc.py` finds it equal (addresses masked), "exact" only after the link.
+NO STOP RULE: work without a context limit and without stopping after a function or a module until gopt is byte-identical; commit often
+(no pushes, only branch `toolchain`), keep this file, findings.json and the log current as you go. Ask the owner only for a decision that is
+really his (the ladder below answers most questions). Rules of the project: CLAUDE.md (German in conversation, English in git).
+
+## Priority ladder for every DIFF (strict order; go down only when the step above is really hopeless)
+1. SOURCE FORMS (highest priority, applies before everything else): try other C forms of the same function (statement order, `if` chains vs
+   `switch`, `a = a | x` vs `|=`, temporaries, `register`, parameter order and types, declaration order, goto, comma, pointer vs index form,
+   the form of the pcc source in mip/ of sys3 and the unix archive). The old compiler is right until proven otherwise; the original source
+   was written by people for this compiler. Use `host/recon/srctry.py FILE FUNC < variants` (it tries variants against the original). Many
+   variants, not six: only when the forms are really exhausted (also the forms of the neighbouring functions) go to 2.
+2. An EXISTING SWITCH of the current compiler (sccvc and its passes) that is changed or newly combined, only so that no other user of the
+   compiler loses its byte identity (run `host/recon/oldcc.sh matrix check`, sccvc: `MATRIX_VER=vc host/recon/oldcc.sh matrix check`, and
+   follow what it says; host/OLDCC_SWITCHES.md is generated).
+3. A NEW SWITCH in the existing compiler, again without changing the output of any other user (same check).
+4. A NEW COMPILER with its own switches: the worst option (we build ever more C compilers that may never have existed; probably only the
+   right source form was not found yet). Only with the owner's decision.
+Never change compiler passes or checkall/nightly checks without asking (CLAUDE.md). Record every difference in the quirks table of
+host/KNOWLEDGE.md and host/OLDCC.md (D1..D23), notes on a function only in findings.json.
 
 Tools (use these, they print little; never dump disassemblies or diffs into the conversation):
 - `RECON_PROG=gopt python3 host/recon/fnc.py FILE.c FUNC ...`  one line per function, the diff is in tmp/tmp/fnc/FUNC.diff
@@ -11,26 +29,45 @@ Tools (use these, they print little; never dump disassemblies or diffs into the 
 - `host/recon/modmap.py`, `own_table_seg2.py`, `rename.py [-m]`, `findings.py gopt` (writes FINDINGS.md), `make -C src/cmd/gopt part`
 - findings.json: after every function its name, file, status and note (the scratch helper upd.py is gone with the session: edit the
   json by a small script or `rename.py`).
+- `RECON_PROG=gopt python3 host/recon/segcmp.py -m [-v NAME] src/cmd/gopt/gopt`  the linked program against the original per function (the work list: the
+  named functions with DIFF)
+- `host/recon/datastr.py [-s | -b LO HI [SHIFT]]`  the data segment by strings: differing strings, shifts, bytes
+- `host/recon/dataname.py OBJ.o ...`  the data address of every global from the code; `srcorder.py FILE.c` puts the functions in address order
+- `host/recon/srctry.py FILE FUNC < variants`  source variants against the original; `regdiff.py`, `odisc.py -s/-o`, `rename.py [-m]` (careful:
+  a key that exists is overwritten: check the findings entries afterwards)
+- build: `cd src/cmd/gopt; PATH=/home/olivleh1/git/P8000/tmp/tmp/wbin:$PATH make gopt` (wbin holds the wrappers of cas, sld, sccvc ... under z8k-emu; fnc.py takes src/cmd/gopt/FILE.c; findings.json key `note`, not `notes`; a case block has "note": "case block of NAME" (or "tail of NAME")).
 
-Written: comm2, rdr2, reader2, debug2, wrtil2 (complete), quads2 (not 4:1c88), alias2 (4:6c0a..4:7368, 4:79d0..4:7bb6, checkops 4:7c68..4:8074 DIFF 25, almap 4:8074 masked, addaffect 4:831e..4:87e6 DIFF 3, initaffect DIFF 11, alalloc/alret/chkallist masked, initallist/addallist DIFF 2, pralvars DIFF 2, mkallist/checkalias/aliasmat/praldim/ind masked, affsize DIFF 3 ...; alias2.c is complete except the placeholder fn5_2bca of segment 5).
-Open in the written functions: see the notes; recurring causes ((6) the register cache of a base address (compress, eval, linkp, dominators: the original loads the base of a global array each time, ours keeps it in rr4/r3); tool: python3 regdiff.py (scratchpad) removes register names from tmp/tmp/fnc/FUNC.diff and shows what is structurally different; (5) is seen again in rmlabels, deledge: cause 1 and 5 together make most of the DIFFs of flow2; (5): the register cache of a pointer in the original is kept over a store to a local (pralvars: ours loads again) and dropped over a store through the pointer (initallist, addallist: ours keeps it); DIFF 2 each; parameters: the first is the one in rr6/r7, a pointer after an int skips r6, see checkalias): (1) the original reloads a parameter at the first use after the
-prologue / behind a conditional jump (operand, cmwalk, prquad, mkleaf, mktree, main, checkops); (2) `and r0,#%7f00` after `lda` in a struct
-assignment to a local only in ours (genquads, fndparm, tmpsearch, checkops): phase B, fnc.py hides it; (3) popt block order of a switch
-(mktree, genquads); (4) displacement form `ld r2,rr2(#4)` after p = p->next (writeil, tmpsearch).
+## State (2026-11-19)
+`make gopt` LINKS. Layout: gdata.o first (bss in address order: bss exact, 42496 bytes), reader2 .. live2 (-Mt4), ebbo2 lpinv2 lpind2 (-Mt5), beta2
+(-Mt4: first fit into the end of segment 4), reg2 alias2b (-Mt5), libc slibc-v12.a. Link flags `-i -e start -Md7 -Mb8 -Ms63`. Functions of every module
+are in the address order of the original. Sizes: code seg 4 64768 (orig 65534), seg 5 51200 (orig 50432), data 31232 = orig (all strings of the modules
+equal in text; the variables with initialisers are in their modules, the mfile2.h SCCS line comes from gopt.h after the module line), bss exact.
+segcmp -m: 203 same, 107 named functions with DIFF (the rest are unnamed case-block pieces). The files of the original are in
+tmp/wega31_root/lib/gopt; the old SCCS lines tell the module of every function (modmap.py).
+Recurring causes of the function DIFFs ((1)-(9) in the notes of findings.json): (1) parameter copy (`ld r3,r7; mult rr2`) vs in place; (2) `and r6,#ADDR` after
+`lda` in struct arguments (fnc.py hides it); (3) popt block order of a switch; (4) displacement form after p = p->next; (5) register cache of a pointer
+(the original reloads a global pointer, ours keeps it in rr2: addallist, initallist, canopt, denorm ...); (6) rr4/rr6 temp pair; (7) betatbl index+offset
+order (macro BBIT); (8) tail merging (ours keeps the last copy, the original the first); (9) top-test vs bottom-test loops. Known fixes of the form: `a[x] = a[x] | (1<<n)`
+instead of `|=`; `printf("\0")` for a two-byte string; `if (c) return 1; return 0;` instead of `return c;`.
 
-Next (in this order):
-1. Segment 4 is written up to 4:f5fe (reader2 .. live2; the rest of seg. 4 is libc). Segment 5 modules: ebbo2.c, lpinv2.c, lpind2.c (all written), reg2.c (37, 11400), alias2b.c; the libc members from 5:9bc0 (item 4). Write ebbo2.c first (the SCCS line ebbo2.c 1.8); the Makefile `part` needs ebbo2.o then (OBJS5 = ebbo2.o ...).
-2. (fn5_2bca of alias2 and the segment 5 functions: with the libc part, item 4.)
-3. quads2.c 4:1c88 (floating compare, EPU words in the listing); then flow2 (4:927e ..), dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2,
-   reg2 (data order, host/recon/modmap.py gave the module of every function in findings.json).
-4. the libc starts at 5:9bc0 (members of slibc; 4:f5fe..4:ff78 too); link: src/cmd/gopt/Makefile (sld, -Mt4/-Mt5), LIBC version open.
-
-## What we do now (the block for the next start message; the AI replaces it at the end of every session)
-
-TASK: `make gopt` (src/cmd/gopt; PATH = tmp/tmp/wbin; LIBC = slibc-v12.a) LINKS (2026-11-19). Layout: gdata.o first (generated by tmp/tmp/gen_gdata.py from host/recon/dataname.py: every global with its original data address; commons in address order give the bss of the original: 42496 bytes, equal), reader2 ... live2 (-Mt4), ebbo2 lpinv2 lpind2 (-Mt5), beta2 (-Mt4, first fit into the end of segment 4), reg2 alias2b gdata7.o (-Mt5), libc. Functions of every module are in the order of the original (host/recon/srcorder.py puts them in the address order and adds forward declarations). Link flags: -i -e start -Md7 -Mb8 -Ms63 (the original: no -z flag, no table entry for the stack, _stkseg = 63; -Ms63 gives 63 but a 5th table entry; -z gives 127 and flag 0x21: OPEN). Check: `RECON_PROG=gopt python3 host/recon/segcmp.py -m src/cmd/gopt/gopt` (same 203, differ 395 incl. 288 unnamed pieces; the 107 named DIFFs are the work list; `-v NAME` prints a diff). Sizes now: code seg 4 64768 (orig 65534), seg 5 51200 (orig 50432), data 31232 = orig (the strings of the modules compare equal in text: `host/recon/datastr.py` lists the differing strings, `-s` the shifts; the variables with initialisers are defined in their modules, mfile2.h SCCS line in gopt.h after the module line), bss exact. Open data differences: string ORDER in checkops (alias2.c: '//    NULL\n' comes after '// chkops: nonstandard' in the original: the fail block is textually later but popt moves it forward; tried), '(almap, symbol...' (alias2.c), 'notlive() = %s' before TRUE/FALSE (lpinv2.c), ebbo2.c: three extra zero words before the value table of the second switch at 0x5930 (a static of the original?), the jump tables of other modules; `host/recon/srctry.py FILE FUNC < variants` tries source variants. NEXT: (1) the 107 named DIFFs (one-line ones first: addallist, canopt, deltmplpdefs, denorm, initallist, insrtlpdef, insrtstmpmove, mkconstopnd, mkdomtree, mkhash, orderbl, pralvars; the causes are the known ones, HANDOFF causes 1-9); (2) libc: the members must land as in the original (fseek ftell rdwr fopen getw at the end of seg 4: -Mt4 before the library spills into segment 0, so first the code sizes must be exact), nullfn out of alias2b.c; (3) data of seg 7 (the module data in order, bincmp); (4) eqopnd DIFF 7, betainit DIFF 2; (5) the alignment to pcc mip (owner idea: names, variables, formatting equal to sys3/unix-archive mip where the code is the same; byte identity first; tool listing the similarity per function, one module per session, fnc.py -a unchanged after each change); (6) findings.json cleanup of the case blocks at 100 %.
+## TASK (work through in this order, without stopping)
+1. THE 107 NAMED DIFFs of `segcmp.py -m` (and the masked DIFFs of `fnc.py -a`): one-line ones first (addallist, canopt, deltmplpdefs, denorm, initallist,
+   insrtlpdef, insrtstmpmove, mkconstopnd, mkdomtree, mkhash, orderbl, pralvars), then the others by size; every one by the priority ladder above (source
+   forms first, many variants). Also betainit (DIFF 2: `t->fl = flag` misses `and r0,#0x0800`), eqopnd (DIFF 7: the original spills only b, uses rr4 as temp),
+   the open big ones (main/dotree/pr of reader2, genquads, operand, writeil, mktree, settmptable, setsymtable, fillindvar, indupdate, freelist, chkfamindvar, ...).
+2. LIBC AND STACK SEGMENT: when the code sizes are exact the libc members must land as in the original (fseek ftell rdwr fopen getw at the end of seg 4 by
+   first fit, the rest from 5:9bc0; `-Mt4` before the library spills into segment 0 as long as sizes differ); the order of the members of slibc-v12.a is a guess
+   (decided by the link compare); nullfn (5:9bbe, = __fltuse of fltioc) out of alias2b.c; the stack segment: the original has no -z flag (relflg 0x01), no table
+   entry for the stack and _stkseg = 63 (instruction bytes 3f); `-Ms63` gives 63 but a 5th table entry, `-z` gives 127 and the flag 0x21 (open: find the sld
+   option or the form that gives the header of the original; sld source: src/cmd/sld/ldm.c).
+3. DATA OF SEGMENT 7 BYTE BY BYTE (`datastr.py`, then `bincmp`): the string ORDER (checkops: '//    NULL\n' after '// chkops: nonstandard' in the original; '(almap, symbol'
+   in alias2.c; 'notlive() = %s' before TRUE/FALSE in lpinv2.c), ebbo2.c (three extra zero words before the value table of the second switch at 0x5930: a static of the original?),
+   the jump and value tables of every module, libc data (iob 7:779e, ctype 78b0, errno 79b2) of the members.
+4. LINK COMPARE: `segcmp.py` exact (no -m), header and segment table, then `bincmp` of the whole file; `make install`, checkall as for the other programs.
+After byte identity: (5) ALIGNMENT TO PCC/MIP (owner idea 2026-11-19): names, variable names, formatting equal to the mip sources of sys3 and the unix archive
+where the code is the same (a tool that lists the similarity per function, one module at a time, `fnc.py -a` and the link unchanged after each change); (6) findings.json
+cleanup (the case-block entries, at 100 %); (7) the whole-tree check.
 
 LIBC DECISION (owner 2026-11-19): at most a few C attempts per member (source forms of the same slibc source; sccvc -O -DSEG, old stdio.h), then a `.s` cut as in host/tools/oldslibc_cas.py (a gopt variant is to be written: two code segments 4 and 5, data seg 7 at image 0x1c4fe, bss seg 8). Own code ends at 4:fc3a: 4:f5fe..fc3a are gopt functions (sameopnd = operand compare, taballoc ...), NOT libc. Libc of seg 4: fseek fc3a (.s: 3 diffs of register choice), ftell fd9a (.s, 4 diffs), rdwr fe50 (C exact), fopen ff54 (C exact), getw ff78..fffe (C exact, 132 bytes, ends at the 64K border). Libc of seg 5 in order: fltioc 9bbe..a170 (includes the 2-byte ret of ffltioc, = nullfn of alias2b.c, to be moved; C 30 diffs), scanf a170 (C), doscan a264 (C 19 diffs), printf/fprintf/sprintf a94e/a9b0/aa06.. and doprnt ab06.. (.s, boundary to find via call targets: a94e x505 = printf, a9b0 x14, ab06 called from a98c a9e0 aa4e), ungetc b2ba (C), atof b326, ecvt b4ba (found 5:b4cc entry), pow10 b69c, filbuf b712, flsbuf b81e (oldslibc/flsbuf/0_3.c), endopen ba54 (C 9 diffs, .s), findiop bc00, cuexit bc32, cnvt bc3e, decimal bd58, length bdf6, a malloc-like member be20..c1b4 (916 bytes, entries be20 c0a4: .s), isatty c1b4, stty c1dc, strcat c218, strcpy c252, tolower c282, then the syscall stubs (shipped bytes) to c414 and the member at c414 (236 bytes, ends the segment? check), plus unknown small members (a8de..a94e 112 bytes, a1aa/a1ea? are inside scanf/doscan). The call-target table of the libc part (entry -> callers) can be rebuilt with the loop in this session: decode both code segments, collect `call <<seg>>addr`.
 
 LIBC CUT (2026-11-19): host/tools/oldslibc_gopt.py (`names`: symbol table harvested from the known members; `cut src/lib/oldslibc`: writes NAME/0_3.s) cut 14 members as assembler: fseek ftell fltioc doscan printf doprnt ecvt(b49e..b69c, entries _ecvt _fcvt __cvt) endopen malloc(+free, realloc) chmod creat open read write (the stubs are the older ones with a chkseg call); every one assembles by sccvc and equals the original text and data (relocated words masked). Wrong earlier guesses: ecvt is not the shipped one; the printf/doprnt boundary is aa8a (strout belongs to doprnt). Still to do: (1) the member list and ORDER of slibc-v12.a for gopt: seg 4: fseek ftell rdwr fopen getw; seg 5: fltioc scanf doscan printf doprnt ungetc atof ecvt pow10 filbuf flsbuf(0_3.c) endopen findiop __callex cuexit cnvt decimal length malloc isatty stty strcat strcpy tolower, the stubs (chmod access? close creat ioctl lseek mkseg open read sgbrk ssgbrk umask write chkseg cerror) and the data members (iob 7:779e, lastbuf, ctype 78b0, errno 79b2, deverr 79b4); the data of the C and shipped members comes from their objects; unknown: 5:c414 (236 bytes) and the tail after it, whether bit 31 of the address constants needs the shipped cas (as the other .s of oldslibc) or sccvc's assembler (decided by the link compare). (2) Makefile in src/lib/oldslibc: rules for NAME/0_3.o by cas, C members by sccvc -O -DSEG with -I../../head/oldv7. (3) link: gopt Makefile LIBC, then segcmp.py/bincmp. (4) move nullfn (5:9bbe = __fltuse of fltioc) out of alias2b.c: it is the first word of fltioc, not an own function.
-START: fnc.py -a ebbo2.c (16 of 20 OK); odisc.py -o clearblocks (RECON_PROG=gopt); case blocks of a function are set with "note": "case block of NAME" in findings.json (key `note`, not `notes`), then rename.py f5_XXXX NAME; fnc.py takes src/cmd/gopt/FILE.c.
-STOP WHEN: about 70% of the context is reached (a rough estimate is enough; `/context` shows it, or judge by the number of tool calls and file reads). Until then work through the TASK list without stopping after each function: write, check with fnc.py, commit, then take the next function in the list and the following ones of the same module (ebbo2.c, then lpinv2.c ...). Do not stop early after one block. At about 70%: update findings.json, this block and the increment log, commit, print the next start block, stop (the owner then runs /compact; an auto-compact is fine, the stand is in this file and git).
