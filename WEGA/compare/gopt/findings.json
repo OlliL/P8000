@@ -2284,63 +2284,63 @@
    "file": "dom2.c",
    "note": "name guessed (blocks of the list with a successor outside it); the two copies of the allocation of a node are in the original; nbl2 (7108) a counter"
   },
-  "f4_c026": {
+  "addhdrlist": {
    "orig": "4:c026",
    "size_orig": 576,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_c266": {
+  "traversefg": {
    "orig": "4:c266",
    "size_orig": 288,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_c386": {
+  "pushblk": {
    "orig": "4:c386",
    "size_orig": 94,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_c3e4": {
+  "checkloop": {
    "orig": "4:c3e4",
    "size_orig": 214,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_c4ba": {
+  "findloop": {
    "orig": "4:c4ba",
    "size_orig": 126,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_c538": {
+  "mkloops": {
    "orig": "4:c538",
    "size_orig": 108,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_c5a4": {
+  "domspace": {
    "orig": "4:c5a4",
    "size_orig": 108,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_c610": {
+  "prlstats": {
    "orig": "4:c610",
    "size_orig": 74,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_c65a": {
+  "domloops": {
    "orig": "4:c65a",
    "size_orig": 68,
    "status": "open",

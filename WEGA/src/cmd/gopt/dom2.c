@@ -18,12 +18,16 @@ extern void tabfree();
 extern int ndfs;
 struct dnode { struct dnode *next; struct dnode *down; int dblkno; };	/* the dominator tree: 10 bytes (guessed) */
 struct bl { struct bl *next; int blk; };		/* a list of blocks */
-struct loop { struct bl *bls; int hdr; struct loop *link; int x0[3]; int cnt; unsigned b15:1, b14:1, b13:1, b12:1; };	/* a loop: the blocks, the header block, the next loop (6 bytes at 6: guessed) */
+struct loop { struct bl *bls; int hdr; struct loop *link; struct bl *exits; int tail; int cnt; unsigned b15:1, b14:1, b13:1, b12:1, b11:1; };	/* a loop: the blocks, the header block, the next loop (6 bytes at 6: guessed) */
 extern struct dnode **darr;
 extern struct loop *loops;
 extern struct dnode *domroot;
 extern struct bl *pheaderlist, *looplist, *freebl;
-extern int nbl, nbl2;
+extern int nbl, nbl2, tailblk, nloops, hdrblk;
+extern int *stk;
+extern void pushblk();
+extern int s4d92, s0b5e, tabavail();
+extern void fn5_5298();
 extern int *bucket;
 extern struct edge *bent;
 extern int nbent;
@@ -483,4 +487,222 @@ exitblks(l)
 	if (s4d82)
 		printf("\n");
 	return r;
+}
+
+/* a loop record with the header h is entered in the sorted list of the loops (looplist is its list of blocks) */
+void
+addhdrlist(h)
+	int h;
+{
+	struct loop *p, *q, *n;
+	int f, d;
+
+	if (s4d82 > 1)
+		printf("addhdrlist(%d)\n", h);
+	n = (struct loop *)taballoc(20, 4);
+	f = 0;
+	if (s4d82 > 2) {
+		printf("looplist on entry:\n");
+		prlist(looplist);
+	}
+	d = idfn[h];
+	if (loops == 0) {
+		loops = n;
+		p = 0;
+	} else {
+		f = chkhdr(h);
+		q = p = loops;
+		while (p != 0) {
+			if (idfn[p->hdr] <= d)
+				break;
+			q = p;
+			p = p->link;
+			if (s4d82 > 2)
+				printf(" %d ", q->hdr);
+		}
+		if (p == q)
+			loops = n;
+		else
+			q->link = n;
+	}
+	n->link = p;
+	n->hdr = h;
+	n->tail = tailblk;
+	n->bls = looplist;
+	n->b12 = 1;
+	n->b11 = 0;
+	n->cnt = 0;
+	if (f & 2) {
+		n->b15 = 1;
+		n->b12 = 0;
+	} else
+		n->b15 = 0;
+	if (f & 1) {
+		n->b14 = 1;
+		n->b12 = 1;
+	} else
+		n->b14 = 0;
+	n->b13 = 0;
+	if (s4d82) {
+		if (s4d82 > 2) {
+			printf("looplist before exit computation:\n");
+			prlist(looplist);
+		}
+		printf("tail block  = %d\n", tailblk);
+		printf("\nloop header = %d, exits: ", h);
+	}
+	n->exits = exitblks(n->bls);
+	looplist = 0;
+	nloops++;
+	if (s4d82 > 1)
+		prlist(n->bls);
+}
+
+/* the blocks of the loop with the header hdrblk and the tail block tailblk: the flow graph is traversed backwards from the tail */
+void
+traversefg()
+{
+	int i, e, b;
+
+	if (s4d82 > 1)
+		printf("traversefg(), headerblk=%d, tailblk=%d\n", hdrblk, tailblk);
+	addblk(&looplist, hdrblk);
+	i = -1;
+	if (hdrblk != tailblk) {
+		pushblk(tailblk, &i);
+		while (i >= 0) {
+			if (s4d82 > 3)
+				printf("traversefg(): in while: i is %d\n", i);
+			b = stk[i];
+			i--;
+			for (e = blks[b]->a.w4; e >= 0; e = edges[e].next) {
+				if (s4d82 > 4)
+					printf("traversefg(): in inner while: pred = %d, its block is %d\n", e, edges[e].blk);
+				pushblk(edges[e].blk, &i);
+			}
+		}
+	}
+	addhdrlist(hdrblk);
+}
+
+/* the block b is put on the stack stk (index *ip) and into the loop list when it is not in it yet (name guessed) */
+void
+pushblk(b, ip)
+	int b;
+	int *ip;
+{
+	int x;
+	struct bl *p;
+
+	for (p = looplist; p != 0; p = p->next)
+		if (p->blk == b)
+			return;
+	stk[++*ip] = b;
+	addblk(&looplist, b);
+}
+
+/* a loop whose tail is the block b: the blocks that jump back to a header in pheaderlist (name from the string) */
+int
+checkloop(b)
+	int b;
+{
+	int pb, x, e;
+	struct bl *p;
+	int found;
+
+	if (s4d82 > 1)
+		printf("checkloop(%d)\n", b);
+	e = blks[b]->b.w4;
+	if (e < 0)
+		return 0;
+	found = 0;
+	while (e >= 0) {
+		pb = edges[e].blk;
+		for (p = pheaderlist; p != 0; p = p->next)
+			if (pb == p->blk) {
+				hdrblk = pb;
+				tailblk = b;
+				traversefg();
+				found = 1;
+			}
+		e = edges[e].next;
+	}
+	return found;
+}
+
+/* the loops below the node q of the dominator tree are found (name from the string) */
+void
+findloop(q)
+	struct dnode *q;
+{
+	if (s4d82 > 1)
+		printf("findloop(), p->dblkno=%d\n", q->dblkno);
+	for (q = q->down; q != 0; q = q->next) {
+		addblk(&pheaderlist, q->dblkno);
+		if (q->down != 0)
+			findloop(q);
+		checkloop(q->dblkno);
+		deletblk(&pheaderlist, q->dblkno);
+	}
+}
+
+/* the loops of the flow graph: the lists are cleared, the tree is traversed from its root (name guessed) */
+void
+mkloops()
+{
+	stk = (int *)taballoc(blkno + blkno, 4);
+	loops = 0;
+	pheaderlist = 0;
+	looplist = 0;
+	freebl = 0;
+	if (domroot != 0) {
+		addblk(&pheaderlist, domroot->dblkno);
+		findloop(domroot);
+		checkloop(domroot->dblkno);
+		if (s4d82)
+			prloops();
+	}
+}
+
+/* the table area for the dominators and the loops is made available (name guessed) */
+int
+domspace()
+{
+	int n, a, b, x, c;
+
+	n = blkno + 1;
+	a = n * 4 * 2;
+	b = n * 12 + n * 20 + n * 6;
+	c = n + n + n * 6 + n * 5 * 2;
+	return tabavail(a + b + c, 4);
+}
+
+/* the statistics of the loop analysis (debug; name guessed) */
+void
+prlstats()
+{
+	printf("//\n//Number of basic blocks \t\t= %d\n", blkno);
+	printf("//Number of basic blocks in loops \t= %d\n", nbl);
+	printf("//Number of loops \t\t\t= %d\n", nloops);
+	printf("//Number of loop exits \t\t\t= %d\n", nbl2);
+}
+
+/* the dominators and the loops (name guessed); 0 when there is no space */
+int
+domloops()
+{
+	if (!domspace())
+		return 0;
+	dominators();
+	mkdomtree();
+	nbl2 = 0;
+	nloops = 0;
+	nbl = 0;
+	mkloops();
+	if (s4d92)
+		prlstats();
+	if (s0b5e > 3) {
+		fn5_5298();
+		return 1;
+	}
 }

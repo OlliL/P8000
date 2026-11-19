@@ -28,5 +28,5 @@ Next (in this order):
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
 TASK: dom2.c: 4:c026 (576 bytes), 4:c266 (288), 4:c386 (94), 4:c3e4 (214), 4:c4ba (126), 4:c538 (108), 4:c5a4 (108), 4:c610 (74), 4:c65a (68, the end of dom2 / the start of init2).
-START: fnc.py -a dom2.c flow2.c (open there: compress, eval, linkp, delbucket, dominators, mkdomtree, addblk and the flow2 ones: all the register cache or cause 1); odisc.py -o f4_c026. The structs dnode, bl, loop (bit fields at 0x12), the globals loops, freebl, nbl, nbl2, pheaderlist, looplist, domroot, darr are in dom2.c (guessed).
+START: fnc.py -a dom2.c flow2.c (open there: compress, eval, linkp, delbucket, dominators, mkdomtree, addblk and the flow2 ones: all the register cache or cause 1); odisc.py -o addhdrlist. The structs dnode, bl, loop (bit fields at 0x12), the globals loops, freebl, nbl, nbl2, pheaderlist, looplist, domroot, darr are in dom2.c (guessed).
 STOP WHEN: 4:c65a is written and checked, or at 70% of the context.
