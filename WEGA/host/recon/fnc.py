@@ -52,7 +52,7 @@ def run(src, name):
     env = dict(os.environ, FNC_ROOT=os.environ.get('FNC_ROOT', os.path.join(CFG.REPO, '..', 'tmp', 'oldroot')),
                FNC_CC=os.environ.get('FNC_CC', '/bin/sccvc'), FNC_OLDV7='1',
                FNC_EXTRA=os.environ.get('FNC_EXTRA', ' '.join(f for f in os.listdir(CFG.SRCDIR) if f.startswith('ops_'))),
-               FNC_DROP=os.environ.get('FNC_DROP', ''), FNC_DROPRAW=os.environ.get('FNC_DROPRAW', r'^and\s+r0,#%7[Ff]00$'))
+               FNC_DROP=os.environ.get('FNC_DROP', ''), FNC_DROPRAW=os.environ.get('FNC_DROPRAW', ''))
     r = subprocess.run([sys.executable, os.path.join(HERE, 'fncheck.py'), dd, a, hi, name], env=env, capture_output=True, text=True)
     shutil.rmtree(td, ignore_errors=True)
     out = (r.stdout + r.stderr)

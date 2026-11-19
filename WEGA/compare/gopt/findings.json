@@ -3890,11 +3890,11 @@
   "insrtstmpmove": {
    "orig": "5:56cc",
    "size_orig": 404,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 2): cause 2: ours has `and r6,#ADDR` after the lda of the struct assignment a = q->c (fnc drops only `and r0,..`)"
+   "note": "masked with vc OLD_D24L (the address of a frame place by lda without the mask and #%7f00: struct copies and struct arguments)"
   },
   "moveindquad": {
    "orig": "5:5860",
@@ -3916,11 +3916,11 @@
   "insrtopstmp": {
    "orig": "5:5a86",
    "size_orig": 126,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 5): cause 2: `and r6,#ADDR` after the lda of every struct assignment (4 places), everything else equal"
+   "note": "masked with vc OLD_D24L (the address of a frame place by lda without the mask and #%7f00: struct copies and struct arguments)"
   },
   "f5_5b04": {
    "orig": "5:5b04",
@@ -3987,11 +3987,11 @@
   "insrtlpdef": {
    "orig": "5:6502",
    "size_orig": 274,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 2): cause 2: `and r6,#ADDR` after the lda of a = q->c"
+   "note": "masked with vc OLD_D24L (the address of a frame place by lda without the mask and #%7f00: struct copies and struct arguments)"
   },
   "deltmplpdefs": {
    "orig": "5:6614",
@@ -4172,11 +4172,11 @@
   "savecolors": {
    "orig": "5:8198",
    "size_orig": 872,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "reg2.c",
    "file": "reg2.c",
-   "note": "open (DIFF 7, cause 2): `and r6,#ADDR` after lda in the four struct arguments (q->c); one jp instead of jr (layout). Names of the two result pointers and of the callees are guesses"
+   "note": "masked with vc OLD_D24L (the address of a frame place by lda without the mask and #%7f00: struct copies and struct arguments)"
   },
   "addreg": {
    "orig": "5:8500",

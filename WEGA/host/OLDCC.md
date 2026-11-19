@@ -179,7 +179,7 @@ neutral on cas when added, alone and all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K` and `OLD_D3JL` (gopt; both neutral on cas);
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL` and `OLD_D24L` (gopt; all neutral on cas);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
   `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
 - spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S`, `OLD_D49`, `OLD_D50` and `OLD_D51` (v0p has no switch in popt).
@@ -301,6 +301,9 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   front of the label is a jump (the record `]` does not count), the parameters known at the jumps come back (tfree1, rmconv); of
   those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
   records are forgotten. With two jumps (buildtree, an `&&`) the original reloads.
+- vc `OLD_D24L` (local3.c, ZL): the address of a frame place (a local struct, the argument area at 0(fp)) is loaded by
+  `lda` without the mask `and rN,#%7f00`. /lib/gopt has 31 such lda (struct copies to a local, struct arguments), none with
+  the mask; sccvc masked all of them. Neutral on cas.
 - vc `OLD_D3JL` (comm3.c, under `OLD_D3J`): a parameter pair that comes back at a label gets the frame home (d3jmark) only
   when it is a long, not a pointer (in segmented code every pointer is a pair; the witness of d3jmark, codgen notoff, is a
   long of nonsegmented code). /lib/gopt canopt, denorm, islive: the frame slot of the pointer is reserved, rr6 is not stored.

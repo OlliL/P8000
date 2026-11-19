@@ -27,6 +27,7 @@
 #define OLD_D24		/* a long cast to a pointer is masked through a copy (with OLD_D25 of scparse): yylex, igetaddr of cas */
 #define OLD_D2S		/* a word in r3 widened to long takes the pair rr2 (allo3.c; cas symtype, one witness) */
 #define OLD_D2K		/* a store through a scratch register makes it forget its name (match; gopt: addallist, initallist) */
+#define OLD_D24L	/* lda of a frame place without the mask and #%7f00 (local3.c ZL; gopt: every struct copy to a local) */
 #define OLD_D3JL	/* OLD_D3J: a pointer parameter that comes back at a label gets no frame home, only a long (gopt: canopt, denorm) */
 #endif
 

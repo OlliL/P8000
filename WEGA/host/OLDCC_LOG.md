@@ -1572,4 +1572,8 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   Source forms tried before: register p, else, nested if, `return !(...)`, unused locals (the frame stays, the store too).
 - fnc.py dropped every `and r0,#ADDR` of our object (meant for `and r0,#%7f00` behind lda): the field masks of bitfield
   stores (betainit, addquad, insertquad, exprfind) showed as DIFF. FNC_DROPRAW (unmasked) drops only `#%7f00` now.
+- gopt, vc `OLD_D24L`: every `lda rrN,off(fp)` of /lib/gopt (31) has no `and rN,#%7f00` behind it; sccvc (ZL of local3.c)
+  masked each. The frame place: OREG of fp with no name, symtab0 or a `~` name (fpsym1, fpsym2). gopt 244 -> 248 OK
+  (insrtlpdef, insrtstmpmove, insrtopstmp, savecolors), nothing lost; matrix vc +0 on cas. fnc.py drops nothing by
+  default any more (FNC_DROPRAW was `and r0,#%7f00`, the same mask).
 
