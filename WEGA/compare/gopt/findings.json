@@ -1548,12 +1548,14 @@
    "file": "alias2.c",
    "note": "case block of setposition"
   },
-  "f4_7088": {
+  "aliasm": {
    "orig": "4:7088",
    "size_orig": 736,
    "status": "open",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "aliasm(): the alias analysis over the quads (collects the addressed variables B and the pointers A, then copies both lists into altab); name guessed (the debug text says 'quads before aliasm'). 191 instructions as in the original; open: (1) the block of the 0x3b case lies in front of the loop body in the original (popt code motion), (2) the shift of the type: srl in the original, ours sra: the type word of struct qa is probably unsigned (not changed yet: gopt.h, check the other functions first), (3) taballoc(nal * 2, 6) after nadr = nal: the original reuses r2 (ld r7,r2; add r7,r2); tried (nadr = nal) * 2, nal + nal, 2 * (..); placeholders still in the source: fn5_2bca, fn7c68"
   },
   "f4_7368": {
    "orig": "4:7368",

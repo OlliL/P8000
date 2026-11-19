@@ -24,6 +24,10 @@ extern int op70d8;
 extern void prquad();
 extern int cerror();
 extern int testbit();
+extern struct quad *fn5_2bca();
+extern int fn7c68();
+extern struct quad *fndcall();
+extern int fndparm();
 extern void setbit();
 
 /* bit j of the row i of the matrix m (rows of dim words) */
@@ -347,4 +351,63 @@ setposition(cls, p, X, Y)
 	default:
 		cerror("setposition: illegal operand\n");
 	}
+}
+
+/* the alias analysis: the variables that are addressed (the list of the addresses) and the pointers are collected from the quads */
+void
+aliasm()
+{
+	struct quad *q;
+	struct qa s;
+	int cls;
+	int A[512];
+	int B[512];
+	int i, n;
+
+	nptr = 1;
+	nadr = 1;
+	nal = 1;
+	altab = (int *)taballoc(2, 6);
+	*altab = 0;
+	A[0] = 0;
+	B[0] = 0;
+	pcur = q = qhead;
+	for (; q != 0; q = q->next) {
+		q = fndcall(q);
+		if (q == 0)
+			break;
+		if (q->op == 0x3b) {
+			pcur = fn5_2bca(q);
+			continue;
+		}
+		if (q->op == 0x2f) {
+			if (!fn7c68(q, 0))
+				continue;
+			cls = op70d8;
+			s = opnd70c8;
+			if (!fn7c68(q, 1))
+				continue;
+			setposition(cls, &s, B, A);
+			if (q->a.b2 == 1 || q->a.b2 == 7)
+				continue;
+			setposition(op70d8, &opnd70c8, B, A);
+		} else if (q->op == 0x34) {
+			if (q->a.b2 == 3 && fndparm(q))
+				setposition(0x34, &opnd70c8, B, A);
+			else if (q->a.b2 == 4 && (DECREF(q->a.w0) & 0x30) == 0x10)
+				setposition(0x18, &q->a, B, A);
+		}
+	}
+	n = nadr;
+	nadr = nal;
+	taballoc(nadr * 2, 6);
+	for (i = 0; i < n; i++)
+		altab[nal++] = B[i];
+	n = nptr;
+	nptr = nal;
+	taballoc(nal * 2, 6);
+	for (i = 0; i < n; i++)
+		altab[nal++] = A[i];
+	if (aflag)
+		pralias();
 }
