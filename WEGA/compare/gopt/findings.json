@@ -2619,7 +2619,7 @@
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_d408": {
+  "issym": {
    "orig": "4:d408",
    "size_orig": 36,
    "status": "open",
@@ -2631,21 +2631,27 @@
    "size_orig": 282,
    "status": "open",
    "kind": "candidate",
-   "module": "live2.c"
+   "module": "live2.c",
+   "note": "case block of issym",
+   "file": "live2.c"
   },
   "f4_d546": {
    "orig": "4:d546",
    "size_orig": 264,
    "status": "open",
    "kind": "candidate",
-   "module": "live2.c"
+   "module": "live2.c",
+   "note": "case block of issym",
+   "file": "live2.c"
   },
   "f4_d64e": {
    "orig": "4:d64e",
    "size_orig": 154,
    "status": "open",
    "kind": "candidate",
-   "module": "live2.c"
+   "module": "live2.c",
+   "note": "case block of issym",
+   "file": "live2.c"
   },
   "f4_d6e8": {
    "orig": "4:d6e8",

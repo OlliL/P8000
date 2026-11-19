@@ -337,3 +337,67 @@ marklpvar()
 		markall();
 	return 1;
 }
+
+/* the kind of the symbol of the operand flag of the quad q: 4 when its symbol is marked, 6 when its temporary is, else 0 (flag 1, 4, 5: the result c, 2: a, 3: b; name from the string) */
+int
+issym(q, flag)
+	struct quad *q;
+	int flag;
+{
+	int r, j;
+
+	r = 0;
+	switch (flag) {
+	case 1:
+	case 4:
+	case 5:
+		j = q->c.w4;
+		if (q->c.b2 == 4) {
+			if (symtab[j].sflags & 1)
+				r = 4;
+		} else if (q->c.b2 == 6) {
+			if (betatbl[j].bopt)
+				r = 6;
+		} else if (q->c.b2 == 8) {
+			if (q->op == 0x2f) {
+				if (symtab[betatbl[j].x1].sflags & 1)
+					r = 4;
+			} else if (betatbl[j].bopt)
+				r = 6;
+		}
+		break;
+	case 2:
+		j = q->a.w4;
+		if (q->a.b2 == 4) {
+			if (symtab[j].sflags & 1)
+				r = 4;
+		} else if (q->a.b2 == 6) {
+			if (betatbl[j].bopt)
+				r = 6;
+		} else if (q->a.b2 == 8) {
+			if (q->op == 0x18 || q->op == 0x1e) {
+				if (symtab[betatbl[j].x1].sflags & 1)
+					r = 4;
+			} else if (betatbl[j].bopt)
+				r = 6;
+		}
+		break;
+	case 3:
+		j = q->b.w4;
+		if (q->b.b2 == 4) {
+			if (symtab[j].sflags & 1)
+				r = 4;
+		} else if (q->b.b2 == 6 || q->b.b2 == 8) {
+			if (betatbl[j].bopt)
+				r = 6;
+		}
+		break;
+	default:
+		cerror("setsym: illegal flag");
+	}
+	if (s4d84 > 3) {
+		printf("// issym : q = %X, bit = %d, i=%d, j=%d\n", q, flag, r, j);
+		prquad(q);
+	}
+	return r;
+}
