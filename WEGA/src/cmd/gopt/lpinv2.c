@@ -1,0 +1,109 @@
+/*
+ * lpinv2.c - gopt: the loop invariant code motion (segment 5). Written from /lib/gopt (no source known); names guessed, the
+ * callees by the address (fnXXXX).
+ */
+#include "gopt.h"
+
+static char sccsid[] = "@[$]lpinv2.c\t1.10  03/04/83 15:58:16 Copr. 1981 87wega3.2.";
+
+struct bl { struct bl *next; int blk; };	/* a list of blocks */
+struct loop { struct bl *bls; int hdr; struct loop *link; struct bl *exits; int tail; int cnt; unsigned b15:1, b14:1, b13:1, b12:1, b11:1; };
+struct hrec { int x[7]; };	/* the record of a block that the header quad points to at 6 (guessed) */
+#define QHREC(q)	(*(struct hrec **)((char *)(q) + 6))
+extern struct quad **blks;
+extern int *idfn;
+struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };
+extern struct bt *betatbl;
+extern int blkno, s4d86;
+
+/* the loop number of every block is cleared (name from the debug output) */
+void
+clearblocks()
+{
+	int i;
+	struct hrec *p;
+
+	if (s4d86 > 3)
+		printf("clearblocks()\n");
+	for (i = 0; i < blkno; i++)
+		if (idfn[i] >= 0) {
+			p = QHREC(blks[i]);
+			p->x[6] = 0;
+		}
+}
+
+/* the blocks of the loop lp get the number n (name from the debug output) */
+void
+marklpblocks(lp, n)
+struct loop *lp;
+int n;
+{
+	int k;
+	struct hrec *h;
+	struct bl *b;
+
+	if (s4d86 > 3)
+		printf("marklpblocks(hdr=%d)\n", lp->hdr);
+	for (b = lp->bls; b != 0; b = b->next) {
+		h = QHREC(blks[b->blk]);
+		h->x[6] = n;
+	}
+}
+
+/* a store of the quad q (name guessed) */
+struct quad *
+qmkstore(q)
+struct quad *q;
+{
+	static struct quad tq;
+
+	if (q->op == 52 && q->a.b2 == 8) {
+		tq.op = 47;
+		tq.c = q->a;
+		return &tq;
+	}
+	return q;
+}
+
+struct dl { int x0; struct quad *q; char x6[18]; struct dl *next; };	/* a node of the list of the definitions (28 bytes, guessed) */
+extern struct dl *a0e0;
+extern int sameopnd();
+
+/* the node of the list a0e0 with the quad of the same operand as q; *flag is set when an operand of a node differs (name from the debug output) */
+struct dl *
+srchdflist(q, flag)
+struct quad *q;
+int *flag;
+{
+	struct dl *p;
+	struct quad *x;
+	int v10, v12, v14, v16;
+
+	if (s4d86 > 3)
+		printf("srchdflist()\n");
+	q = qmkstore(q);
+	p = a0e0;
+	v12 = (char)(q->c.b2 == 8);
+	v10 = v12 && q->op == 47 ? 1 : 0;
+	v14 = v12 && (q->op == 24 || q->op == 47 || q->op == 30);
+	v16 = v12 && (q->op != 24 && q->op != 47 && q->op != 30);
+	while (p != 0) {
+		x = qmkstore(p->q);
+		if (sameopnd(x, q, 1, 1)) {
+			if (v14 && !(x->op == 47 || x->op == 24 || x->op == 30))
+				goto next;
+			if (v16 && (x->op == 47 || x->op == 24 || x->op != 30))
+				goto next;
+			if (x->c.b2 == q->c.b2 && x->c.w4 == q->c.w4)
+				return p;
+			*flag = 1;
+		}
+		if (v10 && x->c.b2 == 8 && x->op == 47 && betatbl[q->c.w4].x1 == betatbl[x->c.w4].x1) {
+			if (x->c.b2 == q->c.b2 && x->c.w4 == q->c.w4)
+				return p;
+			*flag = 1;
+		}
+next:		p = p->next;
+	}
+	return 0;
+}

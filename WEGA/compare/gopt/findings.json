@@ -3550,28 +3550,31 @@
    "module": "ebbo2.c|lpinv2.c",
    "file": "ebbo2.c"
   },
-  "f5_2138": {
+  "clearblocks": {
    "orig": "5:2138",
    "size_orig": 108,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_21a4": {
+  "marklpblocks": {
    "orig": "5:21a4",
    "size_orig": 110,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_2212": {
+  "qmkstore": {
    "orig": "5:2212",
    "size_orig": 88,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_226a": {
+  "srchdflist": {
    "orig": "5:226a",
    "size_orig": 700,
    "status": "open",
