@@ -19,9 +19,9 @@ extern void tabfree(), prquads(), optflow();
 extern struct quad *qhead;
 extern struct quad *delquad(), *insertquad();
 extern int s4d88, maxblk, s70e6;
-extern void rmlabels(), fna198(), fna4fa(), fna9ac(), prstats(), fna66e(), delrun();
+extern void rmlabels(), rmjumps(), deledge(), rm_deadblks(), fna9ac(), prstats(), fna66e(), delrun();
 extern int blkempty();
-extern int s4d74;
+extern int s4d74, s4d76, s4d78;
 
 /* the number of the basic block of the label l in the table t */
 int
@@ -221,7 +221,7 @@ optflow()
 		printf("// after redundant labels are removed:\n");
 		prquads();
 	}
-	fna198(tab);
+	rmjumps(tab);
 	if (s4d88 > 4) {
 		printf("// after jumps are removed:\n");
 		prquads();
@@ -229,7 +229,7 @@ optflow()
 	for (q = qhead; q->op != 0x3b; q = q->next)
 		;
 	s70e6 = q->a.w0;
-	fna4fa();
+	rm_deadblks();
 	if (s4d88) {
 		if (s4d88 > 2) {
 			printf("// after dead blocks are removed: \n");
@@ -339,4 +339,116 @@ blkempty(q)
 		}
 	}
 	return 1;
+}
+
+/* blocks that only jump: the jumps to them are turned to the target, the block is removed; tab: the label of every block (name guessed) */
+void
+rmjumps(tab)
+	int *tab;
+{
+	int i, lbl, e, ok, flag, pb, lb2, k;
+	int *pp, *sp;
+	struct quad *p;
+
+	for (i = 0; i < blkno - 1; i++) {
+		if (blks[i] == 0)
+			continue;
+		lbl = jmplabel(blks[i]);
+		if (lbl == 0)
+			continue;
+		e = blks[i]->a.w4;
+		ok = 1;
+		for (; e >= 0; e = edges[e].next) {
+			flag = 0;
+			pb = edges[e].blk;
+			pp = &blks[edges[e].blk]->a.w4;
+			sp = &blks[edges[e].blk]->b.w4;
+			for (p = blks[edges[e].blk]->next; p->op != 0x3b; p = p->next) {
+				switch (p->op) {
+				case 0x1a:
+					p->a.w4 = lbl;
+					deledge(&blks[i]->a.w4, pb);
+					deledge(sp, i);
+					lb2 = blkof(lbl, tab);
+					addedge(sp, lb2);
+					addedge(&blks[lb2]->a.w4, pb);
+					flag = 1;
+					break;
+				case 0x1b:
+					if (p->next == blks[i] || (p->next->op == 6 && p->next->next == blks[i])) {
+						flag = 0;
+						break;
+					}
+					flag = 1;
+					p->b.w4 = lbl;
+					deledge(&blks[i]->a.w4, pb);
+					deledge(sp, i);
+					lb2 = blkof(lbl, tab);
+					addedge(sp, lb2);
+					addedge(&blks[lb2]->a.w4, pb);
+					break;
+				}
+			}
+			ok = ok && flag;
+		}
+		if (ok) {
+			delrun(blks[i]);
+			k = blkof(lbl, tab);
+			fna66e(i, k, 3);
+			s4d76++;
+			blks[i] = 0;
+			tab[i] = -1;
+		}
+	}
+}
+
+/* the block v is taken out of the edge list q (name guessed) */
+void
+deledge(q, v)
+	int *q;
+	int v;
+{
+	int x, prev;
+
+	if (*q < 0)
+		return;
+	x = *q;
+	if (edges[x].blk == v)
+		*q = edges[x].next;
+	else {
+		while (v != edges[x].blk) {
+			prev = x;
+			x = edges[x].next;
+			if (x < 0)
+				break;
+		}
+		if (x >= 0)
+			edges[prev].next = edges[x].next;
+	}
+}
+
+/* the blocks that nothing leads to (except the first one) are removed until there are none */
+void
+rm_deadblks()
+{
+	int i, x, again;
+	int *pp;
+
+	again = 1;
+	while (again) {
+		again = 0;
+		for (i = 0; i < blkno; i++) {
+			if (i == s70e6 || blks[i] == 0 || blks[i]->a.w4 >= 0)
+				continue;
+			if (s4d88 > 4 && blks[i] != 0)
+				printf("// rm_deadblks :blk(%d,%d,%d)\n", i, blks[i]->a.w4, blks[i]->b.w4);
+			for (x = blks[i]->b.w4; x >= 0; x = edges[x].next) {
+				again = 1;
+				deledge(&blks[edges[x].blk]->a.w4, i);
+			}
+			delrun(blks[i]);
+			s4d78++;
+			blks[i] = 0;
+		}
+	}
 }

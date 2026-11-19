@@ -2068,12 +2068,14 @@
    "file": "flow2.c",
    "note": "open (DIFF 4): the original keeps the address of the list entry in rr2 (no store to the parameter q), ours stores q = &edges[x].next; with edges[x].next = nedge++ (DIFF 18) worse; struct edge {next, blk} 4 bytes guessed"
   },
-  "f4_9b96": {
+  "deledge": {
    "orig": "4:9b96",
    "size_orig": 194,
    "status": "open",
    "kind": "proven",
-   "module": "flow2.c"
+   "module": "flow2.c",
+   "file": "flow2.c",
+   "note": "open (DIFF 7, 5 attempts): (1) the first compare edges[x].blk == v: the original loads blk and compares with v from the stack (cause 1: the parameter is loaded again at the first use), ours compares r5; (2) ours has no ldl rr4,rr6; ld r0,@rr2; ld @rr4,r0 for *q = edges[x].next (the original keeps q in rr6 and copies it; ours seems to share the store); the loop form while (v != edges[x].blk) matches the layout; name guessed: the block v is taken out of the edge list q"
   },
   "rmlabels": {
    "orig": "4:9c58",
@@ -2093,19 +2095,23 @@
    "file": "flow2.c",
    "note": "name guessed: the block has only labels and the ops 6, 0xf"
   },
-  "f4_a198": {
+  "rmjumps": {
    "orig": "4:a198",
    "size_orig": 866,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "flow2.c"
+   "module": "flow2.c",
+   "file": "flow2.c",
+   "note": "name guessed: blocks that only jump are removed (the jumps to them are turned to the target); pp is assigned and never read (as the original); the loops share q = q->next (for (p = blks[x]->next; ...))"
   },
-  "f4_a4fa": {
+  "rm_deadblks": {
    "orig": "4:a4fa",
    "size_orig": 372,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "flow2.c"
+   "module": "flow2.c",
+   "file": "flow2.c",
+   "note": "name from the string; an unused local pp (the original frame is 4 bytes bigger); the check blks[i] != 0 in the debug test is in the original"
   },
   "f4_a66e": {
    "orig": "4:a66e",
@@ -2114,7 +2120,7 @@
    "kind": "proven",
    "module": "flow2.c"
   },
-  "f4_a93c": {
+  "jmplabel": {
    "orig": "4:a93c",
    "size_orig": 88,
    "status": "open",

@@ -205,3 +205,4 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 - 2026-11-19: gopt: alias2.c pralvars (DIFF 2, register cache), mkallist, checkalias (masked; the pointer is the first parameter). Next: 4:9062 .. 4:9108 (the end of alias2), 4:7088.
 - 2026-11-19: gopt: alias2.c finished except fn5_2bca (affsize DIFF 3, ind masked, aliasmat, praldim). flow2.c begun: flow_graph (4:927e..4:98a6 with its case blocks, masked at the
   second attempt), blkof, marklab (masked), addedge (DIFF 4). Next: 4:98a6, 4:9c58 ...
+- 2026-11-19: gopt: flow2.c optflow, blkempty, rmjumps, rm_deadblks (masked), rmlabels (DIFF 13), deledge (DIFF 7): flow2 written up to 4:a66e. Next: 4:a66e, 4:a93c, 4:a9ac ..., dom2.

@@ -1,6 +1,12 @@
 {
 "flow_graph": "OK",
+"optflow": "OK",
 "blkof": "OK",
 "marklab": "OK",
-"addedge": "DIFF 4 (object 49 instructions, original 48)"
+"addedge": "DIFF 4 (object 49 instructions, original 48)",
+"deledge": "DIFF 7 (object 58 instructions, original 62)",
+"rmlabels": "DIFF 13 (object 381 instructions, original 381)",
+"blkempty": "OK",
+"rmjumps": "OK",
+"rm_deadblks": "OK"
 }
