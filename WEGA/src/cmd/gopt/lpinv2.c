@@ -623,3 +623,38 @@ struct quad *q, *firstq;
 		return 1;
 	cerror("invopnd(): illegal op2 opnd");
 }
+
+extern int bitpos(), tstlbit();
+extern void prvec();
+
+/* the result operand of q is not live in the vector vec (name from the debug output) */
+int
+notlive(q, vec)
+struct quad *q;
+unsigned *vec;
+{
+	int k;
+	char *s;
+
+	if (s4d86 > 1) {
+		printf("notlive(q=%x)\n", q);
+		prquad(q);
+		prvec(vec, 3, 1);
+	}
+	if (q->c.b2 == 4)
+		k = bitpos(q, 1, 4);
+	else if (q->c.b2 == 6)
+		k = bitpos(q, 1, 6);
+	else if (q->c.b2 == 8) {
+		if (q->op == 47)
+			k = bitpos(q, 1, 4);
+		else
+			k = bitpos(q, 1, 6);
+	} else
+		cerror("notlive(): illegal rslt opnd");
+	if (s4d86 > 2) {
+		s = (!tstlbit(vec, k) != 0) ? "TRUE" : "FALSE";
+		printf("notlive() = %s\n", s);
+	}
+	return !tstlbit(vec, k);
+}

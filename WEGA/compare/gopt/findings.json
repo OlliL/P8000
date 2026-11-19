@@ -3696,7 +3696,7 @@
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_3b0c": {
+  "notlive": {
    "orig": "5:3b0c",
    "size_orig": 262,
    "status": "open",
