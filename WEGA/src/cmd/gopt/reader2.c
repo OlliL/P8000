@@ -38,7 +38,8 @@ extern void fn0b5e(), fn7088(), fn2c62(), fnf5fe(), fn5_0000(), fn5_6eda(), fn4a
 extern int fn9108(), fn927e(), fnc65a(), fnc69e(), rdsym();
 extern int dope[];
 
-static void dotree(), dotree2(), cutree(), pr(), passes(), abortpass(), prtbl();
+static void dotree(), dotree2(), cutree(), passes(), abortpass(), prtbl();
+extern void pr();
 
 main(argc, argv)
 	int argc;
@@ -280,7 +281,7 @@ cutree(p)
 }
 
 /* print a node (fwalk callback, debug) */
-static void
+void
 pr(p, down, down1, down2)
 	NODE *p;
 	int down;

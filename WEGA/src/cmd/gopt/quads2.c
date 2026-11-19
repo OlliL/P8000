@@ -584,3 +584,202 @@ mapall(p)
 		p->in.op = FREE;
 	}
 }
+
+extern int eflag;
+extern void pr();
+extern void dotree();
+extern NODE *mknode(), *bcon(), *mktemp2();
+
+/*
+ * the conditional operators (?: && ||) and the comma operator are made into jumps; f and t are the labels of the context
+ * (0: none); 1 is returned when the tree has changed (names guessed, written from /lib/gopt)
+ */
+int
+map(p, f, t)
+	register NODE *p;
+	int f, t;
+{
+	register int op, kind, res;
+	int a, b;
+
+	if (eflag > 4) {
+		printf("// map: f = %d, t = %d, p =\n", f, t);
+		fwalk(p, pr, 0);
+	}
+	op = p->in.op;
+	kind = optype(op);
+	a = 0;
+	b = 0;
+	if (kind == LTYPE)
+		return 0;
+	if (kind == UTYPE) {
+		if (op == 0x4c) {
+			res = map(p->in.left, t, f);
+			if (p->in.left->in.op == FREE)
+				p->in.op = FREE;
+			if (eflag > 4) {
+				printf("// map: FREE NOT\n");
+				fwalk(p, pr, 0);
+			}
+			return res;
+		}
+		return map(p->in.left, f, t);
+	}
+	switch (op) {
+	case 0x3b: {
+		NODE *q;
+
+		dotree(p->in.left);
+		q = p->in.right;
+		ncopy(p, p->in.right);
+		q->in.op = FREE;
+		return 1;
+	}
+	case 0x17:
+	case 0x18: {
+		NODE *n, *n2, *t1, *x;
+		int u, lab;
+		NODE *c, *y;
+
+		if (f == 0) {
+			t1 = mktemp2(4);
+			t1->tn.lval = 3;
+			if (logop(p->in.left->in.op)) {
+				if (p->in.left->in.type == 4)
+					n = mknode(0x3a, t1, p->in.left, 4);
+				else {
+					n = mknode(0x6e, p->in.left, 0L, 4);
+					n = mknode(0x3a, t1, n, 4);
+				}
+			} else {
+				c = bcon(0);
+				n = mknode(0x51, p->in.left, c, 4);
+				n->in.right->in.type = n->in.left->in.type;
+				n = mknode(0x3a, t1, n, 4);
+			}
+			n2 = tcopy(t1);
+			dotree(n);
+			lab = newtmpno();
+			x = mknode(0x4c, 0L, 0L, 4);
+			c = bcon(lab);
+			n = mknode(0x73, x, c, 0L);
+			t1 = n2;
+			t1->tn.lval = 2;
+			if (op == 0x18) {
+				y = c = talloc();
+				ncopy(y, t1);
+				x->in.left = c;
+			} else
+				ncopy(x, t1);
+			n2 = tcopy(n->in.left);
+			dotree(n);
+			y = talloc();
+			if (logop(p->in.right->in.op)) {
+				if (p->in.right->in.type == 4)
+					n = mknode(0x3a, y, p->in.right, 4);
+				else {
+					n = mknode(0x6e, p->in.right, 0L, 4);
+					n = mknode(0x3a, y, n, 4);
+				}
+			} else {
+				c = bcon(0);
+				n = mknode(0x51, p->in.right, c, 4);
+				n->in.right->in.type = n->in.left->in.type;
+				n = mknode(0x3a, y, n, 4);
+			}
+			if (op == 0x18)
+				ncopy(y, n2->in.left);
+			else
+				ncopy(y, n2);
+			y->tn.lval = 1;
+			n2 = tcopy(n->in.left);
+			dotree(n);
+			labquad(lab);
+			ncopy(p, n2);
+			p->in.left = 0;
+			return 1;
+		}
+		if (op == 0x18) {
+			lab = (long)t == 0 ? newtmpno() : t;
+			if (p->in.left->in.op == 0x4c) {
+				x = p->in.left->in.left;
+				p->in.left->in.op = FREE;
+			} else
+				x = mknode(0x4c, p->in.left, 0L, 4);
+			c = bcon(lab);
+			n = mknode(0x73, x, c, 0L);
+			n->in.right->tn.rval = 0;
+			dotree(n);
+			if ((long)f == 0) {
+				x = mknode(0x4c, p->in.right, 0L, 4);
+				c = bcon(t);
+				n = mknode(0x73, x, c, 0L);
+				n->in.right->tn.rval = 0;
+				dotree(n);
+			} else if ((long)t == 0) {
+				c = bcon(f);
+				n = mknode(0x73, p->in.right, c, 0L);
+				n->in.right->tn.rval = 0;
+				dotree(n);
+				labquad(lab);
+			} else
+				cerror("map - OROR");
+		} else {
+			lab = (long)f == 0 ? newtmpno() : f;
+			c = bcon(lab);
+			n = mknode(0x73, p->in.left, c, 0L);
+			n->in.right->tn.rval = 0;
+			dotree(n);
+			if ((long)f == 0) {
+				x = mknode(0x4c, p->in.right, 0L, 4);
+				c = bcon(t);
+				n = mknode(0x73, x, c, 0L);
+				n->in.right->tn.rval = 0;
+				dotree(n);
+				labquad(lab);
+			} else if ((long)t == 0) {
+				c = bcon(f);
+				n = mknode(0x73, p->in.right, c, 0L);
+				n->in.right->tn.rval = 0;
+				dotree(n);
+			} else
+				cerror("map - ANDAND");
+		}
+		p->in.op = FREE;
+		return 0;
+	}
+	case 0x15: {
+		int x1, x2;
+		NODE *n, *t1, *cp, *c;
+
+		x1 = newtmpno();
+		x2 = newtmpno();
+		c = bcon(x1);
+		n = mknode(0x73, p->in.left, c, 4);
+		dotree(n);
+		n = mktemp2(p->in.right->in.left->in.type);
+		n->tn.lval = 2;
+		n = mknode(0x3a, n, p->in.right->in.left, p->in.right->in.left->in.type);
+		cp = tcopy(n->in.left);
+		dotree(n);
+		jmpquad(x2);
+		labquad(x1);
+		n = talloc();
+		n = mknode(0x3a, n, p->in.right->in.right, p->in.right->in.right->in.type);
+		ncopy(n->in.left, cp);
+		n->in.left->tn.lval = 1;
+		cp = tcopy(n->in.left);
+		dotree(n);
+		labquad(x2);
+		p->in.right->in.op = FREE;
+		ncopy(p, cp);
+		p->in.left = 0;
+		return 1;
+	}
+	case 0x73:
+		a = (int)p->in.right->in.left;
+		b = p->in.right->tn.rval;
+		break;
+	}
+	return map(p->in.left, a, b) || map(p->in.right, a, b);
+}

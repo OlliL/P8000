@@ -452,40 +452,50 @@
    "file": "quads2.c",
    "note": "open: one instruction: the original does not store the parameter p to the frame (dead store), ours does; 4 forms tried (if chain with direct *(base + index) -= 1 is the nearest)"
   },
-  "f4_231c": {
+  "map": {
    "orig": "4:231c",
    "size_orig": 250,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "map(p, f, t): ?: && || and the comma are made into jumps (f, t: the labels of the context). Written as 4 blocks with their own locals (the frame slots overlap: the original reuses them). Source forms found: `lab = (long)t == 0 ? newtmpno() : t`, `return map(l) || map(r)` (the ldk r2,#1/#0), mknode(.., 0L) (a long 0 as the type), `ncopy(p, p->in.right)` before q is freed, y = c = talloc(); ncopy(y, t1) (not ncopy(y = c = talloc(), ..): that makes a frame temporary). The code is twice as likely repeated as shared in the source: popt merges the tails. The ANDAND/OROR branches test f and t twice (dead tests, kept)"
   },
   "f4_2416": {
    "orig": "4:2416",
    "size_orig": 678,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "case block of map"
   },
   "f4_26bc": {
    "orig": "4:26bc",
    "size_orig": 516,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "case block of map"
   },
   "f4_28c0": {
    "orig": "4:28c0",
    "size_orig": 312,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "case block of map"
   },
   "f4_29f8": {
    "orig": "4:29f8",
    "size_orig": 80,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "quads2.c"
+   "module": "quads2.c",
+   "file": "quads2.c",
+   "note": "case block of map"
   },
   "mknode": {
    "orig": "4:2a48",
