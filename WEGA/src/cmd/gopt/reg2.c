@@ -31,10 +31,10 @@ extern struct quad **s7154;
 extern int *srchdef();
 extern int tstlbit(), testbit();
 extern void clrlbit(), setlbit(), setbit();
-extern void clrbit(), fn5_964c(), restoredges(), fn5_8092();
-extern int fn5_8030();
+extern void clrbit(), fn5_964c(), restoredges(), rmnode();
+extern int findnode();
 extern int werror();
-extern int pickcolor(), fn5_8030();
+extern int pickcolor(), findnode();
 extern void restoredges();
 extern void clrmat(), orvec(), mergevectors(), updatevector();
 extern struct gn *setedges();
@@ -472,7 +472,7 @@ int flag;
 			}
 			return;
 		}
-		fn5_8092();
+		rmnode();
 		again = 1;
 	}
 }
@@ -512,7 +512,7 @@ int k;
 		again = 0;
 		for (j = 1; j < a10e; j++) {
 			if (testbit(a110, j, p->row, a118)) {
-				c = fn5_8030(j, &x);
+				c = findnode(j, &x);
 				if (k == c || (x == 2 && c + 1 == k) || (p->x14 == 2 && k + 1 == c)) {
 					k -= p->x14;
 					if (k < hi) {
@@ -526,4 +526,48 @@ int k;
 		}
 	}
 	return k;
+}
+
+/* the color and the class of the node j (name guessed) */
+int
+findnode(j, px)
+int j;
+int *px;
+{
+	struct gn *p;
+
+	for (p = a11e; p != 0; p = p->link) {
+		if (p->row == j) {
+			*px = p->x14;
+			return p->x12;
+		}
+	}
+	cerror("cannot find node %d", j);
+}
+
+/* the node with the lowest cost is removed from the graph (name from the debug output) */
+void
+rmnode()
+{
+	struct gn *p, *best;
+	int min, j;
+
+	min = 9999;
+	for (p = a11e; p != 0; p = p->link) {
+		if (!p->f15 && p->cost < min) {
+			min = p->cost;
+			best = p;
+		}
+	}
+	if (s4d90 > 4)
+		printf("// rmnode : removing node %d\n", best->row);
+	best->f15 = 1;
+	for (j = 1; j < a10e; j++) {
+		if (testbit(a110, j, best->row, a118)) {
+			clrbit(a110, j, best->row, a118);
+			clrbit(a110, best->row, j, a118);
+			fn5_964c(j);
+			--best->cnt;
+		}
+	}
 }

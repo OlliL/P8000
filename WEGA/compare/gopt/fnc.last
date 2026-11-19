@@ -12,5 +12,7 @@
 "setedges": "DIFF 12 (object 145 instructions, original 148)",
 "colorgraph": "OK",
 "restoredges": "OK",
-"pickcolor": "OK"
+"pickcolor": "OK",
+"findnode": "OK",
+"rmnode": "OK"
 }
