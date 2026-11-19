@@ -589,3 +589,124 @@ int stmpno;
 		cerror("delindvar(), stmp not found\n");
 	}
 }
+
+extern char a050e[];
+extern int sameopnd();
+
+/* the induction variable definitions of the loop are checked for the quad q; the new definition is returned (name from the debug output) */
+struct quad *
+chklpdefs(r, q, op, x)
+struct quad *r, *q;
+int op, x;
+{
+	struct dl *dp, *t;
+	struct quad *res;
+	struct nd *n;
+	int v;
+
+	if (s4d86 > 1) {
+		printf("chklpdefs(), r:\n");
+		prquad(r);
+		printf("OP=%d, q:\n", op);
+		prquad(q);
+	}
+	for (dp = a0e0; dp != 0; dp = dp->next) {
+		if (r != dp->q) {
+			if (q->op == 1 || q->op == 48) {
+				if ((op == 2 ? q->a.b2 : q->b.b2) != 6)
+					continue;
+			}
+			if (!sameopnd(q, dp->q, op, 1))
+				continue;
+			if (!dp->q->f2)
+				continue;
+			if (dp->f13 && dp->q->c.b2 != 3)
+				return 0;
+			if (r == 0)
+				r = insrtlpdef(q);
+			if (s4d86 > 2) {
+				if (s4d86 > 2)
+					printf("found fam. of bsc ind var, dfqd, p->dfquad:\n");
+				prquad(r);
+				prquad(dp->q);
+			}
+			for (t = a0e0; t != 0; t = t->next)
+				if (t->q == r)
+					break;
+			if (t->q == r) {
+				r->f2 = 1;
+				if (dp->f14 || dp->f13) {
+					res = fillindvar(r, q, op, dp, t);
+					if (res != 0 && dp->q->c.b2 == 3) {
+						if (s4d86 > 3)
+							printf("chklpdefs(), tempcnt[temp=%d]=%d\n", dp->q->c.w4, a050e[dp->q->c.w4]);
+						if (a050e[dp->q->c.w4] <= 1)
+							delindvar(dp->l10, dp->e14.w0);
+					}
+					return res;
+				}
+			} else
+				cerror("chklpdef: quad not found\n");
+		} else if (dp->l6 != 0) {
+			n = dp->l6;
+			v = dp->f10 ? 1 : 48;
+			while (n != 0) {
+				indupdate(n, r, v);
+				n = n->link;
+			}
+			freelist(0, dp->l6);
+			dp->l6 = 0;
+		}
+	}
+	return 0;
+}
+
+extern int isdefined();
+
+/* the family of a basic induction variable: the definition r of the quad p is looked for (name from the debug output) */
+struct quad *
+chkfamindvar(r, kind)
+struct quad *r;
+int kind;
+{
+	struct quad *q, *a, *t;
+
+	a = r;
+	q = r->next;
+	if (r->op == 34 && r->next->op == 13) {
+		a = r->next;
+		q = r->next->next;
+	}
+	t = (q->op == 47 && q->a.b2 == a->c.b2 && q->a.w4 == a->c.w4 &&
+	    ((q->f1 && !q->f2) || (q->f1 && q->f2 && q->a.b2 != 6))) ? q : 0;
+	q = r;
+	r = t;
+	if (s4d86 > 1) {
+		printf("chkfamindvar(), q: , r:\n");
+		prquad(q);
+		prquad(r);
+	}
+	switch (q->op) {
+	case 1:
+	case 34:
+	case 44:
+	case 48:
+		if (q->a.b2 == 1 || q->a.b2 == 7 || ((q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8) &&
+		    !isdefined(q, 2) && ((q->a.w0 & 0x30) == 0x10) == ((q->b.w0 & 0x30) == 0x10))) {
+			if (q->op == 44 && q->b.b2 != 1 && q->b.b2 != 7)
+				return 0;
+			q = chklpdefs(r, q, 3, kind);
+			return q;
+		}
+	case 14:
+	case 45:
+		if (q->b.b2 == 1 || q->b.b2 == 7 || ((q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8) &&
+		    !isdefined(q, 3) && ((q->a.w0 & 0x30) == 0x10) == ((q->b.w0 & 0x30) == 0x10))) {
+			if (q->op == 45 && q->a.b2 != 1 && q->a.b2 != 7)
+				return 0;
+			q = chklpdefs(r, q, 2, kind);
+			return q;
+		}
+	}
+	return 0;
+}

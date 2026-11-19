@@ -4019,30 +4019,37 @@
   "delindvar": {
    "orig": "5:67de",
    "size_orig": 278,
-   "status": "open",
+   "status": "ok",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c"
   },
-  "f5_68f4": {
+  "chklpdefs": {
    "orig": "5:68f4",
    "size_orig": 766,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 52, cause 3): block order of the loop (popt codemove: the q->op test is placed behind its body, the compare with dp->q behind the loop), jp instead of jr for long jumps, one more reload of dp (cause 5); param x unused (r2)"
   },
-  "f5_6bf2": {
+  "chkfamindvar": {
    "orig": "5:6bf2",
    "size_orig": 334,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open: the first part (101 instr.) differs in the temp pair rr4/rr6 (cause 7) and reloads of r/t when q = r; r = t (cause 5); the cases are the block f5_6d40 (switch 1,34,44,48 / 14,45, table at 7:68d8/68e4)"
   },
   "f5_6d40": {
    "orig": "5:6d40",
    "size_orig": 410,
    "status": "open",
    "kind": "candidate",
-   "module": "lpind2.c|reg2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "case block of chkfamindvar (written inside it; the original has 126 instructions here)"
   },
   "f5_6eda": {
    "orig": "5:6eda",
