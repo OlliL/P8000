@@ -552,3 +552,40 @@ deltmplpdefs()
 			prquad(u->q);
 	}
 }
+
+extern char a0010[];
+extern void cerror();
+
+/* the induction temporary stmpno is removed from the list of d (name guessed) */
+void
+delindvar(d, stmpno)
+struct dl *d;
+int stmpno;
+{
+	struct nd *p, *prev;
+
+	if (s4d86 > 2)
+		printf("delindvar(stmpno=%d), stmp_cnt=%d\n", stmpno, a0010[stmpno]);
+	if (a0010[stmpno] <= 2) {
+		prev = p = d->l6;
+		while (p != 0) {
+			if (s4d86 > 3)
+				printf("delindvar(), p->indstmp.opnd=%d\n", p->c0.w4);
+			if (p->c0.w4 == stmpno) {
+				if (s4d86 > 3)
+					printf("delindvar(), deleting  p->indstmp.opnd=%d\n", p->c0.w4);
+				--a0010[stmpno];
+				if (prev == p)
+					d->l6 = p->link;
+				else
+					prev->link = p->link;
+				freelist(0, p);
+				p->link = 0;
+				return;
+			}
+			prev = p;
+			p = p->link;
+		}
+		cerror("delindvar(), stmp not found\n");
+	}
+}

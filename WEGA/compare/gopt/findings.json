@@ -4016,7 +4016,7 @@
    "file": "lpind2.c",
    "note": "open (DIFF 2): prev = a0e0 = a0e0->next: the original has ldl rr2,rr0 between the two stores, ours not"
   },
-  "f5_67de": {
+  "delindvar": {
    "orig": "5:67de",
    "size_orig": 278,
    "status": "open",
