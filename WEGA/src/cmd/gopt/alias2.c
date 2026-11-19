@@ -1030,3 +1030,37 @@ aliasmat()
 		praldim();
 	return 1;
 }
+
+/* the position in the alias table for the index p (name from the strings) */
+int
+ind(p)
+	int p;
+{
+	int i, v, pos;
+
+	v = altab[p];
+	if (p < nptr) {
+		if (p < nadr) {
+			if ((symtab[altab[p]].stype & 0x30) == 0x10) {
+				for (i = nptr; i < nal; i++)
+					if (v == altab[i]) {
+						pos = i;
+						goto done;
+					}
+				cerror("ind: *p not found, p=%d\n", p);
+			}
+		neg:
+			pos = -1;
+		done:
+			if (aflag > 2)
+				printf("// ind(%d) = %d\n", p, pos);
+			return pos;
+		}
+		pos = symtab[v].sx14;
+		goto done;
+	}
+	if (p >= nal)
+		goto neg;
+	pos = p;
+	goto done;
+}

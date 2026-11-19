@@ -19,7 +19,7 @@ assignment to a local only in ours (genquads, fndparm, tmpsearch, checkops): pha
 (mktree, genquads); (4) displacement form `ld r2,rr2(#4)` after p = p->next (writeil, tmpsearch).
 
 Next (in this order):
-1. alias2.c: 4:9062 (92), 4:90be (74), 4:9108 (374: the driver with closure, matmul, copymat, clrmat, diag), then 4:7088 (736); fn5_2bca, fn7088 get their names (rename.py -m).
+1. alias2.c: 4:9062 (92), 4:90be (74), 4:9108 (374: the driver with closure, matmul, copymat, clrmat, diag), then 4:7088 (736); fn5_2bca, aliasm get their names (rename.py -m).
 2. after alias2: flow2 from 4:927e.
 3. quads2.c 4:1c88 (floating compare, EPU words in the listing); then flow2 (4:927e ..), dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2,
    reg2 (data order, host/recon/modmap.py gave the module of every function in findings.json).

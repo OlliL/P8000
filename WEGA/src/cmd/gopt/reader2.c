@@ -34,7 +34,7 @@ extern void mkhash(), nlcheck(), prtags(), fwalk(), mapnm(), ncopy(), tprint();
 extern NODE *tcopy();
 extern long addquad();
 extern int constlook();
-extern void genquads(), fn7088(), prquads(), fnf5fe(), fn5_0000(), fn5_6eda(), writeil(), mapall();
+extern void genquads(), aliasm(), prquads(), fnf5fe(), fn5_0000(), fn5_6eda(), writeil(), mapall();
 extern int fn9108(), fn927e(), fnc65a(), fnc69e(), rdsym();
 extern int dope[];
 
@@ -324,7 +324,7 @@ static void
 passes()
 {
 	if (s0078 == 0) {
-		fn7088();
+		aliasm();
 		if (qflag > 4) {
 			printf("// quads before aliasm\n");
 			prquads();
