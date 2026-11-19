@@ -3082,12 +3082,14 @@
    "file": "ebbo2.c",
    "note": "name guessed (the tables of the extended basic block are cleared: htab[32], flags)"
   },
-  "f5_0114": {
+  "vnumber": {
    "orig": "5:0114",
    "size_orig": 188,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c",
+   "note": "open (DIFF 133, same instruction count): popt block order (codemove, OLDCC.md section on block placement): the original keeps the block at 5:044c (fn5_1684 test) after the block at 5:03e2 and reaches it by jp from 5:0286/029e/02e0/02f0; ours moves it in front of the constant fold block (jr). The source uses gotos, the original source form is unknown; 2 forms tried (two ifs, ||)"
   },
   "f5_01d0": {
    "orig": "5:01d0",
@@ -3095,7 +3097,7 @@
    "status": "open",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "notes": "case block of f5_0114"
+   "note": "case block of vnumber"
   },
   "f5_02d4": {
    "orig": "5:02d4",
@@ -3103,7 +3105,7 @@
    "status": "open",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "notes": "case block of f5_0114"
+   "note": "case block of vnumber"
   },
   "f5_04ac": {
    "orig": "5:04ac",
@@ -3111,7 +3113,7 @@
    "status": "open",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "notes": "case block of f5_0114"
+   "note": "case block of vnumber"
   },
   "f5_05fe": {
    "orig": "5:05fe",
@@ -3119,7 +3121,7 @@
    "status": "open",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "notes": "case block of f5_0114"
+   "note": "case block of vnumber"
   },
   "f5_06c6": {
    "orig": "5:06c6",
@@ -3127,7 +3129,7 @@
    "status": "open",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "notes": "case block of f5_0114"
+   "note": "case block of vnumber"
   },
   "f5_0718": {
    "orig": "5:0718",
@@ -3135,7 +3137,7 @@
    "status": "open",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "notes": "case block of f5_0114"
+   "note": "case block of vnumber"
   },
   "f5_0778": {
    "orig": "5:0778",
@@ -3143,7 +3145,7 @@
    "status": "open",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "notes": "case block of f5_0114"
+   "note": "case block of vnumber"
   },
   "f5_07b4": {
    "orig": "5:07b4",
@@ -3151,7 +3153,7 @@
    "status": "open",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "notes": "case block of f5_0114"
+   "note": "case block of vnumber"
   },
   "f5_07d2": {
    "orig": "5:07d2",
@@ -3159,23 +3161,25 @@
    "status": "open",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "notes": "case block of f5_0114"
+   "note": "case block of vnumber"
   },
   "vnfind": {
    "orig": "5:0894",
    "size_orig": 420,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
   "updateopnd": {
    "orig": "5:0a38",
    "size_orig": 348,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
-  "f5_0b94": {
+  "ebbfix": {
    "orig": "5:0b94",
    "size_orig": 486,
    "status": "open",

@@ -1,10 +1,7 @@
 {
-"main": "DIFF 428 (object 473 instructions, original 48)",
-"dotree": "DIFF 12 (object 44 instructions, original 43)",
-"dotree2": "OK",
-"cutree": "OK",
-"pr": "DIFF 15 (object 92 instructions, original 90)",
-"abortpass": "OK",
-"passes": "OK",
-"prtbl": "OK"
+"ebbopt": "OK",
+"ebbinit": "OK",
+"vnumber": "DIFF 133 (object 562 instructions, original 562)",
+"vnfind": "OK",
+"updateopnd": "OK"
 }
