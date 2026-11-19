@@ -3904,12 +3904,14 @@
    "module": "lpind2.c",
    "file": "lpind2.c"
   },
-  "f5_56cc": {
+  "insrtstmpmove": {
    "orig": "5:56cc",
    "size_orig": 404,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 2): cause 2: ours has `and r6,#ADDR` after the lda of the struct assignment a = q->c (fnc drops only `and r0,..`)"
   },
   "f5_5860": {
    "orig": "5:5860",

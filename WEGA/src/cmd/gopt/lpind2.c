@@ -80,3 +80,52 @@ struct quad *q;
 	a0e6++;
 	return q;
 }
+
+extern int s4d94, a0ec;
+extern int fn4_faa4();
+extern struct quad *insertquad(), *qmove();
+
+/* a move of the result of q to a new stemp is inserted and the quads are moved (name from the debug output) */
+struct quad *
+insrtstmpmove(q)
+struct quad *q;
+{
+	struct quad *nq;
+	struct qa a, b, c;
+
+	if (s4d86 > 2) {
+		printf("insrtstmpmove(), q:\n");
+		prquad(q);
+	}
+	a = q->c;
+	b.b2 = 6;
+	b.w4 = s4d94;
+	fn4_faa4(s4d94);
+	s4d94++;
+	a0ec++;
+	b.w0 = a.w0;
+	c.b2 = 0;
+	nq = insertquad(60, &a, &c, &b, q);
+	nq = insertquad(60, &b, &c, &a, nq);
+	nq->f3 = 0;
+	nq->f7 = 0;
+	nq->f4 = 0;
+	if (s4d86 > 3) {
+		printf("insrtstmpmove(), before move, invq, invq->link\n");
+		prquad(q);
+		prquad(q->next);
+	}
+	q = qmove(q);
+	if (s4d86 > 3) {
+		printf("insrtstmpmove(), after first move invq, invq->link\n");
+		prquad(q);
+		prquad(q->next);
+	}
+	q = qmove(q->next);
+	if (s4d86 > 3) {
+		printf("insrtstmpmove(), after second move, invq, invq->link\n");
+		prquad(q);
+		prquad(q->next);
+	}
+	return q;
+}
