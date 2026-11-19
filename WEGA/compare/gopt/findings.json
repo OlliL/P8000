@@ -2212,42 +2212,42 @@
    "file": "dom2.c",
    "note": "open (DIFF 17, 1 attempt): structurally equal (regdiff: only two base reloads ldl R,ADDR against ldl R,R: the register cache of the compiler as in compress, eval, linkp); the dominators of Lengauer and Tarjan; dom (713a), idfn (7120), arrays guessed; n = maxblk + 1; the debug prints of the arrays (s4d82)"
   },
-  "f4_b8a4": {
+  "linkdom": {
    "orig": "4:b8a4",
    "size_orig": 132,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_b928": {
+  "mkdomtree": {
    "orig": "4:b928",
    "size_orig": 652,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_bbb4": {
+  "prlist": {
    "orig": "4:bbb4",
    "size_orig": 78,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_bc02": {
+  "prloops": {
    "orig": "4:bc02",
    "size_orig": 68,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_bc46": {
+  "addblk": {
    "orig": "4:bc46",
    "size_orig": 214,
    "status": "open",
    "kind": "proven",
    "module": "dom2.c"
   },
-  "f4_bd1c": {
+  "deletblk": {
    "orig": "4:bd1c",
    "size_orig": 180,
    "status": "open",

@@ -16,10 +16,19 @@ extern int *dfn, *label, *vertex, *ancest, *child, *size, *parent, *dom, *idfn;
 extern int maxblk, s70e6;
 extern void tabfree();
 extern int ndfs;
+struct dnode { struct dnode *next; struct dnode *down; int dblkno; };	/* the dominator tree: 10 bytes (guessed) */
+struct bl { struct bl *next; int blk; };		/* a list of blocks */
+struct loop { struct bl *bls; int hdr; struct loop *link; };	/* a loop: the blocks, the header block, the next loop (6 bytes at 6: guessed) */
+extern struct dnode **darr;
+extern struct loop *loops;
+extern struct dnode *domroot;
+extern struct bl *pheaderlist, *looplist, *freebl;
+extern int nbl;
 extern int *bucket;
 extern struct edge *bent;
 extern int nbent;
 extern char *taballoc();
+extern void prlist();
 extern int cerror();
 
 /* the depth first search from the block v */
@@ -252,4 +261,145 @@ dominators()
 			printf("\t%d\t%d\t\t%d\t%d\n", i, dom[i], vertex[i], idfn[i]);
 		printf("\n\n");
 	}
+}
+
+/* the children of the node q in the dominator tree are linked (debug output with s4d82) */
+void
+linkdom(q)
+	struct dnode *q;
+{
+	q->down = darr[q->dblkno];
+	q = q->down;
+	if (s4d82 > 1)
+		printf("linkdom: q->dblkno=%d\n", q->dblkno);
+	for (; q != 0; q = q->next)
+		if (darr[q->dblkno] != 0)
+			linkdom(q);
+}
+
+/* the list of blocks (debug) */
+void
+prlist(q)
+	struct bl *q;
+{
+	struct bl *p;
+
+	p = q;
+	printf("list:");
+	for (; p != 0; p = p->next)
+		printf(" %d", p->blk);
+	printf("\n");
+}
+
+/* the loops (debug) */
+void
+prloops()
+{
+	struct loop *q;
+
+	for (q = loops; q != 0; q = q->link) {
+		printf("\nheader blk = %d\nloop ", q->hdr);
+		prlist(q->bls);
+	}
+}
+
+/* the dominator tree: the lists of the children of every block in darr, the root domroot (name guessed) */
+void
+mkdomtree()
+{
+	int i, d;
+	struct dnode *p;
+
+	darr = (struct dnode **)taballoc(blkno << 2, 4);
+	for (i = 0; i < blkno; i++)
+		darr[i] = 0;
+	for (i = 1; i < blkno; i++) {
+		d = dom[i];
+		if (d == -1)
+			continue;
+		if (s4d82 > 3)
+			printf("block=%d, dom block=%d\n", i, d);
+		if (darr[d] != 0) {
+			if (s4d82 > 3)
+				printf("\t\tnext , i=%d, di=%d\n", i, d);
+			p = darr[d];
+			darr[d] = (struct dnode *)taballoc(12, 4);
+			darr[d]->next = p;
+			p = darr[d];
+		} else {
+			if (s4d82 > 3)
+				printf("\t\tfirst, i=%d, di=%d\n", i, d);
+			p = darr[d] = (struct dnode *)taballoc(12, 4);
+			p->next = 0;
+		}
+		p->down = 0;
+		p->dblkno = i;
+	}
+	domroot = (struct dnode *)taballoc(12, 4);
+	domroot->next = 0;
+	domroot->dblkno = s70e6;
+	if (s4d82 > 3) {
+		for (i = 0; i < blkno; i++)
+			if (darr[i] != 0) {
+				p = darr[i];
+				printf("\nlinkd[%d]:\n", i);
+				for (; p != 0; p = p->next)
+					printf(" %d", p->dblkno);
+			}
+		putchar('\n');
+	}
+	if (domroot != 0)
+		linkdom(domroot);
+}
+
+/* the block blk is appended to the list *lp of blocks */
+void
+addblk(lp, blk)
+	struct bl **lp;
+	int blk;
+{
+	struct bl *p, *q;
+
+	if (s4d82 > 1) {
+		if (lp == &pheaderlist)
+			printf("addblk(pheaderlist,%d)\n", blk);
+		else if (lp == &looplist)
+			printf("addblk(looplist,%d)\n", blk);
+	}
+	for (q = p = *lp; q != 0; q = q->next)
+		p = q;
+	if (freebl != 0) {
+		q = freebl;
+		freebl = freebl->next;
+	} else
+		q = (struct bl *)taballoc(6, 4);
+	*(*lp != 0 ? (struct bl **)p : lp) = q;
+	q->next = 0;
+	q->blk = blk;
+	nbl++;
+	if (s4d82 > 1)
+		prlist(*lp);
+}
+
+/* the last block of the list *lp is taken out (it must be blk) and put on the free list */
+void
+deletblk(lp, blk)
+	struct bl **lp;
+	int blk;
+{
+	struct bl *q, *p;
+
+	if (s4d82 > 1 && lp == &pheaderlist)
+		printf("deletblk(pheaderlist,%d)\n", blk);
+	for (q = p = *lp; q->next != 0; p = q, q = q->next)
+		;
+	if (q->blk != blk)
+		cerror("deletblk: not deleting the last block\n", blkno);
+	q = freebl;
+	freebl = p->next;
+	freebl->next = q;
+	p->next = 0;
+	if (s4d82 > 1)
+		prlist(*lp);
+	nbl--;
 }
