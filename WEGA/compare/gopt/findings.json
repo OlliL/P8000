@@ -3787,49 +3787,56 @@
    "size_orig": 1938,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "inbl": {
    "orig": "5:4f22",
    "size_orig": 52,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "orderbl": {
    "orig": "5:4f56",
    "size_orig": 180,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "proceslp": {
    "orig": "5:500a",
    "size_orig": 450,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "marksloop": {
    "orig": "5:51cc",
    "size_orig": 130,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "prlpstats": {
    "orig": "5:524e",
    "size_orig": 74,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_5298": {
+  "loopopt": {
    "orig": "5:5298",
    "size_orig": 668,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "f5_5534": {
    "orig": "5:5534",

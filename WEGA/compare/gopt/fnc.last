@@ -23,5 +23,15 @@
 "prlpdefs": "OK",
 "chkbscindvar": "OK",
 "samebetalpdef": "OK",
-"qparvbetalpdef": "OK"
+"qparvbetalpdef": "OK",
+"lpinv": "OK",
+"insrtdomnode": "OK",
+"updatelooplist": "DIFF 34 (object 115 instructions, original 114)",
+"addpreheader": "OK",
+"inbl": "OK",
+"orderbl": "DIFF 2 (object 58 instructions, original 59)",
+"proceslp": "OK",
+"marksloop": "OK",
+"prlpstats": "OK",
+"loopopt": "OK"
 }

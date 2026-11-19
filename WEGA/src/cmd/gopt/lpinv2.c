@@ -1261,3 +1261,89 @@ prlpstats()
 	printf("//Number of temps created in loop optimization \t= %d\n", a0ee);
 	printf("//Number of induction vars. eliminated in loop opt. = %d\n", a0fe);
 }
+
+extern int s70ec, s4d92, s4d80, s4d94, a0d4;
+extern struct dl *a104;
+extern void fn5_6466(), tabfree(), livevars(), clearflags(), ebbopt(), prquads(), prquad();
+
+/* the loop optimization of the program (name guessed) */
+void
+loopopt()
+{
+	struct loop *lp;
+	struct quad *q;
+	int first;
+
+	first = 1;
+	if (s4d86) {
+		printf("//Program before loop optimization\n");
+		prquads();
+	}
+again:
+	if (!first)
+		tabfree(7, (char *)0);
+	livevars();
+	s4d94 = a0d4;
+	clearblocks();
+	lp = loops;
+	a104 = 0;
+	a0f8 = 0;
+	for (; lp != 0; lp = lp->link) {
+		if (first)
+			orderbl((struct bl **)lp);
+		if (lp->b15)
+			continue;
+		if (lp->b11)
+			continue;
+		if (!lp->b12)
+			continue;
+		if (s4d86 > 3)
+			printf("//\n//processing loop with header %d\n", lp->hdr);
+		lp->b11 = 1;
+		a0e0 = 0;
+		a0e8 = 0;
+		s70ec = lp->hdr;
+		marklpblocks(lp, 1);
+		findlpdefs(lp);
+		liveonexit(lp);
+		a0f4 = findsubdtree(domroot, s70ec);
+		a0fc = 1;
+		a0f2 = 0;
+		a0e4 = 0;
+		a0f0 = 0;
+		while (a0fc)
+			lpinv(lp);
+		if (a0f2 || a0e4) {
+			addpreheader(lp, 0);
+			proceslp(lp);
+		}
+		while (a0da)
+			proceslp(lp);
+		fn5_6466(1);
+		marklpblocks(lp, 0);
+		if (s4d86 > 4) {
+			printf("//Program after optimizing loop\n");
+			for (q = qhead; q != 0; q = q->next)
+				prquad(q);
+		}
+	}
+	a0d4 = s4d94;
+	if (s4d86) {
+		printf("//Program after loop optimization\n");
+		for (q = qhead; q != 0; q = q->next)
+			prquad(q);
+	}
+	ebbopt();
+	first = 0;
+	if (marksloop()) {
+		clearflags();
+		goto again;
+	}
+	if (s4d80) {
+		printf("//Program after basic block optimization\n");
+		for (q = qhead; q != 0; q = q->next)
+			prquad(q);
+	}
+	if (s4d92)
+		prlpstats();
+}
