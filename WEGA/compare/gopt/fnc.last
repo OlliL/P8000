@@ -1,18 +1,7 @@
 {
-"lpow2": "DIFF 4 (object 14 instructions, original 15)",
-"ceval": "DIFF 5 (object 75 instructions, original 73)",
-"qmove": "OK",
-"insrtstmpmove": "DIFF 2 (object 98 instructions, original 97)",
-"moveindquad": "OK",
-"mkconstopnd": "DIFF 2 (object 44 instructions, original 45)",
-"insrtopstmp": "DIFF 5 (object 184 instructions, original 180)",
-"copyopndstmp": "OK",
-"fillindvar": "DIFF 21 (object 298 instructions, original 294)",
-"indupdate": "DIFF 30 (object 94 instructions, original 95)",
-"freelist": "DIFF 29 (object 45 instructions, original 45)",
-"insrtlpdef": "DIFF 2 (object 76 instructions, original 75)",
-"deltmplpdefs": "DIFF 2 (object 118 instructions, original 119)",
-"delindvar": "OK",
-"chklpdefs": "DIFF 52 (object 215 instructions, original 216)",
-"chkfamindvar": "DIFF 139 (object 229 instructions, original 101)"
+"optimize": "OK",
+"marklps": "OK",
+"chkcalls": "DIFF 33 (object 82 instructions, original 88)",
+"symflags": "OK",
+"assignreg": "OK"
 }

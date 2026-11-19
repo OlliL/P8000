@@ -4059,40 +4059,46 @@
    "file": "lpind2.c",
    "note": "case block of chkfamindvar (written inside it; the original has 126 instructions here)"
   },
-  "f5_6eda": {
+  "optimize": {
    "orig": "5:6eda",
    "size_orig": 58,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_6f14": {
+  "marklps": {
    "orig": "5:6f14",
    "size_orig": 62,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_6f52": {
+  "chkcalls": {
    "orig": "5:6f52",
    "size_orig": 280,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c",
+   "note": "open (DIFF 33): the original compiles the loops with the test at the top and shares the head of the first iteration with the advance (rr2 = lp or p; p = *rr2; jr), ours has bottom tests; the else part p = lp->bls at the loop exit is a guess"
   },
-  "f5_706a": {
+  "symflags": {
    "orig": "5:706a",
    "size_orig": 122,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_70e4": {
+  "assignreg": {
    "orig": "5:70e4",
    "size_orig": 748,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_73d0": {
    "orig": "5:73d0",
