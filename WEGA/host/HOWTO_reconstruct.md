@@ -18,6 +18,33 @@ Start message of a session (NAME, ORIG and the increment filled in):
 Several programs unattended, one fresh session each: `host/tools/nightly.sh [-b DOLLARS] NAME[:ORIG] ...` (the session commits,
 the script runs checkall on each commit and stops at the first failure; at the end COVERAGE.md; logs in `tmp/tmp/nightly`).
 
+## Procedure of a long session (context economy)
+
+A reconstruction without source (gopt) runs for many sessions; what costs context is the output of the tools, not the thinking. Rules:
+
+- One module, or one large function, per session; then `/clear`. The state is in `compare/NAME/HANDOFF.md`, `findings.json` (name, file,
+  status, note of every function, kept up to date after every function) and the increment log, not in the conversation.
+- Never print a whole disassembly or diff into the conversation. `odisc.py -s FUNC` (calls, strings, size), `odisc.py -o FUNC` (listing to
+  a file, then `sed -n a,bp`), `fnc.py FILE.c FUNC ...` (one line per function, the diff in `tmp/tmp/fnc/FUNC.diff`), `fnc.py -a FILE.c`
+  (only the names that are not OK). A diff is read in parts (`sed -n`), a listing only for the function in hand.
+- Write the draft of a function from the outline and the listing, compile and compare it at once; at most 6 attempts per block, then note
+  it in `findings.json` and go on. A recurring cause is written once in HANDOFF.md, not in every note again.
+- After each function: `findings.json` (name, file, status, note; `rename.py [-m]` for names), `make part`; a commit per module step.
+- Before the context is 70% full: finish the function in hand, update HANDOFF.md, commit, and give the owner the variable part of the next
+  start message (below). Do not start a new large function late in a session.
+
+Start message of such a session (only the part between the lines is filled in by the owner; the AI writes it for the next session):
+
+    WEGA, increment 150, program gopt: continue by WEGA/host/HOWTO_reconstruct.md ("Procedure of a long session").
+    Read WEGA/CLAUDE.md, WEGA/compare/gopt/HANDOFF.md and only the file of the increment. No subagents.
+    ---- what we do now ----
+    TASK: <the module / function / question of this session, e.g. "alias2.c: 4:7c68 checkops with its blocks">
+    START: <what to do first, e.g. "struct qa: unsigned w0, then fnc.py -a on all files">
+    STOP WHEN: <the end of the piece, e.g. "checkops written; or at 70% of the context">
+    ----
+    At the end: findings.json, HANDOFF.md, the increment log, commit; then print the block "what we do now" for the next
+    session (TASK, START, STOP WHEN), filled in from the real state: what is done, what is open, what comes next.
+
 ## Phase A
 
 Never in phase A: change a compiler pass or a switch, change cas, edit a shipped header, write odd forms to force bytes, spend more than 6 attempts on one function. When stuck: note it and go on. A function left open is a normal result.

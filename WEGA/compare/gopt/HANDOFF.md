@@ -26,3 +26,9 @@ Next (in this order):
 3. quads2.c 4:1c88 (floating compare, EPU words in the listing); then flow2 (4:927e ..), dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2,
    reg2 (data order, host/recon/modmap.py gave the module of every function in findings.json).
 4. the libc starts at 5:9bc0 (members of slibc; 4:f5fe..4:ff78 too); link: src/cmd/gopt/Makefile (sld, -Mt4/-Mt5), LIBC version open.
+
+## What we do now (the block for the next start message; the AI replaces it at the end of every session)
+
+TASK: alias2.c: 4:7c68 (checkops, with its case blocks up to 4:8074), then 4:8074 and 4:831e.
+START: struct qa: `unsigned w0` in gopt.h, then `fnc.py -a` on comm2.c, rdr2.c, reader2.c, quads2.c, debug2.c, wrtil2.c, alias2.c (nothing may get worse; aliasm and mktree should improve).
+STOP WHEN: checkops is written and checked, or at 70% of the context.
