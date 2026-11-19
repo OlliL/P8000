@@ -19,5 +19,6 @@
 "addreg": "OK",
 "addrestore": "OK",
 "addsave": "OK",
-"markreg": "OK"
+"markreg": "OK",
+"addsavequads": "OK"
 }

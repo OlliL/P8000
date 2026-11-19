@@ -41,7 +41,13 @@ extern void markreg();
 extern struct quad *addsave(), *fn5_913c();
 extern struct quad *insertquad();
 extern int fn4_fc06();
-extern void fn5_8ba8(), fn5_8838(), fn5_89ca(), prgraph();
+extern void fn5_8ba8(), addsavequads(), fn5_89ca(), prgraph();
+struct pr { int x; int y; };
+extern struct pr *a70aa;
+extern int blkno;
+#define PY(i)	(*(int *)((char *)a70aa + ((i) * 4 + 2)))
+extern struct quad *fn5_8f5c();
+extern void addsavequads();
 extern void clrbit(), fn5_964c(), restoredges(), rmnode();
 extern int findnode();
 extern int werror();
@@ -641,7 +647,7 @@ savecolors()
 		printf("// quads before addsavequads\n");
 		prquads();
 	}
-	fn5_8838();
+	addsavequads();
 	fn5_89ca();
 }
 
@@ -756,4 +762,35 @@ int reg, blk;
 	p = fn5_913c(blk);
 	qq = insertquad(43, &tmp, (struct qa *)0, (struct qa *)0, p);
 	return qq;
+}
+
+/* the save code of the registers that are used in a block is added to the blocks on the path (name from the debug output) */
+void
+addsavequads()
+{
+	int b, r, e, c, s, out;
+	struct qa *pa, *pb;
+
+	for (b = 0; b < blkno; b++) {
+		if (blks[b] == 0)
+			continue;
+		if (QHREC(blks[b])->w12)
+			continue;
+		for (r = 1; r <= 11; r++) {
+			if (a10a[b] & (1 << r)) {
+				e = blks[b]->a.w4;
+				if (e < 0)
+					continue;
+				for (s = PY(e), c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
+					fn5_9020(s, &out);
+					if (a10a[out] & (1 << r)) {
+						pa = &fn5_8f5c(out, r)->b;
+						pb = &fn5_8f5c(b, r)->b;
+						if (!fn4_fc06(pb, pa))
+							addsave(r, out);
+					}
+				}
+			}
+		}
+	}
 }
