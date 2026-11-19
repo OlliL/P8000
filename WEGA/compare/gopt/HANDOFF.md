@@ -28,5 +28,5 @@ Next (in this order):
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
 TASK: live2.c: 4:e400 (802 bytes, linkreachdefs), 4:e722 (560), 4:e952 (248), 4:ea4a (488), 4:ed82 (294), 4:eea8 (484) and the next ones of live2.
-START: fnc.py -a live2.c (open: islive 4, settmptable 80, insrtlive 7, setsymtable 69, setsym 20, setlbit 9, clrlbit 9, tstlbit 3: leave them); odisc.py -o f4_e400; regdiff.py FILE.diff.
+START: fnc.py -a live2.c (open: islive 4, settmptable 80, insrtlive 7, setsymtable 69, setsym 20, setlbit 9, clrlbit 9, tstlbit 3: leave them); odisc.py -o linkreachdefs; regdiff.py FILE.diff.
 STOP WHEN: 12 functions of live2 are written and checked, or at 70% of the context.

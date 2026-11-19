@@ -31,6 +31,11 @@ extern int tstlbit();
 #define BOPT(j)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> 13) & 1)
 struct lrec { unsigned *f0, *f4, *f8, *fc, *f10, *f14, *f18; };	/* the bit vectors of a block: 28 bytes, stored in the header quad at 6 (guessed) */
 extern int lvwords, dfwords, s4d86;
+struct rn { struct rn *next; int idx; };	/* a node of the reach map: 6 bytes (guessed) */
+extern struct rn *reachmap;
+extern struct quad **defs;
+extern int ndefs;
+#define MASK(p)	((struct quad *)((long)(p) & ~1L))
 extern void clrvec();
 extern char *livevecs, *reachvecs;
 extern struct quad **defs;
@@ -860,4 +865,59 @@ orvec(a, b, n)
 
 	for (i = 0; i < n; i++)
 		*a++ |= *b++;
+}
+
+/* the definitions are linked: the ones with the same operand form a list (the low bit of the pointer in defs marks a done one); name from the string */
+void
+linkreachdefs()
+{
+	int i, j;
+	int *t;
+	struct rn *r, *prev;
+	struct quad *p, *q;
+
+	if (s4d84 > 3)
+		printf("linkreachdefs(), reachdefno=%d\n", ndefs);
+	r = reachmap = (struct rn *)taballoc(6, 3);
+	r->next = 0;
+	for (i = 0; i < ndefs; i++) {
+		if (!((long)defs[i] & 1)) {
+			r->idx = i;
+			if (s4d84 > 3)
+				printf("\nprocessing def no %d, linking defs: \n", i);
+			for (j = i; j < ndefs; j++) {
+				if ((long)defs[j] & 1)
+					continue;
+				if (s4d84 > 5) {
+					printf("// before calling sameopnd, i = %d, reachmap[i] = ", i, defs[i]);
+					prquad(defs[i]);
+				}
+				if (!sameopnd(MASK(defs[i]), defs[j], 1, 1))
+					continue;
+				p = MASK(defs[i]);
+				q = defs[j];
+				if (p != q && (p->c.b2 == 8 || q->c.b2 == 8))
+					if (p->op != 0x2f || q->op != 0x2f)
+						continue;
+				if (s4d84 > 3)
+					printf(" %d", j);
+				t = (int *)taballoc(2, 3);
+				*t = j;
+				defs[j] = (struct quad *)(((long)defs[j] | 1L) & 0x7F00FFFFL);
+				if (s4d84 > 3)
+					printf("r=%X, *r=%d\n", t, j);
+			}
+		}
+		defs[i] = MASK(defs[i]);
+		t = (int *)taballoc(2, 3);
+		*t = -1;
+		prev = r;
+		r = (struct rn *)taballoc(6, 3);
+		prev->next = r;
+		if (s4d84 > 3)
+			printf("r=%X, *r=%d, p=%X, q=%X\n", t, *t, r, prev);
+		r->next = 0;
+	}
+	if (s4d84 > 3)
+		printf("\n");
 }

@@ -2779,7 +2779,7 @@
    "file": "live2.c",
    "note": "odd form: (long)(checkalias(p, pw) == a1) (the original tests the comparison as a long value: tcc, exts, testl); the switches over pw and qw in the order 2, 3, 1; name from the strings"
   },
-  "f4_e400": {
+  "linkreachdefs": {
    "orig": "4:e400",
    "size_orig": 802,
    "status": "open",
