@@ -147,7 +147,7 @@ int ot;
 
 extern struct quad *tmpsearch();
 extern void addlpdef(), setopt();
-extern int isglobal();
+extern int isglobal(), isdefined();
 extern void clrsymflag(), cerror();
 
 /* the flags of the operands of q are cleared; a temporary is followed to its definition (name from the debug output) */
@@ -555,4 +555,71 @@ int ot;
 		return BBIT(i, 12);
 	}
 	cerror("isdefined(): illegal opnd");
+}
+
+extern struct dnode *a0f4;
+
+/* the block dominates all exits of the loop (name from the debug output) */
+int
+domexits(lp, block)
+struct loop *lp;
+int block;
+{
+	struct bl *e;
+
+	if (s4d86 > 2)
+		printf("domexits(hdr=%d, block=%d)\n", lp->hdr, block);
+	for (e = lp->exits; e != 0; e = e->next)
+		if (!isdom(a0f4, block, e->blk))
+			return 0;
+	return 1;
+}
+
+/* the operands of q (and the quads that define its temporaries) are invariant in the loop (name from the debug output) */
+int
+invopnds(q, firstq)
+struct quad *q, *firstq;
+{
+	struct quad *p;
+
+	if (s4d86 > 1) {
+		printf("invopnds(firstq = %X), quad (%X) = \n", firstq, q);
+		prquad(q);
+	}
+	if (q->a.b2 == 3) {
+		p = tmpsearch(firstq, q->a.w4);
+		if (!invopnds(p, firstq))
+			return 0;
+		if (q->b.b2 == 0)
+			return 1;
+	} else if (q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8) {
+		if (!(q->a.b2 == 8 && BBIT(q->a.w4, 11) && q->b.b2 != 0)) {
+			if (isdefined(q, 2))
+				return 0;
+			if (q->b.b2 == 0)
+				return 1;
+		}
+	} else if (q->a.b2 == 1 || q->a.b2 == 2 || q->a.b2 == 7 || q->a.b2 == 5) {
+		if (q->b.b2 == 0)
+			return 1;
+	} else {
+		cerror("invopnd(): illegal op1 opnd");
+		return;
+	}
+	if (q->op == 7)
+		return 0;
+	if (q->b.b2 == 3) {
+		p = tmpsearch(firstq, q->b.w4);
+		if (!invopnds(p, firstq))
+			return 0;
+		return 1;
+	} else if (q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8) {
+		if (q->b.b2 == 8 && BBIT(q->b.w4, 11))
+			return 1;
+		if (isdefined(q, 3))
+			return 0;
+		return 1;
+	} else if (q->b.b2 == 1 || q->b.b2 == 2 || q->b.b2 == 7)
+		return 1;
+	cerror("invopnd(): illegal op2 opnd");
 }

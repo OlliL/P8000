@@ -3682,14 +3682,14 @@
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_385e": {
+  "domexits": {
    "orig": "5:385e",
    "size_orig": 104,
    "status": "open",
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_38c6": {
+  "invopnds": {
    "orig": "5:38c6",
    "size_orig": 582,
    "status": "open",
