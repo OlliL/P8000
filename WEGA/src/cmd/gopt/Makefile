@@ -13,13 +13,15 @@
 # synthetic modules). Data in segment 7, bss in segment 8, as in the original (E611, flag 0x20: stack segment 127, entry 04000000).
 # Not decided until the link is complete: where the limit between the groups lies (T5FIRST), where the libc members go (the original has
 # fseek, ftell, fread, getw at the end of segment 4, printf and the rest in segment 5), the libc revision (LIBC).
+# Stack segment: the original has no -z flag (relflg 0x01), no table entry for the stack and _stkseg = 63; -Ms63 gives 63 but one more
+# table entry (open: segcmp.py -m is not affected). -z gives stack segment 127 and the flag 0x21.
 # The compiler is sccvc by measurement (compare/gopt/findings.json), not the one of the date (v1).
 
 SCC = sccvc
 CFLAGS = -O -I../../head/oldv7
 CAS = cas
 SLD = sld
-SLDFLAGS = -i -e start -z -Md7 -Mb8
+SLDFLAGS = -i -e start -Md7 -Mb8 -Ms63
 CRT = ../../lib/libc/nonseg/crt
 LIBC = ../../lib/slibc-v12.a
 PREFIX = /
