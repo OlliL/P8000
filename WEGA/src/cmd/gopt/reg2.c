@@ -66,7 +66,7 @@ extern int a114, a116, a10e;
 extern struct gnn *a11a;
 #define GF(i, o, t)	(*(t *)((char *)a11a + ((i) * 10 + (o))))
 extern char *taballoc();
-extern int notlive(), fn5_9adc();
+extern int notlive(), inreach();
 extern void mergevectors(), updatevector(), degrees();
 extern void prquad(), prvec(), include(), buildgraph(), colorgraph(), savecolors(), prgraph();
 extern void clearflags(), livevars(), reachdefs(), prquads(), ebbopt(), clearblocks(), marklpblocks();
@@ -188,7 +188,7 @@ int flag;
 			}
 			continue;
 		}
-		if (fn5_9adc(q)) {
+		if (inreach(q)) {
 			switch (q->c.b2) {
 			case 4:
 				if ((symtab[q->c.w4].sflags & 1) || q->f7)
@@ -1155,6 +1155,48 @@ struct quad *r, *r3;
 			return 1;
 		if (fn4_fc06(&r->b, &c->b))
 			return 1;
+	}
+	return 0;
+}
+
+/* the quad q is in the set of the quads that reach (name from the debug output) */
+int
+inreach(q)
+struct quad *q;
+{
+	int i;
+
+	for (i = 0; i < s714e; i++)
+		if (s7154[i] == q)
+			return 1;
+	if (s4d90 > 3) {
+		printf("// inreach returning FALSE for quad -");
+		prquad(q);
+	}
+	return 0;
+}
+
+/* the operands of the quad s are used again behind it in the block (name guessed) */
+int
+usedlater(n, u, s)
+int n, u;
+struct quad *s;
+{
+	struct quad *c;
+
+	for (c = s; c != 0; c = c->next) {
+		if (c->op == 28)
+			return 0;
+		if (c->op == 27 && c->b.w4 == n)
+			return 0;
+		if (c->op != 40 && c->op != 41) {
+			if (fn4_fc06(&s->b, &c->a))
+				return 1;
+			if (fn4_fc06(&s->b, &c->b))
+				return 1;
+			if (fn4_fc06(&s->b, &c->c))
+				return 1;
+		}
 	}
 	return 0;
 }

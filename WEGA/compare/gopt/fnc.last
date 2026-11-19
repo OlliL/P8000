@@ -33,5 +33,7 @@
 "decdeg": "OK",
 "prgraph": "DIFF 11 (object 127 instructions, original 127)",
 "getheader": "OK",
-"usefirst": "OK"
+"usefirst": "OK",
+"usedlater": "OK",
+"inreach": "OK"
 }

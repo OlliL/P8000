@@ -4338,19 +4338,21 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_9a02": {
+  "usedlater": {
    "orig": "5:9a02",
    "size_orig": 218,
    "status": "open",
    "kind": "candidate",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_9adc": {
+  "inreach": {
    "orig": "5:9adc",
    "size_orig": 96,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_9b3c": {
    "orig": "5:9b3c",
