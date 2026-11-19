@@ -573,96 +573,120 @@
    "file": "quads2.c",
    "note": "the callee 4:231c is `map` (the strings \"// map: ...\" belong to it)"
   },
-  "f4_2c10": {
+  "mkqnames": {
    "orig": "4:2c10",
    "size_orig": 82,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "the table qtab (84 quad operators: op, name, operator of the trees) is the data of the module; qop[] (operator of the trees -> quad op) is used by genquads"
   },
-  "f4_2c62": {
+  "prquads": {
    "orig": "4:2c62",
    "size_orig": 42,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c"
   },
-  "f4_2c8c": {
+  "prquad": {
    "orig": "4:2c8c",
    "size_orig": 178,
    "status": "open",
    "kind": "proven",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "open: one instruction: the original reads q from the frame behind the first conditional jump (ldl rr2,0(r15)), ours from rr6; the same in cmwalk and operand (quads2.c): popt of the original forgets the content of a register at the label of the jump target, ours keeps it (phase B)"
   },
-  "f4_2d3e": {
+  "propnd": {
    "orig": "4:2d3e",
    "size_orig": 32,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "the cases stand in the order 1 7 2 3 4 5 6 8 (the code order of the original)"
   },
   "f4_2d5e": {
    "orig": "4:2d5e",
    "size_orig": 44,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "case block of propnd"
   },
   "f4_2d8a": {
    "orig": "4:2d8a",
    "size_orig": 26,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "case block of propnd"
   },
   "f4_2da4": {
    "orig": "4:2da4",
    "size_orig": 36,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "case block of propnd"
   },
   "f4_2dc8": {
    "orig": "4:2dc8",
    "size_orig": 16,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "case block of propnd"
   },
   "f4_2dd8": {
    "orig": "4:2dd8",
    "size_orig": 40,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "case block of propnd"
   },
   "f4_2e00": {
    "orig": "4:2e00",
    "size_orig": 16,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "case block of propnd"
   },
   "f4_2e10": {
    "orig": "4:2e10",
    "size_orig": 16,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "case block of propnd"
   },
   "f4_2e20": {
    "orig": "4:2e20",
    "size_orig": 110,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c",
+   "note": "case block of propnd"
   },
-  "f4_2e8e": {
+  "prstats": {
    "orig": "4:2e8e",
    "size_orig": 56,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "debug2.c"
+   "module": "debug2.c",
+   "file": "debug2.c"
   },
   "rdsym": {
    "orig": "4:2ec6",
