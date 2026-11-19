@@ -68,6 +68,8 @@ def main():
     g = SOut(open(os.path.join(CFG.ROOT, CFG.ORIG_BIN), 'rb').read())
     nm = (lambda t: zcode.norm_masked(re.sub(r'<<\d+>>', '', t))) if getattr(CFG, 'CODESEGS', None) else zcode.norm_masked   # segment numbers differ in an object
     a = [nm(t) for _, t in zcode.insns(oc, s, e, CFG.SEG)]
+    if os.environ.get('FNC_DROP'):    # FNC_DROP=REGEX: the lines of the object that match are dropped (a known difference, e.g. a redundant instruction)
+        a = [t for t in a if not re.search(os.environ['FNC_DROP'], t)]
     gcode = bytes(g.image)[:g.segs[0]['code']]
     if osg is not None:
         off, n = CFG.CODESEGS[osg]

@@ -783,3 +783,210 @@ map(p, f, t)
 	}
 	return map(p->in.left, a, b) || map(p->in.right, a, b);
 }
+
+extern int qop[], nest, v0e;
+extern void tfree();
+static void fold1(), fold2(), asgop2();
+
+/*
+ * the quads of a tree (names guessed, written from /lib/gopt): the operands of the node become operand structures p1, p2, p3
+ * (p3: the result), the quad of the operator is added; the trees of the operands are freed
+ */
+void
+genquads(p)
+	NODE *p;
+{
+	struct qa s1, s2, s3;
+	struct qa *p1, *p2, *p3;
+	struct qa s4;
+	struct quad *q;
+	int kind;
+	NODE rcopy, lcopy;
+
+	p1 = &s1;
+	p2 = &s2;
+	p3 = &s3;
+	if (eflag > 4)
+		fwalk(p, pr, 0);
+	if (qflag > 4)
+		printf("// genquads op =%d\n", p->in.op);
+	nest++;
+	kind = optype(p->in.op);
+	if (kind == LTYPE)
+		goto done;
+	if (p->in.op == 0x46 || p->in.op == 0x67 || p->in.op == 0x48 || p->in.op == 0x69)
+		fold1(p);
+	else if (p->in.op == 0x3a || p->in.op == 0x65)
+		fold2(p);
+	else if (asgop(p->in.op))
+		asgop2(p);
+	genquads(p->in.left);
+	if (kind == BITYPE && p->in.op != 0x7a) {
+		if (p->in.op == 0x46 || p->in.op == 0x67) {
+			if (p->in.right->in.op == CM)
+				cmwalk(p->in.right);
+			else {
+				genquads(p->in.right);
+				addquad(0x32, 0L, 0L, 0L);
+				if (p->in.right->in.op == STARG) {
+					*p1 = *operand(p->in.right->in.left);
+					p2->b2 = 1;
+					p2->w4 = p->in.right->stn.stsize;
+					p3->b2 = 1;
+					p3->w4 = p->in.right->stn.stalign;
+					q = addquad(0x34, p1, p2, p3);
+					q->f0 = 1;
+				} else {
+					*p1 = *operand(p->in.right);
+					addquad(0x34, p1, 0L, 0L);
+				}
+			}
+			addquad(0x35, 0L, 0L, 0L);
+			tfree(p->in.right);
+		} else
+			genquads(p->in.right);
+	}
+	p3->w0 = p->in.type;
+	p3->b2 = 0;
+	p3->w4 = 0;
+	*p1 = *operand(p->in.left);
+	if (kind == BITYPE && p->in.op != 0x7a)
+		*p2 = *operand(p->in.right);
+	else
+		p2 = 0;
+	switch (p->in.op) {
+	case 0x46: case 0x48: case 0x67: case 0x69:
+		p2 = &s2;
+		p2->b2 = 4;
+		p2->w4 = 0;
+		if (nest != 1) {
+			p3->b2 = 3;
+			p3->w4 = v0e++;
+		}
+		break;
+	case 0x3a:
+		*p3 = *p1;
+		*p1 = *p2;
+		p2 = 0;
+		break;
+	case 0x38:
+		*p1 = *p2;
+		p1 = 0;
+		break;
+	case 0xa:
+		p2 = &s2;
+		*p2 = *p1;
+		p1->b2 = 1;
+		p1->w4 = 0;
+		p->in.op = 8;
+		p3->b2 = 3;
+		p3->w4 = v0e++;
+		break;
+	case 0x4e:
+		if (p1->b2 != 3) {
+			p3->b2 = 3;
+			p3->w4 = v0e++;
+			q = addquad(0x3c, p1, 0L, p3);
+			if (nest != 1)
+				q->f0 = 1;
+			s4 = *p3;
+		} else
+			s4 = *p1;
+		p3->b2 = 3;
+		p3->w4 = v0e++;
+		addquad(1, p1, p2, p3);
+		*p2 = *p3;
+		*p3 = *p1;
+		if (p3->b2 == 3)
+			p3->w4 -= 1;
+		*p1 = *p2;
+		addquad(0x2f, p1, 0L, p3);
+		*p3 = s4;
+		goto tail;
+	case 0x4f:
+		if (p1->b2 != 3) {
+			p3->b2 = 3;
+			p3->w4 = v0e++;
+			q = addquad(0x3c, p1, 0L, p3);
+			if (nest != 1)
+				q->f0 = 1;
+			s4 = *p3;
+		} else
+			s4 = *p1;
+		p3->b2 = 3;
+		p3->w4 = v0e++;
+		addquad(0x30, p1, p2, p3);
+		*p2 = *p3;
+		*p3 = *p1;
+		if (p3->b2 == 3)
+			p3->w4 -= 1;
+		*p1 = *p2;
+		addquad(0x2f, p1, 0L, p3);
+		*p3 = s4;
+		goto tail;
+	case 0x65:
+		*p3 = *p1;
+		p3->w0 = p->in.type;
+		*p1 = *p2;
+		p2->b2 = 1;
+		p2->w0 = p->stn.stsize;
+		p2->w4 = p->stn.stalign;
+		break;
+	case 0x66:
+		goto done;
+	case 0x72:
+	case 0x73:
+		break;
+	case 0x7a:
+		p2 = &s2;
+		*p2 = *operand(p->in.right->in.left);
+		*p3 = *operand(p->in.right->in.right);
+		break;
+	default:
+		p3->b2 = 3;
+		p3->w4 = v0e++;
+		if (asgop(p->in.op)) {
+			addquad(qop[p->in.op - 1], p1, p2, p3);
+			*p2 = *p3;
+			*p3 = *p1;
+			*p1 = *p2;
+			p2 = 0;
+			if ((p3->w0 & 0x30) != 0x10 && p3->b2 == 3)
+				p3->w4 -= 1;
+		}
+	}
+	if (qop[p->in.op] == 7)
+		addquad(qop[p->in.op], p1, p3, p2);
+	else
+		addquad(qop[p->in.op], p1, p2, p3);
+	if (p->in.op == 0x7a) {
+		p->in.right->in.right->in.op = FREE;
+		p->in.right->in.left->in.op = FREE;
+	}
+tail:
+	lcopy = *p->in.left;
+	p->in.left->in.op = FREE;
+	if (kind == BITYPE) {
+		rcopy = *p->in.right;
+		p->in.right->in.op = FREE;
+	}
+	if (p3 && p3->b2 == 3) {
+		if (p->in.op == 0x3a)
+			*p = rcopy;
+		else if (!asgop(p->in.op) || p->in.op == 0x4e || p->in.op == 0x4f || p->in.op == 0x24 || p->in.op == 0x75 || p->in.op == 0x65) {
+			p->in.op = 0x7d;
+			p->tn.rval = p3->w4;
+		} else if (p1->b2 == 3) {
+			p->in.op = 0x7d;
+			p->tn.rval = p1->w4;
+		} else
+			*p = lcopy;
+	} else if (asgop(p->in.op) || p->in.op == 0x4e || p->in.op == 0x4f) {
+		p->in.op = p3->b2 == 3 ? 0x79 : 2;
+		p->tn.rval = p3->w4;
+		p->in.type = p3->w0;
+		p->in.sname = symtab + p->tn.rval;
+	}
+done:
+	nest--;
+}

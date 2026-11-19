@@ -156,3 +156,8 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   code); `p->in.sname - symtab` makes scodgen stop (rbusy) with p in a register; `*(base + i) += 1` gives the original's code where
   `base[i]++` does not. Not yet: genquads (4:0b5e..4:14a2), map (4:231c..4:2a3a, the strings "// map: ..."), 4:1c88 (floating),
   the pieces 4:2c10 .. 4:2e8e belong to debug2.c.
+- 2026-11-19: gopt, quads2.c: map (4:231c..4:2a48: ?: && || and the comma to jumps) masked equal; genquads (4:0b5e..4:14a2) written:
+  all but three places equal, open: the `and r0,#%7f00` that every compiler puts behind the lda of a local structure in a structure
+  assignment (the original has none: a finding for phase B, hidden for the check by fncheck.py FNC_DROP), `p3->b2 = 0` (rr0 against
+  rr2) and the last copy of the tree (one shared ldir in the original). Frame equal. make part builds comm2, rdr2, reader2, quads2.
+  Still missing in quads2.c: 4:1c88 (floating compare, EPU words) and debug2.c (4:2c10 ...), the modules after it.
