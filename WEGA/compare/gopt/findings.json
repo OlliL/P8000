@@ -3913,7 +3913,7 @@
    "file": "lpind2.c",
    "note": "open (DIFF 2): cause 2: ours has `and r6,#ADDR` after the lda of the struct assignment a = q->c (fnc drops only `and r0,..`)"
   },
-  "f5_5860": {
+  "moveindquad": {
    "orig": "5:5860",
    "size_orig": 428,
    "status": "open",

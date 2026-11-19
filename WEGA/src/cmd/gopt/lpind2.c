@@ -129,3 +129,51 @@ struct quad *q;
 	}
 	return q;
 }
+
+struct dl { int x0; struct quad *q; long l6; long l10; struct qa e14; int x20; unsigned f15:1, f14:1, f13:1, f12:1, f11:1, f10:1, rest:10; struct dl *next; };
+extern void denorm(), normop();
+
+/* the quad opqd gets a new stemp as its result operand; the stemp is entered into the definition (name from the debug output) */
+void
+moveindquad(x, opqd, out, d, d2, kind)
+struct quad *x, *opqd;
+struct qa *out;
+struct dl *d, *d2;
+int kind;
+{
+	if (s4d86 > 2) {
+		printf("moveindquad(), opqd:\n");
+		prquad(opqd);
+	}
+	if (opqd->op == 34 && opqd->next->op == 13) {
+		opqd = qmove(opqd);
+		opqd = opqd->next;
+	}
+	denorm(&x->a);
+	x->a.b2 = 6;
+	denorm(&opqd->c);
+	opqd->c.b2 = 6;
+	x->a.w4 = s4d94;
+	normop(&x->a);
+	d2->x20 = s4d94;
+	fn4_faa4(s4d94);
+	opqd->c.w4 = s4d94;
+	s4d94++;
+	normop(&opqd->c);
+	a0ec++;
+	*out = opqd->c;
+	if (d->f13) {
+		if (kind == 2) {
+			denorm(&opqd->a);
+			opqd->a.b2 = 6;
+			opqd->a.w4 = d->x20;
+			normop(&opqd->a);
+		} else if (kind == 3) {
+			denorm(&opqd->b);
+			opqd->b.b2 = 6;
+			opqd->b.w4 = d->x20;
+			normop(&opqd->b);
+		}
+	}
+	opqd = qmove(opqd);
+}
