@@ -91,3 +91,6 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   `#ifdef SEG`), mcrt0.o, smcrt0.o (PLZ/ASM, as): sources in src/lib, built in src/lib/build/nonseg and build/seg by
   src/lib/Makefile. The lib Makefiles name their compilers CC and SCC again (no CCV1, SCCV1). oldslibc/errlst/0_2.s is
   made from 0_2.c (sccvc -S): out of git. checkall ALL OK.
+- 2026-11-19: /lib/clist byte-identical: src/cmd/clist.c written from the binary (no source known), ccv0p with the oldv7
+  stdio.h, libc-v2 (now also fputs/0_1, filbuf/0_3, atoi/0_1 and data/0_1 instead of data.o; cpp stays identical);
+  rules in src/cmd/Makefile (SIMPLE), crt0.list; corpus compare/clist (17 cases, identical).

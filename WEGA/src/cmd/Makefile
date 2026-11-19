@@ -12,6 +12,7 @@
 CAS = cas
 CC  = cc
 CCV0 = ccv0
+CCV0P = ccv0p
 CCV1 = ccv1
 CCV1R = ccv1r
 LD  = ld
@@ -22,6 +23,7 @@ LIBC = /lib/libc.a
 CRT = ../lib/libc/nonseg/crt
 # the libc of each single-file command (the one of its time, as in its own Makefile before)
 LIBC_V1 = ../lib/libc-v1.a
+LIBC_V2 = ../lib/libc-v2.a
 LIBC_V3 = ../lib/libc-v3.a
 LIBC_V4 = ../lib/libc-v4.a
 LIBC_V6 = ../lib/libc-v6.a
@@ -30,7 +32,7 @@ LIBC_V10 = ../lib/libc-v10.a
 PROGS = ar
 
 # single-file commands, each with its own compiler and its own libc (byte-identical with the original)
-SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio
+SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o
@@ -42,7 +44,7 @@ all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 # switches the sources to what the shipped libc and cc need (the old libc's readsym, sprintf value, swap_quad; the exit status
 # of size). Without -DSHIPPED the bytes of the originals are rebuilt. The files of /lib are not made here: empty rules below.
 SHIPFLAGS = -O -DSHIPPED
-SHIPCC = CC=cc CCV0=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a
+SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a
 
 shipped:
 	$(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $(PROGS) $(FILES) $(SIMPLE) $(SHIPCC) LIBC=/lib/libc.a
@@ -146,6 +148,11 @@ size.o: size.c
 size: crt0-size.o size.o $(LIBC_V3)
 	$(LD) -e start -o $@ crt0-size.o size.o $(LIBC_V3)
 
+clist.o: clist.c
+	$(CCV0P) $(CFLAGS) -I../head/oldv7 -c clist.c
+clist: crt0-clist.o clist.o $(LIBC_V2)
+	$(LD) -e start -o $@ crt0-clist.o clist.o $(LIBC_V2)
+
 strip.o: strip.c
 	$(CCV1) $(CFLAGS) -c strip.c
 strip: crt0-strip.o strip.o $(LIBC_V4)
@@ -171,10 +178,10 @@ cpio.o: cpio.c
 cpio: crt0-cpio.o cpio.o
 	$(LD) -e start -o $@ crt0-cpio.o cpio.o -lc
 
-crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh `echo $@ | sed -e 's/^crt0-//' -e 's/\.s$$//'` > $@
 
-crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o: crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s
+crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o: crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s
 	$(CAS) -u -o $@ `echo $@ | sed -e 's/\.o$$/.s/'`
 
 install: $(PROGS) $(FILES) $(SIMPLE)
@@ -191,6 +198,8 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	cp sum $(PREFIX)/bin/sum ; $(STRIP) $(PREFIX)/bin/sum
 	cp pr $(PREFIX)/bin/pr ; $(STRIP) $(PREFIX)/bin/pr
 	cp cpio $(PREFIX)/usr/bin/cpio ; $(STRIP) $(PREFIX)/usr/bin/cpio
+	mkdir -p $(PREFIX)/lib
+	cp clist $(PREFIX)/lib/clist ; $(STRIP) $(PREFIX)/lib/clist
 	cp mv $(PREFIX)/bin/mv ; $(STRIP) $(PREFIX)/bin/mv
 	rm -f $(PREFIX)/bin/cp $(PREFIX)/bin/ln
 	ln $(PREFIX)/bin/mv $(PREFIX)/bin/cp
@@ -239,10 +248,10 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 
 clean:
 	rm -f $(PROGS) $(FILES) $(CLEANFILES) $(SIMPLE)
-	rm -f mv.o rm.o rmdir.o write.o size.o strip.o ranlib.o sum.o pr.o cpio.o
+	rm -f mv.o rm.o rmdir.o write.o size.o strip.o ranlib.o sum.o pr.o cpio.o clist.o
 	rm -f crt0-ar.o crt0-sync.o crt0-ar.s crt0-sync.s
-	rm -f crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o
-	rm -f crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s
+	rm -f crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o
+	rm -f crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s
 	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) clean ; cd .. ; done
 
 .PHONY: all subdirs clean install

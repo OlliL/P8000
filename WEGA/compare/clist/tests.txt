@@ -1,0 +1,167 @@
+# The cases of the corpus of clist (compare/clist/corpus.py); the format: host/recon/casefile.py. No man page; src =
+# src/cmd/clist.c. t.in is the assembler file, t.out the listing (cat'ed by the last step).
+
+== plain
+# src: lines without .line are copied
+-- t.in
+	ld	r2,r3
+	ret
+-- case
+step: clist t.in t.out
+step: cat t.out
+
+== comments-dropped
+# src: lines starting with // or /* are dropped, a single / is kept
+-- t.in
+// a comment
+/* another */
+/x kept
+	ret
+-- case
+step: clist t.in t.out
+step: cat t.out
+
+== line-quoted
+# src: \t.line\tN\t"file" (cc -Sl, codgen -l): the C lines up to N, each as "// " + the line, before the .line line
+-- f.c
+int a;
+int b;
+main()
+{
+	return a + b;
+}
+-- t.in
+	.line	3	"f.c"	
+	ld	r2,r3
+	.line	5	"f.c"	
+	ret
+-- case
+step: clist t.in t.out
+step: cat t.out
+
+== line-unquoted
+# src: the name without quotes, ended by blank or tab
+-- f.c
+one
+two
+three
+-- t.in
+	.line	2	f.c x
+	nop
+-- case
+step: clist t.in t.out
+step: cat t.out
+
+== rest-at-end
+# src: done(0) copies the rest of the C file
+-- f.c
+1
+2
+3
+4
+-- t.in
+	.line	1	"f.c"	
+	nop
+-- case
+step: clist t.in t.out
+step: cat t.out
+
+== file-change
+# src: another file: the rest of the old one first, then the new one from line 1
+-- f.c
+f1
+f2
+-- g.c
+g1
+g2
+g3
+-- t.in
+	.line	1	"f.c"	
+	nop
+	.line	2	"g.c"	
+	ret
+-- case
+step: clist t.in t.out
+step: cat t.out
+
+== line-backwards
+# src: a lower line number does nothing
+-- f.c
+a
+b
+c
+-- t.in
+	.line	3	"f.c"	
+	.line	1	"f.c"	
+	nop
+-- case
+step: clist t.in t.out
+step: cat t.out
+
+== unexpected-eof
+# src: a line beyond the end of the C file: "loption: unexpected EOF", exit 1
+-- f.c
+only
+-- t.in
+	.line	5	"f.c"	
+-- case
+step: clist t.in t.out
+step: cat t.out
+
+== no-c-file
+# src: "loption: can't open C file"
+-- t.in
+	.line	1	"nofile.c"	
+-- case
+step: clist t.in t.out
+
+== no-infile
+# src: "loption: can't open infile"
+-- case
+step: clist none.s t.out
+
+== no-outfile
+# src: "loption: can't open outfile"
+-- case
+step: clist t.in nodir/t.out
+
+== bad-cmd-line
+# src: fewer than two arguments: "loption: bad cmd line"
+-- case
+step: clist t.in
+
+== no-args
+-- case
+step: clist
+
+== long-line
+# src: a line of 255 characters without newline: "loption: buffer too small"
+-- case
+host: awk 'BEGIN{for(i=0;i<300;i++)printf "x"; printf "\n"}' > t.in
+step: clist t.in t.out
+
+== line-254
+# src: 254 characters and the newline fit
+-- case
+host: awk 'BEGIN{for(i=0;i<254;i++)printf "y"; printf "\n"}' > t.in
+step: clist t.in t.out
+step: cat t.out
+
+== no-newline
+# src: the last line without a newline (EOF ends it)
+-- case
+host: printf '\tnop' > t.in
+step: clist t.in t.out
+step: cat t.out
+
+== dotline-prefix
+# src: only "\t.line" is checked, the number at column 7: "\t.lineX2" also counts
+-- f.c
+x1
+x2
+-- t.in
+	.lineX2	"f.c"	
+	nop
+-- case
+step: clist t.in t.out
+step: cat t.out

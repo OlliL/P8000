@@ -1,0 +1,97 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv0p",
+ "binary": "/lib/clist",
+ "functions": {
+  "start": {
+   "file": "crt0",
+   "orig": "0x0000",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "main": {
+   "file": "clist.c",
+   "orig": "0x002a",
+   "size_orig": 144,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start"
+   ],
+   "note": "no source known; all names guessed (written from the binary). switch with case 0 falling into case 2 (the .line line is kept after the C lines). An unused global char[256] stands first in the bss (name buf guessed; its place only from the bss addresses)."
+  },
+  "classify": {
+   "file": "clist.c",
+   "orig": "0x00ba",
+   "size_orig": 202,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start",
+    "main"
+   ]
+  },
+  "copysrc": {
+   "file": "clist.c",
+   "orig": "0x0184",
+   "size_orig": 124,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start",
+    "main"
+   ]
+  },
+  "putline": {
+   "file": "clist.c",
+   "orig": "0x0200",
+   "size_orig": 164,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "copysrc",
+    "done"
+   ]
+  },
+  "getline": {
+   "file": "clist.c",
+   "orig": "0x02a4",
+   "size_orig": 130,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start",
+    "main",
+    "copysrc",
+    "done"
+   ]
+  },
+  "error": {
+   "file": "clist.c",
+   "orig": "0x0326",
+   "size_orig": 30,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start",
+    "main",
+    "copysrc",
+    "getline"
+   ]
+  },
+  "done": {
+   "file": "clist.c",
+   "orig": "0x0344",
+   "size_orig": 64,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start",
+    "main",
+    "error"
+   ]
+  }
+ }
+}

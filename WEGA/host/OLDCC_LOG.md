@@ -1542,3 +1542,13 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   scodgen build/segv1c), the descriptions to src/lib/libcisam/COMPILER.md, the diffs (host/libcisam_switches) removed.
   libcisam into src/lib/Makefile (ccv1c/sccv1c -O, Library_libcisam.SC and Library_slibcisam.SC differ in the check-out
   times; arhdr and mkar.sh from libsetup.py). Both archives byte-identical (cmp) in a scratch build.
+
+## 2026-11-19 clist (/lib/clist, increment 150)
+
+- Dating: D1 tight, no SCCS line (OLDCC_DATES.md). ccv0p and ccv0 -O with src/head/oldv7 give the same bytes for clist.c
+  and for fputs.c of libc; v1, v1r, v1q differ (fputs: 78/82 bytes against 74). Taken: v0p, as cpp (the same libc).
+- The libc is libc-v2 of cpp with three more members in its order (fputs/0_1 new: libc's fputs.c by ccv0p; filbuf/0_3,
+  atoi/0_1) and data/0_1 instead of the shipped data.o: data/0_1 names __sobuf before __sibuf, which gives the bss order
+  of clist (_sobuf 0x19fe, _sibuf 0x1bfe); cpp stays byte-identical with it (cmp after the rebuild).
+- The source: no source known (the System III uts/vax/io/clist.c is another thing); src/cmd/clist.c written from the
+  binary, exact at the first build but for the bss; the getline loop as plain while or as for(;;) with breaks: the same bytes.

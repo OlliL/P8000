@@ -665,6 +665,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cparse | vinit1.c | v0p | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  | x |  |  |  |  |
 | cparse | sym1.c | v0p | x | x | ? |  | ? |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |
 | cpp | cpp.c, cpy.y, yylex.c | v0p |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
+| clist | clist.c | v0p | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | kernel | sig.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
 | kernel | sys2.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
 | kernel | sys3.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |

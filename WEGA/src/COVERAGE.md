@@ -11,14 +11,14 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
 | [bin](#bin) | 111 | 27 | 5 | 50 | 29 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
-| [lib](#lib) | 30 | 24 | 0 | 2 | 4 |
+| [lib](#lib) | 30 | 25 | 0 | 1 | 4 |
 | [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
 | [usr/lib](#usr-lib) | 197 | 119 | 2 | 57 | 19 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 879 | 13 | 191 | 114 |
+| **all** | 1197 | 880 | 13 | 190 | 114 |
 
 <a id="root"></a>
 ## root
@@ -237,7 +237,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `lib/as2d` | binary E705 | - | todo | D12 mixed, D1 - | - |
 | `lib/asz2` | binary E705 | - | todo | D12 -, D1 tight | - |
 | `lib/asz2d` | binary E705 | - | todo | D12 mixed, D1 - | - |
-| `lib/clist` | binary E707 | `tmp/sys3/usr/src/uts/vax/io/clist.c` | sys3 | D12 -, D1 tight | - |
+| `lib/clist` | binary E707 | `src/cmd/clist.c` | exact | ccv0p | libc-v2.a |
 | `lib/cnvt.o` | binary E711 | `src/lib` | exact | ccv1 | n/a (object) |
 | `lib/codgen` | binary E711 | `src/cmd/codgen` | exact | ccv0p | libc-v5.a |
 | `lib/cparse` | binary E711 | `src/cmd/cparse` | exact | ccv0p | libc-v7.a |

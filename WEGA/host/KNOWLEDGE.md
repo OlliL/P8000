@@ -94,6 +94,7 @@ Size = s_imsize, I&D = combined (E?07) or separate (E?11).
 | /bin/cc | E707 | nonseg | 11228 | 2940 | 2192 | driver |
 | /bin/scc | E707 | nonseg | 11240 | 2966 | 2192 | driver |
 | /lib/cpp | E707 | nonseg | 13064 | 3418 | 23766 | cpp.c 1.5, cpy.y 1.2, yylex.c 1.1 |
+| /lib/clist | E707 | nonseg | 5328 | 550 | 1800 | clist.c (no SCCS line; src/cmd/clist.c written from the binary), libc-v2 |
 | /lib/cparse | E711 | nonseg | 48896 | 18584 | 28804 | cgram1.y 2.5, code1.c, comm1.c, local1.c, optim1.c, pftn1.c, scan1.c, sym1.c, trees1.c, vinit1.c, xdefs1.c, common, optim |
 | /lib/scparse | E711 | nonseg | 49152 | 18634 | 28804 | same module set as cparse |
 | /lib/codgen | E711 | nonseg | 53760 | 27084 | 17522 | allo3, comm3, lcl3, local3, match3, optim3, order3, rdr3, reader3, regallo3, regs3, table3, table3.nzcc, tr3, wrt3 |
@@ -962,6 +963,7 @@ means it does something fixed instead (only possible where the original's result
 
 | Program | Bug or quirk | Rebuild | Details |
 |---------|--------------|---------|---------|
+| `/lib/clist` | an unused global array of 256 bytes (the first of the bss, name `buf` guessed); `\t.line` lines are found by their first 6 bytes, the number is read at column 7 and the name after the next tab, without a bound (a `.line` line without a tab runs past its end); the `.line` lines stay in the listing | kept | `compare/clist/findings.json` |
 | `/usr/lib/libcisam.a`, `slibcisam.a` (`error`) | writes `sizeof` of the message, its NUL byte too | kept | `compare/libcisam/findings.json` |
 | `/usr/lib/libcisam.a`, `slibcisam.a` (`freeopen`, `freefile`) | `freeopen(op)` clears the flags of the global `openp`, not of `op`; `freefile(fp)` drops the buffers of `filep`, not of `fp` (the same file in the callers) | kept | `compare/libcisam/findings.json` |
 | `/usr/lib/libcisam.a`, `slibcisam.a` (`isperror`) | `is_errlist` has 14 messages: EFNAME (114) and ENOLOK (115) print "Unknown error" | kept | `compare/libcisam/findings.json` |
@@ -1884,7 +1886,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | Library | Programs |
 |---|---|
 | libc-v1 | dc, ranlib (07/82) |
-| libc-v2 | cpp (12/82) |
+| libc-v2 | cpp (12/82), clist |
 | libc-v3 | size (01/83) |
 | libc-v4 | strip (01/83) |
 | libc-v5 | codgen, scodgen, popt, spopt |
