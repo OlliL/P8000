@@ -2140,15 +2140,6 @@
    "note": "case block of jmplabel",
    "file": "flow2.c"
   },
-  "prgraph": {
-   "orig": "5:9698",
-   "size_orig": 506,
-   "status": "open",
-   "kind": "proven",
-   "module": "reg2.c",
-   "file": "reg2.c",
-   "note": "open (DIFF 11, cause 7): the two loads of a11a[i].q via rr2 in the original, via rr0 in ours (temp pair); the rest equals"
-  },
   "dfs": {
    "orig": "4:aaac",
    "size_orig": 298,
@@ -2770,15 +2761,6 @@
    "file": "live2.c",
    "note": "name from the string"
   },
-  "sameopnd": {
-   "orig": "4:e1d0",
-   "size_orig": 560,
-   "status": "masked",
-   "kind": "proven",
-   "module": "live2.c",
-   "file": "live2.c",
-   "note": "odd form: (long)(checkalias(p, pw) == a1) (the original tests the comparison as a long value: tcc, exts, testl); the switches over pw and qw in the order 2, 3, 1; name from the strings"
-  },
   "linkreachdefs": {
    "orig": "4:e400",
    "size_orig": 802,
@@ -2959,68 +2941,71 @@
    "file": "live2.c",
    "note": "name guessed (the driver of the reaching definitions)"
   },
-  "f4_f5fe": {
+  "betainit": {
    "orig": "4:f5fe",
    "size_orig": 260,
    "status": "open",
    "kind": "proven",
-   "module": "beta2.c"
+   "module": "beta2.c",
+   "file": "beta2.c",
+   "note": "open (DIFF 2): the store t->fl = flag misses `and r0,#0x0800` after the shift (tried flag unsigned, & 1, signed field); the rest equals; the case blocks f702, f8ac, f97a are inside"
   },
   "f4_f702": {
    "orig": "4:f702",
    "size_orig": 426,
    "status": "open",
    "kind": "candidate",
-   "module": "beta2.c"
+   "module": "beta2.c",
+   "note": "case block of betainit"
   },
   "f4_f8ac": {
    "orig": "4:f8ac",
    "size_orig": 206,
    "status": "open",
    "kind": "candidate",
-   "module": "beta2.c"
+   "module": "beta2.c",
+   "note": "case block of betainit"
   },
   "f4_f97a": {
    "orig": "4:f97a",
    "size_orig": 206,
    "status": "open",
    "kind": "candidate",
-   "module": "beta2.c"
+   "module": "beta2.c",
+   "note": "case block of betainit"
   },
-  "f4_fa48": {
+  "betaset": {
    "orig": "4:fa48",
    "size_orig": 92,
    "status": "open",
    "kind": "proven",
-   "module": "beta2.c"
+   "module": "beta2.c",
+   "file": "beta2.c"
   },
-  "f4_faa4": {
+  "betanew": {
    "orig": "4:faa4",
    "size_orig": 98,
    "status": "open",
    "kind": "proven",
-   "module": "beta2.c"
+   "module": "beta2.c",
+   "file": "beta2.c"
   },
-  "f4_fb06": {
+  "betaprint": {
    "orig": "4:fb06",
    "size_orig": 226,
    "status": "open",
    "kind": "proven",
-   "module": "beta2.c"
+   "module": "beta2.c",
+   "file": "beta2.c",
+   "note": "BBIT(i, 13) form; if (!bit) FALSE else TRUE"
   },
-  "f4_fbe8": {
+  "isvarty": {
    "orig": "4:fbe8",
    "size_orig": 30,
    "status": "open",
    "kind": "proven",
-   "module": "beta2.c"
-  },
-  "f4_fc06": {
-   "orig": "4:fc06",
-   "size_orig": 52,
-   "status": "open",
-   "kind": "proven",
-   "module": "beta2.c"
+   "module": "beta2.c",
+   "file": "beta2.c"
   },
   "f4_fc3a": {
    "orig": "4:fc3a",
@@ -5006,6 +4991,42 @@
    "status": "open",
    "kind": "candidate",
    "module": "libc"
+  },
+  "eqopnd": {
+   "orig": "4:fc06",
+   "size_orig": 52,
+   "status": "open",
+   "kind": "proven",
+   "module": "beta2.c",
+   "file": "beta2.c",
+   "note": "open (DIFF 7): the original spills only b (ldl 0(r15),rr4) and uses rr4 as temp; ours spills a and b (ldm) and uses rr6 (tried register a, swapped operands, ?:)"
+  },
+  "sameopnd": {
+   "orig": "4:e1d0",
+   "size_orig": 560,
+   "status": "masked",
+   "kind": "proven",
+   "module": "live2.c",
+   "file": "live2.c",
+   "note": "odd form: (long)(checkalias(p, pw) == a1) (the original tests the comparison as a long value: tcc, exts, testl); the switches over pw and qw in the order 2, 3, 1; name from the strings"
+  },
+  "prcgraph": {
+   "orig": "5:9698",
+   "size_orig": 506,
+   "status": "open",
+   "kind": "proven",
+   "module": "reg2.c",
+   "file": "reg2.c",
+   "note": "open (DIFF 11, cause 7): the two loads of a11a[i].q via rr2 in the original, via rr0 in ours (temp pair); the rest equals"
+  },
+  "prgraph": {
+   "orig": "4:a9ac",
+   "size_orig": 256,
+   "status": "masked",
+   "kind": "proven",
+   "module": "flow2.c",
+   "file": "flow2.c",
+   "note": "name guessed: the graph printed (debug); register variables i (r13) and e (r12)"
   }
  },
  "status_note": "masked = the function equals the original under fncheck.py (segment numbers and addresses masked), compiler sccvc under OLDROOT; exact only after the link with segcmp.py"

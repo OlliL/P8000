@@ -41,8 +41,8 @@ extern void addrestore();
 extern void markreg();
 extern struct quad *addsave(), *ebbtail();
 extern struct quad *insertquad();
-extern int fn4_fc06();
-extern void propagate(), addsavequads(), rmrestorequad(), prgraph();
+extern int eqopnd();
+extern void propagate(), addsavequads(), rmrestorequad(), prcgraph();
 struct pr { int x; int y; };
 extern struct pr *a70aa;
 extern int blkno;
@@ -68,7 +68,7 @@ extern struct gnn *a11a;
 extern char *taballoc();
 extern int notlive(), inreach();
 extern void mergevectors(), updatevector(), degrees();
-extern void prquad(), prvec(), include(), buildgraph(), colorgraph(), savecolors(), prgraph();
+extern void prquad(), prvec(), include(), buildgraph(), colorgraph(), savecolors(), prcgraph();
 extern void clearflags(), livevars(), reachdefs(), prquads(), ebbopt(), clearblocks(), marklpblocks();
 
 extern void marklps(), symflags(), chkcalls(), assignreg();
@@ -213,12 +213,12 @@ int flag;
 		degrees();
 		if (s4d90) {
 			printf("// graph before coloring\n");
-			prgraph();
+			prcgraph();
 		}
 		colorgraph(flag);
 		if (s4d90) {
 			printf("// graph after coloring\n");
-			prgraph();
+			prcgraph();
 		}
 		savecolors();
 		if (s4d90) {
@@ -643,7 +643,7 @@ savecolors()
 	if (s4d90) {
 		printf("// quads before propagation\n");
 		prquads();
-		prgraph();
+		prcgraph();
 	}
 	propagate();
 	if (s4d90) {
@@ -679,7 +679,7 @@ struct quad *p;
 			continue;
 		if (qq->a.w4 != reg)
 			continue;
-		if (!fn4_fc06(&qq->b, &c))
+		if (!eqopnd(&qq->b, &c))
 			continue;
 		if (s4d90) {
 			printf("// addreg (1) returning : ");
@@ -789,7 +789,7 @@ addsavequads()
 					if (a10a[out] & (1 << r)) {
 						pa = &rquad(out, r)->b;
 						pb = &rquad(b, r)->b;
-						if (!fn4_fc06(pb, pa))
+						if (!eqopnd(pb, pa))
 							addsave(r, out);
 					}
 				}
@@ -829,7 +829,7 @@ rmrestorequad()
 			for (c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
 				findend(s, &out);
 				t = rquad(out, reg);
-				if (t == 0 || !fn4_fc06(&q->b, &t->b))
+				if (t == 0 || !eqopnd(&q->b, &t->b))
 					ok = 0;
 			}
 			if (ok == 1)
@@ -871,7 +871,7 @@ propagate()
 			} else {
 				pa = &rquad(c, r)->b;
 				pb = &rquad(b, r)->b;
-				if (!fn4_fc06(pb, pa))
+				if (!eqopnd(pb, pa))
 					continue;
 				q = rquad(b, r)->next;
 				if (s4d90 > 1) {
@@ -1082,7 +1082,7 @@ int n;
 
 /* the graph is printed (name from the debug output) */
 void
-prgraph()
+prcgraph()
 {
 	struct gn *p;
 	struct edge *e;
@@ -1151,9 +1151,9 @@ struct quad *r, *r3;
 			return 0;
 		if (c->op == 40)
 			continue;
-		if (fn4_fc06(&r->b, &c->a))
+		if (eqopnd(&r->b, &c->a))
 			return 1;
-		if (fn4_fc06(&r->b, &c->b))
+		if (eqopnd(&r->b, &c->b))
 			return 1;
 	}
 	return 0;
@@ -1190,11 +1190,11 @@ struct quad *s;
 		if (c->op == 27 && c->b.w4 == n)
 			return 0;
 		if (c->op != 40 && c->op != 41) {
-			if (fn4_fc06(&s->b, &c->a))
+			if (eqopnd(&s->b, &c->a))
 				return 1;
-			if (fn4_fc06(&s->b, &c->b))
+			if (eqopnd(&s->b, &c->b))
 				return 1;
-			if (fn4_fc06(&s->b, &c->c))
+			if (eqopnd(&s->b, &c->c))
 				return 1;
 		}
 	}

@@ -21,7 +21,7 @@ CAS = cas
 SLD = sld
 SLDFLAGS = -i -e start -z -Md7 -Mb8
 CRT = ../../lib/libc/nonseg/crt
-LIBC = ../../lib/slibc-v11.a
+LIBC = ../../lib/slibc-v12.a
 PREFIX = /
 STRIP = strip
 

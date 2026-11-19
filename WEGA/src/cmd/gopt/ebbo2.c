@@ -13,7 +13,7 @@ struct aln { int x0; struct aln *next; struct aln *link; };
 struct hent { struct hent *next; int op; int v1; int v2; int val; unsigned cst:1, num:15; struct quad *q; };	/* an entry of htab (guessed) */
 extern struct hent *htab[32];
 extern char a050e[], a0010[];
-extern int fn4_faa4();
+extern int betanew();
 extern long lconst[];
 extern struct aln *usetbl[];
 extern int inuse(), canopt();
@@ -21,14 +21,14 @@ extern int a70ce, a70c6;
 extern struct { struct quad *q; struct sym *s; } a71ec[];
 extern struct aln *killtbl[];
 extern struct sym *symtab;
-extern int fn4_fc06(), killed();
+extern int eqopnd(), killed();
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };	/* an entry of betatbl: 10 bytes (guessed) */
 extern struct bt *betatbl;
 /* an entry of the value table (name guessed): 16 bytes */
 struct vn { struct vn *next; struct qa a; int val; int al; unsigned cst:1, dead:1, rest:14; };
 extern int almap();
 extern void propnd(), normop(), denorm();
-extern int fn4_fbe8(), cerror();
+extern int isvarty(), cerror();
 extern char *taballoc();
 extern struct quad *checkalias();
 extern void tabfree(), prqall();
@@ -146,7 +146,7 @@ int flag;
 	e = (struct vn *)a0cc;
 	while (e != 0) {
 		if (e->val == vn && !e->dead) {
-			if (flag == 1 || (flag == 0 && !fn4_fbe8(e->a.b2))) {
+			if (flag == 1 || (flag == 0 && !isvarty(e->a.b2))) {
 				if (s4d80) {
 					printf("//update ");
 					propnd(p);
@@ -375,7 +375,7 @@ struct quad *first, *last;
 			}
 			denorm(&h->q->c);
 			h->q->c.b2 = 6;
-			fn4_faa4(s4d94);
+			betanew(s4d94);
 			x = h->q->c.w4;
 			y = s4d94;
 			h->q->c.w4 = s4d94++;
@@ -579,7 +579,7 @@ int ot;
 				y = (struct aln *)&betatbl[q->c.w4];
 		} else {
 			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
-				if (y->x0 == e->al && fn4_fc06(&e->a, &q->c) && e->al >= 0) {
+				if (y->x0 == e->al && eqopnd(&e->a, &q->c) && e->al >= 0) {
 					if (q->c.b2 == 4)
 						y = (struct aln *)&symtab[q->c.w4];
 					else
@@ -660,7 +660,7 @@ struct quad *q;
 		printf("// in checkuse ---");
 		prquad(q);
 	}
-	if (!fn4_fbe8(q->a.b2) && q->a.b2 != 3 && q->a.b2 != 5) {
+	if (!isvarty(q->a.b2) && q->a.b2 != 3 && q->a.b2 != 5) {
 		if (q->a.b2 == 8 || q->a.b2 == 6)
 			p = (struct aln *)&betatbl[q->a.w4];
 		else if (q->a.b2 == 4 && (p = (struct aln *)checkalias(q, 2)) == 0)
@@ -672,7 +672,7 @@ struct quad *q;
 				cerror("use_tbl overflow");
 		}
 	}
-	if (!fn4_fbe8(q->b.b2) && q->b.b2 != 3 && q->b.b2 != 0) {
+	if (!isvarty(q->b.b2) && q->b.b2 != 3 && q->b.b2 != 0) {
 		if (q->b.b2 == 8 || q->b.b2 == 6)
 			p = (struct aln *)&betatbl[q->b.w4];
 		else if (q->b.b2 == 4 && (p = (struct aln *)checkalias(q, 3)) == 0)

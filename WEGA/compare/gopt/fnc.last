@@ -1,4 +1,8 @@
 {
-"isebbend": "OK",
-"nullfn": "OK"
+"betainit": "DIFF 2 (object 308 instructions, original 309)",
+"betaset": "OK",
+"betanew": "OK",
+"betaprint": "OK",
+"isvarty": "OK",
+"eqopnd": "DIFF 7 (object 23 instructions, original 23)"
 }
