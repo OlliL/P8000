@@ -31,8 +31,11 @@ extern struct quad **s7154;
 extern int *srchdef();
 extern int tstlbit(), testbit();
 extern void clrlbit(), setlbit(), setbit();
+extern void clrbit(), fn5_964c(), fn5_7eac(), fn5_8092();
+extern int fn5_7f2e();
 extern void clrmat(), orvec(), mergevectors(), updatevector();
 extern struct gn *setedges();
+extern void colorgraph();
 extern int fn5_91fc(), fn5_9372();
 #define QF(q, o)	(*(unsigned **)(*(char **)((char *)(q) + 6) + (o)))
 extern void propnd();
@@ -42,7 +45,7 @@ extern struct gnn *a11a;
 extern char *taballoc();
 extern int notlive(), fn5_9adc();
 extern void mergevectors(), updatevector(), degrees();
-extern void prquad(), prvec(), include(), buildgraph(), fn5_7cb4(), fn5_8198(), fn5_9698();
+extern void prquad(), prvec(), include(), buildgraph(), colorgraph(), fn5_8198(), fn5_9698();
 extern void clearflags(), livevars(), reachdefs(), prquads(), ebbopt(), clearblocks(), marklpblocks();
 
 extern void marklps(), symflags(), chkcalls(), assignreg();
@@ -189,7 +192,7 @@ int flag;
 			printf("// graph before coloring\n");
 			fn5_9698();
 		}
-		fn5_7cb4(flag);
+		colorgraph(flag);
 		if (s4d90) {
 			printf("// graph after coloring\n");
 			fn5_9698();
@@ -413,4 +416,60 @@ unsigned *vec;
 		}
 	}
 	return p;
+}
+
+/* the nodes of the graph are colored: the nodes with few neighbours are put on a stack and get their color in the reverse order (name from the debug output) */
+void
+colorgraph(flag)
+int flag;
+{
+	struct gn *p;
+	struct gn **stack;
+	int sp, again, spill, k, j;
+
+	sp = 0;
+	if (flag == 0) {
+		k = 7;
+		if (s4d72)
+			k--;
+	} else
+		k = 4;
+	again = 1;
+	stack = (struct gn **)taballoc(a116 * 4, 0);
+	for (;;) {
+		while (again) {
+			again = 0;
+			spill = 0;
+			for (p = a11e; p != 0; p = p->link) {
+				if (s4d90 > 4)
+					printf("// colorgraph: inside for loop - node %d, degree %d\n", p->row, p->cnt);
+				if (p->cnt + p->x14 <= k && p->f15 == 0) {
+					p->f15 = 1;
+					stack[sp++] = p;
+					again = 1;
+					for (j = 1; j < a10e; j++) {
+						if (testbit(a110, j, p->row, a118)) {
+							clrbit(a110, j, p->row, a118);
+							clrbit(a110, p->row, j, a118);
+							fn5_964c(j);
+							--p->cnt;
+						}
+					}
+				} else if (!p->f15)
+					spill = 1;
+			}
+		}
+		if (spill == 0) {
+			while (--sp >= 0) {
+				p = stack[sp];
+				if (s4d90 > 2)
+					printf("// picking color for node %d\n", p->row);
+				fn5_7eac();
+				p->x12 = fn5_7f2e(p, k);
+			}
+			return;
+		}
+		fn5_8092();
+		again = 1;
+	}
 }

@@ -4151,12 +4151,13 @@
    "file": "reg2.c",
    "note": "open (DIFF 12): only the first statement q = a11a[i].q: the original copies the parameter (ld r3,r7; mult rr2) and loads through rr0, ours multiplies rr6 in place and uses an indexed load (cause 1/4)"
   },
-  "f5_7cb4": {
+  "colorgraph": {
    "orig": "5:7cb4",
    "size_orig": 504,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_7eac": {
    "orig": "5:7eac",
