@@ -2584,7 +2584,7 @@
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_ce7a": {
+  "setsymtable": {
    "orig": "4:ce7a",
    "size_orig": 580,
    "status": "open",

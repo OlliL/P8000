@@ -12,7 +12,7 @@ extern char *taballoc();
 extern int s4d84, s715e, nlv, lvidx;
 struct lv { unsigned kind:1, alias:1, var:14; };	/* an entry of the table of the live variables (guessed names) */
 extern struct lv *lvtab;
-struct bt { int x[4]; unsigned f15:1, f14:1, bopt:1, rest:13; };	/* an entry of betatbl: 10 bytes (guessed) */
+struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };	/* an entry of betatbl: 10 bytes (guessed) */
 extern struct bt *betatbl;
 struct aln { int x0; struct aln *next; struct aln *link; };
 extern struct aln *checkalias();
@@ -152,6 +152,68 @@ insrtlive(q, cnt)
 	if (islive(v, 1, 1))
 		return 1;
 	if (nlv > 480)
+		return 0;
+	return 1;
+}
+
+/* the operand which (1: the result, 2: the operand a, 3: the operand b) of the quad q: its symbol is entered once in the table of the live variables (name from the strings) */
+int
+setsymtable(q, which)
+	struct quad *q;
+	int which;
+{
+	int t;
+	struct quad tq;
+	int cnt;
+
+	tq.a.b2 = 4;
+	switch (which) {
+	case 1:
+		if (s4d84 > 3)
+			printf("setsymtable(RSLT)\n");
+		t = q->c.w4;
+		if (q->c.b2 == 8)
+			tq.a.w4 = t = betatbl[q->c.w4].x1;
+		else
+			tq.a = q->c;
+		break;
+	case 2:
+		if (s4d84 > 3)
+			printf("setsymtable(OP1)\n");
+		t = q->a.w4;
+		if (q->a.b2 == 8)
+			tq.a.w4 = t = betatbl[q->a.w4].x1;
+		else
+			tq.a = q->a;
+		break;
+	case 3:
+		if (s4d84 > 3)
+			printf("setsymtable(OP2)\n");
+		t = q->b.w4;
+		if (q->b.b2 == 8)
+			tq.a.w4 = t = betatbl[q->b.w4].x1;
+		else
+			tq.a = q->b;
+		break;
+	}
+	if (s4d84 > 3)
+		printf("setsymtable(), %s, optimize=%d\n", ascii + symtab[t].nameoff, symtab[t].sflags & 1);
+	if (symtab[t].sflags & 1)
+		return 1;
+	symtab[t].sflags |= 1;
+	tq.b.b2 = 0;
+	tq.c.b2 = 0;
+	tq.op = 0x2f;
+	cnt = 0;
+	if (!insrtlive(&tq, &cnt))
+		return 0;
+	tq.op = 0x18;
+	if (!insrtlive(&tq, &cnt))
+		return 0;
+	tq.op = 3;
+	if (!insrtlive(&tq, &cnt))
+		return 0;
+	if (cnt < 3 && !islive(t, 1, 0) && nlv > 480)
 		return 0;
 	return 1;
 }
