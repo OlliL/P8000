@@ -1158,3 +1158,106 @@ int flag;
 	}
 	return blkno - 1;
 }
+
+extern int *a7124, a0f0, a0da, a0e6, a0ec, a0ee, a0fe;
+extern struct quad *fn5_56cc(), *fn5_567e(), *fn5_6bf2();
+extern void fn5_6614();
+extern char a050e[];
+
+/* the list of blocks is put into the order of the array a7124 (name guessed) */
+void
+orderbl(pp)
+struct bl **pp;
+{
+	struct bl *x, *y;
+	int i, t;
+
+	x = *pp;
+	for (i = 0; i < blkno; i++) {
+		if (a7124[i] >= 0) {
+			for (y = x; y != 0; y = y->next)
+				if (y->blk == a7124[i])
+					break;
+			if (y != 0) {
+				t = y->blk;
+				y->blk = x->blk;
+				x->blk = t;
+				if ((x = x->next) == 0)
+					return;
+			}
+		}
+	}
+}
+
+/* the loop invariant quads of the loop lp are moved out of the loop (name from the debug output) */
+void
+proceslp(lp)
+struct loop *lp;
+{
+	int blk, k1, k2;
+	struct quad *q, *r;
+	struct bl *b;
+
+	if (s4d86)
+		printf("// proceslp : moving loop inv quads:\n");
+	a0da = 0;
+	for (b = lp->bls; b != 0; b = b->next) {
+		blk = b->blk;
+		if (s4d86 > 1)
+			printf("proceslp(): looking at block=%d\n", blk);
+		if (QHREC(blks[blk])->w12) {
+			if (s4d86 > 2)
+				printf("proceslp(): looking at loop block=%d\n", blk);
+			for (q = blks[blk]->next; q != 0; q = q->next) {
+				if (q->op == 59)
+					break;
+				if (s4d86 > 2) {
+					printf("proceslp: looking at quad, q->lpinv=%d, q->sdef=%d, q->lpind=%d\n", q->f3, q->f1, q->f2);
+					prquad(q);
+				}
+				if (q->f3) {
+					if (q->c.b2 == 3 && a050e[q->c.w4] > 2)
+						q = fn5_56cc(q);
+					else
+						q = fn5_567e(q);
+				} else if (q->c.b2 == 3 || q->c.b2 == 8) {
+					r = fn5_6bf2(q, blk);
+					if (r != 0)
+						q = r;
+				}
+			}
+			if (a0f0)
+				fn5_6614();
+		}
+	}
+}
+
+/* the loops with a count of zero are marked as done; the result tells whether there was one (name from the debug output) */
+int
+marksloop()
+{
+	struct loop *p;
+	int f;
+
+	f = 0;
+	for (p = loops; p != 0; p = p->link) {
+		if (p->b13 && p->cnt == 0) {
+			p->b13 = 0;
+			p->b12 = 1;
+			f = 1;
+			if (s4d86 > 3)
+				printf("//marksloop(loopmarked=%d)\n", p->hdr);
+		}
+	}
+	return f;
+}
+
+/* the statistics of the loop optimization are printed (name guessed) */
+void
+prlpstats()
+{
+	printf("//\n//Number of quads moved out of loops \t\t= %d\n", a0e6);
+	printf("//Number of stemps created in loop optimization = %d\n", a0ec);
+	printf("//Number of temps created in loop optimization \t= %d\n", a0ee);
+	printf("//Number of induction vars. eliminated in loop opt. = %d\n", a0fe);
+}
