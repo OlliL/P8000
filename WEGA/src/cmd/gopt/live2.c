@@ -35,6 +35,7 @@ struct rn { struct rn *next; int idx; };	/* a node of the reach map: 6 bytes (gu
 extern struct rn *reachmap;
 extern struct quad **defs;
 extern int ndefs;
+extern int *srchdef();
 #define MASK(p)	((struct quad *)((long)(p) & ~1L))
 extern void clrvec();
 extern char *livevecs, *reachvecs;
@@ -920,4 +921,56 @@ linkreachdefs()
 	}
 	if (s4d84 > 3)
 		printf("\n");
+}
+
+/* the entry of the definition of the quad q in the reach map (mode 1: the first of the list; else the entry of q itself); name from the strings */
+int *
+srchdef(q, mode)
+	struct quad *q;
+	int mode;
+{
+	struct rn *p;
+	int *pi;
+	struct quad *d;
+
+	if (s4d84 > 3) {
+		printf("srchdef(), quad=\n");
+		prquad(q);
+	}
+	for (p = reachmap; p != 0; p = p->next) {
+		if (s4d84 > 3)
+			printf("srchdef(): p is %lx\n", p);
+		if (!sameopnd(q, defs[p->idx], 1, 1))
+			continue;
+		d = defs[p->idx];
+		if (q != d && (q->c.b2 == 8 || d->c.b2 == 8))
+			if (q->op != 0x2f || d->op != 0x2f)
+				continue;
+		if (s4d84 > 3) {
+			printf("found:\n");
+			prquad(defs[p->idx]);
+		}
+		if (mode == 1)
+			return &p->idx;
+		if (s4d84 > 3)
+			printf("p=%X, *pi=%d, &pi=%X\n", p, p->idx, &p->idx);
+		for (pi = &p->idx; *++pi != -1; )
+			if (defs[*pi] == q)
+				break;
+		if (defs[*pi] == q)
+			return pi;
+		if (s4d84)
+			printf("*pi=%d, pi=%X", *pi, pi);
+		cerror("srchdef: def not found");
+	}
+	if (mode == 1) {
+		p = reachmap;
+		pi = &p->idx;
+		do
+			pi++;
+		while (*pi != -1);
+		pi--;
+		return pi;
+	}
+	cerror("srchdef: variable not found");
 }
