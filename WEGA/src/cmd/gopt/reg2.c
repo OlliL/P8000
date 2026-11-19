@@ -41,13 +41,14 @@ extern void markreg();
 extern struct quad *addsave(), *fn5_913c();
 extern struct quad *insertquad();
 extern int fn4_fc06();
-extern void fn5_8ba8(), addsavequads(), fn5_89ca(), prgraph();
+extern void fn5_8ba8(), addsavequads(), rmrestorequad(), prgraph();
 struct pr { int x; int y; };
 extern struct pr *a70aa;
 extern int blkno;
 #define PY(i)	(*(int *)((char *)a70aa + ((i) * 4 + 2)))
 extern struct quad *fn5_8f5c();
-extern void addsavequads();
+extern void addsavequads(), rmrestorequad();
+extern struct quad *delquad();
 extern void clrbit(), fn5_964c(), restoredges(), rmnode();
 extern int findnode();
 extern int werror();
@@ -648,7 +649,7 @@ savecolors()
 		prquads();
 	}
 	addsavequads();
-	fn5_89ca();
+	rmrestorequad();
 }
 
 /* the quad that loads the register reg for the value c is looked for in the block of x or inserted (name from the debug output) */
@@ -791,6 +792,46 @@ addsavequads()
 					}
 				}
 			}
+		}
+	}
+}
+
+/* the restore quads that are not needed are removed (name from the debug output) */
+void
+rmrestorequad()
+{
+	int b, reg, e, s, c, out, ok;
+	struct quad *q;
+	struct quad *t;
+
+	for (b = 0; b < blkno; b++) {
+		if (s4d90)
+			printf("// rmrestorequad, i = %d\n", b);
+		if (blks[b] == 0)
+			continue;
+		for (q = blks[b]->next; q != 0; q = q->next) {
+			if (q->op == 59)
+				break;
+			if (q->op != 41)
+				continue;
+			if (s4d90)
+				printf("// rmrestorequad, found RESTORE\n");
+			reg = q->a.w4;
+			e = blks[b]->a.w4;
+			if (e < 0)
+				continue;
+			if (s4d90)
+				printf("// rmrestorequad, pred = %d\n", e);
+			s = PY(e);
+			ok = 1;
+			for (c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
+				fn5_9020(s, &out);
+				t = fn5_8f5c(out, reg);
+				if (t == 0 || !fn4_fc06(&q->b, &t->b))
+					ok = 0;
+			}
+			if (ok == 1)
+				q = delquad(q);
 		}
 	}
 }

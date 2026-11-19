@@ -20,5 +20,6 @@
 "addrestore": "OK",
 "addsave": "OK",
 "markreg": "OK",
-"addsavequads": "OK"
+"addsavequads": "OK",
+"rmrestorequad": "OK"
 }
