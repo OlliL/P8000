@@ -664,9 +664,9 @@ extern int issym();
 
 /* the block blk dominates the uses of the variable of q in the loop lp (name from the debug output) */
 int
-domuse(lp, blk, u, q)
+domuse(lp, blk, q)
 struct loop *lp;
-int blk, u;
+int blk;
 struct quad *q;
 {
 	struct bl *b;
@@ -802,5 +802,108 @@ struct dl *d;
 				}
 			}
 		}
+	}
+}
+
+extern int a0fc, a0f2, s0afc;
+extern struct dl *a100;
+extern void chkbscindvar(), marklpinv(), prlpdefs();
+extern int invopnds(), domexits(), notlive(), domuse(), samebetalpdef(), qparvbetalpdef();
+
+/* the loop invariant definitions are searched in the list of the definitions of the loop lp, moved to the list a100 and marked (name from the debug output) */
+void
+lpinv(lp)
+struct loop *lp;
+{
+	struct dl *t;
+	struct quad *q;
+	struct dl *u, *prev;
+	struct quad *h;
+
+	a0fc = 0;
+	if (a0e0 == 0)
+		return;
+	if (s4d86 > 2) {
+		printf("lpinv(hdr=%d)\n", lp->hdr);
+		printf("lpdefs:\n");
+		prlpdefs(a0e0);
+	}
+	a100 = 0;
+	t = prev = a0e0;
+	while (t != 0) {
+		q = t->q;
+		if (s4d86 > 3) {
+			printf("lpinv(), qd->lpinv = %d, processing quad:\n", q->f3);
+			prquad(q);
+		}
+		if (q->f3 || !t->f15)
+			goto L1;
+		h = skiphdrs(blks[t->x0]);
+		if (!invopnds(q, h))
+			goto L2;
+		if (!domexits(lp, t->x0) && !notlive(q, a0e8))
+			goto L2;
+		if (q->c.b2 == 4 && symtab[q->c.w4].sx6 > s0afc)
+			goto L3;
+		if (q->c.b2 == 8 && q->op == 47 && symtab[betatbl[q->c.w4].x1].sx6 > s0afc)
+			goto L3;
+		if (s4d86 > 3) {
+			printf("moving def to possible inv list\n");
+			prquad(q);
+		}
+		if (a100 != 0) {
+			u = a100;
+			a100 = t;
+			if (t == prev) {
+				a0e0 = prev = t->next;
+			} else
+				prev->next = t->next;
+			t = t->next;
+			a100->next = u;
+		} else {
+			a100 = t;
+			if (t == prev) {
+				a0e0 = prev = t->next;
+			} else
+				prev->next = t->next;
+			t = t->next;
+			a100->next = 0;
+		}
+		continue;
+L2:		chkbscindvar(t);
+L1:		prev = t;
+L3:		t = t->next;
+	}
+	if (s4d86 > 2) {
+		printf("\nlpinvhdr\n");
+		prlpdefs(a100);
+		printf("\nlpdefs:\n");
+		prlpdefs(a0e0);
+	}
+	t = a100;
+	if (t == 0)
+		return;
+	for (; t != 0; t = t->next) {
+		if (!domuse(lp, t->x0, t->q))
+			continue;
+		if (t->q->op == 47 && t->q->c.b2 == 8 && samebetalpdef(t->q))
+			continue;
+		if (s4d86 > 2 && a0fc != 1)
+			printf("\n");
+		a0fc = 1;
+		a0f2 = 1;
+		if (!qparvbetalpdef(t->q))
+			clrsymflag(t->q, 1);
+		h = skiphdrs(blks[t->x0]);
+		marklpinv(t->q, h);
+	}
+	if (a0fc) {
+		u = a0e0;
+		if (u != 0) {
+			while (u->next != 0)
+				u = u->next;
+			u->next = a100;
+		} else
+			a0e0 = a100;
 	}
 }

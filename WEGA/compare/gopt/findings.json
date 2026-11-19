@@ -3757,7 +3757,7 @@
    "module": "lpinv2.c",
    "file": "lpinv2.c"
   },
-  "f5_414e": {
+  "lpinv": {
    "orig": "5:414e",
    "size_orig": 1066,
    "status": "open",
