@@ -198,3 +198,5 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   post in case 0x18, default behind case 2). Still missing in alias2.c: 4:7088 (736 bytes), 4:8074 (682), 4:831e, 4:87e6 .. 4:9108.
 - 2026-11-19: gopt: alias2.c almap (4:8074, the position of an operand in the alias table) written, masked equal at the second attempt after the layout (gotos
   zero/neg/done inside the first if). Next: 4:831e addaffect (a switch with case blocks up to 4:87e6, about 1000 bytes), then 4:87e6 .. 4:9108.
+- 2026-11-19: gopt: alias2.c addaffect (4:831e with its eleven case blocks up to 4:87e6, the affect/modify matrices per quad class) written, DIFF 3 (one jr/jp to the
+  shared printf); the globals affect, modval, affdim (70d4, 70ae, 70b6) declared. Next: 4:87e6 initaffect, 4:89c0 .. 4:9108.

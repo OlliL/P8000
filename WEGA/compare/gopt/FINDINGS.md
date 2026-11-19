@@ -99,18 +99,18 @@ exact: the program is byte-identical with the original (`host/tools/checkall.sh`
 | f4_7f18 | 4:7f18 |  | case block of checkops |
 | f4_7f44 | 4:7f44 |  | case block of checkops |
 | f4_7fd8 | 4:7fd8 |  | case block of checkops |
-| f4_831e | 4:831e |  |  |
-| f4_838c | 4:838c |  |  |
-| f4_83d0 | 4:83d0 |  |  |
-| f4_8438 | 4:8438 |  |  |
-| f4_8488 | 4:8488 |  |  |
-| f4_8526 | 4:8526 |  |  |
-| f4_857c | 4:857c |  |  |
-| f4_85b2 | 4:85b2 |  |  |
-| f4_861c | 4:861c |  |  |
-| f4_8678 | 4:8678 |  |  |
-| f4_871a | 4:871a |  |  |
-| f4_8768 | 4:8768 |  |  |
+| addaffect | 4:831e |  | open (DIFF 3, one attempt): the jump of the case block `p = *q` to the shared call printf is jr in the original and jp in ours (the rest is equal, masked); cause not found (the distance should be the same). addaffect(lop, lp, rop, rp): lop QSTORE 0x2f / QIDR 0x18,0x1e / 0x34, rop 3, 7, 0x18, 0x1e, 0x2f; the four parameters r7, rr4, r3 and the stack (r6 stays free by the pair alignment); affect, modval, affdim: names guessed (70d4, 70ae, 70b6); printf of the debug line passes affect and modval on the stack |
+| f4_838c | 4:838c |  | case block of addaffect |
+| f4_83d0 | 4:83d0 |  | case block of addaffect |
+| f4_8438 | 4:8438 |  | case block of addaffect |
+| f4_8488 | 4:8488 |  | case block of addaffect |
+| f4_8526 | 4:8526 |  | case block of addaffect |
+| f4_857c | 4:857c |  | case block of addaffect |
+| f4_85b2 | 4:85b2 |  | case block of addaffect |
+| f4_861c | 4:861c |  | case block of addaffect |
+| f4_8678 | 4:8678 |  | case block of addaffect |
+| f4_871a | 4:871a |  | case block of addaffect |
+| f4_8768 | 4:8768 |  | case block of addaffect |
 | f4_87e6 | 4:87e6 |  |  |
 | f4_89c0 | 4:89c0 |  |  |
 | f4_8a1e | 4:8a1e |  |  |

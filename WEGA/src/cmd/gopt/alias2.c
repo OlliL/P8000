@@ -15,6 +15,9 @@ extern struct sym *mapn();
 extern int tagfind(), itfind();
 extern char *taballoc();
 extern int *altab;
+extern int *affect, *modval;
+extern int affdim;
+extern int almap();
 extern struct sym *symtab;
 extern char ascii[];
 extern struct quad *qhead;
@@ -604,5 +607,117 @@ almap(p, op)
 		if (aflag > 1)
 			printf("(almap, symbol=%s, pos=%d)\n", ascii + symtab[p->w4].nameoff, pos);
 		goto done;
+	}
+}
+
+/* the effect of a quad on the affect matrix and the modify matrix: lop the class of the left operand lp (QSTORE 0x2f, QIDR 0x18, 0x34), rop of the right one rp */
+void
+addaffect(lop, lp, rop, rp)
+	int lop;
+	struct qa *lp;
+	int rop;
+	struct qa *rp;
+{
+	int a, b, c, d;
+
+	if (aflag > 2)
+		printf("// entering addaffect(), lp->opnd = %x, lop  = %d, rop = %d, affect=%X, modval=%X\n", lp->w4, lop, rop, affect, modval);
+	switch (lop) {
+	case 0x2f:
+		a = almap(lp, 0x2f);
+		c = almap(lp, 0x18);
+		switch (rop) {
+		case 0x2f:
+			d = almap(rp, 0x18);
+			setbit(affect, c, d, affdim);
+			d = almap(rp, 0x2f);
+			setbit(modval, a, d, affdim);
+			if (aflag > 1)
+				printf("//  p = q \n");
+			break;
+		case 0x18:
+		case 0x1e:
+			b = almap(rp, 0x18);
+			setbit(modval, a, b, affdim);
+			setbit(affect, c, b, affdim);
+			if (aflag > 1)
+				printf("//  p = *q \n");
+			break;
+		case 3:
+			d = almap(rp, 3);
+			setbit(modval, a, d, affdim);
+			d = almap(rp, 0x2f);
+			setbit(affect, c, d, affdim);
+			if ((rp->w0 & 0x30) == 0x10) {
+				d = almap(rp, 0x18);
+				setbit(affect, c, d, affdim);
+				if (aflag > 1)
+					printf("//  p = &q \n");
+			}
+			break;
+		case 7:
+			setbit(modval, a, 0, affdim);
+			setbit(affect, a, 0, affdim);
+			if (aflag > 1)
+				printf("//  p = f() \n");
+			break;
+		default:
+			cerror("addaffect, lop=QSTORE, rop=default");
+		}
+		break;
+	case 0x18:
+	case 0x1e:
+		a = almap(lp, 0x18);
+		switch (rop) {
+		case 0x2f:
+			d = almap(rp, 0x18);
+			setbit(affect, a, d, affdim);
+			d = almap(rp, 0x2f);
+			setbit(modval, a, d, affdim);
+			if (aflag > 1)
+				printf("//  *p = q \n");
+			break;
+		case 0x18:
+		case 0x1e:
+			b = almap(rp, 0x18);
+			setbit(affect, a, b, affdim);
+			setbit(modval, a, b, affdim);
+			if (aflag > 1)
+				printf("//  *p = *q \n");
+			break;
+		case 3:
+			d = almap(rp, 3);
+			setbit(modval, a, d, affdim);
+			d = almap(rp, 0x2f);
+			setbit(affect, a, d, affdim);
+			if ((rp->w0 & 0x30) == 0x10) {
+				d = almap(rp, 0x18);
+				setbit(affect, a, d, affdim);
+				if (aflag > 1)
+					printf("//  *p = &q \n");
+			}
+			break;
+		case 7:
+			setbit(modval, a, 0, affdim);
+			setbit(affect, a, 0, affdim);
+			if (aflag > 1)
+				printf("//  *p = f() \n");
+			break;
+		default:
+			cerror("addaffect, lop=QIDR, rop=default");
+		}
+		break;
+	case 0x34:
+		if (rop == 0x18 || rop == 0x1e)
+			a = almap(lp, 0x18);
+		else
+			a = almap(lp, 0x2f);
+		setbit(modval, a, 0, affdim);
+		setbit(affect, a, 0, affdim);
+		if (aflag > 1)
+			printf("//  f(....,&a,..) \n");
+		break;
+	default:
+		cerror("addaffect: illegal lop\n");
 	}
 }

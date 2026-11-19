@@ -14,5 +14,7 @@
 "fndcall": "OK",
 "tmpsearch": "DIFF 5 (object 77 instructions, original 75)",
 "fndparm": "DIFF 14 (object 50 instructions, original 49)",
-"checkops": "DIFF 25 (object 269 instructions, original 265)"
+"checkops": "DIFF 25 (object 269 instructions, original 265)",
+"almap": "OK",
+"addaffect": "DIFF 3 (object 272 instructions, original 272)"
 }
