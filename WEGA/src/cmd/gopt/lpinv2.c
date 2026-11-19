@@ -146,6 +146,8 @@ int ot;
 }
 
 extern struct quad *tmpsearch();
+extern void addlpdef(), setopt();
+extern int isglobal();
 extern void clrsymflag(), cerror();
 
 /* the flags of the operands of q are cleared; a temporary is followed to its definition (name from the debug output) */
@@ -353,4 +355,69 @@ struct quad *q;
 	if (s4d86 > 3)
 		printf("isglobal(), returning FALSE\n");
 	return 0;
+}
+
+/* the quads of the blocks of the loop lp are entered as definitions; the definitions that are register candidates are marked (name from the debug output) */
+void
+findlpdefs(lp)
+struct loop *lp;
+{
+	struct quad *q;
+	struct bl *b;
+	int n;
+	struct dl *t;
+	int callf;
+
+	if (s4d86 > 1)
+		printf("findlpdefs()\n");
+	callf = 0;
+	for (b = lp->bls; b != 0; b = b->next) {
+		n = blks[b->blk]->a.w0;
+		if (s4d86 > 2)
+			printf("// findlpdefs: block = %d\n", n);
+		for (q = blks[b->blk]->next; q != 0; q = q->next) {
+			if (q->op == 59)
+				break;
+			if (q->f7 || q->f4 || (q->op == 52 && q->a.b2 == 8)) {
+				addlpdef(q, n);
+				if (q->op == 7)
+					callf = 1;
+			}
+			q->f3 = 0;
+			q->f2 = 0;
+			q->f1 = 0;
+		}
+	}
+	if (a0e0 == 0)
+		return;
+	t = a0e0;
+	while (t != 0) {
+		if (s4d86 > 3) {
+			printf("findlpdefs(), t=%X, t->dfnxt=%X\n", t, t->next);
+			prquad(t->q);
+			if (t->next != 0)
+				prquad(t->next->q);
+		}
+		setopt(t->q);
+		if (t->f15) {
+			if (t->q->op == 52 && t->q->a.b2 == 8)
+				t->f15 = 0;
+			else if (callf && isglobal(t->q))
+				t->f15 = 0;
+			else {
+				t->q->f1 = 1;
+				if (t->q->c.b2 == 4 && isglobal(t->q)) {
+					t->q->c.fl = 1;
+					if (s4d86 > 3) {
+						printf("reg_candidate set for:\n");
+						prquad(t->q);
+					}
+				}
+			}
+		}
+		t->f14 = 0;
+		t->f13 = 0;
+		t->f12 = 0;
+		t = t->next;
+	}
 }

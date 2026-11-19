@@ -3644,7 +3644,7 @@
    "file": "lpinv2.c",
    "note": "open (DIFF 13, 123 against 125 instructions): the original keeps the call printf of the TRUE print in the loop and the first TRUE block jumps to it (jr 2f10), ours the reverse (tail merging, sucomp); the original has `testl rr2; jr ne` after p = checkalias(q, 1) (loop test after the assignment), ours folds it"
   },
-  "f5_2f9e": {
+  "findlpdefs": {
    "orig": "5:2f9e",
    "size_orig": 682,
    "status": "open",
