@@ -2176,26 +2176,32 @@
    "file": "dom2.c",
    "note": "open (DIFF 15): as compress (the nested index cache) plus the block order: the original puts t = label[v] (the test ancest[v] == 0) before the compress call; ?: and a variable t = v tried (not better)"
   },
-  "f4_ad8e": {
+  "linkp": {
    "orig": "4:ad8e",
    "size_orig": 622,
    "status": "open",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "open (DIFF 34, 1 attempt): structurally equal (the registers rr4/r3 against rr6/r2 and two base reloads: the register cache of the compiler, as compress and eval); linkp(v, w): the balanced link of Lengauer and Tarjan; arrays child (712a), size (7132); name from the string"
   },
-  "f4_affc": {
+  "addbucket": {
    "orig": "4:affc",
    "size_orig": 220,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "name from the string; the buckets bucket (713e) and the entries bent (7100, as struct edge), nbent (70fe)"
   },
-  "f4_b0d8": {
+  "delbucket": {
    "orig": "4:b0d8",
    "size_orig": 230,
    "status": "open",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "open (DIFF 22): the original leaves the loop to the code behind the cerror without a second test (jr eq to b16c); ours tests t < 0 again (break) or moves the block of the bucket store (goto found); the form with break is kept"
   },
   "f4_b1be": {
    "orig": "4:b1be",

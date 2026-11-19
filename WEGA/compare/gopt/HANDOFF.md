@@ -28,5 +28,5 @@ Next (in this order):
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
 TASK: dom2.c: 4:ad8e (622 bytes, calls eval/compress presumably: the semidominators), 4:affc (220), 4:b0d8 (230), then 4:b1be (1766, the driver) if there is room.
-START: fnc.py -a dom2.c flow2.c (open: compress 11, eval 15, addedge 4, rmlabels 13, deledge 7, joinblk 9); odisc.py -o f4_ad8e. The arrays dfn, label, vertex, ancest, child, size, parent, ndfs are declared in dom2.c (names guessed).
+START: fnc.py -a dom2.c flow2.c (open: compress 11, eval 15, addedge 4, rmlabels 13, deledge 7, joinblk 9); odisc.py -o linkp. The arrays dfn, label, vertex, ancest, child, size, parent, ndfs are declared in dom2.c (names guessed).
 STOP WHEN: 4:b0d8 is written and checked (4:b1be if there is room), or at 70% of the context.
