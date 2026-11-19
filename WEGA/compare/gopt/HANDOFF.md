@@ -28,5 +28,5 @@ Next (in this order):
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
 TASK: live2.c: 4:ca88 (452 bytes), 4:cc4c (268), 4:cd58 (290), 4:ce7a (580) and the following functions of live2 (see findings.json, module live2.c).
-START: fnc.py -a live2.c dom2.c (open in dom2: compress, eval, linkp, delbucket, dominators, mkdomtree, addblk, domspace: all the register cache); odisc.py -o f4_ca88; regdiff.py shows the structural differences (host/recon/regdiff.py FILE.diff).
+START: fnc.py -a live2.c dom2.c (open in dom2: compress, eval, linkp, delbucket, dominators, mkdomtree, addblk, domspace: all the register cache); odisc.py -o islive; regdiff.py shows the structural differences (host/recon/regdiff.py FILE.diff).
 STOP WHEN: 12 functions of live2 are written and checked, or at 70% of the context.

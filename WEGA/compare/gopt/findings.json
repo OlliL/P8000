@@ -2563,21 +2563,21 @@
    "file": "live2.c",
    "note": "name guessed (debug)"
   },
-  "f4_ca88": {
+  "islive": {
    "orig": "4:ca88",
    "size_orig": 452,
    "status": "open",
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_cc4c": {
+  "settmptable": {
    "orig": "4:cc4c",
    "size_orig": 268,
    "status": "open",
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_cd58": {
+  "insrtlive": {
    "orig": "4:cd58",
    "size_orig": 290,
    "status": "open",
