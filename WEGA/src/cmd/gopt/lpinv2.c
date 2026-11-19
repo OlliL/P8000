@@ -907,3 +907,68 @@ L3:		t = t->next;
 			a0e0 = a100;
 	}
 }
+
+extern struct dnode *domroot;
+extern struct loop *loops;
+extern int s70ea;
+
+/* a node of the dominator tree for the block phblk (the new preheader) is put above the block hblk (name from the debug output) */
+void
+insrtdomnode(hblk, phblk)
+int hblk, phblk;
+{
+	struct dnode *p, *x;
+
+	if (s4d86 > 2)
+		printf("// insrtdomnode(hblk=%d,phblk=%d)\n", hblk, phblk);
+	p = findsubdtree(domroot, hblk);
+	if (p->down != 0)
+		x = p->down;
+	else
+		x = 0;
+	p->down = (struct dnode *)taballoc(12, 4);
+	p->dblkno = phblk;
+	p->down->dblkno = hblk;
+	p->down->down = x;
+}
+
+/* the new preheader phblk of the loop lp is put into the lists of blocks of the outer loops (name from the debug output) */
+void
+updatelooplist(lp, phblk)
+struct loop *lp;
+int phblk;
+{
+	struct loop *p;
+	struct bl *x, *y;
+	int hblk;
+
+	hblk = lp->hdr;
+	if (s4d86 > 1)
+		printf("// updatelooplist(hblk=%d,phblk=%d)\n", hblk, phblk);
+	if (phblk > s70ea)
+		cerror("Too many basic blocks\n");
+	idfn[phblk] = idfn[hblk];
+	for (p = loops; p != 0; p = p->link) {
+		if (p->b13 && p->cnt > 0) {
+			for (x = y = p->bls; x != 0; y = x, x = x->next)
+				if (x->blk == hblk)
+					break;
+			if (x != 0) {
+				if (s4d86 > 2)
+					printf("//update, found outer loop, header=%d\n", p->hdr);
+				--p->cnt;
+				if (x != p->bls) {
+					y->next = (struct bl *)taballoc(6, 4);
+					y->next->next = x;
+					y = y->next;
+				} else {
+					p->bls = (struct bl *)taballoc(6, 4);
+					p->bls->next = x;
+					y = p->bls;
+				}
+				y->blk = phblk;
+			}
+		}
+	}
+	insrtdomnode(hblk, phblk);
+}

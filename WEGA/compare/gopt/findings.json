@@ -3762,21 +3762,25 @@
    "size_orig": 1066,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_4578": {
+  "insrtdomnode": {
    "orig": "5:4578",
    "size_orig": 148,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_460c": {
+  "updatelooplist": {
    "orig": "5:460c",
    "size_orig": 388,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c",
+   "note": "open (DIFF 34, 115 against 114 instructions): popt block order (codemove): ours moves one of the two branch blocks (x == p->bls / else) in front of the loop test jump, the original keeps both behind the loop; for/while and if/else swapped without effect"
   },
   "f5_4790": {
    "orig": "5:4790",
