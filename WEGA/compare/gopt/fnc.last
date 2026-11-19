@@ -29,5 +29,7 @@
 "ebbtail": "OK",
 "nodeno": "DIFF 6 (object 115 instructions, original 116)",
 "insameebbo": "OK",
-"canshare": "DIFF 14 (object 134 instructions, original 137)"
+"canshare": "DIFF 14 (object 134 instructions, original 137)",
+"decdeg": "OK",
+"prgraph": "DIFF 11 (object 127 instructions, original 127)"
 }

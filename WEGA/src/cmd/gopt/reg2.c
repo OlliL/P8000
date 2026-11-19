@@ -51,7 +51,7 @@ extern struct quad *rquad();
 extern void addsavequads(), rmrestorequad(), propagate();
 extern int r_used();
 extern struct quad *delquad();
-extern void clrbit(), fn5_964c(), restoredges(), rmnode();
+extern void clrbit(), decdeg(), restoredges(), rmnode();
 extern int findnode();
 extern int werror();
 extern int pickcolor(), findnode();
@@ -68,7 +68,7 @@ extern struct gnn *a11a;
 extern char *taballoc();
 extern int notlive(), fn5_9adc();
 extern void mergevectors(), updatevector(), degrees();
-extern void prquad(), prvec(), include(), buildgraph(), colorgraph(), savecolors(), fn5_9698();
+extern void prquad(), prvec(), include(), buildgraph(), colorgraph(), savecolors(), prgraph();
 extern void clearflags(), livevars(), reachdefs(), prquads(), ebbopt(), clearblocks(), marklpblocks();
 
 extern void marklps(), symflags(), chkcalls(), assignreg();
@@ -213,12 +213,12 @@ int flag;
 		degrees();
 		if (s4d90) {
 			printf("// graph before coloring\n");
-			fn5_9698();
+			prgraph();
 		}
 		colorgraph(flag);
 		if (s4d90) {
 			printf("// graph after coloring\n");
-			fn5_9698();
+			prgraph();
 		}
 		savecolors();
 		if (s4d90) {
@@ -474,7 +474,7 @@ int flag;
 						if (testbit(a110, j, p->row, a118)) {
 							clrbit(a110, j, p->row, a118);
 							clrbit(a110, p->row, j, a118);
-							fn5_964c(j);
+							decdeg(j);
 							--p->cnt;
 						}
 					}
@@ -586,7 +586,7 @@ rmnode()
 		if (testbit(a110, j, best->row, a118)) {
 			clrbit(a110, j, best->row, a118);
 			clrbit(a110, best->row, j, a118);
-			fn5_964c(j);
+			decdeg(j);
 			--best->cnt;
 		}
 	}
@@ -1062,4 +1062,52 @@ int a, b;
 			return 1;
 	}
 	return 0;
+}
+
+/* the degree of the node n is decremented (name guessed) */
+void
+decdeg(n)
+int n;
+{
+	struct gn *p;
+
+	for (p = a11e; p != 0; p = p->link) {
+		if (n == p->row) {
+			--p->cnt;
+			return;
+		}
+	}
+	cerror("register map missing nodes n  = %d", n);
+}
+
+/* the graph is printed (name from the debug output) */
+void
+prgraph()
+{
+	struct gn *p;
+	struct edge *e;
+	int i, j;
+
+	for (i = 0; i < a116; i++) {
+		printf("// node number = %d, ", GF(i, 0, int));
+		propnd(&GF(i, 2, struct quad *)->c);
+		printf("quadno = %X,", GF(i, 2, struct quad *));
+		printf("\n");
+	}
+	for (p = a11e; p != 0; p = p->link) {
+		printf("// node number = %d, color = %d, degree = %d, weight = %d\n", p->row, p->x12, p->cnt, p->cost);
+		for (e = p->edges; e != 0; e = e->next)
+			printf("//     edge = %d\n", e->k);
+	}
+	printf("\n// itfs :\n");
+	for (i = 0; i < a10e; i++) {
+		printf("// ");
+		for (j = 0; j < a10e; j++) {
+			if (testbit(a110, i, j, a118))
+				putc('1', stdout);
+			else
+				putc('0', stdout);
+		}
+		putc('\n', stdout);
+	}
 }
