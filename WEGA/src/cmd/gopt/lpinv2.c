@@ -67,9 +67,10 @@ struct quad *q;
 	return q;
 }
 
-struct dl { int x0; struct quad *q; long l6; long l10; int x14[4]; unsigned f15:1, f14:1, f13:1, f12:1, rest:12; struct dl *next; };	/* a node of the list of the definitions (28 bytes, guessed) */
+struct dl { int x0; struct quad *q; long l6; long l10; struct qa e14; int x20; unsigned f15:1, f14:1, f13:1, f12:1, f11:1, f10:1, rest:10; struct dl *next; };	/* a node of the list of the definitions (28 bytes, guessed) */
 extern struct dl *a0e0;
 extern int sameopnd();
+extern int a0e4;
 
 /* the node of the list a0e0 with the quad of the same operand as q; *flag is set when an operand of a node differs (name from the debug output) */
 struct dl *
@@ -724,4 +725,82 @@ struct dl *p;
 {
 	for (; p != 0; p = p->next)
 		prquad(p->q);
+}
+
+/* a definition in the list a0e0 has the same result operand as q (name from the debug output) */
+int
+samebetalpdef(q)
+struct quad *q;
+{
+	struct dl *t;
+
+	for (t = a0e0; t != 0; t = t->next) {
+		if (t->q->c.b2 == q->c.b2 && t->q->c.w4 == q->c.w4) {
+			if (s4d86 > 2) {
+				printf("samebetalpdef(), t->dfquad, q:\n");
+				prquad(t->q);
+				printf(q);
+			}
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/* a parameter store in the list a0e0 stores to the result operand of q (name from the debug output) */
+int
+qparvbetalpdef(q)
+struct quad *q;
+{
+	struct dl *t;
+
+	for (t = a0e0; t != 0; t = t->next) {
+		if (t->q->op == 52 && t->q->a.b2 == q->c.b2 && t->q->a.w4 == q->c.w4) {
+			if (s4d86 > 2) {
+				printf("qparvbetalpdef(), t->dfquad, q:\n");
+				prquad(t->q);
+				printf(q);
+			}
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/* the definition d of a quad that adds a constant or an invariant to its own result is a basic induction variable (name from the debug output) */
+void
+chkbscindvar(d)
+struct dl *d;
+{
+	struct quad *s, *x, *h;
+
+	if (s4d86 > 1)
+		printf("//  chkbscindvar: \n");
+	x = d->q;
+	if (x->op == 47 && x->a.b2 == 3) {
+		h = skiphdrs(blks[d->x0]);
+		s = tmpsearch(h, x->a.w4);
+		if (s->op == 1 || s->op == 48) {
+			if (s->b.b2 == 1 || s->b.b2 == 7 || ((s->b.b2 == 4 || s->b.b2 == 6 || s->b.b2 == 8) && !isdefined(s, 3))) {
+				if (sameopnd(s, x, 2, 1)) {
+					if (s4d86 > 1) {
+						printf("found basic induction var:\n");
+						prquad(s);
+					}
+					d->f14 = 1;
+					d->e14 = s->b;
+					if (s->b.b2 == 1 || s->b.b2 == 7)
+						d->f11 = 1;
+					else
+						d->f11 = 0;
+					if (s->op == 1)
+						d->f10 = 1;
+					else
+						d->f10 = 0;
+					a0e4 = 1;
+					x->f2 = 1;
+				}
+			}
+		}
+	}
 }

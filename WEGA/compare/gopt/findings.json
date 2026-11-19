@@ -3666,84 +3666,96 @@
    "size_orig": 138,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "isdom": {
    "orig": "5:34d2",
    "size_orig": 82,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "isdefined": {
    "orig": "5:3524",
    "size_orig": 826,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "domexits": {
    "orig": "5:385e",
    "size_orig": 104,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "invopnds": {
    "orig": "5:38c6",
    "size_orig": 582,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "notlive": {
    "orig": "5:3b0c",
    "size_orig": 262,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "domuse": {
    "orig": "5:3c12",
    "size_orig": 336,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "marklpinv": {
    "orig": "5:3d62",
    "size_orig": 162,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "prlpdefs": {
    "orig": "5:3e04",
    "size_orig": 48,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_3e34": {
+  "chkbscindvar": {
    "orig": "5:3e34",
    "size_orig": 466,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_4006": {
+  "samebetalpdef": {
    "orig": "5:4006",
    "size_orig": 150,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_409c": {
+  "qparvbetalpdef": {
    "orig": "5:409c",
    "size_orig": 178,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "f5_414e": {
    "orig": "5:414e",
