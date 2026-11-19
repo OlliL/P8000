@@ -1101,96 +1101,122 @@
    "file": "comm2.c",
    "note": "name guessed (an area allocator: ssgbrk/mkseg, areas 0..10)"
   },
-  "f4_4a8e": {
+  "writeil": {
    "orig": "4:4a8e",
    "size_orig": 168,
    "status": "open",
    "kind": "proven",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "writeil(): the quads are written (4:4a8e .. 4:53ea, 12 cases of the quad op: 0x2e start of the function, 0x11 its end with the S lines and the temp size, 6 and 0x3b tables, 0x1a 0x1c labels, 9 and 0x32 the call arguments (pend: the list of the arguments), 0x28 0x29 0x2b the registers and the symbols). 630 instructions equal in number; open: the loop of case 0x32 (q = q->next)->op: the original reads q->op with the displacement (ld r2,rr2(#4)), ours increments the address first; tried the comma operator and for(;;). The printf of the R and T lines: the order of the arguments is (a, -offset, type). printf(\"\") before the second list of 0x3b is in the original (an empty format at 4:3950)"
   },
   "f4_4b36": {
    "orig": "4:4b36",
    "size_orig": 94,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_4b94": {
    "orig": "4:4b94",
    "size_orig": 198,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_4c5a": {
    "orig": "4:4c5a",
    "size_orig": 60,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_4c96": {
    "orig": "4:4c96",
    "size_orig": 8,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_4c9e": {
    "orig": "4:4c9e",
    "size_orig": 296,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_4dc6": {
    "orig": "4:4dc6",
    "size_orig": 26,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_4de0": {
    "orig": "4:4de0",
    "size_orig": 26,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_4dfa": {
    "orig": "4:4dfa",
    "size_orig": 78,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_4e48": {
    "orig": "4:4e48",
    "size_orig": 478,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_5026": {
    "orig": "4:5026",
    "size_orig": 106,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_5090": {
    "orig": "4:5090",
    "size_orig": 516,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_5294": {
    "orig": "4:5294",
    "size_orig": 348,
    "status": "open",
    "kind": "candidate",
-   "module": "wrtil2.c"
+   "module": "wrtil2.c",
+   "file": "wrtil2.c",
+   "note": "case block of writeil"
   },
   "f4_53f0": {
    "orig": "4:53f0",

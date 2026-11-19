@@ -571,3 +571,185 @@ asg:
 	} else
 		tfree(p);
 }
+
+extern struct quad *qhead;
+extern int v00, v04;
+extern long vb94;
+extern NODE *curproc;
+extern struct { int next; int val; } *tab70aa;
+extern int **tab70a6;
+extern void prquads(), prtcounts(), fn9b96();
+extern void cleartrees(), mktree();
+
+/* the quads are written as trees in the intermediate language (names guessed, written from /lib/gopt) */
+void
+writeil()
+{
+	struct quad *q;
+	NODE *p, *u, *v;
+	int i;
+	long pos;
+	struct sym *rtab[12];
+
+	if (qflag > 1) {
+		printf("// writeil : quads to be converted to trees - \n");
+		prquads();
+		prtcounts();
+	}
+	for (i = 0; i <= 11; i++)
+		rtab[i] = 0;
+	tmpoff = 0;
+	for (q = qhead; q; q = q->next) {
+		ifline = q->pos.line;
+		switch (q->op) {
+		case 0x2e:
+			printf("{%d\t%ld\t", v00, vb94);
+			pos = ftell(stdout);
+			printf("0000\t%d\t\n", v04);
+			wrline(curproc);
+			tfree(curproc);
+			continue;
+		case 0x11:
+			for (i = 1; i <= 11; i++)
+				if (rtab[i] && (((rtab[i]->sflags >> 2) & 1) || rtab[i]->sclass == 3))
+					printf("S%d\t\n", (rtab[i]->sflags >> 4) & 0xfff);
+			printf("}\n");
+			fseek(stdout, pos, 0);
+			printf("%04.4d", tmpoff);
+			fseek(stdout, 0L, 2);
+			continue;
+		case 6:
+			cleartrees();
+			printf("[%ld\t%d\t%d\t\n", constbl[q->a.w4], q->b.w4, q->c.w4);
+			continue;
+		case 0xf:
+			printf("]\n");
+			continue;
+		case 0x3b:
+			cleartrees();
+			printf("#%d\t", q->a.w0);
+			for (i = q->a.w4; i >= 0; i = tab70aa[i].next) {
+				printf("%d\t", tab70aa[i].val);
+				fn9b96(&q->b.w4, tab70aa[i].val);
+			}
+			printf("");
+			for (i = q->a.w4; i >= 0; i = tab70aa[i].next)
+				if (*(int *)((char *)tab70a6[tab70aa[i].val] + 0x16) < 0)
+					printf("%d\t", tab70aa[i].val);
+			printf("\n");
+			continue;
+		case 0x1c:
+			cleartrees();
+			printf("L%d\t\n", q->a.w4);
+			continue;
+		case 0x1a:
+			cleartrees();
+			printf("B%d\t\n", q->a.w4);
+			continue;
+		case 9:
+			printf("C %d\t", q->a.w4);
+			q = q->next;
+			while (q->op == 0xa) {
+				printf("%d\t", q->a.w4);
+				q = q->next;
+			}
+			printf("\n");
+			continue;
+		case 0x32:
+			pend = 0;
+			while ((q = q->next)->op != 0x35) {
+				if (q->op != 0x34)
+					mktree(q);
+				else {
+					if (q->a.b2 == 8) {
+						q->a.b2 = 3;
+						q->a.w4 = ptbl9c[q->a.w4].x4;
+					}
+					if (pend) {
+						p = talloc();
+						p->in.rall = 0;
+						p->in.op = CM;
+						p->in.left = pend;
+						p->in.right = mkleaf(&q->a);
+						if (q->f0) {
+							u = talloc();
+							u->in.rall = 0;
+							u->in.op = STARG;
+							u->in.type = q->a.w0;
+							u->in.left = p->in.right;
+							u->stn.stsize = q->b.w4;
+							u->stn.stalign = q->c.w4;
+							p->in.right = u;
+						}
+						pend = p;
+					} else {
+						pend = mkleaf(&q->a);
+						if (q->f0) {
+							if (qflag > 4)
+								printf("// structure parameter... generating STARG node\n");
+							p = talloc();
+							p->in.rall = 0;
+							p->in.op = STARG;
+							p->in.type = q->a.w0;
+							p->in.left = pend;
+							p->stn.stsize = q->b.w4;
+							p->stn.stalign = q->c.w4;
+							pend = p;
+						}
+					}
+				}
+			}
+			continue;
+		case 0x2b:
+			if (rtab[q->a.w4] == 0)
+				continue;
+			printf("S%d\t\n", (rtab[q->a.w4]->sflags >> 4) & 0xfff);
+			rtab[q->a.w4] = 0;
+			continue;
+		case 0x28:
+			if (q->a.w4 > 7)
+				q->a.w4 -= 7;
+			if (q->b.b2 == 4) {
+				printf("R%d\t%d\t\n", q->a.w4, (symtab[q->b.w4].sflags >> 4) & 0xfff);
+				rtab[q->a.w4] = symtab + q->b.w4;
+			} else if (q->b.b2 == 6 && ptbl9c[q->b.w4].p6 < 0) {
+				if (qflag > 2)
+					printf("// assigning S%d to offset %d\n", q->a.w4, tmpoff);
+				printf("R%d\t%d\t%d\t\n", q->a.w4, -tmpoff, q->b.w0);
+				ptbl9c[q->b.w4].p6 = tmpoff;
+				tmpoff += szty(q->b.w0) * 2;
+			} else if (q->b.b2 == 6)
+				printf("R%d\t%d\t%d\t\n", q->a.w4, -ptbl9c[q->b.w4].p6, q->b.w0);
+			else {
+				q->b.b2 = 3;
+				q->b.w4 = ptbl9c[q->b.w4].x4;
+				u = mkleaf(&q->b);
+				*(ctpos + q->b.w4) += 1;
+				printf("R%d\t%d\t%d\t\n", q->a.w4, -u->tn.temp, q->b.w0);
+			}
+			continue;
+		case 0x29:
+			if (q->b.b2 == 4)
+				printf("T%d\t\n", (symtab[q->b.w4].sflags >> 4) & 0xfff);
+			else if (q->b.b2 == 6 && ptbl9c[q->b.w4].p6 < 0) {
+				if (qflag > 2)
+					printf("// assigning S%d to offset %d\n", q->b.w4, tmpoff);
+				printf("T%d\t\n", -tmpoff);
+				ptbl9c[q->b.w4].p6 = tmpoff;
+				tmpoff += szty(q->b.w0) * 2;
+			} else if (q->b.b2 == 6)
+				printf("T%d\t\n", -ptbl9c[q->b.w4].p6);
+			else {
+				q->b.b2 = 3;
+				q->b.w4 = ptbl9c[q->b.w4].x4;
+				u = mkleaf(&q->b);
+				*(ctpos + q->b.w4) += 1;
+				printf("T%d\t\n", -u->tn.temp);
+			}
+			continue;
+		default:
+			mktree(q);
+			continue;
+		}
+	}
+}

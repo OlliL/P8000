@@ -178,3 +178,7 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 - 2026-11-19: gopt, wrtil2.c: mktree (4:53f0 .. 4:5f38, the 4:5d0e is its case block for the CBRANCH: cleartrees) written complete (807
   instructions against 806); open: the block order of the switch (case 0x7b + common code first, the other cases inside) and one reload.
   A bug of the original: GE of floating operands becomes FGT. Still missing in wrtil2.c: 4:4a8e (writeil).
+- 2026-11-19: gopt, wrtil2.c complete: writeil (4:4a8e .. 4:53ea) written, 630 instructions as in the original, one place open (displacement
+  load in the loop of the call arguments). All of the module is now source: 4 files of the optimizer (comm2, rdr2, reader2, debug2) and
+  quads2, wrtil2 almost complete. Next modules: alias2.c (4:6c0a ..), flow2, dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2, reg2,
+  alias2b (data order); the libc starts at 5:9bc0.
