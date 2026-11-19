@@ -256,7 +256,7 @@ int n;
 }
 
 struct pr { int x; int y; };
-extern struct pr *a70aa;
+extern struct pr *edges;
 
 /* the header quads in front of q that only lead to q are skipped (name guessed) */
 struct quad *
@@ -266,9 +266,9 @@ struct quad *q;
 	struct quad *x, *y;
 
 	while (q->op == 59) {
-		if (q->a.w4 < 0 || a70aa[q->a.w4].x != -1)
+		if (q->a.w4 < 0 || edges[q->a.w4].x != -1)
 			break;
-		y = blks[a70aa[q->a.w4].y];
+		y = blks[edges[q->a.w4].y];
 		for (x = y->next; x != 0; x = x->next)
 			if (x->op == 59)
 				break;
@@ -323,7 +323,7 @@ int block;
 }
 
 #define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
-extern int *a70da;
+extern int *altab;
 extern struct aln *checkalias();
 
 /* the operand c of q is a global variable or may be changed by the alias of a global one (name from the debug output) */
@@ -348,7 +348,7 @@ struct quad *q;
 		return 1;
 	}
 	for (p = checkalias(q, 1); p != 0; p = p->next) {
-		if ((symtab[a70da[p->x0]].sflags >> 2) & 1) {
+		if ((symtab[altab[p->x0]].sflags >> 2) & 1) {
 			if (s4d86 > 3)
 				printf("isglobal(), returning TRUE\n");
 			return 1;
@@ -424,7 +424,7 @@ struct loop *lp;
 	}
 }
 
-extern int s7158;
+extern int lvwords;
 extern unsigned *a0e8;
 extern void clrvec(), orvec();
 
@@ -444,8 +444,8 @@ struct loop *lp;
 			printf("lblkno=%d\n", lp->exits->blk);
 	}
 	if (a0e8 == 0)
-		a0e8 = (unsigned *)taballoc(s7158 * 2, 2);
-	clrvec(a0e8, s7158);
+		a0e8 = (unsigned *)taballoc(lvwords * 2, 2);
+	clrvec(a0e8, lvwords);
 	e = lp->exits;
 	if (s4d86 > 3)
 		printf("liveonexit(), returned from nullvec(), entering while loop\n");
@@ -454,18 +454,18 @@ struct loop *lp;
 		if (s4d86 > 3)
 			printf("\nexit block = %d, successors = ", e->blk);
 		while (i >= 0) {
-			s = a70aa[i].y;
+			s = edges[i].y;
 			if (s4d86 > 3)
 				printf(" %d", s);
 			y = QHREC(blks[s]);
 			if (y->w12 == 0) {
 				if (s4d86 > 3) {
-					printf("//calling vecunion(%X, %X, %d),q=%X\n", a0e8, y->f4, s7158, y);
+					printf("//calling vecunion(%X, %X, %d),q=%X\n", a0e8, y->f4, lvwords, y);
 					prquad(blks[s]);
 				}
-				orvec(a0e8, y->f4, s7158);
+				orvec(a0e8, y->f4, lvwords);
 			}
-			i = a70aa[i].x;
+			i = edges[i].x;
 		}
 		e = e->next;
 	}
@@ -806,7 +806,7 @@ struct dl *d;
 	}
 }
 
-extern int a0fc, a0f2, s0afc;
+extern int a0fc, a0f2, vafc;
 extern struct dl *a100;
 extern void chkbscindvar(), marklpinv(), prlpdefs();
 extern int invopnds(), domexits(), notlive(), domuse(), samebetalpdef(), qparvbetalpdef();
@@ -844,9 +844,9 @@ struct loop *lp;
 			goto L2;
 		if (!domexits(lp, t->x0) && !notlive(q, a0e8))
 			goto L2;
-		if (q->c.b2 == 4 && symtab[q->c.w4].sx6 > s0afc)
+		if (q->c.b2 == 4 && symtab[q->c.w4].sx6 > vafc)
 			goto L3;
-		if (q->c.b2 == 8 && q->op == 47 && symtab[betatbl[q->c.w4].x1].sx6 > s0afc)
+		if (q->c.b2 == 8 && q->op == 47 && symtab[betatbl[q->c.w4].x1].sx6 > vafc)
 			goto L3;
 		if (s4d86 > 3) {
 			printf("moving def to possible inv list\n");
@@ -911,7 +911,7 @@ L3:		t = t->next;
 
 extern struct dnode *domroot;
 extern struct loop *loops;
-extern int s70ea;
+extern int maxblk;
 
 /* a node of the dominator tree for the block phblk (the new preheader) is put above the block hblk (name from the debug output) */
 void
@@ -946,7 +946,7 @@ int phblk;
 	hblk = lp->hdr;
 	if (s4d86 > 1)
 		printf("// updatelooplist(hblk=%d,phblk=%d)\n", hblk, phblk);
-	if (phblk > s70ea)
+	if (phblk > maxblk)
 		cerror("Too many basic blocks\n");
 	idfn[phblk] = idfn[hblk];
 	for (p = loops; p != 0; p = p->link) {
@@ -978,7 +978,7 @@ extern int blkno, s4d88, s4d90;
 extern struct quad *qhead, *a0d6;
 extern struct quad *insertquad();
 extern void prgraph(), deledge(), addedge(), updatelooplist();
-extern struct pr *a70aa;
+extern struct pr *edges;
 
 /* the block list of the loop lp is searched for p (name guessed) */
 int
@@ -1022,8 +1022,8 @@ int flag;
 		cerror("loop without a label");
 	else
 		lbl = hq->next->a.w4;
-	for (i = hq->a.w4; i >= 0; i = a70aa[i].x) {
-		p = a70aa[i].y;
+	for (i = hq->a.w4; i >= 0; i = edges[i].x) {
+		p = edges[i].y;
 		pq = blks[p];
 		if (s4d86 > 3)
 			printf("checking block = %d\n", p);
@@ -1065,8 +1065,8 @@ int flag;
 	lp->b10 = 1;
 	nq = insertquad(59, &qa1, &qa2, &qa3, pv);
 	a0d6 = nq;
-	for (i = hq->a.w4; i >= 0; i = a70aa[i].x) {
-		p = a70aa[i].y;
+	for (i = hq->a.w4; i >= 0; i = edges[i].x) {
+		p = edges[i].y;
 		pq = blks[p];
 		if (inbl(lp->bls, p))
 			continue;
@@ -1148,8 +1148,8 @@ int flag;
 		QHREC(nq)->f0 = QHREC(hq)->f4;
 	blks[blkno] = nq;
 	blkno++;
-	if (blkno > s70ea) {
-		printf("blkno=%d, maxblocks=%d, hblk=%d\n", blkno, s70ea, hblk);
+	if (blkno > maxblk) {
+		printf("blkno=%d, maxblocks=%d, hblk=%d\n", blkno, maxblk, hblk);
 		cerror("addpreheader(): Too many pre-headers added");
 	}
 	if ((s4d90 || s4d86) && s4d88) {
@@ -1159,12 +1159,12 @@ int flag;
 	return blkno - 1;
 }
 
-extern int *a7124, a0f0, a0da, a0e6, a0ec, a0ee, a0fe;
+extern int *vertex, a0f0, a0da, a0e6, a0ec, a0ee, a0fe;
 extern struct quad *insrtstmpmove(), *qmove(), *chkfamindvar();
 extern void deltmplpdefs();
-extern char a050e[];
+extern char ctpos[];
 
-/* the list of blocks is put into the order of the array a7124 (name guessed) */
+/* the list of blocks is put into the order of the array vertex (name guessed) */
 void
 orderbl(pp)
 struct bl **pp;
@@ -1174,9 +1174,9 @@ struct bl **pp;
 
 	x = *pp;
 	for (i = 0; i < blkno; i++) {
-		if (a7124[i] >= 0) {
+		if (vertex[i] >= 0) {
 			for (y = x; y != 0; y = y->next)
-				if (y->blk == a7124[i])
+				if (y->blk == vertex[i])
 					break;
 			if (y != 0) {
 				t = y->blk;
@@ -1216,7 +1216,7 @@ struct loop *lp;
 					prquad(q);
 				}
 				if (q->f3) {
-					if (q->c.b2 == 3 && a050e[q->c.w4] > 2)
+					if (q->c.b2 == 3 && ctpos[q->c.w4] > 2)
 						q = insrtstmpmove(q);
 					else
 						q = qmove(q);
@@ -1262,9 +1262,9 @@ prlpstats()
 	printf("//Number of induction vars. eliminated in loop opt. = %d\n", a0fe);
 }
 
-extern int s70ec, s4d92, s4d80, s4d94, a0d4;
+extern int hdrblk, s4d92, s4d80, s4d94, a0d4;
 extern struct dl *a104;
-extern void fn5_6466(), tabfree(), livevars(), clearflags(), ebbopt(), prquads(), prquad();
+extern void freelist(), tabfree(), livevars(), clearflags(), ebbopt(), prquads(), prquad();
 
 /* the loop optimization of the program (name guessed) */
 void
@@ -1302,11 +1302,11 @@ again:
 		lp->b11 = 1;
 		a0e0 = 0;
 		a0e8 = 0;
-		s70ec = lp->hdr;
+		hdrblk = lp->hdr;
 		marklpblocks(lp, 1);
 		findlpdefs(lp);
 		liveonexit(lp);
-		a0f4 = findsubdtree(domroot, s70ec);
+		a0f4 = findsubdtree(domroot, hdrblk);
 		a0fc = 1;
 		a0f2 = 0;
 		a0e4 = 0;
@@ -1319,7 +1319,7 @@ again:
 		}
 		while (a0da)
 			proceslp(lp);
-		fn5_6466(1);
+		freelist(1);
 		marklpblocks(lp, 0);
 		if (s4d86 > 4) {
 			printf("//Program after optimizing loop\n");

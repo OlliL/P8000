@@ -15,23 +15,23 @@ extern struct loop *loops;
 extern struct quad *qhead;
 extern struct sym *symtab;
 extern int s4d90;
-extern char a0010[];
+extern char ctneg[];
 extern struct bt *betatbl;
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };
 #define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
-extern int s4d72, s7144, s7158;
+extern int s4d72, dfwords, lvwords;
 extern int a118, a108;
 extern unsigned *a110;
 struct edge { int k; struct edge *next; };
 struct gn { int row; struct gn *link; struct edge *edges; int cnt; int x12; int x14; int cost; unsigned f15:1; };
 extern struct gn *a11e;
 struct gnn { int x0; struct quad *q; int blk; int kind; };
-extern int s714e;
-extern struct quad **s7154;
+extern int ndefs;
+extern struct quad **defs;
 extern int *srchdef();
 extern int tstlbit(), testbit();
 extern void clrlbit(), setlbit(), setbit();
-extern int s70ea;
+extern int maxblk;
 extern unsigned *a10a;
 extern struct loop *getheader();
 extern int usefirst(), addpreheader(), nodeno(), insameebbo(), canshare();
@@ -44,9 +44,9 @@ extern struct quad *insertquad();
 extern int eqopnd();
 extern void propagate(), addsavequads(), rmrestorequad(), prcgraph();
 struct pr { int x; int y; };
-extern struct pr *a70aa;
+extern struct pr *edges;
 extern int blkno;
-#define PY(i)	(*(int *)((char *)a70aa + ((i) * 4 + 2)))
+#define PY(i)	(*(int *)((char *)edges + ((i) * 4 + 2)))
 extern struct quad *rquad();
 extern void addsavequads(), rmrestorequad(), propagate();
 extern int r_used();
@@ -201,7 +201,7 @@ int flag;
 				}
 				break;
 			case 6:
-				if (BBIT(q->c.w4, 13) && a0010[q->c.w4] > 2 && q->op != 47)
+				if (BBIT(q->c.w4, 13) && ctneg[q->c.w4] > 2 && q->op != 47)
 					include(flag, q, last);
 				break;
 			}
@@ -285,7 +285,7 @@ buildgraph()
 	a110 = (unsigned *)taballoc((a116 + 1) * 2 * a118, 0);
 	clrmat(a110, a116 + 1, a118);
 	a11e = 0;
-	tmp = (unsigned *)taballoc(s7144 * 2, 0);
+	tmp = (unsigned *)taballoc(dfwords * 2, 0);
 	live = 0;
 	for (q = qhead; q != 0; q = q->next) {
 		if (q->op == 59) {
@@ -297,8 +297,8 @@ buildgraph()
 			prev = live;
 			live = QF(q, 4);
 			if (q->next->op != 28 && prev != 0)
-				orvec(live, prev, s7158);
-			for (k = 0; k < s7144; k++)
+				orvec(live, prev, lvwords);
+			for (k = 0; k < dfwords; k++)
 				tmp[k] = dfp[k];
 			mergevectors(live, tmp);
 		} else if (q == GF(i, 2, struct quad *)) {
@@ -349,11 +349,11 @@ unsigned *a, *b;
 		printf("//\treachv:\n");
 		prvec(b, 3, 2);
 	}
-	for (i = 0; i < s714e; i++) {
-		if (tstlbit(b, i) && notlive(s7154[i], a)) {
+	for (i = 0; i < ndefs; i++) {
+		if (tstlbit(b, i) && notlive(defs[i], a)) {
 			if (s4d90 > 4) {
 				printf("// mergevectors: clearing bit for i = %d, quad = ", i);
-				prquad(s7154[i]);
+				prquad(defs[i]);
 			}
 			clrlbit(b, i);
 		}
@@ -375,10 +375,10 @@ unsigned *v;
 	if (q->op == 7)
 		return;
 	for (p = srchdef(q, 1); *p != -1; p++) {
-		if (q != s7154[*p]) {
+		if (q != defs[*p]) {
 			if (s4d90 > 4) {
 				printf("// updatevector: clearing bit for quad ");
-				prquad(s7154[*p]);
+				prquad(defs[*p]);
 			}
 			clrlbit(v, *p);
 		} else {
@@ -418,11 +418,11 @@ unsigned *vec;
 		p->x12 = -1;
 		p->x14 = GF(i, 8, int);
 	}
-	for (j = 0; j < s714e; j++) {
-		k = nodeno(s7154[j]);
+	for (j = 0; j < ndefs; j++) {
+		k = nodeno(defs[j]);
 		if (k < 0 || c == k)
 			continue;
-		q2 = s7154[j];
+		q2 = defs[j];
 		if (!tstlbit(vec, j) && !insameebbo(q, q2))
 			continue;
 		if (s4d90 > 2)
@@ -602,7 +602,7 @@ savecolors()
 	int i, f, blk, x1, x2;
 	struct loop *hdr;
 
-	a10a = (unsigned *)taballoc(s70ea * 2, 0);
+	a10a = (unsigned *)taballoc(maxblk * 2, 0);
 	for (n = a11e; n != 0; n = n->link) {
 		if (n->x12 <= 0)
 			continue;
@@ -784,7 +784,7 @@ addsavequads()
 				e = blks[b]->a.w4;
 				if (e < 0)
 					continue;
-				for (s = PY(e), c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
+				for (s = PY(e), c = e; c >= 0; c = edges[c].x, s = PY(c)) {
 					findend(s, &out);
 					if (a10a[out] & (1 << r)) {
 						pa = &rquad(out, r)->b;
@@ -826,7 +826,7 @@ rmrestorequad()
 				printf("// rmrestorequad, pred = %d\n", e);
 			s = PY(e);
 			ok = 1;
-			for (c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
+			for (c = e; c >= 0; c = edges[c].x, s = PY(c)) {
 				findend(s, &out);
 				t = rquad(out, reg);
 				if (t == 0 || !eqopnd(&q->b, &t->b))
@@ -899,11 +899,11 @@ int b, r;
 	if (e < 0)
 		return -1;
 	s = PY(e);
-	for (c = e; c >= 0; c = a70aa[c].x, s = PY(c))
+	for (c = e; c >= 0; c = edges[c].x, s = PY(c))
 		if (a10a[s] & (1 << r))
 			return s;
 	s = PY(e);
-	for (c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
+	for (c = e; c >= 0; c = edges[c].x, s = PY(c)) {
 		if (!(a10a[s] & 1)) {
 			t = r_used(s, r);
 			if (t >= 0)
@@ -1166,8 +1166,8 @@ struct quad *q;
 {
 	int i;
 
-	for (i = 0; i < s714e; i++)
-		if (s7154[i] == q)
+	for (i = 0; i < ndefs; i++)
+		if (defs[i] == q)
 			return 1;
 	if (s4d90 > 3) {
 		printf("// inreach returning FALSE for quad -");

@@ -7,7 +7,7 @@
 static char sccsid[] = "@[$]lpind2.c\t1.5  02/07/83 15:54:28 Copr. 1981 87wega3.2.";
 
 extern int s4d86;
-extern long lconst[];
+extern long constbl[];
 extern int ispow2();
 extern struct quad *a0d6;
 extern int a0e6;
@@ -38,8 +38,8 @@ struct qa b;
 {
 	long x, y, l, m, r;
 
-	x = b.b2 == 1 ? (long)b.w4 : lconst[b.w4];
-	y = a.b2 == 1 ? (long)a.w4 : lconst[a.w4];
+	x = b.b2 == 1 ? (long)b.w4 : constbl[b.w4];
+	y = a.b2 == 1 ? (long)a.w4 : constbl[a.w4];
 	switch (op) {
 	case 1:
 		r = x;
@@ -184,7 +184,7 @@ int kind;
 	opqd = qmove(opqd);
 }
 
-extern int constlook(), s000e, insrtopstmp();
+extern int constlook(), v0e, insrtopstmp();
 
 /* the operand is set to the integer v (w0 as its first word); t == 1: v is used as it is, else it is negated (name guessed) */
 void
@@ -257,7 +257,7 @@ struct quad *outq;
 	if (op == 34) {
 		c.w0 = 5;
 		c.b2 = 3;
-		c.w4 = s000e++;
+		c.w4 = v0e++;
 		a0ee++;
 		a0d6 = insertquad(op, &a, &b, &c, a0d6);
 		b.b2 = 0;
@@ -492,7 +492,7 @@ int blk;
 	a = q->c;
 	denorm(&q->c);
 	b.b2 = 3;
-	b.w4 = s000e++;
+	b.w4 = v0e++;
 	a0ee++;
 	b.w0 = a.w0;
 	q->c = b;
@@ -553,7 +553,7 @@ deltmplpdefs()
 	}
 }
 
-extern char a0010[];
+extern char ctneg[];
 extern void cerror();
 
 /* the induction temporary stmpno is removed from the list of d (name guessed) */
@@ -565,8 +565,8 @@ int stmpno;
 	struct nd *p, *prev;
 
 	if (s4d86 > 2)
-		printf("delindvar(stmpno=%d), stmp_cnt=%d\n", stmpno, a0010[stmpno]);
-	if (a0010[stmpno] <= 2) {
+		printf("delindvar(stmpno=%d), stmp_cnt=%d\n", stmpno, ctneg[stmpno]);
+	if (ctneg[stmpno] <= 2) {
 		prev = p = d->l6;
 		while (p != 0) {
 			if (s4d86 > 3)
@@ -574,7 +574,7 @@ int stmpno;
 			if (p->c0.w4 == stmpno) {
 				if (s4d86 > 3)
 					printf("delindvar(), deleting  p->indstmp.opnd=%d\n", p->c0.w4);
-				--a0010[stmpno];
+				--ctneg[stmpno];
 				if (prev == p)
 					d->l6 = p->link;
 				else
@@ -590,7 +590,7 @@ int stmpno;
 	}
 }
 
-extern char a050e[];
+extern char ctpos[];
 extern int sameopnd();
 
 /* the induction variable definitions of the loop are checked for the quad q; the new definition is returned (name from the debug output) */
@@ -639,8 +639,8 @@ int op, x;
 					res = fillindvar(r, q, op, dp, t);
 					if (res != 0 && dp->q->c.b2 == 3) {
 						if (s4d86 > 3)
-							printf("chklpdefs(), tempcnt[temp=%d]=%d\n", dp->q->c.w4, a050e[dp->q->c.w4]);
-						if (a050e[dp->q->c.w4] <= 1)
+							printf("chklpdefs(), tempcnt[temp=%d]=%d\n", dp->q->c.w4, ctpos[dp->q->c.w4]);
+						if (ctpos[dp->q->c.w4] <= 1)
 							delindvar(dp->l10, dp->e14.w0);
 					}
 					return res;

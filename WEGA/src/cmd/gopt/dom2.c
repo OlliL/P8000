@@ -27,7 +27,7 @@ extern int nbl, nbl2, tailblk, nloops, hdrblk;
 extern int *stk;
 extern void pushblk();
 extern int s4d92, s0b5e, tabavail();
-extern void fn5_5298();
+extern void loopopt();
 extern int *bucket;
 extern struct edge *bent;
 extern int nbent;
@@ -702,7 +702,7 @@ domloops()
 	if (s4d92)
 		prlstats();
 	if (s0b5e > 3) {
-		fn5_5298();
+		loopopt();
 		return 1;
 	}
 }

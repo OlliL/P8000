@@ -20,7 +20,7 @@ extern int matw, affdim;
 struct aln { int x0; struct aln *next; struct aln *link; };	/* a node of the alias lists (guessed; link: 6, the list of the lists) */
 extern struct aln *alfree, *allist, *alcur, *alast;
 extern int ndist, nlist;
-extern struct { int pos; int y[4]; } *rtab;	/* a table of 10 byte entries (guessed) */
+extern struct { int pos; int y[4]; } *betatbl;	/* a table of 10 byte entries (guessed) */
 extern int almap();
 extern struct sym *symtab;
 extern char ascii[];
@@ -31,7 +31,7 @@ extern int op70d8;
 extern void prquad();
 extern int cerror();
 extern int testbit();
-extern struct quad *fn5_2bca();
+extern struct quad *skiphdrs();
 extern int checkops();
 extern struct quad *fndcall();
 extern int fndparm();
@@ -384,7 +384,7 @@ aliasm()
 		if (q == 0)
 			break;
 		if (q->op == 0x3b) {
-			pcur = fn5_2bca(q);
+			pcur = skiphdrs(q);
 			continue;
 		}
 		if (q->op == 0x2f) {
@@ -745,7 +745,7 @@ initaffect()
 		if (q == 0)
 			break;
 		if (q->op == 0x3b)
-			pcur = fn5_2bca(q);
+			pcur = skiphdrs(q);
 		else if (q->op == 0x2f) {
 			if (!checkops(q, 0))
 				continue;
@@ -944,7 +944,7 @@ checkalias(q, ot)
 		printf("// checkalias opndtype = %d\n", ot);
 	if (ot == 2) {
 		if (q->a.b2 == 8)
-			pos = rtab[q->a.w4].pos;
+			pos = betatbl[q->a.w4].pos;
 		else if (q->op == 3)
 			pos = almap(&q->a, 3);
 		else if (q->op == 0x18 || q->op == 0x1e)
@@ -953,12 +953,12 @@ checkalias(q, ot)
 			pos = almap(&q->a, 0x2f);
 	} else if (ot == 1) {
 		if (q->c.b2 == 8)
-			pos = rtab[q->c.w4].pos;
+			pos = betatbl[q->c.w4].pos;
 		else
 			pos = almap(&q->c, 0x2f);
 	} else {
 		if (q->b.b2 == 8)
-			pos = rtab[q->b.w4].pos;
+			pos = betatbl[q->b.w4].pos;
 		else
 			pos = almap(&q->b, 0x2f);
 	}

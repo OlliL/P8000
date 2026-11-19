@@ -47,7 +47,7 @@ extern int eqvec();
 extern int s4f20, s4f22, s4d92;
 extern void tabfree();
 extern void initlive(), initreach(), setwords(), prqall();
-extern char *livevecs, *reachvecs;
+extern char *livevecs, *livevecs;
 extern struct quad **defs;
 extern struct quad *qhead;
 extern void prquad(), prqflags();
@@ -716,7 +716,7 @@ allocreachvecs()
 		if (idfn[i] >= 0)
 			allocvec(q, 2, 6);
 	}
-	reachvecs = taballoc(0, 3);
+	livevecs = taballoc(0, 3);
 	for (i = 0; i < blkno; i++) {
 		q = blks[i];
 		if (idfn[i] >= 0)

@@ -1,8 +1,10 @@
 {
-"betainit": "DIFF 2 (object 308 instructions, original 309)",
-"betaset": "OK",
-"betanew": "OK",
-"betaprint": "OK",
-"isvarty": "OK",
-"eqopnd": "DIFF 7 (object 23 instructions, original 23)"
+"main": "DIFF 427 (object 472 instructions, original 48)",
+"dotree": "DIFF 12 (object 44 instructions, original 43)",
+"dotree2": "OK",
+"cutree": "OK",
+"pr": "DIFF 15 (object 92 instructions, original 90)",
+"abortpass": "OK",
+"passes": "OK",
+"prtbl": "OK"
 }

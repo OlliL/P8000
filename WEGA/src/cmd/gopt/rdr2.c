@@ -9,7 +9,7 @@ static char rdrsccs[] = "@[$]rdr\t2.4  03/04/83 15:31:15 Copr. 1981 87wega3.2.";
 
 extern char *taballoc();
 extern int cerror();
-extern int debug;
+extern int dflag;
 extern FILE *stfile;
 extern FILE *infile;
 extern long ifpos;
@@ -66,7 +66,7 @@ rdsym()
 	fread(&nnumbytes, 2, 1, stfile);
 	fread(&nmembytes, 2, 1, stfile);
 	nsyms = nsymbytes / 22;
-	if (debug)
+	if (dflag)
 		printf("// readstf: stlen = %ld, ntlen = %ld, mtlen = %d, rtlen = %d\n", nsymbytes, nasciibytes, nnumbytes, nmembytes);
 	readsyms(nsyms, symtab + 1, 7);
 	nsyms++;
@@ -79,12 +79,12 @@ rdsym()
 		nmems = nmembytes / 6;
 		readmems(nmems);
 	}
-	if (debug)
+	if (dflag)
 		prtags();
 	sortsyms();
-	if (debug)
+	if (dflag)
 		prtags();
-	if (debug) {
+	if (dflag) {
 		printf("\n Offset to globals = %ld\n\n", stg);
 		printf(" Local tables:\n\n");
 		printf(" symbol table length = %ld\n", nsymbytes);
@@ -121,7 +121,7 @@ readsyms(n, tab, kind)
 				q->sx14 = 0;
 			}
 		}
-		if (debug) {
+		if (dflag) {
 			printf("Symbol Table Entries:\n\n");
 			for (k = n; k > 0; k--, tab = tab + 1) {
 				printf("index = %d\n", tab);
@@ -153,7 +153,7 @@ readtab(buf, n)
 	if (n > 0) {
 		if ((got = fread(buf, 1, (int)n, stfile)) != n)
 			printf("readnt: error in reading ascii table from symbol file\n");
-		if (debug) {
+		if (dflag) {
 			printf("Ascii Table Entries:\n\n");
 			for (x = got; x > 0; ) {
 				printf("(%d)\t%s\n", got - x, buf);
@@ -188,14 +188,14 @@ readnums(n)
 		base = 0;
 	if (fread(buf, 2, n, stfile) != n)
 		printf("readmt: error in reading number table from file stfile\n");
-	if (debug) {
+	if (dflag) {
 		printf("readmt(%d)\n\n", n);
 		printf("Member table:\n\n");
 	}
 	src = buf;
 	dst = (int *)&numtab[base];
 	for (k = n; k > 0; k--, src++, dst += 2) {
-		if (debug)
+		if (dflag)
 			printf("(%d)\ttag = %d\n", n - k, *src);
 		*dst = *src;
 		dst[1] = -1;
@@ -219,7 +219,7 @@ top:
 	fread(mem, 6, n, stfile);
 	stpos = ftell(stfile);
 	cur = mem;
-	if (debug) {
+	if (dflag) {
 		printf("\nReference Table:\n\n");
 		for (k = n; k > 0; k--, cur++)
 			printf(" i = %d, offset = %ld\n", k, cur->off);
@@ -233,7 +233,7 @@ top:
 		fread(&gasciibytes, 4, 1, stfile);
 		fread(&gnumbytes, 2, 1, stfile);
 		fseek(stfile, symbase + gsymbytes, 0);
-		if (debug) {
+		if (dflag) {
 			printf("\nGlobal table sizes:\n\n");
 			printf(" symbol table length = %ld\n", gsymbytes);
 			printf(" ascii table length = %ld\n", gasciibytes);
@@ -260,10 +260,10 @@ top:
 			cnt++;
 		}
 		dp = (struct sym *)((char *)symtab + dest * 22);
-		if (debug > 1)
+		if (dflag > 1)
 			printf("// readrt: fseek(%ld)\n", symbase + base);
 		fseek(stfile, symbase + base, 0);
-		if (debug > 1) {
+		if (dflag > 1) {
 			fread(&w, 2, 1, stfile);
 			printf("// readrt: word = %x\n", w);
 			fseek(stfile, symbase + base, 0);
@@ -311,7 +311,7 @@ tagfind(tag)
 {
 	int lo, hi, mid;
 
-	if (debug)
+	if (dflag)
 		printf("search(%d), tagcnt = %d\n", tag, nglob);
 	if (tag < 0 || nglob == 0)
 		return -1;
@@ -332,7 +332,7 @@ tagfind(tag)
 		else
 			lo = mid;
 		mid = (lo + hi) / 2;
-		if (debug)
+		if (dflag)
 			printf("search: i=%d, j=%d, k=%d\n", lo, hi, mid);
 	}
 	return -1;
@@ -372,7 +372,7 @@ mapnm(p)
 	NODE *m;
 	long ofs;
 
-	if (debug > 1)
+	if (eflag > 1)
 		printf("mapnm, p->op=%d, p->rval=%d\n", p->in.op, p->tn.rval);
 	if (p->in.op == NAME && p->tn.rval >= 0)
 		mapsym(p);

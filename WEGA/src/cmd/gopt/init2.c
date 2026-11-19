@@ -6,9 +6,9 @@
 static char sccsid[] = "@[$]init2.c\t1.3  02/07/83 15:53:16 Copr. 1981 87wega3.2.";
 
 extern int aflag;
-extern int s4d72, s4d7c, s4d80, s4d82, s4d84, s4d86, s4d88, s4d8a, s4d8c, s4d8e, s4d90, s4d92, s0b5e;
-extern FILE *symfile, *ifile, *dfile;
-extern long symhdr, symoff;
+extern int s4d72, qflag, s4d80, s4d82, s4d84, s4d86, s4d88, dflag, tflag, eflag, s4d90, s4d92, s0b5e;
+extern FILE *stfile, *infile, *dfile;
+extern long stg, symoff;
 extern char *strcpy(), *strcat();
 extern int uerror();
 extern void mkdope(), mkqnames();
@@ -31,10 +31,10 @@ initopts(argc, argv)
 			while (*++s)
 				switch (*s) {
 				case 'y':
-					s4d8a++;
+					dflag++;
 					break;
 				case 'q':
-					s4d7c++;
+					qflag++;
 					break;
 				case 'd':
 					s4d82++;
@@ -49,10 +49,10 @@ initopts(argc, argv)
 					s4d88++;
 					break;
 				case 'e':
-					s4d8e++;
+					eflag++;
 					break;
 				case 't':
-					s4d8c++;
+					tflag++;
 					break;
 				case 'a':
 					aflag++;
@@ -70,13 +70,13 @@ initopts(argc, argv)
 					s4d72++;
 					break;
 				case 'E':
-					symfile = fopen(strcat(strcpy(buf, argv[++i]), ".S"), "r");
-					if (symfile == 0)
+					stfile = fopen(strcat(strcpy(buf, argv[++i]), ".S"), "r");
+					if (stfile == 0)
 						printf("error in opening symbol table file %s\n", argv[i - 1]);
-					fread(&symhdr, 4, 1, symfile);
-					symoff = ftell(symfile);
-					ifile = fopen(strcat(strcpy(buf, argv[i]), ".I"), "r");
-					if (ifile == 0)
+					fread(&stg, 4, 1, stfile);
+					symoff = ftell(stfile);
+					infile = fopen(strcat(strcpy(buf, argv[i]), ".I"), "r");
+					if (infile == 0)
 						printf("error in opening intermediate file %s\n", argv[i - 1]);
 					dfile = fopen(strcat(strcpy(buf, argv[i]), ".D"), "rw");
 					if (dfile == 0)

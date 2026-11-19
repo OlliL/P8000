@@ -11,7 +11,7 @@ extern struct bt *betatbl;
 extern struct quad *qhead;
 extern struct sym *symtab;
 extern char ascii[];
-extern char a050e[];
+extern char ctpos[];
 extern int s4d80, s4d94, a0d4, a108;
 extern char *taballoc();
 extern struct quad *delquad();
@@ -32,7 +32,7 @@ betainit()
 		betanew(i);
 	a0d4 = s4d94;
 	for (q = qhead; q != 0; q = q->next) {
-		if (q->c.b2 == 3 && a050e[q->c.w4] == 1) {
+		if (q->c.b2 == 3 && ctpos[q->c.w4] == 1) {
 			q = delquad(q);
 			continue;
 		}

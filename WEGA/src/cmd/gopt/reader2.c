@@ -7,20 +7,20 @@
 static char sccsid[] = "@[$]reader2.c\t1.5  03/04/83 16:01:42 Copr. 1981 87wega3.2.";
 
 extern char ifname[];
-extern int ifline, ifline2;
-extern char *ifnamep;
+extern int ifline;
+extern struct pos curpos;
 extern FILE *infile;
 extern long ifpos;
-extern long head;
+extern long qhead;
 extern int eflag, qflag, tflag, s4d92, nerrors;
 extern char *arhigh[];
 extern int ntmp;
 extern NODE *saved[];
 extern NODE *curproc;
-extern long **lastp;
-extern long vb64, vb04, v06, vb94;
-extern int nconst, nfconst, v0e, vafc, v00, v04, vafe, vb5e;
-extern int s4d7a, s0078, s4d74, s4d76, ntl, s4d78, s4d94, s0240, nctmp, s0244;
+extern struct quad *lastq;
+extern long qtail, v06, vb94;
+extern int nconst, nfconst, v0e, vafc, v00, v04, vafe, s0b5e;
+extern int s4d7a, s0078, s4d74, s4d76, ntl, s4d78, s4d94, ctmpoff, nctmp, nctmpuses;
 extern long s4d96;
 extern char ctneg[], ctpos[];
 extern char *opst[];
@@ -34,11 +34,11 @@ extern void mkhash(), nlcheck(), prtags(), fwalk(), mapnm(), ncopy(), tprint();
 extern NODE *tcopy();
 extern long addquad();
 extern int constlook();
-extern void genquads(), aliasm(), prquads(), fnf5fe(), fn5_0000(), fn5_6eda(), writeil(), mapall();
+extern void genquads(), aliasm(), prquads(), betainit(), ebbopt(), optimize(), writeil(), mapall();
 extern int aliasmat(), flow_graph(), domloops(), initopts(), rdsym();
 extern int dope[];
 
-static void dotree(), dotree2(), cutree(), passes(), abortpass(), prtbl();
+void dotree(), dotree2(), cutree(), passes(), abortpass(), prtbl();
 extern void pr();
 
 main(argc, argv)
@@ -70,11 +70,11 @@ main(argc, argv)
 		case '{':
 			s4d7a = 0;
 			s0078 = 0;
-			vb64 = 0;
+			qtail = 0;
 			nconst = 0;
 			nfconst = 0;
-			vb04 = 0;
-			vb64 = 0;
+			curpos.line = 0;
+			qtail = 0;
 			v0e = 1;
 			tinit();
 			s4d74 = 0;
@@ -84,9 +84,9 @@ main(argc, argv)
 			vafc = 0;
 			lno = 1;
 			s4d94 = 0;
-			s0240 = 0;
+			ctmpoff = 0;
 			nctmp = 0;
-			s0244 = 0;
+			nctmpuses = 0;
 			for (i = 0; i <= 1000; i++) {
 				ctneg[i] = 0;
 				ctpos[i] = 0;
@@ -99,7 +99,7 @@ main(argc, argv)
 			nlcheck();
 			if (!rdsym())
 				cerror("error in reading symbol table file");
-			head = addquad(0x2e, 0L, 0L, 0L);
+			qhead = addquad(0x2e, 0L, 0L, 0L);
 			break;
 		case '}':
 			addquad(0x11, 0L, 0L, 0L);
@@ -140,8 +140,8 @@ main(argc, argv)
 			break;
 		case '.':
 			ifline = rdin(10);
-			ifline2 = ifline;
-			ifnamep = ifname;
+			curpos.line = ifline;
+			curpos.name = ifname;
 			q = ifname;
 			for (;;) {
 				if ((*q = getc(infile)) == '\n')
@@ -156,8 +156,8 @@ main(argc, argv)
 		err:
 				abortpass();
 				fseek(infile, ifpos, 0);
-				tabfree(1, head);
-				head = taballoc(0, 1);
+				tabfree(1, qhead);
+				qhead = taballoc(0, 1);
 			}
 			break;
 		case 'L':
@@ -206,8 +206,8 @@ main(argc, argv)
 	return nerrors;
 }
 
-/* a tree of the intermediate file: a function head (PROC) or a statement */
-static void
+/* a tree of the intermediate file: a function qhead (PROC) or a statement */
+void
 dotree(p)
 	NODE *p;
 {
@@ -229,7 +229,7 @@ dotree(p)
 	curproc = p;
 }
 
-static void
+void
 dotree2(p)
 	register NODE *p;
 {
@@ -316,7 +316,7 @@ static void
 abortpass()
 {
 	s0078 = 1;
-	*lastp = 0;
+	lastq->next = 0;
 	passes();
 }
 
@@ -332,13 +332,13 @@ passes()
 		if (aliasmat() && qflag > 4)
 			prquads();
 		if (flow_graph()) {
-			fnf5fe();
-			if (vb5e > 1)
-				fn5_0000();
-			if (vb5e >= 3 && domloops() == 0)
+			betainit();
+			if (s0b5e > 1)
+				ebbopt();
+			if (s0b5e >= 3 && domloops() == 0)
 				;
-			if (vb5e == 3 || vb5e > 4)
-				fn5_6eda();
+			if (s0b5e == 3 || s0b5e > 4)
+				optimize();
 		}
 	}
 	if (tflag == 0)

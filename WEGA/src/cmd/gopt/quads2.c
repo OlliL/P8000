@@ -229,6 +229,26 @@ fconstlook(p)
 	return i;
 }
 
+/* the index of the double constant x in the table (entered when not there; name guessed) */
+int
+dconstlook(x)
+	double x;
+{
+	int i;
+
+	for (i = 0; i < nfconst; i++)
+		if (*(double *)fconsttbl[i].d == x)
+			break;
+	if (i == nfconst) {
+		fconsttbl[i].rv = 0;
+		*(double *)fconsttbl[nfconst].d = x;
+		nfconst++;
+	}
+	if (nfconst >= 200)
+		cerror("out of space in fconstbl\n");
+	return i;
+}
+
 /* the arguments of a call: a comma list is walked, each argument becomes a quad */
 void
 cmwalk(p)
@@ -277,10 +297,10 @@ cmwalk(p)
 extern struct quad *qfree, *qtail, *qhead, *lastq;
 extern struct pos curpos;
 extern int qflag;
-extern struct { int p0; int p2; int x4; int p6, p8; } *ptbl9c;
+extern struct { int p0; int p2; int x4; int p6, p8; } *betatbl;
 extern char ctpos[], ctneg[];
 extern void prquad();
-static void normop(), denorm();
+void normop(), denorm();
 
 /* a new quad at the end of the list (op, the operands a, b, c; 0: none) */
 struct quad *
@@ -445,7 +465,7 @@ delrun(q)
 }
 
 /* the use of a temporary of an operand is counted */
-static void
+void
 normop(a)
 	struct qa *a;
 {
@@ -458,7 +478,7 @@ normop(a)
 	else if (a->b2 == 6)
 		w = -a->w4;
 	else if (a->b2 == 8)
-		w = ptbl9c[a->w4].x4;
+		w = betatbl[a->w4].x4;
 	else
 		return;
 	if (w > 1000 || w < -1000) {
@@ -471,14 +491,14 @@ normop(a)
 		*(ctneg + -w) += 1;
 }
 
-static void
+void
 denorm(a)
 	struct qa *a;
 {
 	if (a->b2 == 3)
 		*(ctpos + a->w4) -= 1;
 	else if (a->b2 == 8)
-		*(ctpos + ptbl9c[a->w4].x4) -= 1;
+		*(ctpos + betatbl[a->w4].x4) -= 1;
 	else if (a->b2 == 6)
 		*(ctneg + a->w4) -= 1;
 }

@@ -28,7 +28,7 @@ STRIP = strip
 # link order of the original (data order)
 MODULES = reader2 quads2 debug2 rdr2 comm2 wrtil2 alias2 flow2 dom2 init2 live2 ebbo2 lpinv2 lpind2 beta2 reg2 alias2b
 OBJS4 = reader2.o quads2.o debug2.o rdr2.o comm2.o wrtil2.o alias2.o flow2.o dom2.o init2.o live2.o
-OBJS5 = ebbo2.o lpinv2.o lpind2.o beta2.o reg2.o alias2b.o
+OBJS5 = ebbo2.o lpinv2.o lpind2.o beta2.o reg2.o alias2b.o gdata.o
 OBJS = $(OBJS4) $(OBJS5)
 HEADERS = gopt.h ops_gopt.c
 
@@ -81,6 +81,8 @@ beta2.o: beta2.c $(HEADERS)
 	$(SCC) $(CFLAGS) -c beta2.c
 reg2.o: reg2.c $(HEADERS)
 	$(SCC) $(CFLAGS) -c reg2.c
+gdata.o: gdata.c
+	$(SCC) $(CFLAGS) -c gdata.c
 alias2b.o: alias2b.c $(HEADERS)
 	$(SCC) $(CFLAGS) -c alias2b.c
 

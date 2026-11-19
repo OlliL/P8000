@@ -14,10 +14,10 @@ extern int tl[];
 extern char ctpos[], ctneg[];
 extern int ifline;
 extern char ifname[];
-extern int *itab;
+extern int *altab;
 extern long constbl[];
 extern struct { int rv; int d[4]; } fconsttbl[];
-extern struct { int p0; int p2; int x4; int p6, p8; } *ptbl9c;
+extern struct { int p0; int p2; int x4; int p6, p8; } *betatbl;
 extern FILE *dfile;
 extern NODE node[];
 extern struct sym *symtab;
@@ -28,7 +28,7 @@ static int flab = 9000;
 static int tmpoff = 0;
 static int ftot = 0;
 static int fflag = 1;
-extern int nitab;
+extern int nal;
 
 extern int cerror();
 static int treeeq();
@@ -157,8 +157,8 @@ itfind(a)
 {
 	int i;
 
-	for (i = 1; i < nitab; i++)
-		if (itab[i] == a->w4)
+	for (i = 1; i < nal; i++)
+		if (altab[i] == a->w4)
 			return i;
 	return 0;
 }
@@ -238,7 +238,7 @@ mkleaf(a)
 		q->tn.lval = --ctneg[a->w4];
 		if (tlfind(a))
 			q->tn.lval = -q->tn.lval;
-		q->tn.temp = ptbl9c[a->w4].p6;
+		q->tn.temp = betatbl[a->w4].p6;
 		break;
 	case 3:
 		for (r = node; r <= &node[NTREE - 1]; ++r) {
@@ -398,39 +398,39 @@ mktree(q)
 	if (p->in.op == 0x7e) {
 		p->in.op = STAR;
 		if (q->c.b2 == 8 && q->a.b2 == 8)
-			fl = (ptbl9c[q->a.w4].p8 >> 10) & 1;
+			fl = (betatbl[q->a.w4].p8 >> 10) & 1;
 	}
 	if (q->op == 0x3c && q->a.b2 == 4 && q->c.b2 == 8 && (q->a.w0 & 0x30) == 0x10)
-		ptbl9c[q->c.w4].p8 |= 1 << 10;
+		betatbl[q->c.w4].p8 |= 1 << 10;
 	if (q->op == 7) {
 		q->c = q->b;
 		q->b.b2 = 0;
 	}
 	if (q->a.b2 == 8) {
 		q->a.b2 = 3;
-		q->a.w4 = ptbl9c[q->a.w4].x4;
-	} else if (q->a.b2 == 6 && ptbl9c[q->a.w4].p6 < 0) {
+		q->a.w4 = betatbl[q->a.w4].x4;
+	} else if (q->a.b2 == 6 && betatbl[q->a.w4].p6 < 0) {
 		if (qflag > 2)
 			printf("// assigning S%d to offset %d\n", q->a.w4, tmpoff);
-		ptbl9c[q->a.w4].p6 = tmpoff;
+		betatbl[q->a.w4].p6 = tmpoff;
 		tmpoff += szty(q->a.w0) * 2;
 	}
 	if (q->b.b2 == 8) {
 		q->b.b2 = 3;
-		q->b.w4 = ptbl9c[q->b.w4].x4;
-	} else if (q->b.b2 == 6 && ptbl9c[q->b.w4].p6 < 0) {
+		q->b.w4 = betatbl[q->b.w4].x4;
+	} else if (q->b.b2 == 6 && betatbl[q->b.w4].p6 < 0) {
 		if (qflag > 2)
 			printf("// assigning S%d to offset %d\n", q->b.w4, tmpoff);
-		ptbl9c[q->b.w4].p6 = tmpoff;
+		betatbl[q->b.w4].p6 = tmpoff;
 		tmpoff += szty(q->b.w0) * 2;
 	}
 	if (q->c.b2 == 8) {
 		q->c.b2 = 3;
-		q->c.w4 = ptbl9c[q->c.w4].x4;
-	} else if (q->c.b2 == 6 && ptbl9c[q->c.w4].p6 < 0) {
+		q->c.w4 = betatbl[q->c.w4].x4;
+	} else if (q->c.b2 == 6 && betatbl[q->c.w4].p6 < 0) {
 		if (qflag > 2)
 			printf("// assigning S%d to offset %d\n", q->c.w4, tmpoff);
-		ptbl9c[q->c.w4].p6 = tmpoff;
+		betatbl[q->c.w4].p6 = tmpoff;
 		tmpoff += szty(q->c.w0) * 2;
 	}
 	if (p->in.op != 0x7b) {
@@ -576,9 +576,9 @@ extern struct quad *qhead;
 extern int v00, v04;
 extern long vb94;
 extern NODE *curproc;
-extern struct { int next; int val; } *tab70aa;
-extern int **tab70a6;
-extern void prquads(), prtcounts(), fn9b96();
+extern struct { int next; int val; } *edges;
+extern int **blks;
+extern void prquads(), prtcounts(), deledge();
 extern void cleartrees(), mktree();
 
 /* the quads are written as trees in the intermediate language (names guessed, written from /lib/gopt) */
@@ -589,7 +589,7 @@ writeil()
 	NODE *p, *u, *v;
 	int i;
 	long pos;
-	struct sym *rtab[12];
+	struct sym *betatbl[12];
 
 	if (qflag > 1) {
 		printf("// writeil : quads to be converted to trees - \n");
@@ -597,7 +597,7 @@ writeil()
 		prtcounts();
 	}
 	for (i = 0; i <= 11; i++)
-		rtab[i] = 0;
+		betatbl[i] = 0;
 	tmpoff = 0;
 	for (q = qhead; q; q = q->next) {
 		ifline = q->pos.line;
@@ -611,8 +611,8 @@ writeil()
 			continue;
 		case 0x11:
 			for (i = 1; i <= 11; i++)
-				if (rtab[i] && (((rtab[i]->sflags >> 2) & 1) || rtab[i]->sclass == 3))
-					printf("S%d\t\n", (rtab[i]->sflags >> 4) & 0xfff);
+				if (betatbl[i] && (((betatbl[i]->sflags >> 2) & 1) || betatbl[i]->sclass == 3))
+					printf("S%d\t\n", (betatbl[i]->sflags >> 4) & 0xfff);
 			printf("}\n");
 			fseek(stdout, pos, 0);
 			printf("%04.4d", tmpoff);
@@ -628,14 +628,14 @@ writeil()
 		case 0x3b:
 			cleartrees();
 			printf("#%d\t", q->a.w0);
-			for (i = q->a.w4; i >= 0; i = tab70aa[i].next) {
-				printf("%d\t", tab70aa[i].val);
-				fn9b96(&q->b.w4, tab70aa[i].val);
+			for (i = q->a.w4; i >= 0; i = edges[i].next) {
+				printf("%d\t", edges[i].val);
+				deledge(&q->b.w4, edges[i].val);
 			}
 			printf("");
-			for (i = q->a.w4; i >= 0; i = tab70aa[i].next)
-				if (*(int *)((char *)tab70a6[tab70aa[i].val] + 0x16) < 0)
-					printf("%d\t", tab70aa[i].val);
+			for (i = q->a.w4; i >= 0; i = edges[i].next)
+				if (*(int *)((char *)blks[edges[i].val] + 0x16) < 0)
+					printf("%d\t", edges[i].val);
 			printf("\n");
 			continue;
 		case 0x1c:
@@ -663,7 +663,7 @@ writeil()
 				else {
 					if (q->a.b2 == 8) {
 						q->a.b2 = 3;
-						q->a.w4 = ptbl9c[q->a.w4].x4;
+						q->a.w4 = betatbl[q->a.w4].x4;
 					}
 					if (pend) {
 						p = talloc();
@@ -701,28 +701,28 @@ writeil()
 			}
 			continue;
 		case 0x2b:
-			if (rtab[q->a.w4] == 0)
+			if (betatbl[q->a.w4] == 0)
 				continue;
-			printf("S%d\t\n", (rtab[q->a.w4]->sflags >> 4) & 0xfff);
-			rtab[q->a.w4] = 0;
+			printf("S%d\t\n", (betatbl[q->a.w4]->sflags >> 4) & 0xfff);
+			betatbl[q->a.w4] = 0;
 			continue;
 		case 0x28:
 			if (q->a.w4 > 7)
 				q->a.w4 -= 7;
 			if (q->b.b2 == 4) {
 				printf("R%d\t%d\t\n", q->a.w4, (symtab[q->b.w4].sflags >> 4) & 0xfff);
-				rtab[q->a.w4] = symtab + q->b.w4;
-			} else if (q->b.b2 == 6 && ptbl9c[q->b.w4].p6 < 0) {
+				betatbl[q->a.w4] = symtab + q->b.w4;
+			} else if (q->b.b2 == 6 && betatbl[q->b.w4].p6 < 0) {
 				if (qflag > 2)
 					printf("// assigning S%d to offset %d\n", q->a.w4, tmpoff);
 				printf("R%d\t%d\t%d\t\n", q->a.w4, -tmpoff, q->b.w0);
-				ptbl9c[q->b.w4].p6 = tmpoff;
+				betatbl[q->b.w4].p6 = tmpoff;
 				tmpoff += szty(q->b.w0) * 2;
 			} else if (q->b.b2 == 6)
-				printf("R%d\t%d\t%d\t\n", q->a.w4, -ptbl9c[q->b.w4].p6, q->b.w0);
+				printf("R%d\t%d\t%d\t\n", q->a.w4, -betatbl[q->b.w4].p6, q->b.w0);
 			else {
 				q->b.b2 = 3;
-				q->b.w4 = ptbl9c[q->b.w4].x4;
+				q->b.w4 = betatbl[q->b.w4].x4;
 				u = mkleaf(&q->b);
 				*(ctpos + q->b.w4) += 1;
 				printf("R%d\t%d\t%d\t\n", q->a.w4, -u->tn.temp, q->b.w0);
@@ -731,17 +731,17 @@ writeil()
 		case 0x29:
 			if (q->b.b2 == 4)
 				printf("T%d\t\n", (symtab[q->b.w4].sflags >> 4) & 0xfff);
-			else if (q->b.b2 == 6 && ptbl9c[q->b.w4].p6 < 0) {
+			else if (q->b.b2 == 6 && betatbl[q->b.w4].p6 < 0) {
 				if (qflag > 2)
 					printf("// assigning S%d to offset %d\n", q->b.w4, tmpoff);
 				printf("T%d\t\n", -tmpoff);
-				ptbl9c[q->b.w4].p6 = tmpoff;
+				betatbl[q->b.w4].p6 = tmpoff;
 				tmpoff += szty(q->b.w0) * 2;
 			} else if (q->b.b2 == 6)
-				printf("T%d\t\n", -ptbl9c[q->b.w4].p6);
+				printf("T%d\t\n", -betatbl[q->b.w4].p6);
 			else {
 				q->b.b2 = 3;
-				q->b.w4 = ptbl9c[q->b.w4].x4;
+				q->b.w4 = betatbl[q->b.w4].x4;
 				u = mkleaf(&q->b);
 				*(ctpos + q->b.w4) += 1;
 				printf("T%d\t\n", -u->tn.temp);

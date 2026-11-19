@@ -12,12 +12,12 @@ extern char *a0cc;
 struct aln { int x0; struct aln *next; struct aln *link; };
 struct hent { struct hent *next; int op; int v1; int v2; int val; unsigned cst:1, num:15; struct quad *q; };	/* an entry of htab (guessed) */
 extern struct hent *htab[32];
-extern char a050e[], a0010[];
+extern char ctpos[], ctneg[];
 extern int betanew();
-extern long lconst[];
+extern long constbl[];
 extern struct aln *usetbl[];
 extern int inuse(), canopt();
-extern int a70ce, a70c6;
+extern int nptr, nadr;
 extern struct { struct quad *q; struct sym *s; } a71ec[];
 extern struct aln *killtbl[];
 extern struct sym *symtab;
@@ -385,16 +385,16 @@ struct quad *first, *last;
 				if (p->a.b2 == 3 && p->a.w4 == x) {
 					p->a.b2 = 6;
 					p->a.w4 = y;
-					--a050e[x];
+					--ctpos[x];
 					p->f6 = 1;
-					++a0010[y];
+					++ctneg[y];
 				}
 				if (p->b.b2 == 3 && p->b.w4 == x) {
 					p->b.b2 = 6;
 					p->b.w4 = y;
-					--a050e[x];
+					--ctpos[x];
 					p->f5 = 1;
-					++a0010[y];
+					++ctneg[y];
 				}
 			}
 		}
@@ -477,7 +477,7 @@ struct quad *q;
 	case 48:
 		x = 1;
 		if (q->b.b2 == 7) {
-L7:			x = lconst[q->b.w4];
+L7:			x = constbl[q->b.w4];
 			return 0;
 		} else if (q->b.b2 == 1)
 			x = q->b.w4;
@@ -635,7 +635,7 @@ int n;
 
 	e = (struct vn *)a0cc;
 	while (e != 0) {
-		if (e->al == 0 || e->al == a70ce || e->al == a70c6)
+		if (e->al == 0 || e->al == nptr || e->al == nadr)
 			e->val = 0;
 		e = e->next;
 	}
@@ -756,17 +756,17 @@ ebbclean()
 				continue;
 			switch (q->c.b2) {
 			case 3:
-				if (a050e[q->c.w4] > 1)
+				if (ctpos[q->c.w4] > 1)
 					break;
 L1:				q = delquad(q);
 				x = 1;
 				break;
 			case 6:
-				if (a0010[q->c.w4] <= 1)
+				if (ctneg[q->c.w4] <= 1)
 					goto L1;
 				break;
 			case 8:
-				if (a050e[betatbl[q->c.w4].x[0]] <= 1)
+				if (ctpos[betatbl[q->c.w4].x[0]] <= 1)
 					goto L1;
 				break;
 			}
@@ -775,7 +775,7 @@ L1:				q = delquad(q);
 }
 
 extern struct { int rv; double d; } fconsttbl[];
-extern int constlook(), fn4_1c88();
+extern int constlook(), dconstlook();
 
 /* the value of the operation of q computed at compile time: the operands are constants (name guessed from the error messages); the result is an operand c of the quad */
 struct qa
@@ -813,7 +813,7 @@ struct quad *q;
 		}
 	}
 	if (x->a.b2 == 7)
-		op1 = lconst[x->a.w4];
+		op1 = constbl[x->a.w4];
 	else if (x->a.b2 == 1)
 		op1 = x->a.w4;
 	else if (x->a.b2 == 2)
@@ -834,7 +834,7 @@ struct quad *q;
 				cerror("error in compile time constant propagation (2)");
 		}
 		if (x->a.b2 == 7)
-			op2 = lconst[x->a.w4];
+			op2 = constbl[x->a.w4];
 		else if (x->a.b2 == 1)
 			op2 = x->a.w4;
 		else if (x->a.b2 == 2)
@@ -884,7 +884,7 @@ struct quad *q;
 			cerror("error in compile time constant propagation (4) (%d)", q->op);
 		}
 		r.b2 = 2;
-		r.w4 = fn4_1c88(dr);
+		r.w4 = dconstlook(dr);
 	}
 	r.w0 = q->c.w0;
 	return r;

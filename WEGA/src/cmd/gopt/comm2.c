@@ -26,7 +26,7 @@ extern NODE *talloc();
 extern void ncopy();
 extern int szty();
 extern char *mkseg(), *ssgbrk(), *sgbrk();
-extern int debug;
+extern int qflag;
 extern char *arhigh[];
 extern char *taballoc();
 extern void tabfree();
@@ -420,10 +420,10 @@ tabfree(a, p)
 		if (a != 1)
 			cerror("deallocation error in table area %d", a);
 		else {
-			if (debug)
+			if (qflag)
 				printf("// sgbrk(%X)\n", (long)arptr[a] & SEGMASK);
 			sgbrk((long)arptr[a] & SEGMASK);
-			if (debug)
+			if (qflag)
 				printf("// sgbrk(%X)\n", p);
 			sgbrk(p);
 			arlim[a] = p;

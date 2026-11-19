@@ -403,13 +403,6 @@
    "file": "quads2.c",
    "note": "name guessed; reads 4 words from the data file with fscanf (the .word lines of the intermediate file)"
   },
-  "f4_1c88": {
-   "orig": "4:1c88",
-   "size_orig": 154,
-   "status": "open",
-   "kind": "proven",
-   "module": "quads2.c"
-  },
   "addquad": {
    "orig": "4:1d22",
    "size_orig": 482,
@@ -5027,6 +5020,14 @@
    "module": "flow2.c",
    "file": "flow2.c",
    "note": "name guessed: the graph printed (debug); register variables i (r13) and e (r12)"
+  },
+  "dconstlook": {
+   "orig": "4:1c88",
+   "size_orig": 154,
+   "status": "open",
+   "kind": "proven",
+   "module": "quads2.c",
+   "file": "quads2.c"
   }
  },
  "status_note": "masked = the function equals the original under fncheck.py (segment numbers and addresses masked), compiler sccvc under OLDROOT; exact only after the link with segcmp.py"
