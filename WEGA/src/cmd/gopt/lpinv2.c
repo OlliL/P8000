@@ -8,6 +8,7 @@ static char sccsid[] = "@[$]lpinv2.c\t1.10  03/04/83 15:58:16 Copr. 1981 87wega3
 
 struct bl { struct bl *next; int blk; };	/* a list of blocks */
 struct loop { struct bl *bls; int hdr; struct loop *link; struct bl *exits; int tail; int cnt; unsigned b15:1, b14:1, b13:1, b12:1, b11:1; };
+struct aln { int x0; struct aln *next; struct aln *link; };
 struct hrec { int x[7]; };	/* the record of a block that the header quad points to at 6 (guessed) */
 #define QHREC(q)	(*(struct hrec **)((char *)(q) + 6))
 extern struct quad **blks;
@@ -315,4 +316,41 @@ int block;
 				printf("\tr->onedef=%d\n", r->f15);
 		}
 	}
+}
+
+#define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
+extern int *a70da;
+extern struct aln *checkalias();
+
+/* the operand c of q is a global variable or may be changed by the alias of a global one (name from the debug output) */
+int
+isglobal(q)
+struct quad *q;
+{
+	struct aln *p;
+
+	if (q->op == 3)
+		return 0;
+	if ((q->op == 25 || q->op == 2) && q->a.b2 == 8 && BBIT(q->a.w4, 11))
+		return 0;
+	if (s4d86 > 2) {
+		printf("isglobal(),  quad:\n");
+		prquad(q);
+	}
+	if ((q->c.b2 == 4 && ((symtab[q->c.w4].sflags >> 2) & 1)) ||
+	    (q->c.b2 == 8 && ((symtab[betatbl[q->c.w4].x1].sflags >> 2) & 1))) {
+		if (s4d86 > 3)
+			printf("isglobal(), returning TRUE\n");
+		return 1;
+	}
+	for (p = checkalias(q, 1); p != 0; p = p->next) {
+		if ((symtab[a70da[p->x0]].sflags >> 2) & 1) {
+			if (s4d86 > 3)
+				printf("isglobal(), returning TRUE\n");
+			return 1;
+		}
+	}
+	if (s4d86 > 3)
+		printf("isglobal(), returning FALSE\n");
+	return 0;
 }

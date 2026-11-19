@@ -3608,35 +3608,41 @@
    "size_orig": 664,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "alloclpdef": {
    "orig": "5:2ad2",
    "size_orig": 248,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "skiphdrs": {
    "orig": "5:2bca",
    "size_orig": 190,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
   "addlpdef": {
    "orig": "5:2c88",
    "size_orig": 364,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c"
   },
-  "f5_2df4": {
+  "isglobal": {
    "orig": "5:2df4",
    "size_orig": 426,
    "status": "open",
    "kind": "proven",
-   "module": "lpinv2.c"
+   "module": "lpinv2.c",
+   "file": "lpinv2.c",
+   "note": "open (DIFF 13, 123 against 125 instructions): the original keeps the call printf of the TRUE print in the loop and the first TRUE block jumps to it (jr 2f10), ours the reverse (tail merging, sucomp); the original has `testl rr2; jr ne` after p = checkalias(q, 1) (loop test after the assignment), ours folds it"
   },
   "f5_2f9e": {
    "orig": "5:2f9e",
