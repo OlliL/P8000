@@ -25,6 +25,11 @@ extern int cerror();
 extern NODE *talloc();
 extern void ncopy();
 extern int szty();
+extern char *mkseg(), *ssgbrk(), *sgbrk();
+extern int debug;
+extern char *arhigh[];
+extern char *taballoc();
+extern void tabfree();
 static void tfree1();
 static void prline();
 
@@ -350,4 +355,97 @@ plainicon(p)
 	register NODE *p;
 {
 	return p->in.op == ICON && p->tn.lval == 0 && p->tn.rval >= 0;
+}
+
+/* the areas of the tables: each has a segment of its own (area 1 may move to another one) */
+#define NAREA	11
+#define STEP	2000
+#define SEGMASK	0x7f000000L
+static char *arlim[NAREA] = { 0 };	/* end of the memory of the area */
+static char *arptr[NAREA] = { 0 };	/* the next free byte */
+
+/* n bytes of the area a, cleared; the memory grows by at least STEP bytes (names taballoc, tabfree, tabavail guessed) */
+char *
+taballoc(n, a)
+	register int n;
+	int a;
+{
+	int m, seg;
+	register char *p;
+	int *q;
+
+	if (arptr[a] == 0) {
+		arptr[a] = mkseg(0, STEP);
+		arlim[a] = arptr[a] + STEP;
+	}
+	n++;
+	n &= ~1;
+	if (arptr[a] + n >= arlim[a]) {
+		if (n > STEP)
+			m = n;
+		else
+			m = STEP;
+		seg = ((long)arptr[a] >> 24) & 0x7f;
+		if (ssgbrk(seg, m) == (char *)-1) {
+			if (a != 1)
+				cerror("C Optimizer: out of space\n");
+			arptr[a] = arlim[a] = mkseg(0, m);
+			if (arptr[a] == (char *)-1)
+				cerror("C Optimizer: out of space\n");
+		}
+		arlim[a] += m;
+	}
+	p = arptr[a];
+	arptr[a] += n;
+	if (arptr[a] > arhigh[a])
+		arhigh[a] = arptr[a];
+	for (q = (int *)p; q < (int *)arptr[a]; q++)
+		*q = 0;
+	return p;
+}
+
+/* give the memory of the area a back down to p (0: to the start of its segment) */
+void
+tabfree(a, p)
+	int a;
+	char *p;
+{
+	int s1, s2;
+
+	s1 = ((long)arptr[a] >> 24) & 0x7f;
+	s2 = ((long)p >> 24) & 0x7f;
+	if (p == 0)
+		p = (char *)((long)arptr[a] & SEGMASK);
+	else if (s1 != s2) {
+		if (a != 1)
+			cerror("deallocation error in table area %d", a);
+		else {
+			if (debug)
+				printf("// sgbrk(%X)\n", (long)arptr[a] & SEGMASK);
+			sgbrk((long)arptr[a] & SEGMASK);
+			if (debug)
+				printf("// sgbrk(%X)\n", p);
+			sgbrk(p);
+			arlim[a] = p;
+		}
+	}
+	arptr[a] = p;
+}
+
+/* is there room for n bytes in the area a (it is allocated and given back) */
+int
+tabavail(n, a)
+	int n, a;
+{
+	char *p, *q;
+	int r;
+
+	p = taballoc(0, a);
+	q = taballoc(n, a);
+	if (q == (char *)0x7F00FFFFL)
+		r = 0;
+	else
+		r = 1;
+	tabfree(a, p);
+	return r;
 }

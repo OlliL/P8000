@@ -913,26 +913,32 @@
    "module": "comm2.c",
    "file": "comm2.c"
   },
-  "f4_4738": {
+  "taballoc": {
    "orig": "4:4738",
    "size_orig": 508,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "name guessed (an area allocator: ssgbrk/mkseg, areas 0..10)"
   },
-  "f4_4934": {
+  "tabfree": {
    "orig": "4:4934",
    "size_orig": 276,
    "status": "open",
    "kind": "proven",
-   "module": "comm2.c"
+   "module": "comm2.c",
+   "file": "comm2.c",
+   "note": "name guessed; open: one instruction: the original reads p (the second parameter, rr4) for s2 from the register, ours reloads it from the frame (ldl rr2,rr4 / ldl rr2,0(r15)); tried register p, swapped declarations, a copy of p"
   },
-  "f4_4a48": {
+  "tabavail": {
    "orig": "4:4a48",
    "size_orig": 70,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "comm2.c|wrtil2.c"
+   "module": "comm2.c|wrtil2.c",
+   "file": "comm2.c",
+   "note": "name guessed (an area allocator: ssgbrk/mkseg, areas 0..10)"
   },
   "f4_4a8e": {
    "orig": "4:4a8e",
