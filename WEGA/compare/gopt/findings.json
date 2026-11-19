@@ -1886,26 +1886,32 @@
    "file": "alias2.c",
    "note": "name guessed (the strings say: nodes put on alfree)"
   },
-  "f4_8a9e": {
+  "chkallist": {
    "orig": "4:8a9e",
    "size_orig": 238,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "odd form: goto repeated (the block of the repeated list stands behind the return in the original); n is not reset per list (as the original); names of the globals guessed (allist 70d0, alcur 70b2, alast 70e0, ndist 70c0, nlist 70ba)"
   },
-  "f4_8b8c": {
+  "initallist": {
    "orig": "4:8b8c",
    "size_orig": 212,
    "status": "open",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "open (DIFF 2, 2 attempts incl. unsigned x0): after the word store alcur->x0 = v (alast->x0 in addallist) the original loads the global pointer again (ldl rr2,..) before the next store, ours keeps rr2; the rest equal. The same cause in both: a cache of the pointer after a word store through it (phase B). The goto-free form is plain."
   },
-  "f4_8c60": {
+  "addallist": {
    "orig": "4:8c60",
    "size_orig": 182,
    "status": "open",
    "kind": "proven",
-   "module": "alias2.c"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "open (DIFF 2, 2 attempts incl. unsigned x0): after the word store alcur->x0 = v (alast->x0 in addallist) the original loads the global pointer again (ldl rr2,..) before the next store, ours keeps rr2; the rest equal. The same cause in both: a cache of the pointer after a word store through it (phase B). The goto-free form is plain."
   },
   "f4_8d16": {
    "orig": "4:8d16",

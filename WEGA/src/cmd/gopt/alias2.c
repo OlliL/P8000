@@ -17,8 +17,9 @@ extern char *taballoc();
 extern int *altab;
 extern int *affect, *modval;
 extern int matw, affdim;
-struct aln { int x0; struct aln *next; };	/* a node of the free list of the alias lists: 6 bytes (guessed) */
-extern struct aln *alfree;
+struct aln { int x0; struct aln *next; struct aln *link; };	/* a node of the alias lists (guessed; link: 6, the list of the lists) */
+extern struct aln *alfree, *allist, *alcur, *alast;
+extern int ndist, nlist;
 extern int almap();
 extern struct sym *symtab;
 extern char ascii[];
@@ -797,4 +798,93 @@ alret(p)
 			last = q;
 		last->next = p;
 	}
+}
+
+/* the new alias list alcur is compared with the lists before it: a repeated one is given up (nodes to alfree) */
+void
+chkallist()
+{
+	struct aln *p, *a, *b;
+	int n;
+
+	n = 0;
+	for (p = allist; p != alcur; p = p->link) {
+		a = p->next;
+		for (b = alcur->next; a != 0; a = a->next, b = b->next) {
+			if (b == 0 || a->x0 != b->x0)
+				break;
+			n++;
+		}
+		if (a == 0 || b == 0)
+			goto repeated;
+	}
+	if (aflag > 2)
+		printf("// chkallist: distinct alias list found\n");
+	ndist++;
+	return;
+repeated:
+	if (aflag > 1)
+		printf("// chkallist: alias list repeated\n");
+	nlist -= n;
+	alret(alcur->next);
+	alcur->next = p->next;
+}
+
+/* a new alias list for the variable v: the list before it is checked (chkallist) */
+void
+initallist(v)
+	int v;
+{
+	struct aln *t;
+
+	if (aflag > 1)
+		printf("// initallist(%d)\n", v);
+	if (alcur != 0) {
+		if (alcur->next != alast) {
+			if (aflag > 1)
+				printf("// initallist: previous entry nondiagonal\n");
+			chkallist();
+			t = alcur;
+			alcur = (struct aln *)taballoc(10, 6);
+			t->link = alcur;
+			alast = 0;
+		}
+	} else {
+		if (aflag > 1)
+			printf("// initallist: firstalnode initialized\n");
+		alcur = (struct aln *)taballoc(10, 6);
+		allist = alcur;
+	}
+	alcur->x0 = v;
+	alcur->next = 0;
+	alcur->link = 0;
+}
+
+/* the variable v is appended to the current alias list */
+void
+addallist(v)
+	int v;
+{
+	struct aln *t;
+
+	if (aflag > 1)
+		printf("// addallist(%d)\n", v);
+	if (alast != 0) {
+		if (alcur->next != 0) {
+			if (aflag > 1)
+				printf("// addallist: next entry on list\n");
+			t = alast;
+			alast = alalloc();
+			t->next = alast;
+		} else
+			alcur->next = alast;
+	} else {
+		if (aflag > 1)
+			printf("// addallist: first  entry of the list\n");
+		alast = alalloc();
+		alcur->next = alast;
+	}
+	alast->x0 = v;
+	alast->next = 0;
+	nlist++;
 }

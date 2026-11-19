@@ -200,3 +200,5 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   zero/neg/done inside the first if). Next: 4:831e addaffect (a switch with case blocks up to 4:87e6, about 1000 bytes), then 4:87e6 .. 4:9108.
 - 2026-11-19: gopt: alias2.c addaffect (4:831e with its eleven case blocks up to 4:87e6, the affect/modify matrices per quad class) written, DIFF 3 (one jr/jp to the
   shared printf); the globals affect, modval, affdim (70d4, 70ae, 70b6) declared. Next: 4:87e6 initaffect, 4:89c0 .. 4:9108.
+- 2026-11-19: gopt: alias2.c initaffect (DIFF 11, popt block order of the loop), alalloc, alret, chkallist (masked), initallist, addallist (DIFF 2: the original loads the
+  global pointer again after a word store through it). Next: 4:8d16 .. 4:9108 (the end of alias2), 4:7088.
