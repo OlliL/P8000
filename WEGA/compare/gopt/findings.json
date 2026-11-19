@@ -3971,12 +3971,14 @@
    "module": "lpind2.c",
    "file": "lpind2.c"
   },
-  "f5_5ec4": {
+  "fillindvar": {
    "orig": "5:5ec4",
    "size_orig": 1080,
    "status": "open",
    "kind": "proven",
-   "module": "lpind2.c"
+   "module": "lpind2.c",
+   "file": "lpind2.c",
+   "note": "open (DIFF 21, 298 against 294 instructions): the 4 `and r6,#ADDR` of cause 2; block order (codemove): the original places the kind == 2 test block (cp kind,2 ..) behind its body (backward jr ne), ours before it; the source has labels LA/LB in the kind == 3 part and gotos from the kind == 2 part; if (ok) {rest} fn5_6466(0, n) puts the fail block last"
   },
   "f5_62fc": {
    "orig": "5:62fc",

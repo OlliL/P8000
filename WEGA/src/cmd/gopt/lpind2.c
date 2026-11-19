@@ -84,7 +84,11 @@ struct quad *q;
 extern int s4d94, a0ec, a0ee;
 extern void propnd();
 extern int fn4_faa4();
-extern struct quad *insertquad(), *qmove();
+extern struct quad *insertquad(), *qmove(), *moveindquad();
+extern int a0da;
+extern char *taballoc();
+extern int copyopndstmp();
+extern long ceval();
 
 /* a move of the result of q to a new stemp is inserted and the quads are moved (name from the debug output) */
 struct quad *
@@ -131,11 +135,12 @@ struct quad *q;
 	return q;
 }
 
-struct dl { int x0; struct quad *q; long l6; long l10; struct qa e14; int x20; unsigned f15:1, f14:1, f13:1, f12:1, f11:1, f10:1, rest:10; struct dl *next; };
+struct nd { struct qa c0; unsigned f15:1, f14:15; long v; char xc[6]; struct nd *link; };	/* a node of the induction variable lists: 22 bytes (guessed) */
+struct dl { int x0; struct quad *q; struct nd *l6; struct dl *l10; struct qa e14; int x20; unsigned f15:1, f14:1, f13:1, f12:1, f11:1, f10:1, rest:10; struct dl *next; };
 extern void denorm(), normop();
 
 /* the quad opqd gets a new stemp as its result operand; the stemp is entered into the definition (name from the debug output) */
-void
+struct quad *
 moveindquad(x, opqd, out, d, d2, kind)
 struct quad *x, *opqd;
 struct qa *out;
@@ -305,4 +310,94 @@ struct quad *outq;
 		return 1;
 	}
 	return insrtopstmp(opqd, p, t, kind, outq);
+}
+
+extern struct nd *a104;
+extern void fn5_6466();
+
+/* the stemp of the definition p is used for the operand of opqd of t; a node of the induction variable lists is filled (name from the debug output) */
+struct quad *
+fillindvar(qd, opqd, kind, p, t)
+struct quad *qd, *opqd;
+int kind;
+struct dl *p, *t;
+{
+	struct nd *n, *tmp;
+	int ok;
+
+	if (s4d86 > 2) {
+		printf("fillindvar(), OP=%s, opqd:\n", kind == 2 ? "OP1" : "OP2");
+		prquad(opqd);
+	}
+	if (a104 != 0) {
+		n = a104;
+		a104 = a104->link;
+	} else
+		n = (struct nd *)taballoc(22, 7);
+	t->f11 = 0;
+	n->f15 = 0;
+	n->v = 0;
+	ok = 0;
+	if (kind == 3) {
+		if (p->f11) {
+			if (opqd->a.b2 == 1 || opqd->a.b2 == 7 || opqd->op == 1 || opqd->op == 48) {
+				n->f15 = 1;
+				n->v = ceval(opqd->a, opqd->op, p->e14);
+				t->f11 = 1;
+				if (n->v != 0) {
+					if (n->v > 0) {
+LA:						mkconstopnd(&t->e14, n->v, 1, p->e14.w0);
+						ok = 1;
+					} else {
+LB:						mkconstopnd(&t->e14, n->v, 0, p->e14.w0);
+						ok = 1;
+					}
+				}
+			} else
+				ok = copyopndstmp(opqd, p, t, kind, n);
+		} else
+			ok = copyopndstmp(opqd, p, t, kind, n);
+	} else if (kind == 2) {
+		if (p->f11) {
+			if (opqd->b.b2 == 1 || opqd->b.b2 == 7 || opqd->op == 1 || opqd->op == 48) {
+				n->f15 = 1;
+				n->v = ceval(opqd->b, opqd->op, p->e14);
+				if (n->v != 0) {
+					t->f11 = 1;
+					if (n->v > 0)
+						goto LA;
+					else
+						goto LB;
+				}
+			} else
+				ok = copyopndstmp(opqd, p, t, kind, n);
+		} else
+			ok = copyopndstmp(opqd, p, t, kind, n);
+	}
+done:
+	if (ok) {
+		a0da = 1;
+		if (p->f14) {
+			tmp = p->l6;
+			p->l6 = n;
+			n->link = tmp;
+			t->f13 = 1;
+			t->f12 = 0;
+			t->f14 = 0;
+			t->l10 = p;
+		} else if (p->f13) {
+			tmp = p->l10->l6;
+			p->l10->l6 = n;
+			n->link = tmp;
+			t->f12 = 1;
+			t->f13 = 0;
+			t->f14 = 0;
+			t->l10 = p->l10;
+			t->f10 = p->f10;
+		}
+		opqd = moveindquad(qd, opqd, (struct qa *)n, p, t, kind);
+		return opqd;
+	}
+	fn5_6466(0, n);
+	return 0;
 }
