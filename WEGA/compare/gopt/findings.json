@@ -2203,12 +2203,14 @@
    "file": "dom2.c",
    "note": "open (DIFF 22): the original leaves the loop to the code behind the cerror without a second test (jr eq to b16c); ours tests t < 0 again (break) or moves the block of the bucket store (goto found); the form with break is kept"
   },
-  "f4_b1be": {
+  "dominators": {
    "orig": "4:b1be",
    "size_orig": 1766,
    "status": "open",
    "kind": "proven",
-   "module": "dom2.c"
+   "module": "dom2.c",
+   "file": "dom2.c",
+   "note": "open (DIFF 17, 1 attempt): structurally equal (regdiff: only two base reloads ldl R,ADDR against ldl R,R: the register cache of the compiler as in compress, eval, linkp); the dominators of Lengauer and Tarjan; dom (713a), idfn (7120), arrays guessed; n = maxblk + 1; the debug prints of the arrays (s4d82)"
   },
   "f4_b8a4": {
    "orig": "4:b8a4",

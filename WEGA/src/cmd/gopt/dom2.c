@@ -12,7 +12,9 @@ extern int s4d82;
 extern int blkno;
 extern struct quad **blks;
 extern struct edge *edges;
-extern int *dfn, *label, *vertex, *ancest, *child, *size, *parent;
+extern int *dfn, *label, *vertex, *ancest, *child, *size, *parent, *dom, *idfn;
+extern int maxblk, s70e6;
+extern void tabfree();
 extern int ndfs;
 extern int *bucket;
 extern struct edge *bent;
@@ -158,4 +160,96 @@ delbucket(i, blk)
 		bucket[i] = bent[t].next;
 	else
 		bent[prev].next = bent[t].next;
+}
+
+/* the immediate dominators of the blocks (Lengauer and Tarjan); dom: the result, idfn: the inverse of the numbering */
+void
+dominators()
+{
+	int i, u, v, w, e, n;
+
+	n = maxblk + 1;
+	dom = (int *)taballoc(n + n, 4);
+	vertex = (int *)taballoc(n + n, 4);
+	idfn = (int *)taballoc(n + n, 4);
+	parent = (int *)taballoc(n + n, 4);
+	ancest = (int *)taballoc(n + n, 4);
+	label = (int *)taballoc(n + n, 4);
+	dfn = (int *)taballoc(n + n, 4);
+	child = (int *)taballoc(n + n, 4);
+	size = (int *)taballoc(n + n, 4);
+	bucket = (int *)taballoc(n + n, 4);
+	nbent = 0;
+	bent = (struct edge *)taballoc(0, 4);
+	if (s4d82 > 2)
+		printf("dominators: finished storage allocation\n");
+	dom[0] = -1;
+	for (v = 0; v < n; v++) {
+		dfn[v] = 0;
+		vertex[v] = -1;
+		bucket[v] = -1;
+		dom[v] = -1;
+	}
+	vertex[n] = -1;
+	if (s4d82 > 2) {
+		printf("dominators: finished initializing arrays\n");
+		printf("\nstartblock = %d\n", s70e6);
+	}
+	ndfs = 0;
+	dfs(s70e6 + 1);
+	if (s4d82 > 1) {
+		printf("dominators: finished DFST numbering\n");
+		printf("\tblock\tdfn\tidfn\tsemi\tparent\tancestor\tlabel\n");
+		for (i = 0; i < blkno; i++)
+			printf("\t%d\t%d\t%d\t%d\t%d\t%d\t\t%d\n", i, vertex[i], idfn[i], dfn[i], parent[i], ancest[i], label[i]);
+	}
+	size[0] = 0;
+	dfn[0] = 0;
+	label[0] = 0;
+	for (i = ndfs; i >= 2; i--) {
+		w = vertex[i];
+		for (e = blks[w - 1]->a.w4; e >= 0; e = edges[e].next) {
+			v = edges[e].blk + 1;
+			u = eval(v);
+			if (dfn[u] < dfn[w])
+				dfn[w] = dfn[u];
+		}
+		addbucket(vertex[dfn[w]], w);
+		linkp(parent[w], w);
+		e = bucket[parent[w]];
+		if (s4d82 > 2)
+			printf("dominators: finished step 2\n");
+		while (e >= 0) {
+			v = bent[e].blk;
+			delbucket(parent[w], v);
+			u = eval(v);
+			dom[v] = dfn[u] < dfn[v] ? u : parent[w];
+			e = bent[e].next;
+		}
+	}
+	if (s4d82 > 2)
+		printf("dominators: finished step 3\n");
+	for (i = 2; i < n; i++) {
+		idfn[i] = -1;
+		w = vertex[i];
+		if (w >= 0)
+			if (dom[w] != vertex[dfn[w]])
+				dom[w] = dom[dom[w]];
+	}
+	idfn[1] = -1;
+	idfn[0] = -1;
+	dom[n] = -1;
+	for (i = 0; i < n - 1; i++) {
+		dom[i] = dom[i + 1] == -1 ? -1 : dom[i + 1] - 1;
+		vertex[i] = vertex[i + 1] == -1 ? -1 : vertex[i + 1] - 1;
+		if (vertex[i] >= 0)
+			idfn[vertex[i]] = i;
+	}
+	tabfree(4, (char *)parent);
+	if (s4d82) {
+		printf("\n\tblock\tdominator\tdfn\tidfn\n");
+		for (i = 0; i < blkno; i++)
+			printf("\t%d\t%d\t\t%d\t%d\n", i, dom[i], vertex[i], idfn[i]);
+		printf("\n\n");
+	}
 }
