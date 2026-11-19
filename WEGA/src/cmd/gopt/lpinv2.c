@@ -5,9 +5,10 @@
 #include "gopt.h"
 
 static char sccsid[] = "@[$]lpinv2.c\t1.10  03/04/83 15:58:16 Copr. 1981 87wega3.2.";
+static int lblcnt = 15000;
 
 struct bl { struct bl *next; int blk; };	/* a list of blocks */
-struct loop { struct bl *bls; int hdr; struct loop *link; struct bl *exits; int tail; int cnt; unsigned b15:1, b14:1, b13:1, b12:1, b11:1; };
+struct loop { struct bl *bls; int hdr; struct loop *link; struct bl *exits; int tail; int cnt; unsigned b15:1, b14:1, b13:1, b12:1, b11:1, b10:1; };
 struct aln { int x0; struct aln *next; struct aln *link; };
 struct hrec { unsigned *f0; unsigned *f4; unsigned *f8; int w12; };	/* the record of a block that the header quad points to at 6 (guessed) */
 #define QHREC(q)	(*(struct hrec **)((char *)(q) + 6))
@@ -971,4 +972,189 @@ int phblk;
 		}
 	}
 	insrtdomnode(hblk, phblk);
+}
+
+extern int blkno, s4d88, s4d90;
+extern struct quad *qhead, *a0d6;
+extern struct quad *insertquad();
+extern void prgraph(), deledge(), addedge(), updatelooplist();
+extern struct pr *a70aa;
+
+/* the block list of the loop lp is searched for p (name guessed) */
+int
+inbl(list, p)
+struct bl *list;
+int p;
+{
+	for (; list != 0; list = list->next)
+		if (list->blk == p)
+			return 1;
+	return 0;
+}
+
+/* a preheader block is added in front of the header of the loop lp (name from the debug output); the number of the new block is returned */
+int
+addpreheader(lp, flag)
+struct loop *lp;
+int flag;
+{
+	int i, p, hblk, lbl, nl, chg, adj;
+	struct quad *q, *cq, *hq, *pq, *nq, *pv;
+	struct qa qa1, qa2, qa3;
+
+	chg = 0;
+	adj = 0;
+	if (s4d86 > 2)
+		printf("// addpreheader()\n");
+	if ((s4d90 || s4d86) && s4d88) {
+		printf("addpreheader : before insertion, blockno is %d\n", lp->hdr);
+		if (flag != 1)
+			prgraph();
+	}
+	hblk = lp->hdr;
+	updatelooplist(lp, blkno);
+	hq = blks[hblk];
+	if (s4d90 > 1) {
+		printf("// addpreheader: hblk = %d\n", hblk);
+		prquad(hq->next);
+	}
+	if (hq->next->op != 28)
+		cerror("loop without a label");
+	else
+		lbl = hq->next->a.w4;
+	for (i = hq->a.w4; i >= 0; i = a70aa[i].x) {
+		p = a70aa[i].y;
+		pq = blks[p];
+		if (s4d86 > 3)
+			printf("checking block = %d\n", p);
+		if (!inbl(lp->bls, p)) {
+			if (s4d86 > 3)
+				printf("checking non loop block = %d\n", p);
+			pv = pq;
+			while (pq != 0) {
+				if (pq->op == 59)
+					break;
+				pv = pq;
+				pq = pq->next;
+			}
+			if (pq == hq)
+				break;
+		}
+	}
+	pq = pv = qhead;
+	while (pq != 0) {
+		if (pq == hq)
+			break;
+		pv = pq;
+		pq = pq->next;
+	}
+	if (pq == 0)
+		cerror("loop header quad not found");
+	if (s4d86 > 3) {
+		printf("found quad before the header:\n");
+		prquad(pv);
+	}
+	qa1.w4 = -1;
+	qa1.w0 = blkno;
+	qa2.w4 = -1;
+	qa3.b2 = 0;
+	if (flag == 1 && lp->b10) {
+		a0d6 = pv;
+		return p;
+	}
+	lp->b10 = 1;
+	nq = insertquad(59, &qa1, &qa2, &qa3, pv);
+	a0d6 = nq;
+	for (i = hq->a.w4; i >= 0; i = a70aa[i].x) {
+		p = a70aa[i].y;
+		pq = blks[p];
+		if (inbl(lp->bls, p))
+			continue;
+		q = pq->next;
+		if (s4d86 > 3) {
+			printf("header block=%d, header label=%d\n", hblk, lbl);
+			printf("predecessor block=%d, first quad:\n", p);
+			prquad(q);
+		}
+		cq = 0;
+		while (q != 0) {
+			if (q->op == 59 || q->op == 26 || q->op == 27 || q->op == 10)
+				break;
+			if (q->op == 8)
+				cq = q;
+			q = q->next;
+		}
+		if (s4d86 > 3) {
+			printf("predecessor last quad:\n");
+			prquad(q);
+		}
+		if (q != 0) {
+			if (q->op == 26) {
+				if (q->a.w4 == lbl) {
+					if (!chg)
+						nl = lblcnt++;
+					if (s4d86 > 3)
+						printf("jump label changed from %d to %d\n", q->a.w4, nl);
+					q->a.w4 = nl;
+					chg = 1;
+				}
+			} else if (q->op == 27) {
+				if (q->b.w4 == lbl) {
+					if (!chg)
+						nl = lblcnt++;
+					if (s4d86 > 3)
+						printf("jump label changed from %d to %d\n", q->b.w4, nl);
+					chg = 1;
+					q->b.w4 = nl;
+				}
+			} else if (q->op == 10) {
+				if (q->a.w4 == lbl) {
+					if (!chg)
+						nl = lblcnt++;
+					if (s4d86 > 3)
+						printf("case label changed from %d to %d\n", q->a.w4, nl);
+					chg = 1;
+					q->a.w4 = nl;
+					if (cq == 0)
+						cerror("addpreheader: no case quad previously");
+					if (-cq->b.w4 == lbl) {
+						cq->b.w4 = -nl;
+						if (s4d86 > 3) {
+							printf("changed default label for quad\n");
+							prquad(cq);
+						}
+					}
+				}
+			}
+		}
+		if (chg && !adj) {
+			qa1.b2 = 1;
+			qa1.w4 = nl;
+			a0d6 = insertquad(28, &qa1, (struct qa *)0, (struct qa *)0, nq);
+			adj = 1;
+		}
+		deledge(&hq->a.w4, p);
+		deledge(&pq->b.w4, hblk);
+		addedge(&nq->a.w4, p);
+		addedge(&pq->b.w4, blkno);
+		if (s4d86 > 3)
+			printf("replaced link from pred = %d\n", p);
+	}
+	addedge(&nq->b.w4, hblk);
+	addedge(&hq->a.w4, blkno);
+	QHREC(nq) = (struct hrec *)taballoc(28, 2);
+	QHREC(nq)->f4 = QHREC(hq)->f4;
+	if (flag == 1)
+		QHREC(nq)->f0 = QHREC(hq)->f4;
+	blks[blkno] = nq;
+	blkno++;
+	if (blkno > s70ea) {
+		printf("blkno=%d, maxblocks=%d, hblk=%d\n", blkno, s70ea, hblk);
+		cerror("addpreheader(): Too many pre-headers added");
+	}
+	if ((s4d90 || s4d86) && s4d88) {
+		printf("addpreheader : dgf after header insertion\n");
+		prgraph();
+	}
+	return blkno - 1;
 }

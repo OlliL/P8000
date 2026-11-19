@@ -3782,14 +3782,14 @@
    "file": "lpinv2.c",
    "note": "open (DIFF 34, 115 against 114 instructions): popt block order (codemove): ours moves one of the two branch blocks (x == p->bls / else) in front of the loop test jump, the original keeps both behind the loop; for/while and if/else swapped without effect"
   },
-  "f5_4790": {
+  "addpreheader": {
    "orig": "5:4790",
    "size_orig": 1938,
    "status": "open",
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_4f22": {
+  "inbl": {
    "orig": "5:4f22",
    "size_orig": 52,
    "status": "open",
