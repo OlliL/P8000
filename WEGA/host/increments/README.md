@@ -27,8 +27,8 @@ Numbered in steps of ten, so that an increment can be put in between (e.g. 105).
 | 120 | [Corpora for every program and script of src/cmd](120-corpora-src-cmd.md) | done |
 | 130 | [Text and data files (etc, usr/lib, usr/other)](130-text-files.md) | done |
 | 140 | [Subagents: the workflow, on a pilot program](140-subagent-pilot.md) | done (agents dropped: one session per program) |
-| 150 | [The libraries and objects of /lib and /usr/lib](150-libraries.md) | active |
-| 160 | [The programs of bin, usr/bin, etc, usr/lib](160-programs.md) | open |
+| 150 | [The libraries and objects of /lib and /usr/lib](150-libraries.md) | done |
+| 160 | [The programs of bin, usr/bin, etc, usr/lib](160-programs.md) | active |
 | 170 | [PLZ: /bin/as, /lib/as*, plz](170-plz.md) | open |
 | 180 | [Whole system: self-hosted build, boot in MAME](180-whole-system.md) | open |
 | 190 | [Release: installation floppy images](190-release-floppies.md) | open |

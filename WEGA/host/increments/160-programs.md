@@ -2,7 +2,7 @@
 
 ## Status
 
-open (after 150)
+active (2026-11-19; gopt is the current work)
 
 ## Goal
 

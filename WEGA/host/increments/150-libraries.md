@@ -2,7 +2,7 @@
 
 ## Status
 
-active (2026-11-18)
+done (2026-11-19, owner: the libraries and objects are finished; the binaries still open in /lib and /usr/lib belong to 160)
 
 ## Goal
 

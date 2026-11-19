@@ -1,7 +1,7 @@
 # gopt: state for the next session (read this, then compare/gopt/FINDINGS.md only where needed)
 
-Rebuild of /lib/gopt (segmented, code in segments 4 and 5, no source known), increment 150 (host/increments/150-libraries.md, the log
-at its end). Compiler by measurement: sccvc (host/OLDCC.md); a function is "masked" when `fnc.py` finds it equal (segment numbers and
+Rebuild of /lib/gopt (segmented, code in segments 4 and 5, no source known), increment 160 (host/increments/160-programs.md; the log up to 2026-11-19 is at the end of
+150-libraries.md, new entries go to 160-programs.md). Compiler by measurement: sccvc (host/OLDCC.md); a function is "masked" when `fnc.py` finds it equal (segment numbers and
 addresses masked), `exact` only after the link and `segcmp.py` (not tried yet).
 
 Tools (use these, they print little; never dump disassemblies or diffs into the conversation):
