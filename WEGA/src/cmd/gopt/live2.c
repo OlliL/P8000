@@ -19,6 +19,12 @@ extern struct aln *checkalias();
 extern int almap();
 extern int *altab;
 extern int nptr, nadr;
+extern struct quad **blks;
+struct bl { struct bl *next; int blk; };
+struct loop { struct bl *bls; int hdr; struct loop *link; };	/* see dom2.c */
+extern struct loop *loops;
+extern int *idfn;
+extern int blkno;
 extern struct quad *qhead;
 extern void prquad(), prqflags();
 
@@ -261,4 +267,73 @@ setsym(q, flag)
 		cerror("setsym: illegal flag");
 		return 1;
 	}
+}
+
+/* the symbols of the quads of the block b are entered (name from the string); 0 when the table is full */
+int
+markblkvar(b)
+	int b;
+{
+	struct quad *q;
+
+	if (s4d84 > 2)
+		printf("markblkvar(blkno=%d)\n", b);
+	q = blks[b]->next;
+	if (s4d84 > 2)
+		prquad(q);
+	for (; q != 0; q = q->next) {
+		if (q->op == 0x3b)
+			break;
+		if (s4d84 > 2)
+			prquad(q);
+		if (q->f4 || q->f7)
+			if (!setsym(q, 1))
+				return 0;
+		if (q->f6)
+			if (!setsym(q, 2))
+				return 0;
+		if (q->f5)
+			if (!setsym(q, 3))
+				return 0;
+	}
+	if (s4d84 > 2)
+		printf("markblkvar: returning TRUE\n");
+	return 1;
+}
+
+/* the symbols of all blocks that are in the dominator numbering (name guessed) */
+int
+markall()
+{
+	int i;
+
+	for (i = 0; i < blkno; i++)
+		if (idfn[i] >= 0)
+			if (!markblkvar(i))
+				return 0;
+}
+
+/* the symbols of the blocks of the loops (all blocks when there is no loop); name from the string */
+int
+marklpvar()
+{
+	struct loop *p;
+	struct bl *q;
+
+	if (s4d84 > 1) {
+		printf("marklpvar()\n\n");
+		printf("live bit position -- Symbol\n");
+	}
+	p = loops;
+	if (loops != 0) {
+		for (; p != 0; p = p->link) {
+			if (!markblkvar(p->hdr))
+				return 0;
+			for (q = p->bls; q != 0; q = q->next)
+				if (!markblkvar(q->blk))
+					return 0;
+		}
+	} else
+		markall();
+	return 1;
 }

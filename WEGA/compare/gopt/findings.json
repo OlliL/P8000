@@ -2598,21 +2598,21 @@
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_d234": {
+  "markblkvar": {
    "orig": "4:d234",
    "size_orig": 272,
    "status": "open",
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_d344": {
+  "markall": {
    "orig": "4:d344",
    "size_orig": 64,
    "status": "open",
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_d384": {
+  "marklpvar": {
    "orig": "4:d384",
    "size_orig": 132,
    "status": "open",
