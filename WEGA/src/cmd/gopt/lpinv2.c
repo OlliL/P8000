@@ -694,3 +694,34 @@ struct quad *q;
 	}
 	return 1;
 }
+
+/* q and the quads that define its temporaries are marked as invariant (name from the debug output) */
+void
+marklpinv(q, firstq)
+struct quad *q, *firstq;
+{
+	struct quad *p;
+
+	if (s4d86 > 0) {
+		printf("//  marklpinv: \n");
+		prquad(q);
+	}
+	q->f3 = 1;
+	if (q->a.b2 == 3) {
+		p = tmpsearch(firstq, q->a.w4);
+		marklpinv(p, firstq);
+	}
+	if (q->b.b2 == 3 && q->op != 7) {
+		p = tmpsearch(firstq, q->b.w4);
+		marklpinv(p, firstq);
+	}
+}
+
+/* the quads of the list of the definitions are printed (name guessed) */
+void
+prlpdefs(p)
+struct dl *p;
+{
+	for (; p != 0; p = p->next)
+		prquad(p->q);
+}

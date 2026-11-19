@@ -3710,14 +3710,14 @@
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_3d62": {
+  "marklpinv": {
    "orig": "5:3d62",
    "size_orig": 162,
    "status": "open",
    "kind": "proven",
    "module": "lpinv2.c"
   },
-  "f5_3e04": {
+  "prlpdefs": {
    "orig": "5:3e04",
    "size_orig": 48,
    "status": "open",
