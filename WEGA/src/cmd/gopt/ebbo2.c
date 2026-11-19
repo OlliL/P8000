@@ -37,7 +37,7 @@ extern void ebbfix(), resetbb(), ebbclean();
 extern void checkuse(), clear(), fn5_1f2c(), exprenter(), ebbcall(), prquad();
 extern int identop(), nostore();
 extern unsigned a0d0;
-extern struct qa *fn5_1068();
+extern struct qa constfold();
 extern struct hent *exprfind();
 extern struct quad *delquad();
 
@@ -219,7 +219,7 @@ struct quad *q;
 				if (q->c.w0 == 7 || q->c.w0 == 6)
 					goto L44c;
 			}
-			tmp = *fn5_1068(q);
+			tmp = constfold(q);
 			vd = vnfind(&tmp);
 			vc = vnfind(&q->c);
 			vc->val = vd->val;
@@ -772,4 +772,120 @@ L1:				q = delquad(q);
 			}
 		}
 	}
+}
+
+extern struct { int rv; double d; } fconsttbl[];
+extern int constlook(), fn4_1c88();
+
+/* the value of the operation of q computed at compile time: the operands are constants (name guessed from the error messages); the result is an operand c of the quad */
+struct qa
+constfold(q)
+struct quad *q;
+{
+	struct qa r;
+	long res, op1, op2;
+	double d1, d2, dr;
+	struct vn *e, *x;
+	int found;
+
+	if (s4d80 > 3) {
+		printf("// compute :");
+		prquad(q);
+	}
+	x = vnfind(&q->a);
+	if (!(x->a.b2 == 7 || x->a.b2 == 1 || x->a.b2 == 2)) {
+		found = 0;
+		for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+			if (e->val == x->val && (e->a.b2 == 7 || e->a.b2 == 1 || e->a.b2 == 2) && e->cst) {
+				found = 1;
+				break;
+			}
+		}
+		if (found)
+			x = e;
+		else {
+			if (s4d80)
+				for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+					propnd(&e->a);
+					printf(" value = %d, dead = %s\n", e->val, e->dead ? "TRUE" : "FALSE");
+				}
+			cerror("error in compile time constant propagation (1)");
+		}
+	}
+	if (x->a.b2 == 7)
+		op1 = lconst[x->a.w4];
+	else if (x->a.b2 == 1)
+		op1 = x->a.w4;
+	else if (x->a.b2 == 2)
+		d1 = fconsttbl[x->a.w4].d;
+	if (q->b.b2) {
+		x = vnfind(&q->b);
+		if (!(!x->a.b2 == 7 || x->a.b2 == 1 || x->a.b2 == 2)) {
+			found = 0;
+			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+				if (e->val == x->val && (e->a.b2 == 7 || e->a.b2 == 1 || e->a.b2 == 2) && e->cst) {
+					found = 1;
+					break;
+				}
+			}
+			if (found)
+				x = e;
+			else
+				cerror("error in compile time constant propagation (2)");
+		}
+		if (x->a.b2 == 7)
+			op2 = lconst[x->a.w4];
+		else if (x->a.b2 == 1)
+			op2 = x->a.w4;
+		else if (x->a.b2 == 2)
+			d2 = fconsttbl[x->a.w4].d;
+	}
+	if (x->a.b2 != 2) {
+		if (s4d80 > 1)
+			printf("// compute: op1 = %ld, op2 = %ld\n", op1, op2);
+		switch (q->op) {
+		case 1: res = op1 + op2; break;
+		case 4: res = op1 & op2; break;
+		case 13: res = op1; break;
+		case 14: res = op1 / op2; break;
+		case 19: res = op1 == op2; break;
+		case 22: res = op1 >= op2; break;
+		case 23: res = op1 > op2; break;
+		case 29: res = op1 <= op2; break;
+		case 32: res = op1 < op2; break;
+		case 34: res = op1 * op2; break;
+		case 35: res = op1 != op2; break;
+		case 36: res = !op1; break;
+		case 37: res = op1 | op2; break;
+		case 39: res = op1 % op2; break;
+		case 44: res = op1 << op2; break;
+		case 45: res = op2 >> op2; break;
+		case 48: res = op1 - op2; break;
+		default:
+			cerror("error in compile time constant propagation (3) (%d)", q->op);
+		}
+		r.b2 = 7;
+		r.w4 = constlook(res);
+	} else {
+		switch (q->op) {
+		case 1: dr = d1 + d2; break;
+		case 13: dr = d1; break;
+		case 14: dr = d1 / d2; break;
+		case 19: dr = d1 == d2; break;
+		case 22: dr = d1 >= d2; break;
+		case 23: dr = d1 > d2; break;
+		case 29: dr = d1 <= d2; break;
+		case 32: dr = d1 < d2; break;
+		case 34: dr = d1 * d2; break;
+		case 35: dr = d1 != d2; break;
+		case 36: dr = !d1; break;
+		case 48: dr = d1 - d2; break;
+		default:
+			cerror("error in compile time constant propagation (4) (%d)", q->op);
+		}
+		r.b2 = 2;
+		r.w4 = fn4_1c88(dr);
+	}
+	r.w0 = q->c.w0;
+	return r;
 }

@@ -3204,215 +3204,246 @@
    "module": "ebbo2.c",
    "file": "ebbo2.c"
   },
-  "f5_1068": {
+  "constfold": {
    "orig": "5:1068",
    "size_orig": 880,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c",
+   "note": "open (DIFF 28, 432 against 431 instructions): the original returns the struct qa by value (copy to a static and rr2 = its address); (1) tail merging: the original keeps the copy of the common tail `ld r.w4,r2; r.w0 = q->c.w0` in the long branch and the float branch jumps to it (jp), ours keeps the float copy; the same for the store of dr (EPU 4FFC) in the float cases: the original keeps it in the first case, ours has a copy in the == case; (2) long `&` and `|`: the original uses r1 as the temporary (ld r1,op2lo; and r2,..; and r3,r1), ours emits ld r3 .. and r3,r3 (sccvc bug or a different source form: op2&op1, op1&=op2 tried); (3) jr/jp of the layout. Source forms tried: if (b2 == 2) {float} else {long} (worse), duplicated tail"
   },
   "f5_13d8": {
    "orig": "5:13d8",
    "size_orig": 58,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1412": {
    "orig": "5:1412",
    "size_orig": 16,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1422": {
    "orig": "5:1422",
    "size_orig": 6,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1428": {
    "orig": "5:1428",
    "size_orig": 16,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1438": {
    "orig": "5:1438",
    "size_orig": 22,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_144e": {
    "orig": "5:144e",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_145c": {
    "orig": "5:145c",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_146a": {
    "orig": "5:146a",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1478": {
    "orig": "5:1478",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1486": {
    "orig": "5:1486",
    "size_orig": 10,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1490": {
    "orig": "5:1490",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_149e": {
    "orig": "5:149e",
    "size_orig": 16,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_14ae": {
    "orig": "5:14ae",
    "size_orig": 16,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_14be": {
    "orig": "5:14be",
    "size_orig": 16,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_14ce": {
    "orig": "5:14ce",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_14dc": {
    "orig": "5:14dc",
    "size_orig": 12,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_14e8": {
    "orig": "5:14e8",
    "size_orig": 100,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_154c": {
    "orig": "5:154c",
    "size_orig": 42,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1576": {
    "orig": "5:1576",
    "size_orig": 8,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_157e": {
    "orig": "5:157e",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_158c": {
    "orig": "5:158c",
    "size_orig": 30,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_15aa": {
    "orig": "5:15aa",
    "size_orig": 22,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_15c0": {
    "orig": "5:15c0",
    "size_orig": 22,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_15d6": {
    "orig": "5:15d6",
    "size_orig": 22,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_15ec": {
    "orig": "5:15ec",
    "size_orig": 22,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1602": {
    "orig": "5:1602",
    "size_orig": 14,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1610": {
    "orig": "5:1610",
    "size_orig": 22,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_1626": {
    "orig": "5:1626",
    "size_orig": 20,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "f5_163a": {
    "orig": "5:163a",
    "size_orig": 74,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of constfold"
   },
   "identop": {
    "orig": "5:1684",
