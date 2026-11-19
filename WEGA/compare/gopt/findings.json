@@ -2875,7 +2875,7 @@
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_f08c": {
+  "transfer": {
    "orig": "4:f08c",
    "size_orig": 156,
    "status": "open",
@@ -2903,14 +2903,14 @@
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_f4b8": {
+  "prreachstat": {
    "orig": "4:f4b8",
    "size_orig": 38,
    "status": "open",
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_f4de": {
+  "prlivestat": {
    "orig": "4:f4de",
    "size_orig": 38,
    "status": "open",

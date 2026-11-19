@@ -38,7 +38,7 @@ extern struct quad **defs;
 extern int ndefs;
 extern int *srchdef();
 #define MASK(p)	((struct quad *)((long)(p) & ~1L))
-extern void clrvec(), copyvec(), orvec();
+extern void clrvec(), copyvec(), orvec(), andnotvec();
 struct edge { int next; int blk; };
 extern struct edge *edges;
 extern unsigned *tmpv;
@@ -1119,4 +1119,35 @@ confluence(kind, b)
 	}
 	if (s4d84 > 1)
 		printf("\n");
+}
+
+/* the transfer function of the block r: out = gen or (in and not kill) for the reach vectors (kind 2), in = use or (out and not def) for the live vectors (kind 1); name guessed */
+void
+transfer(kind, r)
+	int kind;
+	struct lrec *r;
+{
+	if (kind == 2) {
+		andnotvec(r->f8, r->f18, r->f10, dfwords);
+		orvec(r->f8, r->f14, dfwords);
+	} else if (kind == 1) {
+		andnotvec(r->f4, r->f0, r->f10, lvwords);
+		orvec(r->f4, r->f14, lvwords);
+	}
+}
+
+/* the sizes of the reach vectors (debug; name guessed) */
+void
+prreachstat()
+{
+	printf("//\n//Number of defs in reaching def. analysis = %d\n", ndefs);
+	printf("//Size of reaching def vector \t\t= %d (16 bit words)\n", dfwords);
+}
+
+/* the sizes of the live vectors (debug; name guessed) */
+void
+prlivestat()
+{
+	printf("//\n//Number of vars. used in live var. analysis = %d\n", nlv);
+	printf("//Size of live variable vector \t= %d (16 bit words)\n", lvwords);
 }
