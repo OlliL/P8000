@@ -27,6 +27,6 @@ Next (in this order):
 
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
-TASK: ebbo2.c (segment 5: 5:0000 f5_0000 (192), 5:00c0 (84), 5:0114 (188), 5:01d0 (260), 5:02d4 (472) ...): create src/cmd/gopt/ebbo2.c (SCCS line ebbo2.c 1.8 03/04/83 15:54:14, like live2.c) and write the functions in address order; add ebbo2.o to `part` in the Makefile.
-START: fnc.py -a live2.c flow2.c dom2.c (open: the register cache ones and the layout ones, see findings.json: leave them); odisc.py -o f5_0000 (RECON_PROG=gopt; the keys of segment 5 are f5_XXXX); regdiff.py FILE.diff. Forms that helped: BOPT/BBIT (address of the 10 byte entries of betatbl: index first), (long)(a == b), chains p = darr[d] = ..., unused locals to get the frame size.
+TASK: ebbo2.c (segment 5: 5:0000 ebbopt (192), 5:00c0 (84), 5:0114 (188), 5:01d0 (260), 5:02d4 (472) ...): create src/cmd/gopt/ebbo2.c (SCCS line ebbo2.c 1.8 03/04/83 15:54:14, like live2.c) and write the functions in address order; add ebbo2.o to `part` in the Makefile.
+START: fnc.py -a live2.c flow2.c dom2.c (open: the register cache ones and the layout ones, see findings.json: leave them); odisc.py -o ebbopt (RECON_PROG=gopt; the keys of segment 5 are f5_XXXX); regdiff.py FILE.diff. Forms that helped: BOPT/BBIT (address of the 10 byte entries of betatbl: index first), (long)(a == b), chains p = darr[d] = ..., unused locals to get the frame size.
 STOP WHEN: 12 functions of ebbo2 are written and checked, or at 70% of the context.
