@@ -4272,19 +4272,21 @@
    "module": "reg2.c",
    "file": "reg2.c"
   },
-  "f5_9020": {
+  "findend": {
    "orig": "5:9020",
    "size_orig": 284,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
-  "f5_913c": {
+  "ebbtail": {
    "orig": "5:913c",
    "size_orig": 192,
    "status": "open",
    "kind": "proven",
-   "module": "reg2.c"
+   "module": "reg2.c",
+   "file": "reg2.c"
   },
   "f5_91fc": {
    "orig": "5:91fc",

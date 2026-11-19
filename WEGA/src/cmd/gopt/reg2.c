@@ -35,10 +35,11 @@ extern int s70ea;
 extern unsigned *a10a;
 extern struct quad *fn5_9892();
 extern int fn5_992e(), addpreheader();
-extern char *fn5_9020(), *addreg();
+extern struct quad *findend();
+extern char *addreg();
 extern void addrestore();
 extern void markreg();
-extern struct quad *addsave(), *fn5_913c();
+extern struct quad *addsave(), *ebbtail();
 extern struct quad *insertquad();
 extern int fn4_fc06();
 extern void propagate(), addsavequads(), rmrestorequad(), prgraph();
@@ -622,14 +623,14 @@ savecolors()
 			if (f && !notlive(q, QHREC(blks[blk])->f0)) {
 				if (s4d90 > 4)
 					printf("// inloop = %x\n", QHREC(blks[GF(i, 6, int)])->w12);
-				r = fn5_9020(blk, &x1);
+				r = findend(blk, &x1);
 				r = addreg(n->x12, q->c, x1, r);
-				r2 = fn5_9020(GF(i, 6, int), &x2);
+				r2 = findend(GF(i, 6, int), &x2);
 				if (!fn5_992e(&GF(i, 0, int), r, r2))
 					continue;
 				addrestore(n->x12, q->c, blk, r);
 			} else {
-				r = fn5_9020(GF(i, 6, int), &x1);
+				r = findend(GF(i, 6, int), &x1);
 				r = addreg(n->x12, q->c, x1, r);
 				if (f)
 					continue;
@@ -670,7 +671,7 @@ struct quad *p;
 		propnd(&c);
 		printf("\n");
 	}
-	qq = (struct quad *)fn5_9020(x, &out);
+	qq = (struct quad *)findend(x, &out);
 	for (qq = *(struct quad **)qq; qq != 0; qq = qq->next) {
 		if (qq->op == 28)
 			break;
@@ -715,7 +716,7 @@ struct quad *p;
 		propnd(&c);
 		printf("\n");
 	}
-	qq = (struct quad *)fn5_9020(x, &out);
+	qq = (struct quad *)findend(x, &out);
 	for (qq = *(struct quad **)qq; qq != 0; qq = qq->next) {
 		if (qq->op == 28)
 			break;
@@ -749,7 +750,7 @@ int reg, blk;
 	struct qa tmp;
 	int out;
 
-	qq = (struct quad *)fn5_9020(blk, &out);
+	qq = (struct quad *)findend(blk, &out);
 	for (qq = *(struct quad **)qq; qq != 0; qq = qq->next) {
 		if (qq->op == 28)
 			break;
@@ -761,7 +762,7 @@ int reg, blk;
 	tmp.b2 = 1;
 	tmp.w4 = reg;
 	tmp.w0 = 4;
-	p = fn5_913c(blk);
+	p = ebbtail(blk);
 	qq = insertquad(43, &tmp, (struct qa *)0, (struct qa *)0, p);
 	return qq;
 }
@@ -784,7 +785,7 @@ addsavequads()
 				if (e < 0)
 					continue;
 				for (s = PY(e), c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
-					fn5_9020(s, &out);
+					findend(s, &out);
 					if (a10a[out] & (1 << r)) {
 						pa = &rquad(out, r)->b;
 						pb = &rquad(b, r)->b;
@@ -826,7 +827,7 @@ rmrestorequad()
 			s = PY(e);
 			ok = 1;
 			for (c = e; c >= 0; c = a70aa[c].x, s = PY(c)) {
-				fn5_9020(s, &out);
+				findend(s, &out);
 				t = rquad(out, reg);
 				if (t == 0 || !fn4_fc06(&q->b, &t->b))
 					ok = 0;
@@ -931,4 +932,51 @@ int blk, reg;
 			res = q;
 	}
 	return res;
+}
+
+/* the block with the end of the extended basic block of b; its number in *px (name guessed) */
+struct quad *
+findend(b, px)
+int b;
+int *px;
+{
+	int e, c;
+	struct quad *q;
+
+	e = blks[b]->a.w4;
+	c = b;
+	while (c >= 0) {
+		if (blks[c]->a.w4 < 0) {
+			*px = c;
+			return blks[c];
+		}
+		for (q = blks[c]->next; q != 0; q = q->next) {
+			if (q->op == 59)
+				break;
+			if (q->op == 28) {
+				*px = c;
+				return q;
+			}
+		}
+		c = PY(e);
+		e = blks[c]->a.w4;
+	}
+	*px = 0;
+	return 0;
+}
+
+/* the last quad of the extended basic block of b (name from the debug output) */
+struct quad *
+ebbtail(b)
+int b;
+{
+	struct quad *q, *last;
+
+	last = blks[b];
+	for (q = blks[b]->next; q != 0; q = q->next) {
+		if (q->op == 17 || (q->op == 59 && q->next->op == 28) || q->op == 26)
+			return last;
+		last = q;
+	}
+	cerror("error in ebbtail");
 }

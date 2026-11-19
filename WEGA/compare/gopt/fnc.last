@@ -24,5 +24,7 @@
 "rmrestorequad": "OK",
 "propagate": "OK",
 "r_used": "OK",
-"rquad": "OK"
+"rquad": "OK",
+"findend": "OK",
+"ebbtail": "OK"
 }
