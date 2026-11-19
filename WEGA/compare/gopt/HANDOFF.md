@@ -19,7 +19,7 @@ assignment to a local only in ours (genquads, fndparm, tmpsearch, checkops): pha
 (mktree, genquads); (4) displacement form `ld r2,rr2(#4)` after p = p->next (writeil, tmpsearch).
 
 Next (in this order):
-1. flow2.c: written up to 4:a66e: flow_graph, optflow, rmlabels (DIFF 13), blkempty, rmjumps, deledge (DIFF 7), rm_deadblks, blkof, marklab, addedge (DIFF 4); open placeholders in flow2.c: fna66e (4:a66e), fna9ac (4:a9ac, the print), jmplabel (4:a93c), then 4:a66e .. the end of flow2 and dom2 (see findings.json for the addresses; flow2 ends before 4:ac.. dom2 starts at its SCCS date).
+1. flow2.c is complete (open: addedge 4, rmlabels 13, deledge 7, joinblk 9, all cause 1 or 5); dom2.c begun: dfs (masked), compress 11, eval 15 (the nested index cache: the original has no cache of the base address, ours keeps it in rr4: one more compiler difference, seen in compress and eval); next 4:ad8e (622), 4:affc (220), 4:b0d8 (230), 4:b1be (1766), then init2 (SCCS 1.3).
 2. (fn5_2bca of alias2 and the segment 5 functions: with the libc part, item 4.)
 3. quads2.c 4:1c88 (floating compare, EPU words in the listing); then flow2 (4:927e ..), dom2, init2, live2, ebbo2, lpinv2, lpind2, beta2,
    reg2 (data order, host/recon/modmap.py gave the module of every function in findings.json).
@@ -27,6 +27,6 @@ Next (in this order):
 
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
-TASK: flow2.c: 4:a66e (called with three ints: fna66e), 4:a93c (jmplabel), 4:a9ac (the print of the graph), then the rest of flow2 up to the first function of dom2.
-START: fnc.py -a flow2.c (open: addedge 4, rmlabels 13, deledge 7; the rest masked); the findings.json keys joinblk, f4_a93c, prgraph and the next ones (see modmap: module flow2.c / dom2.c); rename.py -m for the placeholders fna66e, fna9ac.
-STOP WHEN: flow2 is complete (the last function written and checked), or at 70% of the context.
+TASK: dom2.c: 4:ad8e (622 bytes, calls eval/compress presumably: the semidominators), 4:affc (220), 4:b0d8 (230), then 4:b1be (1766, the driver) if there is room.
+START: fnc.py -a dom2.c flow2.c (open: compress 11, eval 15, addedge 4, rmlabels 13, deledge 7, joinblk 9); odisc.py -o f4_ad8e. The arrays dfn, label, vertex, ancest, child, size, parent, ndfs are declared in dom2.c (names guessed).
+STOP WHEN: 4:b0d8 is written and checked (4:b1be if there is room), or at 70% of the context.
