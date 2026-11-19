@@ -9,7 +9,7 @@ static char sccsid[] = "@[$]ebbo2.c\t1.8  03/04/83 15:54:14 Copr. 1981 87wega3.2
 extern int s4d80, s4d94, a0d4, a0d2, s71e4, s71e6, s71e8, s71ea;
 extern struct quad *qhead;
 extern char *a0cc;
-struct hent { struct hent *next; char x4[8]; unsigned cst:1, rest:15; struct quad *q; };	/* an entry of htab (guessed) */
+struct hent { struct hent *next; int op; int v1; int v2; int val; unsigned cst:1, num:15; struct quad *q; };	/* an entry of htab (guessed) */
 extern struct hent *htab[32];
 extern char a050e[], a0010[];
 extern int fn4_faa4();
@@ -24,11 +24,11 @@ extern char *taballoc();
 extern void tabfree(), prqall();
 extern struct quad *vnumber();
 extern void ebbfix(), fn5_1ffc(), fn5_206c();
-extern void fn5_1cd0(), fn5_1854(), fn5_1f2c(), fn5_0f7c(), fn5_1bc0(), prquad();
-extern int fn5_1684(), fn5_1742(), a0d0;
+extern void fn5_1cd0(), fn5_1854(), fn5_1f2c(), exprenter(), fn5_1bc0(), prquad();
+extern int fn5_1684(), fn5_1742();
+extern unsigned a0d0;
 extern struct qa *fn5_1068();
-struct ae { struct ae *next; char x4[6]; int val; int xc; struct quad *q; };	/* (guessed) */
-extern struct ae *fn5_0d7a();
+extern struct hent *exprfind();
 extern struct quad *delquad();
 
 /* the tables of the extended basic block are cleared (name guessed) */
@@ -166,7 +166,7 @@ vnumber(q)
 struct quad *q;
 {
 	int fl;
-	struct ae *vx;
+	struct hent *vx;
 	struct vn *va, *vb, *vc, *vd;
 	struct quad *stk[20];
 	struct qa tmp;
@@ -239,7 +239,7 @@ L3e2:			vc = vnfind(&q->c);
 L44c:			if (fn5_1684(q))
 				goto L3e2;
 			vc = vnfind(&q->c);
-			vx = fn5_0d7a(q, &fl);
+			vx = exprfind(q, &fl);
 			vc->val = vx->val;
 			if (fl != 0) {
 				vc->dead = 1;
@@ -277,7 +277,7 @@ L44c:			if (fn5_1684(q))
 				updateopnd(va->val, &q->a, 1);
 				va = vnfind(&q->a);
 			}
-			vx = fn5_0d7a(q, &fl);
+			vx = exprfind(q, &fl);
 			vc = vnfind(&q->c);
 			if (fl != 0) {
 				if (fn5_1742(vx->q, q)) {
@@ -286,7 +286,7 @@ L44c:			if (fn5_1684(q))
 					if (q->c.b2 == 3)
 						goto L35a;
 				} else
-					fn5_0f7c(q);
+					exprenter(q);
 			}
 			fn5_1cd0(q);
 			if (q->c.b2 == 8)
@@ -389,4 +389,68 @@ struct quad *first, *last;
 			}
 		}
 	}
+}
+
+/* the entry of htab for the expression of q (op and the value numbers of its operands); made when there is none; *fl tells whether it was found (name guessed) */
+struct hent *
+exprfind(q, fl)
+struct quad *q;
+int *fl;
+{
+	int va, vb, vc, h;
+	struct hent *e;
+
+	va = vnfind(&q->a)->val;
+	if (q->b.b2)
+		vb = vnfind(&q->b)->val;
+	else
+		vb = 0;
+	h = q->op + va + vb;
+	h = h % 32;
+	*fl = 1;
+	for (e = htab[h]; e != 0; e = e->next) {
+		if (e->op == q->op && e->v1 == va && e->v2 == vb && e->q->c.w0 == q->c.w0) {
+			vc = vnfind(&e->q->c)->val;
+			if (vc == e->val) {
+				if (e->q->c.b2 == 3 && e->num != a0d0)
+					e->cst = 1;
+				return e;
+			}
+		}
+	}
+	*fl = 0;
+	e = (struct hent *)taballoc(18, 0);
+	e->next = htab[h];
+	htab[h] = e;
+	e->op = q->op;
+	e->v1 = va;
+	e->v2 = vb;
+	e->val = s71e8++;
+	e->num = a0d0;
+	e->cst = 0;
+	e->q = q;
+	return e;
+}
+
+/* the expression of q entered in htab without a search (name guessed) */
+void
+exprenter(q)
+struct quad *q;
+{
+	int va, vb, h;
+	struct hent *e;
+
+	va = vnfind(&q->a)->val;
+	vb = vnfind(&q->b)->val;
+	h = q->op + va + vb;
+	h = h % 32;
+	e = (struct hent *)taballoc(18, 0);
+	e->next = htab[h];
+	htab[h] = e;
+	e->op = q->op;
+	e->v1 = va;
+	e->v2 = vb;
+	e->val = s71e8++;
+	e->cst = 0;
+	e->q = q;
 }

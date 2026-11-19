@@ -3184,21 +3184,25 @@
    "size_orig": 486,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
-  "f5_0d7a": {
+  "exprfind": {
    "orig": "5:0d7a",
    "size_orig": 514,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c",
+   "note": "open (DIFF 2): the field assignment e->num = a0d0 (15 bits at offset 0) has `and r0,#7fff` after `sla r0,#0` in the original, ours emits no mask (a0d0 as int or unsigned, with & 32767 worse)"
   },
-  "f5_0f7c": {
+  "exprenter": {
    "orig": "5:0f7c",
    "size_orig": 236,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
   "f5_1068": {
    "orig": "5:1068",
