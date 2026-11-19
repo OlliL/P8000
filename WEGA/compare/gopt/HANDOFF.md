@@ -10,7 +10,10 @@ really his (the ladder below answers most questions). Rules of the project: CLAU
 ## Priority ladder for every DIFF (strict order; go down only when the step above is really hopeless)
 1. SOURCE FORMS (highest priority, applies before everything else): try other C forms of the same function (statement order, `if` chains vs
    `switch`, `a = a | x` vs `|=`, temporaries, `register`, parameter order and types, declaration order, goto, comma, pointer vs index form,
-   the form of the pcc source in mip/ of sys3 and the unix archive). The old compiler is right until proven otherwise; the original source
+   the form of the pcc source in mip/ of sys3 and the unix archive). ALSO USE THE PCC SOURCES WHILE WORKING ON THE DIFFs, not only afterwards: gopt shares
+   much code with pcc (tmp/sys3/usr/src/cmd/cc/pcc/mip: reader.c, match.c, common.c, manifest, mfile2.h; also cc/vax/mip, cc/pcc/mdp/order.c, lint/mip; the 4.4BSD and
+   2.11BSD trees in the local directories of CLAUDE.md). When a function (or its neighbours) has a pcc relative, take its statement order, loop and
+   condition forms, declarations and register variables from there as source form candidates: they often lead to the original bytes. The old compiler is right until proven otherwise; the original source
    was written by people for this compiler. Use `host/recon/srctry.py FILE FUNC < variants` (it tries variants against the original). Many
    variants, not six: only when the forms are really exhausted (also the forms of the neighbouring functions) go to 2.
 2. An EXISTING SWITCH of the current compiler (sccvc and its passes) that is changed or newly combined, only so that no other user of the
