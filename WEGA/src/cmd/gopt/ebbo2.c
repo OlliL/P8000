@@ -34,7 +34,7 @@ extern struct quad *checkalias();
 extern void tabfree(), prqall();
 extern struct quad *vnumber();
 extern void ebbfix(), resetbb(), ebbclean();
-extern void checkuse(), clear(), fn5_1f2c(), exprenter(), ebbcall(), prquad();
+extern void checkuse(), clear(), addstore(), exprenter(), ebbcall(), prquad();
 extern int identop(), nostore();
 extern unsigned a0d0;
 extern struct qa constfold();
@@ -234,7 +234,7 @@ L39c:			checkuse(q);
 			if (q->c.b2 != 8 && q->c.b2 != 6)
 				continue;
 L3c6:			clear(q, 1);
-			fn5_1f2c(q);
+			addstore(q);
 			continue;
 L35a:			q = delquad(q);
 			continue;

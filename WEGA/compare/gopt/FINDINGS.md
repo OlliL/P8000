@@ -183,64 +183,64 @@ exact: the program is byte-identical with the original (`host/tools/checkall.sh`
 | f4_fed0 | 4:fed0 |  |  |
 | f4_ff54 | 4:ff54 |  |  |
 | f4_ff78 | 4:ff78 |  |  |
-| f5_0114 | 5:0114 |  |  |
-| f5_01d0 | 5:01d0 |  |  |
-| f5_02d4 | 5:02d4 |  |  |
-| f5_04ac | 5:04ac |  |  |
-| f5_05fe | 5:05fe |  |  |
-| f5_06c6 | 5:06c6 |  |  |
-| f5_0718 | 5:0718 |  |  |
-| f5_0778 | 5:0778 |  |  |
-| f5_07b4 | 5:07b4 |  |  |
-| f5_07d2 | 5:07d2 |  |  |
-| f5_0894 | 5:0894 |  |  |
-| f5_0a38 | 5:0a38 |  |  |
-| f5_0b94 | 5:0b94 |  |  |
-| f5_0d7a | 5:0d7a |  |  |
-| f5_0f7c | 5:0f7c |  |  |
-| f5_1068 | 5:1068 |  |  |
-| f5_13d8 | 5:13d8 |  |  |
-| f5_1412 | 5:1412 |  |  |
-| f5_1422 | 5:1422 |  |  |
-| f5_1428 | 5:1428 |  |  |
-| f5_1438 | 5:1438 |  |  |
-| f5_144e | 5:144e |  |  |
-| f5_145c | 5:145c |  |  |
-| f5_146a | 5:146a |  |  |
-| f5_1478 | 5:1478 |  |  |
-| f5_1486 | 5:1486 |  |  |
-| f5_1490 | 5:1490 |  |  |
-| f5_149e | 5:149e |  |  |
-| f5_14ae | 5:14ae |  |  |
-| f5_14be | 5:14be |  |  |
-| f5_14ce | 5:14ce |  |  |
-| f5_14dc | 5:14dc |  |  |
-| f5_14e8 | 5:14e8 |  |  |
-| f5_154c | 5:154c |  |  |
-| f5_1576 | 5:1576 |  |  |
-| f5_157e | 5:157e |  |  |
-| f5_158c | 5:158c |  |  |
-| f5_15aa | 5:15aa |  |  |
-| f5_15c0 | 5:15c0 |  |  |
-| f5_15d6 | 5:15d6 |  |  |
-| f5_15ec | 5:15ec |  |  |
-| f5_1602 | 5:1602 |  |  |
-| f5_1610 | 5:1610 |  |  |
-| f5_1626 | 5:1626 |  |  |
-| f5_163a | 5:163a |  |  |
-| f5_1684 | 5:1684 |  |  |
-| f5_16b8 | 5:16b8 |  |  |
-| f5_1708 | 5:1708 |  |  |
-| f5_1742 | 5:1742 |  |  |
-| f5_1854 | 5:1854 |  |  |
-| f5_1b44 | 5:1b44 |  |  |
-| f5_1b7e | 5:1b7e |  |  |
-| f5_1bc0 | 5:1bc0 |  |  |
-| f5_1cd0 | 5:1cd0 |  |  |
-| f5_1ef2 | 5:1ef2 |  |  |
-| f5_1f2c | 5:1f2c |  |  |
-| f5_1ffc | 5:1ffc |  |  |
-| f5_206c | 5:206c |  |  |
+| vnumber | 5:0114 |  | open (DIFF 133, same instruction count): popt block order (codemove, OLDCC.md section on block placement): the original keeps the block at 5:044c (fn5_1684 test) after the block at 5:03e2 and reaches it by jp from 5:0286/029e/02e0/02f0; ours moves it in front of the constant fold block (jr). The source uses gotos, the original source form is unknown; 2 forms tried (two ifs, ||) |
+| f5_01d0 | 5:01d0 |  | case block of vnumber |
+| f5_02d4 | 5:02d4 |  | case block of vnumber |
+| f5_04ac | 5:04ac |  | case block of vnumber |
+| f5_05fe | 5:05fe |  | case block of vnumber |
+| f5_06c6 | 5:06c6 |  | case block of vnumber |
+| f5_0718 | 5:0718 |  | case block of vnumber |
+| f5_0778 | 5:0778 |  | case block of vnumber |
+| f5_07b4 | 5:07b4 |  | case block of vnumber |
+| f5_07d2 | 5:07d2 |  | case block of vnumber |
+| vnfind | 5:0894 |  |  |
+| updateopnd | 5:0a38 |  |  |
+| ebbfix | 5:0b94 |  |  |
+| exprfind | 5:0d7a |  | open (DIFF 2): the field assignment e->num = a0d0 (15 bits at offset 0) has `and r0,#7fff` after `sla r0,#0` in the original, ours emits no mask (a0d0 as int or unsigned, with & 32767 worse) |
+| exprenter | 5:0f7c |  |  |
+| constfold | 5:1068 |  | open (DIFF 28, 432 against 431 instructions): the original returns the struct qa by value (copy to a static and rr2 = its address); (1) tail merging: the original keeps the copy of the common tail `ld r.w4,r2; r.w0 = q->c.w0` in the long branch and the float branch jumps to it (jp), ours keeps the float copy; the same for the store of dr (EPU 4FFC) in the float cases: the original keeps it in the first case, ours has a copy in the == case; (2) long `&` and `|`: the original uses r1 as the temporary (ld r1,op2lo; and r2,..; and r3,r1), ours emits ld r3 .. and r3,r3 (sccvc bug or a different source form: op2&op1, op1&=op2 tried); (3) jr/jp of the layout. Source forms tried: if (b2 == 2) {float} else {long} (worse), duplicated tail |
+| f5_13d8 | 5:13d8 |  | case block of constfold |
+| f5_1412 | 5:1412 |  | case block of constfold |
+| f5_1422 | 5:1422 |  | case block of constfold |
+| f5_1428 | 5:1428 |  | case block of constfold |
+| f5_1438 | 5:1438 |  | case block of constfold |
+| f5_144e | 5:144e |  | case block of constfold |
+| f5_145c | 5:145c |  | case block of constfold |
+| f5_146a | 5:146a |  | case block of constfold |
+| f5_1478 | 5:1478 |  | case block of constfold |
+| f5_1486 | 5:1486 |  | case block of constfold |
+| f5_1490 | 5:1490 |  | case block of constfold |
+| f5_149e | 5:149e |  | case block of constfold |
+| f5_14ae | 5:14ae |  | case block of constfold |
+| f5_14be | 5:14be |  | case block of constfold |
+| f5_14ce | 5:14ce |  | case block of constfold |
+| f5_14dc | 5:14dc |  | case block of constfold |
+| f5_14e8 | 5:14e8 |  | case block of constfold |
+| f5_154c | 5:154c |  | case block of constfold |
+| f5_1576 | 5:1576 |  | case block of constfold |
+| f5_157e | 5:157e |  | case block of constfold |
+| f5_158c | 5:158c |  | case block of constfold |
+| f5_15aa | 5:15aa |  | case block of constfold |
+| f5_15c0 | 5:15c0 |  | case block of constfold |
+| f5_15d6 | 5:15d6 |  | case block of constfold |
+| f5_15ec | 5:15ec |  | case block of constfold |
+| f5_1602 | 5:1602 |  | case block of constfold |
+| f5_1610 | 5:1610 |  | case block of constfold |
+| f5_1626 | 5:1626 |  | case block of constfold |
+| f5_163a | 5:163a |  | case block of constfold |
+| identop | 5:1684 |  |  |
+| f5_16b8 | 5:16b8 |  | case block of identop |
+| f5_1708 | 5:1708 |  | case block of identop |
+| nostore | 5:1742 |  |  |
+| clear | 5:1854 |  |  |
+| killed | 5:1b44 |  |  |
+| canopt | 5:1b7e |  | open (DIFF 1): the frame has 4 bytes in both, but the original does not store the parameter (rr6 stays in use), ours spills it (ldl 0(r15),rr6): cause 1 (parameter handling) |
+| ebbcall | 5:1bc0 |  |  |
+| checkuse | 5:1cd0 |  |  |
+| inuse | 5:1ef2 |  |  |
+| addstore | 5:1f2c |  |  |
+| resetbb | 5:1ffc |  |  |
+| ebbclean | 5:206c |  |  |
 | f5_2138 | 5:2138 |  |  |
 | f5_21a4 | 5:21a4 |  |  |
 | f5_2212 | 5:2212 |  |  |

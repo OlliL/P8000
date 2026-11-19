@@ -7,9 +7,16 @@
 "ebbfix": "OK",
 "exprfind": "DIFF 2 (object 159 instructions, original 160)",
 "exprenter": "OK",
+"constfold": "DIFF 28 (object 432 instructions, original 431)",
 "identop": "OK",
 "nostore": "OK",
 "clear": "OK",
 "killed": "OK",
-"canopt": "DIFF 2 (object 25 instructions, original 24)"
+"canopt": "DIFF 2 (object 25 instructions, original 24)",
+"ebbcall": "OK",
+"checkuse": "OK",
+"inuse": "OK",
+"addstore": "OK",
+"resetbb": "OK",
+"ebbclean": "OK"
 }
