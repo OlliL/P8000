@@ -9,11 +9,15 @@ static char sccsid[] = "@[$]ebbo2.c\t1.8  03/04/83 15:54:14 Copr. 1981 87wega3.2
 extern int s4d80, s4d94, a0d4, a0d2, s71e4, s71e6, s71e8, s71ea;
 extern struct quad *qhead;
 extern char *a0cc;
+struct aln { int x0; struct aln *next; struct aln *link; };
 struct hent { struct hent *next; int op; int v1; int v2; int val; unsigned cst:1, num:15; struct quad *q; };	/* an entry of htab (guessed) */
 extern struct hent *htab[32];
 extern char a050e[], a0010[];
 extern int fn4_faa4();
 extern long lconst[];
+extern struct aln *killtbl[];
+extern struct sym *symtab;
+extern int fn4_fc06(), killed();
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };	/* an entry of betatbl: 10 bytes (guessed) */
 extern struct bt *betatbl;
 /* an entry of the value table (name guessed): 16 bytes */
@@ -26,7 +30,7 @@ extern struct quad *checkalias();
 extern void tabfree(), prqall();
 extern struct quad *vnumber();
 extern void ebbfix(), fn5_1ffc(), fn5_206c();
-extern void fn5_1cd0(), fn5_1854(), fn5_1f2c(), exprenter(), fn5_1bc0(), prquad();
+extern void fn5_1cd0(), clear(), fn5_1f2c(), exprenter(), fn5_1bc0(), prquad();
 extern int identop(), nostore();
 extern unsigned a0d0;
 extern struct qa *fn5_1068();
@@ -225,7 +229,7 @@ L392:			q->b.b2 = 0;
 L39c:			fn5_1cd0(q);
 			if (q->c.b2 != 8 && q->c.b2 != 6)
 				continue;
-L3c6:			fn5_1854(q, 1);
+L3c6:			clear(q, 1);
 			fn5_1f2c(q);
 			continue;
 L35a:			q = delquad(q);
@@ -517,5 +521,100 @@ struct quad *load1, *load2;
 				return 0;
 		}
 	}
+	return 1;
+}
+
+/* the table entries that may be changed by the store of q (or the load of its operand c) are marked as not valid; the entry is put into the kill table (name from the debug output) */
+void
+clear(q, ot)
+struct quad *q;
+int ot;
+{
+	struct aln *x, *y;
+	struct vn *e;
+	int k, v1, v2;
+
+	if (q->op == 47 || q->op == 33) {
+		x = y = (struct aln *)checkalias(q, ot);
+		if (q->c.b2 == 8)
+			v1 = betatbl[q->c.w4].x1;
+		else
+			v1 = q->c.w4;
+		for (; x != 0; x = x->next) {
+			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+				if (e->al >= 0 && x->x0 == e->al) {
+					if (s4d80 > 4) {
+						printf("// clear: ");
+						propnd(&e->a);
+						printf("\n");
+					}
+					e->val = 0;
+				}
+			}
+		}
+		if (y == 0) {
+			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+				if (e->a.b2 == 8)
+					v2 = betatbl[e->a.w4].x1;
+				else if (e->a.b2 == 4)
+					v2 = e->a.w4;
+				else
+					v2 = -1;
+				if (e->al < 0 && v1 == v2) {
+					if (s4d80 > 4) {
+						printf("// clear: ");
+						propnd(&e->a);
+						printf("\n");
+					}
+					e->val = 0;
+				}
+			}
+			if (q->c.b2 == 4)
+				y = (struct aln *)&symtab[q->c.w4];
+			else
+				y = (struct aln *)&betatbl[q->c.w4];
+		} else {
+			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+				if (y->x0 == e->al && fn4_fc06(&e->a, &q->c) && e->al >= 0) {
+					if (q->c.b2 == 4)
+						y = (struct aln *)&symtab[q->c.w4];
+					else
+						y = (struct aln *)&betatbl[q->c.w4];
+					break;
+				}
+			}
+		}
+	} else
+		y = (struct aln *)&betatbl[q->c.w4];
+	if (s4d80 > 4)
+		printf("// clear : p1 = %X\n", y);
+	if (!killed(y) && q->c.b2 != 3) {
+		killtbl[s71e4++] = y;
+		if (s71e4 >= 1000)
+			cerror("kill_tbl overflow");
+		q->f7 = 1;
+	}
+}
+
+/* y is in the kill table (name guessed) */
+int
+killed(y)
+struct aln *y;
+{
+	int i;
+
+	for (i = 0; i < s71e4; i++)
+		if (killtbl[i] == y)
+			return 1;
+	return 0;
+}
+
+/* the operand p may be optimized (name guessed) */
+int
+canopt(p)
+struct qa *p;
+{
+	if (p->b2 == 4 && ((symtab[p->w4].sflags >> 2) & 1) && a0d2)
+		return 0;
 	return 1;
 }

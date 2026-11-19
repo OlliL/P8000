@@ -3,5 +3,13 @@
 "ebbinit": "OK",
 "vnumber": "DIFF 133 (object 562 instructions, original 562)",
 "vnfind": "OK",
-"updateopnd": "OK"
+"updateopnd": "OK",
+"ebbfix": "OK",
+"exprfind": "DIFF 2 (object 159 instructions, original 160)",
+"exprenter": "OK",
+"identop": "OK",
+"nostore": "OK",
+"clear": "OK",
+"killed": "OK",
+"canopt": "DIFF 2 (object 25 instructions, original 24)"
 }

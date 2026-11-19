@@ -3419,7 +3419,8 @@
    "size_orig": 52,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
   "f5_16b8": {
    "orig": "5:16b8",
@@ -3442,28 +3443,33 @@
    "size_orig": 274,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
-  "f5_1854": {
+  "clear": {
    "orig": "5:1854",
    "size_orig": 752,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
-  "f5_1b44": {
+  "killed": {
    "orig": "5:1b44",
    "size_orig": 58,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
-  "f5_1b7e": {
+  "canopt": {
    "orig": "5:1b7e",
    "size_orig": 66,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c",
+   "note": "open (DIFF 1): the frame has 4 bytes in both, but the original does not store the parameter (rr6 stays in use), ours spills it (ldl 0(r15),rr6): cause 1 (parameter handling)"
   },
   "f5_1bc0": {
    "orig": "5:1bc0",
