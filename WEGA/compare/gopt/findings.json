@@ -3476,42 +3476,48 @@
    "size_orig": 272,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
   "checkuse": {
    "orig": "5:1cd0",
    "size_orig": 546,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
-  "f5_1ef2": {
+  "inuse": {
    "orig": "5:1ef2",
    "size_orig": 58,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
-  "f5_1f2c": {
+  "addstore": {
    "orig": "5:1f2c",
    "size_orig": 208,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
-  "f5_1ffc": {
+  "resetbb": {
    "orig": "5:1ffc",
    "size_orig": 112,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "file": "ebbo2.c"
   },
-  "f5_206c": {
+  "ebbclean": {
    "orig": "5:206c",
    "size_orig": 204,
    "status": "open",
    "kind": "proven",
-   "module": "ebbo2.c|lpinv2.c"
+   "module": "ebbo2.c|lpinv2.c",
+   "file": "ebbo2.c"
   },
   "f5_2138": {
    "orig": "5:2138",

@@ -16,7 +16,7 @@ extern char a050e[], a0010[];
 extern int fn4_faa4();
 extern long lconst[];
 extern struct aln *usetbl[];
-extern int fn5_1ef2(), canopt();
+extern int inuse(), canopt();
 extern int a70ce, a70c6;
 extern struct { struct quad *q; struct sym *s; } a71ec[];
 extern struct aln *killtbl[];
@@ -33,7 +33,7 @@ extern char *taballoc();
 extern struct quad *checkalias();
 extern void tabfree(), prqall();
 extern struct quad *vnumber();
-extern void ebbfix(), fn5_1ffc(), fn5_206c();
+extern void ebbfix(), resetbb(), ebbclean();
 extern void checkuse(), clear(), fn5_1f2c(), exprenter(), ebbcall(), prquad();
 extern int identop(), nostore();
 extern unsigned a0d0;
@@ -77,9 +77,9 @@ ebbopt()
 		ebbfix(r, q);
 		if (a0cc != 0)
 			tabfree(0, a0cc);
-		fn5_1ffc();
+		resetbb();
 	}
-	fn5_206c();
+	ebbclean();
 	tabfree(0, t);
 	a0d4 = s4d94;
 	if (s4d80 > 1) {
@@ -325,7 +325,7 @@ L44c:			if (identop(q))
 			if (va->dead)
 				updateopnd(va->val, &q->a, 1);
 			checkuse(q);
-			fn5_1ffc();
+			resetbb();
 			continue;
 		case 42:
 			va = vnfind(&q->a);
@@ -665,7 +665,7 @@ struct quad *q;
 			p = (struct aln *)&betatbl[q->a.w4];
 		else if (q->a.b2 == 4 && (p = (struct aln *)checkalias(q, 2)) == 0)
 			p = (struct aln *)&symtab[q->a.w4];
-		if (!killed(p) && !fn5_1ef2(p) && canopt(&q->a)) {
+		if (!killed(p) && !inuse(p) && canopt(&q->a)) {
 			q->f6 = 1;
 			usetbl[s71ea++] = p;
 			if (s71ea >= 1000)
@@ -677,11 +677,99 @@ struct quad *q;
 			p = (struct aln *)&betatbl[q->b.w4];
 		else if (q->b.b2 == 4 && (p = (struct aln *)checkalias(q, 3)) == 0)
 			p = (struct aln *)&symtab[q->b.w4];
-		if (!killed(p) && !fn5_1ef2(p) && canopt(&q->b)) {
+		if (!killed(p) && !inuse(p) && canopt(&q->b)) {
 			q->f5 = 1;
 			usetbl[s71ea++] = p;
 			if (s71ea >= 1000)
 				cerror("use_tbl overflow");
+		}
+	}
+}
+
+/* p is in the use table (name guessed) */
+int
+inuse(p)
+struct aln *p;
+{
+	int i;
+
+	for (i = 0; i < s71ea; i++)
+		if (usetbl[i] == p)
+			return 1;
+	return 0;
+}
+
+/* the store of q (or the entry of its operand c) is put into the array of the stores of the block (name from the error message) */
+void
+addstore(q)
+struct quad *q;
+{
+	int k;
+	struct sym *x;
+
+	if (q->op == 47 || q->op == 33) {
+		if (q->c.b2 == 3)
+			return;
+		x = (struct sym *)checkalias(q, 1);
+		if (x == 0)
+			x = &symtab[q->c.w4];
+	} else
+		x = (struct sym *)&betatbl[q->c.w4];
+	a71ec[s71e6].q = q;
+	a71ec[s71e6].s = x;
+	s71e6++;
+	if (s71e6 >= 500)
+		cerror("stores array overflow");
+}
+
+/* the tables of the block are reset at its end (name from the debug output) */
+void
+resetbb()
+{
+	int i;
+
+	s71e4 = 0;
+	s71ea = 0;
+	for (i = 0; i < s71e6; i++) {
+		if (s4d80 > 2) {
+			printf("// resetbasicblock : setting gen_r for ");
+			prquad(a71ec[i].q);
+		}
+		a71ec[i].q->f4 = 1;
+	}
+	s71e6 = 0;
+	a0d2 = 0;
+}
+
+/* the quads with a constant c of which nothing is used are deleted until nothing is deleted (name guessed) */
+void
+ebbclean()
+{
+	struct quad *q;
+	int x;
+
+	x = 1;
+	while (x) {
+		x = 0;
+		for (q = qhead; q != 0; q = q->next) {
+			if (q->op == 59)
+				continue;
+			switch (q->c.b2) {
+			case 3:
+				if (a050e[q->c.w4] > 1)
+					break;
+L1:				q = delquad(q);
+				x = 1;
+				break;
+			case 6:
+				if (a0010[q->c.w4] <= 1)
+					goto L1;
+				break;
+			case 8:
+				if (a050e[betatbl[q->c.w4].x[0]] <= 1)
+					goto L1;
+				break;
+			}
 		}
 	}
 }
