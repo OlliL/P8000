@@ -13,6 +13,7 @@ struct hent { struct hent *next; int op; int v1; int v2; int val; unsigned cst:1
 extern struct hent *htab[32];
 extern char a050e[], a0010[];
 extern int fn4_faa4();
+extern long lconst[];
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };	/* an entry of betatbl: 10 bytes (guessed) */
 extern struct bt *betatbl;
 /* an entry of the value table (name guessed): 16 bytes */
@@ -21,11 +22,12 @@ extern int almap();
 extern void propnd(), normop(), denorm();
 extern int fn4_fbe8(), cerror();
 extern char *taballoc();
+extern struct quad *checkalias();
 extern void tabfree(), prqall();
 extern struct quad *vnumber();
 extern void ebbfix(), fn5_1ffc(), fn5_206c();
 extern void fn5_1cd0(), fn5_1854(), fn5_1f2c(), exprenter(), fn5_1bc0(), prquad();
-extern int fn5_1684(), fn5_1742();
+extern int identop(), nostore();
 extern unsigned a0d0;
 extern struct qa *fn5_1068();
 extern struct hent *exprfind();
@@ -236,7 +238,7 @@ L3e2:			vc = vnfind(&q->c);
 				goto L35a;
 			q->op = 60;
 			goto L392;
-L44c:			if (fn5_1684(q))
+L44c:			if (identop(q))
 				goto L3e2;
 			vc = vnfind(&q->c);
 			vx = exprfind(q, &fl);
@@ -280,7 +282,7 @@ L44c:			if (fn5_1684(q))
 			vx = exprfind(q, &fl);
 			vc = vnfind(&q->c);
 			if (fl != 0) {
-				if (fn5_1742(vx->q, q)) {
+				if (nostore(vx->q, q)) {
 					vc->val = vx->val;
 					vc->dead = 1;
 					if (q->c.b2 == 3)
@@ -453,4 +455,67 @@ struct quad *q;
 	e->val = s71e8++;
 	e->cst = 0;
 	e->q = q;
+}
+
+/* the operation of q does nothing: the second operand is the neutral element (name guessed) */
+int
+identop(q)
+struct quad *q;
+{
+	int x;
+
+	switch (q->op) {
+	case 1:
+	case 48:
+		x = 1;
+		if (q->b.b2 == 7) {
+L7:			x = lconst[q->b.w4];
+			return 0;
+		} else if (q->b.b2 == 1)
+			x = q->b.w4;
+		if (x == 0)
+			return 1;
+		break;
+	case 14:
+	case 34:
+		x = 0;
+		if (q->b.b2 == 7)
+			goto L7;
+		if (q->b.b2 == 1)
+			x = q->b.w4;
+		if (x == 1)
+			return 1;
+		break;
+	}
+	return 0;
+}
+
+/* nothing between the load1 and load2 stores to where load1 reads from (name guessed from the debug output) */
+int
+nostore(load1, load2)
+struct quad *load1, *load2;
+{
+	struct quad *p;
+	struct quad *al;
+
+	if (s4d80 > 4) {
+		printf("// entering compare: load1 and load2 are -\n");
+		prquad(load1);
+		prquad(load2);
+	}
+	al = checkalias(load1, 2);
+	for (p = load1; p != load2; p = p->next) {
+		if (p->op == 47 || p->op == 33) {
+			if (s4d80 > 4) {
+				printf("// comapare : check quad\n");
+				prquad(p);
+				printf("//    al = %X\n", al);
+			}
+			if (al == 0 && load1->a.b2 == p->c.b2 && load1->a.w4 == p->c.w4)
+				return 0;
+			if (al != 0 && checkalias(p, 1) == al)
+				return 0;
+		}
+	}
+	return 1;
 }

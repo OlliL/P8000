@@ -3414,7 +3414,7 @@
    "kind": "candidate",
    "module": "ebbo2.c"
   },
-  "f5_1684": {
+  "identop": {
    "orig": "5:1684",
    "size_orig": 52,
    "status": "open",
@@ -3426,16 +3426,18 @@
    "size_orig": 80,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of identop"
   },
   "f5_1708": {
    "orig": "5:1708",
    "size_orig": 58,
    "status": "open",
    "kind": "candidate",
-   "module": "ebbo2.c"
+   "module": "ebbo2.c",
+   "note": "case block of identop"
   },
-  "f5_1742": {
+  "nostore": {
    "orig": "5:1742",
    "size_orig": 274,
    "status": "open",
