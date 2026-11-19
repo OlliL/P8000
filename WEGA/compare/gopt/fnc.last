@@ -1,0 +1,18 @@
+{
+"rdsym": "OK",
+"readsyms": "OK",
+"readtab": "OK",
+"readnums": "OK",
+"readmems": "OK",
+"sortsyms": "OK",
+"prtags": "OK",
+"tagfind": "OK",
+"mapn": "OK",
+"mapsym": "OK",
+"mapnm": "OK",
+"mkhash": "DIFF 2 (object 11 instructions, original 12)",
+"nlcheck": "OK",
+"eread": "OK",
+"rdin": "OK",
+"rdin2": "OK"
+}
