@@ -28,5 +28,5 @@ Next (in this order):
 ## What we do now (the block for the next start message; the AI replaces it at the end of every session)
 
 TASK: live2.c: 4:d868 (390 bytes), 4:d9ee (436), 4:dba2 (200), 4:dc6a (458) and the next functions of live2 (findings.json, module live2.c).
-START: fnc.py -a live2.c (open: islive 4, settmptable 64, insrtlive 7, setsymtable 69, setsym 20, issym 31, setlbit 9, clrlbit 9, tstlbit 3: layout, register pairs, address form: leave them); odisc.py -o f4_d868; regdiff.py FILE.diff. The names: setlbit, clrlbit, tstlbit are the bit vector functions of live2 (v[i / 16] with i % 16).
+START: fnc.py -a live2.c (open: islive 4, settmptable 64, insrtlive 7, setsymtable 69, setsym 20, issym 31, setlbit 9, clrlbit 9, tstlbit 3: layout, register pairs, address form: leave them); odisc.py -o prvec; regdiff.py FILE.diff. The names: setlbit, clrlbit, tstlbit are the bit vector functions of live2 (v[i / 16] with i % 16).
 STOP WHEN: 12 functions of live2 are written and checked, or at 70% of the context.

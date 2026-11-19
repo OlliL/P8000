@@ -27,6 +27,11 @@ extern int *idfn;
 extern int blkno;
 extern struct quad *qhead;
 extern int ndefs;
+extern int tstlbit();
+struct lrec { unsigned *f0, *f4, *f8, *fc, *f10, *f14, *f18; };	/* the bit vectors of a block: 28 bytes, stored in the header quad at 6 (guessed) */
+extern int lvwords, dfwords, s4d86;
+extern void fnec68();
+extern char *livevecs;
 extern struct quad **defs;
 extern struct quad *qhead;
 extern void prquad(), prqflags();
@@ -467,4 +472,148 @@ tstlbit(v, i)
 	if ((v[i / 16] >> (i % 16)) & 1)
 		return 1;
 	return 0;
+}
+
+/* a bit vector (debug): which 1 kill, 2 gen, 3 in, 4 out; what 1 live (nlv bits), 2 reach (ndefs bits); name guessed */
+void
+prvec(v, which, what)
+	unsigned *v;
+	int which, what;
+{
+	int i, n;
+
+	if (which == 2)
+		printf("%s ", "gen ");
+	else if (which == 1)
+		printf("%s ", "kill");
+	else if (which == 3)
+		printf("%s ", "in  ");
+	else if (which == 4)
+		printf("%s ", "out ");
+	if (what == 1) {
+		printf(" (live) = ");
+		n = nlv;
+	} else if (what == 2) {
+		printf(" (reach) = ");
+		n = ndefs;
+	}
+	for (i = 0; i < n; i++) {
+		putchar(' ');
+		if (tstlbit(v, i))
+			putchar('1');
+		else
+			putchar('0');
+	}
+	putchar('\n');
+}
+
+/* the bit vectors of the header quad q: kind 1 the live vectors (field 5 or 7), kind 2 the reach vectors (field 6 or 7); name from the string */
+void
+allocvec(q, kind, field)
+	struct quad *q;
+	int kind, field;
+{
+	struct lrec *p;
+
+	if (kind == 1) {
+		if (s4d84 > 1)
+			printf("allocvec(LIVE,field=%d)\n", field);
+		if (field == 5) {
+			p = (struct lrec *)taballoc(28, 2);
+			*(struct lrec **)&q->c = p;
+			p->f0 = (unsigned *)taballoc(lvwords * 2, 2);
+			p->f4 = (unsigned *)taballoc(lvwords * 2, 2);
+			if (s4d86) {
+				printf("//inlive set, p = %X, inlive = %X\n", p, p->f4);
+				prquad(q);
+			}
+		} else if (field == 7) {
+			p = *(struct lrec **)&q->c;
+			p->f14 = (unsigned *)taballoc(lvwords * 2, 2);
+			p->f10 = (unsigned *)taballoc(lvwords * 2, 2);
+		}
+	} else if (kind == 2) {
+		p = *(struct lrec **)&q->c;
+		if (field == 6)
+			p->f8 = (unsigned *)taballoc(dfwords * 2, 3);
+		else if (field == 7) {
+			p->f14 = (unsigned *)taballoc(dfwords * 2, 3);
+			p->f10 = (unsigned *)taballoc(dfwords * 2, 3);
+			p->f18 = (unsigned *)taballoc(dfwords * 2, 3);
+			fnec68(p->f14, dfwords);
+			fnec68(p->f10, dfwords);
+		}
+	}
+}
+
+/* the live vectors of all blocks that are in the dominator numbering (name from the string) */
+void
+alloclivevecs()
+{
+	int i;
+	struct quad *q;
+
+	if (s4d84 > 2)
+		printf("alloclivevecs()\n");
+	for (i = 0; i < blkno; i++) {
+		q = blks[i];
+		if (idfn[i] >= 0)
+			allocvec(q, 1, 5);
+	}
+	livevecs = taballoc(0, 2);
+	for (i = 0; i < blkno; i++) {
+		q = blks[i];
+		if (idfn[i] >= 0)
+			allocvec(q, 1, 7);
+	}
+}
+
+/* the bit position of the symbol of the operand which (1: c, 2: a, 3: b) of the quad q in the live vectors; kind 4: a variable, 6: a temporary; name from the strings */
+int
+bitpos(q, which, kind)
+	struct quad *q;
+	int which, kind;
+{
+	struct aln *pa;
+	int t;
+
+	switch (which) {
+	case 1:
+		if (s4d84 > 3)
+			printf("bitpos(RSLT)\n");
+		t = q->c.w4;
+		if (kind == 4 && q->c.b2 == 8)
+			t = betatbl[t].x1;
+		break;
+	case 2:
+		if (s4d84 > 3)
+			printf("bitpos(OP1)\n");
+		t = q->a.w4;
+		if (kind == 4 && q->a.b2 == 8)
+			t = betatbl[t].x1;
+		break;
+	case 3:
+		if (s4d84 > 3)
+			printf("bitpos(OP2)\n");
+		if (kind == 4 && q->b.b2 == 8)
+			t = betatbl[t].x1;
+		t = q->b.w4;
+		break;
+	}
+	if (kind == 4) {
+		pa = checkalias(q, which);
+		if (pa != 0) {
+			t = altab[pa->x0];
+			if (!islive(t, 1, 1))
+				cerror("live var not found");
+		} else if (!islive(t, 1, 0))
+			cerror("live var not found");
+	} else if (kind == 6) {
+		if (!islive(t, 0, 0))
+			cerror("live var not found");
+	} else
+		cerror("bitpos: illegal symbol");
+	if (s4d84 > 2)
+		printf("bitpos=%d\n", lvidx);
+	return lvidx;
 }

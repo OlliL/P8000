@@ -2716,28 +2716,28 @@
    "file": "live2.c",
    "note": "open (DIFF 3): as setlbit"
   },
-  "f4_d868": {
+  "prvec": {
    "orig": "4:d868",
    "size_orig": 390,
    "status": "open",
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_d9ee": {
+  "allocvec": {
    "orig": "4:d9ee",
    "size_orig": 436,
    "status": "open",
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_dba2": {
+  "alloclivevecs": {
    "orig": "4:dba2",
    "size_orig": 200,
    "status": "open",
    "kind": "proven",
    "module": "live2.c"
   },
-  "f4_dc6a": {
+  "bitpos": {
    "orig": "4:dc6a",
    "size_orig": 458,
    "status": "open",
