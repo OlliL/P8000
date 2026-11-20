@@ -1,22 +1,3 @@
 {
-"ebbopt": "OK",
-"ebbinit": "OK",
-"vnumber": "DIFF 38 (object 575 instructions, original 562)",
-"vnfind": "OK",
-"updateopnd": "OK",
-"ebbfix": "OK",
-"exprfind": "OK",
-"exprenter": "OK",
-"constfold": "DIFF 28 (object 432 instructions, original 431)",
-"identop": "OK",
-"nostore": "OK",
-"clear": "OK",
-"killed": "OK",
-"canopt": "OK",
-"ebbcall": "OK",
-"checkuse": "OK",
-"inuse": "OK",
-"addstore": "OK",
-"resetbb": "OK",
-"ebbclean": "OK"
+"isebbend": "OK"
 }

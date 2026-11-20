@@ -1652,3 +1652,6 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   the body whose first statement uses a parameter) reload the parameter from the frame at the start, qmkstore even stores it
   there; propnd, identop (switch on a parameter, no static) take it from rr6. vc `OLD_D3S` (scparse writes `#static` in front of
   the first `[`, scodgen forgets the registers): mkleaf, qmkstore exact, operand 30 -> 28; 276, nothing lost.
+- gopt, cause 8 (2026-11-20): setsym keeps the `return 1` of default (first in the layout) and the last case jumps to it; ours
+  removes the jump of the last case to the label behind it (the dispatch moved to the front) and xjump then takes that copy.
+  Experiment OLD_D67 (spopt: one comjump before the first iterate): setsym exact, 15 other functions lost (262). Dropped.
