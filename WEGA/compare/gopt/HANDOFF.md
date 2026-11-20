@@ -51,16 +51,21 @@ Tools (use these, they print little; never dump disassemblies or diffs into the 
 - build: `cd src/cmd/gopt; PATH=/home/olivleh1/git/P8000/tmp/tmp/wbin:$PATH make gopt` (wbin holds the wrappers of cas, sld, sccvc ... under z8k-emu; fnc.py takes src/cmd/gopt/FILE.c; findings.json key `note`, not `notes`; a case block has "note": "case block of NAME" (or "tail of NAME")).
 
 ## Progress (2026-11-20, overnight run)
-fnc.py over all modules: 255 of 322 OK (was 233). New vc switches of codgen (all +0 on cas, the real cas build stays
-byte-identical; host/OLDCC.md vc section): OLD_D2K (store through a scratch register forgets its name), OLD_D3JL (restored
-pointer parameter: no frame home), OLD_D24L (lda of a frame place without the mask), OLD_D2FA (auto pointers found in the pair named by their frame place). Tools: fnc.py drops nothing any
-more (its default drop hid the bitfield masks); a traced scodgen helps (copy src/cmd/codgen to a scratch tree with src/lib and
-src/head linked, fprintf(stderr) in symreg/rnassign, build build/segvc/scodgen, run `sccvc -T2./dbgcg -S t.c`). The run
-`$S/allfnc.sh` (fnc.py -a over all modules) is a loop over the module list; the matrix model of cas needed the old stdio.h.
+fnc.py over all modules: 271 of 322 OK (was 233). vc switches added (all +0 on cas, the real cas build byte-identical;
+host/OLDCC.md vc section, the source forms tried for each in findings.json/OLDCC_LOG.md): codgen OLD_D2K, OLD_D3JL, OLD_D24L,
+OLD_D2FA (frame-named pairs of autos and computed parameters), OLD_D3PL, OLD_D2AV (changes D2A), OLD_D2XP (changes D2X),
+OLD_D2PP; OLD_D10 narrowed (right shift by one of a scratch register only); spopt OLD_D64. Source forms found: mkhash,
+mkdomtree, deltmplpdefs, addblk, addedge, eqopnd, srchdef (partly). Dropped: OLD_D2AP, popt experiments (no cross jump into a
+later copy; no reversal over a back jump), OLD_D3JC, the full D3KC.
 OWNER 2026-11-20: SOURCE FORMS FIRST, a real srctry batch (10+ forms) before any switch, counts in findings/log.
-Note: the codgen Makefile has no oldcc.h dependency: `rm build/segvc/*.o` after a change of oldcc.h alone.
-Open small ones: orderbl (D2A copy for an auto target in a compare), tstlbit (entry store of a word parameter), affsize,
-mkconstopnd (dead param copy ldl rr0,rr6), testbit (cause 1). The big ones are popt block order (cause 3).
+Tools: fnc.py drops nothing; the traced scodgen (a copy of src/cmd/codgen in a scratch tree with src/lib and src/head linked,
+fprintf(stderr) in symreg/rnassign/getreg, build build/segvc/scodgen, run `sccvc -T2./dbgcg -S t.c`). The codgen Makefile has
+no oldcc.h dependency: `rm build/segvc/*.o` after a change of oldcc.h alone. The old libc archives were rebuilt (complete).
+Open: tstlbit (entry store of i), affsize, mkconstopnd (dead ldl rr0,rr6), cmwalk/mkleaf/prquad (pointer parameter reloaded
+after a label), deledge (v compared from memory), insrtlive/tprint/checkops (popt: which copy of a tail stays, block order),
+srchdef (loop entry into the increment), and the big ones (popt block order, cause 3). Data: checkops' '//    NULL' string
+stands behind '// chkops: nonstandard' in the original: the fail block was behind the nonstd block in the source and the
+original popt moved it up; ours does not (DIFF 89 with that source): a popt codemove difference to find.
 
 ## State (2026-11-19)
 `make gopt` LINKS. Layout: gdata.o first (bss in address order: bss exact, 42496 bytes), reader2 .. live2 (-Mt4), ebbo2 lpinv2 lpind2 (-Mt5), beta2
