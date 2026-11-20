@@ -24,8 +24,3 @@ int b;
 	return 0;
 }
 
-/* a function without a body (name guessed) */
-void
-nullfn()
-{
-}

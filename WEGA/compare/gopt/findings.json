@@ -4344,10 +4344,10 @@
   "nullfn": {
    "orig": "5:9bbe",
    "size_orig": 2,
-   "status": "open",
+   "status": "libc",
    "kind": "candidate",
    "module": "alias2b.c",
-   "file": "alias2b.c"
+   "note": "not gopt code: 5:9bbe is __fltuse (ret), the first word of the libc member fltioc (src/lib/oldslibc/fltioc/0_3.s); removed from alias2b.c 2026-11-20"
   },
   "f5_9bc0": {
    "orig": "5:9bc0",
