@@ -4057,11 +4057,11 @@
   "chkcalls": {
    "orig": "5:6f52",
    "size_orig": 280,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "reg2.c",
    "file": "reg2.c",
-   "note": "open (DIFF 11, 2026-11-20): the outer loop tests at the top and its step jumps into the copy of the init (`p = lp->bls; for (;;) { if (p == 0) { p = lp->bls; return; } ..; p = p->next; }`), the inner loop `for (q = blks[p->blk]->next; q != 0; q = q->next)` (the init jumps into the copy of the step): 31 -> 11 (13 forms). Left: the second loop (callfnd) in the original: init, jump to the test at the bottom, the step jumps into the init copy; for, while, for(;;) with break or return all give the same (11)"
+   "note": "exact (masked): written with gotos (outer: label, `if (p == 0) {p = lp->bls; return;}`; inner: `q = ...; goto qt; qs: q = q->next; qt: if (q == 0) {nextp: p = p->next; goto outer;}`, `if (q->op == 59) goto nextp; if (q->op != 7) goto qs;`, then the code after a call is found falls through to the end); for, while, do, for(;;) and the found code inline or behind the loop give popt other block orders (DIFF 7 to 21)"
   },
   "symflags": {
    "orig": "5:706a",

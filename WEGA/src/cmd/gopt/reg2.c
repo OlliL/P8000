@@ -112,27 +112,32 @@ struct loop *lp;
 	int x;
 
 	p = lp->bls;
-	for (;;) {
-		if (p == 0) {
-			p = lp->bls;
-			return;
-		}
-		x = blks[p->blk]->a.w0;
-		for (q = blks[p->blk]->next; q != 0; q = q->next) {
-			if (q->op == 59)
-				break;
-			if (q->op == 7) {
-				if (s4d90 > 4)
-					printf("// call found in loop\n");
-				for (p = lp->bls; p != 0; p = p->next) {
-					if (s4d90 > 4)
-						printf("// setting callfnd in block %d\n", p->blk);
-					QHREC(blks[p->blk])->callfnd = 1;
-				}
-				return;
-			}
-		}
+outer:
+	if (p == 0) {
+		p = lp->bls;
+		return;
+	}
+	x = blks[p->blk]->a.w0;
+	q = blks[p->blk]->next;
+	goto qt;
+qs:
+	q = q->next;
+qt:
+	if (q == 0) {
+nextp:
 		p = p->next;
+		goto outer;
+	}
+	if (q->op == 59)
+		goto nextp;
+	if (q->op != 7)
+		goto qs;
+	if (s4d90 > 4)
+		printf("// call found in loop\n");
+	for (p = lp->bls; p != 0; p = p->next) {
+		if (s4d90 > 4)
+			printf("// setting callfnd in block %d\n", p->blk);
+		QHREC(blks[p->blk])->callfnd = 1;
 	}
 }
 
