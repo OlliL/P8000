@@ -14,7 +14,7 @@ j = int(sys.argv[sys.argv.index('-j') + 1]) if '-j' in sys.argv else 4
 ns = {}
 exec(open(spec).read(), ns)
 src = open(os.path.join(W, f)).read()
-base = os.path.join(os.path.dirname(os.path.abspath(spec)), 'vt_' + fn)
+base = os.path.join(os.environ.get('RECON_TMP', os.path.join(W, '..', 'tmp', 'tmp')), 'vt', 'vt_' + fn)    # the copies, outside the repository
 os.makedirs(base, exist_ok=True)
 
 def run(item):
