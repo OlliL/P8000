@@ -2572,7 +2572,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 7): the original has the block return 1 inline at the first almap test (the other returns jump to it), ours has it at the end (2026-11-20) cause 8: every return 1 jumps to the first return-1 block (cde2) in the original, ours to the last; 7 source forms (<= 480 / return 0 last, &&, else if, nested if, !a): none; a popt experiment (no cross jump into a later copy) lost 50+ functions"
+   "note": "open (DIFF 7): the original has the block return 1 inline at the first almap test (the other returns jump to it), ours has it at the end (2026-11-20) cause 8: every return 1 jumps to the first return-1 block (cde2) in the original, ours to the last; 7 source forms (<= 480 / return 0 last, &&, else if, nested if, !a): none; a popt experiment (no cross jump into a later copy) lost 50+ functions (2026-11-20) `if (islive(..)) return 1; if (nlv <= 480) return 1; return 0;` gives the end of the original (return 0 last) but the kept copy is that of `a == 0` (comjump: the first), the original keeps the one of the 0x2f test and a == 0 jumps to it: 9; || and return-expression: 9, 11"
   },
   "setsymtable": {
    "orig": "4:ce7a",
@@ -2590,7 +2590,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 8, 2026-11-20): default first in the switch, each case as one condition `if ((b2 == 4 || b2 == 8) && !setsymtable(..) || (b2 == 6 || b2 == 8) && !settmptable(..)) return 0; return 1;` (20 -> 8); left: cause 8 (the original keeps the `return 1` of default and the last case jumps to it; ours the last copy); cases with break and one return 1 behind the switch: 8 too"
+   "note": "open (DIFF 8, 2026-11-20): default first in the switch, each case as one condition `if ((b2 == 4 || b2 == 8) && !setsymtable(..) || (b2 == 6 || b2 == 8) && !settmptable(..)) return 0; return 1;` (20 -> 8); left: cause 8 (the original keeps the `return 1` of default and the last case jumps to it; ours the last copy); cases with break and one return 1 behind the switch: 8 too (2026-11-20) default last in the source: the last case jumps into the copy of default (the sharing of the original) but ours leaves default at the end, the original moves it behind the dispatch (13; K13); return 0/1 or cerror behind the switch: 8-13"
   },
   "markblkvar": {
    "orig": "4:d234",
