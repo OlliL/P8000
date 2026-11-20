@@ -1586,4 +1586,10 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   betainit, rmrestorequad: arguments; killdefs, initlive); not for a wanted register (rall != NOPREF): 253; a statement
   assigning to the auto forgets its frame-named pair first (as OLD_D3K does for parameters): 254 (initlive); no lookup in
   a condition with && or ||, the name stays (clearing it moves the load to rr2): 255, nothing lost; matrix vc +0.
+- 2026-11-20 (owner: source forms first): the switches of the night checked again with a scodgen without them (note: the
+  codgen Makefile has no dependency on oldcc.h, a change of oldcc.h alone needs `rm build/segvc/*.o`). OLD_D2AP removed:
+  deltmplpdefs is exact by the source form `a0e0 = a0e0->next; prev = a0e0;` (its only witness). Kept, with the forms
+  tried: OLD_D3JL (canopt 20 forms), OLD_D2FA (clearblocks 10, solvereach 11, pralvars 9), OLD_D24L (no C form gives a
+  frame lda without the mask), OLD_D2K (about 30). An experiment OLD_D3JC (a call drops the parameters of r4..r7 from
+  earlier jump records: prquad, cmwalk) lost 8 functions and was dropped; prquad: 14 forms tried, open.
 

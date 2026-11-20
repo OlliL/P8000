@@ -525,7 +525,10 @@ deltmplpdefs()
 	while (t != 0) {
 		if (t->q->c.b2 == 3) {
 			if (t == a0e0)
-				prev = a0e0 = a0e0->next;
+			{
+				a0e0 = a0e0->next;
+				prev = a0e0;
+			}
 			else
 				prev->next = t->next;
 			if (a0f8 != 0) {

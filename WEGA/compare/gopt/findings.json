@@ -311,7 +311,7 @@
    "kind": "proven",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "open: one instruction: the last `else if (optype(p->in.op) != LTYPE)` reads p from the frame in the original (ldl rr2,0(r15)), ours from rr6 (popt forwarding); the locals s1, s2 and the pointers p1, p2 as in main"
+   "note": "open: one instruction: the last `else if (optype(p->in.op) != LTYPE)` reads p from the frame in the original (ldl rr2,0(r15)), ours from rr6 (popt forwarding); the locals s1, s2 and the pointers p1, p2 as in main (2026-11-20) the original reloads the pointer parameter from the frame after a label reached by a jump (prquad after if (q == 0) {..return;}, cmwalk at the else, mkleaf already at the switch value); not restoring pointer parameters at every label fixes prquad and cmwalk but loses 13 functions (canopt, denorm, addstore ...): the rule is narrower, open"
   },
   "operand": {
    "orig": "4:1812",
@@ -590,7 +590,7 @@
    "kind": "proven",
    "module": "debug2.c",
    "file": "debug2.c",
-   "note": "open: one instruction: the original reads q from the frame behind the first conditional jump (ldl rr2,0(r15)), ours from rr6; the same in cmwalk and operand (quads2.c): popt of the original forgets the content of a register at the label of the jump target, ours keeps it (phase B)"
+   "note": "open: one instruction: the original reads q from the frame behind the first conditional jump (ldl rr2,0(r15)), ours from rr6; the same in cmwalk and operand (quads2.c): popt of the original forgets the content of a register at the label of the jump target, ours keeps it (phase B) (2026-11-20) the original reloads the pointer parameter from the frame after a label reached by a jump (prquad after if (q == 0) {..return;}, cmwalk at the else, mkleaf already at the switch value); not restoring pointer parameters at every label fixes prquad and cmwalk but loses 13 functions (canopt, denorm, addstore ...): the rule is narrower, open"
   },
   "propnd": {
    "orig": "4:2d3e",
@@ -1361,7 +1361,7 @@
    "kind": "proven",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "open: one instruction: the first use of the parameter a (the switch) reads it from the frame in the original (ldl rr2,6(r15)), ours from rr6; the same phenomenon as operand, cmwalk, prquad. The cases stand in the order 4 5 1 7 2 6 3; `for (r = node; ...; ++r)` (r++ moves the body behind the loop), `*(ctpos + a->w4) -= 1` as a statement; the constants of the float table are written to the data file with fprintf (INTERNAL, WORD := ...), flab starts with 9000"
+   "note": "open: one instruction: the first use of the parameter a (the switch) reads it from the frame in the original (ldl rr2,6(r15)), ours from rr6; the same phenomenon as operand, cmwalk, prquad. The cases stand in the order 4 5 1 7 2 6 3; `for (r = node; ...; ++r)` (r++ moves the body behind the loop), `*(ctpos + a->w4) -= 1` as a statement; the constants of the float table are written to the data file with fprintf (INTERNAL, WORD := ...), flab starts with 9000 (2026-11-20) the original reloads the pointer parameter from the frame after a label reached by a jump (prquad after if (q == 0) {..return;}, cmwalk at the else, mkleaf already at the switch value); not restoring pointer parameters at every label fixes prquad and cmwalk but loses 13 functions (canopt, denorm, addstore ...): the rule is narrower, open"
   },
   "f4_6078": {
    "orig": "4:6078",
@@ -1915,7 +1915,7 @@
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first)"
+   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first) (source forms without OLD_D2FA tried 2026-11-20: clearblocks 10, solvereach 11, pralvars 9: none)"
   },
   "mkallist": {
    "orig": "4:8e36",
@@ -2878,7 +2878,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first)"
+   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first) (source forms without OLD_D2FA tried 2026-11-20: clearblocks 10, solvereach 11, pralvars 9: none)"
   },
   "solvelive": {
    "orig": "4:f23a",
@@ -3478,7 +3478,7 @@
    "kind": "proven",
    "module": "ebbo2.c",
    "file": "ebbo2.c",
-   "note": "masked with vc OLD_D3JL (OLD_D3J: a pointer parameter that comes back at a label gets no frame home; the original reserves the frame slot but does not store rr6)"
+   "note": "masked with vc OLD_D3JL (OLD_D3J: a pointer parameter that comes back at a label gets no frame home; the original reserves the frame slot but does not store rr6) (source forms without OLD_D3JL: 20 tried 2026-11-20, none)"
   },
   "ebbcall": {
    "orig": "5:1bc0",
@@ -3535,7 +3535,7 @@
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first)"
+   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first) (source forms without OLD_D2FA tried 2026-11-20: clearblocks 10, solvereach 11, pralvars 9: none)"
   },
   "marklpblocks": {
    "orig": "5:21a4",
@@ -3783,7 +3783,7 @@
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 2): `if ((x = x->next) == 0)` (x an auto): the original copies rr0 into rr2 after the store (ldl rr2,rr0; testl rr0), sccvc does not; OLD_D2AP covers only a global target (an auto target in deletblk, lpinv has no copy); tried !(x = ..), x = ..; if (x == 0), break, != 0 continue, a cast of 0"
+   "note": "open (DIFF 2): `if ((x = x->next) == 0)` (x an auto): the original copies rr0 into rr2 after the store (ldl rr2,rr0; testl rr0), sccvc does not; OLD_D2AP covers only a global target (an auto target in deletblk, lpinv has no copy); tried !(x = ..), x = ..; if (x == 0), break, != 0 continue, a cast of 0 (2026-11-20) the copy also comes from the separate statements in deltmplpdefs; for orderbl (x an auto in a compare) not found yet"
   },
   "proceslp": {
    "orig": "5:500a",
@@ -4001,7 +4001,7 @@
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 2): prev = a0e0 = a0e0->next: the original has ldl rr2,rr0 between the two stores, ours not masked with vc OLD_D2AP (prev = a0e0 = a0e0->next: the value in rr0 is copied into rr2 after the store to the global)"
+   "note": "masked by the source form `a0e0 = a0e0->next; prev = a0e0;` (two statements, not the chain prev = a0e0 = ...): the value in rr0 is copied into rr2 after the store to the global"
   },
   "delindvar": {
    "orig": "5:67de",

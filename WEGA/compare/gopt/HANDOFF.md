@@ -53,11 +53,12 @@ Tools (use these, they print little; never dump disassemblies or diffs into the 
 ## Progress (2026-11-20, overnight run)
 fnc.py over all modules: 255 of 322 OK (was 233). New vc switches of codgen (all +0 on cas, the real cas build stays
 byte-identical; host/OLDCC.md vc section): OLD_D2K (store through a scratch register forgets its name), OLD_D3JL (restored
-pointer parameter: no frame home), OLD_D24L (lda of a frame place without the mask), OLD_D2AP (D2A copy for a pointer in rr0
-stored to a global), OLD_D2FA (auto pointers found in the pair named by their frame place). Tools: fnc.py drops nothing any
+pointer parameter: no frame home), OLD_D24L (lda of a frame place without the mask), OLD_D2FA (auto pointers found in the pair named by their frame place). Tools: fnc.py drops nothing any
 more (its default drop hid the bitfield masks); a traced scodgen helps (copy src/cmd/codgen to a scratch tree with src/lib and
 src/head linked, fprintf(stderr) in symreg/rnassign, build build/segvc/scodgen, run `sccvc -T2./dbgcg -S t.c`). The run
 `$S/allfnc.sh` (fnc.py -a over all modules) is a loop over the module list; the matrix model of cas needed the old stdio.h.
+OWNER 2026-11-20: SOURCE FORMS FIRST, a real srctry batch (10+ forms) before any switch, counts in findings/log.
+Note: the codgen Makefile has no oldcc.h dependency: `rm build/segvc/*.o` after a change of oldcc.h alone.
 Open small ones: orderbl (D2A copy for an auto target in a compare), tstlbit (entry store of a word parameter), affsize,
 mkconstopnd (dead param copy ldl rr0,rr6), testbit (cause 1). The big ones are popt block order (cause 3).
 
