@@ -112,6 +112,7 @@ genquads(p)
 			genquads(p->in.right);
 	}
 	p3->w0 = p->in.type;
+rl1:
 	p3->b2 = 0;
 	p3->w4 = 0;
 	*p1 = *operand(p->in.left);
@@ -141,6 +142,7 @@ genquads(p)
 	case 0xa:
 		p2 = &s2;
 		*p2 = *p1;
+rl2:
 		p1->b2 = 1;
 		p1->w4 = 0;
 		p->in.op = 8;
@@ -193,8 +195,10 @@ genquads(p)
 		*p3 = *p1;
 		p3->w0 = p->in.type;
 		*p1 = *p2;
+rl3:
 		p2->b2 = 1;
 		p2->w0 = p->stn.stsize;
+rl4:
 		p2->w4 = p->stn.stalign;
 		break;
 	case 0x66:

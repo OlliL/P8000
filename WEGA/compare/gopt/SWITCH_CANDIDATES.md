@@ -5,7 +5,7 @@ classified here with its witnesses, and the search for source forms goes on. A c
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
 without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K1, K17: a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
-The numbers are the DIFF lines of fnc.py (2026-11-20, 296 of 321 OK).
+The numbers are the DIFF lines of fnc.py (2026-11-20, 298 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
 |----|--------------------------|-----------------------|--------|
@@ -15,7 +15,7 @@ The numbers are the DIFF lines of fnc.py (2026-11-20, 296 of 321 OK).
 | K7 | a pointer/global is reloaded where ours keeps it in a register (register cache; cause 5) | compress (11), eval (9), linkp (34), dominators (17) | candidate |
 | K8 | the pair of a temporary: rr4 against rr6 (cause 6); pattern: the original frees the word parameters in r6/r7 (and rr2 of a pointer parameter) for temporaries after their frame store, but keeps a live pointer parameter in rr6; ours the opposite | srchdflist (5), joinblk (9), prcgraph (11), chkfamindvar (9), pr (15), setposition (18), rmlabels (12, with a reload) | candidate |
 | K11 | a chain `a = b = x`: the original copies the value into another register first (`ld r2,r0`) | setsymtable (2; 13 forms) | candidate |
-| K12 | after a store through a copy (`ldl rr6,rr0; ldl @rr6,rr2`) or an ldir the original reloads the pointer from the frame, ours takes the register | updatelooplist (5), mktree (8), genquads (8) | candidate |
+| K12 | after a store through a copy (`ldl rr6,rr0; ldl @rr6,rr2`) or an ldir the original reloads the pointer from the frame, ours takes the register | updatelooplist (5) | candidate |
 | K13 | the then-block of an if is placed before its test, right behind an unconditional jump, the test jumps back to it (spopt codemove); dotree, aliasm, initaffect, buildgraph, clropt were source forms (the common statement in both branches; the then-block as `if (0) { l: ... }` at the loop top, reached by goto); for the loops: switch, loop forms, branch orders tried | chklpdefs (10: only the step block) | candidate |
 | K14 | a long `&`/`\|` with a frame operand: the original takes r1 for the low word (`ld r1,lo; and r3,r1`), ours overwrites r3 (`ld r3,lo; and r3,r3`: wrong code) (scodgen template) | constfold (2 places) | candidate (a bug of the rebuild) |
 | K15 | the EPU store of an int-to-double result is not merged with the store of the first case | constfold (1 instruction) | candidate |

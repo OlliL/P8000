@@ -242,6 +242,7 @@ mktree(q)
 	p->in.rall = 0;
 	p->in.op = qdop[q->op];
 	fl = 0;
+l7e:
 	if (p->in.op == 0x7e) {
 		p->in.op = STAR;
 		if (q->c.b2 == 8 && q->a.b2 == 8)

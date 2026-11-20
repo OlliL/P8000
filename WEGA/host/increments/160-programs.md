@@ -100,3 +100,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: checkops 21 -> 15 (the &t arm of the ?: as if (0) block behind the post code, its tail by goto r1); left: the reload of mode and q (K1/K17).
 - 2026-11-20 gopt: checkops exact: a dead `goto m1;` (behind a goto) to a label before the mode == 1 test makes codgen forget the parameter registers there (K1 by source); 294 of 321 OK.
 - 2026-11-20 gopt: cmwalk (dead goto to the else label), deledge (dead `if (0) v = 0;`) exact: K1 and K17 have no witnesses left; 296 of 321 OK.
+- 2026-11-20 gopt: mktree, genquads exact by lone labels (no goto): codgen forgets its registers at any label, so the original reloads there (K12 by source); 298 of 321 OK.
