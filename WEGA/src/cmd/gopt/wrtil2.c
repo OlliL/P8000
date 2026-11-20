@@ -438,16 +438,15 @@ needustar(p)
 {
 	NODE *q;
 
-	if (p->in.left->in.op != TEMP) {
-		for (q = p->in.left; q->in.op == STAR; q = q->in.left)
-			;
-		if (qflag > 4)
-			printf("// needustar: q->su = %d\n", q->tn.w6);
-		if (q->in.op == TEMP && q->tn.w6 == 0)
-			return 1;
-		return !(optype(q->in.op) == LTYPE || q->in.op == FLD);
-	}
-	return 1;
+	if (p->in.left->in.op == TEMP)
+		return 1;
+	for (q = p->in.left; q->in.op == STAR; q = q->in.left)
+		;
+	if (qflag > 4)
+		printf("// needustar: q->su = %d\n", q->tn.w6);
+	if (q->in.op == TEMP && q->tn.w6 == 0 || optype(q->in.op) != LTYPE && q->in.op != FLD)
+		return 1;
+	return 0;
 }
 
 /* the leaf node of an operand of a quad */
