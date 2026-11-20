@@ -50,6 +50,17 @@ Tools (use these, they print little; never dump disassemblies or diffs into the 
   a key that exists is overwritten: check the findings entries afterwards)
 - build: `cd src/cmd/gopt; PATH=/home/olivleh1/git/P8000/tmp/tmp/wbin:$PATH make gopt` (wbin holds the wrappers of cas, sld, sccvc ... under z8k-emu; fnc.py takes src/cmd/gopt/FILE.c; findings.json key `note`, not `notes`; a case block has "note": "case block of NAME" (or "tail of NAME")).
 
+## Progress (2026-11-20, overnight run)
+fnc.py over all modules: 255 of 322 OK (was 233). New vc switches of codgen (all +0 on cas, the real cas build stays
+byte-identical; host/OLDCC.md vc section): OLD_D2K (store through a scratch register forgets its name), OLD_D3JL (restored
+pointer parameter: no frame home), OLD_D24L (lda of a frame place without the mask), OLD_D2AP (D2A copy for a pointer in rr0
+stored to a global), OLD_D2FA (auto pointers found in the pair named by their frame place). Tools: fnc.py drops nothing any
+more (its default drop hid the bitfield masks); a traced scodgen helps (copy src/cmd/codgen to a scratch tree with src/lib and
+src/head linked, fprintf(stderr) in symreg/rnassign, build build/segvc/scodgen, run `sccvc -T2./dbgcg -S t.c`). The run
+`$S/allfnc.sh` (fnc.py -a over all modules) is a loop over the module list; the matrix model of cas needed the old stdio.h.
+Open small ones: orderbl (D2A copy for an auto target in a compare), tstlbit (entry store of a word parameter), affsize,
+mkconstopnd (dead param copy ldl rr0,rr6), testbit (cause 1). The big ones are popt block order (cause 3).
+
 ## State (2026-11-19)
 `make gopt` LINKS. Layout: gdata.o first (bss in address order: bss exact, 42496 bytes), reader2 .. live2 (-Mt4), ebbo2 lpinv2 lpind2 (-Mt5), beta2
 (-Mt4: first fit into the end of segment 4), reg2 alias2b (-Mt5), libc slibc-v12.a. Link flags `-i -e start -Md7 -Mb8 -Ms63`. Functions of every module
