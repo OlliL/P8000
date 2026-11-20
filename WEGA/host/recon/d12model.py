@@ -147,6 +147,10 @@ def main():
         p = os.path.join(srcdir, f)
         if os.path.isfile(p) and not f.endswith(('.o', '.py')) and f != 'Makefile':
             shutil.copy(p, work)
+    # the -I of the Makefile: since 2026-11-15 the stdio.h of the old programs is in src/head/oldv7 (was beside the sources)
+    mk = os.path.join(CFG.SRCDIR, 'Makefile')
+    if os.path.exists(mk) and 'head/oldv7' in open(mk).read() and not os.path.exists(os.path.join(work, 'stdio.h')):
+        shutil.copy(os.path.join(CFG.REPO, 'src', 'head', 'oldv7', 'stdio.h'), work)
     if hasattr(CFG, 'model_prepare'):
         CFG.model_prepare(work)
     for m in CFG.MODULES:

@@ -1681,3 +1681,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   OLD_D2N; not measured: the full v0p matrix (libc and the other v0/v0p programs). Note: the cparse model is at 164 of 179
   now (code 48640 against 48896; earlier 179 of 179): to be looked at apart from this (the models needed cgram1.c, cpy.c
   and crt0.o of cpp in the source directories, made there by hand).
+- The v0p models were void since 2026-11-15 (found 2026-11-21): d12model copies the headers beside the sources, and the
+  stdio.h of the old programs moved to src/head/oldv7 (5ddcc5d4), so the models took the guest's stdio.h (getc, putc as
+  calls: cparse 164 of 179, codgen 191 of 209, popt 71 of 73, cpp 23 of 26). The shipped builds were not touched (their
+  Makefiles have the -I). d12model now copies src/head/oldv7/stdio.h when the Makefile names head/oldv7: cparse 179,
+  scparse 179, codgen 209, scodgen 210, popt 73, spopt 73, cpp 26, all strictly equal. The OLD_D2NP-under-v0 measurement
+  above was made with the void models and is to be repeated.
