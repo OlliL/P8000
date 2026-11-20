@@ -19,6 +19,6 @@ Status: `candidate` (not built), `built` (exists, its witnesses get source forms
 | K10 | `(q = q->next)->op` with the displacement form (cause 4) | writeil (6) | candidate |
 | K11 | a chain `a = b = x` copies the value into another register first | setsymtable (2) | candidate |
 | K12 | after a store through a copy (`ldl rr6,rr0; ldl @rr6,rr2`) the original reloads the pointer from the frame, ours takes rr0 | updatelooplist (5) | candidate |
-| K13 | the then-block of an if is placed before its test, right behind an unconditional jump, the test jumps back to it (spopt codemove, which block moves) | buildgraph (17), clropt (33), setsym (8; with default last the sharing is right, default is not moved behind the dispatch) | candidate |
+| K13 | the then-block of an if is placed before its test, right behind an unconditional jump, the test jumps back to it (spopt codemove, which block moves) | buildgraph (17), initaffect (11; both: the first then-block of a for body behind the jump of the init), clropt (33), setsym (8; with default last the sharing is right, default is not moved behind the dispatch) | candidate |
 | K14 | a long `&`/`|` with a frame operand: the original takes r1 for the low word (`ld r1,lo; and r3,r1`), ours overwrites r3 (`ld r3,lo; and r3,r3`: wrong code) (scodgen template) | constfold (2 places) | candidate |
 | K15 | the EPU store of an int-to-double result is not merged with the store of the first case | constfold (1 instruction) | candidate |

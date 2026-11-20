@@ -1861,7 +1861,7 @@
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "open (DIFF 11, 3 attempts): the block `pcur = fn5_2bca(q)` (the 0x3b case, ends in a jump to q = q->next) stands in the original before the loop body (behind the jp to the test), in ours inline: the block order of popt (the same loop as aliasm); the rest equal. An unused local int (frame 0x12) and (struct qa *)0 for the null pointer argument of addaffect (the original passes a long 0). affdim (70b8, rows) and matw (70b6, words per row) guessed"
+   "note": "open (DIFF 11, 3 attempts): the block `pcur = fn5_2bca(q)` (the 0x3b case, ends in a jump to q = q->next) stands in the original before the loop body (behind the jp to the test), in ours inline: the block order of popt (the same loop as aliasm); the rest equal. An unused local int (frame 0x12) and (struct qa *)0 for the null pointer argument of addaffect (the original passes a long 0). affdim (70b8, rows) and matw (70b6, words per row) guessed (2026-11-20) the original puts the 0x3b block (pcur = skiphdrs) behind the jump of the loop init, before fndcall (as buildgraph: K13); 5 loop forms (continue, the test in the for, while, init in the for): 11-56"
   },
   "alalloc": {
    "orig": "4:89c0",
