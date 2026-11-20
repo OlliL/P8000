@@ -1655,3 +1655,8 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - gopt, cause 8 (2026-11-20): setsym keeps the `return 1` of default (first in the layout) and the last case jumps to it; ours
   removes the jump of the last case to the label behind it (the dispatch moved to the front) and xjump then takes that copy.
   Experiment OLD_D67 (spopt: one comjump before the first iterate): setsym exact, 15 other functions lost (262). Dropped.
+- gopt, OLD_D3S removed (2026-11-20): the entry store and reload of a parameter in mkleaf, qmkstore, operand come from dead
+  code that assigns the parameter (`if (0) a = 0;` at the start; owner's idea: a leftover of code popt deleted, as tstlbit
+  `i = 0;` behind the last return): codgen forgets the register and gives the parameter its frame home, popt deletes the
+  dead code, the store stays. mkleaf and qmkstore exact without the switch, operand 28 as with it. The witnesses of the
+  gopt switches were measured (compare/gopt/SWITCH_CANDIDATES.md).

@@ -35,7 +35,6 @@
 #define OLD_D3PL	/* OLD_D3P: a pointer parameter cast to long is taken from its pair (regforsym; gopt tabfree) */
 #define OLD_D3JL	/* OLD_D3J: a pointer parameter that comes back at a label gets no frame home, only a long (gopt: canopt, denorm) */
 #define OLD_D3JB	/* OLD_D3J: the end of a block (]) between the jump and the label counts as a record (gopt prquad, cmwalk) */
-#define OLD_D3S		/* a function with a static in its body (#static of scparse): the parameters are not known in their registers (gopt mkleaf, operand, qmkstore) */
 #endif
 
 #ifdef OLD_V0P

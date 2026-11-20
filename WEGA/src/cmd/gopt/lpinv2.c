@@ -108,6 +108,8 @@ struct quad *q;
 {
 	static struct quad tq;
 
+	if (0)
+		q = 0;	/* dead: its store of q at the entry is left (the original) */
 	if (q->op == 52 && q->a.b2 == 8) {
 		tq.op = 47;
 		tq.c = q->a;

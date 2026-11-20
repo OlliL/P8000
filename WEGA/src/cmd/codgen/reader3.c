@@ -495,11 +495,6 @@ reread:
 			nlcheck();
 			continue;
 		case '#':
-#ifdef OLD_D3S
-			if ((ch = getchar()) == 's')	/* vc: #static from scparse: a static in the body, the parameters are not known */
-				rfreeall(1);
-			if (ch != '\n')
-#endif
 			while ((ch = getchar()) != '\n')
 				;
 			continue;

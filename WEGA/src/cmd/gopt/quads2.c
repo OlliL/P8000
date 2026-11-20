@@ -380,6 +380,8 @@ operand(p)
 	struct qa a, b, c;
 	struct sym *sp;
 
+	if (0)
+		p = 0;	/* dead: its store of p at the entry is left (the original) */
 	switch (p->in.op) {
 	case NAME:
 		if (p->tn.rval >= 0) {

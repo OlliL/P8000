@@ -320,7 +320,7 @@
    "kind": "proven",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "open (DIFF 28): (1) the reload of p at the start comes from the static opnd (vc OLD_D3S, 30 -> 28); (2) `p->in.sname - symtab` does not compile with p in rr6 (rbusy error of scodgen): ours uses a local sp; the original has sub of the two low words, div 22, no store; (3) the else block of the NAME case lies behind the return in the original. Static struct opnd (6 bytes) in the data (2026-11-20) the original computes `opnd.w4 = p->in.sname - symtab` directly (no local sp: ldl rr0,sname; sub; div #22) and keeps `opnd.w0 = p->in.type` behind the b2 = 4 branch; that form stops our scodgen with 'rbusy: register to be made busy not found on rslist' (K16, a compiler error of the rebuild)"
+   "note": "open (DIFF 28): (1) the reload of p at the start: dead code `if (0) p = 0;` (30 -> 28; vc OLD_D3S before, removed); (2) `p->in.sname - symtab` does not compile with p in rr6 (rbusy error of scodgen): ours uses a local sp; the original has sub of the two low words, div 22, no store; (3) the else block of the NAME case lies behind the return in the original. Static struct opnd (6 bytes) in the data (2026-11-20) the original computes `opnd.w4 = p->in.sname - symtab` directly (no local sp: ldl rr0,sname; sub; div #22) and keeps `opnd.w0 = p->in.type` behind the b2 = 4 branch; that form stops our scodgen with 'rbusy: register to be made busy not found on rslist' (K16, a compiler error of the rebuild)"
   },
   "f4_1840": {
    "orig": "4:1840",
@@ -1361,7 +1361,7 @@
    "kind": "proven",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "masked by vc OLD_D3S (2026-11-20): the statics ftot/fflag in the body make the original keep the parameter a in the frame (ldl rr2,6(r15) at the switch). The cases stand in the order 4 5 1 7 2 6 3; `for (r = node; ...; ++r)` (r++ moves the body behind the loop), `*(ctpos + a->w4) -= 1` as a statement; the constants of the float table are written to the data file"
+   "note": "masked (2026-11-20) by dead code at the start `if (0) a = 0;` (vc OLD_D3S before, removed): the statics ftot/fflag in the body make the original keep the parameter a in the frame (ldl rr2,6(r15) at the switch). The cases stand in the order 4 5 1 7 2 6 3; `for (r = node; ...; ++r)` (r++ moves the body behind the loop), `*(ctpos + a->w4) -= 1` as a statement; the constants of the float table are written to the data file"
   },
   "f4_6078": {
    "orig": "4:6078",
@@ -3553,7 +3553,7 @@
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "masked by vc OLD_D3S (2026-11-20): the static tq makes the original store q at the entry and reload it from the frame"
+   "note": "masked (2026-11-20) by dead code at the start `if (0) q = 0;` (vc OLD_D3S before, removed): the static tq makes the original store q at the entry and reload it from the frame"
   },
   "srchdflist": {
    "orig": "5:226a",

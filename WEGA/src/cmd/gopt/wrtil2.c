@@ -462,6 +462,8 @@ mkleaf(a)
 	int *d;
 	long pos1, pos2, pos3;
 
+	if (0)
+		a = 0;	/* dead: its store of a at the entry is left (the original) */
 	switch (a->b2) {
 	case 4:
 		q = talloc();

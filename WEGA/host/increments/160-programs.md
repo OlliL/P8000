@@ -89,3 +89,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt dotree exact: the common statement copied into both branches (K13 is a source form too).
 - 2026-11-20 gopt: NODE type unsigned (TWORD as in mip): mktree 10 -> 8, nothing lost; 282 of 321 OK.
 - 2026-11-20 gopt tstlbit exact: dead code that changes i (the entry store is a leftover of code popt deleted; owner hint).
+- 2026-11-20 gopt: vc OLD_D3S removed (dead code `if (0) p = 0;` instead: mkleaf, qmkstore exact, operand 28); 284 of 321 OK; matrix check ok, cas byte-identical.
