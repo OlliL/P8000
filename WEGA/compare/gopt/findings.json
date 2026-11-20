@@ -3579,7 +3579,7 @@
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 33, same instruction count): block order of the a-operand part: the original has the (4,6,8) body at 5:26f2 behind the 3-case and the compare chain after the bodies (jumping back); ours keeps if/else order; switch (a.b2) gives a jump table (worse)"
+   "note": "open (DIFF 33, same instruction count): block order of the a-operand part: the original has the (4,6,8) body at 5:26f2 behind the 3-case and the compare chain after the bodies (jumping back); ours keeps if/else order; switch (a.b2) gives a jump table (worse) (2026-11-20) 14 more forms: one b2 test behind the chain (113 instructions: the original has the copies), `if (q->op == 7) return;`, negated op2 chain, else-if chains of the error (42), !q->b.b2, the 4/6/8 branch last under the negated condition (30, best, not kept: the original has S2 right behind the 3-case and the op test behind S2: codemove needs an unconditional jump to S2)"
   },
   "setopt": {
    "orig": "5:283a",
@@ -3758,7 +3758,7 @@
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 34, 115 against 114 instructions): popt block order (codemove): ours moves one of the two branch blocks (x == p->bls / else) in front of the loop test jump, the original keeps both behind the loop; for/while and if/else swapped without effect"
+   "note": "open (DIFF 5, 2026-11-20): `for (y = x = p->bls; ..)` (the original stores x first, then y: no cross jump of the x store into the loop step, the test reloads x) and `if (x == p->bls) {bls branch} else {y->next branch}`: 32 -> 5 (26 forms: loop as while/&&/continue, the branch orders, p->bls == x). Left: after `p->bls = taballoc(..)` (store through the copy rr6 of rr0) the original reloads p from the frame for `p->bls->next = x`, ours takes rr0 (also y); forms (..)->next, (*p).bls, no cast: none (SWITCH_CANDIDATES K12)"
   },
   "addpreheader": {
    "orig": "5:4790",

@@ -948,21 +948,21 @@ int phblk;
 	idfn[phblk] = idfn[hblk];
 	for (p = loops; p != 0; p = p->link) {
 		if (p->b13 && p->cnt > 0) {
-			for (x = y = p->bls; x != 0; y = x, x = x->next)
+			for (y = x = p->bls; x != 0; y = x, x = x->next)
 				if (x->blk == hblk)
 					break;
 			if (x != 0) {
 				if (s4d86 > 2)
 					printf("//update, found outer loop, header=%d\n", p->hdr);
 				--p->cnt;
-				if (x != p->bls) {
-					y->next = (struct bl *)taballoc(6, 4);
-					y->next->next = x;
-					y = y->next;
-				} else {
+				if (x == p->bls) {
 					p->bls = (struct bl *)taballoc(6, 4);
 					p->bls->next = x;
 					y = p->bls;
+				} else {
+					y->next = (struct bl *)taballoc(6, 4);
+					y->next->next = x;
+					y = y->next;
 				}
 				y->blk = phblk;
 			}

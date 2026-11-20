@@ -79,3 +79,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt writeil: the local array of the register symbols hid the global betatbl (draft error; regsym): DIFF 108 -> 6.
 - 2026-11-20 gopt settmptable exact: `if (!islive(..) && nlv > 480) return 0;` and the bit set in the BBIT address form.
 - 2026-11-20 gopt setsymtable: the body under the negated test (68 -> 17), the op stores of the local tq as a byte of the frame (17 -> 2, form guessed).
+- 2026-11-20 gopt updatelooplist: `y = x = p->bls` (the store order) and the branches swapped: DIFF 32 -> 5. clropt: 14 more forms, none.
