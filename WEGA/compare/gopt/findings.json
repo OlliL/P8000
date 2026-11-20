@@ -3067,7 +3067,7 @@
    "kind": "proven",
    "module": "ebbo2.c",
    "file": "ebbo2.c",
-   "note": "open (DIFF 38): written without the gotos of the draft (2026-11-20): the inner switch with break/default around the constant fold, the copies of the common tails (delquad; clear/addstore under `b2 == 8 || b2 == 6`), case 60 `if (q->c.b2 != 3) { checkuse; clear; addstore; continue; } checkuse; continue;`: DIFF 131 -> 38. Left: cause 8: the original keeps the first copy of the tail `q->b.b2 = 0; checkuse ..` (the identop block jumps into the constant fold block, 5:0392), ours the later one; the same for `updateopnd; va = vnfind`. An if/else-if chain with one tail (the form that would give the original with its popt): 68"
+   "note": "open (DIFF 38): written without the gotos of the draft (2026-11-20): the inner switch with break/default around the constant fold, the copies of the common tails (delquad; clear/addstore under `b2 == 8 || b2 == 6`), case 60 `if (q->c.b2 != 3) { checkuse; clear; addstore; continue; } checkuse; continue;`: DIFF 131 -> 38. Left: cause 8: the original keeps the first copy of the tail `q->b.b2 = 0; checkuse ..` (the identop block jumps into the constant fold block, 5:0392), ours the later one; the same for `updateopnd; va = vnfind`. An if/else-if chain with one tail and the switch cases as && conditions: 41 (the tails right: comjump keeps the first copy, only the cpir switch is missing); the same chain with the inner switch and `goto notcst` into the else: 131 (codemove moves the identop test to the front)"
   },
   "f5_01d0": {
    "orig": "5:01d0",
