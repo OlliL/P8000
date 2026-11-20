@@ -2590,7 +2590,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 20): the branches of if (!setsymtable(...)) return 0: the original shares one return 0 block, ours uses other jumps; an unused local x; the explicit return 1 in the cases"
+   "note": "open (DIFF 8, 2026-11-20): default first in the switch, each case as one condition `if ((b2 == 4 || b2 == 8) && !setsymtable(..) || (b2 == 6 || b2 == 8) && !settmptable(..)) return 0; return 1;` (20 -> 8); left: cause 8 (the original keeps the `return 1` of default and the last case jumps to it; ours the last copy); cases with break and one return 1 behind the switch: 8 too"
   },
   "markblkvar": {
    "orig": "4:d234",
