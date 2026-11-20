@@ -968,10 +968,12 @@ int phblk;
 				--p->cnt;
 				if (x == p->bls) {
 					p->bls = (struct bl *)taballoc(6, 4);
+rl1:
 					p->bls->next = x;
 					y = p->bls;
 				} else {
 					y->next = (struct bl *)taballoc(6, 4);
+rl2:
 					y->next->next = x;
 					y = y->next;
 				}

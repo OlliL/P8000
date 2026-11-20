@@ -109,6 +109,7 @@ linkp(v, w)
 			child[s] = child[child[s]];
 		} else {
 			size[child[s]] = size[s];
+rl1:
 			s = ancest[s] = child[s];
 		}
 	}

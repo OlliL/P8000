@@ -2167,7 +2167,7 @@
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 34, 1 attempt): structurally equal (the registers rr4/r3 against rr6/r2 and two base reloads: the register cache of the compiler, as compress and eval); linkp(v, w): the balanced link of Lengauer and Tarjan; arrays child (712a), size (7132); name from the string"
+   "note": "open (DIFF 34, 1 attempt): structurally equal (the registers rr4/r3 against rr6/r2 and two base reloads: the register cache of the compiler, as compress and eval); linkp(v, w): the balanced link of Lengauer and Tarjan; arrays child (712a), size (7132); name from the string; 2026-11-20: a lone label rl1 (one reload as the original): 34 -> 26; a label sweep over every statement (one and two labels) gives no more; the rest is the rr4/rr6 choice (K7/K8)"
   },
   "addbucket": {
    "orig": "4:affc",
@@ -3754,11 +3754,11 @@
   "updatelooplist": {
    "orig": "5:460c",
    "size_orig": 388,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 5, 2026-11-20): `for (y = x = p->bls; ..)` (the original stores x first, then y: no cross jump of the x store into the loop step, the test reloads x) and `if (x == p->bls) {bls branch} else {y->next branch}`: 32 -> 5 (26 forms: loop as while/&&/continue, the branch orders, p->bls == x). Left: after `p->bls = taballoc(..)` (store through the copy rr6 of rr0) the original reloads p from the frame for `p->bls->next = x`, ours takes rr0 (also y); forms (..)->next, (*p).bls, no cast: none (SWITCH_CANDIDATES K12); 2026-11-20: (*p).bls, p[0].bls, p->bls[0].next forms: all the same code (cparse builds one tree)"
+   "note": "open (DIFF 5, 2026-11-20): `for (y = x = p->bls; ..)` (the original stores x first, then y: no cross jump of the x store into the loop step, the test reloads x) and `if (x == p->bls) {bls branch} else {y->next branch}`: 32 -> 5 (26 forms: loop as while/&&/continue, the branch orders, p->bls == x). Left: after `p->bls = taballoc(..)` (store through the copy rr6 of rr0) the original reloads p from the frame for `p->bls->next = x`, ours takes rr0 (also y); forms (..)->next, (*p).bls, no cast: none (SWITCH_CANDIDATES K12); 2026-11-20: (*p).bls, p[0].bls, p->bls[0].next forms: all the same code (cparse builds one tree); 2026-11-20 exact: lone labels rl1, rl2 before the stores behind taballoc: codgen forgets its registers and reloads p / y as the original (K12 by source)"
   },
   "addpreheader": {
    "orig": "5:4790",

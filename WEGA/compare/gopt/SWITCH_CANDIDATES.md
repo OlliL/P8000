@@ -4,18 +4,17 @@ Owner 2026-11-20: during the source phase no new switch is built; a difference t
 classified here with its witnesses, and the search for source forms goes on. A candidate is only taken up after the
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
-without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K1, K17: a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
-The numbers are the DIFF lines of fnc.py (2026-11-20, 298 of 321 OK).
+without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
+The numbers are the DIFF lines of fnc.py (2026-11-20, 299 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
 |----|--------------------------|-----------------------|--------|
 | K4 | which copy of a common tail stays: the original the first, ours the later one (spopt xjump/comjump); several were source forms (the tail in both branches: indupdate, constfold, dotree; goto to the kept return copy: setsym, insrtlive) | vnumber (38), tprint (11; 8 forms all equal) | candidate |
 | K5 | a parameter copied before an operation that changes its register (`ld r1,r3; mult rr0,r5`; `ldl rr0,rr6`, `ld r3,r2`; cause 1) (scodgen); looks like OLD_D3KC of v0p (vc lacks it because of cas copyfile): a narrower form is the guess; 11 type/order/expression forms and 7 dead-code forms: none | mkconstopnd (2), affsize (3), setedges (12), canshare (14), testbit (22) | candidate |
 | K6 | a store of an 8 bit field of a frame struct goes directly to the slot (scodgen fixfld) | setsymtable (2; the form `((char *)&tq)[4]` is a guess) | candidate |
-| K7 | a pointer/global is reloaded where ours keeps it in a register (register cache; cause 5) | compress (11), eval (9), linkp (34), dominators (17) | candidate |
+| K7 | a pointer/global is reloaded where ours keeps it in a register (register cache; cause 5) | compress (11), eval (9), linkp (26), dominators (17) | candidate |
 | K8 | the pair of a temporary: rr4 against rr6 (cause 6); pattern: the original frees the word parameters in r6/r7 (and rr2 of a pointer parameter) for temporaries after their frame store, but keeps a live pointer parameter in rr6; ours the opposite | srchdflist (5), joinblk (9), prcgraph (11), chkfamindvar (9), pr (15), setposition (18), rmlabels (12, with a reload) | candidate |
 | K11 | a chain `a = b = x`: the original copies the value into another register first (`ld r2,r0`) | setsymtable (2; 13 forms) | candidate |
-| K12 | after a store through a copy (`ldl rr6,rr0; ldl @rr6,rr2`) or an ldir the original reloads the pointer from the frame, ours takes the register | updatelooplist (5) | candidate |
 | K13 | the then-block of an if is placed before its test, right behind an unconditional jump, the test jumps back to it (spopt codemove); dotree, aliasm, initaffect, buildgraph, clropt were source forms (the common statement in both branches; the then-block as `if (0) { l: ... }` at the loop top, reached by goto); for the loops: switch, loop forms, branch orders tried | chklpdefs (10: only the step block) | candidate |
 | K14 | a long `&`/`\|` with a frame operand: the original takes r1 for the low word (`ld r1,lo; and r3,r1`), ours overwrites r3 (`ld r3,lo; and r3,r3`: wrong code) (scodgen template) | constfold (2 places) | candidate (a bug of the rebuild) |
 | K15 | the EPU store of an int-to-double result is not merged with the store of the first case | constfold (1 instruction) | candidate |
@@ -24,7 +23,7 @@ The numbers are the DIFF lines of fnc.py (2026-11-20, 298 of 321 OK).
 Observation 2026-11-20 (K7 and K8 one mechanism, a guess): in every witness of K7 and K8 (linkp, dominators, eval, compress,
 joinblk, rmlabels, prcgraph, srchdflist, setposition, pr) ours keeps the address of a global pointer cached in rr6
 (`ldl rr0,rr6` later) and so takes rr4 (or r3, rr0) for the next temporary; the original loads the global again and
-reuses rr6 (or rr2). Source forms tried without effect: subscript and member syntax (a[b], b[a], *(a+b), (*p).m: one
+reuses rr6 (or rr2). Source forms tried without effect: a lone label in front of every statement (sweep), subscript and member syntax (a[b], b[a], *(a+b), (*p).m: one
 tree), operand order, dead stores to every parameter (and pairs), dead gotos. Best guess: the register cache of our
 scodgen keeps a global's address across the next expression where the original drops it.
 
