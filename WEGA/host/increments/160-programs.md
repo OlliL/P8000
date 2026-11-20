@@ -76,3 +76,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt mktree: the "popt layout" (cause 3) was a source form: the talloc block under the negated condition with return, the asg code behind it without a label: DIFF 632 -> 20.
 - 2026-11-20 gopt vnumber: the gotos of the draft replaced by structured code (inner switch with default, tails copied): DIFF 131 -> 38; the rest is cause 8 (popt keeps the later copy of a common tail).
 - 2026-11-20 gopt genquads: the end chain negated with a nested if: DIFF 50 -> 8. HINT for the layout DIFFs (cause 3): the negated condition with the nested if (mktree, genquads).
+- 2026-11-20 gopt writeil: the local array of the register symbols hid the global betatbl (draft error; regsym): DIFF 108 -> 6.

@@ -59,7 +59,7 @@ writeil()
 	NODE *p, *u, *v;
 	int i;
 	long pos;
-	struct sym *betatbl[12];
+	struct sym *regsym[12];
 
 	if (qflag > 1) {
 		printf("// writeil : quads to be converted to trees - \n");
@@ -67,7 +67,7 @@ writeil()
 		prtcounts();
 	}
 	for (i = 0; i <= 11; i++)
-		betatbl[i] = 0;
+		regsym[i] = 0;
 	tmpoff = 0;
 	for (q = qhead; q; q = q->next) {
 		ifline = q->pos.line;
@@ -81,8 +81,8 @@ writeil()
 			continue;
 		case 0x11:
 			for (i = 1; i <= 11; i++)
-				if (betatbl[i] && (((betatbl[i]->sflags >> 2) & 1) || betatbl[i]->sclass == 3))
-					printf("S%d\t\n", (betatbl[i]->sflags >> 4) & 0xfff);
+				if (regsym[i] && (((regsym[i]->sflags >> 2) & 1) || regsym[i]->sclass == 3))
+					printf("S%d\t\n", (regsym[i]->sflags >> 4) & 0xfff);
 			printf("}\n");
 			fseek(stdout, pos, 0);
 			printf("%04.4d", tmpoff);
@@ -171,17 +171,17 @@ writeil()
 			}
 			continue;
 		case 0x2b:
-			if (betatbl[q->a.w4] == 0)
+			if (regsym[q->a.w4] == 0)
 				continue;
-			printf("S%d\t\n", (betatbl[q->a.w4]->sflags >> 4) & 0xfff);
-			betatbl[q->a.w4] = 0;
+			printf("S%d\t\n", (regsym[q->a.w4]->sflags >> 4) & 0xfff);
+			regsym[q->a.w4] = 0;
 			continue;
 		case 0x28:
 			if (q->a.w4 > 7)
 				q->a.w4 -= 7;
 			if (q->b.b2 == 4) {
 				printf("R%d\t%d\t\n", q->a.w4, (symtab[q->b.w4].sflags >> 4) & 0xfff);
-				betatbl[q->a.w4] = symtab + q->b.w4;
+				regsym[q->a.w4] = symtab + q->b.w4;
 			} else if (q->b.b2 == 6 && betatbl[q->b.w4].p6 < 0) {
 				if (qflag > 2)
 					printf("// assigning S%d to offset %d\n", q->a.w4, tmpoff);

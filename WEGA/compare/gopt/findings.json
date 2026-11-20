@@ -1101,7 +1101,7 @@
    "kind": "proven",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "writeil(): the quads are written (4:4a8e .. 4:53ea, 12 cases of the quad op: 0x2e start of the function, 0x11 its end with the S lines and the temp size, 6 and 0x3b tables, 0x1a 0x1c labels, 9 and 0x32 the call arguments (pend: the list of the arguments), 0x28 0x29 0x2b the registers and the symbols). 630 instructions equal in number; open: the loop of case 0x32 (q = q->next)->op: the original reads q->op with the displacement (ld r2,rr2(#4)), ours increments the address first; tried the comma operator and for(;;). The printf of the R and T lines: the order of the arguments is (a, -offset, type). printf(\"\") before the second list of 0x3b is in the original (an empty format at 4:3950)"
+   "note": "writeil(): the quads are written (4:4a8e .. 4:53ea, 12 cases of the quad op: 0x2e start of the function, 0x11 its end with the S lines and the temp size, 6 and 0x3b tables, 0x1a 0x1c labels, 9 and 0x32 the call arguments (pend: the list of the arguments), 0x28 0x29 0x2b the registers and the symbols). (2026-11-20) the local array of the register symbols (regsym, name guessed) had the name of the global betatbl and hid it for the betatbl[..].x4/.p6 accesses: renamed, DIFF 108 -> 6. Open: the loop of case 0x32 (q = q->next)->op: the original reads q->op with the displacement (ld r2,rr2(#4)), ours increments the address first; tried the comma operator and for(;;). The printf of the R and T lines: the order of the arguments is (a, -offset, type). printf(\"\") before the second list of 0x3b is in the original (an empty format at 4:3950)"
   },
   "f4_4b36": {
    "orig": "4:4b36",
