@@ -2077,7 +2077,7 @@
    "kind": "proven",
    "module": "flow2.c",
    "file": "flow2.c",
-   "note": "open (DIFF 13, 6 attempts): (1) blks[pi]->next->c.w4 |= blks[pj]->next->c.w4: the original uses rr6 for the left side, ours rr4 (2 lines); (2) delquad(p) after nx = p->next: the original keeps p in rr2 over the store to the local nx, ours loads it again (cause 5, as pralvars). Names guessed; fna66e(a, b, c) a placeholder (4:a66e), params: y, x, 2 / pj, pi, 1 (the first argument goes to r7)"
+   "note": "open (DIFF 13, 6 attempts): (1) blks[pi]->next->c.w4 |= blks[pj]->next->c.w4: the original uses rr6 for the left side, ours rr4 (2 lines); (2) delquad(p) after nx = p->next: the original keeps p in rr2 over the store to the local nx, ours loads it again (cause 5, as pralvars). Names guessed; fna66e(a, b, c) a placeholder (4:a66e), params: y, x, 2 / pj, pi, 1 (the first argument goes to r7) (2026-11-20) left: (1) `|=` of c.w4 through rr6 in the original, rr4 in ours (a = a | b: 24); (2) the reload of p at the switch of the edge loop (label: the original reloads, ours forwards); 3 forms of the delquad loop (while, for(;;) break, for with break): all 12"
   },
   "blkempty": {
    "orig": "4:a13c",
