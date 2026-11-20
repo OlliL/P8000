@@ -127,7 +127,7 @@ writeil()
 			continue;
 		case 0x32:
 			pend = 0;
-			while ((q = q->next)->op != 0x35) {
+			while (q = q->next, q->op != 0x35) {
 				if (q->op != 0x34)
 					mktree(q);
 				else {

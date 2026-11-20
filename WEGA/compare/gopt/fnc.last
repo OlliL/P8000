@@ -1,3 +1,15 @@
 {
-"isebbend": "OK"
+"writeil": "OK",
+"mktree": "DIFF 8 (object 807 instructions, original 806)",
+"addrof": "OK",
+"needustar": "OK",
+"mkleaf": "OK",
+"tlfind": "OK",
+"cleartrees": "OK",
+"wrline": "OK",
+"wrtree": "OK",
+"treeeq": "OK",
+"asgfold": "OK",
+"prtcounts": "OK",
+"itfind": "OK"
 }
