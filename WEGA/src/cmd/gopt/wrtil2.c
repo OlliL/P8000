@@ -407,11 +407,12 @@ mktree(q)
 		t->in.op = FREE;
 	} else
 		wrline(p);
-	if (p->in.left->in.op == TEMP && asgop(p->in.op)) {
+	if (p->in.left->in.op != TEMP || !asgop(p->in.op))
+		tfree(p);
+	else {
 		tfree(p->in.right);
 		p->in.op = FREE;
-	} else
-		tfree(p);
+	}
 }
 
 /* a name that is not a pointer: its address is taken */
