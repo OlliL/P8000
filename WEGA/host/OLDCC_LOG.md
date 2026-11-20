@@ -1592,4 +1592,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   tried: OLD_D3JL (canopt 20 forms), OLD_D2FA (clearblocks 10, solvereach 11, pralvars 9), OLD_D24L (no C form gives a
   frame lda without the mask), OLD_D2K (about 30). An experiment OLD_D3JC (a call drops the parameters of r4..r7 from
   earlier jump records: prquad, cmwalk) lost 8 functions and was dropped; prquad: 14 forms tried, open.
+- gopt, OLD_D2FA corrected: a register that had loaded an auto kept its frame name after a store of a new value to the
+  auto (the template of `p = p->r` names nothing, rnassign is called with the OREG first), and D2FA then found the stale
+  register: wrong code (asgfold read the old p). Now a store to a frame place clears that name in all registers before
+  allo (the clearing after expand removed the name rnassign had just given: killdefs lost). gopt 255 OK, asgfold 3 -> 2,
+  matrix vc +0.
 

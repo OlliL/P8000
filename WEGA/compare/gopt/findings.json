@@ -1494,7 +1494,7 @@
    "kind": "proven",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "open: one instruction: `p->in.right->in.op` is loaded by the original with ldl rr0,rr2(#0x12) (displacement), ours with add r1,#0x12 and an indirect load; x = x op y becomes x op= y (op + 1); tried `op = (p = *pp)->in.right->in.op` and other orders"
+   "note": "open (DIFF 2): 10 source forms tried 2026-11-20 (p->in.op++, ++, +=, chains, *pp first, (p = ..)->in.op, ASG op, return): none; with OLD_D2FA (stale frame names now cleared) the copy ldl rr2,rr0 matches; left: `*pp = p` reloads p in the original (the name went to the copy rr6 and was lost by the store through it), ours keeps p in rr0"
   },
   "prtcounts": {
    "orig": "4:6b66",
