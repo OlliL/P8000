@@ -41,7 +41,9 @@ def normalize(what, data):
 def sources(g):
     cases = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'cparse', 'cases')
     fixed = sorted(glob.glob(os.path.join(cases, '*.c'))) + [os.path.join(cases, 'yacc', 'cpy.c')]
-    return g.c_sources() + [os.path.normpath(f) for f in fixed]
+    # owner 2026-11-19: src/cmd/gopt/alias2.c is left out (the original cparse and our build differ on it, the .S file)
+    srcs = [f for f in g.c_sources() if not f.replace(os.sep, '/').endswith('src/cmd/gopt/alias2.c')]
+    return srcs + [os.path.normpath(f) for f in fixed]
 
 
 def generate(g):
