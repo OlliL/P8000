@@ -132,55 +132,63 @@ struct quad *q;
 				updateopnd(vb->val, &q->b, 1);
 				vb = vnfind(&q->b);
 			}
-			if (!va->cst)
-				goto L44c;
-			if (vb != 0 && !vb->cst)
-				goto L44c;
-			switch (q->op) {
-			case 2: case 3: case 25:
-				goto L44c;
-			case 13:
-				if (q->c.w0 == 7 || q->c.w0 == 6)
-					goto L44c;
-			}
-			tmp = constfold(q);
-			vd = vnfind(&tmp);
-			vc = vnfind(&q->c);
-			vc->val = vd->val;
-			vc->cst = 1;
-			vc->dead = 1;
-			if (q->c.b2 == 3)
-				goto L35a;
-			q->op = 60;
-			q->a = tmp;
-L392:			q->b.b2 = 0;
-L39c:			checkuse(q);
-			if (q->c.b2 != 8 && q->c.b2 != 6)
-				continue;
-L3c6:			clear(q, 1);
-			addstore(q);
-			continue;
-L35a:			q = delquad(q);
-			continue;
-L3e2:			vc = vnfind(&q->c);
-			vc->val = va->val;
-			vc->cst = va->cst;
-			vc->dead = 1;
-			if (q->c.b2 == 3)
-				goto L35a;
-			q->op = 60;
-			goto L392;
-L44c:			if (identop(q))
-				goto L3e2;
-			vc = vnfind(&q->c);
-			vx = exprfind(q, &fl);
-			vc->val = vx->val;
-			if (fl != 0) {
+			if (va->cst && (vb == 0 || vb->cst))
+				switch (q->op) {
+				case 2: case 3: case 25:
+					break;
+				case 13:
+					if (q->c.w0 == 7 || q->c.w0 == 6)
+						break;
+				default:
+					tmp = constfold(q);
+					vd = vnfind(&tmp);
+					vc = vnfind(&q->c);
+					vc->val = vd->val;
+					vc->cst = 1;
+					vc->dead = 1;
+					if (q->c.b2 == 3) {
+						q = delquad(q);
+						continue;
+					}
+					q->op = 60;
+					q->a = tmp;
+					q->b.b2 = 0;
+					checkuse(q);
+					if (q->c.b2 == 8 || q->c.b2 == 6) {
+						clear(q, 1);
+						addstore(q);
+					}
+					continue;
+				}
+			if (identop(q)) {
+				vc = vnfind(&q->c);
+				vc->val = va->val;
+				vc->cst = va->cst;
 				vc->dead = 1;
-				if (q->c.b2 == 3)
-					goto L35a;
+				if (q->c.b2 == 3) {
+					q = delquad(q);
+					continue;
+				}
+				q->op = 60;
+				q->b.b2 = 0;
+			} else {
+				vc = vnfind(&q->c);
+				vx = exprfind(q, &fl);
+				vc->val = vx->val;
+				if (fl != 0) {
+					vc->dead = 1;
+					if (q->c.b2 == 3) {
+						q = delquad(q);
+						continue;
+					}
+				}
 			}
-			goto L39c;
+			checkuse(q);
+			if (q->c.b2 == 8 || q->c.b2 == 6) {
+				clear(q, 1);
+				addstore(q);
+			}
+			continue;
 		case 33: case 47:
 			va = vnfind(&q->a);
 			if (va->dead) {
@@ -196,15 +204,17 @@ L44c:			if (identop(q))
 			vc->cst = va->cst;
 			if (q->c.b2 != 8)
 				vc->dead = va->cst;
-			if (q->c.b2 != 4 && q->c.b2 != 6)
-				goto L3c6;
-			if (s4d80 > 3) {
-				printf("// ebbo :");
-				prquad(q);
-				printf("//   value = %d\n", va->val);
+			if (q->c.b2 == 4 || q->c.b2 == 6) {
+				if (s4d80 > 3) {
+					printf("// ebbo :");
+					prquad(q);
+					printf("//   value = %d\n", va->val);
+				}
+				vc->val = va->val;
 			}
-			vc->val = va->val;
-			goto L3c6;
+			clear(q, 1);
+			addstore(q);
+			continue;
 		case 24: case 30:
 			va = vnfind(&q->a);
 			if (va->dead) {
@@ -217,14 +227,18 @@ L44c:			if (identop(q))
 				if (nostore(vx->q, q)) {
 					vc->val = vx->val;
 					vc->dead = 1;
-					if (q->c.b2 == 3)
-						goto L35a;
+					if (q->c.b2 == 3) {
+						q = delquad(q);
+						continue;
+					}
 				} else
 					exprenter(q);
 			}
 			checkuse(q);
-			if (q->c.b2 == 8)
-				goto L3c6;
+			if (q->c.b2 == 8) {
+				clear(q, 1);
+				addstore(q);
+			}
 			continue;
 		case 51:
 			stk[n++] = q;
@@ -267,11 +281,14 @@ L44c:			if (identop(q))
 				vc = vnfind(&q->c);
 				vc->val = va->val;
 				vc->dead = 1;
-				goto L35a;
+				q = delquad(q);
+				continue;
 			}
 			if (q->c.b2 != 3) {
 				checkuse(q);
-				goto L3c6;
+				clear(q, 1);
+				addstore(q);
+				continue;
 			}
 			checkuse(q);
 			continue;
