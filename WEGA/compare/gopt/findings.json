@@ -3779,11 +3779,11 @@
   "orderbl": {
    "orig": "5:4f56",
    "size_orig": 180,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 2): `if ((x = x->next) == 0)` (x an auto): the original copies rr0 into rr2 after the store (ldl rr2,rr0; testl rr0), sccvc does not; OLD_D2AP covers only a global target (an auto target in deletblk, lpinv has no copy); tried !(x = ..), x = ..; if (x == 0), break, != 0 continue, a cast of 0 (2026-11-20) the copy also comes from the separate statements in deltmplpdefs; for orderbl (x an auto in a compare) not found yet"
+   "note": "masked with vc OLD_D2AV (the copy of OLD_D2A for a pointer in rr0 wanted in a temporary register: (x = x->next) == 0 gives ldl rr2,rr0; testl rr0); 5 source forms tried before"
   },
   "proceslp": {
    "orig": "5:500a",
@@ -3829,11 +3829,11 @@
   "ceval": {
    "orig": "5:556a",
    "size_orig": 122,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 5): ours has ldl rr2,rr0 after the store of l and m (the long result of the int call) and subl rr2,m from memory where the original uses the cached rr0; the case order of the source is 1, 48, 34, 44, 14/45 (the dispatch list is sorted)"
+   "note": "masked with vc OLD_D2AV (OLD_D2A without the copy of a long: (l = ispow2(x)) > 0 has no ldl rr2,rr0); 7 source forms tried before (0L, 0 < .., (long) casts, nested ifs, m < l, + -m, declaration order): none"
   },
   "f5_55e4": {
    "orig": "5:55e4",

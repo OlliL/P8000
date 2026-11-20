@@ -1615,4 +1615,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - gopt, vc `OLD_D3PL`: tabfree (9 source forms, none): the pointer parameter p under `(long)p` is a NAME of type long, regforsym
   refused the pair rr4 (type differs, D3PWORD of vc: pointers only). A pointer parameter cast to long is taken: tabfree exact,
   nothing lost, matrix vc +0.
+- gopt, vc `OLD_D2AV`: ceval (7 forms) and orderbl (5 forms): OLD_D2A (no witness in cas) copies a long in the original never,
+  a pointer in rr0 only when the cookie asks for a temporary register (a compare: 010036; the inner assignment of a chain
+  has 01312 and no copy). ceval, orderbl exact, nothing lost: 264 OK; matrix vc +0.
 

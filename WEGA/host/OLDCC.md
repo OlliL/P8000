@@ -179,7 +179,7 @@ neutral on cas when added, alone and all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA` and `OLD_D3PL` (gopt; all neutral on cas);
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL` and `OLD_D2AV` (gopt; all neutral on cas);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
   `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
 - spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S`, `OLD_D49`, `OLD_D50`, `OLD_D51` and `OLD_D64` (gopt, neutral on
@@ -318,6 +318,10 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - vc `OLD_D24L` (local3.c, ZL): the address of a frame place (a local struct, the argument area at 0(fp)) is loaded by
   `lda` without the mask `and rN,#%7f00`. /lib/gopt has 31 such lda (struct copies to a local, struct arguments), none with
   the mask; sccvc masked all of them. No source form: a struct assignment is the only C that gives `lda; ldk; ldir`. Neutral on cas.
+- vc `OLD_D2AV` (match3.c, changes OLD_D2A, which has no witness in cas): the copy of the value of an assignment into a new
+  pair only for a pointer in rr0 that is wanted in a temporary register (cookie INTAREG: `(x = x->next) == 0`, orderbl),
+  not for a long (ceval `(l = ispow2(x)) > 0`) and not for the inner assignment of a chain (`a0e0 = prev = t->next`:
+  lpinv, deletblk, delindvar). Neutral on cas.
 - vc `OLD_D3PL` (regs3.c regforsym, with OLD_D3P): a pointer parameter used under a cast to long is taken from its pair
   (the segmented D3PWORD only accepts casts between pointers). /lib/gopt tabfree `((long)p >> 24) & 0x7f`: `ldl rr2,rr4`;
   9 source forms without it, none. Neutral on cas.
