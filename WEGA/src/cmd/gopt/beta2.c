@@ -171,7 +171,8 @@ int x;
 eqopnd(a, b)
 struct qa *a, *b;
 {
-	if (a->b2 == b->b2 && a->w4 == b->w4)
-		return 1;
+	if (a->b2 == b->b2)
+		if (a->w4 == b->w4)
+			return 1;
 	return 0;
 }

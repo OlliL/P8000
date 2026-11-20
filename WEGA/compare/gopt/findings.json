@@ -4989,11 +4989,11 @@
   "eqopnd": {
    "orig": "4:fc06",
    "size_orig": 52,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "beta2.c",
    "file": "beta2.c",
-   "note": "open (DIFF 7): the original spills only b (ldl 0(r15),rr4) and uses rr4 as temp; ours spills a and b (ldm) and uses rr6 (tried register a, swapped operands, ?:)"
+   "note": "masked by the source form of two nested if (if (a->b2 == b->b2) if (a->w4 == b->w4) return 1;), not &&: the && condition gave other registers (b's pair rr4 for the second address, a stays in rr6 and needs no home)"
   },
   "sameopnd": {
    "orig": "4:e1d0",
