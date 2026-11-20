@@ -1629,4 +1629,8 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - gopt, vc `OLD_D2PP`: setlbit (9 forms, none): no pair free for the address copy; regjam took the idle pair rr6 of the
   pointer parameter v, the original gives r5 (parameter i) back and takes rr4. Unconditional: 268 (addquad, include,
   insertquad lost: the original takes the idle rr2 there); by weight against regjam's pair: 271, nothing lost; matrix vc +0.
+- gopt, OLD_D3JC tried again (a call drops r4..r7 parameters from earlier jump records): prquad, cmwalk exact but tfree1,
+  addstore, transfer, prvec, allocvec, tabfree, addblk, mkconstopnd lost (266). tfree1 (`if (p == 0) cerror(..); else p->..`)
+  keeps p in the original although its shape is that of prquad (`if (q == 0) { printf(..); return; }`, q reloaded): the
+  difference is not the call. Dropped; open.
 
