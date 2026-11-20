@@ -162,12 +162,12 @@ aliasm()
 	}
 	n = nadr;
 	nadr = nal;
-	taballoc(nadr * 2, 6);
+	taballoc((unsigned)nadr * 2, 6);
 	for (i = 0; i < n; i++)
 		altab[nal++] = B[i];
 	n = nptr;
 	nptr = nal;
-	taballoc(nal * 2, 6);
+	taballoc((unsigned)nptr * 2, 6);
 	for (i = 0; i < n; i++)
 		altab[nal++] = A[i];
 	if (aflag)
