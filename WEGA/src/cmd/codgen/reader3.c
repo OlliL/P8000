@@ -668,11 +668,14 @@ delay(p)
 	/* vc (gopt): in a condition with && or || no pair is found by its frame place (killdefs) */
 	d2fanone = p->in.op == CBRANCH && d2faandor(p->in.left);
 	/* vc (gopt): an automatic variable the statement assigns to is not known in the pair of its frame place from its start on */
-	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname && p->in.left->in.sname->sclass == 1) {
+	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname &&
+	    (p->in.left->in.sname->sclass == 1 || p->in.left->in.sname->sclass == 9)) {
 		register struct rs *n;
+		register struct sym *f;
 
+		f = p->in.left->in.sname->sclass == 9 && (p->in.left->in.sname->sflags >> 3 & 1) == 1 ? fpsym2 : fpsym1;
 		for (n = rsuse; n; n = n->next)
-			if (n->cls == 3 && n->sym == fpsym1 && n->off == p->in.left->in.sname->soffset / 8)
+			if (n->cls == 3 && n->sym == f && n->off == p->in.left->in.sname->soffset / 8)
 				n->sym = 0;
 	}
 #endif

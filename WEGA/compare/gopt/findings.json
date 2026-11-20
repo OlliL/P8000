@@ -1659,11 +1659,11 @@
   "tmpsearch": {
    "orig": "4:7a7e",
    "size_orig": 312,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "open: (1) the original reads p->op behind p = p->next with the displacement form (ldl rr2,rr0; ld r2,rr2(#4)), ours increments the address first (the same as writeil case 0x32); (2) the struct assignment s = p->b has the redundant and behind the lda in ours only (see genquads). The original calls prquad(\"p:\\n\") and prquad(\"q:\\n\") with the strings (the debug call is wrong in the original, kept). tmpsearch(p, tmpno, q): the first int goes to r5, the second pointer to rr2 (r4 stays unused)"
+   "note": "masked with vc OLD_D2FA extended to parameters (p = p->next: the pair of the computed value is found for p->op); 8 source forms tried before ((p = p->next)->op, ?:, != 7 swapped, (*p).op, &&, for(;;), declarations): none"
   },
   "fndparm": {
    "orig": "4:7bb6",

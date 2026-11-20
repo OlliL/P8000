@@ -1604,4 +1604,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - gopt: vc OLD_D10 narrowed: the immediate shift by one only for a right shift (its witness, cas asmrel, is `>> 1`);
   gopt lpow2 `r = r << 1` (7 source forms, none) goes through a register as every constant long shift of /lib/gopt.
   Matrix vc: OLD_D10 row unchanged, baseline 0. addblk exact by a source form (the ?: with the lp case first).
+- gopt, OLD_D2FA for parameters: tmpsearch (8 source forms, none). All parameters found by their frame name: 254
+  (delquad, delrun, insertquad, movequad, readsyms, addblk lost: the original reloads a parameter it had loaded); only in
+  pairs named by an assignment (flag 0x0400 set by rnassign, cleared where getreg names a register, copied by rmove): 259
+  (delrun lost: `q = r`); not when the assignment copies a variable (right NAME, REG or frame OREG): 260, nothing lost.
+  Matrix vc +0, the real cas build byte-identical.
 

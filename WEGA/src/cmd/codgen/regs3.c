@@ -16,6 +16,9 @@ extern void fixtemp();
 extern NODE *foldadd();
 extern struct sym *fpsym1;
 extern struct sym *fpsym2;
+#ifdef OLD_D2FA
+int d2facopy;	/* OLD_D2FA: the assignment matched now copies a variable */
+#endif
 extern long frame0;
 extern NODE *getlr();
 extern int getreg();
@@ -604,6 +607,13 @@ rnassign(p1, p2)
 			a->off = 0;
 		}
 	} else {
+#ifdef OLD_D2FA
+		/* OLD_D2FA: named by the assignment of a computed value (not the copy of a variable: delrun q = r) */
+		if (!d2facopy)
+			a->flags |= 0x0400;
+		else
+			a->flags &= ~0x0400;
+#endif
 		a->sym = p2->in.sname;
 		a->off = p2->tn.lval;
 	}
@@ -908,11 +918,14 @@ fixname(p)
 #ifdef OLD_D2FA
 	/* vc (gopt): an automatic pointer or long is also found in the pair an assignment named with its frame place
 	   (rnassign: ~L1+off), when no register is wanted for it (an argument is loaded from the frame) */
-	if (p->in.sname->sclass == 1 && p->in.rall == NOPREF && !d2fanone) {
+	if ((p->in.sname->sclass == 1 || p->in.sname->sclass == 9) && p->in.rall == NOPREF && !d2fanone) {
 		register struct rs *n;
+		register struct sym *f;
 
+		f = p->in.sname->sclass == 9 && (p->in.sname->sflags >> 3 & 1) == 1 ? fpsym2 : fpsym1;
 		for (n = rsuse; n; n = n->next)
-			if (n->cls == 3 && n->sym == fpsym1 && n->off == p->in.sname->soffset / 8 && rclass(p->in.type, n->reg) == 3) {
+			if (n->cls == 3 && n->sym == f && n->off == p->in.sname->soffset / 8 && rclass(p->in.type, n->reg) == 3 &&
+			    (p->in.sname->sclass == 1 || (n->flags & 0x0400))) {
 				n->busy = 1;
 				p->in.op = REG;
 				p->tn.rval = n->reg;

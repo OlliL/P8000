@@ -405,6 +405,9 @@ regjam(cls, reg, flag, sym)
 			if ((reg == -1 || reg == n->reg) && n->busy <= 0) {
 				n->sym = sym;
 				n->off = sym ? sym->soffset : 0;
+#ifdef OLD_D2FA
+		n->flags &= ~0x0400;	/* (not named by an assignment) */
+#endif
 				n->flags &= ~0x8000;
 				n->kind = 8;
 				n->busy = 1;
@@ -475,6 +478,9 @@ regjam(cls, reg, flag, sym)
 			n->busy = 1;
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
+#ifdef OLD_D2FA
+		n->flags &= ~0x0400;	/* (not named by an assignment) */
+#endif
 			n->flags &= ~0x8000;
 			n->kind = 8;
 		ret:
@@ -581,6 +587,9 @@ getreg(cls, reg, flag, sym)
 			n->flags &= ~0x8000;
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
+#ifdef OLD_D2FA
+		n->flags &= ~0x0400;	/* (not named by an assignment) */
+#endif
 			n->kind = 8;
 		found:
 			n->busy = 1;
@@ -640,6 +649,9 @@ getreg(cls, reg, flag, sym)
 			n->flags &= ~0x8000;
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
+#ifdef OLD_D2FA
+		n->flags &= ~0x0400;	/* (not named by an assignment) */
+#endif
 			n->kind = 8;
 			goto found;
 		}
@@ -698,6 +710,9 @@ getreg(cls, reg, flag, sym)
 			n->flags &= ~0x8000;
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
+#ifdef OLD_D2FA
+		n->flags &= ~0x0400;	/* (not named by an assignment) */
+#endif
 			n->kind = 8;
 			goto found;
 		}
@@ -734,6 +749,9 @@ getreg(cls, reg, flag, sym)
 		n->flags &= ~0x8000;
 		n->sym = sym;
 		n->off = sym ? sym->soffset : 0;
+#ifdef OLD_D2FA
+		n->flags &= ~0x0400;	/* (not named by an assignment) */
+#endif
 		n->kind = 8;
 		w = rsuse;		/* take the free node n out of rsfree and put it on the front of rsuse */
 		rsuse = n;
@@ -808,6 +826,9 @@ getreg(cls, reg, flag, sym)
 			n->flags &= ~0x8000;
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
+#ifdef OLD_D2FA
+		n->flags &= ~0x0400;	/* (not named by an assignment) */
+#endif
 			n->kind = 8;
 			w = rsuse;
 			rsuse = n;

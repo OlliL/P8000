@@ -20,7 +20,10 @@ extern int d2vfirst();
 extern int fldoff;
 extern int fldshf;
 extern int fldsz;
-extern struct sym *fpsym1;
+extern struct sym *fpsym1, *fpsym2;
+#ifdef OLD_D2FA
+extern int d2facopy;
+#endif
 extern NODE *getlr();
 extern int getreg();
 extern void hopcode();
@@ -415,11 +418,14 @@ cand:
 			return q->rewrite;
 #ifdef OLD_D2FA
 		/* vc (gopt): a store to a frame place: no register holds its old value any more (before allo: rnassign names the new one) */
-		if (asgop(p->in.op) && p->in.left->in.op == OREG && p->in.left->tn.rval == 15 && p->in.left->in.sname == fpsym1) {
+		d2facopy = p->in.op == ASSIGN && (p->in.right->in.op == NAME || p->in.right->in.op == REG ||
+		    (p->in.right->in.op == OREG && p->in.right->tn.rval == 15));
+		if (asgop(p->in.op) && p->in.left->in.op == OREG && p->in.left->tn.rval == 15 &&
+		    (p->in.left->in.sname == fpsym1 || p->in.left->in.sname == fpsym2)) {
 			register struct rs *o;
 
 			for (o = rsuse; o; o = o->next)
-				if (o->sym == fpsym1 && o->off == p->in.left->tn.lval)
+				if (o->sym == p->in.left->in.sname && o->off == p->in.left->tn.lval)
 					o->sym = 0;
 		}
 #endif

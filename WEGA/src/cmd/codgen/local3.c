@@ -1223,6 +1223,9 @@ tfound:
 ffound:
 	t->sym = f->sym;
 	t->off = f->off;
+#ifdef OLD_D2FA
+	t->flags = (t->flags & ~0x0400) | (f->flags & 0x0400);
+#endif
 	t->kind = f->kind;
 copied:
 	if (type == 6 || type == 7)
