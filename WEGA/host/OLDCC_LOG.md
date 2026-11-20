@@ -1624,4 +1624,6 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - gopt, OLD_D2FA refined: linkreachdefs finds q in rr0 inside `p != q && (p->c.b2 == 8 || q->c.b2 == 8)` but compares q of
   `p != q` from memory. The lookup is now only for a name matched alone (the LTYPE case of match), and the condition rule only
   for || at the top (killdefs). linkreachdefs, asgfold exact: 269 OK, nothing lost; matrix vc +0.
+- gopt, popt experiments dropped (2026-11-20): no cross jump into a later copy (insrtlive, cause 8): 267 -> 218; no branch
+  reversal over a jump back to a loop head (srchdef, cause 9): 269 -> 253. Both causes stay open.
 
