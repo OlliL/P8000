@@ -647,7 +647,6 @@ struct quad *q;
 unsigned *vec;
 {
 	int k;
-	char *s;
 
 	if (s4d86 > 2) {
 		printf("notlive(q=%x)\n", q);
@@ -665,10 +664,8 @@ unsigned *vec;
 			k = bitpos(q, 1, 6);
 	} else
 		cerror("notlive(): illegal rslt opnd");
-	if (s4d86 > 3) {
-		s = (!tstlbit(vec, k) != 0) ? "TRUE" : "FALSE";
-		printf("notlive() = %s\n", s);
-	}
+	if (s4d86 > 3)
+		printf("notlive() = %s\n", (!tstlbit(vec, k) != 0) ? "TRUE" : "FALSE");
 	return !tstlbit(vec, k);
 }
 
