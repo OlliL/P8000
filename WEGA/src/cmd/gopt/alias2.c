@@ -524,6 +524,11 @@ checkops(q, mode)
 			if (s.b2 != 4 || (q->a.w0 & 0x30) != 0x10)
 				goto fail;
 			goto success;
+		if (0) {
+lft:
+			opnd70c8 = *&t;
+			goto r1;
+		}
 		case 2:
 			hist[n++] = 2;
 			if (!found) {
@@ -578,7 +583,10 @@ checkops(q, mode)
 		success:
 			if (aflag > 2)
 				prquad(q);
-			opnd70c8 = *(found ? &t : &s);
+			if (found)
+				goto lft;
+			opnd70c8 = *&s;
+r1:
 			return 1;
 		}
 		if (aflag > 2) {

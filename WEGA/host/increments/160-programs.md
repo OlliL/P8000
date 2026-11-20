@@ -97,3 +97,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: setsym exact (K4/K13 by source: the last case jumps by goto to the return 1 of default and the return 0 of case 1, so popt keeps those copies); 292 of 321 OK.
 - 2026-11-20 gopt: insrtlive exact (goto r1 to the return 1 copy the original keeps); 293 of 321 OK.
 - 2026-11-20 gopt: chklpdefs 51 -> 10 (the then-part and the ternary test as if (0) blocks reached by goto; left: the step block); tprint: 14 more forms, none.
+- 2026-11-20 gopt: checkops 21 -> 15 (the &t arm of the ?: as if (0) block behind the post code, its tail by goto r1); left: the reload of mode and q (K1/K17).
