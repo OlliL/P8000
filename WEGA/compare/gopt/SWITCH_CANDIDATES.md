@@ -24,3 +24,23 @@ Status: `candidate` (not built), `built` (exists, its witnesses get source forms
 | K15 | the EPU store of an int-to-double result is not merged with the store of the first case | constfold (1 instruction) | candidate |
 | K16 | compiler error of our scodgen: `opnd.w4 = p->in.sname - symtab` (pointer difference of a struct member through a parameter pointer) stops with `rbusy: register to be made busy not found on rslist`; the original compiled it (operand has that code) | operand (28; 7 forms of the difference all stop with rbusy, also with the scodgen of before D3S) | candidate (a bug of the rebuild, not a switch) |
 | K17 | a word parameter is not taken from its register after the entry store (the original compares/loads it from the frame; may be the common cause of K1 for words, K8 for r6/r7, K9) | deledge (4: `cp r2,0(r15)` against `cp r5,@rr2`), checkops (21: mode and q at the else if; the rest: the &t arm of opnd70c8 behind an unconditional jump, K13) | candidate (to check against the exact functions that use a word parameter in its register) |
+
+## The switches built for gopt and their witnesses (measured 2026-11-20)
+
+All are +0 on cas (OLDCC_SWITCHES_VC.md, which measures only cas: gopt is not in the matrix). Measured: scodgen (spopt for
+D64) built without the switch, fnc.py over all gopt functions. Witness = exact only with the switch.
+
+| Switch | Witnesses | Other effect without it |
+|--------|-----------|-------------------------|
+| OLD_D3JB | 1: prquad | - |
+| OLD_D3PL | 1: tabfree | - |
+| spopt OLD_D64 | 1: domspace | operand 28>29, rmlabels 12>14 |
+| OLD_D2AV | 2: ceval, orderbl | vnumber 38>39 |
+| OLD_D2XP | 2: fndparm, nodeno | checkops 21>37 |
+| OLD_D2PP | 2: clrlbit, setlbit | checkops 21>55, chkfamindvar 9>13, deledge 4>7 |
+| OLD_D3S (with scparse) | 2: mkleaf, qmkstore | operand 28>30; both exact without it by dead code at the start (`if (0) a = 0;`): to be replaced |
+| OLD_D3JL | 3: canopt, denorm, eqopnd | - |
+| OLD_D24L | 6: fndparm insrtlpdef insrtopstmp insrtstmpmove savecolors tmpsearch | aliasm, checkops, fillindvar, genquads, initaffect, setsymtable, vnumber worse |
+| OLD_D2FA | 9: asgfold clearblocks linkreachdefs liveonexit marklpblocks solvelive solvereach srchdef tmpsearch | updatelooplist 5>9; better without it: genquads 8>6, mktree 8>4, rmlabels 12>11 |
+| OLD_D2K | 11: addallist addblk addhdrlist alloclpdef asgfold betainit betanew include initallist labquad mkleaf | mktree, setedges worse |
+| scparse OLD_D12R | data only (constfold's static return area) | not measurable by fnc.py |
