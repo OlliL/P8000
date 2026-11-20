@@ -191,8 +191,17 @@ sectadd( sec, n ) long n; { /* n more bytes in the section sec */
 	else sectsize[sec] += n;
 	}
 
+#ifdef OLD_D3S
+int d3sstat;	/* vc: a static was declared in the function body: codgen forgets the parameter registers */
+#endif
 bstart( off, regs, fregs ) long off; { /* the head of a function body in the .I file */
 	++ftnno;
+#ifdef OLD_D3S
+	if( d3sstat ){
+		fprintf( outfile, "#static\n" );
+		d3sstat = 0;
+		}
+#endif
 	putc( '[', outfile );
 	fprintf( outfile, "%ld\t", off );
 	fprintf( outfile, "%d\t", regs );

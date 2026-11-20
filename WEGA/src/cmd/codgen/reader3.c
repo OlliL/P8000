@@ -361,7 +361,11 @@ reread:
 		}
 #endif
 #ifdef OLD_D3J
+#ifdef OLD_D3JB
+		if (d3jdead)	/* vc: the end of a block counts too (prquad: return; } behind the jump) */
+#else
 		if (d3jdead && c != ']')
+#endif
 			d3jdead--;	/* 1: the record before this one was a jump */
 #endif
 		switch (c) {
@@ -491,6 +495,11 @@ reread:
 			nlcheck();
 			continue;
 		case '#':
+#ifdef OLD_D3S
+			if ((ch = getchar()) == 's')	/* vc: #static from scparse: a static in the body, the parameters are not known */
+				rfreeall(1);
+			if (ch != '\n')
+#endif
 			while ((ch = getchar()) != '\n')
 				;
 			continue;

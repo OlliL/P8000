@@ -51,13 +51,13 @@ Tools (use these, they print little; never dump disassemblies or diffs into the 
 - build: `cd src/cmd/gopt; PATH=/home/olivleh1/git/P8000/tmp/tmp/wbin:$PATH make gopt` (wbin holds the wrappers of cas, sld, sccvc ... under z8k-emu; fnc.py takes src/cmd/gopt/FILE.c; findings.json key `note`, not `notes`; a case block has "note": "case block of NAME" (or "tail of NAME")).
 
 ## Progress (2026-11-20, overnight run)
-fnc.py over all modules: 273 of 321 OK (was 233 of 322; nullfn removed: it is __fltuse of the libc member fltioc).
+fnc.py over all modules: 276 of 321 OK (was 233 of 322; nullfn removed: it is __fltuse of the libc member fltioc).
 Data (step 3): equal but for the almap strings (host/recon/datadiff.py, code addresses masked). Libc (step 2): equal masked
 (host/recon/libcmp.py); fseek..getw go to seg 4 by first fit only when the code sizes are exact. Stack segment: gopt links by
 sldo (src/cmd/sld make old, -DOLD_SLDS), header structure as the original. bss from 8:0004 (environ at 8:0000).
 New vc switches (all +0 on cas, the real cas build byte-identical; host/OLDCC.md vc section, the source forms tried for each in
 findings.json/OLDCC_LOG.md): codgen OLD_D2K, OLD_D3JL, OLD_D24L, OLD_D2FA, OLD_D3PL, OLD_D2AV (changes D2A), OLD_D2XP (changes
-D2X), OLD_D2PP; OLD_D10 narrowed; spopt OLD_D64; scparse OLD_D12R. The slibc-v12 cut members by sccvc (.addr: bit 31).
+D2X), OLD_D2PP, OLD_D3JB (] between a jump and its label), OLD_D3S (a static in the body: parameters in the frame, with scparse's #static); OLD_D10 narrowed; spopt OLD_D64; scparse OLD_D12R, OLD_D3S. The slibc-v12 cut members by sccvc (.addr: bit 31).
 Source forms found: mkhash, mkdomtree, deltmplpdefs, addblk, addedge, eqopnd, srchdef, freelist, main, notlive, checkops order,
 operand's opnd/mkleaf's statics (data), init2 s4d98.
 HINTS: the author wrote `continue` in loops (main, srchdef), the loop branch first (freelist), ?: for two-value assignments
@@ -66,7 +66,7 @@ function automatically. After a compiler change: `rm *.o` in src/cmd/gopt before
 the codgen Makefile has no oldcc.h dependency (`rm build/segvc/*.o`).
 Open: popt layout (cause 3: which block codemove takes, mktree 632, vnumber, settmptable, setsymtable, writeil, genquads ...;
 cause 8: which copy of a common tail stays, insrtlive, tprint, indupdate; dropped experiments in OLDCC_LOG.md), parameters not
-restored at labels after calls (prquad, cmwalk, checkops), entry store of a word parameter (tstlbit), word parameter compared
+restored at labels (cmwalk, checkops; two OLD_D3JN rules dropped, OLDCC_LOG.md), entry store of a word parameter (tstlbit), word parameter compared
 from memory (deledge), pair choices (joinblk rr6/rr4, testbit), the almap data order (needs the popt move).
 OWNER 2026-11-20: SOURCE FORMS FIRST, a real srctry batch (10+ forms) before any switch, counts in findings/log.
 

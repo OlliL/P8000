@@ -1642,3 +1642,13 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   when the target lies behind; indupdate exact) 271 -> 227; OLD_D66 (codemove also into a label the code in front falls into,
   with a jump inserted) worse on indupdate. Cause 8 (which copy of a common tail stays) stays open.
 
+- gopt, the parameters at labels (2026-11-20): the records of scparse show the difference of prquad and tfree1: `B25 ] L26`
+  against `B27 L24`. vc `OLD_D3JB` (`]` counts as a record for d3jdead): prquad exact, nothing lost (274). Tried and dropped:
+  `OLD_D3JN` as "only the newest conditional jump gives its state back" (cmwalk exact, checkops 21 -> 7, addstore and allocvec
+  lost, 273) and as "a label named only by unconditional jumps drops the other records" (cmwalk and addstore exact, allocvec
+  lost: `] L329 L328 ] B330 L322` keeps q in the original, cmwalk `] L56 ] B57 L51` reloads p; 274, net 0). cmwalk and
+  checkops open.
+- gopt, the parameters of a function with a static (2026-11-20): mkleaf, operand, qmkstore (the functions with a static in
+  the body whose first statement uses a parameter) reload the parameter from the frame at the start, qmkstore even stores it
+  there; propnd, identop (switch on a parameter, no static) take it from rr6. vc `OLD_D3S` (scparse writes `#static` in front of
+  the first `[`, scodgen forgets the registers): mkleaf, qmkstore exact, operand 30 -> 28; 276, nothing lost.

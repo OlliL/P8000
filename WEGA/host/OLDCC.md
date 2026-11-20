@@ -179,9 +179,9 @@ neutral on cas when added, alone and all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP` and `OLD_D2PP` (gopt; all neutral on cas);
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB` and `OLD_D3S` (gopt; all neutral on cas);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13`,
-  `OLD_D25` and `OLD_D12R` (gopt, neutral on cas: the static area of a function that returns a structure is zeros in the data,
+  `OLD_D25`, `OLD_D3S` (with codgen's) and `OLD_D12R` (gopt, neutral on cas: the static area of a function that returns a structure is zeros in the data,
   written at the start of the next function (or at the end of the file), behind the function and its switch tables, not in
   the bss: /lib/gopt constfold, 7:5904). `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
 - spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S`, `OLD_D49`, `OLD_D50`, `OLD_D51` and `OLD_D64` (gopt, neutral on
@@ -338,6 +338,14 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - vc `OLD_D3PL` (regs3.c regforsym, with OLD_D3P): a pointer parameter used under a cast to long is taken from its pair
   (the segmented D3PWORD only accepts casts between pointers). /lib/gopt tabfree `((long)p >> 24) & 0x7f`: `ldl rr2,rr4`;
   9 source forms without it, none. Neutral on cas.
+- vc `OLD_D3JB` (reader3.c, under `OLD_D3J`): the end of a block (`]`) between an unconditional jump and the label behind it
+  counts as a record, so the code in front of the label is not dead and the label keeps only the parameters known at both
+  (prquad `if (q == 0) { printf(..); return; }`: the records `B ] L`, q reloaded from the frame; tfree1 `if (p == 0) cerror(..);
+  else p->..`: `B L`, p stays in rr6). 14 source forms of prquad without it, none. Neutral on cas.
+- vc `OLD_D3S` (scparse pftn1.c/code1.c, scodgen reader3.c): a function with a `static` in its body gets the record `#static`
+  in front of its first `[`; codgen then forgets the parameter registers (rfreeall), the parameters live in the frame
+  from the start (/lib/gopt mkleaf, qmkstore, operand: the statics ftot/fflag, tq, opnd are proven by the data order).
+  The record is a guess of the mechanism, the effect is measured. Neutral on cas.
 - vc `OLD_D3JL` (comm3.c, under `OLD_D3J`): a parameter pair that comes back at a label gets the frame home (d3jmark) only
   when it is a long, not a pointer (in segmented code every pointer is a pair; the witness of d3jmark, codgen notoff, is a
   long of nonsegmented code). 20 source forms of canopt without it, none. /lib/gopt canopt, denorm, islive: the frame slot of the pointer is reserved, rr6 is not stored.
@@ -744,7 +752,10 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | libPW.a, slibPW.a | xmsg.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
 | libPW.a | regcmp.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
 | slibPW.a | move.c | v1 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | comm2.c (common 2.4) | sccvc (measured) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | comm2.c (common 2.4) | sccvc (measured) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | debug2.c (prquad: D3JB) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | wrtil2.c (mkleaf: D3S) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | lpinv2.c (qmkstore: D3S) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
 fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`

@@ -8,6 +8,9 @@ static char sccsid[] = "@[$]pftn1.c\t2.7  08/24/83 14:40:11 Copr. 1981 87wega3.2
 
 int pregfull = 0;	/* the parameter registers are used up (getpreg) */
 int pregvar, pfregvar;	/* the next parameter register, the next float one */
+#ifdef OLD_D3S
+extern int d3sstat;
+#endif
 
 
 
@@ -299,6 +302,9 @@ dimtest:
 		oalloc( p, &autooff );
 		break;
 	case STATIC:
+#ifdef OLD_D3S
+		if( blevel >= 2 ) d3sstat = 1;	/* vc: a static in a function body (bccode) */
+#endif
 	case EXTDEF:
 		p->offset = getlab();
 		if( ISFTN(type) ) curftn = idp;
