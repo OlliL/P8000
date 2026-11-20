@@ -1638,4 +1638,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   cas build byte-identical. init2: one more int (s4d98, unused) behind s4d96: the init2 shift is gone. checkops, notlive:
   string order by source forms. Left in the data: almap (zero/neg/done behind the switch in the source; popt).
   Note: `make gopt` does not rebuild the objects after a compiler change (rm *.o first).
+- gopt, popt experiments dropped: OLD_D65 (xjump: the copy in front of the target jumps back into the copy in front of the jump,
+  when the target lies behind; indupdate exact) 271 -> 227; OLD_D66 (codemove also into a label the code in front falls into,
+  with a jump inserted) worse on indupdate. Cause 8 (which copy of a common tail stays) stays open.
 

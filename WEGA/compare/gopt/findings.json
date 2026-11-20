@@ -3974,7 +3974,7 @@
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 30, 94 against 95): popt block order: the original puts the `opcode == 1 ? 48 : 1` block and the mkconstopnd(.., 0, ..) call behind the else part, ours in front of it"
+   "note": "open (DIFF 30, 94 against 95): popt block order: the original puts the `opcode == 1 ? 48 : 1` block and the mkconstopnd(.., 0, ..) call behind the else part, ours in front of it (2026-11-20) opcode = opcode == 1 ? 48 : 1 (the original's ld r2,#48 / ldk r2,#1): DIFF 30 -> 23. Left: the original keeps the copy of the common tail (mkconstopnd call, insertquad) in the first branch and the else branch jumps back (jr 6378); our popt keeps the later copy. popt experiments: reverse cross jump (OLD_D65) 271 -> 227, codemove into a fall-through label (OLD_D66) worse: dropped"
   },
   "freelist": {
    "orig": "5:6466",

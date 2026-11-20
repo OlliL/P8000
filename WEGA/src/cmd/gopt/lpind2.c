@@ -421,10 +421,7 @@ int opcode;
 		if (ind->v > 0)
 			mkconstopnd(&c, ind->v, 1, ind->c0.w0);
 		else {
-			if (opcode == 1)
-				opcode = 48;
-			else
-				opcode = 1;
+			opcode = opcode == 1 ? 48 : 1;
 			mkconstopnd(&c, ind->v, 0, ind->c0.w0);
 		}
 		opqd = insertquad(opcode, &ind->c0, &c, &ind->c0, opqd);
