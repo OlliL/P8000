@@ -455,22 +455,20 @@ struct nd *n;
 
 	if (flag && a0e0 != 0) {
 		x = a0f8;
-		if (x == 0)
-			a0f8 = a0e0;
-		else {
+		if (x != 0) {
 			for (; x->next != 0; x = x->next)
 				;
 			x->next = a0e0;
-		}
+		} else
+			a0f8 = a0e0;
 	} else if (!flag) {
 		y = a104;
-		if (y == 0)
-			a104 = n;
-		else {
+		if (y != 0) {
 			for (; y->link != 0; y = y->link)
 				;
 			y->link = n;
-		}
+		} else
+			a104 = n;
 	}
 }
 

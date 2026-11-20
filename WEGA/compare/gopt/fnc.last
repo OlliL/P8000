@@ -1,3 +1,18 @@
 {
-"isebbend": "OK"
+"lpow2": "OK",
+"ceval": "OK",
+"qmove": "OK",
+"insrtstmpmove": "OK",
+"moveindquad": "OK",
+"mkconstopnd": "DIFF 2 (object 44 instructions, original 45)",
+"insrtopstmp": "OK",
+"copyopndstmp": "OK",
+"fillindvar": "DIFF 17 (object 294 instructions, original 294)",
+"indupdate": "DIFF 30 (object 94 instructions, original 95)",
+"freelist": "OK",
+"insrtlpdef": "OK",
+"deltmplpdefs": "OK",
+"delindvar": "OK",
+"chklpdefs": "DIFF 51 (object 214 instructions, original 216)",
+"chkfamindvar": "DIFF 13 (object 229 instructions, original 227)"
 }

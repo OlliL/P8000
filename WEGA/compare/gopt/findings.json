@@ -3979,11 +3979,11 @@
   "freelist": {
    "orig": "5:6466",
    "size_orig": 156,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 29, same count): the list walk `x = x->next` while x->next: the original loops with the test at the bottom entered by a jump (test, body, test), ours tests rr0 first and stores x; while and for(;;) forms give the same"
+   "note": "masked by the source form `if (x != 0) { for (..) ; x->next = a0e0; } else a0f8 = a0e0;` (the branch with the loop first; both lists)"
   },
   "insrtlpdef": {
    "orig": "5:6502",
