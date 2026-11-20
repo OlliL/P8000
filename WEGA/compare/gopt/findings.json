@@ -2235,11 +2235,11 @@
   "addblk": {
    "orig": "4:bc46",
    "size_orig": 214,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 3): the original takes rr2 = lp of the test *lp != 0 as the else value of the target pointer; ours loads lp again (jr; ldl rr2,lp): *(*lp != 0 ? p : lp) = q; the form if/else gives DIFF 4; name from the strings"
+   "note": "masked by the source form `*(*lp == 0 ? lp : (struct bl **)p) = q;` (the ?: with the lp case first: rr2 = lp, replaced by p behind the test, one store)"
   },
   "deletblk": {
    "orig": "4:bd1c",
@@ -3820,11 +3820,11 @@
   "lpow2": {
    "orig": "5:5534",
    "size_orig": 54,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 4, 14 against 15 instructions): the original shifts by a variable count (ld r0,#1; sdal rr2,r0), ours slal rr2,#1 for r << 1, r <<= 1, r * 2, r << 1L, r << (char)1: no source form found"
+   "note": "masked: vc OLD_D10 narrowed (only a right shift by one stays immediate, cas asmrel; the left shift r << 1 goes through ld r0,#1; sdal); 7 source forms tried before (<<=, << 1L, * 2, *= 2, r + r, 2 * r, (int)1)"
   },
   "ceval": {
    "orig": "5:556a",

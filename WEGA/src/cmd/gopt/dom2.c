@@ -375,7 +375,7 @@ addblk(lp, blk)
 		freebl = freebl->next;
 	} else
 		q = (struct bl *)taballoc(6, 4);
-	*(*lp != 0 ? (struct bl **)p : lp) = q;
+	*(*lp == 0 ? lp : (struct bl **)p) = q;
 	q->next = 0;
 	q->blk = blk;
 	nbl++;

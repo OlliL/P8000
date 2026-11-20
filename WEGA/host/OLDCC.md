@@ -393,7 +393,8 @@ Unsigned char argument: old `ldb rh7,#0`, shipped `subb rh7,rh7` (cas ifile); ol
 ### D10 Shift of a long by a constant
 
 v0 `OLD_D10` (codgen, match): `ld r2,#24; sdal rr4,r2`, shipped `slal rr4,#24`. The table entry 024 (the immediate shift) is not used
-for a long, so the entries 025 .. 030 load the count into a register. Segmented (vc): a shift by one stays immediate (`sral rr4,#1`; cas asmrel), `<< 16`
+for a long, so the entries 025 .. 030 load the count into a register. Segmented (vc): a right shift by one stays immediate (`sral rr4,#1`; cas asmrel), a left shift by one goes through a
+register (`ld r0,#1; sdal rr2,r0`; gopt lpow2, the only long shift by one of /lib/gopt), `<< 16`
 goes through a register (symreloc).
 
 ### D11 Tail merging

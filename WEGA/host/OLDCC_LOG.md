@@ -1601,4 +1601,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   `add r7,r3` only when it still knows r3 = that slot; memreg (z22.c) parses the offset at the first `+` (`+~L1+4`: 0), so a
   store to c's slot cleared b's register. Skipping `+~` takes 4: domspace exact, operand 31 -> 30, rmlabels 13 -> 11,
   nothing lost; matrix vc +0, the real cas build byte-identical.
+- gopt: vc OLD_D10 narrowed: the immediate shift by one only for a right shift (its witness, cas asmrel, is `>> 1`);
+  gopt lpow2 `r = r << 1` (7 source forms, none) goes through a register as every constant long shift of /lib/gopt.
+  Matrix vc: OLD_D10 row unchanged, baseline 0. addblk exact by a source form (the ?: with the lp case first).
 

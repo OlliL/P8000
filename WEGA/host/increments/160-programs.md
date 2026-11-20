@@ -57,3 +57,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: vc switch `OLD_D2FA` (an auto pointer is found in the pair named by its frame place; not for arguments, not in &&/|| conditions, not when the statement assigns to it): clearblocks, marklpblocks, pralvars, solvelive, solvereach, liveonexit; genquads 84 -> 50; 255 of 322 OK.
 - 2026-11-20 gopt: OLD_D2AP removed again (deltmplpdefs by a source form); the other switches re-checked with 9..20 source forms each; 255 of 322 OK.
 - 2026-11-20 gopt: vc spopt switch `OLD_D64` (memreg reads segmented frame offsets): domspace; OLD_D2FA corrected (stale frame names, wrong code); 256 of 322 OK.
+- 2026-11-20 gopt: addblk (source form), lpow2 (vc OLD_D10: immediate only for a right shift by one); 258 of 322 OK.
