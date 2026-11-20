@@ -1583,7 +1583,7 @@
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "open: the original forms the index in r1 (ld r1,r3; mult rr0,r5) and reads the word with the indexed form ld r2,rr2(r1), then sdl and bit #0; ours adds the address first; tried *(m + ..), other orders, a temporary, & with a mask"
+   "note": "open: the original forms the index in r1 (ld r1,r3; mult rr0,r5) and reads the word with the indexed form ld r2,rr2(r1), then sdl and bit #0; ours adds the address first; tried *(m + ..), other orders, a temporary, & with a mask (2026-11-20) K5: the parameter dim is copied before the mult (ld r1,r3), ours multiplies r3 in place; the indexed load follows from that"
   },
   "clrmat": {
    "orig": "4:7582",
