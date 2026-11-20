@@ -51,7 +51,7 @@ Tools (use these, they print little; never dump disassemblies or diffs into the 
 - build: `cd src/cmd/gopt; PATH=/home/olivleh1/git/P8000/tmp/tmp/wbin:$PATH make gopt` (wbin holds the wrappers of cas, sld, sccvc ... under z8k-emu; fnc.py takes src/cmd/gopt/FILE.c; findings.json key `note`, not `notes`; a case block has "note": "case block of NAME" (or "tail of NAME")).
 
 ## Progress (2026-11-20, overnight run)
-fnc.py over all modules: 276 of 321 OK (was 233 of 322; nullfn removed: it is __fltuse of the libc member fltioc).
+fnc.py over all modules: 282 of 321 OK (2026-11-20 evening) (was 233 of 322; nullfn removed: it is __fltuse of the libc member fltioc).
 Data (step 3): equal but for the almap strings (host/recon/datadiff.py, code addresses masked). Libc (step 2): equal masked
 (host/recon/libcmp.py); fseek..getw go to seg 4 by first fit only when the code sizes are exact. Stack segment: gopt links by
 sldo (src/cmd/sld make old, -DOLD_SLDS), header structure as the original. bss from 8:0004 (environ at 8:0000).
@@ -72,7 +72,7 @@ OWNER 2026-11-20: SOURCE FORMS FIRST, a real srctry batch (10+ forms) before any
 OWNER 2026-11-20 (later): NO new switch during the source phase; a compiler-looking difference goes as a candidate with its
 witnesses to compare/gopt/SWITCH_CANDIDATES.md, then on with source forms. Layout DIFFs were often source forms: the negated
 condition with a nested if (mktree 632 -> 20, genquads 50 -> 8, settmptable, setsymtable), gotos of the draft (vnumber),
-a local array that hid a global (writeil 108 -> 6).
+a local array that hid a global (writeil 108 -> 6). Later: cause 8 is a source form (the common tail written in both branches: indupdate, constfold, dotree); a loop form shows in which copy popt keeps (chkcalls, needustar, isglobal: a guard if before the loop); chain order `y = x = ..` (updatelooplist); `^` instead of `==` (chkfamindvar); NODE type unsigned (TWORD). Forms tried before can match later (writeil comma form): retry them. Tool: $S/vt.py (scratch, variants in parallel on copies) - to be moved to host/recon. The remaining 39 DIFFs are classified in SWITCH_CANDIDATES.md except chklpdefs, fillindvar, chkcalls (layout).
 
 ## State (2026-11-19)
 `make gopt` LINKS. Layout: gdata.o first (bss in address order: bss exact, 42496 bytes), reader2 .. live2 (-Mt4), ebbo2 lpinv2 lpind2 (-Mt5), beta2
