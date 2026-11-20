@@ -1674,3 +1674,10 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - gopt, OLD_D2NP also for a frame auto loaded into a pair (`OREG` with rval 15, as OLD_D2N does for words; experiment
   2026-11-21): rmlabels exact, killdefs lost (`inc r1,#8; cpb @rr2` against `ldb rl2,rr2(#8)`): net 0, not taken.
   rmlabels (2: one reload of a local behind a jump) has no lone-label form either.
+- `OLD_D2NP` under v0 (2026-11-21, owner's question: could it be part of OLD_D2N?): defined in the v0 block for one
+  measurement (so in v0, v0p and every compiler built on them), v0 and v0p codgen rebuilt: the v0p models cparse (164 same,
+  15 differ), scparse (164, 15), codgen (191, 18), scodgen (191, 19), popt (71, 2), spopt (71, 2), cpp (23, 3) and the v0
+  bench (153 functions, 131 same, 221 lines) all the same as without it. So far no evidence against folding it into
+  OLD_D2N; not measured: the full v0p matrix (libc and the other v0/v0p programs). Note: the cparse model is at 164 of 179
+  now (code 48640 against 48896; earlier 179 of 179): to be looked at apart from this (the models needed cgram1.c, cpy.c
+  and crt0.o of cpp in the source directories, made there by hand).
