@@ -96,3 +96,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: buildgraph, clropt exact (K13 by source: the then-block as `if (0) { l: ... }` reached by goto; clropt in goto form); 291 of 321 OK.
 - 2026-11-20 gopt: setsym exact (K4/K13 by source: the last case jumps by goto to the return 1 of default and the return 0 of case 1, so popt keeps those copies); 292 of 321 OK.
 - 2026-11-20 gopt: insrtlive exact (goto r1 to the return 1 copy the original keeps); 293 of 321 OK.
+- 2026-11-20 gopt: chklpdefs 51 -> 10 (the then-part and the ternary test as if (0) blocks reached by goto; left: the step block); tprint: 14 more forms, none.

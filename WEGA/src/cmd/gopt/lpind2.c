@@ -615,11 +615,17 @@ int op, x;
 		prquad(q);
 	}
 	for (dp = a0e0; dp != 0; dp = dp->next) {
-		if (r != dp->q) {
-			if (q->op == 1 || q->op == 48) {
+		if (0) {
+lr:
+			if (0) {
+lt:
 				if ((op == 2 ? q->a.b2 : q->b.b2) != 6)
 					continue;
+				goto so;
 			}
+			if (q->op == 1 || q->op == 48)
+				goto lt;
+so:
 			if (!sameopnd(q, dp->q, op, 1))
 				continue;
 			if (!dp->q->f2)
@@ -651,7 +657,11 @@ int op, x;
 				}
 			} else
 				cerror("chklpdef: quad not found\n");
-		} else if (dp->l6 != 0) {
+			continue;
+		}
+		if (r != dp->q)
+			goto lr;
+		if (dp->l6 != 0) {
 			n = dp->l6;
 			v = dp->f10 ? 1 : 48;
 			while (n != 0) {
