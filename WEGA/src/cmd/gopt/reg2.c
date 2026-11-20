@@ -111,13 +111,14 @@ struct loop *lp;
 	struct quad *q;
 	int x;
 
-	p = (struct bl *)lp;
+	p = lp->bls;
 	for (;;) {
-		p = p->next;
-		if (p == 0)
-			break;
+		if (p == 0) {
+			p = lp->bls;
+			return;
+		}
 		x = blks[p->blk]->a.w0;
-		for (q = blks[p->blk]; (q = q->next) != 0; ) {
+		for (q = blks[p->blk]->next; q != 0; q = q->next) {
 			if (q->op == 59)
 				break;
 			if (q->op == 7) {
@@ -131,8 +132,8 @@ struct loop *lp;
 				return;
 			}
 		}
+		p = p->next;
 	}
-	p = lp->bls;
 }
 
 /* the symbols that are stored by a quad of type 3 get a flag cleared; the value numbering is called then (name guessed) */

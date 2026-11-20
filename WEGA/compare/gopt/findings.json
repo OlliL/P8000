@@ -4061,7 +4061,7 @@
    "kind": "proven",
    "module": "reg2.c",
    "file": "reg2.c",
-   "note": "open (DIFF 33): the original compiles the loops with the test at the top and shares the head of the first iteration with the advance (rr2 = lp or p; p = *rr2; jr), ours has bottom tests; the else part p = lp->bls at the loop exit is a guess"
+   "note": "open (DIFF 11, 2026-11-20): the outer loop tests at the top and its step jumps into the copy of the init (`p = lp->bls; for (;;) { if (p == 0) { p = lp->bls; return; } ..; p = p->next; }`), the inner loop `for (q = blks[p->blk]->next; q != 0; q = q->next)` (the init jumps into the copy of the step): 31 -> 11 (13 forms). Left: the second loop (callfnd) in the original: init, jump to the test at the bottom, the step jumps into the init copy; for, while, for(;;) with break or return all give the same (11)"
   },
   "symflags": {
    "orig": "5:706a",
