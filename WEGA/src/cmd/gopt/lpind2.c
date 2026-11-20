@@ -418,13 +418,14 @@ int opcode;
 		prquad(opqd);
 	}
 	if (ind->f15) {
-		if (ind->v > 0)
+		if (ind->v > 0) {
 			mkconstopnd(&c, ind->v, 1, ind->c0.w0);
-		else {
+			opqd = insertquad(opcode, &ind->c0, &c, &ind->c0, opqd);
+		} else {
 			opcode = opcode == 1 ? 48 : 1;
 			mkconstopnd(&c, ind->v, 0, ind->c0.w0);
+			opqd = insertquad(opcode, &ind->c0, &c, &ind->c0, opqd);
 		}
-		opqd = insertquad(opcode, &ind->c0, &c, &ind->c0, opqd);
 	} else {
 		opqd = insertquad(opcode, &ind->c0, &ind->c12, &ind->c0, opqd);
 		if (s4d86 > 3) {

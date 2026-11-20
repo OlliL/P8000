@@ -82,3 +82,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt updatelooplist: `y = x = p->bls` (the store order) and the branches swapped: DIFF 32 -> 5. clropt: 14 more forms, none.
 - 2026-11-20 gopt chkcalls: the loops by the cross jump direction (init copy kept: top test; step copy kept: for): DIFF 31 -> 11.
 - 2026-11-20 gopt updatevector exact: `*++p != -1` (the draft took the head entry of the srchdef list).
+- 2026-11-20 gopt indupdate exact: cause 8 is a source form: the common tail written in both branches, both end with a jump to the same label, comjump keeps the first copy.
