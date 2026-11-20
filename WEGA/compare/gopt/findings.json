@@ -2158,7 +2158,7 @@
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 15): as compress (the nested index cache) plus the block order: the original puts t = label[v] (the test ancest[v] == 0) before the compress call; ?: and a variable t = v tried (not better)"
+   "note": "open (DIFF 9): the else branch swapped (>= : t = label[v] first; formtry swap, DIFF 15 -> 9); left: the register cache as in compress/linkp (label[ancest[v]] through rr4/r3 instead of reloading rr6); operands swapped (<=) and the || form tried (worse)"
   },
   "linkp": {
    "orig": "4:ad8e",
@@ -2185,7 +2185,7 @@
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 22): the original leaves the loop to the code behind the cerror without a second test (jr eq to b16c); ours tests t < 0 again (break) or moves the block of the bucket store (goto found); the form with break is kept"
+   "note": "open (DIFF 20): the store branches swapped (prev != t first; formtry swap, DIFF 22 -> 20); left: the original leaves the loop to the code behind the cerror without a second test (jr eq to b16c); ours tests t < 0 again (break)"
   },
   "dominators": {
    "orig": "4:b1be",

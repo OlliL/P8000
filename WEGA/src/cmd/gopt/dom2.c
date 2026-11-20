@@ -85,10 +85,10 @@ eval(v)
 		t = label[v];
 	else {
 		compress(v);
-		if (dfn[label[ancest[v]]] < dfn[label[v]])
-			t = label[ancest[v]];
-		else
+		if (dfn[label[ancest[v]]] >= dfn[label[v]])
 			t = label[v];
+		else
+			t = label[ancest[v]];
 	}
 	return t;
 }
@@ -168,10 +168,10 @@ delbucket(i, blk)
 	}
 	if (t < 0)
 		cerror("block blk not found in delbucket = %d\n", blk);
-	if (prev == t)
-		bucket[i] = bent[t].next;
-	else
+	if (prev != t)
 		bent[prev].next = bent[t].next;
+	else
+		bucket[i] = bent[t].next;
 }
 
 /* the immediate dominators of the blocks (Lengauer and Tarjan); dom: the result, idfn: the inverse of the numbering */

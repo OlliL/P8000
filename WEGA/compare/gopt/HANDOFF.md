@@ -51,28 +51,24 @@ Tools (use these, they print little; never dump disassemblies or diffs into the 
 - build: `cd src/cmd/gopt; PATH=/home/olivleh1/git/P8000/tmp/tmp/wbin:$PATH make gopt` (wbin holds the wrappers of cas, sld, sccvc ... under z8k-emu; fnc.py takes src/cmd/gopt/FILE.c; findings.json key `note`, not `notes`; a case block has "note": "case block of NAME" (or "tail of NAME")).
 
 ## Progress (2026-11-20, overnight run)
-fnc.py over all modules: 271 of 322 OK (was 233). vc switches added (all +0 on cas, the real cas build byte-identical;
-host/OLDCC.md vc section, the source forms tried for each in findings.json/OLDCC_LOG.md): codgen OLD_D2K, OLD_D3JL, OLD_D24L,
-OLD_D2FA (frame-named pairs of autos and computed parameters), OLD_D3PL, OLD_D2AV (changes D2A), OLD_D2XP (changes D2X),
-OLD_D2PP; OLD_D10 narrowed (right shift by one of a scratch register only); spopt OLD_D64. Source forms found: mkhash,
-mkdomtree, deltmplpdefs, addblk, addedge, eqopnd, srchdef (partly). Dropped: OLD_D2AP, popt experiments (no cross jump into a
-later copy; no reversal over a back jump), OLD_D3JC, the full D3KC.
-HINT (2026-11-20): the author wrote `continue` in loops: `while (..) continue;` (main), `{ if (x != q) continue; break; }`
-(srchdef) change the popt layout to the original's; try such forms on every loop DIFF.
+fnc.py over all modules: 273 of 321 OK (was 233 of 322; nullfn removed: it is __fltuse of the libc member fltioc).
+Data (step 3): equal but for the almap strings (host/recon/datadiff.py, code addresses masked). Libc (step 2): equal masked
+(host/recon/libcmp.py); fseek..getw go to seg 4 by first fit only when the code sizes are exact. Stack segment: gopt links by
+sldo (src/cmd/sld make old, -DOLD_SLDS), header structure as the original. bss from 8:0004 (environ at 8:0000).
+New vc switches (all +0 on cas, the real cas build byte-identical; host/OLDCC.md vc section, the source forms tried for each in
+findings.json/OLDCC_LOG.md): codgen OLD_D2K, OLD_D3JL, OLD_D24L, OLD_D2FA, OLD_D3PL, OLD_D2AV (changes D2A), OLD_D2XP (changes
+D2X), OLD_D2PP; OLD_D10 narrowed; spopt OLD_D64; scparse OLD_D12R. The slibc-v12 cut members by sccvc (.addr: bit 31).
+Source forms found: mkhash, mkdomtree, deltmplpdefs, addblk, addedge, eqopnd, srchdef, freelist, main, notlive, checkops order,
+operand's opnd/mkleaf's statics (data), init2 s4d98.
+HINTS: the author wrote `continue` in loops (main, srchdef), the loop branch first (freelist), ?: for two-value assignments
+(indupdate, notlive), nested if instead of && (eqopnd), (p = f())->m (mkhash). host/recon/formtry.py tries such rules on a
+function automatically. After a compiler change: `rm *.o` in src/cmd/gopt before make gopt (make does not know the compiler);
+the codgen Makefile has no oldcc.h dependency (`rm build/segvc/*.o`).
+Open: popt layout (cause 3: which block codemove takes, mktree 632, vnumber, settmptable, setsymtable, writeil, genquads ...;
+cause 8: which copy of a common tail stays, insrtlive, tprint, indupdate; dropped experiments in OLDCC_LOG.md), parameters not
+restored at labels after calls (prquad, cmwalk, checkops), entry store of a word parameter (tstlbit), word parameter compared
+from memory (deledge), pair choices (joinblk rr6/rr4, testbit), the almap data order (needs the popt move).
 OWNER 2026-11-20: SOURCE FORMS FIRST, a real srctry batch (10+ forms) before any switch, counts in findings/log.
-Tools: fnc.py drops nothing; the traced scodgen (a copy of src/cmd/codgen in a scratch tree with src/lib and src/head linked,
-fprintf(stderr) in symreg/rnassign/getreg, build build/segvc/scodgen, run `sccvc -T2./dbgcg -S t.c`). The codgen Makefile has
-no oldcc.h dependency: `rm build/segvc/*.o` after a change of oldcc.h alone. The old libc archives were rebuilt (complete).
-Libc (step 2): seg 5 part equal masked (host/recon/libcmp.py; 5:c414..c500 is the zero fill to the segment end, no member);
-fseek..getw sit at the end of seg 4 in the original by first fit (they fill it to 0xfffe), ours go to seg 5 (-Mt5 before
-the library): decide when the code sizes are exact (sldo may take a first fit over all text segments).
-Data (step 3): only the almap strings differ (host/recon/datadiff.py; code addresses masked); bss from 8:0004 (environ).
-Stack segment DONE: gopt links by sldo (src/cmd/sld make old, -DOLD_SLDS), header structure as the original.
-Open: tstlbit (entry store of i), affsize, mkconstopnd (dead ldl rr0,rr6), cmwalk/mkleaf/prquad (pointer parameter reloaded
-after a label), deledge (v compared from memory), insrtlive/tprint/checkops (popt: which copy of a tail stays, block order),
-srchdef (loop entry into the increment), and the big ones (popt block order, cause 3). Data: checkops' '//    NULL' string
-stands behind '// chkops: nonstandard' in the original: the fail block was behind the nonstd block in the source and the
-original popt moved it up; ours does not (DIFF 89 with that source): a popt codemove difference to find.
 
 ## State (2026-11-19)
 `make gopt` LINKS. Layout: gdata.o first (bss in address order: bss exact, 42496 bytes), reader2 .. live2 (-Mt4), ebbo2 lpinv2 lpind2 (-Mt5), beta2
