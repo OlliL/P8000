@@ -24,7 +24,6 @@ extern int tl[];
 extern struct { int a, b; } ctmp[];
 extern struct { int rv; int d[4]; } fconsttbl[];
 
-static struct qa opnd;
 
 static void fold1(), fold2(), asgop2(), asgsimp();
 extern struct quad *delquad();
@@ -373,6 +372,7 @@ struct qa *
 operand(p)
 	NODE *p;
 {
+	static struct qa opnd;
 	int i;
 	long l;
 	struct qa a, b, c;

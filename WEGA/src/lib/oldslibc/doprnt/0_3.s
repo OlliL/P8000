@@ -770,10 +770,10 @@ D75bc:
 	.byte	%00
 	.byte	%73
 D75c4:
-	.long	Lacc4
-	.long	Lacc4
-	.long	Lacc4
-	.long	Lacbe
+	.addr	Lacc4
+	.addr	Lacc4
+	.addr	Lacc4
+	.addr	Lacbe
 D75d4:
 	.byte	%00
 	.byte	%44
@@ -804,17 +804,17 @@ D75d4:
 	.byte	%00
 	.byte	%78
 D75f0:
-	.long	Lad5a
-	.long	Lad42
-	.long	Lad52
-	.long	Lad4a
-	.long	Lafc8
-	.long	Lae7a
-	.long	Laffa
-	.long	Laffa
-	.long	Laffa
-	.long	Lad62
-	.long	Lacf8
-	.long	Laf58
-	.long	Lad08
-	.long	Lad00
+	.addr	Lad5a
+	.addr	Lad42
+	.addr	Lad52
+	.addr	Lad4a
+	.addr	Lafc8
+	.addr	Lae7a
+	.addr	Laffa
+	.addr	Laffa
+	.addr	Laffa
+	.addr	Lad62
+	.addr	Lacf8
+	.addr	Laf58
+	.addr	Lad08
+	.addr	Lad00

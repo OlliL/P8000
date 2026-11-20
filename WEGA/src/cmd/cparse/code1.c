@@ -242,6 +242,10 @@ deflab( n ) register n; {
 	fprintf( outfile, "L%d\t\n", n );
 	}
 
+#ifdef OLD_D12R
+extern int d12rlab;
+extern long d12rsize;
+#endif
 efcode(){
 	/* code for the end of a function */
 	register int i;
@@ -250,15 +254,16 @@ efcode(){
 	long n;
 
 	deflab( retlab );
+#ifdef OLD_D12R
+	i = 0;
+#endif
 	if( strftn ){  /* a static area for the returned structure */
 		p = curftn;
 		i = getlab();
 		curftn->sfld8 = i;
 		size = tsize( DECREF(p->stype), p->dimoff, p->sizoff ) / SZCHAR;
 #ifdef OLD_D12R
-		/* vc (gopt): the area is in the data (zeros), behind the function's switch tables (constfold of ebbo2) */
-		fprintf( dfile, "\t.psec\tdata\n\t.data\n" );
-		fprintf( dfile, "L%d:\t.=.+%ld\n", i, size );
+		/* vc (gopt): the area is in the data (zeros), behind the function and its switch tables (constfold of ebbo2) */
 #else
 		if( sectfull( ADATA, size ) ) newsect( ADATA );
 		else {
@@ -273,8 +278,27 @@ efcode(){
 #endif
 		}
 	bend();
+#ifdef OLD_D12R
+	if( strftn ){	/* written at the start of the next function (or the end of the file): behind this one's tables */
+		d12rlab = i;
+		d12rsize = size;
+		}
+#endif
 	lineid();
 	}
+
+#ifdef OLD_D12R
+int d12rlab = 0;	/* OLD_D12R: the area of the last function, still to be written */
+long d12rsize;
+
+d12rput(){
+	if( d12rlab ){
+		fprintf( dfile, "\t.psec\tdata\n\t.data\n" );
+		fprintf( dfile, "L%d:\t.=.+%ld\n", d12rlab, d12rsize );
+		d12rlab = 0;
+		}
+	}
+#endif
 
 bfcode( a, n ) struct symtab *a[]; {
 	/* code for the beginning of a function; a is an array of
@@ -286,6 +310,9 @@ bfcode( a, n ) struct symtab *a[]; {
 	OFFSZ off;
 	int words, flags, lab;
 
+#ifdef OLD_D12R
+	d12rput();
+#endif
 	lineid();
 	locctr( PROG );
 	p = curftn;

@@ -248,7 +248,7 @@ def gen(img, data, name, sg, a, b, cn, dn, targets, outdir):
                 out.append('D%x:' % k)
             if k in ptr:
                 sg2, off2 = ptr[k]
-                out.append('\t.long\t%s' % ('L%x' % off2 if sg2 in (4, 5) else 'D%x' % off2))
+                out.append('\t.addr\t%s' % ('L%x' % off2 if sg2 in (4, 5) else 'D%x' % off2))
                 k += 4
             else:
                 out.append('\t.byte\t%%%02x' % img[DATA7 + k])

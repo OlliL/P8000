@@ -144,6 +144,9 @@ mainp1(){
 
 	yyparse();
 	yyaccpt();
+#ifdef OLD_D12R
+	d12rput();
+#endif
 #ifdef OLD_D12
 	if( strhead ){ /* the string literals of the file into the last section of the .D file */
 		putstrs();

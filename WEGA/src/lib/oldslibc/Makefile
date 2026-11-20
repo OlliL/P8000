@@ -111,10 +111,11 @@ errlst/0_2.o: errlst/0_2.c
 	cd errlst ; $(CAS) -o 0_2.o -u 0_2.s
 
 # slibc-v12.a: gopt. v12/NAME.o: the shipped source by sccvc (-DSEG, the old stdio.h char *_ptr); NAME/0_3.s cut from /lib/gopt
-# (host/tools/oldslibc_gopt.py); flsbuf/0_3.c: the old fclose; the others are the members of /lib/slibc.a.
+# (host/tools/oldslibc_gopt.py), assembled by sccvc (the assembler of vc: bit 31 in the address constants, as /lib/gopt);
+# v12/data.o by sccvc (_iob, _lastbuf with bit 31); flsbuf/0_3.c: the old fclose; the others are the members of /lib/slibc.a.
 LIBv12 = fseek/0_3.o ftell/0_3.o v12/rdwr.o v12/fopen.o v12/getw.o fltioc/0_3.o \
 	v12/scanf.o doscan/0_3.o printf/0_3.o doprnt/0_3.o v12/ungetc.o tmp/atof.o \
-	ecvt/0_3.o tmp/pow10.o v12/filbuf.o flsbuf/0_3.o endopen/0_3.o tmp/data.o \
+	ecvt/0_3.o tmp/pow10.o v12/filbuf.o flsbuf/0_3.o endopen/0_3.o v12/data.o \
 	v12/findiop.o tmp/__callex.o tmp/cuexit.o v12/cnvt.o tmp/decimal.o v12/length.o \
 	malloc/0_3.o v12/isatty.o tmp/ctype_.o v12/stty.o v12/strcat.o v12/strcpy.o \
 	v12/tolower.o chmod/0_3.o tmp/close.o creat/0_3.o tmp/ioctl.o tmp/lseek.o \
@@ -123,6 +124,10 @@ LIBv12 = fseek/0_3.o ftell/0_3.o v12/rdwr.o v12/fopen.o v12/getw.o fltioc/0_3.o 
 
 ../slibc-v12.a: tmp/created $(LIBv12)
 	sh -x mklib.sh $@ $(AR) $(LIBv12)
+
+v12/data.o: ../libc/common/stdio/data.c
+	-mkdir v12
+	cd v12 ; $(SCCVC) -O -DSEG -I../../../head/oldv7 -c ../../libc/common/stdio/data.c
 
 v12/cnvt.o: ../libc/common/gen/cnvt.c
 	-mkdir v12
@@ -184,46 +189,46 @@ flsbuf/0_3.o: flsbuf/0_3.c
 	cd flsbuf ; $(SCCVC) -O -DSEG -I../../../head/oldv7 -c 0_3.c
 
 fseek/0_3.o: fseek/0_3.s
-	cd fseek ; $(CAS) -o 0_3.o -u 0_3.s
+	cd fseek ; $(SCCVC) -c 0_3.s
 
 ftell/0_3.o: ftell/0_3.s
-	cd ftell ; $(CAS) -o 0_3.o -u 0_3.s
+	cd ftell ; $(SCCVC) -c 0_3.s
 
 fltioc/0_3.o: fltioc/0_3.s
-	cd fltioc ; $(CAS) -o 0_3.o -u 0_3.s
+	cd fltioc ; $(SCCVC) -c 0_3.s
 
 doscan/0_3.o: doscan/0_3.s
-	cd doscan ; $(CAS) -o 0_3.o -u 0_3.s
+	cd doscan ; $(SCCVC) -c 0_3.s
 
 printf/0_3.o: printf/0_3.s
-	cd printf ; $(CAS) -o 0_3.o -u 0_3.s
+	cd printf ; $(SCCVC) -c 0_3.s
 
 doprnt/0_3.o: doprnt/0_3.s
-	cd doprnt ; $(CAS) -o 0_3.o -u 0_3.s
+	cd doprnt ; $(SCCVC) -c 0_3.s
 
 ecvt/0_3.o: ecvt/0_3.s
-	cd ecvt ; $(CAS) -o 0_3.o -u 0_3.s
+	cd ecvt ; $(SCCVC) -c 0_3.s
 
 endopen/0_3.o: endopen/0_3.s
-	cd endopen ; $(CAS) -o 0_3.o -u 0_3.s
+	cd endopen ; $(SCCVC) -c 0_3.s
 
 malloc/0_3.o: malloc/0_3.s
-	cd malloc ; $(CAS) -o 0_3.o -u 0_3.s
+	cd malloc ; $(SCCVC) -c 0_3.s
 
 chmod/0_3.o: chmod/0_3.s
-	cd chmod ; $(CAS) -o 0_3.o -u 0_3.s
+	cd chmod ; $(SCCVC) -c 0_3.s
 
 creat/0_3.o: creat/0_3.s
-	cd creat ; $(CAS) -o 0_3.o -u 0_3.s
+	cd creat ; $(SCCVC) -c 0_3.s
 
 open/0_3.o: open/0_3.s
-	cd open ; $(CAS) -o 0_3.o -u 0_3.s
+	cd open ; $(SCCVC) -c 0_3.s
 
 read/0_3.o: read/0_3.s
-	cd read ; $(CAS) -o 0_3.o -u 0_3.s
+	cd read ; $(SCCVC) -c 0_3.s
 
 write/0_3.o: write/0_3.s
-	cd write ; $(CAS) -o 0_3.o -u 0_3.s
+	cd write ; $(SCCVC) -c 0_3.s
 
 clean:
 	rm -f */0_*.o */*.o $(LIBS) errlst/0_2.s

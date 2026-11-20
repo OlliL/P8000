@@ -23,10 +23,9 @@ extern struct sym *symtab;
 extern int szty();
 extern long ftell();
 
+static NODE *pend = 0;
 static int flab = 9000;
 static int tmpoff = 0;
-static int ftot = 0;
-static int fflag = 1;
 extern int nal;
 
 extern int cerror();
@@ -39,7 +38,6 @@ extern void prquad();
 extern NODE *mkleaf();
 extern int needustar();
 extern void addrof(), asgfold(), cleartrees();
-static NODE *pend = 0;
 #define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 extern struct quad *qhead;
 extern int v00, v04;
@@ -462,6 +460,8 @@ NODE *
 mkleaf(a)
 	struct qa *a;
 {
+	static int ftot = 0;
+	static int fflag = 1;
 	int i;
 	NODE *q, *r;
 	int *d;

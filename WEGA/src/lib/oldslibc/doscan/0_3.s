@@ -794,8 +794,8 @@ D7596:
 	.byte	%00
 	.byte	%25
 D75a0:
-	.long	La488
-	.long	La3bc
-	.long	La3bc
-	.long	La3bc
-	.long	La29a
+	.addr	La488
+	.addr	La3bc
+	.addr	La3bc
+	.addr	La3bc
+	.addr	La29a
