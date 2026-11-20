@@ -135,13 +135,16 @@ aliasm()
 	B[0] = 0;
 	pcur = q = qhead;
 	for (; q != 0; q = q->next) {
-		q = fndcall(q);
-		if (q == 0)
-			break;
-		if (q->op == 0x3b) {
+		if (0) {
+skh:
 			pcur = skiphdrs(q);
 			continue;
 		}
+		q = fndcall(q);
+		if (q == 0)
+			break;
+		if (q->op == 0x3b)
+			goto skh;
 		if (q->op == 0x2f) {
 			if (!checkops(q, 0))
 				continue;
@@ -778,12 +781,17 @@ initaffect()
 		printf("// initaffect: affect=%X, modval=%X, affdim=%d\n", affect, modval, affdim);
 	pcur = q = qhead;
 	for (; q != 0; q = q->next) {
+		if (0) {
+skh:
+			pcur = skiphdrs(q);
+			continue;
+		}
 		q = fndcall(q);
 		if (q == 0)
 			break;
 		if (q->op == 0x3b)
-			pcur = skiphdrs(q);
-		else if (q->op == 0x2f) {
+			goto skh;
+		if (q->op == 0x2f) {
 			if (!checkops(q, 0))
 				continue;
 			cls = op70d8;

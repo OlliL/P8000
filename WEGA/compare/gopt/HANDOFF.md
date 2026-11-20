@@ -51,7 +51,7 @@ Tools (use these, they print little; never dump disassemblies or diffs into the 
 - build: `cd src/cmd/gopt; PATH=/home/olivleh1/git/P8000/tmp/tmp/wbin:$PATH make gopt` (wbin holds the wrappers of cas, sld, sccvc ... under z8k-emu; fnc.py takes src/cmd/gopt/FILE.c; findings.json key `note`, not `notes`; a case block has "note": "case block of NAME" (or "tail of NAME")).
 
 ## Progress (2026-11-20, overnight run)
-fnc.py over all modules: 287 of 321 OK (2026-11-20 late) (was 233 of 322; nullfn removed: it is __fltuse of the libc member fltioc).
+fnc.py over all modules: 289 of 321 OK (2026-11-20 late) (was 233 of 322; nullfn removed: it is __fltuse of the libc member fltioc).
 Data (step 3): equal but for the almap strings (host/recon/datadiff.py, code addresses masked). Libc (step 2): equal masked
 (host/recon/libcmp.py); fseek..getw go to seg 4 by first fit only when the code sizes are exact. Stack segment: gopt links by
 sldo (src/cmd/sld make old, -DOLD_SLDS), header structure as the original. bss from 8:0004 (environ at 8:0000).
