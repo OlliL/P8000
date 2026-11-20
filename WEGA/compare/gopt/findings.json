@@ -2694,11 +2694,11 @@
   "tstlbit": {
    "orig": "4:d834",
    "size_orig": 52,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 3): as setlbit"
+   "note": "masked (2026-11-20, owner's hint: a leftover of code popt deleted): dead code that changes i (`i = 0;` behind `return 0;`; also i++, i /= 16, or `if (0) i = 0;` before it): codgen forgets r5 and stores i at the entry, popt deletes the dead code, the store stays. A dead call (foo(i)) stores all parameters (ldm, DIFF 3); a helper variable `int spare1 = i;` gives the store but a frame of 8 (DIFF 5)"
   },
   "prvec": {
    "orig": "4:d868",

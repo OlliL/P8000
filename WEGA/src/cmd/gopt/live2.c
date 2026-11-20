@@ -475,6 +475,7 @@ tstlbit(v, i)
 	if ((v[i / 16] >> (i % 16)) & 1)
 		return 1;
 	return 0;
+	i = 0;	/* dead: its store at the entry is left (the original) */
 }
 
 /* a bit vector (debug): which 1 kill, 2 gen, 3 in, 4 out; what 1 live (nlv bits), 2 reach (ndefs bits); name guessed */
