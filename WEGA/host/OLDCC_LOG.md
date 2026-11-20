@@ -1671,3 +1671,6 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - gopt, `OLD_D2NP` built into vc (2026-11-21, owner: yes): the experiment above as its own block behind OLD_D2N (allo3.c,
   `cls == 3 && p->in.op == NAME`). gopt 299 -> 305 (compress, dominators, eval, joinblk, linkp, srchdflist exact, rmlabels
   12 -> 2), no function worse; cas +0 (matrix OLD_D2NP), `MATRIX_VER=vc oldcc.sh matrix check`: as in the table.
+- gopt, OLD_D2NP also for a frame auto loaded into a pair (`OREG` with rval 15, as OLD_D2N does for words; experiment
+  2026-11-21): rmlabels exact, killdefs lost (`inc r1,#8; cpb @rr2` against `ldb rl2,rr2(#8)`): net 0, not taken.
+  rmlabels (2: one reload of a local behind a jump) has no lone-label form either.
