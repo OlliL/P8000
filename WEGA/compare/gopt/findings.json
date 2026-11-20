@@ -2676,20 +2676,20 @@
   "setlbit": {
    "orig": "4:d7da",
    "size_orig": 44,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 9): the original spills i (r5) and keeps v in rr6 with rr4 as the second pointer register, ours spills v and uses rr6 (the choice of the register pair, as rmlabels/joinblk the other way round); names guessed (2026-11-20, 9 source forms incl. a[x] = a[x] | .., *(v + ..), declarations): the original copies the address into rr4 (i's pair, so i gets its entry store) and keeps v in rr6; ours takes rr6 (OLD_D2W6 order rr6 before rr4, strongly witnessed in cas)"
+   "note": "masked with vc OLD_D2PP (no pair free: the parameter word i in r5 is given back for rr4, lighter than the idle pair rr6 of v that regjam would take); 9 source forms tried before: none"
   },
   "clrlbit": {
    "orig": "4:d806",
    "size_orig": 46,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 9): as setlbit (2026-11-20, 9 source forms incl. a[x] = a[x] | .., *(v + ..), declarations): the original copies the address into rr4 (i's pair, so i gets its entry store) and keeps v in rr6; ours takes rr6 (OLD_D2W6 order rr6 before rr4, strongly witnessed in cas)"
+   "note": "masked with vc OLD_D2PP (no pair free: the parameter word i in r5 is given back for rr4, lighter than the idle pair rr6 of v that regjam would take); 9 source forms tried before: none"
   },
   "tstlbit": {
    "orig": "4:d834",

@@ -841,6 +841,32 @@ getreg(cls, reg, flag, sym)
 	if (cls == 1 || cls == 2 || cls == 6)
 		goto split;
 fail:
+#ifdef OLD_D2PP
+	/* vc (gopt): no pair free: an idle odd word that holds a parameter and whose even half is free is given back
+	   when that pair weighs less than the idle pair regjam would take (setlbit: rr4 from r4 and the parameter i in r5,
+	   not rr6 of v; addquad keeps rr2) */
+	if (flag == 0x1000 && cls == 3 && reg == -1) {
+		register struct rs *t, *m;
+
+		struct rs *j;
+
+		for (j = rsuse; j; j = j->next)		/* the pair regjam would take */
+			if (j->cls == 3 && j->busy <= 0)
+				break;
+		for (t = rsuse; t; t = t->next)
+			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && t->sym && t->sym->sclass == 9) {
+				for (m = rsfree; m; m = m->next)
+					if (m->cls == 2 && m->reg == t->reg - 1)
+						break;
+				if (m == 0)
+					continue;
+				if (j && rweight[j->reg] <= rweight[t->reg - 1])
+					continue;	/* the idle pair weighs less (addquad: rr2 before rr6) */
+				rsreturn(2, t->reg);
+				return getreg(cls, reg, flag, sym);
+			}
+	}
+#endif
 	return flag == 0x1000 ? regjam(cls, reg, flag, sym) : -1;
 }
 

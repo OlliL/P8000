@@ -179,7 +179,7 @@ neutral on cas when added, alone and all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV` and `OLD_D2XP` (gopt; all neutral on cas);
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP` and `OLD_D2PP` (gopt; all neutral on cas);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
   `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
 - spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S`, `OLD_D49`, `OLD_D50`, `OLD_D51` and `OLD_D64` (gopt, neutral on
@@ -320,6 +320,11 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - vc `OLD_D24L` (local3.c, ZL): the address of a frame place (a local struct, the argument area at 0(fp)) is loaded by
   `lda` without the mask `and rN,#%7f00`. /lib/gopt has 31 such lda (struct copies to a local, struct arguments), none with
   the mask; sccvc masked all of them. No source form: a struct assignment is the only C that gives `lda; ldk; ldir`. Neutral on cas.
+- vc `OLD_D2PP` (regallo3.c getreg, the fail path): when no pair is free, an idle odd word that holds a parameter and
+  whose even half is free is given back for the pair (as OLD_D2PO, which excludes parameter words: cas symtype), if that
+  pair weighs less than the idle pair regjam would take (rweight: rr2 2, rr0 3, rr4 4, rr6 6). /lib/gopt setlbit, clrlbit
+  (rr4 from r4 and the parameter i, not rr6 of v; i gets its entry store); addquad keeps rr2. checkops 15 -> 7,
+  chkfamindvar 17 -> 13, deledge 7 -> 4. Neutral on cas.
 - vc `OLD_D2XP` (allo3.c, changes OLD_D2X, which has no witness in cas): a long (pair) result of a binary operator does not
   go into the pair of its left operand when that is the register of a parameter (nodeno `c = q + 6`: `ldl rr2,rr6;
   inc r3,#6`, sccvc `ldl rr6,rr6; inc r7,#6` destroyed q). /lib/gopt nodeno, fndparm; checkops 21 -> 15, qmkstore 19 -> 14.

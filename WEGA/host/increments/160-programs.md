@@ -66,3 +66,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: vc `OLD_D2XP` (OLD_D2X not into a parameter's pair): nodeno, fndparm; 266 of 322 OK.
 - 2026-11-20 gopt: eqopnd by a source form (nested if instead of &&); 267 of 322 OK.
 - 2026-11-20 gopt: OLD_D2FA refined (only names matched alone; || at the top): linkreachdefs, asgfold; 269 of 322 OK.
+- 2026-11-20 gopt: vc `OLD_D2PP` (a parameter word given back for a lighter pair): setlbit, clrlbit; 271 of 322 OK.

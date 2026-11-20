@@ -1626,4 +1626,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   for || at the top (killdefs). linkreachdefs, asgfold exact: 269 OK, nothing lost; matrix vc +0.
 - gopt, popt experiments dropped (2026-11-20): no cross jump into a later copy (insrtlive, cause 8): 267 -> 218; no branch
   reversal over a jump back to a loop head (srchdef, cause 9): 269 -> 253. Both causes stay open.
+- gopt, vc `OLD_D2PP`: setlbit (9 forms, none): no pair free for the address copy; regjam took the idle pair rr6 of the
+  pointer parameter v, the original gives r5 (parameter i) back and takes rr4. Unconditional: 268 (addquad, include,
+  insertquad lost: the original takes the idle rr2 there); by weight against regjam's pair: 271, nothing lost; matrix vc +0.
 
