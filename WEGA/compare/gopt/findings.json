@@ -1681,7 +1681,7 @@
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "open (5 attempts, DIFF 25): (1) first use of q after the prologue: the original copies rr6 to rr2 (ldl rr2,rr6; inc r3,#6) and keeps rr6, ours increments r7 in place (cause 1); (2) four times and r6,#%7f00 after lda in a struct assignment (cause 2, phase B); (3) the block ldl rr2,#t; jp (found ? &t : &s) stands in the original behind the jp success of the post code, in ours inline (popt block order). Odd forms: gotos (fail inside the mode 0 block, success at the end of case 7, post inside case 0x18 and nonstd in the default behind case 2: the block order of the original); x is always 0 (do..while (x == 0), dead variable); the loop falls out at the end without a return value. checkops(q, mode): mode 0 the result operand c, 1 the operand a; result in opnd70c8/op70d8"
+   "note": "open (DIFF 21 with the source form the data asks for): the fail block (//    NULL) stands behind the nonstd block with an explicit goto fail in front of it (the string order of the data: nonstandard, NULL, at the bottom); popt moves it to the first goto. Left: in the mode == 1 branch the original reloads mode and q from the frame after the label (the parameters do not come back there: calls between the jump and the label, as prquad, cmwalk), and the ?: of opnd70c8 at the end (popt block order)"
   },
   "f4_7dfc": {
    "orig": "4:7dfc",
@@ -1744,7 +1744,7 @@
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "odd forms: gotos zero/neg/done, the block `pos = 0; pos = -1; done: debug tail; return` stands inside the first if (the order of the original behind its first test); each loop leaves with goto done. almap(p, op): the position of the operand in the alias table (op 3 addresses nadr..nptr, 0x18/0x1e pointers nptr..nal, else sx14); name from the debug strings. Unlike the other tails the original compares p->w4 == altab[i] in this order."
+   "note": "odd forms: gotos zero/neg/done, the block `pos = 0; pos = -1; done: debug tail; return` stands inside the first if (the order of the original behind its first test); each loop leaves with goto done. almap(p, op): the position of the operand in the alias table (op 3 addresses nadr..nptr, 0x18/0x1e pointers nptr..nal, else sx14); name from the debug strings. Unlike the other tails the original compares p->w4 == altab[i] in this order. (2026-11-20) data: the string (almap, symbol=...) stands in front of // almap: found pos in the original, so zero/neg/done followed the switch in the source; with that form our popt does not move the blocks up behind the first test (DIFF 48..50, 4 forms); code kept in the masked form, the data order stays open"
   },
   "addaffect": {
    "orig": "4:831e",

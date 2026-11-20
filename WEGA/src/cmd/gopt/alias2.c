@@ -490,10 +490,7 @@ checkops(q, mode)
 				printf("// Store's result opnd is not a ptr:\n");
 				prquad(q);
 			}
-		fail:
-			if (aflag > 2)
-				printf("//    NULL\n");
-			return 0;
+			goto fail;
 		} else
 			fl.fd = 0;
 	} else if (mode == 1) {
@@ -542,6 +539,10 @@ checkops(q, mode)
 				prquad(q);
 			}
 			goto fail;
+		fail:
+			if (aflag > 2)
+				printf("//    NULL\n");
+			return 0;
 		case 0x19:
 			hist[n++] = 0x19;
 			if (!fl.fb)
