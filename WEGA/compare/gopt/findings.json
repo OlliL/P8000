@@ -2581,7 +2581,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 69): (1) tq.op = 0x2f etc. is a byte store to the frame slot in the original (ldb 0x10(r15),#2F), ours forms the address (ldl rr2,#; add; inc #4; ldb @rr2): the local struct quad bit field store; (2) block order; the local struct quad tq with a.b2 = 4, tq.a.w4 = t = betatbl[..].x1; name from the strings"
+   "note": "open (DIFF 2, 2026-11-20): the body under `if (!(symtab[t].sflags & 1)) { .. } return 1;` (layout: 68 -> 17); the op stores of the local tq as `((char *)&tq)[4] = 0x2f` (a byte store to the frame slot as the original; tq.op, (&tq)->op, *((char *)&tq + 4) form the address: 17 -> 2; the form is a guess, the original may have had another type for tq or a codgen that stores an 8 bit field of a frame struct directly); left: one `ld r2,r0` of the chain tq.a.w4 = t = betatbl[..].x1 in one case (t = tq.a.w4 = .. tried: worse); the local struct quad tq with a.b2 = 4; name from the strings"
   },
   "setsym": {
    "orig": "4:d0be",

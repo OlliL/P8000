@@ -224,23 +224,23 @@ setsymtable(q, which)
 	}
 	if (s4d84 > 3)
 		printf("setsymtable(), %s, optimize=%d\n", ascii + symtab[t].nameoff, symtab[t].sflags & 1);
-	if (symtab[t].sflags & 1)
-		return 1;
-	symtab[t].sflags |= 1;
-	tq.b.b2 = 0;
-	tq.c.b2 = 0;
-	tq.op = 0x2f;
-	cnt = 0;
-	if (!insrtlive(&tq, &cnt))
-		return 0;
-	tq.op = 0x18;
-	if (!insrtlive(&tq, &cnt))
-		return 0;
-	tq.op = 3;
-	if (!insrtlive(&tq, &cnt))
-		return 0;
-	if (cnt < 3 && !islive(t, 1, 0) && nlv > 480)
-		return 0;
+	if (!(symtab[t].sflags & 1)) {
+		symtab[t].sflags |= 1;
+		tq.b.b2 = 0;
+		tq.c.b2 = 0;
+		((char *)&tq)[4] = 0x2f;
+		cnt = 0;
+		if (!insrtlive(&tq, &cnt))
+			return 0;
+		((char *)&tq)[4] = 0x18;
+		if (!insrtlive(&tq, &cnt))
+			return 0;
+		((char *)&tq)[4] = 3;
+		if (!insrtlive(&tq, &cnt))
+			return 0;
+		if (cnt < 3 && !islive(t, 1, 0) && nlv > 480)
+			return 0;
+	}
 	return 1;
 }
 
