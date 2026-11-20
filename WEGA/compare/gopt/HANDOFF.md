@@ -69,6 +69,10 @@ cause 8: which copy of a common tail stays, insrtlive, tprint, indupdate; droppe
 restored at labels (cmwalk, checkops; two OLD_D3JN rules dropped, OLDCC_LOG.md), entry store of a word parameter (tstlbit), word parameter compared
 from memory (deledge), pair choices (joinblk rr6/rr4, testbit), the almap data order (needs the popt move).
 OWNER 2026-11-20: SOURCE FORMS FIRST, a real srctry batch (10+ forms) before any switch, counts in findings/log.
+OWNER 2026-11-20 (later): NO new switch during the source phase; a compiler-looking difference goes as a candidate with its
+witnesses to compare/gopt/SWITCH_CANDIDATES.md, then on with source forms. Layout DIFFs were often source forms: the negated
+condition with a nested if (mktree 632 -> 20, genquads 50 -> 8, settmptable, setsymtable), gotos of the draft (vnumber),
+a local array that hid a global (writeil 108 -> 6).
 
 ## State (2026-11-19)
 `make gopt` LINKS. Layout: gdata.o first (bss in address order: bss exact, 42496 bytes), reader2 .. live2 (-Mt4), ebbo2 lpinv2 lpind2 (-Mt5), beta2

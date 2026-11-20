@@ -4018,7 +4018,7 @@
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 52, cause 3): block order of the loop (popt codemove: the q->op test is placed behind its body, the compare with dp->q behind the loop), jp instead of jr for long jumps, one more reload of dp (cause 5); param x unused (r2)"
+   "note": "open (DIFF 52, cause 3): block order of the loop (popt codemove: the q->op test is placed behind its body, the compare with dp->q behind the loop), jp instead of jr for long jumps, one more reload of dp (cause 5); param x unused (r2) (2026-11-20) the original: the ternary test first in the body, the q->op tests jump back to it, the r != dp->q test behind the body; tried: the branches swapped (r == dp->q first: 105), an early continue for r == dp->q (105), the q->op test and the ternary as one && (51)"
   },
   "chkfamindvar": {
    "orig": "5:6bf2",
