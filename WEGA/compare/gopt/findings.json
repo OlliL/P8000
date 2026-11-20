@@ -95,11 +95,11 @@
   "dotree": {
    "orig": "4:0714",
    "size_orig": 166,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "open: same instructions, but the original puts the test for UPROC (0x77) behind the store of curproc, ours behind the PROC block (block order, popt); tried: else-if chain, nested if, switch"
+   "note": "masked (2026-11-20): `curproc = p;` in both branches (0x76, 0x77), the else (mapall, dotree2) without return; the shared tail of the draft gave the 0x77 block in front of its test (K13 looked like popt, is the source form)"
   },
   "dotree2": {
    "orig": "4:07ba",

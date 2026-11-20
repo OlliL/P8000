@@ -86,3 +86,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt constfold: the return tail in both branches (cause 8 as a source form): DIFF 28 -> 10. K14: our sccvc emits wrong code for a long & / | with frame operands (`ld r3,lo; and r3,r3`), the original takes r1.
 - 2026-11-20 gopt needustar exact (early return 1, one condition, return 0 last).
 - 2026-11-20 gopt isglobal exact (a guard if before the loop).
+- 2026-11-20 gopt dotree exact: the common statement copied into both branches (K13 is a source form too).

@@ -217,16 +217,16 @@ dotree(p)
 		fwalk(p, mapnm);
 		if (eflag)
 			fwalk(p, pr, 0);
+		curproc = p;
 	} else if (p->in.op == 0x77) {
 		if (eflag)
 			fwalk(p, pr, 0);
 		mapnm(p->in.left);
+		curproc = p;
 	} else {
 		mapall(p);
 		dotree2(p);
-		return;
 	}
-	curproc = p;
 }
 
 void
