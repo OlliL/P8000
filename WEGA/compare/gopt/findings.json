@@ -2766,11 +2766,11 @@
   "srchdef": {
    "orig": "4:e722",
    "size_orig": 560,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 3): 13 loop forms of the inner search; best `for (pi = &p->idx + 1; *pi != -1; pi++)` (the same values): only the start differs: the original sets pi = &p->idx (inc r3,#4) and jumps into the increment (inc pi,#2) in front of the test, as if the loop began with a continue"
+   "note": "masked by the source form `for (pi = &p->idx; *++pi != -1; ) { if (defs[*pi] != q) continue; break; }` (the continue makes the loop start at the increment as the original)"
   },
   "killdefs": {
    "orig": "4:e952",

@@ -1,10 +1,3 @@
 {
-"main": "DIFF 423 (object 470 instructions, original 48)",
-"dotree": "DIFF 12 (object 44 instructions, original 43)",
-"dotree2": "OK",
-"cutree": "OK",
-"pr": "DIFF 15 (object 92 instructions, original 90)",
-"abortpass": "OK",
-"passes": "OK",
-"prtbl": "OK"
+"isebbend": "OK"
 }

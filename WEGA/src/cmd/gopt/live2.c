@@ -889,9 +889,11 @@ srchdef(q, mode)
 			return &p->idx;
 		if (s4d84 > 3)
 			printf("p=%X, *pi=%d, &pi=%X\n", p, p->idx, &p->idx);
-		for (pi = &p->idx + 1; *pi != -1; pi++)
-			if (defs[*pi] == q)
-				break;
+		for (pi = &p->idx; *++pi != -1; ) {
+			if (defs[*pi] != q)
+				continue;
+			break;
+		}
 		if (defs[*pi] == q)
 			return pi;
 		if (s4d84)

@@ -57,6 +57,8 @@ OLD_D2FA (frame-named pairs of autos and computed parameters), OLD_D3PL, OLD_D2A
 OLD_D2PP; OLD_D10 narrowed (right shift by one of a scratch register only); spopt OLD_D64. Source forms found: mkhash,
 mkdomtree, deltmplpdefs, addblk, addedge, eqopnd, srchdef (partly). Dropped: OLD_D2AP, popt experiments (no cross jump into a
 later copy; no reversal over a back jump), OLD_D3JC, the full D3KC.
+HINT (2026-11-20): the author wrote `continue` in loops: `while (..) continue;` (main), `{ if (x != q) continue; break; }`
+(srchdef) change the popt layout to the original's; try such forms on every loop DIFF.
 OWNER 2026-11-20: SOURCE FORMS FIRST, a real srctry batch (10+ forms) before any switch, counts in findings/log.
 Tools: fnc.py drops nothing; the traced scodgen (a copy of src/cmd/codgen in a scratch tree with src/lib and src/head linked,
 fprintf(stderr) in symreg/rnassign/getreg, build build/segvc/scodgen, run `sccvc -T2./dbgcg -S t.c`). The codgen Makefile has
