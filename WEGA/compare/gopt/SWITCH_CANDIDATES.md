@@ -11,10 +11,10 @@ Status: `candidate` (not built), `built` (exists, its witnesses get source forms
 | K2 | `]` between a jump and its label counts as a record (scodgen D3J) | prquad (exact) | built OLD_D3JB; source forms of prquad to retry |
 | K3 | a static in the body: the parameters live in the frame from the start (scparse/scodgen) | mkleaf, qmkstore (exact), operand (28) | built OLD_D3S; source forms to retry (register/address forms of the parameter) |
 | K4 | which copy of a common tail stays: the original the first, ours the later one (spopt xjump/comjump order) | setsym (8), vnumber (38), insrtlive (7), tprint (11), indupdate (23) | candidate (OLD_D67, "no cross jump into a later copy" dropped) |
-| K5 | a dead copy of a parameter at the first use (`ldl rr0,rr6`, `ld r3,r2`; cause 1) (scodgen) | mkconstopnd (2), affsize (3) | candidate |
+| K5 | a dead copy of a parameter at the first use (`ldl rr0,rr6`, `ld r3,r2`; cause 1) (scodgen) | mkconstopnd (2), affsize (3), setedges (12: `ld r3,r7` before the mult of the parameter i; 6 forms of GF), canshare (14, the same) | candidate |
 | K6 | a store of an 8 bit field of a frame struct goes directly to the slot (scodgen fixfld) | setsymtable (form `((char *)&tq)[4]` found, guessed) | candidate |
 | K7 | a pointer/global is reloaded where ours keeps it in a register (register cache; cause 5) | compress (11), eval (9), linkp (34), dominators (17), chklpdefs (51, one reload) | candidate |
-| K8 | the pair of a temporary: rr4 against rr6 (cause 6) | srchdflist (5), joinblk (9), testbit (22), deledge (4) | candidate |
+| K8 | the pair of a temporary: rr4 against rr6 (cause 6) | srchdflist (5), joinblk (9), testbit (22), deledge (4), prcgraph (11: `ldl rr2,rr6(r3)` against rr0 for the pointer loaded from the GF table; 6 forms) | candidate |
 | K9 | the entry store of a word parameter (tstlbit) | tstlbit (2) | candidate |
 | K10 | `(q = q->next)->op` with the displacement form (cause 4) | writeil (6) | candidate |
 | K11 | a chain `a = b = x` copies the value into another register first | setsymtable (2) | candidate |
