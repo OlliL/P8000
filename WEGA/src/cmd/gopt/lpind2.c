@@ -357,8 +357,9 @@ struct dl *p, *t;
 				ok = copyopndstmp(opqd, p, t, kind, n);
 		} else
 			ok = copyopndstmp(opqd, p, t, kind, n);
-	} else if (kind == 2) {
-		if (p->f11) {
+		if (0) {
+			/* the kind 2 code stands here, reached by goto from below: so the original's block order */
+k2:
 			if (opqd->b.b2 == 1 || opqd->b.b2 == 7 || opqd->op == 1 || opqd->op == 48) {
 				n->f15 = 1;
 				n->v = ceval(opqd->b, opqd->op, p->e14);
@@ -374,8 +375,11 @@ struct dl *p, *t;
 				}
 			} else
 				ok = copyopndstmp(opqd, p, t, kind, n);
-		} else
-			ok = copyopndstmp(opqd, p, t, kind, n);
+		}
+	} else if (kind == 2) {
+		if (p->f11)
+			goto k2;
+		ok = copyopndstmp(opqd, p, t, kind, n);
 	}
 	if (ok) {
 		a0da = 1;

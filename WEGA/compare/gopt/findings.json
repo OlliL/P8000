@@ -2181,11 +2181,11 @@
   "delbucket": {
    "orig": "4:b0d8",
    "size_orig": 230,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 20): the store branches swapped (prev != t first; formtry swap, DIFF 22 -> 20); left: the original leaves the loop to the code behind the cerror without a second test (jr eq to b16c); ours tests t < 0 again (break)"
+   "note": "exact (masked): `prev = t = bucket[i]` (t is stored first), the loop leaves by goto found past the cerror (no second t < 0 test), `if (prev == t) bucket[i] = ...; else bent[prev].next = ...`"
   },
   "dominators": {
    "orig": "4:b1be",
@@ -3961,11 +3961,11 @@
   "fillindvar": {
    "orig": "5:5ec4",
    "size_orig": 1080,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 21, 298 against 294 instructions): the 4 `and r6,#ADDR` of cause 2; block order (codemove): the original places the kind == 2 test block (cp kind,2 ..) behind its body (backward jr ne), ours before it; the source has labels LA/LB in the kind == 3 part and gotos from the kind == 2 part; if (ok) {rest} fn5_6466(0, n) puts the fail block last (2026-11-20) the gotos LA/LB of the draft replaced by copies of the mkconstopnd calls (popt merges them: same 17); left: the original puts the kind == 2 test behind the kind 3 code (layout); 8 forms (separate ifs 51, f11 && cond 17, negated 64-118)"
+   "note": "exact (masked): the kind 2 code with p->f11 set stands at the end of the kind 3 branch as `if (0) { k2: ... }`, the kind 2 branch is `if (p->f11) goto k2; ok = copyopndstmp(...)`: so the original block order (the kind 2 test right before the one copyopndstmp call, its code before it); goto, while, switch and branch order forms with the code in place give popt our order (DIFF 17)"
   },
   "indupdate": {
    "orig": "5:62fc",

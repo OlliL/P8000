@@ -90,3 +90,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: NODE type unsigned (TWORD as in mip): mktree 10 -> 8, nothing lost; 282 of 321 OK.
 - 2026-11-20 gopt tstlbit exact: dead code that changes i (the entry store is a leftover of code popt deleted; owner hint).
 - 2026-11-20 gopt: vc OLD_D3S removed (dead code `if (0) p = 0;` instead: mkleaf, qmkstore exact, operand 28); 284 of 321 OK; matrix check ok, cas byte-identical.
+- 2026-11-20 gopt: delbucket exact (`prev = t = ...`, goto past the cerror), fillindvar exact (the kind 2 code inside the kind 3 branch, reached by goto: only that gives popt the block order); 286 of 321 OK.

@@ -5,7 +5,7 @@ classified here with its witnesses, and the search for source forms goes on. A c
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
 without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form).
-The numbers are the DIFF lines of fnc.py (2026-11-20, 284 of 321 OK).
+The numbers are the DIFF lines of fnc.py (2026-11-20, 286 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
 |----|--------------------------|-----------------------|--------|
@@ -23,8 +23,8 @@ The numbers are the DIFF lines of fnc.py (2026-11-20, 284 of 321 OK).
 | K16 | `opnd.w4 = p->in.sname - symtab` stops our scodgen with `rbusy: register to be made busy not found on rslist`; the original has that code (7 forms, also with older scodgens) | operand (28) | candidate (a bug of the rebuild) |
 | K17 | a word parameter is not taken from its register after the entry store (the original compares/loads it from the frame; may be the common cause of K1 for words and K8 for r6/r7) | deledge (4), checkops (mode at the else if) | candidate |
 
-Not yet classified (layout; source forms open): delbucket (20: the loop exit to the code behind the cerror), fillindvar
-(17: the kind == 2 test behind the kind 3 code), chkcalls (11: the second loop).
+Not yet classified (layout; source forms open): chkcalls (11: the second loop). delbucket and fillindvar went by source
+forms (goto past the cerror; the kind 2 code reached by goto from inside the kind 3 branch).
 
 ## The switches built for gopt and their witnesses (measured 2026-11-20)
 

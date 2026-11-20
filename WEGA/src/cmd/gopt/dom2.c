@@ -159,19 +159,19 @@ delbucket(i, blk)
 
 	if (s4d82 > 2)
 		printf("delbucket(i=%d,blk=%d)\n", i, blk);
-	t = prev = bucket[i];
+	prev = t = bucket[i];
 	while (t >= 0) {
 		if (bent[t].blk == blk)
-			break;
+			goto found;
 		prev = t;
 		t = bent[t].next;
 	}
-	if (t < 0)
-		cerror("block blk not found in delbucket = %d\n", blk);
-	if (prev != t)
-		bent[prev].next = bent[t].next;
-	else
+	cerror("block blk not found in delbucket = %d\n", blk);
+found:
+	if (prev == t)
 		bucket[i] = bent[t].next;
+	else
+		bent[prev].next = bent[t].next;
 }
 
 /* the immediate dominators of the blocks (Lengauer and Tarjan); dom: the result, idfn: the inverse of the numbering */
