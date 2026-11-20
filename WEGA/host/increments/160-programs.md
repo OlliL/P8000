@@ -75,3 +75,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: vc OLD_D3JB (a `]` between a jump and its label is a record: prquad) and OLD_D3S (scparse `#static`: a function with a static in its body keeps the parameters in the frame: mkleaf, qmkstore, operand 30 -> 28); 276 of 321 OK; matrix vc +0, the real cas build byte-identical. Two OLD_D3JN rules for cmwalk dropped (net 0).
 - 2026-11-20 gopt mktree: the "popt layout" (cause 3) was a source form: the talloc block under the negated condition with return, the asg code behind it without a label: DIFF 632 -> 20.
 - 2026-11-20 gopt vnumber: the gotos of the draft replaced by structured code (inner switch with default, tails copied): DIFF 131 -> 38; the rest is cause 8 (popt keeps the later copy of a common tail).
+- 2026-11-20 gopt genquads: the end chain negated with a nested if: DIFF 50 -> 8. HINT for the layout DIFFs (cause 3): the negated condition with the nested if (mktree, genquads).

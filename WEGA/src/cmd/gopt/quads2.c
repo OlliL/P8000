@@ -238,14 +238,16 @@ tail:
 	if (p3 && p3->b2 == 3) {
 		if (p->in.op == 0x3a)
 			*p = rcopy;
-		else if (!asgop(p->in.op) || p->in.op == 0x4e || p->in.op == 0x4f || p->in.op == 0x24 || p->in.op == 0x75 || p->in.op == 0x65) {
+		else if (asgop(p->in.op) && p->in.op != 0x4e && p->in.op != 0x4f && p->in.op != 0x24 && p->in.op != 0x75 && p->in.op != 0x65) {
+			if (p1->b2 == 3) {
+				p->in.op = 0x7d;
+				p->tn.rval = p1->w4;
+			} else
+				*p = lcopy;
+		} else {
 			p->in.op = 0x7d;
 			p->tn.rval = p3->w4;
-		} else if (p1->b2 == 3) {
-			p->in.op = 0x7d;
-			p->tn.rval = p1->w4;
-		} else
-			*p = lcopy;
+		}
 	} else if (asgop(p->in.op) || p->in.op == 0x4e || p->in.op == 0x4f) {
 		p->in.op = p3->b2 == 3 ? 0x79 : 2;
 		p->tn.rval = p3->w4;
