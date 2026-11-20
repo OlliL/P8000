@@ -2077,7 +2077,7 @@
    "kind": "proven",
    "module": "flow2.c",
    "file": "flow2.c",
-   "note": "open (DIFF 13, 6 attempts): (1) blks[pi]->next->c.w4 |= blks[pj]->next->c.w4: the original uses rr6 for the left side, ours rr4 (2 lines); (2) delquad(p) after nx = p->next: the original keeps p in rr2 over the store to the local nx, ours loads it again (cause 5, as pralvars). Names guessed; fna66e(a, b, c) a placeholder (4:a66e), params: y, x, 2 / pj, pi, 1 (the first argument goes to r7) (2026-11-20) left: (1) `|=` of c.w4 through rr6 in the original, rr4 in ours (a = a | b: 24); (2) the reload of p at the switch of the edge loop (label: the original reloads, ours forwards); 3 forms of the delquad loop (while, for(;;) break, for with break): all 12"
+   "note": "open (DIFF 13, 6 attempts): (1) blks[pi]->next->c.w4 |= blks[pj]->next->c.w4: the original uses rr6 for the left side, ours rr4 (2 lines); (2) delquad(p) after nx = p->next: the original keeps p in rr2 over the store to the local nx, ours loads it again (cause 5, as pralvars). Names guessed; fna66e(a, b, c) a placeholder (4:a66e), params: y, x, 2 / pj, pi, 1 (the first argument goes to r7) (2026-11-20) left: (1) `|=` of c.w4 through rr6 in the original, rr4 in ours (a = a | b: 24); (2) the reload of p at the switch of the edge loop (label: the original reloads, ours forwards); 3 forms of the delquad loop (while, for(;;) break, for with break): all 12; 2026-11-21 with OLD_D2NP: DIFF 2"
   },
   "blkempty": {
    "orig": "4:a13c",
@@ -2109,11 +2109,11 @@
   "joinblk": {
    "orig": "4:a66e",
    "size_orig": 718,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "flow2.c",
    "file": "flow2.c",
-   "note": "open (DIFF 9, 1 attempt): the right side of blks[b]->a.w4 = blks[a]->a.w4 loads through rr4, the original through rr6 (twice; the same in rmlabels): cause 1 (the original has no cached parameter in r7 there); name guessed: the edges of block a are appended to those of b, mode 1/2/3 drops edges"
+   "note": "open (DIFF 9, 1 attempt): the right side of blks[b]->a.w4 = blks[a]->a.w4 loads through rr4, the original through rr6 (twice; the same in rmlabels): cause 1 (the original has no cached parameter in r7 there); name guessed: the edges of block a are appended to those of b, mode 1/2/3 drops edges; 2026-11-21 exact with vc OLD_D2NP (a global loaded into a pair is not remembered: rr6 reused, the global loaded again)"
   },
   "jmplabel": {
    "orig": "4:a93c",
@@ -2145,29 +2145,29 @@
   "compress": {
    "orig": "4:abd6",
    "size_orig": 260,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 11): the original has no cache of the base address: dfn[label[ancest[v]]] loads each base again (ldl rr6,...), ours keeps label in rr4 and uses r3: a difference of the register cache of the compiler (the same in eval)"
+   "note": "open (DIFF 11): the original has no cache of the base address: dfn[label[ancest[v]]] loads each base again (ldl rr6,...), ours keeps label in rr4 and uses r3: a difference of the register cache of the compiler (the same in eval); 2026-11-21 exact with vc OLD_D2NP (a global loaded into a pair is not remembered: rr6 reused, the global loaded again)"
   },
   "eval": {
    "orig": "4:acda",
    "size_orig": 180,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 9): the else branch swapped (>= : t = label[v] first; formtry swap, DIFF 15 -> 9); left: the register cache as in compress/linkp (label[ancest[v]] through rr4/r3 instead of reloading rr6); operands swapped (<=) and the || form tried (worse); 2026-11-20: 48 subscript forms of dfn[label[ancest[v]]] (a[b], b[a], *(a+b), *(b+a) per level): all the same code (cparse builds one tree)"
+   "note": "open (DIFF 9): the else branch swapped (>= : t = label[v] first; formtry swap, DIFF 15 -> 9); left: the register cache as in compress/linkp (label[ancest[v]] through rr4/r3 instead of reloading rr6); operands swapped (<=) and the || form tried (worse); 2026-11-20: 48 subscript forms of dfn[label[ancest[v]]] (a[b], b[a], *(a+b), *(b+a) per level): all the same code (cparse builds one tree); 2026-11-21 exact with vc OLD_D2NP (a global loaded into a pair is not remembered: rr6 reused, the global loaded again)"
   },
   "linkp": {
    "orig": "4:ad8e",
    "size_orig": 622,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 34, 1 attempt): structurally equal (the registers rr4/r3 against rr6/r2 and two base reloads: the register cache of the compiler, as compress and eval); linkp(v, w): the balanced link of Lengauer and Tarjan; arrays child (712a), size (7132); name from the string; 2026-11-20: a lone label rl1 (one reload as the original): 34 -> 26; a label sweep over every statement (one and two labels) gives no more; the rest is the rr4/rr6 choice (K7/K8)"
+   "note": "open (DIFF 34, 1 attempt): structurally equal (the registers rr4/r3 against rr6/r2 and two base reloads: the register cache of the compiler, as compress and eval); linkp(v, w): the balanced link of Lengauer and Tarjan; arrays child (712a), size (7132); name from the string; 2026-11-20: a lone label rl1 (one reload as the original): 34 -> 26; a label sweep over every statement (one and two labels) gives no more; the rest is the rr4/rr6 choice (K7/K8); 2026-11-21 exact with vc OLD_D2NP (a global loaded into a pair is not remembered: rr6 reused, the global loaded again)"
   },
   "addbucket": {
    "orig": "4:affc",
@@ -2190,11 +2190,11 @@
   "dominators": {
    "orig": "4:b1be",
    "size_orig": 1766,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 17, 1 attempt): structurally equal (regdiff: only two base reloads ldl R,ADDR against ldl R,R: the register cache of the compiler as in compress, eval, linkp); the dominators of Lengauer and Tarjan; dom (713a), idfn (7120), arrays guessed; n = maxblk + 1; the debug prints of the arrays (s4d82)"
+   "note": "open (DIFF 17, 1 attempt): structurally equal (regdiff: only two base reloads ldl R,ADDR against ldl R,R: the register cache of the compiler as in compress, eval, linkp); the dominators of Lengauer and Tarjan; dom (713a), idfn (7120), arrays guessed; n = maxblk + 1; the debug prints of the arrays (s4d82); 2026-11-21 exact with vc OLD_D2NP (a global loaded into a pair is not remembered: rr6 reused, the global loaded again)"
   },
   "linkdom": {
    "orig": "4:b8a4",
@@ -3558,11 +3558,11 @@
   "srchdflist": {
    "orig": "5:226a",
    "size_orig": 700,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 5): rr4 against rr6 as the pointer temp of the cp (cause 7)"
+   "note": "open (DIFF 5): rr4 against rr6 as the pointer temp of the cp (cause 7); 2026-11-21 exact with vc OLD_D2NP (a global loaded into a pair is not remembered: rr6 reused, the global loaded again)"
   },
   "clrsymflag": {
    "orig": "5:2526",

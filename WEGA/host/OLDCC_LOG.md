@@ -1668,3 +1668,6 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   weighs 6, rr4 4), so it cannot reach rr6. Experiment: `OLD_D2N` also for a pair that loads a NAME (`(cls == 2 || cls == 3
   && p->in.op == NAME)`), scratch scodgen, gopt all functions: 299 -> 305 (compress, dominators, eval, joinblk, linkp,
   srchdflist exact, rmlabels 12 -> 2), no function worse. Not measured: cas (matrix check) and the other models.
+- gopt, `OLD_D2NP` built into vc (2026-11-21, owner: yes): the experiment above as its own block behind OLD_D2N (allo3.c,
+  `cls == 3 && p->in.op == NAME`). gopt 299 -> 305 (compress, dominators, eval, joinblk, linkp, srchdflist exact, rmlabels
+  12 -> 2), no function worse; cas +0 (matrix OLD_D2NP), `MATRIX_VER=vc oldcc.sh matrix check`: as in the table.
