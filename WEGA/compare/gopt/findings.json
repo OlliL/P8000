@@ -2572,7 +2572,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 7): the original has the block return 1 inline at the first almap test (the other returns jump to it), ours has it at the end"
+   "note": "open (DIFF 7): the original has the block return 1 inline at the first almap test (the other returns jump to it), ours has it at the end (2026-11-20) cause 8: every return 1 jumps to the first return-1 block (cde2) in the original, ours to the last; 7 source forms (<= 480 / return 0 last, &&, else if, nested if, !a): none; a popt experiment (no cross jump into a later copy) lost 50+ functions"
   },
   "setsymtable": {
    "orig": "4:ce7a",
