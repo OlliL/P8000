@@ -379,8 +379,10 @@ cand:
 		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (r->in.type == 5 || l->in.type == 15) &&
 		    (p->in.op == LS || p->in.op == RS || p->in.op == ASG LS || p->in.op == ASG RS)
 #ifdef SEG
-		    && !(p->in.right->in.op == ICON && p->in.right->tn.lval == 1 && (p->in.op == RS || p->in.op == ASG RS))
-			/* vc: a right shift by one stays immediate (cas asmrel); a left one goes through a register (gopt lpow2) */
+		    && !(p->in.right->in.op == ICON && p->in.right->tn.lval == 1 && (p->in.op == RS || p->in.op == ASG RS) &&
+			 !(p->in.left->in.op == REG && p->in.left->tn.rval >= 8))
+			/* vc: a right shift by one of a scratch register stays immediate (cas asmrel); a left shift and the shift
+			   of a register variable go through a register (gopt lpow2, ispow2) */
 #endif
 		    )
 			goto next;

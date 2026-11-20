@@ -1053,11 +1053,11 @@
   "ispow2": {
    "orig": "4:46c4",
    "size_orig": 78,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "comm2.c",
    "file": "comm2.c",
-   "note": "open: the original shifts c by `ld r2,#1; neg r2; sdal rr4,r2` (a dynamic shift by -1), ours `sral rr4,#1`. Tried: c >>= 1, c = c >> 1, c >>= 1L, c /= 2, the shift in the body, while. A switch or a source form not found."
+   "note": "masked with vc OLD_D10 narrowed (the shift by one of a register variable goes through a register: ld r2,#1; neg r2; sdal); source forms tried before: the pcc form for(i=0; c>1; ++i) c >>= 1, c = c >> 1, c /= 2, ++n in the body (5): the shift stays"
   },
   "plainicon": {
    "orig": "4:4712",

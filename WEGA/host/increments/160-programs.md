@@ -60,3 +60,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: addblk (source form), lpow2 (vc OLD_D10: immediate only for a right shift by one); 258 of 322 OK.
 - 2026-11-20 gopt: addedge by a source form (if/else with two stores); 259 of 322 OK.
 - 2026-11-20 gopt: OLD_D2FA extended to parameters named by an assignment of a computed value: tmpsearch; 260 of 322 OK.
+- 2026-11-20 gopt: ispow2 (OLD_D10: the shift of a register variable goes through a register); 261 of 322 OK.

@@ -1609,4 +1609,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   pairs named by an assignment (flag 0x0400 set by rnassign, cleared where getreg names a register, copied by rmove): 259
   (delrun lost: `q = r`); not when the assignment copies a variable (right NAME, REG or frame OREG): 260, nothing lost.
   Matrix vc +0, the real cas build byte-identical.
+- gopt ispow2: `c >>= 1` of the register variable c goes through a register in the original. Only a plain RS immediate
+  broke cas asmrel (its `>> 1` reaches match as an ASG RS of the scratch rr2): the rule is now "a right shift by one of a
+  scratch register (rval < 8)". OLD_D10 row and baseline unchanged; gopt 261 OK.
 
