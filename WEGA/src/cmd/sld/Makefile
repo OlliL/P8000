@@ -1,6 +1,8 @@
 # sld: the segmented loader of WEGA, reconstructed from /bin/sld.
 #
 #   make link        sld, linked with slibc-v9.a
+#   make old         sldo, an old sld (ldm.c with -DOLD_SLDS: a stack segment of -Ms without contents gets no table
+#                    entry; the header of /lib/gopt); make oldinstall PREFIX=dir puts it to dir/bin/sldo
 #   make install PREFIX=dir
 #   make clean
 
@@ -26,6 +28,19 @@ sld: $(LINKOBJS) $(LIBC)
 install: sld
 	cp sld $(PREFIX)/bin/sld
 	$(STRIP) $(PREFIX)/bin/sld
+
+old: sldo
+
+sldo: scrt0.o copyname.o dump.o ext.o ld.o ldmo.o printname.o swap.o symbols.o $(LIBC)
+	$(LDBIN) -i -z -e start scrt0.o copyname.o dump.o ext.o ld.o ldmo.o printname.o swap.o symbols.o $(LIBC) -o $@
+
+ldmo.o: ldm.c ld.h
+	cp ldm.c ldmo.c
+	$(SCC) $(CFLAGS) -DOLD_SLDS -c ldmo.c
+	rm -f ldmo.c
+
+oldinstall: sldo
+	cp sldo $(PREFIX)/bin/sldo
 
 copyname.o: copyname.c ld.h
 	$(SCC) $(CFLAGS) -c copyname.c
@@ -58,7 +73,7 @@ scrt0.o: scrt0.s
 	$(CAS) -u -o $@ scrt0.s
 
 clean:
-	rm -f *.o scrt0.s sld
+	rm -f *.o scrt0.s sld sldo
 
 # the library of /lib is not made here (make shipped)
 /lib/libc.a /lib/slibc.a:

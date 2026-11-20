@@ -51,6 +51,7 @@ stage2:
 	cd cmd/codgen ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
 	cd cmd/popt   ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
 	cd cmd/cc     ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
+	cd cmd/sld    ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
 
 cmds:
 	cd cmd ; $(MAKE) all

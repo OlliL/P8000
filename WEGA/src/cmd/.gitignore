@@ -58,6 +58,7 @@
 /popt/build/*/popt
 /popt/build/*/spopt
 /sld/sld
+/sld/sldo
 /standalone/ft41.c
 /standalone/libb.a
 /standalone/sa.cat

@@ -426,6 +426,13 @@ int *res;
 		(*p)++;
 		return 0;
 	}
+#ifdef OLD_SLDS
+	/* the old sld (sldo, /lib/gopt): a stack segment of -Ms without contents gets no table entry, _stkseg names it */
+	if (reslist[x].res == 0x0bb8) {
+		(*p)++;
+		return 0;
+	}
+#endif
 	q = table32_entry(np2seg);
 	if (np2seg++ > 0x100)
 		error(2, "pass2 segment table overflow");
