@@ -4094,7 +4094,7 @@
    "kind": "proven",
    "module": "reg2.c",
    "file": "reg2.c",
-   "note": "open (DIFF 17, cause 3): the test q->op == 59 is placed in front of its block, and the else-if block order, in the original (popt codemove)"
+   "note": "open (DIFF 17, cause 3): the test q->op == 59 is placed in front of its block, and the else-if block order, in the original (popt codemove) (2026-11-20) the original puts the q->op == 59 block before its test (behind the jump of the loop init; the test jumps back to it); 5 forms (if/else swapped, continue after either branch, q != GF continue): none (SWITCH_CANDIDATES K13)"
   },
   "degrees": {
    "orig": "5:7858",
