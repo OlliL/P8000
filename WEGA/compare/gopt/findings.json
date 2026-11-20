@@ -3782,7 +3782,8 @@
    "status": "open",
    "kind": "proven",
    "module": "lpinv2.c",
-   "file": "lpinv2.c"
+   "file": "lpinv2.c",
+   "note": "open (DIFF 2): `if ((x = x->next) == 0)` (x an auto): the original copies rr0 into rr2 after the store (ldl rr2,rr0; testl rr0), sccvc does not; OLD_D2AP covers only a global target (an auto target in deletblk, lpinv has no copy); tried !(x = ..), x = ..; if (x == 0), break, != 0 continue, a cast of 0"
   },
   "proceslp": {
    "orig": "5:500a",
@@ -3996,11 +3997,11 @@
   "deltmplpdefs": {
    "orig": "5:6614",
    "size_orig": 458,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 2): prev = a0e0 = a0e0->next: the original has ldl rr2,rr0 between the two stores, ours not"
+   "note": "open (DIFF 2): prev = a0e0 = a0e0->next: the original has ldl rr2,rr0 between the two stores, ours not masked with vc OLD_D2AP (prev = a0e0 = a0e0->next: the value in rr0 is copied into rr2 after the store to the global)"
   },
   "delindvar": {
    "orig": "5:67de",

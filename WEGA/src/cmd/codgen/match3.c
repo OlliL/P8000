@@ -259,6 +259,9 @@ match(p, cookie)
 #ifdef OLD_D2K
 	int d2kreg;
 #endif
+#ifdef OLD_D2AP
+	int d2apname;
+#endif
 
 	rcount();
 	switch optype(p->in.op) {
@@ -417,6 +420,9 @@ cand:
 #ifdef OLD_D2A
 		t = p->in.op;
 #endif
+#ifdef OLD_D2AP
+		d2apname = p->in.op == ASSIGN && p->in.left->in.op == NAME;
+#endif
 #ifdef OLD_D6S
 		/* v0p: an assignment of a register to itself (the value of a switch into its register) prints nothing */
 		if (p->in.op == ASSIGN && p->in.left->in.op == REG && p->in.right->in.op == REG && p->in.left->tn.rval == p->in.right->tn.rval &&
@@ -445,7 +451,12 @@ cand:
 #endif
 #ifdef OLD_D2A
 		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
+#ifdef OLD_D2AP
+		/* vc (gopt): also a pointer in rr0 assigned to a global (a pair in segmented code; rr0 cannot address) */
+		if (t == ASSIGN && !(cookie & 01) && p->in.op == REG && (p->in.type == 5 || p->in.type == 15 || ((p->in.type & 0x30) == 0x10 && p->tn.rval == 0 && d2apname)) && p->tn.rval < 8 &&
+#else
 		if (t == ASSIGN && !(cookie & 01) && p->in.op == REG && (p->in.type == 5 || p->in.type == 15) && p->tn.rval < 8 &&
+#endif
 		    !(p->in.rall & MUSTDO)) {	/* (not when the value goes to a register wanted for it: an argument) */
 			register int nr;
 

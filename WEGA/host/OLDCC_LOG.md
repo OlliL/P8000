@@ -1576,4 +1576,8 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   masked each. The frame place: OREG of fp with no name, symtab0 or a `~` name (fpsym1, fpsym2). gopt 244 -> 248 OK
   (insrtlpdef, insrtstmpmove, insrtopstmp, savecolors), nothing lost; matrix vc +0 on cas. fnc.py drops nothing by
   default any more (FNC_DROPRAW was `and r0,#%7f00`, the same mask).
+- gopt, vc `OLD_D2AP`: OLD_D2A (copy of the value of a long assignment into a new pair) for pointers: all pointers lost 9
+  functions (taballoc, clear: value in rr2); pointers in rr0 lost 4 (deletblk, lpinv: auto targets, also as two statements);
+  pointers in rr0 with a global target: deltmplpdefs exact, nothing lost, matrix vc +0. orderbl stays open (auto target in
+  a compare, copied in the original).
 
