@@ -87,3 +87,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt needustar exact (early return 1, one condition, return 0 last).
 - 2026-11-20 gopt isglobal exact (a guard if before the loop).
 - 2026-11-20 gopt dotree exact: the common statement copied into both branches (K13 is a source form too).
+- 2026-11-20 gopt: NODE type unsigned (TWORD as in mip): mktree 10 -> 8, nothing lost; 282 of 321 OK.

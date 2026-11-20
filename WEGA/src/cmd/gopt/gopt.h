@@ -95,7 +95,7 @@ union ndu {
 	struct {
 		int	op;
 		int	rall;
-		int	type;
+		unsigned type;
 		char	su;
 		char	fsu;
 		struct sym *sname;	/* 8 */
@@ -106,7 +106,7 @@ union ndu {
 	struct {
 		int	op;
 		int	rall;
-		int	type;
+		unsigned type;
 		int	w6;		/* 6: for a TEMP */
 		int	pad1;		/* 8 */
 		int	pad2;		/* 0xA */
@@ -118,7 +118,7 @@ union ndu {
 	struct {
 		int	op;
 		int	rall;
-		int	type;
+		unsigned type;
 		char	su;
 		char	fsu;
 		int	stsize;		/* 8 */
