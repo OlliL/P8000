@@ -2680,7 +2680,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 9): the original spills i (r5) and keeps v in rr6 with rr4 as the second pointer register, ours spills v and uses rr6 (the choice of the register pair, as rmlabels/joinblk the other way round); names guessed"
+   "note": "open (DIFF 9): the original spills i (r5) and keeps v in rr6 with rr4 as the second pointer register, ours spills v and uses rr6 (the choice of the register pair, as rmlabels/joinblk the other way round); names guessed (2026-11-20, 9 source forms incl. a[x] = a[x] | .., *(v + ..), declarations): the original copies the address into rr4 (i's pair, so i gets its entry store) and keeps v in rr6; ours takes rr6 (OLD_D2W6 order rr6 before rr4, strongly witnessed in cas)"
   },
   "clrlbit": {
    "orig": "4:d806",
@@ -2689,7 +2689,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 9): as setlbit"
+   "note": "open (DIFF 9): as setlbit (2026-11-20, 9 source forms incl. a[x] = a[x] | .., *(v + ..), declarations): the original copies the address into rr4 (i's pair, so i gets its entry store) and keeps v in rr6; ours takes rr6 (OLD_D2W6 order rr6 before rr4, strongly witnessed in cas)"
   },
   "tstlbit": {
    "orig": "4:d834",
