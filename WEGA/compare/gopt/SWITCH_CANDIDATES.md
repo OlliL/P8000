@@ -34,11 +34,11 @@ D64) built without the switch, fnc.py over all gopt functions. Witness = exact o
 | Switch | Witnesses | Other effect without it |
 |--------|-----------|-------------------------|
 | OLD_D3JB | 1: prquad (18 forms without it: none; the `]` of the block) | - |
-| OLD_D3PL | 1: tabfree | - |
-| spopt OLD_D64 | 1: domspace | operand 28>29, rmlabels 12>14 |
+| OLD_D3PL | 1: tabfree (without it: `(long)p` loaded from the frame instead of rr4; 8 cast/order forms: none) | - |
+| spopt OLD_D64 | 1: domspace (a correction of the rebuild: without it spopt reads `\|_stkseg+~L1+4\|` as offset 0 and loses what a register holds; no source form can stand for it) | operand 28>29, rmlabels 12>14 |
 | OLD_D2AV | 2: ceval, orderbl | vnumber 38>39 |
-| OLD_D2XP | 2: fndparm, nodeno | checkops 21>37 |
-| OLD_D2PP | 2: clrlbit, setlbit | checkops 21>55, chkfamindvar 9>13, deledge 4>7 |
+| OLD_D2XP | 2: fndparm, nodeno (without it the parameter pointer is changed in place, the original copies it to rr2 first: as K5) | checkops 21>37 |
+| OLD_D2PP | 2: clrlbit, setlbit (without it: dead `if (0) i = 0;` gives the entry store of i but then i is reloaded (5); behind the return: ldm of all (9); 8 forms) | checkops 21>55, chkfamindvar 9>13, deledge 4>7 |
 | OLD_D3JL | 3: canopt, denorm, eqopnd | - |
 | OLD_D24L | 6: fndparm insrtlpdef insrtopstmp insrtstmpmove savecolors tmpsearch | aliasm, checkops, fillindvar, genquads, initaffect, setsymtable, vnumber worse |
 | OLD_D2FA | 9: asgfold clearblocks linkreachdefs liveonexit marklpblocks solvelive solvereach srchdef tmpsearch | updatelooplist 5>9; better without it: genquads 8>6, mktree 8>4, rmlabels 12>11 |
