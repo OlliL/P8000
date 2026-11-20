@@ -1612,4 +1612,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - gopt ispow2: `c >>= 1` of the register variable c goes through a register in the original. Only a plain RS immediate
   broke cas asmrel (its `>> 1` reaches match as an ASG RS of the scratch rr2): the rule is now "a right shift by one of a
   scratch register (rval < 8)". OLD_D10 row and baseline unchanged; gopt 261 OK.
+- gopt, vc `OLD_D3PL`: tabfree (9 source forms, none): the pointer parameter p under `(long)p` is a NAME of type long, regforsym
+  refused the pair rr4 (type differs, D3PWORD of vc: pointers only). A pointer parameter cast to long is taken: tabfree exact,
+  nothing lost, matrix vc +0.
 

@@ -890,7 +890,12 @@ regforsym(reg, s, type, off)
 		return symreg(s, off, type);
 #ifdef OLD_D3P
 	/* v0: also under a cast between int, unsigned and pointers (the word types) */
-	if (type != s->stype && !(D3PWORD(type) && D3PWORD(s->stype)))
+	if (type != s->stype && !(D3PWORD(type) && D3PWORD(s->stype))
+#ifdef OLD_D3PL
+	    /* vc (gopt): a pointer parameter cast to long is taken from its pair (tabfree (long)p >> 24) */
+	    && !(s->sclass == 9 && (type == 5 || type == 15) && (s->stype & 0x30) == 0x10)
+#endif
+	    )
 		return -1;
 #else
 	if (type != s->stype)

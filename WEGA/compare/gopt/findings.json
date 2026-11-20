@@ -1079,11 +1079,11 @@
   "tabfree": {
    "orig": "4:4934",
    "size_orig": 276,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "comm2.c",
    "file": "comm2.c",
-   "note": "name guessed; open: one instruction: the original reads p (the second parameter, rr4) for s2 from the register, ours reloads it from the frame (ldl rr2,rr4 / ldl rr2,0(r15)); tried register p, swapped declarations, a copy of p"
+   "note": "masked with vc OLD_D3PL (the pointer parameter p cast to long is taken from rr4: ldl rr2,rr4); 9 source forms tried before (casts, (int) of the shift, order of s1/s2, register p, !p): none"
   },
   "tabavail": {
    "orig": "4:4a48",
