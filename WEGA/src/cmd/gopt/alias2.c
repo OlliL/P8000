@@ -494,18 +494,22 @@ checkops(q, mode)
 				prquad(q);
 			}
 			goto fail;
+			goto m1;
 		} else
 			fl.fd = 0;
-	} else if (mode == 1) {
-		s = q->a;
-		if (s.b2 != 3) {
-			if ((s.b2 == 4 || s.b2 == 1 || s.b2 == 7) && (q->a.w0 & 0x30) == 0x10)
-				goto success;
-			goto fail;
+	} else {
+m1:
+		if (mode == 1) {
+			s = q->a;
+			if (s.b2 != 3) {
+				if ((s.b2 == 4 || s.b2 == 1 || s.b2 == 7) && (q->a.w0 & 0x30) == 0x10)
+					goto success;
+				goto fail;
+			} else
+				fl.fd = 1;
 		} else
-			fl.fd = 1;
-	} else
-		cerror("illegal checkops call");
+			cerror("illegal checkops call");
+	}
 	x = 0;
 	do {
 		q = tmpsearch(pcur, s.w4, q);

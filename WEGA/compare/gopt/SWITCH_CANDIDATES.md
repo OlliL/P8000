@@ -5,11 +5,11 @@ classified here with its witnesses, and the search for source forms goes on. A c
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
 without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form).
-The numbers are the DIFF lines of fnc.py (2026-11-20, 293 of 321 OK).
+The numbers are the DIFF lines of fnc.py (2026-11-20, 294 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
 |----|--------------------------|-----------------------|--------|
-| K1 | a parameter at a label behind a jump: the original reloads it from the frame where ours takes its register back (scodgen D3J) | cmwalk (3), checkops (15) | candidate (two OLD_D3JN rules dropped) |
+| K1 | a parameter at a label behind a jump: the original reloads it from the frame where ours takes its register back (scodgen D3J) | cmwalk (3) | candidate (two OLD_D3JN rules dropped) |
 | K4 | which copy of a common tail stays: the original the first, ours the later one (spopt xjump/comjump); several were source forms (the tail in both branches: indupdate, constfold, dotree; goto to the kept return copy: setsym, insrtlive) | vnumber (38), tprint (11; 8 forms all equal) | candidate |
 | K5 | a parameter copied before an operation that changes its register (`ld r1,r3; mult rr0,r5`; `ldl rr0,rr6`, `ld r3,r2`; cause 1) (scodgen); looks like OLD_D3KC of v0p (vc lacks it because of cas copyfile): a narrower form is the guess; 11 type/order/expression forms and 7 dead-code forms: none | mkconstopnd (2), affsize (3), setedges (12), canshare (14), testbit (22) | candidate |
 | K6 | a store of an 8 bit field of a frame struct goes directly to the slot (scodgen fixfld) | setsymtable (2; the form `((char *)&tq)[4]` is a guess) | candidate |
@@ -21,7 +21,7 @@ The numbers are the DIFF lines of fnc.py (2026-11-20, 293 of 321 OK).
 | K14 | a long `&`/`\|` with a frame operand: the original takes r1 for the low word (`ld r1,lo; and r3,r1`), ours overwrites r3 (`ld r3,lo; and r3,r3`: wrong code) (scodgen template) | constfold (2 places) | candidate (a bug of the rebuild) |
 | K15 | the EPU store of an int-to-double result is not merged with the store of the first case | constfold (1 instruction) | candidate |
 | K16 | `opnd.w4 = p->in.sname - symtab` stops our scodgen with `rbusy: register to be made busy not found on rslist`; the original has that code (7 forms, also with older scodgens) | operand (28) | candidate (a bug of the rebuild) |
-| K17 | a word parameter is not taken from its register after the entry store (the original compares/loads it from the frame; may be the common cause of K1 for words and K8 for r6/r7) | deledge (4), checkops (mode at the else if) | candidate |
+| K17 | a word parameter is not taken from its register after the entry store (the original compares/loads it from the frame; may be the common cause of K1 for words and K8 for r6/r7) | deledge (4) | candidate |
 
 All differences classified: delbucket, fillindvar and chkcalls, open layout, went by source forms with gotos (goto past
 the cerror; the kind 2 code reached by goto from inside the kind 3 branch; chkcalls written with labels).
