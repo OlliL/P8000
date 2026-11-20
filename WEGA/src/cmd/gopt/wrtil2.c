@@ -363,12 +363,8 @@ mktree(q)
 		cleartrees();
 		break;
 	}
-	if (asgop(p->in.op))
+	if (asgop(p->in.op) || q->c.b2 != 6 && (q->c.b2 != 3 || p->in.op == 0x7a || ctpos[q->c.w4]-- <= 2))
 		goto asg;
-	if (q->c.b2 != 6) {
-		if (q->c.b2 != 3 || p->in.op == 0x7a || ctpos[q->c.w4]-- <= 2)
-			goto asg;
-	}
 	t = talloc();
 	t->in.rall = 0;
 	t->in.op = ASSIGN;
