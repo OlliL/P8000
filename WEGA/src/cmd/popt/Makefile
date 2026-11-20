@@ -39,7 +39,7 @@ build/segv1/spopt: FORCE
 build/segvk/spopt: FORCE
 	cd build/segvk ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D29"
 build/segvc/spopt: FORCE
-	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D13 -DOLD_D45 -DOLD_D20S -DOLD_D49 -DOLD_D50 -DOLD_D51"
+	cd build/segvc ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D13 -DOLD_D45 -DOLD_D20S -DOLD_D49 -DOLD_D50 -DOLD_D51 -DOLD_D64"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\

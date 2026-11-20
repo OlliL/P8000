@@ -1597,4 +1597,8 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   register: wrong code (asgfold read the old p). Now a store to a frame place clears that name in all registers before
   allo (the clearing after expand removed the name rnassign had just given: killdefs lost). gopt 255 OK, asgfold 3 -> 2,
   matrix vc +0.
+- gopt, vc spopt `OLD_D64`: domspace (9 source forms, none): codgen writes `add r7,|_stkseg+~L1+4|(fp)`, popt turns it into
+  `add r7,r3` only when it still knows r3 = that slot; memreg (z22.c) parses the offset at the first `+` (`+~L1+4`: 0), so a
+  store to c's slot cleared b's register. Skipping `+~` takes 4: domspace exact, operand 31 -> 30, rmlabels 13 -> 11,
+  nothing lost; matrix vc +0, the real cas build byte-identical.
 

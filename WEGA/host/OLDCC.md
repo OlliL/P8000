@@ -182,7 +182,9 @@ neutral on cas when added, alone and all together), with these differences:
   (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L` and `OLD_D2FA` (gopt; all neutral on cas);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
   `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
-- spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S`, `OLD_D49`, `OLD_D50` and `OLD_D51` (v0p has no switch in popt).
+- spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S`, `OLD_D49`, `OLD_D50`, `OLD_D51` and `OLD_D64` (gopt, neutral on
+  cas: memreg of z22.c takes the offset of `|_stkseg+~L1+4|(fp)` behind `~L1`; the shipped one reads `+~L1` as 0, so every
+  store to a frame slot clears every register known to hold a frame slot; /lib/gopt domspace keeps b in r3) (v0p has no switch in popt).
 
 Which switch has which witness in cas: `OLDCC_SWITCHES_VC.md` (all blocks of v0p are measured there; a switch without a
 witness in cas is in vc because it is in v0p). `sccvc` is the compiler of `src/cmd/cas/Makefile` (`old/cas` stays with scc;

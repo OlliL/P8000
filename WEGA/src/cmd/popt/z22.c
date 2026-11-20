@@ -1098,7 +1098,12 @@ int size;
 
 	len = off = roff = 0;
 	for (p = s; *p; len++, p++) {
+#ifdef OLD_D64
+		/* vc (gopt): `|_stkseg+~L1+4|(fp)`: the offset is the number behind ~L1, not that of `+~L1` (always 0) */
+		if (*p == '+' && p[1] != '$' && p[1] != '~') {
+#else
 		if (*p == '+' && p[1] != '$') {
+#endif
 			off = atoi(p + 1);
 			break;
 		}

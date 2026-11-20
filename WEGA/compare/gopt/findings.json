@@ -2325,11 +2325,11 @@
   "domspace": {
    "orig": "4:c5a4",
    "size_orig": 108,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 3): the original adds b from r3 (the cache), ours loads it again from the stack (add r7,b(r15)); an unused local x between b and c; name guessed"
+   "note": "masked with vc spopt OLD_D64 (memreg reads the offset of |_stkseg+~L1+4|(fp) behind ~L1: a store to one frame slot no longer clears the register copies of the others; b stays known in r3); 9 source forms tried before (sums, x temporary, register b, order of terms, parentheses): none"
   },
   "prlstats": {
    "orig": "4:c610",
