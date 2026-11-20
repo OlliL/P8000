@@ -142,10 +142,8 @@ settmptable(q, which)
 	if (s4d84 > 3)
 		printf("settmptable(), i=%d, betatbl[i].bopt=%d\n", t, BOPT(t));
 	if (!BOPT(t)) {
-		betatbl[t].bopt = 1;
-		if (islive(t, 0, 0))
-			return 1;
-		if (nlv > 480)
+		*(int *)((char *)betatbl + (t * 10 + 8)) |= 1 << 13;
+		if (!islive(t, 0, 0) && nlv > 480)
 			return 0;
 	}
 	return 1;

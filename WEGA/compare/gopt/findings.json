@@ -2559,11 +2559,11 @@
   "settmptable": {
    "orig": "4:cc4c",
    "size_orig": 268,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 64): layout: the original puts the block of the if/while (bopt = 1; islive) behind the switch dispatch, before the case blocks (popt block order); the address of betatbl[t].x is formed as (t*10 + 8) first, then added to the base (the same in issym); betatbl a table of 10 byte entries (guessed) (BOPT form: only one jr of the block order is left, DIFF 80 because of the layout)"
+   "note": "masked (2026-11-20): the tail `if (!islive(t, 0, 0) && nlv > 480) return 0;` (the layout: DIFF 80 -> 3), the bit set as `*(int *)((char *)betatbl + (t * 10 + 8)) |= 1 << 13` (the address as BBIT: (t*10 + 8) first); betatbl a table of 10 byte entries (guessed)"
   },
   "insrtlive": {
    "orig": "4:cd58",
