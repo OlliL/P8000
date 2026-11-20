@@ -142,7 +142,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "open: the original computes down + 1 in r0 and stores through rr2 (`ld r0,r5; inc r0,#1; ldl rr2,..; ld @rr2,r0`), ours r2 and rr6; tried four forms of *down1 = *down2 = down + 1; prints the tag with %% in the format (kept); the test `optype == UTYPE` before \", rval = %d\" is as in the binary (2026-11-20) the head `*down1 = *down2 = down + 1`: the original takes r0 for the value and rr2 (the register of the parameter down1) for the pointer, ours r2 and rr0/rr4 (K8); 5 forms (swapped chain, two statements, 1 + down, parentheses): 15-18"
+   "note": "open: the original computes down + 1 in r0 and stores through rr2 (`ld r0,r5; inc r0,#1; ldl rr2,..; ld @rr2,r0`), ours r2 and rr6; tried four forms of *down1 = *down2 = down + 1; prints the tag with %% in the format (kept); the test `optype == UTYPE` before \", rval = %d\" is as in the binary (2026-11-20) the head `*down1 = *down2 = down + 1`: the original takes r0 for the value and rr2 (the register of the parameter down1) for the pointer, ours r2 and rr0/rr4 (K8); 5 forms (swapped chain, two statements, 1 + down, parentheses): 15-18; 2026-11-20: down1[0], 0[down1], *(down1 + 0) forms of the chain store: all the same code (cparse builds one tree)"
   },
   "f4_09ae": {
    "orig": "4:09ae",
@@ -2158,7 +2158,7 @@
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "open (DIFF 9): the else branch swapped (>= : t = label[v] first; formtry swap, DIFF 15 -> 9); left: the register cache as in compress/linkp (label[ancest[v]] through rr4/r3 instead of reloading rr6); operands swapped (<=) and the || form tried (worse)"
+   "note": "open (DIFF 9): the else branch swapped (>= : t = label[v] first; formtry swap, DIFF 15 -> 9); left: the register cache as in compress/linkp (label[ancest[v]] through rr4/r3 instead of reloading rr6); operands swapped (<=) and the || form tried (worse); 2026-11-20: 48 subscript forms of dfn[label[ancest[v]]] (a[b], b[a], *(a+b), *(b+a) per level): all the same code (cparse builds one tree)"
   },
   "linkp": {
    "orig": "4:ad8e",
@@ -3758,7 +3758,7 @@
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 5, 2026-11-20): `for (y = x = p->bls; ..)` (the original stores x first, then y: no cross jump of the x store into the loop step, the test reloads x) and `if (x == p->bls) {bls branch} else {y->next branch}`: 32 -> 5 (26 forms: loop as while/&&/continue, the branch orders, p->bls == x). Left: after `p->bls = taballoc(..)` (store through the copy rr6 of rr0) the original reloads p from the frame for `p->bls->next = x`, ours takes rr0 (also y); forms (..)->next, (*p).bls, no cast: none (SWITCH_CANDIDATES K12)"
+   "note": "open (DIFF 5, 2026-11-20): `for (y = x = p->bls; ..)` (the original stores x first, then y: no cross jump of the x store into the loop step, the test reloads x) and `if (x == p->bls) {bls branch} else {y->next branch}`: 32 -> 5 (26 forms: loop as while/&&/continue, the branch orders, p->bls == x). Left: after `p->bls = taballoc(..)` (store through the copy rr6 of rr0) the original reloads p from the frame for `p->bls->next = x`, ours takes rr0 (also y); forms (..)->next, (*p).bls, no cast: none (SWITCH_CANDIDATES K12); 2026-11-20: (*p).bls, p[0].bls, p->bls[0].next forms: all the same code (cparse builds one tree)"
   },
   "addpreheader": {
    "orig": "5:4790",
