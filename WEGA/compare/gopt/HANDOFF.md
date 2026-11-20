@@ -61,6 +61,7 @@ OWNER 2026-11-20: SOURCE FORMS FIRST, a real srctry batch (10+ forms) before any
 Tools: fnc.py drops nothing; the traced scodgen (a copy of src/cmd/codgen in a scratch tree with src/lib and src/head linked,
 fprintf(stderr) in symreg/rnassign/getreg, build build/segvc/scodgen, run `sccvc -T2./dbgcg -S t.c`). The codgen Makefile has
 no oldcc.h dependency: `rm build/segvc/*.o` after a change of oldcc.h alone. The old libc archives were rebuilt (complete).
+Data (step 3): only the almap strings differ (host/recon/datadiff.py; code addresses masked); bss from 8:0004 (environ).
 Stack segment DONE: gopt links by sldo (src/cmd/sld make old, -DOLD_SLDS), header structure as the original.
 Open: tstlbit (entry store of i), affsize, mkconstopnd (dead ldl rr0,rr6), cmwalk/mkleaf/prquad (pointer parameter reloaded
 after a label), deledge (v compared from memory), insrtlive/tprint/checkops (popt: which copy of a tail stays, block order),

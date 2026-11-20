@@ -4,6 +4,7 @@ host/recon/dataname.py: name, segment, address). Segment 8 (bss): char arrays in
 to the next one; segment 7: the initialised words. To be distributed over the modules in the order of the data.
 */
 
+char environ[4];	/* 8:0000: the environment pointer that the start-up code stores at <<8>>%0000 (scrt0.s) */
 char v04[2];
 char v06[4];
 char qhead[4];
