@@ -179,7 +179,7 @@ neutral on cas when added, alone and all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L` and `OLD_D2AP` (gopt; all neutral on cas);
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2AP` and `OLD_D2FA` (gopt; all neutral on cas);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13` and
   `OLD_D25`. `OLD_D12` gives the data layout of /bin/cas in the real build (strings at the end of a file's data, unpadded);
 - spopt: the shipped one with `OLD_D13`, `OLD_D45`, `OLD_D20S`, `OLD_D49`, `OLD_D50` and `OLD_D51` (v0p has no switch in popt).
@@ -301,6 +301,14 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   front of the label is a jump (the record `]` does not count), the parameters known at the jumps come back (tfree1, rmconv); of
   those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
   records are forgotten. With two jumps (buildtree, an `&&`) the original reloads.
+- vc `OLD_D2FA` (regs3.c fixname, reader3.c): an assignment to an automatic variable names its register with the frame
+  place (rnassign: ~L1+off), but a later NAME of the variable is looked up by its symbol (regforsym), so sccvc never finds
+  it and loads it again (into rr0, the lighter idle pair: `inc r1,#12; ldl rr2,rr0`). The original finds a pointer or long
+  (pair) there (`ldl rr2,rr0; inc r3,#12`, `ldl rr0,rr2(#6)`), except (1) when a register is wanted for it (an argument:
+  loaded from the frame; betainit, rmrestorequad), (2) when the statement assigns to the variable (`q = q->next` reloads q;
+  initlive), (3) in a condition with && or || (killdefs: not found, the name stays). Words are not looked up (findend
+  copies the word from its register). /lib/gopt clearblocks, marklpblocks, pralvars, solvelive, solvereach, liveonexit.
+  Neutral on cas.
 - vc `OLD_D2AP` (match3.c, under `OLD_D2A`): the copy of OLD_D2A also for a pointer (a pair in segmented code) whose value
   is in rr0 and was assigned to a global (`prev = a0e0 = a0e0->next`: `ldl _a0e0,rr0; ldl rr2,rr0`). Not for an auto target
   (deletblk, lpinv have no copy; broader rules lost 4..9 functions); orderbl (`(x = x->next) == 0`, x an auto, copied in the

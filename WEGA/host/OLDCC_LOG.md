@@ -1580,4 +1580,10 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   functions (taballoc, clear: value in rr2); pointers in rr0 lost 4 (deletblk, lpinv: auto targets, also as two statements);
   pointers in rr0 with a global target: deltmplpdefs exact, nothing lost, matrix vc +0. orderbl stays open (auto target in
   a compare, copied in the original).
+- gopt, vc `OLD_D2FA`: found with a traced scodgen (fprintf in symreg, rnassign; run by `sccvc -T2./dbgcg`): rnassign
+  names the pair of an assignment to an auto with (fpsym1, frame offset), regforsym looks the auto up by its symbol.
+  Steps: find autos in every class: 245 OK (words lost: findend, the original copies the word); pairs only: 250 (lost
+  betainit, rmrestorequad: arguments; killdefs, initlive); not for a wanted register (rall != NOPREF): 253; a statement
+  assigning to the auto forgets its frame-named pair first (as OLD_D3K does for parameters): 254 (initlive); no lookup in
+  a condition with && or ||, the name stays (clearing it moves the load to rr2): 255, nothing lost; matrix vc +0.
 

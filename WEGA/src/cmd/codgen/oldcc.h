@@ -29,6 +29,7 @@
 #define OLD_D2K		/* a store through a scratch register makes it forget its name (match; gopt: addallist, initallist) */
 #define OLD_D24L	/* lda of a frame place without the mask and #%7f00 (local3.c ZL; gopt: every struct copy to a local) */
 #define OLD_D2AP	/* OLD_D2A also for a pointer in rr0 assigned to a global: the value is copied into a new pair (gopt: deltmplpdefs) */
+#define OLD_D2FA	/* an automatic pointer or long is found in the pair an assignment named with its frame place (regforsym; gopt) */
 #define OLD_D3JL	/* OLD_D3J: a pointer parameter that comes back at a label gets no frame home, only a long (gopt: canopt, denorm) */
 #endif
 

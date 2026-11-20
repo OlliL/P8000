@@ -28,6 +28,10 @@ extern NODE *deltrees[];
 extern FILE *dfile;
 extern int dope[];
 extern void mkdope();
+#ifdef OLD_D2FA
+int d2faandor();
+extern int d2fanone;
+#endif
 extern void efcode();
 extern int eflag;
 extern void endrun();
@@ -657,6 +661,18 @@ delay(p)
 
 		for (n = rsuse; n; n = n->next)
 			if (n->sym == p->in.left->in.sname)
+				n->sym = 0;
+	}
+#endif
+#ifdef OLD_D2FA
+	/* vc (gopt): in a condition with && or || no pair is found by its frame place (killdefs) */
+	d2fanone = p->in.op == CBRANCH && d2faandor(p->in.left);
+	/* vc (gopt): an automatic variable the statement assigns to is not known in the pair of its frame place from its start on */
+	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname && p->in.left->in.sname->sclass == 1) {
+		register struct rs *n;
+
+		for (n = rsuse; n; n = n->next)
+			if (n->cls == 3 && n->sym == fpsym1 && n->off == p->in.left->in.sname->soffset / 8)
 				n->sym = 0;
 	}
 #endif
@@ -1817,3 +1833,22 @@ argprep(p, cookie)
 	}
 	return p;
 }
+
+#ifdef OLD_D2FA
+/* OLD_D2FA: the tree p has an && or || */
+int
+d2faandor(p)
+	register NODE *p;
+{
+	register int k;
+
+	if (p->in.op == ANDAND || p->in.op == OROR)
+		return 1;
+	k = optype(p->in.op);
+	if (k == LTYPE)
+		return 0;
+	if (d2faandor(p->in.left))
+		return 1;
+	return k == BITYPE && d2faandor(p->in.right);
+}
+#endif

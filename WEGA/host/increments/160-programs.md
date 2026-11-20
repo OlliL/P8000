@@ -54,3 +54,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: vc switch `OLD_D3JL` (a restored pointer parameter gets no frame home; neutral on cas): canopt, denorm, islive; fnc.py FNC_DROPRAW (field masks no longer dropped): betainit, addquad, insertquad, exprfind; fnc.py 244 of 322 OK.
 - 2026-11-20 gopt: vc switch `OLD_D24L` (lda of a frame place without the mask; neutral on cas): insrtlpdef, insrtstmpmove, insrtopstmp, savecolors; fnc.py strict (drops nothing); 248 of 322 OK.
 - 2026-11-20 gopt: vc switch `OLD_D2AP` (OLD_D2A for a pointer in rr0 stored to a global): deltmplpdefs; 249 of 322 OK.
+- 2026-11-20 gopt: vc switch `OLD_D2FA` (an auto pointer is found in the pair named by its frame place; not for arguments, not in &&/|| conditions, not when the statement assigns to it): clearblocks, marklpblocks, pralvars, solvelive, solvereach, liveonexit; genquads 84 -> 50; 255 of 322 OK.

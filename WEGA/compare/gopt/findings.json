@@ -1911,11 +1911,11 @@
   "pralvars": {
    "orig": "4:8d16",
    "size_orig": 288,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "open (DIFF 2): after q = p->next the original keeps p in rr2 for p->x0, ours loads it again (the reverse of initallist: a cache kept over a store to a local, dropped over a store through a pointer in the original); putchar is the macro; name guessed"
+   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first)"
   },
   "mkallist": {
    "orig": "4:8e36",
@@ -2874,20 +2874,20 @@
   "solvereach": {
    "orig": "4:f128",
    "size_orig": 274,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 4): q = blks[i]; r = *(struct lrec **)&q->c: the original copies the cached pointer (ldl rr2,rr0; ldl rr0,rr2(#6)), ours adds 6 in place (inc r1,#6; ldl rr0,@rr2); QLREC with (char *) + 6 does not change it"
+   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first)"
   },
   "solvelive": {
    "orig": "4:f23a",
    "size_orig": 274,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 4): as solvereach; for (i = blkno; i >= 0; i--); prvec(r->f4, 3, 1) before prvec(r->f0, 4, 1)"
+   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first)"
   },
   "clearflags": {
    "orig": "4:f34c",
@@ -3531,20 +3531,20 @@
   "clearblocks": {
    "orig": "5:2138",
    "size_orig": 108,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 5): displacement form (cause 4): y->w12 after y = QHREC(...): the original ldl rr2,rr0; ld r2,rr2(#12), ours inc r1,#12 first (the same in clearblocks, marklpblocks)"
+   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first)"
   },
   "marklpblocks": {
    "orig": "5:21a4",
    "size_orig": 110,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 5): displacement form (cause 4): y->w12 after y = QHREC(...): the original ldl rr2,rr0; ld r2,rr2(#12), ours inc r1,#12 first (the same in clearblocks, marklpblocks)"
+   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first)"
   },
   "qmkstore": {
    "orig": "5:2212",
@@ -3633,11 +3633,11 @@
   "liveonexit": {
    "orig": "5:3248",
    "size_orig": 512,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 5): displacement form (cause 4): y->w12 after y = QHREC(...): the original ldl rr2,rr0; ld r2,rr2(#12), ours inc r1,#12 first (the same in clearblocks, marklpblocks)"
+   "note": "masked with vc OLD_D2FA (an automatic pointer is found in the pair an assignment named with its frame place: ldl rr2,rr0 then the offset, not inc r1 first)"
   },
   "findsubdtree": {
    "orig": "5:3448",

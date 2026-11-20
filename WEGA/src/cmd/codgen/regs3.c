@@ -893,6 +893,10 @@ regforsym(reg, s, type, off)
 	return symreg(s, 0L, type);
 }
 
+#ifdef OLD_D2FA
+int d2fanone;	/* OLD_D2FA: the statement is a condition with && or || */
+#endif
+
 /* a name that lives in a register becomes REG, otherwise an OREG */
 void
 fixname(p)
@@ -901,6 +905,22 @@ fixname(p)
 	register int r;
 
 	r = (p->in.rall & MUSTDO) ? p->in.rall & ~MUSTDO : -1;
+#ifdef OLD_D2FA
+	/* vc (gopt): an automatic pointer or long is also found in the pair an assignment named with its frame place
+	   (rnassign: ~L1+off), when no register is wanted for it (an argument is loaded from the frame) */
+	if (p->in.sname->sclass == 1 && p->in.rall == NOPREF && !d2fanone) {
+		register struct rs *n;
+
+		for (n = rsuse; n; n = n->next)
+			if (n->cls == 3 && n->sym == fpsym1 && n->off == p->in.sname->soffset / 8 && rclass(p->in.type, n->reg) == 3) {
+				n->busy = 1;
+				p->in.op = REG;
+				p->tn.rval = n->reg;
+				p->tn.lval = 0;
+				return;
+			}
+	}
+#endif
 	r = regforsym(r, p->in.sname, p->in.type, p->in.sname->soffset / 8);
 	if (r >= 0) {
 		p->in.op = REG;
