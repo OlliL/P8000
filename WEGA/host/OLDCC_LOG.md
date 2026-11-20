@@ -1621,4 +1621,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - gopt, vc `OLD_D2XP`: nodeno (9 forms, none): template 081 put q + 6 into rr6, the pair of the parameter q, by OLD_D2X
   (no witness in cas). Excluding parameter pairs: nodeno, fndparm exact, checkops 21 -> 15, qmkstore 19 -> 14, nothing lost (266);
   matrix vc +0. (The full OLD_D3KC in vc: 264 -> 202; its tshape part alone changes nothing.)
+- gopt, OLD_D2FA refined: linkreachdefs finds q in rr0 inside `p != q && (p->c.b2 == 8 || q->c.b2 == 8)` but compares q of
+  `p != q` from memory. The lookup is now only for a name matched alone (the LTYPE case of match), and the condition rule only
+  for || at the top (killdefs). linkreachdefs, asgfold exact: 269 OK, nothing lost; matrix vc +0.
 

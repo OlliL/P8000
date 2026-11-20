@@ -1490,11 +1490,11 @@
   "asgfold": {
    "orig": "4:6abe",
    "size_orig": 168,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "open (DIFF 2): 10 source forms tried 2026-11-20 (p->in.op++, ++, +=, chains, *pp first, (p = ..)->in.op, ASG op, return): none; with OLD_D2FA (stale frame names now cleared) the copy ldl rr2,rr0 matches; left: `*pp = p` reloads p in the original (the name went to the copy rr6 and was lost by the store through it), ours keeps p in rr0"
+   "note": "masked with vc OLD_D2FA refined 2026-11-20 (the frame-place lookup only for a name matched alone, not for an operand of a compare; in a condition only when || is not at the top)"
   },
   "prtcounts": {
    "orig": "4:6b66",
@@ -2757,11 +2757,11 @@
   "linkreachdefs": {
    "orig": "4:e400",
    "size_orig": 802,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 7): the second operand q->c.b2 == 8 of the || is loaded by the original through a copy (ldl rr2,rr0; ldb rl2,rr2(#8)), ours adds 8 to rr0 and compares with memory (cpb @rr2); tagged pointers: (long)p & 1 marks, MASK(p) = (long)p & ~1L (the 0x7F00 of the segment is added by the compiler when a pointer is passed); r = reachmap = taballoc (chain order)"
+   "note": "masked with vc OLD_D2FA refined 2026-11-20 (the frame-place lookup only for a name matched alone, not for an operand of a compare; in a condition only when || is not at the top)"
   },
   "srchdef": {
    "orig": "4:e722",

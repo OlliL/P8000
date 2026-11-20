@@ -308,7 +308,9 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   it and loads it again (into rr0, the lighter idle pair: `inc r1,#12; ldl rr2,rr0`). The original finds a pointer or long
   (pair) there (`ldl rr2,rr0; inc r3,#12`, `ldl rr0,rr2(#6)`), except (1) when a register is wanted for it (an argument:
   loaded from the frame; betainit, rmrestorequad), (2) when the statement assigns to the variable (`q = q->next` reloads q;
-  initlive), (3) in a condition with && or || (killdefs: not found, the name stays). Words are not looked up (findend
+  initlive), (3) in a condition with || at the top (killdefs: not found, the name stays; linkreachdefs with && at the top finds it),
+  (4) for an operand of a binary operator (linkreachdefs `p != q` compares q from memory; only a name matched alone, LTYPE in
+  match, is looked up). Words are not looked up (findend
   copies the word from its register). A parameter is found the same way (its frame name: fpsym2 for a parameter with sflags bit 3), but only in a pair named by
   the assignment of a computed value (flag 0x0400; tmpsearch `p = p->next`), not after loading it (delquad) or after the
   copy of a variable (delrun `q = r`). A store to a frame place clears that frame name in every register before the

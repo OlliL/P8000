@@ -22,7 +22,7 @@ extern int fldshf;
 extern int fldsz;
 extern struct sym *fpsym1, *fpsym2;
 #ifdef OLD_D2FA
-extern int d2facopy;
+extern int d2facopy, d2faltype;
 #endif
 extern NODE *getlr();
 extern int getreg();
@@ -285,7 +285,13 @@ match(p, cookie)
 	case LTYPE:
 		if (p->in.op != NAME)
 			goto cont;
+#ifdef OLD_D2FA
+		d2faltype = 1;	/* only a name matched alone (an address, a value) is found by its frame place, not an operand */
 		fixname(p);
+		d2faltype = 0;
+#else
+		fixname(p);
+#endif
 #ifdef OLD_D2C
 		/* v0: a name (not a parameter) found in a scratch register is that register, which then loses the name */
 		if (p->in.op == REG && (cookie & STAREG) && (rstatus[p->tn.rval] & STAREG) && p->in.type != 5 && p->in.type != 15 &&

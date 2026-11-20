@@ -665,8 +665,8 @@ delay(p)
 	}
 #endif
 #ifdef OLD_D2FA
-	/* vc (gopt): in a condition with && or || no pair is found by its frame place (killdefs) */
-	d2fanone = p->in.op == CBRANCH && d2faandor(p->in.left);
+	/* vc (gopt): in a condition with || at the top no pair is found by its frame place (killdefs; linkreachdefs with && finds it) */
+	d2fanone = p->in.op == CBRANCH && p->in.left->in.op == OROR;
 	/* vc (gopt): an automatic variable the statement assigns to is not known in the pair of its frame place from its start on */
 	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname &&
 	    (p->in.left->in.sname->sclass == 1 || p->in.left->in.sname->sclass == 9)) {

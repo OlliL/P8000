@@ -18,6 +18,7 @@ extern struct sym *fpsym1;
 extern struct sym *fpsym2;
 #ifdef OLD_D2FA
 int d2facopy;	/* OLD_D2FA: the assignment matched now copies a variable */
+int d2faltype;	/* OLD_D2FA: fixname of a name matched alone */
 #endif
 extern long frame0;
 extern NODE *getlr();
@@ -923,7 +924,7 @@ fixname(p)
 #ifdef OLD_D2FA
 	/* vc (gopt): an automatic pointer or long is also found in the pair an assignment named with its frame place
 	   (rnassign: ~L1+off), when no register is wanted for it (an argument is loaded from the frame) */
-	if ((p->in.sname->sclass == 1 || p->in.sname->sclass == 9) && p->in.rall == NOPREF && !d2fanone) {
+	if ((p->in.sname->sclass == 1 || p->in.sname->sclass == 9) && p->in.rall == NOPREF && !d2fanone && d2faltype) {
 		register struct rs *n;
 		register struct sym *f;
 
