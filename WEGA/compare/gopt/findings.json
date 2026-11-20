@@ -2770,7 +2770,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 13): the same copy form for d->c.b2; the loop for (pi = &p->idx; *++pi != -1; ): the original jumps to the test (pi++, cp) at the bottom, ours has it at the top; name from the strings; returns int * (the entry in the list)"
+   "note": "open (DIFF 3): 13 loop forms of the inner search; best `for (pi = &p->idx + 1; *pi != -1; pi++)` (the same values): only the start differs: the original sets pi = &p->idx (inc r3,#4) and jumps into the increment (inc pi,#2) in front of the test, as if the loop began with a continue"
   },
   "killdefs": {
    "orig": "4:e952",
