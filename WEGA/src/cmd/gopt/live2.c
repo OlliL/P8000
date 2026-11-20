@@ -255,12 +255,14 @@ setsym(q, flag)
 	switch (flag) {
 	default:
 		cerror("setsym: illegal flag");
+r1:
 		return 1;
 	case 1:
 		if (s4d84 > 3)
 			printf("setsym(GENRBIT)\n");
 		if ((q->c.b2 == 4 || q->c.b2 == 8) && !setsymtable(q, 1)
 		    || (q->c.b2 == 6 || q->c.b2 == 8) && !settmptable(q, 1))
+r0:
 			return 0;
 		return 1;
 	case 2:
@@ -273,10 +275,10 @@ setsym(q, flag)
 	case 3:
 		if (s4d84 > 3)
 			printf("setsym(GENL2BIT)\n");
-		if ((q->b.b2 == 4 || q->b.b2 == 8) && !setsymtable(q, 3)
-		    || (q->b.b2 == 6 || q->b.b2 == 8) && !settmptable(q, 3))
-			return 0;
-		return 1;
+		if (!((q->b.b2 == 4 || q->b.b2 == 8) && !setsymtable(q, 3)
+		    || (q->b.b2 == 6 || q->b.b2 == 8) && !settmptable(q, 3)))
+			goto r1;
+		goto r0;
 	}
 }
 

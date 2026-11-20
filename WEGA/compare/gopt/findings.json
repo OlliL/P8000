@@ -2586,11 +2586,11 @@
   "setsym": {
    "orig": "4:d0be",
    "size_orig": 374,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 8, 2026-11-20): default first in the switch, each case as one condition `if ((b2 == 4 || b2 == 8) && !setsymtable(..) || (b2 == 6 || b2 == 8) && !settmptable(..)) return 0; return 1;` (20 -> 8); left: cause 8 (the original keeps the `return 1` of default and the last case jumps to it; ours the last copy); cases with break and one return 1 behind the switch: 8 too (2026-11-20) default last in the source: the last case jumps into the copy of default (the sharing of the original) but ours leaves default at the end, the original moves it behind the dispatch (13; K13); return 0/1 or cerror behind the switch: 8-13"
+   "note": "exact (masked): popt keeps the return copy right before the epilogue label (the last case after the dispatch moved up); the original keeps the default return 1 and the case 1 return 0: case 3 is `if (!(...)) goto r1; goto r0;` with r1 at the default return 1 and r0 at the case 1 return 0"
   },
   "markblkvar": {
    "orig": "4:d234",
