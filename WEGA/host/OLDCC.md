@@ -179,7 +179,7 @@ neutral on cas when added, alone and all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D2NP` and `OLD_D3JB` (gopt; all neutral on cas);
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP` and `OLD_D3JB` (gopt; all neutral on cas);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13`,
   `OLD_D25` and `OLD_D12R` (gopt, neutral on cas: the static area of a function that returns a structure is zeros in the data,
   written at the start of the next function (or at the end of the file), behind the function and its switch tables, not in
@@ -261,10 +261,9 @@ Where a value goes:
 - v0 `OLD_D2C` (match, allocreg): a name found in a scratch register by fixname is that register, the tree takes it over and
   the register forgets the name (gotscal); not for parameters, and such a copy holds no name.
 - v0 `OLD_D2N` (allocreg): a name loaded into a word register is not remembered there; only the register of an assignment
-  keeps the name (ilbrace reloads `_pstk`, gotscal uses r2 for two statements).
-- vc `OLD_D2NP` (allocreg): OLD_D2N for a pair, a global loaded into a pair is not remembered there; the pair is free again,
-  so OLD_D2W6 takes rr6 for the next pair and the global is loaded again (gopt linkp, dominators, eval, compress, joinblk,
-  srchdflist; +0 on cas).
+  keeps the name (ilbrace reloads `_pstk`, gotscal uses r2 for two statements). The same for a global loaded into a pair
+  (not for an auto pair): the pair is free again, so OLD_D2W6 takes rr6 for the next pair and the global is loaded again
+  (gopt linkp, dominators, eval, compress, joinblk, srchdflist; neutral on the v0p models, the v0 bench and cas).
 - v0 `OLD_D2M` (allocreg): a word multiplied through a pair uses the pair of its even register when the odd half is free
   (adddef `ld r3,r2; mult rr2,#%0006`). `OLD_D2MO`: for an odd left register the pair below it when the even half is
   free or idle (dclstruct, dc `mult rr2,%5F24`).
@@ -753,7 +752,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | slibPW.a | move.c | v1 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | comm2.c (common 2.4) | sccvc (measured) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | debug2.c (prquad: D3JB) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | dom2.c, flow2.c, lpinv2.c (linkp, dominators, eval, compress, joinblk, srchdflist: D2NP) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | dom2.c, flow2.c, lpinv2.c (linkp, dominators, eval, compress, joinblk, srchdflist: D2N for a pair) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | wrtil2.c (mkleaf: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | lpinv2.c (qmkstore: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 

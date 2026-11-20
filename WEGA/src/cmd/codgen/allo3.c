@@ -398,12 +398,9 @@ allocreg(p, cookie)
 		r = -1;		/* v0: only when no lighter register is free; r stays busy for the operand */
 #endif
 #ifdef OLD_D2N
-	if (r == -1 && cls == 2 && (p->in.op == NAME || (p->in.op == OREG && p->tn.rval == 15)))
-		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: a loaded name is not remembered */
-#endif
-#ifdef OLD_D2NP
-	if (r == -1 && cls == 3 && p->in.op == NAME)
-		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* vc (gopt): OLD_D2N for a pair, a loaded global */
+	/* v0: a loaded name is not remembered: a word (a global, an auto), a pair only for a global (gopt linkp, eval) */
+	if (r == -1 && (cls == 2 && (p->in.op == NAME || (p->in.op == OREG && p->tn.rval == 15)) || cls == 3 && p->in.op == NAME))
+		r = getreg(cls, want, 0x1000, (struct sym *)0);
 #endif
 #ifdef OLD_D2C
 	if (r == -1 && p->in.op == REG)

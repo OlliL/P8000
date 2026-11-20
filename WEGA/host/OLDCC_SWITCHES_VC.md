@@ -29,7 +29,6 @@ Lost: exact with all switches, not without this one. Gained: exact only without 
 | OLD_D2M | cas asmins, cas asmword, cas newrec, cas putrow | - | +41 | 10797389 |
 | OLD_D2MO | - | - | +0 | 10797389 |
 | OLD_D2N | - | - | +0 | 10797389 |
-| OLD_D2NP | - | - | +0 | cd9015ca |
 | OLD_D2O | cas dotval, cas even, cas genb, cas iputloc, cas jprange, cas jprnew, cas lstloc, cas odd, cas ohdrinit, cas p2tag, cas seekout, cas symadjust | - | +164, data +451 bytes not equal | 10797389 |
 | OLD_D2P | cas asmins, cas asmreg, cas defsym, cas escape, cas evalint, cas exprreloc, cas exprval, cas iputexpr, cas jdeps, cas jdist, cas jiter, cas jprange, cas jprnew, cas jsum, cas main, cas ohdrinit, cas opadd, cas opsub, cas optim, cas putins, cas sputexpr, cas stenter, cas symtype, cas yylex, cas yyparse | - | +585, data +997 bytes not equal | 10797389 |
 | OLD_D2PO | cas stenter | - | +9, data +449 bytes not equal | 10797389 |

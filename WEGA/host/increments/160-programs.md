@@ -103,3 +103,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: mktree, genquads exact by lone labels (no goto): codgen forgets its registers at any label, so the original reloads there (K12 by source); 298 of 321 OK.
 - 2026-11-20 gopt: updatelooplist exact (lone labels), linkp 34 -> 26; label sweep over all other DIFF functions: no effect (K7/K8 register choice, K5, K4 vnumber, K6/K11, K14-16 untouched); K12 gone; 299 of 321 OK.
 - 2026-11-21 gopt: vc `OLD_D2NP` built (owner): OLD_D2N for a pair (a loaded global not remembered); compress, dominators, eval, joinblk, linkp, srchdflist exact, rmlabels 12 -> 2; cas +0, matrix check ok; 305 of 321 OK.
+- 2026-11-21 gopt: OLD_D2NP folded into OLD_D2N (owner); the v0p models were void since 11-15 (stdio.h, d12model fixed), all strictly equal again; checkall ALL OK before the fold.

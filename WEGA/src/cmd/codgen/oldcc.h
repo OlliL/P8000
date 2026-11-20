@@ -30,7 +30,6 @@
 #define OLD_D24L	/* lda of a frame place without the mask and #%7f00 (local3.c ZL; gopt: every struct copy to a local) */
 #define OLD_D2FA	/* an automatic pointer or long is found in the pair an assignment named with its frame place (regforsym; gopt) */
 #define OLD_D2PP	/* no pair free: an idle odd word holding a parameter is given back for a pair before regjam (getreg; gopt setlbit) */
-#define OLD_D2NP	/* OLD_D2N for a pair: a global loaded into a pair is not remembered there (allocreg; gopt linkp, dominators, eval) */
 #define OLD_D2XP	/* OLD_D2X not into the pair of a parameter (allo3.c; gopt nodeno) */
 #define OLD_D2AV	/* OLD_D2A only for a pointer in rr0, not for a long (match; gopt orderbl, ceval) */
 #define OLD_D3PL	/* OLD_D3P: a pointer parameter cast to long is taken from its pair (regforsym; gopt tabfree) */
@@ -73,7 +72,7 @@
 #define OLD_D2C		/* a name (not a parameter) found in a scratch register is that register; a copy holds no name */
 #define OLD_D2F		/* a free word register only when it weighs no more than the first free pair */
 #define OLD_D2L		/* an idle scratch word that only holds a name counts as free when it weighs less (getreg) */
-#define OLD_D2N		/* a name loaded into a word register (a global, an auto) is not remembered there */
+#define OLD_D2N		/* a name loaded into a word register (a global, an auto) or a global into a pair is not remembered there */
 #define OLD_D6T		/* a cpir switch: the values in front of the targets (record V), the target from the cpir pointer */
 #define OLD_D2T		/* the register of a TEMP (the value of a switch) counts as free for OLD_D2L between its uses */
 #define OLD_D6R		/* the count register of cpir in neither half of rr0 (gswitch) */

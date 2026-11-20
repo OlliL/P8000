@@ -4,7 +4,7 @@ Owner 2026-11-20: during the source phase no new switch is built; a difference t
 classified here with its witnesses, and the search for source forms goes on. A candidate is only taken up after the
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
-without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by the built vc OLD_D2NP; K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
+without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
 The numbers are the DIFF lines of fnc.py (2026-11-20, 305 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
@@ -25,7 +25,7 @@ joinblk, rmlabels, prcgraph, srchdflist, setposition, pr) ours keeps the address
 reuses rr6 (or rr2). Source forms tried without effect: a lone label in front of every statement (sweep), subscript and member syntax (a[b], b[a], *(a+b), (*p).m: one
 tree), operand order, dead stores to every parameter (and pairs), dead gotos. Best guess: the register cache of our
 scodgen keeps a global's address across the next expression where the original drops it.
-Built 2026-11-21 as vc `OLD_D2NP` (owner): see the table of the built switches; left of K7/K8: prcgraph, chkfamindvar,
+Built 2026-11-21 (owner) as vc `OLD_D2NP`, the same day folded into v0 `OLD_D2N` (a global loaded into a pair); left of K7/K8: prcgraph, chkfamindvar,
 setposition, pr, rmlabels (2).
 
 All differences classified: delbucket, fillindvar and chkcalls, open layout, went by source forms with gotos (goto past
@@ -48,5 +48,5 @@ D64) built without the switch, fnc.py over all gopt functions. Witness = exact o
 | OLD_D24L | 6: fndparm insrtlpdef insrtopstmp insrtstmpmove savecolors tmpsearch | aliasm, checkops, fillindvar, genquads, initaffect, setsymtable, vnumber worse |
 | OLD_D2FA | 9: asgfold clearblocks linkreachdefs liveonexit marklpblocks solvelive solvereach srchdef tmpsearch | updatelooplist 5>9; better without it: genquads 8>6, mktree 8>4, rmlabels 12>11 |
 | OLD_D2K | 11: addallist addblk addhdrlist alloclpdef asgfold betainit betanew include initallist labquad mkleaf | mktree, setedges worse |
-| OLD_D2NP | 6: compress dominators eval joinblk linkp srchdflist (built 2026-11-21, K7/K8) | rmlabels 2 instead of 12 |
+| OLD_D2N (pair part, 2026-11-21) | 6: compress dominators eval joinblk linkp srchdflist (K7/K8) | rmlabels 2 instead of 12 |
 | scparse OLD_D12R | data only (constfold's static return area) | not measurable by fnc.py |
