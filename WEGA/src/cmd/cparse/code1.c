@@ -255,6 +255,11 @@ efcode(){
 		i = getlab();
 		curftn->sfld8 = i;
 		size = tsize( DECREF(p->stype), p->dimoff, p->sizoff ) / SZCHAR;
+#ifdef OLD_D12R
+		/* vc (gopt): the area is in the data (zeros), behind the function's switch tables (constfold of ebbo2) */
+		fprintf( dfile, "\t.psec\tdata\n\t.data\n" );
+		fprintf( dfile, "L%d:\t.=.+%ld\n", i, size );
+#else
 		if( sectfull( ADATA, size ) ) newsect( ADATA );
 		else {
 #ifdef SEG
@@ -265,6 +270,7 @@ efcode(){
 		sectadd( ADATA, size );
 		fprintf( dfile, "L%d:\t.=.+%ld\n", i, size );
 		fprintf( dfile, "\t.data\n" );
+#endif
 		}
 	bend();
 	lineid();

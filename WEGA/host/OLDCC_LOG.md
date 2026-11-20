@@ -1633,4 +1633,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   addstore, transfer, prvec, allocvec, tabfree, addblk, mkconstopnd lost (266). tfree1 (`if (p == 0) cerror(..); else p->..`)
   keeps p in the original although its shape is that of prquad (`if (q == 0) { printf(..); return; }`, q reloaded): the
   difference is not the call. Dropped; open.
+- gopt data, vc scparse `OLD_D12R`: the 6 zero bytes of ebbo2 between two switch tables are the static return area of
+  constfold (struct qa); cparse efcode put it into the bss. In the data: the ebbo2 shift is gone, matrix vc +0 (code), the real
+  cas build byte-identical. init2: one more int (s4d98, unused) behind s4d96: the init2 shift is gone. checkops, notlive:
+  string order by source forms. Left in the data: almap (zero/neg/done behind the switch in the source; popt).
+  Note: `make gopt` does not rebuild the objects after a compiler change (rm *.o first).
 
