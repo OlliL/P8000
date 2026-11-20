@@ -164,9 +164,10 @@ insrtlive(q, cnt)
 	}
 	a = checkalias(q, 2);
 	if (a == 0)
-		return 1;
+		goto r1;
 	if ((symtab[q->a.w4].sflags >> 2) & 1) {
 		if (q->op == 0x2f && almap(&q->a, 0x2f) == 0)
+r1:
 			return 1;
 		if (q->op == 0x18 && almap(&q->a, 0x18) == nptr)
 			return 1;
@@ -179,7 +180,7 @@ insrtlive(q, cnt)
 		return 1;
 	if (nlv > 480)
 		return 0;
-	return 1;
+	goto r1;
 }
 
 /* the operand which (1: the result, 2: the operand a, 3: the operand b) of the quad q: its symbol is entered once in the table of the live variables (name from the strings) */
