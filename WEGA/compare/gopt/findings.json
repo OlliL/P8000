@@ -307,11 +307,11 @@
   "cmwalk": {
    "orig": "4:1640",
    "size_orig": 466,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "open: one instruction: the last `else if (optype(p->in.op) != LTYPE)` reads p from the frame in the original (ldl rr2,0(r15)), ours from rr6 (popt forwarding); the locals s1, s2 and the pointers p1, p2 as in main (2026-11-20) the original reloads the pointer parameter from the frame after a label reached by a jump (prquad after if (q == 0) {..return;}, cmwalk at the else, mkleaf already at the switch value); not restoring pointer parameters at every label fixes prquad and cmwalk but loses 13 functions (canopt, denorm, addstore ...): the rule is narrower, open (2026-11-20) the records: `] L56 ] B57 L51`; two OLD_D3JN rules (the newest conditional jump; a label named only by B drops the other records) made it exact but lost addstore or allocvec (OLDCC_LOG.md); open"
+   "note": "exact (masked): `} else { e1: if (optype(p->in.op) != LTYPE) genquads(p); }` with a dead `if (0) goto e1;` at the end of the CM branch: codgen forgets rr6 = p at e1 and reloads it from the frame as the original (K1 by source)"
   },
   "operand": {
    "orig": "4:1812",
@@ -2064,11 +2064,11 @@
   "deledge": {
    "orig": "4:9b96",
    "size_orig": 194,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "flow2.c",
    "file": "flow2.c",
-   "note": "open (DIFF 7, 5 attempts): (1) the first compare edges[x].blk == v: the original loads blk and compares with v from the stack (cause 1: the parameter is loaded again at the first use), ours compares r5; (2) ours has no ldl rr4,rr6; ld r0,@rr2; ld @rr4,r0 for *q = edges[x].next (the original keeps q in rr6 and copies it; ours seems to share the store); the loop form while (v != edges[x].blk) matches the layout; name guessed: the block v is taken out of the edge list q (2026-11-20, 10 source forms: v == .., edges[x = *q], unsigned/short v, do-while, for(;;), comma loop, if ((x = ..) < 0)): best DIFF 7: the original compares the word parameter v from the frame (ld r2,@rr2; cp r2,0(r15)), ours from r5 (cp r5,@rr2); the store *q = edges[x].next copies q twice (ldl rr0,rr6; ldl rr4,rr6)"
+   "note": "exact (masked): dead `if (0) v = 0;` at the start: codgen does not take v from r5 after the entry store but compares it from the frame as the original (K17 by source; as tstlbit)"
   },
   "rmlabels": {
    "orig": "4:9c58",

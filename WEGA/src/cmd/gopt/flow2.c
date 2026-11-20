@@ -255,6 +255,8 @@ deledge(q, v)
 {
 	int x, prev;
 
+	if (0)
+		v = 0;
 	if (*q < 0)
 		return;
 	x = *q;

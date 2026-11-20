@@ -365,8 +365,13 @@ cmwalk(p)
 			r = operand(p->in.right);
 			addquad(0x34, r, 0L, 0L);
 		}
-	} else if (optype(p->in.op) != LTYPE)
-		genquads(p);
+		if (0)
+			goto e1;
+	} else {
+e1:
+		if (optype(p->in.op) != LTYPE)
+			genquads(p);
+	}
 }
 
 /* the operand of a quad for a leaf */
