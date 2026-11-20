@@ -1681,7 +1681,7 @@
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "open (DIFF 21 with the source form the data asks for): the fail block (//    NULL) stands behind the nonstd block with an explicit goto fail in front of it (the string order of the data: nonstandard, NULL, at the bottom); popt moves it to the first goto. Left: in the mode == 1 branch the original reloads mode and q from the frame after the label (the parameters do not come back there: calls between the jump and the label, as prquad, cmwalk), and the ?: of opnd70c8 at the end (popt block order)"
+   "note": "open (DIFF 21 with the source form the data asks for): the fail block (//    NULL) stands behind the nonstd block with an explicit goto fail in front of it (the string order of the data: nonstandard, NULL, at the bottom); popt moves it to the first goto. Left: in the mode == 1 branch the original reloads mode and q from the frame after the label (the parameters do not come back there: calls between the jump and the label, as prquad, cmwalk), and the ?: of opnd70c8 at the end (popt block order) (2026-11-20) separate `if (mode == 1)` with `else if (mode != 0) cerror`: the reload of mode and q is right (10) but the test of mode != 0 is extra (the original has the else jump): not taken; switch (mode) 130; s.b2 == 3 first 47; found ? t : s as if/else or ?: on values: 21. The draft's gotos (post, success, nonstd, fail) are the next thing to restructure"
   },
   "f4_7dfc": {
    "orig": "4:7dfc",
