@@ -369,13 +369,14 @@ struct quad *q;
 			printf("isglobal(), returning TRUE\n");
 		return 1;
 	}
-	for (p = checkalias(q, 1); p != 0; p = p->next) {
-		if ((symtab[altab[p->x0]].sflags >> 2) & 1) {
-			if (s4d86 > 3)
-				printf("isglobal(), returning TRUE\n");
-			return 1;
+	if ((p = checkalias(q, 1)) != 0)
+		for (; p != 0; p = p->next) {
+			if ((symtab[altab[p->x0]].sflags >> 2) & 1) {
+				if (s4d86 > 3)
+					printf("isglobal(), returning TRUE\n");
+				return 1;
+			}
 		}
-	}
 	if (s4d86 > 3)
 		printf("isglobal(), returning FALSE\n");
 	return 0;

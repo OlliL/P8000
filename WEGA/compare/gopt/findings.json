@@ -3616,11 +3616,11 @@
   "isglobal": {
    "orig": "5:2df4",
    "size_orig": 426,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 13, 123 against 125 instructions): the original keeps the call printf of the TRUE print in the loop and the first TRUE block jumps to it (jr 2f10), ours the reverse (tail merging, sucomp); the original has `testl rr2; jr ne` after p = checkalias(q, 1) (loop test after the assignment), ours folds it"
+   "note": "masked (2026-11-20): the alias loop under `if ((p = checkalias(q, 1)) != 0) for (; p != 0; p = p->next)` (the original tests p once more before the loop: the guard; while and for forms equal)"
   },
   "findlpdefs": {
    "orig": "5:2f9e",
