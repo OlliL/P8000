@@ -407,7 +407,12 @@ allocreg(p, cookie)
 #endif
 #ifdef OLD_D2X
 	if (r == -1 && cls == 3 && want == -1 && optype(p->in.op) == BITYPE && p->in.op != LS && p->in.op != RS &&
-	    p->in.op != ASG LS && p->in.op != ASG RS && p->in.left->in.op == REG && szty(p->in.left->in.type) == 2)
+	    p->in.op != ASG LS && p->in.op != ASG RS && p->in.left->in.op == REG && szty(p->in.left->in.type) == 2
+#ifdef OLD_D2XP
+	    /* vc (gopt): not the pair of a parameter (nodeno c = q + 6: ldl rr2,rr6; inc r3,#6) */
+	    && !(p->in.left->in.sname && p->in.left->in.sname->sclass == 9)
+#endif
+	    )
 		r = freereg(p, want, cookie);	/* v0: a long result into the pair of its left operand */
 #endif
 #ifdef OLD_D2M

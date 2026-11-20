@@ -1618,4 +1618,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - gopt, vc `OLD_D2AV`: ceval (7 forms) and orderbl (5 forms): OLD_D2A (no witness in cas) copies a long in the original never,
   a pointer in rr0 only when the cookie asks for a temporary register (a compare: 010036; the inner assignment of a chain
   has 01312 and no copy). ceval, orderbl exact, nothing lost: 264 OK; matrix vc +0.
+- gopt, vc `OLD_D2XP`: nodeno (9 forms, none): template 081 put q + 6 into rr6, the pair of the parameter q, by OLD_D2X
+  (no witness in cas). Excluding parameter pairs: nodeno, fndparm exact, checkops 21 -> 15, qmkstore 19 -> 14, nothing lost (266);
+  matrix vc +0. (The full OLD_D3KC in vc: 264 -> 202; its tshape part alone changes nothing.)
 

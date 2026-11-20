@@ -63,3 +63,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: ispow2 (OLD_D10: the shift of a register variable goes through a register); 261 of 322 OK.
 - 2026-11-20 gopt: vc `OLD_D3PL` (a pointer parameter cast to long from its pair): tabfree; 262 of 322 OK.
 - 2026-11-20 gopt: vc `OLD_D2AV` (OLD_D2A copy only for a pointer in rr0 wanted in a temporary register): ceval, orderbl; 264 of 322 OK.
+- 2026-11-20 gopt: vc `OLD_D2XP` (OLD_D2X not into a parameter's pair): nodeno, fndparm; 266 of 322 OK.
