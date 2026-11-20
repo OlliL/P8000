@@ -692,7 +692,7 @@ int kind;
 	case 44:
 	case 48:
 		if (q->a.b2 == 1 || q->a.b2 == 7 || ((q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8) &&
-		    !isdefined(q, 2) && ((q->a.w0 & 0x30) == 0x10) == ((q->b.w0 & 0x30) == 0x10))) {
+		    !isdefined(q, 2) && !(((q->a.w0 & 0x30) == 0x10) ^ ((q->b.w0 & 0x30) == 0x10)))) {
 			if (q->op == 44 && q->b.b2 != 1 && q->b.b2 != 7)
 				return 0;
 			q = chklpdefs(r, q, 3, kind);
@@ -701,7 +701,7 @@ int kind;
 	case 14:
 	case 45:
 		if (q->b.b2 == 1 || q->b.b2 == 7 || ((q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8) &&
-		    !isdefined(q, 3) && ((q->a.w0 & 0x30) == 0x10) == ((q->b.w0 & 0x30) == 0x10))) {
+		    !isdefined(q, 3) && !(((q->a.w0 & 0x30) == 0x10) ^ ((q->b.w0 & 0x30) == 0x10)))) {
 			if (q->op == 45 && q->a.b2 != 1 && q->a.b2 != 7)
 				return 0;
 			q = chklpdefs(r, q, 2, kind);
