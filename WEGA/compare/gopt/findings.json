@@ -3575,11 +3575,11 @@
   "clropt": {
    "orig": "5:2684",
    "size_orig": 438,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "lpinv2.c",
    "file": "lpinv2.c",
-   "note": "open (DIFF 33, same instruction count): block order of the a-operand part: the original has the (4,6,8) body at 5:26f2 behind the 3-case and the compare chain after the bodies (jumping back); ours keeps if/else order; switch (a.b2) gives a jump table (worse) (2026-11-20) 14 more forms: one b2 test behind the chain (113 instructions: the original has the copies), `if (q->op == 7) return;`, negated op2 chain, else-if chains of the error (42), !q->b.b2, the 4/6/8 branch last under the negated condition (30, best, not kept: the original has S2 right behind the 3-case and the op test behind S2: codemove needs an unconditional jump to S2)"
+   "note": "exact (masked): with gotos in the original block order: the clrsymflag code as `if (0) { l468: ... }` in the a.b2 == 3 branch, behind it `opt: if (q->op == 7) return; goto op2;`, the other branches goto l468 / goto opt, the op2 part behind the chain (K13 layout by source)"
   },
   "setopt": {
    "orig": "5:283a",
@@ -4090,11 +4090,11 @@
   "buildgraph": {
    "orig": "5:75dc",
    "size_orig": 636,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "module": "reg2.c",
    "file": "reg2.c",
-   "note": "open (DIFF 17, cause 3): the test q->op == 59 is placed in front of its block, and the else-if block order, in the original (popt codemove) (2026-11-20) the original puts the q->op == 59 block before its test (behind the jump of the loop init; the test jumps back to it); 5 forms (if/else swapped, continue after either branch, q != GF continue): none (SWITCH_CANDIDATES K13)"
+   "note": "exact (masked): the op 59 code at the loop top as `if (0) { l59: ...; continue; }`, reached by `if (q->op == 59) goto l59;` (K13 layout by source)"
   },
   "degrees": {
    "orig": "5:7858",

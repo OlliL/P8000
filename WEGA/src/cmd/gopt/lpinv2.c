@@ -206,26 +206,34 @@ struct quad *q, *firstq;
 		clropt(p, firstq);
 		if (q->b.b2 == 0)
 			return;
-	} else if (q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8) {
-		clrsymflag(q, 2);
+		if (0) {
+l468:
+			clrsymflag(q, 2);
+			if (q->b.b2 == 0)
+				return;
+		}
+opt:
+		if (q->op == 7)
+			return;
+		goto op2;
+	} else if (q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8)
+		goto l468;
+	else if (q->a.b2 == 1 || q->a.b2 == 2 || q->a.b2 == 7 || q->a.b2 == 5) {
 		if (q->b.b2 == 0)
 			return;
-	} else if (q->a.b2 == 1 || q->a.b2 == 2 || q->a.b2 == 7 || q->a.b2 == 5) {
-		if (q->b.b2 == 0)
-			return;
+		goto opt;
 	} else {
 		cerror("clropt(): illegal op1 opnd");
 		return;
 	}
-	if (q->op != 7) {
-		if (q->b.b2 == 3) {
-			p = tmpsearch(firstq, q->b.w4);
-			clropt(p, firstq);
-		} else if (q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8)
-			clrsymflag(q, 3);
-		else if (!(q->b.b2 == 1 || q->b.b2 == 2 || q->b.b2 == 7))
-			cerror("clropt(): illegal op2 opnd");
-	}
+op2:
+	if (q->b.b2 == 3) {
+		p = tmpsearch(firstq, q->b.w4);
+		clropt(p, firstq);
+	} else if (q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8)
+		clrsymflag(q, 3);
+	else if (!(q->b.b2 == 1 || q->b.b2 == 2 || q->b.b2 == 7))
+		cerror("clropt(): illegal op2 opnd");
 }
 
 /* the flags of the operands of q: the symbols and the betatbl entries of c (and of a of a parameter store) are marked (name from the debug output) */

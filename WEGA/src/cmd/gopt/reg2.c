@@ -293,7 +293,8 @@ buildgraph()
 	tmp = (unsigned *)taballoc(dfwords * 2, 0);
 	live = 0;
 	for (q = qhead; q != 0; q = q->next) {
-		if (q->op == 59) {
+		if (0) {
+l59:
 			if (s4d90 > 4) {
 				printf("// buildgraph : processing quad -\n");
 				prquad(q);
@@ -306,7 +307,11 @@ buildgraph()
 			for (k = 0; k < dfwords; k++)
 				tmp[k] = dfp[k];
 			mergevectors(live, tmp);
-		} else if (q == GF(i, 2, struct quad *)) {
+			continue;
+		}
+		if (q->op == 59)
+			goto l59;
+		if (q == GF(i, 2, struct quad *)) {
 			updatevector(q, tmp);
 			nd = setedges(i, tmp);
 			if (q->c.b2 == 4) {

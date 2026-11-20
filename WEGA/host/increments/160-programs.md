@@ -93,3 +93,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt: delbucket exact (`prev = t = ...`, goto past the cerror), fillindvar exact (the kind 2 code inside the kind 3 branch, reached by goto: only that gives popt the block order); 286 of 321 OK.
 - 2026-11-20 gopt: chkcalls exact, written with gotos (labels for both loops, the found code falls through to the end); 287 of 321 OK. Lesson: when popt moves blocks against every structured form, the draft with gotos in the original block order (or the code reached by goto from inside another branch) is the source form.
 - 2026-11-20 gopt: aliasm, initaffect exact (K13): the skiphdrs then-block as `if (0) { skh: ...; continue; }` at the loop top, reached by goto; 289 of 321 OK.
+- 2026-11-20 gopt: buildgraph, clropt exact (K13 by source: the then-block as `if (0) { l: ... }` reached by goto; clropt in goto form); 291 of 321 OK.
