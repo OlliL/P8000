@@ -26,6 +26,9 @@ joinblk, rmlabels, prcgraph, srchdflist, setposition, pr) ours keeps the address
 reuses rr6 (or rr2). Source forms tried without effect: a lone label in front of every statement (sweep), subscript and member syntax (a[b], b[a], *(a+b), (*p).m: one
 tree), operand order, dead stores to every parameter (and pairs), dead gotos. Best guess: the register cache of our
 scodgen keeps a global's address across the next expression where the original drops it.
+Experiment (2026-11-20, host/OLDCC_LOG.md): `OLD_D2N` (a loaded NAME not remembered, words only) also for pairs: 299 -> 305,
+compress, dominators, eval, joinblk, linkp, srchdflist exact, rmlabels 12 -> 2, nothing lost; left of K7/K8: prcgraph,
+chkfamindvar, setposition, pr, rmlabels (2). Not built in (owner); cas not measured.
 
 All differences classified: delbucket, fillindvar and chkcalls, open layout, went by source forms with gotos (goto past
 the cerror; the kind 2 code reached by goto from inside the kind 3 branch; chkcalls written with labels).

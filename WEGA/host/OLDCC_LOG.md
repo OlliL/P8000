@@ -1660,3 +1660,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   `i = 0;` behind the last return): codgen forgets the register and gives the parameter its frame home, popt deletes the
   dead code, the store stays. mkleaf and qmkstore exact without the switch, operand 28 as with it. The witnesses of the
   gopt switches were measured (compare/gopt/SWITCH_CANDIDATES.md).
+- gopt, K7/K8 (2026-11-20, owner: look for an existing switch that fits or can be adapted; experiment, not built in):
+  in every K7/K8 witness ours keeps the address of a global pointer in rr6 (`ldl rr0,rr6` later) and takes rr4 for the
+  next pair, the original loads the global again and takes rr6. Existing switches: `OLD_D2N` (allocreg: a NAME loaded into a
+  word register is not remembered; v0, so in vc) covers only words (`cls == 2`); `OLD_D2W6` (rr6 before rr4) then takes the
+  free rr6; `OLD_D2P` (idle named pair counts as free) is limited to rr0, rr2 and lighter than the first free pair (rr6
+  weighs 6, rr4 4), so it cannot reach rr6. Experiment: `OLD_D2N` also for a pair that loads a NAME (`(cls == 2 || cls == 3
+  && p->in.op == NAME)`), scratch scodgen, gopt all functions: 299 -> 305 (compress, dominators, eval, joinblk, linkp,
+  srchdflist exact, rmlabels 12 -> 2), no function worse. Not measured: cas (matrix check) and the other models.
