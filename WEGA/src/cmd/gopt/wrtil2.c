@@ -363,25 +363,24 @@ mktree(q)
 		cleartrees();
 		break;
 	}
-	if (asgop(p->in.op) || q->c.b2 != 6 && (q->c.b2 != 3 || p->in.op == 0x7a || ctpos[q->c.w4]-- <= 2))
-		goto asg;
-	t = talloc();
-	t->in.rall = 0;
-	t->in.op = ASSIGN;
-	t->in.type = p->in.type;
-	t->in.right = p;
-	p = mkleaf(&q->c);
-	if (q->c.b2 == 3)
-		*(ctpos + q->c.w4) += 1;
-	else
-		*(ctneg + q->c.w4) += 1;
-	t->in.left = p;
-	asgfold(&t);
-	wrline(t);
-	tfree(t->in.right);
-	t->in.op = FREE;
-	return;
-asg:
+	if (!asgop(p->in.op) && (q->c.b2 == 6 || q->c.b2 == 3 && p->in.op != 0x7a && ctpos[q->c.w4]-- > 2)) {
+		t = talloc();
+		t->in.rall = 0;
+		t->in.op = ASSIGN;
+		t->in.type = p->in.type;
+		t->in.right = p;
+		p = mkleaf(&q->c);
+		if (q->c.b2 == 3)
+			*(ctpos + q->c.w4) += 1;
+		else
+			*(ctneg + q->c.w4) += 1;
+		t->in.left = p;
+		asgfold(&t);
+		wrline(t);
+		tfree(t->in.right);
+		t->in.op = FREE;
+		return;
+	}
 	if (q->c.b2 == 3 && !asgop(p->in.op) && p->in.op != 0x7a) {
 		p->in.rall = q->c.w4;
 		return;
