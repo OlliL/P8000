@@ -21,6 +21,13 @@ The numbers are the DIFF lines of fnc.py (2026-11-20, 296 of 321 OK).
 | K15 | the EPU store of an int-to-double result is not merged with the store of the first case | constfold (1 instruction) | candidate |
 | K16 | `opnd.w4 = p->in.sname - symtab` stops our scodgen with `rbusy: register to be made busy not found on rslist`; the original has that code (7 forms, also with older scodgens) | operand (28) | candidate (a bug of the rebuild) |
 
+Observation 2026-11-20 (K7 and K8 one mechanism, a guess): in every witness of K7 and K8 (linkp, dominators, eval, compress,
+joinblk, rmlabels, prcgraph, srchdflist, setposition, pr) ours keeps the address of a global pointer cached in rr6
+(`ldl rr0,rr6` later) and so takes rr4 (or r3, rr0) for the next temporary; the original loads the global again and
+reuses rr6 (or rr2). Source forms tried without effect: subscript and member syntax (a[b], b[a], *(a+b), (*p).m: one
+tree), operand order, dead stores to every parameter (and pairs), dead gotos. Best guess: the register cache of our
+scodgen keeps a global's address across the next expression where the original drops it.
+
 All differences classified: delbucket, fillindvar and chkcalls, open layout, went by source forms with gotos (goto past
 the cerror; the kind 2 code reached by goto from inside the kind 3 branch; chkcalls written with labels).
 
