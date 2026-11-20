@@ -237,13 +237,14 @@ addedge(q, v)
 	taballoc(4, 8);
 	edges[nedge].blk = v;
 	edges[nedge].next = -1;
-	if (*q >= 0) {
+	if (*q < 0)
+		*q = nedge++;
+	else {
 		x = *q;
 		while (edges[x].next >= 0)
 			x = edges[x].next;
-		q = &edges[x].next;
+		edges[x].next = nedge++;
 	}
-	*q = nedge++;
 }
 
 /* the block v is taken out of the edge list q (name guessed) */

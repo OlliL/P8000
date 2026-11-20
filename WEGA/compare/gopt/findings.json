@@ -2055,11 +2055,11 @@
   "addedge": {
    "orig": "4:9aee",
    "size_orig": 168,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "flow2.c",
    "file": "flow2.c",
-   "note": "open (DIFF 4): the original keeps the address of the list entry in rr2 (no store to the parameter q), ours stores q = &edges[x].next; with edges[x].next = nedge++ (DIFF 18) worse; struct edge {next, blk} 4 bytes guessed"
+   "note": "masked by the source form `if (*q < 0) *q = nedge++; else { x = *q; while (..) x = edges[x].next; edges[x].next = nedge++; }` (popt merges the two stores; no q = &edges[x].next)"
   },
   "deledge": {
    "orig": "4:9b96",
@@ -2068,7 +2068,7 @@
    "kind": "proven",
    "module": "flow2.c",
    "file": "flow2.c",
-   "note": "open (DIFF 7, 5 attempts): (1) the first compare edges[x].blk == v: the original loads blk and compares with v from the stack (cause 1: the parameter is loaded again at the first use), ours compares r5; (2) ours has no ldl rr4,rr6; ld r0,@rr2; ld @rr4,r0 for *q = edges[x].next (the original keeps q in rr6 and copies it; ours seems to share the store); the loop form while (v != edges[x].blk) matches the layout; name guessed: the block v is taken out of the edge list q"
+   "note": "open (DIFF 7, 5 attempts): (1) the first compare edges[x].blk == v: the original loads blk and compares with v from the stack (cause 1: the parameter is loaded again at the first use), ours compares r5; (2) ours has no ldl rr4,rr6; ld r0,@rr2; ld @rr4,r0 for *q = edges[x].next (the original keeps q in rr6 and copies it; ours seems to share the store); the loop form while (v != edges[x].blk) matches the layout; name guessed: the block v is taken out of the edge list q (2026-11-20, 10 source forms: v == .., edges[x = *q], unsigned/short v, do-while, for(;;), comma loop, if ((x = ..) < 0)): best DIFF 7: the original compares the word parameter v from the frame (ld r2,@rr2; cp r2,0(r15)), ours from r5 (cp r5,@rr2); the store *q = edges[x].next copies q twice (ldl rr0,rr6; ldl rr4,rr6)"
   },
   "rmlabels": {
    "orig": "4:9c58",
