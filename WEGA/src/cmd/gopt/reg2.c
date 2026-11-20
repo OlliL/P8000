@@ -374,7 +374,7 @@ unsigned *v;
 
 	if (q->op == 7)
 		return;
-	for (p = srchdef(q, 1); *p != -1; p++) {
+	for (p = srchdef(q, 1); *++p != -1; ) {
 		if (q != defs[*p]) {
 			if (s4d90 > 4) {
 				printf("// updatevector: clearing bit for quad ");

@@ -81,3 +81,4 @@ PLZ programs and `as`: 170.
 - 2026-11-20 gopt setsymtable: the body under the negated test (68 -> 17), the op stores of the local tq as a byte of the frame (17 -> 2, form guessed).
 - 2026-11-20 gopt updatelooplist: `y = x = p->bls` (the store order) and the branches swapped: DIFF 32 -> 5. clropt: 14 more forms, none.
 - 2026-11-20 gopt chkcalls: the loops by the cross jump direction (init copy kept: top test; step copy kept: for): DIFF 31 -> 11.
+- 2026-11-20 gopt updatevector exact: `*++p != -1` (the draft took the head entry of the srchdef list).

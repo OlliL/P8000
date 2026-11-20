@@ -4115,11 +4115,11 @@
   "updatevector": {
    "orig": "5:79b8",
    "size_orig": 208,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "reg2.c",
    "file": "reg2.c",
-   "note": "open (DIFF 19, cause 3): the block of the clearing is placed in front of the compare in the original (codemove); the swapped form q != s7154[*p] is the nearer one"
+   "note": "masked (2026-11-20): `for (p = srchdef(q, 1); *++p != -1; )` (the draft began at the head entry of srchdef's list: the init jumps to the p++ in the original); 5 branch forms tried before (if/else swapped, continue: worse)"
   },
   "setedges": {
    "orig": "5:7a88",
