@@ -577,6 +577,8 @@ struct quad *q;
 		}
 		r.b2 = 7;
 		r.w4 = constlook(res);
+		r.w0 = q->c.w0;
+		return r;
 	} else {
 		switch (q->op) {
 		case 1: dr = d1 + d2; break;
@@ -596,9 +598,9 @@ struct quad *q;
 		}
 		r.b2 = 2;
 		r.w4 = dconstlook(dr);
+		r.w0 = q->c.w0;
+		return r;
 	}
-	r.w0 = q->c.w0;
-	return r;
 }
 
 /* the operation of q does nothing: the second operand is the neutral element (name guessed) */

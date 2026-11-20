@@ -3067,7 +3067,7 @@
    "kind": "proven",
    "module": "ebbo2.c",
    "file": "ebbo2.c",
-   "note": "open (DIFF 38): written without the gotos of the draft (2026-11-20): the inner switch with break/default around the constant fold, the copies of the common tails (delquad; clear/addstore under `b2 == 8 || b2 == 6`), case 60 `if (q->c.b2 != 3) { checkuse; clear; addstore; continue; } checkuse; continue;`: DIFF 131 -> 38. Left: cause 8: the original keeps the first copy of the tail `q->b.b2 = 0; checkuse ..` (the identop block jumps into the constant fold block, 5:0392), ours the later one; the same for `updateopnd; va = vnfind`. An if/else-if chain with one tail and the switch cases as && conditions: 41 (the tails right: comjump keeps the first copy, only the cpir switch is missing); the same chain with the inner switch and `goto notcst` into the else: 131 (codemove moves the identop test to the front)"
+   "note": "open (DIFF 38): written without the gotos of the draft (2026-11-20): the inner switch with break/default around the constant fold, the copies of the common tails (delquad; clear/addstore under `b2 == 8 || b2 == 6`), case 60 `if (q->c.b2 != 3) { checkuse; clear; addstore; continue; } checkuse; continue;`: DIFF 131 -> 38. Left: cause 8: the original keeps the first copy of the tail `q->b.b2 = 0; checkuse ..` (the identop block jumps into the constant fold block, 5:0392), ours the later one; the same for `updateopnd; va = vnfind`. An if/else-if chain with one tail and the switch cases as && conditions: 41 (the tails right: comjump keeps the first copy, only the cpir switch is missing); the same chain with the inner switch and `goto notcst` into the else: 131 (codemove moves the identop test to the front) (2026-11-20) the full tail copied into the identop branch (ending with continue, for comjump): 48, the copies stay"
   },
   "f5_01d0": {
    "orig": "5:01d0",
@@ -3189,7 +3189,7 @@
    "kind": "proven",
    "module": "ebbo2.c",
    "file": "ebbo2.c",
-   "note": "open (DIFF 28, 432 against 431 instructions): the original returns the struct qa by value (copy to a static and rr2 = its address); (1) tail merging: the original keeps the copy of the common tail `ld r.w4,r2; r.w0 = q->c.w0` in the long branch and the float branch jumps to it (jp), ours keeps the float copy; the same for the store of dr (EPU 4FFC) in the float cases: the original keeps it in the first case, ours has a copy in the == case; (2) long `&` and `|`: the original uses r1 as the temporary (ld r1,op2lo; and r2,..; and r3,r1), ours emits ld r3 .. and r3,r3 (sccvc bug or a different source form: op2&op1, op1&=op2 tried); (3) jr/jp of the layout. Source forms tried: if (b2 == 2) {float} else {long} (worse), duplicated tail"
+   "note": "open (DIFF 10, 2026-11-20): `r.w0 = q->c.w0; return r;` in both branches (comjump keeps the copy of the long branch; cause 8 was the source form): 28 -> 10. Left: (1) long & and |: the original `ld r1,op2lo; and r2,..; and r3,r1`, ours `ld r3,..; and r3,r3` (wrong code of our sccvc; res = op1; res &= op2 and op2 & op1 tried: worse; SWITCH_CANDIDATES K14); (2) one EPU store of dr in a float compare case is not merged into the first copy (K15). Earlier forms:  if (b2 == 2) {float} else {long} (worse), duplicated tail"
   },
   "f5_13d8": {
    "orig": "5:13d8",
