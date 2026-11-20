@@ -14,83 +14,83 @@
   "main": {
    "orig": "4:0042",
    "size_orig": 186,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "open: (1) the loop of case C: the original has the slow path of getc (call _filbuf) in front of the loop top, ours behind it (popt code motion, phase B); (2) the frame is 4 bytes larger (the save area of r8..r13 at 0x3C, not 0x38). The cases { } ] [ . L B C / are the blocks 4:00fc ... 4:0700 (found as candidate starts); `err:` stands inside `if (vafe) {...}` (a label behind a jump moves with codemove, OLDCC.md D20). The case / loops for ever: the putc result is compared with the multi-character constant '/n' (0x6E2F), a typo of '\\n' (kept). The names of the callees of other modules are the addresses (addquad ...)"
+   "note": "masked (4:0042..0714 with its case blocks): the putc loop of case / is `while (putc(getc(infile), stdout) != '/n')` without the variables c2, c3 (the slow arm stores into a temporary, as the original); qfree = 0 (not curpos.line) in case {; the space loop of case C ends in `continue;` (the slow path of getc goes in front of the loop top). The case / loops for ever: '/n' is a typo of '\\n' (kept)."
   },
   "f4_00fc": {
    "orig": "4:00fc",
    "size_orig": 292,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "a case block of main (not a function)"
+   "note": "case block of main"
   },
   "f4_0220": {
    "orig": "4:0220",
    "size_orig": 124,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "a case block of main (not a function)"
+   "note": "case block of main"
   },
   "f4_029c": {
    "orig": "4:029c",
    "size_orig": 38,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "a case block of main (not a function)"
+   "note": "case block of main"
   },
   "f4_02c2": {
    "orig": "4:02c2",
    "size_orig": 176,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "a case block of main (not a function)"
+   "note": "case block of main"
   },
   "f4_0372": {
    "orig": "4:0372",
    "size_orig": 194,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "a case block of main (not a function)"
+   "note": "case block of main"
   },
   "f4_0434": {
    "orig": "4:0434",
    "size_orig": 60,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "a case block of main (not a function)"
+   "note": "case block of main"
   },
   "f4_0470": {
    "orig": "4:0470",
    "size_orig": 398,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "a case block of main (not a function)"
+   "note": "case block of main"
   },
   "f4_05fe": {
    "orig": "4:05fe",
    "size_orig": 278,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "a case block of main (not a function)"
+   "note": "case block of main"
   },
   "dotree": {
    "orig": "4:0714",

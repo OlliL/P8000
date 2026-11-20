@@ -19,7 +19,7 @@ extern int ntmp;
 extern NODE *saved[];
 extern NODE *curproc;
 extern struct quad *lastq;
-extern long qtail, v06, vb94;
+extern long qtail, qfree, v06, vb94;
 extern int nconst, nfconst, v0e, vafc, v00, v04, vafe, s0b5e;
 extern int s4d7a, s0078, s4d74, s4d76, ntl, s4d78, s4d94, ctmpoff, nctmp, nctmpuses;
 extern long s4d96;
@@ -55,7 +55,6 @@ main(argc, argv)
 	struct qa *p1, *p2, *p3;
 	int v1, v2;
 	char ch;
-	int c2, c3;
 
 	lno = 1;
 	p1 = &s1;
@@ -74,7 +73,7 @@ main(argc, argv)
 			qtail = 0;
 			nconst = 0;
 			nfconst = 0;
-			curpos.line = 0;
+			qfree = 0;
 			qtail = 0;
 			v0e = 1;
 			tinit();
@@ -178,7 +177,7 @@ main(argc, argv)
 			break;
 		case 'C':
 			while ((ch = getc(infile)) == ' ')
-				;
+				continue;
 			ungetc(ch, infile);
 			p1->b2 = 1;
 			p1->w4 = rdin(10);
@@ -197,7 +196,7 @@ main(argc, argv)
 			break;
 		case '/':
 			putc(c, stdout);
-			while ((c3 = putc(c2 = getc(infile), stdout)) != '/n')
+			while (putc(getc(infile), stdout) != '/n')
 				;
 			break;
 		default:

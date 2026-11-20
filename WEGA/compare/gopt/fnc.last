@@ -1,15 +1,10 @@
 {
-"writeil": "DIFF 108 (object 607 instructions, original 630)",
-"mktree": "DIFF 794 (object 807 instructions, original 806)",
-"addrof": "OK",
-"needustar": "DIFF 16 (object 42 instructions, original 39)",
-"mkleaf": "DIFF 3 (object 385 instructions, original 385)",
-"tlfind": "OK",
-"cleartrees": "OK",
-"wrline": "OK",
-"wrtree": "OK",
-"treeeq": "OK",
-"asgfold": "OK",
-"prtcounts": "OK",
-"itfind": "OK"
+"main": "DIFF 423 (object 470 instructions, original 48)",
+"dotree": "DIFF 12 (object 44 instructions, original 43)",
+"dotree2": "OK",
+"cutree": "OK",
+"pr": "DIFF 15 (object 92 instructions, original 90)",
+"abortpass": "OK",
+"passes": "OK",
+"prtbl": "OK"
 }
