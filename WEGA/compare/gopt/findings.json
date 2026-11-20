@@ -3965,7 +3965,7 @@
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 21, 298 against 294 instructions): the 4 `and r6,#ADDR` of cause 2; block order (codemove): the original places the kind == 2 test block (cp kind,2 ..) behind its body (backward jr ne), ours before it; the source has labels LA/LB in the kind == 3 part and gotos from the kind == 2 part; if (ok) {rest} fn5_6466(0, n) puts the fail block last"
+   "note": "open (DIFF 21, 298 against 294 instructions): the 4 `and r6,#ADDR` of cause 2; block order (codemove): the original places the kind == 2 test block (cp kind,2 ..) behind its body (backward jr ne), ours before it; the source has labels LA/LB in the kind == 3 part and gotos from the kind == 2 part; if (ok) {rest} fn5_6466(0, n) puts the fail block last (2026-11-20) the gotos LA/LB of the draft replaced by copies of the mkconstopnd calls (popt merges them: same 17); left: the original puts the kind == 2 test behind the kind 3 code (layout); 8 forms (separate ifs 51, f11 && cond 17, negated 64-118)"
   },
   "indupdate": {
    "orig": "5:62fc",

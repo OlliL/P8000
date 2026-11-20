@@ -346,10 +346,10 @@ struct dl *p, *t;
 				t->f11 = 1;
 				if (n->v != 0) {
 					if (n->v > 0) {
-LA:						mkconstopnd(&t->e14, n->v, 1, p->e14.w0);
+						mkconstopnd(&t->e14, n->v, 1, p->e14.w0);
 						ok = 1;
 					} else {
-LB:						mkconstopnd(&t->e14, n->v, 0, p->e14.w0);
+						mkconstopnd(&t->e14, n->v, 0, p->e14.w0);
 						ok = 1;
 					}
 				}
@@ -364,17 +364,19 @@ LB:						mkconstopnd(&t->e14, n->v, 0, p->e14.w0);
 				n->v = ceval(opqd->b, opqd->op, p->e14);
 				if (n->v != 0) {
 					t->f11 = 1;
-					if (n->v > 0)
-						goto LA;
-					else
-						goto LB;
+					if (n->v > 0) {
+						mkconstopnd(&t->e14, n->v, 1, p->e14.w0);
+						ok = 1;
+					} else {
+						mkconstopnd(&t->e14, n->v, 0, p->e14.w0);
+						ok = 1;
+					}
 				}
 			} else
 				ok = copyopndstmp(opqd, p, t, kind, n);
 		} else
 			ok = copyopndstmp(opqd, p, t, kind, n);
 	}
-done:
 	if (ok) {
 		a0da = 1;
 		if (p->f14) {
