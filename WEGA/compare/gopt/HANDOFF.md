@@ -45,15 +45,15 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    compare/libcisam/COMPILER.md)
 4. (done 2026-11-21: SWITCH_CANDIDATES.md deleted; its witness table is in COMPILER.md, its observations in OLDCC_LOG.md)
 5. (done 2026-11-21: the vc matrix measures cas and gopt (host/recon/goptmodel.py), rebuilt: host/OLDCC_SWITCHES_VC.md)
-6. gopt is partly made from the mip of PCC (the machine independent part). Find the best fitting mip: search tmp/sys3,
-   tmp/sysv, tmp/plexus, ~/git/unix-history-archive for the version nearest to those parts of src/cmd/gopt.
-7. Align the code of src/cmd/gopt that comes from mip with that mip (names, order, forms), gopt byte-identical throughout.
-   Watch for places where a wrong source form of gopt made a vc switch necessary: the mip form may do without it.
-8. `make shipped` in src/cmd builds src/cmd/gopt with the shipped compilers; where not, `#ifdef SHIPPED` fixes.
-9. Port src/cmd/gopt to host/gopt (as the other host ports).
-10. A corpus compare/gopt (corpus.py): the original /lib/gopt of WEGA 3.1 against 1. the gopt of `make shipped` and 2. host/gopt.
-11. The vc switches with one or two witnesses (matrix): think hard again whether a source form of the witness does without
+6. `make shipped` in src/cmd builds src/cmd/gopt with the shipped compilers; where not, `#ifdef SHIPPED` fixes.
+7. Port src/cmd/gopt to host/gopt (as the other host ports).
+8. A corpus compare/gopt (corpus.py): the original /lib/gopt of WEGA 3.1 against 1. the gopt of `make shipped` and 2. host/gopt.
+9. Centralize the parts of PCC's mip that the passes share: common, rdr and optim are in cparse and codgen (version 2.5)
+   and in gopt (2.4). One place in the tree for them, used by cc/cparse/codgen/popt/gopt, every build byte-identical
+   (the differences of the versions behind switches or #ifdef). Comes after the corpus (step 8) and before the switch
+   work (steps 10, 11), so that those work on the final structure.
+10. The vc switches with one or two witnesses (matrix): think hard again whether a source form of the witness does without
     the switch. Also the goto forms that stand for an optimizer layout: deledge (`goto in;` into `while (v != ..)`: the
     original enters the loop body, its test stands above it; do-while and for (;;) with the tests at the end give other
     code; perhaps a do-while the old popt turned round: then a question of spopt).
-12. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks above.
+11. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks above.
