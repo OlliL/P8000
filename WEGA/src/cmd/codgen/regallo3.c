@@ -638,7 +638,12 @@ getreg(cls, reg, flag, sym)
 				m = t;
 #ifdef OLD_D2P
 		for (t = rsuse; t; t = t->next)		/* an idle pair lighter than both: given back, it is split */
+#ifdef OLD_D3KC
 			if (t->cls == 3 && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
+#else
+			/* not a pair that holds a parameter, as below (vc: gopt pr) */
+			if (t->cls == 3 && t->reg < 8 && t->busy <= 0 && t->kind != 6 && !(t->sym && t->sym->sclass == 9) &&
+#endif
 			    (w == 0 || rweight[t->reg] < rweight[w->reg]) && (m == 0 || rweight[t->reg] < rweight[m->reg])) {
 				rsreturn(3, t->reg);
 				return getreg(cls, reg, flag, sym);

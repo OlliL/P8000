@@ -481,6 +481,22 @@ allocreg(p, cookie)
 			if (r == -1)
 				rbusy(ix, 4, (struct sym *)0, 0L);
 		}
+		/* vc: the index in an odd word register (`rr6(r3)`, alone or the low half of a product): the pair below it (gopt prcgraph) */
+		else if (q->in.op == OREG && q->tn.rval >= 0x100 && (q->tn.rval & 0xFF) != 0 && ((q->tn.rval & 0xFF) - 1) < 8 &&
+		    (((q->tn.rval & 0xFF) - 1) & 1) && (d2rpair((q->tn.rval & 0xFF) - 2) || d2ofree((q->tn.rval & 0xFF) - 1))) {
+			register int ix = (q->tn.rval & 0xFF) - 1;
+
+			if (d2rpair(ix - 1)) {		/* the index is the low half of a pair (a product) */
+				rfree(ix - 1, 5);
+				rsreturn(3, ix - 1);
+			} else {
+				rfree(ix, 4);
+				rsreturn(2, ix);
+			}
+			r = getreg(3, ix - 1, 0, p->in.sname);
+			if (r == -1)
+				cerror("allocreg: the pair of an index not free");
+		}
 #endif
 #ifdef OLD_D2O
 		/* v0p: an odd address register takes its pair too when the even half is free or idle */

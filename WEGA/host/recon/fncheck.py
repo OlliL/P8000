@@ -82,7 +82,7 @@ def main():
         print('OK (masked): %d instructions equal (%04x..%04x)' % (len(b), lo, hi))
         return
     print('DIFF (masked): object %d instructions, original %d' % (len(a), len(b)))
-    for line in difflib.unified_diff(b, a, 'original', 'object', lineterm='', n=2):
+    for line in difflib.unified_diff(b, a, 'original', 'object', lineterm='', n=int(os.environ.get('FNC_CTX', '2'))):
         print(line)
 
 

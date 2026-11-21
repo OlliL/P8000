@@ -1692,3 +1692,15 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   repaired models: cparse 179, scparse 179, codgen 209, scodgen 210, popt 73, spopt 73, cpp 26 strictly equal, v0 bench
   153/131/221 as before, gopt 305 of 321 as with OLD_D2NP; `oldcc.sh matrix check` and `MATRIX_VER=vc ... matrix check`:
   as in the table (the OLD_D2NP row of OLDCC_SWITCHES_VC.md removed); checkall (bb22a0c6): ALL OK.
+- K8 against the existing switches (2026-11-21, owner): two extensions, gopt 305 > 307 of 321.
+  `OLD_D2P`: for a word an idle lighter pair is split, but not a pair that holds a parameter (gopt pr: the original
+  takes r0 for `down + 1`, ours split rr2). Unconditional it changed regforsym in the v0p codgen and scodgen models (DIFF 6),
+  so only without `OLD_D3KC` (v0, vc), as the pair loop below it already does. `OLD_D2Q` (segmented): a value loaded through
+  `rrN(rM)` with an odd index goes into the pair rM-1 when the even half is free, or when rM is the low half of a product
+  pair (gopt prcgraph: `ldl rr2,rr6(r3)`, also when an argument pair is wanted). canshare 14 > 16 and setedges 12 > 15: both
+  K5 (the parameter in r7 multiplied in place, the original copies it to r3 first; with K5 solved the base goes to rr0
+  and no index is used). Tried without effect: vc without `OLD_D3J` (chkfamindvar), a register that holds a parameter not
+  renamed when stored (rnassign case 10). Checks: models 179/179/209/210/73/73/26 strictly equal, bench 153/131/221, both
+  matrix checks as in the table, checkall ALL OK.
+  chkfamindvar (trace): the parameter `r` (rr6) is never on the use list of our scodgen (the frame copy at entry
+  stores r5..r7 with ldm); the original keeps it in rr6 behind the && chain and takes rr4 there.

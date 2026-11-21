@@ -239,7 +239,7 @@ Free registers and pairs:
 - v0 `OLD_D2T` (under OLD_D2L): the register of a TEMP (the value of a switch, held from its start to the compares behind
   the bodies) counts as free while idle, so the bodies take r2 again (setreg, prtree, opact).
 - v0 `OLD_D2P`: OLD_D2L for pairs, an idle pair that holds a name counts as free when it weighs less than the first free
-  pair, and only rr0 or rr2 (an idle rr4 stays when rr6 is free: cas opxor, opor, opand, opshl, opshr, opadd, opsub); two idle words of a pair are given back and merge; for a word an idle lighter pair is given back and split.
+  pair, and only rr0 or rr2 (an idle rr4 stays when rr6 is free: cas opxor, opor, opand, opshl, opshr, opadd, opsub); two idle words of a pair are given back and merge; for a word an idle lighter pair is given back and split, in v0 and vc not a pair that holds a parameter (vc: gopt pr; v0p splits it: regforsym of the codgen model).
 - v0p `OLD_D2PO`: an idle odd word whose even half is free is given back when a pair is wanted and the even half weighs less
   than the first free pair (refid, dclstruct).
 - `OLD_D2PO` leaves a word that holds a parameter (in every version: the passes built by v0p do not change with the limit).
@@ -275,7 +275,8 @@ Where a value goes:
   is free, also when that pair is the wanted one. `OLD_D2QO`: also when an odd word register is wanted for the value
   (getstr). `OLD_D2O`: a long loaded through an odd address register goes into the pair below it when the even half is
   free or idle; segmented (vc) also when an odd word register is wanted (cas iputloc), as `OLD_D2QO`. Segmented (vc): through base and index (`ldl rr2,rr4(r2)`) into the pair of an even index, also when another
-  pair is wanted (a copy follows; cas seekout).
+  pair is wanted (a copy follows; cas seekout); of an odd index (`ldl rr2,rr6(r3)`) into the pair below it when the even half is free or idle
+  or the index is the low half of a product in that pair (gopt prcgraph).
 - v0p `OLD_D2X` (allocreg): a long result of a binary operator goes into the pair of its left operand first (defalign); not
   for shifts, whose count register would get the operand's pair.
 

@@ -138,11 +138,11 @@
   "pr": {
    "orig": "4:08f4",
    "size_orig": 186,
-   "status": "open",
+   "status": "masked",
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "open: the original computes down + 1 in r0 and stores through rr2 (`ld r0,r5; inc r0,#1; ldl rr2,..; ld @rr2,r0`), ours r2 and rr6; tried four forms of *down1 = *down2 = down + 1; prints the tag with %% in the format (kept); the test `optype == UTYPE` before \", rval = %d\" is as in the binary (2026-11-20) the head `*down1 = *down2 = down + 1`: the original takes r0 for the value and rr2 (the register of the parameter down1) for the pointer, ours r2 and rr0/rr4 (K8); 5 forms (swapped chain, two statements, 1 + down, parentheses): 15-18; 2026-11-20: down1[0], 0[down1], *(down1 + 0) forms of the chain store: all the same code (cparse builds one tree)"
+   "note": "open: the original computes down + 1 in r0 and stores through rr2 (`ld r0,r5; inc r0,#1; ldl rr2,..; ld @rr2,r0`), ours r2 and rr6; tried four forms of *down1 = *down2 = down + 1; prints the tag with %% in the format (kept); the test `optype == UTYPE` before \", rval = %d\" is as in the binary (2026-11-20) the head `*down1 = *down2 = down + 1`: the original takes r0 for the value and rr2 (the register of the parameter down1) for the pointer, ours r2 and rr0/rr4 (K8); 5 forms (swapped chain, two statements, 1 + down, parentheses): 15-18; 2026-11-20: down1[0], 0[down1], *(down1 + 0) forms of the chain store: all the same code (cparse builds one tree); 2026-11-21 masked by OLD_D2P extended: an idle pair that holds a parameter is not split for a word (v0, vc; host/OLDCC_LOG.md)"
   },
   "f4_09ae": {
    "orig": "4:09ae",
@@ -4128,7 +4128,7 @@
    "kind": "proven",
    "module": "reg2.c",
    "file": "reg2.c",
-   "note": "open (DIFF 12): only the first statement q = a11a[i].q: the original copies the parameter (ld r3,r7; mult rr2) and loads through rr0, ours multiplies rr6 in place and uses an indexed load (cause 1/4)"
+   "note": "open (DIFF 12): only the first statement q = a11a[i].q: the original copies the parameter (ld r3,r7; mult rr2) and loads through rr0, ours multiplies rr6 in place and uses an indexed load (cause 1/4); 2026-11-21 DIFF 15 with OLD_D2Q odd index (K5, as canshare)"
   },
   "colorgraph": {
    "orig": "5:7cb4",
@@ -4291,7 +4291,7 @@
    "kind": "proven",
    "module": "reg2.c",
    "file": "reg2.c",
-   "note": "open (DIFF 14, cause 1): only the first two statements p = a11a[a].q, q = a11a[b].q: the original copies the int parameter (ld r3,r7; mult rr2) and loads through rr0, ours multiplies the parameter register in place with an indexed load; the rest equals"
+   "note": "open (DIFF 14, cause 1): only the first two statements p = a11a[a].q, q = a11a[b].q: the original copies the int parameter (ld r3,r7; mult rr2) and loads through rr0, ours multiplies the parameter register in place with an indexed load; the rest equals; 2026-11-21 DIFF 16 with OLD_D2Q odd index (K5: the parameter multiplied in place gives the index pair rr6)"
   },
   "decdeg": {
    "orig": "5:964c",
@@ -5007,11 +5007,11 @@
   "prcgraph": {
    "orig": "5:9698",
    "size_orig": 506,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "reg2.c",
    "file": "reg2.c",
-   "note": "open (DIFF 11, cause 7): the two loads of a11a[i].q via rr2 in the original, via rr0 in ours (temp pair); the rest equals"
+   "note": "open (DIFF 11, cause 7): the two loads of a11a[i].q via rr2 in the original, via rr0 in ours (temp pair); the rest equals; 2026-11-21 masked by OLD_D2Q extended (vc): a load through rr6(r3) goes into the pair of the odd index (host/OLDCC_LOG.md)"
   },
   "prgraph": {
    "orig": "4:a9ac",
