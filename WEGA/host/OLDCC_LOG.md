@@ -1691,4 +1691,4 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   global loaded into a pair (not an auto pair: that gives rmlabels but loses killdefs, see above). Measured with the
   repaired models: cparse 179, scparse 179, codgen 209, scodgen 210, popt 73, spopt 73, cpp 26 strictly equal, v0 bench
   153/131/221 as before, gopt 305 of 321 as with OLD_D2NP; `oldcc.sh matrix check` and `MATRIX_VER=vc ... matrix check`:
-  as in the table (the OLD_D2NP row of OLDCC_SWITCHES_VC.md removed).
+  as in the table (the OLD_D2NP row of OLDCC_SWITCHES_VC.md removed); checkall (bb22a0c6): ALL OK.
