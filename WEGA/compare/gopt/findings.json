@@ -4018,7 +4018,7 @@
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 10, 2026-11-20): the r != dp->q code stands at the loop top as `if (0) { lr: ...; continue; }`, reached by `if (r != dp->q) goto lr;`, in it the ternary test as `if (0) { lt: if ((op == 2 ? ...) != 6) continue; goto so; }` reached by `if (q->op == 1 || q->op == 48) goto lt; so:` (51 -> 10). Left: the original has the step dp = dp->next right behind the cerror (fallen into) and before the r test, ours before the loop test (popt moves the step block reached only by jumps); full goto layout, while, the then code last in the body: 16 to 84"
+   "note": "open (DIFF 10, 2026-11-20): the r != dp->q code stands at the loop top as `if (0) { lr: ...; continue; }`, reached by `if (r != dp->q) goto lr;`, in it the ternary test as `if (0) { lt: if ((op == 2 ? ...) != 6) continue; goto so; }` reached by `if (q->op == 1 || q->op == 48) goto lt; so:` (51 -> 10). Left: the original has the step dp = dp->next right behind the cerror (fallen into) and before the r test, ours before the loop test (popt moves the step block reached only by jumps); full goto layout, while, the then code last in the body: 16 to 84; 2026-11-21 left (10): the loop step dp = dp->next lies behind the cerror call in the original (the end of the l6 block jumps to it), ours behind the l6 block; the step as a label at the end of the if (0) block with every continue as goto: 16; an explicit continue at the end of the l6 block: 46"
   },
   "chkfamindvar": {
    "orig": "5:6bf2",
