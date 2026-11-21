@@ -1187,6 +1187,56 @@ register struct node *a;
 }
 #endif
 
+#ifdef OLD_D51
+/* the jump a ends a straight block (no conditional jump in it) whose label stands behind a node of the kind op (CJP, or
+   JP for an unconditional jump or a return) */
+d51blk(a, op)
+register struct node *a;
+int op;
+{
+	register struct node *q;
+
+	for (q = a->back; q && q->op != LABEL; q = q->back)
+		if (q->op == JP || q->op == RET || q->op == JSW || q->op == CJP)
+			return 0;
+	if (q == 0)
+		return 0;
+	while (q->back && (q->back->op == LABEL || q->back->op == KCOMMENT))
+		q = q->back;
+	if (q->back == 0)
+		return 0;
+	if (op == JP)
+		return q->back->op == JP || q->back->op == RET;
+	return q->back->op == op;
+}
+
+/* the jump b at the end of the block of a's target goes back to a label in front of that block */
+d51bwd(a, b)
+register struct node *a, *b;
+{
+	register struct node *q;
+
+	if (b->ref == 0)
+		return 0;
+	for (q = a->ref; q; q = q->back)
+		if (q == b->ref)
+			return 1;
+	return 0;
+}
+
+/* a later jump to the same label whose block stands behind an unconditional jump (it takes the block instead) */
+d51later(a)
+register struct node *a;
+{
+	register struct node *q;
+
+	for (q = a->forw; q; q = q->forw)
+		if (q->op == JP && q->ref == a->ref && d51blk(q, JP) && d51jn(q) > 0)
+			return 1;
+	return 0;
+}
+#endif
+
 #ifdef OLD_D52
 /*
  * v1: a conditional expression in front of the function exit, `cjp M; A; jp T; M: Y; T:`: M is a label of the compiler
@@ -1376,6 +1426,11 @@ struct node *p;
 				if (d51turnable(p3) && p1->ref->refc >= 2)
 					return p1;
 				if (d51jn(p1) == 0)
+					return p1;
+				/* (e): not to a jump whose block is entered by falling through a conditional jump, when a later jump to the
+				   same label stands in a block behind an unconditional jump, and the block does not end in a jump back (a
+				   loop: cas keeps such a block at the first jump) (gopt almap: the done block goes behind neg, not behind zero) */
+				if (d51blk(p1, CJP) && d51later(p1) && !d51bwd(p1, p3) && p1->ref->refc >= 3)
 					return p1;
 				if (d51backloop(p1, p3) && d51jn(p1) == 1 && d51behind(p1, p3->ref))
 					return p1;

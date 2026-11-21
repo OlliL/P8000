@@ -1770,3 +1770,17 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   assignment to a frame place whose value in r0 is used) made it exact, but a trace showed the same codgen state for delbucket
   `prev = t = bucket[i]`, where the original has no copy: the difference is in the source. `tq.a.w4 = (t = betatbl[..].x1,
   t);` gives the copy `ld r2,r0` with the shipped vc. The old guess (a word OLD_D2A copy, K11) is void.
+- gopt almap data (2026-11-21): the original's string order needs the done block behind the switch (7 forms, notes in
+  findings.json); then spopt codemove puts the done block behind the first jump to it (zero, a straight block behind the
+  first conditional jump), the original behind neg (behind zero's jump). vc spopt OLD_D51 extended, part (e): no move to
+  such a jump when a later jump to the same label ends a block behind an unconditional jump. First form (any jump whose label
+  stands behind a CJP, more than one jump to the label): checkops 29, constfold 31; with the later jump: checkops 29; with a
+  straight block (no CJP between label and jump): gopt 321 of 321, data byte-equal, popt/spopt models 73/73, matrix checks as
+  in the table (the matrix measures codgen switches only; cas goes through checkall).
+  checkall then failed on /bin/cas (two places of one early function: a block `ldl rr2,..; ldb rl7,@r2; jr back` that the
+  original leaves at the first jump); (e) now also needs a block that does not end in a jump back in front of it: gopt
+  321, popt/spopt models 73/73.
+  Still /bin/cas: iputexpr and sputexpr (cas ifile.c), the merged tail L20002 of `switch (np->n_type)` named by the two
+  case blocks; the later block also stands behind an unconditional jump (the switch jump). Limit: at least three jumps name
+  the label (almap's done: many). The later block's label must stand behind JP or RET (d51blk). All 26 cas sources that
+  build alone: the same spopt output as with the spopt of HEAD; gopt 321; popt/spopt models 73/73.

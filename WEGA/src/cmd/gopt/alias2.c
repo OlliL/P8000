@@ -617,14 +617,7 @@ almap(p, op)
 		goto done;
 	neg:
 		pos = -1;
-	done:
-		if (aflag > 2) {
-			if (aflag > 3)
-				printf("// almap: found pos=%d\n", pos);
-			if (pos == -1)
-				printf("warning pos = -1\n");
-		}
-		return pos;
+		goto done;
 	}
 	if (p->b2 != 4)
 		goto neg;
@@ -664,6 +657,14 @@ almap(p, op)
 			printf("(almap, symbol=%s, pos=%d)\n", ascii + symtab[p->w4].nameoff, pos);
 		goto done;
 	}
+done:
+	if (aflag > 2) {
+		if (aflag > 3)
+			printf("// almap: found pos=%d\n", pos);
+		if (pos == -1)
+			printf("warning pos = -1\n");
+	}
+	return pos;
 }
 
 /* the effect of a quad on the affect matrix and the modify matrix: lop the class of the left operand lp (QSTORE 0x2f, QIDR 0x18, 0x34), rop of the right one rp */

@@ -1,58 +1,62 @@
 # gopt: handoff (2026-11-21)
 
-GOAL: /lib/gopt rebuilt from C (src/cmd/gopt), byte-identical after the link. Compiler: sccvc (vc = v0p segmented + vc switches,
-host/OLDCC.md). Rules: CLAUDE.md (German in conversation, English in git; commit, never push; branch `toolchain`). Keep this file,
-findings.json (key `note`), SWITCH_CANDIDATES.md, host/OLDCC_LOG.md and host/increments/160-programs.md current.
+GOAL: /lib/gopt rebuilt from C (src/cmd/gopt), byte-identical after the link; then clean up, port to the host and consolidate
+the compiler switches. Compiler: sccvc (vc = v0p segmented + vc switches, host/OLDCC.md). Rules: CLAUDE.md (German in
+conversation, English in git; commit, never push; branch `toolchain`). Keep this file, findings.json, host/OLDCC_LOG.md and
+host/increments/160-programs.md current. Clean-up rule (owner 2026-11-21): what is deleted from a file but still matters (for
+the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LOG.md first.
 
 ## State
-- fnc.py: 321 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
-- Open: none (fnc.py); next is step 7.
-- What was tried for each: its `note` in findings.json and the dated entries of host/OLDCC_LOG.md.
+- fnc.py: 321 of 321 functions masked-equal; the data byte-equal (datadiff 0); stack segment and header as the original (sldo).
+- Left for byte identity: the link (step 1).
 
-## Owner authorisation (2026-11-21)
-- Ladder: source forms > change an existing switch > new vc switch > new compiler (only with the owner).
-- Existing switches (also v0/v0p) may be changed. New vc switches are allowed. Both need four checks to pass (below).
-- The shipped (default) codgen/scodgen must stay byte-identical: change codgen only inside `#ifdef OLD_*`. Bugs of the originals
-  are kept. The vc scodgen may be fixed as long as cas stays identical.
-- Never change checkall or the nightly run without asking.
+## Owner rules for compiler changes (2026-11-21)
+- Ladder: source forms (exhausted, each form written down) > change an existing switch > a new switch only when changing an
+  existing one changes other users > a new compiler (only with the owner). A trace (KDBG) to understand the mechanism comes
+  first; it shows which source form could give the original code.
+- The shipped (default) codgen/scodgen/popt stay byte-identical: change them only inside `#ifdef OLD_*`. Bugs of the originals
+  are kept. Never change checkall or the nightly run without asking.
 
-## The four checks (each compiler change, before its commit)
+## The checks (each compiler change, before its commit)
 1. Models and bench: `oldcc.sh build codgen v0`, `oldcc.sh build codgen v0p` (rm the installed file first), then `oldcc.sh model P` for
-   cparse scparse codgen scodgen popt spopt cpp. Expected: strictly equal, 179/179/209/210/73/73/26.
-   `oldcc.sh bench`: not worse than 153/132/212.
-2. `host/recon/oldcc.sh matrix check` and `MATRIX_VER=vc ... matrix check`. A new or changed vc switch first gets
-   `MATRIX_VER=vc oldcc.sh matrix OLD_X` (must be +0).
-3. gopt total: `fnc.py -a` over all src/cmd/gopt/*.c (no regressions).
-4. checkall on the working tree: `R=$(git stash create); make -C host checkall WEGA=.../tmp/wega31_root PATCH=$R`. Expected: ALL OK
-   (about 25 min, in the background).
+   cparse scparse codgen scodgen popt spopt cpp. Expected: strictly equal, 179/179/209/210/73/73/26. `oldcc.sh bench`: 153/132/212.
+2. `host/recon/oldcc.sh matrix check` and `MATRIX_VER=vc ... matrix check`; a changed codgen switch: `MATRIX_VER=vc oldcc.sh
+   matrix OLD_X` (cas baseline 0). The matrix knows codgen switches only; a popt (spopt) switch is checked on cas by checkall.
+3. gopt total: `fnc.py -a` over all src/cmd/gopt/*.c (321).
+4. checkall with umask 002 (the emulator tests expect it): `R=$(git stash create); make -C host checkall WEGA=.../tmp/wega31_root
+   NAME=x PATCH=$R`. Expected: ALL OK (about 25 min, in the background).
 
 ## Tools
-- `RECON_PROG=gopt python3 host/recon/fnc.py FILE.c FUNC` (diff in tmp/tmp/fnc/FUNC.diff, `FNC_CTX=N` for context; `-a FILE.c` for all).
-- `odisc.py FUNC` (original listing), `vt.py` (variants in parallel), `host/tools/sdis.py -l X.o`.
-- vc build for fnc: `cd src/cmd/codgen; rm build/segvc/*.o; PATH=.../tmp/tmp/wbin:$PATH make build/segvc/scodgen`, then rm and cp
-  to tmp/oldroot/lib/vc/scodgen.
-- Register traces: a temporary `printf("KDBG ...")` of rsuse/rsfree in getreg, then `sccvc -S` of the module (never commit it).
-
-## Watch out: the vc scodgen size
-The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its text is 0xf900 of 0x10000 (after K8).
-/bin/ld wraps sg_code to 0 silently. The codgen Makefile now stops then; before, checkall hung.
-- Measure the size like checkall does: link with `LIBC="../../../../lib/oldlibc/printf/s1p.o ../../../../lib/oldlibc/doprnt/s1d.o
-  ../../../../lib/oldlibc/doprnt/s1f.o /lib/libc.a"`. The three objects are copied from a checkall tree; they are gitignored.
-- Read it with `od -An -tx1 -j28 -N2 build/segvc/scodgen`.
-- Before adding vc code, free room in the OLD_* blocks without changing behaviour (as done: d2pair helper, merged tests,
-  `goto blk`). A segmented port was rejected (the NODE union of cg.h assumes 16-bit pointers).
+- `RECON_PROG=gopt python3 host/recon/fnc.py FILE.c FUNC` (diff in tmp/tmp/fnc/FUNC.diff, `FNC_CTX=N`; `-a FILE.c`; `FNC_ROOT=DIR`
+  another compiler root). `odisc.py FUNC` (original listing), `datadiff.py`, `datastr.py`, `segcmp.py`, `host/tools/bincmp.py`.
+- vc builds: `cd src/cmd/codgen; rm build/segvc/*.o; PATH=.../tmp/tmp/wbin:$PATH make build/segvc/scodgen` (spopt:
+  `src/cmd/popt`, `make build/segvc/spopt`), then rm and cp to tmp/oldroot/lib/vc/. For experiments a copy of tmp/oldroot (a
+  scratch root, `FNC_ROOT`) keeps the installed compiler untouched.
+- Traces: temporary `printf("KDBG ...")` (getreg, rsreturn, rbusy, a tree dump in order; never committed), `sccvc -S`.
+- The vc scodgen is near 64 KiB of text (host/OLDCC.md, vc): measure its size after each change.
 
 ## Next steps (one at a time)
-1. (done 2026-11-21: vc OLD_DNR leaves out the gopt register records, sg_code 0xf800)
-2. (done 2026-11-21: vnumber by gotos to the copies the original keeps and `if (0) { l: then-block }` before the test)
-3. (done 2026-11-21: tprint by narrowing vc spopt OLD_D50; method: run the shipped /lib/spopt on our codgen output (sccvc -S)
-   and compare the block order, then build vc spopt without each switch)
-4. (done 2026-11-21: chklpdefs by the goto form of the original block order and vc spopt OLD_D51 (d))
-5. (done 2026-11-21: chkfamindvar by OLD_D2R (the half OLD_D2V refuses goes back), setposition by OLD_D3AW (an idle parameter
-   in the register of an argument goes back); found by KDBG traces of getreg/rsreturn/rbusy and a tree dump in order)
-6. Small ones (rmlabels done 2026-11-21 by `p && ..`; affsize done 2026-11-21 by `matw = affdim / 16 + 1` and OLD_D2M for a
-   division; mkconstopnd done 2026-11-21 by OLD_D2P, segmented parameter words merge only without a free pair; source forms
-   setsymtable done 2026-11-21 by the source form `tq.a.w4 = (t = .., t)`). Method: first a trace (KDBG), then source forms
-   from it; only then an existing switch changed (owner 2026-11-21:
-   a new switch only when changing an existing one changes other users).
-7. After 321 of 321: the almap string order of the data, `segcmp.py` exact, `bincmp` of the linked file, `make install`, checkall.
+1. gopt byte-identical: the link. bincmp of the stripped build: code segments 4: 65534, 5: 50432 (original) against 64768,
+   51200 (ours): the libc members are placed otherwise (the original has fseek, ftell, fread, getw at the end of segment 4;
+   Makefile notes: T5FIRST, the libc revision), and the start-up code lacks `ldl |<<63>>%0000|(r15),rr8` at 4:0002. Then
+   `make install`, checkall (gopt among the identical files).
+2. findings.json clean-up (no function removed, only contents): statuses such that the generated FINDINGS.md lists only
+   "exact with notes", and the notes keep only what is still odd in the source (dead code, odd forms, guessed names). What was
+   tried on the way goes; what matters beyond gopt goes to KNOWLEDGE.md / OLDCC_LOG.md first.
+3. compare/gopt/COMPILER.md, after the model of src/lib/libcisam/COMPILER.md: the switches gopt needs, each with its witness
+   and mechanism (take the witness table of SWITCH_CANDIDATES.md over). Move src/lib/libcisam/COMPILER.md to
+   compare/libcisam/COMPILER.md and fix its references (host/OLDCC.md, host/OLDCC_LOG.md, host/HANDOFF_libcisam.md, comments in
+   src/cmd/codgen allo3.c and reader3.c: comments only, the codgen stays byte-identical).
+4. Delete compare/gopt/SWITCH_CANDIDATES.md (its content in COMPILER.md, OLDCC_LOG.md).
+5. The switch matrix of vc (host/recon/switchmatrix.py) measures gopt too, not only cas; then rebuild the vc matrix
+   (host/OLDCC_SWITCHES_VC.md) and `matrix check`.
+6. gopt is partly made from the mip of PCC (the machine independent part). Find the best fitting mip: search tmp/sys3,
+   tmp/sysv, tmp/plexus, ~/git/unix-history-archive for the version nearest to those parts of src/cmd/gopt.
+7. Align the code of src/cmd/gopt that comes from mip with that mip (names, order, forms), gopt byte-identical throughout.
+   Watch for places where a wrong source form of gopt made a vc switch necessary: the mip form may do without it.
+8. `make shipped` in src/cmd builds src/cmd/gopt with the shipped compilers; where not, `#ifdef SHIPPED` fixes.
+9. Port src/cmd/gopt to host/gopt (as the other host ports).
+10. A corpus compare/gopt (corpus.py): the original /lib/gopt of WEGA 3.1 against 1. the gopt of `make shipped` and 2. host/gopt.
+11. The vc switches with one or two witnesses (matrix): think hard again whether a source form of the witness does without
+    the switch.
+12. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks above.

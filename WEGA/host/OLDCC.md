@@ -186,8 +186,12 @@ neutral on cas when added, alone and all together), with these differences:
   register instead of stopping, the reclaim of `p->in.sname - symtab` in gopt operand);
   `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of the tree uses) are not read,
   their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room (+0 on cas);
-  its text is near the 64 KiB of a nonsegmented program (sg_code 0xf800 with the OLDPRINTF of src/Makefile, 2026-11-21);
-  /bin/ld does not report an overflow (sg_code wraps, the program runs into zeros), the codgen Makefile stops then;
+  its text is near the 64 KiB of a nonsegmented program (sg_code 0xf900 with the OLDPRINTF of src/Makefile, 2026-11-21;
+  measured as the tree links it: `LIBC="../../../../lib/oldlibc/printf/s1p.o ../../../../lib/oldlibc/doprnt/s1d.o
+  ../../../../lib/oldlibc/doprnt/s1f.o /lib/libc.a"`, the three objects copied from a checkall tree, then
+  `od -An -tx1 -j28 -N2 build/segvc/scodgen`); /bin/ld does not report an overflow (sg_code wraps, the program runs into
+  zeros), the codgen Makefile stops then; room is freed inside the OLD_* blocks without changing behaviour (helpers,
+  merged tests, `goto blk`); a segmented port of the codgen was rejected (the NODE union of cg.h assumes 16-bit pointers);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13`,
   `OLD_D25` and `OLD_D12R` (gopt, neutral on cas: the static area of a function that returns a structure is zeros in the data,
   written at the start of the next function (or at the end of the file), behind the function and its switch tables, not in
@@ -612,7 +616,11 @@ turned where it stands (`cp 0x56; jne plain`, F behind it) and D50 finds the str
 lines without a, b, c); without the limits other functions change: (a) without the window stops the dispatch of
 `switch (res)` in jpr itself, (c) without the one instruction changes p2loop and eight more modules, (c) with any loop
 head in the window changes yyparse. Every other module of cas is byte-identical with and without the switch. One witness. (d) (2026-11-21): not a block that ends in such a pair when more than one jump names its label (a loop test at the
-bottom, entered by a jump and named by the step: gopt chklpdefs; cas unchanged).
+bottom, entered by a jump and named by the step: gopt chklpdefs; cas unchanged). (e) (2026-11-21): not to a jump that ends a
+straight block whose label stands behind a conditional jump, when a later jump to the same label ends a block behind an
+unconditional jump (that one takes the block: gopt almap, the done block behind neg, not behind zero; checkops needs the
+straight block), the block does not end in a jump back in front of it, and at least three jumps name its label (cas
+iputexpr, sputexpr: the merged tail of a switch, named by two jumps, stays at the first one).
 
 
 ### D52 A conditional expression in front of the function exit
