@@ -57,7 +57,13 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    "Global optimizer"), -Wall -Wextra clean; its output and .D file equal /lib/gopt's on the 18 gopt sources, cc and scc,
    -1..-5 (180 runs, cpp and cparse/scparse of WEGA under z8k-emu), also the builds with the sanitizers and -ftrapv and with
    zero and pattern initialised locals. Not yet in host/Makefile nor checkall: with the corpus (step 8), after asking.)
-8. A corpus compare/gopt (corpus.py): the original /lib/gopt of WEGA 3.1 against 1. the gopt of `make shipped` and 2. host/gopt.
+8. (done 2026-11-22: compare/gopt/corpus.py: every C source of src made into x.I, x.S, x.D by the original cc and scc,
+   then gopt -1 .. -5 (scc: -Z) one after the other on the same files; output and files compared. Dry run: wega (make
+   shipped) and host 942 of 942 (104 sources skipped), cold 1137 s (the slowest corpus: first in compare/CORPORA). Found
+   on the way: the shipped build prints the rval of a unary node from its own layout (SHIPPED: -30720 as the original),
+   host: %ld of the most negative long prints 0, the 64 KiB of an area (order3.c: out of space), r5 through checkalias,
+   segment 0 for the vectors that a preheader record does not have. host/gopt in host/Makefile and the host build of
+   checkall.)
 9. Centralize the parts of PCC's mip that the passes share: common, rdr and optim are in cparse and codgen (version 2.5)
    and in gopt (2.4). One place in the tree for them, used by cc/cparse/codgen/popt/gopt, every build byte-identical
    (the differences of the versions behind switches or #ifdef). Comes after the corpus (step 8) and before the switch

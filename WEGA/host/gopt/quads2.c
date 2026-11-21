@@ -508,7 +508,7 @@ struct quad *addquad(int op, struct qa *a, struct qa *b, struct qa *c)
 		q = qfree;
 		qfree = qfree->next;
 	} else {
-		q = (struct quad *)taballoc((int)sizeof(struct quad), 1);
+		q = (struct quad *)tabzalloc((int)sizeof(struct quad), 30, 1);
 		if (q == 0)	/* the original: 0x7F00FFFF, the -1 of the segment calls */
 			return 0;
 	}
@@ -557,7 +557,7 @@ struct quad *insertquad(int op, struct qa *a, struct qa *b, struct qa *c, struct
 		q = qfree;
 		qfree = qfree->next;
 	} else
-		q = (struct quad *)taballoc((int)sizeof(struct quad), 1);
+		q = (struct quad *)tabzalloc((int)sizeof(struct quad), 30, 1);
 	if (op != 0x28 && op != 0x29 && op != 0x2b && op != 0x3b) {
 		normop(a);
 		normop(b);

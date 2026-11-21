@@ -320,34 +320,69 @@ int plainicon(NODE *p)
 }
 
 /* the areas of the tables: each has a segment of its own (area 1 may move to another one).
-   host: each area is one block of ARSIZE bytes; the 64 KiB of a segment of the original are no limit here
-   (KNOWLEDGE.md, quirks: the original stops with "C Optimizer: out of space") */
+   host: each area is one block of ARSIZE bytes; beside it the bytes of the original are counted (z*: the offset in
+   the segment, the end the program knows, the size of the segment as the system rounds it: mkseg() and ssgbrk() in
+   units of 256 bytes, at most 0x10000), so that gopt stops with "C Optimizer: out of space" where the original does
+   (area 1 goes on in a new segment, its offsets from 0). A log of the allocations (host pointer, offset) gives
+   tabfree() and tabzoff() the offset of a pointer. */
 #define NAREA	11
+#define STEP	2000
 #define ARSIZE	(64L << 20)
 static char *arbase[NAREA] = { 0 };	/* host: the start of the memory of the area */
 static char *arlim[NAREA] = { 0 };	/* end of the memory of the area */
 static char *arptr[NAREA] = { 0 };	/* the next free byte */
+static long zptr[NAREA], zlim[NAREA], zsize[NAREA];	/* host: the offset, the end and the segment of the original */
+static struct zlog { char *p; long z; } *zlog[NAREA];	/* host: the allocations of the area in their order */
+static long nzlog[NAREA], mzlog[NAREA];
 
-/* n bytes of the area a, cleared (names taballoc, tabfree, tabavail guessed) */
-char *taballoc(int n, int a)
+#define R256(n)	(((long)(n) + 255) & ~255L)
+
+/* n bytes of the area a, cleared; zn: the bytes of the original (names taballoc, tabfree, tabavail guessed) */
+char *tabzalloc(int n, int zn, int a)
 {
 	char *p;
 	int *q;
+	long m;
 
 	if (arptr[a] == 0) {
 		arbase[a] = arptr[a] = malloc(ARSIZE);
 		if (arptr[a] == 0)
 			cerror("C Optimizer: out of space\n");
 		arlim[a] = arptr[a] + ARSIZE;
+		zptr[a] = 0;			/* mkseg(0, STEP) */
+		zlim[a] = STEP;
+		zsize[a] = R256(STEP);
 	}
 	n++;
 	n &= ~1;
+	zn++;
+	zn &= ~1;
+	if (zptr[a] + zn >= zlim[a]) {
+		m = zn > STEP ? zn : STEP;
+		if (zsize[a] + R256(m) > 0x10000) {	/* ssgbrk() refuses */
+			if (a != 1)
+				cerror("C Optimizer: out of space\n");
+			zptr[a] = zlim[a] = 0;		/* mkseg(0, m): a new segment */
+			zsize[a] = R256(m);
+		} else
+			zsize[a] += R256(m);
+		zlim[a] += m;
+	}
 	if (n % 8 == 0)	/* host: a structure with pointers (and the start of a table) on 8 bytes; other sizes stay
 			   packed, as the arrays of ints that the original overruns into the next one (dominators()) */
 		arptr[a] = arbase[a] + ((arptr[a] - arbase[a] + 7) & ~7L);
 	if (arptr[a] + n >= arlim[a])
 		cerror("C Optimizer: out of space\n");
 	p = arptr[a];
+	if (nzlog[a] == mzlog[a]) {
+		mzlog[a] = mzlog[a] ? 2 * mzlog[a] : 1024;
+		zlog[a] = realloc(zlog[a], mzlog[a] * sizeof(struct zlog));
+		if (zlog[a] == 0)
+			cerror("C Optimizer: out of space\n");
+	}
+	zlog[a][nzlog[a]].p = p;
+	zlog[a][nzlog[a]++].z = zptr[a];
+	zptr[a] += zn;
 	arptr[a] += n;
 	if (arptr[a] > arhigh[a])
 		arhigh[a] = arptr[a];
@@ -356,11 +391,41 @@ char *taballoc(int n, int a)
 	return p;
 }
 
+/* host: the offset in its segment that the original has for p of the area a (an allocation of the log) */
+long tabzoff(int a, char *p)
+{
+	long lo = 0, hi = nzlog[a] - 1, k;
+
+	while (lo <= hi) {
+		k = (lo + hi) / 2;
+		if (zlog[a][k].p < p)
+			lo = k + 1;
+		else if (zlog[a][k].p > p || (k > 0 && zlog[a][k - 1].p == p))
+			hi = k - 1;
+		else
+			return zlog[a][k].z;
+	}
+	return lo < nzlog[a] ? zlog[a][lo].z : zptr[a];
+}
+
 /* give the memory of the area a back down to p (0: to the start of its segment) */
 void tabfree(int a, char *p)
 {
-	if (p == 0)
+	long z;
+
+	if (p == 0) {
 		p = arbase[a];
+		z = 0;		/* the start of the segment that the area is in now */
+	} else {
+		z = tabzoff(a, p);
+		if (a == 1 && z > zptr[a]) {	/* back into an earlier segment (sgbrk): its end is p */
+			zlim[a] = z;
+			zsize[a] = R256(z);
+		}
+	}
+	while (nzlog[a] > 0 && zlog[a][nzlog[a] - 1].p >= p)
+		nzlog[a]--;
+	zptr[a] = z;
 	arptr[a] = p;
 }
 
@@ -370,8 +435,8 @@ int tabavail(int n, int a)
 	char *p, *q;
 	int r;
 
-	p = taballoc(0, a);
-	q = taballoc(n, a);
+	p = tabzalloc(0, 0, a);
+	q = tabzalloc(n, n, a);	/* host: n bytes of the original */
 	if (q == 0)	/* the original: 0x7F00FFFF, the -1 of mkseg(); taballoc() stops before */
 		r = 0;
 	else

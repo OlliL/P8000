@@ -74,7 +74,7 @@ int islive(int v, int kind, int alias)
 			else
 				printf("\t%d,\t\t%d\n", i, v);
 		}
-		taballoc((int)sizeof(struct lv), 2);
+		tabzalloc((int)sizeof(struct lv), 2, 2);
 		lvtab[i].var = v;
 		lvtab[i].kind = kind;
 		lvtab[i].alias = alias;
@@ -380,7 +380,7 @@ void adddef(struct quad *q)
 		printf("defno=%d\n", ndefs);
 		prquad(q);
 	}
-	taballoc((int)sizeof(struct quad *), 3);
+	tabzalloc((int)sizeof(struct quad *), 4, 3);
 	defs[ndefs] = q;
 	ndefs++;
 }
@@ -464,27 +464,28 @@ void allocvec(struct quad *q, int kind, int field)
 		if (s4d84 > 2)
 			printf("allocvec(LIVE,field=%d)\n", field);
 		if (field == 5) {
-			p = (struct lrec *)taballoc((int)sizeof(struct brec), 2);
+			p = (struct lrec *)tabzalloc((int)sizeof(struct brec), 28, 2);
+			brecinit(p);
 			q->rec = p;
-			p->f0 = (unsigned *)taballoc(lvwords * (int)sizeof(unsigned), 2);
-			p->f4 = (unsigned *)taballoc(lvwords * (int)sizeof(unsigned), 2);
+			p->f0 = (unsigned *)tabzalloc(lvwords * (int)sizeof(unsigned), lvwords * 2, 2);
+			p->f4 = (unsigned *)tabzalloc(lvwords * (int)sizeof(unsigned), lvwords * 2, 2);
 			if (s4d86) {
 				printf("//inlive set, p = %X, inlive = %X\n", (unsigned)(uintptr_t)(p), (unsigned)(uintptr_t)(p->f4));
 				prquad(q);
 			}
 		} else if (field == 7) {
 			p = q->rec;
-			p->f14 = (unsigned *)taballoc(lvwords * (int)sizeof(unsigned), 2);
-			p->f10 = (unsigned *)taballoc(lvwords * (int)sizeof(unsigned), 2);
+			p->f14 = (unsigned *)tabzalloc(lvwords * (int)sizeof(unsigned), lvwords * 2, 2);
+			p->f10 = (unsigned *)tabzalloc(lvwords * (int)sizeof(unsigned), lvwords * 2, 2);
 		}
 	} else if (kind == 2) {
 		p = q->rec;
 		if (field == 6)
-			p->f8 = (unsigned *)taballoc(dfwords * (int)sizeof(unsigned), 3);
+			p->f8 = (unsigned *)tabzalloc(dfwords * (int)sizeof(unsigned), dfwords * 2, 3);
 		else if (field == 7) {
-			p->f14 = (unsigned *)taballoc(dfwords * (int)sizeof(unsigned), 3);
-			p->f10 = (unsigned *)taballoc(dfwords * (int)sizeof(unsigned), 3);
-			p->f18 = (unsigned *)taballoc(dfwords * (int)sizeof(unsigned), 3);
+			p->f14 = (unsigned *)tabzalloc(dfwords * (int)sizeof(unsigned), dfwords * 2, 3);
+			p->f10 = (unsigned *)tabzalloc(dfwords * (int)sizeof(unsigned), dfwords * 2, 3);
+			p->f18 = (unsigned *)tabzalloc(dfwords * (int)sizeof(unsigned), dfwords * 2, 3);
 			clrvec(p->f14, dfwords);
 			clrvec(p->f10, dfwords);
 		}
@@ -504,7 +505,7 @@ void alloclivevecs(void)
 		if (idfn[i] >= 0)
 			allocvec(q, 1, 5);
 	}
-	livevecs = taballoc(0, 2);
+	livevecs = tabzalloc(0, 0, 2);
 	for (i = 0; i < blkno; i++) {
 		q = blks[i];
 		if (idfn[i] >= 0)
@@ -640,7 +641,7 @@ void allocreachvecs(void)
 		if (idfn[i] >= 0)
 			allocvec(q, 2, 6);
 	}
-	livevecs = taballoc(0, 3);
+	livevecs = tabzalloc(0, 0, 3);
 	for (i = 0; i < blkno; i++) {
 		q = blks[i];
 		if (idfn[i] >= 0)
@@ -735,7 +736,7 @@ void linkreachdefs(void)
 
 	if (s4d84 > 3)
 		printf("linkreachdefs(), reachdefno=%d\n", ndefs);
-	r = reachmap = (struct rn *)taballoc((int)sizeof(struct rn), 3);
+	r = reachmap = (struct rn *)tabzalloc((int)sizeof(struct rn), 6, 3);
 	r->next = 0;
 	for (i = 0; i < ndefs; i++) {
 		if (!((uintptr_t)defs[i] & 1)) {
@@ -758,7 +759,7 @@ void linkreachdefs(void)
 						continue;
 				if (s4d84 > 3)
 					printf(" %d", j);
-				t = (int *)taballoc((int)sizeof(int), 3);
+				t = (int *)tabzalloc((int)sizeof(int), 2, 3);
 				*t = j;
 				defs[j] = (struct quad *)((uintptr_t)defs[j] | 1);	/* the original masks the segmented address: & 0x7F00FFFF */
 				if (s4d84 > 3)
@@ -766,10 +767,10 @@ void linkreachdefs(void)
 			}
 		}
 		defs[i] = MASK(defs[i]);
-		t = (int *)taballoc((int)sizeof(int), 3);
+		t = (int *)tabzalloc((int)sizeof(int), 2, 3);
 		*t = -1;
 		prev = r;
-		r = (struct rn *)taballoc((int)sizeof(struct rn), 3);
+		r = (struct rn *)tabzalloc((int)sizeof(struct rn), 6, 3);
 		prev->next = r;
 		if (s4d84 > 3)
 			printf("r=%X, *r=%d, p=%X, q=%X\n", (unsigned)(uintptr_t)(t), *t, (unsigned)(uintptr_t)(r), (unsigned)(uintptr_t)(prev));
@@ -959,7 +960,7 @@ void initvecs(int kind)
 	int i;
 
 	if (kind == 2) {
-		tmpv = (unsigned *)taballoc(dfwords * (int)sizeof(unsigned), 3);
+		tmpv = (unsigned *)tabzalloc(dfwords * (int)sizeof(unsigned), dfwords * 2, 3);
 		i = 0;
 		while (i < blkno) {
 			q = blks[i];
@@ -971,7 +972,7 @@ void initvecs(int kind)
 			i++;
 		}
 	} else if (kind == 1) {
-		tmpv = (unsigned *)taballoc(lvwords * (int)sizeof(unsigned), 2);
+		tmpv = (unsigned *)tabzalloc(lvwords * (int)sizeof(unsigned), lvwords * 2, 2);
 		for (i = 0; i < blkno; i++) {
 			q = blks[i];
 			if (idfn[i] >= 0) {
@@ -1139,7 +1140,7 @@ void livevars(void)
 		tabfree(2, (char *)0);
 	nlv = 0;
 	s4f20 = 0;
-	lvtab = (struct lv *)taballoc(0, 2);
+	lvtab = (struct lv *)tabzalloc(0, 0, 2);
 	s715e = 1;
 	if (!marklpvar())
 		cerror("out of live var space");
@@ -1160,7 +1161,7 @@ void reachdefs(void)
 	if (s4f22 == 0)
 		tabfree(3, (char *)0);
 	s4f22 = 0;
-	defs = (struct quad **)taballoc(0, 3);
+	defs = (struct quad **)tabzalloc(0, 0, 3);
 	if (countreachdefs()) {
 		if (ndefs > 0) {
 			setwords(2);

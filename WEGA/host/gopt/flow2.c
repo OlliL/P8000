@@ -38,7 +38,7 @@ int flow_graph(void)
 	if (s4d88 > 1)
 		prquads();
 	tabfree(8, (char *)0);
-	blks = (struct quad **)taballoc(0, 8);
+	blks = (struct quad **)tabzalloc(0, 0, 8);
 	blkno = 0;
 	for (q = qhead; q != 0; q = q->next)
 		if (q->op == 0x3b)
@@ -46,7 +46,7 @@ int flow_graph(void)
 	for (q = qhead; q != 0; q = q->next) {
 		if (q->op != 0x1c && q->op != 6 && q->op != 0xf && nb != 0) {
 			lab[blkno] = -1;
-			taballoc((int)sizeof(struct quad *), 8);
+			tabzalloc((int)sizeof(struct quad *), 4, 8);
 			blks[blkno] = last;
 			blkno++;
 			nb = 0;
@@ -56,7 +56,7 @@ int flow_graph(void)
 		switch (q->op) {
 		case 0x1c:
 			lab[blkno] = q->a.w4;
-			taballoc((int)sizeof(struct quad *), 8);
+			tabzalloc((int)sizeof(struct quad *), 4, 8);
 			blks[blkno] = last;
 			blkno++;
 			nb = 0;
@@ -80,7 +80,7 @@ int flow_graph(void)
 		maxblk = blkno + 10;
 	else
 		maxblk = blkno * 2 / 3 + blkno;
-	taballoc((maxblk - blkno) * (int)sizeof(struct quad *), 8);
+	tabzalloc((maxblk - blkno) * (int)sizeof(struct quad *), (maxblk - blkno) * 4, 8);
 	s1.w4 = -1;
 	s2.w4 = -1;
 #ifdef SHIPPED
@@ -94,7 +94,7 @@ int flow_graph(void)
 		s1.w0 = i;
 		blks[i] = insertquad(0x3b, &s1, &s2, &s3, blks[i]);
 	}
-	edges = (struct edge *)taballoc(0, 8);
+	edges = (struct edge *)tabzalloc(0, 0, 8);
 	nedge = 0;
 	for (i = 0; i < blkno; i++) {
 		for (q = blks[i]->next; q != 0 && q->op != 0x3b; q = q->next) {
@@ -146,11 +146,11 @@ int flow_graph(void)
 		}
 	}
 	optflow();
-	n = ((struct edge *)taballoc(0, 8) - edges) * 4;
+	n = ((struct edge *)tabzalloc(0, 0, 8) - edges) * 4;
 	if (n < 10)
-		taballoc(10 * (int)sizeof(struct edge), 8);
+		tabzalloc(10 * (int)sizeof(struct edge), 40, 8);
 	else
-		taballoc(n * (int)sizeof(struct edge), 8)	/* n * 4 bytes of the original: n entries */;
+		tabzalloc(n * (int)sizeof(struct edge), n * 4, 8)	/* n * 4 bytes of the original: n entries */;
 	return ret;
 }
 
@@ -224,7 +224,7 @@ void addedge(int *q, int v)
 {
 	int x;
 
-	taballoc((int)sizeof(struct edge), 8);
+	tabzalloc((int)sizeof(struct edge), 4, 8);
 	edges[nedge].blk = v;
 	edges[nedge].next = -1;
 	if (*q < 0)

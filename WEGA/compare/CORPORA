@@ -7,6 +7,7 @@
 # corpus alone. A new corpus goes in by its time (host/tools/corpus.sh NAME prints it: the TIME line; compare with the
 # lines around it), not at the end. The times are in seconds of a cold run of 2026-11-16 under a high load (the order
 # counts, not the values); a corpus that waits in real time (halt: sleep 30, down: shut) counts with that time.
+gopt
 cas
 casold
 scchain

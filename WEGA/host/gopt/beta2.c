@@ -19,7 +19,7 @@ int betainit(void)
 	int x, y, flag;
 	int i;
 
-	betatbl = (struct bt *)taballoc(0, 5);
+	betatbl = (struct bt *)tabzalloc(0, 0, 5);
 	s4d94++;
 	for (i = 0; i < s4d94; i++)
 		betanew(i);
@@ -88,7 +88,7 @@ int betainit(void)
 			y = betatbl[q->b.w4].x1;
 		}
 	alloc:
-		t = (struct bt *)taballoc((int)sizeof(struct bt), 5);
+		t = (struct bt *)tabzalloc((int)sizeof(struct bt), 10, 5);
 		t->x0 = x;
 		t->x1 = y;
 		t->x[0] = q->c.w4;
@@ -126,7 +126,7 @@ int betanew(int n)
 {
 	struct bt *t;
 
-	t = (struct bt *)taballoc((int)sizeof(struct bt), 5);
+	t = (struct bt *)tabzalloc((int)sizeof(struct bt), 10, 5);
 	t->f14 = 1;
 	t->f15 = 0;
 	t->bopt = 0;

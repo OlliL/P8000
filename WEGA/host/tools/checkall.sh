@@ -227,7 +227,7 @@ build() {	# build LABEL DIR make-arguments: the program of the shipped build, wi
 }
 build 'cmd (make shipped)' $C shipped
 : > $T/hostbuild.log
-for p in cpp ar binutils cc popt codgen cparse cas ld; do
+for p in cpp ar binutils cc popt codgen gopt cparse cas ld; do
 	make -C $T/shipped/WEGA/host $p >> $T/hostbuild.log 2>&1
 	stamp "3 host build: $p"
 done

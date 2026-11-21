@@ -657,6 +657,12 @@ wrtree(p)
 			printf("%d\t", (p->in.sname->sflags >> 4) & 0xFFF);
 		else if (p->in.op == TEMP)
 			printf("%d\t", p->tn.temp);
+#ifdef SHIPPED
+		/* rval overlays in.right: the original prints the segment word of the node it points to (node[] is in its
+		   segment 8: 0x8800); the shipped link puts node[] elsewhere (KNOWLEDGE.md, quirks) */
+		else if (kind != LTYPE && p->in.right >= node && p->in.right < &node[NTREE])
+			printf("%d\t", -30720);
+#endif
 		else
 			printf("%d\t", p->tn.rval);
 	}

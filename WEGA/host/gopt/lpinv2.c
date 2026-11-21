@@ -226,7 +226,7 @@ struct dl *alloclpdef(struct quad *q, int n)
 		p = a0f8;
 		a0f8 = a0f8->next;
 	} else
-		p = (struct dl *)taballoc((int)sizeof(struct dl), 7);
+		p = (struct dl *)tabzalloc((int)sizeof(struct dl), 28, 7);
 	p->x0 = n;
 	p->q = q;
 	p->l6 = 0;
@@ -414,7 +414,7 @@ void liveonexit(struct loop *lp)
 			printf("lblkno=%d\n", lp->exits->blk);
 	}
 	if (a0e8 == 0)
-		a0e8 = (unsigned *)taballoc(lvwords * (int)sizeof(unsigned), 2);
+		a0e8 = (unsigned *)tabzalloc(lvwords * (int)sizeof(unsigned), lvwords * 2, 2);
 	clrvec(a0e8, lvwords);
 	e = lp->exits;
 	if (s4d86 > 3)
@@ -842,7 +842,7 @@ void insrtdomnode(int hblk, int phblk)
 		x = p->down;
 	else
 		x = 0;
-	p->down = (struct dnode *)taballoc((int)sizeof(struct dnode), 4);
+	p->down = (struct dnode *)tabzalloc((int)sizeof(struct dnode), 12, 4);
 	p->dblkno = phblk;
 	p->down->dblkno = hblk;
 	p->down->down = x;
@@ -871,11 +871,11 @@ void updatelooplist(struct loop *lp, int phblk)
 					printf("//update, found outer loop, header=%d\n", p->hdr);
 				--p->cnt;
 				if (x == p->bls) {
-					p->bls = (struct bl *)taballoc((int)sizeof(struct bl), 4);
+					p->bls = (struct bl *)tabzalloc((int)sizeof(struct bl), 6, 4);
 					p->bls->next = x;
 					y = p->bls;
 				} else {
-					y->next = (struct bl *)taballoc((int)sizeof(struct bl), 4);
+					y->next = (struct bl *)tabzalloc((int)sizeof(struct bl), 6, 4);
 					y->next->next = x;
 					y = y->next;
 				}
@@ -1035,7 +1035,8 @@ found:
 	}
 	addedge(&nq->b.w4, hblk);
 	addedge(&hq->a.w4, blkno);
-	(nq)->rec = (struct hrec *)taballoc((int)sizeof(struct brec), 2);
+	(nq)->rec = (struct hrec *)tabzalloc((int)sizeof(struct brec), 28, 2);
+	brecinit((nq)->rec);
 	(nq)->rec->f4 = (hq)->rec->f4;
 	if (flag == 1)
 		(nq)->rec->f0 = (hq)->rec->f4;

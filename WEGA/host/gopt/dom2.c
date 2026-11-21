@@ -115,7 +115,7 @@ void addbucket(int i, int blk)
 	if (s4d82 > 2)
 		printf("addbucket(i=%d,blk=%d)\n", i, blk);
 	t = bucket[i];
-	taballoc((int)sizeof(struct edge), 4);
+	tabzalloc((int)sizeof(struct edge), 4, 4);
 	if (t == -1)
 		bucket[i] = nbent;
 	else {
@@ -158,18 +158,18 @@ void dominators(void)
 	int i, u, v, w, e, n;
 
 	n = maxblk + 1;
-	dom = (int *)taballoc(n * (int)sizeof(int), 4);
-	vertex = (int *)taballoc(n * (int)sizeof(int), 4);
-	idfn = (int *)taballoc(n * (int)sizeof(int), 4);
-	parent = (int *)taballoc(n * (int)sizeof(int), 4);
-	ancest = (int *)taballoc(n * (int)sizeof(int), 4);
-	label = (int *)taballoc(n * (int)sizeof(int), 4);
-	dfn = (int *)taballoc(n * (int)sizeof(int), 4);
-	child = (int *)taballoc(n * (int)sizeof(int), 4);
-	size = (int *)taballoc(n * (int)sizeof(int), 4);
-	bucket = (int *)taballoc(n * (int)sizeof(int), 4);
+	dom = (int *)tabzalloc(n * (int)sizeof(int), n + n, 4);
+	vertex = (int *)tabzalloc(n * (int)sizeof(int), n + n, 4);
+	idfn = (int *)tabzalloc(n * (int)sizeof(int), n + n, 4);
+	parent = (int *)tabzalloc(n * (int)sizeof(int), n + n, 4);
+	ancest = (int *)tabzalloc(n * (int)sizeof(int), n + n, 4);
+	label = (int *)tabzalloc(n * (int)sizeof(int), n + n, 4);
+	dfn = (int *)tabzalloc(n * (int)sizeof(int), n + n, 4);
+	child = (int *)tabzalloc(n * (int)sizeof(int), n + n, 4);
+	size = (int *)tabzalloc(n * (int)sizeof(int), n + n, 4);
+	bucket = (int *)tabzalloc(n * (int)sizeof(int), n + n, 4);
 	nbent = 0;
-	bent = (struct edge *)taballoc(0, 4);
+	bent = (struct edge *)tabzalloc(0, 0, 4);
 	if (s4d82 > 2)
 		printf("dominators: finished storage allocation\n");
 	dom[0] = -1;
@@ -269,7 +269,7 @@ void mkdomtree(void)
 	int i, d;
 	struct dnode *p;
 
-	darr = (struct dnode **)taballoc(blkno * (int)sizeof(struct dnode *), 4);
+	darr = (struct dnode **)tabzalloc(blkno * (int)sizeof(struct dnode *), blkno << 2, 4);
 	for (i = 0; i < blkno; i++)
 		darr[i] = 0;
 	for (i = 1; i < blkno; i++) {
@@ -282,19 +282,19 @@ void mkdomtree(void)
 			if (s4d82 > 3)
 				printf("\t\tnext , i=%d, di=%d\n", i, d);
 			p = darr[d];
-			darr[d] = (struct dnode *)taballoc((int)sizeof(struct dnode), 4);
+			darr[d] = (struct dnode *)tabzalloc((int)sizeof(struct dnode), 12, 4);
 			darr[d]->next = p;
 			p = darr[d];
 		} else {
 			if (s4d82 > 3)
 				printf("\t\tfirst, i=%d, di=%d\n", i, d);
-			p = darr[d] = (struct dnode *)taballoc((int)sizeof(struct dnode), 4);
+			p = darr[d] = (struct dnode *)tabzalloc((int)sizeof(struct dnode), 12, 4);
 			p->next = 0;
 		}
 		p->down = 0;
 		p->dblkno = i;
 	}
-	(domroot = (struct dnode *)taballoc((int)sizeof(struct dnode), 4))->next = 0;
+	(domroot = (struct dnode *)tabzalloc((int)sizeof(struct dnode), 12, 4))->next = 0;
 	domroot->dblkno = s70e6;
 	if (s4d82 > 3) {
 		for (i = 0; i < blkno; i++)
@@ -350,7 +350,7 @@ void addblk(struct bl **lp, int blk)
 		q = freebl;
 		freebl = freebl->next;
 	} else
-		q = (struct bl *)taballoc((int)sizeof(struct bl), 4);
+		q = (struct bl *)tabzalloc((int)sizeof(struct bl), 6, 4);
 	*(*lp == 0 ? lp : (struct bl **)p) = q;
 	q->next = 0;
 	q->blk = blk;
@@ -435,7 +435,7 @@ struct bl *exitblks(struct bl *l)
 					r = freebl;
 					freebl = freebl->next;
 				} else
-					r = (struct bl *)taballoc((int)sizeof(struct bl), 4);
+					r = (struct bl *)tabzalloc((int)sizeof(struct bl), 6, 4);
 				r->next = 0;
 			} else {
 				t = r;
@@ -443,7 +443,7 @@ struct bl *exitblks(struct bl *l)
 					r = freebl;
 					freebl = freebl->next;
 				} else
-					r = (struct bl *)taballoc((int)sizeof(struct bl), 4);
+					r = (struct bl *)tabzalloc((int)sizeof(struct bl), 6, 4);
 				r->next = t;
 			}
 			nbl2++;
@@ -464,7 +464,7 @@ void addhdrlist(int h)
 
 	if (s4d82 > 1)
 		printf("addhdrlist(%d)\n", h);
-	n = (struct loop *)taballoc((int)sizeof(struct loop), 4);
+	n = (struct loop *)tabzalloc((int)sizeof(struct loop), 20, 4);
 	f = 0;
 	if (s4d82 > 2) {
 		printf("looplist on entry:\n");
@@ -605,7 +605,7 @@ void findloop(struct dnode *q)
 /* the loops of the flow graph: the lists are cleared, the tree is traversed from its root (name guessed) */
 void mkloops(void)
 {
-	stk = (int *)taballoc(blkno * (int)sizeof(int), 4);
+	stk = (int *)tabzalloc(blkno * (int)sizeof(int), blkno + blkno, 4);
 	loops = 0;
 	pheaderlist = 0;
 	looplist = 0;

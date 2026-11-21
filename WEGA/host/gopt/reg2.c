@@ -114,7 +114,7 @@ void assignreg(int flag)
 	struct quad *q, *last;
 	unsigned *dfptr = 0;	/* host: = 0 (the original: what the frame holds) */
 
-	a11a = (struct gnn *)taballoc(0, 0);
+	a11a = (struct gnn *)tabzalloc(0, 0, 0);
 	a116 = 0;
 	a10e = 1;
 	last = 0;
@@ -210,7 +210,7 @@ void include(int flag, struct quad *q, struct quad *last)
 		propnd(&q->c);
 		printf("\n");
 	}
-	t = (void *)taballoc((int)sizeof(struct gnn), 0);
+	t = (void *)tabzalloc((int)sizeof(struct gnn), 10, 0);
 	t->q = q;
 	t->x0 = 0;
 	t->blk = a114;
@@ -231,10 +231,10 @@ void buildgraph(void)
 
 	i = 0;
 	a118 = (a116 + 16) / 16;
-	a110 = (unsigned *)taballoc((a116 + 1) * a118 * (int)sizeof(unsigned), 0);
+	a110 = (unsigned *)tabzalloc((a116 + 1) * a118 * (int)sizeof(unsigned), (a116 + 1) * 2 * a118, 0);
 	clrmat((int *)a110, a116 + 1, a118);
 	a11e = 0;
-	tmp = (unsigned *)taballoc(dfwords * (int)sizeof(unsigned), 0);
+	tmp = (unsigned *)tabzalloc(dfwords * (int)sizeof(unsigned), dfwords * 2, 0);
 	live = 0;
 	for (q = qhead; q != 0; q = q->next) {
 		if (0) {
@@ -353,7 +353,7 @@ struct gn *setedges(int i, unsigned *vec)
 		if (p->row == c)
 			break;
 	if (p == 0) {
-		p = (struct gn *)taballoc((int)sizeof(struct gn), 0);
+		p = (struct gn *)tabzalloc((int)sizeof(struct gn), 20, 0);
 		p->link = a11e;
 		a11e = p;
 		p->edges = 0;
@@ -373,7 +373,7 @@ struct gn *setedges(int i, unsigned *vec)
 		if (s4d90 > 2)
 			printf("// setedge : (%d, %d)\n", c, k);
 		if (!testbit(a110, c, k, a118)) {
-			e = (struct gedge *)taballoc((int)sizeof(struct gedge), 0);
+			e = (struct gedge *)tabzalloc((int)sizeof(struct gedge), 6, 0);
 			e->k = k;
 			e->next = p->edges;
 			p->edges = e;
@@ -401,7 +401,7 @@ void colorgraph(int flag)
 	} else
 		k = 4;
 	again = 1;
-	stack = (struct gn **)taballoc(a116 * (int)sizeof(struct gn *), 0);
+	stack = (struct gn **)tabzalloc(a116 * (int)sizeof(struct gn *), a116 * 4, 0);
 	for (;;) {
 		while (again) {
 			again = 0;
@@ -537,7 +537,7 @@ void savecolors(void)
 	struct loop *hdr;
 	struct quad *r2;
 
-	a10a = (unsigned *)taballoc(maxblk * (int)sizeof(unsigned), 0);
+	a10a = (unsigned *)tabzalloc(maxblk * (int)sizeof(unsigned), maxblk * 2, 0);
 	for (n = a11e; n != 0; n = n->link) {
 		if (n->x12 <= 0)
 			continue;

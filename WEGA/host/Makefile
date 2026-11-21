@@ -8,6 +8,7 @@
 #   binutils/  the WEGA ranlib, strip and size built for Linux (cross tools)
 #   popt/      the WEGA peephole optimizer built for Linux (cross tool)
 #   codgen/    the WEGA code generators codgen and scodgen built for Linux (cross tools)
+#   gopt/      the WEGA global optimizer gopt built for Linux (cross tool)
 #   cparse/    the WEGA front ends cparse and scparse built for Linux (cross tools)
 #   cas/       the WEGA assembler cas built for Linux (cross tool)
 #   ld/        the WEGA loaders ld, sld and gld built for Linux (cross tools)
@@ -38,9 +39,9 @@ OLDROOTABS = $(abspath $(OLDROOT))
 WBIN = $(abspath ../../tmp/wbin)
 WPATH = RUN=wrun PATH=$(WBIN):$$PATH
 
-all: cc popt codgen cparse ar binutils cas ld cpp
+all: cc popt codgen gopt cparse ar binutils cas ld cpp
 
-cc popt codgen cparse ar binutils cas ld cpp:
+cc popt codgen gopt cparse ar binutils cas ld cpp:
 	$(MAKE) -C $@ all
 
 checkall:
@@ -65,8 +66,9 @@ clean:
 	$(MAKE) -C binutils clean
 	$(MAKE) -C popt clean
 	$(MAKE) -C codgen clean
+	$(MAKE) -C gopt clean
 	$(MAKE) -C cparse clean
 	$(MAKE) -C cas clean
 	$(MAKE) -C cpp clean
 
-.PHONY: all checkall checkall-nocache wbin oldroot src clean cc popt codgen cparse ar binutils cas ld cpp
+.PHONY: all checkall checkall-nocache wbin oldroot src clean cc popt codgen gopt cparse ar binutils cas ld cpp

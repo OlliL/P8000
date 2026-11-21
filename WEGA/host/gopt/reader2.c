@@ -147,7 +147,7 @@ int main(int argc, char **argv)
 				abortpass();
 				fseek(infile, ifpos, 0);
 				tabfree(1, (char *)qhead);
-				qhead = (struct quad *)taballoc(0, 1);
+				qhead = (struct quad *)tabzalloc(0, 0, 1);
 			}
 			break;
 		case 'L':

@@ -37,7 +37,7 @@ void ebbopt(void)
 		prqall();
 	}
 	s4d94 = a0d4;
-	t = taballoc(0, 0);
+	t = tabzalloc(0, 0, 0);
 	for (q = qhead; q != 0; ) {
 		ebbinit();
 		r = q;
@@ -296,7 +296,7 @@ struct vn *vnfind(struct qa *p)
 			goto ret;
 		}
 	}
-	e = (struct vn *)taballoc((int)sizeof(struct vn), 0);
+	e = (struct vn *)tabzalloc((int)sizeof(struct vn), 16, 0);
 	if (a0cc == 0)
 		a0cc = (char *)e;
 	else
@@ -420,7 +420,7 @@ struct hent *exprfind(struct quad *q, int *fl)
 		}
 	}
 	*fl = 0;
-	e = (struct hent *)taballoc((int)sizeof(struct hent), 0);
+	e = (struct hent *)tabzalloc((int)sizeof(struct hent), 18, 0);
 	e->next = htab[h];
 	htab[h] = e;
 	e->op = q->op;
@@ -443,7 +443,7 @@ void exprenter(struct quad *q)
 	vb = vnfind(&q->b)->val;
 	h = q->op + va + vb;
 	h = h % 32;
-	e = (struct hent *)taballoc((int)sizeof(struct hent), 0);
+	e = (struct hent *)tabzalloc((int)sizeof(struct hent), 18, 0);
 	e->next = htab[h];
 	htab[h] = e;
 	e->op = q->op;

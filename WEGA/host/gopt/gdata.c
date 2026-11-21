@@ -239,3 +239,12 @@ FILE *fopenrw(char *name)
 		fseek(f, 0L, 2);
 	return f;
 }
+
+/* host: segment 0 of the original, where a vector pointer of a block record that is not set (0) leads: z8k-emu gives
+   a segment of zeros that the run reads and writes (a preheader of lpinv2.c has f0 and f4 only; buildgraph() reads f18) */
+unsigned zseg0[32768];
+
+void brecinit(struct brec *r)
+{
+	r->f0 = r->f4 = r->f8 = r->fc = r->f10 = r->f14 = r->f18 = zseg0;
+}

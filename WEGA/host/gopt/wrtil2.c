@@ -63,7 +63,7 @@ void writeil(void)
 		ifline = q->pos.line;
 		switch (q->op) {
 		case 0x2e:
-			printf("{%d\t%ld\t", v00, vb94);
+			printf("{%d\t%ld\t", v00, zl(vb94));
 			pos = ftell(stdout);
 			printf("0000\t%d\t\n", v04);
 			wrline(curproc);
@@ -80,7 +80,7 @@ void writeil(void)
 			continue;
 		case 6:
 			cleartrees();
-			printf("[%ld\t%d\t%d\t\n", constbl[q->a.w4], q->b.w4, q->c.w4);
+			printf("[%ld\t%d\t%d\t\n", zl(constbl[q->a.w4]), q->b.w4, q->c.w4);
 			continue;
 		case 0xf:
 			printf("]\n");
@@ -620,7 +620,7 @@ static void wrtree(NODE *p)
 	kind = optype(p->in.op);
 	printf("%d\t", p->in.op);
 	if (kind == LTYPE) {
-		printf("%ld", p->tn.lval);
+		printf("%ld", zl(p->tn.lval));
 		putchar('\t');
 	}
 	if (kind != BITYPE) {
@@ -642,7 +642,7 @@ static void wrtree(NODE *p)
 	switch (p->in.op) {
 	case STCALL:
 	case USTCALL:
-		printf("%ld", p->in.left->in.sname->ssize);
+		printf("%ld", zl(p->in.left->in.sname->ssize));
 		printf("\t%d\t\n", p->tn.w6 << 3);
 		break;
 	case STASG:

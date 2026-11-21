@@ -63,7 +63,7 @@ void setposition(int cls, struct qa *p, int *X, int *Y)
 		t.b2 = 4;
 		t.w4 = v - symtab;
 		if (!itfind(&t)) {
-			taballoc((int)sizeof(int), 6);
+			tabzalloc((int)sizeof(int), 2, 6);
 			v->sx14 = nal;
 			symtab[p->w4].sx14 = nal;
 			altab[nal++] = v - symtab;
@@ -79,7 +79,7 @@ void setposition(int cls, struct qa *p, int *X, int *Y)
 		}
 	}
 	if (!itfind(p)) {
-		taballoc((int)sizeof(int), 6);
+		tabzalloc((int)sizeof(int), 2, 6);
 		symtab[p->w4].sx14 = nal;
 		altab[nal++] = p->w4;
 	}
@@ -122,7 +122,7 @@ void aliasm(void)
 	nptr = 1;
 	nadr = 1;
 	nal = 1;
-	altab = (int *)taballoc((int)sizeof(int), 6);
+	altab = (int *)tabzalloc((int)sizeof(int), 2, 6);
 	*altab = 0;
 	A[0] = 0;
 	B[0] = 0;
@@ -158,12 +158,12 @@ skh:
 	}
 	n = nadr;
 	nadr = nal;
-	taballoc(nadr * (int)sizeof(int), 6);
+	tabzalloc(nadr * (int)sizeof(int), (unsigned)nadr * 2, 6);
 	for (i = 0; i < n; i++)
 		altab[nal++] = B[i];
 	n = nptr;
 	nptr = nal;
-	taballoc(nptr * (int)sizeof(int), 6);
+	tabzalloc(nptr * (int)sizeof(int), (unsigned)nptr * 2, 6);
 	for (i = 0; i < n; i++)
 		altab[nal++] = A[i];
 	if (aflag)
@@ -727,8 +727,8 @@ void initaffect(void)
 	struct qa s;
 	int cls;
 
-	affect = (int *)taballoc(affdim * matw * (int)sizeof(int), 6);
-	modval = (int *)taballoc(affdim * matw * (int)sizeof(int), 6);
+	affect = (int *)tabzalloc(affdim * matw * (int)sizeof(int), affdim * 2 * matw, 6);
+	modval = (int *)tabzalloc(affdim * matw * (int)sizeof(int), affdim * 2 * matw, 6);
 	if (aflag > 1)
 		printf("// initaffect: affect=%X, modval=%X, affdim=%d\n", (unsigned)(uintptr_t)(affect), (unsigned)(uintptr_t)(modval), affdim);
 	pcur = q = qhead;
@@ -766,7 +766,7 @@ struct aln *alalloc(void)
 	struct aln *p;
 
 	if (alfree == 0)
-		p = (struct aln *)taballoc((int)sizeof(struct aln), 6)	/* 6 bytes in the original: x0 and next */;
+		p = (struct aln *)tabzalloc((int)sizeof(struct aln), 6, 6)	/* 6 bytes in the original: x0 and next */;
 	else {
 		p = alfree;
 		alfree = alfree->next;
@@ -837,14 +837,14 @@ void initallist(int v)
 				printf("// initallist: previous entry nondiagonal\n");
 			chkallist();
 			t = alcur;
-			alcur = (struct aln *)taballoc((int)sizeof(struct aln), 6);
+			alcur = (struct aln *)tabzalloc((int)sizeof(struct aln), 10, 6);
 			t->link = alcur;
 			alast = 0;
 		}
 	} else {
 		if (aflag > 1)
 			printf("// initallist: firstalnode initialized\n");
-		alcur = (struct aln *)taballoc((int)sizeof(struct aln), 6);
+		alcur = (struct aln *)tabzalloc((int)sizeof(struct aln), 10, 6);
 		allist = alcur;
 	}
 	alcur->x0 = v;

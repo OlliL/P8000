@@ -286,7 +286,7 @@ struct quad *fillindvar(struct quad *qd, struct quad *opqd, int kind, struct dl 
 		n = a104;
 		a104 = a104->link;
 	} else
-		n = (struct nd *)taballoc((int)sizeof(struct nd), 7);
+		n = (struct nd *)tabzalloc((int)sizeof(struct nd), 22, 7);
 	t->f11 = 0;
 	n->f15 = 0;
 	n->v = 0;
@@ -538,14 +538,28 @@ extern char ctpos[];
 /* the induction variable definitions of the loop are checked for the quad q; the new definition is returned (name from the debug output) */
 /* host: the block that chklpdefs() passes to insrtlpdef() in the original: r5 as sameopnd(q, d, op, 1) left it. When the
    operands are the same (kind and number) sameopnd() does not touch r5: it still holds the low word of the address of d,
-   a quad of area 1 (30 bytes each from the start of the segment). Through checkalias() the register is not known. */
+   a quad of area 1 (its offset in the segment: tabzoff()). (The debug output of sameopnd, checkalias, almap
+   changes r5: not modelled.) */
 static int zblk(struct quad *q, struct quad *d, int op)
 {
 	struct qa *a = op == 2 ? &q->a : op == 3 ? &q->b : &q->c;
 
 	if (a->b2 == d->c.b2 && a->w4 == d->c.w4)
-		return (int16_t)(((char *)d - tabbase(1)) / (int)sizeof(struct quad) * 30);
-	cerror("host gopt: insrtlpdef() without its block (the original takes a register left over by checkalias)");
+		return (int16_t)tabzoff(1, (char *)d);
+	/* else sameopnd() was true through checkalias(q, op), the last call: r5 is what it passed to almap() (almap()
+	   leaves r5 alone), or its own ot when the operand is a beta (no almap()) */
+	if (op == 2) {
+		if (q->a.b2 == 8)
+			return 2;
+		if (q->op == 3)
+			return 3;
+		if (q->op == 0x18 || q->op == 0x1e)
+			return 0x18;
+		return 0x2f;
+	}
+	if (op == 1)
+		return q->c.b2 == 8 ? 1 : 0x2f;
+	return q->b.b2 == 8 ? op : 0x2f;
 }
 
 struct quad *chklpdefs(struct quad *r, struct quad *q, int op, int x)

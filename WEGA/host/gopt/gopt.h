@@ -209,5 +209,9 @@ int rdsyms22(struct sym *tab, int n, FILE *f);
 FILE *fopenrw(char *name);
 struct nument { int tag; int x; };	/* numtab: the tags of the members (4 bytes) */
 #define L32(x)	((long)(int32_t)(uint32_t)(x))	/* host: a long of the Z8000 (32 bits, wraps) */
+#define zl(v)	((long)(v) == -2147483648L ? 0L : (long)(v))	/* host: %ld of the libc of gopt prints the
+							   most negative long as 0 (measured; doprnt/0_3) */
+extern unsigned zseg0[];
+void brecinit(struct brec *r);
 #define BLKUNSET	(-32768)	/* host: an argument the original does not pass */
 #include "goptproto.h"

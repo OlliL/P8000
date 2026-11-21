@@ -88,7 +88,7 @@ void readsyms(int n, struct sym *tab, int kind)
 	struct sym *q;
 
 	if (n > 0) {
-		taballoc(n * (int)sizeof(struct sym), 0);
+		tabzalloc(n * (int)sizeof(struct sym), n * 22, 0);
 		if ((x = rdsyms22(tab, n, stfile)) != n)
 			printf("readst: error in reading symbol table file stfile\n");
 		for (k = n, q = tab; k > 0; k--, q = q + 1) {
@@ -348,7 +348,7 @@ void mapnm(NODE *p)
 
 void mkhash(void)
 {
-	(symtab = (struct sym *)taballoc((int)sizeof(struct sym), 0))->nameoff = 0;
+	(symtab = (struct sym *)tabzalloc((int)sizeof(struct sym), 22, 0))->nameoff = 0;
 	symtab->sflags |= 4;
 	symtab->sx14 = 0;
 }
