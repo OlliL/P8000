@@ -297,18 +297,19 @@ static void
 asgop2(p)
 	NODE *p;
 {
+	NODE *t;
 	int op;
-	NODE *q, *t;
+	NODE *q;
 
 	op = p->in.op;
 	if (op == 7 || op == 9 || op == 0x12 || op == 0xf) {
 		q = t = talloc();
 		ncopy(q, p);
 		p->in.op = ASSIGN;
-		q->in.op = q->in.op - 1;
-		q->in.left = tcopy(p->in.left);
-		fwalk(q->in.left, asgsimp);
-		p->in.right = q;
+		t->in.op = t->in.op - 1;
+		t->in.left = tcopy(p->in.left);
+		fwalk(t->in.left, asgsimp);
+		p->in.right = t;
 		fold2(p);
 	}
 }
