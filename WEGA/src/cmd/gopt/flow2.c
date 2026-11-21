@@ -328,7 +328,7 @@ rmlabels(tab)
 		}
 		blks[pi]->next->c.w4 |= blks[pj]->next->c.w4;
 		for (; e >= 0; e = edges[e].next)
-			for (p = blks[edges[e].blk]->next; p != 0 && p->op != 0x3b; p = p->next) {
+			for (p = blks[edges[e].blk]->next; p && p->op != 0x3b; p = p->next) {
 				switch (p->op) {
 				case 0x1a:
 					p->a.w4 = tab[pi];

@@ -5,7 +5,7 @@ host/OLDCC.md). Rules: CLAUDE.md (German in conversation, English in git; commit
 findings.json (key `note`), SWITCH_CANDIDATES.md, host/OLDCC_LOG.md and host/increments/160-programs.md current.
 
 ## State
-- fnc.py: 315 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
+- fnc.py: 316 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
 - Open (DIFF lines, candidate of SWITCH_CANDIDATES.md):
   setposition 18 (K8), chkfamindvar 9 (K8), affsize 3 (K5),
   rmlabels 2 (spopt with the D2AV copy), setsymtable 2 (K11), mkconstopnd 2 (dead `ldl rr0,rr6`, as v0p OLD_D3KC).
