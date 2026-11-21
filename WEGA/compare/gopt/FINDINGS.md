@@ -13,64 +13,26 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | Function | Address | Note |
 |---|---|---|
 | main | 4:0042 | the putc loop of case / is `while (putc(getc(infile), stdout) != '/n')`: '/n' is a typo of '\n' in the original, the loop never ends (kept); qfree = 0 in case {; the space loop of case C ends in `continue;`; v1, v2 declared before i (frame order) |
-| f4_00fc | 4:00fc | case block of main |
-| f4_0220 | 4:0220 | case block of main |
-| f4_029c | 4:029c | case block of main |
-| f4_02c2 | 4:02c2 | case block of main |
-| f4_0372 | 4:0372 | case block of main |
-| f4_0434 | 4:0434 | case block of main |
-| f4_0470 | 4:0470 | case block of main |
-| f4_05fe | 4:05fe | case block of main |
 | dotree | 4:0714 | `curproc = p;` in both branches (0x76, 0x77); the else (mapall, dotree2) has no return |
-| f4_087c | 4:087c | tail of cutree |
-| f4_0886 | 4:0886 | tail of cutree |
 | pr | 4:08f4 | prints the tag with %% in the format (kept); the test `optype == UTYPE` before ", rval = %d" as in the binary |
-| f4_09ae | 4:09ae | tail of pr |
-| f4_09f6 | 4:09f6 | tail of pr |
 | prtbl | 4:0b28 | prints the pointer arhigh[i] with %d, cast (int) (kept) |
 | genquads | 4:0b5e | genquads(p): the quads of a tree (the operands p1 p2 p3 of the node: struct qa, p3 the result; qop[] gives the quad op of the node op) |
-| f4_0e34 | 4:0e34 | case block of genquads |
-| f4_0ea4 | 4:0ea4 | case block of genquads |
-| f4_0ed8 | 4:0ed8 | case block of genquads |
-| f4_0ef8 | 4:0ef8 | case block of genquads |
-| f4_0f34 | 4:0f34 | case block of genquads |
-| f4_1058 | 4:1058 | case block of genquads |
-| f4_113a | 4:113a | case block of genquads |
-| f4_11a4 | 4:11a4 | case block of genquads |
 | fold1 | 4:14a2 | names guessed |
 | fold2 | 4:14e8 | names guessed; the star nodes on the way get op 126 (an op that is not in the table) |
 | asgop2 | 4:1550 | t declared in front of op and q (frame order); `q = t = talloc(); ncopy(q, p);`, then t |
 | cmwalk | 4:1640 | `} else { e1: if (optype(p->in.op) != LTYPE) genquads(p); }` with a dead `if (0) goto e1;` at the end of the CM branch (p is reloaded at e1) |
 | operand | 4:1812 | static struct qa opnd (6 bytes) in the data; `opnd.w4 = p->in.sname - symtab` directly; the else block of the NAME case keeps the tail `opnd.w0 = p->in.type; break`; a, b, c in front of i (frame order) |
-| f4_1840 | 4:1840 | case block of operand |
-| f4_18a8 | 4:18a8 | case block of operand |
-| f4_18fc | 4:18fc | case block of operand |
-| f4_1920 | 4:1920 | case block of operand |
-| f4_1a32 | 4:1a32 | case block of operand |
-| f4_1a56 | 4:1a56 | case block of operand |
 | tlookup | 4:1aea | name guessed |
 | constlook | 4:1b28 | name guessed; `ctmp_no`: see operand |
 | fconstlook | 4:1ba2 | name guessed; reads 4 words from the data file with fscanf (the .word lines of the intermediate file) |
 | delquad | 4:20b6 | prev is unset when q is the head of the list (kept) |
 | denorm | 4:22b6 | the pointer parameter comes back at a label without a frame home (the frame slot is reserved, rr6 is not stored) |
 | map | 4:231c | map(p, f, t): ?: && || and the comma are made into jumps (f, t: the labels of the context); written as 4 blocks with their own locals; `lab = (long)t == 0 ? newtmpno() : t`, `return map(l) || map(r)`, mknode(.., 0L) (a long 0 as the type), `ncopy(p, p->in.right)` before q is freed, `y = c = talloc(); ncopy(y, t1)`; the second talloc of case 0x17/0x18 goes to x (the original reuses the variable); case 0x15 declares no t1 |
-| f4_2416 | 4:2416 | case block of map |
-| f4_26bc | 4:26bc | case block of map |
-| f4_28c0 | 4:28c0 | case block of map |
-| f4_29f8 | 4:29f8 | case block of map |
 | mknode | 4:2a48 | names guessed (all of 2a48 .. 2bcc) |
 | mapall | 4:2bcc | the callee 4:231c is `map` (the strings "// map: ..." belong to it) |
 | mkqnames | 4:2c10 | the table qtab (84 quad operators: op, name, operator of the trees) is the data of the module; qop[] (operator of the trees -> quad op) is used by genquads |
 | prquad | 4:2c8c | `if (q == 0) { printf(..); return; }`: q is reloaded from the frame behind it |
 | propnd | 4:2d3e | the cases stand in the order 1 7 2 3 4 5 6 8 (the code order of the original) |
-| f4_2d5e | 4:2d5e | case block of propnd |
-| f4_2d8a | 4:2d8a | case block of propnd |
-| f4_2da4 | 4:2da4 | case block of propnd |
-| f4_2dc8 | 4:2dc8 | case block of propnd |
-| f4_2dd8 | 4:2dd8 | case block of propnd |
-| f4_2e00 | 4:2e00 | case block of propnd |
-| f4_2e10 | 4:2e10 | case block of propnd |
-| f4_2e20 | 4:2e20 | case block of propnd |
 | readsyms | 4:30a8 | the debug print "index = %d" prints the pointer tab with %d (kept) |
 | readmems | 4:34e8 | `top:` label at the start (n is compared in the frame); fseek whence 0 (int) here, 0L in rdsym; mem[550] static in the data |
 | prtags | 4:3906 | name guessed |
@@ -81,64 +43,21 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | tfree1 | 4:428a | the message of the original starts with a blank: " freeing blank tree!" (kept) |
 | tprint | 4:43e8 | parameters (t, fp): t in r7, fp in rr4; the fprintf call of FTN is shared by PTR and ARY |
 | bsize | 4:448a | pointer: returns 16 also in the segmented program (comm3.c: 32 with SEG); the tails 4:44a8, 4:44b2, 4:44b8 are its returns; dead tests: `(t & 060) == 020` before a return with the same value in szty and tbytes |
-| f4_44a8 | 4:44a8 | tail of bsize (a case block behind its ret) |
-| f4_44b2 | 4:44b2 | tail of bsize (a case block behind its ret) |
-| f4_44b8 | 4:44b8 | tail of bsize (a case block behind its ret) |
-| f4_44f8 | 4:44f8 | tail of szty (a case block behind its ret) |
-| f4_44fc | 4:44fc | tail of szty (a case block behind its ret) |
-| f4_45d2 | 4:45d2 | tail of tbytes (a case block behind its ret) |
-| f4_45d6 | 4:45d6 | tail of tbytes (a case block behind its ret) |
 | ispow2 | 4:46c4 | the shift by one of a register variable goes through a register (ld r2,#1; neg r2; sdal) |
 | taballoc | 4:4738 | name guessed (an area allocator: ssgbrk/mkseg, areas 0..10) |
 | tabfree | 4:4934 | the pointer parameter p cast to long is taken from its register (ldl rr2,rr4) |
 | tabavail | 4:4a48 | name guessed (an area allocator: ssgbrk/mkseg, areas 0..10) |
 | writeil | 4:4a8e | writeil(): the quads are written (12 cases of the quad op: 0x2e start of the function, 0x11 its end with the S lines and the temp size, 6 and 0x3b tables, 0x1a 0x1c labels, 9 and 0x32 the call arguments (pend), 0x28 0x29 0x2b the registers and the symbols); the local array regsym (name guessed); the STARG block uses v (u elsewhere); both "assigning S%d" prints show q->a.w4 |
-| f4_4b36 | 4:4b36 | case block of writeil |
-| f4_4b94 | 4:4b94 | case block of writeil |
-| f4_4c5a | 4:4c5a | case block of writeil |
-| f4_4c96 | 4:4c96 | case block of writeil |
-| f4_4c9e | 4:4c9e | case block of writeil |
-| f4_4dc6 | 4:4dc6 | case block of writeil |
-| f4_4de0 | 4:4de0 | case block of writeil |
-| f4_4dfa | 4:4dfa | case block of writeil |
-| f4_4e48 | 4:4e48 | case block of writeil |
-| f4_5026 | 4:5026 | case block of writeil |
-| f4_5090 | 4:5090 | case block of writeil |
-| f4_5294 | 4:5294 | case block of writeil |
 | mktree | 4:53f0 | mktree(q): a quad is added to the tree (the cases 4:584a ... 4:5d0e are blocks of it) |
-| f4_584a | 4:584a | case block of mktree |
-| f4_5944 | 4:5944 | case block of mktree |
-| f4_5982 | 4:5982 | case block of mktree |
-| f4_59b8 | 4:59b8 | case block of mktree |
-| f4_59ee | 4:59ee | case block of mktree |
-| f4_5a72 | 4:5a72 | case block of mktree |
-| f4_5af6 | 4:5af6 | case block of mktree |
-| f4_5b7a | 4:5b7a | case block of mktree |
-| f4_5bf2 | 4:5bf2 | case block of mktree |
-| f4_5c3c | 4:5c3c | case block of mktree |
-| f4_5c88 | 4:5c88 | case block of mktree |
-| f4_5cd6 | 4:5cd6 | case block of mktree |
-| f4_5d0e | 4:5d0e | case block of mktree |
 | needustar | 4:5fd2 | `if (p->in.left->in.op == TEMP) return 1;` first, then the loop, and the end as one condition `if (q->in.op == TEMP && q->tn.w6 == 0 || optype(q->in.op) != LTYPE && q->in.op != FLD) return 1; return 0;` |
 | mkleaf | 4:6050 | dead code at the start `if (0) a = 0;` (the parameter a stays in the frame); the cases in the order 4 5 1 7 2 6 3; `for (r = node; ...; ++r)`, `*(ctpos + a->w4) -= 1` as a statement; the FCON case sets lval = 0 (its tail is that of case 5); the constants of the float table go to the data file |
-| f4_6078 | 4:6078 | case block of mkleaf |
-| f4_60e4 | 4:60e4 | case block of mkleaf |
-| f4_612c | 4:612c | case block of mkleaf |
-| f4_6166 | 4:6166 | case block of mkleaf |
-| f4_61aa | 4:61aa | case block of mkleaf |
-| f4_6322 | 4:6322 | case block of mkleaf |
-| f4_63ca | 4:63ca | case block of mkleaf |
 | cleartrees | 4:65e4 | the second loop has `p->in.op == FREE;` (a compare as a statement: a typo of = in the original, no effect; kept); the temporaries are numbered by tmpoff |
 | wrtree | 4:687e | two unused register variables (r10, r11) as in eread; the cases STCALL/USTCALL stand in front of STASG/STARG |
-| f4_698c | 4:698c | case block of wrtree |
-| f4_69ba | 4:69ba | case block of wrtree |
 | treeeq | 4:6a36 | the cases BITYPE (falls into UTYPE) LTYPE in that order; LTYPE returns the && expression |
 | asgfold | 4:6abe | the frame place of an automatic pointer is found in the pair an assignment named (vc OLD_D2FA) |
 | prtcounts | 4:6b66 | prints ctpos[i], ctneg[i] of the 1000 temporaries (debug) |
 | itfind | 4:6bc6 | names guessed (a table at the pointer 0x70da, 0x70de entries); the first function of alias2.c (setposition calls it with calr: same file) |
 | setposition | 4:6c0a | setposition(cls, p, X, Y): enters an operand in the list of the addresses X (nadr) and of the pointers Y (nptr), with its structure members (recursive); name from the debug text; an unused local pointer before i (frame); the array-of-pointer case appends to Y without the search (shared with the cases 0x18 0x1e 0x2f) |
-| f4_6f4c | 4:6f4c | case block of setposition |
-| f4_6fa4 | 4:6fa4 | case block of setposition |
 | aliasm | 4:7088 | the skiphdrs code stands at the top of the loop body as `if (0) { skh: pcur = skiphdrs(q); continue; }`, reached by `if (q->op == 0x3b) goto skh;`; taballoc((unsigned)nadr * 2, 6) |
 | ind | 4:7368 | gotos neg/done inside the p < nadr block (the sx14 block and p >= nptr stand behind the return); symtab[altab[p]].stype is read through altab[p] again, not v; name from the strings |
 | clrbit | 4:7464 | clears bit j of row i of a bit matrix (rows of dim words); debug text says setbit (kept) |
@@ -153,25 +72,8 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | tmpsearch | 4:7a7e | p = p->next: the pair of the computed value is found for p->op (vc OLD_D2FA for parameters) |
 | fndparm | 4:7bb6 | name guessed (the string says checkand, actual param & op found); the assignment s = q->a of a local structure |
 | checkops | 4:7c68 | the &t arm of the ?: as `if (0) { lft: opnd70c8 = t; goto r1; }` behind the post code, the end `if (found) goto lft; opnd70c8 = s; r1: return 1;`; the mode == 1 test under a label m1 (`} else { m1: if (mode == 1) ... }`) with a dead `goto m1;` behind the goto fail of the mode == 0 branch (mode and q are reloaded from the frame behind it) |
-| f4_7dfc | 4:7dfc | case block of checkops |
-| f4_7e62 | 4:7e62 | case block of checkops |
-| f4_7ef0 | 4:7ef0 | case block of checkops |
-| f4_7f18 | 4:7f18 | case block of checkops |
-| f4_7f44 | 4:7f44 | case block of checkops |
-| f4_7fd8 | 4:7fd8 | case block of checkops |
 | almap | 4:8074 | almap(p, op): the position of the operand in the alias table (op 3 addresses nadr..nptr, 0x18/0x1e pointers nptr..nal, else sx14); name from the debug strings; gotos zero/neg/done: zero and neg in the first if, the done block (the debug tail and the return) behind the switch; each loop leaves with goto done; p->w4 == altab[i] in this order |
 | addaffect | 4:831e | addaffect(lop, lp, rop, rp): lop QSTORE 0x2f / QIDR 0x18,0x1e / 0x34, rop 3, 7, 0x18, 0x1e, 0x2f; the four parameters r7, rr4, r3 and the stack (r6 stays free by the pair alignment); affect, modval, affdim: names guessed (70d4, 70ae, 70b6) |
-| f4_838c | 4:838c | case block of addaffect |
-| f4_83d0 | 4:83d0 | case block of addaffect |
-| f4_8438 | 4:8438 | case block of addaffect |
-| f4_8488 | 4:8488 | case block of addaffect |
-| f4_8526 | 4:8526 | case block of addaffect |
-| f4_857c | 4:857c | case block of addaffect |
-| f4_85b2 | 4:85b2 | case block of addaffect |
-| f4_861c | 4:861c | case block of addaffect |
-| f4_8678 | 4:8678 | case block of addaffect |
-| f4_871a | 4:871a | case block of addaffect |
-| f4_8768 | 4:8768 | case block of addaffect |
 | initaffect | 4:87e6 | the skiphdrs code stands at the top of the loop body as `if (0) { skh: pcur = skiphdrs(q); continue; }`, reached by `if (q->op == 0x3b) goto skh;` |
 | alalloc | 4:89c0 | the free list alfree (70bc) of 6 byte nodes; name from the string |
 | alret | 4:8a1e | name guessed (the strings say: nodes put on alfree) |
@@ -185,12 +87,6 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | praldim | 4:90be | name guessed |
 | aliasmat | 4:9108 | name guessed (the driver of the alias analysis: matrix, closure, product, alias lists); tmp 1800 words; s4d92 the statistics flag |
 | flow_graph | 4:927e | the name from the string; blocks: quads of the op 0x3b with a.w4 = the predecessor list, b.w4 = the successor list (edges); the loops are for (q = blks[i]->next; ...); jmp: the previous block ended in a jump; 0xa: r->c.w0 = 1 of the first label of the target block |
-| f4_93f2 | 4:93f2 | case block of flow_graph |
-| f4_9476 | 4:9476 | case block of flow_graph |
-| f4_95cc | 4:95cc | case block of flow_graph |
-| f4_9666 | 4:9666 | case block of flow_graph |
-| f4_9738 | 4:9738 | case block of flow_graph |
-| f4_97a6 | 4:97a6 | case block of flow_graph |
 | optflow | 4:98a6 | name guessed (the optimizations of the flow graph with the debug output); an unused local j (the pad before q) |
 | blkof | 4:9a5c | name guessed: the number of the basic block of a label (table of the labels per block) |
 | marklab | 4:9aae | name guessed: the first label quad from q on gets the mark c.b2 = 1, c.w4 = 1 |
@@ -202,7 +98,6 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | rm_deadblks | 4:a4fa | name from the string; an unused local pp (the original frame is 4 bytes bigger); the check blks[i] != 0 in the debug test is in the original |
 | joinblk | 4:a66e | name guessed: the edges of block a are appended to those of b, mode 1/2/3 drops edges |
 | jmplabel | 4:a93c | name guessed: the label of a block that consists only of a jump (op 0x1a) and the ops 6, 0xf, labels |
-| f4_a994 | 4:a994 | case block of jmplabel |
 | prgraph | 4:a9ac | name guessed: the graph printed (debug); register variables i (r13) and e (r12) |
 | dfs | 4:aaac | dfn[v] = ndfs = ndfs + 1 and vertex[ndfs] = label[v] = v (chains); the arrays dfn, label, vertex, ancest, child, size, parent indexed by block + 1: names guessed (the dominator algorithm of Lengauer and Tarjan) |
 | compress | 4:abd6 | the path compression of Lengauer and Tarjan; dfn[label[ancest[v]]] loads each base again |
@@ -229,25 +124,6 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | prlstats | 4:c610 | name guessed (debug) |
 | domloops | 4:c65a | name guessed; falls off the end without a return value when s0b5e <= 3 (as the original) |
 | initopts | 4:c69e | name guessed (the options of the pass; the case blocks in the address order of the original: y q d l p f e t a b r s Z E 5 4 3 2 1); the register variables j and t are unused; an unused pointer stands before buf (frame); argv[i - 1] in the messages is the original; the results of strcpy and strcat in fopen(strcat(strcpy(buf, ..), ..), ..) share one temporary (vc OLD_D14T) |
-| f4_c6e8 | 4:c6e8 | case block of initopts |
-| f4_c6f4 | 4:c6f4 | case block of initopts |
-| f4_c700 | 4:c700 | case block of initopts |
-| f4_c70c | 4:c70c | case block of initopts |
-| f4_c718 | 4:c718 | case block of initopts |
-| f4_c724 | 4:c724 | case block of initopts |
-| f4_c730 | 4:c730 | case block of initopts |
-| f4_c73c | 4:c73c | case block of initopts |
-| f4_c748 | 4:c748 | case block of initopts |
-| f4_c754 | 4:c754 | case block of initopts |
-| f4_c760 | 4:c760 | case block of initopts |
-| f4_c76c | 4:c76c | case block of initopts |
-| f4_c778 | 4:c778 | case block of initopts |
-| f4_c784 | 4:c784 | case block of initopts |
-| f4_c8ee | 4:c8ee | case block of initopts |
-| f4_c8f8 | 4:c8f8 | case block of initopts |
-| f4_c902 | 4:c902 | case block of initopts |
-| f4_c90c | 4:c90c | case block of initopts |
-| f4_c916 | 4:c916 | case block of initopts |
 | prqflags | 4:c974 | name guessed (debug) |
 | prqall | 4:ca54 | name guessed (debug) |
 | islive | 4:ca88 | the pointer parameter comes back at a label without a frame home (vc OLD_D3JL) |
@@ -259,9 +135,6 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | markall | 4:d344 | name guessed; falls off the end without a return value (as the original) |
 | marklpvar | 4:d384 | name from the string |
 | issym | 4:d408 | BOPT form (see initlive); name from the string |
-| f4_d42c | 4:d42c | case block of issym |
-| f4_d546 | 4:d546 | case block of issym |
-| f4_d64e | 4:d64e | case block of issym |
 | adddef | 4:d6e8 | name guessed |
 | countreachdefs | 4:d742 | name from the string; two unused locals (the frame is 4 bytes bigger) |
 | setlbit | 4:d7da | the parameter word i in r5 is given back for rr4 (vc OLD_D2PP) |
@@ -295,55 +168,12 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | livevars | 4:f504 | name guessed (the driver of the live variable analysis) |
 | reachdefs | 4:f592 | name guessed (the driver of the reaching definitions) |
 | betainit | 4:f5fe | flag declared in front of i (frame order) |
-| f4_f702 | 4:f702 | case block of betainit |
-| f4_f8ac | 4:f8ac | case block of betainit |
-| f4_f97a | 4:f97a | case block of betainit |
 | betaprint | 4:fb06 | BBIT(i, 13) form; if (!bit) FALSE else TRUE |
 | eqopnd | 4:fc06 | two nested if (`if (a->b2 == b->b2) if (a->w4 == b->w4) return 1;`), not && |
 | ebbopt | 5:0000 | name guessed (loop over the extended basic blocks: ebbinit, fn5_0114 finds the end, fn5_0b94 optimizes it) |
 | ebbinit | 5:00c0 | name guessed (the tables of the extended basic block are cleared: htab[32], flags) |
 | vnumber | 5:0114 | gotos to the copies of the common tails the original keeps and `if (0) { l: then-block }` in front of the test; the inner switch with break/default around the constant fold |
-| f5_01d0 | 5:01d0 | case block of vnumber |
-| f5_02d4 | 5:02d4 | case block of vnumber |
-| f5_04ac | 5:04ac | case block of vnumber |
-| f5_05fe | 5:05fe | case block of vnumber |
-| f5_06c6 | 5:06c6 | case block of vnumber |
-| f5_0718 | 5:0718 | case block of vnumber |
-| f5_0778 | 5:0778 | case block of vnumber |
-| f5_07b4 | 5:07b4 | case block of vnumber |
-| f5_07d2 | 5:07d2 | case block of vnumber |
 | constfold | 5:1068 | `r.w0 = q->c.w0; return r;` in both branches; the static return area in the data (vc scparse OLD_D12R) |
-| f5_13d8 | 5:13d8 | case block of constfold |
-| f5_1412 | 5:1412 | case block of constfold |
-| f5_1422 | 5:1422 | case block of constfold |
-| f5_1428 | 5:1428 | case block of constfold |
-| f5_1438 | 5:1438 | case block of constfold |
-| f5_144e | 5:144e | case block of constfold |
-| f5_145c | 5:145c | case block of constfold |
-| f5_146a | 5:146a | case block of constfold |
-| f5_1478 | 5:1478 | case block of constfold |
-| f5_1486 | 5:1486 | case block of constfold |
-| f5_1490 | 5:1490 | case block of constfold |
-| f5_149e | 5:149e | case block of constfold |
-| f5_14ae | 5:14ae | case block of constfold |
-| f5_14be | 5:14be | case block of constfold |
-| f5_14ce | 5:14ce | case block of constfold |
-| f5_14dc | 5:14dc | case block of constfold |
-| f5_14e8 | 5:14e8 | case block of constfold |
-| f5_154c | 5:154c | case block of constfold |
-| f5_1576 | 5:1576 | case block of constfold |
-| f5_157e | 5:157e | case block of constfold |
-| f5_158c | 5:158c | case block of constfold |
-| f5_15aa | 5:15aa | case block of constfold |
-| f5_15c0 | 5:15c0 | case block of constfold |
-| f5_15d6 | 5:15d6 | case block of constfold |
-| f5_15ec | 5:15ec | case block of constfold |
-| f5_1602 | 5:1602 | case block of constfold |
-| f5_1610 | 5:1610 | case block of constfold |
-| f5_1626 | 5:1626 | case block of constfold |
-| f5_163a | 5:163a | case block of constfold |
-| f5_16b8 | 5:16b8 | case block of identop |
-| f5_1708 | 5:1708 | case block of identop |
 | canopt | 5:1b7e | the pointer parameter comes back at a label without a frame home (vc OLD_D3JL) |
 | clearblocks | 5:2138 | an automatic pointer is found in the pair an assignment named with its frame place (vc OLD_D2FA) |
 | marklpblocks | 5:21a4 | an automatic pointer is found in the pair an assignment named with its frame place (vc OLD_D2FA) |
@@ -356,17 +186,9 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | orderbl | 5:4f56 | (x = x->next) == 0 copies the pointer in rr0 (vc OLD_D2AV); i, t declared in front of x, y (frame order) |
 | lpow2 | 5:5534 | the left shift r << 1 goes through a register (ld r0,#1; sdal) |
 | ceval | 5:556a | (l = ispow2(x)) > 0 has no copy of the long (vc OLD_D2AV) |
-| f5_55e4 | 5:55e4 | case block of ceval |
-| f5_560c | 5:560c | case block of ceval |
-| f5_5614 | 5:5614 | case block of ceval |
-| f5_5622 | 5:5622 | case block of ceval |
-| f5_5630 | 5:5630 | case block of ceval |
 | insrtstmpmove | 5:56cc | the address of a frame place by lda without the mask (vc OLD_D24L) |
 | mkconstopnd | 5:5a0c | the copy of the pointer parameter p goes to rr0 first (dead: rr0 is no base), then to rr2 (vc OLD_D2P) |
 | insrtopstmp | 5:5a86 | the address of a frame place by lda without the mask (vc OLD_D24L) |
-| f5_5b04 | 5:5b04 | case block of insrtopstmp |
-| f5_5c0c | 5:5c0c | case block of insrtopstmp |
-| f5_5c4c | 5:5c4c | case block of insrtopstmp |
 | fillindvar | 5:5ec4 | the kind 2 code with p->f11 set stands at the end of the kind 3 branch as `if (0) { k2: ... }`, the kind 2 branch is `if (p->f11) goto k2; ok = copyopndstmp(...)` |
 | indupdate | 5:62fc | `opcode = opcode == 1 ? 48 : 1;` and the insertquad call in both branches of `if (ind->v > 0)`; an unused struct qa beside c (frame) |
 | freelist | 5:6466 | `if (x != 0) { for (..) ; x->next = a0e0; } else a0f8 = a0e0;` (the branch with the loop first; both lists) |
@@ -374,7 +196,6 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | deltmplpdefs | 5:6614 | `a0e0 = a0e0->next; prev = a0e0;` (two statements, not the chain prev = a0e0 = ...) |
 | chklpdefs | 5:68f4 | the r != dp->q code at the loop top as `if (0) { lr: ...; continue; }`, reached by `if (r != dp->q) goto lr;`, in it the ternary test as `if (0) { lt: ... }` reached by `if (q->op == 1 || q->op == 48) goto lt; so:`; delindvar(dp->l10, dp->x20) |
 | chkfamindvar | 5:6bf2 | the pointer-kind test as `!(((a & 0x30) == 0x10) ^ ((b & 0x30) == 0x10))` (xor); the case 45 tests q->b.b2 (not a.b2: as the original); the cases are the block f5_6d40 (switch 1,34,44,48 / 14,45) |
-| f5_6d40 | 5:6d40 | case block of chkfamindvar (written inside it; the original has 126 instructions here) |
 | chkcalls | 5:6f52 | written with gotos (outer: label, `if (p == 0) {p = lp->bls; return;}`; inner: `q = ...; goto qt; qs: q = q->next; qt: if (q == 0) {nextp: p = p->next; goto outer;}`, `if (q->op == 59) goto nextp; if (q->op != 7) goto qs;`); x declared in front of q (frame order) |
 | buildgraph | 5:75dc | the op 59 code at the loop top as `if (0) { l59: ...; continue; }`, reached by `if (q->op == 59) goto l59;`; the else-if tests q->c.fl |
 | updatevector | 5:79b8 | `for (p = srchdef(q, 1); *++p != -1; )` |

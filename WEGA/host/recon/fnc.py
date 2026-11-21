@@ -6,8 +6,8 @@ Usage: RECON_PROG=NAME fnc.py [-v] FILE.c FUNC [FUNC ...]     one line each: OK 
                                                                prints only the totals and the names that are not OK
        -v   also the first 20 lines of the diff of the first FUNC
 
-The range of FUNC is its start in findings.json up to the end of the case blocks that follow it (notes "case block of FUNC",
-"tail of FUNC"). The compiler: env FNC_CC (default /bin/sccvc), FNC_ROOT (default tmp/oldroot), FNC_DROP (masked lines, default none), FNC_DROPRAW
+The range of FUNC is its start in findings.json up to the end of the case blocks and tails that follow it (field "part_of":
+FUNC in findings.json). The compiler: env FNC_CC (default /bin/sccvc), FNC_ROOT (default tmp/oldroot), FNC_DROP (masked lines, default none), FNC_DROPRAW
 (unmasked lines; default: the redundant `and r0,#%7f00` behind an lda; not a field mask as `and r0,#%0800`), a known difference of the old compilers: genquads); file level `static` is dropped for the symbols.
 Replaces the scratch chk.sh/all.sh of the gopt work. The results are written to compare/NAME/fnc.last (name, result) too.
 """
@@ -37,7 +37,7 @@ def span(name):
     ks = key_order()
     i = ks.index(name)
     j = i
-    while j + 1 < len(ks) and re.match(r'(case block|tail) of %s( |$)' % re.escape(name), FN[ks[j + 1]].get('note', '')):
+    while j + 1 < len(ks) and FN[ks[j + 1]].get('part_of') == name:
         j += 1
     return ks[i], ks[j]
 
@@ -73,7 +73,7 @@ def main():
     if a and a[0] == '-a':
         src = a[1]
         base = os.path.basename(src)
-        names = [k for k, f in FN.items() if f.get('file') == base and not re.match(r'(case block|tail) of ', f.get('note', ''))
+        names = [k for k, f in FN.items() if f.get('file') == base and not f.get('part_of')
                  and not re.match(r'f\d_', k)]
         res = {}
         for k in sorted(names, key=lambda k: key_order().index(k)):

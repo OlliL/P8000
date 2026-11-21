@@ -49,7 +49,7 @@ def main():
         rel = o.reloc
         starts = sorted(s['value'] for s in o.symbols if s['type'] == 34)
         syms = {s['name']: s['value'] for s in o.symbols if s['type'] == 34}
-        names = [k for k, f in FN.items() if f.get('file') == base and not re.match(r'(case block|tail) of ', f.get('note', ''))
+        names = [k for k, f in FN.items() if f.get('file') == base and not f.get('part_of')
                  and not re.match(r'f\d_', k)]
         for k in names:
             if '_' + k not in syms:

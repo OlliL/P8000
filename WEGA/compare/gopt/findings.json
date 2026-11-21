@@ -1,5 +1,5 @@
 {
- "schema": "functions: name -> orig (SEG:OFFSET), size_orig (to the next start), status (open, exact), kind (proven: a call target; candidate: after an unconditional ret/jump, no jump reaches it), module (a guess unless noted), note (by hand: an odd source form, a guessed name, dead code).",
+ "schema": "functions: name -> orig (SEG:OFFSET), size_orig (to the next start), status (open, exact), kind (proven: a call target; candidate: after an unconditional ret/jump, no jump reaches it), module (a guess unless noted), note (by hand: an odd source form, a guessed name, dead code); part_of: the function a case block or tail of the original belongs to (fnc.py takes it into the range)",
  "compiler": "sccvc (vc: v0p for segmented code with the vc switches, host/OLDCC.md)",
  "binary": "/lib/gopt",
  "functions": {
@@ -27,7 +27,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "case block of main"
+   "part_of": "main"
   },
   "f4_0220": {
    "orig": "4:0220",
@@ -36,7 +36,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "case block of main"
+   "part_of": "main"
   },
   "f4_029c": {
    "orig": "4:029c",
@@ -45,7 +45,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "case block of main"
+   "part_of": "main"
   },
   "f4_02c2": {
    "orig": "4:02c2",
@@ -54,7 +54,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "case block of main"
+   "part_of": "main"
   },
   "f4_0372": {
    "orig": "4:0372",
@@ -63,7 +63,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "case block of main"
+   "part_of": "main"
   },
   "f4_0434": {
    "orig": "4:0434",
@@ -72,7 +72,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "case block of main"
+   "part_of": "main"
   },
   "f4_0470": {
    "orig": "4:0470",
@@ -81,7 +81,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "case block of main"
+   "part_of": "main"
   },
   "f4_05fe": {
    "orig": "4:05fe",
@@ -90,7 +90,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "case block of main"
+   "part_of": "main"
   },
   "dotree": {
    "orig": "4:0714",
@@ -124,7 +124,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "tail of cutree"
+   "part_of": "cutree"
   },
   "f4_0886": {
    "orig": "4:0886",
@@ -133,7 +133,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "tail of cutree"
+   "part_of": "cutree"
   },
   "pr": {
    "orig": "4:08f4",
@@ -151,7 +151,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "tail of pr"
+   "part_of": "pr"
   },
   "f4_09f6": {
    "orig": "4:09f6",
@@ -160,7 +160,7 @@
    "kind": "candidate",
    "module": "reader2.c",
    "file": "reader2.c",
-   "note": "tail of pr"
+   "part_of": "pr"
   },
   "abortpass": {
    "orig": "4:0a66",
@@ -203,7 +203,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of genquads"
+   "part_of": "genquads"
   },
   "f4_0ea4": {
    "orig": "4:0ea4",
@@ -212,7 +212,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of genquads"
+   "part_of": "genquads"
   },
   "f4_0ed8": {
    "orig": "4:0ed8",
@@ -221,7 +221,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of genquads"
+   "part_of": "genquads"
   },
   "f4_0ef8": {
    "orig": "4:0ef8",
@@ -230,7 +230,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of genquads"
+   "part_of": "genquads"
   },
   "f4_0f34": {
    "orig": "4:0f34",
@@ -239,7 +239,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of genquads"
+   "part_of": "genquads"
   },
   "f4_1058": {
    "orig": "4:1058",
@@ -248,7 +248,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of genquads"
+   "part_of": "genquads"
   },
   "f4_113a": {
    "orig": "4:113a",
@@ -257,7 +257,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of genquads"
+   "part_of": "genquads"
   },
   "f4_11a4": {
    "orig": "4:11a4",
@@ -266,7 +266,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of genquads"
+   "part_of": "genquads"
   },
   "fold1": {
    "orig": "4:14a2",
@@ -329,7 +329,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of operand"
+   "part_of": "operand"
   },
   "f4_18a8": {
    "orig": "4:18a8",
@@ -338,7 +338,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of operand"
+   "part_of": "operand"
   },
   "f4_18fc": {
    "orig": "4:18fc",
@@ -347,7 +347,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of operand"
+   "part_of": "operand"
   },
   "f4_1920": {
    "orig": "4:1920",
@@ -356,7 +356,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of operand"
+   "part_of": "operand"
   },
   "f4_1a32": {
    "orig": "4:1a32",
@@ -365,7 +365,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of operand"
+   "part_of": "operand"
   },
   "f4_1a56": {
    "orig": "4:1a56",
@@ -374,7 +374,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of operand"
+   "part_of": "operand"
   },
   "tlookup": {
    "orig": "4:1aea",
@@ -477,7 +477,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of map"
+   "part_of": "map"
   },
   "f4_26bc": {
    "orig": "4:26bc",
@@ -486,7 +486,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of map"
+   "part_of": "map"
   },
   "f4_28c0": {
    "orig": "4:28c0",
@@ -495,7 +495,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of map"
+   "part_of": "map"
   },
   "f4_29f8": {
    "orig": "4:29f8",
@@ -504,7 +504,7 @@
    "kind": "candidate",
    "module": "quads2.c",
    "file": "quads2.c",
-   "note": "case block of map"
+   "part_of": "map"
   },
   "mknode": {
    "orig": "4:2a48",
@@ -606,7 +606,7 @@
    "kind": "candidate",
    "module": "debug2.c",
    "file": "debug2.c",
-   "note": "case block of propnd"
+   "part_of": "propnd"
   },
   "f4_2d8a": {
    "orig": "4:2d8a",
@@ -615,7 +615,7 @@
    "kind": "candidate",
    "module": "debug2.c",
    "file": "debug2.c",
-   "note": "case block of propnd"
+   "part_of": "propnd"
   },
   "f4_2da4": {
    "orig": "4:2da4",
@@ -624,7 +624,7 @@
    "kind": "candidate",
    "module": "debug2.c",
    "file": "debug2.c",
-   "note": "case block of propnd"
+   "part_of": "propnd"
   },
   "f4_2dc8": {
    "orig": "4:2dc8",
@@ -633,7 +633,7 @@
    "kind": "candidate",
    "module": "debug2.c",
    "file": "debug2.c",
-   "note": "case block of propnd"
+   "part_of": "propnd"
   },
   "f4_2dd8": {
    "orig": "4:2dd8",
@@ -642,7 +642,7 @@
    "kind": "candidate",
    "module": "debug2.c",
    "file": "debug2.c",
-   "note": "case block of propnd"
+   "part_of": "propnd"
   },
   "f4_2e00": {
    "orig": "4:2e00",
@@ -651,7 +651,7 @@
    "kind": "candidate",
    "module": "debug2.c",
    "file": "debug2.c",
-   "note": "case block of propnd"
+   "part_of": "propnd"
   },
   "f4_2e10": {
    "orig": "4:2e10",
@@ -660,7 +660,7 @@
    "kind": "candidate",
    "module": "debug2.c",
    "file": "debug2.c",
-   "note": "case block of propnd"
+   "part_of": "propnd"
   },
   "f4_2e20": {
    "orig": "4:2e20",
@@ -669,7 +669,7 @@
    "kind": "candidate",
    "module": "debug2.c",
    "file": "debug2.c",
-   "note": "case block of propnd"
+   "part_of": "propnd"
   },
   "prstats": {
    "orig": "4:2e8e",
@@ -928,7 +928,7 @@
    "kind": "candidate",
    "module": "comm2.c",
    "file": "comm2.c",
-   "note": "tail of bsize (a case block behind its ret)"
+   "part_of": "bsize"
   },
   "f4_44b2": {
    "orig": "4:44b2",
@@ -937,7 +937,7 @@
    "kind": "candidate",
    "module": "comm2.c",
    "file": "comm2.c",
-   "note": "tail of bsize (a case block behind its ret)"
+   "part_of": "bsize"
   },
   "f4_44b8": {
    "orig": "4:44b8",
@@ -946,7 +946,7 @@
    "kind": "candidate",
    "module": "comm2.c",
    "file": "comm2.c",
-   "note": "tail of bsize (a case block behind its ret)"
+   "part_of": "bsize"
   },
   "szty": {
    "orig": "4:44de",
@@ -963,7 +963,7 @@
    "kind": "candidate",
    "module": "comm2.c",
    "file": "comm2.c",
-   "note": "tail of szty (a case block behind its ret)"
+   "part_of": "szty"
   },
   "f4_44fc": {
    "orig": "4:44fc",
@@ -972,7 +972,7 @@
    "kind": "candidate",
    "module": "comm2.c",
    "file": "comm2.c",
-   "note": "tail of szty (a case block behind its ret)"
+   "part_of": "szty"
   },
   "argsize": {
    "orig": "4:4512",
@@ -1005,7 +1005,7 @@
    "kind": "candidate",
    "module": "comm2.c",
    "file": "comm2.c",
-   "note": "tail of tbytes (a case block behind its ret)"
+   "part_of": "tbytes"
   },
   "f4_45d6": {
    "orig": "4:45d6",
@@ -1014,7 +1014,7 @@
    "kind": "candidate",
    "module": "comm2.c",
    "file": "comm2.c",
-   "note": "tail of tbytes (a case block behind its ret)"
+   "part_of": "tbytes"
   },
   "dexit": {
    "orig": "4:45ec",
@@ -1108,7 +1108,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_4b94": {
    "orig": "4:4b94",
@@ -1117,7 +1117,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_4c5a": {
    "orig": "4:4c5a",
@@ -1126,7 +1126,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_4c96": {
    "orig": "4:4c96",
@@ -1135,7 +1135,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_4c9e": {
    "orig": "4:4c9e",
@@ -1144,7 +1144,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_4dc6": {
    "orig": "4:4dc6",
@@ -1153,7 +1153,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_4de0": {
    "orig": "4:4de0",
@@ -1162,7 +1162,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_4dfa": {
    "orig": "4:4dfa",
@@ -1171,7 +1171,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_4e48": {
    "orig": "4:4e48",
@@ -1180,7 +1180,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_5026": {
    "orig": "4:5026",
@@ -1189,7 +1189,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_5090": {
    "orig": "4:5090",
@@ -1198,7 +1198,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "f4_5294": {
    "orig": "4:5294",
@@ -1207,7 +1207,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of writeil"
+   "part_of": "writeil"
   },
   "mktree": {
    "orig": "4:53f0",
@@ -1225,7 +1225,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_5944": {
    "orig": "4:5944",
@@ -1234,7 +1234,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_5982": {
    "orig": "4:5982",
@@ -1243,7 +1243,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_59b8": {
    "orig": "4:59b8",
@@ -1252,7 +1252,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_59ee": {
    "orig": "4:59ee",
@@ -1261,7 +1261,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_5a72": {
    "orig": "4:5a72",
@@ -1270,7 +1270,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_5af6": {
    "orig": "4:5af6",
@@ -1279,7 +1279,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_5b7a": {
    "orig": "4:5b7a",
@@ -1288,7 +1288,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_5bf2": {
    "orig": "4:5bf2",
@@ -1297,7 +1297,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_5c3c": {
    "orig": "4:5c3c",
@@ -1306,7 +1306,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_5c88": {
    "orig": "4:5c88",
@@ -1315,7 +1315,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_5cd6": {
    "orig": "4:5cd6",
@@ -1324,7 +1324,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "f4_5d0e": {
    "orig": "4:5d0e",
@@ -1333,7 +1333,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mktree"
+   "part_of": "mktree"
   },
   "addrof": {
    "orig": "4:5f38",
@@ -1368,7 +1368,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mkleaf"
+   "part_of": "mkleaf"
   },
   "f4_60e4": {
    "orig": "4:60e4",
@@ -1377,7 +1377,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mkleaf"
+   "part_of": "mkleaf"
   },
   "f4_612c": {
    "orig": "4:612c",
@@ -1386,7 +1386,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mkleaf"
+   "part_of": "mkleaf"
   },
   "f4_6166": {
    "orig": "4:6166",
@@ -1395,7 +1395,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mkleaf"
+   "part_of": "mkleaf"
   },
   "f4_61aa": {
    "orig": "4:61aa",
@@ -1404,7 +1404,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mkleaf"
+   "part_of": "mkleaf"
   },
   "f4_6322": {
    "orig": "4:6322",
@@ -1413,7 +1413,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mkleaf"
+   "part_of": "mkleaf"
   },
   "f4_63ca": {
    "orig": "4:63ca",
@@ -1422,7 +1422,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of mkleaf"
+   "part_of": "mkleaf"
   },
   "tlfind": {
    "orig": "4:65a2",
@@ -1465,7 +1465,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of wrtree"
+   "part_of": "wrtree"
   },
   "f4_69ba": {
    "orig": "4:69ba",
@@ -1474,7 +1474,7 @@
    "kind": "candidate",
    "module": "wrtil2.c",
    "file": "wrtil2.c",
-   "note": "case block of wrtree"
+   "part_of": "wrtree"
   },
   "treeeq": {
    "orig": "4:6a36",
@@ -1528,7 +1528,7 @@
    "kind": "candidate",
    "module": "wrtil2.c|alias2.c",
    "file": "alias2.c",
-   "note": "case block of setposition"
+   "part_of": "setposition"
   },
   "f4_6fa4": {
    "orig": "4:6fa4",
@@ -1537,7 +1537,7 @@
    "kind": "candidate",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "case block of setposition"
+   "part_of": "setposition"
   },
   "aliasm": {
    "orig": "4:7088",
@@ -1687,8 +1687,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of checkops",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "checkops"
   },
   "f4_7e62": {
    "orig": "4:7e62",
@@ -1696,8 +1696,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of checkops",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "checkops"
   },
   "f4_7ef0": {
    "orig": "4:7ef0",
@@ -1705,8 +1705,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of checkops",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "checkops"
   },
   "f4_7f18": {
    "orig": "4:7f18",
@@ -1714,8 +1714,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of checkops",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "checkops"
   },
   "f4_7f44": {
    "orig": "4:7f44",
@@ -1723,8 +1723,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of checkops",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "checkops"
   },
   "f4_7fd8": {
    "orig": "4:7fd8",
@@ -1732,8 +1732,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of checkops",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "checkops"
   },
   "almap": {
    "orig": "4:8074",
@@ -1759,8 +1759,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "f4_83d0": {
    "orig": "4:83d0",
@@ -1768,8 +1768,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "f4_8438": {
    "orig": "4:8438",
@@ -1777,8 +1777,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "f4_8488": {
    "orig": "4:8488",
@@ -1786,8 +1786,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "f4_8526": {
    "orig": "4:8526",
@@ -1795,8 +1795,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "f4_857c": {
    "orig": "4:857c",
@@ -1804,8 +1804,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "f4_85b2": {
    "orig": "4:85b2",
@@ -1813,8 +1813,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "f4_861c": {
    "orig": "4:861c",
@@ -1822,8 +1822,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "f4_8678": {
    "orig": "4:8678",
@@ -1831,8 +1831,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "f4_871a": {
    "orig": "4:871a",
@@ -1840,8 +1840,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "f4_8768": {
    "orig": "4:8768",
@@ -1849,8 +1849,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "alias2.c",
-   "note": "case block of addaffect",
-   "file": "alias2.c"
+   "file": "alias2.c",
+   "part_of": "addaffect"
   },
   "initaffect": {
    "orig": "4:87e6",
@@ -1975,8 +1975,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "flow2.c",
-   "note": "case block of flow_graph",
-   "file": "flow2.c"
+   "file": "flow2.c",
+   "part_of": "flow_graph"
   },
   "f4_9476": {
    "orig": "4:9476",
@@ -1984,8 +1984,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "flow2.c",
-   "note": "case block of flow_graph",
-   "file": "flow2.c"
+   "file": "flow2.c",
+   "part_of": "flow_graph"
   },
   "f4_95cc": {
    "orig": "4:95cc",
@@ -1993,8 +1993,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "flow2.c",
-   "note": "case block of flow_graph",
-   "file": "flow2.c"
+   "file": "flow2.c",
+   "part_of": "flow_graph"
   },
   "f4_9666": {
    "orig": "4:9666",
@@ -2002,8 +2002,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "flow2.c",
-   "note": "case block of flow_graph",
-   "file": "flow2.c"
+   "file": "flow2.c",
+   "part_of": "flow_graph"
   },
   "f4_9738": {
    "orig": "4:9738",
@@ -2011,8 +2011,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "flow2.c",
-   "note": "case block of flow_graph",
-   "file": "flow2.c"
+   "file": "flow2.c",
+   "part_of": "flow_graph"
   },
   "f4_97a6": {
    "orig": "4:97a6",
@@ -2020,8 +2020,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "flow2.c",
-   "note": "case block of flow_graph",
-   "file": "flow2.c"
+   "file": "flow2.c",
+   "part_of": "flow_graph"
   },
   "optflow": {
    "orig": "4:98a6",
@@ -2128,8 +2128,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "flow2.c",
-   "note": "case block of jmplabel",
-   "file": "flow2.c"
+   "file": "flow2.c",
+   "part_of": "jmplabel"
   },
   "dfs": {
    "orig": "4:aaac",
@@ -2362,8 +2362,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c6f4": {
    "orig": "4:c6f4",
@@ -2371,8 +2371,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c700": {
    "orig": "4:c700",
@@ -2380,8 +2380,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c70c": {
    "orig": "4:c70c",
@@ -2389,8 +2389,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c718": {
    "orig": "4:c718",
@@ -2398,8 +2398,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c724": {
    "orig": "4:c724",
@@ -2407,8 +2407,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c730": {
    "orig": "4:c730",
@@ -2416,8 +2416,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c73c": {
    "orig": "4:c73c",
@@ -2425,8 +2425,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c748": {
    "orig": "4:c748",
@@ -2434,8 +2434,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c754": {
    "orig": "4:c754",
@@ -2443,8 +2443,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c760": {
    "orig": "4:c760",
@@ -2452,8 +2452,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c76c": {
    "orig": "4:c76c",
@@ -2461,8 +2461,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c778": {
    "orig": "4:c778",
@@ -2470,8 +2470,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c784": {
    "orig": "4:c784",
@@ -2479,8 +2479,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c8ee": {
    "orig": "4:c8ee",
@@ -2488,8 +2488,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c8f8": {
    "orig": "4:c8f8",
@@ -2497,8 +2497,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c902": {
    "orig": "4:c902",
@@ -2506,8 +2506,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c90c": {
    "orig": "4:c90c",
@@ -2515,8 +2515,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "f4_c916": {
    "orig": "4:c916",
@@ -2524,8 +2524,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "init2.c",
-   "note": "case block of initopts",
-   "file": "init2.c"
+   "file": "init2.c",
+   "part_of": "initopts"
   },
   "prqflags": {
    "orig": "4:c974",
@@ -2632,8 +2632,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "live2.c",
-   "note": "case block of issym",
-   "file": "live2.c"
+   "file": "live2.c",
+   "part_of": "issym"
   },
   "f4_d546": {
    "orig": "4:d546",
@@ -2641,8 +2641,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "live2.c",
-   "note": "case block of issym",
-   "file": "live2.c"
+   "file": "live2.c",
+   "part_of": "issym"
   },
   "f4_d64e": {
    "orig": "4:d64e",
@@ -2650,8 +2650,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "live2.c",
-   "note": "case block of issym",
-   "file": "live2.c"
+   "file": "live2.c",
+   "part_of": "issym"
   },
   "adddef": {
    "orig": "4:d6e8",
@@ -2947,7 +2947,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "beta2.c",
-   "note": "case block of betainit"
+   "part_of": "betainit"
   },
   "f4_f8ac": {
    "orig": "4:f8ac",
@@ -2955,7 +2955,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "beta2.c",
-   "note": "case block of betainit"
+   "part_of": "betainit"
   },
   "f4_f97a": {
    "orig": "4:f97a",
@@ -2963,7 +2963,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "beta2.c",
-   "note": "case block of betainit"
+   "part_of": "betainit"
   },
   "betaset": {
    "orig": "4:fa48",
@@ -3073,7 +3073,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of vnumber"
+   "part_of": "vnumber"
   },
   "f5_02d4": {
    "orig": "5:02d4",
@@ -3081,7 +3081,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of vnumber"
+   "part_of": "vnumber"
   },
   "f5_04ac": {
    "orig": "5:04ac",
@@ -3089,7 +3089,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of vnumber"
+   "part_of": "vnumber"
   },
   "f5_05fe": {
    "orig": "5:05fe",
@@ -3097,7 +3097,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of vnumber"
+   "part_of": "vnumber"
   },
   "f5_06c6": {
    "orig": "5:06c6",
@@ -3105,7 +3105,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of vnumber"
+   "part_of": "vnumber"
   },
   "f5_0718": {
    "orig": "5:0718",
@@ -3113,7 +3113,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of vnumber"
+   "part_of": "vnumber"
   },
   "f5_0778": {
    "orig": "5:0778",
@@ -3121,7 +3121,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of vnumber"
+   "part_of": "vnumber"
   },
   "f5_07b4": {
    "orig": "5:07b4",
@@ -3129,7 +3129,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of vnumber"
+   "part_of": "vnumber"
   },
   "f5_07d2": {
    "orig": "5:07d2",
@@ -3137,7 +3137,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of vnumber"
+   "part_of": "vnumber"
   },
   "vnfind": {
    "orig": "5:0894",
@@ -3194,7 +3194,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1412": {
    "orig": "5:1412",
@@ -3202,7 +3202,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1422": {
    "orig": "5:1422",
@@ -3210,7 +3210,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1428": {
    "orig": "5:1428",
@@ -3218,7 +3218,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1438": {
    "orig": "5:1438",
@@ -3226,7 +3226,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_144e": {
    "orig": "5:144e",
@@ -3234,7 +3234,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_145c": {
    "orig": "5:145c",
@@ -3242,7 +3242,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_146a": {
    "orig": "5:146a",
@@ -3250,7 +3250,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1478": {
    "orig": "5:1478",
@@ -3258,7 +3258,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1486": {
    "orig": "5:1486",
@@ -3266,7 +3266,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1490": {
    "orig": "5:1490",
@@ -3274,7 +3274,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_149e": {
    "orig": "5:149e",
@@ -3282,7 +3282,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_14ae": {
    "orig": "5:14ae",
@@ -3290,7 +3290,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_14be": {
    "orig": "5:14be",
@@ -3298,7 +3298,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_14ce": {
    "orig": "5:14ce",
@@ -3306,7 +3306,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_14dc": {
    "orig": "5:14dc",
@@ -3314,7 +3314,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_14e8": {
    "orig": "5:14e8",
@@ -3322,7 +3322,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_154c": {
    "orig": "5:154c",
@@ -3330,7 +3330,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1576": {
    "orig": "5:1576",
@@ -3338,7 +3338,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_157e": {
    "orig": "5:157e",
@@ -3346,7 +3346,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_158c": {
    "orig": "5:158c",
@@ -3354,7 +3354,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_15aa": {
    "orig": "5:15aa",
@@ -3362,7 +3362,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_15c0": {
    "orig": "5:15c0",
@@ -3370,7 +3370,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_15d6": {
    "orig": "5:15d6",
@@ -3378,7 +3378,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_15ec": {
    "orig": "5:15ec",
@@ -3386,7 +3386,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1602": {
    "orig": "5:1602",
@@ -3394,7 +3394,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1610": {
    "orig": "5:1610",
@@ -3402,7 +3402,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_1626": {
    "orig": "5:1626",
@@ -3410,7 +3410,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "f5_163a": {
    "orig": "5:163a",
@@ -3418,7 +3418,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of constfold"
+   "part_of": "constfold"
   },
   "identop": {
    "orig": "5:1684",
@@ -3434,7 +3434,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of identop"
+   "part_of": "identop"
   },
   "f5_1708": {
    "orig": "5:1708",
@@ -3442,7 +3442,7 @@
    "status": "exact",
    "kind": "candidate",
    "module": "ebbo2.c",
-   "note": "case block of identop"
+   "part_of": "identop"
   },
   "nostore": {
    "orig": "5:1742",
@@ -3838,8 +3838,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of ceval",
-   "file": "lpind2.c"
+   "file": "lpind2.c",
+   "part_of": "ceval"
   },
   "f5_560c": {
    "orig": "5:560c",
@@ -3847,8 +3847,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of ceval",
-   "file": "lpind2.c"
+   "file": "lpind2.c",
+   "part_of": "ceval"
   },
   "f5_5614": {
    "orig": "5:5614",
@@ -3856,8 +3856,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of ceval",
-   "file": "lpind2.c"
+   "file": "lpind2.c",
+   "part_of": "ceval"
   },
   "f5_5622": {
    "orig": "5:5622",
@@ -3865,8 +3865,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of ceval",
-   "file": "lpind2.c"
+   "file": "lpind2.c",
+   "part_of": "ceval"
   },
   "f5_5630": {
    "orig": "5:5630",
@@ -3874,8 +3874,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of ceval",
-   "file": "lpind2.c"
+   "file": "lpind2.c",
+   "part_of": "ceval"
   },
   "qmove": {
    "orig": "5:567e",
@@ -3926,8 +3926,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of insrtopstmp",
-   "file": "lpind2.c"
+   "file": "lpind2.c",
+   "part_of": "insrtopstmp"
   },
   "f5_5c0c": {
    "orig": "5:5c0c",
@@ -3935,8 +3935,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of insrtopstmp",
-   "file": "lpind2.c"
+   "file": "lpind2.c",
+   "part_of": "insrtopstmp"
   },
   "f5_5c4c": {
    "orig": "5:5c4c",
@@ -3944,8 +3944,8 @@
    "status": "exact",
    "kind": "candidate",
    "module": "lpind2.c",
-   "note": "case block of insrtopstmp",
-   "file": "lpind2.c"
+   "file": "lpind2.c",
+   "part_of": "insrtopstmp"
   },
   "copyopndstmp": {
    "orig": "5:5d74",
@@ -4033,7 +4033,7 @@
    "kind": "candidate",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "case block of chkfamindvar (written inside it; the original has 126 instructions here)"
+   "part_of": "chkfamindvar"
   },
   "optimize": {
    "orig": "5:6eda",
