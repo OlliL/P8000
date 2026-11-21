@@ -46,6 +46,13 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
 4. (done 2026-11-21: SWITCH_CANDIDATES.md deleted; its witness table is in COMPILER.md, its observations in OLDCC_LOG.md)
 5. (done 2026-11-21: the vc matrix measures cas and gopt (host/recon/goptmodel.py), rebuilt: host/OLDCC_SWITCHES_VC.md)
 6. `make shipped` in src/cmd builds src/cmd/gopt with the shipped compilers; where not, `#ifdef SHIPPED` fixes.
+   State 2026-11-21: it builds (src/cmd/gopt/Makefile: an empty rule for /lib/slibc.a; before, the loop of `make shipped`
+   hid the failure). Measured with `cc -S -On -TO./gopt` (cc and scc, -O2..5) on ten gopt sources against /lib/gopt: -O1,
+   -O2 equal; fixed under SHIPPED: dominators() (a bug of the shipped scodgen, KNOWLEDGE.md quirks), alloclpdef() returns
+   what the original leaves in rr2 (no effect measured). Open: lpinv2.c, quads2.c (-O3, -O5: savecolors/usefirst gives an
+   extra RESTORE; a recycled quad (qfree) holds other operand types already, the cause before it), beta2.c (-O4, -O5;
+   -O5: "illegal bsize type" only with ours). Method: the passes by hand (cpp, cparse -E b, gopt -3 FLAGS -E b) with the
+   debug flags (d dominators, l live, p loops, r registers; y all), the output of both diffed with the addresses masked.
 7. Port src/cmd/gopt to host/gopt (as the other host ports).
 8. A corpus compare/gopt (corpus.py): the original /lib/gopt of WEGA 3.1 against 1. the gopt of `make shipped` and 2. host/gopt.
 9. Centralize the parts of PCC's mip that the passes share: common, rdr and optim are in cparse and codgen (version 2.5)

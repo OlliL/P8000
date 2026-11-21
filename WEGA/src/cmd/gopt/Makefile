@@ -54,6 +54,9 @@ gopt: $(OBJS) $(LIBC4) $(LIBC)
 $(LIBC4): $(LIBC)
 	$(AR) x $(LIBC) $(LIBC4)
 
+# make shipped (src/cmd/Makefile) links with LIBC=/lib/slibc.a of the guest: no rule for it here
+/lib/libc.a /lib/slibc.a:
+
 part: comm2.o rdr2.o reader2.o quads2.o debug2.o wrtil2.o alias2.o flow2.o dom2.o init2.o live2.o ebbo2.o
 
 install: gopt

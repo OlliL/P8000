@@ -254,7 +254,15 @@ dominators()
 	dom[n] = -1;
 	for (i = 0; i < n - 1; i++) {
 		dom[i] = dom[i + 1] == -1 ? -1 : dom[i + 1] - 1;
+#ifdef SHIPPED
+		/* the shipped scodgen stores the -1 of the ?: through the pointer of dom (KNOWLEDGE.md, quirks) */
+		if (vertex[i + 1] == -1)
+			vertex[i] = -1;
+		else
+			vertex[i] = vertex[i + 1] - 1;
+#else
 		vertex[i] = vertex[i + 1] == -1 ? -1 : vertex[i + 1] - 1;
+#endif
 		if (vertex[i] >= 0)
 			idfn[vertex[i]] = i;
 	}

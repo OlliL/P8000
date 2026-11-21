@@ -294,6 +294,9 @@ int n;
 	x = a0e0;
 	a0e0 = p;
 	p->next = x;
+#ifdef SHIPPED
+	return ((struct dl *)&p->next);	/* what the original leaves in rr2 (no return: KNOWLEDGE.md, quirks) */
+#endif
 }
 
 /* the header quads in front of q that only lead to q are skipped (name guessed) */
