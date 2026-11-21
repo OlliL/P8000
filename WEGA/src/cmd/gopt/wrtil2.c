@@ -458,7 +458,6 @@ mkleaf(a)
 {
 	static int ftot = 0;
 	static int fflag = 1;
-	int i;
 	NODE *q, *r;
 	int *d;
 	long pos1, pos2, pos3;
@@ -520,6 +519,7 @@ mkleaf(a)
 			flab++;
 		}
 		q->tn.rval = fconsttbl[a->w4].rv;
+		q->tn.lval = 0;
 		break;
 	case 6:
 		q = talloc();
