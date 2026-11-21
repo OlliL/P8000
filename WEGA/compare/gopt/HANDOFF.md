@@ -49,8 +49,8 @@ The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its te
 2. (done 2026-11-21: vnumber by gotos to the copies the original keeps and `if (0) { l: then-block }` before the test)
 3. (done 2026-11-21: tprint by narrowing vc spopt OLD_D50; method: run the shipped /lib/spopt on our codgen output (sccvc -S)
    and compare the block order, then build vc spopt without each switch)
-4. chklpdefs (10): the natural form (git 520a71ea^) gives 51 with both spopts; the original spopt inverted the loop as D50 does for
-   cas jpr. Next: trace D50/loop inversion in z21.c on the natural form, find why it does not fire, narrow or extend D50.
+4. chklpdefs (10): original block order in its findings note; the goto form in that order gives 37, codemove moves the STEP block
+   to the jump at the end of l6. Next: trace codemove (z21.c, TRACE/debug) on that goto form and find the refusal the original had.
 5. setposition (18) and chkfamindvar (9) (K8, pair choice). Trace rsuse at the pair getreg. In setposition the original takes the
    idle parameter pair rr2 at the second printf argument but not at the first. Find the state difference; allowing parameter pairs
    in the D2P loop is worse (306).
