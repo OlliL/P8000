@@ -1,0 +1,201 @@
+.TH dos 1TUK
+.SH NAME
+dos - Zugriff auf DCP-Files
+.SH SYNTAX
+.na
+.B doscat 
+.B [-r] 
+.I file ...
+.br
+.B doscp 
+.B [-r]
+.I file1 file2
+.br
+.B doscp
+.B [-r]
+.I file 
+...
+.I directory
+.br
+.B dosdir 
+.I directory 
+...
+.br
+.B dosls 
+.I directory 
+...
+.br
+.B dosmkdir 
+.I directory 
+...
+.br
+.B dosrm 
+.I file 
+...
+.br
+.B dosrmdir 
+.I directory 
+...
+.br
+.ad
+.SH BESCHREIBUNG
+Die dos-Kommandos gewaehrleisten den Zugriff auf Files und
+Verzeichnisse auf DCP-Disketten.
+.PP
+.TP 10
+.B doscat
+Kopiert ein oder mehrere DCP-Files auf die Standardausgabe.
+Wird die 
+.B -r 
+Option angegeben, werden die Files ohne Newline-Konvertierung
+kopiert (s. "Benutzung").
+.TP
+.B doscp
+Kopiert Files zwischen einem DCP-Datentraeger und einem WEGA
+Filesystem. Werden die Files 
+.I file1 
+und 
+.I file2 
+angegeben, so wird 
+.I file1 
+zu
+.I file2 
+kopiert. Wird ein Verzeichnis benutzt, werden ein oder
+mehrere Files zu diesem Verzeichnis uebertragen.
+Die 
+.B -r 
+Option bewirkt die
+Unterdrueckung der Newlineumwandlung (s. "Benutzung").
+.TP
+.B dosdir
+Gibt DCP-Dateien im DCP-typischen Verzeichnisformat aus.
+.TP
+.B dosls
+Gibt DCP-Files und -Verzeichnisse in WEGA-Format aus
+(s. (ls(C)).
+.TP
+.B dosrm
+Loescht Files auf einem DCP-Datentraeger.
+.TP
+.B dosmkdir
+Erzeugt ein Verzeichnis auf einem DCP-Datentraeger.
+.TP
+.B dosrmdir
+Loescht Verzeichnisse auf einem DCP-Datentraeger.
+.PP
+Die File- und Verzeichnisargumente fuer DCP haben die Form:
+.sp
+.in +10
+.IR device:name
+.in -10
+.sp
+wobei 
+.I device 
+ein WEGA Pfadname fuer die speziellen Geraetefiles,
+welche die DCP-Disk enthalten, ist und 
+.I name 
+ein Pfadname zu      
+einem File oder Verzeichnis auf der DCP-Disk. Die beiden Komponenten
+werden durch Doppelpunkt (\fB:\fR) getrennt.
+Zum Beispiel spezifiziert 
+.in +10
+.sp
+/dev/fd0:/src/file.asm
+.in -10
+.sp
+das DCP-File 
+.I file.asm 
+im Verzeichnis 
+.I src 
+auf der Disk im Geraetefile
+.I /dev/fd0.
+Beachte die Trennzeichen (\fB/\fR) fuer Filenamen in DCP-Pfadnamen!
+Argumente, die kein "\fIdevice\fR:" enthalten, 
+werden als WEGA-Files betrachtet.
+.PP
+Sind im Standardfile 
+.I /etc/default/dos 
+DCP-Laufwerke
+definiert, koennen diese an Stelle von speziellen Geraetefilepfadnamen verwendet
+werden . Enthaelt z.B. dieses File folgende Zeile:
+.sp
+.in +10
+.B A=/dev/fd0 
+.in -10
+.sp
+kann der Laufwerksbuchstabe "\fBA\fR" fuer den Geraetepfadnamen /dev/fd0
+verwendet werden (s. "Beispiele").
+.PP
+Die Kommandos funktionieren auf folgenden Datentraegertypen:
+.in +10
+.nf
+5 1/4 " DCP-Disketten
+8 oder 9 Sektoren pro Spur
+40 Spuren pro Seite
+1 oder 2 Seiten
+DOS-Versionen 1.0 oder 2.0
+.fi
+.in -10
+.SH BENUTZUNG
+Alle DCP-Textfiles verwenden eine carrige-return/linefeed Kombination,
+CR-LF, um ein Newline darzustellen. WEGA verwendet jedoch ein einzelnes
+Newlinezeichen (LF). Wenn die Kommandos doscat und doscp DCP-Textfiles
+in WEGA transportieren, so wird das CR automatisch gestrichen. Werden
+Textfiles nach DCP transportiert, so fuegen diese Kommandos  vor jedem
+LF ein CR ein. Die 
+.B -r
+Option kann benutzt werden, um die automatische
+Konvertierung zu umgehen und zwingt das Kommando zu einer echten byteweisen
+Uebertragung unabhaengig vom Filetyp.
+.SH BEISPIELE
+.nf
+.B doscat /dev/fd0:docs/memo.txt
+Es wird die Datei docs\\memo.txt der DCP-Diskette im Geratefile
+/dev/fd0 auf der Standardausgabe ausgegeben.
+
+.B doscat /tmp/f1 /tmp/f2 /dev/fd0:src/file.asm
+Ausgabe von zwei WEGA-Files und einer DCP-Datei.
+
+.B dosdir /dev/fd0:src
+Es werden Informationen zur DCP-Disketten-Datei src ausgegeben.
+
+.B dosdir A:src A:dev
+Unter der Voraussetzung, dass die Laufwerksbuchstaben im System 
+vereinbart wurden, werden zwei Dateien im DCP-Verzeichnisformat
+ausgegeben.
+
+.B doscp /tmp/myfile.txt /dev/fd0:docs/memo.txt
+Das WEGA-File im Verzeichnis /tmp wird mit Newlinekonvertierung
+auf die DCP-Diskette als Datei docs\memo.txt kopiert.
+
+.B doscp /tmp/f1 /tmp/f2 /dev/fd0:mydir
+Es werden beide WEGA-Files in das DCP-Unterverzeichnis mydir
+kopiert.
+
+.B dosls /dev/fd0:src
+Die DCP-Datei src wird wird im WEGA-Verzeichnisformat ausgegeben.
+
+.B dosls B:
+Es wird der Inhalt des Stammverzeichnisses der Diskette im definierten
+Laufwerk B: angezeigt.
+
+.B dosmkdir /dev/fd0:usr/docs
+Das DCP-Verzeichnis usr/docs im angegebenen Diskettenlaufwerk wird
+erzeugt.   
+
+.B dosrm /dev/fd0:docs/memo.txt
+Loeschen einer DCP-Disketten-Datei.
+
+.B dosrmdir /dev/fd0:usr/docs
+Es wird das DCP-Verzeichnis usr/docs geloescht.
+.fi
+.SH FILES
+.nf
+/etc/default/dos      Standardinformationen
+/dev/fd*              Floppy-Disk-Geraete
+.fi
+.SH FEHLER
+Es ist nicht moeglich, auf DCP-Verzeichnisse mit wildcard Spezifikation
+Bezug zu nehmen. Die Programme benutzen sich selbst untereinander.
+Dadurch koennen nicht zwei Programme auf die selbe DCP-Disk zugreifen.
+Dies ist nur einem Prozess moeglich waehrend andere warten muessen.
