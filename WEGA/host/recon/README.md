@@ -31,5 +31,6 @@ Makefile of `src` refers to `tools/` or `host/`, so `src` can go to a WEGA syste
 | `corpusc.py` | the inputs of the corpus of the compiler passes: the C sources and what the original earlier passes make of them |
 | `oldcc.sh` | the work on the old compilers: model, lines, findings, matrix, bench |
 | `framemap.py` | a linked segmented program against the original when the layout is the same: per function the frame offsets new -> orig (declaration and chain order), and with -o the other differing pairs (constants, globals, members, jumps); gopt |
+| `goptmodel.py` | the model of /lib/gopt for the vc switch matrix: the program built in a work copy, compared with the original per function (addresses masked, frame offsets and constants compared) |
 
 Popt trace: build popt v0p (`src/cmd/popt/build/nonsegv0p`) with `-DTRACE` in addition to its switches, run it under the emulator as `popt + in.s out.s` on the codgen output of one function (`ccv0p -S` without -O, cut to the function): out.s holds the node list after every iterate and comjump round and every block move (`/*CM ...*/`).

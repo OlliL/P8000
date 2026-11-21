@@ -32,8 +32,9 @@ VERS = {
     'v0p': {'out': 'OLDCC_SWITCHES.md', 'progs': ['cparse', 'popt', 'codgen', 'spopt', 'scparse', 'scodgen', 'cpp'],
             'blocks': ('OLD_V0P', 'OLD_V0'), 'dir': 'nonsegv0p',
             'bin': {'codgen': 'codgen', 'cparse': 'cparse', 'popt': 'popt'}},
-    # sccvc builds /bin/cas only: its model (d12model with sccvc and /lib/old/cas of the work root) is the measure
-    'vc': {'out': 'OLDCC_SWITCHES_VC.md', 'progs': ['cas'], 'blocks': ('OLD_VC', 'OLD_V0P', 'OLD_V0'), 'dir': 'segvc',
+    # sccvc builds /bin/cas and /lib/gopt: the model of cas (d12model with sccvc and /lib/old/cas of the work root) and of
+    # gopt (goptmodel.py: the whole program built in the work copy, compared with the original per function)
+    'vc': {'out': 'OLDCC_SWITCHES_VC.md', 'progs': ['cas', 'gopt'], 'blocks': ('OLD_VC', 'OLD_V0P', 'OLD_V0'), 'dir': 'segvc',
            'bin': {'codgen': 'scodgen', 'cparse': 'scparse', 'popt': 'spopt'}},
 }
 VER = os.environ.get('MATRIX_VER', 'v0p')
@@ -44,7 +45,7 @@ OUT = os.path.join(REPO, 'host', CFGV['out'])
 PROGS = CFGV['progs']
 BIN = CFGV['bin']
 # programs with a compare/NAME/progcfg.py that are not measured, and why
-NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet', 'cas': 'built by sccvc: MATRIX_VER=vc', 'gopt': 'built by sccvc (not byte-identical yet, no model)', 'cc': 'built by the shipped cc, no model'}
+NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet', 'cas': 'built by sccvc: MATRIX_VER=vc', 'cc': 'built by the shipped cc, no model'}
 ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/home/olivleh1/git/P8000/tmp/wega31_root'
 OLDROOT = os.environ.get('OLDROOT', '/home/olivleh1/git/P8000/tmp/oldroot')
 # the work directories: on a local disk, a network share makes the many small files of the builds slow
@@ -128,7 +129,14 @@ def measure(work, prog):
     if os.path.exists(res):
         os.remove(res)
     try:
-        if VER == 'vc':
+        if VER == 'vc' and prog == 'gopt':
+            r = subprocess.run(['python3', os.path.join(HERE, 'goptmodel.py'), work], env=env, capture_output=True,
+                               text=True, timeout=TIMEOUT * 2)
+            if r.returncode:
+                open(os.path.join(work, 'tmp', 'err_%s.txt' % prog), 'w').write((r.stdout + r.stderr)[-400:])
+            elif os.path.exists(os.path.join(work, 'tmp', 'data_gopt.txt')):
+                pass		# the data bytes equal at the same address, read below
+        elif VER == 'vc':
             # the compiler and the old assembler of the work root, as in the build of /bin/cas
             env.update(RECON_PROG=prog, CCHOST=os.path.join(work, 'cc_vc'), CAS=os.path.join(work, 'cas_old'))
             m = subprocess.run(['python3', os.path.join(HERE, 'd12model.py'), '-q'], env=env, capture_output=True,
@@ -182,7 +190,7 @@ def setup():
     os.symlink(os.path.join(REPO, 'src', 'lib'), os.path.join(work, 'src', 'lib'))
     os.symlink(os.path.join(REPO, 'src', 'head'), os.path.join(work, 'src', 'head'))
     subprocess.run(['cp', '-a', OLDROOT, os.path.join(work, 'root')], check=True)
-    for p in PASSES:
+    for p in PASSES + (['gopt'] if VER == 'vc' else []):
         subprocess.run(['cp', '-a', os.path.join(REPO, 'src', 'cmd', p), os.path.join(work, 'src', 'cmd', p)], check=True)
     subprocess.run(['sh', os.path.join(REPO, 'host', 'tools', 'wbin.sh'), os.path.join(work, 'wbin'), ROOT,
                     os.path.join(work, 'root'), EMU], check=True)
@@ -272,6 +280,10 @@ def clone(work, n):
     subprocess.run(['cp', '-a', work, new], check=True)
     shutil.rmtree(os.path.join(new, 'tmp'))
     os.makedirs(os.path.join(new, 'tmp'))
+    # the tools of WEGA with the compilers of this work root (the copy of wbin still names the root of w0)
+    shutil.rmtree(os.path.join(new, 'wbin'))
+    subprocess.run(['sh', os.path.join(REPO, 'host', 'tools', 'wbin.sh'), os.path.join(new, 'wbin'), ROOT,
+                    os.path.join(new, 'root'), EMU], check=True)
     wrappers(new)
     return new
 

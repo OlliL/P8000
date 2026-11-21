@@ -199,8 +199,8 @@ all together), with these differences:
   cas: memreg of z22.c takes the offset of `|_stkseg+~L1+4|(fp)` behind `~L1`; the shipped one reads `+~L1` as 0, so every
   store to a frame slot clears every register known to hold a frame slot; /lib/gopt domspace keeps b in r3) (v0p has no switch in popt).
 
-Which switch has which witness in cas: `OLDCC_SWITCHES_VC.md` (all blocks of v0p are measured there; a switch without a
-witness in cas is in vc because it is in v0p). `sccvc` is the compiler of `src/cmd/cas/Makefile` (`old/cas` stays with scc;
+Which switch has which witness in cas and gopt: `OLDCC_SWITCHES_VC.md` (all blocks of v0p are measured there on both
+programs; a switch without a witness is in vc because it is in v0p). `sccvc` is the compiler of `src/cmd/cas/Makefile` (`old/cas` stays with scc;
 sccvc passes `-DSCCVC` to cpp, for the one form of cas the shipped scc cannot compile: `TABADDR` in cas.h):
 `src/cmd/cc/build/segvc`, `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/vc/spopt`, `/lib/old/cas`; linked with
 `src/lib/slibc-v11.a`. The real build (`make` in `src/cmd/cas`, stripped) is byte-identical with `/bin/cas`; the state

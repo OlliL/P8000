@@ -44,8 +44,7 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
 3. (done 2026-11-21: compare/gopt/COMPILER.md, the switches gopt needs with their witnesses; the libcisam one moved to
    compare/libcisam/COMPILER.md)
 4. (done 2026-11-21: SWITCH_CANDIDATES.md deleted; its witness table is in COMPILER.md, its observations in OLDCC_LOG.md)
-5. The switch matrix of vc (host/recon/switchmatrix.py) measures gopt too, not only cas; then rebuild the vc matrix
-   (host/OLDCC_SWITCHES_VC.md) and `matrix check`.
+5. (done 2026-11-21: the vc matrix measures cas and gopt (host/recon/goptmodel.py), rebuilt: host/OLDCC_SWITCHES_VC.md)
 6. gopt is partly made from the mip of PCC (the machine independent part). Find the best fitting mip: search tmp/sys3,
    tmp/sysv, tmp/plexus, ~/git/unix-history-archive for the version nearest to those parts of src/cmd/gopt.
 7. Align the code of src/cmd/gopt that comes from mip with that mip (names, order, forms), gopt byte-identical throughout.

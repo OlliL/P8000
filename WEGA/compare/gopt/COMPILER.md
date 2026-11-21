@@ -4,7 +4,7 @@
 OLDROOT: `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/vc/spopt`, `/lib/old/cas`) and linked by `sldo` with the start-up code
 of the library (`/lib/scrt0.o`) and `slibc-v12.a` (src/cmd/gopt/Makefile). vc is v0p compiled for segmented code with
 switches of its own (host/OLDCC.md, "The old scc of cas"); /bin/cas is built by the same compiler. The switches below are
-needed by gopt; every one is neutral on cas (`host/OLDCC_SWITCHES_VC.md`). Their mechanism in full: host/OLDCC.md section
+needed by gopt; every one is neutral on cas; the measured witnesses of every switch on cas and gopt: `host/OLDCC_SWITCHES_VC.md`. Their mechanism in full: host/OLDCC.md section
 3; the measurements: host/OLDCC_LOG.md.
 
 A witness is a function that is exact only with the switch. The source forms that the functions need (dead code, gotos for
