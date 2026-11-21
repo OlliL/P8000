@@ -53,6 +53,9 @@
 /doscopy/*/dosrm
 /doscopy/*/dosrmdir
 /format/*/format
+/fse/fse
+/fse/fsen
+/fse/fsepar
 /ld/ld
 /pburn/*/pburn
 /popt/build/*/popt
