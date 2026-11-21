@@ -1737,3 +1737,16 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   left out of the vc build (fcmd, rcmd, scmd, tcmd, memname, findtemp, the rflag part of fixtemp); the reader stops on such
   a record with a message. sg_code 0xfe00 > 0xf800, +0 on cas, gopt 312 unchanged. (A first checkall failed: the edit left regs3.c
   without a newline after the last #endif, and the native cc stops with "system call error: stdin: Error 0".)
+- K8 (2026-11-21), gopt 316 > 318 of 321 (chkfamindvar, setposition), by register traces (KDBG in getreg, rsreturn, rbusy,
+  tcopy and a tree dump in order; not committed). chkfamindvar: behind `ldb rl3,@rr4` of the first compare r4 stayed busy
+  for good: segmented `OLD_D2R` gave the pair rr4 back and took r4, `OLD_D2V` refused r4 ("r stays busy for the operand",
+  true only for the freereg case) and nobody freed it; the second compare then took rr6, the idle parameter r. Now the
+  refused half goes back (allo3.c, D2R with SEG and D2V). setposition: the second printf argument
+  `symtab[p->w4].sclass` is wanted in r3; the original computes the index in r3 (`ldl rr2,p; ld r2,rr2(#4); ld r3,r2;
+  mult rr2`), ours took rr0 because the parameter X stayed idle in rr2. `OLD_D3AW` (argplace) now also gives back an idle
+  parameter in the registers of the argument that the argument does not use (d3awfree, order3.c). Tried on the way
+  (scratch, not kept): the integer operand of a pointer sum gets an odd wish in rallo (setposition 18 > 34, the wish
+  reached the index but rr0 stayed), an odd pair wish mapped to its even register (no change). Checks: models
+  179/179/209/210/73/73/26 strictly equal, bench 153/132/212, both matrix checks as in the table, vc matrix OLD_D3AW and
+  OLD_D2R: cas baseline 0 (rows remeasured: cas jpr is a new witness of D2R, data bytes), gopt 318, vc scodgen text 0xf900
+  (OLDPRINTF link).

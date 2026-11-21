@@ -266,7 +266,8 @@ Where a value goes:
   Segmented (vc): a byte or word through rr2 or rr4 (`rr2(#4)`, `@rr2`, `rr2(r1)`) that only this load uses goes into the even
   half, also when that half is wanted (`ldb rl2,rr2(#4)`; a return value), or into the odd half when that is wanted (an argument in r3); the pointer is loaded again when needed (cas putrow,
   jdeps, yyparse, asmins, mkstring, putstab*, osymout and others). Not through rr6 (a parameter there stays: evalint). An index in an odd word register (`tab(r3)`): the value goes into the even half of
-  its pair when that is free (`ld r2,tab(r3)`; cas optim, defsym, asmins, jprnew).
+  its pair when that is free (`ld r2,tab(r3)`; cas optim, defsym, asmins, jprnew). When `OLD_D2V` refuses that half, it goes
+  back to the free list with the pair (`ldb rl3,@rr4`: rr4 is free for the next pair; gopt chkfamindvar).
 - v0 `OLD_D2C` (match, allocreg): a name found in a scratch register by fixname is that register, the tree takes it over and
   the register forgets the name (gotscal); not for parameters, and such a copy holds no name.
 - v0 `OLD_D2N` (allocreg): a name loaded into a word register is not remembered there; only the register of an assignment
@@ -363,6 +364,8 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   as an address or goes through +, -, unary -, * or a cast (scmd, readsyms, readtab), or a parameter added to an address constant
   (exname), and only when it lies in the register the argument is wanted in: putbyte `bcon(v)` reloads, popt setcon
   `natural(loc)` is `ld r7,r6`. Not in the condition of a `?:`; its arms do not take a parameter from the wanted register (regof).
+  An idle parameter in the register the argument is wanted in that the argument does not use goes back to the free list
+  (gopt setposition: X in rr2, the second argument wanted in r3: the index is computed in rr2, `ld r3,r2; mult rr2`).
 - v0p `OLD_D3L`: a word cast of a global long is not taken from the register that holds the long (freeparm).
 
 Popt, not a difference of the compiler: `rmove` replaces the load of the slot stored last, so `fprintf(..., l)` behind
@@ -766,6 +769,8 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | gopt | comm2.c (common 2.4) | sccvc (measured) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | debug2.c (prquad: D3JB) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | dom2.c, flow2.c, lpinv2.c (linkp, dominators, eval, compress, joinblk, srchdflist: D2N for a pair) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | lpind2.c (chkfamindvar: D2R gives the half D2V refuses back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | alias2.c (setposition: D3AW gives an idle parameter in the argument register back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | wrtil2.c (mkleaf: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | lpinv2.c (qmkstore: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 

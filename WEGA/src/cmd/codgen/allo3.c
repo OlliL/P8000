@@ -379,6 +379,9 @@ allocreg(p, cookie)
 	int cookie;
 {
 	register int want, r, cls;
+#if defined(OLD_D2R) && defined(SEG) && defined(OLD_D2V)
+	int d2rw = 0;	/* r is the even half of a pair address already given back */
+#endif
 
 	if callop(p->in.op)
 		want = callreg(p);
@@ -417,6 +420,9 @@ allocreg(p, cookie)
 			rfree(pr, 5);		/* LONG: the pair */
 			rsreturn(3, pr);
 			r = getreg(2, want == pr + 1 ? pr + 1 : pr, 0, p->in.sname);	/* the odd half when it is wanted */
+#ifdef OLD_D2V
+			d2rw = 1;
+#endif
 		}
 		/* an index in an odd word register (tab(r3)): the even half of its pair, when free */
 		if (r == -1 && q->in.op == OREG && q->tn.rval < 8 && (q->tn.rval & 1) && (want == -1 || want == q->tn.rval - 1))
@@ -426,8 +432,15 @@ allocreg(p, cookie)
 #endif
 	r = cls == 2 && (p->in.op == STAR || p->in.op == OREG) ? freereg(p, want, cookie) : -1;	/* a load through a pointer: its register */
 #ifdef OLD_D2V
-	if (r != -1 && want == -1 && r < 8 && !d2vfirst(r))
+	if (r != -1 && want == -1 && r < 8 && !d2vfirst(r)) {
+#if defined(OLD_D2R) && defined(SEG)
+		/* the half of a pair address OLD_D2R gave back belongs to no operand: it goes back too (gopt chkfamindvar:
+		   ldb rl3,@rr4 kept r4 busy, the next pair was rr6, the parameter r) */
+		if (d2rw)
+			rsreturn(2, r);
+#endif
 		r = -1;		/* v0: only when no lighter register is free; r stays busy for the operand */
+	}
 #endif
 #ifdef OLD_D2N
 	/* v0: a loaded name is not remembered: a word (a global, an auto), a pair only for a global (gopt linkp, eval) */

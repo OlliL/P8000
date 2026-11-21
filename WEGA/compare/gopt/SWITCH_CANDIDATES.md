@@ -4,14 +4,13 @@ Owner 2026-11-20: during the source phase no new switch is built; a difference t
 classified here with its witnesses, and the search for source forms goes on. A candidate is only taken up after the
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
-without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K16 by vc OLD_D2TC, K14 by vc OLD_D2XP extended, K15 by vc OLD_D4F (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
-The numbers are the DIFF lines of fnc.py (2026-11-21, 315 of 321 OK).
+without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K16 by vc OLD_D2TC, K14 by vc OLD_D2XP extended, K15 by vc OLD_D4F (2026-11-21); K8 by OLD_D2R (the half OLD_D2V refuses goes back) and OLD_D3AW (an idle parameter in the register of an argument goes back) (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
+The numbers are the DIFF lines of fnc.py (2026-11-21, 318 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
 |----|--------------------------|-----------------------|--------|
 | K5 | a parameter copied before an operation that changes its register (`ld r1,r3; mult rr0,r5`; `ldl rr0,rr6`, `ld r3,r2`; cause 1) (scodgen); looks like OLD_D3KC of v0p (vc lacks it because of cas copyfile): a narrower form is the guess; 11 type/order/expression forms and 7 dead-code forms: none | mkconstopnd (2), affsize (3) | candidate |
 | K6 | a store of an 8 bit field of a frame struct goes directly to the slot (scodgen fixfld) | setsymtable (2; the form `((char *)&tq)[4]` is a guess) | candidate |
-| K8 | the pair of a temporary: rr4 against rr6 (cause 6); pattern: the original frees the word parameters in r6/r7 (and rr2 of a pointer parameter) for temporaries after their frame store, but keeps a live pointer parameter in rr6; ours the opposite | chkfamindvar (9), setposition (18), rmlabels (2) | candidate |
 | K11 | a chain `a = b = x`: the original copies the value into another register first (`ld r2,r0`) | setsymtable (2; 13 forms) | candidate |
 
 Observation 2026-11-20 (K7 and K8 one mechanism, a guess): in every witness of K7 and K8 (linkp, dominators, eval, compress,
@@ -22,6 +21,9 @@ tree), operand order, dead stores to every parameter (and pairs), dead gotos. Be
 scodgen keeps a global's address across the next expression where the original drops it.
 Built 2026-11-21 (owner) as vc `OLD_D2NP`, the same day folded into v0 `OLD_D2N` (a global loaded into a pair); left of K7/K8: prcgraph, chkfamindvar,
 setposition, pr, rmlabels (2). Later the same day pr by OLD_D2P and prcgraph by OLD_D2Q (both extended, OLDCC_LOG).
+The last two (2026-11-21, register traces) were other mechanisms: in chkfamindvar our scodgen left r4 busy (OLD_D2R gave
+the pair back, took r4, OLD_D2V refused it), so the next pair was rr6 with the parameter r; in setposition the parameter X
+stayed in rr2 while the argument was wanted in r3.
 
 All differences classified: delbucket, fillindvar and chkcalls, open layout, went by source forms with gotos (goto past
 the cerror; the kind 2 code reached by goto from inside the kind 3 branch; chkcalls written with labels).
@@ -50,5 +52,7 @@ D64) built without the switch, fnc.py over all gopt functions. Witness = exact o
 | OLD_D2TC (vc, 2026-11-21) | 1: operand (K16) | the original statement does not compile without it |
 | OLD_D2XP (RESC1 only, vc, 2026-11-21) | 1: constfold (K14, with OLD_D4F) | - |
 | OLD_D4F (vc, 2026-11-21) | 1: constfold (K15) | - |
+| OLD_D2R (OLD_D2V gives the refused half back, 2026-11-21) | 1: chkfamindvar (K8) | - |
+| OLD_D3AW (an idle parameter in the argument register goes back, 2026-11-21) | 1: setposition (K8) | - |
 | OLD_D2N (pair part, 2026-11-21) | 6: compress dominators eval joinblk linkp srchdflist (K7/K8) | rmlabels 2 instead of 12 |
 | scparse OLD_D12R | data only (constfold's static return area) | not measurable by fnc.py |

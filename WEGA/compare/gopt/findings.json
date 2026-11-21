@@ -1517,11 +1517,11 @@
   "setposition": {
    "orig": "4:6c0a",
    "size_orig": 834,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "setposition(cls, p, X, Y): enters an operand in the list of the addresses X (nadr) and of the pointers Y (nptr), with its structure members (recursive); name from the debug text. Open: one expression: `symtab[p->w4].sclass` as the first argument of the first printf: the original computes the address (mult 22, inc 4, ldb rl3,@rr2), ours reads with the indexed form ldb rl3,rr2(r1); tried (symtab + i)->sclass, (*(..)).sclass, (char *)[4], a cast; the rest equal (323 instructions, ours 322; with FNC_DROP for the redundant and). An unused local pointer before i gives the frame of the original (Y at 0x24(r15)); the array-of-pointer case appends to Y without the search (shared with the cases 0x18 0x1e 0x2f in the original) (2026-11-20) left: the second printf argument symtab[p->w4].sclass: the original `ld r3,r2; mult rr2; .. ldb rl3,@rr2`, ours `ld r1,@rr2; mult rr0; ldb rl3,rr2(r1)` (rr4 holds the first argument; K8); 4 forms ((symtab + i)->sclass, &ascii[..], (int)): all 18"
+   "note": "setposition(cls, p, X, Y): enters an operand in the list of the addresses X (nadr) and of the pointers Y (nptr), with its structure members (recursive); name from the debug text. Open: one expression: `symtab[p->w4].sclass` as the first argument of the first printf: the original computes the address (mult 22, inc 4, ldb rl3,@rr2), ours reads with the indexed form ldb rl3,rr2(r1); tried (symtab + i)->sclass, (*(..)).sclass, (char *)[4], a cast; the rest equal (323 instructions, ours 322; with FNC_DROP for the redundant and). An unused local pointer before i gives the frame of the original (Y at 0x24(r15)); the array-of-pointer case appends to Y without the search (shared with the cases 0x18 0x1e 0x2f in the original) (2026-11-20) left: the second printf argument symtab[p->w4].sclass: the original `ld r3,r2; mult rr2; .. ldb rl3,@rr2`, ours `ld r1,@rr2; mult rr0; ldb rl3,rr2(r1)` (rr4 holds the first argument; K8); 4 forms ((symtab + i)->sclass, &ascii[..], (int)): all 18 (2026-11-21) masked by OLD_D3AW: the tree is STAR(PLUS(symtab, PLUS(MUL(..), 4))) wanted in r3; the original takes the free rr2 for p (`ldl rr2,..; ld r2,rr2(#4); ld r3,r2; mult rr2`), ours kept the parameter X idle in rr2 and took rr0. An idle parameter in the register of an argument that the argument does not use goes back before the argument. Tried on the way: the integer operand of a pointer sum gets the odd wish (rallo; 34), an odd pair wish mapped to its even register (no effect alone)."
   },
   "f4_6f4c": {
    "orig": "4:6f4c",
@@ -4023,11 +4023,11 @@
   "chkfamindvar": {
    "orig": "5:6bf2",
    "size_orig": 334,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open: the first part (101 instr.) differs in the temp pair rr4/rr6 (cause 7) and reloads of r/t when q = r; r = t (cause 5); the cases are the block f5_6d40 (switch 1,34,44,48 / 14,45, table at 7:68d8/68e4) (2026-11-20) the pointer-kind test as `!(((a & 0x30) == 0x10) ^ ((b & 0x30) == 0x10))` (the original has xor, not cp): 13 -> 9. Left: in the condition of t the original takes rr4 as the temporary and keeps the parameter r in rr6 (q = r is `ldl ..,rr6`), ours takes rr6 (K8); 5 forms of t (if/else, t = 0 first, r assigned directly: 8-18)"
+   "note": "open: the first part (101 instr.) differs in the temp pair rr4/rr6 (cause 7) and reloads of r/t when q = r; r = t (cause 5); the cases are the block f5_6d40 (switch 1,34,44,48 / 14,45, table at 7:68d8/68e4) (2026-11-20) the pointer-kind test as `!(((a & 0x30) == 0x10) ^ ((b & 0x30) == 0x10))` (the original has xor, not cp): 13 -> 9. Left: in the condition of t the original takes rr4 as the temporary and keeps the parameter r in rr6 (q = r is `ldl ..,rr6`), ours takes rr6 (K8); 5 forms of t (if/else, t = 0 first, r assigned directly: 8-18) (2026-11-21) masked by OLD_D2R: a trace of getreg/rsreturn showed r4 busy for good behind `ldb rl3,@rr4` of the first compare (D2R gave the pair rr4 back and took r4, OLD_D2V refused it and nobody freed it), so the second compare took rr6 and the parameter r was lost; the refused half goes back now."
   },
   "f5_6d40": {
    "orig": "5:6d40",

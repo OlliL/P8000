@@ -5,10 +5,9 @@ host/OLDCC.md). Rules: CLAUDE.md (German in conversation, English in git; commit
 findings.json (key `note`), SWITCH_CANDIDATES.md, host/OLDCC_LOG.md and host/increments/160-programs.md current.
 
 ## State
-- fnc.py: 316 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
+- fnc.py: 318 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
 - Open (DIFF lines, candidate of SWITCH_CANDIDATES.md):
-  setposition 18 (K8), chkfamindvar 9 (K8), affsize 3 (K5),
-  rmlabels 2 (spopt with the D2AV copy), setsymtable 2 (K11), mkconstopnd 2 (dead `ldl rr0,rr6`, as v0p OLD_D3KC).
+  affsize 3 (K5), setsymtable 2 (K11), mkconstopnd 2 (dead `ldl rr0,rr6`, as v0p OLD_D3KC).
 - What was tried for each: its `note` in findings.json and the dated entries of host/OLDCC_LOG.md.
 
 ## Owner authorisation (2026-11-21)
@@ -36,7 +35,7 @@ findings.json (key `note`), SWITCH_CANDIDATES.md, host/OLDCC_LOG.md and host/inc
 - Register traces: a temporary `printf("KDBG ...")` of rsuse/rsfree in getreg, then `sccvc -S` of the module (never commit it).
 
 ## Watch out: the vc scodgen size
-The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its text is 0xf800 of 0x10000 (after OLD_DNR).
+The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its text is 0xf900 of 0x10000 (after K8).
 /bin/ld wraps sg_code to 0 silently. The codgen Makefile now stops then; before, checkall hung.
 - Measure the size like checkall does: link with `LIBC="../../../../lib/oldlibc/printf/s1p.o ../../../../lib/oldlibc/doprnt/s1d.o
   ../../../../lib/oldlibc/doprnt/s1f.o /lib/libc.a"`. The three objects are copied from a checkall tree; they are gitignored.
@@ -50,9 +49,8 @@ The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its te
 3. (done 2026-11-21: tprint by narrowing vc spopt OLD_D50; method: run the shipped /lib/spopt on our codgen output (sccvc -S)
    and compare the block order, then build vc spopt without each switch)
 4. (done 2026-11-21: chklpdefs by the goto form of the original block order and vc spopt OLD_D51 (d))
-5. setposition (18) and chkfamindvar (9) (K8, pair choice). Trace rsuse at the pair getreg. In setposition the original takes the
-   idle parameter pair rr2 at the second printf argument but not at the first. Find the state difference; allowing parameter pairs
-   in the D2P loop is worse (306).
+5. (done 2026-11-21: chkfamindvar by OLD_D2R (the half OLD_D2V refuses goes back), setposition by OLD_D3AW (an idle parameter
+   in the register of an argument goes back); found by KDBG traces of getreg/rsreturn/rbusy and a tree dump in order)
 6. Small ones (rmlabels done 2026-11-21 by `p && ..`; source forms tried for the rest, see the notes): compiler candidates
    affsize (3: a narrower OLD_D2N), setsymtable (2: a word OLD_D2A copy in one case), mkconstopnd (2: a narrow OLD_D3KC).
 7. After 321 of 321: the almap string order of the data, `segcmp.py` exact, `bincmp` of the linked file, `make install`, checkall.

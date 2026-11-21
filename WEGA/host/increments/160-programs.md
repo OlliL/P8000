@@ -112,3 +112,4 @@ PLZ programs and `as`: 170.
 - 2026-11-21 gopt: tprint exact by narrowing vc spopt OLD_D50 (two instructions between loop head and jump); the shipped spopt shows the layout of the original; 314 of 321; cas jpr kept, checkall ALL OK.
 - 2026-11-21 gopt: chklpdefs exact (goto form of the original block order; vc spopt OLD_D51 (d): a loop test named by two jumps is not moved to the entry jump); 315 of 321.
 - 2026-11-21 gopt: rmlabels exact by the loop test `p && p->op != 0x3b` (not `p != 0`); 316 of 321.
+- 2026-11-21 gopt: K8 done: chkfamindvar by OLD_D2R (the word OLD_D2V refuses goes back), setposition by OLD_D3AW (an idle parameter in the argument register goes back); 318 of 321.

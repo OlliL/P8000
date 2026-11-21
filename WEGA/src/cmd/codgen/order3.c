@@ -95,6 +95,7 @@ static void argsort();
 static void fixstarg();
 static void argstrip();
 static void d3aw();
+static void d3awfree();
 static void d22arg();
 static void argplace();
 
@@ -1031,6 +1032,34 @@ d3aw(p, top)
 	if (k == BITYPE)
 		d3aw(p->in.right, top);
 }
+
+/* an idle parameter that lies in the registers lo .. hi and is not in the argument goes back to the free list
+   (gopt setposition: X in rr2, the argument wanted in r3; the pair rr2 then comes before rr0) */
+static int
+d3awuses(p, s)
+	register NODE *p;
+	register struct sym *s;
+{
+	register int k = optype(p->in.op);
+
+	if (k == LTYPE)
+		return p->in.sname == s;
+	return d3awuses(p->in.left, s) || (k == BITYPE && d3awuses(p->in.right, s));
+}
+
+static void
+d3awfree(q)
+	NODE *q;
+{
+	register struct rs *n, *next;
+
+	for (n = rsuse; n; n = next) {
+		next = n->next;
+		if (n->cls <= 3 && n->busy <= 0 && n->kind != 6 && n->sym && n->sym->sclass == 9 &&
+		    n->reg <= d3awhi && n->reg + (n->cls == 3) >= d3awlo && !d3awuses(q, n->sym))
+			rsreturn(n->cls, n->reg);
+	}
+}
 #endif
 
 #ifdef OLD_D22
@@ -1113,6 +1142,7 @@ argplace()
 		d3awlo = reg;
 		d3awhi = reg + szty(q->in.type) - 1;
 		d3aw(q, 1);
+		d3awfree(q);
 #endif
 		if (q->in.type == 6 || q->in.type == 7)
 			order(q, 0x10);
