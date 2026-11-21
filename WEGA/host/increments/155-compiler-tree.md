@@ -65,6 +65,25 @@ Rules of the target:
   III (`#include "mfile1"`, `#include "common"`). Today the unit is written into each wrapper.
 - cparse is already brought close to cc/pcc of System III: the shared parts in comm1.c (`common`) and optim1.c (`optim`)
   follow the System III sources (as far as the bytes allow).
+- Measured 2026-11-22 (step 1, the SCCS lines of the binaries; host: `fdiff.py`-like comparison of the functions after
+  removing comments and blanks):
+  - Units and their wrappers, in the data of each binary the wrapper's line directly before the unit's: cparse/scparse
+    comm1.c 2.1 + common 2.5, optim1.c 2.1 + optim 2.5; codgen/scodgen comm3.c 2.1 + common 2.5, rdr3.c 2.1 + rdr 2.5,
+    optim3.c 2.4 + optim 2.5; gopt comm2.c 1.1 + common 2.4, rdr2.c 1.3 + rdr 2.4. So optim 2.5 is in cparse and in
+    codgen; rdr is a unit of WEGA (System III has none, nor Plexus).
+  - common: the functions of System III (uerror, cerror, werror, tinit, talloc, tcheck, tfree, tfree1, fwalk, walkf,
+    mkdope; tprint in 2.4 only) plus WEGA's (bsize, szty, argsize, where = prline, tbytes, dexit, branch, ncopy, tcopy,
+    ispow2, plainicon). cparse follows System III (most functions equal); gopt and codgen are written alike between
+    them (most equal or a few lines) but not after System III (5 to 30 lines differ per function).
+  - Only in one pass (the wrapper's or the pass's code, not common): cparse syserr, nncon, getmem; codgen syserror,
+    callreg, the D3K/D3J helpers (d3kjump ...), alloc, allocinit; gopt taballoc, tabfree, tabavail.
+  - optim: cparse fortarg, optim, conval, treeeq, rmconv, notflt; codgen optim, conval, treeeq, convelim, isint
+    (optim of codgen differs in 227 lines from System III's, cparse's in 84).
+  - rdr: codgen and gopt share rdsym, readsyms, readtab, readnums, readmems, sortsyms, tagfind, mapn, mapsym, mapnm,
+    mkhash, nlcheck, eread, rdin, rdin2 (2.5 against 2.4: mostly a few lines; mapnm 58); codgen only rddata and the
+    D12K helpers, gopt only prtags.
+  - The names of the functions are ours where the binaries are stripped (where in cparse, prline in codgen and gopt:
+    the same function).
 - `/usr/lib/lint1`, `/usr/lib/lint2` (not rebuilt yet) use the same mip in System III: later members of the tree.
 - References to the old paths (2026-11-22, without findings.json): src/cmd/cc 9 files, cpp 8, cparse 11, codgen 16,
   popt 20, gopt 11; most in host/recon (poptveto), host, compare.
