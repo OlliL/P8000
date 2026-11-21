@@ -150,6 +150,10 @@ freeparm(k)
 	return t;
 }
 
+#ifdef OLD_D2XP
+static int d2xresc;	/* allo: the registers it takes are the result (RESC1) */
+#endif
+
 /*
  * Get the resources of the table entry q for the tree p: the registers (needs bits 0-3: A registers,
  * 4-7: B registers), temporaries in the frame (8-9) and parameter temporaries (10-11), in resc[]. Returns 0
@@ -169,6 +173,9 @@ allo(p, q)
 	need = q->needs;
 	b = need;
 	k = 0;
+#ifdef OLD_D2XP
+	d2xresc = q->rewrite & RESC1;
+#endif
 
 	while (need & 3) {			/* A registers */
 		resc[k].in.op = REG;
@@ -437,6 +444,8 @@ allocreg(p, cookie)
 #ifdef OLD_D2XP
 	    /* vc (gopt): not the pair of a parameter (nodeno c = q + 6: ldl rr2,rr6; inc r3,#6) */
 	    && !(p->in.left->in.sname && p->in.left->in.sname->sclass == 9)
+	    /* nor for a scratch register when the result is the left operand (gopt constfold: ld U1,UR; and AL,AR; and UL,U1) */
+	    && d2xresc
 #endif
 	    )
 		r = freereg(p, want, cookie);	/* v0: a long result into the pair of its left operand */

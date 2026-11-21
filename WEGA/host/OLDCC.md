@@ -179,7 +179,10 @@ neutral on cas when added, alone and all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB` and `OLD_D2TC` (gopt; all neutral on cas; `OLD_D2TC`: rbusy takes a free word
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB`, `OLD_D2TC` and `OLD_D4F` (gopt; all neutral on cas; `OLD_D2XP` also: OLD_D2X only when the registers
+  allo takes are the result (RESC1), not a scratch pair beside a result in the left operand (gopt constfold `ld r1,lo;
+  and r3,r1`); `OLD_D4F`: an idle float register that holds a name is free when its number is lower than the first free
+  one (constfold: the int-to-double result in f0, so its store is merged); `OLD_D2TC`: rbusy takes a free word
   register instead of stopping, the reclaim of `p->in.sname - symtab` in gopt operand);
   its text is near the 64 KiB of a nonsegmented program (sg_code 0xfd00 with the OLDPRINTF of src/Makefile, 2026-11-21);
   /bin/ld does not report an overflow (sg_code wraps, the program runs into zeros), the codgen Makefile stops then;

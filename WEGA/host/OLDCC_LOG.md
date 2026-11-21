@@ -1726,3 +1726,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   for the six give-back-and-take sequences of allocreg, D2M/D2MO/D2S under one test of the left operand, the even and
   odd index cases of D2Q under one, the naming in getreg (D2L, D2P) by `goto blk`: 0xfd00 with K5 and D2TC. The codgen
   Makefile now stops when sg_code is 0 (owner).
+- K14 and K15 (2026-11-21), gopt 311 > 312 (constfold exact). K14: entry 115 of the table (`ld U1,UR; OI AL,AR; OI UL,U1`,
+  rewrite RLEFT) needs a scratch pair; OLD_D2X gave it the pair of the left operand (rr2), so U1 was r3 and `and r3,r3`
+  destroyed the operand. vc `OLD_D2XP` now also asks that the registers allo takes are the result (RESC1). K15: the
+  int-to-double result of a float compare went to f1 because f0 still held d1 (idle, named); the original takes f0, its
+  store equals that of the other cases and spopt merges it. New vc `OLD_D4F`: an idle float register that holds a name
+  is free when its number is lower than the first free one. Both +0 on cas; the vc scodgen text is 0xfe00 again.

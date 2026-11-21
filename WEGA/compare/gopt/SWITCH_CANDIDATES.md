@@ -4,8 +4,8 @@ Owner 2026-11-20: during the source phase no new switch is built; a difference t
 classified here with its witnesses, and the search for source forms goes on. A candidate is only taken up after the
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
-without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K16 by vc OLD_D2TC (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
-The numbers are the DIFF lines of fnc.py (2026-11-21, 311 of 321 OK).
+without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K16 by vc OLD_D2TC, K14 by vc OLD_D2XP extended, K15 by vc OLD_D4F (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
+The numbers are the DIFF lines of fnc.py (2026-11-21, 312 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
 |----|--------------------------|-----------------------|--------|
@@ -15,8 +15,6 @@ The numbers are the DIFF lines of fnc.py (2026-11-21, 311 of 321 OK).
 | K8 | the pair of a temporary: rr4 against rr6 (cause 6); pattern: the original frees the word parameters in r6/r7 (and rr2 of a pointer parameter) for temporaries after their frame store, but keeps a live pointer parameter in rr6; ours the opposite | chkfamindvar (9), setposition (18), rmlabels (2) | candidate |
 | K11 | a chain `a = b = x`: the original copies the value into another register first (`ld r2,r0`) | setsymtable (2; 13 forms) | candidate |
 | K13 | the then-block of an if is placed before its test, right behind an unconditional jump, the test jumps back to it (spopt codemove); dotree, aliasm, initaffect, buildgraph, clropt were source forms (the common statement in both branches; the then-block as `if (0) { l: ... }` at the loop top, reached by goto); for the loops: switch, loop forms, branch orders tried | chklpdefs (10: only the step block) | candidate |
-| K14 | a long `&`/`\|` with a frame operand: the original takes r1 for the low word (`ld r1,lo; and r3,r1`), ours overwrites r3 (`ld r3,lo; and r3,r3`: wrong code) (scodgen template) | constfold (2 places) | candidate (a bug of the rebuild) |
-| K15 | the EPU store of an int-to-double result is not merged with the store of the first case | constfold (1 instruction) | candidate |
 
 Observation 2026-11-20 (K7 and K8 one mechanism, a guess): in every witness of K7 and K8 (linkp, dominators, eval, compress,
 joinblk, rmlabels, prcgraph, srchdflist, setposition, pr) ours keeps the address of a global pointer cached in rr6
@@ -52,5 +50,7 @@ D64) built without the switch, fnc.py over all gopt functions. Witness = exact o
 | OLD_D2MO (not a parameter, v0/vc, 2026-11-21) | 3: canshare setedges testbit (K5) | - |
 | OLD_D2P (no merge of parameter words in r4..r7, v0/vc, 2026-11-21) | 1: testbit | all parameter words: mkconstopnd 2>65 |
 | OLD_D2TC (vc, 2026-11-21) | 1: operand (K16) | the original statement does not compile without it |
+| OLD_D2XP (RESC1 only, vc, 2026-11-21) | 1: constfold (K14, with OLD_D4F) | - |
+| OLD_D4F (vc, 2026-11-21) | 1: constfold (K15) | - |
 | OLD_D2N (pair part, 2026-11-21) | 6: compress dominators eval joinblk linkp srchdflist (K7/K8) | rmlabels 2 instead of 12 |
 | scparse OLD_D12R | data only (constfold's static return area) | not measurable by fnc.py |

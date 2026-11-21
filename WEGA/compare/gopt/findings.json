@@ -3185,11 +3185,11 @@
   "constfold": {
    "orig": "5:1068",
    "size_orig": 880,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "ebbo2.c",
    "file": "ebbo2.c",
-   "note": "open (DIFF 10, 2026-11-20): `r.w0 = q->c.w0; return r;` in both branches (comjump keeps the copy of the long branch; cause 8 was the source form): 28 -> 10. Left: (1) long & and |: the original `ld r1,op2lo; and r2,..; and r3,r1`, ours `ld r3,..; and r3,r3` (wrong code of our sccvc; res = op1; res &= op2 and op2 & op1 tried: worse; SWITCH_CANDIDATES K14); (2) one EPU store of dr in a float compare case is not merged into the first copy (K15). Earlier forms:  if (b2 == 2) {float} else {long} (worse), duplicated tail"
+   "note": "open (DIFF 10, 2026-11-20): `r.w0 = q->c.w0; return r;` in both branches (comjump keeps the copy of the long branch; cause 8 was the source form): 28 -> 10. Left: (1) long & and |: the original `ld r1,op2lo; and r2,..; and r3,r1`, ours `ld r3,..; and r3,r3` (wrong code of our sccvc; res = op1; res &= op2 and op2 & op1 tried: worse; SWITCH_CANDIDATES K14); (2) one EPU store of dr in a float compare case is not merged into the first copy (K15). Earlier forms:  if (b2 == 2) {float} else {long} (worse), duplicated tail; 2026-11-21 masked: K14 was OLD_D2X giving a scratch pair the pair of the left operand (vc OLD_D2XP: only for RESC1), K15 the int-to-double result in f1 because f0 still held d1 (vc OLD_D4F)"
   },
   "f5_13d8": {
    "orig": "5:13d8",

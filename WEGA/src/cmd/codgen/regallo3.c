@@ -615,6 +615,20 @@ getreg(cls, reg, flag, sym)
 			continue;
 		goto found;
 	}
+#ifdef OLD_D4F
+	if (cls == 4 && reg == -1) {	/* vc: an idle float register that holds a name is free when its number is lower (gopt constfold) */
+		for (w = rsfree; w && w->cls != 4; w = w->next)
+			;
+		m = 0;
+		for (t = rsuse; t; t = t->next)
+			if (t->cls == 4 && t->busy <= 0 && t->kind != 6 && (w == 0 || t->reg < w->reg) && (m == 0 || t->reg < m->reg))
+				m = t;
+		if (m) {
+			n = m;
+			goto blk;
+		}
+	}
+#endif
 #ifdef OLD_D2L
 	if (cls == 2 && reg == -1) {	/* v0: an idle word that holds a name is free when it weighs less */
 		for (w = rsfree; w && w->cls != 2 && w->cls != 3; w = w->next)
