@@ -1,6 +1,6 @@
-# 1.0 is the version on WEGA 3.1
+# 1.1 is the version on WEGA 3.1
 
-DOSCOPY_VERSION = 1.0
+DOSCOPY_VERSION = 1.1
 
 all:
 	cd $(DOSCOPY_VERSION) ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $@

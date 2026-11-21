@@ -1,5 +1,5 @@
-"""Corpus of dosrmdir (host/recon/corpusrun.py): the original /usr/bin/dosrmdir against the shipped build (doscopy version 1.0,
-src/cmd/doscopy/1.0), on the cases of compare/dosrmdir/tests.txt (host/recon/casefile.py). Man page: /usr/man/man1/dos.1.
+"""Corpus of dosrmdir (host/recon/corpusrun.py): the original /usr/bin/dosrmdir against the shipped build (doscopy version 1.1,
+src/cmd/doscopy/1.1), on the cases of compare/dosrmdir/tests.txt (host/recon/casefile.py). Man page: /usr/man/man1/dos.1.
 The floppy of every case: host/recon/dospre.py; the files on it are put there by the original doscp, dosmkdir."""
 import os
 import sys
@@ -12,7 +12,7 @@ import dospre  # noqa: E402
 NAME = 'dosrmdir'
 ORIG = 'usr/bin/dosrmdir'
 PROG = 'dosrmdir'
-CANDIDATES = {'wega': 'src/cmd/doscopy/1.0/dosrmdir'}
+CANDIDATES = {'wega': 'src/cmd/doscopy/1.1/dosrmdir'}
 TIMEOUT = 60
 
 

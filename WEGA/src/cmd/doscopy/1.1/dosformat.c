@@ -5,7 +5,7 @@
 	Programm: dosformat.c
  
 	Bearbeiter	: P. Hoge
-	Datum		: 6.1.89
+	Datum		:
 	Version		: 1.1
  
 ***************************************************************************

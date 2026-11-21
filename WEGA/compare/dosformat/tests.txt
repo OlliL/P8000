@@ -1,5 +1,5 @@
 # The cases of the corpus of dosformat (compare/dosformat/corpus.py); the format: host/recon/casefile.py. Where an
-# expectation comes from: man = /usr/man/man1/dos.1, src = src/cmd/doscopy/1.0/dosformat.c. A name that is not a device
+# expectation comes from: man = /usr/man/man1/dos.1, src = src/cmd/doscopy/1.1/dosformat.c. A name that is not a device
 # (no /dev/ in it) is an image: dosformat writes the boot sector, the FATs and the directory into the file and nothing
 # else (the size is those sectors); on a floppy device it runs /bin/format first (the question on the console).
 

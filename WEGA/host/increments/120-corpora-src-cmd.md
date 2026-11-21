@@ -142,7 +142,7 @@ Programs not yet rebuilt (increment 160 adds their corpus when it rebuilds them)
   name in the super block is not that of the directory; the /etc/mnttab of the shipped tree lists z, tmp, usr as
   mounted; smount of this kernel does not check for the super-user.
 - 2026-11-16: corpus sync (manM/sync.M, src/cmd/sync.c): plain, arguments, stdin, user.
-- 2026-11-16: the corpora of the other doscopy programs (version 1.0, man page dos.1): dosls (25 cases), dosdir (25),
+- 2026-11-16: the corpora of the other doscopy programs (version 1.1, man page dos.1): dosls (25 cases), dosdir (25),
   doscat (32), dosmkdir (30), dosrm (24), dosrmdir (26), dosformat (25), in `compare/NAME/tests.txt`, the floppy prefix in
   `host/recon/dospre.py` (the disk of doscp: formatted by the original dosformat). New: `host/tools/dcpimg.py` (free
   clusters, FAT chain and entries, attribute, volume label, a full FAT, and `mkhd`: an image with a DCP file system of

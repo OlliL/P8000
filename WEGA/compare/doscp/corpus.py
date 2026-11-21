@@ -13,7 +13,7 @@ import casefile  # noqa: E402
 NAME = 'doscp'
 ORIG = 'usr/bin/doscp'
 PROG = 'doscp'
-CANDIDATES = {'wega': 'src/cmd/doscopy/1.0/doscp'}
+CANDIDATES = {'wega': 'src/cmd/doscopy/1.1/doscp'}
 TIMEOUT = 60
 TOUCH = "host: find . -type f -exec touch -d '1989-01-05 05:39:00 UTC' {} +"	# doscp takes the time of the WEGA file
 PRE = ['time: 600000000', 'terminal: console', 'device: drive1 d1', 'device: ud', TOUCH,

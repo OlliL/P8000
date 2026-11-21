@@ -5,8 +5,8 @@
 	Programm: dosmkdir.c
  
 	Bearbeiter	: P. Hoge
-	Datum		: 24.1.89
-	Version		: 1.3
+	Datum		:
+	Version		: 1.1
  
 ***************************************************************************
 
