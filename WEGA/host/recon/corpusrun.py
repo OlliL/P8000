@@ -112,15 +112,20 @@ def sha1file(p):
     return _SHA[p]
 
 
+def fstate(p):
+    """a file as an input of a case: its contents and its mode (the cases copy files with their mode, and listing() shows it)"""
+    return '%s %o' % (sha1file(p), os.stat(p).st_mode & 0o7777)
+
+
 def sha1tree(p):
     if os.path.isfile(p):
-        return sha1file(p)
+        return fstate(p)
     h = hashlib.sha1()
     for dp, dn, fn in os.walk(p):
         dn.sort()
         for f in sorted(fn):
             q = os.path.join(dp, f)
-            h.update(os.path.relpath(q, p).encode() + b'\0' + (sha1file(q) if os.path.isfile(q) else 'x').encode())
+            h.update(os.path.relpath(q, p).encode() + b'\0' + (fstate(q) if os.path.isfile(q) else 'x').encode())
     return h.hexdigest()
 
 
@@ -263,7 +268,7 @@ def case_hash(d):
         dn.sort()
         for f in sorted(fn):
             q = os.path.join(dp, f)
-            h.update(os.path.relpath(q, d).encode() + b'\0' + sha1file(q).encode() + b'\n')
+            h.update(os.path.relpath(q, d).encode() + b'\0' + fstate(q).encode() + b'\n')
     return h.hexdigest()
 
 
@@ -559,21 +564,22 @@ _DEPLOCK = threading.Lock()
 
 
 def dep_hash(root, g):
-    """the state of the guest path g of the tree root: a file by its contents, a directory by its names, '-' when missing"""
+    """the state of the guest path g of the tree root: a file by its contents and mode, a directory by its names and mode,
+    '-' when missing"""
     p = root + g
     try:
         st = os.stat(p)
     except OSError:
         return '-'
-    k = (p, st.st_ino, st.st_mtime_ns, st.st_size)
+    k = (p, st.st_ino, st.st_mtime_ns, st.st_size, st.st_mode)
     with _DEPLOCK:
         if k in _DEPMEMO:
             return _DEPMEMO[k]
     if os.path.isdir(p):
-        h = 'd' + hashlib.sha1('\n'.join(sorted(os.listdir(p))).encode('latin-1', 'replace')).hexdigest()
+        h = 'd%o ' % (st.st_mode & 0o7777) + hashlib.sha1('\n'.join(sorted(os.listdir(p))).encode('latin-1', 'replace')).hexdigest()
     else:
         try:
-            h = sha1file(p)
+            h = fstate(p)
         except OSError:
             h = '?'
     with _DEPLOCK:
@@ -796,6 +802,9 @@ def explain(r1, r2, n=12):
 
 
 # ---- the store ----------------------------------------------------------------------------------------------------------
+# The keys hold every input file by its contents and its mode (fstate): the cases copy their files with the mode and
+# listing() shows it, so a tree whose modes differ (a snapshot by git archive: 664; one by tar of the working tree: the
+# modes there) must not reuse the results of the other (found 2026-11-21: cchain, scchain [host] against [wega] from the store).
 
 def store_path(kind, key):
     return os.path.join(STORE, 'results', kind, key[:2], key)
@@ -876,7 +885,7 @@ class Generated:
             else:
                 pn = pr.__name__
             parts = ['in', pn, 'src ' + (os.path.basename(self.src) if self.src else '-'), sha1file(EMU)]	# which file of the directory the case is made from
-            parts += [os.path.basename(f) + ' ' + sha1file(f) for f in sorted(self.sources)]
+            parts += [os.path.basename(f) + ' ' + fstate(f) for f in sorted(self.sources)]
             parts += [f + ' ' + sha1tree(os.path.join(ROOT, f)) for f in self.prep_files if os.path.exists(os.path.join(ROOT, f))]
             self._key = mix(*parts)
         return self._key
@@ -1023,7 +1032,7 @@ def main():
             print('%s: the tree of the original (%s) is not set' % (cfg.NAME, cfg.ROOT_ENV))
             return 1
     # corpus.py too: its normalize() and after_step() shape the stored result (a change of them made stored results stale)
-    base = [sha1file(os.path.join(RUNROOT, cfg.ORIG)), sha1file(EMU), runner_key(), sha1file(os.path.abspath(cfg.__file__))]
+    base = [fstate(os.path.join(RUNROOT, cfg.ORIG)), sha1file(EMU), runner_key(), sha1file(os.path.abspath(cfg.__file__))]
     base += [f + ' ' + (sha1tree(os.path.join(RUNROOT, f)) if os.path.exists(os.path.join(RUNROOT, f)) else 'missing')
              for f in getattr(cfg, 'ROOT_FILES', [])]
     work = os.path.join(WORK, cfg.NAME)
