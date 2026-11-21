@@ -861,7 +861,7 @@ propagate()
 	int b, r, c, i, e;
 	struct quad *q;
 	struct qa tmp;
-	struct qa *t, *pa, *pb;
+	struct qa *t, *pb;
 
 	for (b = 0; b < blkno; b++) {
 		if (blks[b] == 0 || blks[b]->next->op != 28)
@@ -885,9 +885,9 @@ propagate()
 				insertquad(40, &tmp, t, (struct qa *)0, blks[b]->next);
 				markreg(b, r);
 			} else {
-				pa = &rquad(c, r)->b;
+				t = &rquad(c, r)->b;
 				pb = &rquad(b, r)->b;
-				if (!eqopnd(pb, pa))
+				if (!eqopnd(pb, t))
 					continue;
 				q = rquad(b, r)->next;
 				if (s4d90 > 1) {
