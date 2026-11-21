@@ -53,6 +53,6 @@ The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its te
 5. setposition (18) and chkfamindvar (9) (K8, pair choice). Trace rsuse at the pair getreg. In setposition the original takes the
    idle parameter pair rr2 at the second printf argument but not at the first. Find the state difference; allowing parameter pairs
    in the D2P loop is worse (306).
-6. Small ones (rmlabels done 2026-11-21 by `p && ..`): affsize (3: copy register r3 against r1), setsymtable (2: dead `ld r2,r0`
-   in a chain; a word OLD_D2AV had no effect), mkconstopnd (2: a narrow v0p OLD_D3KC is the candidate, see its note).
+6. Small ones (rmlabels done 2026-11-21 by `p && ..`; source forms tried for the rest, see the notes): compiler candidates
+   affsize (3: a narrower OLD_D2N), setsymtable (2: a word OLD_D2A copy in one case), mkconstopnd (2: a narrow OLD_D3KC).
 7. After 321 of 321: the almap string order of the data, `segcmp.py` exact, `bincmp` of the linked file, `make install`, checkall.

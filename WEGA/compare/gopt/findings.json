@@ -1942,7 +1942,7 @@
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "open (DIFF 3, 4 attempts): the original copies nal from r2 (ld r3,r2) for the division, ours loads it again (ld r3,nal); with matw = affdim / 16 + 1 the pair is rr0 and affdim is compared from r2 (DIFF 13); name guessed (the affect matrix: rows affdim <= 225, matw words per row)"
+   "note": "open (DIFF 3, 4 attempts): the original copies nal from r2 (ld r3,r2) for the division, ours loads it again (ld r3,nal); with matw = affdim / 16 + 1 the pair is rr0 and affdim is compared from r2 (DIFF 13); name guessed (the affect matrix: rows affdim <= 225, matw words per row); 2026-11-21 14 more forms (order, chain, comma, ++/+=, register or local copy, label, casts): 3 or worse. The original keeps nal known in r2 after `affdim = nal` and copies it (`ld r3,r2`); our OLD_D2N forgets a loaded global word: a narrower D2N (not for the right side of an assignment to a global?) is the candidate"
   },
   "praldim": {
    "orig": "4:90be",
@@ -2581,7 +2581,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "open (DIFF 2, 2026-11-20): the body under `if (!(symtab[t].sflags & 1)) { .. } return 1;` (layout: 68 -> 17); the op stores of the local tq as `((char *)&tq)[4] = 0x2f` (a byte store to the frame slot as the original; tq.op, (&tq)->op, *((char *)&tq + 4) form the address: 17 -> 2; the form is a guess, the original may have had another type for tq or a codgen that stores an 8 bit field of a frame struct directly); left: one `ld r2,r0` of the chain tq.a.w4 = t = betatbl[..].x1 in one case (t = tq.a.w4 = .. tried: worse); the local struct quad tq with a.b2 = 4; name from the strings"
+   "note": "open (DIFF 2, 2026-11-20): the body under `if (!(symtab[t].sflags & 1)) { .. } return 1;` (layout: 68 -> 17); the op stores of the local tq as `((char *)&tq)[4] = 0x2f` (a byte store to the frame slot as the original; tq.op, (&tq)->op, *((char *)&tq + 4) form the address: 17 -> 2; the form is a guess, the original may have had another type for tq or a codgen that stores an 8 bit field of a frame struct directly); left: one `ld r2,r0` of the chain tq.a.w4 = t = betatbl[..].x1 in one case (t = tq.a.w4 = .. tried: worse); the local struct quad tq with a.b2 = 4; name from the strings; 2026-11-21 15 more forms of case 2 (the q->a case is the only one with the copy; reversed chain, two statements, t as index, braces, negated test, comma): 2 or worse. The dead `ld r2,r0` is the value of t = x copied into a new register (as OLD_D2A for a word, only in this case): compiler candidate"
   },
   "setsym": {
    "orig": "4:d0be",
