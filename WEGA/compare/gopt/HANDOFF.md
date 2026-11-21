@@ -47,7 +47,8 @@ The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its te
 ## Next steps (one at a time)
 1. (done 2026-11-21: vc OLD_DNR leaves out the gopt register records, sg_code 0xf800)
 2. (done 2026-11-21: vnumber by gotos to the copies the original keeps and `if (0) { l: then-block }` before the test)
-3. tprint (11, K4): the same technique. More than 22 forms are already listed in its note.
+3. (tried 2026-11-21) tprint (11): the goto block order gives 10; our spopt moves the block with the kept fprintf call in front of
+   the step label, the original does not: a spopt switch candidate (codemove), see its note.
 4. chklpdefs (10, K13): the then-block placed before its test. Forms as for dotree and clropt (`if (0) { l: ... }` at the loop top).
 5. setposition (18) and chkfamindvar (9) (K8, pair choice). Trace rsuse at the pair getreg. In setposition the original takes the
    idle parameter pair rr2 at the second printf argument but not at the first. Find the state difference; allowing parameter pairs
