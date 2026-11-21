@@ -172,7 +172,7 @@ register struct dosdisc *dp;
 			return;
 		if ((n[1]&0x0f)*256+n[0])
 			used++;
-		if (n[2]*16+((unsigned)n[1]>>4))
+		if (n[2]*16 + n[1]/16)
 			used++;
 	}
  }
@@ -182,11 +182,11 @@ register struct dosdisc *dp;
 	while (nclust--) {
 		if (fread(n, sizeof(*n),2,fp) != 2)
 			return;
-		if (n[1]*256+n[0] != 0)
+		if ((n[1]*256) + n[0] != 0)
 			used++;
 	}
  }
- free = ((unsigned long)dp->vol << 9) - ((unsigned long)dp->clustsiz * used + dp->data);
+ free = (long)dp->vol*512 - (dp->data + (long)dp->clustsiz*used);
  if (free < 0)
 	printf("       %d Datei(en)    ??? Bytes frei\n",dcnt);
  else

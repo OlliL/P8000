@@ -35,13 +35,13 @@ struct dosdisc *dp;
 int conv;
 {
  struct dostat fnrec, dirrec;
- int res, z = 1, infd, i, j, len, ok = 1, nl, mode;
+ int res, z = 1, infd, i, j, len, io = 1, nl, mode;
  char *p, *file, s[LMAX];
  long adr, depos;
  unsigned dnum, nxt, dosnxt();
  unsigned free, follow;
  struct stat instat;
- unsigned char inbuf[1024], outbuf[1024];
+ unsigned char buf[1024], outbuf[1024];
  struct tm *sttime, *localtime();
  int dmax, dcnt = 0;
  char *strchr(), *strrchr();
@@ -73,7 +73,7 @@ int conv;
 	adr = DOSADR(dirrec.first, dp->clustsiz) + dp->data;
 	/* Bestimmen der Anzahl von Verzeichniseintraegen */
 	nxt = dirrec.first;
-	while ((nxt = dosnxt(dp->fd, nxt, dp->fat1, dp->fatlen)) != 0)
+	while ((nxt = dosnxt(dp->fd, nxt, dp->fat1, dp->fatlen)) > 0)
 		z++;
 	dnum = dp->clustsiz / 32;
 	dmax = z * dnum;
@@ -118,11 +118,11 @@ int conv;
 	adr = DOSADR(free, dp->clustsiz) + dp->data;
 
 	for (i = 0; i < 512; i++)
-		inbuf[i] = 0x00;
+		buf[i] = 0x00;
 	lseek(dp->fd, adr, 0);
 	z = dp->clustsiz / 512;
 	for (i = 0; i < z; i++)
-		if (write(dp->fd, inbuf, 512) != 512)
+		if (write(dp->fd, buf, 512) != 512)
 			return(-2);
 	/* depos zeigt auf den zu belegenden Eintrag */
 	depos = lseek(dp->fd, adr, 0);
@@ -142,20 +142,20 @@ int conv;
 	p++;
 	file[strlen(file) - strlen(p) - 1] = '\0';
 	for (i = 0; i < 8; i++)
-		if (strlen(file) <= i)
+		if (i >= strlen(file))
 			fnrec.name[i] = 0x20;
 		else
 			fnrec.name[i] = file[i];
 
 	for (i = 8; i < 11; i++)
-		if (strlen(p) < i - 7)
+		if (i - 7 > strlen(p))
 			fnrec.name[i] = 0x20;
 		else
 			fnrec.name[i] = p[i - 8];
  }
  else {
 	for (i = 0; i < 11; i++)
-		if (strlen(file) <= i || i > 7)
+		if (i >= strlen(file) || i > 7)
 			fnrec.name[i] = 0x20;
 		else
 			fnrec.name[i] = file[i];
@@ -171,7 +171,8 @@ int conv;
  fnrec.date.day = sttime->tm_mday;
  fnrec.date.month = sttime->tm_mon + 1;
  fnrec.date.year = sttime->tm_year;
- fnrec.first = free = fatfree(dp);
+ free = fatfree(dp);
+ fnrec.first = free;
  fatput(free, 0xffff, dp);
  fnrec.dim = instat.st_size;
 
@@ -179,24 +180,16 @@ int conv;
  adr = DOSADR(free, dp->clustsiz) + dp->data;
  lseek(dp->fd, adr, 0);
 
- nl = z = 0;
- goto rd;
-bad:
- fatdel(&fnrec, dp);
- return(-2);
-next:
-   if (!ok)
-	goto done;
-   for (i = 0; i < len; i++) {
-	if (!ok)
-		break;
-	if (conv && inbuf[i] == 0x0a) { /* CR einfuegen */
+ j = nl = z = 0;
+ while ((len = read(infd, buf, 1024)) > 0 && io) {
+   for (i = 0; i < len && io; i++) {
+	if (conv && buf[i] == 0x0a) { /* CR einfuegen */
 		outbuf[j++] = 0x0d;
 		nl++;
 		z++;
 		if (z == dp->clustsiz) {
 			if (write(dp->fd, outbuf, j) < j)
-				ok--;
+				io--;
 			follow = fatfree(dp);
 			fatput(free, follow, dp);
 			fatput(follow, 0xffff, dp);
@@ -206,17 +199,18 @@ next:
 			lseek(dp->fd, adr, 0);
 			z = 0;
 		}
-		if (j == 1024 && ok) {
+		if (j == 1024 && io) {
 			if (write(dp->fd, outbuf, 1024) < 1024)
-				ok--;
+				io--;
 			j = 0;
 		}
 	}
-	outbuf[j++] = inbuf[i];
+	outbuf[j] = buf[i];
+	j++;
 	z++;
 	if (z == dp->clustsiz) {
 		if (write(dp->fd, outbuf, j) < j)
-			ok--;
+			io--;
 		follow = fatfree(dp);
 		fatput(free, follow, dp);
 		fatput(follow, 0xffff, dp);
@@ -226,25 +220,23 @@ next:
 		lseek(dp->fd, adr, 0);
 		z = 0;
 	}
-	if (j == 1024 && ok) {
+	if (j == 1024 && io) {
 		if (write(dp->fd, outbuf, 1024) < 1024)
-			ok--;
+			io--;
 		j = 0;
 	}
    } /* for */
-   if (z && j) {
+   if (z != 0 && j != 0)
 	if (write(dp->fd, outbuf, j) < j)
-		ok--;
-   }
-rd:
- j = 0;
- if ((len = read(infd, inbuf, 1024)) > 0)
-	goto next;
-done:
+		io--;
+   j = 0;
+ } /* while */
  close(infd);
  fnrec.dim += nl;
- if (!ok)
-	goto bad;
+ if (!io) {
+	fatdel(&fnrec, dp);
+	return(-2);
+ }
 
  /* Schreiben eines Verzeichniseintrages */
  depos = lseek(dp->fd, depos, 0);
@@ -262,44 +254,46 @@ done:
 fatfree(dp)
 struct dosdisc *dp;
 {
- long pos, off;
- unsigned char n[3], m[2];
- int v0, v1;
- unsigned size;
- int i = 1, res;
+ long pos, freeadr;
+ unsigned char n12[3], n16[2];
+ unsigned n1, n2, fatsiz, z = 1;
+ int len;
 
- size = (dp->maindir - dp->fat1) / dp->fatnum;
+ fatsiz = (dp->maindir - dp->fat1) / dp->fatnum;
 
  if (dp->fatlen == 12) {
-	size -= 3;
-	lseek(dp->fd, dp->fat1+3, 0);
-	while (size/3 > i++) {
-		if ((res = read(dp->fd, n, 3)) < 3)
+	fatsiz -= 3;
+	lseek(dp->fd, (long)dp->fat1 + 3, 0);
+	while (fatsiz / 3 > z++) {
+		len = read(dp->fd, n12, 3);
+		if (len < 3)
 			return(-1);
-		v0 = (n[1]&0x0f)*256 + n[0];
-		v1 = n[2]*16 + ((unsigned)n[1]>>4);
-		if (v0 == 0) {
-			pos = lseek(dp->fd, -3L, 1);
-			off = pos - dp->fat1;
-			return(off/1.5);
+		n1 = (n12[1] & 0x0f) * 256 + n12[0];
+		n2 = n12[2] * 16 + n12[1] / 16;
+		if (n1 == 0) {
+			pos = lseek(dp->fd, (long)-3, 1);
+			freeadr = pos - dp->fat1;
+			return(freeadr / 1.5);
 		}
-		if (v1 == 0) {
-			pos = lseek(dp->fd, -3L, 1);
-			off = pos - dp->fat1;
-			return(off/1.5 + 1);
+		if (n2 == 0) {
+			pos = lseek(dp->fd, (long)-3, 1);
+			freeadr = pos - dp->fat1;
+			return(freeadr / 1.5 + 1);
 		}
 	}
  }
  else {
-	size -= 4;
-	lseek(dp->fd, dp->fat1+4, 0);
-	while (size/2 > i++) {
-		if ((res = read(dp->fd, m, 2)) < 2)
+	fatsiz -= 4;
+	lseek(dp->fd, (long)dp->fat1 + 4, 0);
+	while (fatsiz / 2 > z++) {
+		len = read(dp->fd, n16, 2);
+		if (len < 2)
 			return(-1);
-		if ((v0 = m[1]*256 + m[0]) == 0) {
-			pos = lseek(dp->fd, -2L, 1);
-			off = pos - dp->fat1;
-			return(off/2);
+		n1 = (n16[1] * 256) + n16[0];
+		if (n1 == 0) {
+			pos = lseek(dp->fd, (long)-2, 1);
+			freeadr = pos - dp->fat1;
+			return(freeadr / 2);
 		}
 	}
  }

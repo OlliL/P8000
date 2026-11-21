@@ -69,7 +69,7 @@ struct dosdisc *dp;
  bps = b[1]*256+b[0];
 
  if (fat == 0) {
-	if (dp->vol - dp->data / bps / b[2] > 4095)
+	if ((dp->vol-(dp->data / bps)/b[2]) > 4095)
 		fat = 16;
 	else
 		fat = 12;

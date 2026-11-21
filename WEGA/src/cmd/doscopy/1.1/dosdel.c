@@ -84,28 +84,30 @@ fatdel(stp,dp)
 struct dostat *stp;
 struct dosdisc *dp;
 {
- int res;
- unsigned next, prev, cur;
+ int res,fatput();
+ unsigned nxt;
+ unsigned zero, last=0;
 
- for (cur = 0; dosnxt(dp->fd,stp->first,dp->fat1,dp->fatlen); cur = 0) {
-	next = stp->first;
-	while (next) {
-		prev = cur;
-		cur = next;
-		next = dosnxt(dp->fd,next,dp->fat1,dp->fatlen);
+ while (dosnxt(dp->fd,stp->first,dp->fat1,dp->fatlen) != 0) {
+	nxt = stp->first;
+	while (nxt) {
+		zero = last;
+		last = nxt;
+		nxt = dosnxt(dp->fd,nxt,dp->fat1,dp->fatlen);
 	}
-	if (prev == 0) {
-		if ((res=fatput(cur,0x0000,dp)) < 0)
+	if (zero == 0) {
+		if ((res=fatput(last,0x0000,dp)) < 0)
 			return(res);
 		if ((res=fatput(stp->first,0xffff,dp)) < 0)
 			return(res);
 	}
 	else {
-		if ((res=fatput(prev,0xffff,dp)) < 0)
+		if ((res=fatput(zero,0xffff,dp)) < 0)
 			return(res);
-		if ((res=fatput(cur,0x0000,dp)) < 0)
+		if ((res=fatput(last,0x0000,dp)) < 0)
 			return(res);
 	}
+	last = 0;
  }
  return(fatput(stp->first,0x0000,dp));
 }

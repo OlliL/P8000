@@ -179,12 +179,12 @@ char **argv;
 			continue;
 		}
 		res = dosopn(dpath, &dos, &dstat);
-		if(!res) {
+		if (res == 0) {
 			fprintf(stderr, "%s: %s nicht gefunden\n", arg0, dpath);
 			status = 2;
 			continue;
 		}
-		 if(res < 0) {
+		if (res < 0) {
 			fprintf(stderr, "%s: %s - Lesefehler\n", arg0, upath);
 			status = 2;
 			continue;
