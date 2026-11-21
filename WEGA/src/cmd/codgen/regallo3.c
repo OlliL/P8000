@@ -678,9 +678,16 @@ getreg(cls, reg, flag, sym)
 	if (cls == 3 && reg == -1) {	/* v0: an idle pair that holds a name is free when it weighs less (OLD_D2L for pairs); only rr0, rr2 */
 		for (w = rsfree; w && w->cls != 3; w = w->next)
 			;
-		for (t = rsuse; t; t = t->next)		/* two idle words of a pair: given back, they merge */
+		/* two idle words of a pair: given back, they merge; segmented the words of a parameter only when no pair is free
+		   (gopt mkconstopnd: the copy of the parameter p goes to the free rr0 first, `ldl rr0,rr6`, and the second one,
+		   rr0 being no base, to the parameters in r2/r3) */
+		for (t = rsuse; t; t = t->next)
 			if (t->cls == 2 && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && D2PN(t) &&
-			    (w == 0 || rweight[t->reg] < rweight[w->reg])) {
+			    (w == 0 || rweight[t->reg] < rweight[w->reg]
+#ifdef SEG
+			    && !(t->sym && t->sym->sclass == 9)
+#endif
+			    )) {
 				for (m = rsuse; m; m = m->next)
 					if (m->cls == 2 && m->reg == t->reg + 1 && m->busy <= 0 && D2PK(m) && D2PN(m))
 						break;

@@ -1758,3 +1758,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   sname): models 179/179/209/210/73/73/26 strictly equal, bench 153/132/212, both matrix checks as in the table, vc matrix
   OLD_D2M: cas baseline 0 (same witnesses), gopt 319, vc scodgen text 0xf900. setposition: 7 forms without the OLD_D3AW
   extension (a lone label gives the original second argument but changes the first): the extension stays.
+- gopt mkconstopnd (2026-11-21), 319 > 320 of 321. Trace: one pair request for the copy of the parameter p (`*p` stored);
+  getreg (OLD_D2P) merged the idle parameter words r2/r3 (w0, t) to rr2, which weighs 2 against 3 of the free rr0. The
+  original copies to rr0 first (dead: rr0 is no base; the shipped scc shows the same `ldl rr0,..; ldl rr6,rr0` pattern)
+  and then to the merged rr2. The earlier guess (OLD_D3KC) was wrong: full D3KC in vc and each of its nine sites alone
+  leave mkconstopnd at 2. Changed: OLD_D2P, the merge of two idle words only when no pair is free. Unlimited it changed
+  the v0p models (cparse 171, codgen 202, bench 220); segmented for all words gopt fell to 271; segmented for the words of a
+  parameter only: gopt 320, models and bench unchanged (nonsegmented code as before), both matrix checks as in the table,
+  vc matrix OLD_D2P: cas baseline 0, vc scodgen text 0xf900.

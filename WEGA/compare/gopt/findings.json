@@ -3908,11 +3908,11 @@
   "mkconstopnd": {
    "orig": "5:5a0c",
    "size_orig": 122,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 2): the original copies the pointer parameter (ldl rr0,rr6) before the first store, ours does not; 2026-11-21 8 more forms (register parameters, declaration order, unsigned w0, the negative branch first, w0 last, v negated): none; the dead `ldl rr0,rr6` then `ldl rr2,rr6` is v0p OLD_D3KC (the parameter copied though wanted in its register; rr0 cannot address); D3KC in vc as a whole: gopt 214. A narrow D3KC is the candidate"
+   "note": "open (DIFF 2): the original copies the pointer parameter (ldl rr0,rr6) before the first store, ours does not; 2026-11-21 8 more forms (register parameters, declaration order, unsigned w0, the negative branch first, w0 last, v negated): none; the dead `ldl rr0,rr6` then `ldl rr2,rr6` is v0p OLD_D3KC (the parameter copied though wanted in its register; rr0 cannot address); D3KC in vc as a whole: gopt 214. A narrow D3KC is the candidate (2026-11-21) masked by OLD_D2P: a trace showed one request for the copy of p, where getreg merged the idle parameter words r2/r3 to rr2 (rr2 weighs less than the free rr0). The original takes rr0 first (dead, rr0 is no base; the shipped scc has the same `ldl rr0,..; ldl rr6,rr0` pattern) and the merged r2/r3 for the second copy. Full OLD_D3KC in vc and each of its parts alone do not give it (the earlier guess was wrong). OLD_D2P: segmented, the words of a parameter merge only when no pair is free (unlimited: the v0p models changed; segmented for all words: gopt 271)."
   },
   "insrtopstmp": {
    "orig": "5:5a86",

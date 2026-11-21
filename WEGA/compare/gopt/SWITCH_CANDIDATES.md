@@ -4,12 +4,11 @@ Owner 2026-11-20: during the source phase no new switch is built; a difference t
 classified here with its witnesses, and the search for source forms goes on. A candidate is only taken up after the
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
-without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K16 by vc OLD_D2TC, K14 by vc OLD_D2XP extended, K15 by vc OLD_D4F (2026-11-21); K8 by OLD_D2R (the half OLD_D2V refuses goes back) and OLD_D3AW (an idle parameter in the register of an argument goes back) (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
-The numbers are the DIFF lines of fnc.py (2026-11-21, 319 of 321 OK).
+without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K16 by vc OLD_D2TC, K14 by vc OLD_D2XP extended, K15 by vc OLD_D4F (2026-11-21); K8 by OLD_D2R (the half OLD_D2V refuses goes back) and OLD_D3AW (an idle parameter in the register of an argument goes back) (2026-11-21); K5 by OLD_D2M (a division) and OLD_D2P (segmented parameter words merge only without a free pair) (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
+The numbers are the DIFF lines of fnc.py (2026-11-21, 320 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
 |----|--------------------------|-----------------------|--------|
-| K5 | a parameter copied before an operation that changes its register (`ld r1,r3; mult rr0,r5`; `ldl rr0,rr6`, `ld r3,r2`; cause 1) (scodgen); looks like OLD_D3KC of v0p (vc lacks it because of cas copyfile): a narrower form is the guess; 11 type/order/expression forms and 7 dead-code forms: none | mkconstopnd (2) | candidate |
 | K6 | a store of an 8 bit field of a frame struct goes directly to the slot (scodgen fixfld) | setsymtable (2; the form `((char *)&tq)[4]` is a guess) | candidate |
 | K11 | a chain `a = b = x`: the original copies the value into another register first (`ld r2,r0`) | setsymtable (2; 13 forms) | candidate |
 
@@ -55,5 +54,6 @@ D64) built without the switch, fnc.py over all gopt functions. Witness = exact o
 | OLD_D2R (OLD_D2V gives the refused half back, 2026-11-21) | 1: chkfamindvar (K8) | - |
 | OLD_D3AW (an idle parameter in the argument register goes back, 2026-11-21) | 1: setposition (K8) | - |
 | OLD_D2M (a division of a name in its register, 2026-11-21) | 1: affsize (K5) | - |
+| OLD_D2P (segmented parameter words merge only without a free pair, 2026-11-21) | 1: mkconstopnd (K5) | - |
 | OLD_D2N (pair part, 2026-11-21) | 6: compress dominators eval joinblk linkp srchdflist (K7/K8) | rmlabels 2 instead of 12 |
 | scparse OLD_D12R | data only (constfold's static return area) | not measurable by fnc.py |

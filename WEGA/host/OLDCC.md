@@ -248,7 +248,8 @@ Free registers and pairs:
   the bodies) counts as free while idle, so the bodies take r2 again (setreg, prtree, opact).
 - v0 `OLD_D2P`: OLD_D2L for pairs, an idle pair that holds a name counts as free when it weighs less than the first free
   pair, and only rr0 or rr2 (an idle rr4 stays when rr6 is free: cas opxor, opor, opand, opshl, opshr, opadd, opsub); two idle words of a pair are given back and merge (in v0 and vc not the words of a parameter in r4..r7: gopt testbit;
-  rr2 still merges: gopt mkconstopnd); for a word an idle lighter pair is given back and split, in v0 and vc not a pair that holds a parameter (vc: gopt pr; v0p splits it: regforsym of the codgen model).
+  segmented the words of a parameter only when no pair is free: gopt mkconstopnd, the copy of p goes to the free rr0 first,
+  `ldl rr0,rr6`, rr0 is no base, the second copy to the merged r2/r3); for a word an idle lighter pair is given back and split, in v0 and vc not a pair that holds a parameter (vc: gopt pr; v0p splits it: regforsym of the codgen model).
 - v0p `OLD_D2PO`: an idle odd word whose even half is free is given back when a pair is wanted and the even half weighs less
   than the first free pair (refid, dclstruct).
 - `OLD_D2PO` leaves a word that holds a parameter (in every version: the passes built by v0p do not change with the limit).
@@ -772,6 +773,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | gopt | dom2.c, flow2.c, lpinv2.c (linkp, dominators, eval, compress, joinblk, srchdflist: D2N for a pair) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | lpind2.c (chkfamindvar: D2R gives the half D2V refuses back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | alias2.c (affsize: D2M divides a named word in the pair of its even register) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | lpind2.c (mkconstopnd: D2P merges parameter words only when no pair is free, segmented) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | alias2.c (setposition: D3AW gives an idle parameter in the argument register back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | wrtil2.c (mkleaf: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | lpinv2.c (qmkstore: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |

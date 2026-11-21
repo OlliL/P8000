@@ -114,3 +114,4 @@ PLZ programs and `as`: 170.
 - 2026-11-21 gopt: rmlabels exact by the loop test `p && p->op != 0x3b` (not `p != 0`); 316 of 321.
 - 2026-11-21 gopt: K8 done: chkfamindvar by OLD_D2R (the word OLD_D2V refuses goes back), setposition by OLD_D3AW (an idle parameter in the argument register goes back); 318 of 321.
 - 2026-11-21 gopt: affsize exact (`matw = affdim / 16 + 1`; OLD_D2M also divides a name found in its register in the pair of its even register); 319 of 321.
+- 2026-11-21 gopt: mkconstopnd exact (OLD_D2P: segmented, the words of a parameter merge into a pair only when no pair is free); 320 of 321.
