@@ -200,7 +200,7 @@ setsymtable(q, which)
 			printf("setsymtable(RSLT)\n");
 		t = q->c.w4;
 		if (q->c.b2 == 8)
-			tq.a.w4 = t = betatbl[q->c.w4].x1;
+			tq.a.w4 = (t = betatbl[q->c.w4].x1, t);
 		else
 			tq.a = q->c;
 		break;
@@ -209,7 +209,7 @@ setsymtable(q, which)
 			printf("setsymtable(OP1)\n");
 		t = q->a.w4;
 		if (q->a.b2 == 8)
-			tq.a.w4 = t = betatbl[q->a.w4].x1;
+			tq.a.w4 = (t = betatbl[q->a.w4].x1, t);
 		else
 			tq.a = q->a;
 		break;
@@ -218,7 +218,7 @@ setsymtable(q, which)
 			printf("setsymtable(OP2)\n");
 		t = q->b.w4;
 		if (q->b.b2 == 8)
-			tq.a.w4 = t = betatbl[q->b.w4].x1;
+			tq.a.w4 = (t = betatbl[q->b.w4].x1, t);
 		else
 			tq.a = q->b;
 		break;

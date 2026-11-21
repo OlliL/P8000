@@ -1766,3 +1766,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   the v0p models (cparse 171, codgen 202, bench 220); segmented for all words gopt fell to 271; segmented for the words of a
   parameter only: gopt 320, models and bench unchanged (nonsegmented code as before), both matrix checks as in the table,
   vc matrix OLD_D2P: cas baseline 0, vc scodgen text 0xf900.
+- gopt setsymtable (2026-11-21), 320 > 321 of 321, by a source form, no compiler change. A word copy in OLD_D2AV (an
+  assignment to a frame place whose value in r0 is used) made it exact, but a trace showed the same codgen state for delbucket
+  `prev = t = bucket[i]`, where the original has no copy: the difference is in the source. `tq.a.w4 = (t = betatbl[..].x1,
+  t);` gives the copy `ld r2,r0` with the shipped vc. The old guess (a word OLD_D2A copy, K11) is void.

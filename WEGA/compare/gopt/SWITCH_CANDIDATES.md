@@ -4,13 +4,11 @@ Owner 2026-11-20: during the source phase no new switch is built; a difference t
 classified here with its witnesses, and the search for source forms goes on. A candidate is only taken up after the
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
-without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K16 by vc OLD_D2TC, K14 by vc OLD_D2XP extended, K15 by vc OLD_D4F (2026-11-21); K8 by OLD_D2R (the half OLD_D2V refuses goes back) and OLD_D3AW (an idle parameter in the register of an argument goes back) (2026-11-21); K5 by OLD_D2M (a division) and OLD_D2P (segmented parameter words merge only without a free pair) (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
-The numbers are the DIFF lines of fnc.py (2026-11-21, 320 of 321 OK).
+without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K16 by vc OLD_D2TC, K14 by vc OLD_D2XP extended, K15 by vc OLD_D4F (2026-11-21); K8 by OLD_D2R (the half OLD_D2V refuses goes back) and OLD_D3AW (an idle parameter in the register of an argument goes back) (2026-11-21); K5 by OLD_D2M (a division) and OLD_D2P (segmented parameter words merge only without a free pair) (2026-11-21); K6 and K11 (setsymtable) by the source form `tq.a.w4 = (t = .., t)` (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
+The numbers are the DIFF lines of fnc.py (2026-11-21, 321 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
 |----|--------------------------|-----------------------|--------|
-| K6 | a store of an 8 bit field of a frame struct goes directly to the slot (scodgen fixfld) | setsymtable (2; the form `((char *)&tq)[4]` is a guess) | candidate |
-| K11 | a chain `a = b = x`: the original copies the value into another register first (`ld r2,r0`) | setsymtable (2; 13 forms) | candidate |
 
 Observation 2026-11-20 (K7 and K8 one mechanism, a guess): in every witness of K7 and K8 (linkp, dominators, eval, compress,
 joinblk, rmlabels, prcgraph, srchdflist, setposition, pr) ours keeps the address of a global pointer cached in rr6

@@ -5,9 +5,8 @@ host/OLDCC.md). Rules: CLAUDE.md (German in conversation, English in git; commit
 findings.json (key `note`), SWITCH_CANDIDATES.md, host/OLDCC_LOG.md and host/increments/160-programs.md current.
 
 ## State
-- fnc.py: 320 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
-- Open (DIFF lines, candidate of SWITCH_CANDIDATES.md):
-  setsymtable 2 (K11) (dead `ldl rr0,rr6`, as v0p OLD_D3KC).
+- fnc.py: 321 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
+- Open: none (fnc.py); next is step 7.
 - What was tried for each: its `note` in findings.json and the dated entries of host/OLDCC_LOG.md.
 
 ## Owner authorisation (2026-11-21)
@@ -53,6 +52,7 @@ The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its te
    in the register of an argument goes back); found by KDBG traces of getreg/rsreturn/rbusy and a tree dump in order)
 6. Small ones (rmlabels done 2026-11-21 by `p && ..`; affsize done 2026-11-21 by `matw = affdim / 16 + 1` and OLD_D2M for a
    division; mkconstopnd done 2026-11-21 by OLD_D2P, segmented parameter words merge only without a free pair; source forms
-   tried for the rest, see the notes): setsymtable (2: a word OLD_D2A copy in one case). First a trace (KDBG), then source forms from it; only then an existing switch changed (owner 2026-11-21:
+   setsymtable done 2026-11-21 by the source form `tq.a.w4 = (t = .., t)`). Method: first a trace (KDBG), then source forms
+   from it; only then an existing switch changed (owner 2026-11-21:
    a new switch only when changing an existing one changes other users).
 7. After 321 of 321: the almap string order of the data, `segcmp.py` exact, `bincmp` of the linked file, `make install`, checkall.
