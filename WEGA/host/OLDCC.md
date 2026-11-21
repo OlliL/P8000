@@ -9,7 +9,7 @@ found, attempts, refuted ideas and removed switches are in `OLDCC_LOG.md`; which
 ## State
 
 With `make PROG CC=ccv0p` and strip these are byte-identical with the originals: cpp, cparse, scparse, codgen, scodgen,
-popt, spopt. With v1: size, strip, mv (also cp, ln), rm. With v1r: write, rmdir. With v0: dc, ranlib. v1q builds libc modules of its time. v1 and v0 are not complete (section 5).
+popt, spopt. With v1: size, strip, mv (also cp, ln), rm. With v1r: write, rmdir. With v0: dc, ranlib. With vc (sccvc): /bin/cas, /lib/gopt. v1q builds libc modules of its time. v1 and v0 are not complete (section 5).
 
 ## 1 Terms and building
 
@@ -154,7 +154,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 The objects of `/wega` (`usr/sys/sys/LIB1`, `usr/sys/dev/LIB2`) were made by an older scc. `sccvk` (`-DSCC -DOLD_VK` in `src/cmd/cc`) runs `/lib/vk/scparse`
 (built in `src/cmd/cparse/build/segvk`, `OLD_D25`), `/lib/vk/scodgen` (`src/cmd/codgen/build/segvk`, `OLD_VK` in `oldcc.h` = `OLD_D3` and `OLD_D24`) and the
-`/lib/vk/spopt` (`src/cmd/popt/build/segvk`: the shipped spopt with `OLD_D29`). Source forms did not help (20 forms of the statements tried); sccv1 (v1 scparse and spopt) is further away. Witnesses (identical):
+`/lib/vk/spopt` (`src/cmd/popt/build/segvk`: the shipped spopt with `OLD_D29`). No source form gives them; sccv1 (v1 scparse and spopt) is further away. Witnesses (identical):
 ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). The `make install` of `src/uts` is identical in all 31 files, `wega` and `LIB2` included.
 
 - Switches: `OLD_D3`, `OLD_D24` (codgen), `OLD_D25` (cparse), `OLD_D29` (popt); section 3.
@@ -165,33 +165,32 @@ The C members of `/lib/libc.a` and `/lib/slibc.a` (sources 08/83 and 09/83) come
 their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_VL` in `src/cmd/cc`, built in
 `build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (spopt), `/lib/vl/scparse` (the shipped one with `OLD_D25`) and `/lib/vl/codgen`,
 `/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53`, `OLD_D57` and `OLD_D24`).
-Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped compilers give
-193, vl gives 204 (nlist, symscan and swap of both libraries, malloc of both libraries (calloc: `unsigned num; int size;`), scanf, segmon and doprnt of slibc added; the printf of both libraries is exact only with its `-I`, so all 206 in the build; doprnt needs two source forms: `_pfile != NULL && ferror(_pfile)`, and the block `lng:` behind the cases `O X U D l`; segmon needs `char *mkseg()` (with `long mkseg()` D25 masks its casts), `sr[0].sr_seg` and `(i = i + 1) <= *nsegs`; slibc malloc also needs two forms of its source: `union store *r` declared in front of `register unsigned onw` in realloc, an unused `int spare` in calloc, whose frame is 2 bytes larger without a found cause, as the spare word of ld in D1) and changes no other member. Both libraries are built by vl
-(`CC = ccvl`, `SCC = sccvl` in `src/lib/libc/Makefile`; owner's decision 2026-11-14), so
+All 206 C members of the two libraries come out exact; the source forms they need are in the sources (doprnt: `_pfile != NULL &&
+ferror(_pfile)` and the block `lng:` behind the cases `O X U D l`; segmon: `char *mkseg()`, `sr[0].sr_seg`, `(i = i + 1) <=
+*nsegs`; slibc malloc: `union store *r` in front of `register unsigned onw` in realloc and an unused `int spare` in calloc).
+Both libraries are built by vl
+(`CC = ccvl`, `SCC = sccvl` in `src/lib/libc/Makefile`; owner's decision), so
 checkall measures every rule of vl on all their members. vl itself is compiled by the shipped cc: in stage 1 linked with
 the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). No member of the two libraries is left in `oldcc/`.
 
 ### The old scc of cas
 
 cas was built by an older scc; its parser and `assemble` without `-O`, the other modules with `-O`. The working compiler
-`sccvc` is v0p compiled for segmented code (measured 2026-11-11: every switch of v0 and v0p that vc did not have is
-neutral on cas when added, alone and all together), with these differences:
+`sccvc` is v0p compiled for segmented code (every switch of v0 and v0p that vc does not have is neutral on cas, alone and
+all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB`, `OLD_D2TC` and `OLD_D4F` (gopt; all neutral on cas; `OLD_D2XP` also: OLD_D2X only when the registers
-  allo takes are the result (RESC1), not a scratch pair beside a result in the left operand (gopt constfold `ld r1,lo;
-  and r3,r1`); `OLD_D4F`: an idle float register that holds a name is free when its number is lower than the first free
-  one (constfold: the int-to-double result in f0, so its store is merged); `OLD_D2TC`: rbusy takes a free word
-  register instead of stopping, the reclaim of `p->in.sname - symtab` in gopt operand);
-  `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of the tree uses) are not read,
-  their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room (+0 on cas);
-  its text is near the 64 KiB of a nonsegmented program (sg_code 0xf900 with the OLDPRINTF of src/Makefile, 2026-11-21;
-  measured as the tree links it: `LIBC="../../../../lib/oldlibc/printf/s1p.o ../../../../lib/oldlibc/doprnt/s1d.o
-  ../../../../lib/oldlibc/doprnt/s1f.o /lib/libc.a"`, the three objects copied from a checkall tree, then
-  `od -An -tx1 -j28 -N2 build/segvc/scodgen`); /bin/ld does not report an overflow (sg_code wraps, the program runs into
-  zeros), the codgen Makefile stops then; room is freed inside the OLD_* blocks without changing behaviour (helpers,
-  merged tests, `goto blk`); a segmented port of the codgen was rejected (the NODE union of cg.h assumes 16-bit pointers);
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype), and for gopt (neutral on cas) `OLD_D2K`, `OLD_D3JL`,
+  `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB`, `OLD_D2TC`, `OLD_D4F` (section 3, D2..D4),
+  `OLD_D14T` (section 3, D4) and `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of
+  the tree uses) are not read, their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room. The text of the
+  vc scodgen is near the 64 KiB of a nonsegmented program; /bin/ld does not report an overflow (sg_code wraps, the program
+  runs into zeros), the codgen Makefile stops then. Measured as the tree links it: `LIBC="../../../../lib/oldlibc/printf/s1p.o
+  ../../../../lib/oldlibc/doprnt/s1d.o ../../../../lib/oldlibc/doprnt/s1f.o /lib/libc.a"` (the three objects from a checkall
+  tree), then `od -An -tx1 -j28 -N2 build/segvc/scodgen`. Room is freed inside the OLD_* blocks without changing behaviour
+  (helpers, merged tests, `goto blk`); a segmented port of the codgen does not work (the NODE union of cg.h assumes 16-bit
+  pointers);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13`,
   `OLD_D25` and `OLD_D12R` (gopt, neutral on cas: the static area of a function that returns a structure is zeros in the data,
   written at the start of the next function (or at the end of the file), behind the function and its switch tables, not in
@@ -320,7 +319,7 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - v0 (not v0p, `OLD_D3KC` sets the v0p side): a parameter wanted in its own register (also as the address of a load into it) is taken as it is, no copy (`ld r7,4(r7)`,
   `isatty`: no `ld r2,r7`); otherwise it is copied first (`ld r2,r7; ld r13,2(r2)`); a name in a scratch register is taken only when no lighter one is free (`ld r2,r3; ld r13,2(r2)`, dc 3 places); `&&` and `||` keep long parameters too (fseek); an idle pair
   that holds a parameter is not taken for a new pair; a parameter whose address is taken is forgotten, so it gets its home (swap); a parameter a statement assigns to is forgotten at the start of the statement (scalint `p = removc(p,n)`); behind a conditional jump the idle registers go back, the known parameters stay.
-- v0p `OLD_D3KC`, one witness: `regforsym` (`if (s == fpsym1 || s == fpsym2) return symreg(s, off, type);`): the original reloads the long parameter `off` from its frame home behind the `||` (`ldl rr4,0(r15)`), without the switch it is taken from rr2. 9 source forms tried (a cast, `+ 0L`, `?:`, `!(.. && ..)`, a `goto` label, `|`, ...): none reloads (`OLDCC_LOG.md` 2026-11-08).
+- v0p `OLD_D3KC`, one witness: `regforsym` (`if (s == fpsym1 || s == fpsym2) return symreg(s, off, type);`): the original reloads the long parameter `off` from its frame home behind the `||` (`ldl rr4,0(r15)`), without the switch it is taken from rr2. No source form reloads it (`OLDCC_LOG.md`).
 - v0p `OLD_D3J`: at a label that jumps have named, only the parameters known at all those jumps stay known; when the record in
   front of the label is a jump (the record `]` does not count), the parameters known at the jumps come back (tfree1, rmconv); of
   those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
@@ -380,12 +379,21 @@ Popt, not a difference of the compiler: `rmove` replaces the load of the slot st
 Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after: guess, a parameter of another type, see longswap in OLDCC_LOG.md); cas: `ld S0,r7`
 followed by `ld r7,S0`.
 
+- vc `OLD_D4F` (getreg): an idle float register that holds a name is free when its number is lower than the first free one
+  (gopt constfold: the int-to-double result in f0, so its store is merged). One witness.
+- vc `OLD_D2TC` (rbusy): a free word register is taken instead of stopping with "not found on rslist" (the reclaim of
+  `opnd.w4 = p->in.sname - symtab` in gopt operand asks for r1, the low half of a result pair already given back). One witness.
+
 ### D4 Spill of arguments
 
 - v0 `OLD_D4R` (cparse, argalloc): the register parameters in front of the first other parameter and behind the last one get no
   home in the frame; those between other parameters keep theirs (block: the spill `ldm` is contiguous).
 - v0 `OLD_D4O` (codgen, stmt): the parameter list is walked from its end, so the register parameters are copied in the order of
   their declaration (`ld r14,r7; ld r13,r6`).
+- vc `OLD_D14T` (local3.c gencall): when the result of a call goes to a temporary of the frame (it is an argument itself,
+  cookie INTEMP), the temporaries that hold its arguments are free again once these are placed, and the result takes the
+  first of them. Witness: gopt initopts `fopen(strcat(strcpy(buf, argv[i]), ".S"), "r")` (the results of strcpy and strcat in
+  one temporary); a call whose result is not wanted in a temporary keeps them (gopt main, eread). One witness.
 - Open: the rule of the spill itself (libc swap: the home of `x`, whose address is taken, written as `0(r15)`, of `l` as `@r15`;
   sld: a long parameter cast to a pointer read from its spill slot).
 
@@ -484,7 +492,7 @@ v0p `OLD_D16A` (codgen, match): `++n` of a frame slot whose value may go to a te
 is `ld A1,n; inc A1,#1; ld n,A1`, not `inc n,#1` (genswitch `p[++n]`); with the value wanted in a register for an address or stored
 it stays in memory. `--` of a frame slot stays in memory under a compare (popt codemove, cpp dodef). "Only `++`" and "not an operand
 of a compare" fit all programs equally; a `++` of a frame slot under a compare or a `--` with this cookie outside one would separate
-them. One witness (`genswitch` of cparse, `range = p[++n].sval-p[2].sval;`). No source form replaces the switch: 9 forms tried (`n = n+1`, `n += 1`, `n++` before or after, `(p+(++n))->sval`, ...) leave `inc n,#1` (`OLDCC_LOG.md` 2026-11-08).
+them. One witness (`genswitch` of cparse, `range = p[++n].sval-p[2].sval;`). No source form replaces the switch (`OLDCC_LOG.md`).
 
 ### D17 Jump and call form: the old cas
 
@@ -540,7 +548,7 @@ of the left operand. The shipped atof of /lib/cparse returns in rq4 as well.
 ### D23 Zero addend
 
 v0p `OLD_D23` (codgen, optim, mapregs): the optim of codgen does not take a zero addend away, so `(rv >> 8) - 1 + 1`, which cparse folds to
-`x + 0` in its last step, stays `add r2,#0` (scodgen usable); a member at offset 0 and an index 0 add nothing at once. One witness (`usable`, `allo3.c`). No source form replaces the switch: every zero addend that cparse leaves, in whatever form written, is taken away by the optim of codgen (11 forms tried, `OLDCC_LOG.md` 2026-11-08); the zero in the original comes from the older codgen, which has no such rule.
+`x + 0` in its last step, stays `add r2,#0` (scodgen usable); a member at offset 0 and an index 0 add nothing at once. One witness (`usable`, `allo3.c`). No source form replaces the switch: every zero addend that cparse leaves, in whatever form written, is taken away by the optim of codgen (`OLDCC_LOG.md`); the zero in the original comes from the older codgen, which has no such rule.
 
 ### D24, D25 Mask of a segmented address
 
@@ -561,7 +569,7 @@ vk `OLD_D29` (popt z21.c, `d29switch`, on the raw nodes of a function before the
 
     Lt: rl r,#2; ldl rr,t(r); jp @rr; bodies; Lb: code at Lo; Lk: block; jp Y; Lh: ld r,x; cp r,#n; cjp ule,Lt; Ldf: default; jp Lb
 
-Only the layout changes, what runs is the same. From this the shipped optimizer makes `TCXONC` in `ttiocom` of `tty.o`: the dispatch in two parts (`rl; ldl; jp @rr` in front of the bodies, `ld; cp; jr ule; jp default` behind `TCSBRK`) and the common tail behind the last body. The tail comes from `xjump`, which needs the label the bodies jump to right behind the last body and no `jp` right behind that label. One witness (`tty`, the source is the plain `switch` of System III); the evidence rule of two functions is not met. The raw code of the old compiler is not known, this is the layout that gives the bytes (owner decision 2026-11-09). `/lib/vk/spopt` is the shipped spopt with this switch; the other objects of vk stay identical.
+Only the layout changes, what runs is the same. From this the shipped optimizer makes `TCXONC` in `ttiocom` of `tty.o`: the dispatch in two parts (`rl; ldl; jp @rr` in front of the bodies, `ld; cp; jr ule; jp default` behind `TCSBRK`) and the common tail behind the last body. The tail comes from `xjump`, which needs the label the bodies jump to right behind the last body and no `jp` right behind that label. One witness (`tty`, the source is the plain `switch` of System III); the evidence rule of two functions is not met. The raw code of the old compiler is not known, this is the layout that gives the bytes (owner decision). `/lib/vk/spopt` is the shipped spopt with this switch; the other objects of vk stay identical.
 
 ### D45 A conditional jump over a jump, and codemove
 
@@ -572,9 +580,8 @@ behind another jump, and that jump does not go to the exit code (an L1xxxx label
 conditional jump. Witness: stabout of cas (`if (*p == 0) break; p++;`
 in the name loop, the block at the `break` is the head of `switch (tag)`: the second half of the dispatch and the check behind the
 switch land behind the entry jump of the loop). One witness, the owner's exception; without the limits other functions of cas
-change (`OLDCC_LOG.md`, 2026-11-10). The exit limit: jpr of cas (the type test of case 0x19, `cp 1; jr ne plain` in
-the original, where plain ends in the jump to the exit); without it jpr has 24 lines instead of 10, nothing else changes
-(2026-11-13).
+change (`OLDCC_LOG.md`). The exit limit: jpr of cas (the type test of case 0x19, `cp 1; jr ne plain` in
+the original, where plain ends in the jump to the exit).
 
 ### D49 Labels no jump names, and the loop inversion
 
@@ -601,7 +608,7 @@ default (plain) to the dispatch E, which falls into case 0x56 (F) and the dispat
 `cp 7; jeq G` as node 22 (straight through A and plain it is about node 35) and the inversion at the back jump of the
 step gives `init; jr T; A; plain; C'; step; T; E; F (.. cp 7; jne C'); G; H`. Alone the switch changes no other function
 of cas. One witness. Not when only one instruction stands between the loop head and that jump (gopt tprint: `ld r2,t; jr` to the call
-of the FTN arm; with it the block that keeps the call moves away from behind its test; cas jpr has more, 2026-11-21).
+of the FTN arm; with it the block that keeps the call moves away from behind its test; cas jpr has more).
 
 ### D51 Block moves that codemove leaves out in front of a loop inversion
 
@@ -612,11 +619,10 @@ the jump stands alone behind its label; (c) when the jump has one instruction in
 ends in the jump back to a label that is fallen into, and the jump stands within 24 nodes behind that label. Witness: jpr
 of cas, one move each: (a) the first dispatch E to the switch head in the loop head, (b) the block of case 0x56 to the
 lone jump of `case 0x56: break`, (c) the step block to the `continue` of case 0x36. With these three left in place, E is
-turned where it stands (`cp 0x56; jne plain`, F behind it) and D50 finds the stretch. Each part is needed (jpr 42, 42, 54
-lines without a, b, c); without the limits other functions change: (a) without the window stops the dispatch of
+turned where it stands (`cp 0x56; jne plain`, F behind it) and D50 finds the stretch. Each part is needed; without the limits other functions change: (a) without the window stops the dispatch of
 `switch (res)` in jpr itself, (c) without the one instruction changes p2loop and eight more modules, (c) with any loop
-head in the window changes yyparse. Every other module of cas is byte-identical with and without the switch. One witness. (d) (2026-11-21): not a block that ends in such a pair when more than one jump names its label (a loop test at the
-bottom, entered by a jump and named by the step: gopt chklpdefs; cas unchanged). (e) (2026-11-21): not to a jump that ends a
+head in the window changes yyparse. Every other module of cas is byte-identical with and without the switch. One witness. (d): not a block that ends in such a pair when more than one jump names its label (a loop test at the
+bottom, entered by a jump and named by the step: gopt chklpdefs; cas unchanged). (e): not to a jump that ends a
 straight block whose label stands behind a conditional jump, when a later jump to the same label ends a block behind an
 unconditional jump (that one takes the block: gopt almap, the done block behind neg, not behind zero; checkops needs the
 straight block), the block does not end in a jump back in front of it, and at least three jumps name its label (cas
@@ -645,8 +651,16 @@ vl `OLD_D53` (codgen reader3.c, `delay`). The shipped codgen takes a temporary o
 variables fill more than 10000 bits (1250 bytes). Witness: nlist of libc.a and slibc.a (`nlist()`: 1592 and 1602 bytes of
 automatic variables, the frame 2 bytes smaller than the shipped one's; `readby` in the same file has the temporary). The
 bound is only known to lie above 1170 bytes (execvp of slibc keeps the temporary) and at or below 1592; why the old
-compiler does so is not known. Other conditions tried and refuted: a constant value, register variables, `OLD_D1R`
-(`OLDCC_LOG.md`, 2026-11-14). One source, two objects.
+compiler does so is not known (`OLDCC_LOG.md`). One source, two objects.
+
+### D57 The entry store of a register parameter used as memory
+
+vl `OLD_D57` (codgen lcl3.c clocal, local3.c efcode, reader3.c). When a function takes the address of a register parameter,
+the store of that parameter in the entry code is written with its offset also at offset 0 (`ld 0(r15),r7`); the shipped
+codgen writes `@r15` there as for every other parameter (a narrower form of `OLD_D18` of v0, which writes every offset 0
+so). Visible only nonsegmented (the segmented store always names `|_stkseg+...|`). Witness: swap of libc.a (`swap(x)`
+takes the bytes of `&x`). No form of the body of swap gives it without the switch (the entry code prints `@fp` for the
+first parameter whatever the body: `t + maxoff` is 0 there). One witness.
 
 ### Register allocation of the old scc
 
@@ -670,8 +684,7 @@ v1 `OLD_D62` (table3_codgen.c rule 052, table3_scodgen.c rule 047a). A float reg
 shipped rule rounds the register first (`fld dbl, f2,f2` before `fcpd f2,mem`), v1 compares it as it is. Witnesses: every
 float compare with memory of libm.a and slibm.a (asin, fmod, hypot, tanh, pow, jn and the rest).
 
-Neither switch changes a program of v1 that was byte-identical before (checkall). Measured 2026-11-18 with a copy of the v1
-codgen per variant: libm 15 of 15 C members exact.
+Neither switch changes a program of v1 that was byte-identical before (checkall).
 ### D63 A float widened to double stays a conversion
 
 v1 `OLD_D63` (codgen, scodgen; optim3.c convelim). The shipped codgen drops a conversion float to double over an operand
@@ -679,7 +692,7 @@ v1 `OLD_D63` (codgen, scodgen; optim3.c convelim). The shipped codgen drops a co
 memory). The v1 codgen keeps the conversion: both operands have the float need 1, each is loaded into a register
 (`flds f0,f1; flds f1,f2`) and rule 051 compares the registers (`fcpx f0,f1`). A double operand has no conversion and still
 goes against memory. Witness: itcompare of libcisam.a (FLOATTYPE, `if (f1 < f2) ... else if (f1 > f2)`). One witness.
-Changes no program of v1 that was byte-identical before (checkall 2026-11-18).
+Changes no program of v1 that was byte-identical before (checkall).
 
 ## 4 Objects and their differences
 
@@ -781,6 +794,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | gopt | dom2.c, flow2.c, lpinv2.c (linkp, dominators, eval, compress, joinblk, srchdflist: D2N for a pair) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | lpind2.c (chkfamindvar: D2R gives the half D2V refuses back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | alias2.c (affsize: D2M divides a named word in the pair of its even register) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | init2.c (initopts: D14T, the temporaries of call arguments free again) | sccvc (measured) |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | lpind2.c (mkconstopnd: D2P merges parameter words only when no pair is free, segmented) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | alias2.c (setposition: D3AW gives an idle parameter in the argument register back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | wrtil2.c (mkleaf: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
@@ -803,19 +817,10 @@ of v1: allprint of `/lib/libl.a` and `/lib/slibl.a`; its limit "A more than one 
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
 - Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
   - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
-  - Owner's exception for cas (vc, 2026-11-10): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout), `OLD_D20S` (popt, exprreloc), `OLD_D49` (popt, yylex), `OLD_D50` and `OLD_D51` (popt, jpr): one witness each, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
-  - Owner's exception for vl (2026-11-15, provisional until each is checked against source forms): `OLD_D53` (nlist),
-    `OLD_D57` (swap of libc, the entry store only; its second part, the parameter of the next function not known in its register, was replaced by `longswap(l) long *l; p = (int *)l;`). Removed after such a check:
-    `OLD_D59`, `OLD_D60` (segmon, source forms), `OLD_D56` (printf of slibc: `regs` of the size used), `OLD_D58` (calloc: `unsigned num; int size;`), `OLD_D55` (scanf, printf, swap: the register arguments in a structure, the bytes of `x` through `struct bytes`), `OLD_D54` (symscan: two nested `if` for the `&&`).
-  - Source forms tried, none replaces the switch: `OLD_D23` (`usable`), `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`, the value of the `switch`: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in front of the dispatch). The forms are in `OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`.
+  - Owner's exception for cas (vc): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout), `OLD_D20S` (popt, exprreloc), `OLD_D49` (popt, yylex), `OLD_D50` and `OLD_D51` (popt, jpr): one witness each, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
+  - Owner's exception for vl (provisional until each is checked against source forms): `OLD_D53` (nlist), `OLD_D57` (swap
+    of libc, the entry store only).
+  - No source form found (`OLDCC_LOG.md`; the compiler without the switch is built by `oldvar.sh`): `OLD_D23` (`usable`),
+    `OLD_D3KC` (`regforsym`), `OLD_D16A` (`genswitch`), `OLD_D6S` (`falloc`).
   - Open, not tried (no idea of a source form, register choice or local arrays): `OLD_D2MO` (`dclstruct`), `OLD_D5A` (`dclargs`), `OLD_D5T` (`procopt`).
   - Not measurable alone (no build or no model without them): `OLD_D3K`, `OLD_D22`, `OLD_D6T`. Neutral in v0p, kept for v0: `OLD_D18`, cparse `OLD_D12`. `OLD_D6D` has several functions now and is no one-witness switch.
-
-### D57 The entry store of a register parameter used as memory
-
-vl `OLD_D57` (codgen lcl3.c clocal, local3.c efcode, reader3.c). When a function takes the address of a register parameter,
-the store of that parameter in the entry code is written with its offset also at offset 0 (`ld 0(r15),r7`); the shipped
-codgen writes `@r15` there as for every other parameter (a narrower form of `OLD_D18` of v0, which writes every offset 0
-so). Visible only nonsegmented (the segmented store always names `|_stkseg+...|`). Witness: swap of libc.a (`swap(x)`
-takes the bytes of `&x`). No form of the body of swap gives it without the switch (the entry code prints `@fp` for the
-first parameter whatever the body: `t + maxoff` is 0 there). One witness.

@@ -1784,3 +1784,44 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   case blocks; the later block also stands behind an unconditional jump (the switch jump). Limit: at least three jumps name
   the label (almap's done: many). The later block's label must stand behind JP or RET (d51blk). All 26 cas sources that
   build alone: the same spopt output as with the spopt of HEAD; gopt 321; popt/spopt models 73/73.
+- gopt strict phase (2026-11-21): the linked /lib/gopt against the original. The masked compare of fnc.py (321 of 321) had
+  hidden frame offsets, constants, globals and members: 563 bytes in about 50 functions. All but one by source forms (the
+  commits "gopt strict: ..."). initopts: `fopen(strcat(strcpy(buf, argv[i]), ".S"), "r")` three times; the results of
+  strcpy and strcat are stored (dead) into temporaries; the original uses one, ours two. No source form (the temporaries of
+  an expression are reset only per statement, reader3.c paroff = baseoff; tried: the assignment in the if, a cast, local
+  declarations of strcpy and strcat). No existing switch is about these temporaries: new vc `OLD_D14T` (local3.c gencall):
+  when the result of a call goes to a temporary (cookie INTEMP), paroff goes back to the lowest temporary among its
+  arguments once they are placed. The first form (saving paroff around genargs) had no effect: argprep/argplace of the outer
+  call had taken the temporary before gencall; unlimited (every call) it changed main and eread (the frames of the original
+  keep the temporaries there). Checks: gopt byte-identical (full rebuild), fnc.py 321, vc matrix OLD_D14T: cas +0, both
+  matrix checks as in the table, models and bench unchanged (vc only), vc scodgen text 0xfa00.
+- OLDCC.md cleaned of work log (2026-11-21, owner: OLDCC.md explains the switches, no log). Moved here as they stood:
+  - vk: 20 forms of the statements tried, none helped.
+  - vl, the measurement on the C members of libc.a and slibc.a (host/recon/poptveto/s1114/cg/libtest.sh), as it stood in
+    OLDCC.md: Measured on all 206 C members of the two libraries (`host/recon/poptveto/s1114/cg/libtest.sh`): the shipped
+    compilers give
+    193, vl gives 204 (nlist, symscan and swap of both libraries, malloc of both libraries (calloc: `unsigned num; int
+    size;`), scanf, segmon and doprnt of slibc added; the printf of both libraries is exact only with its `-I`, so all 206
+    in the build; doprnt needs two source forms: `_pfile != NULL && ferror(_pfile)`, and the block `lng:` behind the cases
+    `O X U D l`; segmon needs `char *mkseg()` (with `long mkseg()` D25 masks its casts), `sr[0].sr_seg` and `(i = i + 1) <=
+    *nsegs`; slibc malloc also needs two forms of its source: `union store *r` declared in front of `register unsigned onw`
+    in realloc, an unused `int spare` in calloc, whose frame is 2 bytes larger without a found cause, as the spare word of
+    ld in D1) and changes no other member.
+  - D3KC regforsym: 9 source forms tried (a cast, `+ 0L`, `?:`, `!(.. && ..)`, a `goto` label, `|`, ...): none reloads
+    (2026-11-08).
+  - D16A genswitch: 9 forms tried (`n = n+1`, `n += 1`, `n++` before or after, `(p+(++n))->sval`, ...) leave `inc n,#1`
+    (2026-11-08).
+  - D45: without the exit limit jpr has 24 lines instead of 10, nothing else changes (2026-11-13).
+  - D51: jpr has 42, 42, 54 lines without (a), (b), (c).
+  - D53: other conditions tried and refuted: a constant value, register variables, `OLD_D1R` (2026-11-14).
+  - D61/D62: measured 2026-11-18 with a copy of the v1 codgen per variant: libm 15 of 15 C members exact.
+  - Section 5 of OLDCC.md, the vl switches and those removed after a check of source forms: - Owner's exception for vl
+    (2026-11-15, provisional until each is checked against source forms): `OLD_D53` (nlist),
+    `OLD_D57` (swap of libc, the entry store only; its second part, the parameter of the next function not known in its
+    register, was replaced by `longswap(l) long *l; p = (int *)l;`). Removed after such a check:
+    `OLD_D59`, `OLD_D60` (segmon, source forms), `OLD_D56` (printf of slibc: `regs` of the size used), `OLD_D58` (calloc:
+    `unsigned num; int size;`), `OLD_D55` (scanf, printf, swap: the register arguments in a structure, the bytes of `x`
+    through `struct bytes`), `OLD_D54` (symscan: two nested `if` for the `&&`).
+  - OLD_D6S falloc, forms tried: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in
+    front of the dispatch.
+  - D23 usable: 11 forms tried (2026-11-08).
