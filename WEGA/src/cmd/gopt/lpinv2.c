@@ -1169,8 +1169,8 @@ void
 orderbl(pp)
 struct bl **pp;
 {
-	struct bl *x, *y;
 	int i, t;
+	struct bl *x, *y;
 
 	x = *pp;
 	for (i = 0; i < blkno; i++) {

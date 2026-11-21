@@ -189,6 +189,7 @@ setsymtable(q, which)
 	struct quad *q;
 	int which;
 {
+	char *unused;	/* the frame of the original has four more bytes here */
 	int t;
 	struct quad tq;
 	int cnt;

@@ -379,9 +379,11 @@ void
 rmjumps(tab)
 	int *tab;
 {
-	int i, lbl, e, ok, flag, pb, lb2, k;
+	int i, lbl, e;
 	int *pp, *sp;
+	int ok, flag, pb, lb2;
 	struct quad *p;
+	int k;
 
 	for (i = 0; i < blkno - 1; i++) {
 		if (blks[i] == 0)

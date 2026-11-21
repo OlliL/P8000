@@ -407,10 +407,10 @@ setedges(i, vec)
 int i;
 unsigned *vec;
 {
+	int j, k, c;
 	struct gn *p;
 	struct edge *e;
 	struct quad *q, *q2;
-	int j, k, c;
 
 	q = GF(i, 2, struct quad *);
 	c = nodeno(q);
@@ -457,8 +457,8 @@ colorgraph(flag)
 int flag;
 {
 	struct gn *p;
+	int spill, again, k, sp, j;
 	struct gn **stack;
-	int sp, again, spill, k, j;
 
 	sp = 0;
 	if (flag == 0) {
@@ -528,7 +528,8 @@ pickcolor(p, k)
 struct gn *p;
 int k;
 {
-	int x, c, j, again, hi, y;
+	int again, j, x, c, hi, y;
+	int unused;	/* the frame of the original has one more word */
 
 	if (p->x14 == 2)
 		k = 5;
@@ -746,9 +747,10 @@ struct quad *
 addsave(reg, blk)
 int reg, blk;
 {
-	struct quad *qq, *p;
+	struct quad *qq;
 	struct qa tmp;
 	int out;
+	struct quad *p;
 
 	qq = (struct quad *)findend(blk, &out);
 	for (qq = *(struct quad **)qq; qq != 0; qq = qq->next) {
@@ -998,8 +1000,8 @@ int
 nodeno(q)
 struct quad *q;
 {
-	struct qa *c, *c2;
 	int i, j;
+	struct qa *c, *c2;
 
 	c = (struct qa *)((char *)q + 6);
 	for (i = 0; i < a116; i++)
