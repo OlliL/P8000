@@ -1,6 +1,6 @@
 {
  "schema": "members: name -> file, status nonsegmented (ccv1c -O) and segmented (sccv1c -O), note",
- "compiler": "v1c (ccv1c, sccv1c): v1 with OLD_D63 and the libcisam switches OLD_D3W, OLD_D2PW, OLD_D3Q, OLD_D3H, OLD_D2CT (src/lib/libcisam/COMPILER.md, host/OLDCC.md v1c). Both archives byte-identical (checkall 2026-11-19).",
+ "compiler": "v1c (ccv1c, sccv1c): v1 with OLD_D63 and the libcisam switches OLD_D3W, OLD_D2PW, OLD_D3Q, OLD_D3H, OLD_D2CT (compare/libcisam/COMPILER.md, host/OLDCC.md v1c). Both archives byte-identical (checkall 2026-11-19).",
  "binary": "/usr/lib/libcisam.a, /usr/lib/slibcisam.a",
  "members": {
   "isdef.o": {

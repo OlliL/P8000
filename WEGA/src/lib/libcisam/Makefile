@@ -1,5 +1,5 @@
 # libcisam: /usr/lib/libcisam.a and /usr/lib/slibcisam.a (C-ISAM 1.03 of Informix, nonsegmented and segmented). No source is
-# known: the 14 sources and isint.h are written from the original members (COMPILER.md, compare/libcisam/findings.json).
+# known: the 14 sources and isint.h are written from the original members (compare/libcisam/COMPILER.md, compare/libcisam/findings.json).
 # Both libraries are made from the same sources (Library.SC 02/11/83) by v1c (ccv1c, sccv1c from OLDROOT: v1 with the code
 # generator of libcisam, host/OLDCC.md) with -O; their Library.SC differ in the times of the check-out:
 # Library_libcisam.SC, Library_slibcisam.SC. Headers: arhdr_libcisam.s, arhdr_slibcisam.s, mkar.sh.

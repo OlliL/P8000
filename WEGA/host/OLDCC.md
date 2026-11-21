@@ -112,7 +112,7 @@ the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibc
   `/lib/v1/cparse`, `/lib/v1c/codgen`, `/lib/v1/popt` (segmented the s-passes).
 - Byte-identical: `/usr/lib/libcisam.a`, `slibcisam.a` (Library.SC 02/11/83), the only witness of all five switches;
   `OLD_D3W` and the others under v1 change cp, ln, mv, rm, ld, strip, libl, libPW. Witnesses, counter-witnesses and what
-  was tried: `src/lib/libcisam/COMPILER.md`.
+  was tried: `compare/libcisam/COMPILER.md`.
 
 ### v1q (before v1)
 

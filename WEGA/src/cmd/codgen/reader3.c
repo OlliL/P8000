@@ -910,7 +910,7 @@ d3qincr(p)
 static int d3depth;	/* nesting of &&, || and ! in cbranch */
 
 /* OLD_D3W (libcisam, under OLD_D3): at the end of a whole condition of &&, || and ! the idle word registers go back,
-   pairs stay; inside the condition they keep their contents (src/lib/libcisam/COMPILER.md) */
+   pairs stay; inside the condition they keep their contents (compare/libcisam/COMPILER.md) */
 static void
 d3words()
 {
@@ -1020,7 +1020,7 @@ again:
 #endif
 #ifdef OLD_D3Q
 		if (d3qincr(p2)) {	/* OLD_D3Q (libcisam): behind the condition of a ?: whose arm increments a
-					   pointer the scratch pairs are free, also a busy one (src/lib/libcisam/COMPILER.md) */
+					   pointer the scratch pairs are free, also a busy one (compare/libcisam/COMPILER.md) */
 			register struct rs *n, *next;
 
 			for (n = rsuse; n; n = next) {
@@ -1460,7 +1460,7 @@ static void cbranch1();
 extern struct sym *fpsym1, *fpsym2;
 int d3hdepth;	/* OLD_D3H (libcisam): cbranch nesting; allo3.c marks (0x2000) the registers it gives out meanwhile.
 			   At the end of a whole condition an idle register given out inside it that holds the frame home of
-			   a parameter goes back (src/lib/libcisam/COMPILER.md) */
+			   a parameter goes back (compare/libcisam/COMPILER.md) */
 
 /* OLD_D3H: does the node hold the frame home of a parameter */
 static int

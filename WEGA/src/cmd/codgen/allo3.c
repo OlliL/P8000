@@ -548,7 +548,7 @@ allocreg(p, cookie)
 #else
 #ifdef OLD_D2PW
 	/* OLD_D2PW (libcisam): the copy of a register that is wanted in a busy register goes into the other half of that
-	   pair when the half is idle and holds a name, not a parameter (src/lib/libcisam/COMPILER.md) */
+	   pair when the half is idle and holds a name, not a parameter (compare/libcisam/COMPILER.md) */
 	if (p->in.op == 96 && cls == 2 && want >= 0 && want < 8) {
 		register struct rs *q;
 
@@ -590,7 +590,7 @@ d2pw:
 #ifdef SEG
 	/* OLD_D2CT (libcisam, segmented; needs OLD_D3H): the copy of a pair that holds a name and was given out in the last
 	   condition into the pair of a wanted odd word register: the pair itself is taken, no copy
-	   (src/lib/libcisam/COMPILER.md) */
+	   (compare/libcisam/COMPILER.md) */
 	if (p->in.op == 96 && cls == 3 && want >= 0 && want < 8 && (want & 1) && p->tn.rval >= 0 && p->tn.rval < 8 && !(p->tn.rval & 1)) {
 		register struct rs *q;
 

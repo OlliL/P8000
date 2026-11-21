@@ -1,7 +1,7 @@
 # gopt: handoff (2026-11-21)
 
 GOAL: /lib/gopt rebuilt from C (src/cmd/gopt), byte-identical after the link; then clean up, port to the host and consolidate
-the compiler switches. Compiler: sccvc (vc = v0p segmented + vc switches, host/OLDCC.md). Rules: CLAUDE.md (German in
+the compiler switches. Compiler: sccvc (vc = v0p segmented + vc switches, host/OLDCC.md, compare/gopt/COMPILER.md). Rules: CLAUDE.md (German in
 conversation, English in git; commit, never push; branch `toolchain`). Keep this file, findings.json, host/OLDCC_LOG.md and
 host/increments/160-programs.md current. Clean-up rule (owner 2026-11-21): what is deleted from a file but still matters (for
 the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LOG.md first.
@@ -41,11 +41,9 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    and statement order, constants, globals, members, tails), vc OLD_D14T for initopts; gopt in SUBDIRS of src/cmd)
 2. (done 2026-11-21: findings.json: every function exact, the notes say only what is odd in the source; FINDINGS.md has
    only "Exact, with a note"; findings.py leaves empty sections out)
-3. compare/gopt/COMPILER.md, after the model of src/lib/libcisam/COMPILER.md: the switches gopt needs, each with its witness
-   and mechanism (take the witness table of SWITCH_CANDIDATES.md over). Move src/lib/libcisam/COMPILER.md to
-   compare/libcisam/COMPILER.md and fix its references (host/OLDCC.md, host/OLDCC_LOG.md, host/HANDOFF_libcisam.md, comments in
-   src/cmd/codgen allo3.c and reader3.c: comments only, the codgen stays byte-identical).
-4. Delete compare/gopt/SWITCH_CANDIDATES.md (its content in COMPILER.md, OLDCC_LOG.md).
+3. (done 2026-11-21: compare/gopt/COMPILER.md, the switches gopt needs with their witnesses; the libcisam one moved to
+   compare/libcisam/COMPILER.md)
+4. (done 2026-11-21: SWITCH_CANDIDATES.md deleted; its witness table is in COMPILER.md, its observations in OLDCC_LOG.md)
 5. The switch matrix of vc (host/recon/switchmatrix.py) measures gopt too, not only cas; then rebuild the vc matrix
    (host/OLDCC_SWITCHES_VC.md) and `matrix check`.
 6. gopt is partly made from the mip of PCC (the machine independent part). Find the best fitting mip: search tmp/sys3,

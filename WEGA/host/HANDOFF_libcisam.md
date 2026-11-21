@@ -1,6 +1,6 @@
 # Handoff: libcisam, the compiler (increment 150)
 
-Done 2026-11-19: libcisam.a and slibcisam.a byte-identical with the compiler v1c (src/lib/libcisam/COMPILER.md).
+Done 2026-11-19: libcisam.a and slibcisam.a byte-identical with the compiler v1c (compare/libcisam/COMPILER.md).
 What follows is the state at the hand-off.
 
 Goal: `/usr/lib/libcisam.a` and `slibcisam.a` (C-ISAM 1.03, Library.SC 02/11/83) byte-identical. The sources are written

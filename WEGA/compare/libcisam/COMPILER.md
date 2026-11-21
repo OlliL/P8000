@@ -1,6 +1,6 @@
 # libcisam: the compiler v1c
 
-libcisam.a and slibcisam.a (C-ISAM 1.03, Library.SC 02/11/83) are byte-identical when the sources of this directory are
+libcisam.a and slibcisam.a (C-ISAM 1.03, Library.SC 02/11/83) are byte-identical when the sources of src/lib/libcisam are
 compiled with -O by **v1c** (`ccv1c`, `sccv1c` from OLDROOT): the passes of v1 (cparse, popt) with a code generator of
 its own (`/lib/v1c/codgen`, `/lib/v1c/scodgen`): the v1 switches (`OLD_D3`, `OLD_D61`, `OLD_D62`, `OLD_D63`; segmented also
 `OLD_D24`, `OLD_D2CW`) and five more that only libcisam shows: `OLD_D3W`, `OLD_D2PW`, `OLD_D3Q`, `OLD_D3H`, `OLD_D2CT`
