@@ -387,7 +387,6 @@ operand(p)
 	int i;
 	long l;
 	struct qa a, b, c;
-	struct sym *sp;
 
 	if (0)
 		p = 0;	/* dead: its store of p at the entry is left (the original) */
@@ -395,14 +394,14 @@ operand(p)
 	case NAME:
 		if (p->tn.rval >= 0) {
 			opnd.b2 = 4;
-			sp = p->in.sname;
-			opnd.w4 = sp - symtab;
-		} else {
-			opnd.b2 = 5;
-			opnd.w4 = -p->tn.rval;
+			opnd.w4 = p->in.sname - symtab;
+		nmt:
+			opnd.w0 = p->in.type;
+			break;
 		}
-		opnd.w0 = p->in.type;
-		break;
+		opnd.b2 = 5;
+		opnd.w4 = -p->tn.rval;
+		goto nmt;
 	case ICON:
 		if ((p->tn.lval > 0 ? p->tn.lval : -p->tn.lval) < 0x7fff) {
 			opnd.b2 = 1;

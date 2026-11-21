@@ -179,7 +179,10 @@ neutral on cas when added, alone and all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP` and `OLD_D3JB` (gopt; all neutral on cas);
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype, one witness), `OLD_D2K`, `OLD_D3JL`, `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB` and `OLD_D2TC` (gopt; all neutral on cas; `OLD_D2TC`: rbusy takes a free word
+  register instead of stopping, the reclaim of `p->in.sname - symtab` in gopt operand);
+  its text is near the 64 KiB of a nonsegmented program (sg_code 0xfd00 with the OLDPRINTF of src/Makefile, 2026-11-21);
+  /bin/ld does not report an overflow (sg_code wraps, the program runs into zeros), the codgen Makefile stops then;
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13`,
   `OLD_D25` and `OLD_D12R` (gopt, neutral on cas: the static area of a function that returns a structure is zeros in the data,
   written at the start of the next function (or at the end of the file), behind the function and its switch tables, not in
@@ -239,7 +242,8 @@ Free registers and pairs:
 - v0 `OLD_D2T` (under OLD_D2L): the register of a TEMP (the value of a switch, held from its start to the compares behind
   the bodies) counts as free while idle, so the bodies take r2 again (setreg, prtree, opact).
 - v0 `OLD_D2P`: OLD_D2L for pairs, an idle pair that holds a name counts as free when it weighs less than the first free
-  pair, and only rr0 or rr2 (an idle rr4 stays when rr6 is free: cas opxor, opor, opand, opshl, opshr, opadd, opsub); two idle words of a pair are given back and merge; for a word an idle lighter pair is given back and split, in v0 and vc not a pair that holds a parameter (vc: gopt pr; v0p splits it: regforsym of the codgen model).
+  pair, and only rr0 or rr2 (an idle rr4 stays when rr6 is free: cas opxor, opor, opand, opshl, opshr, opadd, opsub); two idle words of a pair are given back and merge (in v0 and vc not the words of a parameter in r4..r7: gopt testbit;
+  rr2 still merges: gopt mkconstopnd); for a word an idle lighter pair is given back and split, in v0 and vc not a pair that holds a parameter (vc: gopt pr; v0p splits it: regforsym of the codgen model).
 - v0p `OLD_D2PO`: an idle odd word whose even half is free is given back when a pair is wanted and the even half weighs less
   than the first free pair (refid, dclstruct).
 - `OLD_D2PO` leaves a word that holds a parameter (in every version: the passes built by v0p do not change with the limit).
@@ -266,7 +270,8 @@ Where a value goes:
   (gopt linkp, dominators, eval, compress, joinblk, srchdflist; neutral on the v0p models, the v0 bench and cas).
 - v0 `OLD_D2M` (allocreg): a word multiplied through a pair uses the pair of its even register when the odd half is free
   (adddef `ld r3,r2; mult rr2,#%0006`). `OLD_D2MO`: for an odd left register the pair below it when the even half is
-  free or idle (dclstruct, dc `mult rr2,%5F24`).
+  free or idle (dclstruct, dc `mult rr2,%5F24`), not for a register that holds a parameter (it is copied first: gopt
+  canshare, setedges, testbit; the v0 bench gains 131 > 132 functions, 221 > 212 lines).
 - v0 `OLD_D2U` (rallo): the right operand of a long multiplication wants no register (upoff).
 - v0 `OLD_D6R` (gswitch): the count register of cpir is in neither half of rr0.
 - v0p `OLD_D2A` (match): the value of a long assignment used in a comparison is copied into a new pair that keeps the name

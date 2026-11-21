@@ -1704,3 +1704,25 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   matrix checks as in the table, checkall ALL OK.
   chkfamindvar (trace): the parameter `r` (rr6) is never on the use list of our scodgen (the frame copy at entry
   stores r5..r7 with ldm); the original keeps it in rr6 behind the && chain and takes rr4 there.
+- K5 and K16 (2026-11-21), gopt 307 > 311 of 321.
+  K5: `OLD_D2MO` not for a register that holds a parameter (the original copies it first: `ld r3,r7; mult rr2`); the
+  test has to come before `d2ofree`, which gives the even half back as a side effect (the first form lost r6 of canshare).
+  `OLD_D2P` merge of two idle words: in v0 and vc not the words of a parameter in r4..r7 (testbit; all parameter words
+  broke mkconstopnd, where the original merges r2/r3 into rr2: 2 > 65). setedges, canshare, testbit exact; the v0 bench
+  gains (131 > 132 same functions, 221 > 212 lines), the models stay strictly equal. Left of K5: mkconstopnd (2: the dead
+  `ldl rr0,rr6` of the original), affsize (3: the copy register r3 against r1; `matw = (affdim = nal) / 16 + 1`: 13).
+  K16: the reclaim of `opnd.w4 = p->in.sname - symtab` asks rbusy for r1, the low half of a result pair already given
+  back, and rbusy stops ("not found on rslist"). vc `OLD_D2TC`: rbusy takes the free word instead (cas +0). With the
+  original statement and the NAME case in goto form (the b2 = 4 branch keeps the tail `opnd.w0 = p->in.type; break`)
+  operand is exact. Seen on the way: tcopy of a based OREG busies the index as a pair and the base as a word (base and
+  index swapped; already in the quirks table as the two-argument rbusy); not the cause, not changed.
+  Tried for K8 without effect: chkfamindvar with vc without `OLD_D3J`; vc without `OLD_D2W6` (gopt 311 > 208);
+  setposition with the D2P pair loop taking a parameter pair in vc (306).
+- The vc scodgen over 64 KiB (2026-11-21): the K5 checkall hung 4 h in the build of oldslibc errlst.c (data only). The tree
+  build links the old passes with OLDPRINTF (src/Makefile stage1); the text of the vc scodgen was 0xfe00 (rounded to 256),
+  K5 took it over 64 KiB: /bin/ld wrapped `sg_code` to 0 without a message and scodgen ran into zeros. The local build
+  (libc-v5.a) still fitted. Owner: reduce code (a segmented build was weighed: sld can spread text over segments, but the
+  NODE union of cg.h overlays 16-bit pointers with lval/rval). Reduced, the default build untouched: a helper `d2pair`
+  for the six give-back-and-take sequences of allocreg, D2M/D2MO/D2S under one test of the left operand, the even and
+  odd index cases of D2Q under one, the naming in getreg (D2L, D2P) by `goto blk`: 0xfd00 with K5 and D2TC. The codgen
+  Makefile now stops when sg_code is 0 (owner).

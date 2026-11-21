@@ -4,20 +4,19 @@ Owner 2026-11-20: during the source phase no new switch is built; a difference t
 classified here with its witnesses, and the search for source forms goes on. A candidate is only taken up after the
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
-without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
-The numbers are the DIFF lines of fnc.py (2026-11-21, 307 of 321 OK).
+without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K16 by vc OLD_D2TC (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
+The numbers are the DIFF lines of fnc.py (2026-11-21, 311 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
 |----|--------------------------|-----------------------|--------|
 | K4 | which copy of a common tail stays: the original the first, ours the later one (spopt xjump/comjump); several were source forms (the tail in both branches: indupdate, constfold, dotree; goto to the kept return copy: setsym, insrtlive) | vnumber (38), tprint (11; 8 forms all equal) | candidate |
-| K5 | a parameter copied before an operation that changes its register (`ld r1,r3; mult rr0,r5`; `ldl rr0,rr6`, `ld r3,r2`; cause 1) (scodgen); looks like OLD_D3KC of v0p (vc lacks it because of cas copyfile): a narrower form is the guess; 11 type/order/expression forms and 7 dead-code forms: none | mkconstopnd (2), affsize (3), setedges (15), canshare (16), testbit (22) | candidate |
+| K5 | a parameter copied before an operation that changes its register (`ld r1,r3; mult rr0,r5`; `ldl rr0,rr6`, `ld r3,r2`; cause 1) (scodgen); looks like OLD_D3KC of v0p (vc lacks it because of cas copyfile): a narrower form is the guess; 11 type/order/expression forms and 7 dead-code forms: none | mkconstopnd (2), affsize (3) | candidate |
 | K6 | a store of an 8 bit field of a frame struct goes directly to the slot (scodgen fixfld) | setsymtable (2; the form `((char *)&tq)[4]` is a guess) | candidate |
 | K8 | the pair of a temporary: rr4 against rr6 (cause 6); pattern: the original frees the word parameters in r6/r7 (and rr2 of a pointer parameter) for temporaries after their frame store, but keeps a live pointer parameter in rr6; ours the opposite | chkfamindvar (9), setposition (18), rmlabels (2) | candidate |
 | K11 | a chain `a = b = x`: the original copies the value into another register first (`ld r2,r0`) | setsymtable (2; 13 forms) | candidate |
 | K13 | the then-block of an if is placed before its test, right behind an unconditional jump, the test jumps back to it (spopt codemove); dotree, aliasm, initaffect, buildgraph, clropt were source forms (the common statement in both branches; the then-block as `if (0) { l: ... }` at the loop top, reached by goto); for the loops: switch, loop forms, branch orders tried | chklpdefs (10: only the step block) | candidate |
 | K14 | a long `&`/`\|` with a frame operand: the original takes r1 for the low word (`ld r1,lo; and r3,r1`), ours overwrites r3 (`ld r3,lo; and r3,r3`: wrong code) (scodgen template) | constfold (2 places) | candidate (a bug of the rebuild) |
 | K15 | the EPU store of an int-to-double result is not merged with the store of the first case | constfold (1 instruction) | candidate |
-| K16 | `opnd.w4 = p->in.sname - symtab` stops our scodgen with `rbusy: register to be made busy not found on rslist`; the original has that code (7 forms, also with older scodgens) | operand (28) | candidate (a bug of the rebuild) |
 
 Observation 2026-11-20 (K7 and K8 one mechanism, a guess): in every witness of K7 and K8 (linkp, dominators, eval, compress,
 joinblk, rmlabels, prcgraph, srchdflist, setposition, pr) ours keeps the address of a global pointer cached in rr6
@@ -49,6 +48,9 @@ D64) built without the switch, fnc.py over all gopt functions. Witness = exact o
 | OLD_D2FA | 9: asgfold clearblocks linkreachdefs liveonexit marklpblocks solvelive solvereach srchdef tmpsearch | updatelooplist 5>9; better without it: genquads 8>6, mktree 8>4, rmlabels 12>11 |
 | OLD_D2K | 11: addallist addblk addhdrlist alloclpdef asgfold betainit betanew include initallist labquad mkleaf | mktree, setedges worse |
 | OLD_D2P (no parameter pair split, v0/vc, 2026-11-21) | 1: pr | - |
-| OLD_D2Q (odd index, vc, 2026-11-21) | 1: prcgraph | canshare 14>16, setedges 12>15 (K5) |
+| OLD_D2Q (odd index, vc, 2026-11-21) | 1: prcgraph | - |
+| OLD_D2MO (not a parameter, v0/vc, 2026-11-21) | 3: canshare setedges testbit (K5) | - |
+| OLD_D2P (no merge of parameter words in r4..r7, v0/vc, 2026-11-21) | 1: testbit | all parameter words: mkconstopnd 2>65 |
+| OLD_D2TC (vc, 2026-11-21) | 1: operand (K16) | the original statement does not compile without it |
 | OLD_D2N (pair part, 2026-11-21) | 6: compress dominators eval joinblk linkp srchdflist (K7/K8) | rmlabels 2 instead of 12 |
 | scparse OLD_D12R | data only (constfold's static return area) | not measurable by fnc.py |

@@ -120,6 +120,12 @@ rbusy(reg, type, sym, lv)
 				goto found;
 			}
 	}
+#ifdef OLD_D2TC
+	/* vc: a free word register (the low half of a result pair already given back: reclaim of gopt operand,
+	   p->in.sname - symtab) is taken */
+	if (cls == 2 && reg >= 0 && reg < 8 && getreg(2, reg, 0x1000, sym) == reg)
+		return;
+#endif
 	cerror("rbusy: register to be made busy not found on rslist");
 found:
 	n->busy++;
@@ -340,6 +346,25 @@ d2ofree(r)
 #endif
 
 
+#if defined(OLD_D2M) || defined(OLD_D2Q) || defined(OLD_D2S)
+/* the word x given back and the pair y taken for the result (with the name of p); not free: x busy again (for q) */
+static int
+d2pair(x, y, p, q)
+	register int x;
+	int y;
+	NODE *p, *q;
+{
+	register int r;
+
+	rfree(x, 4);
+	rsreturn(2, x);
+	r = getreg(3, y, 0, p->in.sname);
+	if (r == -1)
+		rbusy(x, 4, q ? q->in.sname : (struct sym *)0, q ? q->tn.lval : 0L);
+	return r;
+}
+#endif
+
 /* a register for the result of p; cookie says what the caller wants */
 int
 allocreg(p, cookie)
@@ -416,37 +441,28 @@ allocreg(p, cookie)
 	    )
 		r = freereg(p, want, cookie);	/* v0: a long result into the pair of its left operand */
 #endif
+#if defined(OLD_D2M) || defined(OLD_D2S)
+	if (r == -1 && cls == 3 && want == -1 && (p->in.op == MUL || p->in.op == 110) && p->in.left->in.op == REG &&
+	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval < 8) {
+		register NODE *l = p->in.left;
+		register int lr = l->tn.rval;
+
 #ifdef OLD_D2M
-	if (r == -1 && cls == 3 && want == -1 && p->in.op == MUL && p->in.left->in.op == REG &&
-	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval < 8 && !(p->in.left->tn.rval & 1) && d2qfree(p->in.left->tn.rval)) {
-		rfree(p->in.left->tn.rval, 4);	/* v0: a word multiplied in the pair of its even register */
-		rsreturn(2, p->in.left->tn.rval);
-		r = getreg(3, p->in.left->tn.rval, 0, p->in.sname);
-		if (r == -1)
-			rbusy(p->in.left->tn.rval, 4, p->in.left->in.sname, p->in.left->tn.lval);
-	}
+		if (p->in.op == MUL && !(lr & 1) && d2qfree(lr))
+			r = d2pair(lr, lr, p, l);	/* v0: a word multiplied in the pair of its even register */
 #ifdef OLD_D2MO
-	/* an odd one in the pair below it when the even half is free or idle */
-	if (r == -1 && cls == 3 && want == -1 && p->in.op == MUL && p->in.left->in.op == REG &&
-	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval < 8 && (p->in.left->tn.rval & 1) && d2ofree(p->in.left->tn.rval)) {
-		rfree(p->in.left->tn.rval, 4);
-		rsreturn(2, p->in.left->tn.rval);
-		r = getreg(3, p->in.left->tn.rval - 1, 0, p->in.sname);
-		if (r == -1)
-			rbusy(p->in.left->tn.rval, 4, p->in.left->in.sname, p->in.left->tn.lval);
-	}
+		/* an odd one in the pair below it when the even half is free or idle; not a parameter (gopt canshare,
+		 * setedges, testbit) */
+		else if (p->in.op == MUL && (lr & 1) && !(l->in.sname && l->in.sname->sclass == 9) && d2ofree(lr))
+			r = d2pair(lr, lr - 1, p, l);
 #endif
 #endif
 #ifdef OLD_D2S
-	/* vc: a word in r3 widened to long (SCONV) takes the pair rr2, the first pair of the order, with r3 in it
-	 * (cas symtype); a word in another register gets a new pair as before (locadv: r7, rr2) */
-	if (r == -1 && cls == 3 && want == -1 && p->in.op == 110 && p->in.left->in.op == REG &&
-	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval == 3 && d2ofree(p->in.left->tn.rval)) {
-		rfree(p->in.left->tn.rval, 4);
-		rsreturn(2, p->in.left->tn.rval);
-		r = getreg(3, p->in.left->tn.rval - 1, 0, p->in.sname);
-		if (r == -1)
-			rbusy(p->in.left->tn.rval, 4, p->in.left->in.sname, p->in.left->tn.lval);
+		/* vc: a word in r3 widened to long (SCONV) takes the pair rr2, the first pair of the order, with r3 in it
+		 * (cas symtype); a word in another register gets a new pair as before (locadv: r7, rr2) */
+		if (p->in.op == 110 && lr == 3 && d2ofree(lr))
+			r = d2pair(lr, lr - 1, p, l);
+#endif
 	}
 #endif
 #ifdef OLD_D2Q
@@ -463,39 +479,30 @@ allocreg(p, cookie)
 		if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && !(q->tn.rval & 1) && (want == -1 || want == q->tn.rval) &&
 		    d2qfree(q->tn.rval)) {
 #endif
-			rfree(q->tn.rval, 4);
-			rsreturn(2, q->tn.rval);		/* merged with its free partner */
-			r = getreg(3, q->tn.rval, 0, p->in.sname);
-			if (r == -1)
-				rbusy(q->tn.rval, 4, q->in.sname, q->tn.lval);
+			r = d2pair(q->tn.rval, q->tn.rval, p, q);		/* merged with its free partner */
 		}
 #ifdef SEG
-		/* segmented: base and index (`rr4(r2)`), the index in an even word register: the pair of the index */
-		else if (q->in.op == OREG && q->tn.rval >= 0x100 && (q->tn.rval & 0xFF) != 0 && ((q->tn.rval & 0xFF) - 1) < 8 &&
-		    !(((q->tn.rval & 0xFF) - 1) & 1) && d2qfree((q->tn.rval & 0xFF) - 1)) {	/* also when another pair is wanted (an argument): a copy follows */
+		/* segmented: base and index (`rr4(r2)`), the index in an even word register: the pair of the index, also when
+		 * another pair is wanted (an argument: a copy follows); vc: the index in an odd word register (`rr6(r3)`, alone
+		 * or the low half of a product): the pair below it (gopt prcgraph) */
+		else if (q->in.op == OREG && q->tn.rval >= 0x100 && (q->tn.rval & 0xFF) != 0 && ((q->tn.rval & 0xFF) - 1) < 8) {
 			register int ix = (q->tn.rval & 0xFF) - 1;
 
-			rfree(ix, 4);
-			rsreturn(2, ix);
-			r = getreg(3, ix, 0, p->in.sname);
-			if (r == -1)
-				rbusy(ix, 4, (struct sym *)0, 0L);
-		}
-		/* vc: the index in an odd word register (`rr6(r3)`, alone or the low half of a product): the pair below it (gopt prcgraph) */
-		else if (q->in.op == OREG && q->tn.rval >= 0x100 && (q->tn.rval & 0xFF) != 0 && ((q->tn.rval & 0xFF) - 1) < 8 &&
-		    (((q->tn.rval & 0xFF) - 1) & 1) && (d2rpair((q->tn.rval & 0xFF) - 2) || d2ofree((q->tn.rval & 0xFF) - 1))) {
-			register int ix = (q->tn.rval & 0xFF) - 1;
-
-			if (d2rpair(ix - 1)) {		/* the index is the low half of a pair (a product) */
-				rfree(ix - 1, 5);
-				rsreturn(3, ix - 1);
-			} else {
-				rfree(ix, 4);
-				rsreturn(2, ix);
+			if (!(ix & 1)) {
+				if (d2qfree(ix))
+					r = d2pair(ix, ix, p, (NODE *)0);
+			} else if (d2rpair(ix - 1) || d2ofree(ix)) {
+				if (d2rpair(ix - 1)) {		/* the index is the low half of a pair (a product) */
+					rfree(ix - 1, 5);
+					rsreturn(3, ix - 1);
+				} else {
+					rfree(ix, 4);
+					rsreturn(2, ix);
+				}
+				r = getreg(3, ix - 1, 0, p->in.sname);
+				if (r == -1)
+					cerror("allocreg: the pair of an index not free");
 			}
-			r = getreg(3, ix - 1, 0, p->in.sname);
-			if (r == -1)
-				cerror("allocreg: the pair of an index not free");
 		}
 #endif
 #ifdef OLD_D2O
@@ -507,11 +514,7 @@ allocreg(p, cookie)
 #else
 		    (want == -1 || want == q->tn.rval - 1) && d2ofree(q->tn.rval)) {
 #endif
-			rfree(q->tn.rval, 4);
-			rsreturn(2, q->tn.rval);
-			r = getreg(3, q->tn.rval - 1, 0, p->in.sname);
-			if (r == -1)
-				rbusy(q->tn.rval, 4, q->in.sname, q->tn.lval);
+			r = d2pair(q->tn.rval, q->tn.rval - 1, p, q);
 		}
 #endif
 	}

@@ -56,6 +56,11 @@ static char rcname[][8] = {
 #else
 #define D2PK(t)	((t)->kind != 6)
 #endif
+#ifdef OLD_D3KC
+#define D2PN(t)	1
+#else
+#define D2PN(t)	(!((t)->sym && (t)->sym->sclass == 9 && (t)->reg >= 4))	/* v0, vc: not the words of a parameter in r4..r7 (gopt testbit) */
+#endif
 
 #ifdef OLD_D2L
 #define D2VARS
@@ -651,14 +656,7 @@ getreg(cls, reg, flag, sym)
 #endif
 		if (m) {
 			n = m;
-			n->flags &= ~0x8000;
-			n->sym = sym;
-			n->off = sym ? sym->soffset : 0;
-#ifdef OLD_D2FA
-		n->flags &= ~0x0400;	/* (not named by an assignment) */
-#endif
-			n->kind = 8;
-			goto found;
+			goto blk;	/* name it as a register variable is named */
 		}
 	}
 #endif
@@ -667,10 +665,10 @@ getreg(cls, reg, flag, sym)
 		for (w = rsfree; w && w->cls != 3; w = w->next)
 			;
 		for (t = rsuse; t; t = t->next)		/* two idle words of a pair: given back, they merge */
-			if (t->cls == 2 && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) &&
+			if (t->cls == 2 && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && D2PN(t) &&
 			    (w == 0 || rweight[t->reg] < rweight[w->reg])) {
 				for (m = rsuse; m; m = m->next)
-					if (m->cls == 2 && m->reg == t->reg + 1 && m->busy <= 0 && D2PK(m))
+					if (m->cls == 2 && m->reg == t->reg + 1 && m->busy <= 0 && D2PK(m) && D2PN(m))
 						break;
 				if (m == 0) {
 					for (m = rsfree; m; m = m->next)
@@ -712,14 +710,7 @@ getreg(cls, reg, flag, sym)
 				m = t;
 		if (m) {
 			n = m;
-			n->flags &= ~0x8000;
-			n->sym = sym;
-			n->off = sym ? sym->soffset : 0;
-#ifdef OLD_D2FA
-		n->flags &= ~0x0400;	/* (not named by an assignment) */
-#endif
-			n->kind = 8;
-			goto found;
+			goto blk;	/* name it as a register variable is named */
 		}
 	}
 #endif
