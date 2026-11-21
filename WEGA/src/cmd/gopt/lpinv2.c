@@ -1030,7 +1030,7 @@ int flag;
 				pq = pq->next;
 			}
 			if (pq == hq)
-				break;
+				goto found;	/* its predecessor is known: no search from qhead */
 		}
 	}
 	pq = qhead;
@@ -1043,6 +1043,7 @@ int flag;
 	}
 	if (pq == 0)
 		cerror("loop header quad not found");
+found:
 	if (s4d86 > 3) {
 		printf("found quad before the header:\n");
 		prquad(pv);

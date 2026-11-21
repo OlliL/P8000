@@ -263,7 +263,9 @@ deledge(q, v)
 	if (edges[x].blk == v)
 		*q = edges[x].next;
 	else {
+		goto in;	/* the first block is known to differ: into the loop */
 		while (v != edges[x].blk) {
+		in:
 			prev = x;
 			x = edges[x].next;
 			if (x < 0)
