@@ -32,6 +32,9 @@ Rules of the target:
 - No OLD_* (D) switch in mip/: the code a switch needs goes to the pass that needs it (`d3kjump` of comm3.c: code nobody
   wrote so; it can be called before the users of `branch()` in codgen). Where that does not work, the exception is
   written down here.
+- Near System III: every source under cc/ is as close to cc/pcc of System III (and Plexus, a System III) as byte
+  identity allows, in the text of the files and in the structure of the files (names, cut, order). The base for mip is the
+  shared part of cparse: comm1.c (common) and optim1.c (optim) are already brought close to System III.
 - compare/NAME stays named by the programs (compare/gopt, compare/scodgen ...), whatever the tree.
 - cpp and popt share nothing with mip; they are under cc/ because they are passes of the compiler.
 
@@ -60,13 +63,15 @@ Rules of the target:
   (comm2.c 1.1); `rdr` 2.5 in codgen (rdr3.c 2.1), 2.4 in gopt (rdr2.c 1.3); `optim` 2.5 (10/06/83) in codgen (optim3.c
   2.4); cparse has optim1.c 2.1. The wrappers with an SCCS line of their own beside the unit's line: as comm1.c of System
   III (`#include "mfile1"`, `#include "common"`). Today the unit is written into each wrapper.
+- cparse is already brought close to cc/pcc of System III: the shared parts in comm1.c (`common`) and optim1.c (`optim`)
+  follow the System III sources (as far as the bytes allow).
 - `/usr/lib/lint1`, `/usr/lib/lint2` (not rebuilt yet) use the same mip in System III: later members of the tree.
 - References to the old paths (2026-11-22, without findings.json): src/cmd/cc 9 files, cpp 8, cparse 11, codgen 16,
   popt 20, gopt 11; most in host/recon (poptveto), host, compare.
 
 ## Steps
 
-1. Measure the mip candidates: the shared text of common, rdr, optim (and of manifest, mfile1, mfile2, the operator
+1. Measure the mip candidates, from the System III-near parts of cparse as the base: the shared text of common, rdr, optim (and of manifest, mfile1, mfile2, the operator
    tables, macdefs) in cparse, gopt, codgen; per unit the versions and their differences; where pass-specific code and
    OLD_* switches sit inside the shared text. Result: the list of the mip files and of the code that moves to the passes.
 2. Move: `src/cmd/cc/` with cc.c; cpp, cparse, gopt, codgen, popt below it (git mv); the Makefiles (relative paths,
@@ -83,6 +88,8 @@ Rules of the target:
   headers); one file per version (`common.2.4`, `common.2.5`), as alike as possible; no D switches in mip/, their code
   goes to the passes that need it (aim, exceptions written down); host/ mirrors the cut; compare/ stays by program;
   cpp and popt under cc/ without mip. 160 paused for this increment.
+- 2026-11-22 (owner): every source under cc/ as close to cc/pcc of System III / Plexus as byte identity allows (text and
+  file structure); mip starts from the shared parts of cparse (comm1.c, optim1.c), which are already close to System III.
 
 ## Not part of it
 
