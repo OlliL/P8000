@@ -783,8 +783,11 @@ int x, reg;
 void
 addsavequads()
 {
-	int b, r, e, c, s, out;
-	struct qa *pa, *pb;
+	int b, r;
+	struct quad *q;	/* q, tmp, t: unused (the locals of propagate; the frame of the original has them) */
+	int e, s, c, out;
+	struct qa tmp;
+	struct qa *t, *pa, *pb;
 
 	for (b = 0; b < blkno; b++) {
 		if (blks[b] == 0)

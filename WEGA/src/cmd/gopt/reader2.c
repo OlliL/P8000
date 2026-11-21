@@ -50,10 +50,10 @@ main(argc, argv)
 	register char *q;
 	register NODE *p;
 	int lno;
+	int v1, v2;
 	int i;
 	struct qa s1, s2, s3;
 	struct qa *p1, *p2, *p3;
-	int v1, v2;
 	char ch;
 
 	lno = 1;

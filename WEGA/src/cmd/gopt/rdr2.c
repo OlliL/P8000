@@ -102,7 +102,9 @@ readsyms(n, tab, kind)
 	struct sym *tab;
 	int kind;
 {
-	int k, x;
+	int k;
+	int t;
+	int x;
 	struct sym *q;
 
 	if (n > 0) {
@@ -127,8 +129,8 @@ readsyms(n, tab, kind)
 				printf("index = %d\n", tab);
 				printf("name offset = %d", tab->nameoff);
 				printf(", type = %s", ttype[tab->stype & 0xF]);
-				for (x = tab->stype >> 4; x != 0; x >>= 2)
-					printf(" %s", tmod[x & 3]);
+				for (t = tab->stype >> 4; t != 0; t >>= 2)
+					printf(" %s", tmod[t & 3]);
 				printf(", class = %s\n", tclass[tab->sclass]);
 				printf("        offset = %ld, reg = %d, size = %ld, tag = %d\n", tab->soffset, tab->sbyte5, tab->ssize, (tab->sflags >> 4) & 0xFFF);
 				printf("        block = %d, global = %d,", tab->sx6, (tab->sflags >> 2) & 1);

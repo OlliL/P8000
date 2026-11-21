@@ -418,6 +418,7 @@ struct quad *opqd;
 int opcode;
 {
 	struct qa c;
+	struct qa unused;	/* the frame of the original has six more bytes */
 
 	if (s4d86 > 2) {
 		printf("indupdate(), opcode=%d, ind->cnst=%d, ind->incsize=%d, q:\n", opcode, ind->f15, ind->v);
