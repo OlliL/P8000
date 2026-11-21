@@ -30,6 +30,11 @@ A reconstruction without source (gopt) runs for many sessions; what costs contex
 - Write the draft of a function from the outline and the listing, compile and compare it at once; at most 6 attempts per block, then note
   it in `findings.json` and go on. A recurring cause is written once in HANDOFF.md, not in every note again.
 - After each function: `findings.json` (name, file, status, note; `rename.py [-m]` for names), `make part`; a commit per module step.
+  A case block or tail of the original that belongs to a function gets `part_of: FUNC` (fnc.py takes it into the range), no note.
+  A note says only what is odd in the source (dead code, an unused local, a goto form, a guessed name, a bug of the original),
+  not what was tried: attempts go to `OLDCC_LOG.md` when they concern the compiler, else nowhere.
+- When fnc.py has every function masked-equal, the program is not done: link it and compare strictly (Phase B, framemap.py);
+  the masked compare hides frame layout, constants, globals and members (gopt: about 50 functions).
 - Before the context is 70% full: finish the function in hand, update HANDOFF.md, commit, and give the owner the variable part of the next
   start message (below). Do not start a new large function late in a session.
 
@@ -88,6 +93,11 @@ More, found on sld: `KNOWLEDGE.md`, "what fixed the findings functions".
 - The compiler or the stdio.h of the wrong time. Try the neighbour version before anything else.
 - Wrong types, wrong parameter order, wrong declaration order: most "register differences" are these. Register variables go from r14 (scc r13) downwards in declaration order; a pointer in scc takes a pair. A parameter not spilled is `register`. `ldm` counts the registers.
 - Statement forms: `x = a + b; x /= 8;` against `x = (a + b) / 8`; `if`/`else` against `?:`; `return` against an else chain; `switch` with the real case values, also explicit cases that do what the default does (a jump table shows them); case order is code order.
+- The frame (segmented scodgen; `KNOWLEDGE.md`, "codgen fidelity"): the locals lie in the order of their declaration behind the
+  saved parameters, then the locals of inner blocks, then the temporaries. A frame of the original that is larger means an
+  unused local (or a register variable that is an auto there), a smaller one a local too many or one variable used for two
+  purposes; a mapping that only mirrors when two declarations are swapped is a chain or statement order (`q = last = x`
+  against `last = q = x`, or two statements).
 - Plain forms first. `goto`, unused labels and spare locals only when nothing plain fits; mark them in `findings.json` as odd forms.
 - `call` where `calr` reaches: the callee is in another file, or the old cas decided it long (`OLDCC.md`, D17). A backward `call` in reach always means another file.
 
@@ -115,7 +125,9 @@ Unattended: `host/tools/nightly.sh lib:libX ...` (one session per library, the s
 
 For what is left: finding the source form of a hard function, and changing the compiler.
 
-- Source form first. A new switch comes only when no form fits; forms tried go to `OLDCC_LOG.md`.
+- The order (owner 2026-11-21): source forms, exhausted and written down; then an existing switch changed; a new switch only
+  when changing an existing one changes other users; a new compiler only with the owner. A compiler change is never the
+  first reaction to a difference: a trace (below) first. Forms tried go to `OLDCC_LOG.md`.
 - How popt treats a function: `recon/poptrace.sh PROG FUNC`, or popt built with `-DTRACE`. Which copy of a tail stays depends on the order iterate, comjump, rmove (`OLDCC.md`, D20). When the mechanism is clear but the form is not, try the combinations by script instead of by hand.
 - A change of a pass, measured in a copy: `recon/oldvar.sh NAME PATCH.py [PASS]`. Removing a switch: a patch deleting its `#define`.
 - Before a compiler change, understand the mechanism by a trace: a temporary `printf("KDBG ...")` in the pass (codgen: rsuse
@@ -136,4 +148,8 @@ For what is left: finding the source form of a hard function, and changing the c
 - The odder a form, the less likely it was written, even when the bytes fit. An odd form that fits is recorded in `findings.json`; a plainer form or a switch stays possible.
 - The test bench (`recon/witness.py`, the System III sources of `tmp/sys3`) is read only by comparison with and without a switch: WEGA changed many System III sources.
 - A switch name has at most 8 characters: the cpp of the old compilers reads no more (`OLD_D2POV` was `OLD_D2PO`; the matrix then shows no witness for either).
-- After a switch: `oldcc.sh matrix SWITCH` (all switches when a program joins), `oldcc.sh matrix check` before the commit, `make -C host checkall`, `OLDCC.md` updated. `OLDCC_SWITCHES.md` is generated. The switches of sccvc (`OLD_VC`, the `segvc` rules; only /bin/cas is built with it) the same way with `MATRIX_VER=vc oldcc.sh matrix [SWITCH ...]` and `MATRIX_VER=vc oldcc.sh matrix check`: `OLDCC_SWITCHES_VC.md`, measured on the model of cas, with the data bytes (a switch that only changes data, as `popt:OLD_D13`) and, for a switch without a lost function, the functions whose lines change.
+- After a switch (new or changed), before its commit: the v0/v0p models (`oldcc.sh build codgen v0|v0p`, then `oldcc.sh model P`
+  for cparse scparse codgen scodgen popt spopt cpp: strictly equal) and `oldcc.sh bench` (not worse); `oldcc.sh matrix SWITCH`
+  (all switches when a program joins) and `oldcc.sh matrix check`; the whole program at work (fnc.py -a, no regression);
+  `make -C host checkall` (umask 002: the emulator tests expect it); `OLDCC.md` updated. A vc switch also: the text of the vc
+  scodgen stays below 64 KiB (`OLDCC.md`, vc). `OLDCC_SWITCHES.md` is generated. The switches of sccvc (`OLD_VC`, the `segvc` rules; only /bin/cas is built with it) the same way with `MATRIX_VER=vc oldcc.sh matrix [SWITCH ...]` and `MATRIX_VER=vc oldcc.sh matrix check`: `OLDCC_SWITCHES_VC.md`, measured on the model of cas, with the data bytes (a switch that only changes data, as `popt:OLD_D13`) and, for a switch without a lost function, the functions whose lines change.
