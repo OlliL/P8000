@@ -591,7 +591,8 @@ code). Witness: jpr of cas. The loop head `T: test; load; jpr E` jumps over the 
 default (plain) to the dispatch E, which falls into case 0x56 (F) and the dispatch of the second switch; the scan reaches
 `cp 7; jeq G` as node 22 (straight through A and plain it is about node 35) and the inversion at the back jump of the
 step gives `init; jr T; A; plain; C'; step; T; E; F (.. cp 7; jne C'); G; H`. Alone the switch changes no other function
-of cas. One witness.
+of cas. One witness. Not when only one instruction stands between the loop head and that jump (gopt tprint: `ld r2,t; jr` to the call
+of the FTN arm; with it the block that keeps the call moves away from behind its test; cas jpr has more, 2026-11-21).
 
 ### D51 Block moves that codemove leaves out in front of a loop inversion
 

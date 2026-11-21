@@ -1283,6 +1283,7 @@ struct node *p;
 	int n;
 #ifdef OLD_D50
 	struct node *jf, *ml, *q50, *w50;
+	int c50;
 #endif
 #ifdef OLD_D20
 	struct node *rp;
@@ -1428,7 +1429,12 @@ struct node *p;
 			if (q50->back && (q50->back->op == JP || q50->back->op == RET) && q50->back != p3) {
 				for (w50 = p3; w50 && w50 != p1 && w50 != q50; w50 = w50->forw)
 					;
-				if (w50 == q50) {
+				c50 = 0;
+				if (w50 == q50)	/* not with one instruction in front of the jump behind the loop head (gopt tprint) */
+					for (w50 = p2->forw; w50 && w50 != p3; w50 = w50->forw)
+						if (w50->op != LABEL && w50->op != KCOMMENT)
+							c50++;
+				if (c50 >= 2) {
 					jf = p3;
 					ml = q50->back;
 					p3 = ml;

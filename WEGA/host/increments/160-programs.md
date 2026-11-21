@@ -109,3 +109,4 @@ PLZ programs and `as`: 170.
 - 2026-11-21 gopt: constfold exact (K14: vc OLD_D2XP only for RESC1; K15: new vc OLD_D4F, an idle named float register is free when lower); 312 of 321; both +0 on cas, checkall ALL OK.
 - 2026-11-21 codgen: vc OLD_DNR (the gopt register records F R S T are not read, their code left out): the vc scodgen text 0xfe00 > 0xf800; +0 on cas, gopt 312, checkall ALL OK.
 - 2026-11-21 gopt: vnumber exact by source form (gotos to the tail copies the original keeps, two then-blocks before their tests); 313 of 321.
+- 2026-11-21 gopt: tprint exact by narrowing vc spopt OLD_D50 (two instructions between loop head and jump); the shipped spopt shows the layout of the original; 314 of 321; cas jpr kept, checkall ALL OK.

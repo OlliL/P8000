@@ -5,9 +5,9 @@ host/OLDCC.md). Rules: CLAUDE.md (German in conversation, English in git; commit
 findings.json (key `note`), SWITCH_CANDIDATES.md, host/OLDCC_LOG.md and host/increments/160-programs.md current.
 
 ## State
-- fnc.py: 313 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
+- fnc.py: 314 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
 - Open (DIFF lines, candidate of SWITCH_CANDIDATES.md):
-  setposition 18 (K8), tprint 11 (K4), chklpdefs 10 (K13), chkfamindvar 9 (K8), affsize 3 (K5),
+  setposition 18 (K8), chklpdefs 10 (spopt loop inversion), chkfamindvar 9 (K8), affsize 3 (K5),
   rmlabels 2 (spopt with the D2AV copy), setsymtable 2 (K11), mkconstopnd 2 (dead `ldl rr0,rr6`, as v0p OLD_D3KC).
 - What was tried for each: its `note` in findings.json and the dated entries of host/OLDCC_LOG.md.
 
@@ -47,9 +47,10 @@ The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its te
 ## Next steps (one at a time)
 1. (done 2026-11-21: vc OLD_DNR leaves out the gopt register records, sg_code 0xf800)
 2. (done 2026-11-21: vnumber by gotos to the copies the original keeps and `if (0) { l: then-block }` before the test)
-3. (tried 2026-11-21) tprint (11): the goto block order gives 10; our spopt moves the block with the kept fprintf call in front of
-   the step label, the original does not: a spopt switch candidate (codemove), see its note.
-4. (tried 2026-11-21) chklpdefs (10): left is the place of the loop step (behind the cerror call in the original); two forms worse, see its note.
+3. (done 2026-11-21: tprint by narrowing vc spopt OLD_D50; method: run the shipped /lib/spopt on our codgen output (sccvc -S)
+   and compare the block order, then build vc spopt without each switch)
+4. chklpdefs (10): the natural form (git 520a71ea^) gives 51 with both spopts; the original spopt inverted the loop as D50 does for
+   cas jpr. Next: trace D50/loop inversion in z21.c on the natural form, find why it does not fire, narrow or extend D50.
 5. setposition (18) and chkfamindvar (9) (K8, pair choice). Trace rsuse at the pair getreg. In setposition the original takes the
    idle parameter pair rr2 at the second printf argument but not at the first. Find the state difference; allowing parameter pairs
    in the D2P loop is worse (306).
