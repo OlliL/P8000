@@ -385,9 +385,8 @@ operand(p)
 	NODE *p;
 {
 	static struct qa opnd;
-	int i;
-	long l;
 	struct qa a, b, c;
+	int i;
 
 	if (0)
 		p = 0;	/* dead: its store of p at the entry is left (the original) */
