@@ -463,7 +463,6 @@ liveonexit(lp)
 struct loop *lp;
 {
 	struct bl *e;
-	struct quad *h;
 	struct hrec *y;
 	int i, s;
 

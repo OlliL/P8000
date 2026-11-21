@@ -108,8 +108,8 @@ chkcalls(lp)
 struct loop *lp;
 {
 	struct bl *p;
-	struct quad *q;
 	int x;
+	struct quad *q;
 
 	p = lp->bls;
 outer:
@@ -812,9 +812,10 @@ addsavequads()
 void
 rmrestorequad()
 {
-	int b, reg, e, s, c, out, ok;
+	int b, reg, e, s, c, out;
 	struct quad *q;
 	struct quad *t;
+	int ok;
 
 	for (b = 0; b < blkno; b++) {
 		if (s4d90)
@@ -950,8 +951,9 @@ findend(b, px)
 int b;
 int *px;
 {
-	int e, c;
+	int c;
 	struct quad *q;
+	int e;
 
 	e = blks[b]->a.w4;
 	c = b;
