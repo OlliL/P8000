@@ -3063,11 +3063,11 @@
   "vnumber": {
    "orig": "5:0114",
    "size_orig": 188,
-   "status": "open",
+   "status": "masked",
    "kind": "proven",
    "module": "ebbo2.c",
    "file": "ebbo2.c",
-   "note": "open (DIFF 38): written without the gotos of the draft (2026-11-20): the inner switch with break/default around the constant fold, the copies of the common tails (delquad; clear/addstore under `b2 == 8 || b2 == 6`), case 60 `if (q->c.b2 != 3) { checkuse; clear; addstore; continue; } checkuse; continue;`: DIFF 131 -> 38. Left: cause 8: the original keeps the first copy of the tail `q->b.b2 = 0; checkuse ..` (the identop block jumps into the constant fold block, 5:0392), ours the later one; the same for `updateopnd; va = vnfind`. An if/else-if chain with one tail and the switch cases as && conditions: 41 (the tails right: comjump keeps the first copy, only the cpir switch is missing); the same chain with the inner switch and `goto notcst` into the else: 131 (codemove moves the identop test to the front) (2026-11-20) the full tail copied into the identop branch (ending with continue, for comjump): 48, the copies stay"
+   "note": "open (DIFF 38): written without the gotos of the draft (2026-11-20): the inner switch with break/default around the constant fold, the copies of the common tails (delquad; clear/addstore under `b2 == 8 || b2 == 6`), case 60 `if (q->c.b2 != 3) { checkuse; clear; addstore; continue; } checkuse; continue;`: DIFF 131 -> 38. Left: cause 8: the original keeps the first copy of the tail `q->b.b2 = 0; checkuse ..` (the identop block jumps into the constant fold block, 5:0392), ours the later one; the same for `updateopnd; va = vnfind`. An if/else-if chain with one tail and the switch cases as && conditions: 41 (the tails right: comjump keeps the first copy, only the cpir switch is missing); the same chain with the inner switch and `goto notcst` into the else: 131 (codemove moves the identop test to the front) (2026-11-20) the full tail copied into the identop branch (ending with continue, for comjump): 48, the copies stay; 2026-11-21 masked by gotos as the original keeps its copies: the identop branch `goto ib` (to q->b.b2 = 0 of the constant fold block), the exprfind branch `goto cu` (to its checkuse), and two then-blocks before their tests (`if (0) { idt: .. }` for identop, `if (0) { c60: .. }` for case 60): 38 > 33 > 21 > 9 > 0"
   },
   "f5_01d0": {
    "orig": "5:01d0",

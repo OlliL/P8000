@@ -5,11 +5,11 @@ classified here with its witnesses, and the search for source forms goes on. A c
 source forms of all its witnesses are exhausted (counted in findings.json). Only open witnesses are listed: a witness
 that became exact leaves the list (its form is in findings.json and host/increments/160-programs.md), a candidate
 without witnesses leaves it too (2026-11-20: K3 = OLD_D3S, K9, K10 went by source forms: dead code, the comma form; K7 by OLD_D2N extended to pairs (2026-11-21); K16 by vc OLD_D2TC, K14 by vc OLD_D2XP extended, K15 by vc OLD_D4F (2026-11-21); K1, K17, K12: a lone label, a dead goto to a label or a dead store to the parameter makes codgen reload it (checkops, cmwalk, deledge)).
-The numbers are the DIFF lines of fnc.py (2026-11-21, 312 of 321 OK).
+The numbers are the DIFF lines of fnc.py (2026-11-21, 313 of 321 OK).
 
 | Id | Guessed mechanism (pass) | Open witnesses (DIFF) | Status |
 |----|--------------------------|-----------------------|--------|
-| K4 | which copy of a common tail stays: the original the first, ours the later one (spopt xjump/comjump); several were source forms (the tail in both branches: indupdate, constfold, dotree; goto to the kept return copy: setsym, insrtlive) | vnumber (38), tprint (11; 8 forms all equal) | candidate |
+| K4 | which copy of a common tail stays: the original the first, ours the later one (spopt xjump/comjump); several were source forms (the tail in both branches: indupdate, constfold, dotree; goto to the kept return copy: setsym, insrtlive) | tprint (11; 8 forms all equal) | candidate |
 | K5 | a parameter copied before an operation that changes its register (`ld r1,r3; mult rr0,r5`; `ldl rr0,rr6`, `ld r3,r2`; cause 1) (scodgen); looks like OLD_D3KC of v0p (vc lacks it because of cas copyfile): a narrower form is the guess; 11 type/order/expression forms and 7 dead-code forms: none | mkconstopnd (2), affsize (3) | candidate |
 | K6 | a store of an 8 bit field of a frame struct goes directly to the slot (scodgen fixfld) | setsymtable (2; the form `((char *)&tq)[4]` is a guess) | candidate |
 | K8 | the pair of a temporary: rr4 against rr6 (cause 6); pattern: the original frees the word parameters in r6/r7 (and rr2 of a pointer parameter) for temporaries after their frame store, but keeps a live pointer parameter in rr6; ours the opposite | chkfamindvar (9), setposition (18), rmlabels (2) | candidate |

@@ -152,7 +152,9 @@ struct quad *q;
 					}
 					q->op = 60;
 					q->a = tmp;
+				ib:
 					q->b.b2 = 0;
+				cu:
 					checkuse(q);
 					if (q->c.b2 == 8 || q->c.b2 == 6) {
 						clear(q, 1);
@@ -160,7 +162,8 @@ struct quad *q;
 					}
 					continue;
 				}
-			if (identop(q)) {
+			if (0) {
+			idt:
 				vc = vnfind(&q->c);
 				vc->val = va->val;
 				vc->cst = va->cst;
@@ -170,25 +173,21 @@ struct quad *q;
 					continue;
 				}
 				q->op = 60;
-				q->b.b2 = 0;
-			} else {
-				vc = vnfind(&q->c);
-				vx = exprfind(q, &fl);
-				vc->val = vx->val;
-				if (fl != 0) {
-					vc->dead = 1;
-					if (q->c.b2 == 3) {
-						q = delquad(q);
-						continue;
-					}
+				goto ib;
+			}
+			if (identop(q))
+				goto idt;
+			vc = vnfind(&q->c);
+			vx = exprfind(q, &fl);
+			vc->val = vx->val;
+			if (fl != 0) {
+				vc->dead = 1;
+				if (q->c.b2 == 3) {
+					q = delquad(q);
+					continue;
 				}
 			}
-			checkuse(q);
-			if (q->c.b2 == 8 || q->c.b2 == 6) {
-				clear(q, 1);
-				addstore(q);
-			}
-			continue;
+			goto cu;
 		case 33: case 47:
 			va = vnfind(&q->a);
 			if (va->dead) {
@@ -284,12 +283,15 @@ struct quad *q;
 				q = delquad(q);
 				continue;
 			}
-			if (q->c.b2 != 3) {
+			if (0) {
+			c60:
 				checkuse(q);
 				clear(q, 1);
 				addstore(q);
 				continue;
 			}
+			if (q->c.b2 != 3)
+				goto c60;
 			checkuse(q);
 			continue;
 		}
