@@ -738,15 +738,3 @@ prtcounts()
 		if (ctpos[i] || ctneg[i])
 			printf("// (%d)\t%d\t%d\n", i, ctpos[i], ctneg[i]);
 }
-
-int
-itfind(a)
-	struct qa *a;
-{
-	int i;
-
-	for (i = 1; i < nal; i++)
-		if (altab[i] == a->w4)
-			return i;
-	return 0;
-}

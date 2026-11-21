@@ -39,6 +39,20 @@ extern void setbit();
 /* forward declarations (the functions are in the order of the original) */
 void pralias();
 
+/* the position of the operand a in the alias table, 0 when it is not there (the first function of the module: its callers in
+   setposition use calr) */
+int
+itfind(a)
+	struct qa *a;
+{
+	int i;
+
+	for (i = 1; i < nal; i++)
+		if (altab[i] == a->w4)
+			return i;
+	return 0;
+}
+
 /*
  * the class of an operand is entered in the lists of the addresses (X) and of the pointers (Y), a structure with its members (names
  * guessed, written from /lib/gopt)

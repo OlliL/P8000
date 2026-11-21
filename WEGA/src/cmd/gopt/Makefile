@@ -22,9 +22,10 @@
 SCC = sccvc
 CFLAGS = -O -I../../head/oldv7
 CAS = cas
+SCRT0 = /lib/scrt0.o
+AR = ar
 SLD = sldo
 SLDFLAGS = -i -e start -Md7 -Mb8 -Ms63
-CRT = ../../lib/libc/nonseg/crt
 LIBC = ../../lib/slibc-v12.a
 PREFIX = /
 STRIP = strip
@@ -36,24 +37,28 @@ OBJS5 = ebbo2.o lpinv2.o lpind2.o
 OBJS4B = beta2.o
 OBJS5B = reg2.o alias2b.o
 OBJS = $(OBJS4) $(OBJS5) $(OBJS4B) $(OBJS5B)
+# the library members of segment 4 (see the gopt rule)
+LIBC4 = fseek.o ftell.o rdwr.o fopen.o getw.o
 HEADERS = gopt.h ops_gopt.c
 
 all: gopt
 
-gopt: scrt0.o $(OBJS) $(LIBC)
-	$(SLD) $(SLDFLAGS) -Mt4 scrt0.o $(OBJS4) -Mt5 $(OBJS5) -Mt4 $(OBJS4B) -Mt5 $(OBJS5B) $(LIBC) -o $@
+# The start-up code is the one of the library (/lib/scrt0.o, Rev 3.2: it saves rr8 first), not a crt0.list template.
+# The first five members of the library (fseek ftell rdwr fopen getw) fill the end of segment 4 in the original (from 4:fc3a
+# to 4:fffe), the others follow the modules in segment 5: they are linked by name with -Mt4 (a whole library behind -Mt4
+# puts what does not fit into segment 0). sldo warns that the archive defines their symbols again.
+
+gopt: $(OBJS) $(LIBC4) $(LIBC)
+	$(SLD) $(SLDFLAGS) -Mt4 $(SCRT0) $(OBJS4) -Mt5 $(OBJS5) -Mt4 $(OBJS4B) -Mt5 $(OBJS5B) -Mt4 $(LIBC4) -Mt5 $(LIBC) -o $@
+
+$(LIBC4): $(LIBC)
+	$(AR) x $(LIBC) $(LIBC4)
 
 part: comm2.o rdr2.o reader2.o quads2.o debug2.o wrtil2.o alias2.o flow2.o dom2.o init2.o live2.o ebbo2.o
 
 install: gopt
 	cp gopt $(PREFIX)/lib/gopt
 	$(STRIP) $(PREFIX)/lib/gopt
-
-scrt0.s: $(CRT)/mkcrt0.sh $(CRT)/scrt0.s.in $(CRT)/crt0.list
-	sh $(CRT)/mkcrt0.sh gopt > $@
-
-scrt0.o: scrt0.s
-	$(CAS) -u -o $@ scrt0.s
 
 reader2.o: reader2.c $(HEADERS)
 	$(SCC) $(CFLAGS) -c reader2.c
@@ -93,4 +98,4 @@ alias2b.o: alias2b.c $(HEADERS)
 	$(SCC) $(CFLAGS) -c alias2b.c
 
 clean:
-	rm -f *.o scrt0.s gopt
+	rm -f $(OBJS) $(LIBC4) gopt

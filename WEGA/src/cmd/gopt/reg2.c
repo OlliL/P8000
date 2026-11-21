@@ -41,7 +41,7 @@ extern void markreg();
 extern struct quad *addsave(), *ebbtail();
 extern struct quad *insertquad();
 extern int eqopnd();
-extern void propagate(), addsavequads(), rmrestorequad(), prcgraph();
+extern void propagate(), addsavequads(), rmrestorequad(), prcgraph(), prgraph();
 struct pr { int x; int y; };
 extern struct pr *edges;
 extern int blkno;
@@ -653,7 +653,7 @@ savecolors()
 	if (s4d90) {
 		printf("// quads before propagation\n");
 		prquads();
-		prcgraph();
+		prgraph();
 	}
 	propagate();
 	if (s4d90) {

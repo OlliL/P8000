@@ -1510,9 +1510,9 @@
    "size_orig": 68,
    "status": "masked",
    "kind": "proven",
-   "module": "wrtil2.c|alias2.c",
-   "file": "wrtil2.c",
-   "note": "names guessed (a table at the pointer 0x70da, 0x70de entries)"
+   "module": "alias2.c",
+   "file": "alias2.c",
+   "note": "names guessed (a table at the pointer 0x70da, 0x70de entries) (2026-11-21) the first function of alias2.c, not the last of wrtil2.c: setposition calls it with calr, which the assembler gives only for a function of the same file."
   },
   "setposition": {
    "orig": "4:6c0a",
