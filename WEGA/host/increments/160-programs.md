@@ -116,3 +116,4 @@ PLZ programs and `as`: 170.
 - 2026-11-21 gopt: affsize exact (`matw = affdim / 16 + 1`; OLD_D2M also divides a name found in its register in the pair of its even register); 319 of 321.
 - 2026-11-21 gopt: mkconstopnd exact (OLD_D2P: segmented, the words of a parameter merge into a pair only when no pair is free); 320 of 321.
 - 2026-11-21 gopt: setsymtable exact by the source form `tq.a.w4 = (t = betatbl[..].x1, t)` (no compiler change); 321 of 321.
+- 2026-11-21 gopt data: setsym string order by `default: goto bad;` (cerror block behind the switch, code unchanged); the data differs only in the almap strings (spopt codemove: the done block behind zero instead of neg).

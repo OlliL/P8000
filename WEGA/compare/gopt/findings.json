@@ -1744,7 +1744,7 @@
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "odd forms: gotos zero/neg/done, the block `pos = 0; pos = -1; done: debug tail; return` stands inside the first if (the order of the original behind its first test); each loop leaves with goto done. almap(p, op): the position of the operand in the alias table (op 3 addresses nadr..nptr, 0x18/0x1e pointers nptr..nal, else sx14); name from the debug strings. Unlike the other tails the original compares p->w4 == altab[i] in this order. (2026-11-20) data: the string (almap, symbol=...) stands in front of // almap: found pos in the original, so zero/neg/done followed the switch in the source; with that form our popt does not move the blocks up behind the first test (DIFF 48..50, 4 forms); code kept in the masked form, the data order stays open"
+   "note": "odd forms: gotos zero/neg/done, the block `pos = 0; pos = -1; done: debug tail; return` stands inside the first if (the order of the original behind its first test); each loop leaves with goto done. almap(p, op): the position of the operand in the alias table (op 3 addresses nadr..nptr, 0x18/0x1e pointers nptr..nal, else sx14); name from the debug strings. Unlike the other tails the original compares p->w4 == altab[i] in this order. (2026-11-20) data: the string (almap, symbol=...) stands in front of // almap: found pos in the original, so zero/neg/done followed the switch in the source; with that form our popt does not move the blocks up behind the first test (DIFF 48..50, 4 forms); code kept in the masked form, the data order stays open (2026-11-21, data) the string of the default printf stands in front of the done block strings in the original: with the done block behind the switch (zero/neg in the first if, goto done) the strings are in order, but spopt codemove puts the done block behind zero (the first jump to it), the original behind neg (DIFF 5); forms tried: done at the end (5), neg at the end with done (38), neg in if (0) (5), first test as goto zero with all three at the end (50), the default body in the first block (57), zero via a label in front of neg's goto (5), neg first with zero in if (0) (5)."
   },
   "addaffect": {
    "orig": "4:831e",
@@ -2590,7 +2590,7 @@
    "kind": "proven",
    "module": "live2.c",
    "file": "live2.c",
-   "note": "exact (masked): popt keeps the return copy right before the epilogue label (the last case after the dispatch moved up); the original keeps the default return 1 and the case 1 return 0: case 3 is `if (!(...)) goto r1; goto r0;` with r1 at the default return 1 and r0 at the case 1 return 0"
+   "note": "exact (masked): popt keeps the return copy right before the epilogue label (the last case after the dispatch moved up); the original keeps the default return 1 and the case 1 return 0: case 3 is `if (!(...)) goto r1; goto r0;` with r1 at the default return 1 and r0 at the case 1 return 0 (2026-11-21, data) the default case as `default: goto bad;` with `bad: cerror(..); goto r1;` behind the switch: the code stays exact and its string comes behind the three printf strings, as in the data of the original."
   },
   "markblkvar": {
    "orig": "4:d234",

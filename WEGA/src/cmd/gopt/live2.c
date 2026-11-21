@@ -255,7 +255,7 @@ setsym(q, flag)
 
 	switch (flag) {
 	default:
-		cerror("setsym: illegal flag");
+		goto bad;
 r1:
 		return 1;
 	case 1:
@@ -281,6 +281,9 @@ r0:
 			goto r1;
 		goto r0;
 	}
+bad:
+	cerror("setsym: illegal flag");
+	goto r1;
 }
 
 /* the symbols of the quads of the block b are entered (name from the string); 0 when the table is full */
