@@ -1372,6 +1372,9 @@ struct node *p;
 				 */
 				if (d51turnable(p3) && d51inwin(p1))
 					return p1;
+				/* (d): not a block ending in a pair iterate turns whose label more jumps name (a loop test at the bottom: gopt chklpdefs) */
+				if (d51turnable(p3) && p1->ref->refc >= 2)
+					return p1;
 				if (d51jn(p1) == 0)
 					return p1;
 				if (d51backloop(p1, p3) && d51jn(p1) == 1 && d51behind(p1, p3->ref))

@@ -614,64 +614,69 @@ int op, x;
 		printf("OP=%d, q:\n", op);
 		prquad(q);
 	}
-	for (dp = a0e0; dp != 0; dp = dp->next) {
-		if (0) {
-lr:
-			if (0) {
-lt:
-				if ((op == 2 ? q->a.b2 : q->b.b2) != 6)
-					continue;
-				goto so;
-			}
-			if (q->op == 1 || q->op == 48)
-				goto lt;
-so:
-			if (!sameopnd(q, dp->q, op, 1))
-				continue;
-			if (!dp->q->f2)
-				continue;
-			if (dp->f13 && dp->q->c.b2 != 3)
-				return 0;
-			if (r == 0)
-				r = insrtlpdef(q);
-			if (s4d86 > 2) {
-				if (s4d86 > 2)
-					printf("found fam. of bsc ind var, dfqd, p->dfquad:\n");
-				prquad(r);
-				prquad(dp->q);
-			}
-			for (t = a0e0; t != 0; t = t->next)
-				if (t->q == r)
-					break;
-			if (t->q == r) {
-				r->f2 = 1;
-				if (dp->f14 || dp->f13) {
-					res = fillindvar(r, q, op, dp, t);
-					if (res != 0 && dp->q->c.b2 == 3) {
-						if (s4d86 > 3)
-							printf("chklpdefs(), tempcnt[temp=%d]=%d\n", dp->q->c.w4, ctpos[dp->q->c.w4]);
-						if (ctpos[dp->q->c.w4] <= 1)
-							delindvar(dp->l10, dp->e14.w0);
-					}
-					return res;
-				}
-			} else
-				cerror("chklpdef: quad not found\n");
-			continue;
-		}
-		if (r != dp->q)
-			goto lr;
-		if (dp->l6 != 0) {
-			n = dp->l6;
-			v = dp->f10 ? 1 : 48;
-			while (n != 0) {
-				indupdate(n, r, v);
-				n = n->link;
-			}
-			freelist(0, dp->l6);
-			dp->l6 = 0;
-		}
+	dp = a0e0;
+	goto lt;
+lb:
+	if (0) {
+lt2:
+		if ((op == 2 ? q->a.b2 : q->b.b2) != 6)
+			goto ls;
+		goto so;
 	}
+	if (q->op == 1 || q->op == 48)
+		goto lt2;
+so:
+	if (!sameopnd(q, dp->q, op, 1))
+		goto ls;
+	if (!dp->q->f2)
+		goto ls;
+	if (dp->f13 && dp->q->c.b2 != 3)
+		return 0;
+	if (r == 0)
+		r = insrtlpdef(q);
+	if (s4d86 > 2) {
+		if (s4d86 > 2)
+			printf("found fam. of bsc ind var, dfqd, p->dfquad:\n");
+		prquad(r);
+		prquad(dp->q);
+	}
+	for (t = a0e0; t != 0; t = t->next)
+		if (t->q == r)
+			break;
+	if (t->q == r) {
+		r->f2 = 1;
+		if (dp->f14 || dp->f13) {
+			res = fillindvar(r, q, op, dp, t);
+			if (res != 0 && dp->q->c.b2 == 3) {
+				if (s4d86 > 3)
+					printf("chklpdefs(), tempcnt[temp=%d]=%d\n", dp->q->c.w4, ctpos[dp->q->c.w4]);
+				if (ctpos[dp->q->c.w4] <= 1)
+					delindvar(dp->l10, dp->e14.w0);
+			}
+			return res;
+		}
+	} else
+		cerror("chklpdef: quad not found\n");
+ls:
+	dp = dp->next;
+	goto lt;
+lh:
+	if (r != dp->q)
+		goto lb;
+	if (dp->l6 != 0) {
+		n = dp->l6;
+		v = dp->f10 ? 1 : 48;
+		while (n != 0) {
+			indupdate(n, r, v);
+			n = n->link;
+		}
+		freelist(0, dp->l6);
+		dp->l6 = 0;
+	}
+	goto ls;
+lt:
+	if (dp != 0)
+		goto lh;
 	return 0;
 }
 

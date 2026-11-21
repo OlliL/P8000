@@ -606,7 +606,8 @@ lone jump of `case 0x56: break`, (c) the step block to the `continue` of case 0x
 turned where it stands (`cp 0x56; jne plain`, F behind it) and D50 finds the stretch. Each part is needed (jpr 42, 42, 54
 lines without a, b, c); without the limits other functions change: (a) without the window stops the dispatch of
 `switch (res)` in jpr itself, (c) without the one instruction changes p2loop and eight more modules, (c) with any loop
-head in the window changes yyparse. Every other module of cas is byte-identical with and without the switch. One witness.
+head in the window changes yyparse. Every other module of cas is byte-identical with and without the switch. One witness. (d) (2026-11-21): not a block that ends in such a pair when more than one jump names its label (a loop test at the
+bottom, entered by a jump and named by the step: gopt chklpdefs; cas unchanged).
 
 
 ### D52 A conditional expression in front of the function exit
