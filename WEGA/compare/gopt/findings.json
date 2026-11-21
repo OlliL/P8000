@@ -3912,7 +3912,7 @@
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "open (DIFF 2): the original copies the pointer parameter (ldl rr0,rr6) before the first store, ours does not"
+   "note": "open (DIFF 2): the original copies the pointer parameter (ldl rr0,rr6) before the first store, ours does not; 2026-11-21 8 more forms (register parameters, declaration order, unsigned w0, the negative branch first, w0 last, v negated): none; the dead `ldl rr0,rr6` then `ldl rr2,rr6` is v0p OLD_D3KC (the parameter copied though wanted in its register; rr0 cannot address); D3KC in vc as a whole: gopt 214. A narrow D3KC is the candidate"
   },
   "insrtopstmp": {
    "orig": "5:5a86",
