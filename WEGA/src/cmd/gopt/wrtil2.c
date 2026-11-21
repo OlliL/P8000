@@ -142,14 +142,14 @@ writeil()
 						p->in.left = pend;
 						p->in.right = mkleaf(&q->a);
 						if (q->f0) {
-							u = talloc();
-							u->in.rall = 0;
-							u->in.op = STARG;
-							u->in.type = q->a.w0;
-							u->in.left = p->in.right;
-							u->stn.stsize = q->b.w4;
-							u->stn.stalign = q->c.w4;
-							p->in.right = u;
+							v = talloc();
+							v->in.rall = 0;
+							v->in.op = STARG;
+							v->in.type = q->a.w0;
+							v->in.left = p->in.right;
+							v->stn.stsize = q->b.w4;
+							v->stn.stalign = q->c.w4;
+							p->in.right = v;
 						}
 						pend = p;
 					} else {
@@ -203,7 +203,7 @@ writeil()
 				printf("T%d\t\n", (symtab[q->b.w4].sflags >> 4) & 0xfff);
 			else if (q->b.b2 == 6 && betatbl[q->b.w4].p6 < 0) {
 				if (qflag > 2)
-					printf("// assigning S%d to offset %d\n", q->b.w4, tmpoff);
+					printf("// assigning S%d to offset %d\n", q->a.w4, tmpoff);
 				printf("T%d\t\n", -tmpoff);
 				betatbl[q->b.w4].p6 = tmpoff;
 				tmpoff += szty(q->b.w0) * 2;

@@ -651,7 +651,7 @@ so:
 				if (s4d86 > 3)
 					printf("chklpdefs(), tempcnt[temp=%d]=%d\n", dp->q->c.w4, ctpos[dp->q->c.w4]);
 				if (ctpos[dp->q->c.w4] <= 1)
-					delindvar(dp->l10, dp->e14.w0);
+					delindvar(dp->l10, dp->x20);
 			}
 			return res;
 		}
@@ -721,7 +721,7 @@ int kind;
 	case 45:
 		if (q->b.b2 == 1 || q->b.b2 == 7 || ((q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8) &&
 		    !isdefined(q, 3) && !(((q->a.w0 & 0x30) == 0x10) ^ ((q->b.w0 & 0x30) == 0x10)))) {
-			if (q->op == 45 && q->a.b2 != 1 && q->a.b2 != 7)
+			if (q->op == 45 && q->b.b2 != 1 && q->b.b2 != 7)
 				return 0;
 			q = chklpdefs(r, q, 2, kind);
 			return q;

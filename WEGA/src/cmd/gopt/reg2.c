@@ -196,7 +196,7 @@ int flag;
 		if (inreach(q)) {
 			switch (q->c.b2) {
 			case 4:
-				if ((symtab[q->c.w4].sflags & 1) || q->f7)
+				if ((symtab[q->c.w4].sflags & 1) || q->c.fl)
 					include(flag, q, last);
 				break;
 			case 8:
@@ -317,7 +317,7 @@ l59:
 			if (q->c.b2 == 4) {
 				if (symtab[q->c.w4].sbyte5)
 					nd->cost = 999;
-				else if (q->f7)
+				else if (q->c.fl)
 					nd->cost = 800;
 				else
 					nd->cost = 0;

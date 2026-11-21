@@ -389,11 +389,11 @@ taballoc(n, a)
 		else
 			m = STEP;
 		seg = ((long)arptr[a] >> 24) & 0x7f;
-		if (ssgbrk(seg, m) == (char *)-1) {
+		if ((long)ssgbrk(seg, m) == -1L) {
 			if (a != 1)
 				cerror("C Optimizer: out of space\n");
 			arptr[a] = arlim[a] = mkseg(0, m);
-			if (arptr[a] == (char *)-1)
+			if ((long)arptr[a] == -1L)
 				cerror("C Optimizer: out of space\n");
 		}
 		arlim[a] += m;
