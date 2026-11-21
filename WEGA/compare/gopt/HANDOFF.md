@@ -39,9 +39,8 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
 1. (done 2026-11-21: /lib/gopt byte-identical after the link and strip: library start-up code, five library members in
    segment 4, about 50 functions found by the strict compare of the linked file (host/recon/framemap.py; frame layout, chain
    and statement order, constants, globals, members, tails), vc OLD_D14T for initopts; gopt in SUBDIRS of src/cmd)
-2. findings.json clean-up (no function removed, only contents): statuses such that the generated FINDINGS.md lists only
-   "exact with notes", and the notes keep only what is still odd in the source (dead code, odd forms, guessed names). What was
-   tried on the way goes; what matters beyond gopt goes to KNOWLEDGE.md / OLDCC_LOG.md first.
+2. (done 2026-11-21: findings.json: every function exact, the notes say only what is odd in the source; FINDINGS.md has
+   only "Exact, with a note"; findings.py leaves empty sections out)
 3. compare/gopt/COMPILER.md, after the model of src/lib/libcisam/COMPILER.md: the switches gopt needs, each with its witness
    and mechanism (take the witness table of SWITCH_CANDIDATES.md over). Move src/lib/libcisam/COMPILER.md to
    compare/libcisam/COMPILER.md and fix its references (host/OLDCC.md, host/OLDCC_LOG.md, host/HANDOFF_libcisam.md, comments in

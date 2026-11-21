@@ -79,10 +79,9 @@ def write_md(d, path, prog):
         else:
             o.write('exact: the program is byte-identical with the original (`host/tools/checkall.sh`).\n\n')
         for s, title in (('open', 'Open'), ('masked', 'Masked')):
-            o.write('## %s\n\n' % title)
             if not st(s):
-                o.write('None.\n\n')
-                continue
+                continue	# an empty section is left out
+            o.write('## %s\n\n' % title)
             o.write('| Function | Address | Lines | Note |\n|---|---|---|---|\n')
             for k in st(s):
                 o.write('| %s | %s | %s | %s |\n' % (k, fn[k]['orig'], fn[k].get('lines', ''), fn[k].get('note', '')))
