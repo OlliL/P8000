@@ -334,8 +334,8 @@ markall()
 int
 marklpvar()
 {
-	struct loop *p;
 	struct bl *q;
+	struct loop *p;
 
 	if (s4d84 > 1) {
 		printf("marklpvar()\n\n");
@@ -526,7 +526,7 @@ allocvec(q, kind, field)
 	struct lrec *p;
 
 	if (kind == 1) {
-		if (s4d84 > 1)
+		if (s4d84 > 2)
 			printf("allocvec(LIVE,field=%d)\n", field);
 		if (field == 5) {
 			p = (struct lrec *)taballoc(28, 2);

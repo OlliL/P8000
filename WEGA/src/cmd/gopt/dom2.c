@@ -361,7 +361,7 @@ addblk(lp, blk)
 	struct bl **lp;
 	int blk;
 {
-	struct bl *p, *q;
+	struct bl *q, *p;
 
 	if (s4d82 > 1) {
 		if (lp == &pheaderlist)
@@ -510,7 +510,7 @@ addhdrlist(h)
 		p = 0;
 	} else {
 		f = chkhdr(h);
-		q = p = loops;
+		p = q = loops;
 		while (p != 0) {
 			if (idfn[p->hdr] <= d)
 				break;

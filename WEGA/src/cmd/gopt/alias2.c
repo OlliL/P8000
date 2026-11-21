@@ -867,7 +867,7 @@ alret(p)
 	} else {
 		if (aflag > 1)
 			printf("// more nodes put on alfree\n");
-		for (q = last = alfree; q != 0; q = q->next)
+		for (last = q = alfree; q != 0; q = q->next)
 			last = q;
 		last->next = p;
 	}
@@ -1012,7 +1012,7 @@ checkalias(q, ot)
 	int pos;
 	struct aln *n;
 
-	if (aflag > 3)
+	if (aflag > 4)
 		printf("// checkalias opndtype = %d\n", ot);
 	if (ot == 2) {
 		if (q->a.b2 == 8)
@@ -1041,7 +1041,7 @@ checkalias(q, ot)
 			break;
 	if (n == 0)
 		return 0;
-	if (aflag > 3)
+	if (aflag > 4)
 		printf("checkalias, returning %s\n", ascii + symtab[altab[n->x0]].nameoff);
 	return n->next;
 }

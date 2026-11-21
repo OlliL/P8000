@@ -145,8 +145,8 @@ nextp:
 void
 symflags()
 {
-	struct quad *q;
 	int found;
+	struct quad *q;
 
 	found = 0;
 	for (q = qhead; q != 0; q = q->next) {

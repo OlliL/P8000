@@ -566,7 +566,7 @@ delindvar(d, stmpno)
 struct dl *d;
 int stmpno;
 {
-	struct nd *p, *prev;
+	struct nd *prev, *p;
 
 	if (s4d86 > 2)
 		printf("delindvar(stmpno=%d), stmp_cnt=%d\n", stmpno, ctneg[stmpno]);

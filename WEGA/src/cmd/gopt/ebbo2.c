@@ -679,7 +679,7 @@ int ot;
 	int k, v1, v2;
 
 	if (q->op == 47 || q->op == 33) {
-		x = y = (struct aln *)checkalias(q, ot);
+		y = x = (struct aln *)checkalias(q, ot);
 		if (q->c.b2 == 8)
 			v1 = betatbl[q->c.w4].x1;
 		else

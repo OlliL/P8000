@@ -22,8 +22,8 @@ betainit()
 {
 	struct quad *q;
 	struct bt *t;
-	int x, y, i;
-	int flag;
+	int x, y, flag;
+	int i;
 
 	betatbl = (struct bt *)taballoc(0, 5);
 	s4d94++;

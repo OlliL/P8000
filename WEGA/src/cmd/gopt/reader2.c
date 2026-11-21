@@ -13,7 +13,7 @@ extern struct pos curpos;
 extern FILE *infile;
 extern long ifpos;
 extern long qhead;
-extern int eflag, qflag, tflag, s4d92, nerrors;
+extern int eflag, qflag, s4d88, tflag, s4d92, nerrors;
 extern char *arhigh[];
 extern int ntmp;
 extern NODE *saved[];
@@ -325,11 +325,11 @@ passes()
 {
 	if (s0078 == 0) {
 		aliasm();
-		if (qflag > 4) {
+		if (s4d88 > 4) {
 			printf("// quads before aliasm");
 			prquads();
 		}
-		if (aliasmat() && qflag > 4)
+		if (aliasmat() && s4d88 > 4)
 			prquads();
 		if (flow_graph()) {
 			betainit();

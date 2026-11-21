@@ -147,7 +147,7 @@ int *flag;
 				return p;
 			*flag = 1;
 		}
-		if (v10 && x->c.b2 == 8 && x->op == 47 && betatbl[q->c.w4].x1 == betatbl[x->c.w4].x1) {
+		if (v10 && x->c.b2 == 8 && x->op == 47 && betatbl[x->c.w4].x1 == betatbl[q->c.w4].x1) {
 			if (x->c.b2 == q->c.b2 && x->c.w4 == q->c.w4)
 				return p;
 			*flag = 1;
@@ -842,7 +842,8 @@ struct loop *lp;
 		prlpdefs(a0e0);
 	}
 	a100 = 0;
-	t = prev = a0e0;
+	t = a0e0;
+	prev = t;
 	while (t != 0) {
 		q = t->q;
 		if (s4d86 > 3) {
@@ -1033,7 +1034,8 @@ int flag;
 				break;
 		}
 	}
-	pq = pv = qhead;
+	pq = qhead;
+	pv = pq;
 	while (pq != 0) {
 		if (pq == hq)
 			break;

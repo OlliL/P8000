@@ -405,8 +405,8 @@ eread()
 	register NODE *p;
 	register int op;
 	register int spare1, spare2, spare3;	/* unused */
-	char c;
 	int x;
+	char c;
 
 	for (; (c = getc(infile)) == '/'; ) {
 		putchar(c);
@@ -425,7 +425,7 @@ eread()
 		p->tn.lval = rdin(10);
 	if (op != BITYPE && p->in.op != FLD) {
 		p->tn.rval = rdin(10);
-		if (eflag > 1)
+		if (eflag > 2)
 			printf("eread: reading rval = %d\n", p->tn.rval);
 	}
 	if (p->in.op == TEMP)

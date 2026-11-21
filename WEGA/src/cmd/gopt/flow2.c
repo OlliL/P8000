@@ -58,7 +58,7 @@ flow_graph()
 			blks[blkno] = last;
 			blkno++;
 			nb = 0;
-			if (s4d88 > 3)
+			if (s4d88 > 4)
 				printf("// new basic block blkno = %d\n", blkno);
 		}
 		switch (q->op) {
@@ -68,7 +68,7 @@ flow_graph()
 			blks[blkno] = last;
 			blkno++;
 			nb = 0;
-			if (s4d88 > 3)
+			if (s4d88 > 4)
 				printf("// label encountered blkno = %d\n", blkno);
 			break;
 		case 0x11:
