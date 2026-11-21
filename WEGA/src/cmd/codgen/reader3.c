@@ -470,13 +470,22 @@ reread:
 			d3jdead = 2;	/* (1 at the next record) */
 #endif
 			continue;
+#ifdef OLD_DNR
+		case 'F':
+		case 'R':
+		case 'S':
+		case 'T':
+			cerror("register records of the global optimizer (-O3, -O5) are not read by this code generator");
+#else
 		case 'F':
 			fcmd(rdin(10));
 			nlcheck();
 			continue;
+#endif
 		case ']':
 			nlcheck();
 			continue;
+#ifndef OLD_DNR
 		case 'R':
 			a = rdin(10);
 			b = rdin(10);
@@ -494,6 +503,7 @@ reread:
 			tcmd((int)rdin(10));
 			nlcheck();
 			continue;
+#endif
 		case '#':
 			while ((ch = getchar()) != '\n')
 				;

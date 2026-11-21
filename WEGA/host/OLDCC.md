@@ -184,7 +184,9 @@ neutral on cas when added, alone and all together), with these differences:
   and r3,r1`); `OLD_D4F`: an idle float register that holds a name is free when its number is lower than the first free
   one (constfold: the int-to-double result in f0, so its store is merged); `OLD_D2TC`: rbusy takes a free word
   register instead of stopping, the reclaim of `p->in.sname - symtab` in gopt operand);
-  its text is near the 64 KiB of a nonsegmented program (sg_code 0xfd00 with the OLDPRINTF of src/Makefile, 2026-11-21);
+  `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of the tree uses) are not read,
+  their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room (+0 on cas);
+  its text is near the 64 KiB of a nonsegmented program (sg_code 0xf800 with the OLDPRINTF of src/Makefile, 2026-11-21);
   /bin/ld does not report an overflow (sg_code wraps, the program runs into zeros), the codgen Makefile stops then;
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13`,
   `OLD_D25` and `OLD_D12R` (gopt, neutral on cas: the static area of a function that returns a structure is zeros in the data,

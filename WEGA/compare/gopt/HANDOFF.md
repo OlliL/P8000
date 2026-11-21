@@ -36,7 +36,7 @@ findings.json (key `note`), SWITCH_CANDIDATES.md, host/OLDCC_LOG.md and host/inc
 - Register traces: a temporary `printf("KDBG ...")` of rsuse/rsfree in getreg, then `sccvc -S` of the module (never commit it).
 
 ## Watch out: the vc scodgen size
-The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its text is 0xfe00 of 0x10000: almost no room.
+The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its text is 0xf800 of 0x10000 (after OLD_DNR).
 /bin/ld wraps sg_code to 0 silently. The codgen Makefile now stops then; before, checkall hung.
 - Measure the size like checkall does: link with `LIBC="../../../../lib/oldlibc/printf/s1p.o ../../../../lib/oldlibc/doprnt/s1d.o
   ../../../../lib/oldlibc/doprnt/s1f.o /lib/libc.a"`. The three objects are copied from a checkall tree; they are gitignored.
@@ -45,8 +45,7 @@ The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its te
   `goto blk`). A segmented port was rejected (the NODE union of cg.h assumes 16-bit pointers).
 
 ## Next steps (one at a time)
-1. Free room in the vc scodgen: shorten OLD_* code in allo3.c and regallo3.c without changing behaviour (for example the
-   OLD_D2L, OLD_D4F and OLD_D2P loops of getreg). Target sg_code 0xfc00 or less. Run all four checks, then commit.
+1. (done 2026-11-21: vc OLD_DNR leaves out the gopt register records, sg_code 0xf800)
 2. vnumber (38, K4: which copy of a common tail spopt keeps): source forms with goto to the copy the original keeps, and the
    code in block order (see the notes of tprint, chkcalls and constfold for the technique).
 3. tprint (11, K4): the same technique. More than 22 forms are already listed in its note.

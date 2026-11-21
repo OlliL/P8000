@@ -1732,3 +1732,8 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   int-to-double result of a float compare went to f1 because f0 still held d1 (idle, named); the original takes f0, its
   store equals that of the other cases and spopt merges it. New vc `OLD_D4F`: an idle float register that holds a name
   is free when its number is lower than the first free one. Both +0 on cas; the vc scodgen text is 0xfe00 again.
+- Room in the vc scodgen (2026-11-21): new vc `OLD_DNR`. The records F R S T of the intermediate file come only from gopt
+  (wrtil2.c) with -O3 or -O5 (cc: optlev); no build of the tree calls sccvc so (cas, gopt, oldslibc use -O). Their code is
+  left out of the vc build (fcmd, rcmd, scmd, tcmd, memname, findtemp, the rflag part of fixtemp); the reader stops on such
+  a record with a message. sg_code 0xfe00 > 0xf800, +0 on cas, gopt 312 unchanged. (A first checkall failed: the edit left regs3.c
+  without a newline after the last #endif, and the native cc stops with "system call error: stdin: Error 0".)

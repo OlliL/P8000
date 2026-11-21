@@ -221,6 +221,7 @@ fixtemp(p)
 	register struct rs *n;
 	register int cls, j;
 
+#ifndef OLD_DNR
 	if (rflag) {
 		if ((i = p->tn.rval) >= 0 && (j = findtemp(i)) >= 0) {
 			p->in.op = REG;
@@ -229,6 +230,7 @@ fixtemp(p)
 			return;
 		}
 	}
+#endif
 	i = tabfind(p->tn.rval);
 	if (tmptab[i].off != p->tn.rval) {
 		if (i == 0x50)
@@ -969,6 +971,7 @@ oregfix(p)
 	p->in.sname = p->in.sname->sclass == 9 && ((p->in.sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
 }
 
+#ifndef OLD_DNR	/* vc: the register records of gopt (F R S T, -O3 and -O5) are not read */
 /* command F: a register variable or a temporary is released */
 void
 fcmd(n)
@@ -995,6 +998,7 @@ fcmd(n)
 	regvar[i].rcls = -1;
 }
 
+#endif
 /* the register variables are given up at the end of a function (flag: put the classes back) */
 void
 regreset(flag)
@@ -1028,6 +1032,7 @@ regreset(flag)
 			rsreturn(9, i);
 }
 
+#ifndef OLD_DNR
 /* command R: a variable (b > 0: by its tag, else a temporary) is placed in register a */
 void
 rcmd(a, b, type)
@@ -1237,3 +1242,5 @@ findtemp(tag)
 			return i;
 	return -1;
 }
+
+#endif
