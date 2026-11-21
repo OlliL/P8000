@@ -817,25 +817,25 @@ map(p, f, t)
 				ncopy(x, t1);
 			n2 = tcopy(n->in.left);
 			dotree(n);
-			y = talloc();
+			x = talloc();
 			if (logop(p->in.right->in.op)) {
 				if (p->in.right->in.type == 4)
-					n = mknode(0x3a, y, p->in.right, 4);
+					n = mknode(0x3a, x, p->in.right, 4);
 				else {
 					n = mknode(0x6e, p->in.right, 0L, 4);
-					n = mknode(0x3a, y, n, 4);
+					n = mknode(0x3a, x, n, 4);
 				}
 			} else {
 				c = bcon(0);
 				n = mknode(0x51, p->in.right, c, 4);
 				n->in.right->in.type = n->in.left->in.type;
-				n = mknode(0x3a, y, n, 4);
+				n = mknode(0x3a, x, n, 4);
 			}
 			if (op == 0x18)
-				ncopy(y, n2->in.left);
+				ncopy(x, n2->in.left);
 			else
-				ncopy(y, n2);
-			y->tn.lval = 1;
+				ncopy(x, n2);
+			x->tn.lval = 1;
 			n2 = tcopy(n->in.left);
 			dotree(n);
 			labquad(lab);
@@ -894,7 +894,7 @@ map(p, f, t)
 	}
 	case 0x15: {
 		int x1, x2;
-		NODE *n, *t1, *cp, *c;
+		NODE *n, *cp, *c;
 
 		x1 = newtmpno();
 		x2 = newtmpno();

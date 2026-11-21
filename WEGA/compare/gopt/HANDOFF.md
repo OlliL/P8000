@@ -36,10 +36,12 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
 - The vc scodgen is near 64 KiB of text (host/OLDCC.md, vc): measure its size after each change.
 
 ## Next steps (one at a time)
-1. gopt byte-identical: the link. bincmp of the stripped build: code segments 4: 65534, 5: 50432 (original) against 64768,
-   51200 (ours): the libc members are placed otherwise (the original has fseek, ftell, fread, getw at the end of segment 4;
-   Makefile notes: T5FIRST, the libc revision), and the start-up code lacks `ldl |<<63>>%0000|(r15),rr8` at 4:0002. Then
-   `make install`, checkall (gopt among the identical files).
+1. gopt byte-identical. Done (2026-11-21): the link (library start-up code /lib/scrt0.o, five library members in segment 4,
+   itfind in alias2.c, prgraph in savecolors), then about 50 functions that the masked compare of fnc.py had hidden (frame
+   layout, chain and statement order, constants, globals, members, tails; host/recon/framemap.py). Left: 9 bytes in initopts:
+   `fopen(strcat(strcpy(buf, argv[i]), ".S"), "r")` (three times): the original stores the results of strcpy and strcat into
+   one temporary (0x3e), ours into two (0x3e, 0x42): codgen keeps the first temporary while it takes the second. Source forms
+   first; then `make install`, checkall (gopt among the identical files).
 2. findings.json clean-up (no function removed, only contents): statuses such that the generated FINDINGS.md lists only
    "exact with notes", and the notes keep only what is still odd in the source (dead code, odd forms, guessed names). What was
    tried on the way goes; what matters beyond gopt goes to KNOWLEDGE.md / OLDCC_LOG.md first.
