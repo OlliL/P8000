@@ -128,6 +128,14 @@ For what is left: finding the source form of a hard function, and changing the c
 - The order (owner 2026-11-21): source forms, exhausted and written down; then an existing switch changed; a new switch only
   when changing an existing one changes other users; a new compiler only with the owner. A compiler change is never the
   first reaction to a difference: a trace (below) first. Forms tried go to `OLDCC_LOG.md`.
+- When no source form fits, the difference is not fixed at once but collected: `compare/NAME/SWITCH_CANDIDATES.md`, one
+  row per kind of behaviour (an id K1, K2, ...; the guessed mechanism and pass; the open witnesses with their differing
+  lines; the status: candidate, built, refuted). A new difference of the same kind joins its row as a witness; the
+  search for source forms of the other functions goes on. Only when the source phase is through are the candidates
+  worked one by one, the one with the most witnesses first: trace, then an existing switch changed or a new one built,
+  each with all its witnesses at once (gopt: K5, K7/K8 were each one mechanism behind several functions). A witness that
+  becomes exact leaves its row; a row without witnesses leaves the file. When the program is done the file is deleted:
+  the switches it led to go to `compare/NAME/COMPILER.md` (switch, pass, mechanism, witnesses), the rest to `OLDCC_LOG.md`.
 - How popt treats a function: `recon/poptrace.sh PROG FUNC`, or popt built with `-DTRACE`. Which copy of a tail stays depends on the order iterate, comjump, rmove (`OLDCC.md`, D20). When the mechanism is clear but the form is not, try the combinations by script instead of by hand.
 - A change of a pass, measured in a copy: `recon/oldvar.sh NAME PATCH.py [PASS]`. Removing a switch: a patch deleting its `#define`.
 - Before a compiler change, understand the mechanism by a trace: a temporary `printf("KDBG ...")` in the pass (codgen: rsuse
