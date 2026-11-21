@@ -2068,7 +2068,7 @@
    "kind": "proven",
    "module": "flow2.c",
    "file": "flow2.c",
-   "note": "exact (masked): dead `if (0) v = 0;` at the start: codgen does not take v from r5 after the entry store but compares it from the frame as the original (K17 by source; as tstlbit)"
+   "note": "exact (masked): dead `if (0) v = 0;` at the start: codgen does not take v from r5 after the entry store but compares it from the frame as the original (K17 by source; as tstlbit) (2026-11-21, strict) the else branch enters the loop body directly (jr ne to the body, the test of `while (v != edges[x].blk)` above it): `goto in;` into the while; do-while and for (;;) with the tests at the end give other code (HANDOFF step 11)."
   },
   "rmlabels": {
    "orig": "4:9c58",

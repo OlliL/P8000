@@ -58,5 +58,7 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
 9. Port src/cmd/gopt to host/gopt (as the other host ports).
 10. A corpus compare/gopt (corpus.py): the original /lib/gopt of WEGA 3.1 against 1. the gopt of `make shipped` and 2. host/gopt.
 11. The vc switches with one or two witnesses (matrix): think hard again whether a source form of the witness does without
-    the switch.
+    the switch. Also the goto forms that stand for an optimizer layout: deledge (`goto in;` into `while (v != ..)`: the
+    original enters the loop body, its test stands above it; do-while and for (;;) with the tests at the end give other
+    code; perhaps a do-while the old popt turned round: then a question of spopt).
 12. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks above.
