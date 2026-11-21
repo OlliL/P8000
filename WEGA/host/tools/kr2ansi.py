@@ -115,6 +115,8 @@ def process(src, protos):
             for dd in ds:
                 nm = find_name(dd)
                 ptypes[nm] = (base + ' ' + dd.replace(nm, '@@')).replace(' *', ' *').strip()
+        # a declaration (extern f(); followed by other declarations) is no definition: its names are not the parameters
+        if set(ptypes) - set(arglist) or re.search(r'\bextern\b', raw_decls): continue
         params = []
         for a in arglist:
             if a in ptypes:

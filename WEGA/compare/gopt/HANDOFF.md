@@ -53,7 +53,10 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    with the debug flags (d dominators, l live, p loops, r registers, y all), both outputs diffed with the addresses
    masked; a mix of vc and shipped objects does not run (other stack conventions); an instrumented vc build overflows
    segment 4.)
-7. Port src/cmd/gopt to host/gopt (as the other host ports).
+7. (done 2026-11-21: host/gopt, taken over from src/cmd/gopt by the port rules (host/HANDOFF_wega_disasm.md, the new section
+   "Global optimizer"), -Wall -Wextra clean; its output and .D file equal /lib/gopt's on the 18 gopt sources, cc and scc,
+   -1..-5 (180 runs, cpp and cparse/scparse of WEGA under z8k-emu), also the builds with the sanitizers and -ftrapv and with
+   zero and pattern initialised locals. Not yet in host/Makefile nor checkall: with the corpus (step 8), after asking.)
 8. A corpus compare/gopt (corpus.py): the original /lib/gopt of WEGA 3.1 against 1. the gopt of `make shipped` and 2. host/gopt.
 9. Centralize the parts of PCC's mip that the passes share: common, rdr and optim are in cparse and codgen (version 2.5)
    and in gopt (2.4). One place in the tree for them, used by cc/cparse/codgen/popt/gopt, every build byte-identical
