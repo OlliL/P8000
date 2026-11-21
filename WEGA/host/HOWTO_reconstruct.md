@@ -118,6 +118,12 @@ For what is left: finding the source form of a hard function, and changing the c
 - Source form first. A new switch comes only when no form fits; forms tried go to `OLDCC_LOG.md`.
 - How popt treats a function: `recon/poptrace.sh PROG FUNC`, or popt built with `-DTRACE`. Which copy of a tail stays depends on the order iterate, comjump, rmove (`OLDCC.md`, D20). When the mechanism is clear but the form is not, try the combinations by script instead of by hand.
 - A change of a pass, measured in a copy: `recon/oldvar.sh NAME PATCH.py [PASS]`. Removing a switch: a patch deleting its `#define`.
+- Before a compiler change, understand the mechanism by a trace: a temporary `printf("KDBG ...")` in the pass (codgen: rsuse
+  in getreg and rsreturn, rbusy, a tree dump in order), the module compiled with `-S` by a compiler in a copy of OLDROOT
+  (fnc.py: `FNC_ROOT`), never committed. The trace often shows the source form (a variable used for two purposes, a
+  statement order) instead of a switch.
+- The masked compare (fnc.py) hides frame offsets, constants, globals and members: when the masked count is complete, link
+  and compare strictly (`host/tools/bincmp.py`; segmented: `recon/framemap.py`, the frame offsets new -> orig per function).
 - Compiler changes are in `src/cmd/{cparse,codgen,popt,cas}` behind a switch, set in the version (`codgen/oldcc.h`, the `build/nonsegVER` rules of the pass Makefile). The normal build stays identical.
 - Function-level check for a program with a model: `RECON_PROG=NAME python3 host/recon/strictcmp.py` (`-c` also compares call forms, `STRICT_CTX=12 ... -v FUNC` shows context). A model (`MODULES`, `model_link` in `compare/NAME/progcfg.py` like `compare/cpp` or `popt/tools`) is needed for a program of v0p; add it to PROGS of `recon/switchmatrix.py`.
 - Structs and names when the bytes stand: `rename.py OLD NEW [-n] [-m]` (sources, tables, findings.json, the .md of the program, KNOWLEDGE.md; `-m`: OLD is a placeholder for a function that exists under the name NEW, e.g. `fn1d22` in a module whose neighbour is written later: gopt; the external names must differ in their first 7 characters: delquad and delquads clash); `findings.py PROG` then writes FINDINGS.md; sizes from address distances, names from debug strings, then System III, then Plexus for Z8000 parts (the WEGA changes: `compare/NAME/SYSIII.md`). The exact count must not drop.
