@@ -44,6 +44,9 @@ def tree_files(d):
 EXCLUDE = {
     'src/lib/libu8000/disasm.c': 'scc -O of the original does not end; the original spopt stops with "C2: can\'t find 2,_word" '
                                  '(the member is built without -O)',
+    'src/cmd/fse/fsetermcap.c': 'no compile unit: a fragment of a function body, included by fsemain.c (alone the original '
+                                'cparse stops with errors; the rebuilt one differs in its error recovery: host segmentation '
+                                'violation, wega an extra "illegal initialization")',
 }
 
 
