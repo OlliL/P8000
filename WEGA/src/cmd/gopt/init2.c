@@ -25,7 +25,7 @@ initopts(argc, argv)
 	register int i;
 	register char *s;
 	register int j;
-	register char *t;
+	char *t;
 	char buf[50];
 
 	for (i = 1; i < argc; i++) {

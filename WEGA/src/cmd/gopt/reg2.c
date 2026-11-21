@@ -609,9 +609,11 @@ savecolors()
 {
 	struct gn *n;
 	struct quad *q;
-	char *r, *r2;
+	char *r;
+	struct qa unused1, unused2;	/* 12 unused bytes in the frame of the original (two struct qa: a guess) */
 	int i, f, blk, x1, x2;
 	struct loop *hdr;
+	char *r2;
 
 	a10a = (unsigned *)taballoc(maxblk * 2, 0);
 	for (n = a11e; n != 0; n = n->link) {
