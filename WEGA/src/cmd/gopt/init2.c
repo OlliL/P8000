@@ -25,7 +25,8 @@ initopts(argc, argv)
 	register int i;
 	register char *s;
 	register int j;
-	char *t;
+	register char *t;
+	char *unused;	/* the frame of the original has four more bytes here */
 	char buf[50];
 
 	for (i = 1; i < argc; i++) {

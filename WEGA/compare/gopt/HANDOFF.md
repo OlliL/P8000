@@ -8,7 +8,7 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
 
 ## State
 - fnc.py: 321 of 321 functions masked-equal; the data byte-equal (datadiff 0); stack segment and header as the original (sldo).
-- Left for byte identity: the link (step 1).
+- /lib/gopt byte-identical (2026-11-21); built and installed by the tree (src/cmd SUBDIRS).
 
 ## Owner rules for compiler changes (2026-11-21)
 - Ladder: source forms (exhausted, each form written down) > change an existing switch > a new switch only when changing an
@@ -36,12 +36,9 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
 - The vc scodgen is near 64 KiB of text (host/OLDCC.md, vc): measure its size after each change.
 
 ## Next steps (one at a time)
-1. gopt byte-identical. Done (2026-11-21): the link (library start-up code /lib/scrt0.o, five library members in segment 4,
-   itfind in alias2.c, prgraph in savecolors), then about 50 functions that the masked compare of fnc.py had hidden (frame
-   layout, chain and statement order, constants, globals, members, tails; host/recon/framemap.py). Left: 9 bytes in initopts:
-   `fopen(strcat(strcpy(buf, argv[i]), ".S"), "r")` (three times): the original stores the results of strcpy and strcat into
-   one temporary (0x3e), ours into two (0x3e, 0x42): codgen keeps the first temporary while it takes the second. Source forms
-   first; then `make install`, checkall (gopt among the identical files).
+1. (done 2026-11-21: /lib/gopt byte-identical after the link and strip: library start-up code, five library members in
+   segment 4, about 50 functions found by the strict compare of the linked file (host/recon/framemap.py; frame layout, chain
+   and statement order, constants, globals, members, tails), vc OLD_D14T for initopts; gopt in SUBDIRS of src/cmd)
 2. findings.json clean-up (no function removed, only contents): statuses such that the generated FINDINGS.md lists only
    "exact with notes", and the notes keep only what is still odd in the source (dead code, odd forms, guessed names). What was
    tried on the way goes; what matters beyond gopt goes to KNOWLEDGE.md / OLDCC_LOG.md first.

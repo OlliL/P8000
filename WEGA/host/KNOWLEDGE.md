@@ -533,6 +533,14 @@ Status of codgen and scodgen: `compare/codgen/FINDINGS.md`; both are byte-identi
 - In leaf functions the shipped cc puts register variables into scratch registers where the original uses r8-r14 (D2). Those cannot match.
 - The saved register sets (`ldm`) are equal for all non-leaf functions checked.
 - Static functions without a symbol (only reached by `calr`) are named by their caller (`static_<address>` until named).
+- Frame layout (segmented scodgen, measured on /lib/gopt 2026-11-21, `host/recon/framemap.py`): from 0 up the area for the stack
+  arguments of the calls (`~L1`), then the saved register parameters, then the locals in the order of their declaration (the
+  first declared has the lowest offset; a `char` takes the low byte of its word), then the locals of inner blocks (sibling
+  blocks share places), then the temporaries of the expressions (`paroff`, reset at each statement), then the saved
+  registers (`ldm`). An unused local still takes its place: a frame of the original larger than ours means an unused
+  local (or a register variable that is an auto in the original), smaller means one too many (or one variable used for two
+  purposes). `calr` reaches only a function of the same assembly file (the module boundary). A masked compare (fnc.py)
+  hides all of this, and the wrong global, member or constant too: the strict compare of the linked file finds it.
 
 ### Function map of `/lib/codgen` (addresses of the original)
 

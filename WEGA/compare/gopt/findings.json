@@ -2356,7 +2356,7 @@
    "kind": "proven",
    "module": "init2.c",
    "file": "init2.c",
-   "note": "name guessed (the options of the pass; the case blocks in the address order of the original: y q d l p f e t a b r s Z E 5 4 3 2 1); two more register variables are saved by the original (ldm r8,#6: j, t unused); argv[i - 1] in the messages is the original"
+   "note": "name guessed (the options of the pass; the case blocks in the address order of the original: y q d l p f e t a b r s Z E 5 4 3 2 1); two more register variables are saved by the original (ldm r8,#6: j, t unused); argv[i - 1] in the messages is the original (2026-11-21, strict) t is a register variable, an unused pointer stands before buf (the frame of the original); the results of strcpy and strcat in fopen(strcat(strcpy(buf, ..), ..), ..) share one temporary: vc OLD_D14T (no source form: the temporaries are reset only per statement)."
   },
   "f4_c6e8": {
    "orig": "4:c6e8",

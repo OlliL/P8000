@@ -36,6 +36,9 @@ extern long freetemp();
 extern void eobl2();
 extern void walkf();
 extern void genargs();
+#ifdef OLD_D14T
+extern long paroff;
+#endif
 extern int gencall();
 extern long geninc();
 extern int genscall();
@@ -1594,6 +1597,22 @@ genscall(p, cookie)
 	return gencall(p, cookie);
 }
 
+#ifdef OLD_D14T
+static long d14targ;	/* OLD_D14T: the lowest temporary that holds an argument of the call (bits) */
+
+/* the arguments of a call (the CM list) that are temporaries of the frame */
+static void
+d14tmin(p)
+	register NODE *p;
+{
+	if (p->in.op == CM) {
+		d14tmin(p->in.left);
+		d14tmin(p->in.right);
+	} else if (p->in.op == OREG && p->tn.rval == 15 && p->in.sname == fpsym1 && (p->tn.lval << 3) < d14targ)
+		d14targ = p->tn.lval << 3;
+}
+#endif
+
 /* generate a call: the function address (an expression) is made addressable, the arguments are placed, then the call itself */
 int
 gencall(p, cookie)
@@ -1621,7 +1640,18 @@ gencall(p, cookie)
 		}
 	}
 	if (p->in.right) {
+#ifdef OLD_D14T
+		/* vc (gopt initopts fopen(strcat(strcpy(..), ..), ..)): a temporary that holds an argument (the result of an
+		   inner call, put there by argprep) is free again once the arguments are placed: the result of this call
+		   takes its place */
+		d14targ = paroff;
+		d14tmin(p->in.right);
 		genargs(p->in.right);
+		if (d14targ < paroff && (cookie & INTEMP))
+			paroff = d14targ;	/* only when the result of this call goes to a temporary (an argument itself) */
+#else
+		genargs(p->in.right);
+#endif
 	}
 #ifdef SEG
 	if (indirect) {

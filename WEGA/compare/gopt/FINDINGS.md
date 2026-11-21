@@ -517,7 +517,7 @@ exact: the program is byte-identical with the original (`host/tools/checkall.sh`
 | domspace | 4:c5a4 |  | masked with vc spopt OLD_D64 (memreg reads the offset of |_stkseg+~L1+4|(fp) behind ~L1: a store to one frame slot no longer clears the register copies of the others; b stays known in r3); 9 source forms tried before (sums, x temporary, register b, order of terms, parentheses): none |
 | prlstats | 4:c610 |  | name guessed (debug) |
 | domloops | 4:c65a |  | name guessed; falls off the end without a return value when s0b5e <= 3 (as the original) |
-| initopts | 4:c69e |  | name guessed (the options of the pass; the case blocks in the address order of the original: y q d l p f e t a b r s Z E 5 4 3 2 1); two more register variables are saved by the original (ldm r8,#6: j, t unused); argv[i - 1] in the messages is the original |
+| initopts | 4:c69e |  | name guessed (the options of the pass; the case blocks in the address order of the original: y q d l p f e t a b r s Z E 5 4 3 2 1); two more register variables are saved by the original (ldm r8,#6: j, t unused); argv[i - 1] in the messages is the original (2026-11-21, strict) t is a register variable, an unused pointer stands before buf (the frame of the original); the results of strcpy and strcat in fopen(strcat(strcpy(buf, ..), ..), ..) share one temporary: vc OLD_D14T (no source form: the temporaries are reset only per statement). |
 | prqflags | 4:c974 |  | name guessed (debug) |
 | prqall | 4:ca54 |  | name guessed (debug) |
 | islive | 4:ca88 |  | masked with vc OLD_D3JL (OLD_D3J: a pointer parameter that comes back at a label gets no frame home; the original reserves the frame slot but does not store rr6) |
