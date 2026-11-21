@@ -1750,3 +1750,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   179/179/209/210/73/73/26 strictly equal, bench 153/132/212, both matrix checks as in the table, vc matrix OLD_D3AW and
   OLD_D2R: cas baseline 0 (rows remeasured: cas jpr is a new witness of D2R, data bytes), gopt 318, vc scodgen text 0xf900
   (OLDPRINTF link).
+- gopt affsize (2026-11-21), 318 > 319 of 321. After a trace, 12 more source forms (findings.json): `matw = affdim / 16 + 1`
+  fits all but the pair of the division (the original `ld r3,r2; exts rr2; div rr2`, so r2 is gone and `affdim > 225`
+  compares memory; ours the free rr0). An existing switch changed (owner: no new switch while an existing one can be
+  adapted): `OLD_D2M` (v0) for DIV as for MUL. Unrestricted it changed the v0p models (cparse yyparse, codgen tagfind
+  `(lo + hi) / 2`: 178/178/208/209) and the bench (131/237); limited to a name found in its register (the left REG has an
+  sname): models 179/179/209/210/73/73/26 strictly equal, bench 153/132/212, both matrix checks as in the table, vc matrix
+  OLD_D2M: cas baseline 0 (same witnesses), gopt 319, vc scodgen text 0xf900. setposition: 7 forms without the OLD_D3AW
+  extension (a lone label gives the original second argument but changes the first): the extension stays.

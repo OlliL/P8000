@@ -1036,7 +1036,7 @@ int
 affsize()
 {
 	affdim = nal;
-	matw = nal / 16 + 1;
+	matw = affdim / 16 + 1;
 	if (affdim > 225)
 		cerror("affect matrix overflow");
 	return tabavail(affdim * 4 * matw + affdim * 3, 6);

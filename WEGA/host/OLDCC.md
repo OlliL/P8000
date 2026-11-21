@@ -275,7 +275,8 @@ Where a value goes:
   (not for an auto pair): the pair is free again, so OLD_D2W6 takes rr6 for the next pair and the global is loaded again
   (gopt linkp, dominators, eval, compress, joinblk, srchdflist; neutral on the v0p models, the v0 bench and cas).
 - v0 `OLD_D2M` (allocreg): a word multiplied through a pair uses the pair of its even register when the odd half is free
-  (adddef `ld r3,r2; mult rr2,#%0006`). `OLD_D2MO`: for an odd left register the pair below it when the even half is
+  (adddef `ld r3,r2; mult rr2,#%0006`); a word divided too when it is a name found in its register (gopt affsize
+  `matw = affdim / 16 + 1`: `ld r3,r2; exts rr2; div rr2`), not a computed value (codgen tagfind `(lo + hi) / 2`). `OLD_D2MO`: for an odd left register the pair below it when the even half is
   free or idle (dclstruct, dc `mult rr2,%5F24`), not for a register that holds a parameter (it is copied first: gopt
   canshare, setedges, testbit; the v0 bench gains 131 > 132 functions, 221 > 212 lines).
 - v0 `OLD_D2U` (rallo): the right operand of a long multiplication wants no register (upoff).
@@ -770,6 +771,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | gopt | debug2.c (prquad: D3JB) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | dom2.c, flow2.c, lpinv2.c (linkp, dominators, eval, compress, joinblk, srchdflist: D2N for a pair) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | lpind2.c (chkfamindvar: D2R gives the half D2V refuses back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | alias2.c (affsize: D2M divides a named word in the pair of its even register) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | alias2.c (setposition: D3AW gives an idle parameter in the argument register back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | wrtil2.c (mkleaf: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | lpinv2.c (qmkstore: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |

@@ -5,9 +5,9 @@ host/OLDCC.md). Rules: CLAUDE.md (German in conversation, English in git; commit
 findings.json (key `note`), SWITCH_CANDIDATES.md, host/OLDCC_LOG.md and host/increments/160-programs.md current.
 
 ## State
-- fnc.py: 318 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
+- fnc.py: 319 of 321 functions masked-equal. Data equal but the almap strings; stack segment and header as the original (sldo).
 - Open (DIFF lines, candidate of SWITCH_CANDIDATES.md):
-  affsize 3 (K5), setsymtable 2 (K11), mkconstopnd 2 (dead `ldl rr0,rr6`, as v0p OLD_D3KC).
+  setsymtable 2 (K11), mkconstopnd 2 (dead `ldl rr0,rr6`, as v0p OLD_D3KC).
 - What was tried for each: its `note` in findings.json and the dated entries of host/OLDCC_LOG.md.
 
 ## Owner authorisation (2026-11-21)
@@ -51,6 +51,8 @@ The tree build (src/Makefile stage1) links the vc scodgen with OLDPRINTF. Its te
 4. (done 2026-11-21: chklpdefs by the goto form of the original block order and vc spopt OLD_D51 (d))
 5. (done 2026-11-21: chkfamindvar by OLD_D2R (the half OLD_D2V refuses goes back), setposition by OLD_D3AW (an idle parameter
    in the register of an argument goes back); found by KDBG traces of getreg/rsreturn/rbusy and a tree dump in order)
-6. Small ones (rmlabels done 2026-11-21 by `p && ..`; source forms tried for the rest, see the notes): compiler candidates
-   affsize (3: a narrower OLD_D2N), setsymtable (2: a word OLD_D2A copy in one case), mkconstopnd (2: a narrow OLD_D3KC).
+6. Small ones (rmlabels done 2026-11-21 by `p && ..`; affsize done 2026-11-21 by `matw = affdim / 16 + 1` and OLD_D2M for a
+   division; source forms tried for the rest, see the notes): setsymtable (2: a word OLD_D2A copy in one case), mkconstopnd
+   (2: a narrow OLD_D3KC). First a trace (KDBG), then source forms from it; only then an existing switch changed (owner 2026-11-21:
+   a new switch only when changing an existing one changes other users).
 7. After 321 of 321: the almap string order of the data, `segcmp.py` exact, `bincmp` of the linked file, `make install`, checkall.

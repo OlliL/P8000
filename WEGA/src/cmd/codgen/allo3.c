@@ -464,14 +464,16 @@ allocreg(p, cookie)
 		r = freereg(p, want, cookie);	/* v0: a long result into the pair of its left operand */
 #endif
 #if defined(OLD_D2M) || defined(OLD_D2S)
-	if (r == -1 && cls == 3 && want == -1 && (p->in.op == MUL || p->in.op == 110) && p->in.left->in.op == REG &&
+	if (r == -1 && cls == 3 && want == -1 && (p->in.op == MUL || p->in.op == DIV || p->in.op == 110) && p->in.left->in.op == REG &&
 	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval < 8) {
 		register NODE *l = p->in.left;
 		register int lr = l->tn.rval;
 
 #ifdef OLD_D2M
-		if (p->in.op == MUL && !(lr & 1) && d2qfree(lr))
-			r = d2pair(lr, lr, p, l);	/* v0: a word multiplied in the pair of its even register */
+		/* v0: a word multiplied in the pair of its even register; divided too when it is a name found in its
+		 * register (gopt affsize; not a computed value: codgen tagfind (lo + hi) / 2) */
+		if ((p->in.op == MUL || p->in.op == DIV && l->in.sname) && !(lr & 1) && d2qfree(lr))
+			r = d2pair(lr, lr, p, l);
 #ifdef OLD_D2MO
 		/* an odd one in the pair below it when the even half is free or idle; not a parameter (gopt canshare,
 		 * setedges, testbit) */
