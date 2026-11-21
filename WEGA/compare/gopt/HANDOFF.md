@@ -64,10 +64,8 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    host: %ld of the most negative long prints 0, the 64 KiB of an area (order3.c: out of space), r5 through checkalias,
    segment 0 for the vectors that a preheader record does not have. host/gopt in host/Makefile and the host build of
    checkall.)
-9. Centralize the parts of PCC's mip that the passes share: common, rdr and optim are in cparse and codgen (version 2.5)
-   and in gopt (2.4). One place in the tree for them, used by cc/cparse/codgen/popt/gopt, every build byte-identical
-   (the differences of the versions behind switches or #ifdef). Comes after the corpus (step 8) and before the switch
-   work (steps 10, 11), so that those work on the final structure.
+9. The compiler tree with the shared parts of mip (common, rdr, optim): increment 155
+   (host/increments/155-compiler-tree.md).
 10. The vc switches with one or two witnesses (matrix): think hard again whether a source form of the witness does without
     the switch. Also the goto forms that stand for an optimizer layout: deledge (`goto in;` into `while (v != ..)`: the
     original enters the loop body, its test stands above it; do-while and for (;;) with the tests at the end give other
