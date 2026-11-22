@@ -1,5 +1,5 @@
 # codgen, scodgen: the code generators (second pass of cc and scc), reconstructed from /lib/codgen and /lib/scodgen. The same sources
-# make both: scodgen is codgen compiled with -DSEG and the tables table3_scodgen.c, hop_scodgen.c
+# make both: scodgen is codgen compiled with -DSEG (table3.c then includes table3.szcc.c, local3.c hop_scodgen.c)
 # Both are non-segmented programs
 #
 #   make              codgen scodgen
@@ -16,8 +16,8 @@ STRIP = strip
 LIBC = ../../../../../lib/libc-v5.a
 CRT = ../../../lib/libc/nonseg/crt
 
-NONSEG_OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3_codgen.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
-SEG_OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3_scodgen.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
+NONSEG_OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
+SEG_OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
 ALL_TARGETS = build/nonseg/codgen build/seg/scodgen
 OLD_TARGETS = build/nonsegv0/codgen build/nonsegv0p/codgen build/nonsegv1/codgen build/nonsegv1q/codgen build/nonsegv1r/codgen build/segv1/scodgen build/nonsegv1c/codgen build/segv1c/scodgen build/segvk/scodgen build/segvc/scodgen build/nonsegvl/codgen build/segvl/scodgen
 
@@ -103,11 +103,11 @@ crt0.o: crt0.s
 # bin targets
 ##################
 
-codgen: $(NONSEG_OBJS) ../../crt0.o table3_codgen.o
+codgen: $(NONSEG_OBJS) ../../crt0.o
 	$(LD) -X -e start -i -o $@ ../../crt0.o $(NONSEG_OBJS) $(LIBC)
 	@if od -b $@ | sed -n 2p | grep '^0000020 [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* 000 000 ' > /dev/null ; then echo "$@: text over 64K (sg_code of the segment table wrapped to 0; ld says nothing)" ; rm -f $@ ; exit 1 ; fi
 
-scodgen: $(SEG_OBJS) ../../crt0.o table3_scodgen.o
+scodgen: $(SEG_OBJS) ../../crt0.o
 	$(LD) -X -e start -i -o $@ ../../crt0.o $(SEG_OBJS)    $(LIBC)
 	@if od -b $@ | sed -n 2p | grep '^0000020 [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* 000 000 ' > /dev/null ; then echo "$@: text over 64K (sg_code of the segment table wrapped to 0; ld says nothing)" ; rm -f $@ ; exit 1 ; fi
 
@@ -146,10 +146,8 @@ tr3.o: ../../tr3.c
 	$(CC) $(CFLAGS) -c ../../tr3.c
 optim3.o: ../../optim3.c ../../../mip/optim.2.5
 	$(CC) $(CFLAGS) -c ../../optim3.c
-table3_codgen.o: ../../table3_codgen.c
-	$(CC) $(CFLAGS) -c ../../table3_codgen.c
-table3_scodgen.o: ../../table3_scodgen.c
-	$(CC) $(CFLAGS) -c ../../table3_scodgen.c
+table3.o: ../../table3.c ../../table3.nzcc.c ../../table3.szcc.c
+	$(CC) $(CFLAGS) -c ../../table3.c
 
 FORCE:
 

@@ -597,7 +597,7 @@ size, TEMP number), lval (long, +0xC), left (+0xE), rval (+0x10). `src/cmd/cc/co
 **Table.** The templates are an array of 10 word entries `op visit lshape ltype rshape rtype needs nx rewrite cstring` behind the version
 string `table3.nzcc.c` (codgen: 150 entries, sentinel "/*NULL*/") or `table3.szcc.c` (scodgen: 174 entries, sentinel "/*hi mom*/"). The
 text of a template begins with its number as a comment (`/* 000 */` ...), which shows in the output. `host/tools/codgentab.py <original>`
-writes the table as C source (`table3_codgen.c`, `table3_scodgen.c`).
+writes the table as C source (`table3.nzcc.c`, `table3.szcc.c`, the SCCS names of the original; `table3.c` includes one of them by `#ifdef SEG`).
 
 **Test harness.** `host/tools/corpus.sh codgen` (and `scodgen`): for every C source the original `cc -S -:d` (`scc`) keeps
 `x.I .D .S`; `codgen -E x <x.I` of ours and of the original are compared (assembler text, messages and exit status).
@@ -2734,8 +2734,8 @@ compared using `cmp` and are identical.
 
 ### codgen host version (`host/cc/codgen`, ANSI C)
 
-Taken over anew from `src/cmd/cc/codgen` by the port rules in `HANDOFF_wega_disasm.md` (same files, same order; `scodgen` is the same source with `-DSEG` and
-`table3_scodgen.c`). Corpus (`compare/codgen`, `compare/scodgen`): 282 of 282 inputs identical for each, also built with `-fsanitize=address,undefined`; `-Wall -Wextra` clean.
+Taken over anew from `src/cmd/cc/codgen` by the port rules in `HANDOFF_wega_disasm.md` (same files, same order; `scodgen` is the same source with `-DSEG`, which
+makes `table3.c` include `table3.szcc.c`). Corpus (`compare/codgen`, `compare/scodgen`): 282 of 282 inputs identical for each, also built with `-fsanitize=address,undefined`; `-Wall -Wextra` clean.
 What differs from the original source besides the K&R to ANSI conversion (each is a rule of the port, the behaviour is the original's):
 - The symbol file (`x.S`) is decoded field by field, big endian (`rd16`, `rd32`, `symdecode`; the host `struct sym` has another size); the nodes are separate fields, `bn.label` is `long`.
 - `setbuf(dfile, malloc(0x200))`: glibc writes `BUFSIZ` bytes into it; `setvbuf(..., 0x200)`. A bump allocator on one arena replaces the break (`allocinit`, `alloc`, `inarena`: words of `sname` that hold numbers are not read as symbols).

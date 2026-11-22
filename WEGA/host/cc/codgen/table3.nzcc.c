@@ -1,8 +1,5 @@
-/* codgen: 150 entries, found at data offset 0x4232 */
-#include "mfile3"
-
-static char sccsid[] = "@[$]table3.c\t2.2  10/06/83 10:57:21 Copr. 1981 87wega3.2.";
-static char tabsccs[] = "@[$]table3.nzcc.c\t2.4  10/06/83 10:59:54 Copr. 1981 87wega3.2.";
+/* the table of codgen (table3.c includes it): 150 entries, found at data offset 0x4232 */
+static char tabsccs[] __attribute__((unused)) = "@[$]table3.nzcc.c\t2.4  10/06/83 10:59:54 Copr. 1981 87wega3.2.";
 
 struct optab table[] = {
 	{ 0x3a, 0x7, 0x6, 0x408, 0x8000, 0x1000, 0x0, 0x1, 0x2, "/* 000 */\n\tsubl\tVAL,AL\n" },	/* 0 */
@@ -59,11 +56,7 @@ struct optab table[] = {
 	{ 0x100e, 0x20, 0x246, 0x2c5, 0x80, 0x8000, 0x0, 0x0, 0x800, "/* 049 */\n\tcpZ<\tAL,ARX\nZI" },	/* 51 */
 	{ 0x100e, 0x20, 0x6, 0x8000, 0x2c6, 0x8000, 0x0, 0x0, 0x800, "/* 050 */\n\tcpZ<\tAL,ARX\nZI" },	/* 52 */
 	{ 0x100e, 0x20, 0x18, 0x30, 0x18, 0x30, 0x0, 0x0, 0x800, "/* 051 */\n\tfcpfZf\tAL,AR\nZI" },	/* 53 */
-#ifdef OLD_D62	/* a float compare with memory without rounding the register first (v1: libm, host/OLDCC.md D62) */
-	{ 0x100e, 0x20, 0x18, 0x30, 0x2c0, 0x30, 0x0, 0x0, 0x800, "/* 052 */\n\tfcpZfZ>\tAL,AR\n\tfldctlb\tcmpflg\nZI" },	/* 54 */
-#else
 	{ 0x100e, 0x20, 0x18, 0x30, 0x2c0, 0x30, 0x0, 0x0, 0x800, "/* 052 */\n\tfld ZR\tAL,AL\n\tfcpZfZ>\tAL,AR\n\tfldctlb\tcmpflg\nZI" },	/* 54 */
-#endif
 	{ 0x50, 0x20, 0x2c0, 0x8000, 0x6, 0x8000, 0x0, 0x0, 0x800, "/* 053 */\n\tcpZ<\tAR,ALX\nZI" },	/* 55 */
 	{ 0x51, 0x20, 0x2c0, 0x8000, 0x6, 0x8000, 0x0, 0x0, 0x800, "/* 054 */\n\tcpZ<\tAR,ALX\nZI" },	/* 56 */
 	{ 0x1018, 0x1, 0x2c6, 0x1000, 0x2c6, 0x1000, 0x0, 0x0, 0x2, "/* 055 - threw opltype away */\n" },	/* 57 */

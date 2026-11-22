@@ -664,7 +664,7 @@ special case) gives the same bytes on libm; `fr == fl` is the plainer form.
 
 ### D62 A float compare with memory without rounding
 
-v1 `OLD_D62` (table3_codgen.c rule 052, table3_scodgen.c rule 047a). A float register compared with a memory operand: the
+v1 `OLD_D62` (table3.nzcc.c rule 052, table3.szcc.c rule 047a). A float register compared with a memory operand: the
 shipped rule rounds the register first (`fld dbl, f2,f2` before `fcpd f2,mem`), v1 compares it as it is. Witnesses: every
 float compare with memory of libm.a and slibm.a (asin, fmod, hypot, tanh, pow, jn and the rest).
 
