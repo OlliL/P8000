@@ -1974,3 +1974,10 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - 2026-11-22, step 10, `OLD_D2FA` exception (2) (an assigned variable not looked up from the start of its statement):
   without it gopt live2.c 164 lines (initlive `q = q->next`: the original reloads q); the clearing at the store (match3.c)
   comes too late for the right side. Stays.
+- 2026-11-22, `OLD_D2S` in a natural form instead of `lr == 3` (vc, cas model): the pair of an odd operand when it weighs no
+  more than the first free pair: 150 (opshort: a byte widened, the original takes a new pair; asmins); words only: 151
+  (asmins: r1 widened into rr2, the lightest, which stood as two free words); the operand given back first, then any pair
+  (d2pair(lr, -1)), words only: 151 (locadv: r7 back, getreg takes rr6, the original rr2). Not yet; the switch stays as it is.
+- 2026-11-22, `OLD_D14T` as "paroff remembered before the arguments, restored behind the call": not possible in gencall, the
+  temporaries of the arguments (the result of strcpy) are made before it (the store pass of the statement); the minimum
+  over the argument temporaries (d14tmin) is the direct form. Stays.
