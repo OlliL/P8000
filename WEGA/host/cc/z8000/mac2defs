@@ -32,3 +32,5 @@
 # define F7 23
 
 # define BYTEOFF(x) ((x)&01)	/* an odd byte address */
+# define BITOOR(x) ((x)>>3)	/* a bit offset to an OREG offset */
+# define TMPREG FP	/* the base of the temporaries */

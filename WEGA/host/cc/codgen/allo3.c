@@ -5,21 +5,6 @@
 
 static char sccsid[] __attribute__((unused)) = "@[$]allo3.c\t2.4  08/24/83 11:29:34 Copr. 1981 87wega3.2.";
 
-/* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
-#ifdef SEG
-#define PTRWORDS	2
-#else
-#define PTRWORDS	1
-#endif
-
-#define TEMPWORDS(p, nfield) \
-	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
-	 (p->in.type == LONG || p->in.type == ULONG) ? 2 : ISPTR(p->in.type) ? PTRWORDS : \
-	 p->in.type == DOUBLE ? 4 : p->in.type == FLOAT ? 2 : (nfield))
-#define PARMWORDS(p, nfield) \
-	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
-	 (p->in.type == LONG || p->in.type == ULONG) ? 2 : ISPTR(p->in.type) ? PTRWORDS : \
-	 p->in.type == DOUBLE ? 4 : p->in.type == FLOAT ? 4 : (nfield))
 
 /* count the register of an operand as busy; sym and lval are only passed on */
 void
@@ -88,13 +73,13 @@ allo(NODE *p, struct optab *q)
 	b = need;
 	k = 0;
 
-	while (need & 3) {			/* A registers */
+	while (need & NACOUNT) {			/* A registers */
 		resc[k].in.op = REG;
 		resc[k].in.type = p->in.type;
 		resc[k].tn.rval = allocreg(p, need & NAMASK);
 		resc[k].tn.lval = 0;
 		resc[k].in.sname = 0;
-		need--;
+		need -= NAREG;
 		k++;
 	}
 	k0 = k;
@@ -104,7 +89,7 @@ allo(NODE *p, struct optab *q)
 			cls = RCPAIR;
 		else
 			cls = rclass(p->in.type, resc[k0].tn.rval);
-		b--;
+		b -= NAREG;
 		k0--;
 		s = rfind(resc[k0].tn.rval, cls);
 		if (s)		/* the original does not test: it writes through a null pointer (data byte 3, inside sccsid of reader3.c) */
@@ -116,13 +101,13 @@ allo(NODE *p, struct optab *q)
 		resc[k].tn.rval = allocreg(p, need & NBMASK);
 		resc[k].tn.lval = 0;
 		resc[k].in.sname = 0;
-		need -= 16;
+		need -= NBREG;
 		k++;
 	}
 	k0 = k;
 	while (b & NBCOUNT) {
 		cls = rclass(p->in.type, resc[k0].tn.rval);
-		b -= 16;
+		b -= NBREG;
 		k0--;
 		s = rfind(resc[k0].tn.rval, cls);
 		if (s)		/* the original does not test: it writes through a null pointer (data byte 3, inside sccsid of reader3.c) */
@@ -131,20 +116,20 @@ allo(NODE *p, struct optab *q)
 	if (need & NTMASK) {			/* a temporary in the frame */
 		resc[k].in.op = OREG;
 		resc[k].in.type = p->in.type;
-		resc[k].tn.rval = FP;
+		resc[k].tn.rval = TMPREG;
 		resc[k].stn.stsize = 0;
 		resc[k].tn.lval = freetemp(TEMPWORDS(p, (need & NTMASK) / NTEMP));
 		resc[k].in.sname = fpsym1;
-		resc[k].tn.lval = resc[k].tn.lval >> 3;
+		resc[k].tn.lval = BITOOR(resc[k].tn.lval);
 		k++;
 	}
 	if (need & NPTMASK) {			/* a temporary for parameters */
 		resc[k].in.op = OREG;
 		resc[k].in.type = p->in.type;
-		resc[k].tn.rval = FP;
+		resc[k].tn.rval = TMPREG;
 		resc[k].stn.stsize = 0;
 		resc[k].tn.lval = freeparm(PARMWORDS(p, (need & NPTMASK) / NPTEMP));
-		resc[k].tn.lval = resc[k].tn.lval >> 3;
+		resc[k].tn.lval = BITOOR(resc[k].tn.lval);
 #ifdef SEG
 		resc[k].in.sname = symtab0;
 #else

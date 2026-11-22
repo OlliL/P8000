@@ -112,7 +112,6 @@
 # define STARG 102
 # define STCALL 103
 # define UNARY_STCALL 104
-# define USTCALL 105
 
 /*	some conversion operators */
 # define FLD 109

@@ -54,7 +54,7 @@ void genquads(NODE *p)
 	kind = optype(p->in.op);
 	if (kind == LTYPE)
 		goto done;
-	if (p->in.op == CALL || p->in.op == STCALL || p->in.op == UNARY CALL || p->in.op == USTCALL)
+	if (p->in.op == CALL || p->in.op == STCALL || p->in.op == UNARY CALL || p->in.op == UNARY STCALL)
 		fold1(p);
 	else if (p->in.op == ASSIGN || p->in.op == STASG)
 		fold2(p);
@@ -95,7 +95,7 @@ void genquads(NODE *p)
 	else
 		p2 = 0;
 	switch (p->in.op) {
-	case CALL: case UNARY CALL: case STCALL: case USTCALL:
+	case CALL: case UNARY CALL: case STCALL: case UNARY STCALL:
 		p2 = &s2;
 		p2->b2 = OANAME;
 		p2->w4 = 0;

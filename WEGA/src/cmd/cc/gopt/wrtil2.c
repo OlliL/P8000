@@ -648,7 +648,7 @@ wrtree(p)
 	printf("%0.2o\t", p->in.type);
 	switch (p->in.op) {
 	case STCALL:
-	case USTCALL:
+	case UNARY STCALL:
 		printf("%ld", p->in.left->in.sname->ssize);
 		printf("\t%d\t\n", p->tn.w6 << 3);
 		break;

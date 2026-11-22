@@ -21,7 +21,7 @@ static struct dopest qtab[] = {
 	{ QBLOCK, "BLOCK", 0 },
 	{ QCALL, "CALL", UNARY CALL },
 	{ QCALL, "CALL", STCALL },
-	{ QCALL, "CALL", USTCALL },
+	{ QCALL, "CALL", UNARY STCALL },
 	{ QCALL, "CALL", CALL },
 	{ QCASE, "CASE", SWTCH },
 	{ QCTABLE, "CTABLE", 0 },

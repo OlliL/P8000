@@ -154,6 +154,17 @@
 #define istreg(r)	(rstatus[r] & (STBREG|STAREG))	/* as PCC mfile2 */
 #define BITMASK(n)	((1L << n) - 1)	/* the low n bits (as PCC local2.c) */
 
+/* the words a temporary for the result of p needs (macros in the original: expanded twice in allo); a parameter
+   temporary of a float takes a double */
+#define STRWORDS(p)	((unsigned)(SZCHAR * p->stn.stsize + (SZINT - 1)) / SZINT)
+#define ISSTOP(p)	(p->in.op == STCALL || p->in.op == STARG || p->in.op == UNARY STCALL || p->in.op == STASG)
+#define TEMPWORDS(p, nfield) \
+	(ISSTOP(p) ? STRWORDS(p) : (p->in.type == LONG || p->in.type == ULONG) ? SZLONG / SZINT : \
+	 ISPTR(p->in.type) ? SZPOINT / SZINT : p->in.type == DOUBLE ? SZDOUBLE / SZINT : p->in.type == FLOAT ? SZFLOAT / SZINT : (nfield))
+#define PARMWORDS(p, nfield) \
+	(ISSTOP(p) ? STRWORDS(p) : (p->in.type == LONG || p->in.type == ULONG) ? SZLONG / SZINT : \
+	 ISPTR(p->in.type) ? SZPOINT / SZINT : p->in.type == DOUBLE ? SZDOUBLE / SZINT : p->in.type == FLOAT ? SZDOUBLE / SZINT : (nfield))
+
 #define MUSTDO	010000
 #define NOPREF	020000
 

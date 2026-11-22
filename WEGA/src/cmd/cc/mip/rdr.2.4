@@ -402,7 +402,7 @@ eread()
 	if (p->in.op == LAB)
 		p->in.op = NAME;
 	p->in.type = rdin(8);
-	if (p->in.op == STASG || p->in.op == STARG || p->in.op == STCALL || p->in.op == USTCALL) {
+	if (p->in.op == STASG || p->in.op == STARG || p->in.op == STCALL || p->in.op == UNARY STCALL) {
 		p->stn.stsize = (rdin(10) + SZCHAR - 1) / SZCHAR;
 		p->stn.stalign = rdin(10) / SZCHAR;
 		if (getc(infile) != '\n')

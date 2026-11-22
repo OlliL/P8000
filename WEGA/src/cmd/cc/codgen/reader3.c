@@ -686,7 +686,7 @@ delay2(p)
 	case UNARY FORTCALL:
 	case NOT:
 	case STCALL:
-	case USTCALL:
+	case UNARY STCALL:
 		return;
 	case INCR:
 	case DECR:
@@ -858,7 +858,7 @@ again:
 	case NOT:
 	case UNARY CALL:
 	case CALL:
-	case USTCALL:
+	case UNARY STCALL:
 	case STCALL:
 	case UNARY FORTCALL:
 	case FCALL:
@@ -1045,10 +1045,10 @@ again:
 		if (gencall(p, cookie))
 			goto nomat;
 		goto cleanup;
-	case USTCALL:
+	case UNARY STCALL:
 		p->in.right = 0;
 	case STCALL:
-		o = p->in.op = USTCALL;
+		o = p->in.op = UNARY STCALL;
 		if (genscall(p, cookie))
 			goto nomat;
 		goto cleanup;
@@ -1153,7 +1153,7 @@ store(p)
 	switch (o) {
 	case UNARY CALL:
 	case UNARY FORTCALL:
-	case USTCALL:
+	case UNARY STCALL:
 		callflag++;
 		break;
 	case UNARY MUL:
@@ -1303,7 +1303,7 @@ again:
 	case FCALL:
 	case UNARY FORTCALL:
 	case STCALL:
-	case USTCALL:
+	case UNARY STCALL:
 		callflag++;
 		return;
 	}

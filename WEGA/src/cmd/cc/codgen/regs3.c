@@ -12,17 +12,6 @@ extern void tmpdump();
 extern struct tmpent tmptab[];
 static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2.";
 
-/* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
-#ifdef SEG
-#define PTRWORDS	2
-#else
-#define PTRWORDS	1
-#endif
-
-#define TEMPWORDS(p, nfield) \
-	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
-	 (p->in.type == LONG || p->in.type == ULONG) ? 2 : ISPTR(p->in.type) ? PTRWORDS : \
-	 p->in.type == DOUBLE ? 4 : p->in.type == FLOAT ? 2 : (nfield))
 
 #define SUBST(from) \
 	if ((p->in.left->in.op == REG || p->in.left->in.op == OREG) && p->in.left->tn.rval == from) \

@@ -230,7 +230,7 @@ static void cutree(NODE *p)
 	op = p->in.op;
 	kind = optype(op);
 	switch (op) {
-	case CALL: case UNARY CALL: case STCALL: case USTCALL:
+	case CALL: case UNARY CALL: case STCALL: case UNARY STCALL:
 		hascall = 1;
 		return;
 	case NOT: case CBRANCH:
@@ -267,7 +267,7 @@ void pr(NODE *p, int down, int *down1, int *down2)
 		break;
 	case REG:
 		break;
-	case STASG: case STARG: case STCALL: case USTCALL:
+	case STASG: case STARG: case STCALL: case UNARY STCALL:
 		printf(" size = %d", p->stn.stsize);
 		printf(" align = %d", p->stn.stalign);
 		break;

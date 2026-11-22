@@ -621,7 +621,7 @@ static void wrtree(NODE *p)
 	printf("%o\t", p->in.type);	/* the original: %0.2o */
 	switch (p->in.op) {
 	case STCALL:
-	case USTCALL:
+	case UNARY STCALL:
 		printf("%ld", zl(p->in.left->in.sname->ssize));
 		printf("\t%d\t\n", p->tn.w6 << 3);
 		break;
