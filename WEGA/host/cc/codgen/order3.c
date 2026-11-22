@@ -288,13 +288,13 @@ rallo(NODE *p, int down)
 		break;
 #ifdef OLD_D5T
 	case PLUS:
-		if ((p->in.rall & MUSTDO) && p->in.right->in.op == REG && p->in.right->tn.rval == 15 && p->in.left->in.op == PLUS)
+		if ((p->in.rall & MUSTDO) && p->in.right->in.op == REG && p->in.right->tn.rval == FP && p->in.left->in.op == PLUS)
 			down1 = NOPREF;	/* an element of a local array as an address: as OLD_D5A */
 		break;
 #endif
 #ifdef OLD_D5A
 	case UNARY MUL:
-		if ((p->in.rall & MUSTDO) && p->in.left->in.op == PLUS && p->in.left->in.right->in.op == REG && p->in.left->in.right->tn.rval == 15)
+		if ((p->in.rall & MUSTDO) && p->in.left->in.op == PLUS && p->in.left->in.right->in.op == REG && p->in.left->in.right->tn.rval == FP)
 			down1 = NOPREF;	/* v0p: the address of a local array element wanted in a given register goes anywhere */
 		break;
 #endif
@@ -752,7 +752,7 @@ genargs(NODE *p)
 	nargs = 0;
 	argl[nargs].node = 0;
 	argreg = 7;
-	argfreg = 0x13;
+	argfreg = F3;
 	argstop = 0;
 	rest = argscan(p);
 	if (p != rest || (p == rest && argstop == 1))
@@ -778,7 +778,7 @@ argscan(NODE *p)
 #else
 		if (p->in.right->in.type == FLOAT || p->in.right->in.type == DOUBLE) {
 #endif
-			if (argfreg < 0x10) {
+			if (argfreg < F0) {
 				if (argstop)
 					goto ret;
 				argstop = 1;
@@ -799,7 +799,7 @@ argscan(NODE *p)
 #else
 	if (p->in.type == FLOAT || p->in.type == DOUBLE) {
 #endif
-		if (argfreg < 0x10)
+		if (argfreg < F0)
 			goto stop;
 		argl[nargs].reg = argfreg;
 		argl[nargs].node = p;
@@ -1008,7 +1008,7 @@ argplace(void)
 			continue;
 		}
 #ifdef OLD_D22
-		if ((q->in.type == DOUBLE || q->in.type == FLOAT) && argl[nargs].reg < 8) {
+		if ((q->in.type == DOUBLE || q->in.type == FLOAT) && argl[nargs].reg < R8) {
 			nleft -= 4;
 			continue;
 		}
@@ -1027,7 +1027,7 @@ argplace(void)
 	for (nargs = 0; (q = argl[nargs].node) != 0; nargs++) {
 		reg = argl[nargs].reg;
 #ifdef OLD_D22
-		if ((q->in.type == FLOAT || q->in.type == DOUBLE) && reg < 8) {
+		if ((q->in.type == FLOAT || q->in.type == DOUBLE) && reg < R8) {
 			d22arg(q, reg);
 			tfree(q);
 			continue;

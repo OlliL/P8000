@@ -245,7 +245,7 @@ clocal(NODE *p)
 #endif
 			r = makeblock(REG, 0, 0, PTR|STRTY);
 			r->tn.lval = s->soffset / SZCHAR;
-			r->tn.rval = 15;
+			r->tn.rval = FP;
 			p = member(makeblock(STREF, r, p, 0));
 			q = p->in.left;
 			if (q->in.op == PLUS) {
@@ -261,7 +261,7 @@ clocal(NODE *p)
 		case AUTO:
 			r = makeblock(REG, 0, 0, PTR|STRTY);
 			r->tn.lval = s->soffset / SZCHAR;
-			r->tn.rval = 15;
+			r->tn.rval = FP;
 			p = member(makeblock(STREF, r, p, 0));
 			q = p->in.left;
 			if (q->in.op == PLUS) {

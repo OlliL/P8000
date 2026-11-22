@@ -106,20 +106,20 @@ rsbuild(void)
 	n->reg = 0;
 	n = n->next;
 #endif
-	for (r = 16; r <= 19; r++, last = n, n = n->next) {
+	for (r = F0; r <= F3; r++, last = n, n = n->next) {
 		n->cls = RCFLOAT;
 		n->reg = r;
 	}
 #ifndef SEG
 	n->cls = RCVWORD;
-	n->reg = 14;
+	n->reg = R14;
 	n = n->next;
 #endif
 	for (r = 8; r <= 12; r += 2, n = n->next) {
 		n->cls = RCVPAIR;
 		n->reg = r;
 	}
-	for (r = 20; r <= 23; r++, last = n, n = n->next) {
+	for (r = F4; r <= F7; r++, last = n, n = n->next) {
 		n->cls = RCVFLOAT;
 		n->reg = r;
 	}
@@ -582,7 +582,7 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 				m = t;
 #ifdef OLD_D2P
 		for (t = rsuse; t; t = t->next)		/* an idle pair lighter than both: given back, it is split */
-			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != RKTEMP &&
+			if (t->cls == RCPAIR && t->reg < R8 && t->busy <= 0 && t->kind != RKTEMP &&
 			    (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) && (m == 0 || rweight[(unsigned char)t->reg] < rweight[m->reg])) {
 				rsreturn(RCPAIR, t->reg);
 				return getreg(cls, reg, flag, sym);
@@ -603,7 +603,7 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 		for (w = rsfree; w && w->cls != RCPAIR; w = w->next)
 			;
 		for (t = rsuse; t; t = t->next)		/* two idle words of a pair: given back, they merge */
-			if (t->cls == RCWORD && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) &&
+			if (t->cls == RCWORD && !(t->reg & 1) && t->reg < R8 && t->busy <= 0 && D2PK(t) &&
 			    (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg])) {
 				for (m = rsuse; m; m = m->next)
 					if (m->cls == RCWORD && m->reg == t->reg + 1 && m->busy <= 0 && D2PK(m))
@@ -625,7 +625,7 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 			}
 #ifdef OLD_D2PO
 		for (t = rsuse; t; t = t->next)		/* an idle odd word whose even half is free: given back */
-			if (t->cls == RCWORD && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) &&
+			if (t->cls == RCWORD && (t->reg & 1) && t->reg < R8 && t->busy <= 0 && D2PK(t) &&
 			    (w == 0 || rweight[t->reg - 1] < rweight[(unsigned char)w->reg])) {
 				for (m = rsfree; m; m = m->next)
 					if (m->cls == RCWORD && m->reg == t->reg - 1)

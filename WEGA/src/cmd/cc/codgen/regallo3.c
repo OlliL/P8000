@@ -123,20 +123,20 @@ rsbuild()
 	n->reg = 0;
 	n = n->next;
 #endif
-	for (r = 16; r <= 19; r++, last = n, n = n->next) {
+	for (r = F0; r <= F3; r++, last = n, n = n->next) {
 		n->cls = RCFLOAT;
 		n->reg = r;
 	}
 #ifndef SEG
 	n->cls = RCVWORD;
-	n->reg = 14;
+	n->reg = R14;
 	n = n->next;
 #endif
 	for (r = 8; r <= 12; r += 2, n = n->next) {
 		n->cls = RCVPAIR;
 		n->reg = r;
 	}
-	for (r = 20; r <= 23; r++, last = n, n = n->next) {
+	for (r = F4; r <= F7; r++, last = n, n = n->next) {
 		n->cls = RCVFLOAT;
 		n->reg = r;
 	}
@@ -646,10 +646,10 @@ getreg(cls, reg, flag, sym)
 #ifdef OLD_D2P
 		for (t = rsuse; t; t = t->next)		/* an idle pair lighter than both: given back, it is split */
 #ifdef OLD_D3KC
-			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != RKTEMP &&
+			if (t->cls == RCPAIR && t->reg < R8 && t->busy <= 0 && t->kind != RKTEMP &&
 #else
 			/* not a pair that holds a parameter, as below (vc: gopt pr) */
-			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != RKTEMP && !(t->sym && t->sym->sclass == PARAM) &&
+			if (t->cls == RCPAIR && t->reg < R8 && t->busy <= 0 && t->kind != RKTEMP && !(t->sym && t->sym->sclass == PARAM) &&
 #endif
 			    (w == 0 || rweight[t->reg] < rweight[w->reg]) && (m == 0 || rweight[t->reg] < rweight[m->reg])) {
 				rsreturn(RCPAIR, t->reg);
@@ -670,7 +670,7 @@ getreg(cls, reg, flag, sym)
 		   (gopt mkconstopnd: the copy of the parameter p goes to the free rr0 first, `ldl rr0,rr6`, and the second one,
 		   rr0 being no base, to the parameters in r2/r3) */
 		for (t = rsuse; t; t = t->next)
-			if (t->cls == RCWORD && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && D2PN(t) &&
+			if (t->cls == RCWORD && !(t->reg & 1) && t->reg < R8 && t->busy <= 0 && D2PK(t) && D2PN(t) &&
 			    (w == 0 || rweight[t->reg] < rweight[w->reg]
 #ifdef SEG
 			    && !(t->sym && t->sym->sclass == PARAM)
@@ -697,7 +697,7 @@ getreg(cls, reg, flag, sym)
 #ifdef OLD_D2PO
 		for (t = rsuse; t; t = t->next)		/* an idle odd word whose even half is free: given back */
 			/* not a word that holds a parameter (cas symtype) */
-			if (t->cls == RCWORD && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == PARAM) &&
+			if (t->cls == RCWORD && (t->reg & 1) && t->reg < R8 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == PARAM) &&
 			    (w == 0 || rweight[t->reg - 1] < rweight[w->reg])) {
 				for (m = rsfree; m; m = m->next)
 					if (m->cls == RCWORD && m->reg == t->reg - 1)
@@ -859,7 +859,7 @@ fail:
 			if (j->cls == RCPAIR && j->busy <= 0)
 				break;
 		for (t = rsuse; t; t = t->next)
-			if (t->cls == RCWORD && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && t->sym && t->sym->sclass == PARAM) {
+			if (t->cls == RCWORD && (t->reg & 1) && t->reg < R8 && t->busy <= 0 && t->sym && t->sym->sclass == PARAM) {
 				for (m = rsfree; m; m = m->next)
 					if (m->cls == RCWORD && m->reg == t->reg - 1)
 						break;

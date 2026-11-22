@@ -186,7 +186,7 @@ fixtemp(p)
 	} else {
 		p->in.op = OREG;
 		p->tn.lval = (long)(unsigned)tmptab[i].reg;
-		p->tn.rval = 15;
+		p->tn.rval = FP;
 		p->stn.stsize = 0;
 #ifdef SEG
 		p->in.sname = symtab0;
@@ -265,7 +265,7 @@ fixfld(p)
 	}
 #ifdef OLD_D5S
 	/* v0: an element of a local array is (index + offset) + fp, the frame pointer added last */
-	if (subsr && a->in.op == PLUS && a->in.left->in.op == REG && a->in.left->tn.rval == 15 && a->in.right->in.op == ICON &&
+	if (subsr && a->in.op == PLUS && a->in.left->in.op == REG && a->in.left->tn.rval == FP && a->in.right->in.op == ICON &&
 	    p->in.right->in.op != ICON) {
 		m = a->in.left;
 		a->in.left = p->in.right;
@@ -402,7 +402,7 @@ mapregs(p)
 #ifdef OLD_D5T
 		/* an element of a local array (OLD_D5S), its member: the member goes to the offset, fp stays last */
 		r = p->in.left;
-		if (r->in.op == PLUS && r->in.right->in.op == REG && r->in.right->tn.rval == 15 && r->in.left->in.op == PLUS &&
+		if (r->in.op == PLUS && r->in.right->in.op == REG && r->in.right->tn.rval == FP && r->in.left->in.op == PLUS &&
 		    r->in.left->in.right->in.op == ICON && n->in.op == ICON && n->in.sname == 0) {
 			r->in.left->in.right->tn.lval += n->tn.lval;
 			n->in.op = FREE;
@@ -585,9 +585,9 @@ rnnullall()
 {
 	register int i;
 
-	for (i = 0; i <= 7; i++)
+	for (i = R0; i <= R7; i++)
 		rnnull(i, 4);
-	for (i = 0; i <= 6; i += 2)
+	for (i = R0; i <= R6; i += 2)
 		;
 	rnnull(i, 5);
 }
@@ -891,7 +891,7 @@ oregfix(p)
 	if (p->in.op == NAME && p->tn.rval < 0)
 		return;
 	p->in.op = OREG;
-	p->tn.rval = 15;
+	p->tn.rval = FP;
 	p->tn.lval = p->in.sname->soffset / SZCHAR;
 	p->stn.stsize = 0;
 	p->in.sname = p->in.sname->sclass == PARAM && ((SFISPMEM(p->in.sname->sflags)) == 1) ? fpsym2 : fpsym1;
@@ -949,11 +949,11 @@ regreset(flag)
 #ifdef SEG
 	for (i = 8; i <= 13; i++)
 #else
-	for (i = 8; i <= 14; i++)
+	for (i = R8; i <= R14; i++)
 #endif
 		if (rsuse)
 			rsreturn(RCANY, i);
-	for (i = 20; i <= 23; i++)
+	for (i = F4; i <= F7; i++)
 		if (rsuse)
 			rsreturn(RCANY, i);
 }

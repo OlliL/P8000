@@ -60,7 +60,7 @@ rbusy(reg, type, sym, lv)
 #ifdef OLD_D2TC
 	/* vc: a free word register (the low half of a result pair already given back: reclaim of gopt operand,
 	   p->in.sname - symtab) is taken */
-	if (cls == RCWORD && reg >= 0 && reg < 8 && getreg(RCWORD, reg, RJAM, sym) == reg)
+	if (cls == RCWORD && reg >= 0 && reg < R8 && getreg(RCWORD, reg, RJAM, sym) == reg)
 		return;
 #endif
 	cerror("rbusy: register to be made busy not found on rslist");
@@ -155,7 +155,7 @@ allo(p, q)
 	if (need & NTMASK) {			/* a temporary in the frame */
 		resc[k].in.op = OREG;
 		resc[k].in.type = p->in.type;
-		resc[k].tn.rval = 15;
+		resc[k].tn.rval = FP;
 		resc[k].stn.stsize = 0;
 		resc[k].tn.lval = freetemp(TEMPWORDS(p, (need & NTMASK) / NTEMP));
 		resc[k].in.sname = fpsym1;
@@ -165,7 +165,7 @@ allo(p, q)
 	if (need & NPTMASK) {			/* a temporary for parameters */
 		resc[k].in.op = OREG;
 		resc[k].in.type = p->in.type;
-		resc[k].tn.rval = 15;
+		resc[k].tn.rval = FP;
 		resc[k].stn.stsize = 0;
 		resc[k].tn.lval = freeparm(PARMWORDS(p, (need & NPTMASK) / NPTEMP));
 		resc[k].tn.lval = resc[k].tn.lval >> 3;
@@ -214,15 +214,15 @@ rclass(type, reg)
 		if (szty(type) == 2)
 #endif
 		{
-			if (reg > 7)
+			if (reg > R7)
 				c = RCVPAIR;
 			else
 				c = RCPAIR;
-		} else if (reg > 7)
+		} else if (reg > R7)
 			c = RCVWORD;
 		else
 			c = RCWORD;
-	} else if (reg > 0x13)
+	} else if (reg > F3)
 		c = RCVFLOAT;
 	else
 		c = RCFLOAT;
@@ -350,7 +350,7 @@ allocreg(p, cookie)
 			q = q->in.left;
 		if (q->in.op == OREG && R2TEST(q->tn.rval))
 			pr = R2UPK1(q->tn.rval);	/* rr2(#n), and rr2(r1) with an index */
-		else if (q->in.op == OREG && q->tn.rval < 8)
+		else if (q->in.op == OREG && q->tn.rval < R8)
 			pr = q->tn.rval;	/* @rr2, rr2(#n): a pair base below 0x100 */
 		if ((pr == 2 || pr == 4) && (want == -1 || want == pr || want == pr + 1) && d2rpair(pr)) {	/* rr2, rr4 */
 			rfree(pr, LONG);		/* LONG: the pair */
@@ -361,14 +361,14 @@ allocreg(p, cookie)
 #endif
 		}
 		/* an index in an odd word register (tab(r3)): the even half of its pair, when free */
-		if (r == -1 && q->in.op == OREG && q->tn.rval < 8 && (q->tn.rval & 1) && (want == -1 || want == q->tn.rval - 1))
+		if (r == -1 && q->in.op == OREG && q->tn.rval < R8 && (q->tn.rval & 1) && (want == -1 || want == q->tn.rval - 1))
 			r = getreg(RCWORD, q->tn.rval - 1, 0, p->in.sname);
 	}
 	if (r == -1)
 #endif
 	r = cls == RCWORD && (p->in.op == UNARY MUL || p->in.op == OREG) ? freereg(p, want, cookie) : -1;	/* a load through a pointer: its register */
 #ifdef OLD_D2V
-	if (r != -1 && want == -1 && r < 8 && !d2vfirst(r)) {
+	if (r != -1 && want == -1 && r < R8 && !d2vfirst(r)) {
 #if defined(OLD_D2R) && defined(SEG)
 		/* the half of a pair address OLD_D2R gave back belongs to no operand: it goes back too (gopt chkfamindvar:
 		   ldb rl3,@rr4 kept r4 busy, the next pair was rr6, the parameter r) */
@@ -380,7 +380,7 @@ allocreg(p, cookie)
 #endif
 #ifdef OLD_D2N
 	/* v0: a loaded name is not remembered: a word (a global, an auto), a pair only for a global (gopt linkp, eval) */
-	if (r == -1 && (cls == RCWORD && (p->in.op == NAME || (p->in.op == OREG && p->tn.rval == 15)) || cls == RCPAIR && p->in.op == NAME))
+	if (r == -1 && (cls == RCWORD && (p->in.op == NAME || (p->in.op == OREG && p->tn.rval == FP)) || cls == RCPAIR && p->in.op == NAME))
 		r = getreg(cls, want, RJAM, (struct sym *)0);
 #endif
 #ifdef OLD_D2C
@@ -401,7 +401,7 @@ allocreg(p, cookie)
 #endif
 #if defined(OLD_D2M) || defined(OLD_D2S)
 	if (r == -1 && cls == RCPAIR && want == -1 && (p->in.op == MUL || p->in.op == DIV || p->in.op == SCONV) && p->in.left->in.op == REG &&
-	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval < 8) {
+	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval < R8) {
 		register NODE *l = p->in.left;
 		register int lr = l->tn.rval;
 
@@ -439,10 +439,10 @@ allocreg(p, cookie)
 			q = q->in.left;
 #ifdef OLD_D2QO
 		/* v0p: also when an odd word register is wanted (the low half of the value, an argument) */
-		if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && !(q->tn.rval & 1) &&
-		    (want == -1 || want == q->tn.rval || (want >= 0 && want < 8 && (want & 1))) && d2qfree(q->tn.rval)) {
+		if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < R8 && !(q->tn.rval & 1) &&
+		    (want == -1 || want == q->tn.rval || (want >= 0 && want < R8 && (want & 1))) && d2qfree(q->tn.rval)) {
 #else
-		if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && !(q->tn.rval & 1) && (want == -1 || want == q->tn.rval) &&
+		if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < R8 && !(q->tn.rval & 1) && (want == -1 || want == q->tn.rval) &&
 		    d2qfree(q->tn.rval)) {
 #endif
 			r = d2pair(q->tn.rval, q->tn.rval, p, q);		/* merged with its free partner */
@@ -473,10 +473,10 @@ allocreg(p, cookie)
 #endif
 #ifdef OLD_D2O
 		/* v0p: an odd address register takes its pair too when the even half is free or idle */
-		else if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && (q->tn.rval & 1) &&
+		else if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < R8 && (q->tn.rval & 1) &&
 #ifdef SEG
 		    /* vc: also when an odd word register is wanted (the low half of the value, an argument), as OLD_D2QO */
-		    (want == -1 || want == q->tn.rval - 1 || (want >= 0 && want < 8 && (want & 1))) && d2ofree(q->tn.rval)) {
+		    (want == -1 || want == q->tn.rval - 1 || (want >= 0 && want < R8 && (want & 1))) && d2ofree(q->tn.rval)) {
 #else
 		    (want == -1 || want == q->tn.rval - 1) && d2ofree(q->tn.rval)) {
 #endif
@@ -491,7 +491,7 @@ allocreg(p, cookie)
 #ifdef OLD_D2PW
 	/* OLD_D2PW (libcisam): the copy of a register that is wanted in a busy register goes into the other half of that
 	   pair when the half is idle and holds a name, not a parameter (compare/libcisam/COMPILER.md) */
-	if (p->in.op == REG && cls == RCWORD && want >= 0 && want < 8) {
+	if (p->in.op == REG && cls == RCWORD && want >= 0 && want < R8) {
 		register struct rs *q;
 
 		for (q = rsuse; q; q = q->next)
@@ -514,7 +514,7 @@ allocreg(p, cookie)
 #ifdef OLD_D2CW
 	/* v1 (segmented): the copy of a word of a register variable pair (`(int)x` of a pointer in rr12) holds no name
 	   (libPW move: the byte behind it takes r2 again) */
-	r = p->in.op == REG && p->tn.rval >= 8 && p->tn.rval < 14 && szty(p->in.type) == 1 && p->in.sname &&
+	r = p->in.op == REG && p->tn.rval >= R8 && p->tn.rval < R14 && szty(p->in.type) == 1 && p->in.sname &&
 	    szty(p->in.sname->stype) == 2 ? getreg(cls, want, RJAM, (struct sym *)0) : -1;
 	if (r == -1)
 #endif
@@ -533,7 +533,7 @@ d2pw:
 	/* OLD_D2CT (libcisam, segmented; needs OLD_D3H): the copy of a pair that holds a name and was given out in the last
 	   condition into the pair of a wanted odd word register: the pair itself is taken, no copy
 	   (compare/libcisam/COMPILER.md) */
-	if (p->in.op == REG && cls == RCPAIR && want >= 0 && want < 8 && (want & 1) && p->tn.rval >= 0 && p->tn.rval < 8 && !(p->tn.rval & 1)) {
+	if (p->in.op == REG && cls == RCPAIR && want >= 0 && want < R8 && (want & 1) && p->tn.rval >= 0 && p->tn.rval < R8 && !(p->tn.rval & 1)) {
 		register struct rs *q;
 
 		for (q = rsuse; q; q = q->next)
@@ -549,7 +549,7 @@ d2pw:
 #endif
 	/* OLD_D2CT (needs OLD_D3H): the copy into the wanted register of a scratch word that holds a name (not a parameter)
 	   and was given out in the last condition: the name goes with the copy, the source register is free */
-	if (p->in.op == REG && cls == RCWORD && want >= 0 && r == want && p->tn.rval >= 0 && p->tn.rval < 8 && p->tn.rval != r) {
+	if (p->in.op == REG && cls == RCWORD && want >= 0 && r == want && p->tn.rval >= 0 && p->tn.rval < R8 && p->tn.rval != r) {
 		register struct rs *q;
 
 		for (q = rsuse; q; q = q->next)
@@ -601,7 +601,7 @@ freereg(p, r, cookie)
 	sym = p->in.sname;
 	if (r == -1) {
 		if (cookie & 04 | 010) {
-			for (reg = 0; reg <= 7; reg++)
+			for (reg = R0; reg <= R7; reg++)
 				if (usable(p, side, reg) > 0) {
 				found:
 					rfree(reg, ty);
@@ -609,8 +609,8 @@ freereg(p, r, cookie)
 					return getreg(cls, reg, RJAM, sym);
 				}
 		} else if (cookie & 0100 | 0200) {
-			for (reg = 0x10; ; reg++) {
-				if (reg > 0x13)
+			for (reg = F0; ; reg++) {
+				if (reg > F3)
 					return -1;
 				if (usable(p, side, reg) > 0)
 					goto found;
@@ -693,9 +693,9 @@ rfree(reg, type)
 	register int cls = rclass(type, reg);
 
 #ifdef SEG
-	if (reg == 15 || reg == 14)
+	if (reg == FP || reg == R14)
 #else
-	if (reg == 15)
+	if (reg == FP)
 #endif
 		return;
 	for (n = rsuse; n; n = n->next)

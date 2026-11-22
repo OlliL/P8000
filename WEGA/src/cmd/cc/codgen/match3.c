@@ -331,7 +331,7 @@ cand:
 		    (p->in.op == LS || p->in.op == RS || p->in.op == ASG LS || p->in.op == ASG RS)
 #ifdef SEG
 		    && !(p->in.right->in.op == ICON && p->in.right->tn.lval == 1 && (p->in.op == RS || p->in.op == ASG RS) &&
-			 !(p->in.left->in.op == REG && p->in.left->tn.rval >= 8))
+			 !(p->in.left->in.op == REG && p->in.left->tn.rval >= R8))
 			/* vc: a right shift by one of a scratch register stays immediate (cas asmrel); a left shift and the shift
 			   of a register variable go through a register (gopt lpow2, ispow2) */
 #endif
@@ -346,7 +346,7 @@ cand:
 #ifdef OLD_D16A
 		/* v0p: a frame slot incremented by a constant whose value may go to a temporary is loaded, incremented in
 		   the register and stored (ld A1,AL; Zi A1,AR; ld AL,A1), not incremented in memory */
-		if (p->in.op == ASG PLUS && (cookie & INTEMP) && l->in.op == OREG && l->tn.rval == 15 &&
+		if (p->in.op == ASG PLUS && (cookie & INTEMP) && l->in.op == OREG && l->tn.rval == FP &&
 		    r->in.op == ICON && r->in.sname == 0) {
 			if (q->rshape == S16CON)
 				goto next;
@@ -372,8 +372,8 @@ cand:
 #ifdef OLD_D2FA
 		/* vc (gopt): a store to a frame place: no register holds its old value any more (before allo: rnassign names the new one) */
 		d2facopy = p->in.op == ASSIGN && (p->in.right->in.op == NAME || p->in.right->in.op == REG ||
-		    (p->in.right->in.op == OREG && p->in.right->tn.rval == 15));
-		if (asgop(p->in.op) && p->in.left->in.op == OREG && p->in.left->tn.rval == 15 &&
+		    (p->in.right->in.op == OREG && p->in.right->tn.rval == FP));
+		if (asgop(p->in.op) && p->in.left->in.op == OREG && p->in.left->tn.rval == FP &&
 		    (p->in.left->in.sname == fpsym1 || p->in.left->in.sname == fpsym2)) {
 			register struct rs *o;
 
@@ -399,7 +399,7 @@ cand:
 		/* a store through a scratch register (*p = x, p->m = x at offset 0) makes it forget the name it holds, as the tree takes
 		   it over (vc gopt addallist, initallist) */
 		d2creg = -1;
-		if (p->in.op == ASSIGN && p->in.left->in.op == OREG && p->in.left->tn.rval >= 0 && p->in.left->tn.rval < 8)
+		if (p->in.op == ASSIGN && p->in.left->in.op == OREG && p->in.left->tn.rval >= 0 && p->in.left->tn.rval < R8)
 			d2creg = p->in.left->tn.rval;
 #endif
 #ifdef OLD_D22
@@ -421,7 +421,7 @@ cand:
 #ifdef SEG
 #define D2APAIR(p)	(ISPTR((p)->in.type) && (p)->tn.rval == 0)
 #else
-#define D2APAIR(p)	(((p)->in.type == LONG || (p)->in.type == ULONG) && (p)->tn.rval < 8)
+#define D2APAIR(p)	(((p)->in.type == LONG || (p)->in.type == ULONG) && (p)->tn.rval < R8)
 #endif
 		if (t == ASSIGN && !(cookie & 01) && (cookie & INTAREG) && p->in.op == REG && D2APAIR(p) &&
 		    !(p->in.rall & MUSTDO)) {	/* (not when the value goes to a register wanted for it: an argument) */

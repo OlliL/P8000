@@ -195,7 +195,7 @@ init()
 #else
 	minreg = 0xE;
 #endif
-	maxreg = 0x17;
+	maxreg = F7;
 #ifdef SEG
 	regtop = 0xD;
 #else
@@ -915,7 +915,7 @@ again:
 
 			for (n = rsuse; n; n = next) {
 				next = n->next;
-				if (n->cls == RCPAIR && n->kind != RKTEMP && n->reg < 8 && n->busy > 0)
+				if (n->cls == RCPAIR && n->kind != RKTEMP && n->reg < R8 && n->busy > 0)
 					rsreturn(n->cls, n->reg);
 			}
 		}
@@ -931,7 +931,7 @@ again:
 			d14qarm(p2->in.right, t, p->in.type);
 			deflab(m1);
 			p->in.op = OREG;
-			p->tn.rval = 15;
+			p->tn.rval = FP;
 			p->tn.lval = t;
 			p->in.sname = 0;
 			p->stn.stsize = 0;
@@ -994,7 +994,7 @@ again:
 			deflab(m);
 			rfreeall(1);
 			p->in.op = OREG;
-			p->tn.rval = 15;
+			p->tn.rval = FP;
 			p->tn.lval = t;
 			p->in.sname = 0;
 			p->stn.stsize = 0;
@@ -1237,7 +1237,7 @@ d14qarm(q, t, ty)
 	n = talloc();
 	n->in.op = OREG;
 	n->in.type = ty;
-	n->tn.rval = 15;
+	n->tn.rval = FP;
 	n->tn.lval = t;
 	n->in.sname = 0;
 	n->stn.stsize = 0;
@@ -1380,7 +1380,7 @@ cbranch(p, true, false)
 	if (--d3hdepth == 0)
 		for (n = rsuse; n; n = next) {
 			next = n->next;
-			if (n->cls <= RCPAIR && n->busy <= 0 && n->kind != RKTEMP && n->reg < 8 && (n->flags & RSD3H) && d3hparm(n))
+			if (n->cls <= RCPAIR && n->busy <= 0 && n->kind != RKTEMP && n->reg < R8 && (n->flags & RSD3H) && d3hparm(n))
 				rsreturn(n->cls, n->reg);
 		}
 }

@@ -137,11 +137,11 @@ efcode(void)
 	if (sz % 2)
 		sz = (sz / 2 + 1) << 1;
 #ifdef SEG
-	a = 13 - minreg;
+	a = R13 - minreg;
 #else
-	a = 14 - minreg;
+	a = R14 - minreg;
 #endif
-	b = 23 - maxreg;
+	b = F7 - maxreg;
 	w = a * 2 + sz;
 	tot = b * 8 + w;
 	epilog(a, sz, b, w, tot);
@@ -199,7 +199,7 @@ regrestore(int a, long sz, int b, long w, int tot)
 	if (b >= 1) {
 		k = maxreg;
 		off = (int)w;
-		for (; k < 0x17; k++, off += 8)
+		for (; k < F7; k++, off += SZDOUBLE / SZCHAR)
 #ifdef SEG
 			printf("\tfldd\t%s,_stkseg+%d(fp)\n", rnames[k + 1], off);
 #else
@@ -279,7 +279,7 @@ regsave(int a, long sz, int b, long w, int tot)
 	if (b >= 1) {
 		k = maxreg;
 		off = (int)w;
-		for (; k < 0x17; k++, off += 8)
+		for (; k < F7; k++, off += SZDOUBLE / SZCHAR)
 #ifdef SEG
 			printf("\tfldd\t_stkseg+%d(fp),%s\n", off, rnames[k + 1]);
 #else
@@ -305,7 +305,7 @@ regargs(int tot)
 		reg = parmtab[i].reg;
 		cls = rclass(s->stype, reg);
 #ifdef OLD_D22
-		if ((s->stype == FLOAT || s->stype == DOUBLE) && reg < 8) {	/* v0p: a double parameter in rq4 */
+		if ((s->stype == FLOAT || s->stype == DOUBLE) && reg < R8) {	/* v0p: a double parameter in rq4 */
 			if (lo > reg)
 				lo = reg;
 			if (hi < reg + 3)
@@ -602,7 +602,7 @@ zzzcode(NODE *p, char c)
 	case 'h':
 		/* the low byte register of a word register */
 		p = getlr(p, c == 'H' ? 'L' : 'R');
-		if (p->tn.rval > 7 || p->tn.rval < 0)
+		if (p->tn.rval > R7 || p->tn.rval < 0)
 			cerror("bad %c call: register = %s\n", c, rnames[p->tn.rval]);
 		fputs(rhnames[p->tn.rval], stdout);
 		return;
@@ -942,7 +942,7 @@ zzzcode(NODE *p, char c)
 		case NAME:
 		case OREG:
 #ifdef SEG
-			if (p->tn.rval == 15)
+			if (p->tn.rval == FP)
 				goto frame;
 			order(p, INAREG|INTAREG);
 		/* fall through */
@@ -953,7 +953,7 @@ zzzcode(NODE *p, char c)
 			rfreeall(0);
 			p->tn.rval++;
 			p->in.type = ut;
-			if (p->tn.rval <= 7 && getreg(RCWORD, p->tn.rval, RJAM, 0) != p->tn.rval)
+			if (p->tn.rval <= R7 && getreg(RCWORD, p->tn.rval, RJAM, 0) != p->tn.rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 		frame:
@@ -1013,7 +1013,7 @@ zzzcode(NODE *p, char c)
 			rfreeall(0);
 			p->tn.rval++;
 			p->in.type = ut;
-			if (p->tn.rval <= 7 && getreg(RCWORD, p->tn.rval, RJAM, 0) != p->tn.rval)
+			if (p->tn.rval <= R7 && getreg(RCWORD, p->tn.rval, RJAM, 0) != p->tn.rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 #endif
@@ -1216,7 +1216,7 @@ oregput(NODE *p)
 #ifdef SEG
 	int bar = 0;
 
-	if (p->tn.rval == 15) {
+	if (p->tn.rval == FP) {
 		if ((p->in.sname == symtab0 && (unsigned)(int)p->tn.lval <= 0xFF) ||
 		    (p->in.sname == fpsym1 && (unsigned)(int)(p->tn.lval + maxoff) <= 0xFF)) {
 			bar++;
@@ -1231,7 +1231,7 @@ oregput(NODE *p)
 		printf("(%s)", rnames[p->tn.rval]);
 	}
 #else
-	if (p->tn.rval == 15) {
+	if (p->tn.rval == FP) {
 		acon(p);
 		printf("(fp)");
 	} else {

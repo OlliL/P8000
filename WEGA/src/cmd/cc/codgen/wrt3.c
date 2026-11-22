@@ -89,7 +89,7 @@ parminit(p)
 		t2 = p->in.type;
 	cls = rclass(t2, r);
 #ifdef OLD_D22
-	if (s->sclass == PARAM && p->tn.lval < 0 && (t2 == 6 || t2 == 7) && r < 8) {	/* v0p: a double parameter in rq4 */
+	if (s->sclass == PARAM && p->tn.lval < 0 && (t2 == FLOAT || t2 == DOUBLE) && r < R8) {	/* v0p: a double parameter in rq4 */
 		if (nparmtab > 9)
 			cerror("rinit: formal paramter array overflow");
 		parmtab[nparmtab].reg = s->sbyte5;

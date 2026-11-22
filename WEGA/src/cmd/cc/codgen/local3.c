@@ -142,11 +142,11 @@ efcode()
 	if (sz % 2)
 		sz = (sz / 2 + 1) << 1;
 #ifdef SEG
-	a = 13 - minreg;
+	a = R13 - minreg;
 #else
-	a = 14 - minreg;
+	a = R14 - minreg;
 #endif
-	b = 23 - maxreg;
+	b = F7 - maxreg;
 	w = a * 2 + sz;
 	tot = b * 8 + w;
 	epilog(a, sz, b, w, tot);
@@ -213,7 +213,7 @@ regrestore(a, sz, b, w, tot)
 	if (b >= 1) {
 		k = maxreg;
 		off = (int)w;
-		for (; k < 0x17; k++, off += 8)
+		for (; k < F7; k++, off += SZDOUBLE / SZCHAR)
 #ifdef SEG
 			printf("\tfldd\t%s,_stkseg+%d(fp)\n", rnames[k + 1], off);
 #else
@@ -308,7 +308,7 @@ regsave(a, sz, b, w, tot)
 	if (b >= 1) {
 		k = maxreg;
 		off = (int)w;
-		for (; k < 0x17; k++, off += 8)
+		for (; k < F7; k++, off += SZDOUBLE / SZCHAR)
 #ifdef SEG
 			printf("\tfldd\t_stkseg+%d(fp),%s\n", off, rnames[k + 1]);
 #else
@@ -335,7 +335,7 @@ regargs(tot)
 		reg = parmtab[i].reg;
 		cls = rclass(s->stype, reg);
 #ifdef OLD_D22
-		if ((s->stype == FLOAT || s->stype == DOUBLE) && reg < 8) {	/* v0p: a double parameter in rq4 */
+		if ((s->stype == FLOAT || s->stype == DOUBLE) && reg < R8) {	/* v0p: a double parameter in rq4 */
 			if (lo > reg)
 				lo = reg;
 			if (hi < reg + 3)
@@ -639,7 +639,7 @@ zzzcode(p, c)
 	case 'h':
 		/* the low byte register of a word register */
 		p = getlr(p, c == 'H' ? 'L' : 'R');
-		if (p->tn.rval > 7 || p->tn.rval < 0)
+		if (p->tn.rval > R7 || p->tn.rval < 0)
 			cerror("bad %c call: register = %s\n", c, rnames[p->tn.rval]);
 		printf(rhnames[p->tn.rval]);
 		return;
@@ -763,7 +763,7 @@ zzzcode(p, c)
 			expand(p, FOREFF, "\tlda\tVA1X,AL\n");
 #ifdef OLD_D24
 			/* the address of a frame place is not masked (vc gopt: struct copies to a local) */
-			if (!(u->in.op == OREG && u->tn.rval == 15 && (u->in.sname == 0 || u->in.sname == symtab0 || ascii[u->in.sname->nameoff] == '~')))
+			if (!(u->in.op == OREG && u->tn.rval == FP && (u->in.sname == 0 || u->in.sname == symtab0 || ascii[u->in.sname->nameoff] == '~')))
 #endif
 			expand(p, FOREFF, "\tand\tA1,#%7f00\n");
 #else
@@ -983,7 +983,7 @@ zzzcode(p, c)
 		case NAME:
 		case OREG:
 #ifdef SEG
-			if (p->tn.rval == 15)
+			if (p->tn.rval == FP)
 				goto frame;
 			order(p, INAREG|INTAREG);
 		case REG:
@@ -993,7 +993,7 @@ zzzcode(p, c)
 			rfreeall(0);
 			p->tn.rval++;
 			p->in.type = (int)u;
-			if (p->tn.rval <= 7 && getreg(RCWORD, p->tn.rval, RJAM, 0) != p->tn.rval)
+			if (p->tn.rval <= R7 && getreg(RCWORD, p->tn.rval, RJAM, 0) != p->tn.rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 		frame:
@@ -1053,7 +1053,7 @@ zzzcode(p, c)
 			rfreeall(0);
 			p->tn.rval++;
 			p->in.type = (int)u;
-			if (p->tn.rval <= 7 && getreg(RCWORD, p->tn.rval, RJAM, 0) != p->tn.rval)
+			if (p->tn.rval <= R7 && getreg(RCWORD, p->tn.rval, RJAM, 0) != p->tn.rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 #endif
@@ -1247,7 +1247,7 @@ conput(p)
 		else
 #ifdef SEG
 #ifdef OLD_D14Q
-			if (p->tn.rval == 15)	/* the temporary of a ?: at the start of the frame, in the stack segment */
+			if (p->tn.rval == FP)	/* the temporary of a ?: at the start of the frame, in the stack segment */
 				printf("|_stkseg|(fp)");
 			else
 #endif
@@ -1276,7 +1276,7 @@ oregput(p)
 	int bar = 0;		/* only the segmented version uses it */
 
 #ifdef SEG
-	if (p->tn.rval == 15) {
+	if (p->tn.rval == FP) {
 		if ((p->in.sname == symtab0 && (unsigned)(int)p->tn.lval <= 0xFF) ||
 		    (p->in.sname == fpsym1 && (unsigned)(int)(p->tn.lval + maxoff) <= 0xFF)) {
 			bar++;
@@ -1291,7 +1291,7 @@ oregput(p)
 		printf("(%s)", rnames[p->tn.rval]);
 	}
 #else
-	if (p->tn.rval == 15) {
+	if (p->tn.rval == FP) {
 		acon(p);
 		printf("(fp)");
 	} else {
@@ -1416,7 +1416,7 @@ adrput(p)
 		} else if (p->tn.lval == 0 && p->in.sname == 0 && p->stn.stsize == 0)
 #ifdef SEG
 #ifdef OLD_D14Q
-			if (r == 15)		/* the temporary of a ?: at the start of the frame, in the stack segment */
+			if (r == FP)		/* the temporary of a ?: at the start of the frame, in the stack segment */
 				printf("|_stkseg|(fp)");
 			else
 #endif
@@ -1504,7 +1504,7 @@ d14tmin(p)
 	if (p->in.op == CM) {
 		d14tmin(p->in.left);
 		d14tmin(p->in.right);
-	} else if (p->in.op == OREG && p->tn.rval == 15 && p->in.sname == fpsym1 && (p->tn.lval << 3) < d14targ)
+	} else if (p->in.op == OREG && p->tn.rval == FP && p->in.sname == fpsym1 && (p->tn.lval << 3) < d14targ)
 		d14targ = p->tn.lval << 3;
 }
 #endif

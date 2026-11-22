@@ -316,7 +316,7 @@ cand:
 #ifdef OLD_D16A
 		/* v0p: a frame slot incremented by a constant whose value may go to a temporary is loaded, incremented in
 		   the register and stored (ld A1,AL; Zi A1,AR; ld AL,A1), not incremented in memory */
-		if (p->in.op == ASG PLUS && (cookie & INTEMP) && l->in.op == OREG && l->tn.rval == 15 &&
+		if (p->in.op == ASG PLUS && (cookie & INTEMP) && l->in.op == OREG && l->tn.rval == FP &&
 		    r->in.op == ICON && r->in.sname == 0) {
 			if (q->rshape == S16CON)
 				goto next;
@@ -362,7 +362,7 @@ cand:
 		reclaim(p, q->rewrite, cookie);
 #ifdef OLD_D2A
 		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
-		if (t == ASSIGN && !(cookie & 01) && p->in.op == REG && (p->in.type == LONG || p->in.type == ULONG) && p->tn.rval < 8 &&
+		if (t == ASSIGN && !(cookie & 01) && p->in.op == REG && (p->in.type == LONG || p->in.type == ULONG) && p->tn.rval < R8 &&
 		    !(p->in.rall & MUSTDO)) {	/* (not when the value goes to a register wanted for it: an argument) */
 			register int nr;
 
