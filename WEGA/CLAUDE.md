@@ -22,7 +22,7 @@ active) and only the file of the active increment; `host/KNOWLEDGE.md` (facts) w
 - Byte identity with the original has priority over fixing a bug found in the original: rebuild the bug first, record it in the quirks table, and fix it only when the owner says so.
 - SYSIII sources (tmp/sys3) can and should be the base for reconstructing the WEGA sources. They are allowed to be copied from. The Plexus sources can be consulted for Z8000 specific stuff.
   For a library without a System III source, 2.11BSD and 4.4BSD-Lite (see Local directories) may be copied from too (owner 2026-11-18).
-- V7 layout in `src/cmd`. Makefiles must also work with WEGA's native `make`:
+- V7 layout in `src/cmd`, except `src/cmd/cc`: a tree of the driver, the passes and the units they share (`mip/`, `z8000/`), see its README.md. Makefiles must also work with WEGA's native `make`:
   use `=` not `?=`, `cd dir ; $(MAKE)`.
 
 ## Working economically (tokens)

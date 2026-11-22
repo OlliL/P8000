@@ -105,7 +105,7 @@ Rules of the target:
 4. (done 2026-11-22) When the future mip parts are as equal as they can be: move them to `src/cmd/cc/mip/` (one file per version; equal
    headers); the wrappers include `../mip/...`; byte-identical; checkall.
 5. host/cc/: the same cut for the host ports (one host mip shared by the host passes); the corpora equal.
-6. `src/cmd/cc/README.md`; CLAUDE.md (with the owner's OK); a line in host/HANDOFF_wega_disasm.md (decisions).
+6. (done 2026-11-22) `src/cmd/cc/README.md`; CLAUDE.md (with the owner's OK); a line in host/HANDOFF_wega_disasm.md (decisions).
 
 ## Decisions
 

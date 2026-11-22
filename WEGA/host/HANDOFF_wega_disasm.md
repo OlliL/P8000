@@ -40,6 +40,8 @@ Not a tool of the chain but the oracle: `host/z8k-emu` (runs the original binari
 - `src/cmd` (K&R C, WEGA `cc`): byte identity with the original is the top priority. Original defects are rebuilt first and recorded in the quirks table in `KNOWLEDGE.md`; a fix needs the owner's decision. Second priority to keep the sources as equal to its SYSIII counterparts as possible (Copy&Paste is allowed).
 - `host/` (ANSI C, gcc): functional equality only. Fixing defects of the original is allowed where the original's result is undefined or wrong; the fix is documented in the quirks table. Functional equality with the original is the top goal here and has to be assured by corpus runs.
 
+- The C compiler (owner 2026-11-22, increment 155): one tree `src/cmd/cc` (driver, cpp, cparse, gopt, codgen, popt) with the units the passes share in `mip/` (one file per SCCS version) and `z8000/`; `host/cc` mirrors it. As near to cc/pcc of System III as the bytes allow; the rules: `src/cmd/cc/README.md`.
+
 ## Check of a program: one mechanism, the corpus
 
 Decided (owner, 2026-11-08): every program is checked by its corpus, not by an own `check.sh`, and there is no `check`
