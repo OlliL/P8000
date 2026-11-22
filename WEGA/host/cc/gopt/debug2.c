@@ -180,7 +180,7 @@ void propnd(struct qa *a)
 
 void prstats(void)
 {
-	printf("number of labels removed = %d\n", s4d74);
-	printf("number of jumps removed = %d\n", s4d76);
-	printf("number of dead blocks removed = %d\n", s4d78);
+	printf("number of labels removed = %d\n", nlabrm);
+	printf("number of jumps removed = %d\n", njmprm);
+	printf("number of dead blocks removed = %d\n", ndeadrm);
 }

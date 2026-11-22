@@ -5,15 +5,15 @@
 static char sccsid[] __attribute__((unused)) = "@[$]ebbo2.c\t1.8  03/04/83 15:54:14 Copr. 1981 87wega3.2.";
 #include "mfile2.h"
 
-extern int a0d2, s71e4, s71e6, s71e8, s71ea;
-extern char *a0cc;
+extern int ebbcalls, nkill, nstores, vnnext, nuse;
+extern char *vnlist;
 extern struct hent *htab[32];
 extern struct aln *usetbl[];
-extern struct a71e a71ec[];
+extern struct a71e stores[];
 extern struct aln *killtbl[];
 extern struct bt *betatbl;
 /* an entry of the value table (name guessed): 16 bytes */
-extern unsigned a0d0;
+extern unsigned curblk;
 
 /* forward declarations (the functions are in the order of the original) */
 void ebbinit();
@@ -26,25 +26,25 @@ void ebbopt(void)
 	struct quad *q, *r;
 	char *t;
 
-	if (s4d80 > 1) {
+	if (bdebug > 1) {
 		printf("// before extended basic block optimization\n");
 		prqall();
 	}
-	s4d94 = a0d4;
+	maxtmp = nbeta;
 	t = tabzalloc(0, 0, 0);
 	for (q = qhead; q != 0; ) {
 		ebbinit();
 		r = q;
 		q = vnumber(q);
 		ebbfix(r, q);
-		if (a0cc != 0)
-			tabfree(0, a0cc);
+		if (vnlist != 0)
+			tabfree(0, vnlist);
 		resetbb();
 	}
 	ebbclean();
 	tabfree(0, t);
-	a0d4 = s4d94;
-	if (s4d80 > 1) {
+	nbeta = maxtmp;
+	if (bdebug > 1) {
 		printf("// after extended basic block optimization\n");
 		prqall();
 	}
@@ -55,14 +55,14 @@ void ebbinit(void)
 {
 	int i;
 
-	a0cc = 0;
-	s71e8 = 1;
+	vnlist = 0;
+	vnnext = 1;
 	for (i = 0; i < 32; i++)
 		htab[i] = 0;
-	s71e6 = 0;
-	s71e4 = 0;
-	s71ea = 0;
-	a0d2 = 0;
+	nstores = 0;
+	nkill = 0;
+	nuse = 0;
+	ebbcalls = 0;
 }
 
 /* the quads of one extended basic block, from q up to the next label, value numbered (name guessed); the label quad is returned */
@@ -84,8 +84,8 @@ struct quad *vnumber(struct quad *q)
 		q->f5 = 0;
 		q->f4 = 0;
 		if (q->op == 59)
-			a0d0 = q->a.w0;
-		if (s4d80 > 3)
+			curblk = q->a.w0;
+		if (bdebug > 3)
 			printf("// opcode = %d\n", q->op);
 		switch (q->op) {
 		case 1: case 2: case 3: case 4: case 13: case 14: case 19: case 22: case 23:
@@ -174,7 +174,7 @@ struct quad *vnumber(struct quad *q)
 			if (q->c.b2 != 8)
 				vc->dead = va->cst;
 			if (q->c.b2 == 4 || q->c.b2 == 6) {
-				if (s4d80 > 3) {
+				if (bdebug > 3) {
 					printf("// ebbo :");
 					prquad(q);
 					printf("//   value = %d\n", va->val);
@@ -226,7 +226,7 @@ struct quad *vnumber(struct quad *q)
 			ebbcall(q, stk, n);
 			n = 0;
 			q->f7 = 1;
-			a0d2 = 1;
+			ebbcalls = 1;
 			continue;
 		case 27:
 			va = vnfind(&q->a);
@@ -275,29 +275,29 @@ struct vn *vnfind(struct qa *p)
 {
 	register struct vn *e, *prev = 0;	/* host: = 0 (the original: what the frame holds) */
 
-	if (s4d80 > 2) {
+	if (bdebug > 2) {
 		printf("// find: ");
 		propnd(p);
 		printf("\n");
 	}
-	for (e = (struct vn *)a0cc; e != 0; prev = e, e = e->next) {
+	for (e = (struct vn *)vnlist; e != 0; prev = e, e = e->next) {
 		if (e->a.b2 == p->b2 && e->a.w4 == p->w4) {
 			if (e->val != 0)
 				goto ret;
-			e->val = s71e8++;
+			e->val = vnnext++;
 			e->dead = 0;
 			e->cst = 0;
 			goto ret;
 		}
 	}
 	e = (struct vn *)tabzalloc((int)sizeof(struct vn), 16, 0);
-	if (a0cc == 0)
-		a0cc = (char *)e;
+	if (vnlist == 0)
+		vnlist = (char *)e;
 	else
 		prev->next = e;
 	e->next = 0;
 	e->a = *p;
-	e->val = s71e8++;
+	e->val = vnnext++;
 	e->dead = 0;
 	if (p->b2 == 8)
 		e->al = betatbl[p->w4].x0;
@@ -319,11 +319,11 @@ void updateopnd(int vn, struct qa *p, int flag)
 {
 	struct vn *e;
 
-	e = (struct vn *)a0cc;
+	e = (struct vn *)vnlist;
 	while (e != 0) {
 		if (e->val == vn && !e->dead) {
 			if (flag == 1 || (flag == 0 && !isvarty(e->a.b2))) {
-				if (s4d80) {
+				if (bdebug) {
 					printf("//update ");
 					propnd(p);
 					printf(" to ");
@@ -338,8 +338,8 @@ void updateopnd(int vn, struct qa *p, int flag)
 		}
 		e = e->next;
 	}
-	if (s4d80 != 0)
-		for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+	if (bdebug != 0)
+		for (e = (struct vn *)vnlist; e != 0; e = e->next) {
 			propnd(&e->a);
 			printf(" value = %d,alnumber = %d, dead = %s\n", e->val, e->al, e->dead ? "TRUE" : "FALSE");
 		}
@@ -357,16 +357,16 @@ void ebbfix(struct quad *first, struct quad *last)
 		for (h = htab[i]; h != 0; h = h->next) {
 			if (!h->cst)
 				continue;
-			if (s4d80 > 1) {
+			if (bdebug > 1) {
 				printf("// fixup :");
 				prquad(h->q);
 			}
 			denorm(&h->q->c);
 			h->q->c.b2 = 6;
-			betanew(s4d94);
+			betanew(maxtmp);
 			x = h->q->c.w4;
-			y = s4d94;
-			h->q->c.w4 = s4d94++;
+			y = maxtmp;
+			h->q->c.w4 = maxtmp++;
 			h->q->f4 = 1;
 			normop(&h->q->c);
 			for (p = first; p != last; p = p->next) {
@@ -407,7 +407,7 @@ struct hent *exprfind(struct quad *q, int *fl)
 		if (e->op == q->op && e->v1 == va && e->v2 == vb && e->q->c.w0 == q->c.w0) {
 			vc = vnfind(&e->q->c)->val;
 			if (vc == e->val) {
-				if (e->q->c.b2 == 3 && e->num != a0d0)
+				if (e->q->c.b2 == 3 && e->num != curblk)
 					e->cst = 1;
 				return e;
 			}
@@ -420,8 +420,8 @@ struct hent *exprfind(struct quad *q, int *fl)
 	e->op = q->op;
 	e->v1 = va;
 	e->v2 = vb;
-	e->val = s71e8++;
-	e->num = a0d0;
+	e->val = vnnext++;
+	e->num = curblk;
 	e->cst = 0;
 	e->q = q;
 	return e;
@@ -443,7 +443,7 @@ void exprenter(struct quad *q)
 	e->op = q->op;
 	e->v1 = va;
 	e->v2 = vb;
-	e->val = s71e8++;
+	e->val = vnnext++;
 	e->cst = 0;
 	e->q = q;
 }
@@ -457,14 +457,14 @@ struct qa constfold(struct quad *q)
 	struct vn *e, *x;
 	int found;
 
-	if (s4d80 > 3) {
+	if (bdebug > 3) {
 		printf("// compute :");
 		prquad(q);
 	}
 	x = vnfind(&q->a);
 	if (!(x->a.b2 == 7 || x->a.b2 == 1 || x->a.b2 == 2)) {
 		found = 0;
-		for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+		for (e = (struct vn *)vnlist; e != 0; e = e->next) {
 			if (e->val == x->val && (e->a.b2 == 7 || e->a.b2 == 1 || e->a.b2 == 2) && e->cst) {
 				found = 1;
 				break;
@@ -473,8 +473,8 @@ struct qa constfold(struct quad *q)
 		if (found)
 			x = e;
 		else {
-			if (s4d80)
-				for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+			if (bdebug)
+				for (e = (struct vn *)vnlist; e != 0; e = e->next) {
 					propnd(&e->a);
 					printf(" value = %d, dead = %s\n", e->val, e->dead ? "TRUE" : "FALSE");
 				}
@@ -491,7 +491,7 @@ struct qa constfold(struct quad *q)
 		x = vnfind(&q->b);
 		if (!(0 || x->a.b2 == 1 || x->a.b2 == 2)) {	/* the original: !b2 == 7 || ..., always false (KNOWLEDGE.md, quirks) */
 			found = 0;
-			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+			for (e = (struct vn *)vnlist; e != 0; e = e->next) {
 				if (e->val == x->val && (e->a.b2 == 7 || e->a.b2 == 1 || e->a.b2 == 2) && e->cst) {
 					found = 1;
 					break;
@@ -510,7 +510,7 @@ struct qa constfold(struct quad *q)
 			d2 = fcget(x->a.w4);
 	}
 	if (x->a.b2 != 2) {
-		if (s4d80 > 1)
+		if (bdebug > 1)
 			printf("// compute: op1 = %ld, op2 = %ld\n", op1, op2);
 		switch (q->op) {
 		case 1: res = L32((uint32_t)op1 + (uint32_t)op2); break;
@@ -598,7 +598,7 @@ int nostore(struct quad *load1, struct quad *load2)
 	struct quad *p;
 	struct aln *al;
 
-	if (s4d80 > 4) {
+	if (bdebug > 4) {
 		printf("// entering compare: load1 and load2 are -\n");
 		prquad(load1);
 		prquad(load2);
@@ -606,7 +606,7 @@ int nostore(struct quad *load1, struct quad *load2)
 	al = checkalias(load1, 2);
 	for (p = load1; p != load2; p = p->next) {
 		if (p->op == 47 || p->op == 33) {
-			if (s4d80 > 4) {
+			if (bdebug > 4) {
 				printf("// comapare : check quad\n");
 				prquad(p);
 				printf("//    al = %X\n", (unsigned)(uintptr_t)(al));
@@ -634,9 +634,9 @@ void clear(struct quad *q, int ot)
 		else
 			v1 = q->c.w4;
 		for (; x != 0; x = x->next) {
-			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+			for (e = (struct vn *)vnlist; e != 0; e = e->next) {
 				if (e->al >= 0 && x->x0 == e->al) {
-					if (s4d80 > 4) {
+					if (bdebug > 4) {
 						printf("// clear: ");
 						propnd(&e->a);
 						printf("\n");
@@ -646,7 +646,7 @@ void clear(struct quad *q, int ot)
 			}
 		}
 		if (y == 0) {
-			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+			for (e = (struct vn *)vnlist; e != 0; e = e->next) {
 				if (e->a.b2 == 8)
 					v2 = betatbl[e->a.w4].x1;
 				else if (e->a.b2 == 4)
@@ -654,7 +654,7 @@ void clear(struct quad *q, int ot)
 				else
 					v2 = -1;
 				if (e->al < 0 && v1 == v2) {
-					if (s4d80 > 4) {
+					if (bdebug > 4) {
 						printf("// clear: ");
 						propnd(&e->a);
 						printf("\n");
@@ -667,7 +667,7 @@ void clear(struct quad *q, int ot)
 			else
 				y = (struct aln *)&betatbl[q->c.w4];
 		} else {
-			for (e = (struct vn *)a0cc; e != 0; e = e->next) {
+			for (e = (struct vn *)vnlist; e != 0; e = e->next) {
 				if (y->x0 == e->al && eqopnd(&e->a, &q->c) && e->al >= 0) {
 					if (q->c.b2 == 4)
 						y = (struct aln *)&symtab[q->c.w4];
@@ -679,11 +679,11 @@ void clear(struct quad *q, int ot)
 		}
 	} else
 		y = (struct aln *)&betatbl[q->c.w4];
-	if (s4d80 > 4)
+	if (bdebug > 4)
 		printf("// clear : p1 = %X\n", (unsigned)(uintptr_t)(y));
 	if (!killed(y) && q->c.b2 != 3) {
-		killtbl[s71e4++] = y;
-		if (s71e4 >= 1000)
+		killtbl[nkill++] = y;
+		if (nkill >= 1000)
 			cerror("kill_tbl overflow");
 		q->f7 = 1;
 	}
@@ -694,7 +694,7 @@ int killed(struct aln *y)
 {
 	int i;
 
-	for (i = 0; i < s71e4; i++)
+	for (i = 0; i < nkill; i++)
 		if (killtbl[i] == y)
 			return 1;
 	return 0;
@@ -703,7 +703,7 @@ int killed(struct aln *y)
 /* the operand p may be optimized (name guessed) */
 int canopt(struct qa *p)
 {
-	if (p->b2 == 4 && ((symtab[p->w4].sflags >> 2) & 1) && a0d2)
+	if (p->b2 == 4 && ((symtab[p->w4].sflags >> 2) & 1) && ebbcalls)
 		return 0;
 	return 1;
 }
@@ -714,16 +714,16 @@ void ebbcall(struct quad *q, struct quad **stk, int n)
 	struct vn *e;
 	int i;
 
-	e = (struct vn *)a0cc;
+	e = (struct vn *)vnlist;
 	while (e != 0) {
 		if (e->al == 0 || e->al == nptr || e->al == nadr)
 			e->val = 0;
 		e = e->next;
 	}
-	for (i = 0; i < s71e6; i++) {
-		if (a71ec[i].q->c.b2 == 4 && ((symtab[a71ec[i].q->c.w4].sflags >> 2) & 1)) {
-			a71ec[i].q = q;
-			a71ec[i].s = symtab;
+	for (i = 0; i < nstores; i++) {
+		if (stores[i].q->c.b2 == 4 && ((symtab[stores[i].q->c.w4].sflags >> 2) & 1)) {
+			stores[i].q = q;
+			stores[i].s = symtab;
 		}
 	}
 	for (i = 0; i < n; i++)
@@ -735,7 +735,7 @@ void checkuse(struct quad *q)
 {
 	struct aln *p = 0;	/* host: = 0 (the original: what the frame holds when a has another kind) */
 
-	if (s4d80 > 3) {
+	if (bdebug > 3) {
 		printf("// in checkuse ---");
 		prquad(q);
 	}
@@ -746,8 +746,8 @@ void checkuse(struct quad *q)
 			p = (struct aln *)&symtab[q->a.w4];
 		if (!killed(p) && !inuse(p) && canopt(&q->a)) {
 			q->f6 = 1;
-			usetbl[s71ea++] = p;
-			if (s71ea >= 1000)
+			usetbl[nuse++] = p;
+			if (nuse >= 1000)
 				cerror("use_tbl overflow");
 		}
 	}
@@ -758,8 +758,8 @@ void checkuse(struct quad *q)
 			p = (struct aln *)&symtab[q->b.w4];
 		if (!killed(p) && !inuse(p) && canopt(&q->b)) {
 			q->f5 = 1;
-			usetbl[s71ea++] = p;
-			if (s71ea >= 1000)
+			usetbl[nuse++] = p;
+			if (nuse >= 1000)
 				cerror("use_tbl overflow");
 		}
 	}
@@ -770,7 +770,7 @@ int inuse(struct aln *p)
 {
 	int i;
 
-	for (i = 0; i < s71ea; i++)
+	for (i = 0; i < nuse; i++)
 		if (usetbl[i] == p)
 			return 1;
 	return 0;
@@ -789,10 +789,10 @@ void addstore(struct quad *q)
 			x = &symtab[q->c.w4];
 	} else
 		x = (struct sym *)&betatbl[q->c.w4];
-	a71ec[s71e6].q = q;
-	a71ec[s71e6].s = x;
-	s71e6++;
-	if (s71e6 >= 500)
+	stores[nstores].q = q;
+	stores[nstores].s = x;
+	nstores++;
+	if (nstores >= 500)
 		cerror("stores array overflow");
 }
 
@@ -801,17 +801,17 @@ void resetbb(void)
 {
 	int i;
 
-	s71e4 = 0;
-	s71ea = 0;
-	for (i = 0; i < s71e6; i++) {
-		if (s4d80 > 3) {
+	nkill = 0;
+	nuse = 0;
+	for (i = 0; i < nstores; i++) {
+		if (bdebug > 3) {
 			printf("// resetbasicblock : setting gen_r for ");
-			prquad(a71ec[i].q);
+			prquad(stores[i].q);
 		}
-		a71ec[i].q->f4 = 1;
+		stores[i].q->f4 = 1;
 	}
-	s71e6 = 0;
-	a0d2 = 0;
+	nstores = 0;
+	ebbcalls = 0;
 }
 
 /* the quads with a constant c of which nothing is used are deleted until nothing is deleted (name guessed) */

@@ -17,7 +17,7 @@ struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };
 extern struct bt *betatbl;
 
 struct dl { int x0; struct quad *q; long l6; long l10; struct qa e14; int x20; unsigned f15:1, f14:1, f13:1, f12:1, f11:1, f10:1, rest:10; struct dl *next; };	/* a node of the list of the definitions (28 bytes, guessed) */
-extern int a0e4;
+extern int invset;
 extern struct quad *tmpsearch();
 extern void addlpdef(), setopt();
 extern void clrsymflag(), cerror();
@@ -26,18 +26,18 @@ struct pr { int x; int y; };
 extern struct pr *edges;
 #define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
 extern struct aln *checkalias();
-extern unsigned *a0e8;
+extern unsigned *exitlive;
 struct dnode { struct dnode *next; struct dnode *down; int dblkno; };	/* the dominator tree (see dom2.c) */
-extern struct dnode *a0f4;
-extern int a0fc, a0f2;
-extern struct dl *a100;
+extern struct dnode *hdrdtree;
+extern int invagain, invfound;
+extern struct dl *invdefs;
 extern void chkbscindvar(), marklpinv(), prlpdefs();
 extern struct quad *qhead;
 extern void addedge(), updatelooplist();
 extern struct pr *edges;
 extern struct quad *insrtstmpmove(), *chkfamindvar();
 extern void deltmplpdefs();
-extern struct dl *a104;
+extern struct dl *freend;
 /* forward declarations (the functions are in the order of the original) */
 int inbl();
 
@@ -48,7 +48,7 @@ clearblocks()
 	int i;
 	struct hrec *p;
 
-	if (s4d86 > 3)
+	if (pdebug > 3)
 		printf("clearblocks()\n");
 	for (i = 0; i < blkno; i++)
 		if (idfn[i] >= 0) {
@@ -67,7 +67,7 @@ int n;
 	struct hrec *h;
 	struct bl *b;
 
-	if (s4d86 > 3)
+	if (pdebug > 3)
 		printf("marklpblocks(hdr=%d)\n", lp->hdr);
 	for (b = lp->bls; b != 0; b = b->next) {
 		h = QHREC(blks[b->blk]);
@@ -92,7 +92,7 @@ struct quad *q;
 	return q;
 }
 
-/* the node of the list a0e0 with the quad of the same operand as q; *flag is set when an operand of a node differs (name from the debug output) */
+/* the node of the list lpdefs with the quad of the same operand as q; *flag is set when an operand of a node differs (name from the debug output) */
 struct dl *
 srchdflist(q, flag)
 struct quad *q;
@@ -100,28 +100,28 @@ int *flag;
 {
 	struct dl *p;
 	struct quad *x;
-	int v10, v12, v14, v16;
+	int isstore, isbeta, ismem, isother;
 
-	if (s4d86 > 3)
+	if (pdebug > 3)
 		printf("srchdflist()\n");
 	q = qmkstore(q);
-	p = a0e0;
-	v12 = (char)(q->c.b2 == 8);
-	v10 = v12 && q->op == 47 ? 1 : 0;
-	v14 = v12 && (q->op == 24 || q->op == 47 || q->op == 30);
-	v16 = v12 && (q->op != 24 && q->op != 47 && q->op != 30);
+	p = lpdefs;
+	isbeta = (char)(q->c.b2 == 8);
+	isstore = isbeta && q->op == 47 ? 1 : 0;
+	ismem = isbeta && (q->op == 24 || q->op == 47 || q->op == 30);
+	isother = isbeta && (q->op != 24 && q->op != 47 && q->op != 30);
 	while (p != 0) {
 		x = qmkstore(p->q);
 		if (sameopnd(x, q, 1, 1)) {
-			if (v14 && !(x->op == 47 || x->op == 24 || x->op == 30))
+			if (ismem && !(x->op == 47 || x->op == 24 || x->op == 30))
 				goto next;
-			if (v16 && (x->op == 47 || x->op == 24 || x->op != 30))
+			if (isother && (x->op == 47 || x->op == 24 || x->op != 30))
 				goto next;
 			if (x->c.b2 == q->c.b2 && x->c.w4 == q->c.w4)
 				return p;
 			*flag = 1;
 		}
-		if (v10 && x->c.b2 == 8 && x->op == 47 && betatbl[x->c.w4].x1 == betatbl[q->c.w4].x1) {
+		if (isstore && x->c.b2 == 8 && x->op == 47 && betatbl[x->c.w4].x1 == betatbl[q->c.w4].x1) {
 			if (x->c.b2 == q->c.b2 && x->c.w4 == q->c.w4)
 				return p;
 			*flag = 1;
@@ -139,7 +139,7 @@ int ot;
 {
 	int i, t;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("clrsymflag(q=%x,opndtype=%s)\n", q, ot == 2 ? "OP1" : "OP2");
 		prquad(q);
 	}
@@ -171,7 +171,7 @@ struct quad *q, *firstq;
 {
 	struct quad *p;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("clropt(firstq = %X), quad (%X) = \n", firstq, q);
 		prquad(q);
 	}
@@ -215,25 +215,25 @@ void
 setopt(q)
 struct quad *q;
 {
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("setopt()\n");
 		prquad(q);
 	}
 	if (q->c.b2 == 4) {
 		symtab[q->c.w4].sflags |= 2;
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("setopt(), rslt sym=%s, lpopt=%d\n", ascii + symtab[q->c.w4].nameoff, (symtab[q->c.w4].sflags >> 1) & 1);
 	} else if (q->c.b2 == 6 || q->c.b2 == 8)
 		*(int *)((char *)betatbl + (q->c.w4 * 10 + 8)) |= 4096;
 	if (q->c.b2 == 8 && q->op == 47) {
 		symtab[betatbl[q->c.w4].x1].sflags |= 2;
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("setopt(), rslt beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->c.w4].x1].nameoff, (symtab[betatbl[q->c.w4].x1].sflags >> 1) & 1);
 	}
 	if (q->op == 52 && q->a.b2 == 8) {
 		*(int *)((char *)betatbl + (q->a.w4 * 10 + 8)) |= 4096;
 		symtab[betatbl[q->a.w4].x1].sflags |= 2;
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("setopt(), qparv beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->a.w4].x1].nameoff, (symtab[betatbl[q->a.w4].x1].sflags >> 1) & 1);
 	}
 }
@@ -246,9 +246,9 @@ int n;
 {
 	struct dl *p, *x;
 
-	if (a0f8 != 0) {
-		p = a0f8;
-		a0f8 = a0f8->next;
+	if (flpdefs != 0) {
+		p = flpdefs;
+		flpdefs = flpdefs->next;
 	} else
 		p = (struct dl *)taballoc(28, 7);
 	p->x0 = n;
@@ -259,14 +259,14 @@ int n;
 	p->f14 = 0;
 	p->f13 = 0;
 	p->f12 = 0;
-	if (s4d86 > 2) {
-		printf("alloclpdef(), q=%X, lpdefs=%X\n", p, a0e0);
+	if (pdebug > 2) {
+		printf("alloclpdef(), q=%X, lpdefs=%X\n", p, lpdefs);
 		prquad(p->q);
-		if (a0e0 != 0)
-			prquad(a0e0->q);
+		if (lpdefs != 0)
+			prquad(lpdefs->q);
 	}
-	x = a0e0;
-	a0e0 = p;
+	x = lpdefs;
+	lpdefs = p;
 	p->next = x;
 #ifdef SHIPPED
 	return ((struct dl *)&p->next);	/* what the original leaves in rr2 (no return: KNOWLEDGE.md, quirks) */
@@ -304,7 +304,7 @@ int block;
 	int fl;
 	struct quad *x;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("addlpdef(block=%d), loop def found:\n", block);
 		prquad(q);
 	}
@@ -316,20 +316,20 @@ int block;
 		clropt(q, x);
 		if (fl)
 			p->f15 = 0;
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("\tonedef=%d\n", p->f15);
 	} else {
 		if (r->q->op != 47 && q->op == 47)
 			r->q = q;
 		if (r->x0 == block) {
 			r->f15 = 0;
-			if (s4d86 > 3) {
+			if (pdebug > 3) {
 				printf("\t\tonedef=%d, same quad:\n", r->f15);
 				prquad(r->q);
 			}
 		} else {
 			r->f15 = 0;
-			if (s4d86 > 3)
+			if (pdebug > 3)
 				printf("\tr->onedef=%d\n", r->f15);
 		}
 	}
@@ -346,25 +346,25 @@ struct quad *q;
 		return 0;
 	if ((q->op == 25 || q->op == 2) && q->a.b2 == 8 && BBIT(q->a.w4, 11))
 		return 0;
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("isglobal(),  quad:\n");
 		prquad(q);
 	}
 	if ((q->c.b2 == 4 && ((symtab[q->c.w4].sflags >> 2) & 1)) ||
 	    (q->c.b2 == 8 && ((symtab[betatbl[q->c.w4].x1].sflags >> 2) & 1))) {
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("isglobal(), returning TRUE\n");
 		return 1;
 	}
 	if ((p = checkalias(q, 1)) != 0)
 		for (; p != 0; p = p->next) {
 			if ((symtab[altab[p->x0]].sflags >> 2) & 1) {
-				if (s4d86 > 3)
+				if (pdebug > 3)
 					printf("isglobal(), returning TRUE\n");
 				return 1;
 			}
 		}
-	if (s4d86 > 3)
+	if (pdebug > 3)
 		printf("isglobal(), returning FALSE\n");
 	return 0;
 }
@@ -380,12 +380,12 @@ struct loop *lp;
 	struct dl *t;
 	int callf;
 
-	if (s4d86 > 1)
+	if (pdebug > 1)
 		printf("findlpdefs()\n");
 	callf = 0;
 	for (b = lp->bls; b != 0; b = b->next) {
 		n = blks[b->blk]->a.w0;
-		if (s4d86 > 2)
+		if (pdebug > 2)
 			printf("// findlpdefs: block = %d\n", n);
 		for (q = blks[b->blk]->next; q != 0; q = q->next) {
 			if (q->op == 59)
@@ -400,11 +400,11 @@ struct loop *lp;
 			q->f1 = 0;
 		}
 	}
-	if (a0e0 == 0)
+	if (lpdefs == 0)
 		return;
-	t = a0e0;
+	t = lpdefs;
 	while (t != 0) {
-		if (s4d86 > 3) {
+		if (pdebug > 3) {
 			printf("findlpdefs(), t=%X, t->dfnxt=%X\n", t, t->next);
 			prquad(t->q);
 			if (t->next != 0)
@@ -420,7 +420,7 @@ struct loop *lp;
 				t->q->f1 = 1;
 				if (t->q->c.b2 == 4 && isglobal(t->q)) {
 					t->q->c.fl = 1;
-					if (s4d86 > 3) {
+					if (pdebug > 3) {
 						printf("reg_candidate set for:\n");
 						prquad(t->q);
 					}
@@ -434,7 +434,7 @@ struct loop *lp;
 	}
 }
 
-/* the variables that are live on the exits of the loop lp are collected in a0e8 (name from the debug output) */
+/* the variables that are live on the exits of the loop lp are collected in exitlive (name from the debug output) */
 void
 liveonexit(lp)
 struct loop *lp;
@@ -443,38 +443,38 @@ struct loop *lp;
 	struct hrec *y;
 	int i, s;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("liveonexit(), exit=%x(x)\n", lp->exits);
 		if (lp->exits != 0)
 			printf("lblkno=%d\n", lp->exits->blk);
 	}
-	if (a0e8 == 0)
-		a0e8 = (unsigned *)taballoc(lvwords * 2, 2);
-	clrvec(a0e8, lvwords);
+	if (exitlive == 0)
+		exitlive = (unsigned *)taballoc(lvwords * 2, 2);
+	clrvec(exitlive, lvwords);
 	e = lp->exits;
-	if (s4d86 > 3)
+	if (pdebug > 3)
 		printf("liveonexit(), returned from nullvec(), entering while loop\n");
 	while (e != 0) {
 		i = blks[e->blk]->b.w4;
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("\nexit block = %d, successors = ", e->blk);
 		while (i >= 0) {
 			s = edges[i].y;
-			if (s4d86 > 3)
+			if (pdebug > 3)
 				printf(" %d", s);
 			y = QHREC(blks[s]);
 			if (y->w12 == 0) {
-				if (s4d86 > 3) {
-					printf("//calling vecunion(%X, %X, %d),q=%X\n", a0e8, y->f4, lvwords, y);
+				if (pdebug > 3) {
+					printf("//calling vecunion(%X, %X, %d),q=%X\n", exitlive, y->f4, lvwords, y);
 					prquad(blks[s]);
 				}
-				orvec(a0e8, y->f4, lvwords);
+				orvec(exitlive, y->f4, lvwords);
 			}
 			i = edges[i].x;
 		}
 		e = e->next;
 	}
-	if (s4d86 > 3)
+	if (pdebug > 3)
 		printf("\n");
 }
 
@@ -486,7 +486,7 @@ int blk;
 {
 	struct dnode *r;
 
-	if (s4d86 > 2)
+	if (pdebug > 2)
 		printf("findsubdtree(hdr=%d,blkno=%d)\n", n->dblkno, blk);
 	if (n->dblkno == blk)
 		return n;
@@ -510,7 +510,7 @@ int blk1, blk2;
 {
 	struct dnode *x;
 
-	if (s4d86 > 2)
+	if (pdebug > 2)
 		printf("isdom(hdr=%d,blk1=%d,blk2=%d)\n", hdr->dblkno, blk1, blk2);
 	x = findsubdtree(hdr, blk1);
 	if (findsubdtree(x, blk2))
@@ -526,7 +526,7 @@ int ot;
 {
 	int t, i;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("isdefined(q=%x,opndtype=%s)\n", q, ot == 2 ? "OP1" : "OP2");
 		prquad(q);
 	}
@@ -540,22 +540,22 @@ int ot;
 		i = q->b.w4;
 	}
 	if (t == 4) {
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("isdefined(), symbol=%s, lpopt=%d\n", ascii + symtab[i].nameoff, (symtab[i].sflags >> 1) & 1);
 		return (symtab[i].sflags >> 1) & 1;
 	}
 	if (t == 6) {
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("isdefined(), stmp=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
 		return BBIT(i, 12);
 	}
 	if (t == 8) {
 		if ((q->op == 24 || q->op == 47) && ot == 2) {
-			if (s4d86 > 3)
+			if (pdebug > 3)
 				printf("isdefined(), op1=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
 			return ((symtab[betatbl[i].x1].sflags >> 1) & 1) || BBIT(i, 12);
 		}
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("isdefined(), beta=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
 		return BBIT(i, 12);
 	}
@@ -570,10 +570,10 @@ int block;
 {
 	struct bl *e;
 
-	if (s4d86 > 2)
+	if (pdebug > 2)
 		printf("domexits(hdr=%d, block=%d)\n", lp->hdr, block);
 	for (e = lp->exits; e != 0; e = e->next)
-		if (!isdom(a0f4, block, e->blk))
+		if (!isdom(hdrdtree, block, e->blk))
 			return 0;
 	return 1;
 }
@@ -585,7 +585,7 @@ struct quad *q, *firstq;
 {
 	struct quad *p;
 
-	if (s4d86 > 1) {
+	if (pdebug > 1) {
 		printf("invopnds(firstq = %X), quad (%X) = \n", firstq, q);
 		prquad(q);
 	}
@@ -635,7 +635,7 @@ unsigned *vec;
 {
 	int k;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("notlive(q=%x)\n", q);
 		prquad(q);
 		prvec(vec, 3, 1);
@@ -651,7 +651,7 @@ unsigned *vec;
 			k = bitpos(q, 1, 6);
 	} else
 		cerror("notlive(): illegal rslt opnd");
-	if (s4d86 > 3)
+	if (pdebug > 3)
 		printf("notlive() = %s\n", (!tstlbit(vec, k) != 0) ? "TRUE" : "FALSE");
 	return !tstlbit(vec, k);
 }
@@ -667,7 +667,7 @@ struct quad *q;
 	struct quad *x;
 	int v, k1, k2, i, s;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("domuse(hdr=%d,blk=%d,q=%X), quad=\n", lp->hdr, blk, q);
 		prquad(q);
 	}
@@ -683,7 +683,7 @@ struct quad *q;
 				k2 = bitpos(x, 2, v);
 			else if (x->f5 && (v = issym(x, 3)))
 				k2 = bitpos(x, 3, v);
-			if (v && k2 == k1 && !isdom(a0f4, blk, i))
+			if (v && k2 == k1 && !isdom(hdrdtree, blk, i))
 				return 0;
 		}
 	}
@@ -697,7 +697,7 @@ struct quad *q, *firstq;
 {
 	struct quad *p;
 
-	if (s4d86 > 1) {
+	if (pdebug > 1) {
 		printf("//  marklpinv: \n");
 		prquad(q);
 	}
@@ -728,7 +728,7 @@ struct dl *d;
 {
 	struct quad *s, *x, *h;
 
-	if (s4d86 > 1)
+	if (pdebug > 1)
 		printf("//  chkbscindvar: \n");
 	x = d->q;
 	if (x->op == 47 && x->a.b2 == 3) {
@@ -737,7 +737,7 @@ struct dl *d;
 		if (s->op == 1 || s->op == 48) {
 			if (s->b.b2 == 1 || s->b.b2 == 7 || ((s->b.b2 == 4 || s->b.b2 == 6 || s->b.b2 == 8) && !isdefined(s, 3))) {
 				if (sameopnd(s, x, 2, 1)) {
-					if (s4d86 > 1) {
+					if (pdebug > 1) {
 						printf("found basic induction var:\n");
 						prquad(s);
 					}
@@ -751,7 +751,7 @@ struct dl *d;
 						d->f10 = 1;
 					else
 						d->f10 = 0;
-					a0e4 = 1;
+					invset = 1;
 					x->f2 = 1;
 				}
 			}
@@ -759,16 +759,16 @@ struct dl *d;
 	}
 }
 
-/* a definition in the list a0e0 has the same result operand as q (name from the debug output) */
+/* a definition in the list lpdefs has the same result operand as q (name from the debug output) */
 int
 samebetalpdef(q)
 struct quad *q;
 {
 	struct dl *t;
 
-	for (t = a0e0; t != 0; t = t->next) {
+	for (t = lpdefs; t != 0; t = t->next) {
 		if (t->q->c.b2 == q->c.b2 && t->q->c.w4 == q->c.w4) {
-			if (s4d86 > 2) {
+			if (pdebug > 2) {
 				printf("samebetalpdef(), t->dfquad, q:\n");
 				prquad(t->q);
 				printf(q);
@@ -779,16 +779,16 @@ struct quad *q;
 	return 0;
 }
 
-/* a parameter store in the list a0e0 stores to the result operand of q (name from the debug output) */
+/* a parameter store in the list lpdefs stores to the result operand of q (name from the debug output) */
 int
 qparvbetalpdef(q)
 struct quad *q;
 {
 	struct dl *t;
 
-	for (t = a0e0; t != 0; t = t->next) {
+	for (t = lpdefs; t != 0; t = t->next) {
 		if (t->q->op == 52 && t->q->a.b2 == q->c.b2 && t->q->a.w4 == q->c.w4) {
-			if (s4d86 > 2) {
+			if (pdebug > 2) {
 				printf("qparvbetalpdef(), t->dfquad, q:\n");
 				prquad(t->q);
 				printf(q);
@@ -799,7 +799,7 @@ struct quad *q;
 	return 0;
 }
 
-/* the loop invariant definitions are searched in the list of the definitions of the loop lp, moved to the list a100 and marked (name from the debug output) */
+/* the loop invariant definitions are searched in the list of the definitions of the loop lp, moved to the list invdefs and marked (name from the debug output) */
 void
 lpinv(lp)
 struct loop *lp;
@@ -809,20 +809,20 @@ struct loop *lp;
 	struct dl *u, *prev;
 	struct quad *h;
 
-	a0fc = 0;
-	if (a0e0 == 0)
+	invagain = 0;
+	if (lpdefs == 0)
 		return;
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("lpinv(hdr=%d)\n", lp->hdr);
 		printf("lpdefs:\n");
-		prlpdefs(a0e0);
+		prlpdefs(lpdefs);
 	}
-	a100 = 0;
-	t = a0e0;
+	invdefs = 0;
+	t = lpdefs;
 	prev = t;
 	while (t != 0) {
 		q = t->q;
-		if (s4d86 > 3) {
+		if (pdebug > 3) {
 			printf("lpinv(), qd->lpinv = %d, processing quad:\n", q->f3);
 			prquad(q);
 		}
@@ -831,46 +831,46 @@ struct loop *lp;
 		h = skiphdrs(blks[t->x0]);
 		if (!invopnds(q, h))
 			goto L2;
-		if (!domexits(lp, t->x0) && !notlive(q, a0e8))
+		if (!domexits(lp, t->x0) && !notlive(q, exitlive))
 			goto L2;
 		if (q->c.b2 == 4 && symtab[q->c.w4].sx6 > vafc)
 			goto L3;
 		if (q->c.b2 == 8 && q->op == 47 && symtab[betatbl[q->c.w4].x1].sx6 > vafc)
 			goto L3;
-		if (s4d86 > 3) {
+		if (pdebug > 3) {
 			printf("moving def to possible inv list\n");
 			prquad(q);
 		}
-		if (a100 != 0) {
-			u = a100;
-			a100 = t;
+		if (invdefs != 0) {
+			u = invdefs;
+			invdefs = t;
 			if (t == prev) {
-				a0e0 = prev = t->next;
+				lpdefs = prev = t->next;
 			} else
 				prev->next = t->next;
 			t = t->next;
-			a100->next = u;
+			invdefs->next = u;
 		} else {
-			a100 = t;
+			invdefs = t;
 			if (t == prev) {
-				a0e0 = prev = t->next;
+				lpdefs = prev = t->next;
 			} else
 				prev->next = t->next;
 			t = t->next;
-			a100->next = 0;
+			invdefs->next = 0;
 		}
 		continue;
 L2:		chkbscindvar(t);
 L1:		prev = t;
 L3:		t = t->next;
 	}
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("\nlpinvhdr\n");
-		prlpdefs(a100);
+		prlpdefs(invdefs);
 		printf("\nlpdefs:\n");
-		prlpdefs(a0e0);
+		prlpdefs(lpdefs);
 	}
-	t = a100;
+	t = invdefs;
 	if (t == 0)
 		return;
 	for (; t != 0; t = t->next) {
@@ -878,23 +878,23 @@ L3:		t = t->next;
 			continue;
 		if (t->q->op == 47 && t->q->c.b2 == 8 && samebetalpdef(t->q))
 			continue;
-		if (s4d86 > 2 && a0fc != 1)
+		if (pdebug > 2 && invagain != 1)
 			printf("\n");
-		a0fc = 1;
-		a0f2 = 1;
+		invagain = 1;
+		invfound = 1;
 		if (!qparvbetalpdef(t->q))
 			clrsymflag(t->q, 1);
 		h = skiphdrs(blks[t->x0]);
 		marklpinv(t->q, h);
 	}
-	if (a0fc) {
-		u = a0e0;
+	if (invagain) {
+		u = lpdefs;
 		if (u != 0) {
 			while (u->next != 0)
 				u = u->next;
-			u->next = a100;
+			u->next = invdefs;
 		} else
-			a0e0 = a100;
+			lpdefs = invdefs;
 	}
 }
 
@@ -905,7 +905,7 @@ int hblk, phblk;
 {
 	struct dnode *p, *x;
 
-	if (s4d86 > 2)
+	if (pdebug > 2)
 		printf("// insrtdomnode(hblk=%d,phblk=%d)\n", hblk, phblk);
 	p = findsubdtree(domroot, hblk);
 	if (p->down != 0)
@@ -929,7 +929,7 @@ int phblk;
 	int hblk;
 
 	hblk = lp->hdr;
-	if (s4d86 > 1)
+	if (pdebug > 1)
 		printf("// updatelooplist(hblk=%d,phblk=%d)\n", hblk, phblk);
 	if (phblk > maxblk)
 		cerror("Too many basic blocks\n");
@@ -940,7 +940,7 @@ int phblk;
 				if (x->blk == hblk)
 					break;
 			if (x != 0) {
-				if (s4d86 > 2)
+				if (pdebug > 2)
 					printf("//update, found outer loop, header=%d\n", p->hdr);
 				--p->cnt;
 				if (x == p->bls) {
@@ -973,9 +973,9 @@ int flag;
 
 	chg = 0;
 	adj = 0;
-	if (s4d86 > 2)
+	if (pdebug > 2)
 		printf("// addpreheader()\n");
-	if ((s4d90 || s4d86) && s4d88) {
+	if ((rdebug || pdebug) && fdebug) {
 		printf("addpreheader : before insertion, blockno is %d\n", lp->hdr);
 		if (flag != 1)
 			prgraph();
@@ -983,7 +983,7 @@ int flag;
 	hblk = lp->hdr;
 	updatelooplist(lp, blkno);
 	hq = blks[hblk];
-	if (s4d90 > 1) {
+	if (rdebug > 1) {
 		printf("// addpreheader: hblk = %d\n", hblk);
 		prquad(hq->next);
 	}
@@ -994,10 +994,10 @@ int flag;
 	for (i = hq->a.w4; i >= 0; i = edges[i].x) {
 		p = edges[i].y;
 		pq = blks[p];
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("checking block = %d\n", p);
 		if (!inbl(lp->bls, p)) {
-			if (s4d86 > 3)
+			if (pdebug > 3)
 				printf("checking non loop block = %d\n", p);
 			pv = pq;
 			while (pq != 0) {
@@ -1021,7 +1021,7 @@ int flag;
 	if (pq == 0)
 		cerror("loop header quad not found");
 found:
-	if (s4d86 > 3) {
+	if (pdebug > 3) {
 		printf("found quad before the header:\n");
 		prquad(pv);
 	}
@@ -1030,19 +1030,19 @@ found:
 	qa2.w4 = -1;
 	qa3.b2 = 0;
 	if (flag == 1 && lp->b10) {
-		a0d6 = pv;
+		phquad = pv;
 		return p;
 	}
 	lp->b10 = 1;
 	nq = insertquad(59, &qa1, &qa2, &qa3, pv);
-	a0d6 = nq;
+	phquad = nq;
 	for (i = hq->a.w4; i >= 0; i = edges[i].x) {
 		p = edges[i].y;
 		pq = blks[p];
 		if (inbl(lp->bls, p))
 			continue;
 		q = pq->next;
-		if (s4d86 > 3) {
+		if (pdebug > 3) {
 			printf("header block=%d, header label=%d\n", hblk, lbl);
 			printf("predecessor block=%d, first quad:\n", p);
 			prquad(q);
@@ -1055,7 +1055,7 @@ found:
 				cq = q;
 			q = q->next;
 		}
-		if (s4d86 > 3) {
+		if (pdebug > 3) {
 			printf("predecessor last quad:\n");
 			prquad(q);
 		}
@@ -1064,7 +1064,7 @@ found:
 				if (q->a.w4 == lbl) {
 					if (!chg)
 						nl = lblcnt++;
-					if (s4d86 > 3)
+					if (pdebug > 3)
 						printf("jump label changed from %d to %d\n", q->a.w4, nl);
 					q->a.w4 = nl;
 					chg = 1;
@@ -1073,7 +1073,7 @@ found:
 				if (q->b.w4 == lbl) {
 					if (!chg)
 						nl = lblcnt++;
-					if (s4d86 > 3)
+					if (pdebug > 3)
 						printf("jump label changed from %d to %d\n", q->b.w4, nl);
 					chg = 1;
 					q->b.w4 = nl;
@@ -1082,7 +1082,7 @@ found:
 				if (q->a.w4 == lbl) {
 					if (!chg)
 						nl = lblcnt++;
-					if (s4d86 > 3)
+					if (pdebug > 3)
 						printf("case label changed from %d to %d\n", q->a.w4, nl);
 					chg = 1;
 					q->a.w4 = nl;
@@ -1090,7 +1090,7 @@ found:
 						cerror("addpreheader: no case quad previously");
 					if (-cq->b.w4 == lbl) {
 						cq->b.w4 = -nl;
-						if (s4d86 > 3) {
+						if (pdebug > 3) {
 							printf("changed default label for quad\n");
 							prquad(cq);
 						}
@@ -1101,14 +1101,14 @@ found:
 		if (chg && !adj) {
 			qa1.b2 = 1;
 			qa1.w4 = nl;
-			a0d6 = insertquad(28, &qa1, (struct qa *)0, (struct qa *)0, nq);
+			phquad = insertquad(28, &qa1, (struct qa *)0, (struct qa *)0, nq);
 			adj = 1;
 		}
 		deledge(&hq->a.w4, p);
 		deledge(&pq->b.w4, hblk);
 		addedge(&nq->a.w4, p);
 		addedge(&pq->b.w4, blkno);
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("replaced link from pred = %d\n", p);
 	}
 	addedge(&nq->b.w4, hblk);
@@ -1123,7 +1123,7 @@ found:
 		printf("blkno=%d, maxblocks=%d, hblk=%d\n", blkno, maxblk, hblk);
 		cerror("addpreheader(): Too many pre-headers added");
 	}
-	if ((s4d90 || s4d86) && s4d88) {
+	if ((rdebug || pdebug) && fdebug) {
 		printf("addpreheader : dgf after header insertion\n");
 		prgraph();
 	}
@@ -1176,20 +1176,20 @@ struct loop *lp;
 	struct quad *q, *r;
 	struct bl *b;
 
-	if (s4d86)
+	if (pdebug)
 		printf("// proceslp : moving loop inv quads:\n");
-	a0da = 0;
+	ivagain = 0;
 	for (b = lp->bls; b != 0; b = b->next) {
 		blk = b->blk;
-		if (s4d86 > 1)
+		if (pdebug > 1)
 			printf("proceslp(): looking at block=%d\n", blk);
 		if (QHREC(blks[blk])->w12) {
-			if (s4d86 > 2)
+			if (pdebug > 2)
 				printf("proceslp(): looking at loop block=%d\n", blk);
 			for (q = blks[blk]->next; q != 0; q = q->next) {
 				if (q->op == 59)
 					break;
-				if (s4d86 > 2) {
+				if (pdebug > 2) {
 					printf("proceslp: looking at quad, q->lpinv=%d, q->sdef=%d, q->lpind=%d\n", q->f3, q->f1, q->f2);
 					prquad(q);
 				}
@@ -1204,7 +1204,7 @@ struct loop *lp;
 						q = r;
 				}
 			}
-			if (a0f0)
+			if (copyins)
 				deltmplpdefs();
 		}
 	}
@@ -1223,7 +1223,7 @@ marksloop()
 			p->b13 = 0;
 			p->b12 = 1;
 			f = 1;
-			if (s4d86 > 3)
+			if (pdebug > 3)
 				printf("//marksloop(loopmarked=%d)\n", p->hdr);
 		}
 	}
@@ -1234,10 +1234,10 @@ marksloop()
 void
 prlpstats()
 {
-	printf("//\n//Number of quads moved out of loops \t\t= %d\n", a0e6);
-	printf("//Number of stemps created in loop optimization = %d\n", a0ec);
-	printf("//Number of temps created in loop optimization \t= %d\n", a0ee);
-	printf("//Number of induction vars. eliminated in loop opt. = %d\n", a0fe);
+	printf("//\n//Number of quads moved out of loops \t\t= %d\n", nqmoved);
+	printf("//Number of stemps created in loop optimization = %d\n", nstemps);
+	printf("//Number of temps created in loop optimization \t= %d\n", nltemps);
+	printf("//Number of induction vars. eliminated in loop opt. = %d\n", nivelim);
 }
 
 /* the loop optimization of the program (name guessed) */
@@ -1249,7 +1249,7 @@ loopopt()
 	int first;
 
 	first = 1;
-	if (s4d86) {
+	if (pdebug) {
 		printf("//Program before loop optimization\n");
 		prquads();
 	}
@@ -1257,11 +1257,11 @@ again:
 	if (!first)
 		tabfree(7, (char *)0);
 	livevars();
-	s4d94 = a0d4;
+	maxtmp = nbeta;
 	clearblocks();
 	lp = loops;
-	a104 = 0;
-	a0f8 = 0;
+	freend = 0;
+	flpdefs = 0;
 	for (; lp != 0; lp = lp->link) {
 		if (first)
 			orderbl((struct bl **)lp);
@@ -1271,38 +1271,38 @@ again:
 			continue;
 		if (!lp->b12)
 			continue;
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("//\n//processing loop with header %d\n", lp->hdr);
 		lp->b11 = 1;
-		a0e0 = 0;
-		a0e8 = 0;
+		lpdefs = 0;
+		exitlive = 0;
 		hdrblk = lp->hdr;
 		marklpblocks(lp, 1);
 		findlpdefs(lp);
 		liveonexit(lp);
-		a0f4 = findsubdtree(domroot, hdrblk);
-		a0fc = 1;
-		a0f2 = 0;
-		a0e4 = 0;
-		a0f0 = 0;
-		while (a0fc)
+		hdrdtree = findsubdtree(domroot, hdrblk);
+		invagain = 1;
+		invfound = 0;
+		invset = 0;
+		copyins = 0;
+		while (invagain)
 			lpinv(lp);
-		if (a0f2 || a0e4) {
+		if (invfound || invset) {
 			addpreheader(lp, 0);
 			proceslp(lp);
 		}
-		while (a0da)
+		while (ivagain)
 			proceslp(lp);
 		freelist(1);
 		marklpblocks(lp, 0);
-		if (s4d86 > 4) {
+		if (pdebug > 4) {
 			printf("//Program after optimizing loop\n");
 			for (q = qhead; q != 0; q = q->next)
 				prquad(q);
 		}
 	}
-	a0d4 = s4d94;
-	if (s4d86) {
+	nbeta = maxtmp;
+	if (pdebug) {
 		printf("//Program after loop optimization\n");
 		for (q = qhead; q != 0; q = q->next)
 			prquad(q);
@@ -1313,11 +1313,11 @@ again:
 		clearflags();
 		goto again;
 	}
-	if (s4d80) {
+	if (bdebug) {
 		printf("//Program after basic block optimization\n");
 		for (q = qhead; q != 0; q = q->next)
 			prquad(q);
 	}
-	if (s4d92)
+	if (sdebug)
 		prlpstats();
 }

@@ -1958,7 +1958,7 @@
    "kind": "proven",
    "module": "alias2.c",
    "file": "alias2.c",
-   "note": "name guessed (the driver of the alias analysis: matrix, closure, product, alias lists); tmp 1800 words; s4d92 the statistics flag"
+   "note": "name guessed (the driver of the alias analysis: matrix, closure, product, alias lists); tmp 1800 words; sdebug the statistics flag"
   },
   "flow_graph": {
    "orig": "4:927e",
@@ -2192,7 +2192,7 @@
    "kind": "proven",
    "module": "dom2.c",
    "file": "dom2.c",
-   "note": "the dominators of Lengauer and Tarjan; dom (713a), idfn (7120), arrays guessed; n = maxblk + 1; the debug prints of the arrays (s4d82)"
+   "note": "the dominators of Lengauer and Tarjan; dom (713a), idfn (7120), arrays guessed; n = maxblk + 1; the debug prints of the arrays (ddebug)"
   },
   "linkdom": {
    "orig": "4:b8a4",
@@ -2345,7 +2345,7 @@
    "kind": "proven",
    "module": "dom2.c|init2.c",
    "file": "dom2.c",
-   "note": "name guessed; falls off the end without a return value when s0b5e <= 3 (as the original)"
+   "note": "name guessed; falls off the end without a return value when olevel <= 3 (as the original)"
   },
   "initopts": {
    "orig": "4:c69e",
@@ -3980,7 +3980,7 @@
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "`if (x != 0) { for (..) ; x->next = a0e0; } else a0f8 = a0e0;` (the branch with the loop first; both lists)"
+   "note": "`if (x != 0) { for (..) ; x->next = lpdefs; } else flpdefs = lpdefs;` (the branch with the loop first; both lists)"
   },
   "insrtlpdef": {
    "orig": "5:6502",
@@ -3998,7 +3998,7 @@
    "kind": "proven",
    "module": "lpind2.c",
    "file": "lpind2.c",
-   "note": "`a0e0 = a0e0->next; prev = a0e0;` (two statements, not the chain prev = a0e0 = ...)"
+   "note": "`lpdefs = lpdefs->next; prev = lpdefs;` (two statements, not the chain prev = lpdefs = ...)"
   },
   "delindvar": {
    "orig": "5:67de",

@@ -85,7 +85,7 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | checkalias | 4:8ed4 | checkalias(q, ot): the first parameter is the pointer (rr6, ot in r5); rtab (0xb9c) is a pointer to 10 byte entries (guessed) |
 | affsize | 4:9062 | name guessed (the affect matrix: rows affdim <= 225, matw words per row); `matw = affdim / 16 + 1` (affdim, not nal) |
 | praldim | 4:90be | name guessed |
-| aliasmat | 4:9108 | name guessed (the driver of the alias analysis: matrix, closure, product, alias lists); tmp 1800 words; s4d92 the statistics flag |
+| aliasmat | 4:9108 | name guessed (the driver of the alias analysis: matrix, closure, product, alias lists); tmp 1800 words; sdebug the statistics flag |
 | flow_graph | 4:927e | the name from the string; blocks: quads of the op 0x3b with a.w4 = the predecessor list, b.w4 = the successor list (edges); the loops are for (q = blks[i]->next; ...); jmp: the previous block ended in a jump; 0xa: r->c.w0 = 1 of the first label of the target block |
 | optflow | 4:98a6 | name guessed (the optimizations of the flow graph with the debug output); an unused local j (the pad before q) |
 | blkof | 4:9a5c | name guessed: the number of the basic block of a label (table of the labels per block) |
@@ -105,7 +105,7 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | linkp | 4:ad8e | linkp(v, w): the balanced link of Lengauer and Tarjan; arrays child (712a), size (7132); name from the string; a lone label rl1 |
 | addbucket | 4:affc | name from the string; the buckets bucket (713e) and the entries bent (7100, as struct edge), nbent (70fe) |
 | delbucket | 4:b0d8 | `prev = t = bucket[i]`, the loop leaves by goto found past the cerror (no second t < 0 test), `if (prev == t) bucket[i] = ...; else bent[prev].next = ...` |
-| dominators | 4:b1be | the dominators of Lengauer and Tarjan; dom (713a), idfn (7120), arrays guessed; n = maxblk + 1; the debug prints of the arrays (s4d82) |
+| dominators | 4:b1be | the dominators of Lengauer and Tarjan; dom (713a), idfn (7120), arrays guessed; n = maxblk + 1; the debug prints of the arrays (ddebug) |
 | linkdom | 4:b8a4 | name from the string; struct dnode {next, down, dblkno} guessed; darr (712e) |
 | mkdomtree | 4:b928 | `(domroot = (struct dnode *)taballoc(12, 4))->next = 0;` (domroot is loaded again); name guessed |
 | prlist | 4:bbb4 | name guessed (debug) |
@@ -122,7 +122,7 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | mkloops | 4:c538 | name guessed |
 | domspace | 4:c5a4 | b stays known in r3 over the stores to the other frame slots (vc spopt OLD_D64) |
 | prlstats | 4:c610 | name guessed (debug) |
-| domloops | 4:c65a | name guessed; falls off the end without a return value when s0b5e <= 3 (as the original) |
+| domloops | 4:c65a | name guessed; falls off the end without a return value when olevel <= 3 (as the original) |
 | initopts | 4:c69e | name guessed (the options of the pass; the case blocks in the address order of the original: y q d l p f e t a b r s Z E 5 4 3 2 1); the register variables j and t are unused; an unused pointer stands before buf (frame); argv[i - 1] in the messages is the original; the results of strcpy and strcat in fopen(strcat(strcpy(buf, ..), ..), ..) share one temporary (vc OLD_D14T) |
 | prqflags | 4:c974 | name guessed (debug) |
 | prqall | 4:ca54 | name guessed (debug) |
@@ -191,9 +191,9 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | insrtopstmp | 5:5a86 | the address of a frame place by lda without the mask (vc OLD_D24L) |
 | fillindvar | 5:5ec4 | the kind 2 code with p->f11 set stands at the end of the kind 3 branch as `if (0) { k2: ... }`, the kind 2 branch is `if (p->f11) goto k2; ok = copyopndstmp(...)` |
 | indupdate | 5:62fc | `opcode = opcode == 1 ? 48 : 1;` and the insertquad call in both branches of `if (ind->v > 0)`; an unused struct qa beside c (frame) |
-| freelist | 5:6466 | `if (x != 0) { for (..) ; x->next = a0e0; } else a0f8 = a0e0;` (the branch with the loop first; both lists) |
+| freelist | 5:6466 | `if (x != 0) { for (..) ; x->next = lpdefs; } else flpdefs = lpdefs;` (the branch with the loop first; both lists) |
 | insrtlpdef | 5:6502 | the address of a frame place by lda without the mask (vc OLD_D24L) |
-| deltmplpdefs | 5:6614 | `a0e0 = a0e0->next; prev = a0e0;` (two statements, not the chain prev = a0e0 = ...) |
+| deltmplpdefs | 5:6614 | `lpdefs = lpdefs->next; prev = lpdefs;` (two statements, not the chain prev = lpdefs = ...) |
 | chklpdefs | 5:68f4 | the r != dp->q code at the loop top as `if (0) { lr: ...; continue; }`, reached by `if (r != dp->q) goto lr;`, in it the ternary test as `if (0) { lt: ... }` reached by `if (q->op == 1 || q->op == 48) goto lt; so:`; delindvar(dp->l10, dp->x20) |
 | chkfamindvar | 5:6bf2 | the pointer-kind test as `!(((a & 0x30) == 0x10) ^ ((b & 0x30) == 0x10))` (xor); the case 45 tests q->b.b2 (not a.b2: as the original); the cases are the block f5_6d40 (switch 1,34,44,48 / 14,45) |
 | chkcalls | 5:6f52 | written with gotos (outer: label, `if (p == 0) {p = lp->bls; return;}`; inner: `q = ...; goto qt; qs: q = q->next; qt: if (q == 0) {nextp: p = p->next; goto outer;}`, `if (q->op == 59) goto nextp; if (q->op != 7) goto qs;`); x declared in front of q (frame order) |

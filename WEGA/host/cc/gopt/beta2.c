@@ -15,10 +15,10 @@ int betainit(void)
 	int i;
 
 	betatbl = (struct bt *)tabzalloc(0, 0, 5);
-	s4d94++;
-	for (i = 0; i < s4d94; i++)
+	maxtmp++;
+	for (i = 0; i < maxtmp; i++)
 		betanew(i);
-	a0d4 = s4d94;
+	nbeta = maxtmp;
 	for (q = qhead; q != 0; q = q->next) {
 		if (q->c.b2 == 3 && ctpos[q->c.w4] == 1) {
 			q = delquad(q);
@@ -95,12 +95,12 @@ int betainit(void)
 		t->f14 = 0;
 		t->b10 = 0;
 		q->c.b2 = 8;
-		q->c.w4 = a0d4;
-		a0d4++;
+		q->c.w4 = nbeta;
+		nbeta++;
 	}
-	if (s4d80)
+	if (bdebug)
 		betaprint();
-	a108 = a0d4;
+	nbeta0 = nbeta;
 	return 0;	/* host: the original has no return; nobody uses the result */
 }
 
@@ -108,7 +108,7 @@ int betaset(struct qa *a)
 {
 	int i;
 
-	for (i = s4d94; i < a0d4; i++)
+	for (i = maxtmp; i < nbeta; i++)
 		if (betatbl[i].x[0] == a->w4) {
 			a->b2 = 8;
 			a->w4 = i;
@@ -139,7 +139,7 @@ int betaprint(void)
 	int i;
 
 	printf("BETA TABLE\n");
-	for (i = 0; i < a0d4; i++) {
+	for (i = 0; i < nbeta; i++) {
 		printf("// (%d)", i);
 		printf("variable = %s, ", ascii + symtab[betatbl[i].x1].nameoff);
 		printf("aliaspos = %d, ", betatbl[i].x0);

@@ -5,16 +5,16 @@
 static char sccsid[] = "@[$]reader2.c\t1.5  03/04/83 16:01:42 Copr. 1981 87wega3.2.";
 #include "mfile2.h"
 
-int s0078 = 0;
+int aborted = 0;
 
 extern long qhead;
 extern int nerrors;
 extern int ntmp;
 extern NODE *saved[];
-extern long qtail, qfree, v06;
+extern long qtail, qfree, maxoff;
 extern int vafe;
-extern int s0078;
-extern long s4d96;
+extern int aborted;
+extern long baseoff;
 extern void mkhash(), nlcheck(), fwalk(), mapnm(), ncopy(), tprint();
 extern long addquad();
 extern void aliasm(), betainit(), optimize(), writeil(), mapall();
@@ -48,22 +48,22 @@ main(argc, argv)
 			break;
 		switch (c) {
 		case '{':
-			s4d7a = 0;
-			s0078 = 0;
+			hascall = 0;
+			aborted = 0;
 			qtail = 0;
 			nconst = 0;
 			nfconst = 0;
 			qfree = 0;
 			qtail = 0;
-			v0e = 1;
+			nexttmp = 1;
 			tinit();
-			s4d74 = 0;
-			s4d76 = 0;
+			nlabrm = 0;
+			njmprm = 0;
 			ntl = 0;
-			s4d78 = 0;
+			ndeadrm = 0;
 			vafc = 0;
 			lno = 1;
-			s4d94 = 0;
+			maxtmp = 0;
 			ctmpoff = 0;
 			nctmp = 0;
 			nctmpuses = 0;
@@ -72,10 +72,10 @@ main(argc, argv)
 				ctpos[i] = 0;
 			}
 			mkhash();
-			v00 = rdin(10);
-			vb94 = rdin(10);
-			v06 = rdin(10);
-			v04 = rdin(10);
+			nlabsave = rdin(10);
+			frame0 = rdin(10);
+			maxoff = rdin(10);
+			nparm = rdin(10);
 			nlcheck();
 			if (!rdsym())
 				cerror("error in reading symbol table file");
@@ -101,13 +101,13 @@ main(argc, argv)
 			nlcheck();
 			break;
 		case '[':
-			s4d96 = rdin(10);
+			baseoff = rdin(10);
 			v1 = rdin(10);
 			v2 = rdin(10);
 			if (vafc == 0)
 				vafc = lno;
 			p1->b2 = 7;
-			p1->w4 = constlook(s4d96);
+			p1->w4 = constlook(baseoff);
 			p2->b2 = 1;
 			p2->w4 = v1;
 			p3->b2 = 1;
@@ -239,7 +239,7 @@ cutree(p)
 	kind = optype(op);
 	switch (op) {
 	case 0x46: case 0x48: case 0x67: case 0x69:
-		s4d7a = 1;
+		hascall = 1;
 		return;
 	case 0x4c: case 0x73:
 		return;
@@ -295,7 +295,7 @@ pr(p, down, down1, down2)
 static void
 abortpass()
 {
-	s0078 = 1;
+	aborted = 1;
 	lastq->next = 0;
 	passes();
 }
@@ -303,27 +303,27 @@ abortpass()
 static void
 passes()
 {
-	if (s0078 == 0) {
+	if (aborted == 0) {
 		aliasm();
-		if (s4d88 > 4) {
+		if (fdebug > 4) {
 			printf("// quads before aliasm");
 			prquads();
 		}
-		if (aliasmat() && s4d88 > 4)
+		if (aliasmat() && fdebug > 4)
 			prquads();
 		if (flow_graph()) {
 			betainit();
-			if (s0b5e > 1)
+			if (olevel > 1)
 				ebbopt();
-			if (s0b5e >= 3 && domloops() == 0)
+			if (olevel >= 3 && domloops() == 0)
 				;
-			if (s0b5e == 3 || s0b5e > 4)
+			if (olevel == 3 || olevel > 4)
 				optimize();
 		}
 	}
 	if (tflag == 0)
 		writeil();
-	if (s4d92)
+	if (sdebug)
 		prtbl();
 }
 

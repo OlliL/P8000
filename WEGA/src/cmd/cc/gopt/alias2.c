@@ -56,7 +56,7 @@ setposition(cls, p, X, Y)
 	}
 	if (p->b2 == 3)
 		return;
-	if (s4d7a && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != 8)
+	if (hascall && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != 8)
 		return;
 	if (symtab[p->w4].sclass == 9)
 		return;
@@ -617,7 +617,7 @@ almap(p, op)
 	}
 	if (p->b2 != 4)
 		goto neg;
-	if (s4d7a && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != 8)
+	if (hascall && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != 8)
 		goto zero;
 	if (symtab[p->w4].sclass == 9)
 		goto zero;
@@ -1080,7 +1080,7 @@ aliasmat()
 		prmat(affect, affdim, matw);
 	}
 	mkallist();
-	if (s4d92)
+	if (sdebug)
 		praldim();
 	return 1;
 }

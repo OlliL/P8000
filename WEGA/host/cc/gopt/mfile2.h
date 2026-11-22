@@ -91,7 +91,7 @@ struct hent { struct hent *next; int op; int v1; int v2; int val; unsigned cst:1
 struct vn { struct vn *next; struct qa a; int val; int al; unsigned cst:1, dead:1, rest:14; };	/* value numbers: 16 */
 struct gedge { int k; struct gedge *next; };			/* the edges of the interference graph (reg2.c: edge): 6 */
 struct gn { int row; struct gn *link; struct gedge *edges; int cnt; int x12; int x14; int cost; unsigned f15:1; };	/* 20 */
-struct gnn { int x0; struct quad *q; int blk; int kind; };	/* the table a11a: 10 */
+struct gnn { int x0; struct quad *q; int blk; int kind; };	/* the table gnodes: 10 */
 
 /* host: the tables that the modules declare with an anonymous structure (the same layout in every module) */
 struct ctmp { int a, b; };
@@ -115,17 +115,17 @@ void brecinit(struct brec *r);
 
 /* what more than one module uses, in the same form (a module declares what only it uses, or what it sees in a
    form of its own) */
-extern int a0d4;
-extern struct quad *a0d6;
-extern int a0da;
-extern struct dl *a0e0;
-extern int a0e6;
-extern int a0ec;
-extern int a0ee;
-extern int a0f0;
-extern struct dl *a0f8;
-extern int a0fe;
-extern int a108;
+extern int nbeta;
+extern struct quad *phquad;
+extern int ivagain;
+extern struct dl *lpdefs;
+extern int nqmoved;
+extern int nstemps;
+extern int nltemps;
+extern int copyins;
+extern struct dl *flpdefs;
+extern int nivelim;
+extern int nbeta0;
 extern int aflag;
 extern int *altab;
 extern char *arhigh[];
@@ -170,29 +170,29 @@ extern int qflag;
 extern struct quad *qfree;
 extern struct quad *qhead;
 extern struct quad *qtail;
-extern int s0b5e;
-extern int s4d72;
-extern int s4d74;
-extern int s4d76;
-extern int s4d78;
-extern int s4d7a;
-extern int s4d80;
-extern int s4d82;
-extern int s4d84;
-extern int s4d86;
-extern int s4d88;
-extern int s4d90;
-extern int s4d92;
-extern int s4d94;
-extern int s70e6;
+extern int olevel;
+extern int zflag;
+extern int nlabrm;
+extern int njmprm;
+extern int ndeadrm;
+extern int hascall;
+extern int bdebug;
+extern int ddebug;
+extern int ldebug;
+extern int pdebug;
+extern int fdebug;
+extern int rdebug;
+extern int sdebug;
+extern int maxtmp;
+extern int startblk;
 extern FILE *stfile;
 extern long stg;
 extern struct sym *symtab;
 extern int tflag;
 extern int tl[];
-extern int v00;
-extern int v04;
-extern int v0e;
+extern int nlabsave;
+extern int nparm;
+extern int nexttmp;
 extern int vafc;
-extern long vb94;
+extern long frame0;
 extern int *vertex;

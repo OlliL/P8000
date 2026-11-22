@@ -6,18 +6,18 @@ static char sccsid[] __attribute__((unused)) = "@[$]reg2.c\t1.11  03/04/83 16:04
 #include "mfile2.h"
 
 extern struct bt *betatbl;
-extern int a118;
-extern unsigned *a110;
-extern struct gn *a11e;
-extern unsigned *a10a;
+extern int matwords;
+extern unsigned *adjmat;
+extern struct gn *cgraph;
+extern unsigned *regused;
 extern struct pr *edges;
-extern int a114, a116, a10e;
-extern struct gnn *a11a;
+extern int bblockno, nnodes, ncolors;
+extern struct gnn *gnodes;
 
 /* the optimizer of the quads: the flow information, the loop information, the value numbering (name guessed) */
 void optimize(void)
 {
-	if (s4d90) {
+	if (rdebug) {
 		printf("// quads before register allocation\n");
 		prquads();
 	}
@@ -70,10 +70,10 @@ nextp:
 		goto nextp;
 	if (q->op != 7)
 		goto qs;
-	if (s4d90 > 4)
+	if (rdebug > 4)
 		printf("// call found in loop\n");
 	for (p = lp->bls; p != 0; p = p->next) {
-		if (s4d90 > 4)
+		if (rdebug > 4)
 			printf("// setting callfnd in block %d\n", p->blk);
 		(blks[p->blk])->rec->callfnd = 1;
 	}
@@ -102,26 +102,26 @@ void assignreg(int flag)
 	struct quad *q, *last;
 	unsigned *dfptr = 0;	/* host: = 0 (the original: what the frame holds) */
 
-	a11a = (struct gnn *)tabzalloc(0, 0, 0);
-	a116 = 0;
-	a10e = 1;
+	gnodes = (struct gnn *)tabzalloc(0, 0, 0);
+	nnodes = 0;
+	ncolors = 1;
 	last = 0;
 	for (q = qhead; q != 0; q = q->next) {
-		if (s4d90 > 4) {
+		if (rdebug > 4) {
 			printf("// assignreg: quad =");
 			prquad(q);
 		}
 		if (q->op == 59) {
-			a114 = q->a.w0;
-			if (s4d90 > 4) {
-				if ((blks[a114])->rec->w12)
-					printf("// block %d in loop\n", a114);
-				if ((blks[a114])->rec->callfnd)
+			bblockno = q->a.w0;
+			if (rdebug > 4) {
+				if ((blks[bblockno])->rec->w12)
+					printf("// block %d in loop\n", bblockno);
+				if ((blks[bblockno])->rec->callfnd)
 					printf("// call in loop\n");
-				printf("// assignreg:dfptr = %X, bblockno = %d\n", (unsigned)(uintptr_t)((q)->rec), a114);
+				printf("// assignreg:dfptr = %X, bblockno = %d\n", (unsigned)(uintptr_t)((q)->rec), bblockno);
 			}
 			dfptr = (q)->rec->f0;
-			if (s4d90 > 4) {
+			if (rdebug > 4) {
 				printf("// assignreg : quad =");
 				prquad(q);
 				prvec(dfptr, 5, 1);
@@ -148,20 +148,20 @@ void assignreg(int flag)
 		}
 		last = q;
 	}
-	if (a116) {
+	if (nnodes) {
 		buildgraph();
 		degrees();
-		if (s4d90) {
+		if (rdebug) {
 			printf("// graph before coloring\n");
 			prcgraph();
 		}
 		colorgraph(flag);
-		if (s4d90) {
+		if (rdebug) {
 			printf("// graph after coloring\n");
 			prcgraph();
 		}
 		savecolors();
-		if (s4d90) {
+		if (rdebug) {
 			printf("// quads after register allocation\n");
 			prquads();
 		}
@@ -176,7 +176,7 @@ void include(int flag, struct quad *q, struct quad *last)
 
 	if (q->op == 7 || q->op == 33)
 		return;
-	if (s4d90 > 4) {
+	if (rdebug > 4) {
 		printf("// include : called with");
 		propnd(&q->c);
 		printf("\n");
@@ -187,13 +187,13 @@ void include(int flag, struct quad *q, struct quad *last)
 		return;
 	if (flag == 0 && q->c.w0 == 2)
 		return;
-	if ((blks[a114])->rec->w12 && (blks[a114])->rec->callfnd && q->c.b2 == 4) {
+	if ((blks[bblockno])->rec->w12 && (blks[bblockno])->rec->callfnd && q->c.b2 == 4) {
 		if ((symtab[q->c.w4].sflags >> 2) & 1)
 			return;
 		if (symtab[q->c.w4].sclass == 9)
 			return;
 	}
-	if (s4d90 > 4) {
+	if (rdebug > 4) {
 		printf("// include :");
 		propnd(&q->c);
 		printf("\n");
@@ -201,12 +201,12 @@ void include(int flag, struct quad *q, struct quad *last)
 	t = (void *)tabzalloc((int)sizeof(struct gnn), 10, 0);
 	t->q = q;
 	t->x0 = 0;
-	t->blk = a114;
-	if (q->c.w0 == 5 || (s4d72 && (q->c.w0 & 0x30) == 0x10))
+	t->blk = bblockno;
+	if (q->c.w0 == 5 || (zflag && (q->c.w0 & 0x30) == 0x10))
 		t->kind = 2;
 	else
 		t->kind = 1;
-	a116++;
+	nnodes++;
 }
 
 /* the graph of the temporaries that are alive at the same time is built (name from the debug output) */
@@ -218,16 +218,16 @@ void buildgraph(void)
 	int i, k;
 
 	i = 0;
-	a118 = (a116 + 16) / 16;
-	a110 = (unsigned *)tabzalloc((a116 + 1) * a118 * (int)sizeof(unsigned), (a116 + 1) * 2 * a118, 0);
-	clrmat((int *)a110, a116 + 1, a118);
-	a11e = 0;
+	matwords = (nnodes + 16) / 16;
+	adjmat = (unsigned *)tabzalloc((nnodes + 1) * matwords * (int)sizeof(unsigned), (nnodes + 1) * 2 * matwords, 0);
+	clrmat((int *)adjmat, nnodes + 1, matwords);
+	cgraph = 0;
 	tmp = (unsigned *)tabzalloc(dfwords * (int)sizeof(unsigned), dfwords * 2, 0);
 	live = 0;
 	for (q = qhead; q != 0; q = q->next) {
 		if (0) {
 l59:
-			if (s4d90 > 4) {
+			if (rdebug > 4) {
 				printf("// buildgraph : processing quad -\n");
 				prquad(q);
 			}
@@ -243,7 +243,7 @@ l59:
 		}
 		if (q->op == 59)
 			goto l59;
-		if (q == a11a[i].q) {
+		if (q == gnodes[i].q) {
 			updatevector(q, tmp);
 			nd = setedges(i, tmp);
 			if (q->c.b2 == 4) {
@@ -253,11 +253,11 @@ l59:
 					nd->cost = 800;
 				else
 					nd->cost = 0;
-			} else if (q->c.b2 == 6 && q->c.w4 > a108)
+			} else if (q->c.b2 == 6 && q->c.w4 > nbeta0)
 				nd->cost = 700;
 			else
 				nd->cost = 0;
-			if ((blks[a11a[i].blk])->rec->w12)
+			if ((blks[gnodes[i].blk])->rec->w12)
 				++nd->cost;
 			i++;
 		}
@@ -270,9 +270,9 @@ void degrees(void)
 	struct gn *p;
 	int j;
 
-	for (p = a11e; p != 0; p = p->link) {
-		for (j = 1; j < a10e; j++)
-			if (testbit(a110, p->row, j, a118))
+	for (p = cgraph; p != 0; p = p->link) {
+		for (j = 1; j < ncolors; j++)
+			if (testbit(adjmat, p->row, j, matwords))
 				++p->cnt;
 	}
 }
@@ -282,7 +282,7 @@ void mergevectors(unsigned *a, unsigned *b)
 {
 	int i;
 
-	if (s4d90 > 4) {
+	if (rdebug > 4) {
 		printf("mergevectors(), livev:\n");
 		prvec(a, 3, 1);
 		printf("//\treachv:\n");
@@ -290,14 +290,14 @@ void mergevectors(unsigned *a, unsigned *b)
 	}
 	for (i = 0; i < ndefs; i++) {
 		if (tstlbit(b, i) && notlive(defs[i], a)) {
-			if (s4d90 > 4) {
+			if (rdebug > 4) {
 				printf("// mergevectors: clearing bit for i = %d, quad = ", i);
 				prquad(defs[i]);
 			}
 			clrlbit(b, i);
 		}
 	}
-	if (s4d90 > 4) {
+	if (rdebug > 4) {
 		printf("// mergevector returning :\n");
 		prvec(b, 3, 2);
 	}
@@ -312,13 +312,13 @@ void updatevector(struct quad *q, unsigned *v)
 		return;
 	for (p = srchdef(q, 1); *++p != -1; ) {
 		if (q != defs[*p]) {
-			if (s4d90 > 4) {
+			if (rdebug > 4) {
 				printf("// updatevector: clearing bit for quad ");
 				prquad(defs[*p]);
 			}
 			clrlbit(v, *p);
 		} else {
-			if (s4d90 > 1) {
+			if (rdebug > 1) {
 				printf("// updatevector: setting bit for quad ");
 				prquad(q);
 			}
@@ -335,21 +335,21 @@ struct gn *setedges(int i, unsigned *vec)
 	struct gedge *e;
 	struct quad *q, *q2;
 
-	q = a11a[i].q;
+	q = gnodes[i].q;
 	c = nodeno(q);
-	for (p = a11e; p != 0; p = p->link)
+	for (p = cgraph; p != 0; p = p->link)
 		if (p->row == c)
 			break;
 	if (p == 0) {
 		p = (struct gn *)tabzalloc((int)sizeof(struct gn), 20, 0);
-		p->link = a11e;
-		a11e = p;
+		p->link = cgraph;
+		cgraph = p;
 		p->edges = 0;
 		p->row = c;
 		p->cnt = 0;
 		p->f15 = 0;
 		p->x12 = -1;
-		p->x14 = a11a[i].kind;
+		p->x14 = gnodes[i].kind;
 	}
 	for (j = 0; j < ndefs; j++) {
 		k = nodeno(defs[j]);
@@ -358,17 +358,17 @@ struct gn *setedges(int i, unsigned *vec)
 		q2 = defs[j];
 		if (!tstlbit(vec, j) && !insameebbo(q, q2))
 			continue;
-		if (s4d90 > 2)
+		if (rdebug > 2)
 			printf("// setedge : (%d, %d)\n", c, k);
-		if (!testbit(a110, c, k, a118)) {
+		if (!testbit(adjmat, c, k, matwords)) {
 			e = (struct gedge *)tabzalloc((int)sizeof(struct gedge), 6, 0);
 			e->k = k;
 			e->next = p->edges;
 			p->edges = e;
-			if (s4d90 > 4)
+			if (rdebug > 4)
 				printf("// just added edge %d to node %d\n", e->k, p->row);
-			setbit((int *)a110, c, k, a118);
-			setbit((int *)a110, k, c, a118);
+			setbit((int *)adjmat, c, k, matwords);
+			setbit((int *)adjmat, k, c, matwords);
 		}
 	}
 	return p;
@@ -384,27 +384,27 @@ void colorgraph(int flag)
 	sp = 0;
 	if (flag == 0) {
 		k = 7;
-		if (s4d72)
+		if (zflag)
 			k--;
 	} else
 		k = 4;
 	again = 1;
-	stack = (struct gn **)tabzalloc(a116 * (int)sizeof(struct gn *), a116 * 4, 0);
+	stack = (struct gn **)tabzalloc(nnodes * (int)sizeof(struct gn *), nnodes * 4, 0);
 	for (;;) {
 		while (again) {
 			again = 0;
 			spill = 0;
-			for (p = a11e; p != 0; p = p->link) {
-				if (s4d90 > 4)
+			for (p = cgraph; p != 0; p = p->link) {
+				if (rdebug > 4)
 					printf("// colorgraph: inside for loop - node %d, degree %d\n", p->row, p->cnt);
 				if (p->cnt + p->x14 <= k && p->f15 == 0) {
 					p->f15 = 1;
 					stack[sp++] = p;
 					again = 1;
-					for (j = 1; j < a10e; j++) {
-						if (testbit(a110, j, p->row, a118)) {
-							clrbit((int *)a110, j, p->row, a118);
-							clrbit((int *)a110, p->row, j, a118);
+					for (j = 1; j < ncolors; j++) {
+						if (testbit(adjmat, j, p->row, matwords)) {
+							clrbit((int *)adjmat, j, p->row, matwords);
+							clrbit((int *)adjmat, p->row, j, matwords);
 							decdeg(j);
 							--p->cnt;
 						}
@@ -416,7 +416,7 @@ void colorgraph(int flag)
 		if (spill == 0) {
 			while (--sp >= 0) {
 				p = stack[sp];
-				if (s4d90 > 2)
+				if (rdebug > 2)
 					printf("// picking color for node %d\n", p->row);
 				restoredges();
 				p->x12 = pickcolor(p, k);
@@ -434,10 +434,10 @@ void restoredges(void)
 	struct gn *p;
 	struct gedge *r;
 
-	for (p = a11e; p != 0; p = p->link) {
+	for (p = cgraph; p != 0; p = p->link) {
 		for (r = p->edges; r != 0; r = r->next) {
-			setbit((int *)a110, r->k, p->row, a118);
-			setbit((int *)a110, p->row, r->k, a118);
+			setbit((int *)adjmat, r->k, p->row, matwords);
+			setbit((int *)adjmat, p->row, r->k, matwords);
 		}
 	}
 }
@@ -457,8 +457,8 @@ int pickcolor(struct gn *p, int k)
 	again = 1;
 	while (again) {
 		again = 0;
-		for (j = 1; j < a10e; j++) {
-			if (testbit(a110, j, p->row, a118)) {
+		for (j = 1; j < ncolors; j++) {
+			if (testbit(adjmat, j, p->row, matwords)) {
 				c = findnode(j, &x);
 				if (k == c || (x == 2 && c + 1 == k) || (p->x14 == 2 && k + 1 == c)) {
 					k -= p->x14;
@@ -480,7 +480,7 @@ int findnode(int j, int *px)
 {
 	struct gn *p;
 
-	for (p = a11e; p != 0; p = p->link) {
+	for (p = cgraph; p != 0; p = p->link) {
 		if (p->row == j) {
 			*px = p->x14;
 			return p->x12;
@@ -496,19 +496,19 @@ void rmnode(void)
 	int min, j;
 
 	min = 9999;
-	for (p = a11e; p != 0; p = p->link) {
+	for (p = cgraph; p != 0; p = p->link) {
 		if (!p->f15 && p->cost < min) {
 			min = p->cost;
 			best = p;
 		}
 	}
-	if (s4d90 > 4)
+	if (rdebug > 4)
 		printf("// rmnode : removing node %d\n", best->row);
 	best->f15 = 1;
-	for (j = 1; j < a10e; j++) {
-		if (testbit(a110, j, best->row, a118)) {
-			clrbit((int *)a110, j, best->row, a118);
-			clrbit((int *)a110, best->row, j, a118);
+	for (j = 1; j < ncolors; j++) {
+		if (testbit(adjmat, j, best->row, matwords)) {
+			clrbit((int *)adjmat, j, best->row, matwords);
+			clrbit((int *)adjmat, best->row, j, matwords);
 			decdeg(j);
 			--best->cnt;
 		}
@@ -525,51 +525,51 @@ void savecolors(void)
 	struct loop *hdr;
 	struct quad *r2;
 
-	a10a = (unsigned *)tabzalloc(maxblk * (int)sizeof(unsigned), maxblk * 2, 0);
-	for (n = a11e; n != 0; n = n->link) {
+	regused = (unsigned *)tabzalloc(maxblk * (int)sizeof(unsigned), maxblk * 2, 0);
+	for (n = cgraph; n != 0; n = n->link) {
 		if (n->x12 <= 0)
 			continue;
-		for (i = 0; i < a116; i++) {
-			if (a11a[i].x0 != n->row)
+		for (i = 0; i < nnodes; i++) {
+			if (gnodes[i].x0 != n->row)
 				continue;
-			q = a11a[i].q;
+			q = gnodes[i].q;
 			f = 0;
-			if ((blks[a11a[i].blk])->rec->w12) {
-				if (s4d90 > 2) {
+			if ((blks[gnodes[i].blk])->rec->w12) {
+				if (rdebug > 2) {
 					prquad(q);
-					printf("before calling getheader, block = %d\n", a11a[i].blk);
+					printf("before calling getheader, block = %d\n", gnodes[i].blk);
 				}
-				hdr = getheader(a11a[i].blk);
+				hdr = getheader(gnodes[i].blk);
 				blk = addpreheader(hdr, 1);
 				f = 1;
 			}
 			if (f && !notlive(q, (blks[blk])->rec->f0)) {
-				if (s4d90 > 4)
-					printf("// inloop = %x\n", (blks[a11a[i].blk])->rec->w12);
+				if (rdebug > 4)
+					printf("// inloop = %x\n", (blks[gnodes[i].blk])->rec->w12);
 				r = findend(blk, &x1);
 				r = addreg(n->x12, q->c, x1, r);
-				r2 = findend(a11a[i].blk, &x2);
-				if (!usefirst(&a11a[i], r, r2))
+				r2 = findend(gnodes[i].blk, &x2);
+				if (!usefirst(&gnodes[i], r, r2))
 					continue;
 				addrestore(n->x12, q->c, blk, r);
 			} else {
-				r = findend(a11a[i].blk, &x1);
+				r = findend(gnodes[i].blk, &x1);
 				r = addreg(n->x12, q->c, x1, r);
 				if (f)
 					continue;
-				if (!usefirst(&a11a[i], r, r))
+				if (!usefirst(&gnodes[i], r, r))
 					continue;
 				addrestore(n->x12, q->c, x1, r);
 			}
 		}
 	}
-	if (s4d90) {
+	if (rdebug) {
 		printf("// quads before propagation\n");
 		prquads();
 		prgraph();
 	}
 	propagate();
-	if (s4d90) {
+	if (rdebug) {
 		printf("// quads before addsavequads\n");
 		prquads();
 	}
@@ -584,7 +584,7 @@ struct quad *addreg(int reg, struct qa c, int x, struct quad *p)
 	struct qa tmp;
 	int out;
 
-	if (s4d90) {
+	if (rdebug) {
 		printf("addreg : reg = %d rslt = ", reg);
 		propnd(&c);
 		printf("\n");
@@ -599,7 +599,7 @@ struct quad *addreg(int reg, struct qa c, int x, struct quad *p)
 			continue;
 		if (!eqopnd(&qq->b, &c))
 			continue;
-		if (s4d90) {
+		if (rdebug) {
 			printf("// addreg (1) returning : ");
 			prquad(qq);
 		}
@@ -610,7 +610,7 @@ struct quad *addreg(int reg, struct qa c, int x, struct quad *p)
 	tmp.w4 = reg;
 	tmp.w0 = 4;
 	qq = insertquad(40, &tmp, &c, (struct qa *)0, p);
-	if (s4d90) {
+	if (rdebug) {
 		printf("// addreg (2) returning : ");
 		prquad(qq);
 	}
@@ -624,7 +624,7 @@ void addrestore(int reg, struct qa c, int x, struct quad *p)
 	struct qa tmp;
 	int out;
 
-	if (s4d90) {
+	if (rdebug) {
 		printf("addrestore : reg = %d rslt = ", reg);
 		propnd(&c);
 		printf("\n");
@@ -672,9 +672,9 @@ struct quad *addsave(int reg, int blk)
 /* the register reg is marked in the set of the block x (name from the debug output) */
 void markreg(int x, int reg)
 {
-	if (s4d90 > 1)
+	if (rdebug > 1)
 		printf("// markreg(%d, %d)\n", x, reg);
-	a10a[x] = a10a[x] | (1 << reg);
+	regused[x] = regused[x] | (1 << reg);
 }
 
 /* the save code of the registers that are used in a block is added to the blocks on the path (name from the debug output) */
@@ -690,13 +690,13 @@ void addsavequads(void)
 		if ((blks[b])->rec->w12)
 			continue;
 		for (r = 1; r <= 11; r++) {
-			if (a10a[b] & (1 << r)) {
+			if (regused[b] & (1 << r)) {
 				e = blks[b]->a.w4;
 				if (e < 0)
 					continue;
 				for (s = edges[e].y, c = e; c >= 0; c = edges[c].x, s = edges[c].y) {
 					findend(s, &out);
-					if (a10a[out] & (1 << r)) {
+					if (regused[out] & (1 << r)) {
 						pa = &rquad(out, r)->b;
 						pb = &rquad(b, r)->b;
 						if (!eqopnd(pb, pa))
@@ -717,7 +717,7 @@ void rmrestorequad(void)
 	int ok;
 
 	for (b = 0; b < blkno; b++) {
-		if (s4d90)
+		if (rdebug)
 			printf("// rmrestorequad, i = %d\n", b);
 		if (blks[b] == 0)
 			continue;
@@ -726,13 +726,13 @@ void rmrestorequad(void)
 				break;
 			if (q->op != 41)
 				continue;
-			if (s4d90)
+			if (rdebug)
 				printf("// rmrestorequad, found RESTORE\n");
 			reg = q->a.w4;
 			e = blks[b]->a.w4;
 			if (e < 0)
 				continue;
-			if (s4d90)
+			if (rdebug)
 				printf("// rmrestorequad, pred = %d\n", e);
 			s = edges[e].y;
 			ok = 1;
@@ -760,17 +760,17 @@ void propagate(void)
 		if (blks[b] == 0 || blks[b]->next->op != 28)
 			continue;
 		e = blks[b]->next->a.w4;
-		if (s4d90 > 1)
+		if (rdebug > 1)
 			printf("// propagate : block %d\n", b);
 		for (r = 1; r <= 11; r++) {
 			for (i = 0; i < blkno; i++)
-				a10a[i] &= ~1;
+				regused[i] &= ~1;
 			c = r_used(b, r);
 			if (c < 0)
 				continue;
-			if (s4d90 > 1)
+			if (rdebug > 1)
 				printf("// propagate : register %d used in block %d\n", r, c);
-			if (!(a10a[b] & (1 << r))) {
+			if (!(regused[b] & (1 << r))) {
 				tmp.b2 = 1;
 				tmp.w4 = r;
 				tmp.w0 = 4;
@@ -783,7 +783,7 @@ void propagate(void)
 				if (!eqopnd(pb, t))
 					continue;
 				q = rquad(b, r)->next;
-				if (s4d90 > 1) {
+				if (rdebug > 1) {
 					printf("// propagate : check quad -");
 					prquad(q);
 				}
@@ -799,19 +799,19 @@ int r_used(int b, int r)
 {
 	int e, s, c, t;
 
-	if (s4d90 > 1)
+	if (rdebug > 1)
 		printf("// r_used(%d, %d)\n", b, r);
-	a10a[b] |= 1;
+	regused[b] |= 1;
 	e = blks[b]->a.w4;
 	if (e < 0)
 		return -1;
 	s = edges[e].y;
 	for (c = e; c >= 0; c = edges[c].x, s = edges[c].y)
-		if (a10a[s] & (1 << r))
+		if (regused[s] & (1 << r))
 			return s;
 	s = edges[e].y;
 	for (c = e; c >= 0; c = edges[c].x, s = edges[c].y) {
-		if (!(a10a[s] & 1)) {
+		if (!(regused[s] & 1)) {
 			t = r_used(s, r);
 			if (t >= 0)
 				return t;
@@ -825,7 +825,7 @@ struct quad *rquad(int blk, int reg)
 {
 	struct quad *q, *res;
 
-	if (s4d90 > 1)
+	if (rdebug > 1)
 		printf("// rquad(%d, %d)\n", blk, reg);
 	res = 0;
 	if (blks[blk] == 0)
@@ -889,27 +889,27 @@ int nodeno(struct quad *q)
 	struct qa *c, *c2;
 
 	c = &q->c;
-	for (i = 0; i < a116; i++)
-		if (a11a[i].q == q) {
+	for (i = 0; i < nnodes; i++)
+		if (gnodes[i].q == q) {
 			j = i;
 			break;
 		}
-	if (i == a116)
+	if (i == nnodes)
 		return -1;
-	if (a11a[j].x0 > 0)
-		return a11a[j].x0;
-	for (i = 0; i < a116; i++) {
-		c2 = &a11a[i].q->c;
-		if (a11a[i].x0 > 0 && c->b2 == c2->b2 && c->w4 == c2->w4 && i != j && canshare(j, i)) {
-			a11a[j].x0 = a11a[i].x0;
+	if (gnodes[j].x0 > 0)
+		return gnodes[j].x0;
+	for (i = 0; i < nnodes; i++) {
+		c2 = &gnodes[i].q->c;
+		if (gnodes[i].x0 > 0 && c->b2 == c2->b2 && c->w4 == c2->w4 && i != j && canshare(j, i)) {
+			gnodes[j].x0 = gnodes[i].x0;
 			break;
 		}
 	}
-	if (a11a[j].x0 <= 0) {
-		a11a[j].x0 = a10e;
-		a10e++;
+	if (gnodes[j].x0 <= 0) {
+		gnodes[j].x0 = ncolors;
+		ncolors++;
 	}
-	return a11a[j].x0;
+	return gnodes[j].x0;
 }
 
 /* the quads p and q are in the same extended basic block (name from the message) */
@@ -917,22 +917,22 @@ int insameebbo(struct quad *p, struct quad *q)
 {
 	int i, ip = 0, jq = 0, e1, e2;	/* host: = 0 (the original: what the frame holds) */
 
-	for (i = 0; i < a116; i++)
-		if (a11a[i].q == p) {
+	for (i = 0; i < nnodes; i++)
+		if (gnodes[i].q == p) {
 			ip = i;
 			break;
 		}
-	if (i == a116)
+	if (i == nnodes)
 		cerror("insameebbo can't find quad");
-	for (i = 0; i < a116; i++)
-		if (a11a[i].q == q) {
+	for (i = 0; i < nnodes; i++)
+		if (gnodes[i].q == q) {
 			jq = i;
 			break;
 		}
-	if (i == a116)
+	if (i == nnodes)
 		cerror("insameebbo can't find quad");
-	findend(a11a[ip].blk, &e1);
-	findend(a11a[jq].blk, &e2);
+	findend(gnodes[ip].blk, &e1);
+	findend(gnodes[jq].blk, &e2);
 	if (e1 == e2)
 		return 1;
 	return 0;
@@ -944,13 +944,13 @@ int canshare(int a, int b)
 	struct quad *p, *q;
 	int ka, kb, k;
 
-	p = a11a[a].q;
-	q = a11a[b].q;
+	p = gnodes[a].q;
+	q = gnodes[b].q;
 	ka = *srchdef(p, 2);
 	kb = *srchdef(q, 2);
-	if (tstlbit((blks[a11a[a].blk])->rec->f18, kb) && !notlive(q, (blks[a11a[a].blk])->rec->f4))
+	if (tstlbit((blks[gnodes[a].blk])->rec->f18, kb) && !notlive(q, (blks[gnodes[a].blk])->rec->f4))
 		return 1;
-	if (tstlbit((blks[a11a[b].blk])->rec->f18, ka) && !notlive(p, (blks[a11a[b].blk])->rec->f4))
+	if (tstlbit((blks[gnodes[b].blk])->rec->f18, ka) && !notlive(p, (blks[gnodes[b].blk])->rec->f4))
 		return 1;
 	for (k = 0; k < blkno; k++) {
 		if (blks[k] != 0 && !notlive(p, (blks[k])->rec->f4) && !notlive(q, (blks[k])->rec->f4))
@@ -964,7 +964,7 @@ void decdeg(int n)
 {
 	struct gn *p;
 
-	for (p = a11e; p != 0; p = p->link) {
+	for (p = cgraph; p != 0; p = p->link) {
 		if (n == p->row) {
 			--p->cnt;
 			return;
@@ -980,22 +980,22 @@ void prcgraph(void)
 	struct gedge *e;
 	int i, j;
 
-	for (i = 0; i < a116; i++) {
-		printf("// node number = %d, ", a11a[i].x0);
-		propnd(&a11a[i].q->c);
-		printf("quadno = %X,", (unsigned)(uintptr_t)(a11a[i].q));
+	for (i = 0; i < nnodes; i++) {
+		printf("// node number = %d, ", gnodes[i].x0);
+		propnd(&gnodes[i].q->c);
+		printf("quadno = %X,", (unsigned)(uintptr_t)(gnodes[i].q));
 		printf("\n");
 	}
-	for (p = a11e; p != 0; p = p->link) {
+	for (p = cgraph; p != 0; p = p->link) {
 		printf("// node number = %d, color = %d, degree = %d, weight = %d\n", p->row, p->x12, p->cnt, p->cost);
 		for (e = p->edges; e != 0; e = e->next)
 			printf("//     edge = %d\n", e->k);
 	}
 	printf("\n// itfs :\n");
-	for (i = 0; i < a10e; i++) {
+	for (i = 0; i < ncolors; i++) {
 		printf("// ");
-		for (j = 0; j < a10e; j++) {
-			if (testbit(a110, i, j, a118))
+		for (j = 0; j < ncolors; j++) {
+			if (testbit(adjmat, i, j, matwords))
 				putc('1', stdout);
 			else
 				putc('0', stdout);
@@ -1010,11 +1010,11 @@ struct loop *getheader(int n)
 	struct loop *lp;
 	struct bl *b;
 
-	if (s4d90 > 2)
+	if (rdebug > 2)
 		printf("// getheader n = %d\n", n);
 	for (lp = loops; lp != 0; lp = lp->link) {
 		for (b = lp->bls; b != 0; b = b->next) {
-			if (s4d90 > 2)
+			if (rdebug > 2)
 				printf("// getheader : lblkno = %d\n", b->blk);
 			if (b->blk == n)
 				return lp;
@@ -1028,7 +1028,7 @@ int usefirst(struct gnn *g, struct quad *r, struct quad *r3)
 {
 	struct quad *c, *end;
 
-	if (s4d90) {
+	if (rdebug) {
 		printf("// usefirst: regquad = ");
 		prquad(r);
 	}
@@ -1077,7 +1077,7 @@ int inreach(struct quad *q)
 	for (i = 0; i < ndefs; i++)
 		if (defs[i] == q)
 			return 1;
-	if (s4d90 > 3) {
+	if (rdebug > 3) {
 		printf("// inreach returning FALSE for quad -");
 		prquad(q);
 	}

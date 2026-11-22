@@ -32,7 +32,7 @@ dfs(v)
 {
 	int e, w;
 
-	if (s4d82 > 2)
+	if (ddebug > 2)
 		printf("dfs(%d)\n", v);
 	dfn[v] = ndfs = ndfs + 1;
 	vertex[ndfs] = label[v] = v;
@@ -53,7 +53,7 @@ void
 compress(v)
 	int v;
 {
-	if (s4d82 > 2)
+	if (ddebug > 2)
 		printf("compress(%d)\n", v);
 	if (ancest[ancest[v]] != 0) {
 		compress(ancest[v]);
@@ -70,7 +70,7 @@ eval(v)
 {
 	int t;
 
-	if (s4d82 > 2)
+	if (ddebug > 2)
 		printf("eval(%d)\n", v);
 	if (ancest[v] == 0)
 		t = label[v];
@@ -91,7 +91,7 @@ linkp(v, w)
 {
 	int s, t;
 
-	if (s4d82 > 2)
+	if (ddebug > 2)
 		printf("linkp(v=%d,w=%d)\n", v, w);
 	s = w;
 	while (dfn[label[w]] < dfn[label[child[s]]]) {
@@ -124,7 +124,7 @@ addbucket(i, blk)
 {
 	int t, prev;
 
-	if (s4d82 > 2)
+	if (ddebug > 2)
 		printf("addbucket(i=%d,blk=%d)\n", i, blk);
 	t = bucket[i];
 	taballoc(4, 4);
@@ -149,7 +149,7 @@ delbucket(i, blk)
 {
 	int t, prev;
 
-	if (s4d82 > 2)
+	if (ddebug > 2)
 		printf("delbucket(i=%d,blk=%d)\n", i, blk);
 	prev = t = bucket[i];
 	while (t >= 0) {
@@ -185,7 +185,7 @@ dominators()
 	bucket = (int *)taballoc(n + n, 4);
 	nbent = 0;
 	bent = (struct edge *)taballoc(0, 4);
-	if (s4d82 > 2)
+	if (ddebug > 2)
 		printf("dominators: finished storage allocation\n");
 	dom[0] = -1;
 	for (v = 0; v < n; v++) {
@@ -195,13 +195,13 @@ dominators()
 		dom[v] = -1;
 	}
 	vertex[n] = -1;
-	if (s4d82 > 2) {
+	if (ddebug > 2) {
 		printf("dominators: finished initializing arrays\n");
-		printf("\nstartblock = %d\n", s70e6);
+		printf("\nstartblock = %d\n", startblk);
 	}
 	ndfs = 0;
-	dfs(s70e6 + 1);
-	if (s4d82 > 1) {
+	dfs(startblk + 1);
+	if (ddebug > 1) {
 		printf("dominators: finished DFST numbering\n");
 		printf("\tblock\tdfn\tidfn\tsemi\tparent\tancestor\tlabel\n");
 		for (i = 0; i < blkno; i++)
@@ -221,7 +221,7 @@ dominators()
 		addbucket(vertex[dfn[w]], w);
 		linkp(parent[w], w);
 		e = bucket[parent[w]];
-		if (s4d82 > 2)
+		if (ddebug > 2)
 			printf("dominators: finished step 2\n");
 		while (e >= 0) {
 			v = bent[e].blk;
@@ -231,7 +231,7 @@ dominators()
 			e = bent[e].next;
 		}
 	}
-	if (s4d82 > 2)
+	if (ddebug > 2)
 		printf("dominators: finished step 3\n");
 	for (i = 2; i < n; i++) {
 		idfn[i] = -1;
@@ -258,7 +258,7 @@ dominators()
 			idfn[vertex[i]] = i;
 	}
 	tabfree(4, (char *)parent);
-	if (s4d82) {
+	if (ddebug) {
 		printf("\n\tblock\tdominator\tdfn\tidfn\n");
 		for (i = 0; i < blkno; i++)
 			printf("\t%d\t%d\t\t%d\t%d\n", i, dom[i], vertex[i], idfn[i]);
@@ -266,14 +266,14 @@ dominators()
 	}
 }
 
-/* the children of the node q in the dominator tree are linked (debug output with s4d82) */
+/* the children of the node q in the dominator tree are linked (debug output with ddebug) */
 void
 linkdom(q)
 	struct dnode *q;
 {
 	q->down = darr[q->dblkno];
 	q = q->down;
-	if (s4d82 > 1)
+	if (ddebug > 1)
 		printf("linkdom: q->dblkno=%d\n", q->dblkno);
 	for (; q != 0; q = q->next)
 		if (darr[q->dblkno] != 0)
@@ -294,17 +294,17 @@ mkdomtree()
 		d = dom[i];
 		if (d == -1)
 			continue;
-		if (s4d82 > 3)
+		if (ddebug > 3)
 			printf("block=%d, dom block=%d\n", i, d);
 		if (darr[d] != 0) {
-			if (s4d82 > 3)
+			if (ddebug > 3)
 				printf("\t\tnext , i=%d, di=%d\n", i, d);
 			p = darr[d];
 			darr[d] = (struct dnode *)taballoc(12, 4);
 			darr[d]->next = p;
 			p = darr[d];
 		} else {
-			if (s4d82 > 3)
+			if (ddebug > 3)
 				printf("\t\tfirst, i=%d, di=%d\n", i, d);
 			p = darr[d] = (struct dnode *)taballoc(12, 4);
 			p->next = 0;
@@ -313,8 +313,8 @@ mkdomtree()
 		p->dblkno = i;
 	}
 	(domroot = (struct dnode *)taballoc(12, 4))->next = 0;
-	domroot->dblkno = s70e6;
-	if (s4d82 > 3) {
+	domroot->dblkno = startblk;
+	if (ddebug > 3) {
 		for (i = 0; i < blkno; i++)
 			if (darr[i] != 0) {
 				p = darr[i];
@@ -362,7 +362,7 @@ addblk(lp, blk)
 {
 	struct bl *q, *p;
 
-	if (s4d82 > 1) {
+	if (ddebug > 1) {
 		if (lp == &pheaderlist)
 			printf("addblk(pheaderlist,%d)\n", blk);
 		else if (lp == &looplist)
@@ -379,7 +379,7 @@ addblk(lp, blk)
 	q->next = 0;
 	q->blk = blk;
 	nbl++;
-	if (s4d82 > 1)
+	if (ddebug > 1)
 		prlist(*lp);
 }
 
@@ -391,7 +391,7 @@ deletblk(lp, blk)
 {
 	struct bl *q, *p;
 
-	if (s4d82 > 1 && lp == &pheaderlist)
+	if (ddebug > 1 && lp == &pheaderlist)
 		printf("deletblk(pheaderlist,%d)\n", blk);
 	for (q = p = *lp; q->next != 0; p = q, q = q->next)
 		;
@@ -401,7 +401,7 @@ deletblk(lp, blk)
 	freebl = p->next;
 	freebl->next = q;
 	p->next = 0;
-	if (s4d82 > 1)
+	if (ddebug > 1)
 		prlist(*lp);
 	nbl--;
 }
@@ -422,7 +422,7 @@ chkhdr(h)
 			found |= 2;
 			q->b15 = 1;
 			q->b12 = 0;
-			if (s4d82)
+			if (ddebug)
 				printf("common header loop, header=%d\n", h);
 		}
 		for (p = q->bls; p != 0; p = p->next)
@@ -431,7 +431,7 @@ chkhdr(h)
 				q->b12 = 0;
 				found |= 1;
 				++q->cnt;
-				if (s4d82)
+				if (ddebug)
 					printf("outer loop found,   header=%d\n", q->hdr);
 				break;
 			}
@@ -459,7 +459,7 @@ exitblks(l)
 					break;
 			if (m != 0)
 				continue;
-			if (s4d82)
+			if (ddebug)
 				printf(" %d", p->blk);
 			if (r == 0) {
 				if (freebl != 0) {
@@ -482,7 +482,7 @@ exitblks(l)
 			break;
 		}
 	}
-	if (s4d82)
+	if (ddebug)
 		printf("\n");
 	return r;
 }
@@ -495,11 +495,11 @@ addhdrlist(h)
 	struct loop *p, *q, *n;
 	int f, d;
 
-	if (s4d82 > 1)
+	if (ddebug > 1)
 		printf("addhdrlist(%d)\n", h);
 	n = (struct loop *)taballoc(20, 4);
 	f = 0;
-	if (s4d82 > 2) {
+	if (ddebug > 2) {
 		printf("looplist on entry:\n");
 		prlist(looplist);
 	}
@@ -515,7 +515,7 @@ addhdrlist(h)
 				break;
 			q = p;
 			p = p->link;
-			if (s4d82 > 2)
+			if (ddebug > 2)
 				printf(" %d ", q->hdr);
 		}
 		if (p == q)
@@ -541,8 +541,8 @@ addhdrlist(h)
 	} else
 		n->b14 = 0;
 	n->b13 = 0;
-	if (s4d82) {
-		if (s4d82 > 2) {
+	if (ddebug) {
+		if (ddebug > 2) {
 			printf("looplist before exit computation:\n");
 			prlist(looplist);
 		}
@@ -552,7 +552,7 @@ addhdrlist(h)
 	n->exits = exitblks(n->bls);
 	looplist = 0;
 	nloops++;
-	if (s4d82 > 1)
+	if (ddebug > 1)
 		prlist(n->bls);
 }
 
@@ -562,19 +562,19 @@ traversefg()
 {
 	int i, e, b;
 
-	if (s4d82 > 1)
+	if (ddebug > 1)
 		printf("traversefg(), headerblk=%d, tailblk=%d\n", hdrblk, tailblk);
 	addblk(&looplist, hdrblk);
 	i = -1;
 	if (hdrblk != tailblk) {
 		pushblk(tailblk, &i);
 		while (i >= 0) {
-			if (s4d82 > 3)
+			if (ddebug > 3)
 				printf("traversefg(): in while: i is %d\n", i);
 			b = stk[i];
 			i--;
 			for (e = blks[b]->a.w4; e >= 0; e = edges[e].next) {
-				if (s4d82 > 4)
+				if (ddebug > 4)
 					printf("traversefg(): in inner while: pred = %d, its block is %d\n", e, edges[e].blk);
 				pushblk(edges[e].blk, &i);
 			}
@@ -608,7 +608,7 @@ checkloop(b)
 	struct bl *p;
 	int found;
 
-	if (s4d82 > 1)
+	if (ddebug > 1)
 		printf("checkloop(%d)\n", b);
 	e = blks[b]->b.w4;
 	if (e < 0)
@@ -633,7 +633,7 @@ void
 findloop(q)
 	struct dnode *q;
 {
-	if (s4d82 > 1)
+	if (ddebug > 1)
 		printf("findloop(), p->dblkno=%d\n", q->dblkno);
 	for (q = q->down; q != 0; q = q->next) {
 		addblk(&pheaderlist, q->dblkno);
@@ -657,7 +657,7 @@ mkloops()
 		addblk(&pheaderlist, domroot->dblkno);
 		findloop(domroot);
 		checkloop(domroot->dblkno);
-		if (s4d82)
+		if (ddebug)
 			prloops();
 	}
 }
@@ -697,9 +697,9 @@ domloops()
 	nloops = 0;
 	nbl = 0;
 	mkloops();
-	if (s4d92)
+	if (sdebug)
 		prlstats();
-	if (s0b5e > 3) {
+	if (olevel > 3) {
 		loopopt();
 		return 1;
 	}

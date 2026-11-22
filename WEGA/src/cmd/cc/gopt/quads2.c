@@ -109,7 +109,7 @@ rl1:
 		p2->w4 = 0;
 		if (nest != 1) {
 			p3->b2 = 3;
-			p3->w4 = v0e++;
+			p3->w4 = nexttmp++;
 		}
 		break;
 	case 0x3a:
@@ -129,12 +129,12 @@ rl2:
 		p1->w4 = 0;
 		p->in.op = 8;
 		p3->b2 = 3;
-		p3->w4 = v0e++;
+		p3->w4 = nexttmp++;
 		break;
 	case 0x4e:
 		if (p1->b2 != 3) {
 			p3->b2 = 3;
-			p3->w4 = v0e++;
+			p3->w4 = nexttmp++;
 			q = addquad(0x3c, p1, 0L, p3);
 			if (nest != 1)
 				q->f0 = 1;
@@ -142,7 +142,7 @@ rl2:
 		} else
 			s4 = *p1;
 		p3->b2 = 3;
-		p3->w4 = v0e++;
+		p3->w4 = nexttmp++;
 		addquad(1, p1, p2, p3);
 		*p2 = *p3;
 		*p3 = *p1;
@@ -155,7 +155,7 @@ rl2:
 	case 0x4f:
 		if (p1->b2 != 3) {
 			p3->b2 = 3;
-			p3->w4 = v0e++;
+			p3->w4 = nexttmp++;
 			q = addquad(0x3c, p1, 0L, p3);
 			if (nest != 1)
 				q->f0 = 1;
@@ -163,7 +163,7 @@ rl2:
 		} else
 			s4 = *p1;
 		p3->b2 = 3;
-		p3->w4 = v0e++;
+		p3->w4 = nexttmp++;
 		addquad(0x30, p1, p2, p3);
 		*p2 = *p3;
 		*p3 = *p1;
@@ -195,7 +195,7 @@ rl4:
 		break;
 	default:
 		p3->b2 = 3;
-		p3->w4 = v0e++;
+		p3->w4 = nexttmp++;
 		if (asgop(p->in.op)) {
 			addquad(qop[p->in.op - 1], p1, p2, p3);
 			*p2 = *p3;
@@ -416,8 +416,8 @@ operand(p)
 		opnd.w0 = p->in.type;
 		if (p->tn.lval < 0)
 			tl[ntl++] = opnd.w4;
-		if (s4d94 < opnd.w4)
-			s4d94 = opnd.w4;
+		if (maxtmp < opnd.w4)
+			maxtmp = opnd.w4;
 		nctmpuses++;
 		break;
 	case 0x7d:
@@ -433,7 +433,7 @@ operand(p)
 		b.w4 = p->tn.rval;
 		b.w0 = 4;
 		c.b2 = 3;
-		c.w4 = v0e++;
+		c.w4 = nexttmp++;
 		c.w0 = p->in.type;
 		addquad(0x3a, &a, &b, &c);
 		opnd = c;
@@ -953,7 +953,7 @@ mktemp2(type)
 	register NODE *p;
 
 	p = mknode(TEMP, 0L, 0L, type);
-	p->tn.w6 = nctmpuses ? ++s4d94 : 0;
+	p->tn.w6 = nctmpuses ? ++maxtmp : 0;
 	p->in.rall = -1;
 	nctmpuses++;
 	ctmpoff++;

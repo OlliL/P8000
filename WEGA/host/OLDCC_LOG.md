@@ -1898,3 +1898,14 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   in each module of /lib/gopt the module's own SCCS line comes first, then that of mfile2.h). stype is unsigned for
   both now (codgen had int): codgen, scodgen, gopt stripped equal; host codgen reads stype without sign as host gopt.
   Models, bench, matrix checks, host corpora 427/427, 854/854, checkall ALL OK. NODE stays in each header (other layout).
+- 2026-11-22 gopt: the 64 globals and locals named by their address have names (src, host, compare/gopt, the documents;
+  no source of the optimizer is known: ZEUS of Zilog, whose renamed copy WEGA is, is not in TUHS, System III/V and
+  contrib/lcc have only the peephole optimizer c2). From the option letters (pcc style Xdebug): -b bdebug (ebbo), -d
+  ddebug (dom), -l ldebug (live), -p pdebug (loops), -f fdebug (flow), -r rdebug (reg), -s sdebug (the statistics),
+  -Z zflag, -1..-5 olevel. From the messages: nlabrm, njmprm, ndeadrm (number of labels / jumps / dead blocks
+  removed), nqmoved, nstemps, nltemps, nivelim (the loop statistics), stores (stores array overflow), bblockno
+  (assignreg), lpdefs, flpdefs (deltmplpdefs), exitlive (liveonexit), startblk. From the use (guessed): maxtmp, nbeta,
+  nbeta0, hascall, baseoff, aborted, lvfirst, dffirst, lvmark, nkill, nuse, nstores, vnlist, vnnext, ebbcalls, curblk,
+  phquad, ivagain, invset, copyins, invfound, invagain, hdrdtree, invdefs, freend, regused, ncolors, adjmat, nnodes,
+  matwords, gnodes, cgraph, nexttmp, and as codgen reads the record { : nlabsave, frame0, maxoff, nparm; the locals of
+  srchdflist isstore, isbeta, ismem, isother; unusedflag (no code uses it). gopt stripped equal.

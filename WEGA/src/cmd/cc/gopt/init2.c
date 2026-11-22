@@ -5,8 +5,8 @@ static char sccsid[] = "@[$]init2.c\t1.3  02/07/83 15:53:16 Copr. 1981 87wega3.2
 #include "mfile2.h"
 
 char ftitle[100] = {0};
-int s4d72 = 0, s4d74 = 0, s4d76 = 0, s4d78 = 0, s4d7a = 0, qflag = 0, aflag = 0, s4d80 = 0, s4d82 = 0, s4d84 = 0, s4d86 = 0, s4d88 = 0;
-int dflag = 0, tflag = 0, eflag = 0, s4d90 = 0, s4d92 = 0, s4d94 = 0, s4d96 = 0, s4d98 = 0;	/* s4d98: no code uses it */
+int zflag = 0, nlabrm = 0, njmprm = 0, ndeadrm = 0, hascall = 0, qflag = 0, aflag = 0, bdebug = 0, ddebug = 0, ldebug = 0, pdebug = 0, fdebug = 0;
+int dflag = 0, tflag = 0, eflag = 0, rdebug = 0, sdebug = 0, maxtmp = 0, baseoff = 0, unusedflag = 0;	/* unusedflag: no code uses it */
 
 extern long stpos;
 extern char *strcpy(), *strcat();
@@ -37,16 +37,16 @@ initopts(argc, argv)
 					qflag++;
 					break;
 				case 'd':
-					s4d82++;
+					ddebug++;
 					break;
 				case 'l':
-					s4d84++;
+					ldebug++;
 					break;
 				case 'p':
-					s4d86++;
+					pdebug++;
 					break;
 				case 'f':
-					s4d88++;
+					fdebug++;
 					break;
 				case 'e':
 					eflag++;
@@ -58,16 +58,16 @@ initopts(argc, argv)
 					aflag++;
 					break;
 				case 'b':
-					s4d80++;
+					bdebug++;
 					break;
 				case 'r':
-					s4d90++;
+					rdebug++;
 					break;
 				case 's':
-					s4d92++;
+					sdebug++;
 					break;
 				case 'Z':
-					s4d72++;
+					zflag++;
 					break;
 				case 'E':
 					stfile = fopen(strcat(strcpy(buf, argv[++i]), ".S"), "r");
@@ -83,19 +83,19 @@ initopts(argc, argv)
 						printf("error in opening data file %s\n", argv[i - 1]);
 					break;
 				case '5':
-					s0b5e = 5;
+					olevel = 5;
 					break;
 				case '4':
-					s0b5e = 4;
+					olevel = 4;
 					break;
 				case '3':
-					s0b5e = 3;
+					olevel = 3;
 					break;
 				case '2':
-					s0b5e = 2;
+					olevel = 2;
 					break;
 				case '1':
-					s0b5e = 1;
+					olevel = 1;
 					break;
 				default:
 					uerror("bad option: %c", *s);

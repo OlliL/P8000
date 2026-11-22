@@ -125,7 +125,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 ### v1r (01/83)
 
-- v1q with `OLD_D1R` (no temporary for the value of a return). Driver `ccv1r`, its own codgen. Byte-identical: `/bin/write`, `/bin/rmdir`, with `libc-v10.a`.
+- v1q with `OLD_D1R` (no temporary for the value of a return). Driver `ccv1r`, its own codgen. Byte-identical: `/bin/write`, `/bin/rmdir`, with `libc-isstore.a`.
 
 ### v0 (1982)
 
@@ -352,7 +352,7 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   Neutral on cas.
 - vc `OLD_D2AV` (match3.c, changes OLD_D2A, which has no witness in cas): the copy of the value of an assignment into a new
   pair only for a pointer in rr0 that is wanted in a temporary register (cookie INTAREG: `(x = x->next) == 0`, orderbl),
-  not for a long (ceval `(l = ispow2(x)) > 0`) and not for the inner assignment of a chain (`a0e0 = prev = t->next`:
+  not for a long (ceval `(l = ispow2(x)) > 0`) and not for the inner assignment of a chain (`lpdefs = prev = t->next`:
   lpinv, deletblk, delindvar). Neutral on cas.
 - vc `OLD_D3PL` (regs3.c regforsym, with OLD_D3P): a pointer parameter used under a cast to long is taken from its pair
   (the segmented D3PWORD only accepts casts between pointers). /lib/gopt tabfree `((long)p >> 24) & 0x7f`: `ldl rr2,rr4`;

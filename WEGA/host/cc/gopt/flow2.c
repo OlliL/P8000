@@ -28,7 +28,7 @@ int flow_graph(void)
 	nb = 0;
 	jmp = 0;
 	ret = 1;
-	if (s4d88 > 1)
+	if (fdebug > 1)
 		prquads();
 	tabfree(8, (char *)0);
 	blks = (struct quad **)tabzalloc(0, 0, 8);
@@ -43,7 +43,7 @@ int flow_graph(void)
 			blks[blkno] = last;
 			blkno++;
 			nb = 0;
-			if (s4d88 > 4)
+			if (fdebug > 4)
 				printf("// new basic block blkno = %d\n", blkno);
 		}
 		switch (q->op) {
@@ -53,7 +53,7 @@ int flow_graph(void)
 			blks[blkno] = last;
 			blkno++;
 			nb = 0;
-			if (s4d88 > 4)
+			if (fdebug > 4)
 				printf("// label encountered blkno = %d\n", blkno);
 			break;
 		case 0x11:
@@ -65,7 +65,7 @@ int flow_graph(void)
 		}
 		last = q;
 	}
-	if (s4d88 > 2)
+	if (fdebug > 2)
 		printf("// number of basic blocks (blkno) %d\n", blkno);
 	if (blkno >= 512)
 		cerror("table overflow in flow_graph");
@@ -154,8 +154,8 @@ void optflow(void)
 	int i;
 	struct quad *q;
 
-	if (s4d88) {
-		if (s4d88 > 2)
+	if (fdebug) {
+		if (fdebug > 2)
 			prquads();
 		printf("// flow graph before optimizations:\n");
 		prgraph();
@@ -167,21 +167,21 @@ void optflow(void)
 		else
 			tab[i] = -1;
 	rmlabels(tab);
-	if (s4d88 > 4) {
+	if (fdebug > 4) {
 		printf("// after redundant labels are removed:\n");
 		prquads();
 	}
 	rmjumps(tab);
-	if (s4d88 > 4) {
+	if (fdebug > 4) {
 		printf("// after jumps are removed:\n");
 		prquads();
 	}
 	for (q = qhead; q->op != 0x3b; q = q->next)
 		;
-	s70e6 = q->a.w0;
+	startblk = q->a.w0;
 	rm_deadblks();
-	if (s4d88) {
-		if (s4d88 > 2) {
+	if (fdebug) {
+		if (fdebug > 2) {
 			printf("// after dead blocks are removed: \n");
 			prquads();
 		}
@@ -282,7 +282,7 @@ void rmlabels(int *tab)
 				joinblk(y, x, 2);
 				blks[i] = 0;
 			}
-			s4d74++;
+			nlabrm++;
 			continue;
 		}
 		if (!blkempty(blks[i]))
@@ -328,7 +328,7 @@ void rmlabels(int *tab)
 			}
 		}
 		joinblk(pj, pi, 1);
-		s4d74++;
+		nlabrm++;
 		blks[pj] = 0;
 		tab[pj] = -1;
 	}
@@ -406,7 +406,7 @@ void rmjumps(int *tab)
 			delrun(blks[i]);
 			k = blkof(lbl, tab);
 			joinblk(i, k, 3);
-			s4d76++;
+			njmprm++;
 			blks[i] = 0;
 			tab[i] = -1;
 		}
@@ -422,16 +422,16 @@ void rm_deadblks(void)
 	while (again) {
 		again = 0;
 		for (i = 0; i < blkno; i++) {
-			if (i == s70e6 || blks[i] == 0 || blks[i]->a.w4 >= 0)
+			if (i == startblk || blks[i] == 0 || blks[i]->a.w4 >= 0)
 				continue;
-			if (s4d88 > 4 && blks[i] != 0)
+			if (fdebug > 4 && blks[i] != 0)
 				printf("// rm_deadblks :blk(%d,%d,%d)\n", i, blks[i]->a.w4, blks[i]->b.w4);
 			for (x = blks[i]->b.w4; x >= 0; x = edges[x].next) {
 				again = 1;
 				deledge(&blks[edges[x].blk]->a.w4, i);
 			}
 			delrun(blks[i]);
-			s4d78++;
+			ndeadrm++;
 			blks[i] = 0;
 		}
 	}

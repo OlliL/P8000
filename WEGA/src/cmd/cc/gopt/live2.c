@@ -4,7 +4,7 @@
 static char sccsid[] = "@[$]live2.c\t1.9  01/07/83 13:42:01 Copr. 1981 87wega3.2.";
 #include "mfile2.h"
 
-extern int s715e, nlv, lvidx;
+extern int lvmark, nlv, lvidx;
 struct lv { unsigned kind:1, alias:1, var:14; };	/* an entry of the table of the live variables (guessed names) */
 extern struct lv *lvtab;
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };	/* an entry of betatbl: 10 bytes (guessed) */
@@ -26,7 +26,7 @@ extern void copyvec(), andnotvec();
 struct edge { int next; int blk; };
 extern struct edge *edges;
 extern unsigned *tmpv;
-extern int s4f20, s4f22;
+extern int lvfirst, dffirst;
 extern void initlive(), initreach(), setwords();
 extern char *livevecs, *livevecs;
 extern struct quad *qhead;
@@ -70,13 +70,13 @@ islive(v, kind, alias)
 {
 	int i;
 
-	if (s4d84 > 2)
+	if (ldebug > 2)
 		printf("islive(%d,isvar=%s,isalias=%s)\n", v, kind == 1 ? "ISVAR" : kind == 8 ? "BETA" : "ISTMP", alias == 1 ? "ALIASED" : "UNALIASED");
 	for (i = 0; i < nlv; i++)
 		if (lvtab[i].var == v && lvtab[i].kind == kind && lvtab[i].alias == alias)
 			goto found;
-	if (s715e) {
-		if (s4d84 > 1) {
+	if (lvmark) {
+		if (ldebug > 1) {
 			if (kind == 1)
 				printf("\t%d\t\t%s\n", i, ascii + symtab[v].nameoff);
 			else
@@ -105,22 +105,22 @@ settmptable(q, which)
 
 	switch (which) {
 	case 1:
-		if (s4d84 > 5)
+		if (ldebug > 5)
 			printf("settmptable(RSLT)\n");
 		t = q->c.w4;
 		break;
 	case 2:
-		if (s4d84 > 5)
+		if (ldebug > 5)
 			printf("settmptable(OP1)\n");
 		t = q->a.w4;
 		break;
 	case 3:
-		if (s4d84 > 5)
+		if (ldebug > 5)
 			printf("settmptable(OP2)\n");
 		t = q->b.w4;
 		break;
 	}
-	if (s4d84 > 3)
+	if (ldebug > 3)
 		printf("settmptable(), i=%d, betatbl[i].bopt=%d\n", t, BOPT(t));
 	if (!BOPT(t)) {
 		*(int *)((char *)betatbl + (t * 10 + 8)) |= 1 << 13;
@@ -139,7 +139,7 @@ insrtlive(q, cnt)
 	struct aln *a;
 	int v;
 
-	if (s4d84 > 3) {
+	if (ldebug > 3) {
 		printf("insrtlive(), opndtype=OP1, quad:\n");
 		prquad(q);
 	}
@@ -178,7 +178,7 @@ setsymtable(q, which)
 	tq.a.b2 = 4;
 	switch (which) {
 	case 1:
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("setsymtable(RSLT)\n");
 		t = q->c.w4;
 		if (q->c.b2 == 8)
@@ -187,7 +187,7 @@ setsymtable(q, which)
 			tq.a = q->c;
 		break;
 	case 2:
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("setsymtable(OP1)\n");
 		t = q->a.w4;
 		if (q->a.b2 == 8)
@@ -196,7 +196,7 @@ setsymtable(q, which)
 			tq.a = q->a;
 		break;
 	case 3:
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("setsymtable(OP2)\n");
 		t = q->b.w4;
 		if (q->b.b2 == 8)
@@ -205,7 +205,7 @@ setsymtable(q, which)
 			tq.a = q->b;
 		break;
 	}
-	if (s4d84 > 3)
+	if (ldebug > 3)
 		printf("setsymtable(), %s, optimize=%d\n", ascii + symtab[t].nameoff, symtab[t].sflags & 1);
 	if (!(symtab[t].sflags & 1)) {
 		symtab[t].sflags |= 1;
@@ -241,7 +241,7 @@ setsym(q, flag)
 r1:
 		return 1;
 	case 1:
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("setsym(GENRBIT)\n");
 		if ((q->c.b2 == 4 || q->c.b2 == 8) && !setsymtable(q, 1)
 		    || (q->c.b2 == 6 || q->c.b2 == 8) && !settmptable(q, 1))
@@ -249,14 +249,14 @@ r0:
 			return 0;
 		return 1;
 	case 2:
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("setsym(GENL1BIT)\n");
 		if ((q->a.b2 == 4 || q->a.b2 == 8) && !setsymtable(q, 2)
 		    || (q->a.b2 == 6 || q->a.b2 == 8) && !settmptable(q, 2))
 			return 0;
 		return 1;
 	case 3:
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("setsym(GENL2BIT)\n");
 		if (!((q->b.b2 == 4 || q->b.b2 == 8) && !setsymtable(q, 3)
 		    || (q->b.b2 == 6 || q->b.b2 == 8) && !settmptable(q, 3)))
@@ -275,15 +275,15 @@ markblkvar(b)
 {
 	struct quad *q;
 
-	if (s4d84 > 2)
+	if (ldebug > 2)
 		printf("markblkvar(blkno=%d)\n", b);
 	q = blks[b]->next;
-	if (s4d84 > 2)
+	if (ldebug > 2)
 		prquad(q);
 	for (; q != 0; q = q->next) {
 		if (q->op == 0x3b)
 			break;
-		if (s4d84 > 2)
+		if (ldebug > 2)
 			prquad(q);
 		if (q->f4 || q->f7)
 			if (!setsym(q, 1))
@@ -295,7 +295,7 @@ markblkvar(b)
 			if (!setsym(q, 3))
 				return 0;
 	}
-	if (s4d84 > 2)
+	if (ldebug > 2)
 		printf("markblkvar: returning TRUE\n");
 	return 1;
 }
@@ -319,7 +319,7 @@ marklpvar()
 	struct bl *q;
 	struct loop *p;
 
-	if (s4d84 > 1) {
+	if (ldebug > 1) {
 		printf("marklpvar()\n\n");
 		printf("live bit position -- Symbol\n");
 	}
@@ -394,7 +394,7 @@ issym(q, flag)
 	default:
 		cerror("setsym: illegal flag");
 	}
-	if (s4d84 > 3) {
+	if (ldebug > 3) {
 		printf("// issym : q = %X, bit = %d, i=%d, j=%d\n", q, flag, r, j);
 		prquad(q);
 	}
@@ -406,7 +406,7 @@ void
 adddef(q)
 	struct quad *q;
 {
-	if (s4d84 > 1) {
+	if (ldebug > 1) {
 		printf("defno=%d\n", ndefs);
 		prquad(q);
 	}
@@ -422,7 +422,7 @@ countreachdefs()
 	struct quad *q;
 	int x, y;
 
-	if (s4d84 > 2)
+	if (ldebug > 2)
 		printf("countreachdefs()\n");
 	for (q = qhead; q != 0; q = q->next) {
 		if (q->op == 0x3b || q->op == 7)
@@ -508,14 +508,14 @@ allocvec(q, kind, field)
 	struct lrec *p;
 
 	if (kind == 1) {
-		if (s4d84 > 2)
+		if (ldebug > 2)
 			printf("allocvec(LIVE,field=%d)\n", field);
 		if (field == 5) {
 			p = (struct lrec *)taballoc(28, 2);
 			*(struct lrec **)&q->c = p;
 			p->f0 = (unsigned *)taballoc(lvwords * 2, 2);
 			p->f4 = (unsigned *)taballoc(lvwords * 2, 2);
-			if (s4d86) {
+			if (pdebug) {
 				printf("//inlive set, p = %X, inlive = %X\n", p, p->f4);
 				prquad(q);
 			}
@@ -545,7 +545,7 @@ alloclivevecs()
 	int i;
 	struct quad *q;
 
-	if (s4d84 > 2)
+	if (ldebug > 2)
 		printf("alloclivevecs()\n");
 	for (i = 0; i < blkno; i++) {
 		q = blks[i];
@@ -571,21 +571,21 @@ bitpos(q, which, kind)
 
 	switch (which) {
 	case 1:
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("bitpos(RSLT)\n");
 		t = q->c.w4;
 		if (kind == 4 && q->c.b2 == 8)
 			t = betatbl[t].x1;
 		break;
 	case 2:
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("bitpos(OP1)\n");
 		t = q->a.w4;
 		if (kind == 4 && q->a.b2 == 8)
 			t = betatbl[t].x1;
 		break;
 	case 3:
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("bitpos(OP2)\n");
 		if (kind == 4 && q->b.b2 == 8)
 			t = betatbl[t].x1;
@@ -605,7 +605,7 @@ bitpos(q, which, kind)
 			cerror("live var not found");
 	} else
 		cerror("bitpos: illegal symbol");
-	if (s4d84 > 2)
+	if (ldebug > 2)
 		printf("bitpos=%d\n", lvidx);
 	return lvidx;
 }
@@ -619,24 +619,24 @@ initlive()
 	struct lrec *p;
 	int bp;
 
-	if (s4d84 > 2)
+	if (ldebug > 2)
 		printf("initlive()\n");
 	alloclivevecs();
-	if (s4d84)
+	if (ldebug)
 		printf("\n");
 	for (i = 0; i < blkno; i++) {
 		q = blks[i];
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			prquad(q);
 		if (idfn[i] < 0)
 			continue;
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			prquad(q);
 		p = *(struct lrec **)&q->c;
 		for (q = q->next; q != 0; q = q->next) {
 			if (q->op == 0x3b)
 				break;
-			if (s4d84 > 3) {
+			if (ldebug > 3) {
 				printf("initlive: processing quad:\n");
 				prquad(q);
 			}
@@ -670,7 +670,7 @@ initlive()
 				}
 			}
 		}
-		if (s4d84 > 1) {
+		if (ldebug > 1) {
 			printf("block=%d\n", i);
 			prvec(p->f10, 1, 1);
 			prvec(p->f14, 2, 1);
@@ -686,7 +686,7 @@ allocreachvecs()
 	int i;
 	struct quad *q;
 
-	if (s4d84 > 2)
+	if (ldebug > 2)
 		printf("allocreachvecs()\n");
 	for (i = 0; i < blkno; i++) {
 		q = blks[i];
@@ -711,7 +711,7 @@ sameopnd(p, q, pw, qw)
 	int t1, t2, v1, v2;
 	char *pn, *qn;
 
-	if (s4d84 > 5) {
+	if (ldebug > 5) {
 		switch (pw) {
 		case 1:
 			pn = "RSLT";
@@ -776,7 +776,7 @@ sameopnd(p, q, pw, qw)
 		if (a1 != 0 && (long)(checkalias(p, pw) == a1))
 			return 1;
 	}
-	if (s4d84 > 5)
+	if (ldebug > 5)
 		printf("sameopnd, returning FALSE\n");
 	return 0;
 }
@@ -790,19 +790,19 @@ linkreachdefs()
 	struct rn *r, *prev;
 	struct quad *p, *q;
 
-	if (s4d84 > 3)
+	if (ldebug > 3)
 		printf("linkreachdefs(), reachdefno=%d\n", ndefs);
 	r = reachmap = (struct rn *)taballoc(6, 3);
 	r->next = 0;
 	for (i = 0; i < ndefs; i++) {
 		if (!((long)defs[i] & 1)) {
 			r->idx = i;
-			if (s4d84 > 3)
+			if (ldebug > 3)
 				printf("\nprocessing def no %d, linking defs: \n", i);
 			for (j = i; j < ndefs; j++) {
 				if ((long)defs[j] & 1)
 					continue;
-				if (s4d84 > 5) {
+				if (ldebug > 5) {
 					printf("// before calling sameopnd, i = %d, reachmap[i] = %X\n", i, defs[i]);
 					prquad(defs[i]);
 				}
@@ -813,12 +813,12 @@ linkreachdefs()
 				if (p != q && (p->c.b2 == 8 || q->c.b2 == 8))
 					if (p->op != 0x2f || q->op != 0x2f)
 						continue;
-				if (s4d84 > 3)
+				if (ldebug > 3)
 					printf(" %d", j);
 				t = (int *)taballoc(2, 3);
 				*t = j;
 				defs[j] = (struct quad *)(((long)defs[j] | 1L) & 0x7F00FFFFL);
-				if (s4d84 > 3)
+				if (ldebug > 3)
 					printf("r=%X, *r=%d\n", t, j);
 			}
 		}
@@ -828,11 +828,11 @@ linkreachdefs()
 		prev = r;
 		r = (struct rn *)taballoc(6, 3);
 		prev->next = r;
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("r=%X, *r=%d, p=%X, q=%X\n", t, *t, r, prev);
 		r->next = 0;
 	}
-	if (s4d84 > 3)
+	if (ldebug > 3)
 		printf("\n");
 }
 
@@ -846,12 +846,12 @@ srchdef(q, mode)
 	int *pi;
 	struct quad *d;
 
-	if (s4d84 > 3) {
+	if (ldebug > 3) {
 		printf("srchdef(), quad=\n");
 		prquad(q);
 	}
 	for (p = reachmap; p != 0; p = p->next) {
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("srchdef(): p is %lx\n", p);
 		if (!sameopnd(q, defs[p->idx], 1, 1))
 			continue;
@@ -859,13 +859,13 @@ srchdef(q, mode)
 		if (q != d && (q->c.b2 == 8 || d->c.b2 == 8))
 			if (q->op != 0x2f || d->op != 0x2f)
 				continue;
-		if (s4d84 > 3) {
+		if (ldebug > 3) {
 			printf("found:\n");
 			prquad(defs[p->idx]);
 		}
 		if (mode == 1)
 			return &p->idx;
-		if (s4d84 > 3)
+		if (ldebug > 3)
 			printf("p=%X, *pi=%d, &pi=%X\n", p, p->idx, &p->idx);
 		for (pi = &p->idx; *++pi != -1; ) {
 			if (defs[*pi] != q)
@@ -874,7 +874,7 @@ srchdef(q, mode)
 		}
 		if (defs[*pi] == q)
 			return pi;
-		if (s4d84)
+		if (ldebug)
 			printf("*pi=%d, pi=%X", *pi, pi);
 		cerror("srchdef: def not found");
 	}
@@ -903,7 +903,7 @@ killdefs(r)
 		if ((q->c.b2 == 4 && ((symtab[q->c.w4].sflags >> 2) & 1)) ||
 		    (q->c.b2 == 8 && !BBIT(q->c.w4, 11) && ((symtab[betatbl[q->c.w4].x1].sflags >> 2) & 1))) {
 			setlbit(r->f10, i);
-			if (s4d84)
+			if (ldebug)
 				printf("kill, i=%d\n", i);
 		}
 	}
@@ -935,7 +935,7 @@ initreach()
 			if (q->f4 && issym(q, 1)) {
 				pk = srchdef(q, 2);
 				setlbit(r->f14, *pk);
-				if (s4d84 > 3)
+				if (ldebug > 3)
 					printf("gen, *pk =%d\n", *pk);
 			}
 			if (q->f7 && issym(q, 5)) {
@@ -944,12 +944,12 @@ initreach()
 					if (q == defs[*pk])
 						continue;
 					setlbit(r->f10, *pk);
-					if (s4d84 > 3)
+					if (ldebug > 3)
 						printf("kill, *pk =%d\n", *pk);
 				}
 			}
 		}
-		if (s4d84 > 1) {
+		if (ldebug > 1) {
 			printf("block=%d\n", i);
 			prvec(r->f14, 2, 2);
 			prvec(r->f10, 1, 2);
@@ -1073,16 +1073,16 @@ confluence(kind, b)
 	struct lrec *r;
 	int e, pb;
 
-	if (s4d84 > 2)
+	if (ldebug > 2)
 		printf("confluence(block=%d)\n", b);
 	if (kind == 2) {
 		clrvec(tmpv, dfwords);
 		e = blks[b]->a.w4;
-		if (s4d84 > 1)
+		if (ldebug > 1)
 			printf("predecessors: ");
 		while (e >= 0) {
 			pb = edges[e].blk;
-			if (s4d84 > 2)
+			if (ldebug > 2)
 				printf(" %d", pb);
 			r = *(struct lrec **)&blks[pb]->c;
 			orvec(tmpv, r->f8, dfwords);
@@ -1091,17 +1091,17 @@ confluence(kind, b)
 	} else if (kind == 1) {
 		clrvec(tmpv, lvwords);
 		e = blks[b]->b.w4;
-		if (s4d84 > 2)
+		if (ldebug > 2)
 			printf("successors: ");
 		for (; e >= 0; e = edges[e].next) {
 			pb = edges[e].blk;
-			if (s4d84 > 2)
+			if (ldebug > 2)
 				printf(" %d", pb);
 			r = *(struct lrec **)&blks[pb]->c;
 			orvec(tmpv, r->f4, lvwords);
 		}
 	}
-	if (s4d84 > 1)
+	if (ldebug > 1)
 		printf("\n");
 }
 
@@ -1143,7 +1143,7 @@ solvereach()
 				transfer(2, r);
 				change = 1;
 			}
-			if (s4d84 > 1) {
+			if (ldebug > 1) {
 				printf("block=%d, change=%s\n", i, change == 1 ? "true" : "false");
 				prvec(r->f18, 3, 2);
 				prvec(r->f8, 4, 2);
@@ -1176,7 +1176,7 @@ solvelive()
 				transfer(1, r);
 				change = 1;
 			}
-			if (s4d84 > 1) {
+			if (ldebug > 1) {
 				printf("block=%d, change=%s\n", i, change == 1 ? "true" : "false");
 				prvec(r->f4, 3, 1);
 				prvec(r->f0, 4, 1);
@@ -1194,11 +1194,11 @@ clearflags()
 
 	for (i = 0; i < nlv; i++) {
 		if (lvtab[i].kind == 1) {
-			if (s4d84 > 1)
+			if (ldebug > 1)
 				printf("clearing flag for symbol  %s\n", ascii + symtab[lvtab[i].var].nameoff);
 			symtab[lvtab[i].var].sflags &= ~1;
 		} else {
-			if (s4d84 > 1)
+			if (ldebug > 1)
 				printf("clearing flag for beta sym %s\n", ascii + symtab[betatbl[lvtab[i].var].x1].nameoff);
 			symtab[betatbl[lvtab[i].var].x1].sflags &= ~1;
 			*(int *)((char *)betatbl + (lvtab[i].var * 10 + 8)) &= ~(1 << 13);
@@ -1226,22 +1226,22 @@ prlivestat()
 void
 livevars()
 {
-	if (s4d84)
+	if (ldebug)
 		prqall();
 	lvwords = 0;
-	if (s4f20 == 0)
+	if (lvfirst == 0)
 		tabfree(2, (char *)0);
 	nlv = 0;
-	s4f20 = 0;
+	lvfirst = 0;
 	lvtab = (struct lv *)taballoc(0, 2);
-	s715e = 1;
+	lvmark = 1;
 	if (!marklpvar())
 		cerror("out of live var space");
-	s715e = 0;
+	lvmark = 0;
 	setwords(1);
 	initlive(1);
 	solvelive();
-	if (s4d92)
+	if (sdebug)
 		prlivestat();
 	tabfree(2, livevecs);
 }
@@ -1252,9 +1252,9 @@ reachdefs()
 {
 	ndefs = 0;
 	dfwords = 0;
-	if (s4f22 == 0)
+	if (dffirst == 0)
 		tabfree(3, (char *)0);
-	s4f22 = 0;
+	dffirst = 0;
 	defs = (struct quad **)taballoc(0, 3);
 	if (countreachdefs()) {
 		if (ndefs > 0) {
@@ -1264,8 +1264,8 @@ reachdefs()
 		}
 	} else
 		cerror("out of reaching def space");
-	if (s4d92)
+	if (sdebug)
 		prreachstat();
 }
 
-int s4f20 = 1, s4f22 = 1;
+int lvfirst = 1, dffirst = 1;

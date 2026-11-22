@@ -50,9 +50,9 @@ writeil()
 		lineno = q->pos.line;
 		switch (q->op) {
 		case 0x2e:
-			printf("{%d\t%ld\t", v00, vb94);
+			printf("{%d\t%ld\t", nlabsave, frame0);
 			pos = ftell(stdout);
-			printf("0000\t%d\t\n", v04);
+			printf("0000\t%d\t\n", nparm);
 			wrline(curproc);
 			tfree(curproc);
 			continue;

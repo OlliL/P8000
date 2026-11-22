@@ -53,12 +53,12 @@ struct qa b;
 		r = 0;
 		break;
 	}
-	if (s4d86 > 3)
+	if (pdebug > 3)
 		printf("%ld = ceval()\n", r);
 	return r;
 }
 
-/* the quad q is moved behind a0d6 (name guessed) */
+/* the quad q is moved behind phquad (name guessed) */
 struct quad *
 qmove(q)
 struct quad *q;
@@ -66,11 +66,11 @@ struct quad *q;
 	struct qa u1, u2, u3;
 	struct quad *u4;
 
-	if (s4d86 > 5)
+	if (pdebug > 5)
 		prquad(q);
-	q = movequad(q, a0d6);
-	a0d6 = a0d6->next;
-	a0e6++;
+	q = movequad(q, phquad);
+	phquad = phquad->next;
+	nqmoved++;
 	return q;
 }
 
@@ -85,16 +85,16 @@ struct quad *q;
 	struct quad *nq;
 	struct qa a, b, c;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("insrtstmpmove(), q:\n");
 		prquad(q);
 	}
 	a = q->c;
 	b.b2 = 6;
-	b.w4 = s4d94;
-	betanew(s4d94);
-	s4d94++;
-	a0ec++;
+	b.w4 = maxtmp;
+	betanew(maxtmp);
+	maxtmp++;
+	nstemps++;
 	b.w0 = a.w0;
 	c.b2 = 0;
 	nq = insertquad(60, &a, &c, &b, q);
@@ -102,19 +102,19 @@ struct quad *q;
 	nq->f3 = 0;
 	nq->f7 = 0;
 	nq->f4 = 0;
-	if (s4d86 > 3) {
+	if (pdebug > 3) {
 		printf("insrtstmpmove(), before move, invq, invq->link\n");
 		prquad(q);
 		prquad(q->next);
 	}
 	q = qmove(q);
-	if (s4d86 > 3) {
+	if (pdebug > 3) {
 		printf("insrtstmpmove(), after first move invq, invq->link\n");
 		prquad(q);
 		prquad(q->next);
 	}
 	q = qmove(q->next);
-	if (s4d86 > 3) {
+	if (pdebug > 3) {
 		printf("insrtstmpmove(), after second move, invq, invq->link\n");
 		prquad(q);
 		prquad(q->next);
@@ -133,7 +133,7 @@ struct qa *out;
 struct dl *d, *d2;
 int kind;
 {
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("moveindquad(), opqd:\n");
 		prquad(opqd);
 	}
@@ -145,14 +145,14 @@ int kind;
 	x->a.b2 = 6;
 	denorm(&opqd->c);
 	opqd->c.b2 = 6;
-	x->a.w4 = s4d94;
+	x->a.w4 = maxtmp;
 	normop(&x->a);
-	d2->x20 = s4d94;
-	betanew(s4d94);
-	opqd->c.w4 = s4d94;
-	s4d94++;
+	d2->x20 = maxtmp;
+	betanew(maxtmp);
+	opqd->c.w4 = maxtmp;
+	maxtmp++;
 	normop(&opqd->c);
-	a0ec++;
+	nstemps++;
 	*out = opqd->c;
 	if (d->f13) {
 		if (kind == 2) {
@@ -207,7 +207,7 @@ struct quad *outq;
 	struct qa a, b, c;
 	int op;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("insrtopstmp(), opqd:, t->dfquad, p->dfquad\n");
 		prquad(opqd);
 		prquad(t->q);
@@ -234,35 +234,35 @@ struct quad *outq;
 			b = opqd->a;
 		break;
 	default:
-		if (s4d86 > 3)
+		if (pdebug > 3)
 			printf("insrtopstmp(), returning FALSE\n");
 		return 0;
 	}
 	if (op == 34) {
 		c.w0 = 5;
 		c.b2 = 3;
-		c.w4 = v0e++;
-		a0ee++;
-		a0d6 = insertquad(op, &a, &b, &c, a0d6);
+		c.w4 = nexttmp++;
+		nltemps++;
+		phquad = insertquad(op, &a, &b, &c, phquad);
 		b.b2 = 0;
 		a.b2 = 6;
-		betanew(s4d94);
-		a.w4 = s4d94;
-		s4d94++;
-		a0d6 = insertquad(13, &c, &b, &a, a0d6);
+		betanew(maxtmp);
+		a.w4 = maxtmp;
+		maxtmp++;
+		phquad = insertquad(13, &c, &b, &a, phquad);
 		c = a;
 	} else {
 		c.b2 = 6;
-		betanew(s4d94);
-		c.w4 = s4d94;
-		s4d94++;
+		betanew(maxtmp);
+		c.w4 = maxtmp;
+		maxtmp++;
 		c.w0 = a.w0;
-		a0d6 = insertquad(op, &a, &b, &c, a0d6);
+		phquad = insertquad(op, &a, &b, &c, phquad);
 	}
-	a0ec++;
+	nstemps++;
 	t->e14 = c;
 	outq->a = c;
-	if (s4d86 > 3) {
+	if (pdebug > 3) {
 		printf("insrtopnd(), ip->opndstmp=\n");
 		propnd(&c);
 		printf("\n");
@@ -278,7 +278,7 @@ struct dl *p, *t;
 int kind;
 struct quad *outq;
 {
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("copyopndstmp(), opqd:\n");
 		prquad(opqd);
 	}
@@ -286,7 +286,7 @@ struct quad *outq;
 	    ((kind == 2 && (opqd->b.b2 == 1 || opqd->b.b2 == 7) && (opqd->op == 1 || opqd->op == 48)) ||
 	     (kind == 3 && (opqd->a.b2 == 1 || opqd->a.b2 == 7) && (opqd->op == 1 || opqd->op == 48)))) {
 		t->e14 = p->e14;
-		if (s4d86 > 3) {
+		if (pdebug > 3) {
 			printf("copyopndstmp(), copied indopnd: \n");
 			propnd(&p->e14);
 			printf("\n");
@@ -296,7 +296,7 @@ struct quad *outq;
 	return insrtopstmp(opqd, p, t, kind, outq);
 }
 
-extern struct nd *a104;
+extern struct nd *freend;
 
 /* the stemp of the definition p is used for the operand of opqd of t; a node of the induction variable lists is filled (name from the debug output) */
 struct quad *
@@ -308,13 +308,13 @@ struct dl *p, *t;
 	struct nd *n, *tmp;
 	int ok;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("fillindvar(), OP=%s, opqd:\n", kind == 2 ? "OP1" : "OP2");
 		prquad(opqd);
 	}
-	if (a104 != 0) {
-		n = a104;
-		a104 = a104->link;
+	if (freend != 0) {
+		n = freend;
+		freend = freend->link;
 	} else
 		n = (struct nd *)taballoc(22, 7);
 	t->f11 = 0;
@@ -365,7 +365,7 @@ k2:
 		ok = copyopndstmp(opqd, p, t, kind, n);
 	}
 	if (ok) {
-		a0da = 1;
+		ivagain = 1;
 		if (p->f14) {
 			tmp = p->l6;
 			p->l6 = n;
@@ -401,7 +401,7 @@ int opcode;
 	struct qa c;
 	struct qa unused;	/* the frame of the original has six more bytes */
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("indupdate(), opcode=%d, ind->cnst=%d, ind->incsize=%d, q:\n", opcode, ind->f15, ind->v);
 		prquad(opqd);
 	}
@@ -416,7 +416,7 @@ int opcode;
 		}
 	} else {
 		opqd = insertquad(opcode, &ind->c0, &ind->c12, &ind->c0, opqd);
-		if (s4d86 > 3) {
+		if (pdebug > 3) {
 			printf("indupdate(), else clause, ind->stmp, ind->opndstmp\n");
 			propnd(&ind->c0);
 			printf("\n");
@@ -427,7 +427,7 @@ int opcode;
 	opqd->f3 = 0;
 	opqd->f7 = 0;
 	opqd->f4 = 0;
-	a0fe++;
+	nivelim++;
 }
 
 /* the node n is put at the end of the list of the free definitions (flag) or of the free induction nodes (name guessed) */
@@ -439,22 +439,22 @@ struct nd *n;
 	struct dl *x;
 	struct nd *y;
 
-	if (flag && a0e0 != 0) {
-		x = a0f8;
+	if (flag && lpdefs != 0) {
+		x = flpdefs;
 		if (x != 0) {
 			for (; x->next != 0; x = x->next)
 				;
-			x->next = a0e0;
+			x->next = lpdefs;
 		} else
-			a0f8 = a0e0;
+			flpdefs = lpdefs;
 	} else if (!flag) {
-		y = a104;
+		y = freend;
 		if (y != 0) {
 			for (; y->link != 0; y = y->link)
 				;
 			y->link = n;
 		} else
-			a104 = n;
+			freend = n;
 	}
 }
 
@@ -472,14 +472,14 @@ int blk;
 	a = q->c;
 	denorm(&q->c);
 	b.b2 = 3;
-	b.w4 = v0e++;
-	a0ee++;
+	b.w4 = nexttmp++;
+	nltemps++;
 	b.w0 = a.w0;
 	q->c = b;
 	normop(&q->c);
 	c.b2 = 0;
 	nq = insertquad(60, &b, &c, &a, q);
-	a0f0 = 1;
+	copyins = 1;
 	alloclpdef(nq, blk);
 	nq->f3 = 0;
 	nq->f7 = 0;
@@ -493,31 +493,31 @@ deltmplpdefs()
 {
 	struct dl *t, *prev, *u;
 
-	if (s4d86 > 2) {
+	if (pdebug > 2) {
 		printf("deltmplpdefs(), on entry, lpdefs:\n");
-		for (u = a0e0; u != 0; u = u->next)
+		for (u = lpdefs; u != 0; u = u->next)
 			prquad(u->q);
 		printf("flpdefs:\n");
-		for (u = a0f8; u != 0; u = u->next)
+		for (u = flpdefs; u != 0; u = u->next)
 			prquad(u->q);
 	}
-	a0f0 = 0;
-	prev = t = a0e0;
+	copyins = 0;
+	prev = t = lpdefs;
 	while (t != 0) {
 		if (t->q->c.b2 == 3) {
-			if (t == a0e0)
+			if (t == lpdefs)
 			{
-				a0e0 = a0e0->next;
-				prev = a0e0;
+				lpdefs = lpdefs->next;
+				prev = lpdefs;
 			}
 			else
 				prev->next = t->next;
-			if (a0f8 != 0) {
-				u = a0f8;
-				a0f8 = t;
+			if (flpdefs != 0) {
+				u = flpdefs;
+				flpdefs = t;
 				t->next = u;
 			} else {
-				a0f8 = t;
+				flpdefs = t;
 				t->next = 0;
 			}
 			t = prev;
@@ -526,12 +526,12 @@ deltmplpdefs()
 			t = t->next;
 		}
 	}
-	if (s4d86 > 3) {
+	if (pdebug > 3) {
 		printf("deltmplpdefs(), on exit, lpdefs:\n");
-		for (u = a0e0; u != 0; u = u->next)
+		for (u = lpdefs; u != 0; u = u->next)
 			prquad(u->q);
 		printf("flpdefs:\n");
-		for (u = a0f8; u != 0; u = u->next)
+		for (u = flpdefs; u != 0; u = u->next)
 			prquad(u->q);
 	}
 }
@@ -546,15 +546,15 @@ int stmpno;
 {
 	struct nd *prev, *p;
 
-	if (s4d86 > 2)
+	if (pdebug > 2)
 		printf("delindvar(stmpno=%d), stmp_cnt=%d\n", stmpno, ctneg[stmpno]);
 	if (ctneg[stmpno] <= 2) {
 		prev = p = d->l6;
 		while (p != 0) {
-			if (s4d86 > 3)
+			if (pdebug > 3)
 				printf("delindvar(), p->indstmp.opnd=%d\n", p->c0.w4);
 			if (p->c0.w4 == stmpno) {
-				if (s4d86 > 3)
+				if (pdebug > 3)
 					printf("delindvar(), deleting  p->indstmp.opnd=%d\n", p->c0.w4);
 				--ctneg[stmpno];
 				if (prev == p)
@@ -583,13 +583,13 @@ int op, x;
 	struct nd *n;
 	int v;
 
-	if (s4d86 > 1) {
+	if (pdebug > 1) {
 		printf("chklpdefs(), r:\n");
 		prquad(r);
 		printf("OP=%d, q:\n", op);
 		prquad(q);
 	}
-	dp = a0e0;
+	dp = lpdefs;
 	goto lt;
 lb:
 	if (0) {
@@ -609,13 +609,13 @@ so:
 		return 0;
 	if (r == 0)
 		r = insrtlpdef(q);
-	if (s4d86 > 2) {
-		if (s4d86 > 2)
+	if (pdebug > 2) {
+		if (pdebug > 2)
 			printf("found fam. of bsc ind var, dfqd, p->dfquad:\n");
 		prquad(r);
 		prquad(dp->q);
 	}
-	for (t = a0e0; t != 0; t = t->next)
+	for (t = lpdefs; t != 0; t = t->next)
 		if (t->q == r)
 			break;
 	if (t->q == r) {
@@ -623,7 +623,7 @@ so:
 		if (dp->f14 || dp->f13) {
 			res = fillindvar(r, q, op, dp, t);
 			if (res != 0 && dp->q->c.b2 == 3) {
-				if (s4d86 > 3)
+				if (pdebug > 3)
 					printf("chklpdefs(), tempcnt[temp=%d]=%d\n", dp->q->c.w4, ctpos[dp->q->c.w4]);
 				if (ctpos[dp->q->c.w4] <= 1)
 					delindvar(dp->l10, dp->x20);
@@ -673,7 +673,7 @@ int kind;
 	    ((q->f1 && !q->f2) || (q->f1 && q->f2 && q->a.b2 != 6))) ? q : 0;
 	q = r;
 	r = t;
-	if (s4d86 > 1) {
+	if (pdebug > 1) {
 		printf("chkfamindvar(), q: , r:\n");
 		prquad(q);
 		prquad(r);
