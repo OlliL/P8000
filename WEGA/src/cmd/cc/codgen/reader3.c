@@ -1800,7 +1800,7 @@ optpre(p)
 	t = p->in.type;
 	u = p->in.left->in.type;
 #ifdef OLD_D24
-	if ((t & 0x30) != (u & 0x30) && (ISPTR(t) || ISPTR(u)))
+	if ((t & TMASK) != (u & TMASK) && (ISPTR(t) || ISPTR(u)))
 		p->in.op = PCONV;
 #endif
 #ifdef OLD_D63

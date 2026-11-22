@@ -337,7 +337,7 @@ allocreg(p, cookie)
 			pr = R2UPK1(q->tn.rval);	/* rr2(#n), and rr2(r1) with an index */
 		else if (q->in.op == OREG && q->tn.rval < R8)
 			pr = q->tn.rval;	/* @rr2, rr2(#n): a pair base below 0x100 */
-		if ((pr == 2 || pr == 4) && (want == -1 || want == pr || want == pr + 1) && d2rpair(pr)) {	/* rr2, rr4 */
+		if ((pr == R2 || pr == R4) && (want == -1 || want == pr || want == pr + 1) && d2rpair(pr)) {	/* rr2, rr4 */
 			rfree(pr, LONG);		/* LONG: the pair */
 			rsreturn(RCPAIR, pr);
 			r = getreg(RCWORD, want == pr + 1 ? pr + 1 : pr, 0, p->in.sname);	/* the odd half when it is wanted */

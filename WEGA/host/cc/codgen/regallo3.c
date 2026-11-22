@@ -89,15 +89,15 @@ rsbuild(void)
 		last->flags &= ~RSD3J;
 #endif
 #ifdef OLD_D2W
-	for (r = 2; r <= 6; n = n->next, r += 2) {	/* the pairs in the order of rweight: rr2 rr0 rr4 rr6 */
+	for (r = R2; r <= R6; n = n->next, r += 2) {	/* the pairs in the order of rweight: rr2 rr0 rr4 rr6 */
 		n->cls = RCPAIR;
-		n->reg = r == 4 ? 0 : r == 6 ? 4 : r;
+		n->reg = r == R4 ? R0 : r == R6 ? R4 : r;
 	}
 	n->cls = RCPAIR;
 	n->reg = 6;
 	n = n->next;
 #else
-	for (r = 2; r <= 6; n = n->next, r += 2) {
+	for (r = R2; r <= R6; n = n->next, r += 2) {
 		n->cls = RCPAIR;
 		n->reg = r;
 	}
@@ -456,8 +456,8 @@ more:
 			prev = n->next;
 			if (n->busy > 0)
 				continue;
-			if ((cls == RCPAIR && ((t = n->cls) == 1 || t == 2)) ||
-			    (cls == RCVPAIR && ((t = n->cls) == 5 || t == 6))) {
+			if ((cls == RCPAIR && ((t = n->cls) == RCBYTE || t == RCWORD)) ||
+			    (cls == RCVPAIR && ((t = n->cls) == RCVBYTE || t == RCVWORD))) {
 				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
 				found = 1;
@@ -671,11 +671,11 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 		}
 #endif
 #ifdef OLD_D2W6
-		if (cls == RCPAIR && reg == -1 && n->reg == 4) {	/* v0p: a pair asked for: rr6 before rr4 */
+		if (cls == RCPAIR && reg == -1 && n->reg == R4) {	/* v0p: a pair asked for: rr6 before rr4 */
 			for (m = n; m && m->cls == RCPAIR; prev = m, m = m->next)
-				if (m->reg == 6)
+				if (m->reg == R6)
 					break;
-			if (m && m->cls == RCPAIR && m->reg == 6)
+			if (m && m->cls == RCPAIR && m->reg == R6)
 				n = m;
 			else
 				for (prev = rsfree; prev != n && prev->next != n; prev = prev->next)

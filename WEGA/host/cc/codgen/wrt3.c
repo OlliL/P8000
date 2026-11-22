@@ -67,10 +67,10 @@ parminit(NODE *p, int down, int *down1, int *down2)
 	n = s->sbyte5;
 	r = s->stype;
 #ifdef SEG
-	if (r == 6 || r == 7)
+	if (r == FLOAT || r == DOUBLE)
 		n -= 6;
 #else
-	if (r == 6 || r == 7)
+	if (r == FLOAT || r == DOUBLE)
 		n -= 5;
 #endif
 	else

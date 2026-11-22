@@ -696,7 +696,7 @@ zzzcode(p, c)
 			x = savecls[nsave] == RCPAIR ? LONG : INT;
 			m = rmode;
 			k = rlmode;
-			if (x == 5)
+			if (x == LONG)
 				rmode = 1;
 			else
 				rmode = 0;
@@ -824,7 +824,7 @@ zzzcode(p, c)
 			expand(p, FOREFF, "\textsb\tU1\n");
 		if (!(dope[p->in.op] & DIVFLG))
 			return;
-		if ((unsigned)t <= 15 && (unsigned)t >= 12)
+		if ((unsigned)t <= ULONG && (unsigned)t >= UCHAR)
 			expand(p, FOREFF, "\tldk\tA1,#0\n");
 		else
 			expand(p, FOREFF, "\texts\tVA1\n");
@@ -1214,18 +1214,14 @@ shincr(t, incr)
 {
 	if (!ISPTR(t))
 		return 0;
-	t = ((unsigned)t >> 2 & ~0xF) | (t & 0xF);
+	t = DECREF(t);
 	if (ISPTR(t))
-#ifdef SEG
-		return incr == 4;		/* a pointer to a pointer */
-#else
-		return incr == 2;		/* a pointer to a pointer (16 bit) */
-#endif
+		return incr == SZPOINT / SZCHAR;	/* a pointer to a pointer */
 	switch (t) {
 	case CHAR: case UCHAR: return incr == 1;
-	case SHORT: case INT: case USHORT: case UNSIGNED: return incr == 2;
-	case FLOAT: return incr == 4;
-	case DOUBLE: return incr == 8;
+	case SHORT: case INT: case USHORT: case UNSIGNED: return incr == SZINT / SZCHAR;
+	case FLOAT: return incr == SZFLOAT / SZCHAR;
+	case DOUBLE: return incr == SZDOUBLE / SZCHAR;
 	}
 	return 0;
 }
