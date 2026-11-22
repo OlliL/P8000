@@ -255,7 +255,7 @@ struct optab {
 };
 extern struct optab table[];
 
-#define NDELAY	20
+#define DELAYS	20
 #undef TREESZ		/* manifest has the 350 of pass 1 */
 #define TREESZ	500
 #define NPOOL	87

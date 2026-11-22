@@ -9,7 +9,7 @@ int nparm;
 long tmpoff;	/* the next free temporary (bits) */
 long parmax;
 FILE *dfile;	/* the data file */
-int ndelay;
+int deli;
 int nlabsave;
 NODE node[TREESZ];
 int dope[129];
@@ -35,7 +35,7 @@ int maxreg;
 NODE *stotree;	/* the subtree that has to be stored first */
 long stg;	/* the offset of the global section in the symbol table file */
 int nparmtab;
-NODE *deltrees[NDELAY];
+NODE *deltrees[DELAYS];
 int regmask;
 int regE;
 int stocook;

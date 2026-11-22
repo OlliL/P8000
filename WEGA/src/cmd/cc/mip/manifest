@@ -164,9 +164,6 @@
 # define NOASG (-1)+
 # define NOUNARY (-2)+
 
-	/* WEGA: the names of gopt and codgen for some operators */
-# define FCALL 73	/* FORTCALL */
-
 /*	various flags */
 # define NOLAB (-1)
 

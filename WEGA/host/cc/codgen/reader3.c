@@ -11,7 +11,7 @@ extern int callflag;
 extern char *cnames[];
 extern NODE *deltrees[];
 extern int lmulflag;
-extern int ndelay;
+extern int deli;
 extern int nlabsave;
 extern int nparm;
 extern int nrecur;
@@ -458,11 +458,12 @@ mapnm_walk(NODE *p, int down, int *a, int *b)
 void
 delay(NODE *p)
 {
+	/* look in all legal places for COMOP's and ++ and -- ops to delay */
 	register int i, ret, sz;
 	long off = 0;
 
 	sz = ret = 0;
-	ndelay = 0;
+	deli = 0;
 	if (p->in.op == RET) {
 		switch (p->in.type) {
 		case FLOAT:
@@ -491,15 +492,18 @@ delay(NODE *p)
 #endif
 	walkf(p, mapregs);
 	canon2(p);
+	/* look for visible COMOPS, and rewrite repeatedly */
 	while (delay1(p))
 		;
-	ndelay = 0;
+
+	/* look for visible, delayable ++ and -- */
+	deli = 0;
 	delay2(p);
-	codgen(p, FOREFF);
+	codgen(p, FOREFF);	/* do what is left */
 #ifdef OLD_D1R
 	ret = 0;	/* no temporary for the value of a return: r2 stays taken while the delayed x++ runs */
 #endif
-	if (ret && ndelay) {
+	if (ret && deli) {
 		printf("/* delay */\n");
 		if (sz == 2) {
 #ifdef SEG
@@ -507,20 +511,20 @@ delay(NODE *p)
 #else
 			printf("\tldl\t~L1+%ld(fp),rr2\n", off);
 #endif
-			rfree(2, LONG);
+			rfree(R2, LONG);
 		} else {
 #ifdef SEG
 			printf("\tld\t_stkseg+~L1+%ld(fp),r2\n", off);
 #else
 			printf("\tld\t~L1+%ld(fp),r2\n", off);
 #endif
-			rfree(2, INT);
+			rfree(R2, INT);
 		}
 	}
-	if (ndelay > 0)
-		for (i = 0; i < ndelay; i++)
-			codgen(deltrees[i], FOREFF);
-	if (ret && ndelay) {
+	if (deli > 0)
+		for (i = 0; i < deli; i++)
+			codgen(deltrees[i], FOREFF);	/* do the rest */
+	if (ret && deli) {
 		printf("/* delay */\n");
 		if (sz == 2)
 #ifdef SEG
@@ -540,7 +544,7 @@ delay(NODE *p)
 /* look for a COMOP that can be done first: 1 if a rewrite happened */
 static int
 delay1(NODE *p)
-{
+{	/* look for COMOPS */
 	register int o, ty;
 	register NODE *q;
 
@@ -554,9 +558,11 @@ delay1(NODE *p)
 	case QUEST:
 	case ANDAND:
 	case OROR:
+		/* don't look on RHS */
 		return delay1(p->in.left);
-	case COMOP:
-		delay(p->in.left);
+	case COMOP:	/* the meat of the routine */
+		delay(p->in.left);	/* completely evaluate the LHS */
+		/* rewrite the COMOP */
 		q = p->in.right;
 		ncopy(p, p->in.right);
 		q->in.op = FREE;
@@ -583,6 +589,7 @@ delstrip(NODE *p)
 static void
 delay2(NODE *p)
 {
+	/* look for delayable ++ and -- operators */
 	register int o, ty;
 	register NODE *q;
 
@@ -594,21 +601,23 @@ delay2(NODE *p)
 	case COMOP:
 	case CALL:
 	case UNARY CALL:
-	case FCALL:
+	case FORTCALL:
 	case UNARY FORTCALL:
 	case NOT:
 	case STCALL:
 	case UNARY STCALL:
+		/* for the moment, don't delay past a conditional context, or
+		   inside of a call */
 		return;
 	case INCR:
 	case DECR:
-		if (ndelay < NDELAY) {
+		if (deli < DELAYS) {
 			q = tcopy(p);
 			walkf(q->in.left, delstrip);
 			walkf(q->in.right, delstrip);
-			deltrees[ndelay++] = q;
+			deltrees[deli++] = q;
 			q = p->in.left;
-			p->in.right->in.op = FREE;
+			p->in.right->in.op = FREE;	/* zap constant */
 			ncopy(p, q);
 			q->in.op = FREE;
 		}
@@ -723,7 +732,7 @@ again:
 	case UNARY STCALL:
 	case STCALL:
 	case UNARY FORTCALL:
-	case FCALL:
+	case FORTCALL:
 	case RET:
 		;
 	}
@@ -877,7 +886,7 @@ again:
 	case UNARY FORTCALL:
 		p->in.right = 0;
 	/* fall through */
-	case FCALL:
+	case FORTCALL:
 		o = p->in.op = UNARY FORTCALL;
 		if (gencall(p, cookie))
 			goto nomat;
@@ -1006,7 +1015,7 @@ store(NODE *p)
 			stoasg(p->in.left, UNARY MUL);
 		break;
 	case CALL:
-	case FCALL:
+	case FORTCALL:
 	case STCALL:
 		store(p->in.left);
 		stoarg(p->in.right, o);
@@ -1099,13 +1108,13 @@ d14qarm(NODE *q, long t, int ty)
 	a->in.right = q;
 	a->in.rall = NOPREF;
 	sucomp(a);
-	i0 = ndelay;
+	i0 = deli;
 	delay2(a);
 	codgen(a, FOREFF);
 	reclaim(a, 0, FOREFF);
-	for (i = i0; i < ndelay; i++)
+	for (i = i0; i < deli; i++)
 		codgen(deltrees[i], FOREFF);
-	ndelay = i0;
+	deli = i0;
 }
 
 #endif
@@ -1141,7 +1150,7 @@ again:
 	switch (p->in.op) {
 	case CALL:
 	case UNARY CALL:
-	case FCALL:
+	case FORTCALL:
 	case UNARY FORTCALL:
 	case STCALL:
 	case UNARY STCALL:
