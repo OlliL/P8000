@@ -3,23 +3,15 @@
  * /lib/gopt (no source known); names guessed, the callees of other modules by the address (fnXXXX).
  */
 static char sccsid[] __attribute__((unused)) = "@[$]dom2.c\t1.2  01/07/83 13:38:58 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-
-extern int s4d82;
-extern int blkno;
-extern struct quad **blks;
 extern struct edge *edges;
-extern int *dfn, *label, *vertex, *ancest, *child, *size, *parent, *dom, *idfn;
-extern int maxblk, s70e6;
+extern int *dfn, *label, *ancest, *child, *size, *parent, *dom;
 extern int ndfs;
 extern struct dnode **darr;
-extern struct loop *loops;
-extern struct dnode *domroot;
 extern struct bl *pheaderlist, *looplist, *freebl;
-extern int nbl, nbl2, tailblk, nloops, hdrblk;
+extern int nbl, nbl2, tailblk, nloops;
 extern int *stk;
-extern int s4d92, s0b5e;
 extern int *bucket;
 extern struct edge *bent;
 extern int nbent;

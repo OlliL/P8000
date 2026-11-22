@@ -3,24 +3,18 @@
  * callees by the address (fnXXXX).
  */
 static char sccsid[] __attribute__((unused)) = "@[$]ebbo2.c\t1.8  03/04/83 15:54:14 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-extern int s4d80, s4d94, a0d4, a0d2, s71e4, s71e6, s71e8, s71ea;
-extern struct quad *qhead;
+extern int a0d2, s71e4, s71e6, s71e8, s71ea;
 extern char *a0cc;
 extern struct hent *htab[32];
-extern char ctpos[], ctneg[];
-extern long constbl[];
 extern struct aln *usetbl[];
-extern int nptr, nadr;
 extern struct a71e a71ec[];
 extern struct aln *killtbl[];
-extern struct sym *symtab;
 extern struct bt *betatbl;
 /* an entry of the value table (name guessed): 16 bytes */
 extern unsigned a0d0;
 
-extern struct fconst fconsttbl[];
 /* forward declarations (the functions are in the order of the original) */
 void ebbinit();
 struct vn * vnfind();

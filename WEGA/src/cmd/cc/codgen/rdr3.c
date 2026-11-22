@@ -26,6 +26,5 @@ extern void sortsyms();
 extern int stflag;
 extern long symbase;
 extern struct tagent tagtab[];
-extern char *tnames[];
 static char sccsid[] = "@[$]rdr3.c\t2.1  11/15/82 12:49:01 Copr. 1981 87wega3.2.";
 #include "../mip/rdr.2.5"

@@ -1873,3 +1873,12 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   common 2.5 defines as int (branch, ncopy, tfree, uerror, walkf) are not declared. codgen, scodgen stripped equal,
   models 179/179/209/210/73/73/26, bench 153/132/212, both matrix checks as in the table, host corpora 427/427,
   checkall ALL OK (the old variants are built by cc with it). The host port the same (cgproto.h stays, mfile3 includes it).
+- 2026-11-22 rdr 2.5: the unused table tnames replaced by the three tables of 2.4 (named tbtype, tmod, tclass in both
+  units: codgen has a function ttype); codgen, scodgen stripped equal. gopt: the header is mfile2.h (the name of the
+  original: its SCCS line in each module of /lib/gopt), gopt.h went; 119 names that two or more modules declare in the
+  same form are in it (one per line), a module keeps what only it declares or what it sees in a form of its own (qhead,
+  betatbl, fconsttbl, numtab ...); functions returning int are not declared, nor tprint, ncopy, fwalk, tfree (int in
+  common 2.4). gopt stripped equal; host the same (82 names). Models, bench, matrix checks, host corpora as before;
+  checkall: all but corpus gopt [host], the stored result of the original with another name of the temporary file (see
+  above), 854 of 854 with CORPUS_NOCACHE=1. optim 2.5: the start of the pointer case of PLUS once for both passes (the
+  tokens after the preprocessor are the same for every pass and switch set).

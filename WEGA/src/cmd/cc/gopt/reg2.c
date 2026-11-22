@@ -3,72 +3,49 @@
  * names guessed, the callees by the address (fnXXXX).
  */
 static char sccsid[] = "@[$]reg2.c\t1.11  03/04/83 16:04:05 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
 struct bl { struct bl *next; int blk; };	/* a list of blocks */
 struct loop { struct bl *bls; int hdr; struct loop *link; struct bl *exits; int tail; int cnt; unsigned b15:1, b14:1, b13:1, b12:1, b11:1, b10:1; };
 struct hrec { unsigned *f0; unsigned *f4; unsigned *f8; int w12; int callfnd; };
 #define QHREC(q)	(*(struct hrec **)((char *)(q) + 6))
 extern struct quad **blks;
-extern struct loop *loops;
 extern struct quad *qhead;
-extern struct sym *symtab;
-extern int s4d90;
-extern char ctneg[];
 extern struct bt *betatbl;
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };
 #define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
-extern int s4d72, dfwords, lvwords;
-extern int a118, a108;
+extern int a118;
 extern unsigned *a110;
 struct edge { int k; struct edge *next; };
 struct gn { int row; struct gn *link; struct edge *edges; int cnt; int x12; int x14; int cost; unsigned f15:1; };
 extern struct gn *a11e;
 struct gnn { int x0; struct quad *q; int blk; int kind; };
-extern int ndefs;
-extern struct quad **defs;
-extern int *srchdef();
-extern int tstlbit(), testbit();
-extern void clrlbit(), setlbit(), setbit();
-extern int maxblk;
+extern void clrlbit(), setlbit();
 extern unsigned *a10a;
 extern struct loop *getheader();
-extern int usefirst(), addpreheader(), nodeno(), insameebbo(), canshare();
 extern struct quad *findend();
 extern char *addreg();
 extern void addrestore();
 extern void markreg();
 extern struct quad *addsave(), *ebbtail();
-extern struct quad *insertquad();
-extern int eqopnd();
-extern void propagate(), addsavequads(), rmrestorequad(), prcgraph(), prgraph();
+extern void propagate(), addsavequads(), rmrestorequad(), prcgraph();
 struct pr { int x; int y; };
 extern struct pr *edges;
-extern int blkno;
 #define PY(i)	(*(int *)((char *)edges + ((i) * 4 + 2)))
 extern struct quad *rquad();
 extern void addsavequads(), rmrestorequad(), propagate();
-extern int r_used();
-extern struct quad *delquad();
 extern void clrbit(), decdeg(), restoredges(), rmnode();
-extern int findnode();
-extern int werror();
-extern int pickcolor(), findnode();
 extern void restoredges();
-extern void clrmat(), orvec(), mergevectors(), updatevector();
+extern void clrmat(), mergevectors(), updatevector();
 extern struct gn *setedges();
 extern void colorgraph(), savecolors();
-extern int nodeno(), insameebbo();
 #define QF(q, o)	(*(unsigned **)(*(char **)((char *)(q) + 6) + (o)))
-extern void propnd();
 extern int a114, a116, a10e;
 extern struct gnn *a11a;
 #define GF(i, o, t)	(*(t *)((char *)a11a + ((i) * 10 + (o))))
-extern char *taballoc();
-extern int notlive(), inreach();
 extern void mergevectors(), updatevector(), degrees();
-extern void prquad(), prvec(), include(), buildgraph(), colorgraph(), savecolors(), prcgraph();
-extern void clearflags(), livevars(), reachdefs(), prquads(), ebbopt(), clearblocks(), marklpblocks();
+extern void include(), buildgraph(), colorgraph(), savecolors(), prcgraph();
+extern void reachdefs(), clearblocks(), marklpblocks();
 
 extern void marklps(), symflags(), chkcalls(), assignreg();
 

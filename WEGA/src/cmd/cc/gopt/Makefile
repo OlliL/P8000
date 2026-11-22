@@ -39,7 +39,7 @@ OBJS5B = reg2.o alias2b.o
 OBJS = $(OBJS4) $(OBJS5) $(OBJS4B) $(OBJS5B)
 # the library members of segment 4 (see the gopt rule)
 LIBC4 = fseek.o ftell.o rdwr.o fopen.o getw.o
-HEADERS = gopt.h ../z8000/macdefs ../mip/manifest
+HEADERS = mfile2.h ../z8000/macdefs ../mip/manifest
 
 all: gopt
 

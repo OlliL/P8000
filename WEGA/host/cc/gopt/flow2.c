@@ -3,17 +3,10 @@
  * names guessed, the callees of other modules by the address (fnXXXX).
  */
 static char sccsid[] __attribute__((unused)) = "@[$]flow2.c\t1.6  03/04/83 15:55:39 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-
-extern int aflag;
-extern int blkno;
 extern int nedge;
-extern struct quad **blks;
 extern struct edge *edges;
-extern struct quad *qhead;
-extern int s4d88, maxblk, s70e6;
-extern int s4d74, s4d76, s4d78;
 
 /* forward declarations (the functions are in the order of the original) */
 int blkof();

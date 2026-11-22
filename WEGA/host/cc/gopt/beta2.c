@@ -3,14 +3,9 @@
  * quads are renumbered to it. Written from /lib/gopt (no source known); names guessed.
  */
 static char sccsid[] __attribute__((unused)) = "@[$]beta2.c\t1.5  01/07/83 13:38:14 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
 extern struct bt *betatbl;
-extern struct quad *qhead;
-extern struct sym *symtab;
-extern char ascii[];
-extern char ctpos[];
-extern int s4d80, s4d94, a0d4, a108;
 
 int betainit(void)
 {

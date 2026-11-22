@@ -3,12 +3,7 @@
  * the callees by the address (fnXXXX).
  */
 static char sccsid[] __attribute__((unused)) = "@[$]lpind2.c\t1.5  02/07/83 15:54:28 Copr. 1981 87wega3.2.";
-#include "gopt.h"
-
-extern int s4d86;
-extern long constbl[];
-extern struct quad *a0d6;
-extern int a0e6;
+#include "mfile2.h"
 
 /* 2 to the power n (name guessed) */
 long lpow2(int n)
@@ -67,9 +62,6 @@ struct quad *qmove(struct quad *q)
 	return q;
 }
 
-extern int s4d94, a0ec, a0ee;
-extern int a0da;
-
 /* a move of the result of q to a new stemp is inserted and the quads are moved (name from the debug output) */
 struct quad *insrtstmpmove(struct quad *q)
 {
@@ -113,7 +105,6 @@ struct quad *insrtstmpmove(struct quad *q)
 	return q;
 }
 
-
 /* the quad opqd gets a new stemp as its result operand; the stemp is entered into the definition (name from the debug output) */
 struct quad *moveindquad(struct quad *x, struct quad *opqd, struct qa *out, struct dl *d, struct dl *d2, int kind)
 {
@@ -154,8 +145,6 @@ struct quad *moveindquad(struct quad *x, struct quad *opqd, struct qa *out, stru
 	opqd = qmove(opqd);
 	return opqd;	/* the original has no return: rr2 still holds the result of qmove() */
 }
-
-extern int v0e;
 
 /* the operand is set to the integer v (w0 as its first word); t == 1: v is used as it is, else it is negated (name guessed) */
 void mkconstopnd(struct qa *p, long v, int t, int w0)
@@ -270,7 +259,6 @@ int copyopndstmp(struct quad *opqd, struct dl *p, struct dl *t, int kind, struct
 }
 
 extern struct nd *a104;
-extern struct dl *a0f8, *a0e0;
 
 /* the stemp of the definition p is used for the operand of opqd of t; a node of the induction variable lists is filled (name from the debug output) */
 struct quad *fillindvar(struct quad *qd, struct quad *opqd, int kind, struct dl *p, struct dl *t)
@@ -361,8 +349,6 @@ k2:
 	return 0;
 }
 
-extern int a0fe;
-
 /* the induction variable ind is entered in the program by an operation behind opqd (name from the debug output) */
 void indupdate(struct nd *ind, struct quad *opqd, int opcode)
 {
@@ -421,8 +407,6 @@ void freelist(int flag, struct nd *n)
 			a104 = n;
 	}
 }
-
-extern int a0f0;
 
 /* the result of q is moved to a new temporary: a move quad is inserted behind q and made a loop definition (name guessed) */
 struct quad *insrtlpdef(struct quad *q, int blk)
@@ -500,8 +484,6 @@ void deltmplpdefs(void)
 	}
 }
 
-extern char ctneg[];
-
 /* the induction temporary stmpno is removed from the list of d (name guessed) */
 void delindvar(struct dl *d, int stmpno)
 {
@@ -532,8 +514,6 @@ void delindvar(struct dl *d, int stmpno)
 		cerror("delindvar(), stmp not found\n");
 	}
 }
-
-extern char ctpos[];
 
 /* the induction variable definitions of the loop are checked for the quad q; the new definition is returned (name from the debug output) */
 /* host: the block that chklpdefs() passes to insrtlpdef() in the original: r5 as sameopnd(q, d, op, 1) left it. When the
@@ -641,7 +621,6 @@ lt:
 		goto lh;
 	return 0;
 }
-
 
 /* the family of a basic induction variable: the definition r of the quad p is looked for (name from the debug output) */
 struct quad *chkfamindvar(struct quad *r, int kind)

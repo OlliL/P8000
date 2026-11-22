@@ -3,28 +3,16 @@
  * names guessed, the callees by the address (fnXXXX).
  */
 static char sccsid[] __attribute__((unused)) = "@[$]reg2.c\t1.11  03/04/83 16:04:05 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-extern struct quad **blks;
-extern struct loop *loops;
-extern struct quad *qhead;
-extern struct sym *symtab;
-extern int s4d90;
-extern char ctneg[];
 extern struct bt *betatbl;
-extern int s4d72, dfwords, lvwords;
-extern int a118, a108;
+extern int a118;
 extern unsigned *a110;
 extern struct gn *a11e;
-extern int ndefs;
-extern struct quad **defs;
-extern int maxblk;
 extern unsigned *a10a;
 extern struct pr *edges;
-extern int blkno;
 extern int a114, a116, a10e;
 extern struct gnn *a11a;
-
 
 /* the optimizer of the quads: the flow information, the loop information, the value numbering (name guessed) */
 void optimize(void)

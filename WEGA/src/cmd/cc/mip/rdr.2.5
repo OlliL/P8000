@@ -3,10 +3,13 @@
  * Included by the wrapper rdr3.c as ../mip/rdr.2.5.
  */
 static char rdrsccs[] = "@[$]rdr\t2.5  08/24/83 16:48:00 Copr. 1981 87wega3.2.";
-char *tnames[] = {
+
+static char *tbtype[] = {
 	"UNDEF", "FARG", "CHAR", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "STRTY", "UNIONTY", "ENUMTY", "MOETY",
 	"UCHAR", "USHORT", "UNSIGNED", "ULONG",
-	"undef", "PTR", "FTN", "ARY",
+};
+static char *tmod[] = { "undef", "PTR", "FTN", "ARY" };
+static char *tclass[] = {
 	"undef", "AUTO", "EXTERN", "STATIC", "REGISTER", "EXTDEF", "LABEL", "undef", "MOS", "PARAM", "STNAME", "MOU", "UNAME",
 	"TYPEDEF", "unused", "ENAME", "MOE", "unused", "USTATIC",
 };

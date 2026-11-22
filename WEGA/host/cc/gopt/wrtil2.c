@@ -3,38 +3,21 @@
  * known); names guessed, the callees of other modules by the address (fnXXXX).
  */
 static char sccsid[] __attribute__((unused)) = "@[$]wrtil2.c\t1.7  03/04/83 16:06:00 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 static int treeeq(NODE *p, NODE *q);
 static void wrtree(NODE *p);
 
-extern int qflag, ntl;
-extern int tl[];
-extern char ctpos[], ctneg[];
-extern int lineno;
-extern char ftitle[];
-extern int *altab;
-extern long constbl[];
-extern struct fconst fconsttbl[];
 extern struct { int p0; int p2; int x4; int p6, p8; } *betatbl;
-extern FILE *dfile;
-extern NODE node[];
-extern struct sym *symtab;
 
 static NODE *pend = 0;
 static int flab = 9000;
 static int tmpoff = 0;
-extern int nal;
 
 static int treeeq();
 static void wrtree();
 
 extern int qdop[];
-extern struct quad *qhead;
-extern int v00, v04;
-extern long vb94;
-extern NODE *curproc;
 extern struct edge *edges;
-extern struct quad **blks;
 /* forward declarations (the functions are in the order of the original) */
 int tlfind();
 void wrline();

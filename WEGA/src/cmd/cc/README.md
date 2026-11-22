@@ -12,7 +12,7 @@ mip/        the machine-independent units the passes share, one file per SCCS ve
 z8000/      what is machine-dependent and shared: macdefs (all three)
 cpp/        the preprocessor (/lib/cpp)
 cparse/     pass 1 (/lib/cparse, /lib/scparse): the files ...1.c, mfile1; comm1.c and optim1.c are the wrappers
-gopt/       pass 2, the global optimizer (/lib/gopt): the files ...2.c, gopt.h; comm2.c and rdr2.c are the wrappers
+gopt/       pass 2, the global optimizer (/lib/gopt): the files ...2.c, mfile2.h; comm2.c and rdr2.c are the wrappers
 codgen/     pass 3 (/lib/codgen, /lib/scodgen): the files ...3.c, mfile3, oldcc.h; comm3.c, optim3.c and rdr3.c
             are the wrappers
 popt/       the peephole optimizer (/lib/popt, /lib/spopt): z20.c ... z23.c

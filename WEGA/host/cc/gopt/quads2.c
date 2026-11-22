@@ -3,7 +3,7 @@
  * (no source known); names guessed, the callees of other modules by the address (fnXXXX).
  */
 static char sccsid[] __attribute__((unused)) = "@[$]quads2.c\t1.8  03/04/83 16:00:29 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 static void asgsimp(NODE *p);
 static void asgop2(NODE *p);
 static void fold2(NODE *p);
@@ -11,31 +11,18 @@ static void fold1(NODE *p);
 
 int ntl = 0, ctmpoff = 0, nctmp = 0, nctmpuses = 0, nest = 0;
 
-
 extern char *symtab0;
-extern struct sym *symtab;
-extern FILE *dfile;
-extern int nconst, nfconst, nctmp, ntl, s4d94, nctmpuses, ctmpoff, v0e;
-extern long constbl[];
-extern int tl[];
 extern struct ctmp ctmp[];
-extern struct fconst fconsttbl[];
-
 
 static void fold1(), fold2(), asgop2(), asgsimp();
 struct qa *operand();
 int tlookup(), constlook(), fconstlook();
 
-extern struct quad *qfree, *qtail, *qhead, *lastq;
-extern struct pos curpos;
-extern int qflag;
 extern struct { int p0; int p2; int x4; int p6, p8; } *betatbl;
-extern char ctpos[], ctneg[];
 void normop(), denorm();
-extern int s4d94, nctmpuses, ctmpoff, tmpno;
+extern int tmpno;
 NODE *mknode();
-extern int eflag;
-extern int qop[], nest, v0e;
+extern int qop[], nest;
 static void fold1(), fold2(), asgop2();
 /* forward declarations (the functions are in the order of the original) */
 void cmwalk();

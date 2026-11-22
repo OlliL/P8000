@@ -3,37 +3,20 @@
  * names guessed, the callees of other modules by the address (fnXXXX).
  */
 static char sccsid[] = "@[$]alias2.c\t1.5  02/07/83 15:50:16 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-
-extern int aflag;
-extern int nadr, nptr, nal, s4d7a, s4d92;
 extern struct { int tag; int x; } numtab[];
-extern struct sym *mapn();
-extern int tagfind(), itfind();
-extern char *taballoc();
-extern int *altab;
 extern int *affect, *modval;
 extern int matw, affdim;
 struct aln { int x0; struct aln *next; struct aln *link; };	/* a node of the alias lists (guessed; link: 6, the list of the lists) */
 extern struct aln *alfree, *allist, *alcur, *alast;
 extern int ndist, nlist;
 extern struct { int pos; int y[4]; } *betatbl;	/* a table of 10 byte entries (guessed) */
-extern int almap();
-extern struct sym *symtab;
-extern char ascii[];
 extern struct quad *qhead;
 extern struct quad *pcur;
 extern struct qa opnd70c8;
 extern int op70d8;
-extern void prquad();
-extern int cerror();
-extern int testbit();
-extern struct quad *skiphdrs();
-extern int checkops();
 extern struct quad *fndcall();
-extern int fndparm();
-extern void setbit();
 
 /* forward declarations (the functions are in the order of the original) */
 void pralias();

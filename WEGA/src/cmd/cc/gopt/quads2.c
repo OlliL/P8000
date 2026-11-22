@@ -3,48 +3,30 @@
  * (no source known); names guessed, the callees of other modules by the address (fnXXXX).
  */
 static char sccsid[] = "@[$]quads2.c\t1.8  03/04/83 16:00:29 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
 int ntl = 0, ctmpoff = 0, nctmp = 0, nctmpuses = 0, nest = 0;
 
-extern NODE *talloc();
-extern NODE *tcopy();
 extern void ncopy(), tfree(), fwalk();
 
 extern char *symtab0;
-extern struct sym *symtab;
 extern struct quad *addquad();
-extern char *taballoc();
-extern void cerror(), genquads();
-extern FILE *dfile;
-extern int fscanf();
-extern int nconst, nfconst, nctmp, ntl, s4d94, nctmpuses, ctmpoff, v0e;
-extern long constbl[];
-extern int tl[];
+extern void cerror();
 extern struct { int a, b; } ctmp[];
 extern struct { int rv; int d[4]; } fconsttbl[];
 
-
 static void fold1(), fold2(), asgop2(), asgsimp();
-extern struct quad *delquad();
 struct qa *operand();
 int tlookup(), constlook(), fconstlook();
 
-extern struct quad *qfree, *qtail, *qhead, *lastq;
-extern struct pos curpos;
-extern int qflag;
+extern struct quad *qfree, *qtail, *qhead;
 extern struct { int p0; int p2; int x4; int p6, p8; } *betatbl;
-extern char ctpos[], ctneg[];
-extern void prquad();
 void normop(), denorm();
-extern int s4d94, nctmpuses, ctmpoff, tmpno;
-extern int map();
+extern int tmpno;
 NODE *mknode();
-extern int eflag;
-extern void pr();
 extern void dotree();
 extern NODE *mknode(), *bcon(), *mktemp2();
-extern int qop[], nest, v0e;
+extern int qop[], nest;
 extern void tfree();
 static void fold1(), fold2(), asgop2();
 /* forward declarations (the functions are in the order of the original) */

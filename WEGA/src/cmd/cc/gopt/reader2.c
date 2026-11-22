@@ -3,44 +3,24 @@
  * the names of the callees in other modules are placeholders (fnXXXX = the address in /lib/gopt, segment 4) until their modules exist.
  */
 static char sccsid[] = "@[$]reader2.c\t1.5  03/04/83 16:01:42 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
 int s0078 = 0;
 
-extern char ftitle[];
-extern int lineno;
-extern struct pos curpos;
-extern FILE *infile;
-extern long ifpos;
 extern long qhead;
-extern int eflag, qflag, s4d88, tflag, s4d92, nerrors;
-extern char *arhigh[];
+extern int nerrors;
 extern int ntmp;
 extern NODE *saved[];
-extern NODE *curproc;
-extern struct quad *lastq;
-extern long qtail, qfree, v06, vb94;
-extern int nconst, nfconst, v0e, vafc, v00, v04, vafe, s0b5e;
-extern int s4d7a, s0078, s4d74, s4d76, ntl, s4d78, s4d94, ctmpoff, nctmp, nctmpuses;
+extern long qtail, qfree, v06;
+extern int vafe;
+extern int s0078;
 extern long s4d96;
-extern char ctneg[], ctpos[];
-extern char *opst[];
-extern long ftell();
-extern char *taballoc();
-extern void tabfree();
-extern long rdin();
-extern NODE *eread();
-extern struct sym *mapn();
-extern void mkhash(), nlcheck(), prtags(), fwalk(), mapnm(), ncopy(), tprint();
-extern NODE *tcopy();
+extern void mkhash(), nlcheck(), fwalk(), mapnm(), ncopy(), tprint();
 extern long addquad();
-extern int constlook();
-extern void genquads(), aliasm(), prquads(), betainit(), ebbopt(), optimize(), writeil(), mapall();
-extern int aliasmat(), flow_graph(), domloops(), initopts(), rdsym();
+extern void aliasm(), betainit(), optimize(), writeil(), mapall();
 extern int dope[];
 
 void dotree(), dotree2(), cutree(), passes(), abortpass(), prtbl();
-extern void pr();
 
 main(argc, argv)
 	int argc;

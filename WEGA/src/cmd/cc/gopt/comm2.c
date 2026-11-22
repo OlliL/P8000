@@ -4,13 +4,8 @@
  * ../codgen/comm3.c (the same file one version later: 2.5 08/24/83).
  */
 static char sccsid[] = "@[$]comm2.c\t1.1  07/07/82 15:54:49 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-extern char ftitle[];
-extern int lineno;
-extern NODE node[], *lastfree;
-extern char *opst[];
+extern NODE *lastfree;
 extern char *mkseg(), *ssgbrk(), *sgbrk();
-extern int qflag;
-extern char *arhigh[];
 #include "../mip/common.2.4"

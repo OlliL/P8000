@@ -3,7 +3,7 @@
  * the names of the callees in other modules are placeholders (fnXXXX = the address in /lib/gopt, segment 4) until their modules exist.
  */
 static char sccsid[] __attribute__((unused)) = "@[$]reader2.c\t1.5  03/04/83 16:01:42 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 static void prtbl(void);
 static void passes(void);
 static void abortpass(void);
@@ -11,25 +11,13 @@ static void cutree(NODE *p);
 
 int s0078 = 0;
 
-extern char ftitle[];
-extern int lineno;
-extern struct pos curpos;
-extern FILE *infile;
-extern long ifpos;
-extern struct quad *qhead;
-extern int eflag, qflag, s4d88, tflag, s4d92, nerrors;
-extern char *arhigh[];
+extern int nerrors;
 extern int ntmp;
 extern NODE *saved[];
-extern NODE *curproc;
-extern struct quad *lastq;
-extern struct quad *qtail, *qfree;
-extern long v06, vb94;
-extern int nconst, nfconst, v0e, vafc, v00, v04, vafe, s0b5e;
-extern int s4d7a, s0078, s4d74, s4d76, ntl, s4d78, s4d94, ctmpoff, nctmp, nctmpuses;
+extern long v06;
+extern int vafe;
+extern int s0078;
 extern long s4d96;
-extern char ctneg[], ctpos[];
-extern char *opst[];
 extern int dope[];
 
 void dotree(), dotree2(), cutree(), passes(), abortpass(), prtbl();

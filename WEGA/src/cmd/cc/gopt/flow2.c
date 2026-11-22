@@ -3,24 +3,16 @@
  * names guessed, the callees of other modules by the address (fnXXXX).
  */
 static char sccsid[] = "@[$]flow2.c\t1.6  03/04/83 15:55:39 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
 struct edge { int next; int blk; };	/* an entry of the edge lists: 4 bytes (guessed) */
 
-extern int aflag;
-extern int blkno;
 extern int nedge;
 extern struct quad **blks;
 extern struct edge *edges;
-extern int cerror();
-extern char *taballoc();
-extern void tabfree(), prquads(), optflow();
+extern void optflow();
 extern struct quad *qhead;
-extern struct quad *delquad(), *insertquad();
-extern int s4d88, maxblk, s70e6;
-extern void rmlabels(), rmjumps(), deledge(), rm_deadblks(), prgraph(), prstats(), joinblk(), delrun();
-extern int blkempty();
-extern int s4d74, s4d76, s4d78;
+extern void rmlabels(), rmjumps(), rm_deadblks(), prstats(), joinblk(), delrun();
 
 /* forward declarations (the functions are in the order of the original) */
 int blkof();

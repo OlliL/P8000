@@ -3,47 +3,26 @@
  * known); names guessed, the callees of other modules by the address (fnXXXX).
  */
 static char sccsid[] = "@[$]wrtil2.c\t1.7  03/04/83 16:06:00 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-
-extern NODE *talloc();
-extern int qflag, ntl;
-extern int tl[];
-extern char ctpos[], ctneg[];
-extern int lineno;
-extern char ftitle[];
-extern int *altab;
-extern long constbl[];
 extern struct { int rv; int d[4]; } fconsttbl[];
 extern struct { int p0; int p2; int x4; int p6, p8; } *betatbl;
-extern FILE *dfile;
-extern NODE node[];
-extern struct sym *symtab;
-extern int szty();
-extern long ftell();
 
 static NODE *pend = 0;
 static int flab = 9000;
 static int tmpoff = 0;
-extern int nal;
 
-extern int cerror();
 static int treeeq();
 static void wrtree();
 
 extern void tfree();
 extern int qdop[];
-extern void prquad();
 extern NODE *mkleaf();
-extern int needustar();
 extern void addrof(), asgfold(), cleartrees();
 extern struct quad *qhead;
-extern int v00, v04;
-extern long vb94;
-extern NODE *curproc;
 extern struct { int next; int val; } *edges;
 extern int **blks;
-extern void prquads(), prtcounts(), deledge();
+extern void prtcounts();
 extern void cleartrees(), mktree();
 /* forward declarations (the functions are in the order of the original) */
 int tlfind();

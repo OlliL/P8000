@@ -2,54 +2,35 @@
  * live2.c - gopt: the live variables. Written from /lib/gopt (no source known); names guessed.
  */
 static char sccsid[] = "@[$]live2.c\t1.9  01/07/83 13:42:01 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-extern struct sym *symtab;
-extern char ascii[];
-extern int cerror();
-extern char *taballoc();
-extern int s4d84, s715e, nlv, lvidx;
+extern int s715e, nlv, lvidx;
 struct lv { unsigned kind:1, alias:1, var:14; };	/* an entry of the table of the live variables (guessed names) */
 extern struct lv *lvtab;
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };	/* an entry of betatbl: 10 bytes (guessed) */
 extern struct bt *betatbl;
 struct aln { int x0; struct aln *next; struct aln *link; };
 extern struct aln *checkalias();
-extern int almap();
-extern int *altab;
-extern int nptr, nadr;
 extern struct quad **blks;
 struct bl { struct bl *next; int blk; };
 struct loop { struct bl *bls; int hdr; struct loop *link; };	/* see dom2.c */
-extern struct loop *loops;
-extern int *idfn;
-extern int blkno;
 extern struct quad *qhead;
-extern int ndefs;
-extern int tstlbit();
 #define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
 #define BOPT(j)	BBIT(j, 13)
 struct lrec { unsigned *f0, *f4, *f8, *fc, *f10, *f14, *f18; };	/* the bit vectors of a block: 28 bytes, stored in the header quad at 6 (guessed) */
-extern int lvwords, dfwords, s4d86;
 struct rn { struct rn *next; int idx; };	/* a node of the reach map: 6 bytes (guessed) */
 extern struct rn *reachmap;
-extern struct quad **defs;
-extern int ndefs;
-extern int *srchdef();
 #define QLREC(q)	(*(struct lrec **)((char *)(q) + 6))
 #define MASK(p)	((struct quad *)((long)(p) & ~1L))
-extern void clrvec(), copyvec(), orvec(), andnotvec();
+extern void copyvec(), andnotvec();
 struct edge { int next; int blk; };
 extern struct edge *edges;
 extern unsigned *tmpv;
-extern int eqvec();
-extern int s4f20, s4f22, s4d92;
-extern void tabfree();
-extern void initlive(), initreach(), setwords(), prqall();
+extern int s4f20, s4f22;
+extern void initlive(), initreach(), setwords();
 extern char *livevecs, *livevecs;
-extern struct quad **defs;
 extern struct quad *qhead;
-extern void prquad(), prqflags();
+extern void prqflags();
 
 /* the flags of the quad q (debug; name guessed) */
 void

@@ -3,7 +3,7 @@
  */
 static char rdrsccs[] __attribute__((unused)) = "@[$]rdr\t2.4  03/04/83 15:31:15 Copr. 1981 87wega3.2.";
 
-static char *ttype[] = {
+static char *tbtype[] = {
 	"UNDEF", "FARG", "CHAR", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "STRTY", "UNIONTY", "ENUMTY", "MOETY",
 	"UCHAR", "USHORT", "UNSIGNED", "ULONG",
 };
@@ -90,7 +90,7 @@ readsyms(int n, struct sym *tab, int kind)
 			for (k = n; k > 0; k--, tab = tab + 1) {
 				printf("index = %d\n", (int)(intptr_t)(tab));
 				printf("name offset = %d", tab->nameoff);
-				printf(", type = %s", ttype[tab->stype & 0xF]);
+				printf(", type = %s", tbtype[tab->stype & 0xF]);
 				for (t = tab->stype >> 4; t != 0; t >>= 2)
 					printf(" %s", tmod[t & 3]);
 				printf(", class = %s\n", tclass[(int)tab->sclass]);

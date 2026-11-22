@@ -3,7 +3,7 @@
  * callees by the address (fnXXXX).
  */
 static char sccsid[] = "@[$]lpinv2.c\t1.10  03/04/83 15:58:16 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
 static int lblcnt = 15000;
 
@@ -13,57 +13,31 @@ struct aln { int x0; struct aln *next; struct aln *link; };
 struct hrec { unsigned *f0; unsigned *f4; unsigned *f8; int w12; };	/* the record of a block that the header quad points to at 6 (guessed) */
 #define QHREC(q)	(*(struct hrec **)((char *)(q) + 6))
 extern struct quad **blks;
-extern int *idfn;
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };
 extern struct bt *betatbl;
-extern void prquad();
-extern int blkno, s4d86;
 
 struct dl { int x0; struct quad *q; long l6; long l10; struct qa e14; int x20; unsigned f15:1, f14:1, f13:1, f12:1, f11:1, f10:1, rest:10; struct dl *next; };	/* a node of the list of the definitions (28 bytes, guessed) */
-extern struct dl *a0e0;
-extern int sameopnd();
 extern int a0e4;
-extern struct sym *symtab;
 extern struct quad *tmpsearch();
 extern void addlpdef(), setopt();
-extern int isglobal(), isdefined();
 extern void clrsymflag(), cerror();
-extern char ascii[];
-extern struct dl *a0f8, *alloclpdef(), *srchdflist();
-extern char *taballoc();
+extern struct dl *srchdflist();
 struct pr { int x; int y; };
 extern struct pr *edges;
-extern struct quad *skiphdrs();
 #define BBIT(j, n)	((*(int *)((char *)betatbl + ((j) * 10 + 8)) >> (n)) & 1)
-extern int *altab;
 extern struct aln *checkalias();
-extern int lvwords;
 extern unsigned *a0e8;
-extern void clrvec(), orvec();
 struct dnode { struct dnode *next; struct dnode *down; int dblkno; };	/* the dominator tree (see dom2.c) */
 extern struct dnode *a0f4;
-extern int bitpos(), tstlbit();
-extern void prvec();
-extern int issym();
-extern int a0fc, a0f2, vafc;
+extern int a0fc, a0f2;
 extern struct dl *a100;
 extern void chkbscindvar(), marklpinv(), prlpdefs();
-extern int invopnds(), domexits(), notlive(), domuse(), samebetalpdef(), qparvbetalpdef();
-extern struct dnode *domroot;
-extern struct loop *loops;
-extern int maxblk;
-extern int blkno, s4d88, s4d90;
-extern struct quad *qhead, *a0d6;
-extern struct quad *insertquad();
-extern void prgraph(), deledge(), addedge(), updatelooplist();
+extern struct quad *qhead;
+extern void addedge(), updatelooplist();
 extern struct pr *edges;
-extern int *vertex, a0f0, a0da, a0e6, a0ec, a0ee, a0fe;
-extern struct quad *insrtstmpmove(), *qmove(), *chkfamindvar();
+extern struct quad *insrtstmpmove(), *chkfamindvar();
 extern void deltmplpdefs();
-extern char ctpos[];
-extern int hdrblk, s4d92, s4d80, s4d94, a0d4;
 extern struct dl *a104;
-extern void freelist(), tabfree(), livevars(), clearflags(), ebbopt(), prquads(), prquad();
 /* forward declarations (the functions are in the order of the original) */
 int inbl();
 

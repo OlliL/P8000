@@ -3,15 +3,11 @@
  * names guessed.
  */
 static char sccsid[] = "@[$]debug2.c\t1.3  02/07/83 15:51:07 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
 extern struct quad *qhead;
-extern char ascii[];
-extern long constbl[];
 extern struct { int rv; double d; } fconsttbl[];
-extern struct sym *symtab;
-extern int s4d74, s4d76, s4d78;
-extern void tprint(), prquad(), propnd();
+extern void tprint();
 
 char *qname[128];
 int qop[128];

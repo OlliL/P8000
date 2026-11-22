@@ -3,45 +3,30 @@
  * callees by the address (fnXXXX).
  */
 static char sccsid[] = "@[$]ebbo2.c\t1.8  03/04/83 15:54:14 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-extern int s4d80, s4d94, a0d4, a0d2, s71e4, s71e6, s71e8, s71ea;
+extern int a0d2, s71e4, s71e6, s71e8, s71ea;
 extern struct quad *qhead;
 extern char *a0cc;
 struct aln { int x0; struct aln *next; struct aln *link; };
 struct hent { struct hent *next; int op; int v1; int v2; int val; unsigned cst:1, num:15; struct quad *q; };	/* an entry of htab (guessed) */
 extern struct hent *htab[32];
-extern char ctpos[], ctneg[];
-extern int betanew();
-extern long constbl[];
 extern struct aln *usetbl[];
-extern int inuse(), canopt();
-extern int nptr, nadr;
 extern struct { struct quad *q; struct sym *s; } a71ec[];
 extern struct aln *killtbl[];
-extern struct sym *symtab;
-extern int eqopnd(), killed();
 struct bt { int x0; int x1; int x[2]; unsigned f15:1, f14:1, bopt:1, rest:13; };	/* an entry of betatbl: 10 bytes (guessed) */
 extern struct bt *betatbl;
 /* an entry of the value table (name guessed): 16 bytes */
 struct vn { struct vn *next; struct qa a; int val; int al; unsigned cst:1, dead:1, rest:14; };
-extern int almap();
-extern void propnd(), normop(), denorm();
-extern int isvarty(), cerror();
-extern char *taballoc();
 extern struct quad *checkalias();
-extern void tabfree(), prqall();
 extern struct quad *vnumber();
 extern void ebbfix(), resetbb(), ebbclean();
-extern void checkuse(), clear(), addstore(), exprenter(), ebbcall(), prquad();
-extern int identop(), nostore();
+extern void checkuse(), clear(), addstore(), exprenter(), ebbcall();
 extern unsigned a0d0;
 extern struct qa constfold();
 extern struct hent *exprfind();
-extern struct quad *delquad();
 
 extern struct { int rv; double d; } fconsttbl[];
-extern int constlook(), dconstlook();
 /* forward declarations (the functions are in the order of the original) */
 void ebbinit();
 struct vn * vnfind();

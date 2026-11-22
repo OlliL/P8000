@@ -1,7 +1,7 @@
 /*
- * gopt.h - definitions of the global optimizer /lib/gopt (the second part of the C compiler beside codgen:
- * it reads the intermediate language of cparse, reader2.c ... reg2.c). Reconstructed from the binary; the name of the
- * original is mfile2.h (SCCS 1.7 03/04/83). Layout of NODE (22 bytes, pointers 32 bits) and the tables are measured.
+ * mfile2.h - the header of the global optimizer /lib/gopt (the second part of the C compiler beside codgen:
+ * it reads the intermediate language of cparse, reader2.c ... reg2.c). Reconstructed from the binary; the name is that of the
+ * original (its SCCS line: mfile2.h 1.7 03/04/83). Layout of NODE (22 bytes, pointers 32 bits) and the tables are measured.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -140,3 +140,88 @@ extern unsigned zseg0[];
 void brecinit(struct brec *r);
 #define BLKUNSET	(-32768)	/* host: an argument the original does not pass */
 #include "goptproto.h"
+
+/* what more than one module uses, in the same form (a module declares what only it uses, or what it sees in a
+   form of its own) */
+extern int a0d4;
+extern struct quad *a0d6;
+extern int a0da;
+extern struct dl *a0e0;
+extern int a0e6;
+extern int a0ec;
+extern int a0ee;
+extern int a0f0;
+extern struct dl *a0f8;
+extern int a0fe;
+extern int a108;
+extern int aflag;
+extern int *altab;
+extern char *arhigh[];
+extern char ascii[];
+extern int blkno;
+extern struct quad **blks;
+extern long constbl[];
+extern int ctmpoff;
+extern char ctneg[];
+extern char ctpos[];
+extern struct pos curpos;
+extern NODE *curproc;
+extern struct quad **defs;
+extern FILE *dfile;
+extern int dflag;
+extern int dfwords;
+extern struct dnode *domroot;
+extern int eflag;
+extern struct fconst fconsttbl[];
+extern char ftitle[];
+extern int hdrblk;
+extern int *idfn;
+extern long ifpos;
+extern FILE *infile;
+extern struct quad *lastq;
+extern int lineno;
+extern struct loop *loops;
+extern int lvwords;
+extern int maxblk;
+extern int nadr;
+extern int nal;
+extern int nconst;
+extern int nctmp;
+extern int nctmpuses;
+extern int ndefs;
+extern int nfconst;
+extern NODE node[];
+extern int nptr;
+extern int ntl;
+extern struct nument numtab[];
+extern char *opst[];
+extern int qflag;
+extern struct quad *qfree;
+extern struct quad *qhead;
+extern struct quad *qtail;
+extern int s0b5e;
+extern int s4d72;
+extern int s4d74;
+extern int s4d76;
+extern int s4d78;
+extern int s4d7a;
+extern int s4d80;
+extern int s4d82;
+extern int s4d84;
+extern int s4d86;
+extern int s4d88;
+extern int s4d90;
+extern int s4d92;
+extern int s4d94;
+extern int s70e6;
+extern FILE *stfile;
+extern long stg;
+extern struct sym *symtab;
+extern int tflag;
+extern int tl[];
+extern int v00;
+extern int v04;
+extern int v0e;
+extern int vafc;
+extern long vb94;
+extern int *vertex;

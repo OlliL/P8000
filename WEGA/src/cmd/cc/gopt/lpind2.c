@@ -3,15 +3,9 @@
  * the callees by the address (fnXXXX).
  */
 static char sccsid[] = "@[$]lpind2.c\t1.5  02/07/83 15:54:28 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-extern int s4d86;
-extern long constbl[];
-extern int ispow2();
-extern struct quad *a0d6;
-extern int a0e6;
 extern struct quad *movequad();
-extern void prquad();
 
 /* 2 to the power n (name guessed) */
 long
@@ -80,13 +74,7 @@ struct quad *q;
 	return q;
 }
 
-extern int s4d94, a0ec, a0ee;
-extern void propnd();
-extern int betanew();
-extern struct quad *insertquad(), *qmove(), *moveindquad();
-extern int a0da;
-extern char *taballoc();
-extern int copyopndstmp();
+extern struct quad *moveindquad();
 extern long ceval();
 
 /* a move of the result of q to a new stemp is inserted and the quads are moved (name from the debug output) */
@@ -136,7 +124,6 @@ struct quad *q;
 
 struct nd { struct qa c0; unsigned f15:1, f14:15; long v; struct qa c12; struct nd *link; };	/* a node of the induction variable lists: 22 bytes (guessed) */
 struct dl { int x0; struct quad *q; struct nd *l6; struct dl *l10; struct qa e14; int x20; unsigned f15:1, f14:1, f13:1, f12:1, f11:1, f10:1, rest:10; struct dl *next; };
-extern void denorm(), normop();
 
 /* the quad opqd gets a new stemp as its result operand; the stemp is entered into the definition (name from the debug output) */
 struct quad *
@@ -182,8 +169,6 @@ int kind;
 	}
 	opqd = qmove(opqd);
 }
-
-extern int constlook(), v0e, insrtopstmp();
 
 /* the operand is set to the integer v (w0 as its first word); t == 1: v is used as it is, else it is negated (name guessed) */
 void
@@ -312,8 +297,6 @@ struct quad *outq;
 }
 
 extern struct nd *a104;
-extern struct dl *a0f8, *a0e0;
-extern void freelist();
 
 /* the stemp of the definition p is used for the operand of opqd of t; a node of the induction variable lists is filled (name from the debug output) */
 struct quad *
@@ -408,8 +391,6 @@ k2:
 	return 0;
 }
 
-extern int a0fe;
-
 /* the induction variable ind is entered in the program by an operation behind opqd (name from the debug output) */
 void
 indupdate(ind, opqd, opcode)
@@ -476,9 +457,6 @@ struct nd *n;
 			a104 = n;
 	}
 }
-
-extern int a0f0;
-extern struct dl *alloclpdef();
 
 /* the result of q is moved to a new temporary: a move quad is inserted behind q and made a loop definition (name guessed) */
 struct quad *
@@ -558,7 +536,6 @@ deltmplpdefs()
 	}
 }
 
-extern char ctneg[];
 extern void cerror();
 
 /* the induction temporary stmpno is removed from the list of d (name guessed) */
@@ -594,9 +571,6 @@ int stmpno;
 		cerror("delindvar(), stmp not found\n");
 	}
 }
-
-extern char ctpos[];
-extern int sameopnd();
 
 /* the induction variable definitions of the loop are checked for the quad q; the new definition is returned (name from the debug output) */
 struct quad *
@@ -680,8 +654,6 @@ lt:
 		goto lh;
 	return 0;
 }
-
-extern int isdefined();
 
 /* the family of a basic induction variable: the definition r of the quad p is looked for (name from the debug output) */
 struct quad *

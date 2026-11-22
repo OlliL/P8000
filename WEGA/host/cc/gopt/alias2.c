@@ -3,21 +3,13 @@
  * names guessed, the callees of other modules by the address (fnXXXX).
  */
 static char sccsid[] __attribute__((unused)) = "@[$]alias2.c\t1.5  02/07/83 15:50:16 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-
-extern int aflag;
-extern int nadr, nptr, nal, s4d7a, s4d92;
-extern struct nument numtab[];
-extern int *altab;
 extern int *affect, *modval;
 extern int matw, affdim;
 extern struct aln *alfree, *allist, *alcur, *alast;
 extern int ndist, nlist;
 extern struct { int pos; int y[4]; } *betatbl;	/* a table of 10 byte entries (guessed) */
-extern struct sym *symtab;
-extern char ascii[];
-extern struct quad *qhead;
 extern struct quad *pcur;
 extern struct qa opnd70c8;
 extern int op70d8;

@@ -3,36 +3,19 @@
  * callees by the address (fnXXXX).
  */
 static char sccsid[] __attribute__((unused)) = "@[$]lpinv2.c\t1.10  03/04/83 15:58:16 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
 static int lblcnt = 15000;
 
-extern struct quad **blks;
-extern int *idfn;
 extern struct bt *betatbl;
-extern int blkno, s4d86;
 
-extern struct dl *a0e0;
 extern int a0e4;
-extern struct sym *symtab;
-extern char ascii[];
-extern struct dl *a0f8;
 extern struct pr *edges;
-extern int *altab;
-extern int lvwords;
 extern unsigned *a0e8;
 extern struct dnode *a0f4;
-extern int a0fc, a0f2, vafc;
+extern int a0fc, a0f2;
 extern struct dl *a100;
-extern struct dnode *domroot;
-extern struct loop *loops;
-extern int maxblk;
-extern int blkno, s4d88, s4d90;
-extern struct quad *qhead, *a0d6;
 extern struct pr *edges;
-extern int *vertex, a0f0, a0da, a0e6, a0ec, a0ee, a0fe;
-extern char ctpos[];
-extern int hdrblk, s4d92, s4d80, s4d94, a0d4;
 extern struct dl *a104;
 /* forward declarations (the functions are in the order of the original) */
 int inbl();

@@ -2,32 +2,17 @@
  * live2.c - gopt: the live variables. Written from /lib/gopt (no source known); names guessed.
  */
 static char sccsid[] __attribute__((unused)) = "@[$]live2.c\t1.9  01/07/83 13:42:01 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
-extern struct sym *symtab;
-extern char ascii[];
-extern int s4d84, s715e, nlv, lvidx;
+extern int s715e, nlv, lvidx;
 extern struct lv *lvtab;
 extern struct bt *betatbl;
-extern int *altab;
-extern int nptr, nadr;
-extern struct quad **blks;
-extern struct loop *loops;
-extern int *idfn;
-extern int blkno;
-extern struct quad *qhead;
-extern int ndefs;
-extern int lvwords, dfwords, s4d86;
 extern struct rn *reachmap;
-extern struct quad **defs;
-extern int ndefs;
 #define MASK(p)	((struct quad *)((uintptr_t)(p) & ~(uintptr_t)1))
 extern struct edge *edges;
 extern unsigned *tmpv;
-extern int s4f20, s4f22, s4d92;
+extern int s4f20, s4f22;
 extern char *livevecs, *livevecs;
-extern struct quad **defs;
-extern struct quad *qhead;
 
 /* the flags of the quad q (debug; name guessed) */
 void prqflags(struct quad *q)

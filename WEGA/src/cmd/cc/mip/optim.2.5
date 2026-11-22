@@ -185,11 +185,11 @@ optim(p) register NODE *p; {
 			p->in.left = p->in.left->in.left;
 			}
 		if( RCON(p) && LO(p)==o && RCON(p->in.left) && conval( p->in.right, o, p->in.left->in.right ) ) goto zapleft;
-# ifdef PASS3
 		if( ISPTR(p->in.type) && LCON(p) && RO(p) == o && RCON(p->in.right) && conval( p->in.left, o, p->in.right->in.right ) ){
 			p->in.right->in.right->in.op = FREE;
 			RO(p) = FREE;
 			p->in.right = p->in.right->in.left;
+# ifdef PASS3
 		neg:
 			/* change +'s of negative consts back to - */
 			if( o==PLUS && nncon(p->in.right) && RV(p)<0 ){
@@ -198,7 +198,9 @@ optim(p) register NODE *p; {
 				o = MINUS;
 				}
 			break;
+# endif
 			}
+# ifdef PASS3
 		if( LCON(p) && RCON(p) && conval( p->in.left, o, p->in.right ) ){
 		zapright:
 			RO(p) = FREE;
@@ -206,11 +208,6 @@ optim(p) register NODE *p; {
 			}
 		goto neg;
 # else
-		if( ISPTR(p->in.type) && LCON(p) && RO(p) == o && RCON(p->in.right) && conval( p->in.left, o, p->in.right->in.right ) ){
-			p->in.right->in.right->in.op = FREE;
-			RO(p) = FREE;
-			p->in.right = p->in.right->in.left;
-			}
 		else if( LCON(p) && RCON(p) && conval( p->in.left, o, p->in.right ) ){
 		zapright:
 			RO(p) = FREE;

@@ -3,36 +3,27 @@
  * /lib/gopt (no source known); names guessed, the callees of other modules by the address (fnXXXX).
  */
 static char sccsid[] = "@[$]dom2.c\t1.2  01/07/83 13:38:58 Copr. 1981 87wega3.2.";
-#include "gopt.h"
+#include "mfile2.h"
 
 struct edge { int next; int blk; };	/* the edge lists of flow2.c */
 
-extern int s4d82;
-extern int blkno;
 extern struct quad **blks;
 extern struct edge *edges;
-extern int *dfn, *label, *vertex, *ancest, *child, *size, *parent, *dom, *idfn;
-extern int maxblk, s70e6;
-extern void tabfree();
+extern int *dfn, *label, *ancest, *child, *size, *parent, *dom;
 extern int ndfs;
 struct dnode { struct dnode *next; struct dnode *down; int dblkno; };	/* the dominator tree: 10 bytes (guessed) */
 struct bl { struct bl *next; int blk; };		/* a list of blocks */
 struct loop { struct bl *bls; int hdr; struct loop *link; struct bl *exits; int tail; int cnt; unsigned b15:1, b14:1, b13:1, b12:1, b11:1; };	/* a loop: the blocks, the header block, the next loop (6 bytes at 6: guessed) */
 extern struct dnode **darr;
-extern struct loop *loops;
-extern struct dnode *domroot;
 extern struct bl *pheaderlist, *looplist, *freebl;
-extern int nbl, nbl2, tailblk, nloops, hdrblk;
+extern int nbl, nbl2, tailblk, nloops;
 extern int *stk;
 extern void pushblk();
-extern int s4d92, s0b5e, tabavail();
 extern void loopopt();
 extern int *bucket;
 extern struct edge *bent;
 extern int nbent;
-extern char *taballoc();
 extern void prlist();
-extern int cerror();
 
 /* the depth first search from the block v */
 void
