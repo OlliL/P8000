@@ -153,9 +153,6 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 	rmode = m; \
 	rlmode = l
 
-#define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
-
-#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 
 #ifdef OLD_D3P
 #ifdef SEG

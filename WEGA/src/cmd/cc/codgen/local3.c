@@ -130,8 +130,7 @@ int rmode = 0;
 int rlmode = 0;
 int nosuffix = 0;
 
-#define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
-
+#undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 #define DIVFLAG	0x80		/* dope flag of the division operators: the dividend gets extended */

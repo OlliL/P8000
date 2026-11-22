@@ -25,9 +25,6 @@ extern int szty();
 extern int tbytes();
 static char sccsid[] = "@[$]lcl3.c\t2.4  10/06/83 10:39:09 Copr. 1981 87wega3.2.";
 
-#define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
-
-#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 
 #ifdef OLD_D3P
 #define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
