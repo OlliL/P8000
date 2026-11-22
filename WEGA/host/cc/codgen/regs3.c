@@ -353,7 +353,7 @@ mapregs(NODE *p)
 			p->in.left->in.type = p->in.type;
 		if (n->in.op == NAME && (n->in.sname->sclass == MOS || n->in.sname->sclass == MOU)) {
 			n->in.op = ICON;
-			n->tn.lval = n->in.sname->soffset / 8;
+			n->tn.lval = n->in.sname->soffset / SZCHAR;
 			n->tn.rval = 0;
 			n->in.sname = 0;
 			n->in.type = INT;
@@ -765,7 +765,7 @@ fixname(NODE *p)
 	if (p->in.sname == 0)	/* a NAME without symbol (a label): the original reads memory at address 0 here and goes on unchanged */
 		return;
 	r = (p->in.rall & MUSTDO) ? p->in.rall & ~MUSTDO : -1;
-	r = regforsym(r, p->in.sname, p->in.type, p->in.sname->soffset / 8);
+	r = regforsym(r, p->in.sname, p->in.type, p->in.sname->soffset / SZCHAR);
 	if (r >= 0) {
 		p->in.op = REG;
 		p->tn.rval = r;
@@ -787,7 +787,7 @@ oregfix(NODE *p)
 		return;
 	p->in.op = OREG;
 	p->tn.rval = 15;
-	p->tn.lval = p->in.sname->soffset / 8;
+	p->tn.lval = p->in.sname->soffset / SZCHAR;
 	p->stn.stsize = 0;
 	p->in.sname = p->in.sname->sclass == PARAM && ((SFISPMEM(p->in.sname->sflags)) == 1) ? fpsym2 : fpsym1;
 }
@@ -924,7 +924,7 @@ scmd(int n)
 		reg = s->sbyte5;
 		i = reg - 7;
 		if (regvar[i].rcls != STATIC)
-			off = off / 8;
+			off = off / SZCHAR;
 		tmp = s->sclass;
 		s->sclass = regvar[i].rcls;
 	} else {
@@ -979,7 +979,7 @@ tcmd(int n)
 		t = s->stype;
 		off = s->soffset;
 		if (s->sclass != STATIC)
-			off = off / 8;
+			off = off / SZCHAR;
 		reg = s->sbyte5;
 	} else {
 		j = findtemp(-n);

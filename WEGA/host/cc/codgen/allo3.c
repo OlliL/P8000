@@ -67,7 +67,7 @@ freeparm(int k)
 		maxoff = tmpoff;
 #endif
 	if (tmpoff > maxoff)
-		cerror("paroff exceeds parmax, %d, %ld", (int)tmpoff / 8, maxoff / 8);
+		cerror("paroff exceeds parmax, %d, %ld", (int)tmpoff / SZCHAR, maxoff / SZCHAR);
 	return t;
 }
 

@@ -277,10 +277,8 @@ reread:
 				cerror("error in reading symbol table file");
 			continue;
 		case '}':
-			if (parmax % 16)
-				parmax = (parmax / 16 + 1) << 4;
-			if (maxoff % 16)
-				maxoff = (maxoff / 16 + 1) << 4;
+			SETOFF(parmax, ALSTACK);
+			SETOFF(maxoff, ALSTACK);
 			efcode();
 #ifdef OLD_D12K
 			d12kout(0);
@@ -548,7 +546,7 @@ delay(p)
 			/* vl: none in a function with more than 10000 bits (1250 bytes) of automatic variables (nlist) */
 			if (baseoff <= 10000L)
 #endif
-			off = freetemp(sz) / 8;
+			off = freetemp(sz) / SZCHAR;
 #endif
 		}
 	}
@@ -574,7 +572,7 @@ delay(p)
 
 		f = p->in.left->in.sname->sclass == PARAM && (SFISPMEM(p->in.left->in.sname->sflags)) == 1 ? fpsym2 : fpsym1;
 		for (n = rsuse; n; n = n->next)
-			if (n->cls == RCPAIR && n->sym == f && n->off == p->in.left->in.sname->soffset / 8)
+			if (n->cls == RCPAIR && n->sym == f && n->off == p->in.left->in.sname->soffset / SZCHAR)
 				n->sym = 0;
 	}
 #endif
@@ -924,7 +922,7 @@ again:
 #endif
 #ifdef OLD_D14Q
 		if (cookie == INTEMP && p->in.type != FLOAT && p->in.type != DOUBLE) {
-			long t = freeparm(szty(p->in.type)) / 8;
+			long t = freeparm(szty(p->in.type)) / SZCHAR;
 
 			d14qarm(p2->in.left, t, p->in.type);
 			cbgen(0, m1 = getlab(), 'I');
@@ -980,7 +978,7 @@ again:
 #ifdef OLD_D14Q
 	case ANDAND:
 		if (cookie == INTEMP) {
-			long t = freeparm(1) / 8;
+			long t = freeparm(1) / SZCHAR;
 
 			d14qarm(p1, t, 4);
 #ifdef SEG
@@ -1362,7 +1360,7 @@ d3hparm(n)
 	if (n->sym == 0 || (n->sym != fpsym1 && n->sym != fpsym2))
 		return 0;
 	for (i = 0; i < nparmtab; i++)
-		if (parmtab[i].sym && parmtab[i].sym->soffset / 8 == n->off)
+		if (parmtab[i].sym && parmtab[i].sym->soffset / SZCHAR == n->off)
 			return 1;
 	return 0;
 }
@@ -1597,7 +1595,7 @@ ffld(p, down, down1, down2)
 	ty = szty(p->in.type) == 2 ? 5 : 4;
 	v = p->tn.rval;
 	s = v & 0x3F;
-	o = szty(p->in.type) * 16 - s - (v >> 6);
+	o = szty(p->in.type) * SZINT - s - (v >> 6);
 	p->in.left->in.type = ty;
 	p->in.op = AND;
 	p->in.right = talloc();

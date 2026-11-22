@@ -141,6 +141,8 @@
 #define R2UPK1(x)	(((x) >> 8) - 1)
 #define R2UPK2(x)	(((x) & 0xFF) - 1)
 
+#define BITMASK(n)	((1L << n) - 1)	/* the low n bits (as PCC local2.c) */
+
 #define MUSTDO	010000
 #define NOPREF	020000
 

@@ -225,10 +225,8 @@ reread:
 				cerror("error in reading symbol table file");
 			continue;
 		case '}':
-			if (parmax % 16)
-				parmax = (parmax / 16 + 1) << 4;
-			if (maxoff % 16)
-				maxoff = (maxoff / 16 + 1) << 4;
+			SETOFF(parmax, ALSTACK);
+			SETOFF(maxoff, ALSTACK);
 			efcode();
 #ifdef OLD_D12K
 			d12kout(0);
@@ -478,7 +476,7 @@ delay(NODE *p)
 			ret++;
 			sz = szty(p->in.type);
 #ifndef OLD_D1R
-			off = freetemp(sz) / 8;
+			off = freetemp(sz) / SZCHAR;
 #endif
 		}
 	}
@@ -770,7 +768,7 @@ again:
 		cbranch(p1, -1, m = getlab());
 #ifdef OLD_D14Q
 		if (cookie == INTEMP && p->in.type != FLOAT && p->in.type != DOUBLE) {
-			long t = freeparm(szty(p->in.type)) / 8;
+			long t = freeparm(szty(p->in.type)) / SZCHAR;
 
 			d14qarm(p2->in.left, t, p->in.type);
 			cbgen(0, m1 = getlab(), 'I');
@@ -826,7 +824,7 @@ again:
 #ifdef OLD_D14Q
 	case ANDAND:
 		if (cookie == INTEMP) {
-			long t = freeparm(1) / 8;
+			long t = freeparm(1) / SZCHAR;
 
 			d14qarm(p1, t, 4);
 			if (t)
@@ -1366,7 +1364,7 @@ ffld(NODE *p, int down, int *down1, int *down2)
 	ty = szty(p->in.type) == 2 ? 5 : 4;
 	v = p->tn.rval;
 	s = v & 0x3F;
-	o = szty(p->in.type) * 16 - s - (v >> 6);
+	o = szty(p->in.type) * SZINT - s - (v >> 6);
 	p->in.left->in.type = ty;
 	p->in.op = AND;
 	p->in.right = talloc();

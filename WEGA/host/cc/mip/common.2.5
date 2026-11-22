@@ -333,7 +333,7 @@ argsize(NODE *p)
 	if (p->in.op == STARG)
 		return (unsigned)p->stn.stsize >> 1;
 	if (p->in.op == NAME && p->in.type == 8)
-		return p->in.sname->ssize / 16;
+		return p->in.sname->ssize / SZINT;
 	t = u = szty(p->in.type == 6 ? 7 : p->in.type);
 	return t;
 }

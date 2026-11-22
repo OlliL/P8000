@@ -244,7 +244,7 @@ clocal(NODE *p)
 #endif
 #endif
 			r = makeblock(REG, 0, 0, PTR|STRTY);
-			r->tn.lval = s->soffset / 8;
+			r->tn.lval = s->soffset / SZCHAR;
 			r->tn.rval = 15;
 			p = member(makeblock(STREF, r, p, 0));
 			q = p->in.left;
@@ -260,7 +260,7 @@ clocal(NODE *p)
 			break;
 		case AUTO:
 			r = makeblock(REG, 0, 0, PTR|STRTY);
-			r->tn.lval = s->soffset / 8;
+			r->tn.lval = s->soffset / SZCHAR;
 			r->tn.rval = 15;
 			p = member(makeblock(STREF, r, p, 0));
 			q = p->in.left;
@@ -314,7 +314,7 @@ clocal(NODE *p)
 				goto done;
 			}
 			if (pf == UNSIGNED && ISPTR(lf)) {
-				l->tn.lval = val & 0xFFFFL;
+				l->tn.lval = val & BITMASK(SZINT);
 				goto done;
 			}
 #endif
@@ -323,10 +323,10 @@ clocal(NODE *p)
 				l->tn.lval = (long)(char)val;
 				break;
 			case UCHAR:
-				l->tn.lval = val & 0xFF;
+				l->tn.lval = val & BITMASK(SZCHAR);
 				break;
 			case UNSIGNED:
-				l->tn.lval = val & 0xFFFFL;
+				l->tn.lval = val & BITMASK(SZINT);
 				break;
 			case INT:
 				l->tn.lval = (long)(int)val;

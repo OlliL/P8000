@@ -139,15 +139,15 @@ parminit(NODE *p, int down, int *down1, int *down2)
 		if (s->stype == STRTY) {
 			if (sz == 1)
 #ifdef SEG
-				printf("\tld\t|_stkseg+~L1+%ld|(fp),%s\n", s->soffset / 8, rnames[r]);
+				printf("\tld\t|_stkseg+~L1+%ld|(fp),%s\n", s->soffset / SZCHAR, rnames[r]);
 #else
-				printf("\tld\t~L1+%ld(fp),%s\n", s->soffset / 8, rnames[r]);
+				printf("\tld\t~L1+%ld(fp),%s\n", s->soffset / SZCHAR, rnames[r]);
 #endif
 			else if (sz == 2)
 #ifdef SEG
-				printf("\tldl\t|_stkseg+~L1+%ld|(fp),r%s\n", s->soffset / 8, rnames[r]);
+				printf("\tldl\t|_stkseg+~L1+%ld|(fp),r%s\n", s->soffset / SZCHAR, rnames[r]);
 #else
-				printf("\tldl\t~L1+%ld(fp),r%s\n", s->soffset / 8, rnames[r]);
+				printf("\tldl\t~L1+%ld(fp),r%s\n", s->soffset / SZCHAR, rnames[r]);
 #endif
 			else
 				cerror("structure argument too long");
@@ -215,7 +215,7 @@ fbegin(struct sym *s)
 	structret = t == STRTY || t == UNIONTY;
 	if (structret) {
 		structlab = s->sx6;
-		structsz = s->ssize / 16;
+		structsz = s->ssize / SZINT;
 	}
 	retlab = getlab();
 	if (pflag) {

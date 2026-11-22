@@ -31,7 +31,6 @@ int rlmode = 0;
 int nosuffix = 0;
 
 #undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
-#define BITMASK(n)	((1L << n) - 1)
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 
@@ -253,7 +252,7 @@ prolog(a, sz, b, w, tot)
 	d3kjump(jlab);
 #endif
 	branch(jlab);
-	eobl2((int)(maxoff / 8), tot);
+	eobl2((int)(maxoff / SZCHAR), tot);
 }
 
 static void
@@ -341,8 +340,8 @@ regargs(tot)
 				lo = reg;
 			if (hi < reg + 3)
 				hi = reg + 3;
-			if (s->soffset / 8 < (unsigned long)(unsigned)t)
-				t = (int)(s->soffset / 8);
+			if (s->soffset / SZCHAR < (unsigned long)(unsigned)t)
+				t = (int)(s->soffset / SZCHAR);
 			continue;
 		}
 #endif
@@ -362,8 +361,8 @@ regargs(tot)
 				k = 0;
 			if (hi < reg + k)
 				hi = reg + k;
-			if (s->soffset / 8 < (unsigned long)(unsigned)t) {
-				t = (int)(s->soffset / 8);
+			if (s->soffset / SZCHAR < (unsigned long)(unsigned)t) {
+				t = (int)(s->soffset / SZCHAR);
 				if (t & 1)
 					t--;
 			}
@@ -375,10 +374,10 @@ regargs(tot)
 			else
 				mn = fldd;
 #ifdef SEG
-			printf("\t%s\t|_stkseg+~L1+%ld|(fp),%s\n", mn, s->soffset / 8, rnames[reg]);
+			printf("\t%s\t|_stkseg+~L1+%ld|(fp),%s\n", mn, s->soffset / SZCHAR, rnames[reg]);
 #else
 			if (maxoff + s->soffset)
-				printf("\t%s\t~L1+%ld(fp),%s\n", mn, s->soffset / 8, rnames[reg]);
+				printf("\t%s\t~L1+%ld(fp),%s\n", mn, s->soffset / SZCHAR, rnames[reg]);
 			else
 #ifdef OLD_D18
 				printf("\t%s\t0(fp),%s\n", mn, rnames[reg]);
@@ -400,7 +399,7 @@ regargs(tot)
 #else
 	if (hi == lo) {
 #ifdef OLD_D57
-		if ((long)(unsigned)t + maxoff || d57off == (long)t * 8)	/* vl: a parameter used as memory: with its offset */
+		if ((long)(unsigned)t + maxoff || d57off == (long)t * SZCHAR)	/* vl: a parameter used as memory: with its offset */
 #else
 		if ((long)(unsigned)t + maxoff)
 #endif
@@ -722,7 +721,7 @@ zzzcode(p, c)
 			printf("#%d\n", fldshf + 1);
 			return;
 		case 8:
-			if (fldoff % 8)
+			if (fldoff % SZCHAR)
 				break;
 			if (fldoff) {
 #ifdef SEG
@@ -734,7 +733,7 @@ zzzcode(p, c)
 				p->in.left->in.left->tn.lval += 1;
 #endif
 			}
-			if (p->in.right->tn.lval & 0xFFFF)
+			if (p->in.right->tn.lval & BITMASK(SZINT))
 				expand(p, FOREFF, "\tldb\tWAL,AR\n");
 			else
 				expand(p, FOREFF, "\tclrb\tWAL\n");
@@ -1005,7 +1004,7 @@ zzzcode(p, c)
 					else {
 						if ((int)u == SHORT || (int)u == USHORT)
 							;
-						p->tn.rval += 2;
+						p->tn.rval += SZINT / SZCHAR;
 					}
 				} else
 					p->tn.rval += 1;
@@ -1030,7 +1029,7 @@ zzzcode(p, c)
 					else {
 						if ((int)u == SHORT || (int)u == USHORT)
 							;
-						p->tn.rval += 2;
+						p->tn.rval += SZINT / SZCHAR;
 					}
 				} else
 					p->tn.rval += 1;
@@ -1320,7 +1319,7 @@ upput(p)
 		if (p->tn.rval < 0)
 			goto ac;
 		r = p->tn.rval;
-		p->tn.rval += 2;
+		p->tn.rval += SZINT / SZCHAR;
 		acon(p);
 		p->tn.rval = r;
 		break;
@@ -1380,7 +1379,7 @@ adrput(p)
 	case ICON:
 		if (upperlval) {			/* the high word of a long constant */
 			save = p->tn.lval;
-			p->tn.lval = (p->tn.lval >> 16) & 0xFFFF;
+			p->tn.lval = (p->tn.lval >> SZINT) & BITMASK(SZINT);
 			putchar('#');
 			acon(p);
 			p->tn.lval = save;
@@ -1558,7 +1557,7 @@ gencall(p, cookie)
 			indirect = 0;
 		} else {
 			/* rr8 holds the address during the call; its old contents wait in a temporary */
-			save = freetemp(2) / 8;
+			save = freetemp(2) / SZCHAR;
 			printf("\tldl\t_stkseg+~L1+%ld(fp),rr8\n", save);
 			printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", f->tn.lval);
 			f->tn.rval = 8;

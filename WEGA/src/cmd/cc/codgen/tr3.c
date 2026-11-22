@@ -120,7 +120,7 @@ bcon(bits)
 
 	n = makeblock(ICON, 0, 0, 4);
 	n->in.sname = 0;
-	n->tn.lval = bits / 8;
+	n->tn.lval = bits / SZCHAR;
 	return n;
 }
 

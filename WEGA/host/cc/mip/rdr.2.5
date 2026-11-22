@@ -326,8 +326,8 @@ mapnm(NODE *p)
 		mapnm(p->in.left);
 		ot = p->in.left->in.type;
 		fixfld(p);
-		ofs = m->in.sname->soffset / 16 * 2;
-		p->tn.rval = ((m->in.sname->soffset % 16) << 6) | (m->in.sname->sclass & 0x3F);
+		ofs = m->in.sname->soffset / SZINT * (SZINT / SZCHAR);
+		p->tn.rval = ((m->in.sname->soffset % SZINT) << 6) | (m->in.sname->sclass & 0x3F);
 		if (p->in.left->in.op == NAME)
 			p->in.left->tn.lval += ofs;
 		else if (ofs != 0) {
@@ -405,8 +405,8 @@ eread(void)
 	p->in.type = rdin(8);
 	p->in.rall = NOPREF;
 	if (p->in.op == STASG || p->in.op == STARG || p->in.op == STCALL || p->in.op == USTCALL) {
-		p->stn.stsize = (rdin(10) + 7) / 8;
-		p->stn.stalign = rdin(10) / 8;
+		p->stn.stsize = (rdin(10) + SZCHAR - 1) / SZCHAR;
+		p->stn.stalign = rdin(10) / SZCHAR;
 		if (getchar() != '\n')
 			cerror("illegal \n");
 	} else
