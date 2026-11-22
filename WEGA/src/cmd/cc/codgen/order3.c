@@ -228,6 +228,7 @@ rallo(p, down)
 	register NODE *p;
 	int down;
 {
+	/* do register allocation */
 	register int o, down1, down2, ty;
 
 	if (p->in.type == FLOAT || p->in.type == DOUBLE) {
@@ -261,17 +262,17 @@ rallo(p, down)
 		break;
 	case MUL:
 		if (p->in.left->in.type == LONG || p->in.left->in.type == ULONG) {
-			down1 = MUSTDO | 6;
+			down1 = MUSTDO | R6;
 #ifndef OLD_D2U
 			if (p->in.right->in.op != REG)
-				down2 = MUSTDO | 4;	/* (OLD_D2U: v0 wants no register for the right operand) */
+				down2 = MUSTDO | R4;	/* (OLD_D2U: v0 wants no register for the right operand) */
 #endif
 		}
 		break;
 	case ASG MUL:
 		if (p->in.left->in.type == LONG || p->in.left->in.type == ULONG) {
-			down1 = MUSTDO | 6;
-			down2 = MUSTDO | 4;
+			down1 = MUSTDO | R6;
+			down2 = MUSTDO | R4;
 		}
 		break;
 	case DIV:
@@ -279,8 +280,8 @@ rallo(p, down)
 	case MOD:
 	case ASG MOD:
 		if (p->in.left->in.type == LONG || p->in.left->in.type == ULONG) {
-			down1 = MUSTDO | 6;
-			down2 = MUSTDO | 2;
+			down1 = MUSTDO | R6;
+			down2 = MUSTDO | R2;
 		}
 		break;
 #ifdef OLD_D5T
@@ -297,9 +298,9 @@ rallo(p, down)
 #endif
 	case RET:
 		if (p->in.type != FLOAT && p->in.type != DOUBLE)
-			down1 = MUSTDO | 2;
+			down1 = MUSTDO | R2;
 		else
-			down1 = MUSTDO | 0x10;
+			down1 = MUSTDO | F0;
 		break;
 	}
 	if (ty != LTYPE)

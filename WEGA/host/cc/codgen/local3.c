@@ -1456,7 +1456,7 @@ gencall(NODE *p, int cookie)
 	if (indirect) {
 		if (argstop == 0 && argreg >= 3) {
 			/* the address is still in reach of a free register pair */
-			f->in.rall = MUSTDO|2;
+			f->in.rall = MUSTDO|R2;
 			order(f, INAREG|INTAREG);
 			rfree(f->tn.rval, PTR|INT);
 			indirect = 0;
