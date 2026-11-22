@@ -568,25 +568,25 @@ setbin(NODE *p)
 /* structure assignment */
 int
 setstr(NODE *p)
-{
-	if (p->in.right->in.op != REG) {
-		order(p->in.right, INTAREG);
-		return 1;
-	}
+{ /* structure assignment */
+	if( p->in.right->in.op != REG ){
+		order( p->in.right, INTAREG );
+		return(1);
+		}
 	p = p->in.left;
-	if (p->in.op != NAME && p->in.op != OREG) {
-		if (p->in.op != UNARY MUL)
-			cerror("bad setstr");
-		order(p->in.left, INTAREG);
-		return 1;
+	if( p->in.op != NAME && p->in.op != OREG ){
+		if( p->in.op != UNARY MUL ) cerror( "bad setstr" );
+		order( p->in.left, INTAREG );
+		return( 1 );
+		}
+	return( 0 );
 	}
-	return 0;
-}
 
 /* setup for the assignment operator */
 int
 setasg(NODE *p)
 {
+	/* setup for assignment operator */
 	register NODE *l, *r;
 
 	l = p->in.left;
@@ -614,6 +614,7 @@ setasg(NODE *p)
 		OFFSTARA(l->in.left);
 		return 1;
 	}
+	/* if things are really strange, get rhs into a register */
 	if (r->in.op != REG) {
 		order(r, INAREG|INBREG);
 		return 1;
@@ -641,8 +642,9 @@ lmuldiv(NODE *p)
 int
 setasop(NODE *p)
 {
+	/* setup for =ops */
 	register int sul, sur;
-	register NODE *q, *c;
+	register NODE *q, *p2;
 	register int fl, fr;
 
 	sul = p->in.left->in.su;
@@ -651,16 +653,19 @@ setasop(NODE *p)
 	fr = p->in.right->in.fsu;
 	if (sur == 0 && fr == 0) {
 leftadr:
+		/* easy case: if addressable, do left value, op, store */
 		if (sul == 0 && fl == 0)
-			goto rew;
+			goto rew;	/* rewrite */
+
+		/* harder; make a left address, val, op, and store */
 		if (p->in.left->in.op == UNARY MUL) {
 			if (lmuldiv(p)) {
 #ifdef SEG
-				p->in.left->in.left->in.rall = MUSTDO|2;
-				p->in.left->in.left->in.left->in.rall = MUSTDO|2;
+				p->in.left->in.left->in.rall = MUSTDO|R2;
+				p->in.left->in.left->in.left->in.rall = MUSTDO|R2;
 #else
-				p->in.left->in.left->in.rall = MUSTDO|1;
-				p->in.left->in.left->in.left->in.rall = MUSTDO|1;
+				p->in.left->in.left->in.rall = MUSTDO|R1;
+				p->in.left->in.left->in.left->in.rall = MUSTDO|R1;
 #endif
 			}
 			OFFSTARA(p->in.left);
@@ -669,28 +674,32 @@ leftadr:
 		if (p->in.left->in.op == FLD && p->in.left->in.left->in.op == UNARY MUL) {
 			if (lmuldiv(p)) {
 #ifdef SEG
-				p->in.left->in.left->in.left->in.rall = MUSTDO|2;
-				p->in.left->in.left->in.left->in.left->in.rall = MUSTDO|2;
+				p->in.left->in.left->in.left->in.rall = MUSTDO|R2;
+				p->in.left->in.left->in.left->in.left->in.rall = MUSTDO|R2;
 #else
-				p->in.left->in.left->in.left->in.rall = MUSTDO|1;
-				p->in.left->in.left->in.left->in.left->in.rall = MUSTDO|1;
+				p->in.left->in.left->in.left->in.rall = MUSTDO|R1;
+				p->in.left->in.left->in.left->in.left->in.rall = MUSTDO|R1;
 #endif
 			}
 			OFFSTARA(p->in.left->in.left);
 			return 1;
 		}
-rew:
+rew:	/* rewrite, accounting for autoincrement and autodecrement */
 		q = p->in.left;
 		if (q->in.op == FLD)
 			q = q->in.left;
 		if (q->in.op != UNARY MUL || shumul(q->in.left) != STARREG)
-			return 0;
-		c = tcopy(p);
+			return 0;	/* let reader.c do it */
+
+		/* mimic code from reader.c */
+		p2 = tcopy(p);
 		p->in.op = ASSIGN;
-		reclaim(p->in.right, 0, 0);
-		p->in.right = c;
+		reclaim(p->in.right, RNULL, 0);
+		p->in.right = p2;
+
+		/* now, zap INCR on right, ASG MINUS on left */
 		if (q->in.left->in.op == INCR) {
-			q = c->in.left;
+			q = p2->in.left;
 			if (q->in.op == FLD)
 				q = q->in.left;
 			if (q->in.left->in.op != INCR)
@@ -702,8 +711,8 @@ rew:
 		q->in.left = q->in.left->in.left;
 		p = canon(p);
 		rallo(p, p->in.rall);
-		order(c->in.left, INTAREG|INTBREG);
-		order(c, INTAREG|INTBREG);
+		order(p2->in.left, INTAREG|INTBREG);
+		order(p2, INTAREG|INTBREG);
 		return 1;
 	}
 	if (p->in.op == ASG MOD || p->in.op == ASG DIV) {
@@ -721,7 +730,7 @@ rew:
 	}
 	if (sul > sur && p->in.left->in.op == UNARY MUL) {
 		if (lmuldiv(p))
-			p->in.left->in.left->in.rall = MUSTDO|2;
+			p->in.left->in.left->in.rall = MUSTDO|R2;
 		OFFSTARA(p->in.left);
 		return 1;
 	}
