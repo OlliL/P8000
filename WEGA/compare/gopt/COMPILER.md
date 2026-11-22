@@ -25,7 +25,7 @@ the code of the original.
 | `OLD_D2XP` | scodgen allocreg | OLD_D2X not into the pair of a parameter, and only when the registers allo takes are the result | constfold fndparm nodeno |
 | `OLD_D2PP` | scodgen getreg | no pair free: an idle odd word holding a parameter is given back for a pair before regjam | clrlbit setlbit |
 | `OLD_D2TC` | scodgen rbusy | a free word register is taken instead of stopping ("not found on rslist") | operand |
-| `OLD_D4F` | scodgen getreg | an idle float register that holds a name is free when its number is lower than the first free one | constfold |
+| `OLD_D2L` (v0) | scodgen getreg | an idle register that holds a name is free when it comes before the first free one (floats: by number) | constfold |
 | `OLD_D14T` | scodgen gencall | when the result of a call goes to a temporary, the temporaries of its arguments are free again | initopts |
 | `OLD_DNR` | scodgen reader | the register records F R S T of gopt (-O3, -O5) are not read: room in the 64 KiB of the vc scodgen | (none: room) |
 | `OLD_D12R` | scparse | the static return area of a function that returns a structure goes into the data behind the function | constfold (data 7:5904) |

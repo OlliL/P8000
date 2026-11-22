@@ -120,3 +120,4 @@ PLZ programs and `as`: 170.
 - 2026-11-21 gopt data byte-equal: almap with the done block behind the switch and vc spopt OLD_D51 (e) (codemove leaves the block for a later jump behind an unconditional jump); 321 of 321. Left: the link (segment sizes, libc placement, start-up code).
 - 2026-11-21 /lib/gopt byte-identical: the link (library start-up code /lib/scrt0.o, fseek ftell rdwr fopen getw in segment 4), about 50 functions corrected after the strict compare of the linked file (host/recon/framemap.py), vc OLD_D14T (initopts); gopt built and installed by src/cmd.
 - 2026-11-22 step 10: vc `OLD_D3PL` gone; the segmented D3PWORD of OLD_D3P has the types of the size of a pointer, D3PCAST one of them a pointer (regs3.c).
+- 2026-11-22 step 10: vc `OLD_D4F` gone, its code is the float part of OLD_D2L (v0; vc is v0p).

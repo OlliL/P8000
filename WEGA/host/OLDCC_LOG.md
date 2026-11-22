@@ -1926,3 +1926,10 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - 2026-11-22, step 10, `OLD_D4F` (constfold): without it the shared tail of the float compares (`dr = d1 == d2`, ...: tcc,
   exts, fldil) takes f1 (f0 holds d1) and is no longer merged by spopt. Forms of case 19: `(d1 == d2)`, `(double)(d1 == d2)`,
   `? 1.0 : 0.0`, `? 1 : 0`, through the int res, `d2 == d1`. None (each other form changes the case itself); the switch stays.
+- 2026-11-22, `OLD_D4F` from the compiler side: it is the float form of v0 OLD_D2L (an idle register holding a name is
+  free when it is the lower one). Tried instead: rfree gives a float register back to rsfree at once (no float register
+  keeps a name): codgen stops on gopt ebbo2.c:571, "rbusy: register to be made busy not found on rslist" (the result
+  register is made busy again behind rfree). Refuted.
+  Then: vc is v0p and so v0, OLD_D2L and OLD_D2P are on in vc already (an idle register holding a name is free when it
+  comes before the first free one: words, pairs). OLD_D4F is that rule for the float registers: its code under OLD_D2L
+  and the switch gone: gopt byte-identical, cas model of vc 152, the seven models and the bench unchanged (v0, v0p).

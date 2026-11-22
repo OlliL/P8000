@@ -595,8 +595,8 @@ getreg(cls, reg, flag, sym)
 			continue;
 		goto found;
 	}
-#ifdef OLD_D4F
-	if (cls == 4 && reg == -1) {	/* vc: an idle float register that holds a name is free when its number is lower (gopt constfold) */
+#ifdef OLD_D2L
+	if (cls == 4 && reg == -1) {	/* v0: an idle float register that holds a name is free when its number is lower (vc: gopt constfold) */
 		for (w = rsfree; w && w->cls != 4; w = w->next)
 			;
 		m = 0;
@@ -608,8 +608,6 @@ getreg(cls, reg, flag, sym)
 			goto blk;
 		}
 	}
-#endif
-#ifdef OLD_D2L
 	if (cls == 2 && reg == -1) {	/* v0: an idle word that holds a name is free when it weighs less */
 		for (w = rsfree; w && w->cls != 2 && w->cls != 3; w = w->next)
 			;

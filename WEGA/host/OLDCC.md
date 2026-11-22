@@ -182,7 +182,7 @@ all together), with these differences:
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
   (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype), and for gopt (neutral on cas) `OLD_D2K`, `OLD_D3JL`,
-  `OLD_D24L`, `OLD_D2FA`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB`, `OLD_D2TC`, `OLD_D4F` (section 3, D2..D4),
+  `OLD_D24L`, `OLD_D2FA`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB`, `OLD_D2TC` (section 3, D2..D4),
   `OLD_D14T` (section 3, D4) and `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of
   the tree uses) are not read, their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room. The text of the
   vc scodgen is near the 64 KiB of a nonsegmented program; /bin/ld does not report an overflow (sg_code wraps, the program
@@ -245,7 +245,8 @@ Free registers and pairs:
   the pair is split (clocal: the copy goes to r2, not to r6 beside the parameter in r7).
 - v0 `OLD_D2L` (getreg): an idle scratch word that only holds a name counts as free when it weighs less than the register
   getreg would take; the name is lost then (newsect `n = ++nsect; cp = &buf[3]` loads into r2 again). The name lives on as
-  long as nobody needs the register.
+  long as nobody needs the register. A float register likewise when its number is lower than that of the first free one
+  (vc gopt constfold: the int-to-double result of a compare in f0, its store merged by spopt; neutral on the models and the bench).
 - v0 `OLD_D2G` (under OLD_D2L): an idle word of the same weight as that register wins (mkdope: r3 against the split rr0).
 - v0 `OLD_D2T` (under OLD_D2L): the register of a TEMP (the value of a switch, held from its start to the compares behind
   the bodies) counts as free while idle, so the bodies take r2 again (setreg, prtree, opact).
@@ -378,8 +379,6 @@ Popt, not a difference of the compiler: `rmove` replaces the load of the slot st
 Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after: guess, a parameter of another type, see longswap in OLDCC_LOG.md); cas: `ld S0,r7`
 followed by `ld r7,S0`.
 
-- vc `OLD_D4F` (getreg): an idle float register that holds a name is free when its number is lower than the first free one
-  (gopt constfold: the int-to-double result in f0, so its store is merged). One witness.
 - vc `OLD_D2TC` (rbusy): a free word register is taken instead of stopping with "not found on rslist" (the reclaim of
   `opnd.w4 = p->in.sname - symtab` in gopt operand asks for r1, the low half of a result pair already given back). One witness.
 
