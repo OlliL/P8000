@@ -5,7 +5,6 @@
 static char sccsid[] = "@[$]wrtil2.c\t1.7  03/04/83 16:06:00 Copr. 1981 87wega3.2.";
 #include "gopt.h"
 
-#define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
 
 extern NODE *talloc();
 extern int qflag, ntl;
@@ -38,7 +37,6 @@ extern void prquad();
 extern NODE *mkleaf();
 extern int needustar();
 extern void addrof(), asgfold(), cleartrees();
-#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 extern struct quad *qhead;
 extern int v00, v04;
 extern long vb94;
