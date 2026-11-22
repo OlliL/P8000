@@ -421,14 +421,15 @@ cand:
 			d2kforget(d2kreg);
 #endif
 #ifdef OLD_D2A
-		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
-#ifdef OLD_D2AV
-		/* vc (gopt): the copy only for a pointer in rr0 wanted in a temporary register (rr0 cannot address: orderbl), not for a
-		   long (ceval), not for the inner assignment of a chain (lpinv, deletblk) */
-		if (t == ASSIGN && !(cookie & 01) && (cookie & INTAREG) && p->in.op == REG && (p->in.type & 0x30) == 0x10 && p->tn.rval == 0 &&
+		/* v0p: the value of an assignment wanted in a register for a test is copied into a new pair, which keeps the
+		   name (not for an inner assignment of a chain, not when the value goes to a register wanted for it): a long;
+		   segmented (vc) a pointer in rr0, which cannot address (gopt orderbl; not a long: ceval) */
+#ifdef SEG
+#define D2APAIR(p)	(((p)->in.type & 0x30) == 0x10 && (p)->tn.rval == 0)
 #else
-		if (t == ASSIGN && !(cookie & 01) && p->in.op == REG && (p->in.type == 5 || p->in.type == 15) && p->tn.rval < 8 &&
+#define D2APAIR(p)	(((p)->in.type == 5 || (p)->in.type == 15) && (p)->tn.rval < 8)
 #endif
+		if (t == ASSIGN && !(cookie & 01) && (cookie & INTAREG) && p->in.op == REG && D2APAIR(p) &&
 		    !(p->in.rall & MUSTDO)) {	/* (not when the value goes to a register wanted for it: an argument) */
 			register int nr;
 

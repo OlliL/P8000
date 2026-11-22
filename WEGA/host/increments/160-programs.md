@@ -121,3 +121,4 @@ PLZ programs and `as`: 170.
 - 2026-11-21 /lib/gopt byte-identical: the link (library start-up code /lib/scrt0.o, fseek ftell rdwr fopen getw in segment 4), about 50 functions corrected after the strict compare of the linked file (host/recon/framemap.py), vc OLD_D14T (initopts); gopt built and installed by src/cmd.
 - 2026-11-22 step 10: vc `OLD_D3PL` gone; the segmented D3PWORD of OLD_D3P has the types of the size of a pointer, D3PCAST one of them a pointer (regs3.c).
 - 2026-11-22 step 10: vc `OLD_D4F` gone, its code is the float part of OLD_D2L (v0; vc is v0p).
+- 2026-11-22 step 10: vc `OLD_D2AV` gone, OLD_D2A asks for INTAREG in all versions, the pair under SEG (match3.c D2APAIR).

@@ -182,7 +182,7 @@ all together), with these differences:
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
   (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype), and for gopt (neutral on cas) `OLD_D2K`, `OLD_D3JL`,
-  `OLD_D24L`, `OLD_D2FA`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB`, `OLD_D2TC` (section 3, D2..D4),
+  `OLD_D24L`, `OLD_D2FA`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB`, `OLD_D2TC` (section 3, D2..D4),
   `OLD_D14T` (section 3, D4) and `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of
   the tree uses) are not read, their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room. The text of the
   vc scodgen is near the 64 KiB of a nonsegmented program; /bin/ld does not report an overflow (sg_code wraps, the program
@@ -286,8 +286,10 @@ Where a value goes:
   canshare, setedges, testbit; the v0 bench gains 131 > 132 functions, 221 > 212 lines).
 - v0 `OLD_D2U` (rallo): the right operand of a long multiplication wants no register (upoff).
 - v0 `OLD_D6R` (gswitch): the count register of cpir is in neither half of rr0.
-- v0p `OLD_D2A` (match): the value of a long assignment used in a comparison is copied into a new pair that keeps the name
-  (nidcl, beginit, endinit); not when the value goes to a register wanted for it.
+- v0p `OLD_D2A` (match): the value of an assignment wanted in a register for a test (cookie INTAREG) is copied into a new pair
+  that keeps the name; not for an inner assignment of a chain, not when the value goes to a register wanted for it. A long
+  (nidcl, beginit, endinit); segmented (vc) a pointer in rr0, which cannot address (gopt orderbl `(x = x->next) == 0`; not a
+  long: ceval `(l = ispow2(x)) > 0`; not in rr2: `(v = checkalias(..)) == 0`; not a chain: lpinv `lpdefs = prev = t->next`).
 - v0p `OLD_D2Q` (allocreg): a long loaded through a pointer goes into the pair of its even address register when the odd half
   is free, also when that pair is the wanted one. `OLD_D2QO`: also when an odd word register is wanted for the value
   (getstr). `OLD_D2O`: a long loaded through an odd address register goes into the pair below it when the even half is
@@ -353,10 +355,6 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   go into the pair of its left operand when that is the register of a parameter (nodeno `c = q + 6`: `ldl rr2,rr6;
   inc r3,#6`, sccvc `ldl rr6,rr6; inc r7,#6` destroyed q). /lib/gopt nodeno, fndparm; checkops 21 -> 15, qmkstore 19 -> 14.
   Neutral on cas.
-- vc `OLD_D2AV` (match3.c, changes OLD_D2A, which has no witness in cas): the copy of the value of an assignment into a new
-  pair only for a pointer in rr0 that is wanted in a temporary register (cookie INTAREG: `(x = x->next) == 0`, orderbl),
-  not for a long (ceval `(l = ispow2(x)) > 0`) and not for the inner assignment of a chain (`lpdefs = prev = t->next`:
-  lpinv, deletblk, delindvar). Neutral on cas.
 - vc `OLD_D3JB` (reader3.c, under `OLD_D3J`): the end of a block (`]`) between an unconditional jump and the label behind it
   counts as a record, so the code in front of the label is not dead and the label keeps only the parameters known at both
   (prquad `if (q == 0) { printf(..); return; }`: the records `B ] L`, q reloaded from the frame; tfree1 `if (p == 0) cerror(..);

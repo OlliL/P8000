@@ -1933,3 +1933,13 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   Then: vc is v0p and so v0, OLD_D2L and OLD_D2P are on in vc already (an idle register holding a name is free when it
   comes before the first free one: words, pairs). OLD_D4F is that rule for the float registers: its code under OLD_D2L
   and the switch gone: gopt byte-identical, cas model of vc 152, the seven models and the bench unchanged (v0, v0p).
+- 2026-11-22, step 10, `OLD_D14T` from the compiler side: the temporaries of a statement grow as a stack (paroff, reset at
+  each `.` record). Without the INTEMP condition (the temporaries of the arguments free behind every call): gopt rdr2.c and
+  reader2.c (the getc/putc pattern: a call whose result is no temporary has a temporary argument; the original puts the next
+  temporary above it) lose 8 lines each; cas 152. The switch is the smallest rule found: the result of a call takes the
+  place of its arguments only when it goes to a temporary itself. Stays.
+- 2026-11-22, step 10, `OLD_D2AV` gone. Measured in vc: a pointer in any pair with INTAREG adds copies behind
+  `(v = checkalias(..)) == 0` (value in rr2; dom2, ebbo2, lpinv2, cas stlook); a pointer in rr0 without INTAREG adds copies
+  in chains (`a = b = x->f`: dom2, lpind2, lpinv2). So vc needs pointer, rr0 (no base register segmented) and INTAREG.
+  INTAREG in the v0p rule (a long, any pair): the seven models and the bench unchanged. One rule now: the value of an
+  assignment wanted in a register for a test; the pair under `#ifdef SEG` (D2APAIR): vc a pointer in rr0, else a long.

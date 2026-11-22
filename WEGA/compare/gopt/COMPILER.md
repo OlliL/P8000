@@ -21,7 +21,7 @@ the code of the original.
 | `OLD_D3JL` | scodgen | a pointer parameter that comes back at a label gets no frame home, only a long does | canopt denorm eqopnd islive |
 | `OLD_D3JB` | scodgen | the end of a block (`]`) between a jump and its label counts as a record (OLD_D3J) | prquad |
 | `OLD_D3P` | scodgen regforsym | a name in a register is taken from it also under a cast between two types of the size of a pointer (pointer, long, unsigned long), one of them a pointer | tabfree |
-| `OLD_D2AV` | scodgen match | OLD_D2A copies only a pointer in rr0 wanted in a temporary register, never a long | ceval orderbl |
+| `OLD_D2A` (v0p) | scodgen match | the value of an assignment wanted in a register for a test is copied into a new pair; segmented a pointer in rr0 | ceval orderbl |
 | `OLD_D2XP` | scodgen allocreg | OLD_D2X not into the pair of a parameter, and only when the registers allo takes are the result | constfold fndparm nodeno |
 | `OLD_D2PP` | scodgen getreg | no pair free: an idle odd word holding a parameter is given back for a pair before regjam | clrlbit setlbit |
 | `OLD_D2TC` | scodgen rbusy | a free word register is taken instead of stopping ("not found on rslist") | operand |

@@ -31,7 +31,6 @@
 #define OLD_D2FA	/* an automatic pointer or long is found in the pair an assignment named with its frame place (regforsym; gopt) */
 #define OLD_D2PP	/* no pair free: an idle odd word holding a parameter is given back for a pair before regjam (getreg; gopt setlbit) */
 #define OLD_D2XP	/* OLD_D2X not into the pair of a parameter (allo3.c; gopt nodeno) */
-#define OLD_D2AV	/* OLD_D2A only for a pointer in rr0, not for a long (match; gopt orderbl, ceval) */
 #define OLD_D3JL	/* OLD_D3J: a pointer parameter that comes back at a label gets no frame home, only a long (gopt: canopt, denorm) */
 #define OLD_D3JB	/* OLD_D3J: the end of a block (]) between the jump and the label counts as a record (gopt prquad, cmwalk) */
 #define OLD_DNR		/* the register records of gopt (F R S T: -O3, -O5) are not read, their code is left out (room: the text is near 64 KiB) */
