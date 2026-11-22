@@ -77,7 +77,7 @@ procopt(void)
 			break;
 		case JP: case CLR: case COM: case INC: case DEC: case NEG:
 		case TST: case SRA: case SLA: case EXTS: case SOB: case LDA:
-		case 38: case 41: case 43: case SRL: case SLL:
+		case 38: case RL: case RR: case SRL: case SLL:	/* 38: no op of optab has it */
 			markregs(p->code, b, a);
 			break;
 		case LDM:

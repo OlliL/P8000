@@ -61,6 +61,23 @@
 #define KCOMMENT 52	/* kept comment lines  / *~~ */
 #define ADDR	53
 
+/* the conditions of a CJP (its subop; as the JEQ ... JHIS of c2, the float ones guessed): eq ne le ge lt gt ult ugt ule uge, feq fneu flt fle fgt fge */
+#define JEQ	0
+#define JNE	1
+#define JLE	2
+#define JGE	3
+#define JLT	4
+#define JGT	5
+#define JLO	6
+#define JHI	7
+#define JLOS	8
+#define JHIS	9
+#define JFEQ	10
+#define JFNE	11
+#define JFLT	12
+#define JFLE	13
+#define JFGT	14
+#define JFGE	15
 /* subop values for size suffixes */
 #define SBYTE	0x10
 #define SLONG	0x11

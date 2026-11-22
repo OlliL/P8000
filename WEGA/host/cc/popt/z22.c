@@ -564,7 +564,7 @@ rmove(void)
 		cp_chk:
 			if (p1->op != CJP)
 				goto cp_end;
-			if (p1->subop != 1 && p1->subop != 0)
+			if (p1->subop != JNE && p1->subop != JEQ)
 				goto cp_end;
 			if (p1->forw->op == CJP)
 				goto cp_end;
@@ -726,7 +726,7 @@ shortjump(void)
 		dualop(p);
 		if (p->op == DEC && equstr(RT1, "#1") &&
 		    isreg(p->code) >= 0 &&
-		    p1->op == CJP && p1->subop == 1 &&
+		    p1->op == CJP && p1->subop == JNE &&
 		    p->refc >= p1->ref->refc) {
 			q = p1->ref;
 			while (ilen(q) == 0)
