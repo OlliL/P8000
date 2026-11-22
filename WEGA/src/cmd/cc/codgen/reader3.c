@@ -1154,6 +1154,7 @@ store(p)
 {
 	register int o, ty;
 
+	/* find a subtree of p which should be stored */
 	o = p->in.op;
 	ty = optype(o);
 	if (ty == LTYPE)
@@ -1200,7 +1201,7 @@ store(p)
 		constore(p->in.left);
 		return;
 	case NOT:
-	case CBRANCH:
+	case CBRANCH:	/* to prevent complicated expressions on the LHS from being stored */
 		constore(p->in.left);
 		return;
 	case MUL:
@@ -1223,8 +1224,8 @@ store(p)
 	}
 	if asgop(p->in.right->in.op)
 		stoasg(p->in.right, o);
-	if (p->in.su > fregs || p->in.fsu > ffregs)
-		mkadrs(p);
+	if (p->in.su > fregs || p->in.fsu > ffregs)	/* must store */
+		mkadrs(p);	/* set up stotree and stocook to subtree that must be stored */
 	store(p->in.right);
 	store(p->in.left);
 }
@@ -1280,6 +1281,9 @@ void
 constore(p)
 	register NODE *p;
 {
+	/* store conditional expressions */
+	/* the point is, avoid storing expressions in conditional
+	   conditional context, since the evaluation order is predetermined */
 	switch (p->in.op) {
 	case QUEST:
 	case ANDAND:
@@ -1715,10 +1719,11 @@ NODE *
 canon(p)
 	register NODE *p;
 {
-	fwalk(p, ffld, 0);
-	walkf(p, oreg2);
-	walkf(p, mycanon);
-	walkf(p, sucomp);
+	/* put p in canonical form */
+	fwalk(p, ffld, 0);	/* look for field operators */
+	walkf(p, oreg2);	/* look for and create OREG nodes */
+	walkf(p, mycanon);	/* your own canonicalization routine(s) */
+	walkf(p, sucomp);	/* do the Sethi-Ullman computation */
 	return p;
 }
 
