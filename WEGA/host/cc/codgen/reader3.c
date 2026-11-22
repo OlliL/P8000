@@ -1201,6 +1201,8 @@ cbranch(NODE *p, int true, int false)
 	register int o;
 	register int lab, flab, tlab;
 
+	/* evaluate p for truth value, and branch to true or false
+	   accordingly: label <0 means fall through */
 	lab = -1;
 	switch (o = p->in.op) {
 	case EQ:
@@ -1244,7 +1246,7 @@ cbranch(NODE *p, int true, int false)
 			case FGT:
 				break;
 			case UGE:
-				cbgen(0, true, 'I');
+				cbgen(0, true, 'I');	/* unconditional branch */
 			case ULT:
 			default:
 				goto uncond;
@@ -1255,7 +1257,7 @@ cbranch(NODE *p, int true, int false)
 	uncond:
 		if (false >= 0)
 			cbgen(0, false, 'I');
-		reclaim(p, 0, 0);
+		reclaim(p, RNULL, 0);
 		return;
 	case ANDAND:
 		lab = false < 0 ? getlab() : false;
@@ -1326,6 +1328,7 @@ cbranch(NODE *p, int true, int false)
 		/* x = constant: the truth value is known */
 		if (p->tn.lval == 0 && p->in.sname == 0)
 			goto isfalse;
+		/* addresses of C objects are never 0 */
 		if (true >= 0)
 			cbgen(0, true, 'I');
 	done:
@@ -1339,6 +1342,7 @@ cbranch(NODE *p, int true, int false)
 		int t;
 
 		t = p->in.type;
+		/* get condition codes */
 		codgen(p, FORCC);
 		if (t == FLOAT || t == DOUBLE) {
 			if (true >= 0)
@@ -1351,7 +1355,7 @@ cbranch(NODE *p, int true, int false)
 			if (false >= 0)
 				cbgen(true >= 0 ? 0 : EQ, false, 'I');
 		}
-		reclaim(p, 0, 0);
+		reclaim(p, RNULL, 0);
 	}
 	}
 }
