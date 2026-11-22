@@ -1909,3 +1909,8 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   phquad, ivagain, invset, copyins, invfound, invagain, hdrdtree, invdefs, freend, regused, ncolors, adjmat, nnodes,
   matwords, gnodes, cgraph, nexttmp, and as codgen reads the record { : nlabsave, frame0, maxoff, nparm; the locals of
   srchdflist isstore, isbeta, ismem, isother; unusedflag (no code uses it). gopt stripped equal.
+- 2026-11-22 OLD_D13 (vc) back in optim 2.5 (under PASS3 and SEG). Moved in front of optim (b4649980) the vc scodgen
+  jams on cas ssymtab.c:48 ("register jam"); behind optim too: the rules of PLUS behind the swap (the constants) work on
+  the swapped tree. Not seen for hours: checkall builds /bin/cas with the shipped scc, and `matrix check` measures
+  nothing; a single vc matrix run stopped with "baseline model failed". With the swap in optim the cas model of vc is
+  same 152, differ 0. OLD_D24 (cas witnesses: the same model) and OLD_D63 (libcisam of v1c, in checkall) stay out of mip.

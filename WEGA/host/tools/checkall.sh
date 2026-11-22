@@ -5,7 +5,7 @@
 # proves the repository alone is enough and leaves the working tree alone:
 #   1. make in src: the old compilers with the shipped tools, the libraries, the old compilers again, cmd/, uts/;
 #   2. make install PREFIX=CHECK_TMP/install: every file there against the file of the same name in WEGA with cmp (the
-#      Makefiles strip as the originals are stripped);
+#      Makefiles strip as the originals are stripped); then cas compiled by vc (sccvc of OLDROOT) against /bin/cas;
 #   3. the corpora of compare/CORPORA (host/tools/corpus.sh, side by side; host/recon/corpusrun.py: the prepared inputs and the
 #      results are kept in the store WEGA/.corpus of the working tree, by keys of their contents), every candidate: the WEGA program
 #      built by make shipped (the shipped cc, scc and libc; the byte-identical builds are proven by 2) and the host build;
@@ -200,6 +200,22 @@ else
 fi
 echo "open, not counted:$o"
 stamp '2 cmp of the install root with WEGA'
+
+# vc, the compiler of /bin/cas (host/OLDCC.md): every source of cas compiled by sccvc of OLDROOT and assembled by its old
+# cas, the functions against /bin/cas (the cas model of the vc matrix). Not a corpus; the /bin/cas of make above is built
+# by the shipped scc, so without this a vc that no longer compiles cas passes (2026-11-22, OLD_D13)
+printf '#!/bin/sh\nexec %s -r %s /lib/old/cas "$@"\n' $EMU $OLD > $T/cas_old
+chmod +x $T/cas_old
+mkdir -p $T/vcmodel
+(cd $T/tree/WEGA && RECON_TMP=$T/vcmodel OLDROOT=$OLD WEGA_ROOT=$WEGA RECON_PROG=cas CCHOST=$T/bin/sccvc CAS=$T/cas_old \
+	timeout 1800 python3 host/recon/d12model.py -q && RECON_TMP=$T/vcmodel OLDROOT=$OLD WEGA_ROOT=$WEGA RECON_PROG=cas \
+	timeout 600 python3 host/recon/strictcmp.py) > $T/vcmodel.log 2>&1
+VM=`tail -1 $T/vcmodel.log`
+case "$VM" in
+'same '*', differ 0 (strict)') result 'cas by vc (model)' ok "$VM" ;;
+*) result 'cas by vc (model)' fail "$VM; see $T/vcmodel.log" ;;
+esac
+stamp '2 cas by vc (the model)'
 
 [ $BUILDONLY = 1 ] && finish
 

@@ -133,15 +133,15 @@ Rules of the target:
   compilers built with cc (v0 ... vl) need not be byte-identical with their build before such a change, only behave
   the same: models, bench, matrix checks and checkall (the programs they build).
 
-- 2026-11-22 (Claude, exception to "no OLD_* in mip", for review): optim 2.5 keeps OLD_D23 (codgen v0p: no zero
-  addend away). Outside optim every way changes how optim folds constants (a hidden zero is no constant for conval);
+- 2026-11-22 (Claude, exceptions to "no OLD_* in mip", for review): optim 2.5 keeps OLD_D23 (codgen v0p: no zero
+  addend away) and OLD_D13 with SEG (vc: the swap in the PLUS case; done in front of optim or behind it, the vc
+  scodgen jams on cas ssymtab.c, because the rules behind the swap work on the swapped tree). OLD_D23: outside optim every way changes how optim folds constants (a hidden zero is no constant for conval);
   it is an older optim without that rule. The other switches went out of mip (owner 2026-11-22: other logic for the
   same aim): OLD_D12K by a walk behind eread (only an FCON gives the record "Ln: " with a blank in the data file, so a
-  NAME of a label that waits there was an FCON); OLD_D24, OLD_D63 and OLD_D13 by a walk in front of optim and one
+  NAME of a label that waits there was an FCON); OLD_D24 and OLD_D63 by a walk in front of optim and one
   behind it (reader3.c optpre, optpost): a conversion the older rmconv keeps is hidden as PCONV (rmconv acts only on
   the direct children of a node, before optim goes below), the mask of OLD_D24 is dropped behind optim (optim has no
-  SCONV case under PASS3), the swap of OLD_D13 is done in front (not the same when optim makes the right side a
-  constant address only on its way; no case in the measurements).
+  SCONV case under PASS3). OLD_D13 went out with them (commit b4649980) and came back: see above.
 
 ## Not part of it
 

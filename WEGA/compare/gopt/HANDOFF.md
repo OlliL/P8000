@@ -64,10 +64,12 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    host: %ld of the most negative long prints 0, the 64 KiB of an area (order3.c: out of space), r5 through checkalias,
    segment 0 for the vectors that a preheader record does not have. host/cc/gopt in host/Makefile and the host build of
    checkall.)
-9. The compiler tree with the shared parts of mip (common, rdr, optim): increment 155
-   (host/increments/155-compiler-tree.md).
+9. (done 2026-11-22: the compiler tree with the shared parts of mip, increment 155; then the headers mfile2.h (gopt),
+   mfile3 (codgen), mip/rdr.h, the PASS3 and OLD switches out of mip but OLD_D23, the names of gopt; host/OLDCC_LOG.md)
 10. The vc switches with one or two witnesses (matrix): think hard again whether a source form of the witness does without
     the switch. Also the goto forms that stand for an optimizer layout: deledge (`goto in;` into `while (v != ..)`: the
     original enters the loop body, its test stands above it; do-while and for (;;) with the tests at the end give other
     code; perhaps a do-while the old popt turned round: then a question of spopt).
+    (owner 2026-11-22: steps 10 and 11 are part of increment 160: 10 the clean-up after a binary is byte-identical, 11
+    the consolidation before the next programs.)
 11. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks above.

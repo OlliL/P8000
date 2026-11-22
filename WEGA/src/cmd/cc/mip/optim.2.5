@@ -156,6 +156,13 @@ optim(p) register NODE *p; {
 		/* someday, do it right */
 		if( nncon(p->in.left) || ( LCON(p) && !RCON(p) && !( RO(p) == REG && p->in.right->tn.rval == 15 ) &&
 				!ISPTR(p->in.type) ) ) SWAP( p->in.left, p->in.right );
+# if defined(PASS3) && defined(OLD_D13) && defined(SEG)
+		/* (codgen vc, an exception in mip: host/increments/155) int + constant address: the address goes to the left
+		   (ldl rr2,#addr; add r3,i); the shipped codgen makes the int register the target of the pointer and jams. Here,
+		   not in a walk around optim: the rules behind it (the constants of PLUS) work on the swapped tree (cas ssymtab.c) */
+		if( o == PLUS && ISPTR(p->in.type) && RCON(p) && ISPTR(p->in.right->in.type) && !ISPTR(p->in.left->in.type) )
+			SWAP( p->in.left, p->in.right );
+# endif
 # if !defined(PASS3) || !defined(OLD_D23)
 		/* (OLD_D23: codgen v0p, an exception in mip: host/increments/155) */
 		if( (o == MINUS || o == PLUS) && nncon(p->in.right) && RV(p) == 0 ) goto zapright;

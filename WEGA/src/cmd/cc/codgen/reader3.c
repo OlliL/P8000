@@ -70,7 +70,7 @@ static void d14qarm();
 #ifdef OLD_D12K
 int d12kname();
 #endif
-#if defined(OLD_D24) || defined(OLD_D63) || defined(OLD_D13) && defined(SEG)
+#if defined(OLD_D24) || defined(OLD_D63)
 int optpre(), optpost();
 #endif
 #ifdef OLD_D3K
@@ -733,7 +733,7 @@ codgen(p, cookie)
 	register int cookie;
 {
 	for (;;) {
-#if defined(OLD_D24) || defined(OLD_D63) || defined(OLD_D13) && defined(SEG)
+#if defined(OLD_D24) || defined(OLD_D63)
 		fwalk(p, optpre, 0);
 		p = optim(p);
 		fwalk(p, optpost, 0);
@@ -1771,27 +1771,16 @@ d2faandor(p)
 }
 #endif
 
-#if defined(OLD_D24) || defined(OLD_D63) || defined(OLD_D13) && defined(SEG)
-/* fwalk in front of optim (mip/optim.2.5) for the older versions: vc (OLD_D13): of int + constant address the address
-   goes to the left (ldl rr2,#addr; add r3,i), the shipped codgen makes the int register the target of the pointer and
-   jams; a conversion the older optim keeps is hidden from rmconv as PCONV (no record of cparse has one): vk, vl, vc
-   (OLD_D24) one between a pointer and a non-pointer, v1 (OLD_D63) a float widened to double */
+#if defined(OLD_D24) || defined(OLD_D63)
+/* fwalk in front of optim (mip/optim.2.5) for the older versions: a conversion the older optim keeps is hidden from rmconv
+   as PCONV (no record of cparse has one): vk, vl, vc (OLD_D24) one between a pointer and a non-pointer, v1 (OLD_D63) a
+   float widened to double */
 int
 optpre(p)
 	register NODE *p;
 {
 	register int t, u;
 
-#if defined(OLD_D13) && defined(SEG)
-	if (p->in.op == PLUS && ISPTR(p->in.type) && p->in.right->in.op == ICON && ISPTR(p->in.right->in.type) &&
-			!ISPTR(p->in.left->in.type)) {
-		register NODE *q;
-
-		q = p->in.left;
-		p->in.left = p->in.right;
-		p->in.right = q;
-	}
-#endif
 	if (p->in.op != SCONV)
 		return 0;
 	t = p->in.type;
