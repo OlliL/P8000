@@ -1960,3 +1960,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   takes the register over; a store through it is such a use). First try: v0p codgen ffld lost (`ld r2,~L1(fp)` for `ld r2,r4`),
   the bench 212 -> 204 lines: d2kforget cleared reg + 1 too, right for a segmented address pair, wrong for a word address (r3
   made r4 forget the parameter). With reg + 1 only under SEG: the seven models and the bench unchanged; vc as before.
+- 2026-11-22, step 10, `OLD_D2S` as the D2MO rule for SCONV (vc): any odd register not a parameter into the pair below:
+  cas 149 (symtype itself lost: r3 there is a parameter); any odd register: 149 (locadv, opshort, asmins). Reading (a guess):
+  the operand of the widening is free before the pair is chosen, and the lightest pair wins (rweight rr2 2), which differs
+  from the shipped choice only for an operand in r3. Not part of another rule; stays.
+- 2026-11-22, step 10, `OLD_D24L` gone: the unmasked lda of a frame place under OLD_D24 (the address masks of the segmented
+  old versions: v1, vk, vl, vc). checkall ALL OK (kernel by vk, the library members by v1 and vl byte-identical); vc unchanged.

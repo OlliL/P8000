@@ -182,7 +182,7 @@ all together), with these differences:
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
   (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype), and for gopt (neutral on cas)
-  `OLD_D24L`, `OLD_D2FA`, `OLD_D2XP`, `OLD_D2TC` (section 3, D2..D4),
+  `OLD_D2FA`, `OLD_D2XP`, `OLD_D2TC` (section 3, D2..D4),
   `OLD_D14T` (section 3, D4) and `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of
   the tree uses) are not read, their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room. The text of the
   vc scodgen is near the 64 KiB of a nonsegmented program; /bin/ld does not report an overflow (sg_code wraps, the program
@@ -346,9 +346,6 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   new one is named (match3.c before allo; without it a stale name gave wrong code: `p = p->r; p->op = ...` read the old p). Source forms tried without it: clearblocks 10, solvereach 11, pralvars 9, none.
   /lib/gopt clearblocks, marklpblocks, pralvars, solvelive, solvereach, liveonexit.
   Neutral on cas.
-- vc `OLD_D24L` (local3.c, ZL): the address of a frame place (a local struct, the argument area at 0(fp)) is loaded by
-  `lda` without the mask `and rN,#%7f00`. /lib/gopt has 31 such lda (struct copies to a local, struct arguments), none with
-  the mask; sccvc masked all of them. No source form: a struct assignment is the only C that gives `lda; ldk; ldir`. Neutral on cas.
 - vc `OLD_D2XP` (allo3.c, changes OLD_D2X, which has no witness in cas): a long (pair) result of a binary operator does not
   go into the pair of its left operand when that is the register of a parameter (nodeno `c = q + 6`: `ldl rr2,rr6;
   inc r3,#6`, sccvc `ldl rr6,rr6; inc r7,#6` destroyed q). /lib/gopt nodeno, fndparm; checkops 21 -> 15, qmkstore 19 -> 14.
@@ -541,7 +538,7 @@ v0p `OLD_D23` (codgen, optim, mapregs): the optim of codgen does not take a zero
 The kernel masks a user address with `(caddr_t)((long)x & 0x7F00FFFF)`. Original: `ldl rr4,rr2; and r4,#%7F00; ldl y,rr4` (a copy in a new pair, the mask on the copy); the shipped scparse and scodgen: `and r2,#%7F00; ldl y,rr2`.
 
 - vk `OLD_D25` (cparse local1.c, SEG, PCONV): a cast of a long to a pointer stays a conversion (SCONV); the shipped scparse paints the type.
-- vk `OLD_D24` (codgen, reader3.c optpre and optpost around optim): `rmconv` keeps a conversion between a pointer and a non-pointer of the same size. The SCONV of a long to a pointer then uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`: the copy and the mask), and an `& 0x7f00ffff` under it is dropped.
+- vk `OLD_D24` (codgen, reader3.c optpre and optpost around optim): `rmconv` keeps a conversion between a pointer and a non-pointer of the same size. The SCONV of a long to a pointer then uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`: the copy and the mask), and an `& 0x7f00ffff` under it is dropped. The address of a frame place (a local struct, the argument area at 0(fp)) is loaded by `lda` without that mask (local3.c ZL): vc /lib/gopt has 31 such lda (struct copies to a local, struct arguments), none with the mask; neutral on cas, the kernel (vk) and the libraries (v1, vl).
 
 The two work only together: each alone gives the code of the shipped compiler. Witnesses: `sig`, `sys2`, `sys3`, `debug` of the kernel. vc has both too (`OLD_D24` in `OLD_VC`, `OLD_D25` in the segvc rule of scparse): cas `yylex` (`(struct pst *)(q->s_2 & 0x7F00FFFFL)`: `ldl rr2,rr0; and r2,#%7F00`) and `igetaddr` (`return ((struct irow *)igetl());`: `ldl rr0,rr2; and r0,#%7F00; ldl rr2,rr0`). In cas a node holds its operands in pointer members of its union and a symbol its name in `s_name` (a union with the value `s_2`), so that only these two casts of a long to a pointer are left; with a cast at every node operand D25 would mask them all. vl has both too (`OLD_D24` in `OLD_VL`, `OLD_D25` in the segvl rule of scparse, `/lib/vl/scparse`): slibc malloc (`setbusy`, `clearbusy` with `INT` = `long`: `(union store *)((long)(p)|BUSY)`; the first call sets `allocs[0].ptr = setbusy(&allocs[1])`: `ldl rr4,rr2; and r4,#%7f00`); D24 alone changes nothing there, nonsegmented D24 changes no libc member. No source form replaces them: 25 forms of the statement in `sig` (casts, `L` constants, order of the operands, `~`, `+ 0`, `| 0`, a long lvalue, parentheses) give the same code, temporaries are worse.
 

@@ -126,3 +126,4 @@ PLZ programs and `as`: 170.
 - 2026-11-22 step 10: vc `OLD_D3JL` gone, its test (a long, not a pointer) is true for every nonsegmented pair.
 - 2026-11-22 step 10: vc `OLD_D2PP` gone, its code is the fail path of OLD_D2PO (v0).
 - 2026-11-22 step 10: vc `OLD_D2K` gone, its code under OLD_D2C (v0; reg + 1 only for a segmented address pair).
+- 2026-11-22 step 10: vc `OLD_D24L` gone, the unmasked lda of a frame place is part of OLD_D24 (local3.c ZL).

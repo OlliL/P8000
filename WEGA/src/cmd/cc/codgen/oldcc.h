@@ -26,7 +26,6 @@
 #define OLD_D6J		/* a dense jump table (segmented): the target into the pair of the value */
 #define OLD_D24		/* a long cast to a pointer is masked through a copy (with OLD_D25 of scparse): yylex, igetaddr of cas */
 #define OLD_D2S		/* a word in r3 widened to long takes the pair rr2 (allo3.c; cas symtype, one witness) */
-#define OLD_D24L	/* lda of a frame place without the mask and #%7f00 (local3.c ZL; gopt: every struct copy to a local) */
 #define OLD_D2FA	/* an automatic pointer or long is found in the pair an assignment named with its frame place (regforsym; gopt) */
 #define OLD_D2XP	/* OLD_D2X not into the pair of a parameter (allo3.c; gopt nodeno) */
 #define OLD_DNR		/* the register records of gopt (F R S T: -O3, -O5) are not read, their code is left out (room: the text is near 64 KiB) */

@@ -766,8 +766,8 @@ zzzcode(p, c)
 		if (u->tn.rval >= 0x100 || u->tn.lval != 0 || u->in.sname != 0 || (u->in.op == OREG && u->stn.stsize < 0)) {
 #ifdef SEG
 			expand(p, FOREFF, "\tlda\tVA1X,AL\n");
-#ifdef OLD_D24L
-			/* vc (gopt): the address of a frame place is not masked */
+#ifdef OLD_D24
+			/* the address of a frame place is not masked (vc gopt: struct copies to a local) */
 			if (!(u->in.op == OREG && u->tn.rval == 15 && (u->in.sname == 0 || u->in.sname == symtab0 || ascii[u->in.sname->nameoff] == '~')))
 #endif
 			expand(p, FOREFF, "\tand\tA1,#%7f00\n");
