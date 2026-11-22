@@ -1,65 +1,14 @@
 /*
  * order3.c - the order of evaluation: Sethi-Ullman numbers, rewrites, arguments
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern void adrput();
-extern int allo();
 extern int argfreg;
 extern struct arg argl[];
-extern int argreg;
-extern int argsize();
-extern int argstop;
-extern NODE *canon();
-extern int cerror();
 extern int crslab;
-extern void deflab();
-extern int dope[];
-extern int ffregs;
-extern int fltused;
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
-extern int fregs;
-extern void genargs();
-extern int getlab();
-extern int getreg();
-extern int shltype();
-extern void mkadrs();
-extern int mkoreg();
 extern void mkrall();
 extern int nargs;
-extern int niceuty();
-extern NODE node[];
-extern int notoff();
-extern void offstar();
-extern char *opst[];
-extern void order();
 extern int ordflag;
-extern void oreg2();
-extern void oregfix();
-extern void rallo();
-extern void reclaim();
-extern NODE resc[];
-extern void rfree();
-extern void recl2();
-extern char *rnames[];
-extern struct rs *rsfree;
-extern int rstatus[];
-extern struct rs *rsuse;
-extern int setasg();
-extern int setasop();
-extern int setbin();
-extern int setstr();
-extern int shumul();
-extern int stoasg();
-extern int stocook;
-extern NODE *stotree;
-extern void sucomp();
-extern struct sym *symtab0;
-extern int szty();
-extern NODE *tcopy();
-extern void tfree();
 static char sccsid[] = "@[$]order3.c\t2.4  08/24/83 13:27:43 Copr. 1981 87wega3.2.";
 int fltused = 0;
 
@@ -464,8 +413,6 @@ orderadd(p)
 }
 
 #ifdef SEG
-extern struct sym *symtab0;
-extern void oreg2();
 
 /* handle indirections: get the address of *p into a register; p is the STAR itself or its operand */
 void

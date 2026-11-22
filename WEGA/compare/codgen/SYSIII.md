@@ -15,7 +15,7 @@ Lines without comments and blanks that also stand in the file.
 | optim3.c | pcc/mip/optim.c | 132 | pcc.d/mip/optim.c | 113 | 409 |
 | order3.c | pcc/mdp/order.c | 235 | pcc.d/order.c | 198 | 1048 |
 | local3.c | pcc/mdp/local2.c | 316 | pcc.d/local2.c | 394 | 1694 |
-| cg.h | pcc/mip/mfile2 | 38 | pcc.d/mip/mfile2 | 34 | 208 |
+| mfile3 | pcc/mip/mfile2 | 38 | pcc.d/mip/mfile2 | 34 | 208 |
 
 78 of the 229 function names are those of System III.
 

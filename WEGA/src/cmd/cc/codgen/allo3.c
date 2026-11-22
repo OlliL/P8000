@@ -1,56 +1,12 @@
 /*
  * allo3.c - allocation of the registers and temporaries of a template
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern int allo();
-extern int allocreg();
-extern long baseoff;
-extern int cerror();
-extern int d2vfirst();
-extern int dope[];
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
-extern long freeparm();
-extern int freereg();
-extern long freetemp();
-extern void walkf();
-extern NODE *getlr();
-extern int getreg();
-extern long maxoff;
-extern long maxtemp;
-extern NODE node[];
-extern void nxwork();
-extern long parmax;
-extern long paroff;
-extern int callreg();
-extern void rbusy();
-extern int rclass();
-extern void reclaim();
-extern NODE resc[];
-extern struct rs *rfind();
-extern void rfree();
-extern void rfreeall();
-extern void recl2();
-extern void rmove();
-extern struct rs *rsfree;
-extern void rsreturn();
 #ifdef OLD_D3H
 extern int d3hdepth;
 #endif
-extern struct rs *rsuse;
 extern void rwprint();
-extern int rwtab[][2];
-extern struct sym *symtab0;
-extern int szty();
-extern NODE *tcopy();
-extern int tflag;
-extern void tfree();
-extern void tmpcleanup();
-extern long tmpoff;
-extern int tshape();
-extern int usable();
 static char sccsid[] = "@[$]allo3.c\t2.4  08/24/83 11:29:34 Copr. 1981 87wega3.2.";
 
 #define RLEFT	01
@@ -70,7 +26,6 @@ static char sccsid[] = "@[$]allo3.c\t2.4  08/24/83 11:29:34 Copr. 1981 87wega3.2
 #define RNULL	0
 
 #define RNOP	010000
-
 
 /* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
 #ifdef SEG
@@ -351,7 +306,6 @@ d2ofree(r)
 	return 0;
 }
 #endif
-
 
 #if defined(OLD_D2M) || defined(OLD_D2Q) || defined(OLD_D2S)
 /* the word x given back and the pair y taken for the result (with the name of p); not free: x busy again (for q) */

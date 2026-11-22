@@ -9,7 +9,7 @@
 HOSTCC = cc
 CFLAGS = -O2 -Wall -Wextra -std=gnu99 -fsigned-char
 COMMON = bss3.c reader3.c rdr3.c local3.c order3.c match3.c allo3.c regallo3.c comm3.c wrt3.c regs3.c lcl3.c tr3.c optim3.c
-HDRS = cg.h cg2.h cgproto.h oldcc.h ../z8000/macdefs ../mip/manifest ../mip/common.2.5 ../mip/optim.2.5 ../mip/rdr.2.5 hop_codgen.c hop_scodgen.c
+HDRS = mfile3 cgproto.h oldcc.h ../z8000/macdefs ../mip/manifest ../mip/common.2.5 ../mip/optim.2.5 ../mip/rdr.2.5 hop_codgen.c hop_scodgen.c
 
 all: codgen scodgen
 

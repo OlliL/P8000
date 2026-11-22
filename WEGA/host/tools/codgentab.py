@@ -60,7 +60,7 @@ def main(path):
         if w[:7] == (0x64,) * 7:	# the last entry: every field 0x64, template "/*NULL*/"
             break
     print("/* %s: %d entries, found at data offset 0x%x */" % (path.split("/")[-1], len(ents), start))
-    print("#include \"cg.h\"\n")
+    print("#include \"mfile3\"\n")
     stamps = re.findall(rb"@\[\$\]table3[^\0]*", d)
     for name, st in zip(("sccsid", "tabsccs"), stamps):
         print("static char %s[] = \"%s\";" % (name, st.decode().replace("\t", "\\t")))

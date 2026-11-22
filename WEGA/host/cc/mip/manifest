@@ -97,7 +97,7 @@
 # define UGE 88
 # define UGT 89
 /*	WEGA: the float compares replace SETBIT, TESTBIT, RESETBIT, ARS of PCC; the numbers from REG on are
-	those of the dope table indope of /lib/cparse (data 0x358e) and of codgen (src/cmd/cc/codgen/cg.h) */
+	those of the dope table indope of /lib/cparse (data 0x358e) and of codgen (src/cmd/cc/codgen/mfile3) */
 # define FEQ 90
 # define FNE 91
 # define FLE 92

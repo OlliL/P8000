@@ -1,65 +1,17 @@
 /*
  * match3.c - the template matcher
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern void acon();
-extern void adrput();
-extern int allo();
-extern int bsize();
-extern int cerror();
-extern void conput();
-extern int dope[];
-extern void expand();
 #ifdef OLD_D2K
 extern void d2kforget();
 #endif
-extern void fixname();
-extern int d2vfirst();
-extern int fldoff;
-extern int fldshf;
-extern int fldsz;
-extern struct sym *fpsym1, *fpsym2;
 #ifdef OLD_D2FA
 extern int d2facopy, d2faltype;
 #endif
-extern NODE *getlr();
-extern int getreg();
-extern void hopcode();
-extern void insput();
-extern int shltype();
-extern int ltypeop();
-extern int match();
-extern NODE node[];
-extern int nosuffix;
 extern int opclass[];
 extern struct optab *opptr[];
-extern void oregfix();
-extern void prlong();
-extern int rclass();
-extern void rcount();
-extern void reclaim();
-extern NODE resc[];
-extern struct rs *rfind();
-extern void rfree();
-extern int rlmode;
-extern int rmode;
-extern void rmove();
-extern int rstatus[];
 extern struct optab *rwdefault;
-extern void setrew();
-extern int shtemp();
-extern int shumul();
-extern int special();
-extern void symdrop();
-extern void symuse();
-extern int szty();
-extern int tflag;
-extern int tshape();
-extern int ttype();
-extern void upput();
-extern void zzzcode();
 static char sccsid[] = "@[$]match3.c\t2.4  08/24/83 13:18:24 Copr. 1981 87wega3.2.";
 int opclass[] = {
 	0x20, 0x21, 0x40, 0x41, 0x800, 0x801, 0x80, 0x81, 0x4, 0xe, 0x2, 0xe, 0x0, 0x2001, 0x10, 0xe,

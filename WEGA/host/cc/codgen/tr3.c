@@ -1,10 +1,8 @@
 /*
  * tr3.c - trees: rewriting names and members
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern NODE node[];
 static char sccsid[] __attribute__((unused)) = "@[$]tr3.c\t2.3  08/24/83 13:57:35 Copr. 1981 87wega3.2.";
 
 #define SCONV	110

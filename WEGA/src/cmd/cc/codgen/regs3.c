@@ -1,68 +1,15 @@
 /*
  * regs3.c - register variables, temporaries, what the registers hold, the commands F R S T
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern char ascii[];
-extern int cerror();
-extern NODE *clocal();
-extern void fcmd();
-extern int findtemp();
-extern void fixfld();
-extern void ncopy();
-extern void fixname();
-extern void fixtemp();
-extern NODE *foldadd();
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
 #ifdef OLD_D2FA
 int d2facopy;	/* OLD_D2FA: the assignment matched now copies a variable */
 int d2faltype;	/* OLD_D2FA: fixname of a name matched alone */
 #endif
-extern long frame0;
-extern NODE *getlr();
-extern int getreg();
-extern struct sym *mapn();
-extern void mapregs();
-extern int maxreg;
 extern void memname();
-extern int minreg;
-extern NODE node[];
-extern int nsave;
-extern void nxwork();
-extern char *opst[];
-extern void oregfix();
-extern int rclass();
-extern void rcmd();
-extern int regforsym();
-extern void regreset();
-extern void regtabinit();
-extern struct rv regvar[];
-extern struct rs *rfind();
-extern int rflag;
-extern void rfree();
-extern void rfreeall();
-extern int rlmode;
-extern int rmode;
-extern void rmove();
-extern void rsreturn();
-extern struct rs *rsuse;
-extern int savecls[];
-extern int saveorig[];
-extern int savereg[];
-extern void scmd();
-extern void symdrop();
-extern int symreg();
-extern struct sym *symtab0;
-extern void symuse();
-extern void tabclear();
-extern int tabfind();
-extern void tcmd();
-extern void tmpcleanup();
 extern void tmpdump();
 extern struct tmpent tmptab[];
-extern int usable();
 static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2.";
 
 #define RLEFT	01
@@ -153,7 +100,6 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 	rmode = m; \
 	rlmode = l
 
-
 #ifdef OLD_D3P
 #ifdef SEG
 #define D3PWORD(t)	(((t) & 0x30) == 0x10)	/* segmented (vc): a cast between pointers only, not int against unsigned */
@@ -161,10 +107,6 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 #define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
 #endif
 #endif
-
-
-
-
 
 static void rnassign();
 static void rnnullp();

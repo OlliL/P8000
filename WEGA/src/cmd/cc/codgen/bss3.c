@@ -1,8 +1,7 @@
 /*
  * bss3.c - the common data, in the order of the original: linked first, it gives their order (no code, no data).
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
 /* the common data, in the order of the original */
 long frame0;
@@ -27,7 +26,7 @@ int regtop;
 int lflag;
 NODE resc[3];	/* the work registers RESC1 .. RESC3 (0x8f24); the contents stay from call to call; a 4th entry because allo reads one past the last */
 int callflag;
-struct { struct sym *sym; int reg; } parmtab[11];
+struct parment parmtab[11];
 int ffregs;	/* set to 4 */
 int fregs;	/* set to 8 by the start of the program */
 int regD;	/* (7), 0x8f1e (0x10), 0x8e18 (0x13), 0x8f8c (1) */
@@ -61,7 +60,7 @@ struct rv regvar[12];	/* symbol, tag of the symbol or of the temporary, register
 int gnumcount;	/* only written */
 int numtab[1001];	/* the number table, a word and a -1 per entry */
 int gnumbytes;
-struct { int tag; struct sym *sym; } tagtab[550];
+struct tagent tagtab[550];
 long gasciibytes;	/* the global section */
 int unused2;
 int nglob;	/* the entries of tagtab */
@@ -121,7 +120,7 @@ int rsflag1;	/* number of entries of rstab1 */
 struct rs pool[NPOOL];
 struct rs *rsexcl;	/* nodes taken away from rsuse by rsmerge */
 struct rs *rspool;
-struct { struct rs *list; int mark; } rsstk[3];	/* the saved lists and their marks, interleaved */
+struct rssave rsstk[3];	/* the saved lists and their marks, interleaved */
 int rsdepth;	/* saved lists */
 int rsflag2;	/* number of entries of rstab2 */
 int rstab2[3];

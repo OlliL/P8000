@@ -1,45 +1,21 @@
 /*
  * reader3.c - the program and the driver of the code generation: p2init, commands of the intermediate file, order of the trees, stores, conditional branches
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
 static int delay1(NODE *p);
 static void delstrip(NODE *p);
 static void delay2(NODE *p);
 
-extern long baseoff;
 extern int callflag;
 extern char *cnames[];
 extern NODE *deltrees[];
-extern FILE *dfile;
-extern int dope[];
-extern int eflag;
-extern int ffregs;
-extern long frame0;
-extern int fregs;
-extern int lineno;
-extern char ftitle[];
-extern int lflag;
 extern int lmulflag;
-extern long maxoff;
-extern int maxreg;
-extern long maxtemp;
-extern int minreg;
 extern int ndelay;
-extern int negrel[];
-extern int nerrors;
 extern int nlabsave;
-extern NODE node[];
 extern int nparm;
-extern int nparmtab;
 extern int nrecur;
 extern int oflag;
-extern char *opst[];
-extern long parmax;
-extern struct { struct sym *sym; int reg; } parmtab[];
-extern long paroff;
-extern int pflag;
 extern int regA;
 extern int regB;
 extern int regC;
@@ -49,17 +25,6 @@ extern int regF;
 extern int regG;
 extern int regmask;
 extern int regtop;
-extern NODE resc[];
-extern int rflag;
-extern struct rs *rsuse;
-extern FILE *stfile;
-extern long stg;
-extern int stocook;
-extern NODE *stotree;
-extern long stpos;
-extern struct sym *symtab;
-extern struct sym *symtab0;
-extern long tmpoff;
 static char sccsid[] __attribute__((unused)) = "@[$]reader3.c\t2.5  08/24/83 13:32:32 Copr. 1981 87wega3.2.";
 int lmulflag = 0;
 int pflag = 0;
@@ -71,13 +36,10 @@ int unused5 = 0;
 long baseoff = 0;
 long maxtemp = 0;
 
-#ifdef OLD_D14Q
-#endif
 #ifdef OLD_D3K
 static int d3kpend;		/* a label waits for its rsfreeall (main) */
 static int d3jdead;		/* v0p: the record before was an unconditional jump */
 #endif
-
 
 #define INTEMP_	0x1000
 
@@ -91,7 +53,6 @@ static int d3jdead;		/* v0p: the record before was an unconditional jump */
 
 #undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
-
 
 /* the relation that is true when the one in the index is false */
 

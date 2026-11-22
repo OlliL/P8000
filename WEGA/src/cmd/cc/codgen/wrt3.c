@@ -1,45 +1,12 @@
 /*
  * wrt3.c - text of the head of a function, its parameters
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern int argsize();
-extern char ascii[];
-extern int cerror();
-extern void endline();
-extern void endrun();
-extern int entlab;
-extern void fbegin();
-extern char fname[];
-extern int getlab();
-extern int getreg();
-extern void hdrout();
-extern int lineno;
-extern char ftitle[];
-extern int jlab;
-extern int lflag;
-extern void mapsym();
 extern int mcountlab;
-extern NODE node[];
-extern int nparmtab;
-extern void parminit();
-extern struct { struct sym *sym; int reg; } parmtab[];
-extern int pflag;
-extern int callreg();
-extern int rclass();
-extern struct rv regvar[];
-extern int retlab;
-extern int rflag;
-extern void rfree();
-extern char *rnames[];
-extern struct rs *rsuse;
 extern int structlab;
-extern int structret;
-extern void structretcode();
 extern long structsz;
 static char sccsid[] = "@[$]wrt3.c\t2.4  08/24/83 14:01:53 Copr. 1981 87wega3.2.";
-
 
 #ifdef OLD_D3P
 #define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)

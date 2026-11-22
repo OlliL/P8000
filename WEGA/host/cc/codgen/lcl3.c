@@ -1,26 +1,17 @@
 /*
  * lcl3.c - switch statements
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
 static void chk(NODE *p);
 
-extern int dope[];
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
-extern NODE node[];
-extern char *rnames[];
 static char sccsid[] __attribute__((unused)) = "@[$]lcl3.c\t2.4  10/06/83 10:39:09 Copr. 1981 87wega3.2.";
-
 
 #ifdef OLD_D3P
 #define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
 #endif
 
 #define SCONV	110
-
-
 
 /* the code for a switch: a jump table, or a search with cpir */
 #ifdef SEG

@@ -189,7 +189,7 @@ all together), with these differences:
   runs into zeros), the codgen Makefile stops then. Measured as the tree links it: `LIBC="../../../../lib/oldlibc/printf/s1p.o
   ../../../../lib/oldlibc/doprnt/s1d.o ../../../../lib/oldlibc/doprnt/s1f.o /lib/libc.a"` (the three objects from a checkall
   tree), then `od -An -tx1 -j28 -N2 build/segvc/scodgen`. Room is freed inside the OLD_* blocks without changing behaviour
-  (helpers, merged tests, `goto blk`); a segmented port of the codgen does not work (the NODE union of cg.h assumes 16-bit
+  (helpers, merged tests, `goto blk`); a segmented port of the codgen does not work (the NODE union of mfile3 assumes 16-bit
   pointers);
 - scparse (the segvc rule): the switches of v0p (`OLD_D12 OLD_D4R OLD_D6T OLD_D6C OLD_D22 OLD_D6D`) with `OLD_D13`,
   `OLD_D25` and `OLD_D12R` (gopt, neutral on cas: the static area of a function that returns a structure is zeros in the data,

@@ -592,7 +592,7 @@ codgen: `# . / B C F L R S T [ ] { }`):
 SNAME 0100, SCON 0200, SFLD 0400, SOREG 01000, STARNM 02000, STARREG 04000, INTEMP 010000, FORARG 020000, SWADD 040000, SPECIAL 0100000;
 types TCHAR 01, TSHORT 02, TINT 04, TLONG 010, TFLOAT 020, TDOUBLE 040, TPOINT 0100, TUCHAR 0200, TUSHORT 0400, TUNSIGNED 01000,
 TULONG 02000, TANY 010000, TSTRUCT 020000. A node is 0x12 bytes: op, rall (0x2000 = none), type, +6, +8 (symbol of a NAME), +0xA (struct
-size, TEMP number), lval (long, +0xC), left (+0xE), rval (+0x10). `src/cmd/cc/codgen/cg.h` has them.
+size, TEMP number), lval (long, +0xC), left (+0xE), rval (+0x10). `src/cmd/cc/codgen/mfile3` has them.
 
 **Table.** The templates are an array of 10 word entries `op visit lshape ltype rshape rtype needs nx rewrite cstring` behind the version
 string `table3.nzcc.c` (codgen: 150 entries, sentinel "/*NULL*/") or `table3.szcc.c` (scodgen: 174 entries, sentinel "/*hi mom*/"). The

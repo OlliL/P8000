@@ -1,121 +1,21 @@
 /*
  * local3.c - machine dependent code: entry and exit of a function, the escape codes "Z" of the templates, operands, calls
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern void acon();
-extern void adrput();
-extern int argreg;
-extern int argstop;
-extern char ascii[];
-extern void branch();
-extern NODE *canon();
-extern void canon2();
 extern int cbflag;
-extern void cbgen();
-extern int cerror();
-extern void conput();
 extern void d3kjump();
-extern void deflab();
-extern int dope[];
-extern void efcode();
-extern void endline();
-extern int entlab;
-extern void expand();
 extern struct hoptab fhoptab[];
-extern int fldoff;
-extern int fldshf;
-extern int fldsz;
-extern int fltused;
-extern char fname[];
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
-extern long frame0;
-extern long freetemp();
 extern void eobl2();
-extern void walkf();
-extern void genargs();
-#ifdef OLD_D14T
-extern long paroff;
-#endif
-extern int gencall();
 extern long geninc();
-extern int genscall();
-extern int getlab();
-extern NODE *getlr();
-extern int getreg();
-extern void hopcode();
 extern void icright();
 extern struct hoptab ihoptab[];
-extern void insput();
-extern int ispow2();
-extern int jlab;
-extern int lastchance();
-extern void lineout();
-extern int shltype();
-extern int ltypeop();
-extern int mainp2();
-extern int match();
-extern long maxoff;
-extern int maxreg;
-extern int minreg;
-extern void mycanon();
-extern int negrel[];
-extern int nextcook();
-extern NODE node[];
-extern int nosuffix;
-extern int notoff();
-extern int nparmtab;
-extern int nsave;
-extern char *opst[];
-extern void order();
 extern void oregput();
-extern long parmax;
-extern struct { struct sym *sym; int reg; } parmtab[];
-extern int nncon();
-extern void prlong();
 extern void psuffix();
-extern void rbusy();
-extern int rclass();
-extern int retlab;
-extern int revrel[];
-extern struct rs *rfind();
-extern void rfree();
-extern void rfreeall();
-extern void recl2();
 extern char *rhnames[];
-extern int rlmode;
 extern char *rlnames[];
-extern int rmode;
-extern void rmove();
-extern char *rnames[];
-extern struct rs *rsfree;
-extern void rsfreeall();
-extern void rsreturn();
-extern int rstatus[];
-extern struct rs *rsuse;
-extern int rwtab[][2];
-extern int savecls[];
-extern int saveorig[];
-extern int savereg[];
-extern int shincr();
-extern int shtemp();
-extern int shumul();
-extern int special();
-extern int structret;
-extern void structretcode();
-extern struct sym *symtab0;
-extern int szty();
-extern NODE *tcopy();
-extern void tfree();
-extern long tmpoff;
-extern int tshape();
 extern void tsuffix();
-extern int ttype();
 extern int upperlval;
-extern void upput();
-extern void zzzcode();
 static char sccsid[] = "@[$]local3.c\t2.4  08/24/83 11:48:31 Copr. 1981 87wega3.2.";
 char *rhnames[] = { "rh0", "rh1", "rh2", "rh3", "rh4", "rh5", "rh6", "rh7" };
 char *rlnames[] = { "rl0", "rl1", "rl2", "rl3", "rl4", "rl5", "rl6", "rl7" };
@@ -234,9 +134,6 @@ eobl2(a, b)
 }
 
 /* the end of the function: entry and exit code with the frame sizes now known */
-#ifdef OLD_D57
-extern long d57off;
-#endif
 
 void
 efcode()
@@ -601,7 +498,6 @@ geninc(op, n)
 	}
 	return n;
 }
-
 
 int unused9 = 0;
 static char *tcctab[] = {
@@ -1853,7 +1749,6 @@ special(p, shape)
 	}
 	cerror("bad special shape: SPECIAL | %%%0.2x", shape - SPECIAL);
 }
-
 
 /* a comparison with a register on the right goes with the operands exchanged */
 static int rev[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };

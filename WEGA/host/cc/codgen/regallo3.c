@@ -1,32 +1,23 @@
 /*
  * regallo3.c - the register lists
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern char ascii[];
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
 extern struct rs pool[];
 extern int rsdepth;
 extern struct rs *rsexcl;
 extern int rsflag1;
 extern int rsflag2;
-extern struct rs *rsfree;
 extern struct rs *rspool;
-extern void rsreturn();
-extern struct { struct rs *list; int mark; } rsstk[];
+extern struct rssave rsstk[];
 extern int rstab1[];
 extern int rstab2[];
-extern struct rs *rsuse;
 static char sccsid[] __attribute__((unused)) = "@[$]regallo3.c\t2.5  08/24/83 13:36:00 Copr. 1981 87wega3.2.";
 static char rcname[][8] = {
 	"TBYTE", "TWORD", "TLONG", "TFLOAT", "GBYTE", "GWORD", "GLONG", "GFLOAT", "RANY", "NULL"
 };
 
 #define MAXRCOUNT 5000
-
-
 
 /* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
 
@@ -905,7 +896,6 @@ rsfreeall(int flag)
 {
 	register struct rs *next;
 	register struct rs *n;
-
 
 	for (next = n = rsuse; n; n = next) {
 		next = n->next;

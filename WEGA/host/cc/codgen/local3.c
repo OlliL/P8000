@@ -1,8 +1,7 @@
 /*
  * local3.c - machine dependent code: entry and exit of a function, the escape codes "Z" of the templates, operands, calls
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
 static void epilog(int a, long sz, int b, long w, int tot);
 static void regrestore(int a, long sz, int b, long w, int tot);
@@ -12,52 +11,11 @@ static void fpdec(unsigned tot);
 static void regsave(int a, long sz, int b, long w, int tot);
 static void regargs(int tot);
 
-extern int argreg;
-extern int argstop;
-extern char ascii[];
 extern int cbflag;
-extern int dope[];
-extern int entlab;
 extern struct hoptab fhoptab[];
-extern int fldoff;
-extern int fldshf;
-extern int fldsz;
-extern int fltused;
-extern char fname[];
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
-extern long frame0;
 extern struct hoptab ihoptab[];
-extern int jlab;
-extern long maxoff;
-extern int maxreg;
-extern int minreg;
-extern int negrel[];
-extern NODE node[];
-extern int nosuffix;
-extern int nparmtab;
-extern int nsave;
-extern char *opst[];
-extern long parmax;
-extern struct { struct sym *sym; int reg; } parmtab[];
-extern int retlab;
-extern int revrel[];
 extern char *rhnames[];
-extern int rlmode;
 extern char *rlnames[];
-extern int rmode;
-extern char *rnames[];
-extern struct rs *rsfree;
-extern void rsreturn();
-extern int rstatus[];
-extern struct rs *rsuse;
-extern int rwtab[][2];
-extern int savecls[];
-extern int saveorig[];
-extern int savereg[];
-extern int structret;
-extern struct sym *symtab0;
-extern long tmpoff;
 extern int upperlval;
 static char sccsid[] __attribute__((unused)) = "@[$]local3.c\t2.4  08/24/83 11:48:31 Copr. 1981 87wega3.2.";
 char *rhnames[] = { "rh0", "rh1", "rh2", "rh3", "rh4", "rh5", "rh6", "rh7" };
@@ -503,7 +461,6 @@ geninc(int op, long n)
 	}
 	return n;
 }
-
 
 int unused9 = 0;
 static char *tcctab[] = {
@@ -1685,7 +1642,6 @@ special(NODE *p, int shape)
 	cerror("bad special shape: SPECIAL | %%%x", shape - SPECIAL);
 	return 0;
 }
-
 
 /* a comparison with a register on the right goes with the operands exchanged */
 static int rev[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };

@@ -1,109 +1,36 @@
 /*
  * reader3.c - the program and the driver of the code generation: p2init, commands of the intermediate file, order of the trees, stores, conditional branches
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern int allo();
 extern void allocinit();
 extern NODE *argprep();
-extern long baseoff;
-extern void branch();
 extern int callflag;
-extern NODE *canon();
-extern void canon2();
-extern void cbgen();
 extern void cbranch();
-extern int cerror();
 extern char *cnames[];
 extern void codgen();
 extern void constore();
 extern void d12kout();
-extern int d3klabel();
 extern void d3kreset();
-extern void deflab();
-extern void delay();
 extern NODE *deltrees[];
-extern FILE *dfile;
-extern int dope[];
 extern void mkdope();
 #ifdef OLD_D2FA
 int d2faandor();
 extern int d2fanone;
 #endif
-extern void efcode();
-extern int eflag;
-extern void endrun();
-extern NODE *eread();
-extern void fbegin();
-extern void fcmd();
 extern void ffld();
-extern int ffregs;
-extern void fixtemp();
-extern long frame0;
-extern long freetemp();
-extern long freeparm();
-extern int fregs;
-extern long ftell();
-extern void walkf();
 extern void fwalk();
-extern int gencall();
-extern int genscall();
-extern int getlab();
-extern void gswitch();
-extern void hdrout();
-extern int lineno;
-extern char ftitle[];
 extern void init();
-extern int lastchance();
-extern int lflag;
-extern void lineout();
 extern int lmulflag;
-extern int mainp2();
 extern char *malloc();
-extern void mapnm();
-extern void mapregs();
 extern void markcall();
-extern int match();
-extern long maxoff;
-extern int maxreg;
-extern long maxtemp;
-extern int minreg;
-extern void mkadrs();
-extern void mkhash();
-extern void mycanon();
-extern void ncopy();
 extern int ndelay;
-extern int negrel[];
 extern int nerrors;
-extern int nextcook();
 extern int nlabsave;
-extern void nlcheck();
-extern NODE node[];
-extern int notoff();
 extern int nparm;
-extern int nparmtab;
 extern int nrecur;
-extern void offstar();
 extern int oflag;
-extern char *opst[];
-extern NODE *optim();
-extern int p2init();
-extern void order();
-extern void oreg2();
-extern long parmax;
-extern void parminit();
-extern struct { struct sym *sym; int reg; } parmtab[];
-extern long paroff;
-extern int pflag;
 extern void prcook();
-extern void rallo();
-extern void rcmd();
-extern void rcount();
-extern int rddata();
-extern long rdin();
-extern int rdsym();
-extern void reclaim();
 extern int regA;
 extern int regB;
 extern int regC;
@@ -112,48 +39,12 @@ extern int regE;
 extern int regF;
 extern int regG;
 extern int regmask;
-extern void regreset();
-extern void regtabinit();
 extern int regtop;
-extern NODE resc[];
-extern int rflag;
-extern void rfree();
-extern void rfreeall();
-extern void recl2();
-extern void rsbuild();
-extern void rsfreeall();
-extern void rsinit();
-extern struct rs *rsuse;
-extern void scmd();
-extern int setasg();
-extern int setasop();
-extern int setbin();
-extern void setrew();
-extern int setstr();
-extern FILE *stfile;
-extern long stg;
 extern void p2compile();
 extern void stoarg();
-extern int stoasg();
-extern int stocook;
 extern void store();
-extern NODE *stotree;
-extern long stpos;
-extern void sucomp();
-extern struct sym *symtab;
-extern struct sym *symtab0;
-extern int szty();
-extern void tabclear();
-extern NODE *talloc();
 extern void tcheck();
-extern void tcmd();
-extern NODE *tcopy();
-extern void tfree();
 extern void tinit();
-extern void tmpcleanup();
-extern long tmpoff;
-extern int tshape();
-extern void uerror();
 static char sccsid[] = "@[$]reader3.c\t2.5  08/24/83 13:32:32 Copr. 1981 87wega3.2.";
 int lmulflag = 0;
 int pflag = 0;
@@ -189,7 +80,6 @@ static int d3kpend;		/* a label waits for its rsfreeall (main) */
 static int d3jdead;		/* v0p: the record before was an unconditional jump */
 #endif
 
-
 #define INTEMP_	0x1000
 
 #define NOMATCH	0x1000
@@ -202,7 +92,6 @@ static int d3jdead;		/* v0p: the record before was an unconditional jump */
 
 #undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
-
 
 /* the relation that is true when the one in the index is false */
 
@@ -1465,13 +1354,11 @@ stoarg(p, calltype)
 	}
 }
 
-
 /* evaluate p for the truth value and jump to true or false; a label < 0 means to fall through */
 int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE, FLT, FLE };	/* 0x274 */
 
 #ifdef OLD_D3H
 static void cbranch1();
-extern struct sym *fpsym1, *fpsym2;
 int d3hdepth;	/* OLD_D3H (libcisam): cbranch nesting; allo3.c marks (0x2000) the registers it gives out meanwhile.
 			   At the end of a whole condition an idle register given out inside it that holds the frame home of
 			   a parameter goes back (compare/libcisam/COMPILER.md) */
@@ -2105,7 +1992,6 @@ d3jmark(cls, reg)
 
 /* ---- v0p (OLD_D12K): the double constants at their statements (from rdr.2.5; rddata is d12kdata there) ---- */
 #ifdef OLD_D12K
-extern long rdin2();
 static int d12kcopy();
 
 /* fwalk: a NAME of a label (eread made it of an FCON) puts out the double constant of that label if it waits */

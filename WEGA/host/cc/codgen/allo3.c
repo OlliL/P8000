@@ -1,27 +1,8 @@
 /*
  * allo3.c - allocation of the registers and temporaries of a template
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-
-extern long baseoff;
-extern int dope[];
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
-extern long maxoff;
-extern long maxtemp;
-extern NODE node[];
-extern long parmax;
-extern long paroff;
-extern NODE resc[];
-extern struct rs *rsfree;
-extern void rsreturn();
-extern struct rs *rsuse;
-extern int rwtab[][2];
-extern struct sym *symtab0;
-extern int tflag;
-extern long tmpoff;
 static char sccsid[] __attribute__((unused)) = "@[$]allo3.c\t2.4  08/24/83 11:29:34 Copr. 1981 87wega3.2.";
 
 #define RLEFT	01
@@ -42,7 +23,6 @@ static char sccsid[] __attribute__((unused)) = "@[$]allo3.c\t2.4  08/24/83 11:29
 
 #define RNOP	010000
 
-
 /* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
 #ifdef SEG
 #define PTRWORDS	2
@@ -58,7 +38,6 @@ static char sccsid[] __attribute__((unused)) = "@[$]allo3.c\t2.4  08/24/83 11:29
 	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
 	 (p->in.type == 5 || p->in.type == 15) ? 2 : (p->in.type & 0x30) == 0x10 ? PTRWORDS : \
 	 p->in.type == 7 ? 4 : p->in.type == 6 ? 4 : (nfield))
-
 
 /* count the register of an operand as busy; sym and lval are only passed on */
 void
@@ -283,7 +262,6 @@ d2ofree(int r)
 	return 0;
 }
 #endif
-
 
 /* a register for the result of p; cookie says what the caller wants */
 int

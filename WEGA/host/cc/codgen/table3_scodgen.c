@@ -1,5 +1,5 @@
 /* scodgen: 174 entries, found at data offset 0x42e2 */
-#include "cg.h"
+#include "mfile3"
 
 static char sccsid[] __attribute__((unused)) = "@[$]table3.c\t2.2  10/06/83 10:57:21 Copr. 1981 87wega3.2.";
 static char tabsccs[] __attribute__((unused)) = "@[$]table3.szcc.c\t2.4  10/06/83 11:03:17 Copr. 1981 87wega3.2.";

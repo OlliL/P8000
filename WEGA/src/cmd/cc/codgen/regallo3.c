@@ -1,44 +1,27 @@
 /*
  * regallo3.c - the register lists
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern char ascii[];
-extern int cerror();
-extern int d2vfirst();
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
-extern int getreg();
 extern struct rs *newnode();
 extern void nullsyms();
-extern int pairmate();
 extern struct rs pool[];
 extern void rcount_reset();
-extern int regjam();
-extern int roverlap();
-extern void rsbuild();
 extern int rsdepth;
 extern void rsdump();
 extern struct rs *rsexcl;
 extern int rsflag1;
 extern int rsflag2;
-extern struct rs *rsfree;
-extern void rsfreeall();
-extern void rsinit();
 extern void rsinsert();
-extern int rsmatch();
 extern void rsmerge();
 extern struct rs *rspool;
 extern void rspush();
 extern void rsrelall();
 extern void rsrelease();
 extern void rsrestart();
-extern void rsreturn();
-extern struct { struct rs *list; int mark; } rsstk[];
+extern struct rssave rsstk[];
 extern int rstab1[];
 extern int rstab2[];
-extern struct rs *rsuse;
 static char sccsid[] = "@[$]regallo3.c\t2.5  08/24/83 13:36:00 Copr. 1981 87wega3.2.";
 static char rcname[][8] = {
 	"TBYTE", "TWORD", "TLONG", "TFLOAT", "GBYTE", "GWORD", "GLONG", "GFLOAT", "RANY", "NULL"
@@ -46,10 +29,7 @@ static char rcname[][8] = {
 
 #define MAXRCOUNT 5000
 
-
-
 /* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
-
 
 #ifdef OLD_D2PT
 #define D2PK(t)	1		/* v0p: OLD_D2P takes the registers of a TEMP too (the value of a switch) */
@@ -1012,7 +992,6 @@ rsfreeall(flag)
 {
 	register struct rs *next;
 	register struct rs *n;
-
 
 	for (next = n = rsuse; n; n = next) {
 		next = n->next;

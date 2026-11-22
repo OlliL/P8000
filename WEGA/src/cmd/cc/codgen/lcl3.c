@@ -1,37 +1,15 @@
 /*
  * lcl3.c - switch statements
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern int cerror();
-extern NODE *clocal();
-extern void delay();
-extern int dope[];
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
-extern int getreg();
-extern void gswitch();
-extern NODE *makeblock();
-extern void mapnm();
-extern NODE *member();
-extern NODE node[];
-extern void reclaim();
-extern struct rs *rfind();
-extern void rfree();
-extern void rmove();
-extern char *rnames[];
-extern int szty();
-extern int tbytes();
 static char sccsid[] = "@[$]lcl3.c\t2.4  10/06/83 10:39:09 Copr. 1981 87wega3.2.";
-
 
 #ifdef OLD_D3P
 #define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
 #endif
 
 #define SCONV	110
-
 
 static void chk();
 
@@ -272,10 +250,6 @@ chk()
 {
 	register int spare;
 }
-#endif
-
-#ifdef OLD_D57
-extern long d57off;
 #endif
 
 /* the node p after the conversions: names to addresses of their class, conversions of constants */

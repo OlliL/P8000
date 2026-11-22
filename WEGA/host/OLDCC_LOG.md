@@ -1865,3 +1865,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - 2026-11-22 corpus store: a stored result of the original names the temporary file of the case (cc.18279.p); a
   candidate run on a new preparation names another (cc.9972.p), so every case of codgen [host] differed after a change
   of the host codgen (0 of 427); with CORPUS_NOCACHE=1 427 of 427, then with the store too. Not changed (checkall tool).
+- 2026-11-22 codgen: one header mfile3 (owner: as mfile1 of cparse and System III; the name after the files ...3.c,
+  gopt's is mfile2.h by the SCCS line in /lib/gopt): cg.h and cg2.h in it, the three anonymous structures of bss3.c
+  named (parment, tagent, rssave), and the 183 declarations that more than one module has; the 137 that one module has
+  stay there, and the 53 of functions returning int went (as System III). All 320 in mfile3: cparse v0p, which builds
+  the shipped codgen, stops in local3.c ("malloc: Not enough core", then "Symbol table out of space"); the five that
+  common 2.5 defines as int (branch, ncopy, tfree, uerror, walkf) are not declared. codgen, scodgen stripped equal,
+  models 179/179/209/210/73/73/26, bench 153/132/212, both matrix checks as in the table, host corpora 427/427,
+  checkall ALL OK (the old variants are built by cc with it). The host port the same (cgproto.h stays, mfile3 includes it).

@@ -1,31 +1,12 @@
 /*
  * wrt3.c - text of the head of a function, its parameters
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern char ascii[];
-extern int entlab;
-extern char fname[];
-extern int lineno;
-extern char ftitle[];
-extern int jlab;
-extern int lflag;
 extern int mcountlab;
-extern NODE node[];
-extern int nparmtab;
-extern struct { struct sym *sym; int reg; } parmtab[];
-extern int pflag;
-extern struct rv regvar[];
-extern int retlab;
-extern int rflag;
-extern char *rnames[];
-extern struct rs *rsuse;
 extern int structlab;
-extern int structret;
 extern long structsz;
 static char sccsid[] __attribute__((unused)) = "@[$]wrt3.c\t2.4  08/24/83 14:01:53 Copr. 1981 87wega3.2.";
-
 
 #ifdef OLD_D3P
 #define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)

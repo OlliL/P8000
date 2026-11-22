@@ -1,8 +1,7 @@
 /*
  * regs3.c - register variables, temporaries, what the registers hold, the commands F R S T
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
 static void rnassign(NODE *p1, NODE *p2);
 static void rnnullp(NODE *p);
@@ -12,25 +11,6 @@ static void rnnulll(int r);
 static void rnnullw(int r);
 static void rnnull(int reg, int type);
 
-extern char ascii[];
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
-extern long frame0;
-extern int maxreg;
-extern int minreg;
-extern NODE node[];
-extern int nsave;
-extern char *opst[];
-extern struct rv regvar[];
-extern int rflag;
-extern int rlmode;
-extern int rmode;
-extern void rsreturn();
-extern struct rs *rsuse;
-extern int savecls[];
-extern int saveorig[];
-extern int savereg[];
-extern struct sym *symtab0;
 extern struct tmpent tmptab[];
 static char sccsid[] __attribute__((unused)) = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2.";
 
@@ -122,14 +102,9 @@ static char sccsid[] __attribute__((unused)) = "@[$]regs3.c\t2.5  10/06/83 10:55
 	rmode = m; \
 	rlmode = l
 
-
 #ifdef OLD_D3P
 #define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
 #endif
-
-
-
-
 
 static void rnassign();
 static void rnnullp();

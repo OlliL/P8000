@@ -1,19 +1,8 @@
 /*
  * tr3.c - trees: rewriting names and members
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern NODE *bcon();
-extern NODE *buildstar();
-extern int cerror();
-extern NODE *clocal();
-extern NODE *foldadd();
-extern NODE *makeblock();
-extern NODE *member();
-extern NODE node[];
-extern NODE *talloc();
-extern void uerror();
 static char sccsid[] = "@[$]tr3.c\t2.3  08/24/83 13:57:35 Copr. 1981 87wega3.2.";
 
 #define SCONV	110

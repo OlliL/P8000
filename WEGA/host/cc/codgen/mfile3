@@ -1,7 +1,9 @@
 /*
- * cg.h - common definitions of the rebuilt code generator (codgen / scodgen), the second pass of the
- * WEGA C compiler. Constants and layouts are read from the original binary; names follow the strings
- * in it (SAREG, TBYTE, RLEFT ...). See ../KNOWLEDGE.md, "codgen / scodgen".
+ * mfile3 - the header of codgen / scodgen, pass 3 of the WEGA C compiler (as mfile2 of pass 2 of System III; the name
+ * after the files ...3.c, the original name is not known):
+ * the constants and layouts read from the original binary (names after its strings: SAREG, TBYTE, RLEFT ...), the
+ * structures the modules share, and the declarations they share (the host port of src/cmd/cc/codgen/mfile3).
+ * See host/KNOWLEDGE.md, "codgen / scodgen".
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -163,3 +165,93 @@ struct optab {
 extern struct optab table[];
 
 extern int dope[];		/* dope flags by operator, filled from indope[] */
+
+#define MAXASCII	0x1194
+#define NDELAY	20
+#undef TREESZ		/* manifest has the 350 of pass 1 */
+#define TREESZ	500
+#define NPOOL	87
+
+struct rv { struct sym *sym; int rtag; int rreg; int rtype; int rcls; };
+struct hoptab { int op; char *str; int tword; };
+struct tmpent {
+	int	off;		/* +0: frame offset of the temporary, negative: end of the table */
+	char	done;		/* +2: not zero: the temporary is still needed */
+	char	cls;		/* +3: class of the register */
+	int flags;		/* +4: bit 15: the register still holds the value */
+	int	reg;		/* +6: the register */
+};
+struct arg { int reg; NODE *node; };
+#include "cgproto.h"
+int inarena(const void *p);
+int rd16(FILE *f);
+long rd32(FILE *f);
+
+struct parment { struct sym *sym; int reg; };	/* parmtab (bss3.c) */
+struct tagent { int tag; struct sym *sym; };	/* tagtab (bss3.c) */
+struct rssave { struct rs *list; int mark; };	/* rsstk (bss3.c) */
+
+/* what more than one module uses (as src/cmd/cc/codgen/mfile3) */
+extern int argreg;
+extern int argstop;
+extern char ascii[];
+extern long baseoff;
+extern FILE *dfile;
+extern int dope[];
+extern int eflag;
+extern int entlab;
+extern int ffregs;
+extern int fldoff;
+extern int fldshf;
+extern int fldsz;
+extern int fltused;
+extern char fname[];
+extern struct sym *fpsym1;
+extern struct sym *fpsym2;
+extern long frame0;
+extern int fregs;
+extern char ftitle[];
+extern int jlab;
+extern int lflag;
+extern int lineno;
+extern long maxoff;
+extern int maxreg;
+extern long maxtemp;
+extern int minreg;
+extern int negrel[];
+extern int nerrors;
+extern NODE node[];
+extern int nosuffix;
+extern int nparmtab;
+extern int nsave;
+extern char *opst[];
+extern long parmax;
+extern struct parment parmtab[];
+extern long paroff;
+extern int pflag;
+extern struct rv regvar[];
+extern NODE resc[];
+extern int retlab;
+extern int revrel[];
+extern int rflag;
+extern int rlmode;
+extern int rmode;
+extern char *rnames[];
+extern struct rs *rsfree;
+extern void rsreturn();
+extern int rstatus[];
+extern struct rs *rsuse;
+extern int rwtab[][2];
+extern int savecls[];
+extern int saveorig[];
+extern int savereg[];
+extern FILE *stfile;
+extern long stg;
+extern int stocook;
+extern NODE *stotree;
+extern long stpos;
+extern int structret;
+extern struct sym *symtab;
+extern struct sym *symtab0;
+extern int tflag;
+extern long tmpoff;

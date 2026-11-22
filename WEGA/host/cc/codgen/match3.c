@@ -1,24 +1,11 @@
 /*
  * match3.c - the template matcher
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
-extern int dope[];
-extern int fldoff;
-extern int fldshf;
-extern int fldsz;
-extern struct sym *fpsym1;
-extern NODE node[];
-extern int nosuffix;
 extern int opclass[];
 extern struct optab *opptr[];
-extern NODE resc[];
-extern int rlmode;
-extern int rmode;
-extern int rstatus[];
 extern struct optab *rwdefault;
-extern int tflag;
 static char sccsid[] __attribute__((unused)) = "@[$]match3.c\t2.4  08/24/83 13:18:24 Copr. 1981 87wega3.2.";
 int opclass[] = {
 	0x20, 0x21, 0x40, 0x41, 0x800, 0x801, 0x80, 0x81, 0x4, 0xe, 0x2, 0xe, 0x0, 0x2001, 0x10, 0xe,

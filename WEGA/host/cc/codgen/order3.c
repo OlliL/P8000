@@ -1,8 +1,7 @@
 /*
  * order3.c - the order of evaluation: Sethi-Ullman numbers, rewrites, arguments
  */
-#include "cg.h"
-#include "cg2.h"
+#include "mfile3"
 
 static int orderadd(NODE *p);
 static int lmuldiv(NODE *p);
@@ -14,27 +13,9 @@ static void argplace(void);
 
 extern int argfreg;
 extern struct arg argl[];
-extern int argreg;
-extern int argstop;
 extern int crslab;
-extern int dope[];
-extern int ffregs;
-extern int fltused;
-extern struct sym *fpsym1;
-extern struct sym *fpsym2;
-extern int fregs;
 extern int nargs;
-extern NODE node[];
-extern char *opst[];
 extern int ordflag;
-extern NODE resc[];
-extern char *rnames[];
-extern struct rs *rsfree;
-extern int rstatus[];
-extern struct rs *rsuse;
-extern int stocook;
-extern NODE *stotree;
-extern struct sym *symtab0;
 static char sccsid[] __attribute__((unused)) = "@[$]order3.c\t2.4  08/24/83 13:27:43 Copr. 1981 87wega3.2.";
 int fltused = 0;
 
@@ -428,7 +409,6 @@ orderadd(NODE *p)
 }
 
 #ifdef SEG
-extern struct sym *symtab0;
 
 /* handle indirections: get the address of *p into a register; p is the STAR itself or its operand */
 void

@@ -126,7 +126,7 @@ Rules of the target:
   (src/cmd/cc is a tree, see its README).
 
 - 2026-11-22 (Claude, for review): what only one pass has inside a shared unit stands under a macro of the pass,
-  defined in its header: PASS3 for codgen (cg.h); cparse's text is the # else. (common 2.5 is one SCCS file in cparse
+  defined in its header: PASS3 for codgen (mfile3); cparse's text is the # else. (common 2.5 is one SCCS file in cparse
   and codgen with different code in both: FLD of the dope table, argsize, callreg, branch, tcopy, nncon, the memory of
   getmem; so the original had such conditionals too, their form is not known.) The declarations a pass needs beyond
   its headers are in its wrapper (comm3.c: sbrk returns a pointer, node, lastfree). The variants of the old
