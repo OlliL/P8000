@@ -314,7 +314,7 @@ cand:
 		   the register and stored (ld A1,AL; Zi A1,AR; ld AL,A1), not incremented in memory */
 		if (p->in.op == ASG PLUS && (cookie & INTEMP) && l->in.op == OREG && l->tn.rval == FP &&
 		    r->in.op == ICON && r->in.sname == 0) {
-			if (q->rshape == S16CON)
+			if (q->rshape == SSCON)
 				goto next;
 			if (q->needs == 1 && q->rewrite == 0x804 && allo(p, q)) {
 				expand(p, cookie, "\tldZB\tA1,AL\n\tZi\tA1,AR\n\tldZB\tAL,A1\n");

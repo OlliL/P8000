@@ -761,10 +761,10 @@ prcook(cookie)
 		case SZERO:
 			printf("SZERO");
 			break;
-		case 0x8002:
+		case SSCON:
 			printf("SSCON");
 			break;
-		case 0x8004:
+		case SICON:
 			printf("SICON");
 			break;
 		default:

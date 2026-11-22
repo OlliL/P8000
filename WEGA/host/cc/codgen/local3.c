@@ -1619,19 +1619,19 @@ special(NODE *p, int shape)
 	switch (shape) {
 	case SKCON:
 		return p->tn.lval >= 0 && p->tn.lval <= 15;
-	case S16CON:
+	case SSCON:
 		return p->tn.lval >= -16 && p->tn.lval <= 16;
 	case SBCON:
 		return p->tn.lval >= -256 && p->tn.lval <= 255;
-	case SWNCON:
+	case SINCON:
 		if (!nncon(p))
 			return 0;
 		/* FALLTHROUGH */
-	case SWCON:
+	case SICON:
 		return p->tn.lval >= -32768 && p->tn.lval <= 32767;
-	case SPOW2:
+	case SCONSET:
 		return ispow2(p->tn.lval) >= 0;
-	case SNPOW2:
+	case SCONRES:
 		return ispow2(~p->tn.lval) >= 0;
 	case SADCON:
 		return 0;

@@ -67,14 +67,15 @@
 #define TSAME	0x4000		/* both operands of the same type */
 #define TFIT	0x8000		/* both operands of the same size */
 
-/* the SPECIAL shapes (local3.c special; names guessed) */
+/* the SPECIAL shapes (local3.c special): SSCON and SICON are the names prcook prints, SCONSET and SCONRES those of
+   Plexus mac2defs (one bit set, one bit clear), the others are guessed */
 #define SKCON	(SPECIAL|1)	/* a constant 0 .. 15 */
-#define S16CON	(SPECIAL|2)	/* a constant -16 .. 16 */
+#define SSCON	(SPECIAL|2)	/* a constant -16 .. 16 */
 #define SBCON	(SPECIAL|3)	/* a constant -256 .. 255 */
-#define SWCON	(SPECIAL|4)	/* a constant -32768 .. 32767 */
-#define SWNCON	(SPECIAL|5)	/* the same, and nncon */
-#define SPOW2	(SPECIAL|6)	/* a power of two */
-#define SNPOW2	(SPECIAL|7)	/* the complement a power of two */
+#define SICON	(SPECIAL|4)	/* a constant -32768 .. 32767 */
+#define SINCON	(SPECIAL|5)	/* the same, and nncon */
+#define SCONSET	(SPECIAL|6)	/* a power of two */
+#define SCONRES	(SPECIAL|7)	/* the complement a power of two */
 #define SADCON	(SPECIAL|8)	/* a constant with a name (an address) */
 
 /* the cookie of a rewrite rule and the answers of match */
