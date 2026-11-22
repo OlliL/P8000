@@ -17,6 +17,8 @@ int qop[128];
 int qdop[128];
 
 /* the quad operators: quad op, name, operator of the trees (the third field is the index of qop[]) */
+struct dopest { int dopeop; char opst[8]; int dopeval; };	/* 12 bytes, as indope of common */
+
 static struct dopest qtab[] = {
 	{ 1, "ADD", 6 },
 	{ 2, "ADDFLD", 69 },

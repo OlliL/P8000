@@ -25,7 +25,7 @@ long ifpos;
 struct quad *lastq;
 int s0b5e;
 int nfconst;
-int ifline;
+int lineno;
 struct quad *qtail;
 char *arhigh[11];
 long vb94;

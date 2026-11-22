@@ -7,13 +7,11 @@ static char sccsid[] __attribute__((unused)) = "@[$]wrtil2.c\t1.7  03/04/83 16:0
 static int treeeq(NODE *p, NODE *q);
 static void wrtree(NODE *p);
 
-#define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
-
 extern int qflag, ntl;
 extern int tl[];
 extern char ctpos[], ctneg[];
-extern int ifline;
-extern char ifname[];
+extern int lineno;
+extern char ftitle[];
 extern int *altab;
 extern long constbl[];
 extern struct fconst fconsttbl[];
@@ -31,7 +29,6 @@ static int treeeq();
 static void wrtree();
 
 extern int qdop[];
-#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 extern struct quad *qhead;
 extern int v00, v04;
 extern long vb94;
@@ -60,7 +57,7 @@ void writeil(void)
 		regsym[i] = 0;
 	tmpoff = 0;
 	for (q = qhead; q; q = q->next) {
-		ifline = q->pos.line;
+		lineno = q->pos.line;
 		switch (q->op) {
 		case 0x2e:
 			printf("{%d\t%ld\t", v00, zl(vb94));
@@ -514,7 +511,7 @@ NODE *mkleaf(struct qa *a)
 		q->tn.temp = betatbl[a->w4].p6;
 		break;
 	case 3:
-		for (r = node; r <= &node[NTREE - 1]; ++r) {
+		for (r = node; r <= &node[TREESZ - 1]; ++r) {
 			if (r->in.rall == a->w4 && r->in.op != FREE) {
 				if (qflag > 4)
 					printf("matched temp %d with op %d\n", a->w4, r->in.op);
@@ -563,7 +560,7 @@ void cleartrees(void)
 {
 	NODE *p, *q, *n1, *n2;
 
-	for (p = node; p <= &node[NTREE - 1]; ++p) {
+	for (p = node; p <= &node[TREESZ - 1]; ++p) {
 		if (p->in.op != FREE && p->in.op != TEMP && p->in.rall > 0 && ctpos[p->in.rall] > 0) {
 			if (qflag > 2)
 				printf("cleartrees: emitting tree\n");
@@ -579,13 +576,13 @@ void cleartrees(void)
 			n2->tn.rval = p->in.rall;
 			n2->tn.lval = ctpos[p->in.rall];
 			n1->in.left = n2;
-			for (q = node; q <= &node[NTREE - 1]; ++q) {
+			for (q = node; q <= &node[TREESZ - 1]; ++q) {
 				if (q->in.op == TEMP && p->in.rall == q->in.rall) {
 					n2->tn.temp = q->tn.temp;
 					break;
 				}
 			}
-			if (q > &node[NTREE - 1]) {
+			if (q > &node[TREESZ - 1]) {
 				if (qflag > 2)
 					printf("// assigning T%d to offset %d\n", p->in.rall, tmpoff);
 				n2->tn.temp = tmpoff;
@@ -597,7 +594,7 @@ void cleartrees(void)
 			n1->in.op = FREE;
 		}
 	}
-	for (p = node; p <= &node[NTREE - 1]; ++p)
+	for (p = node; p <= &node[TREESZ - 1]; ++p)
 		if (p->in.op == TEMP && p->in.rall == 0)
 			(void)(p->in.op == FREE);	/* the original compares and does not assign */
 }
@@ -607,7 +604,7 @@ void wrline(NODE *p)
 {
 	if (p->in.op != FREE) {
 		putchar('.');
-		printf("%d\t%s\n", ifline, ifname);
+		printf("%d\t%s\n", lineno, ftitle);
 		wrtree(p);
 	}
 }
@@ -630,7 +627,7 @@ static void wrtree(NODE *p)
 			printf("%d\t", (p->in.sname->sflags >> 4) & 0xFFF);
 		else if (p->in.op == TEMP)
 			printf("%d\t", p->tn.temp);
-		else if (kind != LTYPE && p->in.right >= node && p->in.right < &node[NTREE])
+		else if (kind != LTYPE && p->in.right >= node && p->in.right < &node[TREESZ])
 			printf("%d\t", -30720);	/* host: rval overlays in.right; the original prints the segment word of
 						   the node it points to (node[] is in segment 8: 0x8800) */
 		else

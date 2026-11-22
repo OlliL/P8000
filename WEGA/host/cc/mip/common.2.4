@@ -1,29 +1,15 @@
 /*
- * common.2.5 (host): the port of src/cmd/cc/mip/common.2.5 for cparse (comm1.c) and codgen (comm3.c); codgen's own
- * parts under PASS3 (cg.h), as there.
+ * common.2.4 (host): the port of src/cmd/cc/mip/common.2.4 for gopt (comm2.c), written from common.2.5 (host) as there.
  */
-static char sccsid2[] __attribute__((unused)) = "@[$]common\t2.5  08/24/83 16:19:58 Copr. 1981 87wega3.2.";
+static char sccsid2[] __attribute__((unused)) = "@[$]common\t2.4  03/04/83 15:24:28 Copr. 1981 87wega3.2.";
 
 # ifndef EXIT
 # define EXIT exit
 # endif
 
 int nerrors = 0;  /* number of errors */
-# ifdef PASS3
-int cunused[9] = { 0 };	/* 18 bytes of zeros in the data of /lib/codgen, not referenced */
-# else
-int cunused[8] = { 0 };	/* 16 bytes of zeros in the data of /lib/cparse (0x357e), not referenced; meaning open */
+static NODE nodinit;	/* talloc gives a node cleared with it */
 
-NODE *lastfree;  /* pointer to last free node; (for allocator) */
-# endif
-
-	/* VARARGS1 */
-int syserr(char *s)
-{ /* a system call failed: die */
-	fprintf( stderr, "system call error: " );
-	perror( s );
-	dexit( 64 );
-	}
 void uerror(char *s, ...)
 {
 	va_list ap;
@@ -92,11 +78,12 @@ NODE *talloc(void)
 	q = lastfree;
 	for( p = TNEXT(q); p!=q; p= TNEXT(p))
 		if( p->in.op ==FREE ){
-# ifdef PASS3
-			p->in.sname = 0;
-# endif
+			*p = nodinit;
 			return(lastfree=p);
 			}
+	q = lastfree;
+	for( p = TNEXT(q); p!=q; p= TNEXT(p))
+		printf( "talloc: opcode = %d\n", p->in.op );
 
 	cerror( "out of tree space; simplify expression");
 	/* NOTREACHED */
@@ -121,11 +108,11 @@ void tfree(NODE *p)
 
 void tfree1(NODE *p)
 {
-	if( p == 0 ) cerror( "freeing blank tree!");
+	if( p == 0 ) cerror( " freeing blank tree!");
 	else p->in.op = FREE;
 	}
 
-void fwalk( NODE *t, void (*f)(NODE *, int, int *, int *), int down )
+void fwalk( NODE *t, void (*f)(), int down )	/* (host gopt: f unprototyped) */
 {
 
 	int down1, down2;
@@ -151,7 +138,7 @@ void fwalk( NODE *t, void (*f)(NODE *, int, int *, int *), int down )
 		}
 	}
 
-void walkf( NODE *t, void (*f)(NODE *) )
+void walkf( NODE *t, void (*f)() )
 {
 	int opty;
 
@@ -165,10 +152,6 @@ void walkf( NODE *t, void (*f)(NODE *) )
 
 
 
-# ifndef PASS3
-int dope[ DSIZE ];
-char *opst[DSIZE];
-# endif
 
 struct dopest { int dopeop; char opst[8]; int dopeval; } indope[] = {
 
@@ -241,11 +224,7 @@ struct dopest { int dopeop; char opst[8]; int dopeval; } indope[] = {
 	{ TYPE, "TYPE", LTYPE },
 	{ LB, "\"[\"", BITYPE },
 	{ CBRANCH, "CBRANCH", BITYPE },
-# ifdef PASS3
-	{ FLD, "FLD", UTYPE },
-# else
 	{ FLD, "FLD", BITYPE },
-# endif
 	{ PMCONV, "PMCONV", BITYPE },
 	{ PVCONV, "PVCONV", BITYPE },
 	{ RETURN, "RETURN", BITYPE|ASGFLG|ASGOPFLG },
@@ -269,14 +248,6 @@ struct dopest { int dopeop; char opst[8]; int dopeval; } indope[] = {
 	{ -1, "", 0 }
 };
 
-char *rnames[] = {	/* the names of the registers (WEGA: in the data, not used by pass 1) */
-#ifdef SEG
-	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "sp", "fp",
-#else
-	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "fp",
-#endif
-	"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
-	};
 
 void mkdope(void)
 {
@@ -287,6 +258,36 @@ void mkdope(void)
 		opst[q->dopeop] = q->opst;
 		}
 	}
+
+void tprint(TWORD t, FILE *fp)
+{ /* output a nice description of the type of t */
+
+	static char * tnames[] = {
+		"undef", "farg", "char", "short", "int", "long", "float", "double", "strty", "unionty", "enumty", "moety",
+		"uchar", "ushort", "unsigned", "ulong", "?", "?"
+		};
+
+	for(;; t = DECREF(t) ){
+
+		if( ISPTR(t) ) fprintf( fp, "PTR " );
+		else if( ISFTN(t) ) fprintf( fp, "FTN " );
+		else if( ISARY(t) ) fprintf( fp, "ARY " );
+		else {
+			if( t > 17 ) t = 17;
+			fputs( tnames[t], fp );
+			return;
+			}
+		}
+	}
+
+char *rnames[] = {	/* the names of the registers (WEGA: in the data, not used by pass 1) */
+#ifdef SEG
+	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "sp", "fp",
+#else
+	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "fp",
+#endif
+	"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
+	};
 
 int bsize(int t)
 { /* the size of a scalar type in bits */
@@ -321,10 +322,6 @@ int szty(TWORD t)
 		return( 2 );
 	case DOUBLE:
 		return( 4 );
-	case INT:
-	case ENUMTY:
-	case UNSIGNED:
-		return( 1 );
 		}
 #ifdef SEG
 	if( ISPTR(t) ) return( 2 );
@@ -334,29 +331,15 @@ int szty(TWORD t)
 	return( 1 );
 	}
 
-# ifdef PASS3
-int
-argsize(NODE *p)
-{
-	int t, u;
-
-	if (p->in.op == STARG)
-		return (unsigned)p->stn.stsize >> 1;
-	if (p->in.op == NAME && p->in.type == 8)
-		return p->in.sname->ssize / 16;
-	t = u = szty(p->in.type == 6 ? 7 : p->in.type);
-	return t;
-}
-# else
 int argsize(NODE *p)
 { /* the size of an argument in words */
-	int s1, s2;
+	int t;
 
-	if( p->in.op == STARG )
-		return( (tsize( STRTY, p->in.left->fn.cdim, p->in.left->fn.csiz ) + 7) / SZINT );
-	return( s1 = s2 = szty( p->in.type == FLOAT ? DOUBLE : p->in.type ) );
+	if( p->in.op == STARG ) return( p->stn.stsize / 2 );
+	if( p->in.op == NAME && p->in.type == STRTY ) return( p->in.sname->ssize / 16 );
+	t = szty( p->in.type == FLOAT ? DOUBLE : p->in.type );
+	return( t );
 	}
-# endif
 
 void where(int c)
 {
@@ -373,9 +356,6 @@ int tbytes(TWORD t)
 	case CHAR:
 	case UCHAR:
 		return( 1 );
-	case SHORT:
-	case USHORT:
-		return( 2 );
 		}
 #ifdef SEG
 	if( ISPTR(t) ) return( 4 );
@@ -385,21 +365,8 @@ int tbytes(TWORD t)
 	return( 2 );
 	}
 
-# ifdef PASS3
-/* the cookie that serves the type: B registers for floats, A registers otherwise */
-int
-callreg(NODE *p)
-{
-	if (p && (p->in.type == 7 || p->in.type == 6))
-		return 0x10;
-	return 2;
-}
-# else
-	/* mapping relationals when the sides are reversed (optim) */
-short revrel[] ={ EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
-char *memtop = 0, *memcur = 0;	/* the hunk of getmem */
-int memfirst = 1;	/* getmem has not been called yet */
-# endif
+	/* mapping relationals when the sides are reversed (not used in gopt) */
+static int revrel[] __attribute__((unused)) ={ EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
 
 void dexit(int v)
 {
@@ -407,19 +374,10 @@ void dexit(int v)
 	exit( v );
 	}
 
-# ifdef PASS3
 void branch(int n)
 { /* the jump to label n */
 	printf( "\tjpr\tL%d\n", n );
 	}
-# else
-extern FILE *outfile;
-
-void branch(int n)
-{ /* a branch record of the intermediate file */
-	fprintf( outfile, "B%d\t\n", n );
-	}
-# endif
 
 void ncopy(NODE *q, NODE *p)
 {
@@ -438,22 +396,7 @@ NODE *tcopy(NODE *p)
 
 	ncopy( q=talloc(), p );
 	r = p->tn.rval;
-# ifdef PASS3
-	if (p->in.op == REG)
-		rbusy(r, p->in.type, p->in.sname, p->tn.lval);
-	else if (p->in.op == OREG) {
-		if (r >= 0x100) {
-			rbusy((r & 0xFF) - 1, 0x14, p->in.sname, p->tn.lval);
-			if (r & 0xFF)
-				rbusy((r >> 8) - 1, 4, 0, 0L);	/* two arguments in the original: name and offset are what the registers hold; rbusy does not use them */
-		} else if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))
-			rbusy(r, 4, p->in.sname, p->tn.lval);
-		else
-			rbusy(r, 0x14, p->in.sname, p->tn.lval);
-	}
-# else
 	(void) r;
-# endif
 
 	switch( optype(q->in.op) ){
 
@@ -467,11 +410,7 @@ NODE *tcopy(NODE *p)
 	return(q);
 	}
 
-# ifdef PASS3
-int ispow2(long c)	/* a long of the host, as tn.lval of codgen */
-# else
-int ispow2(CONSZ c)
-# endif
+int ispow2(long c)
 {
 	int i;
 	if( c <= 0 || (c&(c-1)) ) return(-1);
@@ -482,70 +421,138 @@ int ispow2(CONSZ c)
 int nncon(NODE *p)
 {
 	/* is p a constant without a name */
-# ifdef PASS3
 	return( p->in.op == ICON && p->in.sname == 0 && p->tn.rval >= 0 );
-# else
-	return( p->in.op == ICON && p->tn.rval == NONAME );
-# endif
 	}
 
 
-# ifdef PASS3
-int revrel[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
-/*
- * The allocator of the original: a bump allocator on the break (sbrk), the symbol tables are reserved one behind the other and
- * allocinit() sets the break back. Here one arena replaces the break (malloc of the host uses the break itself); the blocks are
- * rounded to 8 bytes, a multiple of the size of the structures, so that tables stay contiguous.
- */
-static char arena[4 << 20] __attribute__((aligned(16)));
-static char *endbrk = arena + sizeof arena, *curbrk = arena;
+/* the areas of the tables: each has a segment of its own (area 1 may move to another one).
+   host: each area is one block of ARSIZE bytes; beside it the bytes of the original are counted (z*: the offset in
+   the segment, the end the program knows, the size of the segment as the system rounds it: mkseg() and ssgbrk() in
+   units of 256 bytes, at most 0x10000), so that gopt stops with "C Optimizer: out of space" where the original does
+   (area 1 goes on in a new segment, its offsets from 0). A log of the allocations (host pointer, offset) gives
+   tabfree() and tabzoff() the offset of a pointer. */
+#define NAREA	11
+#define STEP	2000
+#define ARSIZE	(64L << 20)
+static char *arbase[NAREA] = { 0 };	/* host: the start of the memory of the area */
+static char *arlim[NAREA] = { 0 };	/* end of the memory of the area */
+static char *arptr[NAREA] = { 0 };	/* the next free byte */
+static long zptr[NAREA], zlim[NAREA], zsize[NAREA];	/* host: the offset, the end and the segment of the original */
+static struct zlog { char *p; long z; } *zlog[NAREA];	/* host: the allocations of the area in their order */
+static long nzlog[NAREA], mzlog[NAREA];
 
-char *
-getmem(int n)
+#define R256(n)	(((long)(n) + 255) & ~255L)
+
+/* n bytes of the area a, cleared; zn: the bytes of the original (names taballoc, tabfree, tabavail guessed) */
+char *tabzalloc(int n, int zn, int a)
 {
-	register char *p;
+	char *p;
+	int *q;
+	long m;
 
-	n = (n + 7) & ~7;
-	if (curbrk + n >= endbrk)
-		cerror("Code generator: out of space\n");
-	p = curbrk;
-	curbrk += n;
+	if (arptr[a] == 0) {
+		arbase[a] = arptr[a] = malloc(ARSIZE);
+		if (arptr[a] == 0)
+			cerror("C Optimizer: out of space\n");
+		arlim[a] = arptr[a] + ARSIZE;
+		zptr[a] = 0;			/* mkseg(0, STEP) */
+		zlim[a] = STEP;
+		zsize[a] = R256(STEP);
+	}
+	n++;
+	n &= ~1;
+	zn++;
+	zn &= ~1;
+	if (zptr[a] + zn >= zlim[a]) {
+		m = zn > STEP ? zn : STEP;
+		if (zsize[a] + R256(m) > 0x10000) {	/* ssgbrk() refuses */
+			if (a != 1)
+				cerror("C Optimizer: out of space\n");
+			zptr[a] = zlim[a] = 0;		/* mkseg(0, m): a new segment */
+			zsize[a] = R256(m);
+		} else
+			zsize[a] += R256(m);
+		zlim[a] += m;
+	}
+	if (n % 8 == 0)	/* host: a structure with pointers (and the start of a table) on 8 bytes; other sizes stay
+			   packed, as the arrays of ints that the original overruns into the next one (dominators()) */
+		arptr[a] = arbase[a] + ((arptr[a] - arbase[a] + 7) & ~7L);
+	if (arptr[a] + n >= arlim[a])
+		cerror("C Optimizer: out of space\n");
+	p = arptr[a];
+	if (nzlog[a] == mzlog[a]) {
+		mzlog[a] = mzlog[a] ? 2 * mzlog[a] : 1024;
+		zlog[a] = realloc(zlog[a], mzlog[a] * sizeof(struct zlog));
+		if (zlog[a] == 0)
+			cerror("C Optimizer: out of space\n");
+	}
+	zlog[a][nzlog[a]].p = p;
+	zlog[a][nzlog[a]++].z = zptr[a];
+	zptr[a] += zn;
+	arptr[a] += n;
+	if (arptr[a] > arhigh[a])
+		arhigh[a] = arptr[a];
+	for (q = (int *)p; q < (int *)arptr[a]; q++)
+		*q = 0;
 	return p;
 }
 
-/* does p point into the arena (a symbol) and not at a number that a node holds in its sname word, a label for instance? */
-int
-inarena(const void *p)
+/* host: the offset in its segment that the original has for p of the area a (an allocation of the log) */
+long tabzoff(int a, char *p)
 {
-	return (const char *)p >= arena && (const char *)p < arena + sizeof arena;
-}
+	long lo = 0, hi = nzlog[a] - 1, k;
 
-void
-allocinit(char *base)
-{
-	curbrk = base;
-}
-# else
-char *getmem(int n)
-{ /* n bytes of memory, from a hunk of at least 2000 bytes */
-	register char *p;
-	int incr;
-
-	if( memfirst ){
-		memfirst = 0;
-		memcur = memtop = 0;
-		}
-	n += 1;
-	n &= ~1;
-	if( memcur + n >= memtop ){
-		if( n > 2000 ) incr = n;
-		else incr = 2000;
-		/* the original moves the break; the host takes a new hunk (nobody calls getmem) */
-		if( (memcur = malloc( incr )) == 0 ) cerror( "Code generator: out of space\n" );
-		memtop = memcur + incr;
-		}
-	p = memcur;
-	memcur += n;
-	return( p );
+	while (lo <= hi) {
+		k = (lo + hi) / 2;
+		if (zlog[a][k].p < p)
+			lo = k + 1;
+		else if (zlog[a][k].p > p || (k > 0 && zlog[a][k - 1].p == p))
+			hi = k - 1;
+		else
+			return zlog[a][k].z;
 	}
-# endif
+	return lo < nzlog[a] ? zlog[a][lo].z : zptr[a];
+}
+
+/* give the memory of the area a back down to p (0: to the start of its segment) */
+void tabfree(int a, char *p)
+{
+	long z;
+
+	if (p == 0) {
+		p = arbase[a];
+		z = 0;		/* the start of the segment that the area is in now */
+	} else {
+		z = tabzoff(a, p);
+		if (a == 1 && z > zptr[a]) {	/* back into an earlier segment (sgbrk): its end is p */
+			zlim[a] = z;
+			zsize[a] = R256(z);
+		}
+	}
+	while (nzlog[a] > 0 && zlog[a][nzlog[a] - 1].p >= p)
+		nzlog[a]--;
+	zptr[a] = z;
+	arptr[a] = p;
+}
+
+/* is there room for n bytes in the area a (it is allocated and given back) */
+int tabavail(int n, int a)
+{
+	char *p, *q;
+	int r;
+
+	p = tabzalloc(0, 0, a);
+	q = tabzalloc(n, n, a);	/* host: n bytes of the original */
+	if (q == 0)	/* the original: 0x7F00FFFF, the -1 of mkseg(); taballoc() stops before */
+		r = 0;
+	else
+		r = 1;
+	tabfree(a, p);
+	return r;
+}
+
+/* host: the start of the area a (the space used: arhigh[a] - tabbase(a); the original prints the offset of arhigh) */
+char *tabbase(int a)
+{
+	return arbase[a];
+}

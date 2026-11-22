@@ -20,4 +20,4 @@ extern struct rs *rsuse;
 static char sccsid[] __attribute__((unused)) = "@[$]comm3.c\t2.1  11/15/82 12:48:27 Copr. 1981 87wega3.2.";
 char unused6[16] = { 0 };
 char ftitle[16] = { 0 };
-#include "common.2.5"
+#include "../mip/common.2.5"

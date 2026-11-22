@@ -5,7 +5,6 @@
 static char sccsid[] __attribute__((unused)) = "@[$]alias2.c\t1.5  02/07/83 15:50:16 Copr. 1981 87wega3.2.";
 #include "gopt.h"
 
-#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 
 extern int aflag;
 extern int nadr, nptr, nal, s4d7a, s4d92;

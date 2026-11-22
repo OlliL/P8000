@@ -2,4 +2,4 @@
 
 static char sccsid[] __attribute__((unused)) = "@[$]optim1.c\t2.1  11/15/82 13:10:49 Copr. 1981 87wega3.2.";
 extern short revrel[];
-#include "optim.2.5"
+#include "../mip/optim.2.5"

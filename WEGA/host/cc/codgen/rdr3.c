@@ -38,4 +38,4 @@ extern struct sym *symtab0;
 extern struct { int tag; struct sym *sym; } tagtab[];
 extern char *tnames[];
 static char sccsid[] __attribute__((unused)) = "@[$]rdr3.c\t2.1  11/15/82 12:49:01 Copr. 1981 87wega3.2.";
-#include "rdr.2.5"
+#include "../mip/rdr.2.5"

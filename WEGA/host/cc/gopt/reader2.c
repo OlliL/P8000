@@ -11,8 +11,8 @@ static void cutree(NODE *p);
 
 int s0078 = 0;
 
-extern char ifname[];
-extern int ifline;
+extern char ftitle[];
+extern int lineno;
 extern struct pos curpos;
 extern FILE *infile;
 extern long ifpos;
@@ -129,10 +129,10 @@ int main(int argc, char **argv)
 			nlcheck();
 			break;
 		case '.':
-			ifline = rdin(10);
-			curpos.line = ifline;
-			curpos.name = ifname;
-			q = ifname;
+			lineno = rdin(10);
+			curpos.line = lineno;
+			curpos.name = ftitle;
+			q = ftitle;
 			for (;;) {
 				if ((*q = getc(infile)) == '\n')
 					break;

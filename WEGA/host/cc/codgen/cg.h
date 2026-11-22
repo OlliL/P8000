@@ -11,8 +11,8 @@
 #include <unistd.h>
 #define PASS3		/* codgen: what common.2.5 (and the other units) have for codgen only */
 #define NONAME	0
-#include "macdefs"
-#include "manifest"
+#include "../z8000/macdefs"
+#include "../mip/manifest"
 #include "oldcc.h"
 
 /* operators (the dope table in ops_*.c has the flags: arity in bits 1-3) */

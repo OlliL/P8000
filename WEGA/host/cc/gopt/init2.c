@@ -4,7 +4,7 @@
 static char sccsid[] __attribute__((unused)) = "@[$]init2.c\t1.3  02/07/83 15:53:16 Copr. 1981 87wega3.2.";
 #include "gopt.h"
 
-char ifname[100] = {0};
+char ftitle[100] = {0};
 int s4d72 = 0, s4d74 = 0, s4d76 = 0, s4d78 = 0, s4d7a = 0, qflag = 0, aflag = 0, s4d80 = 0, s4d82 = 0, s4d84 = 0, s4d86 = 0, s4d88 = 0;
 int dflag = 0, tflag = 0, eflag = 0, s4d90 = 0, s4d92 = 0, s4d94 = 0, s4d98 = 0;	/* s4d98: no code uses it */
 long s4d96 = 0;	/* host: long, as reader2.c stores it (the original: an int, the long also covers s4d98) */
