@@ -397,7 +397,7 @@ mapregs(p)
 			n->tn.lval = n->in.sname->soffset / 8;
 			n->tn.rval = 0;
 			n->in.sname = 0;
-			n->in.type = 4;
+			n->in.type = INT;
 		}
 #ifdef OLD_D5T
 		/* an element of a local array (OLD_D5S), its member: the member goes to the offset, fp stays last */

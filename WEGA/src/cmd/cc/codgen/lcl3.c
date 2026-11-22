@@ -241,7 +241,7 @@ chk(p)
 	if (r->in.op != REG)
 		cerror("badly formed offset");
 	p->in.right = r;
-	r->in.type = 4;
+	r->in.type = INT;
 }
 #else
 /* a debugging hook that does nothing */
@@ -286,7 +286,7 @@ clocal(p)
 			}
 #endif
 #endif
-			r = makeblock(REG, 0, 0, 0x18);
+			r = makeblock(REG, 0, 0, PTR|STRTY);
 			r->tn.lval = s->soffset / 8;
 			r->tn.rval = 15;
 			p = member(makeblock(STREF, r, p, 0));
@@ -302,7 +302,7 @@ clocal(p)
 			}
 			break;
 		case AUTO:
-			r = makeblock(REG, 0, 0, 0x18);
+			r = makeblock(REG, 0, 0, PTR|STRTY);
 			r->tn.lval = s->soffset / 8;
 			r->tn.rval = 15;
 			p = member(makeblock(STREF, r, p, 0));

@@ -1000,7 +1000,7 @@ again:
 			p->tn.lval = t;
 			p->in.sname = 0;
 			p->stn.stsize = 0;
-			p->in.type = 4;
+			p->in.type = INT;
 			goto cleanup;
 		}
 	case OROR:
@@ -1254,7 +1254,7 @@ d14qarm(q, t, ty)
 		a->in.right = q;
 		q = talloc();
 		q->in.op = 110;		/* SCONV */
-		q->in.type = 4;
+		q->in.type = INT;
 		q->in.left = a->in.right;
 		q->in.rall = NOPREF;
 	}

@@ -33,7 +33,6 @@ int nosuffix = 0;
 #undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
-#define DIVFLAG	0x80		/* dope flag of the division operators: the dividend gets extended */
 
 /* the test condition codes for ZN, by relation */
 
@@ -591,18 +590,18 @@ zzzcode(p, c)
 		return;
 	case 'C':
 		if (p->in.type == CHAR)
-			p->in.type = 4;
+			p->in.type = INT;
 		else if (p->in.type == UCHAR)
-			p->in.type = 14;
+			p->in.type = UNSIGNED;
 		else
 			cerror("bad ZC");
 		return;
 	case 'c':
 		/* float <-> double: the operand has to be in a B register */
 		if (p->in.type == FLOAT)
-			p->in.type = 7;
+			p->in.type = DOUBLE;
 		else
-			p->in.type = 6;
+			p->in.type = FLOAT;
 		if (!tshape(p->in.left, STBREG))
 			order(p->in.left, STBREG);
 		return;
@@ -792,7 +791,7 @@ zzzcode(p, c)
 			expand(u, FOREFF, "\tldZB\tU1,AL\n");
 		if (t == CHAR)
 			expand(p, FOREFF, "\textsb\tU1\n");
-		if (!(dope[p->in.op] & DIVFLAG))
+		if (!(dope[p->in.op] & DIVFLG))
 			return;
 		if ((unsigned)t <= 15 && (unsigned)t >= 12)
 			expand(p, FOREFF, "\tldk\tA1,#0\n");
@@ -1170,7 +1169,7 @@ shtemp(p)
 {
 	if (p->in.op == STAR)
 		p = p->in.left;
-	return (p->in.op == REG || p->in.op == OREG) ? !(rstatus[p->tn.rval] & 0x14) : (p->in.op == NAME || p->in.op == ICON);
+	return (p->in.op == REG || p->in.op == OREG) ? !(rstatus[p->tn.rval] & (STAREG|STBREG)) : (p->in.op == NAME || p->in.op == ICON);
 }
 
 /* does an increment of incr bytes on a pointer of type t step by the size of the object it points to? */
@@ -1206,7 +1205,7 @@ shumul(p)
 
 	if (o == NAME || o == OREG || o == ICON)
 		return STARNM;
-	if ((o == 0x4E || o == 9) && p->in.left->in.op == REG && p->in.right->in.op == ICON && p->in.right->in.sname == 0 &&
+	if ((o == INCR || o == ASG MINUS) && p->in.left->in.op == REG && p->in.right->in.op == ICON && p->in.right->in.sname == 0 &&
 	    shincr(p->in.left->in.type, p->in.right->tn.lval))
 		return STARREG;
 	return 0;
@@ -1531,7 +1530,7 @@ gencall(p, cookie)
 			order(f, INAREG|INTAREG);
 			if (f->tn.rval == 0)
 				order(f, INAREG|INTAREG);
-			rfree(f->tn.rval, 0x14);
+			rfree(f->tn.rval, PTR|INT);
 		}
 	}
 	if (p->in.right) {
@@ -1552,9 +1551,9 @@ gencall(p, cookie)
 	if (indirect) {
 		if (argstop == 0 && argreg >= 3) {
 			/* the address is still in reach of a free register pair */
-			f->in.rall = 0x1002;
+			f->in.rall = MUSTDO|2;
 			order(f, INAREG|INTAREG);
-			rfree(f->tn.rval, 0x14);
+			rfree(f->tn.rval, PTR|INT);
 			indirect = 0;
 		} else {
 			/* rr8 holds the address during the call; its old contents wait in a temporary */

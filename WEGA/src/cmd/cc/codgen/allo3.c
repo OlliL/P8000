@@ -124,8 +124,8 @@ allo(p, q)
 		k++;
 	}
 	k0 = k;
-	while (b & 3) {				/* the registers stay busy only for the code of the entry */
-		if (((b & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
+	while (b & NACOUNT) {				/* the registers stay busy only for the code of the entry */
+		if (((b & NAMASK) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
 		    (dope[p->in.op] & DIVFLG))
 			cls = RCPAIR;
 		else
@@ -145,7 +145,7 @@ allo(p, q)
 		k++;
 	}
 	k0 = k;
-	while (b & 0x30) {
+	while (b & NBCOUNT) {
 		cls = rclass(p->in.type, resc[k0].tn.rval);
 		b -= 16;
 		k0--;
@@ -330,10 +330,10 @@ allocreg(p, cookie)
 	else if (p->in.sname == fpsym2)
 		fpsym2->soffset = p->tn.lval;
 #ifdef SEG
-	if (((cookie & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
+	if (((cookie & NAMASK) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
 	    p->in.type == STRTY || p->in.type == UNIONTY || (dope[p->in.op] & DIVFLG))
 #else
-	if (((cookie & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
+	if (((cookie & NAMASK) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
 	    (dope[p->in.op] & DIVFLG))
 #endif
 		cls = RCPAIR;
@@ -672,7 +672,7 @@ recl2(p)
 	if (p->in.op != OREG)
 		return;
 	if (r >= 0x100) {			/* base and index register */
-		rfree((r >> 8) - 1, 0x14);
+		rfree((r >> 8) - 1, PTR|INT);
 		if (r & 0xFF)
 			rfree((r & 0xFF) - 1, INT);
 		return;
@@ -680,7 +680,7 @@ recl2(p)
 	if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))
 		rfree(r, INT);
 	else
-		rfree(r, 0x14);
+		rfree(r, PTR|INT);
 }
 
 /* the register is no longer needed by one more operand */
@@ -826,9 +826,9 @@ done:
 isreg:
 	if (!tflag) {
 		if (p->in.type == SHORT)
-			p->in.type = 4;
+			p->in.type = INT;
 		else if (p->in.type == USHORT)
-			p->in.type = 14;
+			p->in.type = UNSIGNED;
 	}
 	if (rewrite & RESC) {			/* the second register of a long result */
 		want = p->tn.rval;
@@ -840,13 +840,13 @@ isreg:
 			cerror("reclaim: cannot find register free");
 		p->tn.rval = want;
 		if (p->in.type == LONG)
-			p->in.type = 4;
+			p->in.type = INT;
 		else if (p->in.type == ULONG)
 			;
-		p->in.type = 14;		/* sic: also after the LONG case (the original jumps to this store) */
+		p->in.type = UNSIGNED;		/* sic: also after the LONG case (the original jumps to this store) */
 		if (p->in.rall & MUSTDO)
 			want = p->in.rall & ~MUSTDO;
-	} else if (o == 0x3E || o == 0x3F) {	/* a long result of a shift or divide goes to rr4 */
+	} else if (o == MOD || o == ASG MOD) {	/* a long result of a shift or divide goes to rr4 */
 		if (p->in.type == LONG || p->in.type == ULONG) {
 			rfree(p->tn.rval, p->in.type);
 			if (getreg(RCPAIR, 4, RJAM, p->in.sname) != 4)

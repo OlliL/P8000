@@ -28,9 +28,9 @@ int fltused = 0;
 
 #ifdef OLD_D3K
 /* v0: not the register of a parameter (it is copied before an operator changes it) */
-#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & 0x14) && !((q)->in.sname && (q)->in.sname->sclass == PARAM))
+#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & (STAREG|STBREG)) && !((q)->in.sname && (q)->in.sname->sclass == PARAM))
 #else
-#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & 0x14))
+#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & (STAREG|STBREG)))
 #endif
 
 static int orderadd();
@@ -145,7 +145,7 @@ sucomp(p)
 		fl = p->in.left->in.fsu;
 		sur = p->in.right->in.su;
 		fr = p->in.right->in.fsu;
-		if (o == 0x17 || o == 0x18) {		/* && and || */
+		if (o == ANDAND || o == OROR) {		/* && and || */
 			p->in.su = max(max(sul, sur), nr);
 			p->in.fsu = max(max(fl, fr), nf);
 			return;
@@ -492,7 +492,7 @@ niceuty(p)
 {
 	register int t;
 
-	return p->in.op == STAR && (t = p->in.type) != CHAR && t != UCHAR && t != FLOAT && t != DOUBLE && shumul(p->in.left) != 0x800;
+	return p->in.op == STAR && (t = p->in.type) != CHAR && t != UCHAR && t != FLOAT && t != DOUBLE && shumul(p->in.left) != STARREG;
 }
 
 /* order the operands of a binary operator; 1 when something was ordered, 0 when the template can be used */
@@ -506,7 +506,7 @@ setbin(p)
 	l = p->in.left;
 	if (p->in.right->in.su == 0 && p->in.right->in.fsu == 0) {
 		if logop(p->in.op) {
-			if (l->in.op == STAR && shumul(l->in.left) != 0x800)
+			if (l->in.op == STAR && shumul(l->in.left) != STARREG)
 				OFFSTARL(l);
 			else
 				order(l, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
@@ -664,11 +664,11 @@ leftadr:
 		if (p->in.left->in.op == STAR) {
 			if (lmuldiv(p)) {
 #ifdef SEG
-				p->in.left->in.left->in.rall = 0x1002;
-				p->in.left->in.left->in.left->in.rall = 0x1002;
+				p->in.left->in.left->in.rall = MUSTDO|2;
+				p->in.left->in.left->in.left->in.rall = MUSTDO|2;
 #else
-				p->in.left->in.left->in.rall = 0x1001;
-				p->in.left->in.left->in.left->in.rall = 0x1001;
+				p->in.left->in.left->in.rall = MUSTDO|1;
+				p->in.left->in.left->in.left->in.rall = MUSTDO|1;
 #endif
 			}
 			OFFSTARA(p->in.left);
@@ -677,11 +677,11 @@ leftadr:
 		if (p->in.left->in.op == FLD && p->in.left->in.left->in.op == STAR) {
 			if (lmuldiv(p)) {
 #ifdef SEG
-				p->in.left->in.left->in.left->in.rall = 0x1002;
-				p->in.left->in.left->in.left->in.left->in.rall = 0x1002;
+				p->in.left->in.left->in.left->in.rall = MUSTDO|2;
+				p->in.left->in.left->in.left->in.left->in.rall = MUSTDO|2;
 #else
-				p->in.left->in.left->in.left->in.rall = 0x1001;
-				p->in.left->in.left->in.left->in.left->in.rall = 0x1001;
+				p->in.left->in.left->in.left->in.rall = MUSTDO|1;
+				p->in.left->in.left->in.left->in.left->in.rall = MUSTDO|1;
 #endif
 			}
 			OFFSTARA(p->in.left->in.left);
@@ -691,7 +691,7 @@ rew:
 		q = p->in.left;
 		if (q->in.op == FLD)
 			q = q->in.left;
-		if (q->in.op != STAR || shumul(q->in.left) != 0x800)
+		if (q->in.op != STAR || shumul(q->in.left) != STARREG)
 			return 0;
 		c = tcopy(p);
 		p->in.op = ASSIGN;
@@ -729,7 +729,7 @@ rew:
 	}
 	if (sul > sur && p->in.left->in.op == STAR) {
 		if (lmuldiv(p))
-			p->in.left->in.left->in.rall = 0x1002;
+			p->in.left->in.left->in.rall = MUSTDO|2;
 		OFFSTARA(p->in.left);
 		return 1;
 	}
@@ -895,16 +895,16 @@ fixstarg(p)
 {
 	struct optab q;
 
-	q.needs = 0x400;
+	q.needs = NPTEMP;
 	q.nx = 0x20;
 	q.cstring = "/* dummy from fixstarg */\n";
 	if (!allo(p, &q))
 		cerror("bad STARG allocation");
-	resc[0].in.type = 8;
+	resc[0].in.type = STRTY;
 	p->in.op = STASG;
 	p->in.right = p->in.left;
 	p->in.left = tcopy(resc);
-	p->in.type = 0x18;
+	p->in.type = PTR|STRTY;
 }
 
 /* remove the arguments that were collected from the tree up to rest and order the first of the rest */
@@ -937,7 +937,7 @@ argstrip(p, rest)
 				printf("\textsb\t%s\n", rnames[p->tn.rval]);
 			else
 				printf("\tldb\trh%d,#0\n", p->tn.rval);
-			p->in.type = 4;
+			p->in.type = INT;
 		}
 	}
 	order(p, FORARG);
