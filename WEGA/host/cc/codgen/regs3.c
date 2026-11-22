@@ -298,7 +298,7 @@ fixfld(NODE *p)
 #endif
 	if (p->in.op != FLD && a->in.op != UAND)
 		return;
-	if (m->in.op != NAME || m->tn.rval < 0 || (m->in.sname->sflags >> 2 & 1) != 0)
+	if (m->in.op != NAME || m->tn.rval < 0 || (SFISGLOBAL(m->in.sname->sflags)) != 0)
 		return;
 	m = clocal(m);
 	if (m->in.op != STAR)
@@ -391,7 +391,7 @@ mapregs(NODE *p)
 		break;
 	case UAND:
 		m = p->in.left;
-		if (m->in.op == NAME && m->in.sname != 0 && (m->in.sname->sflags >> 2 & 1) == 0 && m->tn.rval >= 0) {	/* no symbol: the original reads the flags at address 0; host: as for a static, the tree stays */
+		if (m->in.op == NAME && m->in.sname != 0 && (SFISGLOBAL(m->in.sname->sflags)) == 0 && m->tn.rval >= 0) {	/* no symbol: the original reads the flags at address 0; host: as for a static, the tree stays */
 			m = clocal(m);
 			if (m->in.op == STAR) {
 				m->in.op = FREE;
@@ -779,7 +779,7 @@ void
 oregfix(NODE *p)
 {
 
-	if ((p->in.sname->sflags >> 2 & 1) == 1)
+	if ((SFISGLOBAL(p->in.sname->sflags)) == 1)
 		return;
 	if (p->in.op == NAME && p->in.sname->sclass == STATIC)
 		return;
@@ -789,7 +789,7 @@ oregfix(NODE *p)
 	p->tn.rval = 15;
 	p->tn.lval = p->in.sname->soffset / 8;
 	p->stn.stsize = 0;
-	p->in.sname = p->in.sname->sclass == PARAM && ((p->in.sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
+	p->in.sname = p->in.sname->sclass == PARAM && ((SFISPMEM(p->in.sname->sflags)) == 1) ? fpsym2 : fpsym1;
 }
 
 /* command F: a register variable or a temporary is released */
@@ -1027,7 +1027,7 @@ void
 memname(struct sym *s, long off)
 {
 
-	if (s && (s->sflags >> 2 & 1))
+	if (s && (SFISGLOBAL(s->sflags)))
 		printf("_%s", ascii + s->nameoff);
 	else if (s && s->sclass == STATIC) {
 		putchar('L');

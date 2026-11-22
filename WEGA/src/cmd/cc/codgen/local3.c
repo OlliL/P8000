@@ -997,7 +997,7 @@ zzzcode(p, c)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 		frame:
-			if (p->in.sname->sclass == STATIC && p->in.op == NAME && !(p->in.sname->sflags >> 2 & 1) && p->tn.rval >= 0) {
+			if (p->in.sname->sclass == STATIC && p->in.op == NAME && !(SFISGLOBAL(p->in.sname->sflags)) && p->tn.rval >= 0) {
 				if (szty(n) == 2) {
 					if ((int)u == CHAR || (int)u == UCHAR)
 						p->tn.rval += 3;
@@ -1022,7 +1022,7 @@ zzzcode(p, c)
 				p->tn.lval += 1;
 			return;
 #else
-			if (p->in.sname->sclass == STATIC && p->in.op == NAME && !(p->in.sname->sflags >> 2 & 1) && p->tn.rval >= 0) {
+			if (p->in.sname->sclass == STATIC && p->in.op == NAME && !(SFISGLOBAL(p->in.sname->sflags)) && p->tn.rval >= 0) {
 				if (szty(n) == 2) {
 					if ((int)u == CHAR || (int)u == UCHAR)
 						p->tn.rval += 3;
@@ -1450,7 +1450,7 @@ acon(p)
 		}
 #ifdef SEG
 		if (p->in.sname != symtab0 && ascii[p->in.sname->nameoff] != '~') {
-			if (p->in.op == NAME && p->in.sname->sclass == STATIC && !(p->in.sname->sflags >> 2 & 1)) {
+			if (p->in.op == NAME && p->in.sname->sclass == STATIC && !(SFISGLOBAL(p->in.sname->sflags))) {
 				putchar('L');
 				printf("%ld", p->in.sname->soffset);
 				p->tn.lval = p->tn.rval;
@@ -1465,7 +1465,7 @@ acon(p)
 		}
 #else
 		if (p->in.sname && ascii[p->in.sname->nameoff] != '~') {
-			if (p->in.op == NAME && p->in.sname->sclass == STATIC && !(p->in.sname->sflags >> 2 & 1)) {	/* a local static: its label */
+			if (p->in.op == NAME && p->in.sname->sclass == STATIC && !(SFISGLOBAL(p->in.sname->sflags))) {	/* a local static: its label */
 				putchar('L');
 				printf("%ld", p->in.sname->soffset);
 				p->tn.lval = p->tn.rval;

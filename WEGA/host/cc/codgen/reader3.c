@@ -1440,7 +1440,7 @@ oreg2(NODE *p)
 		if (q->in.op == PLUS && ql->in.op == ICON && qr->in.op == REG) {
 #endif
 			if (ql->tn.rval < 0) {
-				if (ql->in.sname && ql->in.sname->sclass == STATIC && !(ql->in.sname->sflags >> 2 & 1))	/* SEG: the original reads address 0 for no symbol */
+				if (ql->in.sname && ql->in.sname->sclass == STATIC && !(SFISGLOBAL(ql->in.sname->sflags)))	/* SEG: the original reads address 0 for no symbol */
 					stw = -ql->in.sname->soffset;
 				else
 					stw = ql->tn.rval;

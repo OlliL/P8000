@@ -88,7 +88,7 @@ void symflags(void)
 	found = 0;
 	for (q = qhead; q != 0; q = q->next) {
 		if (q->op == QADDR && q->a.b2 == OANAME) {
-			symtab[q->a.w4].sflags &= ~1;
+			symtab[q->a.w4].sflags &= ~SFOPT;
 			found = 1;
 		}
 	}
@@ -131,7 +131,7 @@ void assignreg(int flag)
 		if (inreach(q)) {
 			switch (q->c.b2) {
 			case OANAME:
-				if ((symtab[q->c.w4].sflags & 1) || q->c.fl)
+				if ((symtab[q->c.w4].sflags & SFOPT) || q->c.fl)
 					include(flag, q, last);
 				break;
 			case OABTEMP:
@@ -188,7 +188,7 @@ void include(int flag, struct quad *q, struct quad *last)
 	if (flag == 0 && q->c.w0 == CHAR)
 		return;
 	if ((blks[bblockno])->rec->w12 && (blks[bblockno])->rec->callfnd && q->c.b2 == OANAME) {
-		if ((symtab[q->c.w4].sflags >> 2) & 1)
+		if (SFISGLOBAL(symtab[q->c.w4].sflags))
 			return;
 		if (symtab[q->c.w4].sclass == PARAM)
 			return;

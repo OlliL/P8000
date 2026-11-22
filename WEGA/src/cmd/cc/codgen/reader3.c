@@ -572,7 +572,7 @@ delay(p)
 		register struct rs *n;
 		register struct sym *f;
 
-		f = p->in.left->in.sname->sclass == PARAM && (p->in.left->in.sname->sflags >> 3 & 1) == 1 ? fpsym2 : fpsym1;
+		f = p->in.left->in.sname->sclass == PARAM && (SFISPMEM(p->in.left->in.sname->sflags)) == 1 ? fpsym2 : fpsym1;
 		for (n = rsuse; n; n = n->next)
 			if (n->cls == RCPAIR && n->sym == f && n->off == p->in.left->in.sname->soffset / 8)
 				n->sym = 0;
@@ -1674,9 +1674,9 @@ oreg2(p)
 #endif
 			if (ql->tn.rval < 0) {
 #ifdef SEG
-				if (ql->in.sname->sclass == STATIC && !(ql->in.sname->sflags >> 2 & 1))
+				if (ql->in.sname->sclass == STATIC && !(SFISGLOBAL(ql->in.sname->sflags)))
 #else
-				if (ql->in.sname && ql->in.sname->sclass == STATIC && !(ql->in.sname->sflags >> 2 & 1))
+				if (ql->in.sname && ql->in.sname->sclass == STATIC && !(SFISGLOBAL(ql->in.sname->sflags)))
 #endif
 					stw = -ql->in.sname->soffset;
 				else

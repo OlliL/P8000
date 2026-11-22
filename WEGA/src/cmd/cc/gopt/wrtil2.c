@@ -58,8 +58,8 @@ writeil()
 			continue;
 		case QEND:
 			for (i = 1; i <= 11; i++)
-				if (regsym[i] && (((regsym[i]->sflags >> 2) & 1) || regsym[i]->sclass == STATIC))
-					printf("S%d\t\n", (regsym[i]->sflags >> 4) & 0xfff);
+				if (regsym[i] && ((SFISGLOBAL(regsym[i]->sflags)) || regsym[i]->sclass == STATIC))
+					printf("S%d\t\n", SFSYMNO(regsym[i]->sflags));
 			printf("}\n");
 			fseek(stdout, pos, 0);
 			printf("%04.4d", tmpoff);
@@ -150,14 +150,14 @@ writeil()
 		case QSAVE:
 			if (regsym[q->a.w4] == 0)
 				continue;
-			printf("S%d\t\n", (regsym[q->a.w4]->sflags >> 4) & 0xfff);
+			printf("S%d\t\n", SFSYMNO(regsym[q->a.w4]->sflags));
 			regsym[q->a.w4] = 0;
 			continue;
 		case QREGISTER:
 			if (q->a.w4 > 7)
 				q->a.w4 -= 7;
 			if (q->b.b2 == OANAME) {
-				printf("R%d\t%d\t\n", q->a.w4, (symtab[q->b.w4].sflags >> 4) & 0xfff);
+				printf("R%d\t%d\t\n", q->a.w4, SFSYMNO(symtab[q->b.w4].sflags));
 				regsym[q->a.w4] = symtab + q->b.w4;
 			} else if (q->b.b2 == OASTEMP && betatbl[q->b.w4].p6 < 0) {
 				if (qflag > 2)
@@ -177,7 +177,7 @@ writeil()
 			continue;
 		case QRESTORE:
 			if (q->b.b2 == OANAME)
-				printf("T%d\t\n", (symtab[q->b.w4].sflags >> 4) & 0xfff);
+				printf("T%d\t\n", SFSYMNO(symtab[q->b.w4].sflags));
 			else if (q->b.b2 == OASTEMP && betatbl[q->b.w4].p6 < 0) {
 				if (qflag > 2)
 					printf("// assigning S%d to offset %d\n", q->a.w4, tmpoff);
@@ -631,7 +631,7 @@ wrtree(p)
 		if (p->in.op == ICON)
 			printf("0\t");
 		else if (p->in.op == NAME && p->tn.rval >= 0)
-			printf("%d\t", (p->in.sname->sflags >> 4) & 0xFFF);
+			printf("%d\t", SFSYMNO(p->in.sname->sflags));
 		else if (p->in.op == TEMP)
 			printf("%d\t", p->tn.temp);
 #ifdef SHIPPED

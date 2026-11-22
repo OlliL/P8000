@@ -98,7 +98,7 @@ parminit(NODE *p, int down, int *down1, int *down2)
 		parmtab[nparmtab].sym = s;
 		nparmtab++;
 		parmtab[nparmtab].sym = 0;
-		s->sflags &= ~8;
+		s->sflags &= ~SFPMEM;
 		return;
 	}
 #endif
@@ -151,7 +151,7 @@ parminit(NODE *p, int down, int *down1, int *down2)
 #endif
 			else
 				cerror("structure argument too long");
-			s->sflags &= ~8;
+			s->sflags &= ~SFPMEM;
 			return;
 		}
 		if (nparmtab > 9)
@@ -160,11 +160,11 @@ parminit(NODE *p, int down, int *down1, int *down2)
 		parmtab[nparmtab].sym = s;
 		nparmtab++;
 		parmtab[nparmtab].sym = 0;
-		s->sflags &= ~8;
+		s->sflags &= ~SFPMEM;
 		return;
 	}
 	if (s->sclass == PARAM && p->tn.lval >= 0)
-		s->sflags |= 8;
+		s->sflags |= SFPMEM;
 	else if (s->sclass != PARAM)
 		cerror("illegal class in PROC tree");
 }

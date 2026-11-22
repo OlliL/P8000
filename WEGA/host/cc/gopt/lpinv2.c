@@ -120,13 +120,13 @@ void clrsymflag(struct quad *q, int ot)
 		t = q->c.b2;
 	}
 	if (t == 4)
-		symtab[i].sflags &= ~2;
+		symtab[i].sflags &= ~SFLPOPT;
 	else if (t == 6)
 		betatbl[i].b12 = 0;
 	else if (t == 8) {
 		betatbl[i].b12 = 0;
 		if ((ot == 2 && q->op == QIDR) || (ot == 1 && q->op == QSTORE))
-			symtab[betatbl[i].x1].sflags &= ~2;
+			symtab[betatbl[i].x1].sflags &= ~SFLPOPT;
 	}
 }
 
@@ -182,21 +182,21 @@ void setopt(struct quad *q)
 		prquad(q);
 	}
 	if (q->c.b2 == OANAME) {
-		symtab[q->c.w4].sflags |= 2;
+		symtab[q->c.w4].sflags |= SFLPOPT;
 		if (pdebug > 3)
-			printf("setopt(), rslt sym=%s, lpopt=%d\n", ascii + symtab[q->c.w4].nameoff, (symtab[q->c.w4].sflags >> 1) & 1);
+			printf("setopt(), rslt sym=%s, lpopt=%d\n", ascii + symtab[q->c.w4].nameoff, SFISLPOPT(symtab[q->c.w4].sflags));
 	} else if (q->c.b2 == OASTEMP || q->c.b2 == OABTEMP)
 		betatbl[q->c.w4].b12 = 1;
 	if (q->c.b2 == OABTEMP && q->op == QSTORE) {
-		symtab[betatbl[q->c.w4].x1].sflags |= 2;
+		symtab[betatbl[q->c.w4].x1].sflags |= SFLPOPT;
 		if (pdebug > 3)
-			printf("setopt(), rslt beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->c.w4].x1].nameoff, (symtab[betatbl[q->c.w4].x1].sflags >> 1) & 1);
+			printf("setopt(), rslt beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->c.w4].x1].nameoff, SFISLPOPT(symtab[betatbl[q->c.w4].x1].sflags));
 	}
 	if (q->op == QPARV && q->a.b2 == OABTEMP) {
 		betatbl[q->a.w4].b12 = 1;
-		symtab[betatbl[q->a.w4].x1].sflags |= 2;
+		symtab[betatbl[q->a.w4].x1].sflags |= SFLPOPT;
 		if (pdebug > 3)
-			printf("setopt(), qparv beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->a.w4].x1].nameoff, (symtab[betatbl[q->a.w4].x1].sflags >> 1) & 1);
+			printf("setopt(), qparv beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->a.w4].x1].nameoff, SFISLPOPT(symtab[betatbl[q->a.w4].x1].sflags));
 	}
 }
 
@@ -302,15 +302,15 @@ int isglobal(struct quad *q)
 		printf("isglobal(),  quad:\n");
 		prquad(q);
 	}
-	if ((q->c.b2 == OANAME && ((symtab[q->c.w4].sflags >> 2) & 1)) ||
-	    (q->c.b2 == OABTEMP && ((symtab[betatbl[q->c.w4].x1].sflags >> 2) & 1))) {
+	if ((q->c.b2 == OANAME && (SFISGLOBAL(symtab[q->c.w4].sflags))) ||
+	    (q->c.b2 == OABTEMP && (SFISGLOBAL(symtab[betatbl[q->c.w4].x1].sflags)))) {
 		if (pdebug > 3)
 			printf("isglobal(), returning TRUE\n");
 		return 1;
 	}
 	if ((p = checkalias(q, 1)) != 0)
 		for (; p != 0; p = p->next) {
-			if ((symtab[altab[p->x0]].sflags >> 2) & 1) {
+			if (SFISGLOBAL(symtab[altab[p->x0]].sflags)) {
 				if (pdebug > 3)
 					printf("isglobal(), returning TRUE\n");
 				return 1;
@@ -480,22 +480,22 @@ int isdefined(struct quad *q, int ot)
 	}
 	if (t == 4) {
 		if (pdebug > 3)
-			printf("isdefined(), symbol=%s, lpopt=%d\n", ascii + symtab[i].nameoff, (symtab[i].sflags >> 1) & 1);
-		return (symtab[i].sflags >> 1) & 1;
+			printf("isdefined(), symbol=%s, lpopt=%d\n", ascii + symtab[i].nameoff, SFISLPOPT(symtab[i].sflags));
+		return SFISLPOPT(symtab[i].sflags);
 	}
 	if (t == 6) {
 		if (pdebug > 3)
-			printf("isdefined(), stmp=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
+			printf("isdefined(), stmp=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, SFISLPOPT(symtab[betatbl[i].x1].sflags));
 		return bbit(i, 12);
 	}
 	if (t == 8) {
 		if ((q->op == QIDR || q->op == QSTORE) && ot == 2) {
 			if (pdebug > 3)
-				printf("isdefined(), op1=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
-			return ((symtab[betatbl[i].x1].sflags >> 1) & 1) || bbit(i, 12);
+				printf("isdefined(), op1=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, SFISLPOPT(symtab[betatbl[i].x1].sflags));
+			return (SFISLPOPT(symtab[betatbl[i].x1].sflags)) || bbit(i, 12);
 		}
 		if (pdebug > 3)
-			printf("isdefined(), beta=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
+			printf("isdefined(), beta=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, SFISLPOPT(symtab[betatbl[i].x1].sflags));
 		return bbit(i, 12);
 	}
 	cerror("isdefined(): illegal opnd");

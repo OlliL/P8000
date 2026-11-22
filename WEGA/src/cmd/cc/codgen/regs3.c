@@ -337,7 +337,7 @@ fixfld(p)
 #endif
 	if (p->in.op != FLD && a->in.op != UAND)
 		return;
-	if (m->in.op != NAME || m->tn.rval < 0 || (m->in.sname->sflags >> 2 & 1) != 0)
+	if (m->in.op != NAME || m->tn.rval < 0 || (SFISGLOBAL(m->in.sname->sflags)) != 0)
 		return;
 	m = clocal(m);
 	if (m->in.op != STAR)
@@ -429,7 +429,7 @@ mapregs(p)
 		break;
 	case UAND:
 		m = p->in.left;
-		if (m->in.op == NAME && (m->in.sname->sflags >> 2 & 1) == 0 && m->tn.rval >= 0) {
+		if (m->in.op == NAME && (SFISGLOBAL(m->in.sname->sflags)) == 0 && m->tn.rval >= 0) {
 			m = clocal(m);
 			if (m->in.op == STAR) {
 				m->in.op = FREE;
@@ -856,7 +856,7 @@ fixname(p)
 		register struct rs *n;
 		register struct sym *f;
 
-		f = p->in.sname->sclass == PARAM && (p->in.sname->sflags >> 3 & 1) == 1 ? fpsym2 : fpsym1;
+		f = p->in.sname->sclass == PARAM && (SFISPMEM(p->in.sname->sflags)) == 1 ? fpsym2 : fpsym1;
 		for (n = rsuse; n; n = n->next)
 			if (n->cls == RCPAIR && n->sym == f && n->off == p->in.sname->soffset / 8 && rclass(p->in.type, n->reg) == RCPAIR &&
 			    (p->in.sname->sclass == AUTO || (n->flags & RSASG))) {
@@ -884,7 +884,7 @@ oregfix(p)
 {
 	register int spare;
 
-	if ((p->in.sname->sflags >> 2 & 1) == 1)
+	if ((SFISGLOBAL(p->in.sname->sflags)) == 1)
 		return;
 	if (p->in.op == NAME && p->in.sname->sclass == STATIC)
 		return;
@@ -894,7 +894,7 @@ oregfix(p)
 	p->tn.rval = 15;
 	p->tn.lval = p->in.sname->soffset / 8;
 	p->stn.stsize = 0;
-	p->in.sname = p->in.sname->sclass == PARAM && ((p->in.sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
+	p->in.sname = p->in.sname->sclass == PARAM && ((SFISPMEM(p->in.sname->sflags)) == 1) ? fpsym2 : fpsym1;
 }
 
 #ifndef OLD_DNR	/* vc: the register records of gopt (F R S T, -O3 and -O5) are not read */
@@ -1144,7 +1144,7 @@ memname(s, off)
 {
 	int x;
 
-	if (s && (s->sflags >> 2 & 1))
+	if (s && (SFISGLOBAL(s->sflags)))
 		printf("_%s", ascii + s->nameoff);
 	else if (s && s->sclass == STATIC) {
 		putchar('L');

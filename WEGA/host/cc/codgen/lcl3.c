@@ -250,7 +250,7 @@ clocal(NODE *p)
 			q = p->in.left;
 			if (q->in.op == PLUS) {
 				if (q->in.right->in.op == ICON) {
-					if (s->sflags >> 3 & 1)
+					if (SFISPMEM(s->sflags))
 						q->in.right->in.sname = fpsym2;
 					else
 						q->in.right->in.sname = fpsym1;
@@ -272,7 +272,7 @@ clocal(NODE *p)
 			break;
 		case STATIC:
 		case LABEL:
-			if ((s->sflags >> 2 & 1) == 1)
+			if ((SFISGLOBAL(s->sflags)) == 1)
 				return p;	/* the original returns without a value (the caller gets what is left in the register) */
 			p->tn.lval = 0;
 			p->tn.rval = -s->soffset;

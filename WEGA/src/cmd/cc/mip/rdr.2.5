@@ -97,14 +97,14 @@ readsyms(n, tab, kind)
 		if ((x = fread(tab, 22, n, stfile)) != n)
 			printf("readst: error in reading symbol table file stfile\n");
 		for (k = n, q = tab; k > 0; k--, q = q + 1) {
-			tagtab[nglob].tag = (q->sflags >> 4) & 0xFFF;
+			tagtab[nglob].tag = SFSYMNO(q->sflags);
 			tagtab[nglob].sym = q;
 			nglob++;
 			q->nameoff += kind;
 			if (kind == 21)
-				q->sflags &= ~4;
+				q->sflags &= ~SFGLOBAL;
 			else {
-				q->sflags |= 4;
+				q->sflags |= SFGLOBAL;
 				q->sx14 = 0;
 			}
 		}
@@ -322,7 +322,7 @@ mapnm(p)
 			}
 		}
 		if (eflag > 1)
-			printf("mapnm, p->sname = %d, p->global=%d\n", p->in.sname, p->in.sname->sflags >> 2 & 1);
+			printf("mapnm, p->sname = %d, p->global=%d\n", p->in.sname, SFISGLOBAL(p->in.sname->sflags));
 		return;
 	}
 	if (p->in.op == ICON) {

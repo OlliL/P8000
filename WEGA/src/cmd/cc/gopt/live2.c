@@ -46,7 +46,7 @@ prqflags(q)
 		printf(" gr");
 	if (q->f7)
 		printf(" k");
-	if (q->c.b2 == OANAME && ((symtab[q->c.w4].sflags >> 2) & 1) && q->c.fl)
+	if (q->c.b2 == OANAME && (SFISGLOBAL(symtab[q->c.w4].sflags)) && q->c.fl)
 		printf(" reg_candidate");
 	printf("\n");
 }
@@ -146,7 +146,7 @@ insrtlive(q, cnt)
 	a = checkalias(q, 2);
 	if (a == 0)
 		goto r1;
-	if ((symtab[q->a.w4].sflags >> 2) & 1) {
+	if (SFISGLOBAL(symtab[q->a.w4].sflags)) {
 		if (q->op == QSTORE && almap(&q->a, QSTORE) == 0)
 r1:
 			return 1;
@@ -206,9 +206,9 @@ setsymtable(q, which)
 		break;
 	}
 	if (ldebug > 3)
-		printf("setsymtable(), %s, optimize=%d\n", ascii + symtab[t].nameoff, symtab[t].sflags & 1);
-	if (!(symtab[t].sflags & 1)) {
-		symtab[t].sflags |= 1;
+		printf("setsymtable(), %s, optimize=%d\n", ascii + symtab[t].nameoff, symtab[t].sflags & SFOPT);
+	if (!(symtab[t].sflags & SFOPT)) {
+		symtab[t].sflags |= SFOPT;
 		tq.b.b2 = OANONE;
 		tq.c.b2 = OANONE;
 		((char *)&tq)[4] = QSTORE;
@@ -352,14 +352,14 @@ issym(q, flag)
 	case 5:
 		j = q->c.w4;
 		if (q->c.b2 == OANAME) {
-			if (symtab[j].sflags & 1)
+			if (symtab[j].sflags & SFOPT)
 				r = 4;
 		} else if (q->c.b2 == OASTEMP) {
 			if (BOPT(j))
 				r = 6;
 		} else if (q->c.b2 == OABTEMP) {
 			if (q->op == QSTORE) {
-				if (symtab[betatbl[j].x1].sflags & 1)
+				if (symtab[betatbl[j].x1].sflags & SFOPT)
 					r = 4;
 			} else if (BOPT(j))
 				r = 6;
@@ -368,14 +368,14 @@ issym(q, flag)
 	case 2:
 		j = q->a.w4;
 		if (q->a.b2 == OANAME) {
-			if (symtab[j].sflags & 1)
+			if (symtab[j].sflags & SFOPT)
 				r = 4;
 		} else if (q->a.b2 == OASTEMP) {
 			if (BOPT(j))
 				r = 6;
 		} else if (q->a.b2 == OABTEMP) {
 			if (q->op == QIDR || q->op == QLOAD) {
-				if (symtab[betatbl[j].x1].sflags & 1)
+				if (symtab[betatbl[j].x1].sflags & SFOPT)
 					r = 4;
 			} else if (BOPT(j))
 				r = 6;
@@ -384,7 +384,7 @@ issym(q, flag)
 	case 3:
 		j = q->b.w4;
 		if (q->b.b2 == OANAME) {
-			if (symtab[j].sflags & 1)
+			if (symtab[j].sflags & SFOPT)
 				r = 4;
 		} else if (q->b.b2 == OASTEMP || q->b.b2 == OABTEMP) {
 			if (BOPT(j))
@@ -900,8 +900,8 @@ killdefs(r)
 
 	for (i = 0; i < ndefs; i++) {
 		q = defs[i];
-		if ((q->c.b2 == OANAME && ((symtab[q->c.w4].sflags >> 2) & 1)) ||
-		    (q->c.b2 == OABTEMP && !BBIT(q->c.w4, 11) && ((symtab[betatbl[q->c.w4].x1].sflags >> 2) & 1))) {
+		if ((q->c.b2 == OANAME && (SFISGLOBAL(symtab[q->c.w4].sflags))) ||
+		    (q->c.b2 == OABTEMP && !BBIT(q->c.w4, 11) && (SFISGLOBAL(symtab[betatbl[q->c.w4].x1].sflags)))) {
 			setlbit(r->f10, i);
 			if (ldebug)
 				printf("kill, i=%d\n", i);
@@ -1196,11 +1196,11 @@ clearflags()
 		if (lvtab[i].kind == 1) {
 			if (ldebug > 1)
 				printf("clearing flag for symbol  %s\n", ascii + symtab[lvtab[i].var].nameoff);
-			symtab[lvtab[i].var].sflags &= ~1;
+			symtab[lvtab[i].var].sflags &= ~SFOPT;
 		} else {
 			if (ldebug > 1)
 				printf("clearing flag for beta sym %s\n", ascii + symtab[betatbl[lvtab[i].var].x1].nameoff);
-			symtab[betatbl[lvtab[i].var].x1].sflags &= ~1;
+			symtab[betatbl[lvtab[i].var].x1].sflags &= ~SFOPT;
 			*(int *)((char *)betatbl + (lvtab[i].var * 10 + 8)) &= ~(1 << 13);
 		}
 	}

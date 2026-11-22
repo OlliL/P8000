@@ -14,10 +14,21 @@ struct sym {
 	int	sx6;		/* +6 */
 	long	soffset;	/* +8: bit offset in the frame, or the label number of a static */
 	long	ssize;		/* +0xC: size in bits (a structure argument) */
-	int	sflags;		/* +0x10 */
+	int	sflags;		/* +0x10: SFSYMNO, SFPMEM, SFGLOBAL, SFLPOPT, SFOPT */
 	int	sx12;		/* +0x12 */
 	int	sx14;		/* +0x14: 0xFFFF */
 };
+
+/* sflags: cparse (putsym) writes the symbol number in bits 4..15 and the four bits below as 0; the passes use them
+   (the names are guessed; "global", "lpopt" and "optimize" are the words of the debug output of rdr and gopt) */
+#define SFSYMNO(f)	(((f) >> 4) & 0xFFF)	/* the symbol number */
+#define SFPMEM	010			/* codgen: a parameter that stays in memory (wrt3: not in a register at the entry) */
+#define SFISPMEM(f)	((f) >> 3 & 1)
+#define SFGLOBAL	04			/* rdr: a global symbol */
+#define SFISGLOBAL(f)	((f) >> 2 & 1)
+#define SFLPOPT	02			/* gopt: defined in the loop (lpinv2: "lpopt") */
+#define SFISLPOPT(f)	((f) >> 1 & 1)
+#define SFOPT	01			/* gopt: "optimize" (live2 setsymtable, reg2) */
 
 /* the storage classes of sclass, as cparse writes them (cparse/mfile1) */
 #define AUTO	1

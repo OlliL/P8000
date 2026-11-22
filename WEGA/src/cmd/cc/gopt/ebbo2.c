@@ -743,7 +743,7 @@ int
 canopt(p)
 struct qa *p;
 {
-	if (p->b2 == OANAME && ((symtab[p->w4].sflags >> 2) & 1) && ebbcalls)
+	if (p->b2 == OANAME && (SFISGLOBAL(symtab[p->w4].sflags)) && ebbcalls)
 		return 0;
 	return 1;
 }
@@ -765,7 +765,7 @@ int n;
 		e = e->next;
 	}
 	for (i = 0; i < nstores; i++) {
-		if (stores[i].q->c.b2 == OANAME && ((symtab[stores[i].q->c.w4].sflags >> 2) & 1)) {
+		if (stores[i].q->c.b2 == OANAME && (SFISGLOBAL(symtab[stores[i].q->c.w4].sflags))) {
 			stores[i].q = q;
 			stores[i].s = symtab;
 		}

@@ -74,14 +74,14 @@ readsyms(int n, struct sym *tab, int kind)
 		if ((x = rdsyms22(tab, n, stfile)) != n)
 			printf("readst: error in reading symbol table file stfile\n");
 		for (k = n, q = tab; k > 0; k--, q = q + 1) {
-			tagtab[nglob].tag = (q->sflags >> 4) & 0xFFF;
+			tagtab[nglob].tag = SFSYMNO(q->sflags);
 			tagtab[nglob].sym = q;
 			nglob++;
 			q->nameoff += kind;
 			if (kind == 7)
-				q->sflags &= ~4;
+				q->sflags &= ~SFGLOBAL;
 			else {
-				q->sflags |= 4;
+				q->sflags |= SFGLOBAL;
 				q->sx14 = 0;
 			}
 		}
@@ -94,8 +94,8 @@ readsyms(int n, struct sym *tab, int kind)
 				for (t = tab->stype >> 4; t != 0; t >>= 2)
 					printf(" %s", tmod[t & 3]);
 				printf(", class = %s\n", tclass[(int)tab->sclass]);
-				printf("        offset = %ld, reg = %d, size = %ld, tag = %d\n", tab->soffset, tab->sbyte5, tab->ssize, (tab->sflags >> 4) & 0xFFF);
-				printf("        block = %d, global = %d,", tab->sx6, (tab->sflags >> 2) & 1);
+				printf("        offset = %ld, reg = %d, size = %ld, tag = %d\n", tab->soffset, tab->sbyte5, tab->ssize, SFSYMNO(tab->sflags));
+				printf("        block = %d, global = %d,", tab->sx6, SFISGLOBAL(tab->sflags));
 				if (tab->sclass == STNAME)
 					printf(" members = %d\n", tab->sx12);
 				else
@@ -341,7 +341,7 @@ void
 mkhash(void)
 {
 	(symtab = (struct sym *)tabzalloc((int)sizeof(struct sym), 22, 0))->nameoff = 0;
-	symtab->sflags |= 4;
+	symtab->sflags |= SFGLOBAL;
 	symtab->sx14 = 0;
 }
 

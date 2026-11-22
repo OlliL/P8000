@@ -271,7 +271,7 @@ clocal(p)
 		case PARAM:
 #ifdef OLD_D57
 			/* vl: a register parameter is used as memory (its address is taken): remembered for efcode */
-			if (!(s->sflags >> 3 & 1))
+			if (!(SFISPMEM(s->sflags)))
 				d57off = s->soffset;
 #endif
 #ifdef OLD_D3K
@@ -293,7 +293,7 @@ clocal(p)
 			q = p->in.left;
 			if (q->in.op == PLUS) {
 				if (q->in.right->in.op == ICON) {
-					if (s->sflags >> 3 & 1)
+					if (SFISPMEM(s->sflags))
 						q->in.right->in.sname = fpsym2;
 					else
 						q->in.right->in.sname = fpsym1;
@@ -315,7 +315,7 @@ clocal(p)
 			break;
 		case STATIC:
 		case LABEL:
-			if ((s->sflags >> 2 & 1) == 1)
+			if ((SFISGLOBAL(s->sflags)) == 1)
 				return;
 			p->tn.lval = 0;
 			p->tn.rval = -s->soffset;
