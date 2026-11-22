@@ -2023,3 +2023,36 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   pstcmp, hash, jiter, ...). hash (`if (p != &k) p = &k; else ...` in a while loop) is a natural if/else whose then arm ends
   in a jump to the join, straight on to the test: in the spopt input the same as `if (c) { S; continue; }`, and the original
   does not move it. So the input of spopt does not tell the two apart; the patch is aside (tmp/tmp/d50follow.patch).
+
+## 2026-11-22 gopt: the handoff closed (what of compare/gopt/HANDOFF.md still matters)
+
+- /lib/gopt byte-identical after the link (2026-11-21): library start-up code, five library members in segment 4, about
+  50 functions found by the strict compare of the linked file (host/recon/framemap.py: frame layout, chain and statement
+  order, constants, globals, members, tails); vc OLD_D14T for initopts. The switches gopt needs: compare/gopt/COMPILER.md.
+- `make shipped` gopt (step 6): its output equals /lib/gopt's on the 18 gopt sources, cc and scc, -O1..-O5 (beta2.c
+  -O4/-O5 stops with "illegal bsize type" in both). `#ifdef SHIPPED`: dominators() (a bug of the shipped scodgen),
+  flow_graph() (the BBLOCK operand kinds the original leaves unset), alloclpdef() (the rr2 of the original, no effect
+  measured); KNOWLEDGE.md, quirks. Method: the passes by hand (cpp, cparse -E b, gopt -3 FLAGS -E b) with the debug flags
+  (d dominators, l live, p loops, r registers, y all), both outputs diffed with the addresses masked. A mix of vc and
+  shipped objects does not run (other stack conventions); an instrumented vc build overflows segment 4.
+- The gopt corpus (step 8, compare/gopt/corpus.py, the slowest corpus) found: the shipped build prints the rval of a
+  unary node from its own layout (SHIPPED: -30720 as the original); host: %ld of the most negative long printed 0; the
+  64 KiB of an area (order3.c: out of space); r5 through checkalias; segment 0 for the vectors a preheader record lacks.
+- Step 11 (names instead of numbers, then the PCC sweep of codgen and mip; SysIII the base, Plexus the second):
+  measured on the way: in WEGA FLOFLG is 01000 and LTYFLG 0400 (the float operators + - * / carry 01000 as FLOFLG in
+  System III; 0400 only + -), so OPFLOAT is FLOFLG as in System III match.c; SPECIAL|2 and SPECIAL|4 are SSCON and SICON
+  (the strings of prcook); the quad ops of gopt are the names of qtab with Q (the strings say QSTORE, QIDR); callreg
+  returns a register (F0 or R2), not a cookie; freereg's `cookie & NASL | NBSL` is always true (quirks table). A central
+  unsigned DECREF changed one instruction of /lib/codgen and /lib/scodgen (fbegin shifts an int arithmetically): found by
+  checkall after the baseline of the variant compare had been rebuilt; now UDECREF where the unsigned form was. Host
+  builds of codgen and scodgen differ from the earlier ones by gcc code choice only (checkall corpora equal).
+- Step 12 (switch consolidation) closed without a broad change (owner 2026-11-22): merging switches that are always set
+  together only removes names and takes away the finer configuration an unknown version may need; rules behind
+  several switches are looked for when a program needs them, as in step 10. Done: OLD_D3KC stands in the v0p block
+  under `#ifndef OLD_VC` (no `#undef` behind it). The inventory (82 switch entries) for later versions:
+  always set together: codgen D61 D62 D63 (v1, v1c, sv1, sv1c); D3W D2PW D3Q D3H D2CT (v1c); popt D45 D49 D50 D51 D64 D20S
+  (svc); cparse D4R D6C D6D (v0, v0p, svc); 22 codgen switches in v0+v0p+vc, 16 in v0p+vc, 7 only in vc.
+  Without an effect in the vc matrix (cas, gopt), set in vc only because vc is v0p plus switches: D2G, D2MO, D2X, D3L,
+  D5A, D5S, D5T, D6R, D12K, D16A, D23; D18 shows 0 in both matrices (progcfg treats D18 as equal).
+  Families of a switch and its refinements: D2P/D2PO/D2PT/D2PW, D2Q/D2QO/D2QF, D2L/D2G/D2T/D2TC, D2R/D2V, D2M/D2MO,
+  D2X/D2XP, D2C/D2CT/D2CW, D3K/D3KC. In several passes: D6T, D22 (codgen, cparse), D13 (codgen, cparse, popt).

@@ -13,7 +13,7 @@ function that differs, the instructions of ORIG and NEW are paired one by one; a
 The locals of a function lie in the frame in the order of their declaration, behind the saved parameters (the first one
 declared has the lowest offset); a mapping that only mirrors when two declarations are swapped is a chain or a statement
 order (q = last = x against last = q = x). FUNC prints its differing pairs; -o prints the other pairs of all functions
-(constants, globals, members, jump targets). Used for /lib/gopt (compare/gopt/HANDOFF.md, step 1).
+(constants, globals, members, jump targets). Used for /lib/gopt (host/OLDCC_LOG.md, 2026-11-22).
 """
 import collections
 import os

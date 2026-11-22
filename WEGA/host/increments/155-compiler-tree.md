@@ -50,7 +50,7 @@ Rules of the target:
 
 ## Read first
 
-- This file; `compare/gopt/HANDOFF.md` (the checks after a compiler change, the vc build of gopt).
+- This file; `host/HOWTO_reconstruct.md`, Phase B (the checks after a compiler change, the vc build).
 - `host/OLDCC.md` section 3 for a switch that has to move out of mip.
 - System III: `tmp/sys3/usr/src/cmd/cc/pcc/mip` (INDEX, comm1.c and comm2.c: wrappers of `common`); Plexus:
   `tmp/plexus/cmd/cc/pcc.d/mip`.
@@ -146,7 +146,7 @@ Rules of the target:
 ## Not part of it
 
 - lint1, lint2 (later members of the tree).
-- The consolidation of the switches (compare/gopt/HANDOFF.md, steps 10 and 11), except moving a switch's code out of mip.
+- The consolidation of the switches (the gopt handoff, steps 10 to 12: host/OLDCC_LOG.md, 2026-11-22), except moving a switch's code out of mip.
 
 ## Log
 

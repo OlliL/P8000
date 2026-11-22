@@ -41,7 +41,7 @@ A reconstruction without source (gopt) runs for many sessions; what costs contex
 Start message of such a session (only the part between the lines is filled in by the owner; the AI writes it for the next session):
 
     WEGA, increment 150, program gopt: continue by WEGA/host/HOWTO_reconstruct.md ("Procedure of a long session").
-    Read WEGA/CLAUDE.md, WEGA/compare/gopt/HANDOFF.md and only the file of the increment. No subagents.
+    Read WEGA/CLAUDE.md, WEGA/compare/NAME/HANDOFF.md (the one of the program) and only the file of the increment. No subagents.
     ---- what we do now ----
     TASK: <the module / function / question of this session, e.g. "alias2.c: 4:7c68 checkops with its blocks">
     START: <what to do first, e.g. "struct qa: unsigned w0, then fnc.py -a on all files">
@@ -144,6 +144,18 @@ For what is left: finding the source form of a hard function, and changing the c
   statement order) instead of a switch.
 - The masked compare (fnc.py) hides frame offsets, constants, globals and members: when the masked count is complete, link
   and compare strictly (`host/tools/bincmp.py`; segmented: `recon/framemap.py`, the frame offsets new -> orig per function).
+- The checks of each compiler change, before its commit (from the gopt reconstruction, 2026-11-21/22): (1) the models:
+  `oldcc.sh build codgen v0` and `v0p` (remove the installed file first), then `oldcc.sh model P` for cparse scparse codgen
+  scodgen popt spopt cpp, all strictly equal, and `oldcc.sh bench`; (2) `recon/oldcc.sh matrix check` and
+  `MATRIX_VER=vc ... matrix check`, a changed codgen switch measured with `MATRIX_VER=vc oldcc.sh matrix OLD_X` (the matrix
+  knows codgen switches; a popt switch is checked on cas by checkall); (3) the program itself (`fnc.py -a` over its files);
+  (4) checkall with umask 002 on the change (`R=$(git stash create); make -C host checkall ... NAME=x PATCH=$R`), ALL OK.
+  The shipped codgen, scodgen, popt stay byte-identical: change them only inside `#ifdef OLD_*`; a cosmetic change of the
+  passes (names, macros) is compared against a fixed good commit, every variant and `/lib` (a baseline rebuilt on the way
+  hid one wrong instruction, 2026-11-22). 2-3 switch changes per checkall, each measured alone first.
+- The vc build of a pass: `cd src/cmd/cc/codgen; rm build/segvc/*.o; PATH=<wbin>:$PATH make build/segvc/scodgen` (spopt:
+  `src/cmd/cc/popt`, `build/segvc/spopt`), then into OLDROOT/lib/vc; experiments in a copy of OLDROOT (`FNC_ROOT`). The
+  text of the vc scodgen is near 64 KiB: measure its size after each change.
 - Compiler changes are in `src/cmd/{cparse,codgen,popt,cas}` behind a switch, set in the version (`codgen/oldcc.h`, the `build/nonsegVER` rules of the pass Makefile). The normal build stays identical.
 - Function-level check for a program with a model: `RECON_PROG=NAME python3 host/recon/strictcmp.py` (`-c` also compares call forms, `STRICT_CTX=12 ... -v FUNC` shows context). A model (`MODULES`, `model_link` in `compare/NAME/progcfg.py` like `compare/cpp` or `popt/tools`) is needed for a program of v0p; add it to PROGS of `recon/switchmatrix.py`.
 - Structs and names when the bytes stand: `rename.py OLD NEW [-n] [-m]` (sources, tables, findings.json, the .md of the program, KNOWLEDGE.md; `-m`: OLD is a placeholder for a function that exists under the name NEW, e.g. `fn1d22` in a module whose neighbour is written later: gopt; the external names must differ in their first 7 characters: delquad and delquads clash); `findings.py PROG` then writes FINDINGS.md; sizes from address distances, names from debug strings, then System III, then Plexus for Z8000 parts (the WEGA changes: `compare/NAME/SYSIII.md`). The exact count must not drop.

@@ -47,7 +47,7 @@ Each change keeps the v0p models (cparse, scparse, codgen, scodgen, popt, spopt,
 | `OLD_D2R` | segmented: the half OLD_D2V refuses goes back to the free list | chkfamindvar |
 | `OLD_D3AW` | an idle parameter in the register of an argument that the argument does not use goes back | setposition |
 
-## Open (HANDOFF step 10)
+## Checked (2026-11-22)
 
-The switches with one or two witnesses are to be checked once more against source forms; deledge has a `goto` into a
-loop that may stand for a layout of the old popt.
+The switches with one or two witnesses were looked at from the compiler side (host/OLDCC_LOG.md, 2026-11-22): D14T, D2XP,
+D2FA, D20S, D45, D50 stay. The loop-head gotos (deledge and others) stay: the input of spopt does not tell them from an if/else.

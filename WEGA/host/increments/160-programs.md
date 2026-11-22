@@ -21,7 +21,7 @@ Every program of the WEGA tree from source, byte-identical, each with a corpus.
 ## Known
 
 - 2026-11-15: bin 25 of 111 exact, usr/bin 10 of 145, etc 33 of 67, usr/lib 1 of 197 (counts include text files, 130).
-- The tool chain is done except `gopt`, `chkout`, `yacc` and the PLZ tools (`host/HANDOFF_wega_disasm.md`, inventory);
+- The tool chain is done except `chkout`, `yacc` and the PLZ tools (`gopt` byte-identical since 2026-11-21) (`host/HANDOFF_wega_disasm.md`, inventory);
   `/bin/cas` is byte-identical, left there: the natural `for` loop of jpr (`compare/cas/HANDOFF.md`).
 
 ## Steps
@@ -128,3 +128,7 @@ PLZ programs and `as`: 170.
 - 2026-11-22 step 10: vc `OLD_D2K` gone, its code under OLD_D2C (v0; reg + 1 only for a segmented address pair).
 - 2026-11-22 step 10: vc `OLD_D24L` gone, the unmasked lda of a frame place is part of OLD_D24 (local3.c ZL).
 - 2026-11-22 step 10 done (HANDOFF); new step 11: readable tables and names in codgen, before the switch consolidation (now 12).
+- 2026-11-22 step 11 done: names and macros instead of numbers in codgen, gopt, popt, mip, then codgen and mip aligned to PCC
+  (SysIII, Plexus); every z8k binary byte-identical, checkall ALL OK.
+- 2026-11-22 step 12 closed without a broad consolidation (owner); OLD_D3KC under #ifndef OLD_VC. The gopt handoff is
+  deleted: its checks are in host/HOWTO_reconstruct.md (Phase B), what still matters in host/OLDCC_LOG.md (2026-11-22).
