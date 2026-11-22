@@ -54,12 +54,25 @@ EMU = os.path.join(REPO, 'host', 'z8k-emu', 'z8k-emu')
 TIMEOUT = 900
 
 
+def vblock(txt, name):
+    """the body of the block #ifdef name ... #endif of oldcc.h (an #if inside it is counted); a match object or None"""
+    m = re.search(r'^#ifdef %s\n' % name, txt, re.M)
+    if not m:
+        return None
+    d = 1
+    for e in re.finditer(r'^#\s*(if|ifdef|ifndef|endif)\b.*\n', txt[m.end():], re.M):
+        d += -1 if e.group(1) == 'endif' else 1
+        if d == 0:
+            return re.compile(r'(?s)(.*)').match(txt, m.end(), m.end() + e.start())
+    return None
+
+
 def switches():
     """{switch: pass} of the version, from the sources"""
     sw = {}
     txt = open(os.path.join(REPO, 'src', 'cmd', 'cc', 'codgen', 'oldcc.h')).read()
     for name in CFGV['blocks']:
-        m = re.search(r'^#ifdef %s\n(.*?)^#endif' % name, txt, re.M | re.S)
+        m = vblock(txt, name)
         for s in re.findall(r'^#define (OLD_D\w+)', m.group(1), re.M):
             sw[s] = 'codgen'
     for p in ('cparse', 'popt'):
@@ -88,7 +101,7 @@ def build(work, name, pas):
         new = txt
         # only in the blocks of the version: the same name can stand in the block of another compiler (OLD_VC) in front of them
         for v in CFGV['blocks']:
-            m = re.search(r'^#ifdef %s\n(.*?)^#endif' % v, txt, re.M | re.S)
+            m = vblock(txt, v)
             part = re.sub(r'^#define %s\b.*\n' % plain, '', m.group(1), count=1, flags=re.M)
             if part != m.group(1):
                 new = txt[:m.start(1)] + part + txt[m.end(1):]

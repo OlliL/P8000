@@ -19,7 +19,7 @@
 
 #ifdef OLD_VC
 /* vc, the working compiler of cas (scodgen; scparse and spopt: the segvc rules of their Makefiles): v0p compiled for segmented
-   code, without OLD_D3KC (undefined behind the block of v0p), and with the switches below. Found by measuring on /bin/cas
+   code, without OLD_D3KC (the block of v0p leaves it out for vc), and with the switches below. Found by measuring on /bin/cas
    (host/OLDCC.md section 2, The old scc of cas); not proven to be the compiler of cas */
 #define OLD_V0P
 #define OLD_D13		/* a constant address stays on the left of a + (mip/optim.2.5), host/OLDCC.md D13 */
@@ -38,7 +38,9 @@
 #define OLD_V0
 #define OLD_D2PO	/* OLD_D2P: an idle odd word whose even half is free is given back for a pair */
 #define OLD_D3J		/* at a label named by jumps only the parameters known at all of them; behind a jump those of its one jump */
+#ifndef OLD_VC		/* vc takes a parameter wanted in its register as it is (cas copyfile), as v0 */
 #define OLD_D3KC	/* a parameter is copied also when wanted in its register (v0: taken as it is); && and || keep only word parameters */
+#endif
 #define OLD_D23		/* a zero addend stays: x + 0 (optim) */
 #define OLD_D2Q		/* a long loaded through a pointer into the pair of its even address register, also when wanted */
 #define OLD_D2X		/* a long result of a binary operator (not a shift) into the pair of its left operand first */
@@ -82,10 +84,6 @@
 #define OLD_D2W6	/* a pair asked for when rr2 and rr0 are taken: rr6 before rr4 (getreg) */
 #define OLD_D5A		/* the address of a local array element whose value goes to a given register: no preference (rallo) */
 #define OLD_D22		/* a double argument, parameter and result in rq4 (r4..r7); a floating compare without rounding */
-#endif
-
-#ifdef OLD_VC
-#undef OLD_D3KC	/* vc takes a parameter wanted in its register as it is (cas copyfile), as v0 */
 #endif
 
 /* d2qfree (allo3.c) serves OLD_D2Q and OLD_D2M */

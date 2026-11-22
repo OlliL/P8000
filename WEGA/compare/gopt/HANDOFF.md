@@ -73,7 +73,7 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
     D14T, D2XP, D2FA, D20S, D45, D50. The loop-head goto forms of gopt (aliasm, initaffect, buildgraph, chklpdefs; deledge):
     traced in spopt; the input of spopt does not tell `if (c) { S; continue; }` from a plain if/else (cas hash, gopt
     prcgraph), so no spopt rule; the gotos stay, probably as written, not refuted.)
-11. Readable tables and names (owner 2026-11-22, before the consolidation: the switches name templates, cookies, shapes
+11. (done 2026-11-22) Readable tables and names (owner 2026-11-22, before the consolidation: the switches name templates, cookies, shapes
     and types by number): codgen one table3.c (SCCS table3.c 2.2) that includes table3.nzcc.c or table3.szcc.c by
     `#ifdef SEG` (the SCCS names of the two tables, 2.4) instead of table3_codgen.c / table3_scodgen.c (hoptab,
     identical in both, stands in local3.c as in PCC local2.c); the entries written with the macros of the shapes, cookies, needs and rewrites as in
@@ -91,4 +91,4 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
     binary byte-identical; a few host builds differ by gcc code choice only (strip, same behaviour; checkall corpora).
     (owner 2026-11-22: steps 10 to 12 are part of increment 160: 10 the clean-up after a binary is byte-identical, 11 and
     12 the consolidation before the next programs.)
-12. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks above.
+12. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks of step 10 (owner 2026-11-22: first an analysis of the candidates and a concept).
