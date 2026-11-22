@@ -574,9 +574,9 @@ freereg(p, r, cookie)
 	char side;
 	int cls;
 
-	if (cookie & 04 | 0100)
+	if (cookie & NASL | NBSL)	/* sic: always true (precedence), see the quirks table */
 		side = 'L';
-	else if (cookie & 010 | 0200)
+	else if (cookie & NASR | NBSR)
 		side = 'R';
 	else
 		return -1;
@@ -585,7 +585,7 @@ freereg(p, r, cookie)
 	ty = p->in.type;
 	sym = p->in.sname;
 	if (r == -1) {
-		if (cookie & 04 | 010) {
+		if (cookie & NASL | NASR) {
 			for (reg = R0; reg <= R7; reg++)
 				if (usable(p, side, reg) > 0) {
 				found:
@@ -593,7 +593,7 @@ freereg(p, r, cookie)
 					cls = rclass(ty, reg);
 					return getreg(cls, reg, RJAM, sym);
 				}
-		} else if (cookie & 0100 | 0200) {
+		} else if (cookie & NBSL | NBSR) {
 			for (reg = F0; ; reg++) {
 				if (reg > F3)
 					return -1;
@@ -638,7 +638,7 @@ usable(p, side, r)
 	if (p->in.op == OREG)
 		return rv == r;
 	if (p->in.op == REG)
-		return (rv == r && (r != 0 || !ISPTR(p->in.type))) || (szty(p->in.type) == 2 && rv + 1 == r);
+		return (rv == r && (r != R0 || !ISPTR(p->in.type))) || (szty(p->in.type) == 2 && rv + 1 == r);
 	return 0;
 #endif
 }
