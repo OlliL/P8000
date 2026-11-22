@@ -348,8 +348,8 @@ allocreg(p, cookie)
 
 		if (q->in.op == STAR)
 			q = q->in.left;
-		if (q->in.op == OREG && q->tn.rval >= 0x100)
-			pr = (q->tn.rval >> 8) - 1;	/* rr2(#n), and rr2(r1) with an index */
+		if (q->in.op == OREG && R2TEST(q->tn.rval))
+			pr = R2UPK1(q->tn.rval);	/* rr2(#n), and rr2(r1) with an index */
 		else if (q->in.op == OREG && q->tn.rval < 8)
 			pr = q->tn.rval;	/* @rr2, rr2(#n): a pair base below 0x100 */
 		if ((pr == 2 || pr == 4) && (want == -1 || want == pr || want == pr + 1) && d2rpair(pr)) {	/* rr2, rr4 */
@@ -451,8 +451,8 @@ allocreg(p, cookie)
 		/* segmented: base and index (`rr4(r2)`), the index in an even word register: the pair of the index, also when
 		 * another pair is wanted (an argument: a copy follows); vc: the index in an odd word register (`rr6(r3)`, alone
 		 * or the low half of a product): the pair below it (gopt prcgraph) */
-		else if (q->in.op == OREG && q->tn.rval >= 0x100 && (q->tn.rval & 0xFF) != 0 && ((q->tn.rval & 0xFF) - 1) < 8) {
-			register int ix = (q->tn.rval & 0xFF) - 1;
+		else if (q->in.op == OREG && R2TEST(q->tn.rval) && (q->tn.rval & 0xFF) != 0 && (R2UPK2(q->tn.rval)) < 8) {
+			register int ix = R2UPK2(q->tn.rval);
 
 			if (!(ix & 1)) {
 				if (d2qfree(ix))
@@ -642,8 +642,8 @@ usable(p, side, r)
 	rv = p->tn.rval;
 #ifdef SEG
 	if (p->in.op == OREG) {
-		if (rv >= 0x100)
-			return (rv >> 8) - 1 == r || (rv >> 8) - 1 + 1 == r || (rv & 0xFF) - 1 == r;
+		if (R2TEST(rv))
+			return R2UPK1(rv) == r || R2UPK1(rv) + 1 == r || R2UPK2(rv) == r;
 		return rv == r || (p->tn.lval == 0 && p->in.sname == 0 && !(p->in.op == OREG && p->stn.stsize < 0) && rv + 1 == r);
 	}
 	if (p->in.op == REG)
@@ -671,10 +671,10 @@ recl2(p)
 	}
 	if (p->in.op != OREG)
 		return;
-	if (r >= 0x100) {			/* base and index register */
-		rfree((r >> 8) - 1, PTR|INT);
+	if (R2TEST(r)) {			/* base and index register */
+		rfree(R2UPK1(r), PTR|INT);
 		if (r & 0xFF)
-			rfree((r & 0xFF) - 1, INT);
+			rfree(R2UPK2(r), INT);
 		return;
 	}
 	if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))

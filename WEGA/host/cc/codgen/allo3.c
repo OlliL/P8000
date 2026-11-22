@@ -434,8 +434,8 @@ usable(NODE *p, int side, int r)
 	rv = p->tn.rval;
 #ifdef SEG
 	if (p->in.op == OREG) {
-		if (rv >= 0x100)
-			return (rv >> 8) - 1 == r || (rv >> 8) - 1 + 1 == r || (rv & 0xFF) - 1 == r;
+		if (R2TEST(rv))
+			return R2UPK1(rv) == r || R2UPK1(rv) + 1 == r || R2UPK2(rv) == r;
 		return rv == r || (p->tn.lval == 0 && p->in.sname == 0 && !(p->in.op == OREG && p->stn.stsize < 0) && rv + 1 == r);
 	}
 	if (p->in.op == REG)
@@ -462,10 +462,10 @@ recl2(NODE *p)
 	}
 	if (p->in.op != OREG)
 		return;
-	if (r >= 0x100) {			/* base and index register */
-		rfree((r >> 8) - 1, PTR|INT);
+	if (R2TEST(r)) {			/* base and index register */
+		rfree(R2UPK1(r), PTR|INT);
 		if (r & 0xFF)
-			rfree((r & 0xFF) - 1, INT);
+			rfree(R2UPK2(r), INT);
 		return;
 	}
 	if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))

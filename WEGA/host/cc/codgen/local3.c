@@ -721,7 +721,7 @@ zzzcode(NODE *p, char c)
 			expand(p, FOREFF, "\tldZB\tA1,#AL\n");
 			return;
 		}
-		if (u->tn.rval >= 0x100 || u->tn.lval != 0 || u->in.sname != 0 || (u->in.op == OREG && u->stn.stsize < 0)) {
+		if (R2TEST(u->tn.rval) || u->tn.lval != 0 || u->in.sname != 0 || (u->in.op == OREG && u->stn.stsize < 0)) {
 #ifdef SEG
 			expand(p, FOREFF, "\tlda\tVA1X,AL\n");
 			expand(p, FOREFF, "\tand\tA1,#%7f00\n");
@@ -1274,7 +1274,7 @@ upput(NODE *p)
 		printf("%s", rnames[p->tn.rval + 1]);
 		break;
 	case OREG:
-		if (p->tn.rval >= 0x100)
+		if (R2TEST(p->tn.rval))
 			cerror("illegal OREG upput");
 #ifdef SEG
 		if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0)) {
@@ -1283,7 +1283,7 @@ upput(NODE *p)
 		} else {
 			p->tn.lval = 2;
 			r2 = p->tn.rval;
-			p->tn.rval = (p->tn.rval + 1) << 8;
+			p->tn.rval = R2BASE(p->tn.rval);
 			adrput(p);
 			p->tn.rval = r2;
 		}
@@ -1337,15 +1337,15 @@ adrput(NODE *p)
 		break;
 	case OREG:
 		r = p->tn.rval;
-		if (r >= 0x100) {			/* base and index register */
+		if (R2TEST(r)) {			/* base and index register */
 			if (r & 0xFF)
 #ifdef SEG
-				printf("r%s(%s)", rnames[(r >> 8) - 1], rnames[(r & 0xFF) - 1]);
+				printf("r%s(%s)", rnames[R2UPK1(r)], rnames[R2UPK2(r)]);
 #else
-				printf("r%s(%s)", rnames[(r >> 8) - 1], rnames[(r & 0xFF) - 1]);
+				printf("r%s(%s)", rnames[R2UPK1(r)], rnames[R2UPK2(r)]);
 #endif
 			else {
-				printf("r%s(#", rnames[(r >> 8) - 1]);
+				printf("r%s(#", rnames[R2UPK1(r)]);
 				acon(p);
 				putchar(')');
 			}

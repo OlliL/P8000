@@ -96,8 +96,8 @@ notoff(t, r, off, cp)
 	long off;
 	char *cp;
 {
-	if (r >= 0x100)
-		return (r >> 8) - 1 == 0;
+	if (R2TEST(r))
+		return R2UPK1(r) == 0;
 	return r == 0;
 }
 
@@ -315,7 +315,7 @@ rallo(p, down)
 
 #ifdef SEG
 /* an indirection through a register plus a constant or a register plus a register becomes an OREG
-   (rval: ((base + 1) << 8) | (index + 1)); 1 when it did */
+   (rval: R2PACK(base, index)); 1 when it did */
 int
 mkoreg(p)
 	register NODE *p;
@@ -333,7 +333,7 @@ mkoreg(p)
 	r = q->in.right;
 	if ((q->in.op == PLUS || q->in.op == MINUS) && r->in.op == ICON && l->in.op == REG && p->in.type != FLOAT && p->in.type != DOUBLE) {
 		off = r->tn.lval;
-		rv = (l->tn.rval + 1) << 8;
+		rv = R2BASE(l->tn.rval);
 		sym = r->in.sname;
 		if (q->in.op == MINUS) {
 			if (sym->nameoff)
@@ -345,7 +345,7 @@ mkoreg(p)
 	if (q->in.op == PLUS && r->in.op == REG && l->in.op == REG && p->in.type != FLOAT && p->in.type != DOUBLE) {
 		if (r->tn.rval == 0)
 			return 0;
-		rv = ((l->tn.rval + 1) << 8) | (r->tn.rval + 1);
+		rv = R2PACK(l->tn.rval, r->tn.rval);
 		off = 0;
 		sym = r->in.sname;
 		goto set;
@@ -355,7 +355,7 @@ mkoreg(p)
 		return 0;
 	return 1;
 set:
-	if ((rv >> 8) - 1 == 0)
+	if (R2UPK1(rv) == 0)
 		return 0;
 	p->in.op = OREG;
 	p->tn.rval = rv;
