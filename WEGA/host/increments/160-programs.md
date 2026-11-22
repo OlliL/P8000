@@ -124,3 +124,5 @@ PLZ programs and `as`: 170.
 - 2026-11-22 step 10: vc `OLD_D2AV` gone, OLD_D2A asks for INTAREG in all versions, the pair under SEG (match3.c D2APAIR).
 - 2026-11-22 step 10: vc `OLD_D3JB` gone, every record counts behind a jump in all versions (reader3.c d3jdead).
 - 2026-11-22 step 10: vc `OLD_D3JL` gone, its test (a long, not a pointer) is true for every nonsegmented pair.
+- 2026-11-22 step 10: vc `OLD_D2PP` gone, its code is the fail path of OLD_D2PO (v0).
+- 2026-11-22 step 10: vc `OLD_D2K` gone, its code under OLD_D2C (v0; reg + 1 only for a segmented address pair).

@@ -3,8 +3,8 @@
  */
 #include "mfile3"
 
-#ifdef OLD_D2K
-extern void d2kforget();
+#ifdef OLD_D2C
+extern void d2cforget();
 #endif
 #ifdef OLD_D2FA
 extern int d2facopy, d2faltype;
@@ -211,8 +211,8 @@ match(p, cookie)
 	int x = 0;
 	int t;
 	int y;
-#ifdef OLD_D2K
-	int d2kreg;
+#ifdef OLD_D2C
+	int d2creg;
 #endif
 
 	rcount();
@@ -402,11 +402,12 @@ cand:
 			return MDONE;
 		}
 #endif
-#ifdef OLD_D2K
-		/* vc (gopt): a store through a scratch register (*p = x, p->m = x at offset 0) makes it forget the name it holds */
-		d2kreg = -1;
+#ifdef OLD_D2C
+		/* a store through a scratch register (*p = x, p->m = x at offset 0) makes it forget the name it holds, as the tree takes
+		   it over (vc gopt addallist, initallist) */
+		d2creg = -1;
 		if (p->in.op == ASSIGN && p->in.left->in.op == OREG && p->in.left->tn.rval >= 0 && p->in.left->tn.rval < 8)
-			d2kreg = p->in.left->tn.rval;
+			d2creg = p->in.left->tn.rval;
 #endif
 #ifdef OLD_D22
 		/* v0p: a floating compare with memory without the rounding fld of the left operand */
@@ -416,9 +417,9 @@ cand:
 #endif
 		expand(p, cookie, q->cstring);
 		reclaim(p, q->rewrite, cookie);
-#ifdef OLD_D2K
-		if (d2kreg >= 0)
-			d2kforget(d2kreg);
+#ifdef OLD_D2C
+		if (d2creg >= 0)
+			d2cforget(d2creg);
 #endif
 #ifdef OLD_D2A
 		/* v0p: the value of an assignment wanted in a register for a test is copied into a new pair, which keeps the

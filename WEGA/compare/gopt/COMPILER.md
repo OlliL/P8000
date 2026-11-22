@@ -15,13 +15,13 @@ the code of the original.
 
 | Switch | Pass | What it does | Witnesses |
 |---|---|---|---|
-| `OLD_D2K` | scodgen match | a store through a scratch register forgets its name | addallist addblk addhdrlist alloclpdef asgfold betainit betanew include initallist labquad mkleaf |
+| `OLD_D2C` (v0) | scodgen match | a store through a scratch register forgets its name | addallist addblk addhdrlist alloclpdef asgfold betainit betanew include initallist labquad mkleaf |
 | `OLD_D2FA` | scodgen regforsym | an automatic pointer or long is found in the pair an assignment named with its frame place (only a name matched alone; in a condition only when `\|\|` is not at the top) | asgfold clearblocks linkreachdefs liveonexit marklpblocks solvelive solvereach srchdef tmpsearch |
 | `OLD_D24L` | scodgen local3.c | lda of a frame place without the mask and `#%7f00` (struct copies and struct arguments) | fndparm insrtlpdef insrtopstmp insrtstmpmove savecolors tmpsearch |
 | `OLD_D3P` | scodgen regforsym | a name in a register is taken from it also under a cast between two types of the size of a pointer (pointer, long, unsigned long), one of them a pointer | tabfree |
 | `OLD_D2A` (v0p) | scodgen match | the value of an assignment wanted in a register for a test is copied into a new pair; segmented a pointer in rr0 | ceval orderbl |
 | `OLD_D2XP` | scodgen allocreg | OLD_D2X not into the pair of a parameter, and only when the registers allo takes are the result | constfold fndparm nodeno |
-| `OLD_D2PP` | scodgen getreg | no pair free: an idle odd word holding a parameter is given back for a pair before regjam | clrlbit setlbit |
+| `OLD_D2PO` (v0) | scodgen getreg | no pair free: an idle odd word holding a parameter is given back for a pair before regjam | clrlbit setlbit |
 | `OLD_D2TC` | scodgen rbusy | a free word register is taken instead of stopping ("not found on rslist") | operand |
 | `OLD_D2L` (v0) | scodgen getreg | an idle register that holds a name is free when it comes before the first free one (floats: by number) | constfold |
 | `OLD_D14T` | scodgen gencall | when the result of a call goes to a temporary, the temporaries of its arguments are free again | initopts |

@@ -1950,3 +1950,13 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   v0 and v0p too: the seven models and the bench unchanged; the exception was never measured. Now every record counts.
 - 2026-11-22, step 10, `OLD_D3JL` gone: "only a long keeps its home at the label, not a pointer" is always true in
   nonsegmented code (a pair never holds a pointer there), so the vc test is the rule of all versions (reader3.c d3jlabel).
+- 2026-11-22, step 10, `OLD_D2XP` as part of OLD_D2X in v0 and v0p: both conditions (not a parameter pair, result RESC1):
+  cparse, scparse, codgen, scodgen lose 3 each (ispow2, yylex, defalign, zzzcode, tshape); RESC1 alone the same three.
+  The RESC1 condition is a difference of vc; the switch stays.
+- 2026-11-22, step 10, `OLD_D2PP` gone: its code (no pair free: an idle odd parameter word given back before regjam) under
+  OLD_D2PO (v0): the seven models and the bench unchanged (the v0p codgen changes). D2PO now has the parameter words in its
+  fail path.
+- 2026-11-22, step 10, `OLD_D2K` gone: its code under OLD_D2C (v0: a name found in a scratch register is lost when the tree
+  takes the register over; a store through it is such a use). First try: v0p codgen ffld lost (`ld r2,~L1(fp)` for `ld r2,r4`),
+  the bench 212 -> 204 lines: d2kforget cleared reg + 1 too, right for a segmented address pair, wrong for a word address (r3
+  made r4 forget the parameter). With reg + 1 only under SEG: the seven models and the bench unchanged; vc as before.

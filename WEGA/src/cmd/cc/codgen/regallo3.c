@@ -836,8 +836,8 @@ getreg(cls, reg, flag, sym)
 	if (cls == 1 || cls == 2 || cls == 6)
 		goto split;
 fail:
-#ifdef OLD_D2PP
-	/* vc (gopt): no pair free: an idle odd word that holds a parameter and whose even half is free is given back
+#ifdef OLD_D2PO
+	/* OLD_D2PO, the parameter words: no pair free: an idle odd word that holds a parameter and whose even half is free is given back
 	   when that pair weighs less than the idle pair regjam would take (setlbit: rr4 from r4 and the parameter i in r5,
 	   not rr6 of v; addquad keeps rr2) */
 	if (flag == 0x1000 && cls == 3 && reg == -1) {

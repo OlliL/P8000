@@ -181,8 +181,8 @@ all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype), and for gopt (neutral on cas) `OLD_D2K`,
-  `OLD_D24L`, `OLD_D2FA`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D2TC` (section 3, D2..D4),
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype), and for gopt (neutral on cas)
+  `OLD_D24L`, `OLD_D2FA`, `OLD_D2XP`, `OLD_D2TC` (section 3, D2..D4),
   `OLD_D14T` (section 3, D4) and `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of
   the tree uses) are not read, their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room. The text of the
   vc scodgen is near the 64 KiB of a nonsegmented program; /bin/ld does not report an overflow (sg_code wraps, the program
@@ -257,6 +257,9 @@ Free registers and pairs:
 - v0p `OLD_D2PO`: an idle odd word whose even half is free is given back when a pair is wanted and the even half weighs less
   than the first free pair (refid, dclstruct).
 - `OLD_D2PO` leaves a word that holds a parameter (in every version: the passes built by v0p do not change with the limit).
+  Only when no pair is free (the fail path of getreg, before regjam) such a word is given back too, if that pair weighs less
+  than the idle pair regjam would take (rweight: rr2 2, rr0 3, rr4 4, rr6 6): vc /lib/gopt setlbit, clrlbit (rr4 from r4 and
+  the parameter i, not rr6 of v; i gets its entry store); addquad keeps rr2. Neutral on cas and on the models and the bench.
   vc has `OLD_D2PO` too. Witness in cas: stenter (`p2->s_12 = blklevel` behind `... = (char *)p2 - (char *)STAB`: r3 still holds
   the constant 0x30, r2 is free, the address takes rr2 and the value r0); witness of the limit: symtype of cas (r3 holds the
   parameter `n`, the address goes to rr0).
@@ -275,6 +278,9 @@ Where a value goes:
   back to the free list with the pair (`ldb rl3,@rr4`: rr4 is free for the next pair; gopt chkfamindvar).
 - v0 `OLD_D2C` (match, allocreg): a name found in a scratch register by fixname is that register, the tree takes it over and
   the register forgets the name (gotscal); not for parameters, and such a copy holds no name.
+  So does a scratch register a store goes through (`p->m = x` at offset 0, `*p = x`; segmented the pair and its words): the
+  next statement loads the pointer again (vc /lib/gopt addallist, initallist, mkhash, mkdomtree: `ldl rr2,_alast`); the shipped
+  codgen keeps the name (only an `inc r3,#n` for a nonzero offset loses it). Neutral on cas, the models and the bench.
 - v0 `OLD_D2N` (allocreg): a name loaded into a word register is not remembered there; only the register of an assignment
   keeps the name (ilbrace reloads `_pstk`, gotscal uses r2 for two statements). The same for a global loaded into a pair
   (not for an auto pair): the pair is free again, so OLD_D2W6 takes rr6 for the next pair and the global is loaded again
@@ -305,11 +311,6 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - vc `OLD_D2S` (allo3.c): a word in r3 widened to long (SCONV) takes the pair rr2, the first pair of the order, with r3 in
   it (`ldk r2,#0`); a word in another register gets a new pair as before (locadv: r7 into rr2). cas symtype (`unsigned n;
   ip->s_2 = n;`). One witness.
-- vc `OLD_D2K` (match3.c, regs3.c d2kforget): an assignment through a scratch register (`p->m = x` at offset 0, `*p = x`) makes
-  the register (pair and words) forget the name it holds; the next statement loads the pointer again (`ldl rr2,_alast`). The
-  shipped and v0p codgen keep it (only an `inc r3,#n` for a nonzero offset loses it). Witnesses in /lib/gopt: addallist,
-  initallist (and mkhash, mkdomtree, which also match with `(p = f())->m = x`); a scan of all of /lib/gopt finds no global
-  pointer used from its register after such a store. Neutral on cas.
 - v1 `OLD_D3` (cbranch): at the join label of `&&` and `||` the shipped codgen gives the idle registers back, the old one keeps
   them with their contents. ld init_entry, dseek.
 - v0 `OLD_D3P` (regforsym): a name that lives in a register is taken from it also when the node wants another register, also
@@ -348,11 +349,6 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - vc `OLD_D24L` (local3.c, ZL): the address of a frame place (a local struct, the argument area at 0(fp)) is loaded by
   `lda` without the mask `and rN,#%7f00`. /lib/gopt has 31 such lda (struct copies to a local, struct arguments), none with
   the mask; sccvc masked all of them. No source form: a struct assignment is the only C that gives `lda; ldk; ldir`. Neutral on cas.
-- vc `OLD_D2PP` (regallo3.c getreg, the fail path): when no pair is free, an idle odd word that holds a parameter and
-  whose even half is free is given back for the pair (as OLD_D2PO, which excludes parameter words: cas symtype), if that
-  pair weighs less than the idle pair regjam would take (rweight: rr2 2, rr0 3, rr4 4, rr6 6). /lib/gopt setlbit, clrlbit
-  (rr4 from r4 and the parameter i, not rr6 of v; i gets its entry store); addquad keeps rr2. checkops 15 -> 7,
-  chkfamindvar 17 -> 13, deledge 7 -> 4. Neutral on cas.
 - vc `OLD_D2XP` (allo3.c, changes OLD_D2X, which has no witness in cas): a long (pair) result of a binary operator does not
   go into the pair of its left operand when that is the register of a parameter (nodeno `c = q + 6`: `ldl rr2,rr6;
   inc r3,#6`, sccvc `ldl rr6,rr6; inc r7,#6` destroyed q). /lib/gopt nodeno, fndparm; checkops 21 -> 15, qmkstore 19 -> 14.

@@ -752,16 +752,20 @@ nxwork(p, nx)
 	}
 }
 
-#ifdef OLD_D2K
-/* OLD_D2K: a store went through the register reg (a pair or its words): they no longer hold a name (not a register variable) */
+#ifdef OLD_D2C
+/* OLD_D2C: a store went through the register reg (segmented: a pair and its words): it no longer holds a name (not a register variable) */
 void
-d2kforget(reg)
+d2cforget(reg)
 	register int reg;
 {
 	register struct rs *n;
 
 	for (n = rsuse; n; n = n->next)
-		if (n->cls <= 4 && n->kind != 6 && (n->reg == reg || n->reg == reg + 1)) {
+#ifdef SEG
+		if (n->cls <= 4 && n->kind != 6 && (n->reg == reg || n->reg == reg + 1)) {	/* the address is a pair */
+#else
+		if (n->cls <= 4 && n->kind != 6 && n->reg == reg) {
+#endif
 			n->sym = 0;
 			n->off = 0;
 		}
