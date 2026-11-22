@@ -28,9 +28,9 @@ int fltused = 0;
 
 #ifdef OLD_D3K
 /* v0: not the register of a parameter (it is copied before an operator changes it) */
-#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & (STAREG|STBREG)) && !((q)->in.sname && (q)->in.sname->sclass == PARAM))
+#define istnode(q)	((q)->in.op == REG && istreg((q)->tn.rval) && !((q)->in.sname && (q)->in.sname->sclass == PARAM))
 #else
-#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & (STAREG|STBREG)))
+#define istnode(q)	((q)->in.op == REG && istreg((q)->tn.rval))
 #endif
 
 static int orderadd();

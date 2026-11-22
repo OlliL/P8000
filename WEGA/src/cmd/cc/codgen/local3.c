@@ -1169,7 +1169,9 @@ shtemp(p)
 {
 	if (p->in.op == UNARY MUL)
 		p = p->in.left;
-	return (p->in.op == REG || p->in.op == OREG) ? !(rstatus[p->tn.rval] & (STAREG|STBREG)) : (p->in.op == NAME || p->in.op == ICON);
+	if (p->in.op == REG || p->in.op == OREG)
+		return !istreg(p->tn.rval);
+	return p->in.op == NAME || p->in.op == ICON;
 }
 
 /* does an increment of incr bytes on a pointer of type t step by the size of the object it points to? */
@@ -1662,12 +1664,13 @@ nextcook(p, cookie)
 	register NODE *p;
 	register int cookie;
 {
+	/* we have failed to match p with cookie; try another */
 	if (cookie == FORREW)
-		return 0;
+		return 0;	/* hopeless! */
 	if (!(cookie & (INTAREG|INTBREG)))
 		return INTAREG|INTBREG;
 	if (!(cookie & INTEMP) && asgop(p->in.op))
-		return INTEMP|INAREG|INTAREG|INBREG|INTBREG;
+		return INTEMP|INAREG|INTAREG|INTBREG|INBREG;
 	return FORREW;
 }
 
