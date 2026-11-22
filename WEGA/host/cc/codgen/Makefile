@@ -1,6 +1,6 @@
 # codgen, scodgen: the code generators of cc and scc built for Linux (cross tools: they behave like /lib/codgen and /lib/scodgen).
 # Sources: taken over from ../../../src/cmd/cc/codgen by the port rules in ../../HANDOFF_wega_disasm.md; scodgen is the same source with
-# -DSEG (table3.c then includes table3.szcc.c; ops_scodgen.c, hop_scodgen.c are included by comm3.c and local3.c).
+# -DSEG (table3.c then includes table3.szcc.c; local3.c includes hop_scodgen.c).
 #
 #   make                 build ./codgen and ./scodgen
 #   test                 ../../tools/corpus.sh --host codgen scodgen   (the corpora of ../../../compare/codgen and scodgen, no make target)
