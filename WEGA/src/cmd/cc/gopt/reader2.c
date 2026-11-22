@@ -191,14 +191,14 @@ void
 dotree(p)
 	NODE *p;
 {
-	if (p->in.op == 0x76) {
+	if (p->in.op == PROC) {
 		if (eflag)
 			fwalk(p, pr, 0);
 		fwalk(p, mapnm);
 		if (eflag)
 			fwalk(p, pr, 0);
 		curproc = p;
-	} else if (p->in.op == 0x77) {
+	} else if (p->in.op == UPROC) {
 		if (eflag)
 			fwalk(p, pr, 0);
 		mapnm(p->in.left);
@@ -238,12 +238,12 @@ cutree(p)
 	op = p->in.op;
 	kind = optype(op);
 	switch (op) {
-	case 0x46: case 0x48: case 0x67: case 0x69:
+	case CALL: case UCALL: case STCALL: case USTCALL:
 		hascall = 1;
 		return;
-	case 0x4c: case 0x73:
+	case NOT: case CBRANCH:
 		return;
-	case 0x4e: case 0x4f:
+	case INCR: case DECR:
 		if (ntmp < 20) {
 			saved[ntmp] = tcopy(p);
 			ntmp++;

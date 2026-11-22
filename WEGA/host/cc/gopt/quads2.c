@@ -54,15 +54,15 @@ void genquads(NODE *p)
 	kind = optype(p->in.op);
 	if (kind == LTYPE)
 		goto done;
-	if (p->in.op == 0x46 || p->in.op == 0x67 || p->in.op == 0x48 || p->in.op == 0x69)
+	if (p->in.op == CALL || p->in.op == STCALL || p->in.op == UCALL || p->in.op == USTCALL)
 		fold1(p);
-	else if (p->in.op == 0x3a || p->in.op == 0x65)
+	else if (p->in.op == ASSIGN || p->in.op == STASG)
 		fold2(p);
 	else if (asgop(p->in.op))
 		asgop2(p);
 	genquads(p->in.left);
-	if (kind == BITYPE && p->in.op != 0x7a) {
-		if (p->in.op == 0x46 || p->in.op == 0x67) {
+	if (kind == BITYPE && p->in.op != SWTCH) {
+		if (p->in.op == CALL || p->in.op == STCALL) {
 			if (p->in.right->in.op == CM)
 				cmwalk(p->in.right);
 			else {
@@ -90,12 +90,12 @@ void genquads(NODE *p)
 	p3->b2 = OANONE;
 	p3->w4 = 0;
 	*p1 = *operand(p->in.left);
-	if (kind == BITYPE && p->in.op != 0x7a)
+	if (kind == BITYPE && p->in.op != SWTCH)
 		*p2 = *operand(p->in.right);
 	else
 		p2 = 0;
 	switch (p->in.op) {
-	case 0x46: case 0x48: case 0x67: case 0x69:
+	case CALL: case UCALL: case STCALL: case USTCALL:
 		p2 = &s2;
 		p2->b2 = OANAME;
 		p2->w4 = 0;
@@ -104,16 +104,16 @@ void genquads(NODE *p)
 			p3->w4 = nexttmp++;
 		}
 		break;
-	case 0x3a:
+	case ASSIGN:
 		*p3 = *p1;
 		*p1 = *p2;
 		p2 = 0;
 		break;
-	case 0x38:
+	case CM:
 		*p1 = *p2;
 		p1 = 0;
 		break;
-	case 0xa:
+	case UMINUS:
 		p2 = &s2;
 		*p2 = *p1;
 		p1->b2 = OAICON;
@@ -122,7 +122,7 @@ void genquads(NODE *p)
 		p3->b2 = OATEMP;
 		p3->w4 = nexttmp++;
 		break;
-	case 0x4e:
+	case INCR:
 		if (p1->b2 != OATEMP) {
 			p3->b2 = OATEMP;
 			p3->w4 = nexttmp++;
@@ -143,7 +143,7 @@ void genquads(NODE *p)
 		addquad(QSTORE, p1, 0L, p3);
 		*p3 = s4;
 		goto tail;
-	case 0x4f:
+	case DECR:
 		if (p1->b2 != OATEMP) {
 			p3->b2 = OATEMP;
 			p3->w4 = nexttmp++;
@@ -164,7 +164,7 @@ void genquads(NODE *p)
 		addquad(QSTORE, p1, 0L, p3);
 		*p3 = s4;
 		goto tail;
-	case 0x65:
+	case STASG:
 		*p3 = *p1;
 		p3->w0 = p->in.type;
 		*p1 = *p2;
@@ -172,12 +172,12 @@ void genquads(NODE *p)
 		p2->w0 = p->stn.stsize;
 		p2->w4 = p->stn.stalign;
 		break;
-	case 0x66:
+	case STARG:
 		goto done;
-	case 0x72:
-	case 0x73:
+	case RET:
+	case CBRANCH:
 		break;
-	case 0x7a:
+	case SWTCH:
 		p2 = &s2;
 		*p2 = *operand(p->in.right->in.left);
 		*p3 = *operand(p->in.right->in.right);
@@ -199,7 +199,7 @@ void genquads(NODE *p)
 		addquad(qop[p->in.op], p1, p3, p2);
 	else
 		addquad(qop[p->in.op], p1, p2, p3);
-	if (p->in.op == 0x7a) {
+	if (p->in.op == SWTCH) {
 		p->in.right->in.right->in.op = FREE;
 		p->in.right->in.left->in.op = FREE;
 	}
@@ -211,9 +211,9 @@ tail:
 		p->in.right->in.op = FREE;
 	}
 	if (p3 && p3->b2 == OATEMP) {
-		if (p->in.op == 0x3a)
+		if (p->in.op == ASSIGN)
 			*p = rcopy;
-		else if (asgop(p->in.op) && p->in.op != 0x4e && p->in.op != 0x4f && p->in.op != 0x24 && p->in.op != 0x75 && p->in.op != 0x65) {
+		else if (asgop(p->in.op) && p->in.op != INCR && p->in.op != DECR && p->in.op != RETURN && p->in.op != CAST && p->in.op != STASG) {
 			if (p1->b2 == OATEMP) {
 				p->in.op = 0x7d;
 				p->tn.rval = p1->w4;
@@ -223,7 +223,7 @@ tail:
 			p->in.op = 0x7d;
 			p->tn.rval = p3->w4;
 		}
-	} else if (asgop(p->in.op) || p->in.op == 0x4e || p->in.op == 0x4f) {
+	} else if (asgop(p->in.op) || p->in.op == INCR || p->in.op == DECR) {
 		p->in.op = p3->b2 == OATEMP ? 0x79 : 2;
 		p->tn.rval = p3->w4;
 		p->in.type = p3->w0;
@@ -397,12 +397,12 @@ struct qa *operand(NODE *p)
 			maxtmp = opnd.w4;
 		nctmpuses++;
 		break;
-	case 0x7d:
+	case TMPS:
 		opnd.b2 = OATEMP;
 		opnd.w0 = p->in.type;
 		opnd.w4 = p->tn.rval;
 		break;
-	case 0x7b:
+	case DESC:
 		a.b2 = OAICON;
 		a.w4 = (int)p->tn.lval;	/* in.left of the original: the same word of the leaf */
 		a.w0 = 4;
@@ -703,7 +703,7 @@ int map(NODE *p, int f, int t)
 		return map(p->in.left, f, t);
 	}
 	switch (op) {
-	case 0x3b: {
+	case COMOP: {
 		NODE *q;
 
 		dotree(p->in.left);
@@ -712,8 +712,8 @@ int map(NODE *p, int f, int t)
 		q->in.op = FREE;
 		return 1;
 	}
-	case 0x17:
-	case 0x18: {
+	case ANDAND:
+	case OROR: {
 		NODE *n, *n2, *t1, *x;
 		int  lab;
 		NODE *c, *y;
@@ -778,7 +778,7 @@ int map(NODE *p, int f, int t)
 		}
 		if (op == 0x18) {
 			lab = (long)t == 0 ? newtmpno() : t;
-			if (p->in.left->in.op == 0x4c) {
+			if (p->in.left->in.op == NOT) {
 				x = p->in.left->in.left;
 				p->in.left->in.op = FREE;
 			} else
@@ -825,7 +825,7 @@ int map(NODE *p, int f, int t)
 		p->in.op = FREE;
 		return 0;
 	}
-	case 0x15: {
+	case QUEST: {
 		int x1, x2;
 		NODE *n, *cp, *c;
 
@@ -853,7 +853,7 @@ int map(NODE *p, int f, int t)
 		p->in.left = 0;
 		return 1;
 	}
-	case 0x73:
+	case CBRANCH:
 		a = (int)p->in.right->tn.lval;	/* in.left of the original: lval of the leaf */
 		b = p->in.right->tn.rval;
 		break;
@@ -937,7 +937,7 @@ void mapall(NODE *p)
 {
 	while (map(p, 0, 0))
 		;
-	if (p->in.op == 0x73 && p->in.left->in.op == FREE) {
+	if (p->in.op == CBRANCH && p->in.left->in.op == FREE) {
 		p->in.right->in.op = FREE;
 		p->in.op = FREE;
 	}

@@ -187,14 +187,14 @@ int main(int argc, char **argv)
 /* a tree of the intermediate file: a function qhead (PROC) or a statement */
 void dotree(NODE *p)
 {
-	if (p->in.op == 0x76) {
+	if (p->in.op == PROC) {
 		if (eflag)
 			fwalk(p, pr, 0);
 		fwalk(p, mapnm, 0);	/* the original passes no down: mapnm() does not use it */
 		if (eflag)
 			fwalk(p, pr, 0);
 		curproc = p;
-	} else if (p->in.op == 0x77) {
+	} else if (p->in.op == UPROC) {
 		if (eflag)
 			fwalk(p, pr, 0);
 		mapnm(p->in.left);
@@ -230,12 +230,12 @@ static void cutree(NODE *p)
 	op = p->in.op;
 	kind = optype(op);
 	switch (op) {
-	case 0x46: case 0x48: case 0x67: case 0x69:
+	case CALL: case UCALL: case STCALL: case USTCALL:
 		hascall = 1;
 		return;
-	case 0x4c: case 0x73:
+	case NOT: case CBRANCH:
 		return;
-	case 0x4e: case 0x4f:
+	case INCR: case DECR:
 		if (ntmp < 20) {
 			saved[ntmp] = tcopy(p);
 			ntmp++;

@@ -247,7 +247,7 @@ void mktree(struct quad *q)
 		betatbl[q->c.w4].p6 = tmpoff;
 		tmpoff += szty(q->c.w0) * 2;
 	}
-	if (p->in.op != 0x7b) {
+	if (p->in.op != DESC) {
 		l = mkleaf(&q->a);
 		r = q->b.b2 ? mkleaf(&q->b) : 0;
 		p->in.left = l;
@@ -257,57 +257,57 @@ void mktree(struct quad *q)
 	}
 	p->in.type = q->c.w0;
 	switch (p->in.op) {
-	case 0x7b:
+	case DESC:
 		p->tn.lval = q->a.w4;
 		p->tn.rval = q->b.w4;
 		break;
-	case 0x46:
+	case CALL:
 		if (pend == 0)
 			p->in.op = p->in.op + 2;
 		p->in.right = pend;
 		pend = 0;
 		addrof(p);
 		break;
-	case 0x50:
+	case EQ:
 		if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
 			p->in.op = 0x5a;
 		break;
-	case 0x51:
+	case NE:
 		if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
 			p->in.op = 0x5b;
 		break;
-	case 0x53:
+	case LT:
 		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
 			p->in.op = 0x57;
 		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
 			p->in.op = 0x5d;
 		break;
-	case 0x52:
+	case LE:
 		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
 			p->in.op = 0x56;
 		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
 			p->in.op = 0x5c;
 		break;
-	case 0x55:
+	case GT:
 		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
 			p->in.op = 0x59;
 		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
 			p->in.op = 0x5f;
 		break;
-	case 0x54:
+	case GE:
 		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
 			p->in.op = 0x58;
 		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
 			p->in.op = 0x5f;
 		break;
-	case 0x8:
+	case MINUS:
 		if (q->a.b2 == OAICON && q->a.w4 == 0) {
 			p->in.op = 0xa;
 			p->in.left->in.op = FREE;
 			p->in.left = p->in.right;
 		}
 		break;
-	case 0x7a:
+	case SWTCH:
 		n = talloc();
 		n->in.rall = 0;
 		n->in.op = CM;
@@ -315,22 +315,22 @@ void mktree(struct quad *q)
 		n->in.right = mkleaf(&q->c);
 		p->in.right = n;
 		break;
-	case 0x65:
+	case STASG:
 		p->stn.stsize = q->b.w0;
 		p->stn.stalign = q->b.w4;
 		p->in.right = p->in.left;
 		p->in.left = mkleaf(&q->c);
 		break;
-	case 0x3a:
+	case ASSIGN:
 		p->in.right = p->in.left;
 		p->in.left = mkleaf(&q->c);
 		asgfold(&p);
 		break;
-	case 0x73:
+	case CBRANCH:
 		cleartrees();
 		break;
 	}
-	if (!asgop(p->in.op) && (q->c.b2 == OASTEMP || (q->c.b2 == OATEMP && p->in.op != 0x7a && ctpos[q->c.w4]-- > 2))) {
+	if (!asgop(p->in.op) && (q->c.b2 == OASTEMP || (q->c.b2 == OATEMP && p->in.op != SWTCH && ctpos[q->c.w4]-- > 2))) {
 		t = talloc();
 		t->in.rall = 0;
 		t->in.op = ASSIGN;
@@ -348,7 +348,7 @@ void mktree(struct quad *q)
 		t->in.op = FREE;
 		return;
 	}
-	if (q->c.b2 == OATEMP && !asgop(p->in.op) && p->in.op != 0x7a) {
+	if (q->c.b2 == OATEMP && !asgop(p->in.op) && p->in.op != SWTCH) {
 		p->in.rall = q->c.w4;
 		return;
 	}
@@ -364,7 +364,7 @@ void mktree(struct quad *q)
 		p->in.type = t->in.type;
 		p->in.left = t;
 	}
-	if (p->in.op == 0x65) {
+	if (p->in.op == STASG) {
 		t = talloc();
 		t->in.rall = 0;
 		t->in.left = p;
