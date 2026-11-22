@@ -7,8 +7,6 @@ static char sccsid[] __attribute__((unused)) = "@[$]tr3.c\t2.3  08/24/83 13:57:3
 
 #define SCONV	110
 
-#undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
-#define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 /* a new node */
 NODE *

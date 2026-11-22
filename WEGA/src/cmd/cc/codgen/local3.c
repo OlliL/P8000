@@ -30,8 +30,6 @@ int rmode = 0;
 int rlmode = 0;
 int nosuffix = 0;
 
-#undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
-#define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 
 /* the test condition codes for ZN, by relation */

@@ -83,8 +83,6 @@ static int d3jdead;		/* v0p: the record before was an unconditional jump */
 
 #define FREE_	100
 
-#undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
-#define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 /* the relation that is true when the one in the index is false */
 

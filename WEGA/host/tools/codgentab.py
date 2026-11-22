@@ -33,7 +33,7 @@ SHAPES = ((0x4000, "SWADD"), (0x2000, "FORARG"), (0x1000, "INTEMP"), (0x800, "ST
           (0x8, "SBREG"), (0x4, "STAREG"), (0x2, "SAREG"), (0x1, "SANY"))
 SPECIALS = {0x8000: "SZERO", 0x8001: "SKCON", 0x8002: "S16CON", 0x8003: "SBCON", 0x8004: "SWCON", 0x8005: "SWNCON",
             0x8006: "SPOW2", 0x8007: "SNPOW2", 0x8008: "SADCON"}
-TYPES = ((0x8000, "TFIT"), (0x4000, "TSAME"), (0x2000, "TSTRUCT"), (0x1000, "TANY"), (0x800, "TPOINT2"),
+TYPES = ((0x8000, "TFIT"), (0x4000, "TSAME"), (0x2000, "TSTRUCT"), (0x1000, "TANY"), (0x800, "TPTRTO"),
          (0x400, "TULONG"), (0x200, "TUNSIGNED"), (0x100, "TUSHORT"), (0x80, "TUCHAR"), (0x40, "TPOINT"),
          (0x20, "TDOUBLE"), (0x10, "TFLOAT"), (0x8, "TLONG"), (0x4, "TINT"), (0x2, "TSHORT"), (0x1, "TCHAR"))
 REWRITES = ((0x1000, "RNOP"), (0x800, "RESCC"), (0x400, "RESC"), (0x10, "RESC3"), (0x8, "RESC2"), (0x4, "RESC1"),

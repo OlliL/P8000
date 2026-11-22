@@ -120,17 +120,17 @@ ttype(t, tword)
 {
 	if ((tword & TANY) || tword == TSAME || tword == TFIT)
 		return 1;
-	if (t == 0)
+	if (t == UNDEF)
 		t = TINT;		/* FARG / undefined: an int */
-	if (ISPTR(t) && (tword & TPOINT2)) {
+	if (ISPTR(t) && (tword & TPTRTO)) {
 		do
-			t = ((unsigned)t >> 2 & ~0xF) | (t & 0xF);	/* strip one level of pointer */
-		while ((t & 0x30) == 0x30);
-		return ttype(t, tword & ~TPOINT2);
+			t = DECREF(t);	/* strip one level of pointer */
+		while (ISARY(t));
+		return ttype(t, tword & ~TPTRTO);
 	}
-	if (t != (t & 0xF))		/* a pointer, array or function type */
+	if (t != BTYPE(t))		/* a pointer, array or function type */
 		return tword & TPOINT;
-	if (tword & TPOINT2)
+	if (tword & TPTRTO)
 		return 0;
 	switch (t) {
 	case CHAR:	return tword & TCHAR;

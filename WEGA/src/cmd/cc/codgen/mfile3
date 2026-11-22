@@ -11,6 +11,8 @@
 #include "../z8000/macdefs"
 #include "../z8000/mac2defs"
 #include "../mip/manifest"
+#undef DECREF		/* codgen: the DECREF of manifest shifts the type as it is (int: arithmetic); codgen shifts it unsigned */
+#define DECREF(x)	((((unsigned)(x) >> TSHIFT) & ~BTMASK) | ((x) & BTMASK))
 #include "../mip/rdr.h"
 #include "oldcc.h"
 
@@ -57,7 +59,7 @@
 #define TUSHORT	0000400
 #define TUNSIGNED 0001000
 #define TULONG	0002000
-#define TPOINT2	0004000
+#define TPTRTO	0004000
 #define TANY	0010000
 #define TSTRUCT	0020000
 
