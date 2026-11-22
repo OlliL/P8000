@@ -90,14 +90,20 @@ Rules of the target:
 
 ## Steps
 
-1. Measure the mip candidates, from the System III-near parts of cparse as the base: the shared text of common, rdr, optim (and of manifest, mfile1, mfile2, the operator
-   tables, macdefs) in cparse, gopt, codgen; per unit the versions and their differences; where pass-specific code and
-   OLD_* switches sit inside the shared text. Result: the list of the mip files and of the code that moves to the passes.
-2. Move: `src/cmd/cc/` with cc.c; cpp, cparse, gopt, codgen, popt below it (git mv); the Makefiles (relative paths,
-   SUBDIRS and the case of `make shipped` in src/cmd/Makefile); all builds byte-identical; checkall.
-3. The tools and documents on the new paths (see Done when); checkall, the oldcc checks, the matrices.
-4. mip/: the unit files per version; the wrappers in the passes include them; the code of OLD_* switches and the
-   pass-specific code out of the unit into the pass; all builds byte-identical after each unit.
+1. Measure the mip candidates, from the System III-near parts of cparse as the base: the shared text of common, rdr,
+   optim (and of manifest, mfile1, mfile2, the operator tables, macdefs) in cparse, gopt, codgen; per unit the versions
+   and their differences; where pass-specific code and OLD_* switches sit inside the shared text. (Units measured, see
+   Known; the headers follow in step 4.)
+2. (done 2026-11-22, checkall ALL OK; the oldcc checks still to run) Move 1:1: cpp, cparse, gopt, codgen, popt below `src/cmd/cc/` (git mv, nothing else changed); the Makefiles (relative
+   paths, SUBDIRS and the case of `make shipped` in src/cmd/Makefile, src/Makefile); the tools and documents on the new
+   paths (see Done when); all builds byte-identical; checkall.
+3. Align in the present directories (cparse, gopt, codgen), not yet in mip: move code between the files of a pass, put
+   the declarations into their headers (mfile1, mfile2, ...), take the units common, optim, rdr out of comm1/2/3.c,
+   optim1/3.c, rdr2/3.c into files of their own (the wrapper keeps its SCCS line and includes the unit), then bring the
+   unit texts of the passes together (from cparse's System III-near text), the OLD_* and pass-specific code out of the
+   units into the passes; all builds byte-identical after each step.
+4. When the future mip parts are as equal as they can be: move them to `src/cmd/cc/mip/` (one file per version; equal
+   headers); the wrappers include `../mip/...`; byte-identical; checkall.
 5. host/cc/: the same cut for the host ports (one host mip shared by the host passes); the corpora equal.
 6. `src/cmd/cc/README.md`; CLAUDE.md (with the owner's OK); a line in host/HANDOFF_wega_disasm.md (decisions).
 
@@ -109,6 +115,9 @@ Rules of the target:
   cpp and popt under cc/ without mip. 160 paused for this increment.
 - 2026-11-22 (owner): every source under cc/ as close to cc/pcc of System III / Plexus as byte identity allows (text and
   file structure); mip starts from the shared parts of cparse (comm1.c, optim1.c), which are already close to System III.
+- 2026-11-22 (owner): first the 1:1 move below cc/; then the alignment in the present pass directories (code moved,
+  declarations into headers, the units into files of their own, their texts aligned); only when the future mip parts
+  are as equal as possible, they move to mip/.
 
 ## Not part of it
 
@@ -118,3 +127,6 @@ Rules of the target:
 ## Log
 
 - 2026-11-22: increment made (owner); 160 paused.
+- 2026-11-22: step 2: cpp, cparse, gopt, codgen, popt moved below src/cmd/cc (git mv); Makefiles (one level more to
+  head/ and lib/, OLDPRINTF5 in src/Makefile, SUBDIRS cc/PASS in src/cmd/Makefile), .gitignore, tools and documents
+  (not OLDCC_LOG.md, not the corpus inputs); checkall ALL OK.

@@ -11,7 +11,7 @@ globals().update({k: v for k, v in vars(_p).items() if k.isupper()})
 NAME = 'scodgen'
 ORIG = 'lib/scodgen'
 OWN_LIM = 0xc022    # the own code ends here; the libc part follows
-SRCDIR = os.path.normpath(os.path.join(HERE, '..', '..', 'src', 'cmd', 'codgen'))
+SRCDIR = os.path.normpath(os.path.join(HERE, '..', '..', 'src', 'cmd', 'cc', 'codgen'))
 CCFLAGS = ['-DSEG']
 MODULES = [m.replace('table3_codgen', 'table3_scodgen') for m in _p.MODULES]
 model_link = _p.model_link

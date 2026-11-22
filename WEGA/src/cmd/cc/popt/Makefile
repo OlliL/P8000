@@ -8,10 +8,10 @@
 
 CC = ccv0p
 LD = ld
-CFLAGS = -O -I../../../../head/oldv7
+CFLAGS = -O -I../../../../../head/oldv7
 PREFIX = /
 STRIP = strip
-LIBC = ../../../../lib/libc-v5.a
+LIBC = ../../../../../lib/libc-v5.a
 CRT0 = /lib/crt0.o
 
 NONSEG_OBJS = z20.o z21.o z22.o z23.o
@@ -81,7 +81,7 @@ spopt: $(SEG_OBJS)
 # obj targets
 ###################
 
-$(NONSEG_OBJS): ../../z2.h ../../../../head/oldv7/stdio.h
+$(NONSEG_OBJS): ../../z2.h ../../../../../head/oldv7/stdio.h
 
 z20.o: ../../z20.c
 	$(CC) $(CFLAGS) -c ../../z20.c

@@ -1,6 +1,6 @@
 # gopt: handoff (2026-11-21)
 
-GOAL: /lib/gopt rebuilt from C (src/cmd/gopt), byte-identical after the link; then clean up, port to the host and consolidate
+GOAL: /lib/gopt rebuilt from C (src/cmd/cc/gopt), byte-identical after the link; then clean up, port to the host and consolidate
 the compiler switches. Compiler: sccvc (vc = v0p segmented + vc switches, host/OLDCC.md, compare/gopt/COMPILER.md). Rules: CLAUDE.md (German in
 conversation, English in git; commit, never push; branch `toolchain`). Keep this file, findings.json, host/OLDCC_LOG.md and
 host/increments/160-programs.md current. Clean-up rule (owner 2026-11-21): what is deleted from a file but still matters (for
@@ -22,15 +22,15 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    cparse scparse codgen scodgen popt spopt cpp. Expected: strictly equal, 179/179/209/210/73/73/26. `oldcc.sh bench`: 153/132/212.
 2. `host/recon/oldcc.sh matrix check` and `MATRIX_VER=vc ... matrix check`; a changed codgen switch: `MATRIX_VER=vc oldcc.sh
    matrix OLD_X` (cas baseline 0). The matrix knows codgen switches only; a popt (spopt) switch is checked on cas by checkall.
-3. gopt total: `fnc.py -a` over all src/cmd/gopt/*.c (321).
+3. gopt total: `fnc.py -a` over all src/cmd/cc/gopt/*.c (321).
 4. checkall with umask 002 (the emulator tests expect it): `R=$(git stash create); make -C host checkall WEGA=.../tmp/wega31_root
    NAME=x PATCH=$R`. Expected: ALL OK (about 25 min, in the background).
 
 ## Tools
 - `RECON_PROG=gopt python3 host/recon/fnc.py FILE.c FUNC` (diff in tmp/tmp/fnc/FUNC.diff, `FNC_CTX=N`; `-a FILE.c`; `FNC_ROOT=DIR`
   another compiler root). `odisc.py FUNC` (original listing), `datadiff.py`, `datastr.py`, `segcmp.py`, `host/tools/bincmp.py`.
-- vc builds: `cd src/cmd/codgen; rm build/segvc/*.o; PATH=.../tmp/tmp/wbin:$PATH make build/segvc/scodgen` (spopt:
-  `src/cmd/popt`, `make build/segvc/spopt`), then rm and cp to tmp/oldroot/lib/vc/. For experiments a copy of tmp/oldroot (a
+- vc builds: `cd src/cmd/cc/codgen; rm build/segvc/*.o; PATH=.../tmp/tmp/wbin:$PATH make build/segvc/scodgen` (spopt:
+  `src/cmd/cc/popt`, `make build/segvc/spopt`), then rm and cp to tmp/oldroot/lib/vc/. For experiments a copy of tmp/oldroot (a
   scratch root, `FNC_ROOT`) keeps the installed compiler untouched.
 - Traces: temporary `printf("KDBG ...")` (getreg, rsreturn, rbusy, a tree dump in order; never committed), `sccvc -S`.
 - The vc scodgen is near 64 KiB of text (host/OLDCC.md, vc): measure its size after each change.
@@ -45,7 +45,7 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    compare/libcisam/COMPILER.md)
 4. (done 2026-11-21: SWITCH_CANDIDATES.md deleted; its witness table is in COMPILER.md, its observations in OLDCC_LOG.md)
 5. (done 2026-11-21: the vc matrix measures cas and gopt (host/recon/goptmodel.py), rebuilt: host/OLDCC_SWITCHES_VC.md)
-6. (done 2026-11-21: `make shipped` builds src/cmd/gopt (Makefile: an empty rule for /lib/slibc.a; before, the loop of
+6. (done 2026-11-21: `make shipped` builds src/cmd/cc/gopt (Makefile: an empty rule for /lib/slibc.a; before, the loop of
    `make shipped` hid the failure). Its output equals /lib/gopt's: 18 gopt sources, cc and scc, -O1..-O5 (180 runs of
    `cc -S -On -TO./gopt`; beta2.c -O4/-O5 stops with "illegal bsize type" in both). `#ifdef SHIPPED`: dominators() (a bug
    of the shipped scodgen), flow_graph() (BBLOCK operand kinds unset in the original), alloclpdef() (the rr2 of the
@@ -53,7 +53,7 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    with the debug flags (d dominators, l live, p loops, r registers, y all), both outputs diffed with the addresses
    masked; a mix of vc and shipped objects does not run (other stack conventions); an instrumented vc build overflows
    segment 4.)
-7. (done 2026-11-21: host/gopt, taken over from src/cmd/gopt by the port rules (host/HANDOFF_wega_disasm.md, the new section
+7. (done 2026-11-21: host/gopt, taken over from src/cmd/cc/gopt by the port rules (host/HANDOFF_wega_disasm.md, the new section
    "Global optimizer"), -Wall -Wextra clean; its output and .D file equal /lib/gopt's on the 18 gopt sources, cc and scc,
    -1..-5 (180 runs, cpp and cparse/scparse of WEGA under z8k-emu), also the builds with the sanitizers and -ftrapv and with
    zero and pattern initialised locals. Not yet in host/Makefile nor checkall: with the corpus (step 8), after asking.)

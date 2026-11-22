@@ -1,6 +1,6 @@
 # cparse against System III and Plexus
 
-What in `src/cmd/cparse` differs from pass 1 of the portable C compiler of System III (`cmd/cc/pcc/mip`: `cgram.y scan.c trees.c pftn.c optim.c xdefs.c comm1.c manifest mfile1`; `cmd/cc/pcc/mdp`: `local.c code.c macdefs`; `vax/mip` is the same text) and from the Plexus PCC (`cmd/cc/pcc.d`, for the Z8000 parts). Measured 2026-11-07. System III is the model; the node members follow it (`p->in.op`, `p->tn.lval`, `p->fn.cdim`, `p->fpn.dval`), the macros of `manifest`, the table sizes and `ASOP` ... `STROP` in `mfile1`. `findings.json` holds the notes per function.
+What in `src/cmd/cc/cparse` differs from pass 1 of the portable C compiler of System III (`cmd/cc/pcc/mip`: `cgram.y scan.c trees.c pftn.c optim.c xdefs.c comm1.c manifest mfile1`; `cmd/cc/pcc/mdp`: `local.c code.c macdefs`; `vax/mip` is the same text) and from the Plexus PCC (`cmd/cc/pcc.d`, for the Z8000 parts). Measured 2026-11-07. System III is the model; the node members follow it (`p->in.op`, `p->tn.lval`, `p->fn.cdim`, `p->fpn.dval`), the macros of `manifest`, the table sizes and `ASOP` ... `STROP` in `mfile1`. `findings.json` holds the notes per function.
 
 ## Lines
 

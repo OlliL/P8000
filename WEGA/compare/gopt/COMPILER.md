@@ -1,8 +1,8 @@
 # gopt: the compiler vc
 
-/lib/gopt (03/83) is byte-identical when the sources of `src/cmd/gopt` are compiled with -O by **vc** (`sccvc` from
+/lib/gopt (03/83) is byte-identical when the sources of `src/cmd/cc/gopt` are compiled with -O by **vc** (`sccvc` from
 OLDROOT: `/lib/vc/scparse`, `/lib/vc/scodgen`, `/lib/vc/spopt`, `/lib/old/cas`) and linked by `sldo` with the start-up code
-of the library (`/lib/scrt0.o`) and `slibc-v12.a` (src/cmd/gopt/Makefile). vc is v0p compiled for segmented code with
+of the library (`/lib/scrt0.o`) and `slibc-v12.a` (src/cmd/cc/gopt/Makefile). vc is v0p compiled for segmented code with
 switches of its own (host/OLDCC.md, "The old scc of cas"); /bin/cas is built by the same compiler. The switches below are
 needed by gopt; every one is neutral on cas; the measured witnesses of every switch on cas and gopt: `host/OLDCC_SWITCHES_VC.md`. Their mechanism in full: host/OLDCC.md section
 3; the measurements: host/OLDCC_LOG.md.

@@ -29,7 +29,7 @@ def model_link(work, objs):
     """the link of d12model.py: crt0.o (make crt0.o), our modules, the libc of the program, like `make cparse`"""
     import os
     here = os.path.dirname(os.path.abspath(__file__))
-    cp = os.path.normpath(os.path.join(here, '..', '..', 'src', 'cmd', 'cparse'))
+    cp = os.path.normpath(os.path.join(here, '..', '..', 'src', 'cmd', 'cc', 'cparse'))
     crt = os.path.join(cp, 'crt0.o')
     hostld = os.path.normpath(os.path.join(cp, '..', '..', '..', 'host', 'ld', 'ld'))
     libc = [os.path.join(cp, '..', '..', 'lib', 'libc-v7.a')]

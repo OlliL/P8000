@@ -9,11 +9,11 @@ CC = ccv0p
 CAS = cas
 LD = ld
 YACC = yacc
-CFLAGS = -O -I../../head/oldv7
+CFLAGS = -O -I../../../head/oldv7
 PREFIX = /
 STRIP = strip
-CRT = ../../lib/libc/nonseg/crt
-LIBC = ../../lib/libc-v2.a
+CRT = ../../../lib/libc/nonseg/crt
+LIBC = ../../../lib/libc-v2.a
 COBJS = cpp.o cpy.o
 
 all: cpp

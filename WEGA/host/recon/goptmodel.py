@@ -3,7 +3,7 @@
 
 Usage: goptmodel.py WORK          (env: WEGA_ROOT or WEGA, the tree of the original; RECON_TMP, where the results go)
 
-Builds WORK/src/cmd/gopt (make clean, make gopt) with the tools of WORK/wbin (sccvc, sldo of the work root), strips a copy
+Builds WORK/src/cmd/cc/gopt (make clean, make gopt) with the tools of WORK/wbin (sccvc, sldo of the work root), strips a copy
 and compares it with the original /lib/gopt instruction by instruction, code segment by code segment (difflib over the
 instructions with the addresses of other places masked: jump and call targets, segmented addresses; frame offsets and
 constants are compared). Every block that differs counts for the function of the original it lies in (findings.json:

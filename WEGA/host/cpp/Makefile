@@ -1,5 +1,5 @@
 # cpp: the C preprocessor of WEGA (/lib/cpp) built for Linux (a cross tool: it behaves like the original).
-# Sources: cpp.c, cpy.y and yylex.c, taken over from ../../src/cmd/cpp by the port rules in
+# Sources: cpp.c, cpy.y and yylex.c, taken over from ../../src/cmd/cc/cpp by the port rules in
 # ../HANDOFF_wega_disasm.md. cpy.y is in the dialect of the host yacc (bison -y).
 #
 #   make                 build ./cpp

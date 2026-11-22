@@ -242,7 +242,7 @@ fi
 stamp '3 emulator tests'
 # the corpora run side by side, each in a work directory of its own; every candidate of a program is tested against the
 # same inputs (the original runs once). At most CHECK_CORPORA corpora run at a time (default: half the cores, each corpus has
-# 2 jobs), in the order of compare/CORPORA (the slowest first): the next one starts when one is done.
+# 2 jobs, a corpus with JOBS in its corpus.py that many), in the order of compare/CORPORA (the slowest first): the next one starts when one is done.
 CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
 touch $T/store.stamp	# the store: what the corpora of this run do not use is older than this (corpus_prune.py in finish)

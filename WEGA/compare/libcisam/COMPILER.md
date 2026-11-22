@@ -4,7 +4,7 @@ libcisam.a and slibcisam.a (C-ISAM 1.03, Library.SC 02/11/83) are byte-identical
 compiled with -O by **v1c** (`ccv1c`, `sccv1c` from OLDROOT): the passes of v1 (cparse, popt) with a code generator of
 its own (`/lib/v1c/codgen`, `/lib/v1c/scodgen`): the v1 switches (`OLD_D3`, `OLD_D61`, `OLD_D62`, `OLD_D63`; segmented also
 `OLD_D24`, `OLD_D2CW`) and five more that only libcisam shows: `OLD_D3W`, `OLD_D2PW`, `OLD_D3Q`, `OLD_D3H`, `OLD_D2CT`
-(src/cmd/codgen/Makefile, targets build/nonsegv1c, build/segv1c). No other program is built with v1c, so v1 is unchanged.
+(src/cmd/cc/codgen/Makefile, targets build/nonsegv1c, build/segv1c). No other program is built with v1c, so v1 is unchanged.
 A later session can try to get rid of them (source forms, narrowing existing switches); the measurements are in
 host/OLDCC_LOG.md (2026-11-18, 2026-11-19).
 

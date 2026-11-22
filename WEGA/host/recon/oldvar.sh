@@ -21,11 +21,11 @@ case "$patch" in -|/*) ;; *) patch=`pwd`/$patch ;; esac
 
 W=$RECON_TMP/oldvar/$name
 rm -rf $W
-mkdir -p $W/WEGA/src/cmd
-cp -a $REPO/src/cmd/$pass $W/WEGA/src/cmd/
+mkdir -p $W/WEGA/src/cmd/cc
+cp -a $REPO/src/cmd/cc/$pass $W/WEGA/src/cmd/cc/
 ln -s $REPO/src/lib $W/WEGA/src/lib
 ln -s $REPO/host $W/WEGA/host
-cd $W/WEGA/src/cmd/$pass || exit 1
+cd $W/WEGA/src/cmd/cc/$pass || exit 1
 if [ "$patch" != - ]; then
 	python3 $patch || exit 1
 fi
@@ -43,7 +43,7 @@ chmod +x $W/cc
 for prog in cparse popt codgen spopt scparse scodgen; do
 	(
 		case $prog in spopt) dir=popt ;; scparse) dir=cparse ;; scodgen) dir=codgen ;; *) dir=$prog ;; esac
-		cd $REPO/src/cmd/$dir
+		cd $REPO/src/cmd/cc/$dir
 		mkdir -p $W/$prog
 		RECON_PROG=$prog RECON_TMP=$W/$prog CAS=$REPO/host/cas/casold CCHOST=$W/cc python3 $REPO/host/recon/d12model.py -q > $W/$prog/model.txt 2>&1
 		RECON_PROG=$prog RECON_TMP=$W/$prog python3 $REPO/host/recon/strictcmp.py > $W/$prog/strict.txt 2>&1

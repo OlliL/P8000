@@ -14,7 +14,7 @@ import corpusc  # noqa: E402
 NAME = 'cparse'
 ORIG = 'lib/cparse'
 PROG = 'cparse'
-CANDIDATES = {'wega': 'src/cmd/cparse/build/nonseg/cparse', 'host': 'host/cparse/cparse'}
+CANDIDATES = {'wega': 'src/cmd/cc/cparse/build/nonseg/cparse', 'host': 'host/cparse/cparse'}
 ROOT_FILES = ['usr/include']
 PREP_FILES = ['lib/cpp', 'usr/include']
 EXPECT = {'src/lib/libc/common/gen/abs.c': 'expect: exit 0\nexpect: file t.I contains abs\n'}
@@ -41,8 +41,8 @@ def normalize(what, data):
 def sources(g):
     cases = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'cparse', 'cases')
     fixed = sorted(glob.glob(os.path.join(cases, '*.c'))) + [os.path.join(cases, 'yacc', 'cpy.c')]
-    # owner 2026-11-19: src/cmd/gopt/alias2.c is left out (the original cparse and our build differ on it, the .S file)
-    srcs = [f for f in g.c_sources() if not f.replace(os.sep, '/').endswith('src/cmd/gopt/alias2.c')]
+    # owner 2026-11-19: src/cmd/cc/gopt/alias2.c is left out (the original cparse and our build differ on it, the .S file)
+    srcs = [f for f in g.c_sources() if not f.replace(os.sep, '/').endswith('src/cmd/cc/gopt/alias2.c')]
     return srcs + [os.path.normpath(f) for f in fixed]
 
 

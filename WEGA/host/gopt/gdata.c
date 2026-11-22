@@ -1,5 +1,5 @@
 /*
-gdata.c - gopt (host): the global variables that no module defines (src/cmd/gopt/gdata.c has them as bytes in the order of the
+gdata.c - gopt (host): the global variables that no module defines (src/cmd/cc/gopt/gdata.c has them as bytes in the order of the
 data of /lib/gopt); here with their types (the extern declarations of the modules) and the element counts of the Z8000 sizes.
 */
 #include "gopt.h"

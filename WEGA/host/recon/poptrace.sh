@@ -2,7 +2,7 @@
 # poptrace.sh PROG FUNC: what popt does with one function of src/cmd/PROG.
 #
 # Builds popt v0p with -DTRACE once (RECON_TMP/poptrace/popt; delete it after a change of popt), compiles the module of
-# FUNC with ccv0p -S and cuts the function out as the input. SEG=1: spopt as shipped (the normal build of src/cmd/popt,
+# FUNC with ccv0p -S and cuts the function out as the input. SEG=1: spopt as shipped (the normal build of src/cmd/cc/popt,
 # -DSPOPT -DTRACE, RECON_TMP/poptrace/spopt) and the shipped scc -S. Writes RECON_TMP/poptrace/FUNC.in and FUNC.out: the out
 # file holds the nodes after each iteration (/*TRACE iterate n*/, /*TRACE comjump*/) and a line /*CM ...*/ for each
 # block moved by codemove. Prints those lines. Run it with the sources of the function as they are now.
@@ -23,11 +23,11 @@ else P=popt BD=nonsegv0p CF="-O -DTRACE" CCB="$Z /bin/cc" CCS="$EMU -r $OLDROOT 
 
 if [ ! -f $W/$P ]; then
 	rm -rf $W/b
-	mkdir -p $W/b/WEGA/src/cmd
-	cp -a $REPO/src/cmd/popt $W/b/WEGA/src/cmd/
+	mkdir -p $W/b/WEGA/src/cmd/cc
+	cp -a $REPO/src/cmd/cc/popt $W/b/WEGA/src/cmd/cc/
 	ln -s $REPO/src/lib $W/b/WEGA/src/lib
 	ln -s $REPO/host $W/b/WEGA/host
-	cd $W/b/WEGA/src/cmd/popt/build/$BD || exit 1
+	cd $W/b/WEGA/src/cmd/cc/popt/build/$BD || exit 1
 	rm -f z2*.o $P
 	# the library lies outside the root of the emulator: a relative copy inside the working directory
 	cp $REPO/src/lib/libc-v5.a ../l.a
@@ -36,9 +36,9 @@ if [ ! -f $W/$P ]; then
 	cp $P $W/$P
 fi
 
-cd $REPO/src/cmd/$prog || exit 1
+cd $REPO/src/cmd/cc/$prog || exit 1
 m=`grep -l "^$func *(\|^[a-z].*[ *]$func *(" *.c | head -1`
-[ -n "$m" ] || { echo "$func: not found in src/cmd/$prog"; exit 1; }
+[ -n "$m" ] || { echo "$func: not found in src/cmd/cc/$prog"; exit 1; }
 m=${m%.c}
 rm -rf $W/w; mkdir -p $W/w
 cp *.c *.h $W/w/ 2>/dev/null

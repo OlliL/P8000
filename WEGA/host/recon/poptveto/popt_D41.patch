@@ -1,7 +1,7 @@
-diff --git a/WEGA/src/cmd/popt/z21.c b/WEGA/src/cmd/popt/z21.c
+diff --git a/WEGA/src/cmd/cc/popt/z21.c b/WEGA/src/cmd/cc/popt/z21.c
 index e0bec63d..d83d8815 100644
---- a/WEGA/src/cmd/popt/z21.c
-+++ b/WEGA/src/cmd/popt/z21.c
+--- a/WEGA/src/cmd/cc/popt/z21.c
++++ b/WEGA/src/cmd/cc/popt/z21.c
 @@ -1141,6 +1141,13 @@ struct node *p;
  				p3->forw->back = p2->back;
  				p2->back = p1->back;

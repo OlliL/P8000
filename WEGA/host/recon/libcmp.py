@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""libcmp.py - the libc part of src/cmd/gopt/gopt against /lib/gopt instruction by instruction (masked): segment 5 from
+"""libcmp.py - the libc part of src/cmd/cc/gopt/gopt against /lib/gopt instruction by instruction (masked): segment 5 from
 5:9bbe (ours from __fltuse) and segment 4 from 4:fc3a (ours from _fseek)."""
 import sys,os,re,difflib
 os.environ['RECON_PROG']='gopt'
@@ -8,7 +8,7 @@ import progcfg, zcode
 from sout import SOut
 CFG=progcfg.load()
 o=SOut(open('/home/olivleh1/git/P8000/tmp/wega31_root/lib/gopt','rb').read())
-n=SOut(open('/home/olivleh1/git/P8000/WEGA/src/cmd/gopt/gopt','rb').read())
+n=SOut(open('/home/olivleh1/git/P8000/WEGA/src/cmd/cc/gopt/gopt','rb').read())
 def segs(s):
     out,off={},0
     for g in s.segs:

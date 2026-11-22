@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""datadiff.py - the data segment of src/cmd/gopt/gopt against /lib/gopt byte by byte; the words that are code addresses
+"""datadiff.py - the data segment of src/cmd/cc/gopt/gopt against /lib/gopt byte by byte; the words that are code addresses
 (84 00 / 85 00 in both: segment 4 and 5) are skipped. Prints the count and the groups of differing bytes."""
 import sys
 sys.path.insert(0,'/home/olivleh1/git/P8000/WEGA/host/tools')
 from sout import SOut
 o=SOut(open('/home/olivleh1/git/P8000/tmp/wega31_root/lib/gopt','rb').read())
-n=SOut(open('/home/olivleh1/git/P8000/WEGA/src/cmd/gopt/gopt','rb').read())
+n=SOut(open('/home/olivleh1/git/P8000/WEGA/src/cmd/cc/gopt/gopt','rb').read())
 od=bytes(o.image)[65534+50432:]; nd=bytes(n.image)[sum(s['code'] for s in n.segs):]
 diffs=[];i=0
 while i<len(od):

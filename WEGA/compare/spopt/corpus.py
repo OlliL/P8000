@@ -14,7 +14,7 @@ import corpusc  # noqa: E402
 NAME = 'spopt'
 ORIG = 'lib/spopt'
 PROG = 'spopt'
-CANDIDATES = {'wega': 'src/cmd/popt/build/seg/spopt', 'host': 'host/popt/spopt'}
+CANDIDATES = {'wega': 'src/cmd/cc/popt/build/seg/spopt', 'host': 'host/popt/spopt'}
 PREP_FILES = ['bin/scc', 'lib/cpp', 'lib/scparse', 'lib/scodgen', 'usr/include']
 EXPECT = {'src/lib/libc/common/gen/abs.c': 'expect: exit 0\nexpect: file out.s contains _abs\n'}
 

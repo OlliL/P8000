@@ -9,7 +9,7 @@ _s.loader.exec_module(_c)
 NAME = 'scparse'
 ORIG = 'lib/scparse'
 PROG = 'scparse'
-CANDIDATES = {'wega': 'src/cmd/cparse/build/seg/scparse', 'host': 'host/cparse/scparse'}
+CANDIDATES = {'wega': 'src/cmd/cc/cparse/build/seg/scparse', 'host': 'host/cparse/scparse'}
 ROOT_FILES = _c.ROOT_FILES
 PREP_FILES = _c.PREP_FILES
 normalize = _c.normalize

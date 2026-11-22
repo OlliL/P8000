@@ -121,7 +121,7 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   functions by symbol and segment; tested with the original plus a symbol table made from findings.json: 599 SAME, one changed
   byte shows as DIFF), fncheck.py takes SEG:OFFSET as LO, bincmp.py lists the code of every segment (blocks as SEGNO*0x10000+OFFSET;
   sld unchanged). Next: the module map per function, then the source per module (`common` first).
-- 2026-11-19: gopt, comm2.c (src/cmd/gopt/comm2.c, gopt.h, ops_gopt.c; not built, not in src/cmd/Makefile): modmap.py gives every
+- 2026-11-19: gopt, comm2.c (src/cmd/cc/gopt/comm2.c, gopt.h, ops_gopt.c; not built, not in src/cmd/Makefile): modmap.py gives every
   function its module (findings.json `module`, from the strings and tables it reads; 17 modules, alias2.c twice, beta2 and the
   borders between neighbours are guesses, 15 functions between live2 and ebbo2); comm2.c = pcc `common` 2.4, the relative is
   codgen/comm3.c; the operator table equals ops_scodgen.c but FLD 8 (ops_gopt.c). 23 functions + 7 tails: 21 equal under fncheck.py
@@ -136,7 +136,7 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
   ispow2, tabfree, mkhash). The compiler is sccvc: 34 of 40 drafted functions equal when measured (before eread, rdin, rdin2), every other segmented compiler 6 or fewer.
   Not an own module: 5:9bc0 on (slibc: _doscan, printf ..., ssgbrk at 5:c3a2) and probably 4:f5fe..4:ff78 (fread, fseek, getw): the libc
   members are at the end of both code segments; the data of gopt's last SCCS line (alias2.c 1.3 08/30/82) lies in front of the libc data.
-- 2026-11-19: gopt, Makefile (src/cmd/gopt/Makefile: sccvc, `sld -i -e start -z -Md7 -Mb8`, -Mt4 for the first modules, -Mt5 from ebbo2;
+- 2026-11-19: gopt, Makefile (src/cmd/cc/gopt/Makefile: sccvc, `sld -i -e start -z -Md7 -Mb8`, -Mt4 for the first modules, -Mt5 from ebbo2;
   measured with synthetic modules: the shipped sld sends an overflowing text to segment 0, not 5, so the second code segment is named;
   a later `-Mt4` module goes by first fit into the free space of segment 4). The start-up code has an entry in crt0.list (gopt: no jump,
   no text, _environ in segment 8; mkcrt0.sh drops the jump for pad `-` also in scrt0 files). The link of the whole program is not tried
@@ -185,7 +185,7 @@ PLZ libraries and objects made by `as`: 170 when they need the PLZ compiler.
 - 2026-11-19: gopt, alias2.c started (4:6c0a .. 4:927e, 50 starts): the bit matrix functions clrbit, setbit, clrmat, copymat, matmul, closure,
   diag, pralias, prmat, fndcall equal under fncheck (masked), testbit (the index form ld r2,rr2(r1)), tmpsearch and fndparm open (the
   struct assignment to a local: lda without the redundant and in the original). findings.json checked against the sources: every function
-  of src/cmd/gopt/*.c has its entry (mktree was missing the name and was renamed). Not yet: 4:6c0a (834 bytes), 4:7088 (736), 4:77e6.. are
+  of src/cmd/cc/gopt/*.c has its entry (mktree was missing the name and was renamed). Not yet: 4:6c0a (834 bytes), 4:7088 (736), 4:77e6.. are
   done, 4:7c68 (checkops), 4:8074, 4:831e, 4:87e6 and the rest up to 4:9108.
 - 2026-11-19: gopt: rename.py checked (it still works; new option -m: OLD is a placeholder for an existing NEW; the placeholders fn0b5e,
   fn1b28, fn1d22, fn2bcc, fn2c62, fn2c8c, fn4a8e of the sources are renamed to the functions; delquads became delrun because delquad and

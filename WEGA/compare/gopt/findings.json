@@ -5028,5 +5028,5 @@
    "file": "quads2.c"
   }
  },
- "status_note": "exact: /lib/gopt is byte-identical with the original (src/cmd/gopt, make; checkall); the notes say what is odd in the source"
+ "status_note": "exact: /lib/gopt is byte-identical with the original (src/cmd/cc/gopt, make; checkall); the notes say what is odd in the source"
 }

@@ -239,9 +239,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `lib/asz2d` | binary E705 | - | todo | D12 mixed, D1 - | - |
 | `lib/clist` | binary E707 | `src/cmd/clist.c` | exact | ccv0p | libc-v2.a |
 | `lib/cnvt.o` | binary E711 | `src/lib` | exact | ccv1 | n/a (object) |
-| `lib/codgen` | binary E711 | `src/cmd/codgen` | exact | ccv0p | libc-v5.a |
-| `lib/cparse` | binary E711 | `src/cmd/cparse` | exact | ccv0p | libc-v7.a |
-| `lib/cpp` | binary E707 | `src/cmd/cpp` | exact | ccv0p | libc-v2.a |
+| `lib/codgen` | binary E711 | `src/cmd/cc/codgen` | exact | ccv0p | libc-v5.a |
+| `lib/cparse` | binary E711 | `src/cmd/cc/cparse` | exact | ccv0p | libc-v7.a |
+| `lib/cpp` | binary E707 | `src/cmd/cc/cpp` | exact | ccv0p | libc-v2.a |
 | `lib/crt0.o` | binary E711 | `src/lib/libc/nonseg/csu` | exact | as | n/a (object) |
 | `lib/doprnt.o` | binary E711 | `src/lib` | exact | ccv1 | n/a (object) |
 | `lib/ex2.13strings` | text | `src/?` | exact | - | - |
@@ -251,10 +251,10 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `lib/libm.a` | archive | `src/lib/libm` | exact | ccv1 | n/a (archive) |
 | `lib/liby.a` | archive | `src/lib/liby` | exact | ccv1 | n/a (archive) |
 | `lib/mcrt0.o` | binary E711 | `src/lib` | exact | as | n/a (object) |
-| `lib/popt` | binary E711 | `src/cmd/popt` | exact | ccv0p | libc-v5.a |
+| `lib/popt` | binary E711 | `src/cmd/cc/popt` | exact | ccv0p | libc-v5.a |
 | `lib/scnvt.o` | binary E607 | `src/lib` | exact | sccv1 | n/a (object) |
-| `lib/scodgen` | binary E711 | `src/cmd/codgen` | exact | ccv0p | libc-v5.a |
-| `lib/scparse` | binary E711 | `src/cmd/cparse` | exact | ccv0p | libc-v7.a |
+| `lib/scodgen` | binary E711 | `src/cmd/cc/codgen` | exact | ccv0p | libc-v5.a |
+| `lib/scparse` | binary E711 | `src/cmd/cc/cparse` | exact | ccv0p | libc-v7.a |
 | `lib/scrt0.o` | binary E607 | `src/lib/libc/seg/csu` | exact | as | n/a (object) |
 | `lib/sdoprnt.o` | binary E607 | `src/lib` | exact | sccv1 | n/a (object) |
 | `lib/slibc.a` | archive | `src/lib/libc` | exact | sccvl | n/a (archive) |
@@ -262,7 +262,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `lib/slibm.a` | archive | `src/lib/libm` | exact | sccv1 | n/a (archive) |
 | `lib/sliby.a` | archive | `src/lib/liby` | exact | sccv1 | n/a (archive) |
 | `lib/smcrt0.o` | binary E607 | `src/lib` | exact | as | n/a (object) |
-| `lib/spopt` | binary E711 | `src/cmd/popt` | exact | ccv0p | libc-v5.a |
+| `lib/spopt` | binary E711 | `src/cmd/cc/popt` | exact | ccv0p | libc-v5.a |
 
 <a id="usr-bin"></a>
 ## usr/bin

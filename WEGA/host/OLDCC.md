@@ -33,7 +33,7 @@ peephole optimizer (descends from the Plexus `c2`); cas decides the jump forms.
 - The old versions are native WEGA programs only (built with the shipped cc, run in the emulator). The host versions
   (`host/codgen`, `host/popt`, ...) get no switches, except `host/cas/casold`, used by the models.
 - One source and one Makefile per pass; every old version is a target of it, built in its own directory with its switches
-  (`src/cmd/cparse/build/nonsegv1`, `codgen/build/nonsegv1q`, ..., the segmented v1 passes in `build/segv1`; `make old`,
+  (`src/cmd/cc/cparse/build/nonsegv1`, `codgen/build/nonsegv1q`, ..., the segmented v1 passes in `build/segv1`; `make old`,
   `make oldinstall`). The cas of v0 and v0p is `make oldcas` in `src/cmd/cas` (built in `old/`). Built programs are not in git.
 - The driver `cc.c` with `OLD_V1`, `OLD_V0`, `OLD_V0P` runs `/lib/vN/cparse`, `codgen`, `popt`. `sccv1` (`-DSCC -DOLD_V1`) runs `/lib/v1/scparse`,
   `scodgen`, `spopt`, built with the switches of v1. v0 and v0p run `/lib/old/cas`;
@@ -153,8 +153,8 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 ### vk: the compiler of the kernel objects
 
 The objects of `/wega` (`usr/sys/sys/LIB1`, `usr/sys/dev/LIB2`) were made by an older scc. `sccvk` (`-DSCC -DOLD_VK` in `src/cmd/cc`) runs `/lib/vk/scparse`
-(built in `src/cmd/cparse/build/segvk`, `OLD_D25`), `/lib/vk/scodgen` (`src/cmd/codgen/build/segvk`, `OLD_VK` in `oldcc.h` = `OLD_D3` and `OLD_D24`) and the
-`/lib/vk/spopt` (`src/cmd/popt/build/segvk`: the shipped spopt with `OLD_D29`). No source form gives them; sccv1 (v1 scparse and spopt) is further away. Witnesses (identical):
+(built in `src/cmd/cc/cparse/build/segvk`, `OLD_D25`), `/lib/vk/scodgen` (`src/cmd/cc/codgen/build/segvk`, `OLD_VK` in `oldcc.h` = `OLD_D3` and `OLD_D24`) and the
+`/lib/vk/spopt` (`src/cmd/cc/popt/build/segvk`: the shipped spopt with `OLD_D29`). No source form gives them; sccv1 (v1 scparse and spopt) is further away. Witnesses (identical):
 ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). The `make install` of `src/uts` is identical in all 31 files, `wega` and `LIB2` included.
 
 - Switches: `OLD_D3`, `OLD_D24` (codgen), `OLD_D25` (cparse), `OLD_D29` (popt); section 3.
@@ -164,7 +164,7 @@ ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). T
 The C members of `/lib/libc.a` and `/lib/slibc.a` (sources 08/83 and 09/83) come out of the shipped cc and scc except a few;
 their compiler was the shipped one a little earlier. `ccvl` and `sccvl` (`-DOLD_VL` in `src/cmd/cc`, built in
 `build/nonsegvl`, `build/segvl`) run the shipped cparse, gopt and popt (spopt), `/lib/vl/scparse` (the shipped one with `OLD_D25`) and `/lib/vl/codgen`,
-`/lib/vl/scodgen` (`src/cmd/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53`, `OLD_D57` and `OLD_D24`).
+`/lib/vl/scodgen` (`src/cmd/cc/codgen/build/nonsegvl`, `build/segvl`; `OLD_VL` in `oldcc.h` = `OLD_D53`, `OLD_D57` and `OLD_D24`).
 All 206 C members of the two libraries come out exact; the source forms they need are in the sources (doprnt: `_pfile != NULL &&
 ferror(_pfile)` and the block `lng:` behind the cases `O X U D l`; segmon: `char *mkseg()`, `sr[0].sr_seg`, `(i = i + 1) <=
 *nsegs`; slibc malloc: `union store *r` in front of `register unsigned onw` in realloc and an unused `int spare` in calloc).

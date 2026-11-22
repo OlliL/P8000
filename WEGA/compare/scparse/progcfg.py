@@ -12,7 +12,7 @@ globals().update({k: v for k, v in vars(_p).items() if k.isupper()})
 NAME = 'scparse'
 ORIG = 'lib/scparse'
 OWN_LIM = 0xa056    # the own code ends here; the libc part follows
-SRCDIR = os.path.normpath(os.path.join(HERE, '..', '..', 'src', 'cmd', 'cparse'))
+SRCDIR = os.path.normpath(os.path.join(HERE, '..', '..', 'src', 'cmd', 'cc', 'cparse'))
 CCFLAGS = ['-DSEG']
 model_link = _p.model_link
 MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'), 'd12model_scparse', os.path.basename(_p.MODEL_OUT))

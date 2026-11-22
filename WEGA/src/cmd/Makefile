@@ -1,7 +1,7 @@
 # cmd: WEGA system commands, in the V7 layout: a command with a single source
 # file is a file here (ar.c, mv.c, size.c, ...); a command with several files, several versions or its own
 # libc has its own subdirectory with its own Makefile (BOOT0, doscopy, pburn, standalone, dc, cc, cas,
-# cpp, cparse, codgen, popt, ld, sld, verify, copydisk, format). Start-up variants of the commands live in
+# cc/cpp, cc/cparse, cc/codgen, cc/popt, ld, sld, verify, copydisk, format). Start-up variants of the commands live in
 # ../lib/libc/nonseg/crt (crt0.s.in + crt0.list, made into crt0-<command>.s by mkcrt0.sh).
 # cc/cc.c is the source of both drivers, cc and scc (scc is cc.c compiled with -DSCC).
 #
@@ -36,7 +36,7 @@ SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o
-SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cpp cparse codgen popt gopt dc ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
+SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 
@@ -53,19 +53,19 @@ shipped:
 	for d in $(SUBDIRS) ; do \
 		case $$d in \
 		sld) X="SCC=scc LIBC=/lib/slibc.a" ;; \
-		gopt) X="SCC=scc SLD=sld LIBC=/lib/slibc.a" ;; \
+		cc/gopt) X="SCC=scc SLD=sld LIBC=/lib/slibc.a" ;; \
 		cas) X="SCC=scc SLIBC=/lib/slibc.a SCCFLAGS=\"$(SHIPFLAGS)\"" ;; \
-		codgen|popt) X='LIBC="../../../../lib/oldlibc/printf/s1.o ../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
-		cpp|cparse|cc|dc|ld) X="LIBC=/lib/libc.a" ;; \
+		cc/codgen|cc/popt) X='LIBC="../../../../../lib/oldlibc/printf/s1.o ../../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
+		cc/cpp|cc/cparse|cc|dc|ld) X="LIBC=/lib/libc.a" ;; \
 		*) X="" ;; \
 		esac ; \
-		cd $$d ; eval $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all '$(SHIPCC)' $$X ; cd .. ; \
+		(cd $$d ; eval $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all '$(SHIPCC)' $$X) ; \
 	done
 
 /lib/libc.a /lib/slibc.a:
 
 subdirs:
-	for d in $(SUBDIRS); do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all ; cd .. ; done
+	for d in $(SUBDIRS); do (cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all) ; done
 
 getud: getud.c
 	$(CC) -o $@ getud.c
@@ -245,7 +245,7 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	rm -f $(PREFIX)/etc/umfs $(PREFIX)/etc/mlf
 	ln $(PREFIX)/etc/mfs $(PREFIX)/etc/umfs
 	ln $(PREFIX)/etc/makelost+found $(PREFIX)/etc/mlf
-	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX) ; cd .. ; done
+	for d in $(SUBDIRS) ; do (cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX)) ; done
 
 clean:
 	rm -f $(PROGS) $(FILES) $(CLEANFILES) $(SIMPLE)
@@ -253,6 +253,6 @@ clean:
 	rm -f crt0-ar.o crt0-sync.o crt0-ar.s crt0-sync.s
 	rm -f crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o
 	rm -f crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s
-	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) clean ; cd .. ; done
+	for d in $(SUBDIRS) ; do (cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) clean) ; done
 
 .PHONY: all subdirs clean install

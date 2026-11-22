@@ -1,4 +1,4 @@
-# popt (WEGA /lib/popt) - notes on the original (from the decompilation; the host program is made from src/cmd/popt, see host/HANDOFF_wega_disasm.md)
+# popt (WEGA /lib/popt) - notes on the original (from the decompilation; the host program is made from src/cmd/cc/popt, see host/HANDOFF_wega_disasm.md)
 
 Goal of the first host version: portable C that turns `cc -S` output into the same text the shipped
 /lib/popt produces (oracle: z8k-emu running the original; corpus in a scratch directory (CORPUS=...),

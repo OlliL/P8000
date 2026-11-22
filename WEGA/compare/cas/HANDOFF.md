@@ -7,7 +7,7 @@ Every attempt is logged in `host/OLDCC_LOG.md` (search "cas jpr").
 
 ## 1 Setup
 
-- spopt of vc: the shipped popt with `OLD_D13 OLD_D45 OLD_D20S OLD_D49` (segvc rule of `src/cmd/popt/Makefile`). The other
+- spopt of vc: the shipped popt with `OLD_D13 OLD_D45 OLD_D20S OLD_D49` (segvc rule of `src/cmd/cc/popt/Makefile`). The other
   passes of vc: `host/OLDCC.md`, "The old scc of cas". All layout decisions of jpr are spopt's: scparse/scodgen only give
   the raw order (`sccvc -S` without -O), cas only chooses `jr`/`jp`.
 - Model: `RECON_PROG=cas RECON_TMP=$T CCHOST=<cc wrapper> CAS=<wrapper of /lib/old/cas> python3 host/recon/d12model.py -q`
@@ -223,13 +223,13 @@ head, D45) is refused though the original makes it. In stabout the target lies b
 lie inside the loop (`-DRJ_INSIDE`); that limit is not yet measured cleanly.
 
 Open: the exact condition of WIN that keeps the 151 others; the natural `for` loop (the classic inversion at the step label
-must not be made; `goto done` and D49 do that now); then the switches in `src/cmd/popt/z21.c`, jpr.c in the form above,
+must not be made; `goto done` and D49 do that now); then the switches in `src/cmd/cc/popt/z21.c`, jpr.c in the form above,
 checkall and the vc matrix.
 
 ## 11 The switches and the libc part (2026-11-14)
 
-- In the tree: `OLD_D50` (rule LIV) and `OLD_D51` (the three refusals) in `src/cmd/popt/z21.c`, both in the segvc rule of
-  `src/cmd/popt/Makefile`; described in `host/OLDCC.md` (D50, D51). D51 is narrower than rule WIN of section 10:
+- In the tree: `OLD_D50` (rule LIV) and `OLD_D51` (the three refusals) in `src/cmd/cc/popt/z21.c`, both in the segvc rule of
+  `src/cmd/cc/popt/Makefile`; described in `host/OLDCC.md` (D50, D51). D51 is narrower than rule WIN of section 10:
   (a) no block that ends in a turnable pair `cjp L; jp X; L:` to a jump within 24 nodes behind a loop head (E to the switch
   head); (b) no block to a jump that stands alone behind its label (F to `case 0x56: break`); (c) no block that ends in
   the jump back to a loop head to a site of one instruction within 24 nodes behind that head (the step to the `continue`

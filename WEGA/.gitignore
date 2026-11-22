@@ -1,5 +1,5 @@
 /compare/*/.lock
-/src/cmd/cparse/cgram1.c
+/src/cmd/cc/cparse/cgram1.c
 /src/uts/conf/BOOTLIB
 /src/uts/conf/boot
 /src/uts/conf/ver.c

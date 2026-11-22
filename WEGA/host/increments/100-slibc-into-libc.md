@@ -48,7 +48,7 @@ where the segmented member differs; the PLZ/ASM and cas sources stay separate fi
 - Owner 2026-11-15, the layout: `libc/common/{gen,stdio}` (used by both, C with `#ifdef SEG` where they differ),
   `libc/nonseg/{crt,csu,gen,sys}` (only libc.a: its .s, mon.c, crt0.s, Library.SC, arhdr.s, the crt0 tools of the programs),
   `libc/seg/{crt,csu,gen,sys}` (only slibc.a: its .s, segmon.c, scrt0.s, Library.SC, arhdr.s). File names unchanged.
-- Owner 2026-11-15, the build: as `src/cmd/codgen`: one Makefile, `build/nonseg` (libc.a, crt0.o) and `build/seg`
+- Owner 2026-11-15, the build: as `src/cmd/cc/codgen`: one Makefile, `build/nonseg` (libc.a, crt0.o) and `build/seg`
   (slibc.a, scrt0.o), each built in its directory by `$(MAKE) -f ../../Makefile`; objects made in place (no mv); safe with -j.
 
 ## Not part of it

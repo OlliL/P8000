@@ -33,8 +33,8 @@ SKIP = ('tmp/', 'dev/', 'z/', '.wegafs-manifest.tsv')
 SOURCE = {'bin/cc': 'cmd/cc', 'bin/scc': 'cmd/cc', 'bin/cas': 'cmd/cas', 'bin/ld': 'cmd/ld', 'bin/sld': 'cmd/sld',
           'bin/cp': 'cmd/mv.c', 'bin/ln': 'cmd/mv.c', 'bin/mv': 'cmd/mv.c', 'bin/pburn': 'cmd/pburn',
           'usr/bin/strip': 'cmd/strip.c', 'usr/bin/ranlib': 'cmd/ranlib.c', 'bin/size': 'cmd/size.c',
-          'lib/cpp': 'cmd/cpp', 'lib/cparse': 'cmd/cparse', 'lib/scparse': 'cmd/cparse', 'lib/codgen': 'cmd/codgen',
-          'lib/scodgen': 'cmd/codgen', 'lib/popt': 'cmd/popt', 'lib/spopt': 'cmd/popt', 'pb.image': 'cmd/BOOT0',
+          'lib/cpp': 'cmd/cc/cpp', 'lib/cparse': 'cmd/cc/cparse', 'lib/scparse': 'cmd/cc/cparse', 'lib/codgen': 'cmd/cc/codgen',
+          'lib/scodgen': 'cmd/cc/codgen', 'lib/popt': 'cmd/cc/popt', 'lib/spopt': 'cmd/cc/popt', 'pb.image': 'cmd/BOOT0',
           'lib/libc.a': 'lib/libc', 'lib/crt0.o': 'lib/libc/nonseg/csu', 'lib/slibc.a': 'lib/libc', 'lib/scrt0.o': 'lib/libc/seg/csu', 'etc/dump': 'cmd/dump.c', 'etc/dumpdir': 'cmd/dumpdir.c',
           'etc/restor': 'cmd/restor.c', 'etc/umfs': 'cmd/mfs.sh', 'etc/mlf': 'cmd/makelost+found.sh'}
 # Makefile variable -> name of the compiler

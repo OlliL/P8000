@@ -1,5 +1,5 @@
 # cparse, scparse: pass 1 of cc and scc (the PCC front end of WEGA) built for Linux (cross tools: they behave like /lib/cparse and /lib/scparse).
-# Sources: taken over from ../../src/cmd/cparse by the port rules in ../HANDOFF_wega_disasm.md; scparse is the same source with -DSEG.
+# Sources: taken over from ../../src/cmd/cc/cparse by the port rules in ../HANDOFF_wega_disasm.md; scparse is the same source with -DSEG.
 # cgram1.y is in the dialect of the host yacc (bison -y); the token numbers are fixed by the %term lines.
 #
 #   make                 build ./cparse and ./scparse

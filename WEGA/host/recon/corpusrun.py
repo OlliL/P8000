@@ -1149,6 +1149,8 @@ def main():
         return label, msgs, res
 
     n = int(os.environ.get('JOBS') or max(1, (os.cpu_count() or 2) - 1))
+    # a long corpus asks for more jobs (JOBS of its corpus.py): at least that many, also when checkall gives 2
+    n = max(n, getattr(cfg, 'JOBS', 0))
     with concurrent.futures.ThreadPoolExecutor(n) as ex:
         for label, msgs, res in ex.map(one, jobs):
             if msgs is None:

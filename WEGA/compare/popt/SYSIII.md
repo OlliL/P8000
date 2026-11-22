@@ -1,6 +1,6 @@
 # popt against System III and Plexus
 
-What in `src/cmd/popt` differs from the object code improver of System III (`cmd/cc/pdp11/c20.c c21.c c2.h`; the PDP-11 `c2`, the VAX one in `cmd/cc/vax/c2` is less close) and from the Z8000 `c2` of Plexus (`cmd/cc/c2.d`: `c20.c` ... `c23.c`, `c2.h`; `cmd/cc/z8000/c2` is close to it). System III has no counterpart of `z22.c` and `z23.c`. Measured 2026-11-07. popt and c2 share their plan (`iterate`, `xjump`, `codemove`, `comjump`, `rmove`, `movedat`), `struct node` and `struct optab` (`opstring`); the module names z20 ... z23 come from the original.
+What in `src/cmd/cc/popt` differs from the object code improver of System III (`cmd/cc/pdp11/c20.c c21.c c2.h`; the PDP-11 `c2`, the VAX one in `cmd/cc/vax/c2` is less close) and from the Z8000 `c2` of Plexus (`cmd/cc/c2.d`: `c20.c` ... `c23.c`, `c2.h`; `cmd/cc/z8000/c2` is close to it). System III has no counterpart of `z22.c` and `z23.c`. Measured 2026-11-07. popt and c2 share their plan (`iterate`, `xjump`, `codemove`, `comjump`, `rmove`, `movedat`), `struct node` and `struct optab` (`opstring`); the module names z20 ... z23 come from the original.
 
 ## Lines
 

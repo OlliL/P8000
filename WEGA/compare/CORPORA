@@ -2,7 +2,7 @@
 # host/tools/corpus.sh runs without a program name. A new corpus joins by a line here; nothing is found by looking at the files.
 #
 # The ORDER is the order of starting: checkall runs at most CHECK_CORPORA corpora at a time (default half the cores, each with
-# 2 jobs) and takes the next name from this list when one is done. So the list is sorted by the time of a cold run (the store
+# 2 jobs, a corpus with JOBS in its corpus.py that many) and takes the next name from this list when one is done. So the list is sorted by the time of a cold run (the store
 # empty), the slowest at the top, the fastest at the bottom: the long ones start first and the run does not end with one long
 # corpus alone. A new corpus goes in by its time (host/tools/corpus.sh NAME prints it: the TIME line; compare with the
 # lines around it), not at the end. The times are in seconds of a cold run of 2026-11-16 under a high load (the order

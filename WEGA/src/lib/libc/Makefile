@@ -1,7 +1,7 @@
 # libc: /lib/libc.a and /lib/crt0.o (nonsegmented, build/nonseg) and /lib/slibc.a and /lib/scrt0.o (segmented, build/seg) from
 # one tree, byte-identical with the WEGA files; the members by vl (ccvl, sccvl from OLDROOT, host/OLDCC.md), the assembler
 # sources by the shipped as and cas. common/: the sources of both (C with #ifdef SEG where the segmented member differs),
-# nonseg/: only libc.a, seg/: only slibc.a; the archive headers: V/arhdr.s, V/Library.SC, mkar.sh. As src/cmd/codgen: each
+# nonseg/: only libc.a, seg/: only slibc.a; the archive headers: V/arhdr.s, V/Library.SC, mkar.sh. As src/cmd/cc/codgen: each
 # variant is made in its build directory by this Makefile (V=nonseg or seg), the objects in place; safe with -j.
 #
 #   make        build/nonseg/libc.a, crt0.o; build/seg/slibc.a, scrt0.o (and the members, used by ../oldlibc)

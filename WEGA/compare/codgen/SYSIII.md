@@ -1,6 +1,6 @@
 # codgen against System III and Plexus
 
-What in `src/cmd/codgen` differs from pass 2 of the portable C compiler of System III (`cmd/cc/pcc/mip`: `reader.c match.c allo.c comm2.c optim.c trees.c mfile2`; `cmd/cc/pcc/mdp`: `order.c local2.c table.c`) and from the Plexus PCC (`cmd/cc/pcc.d`, for the Z8000 parts). Measured 2026-11-07. The tree nodes follow System III: `p->in.op`, `p->tn.lval`, `p->bn.label`, `p->stn.stsize`. `findings.json` holds the notes per function.
+What in `src/cmd/cc/codgen` differs from pass 2 of the portable C compiler of System III (`cmd/cc/pcc/mip`: `reader.c match.c allo.c comm2.c optim.c trees.c mfile2`; `cmd/cc/pcc/mdp`: `order.c local2.c table.c`) and from the Plexus PCC (`cmd/cc/pcc.d`, for the Z8000 parts). Measured 2026-11-07. The tree nodes follow System III: `p->in.op`, `p->tn.lval`, `p->bn.label`, `p->stn.stsize`. `findings.json` holds the notes per function.
 
 ## Lines
 

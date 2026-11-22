@@ -20,13 +20,13 @@
 # The compiler is sccvc by measurement (compare/gopt/findings.json), not the one of the date (v1).
 
 SCC = sccvc
-CFLAGS = -O -I../../head/oldv7
+CFLAGS = -O -I../../../head/oldv7
 CAS = cas
 SCRT0 = /lib/scrt0.o
 AR = ar
 SLD = sldo
 SLDFLAGS = -i -e start -Md7 -Mb8 -Ms63
-LIBC = ../../lib/slibc-v12.a
+LIBC = ../../../lib/slibc-v12.a
 PREFIX = /
 STRIP = strip
 

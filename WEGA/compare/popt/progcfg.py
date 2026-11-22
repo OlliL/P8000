@@ -18,7 +18,7 @@ D6TABLES = True     # the switch tables in the layout of the old cc (d12model.py
 def model_link(work, objs):
     """the link of d12model.py: crt0.o, our modules, the libc of the program"""
     here = os.path.dirname(os.path.abspath(__file__))
-    src = os.path.normpath(os.path.join(here, '..', '..', 'src', 'cmd', 'popt'))
+    src = os.path.normpath(os.path.join(here, '..', '..', 'src', 'cmd', 'cc', 'popt'))
     hostld = os.path.normpath(os.path.join(src, '..', '..', '..', 'host', 'ld', 'ld'))
     libc = [os.path.join(src, '..', '..', 'lib', 'libc-v5.a')]
     return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', os.path.join(os.environ.get('WEGA', '/home/olivleh1/git/P8000/tmp/wega31_root'), 'lib', 'crt0.o')] + objs + libc + \

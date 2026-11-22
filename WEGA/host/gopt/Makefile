@@ -1,5 +1,5 @@
 # gopt: the global optimizer of cc and scc (/lib/gopt) built for Linux (a cross tool: it behaves like /lib/gopt).
-# Sources: taken over from ../../src/cmd/gopt by the port rules in ../HANDOFF_wega_disasm.md; -DSHIPPED takes the forms of the
+# Sources: taken over from ../../src/cmd/cc/gopt by the port rules in ../HANDOFF_wega_disasm.md; -DSHIPPED takes the forms of the
 # source that do not depend on what the frame of the original holds (flow_graph, alloclpdef); ops_gopt.c is included by comm2.c.
 #
 #   make                 build ./gopt

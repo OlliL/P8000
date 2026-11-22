@@ -21,7 +21,9 @@ CC = cc
 CAS = cas
 PREFIX = /
 OLDROOT = /
-OLDPRINTF = ../../../../lib/oldlibc/printf/s1p.o ../../../../lib/oldlibc/doprnt/s1d.o ../../../../lib/oldlibc/doprnt/s1f.o
+OLDPRINTF  = ../../../../lib/oldlibc/printf/s1p.o ../../../../lib/oldlibc/doprnt/s1d.o ../../../../lib/oldlibc/doprnt/s1f.o
+# the same seen from the passes (cmd/cc/PASS/build/X, one level deeper than the driver cmd/cc/build/X)
+OLDPRINTF5 = ../../../../../lib/oldlibc/printf/s1p.o ../../../../../lib/oldlibc/doprnt/s1d.o ../../../../../lib/oldlibc/doprnt/s1f.o
 MAKEARGS =
 
 all: stage1 lib stage2 cmds uts
@@ -32,9 +34,9 @@ stage1: clean
 	cd lib/oldlibc/doprnt ; ar x /lib/libc.a ffltioc.o ; mv ffltioc.o s1f.o
 	cd cmd/cas    ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT)
 
-	cd cmd/cparse ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF) /lib/libc.a'
-	cd cmd/codgen ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF) /lib/libc.a'
-	cd cmd/popt   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF) /lib/libc.a'
+	cd cmd/cc/cparse ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF5) /lib/libc.a'
+	cd cmd/cc/codgen ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF5) /lib/libc.a'
+	cd cmd/cc/popt   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF5) /lib/libc.a'
 	cd cmd/cc     ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) oldinstall PREFIX=$(OLDROOT) LIBC='$(OLDPRINTF) /lib/libc.a'
 
 lib: FORCE
@@ -42,14 +44,14 @@ lib: FORCE
 	cd lib ; $(MAKE) MAKEARGS=$(MAKEARGS)
 
 stage2:
-	cd cmd/cparse ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
-	cd cmd/codgen ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
-	cd cmd/popt   ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
+	cd cmd/cc/cparse ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
+	cd cmd/cc/codgen ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
+	cd cmd/cc/popt   ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
 	cd cmd/cc     ; $(MAKE) clean ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) old
 
-	cd cmd/cparse ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
-	cd cmd/codgen ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
-	cd cmd/popt   ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
+	cd cmd/cc/cparse ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
+	cd cmd/cc/codgen ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
+	cd cmd/cc/popt   ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
 	cd cmd/cc     ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
 	cd cmd/sld    ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
 
