@@ -83,7 +83,12 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
     State 2026-11-22: codgen done (table3.c with table3.nzcc.c/szcc.c, the tables and the modules with names: ops,
     types, cookies, shapes, needs, rewrites, register classes, rs flags, R2* of SysIII, hoptab; checkall ALL OK);
     gopt: quad ops (qtab names with Q), operand kinds, tree ops, types, the storage classes (now in mip/rdr.h).
-    Open: the sflags bits (codgen, gopt, rdr), popt, cparse, cpp.
+    Then (owner 2026-11-22): sflags, popt (optab, CJP conditions, regs[]); cparse and cpp need nothing. The PCC sweep
+    of codgen and mip (SysIII the base, Plexus the second): z8000/mac2defs (registers, BYTEOFF, BITOOR, TMPREG,
+    REGVLAST), the sizes by SZ*/BITMASK/SETOFF, the PCC names (UNARY MUL ..., respref, rtyflg, deli, DELAYS, NRECUR,
+    TPTRTO, istreg, isbreg), the PCC text and comments of the functions both have, FLOFLG/LTYFLG swapped to the
+    WEGA bits, SSCON/SICON (prcook) and SCONSET/SCONRES (Plexus), hoptab in local3.c, simpler SEG blocks. Every z8k
+    binary byte-identical; a few host builds differ by gcc code choice only (strip, same behaviour; checkall corpora).
     (owner 2026-11-22: steps 10 to 12 are part of increment 160: 10 the clean-up after a binary is byte-identical, 11 and
     12 the consolidation before the next programs.)
 12. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks above.
