@@ -29,6 +29,17 @@ Every program of the WEGA tree from source, byte-identical, each with a corpus.
 1. Order by date and compiler (programs of one compiler version together); the tool chain gaps first (`gld`, `yacc`,
    `chkout`, `gopt`), since later programs need them.
 2. Per program with the agents of 140: source, library, own code, corpus; checkall per batch.
+3. (owner 2026-11-22) First the programs that COVERAGE shows as `partial` and whose source is already in the tree, each
+   to exact with its corpus, in this order (smallest step first; mkstr before ex: the ex build uses it, both are of the
+   old compiler, crt0 stamp 3.1 of 10-11/1982):
+   1. `/bin/fse` (src/cmd/fse, built, should be exact now): the corpus (compare/fse/corpus.py), COVERAGE exact.
+   2. `/usr/bin/mkstr` (src/cmd/mkstr.c, 8.6 KB, mkstr.c 1.1 11/01/82; built only as the tool of the ex strings):
+      build and install it, compare, corpus.
+   3. `/bin/ex` (src/cmd/ex, the ex 2.13 sources of Plexus, 67 KB E711; only ex2.13strings is built now): build and
+      install it, compare, corpus.
+   Not in this list: the other `partial` entries have only data files in src (bc lib.b, more.help, yaccpar, unittab.sh,
+   plzcg.errs, news, text, uucp, cref tables, spell.sh), the program itself has no source yet. Then decide with the owner
+   which program comes next.
 
 ## Decisions
 
@@ -132,3 +143,4 @@ PLZ programs and `as`: 170.
   (SysIII, Plexus); every z8k binary byte-identical, checkall ALL OK.
 - 2026-11-22 step 12 closed without a broad consolidation (owner); OLD_D3KC under #ifndef OLD_VC. The gopt handoff is
   deleted: its checks are in host/HOWTO_reconstruct.md (Phase B), what still matters in host/OLDCC_LOG.md (2026-11-22).
+- 2026-11-22 plan (owner): the partial programs with a source in the tree first: fse (corpus), mkstr, ex.
