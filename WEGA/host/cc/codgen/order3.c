@@ -52,9 +52,12 @@ static void argplace();
 int
 stoasg(NODE *p, int o)
 {
-	(void)o;
-	return shltype(p->in.left->in.op, p->in.left);
-}
+	/* should the assignment op p be stored,
+	   given that it lies as the right operand of o
+	   (or the left, if o==UNARY MUL) */
+	(void) o;
+	return( shltype(p->in.left->in.op, p->in.left ) );
+	}
 
 /* store the subtree of p with the larger register need: stotree and stocook for codgen */
 void
@@ -94,13 +97,13 @@ mkadrs(NODE *p)
 int
 notoff(int t, int r, long off, void *cp)
 {
-	(void)t;
-	(void)off;
-	(void)cp;
-	if (R2TEST(r))
-		return R2UPK1(r) == 0;
-	return r == 0;
-}
+	/* is it legal to make an OREG or NAME entry which has an
+	   offset of off, (from a register of r), if the
+	   resulting thing had type t; WEGA: not with r0 as the base */
+	(void) t; (void) off; (void) cp;
+	if( R2TEST(r) ) return( R2UPK1(r) == R0 );
+	return( r == R0 );
+	}
 
 void
 sucomp(NODE *p)
@@ -203,23 +206,24 @@ sucomp(NODE *p)
 void
 mkrall(NODE *p, int r)
 {
-	if (p->in.op == FLD) {
+	/* insure that the use of p gets done with register r; in effect, */
+	/* simulate offstar */
+	if( p->in.op == FLD ){
 		p->in.left->in.rall = p->in.rall;
 		p = p->in.left;
-	}
-	if (p->in.op != UNARY MUL)
-		return;
+		}
+	if( p->in.op != UNARY MUL ) return;  /* no more to do */
 	p = p->in.left;
-	if (p->in.op == UNARY MUL) {
+	if( p->in.op == UNARY MUL ){
 		p->in.rall = r;
 		p = p->in.left;
-	}
-	if (p->in.op == PLUS && p->in.right->in.op == ICON) {
+		}
+	if( p->in.op == PLUS && p->in.right->in.op == ICON ){
 		p->in.rall = r;
 		p = p->in.left;
+		}
+	rallo( p, r );
 	}
-	rallo(p, r);
-}
 
 /* register preferences for the subtrees */
 void
@@ -482,9 +486,10 @@ int
 niceuty(NODE *p)
 {
 	register int t;
-
-	return p->in.op == UNARY MUL && (t = p->in.type) != CHAR && t != UCHAR && t != FLOAT && t != DOUBLE && shumul(p->in.left) != STARREG;
-}
+	return( p->in.op == UNARY MUL && (t=p->in.type)!=CHAR &&
+		t!= UCHAR && t!= FLOAT && t!= DOUBLE &&
+		shumul( p->in.left) != STARREG );
+	}
 
 /* order the operands of a binary operator; 1 when something was ordered, 0 when the template can be used */
 int
@@ -735,14 +740,14 @@ int crslab = 10000;	/* 0x3426 */
 int
 getlab(void)
 {
-	return crslab++;
-}
+	return( crslab++ );
+	}
 
 void
 deflab(int l)
 {
-	printf("L%d:\n", l);
-}
+	printf( "L%d:\n", l );
+	}
 
 void
 genargs(NODE *p)

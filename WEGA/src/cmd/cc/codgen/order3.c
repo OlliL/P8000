@@ -46,12 +46,12 @@ static void argplace();
 
 /* an assignment under an indirection: nothing to store, the check only */
 int
-stoasg(p, o)
-	register NODE *p;
-	int o;
-{
-	return shltype(p->in.left->in.op, p->in.left);
-}
+stoasg( p, o ) register NODE *p; int o; {
+	/* should the assignment op p be stored,
+	   given that it lies as the right operand of o
+	   (or the left, if o==UNARY MUL) */
+	return( shltype(p->in.left->in.op, p->in.left ) );
+	}
 
 /* store the subtree of p with the larger register need: stotree and stocook for codgen */
 void
@@ -90,16 +90,13 @@ mkadrs(p)
 
 /* 0x49c0: is the register (rval of a REG node) unusable as the base of an address: r0, or class 1 in the high byte */
 int
-notoff(t, r, off, cp)
-	int t;
-	register int r;
-	long off;
-	char *cp;
-{
-	if (R2TEST(r))
-		return R2UPK1(r) == 0;
-	return r == 0;
-}
+notoff( t, r, off, cp ) int t; register int r; long off; char *cp; {
+	/* is it legal to make an OREG or NAME entry which has an
+	/* offset of off, (from a register of r), if the
+	/* resulting thing had type t; WEGA: not with r0 as the base */
+	if( R2TEST(r) ) return( R2UPK1(r) == R0 );
+	return( r == R0 );
+	}
 
 void
 sucomp(p)
@@ -205,27 +202,25 @@ sucomp(p)
 
 /* make sure the use of p gets done with register r: simulates offstar */
 void
-mkrall(p, r)
-	register NODE *p;
-	register int r;
-{
-	if (p->in.op == FLD) {
+mkrall( p, r ) register NODE *p; register int r; {
+	/* insure that the use of p gets done with register r; in effect, */
+	/* simulate offstar */
+	if( p->in.op == FLD ){
 		p->in.left->in.rall = p->in.rall;
 		p = p->in.left;
-	}
-	if (p->in.op != UNARY MUL)
-		return;
+		}
+	if( p->in.op != UNARY MUL ) return;  /* no more to do */
 	p = p->in.left;
-	if (p->in.op == UNARY MUL) {
+	if( p->in.op == UNARY MUL ){
 		p->in.rall = r;
 		p = p->in.left;
-	}
-	if (p->in.op == PLUS && p->in.right->in.op == ICON) {
+		}
+	if( p->in.op == PLUS && p->in.right->in.op == ICON ){
 		p->in.rall = r;
 		p = p->in.left;
+		}
+	rallo( p, r );
 	}
-	rallo(p, r);
-}
 
 /* register preferences for the subtrees */
 void
@@ -487,13 +482,12 @@ offstar(p)
 
 /* is p an indirection that offstar can make addressable */
 int
-niceuty(p)
-	register NODE *p;
-{
+niceuty( p ) register NODE *p; {
 	register int t;
-
-	return p->in.op == UNARY MUL && (t = p->in.type) != CHAR && t != UCHAR && t != FLOAT && t != DOUBLE && shumul(p->in.left) != STARREG;
-}
+	return( p->in.op == UNARY MUL && (t=p->in.type)!=CHAR &&
+		t!= UCHAR && t!= FLOAT && t!= DOUBLE &&
+		shumul( p->in.left) != STARREG );
+	}
 
 /* order the operands of a binary operator; 1 when something was ordered, 0 when the template can be used */
 int
@@ -746,17 +740,14 @@ rew:
 int crslab = 10000;	/* 0x3426 */
 
 int
-getlab()
-{
-	return crslab++;
-}
+getlab(){
+	return( crslab++ );
+	}
 
 void
-deflab(l)
-	int l;
-{
-	printf("L%d:\n", l);
-}
+deflab( l ) int l; {
+	printf( "L%d:\n", l );
+	}
 
 void
 genargs(p)
