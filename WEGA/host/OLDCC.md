@@ -31,7 +31,7 @@ intermediate tree (`.I`) and the data as cas text (`.D`); codgen chooses registe
 peephole optimizer (descends from the Plexus `c2`); cas decides the jump forms.
 
 - The old versions are native WEGA programs only (built with the shipped cc, run in the emulator). The host versions
-  (`host/codgen`, `host/popt`, ...) get no switches, except `host/cas/casold`, used by the models.
+  (`host/cc/codgen`, `host/cc/popt`, ...) get no switches, except `host/cas/casold`, used by the models.
 - One source and one Makefile per pass; every old version is a target of it, built in its own directory with its switches
   (`src/cmd/cc/cparse/build/nonsegv1`, `codgen/build/nonsegv1q`, ..., the segmented v1 passes in `build/segv1`; `make old`,
   `make oldinstall`). The cas of v0 and v0p is `make oldcas` in `src/cmd/cas` (built in `old/`). Built programs are not in git.

@@ -393,7 +393,7 @@ import corpusc   # host/recon/corpusc.py: helpers for C sources
 NAME = 'cpp'
 ORIG = 'lib/cpp'
 PROG = 'cpp'
-CANDIDATES = {'wega': 'src/cmd/cc/cpp/cpp', 'host': 'host/cpp/cpp'}
+CANDIDATES = {'wega': 'src/cmd/cc/cpp/cpp', 'host': 'host/cc/cpp/cpp'}
 
 def generate(g):
     for src in g.c_sources():                       # every .c of src/cmd and src/lib

@@ -1,9 +1,9 @@
 # cpp: the C preprocessor of WEGA (/lib/cpp) built for Linux (a cross tool: it behaves like the original).
-# Sources: cpp.c, cpy.y and yylex.c, taken over from ../../src/cmd/cc/cpp by the port rules in
-# ../HANDOFF_wega_disasm.md. cpy.y is in the dialect of the host yacc (bison -y).
+# Sources: cpp.c, cpy.y and yylex.c, taken over from ../../../src/cmd/cc/cpp by the port rules in
+# ../../HANDOFF_wega_disasm.md. cpy.y is in the dialect of the host yacc (bison -y).
 #
 #   make                 build ./cpp
-#   test                 ../tools/corpus.sh --host cpp   (the corpus of ../../compare/cpp, no make target)
+#   test                 ../../tools/corpus.sh --host cpp   (the corpus of ../../../compare/cpp, no make target)
 #   make clean
 
 HOSTCC = cc

@@ -10,7 +10,7 @@ import corpusc  # noqa: E402
 NAME = 'cpp'
 ORIG = 'lib/cpp'
 PROG = 'cpp'
-CANDIDATES = {'wega': 'src/cmd/cc/cpp/cpp', 'host': 'host/cpp/cpp'}
+CANDIDATES = {'wega': 'src/cmd/cc/cpp/cpp', 'host': 'host/cc/cpp/cpp'}
 ROOT_FILES = ['usr/include']
 
 

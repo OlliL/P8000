@@ -10,8 +10,8 @@ NAME = 'scchain'
 ORIG = 'bin/scc'
 PROG = 'scc'
 CONFNAME = 'scc.conf'
-PASSES = {'cpp': ('host/cpp/cpp', 'lib/cpp'), 'cparse': ('host/cparse/scparse', 'lib/scparse'), 'codgen': ('host/codgen/scodgen', 'lib/scodgen'),
-          'popt': ('host/popt/spopt', 'lib/spopt'), 'cas': ('host/cas/cas', 'bin/cas'), 'ld': ('host/ld/sld', 'bin/sld')}
+PASSES = {'cpp': ('host/cc/cpp/cpp', 'lib/cpp'), 'cparse': ('host/cc/cparse/scparse', 'lib/scparse'), 'codgen': ('host/cc/codgen/scodgen', 'lib/scodgen'),
+          'popt': ('host/cc/popt/spopt', 'lib/spopt'), 'cas': ('host/cas/cas', 'bin/cas'), 'ld': ('host/ld/sld', 'bin/sld')}
 CRT0, LIBC = 'lib/scrt0.o', 'lib/slibc.a'
 CANDIDATES = {'host': 'host/cc/scc'}
 DEPENDS, ROOT_FILES = _c.derived(PASSES, CRT0, LIBC)

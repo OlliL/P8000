@@ -6,10 +6,10 @@
 #   cc/        the WEGA cc and scc drivers built for Linux (cross tools)
 #   ar/        the WEGA ar built for Linux (cross tool)
 #   binutils/  the WEGA ranlib, strip and size built for Linux (cross tools)
-#   popt/      the WEGA peephole optimizer built for Linux (cross tool)
-#   codgen/    the WEGA code generators codgen and scodgen built for Linux (cross tools)
-#   gopt/      the WEGA global optimizer gopt built for Linux (cross tool)
-#   cparse/    the WEGA front ends cparse and scparse built for Linux (cross tools)
+#   cc/popt/     the WEGA peephole optimizer built for Linux (cross tool)
+#   cc/codgen/   the WEGA code generators codgen and scodgen built for Linux (cross tools)
+#   cc/gopt/     the WEGA global optimizer gopt built for Linux (cross tool)
+#   cc/cparse/   the WEGA front ends cparse and scparse built for Linux (cross tools)
 #   cas/       the WEGA assembler cas built for Linux (cross tool)
 #   ld/        the WEGA loaders ld, sld and gld built for Linux (cross tools)
 #
@@ -41,8 +41,12 @@ WPATH = RUN=wrun PATH=$(WBIN):$$PATH
 
 all: cc popt codgen gopt cparse ar binutils cas ld cpp
 
-cc popt codgen gopt cparse ar binutils cas ld cpp:
+cc ar binutils cas ld:
 	$(MAKE) -C $@ all
+
+# the passes of the compiler: below cc/, as in src/cmd/cc (increment 155)
+popt codgen gopt cparse cpp:
+	$(MAKE) -C cc/$@ all
 
 checkall:
 	WEGA=$(WEGAABS) CHECK_NAME="$(NAME)" CHECK_PATCH="$(PATCH)" sh tools/checkall.sh
@@ -64,11 +68,11 @@ clean:
 	$(MAKE) -C cc clean
 	$(MAKE) -C ar clean
 	$(MAKE) -C binutils clean
-	$(MAKE) -C popt clean
-	$(MAKE) -C codgen clean
-	$(MAKE) -C gopt clean
-	$(MAKE) -C cparse clean
+	$(MAKE) -C cc/popt clean
+	$(MAKE) -C cc/codgen clean
+	$(MAKE) -C cc/gopt clean
+	$(MAKE) -C cc/cparse clean
 	$(MAKE) -C cas clean
-	$(MAKE) -C cpp clean
+	$(MAKE) -C cc/cpp clean
 
 .PHONY: all checkall checkall-nocache wbin oldroot src clean cc popt codgen gopt cparse ar binutils cas ld cpp

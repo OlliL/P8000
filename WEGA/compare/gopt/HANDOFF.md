@@ -53,7 +53,7 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    with the debug flags (d dominators, l live, p loops, r registers, y all), both outputs diffed with the addresses
    masked; a mix of vc and shipped objects does not run (other stack conventions); an instrumented vc build overflows
    segment 4.)
-7. (done 2026-11-21: host/gopt, taken over from src/cmd/cc/gopt by the port rules (host/HANDOFF_wega_disasm.md, the new section
+7. (done 2026-11-21: host/cc/gopt, taken over from src/cmd/cc/gopt by the port rules (host/HANDOFF_wega_disasm.md, the new section
    "Global optimizer"), -Wall -Wextra clean; its output and .D file equal /lib/gopt's on the 18 gopt sources, cc and scc,
    -1..-5 (180 runs, cpp and cparse/scparse of WEGA under z8k-emu), also the builds with the sanitizers and -ftrapv and with
    zero and pattern initialised locals. Not yet in host/Makefile nor checkall: with the corpus (step 8), after asking.)
@@ -62,7 +62,7 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    shipped) and host 942 of 942 (104 sources skipped), cold 1137 s (the slowest corpus: first in compare/CORPORA). Found
    on the way: the shipped build prints the rval of a unary node from its own layout (SHIPPED: -30720 as the original),
    host: %ld of the most negative long prints 0, the 64 KiB of an area (order3.c: out of space), r5 through checkalias,
-   segment 0 for the vectors that a preheader record does not have. host/gopt in host/Makefile and the host build of
+   segment 0 for the vectors that a preheader record does not have. host/cc/gopt in host/Makefile and the host build of
    checkall.)
 9. The compiler tree with the shared parts of mip (common, rdr, optim): increment 155
    (host/increments/155-compiler-tree.md).

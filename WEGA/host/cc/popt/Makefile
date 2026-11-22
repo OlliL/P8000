@@ -1,9 +1,9 @@
 # popt, spopt: the WEGA peephole optimizer of cc and scc built for Linux (a cross tool: it behaves like /lib/popt and /lib/spopt).
-# Sources: z20.c .. z23.c, z2.h, taken over from ../../src/cmd/cc/popt by the port rules in ../HANDOFF_wega_disasm.md;
+# Sources: z20.c .. z23.c, z2.h, taken over from ../../../src/cmd/cc/popt by the port rules in ../../HANDOFF_wega_disasm.md;
 # spopt is the same source with -DSPOPT.
 #
 #   make                 build ./popt and ./spopt
-#   test                 ../tools/corpus.sh --host popt spopt   (the corpora of ../../compare/popt and spopt, no make target)
+#   test                 ../../tools/corpus.sh --host popt spopt   (the corpora of ../../../compare/popt and spopt, no make target)
 #   make clean
 
 HOSTCC = cc

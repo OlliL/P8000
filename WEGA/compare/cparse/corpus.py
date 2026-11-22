@@ -14,7 +14,7 @@ import corpusc  # noqa: E402
 NAME = 'cparse'
 ORIG = 'lib/cparse'
 PROG = 'cparse'
-CANDIDATES = {'wega': 'src/cmd/cc/cparse/build/nonseg/cparse', 'host': 'host/cparse/cparse'}
+CANDIDATES = {'wega': 'src/cmd/cc/cparse/build/nonseg/cparse', 'host': 'host/cc/cparse/cparse'}
 ROOT_FILES = ['usr/include']
 PREP_FILES = ['lib/cpp', 'usr/include']
 EXPECT = {'src/lib/libc/common/gen/abs.c': 'expect: exit 0\nexpect: file t.I contains abs\n'}

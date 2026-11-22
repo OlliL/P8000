@@ -12,7 +12,7 @@ import corpusc  # noqa: E402
 NAME = 'gopt'
 ORIG = 'lib/gopt'
 PROG = 'gopt'
-CANDIDATES = {'wega': 'src/cmd/cc/gopt/gopt', 'host': 'host/gopt/gopt'}
+CANDIDATES = {'wega': 'src/cmd/cc/gopt/gopt', 'host': 'host/cc/gopt/gopt'}
 # the longest corpus (942 inputs, 5 levels each): 6 jobs instead of the 2 that checkall gives (owner 2026-11-22)
 JOBS = 6
 PASSES = {'cc': ('/bin/cc', ['bin/cc', 'lib/cpp', 'lib/cparse', 'usr/include'], ''),

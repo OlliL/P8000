@@ -17,8 +17,8 @@ ORIG = 'bin/cc'
 PROG = 'cc'
 CONFNAME = 'cc.conf'
 # the passes of the chain: the host binary (relative to the WEGA directory) and the original in the tree
-PASSES = {'cpp': ('host/cpp/cpp', 'lib/cpp'), 'cparse': ('host/cparse/cparse', 'lib/cparse'), 'codgen': ('host/codgen/codgen', 'lib/codgen'),
-          'popt': ('host/popt/popt', 'lib/popt'), 'cas': ('host/cas/cas', 'bin/cas'), 'ld': ('host/ld/ld', 'bin/ld')}
+PASSES = {'cpp': ('host/cc/cpp/cpp', 'lib/cpp'), 'cparse': ('host/cc/cparse/cparse', 'lib/cparse'), 'codgen': ('host/cc/codgen/codgen', 'lib/codgen'),
+          'popt': ('host/cc/popt/popt', 'lib/popt'), 'cas': ('host/cas/cas', 'bin/cas'), 'ld': ('host/ld/ld', 'bin/ld')}
 CRT0, LIBC = 'lib/crt0.o', 'lib/libc.a'
 CANDIDATES = {'host': 'host/cc/cc'}
 

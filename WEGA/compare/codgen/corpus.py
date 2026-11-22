@@ -11,7 +11,7 @@ import corpusc  # noqa: E402
 NAME = 'codgen'
 ORIG = 'lib/codgen'
 PROG = 'codgen'
-CANDIDATES = {'wega': 'src/cmd/cc/codgen/build/nonseg/codgen', 'host': 'host/codgen/codgen'}
+CANDIDATES = {'wega': 'src/cmd/cc/codgen/build/nonseg/codgen', 'host': 'host/cc/codgen/codgen'}
 PREP_FILES = ['bin/cc', 'lib/cpp', 'lib/cparse', 'usr/include']
 EXPECT = {'src/lib/libc/common/gen/abs.c': 'expect: exit 0\nexpect: output contains _abs\n'}
 
