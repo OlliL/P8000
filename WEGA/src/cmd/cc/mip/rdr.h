@@ -5,7 +5,9 @@
  */
 #define MAXASCII	0x1194	/* the ascii table (the names of the symbols) */
 
-/* a symbol of the symbol table file (22 bytes there) */
+#define SYMSZ	22	/* the size of a symbol in the symbol table file */
+
+/* a symbol of the symbol table file (SYMSZ bytes there) */
 struct sym {
 	int	nameoff;	/* +0: offset of the name in the ascii table */
 	unsigned stype;		/* +2 */

@@ -64,7 +64,7 @@ rdsym()
 	fread(&nasciibytes, 4, 1, stfile);
 	fread(&nnumbytes, 2, 1, stfile);
 	fread(&nmembytes, 2, 1, stfile);
-	nsyms = nsymbytes / 22;
+	nsyms = nsymbytes / SYMSZ;
 	readsyms(nsyms, symtab + 3, 21);
 	nsyms += 3;
 	if (nasciibytes + 21 > MAXASCII)
@@ -80,7 +80,7 @@ rdsym()
 	return 1;
 }
 
-/* n symbols of 22 bytes into tab; kind is added to the name offsets */
+/* n symbols of SYMSZ bytes into tab; kind is added to the name offsets */
 void
 readsyms(n, tab, kind)
 	int n;
@@ -93,8 +93,8 @@ readsyms(n, tab, kind)
 	struct sym *q;
 
 	if (n > 0) {
-		getmem(n * 22);
-		if ((x = fread(tab, 22, n, stfile)) != n)
+		getmem(n * SYMSZ);
+		if ((x = fread(tab, SYMSZ, n, stfile)) != n)
 			printf("readst: error in reading symbol table file stfile\n");
 		for (k = n, q = tab; k > 0; k--, q = q + 1) {
 			tagtab[nglob].tag = SFSYMNO(q->sflags);
@@ -190,13 +190,13 @@ top:
 		base = cur->off;
 		cur++;
 		for (k = rem - 1; k > 0; k--) {
-			if (cur->off - first->off != 0x16)
+			if (cur->off - first->off != SYMSZ)
 				break;
 			first = cur;
 			cur++;
 			cnt++;
 		}
-		dp = (struct sym *)((char *)symtab + dest * 22);
+		dp = (struct sym *)((char *)symtab + dest * SYMSZ);
 		fseek(stfile, symbase + base, 0);
 		readsyms(cnt, dp, MAXASCII - gasciibytes);
 		dest += cnt;
@@ -301,10 +301,10 @@ mapnm(p)
 				n = p->in.sname->sbyte5;
 				t = p->in.sname->stype;
 #ifdef SEG
-				if (t == 6 || t == 7)
+				if (t == FLOAT || t == DOUBLE)
 					n -= 13;
 #else
-				if (t == 6 || t == 7)
+				if (t == FLOAT || t == DOUBLE)
 					n -= 12;
 #endif
 				else
@@ -315,7 +315,7 @@ mapnm(p)
 			else {
 				n = p->in.sname->sbyte5;
 				if (!rflag)
-					n = getreg(rclass(p->in.type, n), n, 0x1000, p->in.sname);
+					n = getreg(rclass(p->in.type, n), n, RJAM, p->in.sname);
 				p->in.op = REG;
 				p->tn.rval = n;
 				p->tn.lval = 0;
@@ -344,7 +344,7 @@ mapnm(p)
 		else if (ofs != 0) {
 			t = INCREF(m->in.sname->stype);
 			p->in.left->in.type = t;
-			if ((ot & 0x30) != 0x10 && p->in.left->in.op == UNARY MUL) {
+			if (!ISPTR(ot) && p->in.left->in.op == UNARY MUL) {
 				p->in.left->in.op = FREE;
 				p->in.left = clocal(makeblock(PLUS, p->in.left->in.left, bcon(ofs << 3), t));
 			} else
@@ -361,7 +361,7 @@ mapnm(p)
 void
 mkhash()
 {
-	symtab0 = symtab = (struct sym *)getmem(3 * 22);
+	symtab0 = symtab = (struct sym *)getmem(3 * SYMSZ);
 	fpsym1 = symtab + 1;
 	fpsym2 = symtab + 2;
 	symtab->nameoff = 0;
@@ -399,7 +399,7 @@ eread()
 	p->in.rall = 0;
 	p->in.op = op;
 	op = optype(op);
-	if (op == 0x73)
+	if (op == CBRANCH)
 		erflag = 1;
 	if (op == LTYPE)
 		p->tn.lval = rdin(10);

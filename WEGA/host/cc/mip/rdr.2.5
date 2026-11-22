@@ -59,7 +59,7 @@ rdsym(void)
 	nasciibytes = rd32(stfile);
 	nnumbytes = rd16(stfile);
 	nmembytes = rd16(stfile);
-	nsyms = nsymbytes / 22;
+	nsyms = nsymbytes / SYMSZ;
 	readsyms(nsyms, symtab + 3, 21);
 	nsyms += 3;
 	if (nasciibytes + 21 > MAXASCII)
@@ -75,7 +75,7 @@ rdsym(void)
 	return 1;
 }
 
-/* n symbols of 22 bytes into tab; kind is added to the name offsets */
+/* n symbols of SYMSZ bytes into tab; kind is added to the name offsets */
 void
 readsyms(int n, struct sym *tab, int kind)
 {
@@ -181,7 +181,7 @@ readmems(int n)
 		base = cur->off;
 		cur++;
 		for (k = rem - 1; k > 0; k--) {
-			if (cur->off - first->off != 0x16)
+			if (cur->off - first->off != SYMSZ)
 				break;
 			first = cur;
 			cur++;
@@ -290,10 +290,10 @@ mapnm(NODE *p)
 				n = p->in.sname->sbyte5;
 				t = p->in.sname->stype;
 #ifdef SEG
-				if (t == 6 || t == 7)
+				if (t == FLOAT || t == DOUBLE)
 					n -= 13;
 #else
-				if (t == 6 || t == 7)
+				if (t == FLOAT || t == DOUBLE)
 					n -= 12;
 #endif
 				else
@@ -304,7 +304,7 @@ mapnm(NODE *p)
 			else {
 				n = p->in.sname->sbyte5;
 				if (!rflag)
-					n = getreg(rclass(p->in.type, n), n, 0x1000, p->in.sname);
+					n = getreg(rclass(p->in.type, n), n, RJAM, p->in.sname);
 				p->in.op = REG;
 				p->tn.rval = n;
 				p->tn.lval = 0;
@@ -333,7 +333,7 @@ mapnm(NODE *p)
 		else if (ofs != 0) {
 			t = INCREF(m->in.sname->stype);
 			p->in.left->in.type = t;
-			if ((ot & 0x30) != 0x10 && p->in.left->in.op == UNARY MUL) {
+			if (!ISPTR(ot) && p->in.left->in.op == UNARY MUL) {
 				p->in.left->in.op = FREE;
 				p->in.left = clocal(makeblock(PLUS, p->in.left->in.left, bcon(ofs << 3), t));
 			} else
@@ -387,7 +387,7 @@ eread(void)
 	p->in.rall = 0;
 	p->in.op = op;
 	op = optype(op);
-	if (op == 0x73)
+	if (op == CBRANCH)
 		erflag = 1;
 	if (op == LTYPE)
 		p->tn.lval = rdin(10);
