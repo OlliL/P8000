@@ -50,7 +50,7 @@ Every step and host line runs with umask 022.
                       native candidate (host) does not run the case
   fs:                 reserved for the surroundings; an error until the emulator serves them
   variant: N=V ...    the case runs once per variant line with that environment (default: once, none)
-  expect: exit N | output contains TEXT | output is TEXT (the whole output of the last step, \n a newline) | file PATH contains TEXT | file PATH same-as in/FILE|PATH | missing PATH
+  expect: exit N | output contains TEXT | output is TEXT (the whole output of the last step, \n a newline) | file PATH contains TEXT (escapes as there) | file PATH same-as in/FILE|PATH | missing PATH
                       checked on the original's run
 Compared: per step its output (stdout, then stderr apart; after_step(argv, rc, out, err, dir) of the corpus may cut what the
 original leaves undefined) and exit status, afterwards every entry of the directory: type, mode, size,
@@ -772,8 +772,8 @@ def check_expect(case, res, rd):
             p = os.path.join(rd, e[1])
             if not os.path.isfile(p):
                 bad.append('file %s (missing)' % e[1])
-            elif e[2] == 'contains':
-                if e[3].encode() not in open(p, 'rb').read():
+            elif e[2] == 'contains':	# \n, \t, \ooo, \xNN as in output is
+                if e[3].encode('latin-1').decode('unicode_escape').encode('latin-1') not in open(p, 'rb').read():
                     bad.append('file %s contains %s' % (e[1], e[3]))
             else:
                 if case.get('_dir') and e[3].startswith('in/'):	# a starting file of a hand-written case

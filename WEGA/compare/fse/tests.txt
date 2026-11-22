@@ -1,0 +1,729 @@
+# The cases of the corpus of fse (compare/fse/corpus.py); the format: host/recon/casefile.py. Every case runs with the
+# minimal terminal (terminal: console; fse opens /dev/tty, puts it into RAW and writes the screen there) and TERM=P8,
+# the terminal whose control sequences fsepar has put into the binary (the prefix of corpus.py). The keys come as the
+# operator types them (\xNN: ^A = \x01 ... ^Z = \x1a, ESC \x1b, DEL \x7f, RETURN \r). Where an expectation comes from:
+# man = /usr/man/man1/fse.1, src = src/cmd/fse. At the end of the typed keys stdin ends: a read of 0 bytes is the key
+# F10 (src fsetty.c getkey: 0x00 0x00), save and quit; a case that must not save ends with ^UQ or ^UE. fse waits for
+# ever at "Press <ET> to continue" and at "Save before quit ?" when stdin has ended (KNOWLEDGE.md, quirks): the cases
+# answer there.
+
+# ---- leaving the editor (man: ^UD ^UQ ^UE, the backup) -------------------------------------------------------------
+
+== save-quit
+line one
+line two
+-- case
+step: fse -c t.in
+operator: type 'abc\x15d'
+# man ^UD: save and quit; the old state stays as t.in~ (backup, default)
+expect: exit 0
+expect: file t.in contains 'abcline one\nline two\n'
+expect: file t.in~ contains 'line one\nline two\n'
+expect: output contains 'Saving File:'
+
+== no-backup
+line one
+-- case
+step: fse -cb t.in
+operator: type 'X\x15d'
+# man -b: no backup
+expect: file t.in contains 'Xline one'
+expect: missing t.in~
+
+== banner
+line one
+-- case
+step: fse t.in
+operator: type '\r\x15e'
+# man -c suppresses the opening text; without it fse waits for ET (src fsemain.c)
+expect: output contains '<< FullScreenEditor  V2.0  >>'
+expect: output contains 'Autor:     Jens-Peter Redlich'
+expect: output contains 'Hit ET to continue: '
+expect: output contains 'Loading File '
+
+== quit-unmodified
+line one
+-- case
+step: fse -c t.in
+operator: type '\x15q'
+# man ^UQ: no question when nothing was changed, no backup
+expect: exit 0
+expect: file t.in contains 'line one\n'
+expect: missing t.in~
+
+== quit-modified-no
+line one
+-- case
+step: fse -c t.in
+operator: type 'X\x15qn'
+# man ^UQ: the question; n ends at once
+expect: output contains 'Your Workfile has been modified'
+expect: output contains 'Save before quit ?  (y/n/c) '
+expect: file t.in contains 'line one\n'
+expect: missing t.in~
+
+== quit-modified-yes
+line one
+-- case
+step: fse -c t.in
+operator: type 'X\x15qy'
+# man ^UQ: y saves first
+expect: file t.in contains 'Xline one'
+expect: file t.in~ contains 'line one\n'
+
+== quit-modified-ja
+line one
+-- case
+step: fse -c t.in
+operator: type 'X\x15qj'
+# src fseglob.c reject: J (ja) is taken as y
+expect: file t.in contains 'Xline one'
+
+== quit-modified-cancel
+line one
+-- case
+step: fse -c t.in
+operator: type 'X\x15qcY\x15qn'
+# man ^UQ: c goes back to the work; the second ^UQ, n: nothing saved
+expect: file t.in contains 'line one\n'
+
+== exit-at-once
+line one
+-- case
+step: fse -c t.in
+operator: type 'X\x15e'
+# man ^UE: back to the system at once: nothing saved, no .fse (src fsemain.c COMPILE: exit 2)
+expect: exit 2
+expect: file t.in contains 'line one\n'
+expect: missing .fse
+
+== eof-quits
+line one
+-- case
+step: fse -c t.in
+operator: type 'X'
+# src fsetty.c getkey: the end of the input is F10, save and quit
+expect: exit 0
+expect: file t.in contains 'Xline one'
+
+== backup-toggle
+one
+-- case
+step: fse -c t.in
+operator: type '\x11onX\x15d'
+# man ^QO: the backup switched off while editing
+expect: output contains 'backup: (y/n)   current:y'
+expect: missing t.in~
+
+== env-options
+line one
+-- case
+env: FSE=cb
+step: fse t.in
+operator: type 'X\x15d'
+# man: the variable FSE goes before the options of the command line (c: no opening text, b: no backup)
+expect: file t.in contains 'Xline one'
+expect: missing t.in~
+
+== options-twice
+line one
+-- case
+step: fse -cbb t.in
+operator: type 'X\x15d'
+# man: an option given twice negates the one before: a backup again
+expect: file t.in~ contains 'line one\n'
+
+# ---- files (man: loading, a new name, the memory file .fse) --------------------------------------------------------
+
+== new-file
+-- case
+host: rm t.in
+step: fse -c new
+operator: type '\rhello\x15d'
+# a file that does not exist: the message, then an empty buffer; saved with mode 666 less the umask
+expect: output contains 'file not found'
+expect: output contains 'Press <ET> to continue: '
+expect: file new contains 'hello'
+
+== ask-name
+-- case
+step: fse -c
+operator: type 'named\r\rabc\x15d'
+# src fsemain.c: without a file name and without .fse fse asks for one
+expect: output contains 'Please enter Filename !'
+expect: file named contains 'abc'
+
+== restart
+line one
+line two
+line three
+-- case
+step: fse -c t.in
+operator: type '\x18\x18\x15d'
+step: fse -c
+operator: type 'Z\x15d'
+# man -r (default): without a file name the last file of the directory again, at its line (.fse)
+expect: file t.in contains 'line one\nline two\nZline three\n'
+
+== no-restart
+line one
+-- case
+step: fse -cr t.in
+operator: type '\x15d'
+# man -r negated: no .fse
+expect: missing .fse
+
+== start-line
+line one
+line two
+line three
+-- case
+step: fse -c3 t.in
+operator: type 'X\x15d'
+# man <Zeilennummer>: the cursor starts in that line
+expect: file t.in contains 'line one\nline two\nXline three\n'
+
+== new-name
+one
+-- case
+step: fse -c t.in
+operator: type 'X\x15acopy\r\x15d'
+# man ^UA: the edited copy gets a new name; the file stays as it was
+expect: file t.in contains 'one\n'
+expect: file copy contains 'Xone'
+
+== save-continue
+one
+-- case
+step: fse -c t.in
+operator: type 'A\x15sB\x15d'
+# man ^US: save and go on; the backup of the second save is the first save
+expect: file t.in contains 'ABone'
+expect: file t.in~ contains 'Aone'
+
+== save-load
+one
+-- other
+two
+-- case
+step: fse -c t.in
+operator: type 'X\x15nother\rY\x15d'
+# man ^UN: save, then load another file
+expect: file t.in contains 'Xone'
+expect: file other contains 'Ytwo'
+
+== reject-load
+one
+-- other
+two
+-- case
+step: fse -c t.in
+operator: type 'X\x15pnother\rY\x15d'
+# man ^UP: forget the old file (question: n), load a new one
+expect: file t.in contains 'one\n'
+expect: file other contains 'Ytwo'
+
+== too-big
+-- case
+host: dd if=/dev/zero bs=1024 count=70 2>/dev/null | tr '\0' 'a' > t.in
+step: fse -c t.in
+operator: type '\r\x15e'
+# man BESCHRAENKUNGEN: more than 64 Kbyte
+expect: output contains 'file too big, memoryoverflow'
+
+== permission
+-- case
+user: 100 10
+step: fse -c /.cshrc
+operator: type '\r\x15e'
+# src fseglob.c error: the message of EACCES (/.cshrc of the tree has no read permission for others)
+expect: output contains 'permission denied'
+
+== window
+one
+-- other
+two
+-- case
+step: fse -c t.in
+operator: type '\x17other\rX\x15dY\x15d'
+# man ^W: a second window with a second file; ^UD ends the window, then the first one
+expect: file other contains 'Xtwo'
+expect: file t.in contains 'Yone'
+
+== window-longmem
+one
+-- other
+two
+-- case
+step: fse -cm t.in
+operator: type '\x17other\rX\x15dY\x15d'
+# man -m: the second window in a segment of its own
+expect: file other contains 'Xtwo'
+expect: file t.in contains 'Yone'
+
+== window-copy
+one
+two
+-- other
+three
+-- case
+step: fse -c t.in
+operator: type '\x15g\x17other\r\x15f\x15d\x15q'
+# man ^UF: the block of the other window at the cursor
+expect: file other contains 'one\nthree'
+
+# ---- editing (man: insert and delete, blocks) ----------------------------------------------------------------------
+
+== delete-line-undo
+line one
+line two
+line three
+-- case
+step: fse -c t.in
+operator: type '\x18\x19\x15d'
+step: fse -c t.in
+operator: type '\x19\x11l\x15d'
+# man ^Y deletes the line; ^QL takes the last deletion back
+expect: file t.in contains 'line one\nline three\n'
+
+== delete-words
+one two three
+-- case
+step: fse -c t.in
+operator: type '\x06\x14\x11d\x7f\x15d'
+# man ^F word right, ^T delete the word, ^QD end of line, DEL the character left of the cursor
+expect: file t.in contains 'one  thre\n'
+
+== delete-line-parts
+abcdef
+ghijkl
+mnopqr
+-- case
+step: fse -c t.in
+operator: type '\x04\x04\x0f\x18\x04\x04\x11y\x18\x07\x15d'
+# man ^O start of the line up to the cursor, ^QY cursor to the end of the line, ^G the character at the cursor (^X keeps
+# the column)
+expect: file t.in contains 'cdef\ngh\nmnpqr\n'
+
+== insert-overwrite
+abcdef
+-- case
+step: fse -c t.in
+operator: type '\x16XY\x16Z\x15d'
+# man ^V: insert / overwrite
+expect: file t.in contains 'XYZcdef'
+expect: output contains '^V insert'
+
+== control-insert
+one
+-- case
+step: fse -c t.in
+operator: type '\x10\x01\x10\x09X\x0e\x15d'
+# man ^P: the next character as it comes (^A, a hard tab), ^N a form feed
+expect: file t.in contains '\001\tX\f'
+
+== crlf
+line one
+-- case
+step: fse -cn t.in
+operator: type 'a\rb\x15d'
+# man -n: ET inserts ^M^J
+expect: file t.in contains 'a\r\nbline one'
+
+== yz-swap
+line one
+-- case
+step: fse -cy t.in
+operator: type 'yz\x15d'
+# man -y: Y and Z swapped
+expect: file t.in contains 'zyline one'
+
+== compress
+a
+b
+-- case
+step: fse -c t.in
+operator: type '\x15u'
+# man ^UU: the trailing blanks and tabs go, save, quit
+expect: file t.in contains 'a\nb\n'
+
+== compress-save
+a
+-- case
+step: fse -c t.in
+operator: type '\x15xB\x15e'
+# man ^UX: compress and save (the B after it is not saved: ^UE)
+expect: file t.in contains 'a\n'
+
+== margin
+-- case
+step: fse -c t.in
+operator: type '\x15i20\rthe quick brown fox jumps over the lazy dog\x15d'
+# man ^UI: a right margin, word wrap and the line filled with blanks to it
+expect: output contains 'linelen:  '
+expect: file t.in contains 'the  quick brown fox\njumps  over the lazy\ndog'
+
+== option-a
+-- case
+step: fse -ca t.in
+operator: type 'the quick brown fox jumps over the lazy dog and the quick brown fox jumps again over it\x15d'
+# src fseglob.c options: a (not in the man page) sets the margin to 66
+expect: file t.in contains 'the  quick  brown  fox jumps over the lazy dog and the quick brown\nfox'
+
+== block-write
+one
+two
+three
+-- case
+step: fse -c t.in
+operator: type '\x18\x15b\x18\x15k\x15wblk\r\x15q'
+# man ^UB ^UK the marks, ^UW the block into a file
+expect: file blk contains 'two\n'
+
+== block-copy
+one
+two
+-- case
+step: fse -c t.in
+operator: type '\x15g\x18\x15c\x15d'
+# man ^UG marks the line, ^UC copies the block to the cursor
+expect: file t.in contains 'one\none\ntwo\n'
+
+== block-move
+one
+two
+three
+-- case
+step: fse -c t.in
+operator: type '\x15g\x18\x18\x15v\x15d'
+# man ^UV moves the block to the cursor
+expect: file t.in contains 'two\none\nthree\n'
+
+== block-delete
+one
+two
+three
+-- case
+step: fse -c t.in
+operator: type '\x18\x15g\x15y\x15d'
+# man ^UY deletes the block
+expect: file t.in contains 'one\nthree\n'
+
+== read-file
+one
+-- other
+other text
+-- case
+step: fse -c t.in
+operator: type '\x15rother\r\x15d'
+# man ^UR: a file at the cursor
+expect: file t.in contains 'other text\none\n'
+
+# ---- finding (man: ^QF ^QA ^QQ ^QP) --------------------------------------------------------------------------------
+
+== find
+alpha
+beta
+gamma
+-- case
+step: fse -c t.in
+operator: type '\x11fgam\r\rX\x15d'
+expect: output contains 'Find string: '
+expect: file t.in contains 'Xgamma'
+
+== find-missing
+line one
+-- case
+step: fse -c t.in
+operator: type '\x11fzzz\r\r\r\x15q'
+expect: output contains 'string not found'
+
+== find-backward-upcase
+Alpha
+beta
+alpha
+-- case
+step: fse -c t.in
+operator: type '\x11c\x11fALPHA\rbu\rX\x15d'
+# man: b backwards, u without case; from the end of the file (^QC) the last alpha
+expect: output contains 'Opt: (b)ackward (u)pcase'
+expect: file t.in contains 'Alpha\nbeta\nXalpha'
+
+== repeat-find
+x a x a x
+-- case
+step: fse -c t.in
+operator: type '\x11fa\r\r\x11qX\x15d'
+# man ^QQ repeats the last ^QF
+expect: file t.in contains 'x a x Xa x'
+
+== replace-all
+a cat and a cat
+cat
+-- case
+step: fse -c t.in
+operator: type '\x11acat\rdog\rn*\r\x15d'
+# man ^QA, options n (no question) and * (every one)
+expect: file t.in contains 'a dog and a dog\ndog\n'
+
+== replace-ask
+cat cat cat
+-- case
+step: fse -c t.in
+operator: type '\x11acat\rdog\r*\rync\x15d'
+# man: the question, y n c
+expect: output contains 'replace? (y/n/c/*)'
+expect: file t.in contains 'dog cat cat'
+
+== replace-lines
+one
+two
+three
+-- case
+step: fse -c t.in
+operator: type '\x11a\x10\x0a\r\x10\x0aX\rn2\r\x15d'
+# man: ^J (as ^P^J) is the line end; X at the start of the next 2 lines
+expect: file t.in contains 'one\nXtwo\nXthree\n'
+
+== goto-line
+one
+two
+three
+-- case
+step: fse -c t.in
+operator: type '\x11p3\rX\x15d'
+expect: output contains 'Line: '
+expect: file t.in contains 'Xthree'
+
+== mark-line
+one
+two
+three
+-- case
+step: fse -c t.in
+operator: type '\x18\x18\x11z\x11rX\x11uY\x15d'
+# man ^QZ saves the line number, ^QU goes to it
+expect: file t.in contains 'Xone\ntwo\nYthree\n'
+
+== keys-p8000
+one
+two
+three
+-- case
+step: fse -c t.in
+operator: type '\x1bY3\rX'
+# src fsetty.c getkey: F12 (ESC Y) position; the end of input is F10
+expect: file t.in contains 'Xthree'
+
+# ---- the display (man: ^QH ^QT ^QX ^QM ^QV, the dump mode, termcap) -------------------------------------------------
+
+== help
+line one
+-- case
+step: fse -c t.in
+operator: type '\x11h\r\x15q'
+expect: output contains '^UE return to system'
+expect: output contains '^QF find string'
+
+== help-f9
+line one
+-- case
+step: fse -c t.in
+operator: type '\x1bQ\r\x15q'
+# man: F9 (ESC Q on the P8000) is ^QH
+expect: output contains '^UE return to system'
+
+== metakeys-show
+one
+-- case
+step: fse -c t.in
+operator: type '\x11t\r\x15q'
+# man ^QT: the metakeys, preset for Modula-2
+expect: output contains ">> MetaKey's <<"
+expect: output contains 'PROCEDURE'
+
+== metakey-use
+one
+-- case
+step: fse -c t.in
+operator: type '\x1bv\x15d'
+# man: ESC and a small letter
+expect: file t.in contains 'VAR one'
+
+== metakey-define
+one
+-- case
+step: fse -ck t.in
+operator: type '\x11eaHELLO\x04\x1ba\x15d'
+step: fse -ck t.in
+operator: type '\x1ba\x15d'
+# man ^QE defines a metakey; with -k it is kept in .fse for the next call with -k
+expect: output contains 'MetaKeyDefinition (^D= end)'
+expect: file t.in contains 'HELLOHELLOone'
+
+== control-display
+a\001b\033c
+-- case
+step: fse -c t.in
+operator: type '\x11x4\x11x3\x11x2\x11x1\x15q'
+# man ^QX: the four ways to show a control character
+expect: output contains '1) no display  2)space  3)point  4)as control'
+expect: output contains 'a^Ab^[c'
+expect: output contains 'a.b.c'
+
+== bytemask
+a\341b
+-- case
+step: fse -c t.in
+operator: type '\x11m1\x11m2\x15q'
+# man ^QM: the mask 01111111 shows \341 as a
+expect: output contains 'bytemask  1) 01111111  2) 11111111'
+expect: output contains 'aab'
+
+== dump-mode
+ABCD
+-- case
+step: fse -c t.in
+operator: type '\x1a\x16\x15q'
+# man ^Z: the hex dump
+expect: output contains '41 42 43 44 0A'
+expect: output contains '^Z text ^V ascii/hex'
+
+== dump-edit
+ABCD
+-- case
+step: fse -c t.in
+operator: type '\x1a\x0435\x15d'
+# man DUMP: the byte under the cursor overwritten, in hexadecimal
+expect: file t.in contains 'A5CD'
+
+== dump-edit-ascii
+ABCD
+-- case
+step: fse -c t.in
+operator: type '\x1a\x16\x04xy\x15d'
+# man DUMP: ^V to the ASCII input
+expect: file t.in contains 'AxyD'
+
+== dump-find-position
+0123456789ABCDEF
+-- case
+step: fse -c t.in
+operator: type '\x1a\x11f4142\r\x11p5\r\x1a\x15q'
+expect: output contains 'Enter hexadecimal string'
+expect: output contains 'Enter address in hexadecimal'
+
+== view-dir
+one
+-- case
+step: fse -c t.in
+operator: type '\x11v\x7f\x15q'
+expect: output contains 'Your current directory:'
+
+== termcap-other
+one
+-- case
+env: TERM=vt100
+step: fse -c t.in
+operator: type 'X\x15d'
+# man: another terminal from /etc/termcap
+expect: output contains '[2J'
+expect: file t.in contains 'Xone'
+
+== termcap-unknown
+one
+-- case
+env: TERM=nosuch
+step: fse -c t.in
+expect: exit 1
+expect: output contains 'error in termcap'
+
+== no-term
+one
+-- case
+env: TERM=
+step: fse -c t.in
+operator: type '\x15q'
+expect: exit 1
+expect: output contains 'error in termcap'
+
+# ---- system functions (man: ^UL ^UT ^UM) ---------------------------------------------------------------------------
+
+== unlink
+one
+-- gone
+x
+-- case
+step: fse -c t.in
+operator: type '\x15lgone\r\x15q'
+expect: output contains '< Delete Files >'
+expect: missing gone
+
+== unlink-missing
+one
+-- case
+step: fse -c t.in
+operator: type '\x15lnosuch\r\r\x15q'
+expect: output contains 'file not found'
+
+== chmod
+one
+-- case
+step: fse -c t.in
+operator: type '\x15tt.in\r600\x15q'
+expect: output contains '<Changing Filemode> use * to abort'
+
+== chmod-abort
+one
+-- case
+step: fse -c t.in
+operator: type '\x15tt.in\r6*\x15q'
+# src fsemain.c: * stops the input of the mode
+expect: file t.in contains 'one\n'
+
+== chdir
+one
+-- sub/f
+in sub
+-- case
+step: fse -c t.in
+operator: type '\x15msub\r\x15lf\rX\x15d'
+# man ^UM: another directory; the names after it are below it (the file is saved there too)
+expect: missing sub/f
+expect: file sub/t.in contains 'Xone'
+expect: file t.in contains 'one\n'
+
+== chdir-missing
+one
+-- case
+step: fse -c t.in
+operator: type '\x15mnosuch\r\r\x15q'
+expect: output contains 'file not found'
+
+# ---- -e: the error messages of fsc (man -e) ------------------------------------------------------------------------
+
+== errmsg
+a
+b
+c
+-- case
+host: printf '\000\002\000\001missing semicolon' > errmsg; dd if=/dev/zero bs=1 count=59 2>/dev/null >> errmsg
+step: fse -e t.in
+operator: type 'X\x15d'
+# man -e: errmsg (line, column, text) is read and removed; the cursor in the first line with an error
+expect: output contains 'missing semicolon'
+expect: missing errmsg
+expect: file t.in contains 'a\nXb\nc\n'
+
+== errmsg-next
+a
+b
+c
+d
+-- case
+host: (printf '\000\002\000\001first'; dd if=/dev/zero bs=1 count=71 2>/dev/null; printf '\000\004\000\001second'; dd if=/dev/zero bs=1 count=70 2>/dev/null) > errmsg
+step: fse -e t.in
+operator: type '\x11nX\x15d'
+# man ^QN: the next line with an error
+expect: output contains 'second'
+expect: file t.in contains 'a\nb\nc\nXd\n'

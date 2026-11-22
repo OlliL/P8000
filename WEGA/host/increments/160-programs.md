@@ -32,7 +32,7 @@ Every program of the WEGA tree from source, byte-identical, each with a corpus.
 3. (owner 2026-11-22) First the programs that COVERAGE shows as `partial` and whose source is already in the tree, each
    to exact with its corpus, in this order (smallest step first; mkstr before ex: the ex build uses it, both are of the
    old compiler, crt0 stamp 3.1 of 10-11/1982):
-   1. `/bin/fse` (src/cmd/fse, built, should be exact now): the corpus (compare/fse/corpus.py), COVERAGE exact.
+   1. done 2026-11-22: `/bin/fse` exact, corpus compare/fse (76 cases, all identical), COVERAGE exact.
    2. `/usr/bin/mkstr` (src/cmd/mkstr.c, 8.6 KB, mkstr.c 1.1 11/01/82; built only as the tool of the ex strings):
       build and install it, compare, corpus.
    3. `/bin/ex` (src/cmd/ex, the ex 2.13 sources of Plexus, 67 KB E711; only ex2.13strings is built now): build and
@@ -144,3 +144,6 @@ PLZ programs and `as`: 170.
 - 2026-11-22 step 12 closed without a broad consolidation (owner); OLD_D3KC under #ifndef OLD_VC. The gopt handoff is
   deleted: its checks are in host/HOWTO_reconstruct.md (Phase B), what still matters in host/OLDCC_LOG.md (2026-11-22).
 - 2026-11-22 plan (owner): the partial programs with a source in the tree first: fse (corpus), mkstr, ex.
+- 2026-11-22 fse: corpus compare/fse (76 cases from fse.1 and the source, terminal console, keys typed); z8k-emu: an fd
+  opened on the console model reads host fd 0 and writes host fd 1 (fse writes the screen to /dev/tty O_RDWR, before lost);
+  corpusrun: `file PATH contains` takes the escapes of `output is`; four quirks of fse in KNOWLEDGE.md.

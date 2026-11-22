@@ -1031,6 +1031,14 @@ static int devfd(int fd)
 	return -1;
 }
 
+/* an fd that an open of /dev/... gave for the console model: a terminal reads the keyboard (host fd 0) and writes the
+ * screen (host fd 1) on the same descriptor (fse opens /dev/tty O_RDWR); fds 0, 1, 2 keep their own host fds */
+static int conhost(int fd, int wr)
+{
+	if (fd > 2 && fd < 256 && devof[fd] && !strcmp(devent[devof[fd] - 1].model, "console")) return wr ? 1 : 0;
+	return fd;
+}
+
 static void devfd_set(int fd, int e)
 {
 	if (fd >= 0 && fd < 256) { devof[fd] = e + 1; devproc[fd] = 0; }
@@ -1783,7 +1791,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 			memcpy(buf, d->buf + d->pos, k);
 			d->pos += k;
 		} else
-			k = read(i, buf, j);
+			k = read(conhost(i, 0), buf, j);
 		if (k < 0) return sc_err(c, errno);
 		gwrite(c, p, buf, k);
 		return sc_ok(c, k);
@@ -1791,7 +1799,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		i = a_int(&a); p = a_ptr(&a); j = a_int(&a);
 		if (j > (int)sizeof buf) j = sizeof buf;
 		gread(c, p, buf, j);
-		k = write(i, buf, j);
+		k = write(conhost(i, 1), buf, j);
 		return sc_res(c, k);
 	case 5:		/* open */
 		p = a_ptr(&a); i = a_int(&a);

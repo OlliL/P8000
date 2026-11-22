@@ -9,16 +9,16 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 27 | 5 | 50 | 29 |
+| [bin](#bin) | 111 | 28 | 4 | 50 | 29 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
-| [lib](#lib) | 30 | 25 | 0 | 1 | 4 |
+| [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
 | [usr/lib](#usr-lib) | 197 | 119 | 2 | 57 | 19 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 880 | 13 | 190 | 114 |
+| **all** | 1197 | 882 | 12 | 190 | 113 |
 
 <a id="root"></a>
 ## root
@@ -82,7 +82,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/find` | binary E707 | `tmp/sys3/usr/src/cmd/find.c` | sys3 | D12 old, D1 tight | - |
 | `bin/format` | binary E707 | `src/cmd/format` | exact | cc | libc.a |
 | `bin/fsc` | binary E611 | - | todo | D12 new?, D1 - | - |
-| `bin/fse` | binary E607 | `src/cmd/fse` | partial | - | - |
+| `bin/fse` | binary E607 | `src/cmd/fse` | exact | scc | - |
 | `bin/getfile` | binary E707 | `tmp/sys3/usr/src/graf/src/dev.d/tek4000.d/ged.d/getfile.c` | sys3 | D12 -, D1 loose | - |
 | `bin/gets` | binary E707 | `tmp/sys3/usr/src/lib/libc/vax/stdio/gets.c` | sys3 | D12 -, D1 tight | - |
 | `bin/getud` | binary E707 | `src/cmd/getud.c` | exact | cc | libc.a |
@@ -245,7 +245,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `lib/crt0.o` | binary E711 | `src/lib/libc/nonseg/csu` | exact | as | n/a (object) |
 | `lib/doprnt.o` | binary E711 | `src/lib` | exact | ccv1 | n/a (object) |
 | `lib/ex2.13strings` | text | `src/?` | exact | - | - |
-| `lib/gopt` | binary E611 | - | todo | D12 old, D1 - | - |
+| `lib/gopt` | binary E611 | `src/cmd/cc/gopt` | exact | sccvc | slibc-v12.a |
 | `lib/libc.a` | archive | `src/lib/libc` | exact | ccvl | n/a (archive) |
 | `lib/libl.a` | archive | `src/lib/libl` | exact | ccv1 | n/a (archive) |
 | `lib/libm.a` | archive | `src/lib/libm` | exact | ccv1 | n/a (archive) |
@@ -663,12 +663,12 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `usr/dict/hstop` | data | `src/?` | exact | - | - |
 | `usr/dict/spellhist` | data | `src/cmd/spell` | exact | cc | - |
 | `usr/dict/words` | text | `src/cmd/spell` | exact | cc | - |
-| `usr/doc/fse.doc` | text | `src/cmd/fse` | exact | - | - |
-| `usr/pub/ascii` | text | `src/?` | exact | - | - |
-| `usr/pub/dmalias` | text | `src/?` | exact | - | - |
-| `usr/pub/eqnchar` | text | `src/?` | exact | - | - |
-| `usr/pub/greek` | data | `src/?` | exact | - | - |
-| `usr/pub/termlist` | text | `src/?` | exact | - | - |
+| `usr/doc/fse.doc` | text | `src/cmd/fse` | exact | scc | - |
+| `usr/pub/ascii` | text | `src/cmd/pub` | exact | - | - |
+| `usr/pub/dmalias` | text | `src/cmd/pub` | exact | - | - |
+| `usr/pub/eqnchar` | text | `src/cmd/pub` | exact | - | - |
+| `usr/pub/greek` | data | `src/cmd/pub` | exact | - | - |
+| `usr/pub/termlist` | text | `src/cmd/pub` | exact | - | - |
 | `usr/spool/queuer/config` | text | `src/cmd/queuer` | exact | - | - |
 | `usr/spool/queuer/logfile` | data | `src/cmd/queuer` | exact | - | - |
 | `usr/spool/uucp/remotelines` | text | `src/cmd/uucp` | exact | - | - |
