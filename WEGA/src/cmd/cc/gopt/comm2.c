@@ -13,4 +13,4 @@ extern char *opst[];
 extern char *mkseg(), *ssgbrk(), *sgbrk();
 extern int qflag;
 extern char *arhigh[];
-#include "common.2.4"
+#include "../mip/common.2.4"

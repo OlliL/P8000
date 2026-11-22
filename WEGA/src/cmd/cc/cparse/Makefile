@@ -101,7 +101,7 @@ scparse: $(SEG_OBJS) ../../crt0.o
 # obj targets
 ###################
 
-$(NONSEG_OBJS): ../../mfile1 ../../manifest ../../macdefs ../../../../../head/oldv7/stdio.h
+$(NONSEG_OBJS): ../../mfile1 ../../../mip/manifest ../../../z8000/macdefs ../../../../../head/oldv7/stdio.h
 
 cgram1.c: ../../cgram1.y
 	$(YACC) ../../cgram1.y
@@ -116,13 +116,13 @@ pftn1.o: ../../pftn1.c
 	$(CC) $(CFLAGS) -c ../../pftn1.c
 trees1.o: ../../trees1.c
 	$(CC) $(CFLAGS) -c ../../trees1.c
-optim1.o: ../../optim1.c ../../optim.2.5
+optim1.o: ../../optim1.c ../../../mip/optim.2.5
 	$(CC) $(CFLAGS) -c ../../optim1.c
 code1.o: ../../code1.c
 	$(CC) $(CFLAGS) -c ../../code1.c
 local1.o: ../../local1.c
 	$(CC) $(CFLAGS) -c ../../local1.c
-comm1.o: ../../comm1.c ../../common.2.5
+comm1.o: ../../comm1.c ../../../mip/common.2.5
 	$(CC) $(CFLAGS) -c ../../comm1.c
 vinit1.o: ../../vinit1.c
 	$(CC) $(CFLAGS) -c ../../vinit1.c

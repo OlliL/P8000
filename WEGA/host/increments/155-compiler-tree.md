@@ -97,12 +97,12 @@ Rules of the target:
 2. (done 2026-11-22) Move 1:1: cpp, cparse, gopt, codgen, popt below `src/cmd/cc/` (git mv, nothing else changed); the Makefiles (relative
    paths, SUBDIRS and the case of `make shipped` in src/cmd/Makefile, src/Makefile); the tools and documents on the new
    paths (see Done when); all builds byte-identical; checkall.
-3. Align in the present directories (cparse, gopt, codgen), not yet in mip: move code between the files of a pass, put
+3. (done 2026-11-22) Align in the present directories (cparse, gopt, codgen), not yet in mip: move code between the files of a pass, put
    the declarations into their headers (mfile1, mfile2, ...), take the units common, optim, rdr out of comm1/2/3.c,
    optim1/3.c, rdr2/3.c into files of their own (the wrapper keeps its SCCS line and includes the unit), then bring the
    unit texts of the passes together (from cparse's System III-near text), the OLD_* and pass-specific code out of the
    units into the passes; all builds byte-identical after each step.
-4. When the future mip parts are as equal as they can be: move them to `src/cmd/cc/mip/` (one file per version; equal
+4. (done 2026-11-22) When the future mip parts are as equal as they can be: move them to `src/cmd/cc/mip/` (one file per version; equal
    headers); the wrappers include `../mip/...`; byte-identical; checkall.
 5. host/cc/: the same cut for the host ports (one host mip shared by the host passes); the corpora equal.
 6. `src/cmd/cc/README.md`; CLAUDE.md (with the owner's OK); a line in host/HANDOFF_wega_disasm.md (decisions).
@@ -157,3 +157,8 @@ Rules of the target:
 - 2026-11-22: step 2 checks: models 179/179/209/210/73/73/26 strictly equal, bench 153/132/212, both matrix checks as
   in the table (they print "77 files of the passes changed since": the move); switchmatrix, goptmodel, datastr,
   progcfg (passes below cc/) and the progcfg of cpp, cparse, codgen, popt (host/ld, lib/ one level up) fixed.
+- 2026-11-22: step 3: units split from the wrappers, manifest and macdefs shared, names unified, common 2.5 and optim
+  2.5 one file for cparse and codgen (PASS3), common 2.4 from the text of 2.5, OLD_D3K/D3J and most of OLD_D12K out
+  into reader3.c. Step 4: mip/ (common.2.4, common.2.5, optim.2.5, rdr.2.4, rdr.2.5, manifest), z8000/macdefs;
+  the wrappers include ../mip/UNIT (not -I: the cpp command of the shipped cc is limited to cmd[200]); the tools
+  that copy a pass copy mip and z8000 too. All variants byte-identical; models, bench, matrix checks as before.

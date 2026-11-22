@@ -39,7 +39,7 @@ OBJS5B = reg2.o alias2b.o
 OBJS = $(OBJS4) $(OBJS5) $(OBJS4B) $(OBJS5B)
 # the library members of segment 4 (see the gopt rule)
 LIBC4 = fseek.o ftell.o rdwr.o fopen.o getw.o
-HEADERS = gopt.h macdefs manifest
+HEADERS = gopt.h ../z8000/macdefs ../mip/manifest
 
 all: gopt
 
@@ -69,9 +69,9 @@ quads2.o: quads2.c $(HEADERS)
 	$(SCC) $(CFLAGS) -c quads2.c
 debug2.o: debug2.c $(HEADERS)
 	$(SCC) $(CFLAGS) -c debug2.c
-rdr2.o: rdr2.c rdr.2.4 $(HEADERS)
+rdr2.o: rdr2.c ../mip/rdr.2.4 $(HEADERS)
 	$(SCC) $(CFLAGS) -c rdr2.c
-comm2.o: comm2.c common.2.4 $(HEADERS)
+comm2.o: comm2.c ../mip/common.2.4 $(HEADERS)
 	$(SCC) $(CFLAGS) -c comm2.c
 wrtil2.o: wrtil2.c $(HEADERS)
 	$(SCC) $(CFLAGS) -c wrtil2.c

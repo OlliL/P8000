@@ -1,6 +1,6 @@
 
-# include "macdefs"
-# include "manifest"
+# include "../z8000/macdefs"
+# include "../mip/manifest"
 
 /*	storage classes  */
 # define SNULL 0

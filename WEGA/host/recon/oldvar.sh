@@ -22,7 +22,7 @@ case "$patch" in -|/*) ;; *) patch=`pwd`/$patch ;; esac
 W=$RECON_TMP/oldvar/$name
 rm -rf $W
 mkdir -p $W/WEGA/src/cmd/cc
-cp -a $REPO/src/cmd/cc/$pass $W/WEGA/src/cmd/cc/
+cp -a $REPO/src/cmd/cc/$pass $REPO/src/cmd/cc/mip $REPO/src/cmd/cc/z8000 $W/WEGA/src/cmd/cc/
 ln -s $REPO/src/lib $W/WEGA/src/lib
 ln -s $REPO/host $W/WEGA/host
 cd $W/WEGA/src/cmd/cc/$pass || exit 1

@@ -5,4 +5,4 @@
 static char sccsid[] = "@[$]rdr2.c\t1.3  03/04/83 16:01:05 Copr. 1981 87wega3.2.";
 #include "gopt.h"
 
-#include "rdr.2.4"
+#include "../mip/rdr.2.4"

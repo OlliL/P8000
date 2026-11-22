@@ -192,6 +192,8 @@ def setup():
     subprocess.run(['cp', '-a', OLDROOT, os.path.join(work, 'root')], check=True)
     for p in PASSES + (['gopt'] if VER == 'vc' else []):
         subprocess.run(['cp', '-a', os.path.join(REPO, 'src', 'cmd', 'cc', p), os.path.join(work, 'src', 'cmd', 'cc', p)], check=True)
+    for d in ('mip', 'z8000'):	# the shared units and headers (increment 155)
+        subprocess.run(['cp', '-a', os.path.join(REPO, 'src', 'cmd', 'cc', d), os.path.join(work, 'src', 'cmd', 'cc', d)], check=True)
     subprocess.run(['sh', os.path.join(REPO, 'host', 'tools', 'wbin.sh'), os.path.join(work, 'wbin'), ROOT,
                     os.path.join(work, 'root'), EMU], check=True)
     for f in ('codgen/oldcc.h', 'cparse/Makefile', 'popt/Makefile'):

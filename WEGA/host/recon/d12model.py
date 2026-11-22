@@ -147,6 +147,22 @@ def main():
         p = os.path.join(srcdir, f)
         if os.path.isfile(p) and not f.endswith(('.o', '.py')) and f != 'Makefile':
             shutil.copy(p, work)
+    # the shared units and headers of the compiler (src/cmd/cc/mip, z8000; increment 155): into the flat work
+    # directory, and the includes of "../mip/x" and "../z8000/x" made plain
+    shared = [os.path.join(srcdir, '..', d) for d in ('mip', 'z8000')]
+    if any(os.path.isdir(d) for d in shared):
+        for d in shared:
+            for f in (os.listdir(d) if os.path.isdir(d) else []):
+                shutil.copy(os.path.join(d, f), work)
+        for f in os.listdir(work):
+            q = os.path.join(work, f)
+            try:
+                t = open(q, encoding='latin-1').read()
+            except (IsADirectoryError, UnicodeDecodeError):
+                continue
+            u = t.replace('"../mip/', '"').replace('"../z8000/', '"')
+            if u != t:
+                open(q, 'w', encoding='latin-1').write(u)
     # the -I of the Makefile: since 2026-11-15 the stdio.h of the old programs is in src/head/oldv7 (was beside the sources)
     mk = os.path.join(CFG.SRCDIR, 'Makefile')
     if os.path.exists(mk) and 'head/oldv7' in open(mk).read() and not os.path.exists(os.path.join(work, 'stdio.h')):
