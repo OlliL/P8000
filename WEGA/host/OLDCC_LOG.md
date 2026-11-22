@@ -1985,3 +1985,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   the operand (odd word, even half free or idle; not a byte). The form "operand back, then any pair" had lost locadv: it gave
   the parameter r7 back, the original keeps it and widens into rr2. cas model of vc 152, gopt byte-identical, matrix row as
   before (cas symtype). The same rule in v0p (under OLD_D2M): cparse, scparse lose genswitch and refid, so it stays a vc switch.
+- 2026-11-22, step 10, spopt `OLD_D20S` against v1 `OLD_D20`: D20S with the bound of D20 (refc <= 3, straight block): cas
+  149 (opshort, opseg, opoff); D20 of v1 with the straight-block condition of D20S: checkall fails on libcisam, slibcisam
+  (v1c, the v1 popt). The two do not merge; D20S stays.
+- 2026-11-22, step 10, spopt `OLD_D45` as "codemove takes the jp before the conditional jump is turned" (in iterate): spopt
+  does not end (iterate runs until nothing changes, codemove moves again in every round). D45 also asks more than codemove
+  can (the block straight, ending in a jump whose target stands behind another jump, not the exit code). Stays.
+- 2026-11-22, step 10, spopt `OLD_D50` looked at again: its core (the scan of the loop inversion follows an unconditional jump,
+  as xjump does elsewhere) reads as written code; its limits come from the one witness (cas jpr). No other mechanism found. Stays.
