@@ -756,6 +756,7 @@ prcook(cookie)
 {
 	register int i, flag;
 
+	/* print a nice-looking description of cookie */
 	if (cookie & SPECIAL) {
 		switch (cookie) {
 		case SZERO:
@@ -768,7 +769,7 @@ prcook(cookie)
 			printf("SICON");
 			break;
 		default:
-			printf("SPECIAL+%%%0.2x", cookie & 0x7FFF);
+			printf("SPECIAL+%%%0.2x", cookie & ~SPECIAL);
 		}
 		return;
 	}
