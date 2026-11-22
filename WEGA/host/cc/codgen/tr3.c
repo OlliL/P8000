@@ -81,7 +81,7 @@ buildstar(int op, NODE *l, NODE *r)
 		}
 		if (!ISPTR(l->in.type))
 			uerror("illegal indirection");
-		n->in.type = DECREF(l->in.type);
+		n->in.type = UDECREF(l->in.type);
 		n->in.su = l->in.su;
 		n->in.fsu = l->in.fsu;
 		n->in.rall = l->in.rall;

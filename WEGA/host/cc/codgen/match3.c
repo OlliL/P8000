@@ -114,7 +114,7 @@ ttype(int t, int tword)
 		t = TINT;		/* FARG / undefined: an int */
 	if (ISPTR(t) && (tword & TPTRTO)) {
 		do
-			t = DECREF(t);	/* strip one level of pointer */
+			t = UDECREF(t);	/* strip one level of pointer */
 		while (ISARY(t));
 		return ttype(t, tword & ~TPTRTO);
 	}

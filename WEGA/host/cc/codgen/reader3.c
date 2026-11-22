@@ -1507,7 +1507,7 @@ argprep(NODE *p, int cookie)
 		fake.needs = 0x100;
 		if (!allo(p, &fake))
 			cerror("bad STASG allocation");
-		resc[0].in.type = DECREF(p->in.left->in.type);
+		resc[0].in.type = UDECREF(p->in.left->in.type);
 		p->in.left->in.left = tcopy(&resc[0]);
 		return p->in.left;
 	}

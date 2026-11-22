@@ -17,8 +17,7 @@
 #include "../z8000/macdefs"
 #include "../z8000/mac2defs"
 #include "../mip/manifest"
-#undef DECREF		/* codgen: the DECREF of manifest shifts the type as it is (int: arithmetic); codgen shifts it unsigned */
-#define DECREF(x)	((((unsigned)(x) >> TSHIFT) & ~BTMASK) | ((x) & BTMASK))
+#define UDECREF(x)	((((unsigned)(x) >> TSHIFT) & ~BTMASK) | ((x) & BTMASK))	/* DECREF of manifest shifts an int arithmetically (wrt3 fbegin); most of codgen shifts unsigned */
 #include "../mip/rdr.h"
 #include "oldcc.h"
 

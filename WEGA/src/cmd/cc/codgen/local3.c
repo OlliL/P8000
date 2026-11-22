@@ -858,7 +858,7 @@ zzzcode(p, c)
 			if (r2->in.op == ICON) {
 				tmp = tcopy(r2);
 				r2->in.op = NAME;
-				r2->in.type = DECREF(r2->in.type);
+				r2->in.type = UDECREF(r2->in.type);
 			} else if (!tshape(r2, STAREG | SAREG))
 				order(r2, STAREG | SAREG);
 			if (r2->in.op == REG) {
@@ -1211,7 +1211,7 @@ shincr(t, incr)
 {
 	if (!ISPTR(t))
 		return 0;
-	t = DECREF(t);
+	t = UDECREF(t);
 	if (ISPTR(t))
 		return incr == SZPOINT / SZCHAR;	/* a pointer to a pointer */
 	switch (t) {
