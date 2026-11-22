@@ -1914,3 +1914,15 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   the swapped tree. Not seen for hours: checkall builds /bin/cas with the shipped scc, and `matrix check` measures
   nothing; a single vc matrix run stopped with "baseline model failed". With the swap in optim the cas model of vc is
   same 152, differ 0. OLD_D24 (cas witnesses: the same model) and OLD_D63 (libcisam of v1c, in checkall) stay out of mip.
+- 2026-11-22, gopt HANDOFF step 10 (vc switches), `OLD_D3PL` (tabfree) is gone. Without it `s2 = ((long)p >> 24) & 0x7f`
+  loads `ldl rr2,|_stkseg+~L1|(fp)` instead of the pair rr4. Source forms (`(long)(char *)p`, `(unsigned long)p`, `(int)(...)`,
+  a long local, `register char *p`, `long p`): none. Cause: scparse clocal paints `(long)p` onto the NAME (same size, the
+  target no pointer), so regforsym sees type long; keeping the SCONV in scparse (with a test in lcl3.c) stops codgen with
+  "expression causes compiler loop" (no template for it), so the original painted it too. The segmented D3PWORD now has
+  the types of the size of a pointer (pointer, long, unsigned long) and D3PCAST asks for a pointer on one side: without
+  that, cas iputl/sputl (`(unsigned long)l` of a long parameter, from the frame in the original) are lost (149 of 152).
+  gopt byte-identical, cas model of vc 152. The same "one side a pointer" in v0: cparse and scparse 178 (sputc, `putc` casts
+  the int c to unsigned), so v0 keeps any two of int, unsigned, pointer.
+- 2026-11-22, step 10, `OLD_D4F` (constfold): without it the shared tail of the float compares (`dr = d1 == d2`, ...: tcc,
+  exts, fldil) takes f1 (f0 holds d1) and is no longer merged by spopt. Forms of case 19: `(d1 == d2)`, `(double)(d1 == d2)`,
+  `? 1.0 : 0.0`, `? 1 : 0`, through the int res, `d2 == d1`. None (each other form changes the case itself); the switch stays.

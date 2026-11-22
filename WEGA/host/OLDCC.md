@@ -182,7 +182,7 @@ all together), with these differences:
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
   (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype), and for gopt (neutral on cas) `OLD_D2K`, `OLD_D3JL`,
-  `OLD_D24L`, `OLD_D2FA`, `OLD_D3PL`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB`, `OLD_D2TC`, `OLD_D4F` (section 3, D2..D4),
+  `OLD_D24L`, `OLD_D2FA`, `OLD_D2AV`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB`, `OLD_D2TC`, `OLD_D4F` (section 3, D2..D4),
   `OLD_D14T` (section 3, D4) and `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of
   the tree uses) are not read, their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room. The text of the
   vc scodgen is near the 64 KiB of a nonsegmented program; /bin/ld does not report an overflow (sg_code wraps, the program
@@ -310,8 +310,10 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - v1 `OLD_D3` (cbranch): at the join label of `&&` and `||` the shipped codgen gives the idle registers back, the old one keeps
   them with their contents. ld init_entry, dseek.
 - v0 `OLD_D3P` (regforsym): a name that lives in a register is taken from it also when the node wants another register, also
-  under a cast between int, unsigned and pointers (argdebug, rstruct). Segmented (vc): under a cast between pointers only;
-  `(unsigned)w` of an int parameter loads it from its frame home again (cas iputw, sputw).
+  under a cast between two types of the size of a pointer: v0 int, unsigned and pointers (argdebug, rstruct; int against
+  unsigned: sputc). Segmented (vc): pointer, long and unsigned long, one of the two a pointer (gopt tabfree `(long)p`
+  from rr4); `(unsigned)w` of an int parameter and `(unsigned long)l` of a long one load it from the frame home again
+  (cas iputw, sputw, iputl, sputl).
 - v0 `OLD_D3K`: a parameter stays known in its register at a label a jump has already named and behind `&&`, `||` and the `?:` of
   codgen (there word registers only); at a label only a later jump names, or none, it is forgotten (twords), unless the
   function ends right behind that label. Such a register is not a scratch one for the tree (tshape, istnode): an operator
@@ -354,9 +356,6 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   pair only for a pointer in rr0 that is wanted in a temporary register (cookie INTAREG: `(x = x->next) == 0`, orderbl),
   not for a long (ceval `(l = ispow2(x)) > 0`) and not for the inner assignment of a chain (`lpdefs = prev = t->next`:
   lpinv, deletblk, delindvar). Neutral on cas.
-- vc `OLD_D3PL` (regs3.c regforsym, with OLD_D3P): a pointer parameter used under a cast to long is taken from its pair
-  (the segmented D3PWORD only accepts casts between pointers). /lib/gopt tabfree `((long)p >> 24) & 0x7f`: `ldl rr2,rr4`;
-  9 source forms without it, none. Neutral on cas.
 - vc `OLD_D3JB` (reader3.c, under `OLD_D3J`): the end of a block (`]`) between an unconditional jump and the label behind it
   counts as a record, so the code in front of the label is not dead and the label keeps only the parameters known at both
   (prquad `if (q == 0) { printf(..); return; }`: the records `B ] L`, q reloaded from the frame; tfree1 `if (p == 0) cerror(..);

@@ -101,10 +101,16 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 	rlmode = l
 
 #ifdef OLD_D3P
+/* the types of the size of a pointer; a cast between two of them leaves a name in its register (regforsym) */
 #ifdef SEG
-#define D3PWORD(t)	(((t) & 0x30) == 0x10)	/* segmented (vc): a cast between pointers only, not int against unsigned */
+/* segmented (vc): pointer, long, unsigned long, and one of the two is a pointer (not long against unsigned long:
+   cas iputl; gopt tabfree (long)p) */
+#define D3PWORD(t)	((t) == 5 || (t) == 15 || ((t) & 0x30) == 0x10)
+#define D3PCAST(a, b)	(D3PWORD(a) && D3PWORD(b) && (((a) & 0x30) == 0x10 || ((b) & 0x30) == 0x10))
 #else
+/* v0: int, unsigned and pointers, any two (int against unsigned: cparse sputc) */
 #define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
+#define D3PCAST(a, b)	(D3PWORD(a) && D3PWORD(b))
 #endif
 #endif
 
@@ -831,13 +837,8 @@ regforsym(reg, s, type, off)
 	if (s == fpsym1 || s == fpsym2)
 		return symreg(s, off, type);
 #ifdef OLD_D3P
-	/* v0: also under a cast between int, unsigned and pointers (the word types) */
-	if (type != s->stype && !(D3PWORD(type) && D3PWORD(s->stype))
-#ifdef OLD_D3PL
-	    /* vc (gopt): a pointer parameter cast to long is taken from its pair (tabfree (long)p >> 24) */
-	    && !(s->sclass == 9 && (type == 5 || type == 15) && (s->stype & 0x30) == 0x10)
-#endif
-	    )
+	/* also under a cast between types of the size of a pointer (D3PCAST) */
+	if (type != s->stype && !D3PCAST(type, s->stype))
 		return -1;
 #else
 	if (type != s->stype)

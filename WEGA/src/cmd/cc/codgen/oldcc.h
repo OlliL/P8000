@@ -32,7 +32,6 @@
 #define OLD_D2PP	/* no pair free: an idle odd word holding a parameter is given back for a pair before regjam (getreg; gopt setlbit) */
 #define OLD_D2XP	/* OLD_D2X not into the pair of a parameter (allo3.c; gopt nodeno) */
 #define OLD_D2AV	/* OLD_D2A only for a pointer in rr0, not for a long (match; gopt orderbl, ceval) */
-#define OLD_D3PL	/* OLD_D3P: a pointer parameter cast to long is taken from its pair (regforsym; gopt tabfree) */
 #define OLD_D3JL	/* OLD_D3J: a pointer parameter that comes back at a label gets no frame home, only a long (gopt: canopt, denorm) */
 #define OLD_D3JB	/* OLD_D3J: the end of a block (]) between the jump and the label counts as a record (gopt prquad, cmwalk) */
 #define OLD_D4F		/* an idle float register that holds a name is free when its number is lower than the first free one (gopt constfold) */
