@@ -15,8 +15,8 @@ extern char fname[];
 extern int getlab();
 extern int getreg();
 extern void hdrout();
-extern int ifline;
-extern char ifname[];
+extern int lineno;
+extern char ftitle[];
 extern int jlab;
 extern int lflag;
 extern void mapsym();
@@ -73,11 +73,11 @@ endline()
 	register char *cp;
 
 	if (lflag) {
-		n = strlen(ifname);
-		if (*(cp = &ifname[n - 1]) == '"')
+		n = strlen(ftitle);
+		if (*(cp = &ftitle[n - 1]) == '"')
 			cp--;
 		if (*cp-- == 'c' && *cp == '.')
-			printf("\t.line\t%d\t%s\t\n", ifline, ifname);
+			printf("\t.line\t%d\t%s\t\n", lineno, ftitle);
 	}
 }
 

@@ -21,8 +21,8 @@ extern void dexit();
 extern void walkf();
 extern void fwalk();
 extern int getreg();
-extern int ifline;
-extern char ifname[];
+extern int lineno;
+extern char ftitle[];
 extern struct dopest indope[];
 extern int ispow2();
 extern NODE *lastfree;
@@ -52,5 +52,5 @@ extern void uerror();
 extern void werror();
 static char sccsid[] = "@[$]comm3.c\t2.1  11/15/82 12:48:27 Copr. 1981 87wega3.2.";
 char unused6[16] = { 0 };
-char ifname[16] = { 0 };
+char ftitle[16] = { 0 };
 #include "common.2.5"

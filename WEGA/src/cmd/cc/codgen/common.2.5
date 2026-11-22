@@ -107,7 +107,7 @@ tinit()
 {
 	NODE *p;
 
-	for (p = node; p <= &node[NTREE - 1]; p++)
+	for (p = node; p <= &node[TREESZ - 1]; p++)
 		p->in.op = FREE;
 	lastfree = node;
 }
@@ -120,13 +120,13 @@ talloc()
 	int x;
 
 	start = lastfree;
-	p = start == &node[NTREE - 1] ? node : start + 1;
+	p = start == &node[TREESZ - 1] ? node : start + 1;
 	while (p != start) {
 		if (p->in.op == FREE) {
 			p->in.sname = 0;
 			return lastfree = p;
 		}
-		p = p == &node[NTREE - 1] ? node : p + 1;
+		p = p == &node[TREESZ - 1] ? node : p + 1;
 	}
 	cerror("out of tree space; simplify expression");
 }
@@ -138,7 +138,7 @@ tcheck()
 	NODE *p;
 
 	if (!nerrors)
-		for (p = node; p <= &node[NTREE - 1]; p++)
+		for (p = node; p <= &node[TREESZ - 1]; p++)
 			if (p->in.op != FREE)
 				cerror("wasted space: %%%x(%d)", p, p->in.op);
 	tinit();
@@ -285,7 +285,7 @@ static void
 where(c)
 	int c;
 {
-	fprintf(stderr, "%s:%d: ", ifname, ifline);
+	fprintf(stderr, "%s:%d: ", ftitle, lineno);
 }
 
 /* the size in bytes of a type: 1, 2 or 4 */

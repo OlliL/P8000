@@ -1040,7 +1040,7 @@
    "file": "wrt3.c",
    "orig": "0x8f06",
    "size_orig": 82,
-   "note": "The pointer assigned inside the first test: if (*(cp = &ifname[n - 1]) == '\"').",
+   "note": "The pointer assigned inside the first test: if (*(cp = &ftitle[n - 1]) == '\"').",
    "status": "exact"
   },
   "parminit": {

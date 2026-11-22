@@ -1034,7 +1034,7 @@
    "orig": "0x8c22",
    "size_orig": 82,
    "status": "exact",
-   "note": "The pointer assigned inside the first test: if (*(cp = &ifname[n - 1]) == '\"')."
+   "note": "The pointer assigned inside the first test: if (*(cp = &ftitle[n - 1]) == '\"')."
   },
   "parminit": {
    "file": "wrt3.c",

@@ -53,8 +53,8 @@ extern int genscall();
 extern int getlab();
 extern void gswitch();
 extern void hdrout();
-extern int ifline;
-extern char ifname[];
+extern int lineno;
+extern char ftitle[];
 extern void init();
 extern int lastchance();
 extern int lflag;
@@ -425,12 +425,12 @@ reread:
 			continue;
 		case '.':
 			/* compile code for an expression */
-			ifline = rdin(10);
-			for (cp = ifname; (*cp = getchar()) != '\n'; ++cp)
+			lineno = rdin(10);
+			for (cp = ftitle; (*cp = getchar()) != '\n'; ++cp)
 				;
 			*cp = '\0';
 			if (lflag)
-				lineout(ifline, ifname);
+				lineout(lineno, ftitle);
 			paroff = baseoff;
 #ifndef OLD_D14Q
 			tmpoff = 0;

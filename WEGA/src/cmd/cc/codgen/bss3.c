@@ -12,7 +12,7 @@ long parmax;
 FILE *dfile;	/* the data file */
 int ndelay;
 int nlabsave;
-NODE node[NTREE];
+NODE node[TREESZ];
 int dope[129];
 long paroff;	/* next free place for the parameters of a call (bits) */
 int regG;
@@ -40,7 +40,7 @@ NODE *deltrees[NDELAY];
 int regmask;
 int regE;
 int stocook;
-int ifline;
+int lineno;
 int retlab;
 long maxoff;	/* the largest frame offset so far */
 int nrecur;	/* cleared by p2compile() itself */

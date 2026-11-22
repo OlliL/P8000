@@ -73,7 +73,7 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | rsmatch | 0x86c4 | Odd form: the step of the first search in front of its loop, by goto. |
 | syserror | 0x8824 | Dead code: no caller; name guessed; pulls perror and errlst into the program. |
 | tcopy | 0x8d00 | Quirk: the second rbusy has two arguments (quirk table). |
-| endline | 0x8f06 | The pointer assigned inside the first test: if (*(cp = &ifname[n - 1]) == '"'). |
+| endline | 0x8f06 | The pointer assigned inside the first test: if (*(cp = &ftitle[n - 1]) == '"'). |
 | parminit | 0x8f58 | Odd form: one register variable for the type and then for the register number of the symbol; the index of rnames is long (-p->lval). |
 | fixtemp | 0x9482 | tmptab[i].reg = j = getreg(...); i used for the temporary number first. |
 | tmpcleanup | 0x9600 | The loop test and the end of the table in one for condition; the inner for tests off < 0 with the body inside. |
