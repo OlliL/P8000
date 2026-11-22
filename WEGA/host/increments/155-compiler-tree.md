@@ -139,6 +139,10 @@ Rules of the target:
   addend away), OLD_D63 (rmconv: float to double stays). They change the flow inside optim and rmconv; out of the
   unit only by a second copy of these functions in codgen.
 
+- 2026-11-22 (Claude, exception, for review): rdr 2.5 keeps OLD_D12K in eread (a double constant is written at
+  its statement: d12kout before the FCON becomes a NAME; the caller no longer sees which NAME was an FCON). The rest
+  of OLD_D12K went to reader3.c: the helpers, and d12kdata (rddata with the copy of v0p) called instead of rddata.
+
 ## Not part of it
 
 - lint1, lint2 (later members of the tree).
