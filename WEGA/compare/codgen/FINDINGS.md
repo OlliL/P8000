@@ -63,7 +63,7 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | rwprint | 0x6fca | Odd form: an unreferenced label in front of the first test, as readmems. |
 | reclaim | 0x7058 | Odd form: done in front of the code for a register result, reached by goto from behind it. |
 | newnode | 0x75e0 | m->reg = n->reg = n->reg * 2 in case 2 and 6: the tail is merged behind the first load, as in the original. |
-| rsinsert | 0x7650 | Exact with OLD_D3J forgetting all jump records at a label no jump has named (d3jclear in the record L); one witness, taken on the owner's word. No else return: with another mode a and b are not set (quirk table). |
+| rsinsert | 0x7650 | Exact with OLD_D3J forgetting all jump records at a label no jump has named (d3klabel); one witness, taken on the owner's word. No else return: with another mode a and b are not set (quirk table). |
 | regjam | 0x7916 | Odd form: the split loop stands inside the first loop and is reached by goto from behind it; the code that links the new node stands in the last case and case 1 and 6 reach it by goto; roverlap(1, reg) without a third argument (quirk table). |
 | getreg | 0x7c10 | Odd form: as regjam the split loop inside the free list loop, reached by goto; the found and return code inside the loop of the register variables, in front of its test. The source form is what gives the bytes, not proved to be what the authors wrote. |
 | rsreturn | 0x7f50 | Odd form: if (rspool) n->next = rspool; n->next is 0 from before. The whole rest of the function stands inside the search loop. |

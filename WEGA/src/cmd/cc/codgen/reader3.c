@@ -19,8 +19,7 @@ extern char *cnames[];
 extern void codgen();
 extern void constore();
 extern void d12kout();
-extern void d3jlabel();
-extern int d3knamed();
+extern int d3klabel();
 extern void d3kreset();
 extern void deflab();
 extern void delay();
@@ -179,13 +178,9 @@ static void d14qarm();
 #endif
 #ifdef OLD_D3K
 void d3kjump(), d3kreset();
-int d3knamed();
+int d3klabel();
 static int d3kpend;		/* a label waits for its rsfreeall (main) */
-#ifdef OLD_D3J
-extern void d3jclear();
-static int d3jdead;		/* the record before was an unconditional jump */
-extern void d3jlabel();
-#endif
+static int d3jdead;		/* v0p: the record before was an unconditional jump */
 #endif
 
 
@@ -450,17 +445,8 @@ reread:
 			nlcheck();
 			if (nparm <= 0)
 #ifdef OLD_D3K
-				if (d3knamed(temp)) {
-					rsfreeall(4);
-#ifdef OLD_D3J
-					d3jlabel(temp, d3jdead);
-#endif
-				} else {
-#ifdef OLD_D3J
-					d3jclear();	/* a label no jump has named: a loop head */
-#endif
+				if (!d3klabel(temp, d3jdead))
 					d3kpend = 1;
-				}
 #else
 				rsfreeall(1);
 #endif
@@ -1882,45 +1868,25 @@ d2faandor(p)
 }
 #endif
 
-/* ---- v0 and v0p (OLD_D3K, OLD_D3J): the parameters known in their registers at labels and behind jumps (from comm3.c,
- * where branch() called d3kjump; now its callers do) ---- */
+/* ---- v0 and v0p (OLD_D3K, OLD_D3J): the parameters known in their registers at labels and behind jumps ---- */
 #ifdef OLD_D3K
-/* v0: the labels a jump has named already in this function (a parameter stays known in its register there) */
+/* the labels a jump has named in this function */
 #define D3KMAX	16384
 static char d3kbits[D3KMAX / 8];
 #ifdef OLD_D3J
+/* v0p: a record for each label jumps have named and that is not defined yet: the parameters known at all those jumps */
 #define D3JMAX	8
 static struct d3j {
-	int	lab;
+	int	lab;		/* -1: free */
 	int	n;
-	int	jumps;
 	int	reg[4], cls[4];
 	struct sym *sym[4];
 } d3jtab[D3JMAX];
-static int d3jfree();
 static void d3jmark();
-void d3jsave();
 extern void rfree(), rsreturn();
 #endif
 
-void
-d3kjump(l)
-	register int l;
-{
-	if (l >= 0 && l < D3KMAX)
-		d3kbits[l >> 3] |= 1 << (l & 7);
-#ifdef OLD_D3J
-	d3jsave(l);
-#endif
-}
-
-int
-d3knamed(l)
-	register int l;
-{
-	return l >= 0 && l < D3KMAX && (d3kbits[l >> 3] >> (l & 7) & 1);
-}
-
+/* the start of a function */
 void
 d3kreset()
 {
@@ -1933,43 +1899,34 @@ d3kreset()
 		d3jtab[i].lab = -1;
 #endif
 }
-#endif
 
+/* a jump to the label l */
+void
+d3kjump(l)
+	int l;
+{
 #ifdef OLD_D3J
-/* v0p: all jump records are forgotten */
-void
-d3jclear()
-{
-	register int i;
-
-	for (i = 0; i < D3JMAX; i++)
-		d3jtab[i].lab = -1;
-}
-
-/* v0p: the parameters known in registers at a conditional jump; the label gets them back when the code in front of it
-   ends with a jump (its state is that of the jumps to it) */
-void
-d3jsave(lab)
-	int lab;
-{
 	register struct d3j *j;
 	register struct rs *n;
 	register int i, k;
 	struct d3j *f;
+#endif
 
+	if (l >= 0 && l < D3KMAX)
+		d3kbits[l >> 3] |= 1 << (l & 7);
+#ifdef OLD_D3J
 	f = 0;
 	for (j = d3jtab; j < &d3jtab[D3JMAX]; j++) {
-		if (j->lab == lab)
+		if (j->lab == l)
 			break;
-		if (j->lab <= 0 && f == 0)
+		if (j->lab < 0 && f == 0)
 			f = j;
 	}
 	if (j == &d3jtab[D3JMAX]) {	/* the first jump: the known parameters */
 		if ((j = f) == 0)
 			return;
-		j->lab = lab;
+		j->lab = l;
 		j->n = 0;
-		j->jumps = 1;
 		for (n = rsuse; n; n = n->next)
 			if (n->cls <= 3 && n->sym && n->sym->sclass == 9 && j->n < 4) {
 				j->reg[j->n] = n->reg;
@@ -1979,7 +1936,6 @@ d3jsave(lab)
 			}
 		return;
 	}
-	j->jumps++;
 	for (i = 0; i < j->n; i++) {	/* a later one: those known at both */
 		for (n = rsuse; n; n = n->next)
 			if (n->reg == j->reg[i] && n->cls == j->cls[i] && n->sym == j->sym[i])
@@ -1994,24 +1950,37 @@ d3jsave(lab)
 			i--;
 		}
 	}
+#endif
 }
 
-/* the label lab: the parameters known at all the jumps to it (and at the code in front of it unless dead: that ends
-   with a jump) */
-void
-d3jlabel(lab, dead)
+/* the label lab: 0 when no jump has named it (v0p: all records go, a loop head); else the idle registers go back and
+   a parameter stays known in its register (v0p: only one known at all the jumps; dead: the code in front of the label
+   ends with a jump, the parameters of the jumps come back) */
+int
+d3klabel(lab, dead)
 	int lab, dead;
 {
+#ifdef OLD_D3J
 	register struct d3j *j;
 	register int i, r;
 	register struct rs *n;
 	struct rs *next;
+#endif
 
+	if (lab < 0 || lab >= D3KMAX || !(d3kbits[lab >> 3] >> (lab & 7) & 1)) {
+#ifdef OLD_D3J
+		for (j = d3jtab; j < &d3jtab[D3JMAX]; j++)
+			j->lab = -1;
+#endif
+		return 0;
+	}
+	rsfreeall(4);
+#ifdef OLD_D3J
 	for (j = d3jtab; j < &d3jtab[D3JMAX]; j++)
 		if (j->lab == lab)
 			break;
 	if (j == &d3jtab[D3JMAX])
-		return;
+		return 1;
 	j->lab = -1;
 	for (n = rsuse; n; n = next) {	/* a parameter not known at every jump is forgotten */
 		next = n->next;
@@ -2026,10 +1995,8 @@ d3jlabel(lab, dead)
 		}
 		rsreturn(n->cls, n->reg);
 	}
-	if (!dead)
-		return;
-	for (i = 0; i < j->n; i++)
-		if (d3jfree(j->cls[i], j->reg[i])) {
+	if (dead)
+		for (i = 0; i < j->n; i++) {
 			r = getreg(j->cls[i], j->reg[i], 0, j->sym[i]);
 			if (r == j->reg[i]) {
 				rfree(r, j->cls[i] == 3 ? 5 : j->cls[i] == 1 ? 2 : 4);
@@ -2042,8 +2009,11 @@ d3jlabel(lab, dead)
 					d3jmark(j->cls[i], r);
 			}
 		}
+#endif
+	return 1;
 }
 
+#ifdef OLD_D3J
 /* the node of (cls, reg) got its parameter back at a label: it still needs its home in the frame (regargs) */
 static void
 d3jmark(cls, reg)
@@ -2055,21 +2025,7 @@ d3jmark(cls, reg)
 		if (n->cls == cls && n->reg == reg)
 			n->flags |= 0x4000;
 }
-
-/* the register reg of the class cls is on the free list */
-static int
-d3jfree(cls, reg)
-	int cls, reg;
-{
-	register struct rs *n;
-
-	for (n = rsfree; n; n = n->next)
-		if (n->cls == cls && n->reg == reg)
-			return 1;
-		else if (n->cls == cls + 1 && cls <= 2 && n->reg == (cls == 1 ? reg & 7 & ~1 : reg & ~1))
-			return 1;
-	return 0;
-}
+#endif
 #endif
 
 /* ---- v0p (OLD_D12K): the double constants at their statements (from rdr.2.5; rddata is d12kdata there) ---- */

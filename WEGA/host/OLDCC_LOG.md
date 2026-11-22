@@ -1838,3 +1838,12 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   saved list must change nothing (as d3jlabel without a record). Refuted as the mechanism of OLD_D3J; the dead functions
   look like a save and restore around a stretch of code (what the code in between took is dropped), not a join at a
   label. The code was not kept (patch only in the session).
+- 2026-11-22 OLD_D3K/OLD_D3J code made smaller (reader3.c), each step measured with the seven models and the bench:
+  without the limits (64 records, 16 registers) no change; v0p with "named" = "has a jump record" instead of the bit set
+  d3kbits no change; without d3jfree (getreg decides whether the register comes back) no change; without d3kpend
+  (forget at once) cparse resetbc and codgen rspush lost; without d3jclear at a loop head cparse and codgen one function
+  each lost. A first form with one table for v0 too (256 records instead of d3kbits) left the models equal, but with
+  a stop at a full table the bench lost 19 functions (v0 keeps the records of backward jumps): d3kbits stays for both.
+  Now d3kjump (bit; v0p: the record, the intersection), d3klabel (returns 0 for a label no jump has named; v0p: the
+  records go), d3kreset, d3jmark; d3knamed, d3jsave, d3jlabel, d3jclear, d3jfree gone. Models 179/179/209/210/73/73/26
+  strictly equal, bench 153/132/212, both matrix checks as in the table.

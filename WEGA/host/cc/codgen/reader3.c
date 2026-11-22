@@ -75,9 +75,7 @@ long maxtemp = 0;
 #endif
 #ifdef OLD_D3K
 static int d3kpend;		/* a label waits for its rsfreeall (main) */
-#ifdef OLD_D3J
-static int d3jdead;		/* the record before was an unconditional jump */
-#endif
+static int d3jdead;		/* v0p: the record before was an unconditional jump */
 #endif
 
 
@@ -325,17 +323,8 @@ reread:
 			nlcheck();
 			if (nparm <= 0)
 #ifdef OLD_D3K
-				if (d3knamed(temp)) {
-					rsfreeall(4);
-#ifdef OLD_D3J
-					d3jlabel(temp, d3jdead);
-#endif
-				} else {
-#ifdef OLD_D3J
-					d3jclear();	/* a label no jump has named: a loop head */
-#endif
+				if (!d3klabel(temp, d3jdead))
 					d3kpend = 1;
-				}
 #else
 				rsfreeall(1);
 #endif

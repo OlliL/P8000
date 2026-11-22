@@ -779,7 +779,7 @@
    "file": "regallo3.c",
    "orig": "0x7928",
    "size_orig": 318,
-   "note": "Exact with OLD_D3J forgetting all jump records at a label no jump has named (d3jclear in the record L); one witness, taken on the owner's word. No else return: with another mode a and b are not set (quirk table).",
+   "note": "Exact with OLD_D3J forgetting all jump records at a label no jump has named (d3klabel); one witness, taken on the owner's word. No else return: with another mode a and b are not set (quirk table).",
    "status": "exact"
   },
   "rcount_reset": {
