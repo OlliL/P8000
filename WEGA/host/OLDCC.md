@@ -308,9 +308,10 @@ Where a value goes:
 Open: ld place_sec (`r8 = (secorg[j] - q->tsize) & 0xff00`: a new register for the `and`), chk_ranlib; register variables of
 leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (cas).
 
-- vc `OLD_D2S` (allo3.c): a word in r3 widened to long (SCONV) takes the pair rr2, the first pair of the order, with r3 in
-  it (`ldk r2,#0`); a word in another register gets a new pair as before (locadv: r7 into rr2). cas symtype (`unsigned n;
-  ip->s_2 = n;`). One witness.
+- vc `OLD_D2S` (allo3.c): a word in an odd register widened to long (SCONV) takes the lighter (rweight) of the pair getreg
+  gives and its own pair, when its even half is free or idle: cas symtype (`unsigned n; ip->s_2 = n;`: r3 into rr2,
+  `ldk r2,#0`); locadv (r7: getreg gives rr2, lighter than rr6, r7 keeps the parameter); asmins (r1: rr2 before rr0); not
+  a byte (opshort: a new pair). Not in v0p (cparse and scparse lose genswitch and refid). One witness that needs it.
 - v1 `OLD_D3` (cbranch): at the join label of `&&` and `||` the shipped codgen gives the idle registers back, the old one keeps
   them with their contents. ld init_entry, dseek.
 - v0 `OLD_D3P` (regforsym): a name that lives in a register is taken from it also when the node wants another register, also

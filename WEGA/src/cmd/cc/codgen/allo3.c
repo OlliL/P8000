@@ -436,10 +436,16 @@ allocreg(p, cookie)
 #endif
 #endif
 #ifdef OLD_D2S
-		/* vc: a word in r3 widened to long (SCONV) takes the pair rr2, the first pair of the order, with r3 in it
-		 * (cas symtype); a word in another register gets a new pair as before (locadv: r7, rr2) */
-		if (p->in.op == 110 && lr == 3 && d2ofree(lr))
-			r = d2pair(lr, lr - 1, p, l);
+		/* vc: a word in an odd register widened to long (SCONV) takes the lighter of the pair getreg gives and its own pair
+		 * (rweight; cas symtype: r3 into rr2; locadv: r7 stays, rr2; asmins: r1, rr2 before rr0; not a byte: opshort) */
+		if (p->in.op == 110 && l->in.type != 2 && l->in.type != 12 && (lr & 1) && d2ofree(lr)) {
+			r = getreg(3, -1, 0, p->in.sname);
+			if (r == -1 || rweightof(lr - 1) < rweightof(r)) {
+				if (r != -1)
+					rsreturn(3, r);
+				r = d2pair(lr, lr - 1, p, l);
+			}
+		}
 #endif
 	}
 #endif

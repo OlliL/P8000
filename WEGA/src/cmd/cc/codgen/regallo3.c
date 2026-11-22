@@ -209,6 +209,16 @@ static int rweight[8] = { 3, 4, 2, 3, 4, 5, 6, 7 };	/* the old codgen v0: r0 is 
 static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
 #endif
 
+#ifdef OLD_D2S
+/* the weight of the register r (OLD_D2S) */
+int
+rweightof(r)
+	int r;
+{
+	return rweight[r];
+}
+#endif
+
 /*
  * Put the node n at its place in the free list again. mode 1: the node was just freed or changed, its
  * place is behind the nodes of a lower class (word registers: ordered by rweight); mode 2: a node that was

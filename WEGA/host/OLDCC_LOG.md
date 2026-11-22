@@ -1981,3 +1981,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - 2026-11-22, `OLD_D14T` as "paroff remembered before the arguments, restored behind the call": not possible in gencall, the
   temporaries of the arguments (the result of strcpy) are made before it (the store pass of the statement); the minimum
   over the argument temporaries (d14tmin) is the direct form. Stays.
+- 2026-11-22, `OLD_D2S` rewritten without the special case `lr == 3`: the lighter of the pair getreg gives and the pair of
+  the operand (odd word, even half free or idle; not a byte). The form "operand back, then any pair" had lost locadv: it gave
+  the parameter r7 back, the original keeps it and widens into rr2. cas model of vc 152, gopt byte-identical, matrix row as
+  before (cas symtype). The same rule in v0p (under OLD_D2M): cparse, scparse lose genswitch and refid, so it stays a vc switch.
