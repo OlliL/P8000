@@ -319,15 +319,11 @@ int szty(TWORD t)
 	case LONG:
 	case FLOAT:
 	case ULONG:
-		return( 2 );
+		return( SZLONG/SZINT );
 	case DOUBLE:
-		return( 4 );
+		return( SZDOUBLE/SZINT );
 		}
-#ifdef SEG
-	if( ISPTR(t) ) return( 2 );
-#else
-	if( ISPTR(t) ) return( 1 );
-#endif
+	if( ISPTR(t) ) return( SZPOINT/SZINT );
 	return( 1 );
 	}
 

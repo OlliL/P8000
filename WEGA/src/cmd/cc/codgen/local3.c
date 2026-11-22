@@ -31,6 +31,7 @@ int rlmode = 0;
 int nosuffix = 0;
 
 #undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
+#define BITMASK(n)	((1L << n) - 1)
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 
@@ -1315,7 +1316,7 @@ upput(p)
 	save = p->tn.lval;
 	switch (p->in.op) {
 	case NAME:
-		p->tn.lval += 2;
+		p->tn.lval += SZINT / SZCHAR;
 		if (p->tn.rval < 0)
 			goto ac;
 		r = p->tn.rval;
@@ -1324,7 +1325,7 @@ upput(p)
 		p->tn.rval = r;
 		break;
 	case ICON:
-		p->tn.lval &= 0xFFFF;
+		p->tn.lval &= BITMASK(SZINT);
 		putchar('#');
 		goto ac;
 	case REG:
@@ -1339,17 +1340,17 @@ upput(p)
 			cerror("illegal OREG upput");
 #ifdef SEG
 		if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0)) {
-			p->tn.lval += 2;
+			p->tn.lval += SZINT / SZCHAR;
 			oregput(p);
 		} else {
-			p->tn.lval = 2;
+			p->tn.lval = SZINT / SZCHAR;
 			r2 = p->tn.rval;
 			p->tn.rval = R2BASE(p->tn.rval);
 			adrput(p);
 			p->tn.rval = r2;
 		}
 #else
-		p->tn.lval += 2;
+		p->tn.lval += SZINT / SZCHAR;
 		oregput(p);
 #endif
 		break;
