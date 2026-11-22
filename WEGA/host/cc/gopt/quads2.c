@@ -191,7 +191,7 @@ void genquads(NODE *p)
 			*p3 = *p1;
 			*p1 = *p2;
 			p2 = 0;
-			if ((p3->w0 & 0x30) != 0x10 && p3->b2 == OATEMP)
+			if (!ISPTR(p3->w0) && p3->b2 == OATEMP)
 				p3->w4 -= 1;
 		}
 	}
@@ -405,10 +405,10 @@ struct qa *operand(NODE *p)
 	case DESC:
 		a.b2 = OAICON;
 		a.w4 = (int)p->tn.lval;	/* in.left of the original: the same word of the leaf */
-		a.w0 = 4;
+		a.w0 = INT;
 		b.b2 = OAICON;
 		b.w4 = p->tn.rval;
-		b.w0 = 4;
+		b.w0 = INT;
 		c.b2 = OATEMP;
 		c.w4 = nexttmp++;
 		c.w0 = p->in.type;
@@ -916,7 +916,7 @@ struct quad *labquad(int x)
 
 	p = &s;
 	p->b2 = OAICON;
-	p->w0 = 4;
+	p->w0 = INT;
 	p->w4 = x;
 	return addquad(QLABEL, p, 0L, 0L);
 }

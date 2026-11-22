@@ -214,7 +214,7 @@ void mktree(struct quad *q)
 		if (q->c.b2 == OABTEMP && q->a.b2 == OABTEMP)
 			fl = (betatbl[q->a.w4].p8 >> 10) & 1;
 	}
-	if (q->op == QCOPY && q->a.b2 == OANAME && q->c.b2 == OABTEMP && (q->a.w0 & 0x30) == 0x10)
+	if (q->op == QCOPY && q->a.b2 == OANAME && q->c.b2 == OABTEMP && ISPTR(q->a.w0))
 		betatbl[q->c.w4].p8 |= 1 << 10;
 	if (q->op == QCALL) {
 		q->c = q->b;
@@ -269,35 +269,35 @@ void mktree(struct quad *q)
 		addrof(p);
 		break;
 	case EQ:
-		if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+		if (BTYPE(q->a.w0) == FLOAT || BTYPE(q->a.w0) == DOUBLE)
 			p->in.op = 0x5a;
 		break;
 	case NE:
-		if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+		if (BTYPE(q->a.w0) == FLOAT || BTYPE(q->a.w0) == DOUBLE)
 			p->in.op = 0x5b;
 		break;
 	case LT:
-		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
+		if ((q->a.w0 <= ULONG && q->a.w0 >= UCHAR) || ISPTR(q->a.w0) || ISPTR(q->b.w0))
 			p->in.op = 0x57;
-		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+		else if (BTYPE(q->a.w0) == FLOAT || BTYPE(q->a.w0) == DOUBLE)
 			p->in.op = 0x5d;
 		break;
 	case LE:
-		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
+		if ((q->a.w0 <= ULONG && q->a.w0 >= UCHAR) || ISPTR(q->a.w0) || ISPTR(q->b.w0))
 			p->in.op = 0x56;
-		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+		else if (BTYPE(q->a.w0) == FLOAT || BTYPE(q->a.w0) == DOUBLE)
 			p->in.op = 0x5c;
 		break;
 	case GT:
-		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
+		if ((q->a.w0 <= ULONG && q->a.w0 >= UCHAR) || ISPTR(q->a.w0) || ISPTR(q->b.w0))
 			p->in.op = 0x59;
-		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+		else if (BTYPE(q->a.w0) == FLOAT || BTYPE(q->a.w0) == DOUBLE)
 			p->in.op = 0x5f;
 		break;
 	case GE:
-		if ((q->a.w0 <= 0xf && q->a.w0 >= 0xc) || (q->a.w0 & 0x30) == 0x10 || (q->b.w0 & 0x30) == 0x10)
+		if ((q->a.w0 <= ULONG && q->a.w0 >= UCHAR) || ISPTR(q->a.w0) || ISPTR(q->b.w0))
 			p->in.op = 0x58;
-		else if ((q->a.w0 & 0xf) == 6 || (q->a.w0 & 0xf) == 7)
+		else if (BTYPE(q->a.w0) == FLOAT || BTYPE(q->a.w0) == DOUBLE)
 			p->in.op = 0x5f;
 		break;
 	case MINUS:

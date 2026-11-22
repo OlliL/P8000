@@ -225,11 +225,11 @@ struct quad *q, *last;
 		propnd(&q->c);
 		printf("\n");
 	}
-	if (flag == 1 && q->c.w0 != 6 && q->c.w0 != 7)
+	if (flag == 1 && q->c.w0 != FLOAT && q->c.w0 != DOUBLE)
 		return;
-	if (flag == 0 && (q->c.w0 == 6 || q->c.w0 == 7))
+	if (flag == 0 && (q->c.w0 == FLOAT || q->c.w0 == DOUBLE))
 		return;
-	if (flag == 0 && q->c.w0 == 2)
+	if (flag == 0 && q->c.w0 == CHAR)
 		return;
 	if (QHREC(blks[bblockno])->w12 && QHREC(blks[bblockno])->callfnd && q->c.b2 == OANAME) {
 		if ((symtab[q->c.w4].sflags >> 2) & 1)
@@ -246,7 +246,7 @@ struct quad *q, *last;
 	t->q = q;
 	t->x0 = 0;
 	t->blk = bblockno;
-	if (q->c.w0 == 5 || (zflag && (q->c.w0 & 0x30) == 0x10))
+	if (q->c.w0 == LONG || (zflag && ISPTR(q->c.w0)))
 		t->kind = 2;
 	else
 		t->kind = 1;
@@ -680,7 +680,7 @@ struct quad *p;
 	markreg(x, reg);
 	tmp.b2 = OAICON;
 	tmp.w4 = reg;
-	tmp.w0 = 4;
+	tmp.w0 = INT;
 	qq = insertquad(QREGISTER, &tmp, &c, (struct qa *)0, p);
 	if (rdebug) {
 		printf("// addreg (2) returning : ");
@@ -717,7 +717,7 @@ struct quad *p;
 	}
 	tmp.b2 = OAICON;
 	tmp.w4 = reg;
-	tmp.w0 = 4;
+	tmp.w0 = INT;
 	insertquad(QRESTORE, &tmp, &c, (struct qa *)0, p);
 }
 
@@ -742,7 +742,7 @@ int reg, blk;
 	}
 	tmp.b2 = OAICON;
 	tmp.w4 = reg;
-	tmp.w0 = 4;
+	tmp.w0 = INT;
 	p = ebbtail(blk);
 	qq = insertquad(QSAVE, &tmp, (struct qa *)0, (struct qa *)0, p);
 	return qq;
@@ -859,7 +859,7 @@ propagate()
 			if (!(regused[b] & (1 << r))) {
 				tmp.b2 = OAICON;
 				tmp.w4 = r;
-				tmp.w0 = 4;
+				tmp.w0 = INT;
 				t = &rquad(c, r)->b;
 				insertquad(QREGISTER, &tmp, t, (struct qa *)0, blks[b]->next);
 				markreg(b, r);

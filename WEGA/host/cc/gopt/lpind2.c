@@ -206,7 +206,7 @@ int insrtopstmp(struct quad *opqd, struct dl *p, struct dl *t, int kind, struct 
 		return 0;
 	}
 	if (op == 34) {
-		c.w0 = 5;
+		c.w0 = LONG;
 		c.b2 = OATEMP;
 		c.w4 = nexttmp++;
 		nltemps++;
@@ -648,7 +648,7 @@ struct quad *chkfamindvar(struct quad *r, int kind)
 	case QSHIFTL:
 	case QSUB:
 		if (q->a.b2 == OAICON || q->a.b2 == OALCON || ((q->a.b2 == OANAME || q->a.b2 == OASTEMP || q->a.b2 == OABTEMP) &&
-		    !isdefined(q, 2) && !(((q->a.w0 & 0x30) == 0x10) ^ ((q->b.w0 & 0x30) == 0x10)))) {
+		    !isdefined(q, 2) && !((ISPTR(q->a.w0)) ^ (ISPTR(q->b.w0))))) {
 			if (q->op == QSHIFTL && q->b.b2 != OAICON && q->b.b2 != OALCON)
 				return 0;
 			q = chklpdefs(r, q, 3, kind);
@@ -658,7 +658,7 @@ struct quad *chkfamindvar(struct quad *r, int kind)
 	case QDIV:
 	case QSHIFTR:
 		if (q->b.b2 == OAICON || q->b.b2 == OALCON || ((q->b.b2 == OANAME || q->b.b2 == OASTEMP || q->b.b2 == OABTEMP) &&
-		    !isdefined(q, 3) && !(((q->a.w0 & 0x30) == 0x10) ^ ((q->b.w0 & 0x30) == 0x10)))) {
+		    !isdefined(q, 3) && !((ISPTR(q->a.w0)) ^ (ISPTR(q->b.w0))))) {
 			if (q->op == QSHIFTR && q->b.b2 != OAICON && q->b.b2 != OALCON)
 				return 0;
 			q = chklpdefs(r, q, 2, kind);

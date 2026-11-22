@@ -424,7 +424,7 @@ int checkops(struct quad *q, int mode)
 	if (mode == 0) {
 		s = q->c;
 		if (s.b2 != OATEMP) {
-			if (s.b2 == OANAME && (q->c.w0 & 0x30) == 0x10)
+			if (s.b2 == OANAME && ISPTR(q->c.w0))
 				goto success;
 			if (aflag > 2) {
 				printf("// Store's result opnd is not a ptr:\n");
@@ -439,7 +439,7 @@ m1:
 		if (mode == 1) {
 			s = q->a;
 			if (s.b2 != OATEMP) {
-				if ((s.b2 == OANAME || s.b2 == OAICON || s.b2 == OALCON) && (q->a.w0 & 0x30) == 0x10)
+				if ((s.b2 == OANAME || s.b2 == OAICON || s.b2 == OALCON) && ISPTR(q->a.w0))
 					goto success;
 				goto fail;
 			} else
@@ -462,7 +462,7 @@ m1:
 		post:
 			if (s.b2 == OATEMP)
 				break;
-			if (s.b2 != OANAME || (q->a.w0 & 0x30) != 0x10)
+			if (s.b2 != OANAME || !ISPTR(q->a.w0))
 				goto fail;
 			goto success;
 		if (0) {
@@ -548,7 +548,7 @@ int almap(struct qa *p, int op)
 
 	if (aflag > 2)
 		printf("// almap( optr->opnd=%s,op=%d)\n", ascii + symtab[p->w4].nameoff, op);
-	if ((p->w0 & 0x30) == 0x10 && (p->b2 == OAICON || p->b2 == OALCON)) {
+	if (ISPTR(p->w0) && (p->b2 == OAICON || p->b2 == OALCON)) {
 	zero:
 		pos = 0;
 		goto done;
@@ -637,7 +637,7 @@ void addaffect(int lop, struct qa *lp, int rop, struct qa *rp)
 			setbit(modval, a, d, matw);
 			d = almap(rp, QSTORE);
 			setbit(affect, c, d, matw);
-			if ((rp->w0 & 0x30) == 0x10) {
+			if (ISPTR(rp->w0)) {
 				d = almap(rp, QIDR);
 				setbit(affect, c, d, matw);
 				if (aflag > 1)
@@ -679,7 +679,7 @@ void addaffect(int lop, struct qa *lp, int rop, struct qa *rp)
 			setbit(modval, a, d, matw);
 			d = almap(rp, QSTORE);
 			setbit(affect, a, d, matw);
-			if ((rp->w0 & 0x30) == 0x10) {
+			if (ISPTR(rp->w0)) {
 				d = almap(rp, QIDR);
 				setbit(affect, a, d, matw);
 				if (aflag > 1)

@@ -106,7 +106,7 @@ struct quad *vnumber(struct quad *q)
 				case QADDFLD: case QADDR: case QINDEX:
 					break;
 				case QCONV:
-					if (q->c.w0 == 7 || q->c.w0 == 6)
+					if (q->c.w0 == DOUBLE || q->c.w0 == FLOAT)
 						break;
 				/* fall through */
 				default:

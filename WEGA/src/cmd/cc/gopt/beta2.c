@@ -67,7 +67,7 @@ betainit()
 				flag = 1;
 			goto alloc;
 		case QCOPY:
-			if (q->a.b2 != OANAME || (q->a.w0 & 0x30) != 0x10)
+			if (q->a.b2 != OANAME || !ISPTR(q->a.w0))
 				continue;
 			x = almap(&q->a, q->op);
 			y = q->a.w4;
