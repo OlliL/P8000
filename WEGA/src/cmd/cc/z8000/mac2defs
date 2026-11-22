@@ -30,3 +30,5 @@
 # define F5 21
 # define F6 22
 # define F7 23
+
+# define BYTEOFF(x) ((x)&01)	/* an odd byte address */

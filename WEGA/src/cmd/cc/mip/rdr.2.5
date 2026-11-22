@@ -338,7 +338,7 @@ mapnm(p)
 		ot = p->in.left->in.type;
 		fixfld(p);
 		ofs = m->in.sname->soffset / SZINT * (SZINT / SZCHAR);
-		p->tn.rval = m->in.sname->soffset % SZINT << 6 | m->in.sname->sclass & 0x3F;
+		p->tn.rval = PKFIELD(m->in.sname->sclass & 0x3F, m->in.sname->soffset % SZINT);
 		if (p->in.left->in.op == NAME)
 			p->in.left->tn.lval += ofs;
 		else if (ofs != 0) {

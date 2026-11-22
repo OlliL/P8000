@@ -1361,10 +1361,10 @@ ffld(NODE *p, int down, int *down1, int *down2)
 	*down2 = 0;
 	if (down || p->in.op != FLD)
 		return;
-	ty = szty(p->in.type) == 2 ? 5 : 4;
+	ty = szty(p->in.type) == 2 ? LONG : INT;
 	v = p->tn.rval;
-	s = v & 0x3F;
-	o = szty(p->in.type) * SZINT - s - (v >> 6);
+	s = UPKFSZ(v);
+	o = szty(p->in.type) * SZINT - s - UPKFOFF(v);
 	p->in.left->in.type = ty;
 	p->in.op = AND;
 	p->in.right = talloc();

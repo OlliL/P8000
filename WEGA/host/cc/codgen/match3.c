@@ -41,10 +41,6 @@ char *ocnames[] = {
 	"ASG OPLTYPE",
 };
 
-/* register data (regs3): flag bits of a register, by register number */
-#define RBFLAG	0x0008		/* a register of the B class (long registers) */
-
-#define RTEMPFLAGS 0x0014	/* the register is a scratch (STAREG or STBREG) register */
 
 #define SCONV	110
 
@@ -69,7 +65,7 @@ tshape(NODE *p, int shape)
 	}
 	if ((shape & INTEMP) && shtemp(p))
 		return 1;
-	if ((shape & SWADD) && (o == NAME || o == OREG) && (p->tn.lval & 1))
+	if ((shape & SWADD) && (o == NAME || o == OREG) && BYTEOFF(p->tn.lval))
 		return 0;			/* a word address must be even */
 	switch (o) {
 	case NAME:
@@ -80,23 +76,23 @@ tshape(NODE *p, int shape)
 		if (!(shape & SFLD) || !ltypeop(p->in.left))
 			return 0;
 		o = p->tn.rval;
-		fldsz = o & 0x3F;
-		fldoff = o >> 6;
-		fldshf = 16 - fldsz - (o >> 6);
+		fldsz = UPKFSZ(o);
+		fldoff = UPKFOFF(o);
+		fldshf = SZINT - fldsz - UPKFOFF(o);
 		return 1;
 	case CCODES:
 		return shape & SCC;
 	case REG:
-		r = rstatus[p->tn.rval] & RBFLAG ? SBREG : SAREG;
+		r = isbreg(p->tn.rval) ? SBREG : SAREG;
 #ifdef OLD_D3K
 		/* v0: the register of a parameter is not a scratch one for the tree (it is copied first) */
 #ifdef OLD_D3KC
-		if ((rstatus[p->tn.rval] & RTEMPFLAGS) && !(p->in.sname && p->in.sname->sclass == PARAM))
+		if (istreg(p->tn.rval) && !(p->in.sname && p->in.sname->sclass == PARAM))
 #else
-		if ((rstatus[p->tn.rval] & RTEMPFLAGS) && !(p->in.sname && p->in.sname->sclass == PARAM && (p->in.rall & ~MUSTDO) != p->tn.rval))
+		if (istreg(p->tn.rval) && !(p->in.sname && p->in.sname->sclass == PARAM && (p->in.rall & ~MUSTDO) != p->tn.rval))
 #endif
 #else
-		if (rstatus[p->tn.rval] & RTEMPFLAGS)
+		if istreg(p->tn.rval)
 #endif
 			r = r == SBREG ? (SBREG | STBREG) : (SAREG | STAREG);
 		return shape & r;
