@@ -234,7 +234,7 @@ struct quad *q, *last;
 	if (QHREC(blks[bblockno])->w12 && QHREC(blks[bblockno])->callfnd && q->c.b2 == OANAME) {
 		if ((symtab[q->c.w4].sflags >> 2) & 1)
 			return;
-		if (symtab[q->c.w4].sclass == 9)
+		if (symtab[q->c.w4].sclass == PARAM)
 			return;
 	}
 	if (rdebug > 4) {

@@ -45,9 +45,9 @@ void setposition(int cls, struct qa *p, int *X, int *Y)
 	}
 	if (p->b2 == OATEMP)
 		return;
-	if (hascall && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != 8)
+	if (hascall && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != MOS)
 		return;
-	if (symtab[p->w4].sclass == 9)
+	if (symtab[p->w4].sclass == PARAM)
 		return;
 	if (symtab[p->w4].stype == 8 && symtab[p->w4].sx12 != -1) {
 		v = mapn(symtab[p->w4].sx12);
@@ -558,9 +558,9 @@ int almap(struct qa *p, int op)
 	}
 	if (p->b2 != OANAME)
 		goto neg;
-	if (hascall && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != 8)
+	if (hascall && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != MOS)
 		goto zero;
-	if (symtab[p->w4].sclass == 9)
+	if (symtab[p->w4].sclass == PARAM)
 		goto zero;
 	switch (op) {
 	case QIDR:

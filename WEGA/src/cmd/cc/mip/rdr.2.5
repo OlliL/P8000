@@ -296,7 +296,7 @@ mapnm(p)
 		printf("mapnm, p->op=%d, p->rval=%d\n", p->in.op, p->tn.rval);
 	if (p->in.op == NAME && p->tn.rval >= 0) {
 		mapsym(p);
-		if (p->in.sname->sclass == 4) {
+		if (p->in.sname->sclass == REGISTER) {
 			if (rflag) {
 				n = p->in.sname->sbyte5;
 				t = p->in.sname->stype;

@@ -51,7 +51,7 @@ void writeil(void)
 			continue;
 		case QEND:
 			for (i = 1; i <= 11; i++)
-				if (regsym[i] && (((regsym[i]->sflags >> 2) & 1) || regsym[i]->sclass == 3))
+				if (regsym[i] && (((regsym[i]->sflags >> 2) & 1) || regsym[i]->sclass == STATIC))
 					printf("S%d\t\n", (regsym[i]->sflags >> 4) & 0xfff);
 			printf("}\n");
 			fseek(stdout, pos, 0);

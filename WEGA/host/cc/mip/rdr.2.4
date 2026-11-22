@@ -96,7 +96,7 @@ readsyms(int n, struct sym *tab, int kind)
 				printf(", class = %s\n", tclass[(int)tab->sclass]);
 				printf("        offset = %ld, reg = %d, size = %ld, tag = %d\n", tab->soffset, tab->sbyte5, tab->ssize, (tab->sflags >> 4) & 0xFFF);
 				printf("        block = %d, global = %d,", tab->sx6, (tab->sflags >> 2) & 1);
-				if (tab->sclass == 10)
+				if (tab->sclass == STNAME)
 					printf(" members = %d\n", tab->sx12);
 				else
 					printf(" sttype = %d\n", tab->sx12);

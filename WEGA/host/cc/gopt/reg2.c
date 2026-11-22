@@ -190,7 +190,7 @@ void include(int flag, struct quad *q, struct quad *last)
 	if ((blks[bblockno])->rec->w12 && (blks[bblockno])->rec->callfnd && q->c.b2 == OANAME) {
 		if ((symtab[q->c.w4].sflags >> 2) & 1)
 			return;
-		if (symtab[q->c.w4].sclass == 9)
+		if (symtab[q->c.w4].sclass == PARAM)
 			return;
 	}
 	if (rdebug > 4) {

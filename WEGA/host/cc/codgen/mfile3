@@ -128,26 +128,6 @@
 #define RESCC	04000
 #define RNOP	010000
 
-/* storage classes of the symbol table (struct sym, as cparse writes them: cparse/mfile1) */
-#define AUTO	1
-#define EXTERN	2
-#define STATIC	3
-#define REGISTER	4
-#define EXTDEF	5
-#define LABEL	6
-#define ULABEL	7
-#define MOS	8
-#define PARAM	9
-#define STNAME	10
-#define MOU	11
-#define UNAME	12
-#define TYPEDEF	13
-#define FORTRAN	14
-#define ENAME	15
-#define MOE	16
-#define UFORTRAN	17
-#define USTATIC	18
-
 /* register classes of struct rs (the names are guessed; the numbers are measured from rclass, roverlap, rsreturn):
    a byte, a word, a pair (long, segmented pointer), a float register; 5..8 the same as register variables (5 is never made); RCANY only for rsreturn */
 #define RCBYTE	1
