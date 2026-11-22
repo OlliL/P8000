@@ -1948,3 +1948,5 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   segmented.
 - 2026-11-22, step 10, `OLD_D3JB` gone: v0p did not count the record `]` behind a jump (d3jdead), vc did. Counting it in
   v0 and v0p too: the seven models and the bench unchanged; the exception was never measured. Now every record counts.
+- 2026-11-22, step 10, `OLD_D3JL` gone: "only a long keeps its home at the label, not a pointer" is always true in
+  nonsegmented code (a pair never holds a pointer there), so the vc test is the rule of all versions (reader3.c d3jlabel).

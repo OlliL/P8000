@@ -18,7 +18,6 @@ the code of the original.
 | `OLD_D2K` | scodgen match | a store through a scratch register forgets its name | addallist addblk addhdrlist alloclpdef asgfold betainit betanew include initallist labquad mkleaf |
 | `OLD_D2FA` | scodgen regforsym | an automatic pointer or long is found in the pair an assignment named with its frame place (only a name matched alone; in a condition only when `\|\|` is not at the top) | asgfold clearblocks linkreachdefs liveonexit marklpblocks solvelive solvereach srchdef tmpsearch |
 | `OLD_D24L` | scodgen local3.c | lda of a frame place without the mask and `#%7f00` (struct copies and struct arguments) | fndparm insrtlpdef insrtopstmp insrtstmpmove savecolors tmpsearch |
-| `OLD_D3JL` | scodgen | a pointer parameter that comes back at a label gets no frame home, only a long does | canopt denorm eqopnd islive |
 | `OLD_D3P` | scodgen regforsym | a name in a register is taken from it also under a cast between two types of the size of a pointer (pointer, long, unsigned long), one of them a pointer | tabfree |
 | `OLD_D2A` (v0p) | scodgen match | the value of an assignment wanted in a register for a test is copied into a new pair; segmented a pointer in rr0 | ceval orderbl |
 | `OLD_D2XP` | scodgen allocreg | OLD_D2X not into the pair of a parameter, and only when the registers allo takes are the result | constfold fndparm nodeno |

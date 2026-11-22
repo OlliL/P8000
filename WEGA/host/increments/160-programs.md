@@ -123,3 +123,4 @@ PLZ programs and `as`: 170.
 - 2026-11-22 step 10: vc `OLD_D4F` gone, its code is the float part of OLD_D2L (v0; vc is v0p).
 - 2026-11-22 step 10: vc `OLD_D2AV` gone, OLD_D2A asks for INTAREG in all versions, the pair under SEG (match3.c D2APAIR).
 - 2026-11-22 step 10: vc `OLD_D3JB` gone, every record counts behind a jump in all versions (reader3.c d3jdead).
+- 2026-11-22 step 10: vc `OLD_D3JL` gone, its test (a long, not a pointer) is true for every nonsegmented pair.

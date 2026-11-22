@@ -181,7 +181,7 @@ all together), with these differences:
 
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
-  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype), and for gopt (neutral on cas) `OLD_D2K`, `OLD_D3JL`,
+  (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype), and for gopt (neutral on cas) `OLD_D2K`,
   `OLD_D24L`, `OLD_D2FA`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D2TC` (section 3, D2..D4),
   `OLD_D14T` (section 3, D4) and `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of
   the tree uses) are not read, their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room. The text of the
@@ -328,7 +328,8 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - v0p `OLD_D3J`: at a label that jumps have named, only the parameters known at all those jumps stay known; when the record in
   front of the label is a jump, the parameters known at the jumps come back (tfree1, rmconv); every record counts, also the
   end of a block `]` (vc gopt prquad `if (q == 0) { printf(..); return; }`: `B ] L`, q reloaded from the frame); of
-  those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
+  those only a long parameter still gets its home in the frame (notoff), not a pointer (a pair in segmented code: vc gopt
+  canopt, denorm, islive, the frame slot of the pointer is reserved, rr6 is not stored). At a label no jump has named (a loop head) all jump
   records are forgotten. With two jumps (buildtree, an `&&`) the original reloads.
 - vc `OLD_D2FA` (regs3.c fixname, reader3.c): an assignment to an automatic variable names its register with the frame
   place (rnassign: ~L1+off), but a later NAME of the variable is looked up by its symbol (regforsym), so sccvc never finds
@@ -355,10 +356,6 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
 - vc `OLD_D2XP` (allo3.c, changes OLD_D2X, which has no witness in cas): a long (pair) result of a binary operator does not
   go into the pair of its left operand when that is the register of a parameter (nodeno `c = q + 6`: `ldl rr2,rr6;
   inc r3,#6`, sccvc `ldl rr6,rr6; inc r7,#6` destroyed q). /lib/gopt nodeno, fndparm; checkops 21 -> 15, qmkstore 19 -> 14.
-  Neutral on cas.
-- vc `OLD_D3JL` (reader3.c, under `OLD_D3J`): a parameter pair that comes back at a label gets the frame home (d3jmark) only
-  when it is a long, not a pointer (in segmented code every pointer is a pair; the witness of d3jmark, codgen notoff, is a
-  long of nonsegmented code). 20 source forms of canopt without it, none. /lib/gopt canopt, denorm, islive: the frame slot of the pointer is reserved, rr6 is not stored.
   Neutral on cas.
 - v0p `OLD_D3AW` (argplace): the register of a parameter is forgotten only for an argument that is the parameter itself, uses it
   as an address or goes through +, -, unary -, * or a cast (scmd, readsyms, readtab), or a parameter added to an address constant
