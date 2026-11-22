@@ -5,6 +5,8 @@
 
 long	ftell();
 char	*calloc();
+
+static char sccsid[] = "@[$]mkstr.c\t1.1  11/01/82 08:23:06 - 87wega3.2";
 /*
  * mkstr - create a string error message file by massaging C source
  *

@@ -1,0 +1,139 @@
+# The cases of the corpus of echo (compare/echo/corpus.py); the format: host/recon/casefile.py. src = src/cmd/echo.c.
+
+== no-args
+# src: without arguments a newline
+-- case
+step: echo
+expect: exit 0
+
+== words
+-- case
+step: echo hello world
+expect: exit 0
+
+== n-only
+# src: -n alone: no output at all
+-- case
+step: echo -n
+expect: exit 0
+
+== n-words
+# src: -n: no newline at the end
+-- case
+step: echo -n a b c
+expect: exit 0
+
+== n-twice
+# src: only the first -n is an option
+-- case
+step: echo -n -n x
+expect: exit 0
+
+== n-later
+# src: -n behind a word is a word
+-- case
+step: echo x -n
+expect: exit 0
+
+== n-long
+# src: only the two characters are looked at: -nx is -n
+-- case
+step: echo -nx y
+expect: exit 0
+
+== dash
+-- case
+step: echo - x
+expect: exit 0
+
+== empty-arg
+-- case
+step: echo '' x ''
+expect: exit 0
+
+== esc-b
+-- case
+step: echo 'a\bb'
+expect: exit 0
+
+== esc-c
+# src: \c ends the output, without the newline
+-- case
+step: echo 'abc\cdef' more
+expect: exit 0
+
+== esc-c-n
+-- case
+step: echo -n 'x\c'
+expect: exit 0
+
+== esc-f
+-- case
+step: echo 'a\fb'
+expect: exit 0
+
+== esc-n
+-- case
+step: echo 'a\nb'
+expect: exit 0
+
+== esc-r
+-- case
+step: echo 'a\rb'
+expect: exit 0
+
+== esc-t
+-- case
+step: echo 'a\tb'
+expect: exit 0
+
+== esc-backslash
+-- case
+step: echo 'a\\b'
+expect: exit 0
+
+== esc-octal
+# src: \0 and up to three octal digits
+-- case
+step: echo '\0101\0102\0103'
+expect: exit 0
+
+== esc-octal-short
+-- case
+step: echo '\01x\07y'
+expect: exit 0
+
+== esc-octal-long
+# src: the fourth digit is a character again
+-- case
+step: echo '\01011'
+expect: exit 0
+
+== esc-octal-8
+# src: 8 is no octal digit
+-- case
+step: echo '\08\09'
+expect: exit 0
+
+== esc-octal-zero
+# a byte 0
+-- case
+step: echo 'a\0b'
+expect: exit 0
+
+== esc-unknown
+# src: an unknown escape: the backslash and the character
+-- case
+step: echo 'a\qb'
+expect: exit 0
+
+== esc-end
+# src: a backslash at the end of a word
+-- case
+step: echo 'ab\' c
+expect: exit 0
+
+== many-args
+-- case
+step: echo 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+expect: exit 0

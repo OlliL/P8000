@@ -32,7 +32,7 @@ def compile_obj(src):
     tmp = tempfile.mkdtemp(prefix='fncheck', dir=os.environ.get('RECON_TMP', '/home/olivleh1/git/P8000/tmp/tmp'))
     base = os.path.splitext(os.path.basename(src))[0]
     shutil.copy(src, os.path.join(tmp, base + '.c'))
-    for d in [os.path.join(CFG.SRCDIR, '..', '..', 'head', 'oldv7')] * bool(os.environ.get('FNC_OLDV7')) + [CFG.SRCDIR]:
+    for d in [os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'src', 'head', 'oldv7')] * bool(os.environ.get('FNC_OLDV7')) + [CFG.SRCDIR]:
         for f in os.listdir(d):
             if f.endswith('.h') or f in os.environ.get('FNC_EXTRA', '').split():    # FNC_EXTRA: files the draft includes
                 shutil.copy(os.path.join(d, f), tmp)

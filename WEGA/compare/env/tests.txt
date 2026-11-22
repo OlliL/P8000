@@ -1,0 +1,79 @@
+# The cases of the corpus of env (compare/env/corpus.py); the format: host/recon/casefile.py. src = src/cmd/env.c.
+
+== print
+# src: without a command: the environment, one per line
+-- case
+step: env
+
+== print-env
+-- case
+env: FOO=bar
+env: ZED=1
+step: env
+
+== clear
+# src: "-": an empty environment
+-- case
+env: FOO=bar
+step: env -
+
+== add
+# src: NAME=VALUE is added
+-- case
+step: env - A=1 B=2
+
+== replace
+# src: the same name: the later value
+-- case
+env: FOO=bar
+step: env FOO=new
+
+== replace-twice
+-- case
+step: env - A=1 A=2 B=3 A=4
+
+== empty-value
+-- case
+step: env - A= B=x
+
+== command
+# src: a command runs with the new environment
+-- case
+step: env - X=1 /bin/env
+
+== command-path
+# src: execvp searches PATH
+-- case
+step: env - PATH=/bin X=y env
+
+== command-args
+-- case
+step: env - /bin/echo a b c
+
+== not-found
+# src: "%s: %s\n" of sys_errlist[errno] and the name, exit 1
+-- case
+step: env nosuchcommand
+
+== not-found-path
+-- case
+step: env - PATH=/nonexist nosuchcommand
+
+== not-executable
+-- f
+data
+-- case
+step: env ./f
+
+== script
+# execvp runs a file without a magic number with the shell
+-- s
+echo from script
+-- case
+host: chmod 755 s
+step: env ./s
+
+== dash-later
+# src: "-" only as the first argument
+-- case
+step: env A=1 -

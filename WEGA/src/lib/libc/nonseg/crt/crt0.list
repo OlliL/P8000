@@ -3,6 +3,7 @@
 adb	.......... 87wega3.2.	3.2	09/28/83 00:05:03	bin/adb
 ar	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/ar
 bc	......1981 87wega3.2.			bin/bc
+cat	......1981 87wega3.2.	3.1	10/29/82 08:29:20	bin/cat	stamp1
 chgrp	......1981 87wega3.2.	3.1	03/11/83 00:05:05	bin/chgrp
 chkin	......1981 87wega3.2.	3.2	09/12/83 00:05:03	bin/chkin
 chkout	......1981 87wega3.2.			bin/chkout
@@ -161,6 +162,7 @@ lpr	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/lpr
 m4	COPR. 1981 87wega3.2.			usr/bin/m4
 man	COPR. 1981 87wega3.2.	3.2	09/28/83 00:05:03	usr/bin/man
 mesg	COPR. 1981 87wega3.2.			usr/bin/mesg
+mkstr	COPR. 1981 87wega3.2.	3.1	11/01/82 00:05:05	usr/bin/mkstr	stamp1
 mmchek	COPR. 1981 87wega3.2.	3.2	08/19/83 00:05:04	usr/bin/mmchek
 neqn	COPR. 1981 87wega3.2.			usr/bin/neqn
 news	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/news

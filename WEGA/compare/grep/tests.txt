@@ -1,0 +1,273 @@
+# The cases of the corpus of grep (compare/grep/corpus.py); the format: host/recon/casefile.py. src = src/cmd/grep.c.
+
+== simple
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep apple t.in
+
+== no-match
+# src: exit 1 without a match
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep zebra t.in
+
+== v
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep -v apple t.in
+
+== c
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep -c apple t.in
+
+== l
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- u
+apple
+-- case
+step: grep -l apple t.in u
+
+== n
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep -n a t.in
+
+== b
+# src: -b: the block number
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep -b cake t.in
+
+== y
+# -y is not an option of this grep: getopt and the usage
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep -y apple t.in
+
+== s-missing
+# src: -s: no message for a file that cannot be opened
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep -s apple nofile t.in
+
+== missing
+# src: "grep: can't open %s", exit 2
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep apple nofile t.in
+
+== two-files
+# the file names in front
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- u
+apple tree
+-- case
+step: grep apple t.in u
+
+== stdin
+-- in
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep an
+stdin: in
+
+== anchor
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep '^a' t.in
+
+== dollar
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep 't$' t.in
+
+== dot-star
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep 'a.*e' t.in
+
+== class
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep '[bc]a' t.in
+
+== neg-class
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep '^[^abc]' t.in
+
+== braces
+# src: \{m,n\} of regexp.h
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep 'p\{2\}' t.in
+
+== group
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep '\(an\)\1' t.in
+
+== re-error
+# src: "RE error", exit 2
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep 'a\{' t.in
+
+== usage
+# src: without a pattern: the usage, exit 2
+-- case
+step: grep
+
+== bad-option
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep -x apple t.in
+
+== options-together
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep -vn apple t.in
+
+== empty-pattern
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: grep '' t.in

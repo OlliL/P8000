@@ -1,0 +1,343 @@
+# The cases of the corpus of nl (compare/nl/corpus.py); the format: host/recon/casefile.py. src = src/cmd/nl.c.
+
+== default
+# src: the body lines that are not empty: -bt
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+
+== ba
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -ba t.in
+
+== bn
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -bn t.in
+
+== bp
+# src: -bpPAT: lines with the pattern
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -bpbody t.in
+
+== header-footer
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -ha -fa t.in
+
+== v-i
+# src: -v start, -i increment
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -v10 -i5 t.in
+
+== v-digits
+# the WEGA convert: 0 and 9 are digits
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -v90 -i10 t.in
+
+== p
+# src: -p: no restart at a section
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -p t.in
+
+== l
+# src: -l: blank lines counted as one
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -ba -l2 t.in
+
+== s
+# src: -s: the separator
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -s: t.in
+
+== w
+# src: -w: the width
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -w3 t.in
+
+== nln
+# WEGA: -nln left justified
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -nln t.in
+
+== nrn
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -nrn t.in
+
+== nrz
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -nrz t.in
+
+== d
+# src: -d: other delimiters
+a
+##:
+b
+c
+-- case
+step: nl -d#: t.in
+
+== stdin
+-- in
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl
+stdin: in
+
+== bad-option
+# src: "INVALID OPTION (%s) - PROCESSING TERMINATED"
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -q t.in
+
+== bad-number
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -vx t.in
+
+== bad-format
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl -nxx t.in
+
+== missing
+first
+second
+
+fourth
+\:\:\:
+header line
+\:\:
+body one
+body two
+\:
+footer
+
+last
+-- case
+step: nl nofile

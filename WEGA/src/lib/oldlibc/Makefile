@@ -5,9 +5,9 @@
 # missing, from NAME/0_n.s; the other members are those of ../libc. The order of a library is the order of the members in
 # the original programs, ld takes what is referenced. Version numbers of the modules are invented.
 #
-#   libc-v1.a  dc, ranlib (07/82)
+#   libc-v1.a  dc, ranlib, chmod, pwd, kill, mkdir, sleep, tail, env, nohup, gets (07/82)
 #   libc-v2.a  cpp (12/82), clist
-#   libc-v3.a  size (01/83)
+#   libc-v3.a  size, od (01/83)
 #   libc-v4.a  strip (01/83)
 #   libc-v5.a  codgen, scodgen, popt, spopt
 #   libc-v6.a  rm, mv, cp, ln (05/83 .. 07/83)
@@ -15,6 +15,8 @@
 #   libc-v8.a  cc, scc
 #   libc-v9.a  ld (07/83)
 #   libc-v10.a write, rmdir (01/83)
+#   libc-v11.a mkstr (11/82), cat (10/82), echo (08/82)
+#   libc-v12.a chgrp, chown, sort (02/83 .. 03/83), uname, touch (01/83 .. 03/83)
 #
 #   make        (needs ../libc made, and ccv1, ccv0, ccv0p)
 #   make clean
@@ -28,18 +30,24 @@ CCV0P = ccv0p
 CAS = cas
 AR = ar
 
-LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a
+LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a ../libc-v12.a
 
 all: $(LIBS)
 
-LIBv1 = fseek/0_2.o ftell/0_1.o readsym/0_1.o rdwr/0_3.o system/0_1.o fopen/0_1.o printf/0_3.o doprnt/0_3.o \
-	 ../libc/build/nonseg/ffltioc.o ungetc/0_1.o filbuf/0_3.o setbuf/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o \
-	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ../libc/build/nonseg/abort.o cnvt/0_2.o \
-	 ../libc/build/nonseg/decimal.o length/0_2.o malloc/0_3.o isatty/0_1.o stty/0_1.o swab/0_1.o strncmp/0_1.o \
-	 strncpy/0_1.o goodmagic/0_2.o swap/0_2.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o \
-	 ../libc/build/nonseg/execl.o ../libc/build/nonseg/exit.o ../libc/build/nonseg/fork.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o \
-	 open/0_1.o ../libc/build/nonseg/read.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/time.o ../libc/build/nonseg/unlink.o \
-	 ../libc/build/nonseg/wait.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
+LIBv1 = freopen/0_1.o fseek/0_2.o ftell/0_1.o readsym/0_1.o rdwr/0_3.o system/0_1.o fopen/0_1.o fputs/0_1.o printf/0_3.o doprnt/0_3.o \
+	 ../libc/build/nonseg/ffltioc.o ungetc/0_1.o gets/0_2.o filbuf/0_3.o setbuf/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o \
+	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ../libc/build/nonseg/abort.o \
+	 abs/0_1.o atoi/0_1.o execvp/0_1.o getenv/0_1.o sleep/0_1.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_2.o malloc/0_3.o errlst/0_2.o isatty/0_1.o \
+	 ../libc/build/nonseg/setret.o stty/0_1.o swab/0_1.o index/0_1.o strcmp/0_1.o strchr/0_1.o strcat/0_2.o strcpy/0_2.o strncmp/0_1.o strncpy/0_1.o strlen/0_2.o \
+	 goodmagic/0_2.o swap/0_2.o ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o \
+	 ../libc/build/nonseg/brk.o ../libc/build/nonseg/chdir.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/chown.o \
+	 ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/dup.o ../libc/build/nonseg/execl.o \
+	 ../libc/build/nonseg/execv.o ../libc/build/nonseg/exit.o ../libc/build/nonseg/fork.o ../libc/build/nonseg/fstat.o \
+	 ../libc/build/nonseg/getgid.o ../libc/build/nonseg/getuid.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/kill.o \
+	 ../libc/build/nonseg/link.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/mknod.o open/0_1.o \
+	 ../libc/build/nonseg/pause.o ../libc/build/nonseg/read.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o \
+	 ../libc/build/nonseg/time.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/wait.o ../libc/build/nonseg/write.o \
+	 ../libc/build/nonseg/cerror.o
 # ccv0 ccv0p
 ../libc-v1.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv1)
@@ -53,9 +61,9 @@ LIBv2 = fputs/0_1.o fopen/0_1.o printf/0_5.o doprnt/0_7.o ffltioc/0_1.o filbuf/0
 ../libc-v2.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv2)
 
-LIBv3 = rdwr/0_1.o ../libc/build/nonseg/fopen.o printf/0_1.o doprnt/0_1.o ../libc/build/nonseg/ffltioc.o filbuf/0_1.o flsbuf/0_1.o \
+LIBv3 = ../libc/build/nonseg/freopen.o fseek/0_3.o rdwr/0_1.o ../libc/build/nonseg/fopen.o printf/0_1.o doprnt/0_1.o ../libc/build/nonseg/ffltioc.o filbuf/0_1.o flsbuf/0_1.o \
 	 endopen/0_1.o findiop/0_1.o ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o cnvt/0_1.o \
-	 ../libc/build/nonseg/decimal.o length/0_1.o malloc/0_1.o ../libc/build/nonseg/isatty.o ../libc/build/nonseg/stty.o \
+	 ../libc/build/nonseg/decimal.o length/0_1.o malloc/0_1.o ../libc/build/nonseg/isatty.o ../libc/build/nonseg/stty.o ../libc/build/nonseg/strcmp.o \
 	 ../libc/build/nonseg/swab.o goodmagic/0_1.o swap/0_1.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o \
 	 ../libc/build/nonseg/creat.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o \
 	 ../libc/build/nonseg/umask.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
@@ -147,30 +155,65 @@ LIBv10 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/build/nonseg/f
 ../libc-v10.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv10)
 
+LIBv11 = putchar/0_1.o freopen/0_1.o fseek/0_2.o ftell/0_1.o rew/0_1.o rdwr/0_3.o fopen/0_1.o printf/0_3.o doprnt/0_7.o ffltioc/0_1.o \
+	 ungetc/0_1.o filbuf/0_3.o setbuf/0_1.o data/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o \
+	 perror/0_3.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_3.o calloc/0_1.o malloc/0_3.o errlst/0_2.o isatty/0_1.o stty/0_1.o \
+	 strcmp/0_1.o strcpy/0_2.o strlen/0_2.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/fstat.o ../libc/build/nonseg/ioctl.o \
+	 ../libc/build/nonseg/lseek.o open/0_1.o ../libc/build/nonseg/read.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
+# ccv0 (putchar, perror, rew; calloc .s: one reload ccv0 does not make, compare/mkstr/findings.json)
+../libc-v11.a: objs
+	sh mklib.sh $@ $(AR) $(LIBv11)
+
+LIBv12 = getgrnam/0_1.o getgrent/0_1.o getpwnam/0_1.o getpwent/0_1.o fgets/0_1.o ../libc/build/nonseg/rew.o getopt/0_1.o \
+	 fputc/0_1.o fputs/0_2.o ../libc/build/nonseg/fopen.o printf/0_6.o doprnt/0_6.o ../libc/build/nonseg/ffltioc.o filbuf/0_2.o \
+	 flsbuf/0_1.o endopen/0_2.o findiop/0_1.o ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o \
+	 perror/0_2.o atoi/0_2.o ctime/0_1.o getenv/0_2.o cnvt/0_1.o ../libc/build/nonseg/decimal.o length/0_1.o malloc/0_2.o errlst/0_2.o \
+	 ../libc/build/nonseg/isatty.o ../libc/build/nonseg/stty.o ../libc/build/nonseg/strcmp.o strcpy/0_1.o strlen/0_1.o ../libc/build/nonseg/strchr.o \
+	 ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/chown.o \
+	 ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/ftime.o ../libc/build/nonseg/getpid.o \
+	 ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o ../libc/build/nonseg/stime.o \
+	 ../libc/build/nonseg/time.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/uname.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/utime.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
+# ccv1 (ctime, getenv, getopt, fputc, fputs, getgrnam, getgrent, getpwnam, getpwent, fgets, atoi)
+../libc-v12.a: objs
+	sh mklib.sh $@ $(AR) $(LIBv12)
+
 # the modules: each directory makes its objects with its own Makefile
 objs:
+	cd abs ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd atoi ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd calloc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd cnvt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd ctime ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd data ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd doprnt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd doscan ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd ecvt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd endopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd errlst ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd execvp ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd fdopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd ffltioc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd filbuf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd findiop ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd flsbuf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd fltioc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd fputc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd fputs ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd fopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd freopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd fseek ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd ftell ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd fgets ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getenv ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd gets ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd getw ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getgrent ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getgrnam ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getpwent ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getpwnam ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getopt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd goodmagic ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd index ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd isatty ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd length ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd malloc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
@@ -180,9 +223,13 @@ objs:
 	cd printf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd rdwr ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd readsym ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd putchar ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd rew ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd rindex ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd setbuf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd sleep ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd strcat ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd strchr ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd strcmp ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd strcpy ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd strlen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs

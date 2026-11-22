@@ -1,0 +1,34 @@
+# The cases of the corpus of nohup (compare/nohup/corpus.py); the format: host/recon/casefile.py. src = src/cmd/nohup.c.
+
+== usage
+# src: without a command: the usage, exit 2
+-- case
+step: nohup
+
+== echo
+-- case
+step: nohup /bin/echo hello world
+
+== path
+# src: execvp searches PATH
+-- case
+step: nohup echo x
+
+== status
+# the exit status is that of the command
+-- f
+x
+-- case
+step: nohup /bin/cat nofile f
+
+== not-found
+# src: "%s: not found" goes to /dev/tty (freopen; no terminal in the case: lost), exit 2
+-- case
+step: nohup nosuchcommand
+
+== script
+-- s
+echo from script
+-- case
+host: chmod 755 s
+step: nohup ./s

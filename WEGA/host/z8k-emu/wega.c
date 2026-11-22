@@ -2131,6 +2131,13 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		  for (i = 0; i < 4; i++) { b[4*i] = v[i] >> 24; b[4*i+1] = v[i] >> 16; b[4*i+2] = v[i] >> 8; b[4*i+3] = v[i]; } }
 		gwrite(c, p, b, 16);
 		return sc_long(c, r); }
+	case 57: {	/* utssys(buf, mv, type): type 0 is uname, the utsname of the WEGA kernel (src/uts/h/ver.h, conf/ver.c+: release 3.2);
+		   ustat (type 2) is not modelled: EINVAL */
+		static const char u[36] = "P8000\0\0\0\0" "WEGA\0\0\0\0\0" "3.2\0\0\0\0\0\0" " 3.1 4/5";
+		p = a_ptr(&a); i = a_int(&a); j = a_int(&a);
+		if (j != 0) return sc_err(c, EINVAL);
+		gwrite(c, p, (const uint8_t *)u, 36);
+		return sc_ok(c, 0); }
 	case 55: {	/* mkseg(segaddr): create a segment of the given size, returns seg<<8 */
 		unsigned sno = (a_int(&a) >> 8) & 0x7F, nb = a_int(&a);
 		if (!sno) {

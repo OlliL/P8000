@@ -1,0 +1,200 @@
+# The cases of the corpus of chmod (compare/chmod/corpus.py); the format: host/recon/casefile.py. src = src/cmd/chmod.c.
+
+== octal
+# src: an octal mode is taken as it is
+data
+-- case
+host: chmod 644 t.in
+step: chmod 755 t.in
+
+== octal-small
+data
+-- case
+host: chmod 644 t.in
+step: chmod 400 t.in
+
+== octal-setuid
+data
+-- case
+host: chmod 644 t.in
+step: chmod 4755 t.in
+
+== octal-sticky
+data
+-- case
+host: chmod 644 t.in
+step: chmod 1644 t.in
+
+== octal-bad
+# src: a non-octal digit: "chmod: invalid mode"
+data
+-- case
+host: chmod 644 t.in
+step: chmod 798 t.in
+
+== u-plus-x
+# src: who op permission
+data
+-- case
+host: chmod 644 t.in
+step: chmod u+x t.in
+
+== g-minus-r
+data
+-- case
+host: chmod 644 t.in
+step: chmod g-r t.in
+
+== o-eq-r
+data
+-- case
+host: chmod 600 t.in
+step: chmod o=r t.in
+
+== a-plus-w
+data
+-- case
+host: chmod 644 t.in
+step: chmod a+w t.in
+
+== no-who
+# src: without who: all (ALL: not the set-id bits)
+data
+-- case
+host: chmod 644 t.in
+step: chmod +x t.in
+
+== no-who-minus
+data
+-- case
+host: chmod 777 t.in
+step: chmod -w t.in
+
+== eq-empty
+# src: = without permissions clears the bits of who
+data
+-- case
+host: chmod 777 t.in
+step: chmod go= t.in
+
+== several
+# src: clauses separated by ","
+data
+-- case
+host: chmod 600 t.in
+step: chmod u+x,g+r,o+r t.in
+
+== ops-chained
+# src: several ops after one who
+data
+-- case
+host: chmod 600 t.in
+step: chmod u+x-w+w t.in
+
+== copy-u
+# src: u g o as permissions copy those bits
+data
+-- case
+host: chmod 740 t.in
+step: chmod go=u t.in
+
+== copy-g
+data
+-- case
+host: chmod 650 t.in
+step: chmod o+g t.in
+
+== setid-u
+# src: s with u: setuid
+data
+-- case
+host: chmod 755 t.in
+step: chmod u+s t.in
+
+== setid-g
+data
+-- case
+host: chmod 755 t.in
+step: chmod g+s t.in
+
+== sticky
+# src: t
+data
+-- case
+host: chmod 755 t.in
+step: chmod +t t.in
+
+== setid-a
+# src: s with a
+data
+-- case
+host: chmod 755 t.in
+step: chmod a+s t.in
+
+== bad-op
+# src: a who without an op: no change, exit 0
+data
+-- case
+host: chmod 644 t.in
+step: chmod u t.in
+
+== bad-perm
+data
+-- case
+host: chmod 644 t.in
+step: chmod u+q t.in
+
+== bad-who
+data
+-- case
+host: chmod 644 t.in
+step: chmod z+x t.in
+
+== trailing-comma
+data
+-- case
+host: chmod 644 t.in
+step: chmod u+x, t.in
+
+== usage
+# src: fewer than two arguments: the usage, exit 255
+data
+-- case
+host: chmod 644 t.in
+step: chmod 644
+
+== usage-none
+data
+-- case
+host: chmod 644 t.in
+step: chmod
+
+== missing
+# src: "chmod: can't access %s", the status counts the files
+data
+-- case
+host: chmod 644 t.in
+step: chmod 600 nofile t.in nofile2
+
+== several-files
+data
+-- case
+host: chmod 644 t.in
+host: cp t.in u
+step: chmod 640 t.in u
+
+== directory
+data
+-- case
+host: chmod 644 t.in
+host: mkdir d
+step: chmod 711 d
+
+== mode-from-file
+# src: the symbolic mode works from the mode of each file
+data
+-- case
+host: chmod 600 t.in
+host: cp t.in u
+host: chmod 644 u
+step: chmod g+w t.in u

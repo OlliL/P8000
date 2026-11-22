@@ -1,0 +1,56 @@
+# The cases of the corpus of gets (compare/gets/corpus.py); the format: host/recon/casefile.py. src = src/cmd/gets.c.
+
+== one-line
+# src: the first line, then exit 0
+-- in
+first
+second
+-- case
+step: gets
+stdin: in
+
+== empty-line
+-- in
+
+second
+-- case
+step: gets
+stdin: in
+
+== eof
+# src: at the end of the input without an argument: exit 1
+-- in
+-- case
+step: gets
+stdin: in
+
+== eof-arg
+# src: with an argument: an empty line, exit 0
+-- in
+-- case
+step: gets default
+stdin: in
+
+== no-newline
+-- in
+-- case
+host: printf 'abc' > in
+step: gets
+stdin: in
+
+== long
+-- in
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+-- case
+step: gets
+stdin: in
+
+== twice
+# unbuffered: the second gets reads the second line
+-- in
+one
+two
+three
+-- case
+step: gets
+stdin: in

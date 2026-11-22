@@ -1,0 +1,42 @@
+# The cases of the corpus of sleep (compare/sleep/corpus.py); the format: host/recon/casefile.py. src = src/cmd/sleep.c.
+
+== zero
+# src: 0: sleep(0) returns at once
+-- case
+step: sleep 0
+
+== one
+-- case
+step: sleep 1
+
+== two
+-- case
+step: sleep 2
+
+== usage
+# src: without an argument: "usage: sleep time", exit 2
+-- case
+step: sleep
+
+== bad-char
+# src: "sleep: bad character in argument", exit 2
+-- case
+step: sleep 1x
+
+== negative
+-- case
+step: sleep -1
+
+== empty
+# src: an empty argument: 0
+-- case
+step: sleep ''
+
+== extra-args
+# src: only the first argument counts
+-- case
+step: sleep 0 5 x
+
+== leading-zero
+-- case
+step: sleep 0001

@@ -33,10 +33,14 @@ Every program of the WEGA tree from source, byte-identical, each with a corpus.
    to exact with its corpus, in this order (smallest step first; mkstr before ex: the ex build uses it, both are of the
    old compiler, crt0 stamp 3.1 of 10-11/1982):
    1. done 2026-11-22: `/bin/fse` exact, corpus compare/fse (76 cases, all identical), COVERAGE exact.
-   2. `/usr/bin/mkstr` (src/cmd/mkstr.c, 8.6 KB, mkstr.c 1.1 11/01/82; built only as the tool of the ex strings):
-      build and install it, compare, corpus.
-   3. `/bin/ex` (src/cmd/ex, the ex 2.13 sources of Plexus, 67 KB E711; only ex2.13strings is built now): build and
-      install it, compare, corpus.
+   2. partial 2026-11-22: `/usr/bin/mkstr` (src/cmd/mkstr.c 1.1 11/01/82): ccv0 + `-I../head/oldv7`, crt0 kind stamp1,
+      libc-v11.a; 2 bytes of code left (one parameter reload in main, the compiler: phase A stops; findings.json). Not built in.
+   3. partial 2026-11-22: `/bin/ex` (src/cmd/ex, crt0 3.1 10/28/82, E711): sample ex_addr, ex_put, ex_subr: ccv0 nearest
+      (53 of 100 functions exact; ccv0p 46, ccv1/ccv1r/ccv1q/cc 12..16 of 91); the rest: `@r15` for offset 0 (v0 writes
+      `0(r15)`, OLD_D18) and calr to other files; a compiler question, phase A stops. For a build later: libtermlib is in the tree, xstr in
+      tmp/plexus/cmd/plx/xstr.c (/usr/bin/xstr has no source in src yet), setjmp.h is missing (WEGA has setret.h).
+   4. (owner 2026-11-22) then the programs of /bin (then the others) whose status is `sys3`: phase A each; exact: build,
+      corpus, checkall, commit; not exact: stays partial, the next one.
    Not in this list: the other `partial` entries have only data files in src (bc lib.b, more.help, yaccpar, unittab.sh,
    plzcg.errs, news, text, uucp, cref tables, spell.sh), the program itself has no source yet. Then decide with the owner
    which program comes next.
@@ -147,3 +151,42 @@ PLZ programs and `as`: 170.
 - 2026-11-22 fse: corpus compare/fse (76 cases from fse.1 and the source, terminal console, keys typed); z8k-emu: an fd
   opened on the console model reads host fd 0 and writes host fd 1 (fse writes the screen to /dev/tty O_RDWR, before lost);
   corpusrun: `file PATH contains` takes the escapes of `output is`; four quirks of fse in KNOWLEDGE.md.
+- 2026-11-22 mkstr: phase A; 7 of 8 functions exact with ccv0 and the oldv7 stdio.h; main differs in one instruction
+  (argv from the frame, ccv0 takes r6; 6 source forms), libc calloc the same (taken as 0_1.s). New: crt0.list kind stamp1
+  (mkcrt0.sh), oldlibc perror 0_3, rew 0_1, calloc 0_1, libc-v11.a. fncheck: FNC_OLDV7 found no headers for src/cmd.
+- 2026-11-22 ex: sample (3 files, ccv0 -O -DUSG3TTY ..., -D_JBLEN=10 for the missing setjmp.h): see step 3.3; stays partial.
+- 2026-11-22 cat: exact (cat.c of System III + the WEGA sccsid, ccv0 -I../head/oldv7, crt0 stamp1, libc-v11.a with fstat);
+  in src/cmd/Makefile (SIMPLE), corpus compare/cat (21 cases, all identical), COVERAGE exact.
+- 2026-11-22 echo: exact (echo.c of System III with the -n of Berkeley, the WEGA sccsid, no stdio.h: putchar is the libc
+  function, new oldlibc putchar 0_1 (ccv0) at the front of libc-v11.a); corpus compare/echo (25 cases), COVERAGE exact.
+- 2026-11-22 cmp: exact (cmp.c of System III + the WEGA sccsid, the shipped cc, -lc); corpus compare/cmp (34 cases); quirk: the
+  skips are dead (KNOWLEDGE.md).
+- 2026-11-22 chmod: exact (chmod.c of System III + the WEGA sccsid, ccv0 -I../head/oldv7, libc-v1.a with chmod and stat added);
+  corpus compare/chmod (30 cases).
+- 2026-11-22 chgrp, chown: exact (System III sources with the messages of WEGA: printf, "usage: chgrp gid file ...",
+  "unknown group: %s", "unknown user id: %s"; ccv1 -I../head/oldv7; libc-v12.a: new oldlibc getgrnam, getgrent (the System III
+  one without "char *foo"), getpwnam, getpwent, fgets, atoi 0_2, all ccv1); corpora compare/chgrp, compare/chown (18 cases each).
+- 2026-11-22 kill, pwd, sleep, tail: exact (System III sources + the WEGA sccsid, ccv0 -I../head/oldv7, libc-v1.a with the
+  members of 07/82 added: abs 0_1, sleep 0_1 (the V7 sleep, setret with a buffer of 9 words), setret, the system calls; pwd and
+  tail: the globals in the order of the bss of the original; tail: `fromend = (char)(*arg=='-')` for the extsb); corpora
+  compare/kill (13, no signal reaches a process), sleep (9), tail (24), pwd (3, CASEDIR). mkdir partial (one address of a
+  local array, OLD_D5S of v0; compare/mkdir/findings.json).
+- 2026-11-22 tee, uname: exact (System III + the WEGA sccsid, ccv1; tee with the shipped libc.a, uname with libc-v12.a and the
+  new oldlibc getopt 0_1, fputc 0_1, fputs 0_2, the shipped strchr and uname); z8k-emu: utssys type 0 (uname: P8000 WEGA 3.2
+  " 3.1 4/5" of the kernel); corpora compare/tee (13), compare/uname (11). tr: the WEGA tr is another source (code 5992 against
+  2650 of System III): not started.
+- 2026-11-22 du: exact (System III + the WEGA sccsid, the shipped cc, -lc); corpus compare/du (15). od: another source than
+  System III (code 6952 against 6846 with ccv1q; libc-v3.a now has freopen, fseek 0_3 (ccv1q) and strcmp for it); file: the
+  WEGA file.c reads s.out.h (System III a.out.h): both not started.
+- 2026-11-22 env, nohup: exact (System III + the WEGA sccsid, ccv0, libc-v1.a now also with freopen 0_1, fputs 0_1, execvp,
+  getenv, index, strchr (new 0_1, ccv0), strcmp 0_1 and errlst 0_2; the order: sleep behind execvp, which calls it); corpora
+  compare/env (15), compare/nohup (6).
+- 2026-11-23 grep, nl, sort, touch, gets: exact. grep: the sccsid in front of regexp.h; nl: the WEGA changes (-nln checks the n,
+  convert takes 0 and 9, the sccsid in place of nlvers, an unused word in main: a guess for the frame); sort: /tmp before
+  /usr/tmp; touch: libc-v12.a with getopt, fputc, fputs in front of fopen, ctime 0_1 (System III, tzset with (char)), getenv
+  0_2 (ccv1), ftime, getpid, signal, stime, time, unlink, utime; gets: reconstructed from the binary (no source), libc gets
+  0_2 (ccv0). Corpora (24, 20, 22, 12, 7), also against the shipped builds. env: the shipped build ends with exit(0)
+  (-DSHIPPED; the exit status of the original is the value of the old printf). The corpora derived from compare/chmod had
+  the bare program name as their default step: tail fixed (default t.in), the others have a step in every case.
+  Not exact yet, with the cause measured: od, file, tr, date, nice, time, who, regcmp, egrep (other WEGA sources or
+  frames), ls (calloc, qsort, strncat of ccv1 missing).

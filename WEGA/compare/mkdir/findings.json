@@ -1,0 +1,53 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv0",
+ "binary": "/bin/mkdir",
+ "functions": {
+  "f0000": {
+   "file": "",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "open",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0042": {
+   "file": "",
+   "orig": "0x0042",
+   "size_orig": 112,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "f00b2": {
+   "file": "",
+   "orig": "0x00b2",
+   "size_orig": 336,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  }
+ },
+ "note": "partial 2026-11-22: mkdir.c of System III + the WEGA sccsid with ccv0 -I../head/oldv7 and libc-v1.a: all but one place, \"strcpy(pname+slash, \".\")\" in mkdir(): the original computes (slash + 2) + fp (lda r2,%0002(r13); add r2,r15; ld r7,r2), ccv0 fp + 2 + slash (lda r7,%0002(r15); add r7,r13), the OLD_D5S form of v0 for an address of a local array; tried: &pname[slash], slash+pname, &slash[pname], &pname[0]+slash, pname+(int)slash, and ccv0p, ccv1, ccv1r: none. Phase A: stays partial."
+}

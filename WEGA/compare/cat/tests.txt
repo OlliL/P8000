@@ -1,0 +1,441 @@
+# The cases of the corpus of cat (compare/cat/corpus.py); the format: host/recon/casefile.py. src = src/cmd/cat.c.
+
+== one-file
+# src: a file is copied to the standard output
+hello
+world
+-- case
+expect: exit 0
+
+== two-files
+first
+-- b
+second
+-- case
+step: cat t.in b
+expect: exit 0
+
+== stdin-no-args
+# src: without a file argument the standard input is read
+-- in
+from stdin
+-- case
+step: cat
+stdin: in
+expect: exit 0
+
+== stdin-dash
+# src: "-" names the standard input
+before
+-- in
+from stdin
+-- b
+after
+-- case
+step: cat t.in - b
+stdin: in
+
+== dash-only
+-- in
+abc
+-- case
+step: cat -
+stdin: in
+
+== dash-twice
+# the second "-" finds the standard input at its end
+-- in
+once
+-- case
+step: cat - -
+stdin: in
+
+== unbuffered
+# src: -u: the standard output without a buffer
+some text
+-- case
+step: cat -u t.in
+
+== unbuffered-stdin
+-- in
+x
+y
+-- case
+step: cat -u
+stdin: in
+
+== missing
+# src: "cat: cannot open %s", exit status 2, the other files are still copied
+still here
+-- case
+step: cat nofile t.in
+expect: exit 2
+
+== missing-silent
+# src: -s: no message, the status stays 2
+still here
+-- case
+step: cat -s nofile t.in
+expect: exit 2
+
+== missing-only
+-- case
+step: cat nofile
+expect: exit 2
+
+== options-together
+text
+-- case
+step: cat -s -u nofile t.in
+expect: exit 2
+
+== unknown-option
+# src: an unknown option ends the options; it is then a file name
+text
+-- case
+step: cat -x t.in
+expect: exit 2
+
+== option-after-file
+# src: options only in front of the files; "-u" behind a file is a file name
+text
+-- case
+step: cat t.in -u
+expect: exit 2
+
+== double-dash
+# src: "--" is not 0, u or s: the end of the options, and a file name
+text
+-- case
+step: cat -- t.in
+expect: exit 2
+
+== empty-file
+text
+-- e
+-- case
+step: cat e t.in e
+
+== empty-stdin
+-- in
+-- case
+step: cat
+stdin: in
+
+== binary
+# bytes 0 and 0377 pass through (getc & 0377)
+a\000b\377c\001\200
+
+== no-newline-end
+-- b
+-- case
+host: printf 'no newline' > t.in
+step: cat t.in b t.in
+
+== big-file
+# more than BUFSIZ (512) bytes: stdbuf is written several times
+line 0000 of a file longer than one buffer
+line 0001 of a file longer than one buffer
+line 0002 of a file longer than one buffer
+line 0003 of a file longer than one buffer
+line 0004 of a file longer than one buffer
+line 0005 of a file longer than one buffer
+line 0006 of a file longer than one buffer
+line 0007 of a file longer than one buffer
+line 0008 of a file longer than one buffer
+line 0009 of a file longer than one buffer
+line 0010 of a file longer than one buffer
+line 0011 of a file longer than one buffer
+line 0012 of a file longer than one buffer
+line 0013 of a file longer than one buffer
+line 0014 of a file longer than one buffer
+line 0015 of a file longer than one buffer
+line 0016 of a file longer than one buffer
+line 0017 of a file longer than one buffer
+line 0018 of a file longer than one buffer
+line 0019 of a file longer than one buffer
+line 0020 of a file longer than one buffer
+line 0021 of a file longer than one buffer
+line 0022 of a file longer than one buffer
+line 0023 of a file longer than one buffer
+line 0024 of a file longer than one buffer
+line 0025 of a file longer than one buffer
+line 0026 of a file longer than one buffer
+line 0027 of a file longer than one buffer
+line 0028 of a file longer than one buffer
+line 0029 of a file longer than one buffer
+line 0030 of a file longer than one buffer
+line 0031 of a file longer than one buffer
+line 0032 of a file longer than one buffer
+line 0033 of a file longer than one buffer
+line 0034 of a file longer than one buffer
+line 0035 of a file longer than one buffer
+line 0036 of a file longer than one buffer
+line 0037 of a file longer than one buffer
+line 0038 of a file longer than one buffer
+line 0039 of a file longer than one buffer
+line 0040 of a file longer than one buffer
+line 0041 of a file longer than one buffer
+line 0042 of a file longer than one buffer
+line 0043 of a file longer than one buffer
+line 0044 of a file longer than one buffer
+line 0045 of a file longer than one buffer
+line 0046 of a file longer than one buffer
+line 0047 of a file longer than one buffer
+line 0048 of a file longer than one buffer
+line 0049 of a file longer than one buffer
+line 0050 of a file longer than one buffer
+line 0051 of a file longer than one buffer
+line 0052 of a file longer than one buffer
+line 0053 of a file longer than one buffer
+line 0054 of a file longer than one buffer
+line 0055 of a file longer than one buffer
+line 0056 of a file longer than one buffer
+line 0057 of a file longer than one buffer
+line 0058 of a file longer than one buffer
+line 0059 of a file longer than one buffer
+line 0060 of a file longer than one buffer
+line 0061 of a file longer than one buffer
+line 0062 of a file longer than one buffer
+line 0063 of a file longer than one buffer
+line 0064 of a file longer than one buffer
+line 0065 of a file longer than one buffer
+line 0066 of a file longer than one buffer
+line 0067 of a file longer than one buffer
+line 0068 of a file longer than one buffer
+line 0069 of a file longer than one buffer
+line 0070 of a file longer than one buffer
+line 0071 of a file longer than one buffer
+line 0072 of a file longer than one buffer
+line 0073 of a file longer than one buffer
+line 0074 of a file longer than one buffer
+line 0075 of a file longer than one buffer
+line 0076 of a file longer than one buffer
+line 0077 of a file longer than one buffer
+line 0078 of a file longer than one buffer
+line 0079 of a file longer than one buffer
+line 0080 of a file longer than one buffer
+line 0081 of a file longer than one buffer
+line 0082 of a file longer than one buffer
+line 0083 of a file longer than one buffer
+line 0084 of a file longer than one buffer
+line 0085 of a file longer than one buffer
+line 0086 of a file longer than one buffer
+line 0087 of a file longer than one buffer
+line 0088 of a file longer than one buffer
+line 0089 of a file longer than one buffer
+line 0090 of a file longer than one buffer
+line 0091 of a file longer than one buffer
+line 0092 of a file longer than one buffer
+line 0093 of a file longer than one buffer
+line 0094 of a file longer than one buffer
+line 0095 of a file longer than one buffer
+line 0096 of a file longer than one buffer
+line 0097 of a file longer than one buffer
+line 0098 of a file longer than one buffer
+line 0099 of a file longer than one buffer
+line 0100 of a file longer than one buffer
+line 0101 of a file longer than one buffer
+line 0102 of a file longer than one buffer
+line 0103 of a file longer than one buffer
+line 0104 of a file longer than one buffer
+line 0105 of a file longer than one buffer
+line 0106 of a file longer than one buffer
+line 0107 of a file longer than one buffer
+line 0108 of a file longer than one buffer
+line 0109 of a file longer than one buffer
+line 0110 of a file longer than one buffer
+line 0111 of a file longer than one buffer
+line 0112 of a file longer than one buffer
+line 0113 of a file longer than one buffer
+line 0114 of a file longer than one buffer
+line 0115 of a file longer than one buffer
+line 0116 of a file longer than one buffer
+line 0117 of a file longer than one buffer
+line 0118 of a file longer than one buffer
+line 0119 of a file longer than one buffer
+line 0120 of a file longer than one buffer
+line 0121 of a file longer than one buffer
+line 0122 of a file longer than one buffer
+line 0123 of a file longer than one buffer
+line 0124 of a file longer than one buffer
+line 0125 of a file longer than one buffer
+line 0126 of a file longer than one buffer
+line 0127 of a file longer than one buffer
+line 0128 of a file longer than one buffer
+line 0129 of a file longer than one buffer
+line 0130 of a file longer than one buffer
+line 0131 of a file longer than one buffer
+line 0132 of a file longer than one buffer
+line 0133 of a file longer than one buffer
+line 0134 of a file longer than one buffer
+line 0135 of a file longer than one buffer
+line 0136 of a file longer than one buffer
+line 0137 of a file longer than one buffer
+line 0138 of a file longer than one buffer
+line 0139 of a file longer than one buffer
+line 0140 of a file longer than one buffer
+line 0141 of a file longer than one buffer
+line 0142 of a file longer than one buffer
+line 0143 of a file longer than one buffer
+line 0144 of a file longer than one buffer
+line 0145 of a file longer than one buffer
+line 0146 of a file longer than one buffer
+line 0147 of a file longer than one buffer
+line 0148 of a file longer than one buffer
+line 0149 of a file longer than one buffer
+line 0150 of a file longer than one buffer
+line 0151 of a file longer than one buffer
+line 0152 of a file longer than one buffer
+line 0153 of a file longer than one buffer
+line 0154 of a file longer than one buffer
+line 0155 of a file longer than one buffer
+line 0156 of a file longer than one buffer
+line 0157 of a file longer than one buffer
+line 0158 of a file longer than one buffer
+line 0159 of a file longer than one buffer
+line 0160 of a file longer than one buffer
+line 0161 of a file longer than one buffer
+line 0162 of a file longer than one buffer
+line 0163 of a file longer than one buffer
+line 0164 of a file longer than one buffer
+line 0165 of a file longer than one buffer
+line 0166 of a file longer than one buffer
+line 0167 of a file longer than one buffer
+line 0168 of a file longer than one buffer
+line 0169 of a file longer than one buffer
+line 0170 of a file longer than one buffer
+line 0171 of a file longer than one buffer
+line 0172 of a file longer than one buffer
+line 0173 of a file longer than one buffer
+line 0174 of a file longer than one buffer
+line 0175 of a file longer than one buffer
+line 0176 of a file longer than one buffer
+line 0177 of a file longer than one buffer
+line 0178 of a file longer than one buffer
+line 0179 of a file longer than one buffer
+line 0180 of a file longer than one buffer
+line 0181 of a file longer than one buffer
+line 0182 of a file longer than one buffer
+line 0183 of a file longer than one buffer
+line 0184 of a file longer than one buffer
+line 0185 of a file longer than one buffer
+line 0186 of a file longer than one buffer
+line 0187 of a file longer than one buffer
+line 0188 of a file longer than one buffer
+line 0189 of a file longer than one buffer
+line 0190 of a file longer than one buffer
+line 0191 of a file longer than one buffer
+line 0192 of a file longer than one buffer
+line 0193 of a file longer than one buffer
+line 0194 of a file longer than one buffer
+line 0195 of a file longer than one buffer
+line 0196 of a file longer than one buffer
+line 0197 of a file longer than one buffer
+line 0198 of a file longer than one buffer
+line 0199 of a file longer than one buffer
+line 0200 of a file longer than one buffer
+line 0201 of a file longer than one buffer
+line 0202 of a file longer than one buffer
+line 0203 of a file longer than one buffer
+line 0204 of a file longer than one buffer
+line 0205 of a file longer than one buffer
+line 0206 of a file longer than one buffer
+line 0207 of a file longer than one buffer
+line 0208 of a file longer than one buffer
+line 0209 of a file longer than one buffer
+line 0210 of a file longer than one buffer
+line 0211 of a file longer than one buffer
+line 0212 of a file longer than one buffer
+line 0213 of a file longer than one buffer
+line 0214 of a file longer than one buffer
+line 0215 of a file longer than one buffer
+line 0216 of a file longer than one buffer
+line 0217 of a file longer than one buffer
+line 0218 of a file longer than one buffer
+line 0219 of a file longer than one buffer
+line 0220 of a file longer than one buffer
+line 0221 of a file longer than one buffer
+line 0222 of a file longer than one buffer
+line 0223 of a file longer than one buffer
+line 0224 of a file longer than one buffer
+line 0225 of a file longer than one buffer
+line 0226 of a file longer than one buffer
+line 0227 of a file longer than one buffer
+line 0228 of a file longer than one buffer
+line 0229 of a file longer than one buffer
+line 0230 of a file longer than one buffer
+line 0231 of a file longer than one buffer
+line 0232 of a file longer than one buffer
+line 0233 of a file longer than one buffer
+line 0234 of a file longer than one buffer
+line 0235 of a file longer than one buffer
+line 0236 of a file longer than one buffer
+line 0237 of a file longer than one buffer
+line 0238 of a file longer than one buffer
+line 0239 of a file longer than one buffer
+line 0240 of a file longer than one buffer
+line 0241 of a file longer than one buffer
+line 0242 of a file longer than one buffer
+line 0243 of a file longer than one buffer
+line 0244 of a file longer than one buffer
+line 0245 of a file longer than one buffer
+line 0246 of a file longer than one buffer
+line 0247 of a file longer than one buffer
+line 0248 of a file longer than one buffer
+line 0249 of a file longer than one buffer
+line 0250 of a file longer than one buffer
+line 0251 of a file longer than one buffer
+line 0252 of a file longer than one buffer
+line 0253 of a file longer than one buffer
+line 0254 of a file longer than one buffer
+line 0255 of a file longer than one buffer
+line 0256 of a file longer than one buffer
+line 0257 of a file longer than one buffer
+line 0258 of a file longer than one buffer
+line 0259 of a file longer than one buffer
+line 0260 of a file longer than one buffer
+line 0261 of a file longer than one buffer
+line 0262 of a file longer than one buffer
+line 0263 of a file longer than one buffer
+line 0264 of a file longer than one buffer
+line 0265 of a file longer than one buffer
+line 0266 of a file longer than one buffer
+line 0267 of a file longer than one buffer
+line 0268 of a file longer than one buffer
+line 0269 of a file longer than one buffer
+line 0270 of a file longer than one buffer
+line 0271 of a file longer than one buffer
+line 0272 of a file longer than one buffer
+line 0273 of a file longer than one buffer
+line 0274 of a file longer than one buffer
+line 0275 of a file longer than one buffer
+line 0276 of a file longer than one buffer
+line 0277 of a file longer than one buffer
+line 0278 of a file longer than one buffer
+line 0279 of a file longer than one buffer
+line 0280 of a file longer than one buffer
+line 0281 of a file longer than one buffer
+line 0282 of a file longer than one buffer
+line 0283 of a file longer than one buffer
+line 0284 of a file longer than one buffer
+line 0285 of a file longer than one buffer
+line 0286 of a file longer than one buffer
+line 0287 of a file longer than one buffer
+line 0288 of a file longer than one buffer
+line 0289 of a file longer than one buffer
+line 0290 of a file longer than one buffer
+line 0291 of a file longer than one buffer
+line 0292 of a file longer than one buffer
+line 0293 of a file longer than one buffer
+line 0294 of a file longer than one buffer
+line 0295 of a file longer than one buffer
+line 0296 of a file longer than one buffer
+line 0297 of a file longer than one buffer
+line 0298 of a file longer than one buffer
+line 0299 of a file longer than one buffer
+
+== same-file-twice
+abc
+-- case
+step: cat t.in t.in t.in

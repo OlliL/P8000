@@ -1,0 +1,286 @@
+# The cases of the corpus of cmp (compare/cmp/corpus.py); the format: host/recon/casefile.py. src = src/cmd/cmp.c.
+
+== equal
+# src: equal files: no output, exit 0
+-- a
+abc
+def
+-- b
+abc
+def
+-- case
+step: cmp a b
+
+== differ
+# src: the first difference: char and line
+-- a
+abc
+def
+-- b
+abc
+dxf
+-- case
+step: cmp a b
+
+== differ-first
+-- a
+x
+-- b
+y
+-- case
+step: cmp a b
+
+== silent
+# src: -s: no output, exit 1
+-- a
+abc
+-- b
+abd
+-- case
+step: cmp -s a b
+
+== silent-equal
+-- a
+abc
+-- b
+abc
+-- case
+step: cmp -s a b
+
+== list
+# src: -l: every difference: char (decimal), the bytes (octal)
+-- a
+abcdef
+xyz
+-- b
+abXdeY
+xzz
+-- case
+step: cmp -l a b
+
+== list-equal
+-- a
+abc
+-- b
+abc
+-- case
+step: cmp -l a b
+
+== silent-list
+# src: -s then -l: lflg 0 then 1, as without options
+-- a
+abc
+-- b
+aXc
+-- case
+step: cmp -s -l a b
+
+== list-silent
+# src: -l -s: the source looks for -s first; then -l, and "-s" is the first file name
+-- a
+abc
+-- b
+aXc
+-- case
+step: cmp -l -s a b
+
+== eof-first
+# src: "cmp: EOF on %s" of the shorter file (here the newline of a against the d of b: a difference first)
+-- a
+abc
+-- b
+abcdef
+-- case
+step: cmp a b
+
+== eof-second
+-- a
+abcdef
+-- b
+abc
+-- case
+step: cmp a b
+
+== eof-silent
+-- a
+abc
+-- b
+abcdef
+-- case
+step: cmp -s a b
+
+== eof-list
+# src: -l: the differences, then EOF
+-- a
+aXc
+-- b
+abcdef
+-- case
+step: cmp -l a b
+
+== empty-both
+-- a
+-- b
+-- case
+step: cmp a b
+
+== empty-one
+-- a
+-- b
+x
+-- case
+step: cmp a b
+
+== stdin-first
+# src: "-" as the first file is the standard input
+-- a
+abc
+-- in
+abd
+-- case
+step: cmp - a
+stdin: in
+
+== stdin-second
+# src: "-" as the second file is a file name
+-- a
+abc
+-- in
+abd
+-- case
+step: cmp a -
+stdin: in
+
+== missing-first
+# src: "cmp: cannot open %s", exit 2
+-- a
+abc
+-- case
+step: cmp nofile a
+
+== missing-second
+-- a
+abc
+-- case
+step: cmp a nofile
+
+== missing-silent
+# src: -s: no message
+-- a
+abc
+-- case
+step: cmp -s a nofile
+
+== usage-none
+# src: "usage: cmp [-l] [-s] file1 file2", exit 2
+-- case
+step: cmp
+
+== usage-one
+-- a
+abc
+-- case
+step: cmp a
+
+== usage-four
+# src: more than two file names: the usage
+-- a
+abc
+-- b
+abc
+-- case
+step: cmp a b 1 2 3
+
+== usage-options
+-- case
+step: cmp -s -l
+
+== skip1
+# src: a skip (decimal, octal with a leading 0) is never read: "if(argc != 3) narg()" comes first, every skip gives the usage
+-- a
+XXabc
+-- b
+abc
+-- case
+step: cmp a b 2
+
+== skip2
+-- a
+XXabc
+-- b
+Yabc
+-- case
+step: cmp a b 2 1
+
+== skip-octal
+-- a
+0123456789abc
+-- b
+abc
+-- case
+step: cmp a b 012
+
+== skip-past-eof
+-- a
+ab
+-- b
+ab
+-- case
+step: cmp a b 5
+
+== skip2-past-eof
+-- a
+ab
+-- b
+ab
+-- case
+step: cmp a b 0 5
+
+== skip-not-digit
+-- a
+Xabc
+-- b
+abc
+-- case
+step: cmp a b 1x
+
+== lines
+# src: the line counts the newlines in front of the difference
+-- a
+1
+2
+3
+4
+x
+-- b
+1
+2
+3
+4
+y
+-- case
+step: cmp a b
+
+== binary
+# bytes 0 and 0377
+-- a
+a\000\377
+-- b
+a\001\376
+-- case
+step: cmp -l a b
+
+== same-name
+-- a
+abc
+-- case
+step: cmp a a
+
+== dash-s-file
+# src: only "-s" exactly as the first two characters: "-sx" is -s
+-- a
+abc
+-- b
+abd
+-- case
+step: cmp -sx a b

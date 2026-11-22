@@ -8,9 +8,12 @@ CCV0 = ccv0
 CCV0P = ccv0p
 CAS = cas
 
-objs: 0_1.o
+objs: 0_1.o 0_2.o
 
 0_1.o: ../../libc/common/stdio/fputs.c
 	$(CCV0P) -O -I../../../head/oldv7 -c ../../libc/common/stdio/fputs.c ; mv fputs.o 0_1.o
+
+0_2.o: ../../libc/common/stdio/fputs.c
+	$(CCV1) -O -I../../../head/oldv7 -c ../../libc/common/stdio/fputs.c ; mv fputs.o 0_2.o
 
 .PHONY: objs

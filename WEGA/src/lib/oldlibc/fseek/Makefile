@@ -8,12 +8,15 @@ CCV0 = ccv0
 CCV0P = ccv0p
 CAS = cas
 
-objs: 0_1.o 0_2.o
+objs: 0_1.o 0_2.o 0_3.o
 
 0_1.o: ../../libc/common/stdio/fseek.c
 	$(CCV1) -O -I../../libc/common/stdio -c ../../libc/common/stdio/fseek.c ; mv fseek.o 0_1.o
 
 0_2.o: 0_2.s
 	$(CAS) -u -o 0_2.o 0_2.s
+
+0_3.o: ../../libc/common/stdio/fseek.c
+	$(CCV1Q) -O -I../../libc/common/stdio -c ../../libc/common/stdio/fseek.c ; mv fseek.o 0_3.o
 
 .PHONY: objs

@@ -1,0 +1,111 @@
+# The cases of the corpus of chgrp (compare/chgrp/corpus.py); the format: host/recon/casefile.py. src = src/cmd/chgrp.c.
+
+== usage
+# src: fewer than two arguments: "usage: chgrp gid file ...", exit 4
+data
+-- case
+step: chgrp 0
+
+== usage-none
+data
+-- case
+step: chgrp
+
+== number
+# src: a number is taken as the gid
+data
+-- case
+step: chgrp 0 t.in
+
+== number-other
+data
+-- case
+step: chgrp 1 t.in
+
+== number-big
+data
+-- case
+step: chgrp 99999 t.in
+
+== name
+# src: a name of /etc/group
+data
+-- case
+step: chgrp other t.in
+
+== name-2
+data
+-- case
+step: chgrp sys t.in
+
+== unknown
+# src: "unknown group: %s" (printf), exit 4
+data
+-- case
+step: chgrp nosuchname t.in
+
+== mixed
+# src: a name with a digit is a name
+data
+-- case
+step: chgrp 1x t.in
+
+== missing
+# src: a file that is not there: perror, status 1, the other files go on
+data
+-- case
+step: chgrp 0 nofile t.in
+
+== several
+data
+-- case
+host: cp t.in u
+step: chgrp 0 t.in u nofile
+
+== directory
+data
+-- case
+host: mkdir d
+step: chgrp 0 d
+
+== empty-name
+data
+-- case
+step: chgrp '' t.in
+
+== user-own
+# as user 100 (the emulator models the owners, z8k-emu Z8K_UID): a file of its own
+data
+-- case
+user: 100 100
+step: chgrp 1 t.in
+
+== user-missing
+# src: stat and chown of a missing file fail: perror "nofile: No such file or directory", status 1
+data
+-- case
+user: 100 100
+step: chgrp 1 nofile t.in
+
+== user-not-owner
+# src: a file of root (/.cshrc of the root): perror "Not owner"
+data
+-- case
+user: 100 100
+step: chgrp 1 /.cshrc
+
+== user-twice
+# the second change of the same file: the owner of the first
+data
+-- case
+user: 100 100
+step: chgrp 1 t.in
+step: chgrp 0 t.in
+
+== root-other
+# as root: any file
+data
+-- case
+user: 0 0
+step: chgrp 5 t.in
+step: chgrp 6 t.in

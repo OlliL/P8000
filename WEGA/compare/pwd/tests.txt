@@ -1,0 +1,19 @@
+# The cases of the corpus of pwd (compare/pwd/corpus.py); the format: host/recon/casefile.py. src = src/cmd/pwd.c.
+
+== here
+# src: the path of the working directory, found by walking up with ".."
+-- case
+step: pwd
+
+== with-files
+# the other entries of the directories do not matter
+-- d/f
+x
+-- e
+-- case
+step: pwd
+
+== args
+# src: arguments are not looked at
+-- case
+step: pwd a b

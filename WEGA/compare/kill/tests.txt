@@ -1,0 +1,63 @@
+# The cases of the corpus of kill (compare/kill/corpus.py); the format: host/recon/casefile.py. src = src/cmd/kill.c.
+
+== usage
+# src: without arguments: the usage, exit 2
+-- case
+step: kill
+
+== signal-only
+# src: a signal without a pid: nothing to do, status 0
+-- case
+step: kill -9
+
+== no-process
+# a number without a guest process: granted by the emulator (Z8K_KILLLOG), status 0
+-- case
+step: kill 12345
+
+== no-process-sig
+-- case
+step: kill -9 12345
+
+== no-process-sig0
+-- case
+step: kill -0 23456
+
+== several
+# src: every pid is tried
+-- case
+step: kill 12345 23456 31999
+
+== bad-signal
+# a signal number of 20 and above: the emulator says ESRCH: "kill: %d: no such process", status 2
+-- case
+step: kill -99 12345
+
+== signal-letters
+# src: atoi of the letters: signal 0
+-- case
+step: kill -HUP 12345
+
+== pid-letters
+# src: a pid that is not a number: atoi 0 and no "0": the usage
+-- case
+step: kill abc
+
+== pid-big
+# src: above 32000: the usage
+-- case
+step: kill 32001
+
+== pid-limit
+-- case
+step: kill 32000
+
+== pid-after-bad
+# src: the usage stops at the bad one
+-- case
+step: kill 12345 abc 23456
+
+== pid-zero-text
+# above 32000 again (no pid 0 or below: the emulator would give it to the host)
+-- case
+step: kill 99999

@@ -1,0 +1,129 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv0",
+ "binary": "/usr/bin/mkstr",
+ "functions": {
+  "f0000": {
+   "file": "crt0-mkstr.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "start-up: crt0.s.in, kind stamp1 of crt0.list (the stamp in front of the word %0000 in the data)"
+  },
+  "f0010": {
+   "file": "crt0-mkstr.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": [],
+   "note": "start-up: crt0.s.in, kind stamp1 of crt0.list (the stamp in front of the word %0000 in the data)"
+  },
+  "f0018": {
+   "file": "crt0-mkstr.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": [],
+   "note": "start-up: crt0.s.in, kind stamp1 of crt0.list (the stamp in front of the word %0000 in the data)"
+  },
+  "f0042": {
+   "file": "src/cmd/mkstr.c",
+   "orig": "0x0042",
+   "size_orig": 340,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "name": "main",
+   "note": "ccv0 (and ccv0p) take argv from r6 in \"argc--, progname = *argv++\" (ld r2,r6); the original reloads it from the frame (ld r2,%0000(r15)); 6 source forms tried, none reloads it. The same in libc calloc of mkstr (mult rr2,%0000(r15)), there made from oldlibc/calloc/0_1.s. A compiler older than ccv0 (crt0 and sccsid 11/01/82); phase A: stays partial."
+  },
+  "f0196": {
+   "file": "src/cmd/mkstr.c",
+   "orig": "0x0196",
+   "size_orig": 192,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "name": "process"
+  },
+  "f0256": {
+   "file": "src/cmd/mkstr.c",
+   "orig": "0x0256",
+   "size_orig": 166,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0196"
+   ],
+   "name": "match"
+  },
+  "f02fc": {
+   "file": "src/cmd/mkstr.c",
+   "orig": "0x02fc",
+   "size_orig": 362,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0196"
+   ],
+   "name": "copystr"
+  },
+  "f0466": {
+   "file": "src/cmd/mkstr.c",
+   "orig": "0x0466",
+   "size_orig": 24,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x02fc"
+   ],
+   "name": "octdigit"
+  },
+  "f047e": {
+   "file": "src/cmd/mkstr.c",
+   "orig": "0x047e",
+   "size_orig": 72,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "name": "inithash"
+  },
+  "f04c6": {
+   "file": "src/cmd/mkstr.c",
+   "orig": "0x04c6",
+   "size_orig": 326,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x02fc",
+    "0x047e"
+   ],
+   "name": "hashit"
+  },
+  "f060c": {
+   "file": "src/cmd/mkstr.c",
+   "orig": "0x060c",
+   "size_orig": 192,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x047e",
+    "0x04c6"
+   ],
+   "name": "fgetNUL"
+  }
+ },
+ "libc": "../lib/libc-v11.a (oldlibc/Makefile LIBv11): the members in the order of the original, all found exactly (modfind); new modules: perror 0_3 (ccv0), rew 0_1 (ccv0), calloc 0_1 (.s)",
+ "headers": "-I../head/oldv7 (getc/putc of the time)"
+}

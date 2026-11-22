@@ -5,7 +5,8 @@
 # A pad field of - means: no jump and no text in front of the code (codgen, scodgen).
 # Field 6 of crt0.list gives the template: empty for crt0.s.in, scrt0 for scrt0.s.in (the start-up code
 # of the segmented programs and of ps, pstat, yacc; it has no jump and no text). Field 7 is the segment of
-# _environ in the template (scrt0 only: 2 for segmented programs, 0 for ps and pstat).
+# _environ in the template (scrt0 only: 2 for segmented programs, 0 for ps and pstat). Field 6 stamp1: crt0.s.in with the
+# stamp in front of the word %0000 in the data (an older start-up: mkstr, ex and the others of 11/82, see crt0list.py).
 # The list is made from the original programs by host/tools/crt0list.py. An empty stamp means that the
 # program has no stamp in the data.
 # Fields of crt0.list are separated by a tab; lines with # are comments.
@@ -37,6 +38,12 @@ then
 	src=`sed -e '/^	jr	L1$/d' -e '/^	.byte	"PADTEXT"/d' -e '/^L1:$/d' $dir/crt0.s.in`
 else
 	src=`sed -e "s/PADTEXT/$pad/" $dir/crt0.s.in`
+fi
+if [ "$kind" = "stamp1" ]
+then
+	# the stamp first, then the word
+	src=`echo "$src" | sed -e '/^	.word	%0000$/d' -e '/STAMPTIME/a\\
+	.word	%0000'`
 fi
 if [ -z "$stamp" ]
 then

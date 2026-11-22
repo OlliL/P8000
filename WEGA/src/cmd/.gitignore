@@ -5,11 +5,31 @@
 
 # files in cmd itself
 /ar
+/touch
+/sort
+/nl
+/grep
+/gets
+/kill
+/pwd
+/sleep
+/tail
+/tee
+/uname
+/cat
+/chgrp
+/chown
+/chmod
+/cmp
+/du
 /dump
+/env
 /cpio
 /dumpdir
+/echo
 /getud
 /mv
+/nohup
 /pr
 /putud
 /ranlib

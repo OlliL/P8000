@@ -1,0 +1,76 @@
+# The cases of the corpus of touch (compare/touch/corpus.py); the format: host/recon/casefile.py. src = src/cmd/touch.c.
+
+== plain
+# src: the times of an existing file
+x
+-- case
+time: 600000000
+step: touch t.in
+
+== create
+# src: a file that is not there is created
+-- case
+time: 600000000
+step: touch newf
+
+== c
+# src: -c: not created
+-- case
+time: 600000000
+step: touch -c newf
+
+== a
+x
+-- case
+time: 600000000
+step: touch -a t.in
+
+== m
+x
+-- case
+time: 600000000
+step: touch -m t.in
+
+== date
+# src: mmddhhmm[yy]
+x
+-- case
+time: 600000000
+step: touch 0101120083 t.in
+
+== date-short
+x
+-- case
+time: 600000000
+step: touch 06151230 t.in
+
+== bad-date
+# src: "date: bad conversion"
+x
+-- case
+time: 600000000
+step: touch 13451230 t.in
+
+== usage
+# src: without a file: the usage, exit 2
+-- case
+step: touch
+
+== bad-option
+x
+-- case
+step: touch -x t.in
+
+== cannot-create
+# src: "touch: %s cannot create"
+-- case
+time: 600000000
+step: touch nodir/f
+
+== several
+x
+-- u
+y
+-- case
+time: 600000000
+step: touch t.in u v

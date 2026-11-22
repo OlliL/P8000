@@ -2056,3 +2056,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   D5A, D5S, D5T, D6R, D12K, D16A, D23; D18 shows 0 in both matrices (progcfg treats D18 as equal).
   Families of a switch and its refinements: D2P/D2PO/D2PT/D2PW, D2Q/D2QO/D2QF, D2L/D2G/D2T/D2TC, D2R/D2V, D2M/D2MO,
   D2X/D2XP, D2C/D2CT/D2CW, D3K/D3KC. In several passes: D6T, D22 (codgen, cparse), D13 (codgen, cparse, popt).
+- mkstr (2026-11-22): the compiler of mkstr (crt0 3.1 and mkstr.c 1.1 of 11/01/82) reloads a parameter from its frame home
+  where ccv0 and ccv0p take it from r6: main `argc--, progname = *argv++` gives `ld r2,%0000(r15)` (ccv0: `ld r2,r6`), libc
+  calloc `num *= size` gives `mult rr2,%0000(r15)` (ccv0: `mult rr2,r6`). Both are the second parameter, stored by `ldl
+  0(fp),rr6` at the entry. Tried: 6 forms of the statement in main, 20 forms (5 declarations x 4 products) in calloc;
+  none reloads it. Everything else of mkstr is exact with ccv0 (8 functions, all libc members). Not a switch (phase A).
+- Source form `(char)(a == b)` (2026-11-23): with ccv0 and ccv1 the original's `tcc; extsb r2` before a word store comes from a
+  comparison cast to char; tail `fromend = (char)(*arg=='-')` (ccv0), ctime tzset `sign = (char)(*p == '-')` and `daylight =
+  (char)(*p != '\0')` (ccv1, oldlibc ctime 0_1). Without the cast no extsb.

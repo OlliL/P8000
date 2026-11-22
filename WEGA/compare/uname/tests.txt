@@ -1,0 +1,48 @@
+# The cases of the corpus of uname (compare/uname/corpus.py); the format: host/recon/casefile.py. src = src/cmd/uname.c.
+
+== default
+# src: without options: -s
+-- case
+step: uname
+
+== a
+-- case
+step: uname -a
+
+== s
+-- case
+step: uname -s
+
+== n
+-- case
+step: uname -n
+
+== r
+-- case
+step: uname -r
+
+== v
+-- case
+step: uname -v
+
+== nr
+-- case
+step: uname -nr
+
+== sv
+-- case
+step: uname -s -v
+
+== rv-twice
+-- case
+step: uname -rv -r
+
+== bad
+# src: an unknown option: getopt prints its message, then the usage, exit 2
+-- case
+step: uname -x
+
+== arg
+# src: an argument that is not an option is not looked at
+-- case
+step: uname foo

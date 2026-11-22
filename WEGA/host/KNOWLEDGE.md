@@ -1197,6 +1197,9 @@ means it does something fixed instead (only possible where the original's result
 | fse (`main`, fsetermcap.c) | `strcmp(getenv("TERM"), parm.TERM)` without TERM compares the data at address 0; without a file name `*ap == 0` is read through the null pointer `ap`; "error in termcap" is written with its terminating 0 byte (`sizeof`) | kept | `compare/fse` (no case without TERM) |
 | fse (`options`) | an upper case option sets 2, the lower case one after it toggles bit 0 (2 -> 3, still on): the negation of the man page does not work after an upper case option | kept | source |
 | fse (`save`) | `if (klau) return;` (copy protection: klau is 2 until the first `getkey`) returns without a value | kept | source |
+| cmp (`main`) | the skips `cmp file1 file2 [skip1 [skip2]]` of the source are dead: `if(argc != 3) narg()` stands in front of `if (argc>3) skip1 = otoi(..)`, every skip prints the usage, exit 2; `otoi` would return its long as an int | kept | `compare/cmp` (skip1 .. skip-not-digit) |
+| echo (`main`) | `-n` is only the first argument and only its first two characters: `echo -nx y` prints `y` without a newline; `echo -n` prints nothing; `\0` takes up to three octal digits behind the 0 | kept | `compare/echo` (n-long, n-only, esc-octal-long) |
+| uname (`main`) | main ends without exit or return: the exit status is what r2 holds, the value of the last putchar (`'\n'`: 10); sleep the same with the value of sleep(); env after printing the environment with the value of the last printf (0 from the libc of 07/82, the count from the shipped one: the shipped build, -DSHIPPED, ends with exit(0)) | kept | `compare/uname`, `compare/sleep` (the exit status) |
 | `/bin/write` | with no `/etc/utmp` a terminal named on the command line does not help: the "not logged in" test looks at the terminal name before the loop over utmp (which would set it) ran; only the first 8 characters of the user name are compared (`bobbybobXY` is `bobbybob`); a line is a command (`!`) only when it is the start of a `read` of 128 bytes (a file as input is one block) | kept | `compare/write` |
 | `/etc/dump` | `putitime` counts the entry it finds before the compare and writes at that index: an entry for the same file system and level is not replaced but a new one follows it (22 bytes each); the program ends without `exit(0)`: status 1 after a good dump; `printf("bad key '%c%'\n")` ends in a stray `%` | kept | `compare/dump` |
 | `/etc/dumpdir` | on an empty medium (a file of size 0) `readhdr` does not end (the case ended by the timeout); leaves its temporary `rstNNNNNN` when it ends with "Tape is not volume 1 of the dump" | kept | `compare/dumpdir` |
@@ -1916,9 +1919,9 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 
 | Library | Programs |
 |---|---|
-| libc-v1 | dc, ranlib (07/82) |
+| libc-v1 | dc, ranlib, chmod, env, gets, kill, nohup, pwd, sleep, tail (07/82; mkdir partial) |
 | libc-v2 | cpp (12/82), clist |
-| libc-v3 | size (01/83) |
+| libc-v3 | size (01/83; the members of od added, od not started) |
 | libc-v4 | strip (01/83) |
 | libc-v5 | codgen, scodgen, popt, spopt |
 | libc-v6 | rm, mv, cp, ln (05/83 .. 07/83) |
@@ -1926,6 +1929,8 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v8 | cc, scc |
 | libc-v9 | ld (07/83); its order conflicts with v6, its versions do not |
 | libc-isstore | write, rmdir (01/83) |
+| libc-v12 | chgrp, chown, sort, touch (02/83 .. 03/83), uname (01/83) |
+| libc-v11 | cat (10/82), echo (08/82), mkstr (11/82; the program stays partial, see compare/mkstr/findings.json) |
 
 The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see "libc.a and slibc.a: one tree".
 A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.
