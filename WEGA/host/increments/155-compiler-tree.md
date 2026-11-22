@@ -133,6 +133,12 @@ Rules of the target:
   compilers built with cc (v0 ... vl) need not be byte-identical with their build before such a change, only behave
   the same: models, bench, matrix checks and checkall (the programs they build).
 
+- 2026-11-22 (Claude, exceptions to "no OLD_* in mip", for review): optim 2.5 keeps the codgen switches that sit
+  inside the shared functions, each also under PASS3 (cparse vc defines OLD_D13 too): OLD_D24 (optim: the mask of a
+  long to pointer conversion; rmconv), OLD_D13 with SEG (optim: the address to the left), OLD_D23 (optim: no zero
+  addend away), OLD_D63 (rmconv: float to double stays). They change the flow inside optim and rmconv; out of the
+  unit only by a second copy of these functions in codgen.
+
 ## Not part of it
 
 - lint1, lint2 (later members of the tree).

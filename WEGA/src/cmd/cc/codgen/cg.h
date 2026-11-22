@@ -4,6 +4,7 @@
  * in it (SAREG, TBYTE, RLEFT ...). See ../KNOWLEDGE.md, "codgen / scodgen".
  */
 #define PASS3		/* codgen: what common.2.5 (and the other units) have for codgen only */
+#define NONAME	0		/* the rval of a constant without a name (as cparse, mfile1) */
 #include "macdefs"
 #include "manifest"
 #include "oldcc.h"
@@ -71,7 +72,7 @@ union ndu {
 	struct {
 		int	op;
 		int	rall;		/* register preference, NOPREF when none */
-		int	type;
+		TWORD	type;
 		char	su;		/* 6: registers the subtree needs (word registers) */
 		char	fsu;		/* 7: float registers the subtree needs */
 		struct sym *sname;	/* 8: symbol of a NAME or ICON; non-zero: the constant has a name; the label of a compare */
@@ -83,7 +84,7 @@ union ndu {
 	struct {
 		int	op;
 		int	rall;
-		int	type;
+		TWORD	type;
 		char	su;
 		char	fsu;
 		struct sym *sname;
@@ -94,7 +95,7 @@ union ndu {
 	struct {
 		int	op;
 		int	rall;
-		int	type;
+		TWORD	type;
 		char	su;
 		char	fsu;
 		int	label;		/* 8: for use with branching */
@@ -102,7 +103,7 @@ union ndu {
 	struct {
 		int	op;
 		int	rall;
-		int	type;
+		TWORD	type;
 		char	su;
 		char	fsu;
 		struct sym *sname;

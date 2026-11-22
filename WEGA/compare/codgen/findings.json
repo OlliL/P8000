@@ -1315,14 +1315,14 @@
    "size_orig": 146,
    "status": "exact"
   },
-  "convelim": {
+  "rmconv": {
    "file": "optim3.c",
    "orig": "0xba7c",
    "size_orig": 294,
    "status": "exact",
    "note": "Exact: OLD_D3J, the record ] between a jump and a label does not count."
   },
-  "isint": {
+  "notflt": {
    "file": "optim3.c",
    "orig": "0xbba2",
    "size_orig": 34,

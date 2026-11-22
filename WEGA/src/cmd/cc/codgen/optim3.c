@@ -7,7 +7,7 @@
 extern int bsize();
 extern int cerror();
 extern int conval();
-extern NODE *convelim();
+extern NODE *rmconv();
 extern int dope[];
 extern int ispow2();
 extern void ncopy();
