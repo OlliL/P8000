@@ -513,7 +513,7 @@ p2compile(p)
 		return;
 	}
 	delay(p);
-	reclaim(p, 0, 0);
+	reclaim(p, RNULL, 0);
 	tcheck();
 }
 
@@ -962,7 +962,7 @@ again:
 		else
 			codgen(p2->in.left, INTAREG);
 		p2->in.right->in.rall = p2->in.left->tn.rval | MUSTDO;
-		reclaim(p2->in.left, 0, 0);
+		reclaim(p2->in.left, RNULL, 0);
 		cbgen(0, m1 = getlab(), 'I');
 		deflab(m);
 #ifdef OLD_D3K
@@ -1081,7 +1081,7 @@ again:
 			goto again;
 		}
 		p1 = tcopy(p);
-		reclaim(p->in.left, 0, 0);
+		reclaim(p->in.left, RNULL, 0);
 		p->in.left = p1;
 		p1->in.op = p->in.op == INCR ? ASG PLUS : ASG MINUS;
 		p->in.op = p->in.op == INCR ? MINUS : PLUS;
@@ -1095,7 +1095,7 @@ again:
 			goto again;
 		p2 = tcopy(p);
 		p->in.op = ASSIGN;
-		reclaim(p->in.right, 0, 0);
+		reclaim(p->in.right, RNULL, 0);
 		p->in.right = p2;
 		p = canon(p);
 		rallo(p, p->in.rall);
@@ -1134,7 +1134,7 @@ again:
 
 cleanup:
 	if (cook & FOREFF) {
-		reclaim(p, 0, 0);
+		reclaim(p, RNULL, 0);
 		return;
 	}
 	if (p->in.op == FREE)
@@ -1270,7 +1270,7 @@ d14qarm(q, t, ty)
 	i0 = deli;
 	delay2(a);
 	codgen(a, FOREFF);
-	reclaim(a, 0, FOREFF);
+	reclaim(a, RNULL, FOREFF);
 	for (i = i0; i < deli; i++)
 		codgen(deltrees[i], FOREFF);
 	deli = i0;

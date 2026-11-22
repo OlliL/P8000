@@ -34,7 +34,7 @@ gswitch(p)
 	if (l->in.op != SEARCH) {
 		mapnm(l->in.left);
 		delay(l);
-		reclaim(l, 0, 0);
+		reclaim(l, RNULL, 0);
 		printf("\tcp\t%s,#%ld\n", rnames[reg], n);
 		printf("\tjpr\tugt,L%d\n", dlab);
 		if (reg == 0) {
@@ -151,7 +151,7 @@ gswitch(p)
 	if (l->in.op != SEARCH) {
 		mapnm(l->in.left);
 		delay(l);
-		reclaim(l, 0, 0);
+		reclaim(l, RNULL, 0);
 		printf("\tcp\t%s,#%ld\n", rnames[reg], n);
 		printf("\tjpr\tugt,L%d\n", dlab);
 		if (reg == 0) {
