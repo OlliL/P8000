@@ -2009,3 +2009,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   our popt; differences: window 16 instead of 24, codemove refuses when the block end is the jump or next to it, JBR/JMP):
   vc spopt without D45, D20S, D50, D51: cas 149 (the three witnesses exprreloc, stabout, jpr); the same with the c2 forms:
   141 (yylex, main, symreloc, stlook, ...). The spopt of vc is not the old c2.
+  The two c2 forms apart (without D45, D20S, D50, D51): the codemove refusal next to the jump alone: cas 149 as without it
+  (neutral); the window 16 alone causes the eight more losses (yylex, main, symreloc, stlook, opadd, jdist, lstline; lstrest
+  only by the addresses). stlook is a natural `for (;;)` with an if/else: with 16 the loop is not turned, the original turns
+  it (the conditional jump the inversion looks for is more than 16 nodes behind the head) and puts the then block
+  (`ldl rr8,rr10; ld r2,rr8(#14); jpr L20014`) behind the entry jump, as in the gopt goto cases. So the window is 24, not a
+  question of the source form; and the shipped inversion makes that layout when the conditional jump stands behind the block.
