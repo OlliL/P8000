@@ -1356,7 +1356,7 @@ void prtree(NODE *p)
 	case STARG:
 	case STASG:
 	case STCALL:
-	case USTCALL:
+	case UNARY STCALL:
 		/* print out size */
 		/* use lhs size, in order to avoid hassles with the structure `.' operator */
 

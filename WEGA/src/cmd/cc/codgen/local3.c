@@ -82,14 +82,11 @@ tsuffix(t)
 	case UNSIGNED:
 		break;
 	default:
-#ifdef SEG
 		if (!ISPTR(t))
 			cerror("zzzcode - bad type");
+#ifdef SEG
 		putchar('l');
 		rmode++;
-#else
-		if (!ISPTR(t))
-			cerror("zzzcode - bad type");
 #endif
 	}
 }
@@ -852,7 +849,7 @@ zzzcode(p, c)
 		rg = getlr(p, '1');
 		rn = rg->tn.rval;
 		name = rnames[rn];
-		k2 = szty(rg->in.type) == 2 ? 5 : 4;
+		k2 = szty(rg->in.type) == 2 ? LONG : INT;
 		cls = rclass(rg->in.type, -1);
 		rp2 = rfind(rn, cls);
 		rp2->busy = 1;
@@ -982,13 +979,13 @@ zzzcode(p, c)
 			m3 = p->in.rall & 0xEFFF;
 			printf("%s,", rnames[m3]);
 			expand(p, FOREFF, "AL\n");
-			k3 = getreg(n3 == 4 ? 3 : 2, m3, RJAM, p->in.sname);
+			k3 = getreg(n3 == 4 ? RCPAIR : RCWORD, m3, RJAM, p->in.sname);
 			if (m3 == k3) {
-				rbusy(m3, n3 == 4 ? 5 : 4, p->in.sname, p->tn.lval);
+				rbusy(m3, n3 == 4 ? LONG : INT, p->in.sname, p->tn.lval);
 				return;
 			}
-			rfree(k3, n3 == 4 ? 5 : 4);
-			rsreturn(n3 == 4 ? 3 : 2, k3);
+			rfree(k3, n3 == 4 ? LONG : INT);
+			rsreturn(n3 == 4 ? RCPAIR : RCWORD, k3);
 			return;
 		}
 		if (!tshape(u, STAREG))
