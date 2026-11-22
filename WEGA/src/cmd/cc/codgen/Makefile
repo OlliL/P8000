@@ -123,7 +123,7 @@ bss3.o: ../../bss3.c
 	$(CC) $(CFLAGS) -c ../../bss3.c
 reader3.o: ../../reader3.c
 	$(CC) $(CFLAGS) -c ../../reader3.c
-rdr3.o: ../../rdr3.c
+rdr3.o: ../../rdr3.c ../../rdr.2.5
 	$(CC) $(CFLAGS) -c ../../rdr3.c
 local3.o: ../../local3.c
 	$(CC) $(CFLAGS) -c ../../local3.c
@@ -135,7 +135,7 @@ allo3.o: ../../allo3.c
 	$(CC) $(CFLAGS) -c ../../allo3.c
 regallo3.o: ../../regallo3.c
 	$(CC) $(CFLAGS) -c ../../regallo3.c
-comm3.o: ../../comm3.c
+comm3.o: ../../comm3.c ../../common.2.5
 	$(CC) $(CFLAGS) -c ../../comm3.c
 wrt3.o: ../../wrt3.c
 	$(CC) $(CFLAGS) -c ../../wrt3.c
@@ -145,7 +145,7 @@ lcl3.o: ../../lcl3.c
 	$(CC) $(CFLAGS) -c ../../lcl3.c
 tr3.o: ../../tr3.c
 	$(CC) $(CFLAGS) -c ../../tr3.c
-optim3.o: ../../optim3.c
+optim3.o: ../../optim3.c ../../optim.2.5
 	$(CC) $(CFLAGS) -c ../../optim3.c
 table3_codgen.o: ../../table3_codgen.c
 	$(CC) $(CFLAGS) -c ../../table3_codgen.c
