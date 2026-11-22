@@ -122,3 +122,4 @@ PLZ programs and `as`: 170.
 - 2026-11-22 step 10: vc `OLD_D3PL` gone; the segmented D3PWORD of OLD_D3P has the types of the size of a pointer, D3PCAST one of them a pointer (regs3.c).
 - 2026-11-22 step 10: vc `OLD_D4F` gone, its code is the float part of OLD_D2L (v0; vc is v0p).
 - 2026-11-22 step 10: vc `OLD_D2AV` gone, OLD_D2A asks for INTAREG in all versions, the pair under SEG (match3.c D2APAIR).
+- 2026-11-22 step 10: vc `OLD_D3JB` gone, every record counts behind a jump in all versions (reader3.c d3jdead).

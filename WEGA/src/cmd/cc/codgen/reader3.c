@@ -252,11 +252,7 @@ reread:
 		}
 #endif
 #ifdef OLD_D3J
-#ifdef OLD_D3JB
-		if (d3jdead)	/* vc: the end of a block counts too (prquad: return; } behind the jump) */
-#else
-		if (d3jdead && c != ']')
-#endif
+		if (d3jdead)	/* every record counts, also the end of a block (gopt prquad: return; } behind the jump) */
 			d3jdead--;	/* 1: the record before this one was a jump */
 #endif
 		switch (c) {

@@ -1943,3 +1943,8 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   in chains (`a = b = x->f`: dom2, lpind2, lpinv2). So vc needs pointer, rr0 (no base register segmented) and INTAREG.
   INTAREG in the v0p rule (a long, any pair): the seven models and the bench unchanged. One rule now: the value of an
   assignment wanted in a register for a test; the pair under `#ifdef SEG` (D2APAIR): vc a pointer in rr0, else a long.
+- 2026-11-22, step 10, `OLD_D2QO` / `OLD_D2O`: the segmented D2O also takes an odd wanted word (as D2QO for D2Q). The same
+  for v0p (the condition under OLD_D2QO instead of SEG): cparse and scparse 178 (yyparse, 3 lines). Refuted, it stays
+  segmented.
+- 2026-11-22, step 10, `OLD_D3JB` gone: v0p did not count the record `]` behind a jump (d3jdead), vc did. Counting it in
+  v0 and v0p too: the seven models and the bench unchanged; the exception was never measured. Now every record counts.

@@ -182,7 +182,7 @@ all together), with these differences:
 - codgen (`OLD_VC` in `oldcc.h` defines `OLD_V0P`): without `OLD_D3KC` (cas copyfile: a parameter wanted in its register is
   taken as it is, as in v0), with `OLD_D13` (bit 31 of addresses), `OLD_D6J` (the dense jump table, segmented), `OLD_D24`
   (the mask of a long cast to a pointer, as vk), `OLD_D2S` (symtype), and for gopt (neutral on cas) `OLD_D2K`, `OLD_D3JL`,
-  `OLD_D24L`, `OLD_D2FA`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D3JB`, `OLD_D2TC` (section 3, D2..D4),
+  `OLD_D24L`, `OLD_D2FA`, `OLD_D2XP`, `OLD_D2PP`, `OLD_D2TC` (section 3, D2..D4),
   `OLD_D14T` (section 3, D4) and `OLD_DNR`: the register records of gopt (F R S T, only with -O3 and -O5, which no build of
   the tree uses) are not read, their code (fcmd, rcmd, scmd, tcmd, memname, findtemp) is left out for room. The text of the
   vc scodgen is near the 64 KiB of a nonsegmented program; /bin/ld does not report an overflow (sg_code wraps, the program
@@ -326,7 +326,8 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   that holds a parameter is not taken for a new pair; a parameter whose address is taken is forgotten, so it gets its home (swap); a parameter a statement assigns to is forgotten at the start of the statement (scalint `p = removc(p,n)`); behind a conditional jump the idle registers go back, the known parameters stay.
 - v0p `OLD_D3KC`, one witness: `regforsym` (`if (s == fpsym1 || s == fpsym2) return symreg(s, off, type);`): the original reloads the long parameter `off` from its frame home behind the `||` (`ldl rr4,0(r15)`), without the switch it is taken from rr2. No source form reloads it (`OLDCC_LOG.md`).
 - v0p `OLD_D3J`: at a label that jumps have named, only the parameters known at all those jumps stay known; when the record in
-  front of the label is a jump (the record `]` does not count), the parameters known at the jumps come back (tfree1, rmconv); of
+  front of the label is a jump, the parameters known at the jumps come back (tfree1, rmconv); every record counts, also the
+  end of a block `]` (vc gopt prquad `if (q == 0) { printf(..); return; }`: `B ] L`, q reloaded from the frame); of
   those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
   records are forgotten. With two jumps (buildtree, an `&&`) the original reloads.
 - vc `OLD_D2FA` (regs3.c fixname, reader3.c): an assignment to an automatic variable names its register with the frame
@@ -355,10 +356,6 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   go into the pair of its left operand when that is the register of a parameter (nodeno `c = q + 6`: `ldl rr2,rr6;
   inc r3,#6`, sccvc `ldl rr6,rr6; inc r7,#6` destroyed q). /lib/gopt nodeno, fndparm; checkops 21 -> 15, qmkstore 19 -> 14.
   Neutral on cas.
-- vc `OLD_D3JB` (reader3.c, under `OLD_D3J`): the end of a block (`]`) between an unconditional jump and the label behind it
-  counts as a record, so the code in front of the label is not dead and the label keeps only the parameters known at both
-  (prquad `if (q == 0) { printf(..); return; }`: the records `B ] L`, q reloaded from the frame; tfree1 `if (p == 0) cerror(..);
-  else p->..`: `B L`, p stays in rr6). 14 source forms of prquad without it, none. Neutral on cas.
 - vc `OLD_D3JL` (reader3.c, under `OLD_D3J`): a parameter pair that comes back at a label gets the frame home (d3jmark) only
   when it is a long, not a pointer (in segmented code every pointer is a pair; the witness of d3jmark, codgen notoff, is a
   long of nonsegmented code). 20 source forms of canopt without it, none. /lib/gopt canopt, denorm, islive: the frame slot of the pointer is reserved, rr6 is not stored.
