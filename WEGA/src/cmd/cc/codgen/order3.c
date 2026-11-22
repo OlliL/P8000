@@ -75,7 +75,7 @@ mkadrs(p)
 				}
 			} else if (p->in.left->in.op == FLD && p->in.left->in.left->in.op == UNARY MUL)
 				stotree = p->in.left->in.left->in.left;
-			else
+			else	/* should be only structure assignment */
 				stotree = p->in.left;
 		} else
 			stotree = p->in.right;
@@ -770,9 +770,10 @@ genargs(p)
 {
 	register NODE *rest;
 
+	/* generate code for the arguments */
 	nargs = 0;
 	argl[nargs].node = 0;
-	argreg = 7;
+	argreg = R7;
 	argfreg = F3;
 	argstop = 0;
 	rest = argscan(p);
@@ -806,7 +807,7 @@ argscan(p)
 				argstop = 1;
 				return p->in.right;
 			}
-		} else if (argreg < 2) {
+		} else if (argreg < R2) {
 			if (argstop)
 				goto ret;
 			argstop = 1;
@@ -833,13 +834,13 @@ argscan(p)
 		goto sw;
 def:
 	argstop = 1;
-	argreg = 1;
+	argreg = R1;
 retp:
 	return p;
 c2:
 	if (--argreg & 1)
 		argreg--;
-	if (argreg < 2)
+	if (argreg < R2)
 		goto def;
 c1:
 	argl[nargs].reg = argreg;
@@ -854,7 +855,7 @@ stop:
 sw:
 	switch (argsize(p)) {
 	case 4:
-		if (argreg != 7)
+		if (argreg != R7)
 			goto def;
 		argl[nargs].reg = argreg - 3;
 		argl[nargs].node = p;
@@ -868,7 +869,7 @@ sw:
 		goto c2;
 	default:
 		argstop = 1;
-		argreg = 1;
+		argreg = R1;
 		goto retp;
 	}
 }
