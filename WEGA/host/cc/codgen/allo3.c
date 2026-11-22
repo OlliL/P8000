@@ -14,12 +14,12 @@ static char sccsid[] __attribute__((unused)) = "@[$]allo3.c\t2.4  08/24/83 11:29
 
 #define TEMPWORDS(p, nfield) \
 	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
-	 (p->in.type == 5 || p->in.type == 15) ? 2 : (p->in.type & 0x30) == 0x10 ? PTRWORDS : \
-	 p->in.type == 7 ? 4 : p->in.type == 6 ? 2 : (nfield))
+	 (p->in.type == LONG || p->in.type == ULONG) ? 2 : ISPTR(p->in.type) ? PTRWORDS : \
+	 p->in.type == DOUBLE ? 4 : p->in.type == FLOAT ? 2 : (nfield))
 #define PARMWORDS(p, nfield) \
 	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
-	 (p->in.type == 5 || p->in.type == 15) ? 2 : (p->in.type & 0x30) == 0x10 ? PTRWORDS : \
-	 p->in.type == 7 ? 4 : p->in.type == 6 ? 4 : (nfield))
+	 (p->in.type == LONG || p->in.type == ULONG) ? 2 : ISPTR(p->in.type) ? PTRWORDS : \
+	 p->in.type == DOUBLE ? 4 : p->in.type == FLOAT ? 4 : (nfield))
 
 /* count the register of an operand as busy; sym and lval are only passed on */
 void
@@ -180,9 +180,9 @@ rclass(int type, int reg)
 {
 	register int c;
 
-	if (type != 6 && type != 7) {
+	if (type != FLOAT && type != DOUBLE) {
 #ifdef SEG
-		if (szty(type) == 2 || type == 8 || type == 9)
+		if (szty(type) == 2 || type == STRTY || type == UNIONTY)
 #else
 		if (szty(type) == 2)
 #endif
@@ -263,7 +263,7 @@ allocreg(NODE *p, int cookie)
 		fpsym2->soffset = p->tn.lval;
 #ifdef SEG
 	if (((cookie & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
-	    p->in.type == 8 || p->in.type == 9 || (dope[p->in.op] & DIVFLG))
+	    p->in.type == STRTY || p->in.type == UNIONTY || (dope[p->in.op] & DIVFLG))
 #else
 	if (((cookie & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
 	    (dope[p->in.op] & DIVFLG))
@@ -445,7 +445,7 @@ usable(NODE *p, int side, int r)
 	if (p->in.op == OREG)
 		return rv == r;
 	if (p->in.op == REG)
-		return (rv == r && (r != 0 || (p->in.type & 0x30) != 0x10)) || (szty(p->in.type) == 2 && rv + 1 == r);
+		return (rv == r && (r != 0 || !ISPTR(p->in.type))) || (szty(p->in.type) == 2 && rv + 1 == r);
 	return 0;
 #endif
 }
@@ -609,9 +609,9 @@ done:
 	return;
 isreg:
 	if (!tflag) {
-		if (p->in.type == 3)
+		if (p->in.type == SHORT)
 			p->in.type = 4;
-		else if (p->in.type == 13)
+		else if (p->in.type == USHORT)
 			p->in.type = 14;
 	}
 	if (rewrite & RESC) {			/* the second register of a long result */
@@ -623,15 +623,15 @@ isreg:
 		if (getreg(2, want, 0x1000, p->in.sname) != want)
 			cerror("reclaim: cannot find register free");
 		p->tn.rval = want;
-		if (p->in.type == 5)
+		if (p->in.type == LONG)
 			p->in.type = 4;
-		else if (p->in.type == 15) {
+		else if (p->in.type == ULONG) {
 		}
 		p->in.type = 14;		/* sic: also after the LONG case (the original jumps to this store) */
 		if (p->in.rall & MUSTDO)
 			want = p->in.rall & ~MUSTDO;
 	} else if (o == 0x3E || o == 0x3F) {	/* a long result of a shift or divide goes to rr4 */
-		if (p->in.type == 5 || p->in.type == 15) {
+		if (p->in.type == LONG || p->in.type == ULONG) {
 			rfree(p->tn.rval, p->in.type);
 			if (getreg(3, 4, 0x1000, p->in.sname) != 4)
 				cerror("reclaim: cannot find register free");

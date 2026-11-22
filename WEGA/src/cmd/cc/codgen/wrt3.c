@@ -9,7 +9,7 @@ extern long structsz;
 static char sccsid[] = "@[$]wrt3.c\t2.4  08/24/83 14:01:53 Copr. 1981 87wega3.2.";
 
 #ifdef OLD_D3P
-#define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
+#define D3PWORD(t)	((t) == INT || (t) == UNSIGNED || ISPTR(t))
 #endif
 
 /* the header of the assembler text */
@@ -78,7 +78,7 @@ parminit(p)
 	if (p->tn.lval < 0 && s->sclass != 4 && s->sclass != 8)
 		s->sbyte5 = -p->tn.lval;
 	r = s->sbyte5;
-	if (p->in.type == 8 || p->in.type == 9) {
+	if (p->in.type == STRTY || p->in.type == UNIONTY) {
 		if (sz == 1)
 			t2 = 4;
 		else if (sz == 2)
@@ -110,9 +110,9 @@ parminit(p)
 		rfree(r, t2);
 	got:
 		if (s->sclass == 4) {
-			if (s->stype == 7 || (s->stype == 6 && p->tn.lval < 0))
+			if (s->stype == DOUBLE || (s->stype == FLOAT && p->tn.lval < 0))
 				printf("\tfldd\t%s,", rnames[r]);
-			else if (s->stype == 6)
+			else if (s->stype == FLOAT)
 				printf("\tflds\t%s,", rnames[r]);
 			else {
 				if (sz == 1)
@@ -134,7 +134,7 @@ parminit(p)
 #endif
 			return;
 		}
-		if (s->stype == 8) {
+		if (s->stype == STRTY) {
 			if (sz == 1)
 #ifdef SEG
 				printf("\tld\t|_stkseg+~L1+%ld|(fp),%s\n", s->soffset / 8, rnames[r]);
@@ -215,7 +215,7 @@ fbegin(s)
 	printf("\n\t{\n\n");
 	t = s->stype;
 	t = DECREF(t);
-	structret = t == 8 || t == 9;
+	structret = t == STRTY || t == UNIONTY;
 	if (structret) {
 		structlab = s->sx6;
 		structsz = s->ssize / 16;

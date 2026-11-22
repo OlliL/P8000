@@ -743,7 +743,7 @@ again:
 		cerror("no table entry for op %s", opst[p->in.op]);
 	case RET:
 		p = p->in.left;
-		if (p->in.type == 6 || p->in.type == 7) {
+		if (p->in.type == FLOAT || p->in.type == DOUBLE) {
 			p->in.rall = 0x1010;
 			order(p, 0x10);
 			tfree(p);
@@ -770,7 +770,7 @@ again:
 	case QUEST:
 		cbranch(p1, -1, m = getlab());
 #ifdef OLD_D14Q
-		if (cookie == INTEMP_ && p->in.type != 6 && p->in.type != 7) {
+		if (cookie == INTEMP_ && p->in.type != FLOAT && p->in.type != DOUBLE) {
 			long t = freeparm(szty(p->in.type)) / 8;
 
 			d14qarm(p2->in.left, t, p->in.type);
@@ -799,7 +799,7 @@ again:
 		}
 #endif
 		p2->in.left->in.rall = p->in.rall;
-		if (p2->in.type == 7 || p2->in.type == 6)
+		if (p2->in.type == DOUBLE || p2->in.type == FLOAT)
 			codgen(p2->in.left, 0x10);
 		else
 			codgen(p2->in.left, 4);
@@ -812,7 +812,7 @@ again:
 #else
 		rfreeall(1);
 #endif
-		if (p2->in.type == 7 || p2->in.type == 6)
+		if (p2->in.type == DOUBLE || p2->in.type == FLOAT)
 			codgen(p2->in.right, 0x10);
 		else
 			codgen(p2->in.right, 4);
@@ -865,7 +865,7 @@ again:
 		}
 	/* fall through */
 	case UMINUS:
-		if (p1->in.type == 6 || p1->in.type == 7) {
+		if (p1->in.type == FLOAT || p1->in.type == DOUBLE) {
 			order(p1, 0x10);
 			goto again;
 		}
@@ -941,11 +941,11 @@ again:
 		p->in.right = p2;
 		p = canon(p);
 		rallo(p, p->in.rall);
-		if (p->in.type == 7 || p->in.type == 6)
+		if (p->in.type == DOUBLE || p->in.type == FLOAT)
 			order(p2->in.left, 0x10);
 		else
 			order(p2->in.left, 4);
-		if (p->in.type == 7 || p->in.type == 6)
+		if (p->in.type == DOUBLE || p->in.type == FLOAT)
 			order(p2, 0x10);
 		else
 			order(p2, 4);
@@ -1034,7 +1034,7 @@ store(NODE *p)
 			stocook = INTEMP_;
 		}
 #ifdef OLD_D14Q
-		if (o == QUEST && p->in.type != 6 && p->in.type != 7) {	/* the value of a ?: goes through a temporary */
+		if (o == QUEST && p->in.type != FLOAT && p->in.type != DOUBLE) {	/* the value of a ?: goes through a temporary */
 			stotree = p;
 			stocook = INTEMP_;
 		}
@@ -1052,7 +1052,7 @@ store(NODE *p)
 	case MOD:
 	case ASG MOD:
 		/* the long ones are calls of a library function */
-		if (p->in.left->in.type == 5 || p->in.left->in.type == 15)
+		if (p->in.left->in.type == LONG || p->in.left->in.type == ULONG)
 			if (lmulflag++) {
 				stotree = p;
 				stocook = INTEMP_;
@@ -1093,7 +1093,7 @@ d14qarm(NODE *q, long t, int ty)
 	a->in.op = ASSIGN;
 	a->in.type = ty;
 	a->in.left = n;
-	if (q->in.type == 2 && ty == 4) {		/* a char value of an arm */
+	if (q->in.type == CHAR && ty == INT) {		/* a char value of an arm */
 		a->in.right = q;
 		q = talloc();
 		q->in.op = 110;		/* SCONV */
@@ -1330,7 +1330,7 @@ cbranch(NODE *p, int true, int false)
 
 		t = p->in.type;
 		codgen(p, FORCC);
-		if (t == 6 || t == 7) {
+		if (t == FLOAT || t == DOUBLE) {
 			if (true >= 0)
 				cbgen(FNE, true, 'I');
 			if (false >= 0)

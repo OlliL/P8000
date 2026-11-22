@@ -110,7 +110,7 @@ sucomp(p)
 
 	o = p->in.op;
 	ty = optype(o);
-	if ((t = p->in.type) == 6 || t == 7) {
+	if ((t = p->in.type) == FLOAT || t == DOUBLE) {
 		nf = 1;
 		nr = 0;
 	} else {
@@ -175,7 +175,7 @@ sucomp(p)
 			else
 				p->in.fsu = max(fr, max(fl, 1 + nf + nf));
 		}
-		else if ((dope[p->in.op] & MULFLG) && (p->in.left->in.type == 5 || p->in.left->in.type == 15)) {	/* long * / % */
+		else if ((dope[p->in.op] & MULFLG) && (p->in.left->in.type == LONG || p->in.left->in.type == ULONG)) {	/* long * / % */
 			p->in.su = max(fregs - 1, min(max(sul, nr + sur), max(nr + sul, sur)));
 			if (sur == sul)
 				p->in.fsu = max(ffregs - 1, min(max(fl, nf + fr), max(nf + fl, fr)));
@@ -235,7 +235,7 @@ rallo(p, down)
 {
 	register int o, down1, down2, ty;
 
-	if (p->in.type == 6 || p->in.type == 7) {
+	if (p->in.type == FLOAT || p->in.type == DOUBLE) {
 		fltused++;
 		return;
 	}
@@ -265,7 +265,7 @@ rallo(p, down)
 		down1 = NOPREF;
 		break;
 	case MUL:
-		if (p->in.left->in.type == 5 || p->in.left->in.type == 15) {
+		if (p->in.left->in.type == LONG || p->in.left->in.type == ULONG) {
 			down1 = MUSTDO | 6;
 #ifndef OLD_D2U
 			if (p->in.right->in.op != REG)
@@ -274,7 +274,7 @@ rallo(p, down)
 		}
 		break;
 	case ASG MUL:
-		if (p->in.left->in.type == 5 || p->in.left->in.type == 15) {
+		if (p->in.left->in.type == LONG || p->in.left->in.type == ULONG) {
 			down1 = MUSTDO | 6;
 			down2 = MUSTDO | 4;
 		}
@@ -283,7 +283,7 @@ rallo(p, down)
 	case ASG DIV:
 	case MOD:
 	case ASG MOD:
-		if (p->in.left->in.type == 5 || p->in.left->in.type == 15) {
+		if (p->in.left->in.type == LONG || p->in.left->in.type == ULONG) {
 			down1 = MUSTDO | 6;
 			down2 = MUSTDO | 2;
 		}
@@ -301,15 +301,15 @@ rallo(p, down)
 		break;
 #endif
 	case RET:
-		if (p->in.type != 6 && p->in.type != 7)
+		if (p->in.type != FLOAT && p->in.type != DOUBLE)
 			down1 = MUSTDO | 2;
 		else
 			down1 = MUSTDO | 0x10;
 		break;
 	}
-	if (ty != 2)
+	if (ty != LTYPE)
 		rallo(p->in.left, down1);
-	if (ty == 8)
+	if (ty == BITYPE)
 		rallo(p->in.right, down2);
 }
 
@@ -331,7 +331,7 @@ mkoreg(p)
 	q = p->in.left;
 	l = q->in.left;
 	r = q->in.right;
-	if ((q->in.op == PLUS || q->in.op == MINUS) && r->in.op == ICON && l->in.op == REG && p->in.type != 6 && p->in.type != 7) {
+	if ((q->in.op == PLUS || q->in.op == MINUS) && r->in.op == ICON && l->in.op == REG && p->in.type != FLOAT && p->in.type != DOUBLE) {
 		off = r->tn.lval;
 		rv = (l->tn.rval + 1) << 8;
 		sym = r->in.sname;
@@ -342,7 +342,7 @@ mkoreg(p)
 		}
 		goto set;
 	}
-	if (q->in.op == PLUS && r->in.op == REG && l->in.op == REG && p->in.type != 6 && p->in.type != 7) {
+	if (q->in.op == PLUS && r->in.op == REG && l->in.op == REG && p->in.type != FLOAT && p->in.type != DOUBLE) {
 		if (r->tn.rval == 0)
 			return 0;
 		rv = ((l->tn.rval + 1) << 8) | (r->tn.rval + 1);
@@ -423,7 +423,7 @@ offstar(p)
 		if (l->in.op == PLUS || l->in.op == MINUS) {
 			orderadd(l);
 			if (mkoreg(p)) {
-				if (p->in.type == 6 || p->in.type == 7)
+				if (p->in.type == FLOAT || p->in.type == DOUBLE)
 					order(p, 0x18);
 				else
 					order(p, 6);
@@ -440,7 +440,7 @@ offstar(p)
 				orderadd(l);
 				order(l, 6);
 			}
-			if (p->in.type == 6 || p->in.type == 7)
+			if (p->in.type == FLOAT || p->in.type == DOUBLE)
 				order(p, 0x18);
 			else
 				order(p, 6);
@@ -477,7 +477,7 @@ offstar(p)
 			order(p, 6);
 	}
 	if (star) {
-		if (star->in.type == 6 || star->in.type == 7)
+		if (star->in.type == FLOAT || star->in.type == DOUBLE)
 			order(star, 0x18);
 		else
 			order(star, 6);
@@ -492,7 +492,7 @@ niceuty(p)
 {
 	register int t;
 
-	return p->in.op == STAR && (t = p->in.type) != 2 && t != 12 && t != 6 && t != 7 && shumul(p->in.left) != 0x800;
+	return p->in.op == STAR && (t = p->in.type) != CHAR && t != UCHAR && t != FLOAT && t != DOUBLE && shumul(p->in.left) != 0x800;
 }
 
 /* order the operands of a binary operator; 1 when something was ordered, 0 when the template can be used */
@@ -609,7 +609,7 @@ setasg(p)
 			order(r, 0x2ca);
 		return 1;
 	}
-	if (r->in.op != REG && (p->in.type == 6 || p->in.type == 7)) {
+	if (r->in.op != REG && (p->in.type == FLOAT || p->in.type == DOUBLE)) {
 		order(p->in.right, 0x18);
 		return 1;
 	}
@@ -637,7 +637,7 @@ lmuldiv(p)
 	case ASG MUL:
 	case ASG DIV:
 	case ASG MOD:
-		if (p->in.left->in.type == 5 || p->in.left->in.type == 15)
+		if (p->in.left->in.type == LONG || p->in.left->in.type == ULONG)
 			return 1;
 	default:
 		return 0;
@@ -715,7 +715,7 @@ rew:
 		return 1;
 	}
 	if (p->in.op == ASG MOD || p->in.op == ASG DIV) {
-		if (p->in.type == 5 || p->in.type == 15) {
+		if (p->in.type == LONG || p->in.type == ULONG) {
 #ifdef SEG
 			if (sul) {
 				p->in.right->in.rall = 0x2000;
@@ -792,7 +792,7 @@ argscan(p)
 #ifdef OLD_D22
 		if (0) {	/* v0p: a double argument goes by its size (rq4 when it is the first one) */
 #else
-		if (p->in.right->in.type == 6 || p->in.right->in.type == 7) {
+		if (p->in.right->in.type == FLOAT || p->in.right->in.type == DOUBLE) {
 #endif
 			if (argfreg < 0x10) {
 				if (argstop)
@@ -813,7 +813,7 @@ argscan(p)
 #ifdef OLD_D22
 	if (0) {
 #else
-	if (p->in.type == 6 || p->in.type == 7) {
+	if (p->in.type == FLOAT || p->in.type == DOUBLE) {
 #endif
 		if (argfreg < 0x10)
 			goto stop;
@@ -931,9 +931,9 @@ argstrip(p, rest)
 	if (p->in.op == CM || p->in.op == FREE)
 		return;
 	if (p->in.op != REG) {
-		if (p->in.type == 2 || p->in.type == 12) {
+		if (p->in.type == CHAR || p->in.type == UCHAR) {
 			order(p, 4);
-			if (p->in.type == 2)
+			if (p->in.type == CHAR)
 				printf("\textsb\t%s\n", rnames[p->tn.rval]);
 			else
 				printf("\tldb\trh%d,#0\n", p->tn.rval);
@@ -1053,12 +1053,12 @@ argplace()
 			continue;
 		}
 #ifdef OLD_D22
-		if ((q->in.type == 7 || q->in.type == 6) && argl[nargs].reg < 8) {
+		if ((q->in.type == DOUBLE || q->in.type == FLOAT) && argl[nargs].reg < 8) {
 			nleft -= 4;
 			continue;
 		}
 #endif
-		if (q->in.type == 7 || q->in.type == 6) {
+		if (q->in.type == DOUBLE || q->in.type == FLOAT) {
 			fleft--;
 			continue;
 		}
@@ -1072,7 +1072,7 @@ argplace()
 	for (nargs = 0; (q = argl[nargs].node) != 0; nargs++) {
 		reg = argl[nargs].reg;
 #ifdef OLD_D22
-		if ((q->in.type == 6 || q->in.type == 7) && reg < 8) {
+		if ((q->in.type == FLOAT || q->in.type == DOUBLE) && reg < 8) {
 			d22arg(q, reg);
 			tfree(q);
 			continue;
@@ -1087,13 +1087,13 @@ argplace()
 		d3aw(q, 1);
 		d3awfree(q);
 #endif
-		if (q->in.type == 6 || q->in.type == 7)
+		if (q->in.type == FLOAT || q->in.type == DOUBLE)
 			order(q, 0x10);
 		else
 			order(q, 4);
-		if (q->in.type == 2)
+		if (q->in.type == CHAR)
 			printf("\textsb\t%s\n", rnames[reg]);
-		else if (q->in.type == 12)
+		else if (q->in.type == UCHAR)
 			printf("\tldb\trh%d,#0\n", reg);
 		tfree(q);
 	}

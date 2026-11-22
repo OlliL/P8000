@@ -81,7 +81,7 @@ buildstar(int op, NODE *l, NODE *r)
 			n->in.op = FREE;
 			n = l->in.left;
 		}
-		if ((l->in.type & 0x30) != 0x10)
+		if (!ISPTR(l->in.type))
 			uerror("illegal indirection");
 		n->in.type = DECREF(l->in.type);
 		n->in.su = l->in.su;
@@ -134,7 +134,7 @@ member(NODE *p)
 	off = bcon(o);
 	n = makeblock(PLUS, p, off, nt);
 	p = clocal(n);
-	if ((p->in.type & 0x30) != 0x10)
+	if (!ISPTR(p->in.type))
 		p->in.type = p->in.type + 16;
 	p = buildstar(STAR, p, 0);
 	return p;

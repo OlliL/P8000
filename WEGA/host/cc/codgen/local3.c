@@ -86,12 +86,12 @@ tsuffix(int t)
 		break;
 	default:
 #ifdef SEG
-		if ((t & 0x30) != 0x10)
+		if (!ISPTR(t))
 			cerror("zzzcode - bad type");
 		putchar('l');
 		rmode++;
 #else
-		if ((t & 0x30) != 0x10)
+		if (!ISPTR(t))
 			cerror("zzzcode - bad type");
 #endif
 	}
@@ -306,7 +306,7 @@ regargs(int tot)
 		reg = parmtab[i].reg;
 		cls = rclass(s->stype, reg);
 #ifdef OLD_D22
-		if ((s->stype == 6 || s->stype == 7) && reg < 8) {	/* v0p: a double parameter in rq4 */
+		if ((s->stype == FLOAT || s->stype == DOUBLE) && reg < 8) {	/* v0p: a double parameter in rq4 */
 			if (lo > reg)
 				lo = reg;
 			if (hi < reg + 3)
@@ -340,7 +340,7 @@ regargs(int tot)
 		} else if (cls == 4) {
 			char *mn;
 
-			if (s->stype == 6)
+			if (s->stype == FLOAT)
 				mn = flds;
 			else
 				mn = fldd;
@@ -412,7 +412,7 @@ hopcode(NODE *p)
 	register struct hoptab *q;
 	register int t = p->in.type;
 
-	q = (t == 7 || t == 6) ? fhoptab : ihoptab;
+	q = (t == DOUBLE || t == FLOAT) ? fhoptab : ihoptab;
 	for (; q->op >= 0; q++)
 		if (q->op == o && ttype(t, q->tword)) {
 			printf("%s", q->str);
@@ -498,7 +498,7 @@ zzzcode(NODE *p, char c)
 	/* fall through */
 	case 'B':
 		/* the type suffix of the node, none when a float operation works on registers only */
-		if (p->in.type == 6 || p->in.type == 7) {
+		if (p->in.type == FLOAT || p->in.type == DOUBLE) {
 			q = getlr(p, 'L');
 			r = getlr(p, 'R');
 			if (q->in.op == REG && r->in.op == REG)
@@ -509,9 +509,9 @@ zzzcode(NODE *p, char c)
 	case 'R':
 		/* "sgl," or "dbl," */
 		q = getlr(p, 'L');
-		if (q->in.type == 6)
+		if (q->in.type == FLOAT)
 			printf("sgl,");
-		else if (q->in.type == 7)
+		else if (q->in.type == DOUBLE)
 			printf("dbl,");
 		return;
 	case 'f':
@@ -553,16 +553,16 @@ zzzcode(NODE *p, char c)
 		nosuffix++;
 		return;
 	case 'C':
-		if (p->in.type == 2)
+		if (p->in.type == CHAR)
 			p->in.type = 4;
-		else if (p->in.type == 12)
+		else if (p->in.type == UCHAR)
 			p->in.type = 14;
 		else
 			cerror("bad ZC");
 		return;
 	case 'c':
 		/* float <-> double: the operand has to be in a B register */
-		if (p->in.type == 6)
+		if (p->in.type == FLOAT)
 			p->in.type = 7;
 		else
 			p->in.type = 6;
@@ -615,7 +615,7 @@ zzzcode(NODE *p, char c)
 		upperlval = 0;
 		return;
 	case 'Q':
-		if (p->in.type == 5)
+		if (p->in.type == LONG)
 			printf("\textsl\trq4\n");
 		else
 			printf("\tsubl\trr4,rr4\n");
@@ -745,11 +745,11 @@ zzzcode(NODE *p, char c)
 
 		u = p->in.left;
 		t = u->in.type;
-		if (t == 12)
+		if (t == UCHAR)
 			expand(p, FOREFF, "\tldk\tU1,#0\n");
 		if (u->in.op != REG || getlr(p, '1')->tn.rval + 1 != u->tn.rval)
 			expand(u, FOREFF, "\tldZB\tU1,AL\n");
-		if (t == 2)
+		if (t == CHAR)
 			expand(p, FOREFF, "\textsb\tU1\n");
 		if (!(dope[p->in.op] & DIVFLAG))
 			return;
@@ -829,7 +829,7 @@ zzzcode(NODE *p, char c)
 			if (u->in.op == OREG && u->tn.lval == 0 && u->in.sname == 0 && u->tn.rval < 0x100) {
 				tmp = tcopy(u);
 				u->in.op = REG;
-				if ((u->in.type & 0x30) != 0x10)
+				if (!ISPTR(u->in.type))
 					u->in.type = INCREF(u->in.type);
 			}
 			if (!tshape(u, STAREG)) {
@@ -1080,7 +1080,7 @@ ffound:
 	t->off = f->off;
 	t->kind = f->kind;
 copied:
-	if (type == 6 || type == 7)
+	if (type == FLOAT || type == DOUBLE)
 		printf("/* rmove */\n\tfld");
 	else
 		printf("/* rmove */\n\tld");
@@ -1127,10 +1127,10 @@ shtemp(NODE *p)
 int
 shincr(int t, long incr)
 {
-	if ((t & 0x30) != 0x10)
+	if (!ISPTR(t))
 		return 0;
 	t = ((unsigned)t >> 2 & ~0xF) | (t & 0xF);
-	if ((t & 0x30) == 0x10)
+	if (ISPTR(t))
 #ifdef SEG
 		return incr == 4;		/* a pointer to a pointer */
 #else
@@ -1503,7 +1503,7 @@ gencall(NODE *p, int cookie)
 	/* v0p: a double result comes back in rq4 */
 	if (match(p, 0x16) != MDONE)
 		return 1;
-	if ((p->in.type == 6 || p->in.type == 7) && p->in.op == REG)
+	if ((p->in.type == FLOAT || p->in.type == DOUBLE) && p->in.op == REG)
 		printf("\tfldd\t%s,r4\n", rnames[p->tn.rval]);
 	return 0;
 #else

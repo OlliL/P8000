@@ -6,7 +6,7 @@
 static char sccsid[] = "@[$]lcl3.c\t2.4  10/06/83 10:39:09 Copr. 1981 87wega3.2.";
 
 #ifdef OLD_D3P
-#define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
+#define D3PWORD(t)	((t) == INT || (t) == UNSIGNED || ISPTR(t))
 #endif
 
 #define SCONV	110
@@ -332,14 +332,14 @@ clocal(p)
 		}
 		break;
 	case SCONV:
-		pf = p->in.type == 6 || p->in.type == 7;
-		lf = l->in.type == 6 || l->in.type == 7;
+		pf = p->in.type == FLOAT || p->in.type == DOUBLE;
+		lf = l->in.type == FLOAT || l->in.type == DOUBLE;
 		if (pf || lf)
 			break;
 		while (l->in.op == SCONV) {
 			if (tbytes(l->in.type) <= tbytes(p->in.type))
 				break;
-			if (l->in.left->in.type == 7 || l->in.left->in.type == 6)
+			if (l->in.left->in.type == DOUBLE || l->in.left->in.type == FLOAT)
 				break;
 			l->in.op = FREE;
 			p->in.left = l = l->in.left;
@@ -352,11 +352,11 @@ clocal(p)
 		if (l->in.op == ICON) {
 			val = l->tn.lval;
 #ifdef SEG
-			if (pf == 4 && (lf & 0x30) == 0x10) {
+			if (pf == INT && ISPTR(lf)) {
 				l->tn.lval = (long)(int)val;
 				goto done;
 			}
-			if (pf == 14 && (lf & 0x30) == 0x10) {
+			if (pf == UNSIGNED && ISPTR(lf)) {
 				l->tn.lval = val & 0xFFFFL;
 				goto done;
 			}
@@ -381,7 +381,7 @@ clocal(p)
 		else if (tbytes(pf) != tbytes(lf))
 			break;
 #ifdef SEG
-		else if ((pf & 0x30) == 0x10)
+		else if (ISPTR(pf))
 			break;
 #endif
 		if (tbytes(pf) == tbytes(lf)) {
@@ -401,7 +401,7 @@ clocal(p)
 done:
 #endif
 	if (logop(p->in.op) && r->in.op == ICON && l->in.op == SCONV &&
-	    (l->in.left->in.type == 2 || l->in.left->in.type == 12) && r->tn.lval >= -256 && r->tn.lval <= 255) {
+	    (l->in.left->in.type == CHAR || l->in.left->in.type == UCHAR) && r->tn.lval >= -256 && r->tn.lval <= 255) {
 		l->in.op = FREE;
 		l = p->in.left = l->in.left;
 		p->in.type = r->in.type = l->in.type;

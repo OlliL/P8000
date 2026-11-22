@@ -21,8 +21,8 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 
 #define TEMPWORDS(p, nfield) \
 	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
-	 (p->in.type == 5 || p->in.type == 15) ? 2 : (p->in.type & 0x30) == 0x10 ? PTRWORDS : \
-	 p->in.type == 7 ? 4 : p->in.type == 6 ? 2 : (nfield))
+	 (p->in.type == LONG || p->in.type == ULONG) ? 2 : ISPTR(p->in.type) ? PTRWORDS : \
+	 p->in.type == DOUBLE ? 4 : p->in.type == FLOAT ? 2 : (nfield))
 
 #define SUBST(from) \
 	if ((p->in.left->in.op == REG || p->in.left->in.op == OREG) && p->in.left->tn.rval == from) \
@@ -87,11 +87,11 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 #ifdef SEG
 /* segmented (vc): pointer, long, unsigned long, and one of the two is a pointer (not long against unsigned long:
    cas iputl; gopt tabfree (long)p) */
-#define D3PWORD(t)	((t) == 5 || (t) == 15 || ((t) & 0x30) == 0x10)
-#define D3PCAST(a, b)	(D3PWORD(a) && D3PWORD(b) && (((a) & 0x30) == 0x10 || ((b) & 0x30) == 0x10))
+#define D3PWORD(t)	((t) == LONG || (t) == ULONG || ISPTR(t))
+#define D3PCAST(a, b)	(D3PWORD(a) && D3PWORD(b) && (ISPTR(a) || ISPTR(b)))
 #else
 /* v0: int, unsigned and pointers, any two (int against unsigned: cparse sputc) */
-#define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
+#define D3PWORD(t)	((t) == INT || (t) == UNSIGNED || ISPTR(t))
 #define D3PCAST(a, b)	(D3PWORD(a) && D3PWORD(b))
 #endif
 #endif
@@ -978,7 +978,7 @@ rcmd(a, b, type)
 		s = 0;
 		tag = -b;
 	}
-	if (type == 6 || type == 7) {
+	if (type == FLOAT || type == DOUBLE) {
 #ifdef SEG
 		i = a + 6;
 #else
@@ -1051,7 +1051,7 @@ scmd(n)
 	}
 	printf("/* rvstore */\n");
 #ifdef SEG
-	if ((t & 0x30) == 0x10)
+	if (ISPTR(t))
 		t = 5;
 #endif
 	switch (t) {
@@ -1106,7 +1106,7 @@ tcmd(n)
 	}
 	printf("/* rvrestore */\n");
 #ifdef SEG
-	if ((t & 0x30) == 0x10)
+	if (ISPTR(t))
 		t = 5;
 #endif
 	switch (t) {

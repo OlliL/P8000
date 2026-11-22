@@ -115,7 +115,7 @@ ttype(int t, int tword)
 		return 1;
 	if (t == 0)
 		t = TINT;		/* FARG / undefined: an int */
-	if ((t & 0x30) == 0x10 && (tword & TPOINT2)) {
+	if (ISPTR(t) && (tword & TPOINT2)) {
 		do
 			t = ((unsigned)t >> 2 & ~0xF) | (t & 0xF);	/* strip one level of pointer */
 		while ((t & 0x30) == 0x30);
@@ -215,7 +215,7 @@ match(NODE *p, int cookie)
 		fixname(p);
 #ifdef OLD_D2C
 		/* v0: a name (not a parameter) found in a scratch register is that register, which then loses the name */
-		if (p->in.op == REG && (cookie & STAREG) && (rstatus[p->tn.rval] & STAREG) && p->in.type != 5 && p->in.type != 15 &&
+		if (p->in.op == REG && (cookie & STAREG) && (rstatus[p->tn.rval] & STAREG) && p->in.type != LONG && p->in.type != ULONG &&
 #ifdef OLD_D3KC
 		    p->in.sname && p->in.sname->sclass != 9 &&
 #else
@@ -230,7 +230,7 @@ match(NODE *p, int cookie)
 	case UTYPE:
 #ifdef OLD_D3L
 		/* v0: a word cast of a global long is not taken from the register that holds the long */
-		if (p->in.op == 110 && p->in.left->in.op == NAME && (p->in.left->in.type == 5 || p->in.left->in.type == 15) && p->in.type != 5 && p->in.type != 15 &&
+		if (p->in.op == 110 && p->in.left->in.op == NAME && (p->in.left->in.type == LONG || p->in.left->in.type == ULONG) && p->in.type != LONG && p->in.type != ULONG &&
 		    p->in.left->in.sname->sclass != 9 && p->in.left->in.sname->sclass != 1 && p->in.left->in.sname->sclass != 4)
 			goto cont;
 #endif
@@ -245,7 +245,7 @@ match(NODE *p, int cookie)
 		oregfix(lt);
 	rgt:
 		if (p->in.right->in.op == NAME) {
-			if ((p->in.type == 5 || p->in.type == 15) && ((dope[p->in.op] & MULFLG) || (dope[p->in.op] & DIVFLG))) {
+			if ((p->in.type == LONG || p->in.type == ULONG) && ((dope[p->in.op] & MULFLG) || (dope[p->in.op] & DIVFLG))) {
 				register int rv;
 
 				rv = p->in.right->tn.rval;
@@ -303,7 +303,7 @@ cand:
 			goto next;
 #ifdef OLD_D10
 		/* the old codgen v0 shifts a long by a constant through a register (ld A1,#n; sdal): no OIZB AL,#n */
-		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (r->in.type == 5 || l->in.type == 15) &&
+		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (r->in.type == LONG || l->in.type == ULONG) &&
 		    (p->in.op == LS || p->in.op == RS || p->in.op == ASG LS || p->in.op == ASG RS))
 			goto next;
 #endif
@@ -334,7 +334,7 @@ cand:
 			if (bsize(r->in.type) != t)
 				goto next;
 		}
-		if ((p->in.type == 6 || p->in.type == 7) && q->ltype == 0x8000 && q->rtype == 0x8000)
+		if ((p->in.type == FLOAT || p->in.type == DOUBLE) && q->ltype == 0x8000 && q->rtype == 0x8000)
 			goto next;
 		if (q->needs & REWRITE)
 			return q->rewrite;
@@ -361,7 +361,7 @@ cand:
 		reclaim(p, q->rewrite, cookie);
 #ifdef OLD_D2A
 		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
-		if (t == ASSIGN && !(cookie & 01) && p->in.op == REG && (p->in.type == 5 || p->in.type == 15) && p->tn.rval < 8 &&
+		if (t == ASSIGN && !(cookie & 01) && p->in.op == REG && (p->in.type == LONG || p->in.type == ULONG) && p->tn.rval < 8 &&
 		    !(p->in.rall & MUSTDO)) {	/* (not when the value goes to a register wanted for it: an argument) */
 			register int nr;
 
