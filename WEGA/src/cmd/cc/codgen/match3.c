@@ -16,7 +16,7 @@ static char sccsid[] = "@[$]match3.c\t2.4  08/24/83 13:18:24 Copr. 1981 87wega3.
 int opclass[] = {
 	SIMPFLG, SIMPFLG|ASGFLG, COMMFLG, COMMFLG|ASGFLG, MULFLG, MULFLG|ASGFLG, DIVFLG, DIVFLG|ASGFLG,
 	UTYPE, TYFLG, LTYPE, TYFLG, 0, ASGOPFLG|ASGFLG, LOGFLG, TYFLG,
-	FLOFLG, FLOFLG|ASGFLG, SHFFLG, SHFFLG|ASGFLG, BITFLG, BITFLG|ASGFLG, LTYFLG, LTYFLG|ASGFLG, SPFLG, TYFLG,
+	LTYFLG, LTYFLG|ASGFLG, SHFFLG, SHFFLG|ASGFLG, BITFLG, BITFLG|ASGFLG, FLOFLG, FLOFLG|ASGFLG, SPFLG, TYFLG,
 };
 char *ocnames[] = {
 	"OPSIMP",
@@ -155,8 +155,6 @@ ttype(t, tword)
 /*
  * The operator classes of the table: an entry whose op is OPSIMP + k stands for every operator whose dope flags
  * match opclass[k] (OPSIMP, ASG OPSIMP, OPCOMM, ... in pairs). Data at 0x3530 of /lib/codgen.
- * By the manifest (SysIII) names OPLONG takes FLOFLG and OPFLOAT LTYFLG: WEGA uses the two bits the other way round
- * (MUL and DIV have only 01000: OPFLOAT; long MUL and DIV are calls).
  */
 
 /* build opptr[] */

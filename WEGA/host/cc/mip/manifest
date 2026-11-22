@@ -222,8 +222,8 @@
 # define SIMPFLG 040
 # define COMMFLG 0100
 # define DIVFLG 0200
-# define FLOFLG 0400
-# define LTYFLG 01000
+# define FLOFLG 01000	/* WEGA: the float operators (+ - * /), FLOFLG of System III */
+# define LTYFLG 0400	/* WEGA: the long operators done in line (+ -); the name is a guess */
 # define CALLFLG 02000
 # define MULFLG 04000
 # define SHFFLG 010000
