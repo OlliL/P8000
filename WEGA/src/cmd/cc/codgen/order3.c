@@ -380,8 +380,8 @@ orderadd(p)
 
 	n = 0;
 	if (p->in.op == PLUS || p->in.op == MINUS) {
-		if (p->in.left->in.op == CALL || p->in.left->in.op == 72) {
-			if (p->in.right->in.op == CALL || p->in.right->in.op == 72) {
+		if (p->in.left->in.op == CALL || p->in.left->in.op == UCALL) {
+			if (p->in.right->in.op == CALL || p->in.right->in.op == UCALL) {
 				order(p->in.right, INTEMP);
 				n++;
 				order(p->in.left, 6);
@@ -969,7 +969,7 @@ d3aw(p, top)
 		return;
 	if (p->in.op == STAR)
 		top = 1;		/* below an indirection: an address */
-	else if (p->in.op != PLUS && p->in.op != MINUS && p->in.op != UMINUS && p->in.op != MUL && p->in.op != 110 /* SCONV */)
+	else if (p->in.op != PLUS && p->in.op != MINUS && p->in.op != UMINUS && p->in.op != MUL && p->in.op != SCONV)
 		top = 0;		/* below another operator: a computed value */
 	d3aw(p->in.left, top);
 	if (k == BITYPE)

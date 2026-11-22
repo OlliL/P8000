@@ -253,7 +253,7 @@ match(p, cookie)
 	case UTYPE:
 #ifdef OLD_D3L
 		/* v0: a word cast of a global long is not taken from the register that holds the long */
-		if (p->in.op == 110 && p->in.left->in.op == NAME && (p->in.left->in.type == LONG || p->in.left->in.type == ULONG) && p->in.type != LONG && p->in.type != ULONG &&
+		if (p->in.op == SCONV && p->in.left->in.op == NAME && (p->in.left->in.type == LONG || p->in.left->in.type == ULONG) && p->in.type != LONG && p->in.type != ULONG &&
 		    p->in.left->in.sname->sclass != 9 && p->in.left->in.sname->sclass != 1 && p->in.left->in.sname->sclass != 4)
 			goto cont;
 #endif
@@ -326,7 +326,7 @@ cand:
 			goto next;
 #ifdef OLD_D10
 		/* the old codgen v0 shifts a long by a constant through a register (ld A1,#n; sdal): no OIZB AL,#n */
-		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (r->in.type == LONG || l->in.type == ULONG) &&
+		if (q->lshape == (SAREG|STAREG) && q->rshape == SCON && q->op == ASG OPSHFT && (r->in.type == LONG || l->in.type == ULONG) &&
 		    (p->in.op == LS || p->in.op == RS || p->in.op == ASG LS || p->in.op == ASG RS)
 #ifdef SEG
 		    && !(p->in.right->in.op == ICON && p->in.right->tn.lval == 1 && (p->in.op == RS || p->in.op == ASG RS) &&
@@ -347,7 +347,7 @@ cand:
 		   the register and stored (ld A1,AL; Zi A1,AR; ld AL,A1), not incremented in memory */
 		if (p->in.op == ASG PLUS && (cookie & INTEMP) && l->in.op == OREG && l->tn.rval == 15 &&
 		    r->in.op == ICON && r->in.sname == 0) {
-			if (q->rshape == 0x8002)
+			if (q->rshape == S16CON)
 				goto next;
 			if (q->needs == 1 && q->rewrite == 0x804 && allo(p, q)) {
 				expand(p, cookie, "\tldZB\tA1,AL\n\tZi\tA1,AR\n\tldZB\tAL,A1\n");
@@ -403,7 +403,7 @@ cand:
 #endif
 #ifdef OLD_D22
 		/* v0p: a floating compare with memory without the rounding fld of the left operand */
-		if (q->op == 0x100e && q->lshape == 0x18 && q->rshape == 0x2c0)
+		if (q->op == OPLOG && q->lshape == (SBREG|STBREG) && q->rshape == (SNAME|SCON|SOREG))
 			expand(p, cookie, "\tfcpZfZ>\tAL,AR\n\tfldctlb\tcmpflg\nZI");
 		else
 #endif

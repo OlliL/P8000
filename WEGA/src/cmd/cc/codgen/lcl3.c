@@ -31,7 +31,7 @@ gswitch(p)
 	tab = r->in.right->tn.rval;
 	dlab = -r->in.left->tn.lval;
 	reg = (l->in.op == REG ? l : l->in.left)->tn.rval;
-	if (l->in.op != 124) {
+	if (l->in.op != SEARCH) {
 		mapnm(l->in.left);
 		delay(l);
 		reclaim(l, 0, 0);
@@ -66,7 +66,7 @@ gswitch(p)
 		printf("\tjp\t@r%s\n", rnames[a6]);
 		return;
 	}
-	if (l->in.op == 124) {
+	if (l->in.op == SEARCH) {
 		cnt = (int)l->in.right->tn.lval;
 		tlab = l->in.right->tn.rval;
 		a6 = getreg(3, -1, 0x1000, 0);
@@ -148,7 +148,7 @@ gswitch(p)
 	tab = r->in.right->tn.rval;
 	dlab = -r->in.left->tn.lval;
 	reg = (l->in.op == REG ? l : l->in.left)->tn.rval;
-	if (l->in.op != 124) {
+	if (l->in.op != SEARCH) {
 		mapnm(l->in.left);
 		delay(l);
 		reclaim(l, 0, 0);
@@ -165,7 +165,7 @@ gswitch(p)
 		printf("\tjp\t@%s\n", rnames[reg]);
 		return;
 	}
-	if (l->in.op == 124) {
+	if (l->in.op == SEARCH) {
 	cnt = (int)l->in.right->tn.lval;
 	tlab = l->in.right->tn.rval;
 	if (reg == 0) {

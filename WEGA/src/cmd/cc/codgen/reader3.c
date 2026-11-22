@@ -484,7 +484,7 @@ p2compile(p)
 	int tag;
 
 	nrecur = 0;
-	if (p->in.op == 118) {
+	if (p->in.op == PROC) {
 		mapnm(p->in.left);
 		fbegin(p->in.left->in.sname);
 #ifdef OLD_D4O
@@ -495,13 +495,13 @@ p2compile(p)
 		tfree(p);
 		return;
 	}
-	if (p->in.op == 119) {
+	if (p->in.op == UPROC) {
 		mapnm(p->in.left);
 		fbegin(p->in.left->in.sname);
 		tfree(p);
 		return;
 	}
-	if (p->in.op == 122) {
+	if (p->in.op == SWTCH) {
 		if (p->in.left->in.op == TEMP) {
 			tag = p->in.left->tn.rval;
 			fixtemp(p->in.left);
@@ -1412,12 +1412,12 @@ cbranch(p, true, false)
 	case ULT:
 	case UGE:
 	case UGT:
-	case 90:
-	case 91:
-	case 92:
-	case 93:
-	case 94:
-	case 95:
+	case FEQ:
+	case FNE:
+	case FLE:
+	case FLT:
+	case FGE:
+	case FGT:
 		if (true < 0) {
 			o = p->in.op = negrel[o - EQ];
 			true = false;
@@ -1435,12 +1435,12 @@ cbranch(p, true, false)
 			case LT:
 			case GE:
 			case GT:
-			case 90:
-			case 91:
-			case 92:
-			case 93:
-			case 94:
-			case 95:
+			case FEQ:
+			case FNE:
+			case FLE:
+			case FLT:
+			case FGE:
+			case FGT:
 				break;
 			case UGE:
 				cbgen(0, true, 'I');

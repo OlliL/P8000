@@ -1609,30 +1609,30 @@ special(NODE *p, int shape)
 	if (p->in.op != ICON)
 		return 0;
 	if (p->in.sname) {
-		if (shape != SPECIAL + 8)
+		if (shape != SADCON)
 			return 0;
 		return 1;
 	}
 	if (p->tn.rval < 0)
 		return 0;
 	switch (shape) {
-	case SPECIAL + 1:
+	case SKCON:
 		return p->tn.lval >= 0 && p->tn.lval <= 15;
-	case SPECIAL + 2:
+	case S16CON:
 		return p->tn.lval >= -16 && p->tn.lval <= 16;
-	case SPECIAL + 3:
+	case SBCON:
 		return p->tn.lval >= -256 && p->tn.lval <= 255;
-	case SPECIAL + 5:
+	case SWNCON:
 		if (!nncon(p))
 			return 0;
 		/* FALLTHROUGH */
-	case SPECIAL + 4:
+	case SWCON:
 		return p->tn.lval >= -32768 && p->tn.lval <= 32767;
-	case SPECIAL + 6:
+	case SPOW2:
 		return ispow2(p->tn.lval) >= 0;
-	case SPECIAL + 7:
+	case SNPOW2:
 		return ispow2(~p->tn.lval) >= 0;
-	case SPECIAL + 8:
+	case SADCON:
 		return 0;
 	}
 	cerror("bad special shape: SPECIAL | %%%x", shape - SPECIAL);

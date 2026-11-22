@@ -237,7 +237,7 @@ fixfld(NODE *p)
 	register NODE *a, *m;
 	register int ismember;
 #if defined(OLD_D5S) || defined(OLD_D5G)
-	int subsr = p->in.op == 120;
+	int subsr = p->in.op == SUBSR;
 #endif
 
 	if (p->in.op == FLD) {
@@ -340,7 +340,7 @@ mapregs(NODE *p)
 	register NODE *n, *m, *r;
 
 	switch (p->in.op) {
-	case 120:
+	case SUBSR:
 		fixfld(p);
 #ifdef OLD_D23
 		d23drop(p);
