@@ -15,6 +15,7 @@
 #define NONAME	0
 #define NCUNUSED	9	/* the size of cunused (common.2.5): 18 bytes of zeros in the data of /lib/codgen */
 #include "../z8000/macdefs"
+#include "../z8000/mac2defs"
 #include "../mip/manifest"
 #include "../mip/rdr.h"
 #include "oldcc.h"

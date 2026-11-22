@@ -9,7 +9,7 @@ Makefile    the driver
 mip/        the machine-independent units the passes share, one file per SCCS version, included by the wrappers:
             common.2.4 (gopt), common.2.5 (cparse, codgen), optim.2.5 (cparse, codgen), rdr.2.4 (gopt),
             rdr.2.5 (codgen); manifest (all three); rdr.h (gopt, codgen: the symbol of the symbol table file)
-z8000/      what is machine-dependent and shared: macdefs (all three)
+z8000/      what is machine-dependent and shared: macdefs (all three), mac2defs (codgen: the registers)
 cpp/        the preprocessor (/lib/cpp)
 cparse/     pass 1 (/lib/cparse, /lib/scparse): the files ...1.c, mfile1; comm1.c and optim1.c are the wrappers
 gopt/       pass 2, the global optimizer (/lib/gopt): the files ...2.c, mfile2.h; comm2.c and rdr2.c are the wrappers

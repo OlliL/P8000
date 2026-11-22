@@ -1,0 +1,32 @@
+/*
+ * mac2defs: the registers of the code generator, as in the mac2defs of PCC (System III mdp, Plexus z8000);
+ * the numbers are those of rnames (mip/common.2.5). Included by codgen/mfile3.
+ */
+	/* word registers; rr0..rr14 and rq0..rq12 are named by their first word register */
+# define R0 0
+# define R1 1
+# define R2 2
+# define R3 3
+# define R4 4
+# define R5 5
+# define R6 6
+# define R7 7
+	/* register variables */
+# define R8 8
+# define R9 9
+# define R10 10
+# define R11 11
+# define R12 12
+# define R13 13
+	/* special purpose */
+# define R14 14	/* scodgen: the stack pointer (sp) */
+# define FP 15	/* the frame pointer (fp) */
+	/* floating point registers */
+# define F0 16
+# define F1 17
+# define F2 18
+# define F3 19
+# define F4 20
+# define F5 21
+# define F6 22
+# define F7 23

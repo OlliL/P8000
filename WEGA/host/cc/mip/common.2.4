@@ -294,22 +294,18 @@ int bsize(int t)
 	switch( t ){
 	case CHAR:
 	case UCHAR:
-		return( 8 );
+		return( SZCHAR );
 	case INT:
 	case UNSIGNED:
-		return( 16 );
+		return( SZINT );
 	case LONG:
 	case FLOAT:
 	case ULONG:
-		return( 32 );
+		return( SZLONG );
 	case DOUBLE:
-		return( 64 );
+		return( SZDOUBLE );
 		}
-#ifdef SEG
-	if( ISPTR(t) ) return( 32 );
-#else
-	if( ISPTR(t) ) return( 16 );
-#endif
+	if( ISPTR(t) ) return( SZPOINT );
 	cerror( "illegal bsize type: %%%x\n", t );
 	}
 
@@ -348,17 +344,13 @@ int tbytes(TWORD t)
 	switch( t ){
 	case LONG:
 	case ULONG:
-		return( 4 );
+		return( SZLONG/SZCHAR );
 	case CHAR:
 	case UCHAR:
 		return( 1 );
 		}
-#ifdef SEG
-	if( ISPTR(t) ) return( 4 );
-#else
-	if( ISPTR(t) ) return( 2 );
-#endif
-	return( 2 );
+	if( ISPTR(t) ) return( SZPOINT/SZCHAR );
+	return( SZINT/SZCHAR );
 	}
 
 	/* mapping relationals when the sides are reversed (not used in gopt) */

@@ -287,22 +287,18 @@ int bsize(int t)
 	switch( t ){
 	case CHAR:
 	case UCHAR:
-		return( 8 );
+		return( SZCHAR );
 	case INT:
 	case UNSIGNED:
-		return( 16 );
+		return( SZINT );
 	case LONG:
 	case FLOAT:
 	case ULONG:
-		return( 32 );
+		return( SZLONG );
 	case DOUBLE:
-		return( 64 );
+		return( SZDOUBLE );
 		}
-#ifdef SEG
-	if( ISPTR(t) ) return( 32 );
-#else
-	if( ISPTR(t) ) return( 16 );
-#endif
+	if( ISPTR(t) ) return( SZPOINT );
 	cerror( "illegal bsize type: %%%x\n", t );
 	}
 
@@ -332,9 +328,9 @@ argsize(NODE *p)
 
 	if (p->in.op == STARG)
 		return (unsigned)p->stn.stsize >> 1;
-	if (p->in.op == NAME && p->in.type == 8)
+	if (p->in.op == NAME && p->in.type == STRTY)
 		return p->in.sname->ssize / SZINT;
-	t = u = szty(p->in.type == 6 ? 7 : p->in.type);
+	t = u = szty(p->in.type == FLOAT ? DOUBLE : p->in.type);
 	return t;
 }
 # else
@@ -359,30 +355,26 @@ int tbytes(TWORD t)
 	switch( t ){
 	case LONG:
 	case ULONG:
-		return( 4 );
+		return( SZLONG/SZCHAR );
 	case CHAR:
 	case UCHAR:
 		return( 1 );
 	case SHORT:
 	case USHORT:
-		return( 2 );
+		return( SZSHORT/SZCHAR );
 		}
-#ifdef SEG
-	if( ISPTR(t) ) return( 4 );
-#else
-	if( ISPTR(t) ) return( 2 );
-#endif
-	return( 2 );
+	if( ISPTR(t) ) return( SZPOINT/SZCHAR );
+	return( SZINT/SZCHAR );
 	}
 
 # ifdef PASS3
-/* the cookie that serves the type: B registers for floats, A registers otherwise */
+/* the register of the value of a call: f0 for a float, r2 (rr2) otherwise */
 int
 callreg(NODE *p)
 {
-	if (p && (p->in.type == 7 || p->in.type == 6))
-		return 0x10;
-	return 2;
+	if (p && (p->in.type == DOUBLE || p->in.type == FLOAT))
+		return F0;
+	return R2;
 }
 # else
 	/* mapping relationals when the sides are reversed (optim) */
@@ -432,14 +424,14 @@ NODE *tcopy(NODE *p)
 	if (p->in.op == REG)
 		rbusy(r, p->in.type, p->in.sname, p->tn.lval);
 	else if (p->in.op == OREG) {
-		if (r >= 0x100) {
-			rbusy((r & 0xFF) - 1, 0x14, p->in.sname, p->tn.lval);
+		if (R2TEST(r)) {
+			rbusy(R2UPK2(r), PTR|INT, p->in.sname, p->tn.lval);
 			if (r & 0xFF)
 				rbusy((r >> 8) - 1, 4, 0, 0L);	/* two arguments in the original: name and offset are what the registers hold; rbusy does not use them */
 		} else if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))
-			rbusy(r, 4, p->in.sname, p->tn.lval);
+			rbusy(r, INT, p->in.sname, p->tn.lval);
 		else
-			rbusy(r, 0x14, p->in.sname, p->tn.lval);
+			rbusy(r, PTR|INT, p->in.sname, p->tn.lval);
 	}
 # else
 	(void) r;
