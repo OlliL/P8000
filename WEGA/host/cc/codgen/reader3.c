@@ -752,12 +752,12 @@ again:
 	case RET:
 		p = p->in.left;
 		if (p->in.type == FLOAT || p->in.type == DOUBLE) {
-			p->in.rall = 0x1010;
+			p->in.rall = MUSTDO|F0;
 			order(p, INTBREG);
 			tfree(p);
 			return;
 		}
-		cook = 4;
+		cook = INTAREG;
 		goto again;
 	case CBRANCH:
 		o = p2->tn.lval;
