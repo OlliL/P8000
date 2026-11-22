@@ -53,6 +53,7 @@ shipped:
 	for d in $(SUBDIRS) ; do \
 		case $$d in \
 		sld) X="SCC=scc LIBC=/lib/slibc.a" ;; \
+		fse) X="CC=scc" ;; \
 		cc/gopt) X="SCC=scc SLD=sld LIBC=/lib/slibc.a" ;; \
 		cas) X="SCC=scc SLIBC=/lib/slibc.a SCCFLAGS=\"$(SHIPFLAGS)\"" ;; \
 		cc/codgen|cc/popt) X='LIBC="../../../../../lib/oldlibc/printf/s1.o ../../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
