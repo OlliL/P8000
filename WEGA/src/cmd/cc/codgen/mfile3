@@ -249,6 +249,7 @@ struct optab {
 };
 extern struct optab table[];
 
+#define NRECUR	5000	/* rcount: the recursions of one expression (PCC NRECUR) */
 #define DELAYS	20
 #undef TREESZ		/* manifest has the 350 of pass 1 */
 #define TREESZ	500

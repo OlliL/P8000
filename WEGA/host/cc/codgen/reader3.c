@@ -47,7 +47,6 @@ static int d3jdead;		/* v0p: the record before was an unconditional jump */
 
 /* the relation that is true when the one in the index is false */
 
-#define MAXRCOUNT 5000
 
 static void delstrip();
 static void delay2();
@@ -1146,6 +1145,7 @@ constore(NODE *p)
 void
 markcall(NODE *p)
 {
+	/* mark off calls below the current node */
 again:
 	switch (p->in.op) {
 	case CALL:
@@ -1173,16 +1173,17 @@ again:
 void
 stoarg(NODE *p, int calltype)
 {
+	/* arrange to store the args */
 	if (p->in.op == CM) {
 		stoarg(p->in.left, calltype);
 		p = p->in.right;
 	}
 	callflag = 0;
 	store(p);
-	if (callflag) {
+	if (callflag) {	/* prevent two calls from being active at once */
 		stotree = p;
 		stocook = INTEMP;
-		store(p);
+		store(p);	/* do again to preserve bottom up nature.... */
 	}
 }
 
@@ -1352,8 +1353,8 @@ cbranch(NODE *p, int true, int false)
 
 void
 rcount(void)
-{
-	if (++nrecur > MAXRCOUNT)
+{	/* count recursions */
+	if (++nrecur > NRECUR)
 		cerror("expression causes compiler loop: try simplifying");
 }
 
@@ -1364,6 +1365,7 @@ ffld(NODE *p, int down, int *down1, int *down2)
 	register NODE *shp;
 	register int s, o, v, ty;
 
+	/* look for fields that are not in an lvalue context, and rewrite them... */
 	*down1 = asgop(p->in.op);
 	*down2 = 0;
 	if (down || p->in.op != FLD)
@@ -1371,7 +1373,9 @@ ffld(NODE *p, int down, int *down1, int *down2)
 	ty = szty(p->in.type) == 2 ? LONG : INT;
 	v = p->tn.rval;
 	s = UPKFSZ(v);
-	o = szty(p->in.type) * SZINT - s - UPKFOFF(v);
+	o = szty(p->in.type) * SZINT - s - UPKFOFF(v);	/* amount to shift */
+
+	/* make & mask part */
 	p->in.left->in.type = ty;
 	p->in.op = AND;
 	p->in.right = talloc();
@@ -1383,6 +1387,8 @@ ffld(NODE *p, int down, int *down1, int *down2)
 	p->in.right->in.sname = 0;
 	p->in.right->tn.lval <<= s;
 	p->in.right->tn.lval -= 1;
+
+	/* now, if a shift is needed, do it */
 	if (o != 0) {
 		shp = talloc();
 		shp->in.op = RS;
@@ -1394,7 +1400,7 @@ ffld(NODE *p, int down, int *down1, int *down2)
 		shp->in.right->in.rall = NOPREF;
 		shp->in.right->in.type = ty;
 		shp->in.right->tn.rval = 0;
-		shp->in.right->tn.lval = o;
+		shp->in.right->tn.lval = o;	/* amount to shift */
 		shp->in.right->in.sname = 0;
 		p->in.left = shp;
 	}

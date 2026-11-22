@@ -17,7 +17,6 @@ static char rcname[][8] = {
 	"TBYTE", "TWORD", "TLONG", "TFLOAT", "GBYTE", "GWORD", "GLONG", "GFLOAT", "RANY", "NULL"
 };
 
-#define MAXRCOUNT 5000
 
 /* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
 

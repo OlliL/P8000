@@ -34,7 +34,6 @@ int nosuffix = 0;
 
 /* the test condition codes for ZN, by relation */
 
-#define MAXRCOUNT 5000
 
 #define FREE_	100
 
