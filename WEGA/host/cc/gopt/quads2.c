@@ -67,21 +67,21 @@ void genquads(NODE *p)
 				cmwalk(p->in.right);
 			else {
 				genquads(p->in.right);
-				addquad(0x32, 0L, 0L, 0L);
+				addquad(QSPR, 0L, 0L, 0L);
 				if (p->in.right->in.op == STARG) {
 					*p1 = *operand(p->in.right->in.left);
 					p2->b2 = 1;
 					p2->w4 = p->in.right->stn.stsize;
 					p3->b2 = 1;
 					p3->w4 = p->in.right->stn.stalign;
-					q = addquad(0x34, p1, p2, p3);
+					q = addquad(QPARV, p1, p2, p3);
 					q->f0 = 1;
 				} else {
 					*p1 = *operand(p->in.right);
-					addquad(0x34, p1, 0L, 0L);
+					addquad(QPARV, p1, 0L, 0L);
 				}
 			}
-			addquad(0x35, 0L, 0L, 0L);
+			addquad(QEPR, 0L, 0L, 0L);
 			tfree(p->in.right);
 		} else
 			genquads(p->in.right);
@@ -126,7 +126,7 @@ void genquads(NODE *p)
 		if (p1->b2 != 3) {
 			p3->b2 = 3;
 			p3->w4 = nexttmp++;
-			q = addquad(0x3c, p1, 0L, p3);
+			q = addquad(QCOPY, p1, 0L, p3);
 			if (nest != 1)
 				q->f0 = 1;
 			s4 = *p3;
@@ -134,20 +134,20 @@ void genquads(NODE *p)
 			s4 = *p1;
 		p3->b2 = 3;
 		p3->w4 = nexttmp++;
-		addquad(1, p1, p2, p3);
+		addquad(QADD, p1, p2, p3);
 		*p2 = *p3;
 		*p3 = *p1;
 		if (p3->b2 == 3)
 			p3->w4 -= 1;
 		*p1 = *p2;
-		addquad(0x2f, p1, 0L, p3);
+		addquad(QSTORE, p1, 0L, p3);
 		*p3 = s4;
 		goto tail;
 	case 0x4f:
 		if (p1->b2 != 3) {
 			p3->b2 = 3;
 			p3->w4 = nexttmp++;
-			q = addquad(0x3c, p1, 0L, p3);
+			q = addquad(QCOPY, p1, 0L, p3);
 			if (nest != 1)
 				q->f0 = 1;
 			s4 = *p3;
@@ -155,13 +155,13 @@ void genquads(NODE *p)
 			s4 = *p1;
 		p3->b2 = 3;
 		p3->w4 = nexttmp++;
-		addquad(0x30, p1, p2, p3);
+		addquad(QSUB, p1, p2, p3);
 		*p2 = *p3;
 		*p3 = *p1;
 		if (p3->b2 == 3)
 			p3->w4 -= 1;
 		*p1 = *p2;
-		addquad(0x2f, p1, 0L, p3);
+		addquad(QSTORE, p1, 0L, p3);
 		*p3 = s4;
 		goto tail;
 	case 0x65:
@@ -305,18 +305,18 @@ void cmwalk(NODE *p)
 		cmwalk(p->in.right);
 		cmwalk(p->in.left);
 		if (p->in.left->in.op != CM) {
-			addquad(0x32, 0L, 0L, 0L);
+			addquad(QSPR, 0L, 0L, 0L);
 			if (p->in.left->in.op == STARG) {
 				r = operand(p->in.left->in.left);
 				p1->b2 = 1;
 				p1->w4 = p->in.left->stn.stsize;
 				p2->b2 = 1;
 				p2->w4 = p->in.left->stn.stalign;
-				q = addquad(0x34, r, p1, p2);
+				q = addquad(QPARV, r, p1, p2);
 				q->f0 = 1;
 			} else {
 				r = operand(p->in.left);
-				addquad(0x34, r, 0L, 0L);
+				addquad(QPARV, r, 0L, 0L);
 			}
 		}
 		if (p->in.right->in.op == STARG) {
@@ -325,11 +325,11 @@ void cmwalk(NODE *p)
 			p1->w4 = p->in.right->stn.stsize;
 			p2->b2 = 1;
 			p2->w4 = p->in.right->stn.stalign;
-			q = addquad(0x34, r, p1, p2);
+			q = addquad(QPARV, r, p1, p2);
 			q->f0 = 1;
 		} else {
 			r = operand(p->in.right);
-			addquad(0x34, r, 0L, 0L);
+			addquad(QPARV, r, 0L, 0L);
 		}
 		if (0)
 			goto e1;
@@ -412,7 +412,7 @@ struct qa *operand(NODE *p)
 		c.b2 = 3;
 		c.w4 = nexttmp++;
 		c.w0 = p->in.type;
-		addquad(0x3a, &a, &b, &c);
+		addquad(QDESC, &a, &b, &c);
 		opnd = c;
 		break;
 	}
@@ -526,7 +526,7 @@ struct quad *addquad(int op, struct qa *a, struct qa *b, struct qa *c)
 	if (qtail)
 		qtail->next = q;
 	qtail = q;
-	if (q->op == 0x1a || q->op == 0x1b || q->op == 0xb)
+	if (q->op == QJP || q->op == QJPC || q->op == QCEND)
 		lastq = q;
 	if (qflag > 1) {
 		printf("// in addquad -- ");
@@ -593,7 +593,7 @@ struct quad *delquad(struct quad *q)
 		printf("// removquad : quad = \n");
 		prquad(q);
 	}
-	if (q->op != 0x3b) {
+	if (q->op != QBBLOCK) {
 		denorm(&q->a);
 		denorm(&q->b);
 		denorm(&q->c);
@@ -626,8 +626,8 @@ void delrun(struct quad *q)
 
 	r = q->next;
 	delquad(q);
-	while (r->op != 0x3b) {
-		if (r->op == 0x11)
+	while (r->op != QBBLOCK) {
+		if (r->op == QEND)
 			return;
 		q = r;
 		r = q->next;
@@ -918,7 +918,7 @@ struct quad *labquad(int x)
 	p->b2 = 1;
 	p->w0 = 4;
 	p->w4 = x;
-	return addquad(0x1c, p, 0L, 0L);
+	return addquad(QLABEL, p, 0L, 0L);
 }
 
 struct quad *jmpquad(int x)
@@ -929,7 +929,7 @@ struct quad *jmpquad(int x)
 	p = &s;
 	p->b2 = 1;
 	p->w4 = x;
-	return addquad(0x1a, p, 0L, 0L);
+	return addquad(QJP, p, 0L, 0L);
 }
 
 /* the tree mapped again and again; a comma node without a left side disappears */

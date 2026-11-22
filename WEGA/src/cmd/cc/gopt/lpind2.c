@@ -34,20 +34,20 @@ struct qa b;
 	x = b.b2 == 1 ? (long)b.w4 : constbl[b.w4];
 	y = a.b2 == 1 ? (long)a.w4 : constbl[a.w4];
 	switch (op) {
-	case 1:
+	case QADD:
 		r = x;
 		break;
-	case 48:
+	case QSUB:
 		r = -x;
 		break;
-	case 34:
+	case QMULT:
 		r = x * y;
 		break;
-	case 44:
+	case QSHIFTL:
 		r = x * lpow2((int)y);
 		break;
-	case 14:
-	case 45:
+	case QDIV:
+	case QSHIFTR:
 		if ((l = ispow2(x)) > 0 && (m = ispow2(y)) > 0 && l > m)
 			r = l - m;
 		r = 0;
@@ -97,8 +97,8 @@ struct quad *q;
 	nstemps++;
 	b.w0 = a.w0;
 	c.b2 = 0;
-	nq = insertquad(60, &a, &c, &b, q);
-	nq = insertquad(60, &b, &c, &a, nq);
+	nq = insertquad(QCOPY, &a, &c, &b, q);
+	nq = insertquad(QCOPY, &b, &c, &a, nq);
 	nq->f3 = 0;
 	nq->f7 = 0;
 	nq->f4 = 0;
@@ -137,7 +137,7 @@ int kind;
 		printf("moveindquad(), opqd:\n");
 		prquad(opqd);
 	}
-	if (opqd->op == 34 && opqd->next->op == 13) {
+	if (opqd->op == QMULT && opqd->next->op == QCONV) {
 		opqd = qmove(opqd);
 		opqd = opqd->next;
 	}
@@ -214,18 +214,18 @@ struct quad *outq;
 		prquad(p->q);
 	}
 	switch (opqd->op) {
-	case 1:
+	case QADD:
 		op = 47;
 		a = p->e14;
 		b = zero;
 		break;
-	case 48:
+	case QSUB:
 		op = 48;
 		mkconstopnd(&a, 0L, 1, p->e14.w0);
 		b = p->e14;
 		break;
-	case 34:
-	case 44:
+	case QMULT:
+	case QSHIFTL:
 		a = p->e14;
 		op = opqd->op;
 		if (kind == 2)
@@ -249,7 +249,7 @@ struct quad *outq;
 		betanew(maxtmp);
 		a.w4 = maxtmp;
 		maxtmp++;
-		phquad = insertquad(13, &c, &b, &a, phquad);
+		phquad = insertquad(QCONV, &c, &b, &a, phquad);
 		c = a;
 	} else {
 		c.b2 = 6;
@@ -283,8 +283,8 @@ struct quad *outq;
 		prquad(opqd);
 	}
 	if (!p->f11 &&
-	    ((kind == 2 && (opqd->b.b2 == 1 || opqd->b.b2 == 7) && (opqd->op == 1 || opqd->op == 48)) ||
-	     (kind == 3 && (opqd->a.b2 == 1 || opqd->a.b2 == 7) && (opqd->op == 1 || opqd->op == 48)))) {
+	    ((kind == 2 && (opqd->b.b2 == 1 || opqd->b.b2 == 7) && (opqd->op == QADD || opqd->op == QSUB)) ||
+	     (kind == 3 && (opqd->a.b2 == 1 || opqd->a.b2 == 7) && (opqd->op == QADD || opqd->op == QSUB)))) {
 		t->e14 = p->e14;
 		if (pdebug > 3) {
 			printf("copyopndstmp(), copied indopnd: \n");
@@ -323,7 +323,7 @@ struct dl *p, *t;
 	ok = 0;
 	if (kind == 3) {
 		if (p->f11) {
-			if (opqd->a.b2 == 1 || opqd->a.b2 == 7 || opqd->op == 1 || opqd->op == 48) {
+			if (opqd->a.b2 == 1 || opqd->a.b2 == 7 || opqd->op == QADD || opqd->op == QSUB) {
 				n->f15 = 1;
 				n->v = ceval(opqd->a, opqd->op, p->e14);
 				t->f11 = 1;
@@ -343,7 +343,7 @@ struct dl *p, *t;
 		if (0) {
 			/* the kind 2 code stands here, reached by goto from below: so the original's block order */
 k2:
-			if (opqd->b.b2 == 1 || opqd->b.b2 == 7 || opqd->op == 1 || opqd->op == 48) {
+			if (opqd->b.b2 == 1 || opqd->b.b2 == 7 || opqd->op == QADD || opqd->op == QSUB) {
 				n->f15 = 1;
 				n->v = ceval(opqd->b, opqd->op, p->e14);
 				if (n->v != 0) {
@@ -467,7 +467,7 @@ int blk;
 	struct quad *nq;
 	struct qa a, b, c;
 
-	if (q->op == 34 && q->next->op == 13)
+	if (q->op == QMULT && q->next->op == QCONV)
 		q = q->next;
 	a = q->c;
 	denorm(&q->c);
@@ -478,7 +478,7 @@ int blk;
 	q->c = b;
 	normop(&q->c);
 	c.b2 = 0;
-	nq = insertquad(60, &b, &c, &a, q);
+	nq = insertquad(QCOPY, &b, &c, &a, q);
 	copyins = 1;
 	alloclpdef(nq, blk);
 	nq->f3 = 0;
@@ -598,7 +598,7 @@ lt2:
 			goto ls;
 		goto so;
 	}
-	if (q->op == 1 || q->op == 48)
+	if (q->op == QADD || q->op == QSUB)
 		goto lt2;
 so:
 	if (!sameopnd(q, dp->q, op, 1))
@@ -665,11 +665,11 @@ int kind;
 
 	a = r;
 	q = r->next;
-	if (r->op == 34 && r->next->op == 13) {
+	if (r->op == QMULT && r->next->op == QCONV) {
 		a = r->next;
 		q = r->next->next;
 	}
-	t = (q->op == 47 && q->a.b2 == a->c.b2 && q->a.w4 == a->c.w4 &&
+	t = (q->op == QSTORE && q->a.b2 == a->c.b2 && q->a.w4 == a->c.w4 &&
 	    ((q->f1 && !q->f2) || (q->f1 && q->f2 && q->a.b2 != 6))) ? q : 0;
 	q = r;
 	r = t;
@@ -679,22 +679,22 @@ int kind;
 		prquad(r);
 	}
 	switch (q->op) {
-	case 1:
-	case 34:
-	case 44:
-	case 48:
+	case QADD:
+	case QMULT:
+	case QSHIFTL:
+	case QSUB:
 		if (q->a.b2 == 1 || q->a.b2 == 7 || ((q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8) &&
 		    !isdefined(q, 2) && !(((q->a.w0 & 0x30) == 0x10) ^ ((q->b.w0 & 0x30) == 0x10)))) {
-			if (q->op == 44 && q->b.b2 != 1 && q->b.b2 != 7)
+			if (q->op == QSHIFTL && q->b.b2 != 1 && q->b.b2 != 7)
 				return 0;
 			q = chklpdefs(r, q, 3, kind);
 			return q;
 		}
-	case 14:
-	case 45:
+	case QDIV:
+	case QSHIFTR:
 		if (q->b.b2 == 1 || q->b.b2 == 7 || ((q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8) &&
 		    !isdefined(q, 3) && !(((q->a.w0 & 0x30) == 0x10) ^ ((q->b.w0 & 0x30) == 0x10)))) {
-			if (q->op == 45 && q->b.b2 != 1 && q->b.b2 != 7)
+			if (q->op == QSHIFTR && q->b.b2 != 1 && q->b.b2 != 7)
 				return 0;
 			q = chklpdefs(r, q, 2, kind);
 			return q;

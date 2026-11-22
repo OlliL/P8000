@@ -42,14 +42,14 @@ void writeil(void)
 	for (q = qhead; q; q = q->next) {
 		lineno = q->pos.line;
 		switch (q->op) {
-		case 0x2e:
+		case QSTART:
 			printf("{%d\t%ld\t", nlabsave, zl(frame0));
 			pos = ftell(stdout);
 			printf("0000\t%d\t\n", nparm);
 			wrline(curproc);
 			tfree(curproc);
 			continue;
-		case 0x11:
+		case QEND:
 			for (i = 1; i <= 11; i++)
 				if (regsym[i] && (((regsym[i]->sflags >> 2) & 1) || regsym[i]->sclass == 3))
 					printf("S%d\t\n", (regsym[i]->sflags >> 4) & 0xfff);
@@ -58,14 +58,14 @@ void writeil(void)
 			printf("%04d", tmpoff);	/* the original: %04.4d; its printf has no precision */
 			fseek(stdout, 0L, 2);
 			continue;
-		case 6:
+		case QBLOCK:
 			cleartrees();
 			printf("[%ld\t%d\t%d\t\n", zl(constbl[q->a.w4]), q->b.w4, q->c.w4);
 			continue;
-		case 0xf:
+		case QEBLOCK:
 			printf("]\n");
 			continue;
-		case 0x3b:
+		case QBBLOCK:
 			cleartrees();
 			printf("#%d\t", q->a.w0);
 			for (i = q->a.w4; i >= 0; i = edges[i].next) {
@@ -78,27 +78,27 @@ void writeil(void)
 					printf("%d\t", edges[i].blk);
 			printf("\n");
 			continue;
-		case 0x1c:
+		case QLABEL:
 			cleartrees();
 			printf("L%d\t\n", q->a.w4);
 			continue;
-		case 0x1a:
+		case QJP:
 			cleartrees();
 			printf("B%d\t\n", q->a.w4);
 			continue;
-		case 9:
+		case QCTABLE:
 			printf("C %d\t", q->a.w4);
 			q = q->next;
-			while (q->op == 0xa) {
+			while (q->op == QCASEL) {
 				printf("%d\t", q->a.w4);
 				q = q->next;
 			}
 			printf("\n");
 			continue;
-		case 0x32:
+		case QSPR:
 			pend = 0;
-			while (q = q->next, q->op != 0x35) {
-				if (q->op != 0x34)
+			while (q = q->next, q->op != QEPR) {
+				if (q->op != QPARV)
 					mktree(q);
 				else {
 					if (q->a.b2 == 8) {
@@ -140,13 +140,13 @@ void writeil(void)
 				}
 			}
 			continue;
-		case 0x2b:
+		case QSAVE:
 			if (regsym[q->a.w4] == 0)
 				continue;
 			printf("S%d\t\n", (regsym[q->a.w4]->sflags >> 4) & 0xfff);
 			regsym[q->a.w4] = 0;
 			continue;
-		case 0x28:
+		case QREGISTER:
 			if (q->a.w4 > 7)
 				q->a.w4 -= 7;
 			if (q->b.b2 == 4) {
@@ -168,7 +168,7 @@ void writeil(void)
 				printf("R%d\t%d\t%d\t\n", q->a.w4, -u->tn.temp, q->b.w0);
 			}
 			continue;
-		case 0x29:
+		case QRESTORE:
 			if (q->b.b2 == 4)
 				printf("T%d\t\n", (symtab[q->b.w4].sflags >> 4) & 0xfff);
 			else if (q->b.b2 == 6 && betatbl[q->b.w4].p6 < 0) {
@@ -214,9 +214,9 @@ void mktree(struct quad *q)
 		if (q->c.b2 == 8 && q->a.b2 == 8)
 			fl = (betatbl[q->a.w4].p8 >> 10) & 1;
 	}
-	if (q->op == 0x3c && q->a.b2 == 4 && q->c.b2 == 8 && (q->a.w0 & 0x30) == 0x10)
+	if (q->op == QCOPY && q->a.b2 == 4 && q->c.b2 == 8 && (q->a.w0 & 0x30) == 0x10)
 		betatbl[q->c.w4].p8 |= 1 << 10;
-	if (q->op == 7) {
+	if (q->op == QCALL) {
 		q->c = q->b;
 		q->b.b2 = 0;
 	}
@@ -352,7 +352,7 @@ void mktree(struct quad *q)
 		p->in.rall = q->c.w4;
 		return;
 	}
-	if (q->op == 0x3c) {
+	if (q->op == QCOPY) {
 		if (q->a.b2 == 4 && q->c.b2 == 3)
 			p->tn.w6 = 1;
 	} else if (asgop(p->in.op) && q->c.b2 != 6 && needustar(p)) {

@@ -34,10 +34,10 @@ int flow_graph(void)
 	blks = (struct quad **)tabzalloc(0, 0, 8);
 	blkno = 0;
 	for (q = qhead; q != 0; q = q->next)
-		if (q->op == 0x3b)
+		if (q->op == QBBLOCK)
 			q = delquad(q);
 	for (q = qhead; q != 0; q = q->next) {
-		if (q->op != 0x1c && q->op != 6 && q->op != 0xf && nb != 0) {
+		if (q->op != QLABEL && q->op != QBLOCK && q->op != QEBLOCK && nb != 0) {
 			lab[blkno] = -1;
 			tabzalloc((int)sizeof(struct quad *), 4, 8);
 			blks[blkno] = last;
@@ -47,7 +47,7 @@ int flow_graph(void)
 				printf("// new basic block blkno = %d\n", blkno);
 		}
 		switch (q->op) {
-		case 0x1c:
+		case QLABEL:
 			lab[blkno] = q->a.w4;
 			tabzalloc((int)sizeof(struct quad *), 4, 8);
 			blks[blkno] = last;
@@ -56,10 +56,10 @@ int flow_graph(void)
 			if (fdebug > 4)
 				printf("// label encountered blkno = %d\n", blkno);
 			break;
-		case 0x11:
-		case 0x1a:
-		case 0x1b:
-		case 0x2e:
+		case QEND:
+		case QJP:
+		case QJPC:
+		case QSTART:
 			nb = 1;
 			break;
 		}
@@ -85,14 +85,14 @@ int flow_graph(void)
 	s3.b2 = 0;
 	for (i = 0; i < blkno; i++) {
 		s1.w0 = i;
-		blks[i] = insertquad(0x3b, &s1, &s2, &s3, blks[i]);
+		blks[i] = insertquad(QBBLOCK, &s1, &s2, &s3, blks[i]);
 	}
 	edges = (struct edge *)tabzalloc(0, 0, 8);
 	nedge = 0;
 	for (i = 0; i < blkno; i++) {
-		for (q = blks[i]->next; q != 0 && q->op != 0x3b; q = q->next) {
+		for (q = blks[i]->next; q != 0 && q->op != QBBLOCK; q = q->next) {
 			switch (q->op) {
-			case 0x1c:
+			case QLABEL:
 				if (jmp == 0 && i != 0) {
 					addedge(&blks[i]->a.w4, i - 1);
 					addedge(&blks[i - 1]->b.w4, i);
@@ -100,38 +100,38 @@ int flow_graph(void)
 				}
 				jmp = 0;
 				continue;
-			case 0x1b:
+			case QJPC:
 				lb = blkof(q->b.w4, lab);
 				marklab(blks[lb]);
 				addedge(&blks[lb]->a.w4, i);
 				addedge(&blks[i]->b.w4, lb);
-				if (blks[i + 1]->next->op != 0x1c) {
+				if (blks[i + 1]->next->op != QLABEL) {
 					addedge(&blks[i + 1]->a.w4, i);
 					addedge(&blks[i]->b.w4, i + 1);
 				}
 				continue;
-			case 0x1a:
+			case QJP:
 				lb = blkof(q->a.w4, lab);
 				marklab(blks[lb]);
 				addedge(&blks[lb]->a.w4, i);
 				addedge(&blks[i]->b.w4, lb);
 			/* fall through */
-			case 0xb:
+			case QCEND:
 				jmp = 1;
 				continue;
-			case 0xa:
+			case QCASEL:
 				lb = blkof(q->a.w4, lab);
 				marklab(blks[lb]);
 				addedge(&blks[lb]->a.w4, i);
 				addedge(&blks[i]->b.w4, lb);
 				for (r = blks[lb]; ; r = r->next)
-					if (r->op == 0x1c) {
+					if (r->op == QLABEL) {
 						r->c.w0 = 1;
 						break;
 					}
 				continue;
-			case 6:
-			case 0xf:
+			case QBLOCK:
+			case QEBLOCK:
 				continue;
 			default:
 				jmp = 0;
@@ -162,7 +162,7 @@ void optflow(void)
 		prstats();
 	}
 	for (i = 0; i < blkno; i++)
-		if (blks[i] != 0 && blks[i]->next->op == 0x1c)
+		if (blks[i] != 0 && blks[i]->next->op == QLABEL)
 			tab[i] = blks[i]->next->a.w4;
 		else
 			tab[i] = -1;
@@ -176,7 +176,7 @@ void optflow(void)
 		printf("// after jumps are removed:\n");
 		prquads();
 	}
-	for (q = qhead; q->op != 0x3b; q = q->next)
+	for (q = qhead; q->op != QBBLOCK; q = q->next)
 		;
 	startblk = q->a.w0;
 	rm_deadblks();
@@ -206,7 +206,7 @@ int blkof(int l, int *t)
 /* the first label quad from q on gets the mark (guessed) */
 void marklab(struct quad *q)
 {
-	while (q->op != 0x1c)
+	while (q->op != QLABEL)
 		q = q->next;
 	q->c.b2 = 1;
 	q->c.w4 = 1;
@@ -265,7 +265,7 @@ void rmlabels(int *tab)
 	for (i = 0; i < blkno - 1; i++) {
 		if (blks[i] == 0)
 			continue;
-		if (blks[i]->next->op != 0x1c)
+		if (blks[i]->next->op != QLABEL)
 			continue;
 		if (blks[i]->next->c.w4 == 0) {
 			x = blks[i]->a.w4;
@@ -274,8 +274,8 @@ void rmlabels(int *tab)
 			x = edges[x].blk;
 			y = blks[i]->a.w0;
 			delquad(blks[i]->next);
-			for (p = blks[x]->next; p->op != 0x3b; p = p->next)
-				if (p->op == 0x1b || p->op == 0xb)
+			for (p = blks[x]->next; p->op != QBBLOCK; p = p->next)
+				if (p->op == QJPC || p->op == QCEND)
 					x = -1;
 			if (x >= 0) {
 				delquad(blks[i]);
@@ -308,12 +308,12 @@ void rmlabels(int *tab)
 		}
 		blks[pi]->next->c.w4 |= blks[pj]->next->c.w4;
 		for (; e >= 0; e = edges[e].next)
-			for (p = blks[edges[e].blk]->next; p && p->op != 0x3b; p = p->next) {
+			for (p = blks[edges[e].blk]->next; p && p->op != QBBLOCK; p = p->next) {
 				switch (p->op) {
-				case 0x1a:
+				case QJP:
 					p->a.w4 = tab[pi];
 					break;
-				case 0x1b:
+				case QJPC:
 					if (p->next != blks[pj])
 						p->b.w4 = tab[pi];
 					break;
@@ -322,7 +322,7 @@ void rmlabels(int *tab)
 		if (blkempty(blks[pj])) {
 			delrun(blks[pj]);
 		} else {
-			for (p = blks[pj]; p != 0 && (p->op == 0x3b || p->op == 0x1c); p = nx) {
+			for (p = blks[pj]; p != 0 && (p->op == QBBLOCK || p->op == QLABEL); p = nx) {
 				nx = p->next;
 				delquad(p);
 			}
@@ -338,12 +338,12 @@ void rmlabels(int *tab)
 int blkempty(struct quad *q)
 {
 	for (q = q->next; q != 0; q = q->next) {
-		if (q->op == 0x3b)
+		if (q->op == QBBLOCK)
 			return 1;
 		switch (q->op) {
-		case 6:
-		case 0xf:
-		case 0x1c:
+		case QBLOCK:
+		case QEBLOCK:
+		case QLABEL:
 			break;
 		default:
 			return 0;
@@ -374,9 +374,9 @@ void rmjumps(int *tab)
 			pb = edges[e].blk;
 			pp = &blks[edges[e].blk]->a.w4;
 			sp = &blks[edges[e].blk]->b.w4;
-			for (p = blks[edges[e].blk]->next; p->op != 0x3b; p = p->next) {
+			for (p = blks[edges[e].blk]->next; p->op != QBBLOCK; p = p->next) {
 				switch (p->op) {
-				case 0x1a:
+				case QJP:
 					p->a.w4 = lbl;
 					deledge(&blks[i]->a.w4, pb);
 					deledge(sp, i);
@@ -385,8 +385,8 @@ void rmjumps(int *tab)
 					addedge(&blks[lb2]->a.w4, pb);
 					flag = 1;
 					break;
-				case 0x1b:
-					if (p->next == blks[i] || (p->next->op == 6 && p->next->next == blks[i])) {
+				case QJPC:
+					if (p->next == blks[i] || (p->next->op == QBLOCK && p->next->next == blks[i])) {
 						flag = 0;
 						break;
 					}
@@ -473,14 +473,14 @@ void joinblk(int a, int b, int mode)
 int jmplabel(struct quad *q)
 {
 	for (q = q->next; q != 0; q = q->next) {
-		if (q->op == 0x3b)
+		if (q->op == QBBLOCK)
 			return 0;
 		switch (q->op) {
-		case 6:
-		case 0xf:
-		case 0x1c:
+		case QBLOCK:
+		case QEBLOCK:
+		case QLABEL:
 			continue;
-		case 0x1a:
+		case QJP:
 			return q->a.w4;
 		default:
 			return 0;

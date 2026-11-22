@@ -118,12 +118,12 @@ int insrtlive(struct quad *q, int *cnt)
 	if (a == 0)
 		goto r1;
 	if ((symtab[q->a.w4].sflags >> 2) & 1) {
-		if (q->op == 0x2f && almap(&q->a, 0x2f) == 0)
+		if (q->op == QSTORE && almap(&q->a, QSTORE) == 0)
 r1:
 			return 1;
-		if (q->op == 0x18 && almap(&q->a, 0x18) == nptr)
+		if (q->op == QIDR && almap(&q->a, QIDR) == nptr)
 			return 1;
-		if (q->op == 3 && almap(&q->a, 3) == nadr)
+		if (q->op == QADDR && almap(&q->a, QADDR) == nadr)
 			return 1;
 	}
 	(*cnt)++;
@@ -178,14 +178,14 @@ int setsymtable(struct quad *q, int which)
 		symtab[t].sflags |= 1;
 		tq.b.b2 = 0;
 		tq.c.b2 = 0;
-		tq.op = 0x2f;	/* byte 4 of the quad */
+		tq.op = QSTORE;	/* byte 4 of the quad */
 		cnt = 0;
 		if (!insrtlive(&tq, &cnt))
 			return 0;
-		tq.op = 0x18;	/* byte 4 of the quad */
+		tq.op = QIDR;	/* byte 4 of the quad */
 		if (!insrtlive(&tq, &cnt))
 			return 0;
-		tq.op = 3;	/* byte 4 of the quad */
+		tq.op = QADDR;	/* byte 4 of the quad */
 		if (!insrtlive(&tq, &cnt))
 			return 0;
 		if (cnt < 3 && !islive(t, 1, 0) && nlv > 480)
@@ -242,7 +242,7 @@ int markblkvar(int b)
 	if (ldebug > 2)
 		prquad(q);
 	for (; q != 0; q = q->next) {
-		if (q->op == 0x3b)
+		if (q->op == QBBLOCK)
 			break;
 		if (ldebug > 2)
 			prquad(q);
@@ -315,7 +315,7 @@ int issym(struct quad *q, int flag)
 			if (bbit(j, 13))
 				r = 6;
 		} else if (q->c.b2 == 8) {
-			if (q->op == 0x2f) {
+			if (q->op == QSTORE) {
 				if (symtab[betatbl[j].x1].sflags & 1)
 					r = 4;
 			} else if (bbit(j, 13))
@@ -331,7 +331,7 @@ int issym(struct quad *q, int flag)
 			if (bbit(j, 13))
 				r = 6;
 		} else if (q->a.b2 == 8) {
-			if (q->op == 0x18 || q->op == 0x1e) {
+			if (q->op == QIDR || q->op == QLOAD) {
 				if (symtab[betatbl[j].x1].sflags & 1)
 					r = 4;
 			} else if (bbit(j, 13))
@@ -378,7 +378,7 @@ int countreachdefs(void)
 	if (ldebug > 2)
 		printf("countreachdefs()\n");
 	for (q = qhead; q != 0; q = q->next) {
-		if (q->op == 0x3b || q->op == 7)
+		if (q->op == QBBLOCK || q->op == QCALL)
 			continue;
 		if (!q->f4)
 			continue;
@@ -568,7 +568,7 @@ void initlive(void)
 			prquad(q);
 		p = q->rec;
 		for (q = q->next; q != 0; q = q->next) {
-			if (q->op == 0x3b)
+			if (q->op == QBBLOCK)
 				break;
 			if (ldebug > 3) {
 				printf("initlive: processing quad:\n");
@@ -740,7 +740,7 @@ void linkreachdefs(void)
 				p = MASK(defs[i]);
 				q = defs[j];
 				if (p != q && (p->c.b2 == 8 || q->c.b2 == 8))
-					if (p->op != 0x2f || q->op != 0x2f)
+					if (p->op != QSTORE || q->op != QSTORE)
 						continue;
 				if (ldebug > 3)
 					printf(" %d", j);
@@ -783,7 +783,7 @@ int *srchdef(struct quad *q, int mode)
 			continue;
 		d = defs[p->idx];
 		if (q != d && (q->c.b2 == 8 || d->c.b2 == 8))
-			if (q->op != 0x2f || d->op != 0x2f)
+			if (q->op != QSTORE || d->op != QSTORE)
 				continue;
 		if (ldebug > 3) {
 			printf("found:\n");
@@ -849,9 +849,9 @@ void initreach(void)
 			continue;
 		r = q->rec;
 		for (q = q->next; q != 0; q = q->next) {
-			if (q->op == 0x3b)
+			if (q->op == QBBLOCK)
 				break;
-			if (q->op == 7) {
+			if (q->op == QCALL) {
 				killdefs(r);
 				continue;
 			}

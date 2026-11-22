@@ -105,9 +105,9 @@ nextp:
 		p = p->next;
 		goto outer;
 	}
-	if (q->op == 59)
+	if (q->op == QBBLOCK)
 		goto nextp;
-	if (q->op != 7)
+	if (q->op != QCALL)
 		goto qs;
 	if (rdebug > 4)
 		printf("// call found in loop\n");
@@ -127,7 +127,7 @@ symflags()
 
 	found = 0;
 	for (q = qhead; q != 0; q = q->next) {
-		if (q->op == 3 && q->a.b2 == 4) {
+		if (q->op == QADDR && q->a.b2 == 4) {
 			symtab[q->a.w4].sflags &= ~1;
 			found = 1;
 		}
@@ -153,7 +153,7 @@ int flag;
 			printf("// assignreg: quad =");
 			prquad(q);
 		}
-		if (q->op == 59) {
+		if (q->op == QBBLOCK) {
 			bblockno = q->a.w0;
 			if (rdebug > 4) {
 				if (QHREC(blks[bblockno])->w12)
@@ -178,12 +178,12 @@ int flag;
 				break;
 			case 8:
 				if (BBIT(q->c.w4, 13)) {
-					if ((notlive(q, dfptr) == 0 || q->op == 60) && q->op != 47)
+					if ((notlive(q, dfptr) == 0 || q->op == QCOPY) && q->op != QSTORE)
 						include(flag, q, last);
 				}
 				break;
 			case 6:
-				if (BBIT(q->c.w4, 13) && ctneg[q->c.w4] > 2 && q->op != 47)
+				if (BBIT(q->c.w4, 13) && ctneg[q->c.w4] > 2 && q->op != QSTORE)
 					include(flag, q, last);
 				break;
 			}
@@ -218,7 +218,7 @@ struct quad *q, *last;
 {
 	struct { int x0; struct quad *q; int blk; int kind; } *t;
 
-	if (q->op == 7 || q->op == 33)
+	if (q->op == QCALL || q->op == QMOVE)
 		return;
 	if (rdebug > 4) {
 		printf("// include : called with");
@@ -279,14 +279,14 @@ l59:
 			dfp = QF(q, 0x18);
 			prev = live;
 			live = QF(q, 4);
-			if (q->next->op != 28 && prev != 0)
+			if (q->next->op != QLABEL && prev != 0)
 				orvec(live, prev, lvwords);
 			for (k = 0; k < dfwords; k++)
 				tmp[k] = dfp[k];
 			mergevectors(live, tmp);
 			continue;
 		}
-		if (q->op == 59)
+		if (q->op == QBBLOCK)
 			goto l59;
 		if (q == GF(i, 2, struct quad *)) {
 			updatevector(q, tmp);
@@ -359,7 +359,7 @@ unsigned *v;
 {
 	int *p;
 
-	if (q->op == 7)
+	if (q->op == QCALL)
 		return;
 	for (p = srchdef(q, 1); *++p != -1; ) {
 		if (q != defs[*p]) {
@@ -663,9 +663,9 @@ struct quad *p;
 	}
 	qq = (struct quad *)findend(x, &out);
 	for (qq = *(struct quad **)qq; qq != 0; qq = qq->next) {
-		if (qq->op == 28)
+		if (qq->op == QLABEL)
 			break;
-		if (qq->op != 40)
+		if (qq->op != QREGISTER)
 			continue;
 		if (qq->a.w4 != reg)
 			continue;
@@ -681,7 +681,7 @@ struct quad *p;
 	tmp.b2 = 1;
 	tmp.w4 = reg;
 	tmp.w0 = 4;
-	qq = insertquad(40, &tmp, &c, (struct qa *)0, p);
+	qq = insertquad(QREGISTER, &tmp, &c, (struct qa *)0, p);
 	if (rdebug) {
 		printf("// addreg (2) returning : ");
 		prquad(qq);
@@ -708,9 +708,9 @@ struct quad *p;
 	}
 	qq = (struct quad *)findend(x, &out);
 	for (qq = *(struct quad **)qq; qq != 0; qq = qq->next) {
-		if (qq->op == 28)
+		if (qq->op == QLABEL)
 			break;
-		if (qq->op != 41)
+		if (qq->op != QRESTORE)
 			continue;
 		if (qq->a.w4 == reg)
 			return;
@@ -718,7 +718,7 @@ struct quad *p;
 	tmp.b2 = 1;
 	tmp.w4 = reg;
 	tmp.w0 = 4;
-	insertquad(41, &tmp, &c, (struct qa *)0, p);
+	insertquad(QRESTORE, &tmp, &c, (struct qa *)0, p);
 }
 
 /* the quad that saves the register reg is looked for in the block blk or inserted (name guessed) */
@@ -733,9 +733,9 @@ int reg, blk;
 
 	qq = (struct quad *)findend(blk, &out);
 	for (qq = *(struct quad **)qq; qq != 0; qq = qq->next) {
-		if (qq->op == 28)
+		if (qq->op == QLABEL)
 			break;
-		if (qq->op != 43)
+		if (qq->op != QSAVE)
 			continue;
 		if (qq->a.w4 == reg)
 			return qq;
@@ -744,7 +744,7 @@ int reg, blk;
 	tmp.w4 = reg;
 	tmp.w0 = 4;
 	p = ebbtail(blk);
-	qq = insertquad(43, &tmp, (struct qa *)0, (struct qa *)0, p);
+	qq = insertquad(QSAVE, &tmp, (struct qa *)0, (struct qa *)0, p);
 	return qq;
 }
 
@@ -807,9 +807,9 @@ rmrestorequad()
 		if (blks[b] == 0)
 			continue;
 		for (q = blks[b]->next; q != 0; q = q->next) {
-			if (q->op == 59)
+			if (q->op == QBBLOCK)
 				break;
-			if (q->op != 41)
+			if (q->op != QRESTORE)
 				continue;
 			if (rdebug)
 				printf("// rmrestorequad, found RESTORE\n");
@@ -843,7 +843,7 @@ propagate()
 	struct qa *t, *pb;
 
 	for (b = 0; b < blkno; b++) {
-		if (blks[b] == 0 || blks[b]->next->op != 28)
+		if (blks[b] == 0 || blks[b]->next->op != QLABEL)
 			continue;
 		e = blks[b]->next->a.w4;
 		if (rdebug > 1)
@@ -861,7 +861,7 @@ propagate()
 				tmp.w4 = r;
 				tmp.w0 = 4;
 				t = &rquad(c, r)->b;
-				insertquad(40, &tmp, t, (struct qa *)0, blks[b]->next);
+				insertquad(QREGISTER, &tmp, t, (struct qa *)0, blks[b]->next);
 				markreg(b, r);
 			} else {
 				t = &rquad(c, r)->b;
@@ -873,7 +873,7 @@ propagate()
 					printf("// propagate : check quad -");
 					prquad(q);
 				}
-				if (q->op == 41 && q->a.w4 == r)
+				if (q->op == QRESTORE && q->a.w4 == r)
 					delquad(q);
 			}
 		}
@@ -921,9 +921,9 @@ int blk, reg;
 	if (blks[blk] == 0)
 		cerror("rquad called with bad block");
 	for (q = blks[blk]->next; q != 0; q = q->next) {
-		if (q->op == 59)
+		if (q->op == QBBLOCK)
 			break;
-		if (q->op == 40 && q->a.w4 == reg)
+		if (q->op == QREGISTER && q->a.w4 == reg)
 			res = q;
 	}
 	return res;
@@ -947,9 +947,9 @@ int *px;
 			return blks[c];
 		}
 		for (q = blks[c]->next; q != 0; q = q->next) {
-			if (q->op == 59)
+			if (q->op == QBBLOCK)
 				break;
-			if (q->op == 28) {
+			if (q->op == QLABEL) {
 				*px = c;
 				return q;
 			}
@@ -970,7 +970,7 @@ int b;
 
 	last = blks[b];
 	for (q = blks[b]->next; q != 0; q = q->next) {
-		if (q->op == 17 || (q->op == 59 && q->next->op == 28) || q->op == 26)
+		if (q->op == QEND || (q->op == QBBLOCK && q->next->op == QLABEL) || q->op == QJP)
 			return last;
 		last = q;
 	}
@@ -1143,9 +1143,9 @@ struct quad *r, *r3;
 	}
 	end = g->q;
 	for (c = r3->next; c != 0; c = c->next) {
-		if (c == end || c->op == 28 || c->op == 17)
+		if (c == end || c->op == QLABEL || c->op == QEND)
 			return 0;
-		if (c->op == 40)
+		if (c->op == QREGISTER)
 			continue;
 		if (eqopnd(&r->b, &c->a))
 			return 1;
@@ -1164,11 +1164,11 @@ struct quad *s;
 	struct quad *c;
 
 	for (c = s; c != 0; c = c->next) {
-		if (c->op == 28)
+		if (c->op == QLABEL)
 			return 0;
-		if (c->op == 27 && c->b.w4 == n)
+		if (c->op == QJPC && c->b.w4 == n)
 			return 0;
-		if (c->op != 40 && c->op != 41) {
+		if (c->op != QREGISTER && c->op != QRESTORE) {
 			if (eqopnd(&s->b, &c->a))
 				return 1;
 			if (eqopnd(&s->b, &c->b))

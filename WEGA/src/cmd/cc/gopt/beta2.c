@@ -35,17 +35,17 @@ betainit()
 			betaset(&q->c);
 		flag = 0;
 		switch (q->op) {
-		case 3:
+		case QADDR:
 			flag = 1;
-		case 25:
+		case QINDEX:
 			if (q->a.b2 == 8 && BBIT(q->a.w4, 11)) {
 				if (q->b.b2 == 1 || q->b.b2 == 7)
 					flag = 1;
 			}
-		case 24:
-		case 30:
+		case QIDR:
+		case QLOAD:
 			if (q->a.b2 == 4) {
-				x = almap(&q->a, q->op == 25 ? 3 : q->op);
+				x = almap(&q->a, q->op == QINDEX ? 3 : q->op);
 				y = q->a.w4;
 			} else if (q->a.b2 == 8) {
 				x = betatbl[q->a.w4].x0;
@@ -53,8 +53,8 @@ betainit()
 			} else
 				continue;
 			goto alloc;
-		case 2:
-		case 20:
+		case QADDFLD:
+		case QFIELD:
 			if (q->a.b2 == 4) {
 				x = almap(&q->a, q->op);
 				y = q->a.w4;
@@ -66,7 +66,7 @@ betainit()
 			if (q->a.b2 == 8 && BBIT(q->a.w4, 11))
 				flag = 1;
 			goto alloc;
-		case 60:
+		case QCOPY:
 			if (q->a.b2 != 4 || (q->a.w0 & 0x30) != 0x10)
 				continue;
 			x = almap(&q->a, q->op);

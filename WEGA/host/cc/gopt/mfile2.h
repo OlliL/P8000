@@ -52,6 +52,68 @@ struct qa { unsigned w0; char b2; unsigned fl:1; int w4; };	/* an operand of a q
 
 struct pos { char *name; int line; };
 
+/* the quad operators: the names of qtab (debug2.c) with Q, as the strings of the original say QSTORE and QIDR */
+#define QADD	1
+#define QADDFLD	2
+#define QADDR	3
+#define QAND	4
+#define QANDL	5
+#define QBLOCK	6
+#define QCALL	7
+#define QCASE	8
+#define QCTABLE	9
+#define QCASEL	10
+#define QCEND	11
+#define QCOMPL	12
+#define QCONV	13
+#define QDIV	14
+#define QEBLOCK	15
+#define QELOOP	16
+#define QEND	17
+#define QENTRY	18
+#define QEQ	19
+#define QFIELD	20
+#define QFREE	21
+#define QGE	22
+#define QGT	23
+#define QIDR	24
+#define QINDEX	25
+#define QJP	26
+#define QJPC	27
+#define QLABEL	28
+#define QLE	29
+#define QLOAD	30
+#define QLOOP	31
+#define QLT	32
+#define QMOVE	33
+#define QMULT	34
+#define QNE	35
+#define QNOT	36
+#define QOR	37
+#define QORL	38
+#define QREM	39
+#define QREGISTER	40
+#define QRESTORE	41
+#define QRET	42
+#define QSAVE	43
+#define QSHIFTL	44
+#define QSHIFTR	45
+#define QSTART	46
+#define QSTORE	47
+#define QSUB	48
+#define QXOR	49
+#define QSPR	50
+#define QPARR	51
+#define QPARV	52
+#define QEPR	53
+#define QNOCALLS	54
+#define QNOOPT	55
+#define QOPT	56
+#define QSEARCH	57
+#define QDESC	58
+#define QBBLOCK	59
+#define QCOPY	60
+
 struct quad {
 	struct quad *next;	/* 0 */
 	unsigned op:8;		/* 4 */

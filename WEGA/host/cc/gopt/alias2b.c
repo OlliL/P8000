@@ -12,9 +12,9 @@ int isebbend(int b)
 	if (blks[b]->a.w4 < 0)
 		return 1;
 	for (q = blks[b]->next; q != 0; q = q->next) {
-		if (q->op == 59)
+		if (q->op == QBBLOCK)
 			break;
-		if (q->op == 28)
+		if (q->op == QLABEL)
 			return 1;
 	}
 	return 0;

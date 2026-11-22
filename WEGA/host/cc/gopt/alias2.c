@@ -127,9 +127,9 @@ skh:
 		q = fndcall(q);
 		if (q == 0)
 			break;
-		if (q->op == 0x3b)
+		if (q->op == QBBLOCK)
 			goto skh;
-		if (q->op == 0x2f) {
+		if (q->op == QSTORE) {
 			if (!checkops(q, 0))
 				continue;
 			cls = op70d8;
@@ -140,11 +140,11 @@ skh:
 			if (q->a.b2 == 1 || q->a.b2 == 7)
 				continue;
 			setposition(op70d8, &opnd70c8, B, A);
-		} else if (q->op == 0x34) {
+		} else if (q->op == QPARV) {
 			if (q->a.b2 == 3 && fndparm(q))
-				setposition(0x34, &opnd70c8, B, A);
+				setposition(QPARV, &opnd70c8, B, A);
 			else if (q->a.b2 == 4 && (DECREF(q->a.w0) & 0x30) == 0x10)
-				setposition(0x18, &q->a, B, A);
+				setposition(QIDR, &q->a, B, A);
 		}
 	}
 	n = nadr;
@@ -318,11 +318,11 @@ void prmat(int *m, int n, int dim)
 struct quad *fndcall(struct quad *q)
 {
 	for (; q != 0; q = q->next)
-		if (q->op == 0x2f || q->op == 0x34)
+		if (q->op == QSTORE || q->op == QPARV)
 			break;
 	if (aflag > 2 && q) {
 		printf("\n");
-		if (q->op == 0x2f || q->op == 0x34)
+		if (q->op == QSTORE || q->op == QPARV)
 			prquad(q);
 		printf("\n");
 	}
@@ -341,7 +341,7 @@ struct quad *tmpsearch(struct quad *p, int tmpno, struct quad *q)
 		prquad(p);
 		prquad(q);
 	}
-	if (p->op == 7)
+	if (p->op == QCALL)
 		s = p->b;
 	else
 		s = p->c;
@@ -361,7 +361,7 @@ struct quad *tmpsearch(struct quad *p, int tmpno, struct quad *q)
 			cerror("tmpsearch: temp not found in il %d", tmpno);
 		}
 		p = p->next;
-		if (p->op == 7)
+		if (p->op == QCALL)
 			s = p->b;
 		else
 			s = p->c;
@@ -382,7 +382,7 @@ int fndparm(struct quad *q)
 	for (;;) {
 		q = tmpsearch(pcur, s.w4, q);
 		s = q->a;
-		if (q->op == 3) {
+		if (q->op == QADDR) {
 			if (q->a.b2 != 4)
 				return 0;
 			op70d8 = 3;
@@ -454,8 +454,8 @@ m1:
 			cerror("checkops: history exceeded");
 		s = q->a;
 		switch (q->op) {
-		case 0x18:
-		case 0x1e:
+		case QIDR:
+		case QLOAD:
 			fl.fb = 1;
 			op70d8 = 0x18;
 			hist[n++] = 0x18;
@@ -471,7 +471,7 @@ lft:
 			goto r1;
 		}
 		/* fall through */
-		case 2:
+		case QADDFLD:
 			hist[n++] = 2;
 			if (!found) {
 				if (q->b.b2 == 4) {
@@ -494,18 +494,18 @@ lft:
 			if (aflag > 2)
 				printf("//    NULL\n");
 			return 0;
-		case 0x19:
+		case QINDEX:
 			hist[n++] = 0x19;
 			if (!fl.fb)
 				goto nonstd;
 			goto post;
-		case 1:
-		case 0x30:
+		case QADD:
+		case QSUB:
 			hist[n++] = 1;
 			if (!fl.fb)
 				goto nonstd;
 			goto post;
-		case 3:
+		case QADDR:
 			if (q->a.b2 == 5)
 				goto fail;
 			hist[n++] = 3;
@@ -518,7 +518,7 @@ lft:
 			if (s.b2 == 3)
 				goto post;
 			goto success;
-		case 7:
+		case QCALL:
 			hist[n++] = 7;
 			if (!fl.fd)
 				goto nonstd;
@@ -563,8 +563,8 @@ int almap(struct qa *p, int op)
 	if (symtab[p->w4].sclass == 9)
 		goto zero;
 	switch (op) {
-	case 0x18:
-	case 0x1e:
+	case QIDR:
+	case QLOAD:
 		for (i = nptr; i < nal; i++)
 			if (p->w4 == altab[i]) {
 				pos = i;
@@ -576,7 +576,7 @@ int almap(struct qa *p, int op)
 			goto neg;
 		pos = nptr;
 		goto done;
-	case 3:
+	case QADDR:
 		for (i = nadr; i < nptr; i++)
 			if (p->w4 == altab[i]) {
 				pos = i;
@@ -612,39 +612,39 @@ void addaffect(int lop, struct qa *lp, int rop, struct qa *rp)
 	if (aflag > 2)
 		printf("// entering addaffect(), lp->opnd = %x, lop  = %d, rop = %d, affect=%X, modval=%X\n", lp->w4, lop, rop, (unsigned)(uintptr_t)(affect), (unsigned)(uintptr_t)(modval));
 	switch (lop) {
-	case 0x2f:
-		a = almap(lp, 0x2f);
-		c = almap(lp, 0x18);
+	case QSTORE:
+		a = almap(lp, QSTORE);
+		c = almap(lp, QIDR);
 		switch (rop) {
-		case 0x2f:
-			d = almap(rp, 0x18);
+		case QSTORE:
+			d = almap(rp, QIDR);
 			setbit(affect, c, d, matw);
-			d = almap(rp, 0x2f);
+			d = almap(rp, QSTORE);
 			setbit(modval, a, d, matw);
 			if (aflag > 1)
 				printf("//  p = q \n");
 			break;
-		case 0x18:
-		case 0x1e:
-			b = almap(rp, 0x18);
+		case QIDR:
+		case QLOAD:
+			b = almap(rp, QIDR);
 			setbit(modval, a, b, matw);
 			setbit(affect, c, b, matw);
 			if (aflag > 1)
 				printf("//  p = *q \n");
 			break;
-		case 3:
-			d = almap(rp, 3);
+		case QADDR:
+			d = almap(rp, QADDR);
 			setbit(modval, a, d, matw);
-			d = almap(rp, 0x2f);
+			d = almap(rp, QSTORE);
 			setbit(affect, c, d, matw);
 			if ((rp->w0 & 0x30) == 0x10) {
-				d = almap(rp, 0x18);
+				d = almap(rp, QIDR);
 				setbit(affect, c, d, matw);
 				if (aflag > 1)
 					printf("//  p = &q \n");
 			}
 			break;
-		case 7:
+		case QCALL:
 			setbit(modval, a, 0, matw);
 			setbit(affect, a, 0, matw);
 			if (aflag > 1)
@@ -654,39 +654,39 @@ void addaffect(int lop, struct qa *lp, int rop, struct qa *rp)
 			cerror("addaffect, lop=QSTORE, rop=default");
 		}
 		break;
-	case 0x18:
-	case 0x1e:
-		a = almap(lp, 0x18);
+	case QIDR:
+	case QLOAD:
+		a = almap(lp, QIDR);
 		switch (rop) {
-		case 0x2f:
-			d = almap(rp, 0x18);
+		case QSTORE:
+			d = almap(rp, QIDR);
 			setbit(affect, a, d, matw);
-			d = almap(rp, 0x2f);
+			d = almap(rp, QSTORE);
 			setbit(modval, a, d, matw);
 			if (aflag > 1)
 				printf("//  *p = q \n");
 			break;
-		case 0x18:
-		case 0x1e:
-			b = almap(rp, 0x18);
+		case QIDR:
+		case QLOAD:
+			b = almap(rp, QIDR);
 			setbit(affect, a, b, matw);
 			setbit(modval, a, b, matw);
 			if (aflag > 1)
 				printf("//  *p = *q \n");
 			break;
-		case 3:
-			d = almap(rp, 3);
+		case QADDR:
+			d = almap(rp, QADDR);
 			setbit(modval, a, d, matw);
-			d = almap(rp, 0x2f);
+			d = almap(rp, QSTORE);
 			setbit(affect, a, d, matw);
 			if ((rp->w0 & 0x30) == 0x10) {
-				d = almap(rp, 0x18);
+				d = almap(rp, QIDR);
 				setbit(affect, a, d, matw);
 				if (aflag > 1)
 					printf("//  *p = &q \n");
 			}
 			break;
-		case 7:
+		case QCALL:
 			setbit(modval, a, 0, matw);
 			setbit(affect, a, 0, matw);
 			if (aflag > 1)
@@ -696,11 +696,11 @@ void addaffect(int lop, struct qa *lp, int rop, struct qa *rp)
 			cerror("addaffect, lop=QIDR, rop=default");
 		}
 		break;
-	case 0x34:
-		if (rop == 0x18 || rop == 0x1e)
-			a = almap(lp, 0x18);
+	case QPARV:
+		if (rop == QIDR || rop == QLOAD)
+			a = almap(lp, QIDR);
 		else
-			a = almap(lp, 0x2f);
+			a = almap(lp, QSTORE);
 		setbit(modval, a, 0, matw);
 		setbit(affect, a, 0, matw);
 		if (aflag > 1)
@@ -732,9 +732,9 @@ skh:
 		q = fndcall(q);
 		if (q == 0)
 			break;
-		if (q->op == 0x3b)
+		if (q->op == QBBLOCK)
 			goto skh;
-		if (q->op == 0x2f) {
+		if (q->op == QSTORE) {
 			if (!checkops(q, 0))
 				continue;
 			cls = op70d8;
@@ -742,7 +742,7 @@ skh:
 			if (!checkops(q, 1))
 				continue;
 			addaffect(cls, &s, op70d8, &opnd70c8);
-		} else if (q->op == 0x34) {
+		} else if (q->op == QPARV) {
 			if (q->a.b2 == 3 && fndparm(q))
 				addaffect(0x34, &opnd70c8, 0, (struct qa *)0);
 			else if (q->a.b2 == 4 && (DECREF(q->a.w0) & 0x30) == 0x10)
@@ -920,22 +920,22 @@ struct aln *checkalias(struct quad *q, int ot)
 	if (ot == 2) {
 		if (q->a.b2 == 8)
 			pos = betatbl[q->a.w4].pos;
-		else if (q->op == 3)
-			pos = almap(&q->a, 3);
-		else if (q->op == 0x18 || q->op == 0x1e)
-			pos = almap(&q->a, 0x18);
+		else if (q->op == QADDR)
+			pos = almap(&q->a, QADDR);
+		else if (q->op == QIDR || q->op == QLOAD)
+			pos = almap(&q->a, QIDR);
 		else
-			pos = almap(&q->a, 0x2f);
+			pos = almap(&q->a, QSTORE);
 	} else if (ot == 1) {
 		if (q->c.b2 == 8)
 			pos = betatbl[q->c.w4].pos;
 		else
-			pos = almap(&q->c, 0x2f);
+			pos = almap(&q->c, QSTORE);
 	} else {
 		if (q->b.b2 == 8)
 			pos = betatbl[q->b.w4].pos;
 		else
-			pos = almap(&q->b, 0x2f);
+			pos = almap(&q->b, QSTORE);
 	}
 	if (pos == -1)
 		return 0;

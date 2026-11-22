@@ -93,23 +93,23 @@ struct quad *q;
 
 	n = 0;
 	for (; (q = q->next) != 0; ) {
-		if (q->op == 28)
+		if (q->op == QLABEL)
 			return q;
 		q->f7 = 0;
 		q->f6 = 0;
 		q->f5 = 0;
 		q->f4 = 0;
-		if (q->op == 59)
+		if (q->op == QBBLOCK)
 			curblk = q->a.w0;
 		if (bdebug > 3)
 			printf("// opcode = %d\n", q->op);
 		switch (q->op) {
-		case 1: case 2: case 3: case 4: case 13: case 14: case 19: case 22: case 23:
-		case 25: case 29: case 32: case 34: case 35: case 36: case 37: case 39:
-		case 44: case 45: case 48: case 49:
+		case QADD: case QADDFLD: case QADDR: case QAND: case QCONV: case QDIV: case QEQ: case QGE: case QGT:
+		case QINDEX: case QLE: case QLT: case QMULT: case QNE: case QNOT: case QOR: case QREM:
+		case QSHIFTL: case QSHIFTR: case QSUB: case QXOR:
 			va = vnfind(&q->a);
 			vb = q->b.b2 ? vnfind(&q->b) : 0;
-			if (va != 0 && va->dead && q->op != 3) {
+			if (va != 0 && va->dead && q->op != QADDR) {
 				updateopnd(va->val, &q->a, 1);
 				va = vnfind(&q->a);
 			}
@@ -119,9 +119,9 @@ struct quad *q;
 			}
 			if (va->cst && (vb == 0 || vb->cst))
 				switch (q->op) {
-				case 2: case 3: case 25:
+				case QADDFLD: case QADDR: case QINDEX:
 					break;
-				case 13:
+				case QCONV:
 					if (q->c.w0 == 7 || q->c.w0 == 6)
 						break;
 				default:
@@ -135,7 +135,7 @@ struct quad *q;
 						q = delquad(q);
 						continue;
 					}
-					q->op = 60;
+					q->op = QCOPY;
 					q->a = tmp;
 				ib:
 					q->b.b2 = 0;
@@ -157,7 +157,7 @@ struct quad *q;
 					q = delquad(q);
 					continue;
 				}
-				q->op = 60;
+				q->op = QCOPY;
 				goto ib;
 			}
 			if (identop(q))
@@ -173,7 +173,7 @@ struct quad *q;
 				}
 			}
 			goto cu;
-		case 33: case 47:
+		case QMOVE: case QSTORE:
 			va = vnfind(&q->a);
 			if (va->dead) {
 				updateopnd(va->val, &q->a, 1);
@@ -199,7 +199,7 @@ struct quad *q;
 			clear(q, 1);
 			addstore(q);
 			continue;
-		case 24: case 30:
+		case QIDR: case QLOAD:
 			va = vnfind(&q->a);
 			if (va->dead) {
 				updateopnd(va->val, &q->a, 1);
@@ -224,15 +224,15 @@ struct quad *q;
 				addstore(q);
 			}
 			continue;
-		case 51:
+		case QPARR:
 			stk[n++] = q;
-		case 52:
+		case QPARV:
 			va = vnfind(&q->a);
 			if (va->dead)
 				updateopnd(va->val, &q->a, 1);
 			checkuse(q);
 			continue;
-		case 7:
+		case QCALL:
 			va = vnfind(&q->a);
 			if (va->dead)
 				updateopnd(va->val, &q->a, 1);
@@ -242,20 +242,20 @@ struct quad *q;
 			q->f7 = 1;
 			ebbcalls = 1;
 			continue;
-		case 27:
+		case QJPC:
 			va = vnfind(&q->a);
 			if (va->dead)
 				updateopnd(va->val, &q->a, 1);
 			checkuse(q);
 			resetbb();
 			continue;
-		case 42:
+		case QRET:
 			va = vnfind(&q->a);
 			if (va != 0 && va->dead)
 				updateopnd(va->val, &q->a, 1);
 			checkuse(q);
 			continue;
-		case 60:
+		case QCOPY:
 			va = vnfind(&q->a);
 			if (va->dead) {
 				updateopnd(va->val, &q->a, 1);
@@ -320,7 +320,7 @@ struct qa *p;
 	else if (p->b2 == 3)
 		e->al = -p->w4;
 	else if (p->b2 == 4)
-		e->al = almap(p, 47);
+		e->al = almap(p, QSTORE);
 	else
 		e->al = -9999;
 	if (p->b2 == 7 || p->b2 == 1 || p->b2 == 2)
@@ -542,23 +542,23 @@ struct quad *q;
 		if (bdebug > 1)
 			printf("// compute: op1 = %ld, op2 = %ld\n", op1, op2);
 		switch (q->op) {
-		case 1: res = op1 + op2; break;
-		case 4: res = op1 & op2; break;
-		case 13: res = op1; break;
-		case 14: res = op1 / op2; break;
-		case 19: res = op1 == op2; break;
-		case 22: res = op1 >= op2; break;
-		case 23: res = op1 > op2; break;
-		case 29: res = op1 <= op2; break;
-		case 32: res = op1 < op2; break;
-		case 34: res = op1 * op2; break;
-		case 35: res = op1 != op2; break;
-		case 36: res = !op1; break;
-		case 37: res = op1 | op2; break;
-		case 39: res = op1 % op2; break;
-		case 44: res = op1 << op2; break;
-		case 45: res = op2 >> op2; break;
-		case 48: res = op1 - op2; break;
+		case QADD: res = op1 + op2; break;
+		case QAND: res = op1 & op2; break;
+		case QCONV: res = op1; break;
+		case QDIV: res = op1 / op2; break;
+		case QEQ: res = op1 == op2; break;
+		case QGE: res = op1 >= op2; break;
+		case QGT: res = op1 > op2; break;
+		case QLE: res = op1 <= op2; break;
+		case QLT: res = op1 < op2; break;
+		case QMULT: res = op1 * op2; break;
+		case QNE: res = op1 != op2; break;
+		case QNOT: res = !op1; break;
+		case QOR: res = op1 | op2; break;
+		case QREM: res = op1 % op2; break;
+		case QSHIFTL: res = op1 << op2; break;
+		case QSHIFTR: res = op2 >> op2; break;
+		case QSUB: res = op1 - op2; break;
 		default:
 			cerror("error in compile time constant propagation (3) (%d)", q->op);
 		}
@@ -568,18 +568,18 @@ struct quad *q;
 		return r;
 	} else {
 		switch (q->op) {
-		case 1: dr = d1 + d2; break;
-		case 13: dr = d1; break;
-		case 14: dr = d1 / d2; break;
-		case 19: dr = d1 == d2; break;
-		case 22: dr = d1 >= d2; break;
-		case 23: dr = d1 > d2; break;
-		case 29: dr = d1 <= d2; break;
-		case 32: dr = d1 < d2; break;
-		case 34: dr = d1 * d2; break;
-		case 35: dr = d1 != d2; break;
-		case 36: dr = !d1; break;
-		case 48: dr = d1 - d2; break;
+		case QADD: dr = d1 + d2; break;
+		case QCONV: dr = d1; break;
+		case QDIV: dr = d1 / d2; break;
+		case QEQ: dr = d1 == d2; break;
+		case QGE: dr = d1 >= d2; break;
+		case QGT: dr = d1 > d2; break;
+		case QLE: dr = d1 <= d2; break;
+		case QLT: dr = d1 < d2; break;
+		case QMULT: dr = d1 * d2; break;
+		case QNE: dr = d1 != d2; break;
+		case QNOT: dr = !d1; break;
+		case QSUB: dr = d1 - d2; break;
 		default:
 			cerror("error in compile time constant propagation (4) (%d)", q->op);
 		}
@@ -598,8 +598,8 @@ struct quad *q;
 	int x;
 
 	switch (q->op) {
-	case 1:
-	case 48:
+	case QADD:
+	case QSUB:
 		x = 1;
 		if (q->b.b2 == 7) {
 L7:			x = constbl[q->b.w4];
@@ -609,8 +609,8 @@ L7:			x = constbl[q->b.w4];
 		if (x == 0)
 			return 1;
 		break;
-	case 14:
-	case 34:
+	case QDIV:
+	case QMULT:
 		x = 0;
 		if (q->b.b2 == 7)
 			goto L7;
@@ -638,7 +638,7 @@ struct quad *load1, *load2;
 	}
 	al = checkalias(load1, 2);
 	for (p = load1; p != load2; p = p->next) {
-		if (p->op == 47 || p->op == 33) {
+		if (p->op == QSTORE || p->op == QMOVE) {
 			if (bdebug > 4) {
 				printf("// comapare : check quad\n");
 				prquad(p);
@@ -663,7 +663,7 @@ int ot;
 	struct vn *e;
 	int k, v1, v2;
 
-	if (q->op == 47 || q->op == 33) {
+	if (q->op == QSTORE || q->op == QMOVE) {
 		y = x = (struct aln *)checkalias(q, ot);
 		if (q->c.b2 == 8)
 			v1 = betatbl[q->c.w4].x1;
@@ -832,7 +832,7 @@ struct quad *q;
 	int k;
 	struct sym *x;
 
-	if (q->op == 47 || q->op == 33) {
+	if (q->op == QSTORE || q->op == QMOVE) {
 		if (q->c.b2 == 3)
 			return;
 		x = (struct sym *)checkalias(q, 1);
@@ -877,7 +877,7 @@ ebbclean()
 	while (x) {
 		x = 0;
 		for (q = qhead; q != 0; q = q->next) {
-			if (q->op == 59)
+			if (q->op == QBBLOCK)
 				continue;
 			switch (q->c.b2) {
 			case 3:

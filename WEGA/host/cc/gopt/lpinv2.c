@@ -56,8 +56,8 @@ struct quad *qmkstore(struct quad *q)
 
 	if (0)
 		q = 0;	/* dead: its store of q at the entry is left (the original) */
-	if (q->op == 52 && q->a.b2 == 8) {
-		tq.op = 47;
+	if (q->op == QPARV && q->a.b2 == 8) {
+		tq.op = QSTORE;
 		tq.c = q->a;
 		return &tq;
 	}
@@ -76,21 +76,21 @@ struct dl *srchdflist(struct quad *q, int *flag)
 	q = qmkstore(q);
 	p = lpdefs;
 	isbeta = (char)(q->c.b2 == 8);
-	isstore = isbeta && q->op == 47 ? 1 : 0;
-	ismem = isbeta && (q->op == 24 || q->op == 47 || q->op == 30);
-	isother = isbeta && (q->op != 24 && q->op != 47 && q->op != 30);
+	isstore = isbeta && q->op == QSTORE ? 1 : 0;
+	ismem = isbeta && (q->op == QIDR || q->op == QSTORE || q->op == QLOAD);
+	isother = isbeta && (q->op != QIDR && q->op != QSTORE && q->op != QLOAD);
 	while (p != 0) {
 		x = qmkstore(p->q);
 		if (sameopnd(x, q, 1, 1)) {
-			if (ismem && !(x->op == 47 || x->op == 24 || x->op == 30))
+			if (ismem && !(x->op == QSTORE || x->op == QIDR || x->op == QLOAD))
 				goto next;
-			if (isother && (x->op == 47 || x->op == 24 || x->op != 30))
+			if (isother && (x->op == QSTORE || x->op == QIDR || x->op != QLOAD))
 				goto next;
 			if (x->c.b2 == q->c.b2 && x->c.w4 == q->c.w4)
 				return p;
 			*flag = 1;
 		}
-		if (isstore && x->c.b2 == 8 && x->op == 47 && betatbl[x->c.w4].x1 == betatbl[q->c.w4].x1) {
+		if (isstore && x->c.b2 == 8 && x->op == QSTORE && betatbl[x->c.w4].x1 == betatbl[q->c.w4].x1) {
 			if (x->c.b2 == q->c.b2 && x->c.w4 == q->c.w4)
 				return p;
 			*flag = 1;
@@ -125,7 +125,7 @@ void clrsymflag(struct quad *q, int ot)
 		betatbl[i].b12 = 0;
 	else if (t == 8) {
 		betatbl[i].b12 = 0;
-		if ((ot == 2 && q->op == 24) || (ot == 1 && q->op == 47))
+		if ((ot == 2 && q->op == QIDR) || (ot == 1 && q->op == QSTORE))
 			symtab[betatbl[i].x1].sflags &= ~2;
 	}
 }
@@ -151,7 +151,7 @@ l468:
 				return;
 		}
 opt:
-		if (q->op == 7)
+		if (q->op == QCALL)
 			return;
 		goto op2;
 	} else if (q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8)
@@ -187,12 +187,12 @@ void setopt(struct quad *q)
 			printf("setopt(), rslt sym=%s, lpopt=%d\n", ascii + symtab[q->c.w4].nameoff, (symtab[q->c.w4].sflags >> 1) & 1);
 	} else if (q->c.b2 == 6 || q->c.b2 == 8)
 		betatbl[q->c.w4].b12 = 1;
-	if (q->c.b2 == 8 && q->op == 47) {
+	if (q->c.b2 == 8 && q->op == QSTORE) {
 		symtab[betatbl[q->c.w4].x1].sflags |= 2;
 		if (pdebug > 3)
 			printf("setopt(), rslt beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->c.w4].x1].nameoff, (symtab[betatbl[q->c.w4].x1].sflags >> 1) & 1);
 	}
-	if (q->op == 52 && q->a.b2 == 8) {
+	if (q->op == QPARV && q->a.b2 == 8) {
 		betatbl[q->a.w4].b12 = 1;
 		symtab[betatbl[q->a.w4].x1].sflags |= 2;
 		if (pdebug > 3)
@@ -237,12 +237,12 @@ struct quad *skiphdrs(struct quad *q)
 {
 	struct quad *x, *y;
 
-	while (q->op == 59) {
+	while (q->op == QBBLOCK) {
 		if (q->a.w4 < 0 || edges[q->a.w4].x != -1)
 			break;
 		y = blks[edges[q->a.w4].y];
 		for (x = y->next; x != 0; x = x->next)
-			if (x->op == 59)
+			if (x->op == QBBLOCK)
 				break;
 		if (x != q)
 			break;
@@ -273,7 +273,7 @@ void addlpdef(struct quad *q, int block)
 		if (pdebug > 3)
 			printf("\tonedef=%d\n", p->f15);
 	} else {
-		if (r->q->op != 47 && q->op == 47)
+		if (r->q->op != QSTORE && q->op == QSTORE)
 			r->q = q;
 		if (r->x0 == block) {
 			r->f15 = 0;
@@ -294,9 +294,9 @@ int isglobal(struct quad *q)
 {
 	struct aln *p;
 
-	if (q->op == 3)
+	if (q->op == QADDR)
 		return 0;
-	if ((q->op == 25 || q->op == 2) && q->a.b2 == 8 && bbit(q->a.w4, 11))
+	if ((q->op == QINDEX || q->op == QADDFLD) && q->a.b2 == 8 && bbit(q->a.w4, 11))
 		return 0;
 	if (pdebug > 2) {
 		printf("isglobal(),  quad:\n");
@@ -338,11 +338,11 @@ void findlpdefs(struct loop *lp)
 		if (pdebug > 2)
 			printf("// findlpdefs: block = %d\n", n);
 		for (q = blks[b->blk]->next; q != 0; q = q->next) {
-			if (q->op == 59)
+			if (q->op == QBBLOCK)
 				break;
-			if (q->f7 || q->f4 || (q->op == 52 && q->a.b2 == 8)) {
+			if (q->f7 || q->f4 || (q->op == QPARV && q->a.b2 == 8)) {
 				addlpdef(q, n);
-				if (q->op == 7)
+				if (q->op == QCALL)
 					callf = 1;
 			}
 			q->f3 = 0;
@@ -362,7 +362,7 @@ void findlpdefs(struct loop *lp)
 		}
 		setopt(t->q);
 		if (t->f15) {
-			if (t->q->op == 52 && t->q->a.b2 == 8)
+			if (t->q->op == QPARV && t->q->a.b2 == 8)
 				t->f15 = 0;
 			else if (callf && isglobal(t->q))
 				t->f15 = 0;
@@ -470,7 +470,7 @@ int isdefined(struct quad *q, int ot)
 		prquad(q);
 	}
 	if (ot == 2) {
-		if (q->op == 3 && q->a.b2 == 4)
+		if (q->op == QADDR && q->a.b2 == 4)
 			return 0;
 		t = q->a.b2;
 		i = q->a.w4;
@@ -489,7 +489,7 @@ int isdefined(struct quad *q, int ot)
 		return bbit(i, 12);
 	}
 	if (t == 8) {
-		if ((q->op == 24 || q->op == 47) && ot == 2) {
+		if ((q->op == QIDR || q->op == QSTORE) && ot == 2) {
 			if (pdebug > 3)
 				printf("isdefined(), op1=%s, lpopt=%d\n", ascii + symtab[betatbl[i].x1].nameoff, (symtab[betatbl[i].x1].sflags >> 1) & 1);
 			return ((symtab[betatbl[i].x1].sflags >> 1) & 1) || bbit(i, 12);
@@ -543,7 +543,7 @@ int invopnds(struct quad *q, struct quad *firstq)
 		cerror("invopnd(): illegal op1 opnd");
 		return 0;
 	}
-	if (q->op == 7)
+	if (q->op == QCALL)
 		return 0;
 	if (q->b.b2 == 3) {
 		p = tmpsearch(firstq, q->b.w4, (struct quad *)0);
@@ -576,7 +576,7 @@ int notlive(struct quad *q, unsigned *vec)
 	else if (q->c.b2 == 6)
 		k = bitpos(q, 1, 6);
 	else if (q->c.b2 == 8) {
-		if (q->op == 47)
+		if (q->op == QSTORE)
 			k = bitpos(q, 1, 4);
 		else
 			k = bitpos(q, 1, 6);
@@ -603,7 +603,7 @@ int domuse(struct loop *lp, int blk, struct quad *q)
 	for (b = lp->bls; b != 0; b = b->next) {
 		i = b->blk;
 		for (x = blks[i]->next; x != 0; x = x->next) {
-			if (x->op == 59)
+			if (x->op == QBBLOCK)
 				break;
 			v = 0;
 			if (x->f6 && (v = issym(x, 2)))
@@ -631,7 +631,7 @@ void marklpinv(struct quad *q, struct quad *firstq)
 		p = tmpsearch(firstq, q->a.w4, (struct quad *)0);
 		marklpinv(p, firstq);
 	}
-	if (q->b.b2 == 3 && q->op != 7) {
+	if (q->b.b2 == 3 && q->op != QCALL) {
 		p = tmpsearch(firstq, q->b.w4, (struct quad *)0);
 		marklpinv(p, firstq);
 	}
@@ -652,10 +652,10 @@ void chkbscindvar(struct dl *d)
 	if (pdebug > 1)
 		printf("//  chkbscindvar: \n");
 	x = d->q;
-	if (x->op == 47 && x->a.b2 == 3) {
+	if (x->op == QSTORE && x->a.b2 == 3) {
 		h = skiphdrs(blks[d->x0]);
 		s = tmpsearch(h, x->a.w4, (struct quad *)0);
-		if (s->op == 1 || s->op == 48) {
+		if (s->op == QADD || s->op == QSUB) {
 			if (s->b.b2 == 1 || s->b.b2 == 7 || ((s->b.b2 == 4 || s->b.b2 == 6 || s->b.b2 == 8) && !isdefined(s, 3))) {
 				if (sameopnd(s, x, 2, 1)) {
 					if (pdebug > 1) {
@@ -668,7 +668,7 @@ void chkbscindvar(struct dl *d)
 						d->f11 = 1;
 					else
 						d->f11 = 0;
-					if (s->op == 1)
+					if (s->op == QADD)
 						d->f10 = 1;
 					else
 						d->f10 = 0;
@@ -704,7 +704,7 @@ int qparvbetalpdef(struct quad *q)
 	struct dl *t;
 
 	for (t = lpdefs; t != 0; t = t->next) {
-		if (t->q->op == 52 && t->q->a.b2 == q->c.b2 && t->q->a.w4 == q->c.w4) {
+		if (t->q->op == QPARV && t->q->a.b2 == q->c.b2 && t->q->a.w4 == q->c.w4) {
 			if (pdebug > 2) {
 				printf("qparvbetalpdef(), t->dfquad, q:\n");
 				prquad(t->q);
@@ -750,7 +750,7 @@ void lpinv(struct loop *lp)
 			goto L2;
 		if (q->c.b2 == 4 && symtab[q->c.w4].sx6 > vafc)
 			goto L3;
-		if (q->c.b2 == 8 && q->op == 47 && symtab[betatbl[q->c.w4].x1].sx6 > vafc)
+		if (q->c.b2 == 8 && q->op == QSTORE && symtab[betatbl[q->c.w4].x1].sx6 > vafc)
 			goto L3;
 		if (pdebug > 3) {
 			printf("moving def to possible inv list\n");
@@ -791,7 +791,7 @@ L3:		t = t->next;
 	for (; t != 0; t = t->next) {
 		if (!domuse(lp, t->x0, t->q))
 			continue;
-		if (t->q->op == 47 && t->q->c.b2 == 8 && samebetalpdef(t->q))
+		if (t->q->op == QSTORE && t->q->c.b2 == 8 && samebetalpdef(t->q))
 			continue;
 		if (pdebug > 2 && invagain != 1)
 			printf("\n");
@@ -892,7 +892,7 @@ int addpreheader(struct loop *lp, int flag)
 		printf("// addpreheader: hblk = %d\n", hblk);
 		prquad(hq->next);
 	}
-	if (hq->next->op != 28)
+	if (hq->next->op != QLABEL)
 		cerror("loop without a label");
 	else
 		lbl = hq->next->a.w4;
@@ -906,7 +906,7 @@ int addpreheader(struct loop *lp, int flag)
 				printf("checking non loop block = %d\n", p);
 			pv = pq;
 			while (pq != 0) {
-				if (pq->op == 59)
+				if (pq->op == QBBLOCK)
 					break;
 				pv = pq;
 				pq = pq->next;
@@ -939,7 +939,7 @@ found:
 		return p;
 	}
 	lp->b10 = 1;
-	nq = insertquad(59, &qa1, &qa2, &qa3, pv);
+	nq = insertquad(QBBLOCK, &qa1, &qa2, &qa3, pv);
 	phquad = nq;
 	for (i = hq->a.w4; i >= 0; i = edges[i].x) {
 		p = edges[i].y;
@@ -954,9 +954,9 @@ found:
 		}
 		cq = 0;
 		while (q != 0) {
-			if (q->op == 59 || q->op == 26 || q->op == 27 || q->op == 10)
+			if (q->op == QBBLOCK || q->op == QJP || q->op == QJPC || q->op == QCASEL)
 				break;
-			if (q->op == 8)
+			if (q->op == QCASE)
 				cq = q;
 			q = q->next;
 		}
@@ -965,7 +965,7 @@ found:
 			prquad(q);
 		}
 		if (q != 0) {
-			if (q->op == 26) {
+			if (q->op == QJP) {
 				if (q->a.w4 == lbl) {
 					if (!chg)
 						nl = lblcnt++;
@@ -974,7 +974,7 @@ found:
 					q->a.w4 = nl;
 					chg = 1;
 				}
-			} else if (q->op == 27) {
+			} else if (q->op == QJPC) {
 				if (q->b.w4 == lbl) {
 					if (!chg)
 						nl = lblcnt++;
@@ -983,7 +983,7 @@ found:
 					chg = 1;
 					q->b.w4 = nl;
 				}
-			} else if (q->op == 10) {
+			} else if (q->op == QCASEL) {
 				if (q->a.w4 == lbl) {
 					if (!chg)
 						nl = lblcnt++;
@@ -1006,7 +1006,7 @@ found:
 		if (chg && !adj) {
 			qa1.b2 = 1;
 			qa1.w4 = nl;
-			phquad = insertquad(28, &qa1, (struct qa *)0, (struct qa *)0, nq);
+			phquad = insertquad(QLABEL, &qa1, (struct qa *)0, (struct qa *)0, nq);
 			adj = 1;
 		}
 		deledge(&hq->a.w4, p);
@@ -1086,7 +1086,7 @@ void proceslp(struct loop *lp)
 			if (pdebug > 2)
 				printf("proceslp(): looking at loop block=%d\n", blk);
 			for (q = blks[blk]->next; q != 0; q = q->next) {
-				if (q->op == 59)
+				if (q->op == QBBLOCK)
 					break;
 				if (pdebug > 2) {
 					printf("proceslp: looking at quad, q->lpinv=%d, q->sdef=%d, q->lpind=%d\n", q->f3, q->f1, q->f2);

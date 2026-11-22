@@ -79,10 +79,10 @@ main(argc, argv)
 			nlcheck();
 			if (!rdsym())
 				cerror("error in reading symbol table file");
-			qhead = addquad(0x2e, 0L, 0L, 0L);
+			qhead = addquad(QSTART, 0L, 0L, 0L);
 			break;
 		case '}':
-			addquad(0x11, 0L, 0L, 0L);
+			addquad(QEND, 0L, 0L, 0L);
 			nlcheck();
 			passes();
 			tabfree(0, 0L);
@@ -96,7 +96,7 @@ main(argc, argv)
 			tabfree(8, 0L);
 			break;
 		case ']':
-			if (!addquad(0x0f, 0L, 0L, 0L))
+			if (!addquad(QEBLOCK, 0L, 0L, 0L))
 				goto err;
 			nlcheck();
 			break;
@@ -114,7 +114,7 @@ main(argc, argv)
 			p3->w4 = v2;
 			p1->w0 = lno;
 			lno++;
-			if (!addquad(6, p1, p2, p3))
+			if (!addquad(QBLOCK, p1, p2, p3))
 				goto err;
 			nlcheck();
 			break;
@@ -143,14 +143,14 @@ main(argc, argv)
 		case 'L':
 			p1->b2 = 1;
 			p1->w4 = rdin(10);
-			if (!addquad(0x1c, p1, 0L, 0L))
+			if (!addquad(QLABEL, p1, 0L, 0L))
 				goto err;
 			nlcheck();
 			break;
 		case 'B':
 			p1->b2 = 1;
 			p1->w4 = rdin(10);
-			if (!addquad(0x1a, p1, 0L, 0L))
+			if (!addquad(QJP, p1, 0L, 0L))
 				goto err;
 			nlcheck();
 			ifpos = ftell(infile);
@@ -161,16 +161,16 @@ main(argc, argv)
 			ungetc(ch, infile);
 			p1->b2 = 1;
 			p1->w4 = rdin(10);
-			if (!addquad(9, p1, 0L, 0L))
+			if (!addquad(QCTABLE, p1, 0L, 0L))
 				goto err;
 			while ((ch = getc(infile)) != '\n') {
 				ungetc(ch, infile);
 				p1->b2 = 1;
 				p1->w4 = rdin(10);
-				if (!addquad(10, p1, 0L, 0L))
+				if (!addquad(QCASEL, p1, 0L, 0L))
 					goto err;
 			}
-			if (!addquad(11, 0L, 0L, 0L))
+			if (!addquad(QCEND, 0L, 0L, 0L))
 				goto err;
 			ifpos = ftell(infile);
 			break;
