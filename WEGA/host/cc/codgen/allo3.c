@@ -165,7 +165,7 @@ freetemp(int k)
 {
 	register long t = paroff;
 
-	paroff += k << 4;
+	paroff += k * SZINT;
 	if (paroff > parmax)
 		parmax = paroff;
 	if (paroff - baseoff > maxtemp)
@@ -515,7 +515,7 @@ rwprint(int rw)
 		0,
 	};
 
-	if (rw == 0) {
+	if (rw == RNULL) {
 		printf("RNULL");
 		return;
 	}
