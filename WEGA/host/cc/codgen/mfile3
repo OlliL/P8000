@@ -328,5 +328,5 @@ extern long stpos;
 extern int structret;
 extern struct sym *symtab;
 extern struct sym *symtab0;
-extern int tflag;
+extern int rtyflg;
 extern long tmpoff;

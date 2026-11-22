@@ -397,7 +397,7 @@ extern void tabclear();
 extern NODE *talloc();
 extern void tcmd();
 extern NODE *tcopy();
-extern int tflag;
+extern int rtyflg;
 extern void tmpcleanup();
 extern long tmpoff;
 extern void upput();

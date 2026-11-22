@@ -270,7 +270,7 @@ match(p, cookie)
 
 				rv = p->in.right->tn.rval;
 				/* mult and div use r4..r7: a right operand in r6 (or r4 for div) goes to memory */
-				if (rv == 6 || ((dope[p->in.op] & DIVFLG) && rv == 4)) {
+				if (rv == R6 || ((dope[p->in.op] & DIVFLG) && rv == R4)) {
 					oregfix(p->in.right);
 					goto cont;
 				}
@@ -439,7 +439,7 @@ nom:
 }
 
 /* expand the template cp for the tree p */
-int tflag = 0;
+int rtyflg = 0;
 
 void
 expand(p, cookie, cp)
@@ -452,7 +452,7 @@ expand(p, cookie, cp)
 	register NODE *r;
 	register struct rs *n;
 
-	tflag = 0;
+	rtyflg = 0;
 	for (; *cp; ++cp) {
 		switch (*cp) {
 		default:
@@ -463,8 +463,8 @@ expand(p, cookie, cp)
 			continue;
 		case 'B':		/* byte offset in word */
 			val = getlr(p, *++cp)->tn.lval;
-			val = val & 1;
-			printf("%ld", val);
+			val = BYTEOFF(val);
+			printf(CONFMT, val);
 			continue;
 		case 'C':		/* for constant value only */
 			/* the result register of a call holds the value of the right operand: note it */
@@ -480,7 +480,7 @@ expand(p, cookie, cp)
 			conput(r);
 			continue;
 		case 'F':		/* this line deleted if FOREFF is active */
-			if (cookie & SANY)
+			if (cookie & FOREFF)
 				while (*++cp != '\n')
 					;
 			continue;
@@ -509,7 +509,7 @@ expand(p, cookie, cp)
 			printf("%d", fldsz);
 			continue;
 		case 'T':		/* rewrite register type is suppressed */
-			tflag = 1;
+			rtyflg = 1;
 			continue;
 		case 'U':		/* for upper half of address, only */
 			upput(getlr(p, *++cp));

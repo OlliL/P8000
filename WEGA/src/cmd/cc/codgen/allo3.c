@@ -824,7 +824,7 @@ done:
 	rfreeall(0);
 	return;
 isreg:
-	if (!tflag) {
+	if (!rtyflg) {
 		if (p->in.type == SHORT)
 			p->in.type = INT;
 		else if (p->in.type == USHORT)
