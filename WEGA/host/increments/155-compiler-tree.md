@@ -119,6 +119,12 @@ Rules of the target:
   declarations into headers, the units into files of their own, their texts aligned); only when the future mip parts
   are as equal as possible, they move to mip/.
 
+- 2026-11-22 (owner): for 155 codgen may be restructured without asking (moving code, aligning texts) as long as every
+  build stays byte-identical; no new or changed switch. Names in the shared parts: System III's (or Plexus'), else
+  cparse's, renamed in all passes and the host ports. A switch part that cannot leave a mip unit without losing the
+  bytes: it stays, the exception goes here with its reason, the work goes on. CLAUDE.md: one line at "V7 layout"
+  (src/cmd/cc is a tree, see its README).
+
 ## Not part of it
 
 - lint1, lint2 (later members of the tree).
