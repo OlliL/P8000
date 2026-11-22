@@ -13,14 +13,12 @@ FILE *dfile;	/* the data file */
 int ndelay;
 int nlabsave;
 NODE node[TREESZ];
-int dope[129];
 long paroff;	/* next free place for the parameters of a call (bits) */
 int regG;
 int regA;
 FILE *stfile;	/* the symbol table file */
 int unused1;
 int regC;
-char *opst[129];
 int minreg;
 int regB;
 int regtop;
@@ -125,7 +123,6 @@ struct { struct rs *list; int mark; } rsstk[3];	/* the saved lists and their mar
 int rsdepth;	/* saved lists */
 int rsflag2;	/* number of entries of rstab2 */
 int rstab2[3];
-NODE *lastfree;
 int mcountlab;
 int structlab;
 long structsz;

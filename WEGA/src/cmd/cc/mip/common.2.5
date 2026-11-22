@@ -11,13 +11,9 @@ static char sccsid2[] = "@[$]common\t2.5  08/24/83 16:19:58 Copr. 1981 87wega3.2
 # endif
 
 int nerrors = 0;  /* number of errors */
-# ifdef PASS3
-int cunused[9] = { 0 };	/* 18 bytes of zeros in the data of /lib/codgen, not referenced */
-# else
-int cunused[8] = { 0 };	/* 16 bytes of zeros in the data of /lib/cparse (0x357e), not referenced; meaning open */
+int cunused[NCUNUSED] = { 0 };	/* zeros in the data, not referenced (cparse 16 bytes at 0x357e, codgen 18); meaning open */
 
 NODE *lastfree;  /* pointer to last free node; (for allocator) */
-# endif
 
 	/* VARARGS1 */
 syserr( s ) char *s; { /* a system call failed: die */
@@ -146,10 +142,8 @@ walkf( t, f ) register NODE *t;  int (*f)(); {
 
 
 
-# ifndef PASS3
 int dope[ DSIZE ];
 char *opst[DSIZE];
-# endif
 
 struct dopest { int dopeop; char opst[8]; int dopeval; } indope[] = {
 

@@ -11,6 +11,7 @@
 #include <unistd.h>
 #define PASS3		/* codgen: what common.2.5 (and the other units) have for codgen only */
 #define NONAME	0
+#define NCUNUSED	9	/* the size of cunused (common.2.5): 18 bytes of zeros in the data of /lib/codgen */
 #include "../z8000/macdefs"
 #include "../mip/manifest"
 #include "oldcc.h"

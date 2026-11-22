@@ -3,22 +3,6 @@
  */
 static char rdrsccs[] __attribute__((unused)) = "@[$]rdr\t2.4  03/04/83 15:31:15 Copr. 1981 87wega3.2.";
 
-extern int dflag;
-extern FILE *stfile;
-extern FILE *infile;
-extern long ifpos;
-extern int eflag;
-extern int nglob;
-extern long nsymbytes, nasciibytes;
-extern int nnumbytes, nmembytes;
-extern int nsyms, nnums, nmems;
-extern struct sym *symtab;
-extern struct nument numtab[];
-extern struct tagent tagtab[];
-extern long stg;
-extern long gsymbytes, gasciibytes, symbase;
-extern int gnumbytes, gnumcount;
-
 static char *ttype[] = {
 	"UNDEF", "FARG", "CHAR", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "STRTY", "UNIONTY", "ENUMTY", "MOETY",
 	"UCHAR", "USHORT", "UNSIGNED", "ULONG",
@@ -34,7 +18,8 @@ long stpos = 0;
 int firstsect = 1;
 
 /* the symbol table file: the local section, then the member table of the global one */
-int rdsym(void)
+int
+rdsym(void)
 {
 	nglob = 0;
 	fseek(stfile, stpos, 0L);
@@ -76,7 +61,8 @@ int rdsym(void)
 }
 
 /* n symbols of 22 bytes into tab; kind is added to the name offsets */
-void readsyms(int n, struct sym *tab, int kind)
+void
+readsyms(int n, struct sym *tab, int kind)
 {
 	int k;
 	int t;
@@ -121,7 +107,8 @@ void readsyms(int n, struct sym *tab, int kind)
 }
 
 /* the ascii table */
-void readtab(char *buf, long n)
+void
+readtab(char *buf, long n)
 {
 	int x, got;
 
@@ -145,7 +132,8 @@ void readtab(char *buf, long n)
 }
 
 /* the number table of a section, behind the numbers already there */
-void readnums(int n)
+void
+readnums(int n)
 {
 	int buf[500];
 	int k, base;
@@ -178,7 +166,8 @@ void readnums(int n)
 }
 
 /* the member table of the global section: the symbols it points to are read in runs of consecutive ones */
-void readmems(int n)
+void
+readmems(int n)
 {
 	static struct stent { long off; int x; } mem[550];
 	struct stent *cur, *first;
@@ -234,7 +223,7 @@ void readmems(int n)
 			cur++;
 			cnt++;
 		}
-		dp = symtab + dest;	/* the original: symtab + dest * 22 bytes */
+		dp = symtab + dest;
 		if (dflag > 1)
 			printf("// readrt: fseek(%ld)\n", symbase + base);
 		fseek(stfile, symbase + base, 0);
@@ -251,7 +240,8 @@ void readmems(int n)
 }
 
 /* sort the tags */
-void sortsyms(void)
+void
+sortsyms(void)
 {
 	int i, j;
 	int t;
@@ -269,7 +259,8 @@ void sortsyms(void)
 			}
 }
 
-void prtags(void)
+void
+prtags(void)
 {
 	int i, n;
 
@@ -278,7 +269,8 @@ void prtags(void)
 }
 
 /* the index of the tag in tagtab, or -1 */
-int tagfind(int tag)
+int
+tagfind(int tag)
 {
 	int lo, hi, mid;
 
@@ -309,7 +301,8 @@ int tagfind(int tag)
 	return -1;
 }
 
-struct sym *mapn(int tag)
+struct sym *
+mapn(int tag)
 {
 	int i;
 
@@ -320,7 +313,8 @@ struct sym *mapn(int tag)
 }
 
 /* the symbol of a node from its tag */
-void mapsym(NODE *p)
+void
+mapsym(NODE *p)
 {
 	register int i;
 
@@ -331,7 +325,8 @@ void mapsym(NODE *p)
 }
 
 /* a leaf of the tree from the file */
-void mapnm(NODE *p)
+void
+mapnm(NODE *p)
 {
 
 	if (eflag > 1)
@@ -342,7 +337,8 @@ void mapnm(NODE *p)
 		p->in.sname = 0;
 }
 
-void mkhash(void)
+void
+mkhash(void)
 {
 	(symtab = (struct sym *)tabzalloc((int)sizeof(struct sym), 22, 0))->nameoff = 0;
 	symtab->sflags |= 4;
@@ -350,7 +346,8 @@ void mkhash(void)
 }
 
 /* the end of a line of the intermediate file */
-void nlcheck(void)
+void
+nlcheck(void)
 {
 	if (getc(infile) != '\n')
 		cerror("intermediate file format error");
@@ -359,7 +356,8 @@ void nlcheck(void)
 /* a tree of the intermediate file */
 int erflag = 0;
 
-NODE *eread(void)
+NODE *
+eread(void)
 {
 	register NODE *p;
 	register int op;
@@ -408,13 +406,15 @@ NODE *eread(void)
 	return p;
 }
 
-long rdin(int base)
+long
+rdin(int base)
 {
 	return rdin2(base, infile);
 }
 
 /* one number from the intermediate file or the data file; the input is f */
-long rdin2(int base, FILE *f)
+long
+rdin2(int base, FILE *f)
 {
 	register int sign, c;
 	long val;

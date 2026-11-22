@@ -227,6 +227,7 @@ extern int asavbc[], *psavbc;
 /*	used to mark a constant with no name field */
 
 # define NONAME 0	/* WEGA: 0 (PCC 040000); nncon of /lib/cparse tests rval against 0 */
+# define NCUNUSED 8	/* the size of cunused (common.2.5): 16 bytes of zeros in the data of /lib/cparse (0x357e) */
 
 	/* mark an offset which is undefined */
 

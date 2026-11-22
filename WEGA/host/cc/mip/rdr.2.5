@@ -3,58 +3,16 @@
  */
 static char rdrsccs[] __attribute__((unused)) = "@[$]rdr\t2.5  08/24/83 16:48:00 Copr. 1981 87wega3.2.";
 char *tnames[] = {
-	"UNDEF",
-	"FARG",
-	"CHAR",
-	"SHORT",
-	"INT",
-	"LONG",
-	"FLOAT",
-	"DOUBLE",
-	"STRTY",
-	"UNIONTY",
-	"ENUMTY",
-	"MOETY",
-	"UCHAR",
-	"USHORT",
-	"UNSIGNED",
-	"ULONG",
-	"undef",
-	"PTR",
-	"FTN",
-	"ARY",
-	"undef",
-	"AUTO",
-	"EXTERN",
-	"STATIC",
-	"REGISTER",
-	"EXTDEF",
-	"LABEL",
-	"undef",
-	"MOS",
-	"PARAM",
-	"STNAME",
-	"MOU",
-	"UNAME",
-	"TYPEDEF",
-	"unused",
-	"ENAME",
-	"MOE",
-	"unused",
-	"USTATIC",
+	"UNDEF", "FARG", "CHAR", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "STRTY", "UNIONTY", "ENUMTY", "MOETY",
+	"UCHAR", "USHORT", "UNSIGNED", "ULONG",
+	"undef", "PTR", "FTN", "ARY",
+	"undef", "AUTO", "EXTERN", "STATIC", "REGISTER", "EXTDEF", "LABEL", "undef", "MOS", "PARAM", "STNAME", "MOU", "UNAME",
+	"TYPEDEF", "unused", "ENAME", "MOE", "unused", "USTATIC",
 };
 char ascii[MAXASCII] = "NULL\0~L1\0~L2";		/* 0x630: the ascii table; "NULL", "~L1", "~L2" come first */
 int stflag = 2;
 long stpos = 0;
 int firstsect = 1;
-
-
-
-
-
-#ifdef OLD_D12K
-#endif
-
 
 /* copy a section of the data file to the output */
 int
@@ -67,9 +25,6 @@ rddata(void)
 	n = rdin2(10, dfile);
 	if (getc(dfile) != '\n')
 		cerror("data file format error\n");
-#ifdef OLD_D12K
-	if (1) return d12kcopy(n);
-#endif
 	for (; n > 0; ) {
 		if (n > 0x200) {
 			chunk = 0x200;
@@ -88,37 +43,6 @@ rddata(void)
 	return 1;
 }
 
-/*
- * The symbol table file is written by cparse of the Z8000: big endian, 16 bit words, 32 bit longs, records of 22 bytes. It is read
- * field by field (the host struct sym has another size and byte order).
- */
-int
-rd16(FILE *f)
-{
-	int h = getc(f);
-
-	return (short)(h << 8 | getc(f));
-}
-
-long
-rd32(FILE *f)
-{
-	long h = rd16(f);
-
-	return (int32_t)((uint32_t)(h & 0xFFFF) << 16 | (rd16(f) & 0xFFFF));
-}
-
-/* getw of the original libc: two bytes, the first one the high one; -1 at the end of the file */
-static int
-getw16(FILE *f)
-{
-	int h = getc(f);
-
-	if (feof(f))
-		return -1;
-	return (short)(h << 8 | getc(f));
-}
-
 /* the symbol table file: the local section, then the member table of the global one */
 int
 rdsym(void)
@@ -133,11 +57,11 @@ rdsym(void)
 	nnumbytes = rd16(stfile);
 	nmembytes = rd16(stfile);
 	nsyms = nsymbytes / 22;
-	readsyms(nsyms, symtab + 3, 0x15);	/* behind the three symbols at the start (0x42 bytes) */
+	readsyms(nsyms, symtab + 3, 21);
 	nsyms += 3;
-	if (nasciibytes + 0x15 > MAXASCII)
+	if (nasciibytes + 21 > MAXASCII)
 		cerror("local ascii table overflow\n");
-	readtab(ascii + 0x15, nasciibytes);
+	readtab(ascii + 21, nasciibytes);
 	nnums = nnumbytes / 2;
 	readnums(nnums);
 	if (stflag) {
@@ -148,130 +72,24 @@ rdsym(void)
 	return 1;
 }
 
-#ifdef OLD_D12K
-/* v0p: a double constant is written at its statement, not with the data at the head of the function: the blocks
-   "Ln: " and four words of the data wait in d12ktab for d12kout */
-#define D12KMAX	16
-static struct { int lab; char text[120]; } d12ktab[D12KMAX];
-
-static int
-d12kcopy(long n)
-{
-	static char line[300];
-	register int i, c;
-	int k, lab;
-	char *q;
-
-	while (n > 0) {
-		i = 0;
-		while (n > 0) {
-			c = getc(dfile);
-			if (c == EOF)
-				return 0;
-			n--;
-			if (i < 298)
-				line[i++] = c;
-			if (c == '\n')
-				break;
-		}
-		line[i] = 0;
-		if (line[0] == 'L' && i > 3 && line[i - 3] == ':' && line[i - 2] == ' ' && line[i - 1] == '\n') {
-			lab = 0;
-			for (q = line + 1; *q >= '0' && *q <= '9'; q++)
-				lab = lab * 10 + *q - '0';
-			for (k = 0; k < D12KMAX && d12ktab[k].lab; k++)
-				;
-			if (k < D12KMAX) {
-				d12ktab[k].lab = lab;
-				q = d12ktab[k].text;
-				sprintf(q, "%s", line);
-				q += strlen(q);
-				for (i = 0; i < 4 && n > 0; i++) {
-					for (;;) {
-						c = getc(dfile);
-						if (c == EOF)
-							return 0;
-						n--;
-						*q++ = c;
-						if (c == '\n' || n <= 0)
-							break;
-					}
-				}
-				*q = 0;
-				continue;
-			}
-		}
-		if (fwrite(line, 1, strlen(line), stdout) != strlen(line))
-			return 0;
-	}
-	return 1;
-}
-
-/* the constant with the label lab (0: all that wait) goes out now */
-void
-d12kout(int lab)
-{
-	register int k;
-
-	for (k = 0; k < D12KMAX; k++)
-		if (d12ktab[k].lab && (lab == 0 || d12ktab[k].lab == lab)) {
-#ifdef SEG
-			printf("\t.psec data\n");
-#endif
-			printf("\t.data\n\t.even\n%s", d12ktab[k].text);
-#ifdef SEG
-			printf("\t.psec\n");
-#endif
-			printf("\t.code\n");
-			d12ktab[k].lab = 0;
-		}
-}
-#endif
-
-/* a record of the symbol table file (22 bytes, big endian) into a symbol */
-static void
-symdecode(struct sym *q, const unsigned char *r)
-{
-#define W16(o)	((short)(r[o] << 8 | r[(o) + 1]))
-#define W32(o)	((int32_t)((uint32_t)r[o] << 24 | (uint32_t)r[(o) + 1] << 16 | (uint32_t)r[(o) + 2] << 8 | r[(o) + 3]))
-	q->nameoff = W16(0);
-	q->stype = W16(2);
-	q->sclass = (char)r[4];
-	q->sbyte5 = (char)r[5];
-	q->sx6 = W16(6);
-	q->soffset = W32(8);
-	q->ssize = W32(12);
-	q->sflags = W16(16);
-	q->sx12 = W16(18);
-	q->sx14 = W16(20);
-#undef W16
-#undef W32
-}
-
 /* n symbols of 22 bytes into tab; kind is added to the name offsets */
 void
 readsyms(int n, struct sym *tab, int kind)
 {
-	int k, x;
+	int k;
+	int x;
 	struct sym *q;
 
 	if (n > 0) {
 		getmem(n * sizeof (struct sym));
-		for (x = 0; x < n; x++) {
-			unsigned char rec[22];
-
-			if (fread(rec, 22, 1, stfile) != 1)
-				break;
-			symdecode(&tab[x], rec);
-		}
-		if (x != n)
+		if ((x = rdsyms22(tab, n, stfile)) != n)
 			printf("readst: error in reading symbol table file stfile\n");
 		for (k = n, q = tab; k > 0; k--, q = q + 1) {
 			tagtab[nglob].tag = (q->sflags >> 4) & 0xFFF;
 			tagtab[nglob].sym = q;
 			nglob++;
 			q->nameoff += kind;
-			if (kind == 0x15)
+			if (kind == 21)
 				q->sflags &= ~4;
 			else {
 				q->sflags |= 4;
@@ -287,9 +105,10 @@ readtab(char *buf, long n)
 {
 	int got;
 
-	if (n > 0)
+	if (n > 0) {
 		if ((got = fread(buf, 1, (int)n, stfile)) != n)
 			printf("readnt: error in reading ascii table from symbol file\n");
+	}
 }
 
 /* the number table of a section, behind the numbers already there */
@@ -308,12 +127,9 @@ readnums(int n)
 		base = nsyms;
 	else
 		base = 0;
-	for (k = 0; k < n; k++) {
-		int h = getc(stfile);
-
-		buf[k] = (short)(h << 8 | getc(stfile));
-	}
-	if (feof(stfile))
+	for (k = 0; k < n && !feof(stfile); k++)
+		buf[k] = rd16(stfile);
+	if (k != n || feof(stfile))
 		printf("readmt: error in reading number table from file stfile\n");
 	src = buf;
 	dst = numtab + (base << 1);	/* entries of 4 bytes: two words */
@@ -348,7 +164,7 @@ readmems(int n)
 		gasciibytes = rd32(stfile);
 		gnumbytes = rd16(stfile);
 		fseek(stfile, symbase + gsymbytes, 0);
-		if (gasciibytes + nasciibytes + 0x15 > MAXASCII)
+		if (gasciibytes + nasciibytes + 21 > MAXASCII)
 			cerror("global ascii table overflow");
 		readtab(ascii + (MAXASCII - gasciibytes), gasciibytes);
 		readnums(gnumcount = gnumbytes / 2);
@@ -452,7 +268,7 @@ mapsym(NODE *p)
 	}
 }
 
-/* a leaf of the tree from the file: symbols, register variables and fields */
+/* a leaf of the tree from the file */
 void
 mapnm(NODE *p)
 {
@@ -527,7 +343,7 @@ mapnm(NODE *p)
 	p->in.sname = 0;
 }
 
-/* the two pseudo symbols ~L1 and ~L2 of the frame */
+/* the first entries of the symbol table */
 void
 mkhash(void)
 {
@@ -572,16 +388,14 @@ eread(void)
 		erflag = 1;
 	if (op == LTYPE)
 		p->tn.lval = rdin(10);
-	if (op != BITYPE && p->in.op != FLD)
+	if (op != BITYPE && p->in.op != FLD) {
 		p->tn.rval = rdin(10);
+	}
 	if (p->in.op == TEMP)
 		p->stn.stsize = rdin(10);
 	if (p->in.op == LAB)
 		p->in.op = NAME;
 	if (p->in.op == FCON) {
-#ifdef OLD_D12K
-		d12kout(-p->tn.rval);
-#endif
 		p->in.op = NAME;
 		p->tn.lval = 0;
 	}
@@ -625,9 +439,7 @@ rdin2(int base, FILE *f)
 		}
 		if (c == '\t')
 			break;
-		if (c >= '0') {
-			if (c > '9')
-				goto bad;
+		if (c >= '0' && c <= '9') {
 			val *= base;
 			if (sign > 0)
 				val += c - '0';
@@ -635,7 +447,6 @@ rdin2(int base, FILE *f)
 				val -= c - '0';
 			continue;
 		}
-	bad:
 		fflush(stderr);
 		cerror("illegal character `%x' in input file", c);
 		break;

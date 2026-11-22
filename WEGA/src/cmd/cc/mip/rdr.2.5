@@ -4,55 +4,16 @@
  */
 static char rdrsccs[] = "@[$]rdr\t2.5  08/24/83 16:48:00 Copr. 1981 87wega3.2.";
 char *tnames[] = {
-	"UNDEF",
-	"FARG",
-	"CHAR",
-	"SHORT",
-	"INT",
-	"LONG",
-	"FLOAT",
-	"DOUBLE",
-	"STRTY",
-	"UNIONTY",
-	"ENUMTY",
-	"MOETY",
-	"UCHAR",
-	"USHORT",
-	"UNSIGNED",
-	"ULONG",
-	"undef",
-	"PTR",
-	"FTN",
-	"ARY",
-	"undef",
-	"AUTO",
-	"EXTERN",
-	"STATIC",
-	"REGISTER",
-	"EXTDEF",
-	"LABEL",
-	"undef",
-	"MOS",
-	"PARAM",
-	"STNAME",
-	"MOU",
-	"UNAME",
-	"TYPEDEF",
-	"unused",
-	"ENAME",
-	"MOE",
-	"unused",
-	"USTATIC",
+	"UNDEF", "FARG", "CHAR", "SHORT", "INT", "LONG", "FLOAT", "DOUBLE", "STRTY", "UNIONTY", "ENUMTY", "MOETY",
+	"UCHAR", "USHORT", "UNSIGNED", "ULONG",
+	"undef", "PTR", "FTN", "ARY",
+	"undef", "AUTO", "EXTERN", "STATIC", "REGISTER", "EXTDEF", "LABEL", "undef", "MOS", "PARAM", "STNAME", "MOU", "UNAME",
+	"TYPEDEF", "unused", "ENAME", "MOE", "unused", "USTATIC",
 };
 char ascii[MAXASCII] = "NULL\0~L1\0~L2";		/* 0x630: the ascii table; "NULL", "~L1", "~L2" come first */
 int stflag = 2;
 long stpos = 0;
 int firstsect = 1;
-
-
-
-
-
 
 /* copy a section of the data file to the output */
 int
@@ -101,11 +62,11 @@ rdsym()
 	fread(&nnumbytes, 2, 1, stfile);
 	fread(&nmembytes, 2, 1, stfile);
 	nsyms = nsymbytes / 22;
-	readsyms(nsyms, (struct sym *)((char *)symtab + 0x42), 0x15);
+	readsyms(nsyms, symtab + 3, 21);
 	nsyms += 3;
-	if (nasciibytes + 0x15 > MAXASCII)
+	if (nasciibytes + 21 > MAXASCII)
 		cerror("local ascii table overflow\n");
-	readtab(ascii + 0x15, nasciibytes);
+	readtab(ascii + 21, nasciibytes);
 	nnums = nnumbytes / 2;
 	readnums(nnums);
 	if (stflag) {
@@ -123,7 +84,9 @@ readsyms(n, tab, kind)
 	struct sym *tab;
 	int kind;
 {
-	int k, unused, x;
+	int k;
+	int t;
+	int x;
 	struct sym *q;
 
 	if (n > 0) {
@@ -135,7 +98,7 @@ readsyms(n, tab, kind)
 			tagtab[nglob].sym = q;
 			nglob++;
 			q->nameoff += kind;
-			if (kind == 0x15)
+			if (kind == 21)
 				q->sflags &= ~4;
 			else {
 				q->sflags |= 4;
@@ -153,9 +116,10 @@ readtab(buf, n)
 {
 	int x, got;
 
-	if (n > 0)
+	if (n > 0) {
 		if ((got = fread(buf, 1, (int)n, stfile)) != n)
 			printf("readnt: error in reading ascii table from symbol file\n");
+	}
 }
 
 /* the number table of a section, behind the numbers already there */
@@ -209,7 +173,7 @@ top:
 		fread(&gasciibytes, 4, 1, stfile);
 		fread(&gnumbytes, 2, 1, stfile);
 		fseek(stfile, symbase + gsymbytes, 0);
-		if (gasciibytes + nasciibytes + 0x15 > MAXASCII)
+		if (gasciibytes + nasciibytes + 21 > MAXASCII)
 			cerror("global ascii table overflow");
 		readtab(ascii + (MAXASCII - gasciibytes), gasciibytes);
 		readnums(gnumcount = gnumbytes / 2);
@@ -316,7 +280,7 @@ mapsym(p)
 	}
 }
 
-/* a leaf of the tree from the file: symbols, register variables and fields */
+/* a leaf of the tree from the file */
 void
 mapnm(p)
 	NODE *p;
@@ -390,13 +354,13 @@ mapnm(p)
 	p->in.sname = 0;
 }
 
-/* the two pseudo symbols ~L1 and ~L2 of the frame */
+/* the first entries of the symbol table */
 void
 mkhash()
 {
-	symtab0 = symtab = (struct sym *)getmem(0x42);
-	fpsym1 = (struct sym *)((char *)symtab + 0x16);
-	fpsym2 = (struct sym *)((char *)symtab + 0x2C);
+	symtab0 = symtab = (struct sym *)getmem(3 * 22);
+	fpsym1 = symtab + 1;
+	fpsym2 = symtab + 2;
 	symtab->nameoff = 0;
 	symtab[1].nameoff = 5;
 	symtab[2].nameoff = 9;
@@ -418,7 +382,7 @@ eread()
 {
 	register NODE *p;
 	register int op;
-	register int spare1, spare2, spare3;	/* unused: the original reserves these registers */
+	register int spare1, spare2, spare3;	/* unused */
 	char c;
 
 	for (; (c = getchar()) == '/'; ) {
@@ -436,8 +400,9 @@ eread()
 		erflag = 1;
 	if (op == LTYPE)
 		p->tn.lval = rdin(10);
-	if (op != BITYPE && p->in.op != FLD)
+	if (op != BITYPE && p->in.op != FLD) {
 		p->tn.rval = rdin(10);
+	}
 	if (p->in.op == TEMP)
 		p->stn.stsize = rdin(10);
 	if (p->in.op == LAB)
@@ -489,9 +454,7 @@ rdin2(base, f)
 		}
 		if (c == '\t')
 			break;
-		if (c >= '0') {
-			if (c > '9')
-				goto bad;
+		if (c >= '0' && c <= '9') {
 			val *= base;
 			if (sign > 0)
 				val += c - '0';
@@ -499,7 +462,6 @@ rdin2(base, f)
 				val -= c - '0';
 			continue;
 		}
-	bad:
 		fflush(stderr);
 		cerror("illegal character `%x' in input file", c);
 		break;

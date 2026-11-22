@@ -1853,3 +1853,15 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   swap of OLD_D13, the conversions the older rmconv keeps become PCONV) and optpost (behind optim: SCONV again, the mask
   of OLD_D24 dropped). Each step: models 179/179/209/210/73/73/26 strictly equal, bench 153/132/212, both matrix
   checks as in the table, checkall ALL OK (the vk, vc and v1 programs). OLD_D23 stays in optim 2.5.
+- 2026-11-22 mip text made closer (no change of a binary: codgen, scodgen, cparse, scparse, gopt stripped equal to the
+  originals, checkall ALL OK). common 2.5: cunused[NCUNUSED] (cg.h 9, mfile1 8), lastfree, dope and opst for both passes
+  (codgen keeps its definitions in bss3.c too: they are commons, and bss3.c sets their place; without lastfree there
+  the bss moved, 43 bytes of operands). rdr 2.4/2.5 (src and host): the externs of 2.4 in the wrapper rdr2.c, 2.5
+  written as 2.4 where the code is the same (decimal constants, symtab + 3, the locals k, t, x, the table in the lines
+  of 2.4, the test of rdin2 without goto, braces, comments); host: the stale OLD_D12K code out of rdr.2.5, its readers
+  of the big endian symbol file (rd16, rd32, getw16, symdecode, now with rdsyms22 as gopt) in the wrapper rdr3.c.
+  Not the same code, so kept: dst = (int *)((char *)numtab + (base << 2)) (as &numtab[base] all of codgen moves) and no
+  int x in eread (the frame). diff rdr.2.4 rdr.2.5: 357 lines before, 259 now; what is left are the changes 2.4 > 2.5.
+- 2026-11-22 corpus store: a stored result of the original names the temporary file of the case (cc.18279.p); a
+  candidate run on a new preparation names another (cc.9972.p), so every case of codgen [host] differed after a change
+  of the host codgen (0 of 427); with CORPUS_NOCACHE=1 427 of 427, then with the store too. Not changed (checkall tool).
