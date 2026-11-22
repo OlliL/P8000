@@ -645,9 +645,9 @@ oplook(void)
 					return op;
 				}
 			if (*lp == 'l' && lp[1] == 0 && np[-1] == 0)
-				return o->opcode + 0x1100;
+				return o->opcode + (SLONG << 8);
 			if (*lp++ == 'b' && *lp++ == 0 && *--np == 0)
-				return o->opcode + 0x1000;
+				return o->opcode + (SBYTE << 8);
 		}
 		h++;
 		if (h >= &ophash[OPHS])

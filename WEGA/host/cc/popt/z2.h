@@ -119,8 +119,10 @@ extern int nchange;
 extern char debug;
 extern char flag136a;
 extern char regs[NREGS][32];
-#define RT1 regs[48]
-#define RT2 regs[49]
+#define NRT1	48	/* the regs[] of the two operands of the instruction looked at */
+#define NRT2	49
+#define RT1 regs[NRT1]
+#define RT2 regs[NRT2]
 
 /* statistics */
 extern int nbrbr, nrevbr, nskip, nrlab, nxjump, ncomj, ncmot, loopiv, nsob;

@@ -231,7 +231,7 @@ rmove(void)
 				savereg(r12, RT2, ty);
 				if (ty == TL) {
 					savereg(r11, regs[r12 + TW], TW);
-					savereg(r11 + 1, regs[r12 + 0x11], TW);
+					savereg(r11 + 1, regs[r12 + TW + 1], TW);
 					makereg(r11, b1, TW);
 					savereg(r12, b1, TW);
 					makereg(r11 + 1, b1, TW);
@@ -395,7 +395,7 @@ rmove(void)
 		}
 		if (isreg(RT2 + 1) >= 0) {
 		kill_all:
-			cleargroup(0x32, 1);
+			cleargroup(NREGS, 1);
 		}
 		goto disp;
 
@@ -588,12 +588,12 @@ rmove(void)
 			goto cc_clear;
 		if (p->back->op == TST) {
 			singop(p->back);
-			savereg(0x31, "#0", 0);
+			savereg(NRT2, "#0", 0);
 		} else
 			dualop(p->back);
 		ty = dest(p->back);
-		tc = findcon(0x30, ty);
-		rc = findcon(0x31, ty);
+		tc = findcon(NRT1, ty);
+		rc = findcon(NRT2, ty);
 		r12 = compare(p->subop, rc, tc);
 		if (r12 == 0) {
 			if (p1->op == CJP || p1->op == EXTS) {
@@ -673,7 +673,7 @@ rmove(void)
 
 	do_call:
 		flag136a = 1;
-		cleargroup(0x32, 0);
+		cleargroup(NREGS, 0);
 		goto reset;
 		}
 
@@ -1257,36 +1257,36 @@ killreg(int n, int type)
 		regs[n][0] = 0;
 		if (n >= 8)
 			n -= 8;
-		regs[n + 16][0] = 0;
+		regs[n + TW][0] = 0;
 		if (n & 1)
-			regs[n + 0x1f][0] = 0;
+			regs[n + TL - 1][0] = 0;
 		else
-			regs[n + 0x20][0] = 0;
+			regs[n + TL][0] = 0;
 		break;
 	case TW:
-		regs[n + 16][0] = 0;
+		regs[n + TW][0] = 0;
 		if (n < 8) {
 			regs[n][0] = 0;
 			regs[n + 8][0] = 0;
 		}
 		if (n & 1)
-			regs[n + 0x1f][0] = 0;
+			regs[n + TL - 1][0] = 0;
 		else
-			regs[n + 0x20][0] = 0;
+			regs[n + TL][0] = 0;
 		break;
 	case TL:
 	case TQ:
 		if (type == TQ)
 			n += 2;
-		regs[n + 0x20][0] = 0;
+		regs[n + TL][0] = 0;
 		if (n < 8) {
 			regs[n][0] = 0;
 			regs[n + 1][0] = 0;
 			regs[n + 8][0] = 0;
 			regs[n + 9][0] = 0;
 		}
-		regs[n + 16][0] = 0;
-		regs[n + 0x11][0] = 0;
+		regs[n + TW][0] = 0;
+		regs[n + TW + 1][0] = 0;
 		break;
 	}
 	makereg(n / 4, name, TQ);
@@ -1662,7 +1662,7 @@ redunbr(struct node *p)
 	t = nonlab(t);
 	if (t->op == TST) {
 		singop(t);
-		savereg(0x31, "#0", 0);
+		savereg(NRT2, "#0", 0);
 	} else if (t->op == CP)
 		dualop(t);
 	else
@@ -1670,8 +1670,8 @@ redunbr(struct node *p)
 	if (t->forw->op != CJP)
 		return;
 	ty = dest(t);
-	a = findcon(0x30, ty);
-	b = findcon(0x31, ty);
+	a = findcon(NRT1, ty);
+	b = findcon(NRT2, ty);
 	t = t->forw;
 	if (compare(t->subop, b, a) <= 0)
 		return;
