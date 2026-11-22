@@ -361,7 +361,7 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   counts as a record, so the code in front of the label is not dead and the label keeps only the parameters known at both
   (prquad `if (q == 0) { printf(..); return; }`: the records `B ] L`, q reloaded from the frame; tfree1 `if (p == 0) cerror(..);
   else p->..`: `B L`, p stays in rr6). 14 source forms of prquad without it, none. Neutral on cas.
-- vc `OLD_D3JL` (comm3.c, under `OLD_D3J`): a parameter pair that comes back at a label gets the frame home (d3jmark) only
+- vc `OLD_D3JL` (reader3.c, under `OLD_D3J`): a parameter pair that comes back at a label gets the frame home (d3jmark) only
   when it is a long, not a pointer (in segmented code every pointer is a pair; the witness of d3jmark, codgen notoff, is a
   long of nonsegmented code). 20 source forms of canopt without it, none. /lib/gopt canopt, denorm, islive: the frame slot of the pointer is reserved, rr6 is not stored.
   Neutral on cas.
@@ -469,7 +469,7 @@ Not reproduced in v1: ld load1 (the store behind a dead `ldl rr4,rr2` shared wit
 
 ### D13 Pointer constants (old scc)
 
-The assembler of the old scc keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`) and of every address of an `.addr` (pointer tables, jump tables: `%8400xxxx`, `%8500xxxx`); the shipped one clears both, and both keep it clear in `.long`. vc `OLD_D13`: cas `assemble.c` (a long immediate goes through `genlop` with the flag of an address), `parser.y` and `p2loop.c` (pass 1 marks an `.addr` list by the tags 0xE0 and 0xE1, pass 2 calls `genlop` with the flag between them), and spopt (`popt/z21.c`: a jump table entry is printed as `.addr`, the shipped one prints `.long`; `/lib/vc/spopt`). The cut members of `slibc-v11` (doprnt, cnvt, endopen) have their jump tables as `.long` and bit 31 clear, as in /bin/cas. `/lib/old/cas` (`src/cmd/cas/old`, with `OLD_CAS`; `OLD_D13` acts only in segmented code, so v0 and v0p are not touched), built by scc. scparse of vc with `OLD_D13` (local1.c, trees1.c): the cast of a constant to a pointer masks with `0xff00ffff`, bit 31 stays; scodgen of vc with `OLD_D13` (optim3.c): in `int + constant address` the address goes to the left (`ldl rr2,#%87000030; add r3,i`), where the shipped codgen makes the int register the target and stops with "register jam" (cas stabp, itabp, stalloc, italloc, namalloc, jsymadj, symadjust: `(char *)STAB + i`). Witnesses: cas `ssymtab` (immediates), the pointer and jump tables in the data of cas.
+The assembler of the old scc keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`) and of every address of an `.addr` (pointer tables, jump tables: `%8400xxxx`, `%8500xxxx`); the shipped one clears both, and both keep it clear in `.long`. vc `OLD_D13`: cas `assemble.c` (a long immediate goes through `genlop` with the flag of an address), `parser.y` and `p2loop.c` (pass 1 marks an `.addr` list by the tags 0xE0 and 0xE1, pass 2 calls `genlop` with the flag between them), and spopt (`popt/z21.c`: a jump table entry is printed as `.addr`, the shipped one prints `.long`; `/lib/vc/spopt`). The cut members of `slibc-v11` (doprnt, cnvt, endopen) have their jump tables as `.long` and bit 31 clear, as in /bin/cas. `/lib/old/cas` (`src/cmd/cas/old`, with `OLD_CAS`; `OLD_D13` acts only in segmented code, so v0 and v0p are not touched), built by scc. scparse of vc with `OLD_D13` (local1.c, trees1.c): the cast of a constant to a pointer masks with `0xff00ffff`, bit 31 stays; scodgen of vc with `OLD_D13` (mip/optim.2.5, under PASS3): in `int + constant address` the address goes to the left (`ldl rr2,#%87000030; add r3,i`), where the shipped codgen makes the int register the target and stops with "register jam" (cas stabp, itabp, stalloc, italloc, namalloc, jsymadj, symadjust: `(char *)STAB + i`). Witnesses: cas `ssymtab` (immediates), the pointer and jump tables in the data of cas.
 
 ### D14 Varargs prologue and post-increment (old libc members)
 
@@ -555,7 +555,7 @@ v0p `OLD_D23` (codgen, optim, mapregs): the optim of codgen does not take a zero
 The kernel masks a user address with `(caddr_t)((long)x & 0x7F00FFFF)`. Original: `ldl rr4,rr2; and r4,#%7F00; ldl y,rr4` (a copy in a new pair, the mask on the copy); the shipped scparse and scodgen: `and r2,#%7F00; ldl y,rr2`.
 
 - vk `OLD_D25` (cparse local1.c, SEG, PCONV): a cast of a long to a pointer stays a conversion (SCONV); the shipped scparse paints the type.
-- vk `OLD_D24` (codgen optim3.c): `convelim` keeps a conversion between a pointer and a non-pointer of the same size. The SCONV of a long to a pointer then uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`: the copy and the mask), and an `& 0x7f00ffff` under it is dropped.
+- vk `OLD_D24` (codgen, mip/optim.2.5): `rmconv` keeps a conversion between a pointer and a non-pointer of the same size. The SCONV of a long to a pointer then uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`: the copy and the mask), and an `& 0x7f00ffff` under it is dropped.
 
 The two work only together: each alone gives the code of the shipped compiler. Witnesses: `sig`, `sys2`, `sys3`, `debug` of the kernel. vc has both too (`OLD_D24` in `OLD_VC`, `OLD_D25` in the segvc rule of scparse): cas `yylex` (`(struct pst *)(q->s_2 & 0x7F00FFFFL)`: `ldl rr2,rr0; and r2,#%7F00`) and `igetaddr` (`return ((struct irow *)igetl());`: `ldl rr0,rr2; and r0,#%7F00; ldl rr2,rr0`). In cas a node holds its operands in pointer members of its union and a symbol its name in `s_name` (a union with the value `s_2`), so that only these two casts of a long to a pointer are left; with a cast at every node operand D25 would mask them all. vl has both too (`OLD_D24` in `OLD_VL`, `OLD_D25` in the segvl rule of scparse, `/lib/vl/scparse`): slibc malloc (`setbusy`, `clearbusy` with `INT` = `long`: `(union store *)((long)(p)|BUSY)`; the first call sets `allocs[0].ptr = setbusy(&allocs[1])`: `ldl rr4,rr2; and r4,#%7f00`); D24 alone changes nothing there, nonsegmented D24 changes no libc member. No source form replaces them: 25 forms of the statement in `sig` (casts, `L` constants, order of the operands, `~`, `+ 0`, `| 0`, a long lvalue, parentheses) give the same code, temporaries are worse.
 
@@ -687,7 +687,7 @@ float compare with memory of libm.a and slibm.a (asin, fmod, hypot, tanh, pow, j
 Neither switch changes a program of v1 that was byte-identical before (checkall).
 ### D63 A float widened to double stays a conversion
 
-v1 `OLD_D63` (codgen, scodgen; optim3.c convelim). The shipped codgen drops a conversion float to double over an operand
+v1 `OLD_D63` (codgen, scodgen; mip/optim.2.5 rmconv). The shipped codgen drops a conversion float to double over an operand
 (`SCONV` double of a float), so `f1 < f2` of two floats compares `flds f0,f1; fcpxs f0,f2` (rule 052, register against
 memory). The v1 codgen keeps the conversion: both operands have the float need 1, each is loaded into a register
 (`flds f0,f1; flds f1,f2`) and rule 051 compares the registers (`fcpx f0,f1`). A double operand has no conversion and still

@@ -1825,3 +1825,4 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   - OLD_D6S falloc, forms tried: `new>=0?` turned round, `type`, brackets, casts, `+0`; the block of the else part stays in
     front of the dispatch.
   - D23 usable: 11 forms tried (2026-11-08).
+- 2026-11-22 (increment 155): the code of OLD_D3K/OLD_D3J (d3kjump and its helpers) moved from comm3.c into reader3.c (branch() no longer calls d3kjump, its two callers do), OLD_D12K (d12k helpers, d12kdata instead of rddata) from rdr3.c into reader3.c; OLD_D24, OLD_D13, OLD_D23, OLD_D63 and the d12kout of eread stay in the shared units mip/optim.2.5 and mip/rdr.2.5 (also under PASS3). The variants built with cc differ in their bytes from their build before; models 179/179/209/210/73/73/26 strictly equal, bench 153/132/212, both matrix checks as in the table. convelim and isint of codgen are rmconv and notflt.

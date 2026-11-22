@@ -90,7 +90,7 @@ Rules of the target:
 
 ## Steps
 
-1. Measure the mip candidates, from the System III-near parts of cparse as the base: the shared text of common, rdr,
+1. (done 2026-11-22) Measure the mip candidates, from the System III-near parts of cparse as the base: the shared text of common, rdr,
    optim (and of manifest, mfile1, mfile2, the operator tables, macdefs) in cparse, gopt, codgen; per unit the versions
    and their differences; where pass-specific code and OLD_* switches sit inside the shared text. (Units measured, see
    Known; the headers follow in step 4.)
@@ -104,7 +104,7 @@ Rules of the target:
    units into the passes; all builds byte-identical after each step.
 4. (done 2026-11-22) When the future mip parts are as equal as they can be: move them to `src/cmd/cc/mip/` (one file per version; equal
    headers); the wrappers include `../mip/...`; byte-identical; checkall.
-5. host/cc/: the same cut for the host ports (one host mip shared by the host passes); the corpora equal.
+5. (done 2026-11-22) host/cc/: the same cut for the host ports (one host mip shared by the host passes); the corpora equal.
 6. (done 2026-11-22) `src/cmd/cc/README.md`; CLAUDE.md (with the owner's OK); a line in host/HANDOFF_wega_disasm.md (decisions).
 
 ## Decisions
@@ -162,3 +162,7 @@ Rules of the target:
   into reader3.c. Step 4: mip/ (common.2.4, common.2.5, optim.2.5, rdr.2.4, rdr.2.5, manifest), z8000/macdefs;
   the wrappers include ../mip/UNIT (not -I: the cpp command of the shipped cc is limited to cmd[200]); the tools
   that copy a pass copy mip and z8000 too. All variants byte-identical; models, bench, matrix checks as before.
+- 2026-11-22: step 5: host/cpp, cparse, codgen, gopt, popt below host/cc (674f0d0c); the host units split, named as
+  in src, common 2.5 and optim 2.5 one text for host cparse and codgen (PASS3), common 2.4 from it, manifest and
+  macdefs shared, host/cc/mip and host/cc/z8000 (fcf10df7, b97b433e); host corpora equal (452, 427, 854). A checkall
+  under the load of parallel model runs failed by timeouts only (UNSTABLE, exit 15); the clean run follows.
