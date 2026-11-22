@@ -333,12 +333,12 @@ mapnm(NODE *p)
 		else if (ofs != 0) {
 			t = INCREF(m->in.sname->stype);
 			p->in.left->in.type = t;
-			if ((ot & 0x30) != 0x10 && p->in.left->in.op == STAR) {
+			if ((ot & 0x30) != 0x10 && p->in.left->in.op == UNARY MUL) {
 				p->in.left->in.op = FREE;
 				p->in.left = clocal(makeblock(PLUS, p->in.left->in.left, bcon(ofs << 3), t));
 			} else
 				p->in.left = clocal(makeblock(PLUS, p->in.left, bcon(ofs << 3), t));
-			p->in.left = buildstar(STAR, p->in.left, 0);
+			p->in.left = buildstar(UNARY MUL, p->in.left, 0);
 		}
 		m->in.op = FREE;
 		return;

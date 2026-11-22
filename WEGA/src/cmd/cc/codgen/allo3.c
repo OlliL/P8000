@@ -342,11 +342,11 @@ allocreg(p, cookie)
 #ifdef OLD_D2R
 #ifdef SEG
 	r = -1;
-	if (cls == RCWORD && (p->in.op == STAR || p->in.op == OREG)) {
+	if (cls == RCWORD && (p->in.op == UNARY MUL || p->in.op == OREG)) {
 		register NODE *q = getlr(p, 'L');	/* segmented: a pair address, used only here, gives its even half */
 		register int pr = -1;
 
-		if (q->in.op == STAR)
+		if (q->in.op == UNARY MUL)
 			q = q->in.left;
 		if (q->in.op == OREG && R2TEST(q->tn.rval))
 			pr = R2UPK1(q->tn.rval);	/* rr2(#n), and rr2(r1) with an index */
@@ -366,7 +366,7 @@ allocreg(p, cookie)
 	}
 	if (r == -1)
 #endif
-	r = cls == RCWORD && (p->in.op == STAR || p->in.op == OREG) ? freereg(p, want, cookie) : -1;	/* a load through a pointer: its register */
+	r = cls == RCWORD && (p->in.op == UNARY MUL || p->in.op == OREG) ? freereg(p, want, cookie) : -1;	/* a load through a pointer: its register */
 #ifdef OLD_D2V
 	if (r != -1 && want == -1 && r < 8 && !d2vfirst(r)) {
 #if defined(OLD_D2R) && defined(SEG)
@@ -432,10 +432,10 @@ allocreg(p, cookie)
 	}
 #endif
 #ifdef OLD_D2Q
-	if (r == -1 && cls == RCPAIR && (p->in.op == STAR || p->in.op == OREG)) {
+	if (r == -1 && cls == RCPAIR && (p->in.op == UNARY MUL || p->in.op == OREG)) {
 		register NODE *q = getlr(p, 'L');	/* a long through a pointer: the pair of its even register */
 
-		if (q->in.op == STAR)
+		if (q->in.op == UNARY MUL)
 			q = q->in.left;
 #ifdef OLD_D2QO
 		/* v0p: also when an odd word register is wanted (the low half of the value, an argument) */
@@ -637,7 +637,7 @@ usable(p, side, r)
 	register int rv;
 
 	p = getlr(p, side);
-	if (p->in.op == STAR)
+	if (p->in.op == UNARY MUL)
 		p = p->in.left;
 	rv = p->tn.rval;
 #ifdef SEG

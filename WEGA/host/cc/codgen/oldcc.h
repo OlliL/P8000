@@ -28,7 +28,7 @@
 #ifdef OLD_V0
 /* v0, the programs of 1982 */
 #define OLD_D2MO	/* OLD_D2M for an odd left register: the pair below it when its even half is free or idle */
-#define OLD_D2R		/* a load through a pointer (STAR, OREG) into the register of its address first (allocreg) */
+#define OLD_D2R		/* a load through a pointer (UNARY MUL, OREG) into the register of its address first (allocreg) */
 #define OLD_D18		/* the frame operand at offset 0 written as 0(fp), never @fp */
 #define OLD_D1R		/* no temporary for the value of a return (r2 stays taken while a delayed x++ runs) */
 #define OLD_D2W		/* the free registers: r0 early (rweight), the pairs rr2 rr0 rr4 rr6 at the start (rsbuild) */

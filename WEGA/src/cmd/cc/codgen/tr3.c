@@ -82,8 +82,8 @@ buildstar(op, l, r)
 
 	n = makeblock(op, l, r, 4);
 	switch (n->in.op) {
-	case STAR:
-		if (l->in.op == UAND) {
+	case UNARY MUL:
+		if (l->in.op == UNARY AND) {
 			l->in.op = FREE;
 			n->in.op = FREE;
 			n = l->in.left;
@@ -95,8 +95,8 @@ buildstar(op, l, r)
 		n->in.fsu = l->in.fsu;
 		n->in.rall = l->in.rall;
 		break;
-	case UAND:
-		if (l->in.op == STAR) {
+	case UNARY AND:
+		if (l->in.op == UNARY MUL) {
 			l->in.op = FREE;
 			n->in.op = FREE;
 			n = l->in.left;
@@ -149,6 +149,6 @@ member(p)
 	p = clocal(n);
 	if (!ISPTR(p->in.type))
 		p->in.type = p->in.type + 16;
-	p = buildstar(STAR, p, 0);
+	p = buildstar(UNARY MUL, p, 0);
 	return p;
 }

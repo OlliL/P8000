@@ -1095,13 +1095,13 @@ copied:
 		printf("\t%s,%s\n", rnames[to], rnames[from]);
 }
 
-/* an operator that is a leaf, or (with p) a STAR over a leaf that shumul accepts */
+/* an operator that is a leaf, or (with p) a UNARY MUL over a leaf that shumul accepts */
 int
 shltype(int op, NODE *p)
 {
 	if (op == NAME || op == REG || op == ICON || op == OREG)
 		return 1;
-	return op == STAR && p != 0 && shumul(p->in.left);
+	return op == UNARY MUL && p != 0 && shumul(p->in.left);
 }
 
 /* the operator is a leaf that can be addressed: NAME, REG, ICON, OREG */
@@ -1114,11 +1114,11 @@ ltypeop(NODE *p)
 	return o == NAME || o == REG || o == ICON || o == OREG;
 }
 
-/* STAR over p: a register variable or a constant (operand that needs no register) */
+/* UNARY MUL over p: a register variable or a constant (operand that needs no register) */
 int
 shtemp(NODE *p)
 {
-	if (p->in.op == STAR)
+	if (p->in.op == UNARY MUL)
 		p = p->in.left;
 	return (p->in.op == REG || p->in.op == OREG) ? !(rstatus[p->tn.rval] & (STAREG|STBREG)) : (p->in.op == NAME || p->in.op == ICON);
 }
@@ -1145,7 +1145,7 @@ shincr(int t, long incr)
 	return 0;
 }
 
-/* STAR over p: which address shapes does it fit? STARNM for a name, STARREG for a post increment through a register */
+/* UNARY MUL over p: which address shapes does it fit? STARNM for a name, STARREG for a post increment through a register */
 int
 shumul(NODE *p)
 {
@@ -1488,7 +1488,7 @@ gencall(NODE *p, int cookie)
 		f->in.op = OREG;
 		f->stn.stsize = 0;
 	}
-	p->in.op = UCALL;
+	p->in.op = UNARY CALL;
 	rsfreeall(1);
 #ifndef OLD_D14Q
 	tmpoff = 0;

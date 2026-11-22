@@ -230,7 +230,7 @@ static void cutree(NODE *p)
 	op = p->in.op;
 	kind = optype(op);
 	switch (op) {
-	case CALL: case UCALL: case STCALL: case USTCALL:
+	case CALL: case UNARY CALL: case STCALL: case USTCALL:
 		hascall = 1;
 		return;
 	case NOT: case CBRANCH:

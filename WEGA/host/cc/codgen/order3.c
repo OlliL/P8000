@@ -66,7 +66,7 @@ mkadrs(NODE *p)
 	if asgop(o) {
 		if (p->in.left->in.su > p->in.right->in.su ||
 		    (p->in.left->in.su == p->in.right->in.su && p->in.left->in.fsu >= p->in.right->in.fsu)) {
-			if (p->in.left->in.op == STAR) {
+			if (p->in.left->in.op == UNARY MUL) {
 				if (p->in.left->in.su > 0 || p->in.left->in.fsu > 0)
 					stotree = p->in.left->in.left;
 				else if (p->in.right->in.su > 0 || p->in.right->in.fsu > 0)
@@ -75,7 +75,7 @@ mkadrs(NODE *p)
 					cerror("store finds both sides trivial");
 					return;
 				}
-			} else if (p->in.left->in.op == FLD && p->in.left->in.left->in.op == STAR)
+			} else if (p->in.left->in.op == FLD && p->in.left->in.left->in.op == UNARY MUL)
 				stotree = p->in.left->in.left->in.left;
 			else
 				stotree = p->in.left;
@@ -136,7 +136,7 @@ sucomp(NODE *p)
 		p->in.su = max(p->in.left->in.su, nr);
 		p->in.fsu = max(p->in.left->in.fsu, nf);
 #ifdef SEG
-		if (p->in.op == STAR)		/* an indirection through a long pointer needs a register pair */
+		if (p->in.op == UNARY MUL)		/* an indirection through a long pointer needs a register pair */
 			p->in.su = max(p->in.su, 2);
 #endif
 		return;
@@ -207,10 +207,10 @@ mkrall(NODE *p, int r)
 		p->in.left->in.rall = p->in.rall;
 		p = p->in.left;
 	}
-	if (p->in.op != STAR)
+	if (p->in.op != UNARY MUL)
 		return;
 	p = p->in.left;
-	if (p->in.op == STAR) {
+	if (p->in.op == UNARY MUL) {
 		p->in.rall = r;
 		p = p->in.left;
 	}
@@ -293,7 +293,7 @@ rallo(NODE *p, int down)
 		break;
 #endif
 #ifdef OLD_D5A
-	case STAR:
+	case UNARY MUL:
 		if ((p->in.rall & MUSTDO) && p->in.left->in.op == PLUS && p->in.left->in.right->in.op == REG && p->in.left->in.right->tn.rval == 15)
 			down1 = NOPREF;	/* v0p: the address of a local array element wanted in a given register goes anywhere */
 		break;
@@ -323,7 +323,7 @@ mkoreg(NODE *p)
 	NODE *q;
 	long off;
 
-	if (p->in.op != STAR)
+	if (p->in.op != UNARY MUL)
 		return 0;
 	q = p->in.left;
 	l = q->in.left;
@@ -376,8 +376,8 @@ orderadd(NODE *p)
 
 	n = 0;
 	if (p->in.op == PLUS || p->in.op == MINUS) {
-		if (p->in.left->in.op == CALL || p->in.left->in.op == UCALL) {
-			if (p->in.right->in.op == CALL || p->in.right->in.op == UCALL) {
+		if (p->in.left->in.op == CALL || p->in.left->in.op == UNARY CALL) {
+			if (p->in.right->in.op == CALL || p->in.right->in.op == UNARY CALL) {
 				order(p->in.right, INTEMP);
 				n++;
 				order(p->in.left, INAREG|INTAREG);
@@ -406,13 +406,13 @@ orderadd(NODE *p)
 
 #ifdef SEG
 
-/* handle indirections: get the address of *p into a register; p is the STAR itself or its operand */
+/* handle indirections: get the address of *p into a register; p is the UNARY MUL itself or its operand */
 void
 offstar(NODE *p)
 {
 	register NODE *l;
 
-	if (p->in.op == STAR) {
+	if (p->in.op == UNARY MUL) {
 		l = p->in.left;
 		if (l->in.op == PLUS || l->in.op == MINUS) {
 			orderadd(l);
@@ -454,7 +454,7 @@ offstar(NODE *p)
 	register int save;
 
 	star = 0;
-	if (p->in.op == STAR) {
+	if (p->in.op == UNARY MUL) {
 		if (p->in.rall & MUSTDO)
 			star = p;
 		p = p->in.left;
@@ -483,7 +483,7 @@ niceuty(NODE *p)
 {
 	register int t;
 
-	return p->in.op == STAR && (t = p->in.type) != CHAR && t != UCHAR && t != FLOAT && t != DOUBLE && shumul(p->in.left) != STARREG;
+	return p->in.op == UNARY MUL && (t = p->in.type) != CHAR && t != UCHAR && t != FLOAT && t != DOUBLE && shumul(p->in.left) != STARREG;
 }
 
 /* order the operands of a binary operator; 1 when something was ordered, 0 when the template can be used */
@@ -496,7 +496,7 @@ setbin(NODE *p)
 	l = p->in.left;
 	if (p->in.right->in.su == 0 && p->in.right->in.fsu == 0) {
 		if logop(p->in.op) {
-			if (l->in.op == STAR && shumul(l->in.left) != STARREG)
+			if (l->in.op == UNARY MUL && shumul(l->in.left) != STARREG)
 				OFFSTARL(l);
 			else
 				order(l, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
@@ -570,7 +570,7 @@ setstr(NODE *p)
 	}
 	p = p->in.left;
 	if (p->in.op != NAME && p->in.op != OREG) {
-		if (p->in.op != STAR)
+		if (p->in.op != UNARY MUL)
 			cerror("bad setstr");
 		order(p->in.left, INTAREG);
 		return 1;
@@ -586,12 +586,12 @@ setasg(NODE *p)
 
 	l = p->in.left;
 	r = p->in.right;
-	if (l->in.su > r->in.su && l->in.op == STAR) {
+	if (l->in.su > r->in.su && l->in.op == UNARY MUL) {
 		OFFSTARA(l);
 		return 1;
 	}
 	if (r->in.su != 0 && r->in.op != REG) {
-		if (r->in.op == STAR)
+		if (r->in.op == UNARY MUL)
 			OFFSTARL(r);
 		else
 			order(r, SNAME|SCON|SOREG|INAREG|INBREG);
@@ -601,11 +601,11 @@ setasg(NODE *p)
 		order(p->in.right, INBREG|INTBREG);
 		return 1;
 	}
-	if (l->in.op == STAR) {
+	if (l->in.op == UNARY MUL) {
 		OFFSTARA(l);
 		return 1;
 	}
-	if (l->in.op == FLD && l->in.left->in.op == STAR) {
+	if (l->in.op == FLD && l->in.left->in.op == UNARY MUL) {
 		OFFSTARA(l->in.left);
 		return 1;
 	}
@@ -648,7 +648,7 @@ setasop(NODE *p)
 leftadr:
 		if (sul == 0 && fl == 0)
 			goto rew;
-		if (p->in.left->in.op == STAR) {
+		if (p->in.left->in.op == UNARY MUL) {
 			if (lmuldiv(p)) {
 #ifdef SEG
 				p->in.left->in.left->in.rall = MUSTDO|2;
@@ -661,7 +661,7 @@ leftadr:
 			OFFSTARA(p->in.left);
 			return 1;
 		}
-		if (p->in.left->in.op == FLD && p->in.left->in.left->in.op == STAR) {
+		if (p->in.left->in.op == FLD && p->in.left->in.left->in.op == UNARY MUL) {
 			if (lmuldiv(p)) {
 #ifdef SEG
 				p->in.left->in.left->in.left->in.rall = MUSTDO|2;
@@ -678,7 +678,7 @@ rew:
 		q = p->in.left;
 		if (q->in.op == FLD)
 			q = q->in.left;
-		if (q->in.op != STAR || shumul(q->in.left) != STARREG)
+		if (q->in.op != UNARY MUL || shumul(q->in.left) != STARREG)
 			return 0;
 		c = tcopy(p);
 		p->in.op = ASSIGN;
@@ -714,13 +714,13 @@ rew:
 			return 1;
 		}
 	}
-	if (sul > sur && p->in.left->in.op == STAR) {
+	if (sul > sur && p->in.left->in.op == UNARY MUL) {
 		if (lmuldiv(p))
 			p->in.left->in.left->in.rall = MUSTDO|2;
 		OFFSTARA(p->in.left);
 		return 1;
 	}
-	if (p->in.right->in.op == STAR) {
+	if (p->in.right->in.op == UNARY MUL) {
 		OFFSTARL(p->in.right);
 		return 1;
 	}
@@ -952,9 +952,9 @@ d3aw(NODE *p, int top)
 	k = optype(p->in.op);
 	if (k == LTYPE || p->in.op == QUEST)
 		return;
-	if (p->in.op == STAR)
+	if (p->in.op == UNARY MUL)
 		top = 1;		/* below an indirection: an address */
-	else if (p->in.op != PLUS && p->in.op != MINUS && p->in.op != UMINUS && p->in.op != MUL && p->in.op != SCONV)
+	else if (p->in.op != PLUS && p->in.op != MINUS && p->in.op != UNARY MINUS && p->in.op != MUL && p->in.op != SCONV)
 		top = 0;		/* below another operator: a computed value */
 	d3aw(p->in.left, top);
 	if (k == BITYPE)

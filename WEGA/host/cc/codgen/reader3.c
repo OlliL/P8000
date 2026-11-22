@@ -595,9 +595,9 @@ delay2(NODE *p)
 	case OROR:
 	case COMOP:
 	case CALL:
-	case UCALL:
+	case UNARY CALL:
 	case FCALL:
-	case UFCALL:
+	case UNARY FORTCALL:
 	case NOT:
 	case STCALL:
 	case USTCALL:
@@ -720,11 +720,11 @@ again:
 	case ANDAND:
 	case OROR:
 	case NOT:
-	case UCALL:
+	case UNARY CALL:
 	case CALL:
 	case USTCALL:
 	case STCALL:
-	case UFCALL:
+	case UNARY FORTCALL:
 	case FCALL:
 	case RET:
 		;
@@ -856,12 +856,12 @@ again:
 		order(p, INTAREG);
 		goto cleanup;
 	case FLD:
-		if (p1->in.op == STAR) {
+		if (p1->in.op == UNARY MUL) {
 			offstar(p1->in.left);
 			goto again;
 		}
 	/* fall through */
-	case UMINUS:
+	case UNARY MINUS:
 		if (p1->in.type == FLOAT || p1->in.type == DOUBLE) {
 			order(p1, INTBREG);
 			goto again;
@@ -876,19 +876,19 @@ again:
 	case INIT:
 		uerror("illegal initialization: order()");
 		return;
-	case UFCALL:
+	case UNARY FORTCALL:
 		p->in.right = 0;
 	/* fall through */
 	case FCALL:
-		o = p->in.op = UFCALL;
+		o = p->in.op = UNARY FORTCALL;
 		if (gencall(p, cookie))
 			goto nomat;
 		goto cleanup;
-	case UCALL:
+	case UNARY CALL:
 		p->in.right = 0;
 	/* fall through */
 	case CALL:
-		o = p->in.op = UCALL;
+		o = p->in.op = UNARY CALL;
 		if (gencall(p, cookie))
 			goto nomat;
 		goto cleanup;
@@ -900,7 +900,7 @@ again:
 		if (genscall(p, cookie))
 			goto nomat;
 		goto cleanup;
-	case STAR:
+	case UNARY MUL:
 		if (cook == FOREFF) {
 			order(p->in.left, FOREFF);
 			p->in.op = FREE;
@@ -908,7 +908,7 @@ again:
 		}
 #ifdef SEG
 		offstar(p);
-		if (p->in.op != STAR)
+		if (p->in.op != UNARY MUL)
 			goto cleanup;
 #else
 		offstar(p->in.left);
@@ -998,14 +998,14 @@ store(NODE *p)
 	if (ty == LTYPE)
 		return;
 	switch (o) {
-	case UCALL:
-	case UFCALL:
+	case UNARY CALL:
+	case UNARY FORTCALL:
 	case USTCALL:
 		callflag++;
 		break;
-	case STAR:
+	case UNARY MUL:
 		if asgop(p->in.left->in.op)
-			stoasg(p->in.left, STAR);
+			stoasg(p->in.left, UNARY MUL);
 		break;
 	case CALL:
 	case FCALL:
@@ -1142,9 +1142,9 @@ markcall(NODE *p)
 again:
 	switch (p->in.op) {
 	case CALL:
-	case UCALL:
+	case UNARY CALL:
 	case FCALL:
-	case UFCALL:
+	case UNARY FORTCALL:
 	case STCALL:
 	case USTCALL:
 		callflag++;
@@ -1404,7 +1404,7 @@ oreg2(NODE *p)
 	long temp;
 	int stw;
 
-	if (p->in.op != STAR)
+	if (p->in.op != UNARY MUL)
 		return;
 	q = p->in.left;
 	if (q->in.op == REG) {

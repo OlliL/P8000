@@ -61,7 +61,7 @@ genquads(p)
 	kind = optype(p->in.op);
 	if (kind == LTYPE)
 		goto done;
-	if (p->in.op == CALL || p->in.op == STCALL || p->in.op == UCALL || p->in.op == USTCALL)
+	if (p->in.op == CALL || p->in.op == STCALL || p->in.op == UNARY CALL || p->in.op == USTCALL)
 		fold1(p);
 	else if (p->in.op == ASSIGN || p->in.op == STASG)
 		fold2(p);
@@ -103,7 +103,7 @@ rl1:
 	else
 		p2 = 0;
 	switch (p->in.op) {
-	case CALL: case UCALL: case STCALL: case USTCALL:
+	case CALL: case UNARY CALL: case STCALL: case USTCALL:
 		p2 = &s2;
 		p2->b2 = OANAME;
 		p2->w4 = 0;
@@ -121,7 +121,7 @@ rl1:
 		*p1 = *p2;
 		p1 = 0;
 		break;
-	case UMINUS:
+	case UNARY MINUS:
 		p2 = &s2;
 		*p2 = *p1;
 rl2:
@@ -251,7 +251,7 @@ fold1(p)
 {
 	NODE *q;
 
-	if (p->in.left->in.op == UAND && p->in.left->in.left->in.op == NAME) {
+	if (p->in.left->in.op == UNARY AND && p->in.left->in.left->in.op == NAME) {
 		q = p->in.left;
 		p->in.left = q->in.left;
 		q->in.op = FREE;
@@ -265,7 +265,7 @@ fold2(p)
 {
 	NODE *q;
 
-	for (q = p->in.left; q->in.op == STAR; q = q->in.left)
+	for (q = p->in.left; q->in.op == UNARY MUL; q = q->in.left)
 		q->in.op = 126;
 	if (q->in.op == SUBSR || q->in.op == STREF || q->in.op == PLUS || q->in.op == MINUS) {
 		q = p->in.left;

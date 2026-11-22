@@ -288,7 +288,7 @@ fixfld(p)
 #endif
 #if defined(OLD_D5S) && !defined(OLD_D3KC) && !defined(SEG)
 	/* v0: a member of an element of a global array: (index*size + member + index) + address, the address last */
-	if (subsr && a->in.op == PLUS && a->in.left->in.op == UAND && a->in.right->in.op == PLUS && p->in.right->in.op != ICON) {
+	if (subsr && a->in.op == PLUS && a->in.left->in.op == UNARY AND && a->in.right->in.op == PLUS && p->in.right->in.op != ICON) {
 		m = a->in.left;
 		a->in.left = a->in.right;
 		a->in.right = p->in.right;
@@ -302,7 +302,7 @@ fixfld(p)
 	/* vc: a constant second index of a global array of arrays is folded into the address (_lctab+4(r3)) */
 	if (subsr && a->in.op == PLUS && p->in.right->in.op == ICON && !p->in.right->in.sname &&
 	    ((a->in.left->in.op == ICON && a->in.left->in.sname) ||
-	     (a->in.left->in.op == UAND && a->in.left->in.left->in.op == NAME))) {
+	     (a->in.left->in.op == UNARY AND && a->in.left->in.left->in.op == NAME))) {
 		if (a->in.left->in.op == ICON)
 			a->in.left->tn.lval += p->in.right->tn.lval;
 		else
@@ -317,7 +317,7 @@ fixfld(p)
 #endif
 #ifdef OLD_D5G
 	/* v0p: an element of a global array of arrays is (index + index) + address, the address added last */
-	if (subsr && a->in.op == PLUS && (a->in.left->in.op == UAND || (a->in.left->in.op == ICON && a->in.left->in.sname)) &&
+	if (subsr && a->in.op == PLUS && (a->in.left->in.op == UNARY AND || (a->in.left->in.op == ICON && a->in.left->in.sname)) &&
 	    p->in.right->in.op != ICON) {
 		m = a->in.left;
 		a->in.left = p->in.right;
@@ -335,12 +335,12 @@ fixfld(p)
 		return;
 	}
 #endif
-	if (p->in.op != FLD && a->in.op != UAND)
+	if (p->in.op != FLD && a->in.op != UNARY AND)
 		return;
 	if (m->in.op != NAME || m->tn.rval < 0 || (SFISGLOBAL(m->in.sname->sflags)) != 0)
 		return;
 	m = clocal(m);
-	if (m->in.op != STAR)
+	if (m->in.op != UNARY MUL)
 		return;
 	if (!ismember) {
 		m->in.op = FREE;
@@ -390,7 +390,7 @@ mapregs(p)
 	case STREF:
 		fixfld(p);
 		n = p->in.right;
-		if (p->in.left->in.op == UAND)
+		if (p->in.left->in.op == UNARY AND)
 			p->in.left->in.type = p->in.type;
 		if (n->in.op == NAME && (n->in.sname->sclass == MOS || n->in.sname->sclass == MOU)) {
 			n->in.op = ICON;
@@ -427,11 +427,11 @@ mapregs(p)
 			n->in.op = FREE;
 		}
 		break;
-	case UAND:
+	case UNARY AND:
 		m = p->in.left;
 		if (m->in.op == NAME && (SFISGLOBAL(m->in.sname->sflags)) == 0 && m->tn.rval >= 0) {
 			m = clocal(m);
-			if (m->in.op == STAR) {
+			if (m->in.op == UNARY MUL) {
 				m->in.op = FREE;
 				p->in.op = FREE;
 				r = m->in.left;

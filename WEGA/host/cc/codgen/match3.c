@@ -102,7 +102,7 @@ tshape(NODE *p, int shape)
 		return shape & r;
 	case OREG:
 		return shape & SOREG;
-	case STAR:
+	case UNARY MUL:
 		return shumul(p->in.left) & shape;
 	}
 	return 0;
@@ -412,7 +412,7 @@ expand(NODE *p, int cookie, char *cp)
 			/* the result register of a call holds the value of the right operand: note it */
 			r = getlr(p, *++cp);
 			n = rfind(resc[0].tn.rval, rclass(p->in.type, resc[0].tn.rval));
-			if (p->in.op == UCALL)
+			if (p->in.op == UNARY CALL)
 				n->sym = 0;
 			else {
 				n->off = r->tn.lval;

@@ -210,7 +210,7 @@ void mktree(struct quad *q)
 	p->in.op = qdop[q->op];
 	fl = 0;
 	if (p->in.op == 0x7e) {
-		p->in.op = STAR;
+		p->in.op = UNARY MUL;
 		if (q->c.b2 == OABTEMP && q->a.b2 == OABTEMP)
 			fl = (betatbl[q->a.w4].p8 >> 10) & 1;
 	}
@@ -251,7 +251,7 @@ void mktree(struct quad *q)
 		l = mkleaf(&q->a);
 		r = q->b.b2 ? mkleaf(&q->b) : 0;
 		p->in.left = l;
-		if (p->in.op == STAR)
+		if (p->in.op == UNARY MUL)
 			p->in.left->tn.w6 = fl;
 		p->in.right = r;
 	}
@@ -358,7 +358,7 @@ void mktree(struct quad *q)
 	} else if (asgop(p->in.op) && q->c.b2 != OASTEMP && needustar(p)) {
 		t = talloc();
 		t->in.rall = 0;
-		t->in.op = STAR;
+		t->in.op = UNARY MUL;
 		t->in.left = p->in.left;
 		t->in.type = DECREF(p->in.left->in.type);
 		p->in.type = t->in.type;
@@ -368,7 +368,7 @@ void mktree(struct quad *q)
 		t = talloc();
 		t->in.rall = 0;
 		t->in.left = p;
-		t->in.op = STAR;
+		t->in.op = UNARY MUL;
 		t->in.type = p->in.type;
 		wrline(t);
 		t->in.op = FREE;
@@ -390,7 +390,7 @@ void addrof(NODE *p)
 	if (p->in.left->in.op == NAME && (p->in.left->in.type & 0x30) != 0x10) {
 		q = talloc();
 		q->in.rall = 0;
-		q->in.op = UAND;
+		q->in.op = UNARY AND;
 		q->in.left = p->in.left;
 		q->in.type = INCREF(p->in.left->in.type);
 		p->in.left = q;
@@ -404,7 +404,7 @@ int needustar(NODE *p)
 
 	if (p->in.left->in.op == TEMP)
 		return 1;
-	for (q = p->in.left; q->in.op == STAR; q = q->in.left)
+	for (q = p->in.left; q->in.op == UNARY MUL; q = q->in.left)
 		;
 	if (qflag > 4)
 		printf("// needustar: q->su = %d\n", q->tn.w6);
