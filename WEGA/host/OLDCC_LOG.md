@@ -1882,3 +1882,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   checkall: all but corpus gopt [host], the stored result of the original with another name of the temporary file (see
   above), 854 of 854 with CORPUS_NOCACHE=1. optim 2.5: the start of the pointer case of PLUS once for both passes (the
   tokens after the preprocessor are the same for every pass and switch set).
+- 2026-11-22 optim 2.5, PASS3 blocks made one text for both passes where codgen and scodgen stay stripped equal (cparse:
+  the same tokens after the preprocessor): the locals of optim (int i; NODE *sp; TWORD t: codgen uses neither x nor i,
+  sp keeps its place; econvert stays under # ifndef PASS3), conval PLUS of SEG (break, not return 1), the division
+  and the rest by 0 (if/else of cparse), the case ASG DIV/MOD (the nested if of cparse; zapright and makety of cparse
+  stay under # ifndef PASS3), rmconv (the text of cparse; the goto form of codgen went). Not the same code, so kept:
+  conval MINUS of SEG (the difference of pointer constants; the form of cparse moves 27 bytes of scodgen). 20 > 17
+  lines with PASS3. Host the same, and its stale OLD_D24, OLD_D13 blocks went. Models, bench, matrix checks, host
+  corpora 427/427, 452/452, checkall ALL OK.

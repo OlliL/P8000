@@ -36,13 +36,11 @@ NODE *optim(NODE *p)
 
 	int o, ty;
 	register NODE *a, *b;
-# ifdef PASS3
-	NODE *sp;	/* (host: the unused x and i of the original go) */
-# else
-	int i;
+	int i __attribute__((unused));	/* (host: codgen does not use i and t) */
 	NODE *sp;
-	TWORD t;
+	TWORD t __attribute__((unused));
 
+# ifndef PASS3
 	if( (t=BTYPE(p->in.type))==ENUMTY || t==MOETY ) econvert(p);
 # endif
 	ty = optype( o=p->in.op);
@@ -65,19 +63,6 @@ NODE *optim(NODE *p)
 # endif
 	if( ty == BITYPE ) p->in.right = optim(p->in.right);
 	p->in.left = optim(p->in.left);
-# if defined(PASS3) && defined(OLD_D24)
-	/* (codgen v1, an exception in mip: host/increments/155) the conversion of a long to a pointer masks the
-	   address (template 040a): the mask 0x7f00ffff in front of it is dropped */
-	if( o == SCONV && ISPTR(p->in.type) && LO(p) == AND && RO(p->in.left) == ICON &&
-			p->in.left->in.right->in.sname == 0 && RV(p->in.left) == 0x7F00FFFFL ){
-		NODE *a;
-
-		a = p->in.left;
-		p->in.left = a->in.left;
-		a->in.right->in.op = FREE;
-		a->in.op = FREE;
-		}
-# endif
 
 	/* collect constants */
 
@@ -171,12 +156,6 @@ NODE *optim(NODE *p)
 		/* someday, do it right */
 		if( nncon(p->in.left) || ( LCON(p) && !RCON(p) && !( RO(p) == REG && p->in.right->tn.rval == 15 ) &&
 				!ISPTR(p->in.type) ) ) SWAP( p->in.left, p->in.right );
-# if defined(PASS3) && defined(OLD_D13) && defined(SEG)
-		/* (codgen vc, an exception in mip: host/increments/155) int + constant address: the address goes to the
-		   left (ldl rr2,#addr; add r3,i); the shipped codgen makes an int register the target of the pointer and jams */
-		if( o == PLUS && ISPTR(p->in.type) && RCON(p) && ISPTR(p->in.right->in.type) && !ISPTR(p->in.left->in.type) )
-			SWAP( p->in.left, p->in.right );
-# endif
 # if !defined(PASS3) || !defined(OLD_D23)
 		/* (OLD_D23: codgen v0p, an exception in mip: host/increments/155) */
 		if( (o == MINUS || o == PLUS) && nncon(p->in.right) && RV(p) == 0 ) goto zapright;
@@ -202,11 +181,11 @@ NODE *optim(NODE *p)
 			p->in.left = p->in.left->in.left;
 			}
 		if( RCON(p) && LO(p)==o && RCON(p->in.left) && conval( p->in.right, o, p->in.left->in.right ) ) goto zapleft;
-# ifdef PASS3
 		if( ISPTR(p->in.type) && LCON(p) && RO(p) == o && RCON(p->in.right) && conval( p->in.left, o, p->in.right->in.right ) ){
 			p->in.right->in.right->in.op = FREE;
 			RO(p) = FREE;
 			p->in.right = p->in.right->in.left;
+# ifdef PASS3
 		neg:
 			/* change +'s of negative consts back to - */
 			if( o==PLUS && nncon(p->in.right) && RV(p)<0 ){
@@ -215,7 +194,9 @@ NODE *optim(NODE *p)
 				o = MINUS;
 				}
 			break;
+# endif
 			}
+# ifdef PASS3
 		if( LCON(p) && RCON(p) && conval( p->in.left, o, p->in.right ) ){
 		zapright:
 			RO(p) = FREE;
@@ -223,11 +204,6 @@ NODE *optim(NODE *p)
 			}
 		goto neg;
 # else
-		if( ISPTR(p->in.type) && LCON(p) && RO(p) == o && RCON(p->in.right) && conval( p->in.left, o, p->in.right->in.right ) ){
-			p->in.right->in.right->in.op = FREE;
-			RO(p) = FREE;
-			p->in.right = p->in.right->in.left;
-			}
 		else if( LCON(p) && RCON(p) && conval( p->in.left, o, p->in.right ) ){
 		zapright:
 			RO(p) = FREE;
@@ -258,26 +234,9 @@ NODE *optim(NODE *p)
 # endif
 
 	case DIV:
-# ifdef PASS3
-	case ASG DIV:
-	case MOD:
-	case ASG MOD:
-		a = p->in.right;
-		if( !ISUNSIGNED(p->in.type) ) break;
-		if( !nncon(a) ) break;
-		if( ispow2(a->tn.lval) <= 0 ) break;
-		if( o == MOD || o == ASG MOD ){
-			p->in.op = (o == ASG MOD) ? ASG AND : AND;
-			a->tn.lval -= 1;
-			a->in.type = p->in.type = p->in.left->in.type;
-			}
-		else {
-			p->in.op = (o == ASG DIV) ? ASG RS : RS;
-			a->tn.lval = ispow2( a->tn.lval );
-			}
-		break;
-# else
+# ifndef PASS3
 		if( nncon( p->in.right ) && p->in.right->tn.lval == 1 ) goto zapright;
+# endif
 	/* fall through */
 	case ASG DIV:
 	case MOD:
@@ -292,12 +251,13 @@ NODE *optim(NODE *p)
 			else {
 				p->in.op = (o == ASG DIV) ? ASG RS : RS;
 				a->tn.lval = ispow2( a->tn.lval );
+# ifndef PASS3
 				if( p->in.op == RS && p->in.left->in.type != p->in.type )
 					p->in.left = makety( p->in.left, p->in.type, p->fn.cdim, p->fn.csiz );
+# endif
 				}
 			}
 		break;
-# endif
 
 	case ASG PLUS:
 	case ASG MINUS:
@@ -358,11 +318,7 @@ int conval(NODE *p, int o, NODE *q)
 #ifdef SEG
 		if( ISPTR(p->in.type) ){
 			p->tn.lval = ((val & 0x7f00ffffL) + p->tn.lval) & 0x7f00ffffL;
-# ifdef PASS3
-			return( 1 );
-# else
 			break;
-# endif
 			}
 #endif
 		p->tn.lval += val;
@@ -394,28 +350,12 @@ int conval(NODE *p, int o, NODE *q)
 		p->tn.lval *= val;
 		break;
 	case DIV:
-# ifdef PASS3
-		if( val == 0 ){
-			uerror( "division by 0" );
-			return( 1 );
-			}
-		p->tn.lval /= val;
-# else
 		if( val == 0 ) uerror( "division by 0" );
 		else p->tn.lval /= val;
-# endif
 		break;
 	case MOD:
-# ifdef PASS3
-		if( val == 0 ){
-			uerror( "division by 0" );
-			return( 1 );
-			}
-		p->tn.lval %= val;
-# else
 		if( val == 0 ) uerror( "division by 0" );
 		else p->tn.lval %= val;
-# endif
 		break;
 	case AND:
 		p->tn.lval &= val;
@@ -504,70 +444,6 @@ int treeeq(NODE *p, NODE *q)
 
 NODE *rmconv(NODE *p, char c)
 { /* drop a conversion that changes nothing: c 'r' of the right side, 'l' of the left side, else of p */
-# ifdef PASS3
-	register NODE *q, *r;
-	int s;
-
-	if (c == 'r') {
-		q = p->in.right;
-#ifdef OLD_D24	/* (codgen v1, an exception in mip: host/increments/155) */
-		if ((q->in.type & 0x30) != (q->in.left->in.type & 0x30) && ((q->in.type & 0x30) == 0x10 || (q->in.left->in.type & 0x30) == 0x10))
-			return p;
-#endif
-		if (q->in.type != q->in.left->in.type) {
-			s = bsize(q->in.left->in.type);
-			if (s != bsize(q->in.type))
-				goto test;
-			if (!(notflt(q->in.type) ^ notflt(q->in.left->in.type)))
-				goto remove;
-		test:
-#ifdef OLD_D63	/* (codgen v1, an exception in mip: host/increments/155) */
-			return p;	/* v1: a float widened to double stays a conversion (host/OLDCC.md D63) */
-#else
-			if (q->in.type != 7 || q->in.left->in.type != 6)
-				return p;
-#endif
-		}
-	remove:
-		r = tcopy(q->in.left);
-		tfree(q);
-		p->in.right = r;
-		return p;
-	}
-	if (c == 'l') {
-		q = p->in.left;
-#ifdef OLD_D24	/* (codgen v1, an exception in mip: host/increments/155) */
-		if ((q->in.type & 0x30) != (q->in.left->in.type & 0x30) && ((q->in.type & 0x30) == 0x10 || (q->in.left->in.type & 0x30) == 0x10))
-			return p;
-#endif
-		if (q->in.type != q->in.left->in.type) {
-			s = bsize(q->in.left->in.type);
-			if (s != bsize(q->in.type))
-				goto ltest;
-			if (!(notflt(q->in.type) ^ notflt(q->in.left->in.type)))
-				goto lremove;
-		ltest:
-#ifdef OLD_D63	/* (codgen v1, an exception in mip: host/increments/155) */
-			return p;	/* v1: a float widened to double stays a conversion (host/OLDCC.md D63) */
-#else
-			if (q->in.type != 7 || q->in.left->in.type != 6)
-				return p;
-#endif
-		}
-	lremove:
-		r = tcopy(q->in.left);
-		tfree(q);
-		p->in.left = r;
-		return p;
-	}
-	if (p->in.type == 0) {
-		r = tcopy(p->in.left);
-		tfree(p);
-		p = r;
-	}
-	return p;
-	}
-# else
 	register NODE *q, *r;
 
 	if( c == 'r' ){
@@ -597,7 +473,6 @@ NODE *rmconv(NODE *p, char c)
 		}
 	return( p );
 	}
-# endif
 
 int notflt(TWORD t)
 { /* is t not a floating type */

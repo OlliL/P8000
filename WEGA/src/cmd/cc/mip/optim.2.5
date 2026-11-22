@@ -37,15 +37,11 @@ optim(p) register NODE *p; {
 
 	register o, ty;
 	register NODE *a, *b;
-# ifdef PASS3
-	int x;
-	NODE *sp;
-	int i;
-# else
 	int i;
 	NODE *sp;
 	TWORD t;
 
+# ifndef PASS3
 	if( (t=BTYPE(p->in.type))==ENUMTY || t==MOETY ) econvert(p);
 # endif
 	ty = optype( o=p->in.op);
@@ -238,26 +234,9 @@ optim(p) register NODE *p; {
 # endif
 
 	case DIV:
-# ifdef PASS3
-	case ASG DIV:
-	case MOD:
-	case ASG MOD:
-		a = p->in.right;
-		if( !ISUNSIGNED(p->in.type) ) break;
-		if( !nncon(a) ) break;
-		if( ispow2(a->tn.lval) <= 0 ) break;
-		if( o == MOD || o == ASG MOD ){
-			p->in.op = (o == ASG MOD) ? ASG AND : AND;
-			a->tn.lval -= 1;
-			a->in.type = p->in.type = p->in.left->in.type;
-			}
-		else {
-			p->in.op = (o == ASG DIV) ? ASG RS : RS;
-			a->tn.lval = ispow2( a->tn.lval );
-			}
-		break;
-# else
+# ifndef PASS3
 		if( nncon( p->in.right ) && p->in.right->tn.lval == 1 ) goto zapright;
+# endif
 	case ASG DIV:
 	case MOD:
 	case ASG MOD:	/* WEGA: unsigned by a power of 2 as a shift or an and */
@@ -271,12 +250,13 @@ optim(p) register NODE *p; {
 			else {
 				p->in.op = (o == ASG DIV) ? ASG RS : RS;
 				a->tn.lval = ispow2( a->tn.lval );
+# ifndef PASS3
 				if( p->in.op == RS && p->in.left->in.type != p->in.type )
 					p->in.left = makety( p->in.left, p->in.type, p->fn.cdim, p->fn.csiz );
+# endif
 				}
 			}
 		break;
-# endif
 
 	case ASG PLUS:
 	case ASG MINUS:
@@ -336,11 +316,7 @@ conval( p, o, q ) register NODE *p, *q; {
 #ifdef SEG
 		if( ISPTR(p->in.type) ){
 			p->tn.lval = ((val & 0x7f00ffffL) + p->tn.lval) & 0x7f00ffffL;
-# ifdef PASS3
-			return( 1 );
-# else
 			break;
-# endif
 			}
 #endif
 		p->tn.lval += val;
@@ -372,28 +348,12 @@ conval( p, o, q ) register NODE *p, *q; {
 		p->tn.lval *= val;
 		break;
 	case DIV:
-# ifdef PASS3
-		if( val == 0 ){
-			uerror( "division by 0" );
-			return( 1 );
-			}
-		p->tn.lval /= val;
-# else
 		if( val == 0 ) uerror( "division by 0" );
 		else p->tn.lval /= val;
-# endif
 		break;
 	case MOD:
-# ifdef PASS3
-		if( val == 0 ){
-			uerror( "division by 0" );
-			return( 1 );
-			}
-		p->tn.lval %= val;
-# else
 		if( val == 0 ) uerror( "division by 0" );
 		else p->tn.lval %= val;
-# endif
 		break;
 	case AND:
 		p->tn.lval &= val;
@@ -479,54 +439,6 @@ treeeq( p, q ) register NODE *p, *q; { /* are the trees p and q equal */
 
 NODE *
 rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes nothing: c 'r' of the right side, 'l' of the left side, else of p */
-# ifdef PASS3
-	register NODE *q, *r;
-	int s;
-
-	if (c == 'r') {
-		q = p->in.right;
-		if (q->in.type != q->in.left->in.type) {
-			s = bsize(q->in.left->in.type);
-			if (s != bsize(q->in.type))
-				goto test;
-			if (!(notflt(q->in.type) ^ notflt(q->in.left->in.type)))
-				goto remove;
-		test:
-			if (q->in.type != 7 || q->in.left->in.type != 6)
-				return p;
-		}
-	remove:
-		r = tcopy(q->in.left);
-		tfree(q);
-		p->in.right = r;
-		return p;
-	}
-	if (c == 'l') {
-		q = p->in.left;
-		if (q->in.type != q->in.left->in.type) {
-			s = bsize(q->in.left->in.type);
-			if (s != bsize(q->in.type))
-				goto ltest;
-			if (!(notflt(q->in.type) ^ notflt(q->in.left->in.type)))
-				goto lremove;
-		ltest:
-			if (q->in.type != 7 || q->in.left->in.type != 6)
-				return p;
-		}
-	lremove:
-		r = tcopy(q->in.left);
-		tfree(q);
-		p->in.left = r;
-		return p;
-	}
-	if (p->in.type == 0) {
-		r = tcopy(p->in.left);
-		tfree(p);
-		p = r;
-	}
-	return p;
-	}
-# else
 	register NODE *q, *r;
 
 	if( c == 'r' ){
@@ -556,7 +468,6 @@ rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes not
 		}
 	return( p );
 	}
-# endif
 
 notflt( t ) register TWORD t; { /* is t not a floating type */
 	return( t == FLOAT || t == DOUBLE ? 0 : 1 );
