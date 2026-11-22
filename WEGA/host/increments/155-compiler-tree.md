@@ -125,6 +125,14 @@ Rules of the target:
   bytes: it stays, the exception goes here with its reason, the work goes on. CLAUDE.md: one line at "V7 layout"
   (src/cmd/cc is a tree, see its README).
 
+- 2026-11-22 (Claude, for review): what only one pass has inside a shared unit stands under a macro of the pass,
+  defined in its header: PASS3 for codgen (cg.h); cparse's text is the # else. (common 2.5 is one SCCS file in cparse
+  and codgen with different code in both: FLD of the dope table, argsize, callreg, branch, tcopy, nncon, the memory of
+  getmem; so the original had such conditionals too, their form is not known.) The declarations a pass needs beyond
+  its headers are in its wrapper (comm3.c: sbrk returns a pointer, node, lastfree). The variants of the old
+  compilers built with cc (v0 ... vl) need not be byte-identical with their build before such a change, only behave
+  the same: models, bench, matrix checks and checkall (the programs they build).
+
 ## Not part of it
 
 - lint1, lint2 (later members of the tree).

@@ -1,6 +1,8 @@
 /*
- * common.2.5: the unit common 2.5 (its SCCS line below), shared in the original by cparse/scparse (comm1.c) and codgen/scodgen (comm3.c).
- * Included by the wrapper comm1.c; for now here, mip/ when the passes agree (increment 155).
+ * common.2.5: the unit common 2.5 (its SCCS line below), shared in the original by cparse/scparse (comm1.c) and
+ * codgen/scodgen (comm3.c); the text of cparse (near the common of System III). What codgen has of its own stands
+ * under PASS3 (defined in cg.h), cparse's in the # else; the declarations a pass needs beyond its headers are in its
+ * wrapper (comm3.c: sbrk returns a pointer).
  */
 static char sccsid2[] = "@[$]common\t2.5  08/24/83 16:19:58 Copr. 1981 87wega3.2.";
 
@@ -9,9 +11,13 @@ static char sccsid2[] = "@[$]common\t2.5  08/24/83 16:19:58 Copr. 1981 87wega3.2
 # endif
 
 int nerrors = 0;  /* number of errors */
+# ifdef PASS3
+int cunused[9] = { 0 };	/* 18 bytes of zeros in the data of /lib/codgen, not referenced */
+# else
 int cunused[8] = { 0 };	/* 16 bytes of zeros in the data of /lib/cparse (0x357e), not referenced; meaning open */
 
 NODE *lastfree;  /* pointer to last free node; (for allocator) */
+# endif
 
 	/* VARARGS1 */
 syserr( s ) char *s; { /* a system call failed: die */
@@ -69,7 +75,12 @@ talloc(){
 
 	q = lastfree;
 	for( p = TNEXT(q); p!=q; p= TNEXT(p))
-		if( p->in.op ==FREE ) return(lastfree=p);
+		if( p->in.op ==FREE ){
+# ifdef PASS3
+			p->in.sname = 0;
+# endif
+			return(lastfree=p);
+			}
 
 	cerror( "out of tree space; simplify expression");
 	/* NOTREACHED */
@@ -135,8 +146,10 @@ walkf( t, f ) register NODE *t;  int (*f)(); {
 
 
 
+# ifndef PASS3
 int dope[ DSIZE ];
 char *opst[DSIZE];
+# endif
 
 struct dopest { int dopeop; char opst[8]; int dopeval; } indope[] = {
 
@@ -209,7 +222,11 @@ struct dopest { int dopeop; char opst[8]; int dopeval; } indope[] = {
 	TYPE, "TYPE", LTYPE,
 	LB, "\"[\"", BITYPE,
 	CBRANCH, "CBRANCH", BITYPE,
+# ifdef PASS3
+	FLD, "FLD", UTYPE,
+# else
 	FLD, "FLD", BITYPE,
+# endif
 	PMCONV, "PMCONV", BITYPE,
 	PVCONV, "PVCONV", BITYPE,
 	RETURN, "RETURN", BITYPE|ASGFLG|ASGOPFLG,
@@ -295,6 +312,21 @@ szty( t ) TWORD t; { /* the size of a scalar type in words */
 	return( 1 );
 	}
 
+# ifdef PASS3
+int
+argsize(p)
+	register NODE *p;
+{
+	int t, u;
+
+	if (p->in.op == STARG)
+		return (unsigned)p->stn.stsize >> 1;
+	if (p->in.op == NAME && p->in.type == 8)
+		return p->in.sname->ssize / 16;
+	t = u = szty(p->in.type == 6 ? 7 : p->in.type);
+	return t;
+}
+# else
 argsize( p ) register NODE *p; { /* the size of an argument in words */
 	int s1, s2;
 
@@ -302,6 +334,7 @@ argsize( p ) register NODE *p; { /* the size of an argument in words */
 		return( (tsize( STRTY, p->in.left->fn.cdim, p->in.left->fn.csiz ) + 7) / SZINT );
 	return( s1 = s2 = szty( p->in.type == FLOAT ? DOUBLE : p->in.type ) );
 	}
+# endif
 
 where(c){ /* print the location of an error */
 	fprintf( stderr, "%s:%d: ", ftitle, lineno );
@@ -327,21 +360,39 @@ tbytes( t ) TWORD t; { /* the size of a scalar type in bytes, at most 4 */
 	return( 2 );
 	}
 
+# ifdef PASS3
+/* the cookie that serves the type: B registers for floats, A registers otherwise */
+int
+callreg(p)
+	register NODE *p;
+{
+	if (p && (p->in.type == 7 || p->in.type == 6))
+		return 0x10;
+	return 2;
+}
+# else
 	/* mapping relationals when the sides are reversed (optim) */
 short revrel[] ={ EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
 char *memtop = 0, *memcur = 0;	/* the hunk of getmem */
 int memfirst = 1;	/* getmem has not been called yet */
+# endif
 
 dexit( v ){
 	fflush( stdout );
 	exit( v );
 	}
 
+# ifdef PASS3
+branch( n ) register n; { /* the jump to label n */
+	printf( "\tjpr\tL%d\n", n );
+	}
+# else
 extern FILE *outfile;
 
 branch( n ) register n; { /* a branch record of the intermediate file */
 	fprintf( outfile, "B%d\t\n", n );
 	}
+# endif
 
 ncopy( q, p ) register NODE *q, *p; {
 	/* copy the contents of p into q, without any feeling for
@@ -360,6 +411,20 @@ tcopy( p ) register NODE *p; {
 
 	ncopy( q=talloc(), p );
 	r = p->tn.rval;
+# ifdef PASS3
+	if (p->in.op == REG)
+		rbusy(r, p->in.type, p->in.sname, p->tn.lval);
+	else if (p->in.op == OREG) {
+		if (r >= 0x100) {
+			rbusy((r & 0xFF) - 1, 0x14, p->in.sname, p->tn.lval);
+			if (r & 0xFF)
+				rbusy((r >> 8) - 1, 4);
+		} else if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))
+			rbusy(r, 4, p->in.sname, p->tn.lval);
+		else
+			rbusy(r, 0x14, p->in.sname, p->tn.lval);
+	}
+# endif
 
 	switch( optype(q->in.op) ){
 
@@ -381,9 +446,18 @@ ispow2( c ) register CONSZ c; {
 
 nncon( p ) register NODE *p; {
 	/* is p a constant without a name */
+# ifdef PASS3
+	return( p->in.op == ICON && p->in.sname == 0 && p->tn.rval >= 0 );
+# else
 	return( p->in.op == ICON && p->tn.rval == NONAME );
+# endif
 	}
 
+# ifdef PASS3
+int revrel[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
+static char *memtop, *memcur;	/* the hunk of getmem (0x4060, 0x405e) */
+static int memfirst = 1;	/* 0x4062 */
+# endif
 
 char *
 getmem( n ) register n; { /* n bytes of memory, from a hunk of at least 2000 bytes */
@@ -406,3 +480,14 @@ getmem( n ) register n; { /* n bytes of memory, from a hunk of at least 2000 byt
 	memcur += n;
 	return( p );
 	}
+
+# ifdef PASS3
+void
+allocinit(base)
+	char *base;
+{
+	brk(base);
+	memcur = memtop = base;
+	memtop--;
+}
+# endif

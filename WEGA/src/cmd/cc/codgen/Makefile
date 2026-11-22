@@ -1,5 +1,5 @@
 # codgen, scodgen: the code generators (second pass of cc and scc), reconstructed from /lib/codgen and /lib/scodgen. The same sources
-# make both: scodgen is codgen compiled with -DSEG and the tables table3_scodgen.c, ops_scodgen.c, hop_scodgen.c
+# make both: scodgen is codgen compiled with -DSEG and the tables table3_scodgen.c, hop_scodgen.c
 # Both are non-segmented programs
 #
 #   make              codgen scodgen
@@ -117,7 +117,6 @@ scodgen: $(SEG_OBJS) ../../crt0.o table3_scodgen.o
 
 $(NONSEG_OBJS) $(SEG_OBJS): ../../cg.h ../../cg2.h
 local3.o: ../../hop_codgen.c ../../hop_scodgen.c
-comm3.o: ../../ops_codgen.c ../../ops_scodgen.c
 
 bss3.o: ../../bss3.c
 	$(CC) $(CFLAGS) -c ../../bss3.c

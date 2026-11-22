@@ -3,6 +3,7 @@
  */
 #define MAXASCII	0x1194
 #define NDELAY	20
+#undef TREESZ		/* manifest has the 350 of pass 1 */
 #define TREESZ	500
 #define NPOOL	87
 

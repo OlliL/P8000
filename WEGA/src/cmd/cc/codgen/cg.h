@@ -3,6 +3,8 @@
  * WEGA C compiler. Constants and layouts are read from the original binary; names follow the strings
  * in it (SAREG, TBYTE, RLEFT ...). See ../KNOWLEDGE.md, "codgen / scodgen".
  */
+#define PASS3		/* codgen: what common.2.5 (and the other units) have for codgen only */
+#include "macdefs"
 #include "manifest"
 #include "oldcc.h"
 
@@ -152,6 +154,4 @@ struct optab {
 };
 extern struct optab table[];
 
-struct dopest { int dopeop; char opst[8]; int dopeval; };	/* 12 bytes like the original */
-extern struct dopest indope[];
 extern int dope[];		/* dope flags by operator, filled from indope[] */
