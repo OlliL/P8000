@@ -179,7 +179,7 @@ sucomp(p)
 			else
 				p->in.fsu = max(fl, fr);
 		}
-		else if ((dope[p->in.op] & MULFLG) && optype(p->in.left->in.op) == 2 && nr > szty(p->in.left->in.type)) {
+		else if ((dope[p->in.op] & MULFLG) && optype(p->in.left->in.op) == LTYPE && nr > szty(p->in.left->in.type)) {
 			p->in.su = max(nr, max(sul, sur));
 			if (sur == sul)
 				p->in.fsu = max(nf, max(fl, fr));
@@ -498,7 +498,7 @@ setbin(p)
 
 	r = p->in.right;
 	l = p->in.left;
-	if (p->in.right->in.su == 0 && p->in.right->in.fsu == 0) {
+	if (p->in.right->in.su == 0 && p->in.right->in.fsu == 0) {	/* rhs is addressable */
 		if logop(p->in.op) {
 			if (l->in.op == UNARY MUL && shumul(l->in.left) != STARREG)
 				OFFSTARL(l);
@@ -513,9 +513,14 @@ setbin(p)
 				order(l, INTAREG|INTBREG);
 			return 1;
 		}
+		/* rewrite */
 		return 0;
 	}
+	/* now, rhs is complicated: must do both sides into registers */
+	/* do the harder side first */
+
 	if logop(p->in.op) {
+		/* relational: do both sides into regs if need be */
 		if (r->in.su > l->in.su || (r->in.su == l->in.su && r->in.fsu >= l->in.fsu)) {
 			if (niceuty(r)) {
 				OFFSTARA(r);
@@ -546,12 +551,14 @@ setbin(p)
 		}
 		cerror("setbin can't deal with %s", opst[p->in.op]);
 	}
+
+	/* ordinary operator */
 	if (!istnode(r) && (r->in.su > l->in.su || (r->in.su == l->in.su && r->in.fsu > l->in.fsu))) {
 		if (niceuty(r)) {
 			OFFSTARA(r);
 			return 1;
 		}
-		order(r, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
+		order(r, INAREG|INTAREG|INBREG|INTBREG|INTEMP);	/* anything goes on rhs */
 		return 1;
 	}
 	if (!istnode(l)) {
