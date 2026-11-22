@@ -87,7 +87,7 @@ mkadrs(NODE *p)
 		else
 			stotree = p->in.right;
 	}
-	stocook = 0x1000;
+	stocook = INTEMP;
 }
 
 /* 0x49c0: is the register (rval of a REG node) unusable as the base of an address: r0, or class 1 in the high byte */
@@ -705,7 +705,7 @@ rew:
 		if (p->in.type == LONG || p->in.type == ULONG) {
 #ifdef SEG
 			if (sul) {
-				p->in.right->in.rall = 0x2000;
+				p->in.right->in.rall = NOPREF;
 				order(p->in.right, INTEMP);
 				return 1;
 			}

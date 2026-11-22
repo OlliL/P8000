@@ -210,13 +210,26 @@ union ndu {
 extern char ascii[];		/* the ascii table (names of the symbols) */
 extern struct sym *fpsym1, *fpsym2;	/* the pseudo symbols ~L1 and ~L2 of the frame */
 
+/* struct rs (the names are guessed, the meaning is measured): kind */
+#define RKTEMP	6	/* the register holds a temporary (TEMP of tmptab) */
+#define RKVAR	8	/* the register holds the symbol a getreg asked for */
+/* struct rs: flags */
+#define RSCONST	0x8000	/* the register holds a constant (fpsym1, off = the value; 'C' of expand); nothing tests it; rsprint prints bit 15 */
+#define RSD3J	0x4000	/* OLD_D3J: given back to a parameter after a jump (d3jmark) */
+#define RSD3H	0x2000	/* OLD_D3H: given out inside a condition */
+#define RSASG	0x0400	/* OLD_D2FA: named by the assignment of a computed value */
+/* struct tmpent: flags */
+#define TMPINREG	0x8000	/* the temporary is in a register */
+/* getreg: flag */
+#define RJAM	0x1000	/* if no register is free, take one from the used list (regjam) */
+
 struct rs {
 	char reg;	/* register number (byte registers 0..15, word registers 0..15, long registers even) */
-	char cls;
-	char kind;	/* 8: holds a symbol */
+	char cls;	/* RCBYTE ... RCANY */
+	char kind;	/* RKTEMP, RKVAR */
 	char busy;	/* use count */
 	long	off;		/* frame offset of the symbol it holds */
-	int	flags;		/* bit 15: ... */
+	int	flags;		/* RSCONST, RSD3J, RSD3H, RSASG */
 	struct rs *next;
 	struct sym *sym;
 };
@@ -248,7 +261,7 @@ struct tmpent {
 	int	off;		/* +0: frame offset of the temporary, negative: end of the table */
 	char	done;		/* +2: not zero: the temporary is still needed */
 	char	cls;		/* +3: class of the register */
-	int flags;		/* +4: bit 15: the register still holds the value */
+	int flags;		/* +4: TMPINREG */
 	int	reg;		/* +6: the register */
 };
 struct arg { int reg; NODE *node; };

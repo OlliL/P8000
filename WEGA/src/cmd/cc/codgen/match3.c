@@ -14,8 +14,9 @@ extern struct optab *opptr[];
 extern struct optab *rwdefault;
 static char sccsid[] = "@[$]match3.c\t2.4  08/24/83 13:18:24 Copr. 1981 87wega3.2.";
 int opclass[] = {
-	0x20, 0x21, 0x40, 0x41, 0x800, 0x801, 0x80, 0x81, 0x4, 0xe, 0x2, 0xe, 0x0, 0x2001, 0x10, 0xe,
-	0x100, 0x101, 0x1000, 0x1001, 0x8000, 0x8001, 0x200, 0x201, 0x4000, 0xe,
+	SIMPFLG, SIMPFLG|ASGFLG, COMMFLG, COMMFLG|ASGFLG, MULFLG, MULFLG|ASGFLG, DIVFLG, DIVFLG|ASGFLG,
+	UTYPE, TYFLG, LTYPE, TYFLG, 0, ASGOPFLG|ASGFLG, LOGFLG, TYFLG,
+	FLOFLG, FLOFLG|ASGFLG, SHFFLG, SHFFLG|ASGFLG, BITFLG, BITFLG|ASGFLG, LTYFLG, LTYFLG|ASGFLG, SPFLG, TYFLG,
 };
 char *ocnames[] = {
 	"OPSIMP",
@@ -152,8 +153,10 @@ ttype(t, tword)
 }
 
 /*
- * The operator classes of the table: an entry whose op is 0x1000 + k stands for every operator whose dope flags
+ * The operator classes of the table: an entry whose op is OPSIMP + k stands for every operator whose dope flags
  * match opclass[k] (OPSIMP, ASG OPSIMP, OPCOMM, ... in pairs). Data at 0x3530 of /lib/codgen.
+ * By the manifest (SysIII) names OPLONG takes FLOFLG and OPFLOAT LTYFLG: WEGA uses the two bits the other way round
+ * (MUL and DIV have only 01000: OPFLOAT; long MUL and DIV are calls).
  */
 
 /* build opptr[] */
@@ -164,7 +167,7 @@ setrew()
 	register int op, mask;
 
 	for (q = table; q->op != FREE; q++)
-		if (q->needs == 0x1000) {
+		if (q->needs == REWRITE) {
 			rwdefault = q;
 			goto more;
 		}
@@ -173,15 +176,15 @@ more:
 	for (op = 0; op < 129; op++)
 		if (dope[op]) {
 			for (q = table; q->op != FREE; q++) {
-				if (q->op < 0x1000) {
+				if (q->op < OPSIMP) {
 					if (q->op == op)
 						break;
-				} else if ((mask = opclass[q->op - 0x1000]) & 0x4000) {
+				} else if ((mask = opclass[q->op - OPSIMP]) & SPFLG) {
 					if (op == NAME || op == ICON || op == OREG)
 						break;
 					else if (shltype(op, (NODE *)0))
 						break;
-				} else if ((dope[op] & (mask | 1)) == mask)
+				} else if ((dope[op] & (mask | ASGFLG)) == mask)
 					break;
 			}
 			opptr[op] = q;
@@ -308,14 +311,14 @@ next:
 top:
 	if (q->op == FREE)
 		goto nom;
-	if (q->op < 0x1000)
+	if (q->op < OPSIMP)
 		goto aa;
 	{
 		register int opmtemp;
 
-		if ((opmtemp = opclass[q->op - 0x1000]) & 0x4000)
+		if ((opmtemp = opclass[q->op - OPSIMP]) & SPFLG)
 			goto zz;
-		if ((dope[p->in.op] & (opmtemp | 1)) == opmtemp) {
+		if ((dope[p->in.op] & (opmtemp | ASGFLG)) == opmtemp) {
 cand:
 		if (!(q->visit & cookie))
 			goto next;
@@ -426,7 +429,7 @@ cand:
 		    !(p->in.rall & MUSTDO)) {	/* (not when the value goes to a register wanted for it: an argument) */
 			register int nr;
 
-			nr = getreg(RCPAIR, -1, 0x1000, (struct sym *)0);
+			nr = getreg(RCPAIR, -1, RJAM, (struct sym *)0);
 			if (nr >= 0 && nr != p->tn.rval) {
 				rmove(nr, p->tn.rval, p->in.type);
 				rfree(nr, p->in.type);
@@ -478,7 +481,7 @@ expand(p, cookie, cp)
 			else {
 				n->off = r->tn.lval;
 				n->sym = fpsym1;
-				n->flags |= 0x8000;
+				n->flags |= RSCONST;
 			}
 			conput(r);
 			continue;

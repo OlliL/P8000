@@ -36,7 +36,7 @@ static char sccsid[] __attribute__((unused)) = "@[$]regs3.c\t2.5  10/06/83 10:55
 #define SAVEREGS \
 	n = rfind(4, RCPAIR); \
 	if (n && n->busy > 0) { \
-		r = getreg(RCPAIR, -1, 0x1000, p->in.sname); \
+		r = getreg(RCPAIR, -1, RJAM, p->in.sname); \
 		if (r < 0) \
 			cerror("regfile: case A4UW can't free rr4 on %s\n", opst[p->in.op]); \
 		rmode++; \
@@ -50,7 +50,7 @@ static char sccsid[] __attribute__((unused)) = "@[$]regs3.c\t2.5  10/06/83 10:55
 	} else { \
 		n = rfind(4, RCWORD); \
 		if (n && n->busy > 0) { \
-			r = getreg(RCWORD, -1, 0x1000, p->in.sname); \
+			r = getreg(RCWORD, -1, RJAM, p->in.sname); \
 			if (r < 0) \
 				cerror("regfile: case A4UW can't free r4 on %s\n", opst[p->in.op]); \
 			savereg[nsave] = r; \
@@ -63,11 +63,11 @@ static char sccsid[] __attribute__((unused)) = "@[$]regs3.c\t2.5  10/06/83 10:55
 		} \
 		n = rfind(5, RCWORD); \
 		if (n && n->busy > 0) { \
-			r = getreg(RCWORD, -1, 0x1000, p->in.sname); \
+			r = getreg(RCWORD, -1, RJAM, p->in.sname); \
 			if (r < 0) \
 				cerror("regfile: case A4UW can't free r5 on %s\n", opst[p->in.op]); \
 			if (r == 4) { \
-				r = getreg(RCWORD, -1, 0x1000, p->in.sname); \
+				r = getreg(RCWORD, -1, RJAM, p->in.sname); \
 				if (r < 0) \
 					cerror("regfile: case A4UW can't free r5 on %s\n", opst[p->in.op]); \
 				rfree(4, INT); \
@@ -151,15 +151,15 @@ fixtemp(NODE *p)
 			cerror("TEMP table overflow\n");
 		tmptab[i].off = p->tn.rval;
 		if (p->tn.lval == -1) {
-			tmptab[i].flags |= 0x8000;
+			tmptab[i].flags |= TMPINREG;
 			cls = rclass(p->in.type, -1);
-			tmptab[i].reg = j = getreg(cls, -1, 0x1000, 0);
+			tmptab[i].reg = j = getreg(cls, -1, RJAM, 0);
 			tmptab[i].cls = cls;
 			n = rfind(j, cls);
-			n->kind = 6;
+			n->kind = RKTEMP;
 			n->busy = 0;
 		} else {
-			tmptab[i].flags &= ~0x8000;
+			tmptab[i].flags &= ~TMPINREG;
 			tmptab[i].reg = (int)((long)(unsigned)p->stn.stsize + frame0);
 		}
 		if (i + 1 != 0x50)
@@ -197,7 +197,7 @@ tmpcleanup(void)
 		if ((tmptab[i].flags >> 15 & 1) == 1) {
 			n = rfind(tmptab[i].reg, tmptab[i].cls);
 			if (n) {
-				n->kind = 8;
+				n->kind = RKVAR;
 				n->busy = 0;
 			}
 		}
@@ -439,7 +439,7 @@ rfreeall(int flag)
 
 	for (n = rsuse; n; n = next) {
 		next = n->next;
-		if (n->busy > 0 || n->kind == 6)
+		if (n->busy > 0 || n->kind == RKTEMP)
 			continue;
 #ifdef OLD_D3K
 #ifdef OLD_D3KC
@@ -484,7 +484,7 @@ rnassign(NODE *p1, NODE *p2)
 	case RCVFLOAT:
 		return;
 	}
-	if (a->kind == 6)
+	if (a->kind == RKTEMP)
 		return;
 	if (p2->in.op == REG) {
 		b = rfind(p2->tn.rval, rclass(p2->in.type, p2->tn.rval));
@@ -499,7 +499,7 @@ rnassign(NODE *p1, NODE *p2)
 		a->sym = p2->in.sname;
 		a->off = p2->tn.lval;
 	}
-	a->flags &= ~0x8000;
+	a->flags &= ~RSCONST;
 	a->busy = 0;
 }
 
@@ -514,8 +514,8 @@ rnnullp(NODE *p)
 		n->sym = 0;
 		n->busy = 0;
 		n->off = 0;
-		n->flags &= ~0x8000;
-		n->kind = 8;
+		n->flags &= ~RSCONST;
+		n->kind = RKVAR;
 	}
 }
 
@@ -567,8 +567,8 @@ rnnull(int reg, int type)
 		n->sym = 0;
 		n->busy = 0;
 		n->off = 0;
-		n->flags &= ~0x8000;
-		n->kind = 8;
+		n->flags &= ~RSCONST;
+		n->kind = RKVAR;
 	}
 }
 
@@ -733,7 +733,7 @@ regforsym(int reg, struct sym *s, int type, long off)
 
 	if (s->sclass == REGISTER) {
 		cls = rclass(type, reg);
-		r = getreg(cls, reg, 0x1000, s);
+		r = getreg(cls, reg, RJAM, s);
 		if (r == s->sbyte5)
 			return r;
 		rsreturn(cls, r);
@@ -897,7 +897,7 @@ rcmd(int a, int b, int type)
 			minreg = r - 1;
 	}
 	cls = rclass(type, r);
-	got = getreg(cls, r, 0x1000, s);
+	got = getreg(cls, r, RJAM, s);
 	if (got != r)
 		cerror("rvplace: getreg got wrong register");
 	n = rfind(got, cls);

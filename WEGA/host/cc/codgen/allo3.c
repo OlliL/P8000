@@ -41,7 +41,7 @@ rbusy(int reg, int type, struct sym *sym, long lv)
 		for (prev = n = rsuse; n; prev = n, n = n->next)
 			if (n->cls == RCPAIR && n->reg == l) {
 				rsreturn(RCPAIR, l);
-				if (getreg(RCWORD, reg, 0x1000, 0) != reg)
+				if (getreg(RCWORD, reg, RJAM, 0) != reg)
 					cerror("rbusy: register %d not free", reg);
 				/* the original counts the node in front of the one it found */
 				n = prev;
@@ -237,7 +237,7 @@ d2ofree(int r)
 		if (n->reg == r - 1 && n->cls == RCWORD)
 			return 1;
 	for (n = rsuse; n; n = n->next)
-		if (n->reg == r - 1 && n->cls == RCWORD && n->busy <= 0 && n->kind != 6) {
+		if (n->reg == r - 1 && n->cls == RCWORD && n->busy <= 0 && n->kind != RKTEMP) {
 			rsreturn(RCWORD, r - 1);
 			return 1;
 		}
@@ -283,23 +283,23 @@ allocreg(NODE *p, int cookie)
 
 		if (l->in.op == REG && (l->tn.rval & 1) && l->tn.rval < 8 && szty(l->in.type) == 1) {
 			rfree(l->tn.rval, l->in.type);
-			r = getreg(RCPAIR, l->tn.rval - 1, 0x1000, p->in.sname);
+			r = getreg(RCPAIR, l->tn.rval - 1, RJAM, p->in.sname);
 			if (r != l->tn.rval - 1) {
 				if (r != -1)
 					rfree(r, p->in.type);
 				r = -1;
-				getreg(RCWORD, l->tn.rval, 0x1000, l->in.sname);
+				getreg(RCWORD, l->tn.rval, RJAM, l->in.sname);
 			}
 		}
 	}
 #endif
 #ifdef OLD_D2N
 	if (r == -1 && cls == RCWORD && (p->in.op == NAME || (p->in.op == OREG && p->tn.rval == 15)))
-		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: a loaded name is not remembered */
+		r = getreg(cls, want, RJAM, (struct sym *)0);	/* v0: a loaded name is not remembered */
 #endif
 #ifdef OLD_D2C
 	if (r == -1 && p->in.op == REG)
-		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: the copy of a name in a register holds no name */
+		r = getreg(cls, want, RJAM, (struct sym *)0);	/* v0: the copy of a name in a register holds no name */
 #endif
 #ifdef OLD_D2X
 	if (r == -1 && cls == RCPAIR && want == -1 && optype(p->in.op) == BITYPE && p->in.op != LS && p->in.op != RS &&
@@ -361,9 +361,9 @@ allocreg(NODE *p, int cookie)
 	}
 #endif
 	if (r == -1)
-		r = getreg(cls, want, 0x1000, p->in.sname);
+		r = getreg(cls, want, RJAM, p->in.sname);
 #else
-	r = getreg(cls, want, 0x1000, p->in.sname);
+	r = getreg(cls, want, RJAM, p->in.sname);
 #endif
 	if (r == -1) {
 		r = freereg(p, want, cookie);
@@ -401,7 +401,7 @@ freereg(NODE *p, int r, int cookie)
 				found:
 					rfree(reg, ty);
 					cls = rclass(ty, reg);
-					return getreg(cls, reg, 0x1000, sym);
+					return getreg(cls, reg, RJAM, sym);
 				}
 		} else if ((cookie & 0100) | 0200) {
 			for (reg = 0x10; ; reg++) {
@@ -417,7 +417,7 @@ freereg(NODE *p, int r, int cookie)
 		return -1;
 	rfree(r, ty);
 	cls = rclass(ty, r);
-	return getreg(cls, r, 0x1000, sym);
+	return getreg(cls, r, RJAM, sym);
 }
 
 /* ---- getting registers ------------------------------------------------------------------------------- */
@@ -519,7 +519,7 @@ rwprint(int rw)
 		printf("RNULL");
 		return;
 	}
-	if (rw == 0x1000) {
+	if (rw == RNOP) {
 		printf("RNOP");
 		return;
 	}
@@ -620,7 +620,7 @@ isreg:
 		if (!(p->in.rall & MUSTDO))
 			p->in.rall = (p->in.rall & NOPREF) | want;
 		rfree(p->tn.rval, p->in.type);
-		if (getreg(RCWORD, want, 0x1000, p->in.sname) != want)
+		if (getreg(RCWORD, want, RJAM, p->in.sname) != want)
 			cerror("reclaim: cannot find register free");
 		p->tn.rval = want;
 		if (p->in.type == LONG)
@@ -633,7 +633,7 @@ isreg:
 	} else if (o == 0x3E || o == 0x3F) {	/* a long result of a shift or divide goes to rr4 */
 		if (p->in.type == LONG || p->in.type == ULONG) {
 			rfree(p->tn.rval, p->in.type);
-			if (getreg(RCPAIR, 4, 0x1000, p->in.sname) != 4)
+			if (getreg(RCPAIR, 4, RJAM, p->in.sname) != 4)
 				cerror("reclaim: cannot find register free");
 			p->tn.rval = 4;
 			if (!(p->in.rall & MUSTDO))
@@ -644,13 +644,13 @@ isreg:
 		goto done;
 	if (!(rewrite & RESC)) {
 		want = p->in.rall & ~MUSTDO;
-		if (want & 0x2000)
+		if (want & NOPREF)
 			goto done;
 	}
 	if (want == p->tn.rval)
 		goto done;
 	rfree(p->tn.rval, p->in.type);
-	if (getreg(rclass(p->in.type, want), want, 0x1000, p->in.sname) != want)
+	if (getreg(rclass(p->in.type, want), want, RJAM, p->in.sname) != want)
 		cerror("reclaim dest reg not free");
 	rmove(want, p->tn.rval, p->in.type);
 	p->tn.rval = want;

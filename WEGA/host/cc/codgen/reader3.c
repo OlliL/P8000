@@ -41,7 +41,6 @@ static int d3kpend;		/* a label waits for its rsfreeall (main) */
 static int d3jdead;		/* v0p: the record before was an unconditional jump */
 #endif
 
-#define INTEMP_	0x1000
 
 #define FREE_	100
 
@@ -655,9 +654,9 @@ prcook(int cookie)
 {
 	register int i, flag;
 
-	if (cookie & 0x8000) {
+	if (cookie & SPECIAL) {
 		switch (cookie) {
-		case 0x8000:
+		case SZERO:
 			printf("SZERO");
 			break;
 		case 0x8002:
@@ -770,7 +769,7 @@ again:
 	case QUEST:
 		cbranch(p1, -1, m = getlab());
 #ifdef OLD_D14Q
-		if (cookie == INTEMP_ && p->in.type != FLOAT && p->in.type != DOUBLE) {
+		if (cookie == INTEMP && p->in.type != FLOAT && p->in.type != DOUBLE) {
 			long t = freeparm(szty(p->in.type)) / 8;
 
 			d14qarm(p2->in.left, t, p->in.type);
@@ -826,7 +825,7 @@ again:
 		goto cleanup;
 #ifdef OLD_D14Q
 	case ANDAND:
-		if (cookie == INTEMP_) {
+		if (cookie == INTEMP) {
 			long t = freeparm(1) / 8;
 
 			d14qarm(p1, t, 4);
@@ -1021,7 +1020,7 @@ store(NODE *p)
 		markcall(p->in.right);
 		if (p->in.right->in.su > fregs || p->in.right->in.fsu > ffregs) {
 			stotree = p;
-			stocook = INTEMP_;
+			stocook = INTEMP;
 		}
 		store(p->in.left);
 		return;
@@ -1031,12 +1030,12 @@ store(NODE *p)
 		markcall(p->in.right);
 		if (p->in.right->in.su > fregs || p->in.right->in.fsu > ffregs) {
 			stotree = p;
-			stocook = INTEMP_;
+			stocook = INTEMP;
 		}
 #ifdef OLD_D14Q
 		if (o == QUEST && p->in.type != FLOAT && p->in.type != DOUBLE) {	/* the value of a ?: goes through a temporary */
 			stotree = p;
-			stocook = INTEMP_;
+			stocook = INTEMP;
 		}
 #endif
 		constore(p->in.left);
@@ -1055,7 +1054,7 @@ store(NODE *p)
 		if (p->in.left->in.type == LONG || p->in.left->in.type == ULONG)
 			if (lmulflag++) {
 				stotree = p;
-				stocook = INTEMP_;
+				stocook = INTEMP;
 			}
 		break;
 	}
@@ -1127,7 +1126,7 @@ constore(NODE *p)
 		/* an && on the left of a || is evaluated into a temporary */
 		if (p->in.op == OROR && p->in.left->in.op == ANDAND) {
 			stotree = p->in.left;
-			stocook = INTEMP_;
+			stocook = INTEMP;
 		}
 #endif
 	/* fall through */
@@ -1177,7 +1176,7 @@ stoarg(NODE *p, int calltype)
 	store(p);
 	if (callflag) {
 		stotree = p;
-		stocook = INTEMP_;
+		stocook = INTEMP;
 		store(p);
 	}
 }
@@ -1482,7 +1481,7 @@ argprep(NODE *p, int cookie)
 	struct optab fake;
 	NODE *n;
 
-	if (p->in.op == STARG && cookie == INTEMP_) {
+	if (p->in.op == STARG && cookie == INTEMP) {
 		copy = tcopy(p->in.left);
 		walkf(p->in.left, recl2);
 		tfree(p->in.left);

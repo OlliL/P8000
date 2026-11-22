@@ -108,7 +108,7 @@ parminit(NODE *p, int down, int *down1, int *down2)
 				q->busy = 0;
 				goto got;
 			}
-		getreg(cls, r, 0x1000, s);
+		getreg(cls, r, RJAM, s);
 		rfree(r, t2);
 	got:
 		if (s->sclass == REGISTER) {

@@ -80,7 +80,6 @@ static int d3kpend;		/* a label waits for its rsfreeall (main) */
 static int d3jdead;		/* v0p: the record before was an unconditional jump */
 #endif
 
-#define INTEMP_	0x1000
 
 #define FREE_	100
 
@@ -753,9 +752,9 @@ prcook(cookie)
 {
 	register int i, flag;
 
-	if (cookie & 0x8000) {
+	if (cookie & SPECIAL) {
 		switch (cookie) {
-		case 0x8000:
+		case SZERO:
 			printf("SZERO");
 			break;
 		case 0x8002:
@@ -811,7 +810,7 @@ d3words()
 
 	for (n = rsuse; n; n = next) {
 		next = n->next;
-		if (n->busy > 0 || n->kind == 6)
+		if (n->busy > 0 || n->kind == RKTEMP)
 			continue;
 		if (n->cls == RCWORD)
 			rsreturn(n->cls, n->reg);
@@ -918,13 +917,13 @@ again:
 
 			for (n = rsuse; n; n = next) {
 				next = n->next;
-				if (n->cls == RCPAIR && n->kind != 6 && n->reg < 8 && n->busy > 0)
+				if (n->cls == RCPAIR && n->kind != RKTEMP && n->reg < 8 && n->busy > 0)
 					rsreturn(n->cls, n->reg);
 			}
 		}
 #endif
 #ifdef OLD_D14Q
-		if (cookie == INTEMP_ && p->in.type != FLOAT && p->in.type != DOUBLE) {
+		if (cookie == INTEMP && p->in.type != FLOAT && p->in.type != DOUBLE) {
 			long t = freeparm(szty(p->in.type)) / 8;
 
 			d14qarm(p2->in.left, t, p->in.type);
@@ -980,7 +979,7 @@ again:
 		goto cleanup;
 #ifdef OLD_D14Q
 	case ANDAND:
-		if (cookie == INTEMP_) {
+		if (cookie == INTEMP) {
 			long t = freeparm(1) / 8;
 
 			d14qarm(p1, t, 4);
@@ -1176,7 +1175,7 @@ store(p)
 		markcall(p->in.right);
 		if (p->in.right->in.su > fregs || p->in.right->in.fsu > ffregs) {
 			stotree = p;
-			stocook = INTEMP_;
+			stocook = INTEMP;
 		}
 		store(p->in.left);
 		return;
@@ -1186,12 +1185,12 @@ store(p)
 		markcall(p->in.right);
 		if (p->in.right->in.su > fregs || p->in.right->in.fsu > ffregs) {
 			stotree = p;
-			stocook = INTEMP_;
+			stocook = INTEMP;
 		}
 #ifdef OLD_D14Q
 		if (o == QUEST && p->in.type != FLOAT && p->in.type != DOUBLE) {	/* the value of a ?: goes through a temporary */
 			stotree = p;
-			stocook = INTEMP_;
+			stocook = INTEMP;
 		}
 #endif
 		constore(p->in.left);
@@ -1210,7 +1209,7 @@ store(p)
 		if (p->in.left->in.type == LONG || p->in.left->in.type == ULONG)
 			if (lmulflag++) {
 				stotree = p;
-				stocook = INTEMP_;
+				stocook = INTEMP;
 			}
 		break;
 	}
@@ -1286,7 +1285,7 @@ constore(p)
 		/* an && on the left of a || is evaluated into a temporary */
 		if (p->in.op == OROR && p->in.left->in.op == ANDAND) {
 			stotree = p->in.left;
-			stocook = INTEMP_;
+			stocook = INTEMP;
 		}
 #endif
 	case NOT:
@@ -1339,7 +1338,7 @@ stoarg(p, calltype)
 	store(p);
 	if (callflag) {
 		stotree = p;
-		stocook = INTEMP_;
+		stocook = INTEMP;
 		store(p);
 	}
 }
@@ -1349,7 +1348,7 @@ int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE,
 
 #ifdef OLD_D3H
 static void cbranch1();
-int d3hdepth;	/* OLD_D3H (libcisam): cbranch nesting; allo3.c marks (0x2000) the registers it gives out meanwhile.
+int d3hdepth;	/* OLD_D3H (libcisam): cbranch nesting; allo3.c marks (RSD3H) the registers it gives out meanwhile.
 			   At the end of a whole condition an idle register given out inside it that holds the frame home of
 			   a parameter goes back (compare/libcisam/COMPILER.md) */
 
@@ -1377,13 +1376,13 @@ cbranch(p, true, false)
 
 	if (d3hdepth == 0)
 		for (n = rsuse; n; n = n->next)
-			n->flags &= ~0x2000;
+			n->flags &= ~RSD3H;
 	d3hdepth++;
 	cbranch1(p, true, false);
 	if (--d3hdepth == 0)
 		for (n = rsuse; n; n = next) {
 			next = n->next;
-			if (n->cls <= RCPAIR && n->busy <= 0 && n->kind != 6 && n->reg < 8 && (n->flags & 0x2000) && d3hparm(n))
+			if (n->cls <= RCPAIR && n->busy <= 0 && n->kind != RKTEMP && n->reg < 8 && (n->flags & RSD3H) && d3hparm(n))
 				rsreturn(n->cls, n->reg);
 		}
 }
@@ -1722,7 +1721,7 @@ argprep(p, cookie)
 	struct optab fake;
 	NODE *n;
 
-	if (p->in.op == STARG && cookie == INTEMP_) {
+	if (p->in.op == STARG && cookie == INTEMP) {
 		copy = tcopy(p->in.left);
 		walkf(p->in.left, recl2);
 		tfree(p->in.left);
@@ -1960,7 +1959,7 @@ d3jmark(cls, reg)
 
 	for (n = rsuse; n; n = n->next)
 		if (n->cls == cls && n->reg == reg)
-			n->flags |= 0x4000;
+			n->flags |= RSD3J;
 }
 #endif
 #endif

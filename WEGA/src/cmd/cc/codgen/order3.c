@@ -85,7 +85,7 @@ mkadrs(p)
 		else
 			stotree = p->in.right;
 	}
-	stocook = 0x1000;
+	stocook = INTEMP;
 }
 
 /* 0x49c0: is the register (rval of a REG node) unusable as the base of an address: r0, or class 1 in the high byte */
@@ -718,7 +718,7 @@ rew:
 		if (p->in.type == LONG || p->in.type == ULONG) {
 #ifdef SEG
 			if (sul) {
-				p->in.right->in.rall = 0x2000;
+				p->in.right->in.rall = NOPREF;
 				order(p->in.right, INTEMP);
 				return 1;
 			}
@@ -998,7 +998,7 @@ d3awfree(q)
 
 	for (n = rsuse; n; n = next) {
 		next = n->next;
-		if (n->cls <= RCPAIR && n->busy <= 0 && n->kind != 6 && n->sym && n->sym->sclass == PARAM &&
+		if (n->cls <= RCPAIR && n->busy <= 0 && n->kind != RKTEMP && n->sym && n->sym->sclass == PARAM &&
 		    n->reg <= d3awhi && n->reg + (n->cls == RCPAIR) >= d3awlo && !d3awuses(q, n->sym))
 			rsreturn(n->cls, n->reg);
 	}

@@ -34,7 +34,7 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 #define SAVEREGS \
 	n = rfind(4, RCPAIR); \
 	if (n && n->busy > 0) { \
-		r = getreg(RCPAIR, -1, 0x1000, p->in.sname); \
+		r = getreg(RCPAIR, -1, RJAM, p->in.sname); \
 		if (r < 0) \
 			cerror("regfile: case A4UW can't free rr4 on %s\n", opst[p->in.op]); \
 		rmode++; \
@@ -48,7 +48,7 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 	} else { \
 		n = rfind(4, RCWORD); \
 		if (n && n->busy > 0) { \
-			r = getreg(RCWORD, -1, 0x1000, p->in.sname); \
+			r = getreg(RCWORD, -1, RJAM, p->in.sname); \
 			if (r < 0) \
 				cerror("regfile: case A4UW can't free r4 on %s\n", opst[p->in.op]); \
 			savereg[nsave] = r; \
@@ -61,11 +61,11 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 		} \
 		n = rfind(5, RCWORD); \
 		if (n && n->busy > 0) { \
-			r = getreg(RCWORD, -1, 0x1000, p->in.sname); \
+			r = getreg(RCWORD, -1, RJAM, p->in.sname); \
 			if (r < 0) \
 				cerror("regfile: case A4UW can't free r5 on %s\n", opst[p->in.op]); \
 			if (r == 4) { \
-				r = getreg(RCWORD, -1, 0x1000, p->in.sname); \
+				r = getreg(RCWORD, -1, RJAM, p->in.sname); \
 				if (r < 0) \
 					cerror("regfile: case A4UW can't free r5 on %s\n", opst[p->in.op]); \
 				rfree(4, INT); \
@@ -164,15 +164,15 @@ fixtemp(p)
 			cerror("TEMP table overflow\n");
 		tmptab[i].off = p->tn.rval;
 		if (p->tn.lval == -1) {
-			tmptab[i].flags |= 0x8000;
+			tmptab[i].flags |= TMPINREG;
 			cls = rclass(p->in.type, -1);
-			tmptab[i].reg = j = getreg(cls, -1, 0x1000, 0);
+			tmptab[i].reg = j = getreg(cls, -1, RJAM, 0);
 			tmptab[i].cls = cls;
 			n = rfind(j, cls);
-			n->kind = 6;
+			n->kind = RKTEMP;
 			n->busy = 0;
 		} else {
-			tmptab[i].flags &= ~0x8000;
+			tmptab[i].flags &= ~TMPINREG;
 			tmptab[i].reg = (int)((long)(unsigned)p->stn.stsize + frame0);
 		}
 		if (i + 1 != 0x50)
@@ -210,7 +210,7 @@ tmpcleanup()
 		if ((tmptab[i].flags >> 15 & 1) == 1) {
 			n = rfind(tmptab[i].reg, tmptab[i].cls);
 			if (n) {
-				n->kind = 8;
+				n->kind = RKVAR;
 				n->busy = 0;
 			}
 		}
@@ -477,7 +477,7 @@ rfreeall(flag)
 
 	for (n = rsuse; n; n = next) {
 		next = n->next;
-		if (n->busy > 0 || n->kind == 6)
+		if (n->busy > 0 || n->kind == RKTEMP)
 			continue;
 #ifdef OLD_D3K
 #ifdef OLD_D3KC
@@ -525,7 +525,7 @@ rnassign(p1, p2)
 	case RCVFLOAT:
 		return;
 	}
-	if (a->kind == 6)
+	if (a->kind == RKTEMP)
 		return;
 	if (p2->in.op == REG) {
 		b = rfind(p2->tn.rval, rclass(p2->in.type, p2->tn.rval));
@@ -540,14 +540,14 @@ rnassign(p1, p2)
 #ifdef OLD_D2FA
 		/* OLD_D2FA: named by the assignment of a computed value (not the copy of a variable: delrun q = r) */
 		if (!d2facopy)
-			a->flags |= 0x0400;
+			a->flags |= RSASG;
 		else
-			a->flags &= ~0x0400;
+			a->flags &= ~RSASG;
 #endif
 		a->sym = p2->in.sname;
 		a->off = p2->tn.lval;
 	}
-	a->flags &= ~0x8000;
+	a->flags &= ~RSCONST;
 	a->busy = 0;
 }
 
@@ -563,8 +563,8 @@ rnnullp(p)
 		n->sym = 0;
 		n->busy = 0;
 		n->off = 0;
-		n->flags &= ~0x8000;
-		n->kind = 8;
+		n->flags &= ~RSCONST;
+		n->kind = RKVAR;
 	}
 }
 
@@ -619,8 +619,8 @@ rnnull(reg, type)
 		n->sym = 0;
 		n->busy = 0;
 		n->off = 0;
-		n->flags &= ~0x8000;
-		n->kind = 8;
+		n->flags &= ~RSCONST;
+		n->kind = RKVAR;
 	}
 }
 
@@ -744,9 +744,9 @@ d2cforget(reg)
 
 	for (n = rsuse; n; n = n->next)
 #ifdef SEG
-		if (n->cls <= RCFLOAT && n->kind != 6 && (n->reg == reg || n->reg == reg + 1)) {	/* the address is a pair */
+		if (n->cls <= RCFLOAT && n->kind != RKTEMP && (n->reg == reg || n->reg == reg + 1)) {	/* the address is a pair */
 #else
-		if (n->cls <= RCFLOAT && n->kind != 6 && n->reg == reg) {
+		if (n->cls <= RCFLOAT && n->kind != RKTEMP && n->reg == reg) {
 #endif
 			n->sym = 0;
 			n->off = 0;
@@ -814,7 +814,7 @@ regforsym(reg, s, type, off)
 
 	if (s->sclass == REGISTER) {
 		cls = rclass(type, reg);
-		r = getreg(cls, reg, 0x1000, s);
+		r = getreg(cls, reg, RJAM, s);
 		if (r == s->sbyte5)
 			return r;
 		rsreturn(cls, r);
@@ -859,7 +859,7 @@ fixname(p)
 		f = p->in.sname->sclass == PARAM && (p->in.sname->sflags >> 3 & 1) == 1 ? fpsym2 : fpsym1;
 		for (n = rsuse; n; n = n->next)
 			if (n->cls == RCPAIR && n->sym == f && n->off == p->in.sname->soffset / 8 && rclass(p->in.type, n->reg) == RCPAIR &&
-			    (p->in.sname->sclass == AUTO || (n->flags & 0x0400))) {
+			    (p->in.sname->sclass == AUTO || (n->flags & RSASG))) {
 				n->busy = 1;
 				p->in.op = REG;
 				p->tn.rval = n->reg;
@@ -1009,7 +1009,7 @@ rcmd(a, b, type)
 			minreg = r - 1;
 	}
 	cls = rclass(type, r);
-	got = getreg(cls, r, 0x1000, s);
+	got = getreg(cls, r, RJAM, s);
 	if (got != r)
 		cerror("rvplace: getreg got wrong register");
 	n = rfind(got, cls);

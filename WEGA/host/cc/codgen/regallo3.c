@@ -24,7 +24,7 @@ static char rcname[][8] = {
 #ifdef OLD_D2PT
 #define D2PK(t)	1		/* v0p: OLD_D2P takes the registers of a TEMP too (the value of a switch) */
 #else
-#define D2PK(t)	((t)->kind != 6)
+#define D2PK(t)	((t)->kind != RKTEMP)
 #endif
 
 #ifdef OLD_D2L
@@ -87,7 +87,7 @@ rsbuild(void)
 	n = rsfree = rspool;
 #ifdef OLD_D3J
 	for (last = n; last; last = last->next)
-		last->flags &= ~0x4000;
+		last->flags &= ~RSD3J;
 #endif
 #ifdef OLD_D2W
 	for (r = 2; r <= 6; n = n->next, r += 2) {	/* the pairs in the order of rweight: rr2 rr0 rr4 rr6 */
@@ -142,9 +142,9 @@ rsdump(struct rs *l)
 		printf("\t%d", n->busy);
 		printf("\t\t%ld", n->off);
 		printf("\t%d", n->flags >> 15 & 1);
-		if (n->kind == 8)
+		if (n->kind == RKVAR)
 			printf("\tDNULL");
-		else if (n->kind == 6)
+		else if (n->kind == RKTEMP)
 			printf("\tDETMP");
 		putchar('\n');
 	}
@@ -363,8 +363,8 @@ regjam(int cls, int reg, int flag, struct sym *sym)
 			if ((reg == -1 || reg == n->reg) && n->busy <= 0) {
 				n->sym = sym;
 				n->off = (sym && inarena(sym)) ? sym->soffset : 0;
-				n->flags &= ~0x8000;
-				n->kind = 8;
+				n->flags &= ~RSCONST;
+				n->kind = RKVAR;
 				n->busy = 1;
 				goto ret;
 			}
@@ -433,8 +433,8 @@ regjam(int cls, int reg, int flag, struct sym *sym)
 			n->busy = 1;
 			n->sym = sym;
 			n->off = (sym && inarena(sym)) ? sym->soffset : 0;
-			n->flags &= ~0x8000;
-			n->kind = 8;
+			n->flags &= ~RSCONST;
+			n->kind = RKVAR;
 		ret:
 			return n->reg;
 		}
@@ -466,11 +466,11 @@ more:
 			}
 		}
 		if (found)
-			return getreg(cls, reg, 0x1000, sym);
+			return getreg(cls, reg, RJAM, sym);
 	}
 fail:
 	if (reg != -1)
-		return getreg(cls, -1, 0x1000, sym);
+		return getreg(cls, -1, RJAM, sym);
 	return -1;
 }
 
@@ -500,7 +500,7 @@ d2vfirst(int reg)
 
 /*
  * Get a register of the class cls for the symbol sym (or a temporary when sym is 0); reg = -1: any.
- * flag 0x1000: if no register is free, take one from the used list (regjam). Returns the register
+ * flag RJAM: if no register is free, take one from the used list (regjam). Returns the register
  * number, or -1.
  */
 int
@@ -531,10 +531,10 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 			}
 			goto chk;
 		blk:
-			n->flags &= ~0x8000;
+			n->flags &= ~RSCONST;
 			n->sym = sym;
 			n->off = (sym && inarena(sym)) ? sym->soffset : 0;
-			n->kind = 8;
+			n->kind = RKVAR;
 		found:
 			n->busy = 1;
 		ret:
@@ -576,13 +576,13 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 			if (t->cls == RCWORD && t->busy <= 0 && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) &&
 #endif
 #else
-			if (t->cls == RCWORD && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) &&
+			if (t->cls == RCWORD && t->busy <= 0 && t->kind != RKTEMP && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) &&
 #endif
 			    (m == 0 || rweight[(unsigned char)t->reg] < rweight[m->reg]))
 				m = t;
 #ifdef OLD_D2P
 		for (t = rsuse; t; t = t->next)		/* an idle pair lighter than both: given back, it is split */
-			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
+			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != RKTEMP &&
 			    (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) && (m == 0 || rweight[(unsigned char)t->reg] < rweight[m->reg])) {
 				rsreturn(RCPAIR, t->reg);
 				return getreg(cls, reg, flag, sym);
@@ -590,10 +590,10 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 #endif
 		if (m) {
 			n = m;
-			n->flags &= ~0x8000;
+			n->flags &= ~RSCONST;
 			n->sym = sym;
 			n->off = (sym && inarena(sym)) ? sym->soffset : 0;
-			n->kind = 8;
+			n->kind = RKVAR;
 			goto found;
 		}
 	}
@@ -647,10 +647,10 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 				m = t;
 		if (m) {
 			n = m;
-			n->flags &= ~0x8000;
+			n->flags &= ~RSCONST;
 			n->sym = sym;
 			n->off = (sym && inarena(sym)) ? sym->soffset : 0;
-			n->kind = 8;
+			n->kind = RKVAR;
 			goto found;
 		}
 	}
@@ -683,10 +683,10 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 					;
 		}
 #endif
-		n->flags &= ~0x8000;
+		n->flags &= ~RSCONST;
 		n->sym = sym;
 		n->off = (sym && inarena(sym)) ? sym->soffset : 0;
-		n->kind = 8;
+		n->kind = RKVAR;
 		w = rsuse;		/* take the free node n out of rsfree and put it on the front of rsuse */
 		rsuse = n;
 		if (prev == n)
@@ -757,10 +757,10 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 				cerror("getreg: illegal type default case");
 				break;
 			}
-			n->flags &= ~0x8000;
+			n->flags &= ~RSCONST;
 			n->sym = sym;
 			n->off = (sym && inarena(sym)) ? sym->soffset : 0;
-			n->kind = 8;
+			n->kind = RKVAR;
 			w = rsuse;
 			rsuse = n;
 		nxt:
@@ -772,7 +772,7 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 	if (cls == RCBYTE || cls == RCWORD || cls == RCVWORD)
 		goto split;
 fail:
-	return flag == 0x1000 ? regjam(cls, reg, flag, sym) : -1;
+	return flag == RJAM ? regjam(cls, reg, flag, sym) : -1;
 }
 
 /*
@@ -903,12 +903,12 @@ rsfreeall(int flag)
 		case 1:
 			if (n->cls > RCFLOAT)
 				continue;
-			if (n->kind == 6)
+			if (n->kind == RKTEMP)
 				continue;
 			goto ret;
 #ifdef OLD_D3K
 		case 4:			/* v0, at a label: as 1, but a parameter stays known in its register */
-			if (n->cls > RCFLOAT || n->kind == 6)
+			if (n->cls > RCFLOAT || n->kind == RKTEMP)
 				continue;
 			if (n->busy <= 0 && n->sym && n->sym->sclass == PARAM)
 				continue;
@@ -1104,6 +1104,6 @@ rsrestart(void)
 	l = rsuse;
 	rsuse = 0;
 	for (n = l; n; n = n->next)
-		getreg(n->cls, n->reg, 0x2000, 0);
+		getreg(n->cls, n->reg, 0x2000, 0);	/* (any flag but RJAM: none from the used list) */
 	rsrelease(l);
 }

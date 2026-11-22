@@ -37,17 +37,17 @@ gswitch(NODE *p)
 		printf("\tjpr\tugt,L%d\n", dlab);
 		if (reg == 0) {
 			save = reg;
-			reg = getreg(RCWORD, -1, 0x1000, 0);
+			reg = getreg(RCWORD, -1, RJAM, 0);
 			rmove(reg, save, SHORT);
 			rfree(save, SHORT);
 		}
-		a6 = getreg(RCPAIR, -1, 0x1000, 0);
+		a6 = getreg(RCPAIR, -1, RJAM, 0);
 		if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
 			save = a6;
-			a6 = getreg(RCPAIR, -1, 0x1000, 0);
+			a6 = getreg(RCPAIR, -1, RJAM, 0);
 			if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
 				t2 = a6;
-				a6 = getreg(RCPAIR, -1, 0x1000, 0);
+				a6 = getreg(RCPAIR, -1, RJAM, 0);
 				rfree(t2, LONG);
 			}
 			rfree(save, LONG);
@@ -60,24 +60,24 @@ gswitch(NODE *p)
 	if (l->in.op == SEARCH) {
 		cnt = (int)l->in.right->tn.lval;
 		tlab = l->in.right->tn.rval;
-		a6 = getreg(RCPAIR, -1, 0x1000, 0);
+		a6 = getreg(RCPAIR, -1, RJAM, 0);
 		if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
 			t = a6;
-			a6 = getreg(RCPAIR, -1, 0x1000, 0);
+			a6 = getreg(RCPAIR, -1, RJAM, 0);
 			if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
 				t2 = a6;
-				a6 = getreg(RCPAIR, -1, 0x1000, 0);
+				a6 = getreg(RCPAIR, -1, RJAM, 0);
 				rfree(t2, LONG);
 			}
 			rfree(t, LONG);
 		}
-		rb = getreg(RCWORD, -1, 0x1000, 0);
+		rb = getreg(RCWORD, -1, RJAM, 0);
 		if (reg == rb || rb == 0) {
 			t = rb;
-			rb = getreg(RCWORD, -1, 0x1000, 0);
+			rb = getreg(RCWORD, -1, RJAM, 0);
 			if (reg == rb || rb == 0) {
 				t2 = rb;
-				rb = getreg(RCWORD, -1, 0x1000, 0);
+				rb = getreg(RCWORD, -1, RJAM, 0);
 				rfree(t2, SHORT);
 			}
 			rfree(t, SHORT);
@@ -121,7 +121,7 @@ gswitch(NODE *p)
 		printf("\tjpr\tugt,L%d\n", dlab);
 		if (reg == 0) {
 			save = reg;
-			reg = getreg(RCWORD, -1, 0x1000, 0);
+			reg = getreg(RCWORD, -1, RJAM, 0);
 			rmove(reg, save, SHORT);
 			rfree(save, SHORT);
 		}
@@ -135,7 +135,7 @@ gswitch(NODE *p)
 	tlab = l->in.right->tn.rval;
 	if (reg == 0) {
 		t = reg;
-		reg = getreg(RCWORD, -1, 0x1000, 0);
+		reg = getreg(RCWORD, -1, RJAM, 0);
 		rmove(reg, t, SHORT);
 		rfree(t, SHORT);
 	}
@@ -143,20 +143,20 @@ gswitch(NODE *p)
 	if ((tn = rfind(reg, RCWORD)) != 0)	/* the register of the switch value is in use here (OLD_D2T frees it in between) */
 		tn->busy++;
 	else
-		getreg(RCWORD, reg, 0x1000, 0);
+		getreg(RCWORD, reg, RJAM, 0);
 #endif
-	ra = getreg(RCWORD, -1, 0x1000, 0);
+	ra = getreg(RCWORD, -1, RJAM, 0);
 	if (reg == ra || ra == 0) {
 		t = ra;
-		ra = getreg(RCWORD, -1, 0x1000, 0);
+		ra = getreg(RCWORD, -1, RJAM, 0);
 		if (reg == ra || ra == 0) {
 			t2 = ra;
-			ra = getreg(RCWORD, -1, 0x1000, 0);
+			ra = getreg(RCWORD, -1, RJAM, 0);
 			rfree(t2, SHORT);
 		}
 		rfree(t, SHORT);
 	}
-	rb = getreg(RCWORD, -1, 0x1000, 0);
+	rb = getreg(RCWORD, -1, RJAM, 0);
 #ifdef OLD_D6R
 #define D6RBAD(r)	(reg == (r) || (r) <= 1)	/* v0: the count of cpir in neither half of rr0 */
 #else
@@ -164,10 +164,10 @@ gswitch(NODE *p)
 #endif
 	if (D6RBAD(rb)) {
 		t = rb;
-		rb = getreg(RCWORD, -1, 0x1000, 0);
+		rb = getreg(RCWORD, -1, RJAM, 0);
 		if (D6RBAD(rb)) {
 			t2 = rb;
-			rb = getreg(RCWORD, -1, 0x1000, 0);
+			rb = getreg(RCWORD, -1, RJAM, 0);
 			rfree(t2, SHORT);
 		}
 		rfree(t, SHORT);

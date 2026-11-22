@@ -348,7 +348,7 @@ regargs(tot)
 #endif
 		n = rfind(reg, cls);
 #ifdef OLD_D3J
-		if ((!n || n->sym != s || (n->flags & 0x4000)) && cls < RCFLOAT) {
+		if ((!n || n->sym != s || (n->flags & RSD3J)) && cls < RCFLOAT) {
 #else
 		if ((!n || n->sym != s) && cls < RCFLOAT) {
 #endif
@@ -952,7 +952,7 @@ zzzcode(p, c)
 			m3 = p->in.rall & 0xEFFF;
 			printf("%s,", rnames[m3]);
 			expand(p, FOREFF, "AL\n");
-			k3 = getreg(n3 == 4 ? 3 : 2, m3, 0x1000, p->in.sname);
+			k3 = getreg(n3 == 4 ? 3 : 2, m3, RJAM, p->in.sname);
 			if (m3 == k3) {
 				rbusy(m3, n3 == 4 ? 5 : 4, p->in.sname, p->tn.lval);
 				return;
@@ -994,7 +994,7 @@ zzzcode(p, c)
 			rfreeall(0);
 			p->tn.rval++;
 			p->in.type = (int)u;
-			if (p->tn.rval <= 7 && getreg(RCWORD, p->tn.rval, 0x1000, 0) != p->tn.rval)
+			if (p->tn.rval <= 7 && getreg(RCWORD, p->tn.rval, RJAM, 0) != p->tn.rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 		frame:
@@ -1054,7 +1054,7 @@ zzzcode(p, c)
 			rfreeall(0);
 			p->tn.rval++;
 			p->in.type = (int)u;
-			if (p->tn.rval <= 7 && getreg(RCWORD, p->tn.rval, 0x1000, 0) != p->tn.rval)
+			if (p->tn.rval <= 7 && getreg(RCWORD, p->tn.rval, RJAM, 0) != p->tn.rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 #endif
@@ -1089,7 +1089,8 @@ zzzcode(p, c)
  * (symbol, offset, kind); when `from` is on no list `to` holds nothing known afterwards (0x3cf2)
  */
 int rwtab[][2] = {
-	{ 0x14, 0x14 }, { 0xe, 0xaca }, { 0x1000, 0x1000 }, { 0x2000, 0x2000 }, { 0x4, 0x240 }, { 0, 0 }
+	{ INTAREG|INTBREG, INTAREG|INTBREG }, { INAREG|INTAREG|INBREG, SAREG|SBREG|SNAME|SCON|SOREG|STARREG },
+	{ INTEMP, INTEMP }, { FORARG, FORARG }, { INTAREG, SNAME|SOREG }, { 0, 0 }
 };
 
 void
@@ -1115,13 +1116,13 @@ tfound:
 			goto ffound;
 	t->sym = 0;
 	t->off = 0;
-	t->kind = 8;
+	t->kind = RKVAR;
 	goto copied;
 ffound:
 	t->sym = f->sym;
 	t->off = f->off;
 #ifdef OLD_D2FA
-	t->flags = (t->flags & ~0x0400) | (f->flags & 0x0400);
+	t->flags = (t->flags & ~RSASG) | (f->flags & RSASG);
 #endif
 	t->kind = f->kind;
 copied:
@@ -1664,10 +1665,10 @@ nextcook(p, cookie)
 {
 	if (cookie == FORREW)
 		return 0;
-	if (!(cookie & 0x14))
-		return 0x14;
-	if (!(cookie & 0x1000) && asgop(p->in.op))
-		return 0x101E;
+	if (!(cookie & (INTAREG|INTBREG)))
+		return INTAREG|INTBREG;
+	if (!(cookie & INTEMP) && asgop(p->in.op))
+		return INTEMP|INAREG|INTAREG|INBREG|INTBREG;
 	return FORREW;
 }
 
@@ -1677,7 +1678,7 @@ lastchance(p, cookie)
 	register NODE *p;
 	register int cookie;
 {
-	if (cookie == 0x2000 && (p->in.op == OREG || p->in.op == NAME))
+	if (cookie == FORARG && (p->in.op == OREG || p->in.op == NAME))
 		return 1;
 	return 0;
 }

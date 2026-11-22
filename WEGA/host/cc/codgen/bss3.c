@@ -87,7 +87,7 @@ int fldshf;	/* the field that tshape found (size, offset, shift) */
 int nargs;
 int argfreg;	/* the next float register, counts down from 0x13 */
 struct arg argl[11];
-struct optab *rwdefault;	/* the entry with needs == 0x1000 (the default rewrite entry) */
+struct optab *rwdefault;	/* the entry with needs == REWRITE (the default rewrite entry) */
 struct optab *opptr[129];	/* the first table entry that can serve an operator */
 int unused3[24];
 #else
@@ -110,7 +110,7 @@ int ordflag;	/* set to 0x14 while offstar orders a register that is not preferre
 int unused3[23];
 int argfreg;	/* the next float register, counts down from 0x13 */
 struct arg argl[11];
-struct optab *rwdefault;	/* the entry with needs == 0x1000 (the default rewrite entry) */
+struct optab *rwdefault;	/* the entry with needs == REWRITE (the default rewrite entry) */
 struct optab *opptr[129];	/* the first table entry that can serve an operator */
 #endif
 int rstab1[3];

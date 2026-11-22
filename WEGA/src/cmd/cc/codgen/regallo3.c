@@ -34,7 +34,7 @@ static char rcname[][8] = {
 #ifdef OLD_D2PT
 #define D2PK(t)	1		/* v0p: OLD_D2P takes the registers of a TEMP too (the value of a switch) */
 #else
-#define D2PK(t)	((t)->kind != 6)
+#define D2PK(t)	((t)->kind != RKTEMP)
 #endif
 #ifdef OLD_D3KC
 #define D2PN(t)	1
@@ -104,7 +104,7 @@ rsbuild()
 	n = rsfree = rspool;
 #ifdef OLD_D3J
 	for (last = n; last; last = last->next)
-		last->flags &= ~0x4000;
+		last->flags &= ~RSD3J;
 #endif
 #ifdef OLD_D2W
 	for (r = 2; r <= 6; n = n->next, r += 2) {	/* the pairs in the order of rweight: rr2 rr0 rr4 rr6 */
@@ -160,9 +160,9 @@ rsdump(l)
 		printf("\t%d", n->busy);
 		printf("\t\t%ld", n->off);
 		printf("\t%d", n->flags >> 15 & 1);
-		if (n->kind == 8)
+		if (n->kind == RKVAR)
 			printf("\tDNULL");
-		else if (n->kind == 6)
+		else if (n->kind == RKTEMP)
 			printf("\tDETMP");
 		putchar('\n');
 	}
@@ -401,10 +401,10 @@ regjam(cls, reg, flag, sym)
 				n->sym = sym;
 				n->off = sym ? sym->soffset : 0;
 #ifdef OLD_D2FA
-		n->flags &= ~0x0400;	/* (not named by an assignment) */
+		n->flags &= ~RSASG;	/* (not named by an assignment) */
 #endif
-				n->flags &= ~0x8000;
-				n->kind = 8;
+				n->flags &= ~RSCONST;
+				n->kind = RKVAR;
 				n->busy = 1;
 				goto ret;
 			}
@@ -474,10 +474,10 @@ regjam(cls, reg, flag, sym)
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
 #ifdef OLD_D2FA
-		n->flags &= ~0x0400;	/* (not named by an assignment) */
+		n->flags &= ~RSASG;	/* (not named by an assignment) */
 #endif
-			n->flags &= ~0x8000;
-			n->kind = 8;
+			n->flags &= ~RSCONST;
+			n->kind = RKVAR;
 		ret:
 			return n->reg;
 		}
@@ -509,11 +509,11 @@ more:
 			}
 		}
 		if (found)
-			return getreg(cls, reg, 0x1000, sym);
+			return getreg(cls, reg, RJAM, sym);
 	}
 fail:
 	if (reg != -1)
-		return getreg(cls, -1, 0x1000, sym);
+		return getreg(cls, -1, RJAM, sym);
 	return -1;
 }
 
@@ -544,7 +544,7 @@ d2vfirst(reg)
 
 /*
  * Get a register of the class cls for the symbol sym (or a temporary when sym is 0); reg = -1: any.
- * flag 0x1000: if no register is free, take one from the used list (regjam). Returns the register
+ * flag RJAM: if no register is free, take one from the used list (regjam). Returns the register
  * number, or -1.
  */
 int
@@ -579,13 +579,13 @@ getreg(cls, reg, flag, sym)
 			}
 			goto chk;
 		blk:
-			n->flags &= ~0x8000;
+			n->flags &= ~RSCONST;
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
 #ifdef OLD_D2FA
-		n->flags &= ~0x0400;	/* (not named by an assignment) */
+		n->flags &= ~RSASG;	/* (not named by an assignment) */
 #endif
-			n->kind = 8;
+			n->kind = RKVAR;
 		found:
 			n->busy = 1;
 		ret:
@@ -611,7 +611,7 @@ getreg(cls, reg, flag, sym)
 			;
 		m = 0;
 		for (t = rsuse; t; t = t->next)
-			if (t->cls == RCFLOAT && t->busy <= 0 && t->kind != 6 && (w == 0 || t->reg < w->reg) && (m == 0 || t->reg < m->reg))
+			if (t->cls == RCFLOAT && t->busy <= 0 && t->kind != RKTEMP && (w == 0 || t->reg < w->reg) && (m == 0 || t->reg < m->reg))
 				m = t;
 		if (m) {
 			n = m;
@@ -639,17 +639,17 @@ getreg(cls, reg, flag, sym)
 			if (t->cls == RCWORD && t->busy <= 0 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
 #endif
 #else
-			if (t->cls == RCWORD && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+			if (t->cls == RCWORD && t->busy <= 0 && t->kind != RKTEMP && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
 #endif
 			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
 				m = t;
 #ifdef OLD_D2P
 		for (t = rsuse; t; t = t->next)		/* an idle pair lighter than both: given back, it is split */
 #ifdef OLD_D3KC
-			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
+			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != RKTEMP &&
 #else
 			/* not a pair that holds a parameter, as below (vc: gopt pr) */
-			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != 6 && !(t->sym && t->sym->sclass == PARAM) &&
+			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != RKTEMP && !(t->sym && t->sym->sclass == PARAM) &&
 #endif
 			    (w == 0 || rweight[t->reg] < rweight[w->reg]) && (m == 0 || rweight[t->reg] < rweight[m->reg])) {
 				rsreturn(RCPAIR, t->reg);
@@ -751,13 +751,13 @@ getreg(cls, reg, flag, sym)
 					;
 		}
 #endif
-		n->flags &= ~0x8000;
+		n->flags &= ~RSCONST;
 		n->sym = sym;
 		n->off = sym ? sym->soffset : 0;
 #ifdef OLD_D2FA
-		n->flags &= ~0x0400;	/* (not named by an assignment) */
+		n->flags &= ~RSASG;	/* (not named by an assignment) */
 #endif
-		n->kind = 8;
+		n->kind = RKVAR;
 		w = rsuse;		/* take the free node n out of rsfree and put it on the front of rsuse */
 		rsuse = n;
 		if (prev == n)
@@ -828,13 +828,13 @@ getreg(cls, reg, flag, sym)
 				cerror("getreg: illegal type default case");
 				break;
 			}
-			n->flags &= ~0x8000;
+			n->flags &= ~RSCONST;
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
 #ifdef OLD_D2FA
-		n->flags &= ~0x0400;	/* (not named by an assignment) */
+		n->flags &= ~RSASG;	/* (not named by an assignment) */
 #endif
-			n->kind = 8;
+			n->kind = RKVAR;
 			w = rsuse;
 			rsuse = n;
 		nxt:
@@ -850,7 +850,7 @@ fail:
 	/* OLD_D2PO, the parameter words: no pair free: an idle odd word that holds a parameter and whose even half is free is given back
 	   when that pair weighs less than the idle pair regjam would take (setlbit: rr4 from r4 and the parameter i in r5,
 	   not rr6 of v; addquad keeps rr2) */
-	if (flag == 0x1000 && cls == RCPAIR && reg == -1) {
+	if (flag == RJAM && cls == RCPAIR && reg == -1) {
 		register struct rs *t, *m;
 
 		struct rs *j;
@@ -872,7 +872,7 @@ fail:
 			}
 	}
 #endif
-	return flag == 0x1000 ? regjam(cls, reg, flag, sym) : -1;
+	return flag == RJAM ? regjam(cls, reg, flag, sym) : -1;
 }
 
 /*
@@ -1007,12 +1007,12 @@ rsfreeall(flag)
 		case 1:
 			if (n->cls > RCFLOAT)
 				continue;
-			if (n->kind == 6)
+			if (n->kind == RKTEMP)
 				continue;
 			goto ret;
 #ifdef OLD_D3K
 		case 4:			/* v0, at a label: as 1, but a parameter stays known in its register */
-			if (n->cls > RCFLOAT || n->kind == 6)
+			if (n->cls > RCFLOAT || n->kind == RKTEMP)
 				continue;
 			if (n->busy <= 0 && n->sym && n->sym->sclass == PARAM)
 				continue;
@@ -1212,6 +1212,6 @@ rsrestart()
 	l = rsuse;
 	rsuse = 0;
 	for (last = n = l; n; last = n, n = n->next)
-		getreg(n->cls, n->reg, 0x2000, 0);
+		getreg(n->cls, n->reg, 0x2000, 0);	/* (any flag but RJAM: none from the used list) */
 	rsrelease(l);
 }
