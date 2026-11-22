@@ -748,30 +748,30 @@ top:
 }
 
 void
-reclaim(p, rewrite, cookie)
+reclaim(p, rw, cookie)
 	NODE *p;
-	int rewrite;
+	int rw;
 	int cookie;
 {
 	register int want;
 	register NODE *c;
 	register NODE **ap;
 	register int o;
-	register int *rw;
+	register struct respref *r;
 	NODE *a[5];
 
 	o = p->in.op;
-	if (rewrite == RNOP)
+	if (rw == RNOP)
 		goto done;
-	if (o == FREE && rewrite == RNULL)
+	if (o == FREE && rw == RNULL)
 		goto done;
 	want = o;
 	walkf(p, recl2);
-	if (rewrite == 0 || (cookie & FOREFF)) {
+	if (rw == RNULL || (cookie & FOREFF)) {
 		tfree(p);
 		goto done;
 	}
-	if ((cookie & FORCC) && (rewrite & RESCC)) {	/* the condition codes */
+	if ((cookie & FORCC) && (rw & RESCC)) {	/* the condition codes */
 		tfree(p);
 		p->in.op = CCODES;
 		p->tn.lval = want;
@@ -779,24 +779,24 @@ reclaim(p, rewrite, cookie)
 		goto done;
 	}
 	ap = a;
-	if (rewrite & RLEFT)
+	if (rw & RLEFT)
 		*ap++ = getlr(p, 'L');
-	if (rewrite & RRIGHT)
+	if (rw & RRIGHT)
 		*ap++ = getlr(p, 'R');
-	if (rewrite & RESC1)
+	if (rw & RESC1)
 		*ap++ = &resc[0];
-	if (rewrite & RESC2)
+	if (rw & RESC2)
 		*ap++ = &resc[1];
-	if (rewrite & RESC3)
+	if (rw & RESC3)
 		*ap++ = &resc[2];
 	if (ap == a)
 		cerror("illegal reclaim");
-	*ap = 0;
-	for (rw = (int *)rwtab; *rw; rw += 2) {
-		if (!(cookie & rw[0]))
+	*ap = NIL;
+	for (r = respref; r->cform; ++r) {
+		if (!(cookie & r->cform))
 			continue;
-		for (ap = a; (c = *ap) != 0; ap++)
-			if (tshape(c, rw[1]))
+		for (ap = a; (c = *ap) != NIL; ap++)
+			if (tshape(c, r->mform))
 				goto found;
 	}
 	cerror("cannot reclaim");
@@ -830,7 +830,7 @@ isreg:
 		else if (p->in.type == USHORT)
 			p->in.type = UNSIGNED;
 	}
-	if (rewrite & RESC) {			/* the second register of a long result */
+	if (rw & RESC) {			/* the second register of a long result */
 		want = p->tn.rval;
 		want++;
 		if (!(p->in.rall & MUSTDO))
@@ -846,19 +846,19 @@ isreg:
 		p->in.type = UNSIGNED;		/* sic: also after the LONG case (the original jumps to this store) */
 		if (p->in.rall & MUSTDO)
 			want = p->in.rall & ~MUSTDO;
-	} else if (o == MOD || o == ASG MOD) {	/* a long result of a shift or divide goes to rr4 */
+	} else if (o == MOD || o == ASG MOD) {	/* a long remainder goes to rr4 */
 		if (p->in.type == LONG || p->in.type == ULONG) {
 			rfree(p->tn.rval, p->in.type);
-			if (getreg(RCPAIR, 4, RJAM, p->in.sname) != 4)
+			if (getreg(RCPAIR, R4, RJAM, p->in.sname) != R4)
 				cerror("reclaim: cannot find register free");
-			p->tn.rval = 4;
+			p->tn.rval = R4;
 			if (!(p->in.rall & MUSTDO))
-				p->in.rall = (p->in.rall & NOPREF) | 4;
+				p->in.rall = (p->in.rall & NOPREF) | R4;
 		}
 	}
 	if (!(p->in.rall & MUSTDO))
 		goto done;
-	if (!(rewrite & RESC)) {
+	if (!(rw & RESC)) {
 		want = p->in.rall & ~MUSTDO;
 		if (want & NOPREF)
 			goto done;

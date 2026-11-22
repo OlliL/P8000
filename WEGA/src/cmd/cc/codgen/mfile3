@@ -375,7 +375,7 @@ extern void rsinit();
 extern void rsreturn();
 extern int rstatus[];
 extern struct rs *rsuse;
-extern int rwtab[][2];
+extern struct respref { int cform; int mform; } respref[];
 extern int savecls[];
 extern int saveorig[];
 extern int savereg[];

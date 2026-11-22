@@ -1085,7 +1085,8 @@ zzzcode(p, c)
  * rmove: copy register `from` to register `to` (assembler text) and let `to` take over what `from` holds
  * (symbol, offset, kind); when `from` is on no list `to` holds nothing known afterwards (0x3cf2)
  */
-int rwtab[][2] = {
+/* the results reclaim prefers: the cookie (cform) and the shape of the result for it (mform) */
+struct respref respref[] = {
 	{ INTAREG|INTBREG, INTAREG|INTBREG }, { INAREG|INTAREG|INBREG, SAREG|SBREG|SNAME|SCON|SOREG|STARREG },
 	{ INTEMP, INTEMP }, { FORARG, FORARG }, { INTAREG, SNAME|SOREG }, { 0, 0 }
 };
