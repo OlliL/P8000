@@ -11,7 +11,7 @@ YACC = bison -y -Wno-yacc -Wno-other
 CFLAGS = -O2 -Wall -Wextra -std=gnu99 -fsigned-char
 OBJS = xdefs1 scan1 pftn1 trees1 optim1 code1 local1 comm1 vinit1 sym1 sym2 zalloc
 SRCS = cgram1.c $(OBJS:=.c)
-HDRS = mfile1 manifest macdefs cpproto.h
+HDRS = mfile1 manifest macdefs cpproto.h common.2.5 optim.2.5
 
 all: cparse scparse
 

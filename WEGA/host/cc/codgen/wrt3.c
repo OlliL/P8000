@@ -7,8 +7,8 @@
 extern char ascii[];
 extern int entlab;
 extern char fname[];
-extern int ifline;
-extern char ifname[];
+extern int lineno;
+extern char ftitle[];
 extern int jlab;
 extern int lflag;
 extern int mcountlab;
@@ -26,9 +26,6 @@ extern int structret;
 extern long structsz;
 static char sccsid[] __attribute__((unused)) = "@[$]wrt3.c\t2.4  08/24/83 14:01:53 Copr. 1981 87wega3.2.";
 
-#define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
-
-#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 
 #ifdef OLD_D3P
 #define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
@@ -62,11 +59,11 @@ endline(void)
 	register char *cp;
 
 	if (lflag) {
-		n = strlen(ifname);
-		if (*(cp = &ifname[n - 1]) == '"')
+		n = strlen(ftitle);
+		if (*(cp = &ftitle[n - 1]) == '"')
 			cp--;
 		if (*cp-- == 'c' && *cp == '.')
-			printf("\t.line\t%d\t%s\t\n", ifline, ifname);
+			printf("\t.line\t%d\t%s\t\n", lineno, ftitle);
 	}
 }
 

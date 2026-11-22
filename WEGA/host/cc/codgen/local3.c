@@ -73,8 +73,7 @@ int rmode = 0;
 int rlmode = 0;
 int nosuffix = 0;
 
-#define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
-
+#undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 #define DIVFLAG	0x80		/* dope flag of the division operators: the dividend gets extended */
@@ -591,7 +590,7 @@ zzzcode(NODE *p, char c)
 		/* inc/dec/add/sub or the mnemonic of the operator, with the type suffix */
 		if (!tshape(z = getlr(p, 'R'), SCON))
 			cerror("bad Zi");
-		if (plainicon(z))
+		if (nncon(z))
 			z->tn.lval = geninc(p->in.op, z->tn.lval);
 		else
 			hopcode(p);
@@ -1671,7 +1670,7 @@ special(NODE *p, int shape)
 	case SPECIAL + 3:
 		return p->tn.lval >= -256 && p->tn.lval <= 255;
 	case SPECIAL + 5:
-		if (!plainicon(p))
+		if (!nncon(p))
 			return 0;
 		/* FALLTHROUGH */
 	case SPECIAL + 4:

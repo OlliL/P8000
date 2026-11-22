@@ -32,7 +32,7 @@ void tfree(NODE *p);
 void tfree1(NODE *p);
 void mkdope(void);
 int bsize(int t);
-int twords(TWORD t);
+int szty(TWORD t);
 int argsize(NODE *p);
 void where(int c);
 int tbytes(TWORD t);

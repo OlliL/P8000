@@ -988,7 +988,7 @@ NODE *tymatch(NODE *p)
 		}
 
 	/* WEGA: a product of two words is long */
-	if( (o == MUL || o == ASG MUL) && twords( p->in.left->in.type ) == 1 && twords( p->in.right->in.type ) == 1 ){
+	if( (o == MUL || o == ASG MUL) && szty( p->in.left->in.type ) == 1 && szty( p->in.right->in.type ) == 1 ){
 		p->in.type = u ? ULONG : LONG;
 		p = makety( p, tu, 0, (int)tu );
 		}
@@ -1447,7 +1447,7 @@ NODE *tempnode(TWORD t, int flag)
 	q->tn.rval = tmpno++;
 	if( flag == 1 ){
 		q->fn.csiz = tmpoff;
-		tmpoff += twords( t ) * 2;
+		tmpoff += szty( t ) * 2;
 		}
 	return( q );
 	}

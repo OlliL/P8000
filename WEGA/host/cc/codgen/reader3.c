@@ -18,8 +18,8 @@ extern int eflag;
 extern int ffregs;
 extern long frame0;
 extern int fregs;
-extern int ifline;
-extern char ifname[];
+extern int lineno;
+extern char ftitle[];
 extern int lflag;
 extern int lmulflag;
 extern long maxoff;
@@ -91,8 +91,7 @@ static int d3jdead;		/* the record before was an unconditional jump */
 
 #define FREE_	100
 
-#define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
-
+#undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 
@@ -307,12 +306,12 @@ reread:
 			continue;
 		case '.':
 			/* compile code for an expression */
-			ifline = rdin(10);
-			for (cp = ifname; (*cp = getchar()) != '\n'; ++cp)
+			lineno = rdin(10);
+			for (cp = ftitle; (*cp = getchar()) != '\n'; ++cp)
 				;
 			*cp = '\0';
 			if (lflag)
-				lineout(ifline, ifname);
+				lineout(lineno, ftitle);
 			paroff = baseoff;
 #ifndef OLD_D14Q
 			tmpoff = 0;
