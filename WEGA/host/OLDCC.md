@@ -464,7 +464,7 @@ Not reproduced in v1: ld load1 (the store behind a dead `ldl rr4,rr2` shared wit
 - v1, v0 `OLD_D12` (cparse, putstrs): the initialised data and the switch tables in source order, all string literals of a file
   behind them as one pool, aligned only at its start and end, equal strings not merged. The shipped one writes the strings of a
   function in front of it, each padded to an even address.
-- v0p `OLD_D12K` (codgen, rddata, eread): a double constant goes into the data at its statement, not with the .D data at the head of
+- v0p `OLD_D12K` (codgen, reader3.c: d12kdata instead of rddata, a walk behind eread): a double constant goes into the data at its statement, not with the .D data at the head of
   the function (buildtree). One witness.
 
 ### D13 Pointer constants (old scc)
@@ -555,7 +555,7 @@ v0p `OLD_D23` (codgen, optim, mapregs): the optim of codgen does not take a zero
 The kernel masks a user address with `(caddr_t)((long)x & 0x7F00FFFF)`. Original: `ldl rr4,rr2; and r4,#%7F00; ldl y,rr4` (a copy in a new pair, the mask on the copy); the shipped scparse and scodgen: `and r2,#%7F00; ldl y,rr2`.
 
 - vk `OLD_D25` (cparse local1.c, SEG, PCONV): a cast of a long to a pointer stays a conversion (SCONV); the shipped scparse paints the type.
-- vk `OLD_D24` (codgen, mip/optim.2.5): `rmconv` keeps a conversion between a pointer and a non-pointer of the same size. The SCONV of a long to a pointer then uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`: the copy and the mask), and an `& 0x7f00ffff` under it is dropped.
+- vk `OLD_D24` (codgen, reader3.c optpre and optpost around optim): `rmconv` keeps a conversion between a pointer and a non-pointer of the same size. The SCONV of a long to a pointer then uses the template 040a (`ldl VA1,ALX; and A1,#%7f00`: the copy and the mask), and an `& 0x7f00ffff` under it is dropped.
 
 The two work only together: each alone gives the code of the shipped compiler. Witnesses: `sig`, `sys2`, `sys3`, `debug` of the kernel. vc has both too (`OLD_D24` in `OLD_VC`, `OLD_D25` in the segvc rule of scparse): cas `yylex` (`(struct pst *)(q->s_2 & 0x7F00FFFFL)`: `ldl rr2,rr0; and r2,#%7F00`) and `igetaddr` (`return ((struct irow *)igetl());`: `ldl rr0,rr2; and r0,#%7F00; ldl rr2,rr0`). In cas a node holds its operands in pointer members of its union and a symbol its name in `s_name` (a union with the value `s_2`), so that only these two casts of a long to a pointer are left; with a cast at every node operand D25 would mask them all. vl has both too (`OLD_D24` in `OLD_VL`, `OLD_D25` in the segvl rule of scparse, `/lib/vl/scparse`): slibc malloc (`setbusy`, `clearbusy` with `INT` = `long`: `(union store *)((long)(p)|BUSY)`; the first call sets `allocs[0].ptr = setbusy(&allocs[1])`: `ldl rr4,rr2; and r4,#%7f00`); D24 alone changes nothing there, nonsegmented D24 changes no libc member. No source form replaces them: 25 forms of the statement in `sig` (casts, `L` constants, order of the operands, `~`, `+ 0`, `| 0`, a long lvalue, parentheses) give the same code, temporaries are worse.
 
@@ -687,7 +687,7 @@ float compare with memory of libm.a and slibm.a (asin, fmod, hypot, tanh, pow, j
 Neither switch changes a program of v1 that was byte-identical before (checkall).
 ### D63 A float widened to double stays a conversion
 
-v1 `OLD_D63` (codgen, scodgen; mip/optim.2.5 rmconv). The shipped codgen drops a conversion float to double over an operand
+v1 `OLD_D63` (codgen, scodgen; reader3.c optpre: hidden from rmconv). The shipped codgen drops a conversion float to double over an operand
 (`SCONV` double of a float), so `f1 < f2` of two floats compares `flds f0,f1; fcpxs f0,f2` (rule 052, register against
 memory). The v1 codgen keeps the conversion: both operands have the float need 1, each is loaded into a register
 (`flds f0,f1; flds f1,f2`) and rule 051 compares the registers (`fcpx f0,f1`). A double operand has no conversion and still

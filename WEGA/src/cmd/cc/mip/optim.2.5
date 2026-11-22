@@ -68,19 +68,6 @@ optim(p) register NODE *p; {
 # endif
 	if( ty == BITYPE ) p->in.right = optim(p->in.right);
 	p->in.left = optim(p->in.left);
-# if defined(PASS3) && defined(OLD_D24)
-	/* (codgen v1, an exception in mip: host/increments/155) the conversion of a long to a pointer masks the
-	   address (template 040a): the mask 0x7f00ffff in front of it is dropped */
-	if( o == SCONV && ISPTR(p->in.type) && LO(p) == AND && RO(p->in.left) == ICON &&
-			p->in.left->in.right->in.sname == 0 && RV(p->in.left) == 0x7F00FFFFL ){
-		NODE *a;
-
-		a = p->in.left;
-		p->in.left = a->in.left;
-		a->in.right->in.op = FREE;
-		a->in.op = FREE;
-		}
-# endif
 
 	/* collect constants */
 
@@ -173,12 +160,6 @@ optim(p) register NODE *p; {
 		/* someday, do it right */
 		if( nncon(p->in.left) || ( LCON(p) && !RCON(p) && !( RO(p) == REG && p->in.right->tn.rval == 15 ) &&
 				!ISPTR(p->in.type) ) ) SWAP( p->in.left, p->in.right );
-# if defined(PASS3) && defined(OLD_D13) && defined(SEG)
-		/* (codgen vc, an exception in mip: host/increments/155) int + constant address: the address goes to the
-		   left (ldl rr2,#addr; add r3,i); the shipped codgen makes an int register the target of the pointer and jams */
-		if( o == PLUS && ISPTR(p->in.type) && RCON(p) && ISPTR(p->in.right->in.type) && !ISPTR(p->in.left->in.type) )
-			SWAP( p->in.left, p->in.right );
-# endif
 # if !defined(PASS3) || !defined(OLD_D23)
 		/* (OLD_D23: codgen v0p, an exception in mip: host/increments/155) */
 		if( (o == MINUS || o == PLUS) && nncon(p->in.right) && RV(p) == 0 ) goto zapright;
@@ -507,10 +488,6 @@ rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes not
 
 	if (c == 'r') {
 		q = p->in.right;
-#ifdef OLD_D24	/* (codgen v1, an exception in mip: host/increments/155) */
-		if ((q->in.type & 0x30) != (q->in.left->in.type & 0x30) && ((q->in.type & 0x30) == 0x10 || (q->in.left->in.type & 0x30) == 0x10))
-			return p;
-#endif
 		if (q->in.type != q->in.left->in.type) {
 			s = bsize(q->in.left->in.type);
 			if (s != bsize(q->in.type))
@@ -518,12 +495,8 @@ rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes not
 			if (!(notflt(q->in.type) ^ notflt(q->in.left->in.type)))
 				goto remove;
 		test:
-#ifdef OLD_D63	/* (codgen v1, an exception in mip: host/increments/155) */
-			return p;	/* v1: a float widened to double stays a conversion (host/OLDCC.md D63) */
-#else
 			if (q->in.type != 7 || q->in.left->in.type != 6)
 				return p;
-#endif
 		}
 	remove:
 		r = tcopy(q->in.left);
@@ -533,10 +506,6 @@ rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes not
 	}
 	if (c == 'l') {
 		q = p->in.left;
-#ifdef OLD_D24	/* (codgen v1, an exception in mip: host/increments/155) */
-		if ((q->in.type & 0x30) != (q->in.left->in.type & 0x30) && ((q->in.type & 0x30) == 0x10 || (q->in.left->in.type & 0x30) == 0x10))
-			return p;
-#endif
 		if (q->in.type != q->in.left->in.type) {
 			s = bsize(q->in.left->in.type);
 			if (s != bsize(q->in.type))
@@ -544,12 +513,8 @@ rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes not
 			if (!(notflt(q->in.type) ^ notflt(q->in.left->in.type)))
 				goto lremove;
 		ltest:
-#ifdef OLD_D63	/* (codgen v1, an exception in mip: host/increments/155) */
-			return p;	/* v1: a float widened to double stays a conversion (host/OLDCC.md D63) */
-#else
 			if (q->in.type != 7 || q->in.left->in.type != 6)
 				return p;
-#endif
 		}
 	lremove:
 		r = tcopy(q->in.left);

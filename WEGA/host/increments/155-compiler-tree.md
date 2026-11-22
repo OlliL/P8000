@@ -133,15 +133,15 @@ Rules of the target:
   compilers built with cc (v0 ... vl) need not be byte-identical with their build before such a change, only behave
   the same: models, bench, matrix checks and checkall (the programs they build).
 
-- 2026-11-22 (Claude, exceptions to "no OLD_* in mip", for review): optim 2.5 keeps the codgen switches that sit
-  inside the shared functions, each also under PASS3 (cparse vc defines OLD_D13 too): OLD_D24 (optim: the mask of a
-  long to pointer conversion; rmconv), OLD_D13 with SEG (optim: the address to the left), OLD_D23 (optim: no zero
-  addend away), OLD_D63 (rmconv: float to double stays). They change the flow inside optim and rmconv; out of the
-  unit only by a second copy of these functions in codgen.
-
-- 2026-11-22 (Claude, exception, for review): rdr 2.5 keeps OLD_D12K in eread (a double constant is written at
-  its statement: d12kout before the FCON becomes a NAME; the caller no longer sees which NAME was an FCON). The rest
-  of OLD_D12K went to reader3.c: the helpers, and d12kdata (rddata with the copy of v0p) called instead of rddata.
+- 2026-11-22 (Claude, exception to "no OLD_* in mip", for review): optim 2.5 keeps OLD_D23 (codgen v0p: no zero
+  addend away). Outside optim every way changes how optim folds constants (a hidden zero is no constant for conval);
+  it is an older optim without that rule. The other switches went out of mip (owner 2026-11-22: other logic for the
+  same aim): OLD_D12K by a walk behind eread (only an FCON gives the record "Ln: " with a blank in the data file, so a
+  NAME of a label that waits there was an FCON); OLD_D24, OLD_D63 and OLD_D13 by a walk in front of optim and one
+  behind it (reader3.c optpre, optpost): a conversion the older rmconv keeps is hidden as PCONV (rmconv acts only on
+  the direct children of a node, before optim goes below), the mask of OLD_D24 is dropped behind optim (optim has no
+  SCONV case under PASS3), the swap of OLD_D13 is done in front (not the same when optim makes the right side a
+  constant address only on its way; no case in the measurements).
 
 ## Not part of it
 

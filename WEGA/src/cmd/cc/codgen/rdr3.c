@@ -10,7 +10,6 @@ extern NODE *bcon();
 extern NODE *buildstar();
 extern int cerror();
 extern NODE *clocal();
-extern void d12kout();
 extern FILE *dfile;
 extern int dope[];
 extern int eflag;

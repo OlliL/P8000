@@ -176,6 +176,12 @@ long maxtemp = 0;
 #ifdef OLD_D14Q
 static void d14qarm();
 #endif
+#ifdef OLD_D12K
+int d12kname();
+#endif
+#if defined(OLD_D24) || defined(OLD_D63) || defined(OLD_D13) && defined(SEG)
+int optpre(), optpost();
+#endif
 #ifdef OLD_D3K
 void d3kjump(), d3kreset();
 int d3klabel();
@@ -437,6 +443,9 @@ reread:
 			tmpoff = 0;
 #endif
 			p = eread();
+#ifdef OLD_D12K
+			fwalk(p, d12kname, 0);	/* the double constants of the statement go out in front of its code */
+#endif
 			p2compile(p);
 			continue;
 		case 'L':
@@ -835,7 +844,14 @@ codgen(p, cookie)
 	register int cookie;
 {
 	for (;;) {
+#if defined(OLD_D24) || defined(OLD_D63) || defined(OLD_D13) && defined(SEG)
+		fwalk(p, optpre, 0);
+		p = optim(p);
+		fwalk(p, optpost, 0);
+		p = canon(p);
+#else
 		p = canon(optim(p));
+#endif
 		stotree = 0;
 		store(p);
 		lmulflag = 0;
@@ -1868,6 +1884,65 @@ d2faandor(p)
 }
 #endif
 
+#if defined(OLD_D24) || defined(OLD_D63) || defined(OLD_D13) && defined(SEG)
+/* fwalk in front of optim (mip/optim.2.5) for the older versions: vc (OLD_D13): of int + constant address the address
+   goes to the left (ldl rr2,#addr; add r3,i), the shipped codgen makes the int register the target of the pointer and
+   jams; a conversion the older optim keeps is hidden from rmconv as PCONV (no record of cparse has one): vk, vl, vc
+   (OLD_D24) one between a pointer and a non-pointer, v1 (OLD_D63) a float widened to double */
+int
+optpre(p)
+	register NODE *p;
+{
+	register int t, u;
+
+#if defined(OLD_D13) && defined(SEG)
+	if (p->in.op == PLUS && ISPTR(p->in.type) && p->in.right->in.op == ICON && ISPTR(p->in.right->in.type) &&
+			!ISPTR(p->in.left->in.type)) {
+		register NODE *q;
+
+		q = p->in.left;
+		p->in.left = p->in.right;
+		p->in.right = q;
+	}
+#endif
+	if (p->in.op != SCONV)
+		return 0;
+	t = p->in.type;
+	u = p->in.left->in.type;
+#ifdef OLD_D24
+	if ((t & 0x30) != (u & 0x30) && ((t & 0x30) == 0x10 || (u & 0x30) == 0x10))
+		p->in.op = PCONV;
+#endif
+#ifdef OLD_D63
+	if (t == DOUBLE && u == FLOAT)
+		p->in.op = PCONV;
+#endif
+	return 0;
+}
+
+/* fwalk behind optim: the hidden conversions are SCONV again; vk, vl, vc (OLD_D24): the conversion of a long to a
+   pointer masks the address (template 040a), so a mask 0x7f00ffff in front of it is dropped */
+int
+optpost(p)
+	register NODE *p;
+{
+	register NODE *a;
+
+	if (p->in.op != PCONV)
+		return 0;
+	p->in.op = SCONV;
+#ifdef OLD_D24
+	if (ISPTR(p->in.type) && (a = p->in.left)->in.op == AND && a->in.right->in.op == ICON &&
+			a->in.right->in.sname == 0 && a->in.right->tn.lval == 0x7F00FFFFL) {
+		p->in.left = a->in.left;
+		a->in.right->in.op = FREE;
+		a->in.op = FREE;
+	}
+#endif
+	return 0;
+}
+#endif
+
 /* ---- v0 and v0p (OLD_D3K, OLD_D3J): the parameters known in their registers at labels and behind jumps ---- */
 #ifdef OLD_D3K
 /* the labels a jump has named in this function */
@@ -2032,6 +2107,16 @@ d3jmark(cls, reg)
 #ifdef OLD_D12K
 extern long rdin2();
 static int d12kcopy();
+
+/* fwalk: a NAME of a label (eread made it of an FCON) puts out the double constant of that label if it waits */
+int
+d12kname(p)
+	register NODE *p;
+{
+	if (p->in.op == NAME && p->tn.rval < 0)
+		d12kout(-p->tn.rval);
+	return 0;
+}
 
 /* rddata of rdr.2.5 for v0p: the section goes to d12kcopy */
 int

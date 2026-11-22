@@ -1847,3 +1847,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   Now d3kjump (bit; v0p: the record, the intersection), d3klabel (returns 0 for a label no jump has named; v0p: the
   records go), d3kreset, d3jmark; d3knamed, d3jsave, d3jlabel, d3jclear, d3jfree gone. Models 179/179/209/210/73/73/26
   strictly equal, bench 153/132/212, both matrix checks as in the table.
+- 2026-11-22 the switches of codgen out of mip (owner: other logic for the same aim). OLD_D12K: d12kout no longer in eread
+  (rdr 2.5), a fwalk behind eread (reader3.c d12kname) puts out the constant of each NAME of a waiting label. OLD_D24
+  (both parts), OLD_D63, OLD_D13: no longer in optim and rmconv (optim 2.5); reader3.c optpre (in front of optim: the
+  swap of OLD_D13, the conversions the older rmconv keeps become PCONV) and optpost (behind optim: SCONV again, the mask
+  of OLD_D24 dropped). Each step: models 179/179/209/210/73/73/26 strictly equal, bench 153/132/212, both matrix
+  checks as in the table, checkall ALL OK (the vk, vc and v1 programs). OLD_D23 stays in optim 2.5.

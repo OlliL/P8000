@@ -443,9 +443,6 @@ eread()
 	if (p->in.op == LAB)
 		p->in.op = NAME;
 	if (p->in.op == FCON) {
-#ifdef OLD_D12K
-		d12kout(-p->tn.rval);
-#endif
 		p->in.op = NAME;
 		p->tn.lval = 0;
 	}
