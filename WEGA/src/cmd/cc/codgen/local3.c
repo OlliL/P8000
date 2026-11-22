@@ -73,7 +73,7 @@ extern void order();
 extern void oregput();
 extern long parmax;
 extern struct { struct sym *sym; int reg; } parmtab[];
-extern int plainicon();
+extern int nncon();
 extern void prlong();
 extern void psuffix();
 extern void rbusy();
@@ -685,7 +685,7 @@ zzzcode(p, c)
 		/* inc/dec/add/sub or the mnemonic of the operator, with the type suffix */
 		if (!tshape(z = getlr(p, 'R'), SCON))
 			cerror("bad Zi");
-		if (plainicon(z))
+		if (nncon(z))
 			z->tn.lval = geninc(p->in.op, z->tn.lval);
 		else
 			hopcode(p);
@@ -1836,7 +1836,7 @@ special(p, shape)
 	case SPECIAL + 3:
 		return p->tn.lval >= -256 && p->tn.lval <= 255;
 	case SPECIAL + 5:
-		if (!plainicon(p))
+		if (!nncon(p))
 			return 0;
 		/* FALLTHROUGH */
 	case SPECIAL + 4:

@@ -982,7 +982,7 @@
    "module": "comm2.c",
    "file": "comm2.c"
   },
-  "prline": {
+  "where": {
    "orig": "4:457e",
    "size_orig": 44,
    "status": "exact",
@@ -1057,7 +1057,7 @@
    "file": "comm2.c",
    "note": "the shift by one of a register variable goes through a register (ld r2,#1; neg r2; sdal)"
   },
-  "plainicon": {
+  "nncon": {
    "orig": "4:4712",
    "size_orig": 38,
    "status": "exact",

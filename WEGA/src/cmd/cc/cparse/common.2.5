@@ -274,7 +274,7 @@ bsize( t ) register t; { /* the size of a scalar type in bits */
 	cerror( "illegal bsize type: %%%0.2x\n", t );
 	}
 
-twords( t ) TWORD t; { /* the size of a scalar type in words */
+szty( t ) TWORD t; { /* the size of a scalar type in words */
 	switch( t ){
 	case LONG:
 	case FLOAT:
@@ -300,7 +300,7 @@ argsize( p ) register NODE *p; { /* the size of an argument in words */
 
 	if( p->in.op == STARG )
 		return( (tsize( STRTY, p->in.left->fn.cdim, p->in.left->fn.csiz ) + 7) / SZINT );
-	return( s1 = s2 = twords( p->in.type == FLOAT ? DOUBLE : p->in.type ) );
+	return( s1 = s2 = szty( p->in.type == FLOAT ? DOUBLE : p->in.type ) );
 	}
 
 where(c){ /* print the location of an error */

@@ -29,7 +29,7 @@ Own functions, read against the PCC ones whose name or place suggested a match (
 - The symbol table file and the data file: sym1.c `hash regfree copysym refid sinit sheader putrefsyms putsym putnames puttags putrefs sputc`, vinit1.c `resetmem putstrs`, code1.c `openfiles fnfile fltlab fhashv newsect sectfull sectadd`.
 - The intermediate file: code1.c `bstart bend bfend lineid`.
 - Arguments in registers: pftn1.c `argalloc setreg initpreg getpreg argdebug psavel`, trees1.c `argregs`.
-- Others: scan1.c `lxstart lxclass sfinit dimtinit savestr`, trees1.c `lcons tempnode`, optim1.c `treeeq rmconv notflt`, local1.c `cprint`, comm1.c `syserr bsize twords argsize tbytes ncopy tcopy getmem`, xdefs1.c `scnames`.
+- Others: scan1.c `lxstart lxclass sfinit dimtinit savestr`, trees1.c `lcons tempnode`, optim1.c `treeeq rmconv notflt`, local1.c `cprint`, comm1.c (common.2.5) `syserr bsize szty argsize tbytes ncopy tcopy getmem`, xdefs1.c `scnames`.
 
 PCC functions without a counterpart here: `andable aocode aoend bycode cendarg checkst ejobcode eprint fixdef fldty isitlong movestab outchar p2tree relook tprint`.
 

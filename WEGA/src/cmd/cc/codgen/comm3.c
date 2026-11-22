@@ -4,7 +4,7 @@
 #include "cg.h"
 #include "cg2.h"
 
-extern char *alloc();
+extern char *getmem();
 extern void allocinit();
 extern int argsize();
 extern void branch();
@@ -30,7 +30,7 @@ extern void ncopy();
 extern int nerrors;
 extern NODE node[];
 extern char *opst[];
-extern int plainicon();
+extern int nncon();
 extern int callreg();
 extern void rbusy();
 extern int revrel[];
@@ -40,7 +40,7 @@ extern struct rs *rsfree;
 extern void rsreturn();
 extern struct rs *rsuse;
 extern char *sbrk();
-extern void syserror();
+extern void syserr();
 extern int szty();
 extern NODE *talloc();
 extern int tbytes();

@@ -31,7 +31,7 @@ Own functions, no function of System III does the same (read in both texts where
 - Temporaries in registers: regs3.c `regtabinit tabfind tabclear fixtemp tmpcleanup tmpdump`.
 - Arguments in registers: order3.c `argscan argsort fixstarg argstrip argplace`, reader3.c `argprep`, allo3.c `freeparm rclass allocreg`.
 - Function entry and exit: local3.c `epilog regrestore fpinc prolog fpdec regsave`, wrt3.c `hdrout endrun endline structretcode fbegin`, lcl3.c `gswitch chk`.
-- Others: reader3.c `init delstrip`, local3.c `psuffix tsuffix lineout geninc ltypeop shincr prlong oregput icright canon2`, order3.c `orderadd lmuldiv`, comm3.c `syserror bsize prline tbytes plainicon alloc allocinit`, regs3.c `fixfld mapregs`, tr3.c `foldadd member`, optim3.c `isint`.
+- Others: reader3.c `init delstrip`, local3.c `psuffix tsuffix lineout geninc ltypeop shincr prlong oregput icright canon2`, order3.c `orderadd lmuldiv`, comm3.c (common.2.5) `syserr bsize where tbytes nncon getmem allocinit`, regs3.c `fixfld mapregs`, tr3.c `foldadd member`, optim3.c `isint`.
 - Candidates for a PCC name, shortened forms of System III functions, not renamed: tr3.c `makeblock` (`block`), `buildstar` (`buildtree`), optim3.c `treeeq convelim`.
 
 ## Forms that follow the bytes, not the System III text

@@ -156,7 +156,7 @@ clocal(p) NODE *p; {
 		settype:
 			l->in.type = ml;
 			}
-		else if( l->in.op == MUL && twords( ml ) - twords( m ) == 1 ) goto settype;	/* the product is long */
+		else if( l->in.op == MUL && szty( ml ) - szty( m ) == 1 ) goto settype;	/* the product is long */
 		else if( tbytes( ml ) != tbytes( m ) ) break;
 #ifdef SEG
 		else if( ISPTR(ml) ) break;

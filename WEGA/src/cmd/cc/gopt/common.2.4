@@ -27,7 +27,7 @@ extern char *arhigh[];
 extern char *taballoc();
 extern void tabfree();
 static void tfree1();
-static void prline();
+static void where();
 
 /* an error in the source program */
 void
@@ -35,7 +35,7 @@ uerror(s, a)
 	char *s;
 {
 	++nerrors;
-	prline('u');
+	where('u');
 	fprintf(stderr, s, a);
 	fprintf(stderr, "\n");
 	if (nerrors > NERRMAX)
@@ -47,7 +47,7 @@ int
 cerror(s, a, b, c)
 	char *s;
 {
-	prline('c');
+	where('c');
 	if (nerrors && nerrors <= NERRMAX)
 		fprintf(stderr, "cannot recover from earlier errors\n");
 	else {
@@ -62,7 +62,7 @@ void
 werror(s, a, b)
 	char *s;
 {
-	prline('w');
+	where('w');
 	fprintf(stderr, "warning: ");
 	fprintf(stderr, s, a, b);
 	fprintf(stderr, "\n");
@@ -264,7 +264,7 @@ argsize(p)
 
 /* the file and line of the intermediate file in front of an error message */
 static void
-prline(c)
+where(c)
 	int c;
 {
 	fprintf(stderr, "%s:%d: ", ifname, ifline);
@@ -350,7 +350,7 @@ ispow2(c)
 }
 
 int
-plainicon(p)
+nncon(p)
 	register NODE *p;
 {
 	return p->in.op == ICON && p->in.sname == 0 && p->tn.rval >= 0;

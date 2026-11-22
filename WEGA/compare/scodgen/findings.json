@@ -866,7 +866,7 @@
    "size_orig": 74,
    "status": "exact"
   },
-  "syserror": {
+  "syserr": {
    "file": "comm3.c",
    "orig": "0x8824",
    "size_orig": 36,
@@ -957,7 +957,7 @@
    "size_orig": 92,
    "status": "exact"
   },
-  "prline": {
+  "where": {
    "file": "comm3.c",
    "orig": "0x8c2c",
    "size_orig": 30,
@@ -1006,13 +1006,13 @@
    "size_orig": 78,
    "status": "exact"
   },
-  "plainicon": {
+  "nncon": {
    "file": "comm3.c",
    "orig": "0x8e20",
    "size_orig": 42,
    "status": "exact"
   },
-  "alloc": {
+  "getmem": {
    "file": "comm3.c",
    "orig": "0x8e4a",
    "size_orig": 124,

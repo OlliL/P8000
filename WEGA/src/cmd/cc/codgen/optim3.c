@@ -13,7 +13,7 @@ extern int ispow2();
 extern void ncopy();
 extern NODE node[];
 extern NODE *optim();
-extern int plainicon();
+extern int nncon();
 extern int revrel[];
 extern NODE *tcopy();
 extern void tfree();

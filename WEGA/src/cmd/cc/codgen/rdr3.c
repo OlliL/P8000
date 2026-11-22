@@ -4,7 +4,7 @@
 #include "cg.h"
 #include "cg2.h"
 
-extern char *alloc();
+extern char *getmem();
 extern char ascii[];
 extern NODE *bcon();
 extern NODE *buildstar();

@@ -217,7 +217,7 @@ readsyms(n, tab, kind)
 	struct sym *q;
 
 	if (n > 0) {
-		alloc(n * 22);
+		getmem(n * 22);
 		if ((x = fread(tab, 22, n, stfile)) != n)
 			printf("readst: error in reading symbol table file stfile\n");
 		for (k = n, q = tab; k > 0; k--, q = q + 1) {
@@ -484,7 +484,7 @@ mapnm(p)
 void
 mkhash()
 {
-	symtab0 = symtab = (struct sym *)alloc(0x42);
+	symtab0 = symtab = (struct sym *)getmem(0x42);
 	fpsym1 = (struct sym *)((char *)symtab + 0x16);
 	fpsym2 = (struct sym *)((char *)symtab + 0x2C);
 	symtab->nameoff = 0;
