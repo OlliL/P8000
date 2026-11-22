@@ -77,7 +77,7 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
     and types by number): codgen one table3.c (SCCS table3.c 2.2) that includes table3.nzcc.c or table3.szcc.c by
     `#ifdef SEG` (the SCCS names of the two tables, 2.4) instead of table3_codgen.c / table3_scodgen.c (and the same for
     hop_*.c if they belong to it); the entries written with the macros of the shapes, cookies, needs and rewrites as in
-    the Plexus pcc.d/table.c with pcc.d/mip/manifest (read for ideas, never copied); then the rest of the passes searched
+    the Plexus pcc.d/table.c with pcc.d/mip/manifest (SysIII the base, Plexus the second; both may be copied from); then the rest of the passes searched
     for magic numbers that should be defines (op numbers such as 110 for SCONV, the types 5 and 15, 0x30, 0x1000, ...).
     Every step byte-identical (shipped, models, corpora).
     State 2026-11-22: codgen done (table3.c with table3.nzcc.c/szcc.c, the tables and the modules with names: ops,

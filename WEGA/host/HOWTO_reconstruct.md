@@ -63,7 +63,7 @@ Never in phase A: change a compiler pass or a switch, change cas, edit a shipped
       unchanged to the same place in the V7 layout: a single file to `src/cmd/NAME.c` (its rules in `src/cmd/Makefile`: SIMPLE,
       `ranlib`, `size` are the pattern), a directory to `src/cmd/NAME/` with its own Makefile (`dc/Makefile` is the pattern).
       A source not below `cmd` is only named. What WEGA changed against System III goes later to `compare/NAME/SYSIII.md`.
-      For what is specific to the Z8000 the Plexus sources (`tmp/plexus`) may be read, not copied. Without a source: step 3.
+      For what is specific to the Z8000 the Plexus sources (`tmp/plexus`) are the second base; they may be copied from too (owner 2026-11-22). Without a source: step 3.
    3. **Dating.** The line of `OLDCC_DATES.md`, and the compiler of that time (`OLDCC.md`, section 2): D1 tight = v0 (1982),
       slots = v1 (01/83 .. 07/83, neighbours v1r, v1q), loose with the libc of 09/83 = the shipped cc (scc). The script names the
       candidate; the main session decides, measuring the neighbours too ("Evidence rules").

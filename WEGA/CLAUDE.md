@@ -20,7 +20,7 @@ active) and only the file of the active increment; `host/KNOWLEDGE.md` (facts) w
   counts on the way); running notes, measurements, attempts and what went away go as dated entries to `host/OLDCC_LOG.md`. Other documents do not repeat this knowledge.
 - Notes on findings only in the program's `findings.json`.
 - Byte identity with the original has priority over fixing a bug found in the original: rebuild the bug first, record it in the quirks table, and fix it only when the owner says so.
-- SYSIII sources (tmp/sys3) can and should be the base for reconstructing the WEGA sources. They are allowed to be copied from. The Plexus sources can be consulted for Z8000 specific stuff.
+- SYSIII sources (tmp/sys3) can and should be the base for reconstructing the WEGA sources. They are allowed to be copied from. The Plexus sources (tmp/plexus) are the second base, above all for what is specific to the Z8000; they may be copied from too (owner 2026-11-22).
   For a library without a System III source, 2.11BSD and 4.4BSD-Lite (see Local directories) may be copied from too (owner 2026-11-18).
 - V7 layout in `src/cmd`, except `src/cmd/cc`: a tree of the driver, the passes and the units they share (`mip/`, `z8000/`), see its README.md. Makefiles must also work with WEGA's native `make`:
   use `=` not `?=`, `cd dir ; $(MAKE)`.
@@ -46,7 +46,7 @@ active) and only the file of the active increment; `host/KNOWLEDGE.md` (facts) w
 | `/home/olivleh1/git/P8000/tmp/wega31_books`          | WEGA manuals and handbooks (scans, OCR text)         | lookup                                              |
 | `/home/olivleh1/git/P8000/tmp/cpu_docs`              | Z8000/Z8001/Z8002 CPU manuals (PDF + OCR text)       | instruction sets, formats                           |
 | `/home/olivleh1/git/P8000/tmp/wega31_kernel`         | original kernel objects / libraries                  | compare, disassemble                                |
-| `/home/olivleh1/git/P8000/tmp/plexus`                | Plexus sources, private reference only               | read for ideas, never copy                          |
+| `/home/olivleh1/git/P8000/tmp/plexus`                | Plexus sources                                       | second base after SYS III; may be copied from       |
 | `/home/olivleh1/git/P8000/tmp/sys3`                  | SYS III sources                                      | use as a starting point for source reconstruction   |
 | `/home/olivleh1/git/P8000/tmp/wega31_disks`          | WEGA 3.1 floppy images and raw conversions           | extract originals                                   |
 | `/mnt/users/olivleh1/BACKUPs/Operating_Systems`  | 2.11BSD and 4.4BSD-Lite trees                        | library sources where System III has none           |
