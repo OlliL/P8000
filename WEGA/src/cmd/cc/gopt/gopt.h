@@ -14,7 +14,7 @@
 #define UAND	16
 
 
-#define NTREE	350		/* nodes of the pool: node[0] .. node[NTREE - 1] */
+/* TREESZ (manifest): 350 nodes in the pool, node[0] .. node[TREESZ - 1] */
 
 
 union ndu {

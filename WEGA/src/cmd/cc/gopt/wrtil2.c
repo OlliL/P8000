@@ -10,8 +10,8 @@ extern NODE *talloc();
 extern int qflag, ntl;
 extern int tl[];
 extern char ctpos[], ctneg[];
-extern int ifline;
-extern char ifname[];
+extern int lineno;
+extern char ftitle[];
 extern int *altab;
 extern long constbl[];
 extern struct { int rv; int d[4]; } fconsttbl[];
@@ -68,7 +68,7 @@ writeil()
 		regsym[i] = 0;
 	tmpoff = 0;
 	for (q = qhead; q; q = q->next) {
-		ifline = q->pos.line;
+		lineno = q->pos.line;
 		switch (q->op) {
 		case 0x2e:
 			printf("{%d\t%ld\t", v00, vb94);
@@ -531,7 +531,7 @@ mkleaf(a)
 		q->tn.temp = betatbl[a->w4].p6;
 		break;
 	case 3:
-		for (r = node; r <= &node[NTREE - 1]; ++r) {
+		for (r = node; r <= &node[TREESZ - 1]; ++r) {
 			if (r->in.rall == a->w4 && r->in.op != FREE) {
 				if (qflag > 4)
 					printf("matched temp %d with op %d\n", a->w4, r->in.op);
@@ -583,7 +583,7 @@ cleartrees()
 {
 	NODE *p, *q, *n1, *n2;
 
-	for (p = node; p <= &node[NTREE - 1]; ++p) {
+	for (p = node; p <= &node[TREESZ - 1]; ++p) {
 		if (p->in.op != FREE && p->in.op != TEMP && p->in.rall > 0 && ctpos[p->in.rall] > 0) {
 			if (qflag > 2)
 				printf("cleartrees: emitting tree\n");
@@ -599,13 +599,13 @@ cleartrees()
 			n2->tn.rval = p->in.rall;
 			n2->tn.lval = ctpos[p->in.rall];
 			n1->in.left = n2;
-			for (q = node; q <= &node[NTREE - 1]; ++q) {
+			for (q = node; q <= &node[TREESZ - 1]; ++q) {
 				if (q->in.op == TEMP && p->in.rall == q->in.rall) {
 					n2->tn.temp = q->tn.temp;
 					break;
 				}
 			}
-			if (q > &node[NTREE - 1]) {
+			if (q > &node[TREESZ - 1]) {
 				if (qflag > 2)
 					printf("// assigning T%d to offset %d\n", p->in.rall, tmpoff);
 				n2->tn.temp = tmpoff;
@@ -617,7 +617,7 @@ cleartrees()
 			n1->in.op = FREE;
 		}
 	}
-	for (p = node; p <= &node[NTREE - 1]; ++p)
+	for (p = node; p <= &node[TREESZ - 1]; ++p)
 		if (p->in.op == TEMP && p->in.rall == 0)
 			p->in.op == FREE;
 }
@@ -629,7 +629,7 @@ wrline(p)
 {
 	if (p->in.op != FREE) {
 		putchar('.');
-		printf("%d\t%s\n", ifline, ifname);
+		printf("%d\t%s\n", lineno, ftitle);
 		wrtree(p);
 	}
 }
@@ -658,7 +658,7 @@ wrtree(p)
 #ifdef SHIPPED
 		/* rval overlays in.right: the original prints the segment word of the node it points to (node[] is in its
 		   segment 8: 0x8800); the shipped link puts node[] elsewhere (KNOWLEDGE.md, quirks) */
-		else if (kind != LTYPE && p->in.right >= node && p->in.right < &node[NTREE])
+		else if (kind != LTYPE && p->in.right >= node && p->in.right < &node[TREESZ])
 			printf("%d\t", -30720);
 #endif
 		else

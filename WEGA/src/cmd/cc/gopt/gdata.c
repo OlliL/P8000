@@ -27,7 +27,7 @@ char ifpos[4];
 char lastq[4];
 char s0b5e[2];
 char nfconst[2];
-char ifline[2];
+char lineno[2];
 char qtail[4];
 char arhigh[44];
 char vb94[4];

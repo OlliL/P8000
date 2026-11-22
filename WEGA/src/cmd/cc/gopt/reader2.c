@@ -7,8 +7,8 @@ static char sccsid[] = "@[$]reader2.c\t1.5  03/04/83 16:01:42 Copr. 1981 87wega3
 
 int s0078 = 0;
 
-extern char ifname[];
-extern int ifline;
+extern char ftitle[];
+extern int lineno;
 extern struct pos curpos;
 extern FILE *infile;
 extern long ifpos;
@@ -139,10 +139,10 @@ main(argc, argv)
 			nlcheck();
 			break;
 		case '.':
-			ifline = rdin(10);
-			curpos.line = ifline;
-			curpos.name = ifname;
-			q = ifname;
+			lineno = rdin(10);
+			curpos.line = lineno;
+			curpos.name = ftitle;
+			q = ftitle;
 			for (;;) {
 				if ((*q = getc(infile)) == '\n')
 					break;

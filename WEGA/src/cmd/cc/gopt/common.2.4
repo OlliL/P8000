@@ -4,8 +4,8 @@
  */
 static char commsccs[] = "@[$]common\t2.4  03/04/83 15:24:28 Copr. 1981 87wega3.2.";
 
-extern char ifname[];
-extern int ifline;
+extern char ftitle[];
+extern int lineno;
 extern NODE node[];
 extern NODE *lastfree;
 
@@ -74,7 +74,7 @@ tinit()
 {
 	NODE *p;
 
-	for (p = node; p <= &node[NTREE - 1]; ++p)
+	for (p = node; p <= &node[TREESZ - 1]; ++p)
 		p->in.op = FREE;
 	lastfree = node;
 }
@@ -87,13 +87,13 @@ talloc()
 	int x;
 
 	q = lastfree;
-	for (p = q == &node[NTREE - 1] ? node : q + 1; p != q; p = p == &node[NTREE - 1] ? node : p + 1)
+	for (p = q == &node[TREESZ - 1] ? node : q + 1; p != q; p = p == &node[TREESZ - 1] ? node : p + 1)
 		if (p->in.op == FREE) {
 			*p = nodinit;
 			return lastfree = p;
 		}
 	q = lastfree;
-	for (p = q == &node[NTREE - 1] ? node : q + 1; p != q; p = p == &node[NTREE - 1] ? node : p + 1)
+	for (p = q == &node[TREESZ - 1] ? node : q + 1; p != q; p = p == &node[TREESZ - 1] ? node : p + 1)
 		printf("talloc: opcode = %d\n", p->in.op);
 	cerror("out of tree space; simplify expression");
 }
@@ -105,7 +105,7 @@ tcheck()
 	NODE *p;
 
 	if (!nerrors)
-		for (p = node; p <= &node[NTREE - 1]; ++p)
+		for (p = node; p <= &node[TREESZ - 1]; ++p)
 			if (p->in.op != FREE)
 				cerror("wasted space: %%%x(%d)", p, p->in.op);
 	tinit();
@@ -267,7 +267,7 @@ static void
 where(c)
 	int c;
 {
-	fprintf(stderr, "%s:%d: ", ifname, ifline);
+	fprintf(stderr, "%s:%d: ", ftitle, lineno);
 }
 
 /* the size in bytes of a type: 1, 2 or 4 */
