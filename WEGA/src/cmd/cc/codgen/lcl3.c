@@ -39,9 +39,9 @@ gswitch(p)
 		printf("\tjpr\tugt,L%d\n", dlab);
 		if (reg == 0) {
 			save = reg;
-			reg = getreg(2, -1, 0x1000, 0);
-			rmove(reg, save, 3);
-			rfree(save, 3);
+			reg = getreg(RCWORD, -1, 0x1000, 0);
+			rmove(reg, save, SHORT);
+			rfree(save, SHORT);
 		}
 #ifdef OLD_D6J
 		if ((reg & ~1) != 0)
@@ -49,16 +49,16 @@ gswitch(p)
 		else
 #endif
 		{
-		a6 = getreg(3, -1, 0x1000, 0);
+		a6 = getreg(RCPAIR, -1, 0x1000, 0);
 		if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
 			save = a6;
-			a6 = getreg(3, -1, 0x1000, 0);
+			a6 = getreg(RCPAIR, -1, 0x1000, 0);
 			if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
 				t2 = a6;
-				a6 = getreg(3, -1, 0x1000, 0);
-				rfree(t2, 5);
+				a6 = getreg(RCPAIR, -1, 0x1000, 0);
+				rfree(t2, LONG);
 			}
-			rfree(save, 5);
+			rfree(save, LONG);
 		}
 		}
 		printf("\trl\t%s,#2\n", rnames[reg]);
@@ -69,18 +69,18 @@ gswitch(p)
 	if (l->in.op == SEARCH) {
 		cnt = (int)l->in.right->tn.lval;
 		tlab = l->in.right->tn.rval;
-		a6 = getreg(3, -1, 0x1000, 0);
+		a6 = getreg(RCPAIR, -1, 0x1000, 0);
 		if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
 			t = a6;
-			a6 = getreg(3, -1, 0x1000, 0);
+			a6 = getreg(RCPAIR, -1, 0x1000, 0);
 			if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
 				t2 = a6;
-				a6 = getreg(3, -1, 0x1000, 0);
-				rfree(t2, 5);
+				a6 = getreg(RCPAIR, -1, 0x1000, 0);
+				rfree(t2, LONG);
 			}
-			rfree(t, 5);
+			rfree(t, LONG);
 		}
-		rb = getreg(2, -1, 0x1000, 0);
+		rb = getreg(RCWORD, -1, 0x1000, 0);
 #ifdef OLD_D6T
 		/* the old scc: the count neither in the pair of the value (it takes the target) nor in rr0 */
 		if (((rb | 1) == (reg | 1) || rb <= 1)) {
@@ -88,21 +88,21 @@ gswitch(p)
 
 			while (((rb | 1) == (reg | 1) || rb <= 1) && nb < 8) {
 				bad[nb++] = rb;
-				rb = getreg(2, -1, 0x1000, 0);
+				rb = getreg(RCWORD, -1, 0x1000, 0);
 			}
 			while (nb > 0)
-				rfree(bad[--nb], 3);
+				rfree(bad[--nb], SHORT);
 		}
 #else
 		if (reg == rb || rb == 0) {
 			t = rb;
-			rb = getreg(2, -1, 0x1000, 0);
+			rb = getreg(RCWORD, -1, 0x1000, 0);
 			if (reg == rb || rb == 0) {
 				t2 = rb;
-				rb = getreg(2, -1, 0x1000, 0);
-				rfree(t2, 3);
+				rb = getreg(RCWORD, -1, 0x1000, 0);
+				rfree(t2, SHORT);
 			}
-			rfree(t, 3);
+			rfree(t, SHORT);
 		}
 #endif
 		printf("\tldl\tr%s,#L%d\n", rnames[a6], tlab);
@@ -123,9 +123,9 @@ gswitch(p)
 		printf("\tldl\tr%s,L%d+%d(%s)\n", rnames[a6], tab, (cnt - 1) << 2, rnames[rb]);
 		printf("\tjp\t@r%s\n", rnames[a6]);
 #endif
-		rfree(a6, 5);
-		rfree(rb, 3);
-		rfree(reg, 3);
+		rfree(a6, LONG);
+		rfree(rb, SHORT);
+		rfree(reg, SHORT);
 	}
 }
 #else
@@ -156,9 +156,9 @@ gswitch(p)
 		printf("\tjpr\tugt,L%d\n", dlab);
 		if (reg == 0) {
 			save = reg;
-			reg = getreg(2, -1, 0x1000, 0);
-			rmove(reg, save, 3);
-			rfree(save, 3);
+			reg = getreg(RCWORD, -1, 0x1000, 0);
+			rmove(reg, save, SHORT);
+			rfree(save, SHORT);
 		}
 		printf("\trl\t%s,#1\n", rnames[reg]);
 		printf("\tld\t%s,L%d(%s)\n", rnames[reg], tab, rnames[reg]);
@@ -170,28 +170,28 @@ gswitch(p)
 	tlab = l->in.right->tn.rval;
 	if (reg == 0) {
 		t = reg;
-		reg = getreg(2, -1, 0x1000, 0);
-		rmove(reg, t, 3);
-		rfree(t, 3);
+		reg = getreg(RCWORD, -1, 0x1000, 0);
+		rmove(reg, t, SHORT);
+		rfree(t, SHORT);
 	}
 #ifdef OLD_D2T
-	if ((tn = rfind(reg, 2)) != 0)	/* the register of the switch value is in use here (OLD_D2T frees it in between) */
+	if ((tn = rfind(reg, RCWORD)) != 0)	/* the register of the switch value is in use here (OLD_D2T frees it in between) */
 		tn->busy++;
 	else
-		getreg(2, reg, 0x1000, 0);
+		getreg(RCWORD, reg, 0x1000, 0);
 #endif
-	ra = getreg(2, -1, 0x1000, 0);
+	ra = getreg(RCWORD, -1, 0x1000, 0);
 	if (reg == ra || ra == 0) {
 		t = ra;
-		ra = getreg(2, -1, 0x1000, 0);
+		ra = getreg(RCWORD, -1, 0x1000, 0);
 		if (reg == ra || ra == 0) {
 			t2 = ra;
-			ra = getreg(2, -1, 0x1000, 0);
-			rfree(t2, 3);
+			ra = getreg(RCWORD, -1, 0x1000, 0);
+			rfree(t2, SHORT);
 		}
-		rfree(t, 3);
+		rfree(t, SHORT);
 	}
-	rb = getreg(2, -1, 0x1000, 0);
+	rb = getreg(RCWORD, -1, 0x1000, 0);
 #ifdef OLD_D6R
 #define D6RBAD(r)	(reg == (r) || (r) <= 1)	/* v0: the count of cpir in neither half of rr0 */
 #else
@@ -199,13 +199,13 @@ gswitch(p)
 #endif
 	if (D6RBAD(rb)) {
 		t = rb;
-		rb = getreg(2, -1, 0x1000, 0);
+		rb = getreg(RCWORD, -1, 0x1000, 0);
 		if (D6RBAD(rb)) {
 			t2 = rb;
-			rb = getreg(2, -1, 0x1000, 0);
-			rfree(t2, 3);
+			rb = getreg(RCWORD, -1, 0x1000, 0);
+			rfree(t2, SHORT);
 		}
-		rfree(t, 3);
+		rfree(t, SHORT);
 	}
 	printf("\tld\t%s,#L%d\n", rnames[ra], tlab);
 	printf("\tld\t%s,#%d\n", rnames[rb], cnt);
@@ -220,9 +220,9 @@ gswitch(p)
 	printf("\tld\t%s,L%d+%d(%s)\n", rnames[reg], tab, (cnt - 1) * 2, rnames[rb]);
 #endif
 	printf("\tjp\t@%s\n", rnames[reg]);
-	rfree(ra, 3);
-	rfree(rb, 3);
-	rfree(reg, 3);
+	rfree(ra, SHORT);
+	rfree(rb, SHORT);
+	rfree(reg, SHORT);
 	}
 }
 #endif

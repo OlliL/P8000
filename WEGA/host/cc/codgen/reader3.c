@@ -512,14 +512,14 @@ delay(NODE *p)
 #else
 			printf("\tldl\t~L1+%ld(fp),rr2\n", off);
 #endif
-			rfree(2, 5);
+			rfree(2, LONG);
 		} else {
 #ifdef SEG
 			printf("\tld\t_stkseg+~L1+%ld(fp),r2\n", off);
 #else
 			printf("\tld\t~L1+%ld(fp),r2\n", off);
 #endif
-			rfree(2, 4);
+			rfree(2, INT);
 		}
 	}
 	if (ndelay > 0)
@@ -794,7 +794,7 @@ again:
 			register struct rs *n;
 
 			for (n = rsuse; n; n = n->next)
-				if (n->cls <= 4 && n->sym && n->sym->sclass == PARAM && n->reg == (p->in.rall & 0xff))
+				if (n->cls <= RCFLOAT && n->sym && n->sym->sclass == PARAM && n->reg == (p->in.rall & 0xff))
 					n->sym = 0;
 		}
 #endif

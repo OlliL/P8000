@@ -34,9 +34,9 @@ static char sccsid[] __attribute__((unused)) = "@[$]regs3.c\t2.5  10/06/83 10:55
 
 /* r4 and r5 hold values that are still needed: move them to other registers */
 #define SAVEREGS \
-	n = rfind(4, 3); \
+	n = rfind(4, RCPAIR); \
 	if (n && n->busy > 0) { \
-		r = getreg(3, -1, 0x1000, p->in.sname); \
+		r = getreg(RCPAIR, -1, 0x1000, p->in.sname); \
 		if (r < 0) \
 			cerror("regfile: case A4UW can't free rr4 on %s\n", opst[p->in.op]); \
 		rmode++; \
@@ -44,40 +44,40 @@ static char sccsid[] __attribute__((unused)) = "@[$]regs3.c\t2.5  10/06/83 10:55
 		saveorig[nsave] = 4; \
 		savecls[nsave] = 3; \
 		nsave++; \
-		rfind(r, 3)->busy = 1; \
-		rmove(r, 4, 5); \
+		rfind(r, RCPAIR)->busy = 1; \
+		rmove(r, 4, LONG); \
 		SUBST(4); \
 	} else { \
-		n = rfind(4, 2); \
+		n = rfind(4, RCWORD); \
 		if (n && n->busy > 0) { \
-			r = getreg(2, -1, 0x1000, p->in.sname); \
+			r = getreg(RCWORD, -1, 0x1000, p->in.sname); \
 			if (r < 0) \
 				cerror("regfile: case A4UW can't free r4 on %s\n", opst[p->in.op]); \
 			savereg[nsave] = r; \
 			saveorig[nsave] = 4; \
 			savecls[nsave] = 2; \
 			nsave++; \
-			rfind(r, 2)->busy = 1; \
-			rmove(r, 4, 4); \
+			rfind(r, RCWORD)->busy = 1; \
+			rmove(r, 4, INT); \
 			SUBST(4); \
 		} \
-		n = rfind(5, 2); \
+		n = rfind(5, RCWORD); \
 		if (n && n->busy > 0) { \
-			r = getreg(2, -1, 0x1000, p->in.sname); \
+			r = getreg(RCWORD, -1, 0x1000, p->in.sname); \
 			if (r < 0) \
 				cerror("regfile: case A4UW can't free r5 on %s\n", opst[p->in.op]); \
 			if (r == 4) { \
-				r = getreg(2, -1, 0x1000, p->in.sname); \
+				r = getreg(RCWORD, -1, 0x1000, p->in.sname); \
 				if (r < 0) \
 					cerror("regfile: case A4UW can't free r5 on %s\n", opst[p->in.op]); \
-				rfree(4, 4); \
+				rfree(4, INT); \
 			} \
 			savereg[nsave] = r; \
 			saveorig[nsave] = 5; \
 			savecls[nsave] = 2; \
 			nsave++; \
-			rfind(r, 2)->busy = 1; \
-			rmove(r, 5, 4); \
+			rfind(r, RCWORD)->busy = 1; \
+			rmove(r, 5, INT); \
 			SUBST(5); \
 		} \
 	} \
@@ -443,9 +443,9 @@ rfreeall(int flag)
 			continue;
 #ifdef OLD_D3K
 #ifdef OLD_D3KC
-		if (flag == 2 && n->cls == 2 && n->sym && n->sym->sclass == PARAM)
+		if (flag == 2 && n->cls == RCWORD && n->sym && n->sym->sclass == PARAM)
 #else
-		if (flag == 2 && n->cls <= 3 && n->sym && n->sym->sclass == PARAM)
+		if (flag == 2 && n->cls <= RCPAIR && n->sym && n->sym->sclass == PARAM)
 #endif
 			continue;
 #endif
@@ -478,10 +478,10 @@ rnassign(NODE *p1, NODE *p2)
 	if (a == 0)
 		return;
 	switch (a->cls) {
-	case 5:
-	case 6:
-	case 7:
-	case 8:
+	case RCVBYTE:
+	case RCVWORD:
+	case RCVPAIR:
+	case RCVFLOAT:
 		return;
 	}
 	if (a->kind == 6)
@@ -842,10 +842,10 @@ regreset(int flag)
 	for (i = 8; i <= 14; i++)
 #endif
 		if (rsuse)
-			rsreturn(9, i);
+			rsreturn(RCANY, i);
 	for (i = 20; i <= 23; i++)
 		if (rsuse)
-			rsreturn(9, i);
+			rsreturn(RCANY, i);
 }
 
 /* command R: a variable (b > 0: by its tag, else a temporary) is placed in register a */
@@ -923,7 +923,7 @@ scmd(int n)
 		off = s->soffset;
 		reg = s->sbyte5;
 		i = reg - 7;
-		if (regvar[i].rcls != 3)
+		if (regvar[i].rcls != STATIC)
 			off = off / 8;
 		tmp = s->sclass;
 		s->sclass = regvar[i].rcls;
@@ -939,20 +939,20 @@ scmd(int n)
 	printf("/* rvstore */\n");
 #ifdef SEG
 	if (ISPTR(t))
-		t = 5;
+		t = LONG;
 #endif
 	switch (t) {
-	case 5:
+	case LONG:
 		printf("\tldl\t");
 		memname(s, off);
 		printf(",rr%d\n", reg);
 		break;
-	case 6:
+	case FLOAT:
 		printf("\tflds\t");
 		memname(s, off);
 		printf(",f%d\n", reg - 16);
 		break;
-	case 7:
+	case DOUBLE:
 		printf("\tfldd\t");
 		memname(s, off);
 		printf(",f%d\n", reg - 16);
@@ -993,22 +993,22 @@ tcmd(int n)
 	printf("/* rvrestore */\n");
 #ifdef SEG
 	if (ISPTR(t))
-		t = 5;
+		t = LONG;
 #endif
 	switch (t) {
-	case 5:
+	case LONG:
 		printf("\tldl\t");
 		printf("rr%d,", reg);
 		memname(s, off);
 		putchar('\n');
 		break;
-	case 6:
+	case FLOAT:
 		printf("\tflds\t");
 		printf("f%d,", reg - 16);
 		memname(s, off);
 		putchar('\n');
 		break;
-	case 7:
+	case DOUBLE:
 		printf("\tfldd\t");
 		printf("f%d,", reg - 16);
 		memname(s, off);

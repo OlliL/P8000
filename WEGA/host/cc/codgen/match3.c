@@ -365,7 +365,7 @@ cand:
 		    !(p->in.rall & MUSTDO)) {	/* (not when the value goes to a register wanted for it: an argument) */
 			register int nr;
 
-			nr = getreg(3, -1, 0x1000, (struct sym *)0);
+			nr = getreg(RCPAIR, -1, 0x1000, (struct sym *)0);
 			if (nr >= 0 && nr != p->tn.rval) {
 				rmove(nr, p->tn.rval, p->in.type);
 				rfree(nr, p->in.type);

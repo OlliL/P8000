@@ -348,15 +348,15 @@ regargs(tot)
 #endif
 		n = rfind(reg, cls);
 #ifdef OLD_D3J
-		if ((!n || n->sym != s || (n->flags & 0x4000)) && cls < 4) {
+		if ((!n || n->sym != s || (n->flags & 0x4000)) && cls < RCFLOAT) {
 #else
-		if ((!n || n->sym != s) && cls < 4) {
+		if ((!n || n->sym != s) && cls < RCFLOAT) {
 #endif
 			int k;
 
 			if (lo > reg)
 				lo = reg;
-			if (cls == 3)
+			if (cls == RCPAIR)
 				k = 1;
 			else
 				k = 0;
@@ -367,7 +367,7 @@ regargs(tot)
 				if (t & 1)
 					t--;
 			}
-		} else if (cls == 4) {
+		} else if (cls == RCFLOAT) {
 			char *mn;
 
 			if (s->stype == FLOAT)
@@ -663,7 +663,7 @@ zzzcode(p, c)
 			int m, k;
 
 			nsave--;
-			x = savecls[nsave] == 3 ? 5 : 4;
+			x = savecls[nsave] == RCPAIR ? LONG : INT;
 			m = rmode;
 			k = rlmode;
 			if (x == 5)
@@ -994,7 +994,7 @@ zzzcode(p, c)
 			rfreeall(0);
 			p->tn.rval++;
 			p->in.type = (int)u;
-			if (p->tn.rval <= 7 && getreg(2, p->tn.rval, 0x1000, 0) != p->tn.rval)
+			if (p->tn.rval <= 7 && getreg(RCWORD, p->tn.rval, 0x1000, 0) != p->tn.rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 		frame:
@@ -1054,7 +1054,7 @@ zzzcode(p, c)
 			rfreeall(0);
 			p->tn.rval++;
 			p->in.type = (int)u;
-			if (p->tn.rval <= 7 && getreg(2, p->tn.rval, 0x1000, 0) != p->tn.rval)
+			if (p->tn.rval <= 7 && getreg(RCWORD, p->tn.rval, 0x1000, 0) != p->tn.rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 #endif
@@ -1074,7 +1074,7 @@ zzzcode(p, c)
 			case 5:
 			case 6:
 			case 7:
-				rsreturn(9, a->reg);
+				rsreturn(RCANY, a->reg);
 			}
 		}
 		return;

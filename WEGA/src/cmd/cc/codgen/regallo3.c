@@ -108,36 +108,36 @@ rsbuild()
 #endif
 #ifdef OLD_D2W
 	for (r = 2; r <= 6; n = n->next, r += 2) {	/* the pairs in the order of rweight: rr2 rr0 rr4 rr6 */
-		n->cls = 3;
+		n->cls = RCPAIR;
 		n->reg = r == 4 ? 0 : r == 6 ? 4 : r;
 	}
-	n->cls = 3;
+	n->cls = RCPAIR;
 	n->reg = 6;
 	n = n->next;
 #else
 	for (r = 2; r <= 6; n = n->next, r += 2) {
-		n->cls = 3;
+		n->cls = RCPAIR;
 		n->reg = r;
 	}
-	n->cls = 3;
+	n->cls = RCPAIR;
 	n->reg = 0;
 	n = n->next;
 #endif
 	for (r = 16; r <= 19; r++, last = n, n = n->next) {
-		n->cls = 4;
+		n->cls = RCFLOAT;
 		n->reg = r;
 	}
 #ifndef SEG
-	n->cls = 6;
+	n->cls = RCVWORD;
 	n->reg = 14;
 	n = n->next;
 #endif
 	for (r = 8; r <= 12; r += 2, n = n->next) {
-		n->cls = 7;
+		n->cls = RCVPAIR;
 		n->reg = r;
 	}
 	for (r = 20; r <= 23; r++, last = n, n = n->next) {
-		n->cls = 8;
+		n->cls = RCVFLOAT;
 		n->reg = r;
 	}
 	last->next = 0;
@@ -184,15 +184,15 @@ newnode(n, k)
 	m = rspool;
 	rspool = rspool->next;
 	switch (n->cls) {
-	case 3:
-	case 7:
+	case RCPAIR:
+	case RCVPAIR:
 		m->reg = n->reg;
 		n->reg++;
 		n->cls = m->cls = k;
 	rt:
 		return m;
-	case 2:
-	case 6:
+	case RCWORD:
+	case RCVWORD:
 		m->reg = n->reg = n->reg * 2;		/* word register r: bytes 2r and 2r+1 */
 		n->reg++;
 		n->cls = m->cls = k;
@@ -241,9 +241,9 @@ rsinsert(n, mode)
 		}
 		if (a == 0)
 			return;
-		if (n == a && n->cls != 2)
+		if (n == a && n->cls != RCWORD)
 			return;
-		if (n->cls == 2) {
+		if (n->cls == RCWORD) {
 			key = rweight[n->reg];
 			while (a && n->cls == a->cls && key >= rweight[a->reg]) {
 				b = a;
@@ -261,7 +261,7 @@ rsinsert(n, mode)
 			b = a;
 			a = a->next;
 		}
-		if (n->cls == 3) {
+		if (n->cls == RCPAIR) {
 			key = rweight[n->reg];
 			while (a && n->cls == a->cls && key > rweight[a->reg]) {
 				b = a;
@@ -306,71 +306,71 @@ roverlap(cls, reg, n)
 	register int q;
 
 	switch (cls) {
-	case 1:
-		if (n->cls == 1) {
+	case RCBYTE:
+		if (n->cls == RCBYTE) {
 			if (reg == n->reg)
 				return 1;
 			return 0;
 		}
 		q = reg / 2;
-		if (n->cls == 3 && q - 1 == n->reg)
+		if (n->cls == RCPAIR && q - 1 == n->reg)
 			return 1;
 		if (q == n->reg)
 			return 1;
 		return 0;
-	case 6:
-		if (n->cls == 6) {
+	case RCVWORD:
+		if (n->cls == RCVWORD) {
 			if (reg == n->reg)
 				return 1;
 			return 0;
 		}
-		if (n->cls == 7) {
+		if (n->cls == RCVPAIR) {
 			if (reg == n->reg || reg - 1 == n->reg)
 				return 1;
 			return 0;
 		}
 		break;
-	case 2:
-		if (n->cls == 1) {
+	case RCWORD:
+		if (n->cls == RCBYTE) {
 			if (reg == n->reg / 2)
 				return 1;
 			return 0;
 		}
-		if (n->cls == 2) {
+		if (n->cls == RCWORD) {
 			if (reg == n->reg)
 				return 1;
 			return 0;
 		}
-		if (n->cls == 3) {
+		if (n->cls == RCPAIR) {
 			if (reg == n->reg || reg - 1 == n->reg)
 				return 1;
 			return 0;
 		}
 		break;
-	case 7:
-		if (n->cls == 6) {
+	case RCVPAIR:
+		if (n->cls == RCVWORD) {
 			if (reg == n->reg || reg + 1 == n->reg)
 				return 1;
 			return 0;
 		}
-		if (n->cls == 7) {
+		if (n->cls == RCVPAIR) {
 			if (reg == n->reg)
 				return 1;
 			return 0;
 		}
 		/* falls through */
-	case 3:
-		if (n->cls == 1) {
+	case RCPAIR:
+		if (n->cls == RCBYTE) {
 			if (n->reg / 2 == reg || n->reg / 2 == reg + 1)
 				return 1;
 			return 0;
 		}
-		if (n->cls == 2) {
+		if (n->cls == RCWORD) {
 			if (reg == n->reg || reg + 1 == n->reg)
 				return 1;
 			return 0;
 		}
-		if (n->cls == 3) {
+		if (n->cls == RCPAIR) {
 			if (reg == n->reg)
 				return 1;
 			return 0;
@@ -413,21 +413,21 @@ regjam(cls, reg, flag, sym)
 		struct rs *w;
 
 		for (prev = n = rsuse; n; prev = n, n = n->next) {
-			if (!(n->cls <= 3 || (n->cls == 7 && cls == 6)) || n->busy > 0)
+			if (!(n->cls <= RCPAIR || (n->cls == RCVPAIR && cls == RCVWORD)) || n->busy > 0)
 				continue;
 			switch (cls) {
-			case 1:
+			case RCBYTE:
 				if (reg != -1) {
-					if (n->cls == 3) {
-						if (!roverlap(1, reg, n))
+					if (n->cls == RCPAIR) {
+						if (!roverlap(RCBYTE, reg, n))
 							continue;
-					} else if (n->cls == 2) {
-						if (!roverlap(1, reg))
+					} else if (n->cls == RCWORD) {
+						if (!roverlap(RCBYTE, reg))
 							continue;
 					}
 				}
-				if (n->cls == 3) {
-					w = newnode(n, 2);
+				if (n->cls == RCPAIR) {
+					w = newnode(n, RCWORD);
 					if (reg != -1 && reg / 2 == n->reg) {
 						n->reg--;
 						w->reg++;
@@ -435,27 +435,27 @@ regjam(cls, reg, flag, sym)
 					w->next = rsfree;
 					rsfree = w;
 					rsinsert(w, 1);
-				} else if (n->cls != 2)
+				} else if (n->cls != RCWORD)
 					cerror("regjam: illegal type");
-				w = newnode(n, 1);
+				w = newnode(n, RCBYTE);
 				if (reg == w->reg)
 					goto swap;
 				goto link;
-			case 6:
-				if (n->cls != 7)
+			case RCVWORD:
+				if (n->cls != RCVPAIR)
 					continue;
 				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
-				w = newnode(n, 6);
+				w = newnode(n, RCVWORD);
 				if (reg != -1 && reg == w->reg)
 					goto swap;
 				goto link;
-			case 2:
-				if (n->cls != 3)
+			case RCWORD:
+				if (n->cls != RCPAIR)
 					continue;
 				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
-				w = newnode(n, 2);
+				w = newnode(n, RCWORD);
 				if (reg != -1 && reg == w->reg) {
 				swap:
 					n->reg--;
@@ -488,10 +488,10 @@ regjam(cls, reg, flag, sym)
 				goto fail;
 		}
 	}
-	if (cls == 1 || cls == 2 || cls == 6)
+	if (cls == RCBYTE || cls == RCWORD || cls == RCVWORD)
 		goto split;
 more:
-	if (cls == 3 || cls == 7) {
+	if (cls == RCPAIR || cls == RCVPAIR) {
 		/* free the smaller registers that lie inside the wanted long register */
 		int found, t;
 
@@ -500,8 +500,8 @@ more:
 			prev = n->next;
 			if (n->busy > 0)
 				continue;
-			if ((cls == 3 && ((t = n->cls) == 1 || t == 2)) ||
-			    (cls == 7 && ((t = n->cls) == 5 || t == 6))) {
+			if ((cls == RCPAIR && ((t = n->cls) == 1 || t == 2)) ||
+			    (cls == RCVPAIR && ((t = n->cls) == 5 || t == 6))) {
 				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
 				found = 1;
@@ -518,7 +518,7 @@ fail:
 }
 
 #ifdef OLD_D2V
-/* v0: the word register reg (that of an address) weighs no more than the one getreg(2, -1) would take */
+/* v0: the word register reg (that of an address) weighs no more than the one getreg(RCWORD, -1) would take */
 int
 d2vfirst(reg)
 	int reg;
@@ -526,17 +526,17 @@ d2vfirst(reg)
 	register struct rs *w, *t;
 	register int k;
 
-	for (w = rsfree; w && w->cls != 2 && w->cls != 3; w = w->next)
+	for (w = rsfree; w && w->cls != RCWORD && w->cls != RCPAIR; w = w->next)
 		;
-	if (w && w->cls == 2) {
-		for (t = w; t && t->cls != 3; t = t->next)
+	if (w && w->cls == RCWORD) {
+		for (t = w; t && t->cls != RCPAIR; t = t->next)
 			;
 		if (t && rweight[w->reg] > rweight[t->reg])
 			w = t;
 	}
 	k = w ? rweight[w->reg] : 100;
 	for (t = rsuse; t; t = t->next)
-		if (t->cls == 2 && t->busy <= 0 && t->reg != reg && rweight[t->reg] < k)
+		if (t->cls == RCWORD && t->busy <= 0 && t->reg != reg && rweight[t->reg] < k)
 			k = rweight[t->reg];
 	return rweight[reg] <= k;
 }
@@ -566,10 +566,10 @@ getreg(cls, reg, flag, sym)
 #endif
 
 	switch (cls) {				/* register variables: the register is named */
-	case 5:
-	case 6:
-	case 7:
-	case 8:
+	case RCVBYTE:
+	case RCVWORD:
+	case RCVPAIR:
+	case RCVFLOAT:
 		for (n = rsuse; n; n = n->next) {
 			if (reg != n->reg)
 				continue;
@@ -606,24 +606,24 @@ getreg(cls, reg, flag, sym)
 		goto found;
 	}
 #ifdef OLD_D2L
-	if (cls == 4 && reg == -1) {	/* v0: an idle float register that holds a name is free when its number is lower (vc: gopt constfold) */
-		for (w = rsfree; w && w->cls != 4; w = w->next)
+	if (cls == RCFLOAT && reg == -1) {	/* v0: an idle float register that holds a name is free when its number is lower (vc: gopt constfold) */
+		for (w = rsfree; w && w->cls != RCFLOAT; w = w->next)
 			;
 		m = 0;
 		for (t = rsuse; t; t = t->next)
-			if (t->cls == 4 && t->busy <= 0 && t->kind != 6 && (w == 0 || t->reg < w->reg) && (m == 0 || t->reg < m->reg))
+			if (t->cls == RCFLOAT && t->busy <= 0 && t->kind != 6 && (w == 0 || t->reg < w->reg) && (m == 0 || t->reg < m->reg))
 				m = t;
 		if (m) {
 			n = m;
 			goto blk;
 		}
 	}
-	if (cls == 2 && reg == -1) {	/* v0: an idle word that holds a name is free when it weighs less */
-		for (w = rsfree; w && w->cls != 2 && w->cls != 3; w = w->next)
+	if (cls == RCWORD && reg == -1) {	/* v0: an idle word that holds a name is free when it weighs less */
+		for (w = rsfree; w && w->cls != RCWORD && w->cls != RCPAIR; w = w->next)
 			;
 #ifdef OLD_D2F
-		if (w && w->cls == 2) {		/* the word getreg would take: the first free word or the first pair */
-			for (t = w; t && t->cls != 3; t = t->next)
+		if (w && w->cls == RCWORD) {		/* the word getreg would take: the first free word or the first pair */
+			for (t = w; t && t->cls != RCPAIR; t = t->next)
 				;
 			if (t && rweight[w->reg] > rweight[t->reg])
 				w = t;
@@ -634,25 +634,25 @@ getreg(cls, reg, flag, sym)
 #ifdef OLD_D2T
 			/* v0: also the register of a TEMP (the value of a switch, needed again only behind a jump) */
 #ifdef OLD_D2G
-			if (t->cls == 2 && t->busy <= 0 && (w == 0 || rweight[t->reg] < rweight[w->reg] || (rweight[t->reg] == rweight[w->reg] && t->reg != 0)) &&
+			if (t->cls == RCWORD && t->busy <= 0 && (w == 0 || rweight[t->reg] < rweight[w->reg] || (rweight[t->reg] == rweight[w->reg] && t->reg != 0)) &&
 #else
-			if (t->cls == 2 && t->busy <= 0 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+			if (t->cls == RCWORD && t->busy <= 0 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
 #endif
 #else
-			if (t->cls == 2 && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+			if (t->cls == RCWORD && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
 #endif
 			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
 				m = t;
 #ifdef OLD_D2P
 		for (t = rsuse; t; t = t->next)		/* an idle pair lighter than both: given back, it is split */
 #ifdef OLD_D3KC
-			if (t->cls == 3 && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
+			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
 #else
 			/* not a pair that holds a parameter, as below (vc: gopt pr) */
-			if (t->cls == 3 && t->reg < 8 && t->busy <= 0 && t->kind != 6 && !(t->sym && t->sym->sclass == PARAM) &&
+			if (t->cls == RCPAIR && t->reg < 8 && t->busy <= 0 && t->kind != 6 && !(t->sym && t->sym->sclass == PARAM) &&
 #endif
 			    (w == 0 || rweight[t->reg] < rweight[w->reg]) && (m == 0 || rweight[t->reg] < rweight[m->reg])) {
-				rsreturn(3, t->reg);
+				rsreturn(RCPAIR, t->reg);
 				return getreg(cls, reg, flag, sym);
 			}
 #endif
@@ -663,57 +663,57 @@ getreg(cls, reg, flag, sym)
 	}
 #endif
 #ifdef OLD_D2P
-	if (cls == 3 && reg == -1) {	/* v0: an idle pair that holds a name is free when it weighs less (OLD_D2L for pairs); only rr0, rr2 */
-		for (w = rsfree; w && w->cls != 3; w = w->next)
+	if (cls == RCPAIR && reg == -1) {	/* v0: an idle pair that holds a name is free when it weighs less (OLD_D2L for pairs); only rr0, rr2 */
+		for (w = rsfree; w && w->cls != RCPAIR; w = w->next)
 			;
 		/* two idle words of a pair: given back, they merge; segmented the words of a parameter only when no pair is free
 		   (gopt mkconstopnd: the copy of the parameter p goes to the free rr0 first, `ldl rr0,rr6`, and the second one,
 		   rr0 being no base, to the parameters in r2/r3) */
 		for (t = rsuse; t; t = t->next)
-			if (t->cls == 2 && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && D2PN(t) &&
+			if (t->cls == RCWORD && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && D2PN(t) &&
 			    (w == 0 || rweight[t->reg] < rweight[w->reg]
 #ifdef SEG
 			    && !(t->sym && t->sym->sclass == PARAM)
 #endif
 			    )) {
 				for (m = rsuse; m; m = m->next)
-					if (m->cls == 2 && m->reg == t->reg + 1 && m->busy <= 0 && D2PK(m) && D2PN(m))
+					if (m->cls == RCWORD && m->reg == t->reg + 1 && m->busy <= 0 && D2PK(m) && D2PN(m))
 						break;
 				if (m == 0) {
 					for (m = rsfree; m; m = m->next)
-						if (m->cls == 2 && m->reg == t->reg + 1)
+						if (m->cls == RCWORD && m->reg == t->reg + 1)
 							break;
 					if (m == 0)
 						continue;
 					k = t->reg;
-					rsreturn(2, k);
+					rsreturn(RCWORD, k);
 				} else {
 					k = t->reg;
-					rsreturn(2, k);
-					rsreturn(2, k + 1);
+					rsreturn(RCWORD, k);
+					rsreturn(RCWORD, k + 1);
 				}
 				return getreg(cls, reg, flag, sym);
 			}
 #ifdef OLD_D2PO
 		for (t = rsuse; t; t = t->next)		/* an idle odd word whose even half is free: given back */
 			/* not a word that holds a parameter (cas symtype) */
-			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == PARAM) &&
+			if (t->cls == RCWORD && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == PARAM) &&
 			    (w == 0 || rweight[t->reg - 1] < rweight[w->reg])) {
 				for (m = rsfree; m; m = m->next)
-					if (m->cls == 2 && m->reg == t->reg - 1)
+					if (m->cls == RCWORD && m->reg == t->reg - 1)
 						break;
 				if (m == 0)
 					continue;
-				rsreturn(2, t->reg);
+				rsreturn(RCWORD, t->reg);
 				return getreg(cls, reg, flag, sym);
 			}
 #endif
 		m = 0;
 		for (t = rsuse; t; t = t->next)
 #ifdef OLD_D3KC
-			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && t->reg < 4 &&
+			if (t->cls == RCPAIR && t->busy <= 0 && D2PK(t) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && t->reg < 4 &&
 #else
-			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == PARAM) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && t->reg < 4 &&
+			if (t->cls == RCPAIR && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == PARAM) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && t->reg < 4 &&
 #endif
 			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
 				m = t;
@@ -732,19 +732,19 @@ getreg(cls, reg, flag, sym)
 		if (reg != -1 && reg != n->reg)
 			continue;
 #ifdef OLD_D2F
-		if (cls == 2 && reg == -1) {	/* v0: a free word only when it weighs no more than the first free pair */
-			for (w = n; w && w->cls != 3; w = w->next)
+		if (cls == RCWORD && reg == -1) {	/* v0: a free word only when it weighs no more than the first free pair */
+			for (w = n; w && w->cls != RCPAIR; w = w->next)
 				;
 			if (w && rweight[n->reg] > rweight[w->reg])
 				break;
 		}
 #endif
 #ifdef OLD_D2W6
-		if (cls == 3 && reg == -1 && n->reg == 4) {	/* v0p: a pair asked for: rr6 before rr4 */
-			for (m = n; m && m->cls == 3; prev = m, m = m->next)
+		if (cls == RCPAIR && reg == -1 && n->reg == 4) {	/* v0p: a pair asked for: rr6 before rr4 */
+			for (m = n; m && m->cls == RCPAIR; prev = m, m = m->next)
 				if (m->reg == 6)
 					break;
-			if (m && m->cls == 3 && m->reg == 6)
+			if (m && m->cls == RCPAIR && m->reg == 6)
 				n = m;
 			else
 				for (prev = rsfree; prev != n && prev->next != n; prev = prev->next)
@@ -767,22 +767,22 @@ getreg(cls, reg, flag, sym)
 		goto nxt;
 	split:					/* split a larger node */
 		for (prev = n = rsfree; n; prev = n, n = n->next) {
-			if (!(n->cls <= 3 || (n->cls == 7 && cls == 6)))
+			if (!(n->cls <= RCPAIR || (n->cls == RCVPAIR && cls == RCVWORD)))
 				continue;
 			switch (cls) {
-			case 1:
+			case RCBYTE:
 				if (reg != -1) {
-					if (n->cls == 3) {
-						if (!roverlap(1, reg, n))
+					if (n->cls == RCPAIR) {
+						if (!roverlap(RCBYTE, reg, n))
 							continue;
-					} else if (n->cls == 2) {
-						if (!roverlap(1, reg, n))
+					} else if (n->cls == RCWORD) {
+						if (!roverlap(RCBYTE, reg, n))
 							continue;
 					} else
 						continue;
 				}
-				if (n->cls == 3) {
-					w = newnode(n, 2);
+				if (n->cls == RCPAIR) {
+					w = newnode(n, RCWORD);
 					if (reg != -1 && reg / 2 != w->reg) {
 						n->reg--;
 						w->reg++;
@@ -794,27 +794,27 @@ getreg(cls, reg, flag, sym)
 						prev->next = w;
 					rsinsert(n, 1);
 					n = w;
-				} else if (n->cls != 2)
+				} else if (n->cls != RCWORD)
 					continue;
-				w = newnode(n, 1);
+				w = newnode(n, RCBYTE);
 				if (reg != -1 && reg != w->reg)
 					goto swap;
 				goto link;
-			case 6:
-				if (n->cls != 7)
+			case RCVWORD:
+				if (n->cls != RCVPAIR)
 					continue;
 				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
-				w = newnode(n, 6);
+				w = newnode(n, RCVWORD);
 				if (reg != -1 && reg != w->reg)
 					goto swap;
 				goto link;
-			case 2:
-				if (n->cls != 3)
+			case RCWORD:
+				if (n->cls != RCPAIR)
 					continue;
 				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
-				w = newnode(n, 2);
+				w = newnode(n, RCWORD);
 				if (reg != -1 && reg != w->reg) {
 				swap:
 					n->reg--;
@@ -843,31 +843,31 @@ getreg(cls, reg, flag, sym)
 		}
 		goto fail;
 	}
-	if (cls == 1 || cls == 2 || cls == 6)
+	if (cls == RCBYTE || cls == RCWORD || cls == RCVWORD)
 		goto split;
 fail:
 #ifdef OLD_D2PO
 	/* OLD_D2PO, the parameter words: no pair free: an idle odd word that holds a parameter and whose even half is free is given back
 	   when that pair weighs less than the idle pair regjam would take (setlbit: rr4 from r4 and the parameter i in r5,
 	   not rr6 of v; addquad keeps rr2) */
-	if (flag == 0x1000 && cls == 3 && reg == -1) {
+	if (flag == 0x1000 && cls == RCPAIR && reg == -1) {
 		register struct rs *t, *m;
 
 		struct rs *j;
 
 		for (j = rsuse; j; j = j->next)		/* the pair regjam would take */
-			if (j->cls == 3 && j->busy <= 0)
+			if (j->cls == RCPAIR && j->busy <= 0)
 				break;
 		for (t = rsuse; t; t = t->next)
-			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && t->sym && t->sym->sclass == PARAM) {
+			if (t->cls == RCWORD && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && t->sym && t->sym->sclass == PARAM) {
 				for (m = rsfree; m; m = m->next)
-					if (m->cls == 2 && m->reg == t->reg - 1)
+					if (m->cls == RCWORD && m->reg == t->reg - 1)
 						break;
 				if (m == 0)
 					continue;
 				if (j && rweight[j->reg] <= rweight[t->reg - 1])
 					continue;	/* the idle pair weighs less (addquad: rr2 before rr6) */
-				rsreturn(2, t->reg);
+				rsreturn(RCWORD, t->reg);
 				return getreg(cls, reg, flag, sym);
 			}
 	}
@@ -895,7 +895,7 @@ rsreturn(cls, reg)
 	if ((n = rsuse) == 0)
 		cerror("deletereg allocated register status list empty");
 	for (prev = n; n; prev = n, n = n->next) {
-		if ((cls == n->cls || cls == 9) && reg == n->reg) {
+		if ((cls == n->cls || cls == RCANY) && reg == n->reg) {
 			cls = n->cls;
 			if (prev == n)
 				rsuse = prev->next;
@@ -915,9 +915,9 @@ rsreturn(cls, reg)
 				b->next = n;
 				return;
 			}
-			if (cls != a->cls || (cls != 1 && cls != 2 && cls != 6)) {
+			if (cls != a->cls || (cls != RCBYTE && cls != RCWORD && cls != RCVWORD)) {
 				key = rweight[reg];
-				if (cls == 3)
+				if (cls == RCPAIR)
 					while (a && cls == a->cls && key > rweight[a->reg]) {
 						b = a;
 						a = a->next;
@@ -935,13 +935,13 @@ rsreturn(cls, reg)
 			for (b = a; cls == b->cls; ) {
 				if (partner == b->reg) {
 					b->reg = partner & ~1;
-					if (cls == 1) {
-						b->cls = 2;
+					if (cls == RCBYTE) {
+						b->cls = RCWORD;
 						b->reg = b->reg / 2;
-					} else if (cls == 2)
-						b->cls = 3;
-					else if (cls == 6)
-						b->cls = 7;
+					} else if (cls == RCWORD)
+						b->cls = RCPAIR;
+					else if (cls == RCVWORD)
+						b->cls = RCVPAIR;
 					else
 						cerror("deletereg: illegal type");
 					if (rspool)
@@ -981,7 +981,7 @@ nullsyms(mode)
 	for (n = rsuse; n; n = n->next) {
 		switch (mode) {
 		case 1:
-			if (n->cls <= 4)
+			if (n->cls <= RCFLOAT)
 				n->sym = 0;
 			break;
 		default:
@@ -1005,21 +1005,21 @@ rsfreeall(flag)
 		next = n->next;
 		switch (flag) {
 		case 1:
-			if (n->cls > 4)
+			if (n->cls > RCFLOAT)
 				continue;
 			if (n->kind == 6)
 				continue;
 			goto ret;
 #ifdef OLD_D3K
 		case 4:			/* v0, at a label: as 1, but a parameter stays known in its register */
-			if (n->cls > 4 || n->kind == 6)
+			if (n->cls > RCFLOAT || n->kind == 6)
 				continue;
 			if (n->busy <= 0 && n->sym && n->sym->sclass == PARAM)
 				continue;
 			goto ret;
 #endif
 		case 2:
-			if (n->cls <= 4)
+			if (n->cls <= RCFLOAT)
 				continue;
 		case 3:
 ret:

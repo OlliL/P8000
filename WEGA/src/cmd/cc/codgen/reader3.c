@@ -575,7 +575,7 @@ delay(p)
 
 		f = p->in.left->in.sname->sclass == PARAM && (p->in.left->in.sname->sflags >> 3 & 1) == 1 ? fpsym2 : fpsym1;
 		for (n = rsuse; n; n = n->next)
-			if (n->cls == 3 && n->sym == f && n->off == p->in.left->in.sname->soffset / 8)
+			if (n->cls == RCPAIR && n->sym == f && n->off == p->in.left->in.sname->soffset / 8)
 				n->sym = 0;
 	}
 #endif
@@ -597,14 +597,14 @@ delay(p)
 #else
 			printf("\tldl\t~L1+%ld(fp),rr2\n", off);
 #endif
-			rfree(2, 5);
+			rfree(2, LONG);
 		} else {
 #ifdef SEG
 			printf("\tld\t_stkseg+~L1+%ld(fp),r2\n", off);
 #else
 			printf("\tld\t~L1+%ld(fp),r2\n", off);
 #endif
-			rfree(2, 4);
+			rfree(2, INT);
 		}
 	}
 	if (ndelay > 0)
@@ -813,7 +813,7 @@ d3words()
 		next = n->next;
 		if (n->busy > 0 || n->kind == 6)
 			continue;
-		if (n->cls == 2)
+		if (n->cls == RCWORD)
 			rsreturn(n->cls, n->reg);
 	}
 }
@@ -918,7 +918,7 @@ again:
 
 			for (n = rsuse; n; n = next) {
 				next = n->next;
-				if (n->cls == 3 && n->kind != 6 && n->reg < 8 && n->busy > 0)
+				if (n->cls == RCPAIR && n->kind != 6 && n->reg < 8 && n->busy > 0)
 					rsreturn(n->cls, n->reg);
 			}
 		}
@@ -948,7 +948,7 @@ again:
 			register struct rs *n;
 
 			for (n = rsuse; n; n = n->next)
-				if (n->cls <= 4 && n->sym && n->sym->sclass == PARAM && n->reg == (p->in.rall & 0xff))
+				if (n->cls <= RCFLOAT && n->sym && n->sym->sclass == PARAM && n->reg == (p->in.rall & 0xff))
 					n->sym = 0;
 		}
 #endif
@@ -1383,7 +1383,7 @@ cbranch(p, true, false)
 	if (--d3hdepth == 0)
 		for (n = rsuse; n; n = next) {
 			next = n->next;
-			if (n->cls <= 3 && n->busy <= 0 && n->kind != 6 && n->reg < 8 && (n->flags & 0x2000) && d3hparm(n))
+			if (n->cls <= RCPAIR && n->busy <= 0 && n->kind != 6 && n->reg < 8 && (n->flags & 0x2000) && d3hparm(n))
 				rsreturn(n->cls, n->reg);
 		}
 }
@@ -1869,7 +1869,7 @@ d3kjump(l)
 		j->lab = l;
 		j->n = 0;
 		for (n = rsuse; n; n = n->next)
-			if (n->cls <= 3 && n->sym && n->sym->sclass == PARAM && j->n < 4) {
+			if (n->cls <= RCPAIR && n->sym && n->sym->sclass == PARAM && j->n < 4) {
 				j->reg[j->n] = n->reg;
 				j->cls[j->n] = n->cls;
 				j->sym[j->n] = n->sym;
@@ -1925,7 +1925,7 @@ d3klabel(lab, dead)
 	j->lab = -1;
 	for (n = rsuse; n; n = next) {	/* a parameter not known at every jump is forgotten */
 		next = n->next;
-		if (n->cls > 3 || !n->sym || n->sym->sclass != PARAM || n->busy > 0)
+		if (n->cls > RCPAIR || !n->sym || n->sym->sclass != PARAM || n->busy > 0)
 			continue;
 		if (!dead) {
 			for (i = 0; i < j->n; i++)
@@ -1940,9 +1940,9 @@ d3klabel(lab, dead)
 		for (i = 0; i < j->n; i++) {
 			r = getreg(j->cls[i], j->reg[i], 0, j->sym[i]);
 			if (r == j->reg[i]) {
-				rfree(r, j->cls[i] == 3 ? 5 : j->cls[i] == 1 ? 2 : 4);
+				rfree(r, j->cls[i] == RCPAIR ? LONG : j->cls[i] == RCBYTE ? CHAR : INT);
 				/* a long parameter keeps its home, not a pointer (a pair in segmented code: gopt canopt) */
-				if (j->cls[i] == 3 && !ISPTR(j->sym[i]->stype))
+				if (j->cls[i] == RCPAIR && !ISPTR(j->sym[i]->stype))
 					d3jmark(j->cls[i], r);
 			}
 		}

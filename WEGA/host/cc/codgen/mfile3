@@ -148,6 +148,18 @@
 #define UFORTRAN	17
 #define USTATIC	18
 
+/* register classes of struct rs (the names are guessed; the numbers are measured from rclass, roverlap, rsreturn):
+   a byte, a word, a pair (long, segmented pointer), a float register; 5..8 the same as register variables (5 is never made); RCANY only for rsreturn */
+#define RCBYTE	1
+#define RCWORD	2
+#define RCPAIR	3
+#define RCFLOAT	4
+#define RCVBYTE	5
+#define RCVWORD	6
+#define RCVPAIR	7
+#define RCVFLOAT	8
+#define RCANY	9
+
 #define MUSTDO	010000
 #define NOPREF	020000
 

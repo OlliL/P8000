@@ -944,8 +944,8 @@ d3aw(NODE *p, int top)
 	if (p->in.op == NAME && p->in.sname && p->in.sname->sclass == PARAM) {
 		if (top)
 			for (n = rsuse; n; n = n->next)
-				if (n->cls <= 4 && n->sym == p->in.sname && n->reg <= d3awhi &&
-				    n->reg + (n->cls == 3) >= d3awlo)
+				if (n->cls <= RCFLOAT && n->sym == p->in.sname && n->reg <= d3awhi &&
+				    n->reg + (n->cls == RCPAIR) >= d3awlo)
 					n->sym = 0;
 		return;
 	}
@@ -979,8 +979,8 @@ d22arg(NODE *q, int reg)
 		printf("\tfldd\tr%d,%s\n", reg, rnames[q->tn.rval]);
 		rfree(q->tn.rval, q->in.type);
 	}
-	getreg(3, reg, 0, (struct sym *)0);
-	getreg(3, reg + 2, 0, (struct sym *)0);
+	getreg(RCPAIR, reg, 0, (struct sym *)0);
+	getreg(RCPAIR, reg + 2, 0, (struct sym *)0);
 }
 #endif
 
