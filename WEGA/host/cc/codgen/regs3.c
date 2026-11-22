@@ -856,11 +856,7 @@ rcmd(int a, int b, int type)
 		tag = -b;
 	}
 	if (type == FLOAT || type == DOUBLE) {
-#ifdef SEG
-		i = a + 6;
-#else
-		i = a + 7;
-#endif
+		i = a + NREGVW;
 		old = regvar[i].sym;
 		regvar[i].sym = s;
 		regvar[i].rtag = tag;

@@ -246,13 +246,11 @@ allocreg(NODE *p, int cookie)
 		fpsym1->soffset = p->tn.lval;
 	else if (p->in.sname == fpsym2)
 		fpsym2->soffset = p->tn.lval;
+	if (((cookie & NAMASK) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
 #ifdef SEG
-	if (((cookie & NAMASK) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
-	    p->in.type == STRTY || p->in.type == UNIONTY || (dope[p->in.op] & DIVFLG))
-#else
-	if (((cookie & NAMASK) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
-	    (dope[p->in.op] & DIVFLG))
+	    p->in.type == STRTY || p->in.type == UNIONTY ||
 #endif
+	    (dope[p->in.op] & DIVFLG))
 		cls = RCPAIR;
 	else
 		cls = rclass(p->in.type, want);

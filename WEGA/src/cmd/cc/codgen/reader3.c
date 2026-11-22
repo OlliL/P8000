@@ -187,17 +187,9 @@ init()
 	maxoff = 0;
 	maxtemp = 0;
 	parmax = 0;
-#ifdef SEG
-	minreg = 0xD;
-#else
-	minreg = 0xE;
-#endif
+	minreg = REGVLAST;
 	maxreg = F7;
-#ifdef SEG
-	regtop = 0xD;
-#else
-	regtop = 0xE;
-#endif
+	regtop = REGVLAST;
 	regmask = (regtop - 1) & ~1;
 	regreset(0);
 	nparmtab = 0;
@@ -288,11 +280,7 @@ reread:
 			regE = rdin(10);
 			regF = rdin(10);
 			if (rflag) {
-#ifdef SEG
-				regE = 0xD;
-#else
-				regE = 0xE;
-#endif
+				regE = REGVLAST;
 				regF = 0x17;
 			}
 			nlcheck();

@@ -1241,29 +1241,25 @@ oregput(NODE *p)
 #ifdef SEG
 	int bar = 0;
 
+#endif
 	if (p->tn.rval == FP) {
+#ifdef SEG
 		if ((p->in.sname == symtab0 && (unsigned)(int)p->tn.lval <= 0xFF) ||
 		    (p->in.sname == fpsym1 && (unsigned)(int)(p->tn.lval + maxoff) <= 0xFF)) {
 			bar++;
 			putchar('|');
 		}
+#endif
 		acon(p);
+#ifdef SEG
 		if (bar)
 			putchar('|');
-		printf("(fp)");
-	} else {
-		acon(p);
-		printf("(%s)", rnames[p->tn.rval]);
-	}
-#else
-	if (p->tn.rval == FP) {
-		acon(p);
-		printf("(fp)");
-	} else {
-		acon(p);
-		printf("(%s)", rnames[p->tn.rval]);
-	}
 #endif
+		printf("(fp)");
+	} else {
+		acon(p);
+		printf("(%s)", rnames[p->tn.rval]);
+	}
 }
 
 /* the second word of an operand */
@@ -1366,11 +1362,7 @@ adrput(NODE *p)
 		r = p->tn.rval;
 		if (R2TEST(r)) {			/* base and index register */
 			if (r & 0xFF)
-#ifdef SEG
 				printf("r%s(%s)", rnames[R2UPK1(r)], rnames[R2UPK2(r)]);
-#else
-				printf("r%s(%s)", rnames[R2UPK1(r)], rnames[R2UPK2(r)]);
-#endif
 			else {
 				printf("r%s(#", rnames[R2UPK1(r)]);
 				acon(p);

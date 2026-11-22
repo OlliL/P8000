@@ -34,3 +34,10 @@
 # define BYTEOFF(x) ((x)&01)	/* an odd byte address */
 # define BITOOR(x) ((x)>>3)	/* a bit offset to an OREG offset */
 # define TMPREG FP	/* the base of the temporaries */
+	/* the last register for a register variable: scodgen keeps r14 for the stack pointer (rr14) */
+# ifdef SEG
+# define REGVLAST R13
+# else
+# define REGVLAST R14
+# endif
+# define NREGVW (REGVLAST - R7)	/* the word register variables r8 .. REGVLAST */
