@@ -1966,3 +1966,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   from the shipped choice only for an operand in r3. Not part of another rule; stays.
 - 2026-11-22, step 10, `OLD_D24L` gone: the unmasked lda of a frame place under OLD_D24 (the address masks of the segmented
   old versions: v1, vk, vl, vc). checkall ALL OK (kernel by vk, the library members by v1 and vl byte-identical); vc unchanged.
+- 2026-11-22, step 10, `OLD_D2FA` exception (3) (no lookup in a condition with || at the top): without it gopt killdefs
+  (live2.c) and cas yyparse (3 lines) are lost. In killdefs the original takes rr0, which holds q, over for `q->c.b2`
+  (`inc r1,#8; ldl rr2,rr0; cpb @rr2,#4`) and reloads q later, as OLD_D2C does for a word. Tried: D2C also for a segmented
+  automatic pointer pair (STAREG, not a parameter) instead of exception (3): worse (live2 14, lpinv2 8, wrtil2 6 lines).
+  Exception (3) stays.
+- 2026-11-22, step 10, `OLD_D2FA` exception (2) (an assigned variable not looked up from the start of its statement):
+  without it gopt live2.c 164 lines (initlive `q = q->next`: the original reloads q); the clearing at the store (match3.c)
+  comes too late for the right side. Stays.
