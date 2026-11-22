@@ -1471,6 +1471,7 @@ acon(p)
 {
 	char c;
 
+	/* print out a constant */
 	if (p->in.op == ICON && p->tn.rval < 0)
 		printf("L%d", -p->tn.rval);
 	else if (p->in.op == OREG && p->stn.stsize < 0)
@@ -1478,7 +1479,7 @@ acon(p)
 	else if (p->in.op == NAME && p->tn.rval < 0)
 		printf("L%d", -p->tn.rval);
 	else {
-		if (p->in.sname == 0) {
+		if (p->in.sname == 0) {	/* constant only */
 			printf("%ld", p->tn.lval);
 			return;
 		}
@@ -1521,7 +1522,7 @@ int
 genscall(p, cookie)
 	NODE *p;
 	int cookie;
-{
+{	/* structure valued call */
 	return gencall(p, cookie);
 }
 
@@ -1552,6 +1553,7 @@ gencall(p, cookie)
 	register int indirect;
 	long save;
 
+	/* generate the call given by p */
 	f = p->in.left;
 	fop = f->in.op;
 	indirect = 0;
@@ -1560,9 +1562,9 @@ gencall(p, cookie)
 		if (p->in.right) {
 			indirect = 1;
 			order(f, INTEMP);
-		} else if (fop != REG || f->tn.rval == 0) {
+		} else if (fop != REG || f->tn.rval == R0) {
 			order(f, INAREG|INTAREG);
-			if (f->tn.rval == 0)
+			if (f->tn.rval == R0)
 				order(f, INAREG|INTAREG);
 			rfree(f->tn.rval, PTR|INT);
 		}
@@ -1583,7 +1585,7 @@ gencall(p, cookie)
 	}
 #ifdef SEG
 	if (indirect) {
-		if (argstop == 0 && argreg >= 3) {
+		if (argstop == 0 && argreg >= R3) {
 			/* the address is still in reach of a free register pair */
 			f->in.rall = MUSTDO|R2;
 			order(f, INAREG|INTAREG);
@@ -1594,7 +1596,7 @@ gencall(p, cookie)
 			save = freetemp(2) / SZCHAR;
 			printf("\tldl\t_stkseg+~L1+%ld(fp),rr8\n", save);
 			printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", f->tn.lval);
-			f->tn.rval = 8;
+			f->tn.rval = R8;
 			f->tn.lval = 0;
 			f->in.sname = 0;
 		}
@@ -1609,7 +1611,7 @@ gencall(p, cookie)
 #else
 			printf("\tld\tr1,@fp\n");
 #endif
-		f->tn.rval = 1;
+		f->tn.rval = R1;
 		f->tn.lval = 0;
 		f->in.sname = 0;
 	}
@@ -1676,6 +1678,7 @@ cbgen(o, lab, mode)
 #ifdef OLD_D3K
 	d3kjump(lab);
 #endif
+	/* print conditional and unconditional branches */
 	if (o == 0) {
 		printf("\tjpr\tL%d\n", lab);
 		return;
