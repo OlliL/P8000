@@ -2,7 +2,7 @@
 
 ## Status
 
-active (2026-11-22; 160 paused for it)
+done (2026-11-22; checkall ALL OK on 45c2e3d4's tree; 160 active again). The decisions marked "Claude, for review" wait for the owner.
 
 ## Goal
 
@@ -166,3 +166,4 @@ Rules of the target:
   in src, common 2.5 and optim 2.5 one text for host cparse and codgen (PASS3), common 2.4 from it, manifest and
   macdefs shared, host/cc/mip and host/cc/z8000 (fcf10df7, b97b433e); host corpora equal (452, 427, 854). A checkall
   under the load of parallel model runs failed by timeouts only (UNSTABLE, exit 15); the clean run follows.
+- 2026-11-22: checkall ALL OK (796 files identical, gopt 854 of 854 for wega and host); Done when holds; done.

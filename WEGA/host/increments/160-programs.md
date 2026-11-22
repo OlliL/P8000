@@ -2,7 +2,7 @@
 
 ## Status
 
-paused (2026-11-22, owner: for 155, the compiler tree; before: active since 2026-11-19, gopt the current work)
+active (again 2026-11-22, after 155)
 
 ## Goal
 
