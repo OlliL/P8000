@@ -384,23 +384,23 @@ orderadd(p)
 			if (p->in.right->in.op == CALL || p->in.right->in.op == UCALL) {
 				order(p->in.right, INTEMP);
 				n++;
-				order(p->in.left, 6);
+				order(p->in.left, INAREG|INTAREG);
 				n++;
 			} else {
-				order(p->in.left, 6);
+				order(p->in.left, INAREG|INTAREG);
 				n++;
 				if (p->in.right->in.op != ICON && p->in.right->in.op != REG) {
-					order(p->in.right, 6);
+					order(p->in.right, INAREG|INTAREG);
 					n++;
 				}
 			}
 		} else {
 			if (p->in.right->in.op != ICON && p->in.right->in.op != REG) {
-				order(p->in.right, 6);
+				order(p->in.right, INAREG|INTAREG);
 				n++;
 			}
 			if (p->in.left->in.op != ICON && p->in.left->in.op != REG) {
-				order(p->in.left, 6);
+				order(p->in.left, INAREG|INTAREG);
 				n++;
 			}
 		}
@@ -424,9 +424,9 @@ offstar(p)
 			orderadd(l);
 			if (mkoreg(p)) {
 				if (p->in.type == FLOAT || p->in.type == DOUBLE)
-					order(p, 0x18);
+					order(p, INBREG|INTBREG);
 				else
-					order(p, 6);
+					order(p, INAREG|INTAREG);
 				return;
 			}
 		}
@@ -438,18 +438,18 @@ offstar(p)
 		if (p->in.rall & MUSTDO) {
 			if (optype(p->in.op) != LTYPE) {
 				orderadd(l);
-				order(l, 6);
+				order(l, INAREG|INTAREG);
 			}
 			if (p->in.type == FLOAT || p->in.type == DOUBLE)
-				order(p, 0x18);
+				order(p, INBREG|INTBREG);
 			else
-				order(p, 6);
+				order(p, INAREG|INTAREG);
 			return;
 		}
 		p = l;
 	}
 	orderadd(p);
-	order(p, 6);
+	order(p, INAREG|INTAREG);
 }
 #else
 /* handle indirections: get the address of *p into a register */
@@ -471,16 +471,16 @@ offstar(p)
 		if (p->in.op == REG && p->tn.rval == 0) {
 			save = ordflag;
 			ordflag = 0x14;
-			order(p, 6);
+			order(p, INAREG|INTAREG);
 			ordflag = save;
 		} else
-			order(p, 6);
+			order(p, INAREG|INTAREG);
 	}
 	if (star) {
 		if (star->in.type == FLOAT || star->in.type == DOUBLE)
-			order(star, 0x18);
+			order(star, INBREG|INTBREG);
 		else
-			order(star, 6);
+			order(star, INAREG|INTAREG);
 	}
 }
 #endif
@@ -576,14 +576,14 @@ setstr(p)
 	register NODE *p;
 {
 	if (p->in.right->in.op != REG) {
-		order(p->in.right, 4);
+		order(p->in.right, INTAREG);
 		return 1;
 	}
 	p = p->in.left;
 	if (p->in.op != NAME && p->in.op != OREG) {
 		if (p->in.op != STAR)
 			cerror("bad setstr");
-		order(p->in.left, 4);
+		order(p->in.left, INTAREG);
 		return 1;
 	}
 	return 0;
@@ -606,11 +606,11 @@ setasg(p)
 		if (r->in.op == STAR)
 			OFFSTARL(r);
 		else
-			order(r, 0x2ca);
+			order(r, SNAME|SCON|SOREG|INAREG|INBREG);
 		return 1;
 	}
 	if (r->in.op != REG && (p->in.type == FLOAT || p->in.type == DOUBLE)) {
-		order(p->in.right, 0x18);
+		order(p->in.right, INBREG|INTBREG);
 		return 1;
 	}
 	if (l->in.op == STAR) {
@@ -622,7 +622,7 @@ setasg(p)
 		return 1;
 	}
 	if (r->in.op != REG) {
-		order(r, 10);
+		order(r, INAREG|INBREG);
 		return 1;
 	}
 	return 0;
@@ -723,7 +723,7 @@ rew:
 				return 1;
 			}
 #endif
-			order(p->in.right, 4);
+			order(p->in.right, INTAREG);
 			return 1;
 		}
 	}
@@ -739,7 +739,7 @@ rew:
 	}
 	if (p->in.right->in.op == REG)
 		goto leftadr;
-	order(p->in.right, 10);
+	order(p->in.right, INAREG|INBREG);
 	return 1;
 }
 
@@ -925,14 +925,14 @@ argstrip(p, rest)
 	}
 	if (p->in.op == STARG) {
 		fixstarg(p);
-		order(p, 1);
+		order(p, FOREFF);
 		return;
 	}
 	if (p->in.op == CM || p->in.op == FREE)
 		return;
 	if (p->in.op != REG) {
 		if (p->in.type == CHAR || p->in.type == UCHAR) {
-			order(p, 4);
+			order(p, INTAREG);
 			if (p->in.type == CHAR)
 				printf("\textsb\t%s\n", rnames[p->tn.rval]);
 			else
@@ -940,7 +940,7 @@ argstrip(p, rest)
 			p->in.type = 4;
 		}
 	}
-	order(p, 0x2000);
+	order(p, FORARG);
 }
 
 #ifdef OLD_D3AW
@@ -1020,7 +1020,7 @@ d22arg(q, reg)
 		printf(",#4\n");
 		recl2(q);
 	} else {
-		order(q, 0x10);
+		order(q, INTBREG);
 		printf("\tfldd\tr%d,%s\n", reg, rnames[q->tn.rval]);
 		rfree(q->tn.rval, q->in.type);
 	}
@@ -1088,9 +1088,9 @@ argplace()
 		d3awfree(q);
 #endif
 		if (q->in.type == FLOAT || q->in.type == DOUBLE)
-			order(q, 0x10);
+			order(q, INTBREG);
 		else
-			order(q, 4);
+			order(q, INTAREG);
 		if (q->in.type == CHAR)
 			printf("\textsb\t%s\n", rnames[reg]);
 		else if (q->in.type == UCHAR)

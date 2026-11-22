@@ -121,7 +121,7 @@ ttype(t, tword)
 	register int t;
 	register int tword;
 {
-	if ((tword & TANY) || tword == 0x4000 || tword == 0x8000)
+	if ((tword & TANY) || tword == TSAME || tword == TFIT)
 		return 1;
 	if (t == 0)
 		t = TINT;		/* FARG / undefined: an int */
@@ -356,15 +356,15 @@ cand:
 			}
 		}
 #endif
-		if (q->ltype == 0x4000 || q->rtype == 0x4000) {		/* both operands of the same type */
+		if (q->ltype == TSAME || q->rtype == TSAME) {		/* both operands of the same type */
 			if (r->in.type != l->in.type)
 				goto next;
-		} else if (q->ltype == 0x8000 || q->rtype == 0x8000) {	/* of the same size */
+		} else if (q->ltype == TFIT || q->rtype == TFIT) {	/* of the same size */
 			t = bsize(l->in.type);
 			if (bsize(r->in.type) != t)
 				goto next;
 		}
-		if ((p->in.type == FLOAT || p->in.type == DOUBLE) && q->ltype == 0x8000 && q->rtype == 0x8000)
+		if ((p->in.type == FLOAT || p->in.type == DOUBLE) && q->ltype == TFIT && q->rtype == TFIT)
 			goto next;
 		if (q->needs & REWRITE)
 			return q->rewrite;

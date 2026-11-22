@@ -945,7 +945,7 @@ zzzcode(NODE *p, char c)
 #ifdef SEG
 			if (p->tn.rval == 15)
 				goto frame;
-			order(p, 6);
+			order(p, INAREG|INTAREG);
 		/* fall through */
 		case REG:
 			if (szty(n) != 2)
@@ -1442,9 +1442,9 @@ gencall(NODE *p, int cookie)
 			indirect = 1;
 			order(f, INTEMP);
 		} else if (fop != REG || f->tn.rval == 0) {
-			order(f, 6);
+			order(f, INAREG|INTAREG);
 			if (f->tn.rval == 0)
-				order(f, 6);
+				order(f, INAREG|INTAREG);
 			rfree(f->tn.rval, 0x14);
 		}
 	}
@@ -1456,7 +1456,7 @@ gencall(NODE *p, int cookie)
 		if (argstop == 0 && argreg >= 3) {
 			/* the address is still in reach of a free register pair */
 			f->in.rall = 0x1002;
-			order(f, 6);
+			order(f, INAREG|INTAREG);
 			rfree(f->tn.rval, 0x14);
 			indirect = 0;
 		} else {
@@ -1494,20 +1494,20 @@ gencall(NODE *p, int cookie)
 	tmpoff = 0;
 #endif
 #ifdef SEG
-	fop = match(p, 0x16);
+	fop = match(p, INAREG|INTAREG|INTBREG);
 	if (indirect)
 		printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", save);
 	return fop != MDONE;
 #else
 #ifdef OLD_D22
 	/* v0p: a double result comes back in rq4 */
-	if (match(p, 0x16) != MDONE)
+	if (match(p, INAREG|INTAREG|INTBREG) != MDONE)
 		return 1;
 	if ((p->in.type == FLOAT || p->in.type == DOUBLE) && p->in.op == REG)
 		printf("\tfldd\t%s,r4\n", rnames[p->tn.rval]);
 	return 0;
 #else
-	return match(p, 0x16) != MDONE;
+	return match(p, INAREG|INTAREG|INTBREG) != MDONE;
 #endif
 #endif
 }

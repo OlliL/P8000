@@ -96,13 +96,19 @@
 
 /* needs: registers (A: bits 0-3, B: 4-7), temporaries of the frame (8-9) and of the parameter area (10-11) */
 #define NAREG	01
+#define NACOUNT	03
+#define NAMASK	017
 #define NASL	04		/* share left register */
 #define NASR	010		/* share right register */
 #define NBREG	020
+#define NBCOUNT	060
+#define NBMASK	0360
 #define NBSL	0100
 #define NBSR	0200
 #define NTEMP	0400
+#define NTMASK	01400		/* WEGA: two bits (the PCC has 07400) */
 #define NPTEMP	02000		/* a temporary of the parameter area (name guessed) */
+#define NPTMASK	06000
 #define REWRITE	0x1000		/* in q->needs: the entry only rewrites the tree, q->rewrite is the answer */
 
 /* rewrite: what the tree becomes */

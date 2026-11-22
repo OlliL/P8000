@@ -117,7 +117,7 @@ allo(p, q)
 	while (need & 3) {			/* A registers */
 		resc[k].in.op = REG;
 		resc[k].in.type = p->in.type;
-		resc[k].tn.rval = allocreg(p, need & 0xF);
+		resc[k].tn.rval = allocreg(p, need & NAMASK);
 		resc[k].tn.lval = 0;
 		resc[k].in.sname = 0;
 		need--;
@@ -135,10 +135,10 @@ allo(p, q)
 		s = rfind(resc[k0].tn.rval, cls);
 		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
 	}
-	while (need & 0x30) {			/* B registers */
+	while (need & NBCOUNT) {			/* B registers */
 		resc[k].in.op = REG;
 		resc[k].in.type = p->in.type;
-		resc[k].tn.rval = allocreg(p, need & 0xF0);
+		resc[k].tn.rval = allocreg(p, need & NBMASK);
 		resc[k].tn.lval = 0;
 		resc[k].in.sname = 0;
 		need -= 16;
@@ -152,22 +152,22 @@ allo(p, q)
 		s = rfind(resc[k0].tn.rval, cls);
 		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
 	}
-	if (need & 0x300) {			/* a temporary in the frame */
+	if (need & NTMASK) {			/* a temporary in the frame */
 		resc[k].in.op = OREG;
 		resc[k].in.type = p->in.type;
 		resc[k].tn.rval = 15;
 		resc[k].stn.stsize = 0;
-		resc[k].tn.lval = freetemp(TEMPWORDS(p, (need & 0x300) / 0x100));
+		resc[k].tn.lval = freetemp(TEMPWORDS(p, (need & NTMASK) / NTEMP));
 		resc[k].in.sname = fpsym1;
 		resc[k].tn.lval = resc[k].tn.lval >> 3;
 		k++;
 	}
-	if (need & 0xC00) {			/* a temporary for parameters */
+	if (need & NPTMASK) {			/* a temporary for parameters */
 		resc[k].in.op = OREG;
 		resc[k].in.type = p->in.type;
 		resc[k].tn.rval = 15;
 		resc[k].stn.stsize = 0;
-		resc[k].tn.lval = freeparm(PARMWORDS(p, (need & 0xC00) / 0x400));
+		resc[k].tn.lval = freeparm(PARMWORDS(p, (need & NPTMASK) / NPTEMP));
 		resc[k].tn.lval = resc[k].tn.lval >> 3;
 #ifdef SEG
 		resc[k].in.sname = symtab0;
@@ -771,7 +771,7 @@ reclaim(p, rewrite, cookie)
 		tfree(p);
 		goto done;
 	}
-	if ((cookie & 0x20) && (rewrite & RESCC)) {	/* the condition codes */
+	if ((cookie & FORCC) && (rewrite & RESCC)) {	/* the condition codes */
 		tfree(p);
 		p->in.op = CCODES;
 		p->tn.lval = want;

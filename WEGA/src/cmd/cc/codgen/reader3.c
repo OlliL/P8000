@@ -883,7 +883,7 @@ again:
 		p = p->in.left;
 		if (p->in.type == FLOAT || p->in.type == DOUBLE) {
 			p->in.rall = 0x1010;
-			order(p, 0x10);
+			order(p, INTBREG);
 			tfree(p);
 			return;
 		}
@@ -954,9 +954,9 @@ again:
 #endif
 		p2->in.left->in.rall = p->in.rall;
 		if (p2->in.type == DOUBLE || p2->in.type == FLOAT)
-			codgen(p2->in.left, 0x10);
+			codgen(p2->in.left, INTBREG);
 		else
-			codgen(p2->in.left, 4);
+			codgen(p2->in.left, INTAREG);
 		p2->in.right->in.rall = p2->in.left->tn.rval | MUSTDO;
 		reclaim(p2->in.left, 0, 0);
 		cbgen(0, m1 = getlab(), 'I');
@@ -967,9 +967,9 @@ again:
 		rfreeall(1);
 #endif
 		if (p2->in.type == DOUBLE || p2->in.type == FLOAT)
-			codgen(p2->in.right, 0x10);
+			codgen(p2->in.right, INTBREG);
 		else
-			codgen(p2->in.right, 4);
+			codgen(p2->in.right, INTAREG);
 		deflab(m1);
 		p->in.op = REG;
 		p->tn.lval = 0;
@@ -1014,7 +1014,7 @@ again:
 		cbranch(p, -1, m = getlab());
 		p->in.op = CCODES;
 		p->bn.label = m;
-		order(p, 4);
+		order(p, INTAREG);
 		goto cleanup;
 	case FLD:
 		if (p1->in.op == STAR) {
@@ -1023,15 +1023,15 @@ again:
 		}
 	case UMINUS:
 		if (p1->in.type == FLOAT || p1->in.type == DOUBLE) {
-			order(p1, 0x10);
+			order(p1, INTBREG);
 			goto again;
 		}
-		order(p1, 2);
+		order(p1, INAREG);
 		goto again;
 	case NAME:
 		if (o == REG)
 			goto nomat;
-		order(p, 4);
+		order(p, INTAREG);
 		goto again;
 	case INIT:
 		uerror("illegal initialization: order()");
@@ -1096,13 +1096,13 @@ again:
 		p = canon(p);
 		rallo(p, p->in.rall);
 		if (p->in.type == DOUBLE || p->in.type == FLOAT)
-			order(p2->in.left, 0x10);
+			order(p2->in.left, INTBREG);
 		else
-			order(p2->in.left, 4);
+			order(p2->in.left, INTAREG);
 		if (p->in.type == DOUBLE || p->in.type == FLOAT)
-			order(p2, 0x10);
+			order(p2, INTBREG);
 		else
-			order(p2, 4);
+			order(p2, INTAREG);
 		goto again;
 	case ASSIGN:
 		if (setasg(p))
