@@ -2015,3 +2015,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   it (the conditional jump the inversion looks for is more than 16 nodes behind the head) and puts the then block
   (`ldl rr8,rr10; ld r2,rr8(#14); jpr L20014`) behind the entry jump, as in the gopt goto cases. So the window is 24, not a
   question of the source form; and the shipped inversion makes that layout when the conditional jump stands behind the block.
+- 2026-11-22, the loop-head goto forms traced (popt with TRACE on the codgen output of the natural initaffect): our spopt
+  turns the loop at the head test only; the original also exchanged `[body start .. jpr ne,L523]` with `[S; jpr L519]` and
+  turned the cjp (label L523 now at S): an inversion around the continue jump, whose scan finds the cjp naming the label
+  behind the jump only after following the conditional jump back of the loop. As a D50 extension (the scan follows that
+  jump once, for a forward jump p; S goes in front of the body start): cas 132; only for forward jumps: 144 (yylex, main,
+  pstcmp, hash, jiter, ...). hash (`if (p != &k) p = &k; else ...` in a while loop) is a natural if/else whose then arm ends
+  in a jump to the join, straight on to the test: in the spopt input the same as `if (c) { S; continue; }`, and the original
+  does not move it. So the input of spopt does not tell the two apart; the patch is aside (tmp/tmp/d50follow.patch).
