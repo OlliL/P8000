@@ -300,11 +300,10 @@ mapnm(p)
 			if (rflag) {
 				n = p->in.sname->sbyte5;
 				t = p->in.sname->stype;
-#ifdef SEG
 				if (t == FLOAT || t == DOUBLE)
+#ifdef SEG
 					n -= 13;
 #else
-				if (t == FLOAT || t == DOUBLE)
 					n -= 12;
 #endif
 				else
