@@ -356,6 +356,9 @@ prolog(a, sz, b, w, tot)
 	fpdec(tot);
 	regsave(a, sz, b, w, tot);
 	regargs(tot);
+#ifdef OLD_D3K
+	d3kjump(jlab);
+#endif
 	branch(jlab);
 	eobl2((int)(maxoff / 8), tot);
 }
