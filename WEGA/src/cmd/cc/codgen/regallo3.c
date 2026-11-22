@@ -39,7 +39,7 @@ static char rcname[][8] = {
 #ifdef OLD_D3KC
 #define D2PN(t)	1
 #else
-#define D2PN(t)	(!((t)->sym && (t)->sym->sclass == 9 && (t)->reg >= 4))	/* v0, vc: not the words of a parameter in r4..r7 (gopt testbit) */
+#define D2PN(t)	(!((t)->sym && (t)->sym->sclass == PARAM && (t)->reg >= 4))	/* v0, vc: not the words of a parameter in r4..r7 (gopt testbit) */
 #endif
 
 #ifdef OLD_D2L
@@ -649,7 +649,7 @@ getreg(cls, reg, flag, sym)
 			if (t->cls == 3 && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
 #else
 			/* not a pair that holds a parameter, as below (vc: gopt pr) */
-			if (t->cls == 3 && t->reg < 8 && t->busy <= 0 && t->kind != 6 && !(t->sym && t->sym->sclass == 9) &&
+			if (t->cls == 3 && t->reg < 8 && t->busy <= 0 && t->kind != 6 && !(t->sym && t->sym->sclass == PARAM) &&
 #endif
 			    (w == 0 || rweight[t->reg] < rweight[w->reg]) && (m == 0 || rweight[t->reg] < rweight[m->reg])) {
 				rsreturn(3, t->reg);
@@ -673,7 +673,7 @@ getreg(cls, reg, flag, sym)
 			if (t->cls == 2 && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && D2PN(t) &&
 			    (w == 0 || rweight[t->reg] < rweight[w->reg]
 #ifdef SEG
-			    && !(t->sym && t->sym->sclass == 9)
+			    && !(t->sym && t->sym->sclass == PARAM)
 #endif
 			    )) {
 				for (m = rsuse; m; m = m->next)
@@ -697,7 +697,7 @@ getreg(cls, reg, flag, sym)
 #ifdef OLD_D2PO
 		for (t = rsuse; t; t = t->next)		/* an idle odd word whose even half is free: given back */
 			/* not a word that holds a parameter (cas symtype) */
-			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == 9) &&
+			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == PARAM) &&
 			    (w == 0 || rweight[t->reg - 1] < rweight[w->reg])) {
 				for (m = rsfree; m; m = m->next)
 					if (m->cls == 2 && m->reg == t->reg - 1)
@@ -713,7 +713,7 @@ getreg(cls, reg, flag, sym)
 #ifdef OLD_D3KC
 			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && t->reg < 4 &&
 #else
-			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == 9) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && t->reg < 4 &&
+			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == PARAM) && (w == 0 || rweight[t->reg] < rweight[w->reg]) && t->reg < 4 &&
 #endif
 			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
 				m = t;
@@ -859,7 +859,7 @@ fail:
 			if (j->cls == 3 && j->busy <= 0)
 				break;
 		for (t = rsuse; t; t = t->next)
-			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && t->sym && t->sym->sclass == 9) {
+			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && t->sym && t->sym->sclass == PARAM) {
 				for (m = rsfree; m; m = m->next)
 					if (m->cls == 2 && m->reg == t->reg - 1)
 						break;
@@ -1014,7 +1014,7 @@ rsfreeall(flag)
 		case 4:			/* v0, at a label: as 1, but a parameter stays known in its register */
 			if (n->cls > 4 || n->kind == 6)
 				continue;
-			if (n->busy <= 0 && n->sym && n->sym->sclass == 9)
+			if (n->busy <= 0 && n->sym && n->sym->sclass == PARAM)
 				continue;
 			goto ret;
 #endif

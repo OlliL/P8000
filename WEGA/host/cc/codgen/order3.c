@@ -35,7 +35,7 @@ int fltused = 0;
 
 #ifdef OLD_D3K
 /* v0: not the register of a parameter (it is copied before an operator changes it) */
-#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & 0x14) && !((q)->in.sname && (q)->in.sname->sclass == 9))
+#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & 0x14) && !((q)->in.sname && (q)->in.sname->sclass == PARAM))
 #else
 #define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & 0x14))
 #endif
@@ -941,7 +941,7 @@ d3aw(NODE *p, int top)
 	register struct rs *n;
 	register int k;
 
-	if (p->in.op == NAME && p->in.sname && p->in.sname->sclass == 9) {
+	if (p->in.op == NAME && p->in.sname && p->in.sname->sclass == PARAM) {
 		if (top)
 			for (n = rsuse; n; n = n->next)
 				if (n->cls <= 4 && n->sym == p->in.sname && n->reg <= d3awhi &&

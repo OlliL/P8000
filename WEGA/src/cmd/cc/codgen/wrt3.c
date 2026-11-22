@@ -73,9 +73,9 @@ parminit(p)
 #endif
 	else
 		n -= 7;
-	if (rflag && s->sclass == 4 && regvar[n].sym != s)
+	if (rflag && s->sclass == REGISTER && regvar[n].sym != s)
 		s->sclass = 9;
-	if (p->tn.lval < 0 && s->sclass != 4 && s->sclass != 8)
+	if (p->tn.lval < 0 && s->sclass != REGISTER && s->sclass != MOS)
 		s->sbyte5 = -p->tn.lval;
 	r = s->sbyte5;
 	if (p->in.type == STRTY || p->in.type == UNIONTY) {
@@ -89,7 +89,7 @@ parminit(p)
 		t2 = p->in.type;
 	cls = rclass(t2, r);
 #ifdef OLD_D22
-	if (s->sclass == 9 && p->tn.lval < 0 && (t2 == 6 || t2 == 7) && r < 8) {	/* v0p: a double parameter in rq4 */
+	if (s->sclass == PARAM && p->tn.lval < 0 && (t2 == 6 || t2 == 7) && r < 8) {	/* v0p: a double parameter in rq4 */
 		if (nparmtab > 9)
 			cerror("rinit: formal paramter array overflow");
 		parmtab[nparmtab].reg = s->sbyte5;
@@ -100,7 +100,7 @@ parminit(p)
 		return;
 	}
 #endif
-	if ((s->sclass == 9 && p->tn.lval < 0) || s->sclass == 4) {
+	if ((s->sclass == PARAM && p->tn.lval < 0) || s->sclass == REGISTER) {
 		for (q = rsuse; q; q = q->next)
 			if (q->reg == r) {
 				q->busy = 0;
@@ -109,7 +109,7 @@ parminit(p)
 		getreg(cls, r, 0x1000, s);
 		rfree(r, t2);
 	got:
-		if (s->sclass == 4) {
+		if (s->sclass == REGISTER) {
 			if (s->stype == DOUBLE || (s->stype == FLOAT && p->tn.lval < 0))
 				printf("\tfldd\t%s,", rnames[r]);
 			else if (s->stype == FLOAT)
@@ -161,9 +161,9 @@ parminit(p)
 		s->sflags &= ~8;
 		return;
 	}
-	if (s->sclass == 9 && p->tn.lval >= 0)
+	if (s->sclass == PARAM && p->tn.lval >= 0)
 		s->sflags |= 8;
-	else if (s->sclass != 9)
+	else if (s->sclass != PARAM)
 		cerror("illegal class in PROC tree");
 }
 
@@ -202,7 +202,7 @@ fbegin(s)
 	*cp++ = '_';
 	for (np = ascii + s->nameoff; *cp++ = *np++; )
 		;
-	if (s->sclass == 5)
+	if (s->sclass == EXTDEF)
 		printf("/*~~%s:*/\n", ascii + s->nameoff);
 #ifdef SEG
 	printf("\n\t.psec\n\t.code\n\n");
@@ -210,7 +210,7 @@ fbegin(s)
 	printf("\n\t.code\n\n");
 #endif
 	printf("\t%s:", fname);
-	if (s->sclass == 5)
+	if (s->sclass == EXTDEF)
 		printf(":");
 	printf("\n\t{\n\n");
 	t = s->stype;

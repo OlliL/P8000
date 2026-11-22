@@ -392,7 +392,7 @@ allocreg(p, cookie)
 	    p->in.op != ASG LS && p->in.op != ASG RS && p->in.left->in.op == REG && szty(p->in.left->in.type) == 2
 #ifdef OLD_D2XP
 	    /* vc (gopt): not the pair of a parameter (nodeno c = q + 6: ldl rr2,rr6; inc r3,#6) */
-	    && !(p->in.left->in.sname && p->in.left->in.sname->sclass == 9)
+	    && !(p->in.left->in.sname && p->in.left->in.sname->sclass == PARAM)
 	    /* nor for a scratch register when the result is the left operand (gopt constfold: ld U1,UR; and AL,AR; and UL,U1) */
 	    && d2xresc
 #endif
@@ -413,7 +413,7 @@ allocreg(p, cookie)
 #ifdef OLD_D2MO
 		/* an odd one in the pair below it when the even half is free or idle; not a parameter (gopt canshare,
 		 * setedges, testbit) */
-		else if (p->in.op == MUL && (lr & 1) && !(l->in.sname && l->in.sname->sclass == 9) && d2ofree(lr))
+		else if (p->in.op == MUL && (lr & 1) && !(l->in.sname && l->in.sname->sclass == PARAM) && d2ofree(lr))
 			r = d2pair(lr, lr - 1, p, l);
 #endif
 #endif
@@ -500,7 +500,7 @@ allocreg(p, cookie)
 		if (q) {
 			for (q = rsuse; q; q = q->next)
 				if (q->cls == 2 && q->reg == (want ^ 1) && q->busy <= 0 && q->kind != 6 && q->sym &&
-				    q->sym->sclass != 9)
+				    q->sym->sclass != PARAM)
 					break;
 			if (q) {
 				rsreturn(2, want ^ 1);
@@ -539,7 +539,7 @@ d2pw:
 		for (q = rsuse; q; q = q->next)
 			if (q->cls == 3 && q->reg == p->tn.rval)
 				break;
-		if (q && q->sym && q->sym->sclass != 9 && q->busy == 1 && q->kind != 6 && (q->flags & 0x2000)) {
+		if (q && q->sym && q->sym->sclass != PARAM && q->busy == 1 && q->kind != 6 && (q->flags & 0x2000)) {
 			if (r != -1 && r != p->tn.rval)
 				rsreturn(3, r);
 			r = p->tn.rval;
@@ -555,7 +555,7 @@ d2pw:
 		for (q = rsuse; q; q = q->next)
 			if (q->cls == 2 && q->reg == p->tn.rval)
 				break;
-		if (q && q->sym && q->sym->sclass != 9 && q->busy == 1 && q->kind != 6 && (q->flags & 0x2000)) {
+		if (q && q->sym && q->sym->sclass != PARAM && q->busy == 1 && q->kind != 6 && (q->flags & 0x2000)) {
 			q->sym = 0;
 			q->busy = 0;
 			rsreturn(2, p->tn.rval);

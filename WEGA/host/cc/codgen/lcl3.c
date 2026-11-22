@@ -230,7 +230,7 @@ clocal(NODE *p)
 	case NAME:
 		s = p->in.sname;
 		switch (s->sclass) {
-		case 9:
+		case PARAM:
 #ifdef OLD_D3K
 #ifndef OLD_D3KC
 			/* v0: a parameter whose address is taken is not known in its register: it needs its home */
@@ -258,7 +258,7 @@ clocal(NODE *p)
 				chk(q);
 			}
 			break;
-		case 1:
+		case AUTO:
 			r = makeblock(REG, 0, 0, 0x18);
 			r->tn.lval = s->soffset / 8;
 			r->tn.rval = 15;
@@ -270,19 +270,19 @@ clocal(NODE *p)
 				chk(q);
 			}
 			break;
-		case 3:
-		case 6:
+		case STATIC:
+		case LABEL:
 			if ((s->sflags >> 2 & 1) == 1)
 				return p;	/* the original returns without a value (the caller gets what is left in the register) */
 			p->tn.lval = 0;
 			p->tn.rval = -s->soffset;
 			break;
-		case 4:
+		case REGISTER:
 			p->in.op = REG;
 			p->tn.lval = 0;
 			p->tn.rval = s->sbyte5;
 			break;
-		case 18:
+		case USTATIC:
 			break;
 		default:
 			cerror("lcl: NAME op has illegal class\n");

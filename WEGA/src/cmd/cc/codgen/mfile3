@@ -122,6 +122,26 @@
 #define RESCC	04000
 #define RNOP	010000
 
+/* storage classes of the symbol table (struct sym, as cparse writes them: cparse/mfile1) */
+#define AUTO	1
+#define EXTERN	2
+#define STATIC	3
+#define REGISTER	4
+#define EXTDEF	5
+#define LABEL	6
+#define ULABEL	7
+#define MOS	8
+#define PARAM	9
+#define STNAME	10
+#define MOU	11
+#define UNAME	12
+#define TYPEDEF	13
+#define FORTRAN	14
+#define ENAME	15
+#define MOE	16
+#define UFORTRAN	17
+#define USTATIC	18
+
 #define MUSTDO	010000
 #define NOPREF	020000
 

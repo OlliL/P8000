@@ -28,7 +28,7 @@ int fltused = 0;
 
 #ifdef OLD_D3K
 /* v0: not the register of a parameter (it is copied before an operator changes it) */
-#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & 0x14) && !((q)->in.sname && (q)->in.sname->sclass == 9))
+#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & 0x14) && !((q)->in.sname && (q)->in.sname->sclass == PARAM))
 #else
 #define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & 0x14))
 #endif
@@ -956,7 +956,7 @@ d3aw(p, top)
 	register struct rs *n;
 	register int k;
 
-	if (p->in.op == NAME && p->in.sname && p->in.sname->sclass == 9) {
+	if (p->in.op == NAME && p->in.sname && p->in.sname->sclass == PARAM) {
 		if (top)
 			for (n = rsuse; n; n = n->next)
 				if (n->cls <= 4 && n->sym == p->in.sname && n->reg <= d3awhi &&
@@ -998,7 +998,7 @@ d3awfree(q)
 
 	for (n = rsuse; n; n = next) {
 		next = n->next;
-		if (n->cls <= 3 && n->busy <= 0 && n->kind != 6 && n->sym && n->sym->sclass == 9 &&
+		if (n->cls <= 3 && n->busy <= 0 && n->kind != 6 && n->sym && n->sym->sclass == PARAM &&
 		    n->reg <= d3awhi && n->reg + (n->cls == 3) >= d3awlo && !d3awuses(q, n->sym))
 			rsreturn(n->cls, n->reg);
 	}

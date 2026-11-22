@@ -268,7 +268,7 @@ clocal(p)
 	case NAME:
 		s = p->in.sname;
 		switch (s->sclass) {
-		case 9:
+		case PARAM:
 #ifdef OLD_D57
 			/* vl: a register parameter is used as memory (its address is taken): remembered for efcode */
 			if (!(s->sflags >> 3 & 1))
@@ -301,7 +301,7 @@ clocal(p)
 				chk(q);
 			}
 			break;
-		case 1:
+		case AUTO:
 			r = makeblock(REG, 0, 0, 0x18);
 			r->tn.lval = s->soffset / 8;
 			r->tn.rval = 15;
@@ -313,19 +313,19 @@ clocal(p)
 				chk(q);
 			}
 			break;
-		case 3:
-		case 6:
+		case STATIC:
+		case LABEL:
 			if ((s->sflags >> 2 & 1) == 1)
 				return;
 			p->tn.lval = 0;
 			p->tn.rval = -s->soffset;
 			break;
-		case 4:
+		case REGISTER:
 			p->in.op = REG;
 			p->tn.lval = 0;
 			p->tn.rval = s->sbyte5;
 			break;
-		case 18:
+		case USTATIC:
 			break;
 		default:
 			cerror("lcl: NAME op has illegal class\n");

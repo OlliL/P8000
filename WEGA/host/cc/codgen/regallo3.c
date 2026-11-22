@@ -641,7 +641,7 @@ getreg(int cls, int reg, int flag, struct sym *sym)
 #ifdef OLD_D3KC
 			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) &&
 #else
-			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == 9) && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) &&
+			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == PARAM) && (w == 0 || rweight[(unsigned char)t->reg] < rweight[(unsigned char)w->reg]) &&
 #endif
 			    (m == 0 || rweight[(unsigned char)t->reg] < rweight[m->reg]))
 				m = t;
@@ -910,7 +910,7 @@ rsfreeall(int flag)
 		case 4:			/* v0, at a label: as 1, but a parameter stays known in its register */
 			if (n->cls > 4 || n->kind == 6)
 				continue;
-			if (n->busy <= 0 && n->sym && n->sym->sclass == 9)
+			if (n->busy <= 0 && n->sym && n->sym->sclass == PARAM)
 				continue;
 			goto ret;
 #endif

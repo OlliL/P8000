@@ -392,7 +392,7 @@ mapregs(p)
 		n = p->in.right;
 		if (p->in.left->in.op == UAND)
 			p->in.left->in.type = p->in.type;
-		if (n->in.op == NAME && (n->in.sname->sclass == 8 || n->in.sname->sclass == 11)) {
+		if (n->in.op == NAME && (n->in.sname->sclass == MOS || n->in.sname->sclass == MOU)) {
 			n->in.op = ICON;
 			n->tn.lval = n->in.sname->soffset / 8;
 			n->tn.rval = 0;
@@ -481,9 +481,9 @@ rfreeall(flag)
 			continue;
 #ifdef OLD_D3K
 #ifdef OLD_D3KC
-		if (flag == 2 && n->cls == 2 && n->sym && n->sym->sclass == 9)
+		if (flag == 2 && n->cls == 2 && n->sym && n->sym->sclass == PARAM)
 #else
-		if (flag == 2 && n->cls <= 3 && n->sym && n->sym->sclass == 9)
+		if (flag == 2 && n->cls <= 3 && n->sym && n->sym->sclass == PARAM)
 #endif
 			continue;
 #endif
@@ -812,7 +812,7 @@ regforsym(reg, s, type, off)
 {
 	register int r, cls;
 
-	if (s->sclass == 4) {
+	if (s->sclass == REGISTER) {
 		cls = rclass(type, reg);
 		r = getreg(cls, reg, 0x1000, s);
 		if (r == s->sbyte5)
@@ -852,14 +852,14 @@ fixname(p)
 #ifdef OLD_D2FA
 	/* vc (gopt): an automatic pointer or long is also found in the pair an assignment named with its frame place
 	   (rnassign: ~L1+off), when no register is wanted for it (an argument is loaded from the frame) */
-	if ((p->in.sname->sclass == 1 || p->in.sname->sclass == 9) && p->in.rall == NOPREF && !d2fanone && d2faltype) {
+	if ((p->in.sname->sclass == AUTO || p->in.sname->sclass == PARAM) && p->in.rall == NOPREF && !d2fanone && d2faltype) {
 		register struct rs *n;
 		register struct sym *f;
 
-		f = p->in.sname->sclass == 9 && (p->in.sname->sflags >> 3 & 1) == 1 ? fpsym2 : fpsym1;
+		f = p->in.sname->sclass == PARAM && (p->in.sname->sflags >> 3 & 1) == 1 ? fpsym2 : fpsym1;
 		for (n = rsuse; n; n = n->next)
 			if (n->cls == 3 && n->sym == f && n->off == p->in.sname->soffset / 8 && rclass(p->in.type, n->reg) == 3 &&
-			    (p->in.sname->sclass == 1 || (n->flags & 0x0400))) {
+			    (p->in.sname->sclass == AUTO || (n->flags & 0x0400))) {
 				n->busy = 1;
 				p->in.op = REG;
 				p->tn.rval = n->reg;
@@ -886,7 +886,7 @@ oregfix(p)
 
 	if ((p->in.sname->sflags >> 2 & 1) == 1)
 		return;
-	if (p->in.op == NAME && p->in.sname->sclass == 3)
+	if (p->in.op == NAME && p->in.sname->sclass == STATIC)
 		return;
 	if (p->in.op == NAME && p->tn.rval < 0)
 		return;
@@ -894,7 +894,7 @@ oregfix(p)
 	p->tn.rval = 15;
 	p->tn.lval = p->in.sname->soffset / 8;
 	p->stn.stsize = 0;
-	p->in.sname = p->in.sname->sclass == 9 && ((p->in.sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
+	p->in.sname = p->in.sname->sclass == PARAM && ((p->in.sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
 }
 
 #ifndef OLD_DNR	/* vc: the register records of gopt (F R S T, -O3 and -O5) are not read */
@@ -1092,7 +1092,7 @@ tcmd(n)
 		s = mapn(n);
 		t = s->stype;
 		off = s->soffset;
-		if (s->sclass != 3)
+		if (s->sclass != STATIC)
 			off = off / 8;
 		reg = s->sbyte5;
 	} else {
@@ -1146,7 +1146,7 @@ memname(s, off)
 
 	if (s && (s->sflags >> 2 & 1))
 		printf("_%s", ascii + s->nameoff);
-	else if (s && s->sclass == 3) {
+	else if (s && s->sclass == STATIC) {
 		putchar('L');
 		printf("%ld", off);
 	} else {

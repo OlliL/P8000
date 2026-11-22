@@ -351,7 +351,7 @@ mapregs(NODE *p)
 		n = p->in.right;
 		if (p->in.left->in.op == UAND)
 			p->in.left->in.type = p->in.type;
-		if (n->in.op == NAME && (n->in.sname->sclass == 8 || n->in.sname->sclass == 11)) {
+		if (n->in.op == NAME && (n->in.sname->sclass == MOS || n->in.sname->sclass == MOU)) {
 			n->in.op = ICON;
 			n->tn.lval = n->in.sname->soffset / 8;
 			n->tn.rval = 0;
@@ -443,9 +443,9 @@ rfreeall(int flag)
 			continue;
 #ifdef OLD_D3K
 #ifdef OLD_D3KC
-		if (flag == 2 && n->cls == 2 && n->sym && n->sym->sclass == 9)
+		if (flag == 2 && n->cls == 2 && n->sym && n->sym->sclass == PARAM)
 #else
-		if (flag == 2 && n->cls <= 3 && n->sym && n->sym->sclass == 9)
+		if (flag == 2 && n->cls <= 3 && n->sym && n->sym->sclass == PARAM)
 #endif
 			continue;
 #endif
@@ -731,7 +731,7 @@ regforsym(int reg, struct sym *s, int type, long off)
 {
 	register int r, cls;
 
-	if (s->sclass == 4) {
+	if (s->sclass == REGISTER) {
 		cls = rclass(type, reg);
 		r = getreg(cls, reg, 0x1000, s);
 		if (r == s->sbyte5)
@@ -781,7 +781,7 @@ oregfix(NODE *p)
 
 	if ((p->in.sname->sflags >> 2 & 1) == 1)
 		return;
-	if (p->in.op == NAME && p->in.sname->sclass == 3)
+	if (p->in.op == NAME && p->in.sname->sclass == STATIC)
 		return;
 	if (p->in.op == NAME && p->tn.rval < 0)
 		return;
@@ -789,7 +789,7 @@ oregfix(NODE *p)
 	p->tn.rval = 15;
 	p->tn.lval = p->in.sname->soffset / 8;
 	p->stn.stsize = 0;
-	p->in.sname = p->in.sname->sclass == 9 && ((p->in.sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
+	p->in.sname = p->in.sname->sclass == PARAM && ((p->in.sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
 }
 
 /* command F: a register variable or a temporary is released */
@@ -978,7 +978,7 @@ tcmd(int n)
 		s = mapn(n);
 		t = s->stype;
 		off = s->soffset;
-		if (s->sclass != 3)
+		if (s->sclass != STATIC)
 			off = off / 8;
 		reg = s->sbyte5;
 	} else {
@@ -1029,7 +1029,7 @@ memname(struct sym *s, long off)
 
 	if (s && (s->sflags >> 2 & 1))
 		printf("_%s", ascii + s->nameoff);
-	else if (s && s->sclass == 3) {
+	else if (s && s->sclass == STATIC) {
 		putchar('L');
 		printf("%ld", off);
 	} else {

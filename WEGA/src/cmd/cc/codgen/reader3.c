@@ -556,7 +556,7 @@ delay(p)
 	fwalk(p, mapnm, 0);
 #if defined(OLD_D3K) && !defined(OLD_D3KC)
 	/* v0: a parameter the statement assigns to is not known in its register from its start on */
-	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname && p->in.left->in.sname->sclass == 9) {
+	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname && p->in.left->in.sname->sclass == PARAM) {
 		register struct rs *n;
 
 		for (n = rsuse; n; n = n->next)
@@ -569,11 +569,11 @@ delay(p)
 	d2fanone = p->in.op == CBRANCH && p->in.left->in.op == OROR;
 	/* vc (gopt): an automatic variable the statement assigns to is not known in the pair of its frame place from its start on */
 	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname &&
-	    (p->in.left->in.sname->sclass == 1 || p->in.left->in.sname->sclass == 9)) {
+	    (p->in.left->in.sname->sclass == AUTO || p->in.left->in.sname->sclass == PARAM)) {
 		register struct rs *n;
 		register struct sym *f;
 
-		f = p->in.left->in.sname->sclass == 9 && (p->in.left->in.sname->sflags >> 3 & 1) == 1 ? fpsym2 : fpsym1;
+		f = p->in.left->in.sname->sclass == PARAM && (p->in.left->in.sname->sflags >> 3 & 1) == 1 ? fpsym2 : fpsym1;
 		for (n = rsuse; n; n = n->next)
 			if (n->cls == 3 && n->sym == f && n->off == p->in.left->in.sname->soffset / 8)
 				n->sym = 0;
@@ -948,7 +948,7 @@ again:
 			register struct rs *n;
 
 			for (n = rsuse; n; n = n->next)
-				if (n->cls <= 4 && n->sym && n->sym->sclass == 9 && n->reg == (p->in.rall & 0xff))
+				if (n->cls <= 4 && n->sym && n->sym->sclass == PARAM && n->reg == (p->in.rall & 0xff))
 					n->sym = 0;
 		}
 #endif
@@ -1675,9 +1675,9 @@ oreg2(p)
 #endif
 			if (ql->tn.rval < 0) {
 #ifdef SEG
-				if (ql->in.sname->sclass == 3 && !(ql->in.sname->sflags >> 2 & 1))
+				if (ql->in.sname->sclass == STATIC && !(ql->in.sname->sflags >> 2 & 1))
 #else
-				if (ql->in.sname && ql->in.sname->sclass == 3 && !(ql->in.sname->sflags >> 2 & 1))
+				if (ql->in.sname && ql->in.sname->sclass == STATIC && !(ql->in.sname->sflags >> 2 & 1))
 #endif
 					stw = -ql->in.sname->soffset;
 				else
@@ -1869,7 +1869,7 @@ d3kjump(l)
 		j->lab = l;
 		j->n = 0;
 		for (n = rsuse; n; n = n->next)
-			if (n->cls <= 3 && n->sym && n->sym->sclass == 9 && j->n < 4) {
+			if (n->cls <= 3 && n->sym && n->sym->sclass == PARAM && j->n < 4) {
 				j->reg[j->n] = n->reg;
 				j->cls[j->n] = n->cls;
 				j->sym[j->n] = n->sym;
@@ -1925,7 +1925,7 @@ d3klabel(lab, dead)
 	j->lab = -1;
 	for (n = rsuse; n; n = next) {	/* a parameter not known at every jump is forgotten */
 		next = n->next;
-		if (n->cls > 3 || !n->sym || n->sym->sclass != 9 || n->busy > 0)
+		if (n->cls > 3 || !n->sym || n->sym->sclass != PARAM || n->busy > 0)
 			continue;
 		if (!dead) {
 			for (i = 0; i < j->n; i++)

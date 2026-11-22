@@ -486,7 +486,7 @@ delay(NODE *p)
 	fwalk(p, mapnm_walk, 0);
 #if defined(OLD_D3K) && !defined(OLD_D3KC)
 	/* v0: a parameter the statement assigns to is not known in its register from its start on */
-	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname && p->in.left->in.sname->sclass == 9) {
+	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname && p->in.left->in.sname->sclass == PARAM) {
 		register struct rs *n;
 
 		for (n = rsuse; n; n = n->next)
@@ -794,7 +794,7 @@ again:
 			register struct rs *n;
 
 			for (n = rsuse; n; n = n->next)
-				if (n->cls <= 4 && n->sym && n->sym->sclass == 9 && n->reg == (p->in.rall & 0xff))
+				if (n->cls <= 4 && n->sym && n->sym->sclass == PARAM && n->reg == (p->in.rall & 0xff))
 					n->sym = 0;
 		}
 #endif
@@ -1441,7 +1441,7 @@ oreg2(NODE *p)
 		if (q->in.op == PLUS && ql->in.op == ICON && qr->in.op == REG) {
 #endif
 			if (ql->tn.rval < 0) {
-				if (ql->in.sname && ql->in.sname->sclass == 3 && !(ql->in.sname->sflags >> 2 & 1))	/* SEG: the original reads address 0 for no symbol */
+				if (ql->in.sname && ql->in.sname->sclass == STATIC && !(ql->in.sname->sflags >> 2 & 1))	/* SEG: the original reads address 0 for no symbol */
 					stw = -ql->in.sname->soffset;
 				else
 					stw = ql->tn.rval;

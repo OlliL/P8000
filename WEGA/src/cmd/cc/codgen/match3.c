@@ -98,9 +98,9 @@ tshape(p, shape)
 #ifdef OLD_D3K
 		/* v0: the register of a parameter is not a scratch one for the tree (it is copied first) */
 #ifdef OLD_D3KC
-		if ((rstatus[p->tn.rval] & RTEMPFLAGS) && !(p->in.sname && p->in.sname->sclass == 9))
+		if ((rstatus[p->tn.rval] & RTEMPFLAGS) && !(p->in.sname && p->in.sname->sclass == PARAM))
 #else
-		if ((rstatus[p->tn.rval] & RTEMPFLAGS) && !(p->in.sname && p->in.sname->sclass == 9 && (p->in.rall & ~MUSTDO) != p->tn.rval))
+		if ((rstatus[p->tn.rval] & RTEMPFLAGS) && !(p->in.sname && p->in.sname->sclass == PARAM && (p->in.rall & ~MUSTDO) != p->tn.rval))
 #endif
 #else
 		if (rstatus[p->tn.rval] & RTEMPFLAGS)
@@ -240,9 +240,9 @@ match(p, cookie)
 		/* v0: a name (not a parameter) found in a scratch register is that register, which then loses the name */
 		if (p->in.op == REG && (cookie & STAREG) && (rstatus[p->tn.rval] & STAREG) && p->in.type != LONG && p->in.type != ULONG &&
 #ifdef OLD_D3KC
-		    p->in.sname && p->in.sname->sclass != 9 &&
+		    p->in.sname && p->in.sname->sclass != PARAM &&
 #else
-		    p->in.sname && (p->in.sname->sclass != 9 ? (p->in.rall & MUSTDO) || d2vfirst(p->tn.rval) : (p->in.rall & ~MUSTDO) == p->tn.rval) &&
+		    p->in.sname && (p->in.sname->sclass != PARAM ? (p->in.rall & MUSTDO) || d2vfirst(p->tn.rval) : (p->in.rall & ~MUSTDO) == p->tn.rval) &&
 #endif
 		    (!(p->in.rall & MUSTDO) || (p->in.rall & ~MUSTDO) == p->tn.rval)) {
 			symdrop(p->tn.rval);
@@ -254,7 +254,7 @@ match(p, cookie)
 #ifdef OLD_D3L
 		/* v0: a word cast of a global long is not taken from the register that holds the long */
 		if (p->in.op == SCONV && p->in.left->in.op == NAME && (p->in.left->in.type == LONG || p->in.left->in.type == ULONG) && p->in.type != LONG && p->in.type != ULONG &&
-		    p->in.left->in.sname->sclass != 9 && p->in.left->in.sname->sclass != 1 && p->in.left->in.sname->sclass != 4)
+		    p->in.left->in.sname->sclass != PARAM && p->in.left->in.sname->sclass != AUTO && p->in.left->in.sname->sclass != REGISTER)
 			goto cont;
 #endif
 		if (p->in.left->in.op == NAME)
@@ -280,7 +280,7 @@ match(p, cookie)
 			}
 #ifdef OLD_D3AW
 			/* v0p: a parameter added to an address constant is not taken from its register */
-			if (p->in.op == PLUS && p->in.left->in.op == ICON && p->in.left->in.sname && p->in.right->in.sname->sclass == 9)
+			if (p->in.op == PLUS && p->in.left->in.op == ICON && p->in.left->in.sname && p->in.right->in.sname->sclass == PARAM)
 				oregfix(p->in.right);
 			else
 #endif
