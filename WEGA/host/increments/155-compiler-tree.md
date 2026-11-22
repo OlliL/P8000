@@ -94,7 +94,7 @@ Rules of the target:
    optim (and of manifest, mfile1, mfile2, the operator tables, macdefs) in cparse, gopt, codgen; per unit the versions
    and their differences; where pass-specific code and OLD_* switches sit inside the shared text. (Units measured, see
    Known; the headers follow in step 4.)
-2. (done 2026-11-22, checkall ALL OK; the oldcc checks still to run) Move 1:1: cpp, cparse, gopt, codgen, popt below `src/cmd/cc/` (git mv, nothing else changed); the Makefiles (relative
+2. (done 2026-11-22) Move 1:1: cpp, cparse, gopt, codgen, popt below `src/cmd/cc/` (git mv, nothing else changed); the Makefiles (relative
    paths, SUBDIRS and the case of `make shipped` in src/cmd/Makefile, src/Makefile); the tools and documents on the new
    paths (see Done when); all builds byte-identical; checkall.
 3. Align in the present directories (cparse, gopt, codgen), not yet in mip: move code between the files of a pass, put
@@ -130,3 +130,6 @@ Rules of the target:
 - 2026-11-22: step 2: cpp, cparse, gopt, codgen, popt moved below src/cmd/cc (git mv); Makefiles (one level more to
   head/ and lib/, OLDPRINTF5 in src/Makefile, SUBDIRS cc/PASS in src/cmd/Makefile), .gitignore, tools and documents
   (not OLDCC_LOG.md, not the corpus inputs); checkall ALL OK.
+- 2026-11-22: step 2 checks: models 179/179/209/210/73/73/26 strictly equal, bench 153/132/212, both matrix checks as
+  in the table (they print "77 files of the passes changed since": the move); switchmatrix, goptmodel, datastr,
+  progcfg (passes below cc/) and the progcfg of cpp, cparse, codgen, popt (host/ld, lib/ one level up) fixed.

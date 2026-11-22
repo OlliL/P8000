@@ -57,13 +57,13 @@ TIMEOUT = 900
 def switches():
     """{switch: pass} of the version, from the sources"""
     sw = {}
-    txt = open(os.path.join(REPO, 'src', 'cmd', 'codgen', 'oldcc.h')).read()
+    txt = open(os.path.join(REPO, 'src', 'cmd', 'cc', 'codgen', 'oldcc.h')).read()
     for name in CFGV['blocks']:
         m = re.search(r'^#ifdef %s\n(.*?)^#endif' % name, txt, re.M | re.S)
         for s in re.findall(r'^#define (OLD_D\w+)', m.group(1), re.M):
             sw[s] = 'codgen'
     for p in ('cparse', 'popt'):
-        m = vline(open(os.path.join(REPO, 'src', 'cmd', p, 'Makefile')).read(), p)
+        m = vline(open(os.path.join(REPO, 'src', 'cmd', 'cc', p, 'Makefile')).read(), p)
         for s in re.findall(r'-D(OLD_\w+)', m.group(2) if m else ''):
             sw[p + ':' + s] = p
     return sw
@@ -80,7 +80,7 @@ def commit():
 
 def build(work, name, pas):
     """build pass pas without the switch in the scratch copy and install it; returns an error text or None"""
-    src = os.path.join(work, 'src', 'cmd', pas)
+    src = os.path.join(work, 'src', 'cmd', 'cc', pas)
     plain = name.split(':')[-1]
     if pas == 'codgen':
         p = os.path.join(src, 'oldcc.h')
@@ -107,7 +107,7 @@ def build(work, name, pas):
 
 def make(work, pas):
     """the pass of the version, built by its Makefile with the tools of WEGA (wbin of the work copy)"""
-    src = os.path.join(work, 'src', 'cmd', pas)
+    src = os.path.join(work, 'src', 'cmd', 'cc', pas)
     b = BIN[pas]
     d = os.path.join(src, 'build', CFGV['dir'])
     for f in os.listdir(d):
@@ -186,16 +186,16 @@ def setup():
     shutil.rmtree(os.path.join(TMP, 'matrix_' + VER), ignore_errors=True)
     work = os.path.join(TMP, 'matrix_' + VER, 'w0')
     os.makedirs(os.path.join(work, 'tmp'))
-    os.makedirs(os.path.join(work, 'src', 'cmd'))
+    os.makedirs(os.path.join(work, 'src', 'cmd', 'cc'))
     os.symlink(os.path.join(REPO, 'src', 'lib'), os.path.join(work, 'src', 'lib'))
     os.symlink(os.path.join(REPO, 'src', 'head'), os.path.join(work, 'src', 'head'))
     subprocess.run(['cp', '-a', OLDROOT, os.path.join(work, 'root')], check=True)
     for p in PASSES + (['gopt'] if VER == 'vc' else []):
-        subprocess.run(['cp', '-a', os.path.join(REPO, 'src', 'cmd', p), os.path.join(work, 'src', 'cmd', p)], check=True)
+        subprocess.run(['cp', '-a', os.path.join(REPO, 'src', 'cmd', 'cc', p), os.path.join(work, 'src', 'cmd', 'cc', p)], check=True)
     subprocess.run(['sh', os.path.join(REPO, 'host', 'tools', 'wbin.sh'), os.path.join(work, 'wbin'), ROOT,
                     os.path.join(work, 'root'), EMU], check=True)
     for f in ('codgen/oldcc.h', 'cparse/Makefile', 'popt/Makefile'):
-        p = os.path.join(work, 'src', 'cmd', f)
+        p = os.path.join(work, 'src', 'cmd', 'cc', f)
         shutil.copy(p, p + '.all')
     wrappers(work)
     return work
@@ -210,7 +210,7 @@ def wrappers(work):
 
 
 def restore(work, pas):
-    src = os.path.join(work, 'src', 'cmd', pas)
+    src = os.path.join(work, 'src', 'cmd', 'cc', pas)
     f = 'oldcc.h' if pas == 'codgen' else 'Makefile'
     shutil.copy(os.path.join(src, f + '.all'), os.path.join(src, f))
     shutil.copy(os.path.join(work, 'base', pas), os.path.join(work, 'root', 'lib', VER, BIN[pas]))
@@ -307,7 +307,7 @@ def run(args):
         e = make(work, p)
         if e:
             sys.exit('baseline build of %s failed: %s' % (p, e))
-        shutil.copy(os.path.join(work, 'src', 'cmd', p, 'build', CFGV['dir'], BIN[p]), os.path.join(work, 'base', p))
+        shutil.copy(os.path.join(work, 'src', 'cmd', 'cc', p, 'build', CFGV['dir'], BIN[p]), os.path.join(work, 'base', p))
     base = {p: measure(work, p) for p in PROGS}
     if None in base.values():
         sys.exit('baseline model failed')
@@ -349,7 +349,7 @@ def check():
     for s in sorted(set(rows) - set(sw)):
         print('in the table but gone from the sources (oldcc.sh matrix): %s' % s)
         bad = 1
-    cmd = os.path.join(REPO, 'src', 'cmd')
+    cmd = os.path.join(REPO, 'src', 'cmd', 'cc')
     for d in sorted(os.listdir(os.path.join(REPO, 'compare'))) if VER == 'v0p' else []:
         if os.path.exists(os.path.join(REPO, 'compare', d, 'progcfg.py')) and os.path.isdir(os.path.join(cmd, d)) \
                 and d not in PROGS and d not in NOTPROGS:
@@ -358,7 +358,7 @@ def check():
     stamps = set(re.findall(r'\| (\w+) \|$', '\n'.join(rows.values()), re.M))
     for st in sorted(stamps):
         r = subprocess.run(['git', '-C', REPO, 'diff', '--name-only', st, 'HEAD', '--'] +
-                           [os.path.join('src', 'cmd', p) for p in PASSES], capture_output=True, text=True)
+                           [os.path.join('src', 'cmd', 'cc', p) for p in PASSES], capture_output=True, text=True)
         n = len([x for x in r.stdout.split('\n') if x and 'findings' not in x])
         print('measured at %s: %d files of the passes changed since' % (st, n))
     print('check: ' + ('differences, see above' if bad else 'switches and programs as in the table'))

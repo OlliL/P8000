@@ -47,7 +47,7 @@ def listing(img, segs):
 def main():
     work = sys.argv[1]
     tmp = os.environ.get('RECON_TMP', os.path.join(work, 'tmp'))
-    src = os.path.join(work, 'src', 'cmd', 'gopt')
+    src = os.path.join(work, 'src', 'cmd', 'cc', 'gopt')
     env = dict(os.environ, PATH=os.path.join(work, 'wbin') + ':' + os.environ['PATH'])
     subprocess.run(['make', 'clean'], cwd=src, env=env, capture_output=True, timeout=TIMEOUT)
     r = subprocess.run(['make', 'gopt'], cwd=src, env=env, capture_output=True, text=True, timeout=TIMEOUT)

@@ -31,8 +31,8 @@ def model_link(work, objs):
     here = os.path.dirname(os.path.abspath(__file__))
     cp = os.path.normpath(os.path.join(here, '..', '..', 'src', 'cmd', 'cc', 'cparse'))
     crt = os.path.join(cp, 'crt0.o')
-    hostld = os.path.normpath(os.path.join(cp, '..', '..', '..', 'host', 'ld', 'ld'))
-    libc = [os.path.join(cp, '..', '..', 'lib', 'libc-v7.a')]
+    hostld = os.path.normpath(os.path.join(cp, '..', '..', '..', '..', 'host', 'ld', 'ld'))
+    libc = [os.path.join(cp, '..', '..', '..', 'lib', 'libc-v7.a')]
     return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', crt] + objs + libc + ['-o', 'cparsem']
 
 

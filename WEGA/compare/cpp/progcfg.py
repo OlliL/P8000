@@ -18,8 +18,8 @@ def model_link(work, objs):
     """the link of d12model.py: crt0.o (make crt0.o), our modules, the libc of the program"""
     here = os.path.dirname(os.path.abspath(__file__))
     src = os.path.normpath(os.path.join(here, '..', '..', 'src', 'cmd', 'cc', 'cpp'))
-    hostld = os.path.normpath(os.path.join(src, '..', '..', '..', 'host', 'ld', 'ld'))
-    libc = [os.path.join(src, '..', '..', 'lib', 'libc-v2.a')]
+    hostld = os.path.normpath(os.path.join(src, '..', '..', '..', '..', 'host', 'ld', 'ld'))
+    libc = [os.path.join(src, '..', '..', '..', 'lib', 'libc-v2.a')]
     return [os.environ.get('LDBIN', hostld), '-e', 'start', os.path.join(src, 'crt0.o')] + objs + libc + ['-o', 'cppm']
 
 

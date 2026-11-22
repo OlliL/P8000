@@ -60,6 +60,8 @@ def load():
         m.LIBC_FROM = getattr(m, 'OWN_LIM', 0)
     cmd = os.path.join(HERE, '..', '..', 'src', 'cmd')
     srcdir = os.path.join(cmd, m.NAME)
+    if not os.path.isdir(srcdir) and os.path.isdir(os.path.join(cmd, 'cc', m.NAME)):
+        srcdir = os.path.join(cmd, 'cc', m.NAME)     # the passes of the compiler (increment 155)
     defaults = {'SEG': False, 'CC': '/bin/cc', 'SRCDIR': os.path.normpath(srcdir if os.path.isdir(srcdir) else cmd),
                 'MODULES': [], 'TABLES': [], 'DOCS': [], 'D18': False}
     for k, v in defaults.items():

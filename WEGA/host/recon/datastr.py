@@ -35,7 +35,7 @@ def main():
     shifts = '-s' in a
     byt = '-b' in a
     a = [x for x in a if x not in ('-s', '-b')]
-    default = os.path.join(CFG.REPO, 'src', 'cmd', CFG.NAME if hasattr(CFG, 'NAME') else 'gopt', 'gopt')
+    default = os.path.join(CFG.REPO, 'src', 'cmd', 'cc', CFG.NAME if hasattr(CFG, 'NAME') else 'gopt', 'gopt')
     if byt:
         lo, hi = int(a[0], 16), int(a[1], 16)
         sh = int(a[2]) if len(a) > 2 and not a[2].endswith('opt') else 0
