@@ -2066,7 +2066,7 @@
    "kind": "proven",
    "module": "flow2.c",
    "file": "flow2.c",
-   "note": "dead `if (0) v = 0;` at the start (v is compared from the frame); the else branch enters the loop body by `goto in;` into `while (v != edges[x].blk)` (the first block is known to differ; HANDOFF step 11)"
+   "note": "dead `if (0) v = 0;` at the start (v is compared from the frame); the else branch enters the loop body by `goto in;` into `while (v != edges[x].blk)` (the first block is known to differ; HANDOFF step 10: the loop-head goto forms stay)"
   },
   "rmlabels": {
    "orig": "4:9c58",

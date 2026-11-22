@@ -127,3 +127,4 @@ PLZ programs and `as`: 170.
 - 2026-11-22 step 10: vc `OLD_D2PP` gone, its code is the fail path of OLD_D2PO (v0).
 - 2026-11-22 step 10: vc `OLD_D2K` gone, its code under OLD_D2C (v0; reg + 1 only for a segmented address pair).
 - 2026-11-22 step 10: vc `OLD_D24L` gone, the unmasked lda of a frame place is part of OLD_D24 (local3.c ZL).
+- 2026-11-22 step 10 done (HANDOFF); new step 11: readable tables and names in codgen, before the switch consolidation (now 12).

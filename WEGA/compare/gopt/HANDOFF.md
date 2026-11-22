@@ -66,10 +66,20 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
    checkall.)
 9. (done 2026-11-22: the compiler tree with the shared parts of mip, increment 155; then the headers mfile2.h (gopt),
    mfile3 (codgen), mip/rdr.h, the PASS3 and OLD switches out of mip but OLD_D23, the names of gopt; host/OLDCC_LOG.md)
-10. The vc switches with one or two witnesses (matrix): think hard again whether a source form of the witness does without
-    the switch. Also the goto forms that stand for an optimizer layout: deledge (`goto in;` into `while (v != ..)`: the
-    original enters the loop body, its test stands above it; do-while and for (;;) with the tests at the end give other
-    code; perhaps a do-while the old popt turned round: then a question of spopt).
-    (owner 2026-11-22: steps 10 and 11 are part of increment 160: 10 the clean-up after a binary is byte-identical, 11
-    the consolidation before the next programs.)
-11. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks above.
+10. (done 2026-11-22: the vc switches with one or two witnesses looked at from the compiler side, host/OLDCC_LOG.md.
+    Gone: D3PL (the segmented D3PWORD of D3P: the types of the size of a pointer), D4F (the float part of D2L), D2AV
+    (D2A asks for INTAREG in all versions), D3JB (every record counts), D3JL (always true nonsegmented), D2PP (the fail
+    path of D2PO), D2K (part of D2C), D24L (part of D24). D2S rewritten without the special case for r3. Stay (measured):
+    D14T, D2XP, D2FA, D20S, D45, D50. The loop-head goto forms of gopt (aliasm, initaffect, buildgraph, chklpdefs; deledge):
+    traced in spopt; the input of spopt does not tell `if (c) { S; continue; }` from a plain if/else (cas hash, gopt
+    prcgraph), so no spopt rule; the gotos stay, probably as written, not refuted.)
+11. Readable tables and names (owner 2026-11-22, before the consolidation: the switches name templates, cookies, shapes
+    and types by number): codgen one table3.c (SCCS table3.c 2.2) that includes table3.nzcc.c or table3.szcc.c by
+    `#ifdef SEG` (the SCCS names of the two tables, 2.4) instead of table3_codgen.c / table3_scodgen.c (and the same for
+    hop_*.c if they belong to it); the entries written with the macros of the shapes, cookies, needs and rewrites as in
+    the Plexus pcc.d/table.c with pcc.d/mip/manifest (read for ideas, never copied); then the rest of the passes searched
+    for magic numbers that should be defines (op numbers such as 110 for SCONV, the types 5 and 15, 0x30, 0x1000, ...).
+    Every step byte-identical (shipped, models, corpora).
+    (owner 2026-11-22: steps 10 to 12 are part of increment 160: 10 the clean-up after a binary is byte-identical, 11 and
+    12 the consolidation before the next programs.)
+12. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks above.
