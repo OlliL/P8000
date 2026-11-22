@@ -80,6 +80,10 @@ the reconstruction of other programs) goes to host/KNOWLEDGE.md or host/OLDCC_LO
     the Plexus pcc.d/table.c with pcc.d/mip/manifest (read for ideas, never copied); then the rest of the passes searched
     for magic numbers that should be defines (op numbers such as 110 for SCONV, the types 5 and 15, 0x30, 0x1000, ...).
     Every step byte-identical (shipped, models, corpora).
+    State 2026-11-22: codgen done (table3.c with table3.nzcc.c/szcc.c, the tables and the modules with names: ops,
+    types, cookies, shapes, needs, rewrites, register classes, rs flags, R2* of SysIII, hoptab; checkall ALL OK);
+    gopt: quad ops (qtab names with Q), operand kinds, tree ops, types, the storage classes (now in mip/rdr.h).
+    Open: the sflags bits (codgen, gopt, rdr), popt, cparse, cpp.
     (owner 2026-11-22: steps 10 to 12 are part of increment 160: 10 the clean-up after a binary is byte-identical, 11 and
     12 the consolidation before the next programs.)
 12. v0 / v0p against vc: unify, merge or simplify switches (switch consolidation); every change through the checks above.
