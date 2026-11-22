@@ -3,6 +3,7 @@
  * it reads the intermediate language of cparse, reader2.c ... reg2.c). Reconstructed from the binary; the name of the
  * original is mfile2.h (SCCS 1.7 03/04/83). Layout of NODE (22 bytes, pointers 32 bits) and the tables are measured.
  */
+#include "macdefs"
 #include "manifest"
 
 /* operators (the dope table in ops_*.c has the flags: arity in bits 1-3) */
@@ -81,8 +82,6 @@ struct quad {
 	struct pos pos;		/* 0x18: the file name and the line of the source */
 };
 
-struct dopest { int dopeop; char opst[8]; int dopeval; };	/* 12 bytes */
-extern struct dopest indope[];
 extern int dope[];
 extern char *opst[];
 
