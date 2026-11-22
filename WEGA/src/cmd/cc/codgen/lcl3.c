@@ -362,16 +362,16 @@ clocal(p)
 			}
 #endif
 			switch (pf) {
-			case 2:
+			case CHAR:
 				l->tn.lval = (long)(char)val;
 				break;
-			case 12:
+			case UCHAR:
 				l->tn.lval = val & 0xFF;
 				break;
-			case 14:
+			case UNSIGNED:
 				l->tn.lval = val & 0xFFFFL;
 				break;
-			case 4:
+			case INT:
 				l->tn.lval = (long)(int)val;
 				break;
 			}

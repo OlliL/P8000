@@ -469,10 +469,10 @@ delay(NODE *p)
 	ndelay = 0;
 	if (p->in.op == RET) {
 		switch (p->in.type) {
-		case 6:
-		case 7:
-		case 8:
-		case 9:
+		case FLOAT:
+		case DOUBLE:
+		case STRTY:
+		case UNIONTY:
 			break;
 		default:
 			ret++;

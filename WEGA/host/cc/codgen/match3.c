@@ -127,17 +127,17 @@ ttype(int t, int tword)
 	if (tword & TPOINT2)
 		return 0;
 	switch (t) {
-	case 2:  return tword & TCHAR;
-	case 3:  return tword & TSHORT;
-	case 8: case 9: return tword & TSTRUCT;
-	case 4:  return tword & TINT;
-	case 14: return tword & TUNSIGNED;
-	case 13: return tword & TUSHORT;
-	case 12: return tword & TUCHAR;
-	case 15: return tword & TULONG;
-	case 5:  return tword & TLONG;
-	case 6:  return tword & TFLOAT;
-	case 7:  return tword & TDOUBLE;
+	case CHAR:	return tword & TCHAR;
+	case SHORT:	return tword & TSHORT;
+	case STRTY: case UNIONTY:	return tword & TSTRUCT;
+	case INT:	return tword & TINT;
+	case UNSIGNED:	return tword & TUNSIGNED;
+	case USHORT:	return tword & TUSHORT;
+	case UCHAR:	return tword & TUCHAR;
+	case ULONG:	return tword & TULONG;
+	case LONG:	return tword & TLONG;
+	case FLOAT:	return tword & TFLOAT;
+	case DOUBLE:	return tword & TDOUBLE;
 	}
 	return 0;			/* ENUMTY, MOETY, FARG */
 }

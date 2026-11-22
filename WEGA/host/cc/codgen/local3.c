@@ -62,26 +62,26 @@ tsuffix(int t)
 	if (nosuffix)
 		return;
 	switch (t) {
-	case 6:
+	case FLOAT:
 		putchar('s');
 		break;
-	case 7:
+	case DOUBLE:
 		putchar('d');
 		break;
-	case 5:
-	case 15:
+	case LONG:
+	case ULONG:
 		putchar('l');
 		rmode++;
 		break;
-	case 2:
-	case 12:
+	case CHAR:
+	case UCHAR:
 		putchar('b');
 		rlmode++;
 		break;
-	case 3:
-	case 4:
-	case 13:
-	case 14:
+	case SHORT:
+	case INT:
+	case USHORT:
+	case UNSIGNED:
 		break;
 	default:
 #ifdef SEG
@@ -1137,10 +1137,10 @@ shincr(int t, long incr)
 		return incr == 2;		/* a pointer to a pointer (16 bit) */
 #endif
 	switch (t) {
-	case 2: case 12: return incr == 1;
-	case 3: case 4: case 13: case 14: return incr == 2;
-	case 6: return incr == 4;
-	case 7: return incr == 8;
+	case CHAR: case UCHAR: return incr == 1;
+	case SHORT: case INT: case USHORT: case UNSIGNED: return incr == 2;
+	case FLOAT: return incr == 4;
+	case DOUBLE: return incr == 8;
 	}
 	return 0;
 }
