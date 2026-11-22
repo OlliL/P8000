@@ -635,13 +635,17 @@ delay2(NODE *p)
 void
 codgen(NODE *p, int cookie)
 {
+	/* generate the code for p;
+	   order may call codgen recursively */
+	/* cookie is used to describe the context */
 	for (;;) {
 		p = canon(optim(p));
-		stotree = 0;
+		stotree = NIL;
 		store(p);
 		lmulflag = 0;
-		if (stotree == 0)
+		if (stotree == NIL)
 			break;
+		/* because it's minimal, can do w.o. stores */
 		order(stotree, stocook);
 	}
 	order(p, cookie);

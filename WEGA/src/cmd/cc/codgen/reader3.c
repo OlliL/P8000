@@ -725,6 +725,9 @@ codgen(p, cookie)
 	register NODE *p;
 	register int cookie;
 {
+	/* generate the code for p;
+	   order may call codgen recursively */
+	/* cookie is used to describe the context */
 	for (;;) {
 #if defined(OLD_D24) || defined(OLD_D63)
 		fwalk(p, optpre, 0);
@@ -734,11 +737,12 @@ codgen(p, cookie)
 #else
 		p = canon(optim(p));
 #endif
-		stotree = 0;
+		stotree = NIL;
 		store(p);
 		lmulflag = 0;
-		if (stotree == 0)
+		if (stotree == NIL)
 			break;
+		/* because it's minimal, can do w.o. stores */
 		order(stotree, stocook);
 	}
 	order(p, cookie);
