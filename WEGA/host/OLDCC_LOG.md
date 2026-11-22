@@ -1890,3 +1890,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   conval MINUS of SEG (the difference of pointer constants; the form of cparse moves 27 bytes of scodgen). 20 > 17
   lines with PASS3. Host the same, and its stale OLD_D24, OLD_D13 blocks went. Models, bench, matrix checks, host
   corpora 427/427, 452/452, checkall ALL OK.
+- 2026-11-22 the headers mfile2.h (gopt) and mfile3 (codgen) side by side: what both had is out of them. The extern
+  dope and opst (manifest has them, as in System III); STAR, UMINUS, UAND, UCALL, FCALL, UFCALL (the names of gopt and
+  codgen for UNARY MUL ... FORTCALL, the same numbers) into manifest; struct sym and MAXASCII (the symbol table file,
+  which only gopt and codgen read, with rdr) into the new mip/rdr.h (name and cut a guess: neither binary has an SCCS
+  line of a second header; the place of the SCCS line inside mfile2.h is not measurable, nothing above it makes data;
+  in each module of /lib/gopt the module's own SCCS line comes first, then that of mfile2.h). stype is unsigned for
+  both now (codgen had int): codgen, scodgen, gopt stripped equal; host codgen reads stype without sign as host gopt.
+  Models, bench, matrix checks, host corpora 427/427, 854/854, checkall ALL OK. NODE stays in each header (other layout).

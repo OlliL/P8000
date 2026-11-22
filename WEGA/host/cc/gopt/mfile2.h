@@ -11,17 +11,7 @@
 #include <unistd.h>
 #include "../z8000/macdefs"
 #include "../mip/manifest"
-
-/* operators (the dope table in ops_*.c has the flags: arity in bits 1-3) */
-#define STAR	13		/* unary * */
-#define UMINUS	10
-#define UCALL	72
-#define FCALL	73
-#define UFCALL	75
-#define UAND	16
-
-
-
+#include "../mip/rdr.h"
 
 union ndu {
 	struct {
@@ -58,21 +48,6 @@ union ndu {
 	}stn;
 };
 
-#define MAXASCII	0x1194
-
-struct sym {
-	int	nameoff;
-	unsigned stype;
-	char	sclass;
-	char	sbyte5;
-	int	sx6;
-	long	soffset;
-	long	ssize;		/* 0xC: size in bits */
-	int	sflags;
-	int	sx12;
-	int	sx14;
-};
-
 struct qa { unsigned w0; char b2; unsigned fl:1; int w4; };	/* an operand of a quad: 6 bytes (names guessed) */
 
 struct pos { char *name; int line; };
@@ -87,9 +62,6 @@ struct quad {
 	struct pos pos;		/* 0x18: the file name and the line of the source */
 	struct brec *rec;	/* host: the record of a BBLOCK quad that the original keeps in the bytes of c (at 6) */
 };
-
-extern int dope[];
-extern char *opst[];
 
 static char mfile2sccs[] __attribute__((unused)) = "@[$]mfile2.h\t1.7  03/04/83 16:06:50 Copr. 1981 87wega3.2.";
 
@@ -194,7 +166,6 @@ extern NODE node[];
 extern int nptr;
 extern int ntl;
 extern struct nument numtab[];
-extern char *opst[];
 extern int qflag;
 extern struct quad *qfree;
 extern struct quad *qhead;

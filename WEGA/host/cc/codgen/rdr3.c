@@ -59,7 +59,7 @@ symdecode(struct sym *q, const unsigned char *r)
 #define W16(o)	((short)(r[o] << 8 | r[(o) + 1]))
 #define W32(o)	((int32_t)((uint32_t)r[o] << 24 | (uint32_t)r[(o) + 1] << 16 | (uint32_t)r[(o) + 2] << 8 | r[(o) + 3]))
 	q->nameoff = W16(0);
-	q->stype = W16(2);
+	q->stype = (unsigned)W16(2) & 0xFFFF;
 	q->sclass = (char)r[4];
 	q->sbyte5 = (char)r[5];
 	q->sx6 = W16(6);

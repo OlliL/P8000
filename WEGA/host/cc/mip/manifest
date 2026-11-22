@@ -170,6 +170,14 @@
 # define NOASG (-1)+
 # define NOUNARY (-2)+
 
+	/* WEGA: the names of gopt and codgen for some operators */
+# define UMINUS 10	/* UNARY MINUS */
+# define STAR 13	/* UNARY MUL */
+# define UAND 16	/* UNARY AND */
+# define UCALL 72	/* UNARY CALL */
+# define FCALL 73	/* FORTCALL */
+# define UFCALL 75	/* UNARY FORTCALL */
+
 /*	various flags */
 # define NOLAB (-1)
 

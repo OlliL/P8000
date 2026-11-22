@@ -761,10 +761,10 @@ regforsym(int reg, struct sym *s, int type, long off)
 		return symreg(s, off, type);
 #ifdef OLD_D3P
 	/* v0: also under a cast between int, unsigned and pointers (the word types) */
-	if (type != s->stype && !(D3PWORD(type) && D3PWORD(s->stype)))
+	if (type != (int)s->stype && !(D3PWORD(type) && D3PWORD(s->stype)))
 		return -1;
 #else
-	if (type != s->stype)
+	if (type != (int)s->stype)
 		return -1;
 #endif
 #ifndef OLD_D3P

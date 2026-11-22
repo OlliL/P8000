@@ -16,15 +16,8 @@
 #define NCUNUSED	9	/* the size of cunused (common.2.5): 18 bytes of zeros in the data of /lib/codgen */
 #include "../z8000/macdefs"
 #include "../mip/manifest"
+#include "../mip/rdr.h"
 #include "oldcc.h"
-
-/* operators (the dope table in ops_*.c has the flags: arity in bits 1-3) */
-#define STAR	13		/* unary * */
-#define UMINUS	10
-#define UCALL	72
-#define FCALL	73
-#define UFCALL	75
-#define UAND	16
 
 #define FOREFF	01
 #define INAREG	02
@@ -76,7 +69,6 @@
 #define MUSTDO	010000
 #define NOPREF	020000
 
-
 union ndu {
 	struct {
 		int	op;
@@ -121,19 +113,6 @@ union ndu {
 	}stn;				/* structure node */
 };
 
-/* a symbol of the symbol table file (22 bytes there), see ../KNOWLEDGE.md */
-struct sym {
-	int	nameoff;	/* +0: offset of the name in the ascii table */
-	int	stype;		/* +2 */
-	char	sclass;		/* +4: 1 auto, 3 static, 4 register, 9 parameter ... */
-	char	sbyte5;		/* +5: the register number of a register variable, the size of a field in bits (+4) */
-	int	sx6;		/* +6 */
-	long	soffset;	/* +8: bit offset in the frame, or the label number of a static */
-	long	ssize;		/* +0xC: size in bits (a structure argument) */
-	int	sflags;		/* +0x10 */
-	int	sx12;		/* +0x12 */
-	int	sx14;		/* +0x14: 0xFFFF */
-};
 extern char ascii[];		/* the ascii table (names of the symbols) */
 extern struct sym *fpsym1, *fpsym2;	/* the pseudo symbols ~L1 and ~L2 of the frame */
 
@@ -164,9 +143,6 @@ struct optab {
 };
 extern struct optab table[];
 
-extern int dope[];		/* dope flags by operator, filled from indope[] */
-
-#define MAXASCII	0x1194
 #define NDELAY	20
 #undef TREESZ		/* manifest has the 350 of pass 1 */
 #define TREESZ	500
@@ -197,7 +173,6 @@ extern int argstop;
 extern char ascii[];
 extern long baseoff;
 extern FILE *dfile;
-extern int dope[];
 extern int eflag;
 extern int entlab;
 extern int ffregs;
@@ -224,7 +199,6 @@ extern NODE node[];
 extern int nosuffix;
 extern int nparmtab;
 extern int nsave;
-extern char *opst[];
 extern long parmax;
 extern struct parment parmtab[];
 extern long paroff;

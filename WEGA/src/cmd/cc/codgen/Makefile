@@ -115,7 +115,7 @@ scodgen: $(SEG_OBJS) ../../crt0.o table3_scodgen.o
 # obj targets
 ###################
 
-$(NONSEG_OBJS) $(SEG_OBJS): ../../mfile3 ../../../mip/manifest ../../../z8000/macdefs
+$(NONSEG_OBJS) $(SEG_OBJS): ../../mfile3 ../../../mip/manifest ../../../mip/rdr.h ../../../z8000/macdefs
 local3.o: ../../hop_codgen.c ../../hop_scodgen.c
 
 bss3.o: ../../bss3.c
