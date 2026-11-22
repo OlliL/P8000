@@ -106,11 +106,11 @@ main(argc, argv)
 			v2 = rdin(10);
 			if (vafc == 0)
 				vafc = lno;
-			p1->b2 = 7;
+			p1->b2 = OALCON;
 			p1->w4 = constlook(baseoff);
-			p2->b2 = 1;
+			p2->b2 = OAICON;
 			p2->w4 = v1;
-			p3->b2 = 1;
+			p3->b2 = OAICON;
 			p3->w4 = v2;
 			p1->w0 = lno;
 			lno++;
@@ -141,14 +141,14 @@ main(argc, argv)
 			}
 			break;
 		case 'L':
-			p1->b2 = 1;
+			p1->b2 = OAICON;
 			p1->w4 = rdin(10);
 			if (!addquad(QLABEL, p1, 0L, 0L))
 				goto err;
 			nlcheck();
 			break;
 		case 'B':
-			p1->b2 = 1;
+			p1->b2 = OAICON;
 			p1->w4 = rdin(10);
 			if (!addquad(QJP, p1, 0L, 0L))
 				goto err;
@@ -159,13 +159,13 @@ main(argc, argv)
 			while ((ch = getc(infile)) == ' ')
 				continue;
 			ungetc(ch, infile);
-			p1->b2 = 1;
+			p1->b2 = OAICON;
 			p1->w4 = rdin(10);
 			if (!addquad(QCTABLE, p1, 0L, 0L))
 				goto err;
 			while ((ch = getc(infile)) != '\n') {
 				ungetc(ch, infile);
-				p1->b2 = 1;
+				p1->b2 = OAICON;
 				p1->w4 = rdin(10);
 				if (!addquad(QCASEL, p1, 0L, 0L))
 					goto err;

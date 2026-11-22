@@ -23,31 +23,31 @@ betainit()
 		betanew(i);
 	nbeta = maxtmp;
 	for (q = qhead; q != 0; q = q->next) {
-		if (q->c.b2 == 3 && ctpos[q->c.w4] == 1) {
+		if (q->c.b2 == OATEMP && ctpos[q->c.w4] == 1) {
 			q = delquad(q);
 			continue;
 		}
-		if (q->a.b2 == 3)
+		if (q->a.b2 == OATEMP)
 			betaset(&q->a);
-		if (q->b.b2 == 3)
+		if (q->b.b2 == OATEMP)
 			betaset(&q->b);
-		if (q->c.b2 == 3)
+		if (q->c.b2 == OATEMP)
 			betaset(&q->c);
 		flag = 0;
 		switch (q->op) {
 		case QADDR:
 			flag = 1;
 		case QINDEX:
-			if (q->a.b2 == 8 && BBIT(q->a.w4, 11)) {
-				if (q->b.b2 == 1 || q->b.b2 == 7)
+			if (q->a.b2 == OABTEMP && BBIT(q->a.w4, 11)) {
+				if (q->b.b2 == OAICON || q->b.b2 == OALCON)
 					flag = 1;
 			}
 		case QIDR:
 		case QLOAD:
-			if (q->a.b2 == 4) {
+			if (q->a.b2 == OANAME) {
 				x = almap(&q->a, q->op == QINDEX ? 3 : q->op);
 				y = q->a.w4;
-			} else if (q->a.b2 == 8) {
+			} else if (q->a.b2 == OABTEMP) {
 				x = betatbl[q->a.w4].x0;
 				y = betatbl[q->a.w4].x1;
 			} else
@@ -55,30 +55,30 @@ betainit()
 			goto alloc;
 		case QADDFLD:
 		case QFIELD:
-			if (q->a.b2 == 4) {
+			if (q->a.b2 == OANAME) {
 				x = almap(&q->a, q->op);
 				y = q->a.w4;
-			} else if (q->a.b2 == 8) {
+			} else if (q->a.b2 == OABTEMP) {
 				x = betatbl[q->a.w4].x0;
 				y = betatbl[q->a.w4].x1;
 			} else
 				continue;
-			if (q->a.b2 == 8 && BBIT(q->a.w4, 11))
+			if (q->a.b2 == OABTEMP && BBIT(q->a.w4, 11))
 				flag = 1;
 			goto alloc;
 		case QCOPY:
-			if (q->a.b2 != 4 || (q->a.w0 & 0x30) != 0x10)
+			if (q->a.b2 != OANAME || (q->a.w0 & 0x30) != 0x10)
 				continue;
 			x = almap(&q->a, q->op);
 			y = q->a.w4;
 			goto alloc;
 		default:
-			if (q->a.b2 == 8 && q->c.b2 == 3) {
+			if (q->a.b2 == OABTEMP && q->c.b2 == OATEMP) {
 				x = betatbl[q->a.w4].x0;
 				y = betatbl[q->a.w4].x1;
 				goto alloc;
 			}
-			if (q->b.b2 != 8 || q->c.b2 != 3)
+			if (q->b.b2 != OABTEMP || q->c.b2 != OATEMP)
 				continue;
 			x = betatbl[q->b.w4].x0;
 			y = betatbl[q->b.w4].x1;
@@ -95,7 +95,7 @@ betainit()
 		t->fl = flag;
 		t->f14 = 0;
 		t->b10 = 0;
-		q->c.b2 = 8;
+		q->c.b2 = OABTEMP;
 		q->c.w4 = nbeta;
 		nbeta++;
 	}
@@ -111,7 +111,7 @@ struct qa *a;
 
 	for (i = maxtmp; i < nbeta; i++)
 		if (betatbl[i].x[0] == a->w4) {
-			a->b2 = 8;
+			a->b2 = OABTEMP;
 			a->w4 = i;
 			break;
 		}

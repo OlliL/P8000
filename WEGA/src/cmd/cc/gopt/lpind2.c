@@ -31,8 +31,8 @@ struct qa b;
 {
 	long x, y, l, m, r;
 
-	x = b.b2 == 1 ? (long)b.w4 : constbl[b.w4];
-	y = a.b2 == 1 ? (long)a.w4 : constbl[a.w4];
+	x = b.b2 == OAICON ? (long)b.w4 : constbl[b.w4];
+	y = a.b2 == OAICON ? (long)a.w4 : constbl[a.w4];
 	switch (op) {
 	case QADD:
 		r = x;
@@ -90,13 +90,13 @@ struct quad *q;
 		prquad(q);
 	}
 	a = q->c;
-	b.b2 = 6;
+	b.b2 = OASTEMP;
 	b.w4 = maxtmp;
 	betanew(maxtmp);
 	maxtmp++;
 	nstemps++;
 	b.w0 = a.w0;
-	c.b2 = 0;
+	c.b2 = OANONE;
 	nq = insertquad(QCOPY, &a, &c, &b, q);
 	nq = insertquad(QCOPY, &b, &c, &a, nq);
 	nq->f3 = 0;
@@ -142,9 +142,9 @@ int kind;
 		opqd = opqd->next;
 	}
 	denorm(&x->a);
-	x->a.b2 = 6;
+	x->a.b2 = OASTEMP;
 	denorm(&opqd->c);
-	opqd->c.b2 = 6;
+	opqd->c.b2 = OASTEMP;
 	x->a.w4 = maxtmp;
 	normop(&x->a);
 	d2->x20 = maxtmp;
@@ -157,12 +157,12 @@ int kind;
 	if (d->f13) {
 		if (kind == 2) {
 			denorm(&opqd->a);
-			opqd->a.b2 = 6;
+			opqd->a.b2 = OASTEMP;
 			opqd->a.w4 = d->x20;
 			normop(&opqd->a);
 		} else if (kind == 3) {
 			denorm(&opqd->b);
-			opqd->b.b2 = 6;
+			opqd->b.b2 = OASTEMP;
 			opqd->b.w4 = d->x20;
 			normop(&opqd->b);
 		}
@@ -180,17 +180,17 @@ int t, w0;
 	p->w0 = w0;
 	if (t == 1) {
 		if (v > 32767) {
-			p->b2 = 7;
+			p->b2 = OALCON;
 			p->w4 = constlook(v);
 		} else {
-			p->b2 = 1;
+			p->b2 = OAICON;
 			p->w4 = v;
 		}
 	} else if (v < -32767) {
-		p->b2 = 7;
+		p->b2 = OALCON;
 		p->w4 = constlook(-v);
 	} else {
-		p->b2 = 1;
+		p->b2 = OAICON;
 		p->w4 = -v;
 	}
 }
@@ -240,19 +240,19 @@ struct quad *outq;
 	}
 	if (op == 34) {
 		c.w0 = 5;
-		c.b2 = 3;
+		c.b2 = OATEMP;
 		c.w4 = nexttmp++;
 		nltemps++;
 		phquad = insertquad(op, &a, &b, &c, phquad);
-		b.b2 = 0;
-		a.b2 = 6;
+		b.b2 = OANONE;
+		a.b2 = OASTEMP;
 		betanew(maxtmp);
 		a.w4 = maxtmp;
 		maxtmp++;
 		phquad = insertquad(QCONV, &c, &b, &a, phquad);
 		c = a;
 	} else {
-		c.b2 = 6;
+		c.b2 = OASTEMP;
 		betanew(maxtmp);
 		c.w4 = maxtmp;
 		maxtmp++;
@@ -283,8 +283,8 @@ struct quad *outq;
 		prquad(opqd);
 	}
 	if (!p->f11 &&
-	    ((kind == 2 && (opqd->b.b2 == 1 || opqd->b.b2 == 7) && (opqd->op == QADD || opqd->op == QSUB)) ||
-	     (kind == 3 && (opqd->a.b2 == 1 || opqd->a.b2 == 7) && (opqd->op == QADD || opqd->op == QSUB)))) {
+	    ((kind == 2 && (opqd->b.b2 == OAICON || opqd->b.b2 == OALCON) && (opqd->op == QADD || opqd->op == QSUB)) ||
+	     (kind == 3 && (opqd->a.b2 == OAICON || opqd->a.b2 == OALCON) && (opqd->op == QADD || opqd->op == QSUB)))) {
 		t->e14 = p->e14;
 		if (pdebug > 3) {
 			printf("copyopndstmp(), copied indopnd: \n");
@@ -323,7 +323,7 @@ struct dl *p, *t;
 	ok = 0;
 	if (kind == 3) {
 		if (p->f11) {
-			if (opqd->a.b2 == 1 || opqd->a.b2 == 7 || opqd->op == QADD || opqd->op == QSUB) {
+			if (opqd->a.b2 == OAICON || opqd->a.b2 == OALCON || opqd->op == QADD || opqd->op == QSUB) {
 				n->f15 = 1;
 				n->v = ceval(opqd->a, opqd->op, p->e14);
 				t->f11 = 1;
@@ -343,7 +343,7 @@ struct dl *p, *t;
 		if (0) {
 			/* the kind 2 code stands here, reached by goto from below: so the original's block order */
 k2:
-			if (opqd->b.b2 == 1 || opqd->b.b2 == 7 || opqd->op == QADD || opqd->op == QSUB) {
+			if (opqd->b.b2 == OAICON || opqd->b.b2 == OALCON || opqd->op == QADD || opqd->op == QSUB) {
 				n->f15 = 1;
 				n->v = ceval(opqd->b, opqd->op, p->e14);
 				if (n->v != 0) {
@@ -471,13 +471,13 @@ int blk;
 		q = q->next;
 	a = q->c;
 	denorm(&q->c);
-	b.b2 = 3;
+	b.b2 = OATEMP;
 	b.w4 = nexttmp++;
 	nltemps++;
 	b.w0 = a.w0;
 	q->c = b;
 	normop(&q->c);
-	c.b2 = 0;
+	c.b2 = OANONE;
 	nq = insertquad(QCOPY, &b, &c, &a, q);
 	copyins = 1;
 	alloclpdef(nq, blk);
@@ -504,7 +504,7 @@ deltmplpdefs()
 	copyins = 0;
 	prev = t = lpdefs;
 	while (t != 0) {
-		if (t->q->c.b2 == 3) {
+		if (t->q->c.b2 == OATEMP) {
 			if (t == lpdefs)
 			{
 				lpdefs = lpdefs->next;
@@ -605,7 +605,7 @@ so:
 		goto ls;
 	if (!dp->q->f2)
 		goto ls;
-	if (dp->f13 && dp->q->c.b2 != 3)
+	if (dp->f13 && dp->q->c.b2 != OATEMP)
 		return 0;
 	if (r == 0)
 		r = insrtlpdef(q);
@@ -622,7 +622,7 @@ so:
 		r->f2 = 1;
 		if (dp->f14 || dp->f13) {
 			res = fillindvar(r, q, op, dp, t);
-			if (res != 0 && dp->q->c.b2 == 3) {
+			if (res != 0 && dp->q->c.b2 == OATEMP) {
 				if (pdebug > 3)
 					printf("chklpdefs(), tempcnt[temp=%d]=%d\n", dp->q->c.w4, ctpos[dp->q->c.w4]);
 				if (ctpos[dp->q->c.w4] <= 1)
@@ -670,7 +670,7 @@ int kind;
 		q = r->next->next;
 	}
 	t = (q->op == QSTORE && q->a.b2 == a->c.b2 && q->a.w4 == a->c.w4 &&
-	    ((q->f1 && !q->f2) || (q->f1 && q->f2 && q->a.b2 != 6))) ? q : 0;
+	    ((q->f1 && !q->f2) || (q->f1 && q->f2 && q->a.b2 != OASTEMP))) ? q : 0;
 	q = r;
 	r = t;
 	if (pdebug > 1) {
@@ -683,18 +683,18 @@ int kind;
 	case QMULT:
 	case QSHIFTL:
 	case QSUB:
-		if (q->a.b2 == 1 || q->a.b2 == 7 || ((q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8) &&
+		if (q->a.b2 == OAICON || q->a.b2 == OALCON || ((q->a.b2 == OANAME || q->a.b2 == OASTEMP || q->a.b2 == OABTEMP) &&
 		    !isdefined(q, 2) && !(((q->a.w0 & 0x30) == 0x10) ^ ((q->b.w0 & 0x30) == 0x10)))) {
-			if (q->op == QSHIFTL && q->b.b2 != 1 && q->b.b2 != 7)
+			if (q->op == QSHIFTL && q->b.b2 != OAICON && q->b.b2 != OALCON)
 				return 0;
 			q = chklpdefs(r, q, 3, kind);
 			return q;
 		}
 	case QDIV:
 	case QSHIFTR:
-		if (q->b.b2 == 1 || q->b.b2 == 7 || ((q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8) &&
+		if (q->b.b2 == OAICON || q->b.b2 == OALCON || ((q->b.b2 == OANAME || q->b.b2 == OASTEMP || q->b.b2 == OABTEMP) &&
 		    !isdefined(q, 3) && !(((q->a.w0 & 0x30) == 0x10) ^ ((q->b.w0 & 0x30) == 0x10)))) {
-			if (q->op == QSHIFTR && q->b.b2 != 1 && q->b.b2 != 7)
+			if (q->op == QSHIFTR && q->b.b2 != OAICON && q->b.b2 != OALCON)
 				return 0;
 			q = chklpdefs(r, q, 2, kind);
 			return q;

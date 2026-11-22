@@ -143,28 +143,28 @@ void prquad(struct quad *q)
 void propnd(struct qa *a)
 {
 	switch (a->b2) {
-	case 1:
+	case OAICON:
 		printf("%d", a->w4);
 		break;
-	case 7:
+	case OALCON:
 		printf("%ld", constbl[a->w4]);
 		break;
-	case 2:
+	case OAFCON:
 		printf("%f", fcget(a->w4));
 		break;
-	case 3:
+	case OATEMP:
 		printf("T%d", a->w4);
 		break;
-	case 4:
+	case OANAME:
 		printf("%s", ascii + symtab[a->w4].nameoff);
 		break;
-	case 5:
+	case OALABEL:
 		printf("L%d", a->w4);
 		break;
-	case 6:
+	case OASTEMP:
 		printf("S%d", a->w4);
 		break;
-	case 8:
+	case OABTEMP:
 		printf("B%d", a->w4);
 		break;
 	default:

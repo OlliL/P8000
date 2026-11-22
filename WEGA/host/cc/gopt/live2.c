@@ -26,7 +26,7 @@ void prqflags(struct quad *q)
 		printf(" gr");
 	if (q->f7)
 		printf(" k");
-	if (q->c.b2 == 4 && ((symtab[q->c.w4].sflags >> 2) & 1) && q->c.fl)
+	if (q->c.b2 == OANAME && ((symtab[q->c.w4].sflags >> 2) & 1) && q->c.fl)
 		printf(" reg_candidate");
 	printf("\n");
 }
@@ -142,13 +142,13 @@ int setsymtable(struct quad *q, int which)
 	struct quad tq;
 	int cnt;
 
-	tq.a.b2 = 4;
+	tq.a.b2 = OANAME;
 	switch (which) {
 	case 1:
 		if (ldebug > 3)
 			printf("setsymtable(RSLT)\n");
 		t = q->c.w4;
-		if (q->c.b2 == 8)
+		if (q->c.b2 == OABTEMP)
 			tq.a.w4 = (t = betatbl[q->c.w4].x1, t);
 		else
 			tq.a = q->c;
@@ -157,7 +157,7 @@ int setsymtable(struct quad *q, int which)
 		if (ldebug > 3)
 			printf("setsymtable(OP1)\n");
 		t = q->a.w4;
-		if (q->a.b2 == 8)
+		if (q->a.b2 == OABTEMP)
 			tq.a.w4 = (t = betatbl[q->a.w4].x1, t);
 		else
 			tq.a = q->a;
@@ -166,7 +166,7 @@ int setsymtable(struct quad *q, int which)
 		if (ldebug > 3)
 			printf("setsymtable(OP2)\n");
 		t = q->b.w4;
-		if (q->b.b2 == 8)
+		if (q->b.b2 == OABTEMP)
 			tq.a.w4 = (t = betatbl[q->b.w4].x1, t);
 		else
 			tq.a = q->b;
@@ -176,8 +176,8 @@ int setsymtable(struct quad *q, int which)
 		printf("setsymtable(), %s, optimize=%d\n", ascii + symtab[t].nameoff, symtab[t].sflags & 1);
 	if (!(symtab[t].sflags & 1)) {
 		symtab[t].sflags |= 1;
-		tq.b.b2 = 0;
-		tq.c.b2 = 0;
+		tq.b.b2 = OANONE;
+		tq.c.b2 = OANONE;
 		tq.op = QSTORE;	/* byte 4 of the quad */
 		cnt = 0;
 		if (!insrtlive(&tq, &cnt))
@@ -206,23 +206,23 @@ r1:
 	case 1:
 		if (ldebug > 3)
 			printf("setsym(GENRBIT)\n");
-		if (((q->c.b2 == 4 || q->c.b2 == 8) && !setsymtable(q, 1))
-		    || ((q->c.b2 == 6 || q->c.b2 == 8) && !settmptable(q, 1)))
+		if (((q->c.b2 == OANAME || q->c.b2 == OABTEMP) && !setsymtable(q, 1))
+		    || ((q->c.b2 == OASTEMP || q->c.b2 == OABTEMP) && !settmptable(q, 1)))
 r0:
 			return 0;
 		return 1;
 	case 2:
 		if (ldebug > 3)
 			printf("setsym(GENL1BIT)\n");
-		if (((q->a.b2 == 4 || q->a.b2 == 8) && !setsymtable(q, 2))
-		    || ((q->a.b2 == 6 || q->a.b2 == 8) && !settmptable(q, 2)))
+		if (((q->a.b2 == OANAME || q->a.b2 == OABTEMP) && !setsymtable(q, 2))
+		    || ((q->a.b2 == OASTEMP || q->a.b2 == OABTEMP) && !settmptable(q, 2)))
 			return 0;
 		return 1;
 	case 3:
 		if (ldebug > 3)
 			printf("setsym(GENL2BIT)\n");
-		if (!(((q->b.b2 == 4 || q->b.b2 == 8) && !setsymtable(q, 3))
-		    || ((q->b.b2 == 6 || q->b.b2 == 8) && !settmptable(q, 3))))
+		if (!(((q->b.b2 == OANAME || q->b.b2 == OABTEMP) && !setsymtable(q, 3))
+		    || ((q->b.b2 == OASTEMP || q->b.b2 == OABTEMP) && !settmptable(q, 3))))
 			goto r1;
 		goto r0;
 	}
@@ -308,13 +308,13 @@ int issym(struct quad *q, int flag)
 	case 4:
 	case 5:
 		j = q->c.w4;
-		if (q->c.b2 == 4) {
+		if (q->c.b2 == OANAME) {
 			if (symtab[j].sflags & 1)
 				r = 4;
-		} else if (q->c.b2 == 6) {
+		} else if (q->c.b2 == OASTEMP) {
 			if (bbit(j, 13))
 				r = 6;
-		} else if (q->c.b2 == 8) {
+		} else if (q->c.b2 == OABTEMP) {
 			if (q->op == QSTORE) {
 				if (symtab[betatbl[j].x1].sflags & 1)
 					r = 4;
@@ -324,13 +324,13 @@ int issym(struct quad *q, int flag)
 		break;
 	case 2:
 		j = q->a.w4;
-		if (q->a.b2 == 4) {
+		if (q->a.b2 == OANAME) {
 			if (symtab[j].sflags & 1)
 				r = 4;
-		} else if (q->a.b2 == 6) {
+		} else if (q->a.b2 == OASTEMP) {
 			if (bbit(j, 13))
 				r = 6;
-		} else if (q->a.b2 == 8) {
+		} else if (q->a.b2 == OABTEMP) {
 			if (q->op == QIDR || q->op == QLOAD) {
 				if (symtab[betatbl[j].x1].sflags & 1)
 					r = 4;
@@ -340,10 +340,10 @@ int issym(struct quad *q, int flag)
 		break;
 	case 3:
 		j = q->b.w4;
-		if (q->b.b2 == 4) {
+		if (q->b.b2 == OANAME) {
 			if (symtab[j].sflags & 1)
 				r = 4;
-		} else if (q->b.b2 == 6 || q->b.b2 == 8) {
+		} else if (q->b.b2 == OASTEMP || q->b.b2 == OABTEMP) {
 			if (bbit(j, 13))
 				r = 6;
 		}
@@ -509,20 +509,20 @@ int bitpos(struct quad *q, int which, int kind)
 		if (ldebug > 3)
 			printf("bitpos(RSLT)\n");
 		t = q->c.w4;
-		if (kind == 4 && q->c.b2 == 8)
+		if (kind == 4 && q->c.b2 == OABTEMP)
 			t = betatbl[t].x1;
 		break;
 	case 2:
 		if (ldebug > 3)
 			printf("bitpos(OP1)\n");
 		t = q->a.w4;
-		if (kind == 4 && q->a.b2 == 8)
+		if (kind == 4 && q->a.b2 == OABTEMP)
 			t = betatbl[t].x1;
 		break;
 	case 3:
 		if (ldebug > 3)
 			printf("bitpos(OP2)\n");
-		if (kind == 4 && q->b.b2 == 8)
+		if (kind == 4 && q->b.b2 == OABTEMP)
 			t = betatbl[t].x1;
 		t = q->b.w4;
 		break;
@@ -579,7 +579,7 @@ void initlive(void)
 				if (k) {
 					bp = bitpos(q, 2, k);
 					setlbit(p->f14, bp);
-					if (k == 4 && q->a.b2 == 8 && bbit(q->a.w4, 13)) {
+					if (k == 4 && q->a.b2 == OABTEMP && bbit(q->a.w4, 13)) {
 						bp = bitpos(q, 2, 6);
 						setlbit(p->f14, bp);
 					}
@@ -597,7 +597,7 @@ void initlive(void)
 				if (k) {
 					bp = bitpos(q, 1, k);
 					setlbit(p->f10, bp);
-					if (k == 4 && q->c.b2 == 8 && bbit(q->c.w4, 13)) {
+					if (k == 4 && q->c.b2 == OABTEMP && bbit(q->c.w4, 13)) {
 						bp = bitpos(q, 1, 6);
 						setlbit(p->f10, bp);
 					}
@@ -739,7 +739,7 @@ void linkreachdefs(void)
 					continue;
 				p = MASK(defs[i]);
 				q = defs[j];
-				if (p != q && (p->c.b2 == 8 || q->c.b2 == 8))
+				if (p != q && (p->c.b2 == OABTEMP || q->c.b2 == OABTEMP))
 					if (p->op != QSTORE || q->op != QSTORE)
 						continue;
 				if (ldebug > 3)
@@ -782,7 +782,7 @@ int *srchdef(struct quad *q, int mode)
 		if (!sameopnd(q, defs[p->idx], 1, 1))
 			continue;
 		d = defs[p->idx];
-		if (q != d && (q->c.b2 == 8 || d->c.b2 == 8))
+		if (q != d && (q->c.b2 == OABTEMP || d->c.b2 == OABTEMP))
 			if (q->op != QSTORE || d->op != QSTORE)
 				continue;
 		if (ldebug > 3) {
@@ -824,8 +824,8 @@ void killdefs(struct lrec *r)
 
 	for (i = 0; i < ndefs; i++) {
 		q = defs[i];
-		if ((q->c.b2 == 4 && ((symtab[q->c.w4].sflags >> 2) & 1)) ||
-		    (q->c.b2 == 8 && !bbit(q->c.w4, 11) && ((symtab[betatbl[q->c.w4].x1].sflags >> 2) & 1))) {
+		if ((q->c.b2 == OANAME && ((symtab[q->c.w4].sflags >> 2) & 1)) ||
+		    (q->c.b2 == OABTEMP && !bbit(q->c.w4, 11) && ((symtab[betatbl[q->c.w4].x1].sflags >> 2) & 1))) {
 			setlbit(r->f10, i);
 			if (ldebug)
 				printf("kill, i=%d\n", i);

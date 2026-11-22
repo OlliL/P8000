@@ -70,9 +70,9 @@ void genquads(NODE *p)
 				addquad(QSPR, 0L, 0L, 0L);
 				if (p->in.right->in.op == STARG) {
 					*p1 = *operand(p->in.right->in.left);
-					p2->b2 = 1;
+					p2->b2 = OAICON;
 					p2->w4 = p->in.right->stn.stsize;
-					p3->b2 = 1;
+					p3->b2 = OAICON;
 					p3->w4 = p->in.right->stn.stalign;
 					q = addquad(QPARV, p1, p2, p3);
 					q->f0 = 1;
@@ -87,7 +87,7 @@ void genquads(NODE *p)
 			genquads(p->in.right);
 	}
 	p3->w0 = p->in.type;
-	p3->b2 = 0;
+	p3->b2 = OANONE;
 	p3->w4 = 0;
 	*p1 = *operand(p->in.left);
 	if (kind == BITYPE && p->in.op != 0x7a)
@@ -97,10 +97,10 @@ void genquads(NODE *p)
 	switch (p->in.op) {
 	case 0x46: case 0x48: case 0x67: case 0x69:
 		p2 = &s2;
-		p2->b2 = 4;
+		p2->b2 = OANAME;
 		p2->w4 = 0;
 		if (nest != 1) {
-			p3->b2 = 3;
+			p3->b2 = OATEMP;
 			p3->w4 = nexttmp++;
 		}
 		break;
@@ -116,15 +116,15 @@ void genquads(NODE *p)
 	case 0xa:
 		p2 = &s2;
 		*p2 = *p1;
-		p1->b2 = 1;
+		p1->b2 = OAICON;
 		p1->w4 = 0;
 		p->in.op = 8;
-		p3->b2 = 3;
+		p3->b2 = OATEMP;
 		p3->w4 = nexttmp++;
 		break;
 	case 0x4e:
-		if (p1->b2 != 3) {
-			p3->b2 = 3;
+		if (p1->b2 != OATEMP) {
+			p3->b2 = OATEMP;
 			p3->w4 = nexttmp++;
 			q = addquad(QCOPY, p1, 0L, p3);
 			if (nest != 1)
@@ -132,20 +132,20 @@ void genquads(NODE *p)
 			s4 = *p3;
 		} else
 			s4 = *p1;
-		p3->b2 = 3;
+		p3->b2 = OATEMP;
 		p3->w4 = nexttmp++;
 		addquad(QADD, p1, p2, p3);
 		*p2 = *p3;
 		*p3 = *p1;
-		if (p3->b2 == 3)
+		if (p3->b2 == OATEMP)
 			p3->w4 -= 1;
 		*p1 = *p2;
 		addquad(QSTORE, p1, 0L, p3);
 		*p3 = s4;
 		goto tail;
 	case 0x4f:
-		if (p1->b2 != 3) {
-			p3->b2 = 3;
+		if (p1->b2 != OATEMP) {
+			p3->b2 = OATEMP;
 			p3->w4 = nexttmp++;
 			q = addquad(QCOPY, p1, 0L, p3);
 			if (nest != 1)
@@ -153,12 +153,12 @@ void genquads(NODE *p)
 			s4 = *p3;
 		} else
 			s4 = *p1;
-		p3->b2 = 3;
+		p3->b2 = OATEMP;
 		p3->w4 = nexttmp++;
 		addquad(QSUB, p1, p2, p3);
 		*p2 = *p3;
 		*p3 = *p1;
-		if (p3->b2 == 3)
+		if (p3->b2 == OATEMP)
 			p3->w4 -= 1;
 		*p1 = *p2;
 		addquad(QSTORE, p1, 0L, p3);
@@ -168,7 +168,7 @@ void genquads(NODE *p)
 		*p3 = *p1;
 		p3->w0 = p->in.type;
 		*p1 = *p2;
-		p2->b2 = 1;
+		p2->b2 = OAICON;
 		p2->w0 = p->stn.stsize;
 		p2->w4 = p->stn.stalign;
 		break;
@@ -183,7 +183,7 @@ void genquads(NODE *p)
 		*p3 = *operand(p->in.right->in.right);
 		break;
 	default:
-		p3->b2 = 3;
+		p3->b2 = OATEMP;
 		p3->w4 = nexttmp++;
 		if (asgop(p->in.op)) {
 			addquad(qop[p->in.op - 1], p1, p2, p3);
@@ -191,7 +191,7 @@ void genquads(NODE *p)
 			*p3 = *p1;
 			*p1 = *p2;
 			p2 = 0;
-			if ((p3->w0 & 0x30) != 0x10 && p3->b2 == 3)
+			if ((p3->w0 & 0x30) != 0x10 && p3->b2 == OATEMP)
 				p3->w4 -= 1;
 		}
 	}
@@ -210,11 +210,11 @@ tail:
 		rcopy = *p->in.right;
 		p->in.right->in.op = FREE;
 	}
-	if (p3 && p3->b2 == 3) {
+	if (p3 && p3->b2 == OATEMP) {
 		if (p->in.op == 0x3a)
 			*p = rcopy;
 		else if (asgop(p->in.op) && p->in.op != 0x4e && p->in.op != 0x4f && p->in.op != 0x24 && p->in.op != 0x75 && p->in.op != 0x65) {
-			if (p1->b2 == 3) {
+			if (p1->b2 == OATEMP) {
 				p->in.op = 0x7d;
 				p->tn.rval = p1->w4;
 			} else
@@ -224,7 +224,7 @@ tail:
 			p->tn.rval = p3->w4;
 		}
 	} else if (asgop(p->in.op) || p->in.op == 0x4e || p->in.op == 0x4f) {
-		p->in.op = p3->b2 == 3 ? 0x79 : 2;
+		p->in.op = p3->b2 == OATEMP ? 0x79 : 2;
 		p->tn.rval = p3->w4;
 		p->in.type = p3->w0;
 		p->in.sname = symtab + p->tn.rval;
@@ -308,9 +308,9 @@ void cmwalk(NODE *p)
 			addquad(QSPR, 0L, 0L, 0L);
 			if (p->in.left->in.op == STARG) {
 				r = operand(p->in.left->in.left);
-				p1->b2 = 1;
+				p1->b2 = OAICON;
 				p1->w4 = p->in.left->stn.stsize;
-				p2->b2 = 1;
+				p2->b2 = OAICON;
 				p2->w4 = p->in.left->stn.stalign;
 				q = addquad(QPARV, r, p1, p2);
 				q->f0 = 1;
@@ -321,9 +321,9 @@ void cmwalk(NODE *p)
 		}
 		if (p->in.right->in.op == STARG) {
 			r = operand(p->in.right->in.left);
-			p1->b2 = 1;
+			p1->b2 = OAICON;
 			p1->w4 = p->in.right->stn.stsize;
-			p2->b2 = 1;
+			p2->b2 = OAICON;
 			p2->w4 = p->in.right->stn.stalign;
 			q = addquad(QPARV, r, p1, p2);
 			q->f0 = 1;
@@ -352,32 +352,32 @@ struct qa *operand(NODE *p)
 	switch (p->in.op) {
 	case NAME:
 		if (p->tn.rval >= 0) {
-			opnd.b2 = 4;
+			opnd.b2 = OANAME;
 			opnd.w4 = p->in.sname - symtab;
 		nmt:
 			opnd.w0 = p->in.type;
 			break;
 		}
-		opnd.b2 = 5;
+		opnd.b2 = OALABEL;
 		opnd.w4 = -p->tn.rval;
 		goto nmt;
 	case ICON:
 		if ((p->tn.lval > 0 ? p->tn.lval : -p->tn.lval) < 0x7fff) {
-			opnd.b2 = 1;
+			opnd.b2 = OAICON;
 			opnd.w4 = p->tn.lval;
 		} else {
-			opnd.b2 = 7;
+			opnd.b2 = OALCON;
 			opnd.w4 = constlook(p->tn.lval);
 		}
 		opnd.w0 = p->in.type;
 		break;
 	case FCON:
-		opnd.b2 = 2;
+		opnd.b2 = OAFCON;
 		opnd.w0 = p->in.type;
 		opnd.w4 = fconstlook(p);
 		break;
 	case TEMP:
-		opnd.b2 = 6;
+		opnd.b2 = OASTEMP;
 		if (p->in.rall)
 			opnd.w4 = p->tn.w6;
 		else if ((i = tlookup(p->tn.rval)) >= 0)
@@ -398,18 +398,18 @@ struct qa *operand(NODE *p)
 		nctmpuses++;
 		break;
 	case 0x7d:
-		opnd.b2 = 3;
+		opnd.b2 = OATEMP;
 		opnd.w0 = p->in.type;
 		opnd.w4 = p->tn.rval;
 		break;
 	case 0x7b:
-		a.b2 = 1;
+		a.b2 = OAICON;
 		a.w4 = (int)p->tn.lval;	/* in.left of the original: the same word of the leaf */
 		a.w0 = 4;
-		b.b2 = 1;
+		b.b2 = OAICON;
 		b.w4 = p->tn.rval;
 		b.w0 = 4;
-		c.b2 = 3;
+		c.b2 = OATEMP;
 		c.w4 = nexttmp++;
 		c.w0 = p->in.type;
 		addquad(QDESC, &a, &b, &c);
@@ -509,16 +509,16 @@ struct quad *addquad(int op, struct qa *a, struct qa *b, struct qa *c)
 	q->f5 = 0;
 	q->f0 = 0;
 	if (c == 0)
-		q->c.b2 = 0;
+		q->c.b2 = OANONE;
 	else
 		q->c = *c;
 	q->c.fl = 0;
 	if (a == 0)
-		q->a.b2 = 0;
+		q->a.b2 = OANONE;
 	else
 		q->a = *a;
 	if (b == 0)
-		q->b.b2 = 0;
+		q->b.b2 = OANONE;
 	else
 		q->b = *b;
 	q->pos = curpos;
@@ -557,16 +557,16 @@ struct quad *insertquad(int op, struct qa *a, struct qa *b, struct qa *c, struct
 	q->f6 = 0;
 	q->f5 = 0;
 	if (c == 0)
-		q->c.b2 = 0;
+		q->c.b2 = OANONE;
 	else
 		q->c = *c;
 	q->c.fl = 0;
 	if (a == 0)
-		q->a.b2 = 0;
+		q->a.b2 = OANONE;
 	else
 		q->a = *a;
 	if (b == 0)
-		q->b.b2 = 0;
+		q->b.b2 = OANONE;
 	else
 		q->b = *b;
 	q->pos = curpos;
@@ -642,11 +642,11 @@ void normop(struct qa *a)
 
 	if (a == 0)
 		return;
-	if (a->b2 == 3)
+	if (a->b2 == OATEMP)
 		w = a->w4;
-	else if (a->b2 == 6)
+	else if (a->b2 == OASTEMP)
 		w = -a->w4;
-	else if (a->b2 == 8)
+	else if (a->b2 == OABTEMP)
 		w = betatbl[a->w4].x4;
 	else
 		return;
@@ -662,11 +662,11 @@ void normop(struct qa *a)
 
 void denorm(struct qa *a)
 {
-	if (a->b2 == 3)
+	if (a->b2 == OATEMP)
 		*(ctpos + a->w4) -= 1;
-	else if (a->b2 == 8)
+	else if (a->b2 == OABTEMP)
 		*(ctpos + betatbl[a->w4].x4) -= 1;
-	else if (a->b2 == 6)
+	else if (a->b2 == OASTEMP)
 		*(ctneg + a->w4) -= 1;
 }
 
@@ -915,7 +915,7 @@ struct quad *labquad(int x)
 	struct qa *p;
 
 	p = &s;
-	p->b2 = 1;
+	p->b2 = OAICON;
 	p->w0 = 4;
 	p->w4 = x;
 	return addquad(QLABEL, p, 0L, 0L);
@@ -927,7 +927,7 @@ struct quad *jmpquad(int x)
 	struct qa *p;
 
 	p = &s;
-	p->b2 = 1;
+	p->b2 = OAICON;
 	p->w4 = x;
 	return addquad(QJP, p, 0L, 0L);
 }

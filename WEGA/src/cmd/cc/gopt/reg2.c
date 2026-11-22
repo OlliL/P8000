@@ -127,7 +127,7 @@ symflags()
 
 	found = 0;
 	for (q = qhead; q != 0; q = q->next) {
-		if (q->op == QADDR && q->a.b2 == 4) {
+		if (q->op == QADDR && q->a.b2 == OANAME) {
 			symtab[q->a.w4].sflags &= ~1;
 			found = 1;
 		}
@@ -172,17 +172,17 @@ int flag;
 		}
 		if (inreach(q)) {
 			switch (q->c.b2) {
-			case 4:
+			case OANAME:
 				if ((symtab[q->c.w4].sflags & 1) || q->c.fl)
 					include(flag, q, last);
 				break;
-			case 8:
+			case OABTEMP:
 				if (BBIT(q->c.w4, 13)) {
 					if ((notlive(q, dfptr) == 0 || q->op == QCOPY) && q->op != QSTORE)
 						include(flag, q, last);
 				}
 				break;
-			case 6:
+			case OASTEMP:
 				if (BBIT(q->c.w4, 13) && ctneg[q->c.w4] > 2 && q->op != QSTORE)
 					include(flag, q, last);
 				break;
@@ -231,7 +231,7 @@ struct quad *q, *last;
 		return;
 	if (flag == 0 && q->c.w0 == 2)
 		return;
-	if (QHREC(blks[bblockno])->w12 && QHREC(blks[bblockno])->callfnd && q->c.b2 == 4) {
+	if (QHREC(blks[bblockno])->w12 && QHREC(blks[bblockno])->callfnd && q->c.b2 == OANAME) {
 		if ((symtab[q->c.w4].sflags >> 2) & 1)
 			return;
 		if (symtab[q->c.w4].sclass == 9)
@@ -291,14 +291,14 @@ l59:
 		if (q == GF(i, 2, struct quad *)) {
 			updatevector(q, tmp);
 			nd = setedges(i, tmp);
-			if (q->c.b2 == 4) {
+			if (q->c.b2 == OANAME) {
 				if (symtab[q->c.w4].sbyte5)
 					nd->cost = 999;
 				else if (q->c.fl)
 					nd->cost = 800;
 				else
 					nd->cost = 0;
-			} else if (q->c.b2 == 6 && q->c.w4 > nbeta0)
+			} else if (q->c.b2 == OASTEMP && q->c.w4 > nbeta0)
 				nd->cost = 700;
 			else
 				nd->cost = 0;
@@ -678,7 +678,7 @@ struct quad *p;
 		return (char *)qq;
 	}
 	markreg(x, reg);
-	tmp.b2 = 1;
+	tmp.b2 = OAICON;
 	tmp.w4 = reg;
 	tmp.w0 = 4;
 	qq = insertquad(QREGISTER, &tmp, &c, (struct qa *)0, p);
@@ -715,7 +715,7 @@ struct quad *p;
 		if (qq->a.w4 == reg)
 			return;
 	}
-	tmp.b2 = 1;
+	tmp.b2 = OAICON;
 	tmp.w4 = reg;
 	tmp.w0 = 4;
 	insertquad(QRESTORE, &tmp, &c, (struct qa *)0, p);
@@ -740,7 +740,7 @@ int reg, blk;
 		if (qq->a.w4 == reg)
 			return qq;
 	}
-	tmp.b2 = 1;
+	tmp.b2 = OAICON;
 	tmp.w4 = reg;
 	tmp.w0 = 4;
 	p = ebbtail(blk);
@@ -857,7 +857,7 @@ propagate()
 			if (rdebug > 1)
 				printf("// propagate : register %d used in block %d\n", r, c);
 			if (!(regused[b] & (1 << r))) {
-				tmp.b2 = 1;
+				tmp.b2 = OAICON;
 				tmp.w4 = r;
 				tmp.w0 = 4;
 				t = &rquad(c, r)->b;

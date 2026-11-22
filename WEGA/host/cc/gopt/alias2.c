@@ -43,7 +43,7 @@ void setposition(int cls, struct qa *p, int *X, int *Y)
 		printf("// entering setposition(), p->opnd = %s, class = %d\n", ascii + symtab[p->w4].nameoff, symtab[p->w4].sclass);
 		printf("// p->att = %d\n", p->b2);
 	}
-	if (p->b2 == 3)
+	if (p->b2 == OATEMP)
 		return;
 	if (hascall && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != 8)
 		return;
@@ -51,7 +51,7 @@ void setposition(int cls, struct qa *p, int *X, int *Y)
 		return;
 	if (symtab[p->w4].stype == 8 && symtab[p->w4].sx12 != -1) {
 		v = mapn(symtab[p->w4].sx12);
-		t.b2 = 4;
+		t.b2 = OANAME;
 		t.w4 = v - symtab;
 		if (!itfind(&t)) {
 			tabzalloc((int)sizeof(int), 2, 6);
@@ -63,7 +63,7 @@ void setposition(int cls, struct qa *p, int *X, int *Y)
 		for (i = v->sx12; numtab[i].tag > 0; i++) {
 			if (tagfind(numtab[i].tag) != -1) {
 				t.w4 = mapn(numtab[i].tag) - symtab;
-				t.b2 = 4;
+				t.b2 = OANAME;
 				if (!itfind(&t))
 					setposition(cls, &t, X, Y);
 			}
@@ -89,7 +89,7 @@ void setposition(int cls, struct qa *p, int *X, int *Y)
 			if (X[i] == p->w4)
 				return;
 		X[nadr++] = p->w4;
-		if (p->b2 == 4 && (symtab[p->w4].stype & 0x30) == 0x30 && (DECREF(symtab[p->w4].stype) & 0x30) == 0x10) {
+		if (p->b2 == OANAME && (symtab[p->w4].stype & 0x30) == 0x30 && (DECREF(symtab[p->w4].stype) & 0x30) == 0x10) {
 			Y[nptr++] = p->w4;
 		}
 		return;
@@ -137,13 +137,13 @@ skh:
 			if (!checkops(q, 1))
 				continue;
 			setposition(cls, &s, B, A);
-			if (q->a.b2 == 1 || q->a.b2 == 7)
+			if (q->a.b2 == OAICON || q->a.b2 == OALCON)
 				continue;
 			setposition(op70d8, &opnd70c8, B, A);
 		} else if (q->op == QPARV) {
-			if (q->a.b2 == 3 && fndparm(q))
+			if (q->a.b2 == OATEMP && fndparm(q))
 				setposition(QPARV, &opnd70c8, B, A);
-			else if (q->a.b2 == 4 && (DECREF(q->a.w0) & 0x30) == 0x10)
+			else if (q->a.b2 == OANAME && (DECREF(q->a.w0) & 0x30) == 0x10)
 				setposition(QIDR, &q->a, B, A);
 		}
 	}
@@ -345,7 +345,7 @@ struct quad *tmpsearch(struct quad *p, int tmpno, struct quad *q)
 		s = p->b;
 	else
 		s = p->c;
-	while (s.b2 != 3 || s.w4 != tmpno) {
+	while (s.b2 != OATEMP || s.w4 != tmpno) {
 		if (p == q) {
 			if (found) {
 				found = 0;
@@ -383,7 +383,7 @@ int fndparm(struct quad *q)
 		q = tmpsearch(pcur, s.w4, q);
 		s = q->a;
 		if (q->op == QADDR) {
-			if (q->a.b2 != 4)
+			if (q->a.b2 != OANAME)
 				return 0;
 			op70d8 = 3;
 			opnd70c8 = s;
@@ -393,7 +393,7 @@ int fndparm(struct quad *q)
 			}
 			return 1;
 		}
-		if (s.b2 != 3)
+		if (s.b2 != OATEMP)
 			return 0;
 	}
 }
@@ -423,8 +423,8 @@ int checkops(struct quad *q, int mode)
 	fl.fc = 1;
 	if (mode == 0) {
 		s = q->c;
-		if (s.b2 != 3) {
-			if (s.b2 == 4 && (q->c.w0 & 0x30) == 0x10)
+		if (s.b2 != OATEMP) {
+			if (s.b2 == OANAME && (q->c.w0 & 0x30) == 0x10)
 				goto success;
 			if (aflag > 2) {
 				printf("// Store's result opnd is not a ptr:\n");
@@ -438,8 +438,8 @@ int checkops(struct quad *q, int mode)
 m1:
 		if (mode == 1) {
 			s = q->a;
-			if (s.b2 != 3) {
-				if ((s.b2 == 4 || s.b2 == 1 || s.b2 == 7) && (q->a.w0 & 0x30) == 0x10)
+			if (s.b2 != OATEMP) {
+				if ((s.b2 == OANAME || s.b2 == OAICON || s.b2 == OALCON) && (q->a.w0 & 0x30) == 0x10)
 					goto success;
 				goto fail;
 			} else
@@ -460,9 +460,9 @@ m1:
 			op70d8 = 0x18;
 			hist[n++] = 0x18;
 		post:
-			if (s.b2 == 3)
+			if (s.b2 == OATEMP)
 				break;
-			if (s.b2 != 4 || (q->a.w0 & 0x30) != 0x10)
+			if (s.b2 != OANAME || (q->a.w0 & 0x30) != 0x10)
 				goto fail;
 			goto success;
 		if (0) {
@@ -474,7 +474,7 @@ lft:
 		case QADDFLD:
 			hist[n++] = 2;
 			if (!found) {
-				if (q->b.b2 == 4) {
+				if (q->b.b2 == OANAME) {
 					t = q->b;
 					found = 1;
 				} else
@@ -506,7 +506,7 @@ lft:
 				goto nonstd;
 			goto post;
 		case QADDR:
-			if (q->a.b2 == 5)
+			if (q->a.b2 == OALABEL)
 				goto fail;
 			hist[n++] = 3;
 			if (!fl.fc)
@@ -515,7 +515,7 @@ lft:
 				op70d8 = 3;
 			if (n > 3 && hist[n - 2] == 0x19 && hist[n - 3] == 0x18)
 				goto nonstd;
-			if (s.b2 == 3)
+			if (s.b2 == OATEMP)
 				goto post;
 			goto success;
 		case QCALL:
@@ -548,7 +548,7 @@ int almap(struct qa *p, int op)
 
 	if (aflag > 2)
 		printf("// almap( optr->opnd=%s,op=%d)\n", ascii + symtab[p->w4].nameoff, op);
-	if ((p->w0 & 0x30) == 0x10 && (p->b2 == 1 || p->b2 == 7)) {
+	if ((p->w0 & 0x30) == 0x10 && (p->b2 == OAICON || p->b2 == OALCON)) {
 	zero:
 		pos = 0;
 		goto done;
@@ -556,7 +556,7 @@ int almap(struct qa *p, int op)
 		pos = -1;
 		goto done;
 	}
-	if (p->b2 != 4)
+	if (p->b2 != OANAME)
 		goto neg;
 	if (hascall && ((symtab[p->w4].sflags >> 2) & 1) && symtab[p->w4].sclass != 8)
 		goto zero;
@@ -743,9 +743,9 @@ skh:
 				continue;
 			addaffect(cls, &s, op70d8, &opnd70c8);
 		} else if (q->op == QPARV) {
-			if (q->a.b2 == 3 && fndparm(q))
+			if (q->a.b2 == OATEMP && fndparm(q))
 				addaffect(0x34, &opnd70c8, 0, (struct qa *)0);
-			else if (q->a.b2 == 4 && (DECREF(q->a.w0) & 0x30) == 0x10)
+			else if (q->a.b2 == OANAME && (DECREF(q->a.w0) & 0x30) == 0x10)
 				addaffect(0x34, &q->a, 0x18, (struct qa *)0);
 		}
 	}
@@ -918,7 +918,7 @@ struct aln *checkalias(struct quad *q, int ot)
 	if (aflag > 4)
 		printf("// checkalias opndtype = %d\n", ot);
 	if (ot == 2) {
-		if (q->a.b2 == 8)
+		if (q->a.b2 == OABTEMP)
 			pos = betatbl[q->a.w4].pos;
 		else if (q->op == QADDR)
 			pos = almap(&q->a, QADDR);
@@ -927,12 +927,12 @@ struct aln *checkalias(struct quad *q, int ot)
 		else
 			pos = almap(&q->a, QSTORE);
 	} else if (ot == 1) {
-		if (q->c.b2 == 8)
+		if (q->c.b2 == OABTEMP)
 			pos = betatbl[q->c.w4].pos;
 		else
 			pos = almap(&q->c, QSTORE);
 	} else {
-		if (q->b.b2 == 8)
+		if (q->b.b2 == OABTEMP)
 			pos = betatbl[q->b.w4].pos;
 		else
 			pos = almap(&q->b, QSTORE);

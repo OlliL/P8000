@@ -49,6 +49,16 @@ union ndu {
 };
 
 struct qa { unsigned w0; char b2; unsigned fl:1; int w4; };	/* an operand of a quad: 6 bytes (names guessed) */
+/* the kind of an operand (b2; the names are guessed, the meaning from propnd, which prints "badatt" for another) */
+#define OANONE	0	/* no operand */
+#define OAICON	1	/* an int constant, w4 */
+#define OAFCON	2	/* a float constant, fconsttbl[w4] */
+#define OATEMP	3	/* a temporary T, w4 */
+#define OANAME	4	/* a symbol, symtab[w4] */
+#define OALABEL	5	/* a label L, w4 */
+#define OASTEMP	6	/* a temporary S of the loop induction (lpind2) */
+#define OALCON	7	/* a long constant, constbl[w4] */
+#define OABTEMP	8	/* a temporary B (beta2) */
 
 struct pos { char *name; int line; };
 

@@ -56,7 +56,7 @@ struct quad *qmkstore(struct quad *q)
 
 	if (0)
 		q = 0;	/* dead: its store of q at the entry is left (the original) */
-	if (q->op == QPARV && q->a.b2 == 8) {
+	if (q->op == QPARV && q->a.b2 == OABTEMP) {
 		tq.op = QSTORE;
 		tq.c = q->a;
 		return &tq;
@@ -75,7 +75,7 @@ struct dl *srchdflist(struct quad *q, int *flag)
 		printf("srchdflist()\n");
 	q = qmkstore(q);
 	p = lpdefs;
-	isbeta = (char)(q->c.b2 == 8);
+	isbeta = (char)(q->c.b2 == OABTEMP);
 	isstore = isbeta && q->op == QSTORE ? 1 : 0;
 	ismem = isbeta && (q->op == QIDR || q->op == QSTORE || q->op == QLOAD);
 	isother = isbeta && (q->op != QIDR && q->op != QSTORE && q->op != QLOAD);
@@ -90,7 +90,7 @@ struct dl *srchdflist(struct quad *q, int *flag)
 				return p;
 			*flag = 1;
 		}
-		if (isstore && x->c.b2 == 8 && x->op == QSTORE && betatbl[x->c.w4].x1 == betatbl[q->c.w4].x1) {
+		if (isstore && x->c.b2 == OABTEMP && x->op == QSTORE && betatbl[x->c.w4].x1 == betatbl[q->c.w4].x1) {
 			if (x->c.b2 == q->c.b2 && x->c.w4 == q->c.w4)
 				return p;
 			*flag = 1;
@@ -139,25 +139,25 @@ void clropt(struct quad *q, struct quad *firstq)
 		printf("clropt(firstq = %X), quad (%X) = \n", (unsigned)(uintptr_t)(firstq), (unsigned)(uintptr_t)(q));
 		prquad(q);
 	}
-	if (q->a.b2 == 3) {
+	if (q->a.b2 == OATEMP) {
 		p = tmpsearch(firstq, q->a.w4, (struct quad *)0);
 		clropt(p, firstq);
-		if (q->b.b2 == 0)
+		if (q->b.b2 == OANONE)
 			return;
 		if (0) {
 l468:
 			clrsymflag(q, 2);
-			if (q->b.b2 == 0)
+			if (q->b.b2 == OANONE)
 				return;
 		}
 opt:
 		if (q->op == QCALL)
 			return;
 		goto op2;
-	} else if (q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8)
+	} else if (q->a.b2 == OANAME || q->a.b2 == OASTEMP || q->a.b2 == OABTEMP)
 		goto l468;
-	else if (q->a.b2 == 1 || q->a.b2 == 2 || q->a.b2 == 7 || q->a.b2 == 5) {
-		if (q->b.b2 == 0)
+	else if (q->a.b2 == OAICON || q->a.b2 == OAFCON || q->a.b2 == OALCON || q->a.b2 == OALABEL) {
+		if (q->b.b2 == OANONE)
 			return;
 		goto opt;
 	} else {
@@ -165,12 +165,12 @@ opt:
 		return;
 	}
 op2:
-	if (q->b.b2 == 3) {
+	if (q->b.b2 == OATEMP) {
 		p = tmpsearch(firstq, q->b.w4, (struct quad *)0);
 		clropt(p, firstq);
-	} else if (q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8)
+	} else if (q->b.b2 == OANAME || q->b.b2 == OASTEMP || q->b.b2 == OABTEMP)
 		clrsymflag(q, 3);
-	else if (!(q->b.b2 == 1 || q->b.b2 == 2 || q->b.b2 == 7))
+	else if (!(q->b.b2 == OAICON || q->b.b2 == OAFCON || q->b.b2 == OALCON))
 		cerror("clropt(): illegal op2 opnd");
 }
 
@@ -181,18 +181,18 @@ void setopt(struct quad *q)
 		printf("setopt()\n");
 		prquad(q);
 	}
-	if (q->c.b2 == 4) {
+	if (q->c.b2 == OANAME) {
 		symtab[q->c.w4].sflags |= 2;
 		if (pdebug > 3)
 			printf("setopt(), rslt sym=%s, lpopt=%d\n", ascii + symtab[q->c.w4].nameoff, (symtab[q->c.w4].sflags >> 1) & 1);
-	} else if (q->c.b2 == 6 || q->c.b2 == 8)
+	} else if (q->c.b2 == OASTEMP || q->c.b2 == OABTEMP)
 		betatbl[q->c.w4].b12 = 1;
-	if (q->c.b2 == 8 && q->op == QSTORE) {
+	if (q->c.b2 == OABTEMP && q->op == QSTORE) {
 		symtab[betatbl[q->c.w4].x1].sflags |= 2;
 		if (pdebug > 3)
 			printf("setopt(), rslt beta=%s, lpopt=%d\n", ascii + symtab[betatbl[q->c.w4].x1].nameoff, (symtab[betatbl[q->c.w4].x1].sflags >> 1) & 1);
 	}
-	if (q->op == QPARV && q->a.b2 == 8) {
+	if (q->op == QPARV && q->a.b2 == OABTEMP) {
 		betatbl[q->a.w4].b12 = 1;
 		symtab[betatbl[q->a.w4].x1].sflags |= 2;
 		if (pdebug > 3)
@@ -296,14 +296,14 @@ int isglobal(struct quad *q)
 
 	if (q->op == QADDR)
 		return 0;
-	if ((q->op == QINDEX || q->op == QADDFLD) && q->a.b2 == 8 && bbit(q->a.w4, 11))
+	if ((q->op == QINDEX || q->op == QADDFLD) && q->a.b2 == OABTEMP && bbit(q->a.w4, 11))
 		return 0;
 	if (pdebug > 2) {
 		printf("isglobal(),  quad:\n");
 		prquad(q);
 	}
-	if ((q->c.b2 == 4 && ((symtab[q->c.w4].sflags >> 2) & 1)) ||
-	    (q->c.b2 == 8 && ((symtab[betatbl[q->c.w4].x1].sflags >> 2) & 1))) {
+	if ((q->c.b2 == OANAME && ((symtab[q->c.w4].sflags >> 2) & 1)) ||
+	    (q->c.b2 == OABTEMP && ((symtab[betatbl[q->c.w4].x1].sflags >> 2) & 1))) {
 		if (pdebug > 3)
 			printf("isglobal(), returning TRUE\n");
 		return 1;
@@ -340,7 +340,7 @@ void findlpdefs(struct loop *lp)
 		for (q = blks[b->blk]->next; q != 0; q = q->next) {
 			if (q->op == QBBLOCK)
 				break;
-			if (q->f7 || q->f4 || (q->op == QPARV && q->a.b2 == 8)) {
+			if (q->f7 || q->f4 || (q->op == QPARV && q->a.b2 == OABTEMP)) {
 				addlpdef(q, n);
 				if (q->op == QCALL)
 					callf = 1;
@@ -362,13 +362,13 @@ void findlpdefs(struct loop *lp)
 		}
 		setopt(t->q);
 		if (t->f15) {
-			if (t->q->op == QPARV && t->q->a.b2 == 8)
+			if (t->q->op == QPARV && t->q->a.b2 == OABTEMP)
 				t->f15 = 0;
 			else if (callf && isglobal(t->q))
 				t->f15 = 0;
 			else {
 				t->q->f1 = 1;
-				if (t->q->c.b2 == 4 && isglobal(t->q)) {
+				if (t->q->c.b2 == OANAME && isglobal(t->q)) {
 					t->q->c.fl = 1;
 					if (pdebug > 3) {
 						printf("reg_candidate set for:\n");
@@ -470,7 +470,7 @@ int isdefined(struct quad *q, int ot)
 		prquad(q);
 	}
 	if (ot == 2) {
-		if (q->op == QADDR && q->a.b2 == 4)
+		if (q->op == QADDR && q->a.b2 == OANAME)
 			return 0;
 		t = q->a.b2;
 		i = q->a.w4;
@@ -523,21 +523,21 @@ int invopnds(struct quad *q, struct quad *firstq)
 		printf("invopnds(firstq = %X), quad (%X) = \n", (unsigned)(uintptr_t)(firstq), (unsigned)(uintptr_t)(q));
 		prquad(q);
 	}
-	if (q->a.b2 == 3) {
+	if (q->a.b2 == OATEMP) {
 		p = tmpsearch(firstq, q->a.w4, (struct quad *)0);
 		if (!invopnds(p, firstq))
 			return 0;
-		if (q->b.b2 == 0)
+		if (q->b.b2 == OANONE)
 			return 1;
-	} else if (q->a.b2 == 4 || q->a.b2 == 6 || q->a.b2 == 8) {
-		if (!(q->a.b2 == 8 && bbit(q->a.w4, 11) && q->b.b2 != 0)) {
+	} else if (q->a.b2 == OANAME || q->a.b2 == OASTEMP || q->a.b2 == OABTEMP) {
+		if (!(q->a.b2 == OABTEMP && bbit(q->a.w4, 11) && q->b.b2 != OANONE)) {
 			if (isdefined(q, 2))
 				return 0;
-			if (q->b.b2 == 0)
+			if (q->b.b2 == OANONE)
 				return 1;
 		}
-	} else if (q->a.b2 == 1 || q->a.b2 == 2 || q->a.b2 == 7 || q->a.b2 == 5) {
-		if (q->b.b2 == 0)
+	} else if (q->a.b2 == OAICON || q->a.b2 == OAFCON || q->a.b2 == OALCON || q->a.b2 == OALABEL) {
+		if (q->b.b2 == OANONE)
 			return 1;
 	} else {
 		cerror("invopnd(): illegal op1 opnd");
@@ -545,18 +545,18 @@ int invopnds(struct quad *q, struct quad *firstq)
 	}
 	if (q->op == QCALL)
 		return 0;
-	if (q->b.b2 == 3) {
+	if (q->b.b2 == OATEMP) {
 		p = tmpsearch(firstq, q->b.w4, (struct quad *)0);
 		if (!invopnds(p, firstq))
 			return 0;
 		return 1;
-	} else if (q->b.b2 == 4 || q->b.b2 == 6 || q->b.b2 == 8) {
-		if (q->b.b2 == 8 && bbit(q->b.w4, 11))
+	} else if (q->b.b2 == OANAME || q->b.b2 == OASTEMP || q->b.b2 == OABTEMP) {
+		if (q->b.b2 == OABTEMP && bbit(q->b.w4, 11))
 			return 1;
 		if (isdefined(q, 3))
 			return 0;
 		return 1;
-	} else if (q->b.b2 == 1 || q->b.b2 == 2 || q->b.b2 == 7)
+	} else if (q->b.b2 == OAICON || q->b.b2 == OAFCON || q->b.b2 == OALCON)
 		return 1;
 	cerror("invopnd(): illegal op2 opnd");
 }
@@ -571,11 +571,11 @@ int notlive(struct quad *q, unsigned *vec)
 		prquad(q);
 		prvec(vec, 3, 1);
 	}
-	if (q->c.b2 == 4)
+	if (q->c.b2 == OANAME)
 		k = bitpos(q, 1, 4);
-	else if (q->c.b2 == 6)
+	else if (q->c.b2 == OASTEMP)
 		k = bitpos(q, 1, 6);
-	else if (q->c.b2 == 8) {
+	else if (q->c.b2 == OABTEMP) {
 		if (q->op == QSTORE)
 			k = bitpos(q, 1, 4);
 		else
@@ -627,11 +627,11 @@ void marklpinv(struct quad *q, struct quad *firstq)
 		prquad(q);
 	}
 	q->f3 = 1;
-	if (q->a.b2 == 3) {
+	if (q->a.b2 == OATEMP) {
 		p = tmpsearch(firstq, q->a.w4, (struct quad *)0);
 		marklpinv(p, firstq);
 	}
-	if (q->b.b2 == 3 && q->op != QCALL) {
+	if (q->b.b2 == OATEMP && q->op != QCALL) {
 		p = tmpsearch(firstq, q->b.w4, (struct quad *)0);
 		marklpinv(p, firstq);
 	}
@@ -652,11 +652,11 @@ void chkbscindvar(struct dl *d)
 	if (pdebug > 1)
 		printf("//  chkbscindvar: \n");
 	x = d->q;
-	if (x->op == QSTORE && x->a.b2 == 3) {
+	if (x->op == QSTORE && x->a.b2 == OATEMP) {
 		h = skiphdrs(blks[d->x0]);
 		s = tmpsearch(h, x->a.w4, (struct quad *)0);
 		if (s->op == QADD || s->op == QSUB) {
-			if (s->b.b2 == 1 || s->b.b2 == 7 || ((s->b.b2 == 4 || s->b.b2 == 6 || s->b.b2 == 8) && !isdefined(s, 3))) {
+			if (s->b.b2 == OAICON || s->b.b2 == OALCON || ((s->b.b2 == OANAME || s->b.b2 == OASTEMP || s->b.b2 == OABTEMP) && !isdefined(s, 3))) {
 				if (sameopnd(s, x, 2, 1)) {
 					if (pdebug > 1) {
 						printf("found basic induction var:\n");
@@ -664,7 +664,7 @@ void chkbscindvar(struct dl *d)
 					}
 					d->f14 = 1;
 					d->e14 = s->b;
-					if (s->b.b2 == 1 || s->b.b2 == 7)
+					if (s->b.b2 == OAICON || s->b.b2 == OALCON)
 						d->f11 = 1;
 					else
 						d->f11 = 0;
@@ -748,9 +748,9 @@ void lpinv(struct loop *lp)
 			goto L2;
 		if (!domexits(lp, t->x0) && !notlive(q, exitlive))
 			goto L2;
-		if (q->c.b2 == 4 && symtab[q->c.w4].sx6 > vafc)
+		if (q->c.b2 == OANAME && symtab[q->c.w4].sx6 > vafc)
 			goto L3;
-		if (q->c.b2 == 8 && q->op == QSTORE && symtab[betatbl[q->c.w4].x1].sx6 > vafc)
+		if (q->c.b2 == OABTEMP && q->op == QSTORE && symtab[betatbl[q->c.w4].x1].sx6 > vafc)
 			goto L3;
 		if (pdebug > 3) {
 			printf("moving def to possible inv list\n");
@@ -791,7 +791,7 @@ L3:		t = t->next;
 	for (; t != 0; t = t->next) {
 		if (!domuse(lp, t->x0, t->q))
 			continue;
-		if (t->q->op == QSTORE && t->q->c.b2 == 8 && samebetalpdef(t->q))
+		if (t->q->op == QSTORE && t->q->c.b2 == OABTEMP && samebetalpdef(t->q))
 			continue;
 		if (pdebug > 2 && invagain != 1)
 			printf("\n");
@@ -933,7 +933,7 @@ found:
 	qa1.w4 = -1;
 	qa1.w0 = blkno;
 	qa2.w4 = -1;
-	qa3.b2 = 0;
+	qa3.b2 = OANONE;
 	if (flag == 1 && lp->b10) {
 		phquad = pv;
 		return p;
@@ -1004,7 +1004,7 @@ found:
 			}
 		}
 		if (chg && !adj) {
-			qa1.b2 = 1;
+			qa1.b2 = OAICON;
 			qa1.w4 = nl;
 			phquad = insertquad(QLABEL, &qa1, (struct qa *)0, (struct qa *)0, nq);
 			adj = 1;
@@ -1093,11 +1093,11 @@ void proceslp(struct loop *lp)
 					prquad(q);
 				}
 				if (q->f3) {
-					if (q->c.b2 == 3 && ctpos[q->c.w4] > 2)
+					if (q->c.b2 == OATEMP && ctpos[q->c.w4] > 2)
 						q = insrtstmpmove(q);
 					else
 						q = qmove(q);
-				} else if (q->c.b2 == 3 || q->c.b2 == 8) {
+				} else if (q->c.b2 == OATEMP || q->c.b2 == OABTEMP) {
 					r = chkfamindvar(q, blk);
 					if (r != 0)
 						q = r;

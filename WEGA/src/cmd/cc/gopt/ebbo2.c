@@ -131,17 +131,17 @@ struct quad *q;
 					vc->val = vd->val;
 					vc->cst = 1;
 					vc->dead = 1;
-					if (q->c.b2 == 3) {
+					if (q->c.b2 == OATEMP) {
 						q = delquad(q);
 						continue;
 					}
 					q->op = QCOPY;
 					q->a = tmp;
 				ib:
-					q->b.b2 = 0;
+					q->b.b2 = OANONE;
 				cu:
 					checkuse(q);
-					if (q->c.b2 == 8 || q->c.b2 == 6) {
+					if (q->c.b2 == OABTEMP || q->c.b2 == OASTEMP) {
 						clear(q, 1);
 						addstore(q);
 					}
@@ -153,7 +153,7 @@ struct quad *q;
 				vc->val = va->val;
 				vc->cst = va->cst;
 				vc->dead = 1;
-				if (q->c.b2 == 3) {
+				if (q->c.b2 == OATEMP) {
 					q = delquad(q);
 					continue;
 				}
@@ -167,7 +167,7 @@ struct quad *q;
 			vc->val = vx->val;
 			if (fl != 0) {
 				vc->dead = 1;
-				if (q->c.b2 == 3) {
+				if (q->c.b2 == OATEMP) {
 					q = delquad(q);
 					continue;
 				}
@@ -180,15 +180,15 @@ struct quad *q;
 				va = vnfind(&q->a);
 			}
 			vc = vnfind(&q->c);
-			if (vc->dead && q->c.b2 != 4) {
+			if (vc->dead && q->c.b2 != OANAME) {
 				updateopnd(vc->val, &q->c, 0);
 				vc = vnfind(&q->c);
 			}
 			checkuse(q);
 			vc->cst = va->cst;
-			if (q->c.b2 != 8)
+			if (q->c.b2 != OABTEMP)
 				vc->dead = va->cst;
-			if (q->c.b2 == 4 || q->c.b2 == 6) {
+			if (q->c.b2 == OANAME || q->c.b2 == OASTEMP) {
 				if (bdebug > 3) {
 					printf("// ebbo :");
 					prquad(q);
@@ -211,7 +211,7 @@ struct quad *q;
 				if (nostore(vx->q, q)) {
 					vc->val = vx->val;
 					vc->dead = 1;
-					if (q->c.b2 == 3) {
+					if (q->c.b2 == OATEMP) {
 						q = delquad(q);
 						continue;
 					}
@@ -219,7 +219,7 @@ struct quad *q;
 					exprenter(q);
 			}
 			checkuse(q);
-			if (q->c.b2 == 8) {
+			if (q->c.b2 == OABTEMP) {
 				clear(q, 1);
 				addstore(q);
 			}
@@ -261,7 +261,7 @@ struct quad *q;
 				updateopnd(va->val, &q->a, 1);
 				va = vnfind(&q->a);
 			}
-			if (q->c.b2 == 3 && !q->f0) {
+			if (q->c.b2 == OATEMP && !q->f0) {
 				vc = vnfind(&q->c);
 				vc->val = va->val;
 				vc->dead = 1;
@@ -275,7 +275,7 @@ struct quad *q;
 				addstore(q);
 				continue;
 			}
-			if (q->c.b2 != 3)
+			if (q->c.b2 != OATEMP)
 				goto c60;
 			checkuse(q);
 			continue;
@@ -315,15 +315,15 @@ struct qa *p;
 	e->a = *p;
 	e->val = vnnext++;
 	e->dead = 0;
-	if (p->b2 == 8)
+	if (p->b2 == OABTEMP)
 		e->al = betatbl[p->w4].x0;
-	else if (p->b2 == 3)
+	else if (p->b2 == OATEMP)
 		e->al = -p->w4;
-	else if (p->b2 == 4)
+	else if (p->b2 == OANAME)
 		e->al = almap(p, QSTORE);
 	else
 		e->al = -9999;
-	if (p->b2 == 7 || p->b2 == 1 || p->b2 == 2)
+	if (p->b2 == OALCON || p->b2 == OAICON || p->b2 == OAFCON)
 		e->cst = 1;
 	else
 		e->cst = 0;
@@ -384,7 +384,7 @@ struct quad *first, *last;
 				prquad(h->q);
 			}
 			denorm(&h->q->c);
-			h->q->c.b2 = 6;
+			h->q->c.b2 = OASTEMP;
 			betanew(maxtmp);
 			x = h->q->c.w4;
 			y = maxtmp;
@@ -392,15 +392,15 @@ struct quad *first, *last;
 			h->q->f4 = 1;
 			normop(&h->q->c);
 			for (p = first; p != last; p = p->next) {
-				if (p->a.b2 == 3 && p->a.w4 == x) {
-					p->a.b2 = 6;
+				if (p->a.b2 == OATEMP && p->a.w4 == x) {
+					p->a.b2 = OASTEMP;
 					p->a.w4 = y;
 					--ctpos[x];
 					p->f6 = 1;
 					++ctneg[y];
 				}
-				if (p->b.b2 == 3 && p->b.w4 == x) {
-					p->b.b2 = 6;
+				if (p->b.b2 == OATEMP && p->b.w4 == x) {
+					p->b.b2 = OASTEMP;
 					p->b.w4 = y;
 					--ctpos[x];
 					p->f5 = 1;
@@ -432,7 +432,7 @@ int *fl;
 		if (e->op == q->op && e->v1 == va && e->v2 == vb && e->q->c.w0 == q->c.w0) {
 			vc = vnfind(&e->q->c)->val;
 			if (vc == e->val) {
-				if (e->q->c.b2 == 3 && e->num != curblk)
+				if (e->q->c.b2 == OATEMP && e->num != curblk)
 					e->cst = 1;
 				return e;
 			}
@@ -491,10 +491,10 @@ struct quad *q;
 		prquad(q);
 	}
 	x = vnfind(&q->a);
-	if (!(x->a.b2 == 7 || x->a.b2 == 1 || x->a.b2 == 2)) {
+	if (!(x->a.b2 == OALCON || x->a.b2 == OAICON || x->a.b2 == OAFCON)) {
 		found = 0;
 		for (e = (struct vn *)vnlist; e != 0; e = e->next) {
-			if (e->val == x->val && (e->a.b2 == 7 || e->a.b2 == 1 || e->a.b2 == 2) && e->cst) {
+			if (e->val == x->val && (e->a.b2 == OALCON || e->a.b2 == OAICON || e->a.b2 == OAFCON) && e->cst) {
 				found = 1;
 				break;
 			}
@@ -510,18 +510,18 @@ struct quad *q;
 			cerror("error in compile time constant propagation (1)");
 		}
 	}
-	if (x->a.b2 == 7)
+	if (x->a.b2 == OALCON)
 		op1 = constbl[x->a.w4];
-	else if (x->a.b2 == 1)
+	else if (x->a.b2 == OAICON)
 		op1 = x->a.w4;
-	else if (x->a.b2 == 2)
+	else if (x->a.b2 == OAFCON)
 		d1 = fconsttbl[x->a.w4].d;
 	if (q->b.b2) {
 		x = vnfind(&q->b);
-		if (!(!x->a.b2 == 7 || x->a.b2 == 1 || x->a.b2 == 2)) {
+		if (!(!x->a.b2 == OALCON || x->a.b2 == OAICON || x->a.b2 == OAFCON)) {
 			found = 0;
 			for (e = (struct vn *)vnlist; e != 0; e = e->next) {
-				if (e->val == x->val && (e->a.b2 == 7 || e->a.b2 == 1 || e->a.b2 == 2) && e->cst) {
+				if (e->val == x->val && (e->a.b2 == OALCON || e->a.b2 == OAICON || e->a.b2 == OAFCON) && e->cst) {
 					found = 1;
 					break;
 				}
@@ -531,14 +531,14 @@ struct quad *q;
 			else
 				cerror("error in compile time constant propagation (2)");
 		}
-		if (x->a.b2 == 7)
+		if (x->a.b2 == OALCON)
 			op2 = constbl[x->a.w4];
-		else if (x->a.b2 == 1)
+		else if (x->a.b2 == OAICON)
 			op2 = x->a.w4;
-		else if (x->a.b2 == 2)
+		else if (x->a.b2 == OAFCON)
 			d2 = fconsttbl[x->a.w4].d;
 	}
-	if (x->a.b2 != 2) {
+	if (x->a.b2 != OAFCON) {
 		if (bdebug > 1)
 			printf("// compute: op1 = %ld, op2 = %ld\n", op1, op2);
 		switch (q->op) {
@@ -562,7 +562,7 @@ struct quad *q;
 		default:
 			cerror("error in compile time constant propagation (3) (%d)", q->op);
 		}
-		r.b2 = 7;
+		r.b2 = OALCON;
 		r.w4 = constlook(res);
 		r.w0 = q->c.w0;
 		return r;
@@ -583,7 +583,7 @@ struct quad *q;
 		default:
 			cerror("error in compile time constant propagation (4) (%d)", q->op);
 		}
-		r.b2 = 2;
+		r.b2 = OAFCON;
 		r.w4 = dconstlook(dr);
 		r.w0 = q->c.w0;
 		return r;
@@ -601,10 +601,10 @@ struct quad *q;
 	case QADD:
 	case QSUB:
 		x = 1;
-		if (q->b.b2 == 7) {
+		if (q->b.b2 == OALCON) {
 L7:			x = constbl[q->b.w4];
 			return 0;
-		} else if (q->b.b2 == 1)
+		} else if (q->b.b2 == OAICON)
 			x = q->b.w4;
 		if (x == 0)
 			return 1;
@@ -612,9 +612,9 @@ L7:			x = constbl[q->b.w4];
 	case QDIV:
 	case QMULT:
 		x = 0;
-		if (q->b.b2 == 7)
+		if (q->b.b2 == OALCON)
 			goto L7;
-		if (q->b.b2 == 1)
+		if (q->b.b2 == OAICON)
 			x = q->b.w4;
 		if (x == 1)
 			return 1;
@@ -665,7 +665,7 @@ int ot;
 
 	if (q->op == QSTORE || q->op == QMOVE) {
 		y = x = (struct aln *)checkalias(q, ot);
-		if (q->c.b2 == 8)
+		if (q->c.b2 == OABTEMP)
 			v1 = betatbl[q->c.w4].x1;
 		else
 			v1 = q->c.w4;
@@ -683,9 +683,9 @@ int ot;
 		}
 		if (y == 0) {
 			for (e = (struct vn *)vnlist; e != 0; e = e->next) {
-				if (e->a.b2 == 8)
+				if (e->a.b2 == OABTEMP)
 					v2 = betatbl[e->a.w4].x1;
-				else if (e->a.b2 == 4)
+				else if (e->a.b2 == OANAME)
 					v2 = e->a.w4;
 				else
 					v2 = -1;
@@ -698,14 +698,14 @@ int ot;
 					e->val = 0;
 				}
 			}
-			if (q->c.b2 == 4)
+			if (q->c.b2 == OANAME)
 				y = (struct aln *)&symtab[q->c.w4];
 			else
 				y = (struct aln *)&betatbl[q->c.w4];
 		} else {
 			for (e = (struct vn *)vnlist; e != 0; e = e->next) {
 				if (y->x0 == e->al && eqopnd(&e->a, &q->c) && e->al >= 0) {
-					if (q->c.b2 == 4)
+					if (q->c.b2 == OANAME)
 						y = (struct aln *)&symtab[q->c.w4];
 					else
 						y = (struct aln *)&betatbl[q->c.w4];
@@ -717,7 +717,7 @@ int ot;
 		y = (struct aln *)&betatbl[q->c.w4];
 	if (bdebug > 4)
 		printf("// clear : p1 = %X\n", y);
-	if (!killed(y) && q->c.b2 != 3) {
+	if (!killed(y) && q->c.b2 != OATEMP) {
 		killtbl[nkill++] = y;
 		if (nkill >= 1000)
 			cerror("kill_tbl overflow");
@@ -743,7 +743,7 @@ int
 canopt(p)
 struct qa *p;
 {
-	if (p->b2 == 4 && ((symtab[p->w4].sflags >> 2) & 1) && ebbcalls)
+	if (p->b2 == OANAME && ((symtab[p->w4].sflags >> 2) & 1) && ebbcalls)
 		return 0;
 	return 1;
 }
@@ -765,7 +765,7 @@ int n;
 		e = e->next;
 	}
 	for (i = 0; i < nstores; i++) {
-		if (stores[i].q->c.b2 == 4 && ((symtab[stores[i].q->c.w4].sflags >> 2) & 1)) {
+		if (stores[i].q->c.b2 == OANAME && ((symtab[stores[i].q->c.w4].sflags >> 2) & 1)) {
 			stores[i].q = q;
 			stores[i].s = symtab;
 		}
@@ -785,10 +785,10 @@ struct quad *q;
 		printf("// in checkuse ---");
 		prquad(q);
 	}
-	if (!isvarty(q->a.b2) && q->a.b2 != 3 && q->a.b2 != 5) {
-		if (q->a.b2 == 8 || q->a.b2 == 6)
+	if (!isvarty(q->a.b2) && q->a.b2 != OATEMP && q->a.b2 != OALABEL) {
+		if (q->a.b2 == OABTEMP || q->a.b2 == OASTEMP)
 			p = (struct aln *)&betatbl[q->a.w4];
-		else if (q->a.b2 == 4 && (p = (struct aln *)checkalias(q, 2)) == 0)
+		else if (q->a.b2 == OANAME && (p = (struct aln *)checkalias(q, 2)) == 0)
 			p = (struct aln *)&symtab[q->a.w4];
 		if (!killed(p) && !inuse(p) && canopt(&q->a)) {
 			q->f6 = 1;
@@ -797,10 +797,10 @@ struct quad *q;
 				cerror("use_tbl overflow");
 		}
 	}
-	if (!isvarty(q->b.b2) && q->b.b2 != 3 && q->b.b2 != 0) {
-		if (q->b.b2 == 8 || q->b.b2 == 6)
+	if (!isvarty(q->b.b2) && q->b.b2 != OATEMP && q->b.b2 != OANONE) {
+		if (q->b.b2 == OABTEMP || q->b.b2 == OASTEMP)
 			p = (struct aln *)&betatbl[q->b.w4];
-		else if (q->b.b2 == 4 && (p = (struct aln *)checkalias(q, 3)) == 0)
+		else if (q->b.b2 == OANAME && (p = (struct aln *)checkalias(q, 3)) == 0)
 			p = (struct aln *)&symtab[q->b.w4];
 		if (!killed(p) && !inuse(p) && canopt(&q->b)) {
 			q->f5 = 1;
@@ -833,7 +833,7 @@ struct quad *q;
 	struct sym *x;
 
 	if (q->op == QSTORE || q->op == QMOVE) {
-		if (q->c.b2 == 3)
+		if (q->c.b2 == OATEMP)
 			return;
 		x = (struct sym *)checkalias(q, 1);
 		if (x == 0)
@@ -880,17 +880,17 @@ ebbclean()
 			if (q->op == QBBLOCK)
 				continue;
 			switch (q->c.b2) {
-			case 3:
+			case OATEMP:
 				if (ctpos[q->c.w4] > 1)
 					break;
 L1:				q = delquad(q);
 				x = 1;
 				break;
-			case 6:
+			case OASTEMP:
 				if (ctneg[q->c.w4] <= 1)
 					goto L1;
 				break;
-			case 8:
+			case OABTEMP:
 				if (ctpos[betatbl[q->c.w4].x[0]] <= 1)
 					goto L1;
 				break;

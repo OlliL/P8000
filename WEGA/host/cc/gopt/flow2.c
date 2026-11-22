@@ -79,10 +79,10 @@ int flow_graph(void)
 #ifdef SHIPPED
 	/* the kinds of the operands are not set: the original has what its frame holds there; a kind 4 (a name) of the shipped build
 	   makes eqopnd() take the edge list in a.w4 for a name (usefirst(), reg2.c) */
-	s1.b2 = 0;
-	s2.b2 = 0;
+	s1.b2 = OANONE;
+	s2.b2 = OANONE;
 #endif
-	s3.b2 = 0;
+	s3.b2 = OANONE;
 	for (i = 0; i < blkno; i++) {
 		s1.w0 = i;
 		blks[i] = insertquad(QBBLOCK, &s1, &s2, &s3, blks[i]);
@@ -208,7 +208,7 @@ void marklab(struct quad *q)
 {
 	while (q->op != QLABEL)
 		q = q->next;
-	q->c.b2 = 1;
+	q->c.b2 = OAICON;
 	q->c.w4 = 1;
 }
 

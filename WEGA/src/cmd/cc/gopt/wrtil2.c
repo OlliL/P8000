@@ -108,8 +108,8 @@ writeil()
 				if (q->op != QPARV)
 					mktree(q);
 				else {
-					if (q->a.b2 == 8) {
-						q->a.b2 = 3;
+					if (q->a.b2 == OABTEMP) {
+						q->a.b2 = OATEMP;
 						q->a.w4 = betatbl[q->a.w4].x4;
 					}
 					if (pend) {
@@ -156,19 +156,19 @@ writeil()
 		case QREGISTER:
 			if (q->a.w4 > 7)
 				q->a.w4 -= 7;
-			if (q->b.b2 == 4) {
+			if (q->b.b2 == OANAME) {
 				printf("R%d\t%d\t\n", q->a.w4, (symtab[q->b.w4].sflags >> 4) & 0xfff);
 				regsym[q->a.w4] = symtab + q->b.w4;
-			} else if (q->b.b2 == 6 && betatbl[q->b.w4].p6 < 0) {
+			} else if (q->b.b2 == OASTEMP && betatbl[q->b.w4].p6 < 0) {
 				if (qflag > 2)
 					printf("// assigning S%d to offset %d\n", q->a.w4, tmpoff);
 				printf("R%d\t%d\t%d\t\n", q->a.w4, -tmpoff, q->b.w0);
 				betatbl[q->b.w4].p6 = tmpoff;
 				tmpoff += szty(q->b.w0) * 2;
-			} else if (q->b.b2 == 6)
+			} else if (q->b.b2 == OASTEMP)
 				printf("R%d\t%d\t%d\t\n", q->a.w4, -betatbl[q->b.w4].p6, q->b.w0);
 			else {
-				q->b.b2 = 3;
+				q->b.b2 = OATEMP;
 				q->b.w4 = betatbl[q->b.w4].x4;
 				u = mkleaf(&q->b);
 				*(ctpos + q->b.w4) += 1;
@@ -176,18 +176,18 @@ writeil()
 			}
 			continue;
 		case QRESTORE:
-			if (q->b.b2 == 4)
+			if (q->b.b2 == OANAME)
 				printf("T%d\t\n", (symtab[q->b.w4].sflags >> 4) & 0xfff);
-			else if (q->b.b2 == 6 && betatbl[q->b.w4].p6 < 0) {
+			else if (q->b.b2 == OASTEMP && betatbl[q->b.w4].p6 < 0) {
 				if (qflag > 2)
 					printf("// assigning S%d to offset %d\n", q->a.w4, tmpoff);
 				printf("T%d\t\n", -tmpoff);
 				betatbl[q->b.w4].p6 = tmpoff;
 				tmpoff += szty(q->b.w0) * 2;
-			} else if (q->b.b2 == 6)
+			} else if (q->b.b2 == OASTEMP)
 				printf("T%d\t\n", -betatbl[q->b.w4].p6);
 			else {
-				q->b.b2 = 3;
+				q->b.b2 = OATEMP;
 				q->b.w4 = betatbl[q->b.w4].x4;
 				u = mkleaf(&q->b);
 				*(ctpos + q->b.w4) += 1;
@@ -222,37 +222,37 @@ mktree(q)
 l7e:
 	if (p->in.op == 0x7e) {
 		p->in.op = STAR;
-		if (q->c.b2 == 8 && q->a.b2 == 8)
+		if (q->c.b2 == OABTEMP && q->a.b2 == OABTEMP)
 			fl = (betatbl[q->a.w4].p8 >> 10) & 1;
 	}
-	if (q->op == QCOPY && q->a.b2 == 4 && q->c.b2 == 8 && (q->a.w0 & 0x30) == 0x10)
+	if (q->op == QCOPY && q->a.b2 == OANAME && q->c.b2 == OABTEMP && (q->a.w0 & 0x30) == 0x10)
 		betatbl[q->c.w4].p8 |= 1 << 10;
 	if (q->op == QCALL) {
 		q->c = q->b;
-		q->b.b2 = 0;
+		q->b.b2 = OANONE;
 	}
-	if (q->a.b2 == 8) {
-		q->a.b2 = 3;
+	if (q->a.b2 == OABTEMP) {
+		q->a.b2 = OATEMP;
 		q->a.w4 = betatbl[q->a.w4].x4;
-	} else if (q->a.b2 == 6 && betatbl[q->a.w4].p6 < 0) {
+	} else if (q->a.b2 == OASTEMP && betatbl[q->a.w4].p6 < 0) {
 		if (qflag > 2)
 			printf("// assigning S%d to offset %d\n", q->a.w4, tmpoff);
 		betatbl[q->a.w4].p6 = tmpoff;
 		tmpoff += szty(q->a.w0) * 2;
 	}
-	if (q->b.b2 == 8) {
-		q->b.b2 = 3;
+	if (q->b.b2 == OABTEMP) {
+		q->b.b2 = OATEMP;
 		q->b.w4 = betatbl[q->b.w4].x4;
-	} else if (q->b.b2 == 6 && betatbl[q->b.w4].p6 < 0) {
+	} else if (q->b.b2 == OASTEMP && betatbl[q->b.w4].p6 < 0) {
 		if (qflag > 2)
 			printf("// assigning S%d to offset %d\n", q->b.w4, tmpoff);
 		betatbl[q->b.w4].p6 = tmpoff;
 		tmpoff += szty(q->b.w0) * 2;
 	}
-	if (q->c.b2 == 8) {
-		q->c.b2 = 3;
+	if (q->c.b2 == OABTEMP) {
+		q->c.b2 = OATEMP;
 		q->c.w4 = betatbl[q->c.w4].x4;
-	} else if (q->c.b2 == 6 && betatbl[q->c.w4].p6 < 0) {
+	} else if (q->c.b2 == OASTEMP && betatbl[q->c.w4].p6 < 0) {
 		if (qflag > 2)
 			printf("// assigning S%d to offset %d\n", q->c.w4, tmpoff);
 		betatbl[q->c.w4].p6 = tmpoff;
@@ -312,7 +312,7 @@ l7e:
 			p->in.op = 0x5f;
 		break;
 	case 0x8:
-		if (q->a.b2 == 1 && q->a.w4 == 0) {
+		if (q->a.b2 == OAICON && q->a.w4 == 0) {
 			p->in.op = 0xa;
 			p->in.left->in.op = FREE;
 			p->in.left = p->in.right;
@@ -341,14 +341,14 @@ l7e:
 		cleartrees();
 		break;
 	}
-	if (!asgop(p->in.op) && (q->c.b2 == 6 || q->c.b2 == 3 && p->in.op != 0x7a && ctpos[q->c.w4]-- > 2)) {
+	if (!asgop(p->in.op) && (q->c.b2 == OASTEMP || q->c.b2 == OATEMP && p->in.op != 0x7a && ctpos[q->c.w4]-- > 2)) {
 		t = talloc();
 		t->in.rall = 0;
 		t->in.op = ASSIGN;
 		t->in.type = p->in.type;
 		t->in.right = p;
 		p = mkleaf(&q->c);
-		if (q->c.b2 == 3)
+		if (q->c.b2 == OATEMP)
 			*(ctpos + q->c.w4) += 1;
 		else
 			*(ctneg + q->c.w4) += 1;
@@ -359,14 +359,14 @@ l7e:
 		t->in.op = FREE;
 		return;
 	}
-	if (q->c.b2 == 3 && !asgop(p->in.op) && p->in.op != 0x7a) {
+	if (q->c.b2 == OATEMP && !asgop(p->in.op) && p->in.op != 0x7a) {
 		p->in.rall = q->c.w4;
 		return;
 	}
 	if (q->op == QCOPY) {
-		if (q->a.b2 == 4 && q->c.b2 == 3)
+		if (q->a.b2 == OANAME && q->c.b2 == OATEMP)
 			p->tn.w6 = 1;
-	} else if (asgop(p->in.op) && q->c.b2 != 6 && needustar(p)) {
+	} else if (asgop(p->in.op) && q->c.b2 != OASTEMP && needustar(p)) {
 		t = talloc();
 		t->in.rall = 0;
 		t->in.op = STAR;
@@ -442,7 +442,7 @@ mkleaf(a)
 	if (0)
 		a = 0;	/* dead: its store of a at the entry is left (the original) */
 	switch (a->b2) {
-	case 4:
+	case OANAME:
 		q = talloc();
 		q->in.rall = 0;
 		q->in.op = NAME;
@@ -451,7 +451,7 @@ mkleaf(a)
 		q->tn.lval = 0;
 		q->tn.rval = a->w4;
 		break;
-	case 5:
+	case OALABEL:
 		q = talloc();
 		q->in.rall = 0;
 		q->in.op = NAME;
@@ -459,21 +459,21 @@ mkleaf(a)
 		q->tn.rval = -a->w4;
 		q->tn.lval = 0;
 		break;
-	case 1:
+	case OAICON:
 		q = talloc();
 		q->in.rall = 0;
 		q->in.op = ICON;
 		q->in.type = a->w0;
 		q->tn.lval = a->w4;
 		break;
-	case 7:
+	case OALCON:
 		q = talloc();
 		q->in.rall = 0;
 		q->in.op = ICON;
 		q->in.type = a->w0;
 		q->tn.lval = constbl[a->w4];
 		break;
-	case 2:
+	case OAFCON:
 		q = talloc();
 		q->in.rall = 0;
 		q->in.op = FCON;
@@ -498,7 +498,7 @@ mkleaf(a)
 		q->tn.rval = fconsttbl[a->w4].rv;
 		q->tn.lval = 0;
 		break;
-	case 6:
+	case OASTEMP:
 		q = talloc();
 		q->in.rall = 0;
 		q->in.op = TEMP;
@@ -509,7 +509,7 @@ mkleaf(a)
 			q->tn.lval = -q->tn.lval;
 		q->tn.temp = betatbl[a->w4].p6;
 		break;
-	case 3:
+	case OATEMP:
 		for (r = node; r <= &node[TREESZ - 1]; ++r) {
 			if (r->in.rall == a->w4 && r->in.op != FREE) {
 				if (qflag > 4)
