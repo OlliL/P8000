@@ -1993,3 +1993,15 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   can (the block straight, ending in a jump whose target stands behind another jump, not the exit code). Stays.
 - 2026-11-22, step 10, spopt `OLD_D50` looked at again: its core (the scan of the loop inversion follows an unconditional jump,
   as xjump does elsewhere) reads as written code; its limits come from the one witness (cas jpr). No other mechanism found. Stays.
+- 2026-11-22, step 10, the goto forms `if (0) { L: ...; continue; }` at a loop head (gopt aliasm, initaffect, buildgraph,
+  chklpdefs): in /lib/gopt the block of `if (c) { ...; continue; }` stands behind the entry jump an inversion leaves at the
+  old loop head (codgen puts the for test at the top; spopt turns the loop). A test rule in spopt iterate (vc, beside D45):
+  `cjp c,L1; S; jp X; L1:` with S ending in a jump, S moved behind the preceding jump and the cjp turned to it, when that
+  jump is the entry jump of an inverted loop (it jumps forward to the test, which ends in the cjp back to the label behind
+  it), X is the continue label (named twice or more, straight code up to the test), the code at L1 does not start with an
+  unconditional jump nor fall into X (the other arm of an if/else or ?:), and every label inside S is named only from S.
+  Measured: cas model 152, the gopt sources of today byte-identical, the natural initaffect exact. Not yet: gopt prcgraph
+  (`if (testbit(..)) putc('1'); else putc('0');` at the end of a loop body) and lpinv are moved too: after refcount (every
+  jump to the last label of a label run) an if/else at the end of the body looks like `if (c) { A; continue; } B`; without
+  that retarget in vc cas loses symreloc and jpr. Only in round 1 of iterate: no help (the retarget is before round 0).
+  The patch is kept aside, not in the tree.
