@@ -75,16 +75,16 @@ void setposition(int cls, struct qa *p, int *X, int *Y)
 		altab[nal++] = p->w4;
 	}
 	switch (cls) {
-	case 0x18:
-	case 0x1e:
-	case 0x2f:
+	case QIDR:
+	case QLOAD:
+	case QSTORE:
 		for (i = 0; i < nptr; i++)
 			if (Y[i] == p->w4)
 				return;
 		Y[nptr++] = p->w4;
 		return;
-	case 3:
-	case 0x34:
+	case QADDR:
+	case QPARV:
 		for (i = 0; i < nadr; i++)
 			if (X[i] == p->w4)
 				return;
@@ -93,7 +93,7 @@ void setposition(int cls, struct qa *p, int *X, int *Y)
 			Y[nptr++] = p->w4;
 		}
 		return;
-	case 7:
+	case QCALL:
 		return;
 	default:
 		cerror("setposition: illegal operand\n");
@@ -314,7 +314,7 @@ void prmat(int *m, int n, int dim)
 	putchar('\n');
 }
 
-/* the first quad of the list q that is a call (0x2f or 0x34), 0 when there is none */
+/* the first quad of the list q that is a call (QSTORE or QPARV), 0 when there is none */
 struct quad *fndcall(struct quad *q)
 {
 	for (; q != 0; q = q->next)
@@ -385,7 +385,7 @@ int fndparm(struct quad *q)
 		if (q->op == QADDR) {
 			if (q->a.b2 != OANAME)
 				return 0;
-			op70d8 = 3;
+			op70d8 = QADDR;
 			opnd70c8 = s;
 			if (aflag > 2) {
 				printf("// checkand, actual param  & op found:\n");
@@ -415,8 +415,8 @@ int checkops(struct quad *q, int mode)
 	int hist[30];
 
 	n = 0;
-	hist[n++] = 0x2f;
-	op70d8 = 0x2f;
+	hist[n++] = QSTORE;
+	op70d8 = QSTORE;
 	found = 0;
 	fl.fa = 1;
 	fl.fb = 1;
@@ -457,8 +457,8 @@ m1:
 		case QIDR:
 		case QLOAD:
 			fl.fb = 1;
-			op70d8 = 0x18;
-			hist[n++] = 0x18;
+			op70d8 = QIDR;
+			hist[n++] = QIDR;
 		post:
 			if (s.b2 == OATEMP)
 				break;
@@ -495,7 +495,7 @@ lft:
 				printf("//    NULL\n");
 			return 0;
 		case QINDEX:
-			hist[n++] = 0x19;
+			hist[n++] = QINDEX;
 			if (!fl.fb)
 				goto nonstd;
 			goto post;
@@ -508,21 +508,21 @@ lft:
 		case QADDR:
 			if (q->a.b2 == OALABEL)
 				goto fail;
-			hist[n++] = 3;
+			hist[n++] = QADDR;
 			if (!fl.fc)
 				goto nonstd;
-			if (op70d8 == 0x2f && mode == 1)
-				op70d8 = 3;
-			if (n > 3 && hist[n - 2] == 0x19 && hist[n - 3] == 0x18)
+			if (op70d8 == QSTORE && mode == 1)
+				op70d8 = QADDR;
+			if (n > 3 && hist[n - 2] == QINDEX && hist[n - 3] == QIDR)
 				goto nonstd;
 			if (s.b2 == OATEMP)
 				goto post;
 			goto success;
 		case QCALL:
-			hist[n++] = 7;
+			hist[n++] = QCALL;
 			if (!fl.fd)
 				goto nonstd;
-			op70d8 = 7;
+			op70d8 = QCALL;
 		success:
 			if (aflag > 2)
 				prquad(q);
@@ -540,7 +540,7 @@ r1:
 	return 0;	/* host: not reached (x stays 0: the loop ends by return only) */
 }
 
-/* the position of the operand p in the alias table (0: not tracked, -1: not found); op: the class of the operand (3 address, 0x18 pointer) */
+/* the position of the operand p in the alias table (0: not tracked, -1: not found); op: the class of the operand (QADDR address, QIDR pointer) */
 int almap(struct qa *p, int op)
 {
 	int i;
@@ -604,7 +604,7 @@ done:
 	return pos;
 }
 
-/* the effect of a quad on the affect matrix and the modify matrix: lop the class of the left operand lp (QSTORE 0x2f, QIDR 0x18, 0x34), rop of the right one rp */
+/* the effect of a quad on the affect matrix and the modify matrix: lop the class of the left operand lp (QSTORE, QIDR, QPARV), rop of the right one rp */
 void addaffect(int lop, struct qa *lp, int rop, struct qa *rp)
 {
 	int a, b, c, d;
@@ -744,9 +744,9 @@ skh:
 			addaffect(cls, &s, op70d8, &opnd70c8);
 		} else if (q->op == QPARV) {
 			if (q->a.b2 == OATEMP && fndparm(q))
-				addaffect(0x34, &opnd70c8, 0, (struct qa *)0);
+				addaffect(QPARV, &opnd70c8, 0, (struct qa *)0);
 			else if (q->a.b2 == OANAME && (DECREF(q->a.w0) & 0x30) == 0x10)
-				addaffect(0x34, &q->a, 0x18, (struct qa *)0);
+				addaffect(QPARV, &q->a, QIDR, (struct qa *)0);
 		}
 	}
 }
