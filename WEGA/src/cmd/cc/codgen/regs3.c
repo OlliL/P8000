@@ -12,24 +12,6 @@ extern void tmpdump();
 extern struct tmpent tmptab[];
 static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2.";
 
-#define RLEFT	01
-
-#define RRIGHT	02
-
-#define RESC1	04
-
-#define RESC2	010
-
-#define RESC3	020
-
-#define RESCC	04000
-
-#define RESC	02000		/* rewrite & 0x400: the second register of a long result */
-
-#define RNULL	0
-
-#define RNOP	010000
-
 /* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
 #ifdef SEG
 #define PTRWORDS	2

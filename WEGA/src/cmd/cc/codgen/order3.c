@@ -12,10 +12,6 @@ extern int ordflag;
 static char sccsid[] = "@[$]order3.c\t2.4  08/24/83 13:27:43 Copr. 1981 87wega3.2.";
 int fltused = 0;
 
-#define FORREW	0x4000
-
-#define MDONE	0x1001
-
 #define FREE_	100
 
 #ifdef SEG

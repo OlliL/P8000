@@ -45,15 +45,7 @@ char *ocnames[] = {
 
 #define RTEMPFLAGS 0x0014	/* the register is a scratch (STAREG or STBREG) register */
 
-#define NOMATCH	0x1000
-
-#define MDONE	0x1001
-
-#define FORREW	0x4000
-
 #define SCONV	110
-
-#define REWRITE	0x1000		/* in q->needs: the entry only rewrites the tree, q->rewrite is the answer */
 
 /* does the node p fit the shape? */
 int

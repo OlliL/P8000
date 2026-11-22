@@ -40,10 +40,6 @@ int nosuffix = 0;
 
 #define MAXRCOUNT 5000
 
-#define FORREW	0x4000
-
-#define MDONE	0x1001
-
 #define FREE_	100
 
 static void fpinc();

@@ -2,182 +2,882 @@
 static char tabsccs[] = "@[$]table3.szcc.c\t2.4  10/06/83 11:03:17 Copr. 1981 87wega3.2.";
 
 struct optab table[] = {
-	{ 0x3a, 0x7, 0x6, 0x448, 0x8000, 0x1000, 0x0, 0x1, 0x2, "/* 000 */\n\tsubl\tVAL,AL\n" },	/* 0 */
-	{ 0x3a, 0x7, 0x2c0, 0x448, 0x8000, 0x1000, 0x1, 0x2, 0x2, "/* 001 */\n\tsubl\tVA1,A1\n\tldl\tAL,A1\n" },	/* 1 */
-	{ 0x3a, 0x7, 0x6, 0x448, 0x80, 0x1000, 0x0, 0x19, 0x2, "/* 002 */\n\tldl\tVAL,AR\n" },	/* 2 */
-	{ 0x3a, 0x7, 0x2c0, 0x448, 0x80, 0x1000, 0x1, 0xd, 0x2, "/* 003 */\n\tldl\tVA1,AR\n\tldl\tAL,A1\n" },	/* 3 */
-	{ 0x3a, 0x7, 0x6, 0x306, 0x8001, 0x1000, 0x0, 0x7, 0x1, "/* 004 */\n\tldk\tAL,AR\n" },	/* 4 */
-	{ 0x3a, 0x7, 0x2c6, 0x1000, 0x8000, 0x1000, 0x0, 0x4, 0x2, "/* 005 */\n\tclrZB\tAL\n" },	/* 5 */
-	{ 0x3a, 0x7, 0x258, 0x30, 0x6, 0x20, 0x0, 0x0, 0x2, "/* 006a*/\n\tldm\tAL,AR,#4\n" },	/* 6 */
-	{ 0x3a, 0x7, 0x2c6, 0x8000, 0x86, 0x8000, 0x0, 0x8, 0x2, "/* 006b*/\n\tldZB\tAL,AR\n" },	/* 7 */
-	{ 0x3a, 0x9, 0x258, 0x30, 0x18, 0x30, 0x0, 0x9, 0x2, "/* 006c*/\n\tfldZB\tAL,AR\n" },	/* 8 */
-	{ 0x3a, 0x7, 0x6, 0x8000, 0x2c6, 0x8000, 0x0, 0x9, 0x1, "/* 007 */\n\tldZB\tAL,AR\n" },	/* 9 */
-	{ 0x3a, 0x19, 0x240, 0x30, 0x240, 0x30, 0x10, 0xf, 0x4, "/* 008a*/\n\tfldZ>\tA1,AR\n\tfldZ<\tAL,A1\n" },	/* 10 */
-	{ 0x3a, 0x7, 0x2c0, 0x8000, 0x2c0, 0x8000, 0x1, 0xf, 0x4, "/* 008b*/\n\tldZB\tA1,AR\n\tldZB\tAL,A1\n" },	/* 11 */
-	{ 0x3a, 0x1000, 0x2c6, 0x81, 0x2c6, 0x387, 0x100, 0x12, 0x4, "/* 009a*/\n\tldb\tWAL,AR\n\tldb\tWA1,AR\n" },	/* 12 */
-	{ 0x3a, 0x7, 0x2c6, 0x81, 0x2c6, 0x387, 0x0, 0x17, 0x3, "/* 009b*/\n\tldb\tWAL,AR\n" },	/* 13 */
-	{ 0x3a, 0x6, 0x2c6, 0x448, 0x2c6, 0x1000, 0x0, 0x19, 0x1, "/* 010 */\n\tldZB\tAL,AR\n" },	/* 14 */
-	{ 0x3a, 0x3, 0x100, 0x1000, 0x80, 0x1000, 0x1, 0x12, 0x2, "/* 011 */\nZK" },	/* 15 */
-	{ 0x3a, 0x7, 0x100, 0x1000, 0x4, 0x1000, 0x2, 0x15, 0x2, "/* 012 */\nF\tld\tA2,AR\n\tsla\tAR,#H\n\tand\tAR,#M\n\tld\tA1,AL\n\tand\tA1,#N\n\tor\tA1,AR\n\tld\tAL,A1\nF\tld\tAR,A2\n" },	/* 16 */
-	{ 0x3a, 0x3, 0x100, 0x1000, 0x2c6, 0x1000, 0x2, 0x15, 0x2, "/* 013 */\n\tld\tA1,AR\n\tsla\tA1,#H\n\tand\tA1,#M\n\tld\tA2,AL\n\tand\tA2,#N\n\tor\tA2,A1\n\tld\tAL,A2\n" },	/* 17 */
-	{ 0xa, 0x27, 0x4, 0x307, 0x1, 0x8000, 0x0, 0x1a, 0x801, "/* 014a*/\n\tnegZB\tAL\n" },	/* 18 */
-	{ 0xa, 0x39, 0x10, 0x30, 0x1, 0x30, 0x0, 0x1a, 0x801, "/* 014b*/\n\tfneg\tAL,AL\n" },	/* 19 */
-	{ 0xa, 0x39, 0x240, 0x30, 0x1, 0x8000, 0x50, 0x14, 0x804, "/* 015a*/\n\tfnegZ<\tA1,AL\n" },	/* 20 */
-	{ 0xa, 0x27, 0x2c6, 0x408, 0x1, 0x1000, 0x5, 0x13, 0x804, "/* 015b*/\n\tsubl\tVA1,A1\n\tsubl\tA1,AL\n" },	/* 21 */
-	{ 0x4d, 0x27, 0x4, 0x387, 0x1, 0x8000, 0x0, 0x1a, 0x801, "/* 016 */\n\tcomZB\tAL\n" },	/* 22 */
-	{ 0x4d, 0x7, 0x4, 0x408, 0x1, 0x1000, 0x0, 0x19, 0x1, "/* 017 */\n\tcom\tAL\n\tcom\tUL\n" },	/* 23 */
-	{ 0x63, 0x6, 0x1, 0x1000, 0x1, 0x1000, 0x1, 0x14, 0x4, "/* 018 */\nZN" },	/* 24 */
-	{ 0x1013, 0x27, 0x6, 0x1000, 0x80, 0x1000, 0x0, 0x1a, 0x801, "/* 019 */\n\tOIZB\tAL,AR\n" },	/* 25 */
-	{ 0x43, 0x27, 0x6, 0x780, 0x4, 0x306, 0x0, 0x1c, 0x801, "/* 020 */\n\tnegZ>\tARX\n\tsdlZB\tALX,AR\n" },	/* 26 */
-	{ 0x43, 0x27, 0x6, 0x1000, 0x4, 0x306, 0x0, 0x1c, 0x801, "/* 021 */\n\tnegZ>\tARX\n\tsdaZB\tALX,AR\n" },	/* 27 */
-	{ 0x43, 0x27, 0x6, 0x780, 0x2c6, 0x306, 0x1, 0x1f, 0x801, "/* 022 */\n\tldZ>\tA1,AR\n\tnegZ>\tA1X\n\tsdlZB\tALX,A1\n" },	/* 28 */
-	{ 0x43, 0x27, 0x6, 0x1000, 0x2c6, 0x306, 0x1, 0x1f, 0x801, "/* 023 */\n\tldZ>\tA1,AR\n\tnegZ>\tA1X\n\tsdaZB\tALX,A1\n" },	/* 29 */
-	{ 0x41, 0x27, 0x6, 0x1000, 0x6, 0x306, 0x0, 0x1a, 0x801, "/* 024 */\n\tsdaZB\tALX,AR\n" },	/* 30 */
-	{ 0x41, 0x27, 0x6, 0x1000, 0x2c6, 0x306, 0x1, 0x1f, 0x801, "/* 025 */\n\tldZ>\tA1,ARX\n\tsdaZB\tALX,A1\n" },	/* 31 */
-	{ 0x6e, 0x6, 0x80, 0x40, 0x1, 0x306, 0x1, 0x12, 0x4, "/* 026 */\n\tld\tA1,#^o CL\n" },	/* 32 */
-	{ 0x6e, 0x6, 0x4, 0x1, 0x1, 0x306, 0x0, 0x18, 0x1, "/* 027 */\n\textsb\tAL\n" },	/* 33 */
-	{ 0x6e, 0x6, 0x2c6, 0x1, 0x1, 0x306, 0x1, 0x12, 0x4, "/* 028 */\n\tldb\tWA1,ALX\n\textsb\tA1\n" },	/* 34 */
-	{ 0x6e, 0x6, 0x2c6, 0x1, 0x1, 0x408, 0x1, 0x13, 0x4, "/* 029 */\n\tldb\tWU1,ALX\n\textsb\tU1\n\texts\tVA1\n" },	/* 35 */
-	{ 0x6e, 0x6, 0x2c6, 0x1, 0x1, 0x40, 0x1, 0x13, 0x4, "/* 030 */\n\tsub\tA1,A1\n\tldb\tWU1,ALX\n\textsb\tU1\n" },	/* 36 */
-	{ 0x6e, 0x6, 0x2c6, 0x80, 0x1, 0x448, 0x1, 0x13, 0x4, "/* 031 */\n\tsubl\tVA1,A1X\n\tldb\tWU1,AL\n" },	/* 37 */
-	{ 0x6e, 0x6, 0x4, 0x80, 0x1, 0x306, 0x0, 0x0, 0x1, "/* 032 */\n\tsubb\tZH,ZH\n" },	/* 38 */
-	{ 0x6e, 0x6, 0x2c6, 0x80, 0x1, 0x306, 0x1, 0x12, 0x4, "/* 033 */\n\tldk\tA1,#0\n\tldb\tWA1,AL\n" },	/* 39 */
-	{ 0x6e, 0x6, 0x2c4, 0x1000, 0x1, 0x81, 0x0, 0x0, 0x1, "/* 034 */\nZT" },	/* 40 */
-	{ 0x6e, 0x6, 0x2, 0x408, 0x1, 0x81, 0x1, 0xc, 0x4, "/* 035a*/\n\tld\tA1,UL\n" },	/* 41 */
-	{ 0x6e, 0x6, 0x2, 0x1000, 0x1, 0x81, 0x1, 0xc, 0x4, "/* 035b*/\n\tld\tA1,AL\n" },	/* 42 */
-	{ 0x6e, 0x6, 0x2c6, 0x4, 0x1, 0x408, 0x1, 0x13, 0x4, "/* 036 */\n\tld\tU1,AL\n\texts\tVA1\n" },	/* 43 */
-	{ 0x6e, 0x6, 0x2c6, 0x200, 0x1, 0x408, 0x1, 0x13, 0x4, "/* 037 */\n\tldk\tA1,#0\n\tld\tU1,AL\n" },	/* 44 */
-	{ 0x6e, 0x6, 0x2c6, 0x306, 0x1, 0x40, 0x1, 0x13, 0x4, "/* 038 */\n\tsub\tA1,A1\n\tld\tU1,AL\n" },	/* 45 */
-	{ 0x6e, 0x6, 0x2c6, 0x448, 0x1, 0x306, 0x0, 0x19, 0x1, "/* 039 */\nZT" },	/* 46 */
-	{ 0x6e, 0x6, 0x2c6, 0x408, 0x1, 0x40, 0x1, 0x13, 0x4, "/* 040a*/\n\tldl\tVA1,ALX\n\tand\tA1,#%7f00\n" },	/* 47 */
-	{ 0x6e, 0x18, 0x240, 0x408, 0x1, 0x30, 0x10, 0x10, 0x4, "/* 040b*/\n\tfldil\tA1,AL\n" },	/* 48 */
-	{ 0x6e, 0x18, 0x6, 0x408, 0x1, 0x30, 0x10, 0x10, 0x4, "/* 040c*/\n\tfldil\tA1,rAL\n" },	/* 49 */
-	{ 0x6e, 0x7, 0x18, 0x30, 0x1, 0x408, 0x1, 0x11, 0x4, "/* 040d*/\n\tfldtl\trA1,AL\n" },	/* 50 */
-	{ 0x6e, 0x19, 0x18, 0x30, 0x1, 0x30, 0x0, 0x0, 0x1, "/* 040e*/\n" },	/* 51 */
-	{ 0x6e, 0x19, 0x258, 0x30, 0x1, 0x30, 0x0, 0x0, 0x1, "/* 040f*/\nZc" },	/* 52 */
-	{ 0x100e, 0x20, 0x8000, 0x1000, 0x2c6, 0x387, 0x0, 0x0, 0x800, "/* 041 */\n\tcpZ<\tARX,#0\nZF" },	/* 53 */
-	{ 0x100e, 0x20, 0x8000, 0x1000, 0x6, 0x408, 0x0, 0x0, 0x800, "/* 042 */\n\tcpl\tVARX,#0\nZF" },	/* 54 */
-	{ 0x100e, 0x20, 0x6, 0x448, 0x8000, 0x1000, 0x0, 0x0, 0x800, "/* 043 */\n\tcpl\tVALX,#0\nZI" },	/* 55 */
-	{ 0x100e, 0x20, 0x246, 0x387, 0x80, 0x8000, 0x0, 0x0, 0x800, "/* 044 */\n\tcpZ<\tAL,ARX\nZI" },	/* 56 */
-	{ 0x100e, 0x20, 0x6, 0x40, 0x80, 0x8000, 0x0, 0x0, 0x800, "/* 045 */\n\tcpl\tVAL,ARX\nZI" },	/* 57 */
-	{ 0x100e, 0x20, 0x6, 0x8000, 0x2c6, 0x8000, 0x0, 0x0, 0x800, "/* 046a*/\n\tcpZ<\tAL,ARX\nZI" },	/* 58 */
-	{ 0x100e, 0x20, 0x18, 0x30, 0x18, 0x30, 0x0, 0x0, 0x800, "/* 046b*/\n\tfcpfZf\tAL,AR\nZI" },	/* 59 */
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 0 */
+		SAREG|STAREG,	TLONG|TPOINT|TULONG,
+		SZERO,	TANY,
+		0,	0x1,	RRIGHT,
+		"/* 000 */\n\tsubl\tVAL,AL\n" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 1 */
+		SNAME|SCON|SOREG,	TLONG|TPOINT|TULONG,
+		SZERO,	TANY,
+		NAREG,	0x2,	RRIGHT,
+		"/* 001 */\n\tsubl\tVA1,A1\n\tldl\tAL,A1\n" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 2 */
+		SAREG|STAREG,	TLONG|TPOINT|TULONG,
+		SCON,	TANY,
+		0,	0x19,	RRIGHT,
+		"/* 002 */\n\tldl\tVAL,AR\n" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 3 */
+		SNAME|SCON|SOREG,	TLONG|TPOINT|TULONG,
+		SCON,	TANY,
+		NAREG,	0xd,	RRIGHT,
+		"/* 003 */\n\tldl\tVA1,AR\n\tldl\tAL,A1\n" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 4 */
+		SAREG|STAREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		SKCON,	TANY,
+		0,	0x7,	RLEFT,
+		"/* 004 */\n\tldk\tAL,AR\n" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 5 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		SZERO,	TANY,
+		0,	0x4,	RRIGHT,
+		"/* 005 */\n\tclrZB\tAL\n" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 6 */
+		SBREG|STBREG|SNAME|SOREG,	TFLOAT|TDOUBLE,
+		SAREG|STAREG,	TDOUBLE,
+		0,	0x0,	RRIGHT,
+		"/* 006a*/\n\tldm\tAL,AR,#4\n" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 7 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		SAREG|STAREG|SCON,	TFIT,
+		0,	0x8,	RRIGHT,
+		"/* 006b*/\n\tldZB\tAL,AR\n" },
+	{ ASSIGN,	FOREFF|INBREG,		/* 8 */
+		SBREG|STBREG|SNAME|SOREG,	TFLOAT|TDOUBLE,
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		0,	0x9,	RRIGHT,
+		"/* 006c*/\n\tfldZB\tAL,AR\n" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 9 */
+		SAREG|STAREG,	TFIT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		0,	0x9,	RLEFT,
+		"/* 007 */\n\tldZB\tAL,AR\n" },
+	{ ASSIGN,	FOREFF|INBREG|INTBREG,		/* 10 */
+		SNAME|SOREG,	TFLOAT|TDOUBLE,
+		SNAME|SOREG,	TFLOAT|TDOUBLE,
+		NBREG,	0xf,	RESC1,
+		"/* 008a*/\n\tfldZ>\tA1,AR\n\tfldZ<\tAL,A1\n" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 11 */
+		SNAME|SCON|SOREG,	TFIT,
+		SNAME|SCON|SOREG,	TFIT,
+		NAREG,	0xf,	RESC1,
+		"/* 008b*/\n\tldZB\tA1,AR\n\tldZB\tAL,A1\n" },
+	{ ASSIGN,	INTEMP,		/* 12 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TUCHAR,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		NTEMP,	0x12,	RESC1,
+		"/* 009a*/\n\tldb\tWAL,AR\n\tldb\tWA1,AR\n" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 13 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TUCHAR,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		0,	0x17,	RLEFT|RRIGHT,
+		"/* 009b*/\n\tldb\tWAL,AR\n" },
+	{ ASSIGN,	INAREG|INTAREG,		/* 14 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TPOINT|TULONG,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		0,	0x19,	RLEFT,
+		"/* 010 */\n\tldZB\tAL,AR\n" },
+	{ ASSIGN,	FOREFF|INAREG,		/* 15 */
+		SFLD,	TANY,
+		SCON,	TANY,
+		NAREG,	0x12,	RRIGHT,
+		"/* 011 */\nZK" },
+	{ ASSIGN,	FOREFF|INAREG|INTAREG,		/* 16 */
+		SFLD,	TANY,
+		STAREG,	TANY,
+		2*NAREG,	0x15,	RRIGHT,
+		"/* 012 */\nF\tld\tA2,AR\n\tsla\tAR,#H\n\tand\tAR,#M\n\tld\tA1,AL\n\tand\tA1,#N\n\tor\tA1,AR\n\tld\tAL,A1\nF\tld\tAR,A2\n" },
+	{ ASSIGN,	FOREFF|INAREG,		/* 17 */
+		SFLD,	TANY,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		2*NAREG,	0x15,	RRIGHT,
+		"/* 013 */\n\tld\tA1,AR\n\tsla\tA1,#H\n\tand\tA1,#M\n\tld\tA2,AL\n\tand\tA2,#N\n\tor\tA2,A1\n\tld\tAL,A2\n" },
+	{ UNARY MINUS,	FOREFF|INAREG|INTAREG|FORCC,		/* 18 */
+		STAREG,	TCHAR|TSHORT|TINT|TUSHORT|TUNSIGNED,
+		SANY,	TFIT,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 014a*/\n\tnegZB\tAL\n" },
+	{ UNARY MINUS,	FOREFF|INBREG|INTBREG|FORCC,		/* 19 */
+		STBREG,	TFLOAT|TDOUBLE,
+		SANY,	TFLOAT|TDOUBLE,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 014b*/\n\tfneg\tAL,AL\n" },
+	{ UNARY MINUS,	FOREFF|INBREG|INTBREG|FORCC,		/* 20 */
+		SNAME|SOREG,	TFLOAT|TDOUBLE,
+		SANY,	TFIT,
+		NBREG|NBSL,	0x14,	RESC1|RESCC,
+		"/* 015a*/\n\tfnegZ<\tA1,AL\n" },
+	{ UNARY MINUS,	FOREFF|INAREG|INTAREG|FORCC,		/* 21 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TULONG,
+		SANY,	TANY,
+		NAREG|NASL,	0x13,	RESC1|RESCC,
+		"/* 015b*/\n\tsubl\tVA1,A1\n\tsubl\tA1,AL\n" },
+	{ COMPL,	FOREFF|INAREG|INTAREG|FORCC,		/* 22 */
+		STAREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SANY,	TFIT,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 016 */\n\tcomZB\tAL\n" },
+	{ COMPL,	FOREFF|INAREG|INTAREG,		/* 23 */
+		STAREG,	TLONG|TULONG,
+		SANY,	TANY,
+		0,	0x19,	RLEFT,
+		"/* 017 */\n\tcom\tAL\n\tcom\tUL\n" },
+	{ CCODES,	INAREG|INTAREG,		/* 24 */
+		SANY,	TANY,
+		SANY,	TANY,
+		NAREG,	0x14,	RESC1,
+		"/* 018 */\nZN" },
+	{ ASG OPSHFT,	FOREFF|INAREG|INTAREG|FORCC,		/* 25 */
+		SAREG|STAREG,	TANY,
+		SCON,	TANY,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 019 */\n\tOIZB\tAL,AR\n" },
+	{ ASG RS,	FOREFF|INAREG|INTAREG|FORCC,		/* 26 */
+		SAREG|STAREG,	TUCHAR|TUSHORT|TUNSIGNED|TULONG,
+		STAREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x1c,	RLEFT|RESCC,
+		"/* 020 */\n\tnegZ>\tARX\n\tsdlZB\tALX,AR\n" },
+	{ ASG RS,	FOREFF|INAREG|INTAREG|FORCC,		/* 27 */
+		SAREG|STAREG,	TANY,
+		STAREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x1c,	RLEFT|RESCC,
+		"/* 021 */\n\tnegZ>\tARX\n\tsdaZB\tALX,AR\n" },
+	{ ASG RS,	FOREFF|INAREG|INTAREG|FORCC,		/* 28 */
+		SAREG|STAREG,	TUCHAR|TUSHORT|TUNSIGNED|TULONG,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x1f,	RLEFT|RESCC,
+		"/* 022 */\n\tldZ>\tA1,AR\n\tnegZ>\tA1X\n\tsdlZB\tALX,A1\n" },
+	{ ASG RS,	FOREFF|INAREG|INTAREG|FORCC,		/* 29 */
+		SAREG|STAREG,	TANY,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x1f,	RLEFT|RESCC,
+		"/* 023 */\n\tldZ>\tA1,AR\n\tnegZ>\tA1X\n\tsdaZB\tALX,A1\n" },
+	{ ASG LS,	FOREFF|INAREG|INTAREG|FORCC,		/* 30 */
+		SAREG|STAREG,	TANY,
+		SAREG|STAREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 024 */\n\tsdaZB\tALX,AR\n" },
+	{ ASG LS,	FOREFF|INAREG|INTAREG|FORCC,		/* 31 */
+		SAREG|STAREG,	TANY,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x1f,	RLEFT|RESCC,
+		"/* 025 */\n\tldZ>\tA1,ARX\n\tsdaZB\tALX,A1\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 32 */
+		SCON,	TPOINT,
+		SANY,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x12,	RESC1,
+		"/* 026 */\n\tld\tA1,#^o CL\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 33 */
+		STAREG,	TCHAR,
+		SANY,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x18,	RLEFT,
+		"/* 027 */\n\textsb\tAL\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 34 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR,
+		SANY,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x12,	RESC1,
+		"/* 028 */\n\tldb\tWA1,ALX\n\textsb\tA1\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 35 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR,
+		SANY,	TLONG|TULONG,
+		NAREG,	0x13,	RESC1,
+		"/* 029 */\n\tldb\tWU1,ALX\n\textsb\tU1\n\texts\tVA1\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 36 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR,
+		SANY,	TPOINT,
+		NAREG,	0x13,	RESC1,
+		"/* 030 */\n\tsub\tA1,A1\n\tldb\tWU1,ALX\n\textsb\tU1\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 37 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TUCHAR,
+		SANY,	TLONG|TPOINT|TULONG,
+		NAREG,	0x13,	RESC1,
+		"/* 031 */\n\tsubl\tVA1,A1X\n\tldb\tWU1,AL\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 38 */
+		STAREG,	TUCHAR,
+		SANY,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x0,	RLEFT,
+		"/* 032 */\n\tsubb\tZH,ZH\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 39 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TUCHAR,
+		SANY,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x12,	RESC1,
+		"/* 033 */\n\tldk\tA1,#0\n\tldb\tWA1,AL\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 40 */
+		STAREG|SNAME|SCON|SOREG,	TANY,
+		SANY,	TCHAR|TUCHAR,
+		0,	0x0,	RLEFT,
+		"/* 034 */\nZT" },
+	{ SCONV,	INAREG|INTAREG,		/* 41 */
+		SAREG,	TLONG|TULONG,
+		SANY,	TCHAR|TUCHAR,
+		NAREG,	0xc,	RESC1,
+		"/* 035a*/\n\tld\tA1,UL\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 42 */
+		SAREG,	TANY,
+		SANY,	TCHAR|TUCHAR,
+		NAREG,	0xc,	RESC1,
+		"/* 035b*/\n\tld\tA1,AL\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 43 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TINT,
+		SANY,	TLONG|TULONG,
+		NAREG,	0x13,	RESC1,
+		"/* 036 */\n\tld\tU1,AL\n\texts\tVA1\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 44 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TUNSIGNED,
+		SANY,	TLONG|TULONG,
+		NAREG,	0x13,	RESC1,
+		"/* 037 */\n\tldk\tA1,#0\n\tld\tU1,AL\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 45 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		SANY,	TPOINT,
+		NAREG,	0x13,	RESC1,
+		"/* 038 */\n\tsub\tA1,A1\n\tld\tU1,AL\n" },
+	{ SCONV,	INAREG|INTAREG,		/* 46 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TPOINT|TULONG,
+		SANY,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x19,	RLEFT,
+		"/* 039 */\nZT" },
+	{ SCONV,	INAREG|INTAREG,		/* 47 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TULONG,
+		SANY,	TPOINT,
+		NAREG,	0x13,	RESC1,
+		"/* 040a*/\n\tldl\tVA1,ALX\n\tand\tA1,#%7f00\n" },
+	{ SCONV,	INBREG|INTBREG,		/* 48 */
+		SNAME|SOREG,	TLONG|TULONG,
+		SANY,	TFLOAT|TDOUBLE,
+		NBREG,	0x10,	RESC1,
+		"/* 040b*/\n\tfldil\tA1,AL\n" },
+	{ SCONV,	INBREG|INTBREG,		/* 49 */
+		SAREG|STAREG,	TLONG|TULONG,
+		SANY,	TFLOAT|TDOUBLE,
+		NBREG,	0x10,	RESC1,
+		"/* 040c*/\n\tfldil\tA1,rAL\n" },
+	{ SCONV,	FOREFF|INAREG|INTAREG,		/* 50 */
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		SANY,	TLONG|TULONG,
+		NAREG,	0x11,	RESC1,
+		"/* 040d*/\n\tfldtl\trA1,AL\n" },
+	{ SCONV,	FOREFF|INBREG|INTBREG,		/* 51 */
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		SANY,	TFLOAT|TDOUBLE,
+		0,	0x0,	RLEFT,
+		"/* 040e*/\n" },
+	{ SCONV,	FOREFF|INBREG|INTBREG,		/* 52 */
+		SBREG|STBREG|SNAME|SOREG,	TFLOAT|TDOUBLE,
+		SANY,	TFLOAT|TDOUBLE,
+		0,	0x0,	RLEFT,
+		"/* 040f*/\nZc" },
+	{ OPLOG,	FORCC,		/* 53 */
+		SZERO,	TANY,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		0,	0x0,	RESCC,
+		"/* 041 */\n\tcpZ<\tARX,#0\nZF" },
+	{ OPLOG,	FORCC,		/* 54 */
+		SZERO,	TANY,
+		SAREG|STAREG,	TLONG|TULONG,
+		0,	0x0,	RESCC,
+		"/* 042 */\n\tcpl\tVARX,#0\nZF" },
+	{ OPLOG,	FORCC,		/* 55 */
+		SAREG|STAREG,	TLONG|TPOINT|TULONG,
+		SZERO,	TANY,
+		0,	0x0,	RESCC,
+		"/* 043 */\n\tcpl\tVALX,#0\nZI" },
+	{ OPLOG,	FORCC,		/* 56 */
+		SAREG|STAREG|SNAME|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SCON,	TFIT,
+		0,	0x0,	RESCC,
+		"/* 044 */\n\tcpZ<\tAL,ARX\nZI" },
+	{ OPLOG,	FORCC,		/* 57 */
+		SAREG|STAREG,	TPOINT,
+		SCON,	TFIT,
+		0,	0x0,	RESCC,
+		"/* 045 */\n\tcpl\tVAL,ARX\nZI" },
+	{ OPLOG,	FORCC,		/* 58 */
+		SAREG|STAREG,	TFIT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		0,	0x0,	RESCC,
+		"/* 046a*/\n\tcpZ<\tAL,ARX\nZI" },
+	{ OPLOG,	FORCC,		/* 59 */
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		0,	0x0,	RESCC,
+		"/* 046b*/\n\tfcpfZf\tAL,AR\nZI" },
 #ifdef OLD_D62	/* a float compare with memory without rounding the register first (v1: libm, host/OLDCC.md D62) */
-	{ 0x100e, 0x20, 0x18, 0x30, 0x2c0, 0x30, 0x0, 0x0, 0x800, "/* 047a*/\n\tfcpZfZ>\tAL,AR\n\tfldctlb\tcmpflg\nZI" },	/* 60 */
+	{ OPLOG,	FORCC,		/* 60 */
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		SNAME|SCON|SOREG,	TFLOAT|TDOUBLE,
+		0,	0x0,	RESCC,
+		"/* 047a*/\n\tfcpZfZ>\tAL,AR\n\tfldctlb\tcmpflg\nZI" },
 #else
-	{ 0x100e, 0x20, 0x18, 0x30, 0x2c0, 0x30, 0x0, 0x0, 0x800, "/* 047a*/\n\tfld ZR\tAL,AL\n\tfcpZfZ>\tAL,AR\n\tfldctlb\tcmpflg\nZI" },	/* 60 */
+	{ OPLOG,	FORCC,		/* 60 */
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		SNAME|SCON|SOREG,	TFLOAT|TDOUBLE,
+		0,	0x0,	RESCC,
+		"/* 047a*/\n\tfld ZR\tAL,AL\n\tfcpZfZ>\tAL,AR\n\tfldctlb\tcmpflg\nZI" },
 #endif
-	{ 0x50, 0x20, 0x2c0, 0x8000, 0x6, 0x8000, 0x0, 0x0, 0x800, "/* 047b*/\n\tcpZ<\tAR,ALX\nZI" },	/* 61 */
-	{ 0x51, 0x20, 0x2c0, 0x8000, 0x6, 0x8000, 0x0, 0x0, 0x800, "/* 048 */\n\tcpZ<\tAR,ALX\nZI" },	/* 62 */
-	{ 0x1018, 0x1, 0x2c6, 0x1000, 0x2c6, 0x1000, 0x0, 0x0, 0x2, "/* 049 - threw opltype away */\n" },	/* 63 */
-	{ 0x1018, 0x6, 0x1, 0x408, 0x8000, 0x408, 0x1, 0x2, 0x4, "/* 050 */\n\tsubl\tVA1,A1\n" },	/* 64 */
-	{ 0x1018, 0x6, 0x1, 0x1000, 0x8000, 0x1000, 0x1, 0x3, 0x4, "/* 051 */\n\tsubZB\tA1,A1\n" },	/* 65 */
-	{ 0x1018, 0x6, 0x1, 0x8000, 0x80, 0x408, 0x1, 0x5, 0x4, "/* 052 */\n\tldl\tVA1,AR\n" },	/* 66 */
-	{ 0x1018, 0x7, 0x1, 0x306, 0x8001, 0x306, 0x9, 0x6, 0x4, "/* 053 */\n\tldk\tA1,AR\n" },	/* 67 */
-	{ 0x1018, 0x7, 0x1, 0x8000, 0x2c6, 0x7cf, 0x9, 0x0, 0x4, "/* 054a*/\n\tldZB\tA1,AR\n" },	/* 68 */
-	{ 0x1018, 0x19, 0x1, 0x8000, 0x258, 0x30, 0x90, 0xe, 0x4, "/* 054b*/\n\tfldZ<\tA1,AR\n" },	/* 69 */
-	{ 0x1018, 0x19, 0x1, 0x30, 0x6, 0x20, 0x10, 0x0, 0x4, "/* 054c*/\n\tfldd\tA1,AR\n" },	/* 70 */
-	{ 0x1018, 0x7, 0x1, 0x8000, 0x18, 0x20, 0x0, 0x0, 0x0, "/* 054d*/\n\tfldd\tr4,AR\n" },	/* 71 */
-	{ 0x1018, 0x1000, 0x6, 0x8000, 0x2c6, 0x8000, 0x100, 0xa, 0x4, "/* 055 */\n\tldZB\tA1,AR\n" },	/* 72 */
-	{ 0x1018, 0x20, 0x1, 0x1000, 0x2c6, 0x387, 0x0, 0x0, 0x800, "/* 056a*/\n\tcpZB\tAR,#0\n" },	/* 73 */
-	{ 0x1018, 0x1000, 0x18, 0x30, 0x258, 0x20, 0x100, 0xa, 0x4, "/* 056b*/\n\tfldd\tA1,AR\n" },	/* 74 */
-	{ 0x1018, 0x1000, 0x18, 0x30, 0x258, 0x10, 0x100, 0xa, 0x4, "/* 056c*/\n\tflds\tA1,AR\n" },	/* 75 */
-	{ 0x1018, 0x20, 0x1, 0x1000, 0x6, 0x448, 0x0, 0x0, 0x800, "/* 057a*/\n\tcpl\tVAR,#0\n" },	/* 76 */
-	{ 0x1018, 0x20, 0x1, 0x1000, 0x2c0, 0x448, 0x1, 0x13, 0x800, "/* 057b*/\n\tldl\tVA1,AR\n\tcpl\tA1,#0\n" },	/* 77 */
-	{ 0x1018, 0x20, 0x1, 0x1000, 0x18, 0x30, 0x0, 0x0, 0x800, "/* 057c*/\n\tfcpz\tAR\n" },	/* 78 */
-	{ 0x1018, 0x2000, 0x6, 0x8000, 0x2c6, 0x8000, 0x400, 0xe, 0x0, "/* 058a*/\n\tldZB\tA1,AR\n" },	/* 79 */
-	{ 0x1018, 0x2000, 0x18, 0x30, 0x240, 0x20, 0x400, 0xe, 0x0, "/* 058b*/\n\tfldd\tA1,AR\n" },	/* 80 */
-	{ 0x1018, 0x2000, 0x1, 0x1000, 0x18, 0x30, 0x400, 0xe, 0x0, "/* 058c*/\n\tfldd\tA1,AR\n" },	/* 81 */
-	{ 0x1018, 0x2000, 0x1, 0x1000, 0x2c0, 0x20, 0x400, 0x0, 0x0, "/* 058d*/\nZP\tldm\tr4,AR,#4\n\tldm\tA1,r4,#4\n" },	/* 82 */
-	{ 0x1018, 0x6, 0x1, 0x1000, 0x2c0, 0x10, 0x10, 0x0, 0x0, "/* 058e*/\n\tflds\tA1,AR\n\tfldd\tr4,A1\n" },	/* 83 */
-	{ 0x1018, 0x6, 0x1, 0x1000, 0x2c0, 0x20, 0x0, 0x0, 0x0, "/* 058f*/\nZP\tldm\tr4,AR,#4\n" },	/* 84 */
-	{ 0x1018, 0x4, 0x1, 0x1000, 0x2, 0x2000, 0x1, 0xc, 0x4, "/* 059 */\n\tldl\tVA1,ALX\n" },	/* 85 */
-	{ 0x1018, 0x4, 0x1, 0x1000, 0x200, 0x2000, 0x1, 0x14, 0x4, "/* 060 */\nZL" },	/* 86 */
-	{ 0x1018, 0x4, 0x1, 0x1000, 0x40, 0x2000, 0x1, 0xb, 0x4, "/* 061 */\n\tldl\tVA1X,#AL\n" },	/* 87 */
-	{ 0x4e, 0x7, 0x2c6, 0x40, 0x8002, 0x1000, 0x1, 0x14, 0x4, "/* 062 */\nF\tldZB\tA1,ALX\nZu" },	/* 88 */
-	{ 0x4e, 0x7, 0x2c6, 0x1000, 0x8002, 0x387, 0x1, 0x14, 0x4, "/* 063 */\nF\tldZB\tA1,ALX\n\tZi\tAL,AR\n" },	/* 89 */
-	{ 0x4f, 0x7, 0x2c6, 0x40, 0x8002, 0x1000, 0x1, 0x14, 0x4, "/* 064 */\nF\tldZB\tA1,ALX\nZu" },	/* 90 */
-	{ 0x4f, 0x7, 0x2c6, 0x1000, 0x8002, 0x387, 0x1, 0x14, 0x4, "/* 065 */\nF\tldZB\tA1,ALX\n\tZi\tAL,AR\n" },	/* 91 */
-	{ 0x4e, 0x7, 0x6, 0x40, 0x80, 0x1000, 0x1, 0x14, 0x4, "/* 066 */\nF\tldZB\tA1,ALX\n\tadd\tUL,AR\n" },	/* 92 */
-	{ 0x4e, 0x7, 0x6, 0x1000, 0x80, 0x1000, 0x1, 0x14, 0x4, "/* 067 */\nF\tldZB\tA1,AL\n\taddZB\tAL,AR\n" },	/* 93 */
-	{ 0x4f, 0x7, 0x6, 0x40, 0x80, 0x1000, 0x1, 0x14, 0x4, "/* 068 */\nF\tldZB\tA1,ALX\n\tsub\tUL,AR\n" },	/* 94 */
-	{ 0x4f, 0x7, 0x6, 0x1000, 0x80, 0x1000, 0x1, 0x14, 0x4, "/* 069 */\nF\tldZB\tA1,AL\n\tsubZB\tAL,AR\n" },	/* 95 */
-	{ 0x4e, 0x7, 0x2c6, 0x40, 0x80, 0x1000, 0x2, 0x16, 0x8, "/* 070 */\n\tldl\tVA1,AL\nF\tldl\tA2,A1X\n\tadd\tU1,AR\n\tldl\tVAL,A1\n" },	/* 96 */
-	{ 0x4f, 0x7, 0x2c6, 0x40, 0x80, 0x1000, 0x2, 0x16, 0x8, "/* 071 */\n\tldl\tVA1,AL\nF\tldl\tA2,A1X\n\tsub\tU1,AR\n\tldl\tVAL,A1\n" },	/* 97 */
-	{ 0x4e, 0x7, 0x2c6, 0x408, 0x80, 0x1000, 0x2, 0x16, 0x8, "/* 072 */\n\tldl\tVA1,AL\nF\tldl\tA2,A1\n\taddl\tA1,AR\n\tldl\tAL,A1\n" },	/* 98 */
-	{ 0x4f, 0x7, 0x2c6, 0x408, 0x80, 0x1000, 0x2, 0x16, 0x8, "/* 073 */\n\tldl\tVA1,AL\nF\tldl\tA2,A1\n\tsubl\tA1,AR\n\tldl\tAL,A1\n" },	/* 99 */
-	{ 0xe, 0x20, 0x2c6, 0x387, 0x8006, 0x1000, 0x0, 0x0, 0x800, "/* 074 */\n\tbitZ<\tAL,#Z2\n" },	/* 100 */
-	{ 0x6, 0x7, 0x4, 0x40, 0x80, 0x306, 0x0, 0x1a, 0x1, "/* 075 */\n\tZtZi\tUL,AR\n" },	/* 101 */
-	{ 0x8, 0x7, 0x4, 0x40, 0x80, 0x306, 0x0, 0x1a, 0x1, "/* 076 */\n\tZtZi\tUL,AR\n" },	/* 102 */
-	{ 0x6, 0x7, 0x4, 0x40, 0x2c6, 0x306, 0x0, 0x1a, 0x1, "/* 077 */\n\tOIZ>\tUL,AR\n" },	/* 103 */
-	{ 0x8, 0x7, 0x4, 0x40, 0x2c6, 0x306, 0x0, 0x1a, 0x1, "/* 078 */\n\tOIZ>\tUL,AR\n" },	/* 104 */
-	{ 0x6, 0x7, 0x6, 0x40, 0x6, 0x306, 0x1, 0x13, 0x4, "/* 079 */\n\tldl\tVA1,ALX\n\tOIZ>\tU1,AR\n" },	/* 105 */
-	{ 0x8, 0x7, 0x6, 0x40, 0x6, 0x306, 0x1, 0x13, 0x4, "/* 080 */\n\tldl\tVA1,ALX\n\tOIZ>\tU1,AR\n" },	/* 106 */
-	{ 0x6, 0x7, 0x6, 0x40, 0x80, 0x306, 0x1, 0x13, 0x4, "/* 081 */\n\tldl\tVA1,ALX\n\tZtZi\tU1,AR\n" },	/* 107 */
-	{ 0x8, 0x7, 0x6, 0x40, 0x80, 0x306, 0x1, 0x13, 0x4, "/* 082 */\n\tldl\tVA1,ALX\n\tZtZi\tU1,AR\n" },	/* 108 */
-	{ 0x6, 0x27, 0x4, 0x387, 0x80, 0x8000, 0x0, 0x1a, 0x801, "/* 083 */\n\tZi\tAL,AR\n" },	/* 109 */
-	{ 0x8, 0x27, 0x4, 0x387, 0x80, 0x8000, 0x0, 0x1a, 0x801, "/* 084 */\n\tZi\tAL,AR\n" },	/* 110 */
-	{ 0x1010, 0x27, 0x4, 0x8000, 0x2c6, 0x8000, 0x0, 0x1a, 0x801, "/* 085a*/\n\tOIZB\tAL,AR\n" },	/* 111 */
-	{ 0x1016, 0x39, 0x10, 0x30, 0x258, 0x30, 0x0, 0x1a, 0x801, "/* 085b*/\n\tOIZ>\tAL,AR\n" },	/* 112 */
-	{ 0x6, 0x27, 0x2c6, 0x8000, 0x4, 0x8000, 0x0, 0x1b, 0x802, "/* 086 */\n\tOIZB\tAR,AL\n" },	/* 113 */
-	{ 0x1000, 0x27, 0x4, 0x387, 0x2c6, 0x8000, 0x0, 0x1a, 0x801, "/* 087 */\n\tOIZB\tAL,AR\n" },	/* 114 */
-	{ 0x1002, 0x27, 0x2c6, 0x387, 0x4, 0x8000, 0x0, 0x1b, 0x802, "/* 088 */\n\tOIZB\tAR,AL\n" },	/* 115 */
-	{ 0x8, 0x7, 0x8005, 0x306, 0x6, 0x306, 0x1, 0x12, 0x4, "/* 089 */\n\tld\tA1,AR\n\tneg\tA1\n\tadd\tA1,#CL\n" },	/* 116 */
-	{ 0xb, 0x27, 0x2c6, 0x387, 0x2c6, 0x306, 0x5, 0x13, 0x804, "/* 090 */\nZM\tmult\tVA1X,AR\n" },	/* 117 */
-	{ 0xc, 0x27, 0x4, 0x306, 0x2c6, 0x306, 0x1, 0x13, 0x804, "/* 091 */\nZM\tmult\tVA1X,AR\n" },	/* 118 */
-	{ 0xc, 0x27, 0x2c6, 0x387, 0x2c6, 0x306, 0x1, 0x13, 0x804, "/* 092 */\nZM\tmult\tVA1X,AR\n\tldZ<\tAL,U1\n" },	/* 119 */
-	{ 0x3c, 0x27, 0x2c6, 0x387, 0x2c6, 0x306, 0x1, 0x13, 0xc04, "/* 093 */\nZM\tdiv\tVA1X,AR\n" },	/* 120 */
-	{ 0x3d, 0x27, 0x2c6, 0x387, 0x2c6, 0x306, 0x1, 0x13, 0xc04, "/* 094 */\nZM\tdiv\tVA1X,AR\n\tldZB\tAL,U1\n" },	/* 121 */
-	{ 0x3e, 0x7, 0x2c6, 0x387, 0x2c6, 0x306, 0x1, 0x13, 0x4, "/* 095 */\nZM\tdiv\tVA1X,AR\n" },	/* 122 */
-	{ 0x3f, 0x7, 0x2c6, 0x387, 0x2c6, 0x306, 0x1, 0x13, 0x4, "/* 096 */\nZM\tdiv\tVA1X,AR\n\tldZB\tAL,A1\n" },	/* 123 */
-	{ 0xc, 0x27, 0x4, 0x408, 0x2c6, 0x408, 0x0, 0x21, 0x801, "/* 097 */\n\tmultl\trq4,VARZ0\n" },	/* 124 */
-	{ 0x3d, 0x27, 0x4, 0x408, 0x2c6, 0x408, 0x0, 0x22, 0x801, "/* 098 */\nZQ\tdivl\trq4,VARZ0\n" },	/* 125 */
-	{ 0x3f, 0x7, 0x4, 0x408, 0x2c6, 0x408, 0x0, 0x22, 0x1, "/* 099 */\nZQ\tdivl\trq4,VARZ0\n" },	/* 126 */
-	{ 0x7, 0x3, 0x2c6, 0x40, 0x8002, 0x306, 0x0, 0x19, 0x1, "/* 100 */\nZu" },	/* 127 */
-	{ 0x9, 0x3, 0x2c6, 0x40, 0x8002, 0x306, 0x0, 0x19, 0x1, "/* 101 */\nZu" },	/* 128 */
-	{ 0x7, 0x3, 0xc6, 0x40, 0x4, 0x306, 0x0, 0x19, 0x1, "/* 102 */\n\tadd\tAR,UL\n\tld\tUL,AR\n" },	/* 129 */
-	{ 0x7, 0x3, 0x2c6, 0x40, 0x2c6, 0x306, 0x1, 0x13, 0x1, "/* 103 */\n\tld\tU1,UL\n\tadd\tU1,AR\n\tld\tUL,U1\n" },	/* 130 */
-	{ 0x9, 0x3, 0x2c6, 0x40, 0x2c6, 0x306, 0x1, 0x13, 0x1, "/* 104 */\n\tld\tU1,UL\n\tsub\tU1,AR\n\tld\tUL,U1\n" },	/* 131 */
-	{ 0x7, 0x23, 0x2c6, 0x1000, 0x8002, 0x387, 0x0, 0x1a, 0x801, "/* 105 */\n\tZi\tAL,AR\n" },	/* 132 */
-	{ 0x9, 0x23, 0x2c6, 0x1000, 0x8002, 0x387, 0x0, 0x1a, 0x801, "/* 106 */\n\tZi\tAL,AR\n" },	/* 133 */
-	{ 0x1011, 0x23, 0x6, 0x8000, 0x2c6, 0x8000, 0x0, 0x1a, 0x801, "/* 107 */\n\tOIZB\tAL,AR\n" },	/* 134 */
-	{ 0x7, 0x23, 0x2c6, 0x8000, 0x4, 0x8000, 0x0, 0x1b, 0x802, "/* 108 */\n\taddZB\tAR,AL\n\tldZB\tAL,AR\n" },	/* 135 */
-	{ 0x1011, 0x23, 0x2c6, 0x8000, 0x2c6, 0x8000, 0x1, 0x13, 0x804, "/* 109 */\n\tldZB\tA1,AL\n\tOIZB\tA1,AR\n\tldZB\tAL,A1\n" },	/* 136 */
-	{ 0xf, 0x7, 0x2c6, 0x387, 0x8007, 0x1000, 0x0, 0x1a, 0x1, "/* 110 */\n\tresZB\tAL,#Z~\n" },	/* 137 */
-	{ 0x12, 0x7, 0x2c6, 0x387, 0x8006, 0x1000, 0x0, 0x1a, 0x1, "/* 111 */\n\tsetZB\tAL,#Z2\n" },	/* 138 */
-	{ 0x1001, 0x23, 0x6, 0x387, 0x2c6, 0x8000, 0x0, 0x1a, 0x801, "/* 112 */\n\tOIZB\tAL,AR\n" },	/* 139 */
-	{ 0x1003, 0x23, 0x2c6, 0x387, 0x4, 0x8000, 0x0, 0x1c, 0x801, "/* 113 */\n\tOIZB\tAR,AL\n\tldZB\tAL,AR\n" },	/* 140 */
-	{ 0x1001, 0x23, 0x2c6, 0x387, 0x2c6, 0x8000, 0x1, 0xf, 0x801, "/* 114a*/\n\tldZB\tA1,AL\n\tOIZB\tA1,AR\n\tldZB\tAL,A1\n" },	/* 141 */
-	{ 0x1017, 0x39, 0x18, 0x30, 0x258, 0x30, 0x0, 0x1a, 0x801, "/* 114b*/\n\tOIZ>\tAL,AR\n" },	/* 142 */
-	{ 0x1015, 0x3, 0x6, 0x448, 0x200, 0x448, 0x1, 0x1f, 0x1, "/* 115 */\n\tld\tU1,UR\n\tOI\tAL,AR\n\tOI\tUL,U1\n" },	/* 143 */
-	{ 0x1015, 0x3, 0x6, 0x448, 0x8008, 0x408, 0x0, 0x19, 0x1, "/* 116a*/\n\tldl\tVA1,ARX\n\tOI\tAL,A1\n\tOI\tUL,U1\n" },	/* 144 */
-	{ 0x1015, 0x3, 0x6, 0x448, 0x2c6, 0x448, 0x0, 0x19, 0x1, "/* 116b*/\n\tOI\tZl,Zr\n\tOI\tUL,UR\n" },	/* 145 */
-	{ 0x1015, 0x3, 0x2c6, 0x448, 0x200, 0x448, 0xa, 0x16, 0x1, "/* 117 */\n\tldl\tVA1,ALX\n\tldl\tVA2,ARX\n\tOI\tA1,A2\n\tOI\tU1,U2\n\tldl\tVAL,A1\n" },	/* 146 */
-	{ 0x1015, 0x3, 0x2c6, 0x448, 0x8008, 0x408, 0x2, 0x16, 0x1, "/* 118a*/\n\tldl\tVA1,ALX\n\tldl\tVA2,ARX\n\tOI\tA1,A2\n\tOI\tU1,U2\n\tldl\tVAL,A1\n" },	/* 147 */
-	{ 0x1015, 0x3, 0x2c6, 0x448, 0x2c6, 0x448, 0x1, 0x11, 0x1, "/* 118b*/\n\tldl\tVA1,ALX\n\tOI\tA1,Zr\n\tOI\tU1,UR\n\tldl\tVAL,A1\n" },	/* 148 */
-	{ 0x48, 0x4, 0x202, 0x1000, 0x1, 0x7df, 0x5, 0x20, 0x4, "/* 119a*/\n\tcall\tCL\n" },	/* 149 */
-	{ 0x48, 0x4, 0x202, 0x1000, 0x1, 0x20, 0x10, 0x20, 0x4, "/* 119b*/\n\tcall\tCL\n" },	/* 150 */
-	{ 0x48, 0x4, 0xc0, 0x1000, 0x1, 0x7df, 0x5, 0x20, 0x4, "/* 120a*/\n\tcallr\tCL\n" },	/* 151 */
-	{ 0x48, 0x4, 0xc0, 0x1000, 0x1, 0x20, 0x10, 0x20, 0x4, "/* 120b*/\n\tcallr\tCL\n" },	/* 152 */
-	{ 0x65, 0x1, 0x2c6, 0x1000, 0x2c6, 0x1000, 0x1, 0x12, 0x0, "/* 121 */\nZS" },	/* 153 */
-	{ 0x65, 0x1000, 0x2c6, 0x1000, 0x2c6, 0x1000, 0x1, 0x12, 0x1, "/* 122 */\nZs" },	/* 154 */
-	{ 0x65, 0x4, 0x2c6, 0x1000, 0x2c6, 0x1000, 0x1, 0x12, 0x2, "/* 123 */\nZS" },	/* 155 */
-	{ 0x66, 0x2004, 0x2c6, 0x1000, 0x1, 0x1000, 0x0, 0x0, 0x0, "/* 124 */\nZA" },	/* 156 */
-	{ 0x74, 0x1, 0x80, 0x1000, 0x1, 0x306, 0x0, 0x0, 0x1000, "/* 125 */\n\tZUCL\n" },	/* 157 */
-	{ 0x74, 0x1, 0x80, 0x1000, 0x1, 0x81, 0x0, 0x0, 0x1000, "/* 126 */\n\tZVCL\n" },	/* 158 */
-	{ 0x74, 0x1, 0x80, 0x1000, 0x1, 0x448, 0x0, 0x0, 0x1000, "/* 127 */\n\tZWCL\n" },	/* 159 */
-	{ 0xd, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0xd, "" },	/* 160 */
-	{ 0x4e, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x4e, "" },	/* 161 */
-	{ 0x4f, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x4e, "" },	/* 162 */
-	{ 0x3a, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x3a, "" },	/* 163 */
-	{ 0x65, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x65, "" },	/* 164 */
-	{ 0x100a, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x2, "" },	/* 165 */
-	{ 0x100e, 0x20, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x8, "" },	/* 166 */
-	{ 0x100e, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x4c, "" },	/* 167 */
-	{ 0x3b, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x3b, "" },	/* 168 */
-	{ 0x74, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x74, "" },	/* 169 */
-	{ 0x1008, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0xa, "" },	/* 170 */
-	{ 0x100d, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x7, "" },	/* 171 */
-	{ 0x100c, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x8, "" },	/* 172 */
-	{ 0x64, 0x64, 0x64, 0x64, 0x64, 0x64, 0x64, 0x0, 0x64, "/*hi mom*/\n" },	/* 173 */
+	{ EQ,	FORCC,		/* 61 */
+		SNAME|SCON|SOREG,	TFIT,
+		SAREG|STAREG,	TFIT,
+		0,	0x0,	RESCC,
+		"/* 047b*/\n\tcpZ<\tAR,ALX\nZI" },
+	{ NE,	FORCC,		/* 62 */
+		SNAME|SCON|SOREG,	TFIT,
+		SAREG|STAREG,	TFIT,
+		0,	0x0,	RESCC,
+		"/* 048 */\n\tcpZ<\tAR,ALX\nZI" },
+	{ OPLTYPE,	FOREFF,		/* 63 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		0,	0x0,	RRIGHT,
+		"/* 049 - threw opltype away */\n" },
+	{ OPLTYPE,	INAREG|INTAREG,		/* 64 */
+		SANY,	TLONG|TULONG,
+		SZERO,	TLONG|TULONG,
+		NAREG,	0x2,	RESC1,
+		"/* 050 */\n\tsubl\tVA1,A1\n" },
+	{ OPLTYPE,	INAREG|INTAREG,		/* 65 */
+		SANY,	TANY,
+		SZERO,	TANY,
+		NAREG,	0x3,	RESC1,
+		"/* 051 */\n\tsubZB\tA1,A1\n" },
+	{ OPLTYPE,	INAREG|INTAREG,		/* 66 */
+		SANY,	TFIT,
+		SCON,	TLONG|TULONG,
+		NAREG,	0x5,	RESC1,
+		"/* 052 */\n\tldl\tVA1,AR\n" },
+	{ OPLTYPE,	FOREFF|INAREG|INTAREG,		/* 67 */
+		SANY,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		SKCON,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG|NASR,	0x6,	RESC1,
+		"/* 053 */\n\tldk\tA1,AR\n" },
+	{ OPLTYPE,	FOREFF|INAREG|INTAREG,		/* 68 */
+		SANY,	TFIT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TLONG|TPOINT|TUCHAR|TUSHORT|TUNSIGNED|TULONG,
+		NAREG|NASR,	0x0,	RESC1,
+		"/* 054a*/\n\tldZB\tA1,AR\n" },
+	{ OPLTYPE,	FOREFF|INBREG|INTBREG,		/* 69 */
+		SANY,	TFIT,
+		SBREG|STBREG|SNAME|SOREG,	TFLOAT|TDOUBLE,
+		NBREG|NBSR,	0xe,	RESC1,
+		"/* 054b*/\n\tfldZ<\tA1,AR\n" },
+	{ OPLTYPE,	FOREFF|INBREG|INTBREG,		/* 70 */
+		SANY,	TFLOAT|TDOUBLE,
+		SAREG|STAREG,	TDOUBLE,
+		NBREG,	0x0,	RESC1,
+		"/* 054c*/\n\tfldd\tA1,AR\n" },
+	{ OPLTYPE,	FOREFF|INAREG|INTAREG,		/* 71 */
+		SANY,	TFIT,
+		SBREG|STBREG,	TDOUBLE,
+		0,	0x0,	RNULL,
+		"/* 054d*/\n\tfldd\tr4,AR\n" },
+	{ OPLTYPE,	INTEMP,		/* 72 */
+		SAREG|STAREG,	TFIT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		NTEMP,	0xa,	RESC1,
+		"/* 055 */\n\tldZB\tA1,AR\n" },
+	{ OPLTYPE,	FORCC,		/* 73 */
+		SANY,	TANY,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		0,	0x0,	RESCC,
+		"/* 056a*/\n\tcpZB\tAR,#0\n" },
+	{ OPLTYPE,	INTEMP,		/* 74 */
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		SBREG|STBREG|SNAME|SOREG,	TDOUBLE,
+		NTEMP,	0xa,	RESC1,
+		"/* 056b*/\n\tfldd\tA1,AR\n" },
+	{ OPLTYPE,	INTEMP,		/* 75 */
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		SBREG|STBREG|SNAME|SOREG,	TFLOAT,
+		NTEMP,	0xa,	RESC1,
+		"/* 056c*/\n\tflds\tA1,AR\n" },
+	{ OPLTYPE,	FORCC,		/* 76 */
+		SANY,	TANY,
+		SAREG|STAREG,	TLONG|TPOINT|TULONG,
+		0,	0x0,	RESCC,
+		"/* 057a*/\n\tcpl\tVAR,#0\n" },
+	{ OPLTYPE,	FORCC,		/* 77 */
+		SANY,	TANY,
+		SNAME|SCON|SOREG,	TLONG|TPOINT|TULONG,
+		NAREG,	0x13,	RESCC,
+		"/* 057b*/\n\tldl\tVA1,AR\n\tcpl\tA1,#0\n" },
+	{ OPLTYPE,	FORCC,		/* 78 */
+		SANY,	TANY,
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		0,	0x0,	RESCC,
+		"/* 057c*/\n\tfcpz\tAR\n" },
+	{ OPLTYPE,	FORARG,		/* 79 */
+		SAREG|STAREG,	TFIT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		NPTEMP,	0xe,	RNULL,
+		"/* 058a*/\n\tldZB\tA1,AR\n" },
+	{ OPLTYPE,	FORARG,		/* 80 */
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		SNAME|SOREG,	TDOUBLE,
+		NPTEMP,	0xe,	RNULL,
+		"/* 058b*/\n\tfldd\tA1,AR\n" },
+	{ OPLTYPE,	FORARG,		/* 81 */
+		SANY,	TANY,
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		NPTEMP,	0xe,	RNULL,
+		"/* 058c*/\n\tfldd\tA1,AR\n" },
+	{ OPLTYPE,	FORARG,		/* 82 */
+		SANY,	TANY,
+		SNAME|SCON|SOREG,	TDOUBLE,
+		NPTEMP,	0x0,	RNULL,
+		"/* 058d*/\nZP\tldm\tr4,AR,#4\n\tldm\tA1,r4,#4\n" },
+	{ OPLTYPE,	INAREG|INTAREG,		/* 83 */
+		SANY,	TANY,
+		SNAME|SCON|SOREG,	TFLOAT,
+		NBREG,	0x0,	RNULL,
+		"/* 058e*/\n\tflds\tA1,AR\n\tfldd\tr4,A1\n" },
+	{ OPLTYPE,	INAREG|INTAREG,		/* 84 */
+		SANY,	TANY,
+		SNAME|SCON|SOREG,	TDOUBLE,
+		0,	0x0,	RNULL,
+		"/* 058f*/\nZP\tldm\tr4,AR,#4\n" },
+	{ OPLTYPE,	INTAREG,		/* 85 */
+		SANY,	TANY,
+		SAREG,	TSTRUCT,
+		NAREG,	0xc,	RESC1,
+		"/* 059 */\n\tldl\tVA1,ALX\n" },
+	{ OPLTYPE,	INTAREG,		/* 86 */
+		SANY,	TANY,
+		SOREG,	TSTRUCT,
+		NAREG,	0x14,	RESC1,
+		"/* 060 */\nZL" },
+	{ OPLTYPE,	INTAREG,		/* 87 */
+		SANY,	TANY,
+		SNAME,	TSTRUCT,
+		NAREG,	0xb,	RESC1,
+		"/* 061 */\n\tldl\tVA1X,#AL\n" },
+	{ INCR,	FOREFF|INAREG|INTAREG,		/* 88 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TPOINT,
+		S16CON,	TANY,
+		NAREG,	0x14,	RESC1,
+		"/* 062 */\nF\tldZB\tA1,ALX\nZu" },
+	{ INCR,	FOREFF|INAREG|INTAREG,		/* 89 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		S16CON,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		NAREG,	0x14,	RESC1,
+		"/* 063 */\nF\tldZB\tA1,ALX\n\tZi\tAL,AR\n" },
+	{ DECR,	FOREFF|INAREG|INTAREG,		/* 90 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TPOINT,
+		S16CON,	TANY,
+		NAREG,	0x14,	RESC1,
+		"/* 064 */\nF\tldZB\tA1,ALX\nZu" },
+	{ DECR,	FOREFF|INAREG|INTAREG,		/* 91 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		S16CON,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		NAREG,	0x14,	RESC1,
+		"/* 065 */\nF\tldZB\tA1,ALX\n\tZi\tAL,AR\n" },
+	{ INCR,	FOREFF|INAREG|INTAREG,		/* 92 */
+		SAREG|STAREG,	TPOINT,
+		SCON,	TANY,
+		NAREG,	0x14,	RESC1,
+		"/* 066 */\nF\tldZB\tA1,ALX\n\tadd\tUL,AR\n" },
+	{ INCR,	FOREFF|INAREG|INTAREG,		/* 93 */
+		SAREG|STAREG,	TANY,
+		SCON,	TANY,
+		NAREG,	0x14,	RESC1,
+		"/* 067 */\nF\tldZB\tA1,AL\n\taddZB\tAL,AR\n" },
+	{ DECR,	FOREFF|INAREG|INTAREG,		/* 94 */
+		SAREG|STAREG,	TPOINT,
+		SCON,	TANY,
+		NAREG,	0x14,	RESC1,
+		"/* 068 */\nF\tldZB\tA1,ALX\n\tsub\tUL,AR\n" },
+	{ DECR,	FOREFF|INAREG|INTAREG,		/* 95 */
+		SAREG|STAREG,	TANY,
+		SCON,	TANY,
+		NAREG,	0x14,	RESC1,
+		"/* 069 */\nF\tldZB\tA1,AL\n\tsubZB\tAL,AR\n" },
+	{ INCR,	FOREFF|INAREG|INTAREG,		/* 96 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TPOINT,
+		SCON,	TANY,
+		2*NAREG,	0x16,	RESC2,
+		"/* 070 */\n\tldl\tVA1,AL\nF\tldl\tA2,A1X\n\tadd\tU1,AR\n\tldl\tVAL,A1\n" },
+	{ DECR,	FOREFF|INAREG|INTAREG,		/* 97 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TPOINT,
+		SCON,	TANY,
+		2*NAREG,	0x16,	RESC2,
+		"/* 071 */\n\tldl\tVA1,AL\nF\tldl\tA2,A1X\n\tsub\tU1,AR\n\tldl\tVAL,A1\n" },
+	{ INCR,	FOREFF|INAREG|INTAREG,		/* 98 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TULONG,
+		SCON,	TANY,
+		2*NAREG,	0x16,	RESC2,
+		"/* 072 */\n\tldl\tVA1,AL\nF\tldl\tA2,A1\n\taddl\tA1,AR\n\tldl\tAL,A1\n" },
+	{ DECR,	FOREFF|INAREG|INTAREG,		/* 99 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TULONG,
+		SCON,	TANY,
+		2*NAREG,	0x16,	RESC2,
+		"/* 073 */\n\tldl\tVA1,AL\nF\tldl\tA2,A1\n\tsubl\tA1,AR\n\tldl\tAL,A1\n" },
+	{ AND,	FORCC,		/* 100 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SPOW2,	TANY,
+		0,	0x0,	RESCC,
+		"/* 074 */\n\tbitZ<\tAL,#Z2\n" },
+	{ PLUS,	FOREFF|INAREG|INTAREG,		/* 101 */
+		STAREG,	TPOINT,
+		SCON,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x1a,	RLEFT,
+		"/* 075 */\n\tZtZi\tUL,AR\n" },
+	{ MINUS,	FOREFF|INAREG|INTAREG,		/* 102 */
+		STAREG,	TPOINT,
+		SCON,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x1a,	RLEFT,
+		"/* 076 */\n\tZtZi\tUL,AR\n" },
+	{ PLUS,	FOREFF|INAREG|INTAREG,		/* 103 */
+		STAREG,	TPOINT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x1a,	RLEFT,
+		"/* 077 */\n\tOIZ>\tUL,AR\n" },
+	{ MINUS,	FOREFF|INAREG|INTAREG,		/* 104 */
+		STAREG,	TPOINT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x1a,	RLEFT,
+		"/* 078 */\n\tOIZ>\tUL,AR\n" },
+	{ PLUS,	FOREFF|INAREG|INTAREG,		/* 105 */
+		SAREG|STAREG,	TPOINT,
+		SAREG|STAREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RESC1,
+		"/* 079 */\n\tldl\tVA1,ALX\n\tOIZ>\tU1,AR\n" },
+	{ MINUS,	FOREFF|INAREG|INTAREG,		/* 106 */
+		SAREG|STAREG,	TPOINT,
+		SAREG|STAREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RESC1,
+		"/* 080 */\n\tldl\tVA1,ALX\n\tOIZ>\tU1,AR\n" },
+	{ PLUS,	FOREFF|INAREG|INTAREG,		/* 107 */
+		SAREG|STAREG,	TPOINT,
+		SCON,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RESC1,
+		"/* 081 */\n\tldl\tVA1,ALX\n\tZtZi\tU1,AR\n" },
+	{ MINUS,	FOREFF|INAREG|INTAREG,		/* 108 */
+		SAREG|STAREG,	TPOINT,
+		SCON,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RESC1,
+		"/* 082 */\n\tldl\tVA1,ALX\n\tZtZi\tU1,AR\n" },
+	{ PLUS,	FOREFF|INAREG|INTAREG|FORCC,		/* 109 */
+		STAREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SCON,	TFIT,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 083 */\n\tZi\tAL,AR\n" },
+	{ MINUS,	FOREFF|INAREG|INTAREG|FORCC,		/* 110 */
+		STAREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SCON,	TFIT,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 084 */\n\tZi\tAL,AR\n" },
+	{ OPLONG,	FOREFF|INAREG|INTAREG|FORCC,		/* 111 */
+		STAREG,	TFIT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 085a*/\n\tOIZB\tAL,AR\n" },
+	{ OPFLOAT,	FOREFF|INBREG|INTBREG|FORCC,		/* 112 */
+		STBREG,	TFLOAT|TDOUBLE,
+		SBREG|STBREG|SNAME|SOREG,	TFLOAT|TDOUBLE,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 085b*/\n\tOIZ>\tAL,AR\n" },
+	{ PLUS,	FOREFF|INAREG|INTAREG|FORCC,		/* 113 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		STAREG,	TFIT,
+		0,	0x1b,	RRIGHT|RESCC,
+		"/* 086 */\n\tOIZB\tAR,AL\n" },
+	{ OPSIMP,	FOREFF|INAREG|INTAREG|FORCC,		/* 114 */
+		STAREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 087 */\n\tOIZB\tAL,AR\n" },
+	{ OPCOMM,	FOREFF|INAREG|INTAREG|FORCC,		/* 115 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		STAREG,	TFIT,
+		0,	0x1b,	RRIGHT|RESCC,
+		"/* 088 */\n\tOIZB\tAR,AL\n" },
+	{ MINUS,	FOREFF|INAREG|INTAREG,		/* 116 */
+		SWNCON,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		SAREG|STAREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x12,	RESC1,
+		"/* 089 */\n\tld\tA1,AR\n\tneg\tA1\n\tadd\tA1,#CL\n" },
+	{ MUL,	FOREFF|INAREG|INTAREG|FORCC,		/* 117 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG|NASL,	0x13,	RESC1|RESCC,
+		"/* 090 */\nZM\tmult\tVA1X,AR\n" },
+	{ ASG MUL,	FOREFF|INAREG|INTAREG|FORCC,		/* 118 */
+		STAREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RESC1|RESCC,
+		"/* 091 */\nZM\tmult\tVA1X,AR\n" },
+	{ ASG MUL,	FOREFF|INAREG|INTAREG|FORCC,		/* 119 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RESC1|RESCC,
+		"/* 092 */\nZM\tmult\tVA1X,AR\n\tldZ<\tAL,U1\n" },
+	{ DIV,	FOREFF|INAREG|INTAREG|FORCC,		/* 120 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RESC1|RESC|RESCC,
+		"/* 093 */\nZM\tdiv\tVA1X,AR\n" },
+	{ ASG DIV,	FOREFF|INAREG|INTAREG|FORCC,		/* 121 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RESC1|RESC|RESCC,
+		"/* 094 */\nZM\tdiv\tVA1X,AR\n\tldZB\tAL,U1\n" },
+	{ MOD,	FOREFF|INAREG|INTAREG,		/* 122 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RESC1,
+		"/* 095 */\nZM\tdiv\tVA1X,AR\n" },
+	{ ASG MOD,	FOREFF|INAREG|INTAREG,		/* 123 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RESC1,
+		"/* 096 */\nZM\tdiv\tVA1X,AR\n\tldZB\tAL,A1\n" },
+	{ ASG MUL,	FOREFF|INAREG|INTAREG|FORCC,		/* 124 */
+		STAREG,	TLONG|TULONG,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TULONG,
+		0,	0x21,	RLEFT|RESCC,
+		"/* 097 */\n\tmultl\trq4,VARZ0\n" },
+	{ ASG DIV,	FOREFF|INAREG|INTAREG|FORCC,		/* 125 */
+		STAREG,	TLONG|TULONG,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TULONG,
+		0,	0x22,	RLEFT|RESCC,
+		"/* 098 */\nZQ\tdivl\trq4,VARZ0\n" },
+	{ ASG MOD,	FOREFF|INAREG|INTAREG,		/* 126 */
+		STAREG,	TLONG|TULONG,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TULONG,
+		0,	0x22,	RLEFT,
+		"/* 099 */\nZQ\tdivl\trq4,VARZ0\n" },
+	{ ASG PLUS,	FOREFF|INAREG,		/* 127 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TPOINT,
+		S16CON,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x19,	RLEFT,
+		"/* 100 */\nZu" },
+	{ ASG MINUS,	FOREFF|INAREG,		/* 128 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TPOINT,
+		S16CON,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x19,	RLEFT,
+		"/* 101 */\nZu" },
+	{ ASG PLUS,	FOREFF|INAREG,		/* 129 */
+		SAREG|STAREG|SNAME|SCON,	TPOINT,
+		STAREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x19,	RLEFT,
+		"/* 102 */\n\tadd\tAR,UL\n\tld\tUL,AR\n" },
+	{ ASG PLUS,	FOREFF|INAREG,		/* 130 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TPOINT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RLEFT,
+		"/* 103 */\n\tld\tU1,UL\n\tadd\tU1,AR\n\tld\tUL,U1\n" },
+	{ ASG MINUS,	FOREFF|INAREG,		/* 131 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TPOINT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		NAREG,	0x13,	RLEFT,
+		"/* 104 */\n\tld\tU1,UL\n\tsub\tU1,AR\n\tld\tUL,U1\n" },
+	{ ASG PLUS,	FOREFF|INAREG|FORCC,		/* 132 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		S16CON,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 105 */\n\tZi\tAL,AR\n" },
+	{ ASG MINUS,	FOREFF|INAREG|FORCC,		/* 133 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		S16CON,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 106 */\n\tZi\tAL,AR\n" },
+	{ ASG OPLONG,	FOREFF|INAREG|FORCC,		/* 134 */
+		SAREG|STAREG,	TFIT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 107 */\n\tOIZB\tAL,AR\n" },
+	{ ASG PLUS,	FOREFF|INAREG|FORCC,		/* 135 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		STAREG,	TFIT,
+		0,	0x1b,	RRIGHT|RESCC,
+		"/* 108 */\n\taddZB\tAR,AL\n\tldZB\tAL,AR\n" },
+	{ ASG OPLONG,	FOREFF|INAREG|FORCC,		/* 136 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		NAREG,	0x13,	RESC1|RESCC,
+		"/* 109 */\n\tldZB\tA1,AL\n\tOIZB\tA1,AR\n\tldZB\tAL,A1\n" },
+	{ ASG AND,	FOREFF|INAREG|INTAREG,		/* 137 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SNPOW2,	TANY,
+		0,	0x1a,	RLEFT,
+		"/* 110 */\n\tresZB\tAL,#Z~\n" },
+	{ ASG OR,	FOREFF|INAREG|INTAREG,		/* 138 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SPOW2,	TANY,
+		0,	0x1a,	RLEFT,
+		"/* 111 */\n\tsetZB\tAL,#Z2\n" },
+	{ ASG OPSIMP,	FOREFF|INAREG|FORCC,		/* 139 */
+		SAREG|STAREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 112 */\n\tOIZB\tAL,AR\n" },
+	{ ASG OPCOMM,	FOREFF|INAREG|FORCC,		/* 140 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		STAREG,	TFIT,
+		0,	0x1c,	RLEFT|RESCC,
+		"/* 113 */\n\tOIZB\tAR,AL\n\tldZB\tAL,AR\n" },
+	{ ASG OPSIMP,	FOREFF|INAREG|FORCC,		/* 141 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TCHAR|TSHORT|TINT|TUCHAR|TUSHORT|TUNSIGNED,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TFIT,
+		NAREG,	0xf,	RLEFT|RESCC,
+		"/* 114a*/\n\tldZB\tA1,AL\n\tOIZB\tA1,AR\n\tldZB\tAL,A1\n" },
+	{ ASG OPFLOAT,	FOREFF|INBREG|INTBREG|FORCC,		/* 142 */
+		SBREG|STBREG,	TFLOAT|TDOUBLE,
+		SBREG|STBREG|SNAME|SOREG,	TFLOAT|TDOUBLE,
+		0,	0x1a,	RLEFT|RESCC,
+		"/* 114b*/\n\tOIZ>\tAL,AR\n" },
+	{ ASG OPBIT,	FOREFF|INAREG,		/* 143 */
+		SAREG|STAREG,	TLONG|TPOINT|TULONG,
+		SOREG,	TLONG|TPOINT|TULONG,
+		NAREG,	0x1f,	RLEFT,
+		"/* 115 */\n\tld\tU1,UR\n\tOI\tAL,AR\n\tOI\tUL,U1\n" },
+	{ ASG OPBIT,	FOREFF|INAREG,		/* 144 */
+		SAREG|STAREG,	TLONG|TPOINT|TULONG,
+		SADCON,	TLONG|TULONG,
+		0,	0x19,	RLEFT,
+		"/* 116a*/\n\tldl\tVA1,ARX\n\tOI\tAL,A1\n\tOI\tUL,U1\n" },
+	{ ASG OPBIT,	FOREFF|INAREG,		/* 145 */
+		SAREG|STAREG,	TLONG|TPOINT|TULONG,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TPOINT|TULONG,
+		0,	0x19,	RLEFT,
+		"/* 116b*/\n\tOI\tZl,Zr\n\tOI\tUL,UR\n" },
+	{ ASG OPBIT,	FOREFF|INAREG,		/* 146 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TPOINT|TULONG,
+		SOREG,	TLONG|TPOINT|TULONG,
+		2*NAREG|NASR,	0x16,	RLEFT,
+		"/* 117 */\n\tldl\tVA1,ALX\n\tldl\tVA2,ARX\n\tOI\tA1,A2\n\tOI\tU1,U2\n\tldl\tVAL,A1\n" },
+	{ ASG OPBIT,	FOREFF|INAREG,		/* 147 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TPOINT|TULONG,
+		SADCON,	TLONG|TULONG,
+		2*NAREG,	0x16,	RLEFT,
+		"/* 118a*/\n\tldl\tVA1,ALX\n\tldl\tVA2,ARX\n\tOI\tA1,A2\n\tOI\tU1,U2\n\tldl\tVAL,A1\n" },
+	{ ASG OPBIT,	FOREFF|INAREG,		/* 148 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TPOINT|TULONG,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TLONG|TPOINT|TULONG,
+		NAREG,	0x11,	RLEFT,
+		"/* 118b*/\n\tldl\tVA1,ALX\n\tOI\tA1,Zr\n\tOI\tU1,UR\n\tldl\tVAL,A1\n" },
+	{ UNARY CALL,	INTAREG,		/* 149 */
+		SAREG|SOREG,	TANY,
+		SANY,	TCHAR|TSHORT|TINT|TLONG|TFLOAT|TPOINT|TUCHAR|TUSHORT|TUNSIGNED|TULONG,
+		NAREG|NASL,	0x20,	RESC1,
+		"/* 119a*/\n\tcall\tCL\n" },
+	{ UNARY CALL,	INTAREG,		/* 150 */
+		SAREG|SOREG,	TANY,
+		SANY,	TDOUBLE,
+		NBREG,	0x20,	RESC1,
+		"/* 119b*/\n\tcall\tCL\n" },
+	{ UNARY CALL,	INTAREG,		/* 151 */
+		SNAME|SCON,	TANY,
+		SANY,	TCHAR|TSHORT|TINT|TLONG|TFLOAT|TPOINT|TUCHAR|TUSHORT|TUNSIGNED|TULONG,
+		NAREG|NASL,	0x20,	RESC1,
+		"/* 120a*/\n\tcallr\tCL\n" },
+	{ UNARY CALL,	INTAREG,		/* 152 */
+		SNAME|SCON,	TANY,
+		SANY,	TDOUBLE,
+		NBREG,	0x20,	RESC1,
+		"/* 120b*/\n\tcallr\tCL\n" },
+	{ STASG,	FOREFF,		/* 153 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		NAREG,	0x12,	RNULL,
+		"/* 121 */\nZS" },
+	{ STASG,	INTEMP,		/* 154 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		NAREG,	0x12,	RLEFT,
+		"/* 122 */\nZs" },
+	{ STASG,	INTAREG,		/* 155 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		NAREG,	0x12,	RRIGHT,
+		"/* 123 */\nZS" },
+	{ STARG,	INTAREG|FORARG,		/* 156 */
+		SAREG|STAREG|SNAME|SCON|SOREG,	TANY,
+		SANY,	TANY,
+		0,	0x0,	RNULL,
+		"/* 124 */\nZA" },
+	{ INIT,	FOREFF,		/* 157 */
+		SCON,	TANY,
+		SANY,	TSHORT|TINT|TUSHORT|TUNSIGNED,
+		0,	0x0,	RNOP,
+		"/* 125 */\n\tZUCL\n" },
+	{ INIT,	FOREFF,		/* 158 */
+		SCON,	TANY,
+		SANY,	TCHAR|TUCHAR,
+		0,	0x0,	RNOP,
+		"/* 126 */\n\tZVCL\n" },
+	{ INIT,	FOREFF,		/* 159 */
+		SCON,	TANY,
+		SANY,	TLONG|TPOINT|TULONG,
+		0,	0x0,	RNOP,
+		"/* 127 */\n\tZWCL\n" },
+	{ UNARY MUL,	FORREW,		/* 160 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	UNARY MUL,
+		"" },
+	{ INCR,	FORREW,		/* 161 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	INCR,
+		"" },
+	{ DECR,	FORREW,		/* 162 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	INCR,
+		"" },
+	{ ASSIGN,	FORREW,		/* 163 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	ASSIGN,
+		"" },
+	{ STASG,	FORREW,		/* 164 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	STASG,
+		"" },
+	{ OPLEAF,	FORREW,		/* 165 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	NAME,
+		"" },
+	{ OPLOG,	FORCC,		/* 166 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	BITYPE,
+		"" },
+	{ OPLOG,	FORREW,		/* 167 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	NOT,
+		"" },
+	{ COMOP,	FORREW,		/* 168 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	COMOP,
+		"" },
+	{ INIT,	FORREW,		/* 169 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	INIT,
+		"" },
+	{ OPUNARY,	FORREW,		/* 170 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	UNARY MINUS,
+		"" },
+	{ ASG OPANY,	FORREW,		/* 171 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	ASG PLUS,
+		"" },
+	{ OPANY,	FORREW,		/* 172 */
+		SANY,	TANY,
+		SANY,	TANY,
+		REWRITE,	0x0,	BITYPE,
+		"" },
+	{ FREE,	FREE,		/* 173 */
+		FREE,	FREE,
+		FREE,	FREE,
+		FREE,	0x0,	FREE,
+		"/*hi mom*/\n" },
 };

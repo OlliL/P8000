@@ -60,6 +60,62 @@
 #define TANY	0010000
 #define TSTRUCT	0020000
 
+/* WEGA types of the table beyond the PCC (match3.c ttype; names guessed, the PCC has TFIT 040000 for its 0x4000) */
+#define TSAME	0x4000		/* both operands of the same type */
+#define TFIT	0x8000		/* both operands of the same size */
+
+/* the SPECIAL shapes (local3.c special; names guessed) */
+#define SKCON	(SPECIAL|1)	/* a constant 0 .. 15 */
+#define S16CON	(SPECIAL|2)	/* a constant -16 .. 16 */
+#define SBCON	(SPECIAL|3)	/* a constant -256 .. 255 */
+#define SWCON	(SPECIAL|4)	/* a constant -32768 .. 32767 */
+#define SWNCON	(SPECIAL|5)	/* the same, and nncon */
+#define SPOW2	(SPECIAL|6)	/* a power of two */
+#define SNPOW2	(SPECIAL|7)	/* the complement a power of two */
+#define SADCON	(SPECIAL|8)	/* a constant with a name (an address) */
+
+/* the cookie of a rewrite rule and the answers of match */
+#define FORREW	0x4000
+#define NOMATCH	0x1000
+#define MDONE	0x1001
+
+/* the operator classes of the table (op 0x1000 + 2k, ASG: + 1; the order of ocnames and opclass of match3.c) */
+#define OPSIMP	0x1000
+#define OPCOMM	0x1002
+#define OPMUL	0x1004
+#define OPDIV	0x1006
+#define OPUNARY	0x1008
+#define OPLEAF	0x100a
+#define OPANY	0x100c
+#define OPLOG	0x100e
+#define OPLONG	0x1010
+#define OPSHFT	0x1012
+#define OPBIT	0x1014
+#define OPFLOAT	0x1016
+#define OPLTYPE	0x1018
+
+/* needs: registers (A: bits 0-3, B: 4-7), temporaries of the frame (8-9) and of the parameter area (10-11) */
+#define NAREG	01
+#define NASL	04		/* share left register */
+#define NASR	010		/* share right register */
+#define NBREG	020
+#define NBSL	0100
+#define NBSR	0200
+#define NTEMP	0400
+#define NPTEMP	02000		/* a temporary of the parameter area (name guessed) */
+#define REWRITE	0x1000		/* in q->needs: the entry only rewrites the tree, q->rewrite is the answer */
+
+/* rewrite: what the tree becomes */
+#define RNULL	0
+#define RLEFT	01
+#define RRIGHT	02
+#define RESC1	04
+#define RESC2	010
+#define RESC3	020
+#define RESC	02000		/* rewrite & 0x400: the second register of a long result */
+#define RESCC	04000
+#define RNOP	010000
+
 #define MUSTDO	010000
 #define NOPREF	020000
 

@@ -43,12 +43,6 @@ static int d3jdead;		/* v0p: the record before was an unconditional jump */
 
 #define INTEMP_	0x1000
 
-#define NOMATCH	0x1000
-
-#define MDONE	0x1001
-
-#define FORREW	0x4000
-
 #define FREE_	100
 
 #undef DECREF		/* the DECREF of manifest shifts the type as it is (int: arithmetic) */
