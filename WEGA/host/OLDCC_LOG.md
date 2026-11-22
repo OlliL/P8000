@@ -2005,3 +2005,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   jump to the last label of a label run) an if/else at the end of the body looks like `if (c) { A; continue; } B`; without
   that retarget in vc cas loses symreloc and jpr. Only in round 1 of iterate: no help (the retarget is before round 0).
   The patch is kept aside, not in the tree.
+- 2026-11-22, the spopt of vc against c2 of System III (pdp11/c20.c: iterate, xjump, codemove and the loop inversion as in
+  our popt; differences: window 16 instead of 24, codemove refuses when the block end is the jump or next to it, JBR/JMP):
+  vc spopt without D45, D20S, D50, D51: cas 149 (the three witnesses exprreloc, stabout, jpr); the same with the c2 forms:
+  141 (yylex, main, symreloc, stlook, ...). The spopt of vc is not the old c2.
