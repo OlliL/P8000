@@ -106,7 +106,7 @@ int *flag;
 		printf("srchdflist()\n");
 	q = qmkstore(q);
 	p = lpdefs;
-	isbeta = (char)(q->c.b2 == OABTEMP);
+	isbeta = q->c.b2 == OABTEMP;
 	isstore = isbeta && q->op == QSTORE ? 1 : 0;
 	ismem = isbeta && (q->op == QIDR || q->op == QSTORE || q->op == QLOAD);
 	isother = isbeta && (q->op != QIDR && q->op != QSTORE && q->op != QLOAD);

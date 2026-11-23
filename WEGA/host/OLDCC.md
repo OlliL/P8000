@@ -458,12 +458,13 @@ without `-O` the head stays on top. Open: sld 0x7C26 keeps its head on top.
 Unsigned char argument: old `ldb rh7,#0`, shipped `subb rh7,rh7` (cas ifile); old libc length `ldb rl3,@r2` + `testb rl3` against
 `testb @r2`; char loads as `ldb`/`subb` or `extsb; and #FF`.
 
-- v0, v0p, v1 cparse `OLD_D8L` (clocal): a compare of a char with a constant that fits (the WEGA rule that makes it a byte
+- v0, v0p, v1 cparse, vc scparse `OLD_D8L` (clocal): a compare of a char with a constant that fits (the WEGA rule that makes it a byte
   compare) keeps the char type, so its value used as an int is sign extended (`cpb ..,#k; ldk r2,#0; tcc cc,r2; extsb
   r2`). The shipped cparse has `if( !logop( p->in.op ) )` in front of the assignment inside a branch taken only for
   logops: dead code, the compare stays int. In the originals of 1982 52 (v0) and 22 (v0a) such values, all with the
   extsb but two (apropos, whatis); ex edge, gettmode, advance, vgetline; the forced casts `(char)(a == b)` of tail,
-  libc endopen 0_3 (v0p), 0_5 and 0_1 (v1r, v1q), ctime 0_1 (v1) are gone. The segmented cparse versions not measured.
+  libc endopen 0_3 (v0p), 0_5 and 0_1 (v1r, v1q), ctime 0_1 (v1) and gopt lpinv2.c srchdflist (vc: cas and gopt still exact; without it gopt loses srchdflist) are
+  gone. The other segmented versions (v1, vk, vl) not measured.
 
 ### D9 Shift by 8 bits
 

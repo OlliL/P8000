@@ -2136,3 +2136,6 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   `(char)(...)` (tail, endopen 0_3, 0_5, ctime 0_1). clocal of the shipped cparse sets the char type only for a non-logop
   inside a branch for logops (dead); without that condition: ex 348 -> 352, the casts removed and every module exact with
   v0p (endopen 0_3) and v1 (endopen 0_5, 0_1, ctime 0_1); tree units, bench, v0p models unchanged.
+- `OLD_D8L` also in vc (scparse of sccvc, 2026-11-23): the cast `(char)(q->c.b2 == OABTEMP)` of gopt lpinv2.c srchdflist
+  removed; `MATRIX_VER=vc oldcc.sh matrix cparse:OLD_D8L`: baseline cas and gopt 0 differing functions, without the
+  switch gopt srchdflist lost (+57 data bytes).
