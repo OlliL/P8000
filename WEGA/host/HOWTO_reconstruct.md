@@ -149,7 +149,7 @@ For what is left: finding the source form of a hard function, and changing the c
 - The masked compare (fnc.py) hides frame offsets, constants, globals and members: when the masked count is complete, link
   and compare strictly (`host/tools/bincmp.py`; segmented: `recon/framemap.py`, the frame offsets new -> orig per function).
 - The checks of each compiler change, before its commit (from the gopt reconstruction, 2026-11-21/22): (1) the models:
-  `oldcc.sh build codgen v0` and `v0p` (remove the installed file first), then `oldcc.sh model P` for cparse scparse codgen
+  `oldcc.sh build codgen v0`, `v0a` and `v0p` (remove the installed file first; v0a: then ex, 339 of 391 functions exact), then `oldcc.sh model P` for cparse scparse codgen
   scodgen popt spopt cpp, all strictly equal, and `oldcc.sh bench`; (2) `recon/oldcc.sh matrix check` and
   `MATRIX_VER=vc ... matrix check`, a changed codgen switch measured with `MATRIX_VER=vc oldcc.sh matrix OLD_X` (the matrix
   knows codgen switches; a popt switch is checked on cas by checkall); (3) the program itself (`fnc.py -a` over its files);

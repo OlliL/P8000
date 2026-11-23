@@ -39,6 +39,8 @@ Every program of the WEGA tree from source, byte-identical, each with a corpus.
       (53 of 100 functions exact; ccv0p 46, ccv1/ccv1r/ccv1q/cc 12..16 of 91); the rest: `@r15` for offset 0 (v0 writes
       `0(r15)`, OLD_D18) and calr to other files; a compiler question, phase A stops. For a build later: the termlib of ex is src/lib/oldtermlib (libtermlib-v1.a, ccv0, exact), xstr in
       tmp/plexus/cmd/plx/xstr.c (/usr/bin/xstr has no source in src yet), setjmp.h is missing (WEGA has setret.h).
+      2026-11-23: built in the tree (src/cmd/ex), own code by ccv0a (v0a: v0 with OLD_D3AW, host/OLDCC.md): 339 of 391
+      functions exact; the rest phase B (compare/ex/findings.json).
    4. (owner 2026-11-22) then the programs of /bin (then the others) whose status is `sys3`: phase A each; exact: build,
       corpus, checkall, commit; not exact: stays partial, the next one.
    Not in this list: the other `partial` entries have only data files in src (bc lib.b, more.help, yaccpar, unittab.sh,

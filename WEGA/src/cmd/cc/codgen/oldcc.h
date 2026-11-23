@@ -33,6 +33,13 @@
 #define OLD_D2TC	/* rbusy takes a free word register instead of stopping (reclaim of gopt operand: p->in.sname - symtab) */
 #endif
 
+#ifdef OLD_V0A
+/* v0a, the compiler of ex (10/82): v0 and OLD_D3AW (host/OLDCC_PARAMREGS.md); the programs of 07/82 and the libraries
+   linked into ex follow v0 */
+#define OLD_V0
+#define OLD_D3AW	/* OLD_D3A only for a parameter that is a whole argument or an address in it (argplace) */
+#endif
+
 #ifdef OLD_V0P
 /* v0p, the compiler of the passes: v0 and */
 #define OLD_V0

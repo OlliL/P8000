@@ -52,6 +52,13 @@ static int	intign, quitign, hupign, termign;
 static int	unused1, nfiles;
 char	*fname = "basic";
 char	*cpp		= "/lib/cpp";
+#ifdef OLD_V0A
+/* ccv0a (v0a/Makefile): v0 with the code generator of ex (10/82) in /lib/v0a */
+char	*cparse		= "/lib/v0/cparse";
+char	*gopt		= "/lib/gopt";
+char	*codgen		= "/lib/v0a/codgen";
+char	*popt		= "/lib/v0/popt";
+#else
 #ifdef OLD_V0P
 /* ccv0p (v0p/Makefile): the passes of the old compiler v0p are in /lib/v0p */
 char	*cparse		= "/lib/v0p/cparse";
@@ -120,6 +127,7 @@ char	*cparse		= SEG("/lib/cparse", "/lib/scparse");
 char	*gopt		= "/lib/gopt";
 char	*codgen		= SEG("/lib/codgen", "/lib/scodgen");
 char	*popt		= SEG("/lib/popt", "/lib/spopt");
+#endif
 #endif
 #endif
 #endif

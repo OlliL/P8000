@@ -2091,3 +2091,17 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   The 2026-10 entry measured D2Q in v0 on the bench as 1080 > 1085 lines; now bench v0 134 > 135 same, 207 > 197 lines.
   Models of the passes (v0p) all exact, matrix OLD_D2QI +0. ctime 0_2 stays cas: gmtime/ct_numb reload parameters, asctime
   multiplies in rr2 (ours rr0).
+
+## 2026-11-23 v0a: v0 with OLD_D3AW, the compiler of ex
+
+- Built as its own version (`ccv0a`, `/lib/v0a/codgen`; cparse and popt of v0) after the measurement in
+  `OLDCC_PARAMREGS.md` (log 2026-11-23): ex 323 -> 339 of 391 functions exact, none lost; chkout 15 -> 10 of 18, dc,
+  ranlib and the v0 modules of libc-v1.a lose with the switch. The libc members inside /bin/ex (isatty, stty, gtty) are
+  exact only without it. Owner decision 2026-11-23: a version of its own for ex (evidence rule 4).
+- The other variant measured (every parameter register forgotten at the start of each statement): ex 283 exact, 53 lost; refuted.
+- Date line of OLD_D3AW: own code compiled by ccv0 and ccv0a, functions against the originals (sources: the tree,
+  System III, for xstr Plexus). Against the switch: cron 07/23, join and ptx 07/24, banner and sdiff 07/28/82 (one exact
+  function lost each). For it: xstr 11/01/82 (hashit, found exact only with it; xgetc reloads `file` for `_filbuf`).
+  No place: echo 08/12, cat 10/29, mkstr, at, expand 11/01/82, env, cut, mesg, pwck, tty, cal, col, cb. grpck 07/28
+  (`ld r6,@r6` for argv[1]: v0 copies the parameter first, v0a reloads it; the original does neither) is an open form of v0.
+  Not compiled: pcat, unpack, file, exrecover, apropos, whatis, getNAME. Between 07/28/82 and 10/28/82 no program has a place.

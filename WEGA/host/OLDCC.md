@@ -62,7 +62,7 @@ register variables: "slots" (as many never used frame words as saved registers: 
 | Time (build stamp) | D12 of the data | Programs (examples) | Compiler |
 |---|---|---|---|
 | 1981 .. 1982, no crt0 stamp (sources 07/82 ..) | packed | chmod, dc, m4, eqn, cpp (12/82), ranlib, the plz tools | v0 (D1 tight) |
-| 10/82 .. 11/82 (crt0 3.1) | packed | ex, vi, at | v0 (D1 tight); shut, dd 11/82 .. 12/82 loose |
+| 10/82 .. 11/82 (crt0 3.1) | packed | ex, vi, at, xstr | v0a (ex, xstr measured; the libraries of ex v0); shut, dd 11/82 .. 12/82 loose |
 | 01/05/83 (crt0 3.1) | packed | write, rmdir | v1r (write fits v1q and v1 too, rmdir does not fit v1) |
 | 01/14/83 (crt0 3.1) | packed | size | v1, v1q and v1r all fit its own code; its libc: v1q |
 | 01/24/83 .. 05/83 (crt0 3.1) | packed | strip, ls, sort, passwd, mount, rm, lint1 | v1 (strip, rm measured: v1q, v1r do not fit) |
@@ -141,6 +141,21 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
   renaming of register variables into low registers is done by popt `procopt`, in the shipped compiler too).
+
+### v0a (10/82, ex)
+
+- v0 with `OLD_D3AW` (codgen); cparse and popt those of v0 (`ccv0a`, `/lib/v0a/codgen`). The own code of ex (crt0 3.1
+  10/28/82) follows it, the libraries linked into ex (libc-v1.a, libtermlib-v1.a) follow v0: isatty, stty, gtty in /bin/ex
+  are exact with v0 and differ with `OLD_D3AW`.
+- Measured 2026-11-23 (`OLDCC_PARAMREGS.md`): ex 323 -> 339 of 391 functions exact, none lost. The programs of 07/82
+  contradict the switch: with it chkout loses apply, getat, nextcmd, notplain, doit (15 -> 10 of 18 exact), dc 13
+  functions, ranlib 2, the v0 modules of libc-v1.a 10. mkstr (11/82) has no place the switch touches.
+- Date line (measured 2026-11-23, own code compiled by ccv0 and ccv0a, functions against the originals): with v0 and
+  against the switch: cron (07/23/82), join, ptx (07/24/82), banner, sdiff (07/28/82), besides chkout, dc, ranlib; with
+  v0a: ex (crt0 3.1 10/28/82), xstr (11/01/82: hashit, found exact only with it; xgetc reloads its parameter for
+  `_filbuf` as v0a does). echo (08/12/82), cat (10/29/82), mkstr, at, expand (11/01/82) have no place it touches. So
+  the switch came between 07/28/82 and 10/28/82; no program of the tree in between has such a place. (guess) It came
+  with the build that stamps crt0 (3.1): every v0 witness has no crt0 stamp, every v0a witness has one.
 
 ### v0p (the compiler of the passes)
 
@@ -352,7 +367,7 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   go into the pair of its left operand when that is the register of a parameter (nodeno `c = q + 6`: `ldl rr2,rr6;
   inc r3,#6`, sccvc `ldl rr6,rr6; inc r7,#6` destroyed q). /lib/gopt nodeno, fndparm; checkops 21 -> 15, qmkstore 19 -> 14.
   Neutral on cas.
-- v0p `OLD_D3AW` (argplace): the register of a parameter is forgotten only for an argument that is the parameter itself, uses it
+- v0a, v0p `OLD_D3AW` (argplace): the register of a parameter is forgotten only for an argument that is the parameter itself, uses it
   as an address or goes through +, -, unary -, * or a cast (scmd, readsyms, readtab), or a parameter added to an address constant
   (exname), and only when it lies in the register the argument is wanted in: putbyte `bcon(v)` reloads, popt setcon
   `natural(loc)` is `ld r7,r6`. Not in the condition of a `?:`; its arms do not take a parameter from the wanted register (regof).
@@ -749,6 +764,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cpp | cpp.c, cpy.y, yylex.c | v0p |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 | clist | clist.c | v0p | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | mkdir | mkdir.c | v0 |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| ex | ex 2.13 (own code) | v0a |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | mkstr | mkstr.c, libc calloc | v0 |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | kernel | sig.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
 | kernel | sys2.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |

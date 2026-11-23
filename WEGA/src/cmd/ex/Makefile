@@ -5,7 +5,8 @@
 # operands). For each source, in the order of the objects: mkstr takes the strings of the error messages out (into
 # ex2.13strings, made first over all sources, so the offsets are those of one run in this order), the preprocessed source
 # goes through xstr (the shared strings, collected in the file strings, in this order), the compiler writes x.s, shrink.sh
-# changes it, cas makes the object. Then xstr writes xs.c with the strings (strings.o). mkstr (../mkstr.c) and xstr
+# changes it, cas makes the object. The compiler is v0a (ccv0a: v0 with OLD_D3AW, host/OLDCC.md); the libraries
+# linked in (libc-v1.a, libtermlib-v1.a) are of v0 (ccv0). Then xstr writes xs.c with the strings (strings.o). mkstr (../mkstr.c) and xstr
 # (../xstr.c) are programs of the WEGA system that make runs itself: RUN is "wrun" under the emulator, empty on WEGA.
 # printf.c is WEGA's printf (printf and doprnt of the libc of the time printing by putchar), not pprintf.c of Plexus.
 #
@@ -14,6 +15,7 @@
 
 CC = cc
 CCV0 = ccv0
+CCV0A = ccv0a
 CAS = cas
 LD = ld
 PREFIX = /
@@ -34,8 +36,9 @@ all: ex ex$(VERSION)strings
 mkstr: ../mkstr.c
 	$(CC) -O -o mkstr ../mkstr.c
 
+# xstr 11/01/82 by v0a (host/OLDCC.md: hashit, found exact only with it); its libc is still open
 xstr: ../xstr.c
-	$(CC) -O -o xstr ../xstr.c
+	$(CCV0A) -O -o xstr ../xstr.c
 
 ex$(VERSION)strings: mkstr $(CFILES)
 	rm -f ex$(VERSION)strings
@@ -48,13 +51,13 @@ objs: mkstr xstr ex$(VERSION)strings shrink.sh $(CFILES) $(HFILES)
 	for f in $(SRCS) ; do \
 		$(RUN) ./mkstr - ex$(VERSION)strings x $$f.c || exit 1 ; \
 		$(CCV0) -E $(CFLAGS) $(OPTIONS) x$$f.c | $(RUN) ./xstr -c - || exit 1 ; \
-		$(CCV0) -S $(CFLAGS) $(OPTIONS) x.c || exit 1 ; \
+		$(CCV0A) -S $(CFLAGS) $(OPTIONS) x.c || exit 1 ; \
 		sh shrink.sh x.s ; \
 		$(CAS) -u -o $$f.o x.s || exit 1 ; \
 		rm -f x$$f.c x.c x.s ; \
 	done
 	$(RUN) ./xstr
-	$(CCV0) -S xs.c
+	$(CCV0A) -S xs.c
 	$(CAS) -u -o strings.o xs.s
 	rm -f xs.c xs.s
 	touch objs
