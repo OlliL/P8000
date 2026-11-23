@@ -86,5 +86,6 @@
    "findings": "the form of OLD_D5S (index + offset) + fp"
   }
  },
- "wega edits": "sTTY: stty(i, &tty), not ioctl TIOCSETN (the original calls stty; sgtty.h of WEGA defines TIOCSETN). getach: after read(0, &lastc, 1) the original keeps the high byte and swaps it down (lastc &= 0177400; swab(&lastc, &lastc, 2)): the byte read lies in the high half of the int on the Z8000."
+ "wega edits": "sTTY: stty(i, &tty), not ioctl TIOCSETN (the original calls stty; sgtty.h of WEGA defines TIOCSETN). getach: after read(0, &lastc, 1) the original keeps the high byte and swaps it down (lastc &= 0177400; swab(&lastc, &lastc, 2)): the byte read lies in the high half of the int on the Z8000.",
+ "printf": "Not pprintf.c (its printf, _p_dconv, _p_emit are not in /bin/ex). The module at 0xe546..0xe96e (before termlib, which starts about 0xe96e; libc from 0xf0f2) is a copy of the libc printf and doprnt of the time, printing by ex's putchar: a stub table of one entry (jp putchar), printf at e54a (varargs: r2..r7 to the stack), _align at e57e (1 instruction off doprnt/0_7 of oldlibc, the member of cat, env, nohup, sum), the formatter at e5d4 (calls strlen, putchar), _atoip at e8fa (2 off). doprnt 0_7 is only a .s in oldlibc; C versions 0_2, 0_4, 0_5, 0_6 exist. Next: a C source of this module (doprnt with putchar)."
 }
