@@ -416,6 +416,20 @@ mapregs(p)
 			n->in.op = FREE;
 		}
 		break;
+#ifdef OLD_D5SA
+	case PLUS:
+		/* v0: the address of a local array plus a variable: (variable + offset) + fp, the frame pointer added last (mkdir
+		   strcpy(pname+slash, ".")) */
+		m = p->in.left;
+		if (m->in.op == PLUS && m->in.left->in.op == REG && m->in.left->tn.rval == FP && m->in.right->in.op == ICON &&
+		    p->in.right->in.op != ICON) {
+			r = m->in.left;
+			m->in.left = p->in.right;
+			m->in.type = p->in.right->in.type;
+			p->in.right = r;
+		}
+		break;
+#endif
 	case UNARY AND:
 		m = p->in.left;
 		if (m->in.op == NAME && (SFISGLOBAL(m->in.sname->sflags)) == 0 && m->tn.rval >= 0) {

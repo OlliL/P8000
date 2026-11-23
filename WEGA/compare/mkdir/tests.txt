@@ -1,0 +1,91 @@
+# The cases of the corpus of mkdir (compare/mkdir/corpus.py); the format: host/recon/casefile.py. src = src/cmd/mkdir.c.
+
+== one
+# src: one directory, with . and ..
+-- case
+step: /bin/mkdir d
+
+== several
+-- case
+step: /bin/mkdir a b c
+
+== path
+# src: a path: the parent directory is checked (pname)
+-- case
+host: mkdir p
+step: /bin/mkdir p/q
+
+== deep-path
+-- case
+host: mkdir -p p/q/r
+step: /bin/mkdir p/q/r/s
+
+== trailing-slash
+# quirk: the parent is the part up to the last /: "d/" gives "d/.", which is not there
+-- case
+step: /bin/mkdir d/
+
+== no-parent
+# src: "mkdir: cannot access %s" of the parent
+-- case
+step: /bin/mkdir nop/q
+
+== exists
+# src: "mkdir: cannot make directory %s"
+-- case
+host: mkdir d
+step: /bin/mkdir d
+
+== exists-file
+-- case
+host: touch f
+step: /bin/mkdir f
+
+== some-bad
+# src: the status is 2 when one fails, the others are made
+-- case
+host: mkdir x
+step: /bin/mkdir a x b
+
+== arg-count
+# src: "mkdir: arg count", exit 2
+-- case
+step: /bin/mkdir
+
+== root
+# as root
+-- case
+user: 0 0
+time: 600000000
+step: /bin/mkdir d
+
+== user
+# as a user: the directory belongs to the user
+-- case
+user: 100 100
+time: 600000000
+step: /bin/mkdir d
+
+== user-no-write
+# the parent is not writable for the user: cannot access
+-- case
+host: mkdir ro
+host: chmod 555 ro
+user: 100 100
+step: /bin/mkdir ro/d
+
+== absolute-tmp
+# a path in the guest /tmp (the layer)
+-- case
+user: 0 0
+time: 600000000
+step: /bin/mkdir /tmp/newdir
+
+== slash-only
+-- case
+step: /bin/mkdir /
+
+== long-name
+# a name of 14 characters
+-- case
+step: /bin/mkdir abcdefghijklmn

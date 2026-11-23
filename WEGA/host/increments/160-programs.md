@@ -202,3 +202,5 @@ PLZ programs and `as`: 170.
 - 2026-11-23 checkall c7 failed: the su corpus wrote /usr/adm/sulog into ROOT (the layer takes a new file only in a directory
   that exists in the layer). sulog removed from the tree (/usr/adm of WEGA is empty); every su case makes $Z8K_OVERLAY/usr/adm
   first. checkall c8 ALL OK; src/COVERAGE.md generated (coverage.py on its install tree): exact 903, partial 14.
+- 2026-11-23 phase B (owner): mkdir, find, mkstr, ex. mkdir exact with the v0 switch OLD_D5SA (owner's exception, one witness)
+  and OLD_D5T moved to v0; corpus compare/mkdir (16, set-user-id root at its place, INSTALLED); quirk: `mkdir d/`.

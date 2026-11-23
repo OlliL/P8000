@@ -28,6 +28,7 @@
 /dumpdir
 /echo
 /getud
+/mkdir
 /mv
 /nohup
 /pr

@@ -49,5 +49,5 @@
    ]
   }
  },
- "note": "partial 2026-11-22: mkdir.c of System III + the WEGA sccsid with ccv0 -I../head/oldv7 and libc-v1.a: all but one place, \"strcpy(pname+slash, \".\")\" in mkdir(): the original computes (slash + 2) + fp (lda r2,%0002(r13); add r2,r15; ld r7,r2), ccv0 fp + 2 + slash (lda r7,%0002(r15); add r7,r13), the OLD_D5S form of v0 for an address of a local array; tried: &pname[slash], slash+pname, &slash[pname], &pname[0]+slash, pname+(int)slash, and ccv0p, ccv1, ccv1r: none. Phase A: stays partial."
+ "note": "exact 2026-11-23 (phase B): with the v0 switch OLD_D5SA (codgen mapregs) and OLD_D5T in v0 (host/OLDCC.md, D5). Before: the one place strcpy(pname+slash, \".\") in mkdir(); source forms tried in phase A: &pname[slash], slash+pname, &slash[pname], &pname[0]+slash, pname+(int)slash, and ccv0p, ccv1, ccv1r."
 }

@@ -2064,3 +2064,12 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - Source form `(char)(a == b)` (2026-11-23): with ccv0 and ccv1 the original's `tcc; extsb r2` before a word store comes from a
   comparison cast to char; tail `fromend = (char)(*arg=='-')` (ccv0), ctime tzset `sign = (char)(*p == '-')` and `daylight =
   (char)(*p != '\0')` (ccv1, oldlibc ctime 0_1). Without the cast no extsb.
+- OLD_D5SA (2026-11-23, phase B of mkdir): mkdir `strcpy(pname+slash, ".")`: the original `lda r2,%0002(r13); add r2,r15; ld r7,r2`,
+  ccv0 `lda r7,%0002(r15); add r7,r13`. The tree at mapregs: PLUS(PLUS(REG fp, ICON with the frame symbol), REG r13) (a KDBG trace;
+  the ICON carries sname, so no test of !sname). New v0 switch OLD_D5SA in mapregs (case PLUS): PLUS(PLUS(fp, k), x) with x not
+  constant becomes PLUS(PLUS(x, k), fp). The r2 and the copy come from the rallo rule of OLD_D5T (no preference); OLD_D5T moved from
+  the v0p block to v0 (v0p inherits it; its witness popt procopt stays). Measured in a copy of OLDROOT: mkdir byte-identical; cat,
+  echo, chmod, pwd, kill, sleep, tail, env, nohup, gets, clist stay identical; models cparse scparse codgen scodgen popt spopt cpp
+  strict (179 179 209 210 73 73 26); bench v0 133 -> 134 functions, 209 -> 207 lines (the gain is mkdir itself). Witness search
+  in the originals (lda rX,k(rY); add rX,r15 not followed by a use through rX): mkdir, pwck, tabs, vls, upkeep; tabs filetab is
+  exact without the switch, the others have no source yet. One witness: owner's exception.

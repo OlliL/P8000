@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 49 | 6 | 27 | 29 |
+| [bin](#bin) | 111 | 50 | 5 | 27 | 29 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 903 | 14 | 167 | 113 |
+| **all** | 1197 | 904 | 13 | 167 | 113 |
 
 <a id="root"></a>
 ## root
@@ -98,7 +98,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/ls` | binary E707 | `tmp/sys3/usr/src/cmd/ls.c` | sys3 | D12 old?, D1 slots | - |
 | `bin/mail` | binary E707 | `tmp/sys3/usr/src/cmd/mail.c` | sys3 | D12 new, D1 loose | - |
 | `bin/make` | binary E711 | - | todo | D12 new, D1 loose | - |
-| `bin/mkdir` | binary E707 | `src/cmd/mkdir.c` | partial | cc | libc.a |
+| `bin/mkdir` | binary E707 | `src/cmd/mkdir.c` | exact | ccv0 | libc-v1.a |
 | `bin/more` | binary E707 | `src/cmd/more` | partial | - | - |
 | `bin/mv` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
 | `bin/newgrp` | binary E707 | `tmp/sys3/usr/src/cmd/newgrp.c` | sys3 | D12 mixed, D1 loose | - |

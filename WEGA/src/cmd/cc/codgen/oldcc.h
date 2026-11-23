@@ -52,7 +52,6 @@
 #define OLD_D2O		/* a long loaded through an odd address register into the pair below it (allocreg) */
 #define OLD_D16A	/* ++ of a frame slot by a constant, value to a temporary: load, increment, store (match) */
 #define OLD_D6S		/* an assignment of a register to itself prints nothing (match) */
-#define OLD_D5T		/* a member of an element of a local array: its offset beside that of the array (mapregs, rallo) */
 #define OLD_D12K	/* a double constant goes into the data at its statement (rddata, d12kout) */
 #define OLD_D3L		/* a word cast of a global long is not taken from the register that holds the long */
 #endif
@@ -81,6 +80,8 @@
 #define OLD_D2U		/* the right operand of a long multiplication wants no register (rallo) */
 #define OLD_D2G		/* OLD_D2L: an idle word of the same weight as the free one wins */
 #define OLD_D5S		/* an element of a local array: (index + offset) + fp, the frame pointer added last (fixfld) */
+#define OLD_D5SA	/* OLD_D5S for an address: local array + variable (pname+slash) is (variable + offset) + fp (mapregs) */
+#define OLD_D5T		/* a member of an element of a local array: its offset beside that of the array (mapregs, rallo) */
 #define OLD_D2W6	/* a pair asked for when rr2 and rr0 are taken: rr6 before rr4 (getreg) */
 #define OLD_D5A		/* the address of a local array element whose value goes to a given register: no preference (rallo) */
 #define OLD_D22		/* a double argument, parameter and result in rq4 (r4..r7); a floating compare without rounding */

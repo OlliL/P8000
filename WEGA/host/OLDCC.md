@@ -133,11 +133,11 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
   temporary, leaf functions without a frame) and packed strings.
 - Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D6D`, `OLD_D22` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
   `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`, `OLD_D2MO`,
-  `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6` (codgen); none in popt. Not `OLD_D1`,
+  `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D5SA`, `OLD_D5T`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6` (codgen); none in popt. Not `OLD_D1`,
   not `OLD_D3`. cas: the old one (D17).
 - Byte-identical modules of libc-v1.a from C: isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3.
 - Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 131 of 153 functions equal, 221 differing lines.
-- Byte-identical: `/bin/dc`, `/usr/bin/ranlib`, `/bin/sum`.
+- Byte-identical: `/bin/dc`, `/usr/bin/ranlib`, `/bin/sum`, `/bin/mkdir` (with `OLD_D5SA`).
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
   renaming of register variables into low registers is done by popt `procopt`, in the shipped compiler too).
@@ -146,7 +146,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 - v0 with the differences that only the passes show. It built cparse, scparse, codgen, scodgen, popt, spopt and cpp: all
   seven are byte-identical, all their functions strictly exact.
-- Switches: those of v0 and `OLD_D3KC`, `OLD_D3J`, `OLD_D2PO`, `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`,
+- Switches: those of v0 and `OLD_D3KC`, `OLD_D3J`, `OLD_D2PO`, `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`,
   `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L`, `OLD_D23` (codgen). popt needs no switch.
 - The corpus of cparse and scparse holds only with the ccv0p build: the heap contents of the .S file follow the data layout of the pass.
 
@@ -393,8 +393,11 @@ All in codgen, fixfld, mapregs, rallo.
 - v0p `OLD_D5G`: an element of a global array of arrays is `(index + index) + address`, the address added last (newsect). Segmented
   (vc): the address first, the index behind it (`_a(r3)`); a constant second index is folded into the address (`lctab[i][1]` as
   `_lctab+4(r3)`; cas ohdrinit, symadjust, also `buf[1]` of a local array as a frame operand: escape).
-- v0p `OLD_D5T`: the STREF form of OLD_D5S: a member of an element of a local array of structures is `(index + offset + member) +
-  fp`; as an address wanted in a given register it gets no preference (popt procopt).
+- v0 `OLD_D5T` (v0p until 2026-11-23, its witness popt; mkdir moved it to v0): the STREF form of OLD_D5S: a member of an element of a
+  local array of structures is `(index + offset + member) + fp`; as an address wanted in a given register it gets no preference
+  (popt procopt; mkdir: the address of OLD_D5SA computed in r2, then `ld r7,r2`).
+- v0 `OLD_D5SA` (mapregs): the address of a local array plus a variable, `pname+slash`, is `(slash + offset) + fp`, the frame pointer
+  added last (`lda r2,%0002(r13); add r2,r15`; mkdir `strcpy(pname+slash, ".")`). One witness (owner's exception 2026-11-23, section 5).
 
 ### D6 switch
 
@@ -743,6 +746,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cparse | sym1.c | v0p | x | x | ? |  | ? |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |
 | cpp | cpp.c, cpy.y, yylex.c | v0p |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 | clist | clist.c | v0p | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| mkdir | mkdir.c | v0 |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | mkstr | mkstr.c, libc calloc | open (v0, older) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | kernel | sig.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
 | kernel | sys2.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
@@ -801,7 +805,7 @@ of v1: allprint of `/lib/libl.a` and `/lib/slibl.a`; its limit "A more than one 
 - The rule of the spill of arguments (D4).
 - The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
 - Switches with one witness (a function and its segmented copy; they are not independent witnesses). State per switch:
-  - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`).
+  - Owner's exception: `OLD_D12K` (buildtree), `OLD_D3L` (freeparm, special) (`OLDCC_LOG.md`); `OLD_D5SA` (mkdir, 2026-11-23).
   - Owner's exception for cas (vc): `OLD_D2S` (symtype). `OLD_D2PO` in vc (stenter): one witness in cas, the switch is v0p's. `OLD_D45` (popt, stabout), `OLD_D20S` (popt, exprreloc), `OLD_D49` (popt, yylex), `OLD_D50` and `OLD_D51` (popt, jpr): one witness each, provisional until /bin/cas is byte-identical and every switch of vc with one or two witnesses is checked against source forms again.
   - Owner's exception for vl (provisional until each is checked against source forms): `OLD_D53` (nlist), `OLD_D57` (swap
     of libc, the entry store only).
