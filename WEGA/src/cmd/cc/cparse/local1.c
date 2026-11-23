@@ -186,15 +186,6 @@ clocal(p) NODE *p; {
 		if( tbytes( ml ) == tbytes( m ) ) goto paint;
 #else
 		if( tbytes( ml ) == tbytes( m ) ){
-#ifdef OLD_D19K
-			/* v0: a pointer converted to an int of its size keeps its pointer type (the conversion goes), so the code
-			   generator keeps an address constant on the left of its + and folds a constant index into it (chkout
-			   setnames &chkname[n + 1] - p: ld r2,#_chkname+1; add r2,n) */
-			if( ISPTR(m) && !ISPTR(ml) ){
-				p->in.op = FREE;
-				return( l );
-				}
-#endif
 		paint:
 			l->in.type = p->in.type;
 			l->fn.cdim = p->fn.cdim;

@@ -839,8 +839,15 @@ oconvert(p) register NODE *p; {
 		return( p );
 
 	case MINUS:
+#ifdef OLD_D19K
+		/* v0: the two pointers of a difference stay pointers (no conversion to int), so in the code generator the + of
+		   &global[i + c] stays a pointer +: optim keeps the address constant on the left and folds the constant into it
+		   (chkout setnames &chkname[n + 1] - p: ld r2,#_chkname+1; add r2,n) */
+		q = p->in.left;
+#else
 		p->in.left = block( SCONV, q = p->in.left, NIL, INT, 0, INT );
 		p->in.right = block( SCONV, p->in.right, NIL, INT, 0, INT );
+#endif
 		return(  clocal( block( PVCONV,
 			p, bpsize(q), INT, 0, INT ) ) );
 		}

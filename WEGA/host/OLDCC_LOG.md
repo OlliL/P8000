@@ -2149,11 +2149,14 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
     parameter's r2 (lighter than r0) and reloaded it. ccv0, ccv0a, ccv0p take r2, ccv1 r0/r1. First in v0 with vc too:
     gopt lost one byte (`ld r0,r3` for `ld r2,r3`), so not in vc. Bench 139/188, the seven models, ex 651 of 684 found
     (masked search of each function), checkall: unchanged. ctime 0_2 (asctime r1/rr0 for r3/rr2) the same with and without.
-  - `OLD_D19K` (cparse, clocal SCONV): setnames `&chkname[n + 1] - p`. The tree of cparse is SUBSR(&chkname, n + 1) under
+  - `OLD_D19K` (cparse): setnames `&chkname[n + 1] - p`. The tree of cparse is SUBSR(&chkname, n + 1) under
     a pointer-to-int conversion; the paint to int makes the + an int + in codgen, where optim swaps the address constant
     to the right (`ld r2,n; add r2,#_chkname+1`). Kept a pointer, optim folds the 1 into the constant on the left
     (`ld r2,#_chkname+1; add r2,n`, the original). Tried before: the vc rule of mip optim (OLD_D13, SEG) for
-    nonsegmented code: no change (the + is no pointer +); cparse without OLD_D19P: no change. Bench, ex, checkall unchanged.
+    nonsegmented code: no change (the + is no pointer +); cparse without OLD_D19P: no change. First in clocal for every
+    pointer-to-int conversion: dc did not compile (`(int)p->beg & 01`: operands of & incompatible), and checkall stayed
+    ALL OK with /bin/dc missing from the install tree (seen only by coverage.py). Then in oconvert, only for the two
+    pointers of a difference: dc exact again; bench, ex unchanged.
   - Side findings in crpost (07/26/82, not in the tree; System III crpost.c compiled with ccv0, functions searched in the
     original): put `&obuf[optr] - 1` (obuf a pointer) is `optr - 1` first and obuf added last (the rule of OLD_D19P, here
     over SUBSR); get reloads a parameter `ld r7,0(r15)` before a call (the place of OLD_D3AW, three days after chkout).

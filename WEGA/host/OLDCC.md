@@ -558,9 +558,8 @@ write these operands in the order that gives the bytes (`argregs`, `rmconv`, `cl
   vishft and viin `tp + j * WCOLS - shft`; vzop `p - i - 1` as `p - (i + 1)`; save, vremote, vup with array addresses).
   ex 342 -> 348, bench 137 -> 139; the v0 programs of the tree and the v0p models unchanged. No pcc of the unix
   history archive (V7, 32V, 2.9BSD .. 4.4BSD, V8 .. V10, SunOS) has it.
-- v0 cparse `OLD_D19K` (clocal, SCONV): a pointer converted to an int of its size keeps its pointer type; the conversion goes
-  without the paint to int. A pointer difference converts both pointers, so the + of `&global[i + c]` stays a pointer + in
-  codgen: optim keeps the address constant on the left and folds the constant into it (chkout setnames `&chkname[n + 1] - p`:
+- v0 cparse `OLD_D19K` (oconvert, trees1.c): the two pointers of a difference are not converted to int (shipped: an SCONV
+  each, painted to int by clocal). So the + of `&global[i + c]` stays a pointer + in codgen: optim keeps the address constant on the left and folds the constant into it (chkout setnames `&chkname[n + 1] - p`:
   `ld r2,#_chkname+1; add r2,n`; shipped and painted: `ld r2,n; add r2,#_chkname+1`). Witness: chkout setnames only; the
   bench, ex, the v0 programs of the tree unchanged. Not in v0p (its cparse is shared by the models, not measured there).
 
