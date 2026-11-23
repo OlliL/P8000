@@ -133,10 +133,10 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
   temporary, leaf functions without a frame) and packed strings.
 - Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D6D`, `OLD_D22` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
   `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`, `OLD_D2MO`,
-  `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D5T`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6`, `OLD_D2Q`, `OLD_D2QI` (codgen); none in popt. Not `OLD_D1`,
+  `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D5T`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6`, `OLD_D2Q`, `OLD_D2QI`, `OLD_D3K2`, `OLD_D3J` (codgen); none in popt. Not `OLD_D1`,
   not `OLD_D3`. cas: the old one (D17).
-- Byte-identical modules of libc-v1.a from C: getpwuid 0_2, getpwent 0_2, fdopen 0_2, isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3.
-- Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 135 of 153 functions equal, 197 differing lines.
+- Byte-identical modules of libc-v1.a from C: getpwuid 0_2, getpwent 0_2, fdopen 0_2, isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3, fseek 0_2.
+- Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 137 of 153 functions equal, 195 differing lines.
 - Byte-identical: `/bin/dc`, `/usr/bin/ranlib`, `/bin/sum`, `/bin/mkdir` (the address form of `OLD_D5S`), `/bin/bc` (yacc output of bc.y).
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
@@ -161,7 +161,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 - v0 with the differences that only the passes show. It built cparse, scparse, codgen, scodgen, popt, spopt and cpp: all
   seven are byte-identical, all their functions strictly exact.
-- Switches: those of v0 (without `OLD_D2QI`) and `OLD_D3KC`, `OLD_D3J`, `OLD_D2PO`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`,
+- Switches: those of v0 (without `OLD_D2QI`, `OLD_D3K2`) and `OLD_D3KC`, `OLD_D3J`, `OLD_D2PO`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`,
   `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L`, `OLD_D23` (codgen). popt needs no switch.
 - The corpus of cparse and scparse holds only with the ccv0p build: the heap contents of the .S file follow the data layout of the pass.
 
@@ -343,6 +343,14 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   `isatty`: no `ld r2,r7`); otherwise it is copied first (`ld r2,r7; ld r13,2(r2)`); a name in a scratch register is taken only when no lighter one is free (`ld r2,r3; ld r13,2(r2)`, dc 3 places); `&&` and `||` keep long parameters too (fseek); an idle pair
   that holds a parameter is not taken for a new pair; a parameter whose address is taken is forgotten, so it gets its home (swap); a parameter a statement assigns to is forgotten at the start of the statement (scalint `p = removc(p,n)`); behind a conditional jump the idle registers go back, the known parameters stay.
 - v0p `OLD_D3KC`, one witness: `regforsym` (`if (s == fpsym1 || s == fpsym2) return symreg(s, off, type);`): the original reloads the long parameter `off` from its frame home behind the `||` (`ldl rr4,0(r15)`), without the switch it is taken from rr2. No source form reloads it (`OLDCC_LOG.md`).
+- v0, v0a (not v0p) `OLD_D3K2` (d3klabel, cbranch): at a label and behind `&&` and `||` only the first two parameters (in
+  the order of the declaration) stay known in their registers, the others are forgotten; at a label behind a jump the
+  parameters known at the jumps to it come back (`OLD_D3J`, in v0 for this). Witnesses: ex vreplace (`newcnt < 0` from the
+  frame behind `if (cnt < 0) cnt = 0;`), vdellin (`FLAGS(l)` behind `DL == NOSTR || cnt < 0`), `_align` of the printf of
+  ex and of the libc doprnt 0_3, 0_5, 0_7 (stkap stored at the entry, taken from r5 in the else branch); libc fseek 0_2
+  (offset, a long second parameter, stays known: the boundary is the first two parameters, not the pair rr6); the
+  bench 135 -> 137. (guess) A table of two places for the parameters known at a jump. v0p keeps the fourth parameter of
+  codgen notoff (an unused pointer) without a frame home.
 - v0p `OLD_D3J`: at a label that jumps have named, only the parameters known at all those jumps stay known; when the record in
   front of the label is a jump, the parameters known at the jumps come back (tfree1, rmconv); every record counts, also the
   end of a block `]` (vc gopt prquad `if (q == 0) { printf(..); return; }`: `B ] L`, q reloaded from the frame); of

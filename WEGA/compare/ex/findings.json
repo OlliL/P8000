@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "v0a (ccv0a: v0 with OLD_D3AW, host/OLDCC.md) for the own code; the libraries (libc-v1.a, libtermlib-v1.a) v0. Measured 2026-11-23: 340 of 391 functions exact (v0: 323; tailspec by OLD_D3AC). Of the other 51, 24 differ only by call/calr, jp/jr or the masked address of a switch table; the rest is in the clusters of 'phase B'.",
+ "compiler": "v0a (ccv0a: v0 with OLD_D3AW, host/OLDCC.md) for the own code; the libraries (libc-v1.a, libtermlib-v1.a) v0. Measured 2026-11-23: 342 of 391 functions exact (v0: 323; tailspec by OLD_D3AC, vreplace and _align by OLD_D3K2 of v0). Of the other 49, 24 differ only by call/calr, jp/jr or the masked address of a switch table; the rest is in the clusters of 'phase B'.",
  "binary": "/bin/ex (links: vi, view, edit); E711, text 63488 bytes (code to 0xf7fe)",
  "build": "vi.mk of Plexus: mkstr - ex2.13strings x FILE.c, cc -E | xstr -c -, cc -c x.c. WEGA adds a step between the compiler and cas (src/cmd/ex/shrink.sh, cc -S, shrink.sh x.s, cas), both parts to save room (the code ends at 0xf7fe, the text limit is 64K): (1) each module begins with a table of 'jp _name' for every external function called 3 times or more (callr) in the module, the calls go by calr to the table; order 'sort | uniq -c | sort -n' (by the number of calls, then the name, ASCII); 22 tables, 183 stubs, 944 calls, 1156 bytes saved; only in ex (all programs of the root scanned). (2) a frame operand at offset 0 becomes @fp: ~L1(fp) in a function with '~L1 := 0' (not lda), and 0(fp) beside r0..r7 (the parameter stores); the saves of r8..r14 stay 0(fp) (139 of 139). Measured on the ccv0 output of all modules: 98 of 98 parameter stores and about 220 operands in the bodies as in the original. Of 310 files of the root only ex (and its links) has saves at 0(r15) with parameters at @r15. Not documented.",
  "open": "setjmp.h missing in WEGA (measured with setret.h, ret_buf).",
@@ -8,12 +8,8 @@
  "options": "-DZCMD -DZZCMD -DRDONLY -DWRAPMGN -DOPENCODE -DLISPCODE -DTAGSCODE -DCRNL -DSOFTTABS -DCHDIR -DBEEHIVE -DUCVISUAL, not -DUSG3TTY (the V7 tty calls, not those of System III as in vi.mk of Plexus). Measured 2026-11-23 on all modules (ccv0, shrink.sh), the sum of the differing lines: vi.mk options 2757; + OPENCODE, LISPCODE, TAGSCODE, CRNL 2455; + SOFTTABS 2421; without USG3TTY 2248; + CHDIR 900. BEEHIVE and UCVISUAL act only in ex_vget.c getbr, which is exact with both (the line sum had shown them worse: it compares a window of the length of the own function).",
  "phase B": {
   "reload": {
-   "functions": [
-    "vdellin",
-    "vreplace",
-    "_align"
-   ],
-   "difference": "v0a (OLD_D3AW) gives the reloads of a parameter that is a whole argument of a call (tail, tail2of, setin, exit, putchar, normal, sTTY, substitute, cerror, merror, smerror, getline, partreg, vclrlin, vputch, printf exact; dosubcon, plodput only call/calr). tailspec by OLD_D3AC. Left, no call: vdellin (p as an index: ld r2,@r15), vreplace (cp @r15,#0), _align (the store at the entry)",
+   "functions": [],
+   "difference": "v0a (OLD_D3AW) gives the reloads of a parameter that is a whole argument of a call (tail, tail2of, setin, exit, putchar, normal, sTTY, substitute, cerror, merror, smerror, getline, partreg, vclrlin, vputch, printf exact; dosubcon, plodput only call/calr). tailspec by OLD_D3AC; vdellin, vreplace, _align by OLD_D3K2 (only the first two parameters stay known at a label and behind && and ||; vdellin differs only by call/calr)",
    "tried": "on tail without effect: no blank line, char comm[], return (...), return; at the end, a block, a null statement, an extra local, the parameter undeclared",
    "findings": "an unused label in front of the statement gives it (OLD_D3K forgets the parameters at a label no jump names; putchar and tail exact with it); thirteen unused labels are no likely source form"
   },

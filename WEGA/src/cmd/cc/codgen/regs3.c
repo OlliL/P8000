@@ -470,7 +470,11 @@ symuse(s)
 	}
 }
 
-/* idle registers go back to the free list (flag 0: only the ones that hold no symbol) */
+#ifdef OLD_D3K2
+int d3k2first();
+#endif
+
+/* idle registers go back to the free list (flag 0: only the ones that hold no symbol; 5: v0 OLD_D3K2) */
 void
 rfreeall(flag)
 	int flag;
@@ -489,6 +493,11 @@ rfreeall(flag)
 		if (flag == 2 && n->cls <= RCPAIR && n->sym && n->sym->sclass == PARAM)
 #endif
 			continue;
+#ifdef OLD_D3K2
+		/* v0: behind && and || only the first two parameters stay known */
+		if (flag == 5 && n->cls <= RCPAIR && n->sym && n->sym->sclass == PARAM && d3k2first(n->sym))
+			continue;
+#endif
 #endif
 		if (n->sym == 0 || flag != 0)
 			rsreturn(n->cls, n->reg);

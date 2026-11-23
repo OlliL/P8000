@@ -164,3 +164,5 @@ exact programs of 07/82 (dc, bc, tail, sum, mkdir, ranlib).
   - _align: the libc doprnt modules of the v0 time (oldlibc doprnt 0_3, 0_5, 0_7, kept as cas sources) have the same entry
     store `ld 0(r15),r5` of stkap; compiled from 0_5.c by ccv0 or ccv0a only this store is missing (_atoip exact, _doprnt
     6 instructions). One source form (`*app = stkap; return;` inside an else-if), four builds of it.
+- 2026-11-23 `OLD_D3K2` (v0, v0a): at a label and behind && and || only the first two parameters stay known; with the
+  restore of `OLD_D3J` behind a jump. vreplace, _align exact, vdellin only call/calr; ex 342 of 391. See OLDCC.md.

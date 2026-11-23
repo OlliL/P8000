@@ -97,6 +97,12 @@
 #define OLD_D22		/* a double argument, parameter and result in rq4 (r4..r7); a floating compare without rounding */
 #endif
 
+#if defined(OLD_V0) && !defined(OLD_V0P)
+/* v0 and v0a, not v0p (codgen notoff keeps its fourth parameter, an unused pointer) */
+#define OLD_D3K2	/* at a label and behind && and || only the first two parameters stay known (d3klabel, cbranch) */
+#define OLD_D3J		/* at a label named by jumps only the parameters known at all of them; behind a jump those of its one jump */
+#endif
+
 /* d2qfree (allo3.c) serves OLD_D2Q and OLD_D2M */
 #ifdef OLD_D2Q
 #define OLD_D2QF

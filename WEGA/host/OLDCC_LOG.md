@@ -2114,3 +2114,13 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - The 14 oldlibc modules kept as cas sources, compiled from every C source at hand (NAME/0_n.c, ../libc) by ccv0 and
   ccv0a: none exact; v0 and v0a give the same code except ctime `_ctime` (v0a one instruction off). Closest: doprnt 0_5
   from 0_5.c (_align the entry store of stkap, _doprnt 6), 0_3 and 0_7 the same _align; malloc 0_3 from malloc.c (_malloc 4).
+- `OLD_D3K2` (2026-11-23, owner: build it in v0): found by measuring the originals instead of guessing. A scan of the
+  binaries (scratch preload.py: the reads of a parameter's frame home while its register still holds it) compared with
+  our build: in all of ex only vdellin and vreplace differ, both the third parameter r5 behind a label; `_align` stores
+  r5 although it takes it from r5 in an else branch. Over the 81 binaries of 1982 r5 is almost never taken from its
+  register behind a label (only the `_align` of the libc printf). Tried first as "only rr6 stays" (X5): ex 342, bench 137,
+  doprnt `_align` exact, but libc fseek 0_2 (a long second parameter) 5 -> 8 instructions; "the first two parameters"
+  (X6) makes fseek 0_2 exact and is equal elsewhere. Needs the restore of `OLD_D3J` behind a jump (else branch of `_align`),
+  so v0 gets `OLD_D3J` too. Earlier forms refuted on the way: forgetting after every statement, after || at once (V1..V4),
+  r5 forgotten also behind a conditional jump (chkout apply). v0p: codgen notoff (fourth parameter cp, an unused pointer,
+  not stored by the original) differs with it, so v0 and v0a only. fseek 0_2 now built from C by ccv0.

@@ -993,6 +993,11 @@ nullsyms(mode)
  * Free the nodes of rsuse that flag selects: 1 the variables of the classes up to 4 that are not
  * register variables (kind 6), 2 the nodes of the classes above 4, 3 all of them.
  */
+#ifdef OLD_D3K2
+int d3k2first();
+int d3k2dead;		/* the record in front of the label is a jump (d3klabel) */
+#endif
+
 void
 rsfreeall(flag)
 	int flag;
@@ -1014,6 +1019,14 @@ rsfreeall(flag)
 			if (n->cls > RCFLOAT || n->kind == RKTEMP)
 				continue;
 			if (n->busy <= 0 && n->sym && n->sym->sclass == PARAM)
+				continue;
+			goto ret;
+#endif
+#ifdef OLD_D3K2
+		case 5:			/* v0 OLD_D3K2, at a label: as 4, but only the first two parameters (all behind a jump) */
+			if (n->cls > RCFLOAT || n->kind == RKTEMP)
+				continue;
+			if (n->busy <= 0 && n->sym && n->sym->sclass == PARAM && (d3k2first(n->sym) || d3k2dead))
 				continue;
 			goto ret;
 #endif

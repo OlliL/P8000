@@ -19,6 +19,8 @@ Makefile of `src` refers to `tools/` or `host/`, so `src` can go to a WEGA syste
 | `callcmp.py OLD NEW NM` | call-trace comparison of two emulator traces (the functions of findings.json) |
 | `zcode.py` | instruction lists and the two normal forms (masked, strict) of the comparison |
 | `strictcmp.py [-m] [-v NAME]` | (`STRICT_CTX=n`: lines of context for -v) every function of our linked program against the original; strict: only code addresses masked (the authority; `-m` is the old masked form) |
+| `paramreload.py BINARY [-v]` | in each function of a nonsegmented binary (no source needed) the reads of a parameter's frame home while its register still holds it (R; `-v` also the reads of the register, K), with the predecessors of the place; the scan that found `OLD_D3K2` |
+| `reloaddiff.py BINARY OBJ...` | per function of our objects (located in the original by its first instructions) the R events of paramreload against the original's: where our compiler and the original disagree about a parameter reload |
 | `fncheck.py DRAFT LO HI` | a draft compiled alone against a range of the original (masked, a first look) |
 | `d12model.py` | our modules linked under the data layout of the old cc (strings at the end of each file, unpadded); data compared; the input of strictcmp |
 | `rename.py OLD NEW ...` | rename everywhere: sources, tables, findings.json, the .md files of the tools and of the project |

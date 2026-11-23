@@ -475,6 +475,27 @@ d3ac(p)
 }
 #endif
 
+#ifdef OLD_D3K2
+#define D3K2F	5	/* rfreeall: only the first two parameters stay known */
+extern int d3k2dead;
+
+/* v0: is s one of the first two parameters in the order of the declaration (parmtab, OLD_D4O); only those stay known
+   in their registers at a label and behind && and || (ex vdellin, vreplace, _align; libc fseek 0_2, doprnt) */
+int
+d3k2first(s)
+	struct sym *s;
+{
+	register int i;
+
+	for (i = 0; i < nparmtab && i < 2; i++)
+		if (parmtab[i].sym == s)
+			return 1;
+	return 0;
+}
+#else
+#define D3K2F	2
+#endif
+
 #ifdef OLD_D4O
 /* the parameter list from its last element to its first */
 static void
@@ -1515,7 +1536,7 @@ cbranch(p, true, false)
 #endif
 #ifndef OLD_D3
 #ifdef OLD_D3K
-		rfreeall(2);	/* v0: a parameter stays known in its register */
+		rfreeall(D3K2F);	/* v0: a parameter stays known in its register */
 #else
 		rfreeall(1);
 #endif
@@ -1537,7 +1558,7 @@ cbranch(p, true, false)
 #endif
 #ifndef OLD_D3
 #ifdef OLD_D3K
-		rfreeall(2);	/* v0: a parameter stays known in its register */
+		rfreeall(D3K2F);	/* v0: a parameter stays known in its register */
 #else
 		rfreeall(1);
 #endif
@@ -1966,7 +1987,12 @@ d3klabel(lab, dead)
 #endif
 		return 0;
 	}
+#ifdef OLD_D3K2
+	d3k2dead = dead;
+	rsfreeall(5);
+#else
 	rsfreeall(4);
+#endif
 #ifdef OLD_D3J
 	for (j = d3jtab; j < &d3jtab[D3JMAX]; j++)
 		if (j->lab == lab)
