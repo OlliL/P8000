@@ -107,6 +107,11 @@ top:
 	}
 	if (read(0, (char *) &lastc, 1) != 1)
 		lastc = EOF;
+	else {
+		/* WEGA: the byte read lies in the high half of lastc (Z8000) */
+		lastc &= 0177400;
+		swab((char *) &lastc, (char *) &lastc, 2);
+	}
 	return (lastc);
 }
 
