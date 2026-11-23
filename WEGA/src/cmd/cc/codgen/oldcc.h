@@ -42,7 +42,6 @@
 #define OLD_D3KC	/* a parameter is copied also when wanted in its register (v0: taken as it is); && and || keep only word parameters */
 #endif
 #define OLD_D23		/* a zero addend stays: x + 0 (optim) */
-#define OLD_D2Q		/* a long loaded through a pointer into the pair of its even address register, also when wanted */
 #define OLD_D2X		/* a long result of a binary operator (not a shift) into the pair of its left operand first */
 #define OLD_D5G		/* an element of a global array of arrays: (index + index) + address (fixfld) */
 #define OLD_D3AW	/* before the arguments of a call forget the register of a parameter, only for a parameter that is a whole argument or an address in it (argplace) */
@@ -83,6 +82,10 @@
 #define OLD_D5T		/* a member of an element of a local array: its offset beside that of the array (mapregs, rallo) */
 #define OLD_D2W6	/* a pair asked for when rr2 and rr0 are taken: rr6 before rr4 (getreg) */
 #define OLD_D5A		/* the address of a local array element whose value goes to a given register: no preference (rallo) */
+#define OLD_D2Q		/* a long loaded through a pointer into the pair of its even address register, also when wanted (v0: chkout, libc ctime of 07/82) */
+#ifndef OLD_V0P
+#define OLD_D2QI	/* OLD_D2Q also when the odd partner is idle (given back; chkout getat) */
+#endif
 #define OLD_D22		/* a double argument, parameter and result in rq4 (r4..r7); a floating compare without rounding */
 #endif
 

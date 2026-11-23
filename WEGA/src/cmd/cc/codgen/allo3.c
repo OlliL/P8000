@@ -11,6 +11,9 @@ static char sccsid[] = "@[$]allo3.c\t2.4  08/24/83 11:29:34 Copr. 1981 87wega3.2
 
 
 static int d2qfree();
+#ifdef OLD_D2QI
+static int d2qidle();
+#endif
 static int d2ofree();
 
 /* count the register of an operand as busy; sym and lval are only passed on */
@@ -232,6 +235,32 @@ d2qfree(r)
 			return 1;
 	return 0;
 }
+
+#ifdef OLD_D2QI
+/* OLD_D2Q (v0): the odd partner may also be idle (a parameter no longer used), it is given back (as d2ofree) */
+static int
+d2qidle(r)
+	register int r;
+{
+	register struct rs *n;
+
+	if (d2qfree(r))
+		return 1;
+	for (n = rsuse; n; n = n->next)
+		if (n->reg == r && n->cls == RCWORD)
+			break;
+	if (n == 0 || n->busy != 1)
+		return 0;
+	for (n = rsuse; n; n = n->next)
+		if (n->reg == r + 1 && n->cls == RCWORD && n->busy <= 0 && n->kind != RKTEMP) {
+			rsreturn(RCWORD, r + 1);
+			return 1;
+		}
+	return 0;
+}
+#else
+#define d2qidle	d2qfree
+#endif
 #endif
 
 #if defined(OLD_D2R) && defined(SEG)
@@ -426,7 +455,7 @@ allocreg(p, cookie)
 		    (want == -1 || want == q->tn.rval || (want >= 0 && want < R8 && (want & 1))) && d2qfree(q->tn.rval)) {
 #else
 		if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < R8 && !(q->tn.rval & 1) && (want == -1 || want == q->tn.rval) &&
-		    d2qfree(q->tn.rval)) {
+		    d2qidle(q->tn.rval)) {
 #endif
 			r = d2pair(q->tn.rval, q->tn.rval, p, q);		/* merged with its free partner */
 		}

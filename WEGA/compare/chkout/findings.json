@@ -111,7 +111,7 @@
    "callers": [
     "0x01a2"
    ],
-   "note": "open: if (vp->start == 0): the original loads the long through r2 into rr2 (and reloads vp), ours into rr0. The trait of v0p OLD_D2Q (host/OLDCC.md, D2), also in getat and gmtime of ctime 0_2 (libc); ccv0 has no D2Q, ccv0p differs elsewhere (whole program 48 bytes longer). 5 forms tried (== 0, !, == 0L, <= 0, (int)). chkin (cc) loads it as the source says: a trait of the compiler of 07/82. if (rel && (rel == r && lev == l)): the form chkin needs, the same code here."
+   "note": "if (rel && (rel == r && lev == l)) (the form chkin needs, the same code here). The long through r2 into rr2: OLD_D2Q, since 2026-11-23 in v0 too (host/OLDCC.md, D2)."
   },
   "apply": {
    "file": "common.c",
@@ -156,7 +156,7 @@
     "0x09ec",
     "0x0afe"
    ],
-   "note": "open: fseek(in, vp->pos, 0): the original ldl rr4,4(r4) (the long into the pair of the address register), ours ldl rr2,4(r4); ldl rr4,rr2. See readchk. chkin (cc) is exact with the same source."
+   "note": "fseek(in, vp->pos, 0): ldl rr4,4(r4), the long into the pair of its address register whose odd half r5 holds the parameter line no longer used: OLD_D2QI (v0)."
   },
   "setnames": {
    "file": "common.c",
@@ -211,5 +211,5 @@
    "note": "a goto loop (loop/next/test): a keyword skips 3 characters straight to the test, the others share the print of %c and p++; the while and for forms are laid out otherwise by popt."
   }
  },
- "note": "a WEGA program (qcv(5)) without a System III source, written from the disassembly (chkout.c, common.c, chkout.h); ccv0, the stdio.h of oldv7 and libc-v1.a (with rewind, fdopen 0_2, getpwuid 0_2, getpwent 0_2, fgets 0_2, ctime 0_2 and getenv in front of atoi). Not yet identical: putline, wfprintf, readchk, getat, setnames."
+ "note": "a WEGA program (qcv(5)) without a System III source, written from the disassembly (chkout.c, common.c, chkout.h); ccv0, the stdio.h of oldv7 and libc-v1.a (with rewind, fdopen 0_2, getpwuid 0_2, getpwent 0_2, fgets 0_2, ctime 0_2 and getenv in front of atoi). Not yet identical: putline, wfprintf (chkout.c), setnames (common.c)."
 }

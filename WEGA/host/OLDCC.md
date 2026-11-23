@@ -133,10 +133,10 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
   temporary, leaf functions without a frame) and packed strings.
 - Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D6D`, `OLD_D22` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
   `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`, `OLD_D2MO`,
-  `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D5T`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6` (codgen); none in popt. Not `OLD_D1`,
+  `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D5T`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6`, `OLD_D2Q`, `OLD_D2QI` (codgen); none in popt. Not `OLD_D1`,
   not `OLD_D3`. cas: the old one (D17).
-- Byte-identical modules of libc-v1.a from C: isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3.
-- Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 131 of 153 functions equal, 221 differing lines.
+- Byte-identical modules of libc-v1.a from C: getpwuid 0_2, getpwent 0_2, fdopen 0_2, isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3.
+- Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 135 of 153 functions equal, 197 differing lines.
 - Byte-identical: `/bin/dc`, `/usr/bin/ranlib`, `/bin/sum`, `/bin/mkdir` (the address form of `OLD_D5S`), `/bin/bc` (yacc output of bc.y).
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
@@ -146,7 +146,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 - v0 with the differences that only the passes show. It built cparse, scparse, codgen, scodgen, popt, spopt and cpp: all
   seven are byte-identical, all their functions strictly exact.
-- Switches: those of v0 and `OLD_D3KC`, `OLD_D3J`, `OLD_D2PO`, `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`,
+- Switches: those of v0 (without `OLD_D2QI`) and `OLD_D3KC`, `OLD_D3J`, `OLD_D2PO`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`,
   `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L`, `OLD_D23` (codgen). popt needs no switch.
 - The corpus of cparse and scparse holds only with the ccv0p build: the heap contents of the .S file follow the data layout of the pass.
 
@@ -296,8 +296,9 @@ Where a value goes:
   that keeps the name; not for an inner assignment of a chain, not when the value goes to a register wanted for it. A long
   (nidcl, beginit, endinit); segmented (vc) a pointer in rr0, which cannot address (gopt orderbl `(x = x->next) == 0`; not a
   long: ceval `(l = ispow2(x)) > 0`; not in rr2: `(v = checkalias(..)) == 0`; not a chain: lpinv `lpdefs = prev = t->next`).
-- v0p `OLD_D2Q` (allocreg): a long loaded through a pointer goes into the pair of its even address register when the odd half
-  is free, also when that pair is the wanted one. `OLD_D2QO`: also when an odd word register is wanted for the value
+- v0 `OLD_D2Q` (allocreg): a long loaded through a pointer goes into the pair of its even address register when the odd half
+  is free, also when that pair is the wanted one (cparse; chkout readchk). v0 `OLD_D2QI` (not v0p): also when the odd half is idle (a
+  parameter no longer used), it is given back as with `OLD_D2O` (chkout getat `ldl rr4,4(r4)`, libc ctime 0_2 localtime). `OLD_D2QO`: also when an odd word register is wanted for the value
   (getstr). `OLD_D2O`: a long loaded through an odd address register goes into the pair below it when the even half is
   free or idle; segmented (vc) also when an odd word register is wanted (cas iputloc), as `OLD_D2QO`. Segmented (vc): through base and index (`ldl rr2,rr4(r2)`) into the pair of an even index, also when another
   pair is wanted (a copy follows; cas seekout); of an odd index (`ldl rr2,rr6(r3)`) into the pair below it when the even half is free or idle
@@ -306,8 +307,7 @@ Where a value goes:
   for shifts, whose count register would get the operand's pair.
 
 Open: ld place_sec (`r8 = (secorg[j] - q->tsize) & 0xff00`: a new register for the `and`), chk_ranlib; register variables of
-leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (cas). `OLD_D2Q` in v0 code (07/82, built otherwise as v0): libc
-ctime 0_2 (gmtime `ld r6,0(r15); ldl rr6,@r6`, kept as cas source), chkout readchk and getat; ccv0 takes another pair and copies.
+leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (cas).
 
 - vc `OLD_D2S` (allo3.c): a word in an odd register widened to long (SCONV) takes the lighter (rweight) of the pair getreg
   gives and its own pair, when its even half is free or idle: cas symtype (`unsigned n; ip->s_2 = n;`: r3 into rr2,

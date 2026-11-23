@@ -2085,3 +2085,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - mkstr solved by a source form (2026-11-23): the reload of argv in main and of size in libc calloc (the entry of 2026-11-22
   took them for a compiler older than ccv0) come from an unused label in front of the statement, as in find scomp (OLD_D3K: a
   parameter is forgotten at a label no jump names). ccv0 as it is; oldlibc calloc 0_1 is C again (0_1.c), no .s.
+- 2026-11-23 OLD_D2Q from v0p into v0, with OLD_D2QI (v0 only: the odd half of the pair may be idle, a parameter no longer
+  used, and is given back as in d2ofree of OLD_D2O). Witnesses: chkout (07/82) readchk `ldl rr2,@r2` and getat `ldl rr4,4(r4)`
+  (the same common.c 1.3 is exact in chkin with the shipped cc, so a compiler trait), libc ctime 0_2 (gmtime, localtime).
+  The 2026-10 entry measured D2Q in v0 on the bench as 1080 > 1085 lines; now bench v0 134 > 135 same, 207 > 197 lines.
+  Models of the passes (v0p) all exact, matrix OLD_D2QI +0. ctime 0_2 stays cas: gmtime/ct_numb reload parameters, asctime
+  multiplies in rr2 (ours rr0).
