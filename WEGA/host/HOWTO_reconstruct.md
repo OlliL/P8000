@@ -58,7 +58,7 @@ source change removes are kept for phase B in `findings.json`: grouped into clus
 kind of difference (probably one cause), each with its functions, what was tried and the findings or guesses so far. A trace
 of a pass (KDBG, poptrace) is phase B (owner 2026-11-23).
 
-1. **Setup: `python3 host/recon/setup.py NAME [ORIG]`** (ORIG below the WEGA root, default `bin/NAME`; nonsegmented programs).
+1. **Setup: `python3 host/recon/setup.py NAME [ORIG]`** (ORIG below the WEGA root, default `bin/NAME`; nonsegmented programs, E707 or E711; the library part includes a termlib linked before the libc).
    It does the mechanical start and prints a report (RESULT, SCCS, SOURCE, DATE, COMPILER, OWN_LIM, LIBC, FILES); an existing
    source, `progcfg.py` or `findings.json` is kept. What it does, and what the main session decides from it:
    1. **SCCS lines.** The `@[$]` strings of the binary name the own source files, their order and dates; several lines mean

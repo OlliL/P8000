@@ -1,69 +1,2465 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "v0a (ccv0a: v0 with OLD_D3AW, host/OLDCC.md) for the own code; the libraries (libc-v1.a, libtermlib-v1.a) v0. Measured 2026-11-23: 355 of 391 functions exact (v0: 323; tailspec by OLD_D3AC, vreplace and _align by OLD_D3K2 of v0, the additive chains by cparse OLD_D19P, the char compares by cparse OLD_D8L, the register knowledge by OLD_D2NS of v0a). Of the other 36, 24 differ only by call/calr, jp/jr or the masked address of a switch table; the rest is in the clusters of 'phase B'.",
+ "compiler": "ccv0a (v0a: v0 with OLD_D3AW, OLD_D3AC, OLD_D2NS; host/OLDCC.md) for the own code; the libraries (libtermlib-v1.a, libc-v1.a) v0",
  "binary": "/bin/ex (links: vi, view, edit); E711, text 63488 bytes (code to 0xf7fe)",
- "build": "vi.mk of Plexus: mkstr - ex2.13strings x FILE.c, cc -E | xstr -c -, cc -c x.c. WEGA adds a step between the compiler and cas (src/cmd/ex/shrink.sh, cc -S, shrink.sh x.s, cas), both parts to save room (the code ends at 0xf7fe, the text limit is 64K): (1) each module begins with a table of 'jp _name' for every external function called 3 times or more (callr) in the module, the calls go by calr to the table; order 'sort | uniq -c | sort -n' (by the number of calls, then the name, ASCII); 22 tables, 183 stubs, 944 calls, 1156 bytes saved; only in ex (all programs of the root scanned). (2) a frame operand at offset 0 becomes @fp: ~L1(fp) in a function with '~L1 := 0' (not lda), and 0(fp) beside r0..r7 (the parameter stores); the saves of r8..r14 stay 0(fp) (139 of 139). Measured on the ccv0 output of all modules: 98 of 98 parameter stores and about 220 operands in the bodies as in the original. Of 310 files of the root only ex (and its links) has saves at 0(r15) with parameters at @r15. Not documented.",
- "open": "setjmp.h missing in WEGA (measured with setret.h, ret_buf).",
- "functions": {},
- "options": "-DZCMD -DZZCMD -DRDONLY -DWRAPMGN -DOPENCODE -DLISPCODE -DTAGSCODE -DCRNL -DSOFTTABS -DCHDIR -DBEEHIVE -DUCVISUAL, not -DUSG3TTY (the V7 tty calls, not those of System III as in vi.mk of Plexus). Measured 2026-11-23 on all modules (ccv0, shrink.sh), the sum of the differing lines: vi.mk options 2757; + OPENCODE, LISPCODE, TAGSCODE, CRNL 2455; + SOFTTABS 2421; without USG3TTY 2248; + CHDIR 900. BEEHIVE and UCVISUAL act only in ex_vget.c getbr, which is exact with both (the line sum had shown them worse: it compares a window of the length of the own function).",
- "phase B": {
-  "reload": {
-   "functions": [],
-   "difference": "v0a (OLD_D3AW) gives the reloads of a parameter that is a whole argument of a call (tail, tail2of, setin, exit, putchar, normal, sTTY, substitute, cerror, merror, smerror, getline, partreg, vclrlin, vputch, printf exact; dosubcon, plodput only call/calr). tailspec by OLD_D3AC; vdellin, vreplace, _align by OLD_D3K2 (only the first two parameters stay known at a label and behind && and ||; vdellin differs only by call/calr)",
-   "tried": "on tail without effect: no blank line, char comm[], return (...), return; at the end, a block, a null statement, an extra local, the parameter undeclared",
-   "findings": "an unused label in front of the statement gives it (OLD_D3K forgets the parameters at a label no jump names; putchar and tail exact with it); thirteen unused labels are no likely source form"
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 94,
+   "status": "crt0"
   },
-  "indirect call": {
-   "functions": [
-    "listchar",
-    "normchar",
-    "vgotab"
-   ],
-   "difference": "indirect call (order(f, INTEMP), ld r1,0(fp); call @r1, local3.c gencall): the store of the function address to the temporary stays 0(r15) in the original, the load into r1 is @r15 in vgotab and the second pair of listchar, 0(r15) in the first",
-   "findings": "no text rule of shrink.sh gives it: two pairs with the same text in the .s come out differently"
+  "main": {
+   "file": "ex.c",
+   "orig": "0x005e",
+   "size_orig": 872,
+   "status": "exact"
   },
-  "structure copy register": {
-   "functions": [
-    "setty",
-    "gTTY"
-   ],
-   "difference": "nttyc = ottyc: the destination goes to r0 (ld r0,#nttyc) and is copied into an address register for ldir: r4 (setty), r6 (gTTY) in the original, r1 with ccv0",
-   "findings": "of all files of the root only ex has r4/r6 there (adb, vls: r1; dumpdir, restor: r7); none of the exact v0 programs has the pattern; the tree is the same (ld r0,#.. in both)"
+  "init": {
+   "file": "ex.c",
+   "orig": "0x03c6",
+   "size_orig": 90,
+   "status": "exact"
   },
-  "register knowledge": {
-   "functions": [],
-   "difference": "a global just stored from r2 (WTOP = p; rnleft = ...) is loaded again from memory by the original in the next statement, ccv0 takes it from r2",
-   "tried": "vopen: WTOP = p, WLINES = ...; (WBOT - WTOP) + 1; the store in a block; WTOP as int: no effect",
-   "findings": "solved by codgen OLD_D2NS (v0a): a word stored to a global is not remembered in its register; vopen, YANKreg, YANKline exact"
+  "onhup": {
+   "file": "ex.c",
+   "orig": "0x0420",
+   "size_orig": 44,
+   "status": "exact"
   },
-  "order of additive chains": {
-   "functions": [],
-   "difference": "p + i - k, p + a - b (pointer or int): the original computes the integer part first and adds the pointer (or the last term) last, ccv0 keeps the order of the source",
-   "tried": "vrep: cursor + (cnt - 1), cnt - 1 + cursor, (cnt - 1) + cursor, &cursor[cnt - 1] give it; cursor - 1 + cnt does not",
-   "findings": "solved by cparse OLD_D19P (v0, v0p): a chain on a pointer, (ptr +- a) +- b, is ptr +- (a +- b); vrep, vremote, save, vup, vzop, viin exact, operate and vishft only call/calr"
+  "onintr": {
+   "file": "ex.c",
+   "orig": "0x044c",
+   "size_orig": 54,
+   "status": "exact"
   },
-  "char compare": {
-   "functions": [],
-   "difference": "the value of a comparison of two chars (wcursor[1] == 0) gets an extsb behind the tcc in the original, ccv0 writes the tcc alone; comparisons of pointers have no extsb",
-   "findings": "solved by cparse OLD_D8L (v0, v0p, v1): the compare of a char with a constant keeps the char type, its value is sign extended; edge, gettmode, advance, vgetline exact"
+  "setrupt": {
+   "file": "ex.c",
+   "orig": "0x0482",
+   "size_orig": 28,
+   "status": "exact"
   },
-  "local array index": {
-   "functions": [
-    "getone"
-   ],
-   "difference": "G.argv[G.argc0 - 1]-like element of a local array: the original adds the offset to the index and then fp (add r2,#4; add r2,r15), ccv0 lda r3,4(r15); add r3,r2",
-   "findings": "the form of OLD_D5S (index + offset) + fp"
+  "preserve": {
+   "file": "ex.c",
+   "orig": "0x049e",
+   "size_orig": 86,
+   "status": "exact"
   },
-  "address difference": {
-   "functions": [
-    "dosub"
-   ],
-   "difference": "loc2 = sp + (linebuf - genbuf): the original computes linebuf - genbuf at run time (ld r2,#linebuf; sub r2,#genbuf; add r2,sp), ccv0 folds it; the loop 'while (*sp++ = *lp++) if (sp >= ..) goto ovflo;' is laid out otherwise"
+  "exit": {
+   "file": "ex.c",
+   "orig": "0x04f4",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "setdot": {
+   "file": "ex_addr.c",
+   "orig": "0x050e",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "setdot1": {
+   "file": "ex_addr.c",
+   "orig": "0x051c",
+   "size_orig": 38,
+   "status": "exact"
+  },
+  "setcount": {
+   "file": "ex_addr.c",
+   "orig": "0x0542",
+   "size_orig": 94,
+   "status": "exact"
+  },
+  "getnum": {
+   "file": "ex_addr.c",
+   "orig": "0x05a0",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "setall": {
+   "file": "ex_addr.c",
+   "orig": "0x05d4",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "setnoaddr": {
+   "file": "ex_addr.c",
+   "orig": "0x0602",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "address": {
+   "file": "ex_addr.c",
+   "orig": "0x0610",
+   "size_orig": 554,
+   "status": "exact"
+  },
+  "setCNL": {
+   "file": "ex_addr.c",
+   "orig": "0x083a",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "setNAEOL": {
+   "file": "ex_addr.c",
+   "orig": "0x0842",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "commands": {
+   "file": "ex_cmds.c",
+   "orig": "0x08ae",
+   "size_orig": 2838,
+   "status": "exact"
+  },
+  "cmdreg": {
+   "file": "ex_cmds2.c",
+   "orig": "0x13c4",
+   "size_orig": 50,
+   "status": "exact"
+  },
+  "endcmd": {
+   "file": "ex_cmds2.c",
+   "orig": "0x13f6",
+   "size_orig": 48,
+   "status": "exact"
+  },
+  "eol": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1426",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "error": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1438",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "erewind": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1456",
+   "size_orig": 84,
+   "status": "exact"
+  },
+  "error0": {
+   "file": "ex_cmds2.c",
+   "orig": "0x14aa",
+   "size_orig": 154,
+   "status": "exact"
+  },
+  "error1": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1544",
+   "size_orig": 180,
+   "status": "exact"
+  },
+  "fixol": {
+   "file": "ex_cmds2.c",
+   "orig": "0x15f8",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "exclam": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1636",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "makargs": {
+   "file": "ex_cmds2.c",
+   "orig": "0x164a",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "next": {
+   "file": "ex_cmds2.c",
+   "orig": "0x166e",
+   "size_orig": 88,
+   "status": "exact"
+  },
+  "newline": {
+   "file": "ex_cmds2.c",
+   "orig": "0x16c6",
+   "size_orig": 110,
+   "status": "exact"
+  },
+  "nomore": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1734",
+   "size_orig": 60,
+   "status": "exact"
+  },
+  "quickly": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1770",
+   "size_orig": 44,
+   "status": "exact"
+  },
+  "resetflav": {
+   "file": "ex_cmds2.c",
+   "orig": "0x179c",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "serror": {
+   "file": "ex_cmds2.c",
+   "orig": "0x17b6",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "setflav": {
+   "file": "ex_cmds2.c",
+   "orig": "0x17d6",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "skipend": {
+   "file": "ex_cmds2.c",
+   "orig": "0x180e",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "tailspec": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1832",
+   "size_orig": 22,
+   "status": "exact"
+  },
+  "tail": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1848",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "tail2of": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1858",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "tailprim": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1868",
+   "size_orig": 172,
+   "status": "exact"
+  },
+  "vcontin": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1914",
+   "size_orig": 124,
+   "status": "exact"
+  },
+  "vnfl": {
+   "file": "ex_cmds2.c",
+   "orig": "0x1990",
+   "size_orig": 142,
+   "status": "exact"
+  },
+  "append": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1a1e",
+   "size_orig": 214,
+   "status": "exact"
+  },
+  "appendnone": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1af4",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "pargs": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1b14",
+   "size_orig": 130,
+   "status": "exact"
+  },
+  "delete": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1b96",
+   "size_orig": 272,
+   "status": "exact"
+  },
+  "deletenone": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1ca6",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "squish": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1cc4",
+   "size_orig": 82,
+   "status": "exact"
+  },
+  "join": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1d16",
+   "size_orig": 256,
+   "status": "exact"
+  },
+  "move": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1e16",
+   "size_orig": 104,
+   "status": "exact"
+  },
+  "move1": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1e7e",
+   "size_orig": 272,
+   "status": "exact"
+  },
+  "getcopy": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1f8e",
+   "size_orig": 0,
+   "status": "open"
+  },
+  "getput": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1f8e",
+   "size_orig": 68,
+   "status": "open"
+  },
+  "put": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x1fd2",
+   "size_orig": 92,
+   "status": "exact"
+  },
+  "pragged": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x202e",
+   "size_orig": 160,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "shift": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x20ce",
+   "size_orig": 214,
+   "status": "exact"
+  },
+  "tagfind": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x21a4",
+   "size_orig": 622,
+   "status": "exact"
+  },
+  "yank": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x2412",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "zop": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x2430",
+   "size_orig": 282,
+   "status": "exact"
+  },
+  "zop2": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x254a",
+   "size_orig": 514,
+   "status": "exact"
+  },
+  "plines": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x274c",
+   "size_orig": 88,
+   "status": "exact"
+  },
+  "pofix": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x27a4",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "undo": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x27bc",
+   "size_orig": 506,
+   "status": "exact"
+  },
+  "somechange": {
+   "file": "ex_cmdsub.c",
+   "orig": "0x29b6",
+   "size_orig": 154,
+   "status": "exact"
+  },
+  "ignchar": {
+   "file": "ex_get.c",
+   "orig": "0x2a50",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "getchar": {
+   "file": "ex_get.c",
+   "orig": "0x2a68",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "getcd": {
+   "file": "ex_get.c",
+   "orig": "0x2a80",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "peekchar": {
+   "file": "ex_get.c",
+   "orig": "0x2ac0",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "peekcd": {
+   "file": "ex_get.c",
+   "orig": "0x2ad2",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "getach": {
+   "file": "ex_get.c",
+   "orig": "0x2ae4",
+   "size_orig": 264,
+   "status": "exact"
+  },
+  "gettty": {
+   "file": "ex_get.c",
+   "orig": "0x2bec",
+   "size_orig": 494,
+   "status": "exact"
+  },
+  "smunch": {
+   "file": "ex_get.c",
+   "orig": "0x2dda",
+   "size_orig": 76,
+   "status": "exact"
+  },
+  "checkjunk": {
+   "file": "ex_get.c",
+   "orig": "0x2e26",
+   "size_orig": 38,
+   "status": "exact"
+  },
+  "setin": {
+   "file": "ex_get.c",
+   "orig": "0x2e4c",
+   "size_orig": 92,
+   "status": "exact"
+  },
+  "filename": {
+   "file": "ex_io.c",
+   "orig": "0x2ea8",
+   "size_orig": 390,
+   "status": "exact"
+  },
+  "getargs": {
+   "file": "ex_io.c",
+   "orig": "0x302e",
+   "size_orig": 270,
+   "status": "exact"
+  },
+  "glob": {
+   "file": "ex_io.c",
+   "orig": "0x313c",
+   "size_orig": 418,
+   "status": "exact"
+  },
+  "gscan": {
+   "file": "ex_io.c",
+   "orig": "0x32de",
+   "size_orig": 48,
+   "status": "exact"
+  },
+  "getone": {
+   "file": "ex_io.c",
+   "orig": "0x330e",
+   "size_orig": 90,
+   "status": "open",
+   "note": "phase B, local array index: G.argv[G.argc0 - 1]-like element of a local array: the original adds the offset to the index and then fp (add r2,#4; add r2,r15), ccv0 lda r3,4(r15); add r3,r2"
+  },
+  "rop": {
+   "file": "ex_io.c",
+   "orig": "0x3368",
+   "size_orig": 144,
+   "status": "exact"
+  },
+  "rop2": {
+   "file": "ex_io.c",
+   "orig": "0x33f8",
+   "size_orig": 22,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "rop3": {
+   "file": "ex_io.c",
+   "orig": "0x340e",
+   "size_orig": 210,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "samei": {
+   "file": "ex_io.c",
+   "orig": "0x34e0",
+   "size_orig": 60,
+   "status": "exact"
+  },
+  "wop": {
+   "file": "ex_io.c",
+   "orig": "0x351c",
+   "size_orig": 554,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "edfile": {
+   "file": "ex_io.c",
+   "orig": "0x3746",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "getfile": {
+   "file": "ex_io.c",
+   "orig": "0x377c",
+   "size_orig": 200,
+   "status": "exact"
+  },
+  "putfile": {
+   "file": "ex_io.c",
+   "orig": "0x3844",
+   "size_orig": 194,
+   "status": "exact"
+  },
+  "wrerror": {
+   "file": "ex_io.c",
+   "orig": "0x3906",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "source": {
+   "file": "ex_io.c",
+   "orig": "0x3922",
+   "size_orig": 270,
+   "status": "exact"
+  },
+  "clrstats": {
+   "file": "ex_io.c",
+   "orig": "0x3a30",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "iostats": {
+   "file": "ex_io.c",
+   "orig": "0x3a4c",
+   "size_orig": 204,
+   "status": "exact"
+  },
+  "setlist": {
+   "file": "ex_put.c",
+   "orig": "0x3b18",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "setnumb": {
+   "file": "ex_put.c",
+   "orig": "0x3b42",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "listchar": {
+   "file": "ex_put.c",
+   "orig": "0x3b6c",
+   "size_orig": 112,
+   "status": "open",
+   "note": "phase B, indirect call: indirect call (order(f, INTEMP), ld r1,0(fp); call @r1, local3.c gencall): the store of the function address to the temporary stays 0(r15) in the original, the load into r1 is @r15 in vgotab and the second pair of listchar, 0(r15) in the first"
+  },
+  "normchar": {
+   "file": "ex_put.c",
+   "orig": "0x3bdc",
+   "size_orig": 232,
+   "status": "open",
+   "note": "phase B, indirect call: indirect call (order(f, INTEMP), ld r1,0(fp); call @r1, local3.c gencall): the store of the function address to the temporary stays 0(r15) in the original, the load into r1 is @r15 in vgotab and the second pair of listchar, 0(r15) in the first"
+  },
+  "numbline": {
+   "file": "ex_put.c",
+   "orig": "0x3cc4",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "normline": {
+   "file": "ex_put.c",
+   "orig": "0x3ce4",
+   "size_orig": 60,
+   "status": "exact"
+  },
+  "slobber": {
+   "file": "ex_put.c",
+   "orig": "0x3d20",
+   "size_orig": 82,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "putchar": {
+   "file": "ex_put.c",
+   "orig": "0x3d72",
+   "size_orig": 22,
+   "status": "exact"
+  },
+  "termchar": {
+   "file": "ex_put.c",
+   "orig": "0x3d88",
+   "size_orig": 74,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "flush": {
+   "file": "ex_put.c",
+   "orig": "0x3dd2",
+   "size_orig": 6,
+   "status": "exact"
+  },
+  "flush1": {
+   "file": "ex_put.c",
+   "orig": "0x3dd8",
+   "size_orig": 286,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "flush2": {
+   "file": "ex_put.c",
+   "orig": "0x3ef6",
+   "size_orig": 16,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "fgoto": {
+   "file": "ex_put.c",
+   "orig": "0x3f06",
+   "size_orig": 472,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "tab": {
+   "file": "ex_put.c",
+   "orig": "0x40de",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "plodput": {
+   "file": "ex_put.c",
+   "orig": "0x40ee",
+   "size_orig": 26,
+   "status": "open"
+  },
+  "plod": {
+   "file": "ex_put.c",
+   "orig": "0x4108",
+   "size_orig": 938,
+   "status": "exact"
+  },
+  "noteinp": {
+   "file": "ex_put.c",
+   "orig": "0x44b2",
+   "size_orig": 44,
+   "status": "exact"
+  },
+  "termreset": {
+   "file": "ex_put.c",
+   "orig": "0x44de",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "draino": {
+   "file": "ex_put.c",
+   "orig": "0x4522",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "flusho": {
+   "file": "ex_put.c",
+   "orig": "0x452a",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "putnl": {
+   "file": "ex_put.c",
+   "orig": "0x454c",
+   "size_orig": 6,
+   "status": "exact"
+  },
+  "putS": {
+   "file": "ex_put.c",
+   "orig": "0x4552",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "putch": {
+   "file": "ex_put.c",
+   "orig": "0x4570",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "putpad": {
+   "file": "ex_put.c",
+   "orig": "0x4592",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "setoutt": {
+   "file": "ex_put.c",
+   "orig": "0x45a6",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "lprintf": {
+   "file": "ex_put.c",
+   "orig": "0x45ae",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "putNFL": {
+   "file": "ex_put.c",
+   "orig": "0x45d2",
+   "size_orig": 6,
+   "status": "exact"
+  },
+  "pstart": {
+   "file": "ex_put.c",
+   "orig": "0x45d8",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "pstop": {
+   "file": "ex_put.c",
+   "orig": "0x4610",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "ostart": {
+   "file": "ex_put.c",
+   "orig": "0x462e",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "ttcharoff": {
+   "file": "ex_put.c",
+   "orig": "0x4672",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "ostop": {
+   "file": "ex_put.c",
+   "orig": "0x4696",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "normal": {
+   "file": "ex_put.c",
+   "orig": "0x46c0",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "setty": {
+   "file": "ex_put.c",
+   "orig": "0x46d8",
+   "size_orig": 62,
+   "status": "open",
+   "note": "phase B, structure copy register: nttyc = ottyc: the destination goes to r0 (ld r0,#nttyc) and is copied into an address register for ldir: r4 (setty), r6 (gTTY) in the original, r1 with ccv0"
+  },
+  "gTTY": {
+   "file": "ex_put.c",
+   "orig": "0x4716",
+   "size_orig": 52,
+   "status": "open",
+   "note": "phase B, structure copy register: nttyc = ottyc: the destination goes to r0 (ld r0,#nttyc) and is copied into an address register for ldir: r4 (setty), r6 (gTTY) in the original, r1 with ccv0"
+  },
+  "sTTY": {
+   "file": "ex_put.c",
+   "orig": "0x474a",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "noonl": {
+   "file": "ex_put.c",
+   "orig": "0x476a",
+   "size_orig": 48,
+   "status": "exact"
+  },
+  "global": {
+   "file": "ex_re.c",
+   "orig": "0x479a",
+   "size_orig": 390,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "substitute": {
+   "file": "ex_re.c",
+   "orig": "0x4920",
+   "size_orig": 196,
+   "status": "exact"
+  },
+  "compsub": {
+   "file": "ex_re.c",
+   "orig": "0x49e4",
+   "size_orig": 196,
+   "status": "exact"
+  },
+  "comprhs": {
+   "file": "ex_re.c",
+   "orig": "0x4aa8",
+   "size_orig": 178,
+   "status": "exact"
+  },
+  "getsub": {
+   "file": "ex_re.c",
+   "orig": "0x4b5a",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "dosubcon": {
+   "file": "ex_re.c",
+   "orig": "0x4b82",
+   "size_orig": 42,
+   "status": "open"
+  },
+  "confirmed": {
+   "file": "ex_re.c",
+   "orig": "0x4bac",
+   "size_orig": 194,
+   "status": "exact"
+  },
+  "getch": {
+   "file": "ex_re.c",
+   "orig": "0x4c6e",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "ugo": {
+   "file": "ex_re.c",
+   "orig": "0x4c96",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "dosub": {
+   "file": "ex_re.c",
+   "orig": "0x4cb4",
+   "size_orig": 314,
+   "status": "open",
+   "note": "phase B, address difference: loc2 = sp + (linebuf - genbuf): the original computes linebuf - genbuf at run time (ld r2,#linebuf; sub r2,#genbuf; add r2,sp), ccv0 folds it; the loop 'while (*sp++ = *lp++) if (sp >= ..) goto ovflo;' is laid out otherwise"
+  },
+  "fixcase": {
+   "file": "ex_re.c",
+   "orig": "0x4dee",
+   "size_orig": 66,
+   "status": "exact"
+  },
+  "place": {
+   "file": "ex_re.c",
+   "orig": "0x4e30",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "snote": {
+   "file": "ex_re.c",
+   "orig": "0x4e66",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "compile": {
+   "file": "ex_re.c",
+   "orig": "0x4eb0",
+   "size_orig": 974,
+   "status": "exact"
+  },
+  "cerror": {
+   "file": "ex_re.c",
+   "orig": "0x527e",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "same": {
+   "file": "ex_re.c",
+   "orig": "0x528e",
+   "size_orig": 72,
+   "status": "exact"
+  },
+  "execute": {
+   "file": "ex_re.c",
+   "orig": "0x52d6",
+   "size_orig": 206,
+   "status": "exact"
+  },
+  "advance": {
+   "file": "ex_re.c",
+   "orig": "0x53a4",
+   "size_orig": 424,
+   "status": "exact"
+  },
+  "cclass": {
+   "file": "ex_re.c",
+   "orig": "0x554c",
+   "size_orig": 164,
+   "status": "exact"
+  },
+  "set": {
+   "file": "ex_set.c",
+   "orig": "0x55f0",
+   "size_orig": 614,
+   "status": "exact"
+  },
+  "setend": {
+   "file": "ex_set.c",
+   "orig": "0x5856",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "prall": {
+   "file": "ex_set.c",
+   "orig": "0x5880",
+   "size_orig": 104,
+   "status": "exact"
+  },
+  "propts": {
+   "file": "ex_set.c",
+   "orig": "0x58e8",
+   "size_orig": 94,
+   "status": "exact"
+  },
+  "propt": {
+   "file": "ex_set.c",
+   "orig": "0x5946",
+   "size_orig": 110,
+   "status": "exact"
+  },
+  "any": {
+   "file": "ex_subr.c",
+   "orig": "0x59b4",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "backtab": {
+   "file": "ex_subr.c",
+   "orig": "0x59d6",
+   "size_orig": 38,
+   "status": "exact"
+  },
+  "change": {
+   "file": "ex_subr.c",
+   "orig": "0x59fc",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "column": {
+   "file": "ex_subr.c",
+   "orig": "0x5a0a",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "comment": {
+   "file": "ex_subr.c",
+   "orig": "0x5a28",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "Copy": {
+   "file": "ex_subr.c",
+   "orig": "0x5a52",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "copyw": {
+   "file": "ex_subr.c",
+   "orig": "0x5a74",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "copywR": {
+   "file": "ex_subr.c",
+   "orig": "0x5a96",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "ctlof": {
+   "file": "ex_subr.c",
+   "orig": "0x5ac4",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "dingdong": {
+   "file": "ex_subr.c",
+   "orig": "0x5adc",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "fixindent": {
+   "file": "ex_subr.c",
+   "orig": "0x5afa",
+   "size_orig": 72,
+   "status": "exact"
+  },
+  "filioerr": {
+   "file": "ex_subr.c",
+   "orig": "0x5b42",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "genindent": {
+   "file": "ex_subr.c",
+   "orig": "0x5b66",
+   "size_orig": 48,
+   "status": "exact"
+  },
+  "getDOT": {
+   "file": "ex_subr.c",
+   "orig": "0x5b96",
+   "size_orig": 12,
+   "status": "exact"
+  },
+  "getmark": {
+   "file": "ex_subr.c",
+   "orig": "0x5ba2",
+   "size_orig": 48,
+   "status": "exact"
+  },
+  "getn": {
+   "file": "ex_subr.c",
+   "orig": "0x5bd2",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "ignnEOF": {
+   "file": "ex_subr.c",
+   "orig": "0x5c0a",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "iswhite": {
+   "file": "ex_subr.c",
+   "orig": "0x5c32",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "junk": {
+   "file": "ex_subr.c",
+   "orig": "0x5c4a",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "killed": {
+   "file": "ex_subr.c",
+   "orig": "0x5c8a",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "killcnt": {
+   "file": "ex_subr.c",
+   "orig": "0x5c9c",
+   "size_orig": 124,
+   "status": "exact"
+  },
+  "lineno": {
+   "file": "ex_subr.c",
+   "orig": "0x5d18",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "lineDOL": {
+   "file": "ex_subr.c",
+   "orig": "0x5d28",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "lineDOT": {
+   "file": "ex_subr.c",
+   "orig": "0x5d30",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "markDOT": {
+   "file": "ex_subr.c",
+   "orig": "0x5d38",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "markpr": {
+   "file": "ex_subr.c",
+   "orig": "0x5d40",
+   "size_orig": 50,
+   "status": "exact"
+  },
+  "markreg": {
+   "file": "ex_subr.c",
+   "orig": "0x5d72",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "mesg": {
+   "file": "ex_subr.c",
+   "orig": "0x5da6",
+   "size_orig": 88,
+   "status": "exact"
+  },
+  "merror": {
+   "file": "ex_subr.c",
+   "orig": "0x5dfe",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "merror1": {
+   "file": "ex_subr.c",
+   "orig": "0x5e6a",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "morelines": {
+   "file": "ex_subr.c",
+   "orig": "0x5ea0",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "nonzero": {
+   "file": "ex_subr.c",
+   "orig": "0x5ec4",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "notable": {
+   "file": "ex_subr.c",
+   "orig": "0x5ed8",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "notempty": {
+   "file": "ex_subr.c",
+   "orig": "0x5ef6",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "netchHAD": {
+   "file": "ex_subr.c",
+   "orig": "0x5f08",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "netchange": {
+   "file": "ex_subr.c",
+   "orig": "0x5f1c",
+   "size_orig": 100,
+   "status": "exact"
+  },
+  "putmark": {
+   "file": "ex_subr.c",
+   "orig": "0x5f80",
+   "size_orig": 22,
+   "status": "exact"
+  },
+  "putmk1": {
+   "file": "ex_subr.c",
+   "orig": "0x5f96",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "plural": {
+   "file": "ex_subr.c",
+   "orig": "0x5fcc",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "qcolumn": {
+   "file": "ex_subr.c",
+   "orig": "0x5fe4",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "qcount": {
+   "file": "ex_subr.c",
+   "orig": "0x6050",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "reverse": {
+   "file": "ex_subr.c",
+   "orig": "0x607a",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "save": {
+   "file": "ex_subr.c",
+   "orig": "0x6096",
+   "size_orig": 226,
+   "status": "exact"
+  },
+  "save12": {
+   "file": "ex_subr.c",
+   "orig": "0x6178",
+   "size_orig": 12,
+   "status": "exact"
+  },
+  "saveall": {
+   "file": "ex_subr.c",
+   "orig": "0x6184",
+   "size_orig": 12,
+   "status": "exact"
+  },
+  "span": {
+   "file": "ex_subr.c",
+   "orig": "0x6190",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "sync": {
+   "file": "ex_subr.c",
+   "orig": "0x61a0",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "skipwh": {
+   "file": "ex_subr.c",
+   "orig": "0x61ae",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "smerror": {
+   "file": "ex_subr.c",
+   "orig": "0x61d6",
+   "size_orig": 88,
+   "status": "exact"
+  },
+  "strend": {
+   "file": "ex_subr.c",
+   "orig": "0x622e",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "strcLIN": {
+   "file": "ex_subr.c",
+   "orig": "0x6248",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "syserror": {
+   "file": "ex_subr.c",
+   "orig": "0x6258",
+   "size_orig": 60,
+   "status": "exact"
+  },
+  "vfindcol": {
+   "file": "ex_subr.c",
+   "orig": "0x6294",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "vskipwh": {
+   "file": "ex_subr.c",
+   "orig": "0x62e2",
+   "size_orig": 38,
+   "status": "exact"
+  },
+  "vpastwh": {
+   "file": "ex_subr.c",
+   "orig": "0x6308",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "whitecnt": {
+   "file": "ex_subr.c",
+   "orig": "0x6328",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "markit": {
+   "file": "ex_subr.c",
+   "orig": "0x635e",
+   "size_orig": 48,
+   "status": "exact"
+  },
+  "fileinit": {
+   "file": "ex_temp.c",
+   "orig": "0x638e",
+   "size_orig": 294,
+   "status": "exact"
+  },
+  "cleanup": {
+   "file": "ex_temp.c",
+   "orig": "0x64b4",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "getline": {
+   "file": "ex_temp.c",
+   "orig": "0x64fe",
+   "size_orig": 86,
+   "status": "exact"
+  },
+  "putline": {
+   "file": "ex_temp.c",
+   "orig": "0x6554",
+   "size_orig": 148,
+   "status": "exact"
+  },
+  "getblock": {
+   "file": "ex_temp.c",
+   "orig": "0x65e8",
+   "size_orig": 300,
+   "status": "exact"
+  },
+  "blkio": {
+   "file": "ex_temp.c",
+   "orig": "0x6714",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "synctmp": {
+   "file": "ex_temp.c",
+   "orig": "0x6754",
+   "size_orig": 338,
+   "status": "exact"
+  },
+  "TSYNC": {
+   "file": "ex_temp.c",
+   "orig": "0x68a6",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "regio": {
+   "file": "ex_temp.c",
+   "orig": "0x68b6",
+   "size_orig": 152,
+   "status": "exact"
+  },
+  "REGblk": {
+   "file": "ex_temp.c",
+   "orig": "0x694e",
+   "size_orig": 106,
+   "status": "exact"
+  },
+  "mapreg": {
+   "file": "ex_temp.c",
+   "orig": "0x69b8",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "KILLreg": {
+   "file": "ex_temp.c",
+   "orig": "0x69f8",
+   "size_orig": 124,
+   "status": "exact"
+  },
+  "shread": {
+   "file": "ex_temp.c",
+   "orig": "0x6a74",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "putreg": {
+   "file": "ex_temp.c",
+   "orig": "0x6a92",
+   "size_orig": 228,
+   "status": "exact"
+  },
+  "partreg": {
+   "file": "ex_temp.c",
+   "orig": "0x6b76",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "notpart": {
+   "file": "ex_temp.c",
+   "orig": "0x6b88",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "getREG": {
+   "file": "ex_temp.c",
+   "orig": "0x6ba0",
+   "size_orig": 118,
+   "status": "exact"
+  },
+  "YANKreg": {
+   "file": "ex_temp.c",
+   "orig": "0x6c16",
+   "size_orig": 202,
+   "status": "exact"
+  },
+  "kshift": {
+   "file": "ex_temp.c",
+   "orig": "0x6ce0",
+   "size_orig": 58,
+   "status": "exact"
+  },
+  "YANKline": {
+   "file": "ex_temp.c",
+   "orig": "0x6d1a",
+   "size_orig": 120,
+   "status": "exact"
+  },
+  "rbflush": {
+   "file": "ex_temp.c",
+   "orig": "0x6d92",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "gettmode": {
+   "file": "ex_tty.c",
+   "orig": "0x6dd2",
+   "size_orig": 134,
+   "status": "exact"
+  },
+  "setterm": {
+   "file": "ex_tty.c",
+   "orig": "0x6e58",
+   "size_orig": 404,
+   "status": "exact"
+  },
+  "zap": {
+   "file": "ex_tty.c",
+   "orig": "0x6fec",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "longname": {
+   "file": "ex_tty.c",
+   "orig": "0x7036",
+   "size_orig": 112,
+   "status": "exact"
+  },
+  "unix0": {
+   "file": "ex_unix.c",
+   "orig": "0x70a6",
+   "size_orig": 502,
+   "status": "exact"
+  },
+  "unixex": {
+   "file": "ex_unix.c",
+   "orig": "0x729c",
+   "size_orig": 318,
+   "status": "exact"
+  },
+  "unixwt": {
+   "file": "ex_unix.c",
+   "orig": "0x73da",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "filter": {
+   "file": "ex_unix.c",
+   "orig": "0x7412",
+   "size_orig": 256,
+   "status": "exact"
+  },
+  "recover": {
+   "file": "ex_unix.c",
+   "orig": "0x7512",
+   "size_orig": 126,
+   "status": "exact"
+  },
+  "waitfor": {
+   "file": "ex_unix.c",
+   "orig": "0x7590",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "revocer": {
+   "file": "ex_unix.c",
+   "orig": "0x75ba",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "oop": {
+   "file": "ex_v.c",
+   "orig": "0x75e4",
+   "size_orig": 306,
+   "status": "exact"
+  },
+  "ovbeg": {
+   "file": "ex_v.c",
+   "orig": "0x7716",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "ovend": {
+   "file": "ex_v.c",
+   "orig": "0x774a",
+   "size_orig": 80,
+   "status": "exact"
+  },
+  "vop": {
+   "file": "ex_v.c",
+   "orig": "0x779a",
+   "size_orig": 266,
+   "status": "exact"
+  },
+  "fixzero": {
+   "file": "ex_v.c",
+   "orig": "0x78a4",
+   "size_orig": 76,
+   "status": "exact"
+  },
+  "savevis": {
+   "file": "ex_v.c",
+   "orig": "0x78f0",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "undvis": {
+   "file": "ex_v.c",
+   "orig": "0x7912",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "setwind": {
+   "file": "ex_v.c",
+   "orig": "0x7956",
+   "size_orig": 174,
+   "status": "exact"
+  },
+  "vok": {
+   "file": "ex_v.c",
+   "orig": "0x7a04",
+   "size_orig": 264,
+   "status": "exact"
+  },
+  "vintr": {
+   "file": "ex_v.c",
+   "orig": "0x7b0c",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "vsetsiz": {
+   "file": "ex_v.c",
+   "orig": "0x7b2c",
+   "size_orig": 116,
+   "status": "exact"
+  },
+  "vopen": {
+   "file": "ex_vadj.c",
+   "orig": "0x7ba0",
+   "size_orig": 342,
+   "status": "exact"
+  },
+  "vreopen": {
+   "file": "ex_vadj.c",
+   "orig": "0x7cf6",
+   "size_orig": 242,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "vglitchup": {
+   "file": "ex_vadj.c",
+   "orig": "0x7de8",
+   "size_orig": 250,
+   "status": "exact"
+  },
+  "vinslin": {
+   "file": "ex_vadj.c",
+   "orig": "0x7ee2",
+   "size_orig": 292,
+   "status": "exact"
+  },
+  "vopenup": {
+   "file": "ex_vadj.c",
+   "orig": "0x8006",
+   "size_orig": 118,
+   "status": "exact"
+  },
+  "vadjAL": {
+   "file": "ex_vadj.c",
+   "orig": "0x807c",
+   "size_orig": 134,
+   "status": "exact"
+  },
+  "vrollup": {
+   "file": "ex_vadj.c",
+   "orig": "0x8102",
+   "size_orig": 94,
+   "status": "exact"
+  },
+  "vup1": {
+   "file": "ex_vadj.c",
+   "orig": "0x8160",
+   "size_orig": 10,
+   "status": "exact"
+  },
+  "vmoveitup": {
+   "file": "ex_vadj.c",
+   "orig": "0x816a",
+   "size_orig": 142,
+   "status": "exact"
+  },
+  "vscroll": {
+   "file": "ex_vadj.c",
+   "orig": "0x81f8",
+   "size_orig": 184,
+   "status": "exact"
+  },
+  "vscrap": {
+   "file": "ex_vadj.c",
+   "orig": "0x82b0",
+   "size_orig": 292,
+   "status": "exact"
+  },
+  "vrepaint": {
+   "file": "ex_vadj.c",
+   "orig": "0x83d4",
+   "size_orig": 350,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "vredraw": {
+   "file": "ex_vadj.c",
+   "orig": "0x8532",
+   "size_orig": 582,
+   "status": "exact"
+  },
+  "vdellin": {
+   "file": "ex_vadj.c",
+   "orig": "0x8778",
+   "size_orig": 104,
+   "status": "open"
+  },
+  "vadjDL": {
+   "file": "ex_vadj.c",
+   "orig": "0x87e0",
+   "size_orig": 132,
+   "status": "exact"
+  },
+  "vsyncCL": {
+   "file": "ex_vadj.c",
+   "orig": "0x8864",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "vsync": {
+   "file": "ex_vadj.c",
+   "orig": "0x8876",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "vsync1": {
+   "file": "ex_vadj.c",
+   "orig": "0x8894",
+   "size_orig": 358,
+   "status": "exact"
+  },
+  "vcloseup": {
+   "file": "ex_vadj.c",
+   "orig": "0x89fa",
+   "size_orig": 44,
+   "status": "exact"
+  },
+  "vreplace": {
+   "file": "ex_vadj.c",
+   "orig": "0x8a26",
+   "size_orig": 556,
+   "status": "exact"
+  },
+  "sethard": {
+   "file": "ex_vadj.c",
+   "orig": "0x8c52",
+   "size_orig": 72,
+   "status": "exact"
+  },
+  "vdirty": {
+   "file": "ex_vadj.c",
+   "orig": "0x8c9a",
+   "size_orig": 48,
+   "status": "exact"
+  },
+  "ungetkey": {
+   "file": "ex_vget.c",
+   "orig": "0x8cca",
+   "size_orig": 22,
+   "status": "exact"
+  },
+  "getkey": {
+   "file": "ex_vget.c",
+   "orig": "0x8ce0",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "peekbr": {
+   "file": "ex_vget.c",
+   "orig": "0x8cf2",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "getbr": {
+   "file": "ex_vget.c",
+   "orig": "0x8d02",
+   "size_orig": 390,
+   "status": "exact"
+  },
+  "getesc": {
+   "file": "ex_vget.c",
+   "orig": "0x8e88",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "peekkey": {
+   "file": "ex_vget.c",
+   "orig": "0x8ebc",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "readecho": {
+   "file": "ex_vget.c",
+   "orig": "0x8ec4",
+   "size_orig": 250,
+   "status": "exact"
+  },
+  "setLAST": {
+   "file": "ex_vget.c",
+   "orig": "0x8fbe",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "addtext": {
+   "file": "ex_vget.c",
+   "orig": "0x8ff2",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "setDEL": {
+   "file": "ex_vget.c",
+   "orig": "0x901c",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "setBUF": {
+   "file": "ex_vget.c",
+   "orig": "0x9024",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "addto": {
+   "file": "ex_vget.c",
+   "orig": "0x9052",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "noteit": {
+   "file": "ex_vget.c",
+   "orig": "0x909c",
+   "size_orig": 212,
+   "status": "exact"
+  },
+  "obeep": {
+   "file": "ex_vget.c",
+   "orig": "0x9170",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "map": {
+   "file": "ex_vget.c",
+   "orig": "0x918e",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "vgetcnt": {
+   "file": "ex_vget.c",
+   "orig": "0x91c2",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "vmain": {
+   "file": "ex_vmain.c",
+   "orig": "0x922e",
+   "size_orig": 2456,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "grabtag": {
+   "file": "ex_vmain.c",
+   "orig": "0x9bc6",
+   "size_orig": 90,
+   "status": "exact"
+  },
+  "prepapp": {
+   "file": "ex_vmain.c",
+   "orig": "0x9c20",
+   "size_orig": 22,
+   "status": "exact"
+  },
+  "vremote": {
+   "file": "ex_vmain.c",
+   "orig": "0x9c36",
+   "size_orig": 84,
+   "status": "exact"
+  },
+  "vsave": {
+   "file": "ex_vmain.c",
+   "orig": "0x9c8a",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "vzop": {
+   "file": "ex_vmain.c",
+   "orig": "0x9cf6",
+   "size_orig": 348,
+   "status": "exact"
+  },
+  "operate": {
+   "file": "ex_voper.c",
+   "orig": "0x9e52",
+   "size_orig": 2112,
+   "status": "open"
+  },
+  "find": {
+   "file": "ex_voper.c",
+   "orig": "0xa692",
+   "size_orig": 54,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "word": {
+   "file": "ex_voper.c",
+   "orig": "0xa6c8",
+   "size_orig": 296,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "eend": {
+   "file": "ex_voper.c",
+   "orig": "0xa7f0",
+   "size_orig": 120,
+   "status": "exact"
+  },
+  "wordof": {
+   "file": "ex_voper.c",
+   "orig": "0xa868",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "wordch": {
+   "file": "ex_voper.c",
+   "orig": "0xa8a6",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "edge": {
+   "file": "ex_voper.c",
+   "orig": "0xa8de",
+   "size_orig": 48,
+   "status": "exact"
+  },
+  "margin": {
+   "file": "ex_voper.c",
+   "orig": "0xa90e",
+   "size_orig": 100,
+   "status": "exact"
+  },
+  "vUndo": {
+   "file": "ex_vops.c",
+   "orig": "0xa972",
+   "size_orig": 136,
+   "status": "exact"
+  },
+  "vundo": {
+   "file": "ex_vops.c",
+   "orig": "0xa9fa",
+   "size_orig": 652,
+   "status": "exact"
+  },
+  "vnoapp": {
+   "file": "ex_vops.c",
+   "orig": "0xac86",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "vmove": {
+   "file": "ex_vops.c",
+   "orig": "0xac94",
+   "size_orig": 254,
+   "status": "exact"
+  },
+  "vdelete": {
+   "file": "ex_vops.c",
+   "orig": "0xad92",
+   "size_orig": 306,
+   "status": "exact"
+  },
+  "vchange": {
+   "file": "ex_vops.c",
+   "orig": "0xaec4",
+   "size_orig": 786,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "voOpen": {
+   "file": "ex_vops.c",
+   "orig": "0xb1d6",
+   "size_orig": 400,
+   "status": "exact"
+  },
+  "vshftop": {
+   "file": "ex_vops.c",
+   "orig": "0xb366",
+   "size_orig": 86,
+   "status": "exact"
+  },
+  "vfilter": {
+   "file": "ex_vops.c",
+   "orig": "0xb3bc",
+   "size_orig": 304,
+   "status": "exact"
+  },
+  "xdw": {
+   "file": "ex_vops.c",
+   "orig": "0xb4ec",
+   "size_orig": 256,
+   "status": "exact"
+  },
+  "vshift": {
+   "file": "ex_vops.c",
+   "orig": "0xb5ec",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "vrep": {
+   "file": "ex_vops.c",
+   "orig": "0xb5fa",
+   "size_orig": 196,
+   "status": "exact"
+  },
+  "vyankit": {
+   "file": "ex_vops.c",
+   "orig": "0xb6be",
+   "size_orig": 104,
+   "status": "exact"
+  },
+  "setpk": {
+   "file": "ex_vops.c",
+   "orig": "0xb726",
+   "size_orig": 80,
+   "status": "exact"
+  },
+  "bleep": {
+   "file": "ex_vops2.c",
+   "orig": "0xb776",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "vdcMID": {
+   "file": "ex_vops2.c",
+   "orig": "0xb7a4",
+   "size_orig": 96,
+   "status": "exact"
+  },
+  "takeout": {
+   "file": "ex_vops2.c",
+   "orig": "0xb804",
+   "size_orig": 88,
+   "status": "exact"
+  },
+  "ateopr": {
+   "file": "ex_vops2.c",
+   "orig": "0xb85c",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "vappend": {
+   "file": "ex_vops2.c",
+   "orig": "0xb8a6",
+   "size_orig": 1066,
+   "status": "exact"
+  },
+  "back1": {
+   "file": "ex_vops2.c",
+   "orig": "0xbcd0",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "vgetline": {
+   "file": "ex_vops2.c",
+   "orig": "0xbce4",
+   "size_orig": 1028,
+   "status": "exact"
+  },
+  "vdoappend": {
+   "file": "ex_vops2.c",
+   "orig": "0xc0e8",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "vgetsplit": {
+   "file": "ex_vops2.c",
+   "orig": "0xc116",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "vmaxrep": {
+   "file": "ex_vops2.c",
+   "orig": "0xc130",
+   "size_orig": 158,
+   "status": "exact"
+  },
+  "lfind": {
+   "file": "ex_vops3.c",
+   "orig": "0xc1ce",
+   "size_orig": 690,
+   "status": "exact"
+  },
+  "endsent": {
+   "file": "ex_vops3.c",
+   "orig": "0xc480",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "endPS": {
+   "file": "ex_vops3.c",
+   "orig": "0xc4ec",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "lindent": {
+   "file": "ex_vops3.c",
+   "orig": "0xc50e",
+   "size_orig": 260,
+   "status": "exact"
+  },
+  "lmatchp": {
+   "file": "ex_vops3.c",
+   "orig": "0xc612",
+   "size_orig": 182,
+   "status": "exact"
+  },
+  "lsmatch": {
+   "file": "ex_vops3.c",
+   "orig": "0xc6c8",
+   "size_orig": 238,
+   "status": "exact"
+  },
+  "ltosolid": {
+   "file": "ex_vops3.c",
+   "orig": "0xc7b6",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "ltosol1": {
+   "file": "ex_vops3.c",
+   "orig": "0xc7be",
+   "size_orig": 152,
+   "status": "exact"
+  },
+  "lskipbal": {
+   "file": "ex_vops3.c",
+   "orig": "0xc856",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "lskipatom": {
+   "file": "ex_vops3.c",
+   "orig": "0xc8a0",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "lskipa1": {
+   "file": "ex_vops3.c",
+   "orig": "0xc8a8",
+   "size_orig": 106,
+   "status": "exact"
+  },
+  "lnext": {
+   "file": "ex_vops3.c",
+   "orig": "0xc912",
+   "size_orig": 176,
+   "status": "exact"
+  },
+  "lbrack": {
+   "file": "ex_vops3.c",
+   "orig": "0xc9c2",
+   "size_orig": 186,
+   "status": "exact"
+  },
+  "isa": {
+   "file": "ex_vops3.c",
+   "orig": "0xca7c",
+   "size_orig": 98,
+   "status": "exact"
+  },
+  "vclear": {
+   "file": "ex_vput.c",
+   "orig": "0xcade",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "vclrbyte": {
+   "file": "ex_vput.c",
+   "orig": "0xcb1c",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "vclrlin": {
+   "file": "ex_vput.c",
+   "orig": "0xcb36",
+   "size_orig": 82,
+   "status": "exact"
+  },
+  "vclreol": {
+   "file": "ex_vput.c",
+   "orig": "0xcb88",
+   "size_orig": 218,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "vclrech": {
+   "file": "ex_vput.c",
+   "orig": "0xcc62",
+   "size_orig": 160,
+   "status": "exact"
+  },
+  "fixech": {
+   "file": "ex_vput.c",
+   "orig": "0xcd02",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "vcursbef": {
+   "file": "ex_vput.c",
+   "orig": "0xcd2a",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "vcursat": {
+   "file": "ex_vput.c",
+   "orig": "0xcd58",
+   "size_orig": 50,
+   "status": "exact"
+  },
+  "vcursaft": {
+   "file": "ex_vput.c",
+   "orig": "0xcd8a",
+   "size_orig": 22,
+   "status": "exact"
+  },
+  "vfixcurs": {
+   "file": "ex_vput.c",
+   "orig": "0xcda0",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "vsetcurs": {
+   "file": "ex_vput.c",
+   "orig": "0xcda8",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "vigoto": {
+   "file": "ex_vput.c",
+   "orig": "0xcdd0",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "vcsync": {
+   "file": "ex_vput.c",
+   "orig": "0xcdde",
+   "size_orig": 12,
+   "status": "exact"
+  },
+  "vgotoCL": {
+   "file": "ex_vput.c",
+   "orig": "0xcdea",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "vigotoCL": {
+   "file": "ex_vput.c",
+   "orig": "0xce18",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "vgoto": {
+   "file": "ex_vput.c",
+   "orig": "0xce46",
+   "size_orig": 382,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "vgotab": {
+   "file": "ex_vput.c",
+   "orig": "0xcfc4",
+   "size_orig": 50,
+   "status": "open",
+   "note": "phase B, indirect call: indirect call (order(f, INTEMP), ld r1,0(fp); call @r1, local3.c gencall): the store of the function address to the temporary stays 0(r15) in the original, the load into r1 is @r15 in vgotab and the second pair of listchar, 0(r15) in the first"
+  },
+  "vprepins": {
+   "file": "ex_vput.c",
+   "orig": "0xcff6",
+   "size_orig": 70,
+   "status": "exact"
+  },
+  "vmaktop": {
+   "file": "ex_vput.c",
+   "orig": "0xd03c",
+   "size_orig": 154,
+   "status": "exact"
+  },
+  "vinschar": {
+   "file": "ex_vput.c",
+   "orig": "0xd0d6",
+   "size_orig": 718,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "vrigid": {
+   "file": "ex_vput.c",
+   "orig": "0xd3a4",
+   "size_orig": 74,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "vneedpos": {
+   "file": "ex_vput.c",
+   "orig": "0xd3ee",
+   "size_orig": 66,
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+  },
+  "vnpins": {
+   "file": "ex_vput.c",
+   "orig": "0xd430",
+   "size_orig": 190,
+   "status": "exact"
+  },
+  "vishft": {
+   "file": "ex_vput.c",
+   "orig": "0xd4ee",
+   "size_orig": 412,
+   "status": "open"
+  },
+  "viin": {
+   "file": "ex_vput.c",
+   "orig": "0xd68a",
+   "size_orig": 714,
+   "status": "exact"
+  },
+  "godm": {
+   "file": "ex_vput.c",
+   "orig": "0xd954",
+   "size_orig": 50,
+   "status": "exact"
+  },
+  "enddm": {
+   "file": "ex_vput.c",
+   "orig": "0xd986",
+   "size_orig": 50,
+   "status": "exact"
+  },
+  "goim": {
+   "file": "ex_vput.c",
+   "orig": "0xd9b8",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "endim": {
+   "file": "ex_vput.c",
+   "orig": "0xd9d2",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "vputchar": {
+   "file": "ex_vput.c",
+   "orig": "0xd9ea",
+   "size_orig": 596,
+   "status": "exact"
+  },
+  "physdc": {
+   "file": "ex_vput.c",
+   "orig": "0xdc3e",
+   "size_orig": 412,
+   "status": "exact"
+  },
+  "vputch": {
+   "file": "ex_vput.c",
+   "orig": "0xddda",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "vmoveto": {
+   "file": "ex_vwind.c",
+   "orig": "0xddfc",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "vjumpto": {
+   "file": "ex_vwind.c",
+   "orig": "0xde24",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "vupdown": {
+   "file": "ex_vwind.c",
+   "orig": "0xde62",
+   "size_orig": 66,
+   "status": "exact"
+  },
+  "vup": {
+   "file": "ex_vwind.c",
+   "orig": "0xdea4",
+   "size_orig": 368,
+   "status": "exact"
+  },
+  "vdown": {
+   "file": "ex_vwind.c",
+   "orig": "0xe014",
+   "size_orig": 282,
+   "status": "exact"
+  },
+  "vcontext": {
+   "file": "ex_vwind.c",
+   "orig": "0xe12e",
+   "size_orig": 178,
+   "status": "exact"
+  },
+  "vclean": {
+   "file": "ex_vwind.c",
+   "orig": "0xe1e0",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "vshow": {
+   "file": "ex_vwind.c",
+   "orig": "0xe202",
+   "size_orig": 212,
+   "status": "exact"
+  },
+  "vreset": {
+   "file": "ex_vwind.c",
+   "orig": "0xe2d6",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "vback": {
+   "file": "ex_vwind.c",
+   "orig": "0xe30a",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "vfit": {
+   "file": "ex_vwind.c",
+   "orig": "0xe342",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "vroll": {
+   "file": "ex_vwind.c",
+   "orig": "0xe390",
+   "size_orig": 136,
+   "status": "exact"
+  },
+  "vrollR": {
+   "file": "ex_vwind.c",
+   "orig": "0xe418",
+   "size_orig": 132,
+   "status": "exact"
+  },
+  "vcookit": {
+   "file": "ex_vwind.c",
+   "orig": "0xe49c",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "vdepth": {
+   "file": "ex_vwind.c",
+   "orig": "0xe4d0",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "vnline": {
+   "file": "ex_vwind.c",
+   "orig": "0xe50e",
+   "size_orig": 60,
+   "status": "exact"
+  },
+  "printf": {
+   "file": "printf.c",
+   "orig": "0xe54a",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "_align": {
+   "file": "printf.c",
+   "orig": "0xe57e",
+   "size_orig": 86,
+   "status": "exact"
+  },
+  "_doprnt": {
+   "file": "printf.c",
+   "orig": "0xe5d4",
+   "size_orig": 806,
+   "status": "exact"
+  },
+  "_atoip": {
+   "file": "printf.c",
+   "orig": "0xe8fa",
+   "size_orig": 116,
+   "status": "exact"
   }
  },
- "wega edits": "sTTY: stty(i, &tty), not ioctl TIOCSETN (the original calls stty; sgtty.h of WEGA defines TIOCSETN). getach: after read(0, &lastc, 1) the original keeps the high byte and swaps it down (lastc &= 0177400; swab(&lastc, &lastc, 2)): the byte read lies in the high half of the int on the Z8000. set (ex_set.c, NUMERIC): after the TABSTOP check 'if (cp && strcmp(cp, \"window\") == 0) { vsetsiz(value(WINDOW)); setwind(); }'. getblock (ex_temp.c): 'Tmp file too large' is fatal: error0(); merror(msg); if (io > 0) close(io); if (inopen) setty(normf); cleanup(1); exit(1) (globals named by error1 (io) and the quit command (inopen, normf)). rop (ex_io.c): after the fstat 'if ((stbuf.st_mode & 0700) == 0400) printf(\" [File is read only]\");'. main (ex.c): after EXINIT 'else if (access(\"./.exrc\", 0) == 0) source(\"./.exrc\", 1);' before $HOME/.exrc. Shells (ex_cmds.c, ex_unix.c): a new command cshell ('c' switch: case 's': tail(\"cshell\"); goto shell;), the shell command runs c == 's' ? \"sh\" : \"csh\"; unixex has a fifth parameter, the name of the shell (argv[0]), and runs *name == 's' ? svalue(SHELL) : \"/bin/csh\"; ! and filter pass options[SHELL].oabbrev (\"sh\": the original loads the word at the oabbrev of SHELL). vmain (ex_vmain.c, ^F): the lines to move go to a block variable (int n = ...; the frame slot of sdc) and ^F does not move beyond dol ('if (dot + n > dol) continue;').",
- "printf": "src/cmd/ex/printf.c (2026-11-23, written from /bin/ex 0xe546..0xe96e), the last module before strings.o instead of pprintf.c of Plexus (its functions are not in /bin/ex; removed from the tree): printf (as oldlibc printf 0_5, without stdout, return (0)), _align (as doprnt 0_7), _doprnt (a smaller one: no file, putchar, no floating point, no sign handling, no (null), a flag for a precision that prints one '0'), _atoip. _doprnt and _atoip exact; printf and _align differ only by the parameter cluster of phase B (printf reloads fmt, _align stores stkap at the entry). One module: its jp table (putchar) stands in front of printf.",
- "compare note": "The masked comparison shows 'ld r3,#%00xx' (original) against 'ld r3,#A' (object) for the address of a switch table below 0x100 in the data (main, commands, address): not a difference of the code; to be checked when linked.",
- "call/calr": "calr in the original where the build has call (or the other way) and jp/jr: the choice of cas by the distance; they follow the other differences (the stub tables are the same as the original's). Functions with only these: main, address, commands, pragged, rop2, rop3, wop, slobber, termchar, flush1, flush2, fgoto, global, vreopen, vrepaint, vmain, find, word, vchange, vclreol, vgoto, vinschar, vrigid, vneedpos.",
- "termlib": "src/lib/oldtermlib (libtermlib-v1.a, ccv0 -O -DCM_N -DCM_GT -DCM_B -DCM_D): termcap 6 of 6, tgoto, tputs exact in /bin/ex (termcap e96e, tgoto ee24, tputs eff2). The shipped libtermlib.a (v1, 01/83) has newer forms: tnchktc there 'tbuf + strlen(tbuf) - 2', ex's 'tbuf + (strlen(tbuf) - 2)' (the call first: 'dec r2,#2; add r2,_tbuf'). tgoto of ex reads CM and destline from their frame homes for the initial values of cp and which (ld r2,4(r15); ld 6(r15),r2; ld r12,0(r15)); ccv0 takes the registers, also with the initializers as statements; a label (start:) in front of them gives it (host/OLDCC_PARAMREGS.md, a compiler form). Plexus cmd/plx/termlib has the same code as 2.11BSD (1979 headers, result[16], E_TERMCAP from local/uparm.h)."
+ "note": {
+  "build": "vi.mk of Plexus: mkstr - ex2.13strings x FILE.c, cc -E | xstr -c -, cc -c x.c. WEGA adds a step between the compiler and cas (src/cmd/ex/shrink.sh, cc -S, shrink.sh x.s, cas), both parts to save room (the code ends at 0xf7fe, the text limit is 64K): (1) each module begins with a table of 'jp _name' for every external function called 3 times or more (callr) in the module, the calls go by calr to the table; order 'sort | uniq -c | sort -n' (by the number of calls, then the name, ASCII); 22 tables, 183 stubs, 944 calls, 1156 bytes saved; only in ex (all programs of the root scanned). (2) a frame operand at offset 0 becomes @fp: ~L1(fp) in a function with '~L1 := 0' (not lda), and 0(fp) beside r0..r7 (the parameter stores); the saves of r8..r14 stay 0(fp) (139 of 139). Measured on the ccv0 output of all modules: 98 of 98 parameter stores and about 220 operands in the bodies as in the original. Of 310 files of the root only ex (and its links) has saves at 0(r15) with parameters at @r15. Not documented.",
+  "open": "setjmp.h missing in WEGA (measured with setret.h, ret_buf).",
+  "options": "-DZCMD -DZZCMD -DRDONLY -DWRAPMGN -DOPENCODE -DLISPCODE -DTAGSCODE -DCRNL -DSOFTTABS -DCHDIR -DBEEHIVE -DUCVISUAL, not -DUSG3TTY (the V7 tty calls, not those of System III as in vi.mk of Plexus). Measured 2026-11-23 on all modules (ccv0, shrink.sh), the sum of the differing lines: vi.mk options 2757; + OPENCODE, LISPCODE, TAGSCODE, CRNL 2455; + SOFTTABS 2421; without USG3TTY 2248; + CHDIR 900. BEEHIVE and UCVISUAL act only in ex_vget.c getbr, which is exact with both (the line sum had shown them worse: it compares a window of the length of the own function).",
+  "phase B": {
+   "reload": {
+    "functions": [],
+    "difference": "v0a (OLD_D3AW) gives the reloads of a parameter that is a whole argument of a call (tail, tail2of, setin, exit, putchar, normal, sTTY, substitute, cerror, merror, smerror, getline, partreg, vclrlin, vputch, printf exact; dosubcon, plodput only call/calr). tailspec by OLD_D3AC; vdellin, vreplace, _align by OLD_D3K2 (only the first two parameters stay known at a label and behind && and ||; vdellin differs only by call/calr)",
+    "tried": "on tail without effect: no blank line, char comm[], return (...), return; at the end, a block, a null statement, an extra local, the parameter undeclared",
+    "findings": "an unused label in front of the statement gives it (OLD_D3K forgets the parameters at a label no jump names; putchar and tail exact with it); thirteen unused labels are no likely source form"
+   },
+   "indirect call": {
+    "functions": [
+     "listchar",
+     "normchar",
+     "vgotab"
+    ],
+    "difference": "indirect call (order(f, INTEMP), ld r1,0(fp); call @r1, local3.c gencall): the store of the function address to the temporary stays 0(r15) in the original, the load into r1 is @r15 in vgotab and the second pair of listchar, 0(r15) in the first",
+    "findings": "no text rule of shrink.sh gives it: two pairs with the same text in the .s come out differently"
+   },
+   "structure copy register": {
+    "functions": [
+     "setty",
+     "gTTY"
+    ],
+    "difference": "nttyc = ottyc: the destination goes to r0 (ld r0,#nttyc) and is copied into an address register for ldir: r4 (setty), r6 (gTTY) in the original, r1 with ccv0",
+    "findings": "of all files of the root only ex has r4/r6 there (adb, vls: r1; dumpdir, restor: r7); none of the exact v0 programs has the pattern; the tree is the same (ld r0,#.. in both)"
+   },
+   "register knowledge": {
+    "functions": [],
+    "difference": "a global just stored from r2 (WTOP = p; rnleft = ...) is loaded again from memory by the original in the next statement, ccv0 takes it from r2",
+    "tried": "vopen: WTOP = p, WLINES = ...; (WBOT - WTOP) + 1; the store in a block; WTOP as int: no effect",
+    "findings": "solved by codgen OLD_D2NS (v0a): a word stored to a global is not remembered in its register; vopen, YANKreg, YANKline exact"
+   },
+   "order of additive chains": {
+    "functions": [],
+    "difference": "p + i - k, p + a - b (pointer or int): the original computes the integer part first and adds the pointer (or the last term) last, ccv0 keeps the order of the source",
+    "tried": "vrep: cursor + (cnt - 1), cnt - 1 + cursor, (cnt - 1) + cursor, &cursor[cnt - 1] give it; cursor - 1 + cnt does not",
+    "findings": "solved by cparse OLD_D19P (v0, v0p): a chain on a pointer, (ptr +- a) +- b, is ptr +- (a +- b); vrep, vremote, save, vup, vzop, viin exact, operate and vishft only call/calr"
+   },
+   "char compare": {
+    "functions": [],
+    "difference": "the value of a comparison of two chars (wcursor[1] == 0) gets an extsb behind the tcc in the original, ccv0 writes the tcc alone; comparisons of pointers have no extsb",
+    "findings": "solved by cparse OLD_D8L (v0, v0p, v1): the compare of a char with a constant keeps the char type, its value is sign extended; edge, gettmode, advance, vgetline exact"
+   },
+   "local array index": {
+    "functions": [
+     "getone"
+    ],
+    "difference": "G.argv[G.argc0 - 1]-like element of a local array: the original adds the offset to the index and then fp (add r2,#4; add r2,r15), ccv0 lda r3,4(r15); add r3,r2",
+    "findings": "the form of OLD_D5S (index + offset) + fp"
+   },
+   "address difference": {
+    "functions": [
+     "dosub"
+    ],
+    "difference": "loc2 = sp + (linebuf - genbuf): the original computes linebuf - genbuf at run time (ld r2,#linebuf; sub r2,#genbuf; add r2,sp), ccv0 folds it; the loop 'while (*sp++ = *lp++) if (sp >= ..) goto ovflo;' is laid out otherwise"
+   }
+  },
+  "wega edits": "sTTY: stty(i, &tty), not ioctl TIOCSETN (the original calls stty; sgtty.h of WEGA defines TIOCSETN). getach: after read(0, &lastc, 1) the original keeps the high byte and swaps it down (lastc &= 0177400; swab(&lastc, &lastc, 2)): the byte read lies in the high half of the int on the Z8000. set (ex_set.c, NUMERIC): after the TABSTOP check 'if (cp && strcmp(cp, \"window\") == 0) { vsetsiz(value(WINDOW)); setwind(); }'. getblock (ex_temp.c): 'Tmp file too large' is fatal: error0(); merror(msg); if (io > 0) close(io); if (inopen) setty(normf); cleanup(1); exit(1) (globals named by error1 (io) and the quit command (inopen, normf)). rop (ex_io.c): after the fstat 'if ((stbuf.st_mode & 0700) == 0400) printf(\" [File is read only]\");'. main (ex.c): after EXINIT 'else if (access(\"./.exrc\", 0) == 0) source(\"./.exrc\", 1);' before $HOME/.exrc. Shells (ex_cmds.c, ex_unix.c): a new command cshell ('c' switch: case 's': tail(\"cshell\"); goto shell;), the shell command runs c == 's' ? \"sh\" : \"csh\"; unixex has a fifth parameter, the name of the shell (argv[0]), and runs *name == 's' ? svalue(SHELL) : \"/bin/csh\"; ! and filter pass options[SHELL].oabbrev (\"sh\": the original loads the word at the oabbrev of SHELL). vmain (ex_vmain.c, ^F): the lines to move go to a block variable (int n = ...; the frame slot of sdc) and ^F does not move beyond dol ('if (dot + n > dol) continue;').",
+  "printf": "src/cmd/ex/printf.c (2026-11-23, written from /bin/ex 0xe546..0xe96e), the last module before strings.o instead of pprintf.c of Plexus (its functions are not in /bin/ex; removed from the tree): printf (as oldlibc printf 0_5, without stdout, return (0)), _align (as doprnt 0_7), _doprnt (a smaller one: no file, putchar, no floating point, no sign handling, no (null), a flag for a precision that prints one '0'), _atoip. _doprnt and _atoip exact; printf and _align differ only by the parameter cluster of phase B (printf reloads fmt, _align stores stkap at the entry). One module: its jp table (putchar) stands in front of printf.",
+  "compare note": "The masked comparison shows 'ld r3,#%00xx' (original) against 'ld r3,#A' (object) for the address of a switch table below 0x100 in the data (main, commands, address): not a difference of the code; to be checked when linked.",
+  "call/calr": "calr in the original where the build has call (or the other way) and jp/jr: the choice of cas by the distance; they follow the other differences (the stub tables are the same as the original's). Functions with only these: main, address, commands, pragged, rop2, rop3, wop, slobber, termchar, flush1, flush2, fgoto, global, vreopen, vrepaint, vmain, find, word, vchange, vclreol, vgoto, vinschar, vrigid, vneedpos.",
+  "termlib": "src/lib/oldtermlib (libtermlib-v1.a, ccv0 -O -DCM_N -DCM_GT -DCM_B -DCM_D): termcap 6 of 6, tgoto, tputs exact in /bin/ex (termcap e96e, tgoto ee24, tputs eff2). The shipped libtermlib.a (v1, 01/83) has newer forms: tnchktc there 'tbuf + strlen(tbuf) - 2', ex's 'tbuf + (strlen(tbuf) - 2)' (the call first: 'dec r2,#2; add r2,_tbuf'). tgoto of ex reads CM and destline from their frame homes for the initial values of cp and which (ld r2,4(r15); ld 6(r15),r2; ld r12,0(r15)); ccv0 takes the registers, also with the initializers as statements; a label (start:) in front of them gives it (host/OLDCC_PARAMREGS.md, a compiler form). Plexus cmd/plx/termlib has the same code as 2.11BSD (1979 headers, result[16], E_TERMCAP from local/uparm.h).",
+  "compiler (measured)": "v0a (ccv0a: v0 with OLD_D3AW, host/OLDCC.md) for the own code; the libraries (libc-v1.a, libtermlib-v1.a) v0. Measured 2026-11-23: 355 of 391 functions exact (v0: 323; tailspec by OLD_D3AC, vreplace and _align by OLD_D3K2 of v0, the additive chains by cparse OLD_D19P, the char compares by cparse OLD_D8L, the register knowledge by OLD_D2NS of v0a). Of the other 36, 24 differ only by call/calr, jp/jr or the masked address of a switch table; the rest is in the clusters of 'phase B'."
+ }
 }

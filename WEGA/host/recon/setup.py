@@ -120,18 +120,22 @@ def compiler(d):
 def libc_end(path, starts):
     """(key, OWN_LIM, best library, covered, total, gaps, first member, equally good libraries) by the walk of whichlibc.py"""
     gc, cg = whichlibc.load(path)
+    while cg > 1 and gc[cg - 2:cg] == b'\0\0':                   # E711: the code is padded with zeros to 256 bytes
+        cg -= 2
     A = list(zcode.insns(gc, 0, cg, False))
     addr = [a for a, _ in A]
     NA = [whichlibc.norm(t) for _, t in A]
     libs = sorted(glob.glob(LIBDIR + '/libc-v*.a')) + [os.path.join(ROOT, 'lib', 'libc.a')]   # the shipped libc (src/lib/libc builds it identical)
-    mem = {lib: whichlibc.members(lib) for lib in libs}
+    # the termlib (src/lib/libtermlib*.a) is linked before the libc (ex): its members belong to the library part too
+    term = [m for t in sorted(glob.glob(LIBDIR + '/libtermlib*.a')) for m in whichlibc.members(t)]
+    mem = {lib: whichlibc.members(lib) + term for lib in libs}
     first = next(k for k, a in enumerate(addr) if a >= 0x10)      # behind the jump of crt0
     res = []
     for lib in libs:
         _, rows = whichlibc.walk(gc, A, NA, addr, mem[lib], first)
         walk = []                                   # (addr, size, member or None for a gap)
         for r in rows:
-            m = re.match(r'# gap ([0-9a-f]+) \.\. ([0-9a-f]+|end)', r)
+            m = re.match(r'# gap ([0-9a-f]+) \.\. (end|[0-9a-f]+)', r)
             if m:
                 lo = int(m.group(1), 16)
                 hi = cg if m.group(2) == 'end' else int(m.group(2), 16)
@@ -197,7 +201,7 @@ def main():
 
     o = SOut(open(opath, 'rb').read())
     hdr = open(opath, 'rb').read(2)
-    if hdr != b'\xe7\x07':
+    if hdr not in (b'\xe7\x07', b'\xe7\x11'):     # E711: split I/D, the code alone from address 0
         rep['RESULT'] = 'stopped: magic %s, not a nonsegmented E707 program' % hdr.hex()
         report(rep)
         sys.exit(1)
