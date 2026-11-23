@@ -2139,3 +2139,8 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - `OLD_D8L` also in vc (scparse of sccvc, 2026-11-23): the cast `(char)(q->c.b2 == OABTEMP)` of gopt lpinv2.c srchdflist
   removed; `MATRIX_VER=vc oldcc.sh matrix cparse:OLD_D8L`: baseline cas and gopt 0 differing functions, without the
   switch gopt srchdflist lost (+57 data bytes).
+- `OLD_D2NS` (2026-11-23, codgen v0a): the ex cluster "register knowledge" (vopen, YANKreg, YANKline: a global just stored
+  from r2 is read from memory in the next statement). In rnassign a word stored to a NAME no longer names its register:
+  ex 352 -> 355, none lost. With v0: tree units and v0p models unchanged, bench same 139 but 188 -> 191 lines (pack
+  packfile: rr0 for rr2 at one more place, the pair choice the function already gets wrong): v0a only. The variant "keeps
+  its name for the register choice, not found by symreg" (RSXN): ex 327 (-28), bench 137: refuted.

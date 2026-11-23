@@ -144,7 +144,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 ### v0a (10/82, ex)
 
-- v0 with `OLD_D3AW` and `OLD_D3AC` (codgen); cparse and popt those of v0 (`ccv0a`, `/lib/v0a/codgen`). The own code of ex (crt0 3.1
+- v0 with `OLD_D3AW`, `OLD_D3AC` and `OLD_D2NS` (codgen); cparse and popt those of v0 (`ccv0a`, `/lib/v0a/codgen`). The own code of ex (crt0 3.1
   10/28/82) follows it, the libraries linked into ex (libc-v1.a, libtermlib-v1.a) follow v0: isatty, stty, gtty in /bin/ex
   are exact with v0 and differ with `OLD_D3AW`.
 - Measured 2026-11-23 (`OLDCC_PARAMREGS.md`): ex 323 -> 339 of 391 functions exact, none lost; 340 with `OLD_D3AC`. The programs of 07/82
@@ -375,6 +375,10 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   go into the pair of its left operand when that is the register of a parameter (nodeno `c = q + 6`: `ldl rr2,rr6;
   inc r3,#6`, sccvc `ldl rr6,rr6; inc r7,#6` destroyed q). /lib/gopt nodeno, fndparm; checkops 21 -> 15, qmkstore 19 -> 14.
   Neutral on cas.
+- v0a `OLD_D2NS` (rnassign): a word stored to a global is not remembered in its register (the stores' counterpart of
+  `OLD_D2N`): ex vopen `WTOP = p; WLINES = WBOT - WTOP + 1` (`sub r2,_WTOP`), YANKreg, YANKline; ex 352 -> 355. With
+  v0 the bench gets 3 lines worse in pack packfile (a pair rr0 for rr2, the same wrong choice the function already has
+  elsewhere), the tree units unchanged: so v0a only. Kept named but not found by symreg instead: ex -28 (refuted).
 - v0a `OLD_D3AC` (delay): an int parameter converted to a char (a cast, or the right side of a char
   assignment) is forgotten in its register, so its low byte is read from its frame home (ex tailspec `foocmd[0] = c`:
   `ldb rl2,1(r15)`). Witness: ex tailspec only. With v0 the programs of the tree (162 functions), the bench and xstr

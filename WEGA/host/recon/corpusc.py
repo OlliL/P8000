@@ -121,6 +121,10 @@ def prepare_ids(src, work, cc):
         if not os.path.exists(p):
             return None
         os.rename(p, os.path.join(work, 'x.' + ext))
+    # the other files the compiler left (cc.PID.p): named by the host pid, the same in every run under x
+    for f in os.listdir(work):
+        if f.startswith(base[0] + '.'):
+            os.rename(os.path.join(work, f), os.path.join(work, 'x' + f[len(base[0]):]))
     return 'x'
 
 

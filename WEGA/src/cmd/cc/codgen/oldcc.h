@@ -34,11 +34,12 @@
 #endif
 
 #ifdef OLD_V0A
-/* v0a, the compiler of ex (10/82): v0 and OLD_D3AW, OLD_D3AC (host/OLDCC_PARAMREGS.md); the programs of 07/82 and the libraries
+/* v0a, the compiler of ex (10/82): v0 and OLD_D3AW, OLD_D3AC, OLD_D2NS (host/OLDCC_PARAMREGS.md); the programs of 07/82 and the libraries
    linked into ex follow v0 */
 #define OLD_V0
 #define OLD_D3AW	/* OLD_D3A only for a parameter that is a whole argument or an address in it (argplace) */
 #define OLD_D3AC	/* an int parameter converted to a char is taken from its frame home (its low byte; delay) */
+#define OLD_D2NS	/* a word stored to a global is not remembered in its register (rnassign) */
 #endif
 
 #ifdef OLD_V0P

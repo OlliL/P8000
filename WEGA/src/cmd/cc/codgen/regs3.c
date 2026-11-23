@@ -558,6 +558,13 @@ rnassign(p1, p2)
 #endif
 		a->sym = p2->in.sname;
 		a->off = p2->tn.lval;
+#ifdef OLD_D2NS
+		/* v0a: a word stored to a global is not remembered in its register (ex vopen WTOP = p; WBOT - WTOP: sub r2,_WTOP) */
+		if (p2->in.op == NAME && a->cls == RCWORD) {
+			a->sym = 0;
+			a->off = 0;
+		}
+#endif
 	}
 	a->flags &= ~RSCONST;
 	a->busy = 0;
