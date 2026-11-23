@@ -2160,3 +2160,14 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   - Side findings in crpost (07/26/82, not in the tree; System III crpost.c compiled with ccv0, functions searched in the
     original): put `&obuf[optr] - 1` (obuf a pointer) is `optr - 1` first and obuf added last (the rule of OLD_D19P, here
     over SUBSR); get reloads a parameter `ld r7,0(r15)` before a call (the place of OLD_D3AW, three days after chkout).
+
+## 2026-11-23 ex in phase A (increment 161): what stays for the compiler
+
+- compare/ex rebuilt in the setup format: 394 functions, 361 exact (ccv0a). The open ones: the clusters indirect call
+  (listchar, normchar, vgotab), structure copy register (setty, gTTY), local array index (getone, 6 forms tried), and
+  dosub; the rest differ only by call/calr or jp/jr (cas by the distance, after the other differences of their module).
+- dosub, `loc2 = sp + (linebuf - genbuf)` (the form of every BSD ex and of Plexus): ccv0, ccv0a, ccv1 and the shipped
+  /bin/cc fold the difference of the two arrays to 0 (wrong code: `ld _loc2,r13`); the original of ex computes
+  `ld r2,#_linebuf; sub r2,#_genbuf; add r2,r13`. ccv0p writes `lda r2,0(r14)`. Folded too: `linebuf - genbuf + sp`,
+  `(int)` casts, `&sp[linebuf - genbuf]`. `sp - genbuf + linebuf` is not folded (4 lines left: the order) and removes the
+  block order difference of the loops of dosub; not taken (no source has it). A difference for a switch later (not in this run).

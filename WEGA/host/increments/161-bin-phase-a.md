@@ -113,3 +113,6 @@ rsh = sh, edit = vi = view = ex, bin/login = etc/login. Not in this run: `as` (1
 Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/lib (after this run).
 
 ## Log
+- 2026-11-23 step 0 ex worked on: 361 of 394 exact (360 + crt0); open: the compiler clusters (indirect call, structure copy
+  register, getone, dosub: the shipped cc folds `a - b` of two arrays to 0, KNOWLEDGE.md quirks) and functions with only
+  call/calr; no source change taken.

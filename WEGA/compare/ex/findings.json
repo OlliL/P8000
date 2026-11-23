@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "ccv0a (v0a: v0 with OLD_D3AW, OLD_D3AC, OLD_D2NS; host/OLDCC.md) for the own code; the libraries (libtermlib-v1.a, libc-v1.a) v0",
+ "compiler": "ccv0a (v0a: v0 with OLD_D3AW, OLD_D3AC, OLD_D2NS; host/OLDCC.md) for the own code; the libraries (libtermlib-v1.a, libc-v1.a) v0. Phase A done 2026-11-23: 361 of 394 functions exact (the start-up code counted).",
  "binary": "/bin/ex (links: vi, view, edit); E711, text 63488 bytes (code to 0xf7fe)",
  "functions": {
   "start": {
@@ -312,14 +312,14 @@
   "getcopy": {
    "file": "ex_cmdsub.c",
    "orig": "0x1f8e",
-   "size_orig": 0,
-   "status": "open"
+   "size_orig": 32,
+   "status": "exact"
   },
   "getput": {
    "file": "ex_cmdsub.c",
-   "orig": "0x1f8e",
-   "size_orig": 68,
-   "status": "open"
+   "orig": "0x1fae",
+   "size_orig": 36,
+   "status": "exact"
   },
   "put": {
    "file": "ex_cmdsub.c",
@@ -477,7 +477,7 @@
    "orig": "0x330e",
    "size_orig": 90,
    "status": "open",
-   "note": "phase B, local array index: G.argv[G.argc0 - 1]-like element of a local array: the original adds the offset to the index and then fp (add r2,#4; add r2,r15), ccv0 lda r3,4(r15); add r3,r2"
+   "note": "phase B, local array index: G.argv[G.argc0 - 1]-like element of a local array: the original adds the offset to the index and then fp (add r2,#4; add r2,r15), ccv0 lda r3,4(r15); add r3,r2 Forms tried 2026-11-23 (6): *(G.argv + i), (G.argv - 1)[G.argc0], (&G)->argv[..], a char* offset: none."
   },
   "rop": {
    "file": "ex_io.c",
@@ -649,7 +649,8 @@
    "file": "ex_put.c",
    "orig": "0x40ee",
    "size_orig": 26,
-   "status": "open"
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences of the module)"
   },
   "plod": {
    "file": "ex_put.c",
@@ -820,7 +821,8 @@
    "file": "ex_re.c",
    "orig": "0x4b82",
    "size_orig": 42,
-   "status": "open"
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences of the module)"
   },
   "confirmed": {
    "file": "ex_re.c",
@@ -845,7 +847,7 @@
    "orig": "0x4cb4",
    "size_orig": 314,
    "status": "open",
-   "note": "phase B, address difference: loc2 = sp + (linebuf - genbuf): the original computes linebuf - genbuf at run time (ld r2,#linebuf; sub r2,#genbuf; add r2,sp), ccv0 folds it; the loop 'while (*sp++ = *lp++) if (sp >= ..) goto ovflo;' is laid out otherwise"
+   "note": "phase B, address difference: loc2 = sp + (linebuf - genbuf) (every BSD ex, Plexus): ccv0/ccv0a/ccv1 and the shipped /bin/cc fold linebuf - genbuf to 0 (wrong code, KNOWLEDGE.md quirks), the original computes ld r2,#linebuf; sub r2,#genbuf; add r2,r13. 7 forms tried (OLDCC_LOG.md 2026-11-23); sp - genbuf + linebuf is not folded (4 lines left: the order) and also removes the block order difference of the loops; not taken."
   },
   "fixcase": {
    "file": "ex_re.c",
@@ -1615,7 +1617,8 @@
    "file": "ex_vadj.c",
    "orig": "0x8778",
    "size_orig": 104,
-   "status": "open"
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences of the module)"
   },
   "vadjDL": {
    "file": "ex_vadj.c",
@@ -1802,7 +1805,8 @@
    "file": "ex_voper.c",
    "orig": "0x9e52",
    "size_orig": 2112,
-   "status": "open"
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences of the module)"
   },
   "find": {
    "file": "ex_voper.c",
@@ -2225,7 +2229,8 @@
    "file": "ex_vput.c",
    "orig": "0xd4ee",
    "size_orig": 412,
-   "status": "open"
+   "status": "open",
+   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences of the module)"
   },
   "viin": {
    "file": "ex_vput.c",
