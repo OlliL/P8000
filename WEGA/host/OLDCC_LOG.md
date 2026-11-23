@@ -2105,3 +2105,12 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   No place: echo 08/12, cat 10/29, mkstr, at, expand 11/01/82, env, cut, mesg, pwck, tty, cal, col, cb. grpck 07/28
   (`ld r6,@r6` for argv[1]: v0 copies the parameter first, v0a reloads it; the original does neither) is an open form of v0.
   Not compiled: pcat, unpack, file, exrecover, apropos, whatis, getNAME. Between 07/28/82 and 10/28/82 no program has a place.
+- `OLD_D3AC`: the form T1 of `OLDCC_PARAMREGS.md`. ex 339 -> 340
+  (tailspec); the ccv0 units of the tree (162 functions) and the bench (135 of 153) unchanged. In the v0 block first: v0p
+  lost cparse/scparse sputc and popt/spopt findbyte, findword, findlong (the parameter from its register), so it is set for
+  v0 without v0p. The seven v0p models strictly equal again, matrix check as in the table.
+  Then moved to v0a (owner 2026-11-23): its only witness is ex, the v0 programs have no such place, and in v0 it needed the
+  exception for v0p; v0 and v0p codgen as before.
+- The 14 oldlibc modules kept as cas sources, compiled from every C source at hand (NAME/0_n.c, ../libc) by ccv0 and
+  ccv0a: none exact; v0 and v0a give the same code except ctime `_ctime` (v0a one instruction off). Closest: doprnt 0_5
+  from 0_5.c (_align the entry store of stkap, _doprnt 6), 0_3 and 0_7 the same _align; malloc 0_3 from malloc.c (_malloc 4).

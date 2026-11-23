@@ -144,10 +144,10 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 ### v0a (10/82, ex)
 
-- v0 with `OLD_D3AW` (codgen); cparse and popt those of v0 (`ccv0a`, `/lib/v0a/codgen`). The own code of ex (crt0 3.1
+- v0 with `OLD_D3AW` and `OLD_D3AC` (codgen); cparse and popt those of v0 (`ccv0a`, `/lib/v0a/codgen`). The own code of ex (crt0 3.1
   10/28/82) follows it, the libraries linked into ex (libc-v1.a, libtermlib-v1.a) follow v0: isatty, stty, gtty in /bin/ex
   are exact with v0 and differ with `OLD_D3AW`.
-- Measured 2026-11-23 (`OLDCC_PARAMREGS.md`): ex 323 -> 339 of 391 functions exact, none lost. The programs of 07/82
+- Measured 2026-11-23 (`OLDCC_PARAMREGS.md`): ex 323 -> 339 of 391 functions exact, none lost; 340 with `OLD_D3AC`. The programs of 07/82
   contradict the switch: with it chkout loses apply, getat, nextcmd, notplain, doit (15 -> 10 of 18 exact), dc 13
   functions, ranlib 2, the v0 modules of libc-v1.a 10. mkstr (11/82) has no place the switch touches.
 - Date line (measured 2026-11-23, own code compiled by ccv0 and ccv0a, functions against the originals): with v0 and
@@ -367,6 +367,10 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   go into the pair of its left operand when that is the register of a parameter (nodeno `c = q + 6`: `ldl rr2,rr6;
   inc r3,#6`, sccvc `ldl rr6,rr6; inc r7,#6` destroyed q). /lib/gopt nodeno, fndparm; checkops 21 -> 15, qmkstore 19 -> 14.
   Neutral on cas.
+- v0a `OLD_D3AC` (delay): an int parameter converted to a char (a cast, or the right side of a char
+  assignment) is forgotten in its register, so its low byte is read from its frame home (ex tailspec `foocmd[0] = c`:
+  `ldb rl2,1(r15)`). Witness: ex tailspec only. With v0 the programs of the tree (162 functions), the bench and xstr
+  stay as they are (no such place); v0p takes the register (cparse sputc, popt findbyte, findword, findlong `(char)n + '0'`).
 - v0a, v0p `OLD_D3AW` (argplace): the register of a parameter is forgotten only for an argument that is the parameter itself, uses it
   as an address or goes through +, -, unary -, * or a cast (scmd, readsyms, readtab), or a parameter added to an address constant
   (exname), and only when it lies in the register the argument is wanted in: putbyte `bcon(v)` reloads, popt setcon

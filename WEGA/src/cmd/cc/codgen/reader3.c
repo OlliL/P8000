@@ -439,6 +439,42 @@ reread:
 	return nerrors;
 }
 
+#ifdef OLD_D3AC
+/* v0a: an int parameter converted to a char (a cast, or the right side of a char assignment) is forgotten in its
+   register, so its low byte is read from its frame home (ex tailspec: foocmd[0] = c; ldb rl2,1(r15)) */
+static void
+d3acparm(p)
+	register NODE *p;
+{
+	register struct rs *n;
+
+	if (p->in.op != NAME || p->in.sname == 0 || p->in.sname->sclass != PARAM || p->in.type == CHAR || p->in.type == UCHAR)
+		return;
+	for (n = rsuse; n; n = n->next)
+		if (n->cls <= RCFLOAT && n->busy <= 0 && n->sym == p->in.sname)
+			n->sym = 0;
+}
+
+static void
+d3ac(p)
+	register NODE *p;
+{
+	register int k = optype(p->in.op);
+
+	if (p->in.type == CHAR || p->in.type == UCHAR) {
+		if (p->in.op == SCONV)
+			d3acparm(p->in.left);
+		else if (p->in.op == ASSIGN)
+			d3acparm(p->in.right);
+	}
+	if (k == LTYPE)
+		return;
+	d3ac(p->in.left);
+	if (k == BITYPE)
+		d3ac(p->in.right);
+}
+#endif
+
 #ifdef OLD_D4O
 /* the parameter list from its last element to its first */
 static void
@@ -537,6 +573,9 @@ delay(p)
 		}
 	}
 	fwalk(p, mapnm, 0);
+#ifdef OLD_D3AC
+	d3ac(p);
+#endif
 #if defined(OLD_D3K) && !defined(OLD_D3KC)
 	/* v0: a parameter the statement assigns to is not known in its register from its start on */
 	if (p->in.op == ASSIGN && p->in.left->in.op == NAME && p->in.left->in.sname && p->in.left->in.sname->sclass == PARAM) {
