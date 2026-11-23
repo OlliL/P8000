@@ -1,0 +1,84 @@
+# The cases of the corpus of chkwhat (compare/chkwhat/corpus.py); the format: host/recon/casefile.py (the default file is
+# a, the default step chkwhat a). Every file of a case ends with a newline (casefile).
+# Where an expectation comes from: man = /usr/man/man1/chkwhat.1, src = src/cmd/sccs/chkwhat.c. The messages go to the
+# standard error (compared, not in the expectations).
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== man-one-file
+# man: the identification strings behind @[$]; src: each up to a NUL, newline, " or ', one per line, no name with one file
+text @[$]prog.c	1.4  02/10/83 - 87wega3.2
+more text
+@[$]other.c 2.1
+-- expect
+prog.c	1.4  02/10/83 - 87wega3.2
+other.c 2.1
+
+== man-two-files
+# src: with more than one file each line starts with the name and ": "
+-- case
+step: chkwhat a b
+-- a
+@[$]a.c 1.1
+-- b
+x@[$]b.c 1.2
+-- expect
+a: a.c 1.1
+b: b.c 1.2
+
+== man-w
+# man: -w; src: the pattern @[$] and a blank in front of each string
+-- case
+step: chkwhat -w a
+-- a
+@[$]a.c 1.1
+-- expect
+@[$] a.c 1.1
+
+== man-usage
+# src: no file: "Usage: %s [-w] file ...", exit 1
+-- case
+step: chkwhat -w
+expect: exit 1
+
+== src-terminators
+# src: a string ends at a NUL, a " or a '
+@[$]one\000two
+@[$]in "quotes"
+@[$]it's
+-- expect
+one
+in 
+it
+
+== src-no-match
+# src: a file without @[$]: no output, exit 0
+nothing here @[$
+-- case
+step: chkwhat a
+expect: exit 0
+
+== src-cannot-open
+# src: "%s: cannot open %s" for a file that does not open; the others are read; the exit status is the number of errors
+-- case
+step: chkwhat nofile a nofile2
+expect: exit 2
+expect: output contains 'a: a.c 1.1'
+-- a
+@[$]a.c 1.1
+
+== src-restart
+# src: a character that breaks the pattern is not tested again as its first one: @@[$] is not found (a quirk)
+@@[$]lost
+@[$]found
+-- expect
+found
+
+== src-dash-file
+# src: an argument starting with - in front is taken as -w (any letter)
+-- case
+step: chkwhat -x a
+-- a
+@[$]a.c 1.1
+-- expect
+@[$] a.c 1.1

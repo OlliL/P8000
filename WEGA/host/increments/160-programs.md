@@ -226,3 +226,7 @@ PLZ programs and `as`: 170.
 - 2026-11-23 bd exact: a WEGA program (no System III source), src/cmd/bd.c written from the disassembly (one function main, the
   first draft fitted); shipped cc -O, /lib/libc.a, not stripped; the object name cc.818.o patched by dd; corpus compare/bd (8);
   quirk: the last line writes 0177 and above raw.
+- 2026-11-23 chkwhat exact: a WEGA program of qcv(5), no source in System III (the SCCS sources there are admin, get, delta ...
+  of /usr/bin; chkin, chkout, chkwhat are WEGA's own source control); src/cmd/sccs/chkwhat.c from the disassembly, ccv1,
+  libc-v4.a; the usage message as an initialised array (the data padding), the string loop as a for with two getc; corpus
+  compare/chkwhat (9); quirks: no end at EOF, @@[$] not found, any -x is -w.

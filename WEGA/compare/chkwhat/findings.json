@@ -1,0 +1,55 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/chkwhat",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "chkwhat.c",
+   "orig": "0x0042",
+   "size_orig": 120,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start"
+   ],
+   "note": "names guessed (errors, nfiles, progname, wflag, usage). The usage message is an initialised array usage[] (the original has it in the data, padded to an even length, in front of the string pool), not a literal. An argument starting with - is -w whatever its letter; with no argument at all **argv reads the null pointer (quirks table)."
+  },
+  "dowhat": {
+   "file": "chkwhat.c",
+   "orig": "0x00ba",
+   "size_orig": 368,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start",
+    "main"
+   ],
+   "note": "the string after @[$] is read by for (c = getc(fp); c && ...; c = getc(fp)) (two getc: the original shares their halves); the loop does not stop at EOF and a character that breaks the pattern is not tested again (quirks table)."
+  }
+ },
+ "note": "a WEGA program (qcv(5)) without a System III source, written from the disassembly; byte-identical with ccv1, the stdio.h of oldv7 and libc-v4.a."
+}
