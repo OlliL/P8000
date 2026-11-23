@@ -2073,3 +2073,12 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   strict (179 179 209 210 73 73 26); bench v0 133 -> 134 functions, 209 -> 207 lines (the gain is mkdir itself). Witness search
   in the originals (lda rX,k(rY); add rX,r15 not followed by a use through rX): mkdir, pwck, tabs, vls, upkeep; tabs filetab is
   exact without the switch, the others have no source yet. One witness: owner's exception.
+- 2026-11-23 the owner: extend an existing switch before a new one. OLD_D5SA folded into OLD_D5S (its address form, mapregs).
+  For find scomp a char-parameter rule in OLD_D3J (d3kjump keeps no char parameter, so it is forgotten at the label and gets its
+  home at the entry: `ld %0000(r15),r5`, the reload `cpb %0001(r15),#%2D`) makes find 39 of 39 but breaks rmconv (mip/optim.2.5:
+  `char c`, `if (c == 'r') ... else if (c == 'l')`, the original keeps c in r6) in cparse, scparse, codgen, scodgen: refuted as a
+  general rule, taken back. Differences seen: scomp's s is the third parameter (r5), declared `register char`; rmconv's c the
+  second (r6), `char`. Open.
+- find scomp solved by a source form (2026-11-23): an unused label in front of the second `if(s == '-')` gives the original's
+  home store and reload of the char parameter with the v0p as it is (OLD_D3K: at a label no jump names a parameter is forgotten).
+  The compiler rules measured before (char parameter, r5, loop order, busy, byte register) are not needed and not built.

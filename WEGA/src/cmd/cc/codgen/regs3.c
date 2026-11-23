@@ -416,9 +416,9 @@ mapregs(p)
 			n->in.op = FREE;
 		}
 		break;
-#ifdef OLD_D5SA
+#ifdef OLD_D5S
 	case PLUS:
-		/* v0: the address of a local array plus a variable: (variable + offset) + fp, the frame pointer added last (mkdir
+		/* v0 (OLD_D5S, its address form): the address of a local array plus a variable: (variable + offset) + fp, the frame pointer added last (mkdir
 		   strcpy(pname+slash, ".")) */
 		m = p->in.left;
 		if (m->in.op == PLUS && m->in.left->in.op == REG && m->in.left->tn.rval == FP && m->in.right->in.op == ICON &&

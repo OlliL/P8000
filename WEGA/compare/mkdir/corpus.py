@@ -1,5 +1,5 @@
 """Corpus of mkdir (host/recon/corpusrun.py): the original /bin/mkdir against the build (src/cmd/mkdir, mkdir.c of System III
-with the WEGA sccsid, ccv0 with OLD_D5SA, libc-v1.a), at its place in the tree (INSTALLED: set-user-id root as the original),
+with the WEGA sccsid, ccv0 (the address form of OLD_D5S), libc-v1.a), at its place in the tree (INSTALLED: set-user-id root as the original),
 on the cases of compare/mkdir/tests.txt (host/recon/casefile.py): directories with and without a path, several, the
 messages of the source (arg count, cannot access, cannot make directory), as root and as a user (the owner model of
 z8k-emu: mkdir runs as root and gives the new directory to the real user)."""

@@ -1,5 +1,5 @@
 """Corpus of sort (host/recon/corpusrun.py): the original /bin/sort against the build (src/cmd/sort, sort.c of System III
-with the WEGA order of the temporary directories (/tmp first) and the sccsid, ccv1, libc-v12.a), on the cases of
+with the WEGA order of the temporary directories (/tmp first) and the sccsid, ccv1, libc-v6.a), on the cases of
 compare/sort/tests.txt (host/recon/casefile.py): the options and keys of the source, -c, -m, -o, -u and the messages."""
 import os
 import sys

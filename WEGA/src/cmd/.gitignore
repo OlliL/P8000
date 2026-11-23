@@ -27,6 +27,7 @@
 /cpio
 /dumpdir
 /echo
+/find
 /getud
 /mkdir
 /mv

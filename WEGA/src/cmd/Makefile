@@ -29,13 +29,12 @@ LIBC_V4 = ../lib/libc-v4.a
 LIBC_V6 = ../lib/libc-v6.a
 LIBC_V10 = ../lib/libc-v10.a
 LIBC_V11 = ../lib/libc-v11.a
-LIBC_V12 = ../lib/libc-v12.a
-LIBC_V13 = ../lib/libc-v13.a
+LIBC_V7 = ../lib/libc-v7.a
 
 PROGS = ar
 
 # single-file commands, each with its own compiler and its own libc (byte-identical with the original)
-SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmod chgrp chown pwd kill sleep tail uname tee du env nohup gets sort touch grep nl su mkdir
+SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmod chgrp chown pwd kill sleep tail uname tee du env nohup gets sort touch grep nl su mkdir find
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o
@@ -47,7 +46,7 @@ all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 # switches the sources to what the shipped libc and cc need (the old libc's readsym, sprintf value, swap_quad; the exit status
 # of size). Without -DSHIPPED the bytes of the originals are rebuilt. The files of /lib are not made here: empty rules below.
 SHIPFLAGS = -O -DSHIPPED
-SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V12=/lib/libc.a LIBC_V13=/lib/libc.a
+SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a
 
 shipped:
 	$(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $(PROGS) $(FILES) $(SIMPLE) $(SHIPCC) LIBC=/lib/libc.a
@@ -180,13 +179,13 @@ chmod: crt0-chmod.o chmod.o $(LIBC_V1)
 
 chgrp.o: chgrp.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c chgrp.c
-chgrp: crt0-chgrp.o chgrp.o $(LIBC_V12)
-	$(LD) -e start -o $@ crt0-chgrp.o chgrp.o $(LIBC_V12)
+chgrp: crt0-chgrp.o chgrp.o $(LIBC_V6)
+	$(LD) -e start -o $@ crt0-chgrp.o chgrp.o $(LIBC_V6)
 
 chown.o: chown.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c chown.c
-chown: crt0-chown.o chown.o $(LIBC_V12)
-	$(LD) -e start -o $@ crt0-chown.o chown.o $(LIBC_V12)
+chown: crt0-chown.o chown.o $(LIBC_V6)
+	$(LD) -e start -o $@ crt0-chown.o chown.o $(LIBC_V6)
 
 pwd.o: pwd.c
 	$(CCV0) $(CFLAGS) -I../head/oldv7 -c pwd.c
@@ -210,8 +209,8 @@ tail: crt0-tail.o tail.o $(LIBC_V1)
 
 uname.o: uname.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c uname.c
-uname: crt0-uname.o uname.o $(LIBC_V12)
-	$(LD) -e start -o $@ crt0-uname.o uname.o $(LIBC_V12)
+uname: crt0-uname.o uname.o $(LIBC_V6)
+	$(LD) -e start -o $@ crt0-uname.o uname.o $(LIBC_V6)
 
 tee.o: tee.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c tee.c
@@ -240,13 +239,13 @@ gets: crt0-gets.o gets.o $(LIBC_V1)
 
 sort.o: sort.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c sort.c
-sort: crt0-sort.o sort.o $(LIBC_V12)
-	$(LD) -e start -o $@ crt0-sort.o sort.o $(LIBC_V12)
+sort: crt0-sort.o sort.o $(LIBC_V6)
+	$(LD) -e start -o $@ crt0-sort.o sort.o $(LIBC_V6)
 
 touch.o: touch.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c touch.c
-touch: crt0-touch.o touch.o $(LIBC_V12)
-	$(LD) -e start -o $@ crt0-touch.o touch.o $(LIBC_V12)
+touch: crt0-touch.o touch.o $(LIBC_V6)
+	$(LD) -e start -o $@ crt0-touch.o touch.o $(LIBC_V6)
 
 grep.o: grep.c
 	$(CC) $(CFLAGS) -c grep.c
@@ -260,13 +259,19 @@ nl: crt0-nl.o nl.o
 
 su.o: su.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c su.c
-su: crt0-su.o su.o $(LIBC_V13)
-	$(LD) -e start -o $@ crt0-su.o su.o $(LIBC_V13)
+su: crt0-su.o su.o $(LIBC_V4)
+	$(LD) -e start -o $@ crt0-su.o su.o $(LIBC_V4)
 
 mkdir.o: mkdir.c
 	$(CCV0) $(CFLAGS) -I../head/oldv7 -c mkdir.c
 mkdir: crt0-mkdir.o mkdir.o $(LIBC_V1)
 	$(LD) -e start -o $@ crt0-mkdir.o mkdir.o $(LIBC_V1)
+
+# find: the stdio.h of the tree (getc with --_cnt < 0 first), not oldv7
+find.o: find.c
+	$(CCV0P) $(CFLAGS) -c find.c
+find: crt0-find.o find.o $(LIBC_V7)
+	$(LD) -e start -o $@ crt0-find.o find.o $(LIBC_V7)
 
 strip.o: strip.c
 	$(CCV1) $(CFLAGS) -c strip.c
@@ -293,10 +298,10 @@ cpio.o: cpio.c
 cpio: crt0-cpio.o cpio.o
 	$(LD) -e start -o $@ crt0-cpio.o cpio.o -lc
 
-crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh `echo $@ | sed -e 's/^crt0-//' -e 's/\.s$$//'` > $@
 
-crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o: crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s
+crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o crt0-find.o: crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s
 	$(CAS) -u -o $@ `echo $@ | sed -e 's/\.o$$/.s/'`
 
 install: $(PROGS) $(FILES) $(SIMPLE)
@@ -338,6 +343,7 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	cp nl $(PREFIX)/bin/nl ; $(STRIP) $(PREFIX)/bin/nl
 	cp su $(PREFIX)/bin/su ; $(STRIP) $(PREFIX)/bin/su ; chmod 4751 $(PREFIX)/bin/su
 	cp mkdir $(PREFIX)/bin/mkdir ; $(STRIP) $(PREFIX)/bin/mkdir ; chmod 4751 $(PREFIX)/bin/mkdir
+	cp find $(PREFIX)/bin/find ; $(STRIP) $(PREFIX)/bin/find
 	rm -f $(PREFIX)/bin/cp $(PREFIX)/bin/ln
 	ln $(PREFIX)/bin/mv $(PREFIX)/bin/cp
 	ln $(PREFIX)/bin/mv $(PREFIX)/bin/ln
@@ -385,10 +391,10 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 
 clean:
 	rm -f $(PROGS) $(FILES) $(CLEANFILES) $(SIMPLE)
-	rm -f mv.o rm.o rmdir.o write.o size.o strip.o ranlib.o sum.o pr.o cpio.o clist.o cat.o echo.o cmp.o chmod.o chgrp.o chown.o pwd.o kill.o sleep.o tail.o uname.o tee.o du.o env.o nohup.o gets.o sort.o touch.o grep.o nl.o su.o mkdir.o
+	rm -f mv.o rm.o rmdir.o write.o size.o strip.o ranlib.o sum.o pr.o cpio.o clist.o cat.o echo.o cmp.o chmod.o chgrp.o chown.o pwd.o kill.o sleep.o tail.o uname.o tee.o du.o env.o nohup.o gets.o sort.o touch.o grep.o nl.o su.o mkdir.o find.o
 	rm -f crt0-ar.o crt0-sync.o crt0-ar.s crt0-sync.s
-	rm -f crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o
-	rm -f crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s
+	rm -f crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o crt0-find.o
+	rm -f crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s
 	for d in $(SUBDIRS) ; do (cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) clean) ; done
 
 .PHONY: all subdirs clean install

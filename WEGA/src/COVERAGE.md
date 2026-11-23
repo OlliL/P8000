@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 50 | 5 | 27 | 29 |
+| [bin](#bin) | 111 | 51 | 4 | 27 | 29 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 904 | 13 | 167 | 113 |
+| **all** | 1197 | 905 | 12 | 167 | 113 |
 
 <a id="root"></a>
 ## root
@@ -52,13 +52,13 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/cas` | binary E611 | `src/cmd/cas` | exact | sccvc | slibc-v11.a |
 | `bin/cat` | binary E707 | `src/cmd/cat.c` | exact | ccv0 | libc-v11.a |
 | `bin/cc` | binary E707 | `src/cmd/cc` | exact | cc | libc-v8.a |
-| `bin/chgrp` | binary E707 | `src/cmd/chgrp.c` | exact | ccv1 | libc-v12.a |
+| `bin/chgrp` | binary E707 | `src/cmd/chgrp.c` | exact | ccv1 | libc-v6.a |
 | `bin/chkdiff` | text | `src/cmd/chkdiff.sh` | exact | - | - |
 | `bin/chkin` | binary E707 | - | todo | D12 new, D1 loose | - |
 | `bin/chkout` | binary E707 | - | todo | D12 old, D1 tight | - |
 | `bin/chkwhat` | binary E707 | - | todo | D12 new?, D1 slots | - |
 | `bin/chmod` | binary E707 | `src/cmd/chmod.c` | exact | ccv0 | libc-v1.a |
-| `bin/chown` | binary E707 | `src/cmd/chown.c` | exact | ccv1 | libc-v12.a |
+| `bin/chown` | binary E707 | `src/cmd/chown.c` | exact | ccv1 | libc-v6.a |
 | `bin/cmp` | binary E707 | `src/cmd/cmp.c` | exact | cc | libc.a |
 | `bin/copydisk` | binary E707 | `src/cmd/copydisk` | exact | cc | libc.a |
 | `bin/cp` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
@@ -79,7 +79,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/ex` | binary E711 | `src/cmd/ex` | partial | cc | - |
 | `bin/fc` | binary E607 | - | todo | D12 new?, D1 - | - |
 | `bin/file` | binary E707 | `tmp/sys3/usr/src/cmd/file.c` | sys3 | D12 old, D1 tight | - |
-| `bin/find` | binary E707 | `src/cmd/find.c` | partial | cc | libc.a |
+| `bin/find` | binary E707 | `src/cmd/find.c` | exact | ccv0p | libc-v7.a |
 | `bin/format` | binary E707 | `src/cmd/format` | exact | cc | libc.a |
 | `bin/fsc` | binary E611 | - | todo | D12 new?, D1 - | - |
 | `bin/fse` | binary E607 | `src/cmd/fse` | exact | scc | - |
@@ -128,9 +128,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/size` | binary E707 | `src/cmd/size.c` | exact | ccv1 | libc-v3.a |
 | `bin/sld` | binary E611 | `src/cmd/sld` | exact | scc | slibc-v9.a |
 | `bin/sleep` | binary E707 | `src/cmd/sleep.c` | exact | ccv0 | libc-v1.a |
-| `bin/sort` | binary E707 | `src/cmd/sort.c` | exact | ccv1 | libc-v12.a |
+| `bin/sort` | binary E707 | `src/cmd/sort.c` | exact | ccv1 | libc-v6.a |
 | `bin/stty` | binary E707 | `tmp/sys3/usr/src/cmd/stty.c` | sys3 | D12 old, D1 loose | - |
-| `bin/su` | binary E707 | `src/cmd/su.c` | exact | ccv1 | libc-v13.a |
+| `bin/su` | binary E707 | `src/cmd/su.c` | exact | ccv1 | libc-v4.a |
 | `bin/sum` | binary E707 | `src/cmd/sum.c` | exact | ccv0 | libc-v1.a |
 | `bin/sync` | binary E707 | `src/cmd/sync.c` | exact | cc | libc.a |
 | `bin/tail` | binary E707 | `src/cmd/tail.c` | exact | ccv0 | libc-v1.a |
@@ -138,9 +138,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/tee` | binary E707 | `src/cmd/tee.c` | exact | ccv1 | libc.a |
 | `bin/test` | binary E707 | `tmp/sys3/usr/src/cmd/sh/test.c` | sys3 | D12 old?, D1 - | - |
 | `bin/time` | binary E707 | `tmp/sys3/usr/src/cmd/time.c` | sys3 | D12 old, D1 slots | - |
-| `bin/touch` | binary E707 | `src/cmd/touch.c` | exact | ccv1 | libc-v12.a |
+| `bin/touch` | binary E707 | `src/cmd/touch.c` | exact | ccv1 | libc-v6.a |
 | `bin/tr` | binary E707 | `tmp/sys3/usr/src/cmd/tr.c` | sys3 | D12 -, D1 slots | - |
-| `bin/uname` | binary E707 | `src/cmd/uname.c` | exact | ccv1 | libc-v12.a |
+| `bin/uname` | binary E707 | `src/cmd/uname.c` | exact | ccv1 | libc-v6.a |
 | `bin/uuclear` | text | `src/cmd/uuclear.sh` | exact | - | - |
 | `bin/uucp` | binary E707 | `src/cmd/uucp` | partial | - | - |
 | `bin/uulog` | binary E707 | `tmp/sys3/usr/src/cmd/uucp/uulog.c` | sys3 | D12 new, D1 loose | - |

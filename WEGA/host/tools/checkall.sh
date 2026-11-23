@@ -27,6 +27,8 @@ HERE=`cd \`dirname $0\` && pwd`
 REPO=`cd $HERE/../.. && pwd`
 WEGA=${WEGA:-$REPO/../tmp/wega31_root}
 WEGA=`cd $WEGA && pwd`
+# the umask of the owner's shell: z8k-emu tests/openflags.out expects a created file with mode 664
+umask 002
 if [ -n "$CHECK_TMP" ]; then T=$CHECK_TMP
 elif [ -n "$CHECK_NAME" ]; then T=/tmp/wega_check.$CHECK_NAME
 else T=/tmp/wega_check; fi

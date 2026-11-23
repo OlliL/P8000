@@ -9,44 +9,14 @@ static char sccsid[] = "@[$]find.c\t2.2  10/25/83 14:25:23 - 87wega3.2";
 #define A_DAY	86400L /* a day full of seconds */
 #define EQ(x, y)	(strcmp(x, y)==0)
 
-int	Randlast;
-char	Pathname[PATHLEN];
-
+/* the globals in the order of the bss of the original (its order of the .comm lines) */
 struct anode {
 	int (*F)();
 	struct anode *L, *R;
-} Node[100];
+};
 int Nn;  /* number of nodes */
-char	*Fname;
-long	Now;
-int	Argc,
-	Ai,
-	Pi;
 char	**Argv;
-/* cpio stuff */
-int	Cpio;
-short	*SBuf, *Dbuf, *Wp;
-char	*Buf, *Cbuf, *Cp;
-char	Strhdr[500],
-	*Chdr = Strhdr;
-int	Bufsize = 5120;
-int	Wct = 2560, Cct = 5120;
-int	Cflag;
-
-long	Newer;
-
-struct stat Statb;
-
-struct	anode	*exp(),
-		*e1(),
-		*e2(),
-		*e3(),
-		*mk();
-char	*nxtarg();
-char	Home[128];
-long	Blocks;
-char *strrchr();
-char *sbrk();
+short	*SBuf;
 	struct header {
 		short	h_magic,
 			h_dev;
@@ -61,6 +31,40 @@ char *sbrk();
 			h_filesize[2];
 		char	h_name[256];
 	} hdr;
+short	*Dbuf;
+char	*Cbuf;
+long	Newer;
+char	Home[128];
+char	*Buf;
+struct anode Node[100];
+short	*Wp;
+char	*Cp;
+int	Ai,
+	Pi;
+union { long l; short s[2]; char c[4]; } U;
+int	Cflag;
+char	*Fname;
+long	Blocks;
+int	Argc;
+/* cpio stuff */
+int	Cpio;
+struct stat Statb;
+char	Strhdr[500],
+	*Chdr = Strhdr;
+int	Randlast;
+char	Pathname[PATHLEN];
+long	Now;
+int	Bufsize = 5120;
+int	Wct = 2560, Cct = 5120;
+
+struct	anode	*exp(),
+		*e1(),
+		*e2(),
+		*e3(),
+		*mk();
+char	*nxtarg();
+char *strrchr();
+char *sbrk();
 main(argc, argv) char *argv[];
 {
 	struct anode *exlist;
@@ -404,7 +408,6 @@ struct { int f, com; } *p;
 }
 
 #define MKSHORT(v, lv) {U.l=1L;if(U.c[0]) U.l=lv, v[0]=U.s[1], v[1]=U.s[0]; else U.l=lv, v[0]=U.s[0], v[1]=U.s[1];}
-union { long l; short s[2]; char c[4]; } U;
 long mklong(v)
 short v[];
 {
@@ -493,6 +496,7 @@ register char s;
 {
 	if(s == '+')
 		return(a > b);
+minus:	/* not jumped to: as in the original, s is forgotten here (OLD_D3K) */
 	if(s == '-')
 		return(a < (b * -1));
 	return(a == b);

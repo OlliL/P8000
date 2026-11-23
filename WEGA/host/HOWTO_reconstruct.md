@@ -162,6 +162,10 @@ For what is left: finding the source form of a hard function, and changing the c
 
 ## Evidence rules for the old compilers
 
+- The order of the remedies (owner, 2026-11-15/21/23): 1. source forms (written down, each one tried); 2. extend an existing
+  switch whose rule the finding refines (grep `codgen/oldcc.h` and `OLDCC.md` for it first: the address form of an element rule goes
+  into that rule, a parameter case at a label into the label rule); 3. a new switch name only when no existing switch covers the
+  mechanism. Ask the owner before touching a pass.
 - Which compiler (owner 2026-11-05): 1. the date of the program (`OLDCC_DATES.md`) names the candidate, the version whose time it lies in (`OLDCC.md`, section 2). 2. Always measure the neighbouring versions too. 3. A new rule goes into the existing version first; `checkall` shows whether its programs stay identical. 4. A new version only when two programs or modules provably contradict each other; it must fit the time line and differ from its neighbour by as few switches as possible. 5. Time and witnesses of each version stand in `OLDCC.md`.
 - A switch needs two independent functions, preferably in different programs. A function and its segmented copy are one. A function that fits only through a switch nothing else needs is a suspect source form. Exceptions only by the owner; they are listed in `OLDCC.md`, section 5.
 - No regression: every exact function stays exact in every program of the same compiler version. A program of another time is no counter-witness.

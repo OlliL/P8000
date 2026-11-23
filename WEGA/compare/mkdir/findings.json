@@ -49,5 +49,5 @@
    ]
   }
  },
- "note": "exact 2026-11-23 (phase B): with the v0 switch OLD_D5SA (codgen mapregs) and OLD_D5T in v0 (host/OLDCC.md, D5). Before: the one place strcpy(pname+slash, \".\") in mkdir(); source forms tried in phase A: &pname[slash], slash+pname, &slash[pname], &pname[0]+slash, pname+(int)slash, and ccv0p, ccv1, ccv1r."
+ "note": "exact 2026-11-23 (phase B): with the address form of OLD_D5S (codgen mapregs) and OLD_D5T in v0 (host/OLDCC.md, D5). Before: the one place strcpy(pname+slash, \".\") in mkdir(); source forms tried in phase A: &pname[slash], slash+pname, &slash[pname], &pname[0]+slash, pname+(int)slash, and ccv0p, ccv1, ccv1r."
 }

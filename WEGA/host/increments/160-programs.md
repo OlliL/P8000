@@ -202,5 +202,16 @@ PLZ programs and `as`: 170.
 - 2026-11-23 checkall c7 failed: the su corpus wrote /usr/adm/sulog into ROOT (the layer takes a new file only in a directory
   that exists in the layer). sulog removed from the tree (/usr/adm of WEGA is empty); every su case makes $Z8K_OVERLAY/usr/adm
   first. checkall c8 ALL OK; src/COVERAGE.md generated (coverage.py on its install tree): exact 903, partial 14.
-- 2026-11-23 phase B (owner): mkdir, find, mkstr, ex. mkdir exact with the v0 switch OLD_D5SA (owner's exception, one witness)
+- 2026-11-23 phase B (owner): mkdir, find, mkstr, ex. mkdir exact with the address form of OLD_D5S (first a new switch OLD_D5SA; folded into OLD_D5S on the owner's word; one witness)
   and OLD_D5T moved to v0; corpus compare/mkdir (16, set-user-id root at its place, INSTALLED); quirk: `mkdir d/`.
+- 2026-11-23 find exact (phase B) by source forms only: the label in scomp (an unused label in front of the second if; ~80
+  forms tried before, in compare/find/findings.json the rules refuted on the way), the globals in the order of the original,
+  libc-v7.a; corpus compare/find (35). The compiler stays as committed; OLD_D5SA folded into OLD_D5S.
+- 2026-11-23 owner: too many libc versions. find's members fit libc-v7.a (cparse, scparse): the same versions of the shared modules,
+  an order that fits all three (find does not use errlst); libc-v14.a dropped. cparse, scparse and find byte-identical with it.
+  Next: the same check for libc-v11, v12, v13 against the older versions.
+- 2026-11-23 libc-v12.a merged into libc-v6.a, libc-v13.a into libc-v4.a (no module of both with another version; the orders
+  merged without a cycle): mv, rm, chgrp, chown, sort, touch, uname, strip, su byte-identical with them. libc-v11.a stays: cat
+  needs doprnt 0_7, ffltioc 0_1, data 0_1, length 0_3, each older library has another version of one of them.
+- 2026-11-23 host/tools/checkall.sh sets umask 002 (z8k-emu tests/openflags.out expects mode 664; with 022 it failed). checkall
+  ALL OK (124 corpora), src/COVERAGE.md generated: 905 exact, find exact.
