@@ -114,3 +114,4 @@ su
 mkdir
 find
 bc
+bcmp

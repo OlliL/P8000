@@ -28,6 +28,7 @@
 /dumpdir
 /echo
 /find
+/bcmp
 /getud
 /mkdir
 /mv

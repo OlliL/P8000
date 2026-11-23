@@ -36,8 +36,8 @@ PROGS = ar
 # single-file commands, each with its own compiler and its own libc (byte-identical with the original)
 SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmod chgrp chown pwd kill sleep tail uname tee du env nohup gets sort touch grep nl su mkdir find
 
-FILES=		getud putud dump dumpdir restor sync tar
-CLEANFILES=	sync.o ar.o  getud.o  putud.o
+FILES=		getud putud bcmp dump dumpdir restor sync tar
+CLEANFILES=	sync.o ar.o  getud.o  putud.o  bcmp.o
 SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
@@ -89,6 +89,18 @@ putud: putud.c
 	@cat putud2 >> putud1
 	@mv putud1 putud
 	@rm putud2
+
+# bcmp: a WEGA program (no System III source), separate I and D (-i), not stripped: the name of its object in the symbol table
+# is the scratch file of the original cc, cc.211.o (the PID)
+bcmp: bcmp.c
+	$(CC) -i -O -o $@ bcmp.c
+	@echo "Patching bcmp with scratchfilename used in original cc (contains PID)"
+	@dd if=bcmp of=bcmp1 bs=1 count=6965 >/dev/null 2>&1
+	@echo -n '211.o' >>bcmp1
+	@dd if=bcmp of=bcmp2 bs=1 skip=6970 >/dev/null 2>&1
+	@cat bcmp2 >> bcmp1
+	@mv bcmp1 bcmp
+	@rm bcmp2
 
 dump: dump.c
 	$(CC) $(CFLAGS) -o $@ dump.c
@@ -305,7 +317,7 @@ crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranl
 	$(CAS) -u -o $@ `echo $@ | sed -e 's/\.o$$/.s/'`
 
 install: $(PROGS) $(FILES) $(SIMPLE)
-	for file in ar getud putud tar sync ; do cp $$file $(PREFIX)/bin/$$file ; done
+	for file in ar getud putud bcmp tar sync ; do cp $$file $(PREFIX)/bin/$$file ; done
 	for file in chkdiff uuclear whodo ; do cp $$file.sh $(PREFIX)/bin/$$file ; chmod 755 $(PREFIX)/bin/$$file ; done
 	for file in ar tar sync ; do $(STRIP) $(PREFIX)/bin/$$file ; done
 	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; $(STRIP) $(PREFIX)/etc/$$file ; done

@@ -219,3 +219,7 @@ PLZ programs and `as`: 170.
   bc.c, ccv0, libc-v1.a with pipe added between pause and read); WEGA's sccsid; bundle rewritten for the register arguments
   (bundle copies a1..a5 to regs[5], xbundle switches to &args at the sixth element); the bss order by a block of the commons at
   the head of bc.y; corpus compare/bc (31; dc of the root through the pipe); quirk: `bc nofile` says (null).
+- 2026-11-23 bcmp exact: a WEGA program (no System III source), src/cmd/bcmp.c written from the disassembly (one function main);
+  shipped cc -i -O (E711, not stripped), /lib/libc.a; the byte compare by (c1 &= 0377) != (c2 &= 0377) (load and store back);
+  the object name cc.211.o of the symbol table patched by dd as getud, putud; corpus compare/bcmp (11); quirk: a file that is
+  part of the other is not reported.

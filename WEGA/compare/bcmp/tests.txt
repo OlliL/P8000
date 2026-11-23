@@ -1,0 +1,105 @@
+# The cases of the corpus of bcmp (compare/bcmp/corpus.py); the format: host/recon/casefile.py (the default file is a,
+# the default step bcmp a b). Every file of a case ends with a newline (casefile).
+# Where an expectation comes from: man = /usr/man/man1/bcmp.1, src = src/cmd/bcmp.c.
+# A difference is printed as "%6X :  %02x " of the offset and the byte of file1, then '%c' (printable) or three blanks,
+# then "\t%02x " and '%c' and a newline (printable) or only the newline; at the end "file 1 EOF", "file 2 EOF" or
+# "file 1 and 2 EOF" (src).
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== man-equal
+# man: no message when both files are equal
+abc
+-- b
+abc
+
+== man-one-difference
+# man: the byte number and the contents of the differing bytes; src: both files end together
+abc
+-- b
+abd
+-- expect
+     2 :  63 'c'	64 'd'
+file 1 and 2 EOF
+
+== man-two-differences
+# man: every differing byte
+abcdef
+-- b
+xbcdeY
+-- expect
+     0 :  61 'a'	78 'x'
+     5 :  66 'f'	59 'Y'
+file 1 and 2 EOF
+
+== man-offset-hex
+# src: the offset in hex (%6X)
+0123456789abcdefghijKLM
+-- b
+0123456789abcdefghijkLm
+-- expect
+    14 :  4b 'K'	6b 'k'
+    16 :  4d 'M'	6d 'm'
+file 1 and 2 EOF
+
+== man-subset
+# man: a file that is a real part of the other is reported; src: the EOF message only after a difference, so here
+# nothing (a bug of the original)
+abc
+-- b
+abc
+def
+
+# ---- what the source has besides ---------------------------------------------------------------------------------
+
+== src-file1-shorter
+# src: the loop ends at the EOF of file1, file2 is not at its end
+xb
+-- b
+ab
+zz
+-- expect
+     0 :  78 'x'	61 'a'
+file 1 EOF
+
+== src-file2-shorter
+# src: the loop ends at the EOF of file2
+ab
+zz
+-- b
+xb
+-- expect
+     0 :  61 'a'	78 'x'
+file 2 EOF
+
+== src-unprintable
+# src: a byte below ' ' gives three blanks (file1) or only the newline (file2)
+a\001
+-- b
+a\002
+-- expect
+     1 :  01    	02 
+file 1 and 2 EOF
+
+== src-high-byte
+# src: a byte above 0x7f is negative as a char: not printable
+\200
+-- b
+A
+-- expect
+     0 :  80    	41 'A'
+file 1 and 2 EOF
+
+== src-no-file1
+# src: "can't open file %s" and exit 1
+-- case
+step: bcmp nofile a
+-- expect
+can't open file nofile
+
+== src-no-file2
+# src: the second file the same
+-- case
+step: bcmp a nofile
+-- expect
+can't open file nofile

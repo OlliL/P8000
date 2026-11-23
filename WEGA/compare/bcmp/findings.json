@@ -1,0 +1,11 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/bcmp",
+ "note": "a WEGA program without a System III source, written from the disassembly; separate I and D (E711), not stripped; byte-identical with the shipped cc (-i -O) and /lib/libc.a, the name of the object in the symbol table (cc.211.o, the PID of the cc of the original) patched by dd in src/cmd/Makefile.",
+ "functions": {
+  "start": {"file": "crt0", "orig": "0x0000", "size_orig": 42, "status": "crt0", "kind": "proven", "callers": []},
+  "main": {"file": "bcmp.c", "orig": "0x002a", "size_orig": 720, "status": "exact", "kind": "proven", "callers": ["start"],
+   "note": "the names are guessed (no strings name them). The compare of the two bytes loads each one and stores it back: (c1 &= 0377) != (c2 &= 0377) gives it (no-op on a char); c1 = c1; c2 = c2; would too. eof2 is set only when eof1 is 0, so the end tests feof(fp2) again; the EOF message stands under if (diff): a bug, see the quirks table."}
+ }
+}
