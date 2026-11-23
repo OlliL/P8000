@@ -45,7 +45,7 @@ place named; "ccv0" is what ours does today without a forced form.
 |---|---|---|---|---|---|
 | chkout main (argc, argv) | ldl rr6 | `rel = 0; lev = 0;` | `progname = *argv++` | frame | register |
 | mkstr main (argc, argv) | ldl rr6 | `x = 0;` (clrb) | `argc--, progname = *argv++` | frame | register |
-| calloc (num, size) | (to be read) | none | `num *= size` | frame (memory operand of mult) | register |
+| calloc (num, size) | ldl rr6 | none | `num *= size` | frame, both: `ld r3,2(r15); mult rr2,0(r15)` | register |
 | ctime gmtime (tim) | ld r7 | none | `hms = *tim % 86400L` (long through tim, wanted in rr6 for divl) | frame | register |
 | chkout putline (in, out, vp, line) | ldm r4..r7 | `if (*line == '&') line++` | `keyword(out, vp->rel, vp->lev, line)` | frame (vp, out, line) | register (vp) |
 | chkout putline | ldm r4..r7 | the same, other branch | `wfprintf(out, "%s", line)` | register (out: `ld r7,r6`) | frame |
@@ -61,8 +61,32 @@ place named; "ccv0" is what ours does today without a forced form.
 | chkout summary (vp) | ld r7 | `if (pflag) return;` | `vp->next` | frame | frame |
 | ctime ct_numb (cp, n) | ld r7 only (n is never stored) | `cp++` | `n >= 10`, `n / 10`, `n % 10` | register r6 all through | ours stores n and divides in rr6 |
 
-Rows to add (data still to be read): ex (the 27 functions of table 1, the original of ex is not split into functions in
-`compare/ex/findings.json` yet), calloc, the counter-examples of the exact v0 programs bc, dc, tail, sum, mkdir, ranlib.
+### ex (v0, 10/82)
+
+Measured 2026-11-23: our ex of the tree (`src/cmd/ex/ex`, unstripped) against /bin/ex, each function aligned on the first
+equal instructions (scratch script `tmp/tmp/exmap.py`). All with one store at the entry unless named.
+
+| Function | Entry | The place | Original | ccv0 |
+|---|---|---|---|---|
+| tail (comm), tail2of | ld | `tailprim(comm, 1, 0)`: comm the whole first argument, wanted in r7 | `ld r7,@r15` (frame) | nothing (r7 as it is) |
+| putchar (c) | ld | `(*Putchar)(c)`: whole argument in r7 | `ld r7,@r15` | nothing |
+| cerror, normal, exit, vputch, gTTY | ld | the parameter the whole first argument of a call | `ld r7,@r15` | nothing |
+| substitute, getline | ldm | the same | `ld r7,@r15` | nothing |
+| merror, smerror, dosubcon, vclrlin | ld r14 / ldl rr6 | the same (home at 2) | `ld r7,2(r15)` | nothing |
+| printf | ldm r2..r7 | the same (home at 10) | `ld r7,10(r15)` | nothing |
+| partreg (c) | ld | c (int) passed as a char | `ldb rl7,1(r15); extsb r7` | `extsb r7` on the register |
+| setin (addr) | ld | `getline(*addr)`: the parameter as the address of the argument, wanted in r7, behind a label | `ld r7,@r15; ld r7,@r7` | `ld r2,r7; ld r7,@r2` |
+| tailspec (c) | ld | `foocmd[0] = c`: no call | `ldb rl2,1(r15)` (the byte from the frame) | `ld r2,r7; ldb ..,rl2` |
+| vdellin (p, cnt, ..) | ldm r5..r7 | p (r5) as an index, behind `if (cnt == 0)`, a test of a global and `if (cnt < 0)` | `ld r2,@r15` | `ld r2,r5` |
+| _align | ld r5 | (the store differs, to be read) | | |
+| plodput, sTTY, vreplace, vopen, YANKreg, YANKline | | first difference elsewhere (layout, register knowledge of a global) | | |
+
+### Counter-examples, v0 of 07/82
+
+In chkout the same situation as most of ex, a parameter as the whole argument in its own register, keeps the register:
+notplain `stat(name, &st)`, doit `setnames(name)`, putline `apply(in, out, vp->next, line)`, ctime `localtime(t)`.
+mkstr (11/82) has no such call (checked: its calls with a parameter pass it in another register). Still to check: the
+exact programs of 07/82 (dc, bc, tail, sum, mkdir, ranlib).
 
 ## 3. Observations and guesses
 
@@ -81,7 +105,13 @@ Rows to add (data still to be read): ex (the 27 functions of table 1, the origin
   the statement that assigns line would be where vp is forgotten (the first guess).
 - (guess) gmtime: the long through tim is wanted in rr6 (divl). The original seems to take the pair rr6 first, which
   loses tim in r7, and then loads the address from the frame into r6; ccv0 copies `ld r6,r7` first.
-- (fact) v0p `OLD_D3AW` (a parameter that is a whole argument in its wanted register is forgotten) does not hold for v0:
+- (fact) 22 of the 27 ex witnesses are the rule of v0p `OLD_D3AW` (argplace): a parameter that is the whole argument of
+  a call, its address or goes through a cast, in the register the argument is wanted in, is taken from the frame (table
+  ex). So ex (10/82) was built by a v0 with D3AW, chkout (07/82) by a v0 without it: two programs of "v0" that contradict
+  each other in this point (guess: a later state of the compiler between v0 and v0p; evidence rule 4 of HOWTO_reconstruct).
+- (fact) Left over in ex without a call: tailspec (`foocmd[0] = c` reads the byte of c from the frame) and vdellin (p as an
+  index behind three tests). Two forms of their own, not D3AW.
+- (fact) v0p `OLD_D3AW` (a parameter that is a whole argument in its wanted register is forgotten) does not hold for v0 of 07/82:
   chkout passes `name` to stat and setnames, and in, out, line to apply, straight from their registers. ex `tail(comm) {
   tailprim(comm, 1, 0); }` reloads comm: ex is later (10/82), perhaps a later state of the compiler (guess).
 - (fact) The "reload" functions of ex were tried with forms on tail without effect (no blank line, `char comm[]`,
@@ -99,5 +129,7 @@ Rows to add (data still to be read): ex (the 27 functions of table 1, the origin
   all `ld r2,r6`.
 - 2026-11-23 libc ctime 0_2 ct_numb: `OLD_D2MP` (v0: OLD_D2M does not take the pair of a parameter that is divided):
   ct_numb exact, bench v0 and chkout unchanged, v0p not touched. Removed again (owner): only one witness.
+- 2026-11-23 the 27 ex witnesses read against our build (exmap.py): 22 are D3AW (table ex); calloc reads both parameters
+  from the frame. Nothing built.
 - 2026-11-23 `OLD_D2Q` into v0 with `OLD_D2QI` (committed 729ad896): chkout readchk and getat exact; not a parameter question,
   noted here because it moved gmtime's second load to the original form.
