@@ -245,7 +245,12 @@ clocal(p) NODE *p; {
 		l->in.op = FREE;
 		l = p->in.left = l->in.left;
 		r->in.type = l->in.type;
+#ifdef OLD_D8L
+		/* v0, v0p, v1: the compare keeps the char type, its value is sign extended (tcc, extsb) where it is used as an int */
+		p->in.type = l->in.type;
+#else
 		if( !logop( p->in.op ) ) p->in.type = l->in.type;
+#endif
 		}
 
 	return(p);

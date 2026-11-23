@@ -84,7 +84,7 @@ the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibc
 
 ### v1 (01/83 .. 07/83)
 
-- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D25` (scparse), `OLD_D3`, `OLD_D61`, `OLD_D62` and `OLD_D63` (codgen, scodgen), `OLD_D24`
+- Switches: `OLD_D1`, `OLD_D12` and `OLD_D8L` (cparse), `OLD_D25` (scparse), `OLD_D3`, `OLD_D61`, `OLD_D62` and `OLD_D63` (codgen, scodgen), `OLD_D24`
   (scodgen), `OLD_D2CW` (scodgen), `OLD_D20` and `OLD_D52` (popt).
 - `OLD_D24` and `OLD_D25` (a long cast to a pointer is masked through a copy) are in the segmented v1 since slibPW (07/83):
   xalloc (`(char *)((long)np + usize)`, `(char *)Lastbrk`), regcmp (`sp = (char *)*adx++` through a `long *`), regex.
@@ -131,7 +131,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 - Programs: those of 1982 (sources 07/82 .., crt0 3.1 up to 11/82). Marks: tight frames (no unused frame word, no return
   temporary, leaf functions without a frame) and packed strings.
-- Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D6D`, `OLD_D22`, `OLD_D19P` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
+- Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D6D`, `OLD_D22`, `OLD_D19P`, `OLD_D8L` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
   `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`, `OLD_D2MO`,
   `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D5T`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6`, `OLD_D2Q`, `OLD_D2QI`, `OLD_D3K2`, `OLD_D3J` (codgen); none in popt. Not `OLD_D1`,
   not `OLD_D3`. cas: the old one (D17).
@@ -457,6 +457,13 @@ without `-O` the head stays on top. Open: sld 0x7C26 keeps its head on top.
 
 Unsigned char argument: old `ldb rh7,#0`, shipped `subb rh7,rh7` (cas ifile); old libc length `ldb rl3,@r2` + `testb rl3` against
 `testb @r2`; char loads as `ldb`/`subb` or `extsb; and #FF`.
+
+- v0, v0p, v1 cparse `OLD_D8L` (clocal): a compare of a char with a constant that fits (the WEGA rule that makes it a byte
+  compare) keeps the char type, so its value used as an int is sign extended (`cpb ..,#k; ldk r2,#0; tcc cc,r2; extsb
+  r2`). The shipped cparse has `if( !logop( p->in.op ) )` in front of the assignment inside a branch taken only for
+  logops: dead code, the compare stays int. In the originals of 1982 52 (v0) and 22 (v0a) such values, all with the
+  extsb but two (apropos, whatis); ex edge, gettmode, advance, vgetline; the forced casts `(char)(a == b)` of tail,
+  libc endopen 0_3 (v0p), 0_5 and 0_1 (v1r, v1q), ctime 0_1 (v1) are gone. The segmented cparse versions not measured.
 
 ### D9 Shift by 8 bits
 

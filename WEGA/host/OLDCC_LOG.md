@@ -2130,3 +2130,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   buildtree makes the node; owner: no switches in mip): the same output on ex, the bench, the tree units and the v0p models. ex 342 -> 348, the other
   two (operate, vishft) only call/calr and jp/jr; bench 137 -> 139 (188 lines); tree units and v0p models unchanged.
   Searched the pcc sources of the unix history archive for it: not there.
+- `OLD_D8L` (2026-11-23, cparse v0, v0p, v1): the ex cluster "char compare" (edge, gettmode, advance, vgetline: extsb behind
+  the tcc of a byte compare used as a value). Count in the binaries of 1982: cpb + tcc as a value has the extsb 52 times
+  (v0) and 22 times (v0a), twice not (apropos, whatis); cp, cpl never. Our tree reached it only with forced casts
+  `(char)(...)` (tail, endopen 0_3, 0_5, ctime 0_1). clocal of the shipped cparse sets the char type only for a non-logop
+  inside a branch for logops (dead); without that condition: ex 348 -> 352, the casts removed and every module exact with
+  v0p (endopen 0_3) and v1 (endopen 0_5, 0_1, ctime 0_1); tree units, bench, v0p models unchanged.

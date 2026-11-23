@@ -13,13 +13,13 @@ register FILE *iop;
 	if (iop == NULL)
 		return NULL;
 
-	if (((char)(mode[0] == 'r') && (char)(mode[1] == 'w')) ||
+	if ((mode[0] == 'r' && mode[1] == 'w') ||
 	    (mode[0] == 'w' && mode[1] == 'r')) {
 		mode[0]='r';
 		mode[1]='+';
 	}
 
-	rw = (char)(mode[1] == '+');
+	rw = mode[1] == '+';
 
 	switch (*mode) {
 

@@ -45,7 +45,7 @@ char **argv;
 		argc++;
 		argv--;
 	}
-	fromend = (char)(*arg=='-');
+	fromend = *arg=='-';
 	arg++;
 	n = (isdigit(*arg)) ? 0 : 10;
 	while(isdigit(*arg))

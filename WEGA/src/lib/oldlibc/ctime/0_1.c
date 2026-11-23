@@ -275,7 +275,7 @@ tzset()
 		q = tzname[0];
 		do *q++ = *p? *p++: ' ';
 		while(--n);
-		if(sign = (char)(*p == '-'))
+		if(sign = *p == '-')
 			p++;
 		n = 0;
 		while(*p >= '0' && *p <= '9')
@@ -283,7 +283,7 @@ tzset()
 		if(sign)
 			n = -n;
 		timezone = ((long) (n * 60)) * 60;
-		if(daylight = (char)(*p != '\0')) {
+		if(daylight = *p != '\0') {
 			q = tzname[1];
 			n = 3;
 			do *q++ = *p? *p++: ' ';

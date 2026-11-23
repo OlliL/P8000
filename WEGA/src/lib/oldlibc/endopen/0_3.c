@@ -21,7 +21,7 @@ register FILE *iop;
 		mode[1]='+';
 	}
 
-	rw = (char)(mode[1] == '+');
+	rw = mode[1] == '+';
 
 	switch (*mode) {
 
