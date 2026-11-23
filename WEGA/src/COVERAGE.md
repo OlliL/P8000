@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 53 | 3 | 27 | 28 |
+| [bin](#bin) | 111 | 54 | 3 | 27 | 27 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 907 | 11 | 167 | 112 |
+| **all** | 1197 | 908 | 11 | 167 | 111 |
 
 <a id="root"></a>
 ## root
@@ -48,7 +48,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/as` | binary E711 | - | todo | D12 old?, D1 tight | - |
 | `bin/bc` | binary E707 | `src/cmd/bc` | exact | ccv0 | libc-v1.a |
 | `bin/bcmp` | binary E711 | `src/cmd/bcmp.c` | exact | cc | libc.a |
-| `bin/bd` | binary E707 | - | todo | D12 -, D1 loose | - |
+| `bin/bd` | binary E707 | `src/cmd/bd.c` | exact | cc | libc.a |
 | `bin/cas` | binary E611 | `src/cmd/cas` | exact | sccvc | slibc-v11.a |
 | `bin/cat` | binary E707 | `src/cmd/cat.c` | exact | ccv0 | libc-v11.a |
 | `bin/cc` | binary E707 | `src/cmd/cc` | exact | cc | libc-v8.a |
@@ -489,7 +489,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `usr/lib/font/ftUD` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/fonts.d/ftUD.c` | sys3 | D12 -, D1 - | - |
 | `usr/lib/font/ftXM` | binary E711 | `tmp/sys3/usr/src/cmd/text/roff.d/fonts.d/ftXM.c` | sys3 | D12 -, D1 - | - |
 | `usr/lib/help/ad` | text | `src/cmd/sccs/help.d` | exact | - | - |
-| `usr/lib/help/bd` | text | `src/cmd/sccs/help.d` | exact | - | - |
+| `usr/lib/help/bd` | text | `src/cmd/bd.c` | exact | cc | libc.a |
 | `usr/lib/help/cb` | text | `src/cmd/sccs/help.d` | exact | - | - |
 | `usr/lib/help/cm` | text | `src/cmd/sccs/help.d` | exact | - | - |
 | `usr/lib/help/cmds` | text | `src/cmd/sccs/help.d` | exact | - | - |

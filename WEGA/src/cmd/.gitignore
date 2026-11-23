@@ -29,6 +29,7 @@
 /echo
 /find
 /bcmp
+/bd
 /getud
 /mkdir
 /mv

@@ -1,0 +1,67 @@
+# The cases of the corpus of bd (compare/bd/corpus.py); the format: host/recon/casefile.py (the default file is a). Every file
+# of a case ends with a newline (casefile). The output starts with a newline and ends with two, so every case has an
+# expect: output is line (\n, \t, \ooo as escapes).
+# Where an expectation comes from: man = /usr/man/man1/bd.1, src = src/cmd/bd.c.
+
+== man-stdin
+# man: without a file the standard input; src: the address %4x, each byte ' %02x', the printable bytes between * and *, the rest as .; at the end a newline more
+-- case
+step: bd
+stdin: s.in
+expect: output is '\n   0   61 62 63 0a                                    \t*abc.*\n\n'
+-- s.in
+abc
+
+== man-file
+# man: bd file
+-- case
+step: bd a
+expect: output is '\n   0   61 62 63 0a                                    \t*abc.*\n\n'
+-- a
+abc
+
+== src-sixteen
+# src: a full line of 16 bytes, then the address of the next line and an empty last line (48 blanks, **)
+-- case
+step: bd a
+expect: output is '\n   0   30 31 32 33 34 35 36 37 38 39 61 62 63 64 65 0a\t*0123456789abcde.*\n  10                                                  \t**\n\n'
+-- a
+0123456789abcde
+
+== src-two-lines
+# src: the address in hex: 10 for the second line
+-- case
+step: bd a
+expect: output is '\n   0   30 31 32 33 34 35 36 37 38 39 41 42 43 44 45 46\t*0123456789ABCDEF*\n  10   78 79 7a 0a                                    \t*xyz.*\n\n'
+-- a
+0123456789ABCDEFxyz
+
+== src-unprintable
+# src: in a full line a byte below blank or from 0177 on is a .
+-- case
+step: bd a
+expect: output is '\n   0   01 7f 80 20 61 61 61 61 61 61 61 61 61 61 61 0a\t*... aaaaaaaaaaa.*\n  10                                                  \t**\n\n'
+-- a
+\001\177\200 aaaaaaaaaaa
+
+== src-last-line-raw
+# src: the last line tests only for blank: 0177 and bytes above it are written as they are (a bug of the original)
+-- case
+step: bd a
+expect: output is '\n   0   7f 80 78 0a                                    \t*\177\200x.*\n\n'
+-- a
+\177\200x
+
+== src-no-file
+# src: "can't open file %s", then the newline of the end
+-- case
+step: bd nofile
+expect: output is 'can'"'"'t open file nofile\n\n'
+
+== src-address-hex
+# src: 33 bytes: the addresses 0, 10, 20
+-- case
+step: bd a
+expect: output is '\n   0   61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61\t*aaaaaaaaaaaaaaaa*\n  10   62 62 62 62 62 62 62 62 62 62 62 62 62 62 62 62\t*bbbbbbbbbbbbbbbb*\n  20   0a                                             \t*.*\n\n'
+-- a
+aaaaaaaaaaaaaaaabbbbbbbbbbbbbbbb

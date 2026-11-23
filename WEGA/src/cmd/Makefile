@@ -36,8 +36,8 @@ PROGS = ar
 # single-file commands, each with its own compiler and its own libc (byte-identical with the original)
 SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmod chgrp chown pwd kill sleep tail uname tee du env nohup gets sort touch grep nl su mkdir find
 
-FILES=		getud putud bcmp dump dumpdir restor sync tar
-CLEANFILES=	sync.o ar.o  getud.o  putud.o  bcmp.o
+FILES=		getud putud bcmp bd dump dumpdir restor sync tar
+CLEANFILES=	sync.o ar.o  getud.o  putud.o  bcmp.o  bd.o
 SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
@@ -101,6 +101,18 @@ bcmp: bcmp.c
 	@cat bcmp2 >> bcmp1
 	@mv bcmp1 bcmp
 	@rm bcmp2
+
+# bd: a WEGA program (no System III source), not stripped: the name of its object in the symbol table is the scratch file of
+# the original cc, cc.818.o (the PID)
+bd: bd.c
+	$(CC) -O -o $@ bd.c
+	@echo "Patching bd with scratchfilename used in original cc (contains PID)"
+	@dd if=bd of=bd1 bs=1 count=6539 >/dev/null 2>&1
+	@echo -n '818.o' >>bd1
+	@dd if=bd of=bd2 bs=1 skip=6544 >/dev/null 2>&1
+	@cat bd2 >> bd1
+	@mv bd1 bd
+	@rm bd2
 
 dump: dump.c
 	$(CC) $(CFLAGS) -o $@ dump.c
@@ -317,7 +329,7 @@ crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranl
 	$(CAS) -u -o $@ `echo $@ | sed -e 's/\.o$$/.s/'`
 
 install: $(PROGS) $(FILES) $(SIMPLE)
-	for file in ar getud putud bcmp tar sync ; do cp $$file $(PREFIX)/bin/$$file ; done
+	for file in ar getud putud bcmp bd tar sync ; do cp $$file $(PREFIX)/bin/$$file ; done
 	for file in chkdiff uuclear whodo ; do cp $$file.sh $(PREFIX)/bin/$$file ; chmod 755 $(PREFIX)/bin/$$file ; done
 	for file in ar tar sync ; do $(STRIP) $(PREFIX)/bin/$$file ; done
 	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; $(STRIP) $(PREFIX)/etc/$$file ; done

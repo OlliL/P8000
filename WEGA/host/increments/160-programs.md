@@ -223,3 +223,6 @@ PLZ programs and `as`: 170.
   shipped cc -i -O (E711, not stripped), /lib/libc.a; the byte compare by (c1 &= 0377) != (c2 &= 0377) (load and store back);
   the object name cc.211.o of the symbol table patched by dd as getud, putud; corpus compare/bcmp (11); quirk: a file that is
   part of the other is not reported.
+- 2026-11-23 bd exact: a WEGA program (no System III source), src/cmd/bd.c written from the disassembly (one function main, the
+  first draft fitted); shipped cc -O, /lib/libc.a, not stripped; the object name cc.818.o patched by dd; corpus compare/bd (8);
+  quirk: the last line writes 0177 and above raw.
