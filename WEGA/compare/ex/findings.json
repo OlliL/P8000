@@ -23,7 +23,9 @@
     "gTTY",
     "sTTY",
     "setin",
-    "vreplace"
+    "vreplace",
+    "printf",
+    "_align"
    ],
    "difference": "the original reloads a parameter from its frame home (ld r7,@r15) in front of its first use, ccv0 takes it from the register",
    "tried": "on tail without effect: no blank line, char comm[], return (...), return; at the end, a block, a null statement, an extra local, the parameter undeclared",
@@ -87,5 +89,5 @@
   }
  },
  "wega edits": "sTTY: stty(i, &tty), not ioctl TIOCSETN (the original calls stty; sgtty.h of WEGA defines TIOCSETN). getach: after read(0, &lastc, 1) the original keeps the high byte and swaps it down (lastc &= 0177400; swab(&lastc, &lastc, 2)): the byte read lies in the high half of the int on the Z8000.",
- "printf": "Not pprintf.c (its printf, _p_dconv, _p_emit are not in /bin/ex). The module at 0xe546..0xe96e (before termlib, which starts about 0xe96e; libc from 0xf0f2) is a copy of the libc printf and doprnt of the time, printing by ex's putchar: a stub table of one entry (jp putchar), printf at e54a (varargs: r2..r7 to the stack), _align at e57e (1 instruction off doprnt/0_7 of oldlibc, the member of cat, env, nohup, sum), the formatter at e5d4 (calls strlen, putchar), _atoip at e8fa (2 off). doprnt 0_7 is only a .s in oldlibc; C versions 0_2, 0_4, 0_5, 0_6 exist. Next: a C source of this module (doprnt with putchar)."
+ "printf": "src/cmd/ex/printf.c (2026-11-23, written from /bin/ex 0xe546..0xe96e), the last module before strings.o instead of pprintf.c (Plexus; its functions are not in /bin/ex): printf (as oldlibc printf 0_5, without stdout, return (0)), _align (as doprnt 0_7), _doprnt (a smaller one: no file, putchar, no floating point, no sign handling, no (null), a flag for a precision that prints one '0'), _atoip. _doprnt and _atoip exact; printf and _align differ only by the parameter cluster of phase B (printf reloads fmt, _align stores stkap at the entry). One module: its jp table (putchar) stands in front of printf."
 }
