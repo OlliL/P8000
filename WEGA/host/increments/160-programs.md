@@ -37,7 +37,7 @@ Every program of the WEGA tree from source, byte-identical, each with a corpus.
       libc-v11.a; 2 bytes of code left (one parameter reload in main, the compiler: phase A stops; findings.json). Not built in.
    3. partial 2026-11-22: `/bin/ex` (src/cmd/ex, crt0 3.1 10/28/82, E711): sample ex_addr, ex_put, ex_subr: ccv0 nearest
       (53 of 100 functions exact; ccv0p 46, ccv1/ccv1r/ccv1q/cc 12..16 of 91); the rest: `@r15` for offset 0 (v0 writes
-      `0(r15)`, OLD_D18) and calr to other files; a compiler question, phase A stops. For a build later: libtermlib is in the tree, xstr in
+      `0(r15)`, OLD_D18) and calr to other files; a compiler question, phase A stops. For a build later: the termlib of ex is src/lib/oldtermlib (libtermlib-v1.a, ccv0, exact), xstr in
       tmp/plexus/cmd/plx/xstr.c (/usr/bin/xstr has no source in src yet), setjmp.h is missing (WEGA has setret.h).
    4. (owner 2026-11-22) then the programs of /bin (then the others) whose status is `sys3`: phase A each; exact: build,
       corpus, checkall, commit; not exact: stays partial, the next one.

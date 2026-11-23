@@ -21,7 +21,7 @@ VERSION = 2.13
 OPTIONS = -DZCMD -DZZCMD -DRDONLY -DWRAPMGN -DOPENCODE -DLISPCODE -DTAGSCODE -DCRNL -DSOFTTABS -DCHDIR -DBEEHIVE -DUCVISUAL
 CFLAGS = -O
 CRT = ../../lib/libc/nonseg/crt
-TERMLIB = ../../lib/libtermlib/build/nonseg/libtermlib.a
+TERMLIB = ../../lib/libtermlib-v1.a
 LIBC_V1 = ../../lib/libc-v1.a
 SRCS = ex ex_addr ex_cmds ex_cmds2 ex_cmdsub ex_data ex_get ex_io ex_put ex_re ex_set ex_subr ex_temp ex_tty ex_unix ex_v ex_vadj ex_vget \
 	ex_vmain ex_voper ex_vops ex_vops2 ex_vops3 ex_vput ex_vwind printf

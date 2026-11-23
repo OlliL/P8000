@@ -17,6 +17,7 @@ are already in the System III or Plexus source are left out: ex choice, samef, o
 | v0 | chkout `main` | label `again:` in front of `progname = *argv++` | argv from the frame (`ld r2,0(r15)`) |
 | v0 | mkstr `main` (f0042) | label `start:` in front of `argc--, progname = *argv++` | argv from the frame |
 | v0 | libc calloc 0_1 | label `start:` in front of `num *= size` | `mult rr2,0(r15)`: size from the frame |
+| v0 | termlib tgoto (ex, src/lib/oldtermlib) | the initializers of cp, dp, oncol, which as statements behind a label `start:` | CM and destline from the frame (`ld r2,4(r15); ld 6(r15),r2`, `ld r12,0(r15)`); initializers or plain statements: registers |
 | v0p | find `scomp` | label `minus:` behind `if (s == '+') return (a > b);` | s from the frame (`cpb 1(r15),#'-'`), stored at the entry |
 | v0p | codgen, scodgen `readmems`, `rwprint` | label `top:` in front of the first test (allo3.c) | the parameter from the frame |
 | v0p | cpp `subst` | label `top:` in front of the first use of sp | sp from the frame |

@@ -1,4 +1,4 @@
-# lib: libc/build/nonseg/libc.a, libc/build/seg/slibc.a, libl/libl.a, libl/slibl.a, liby/liby.a, liby/sliby.a, libm/libm.a, libm/slibm.a, libPW/libPW.a, libPW/slibPW.a, libmp/libmp.a, libmp/slibmp.a, libtermlib/libtermlib.a, libtermlib/slibtermlib.a, libcurses/libcurses.a, libcurses/slibcurses.a, libscreen/libscreen.a, libscreen/slibscreen.a, libcisam/libcisam.a, libcisam/slibcisam.a, libu8000/libu8000.a, libu8000/slibu8000.a (the shipped libraries, from their sources), build/nonseg and build/seg: the loose objects of /lib and libc-vN.a (the libraries of the old programs, oldlibc/).
+# lib: libc/build/nonseg/libc.a, libc/build/seg/slibc.a, libl/libl.a, libl/slibl.a, liby/liby.a, liby/sliby.a, libm/libm.a, libm/slibm.a, libPW/libPW.a, libPW/slibPW.a, libmp/libmp.a, libmp/slibmp.a, libtermlib/libtermlib.a, libtermlib/slibtermlib.a, libcurses/libcurses.a, libcurses/slibcurses.a, libscreen/libscreen.a, libscreen/slibscreen.a, libcisam/libcisam.a, libcisam/slibcisam.a, libu8000/libu8000.a, libu8000/slibu8000.a (the shipped libraries, from their sources), build/nonseg and build/seg: the loose objects of /lib and libc-vN.a (the libraries of the old programs, oldlibc/), libtermlib-v1.a (oldtermlib/).
 #
 #   make
 #   make install PREFIX=dir   the shipped libraries and objects (cnvt.o, doprnt.o, mcrt0.o, scnvt.o, sdoprnt.o, smcrt0.o, libc.a, crt0.o, slibc.a, scrt0.o, libl.a, slibl.a, usr/lib/lex/ncform, liby.a, sliby.a, libm.a, slibm.a, usr/lib/libPW.a, usr/lib/slibPW.a, usr/lib/libmp.a, usr/lib/slibmp.a, usr/lib/libtermlib.a, usr/lib/slibtermlib.a, usr/lib/libcurses.a, usr/lib/slibcurses.a, usr/lib/libscreen.a, usr/lib/slibscreen.a, usr/lib/libcisam.a, usr/lib/slibcisam.a, usr/lib/libu8000.a, usr/lib/slibu8000.a) below dir
@@ -30,6 +30,7 @@ all: objs
 	cd libu8000 ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS)
 	# no make args, not threadsafe
 	cd oldlibc ; $(MAKE)
+	cd oldtermlib ; $(MAKE)
 	cd oldslibc ; $(MAKE)
 
 install: objs
@@ -66,6 +67,7 @@ clean:
 	cd libcisam ; $(MAKE) clean
 	cd libu8000 ; $(MAKE) clean
 	cd oldlibc ; $(MAKE) clean
+	cd oldtermlib ; $(MAKE) clean
 	cd oldslibc ; $(MAKE) clean
 
 # the loose objects of /lib: NOBJS in build/nonseg, SOBJS in build/seg (installed as scnvt.o, sdoprnt.o, smcrt0.o)
