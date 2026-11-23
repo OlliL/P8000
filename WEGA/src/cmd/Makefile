@@ -59,7 +59,7 @@ shipped:
 		cc/gopt) X="SCC=scc SLD=sld LIBC=/lib/slibc.a" ;; \
 		cas) X="SCC=scc SLIBC=/lib/slibc.a SCCFLAGS=\"$(SHIPFLAGS)\"" ;; \
 		cc/codgen|cc/popt) X='LIBC="../../../../../lib/oldlibc/printf/s1.o ../../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
-		cc/cpp|cc/cparse|cc|dc|ld) X="LIBC=/lib/libc.a" ;; \
+		cc/cpp|cc/cparse|cc|dc|bc|ld) X="LIBC=/lib/libc.a" ;; \
 		*) X="" ;; \
 		esac ; \
 		(cd $$d ; eval $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all '$(SHIPCC)' $$X) ; \

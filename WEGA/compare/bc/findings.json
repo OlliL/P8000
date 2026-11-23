@@ -1,0 +1,190 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv0",
+ "binary": "/bin/bc",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "yylex": {
+   "file": "bc.y",
+   "orig": "0x0042",
+   "size_orig": 872,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "yyparse"
+   ]
+  },
+  "cpeek": {
+   "file": "bc.y",
+   "orig": "0x03aa",
+   "size_orig": 40,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "getch": {
+   "file": "bc.y",
+   "orig": "0x03d2",
+   "size_orig": 190,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start",
+    "yylex"
+   ]
+  },
+  "bundle": {
+   "file": "bc.y",
+   "orig": "0x0490",
+   "size_orig": 46,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "WEGA rewrote bundle(a) of System III (p = &a walks the arguments on the stack): the arguments a1..a5 come in registers, so bundle copies them into regs[5] and xbundle takes the rest from &args from the sixth element on (the form of printf in the libc)."
+  },
+  "xbundle": {
+   "file": "bc.y",
+   "orig": "0x04be",
+   "size_orig": 142,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "guessed name: the body of bundle (called by calr from bundle; the binary is stripped)."
+  },
+  "routput": {
+   "file": "bc.y",
+   "orig": "0x054c",
+   "size_orig": 72,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "output": {
+   "file": "bc.y",
+   "orig": "0x0594",
+   "size_orig": 48,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "conout": {
+   "file": "bc.y",
+   "orig": "0x05c4",
+   "size_orig": 48,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "yyerror": {
+   "file": "bc.y",
+   "orig": "0x05f4",
+   "size_orig": 82,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "getch",
+    "yyinit",
+    "yyparse"
+   ]
+  },
+  "pp": {
+   "file": "bc.y",
+   "orig": "0x0646",
+   "size_orig": 62,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "tp": {
+   "file": "bc.y",
+   "orig": "0x0684",
+   "size_orig": 62,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "yyinit": {
+   "file": "bc.y",
+   "orig": "0x06c2",
+   "size_orig": 102,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "main"
+   ],
+   "note": "a quirk of the original: yyerror(\"cannot open input file\") comes before ss = sargv[1], so the message names the null pointer, (null)."
+  },
+  "getout": {
+   "file": "bc.y",
+   "orig": "0x0728",
+   "size_orig": 22,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start",
+    "yylex",
+    "getch"
+   ]
+  },
+  "getf": {
+   "file": "bc.y",
+   "orig": "0x073e",
+   "size_orig": 22,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "geta": {
+   "file": "bc.y",
+   "orig": "0x0754",
+   "size_orig": 22,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "main": {
+   "file": "bc.y",
+   "orig": "0x076a",
+   "size_orig": 254,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "start"
+   ]
+  },
+  "yyparse": {
+   "file": "bc.y",
+   "orig": "0x0868",
+   "size_orig": 2694,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "main"
+   ]
+  }
+ },
+ "note": "byte-identical with ccv0 and libc-v1.a (07/82, pipe added). The bss order of the original is given by a block of the commons at the head of bc.y (the cpp pattern)."
+}

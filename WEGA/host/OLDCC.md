@@ -137,7 +137,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
   not `OLD_D3`. cas: the old one (D17).
 - Byte-identical modules of libc-v1.a from C: isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3.
 - Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 131 of 153 functions equal, 221 differing lines.
-- Byte-identical: `/bin/dc`, `/usr/bin/ranlib`, `/bin/sum`, `/bin/mkdir` (the address form of `OLD_D5S`).
+- Byte-identical: `/bin/dc`, `/usr/bin/ranlib`, `/bin/sum`, `/bin/mkdir` (the address form of `OLD_D5S`), `/bin/bc` (yacc output of bc.y).
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
   renaming of register variables into low registers is done by popt `procopt`, in the shipped compiler too).

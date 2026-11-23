@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 51 | 4 | 27 | 29 |
+| [bin](#bin) | 111 | 52 | 3 | 27 | 29 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 905 | 12 | 167 | 113 |
+| **all** | 1197 | 906 | 11 | 167 | 113 |
 
 <a id="root"></a>
 ## root
@@ -46,7 +46,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/adb` | binary E711 | - | todo | D12 new, D1 loose | - |
 | `bin/ar` | binary E707 | `src/cmd/ar.c` | exact | cc | libc.a |
 | `bin/as` | binary E711 | - | todo | D12 old?, D1 tight | - |
-| `bin/bc` | binary E707 | `src/cmd/bc` | partial | - | - |
+| `bin/bc` | binary E707 | `src/cmd/bc` | exact | ccv0 | libc-v1.a |
 | `bin/bcmp` | binary E711 | - | todo | D12 -, D1 loose | - |
 | `bin/bd` | binary E707 | - | todo | D12 -, D1 loose | - |
 | `bin/cas` | binary E611 | `src/cmd/cas` | exact | sccvc | slibc-v11.a |
@@ -505,7 +505,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `usr/lib/help/un` | text | `src/cmd/sccs/help.d` | exact | - | - |
 | `usr/lib/help/ut` | text | `src/cmd/sccs/help.d` | exact | - | - |
 | `usr/lib/lex/ncform` | text | `src/lib/libl` | exact | ccv1 | - |
-| `usr/lib/lib.b` | text | `src/cmd/bc` | exact | - | - |
+| `usr/lib/lib.b` | text | `src/cmd/bc` | exact | ccv0 | libc-v1.a |
 | `usr/lib/libPW.a` | archive | `src/lib/libPW` | exact | ccv1 | n/a (archive) |
 | `usr/lib/libcisam.a` | archive | `src/lib/libcisam` | exact | ccv1c | n/a (archive) |
 | `usr/lib/libcurses.a` | archive | `src/lib/libcurses` | exact | cc | n/a (archive) |

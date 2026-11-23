@@ -1,0 +1,364 @@
+# The cases of the corpus of bc (compare/bc/corpus.py); the format: host/recon/casefile.py (the default file is t.in, the
+# default step bc t.in: bc reads t.in, then the standard input (empty), and ends dc with q).
+# Where an expectation comes from: man = /usr/man/man1/bc.1, src = src/cmd/bc/bc.y (rule of the grammar or function),
+# dc = the arithmetic of dc(1) (results truncated to scale digits).
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== man-operators
+# man: Operatoren + - * / % ^; the value of an expression statement is printed
+2+3
+7-10
+6*7
+17/5
+17%5
+2^10
+-- expect
+5
+-3
+42
+3
+2
+1024
+
+== man-scale
+# man: an assignment to scale sets the digits of dc; dc: truncated; dc2.c: two digits a byte, an odd scale prints the
+# padding digit of the first byte in front of the point (0.333)
+scale=3
+1/3
+2/3
+10/4
+-- expect
+0.333
+0.666
+2.500
+
+== man-sqrt-length-scale
+# man: sqrt ( e ), length ( e ) = significant decimal digits, scale ( e ) = digits right of the point
+sqrt(16)
+length(123.45)
+scale(123.45)
+scale=4
+sqrt(2)
+-- expect
+4
+5
+2
+1.4142
+
+== man-obase
+# man: obase sets the output base (dc: digits above 9 as A..F)
+obase=16
+255
+obase=2
+10
+-- expect
+FF
+1010
+
+== man-ibase
+# man: ibase sets the input base; src yylex: the digits 0-9 and A-F
+ibase=16
+FF
+1A
+ibase=A
+99
+-- expect
+255
+26
+99
+
+== man-incdec
+# man: ++ and -- prefix and postfix, on names; a postfix operator gives the old value
+a=5
+a++
+a
+--a
+++a
+a--
+a
+-- expect
+5
+6
+5
+6
+6
+5
+
+== man-eqop
+# man: =+ =- =* =/ =% =^
+a=10
+a=+5
+a
+a=-3
+a
+a=*2
+a
+a=/5
+a
+a=%3
+a
+b=2
+b=^5
+b
+-- expect
+15
+12
+24
+4
+1
+32
+
+== man-arrays
+# man: array elements letter [ e ]; a letter is a variable, an array and a function at the same time
+a[0]=1
+a[1]=2
+a[0]+a[1]
+a=4
+a[3]=5
+a+a[3]
+a[1]=+3
+a[1]
+-- expect
+3
+9
+5
+
+== man-relations
+# man: == <= >= != < > in if and while
+if(1<2) 7
+if(2<1) 8
+if(1==1) 9
+if(1!=1) 10
+if(2>=2) 11
+if(2<=1) 12
+if(3>2) 13
+-- expect
+7
+9
+11
+13
+
+== man-while-for-break
+# man: while, for (all three expressions), break, { statement ; ... }
+i=0
+while(i<3){i=i+1;i}
+for(i=0;i<10;i++){if(i==3)break;i}
+-- expect
+1
+2
+3
+0
+1
+2
+
+== man-semicolon
+# man: statements separated by semicolon or newline
+1;2;{3;4}
+-- expect
+1
+2
+3
+4
+
+== man-define
+# man: define letter ( letters ) { auto ...; statements; return ( e ) }
+define f(x){
+	auto y
+	y=x*x
+	return(y+1)
+}
+f(3)
+f(0)
+-- expect
+10
+1
+
+== man-recursion
+# man: auto variables are pushed at a call (recursion works)
+define f(n){
+	if(n<=1) return(1)
+	return(n*f(n-1))
+}
+f(10)
+-- expect
+3628800
+
+== man-function-arguments
+# man: letter ( e , ... , e ); every argument by value
+define g(a,b,c,d,e,f,h){
+	return(a+b*2+c*3+d*4+e*5+f*6+h*7)
+}
+g(1,1,1,1,1,1,1)
+g(1,2,3,4,5,6,7)
+-- expect
+28
+140
+
+== man-example
+# man: BEISPIELE, the exponential function, here for 0 and 1 with scale 5; dc: every term a/b truncated to 5 digits
+# (1+1+.5+.16666+.04166+.00833+.00138+.00019+.00002)
+scale = 5
+define e(x){
+	auto a, b, c, i, s
+	a = 1
+	b = 1
+	s = 1
+	for(i=1; 1==1; i++){
+		a = a*x
+		b = b*i
+		c = a/b
+		if(c == 0) return(s)
+		s = s+c
+	}
+}
+e(0)
+e(1)
+-- expect
+1
+2.71824
+
+== man-comment
+# man: comments in /* and */
+/* a comment */ 4
+5 /* more
+over two lines */
+-- expect
+4
+5
+
+== man-quit
+# man: quit is taken when read: the rest of the input is not read
+1
+quit
+2
+-- expect
+1
+
+== man-stdin
+# man: the input from the standard input (no file)
+-- case
+step: bc
+stdin: s.in
+-- s.in
+3*4
+-- expect
+12
+
+== man-two-files
+# man: bc [ file ... ]; src getch: the files in turn, then the standard input
+-- case
+step: bc t.in u.in
+-- t.in
+x=6
+-- u.in
+x*7
+-- expect
+42
+
+== man-lib
+# man: -l the math library /usr/lib/lib.b (s c e l a j); dc: truncated to the scale of the library function
+-- case
+step: bc -l t.in
+-- t.in
+scale=5
+s(0)
+c(0)
+e(0)
+l(1)
+a(0)
+-- expect
+0
+1.00000
+1.00000
+0
+0
+
+== man-c
+# man: -c only compiles: the input of dc on the standard output; src: a number is " n", a letter is loaded
+# with l, an expression statement ends with ps., getout writes q
+-- case
+step: bc -c t.in
+expect: output is ' 2 3+sa\nlaps.\nq'
+-- t.in
+a=2+3
+a
+
+# ---- what the source has besides ---------------------------------------------------------------------------------
+
+== src-d-option
+# src main: -d is taken as -c
+-- case
+step: bc -d t.in
+expect: output is ' 1ps.\nq'
+-- t.in
+1
+
+== src-bad-option
+# src main: an option other than -c -d -l: "unrecognizable argument"
+-- case
+step: bc -x
+-- expect
+unrecognizable argument
+
+== src-no-file
+# src yyinit: a file that does not open: yyerror "cannot open input file" (as a dc string, c[...]pc); ss is set only
+# behind the call, so the name is the null pointer, (null) by printf (a quirk of the original)
+-- case
+step: bc -c nofile
+expect: output is 'c[cannot open input file on line 1, (null)]pc\n'
+
+== src-no-file-dc
+# src yyerror: the message through dc: dc prints the string
+-- case
+step: bc nofile
+-- expect
+cannot open input file on line 1, (null)
+
+== src-string
+# src: a string "..." is printed by dc with P (no newline added)
+"hello
+"
+1
+-- expect
+hello
+1
+
+== src-keywords-two-letters
+# src yylex: a reserved word is known by its first two letters, the rest of the letters is skipped (dc: 0. for an odd scale)
+scale=2
+1/3
+sc=3
+1/3
+-- expect
+.33
+0.333
+
+== src-syntax-error
+# src: an unknown word is a syntax error (yyerror "syntax error" through dc), line 1 of t.in
+xyz
+-- expect
+syntax error on line 1, t.in
+
+== src-obase-ibase-eqop
+# src: scale =+, ibase and obase with an EQOP (K, I, O of dc)
+scale=1
+scale=+2
+1/3
+-- expect
+0.333
+
+== src-backslash
+# src yylex: a backslash skips the next character (the newline: a line continued)
+1+\
+2
+-- expect
+3
+
+== src-bundle-many
+# src bundle: more than five elements (a[e] EQOP e: 8, a definition: 6) come from the stack of the call
+a[2]=10
+a[2]=*3
+a[2]
+-- expect
+30

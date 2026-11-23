@@ -215,3 +215,7 @@ PLZ programs and `as`: 170.
   needs doprnt 0_7, ffltioc 0_1, data 0_1, length 0_3, each older library has another version of one of them.
 - 2026-11-23 host/tools/checkall.sh sets umask 002 (z8k-emu tests/openflags.out expects mode 664; with 022 it failed). checkall
   ALL OK (124 corpora), src/COVERAGE.md generated: 905 exact, find exact.
+- 2026-11-23 bc exact (phase A, source forms only; phase B not needed): bc.y of System III built as :mkcmd does (yacc, y.tab.c ->
+  bc.c, ccv0, libc-v1.a with pipe added between pause and read); WEGA's sccsid; bundle rewritten for the register arguments
+  (bundle copies a1..a5 to regs[5], xbundle switches to &args at the sixth element); the bss order by a block of the commons at
+  the head of bc.y; corpus compare/bc (31; dc of the root through the pipe); quirk: `bc nofile` says (null).

@@ -5,7 +5,7 @@
 # missing, from NAME/0_n.s; the other members are those of ../libc. The order of a library is the order of the members in
 # the original programs, ld takes what is referenced. Version numbers of the modules are invented.
 #
-#   libc-v1.a  dc, ranlib, chmod, pwd, kill, mkdir, sleep, tail, env, nohup, gets (07/82)
+#   libc-v1.a  dc, ranlib, chmod, pwd, kill, mkdir, sleep, tail, env, nohup, gets, bc (07/82)
 #   libc-v2.a  cpp (12/82), clist
 #   libc-v3.a  size, od (01/83)
 #   libc-v4.a  strip (01/83), su (02/83; the members of passwd too)
@@ -44,7 +44,7 @@ LIBv1 = freopen/0_1.o fseek/0_2.o ftell/0_1.o readsym/0_1.o rdwr/0_3.o system/0_
 	 ../libc/build/nonseg/execv.o ../libc/build/nonseg/exit.o ../libc/build/nonseg/fork.o ../libc/build/nonseg/fstat.o \
 	 ../libc/build/nonseg/getgid.o ../libc/build/nonseg/getuid.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/kill.o \
 	 ../libc/build/nonseg/link.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/mknod.o open/0_1.o \
-	 ../libc/build/nonseg/pause.o ../libc/build/nonseg/read.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o \
+	 ../libc/build/nonseg/pause.o ../libc/build/nonseg/pipe.o ../libc/build/nonseg/read.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o \
 	 ../libc/build/nonseg/time.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/wait.o ../libc/build/nonseg/write.o \
 	 ../libc/build/nonseg/cerror.o
 # ccv0 ccv0p
