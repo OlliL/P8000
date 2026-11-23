@@ -133,8 +133,9 @@ v $R$
 	1 lines
 
 == man-e-locked
-# man: "checked out by": a lock file exists; src: only with -e, exit status 1
+# man: "checked out by": a lock file exists; src: only with -e, exit status 1 (the time of the lock file fixed: it is printed)
 -- case
+host: touch -t 198801121123.45 a-
 step: chkout -e a
 -- a-
 -- a+

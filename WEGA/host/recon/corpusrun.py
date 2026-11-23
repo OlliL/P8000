@@ -22,7 +22,8 @@ the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting fil
   env: NAME=VALUE     environment of the step before, or of every step when it comes before the first one
   host: LINE          a line of the host shell between the steps (preparation; WEGA_ROOT and WEGA_HOST (WEGA/host) are
                       set; each line its own shell)
-Every step and host line runs with umask 022.
+The whole run has umask 022 (main: the starting files written here, every step and host line), whatever the umask of
+the caller: the modes of the files are not in the keys of the store.
   terminal: console   the minimal terminal (z8k-emu Z8K_CONSOLE): stdin/out of the steps are the console for isatty,
                       ttyname, the tty ioctls; /dev/console and /dev/tty are it
   device: driveN FILE | ud | NAME KIND:ARG [excl] [console]   the guest /dev (z8k-emu Z8K_DEVTAB; write_devtab below):
@@ -986,6 +987,7 @@ def runner_key():
 
 
 def main():
+    os.umask(0o022)	# the modes of the starting files and of the files of the steps do not depend on the caller (checkall: 002)
     # the steps start as from a terminal: INT and QUIT at their default, whatever the runner inherits (a corpus started
     # with & by a shell script has them ignored, and an ignored signal stays ignored through exec, for the guest too)
     signal.signal(signal.SIGINT, signal.default_int_handler)
