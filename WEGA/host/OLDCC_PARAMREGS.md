@@ -150,3 +150,17 @@ exact programs of 07/82 (dc, bc, tail, sum, mkdir, ranlib).
   - Left in ex with A: vdellin (p as an index, `ld r2,@r15`), vreplace (`cp @r15,#0`), tailspec (the byte of c from the
     frame), _align (the store at the entry), gTTY (structure copy register), vopen, YANKreg, YANKline (register knowledge
     of a global). None of them is an argument of a call.
+- 2026-11-23 the four places of ex left with v0a (vdellin, vreplace, tailspec, _align), measured on ex (339 exact with v0a):
+  - v0a plus each switch of v0p alone (D3KC, D3J, D2PO, D2X, D12K, D5G, D2A, D2O, D2QO, D2PT, D16A, D6S, D3L, D23): none
+    gains a function; D3KC loses plural, D16A _doprnt.
+  - Experimental forms (codgen, after mapnm, one at a time; patch kept outside the tree):
+    T1 an int parameter converted to a char (SCONV, or a char assignment of it) is forgotten: tailspec exact (`ldb rl2,1(r15)`),
+    nothing lost; with v0 instead of v0a: the ccv0 units of the tree (162 functions) and the bench (135 of 153) unchanged.
+    The same form as partreg, which `OLD_D3AW` gives inside an argument.
+    T3 a parameter scaled as an index (MUL, LS by a constant) is forgotten: vdellin not gained, getblock, vglitchup lost. Refuted.
+    T4 an assignment to a parameter forgets all parameters: no change at all (vreplace not gained). Refuted.
+    T5 a parameter that is the whole right side of an assignment is forgotten behind the statement: _align exact, setlist,
+    setnumb, vigoto, _atoip lost (a parameter stored into a global stays in its register there). Refuted in this form.
+  - _align: the libc doprnt modules of the v0 time (oldlibc doprnt 0_3, 0_5, 0_7, kept as cas sources) have the same entry
+    store `ld 0(r15),r5` of stkap; compiled from 0_5.c by ccv0 or ccv0a only this store is missing (_atoip exact, _doprnt
+    6 instructions). One source form (`*app = stkap; return;` inside an else-if), four builds of it.
