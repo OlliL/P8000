@@ -53,6 +53,10 @@ Start message of such a session (only the part between the lines is filled in by
 ## Phase A
 
 Never in phase A: change a compiler pass or a switch, change cas, edit a shipped header, write odd forms to force bytes, spend more than 6 attempts on one function. When stuck: note it and go on. A function left open is a normal result.
+Phase A looks for changes of the source only (forms, options, headers of the build, WEGA's own edits). Differences that no
+source change removes are kept for phase B in `findings.json`: grouped into clusters where several functions show the same
+kind of difference (probably one cause), each with its functions, what was tried and the findings or guesses so far. A trace
+of a pass (KDBG, poptrace) is phase B (owner 2026-11-23).
 
 1. **Setup: `python3 host/recon/setup.py NAME [ORIG]`** (ORIG below the WEGA root, default `bin/NAME`; nonsegmented programs).
    It does the mechanical start and prints a report (RESULT, SCCS, SOURCE, DATE, COMPILER, OWN_LIM, LIBC, FILES); an existing

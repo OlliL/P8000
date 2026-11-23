@@ -987,13 +987,8 @@ sTTY(i)
 	if (tty.sg_ospeed >= B1200)
 		write(1, "\377", 1);
 # endif
-# ifdef TIOCSETN
-	/* Don't flush typeahead if we don't have to. */
-	ioctl(i, TIOCSETN, &tty);
-# else
-	/* We have to.  Too bad. */
+	/* WEGA: always stty, not ioctl TIOCSETN (the original calls stty; its sgtty.h has TIOCSETN) */
 	stty(i, &tty);
-# endif
 # ifdef TIOCGETC
 	/*
 	 * Update the other random chars while we're at it.
