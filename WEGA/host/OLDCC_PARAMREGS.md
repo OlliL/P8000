@@ -166,3 +166,7 @@ exact programs of 07/82 (dc, bc, tail, sum, mkdir, ranlib).
     6 instructions). One source form (`*app = stkap; return;` inside an else-if), four builds of it.
 - 2026-11-23 `OLD_D3K2` (v0, v0a): at a label and behind && and || only the first two parameters stay known; with the
   restore of `OLD_D3J` behind a jump. vreplace, _align exact, vdellin only call/calr; ex 342 of 391. See OLDCC.md.
+- 2026-11-23 chkout (07/82) with ccv0a instead of ccv0, masked per function against /bin/chkout: 81 differing instructions
+  with v0, 96 with v0a. No function gains. putline, wfprintf, doit, apply, nextcmd, getat and notplain gain only reloads
+  `ld r7,(r15)` (and r6, r5, r4 in front of the call of wfprintf) that the original does not have: OLD_D3AW. OLD_D3AC and
+  OLD_D2NS change nothing in chkout. chkout stays with v0; its open places (putline, wfprintf, setnames) are not v0a.
