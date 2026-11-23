@@ -134,3 +134,19 @@ exact programs of 07/82 (dc, bc, tail, sum, mkdir, ranlib).
   from the frame. Nothing built.
 - 2026-11-23 `OLD_D2Q` into v0 with `OLD_D2QI` (committed 729ad896): chkout readchk and getat exact; not a parameter question,
   noted here because it moved gmtime's second load to the original form.
+- 2026-11-23 measured without building in (two codgen variants of v0, each in a root of its own; nothing kept):
+  A = v0 + `OLD_D3AW`, B = v0 + every parameter register forgotten at the start of each statement.
+  - ex (own code, 391 functions against /bin/ex, today 323 exact): A 339 exact, 16 gained (tail, tail2of, setin, exit,
+    putchar, normal, sTTY, substitute, cerror, merror, smerror, getline, partreg, vclrlin, vputch, printf), dosubcon and
+    plodput down to call/calr, none lost. B 283 exact: 13 gained (tailspec the only one A does not have), 53 lost. B is refuted.
+  - The libc members of the same binary ex (libc-v1: isatty, stty, gtty) are exact with v0 and differ with A.
+  - The ccv0 units of the tree (cmd, sccs, dc, oldlibc, oldtermlib; 145 functions, bc not measured): A changes 31, all in
+    programs and modules of 07/82 or the library: chkout (doit, wfprintf, apply, nextcmd, getat, notplain), dc (main and
+    12 of dc2.c), ranlib (nextel, fixdate), oldlibc (cfree, ftell, isatty, perror, printf 0_5, readsym, stty, gtty,
+    system, csystem). mkstr (11/82) and oldtermlib are not touched by A. B changes 78.
+  - Result (fact): ex's own code follows `OLD_D3AW`, the programs of 07/82 and the libraries linked into ex do not.
+    (guess) The rule came into the compiler between 07/82 and 10/82; ex was compiled by that later state, its libraries
+    by the earlier one.
+  - Left in ex with A: vdellin (p as an index, `ld r2,@r15`), vreplace (`cp @r15,#0`), tailspec (the byte of c from the
+    frame), _align (the store at the entry), gTTY (structure copy register), vopen, YANKreg, YANKline (register knowledge
+    of a global). None of them is an argument of a call.
