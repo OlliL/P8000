@@ -1,0 +1,273 @@
+# The cases of the corpus of chkout (compare/chkout/corpus.py); the format: host/recon/casefile.py (the default file is
+# a+, the default step chkout -p a). Every file of a case ends with a newline (casefile).
+# Where an expectation comes from: man = /usr/man/man1/chkout.1 and /usr/man/man5/qcv.5, src = src/cmd/sccs/chkout.c and
+# common.c. A chkfile: &R a release, &H the version (who and when), &C comments, the lines of diff -f, &D its end.
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== man-p-one-version
+# man: -p writes the version to the standard output; src: no summary with -p
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+&C first
+a0
+first line
+second line
+.
+&D
+-- expect
+first line
+second line
+
+== man-p-last-version
+# man: without -v the last version; src: c2 replaces line 2, the lines behind it stay
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+one
+two
+three
+.
+&D
+&H otto at Wed Jan 13 08:00:00 1988
+c2
+TWO
+.
+&D
+-- expect
+one
+TWO
+three
+
+== man-v-older-version
+# man: -v rel.lev makes that version
+-- case
+step: chkout -p -v 1.1 a
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+one
+two
+three
+.
+&D
+&H otto at Wed Jan 13 08:00:00 1988
+c2
+TWO
+.
+&D
+-- expect
+one
+two
+three
+
+== man-keywords
+# qcv(5): $R$ the version, $Z$ the four characters @[$], $W$ @[$], the name of the file, a tab and the version; src: $M$
+# the name of the file
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+v $R$ z $Z$ m $M$
+static char w[] = "$W$";
+.
+&D
+-- expect
+v 1.1 z @[$] m a
+static char w[] = "@[$]a	1.1";
+
+== man-h-history
+# man: -h the versions with number, who and when, and the comments; no version is made; src: the last version first, a
+# blank line behind each
+-- case
+step: chkout -h a
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+&C first
+a0
+x
+.
+&D
+&H otto at Wed Jan 13 08:00:00 1988
+&C second
+&C more
+a1
+y
+.
+&D
+-- case
+expect: output is 'Version 1.2 by otto at Wed Jan 13 08:00:00 1988\nsecond\nmore\n\nVersion 1.1 by hugo at Tue Jan 12 11:23:45 1988\nfirst\n\n'
+
+== man-read-only-file
+# man: without options a read-only file in the current directory; src: the version and the number of lines on the
+# standard output, "No keywords substituted" when the file has none
+-- case
+step: chkout a
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+one
+two
+.
+&D
+-- expect
+	Version 1.1
+	2 lines
+	No keywords substituted
+
+== man-e-editable
+# man: -e an editable file and the lock file a-; src: the keywords stay as they are, no "No keywords" line
+-- case
+step: chkout -e a
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+v $R$
+.
+&D
+-- expect
+	Version 1.1
+	1 lines
+
+== man-e-locked
+# man: "checked out by": a lock file exists; src: only with -e, exit status 1
+-- case
+step: chkout -e a
+-- a-
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+x
+.
+&D
+-- case
+expect: output contains 'already checked out by'
+expect: exit 1
+
+== man-writable-exists
+# man: "writable xxxxx exists"; src: exit status 1
+-- case
+host: chmod 644 a
+step: chkout a
+-- a
+old
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+x
+.
+&D
+-- case
+expect: output contains 'writable a exists'
+expect: exit 1
+
+== man-version-not-found
+# man: "version rel.lev not found"; src: exit status 1, nothing written
+-- case
+step: chkout -p -v 1.5 a
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+x
+.
+&D
+-- case
+expect: output contains 'a: version 1.5 not found'
+expect: exit 1
+
+== man-d-dir
+# man: -d dir makes the file in dir
+-- case
+host: mkdir d
+step: chkout -d d a
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+x
+.
+&D
+-- case
+expect: file d/a contains 'x'
+
+# ---- what the source has besides ----------------------------------------------------------------------------------
+
+== src-delete-and-append
+# src: d2 deletes line 2, a3 appends behind line 3 (the commands in the order of their lines, as diff -f writes them)
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+one
+two
+three
+.
+&D
+&H otto at Wed Jan 13 08:00:00 1988
+d2
+a3
+four
+.
+&D
+-- expect
+one
+three
+four
+
+== src-cannot-open
+# src: "cannot open" for a missing chkfile, exit status 1
+-- case
+step: chkout -p b
+expect: output contains 'cannot open b+'
+expect: exit 1
+
+== src-bad-version
+# src: "bad version" when a number of -v is 0, exit status 1
+-- case
+step: chkout -p -v 0.1 a
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+x
+.
+&D
+-- case
+expect: output contains '0.1: bad version'
+expect: exit 1
+
+== src-usage
+# src: the usage message for an unknown option and for no file, exit status 1
+-- case
+step: chkout -x a
+expect: output contains 'Usage:'
+expect: exit 1
+
+== src-two-files
+# src: with more than one file -p writes the name of each in front of its version
+-- case
+step: chkout -p a b
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+x
+.
+&D
+-- b+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+y
+.
+&D
+-- expect
+a:
+x
+b:
+y

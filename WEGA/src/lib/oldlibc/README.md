@@ -19,11 +19,12 @@ A program finds its library with `host/tools/whichlibc.py`. `host/tools/libctabl
 
 ## Open
 
-The 13 `.s`, waiting for a compiler or a source form (`host/tools/libcfit.py`, `libctable.py`; what was tried:
+The 14 `.s`, waiting for a compiler or a source form (`host/tools/libcfit.py`, `libctable.py`; what was tried:
 `host/OLDCC_LOG.md`):
 
 - With v1q (size): `doprnt` 0_1.
-- With v0: `fseek` 0_2 (one statement: the registers at the label of an else, `OLD_D3J` fits it and not dc), `doprnt` 0_3.
+- With v0: `fseek` 0_2 (one statement: the registers at the label of an else, `OLD_D3J` fits it and not dc), `doprnt` 0_3, `ctime` 0_2 (v0 with the `OLD_D2Q` of v0p: `ld r6,0(r15); ldl rr6,@r6` in gmtime, `n` in r6 of ct_numb; rr2 for rr0 in localtime, asctime; the
+  same ctime is in at, cron, calprog and 12 more).
 - Libc of the passes: `malloc` 0_3 (a parameter reloaded at a label, the order of `q+temp-1`), `cnvt` 0_2 (`-val` of a long
   parameter from memory, one witness), `doprnt` 0_5, 0_7 (`_align` spills r5, `ap = argp` reloads, the order of a double
   argument), `fltioc` 0_1.

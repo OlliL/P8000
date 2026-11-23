@@ -244,3 +244,7 @@ PLZ programs and `as`: 170.
   unixex with the shell name, ^F of vmain), printf.c written from the binary (pprintf.c removed), BEEHIVE and UCVISUAL set: 323 of
   391 functions exact (in scratch; not yet built in the tree: setjmp.h). The rest is call/calr and jp/jr that follow, or the
   clusters for phase B in compare/ex/findings.json.
+- 2026-11-23 chkout (phase A, partial): chkout.c, common.c, chkout.h written from the disassembly (ccv0, oldv7 stdio.h); libc-v1
+  complete for it (getpwuid 0_2, getpwent 0_2, fgets 0_2, rewind, fdopen 0_2 of System III, ctime 0_2 as cas source, getenv in
+  front of atoi). Data and bss identical; 5 functions differ (putline, wfprintf, readchk, getat, setnames: parameter registers,
+  a long into the pair of its address register, `&chkname[n + 1]`), see compare/chkout/findings.json. Built, not installed.

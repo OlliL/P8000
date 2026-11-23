@@ -33,10 +33,10 @@ LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-
 
 all: $(LIBS)
 
-LIBv1 = freopen/0_1.o fseek/0_2.o ftell/0_1.o readsym/0_1.o rdwr/0_3.o system/0_1.o fopen/0_1.o fputs/0_1.o printf/0_3.o doprnt/0_3.o \
+LIBv1 = freopen/0_1.o getpwuid/0_2.o getpwent/0_2.o fgets/0_2.o fseek/0_2.o ftell/0_1.o rew/0_1.o readsym/0_1.o rdwr/0_3.o system/0_1.o fopen/0_1.o fdopen/0_2.o fputs/0_1.o printf/0_3.o doprnt/0_3.o \
 	 ../libc/build/nonseg/ffltioc.o ungetc/0_1.o gets/0_2.o filbuf/0_3.o setbuf/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o \
-	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ../libc/build/nonseg/abort.o \
-	 abs/0_1.o atoi/0_1.o execvp/0_1.o getenv/0_1.o sleep/0_1.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_2.o malloc/0_3.o errlst/0_2.o isatty/0_1.o \
+	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ../libc/build/nonseg/abort.o ctime/0_2.o \
+	 abs/0_1.o execvp/0_1.o getenv/0_1.o atoi/0_1.o sleep/0_1.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_2.o malloc/0_3.o errlst/0_2.o isatty/0_1.o \
 	 ../libc/build/nonseg/setret.o stty/0_1.o swab/0_1.o toupper/0_1.o index/0_1.o strcat/0_2.o strcmp/0_1.o strchr/0_1.o strcpy/0_2.o strncmp/0_1.o strncpy/0_1.o strlen/0_2.o \
 	 goodmagic/0_2.o swap/0_2.o ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o \
 	 ../libc/build/nonseg/brk.o ../libc/build/nonseg/chdir.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/chown.o \

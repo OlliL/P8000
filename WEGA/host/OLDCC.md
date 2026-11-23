@@ -306,7 +306,8 @@ Where a value goes:
   for shifts, whose count register would get the operand's pair.
 
 Open: ld place_sec (`r8 = (secorg[j] - q->tsize) & 0xff00`: a new register for the `and`), chk_ranlib; register variables of
-leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (cas).
+leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (cas). `OLD_D2Q` in v0 code (07/82, built otherwise as v0): libc
+ctime 0_2 (gmtime `ld r6,0(r15); ldl rr6,@r6`, kept as cas source), chkout readchk and getat; ccv0 takes another pair and copies.
 
 - vc `OLD_D2S` (allo3.c): a word in an odd register widened to long (SCONV) takes the lighter (rweight) of the pair getreg
   gives and its own pair, when its even half is free or idle: cas symtype (`unsigned n; ip->s_2 = n;`: r3 into rr2,

@@ -1,0 +1,215 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv0",
+ "binary": "/bin/chkout",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "chkout.c",
+   "orig": "0x0042",
+   "size_orig": 352,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "an unused label in front of progname = *argv++ (the original reads argv from its home there, as codgen does behind a label); the usage message is an initialised array usage[] (one string for its five uses)."
+  },
+  "doit": {
+   "file": "chkout.c",
+   "orig": "0x01a2",
+   "size_orig": 556,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "names guessed. An open error path returns without closing the chkfile (cannot create lockfile)."
+  },
+  "history": {
+   "file": "chkout.c",
+   "orig": "0x03ce",
+   "size_orig": 408,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x01a2"
+   ]
+  },
+  "getvers": {
+   "file": "chkout.c",
+   "orig": "0x0566",
+   "size_orig": 222,
+   "status": "open",
+   "kind": "proven",
+   "callers": []
+  },
+  "summary": {
+   "file": "chkout.c",
+   "orig": "0x0644",
+   "size_orig": 118,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x01a2"
+   ]
+  },
+  "putline": {
+   "file": "chkout.c",
+   "orig": "0x06ba",
+   "size_orig": 100,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x092c",
+    "0x0afe"
+   ],
+   "note": "open: the original has the keyword() block first and wfprintf() behind it with out known in r6, and apply() of the else with every parameter known; ours (if (eflag) wfprintf else keyword) has the two blocks the other way round and reloads the parameters for apply(). The frame has 2 bytes more than the parameters: an unused local. line = line + 1 (not line++: ld/inc/ld)."
+  },
+  "wfprintf": {
+   "file": "chkout.c",
+   "orig": "0x071e",
+   "size_orig": 102,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x06ba",
+    "0x0d2a"
+   ],
+   "note": "open: the original copies the three stack arguments through r0, ours through r2 (r2 holds the sixth parameter; ccv0 takes it as a scratch and reloads it). ferror(fp) != 0 gives the tcc of the original."
+  },
+  "readchk": {
+   "file": "common.c",
+   "orig": "0x0784",
+   "size_orig": 424,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x01a2"
+   ],
+   "note": "open: if (vp->start == 0): the original loads the long through r2 into rr2 (and reloads vp), ours into rr0. The trait of v0p OLD_D2Q (host/OLDCC.md, D2), also in getat and gmtime of ctime 0_2 (libc); ccv0 has no D2Q, ccv0p differs elsewhere (whole program 48 bytes longer). 5 forms tried (== 0, !, == 0L, <= 0, (int))."
+  },
+  "apply": {
+   "file": "common.c",
+   "orig": "0x092c",
+   "size_orig": 192,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x01a2",
+    "0x06ba"
+   ],
+   "note": "the if is negated (cmd != * && curline >= n1: switch, else putline) and the cases are in the order a, d, c, as the original lays them out."
+  },
+  "nextcmd": {
+   "file": "common.c",
+   "orig": "0x09ec",
+   "size_orig": 274,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x092c"
+   ],
+   "note": "if (*p != a && != d && != c) { error } else vp->cmd = *p++; then while loops: the layout of the original (popt moves the block behind the first loop in front of it)."
+  },
+  "copytext": {
+   "file": "common.c",
+   "orig": "0x0afe",
+   "size_orig": 68,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x092c"
+   ]
+  },
+  "getat": {
+   "file": "common.c",
+   "orig": "0x0b42",
+   "size_orig": 64,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x09ec",
+    "0x0afe"
+   ],
+   "note": "open: fseek(in, vp->pos, 0): the original ldl rr4,4(r4) (the long into the pair of the address register), ours ldl rr2,4(r4); ldl rr4,rr2. See readchk."
+  },
+  "setnames": {
+   "file": "common.c",
+   "orig": "0x0b82",
+   "size_orig": 262,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x01a2"
+   ],
+   "note": "open: &chkname[n + 1] - p: the original ld r2,#chkname+1; add r2,n, ours ld r2,n; add r2,#chkname+1 (17 forms tried: index, pointer, cast, unsigned, reordered; chkname + n alone gives the constant first, with an offset the index comes first)."
+  },
+  "basename": {
+   "file": "common.c",
+   "orig": "0x0c88",
+   "size_orig": 52,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0b82"
+   ]
+  },
+  "notplain": {
+   "file": "common.c",
+   "orig": "0x0cbc",
+   "size_orig": 66,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0b82"
+   ]
+  },
+  "freevers": {
+   "file": "common.c",
+   "orig": "0x0cfe",
+   "size_orig": 44,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x01a2"
+   ]
+  },
+  "keyword": {
+   "file": "common.c",
+   "orig": "0x0d2a",
+   "size_orig": 310,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x06ba"
+   ],
+   "note": "a goto loop (loop/next/test): a keyword skips 3 characters straight to the test, the others share the print of %c and p++; the while and for forms are laid out otherwise by popt."
+  }
+ },
+ "note": "a WEGA program (qcv(5)) without a System III source, written from the disassembly (chkout.c, common.c, chkout.h); ccv0, the stdio.h of oldv7 and libc-v1.a (with rewind, fdopen 0_2, getpwuid 0_2, getpwent 0_2, fgets 0_2, ctime 0_2 and getenv in front of atoi). Not yet identical: putline, wfprintf, readchk, getat, setnames."
+}

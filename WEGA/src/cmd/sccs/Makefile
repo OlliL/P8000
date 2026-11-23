@@ -1,21 +1,24 @@
 # sccs: the SCCS commands of System III (usr/src/cmd/sccs): so far the help files of the command help (help.d); and the
-# commands of WEGA's own source control (qcv(5)): chkwhat (byte-identical with /bin/chkwhat: ccv1, libc-v4.a).
+# commands of WEGA's own source control (qcv(5)): chkwhat (byte-identical with /bin/chkwhat: ccv1, libc-v4.a), chkout (ccv0,
+# libc-v1.a; built, not installed until it is identical).
 #
 #   make              build
 #   make install PREFIX=dir
 #   make clean
 
+CCV0 = ccv0
 CCV1 = ccv1
 CAS = cas
 LD = ld
 CFLAGS = -O -I../../head/oldv7
 PREFIX = /
 STRIP = strip
+LIBC_V1 = ../../lib/libc-v1.a
 LIBC_V4 = ../../lib/libc-v4.a
 CRT = ../../lib/libc/nonseg/crt
 SUBDIRS = help.d
 
-all: chkwhat
+all: chkwhat chkout
 	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) all ; cd .. ; done
 
 chkwhat: crt0-chkwhat.o chkwhat.o $(LIBC_V4)
@@ -30,6 +33,21 @@ crt0-chkwhat.o: crt0-chkwhat.s
 chkwhat.o: chkwhat.c
 	$(CCV1) $(CFLAGS) -c chkwhat.c
 
+chkout: crt0-chkout.o chkout.o common.o $(LIBC_V1)
+	$(LD) -e start -o $@ crt0-chkout.o chkout.o common.o $(LIBC_V1)
+
+crt0-chkout.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+	sh $(CRT)/mkcrt0.sh chkout > $@
+
+crt0-chkout.o: crt0-chkout.s
+	$(CAS) -u -o $@ crt0-chkout.s
+
+chkout.o: chkout.c chkout.h
+	$(CCV0) $(CFLAGS) -c chkout.c
+
+common.o: common.c chkout.h
+	$(CCV0) $(CFLAGS) -c common.c
+
 install: chkwhat
 	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done
 	mkdir -p $(PREFIX)/bin
@@ -37,7 +55,7 @@ install: chkwhat
 
 clean:
 	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) clean ; cd .. ; done
-	rm -f chkwhat chkwhat.o crt0-chkwhat.s crt0-chkwhat.o
+	rm -f chkwhat chkwhat.o crt0-chkwhat.s crt0-chkwhat.o chkout chkout.o common.o crt0-chkout.s crt0-chkout.o
 
 .PHONY: all install clean
 
