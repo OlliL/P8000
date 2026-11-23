@@ -43,7 +43,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <signal.h>
-#include <setjmp.h>
+#include <setret.h>	/* WEGA: setret/longret, ret_buf (no setjmp.h) */
 #include <sys/stat.h>
 
 /*
@@ -185,7 +185,7 @@ char	*pkill[2];		/* Trim for put with ragged (LISP) delete */
 bool	pfast;			/* Have stty -nl'ed to go faster */
 int	pid;			/* Process id of child */
 int	ppid;			/* Process id of parent (e.g. main ex proc) */
-jmp_buf	resetlab;		/* For error throws to top level (cmd mode) */
+ret_buf	resetlab;		/* For error throws to top level (cmd mode) */
 int	rpid;			/* Pid returned from wait() */
 bool	ruptible;		/* Interruptible is normal state */
 bool	shudclob;		/* Have a prompt to clobber (e.g. on ^D) */
@@ -193,7 +193,7 @@ int	status;			/* Status returned from wait() */
 short	tchng;			/* If nonzero, then [Modified] */
 short	tfile;			/* Temporary file unit */
 bool	vcatch;			/* Want to catch an error (open/visual) */
-jmp_buf	vreslab;		/* For error throws to a visual catch */
+ret_buf	vreslab;		/* For error throws to a visual catch */
 short	xchng;			/* Suppresses multiple "No writes" in !cmd */
 
 /*
@@ -203,18 +203,18 @@ short	xchng;			/* Suppresses multiple "No writes" in !cmd */
 #define ckaw()		{if (chng && value(AUTOWRITE)) wop(0);}
 #define	copy(a,b,c)	Copy((char *) a, (char *) b, c)
 #define	eq(a, b)	((a) && (b) && strcmp(a, b) == 0)
-#define	getexit(a)	copy(a, resetlab, sizeof (jmp_buf))
+#define	getexit(a)	copy(a, resetlab, sizeof (ret_buf))
 #define	lastchar()	lastc
 #define	outchar(c)	(*Outchar)(c)
 #define	pastwh()	(ignore(skipwh()))
 #define	pline(no)	(*Pline)(no)
-#define	reset()		longjmp(resetlab,1)
-#define	resexit(a)	copy(resetlab, a, sizeof (jmp_buf))
-#define	setexit()	setjmp(resetlab)
+#define	reset()		longret(resetlab,1)
+#define	resexit(a)	copy(resetlab, a, sizeof (ret_buf))
+#define	setexit()	setret(resetlab)
 #define	setlastchar(c)	lastc = c
 #define	ungetchar(c)	peekc = c
 
-#define	CATCH		vcatch = 1; if (setjmp(vreslab) == 0) {
+#define	CATCH		vcatch = 1; if (setret(vreslab) == 0) {
 #define FIXUNDO		((inopen >= 0) && (inopen || !inglobal))
 #define	ONERR		} else { vcatch = 0;
 #define	ENDCATCH	} vcatch = 0;

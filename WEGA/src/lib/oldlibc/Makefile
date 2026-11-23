@@ -5,7 +5,7 @@
 # missing, from NAME/0_n.s; the other members are those of ../libc. The order of a library is the order of the members in
 # the original programs, ld takes what is referenced. Version numbers of the modules are invented.
 #
-#   libc-v1.a  dc, ranlib, chmod, pwd, kill, mkdir, sleep, tail, env, nohup, gets, bc (07/82)
+#   libc-v1.a  dc, ranlib, chmod, pwd, kill, mkdir, sleep, tail, env, nohup, gets, bc (07/82), ex (10/82)
 #   libc-v2.a  cpp (12/82), clist
 #   libc-v3.a  size, od (01/83)
 #   libc-v4.a  strip (01/83), su (02/83; the members of passwd too)
@@ -37,11 +37,11 @@ LIBv1 = freopen/0_1.o fseek/0_2.o ftell/0_1.o readsym/0_1.o rdwr/0_3.o system/0_
 	 ../libc/build/nonseg/ffltioc.o ungetc/0_1.o gets/0_2.o filbuf/0_3.o setbuf/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o \
 	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ../libc/build/nonseg/abort.o \
 	 abs/0_1.o atoi/0_1.o execvp/0_1.o getenv/0_1.o sleep/0_1.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_2.o malloc/0_3.o errlst/0_2.o isatty/0_1.o \
-	 ../libc/build/nonseg/setret.o stty/0_1.o swab/0_1.o index/0_1.o strcmp/0_1.o strchr/0_1.o strcat/0_2.o strcpy/0_2.o strncmp/0_1.o strncpy/0_1.o strlen/0_2.o \
+	 ../libc/build/nonseg/setret.o stty/0_1.o swab/0_1.o toupper/0_1.o index/0_1.o strcat/0_2.o strcmp/0_1.o strchr/0_1.o strcpy/0_2.o strncmp/0_1.o strncpy/0_1.o strlen/0_2.o \
 	 goodmagic/0_2.o swap/0_2.o ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o \
 	 ../libc/build/nonseg/brk.o ../libc/build/nonseg/chdir.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/chown.o \
 	 ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/dup.o ../libc/build/nonseg/execl.o \
-	 ../libc/build/nonseg/execv.o ../libc/build/nonseg/exit.o ../libc/build/nonseg/fork.o ../libc/build/nonseg/fstat.o \
+	 ../libc/build/nonseg/execv.o ../libc/build/nonseg/exit.o ../libc/build/nonseg/fork.o ../libc/build/nonseg/fstat.o ../libc/build/nonseg/getpid.o \
 	 ../libc/build/nonseg/getgid.o ../libc/build/nonseg/getuid.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/kill.o \
 	 ../libc/build/nonseg/link.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/mknod.o open/0_1.o \
 	 ../libc/build/nonseg/pause.o ../libc/build/nonseg/pipe.o ../libc/build/nonseg/read.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o \
@@ -184,6 +184,7 @@ LIBv11 = putchar/0_1.o freopen/0_1.o fseek/0_2.o ftell/0_1.o rew/0_1.o rdwr/0_3.
 
 # the modules: each directory makes its objects with its own Makefile
 objs:
+	cd toupper ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd puts ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd popen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd ttyslot ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs

@@ -115,6 +115,11 @@
 /cref/mtab
 /ex/ex2.13strings
 /ex/mkstr
+/ex/ex
+/ex/objs
+/ex/strings
+/ex/xstr
+/ex/crt0-ex.s
 /lint/headers
 /lint/include/
 /lint/llib-lc.ln

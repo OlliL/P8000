@@ -163,7 +163,7 @@ error1(str)
 		inopen = 1;
 		vcatch = 0;
 		fixol();
-		longjmp(vreslab,1);
+		longret(vreslab,1);
 	}
 	if (str && !vcatch)
 		putNFL();

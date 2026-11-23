@@ -25,6 +25,7 @@ echo2	......1981 87wega3.2.			bin/echo2
 ed	......1981 87wega3.2.	3.1	01/30/83 00:05:05	bin/ed
 egrep	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/egrep
 env	......1981 87wega3.2.			bin/env
+ex	......1981 87wega3.2.	3.1	10/28/82 12:00:41	bin/ex	stamp1
 file	......1981 87wega3.2.			bin/file
 find	......1981 87wega3.2.	3.2	10/25/83 00:05:05	bin/find
 getfile	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/getfile

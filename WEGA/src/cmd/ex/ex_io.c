@@ -658,7 +658,7 @@ source(fil, okfail)
 	char *fil;
 	bool okfail;
 {
-	jmp_buf osetexit;
+	ret_buf osetexit;
 	register int saveinp, ointty, oerrno;
 
 	signal(SIGINT, SIG_IGN);
