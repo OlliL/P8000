@@ -283,10 +283,10 @@ char *line;
 	if (vp->next == 0) {
 		if (*line == '&')
 			line = line + 1;
-		if (eflag)
-			wfprintf(out, "%s", line);
-		else
+		if (!eflag)
 			keyword(out, vp->rel, vp->lev, line);
+		else
+			wfprintf(out, "%s", line);
 		nlines++;
 	} else
 		apply(in, out, vp->next, line);

@@ -88,7 +88,7 @@
     "0x092c",
     "0x0afe"
    ],
-   "note": "open: the original has the keyword() block first and wfprintf() behind it with out known in r6, and apply() of the else with every parameter known; ours (if (eflag) wfprintf else keyword) has the two blocks the other way round and reloads the parameters for apply(). The frame has 2 bytes more than the parameters: an unused local. line = line + 1 (not line++: ld/inc/ld)."
+   "note": "if (!eflag) keyword(...); else wfprintf(...): the keyword() block first (masked equal with ccv0 of 2026-11-23). The frame has 2 bytes more than the parameters: an unused local. line = line + 1 (not line++: ld/inc/ld)."
   },
   "wfprintf": {
    "file": "chkout.c",
