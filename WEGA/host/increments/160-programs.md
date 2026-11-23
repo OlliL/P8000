@@ -237,3 +237,6 @@ PLZ programs and `as`: 170.
   cas (src/cmd/ex/shrink.sh, not yet in the Makefile): a jp stub table per module for externals called 3 times or more (order of
   sort | uniq -c | sort -n) and frame operands at offset 0 written @fp (not the saves of r8..r14). 130 -> 265 of 385 functions
   exact; ex2.13strings byte-identical. Next: the source differences; listchar/normchar kept for later (compare/ex/findings.json).
+- 2026-11-23 ex: the options of the WEGA build measured (compare/ex/findings.json): vi.mk's without USG3TTY, plus OPENCODE,
+  LISPCODE, TAGSCODE, CRNL, SOFTTABS, CHDIR: 314 of 390 functions exact (differing lines 2757 -> 900). Kept back: 11 functions that
+  reload a parameter (an unused label would do it), listchar/normchar/vgotab.
