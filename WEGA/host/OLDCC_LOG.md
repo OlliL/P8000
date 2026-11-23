@@ -2124,3 +2124,9 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   so v0 gets `OLD_D3J` too. Earlier forms refuted on the way: forgetting after every statement, after || at once (V1..V4),
   r5 forgotten also behind a conditional jump (chkout apply). v0p: codgen notoff (fourth parameter cp, an unused pointer,
   not stored by the original) differs with it, so v0 and v0a only. fseek 0_2 now built from C by ccv0.
+- `OLD_D19P` (2026-11-23, cparse v0 and v0p): the ex cluster "order of additive chains" (vrep, vremote, save, vup, vzop,
+  viin, operate, vishft) read as one rule: every place is a chain on a pointer, and the original adds the pointer last
+  after combining the integer terms. First built in optim (mip/optim.2.5), then moved to clocal of cparse (local1.c, when
+  buildtree makes the node; owner: no switches in mip): the same output on ex, the bench, the tree units and the v0p models. ex 342 -> 348, the other
+  two (operate, vishft) only call/calr and jp/jr; bench 137 -> 139 (188 lines); tree units and v0p models unchanged.
+  Searched the pcc sources of the unix history archive for it: not there.

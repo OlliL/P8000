@@ -35,6 +35,27 @@ clocal(p) NODE *p; {
 	r = p->in.right;
 	o = p->in.op;
 
+#ifdef OLD_D19P
+	/* v0, v0p: (ptr lo a) o b is ptr lo (a op b): the integer terms of a chain on a pointer are combined first, the
+	   pointer comes last (ex vrep cursor + cnt - 1, vishft tp + j * WCOLS - shft, vzop p - i - 1) */
+	if( (o == PLUS || o == MINUS) && ISPTR(p->in.type) && (l->in.op == PLUS || l->in.op == MINUS) &&
+			ISPTR(l->in.type) && ISPTR(l->in.left->in.type) && !ISPTR(l->in.right->in.type) && !ISPTR(r->in.type) ){
+		NODE *ptr = l->in.left;
+
+		x = l->in.op;
+		l->in.left = l->in.right;
+		l->in.right = r;
+		l->in.op = x == o ? PLUS : MINUS;
+		l->in.type = l->in.left->in.type;
+		l->fn.cdim = l->in.left->fn.cdim;
+		l->fn.csiz = l->in.left->fn.csiz;
+		p->in.left = ptr;
+		p->in.right = r = clocal( l );
+		p->in.op = o = x;
+		l = ptr;
+		}
+#endif
+
 	switch( o ){
 
 	case NAME:

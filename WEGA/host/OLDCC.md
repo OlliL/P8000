@@ -131,12 +131,12 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 - Programs: those of 1982 (sources 07/82 .., crt0 3.1 up to 11/82). Marks: tight frames (no unused frame word, no return
   temporary, leaf functions without a frame) and packed strings.
-- Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D6D`, `OLD_D22` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
+- Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D6D`, `OLD_D22`, `OLD_D19P` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
   `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`, `OLD_D2MO`,
   `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D5T`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6`, `OLD_D2Q`, `OLD_D2QI`, `OLD_D3K2`, `OLD_D3J` (codgen); none in popt. Not `OLD_D1`,
   not `OLD_D3`. cas: the old one (D17).
 - Byte-identical modules of libc-v1.a from C: getpwuid 0_2, getpwent 0_2, fdopen 0_2, isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3, fseek 0_2.
-- Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 137 of 153 functions equal, 195 differing lines.
+- Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 139 of 153 functions equal, 188 differing lines.
 - Byte-identical: `/bin/dc`, `/usr/bin/ranlib`, `/bin/sum`, `/bin/mkdir` (the address form of `OLD_D5S`), `/bin/bc` (yacc output of bc.y).
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
@@ -537,6 +537,12 @@ writes `%0000(r15)` for the home of a parameter where rmdir has `@r15`.
 
 The old cc evaluates the left operand of `+`, `==`, `>` first when both are calls; the shipped cc the right one. Our sources of cparse
 write these operands in the order that gives the bytes (`argregs`, `rmconv`, `clocal`).
+
+- v0, v0p cparse `OLD_D19P` (clocal, local1.c): a chain on a pointer, `(ptr ± a) ± b`, becomes `ptr ± (a ± b)`: the integer terms
+  are combined first and the pointer is added last (ex vrep `cursor + cnt - 1`: `ld r2,cnt; dec r2,#1; add r2,cursor`;
+  vishft and viin `tp + j * WCOLS - shft`; vzop `p - i - 1` as `p - (i + 1)`; save, vremote, vup with array addresses).
+  ex 342 -> 348, bench 137 -> 139; the v0 programs of the tree and the v0p models unchanged. No pcc of the unix
+  history archive (V7, 32V, 2.9BSD .. 4.4BSD, V8 .. V10, SunOS) has it.
 
 ### D20 Code motion of popt
 
