@@ -76,6 +76,9 @@
 #define OLD_D4O		/* the parameters taken in the order of their declaration (the copies of register parameters) */
 #define OLD_D2C		/* a name (not a parameter) found in a scratch register is that register; a copy holds no name */
 #define OLD_D2F		/* a free word register only when it weighs no more than the first free pair */
+#ifndef OLD_VC		/* vc takes it (gopt: ld r2,r3) */
+#define OLD_D2LP	/* OLD_D2L not for a word that holds a parameter (chkout wfprintf: r0, not the parameter in r2) */
+#endif
 #define OLD_D2L		/* an idle scratch word that only holds a name counts as free when it weighs less (getreg) */
 #define OLD_D2N		/* a name loaded into a word register (a global, an auto) or a global into a pair is not remembered there */
 #define OLD_D6T		/* a cpir switch: the values in front of the targets (record V), the target from the cpir pointer */

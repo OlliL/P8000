@@ -21,7 +21,7 @@ Every program of the WEGA tree from source, byte-identical, each with a corpus.
 ## Known
 
 - 2026-11-15: bin 25 of 111 exact, usr/bin 10 of 145, etc 33 of 67, usr/lib 1 of 197 (counts include text files, 130).
-- The tool chain is done except `chkout`, `yacc` and the PLZ tools (`gopt` byte-identical since 2026-11-21) (`host/HANDOFF_wega_disasm.md`, inventory);
+- The tool chain is done except `yacc` and the PLZ tools (`gopt` byte-identical since 2026-11-21) (`host/HANDOFF_wega_disasm.md`, inventory);
   `/bin/cas` is byte-identical, left there: the natural `for` loop of jpr (`compare/cas/HANDOFF.md`).
 
 ## Steps
@@ -254,3 +254,6 @@ PLZ programs and `as`: 170.
   its sccsid of 07/82), shipped cc, libc-v12.a (the shipped libc.a with printf and doprnt 0_4). Its common.c settles three
   forms (the nested if of apply, `rel && (rel == r && lev == l)`, basename() as an argument) and shows that the rest of
   chkout's common.c differences (readchk, getat, setnames) are traits of the compiler of 07/82. Corpus compare/chkin.
+- 2026-11-23 chkout exact: readchk and getat by OLD_D2Q/OLD_D2QI in v0, putline by `if (!eflag) keyword else wfprintf`,
+  wfprintf by OLD_D2LP (codgen v0), setnames by OLD_D19K (cparse v0); one witness each (owner: as OLD_D3AC). Installed
+  (751); corpus compare/chkout (16 cases). corpusrun runs with umask 022 itself (the modes of the starting files).

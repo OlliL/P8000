@@ -31,7 +31,7 @@
    "file": "chkout.c",
    "orig": "0x0042",
    "size_orig": 352,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000"
@@ -42,7 +42,7 @@
    "file": "chkout.c",
    "orig": "0x01a2",
    "size_orig": 556,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
@@ -54,7 +54,7 @@
    "file": "chkout.c",
    "orig": "0x03ce",
    "size_orig": 408,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x01a2"
@@ -64,7 +64,7 @@
    "file": "chkout.c",
    "orig": "0x0566",
    "size_orig": 222,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
@@ -72,7 +72,7 @@
    "file": "chkout.c",
    "orig": "0x0644",
    "size_orig": 118,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x01a2"
@@ -82,31 +82,31 @@
    "file": "chkout.c",
    "orig": "0x06ba",
    "size_orig": 100,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x092c",
     "0x0afe"
    ],
-   "note": "if (!eflag) keyword(...); else wfprintf(...): the keyword() block first (masked equal with ccv0 of 2026-11-23). The frame has 2 bytes more than the parameters: an unused local. line = line + 1 (not line++: ld/inc/ld)."
+   "note": "if (!eflag) keyword(...); else wfprintf(...): the keyword() block first. The frame has 2 bytes more than the parameters: an unused local. line = line + 1 (not line++: ld/inc/ld)."
   },
   "wfprintf": {
    "file": "chkout.c",
    "orig": "0x071e",
    "size_orig": 102,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x06ba",
     "0x0d2a"
    ],
-   "note": "open: the original copies the three stack arguments through r0, ours through r2 (r2 holds the sixth parameter; ccv0 takes it as a scratch and reloads it). ferror(fp) != 0 gives the tcc of the original."
+   "note": "the three stack arguments copied through r0: ccv0 with OLD_D2LP (OLD_D2L does not take the parameter in r2; its witness). ferror(fp) != 0 gives the tcc of the original."
   },
   "readchk": {
    "file": "common.c",
    "orig": "0x0784",
    "size_orig": 424,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x01a2"
@@ -117,7 +117,7 @@
    "file": "common.c",
    "orig": "0x092c",
    "size_orig": 192,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x01a2",
@@ -129,7 +129,7 @@
    "file": "common.c",
    "orig": "0x09ec",
    "size_orig": 274,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x092c"
@@ -140,7 +140,7 @@
    "file": "common.c",
    "orig": "0x0afe",
    "size_orig": 68,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x092c"
@@ -150,7 +150,7 @@
    "file": "common.c",
    "orig": "0x0b42",
    "size_orig": 64,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09ec",
@@ -162,18 +162,18 @@
    "file": "common.c",
    "orig": "0x0b82",
    "size_orig": 262,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x01a2"
    ],
-   "note": "open: &chkname[n + 1] - p: the original ld r2,#chkname+1; add r2,n, ours ld r2,n; add r2,#chkname+1 (17 forms tried). The same source in chkin (common.c 1.3, cc) gives the order of ours there: a trait of the compiler of 07/82, not of the source. outname gets basename(chkname) as an argument (no variable; the 6(r15) of the original is the temporary)."
+   "note": "&chkname[n + 1] - p: ld r2,#chkname+1; add r2,n with OLD_D19K of cparse v0 (the pointer under the int conversion of the difference keeps its type; its witness). outname gets basename(chkname) as an argument (no variable; the 6(r15) of the original is the temporary)."
   },
   "basename": {
    "file": "common.c",
    "orig": "0x0c88",
    "size_orig": 52,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0b82"
@@ -183,7 +183,7 @@
    "file": "common.c",
    "orig": "0x0cbc",
    "size_orig": 66,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0b82"
@@ -193,7 +193,7 @@
    "file": "common.c",
    "orig": "0x0cfe",
    "size_orig": 44,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x01a2"
@@ -203,7 +203,7 @@
    "file": "common.c",
    "orig": "0x0d2a",
    "size_orig": 310,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x06ba"
@@ -211,5 +211,5 @@
    "note": "a goto loop (loop/next/test): a keyword skips 3 characters straight to the test, the others share the print of %c and p++; the while and for forms are laid out otherwise by popt."
   }
  },
- "note": "a WEGA program (qcv(5)) without a System III source, written from the disassembly (chkout.c, common.c, chkout.h); ccv0, the stdio.h of oldv7 and libc-v1.a (with rewind, fdopen 0_2, getpwuid 0_2, getpwent 0_2, fgets 0_2, ctime 0_2 and getenv in front of atoi). Not yet identical: putline, wfprintf (chkout.c), setnames (common.c)."
+ "note": "a WEGA program (qcv(5)) without a System III source, written from the disassembly (chkout.c, common.c, chkout.h); ccv0, the stdio.h of oldv7 and libc-v1.a (with rewind, fdopen 0_2, getpwuid 0_2, getpwent 0_2, fgets 0_2, ctime 0_2 and getenv in front of atoi). Byte-identical with /bin/chkout: ccv0 with OLD_D2LP (wfprintf) and OLD_D19K (setnames), one witness each (host/OLDCC.md)."
 }

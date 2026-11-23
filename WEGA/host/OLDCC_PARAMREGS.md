@@ -170,3 +170,5 @@ exact programs of 07/82 (dc, bc, tail, sum, mkdir, ranlib).
   with v0, 96 with v0a. No function gains. putline, wfprintf, doit, apply, nextcmd, getat and notplain gain only reloads
   `ld r7,(r15)` (and r6, r5, r4 in front of the call of wfprintf) that the original does not have: OLD_D3AW. OLD_D3AC and
   OLD_D2NS change nothing in chkout. chkout stays with v0; its open places (putline, wfprintf, setnames) are not v0a.
+- 2026-11-23 crpost (07/26/82, System III crpost.c with ccv0, not in the tree): get reloads its parameter `ld r7,0(r15)`
+  before a call, the place of OLD_D3AW; chkout (07/23/82) does not. Not yet looked at in detail.

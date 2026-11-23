@@ -1,6 +1,6 @@
 # sccs: the SCCS commands of System III (usr/src/cmd/sccs): so far the help files of the command help (help.d); and the
-# commands of WEGA's own source control (qcv(5)): chkwhat (byte-identical with /bin/chkwhat: ccv1, libc-v4.a), chkout (ccv0,
-# libc-v1.a; built, not installed until it is identical), chkin (byte-identical with /bin/chkin: cc, libc-v12.a);
+# commands of WEGA's own source control (qcv(5)): chkwhat (byte-identical with /bin/chkwhat: ccv1, libc-v4.a), chkout (byte-identical
+# with /bin/chkout: ccv0, libc-v1.a), chkin (byte-identical with /bin/chkin: cc, libc-v12.a);
 # common.c is in both (chkout: -DCHKOUT).
 #
 #   make              build
@@ -66,10 +66,11 @@ chkin.o: chkin.c chkout.h
 chkin-common.o: common.c chkout.h
 	cp common.c chkin-common.c ; $(CC) -O -c chkin-common.c ; rm -f chkin-common.c
 
-install: chkwhat chkin
+install: chkwhat chkout chkin
 	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done
 	mkdir -p $(PREFIX)/bin
 	rm -f $(PREFIX)/bin/chkwhat ; cp chkwhat $(PREFIX)/bin/chkwhat ; $(STRIP) $(PREFIX)/bin/chkwhat ; chmod 755 $(PREFIX)/bin/chkwhat
+	rm -f $(PREFIX)/bin/chkout ; cp chkout $(PREFIX)/bin/chkout ; $(STRIP) $(PREFIX)/bin/chkout ; chmod 751 $(PREFIX)/bin/chkout
 	rm -f $(PREFIX)/bin/chkin ; cp chkin $(PREFIX)/bin/chkin ; $(STRIP) $(PREFIX)/bin/chkin ; chmod 751 $(PREFIX)/bin/chkin
 
 clean:

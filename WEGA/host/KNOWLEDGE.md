@@ -1215,7 +1215,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/bcmp` | a file that is a real part of the other (equal up to the end of the shorter) gives no message, against the man page: the EOF message (`file 1 EOF`, `file 2 EOF`, `file 1 and 2 EOF`) stands under the flag of a difference; with one argument file1 is the standard input and file2 stays the null pointer (getc on it) | kept | `compare/bcmp` |
 | `/bin/bd` | the last (incomplete) line tests a byte only for `>= ' '`: 0177 and the bytes above it are written raw into the character field, the full lines write a `.` for them; a file of a multiple of 16 bytes ends with an empty line (its address and `**`) | kept | `compare/bd` |
 | `/bin/chkwhat` | the string behind `@[$]` ends only at NUL, newline, `"` or `'`: at the end of a file without one of them it takes EOF as a character and writes 0377 for ever; a character that breaks the pattern is not tested again as its first one (`@@[$]x` is not found); any argument starting with `-` in front is `-w`; with no argument at all it reads the first byte of the null pointer argv[1] | kept | `compare/chkwhat` |
-| `/bin/chkout` | a chkfile whose first line is not an `&` line writes through the null pointer vp (readchk sets vp->start before any `&H`); when the lockfile cannot be created the chkfile stays open (the next file of the call goes on); `-v` takes `rel.lev` only with both numbers above 0 | kept (not yet identical) | `compare/chkout` |
+| `/bin/chkout` | a chkfile whose first line is not an `&` line writes through the null pointer vp (readchk sets vp->start before any `&H`); when the lockfile cannot be created the chkfile stays open (the next file of the call goes on); `-v` takes `rel.lev` only with both numbers above 0 | kept (byte-identical) | `compare/chkout` |
 | `/bin/chkin` | the copy of the chkfile goes to the current directory: tmpname gets the directory of the chkfile and is then overwritten by `sprintf(tmpname, "%.8s%d", ...)`; the loop that ends a last line without a newline runs over all 512 bytes of the line buffer behind the NUL; "cannot access file" leaves the exit status 0; `-v` takes only `rel.1` | kept | `compare/chkin` |
 | `/bin/find` | at the end of every directory it walks it says `find: cannot read NAME` with the name of the last entry (also on the tree's own directories); the listing and the matches are complete | kept (the corpora's expectations ignore those lines) | `compare/mandbmgr` |
 | `/etc/man.dbmgr` | with a directory inside the database the loop only ends when the files are gone and `ls` shows only that directory (the age goes down by one in each round; `find` removes files, not directories) | kept | `compare/mandbmgr` (subdirectory) |
@@ -1928,7 +1928,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 
 | Library | Programs |
 |---|---|
-| libc-v1 | dc, ranlib, chmod, env, gets, kill, nohup, pwd, sleep, tail, bc (07/82; mkdir partial; pipe for bc); chkout partial (getpwuid, getpwent, fgets 0_2, rewind, fdopen 0_2, ctime 0_2, getenv in front of atoi) |
+| libc-v1 | dc, ranlib, chmod, env, gets, kill, nohup, pwd, sleep, tail, bc (07/82; mkdir partial; pipe for bc); chkout (getpwuid, getpwent, fgets 0_2, rewind, fdopen 0_2, ctime 0_2, getenv in front of atoi) |
 | libc-v2 | cpp (12/82), clist |
 | libc-v3 | size (01/83; the members of od added, od not started) |
 | libc-v4 | strip (01/83), su (02/83; the members of passwd too) |

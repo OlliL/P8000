@@ -44,6 +44,11 @@ static char rcname[][8] = {
 #ifdef OLD_D2L
 #define D2VARS
 #endif
+#ifdef OLD_D2LP
+#define D2LPN(t)	(!((t)->sym && (t)->sym->sclass == PARAM))	/* v0: OLD_D2L does not take a word that holds a parameter (chkout wfprintf) */
+#else
+#define D2LPN(t)	1
+#endif
 #ifdef OLD_D2P
 #define D2VARS
 #endif
@@ -640,7 +645,7 @@ getreg(cls, reg, flag, sym)
 #else
 			if (t->cls == RCWORD && t->busy <= 0 && t->kind != RKTEMP && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
 #endif
-			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
+			    (m == 0 || rweight[t->reg] < rweight[m->reg]) && D2LPN(t))
 				m = t;
 #ifdef OLD_D2P
 		for (t = rsuse; t; t = t->next)		/* an idle pair lighter than both: given back, it is split */

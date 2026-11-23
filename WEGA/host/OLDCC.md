@@ -131,13 +131,13 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 - Programs: those of 1982 (sources 07/82 .., crt0 3.1 up to 11/82). Marks: tight frames (no unused frame word, no return
   temporary, leaf functions without a frame) and packed strings.
-- Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D6D`, `OLD_D22`, `OLD_D19P`, `OLD_D8L` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
-  `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`, `OLD_D2MO`,
+- Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D6D`, `OLD_D22`, `OLD_D19P`, `OLD_D19K`, `OLD_D8L` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
+  `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2LP`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`, `OLD_D2MO`,
   `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D5T`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6`, `OLD_D2Q`, `OLD_D2QI`, `OLD_D3K2`, `OLD_D3J` (codgen); none in popt. Not `OLD_D1`,
   not `OLD_D3`. cas: the old one (D17).
 - Byte-identical modules of libc-v1.a from C: getpwuid 0_2, getpwent 0_2, fdopen 0_2, isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3, fseek 0_2.
 - Test bench (System III sources of 38 programs of 1982, `oldcc.sh bench`): 139 of 153 functions equal, 188 differing lines.
-- Byte-identical: `/bin/dc`, `/usr/bin/ranlib`, `/bin/sum`, `/bin/mkdir` (the address form of `OLD_D5S`), `/bin/bc` (yacc output of bc.y).
+- Byte-identical: `/bin/dc`, `/usr/bin/ranlib`, `/bin/sum`, `/bin/mkdir` (the address form of `OLD_D5S`), `/bin/bc` (yacc output of bc.y), `/bin/chkout` (07/23/82; its witness of `OLD_D2LP` and `OLD_D19K`).
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
   renaming of register variables into low registers is done by popt `procopt`, in the shipped compiler too).
@@ -262,6 +262,9 @@ Free registers and pairs:
   getreg would take; the name is lost then (newsect `n = ++nsect; cp = &buf[3]` loads into r2 again). The name lives on as
   long as nobody needs the register. A float register likewise when its number is lower than that of the first free one
   (vc gopt constfold: the int-to-double result of a compare in f0, its store merged by spopt; neutral on the models and the bench).
+- v0 `OLD_D2LP` (under OLD_D2L): not a word that holds a parameter (chkout wfprintf: the three stack arguments copied
+  through r0, the parameter in r2 stays; with OLD_D2L alone r2 and a reload). Witness: chkout wfprintf only; the bench, the
+  v0p models, ex and the v0 programs of the tree unchanged. Not in vc: gopt takes the parameter's r2 (`ld r2,r3`).
 - v0 `OLD_D2G` (under OLD_D2L): an idle word of the same weight as that register wins (mkdope: r3 against the split rr0).
 - v0 `OLD_D2T` (under OLD_D2L): the register of a TEMP (the value of a switch, held from its start to the compares behind
   the bodies) counts as free while idle, so the bodies take r2 again (setreg, prtree, opact).
@@ -555,6 +558,11 @@ write these operands in the order that gives the bytes (`argregs`, `rmconv`, `cl
   vishft and viin `tp + j * WCOLS - shft`; vzop `p - i - 1` as `p - (i + 1)`; save, vremote, vup with array addresses).
   ex 342 -> 348, bench 137 -> 139; the v0 programs of the tree and the v0p models unchanged. No pcc of the unix
   history archive (V7, 32V, 2.9BSD .. 4.4BSD, V8 .. V10, SunOS) has it.
+- v0 cparse `OLD_D19K` (clocal, SCONV): a pointer converted to an int of its size keeps its pointer type; the conversion goes
+  without the paint to int. A pointer difference converts both pointers, so the + of `&global[i + c]` stays a pointer + in
+  codgen: optim keeps the address constant on the left and folds the constant into it (chkout setnames `&chkname[n + 1] - p`:
+  `ld r2,#_chkname+1; add r2,n`; shipped and painted: `ld r2,n; add r2,#_chkname+1`). Witness: chkout setnames only; the
+  bench, ex, the v0 programs of the tree unchanged. Not in v0p (its cparse is shared by the models, not measured there).
 
 ### D20 Code motion of popt
 
@@ -796,6 +804,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | mkdir | mkdir.c | v0 |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | ex | ex 2.13 (own code) | v0a |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | mkstr | mkstr.c, libc calloc | v0 |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| chkout | chkout.c, common.c (07/23/82) | v0 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
 | kernel | sig.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
 | kernel | sys2.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
 | kernel | sys3.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |

@@ -2144,3 +2144,16 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   ex 352 -> 355, none lost. With v0: tree units and v0p models unchanged, bench same 139 but 188 -> 191 lines (pack
   packfile: rr0 for rr2 at one more place, the pair choice the function already gets wrong): v0a only. The variant "keeps
   its name for the register choice, not found by symreg" (RSXN): ex 327 (-28), bench 137: refuted.
+- 2026-11-23 chkout (07/23/82) exact with two v0 switches, one witness each (owner: commit with one witness, as OLD_D3AC):
+  - `OLD_D2LP` (codgen, getreg, under OLD_D2L): wfprintf copies its three stack arguments through r0; ccv0 took the
+    parameter's r2 (lighter than r0) and reloaded it. ccv0, ccv0a, ccv0p take r2, ccv1 r0/r1. First in v0 with vc too:
+    gopt lost one byte (`ld r0,r3` for `ld r2,r3`), so not in vc. Bench 139/188, the seven models, ex 651 of 684 found
+    (masked search of each function), checkall: unchanged. ctime 0_2 (asctime r1/rr0 for r3/rr2) the same with and without.
+  - `OLD_D19K` (cparse, clocal SCONV): setnames `&chkname[n + 1] - p`. The tree of cparse is SUBSR(&chkname, n + 1) under
+    a pointer-to-int conversion; the paint to int makes the + an int + in codgen, where optim swaps the address constant
+    to the right (`ld r2,n; add r2,#_chkname+1`). Kept a pointer, optim folds the 1 into the constant on the left
+    (`ld r2,#_chkname+1; add r2,n`, the original). Tried before: the vc rule of mip optim (OLD_D13, SEG) for
+    nonsegmented code: no change (the + is no pointer +); cparse without OLD_D19P: no change. Bench, ex, checkall unchanged.
+  - Side findings in crpost (07/26/82, not in the tree; System III crpost.c compiled with ccv0, functions searched in the
+    original): put `&obuf[optr] - 1` (obuf a pointer) is `optr - 1` first and obuf added last (the rule of OLD_D19P, here
+    over SUBSR); get reloads a parameter `ld r7,0(r15)` before a call (the place of OLD_D3AW, three days after chkout).
