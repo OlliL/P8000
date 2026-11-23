@@ -1,0 +1,446 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv0",
+ "binary": "/bin/find",
+ "functions": {
+  "f0000": {
+   "file": "",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "open",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0042": {
+   "file": "",
+   "orig": "0x0042",
+   "size_orig": 502,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "f0238": {
+   "file": "",
+   "orig": "0x0238",
+   "size_orig": 78,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x0238",
+    "0x0362"
+   ]
+  },
+  "f0286": {
+   "file": "",
+   "orig": "0x0286",
+   "size_orig": 134,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0238",
+    "0x0286"
+   ]
+  },
+  "f030c": {
+   "file": "",
+   "orig": "0x030c",
+   "size_orig": 86,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0286"
+   ]
+  },
+  "f0362": {
+   "file": "",
+   "orig": "0x0362",
+   "size_orig": 1216,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x030c"
+   ]
+  },
+  "f0822": {
+   "file": "",
+   "orig": "0x0822",
+   "size_orig": 60,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0238",
+    "0x0286",
+    "0x030c",
+    "0x0362"
+   ]
+  },
+  "f085e": {
+   "file": "",
+   "orig": "0x085e",
+   "size_orig": 52,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0238",
+    "0x0286",
+    "0x030c",
+    "0x0362"
+   ]
+  },
+  "f0892": {
+   "file": "",
+   "orig": "0x0892",
+   "size_orig": 88,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f08ea": {
+   "file": "",
+   "orig": "0x08ea",
+   "size_orig": 68,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f092e": {
+   "file": "",
+   "orig": "0x092e",
+   "size_orig": 46,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f095c": {
+   "file": "",
+   "orig": "0x095c",
+   "size_orig": 26,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0976": {
+   "file": "",
+   "orig": "0x0976",
+   "size_orig": 12,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0982": {
+   "file": "",
+   "orig": "0x0982",
+   "size_orig": 42,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f09ac": {
+   "file": "",
+   "orig": "0x09ac",
+   "size_orig": 42,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f09d6": {
+   "file": "",
+   "orig": "0x09d6",
+   "size_orig": 42,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0a00": {
+   "file": "",
+   "orig": "0x0a00",
+   "size_orig": 30,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0a1e": {
+   "file": "",
+   "orig": "0x0a1e",
+   "size_orig": 30,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0a3c": {
+   "file": "",
+   "orig": "0x0a3c",
+   "size_orig": 28,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0a58": {
+   "file": "",
+   "orig": "0x0a58",
+   "size_orig": 30,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0a76": {
+   "file": "",
+   "orig": "0x0a76",
+   "size_orig": 48,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0aa6": {
+   "file": "",
+   "orig": "0x0aa6",
+   "size_orig": 46,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0ad4": {
+   "file": "",
+   "orig": "0x0ad4",
+   "size_orig": 32,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0af4": {
+   "file": "",
+   "orig": "0x0af4",
+   "size_orig": 30,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0b12": {
+   "file": "",
+   "orig": "0x0b12",
+   "size_orig": 218,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0bec": {
+   "file": "",
+   "orig": "0x0bec",
+   "size_orig": 60,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0c28"
+   ]
+  },
+  "f0c28": {
+   "file": "",
+   "orig": "0x0c28",
+   "size_orig": 702,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "f0ee6": {
+   "file": "",
+   "orig": "0x0ee6",
+   "size_orig": 118,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0c28"
+   ]
+  },
+  "f0f5c": {
+   "file": "",
+   "orig": "0x0f5c",
+   "size_orig": 14,
+   "status": "open",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0f6a": {
+   "file": "",
+   "orig": "0x0f6a",
+   "size_orig": 56,
+   "status": "open",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0fa2": {
+   "file": "",
+   "orig": "0x0fa2",
+   "size_orig": 186,
+   "status": "open",
+   "kind": "proven",
+   "callers": []
+  },
+  "f105c": {
+   "file": "",
+   "orig": "0x105c",
+   "size_orig": 338,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0362"
+   ]
+  },
+  "f11ae": {
+   "file": "",
+   "orig": "0x11ae",
+   "size_orig": 702,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x11ae"
+   ]
+  },
+  "f146c": {
+   "file": "",
+   "orig": "0x146c",
+   "size_orig": 44,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0362"
+   ]
+  },
+  "f1498": {
+   "file": "",
+   "orig": "0x1498",
+   "size_orig": 208,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x146c",
+    "0x1498"
+   ]
+  },
+  "f1568": {
+   "file": "",
+   "orig": "0x1568",
+   "size_orig": 50,
+   "status": "open",
+   "kind": "proven",
+   "callers": []
+  },
+  "f159a": {
+   "file": "",
+   "orig": "0x159a",
+   "size_orig": 134,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0c28"
+   ]
+  },
+  "f1620": {
+   "file": "",
+   "orig": "0x1620",
+   "size_orig": 120,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0c28"
+   ]
+  },
+  "f1698": {
+   "file": "",
+   "orig": "0x1698",
+   "size_orig": 202,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x159a",
+    "0x1620"
+   ]
+  },
+  "f1762": {
+   "file": "",
+   "orig": "0x1762",
+   "size_orig": 22,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x030c",
+    "0x0362",
+    "0x085e",
+    "0x0c28",
+    "0x11ae",
+    "0x1698"
+   ]
+  },
+  "f1778": {
+   "file": "",
+   "orig": "0x1778",
+   "size_orig": 186,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "f1832": {
+   "file": "",
+   "orig": "0x1832",
+   "size_orig": 136,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "f18ba": {
+   "file": "",
+   "orig": "0x18ba",
+   "size_orig": 112,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x1698"
+   ]
+  },
+  "f192a": {
+   "file": "",
+   "orig": "0x192a",
+   "size_orig": 74,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x1762"
+   ]
+  }
+ },
+ "note": "partial 2026-11-23: find.c of System III + the WEGA sccsid and chdir(strlen(Pathname)? Pathname: \"/\") in descend; ccv0p -O with the shipped stdio.h (getc with --_cnt < 0 first): 38 of 39 functions exact (funcfind, masked). scomp(a, b, s): the original stores the char parameter s (r5) to its frame home at the entry (ld %0000(r15),r5) and reloads it behind the first if (cpb %0001(r15),#%2D); ccv0p and ccv0 keep it in rl5. Tried: register char s, char s, int s, register int s, else if, switch, (char)s, and ccv0, ccv1, ccv1r, ccv1q: none. libc: the members of libc-v7 and libc-v1 (fputs 0_1, fopen 0_1, fdopen 0_1, printf 0_5, doprnt 0_5, puts (ccv0, new), filbuf 0_3, flsbuf 0_2, endopen 0_4, findiop 0_2, execvp 0_1, getenv 0_1, sleep 0_1, atoi 0_1, cnvt 0_2, length 0_2, malloc 0_3, isatty 0_2, setret, stty 0_3, index 0_1, strcmp 0_1, strncmp 0_1, strcpy 0_2, strlen 0_2, strrchr 0_1, the system calls); no library made yet. Phase A: stays partial."
+}

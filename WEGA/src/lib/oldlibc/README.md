@@ -15,7 +15,7 @@ A program finds its library with `host/tools/whichlibc.py`. `host/tools/libctabl
 
 ## State
 
-113 of 127 modules from C. Which program uses which library: `host/KNOWLEDGE.md`, "The libraries of the old programs".
+124 of 138 modules from C. Which program uses which library: `host/KNOWLEDGE.md`, "The libraries of the old programs".
 
 ## Open
 

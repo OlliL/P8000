@@ -190,3 +190,15 @@ PLZ programs and `as`: 170.
   the bare program name as their default step: tail fixed (default t.in), the others have a step in every case.
   Not exact yet, with the cause measured: od, file, tr, date, nice, time, who, regcmp, egrep (other WEGA sources or
   frames), ls (calloc, qsort, strncat of ccv1 missing).
+- 2026-11-23 find partial (38 of 39 functions with ccv0p; scomp stores and reloads its char parameter, no source form;
+  compare/find/findings.json). dd: perror 0_4 (ccv1r), errlst, dup added to libc-v10.a, its own code differs (WEGA dd 2.3).
+  uuname, uulog, uux: older sources than System III ("Usage: uunames [-l]"); getfile: a WEGA program without source; test:
+  /bin/test is not the test of sh. Not started.
+- 2026-11-23 su: exact (su.c of System III with the WEGA changes, found from the binary: "wega" as the default id,
+  char term[32] = "TERM=" and strcat(term, getenv("TERM")) for envinit[2], rindex; ccv1; libc-v13.a: new oldlibc cuserid,
+  getpass, putpwent, getpwuid, crypt, a64l, l64a, ttyname 0_2 (ccv1), getlogin of V7, ttyslot with rindex); corpus compare/su
+  (10, the password on the console model); a quirk: `su -` without TERM reads the null pointer. passwd: the WEGA locking
+  (lkdata, unlk) and 1 KB more data: not started.
+- 2026-11-23 checkall c7 failed: the su corpus wrote /usr/adm/sulog into ROOT (the layer takes a new file only in a directory
+  that exists in the layer). sulog removed from the tree (/usr/adm of WEGA is empty); every su case makes $Z8K_OVERLAY/usr/adm
+  first. checkall c8 ALL OK; src/COVERAGE.md generated (coverage.py on its install tree): exact 903, partial 14.

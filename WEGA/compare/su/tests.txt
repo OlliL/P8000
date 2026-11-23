@@ -1,0 +1,77 @@
+# The cases of the corpus of su (compare/su/corpus.py); the format: host/recon/casefile.py. src = src/cmd/su.c.
+
+== root-command
+# src: as root no password; with arguments the shell runs them
+-- case
+user: 0 0
+host: mkdir -p $Z8K_OVERLAY/usr/adm
+step: su bin -c 'echo hello'
+
+== root-default
+# src: without a name: wega
+-- case
+user: 0 0
+host: mkdir -p $Z8K_OVERLAY/usr/adm
+step: su wega -c 'echo x'
+
+== root-id-env
+-- case
+user: 0 0
+host: mkdir -p $Z8K_OVERLAY/usr/adm
+step: su bin -c 'echo $HOME $PATH'
+
+== root-dash
+# src: "-": the environment of the user (HOME, PATH, TERM), a login shell
+-- case
+user: 0 0
+env: TERM=P8
+host: mkdir -p $Z8K_OVERLAY/usr/adm
+step: su - bin -c 'echo $HOME $PATH $TERM'
+
+== root-dash-noterm
+# quirk: without TERM getenv gives a null pointer; strcat copies what stands at address 0 (the text of crt0)
+-- case
+user: 0 0
+host: mkdir -p $Z8K_OVERLAY/usr/adm
+step: su - adm -c 'echo $TERM'
+
+== unknown
+# src: "Unknown id: %s"
+-- case
+user: 0 0
+host: mkdir -p $Z8K_OVERLAY/usr/adm
+step: su nosuch
+
+== unknown-user
+-- case
+user: 100 100
+host: mkdir -p $Z8K_OVERLAY/usr/adm
+step: su nosuch
+
+== user-password-wrong
+# src: a user is asked the password on /dev/tty: "Sorry"
+-- case
+user: 100 100
+terminal: console
+host: mkdir -p $Z8K_OVERLAY/usr/adm
+step: su wega -c 'echo x'
+operator: at 'Password:' type 'wrong\r'
+
+== user-nopass
+# src: an entry with x as password
+-- case
+user: 100 100
+terminal: console
+host: mkdir -p $Z8K_OVERLAY/usr/adm
+step: su bin -c 'echo x'
+operator: at 'Password:' type 'x\r'
+
+== log
+# src: the log line of /usr/adm/sulog (the directory is in the layer; the clock fixed)
+-- case
+user: 0 0
+time: 600000000
+host: mkdir -p $Z8K_OVERLAY/usr/adm
+host: touch $Z8K_OVERLAY/usr/adm/sulog
+step: su bin -c 'echo y'
+step: cat /usr/adm/sulog

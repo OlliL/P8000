@@ -14,9 +14,10 @@
 #   libc-v7.a  cparse, scparse (10/83)
 #   libc-v8.a  cc, scc
 #   libc-v9.a  ld (07/83)
-#   libc-v10.a write, rmdir (01/83)
+#   libc-v10.a write, rmdir (01/83); perror, errlst, dup for dd (12/82, its own code not exact yet)
 #   libc-v11.a mkstr (11/82), cat (10/82), echo (08/82)
 #   libc-v12.a chgrp, chown, sort (02/83 .. 03/83), uname, touch (01/83 .. 03/83)
+#   libc-v13.a su (02/83; the members of passwd too, passwd not exact yet)
 #
 #   make        (needs ../libc made, and ccv1, ccv0, ccv0p)
 #   make clean
@@ -30,7 +31,7 @@ CCV0P = ccv0p
 CAS = cas
 AR = ar
 
-LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a ../libc-v12.a
+LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a ../libc-v12.a ../libc-v13.a
 
 all: $(LIBS)
 
@@ -144,10 +145,10 @@ LIBv9 = ../libc/build/nonseg/scanf.o doscan/0_1.o printf/0_6.o doprnt/0_6.o ../l
 	sh mklib.sh $@ $(AR) $(LIBv9)
 
 LIBv10 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/build/nonseg/ffltioc.o filbuf/0_4.o flsbuf/0_3.o endopen/0_5.o \
-	 findiop/0_3.o ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ttyname/0_1.o cnvt/0_3.o \
-	 ../libc/build/nonseg/decimal.o length/0_4.o malloc/0_6.o isatty/0_3.o stty/0_4.o strcat/0_3.o strcmp/0_2.o \
+	 findiop/0_3.o ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o perror/0_4.o ttyname/0_1.o cnvt/0_3.o \
+	 ../libc/build/nonseg/decimal.o length/0_4.o malloc/0_6.o errlst/0_2.o isatty/0_3.o stty/0_4.o strcat/0_3.o strcmp/0_2.o \
 	 strcpy/0_3.o strlen/0_3.o strrchr/0_3.o ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o ../libc/build/nonseg/brk.o \
-	 ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/execl.o ../libc/build/nonseg/fork.o \
+	 ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/dup.o ../libc/build/nonseg/execl.o ../libc/build/nonseg/fork.o \
 	 ../libc/build/nonseg/fstat.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o \
 	 ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/wait.o \
 	 ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
@@ -177,8 +178,35 @@ LIBv12 = getgrnam/0_1.o getgrent/0_1.o getpwnam/0_1.o getpwent/0_1.o fgets/0_1.o
 ../libc-v12.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv12)
 
+LIBv13 = cuserid/0_1.o getpass/0_1.o putpwent/0_1.o getpwnam/0_1.o getpwuid/0_1.o getpwent/0_1.o fgets/0_1.o \
+	 ../libc/build/nonseg/rew.o ../libc/build/nonseg/fopen.o printf/0_2.o doprnt/0_2.o ../libc/build/nonseg/ffltioc.o \
+	 filbuf/0_2.o ../libc/build/nonseg/setbuf.o flsbuf/0_1.o endopen/0_2.o findiop/0_1.o ../libc/build/nonseg/data.o \
+	 ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ctime/0_1.o getenv/0_2.o getlogin/0_1.o perror/0_2.o \
+	 ttyslot/0_1.o ttyname/0_2.o atoi/0_2.o cnvt/0_1.o ../libc/build/nonseg/decimal.o length/0_1.o crypt/0_1.o malloc/0_2.o \
+	 errlst/0_2.o ../libc/build/nonseg/isatty.o ../libc/build/nonseg/stty.o strcat/0_1.o ../libc/build/nonseg/strcmp.o \
+	 ../libc/build/nonseg/strncmp.o strcpy/0_1.o strlen/0_1.o rindex/0_1.o a64l/0_1.o l64a/0_1.o \
+	 ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/access.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chdir.o \
+	 ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/execl.o \
+	 ../libc/build/nonseg/execv.o ../libc/build/nonseg/fstat.o ../libc/build/nonseg/getpid.o ../libc/build/nonseg/getuid.o \
+	 ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lkdata.o ../libc/build/nonseg/link.o ../libc/build/nonseg/lseek.o \
+	 ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o ../libc/build/nonseg/setgid.o ../libc/build/nonseg/setuid.o \
+	 ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o ../libc/build/nonseg/time.o ../libc/build/nonseg/umask.o \
+	 ../libc/build/nonseg/unlink.o ../libc/build/nonseg/unlk.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
+# ccv1 (cuserid, getpass, putpwent, getpwuid, getlogin, ttyslot, ttyname 0_2, crypt, a64l, l64a)
+../libc-v13.a: objs
+	sh mklib.sh $@ $(AR) $(LIBv13)
+
 # the modules: each directory makes its objects with its own Makefile
 objs:
+	cd ttyslot ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd putpwent ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd l64a ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getpwuid ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getpass ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getlogin ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd cuserid ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd crypt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd a64l ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd abs ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd atoi ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd calloc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs

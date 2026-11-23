@@ -8,7 +8,7 @@ CCV0 = ccv0
 CCV0P = ccv0p
 CAS = cas
 
-objs: 0_1.o 0_2.o 0_3.o
+objs: 0_1.o 0_2.o 0_3.o 0_4.o
 
 0_1.o: ../../libc/common/gen/perror.c
 	$(CCV0P) -O -I../../libc/common/gen -c ../../libc/common/gen/perror.c ; mv perror.o 0_1.o
@@ -18,5 +18,8 @@ objs: 0_1.o 0_2.o 0_3.o
 
 0_3.o: ../../libc/common/gen/perror.c
 	$(CCV0) -O -I../../libc/common/gen -c ../../libc/common/gen/perror.c ; mv perror.o 0_3.o
+
+0_4.o: ../../libc/common/gen/perror.c
+	$(CCV1R) -O -I../../libc/common/gen -c ../../libc/common/gen/perror.c ; mv perror.o 0_4.o
 
 .PHONY: objs
