@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "ccv0 (2026-11-23, with shrink.sh and the options: 314 of 390 functions exact)",
+ "compiler": "ccv0 (2026-11-23, with shrink.sh, the options and the WEGA edits: 323 of 391 functions exact; of the other 68, 24 differ only by call/calr, jp/jr or the masked address of a switch table, the rest is in the clusters of 'phase B')",
  "binary": "/bin/ex (links: vi, view, edit); E711, text 63488 bytes (code to 0xf7fe)",
  "build": "vi.mk of Plexus: mkstr - ex2.13strings x FILE.c, cc -E | xstr -c -, cc -c x.c. WEGA adds a step between the compiler and cas (src/cmd/ex/shrink.sh, cc -S, shrink.sh x.s, cas), both parts to save room (the code ends at 0xf7fe, the text limit is 64K): (1) each module begins with a table of 'jp _name' for every external function called 3 times or more (callr) in the module, the calls go by calr to the table; order 'sort | uniq -c | sort -n' (by the number of calls, then the name, ASCII); 22 tables, 183 stubs, 944 calls, 1156 bytes saved; only in ex (all programs of the root scanned). (2) a frame operand at offset 0 becomes @fp: ~L1(fp) in a function with '~L1 := 0' (not lda), and 0(fp) beside r0..r7 (the parameter stores); the saves of r8..r14 stay 0(fp) (139 of 139). Measured on the ccv0 output of all modules: 98 of 98 parameter stores and about 220 operands in the bodies as in the original. Of 310 files of the root only ex (and its links) has saves at 0(r15) with parameters at @r15. Not documented.",
  "open": "setjmp.h missing in WEGA (measured with setret.h, ret_buf).",
@@ -25,7 +25,14 @@
     "setin",
     "vreplace",
     "printf",
-    "_align"
+    "_align",
+    "tailspec",
+    "dosubcon",
+    "vclrlin",
+    "plodput",
+    "normal",
+    "exit",
+    "vputch"
    ],
    "difference": "the original reloads a parameter from its frame home (ld r7,@r15) in front of its first use, ccv0 takes it from the register",
    "tried": "on tail without effect: no blank line, char comm[], return (...), return; at the end, a block, a null statement, an extra local, the parameter undeclared",
@@ -51,7 +58,8 @@
   "register knowledge": {
    "functions": [
     "vopen",
-    "YANKreg"
+    "YANKreg",
+    "YANKline"
    ],
    "difference": "a global just stored from r2 (WTOP = p; rnleft = ...) is loaded again from memory by the original in the next statement, ccv0 takes it from r2",
    "tried": "vopen: WTOP = p, WLINES = ...; (WBOT - WTOP) + 1; the store in a block; WTOP as int: no effect",
@@ -77,7 +85,8 @@
     "edge",
     "gettmode",
     "advance",
-    "(c03c)"
+    "(c03c)",
+    "vgetline"
    ],
    "difference": "the value of a comparison of two chars (wcursor[1] == 0) gets an extsb behind the tcc in the original, ccv0 writes the tcc alone; comparisons of pointers have no extsb",
    "findings": "none of the exact v0 programs has tcc + extsb in its own code"
@@ -99,5 +108,5 @@
  "wega edits": "sTTY: stty(i, &tty), not ioctl TIOCSETN (the original calls stty; sgtty.h of WEGA defines TIOCSETN). getach: after read(0, &lastc, 1) the original keeps the high byte and swaps it down (lastc &= 0177400; swab(&lastc, &lastc, 2)): the byte read lies in the high half of the int on the Z8000. set (ex_set.c, NUMERIC): after the TABSTOP check 'if (cp && strcmp(cp, \"window\") == 0) { vsetsiz(value(WINDOW)); setwind(); }'. getblock (ex_temp.c): 'Tmp file too large' is fatal: error0(); merror(msg); if (io > 0) close(io); if (inopen) setty(normf); cleanup(1); exit(1) (globals named by error1 (io) and the quit command (inopen, normf)). rop (ex_io.c): after the fstat 'if ((stbuf.st_mode & 0700) == 0400) printf(\" [File is read only]\");'. main (ex.c): after EXINIT 'else if (access(\"./.exrc\", 0) == 0) source(\"./.exrc\", 1);' before $HOME/.exrc. Shells (ex_cmds.c, ex_unix.c): a new command cshell ('c' switch: case 's': tail(\"cshell\"); goto shell;), the shell command runs c == 's' ? \"sh\" : \"csh\"; unixex has a fifth parameter, the name of the shell (argv[0]), and runs *name == 's' ? svalue(SHELL) : \"/bin/csh\"; ! and filter pass options[SHELL].oabbrev (\"sh\": the original loads the word at the oabbrev of SHELL). vmain (ex_vmain.c, ^F): the lines to move go to a block variable (int n = ...; the frame slot of sdc) and ^F does not move beyond dol ('if (dot + n > dol) continue;').",
  "printf": "src/cmd/ex/printf.c (2026-11-23, written from /bin/ex 0xe546..0xe96e), the last module before strings.o instead of pprintf.c of Plexus (its functions are not in /bin/ex; removed from the tree): printf (as oldlibc printf 0_5, without stdout, return (0)), _align (as doprnt 0_7), _doprnt (a smaller one: no file, putchar, no floating point, no sign handling, no (null), a flag for a precision that prints one '0'), _atoip. _doprnt and _atoip exact; printf and _align differ only by the parameter cluster of phase B (printf reloads fmt, _align stores stkap at the entry). One module: its jp table (putchar) stands in front of printf.",
  "compare note": "The masked comparison shows 'ld r3,#%00xx' (original) against 'ld r3,#A' (object) for the address of a switch table below 0x100 in the data (main, commands, address): not a difference of the code; to be checked when linked.",
- "call/calr": "calr in the original where the build has call (or the other way) and jp/jr: the choice of cas by the distance; they follow the other differences (the stub tables are the same as the original's). Left: commands, vmain, word, operate, fgoto, vrepaint, vinschar and others; to be measured again when the clusters are solved."
+ "call/calr": "calr in the original where the build has call (or the other way) and jp/jr: the choice of cas by the distance; they follow the other differences (the stub tables are the same as the original's). Functions with only these: main, address, commands, pragged, rop2, rop3, wop, slobber, termchar, flush1, flush2, fgoto, global, vreopen, vrepaint, vmain, find, word, vchange, vclreol, vgoto, vinschar, vrigid, vneedpos."
 }

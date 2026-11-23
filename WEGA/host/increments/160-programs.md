@@ -240,3 +240,7 @@ PLZ programs and `as`: 170.
 - 2026-11-23 ex: the options of the WEGA build measured (compare/ex/findings.json): vi.mk's without USG3TTY, plus OPENCODE,
   LISPCODE, TAGSCODE, CRNL, SOFTTABS, CHDIR: 314 of 390 functions exact (differing lines 2757 -> 900). Kept back: 11 functions that
   reload a parameter (an unused label would do it), listchar/normchar/vgotab.
+- 2026-11-23 ex (phase A): WEGA edits found and made in the source (sTTY, getach, set, getblock, rop, main ./.exrc, cshell and
+  unixex with the shell name, ^F of vmain), printf.c written from the binary (pprintf.c removed), BEEHIVE and UCVISUAL set: 323 of
+  391 functions exact (in scratch; not yet built in the tree: setjmp.h). The rest is call/calr and jp/jr that follow, or the
+  clusters for phase B in compare/ex/findings.json.
