@@ -1216,6 +1216,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/bd` | the last (incomplete) line tests a byte only for `>= ' '`: 0177 and the bytes above it are written raw into the character field, the full lines write a `.` for them; a file of a multiple of 16 bytes ends with an empty line (its address and `**`) | kept | `compare/bd` |
 | `/bin/chkwhat` | the string behind `@[$]` ends only at NUL, newline, `"` or `'`: at the end of a file without one of them it takes EOF as a character and writes 0377 for ever; a character that breaks the pattern is not tested again as its first one (`@@[$]x` is not found); any argument starting with `-` in front is `-w`; with no argument at all it reads the first byte of the null pointer argv[1] | kept | `compare/chkwhat` |
 | `/bin/chkout` | a chkfile whose first line is not an `&` line writes through the null pointer vp (readchk sets vp->start before any `&H`); when the lockfile cannot be created the chkfile stays open (the next file of the call goes on); `-v` takes `rel.lev` only with both numbers above 0 | kept (not yet identical) | `compare/chkout` |
+| `/bin/chkin` | the copy of the chkfile goes to the current directory: tmpname gets the directory of the chkfile and is then overwritten by `sprintf(tmpname, "%.8s%d", ...)`; the loop that ends a last line without a newline runs over all 512 bytes of the line buffer behind the NUL; "cannot access file" leaves the exit status 0; `-v` takes only `rel.1` | kept | `compare/chkin` |
 | `/bin/find` | at the end of every directory it walks it says `find: cannot read NAME` with the name of the last entry (also on the tree's own directories); the listing and the matches are complete | kept (the corpora's expectations ignore those lines) | `compare/mandbmgr` |
 | `/etc/man.dbmgr` | with a directory inside the database the loop only ends when the files are gone and `ls` shows only that directory (the age goes down by one in each round; `find` removes files, not directories) | kept | `compare/mandbmgr` (subdirectory) |
 | `/bin/df` | reads the kernel's `_Nmount` (the symbol of `/wega`, address 0x01000032 of `/dev/kmem`) to allocate its table, and counts the free blocks of the device itself; nothing else of kmem for `df -f DEVICE` | modelled: `host/tools/mkkmem.py` | `compare/mandbmgr` |
@@ -1938,6 +1939,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v9 | ld (07/83); its order conflicts with v6, its versions do not |
 | libc-isstore | write, rmdir (01/83) |
 | libc-v11 | cat (10/82), echo (08/82), mkstr (11/82) |
+| libc-v12 | chkin (09/83): the shipped libc.a with printf and doprnt 0_4 in their places (ar r) |
 
 The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see "libc.a and slibc.a: one tree".
 A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.

@@ -111,7 +111,7 @@
    "callers": [
     "0x01a2"
    ],
-   "note": "open: if (vp->start == 0): the original loads the long through r2 into rr2 (and reloads vp), ours into rr0. The trait of v0p OLD_D2Q (host/OLDCC.md, D2), also in getat and gmtime of ctime 0_2 (libc); ccv0 has no D2Q, ccv0p differs elsewhere (whole program 48 bytes longer). 5 forms tried (== 0, !, == 0L, <= 0, (int))."
+   "note": "open: if (vp->start == 0): the original loads the long through r2 into rr2 (and reloads vp), ours into rr0. The trait of v0p OLD_D2Q (host/OLDCC.md, D2), also in getat and gmtime of ctime 0_2 (libc); ccv0 has no D2Q, ccv0p differs elsewhere (whole program 48 bytes longer). 5 forms tried (== 0, !, == 0L, <= 0, (int)). chkin (cc) loads it as the source says: a trait of the compiler of 07/82. if (rel && (rel == r && lev == l)): the form chkin needs, the same code here."
   },
   "apply": {
    "file": "common.c",
@@ -123,7 +123,7 @@
     "0x01a2",
     "0x06ba"
    ],
-   "note": "the if is negated (cmd != * && curline >= n1: switch, else putline) and the cases are in the order a, d, c, as the original lays them out."
+   "note": "nested if (cmd != *) if (curline >= n1) switch, else putline twice (the form chkin needs; ccv0 lays it out as the original too); the cases in the order a, d, c."
   },
   "nextcmd": {
    "file": "common.c",
@@ -156,7 +156,7 @@
     "0x09ec",
     "0x0afe"
    ],
-   "note": "open: fseek(in, vp->pos, 0): the original ldl rr4,4(r4) (the long into the pair of the address register), ours ldl rr2,4(r4); ldl rr4,rr2. See readchk."
+   "note": "open: fseek(in, vp->pos, 0): the original ldl rr4,4(r4) (the long into the pair of the address register), ours ldl rr2,4(r4); ldl rr4,rr2. See readchk. chkin (cc) is exact with the same source."
   },
   "setnames": {
    "file": "common.c",
@@ -167,7 +167,7 @@
    "callers": [
     "0x01a2"
    ],
-   "note": "open: &chkname[n + 1] - p: the original ld r2,#chkname+1; add r2,n, ours ld r2,n; add r2,#chkname+1 (17 forms tried: index, pointer, cast, unsigned, reordered; chkname + n alone gives the constant first, with an offset the index comes first)."
+   "note": "open: &chkname[n + 1] - p: the original ld r2,#chkname+1; add r2,n, ours ld r2,n; add r2,#chkname+1 (17 forms tried). The same source in chkin (common.c 1.3, cc) gives the order of ours there: a trait of the compiler of 07/82, not of the source. outname gets basename(chkname) as an argument (no variable; the 6(r15) of the original is the temporary)."
   },
   "basename": {
    "file": "common.c",

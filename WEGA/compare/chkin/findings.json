@@ -1,0 +1,307 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/chkin",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "chkin.c",
+   "orig": "0x0042",
+   "size_orig": 378,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "names guessed (rflag, bflag, vflag, comment, currel, sigint...); the usage message is an initialised array usage[]."
+  },
+  "doit": {
+   "file": "chkin.c",
+   "orig": "0x01bc",
+   "size_orig": 804,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "the temporary copy of the chkfile: tmpname gets the directory of the chkfile (dirname) and is then overwritten by sprintf(tmpname, \"%.8s%d\", ...): the copy is made in the current directory (quirks table). \"cannot access file\" does not count as an error (exit status 0)."
+  },
+  "delta": {
+   "file": "chkin.c",
+   "orig": "0x04e0",
+   "size_orig": 324,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ]
+  },
+  "header": {
+   "file": "chkin.c",
+   "orig": "0x0624",
+   "size_orig": 454,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x04e0",
+    "0x07ea"
+   ],
+   "note": "j, bad, n, s are locals of the block of the comment loop (they share the frame place of the temporaries of getpwuid(getuid()) and ctime() in front). first and clist are static with an initialiser (in the data)."
+  },
+  "newfile": {
+   "file": "chkin.c",
+   "orig": "0x07ea",
+   "size_orig": 256,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ],
+   "note": "the loop that ends a last line without a newline runs over all 512 bytes of line behind the NUL (it reads bytes fgets did not write; quirks table)."
+  },
+  "putline": {
+   "file": "chkin.c",
+   "orig": "0x08ea",
+   "size_orig": 60,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0fec"
+   ]
+  },
+  "mkversion": {
+   "file": "chkin.c",
+   "orig": "0x0926",
+   "size_orig": 284,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ]
+  },
+  "copyfile": {
+   "file": "chkin.c",
+   "orig": "0x0a42",
+   "size_orig": 334,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ],
+   "note": "ferror(out) != 0 (the tcc of the original); also in wfprintf and fclosechk."
+  },
+  "dirname": {
+   "file": "chkin.c",
+   "orig": "0x0b90",
+   "size_orig": 48,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ]
+  },
+  "wfprintf": {
+   "file": "chkin.c",
+   "orig": "0x0bc0",
+   "size_orig": 70,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x04e0",
+    "0x0624",
+    "0x07ea",
+    "0x08ea",
+    "0x13ec"
+   ]
+  },
+  "fclosechk": {
+   "file": "chkin.c",
+   "orig": "0x0c06",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc",
+    "0x04e0"
+   ]
+  },
+  "ioerror": {
+   "file": "chkin.c",
+   "orig": "0x0c30",
+   "size_orig": 60,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0bc0",
+    "0x0c06"
+   ]
+  },
+  "onintr": {
+   "file": "chkin.c",
+   "orig": "0x0c6c",
+   "size_orig": 80,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "setsigs": {
+   "file": "chkin.c",
+   "orig": "0x0cbc",
+   "size_orig": 146,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x01bc"
+   ]
+  },
+  "ignsigs": {
+   "file": "chkin.c",
+   "orig": "0x0d4e",
+   "size_orig": 34,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ]
+  },
+  "getvers": {
+   "file": "chkin.c",
+   "orig": "0x0d70",
+   "size_orig": 218,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "-v takes only rel.1 (l != 1 is a bad version)."
+  },
+  "readchk": {
+   "file": "common.c",
+   "orig": "0x0e4a",
+   "size_orig": 418,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ],
+   "note": "if (rel && (rel == r && lev == l)): the inner && in parentheses gives the r3 of the original with cc (without them r2); chkout (ccv0) is the same with both."
+  },
+  "apply": {
+   "file": "common.c",
+   "orig": "0x0fec",
+   "size_orig": 200,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc",
+    "0x08ea"
+   ],
+   "note": "nested if (cmd != *) if (curline >= n1) switch ... else putline, else putline: the registers of the original switch with cc; the same code for ccv0 (chkout) as the && form."
+  },
+  "nextcmd": {
+   "file": "common.c",
+   "orig": "0x10b4",
+   "size_orig": 274,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0fec"
+   ]
+  },
+  "copytext": {
+   "file": "common.c",
+   "orig": "0x11c6",
+   "size_orig": 66,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "getat": {
+   "file": "common.c",
+   "orig": "0x1208",
+   "size_orig": 66,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x10b4"
+   ]
+  },
+  "setnames": {
+   "file": "common.c",
+   "orig": "0x124a",
+   "size_orig": 260,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ],
+   "note": "sprintf(outname, \"%s/%s\", dir, basename(chkname)) and strcpy(outname, basename(chkname)): the call as argument, no variable q (the frame of the original)."
+  },
+  "basename": {
+   "file": "common.c",
+   "orig": "0x134e",
+   "size_orig": 50,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc",
+    "0x124a"
+   ]
+  },
+  "notplain": {
+   "file": "common.c",
+   "orig": "0x1380",
+   "size_orig": 66,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x124a"
+   ]
+  },
+  "freevers": {
+   "file": "common.c",
+   "orig": "0x13c2",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01bc"
+   ]
+  },
+  "keyword": {
+   "file": "common.c",
+   "orig": "0x13ec",
+   "size_orig": 318,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0926"
+   ]
+  }
+ },
+ "note": "a WEGA program (qcv(5)) without a System III source, written from the disassembly (chkin.c; common.c and chkout.h with chkout); byte-identical with the shipped cc and libc-v12.a (the shipped libc.a with printf and doprnt 0_4)."
+}

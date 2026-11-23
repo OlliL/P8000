@@ -46,7 +46,7 @@ all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 # switches the sources to what the shipped libc and cc need (the old libc's readsym, sprintf value, swap_quad; the exit status
 # of size). Without -DSHIPPED the bytes of the originals are rebuilt. The files of /lib are not made here: empty rules below.
 SHIPFLAGS = -O -DSHIPPED
-SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a
+SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V12=/lib/libc.a
 
 shipped:
 	$(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $(PROGS) $(FILES) $(SIMPLE) $(SHIPCC) LIBC=/lib/libc.a

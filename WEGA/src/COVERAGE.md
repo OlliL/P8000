@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 55 | 3 | 27 | 26 |
+| [bin](#bin) | 111 | 56 | 3 | 27 | 25 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 30 | 6 | 63 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 910 | 11 | 167 | 109 |
+| **all** | 1197 | 911 | 11 | 167 | 108 |
 
 <a id="root"></a>
 ## root
@@ -54,7 +54,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/cc` | binary E707 | `src/cmd/cc` | exact | cc | libc-v8.a |
 | `bin/chgrp` | binary E707 | `src/cmd/chgrp.c` | exact | ccv1 | libc-v6.a |
 | `bin/chkdiff` | text | `src/cmd/chkdiff.sh` | exact | - | - |
-| `bin/chkin` | binary E707 | - | todo | D12 new, D1 loose | - |
+| `bin/chkin` | binary E707 | `src/cmd/sccs` | exact | cas, cc | libc-v12.a |
 | `bin/chkout` | binary E707 | - | todo | D12 old, D1 tight | - |
 | `bin/chkwhat` | binary E707 | `src/cmd/sccs` | exact | cas, ccv1 | libc-v4.a |
 | `bin/chmod` | binary E707 | `src/cmd/chmod.c` | exact | ccv0 | libc-v1.a |

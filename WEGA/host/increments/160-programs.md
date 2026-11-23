@@ -248,3 +248,7 @@ PLZ programs and `as`: 170.
   complete for it (getpwuid 0_2, getpwent 0_2, fgets 0_2, rewind, fdopen 0_2 of System III, ctime 0_2 as cas source, getenv in
   front of atoi). Data and bss identical; 5 functions differ (putline, wfprintf, readchk, getat, setnames: parameter registers,
   a long into the pair of its address register, `&chkname[n + 1]`), see compare/chkout/findings.json. Built, not installed.
+- 2026-11-23 chkin exact: chkin.c from the disassembly, common.c shared with chkout (the same source; -DCHKOUT gives chkout
+  its sccsid of 07/82), shipped cc, libc-v12.a (the shipped libc.a with printf and doprnt 0_4). Its common.c settles three
+  forms (the nested if of apply, `rel && (rel == r && lev == l)`, basename() as an argument) and shows that the rest of
+  chkout's common.c differences (readchk, getat, setnames) are traits of the compiler of 07/82. Corpus compare/chkin.

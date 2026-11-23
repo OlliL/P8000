@@ -1,0 +1,150 @@
+# The cases of the corpus of chkin (compare/chkin/corpus.py); the format: host/recon/casefile.py (the default file is a,
+# the default step chkin -c note a). Every file of a case ends with a newline (casefile).
+# Where an expectation comes from: man = /usr/man/man1/chkin.1 and /usr/man/man5/qcv.5, src = src/cmd/sccs/chkin.c and
+# common.c. The clock of the guest is fixed (time:), the &H line holds it.
+
+# ---- the public interface (man page) ----------------------------------------------------------------------------
+
+== man-new-chkfile
+# man: without a chkfile it is made with the whole file; qcv(5): &R, &H, &C, the lines as a0 of diff -f, &D
+-- case
+time: 605545021
+expect: file a+ contains '&R\n&H '
+expect: file a+ contains '&C note\na0\none\ntwo\n.\n&D\n'
+-- a
+one
+two
+
+== man-read-only-replaces
+# man: the file is replaced by the read-only version of chkout; qcv(5): $R$ is the version
+-- case
+time: 605545021
+expect: file a contains 'version 1.1 of a'
+-- a
+version $R$ of $M$
+
+== man-r-removes
+# man: -r removes the file
+-- case
+time: 605545021
+step: chkin -r -c note a
+expect: missing a
+expect: file a+ contains 'a0\nx\n.\n&D\n'
+-- a
+x
+
+== man-new-version
+# man: with a chkfile and its lock file the differences of diff go in, the lock file goes; src: the comment behind &H
+-- case
+time: 605545021
+step: chkin -c second a
+expect: file a+ contains '&C second\nc2\nTWO\n.\n&D\n'
+expect: missing a-
+-- a
+one
+TWO
+three
+-- a-
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+one
+two
+three
+.
+&D
+
+== man-new-version-keyword
+# man: the read-only file of the new version; qcv(5): $R$
+-- case
+time: 605545021
+step: chkin -c second a
+expect: file a contains 'v 1.2'
+-- a
+v $R$
+x
+-- a-
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+v $R$
+.
+&D
+
+== man-b-release
+# man: -b the next release, level 1: a new &R line in front of the version
+-- case
+time: 605545021
+step: chkin -b -c rel a
+expect: file a+ contains '&D\n&R\n&H '
+-- a
+y
+-- a-
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+x
+.
+&D
+
+== man-no-lock-file
+# man: without the lock file the file is not taken; src: "no lock file", exit status 1
+-- case
+time: 605545021
+expect: output contains 'no lock file for a'
+expect: exit 1
+-- a
+y
+-- a+
+&R
+&H hugo at Tue Jan 12 11:23:45 1988
+a0
+x
+.
+&D
+
+== man-d-dir
+# man: -d dir takes the file from dir
+-- case
+time: 605545021
+host: mkdir d ; echo one > d/a
+step: chkin -r -c note -d d a
+expect: file a+ contains 'a0\none\n.\n&D\n'
+expect: missing d/a
+
+# ---- what the source has besides ----------------------------------------------------------------------------------
+
+== src-escape-lines
+# src: a line of the file that starts with & or . gets an & in front (putline of chkout takes it away)
+-- case
+time: 605545021
+step: chkin -r -c note a
+expect: file a+ contains 'a0\n&&x\n&.\nz\n.\n&D\n'
+-- a
+&x
+.
+z
+
+== src-cannot-access
+# src: "cannot access file" when the file is missing; the exit status stays 0
+-- case
+step: chkin -c note b
+expect: output contains 'cannot access file b'
+expect: exit 0
+
+== src-usage
+# src: the usage message for an unknown option, exit status 1
+-- case
+step: chkin -x a
+expect: output contains 'Usage:'
+expect: exit 1
+
+== src-bad-version
+# src: -v takes only rel.1 with rel above 0: "bad version", exit status 1
+-- case
+step: chkin -v 2.2 -c note a
+expect: output contains '2.2: bad version'
+expect: exit 1

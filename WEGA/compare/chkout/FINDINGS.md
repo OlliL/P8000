@@ -17,12 +17,12 @@ exact: the program is byte-identical with the original (`host/tools/checkall.sh`
 | summary | 0x0644 |  |  |
 | putline | 0x06ba |  | open: the original has the keyword() block first and wfprintf() behind it with out known in r6, and apply() of the else with every parameter known; ours (if (eflag) wfprintf else keyword) has the two blocks the other way round and reloads the parameters for apply(). The frame has 2 bytes more than the parameters: an unused local. line = line + 1 (not line++: ld/inc/ld). |
 | wfprintf | 0x071e |  | open: the original copies the three stack arguments through r0, ours through r2 (r2 holds the sixth parameter; ccv0 takes it as a scratch and reloads it). ferror(fp) != 0 gives the tcc of the original. |
-| readchk | 0x0784 |  | open: if (vp->start == 0): the original loads the long through r2 into rr2 (and reloads vp), ours into rr0. The trait of v0p OLD_D2Q (host/OLDCC.md, D2), also in getat and gmtime of ctime 0_2 (libc); ccv0 has no D2Q, ccv0p differs elsewhere (whole program 48 bytes longer). 5 forms tried (== 0, !, == 0L, <= 0, (int)). |
-| apply | 0x092c |  | the if is negated (cmd != * && curline >= n1: switch, else putline) and the cases are in the order a, d, c, as the original lays them out. |
+| readchk | 0x0784 |  | open: if (vp->start == 0): the original loads the long through r2 into rr2 (and reloads vp), ours into rr0. The trait of v0p OLD_D2Q (host/OLDCC.md, D2), also in getat and gmtime of ctime 0_2 (libc); ccv0 has no D2Q, ccv0p differs elsewhere (whole program 48 bytes longer). 5 forms tried (== 0, !, == 0L, <= 0, (int)). chkin (cc) loads it as the source says: a trait of the compiler of 07/82. if (rel && (rel == r && lev == l)): the form chkin needs, the same code here. |
+| apply | 0x092c |  | nested if (cmd != *) if (curline >= n1) switch, else putline twice (the form chkin needs; ccv0 lays it out as the original too); the cases in the order a, d, c. |
 | nextcmd | 0x09ec |  | if (*p != a && != d && != c) { error } else vp->cmd = *p++; then while loops: the layout of the original (popt moves the block behind the first loop in front of it). |
 | copytext | 0x0afe |  |  |
-| getat | 0x0b42 |  | open: fseek(in, vp->pos, 0): the original ldl rr4,4(r4) (the long into the pair of the address register), ours ldl rr2,4(r4); ldl rr4,rr2. See readchk. |
-| setnames | 0x0b82 |  | open: &chkname[n + 1] - p: the original ld r2,#chkname+1; add r2,n, ours ld r2,n; add r2,#chkname+1 (17 forms tried: index, pointer, cast, unsigned, reordered; chkname + n alone gives the constant first, with an offset the index comes first). |
+| getat | 0x0b42 |  | open: fseek(in, vp->pos, 0): the original ldl rr4,4(r4) (the long into the pair of the address register), ours ldl rr2,4(r4); ldl rr4,rr2. See readchk. chkin (cc) is exact with the same source. |
+| setnames | 0x0b82 |  | open: &chkname[n + 1] - p: the original ld r2,#chkname+1; add r2,n, ours ld r2,n; add r2,#chkname+1 (17 forms tried). The same source in chkin (common.c 1.3, cc) gives the order of ours there: a trait of the compiler of 07/82, not of the source. outname gets basename(chkname) as an argument (no variable; the 6(r15) of the original is the temporary). |
 | basename | 0x0c88 |  |  |
 | notplain | 0x0cbc |  |  |
 | freevers | 0x0cfe |  |  |

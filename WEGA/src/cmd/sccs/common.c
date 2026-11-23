@@ -1,5 +1,6 @@
 /* common.c: reading a chkfile and making a version from it (WEGA qcv(5), no System III source; reconstructed from
-   /bin/chkout, the names are guessed) */
+   /bin/chkout and /bin/chkin, the names are guessed). chkout has the copy of 07/82 (-DCHKOUT, ccv0), chkin that of
+   09/83 (cc); the source is the same. */
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/types.h>
@@ -7,7 +8,11 @@
 #include <time.h>
 #include "chkout.h"
 
-static char sccsid[] = "@[$]common.c\t1.3  07/23/82 18:25:26 - 87wega3.2";
+#ifdef CHKOUT
+static char sccsid[] = "@[$]common.c\t1.3  07/23/82 18:25:26 - 87wega3.2";	/* the copy in chkout */
+#else
+static char sccsid[] = "@[$]common.c\t1.3  09/12/83 22:05:56 - 87wega3.2";	/* the copy in chkin */
+#endif
 
 char *malloc();
 char *basename();
@@ -50,7 +55,7 @@ FILE *fp;
 					vp->pos = off;
 				}
 				body = 0;
-				if (rel && rel == r && lev == l)
+				if (rel && (rel == r && lev == l))
 					return (head);
 				break;
 			case 'H':
@@ -89,24 +94,27 @@ char *line;
 {
 	if (vp->cmd == 0)
 		nextcmd(in, vp);
-	if (vp->cmd != '*' && vp->curline >= vp->n1)
-		switch (vp->cmd) {
-		case 'a':
-			putline(in, out, vp, line);
-			copytext(in, out, vp);
-			vp->cmd = 0;
-			break;
-		case 'd':
-			if (vp->curline == vp->n2)
-				vp->cmd = 0;
-			break;
-		case 'c':
-			if (vp->curline == vp->n2) {
+	if (vp->cmd != '*')
+		if (vp->curline >= vp->n1)
+			switch (vp->cmd) {
+			case 'a':
+				putline(in, out, vp, line);
 				copytext(in, out, vp);
 				vp->cmd = 0;
+				break;
+			case 'd':
+				if (vp->curline == vp->n2)
+					vp->cmd = 0;
+				break;
+			case 'c':
+				if (vp->curline == vp->n2) {
+					copytext(in, out, vp);
+					vp->cmd = 0;
+				}
+				break;
 			}
-			break;
-		}
+		else
+			putline(in, out, vp, line);
 	else
 		putline(in, out, vp, line);
 	vp->curline++;
@@ -175,7 +183,6 @@ char *name;
 {
 	int n;
 	char *p;
-	char *q;
 
 	strcpy(chkname, name);
 	n = strlen(chkname) - 1;
@@ -189,13 +196,10 @@ char *name;
 		errors++;
 		return (0);
 	}
-	if (dir) {
-		q = basename(chkname);
-		sprintf(outname, "%s/%s", dir, q);
-	} else {
-		q = basename(chkname);
-		strcpy(outname, q);
-	}
+	if (dir)
+		sprintf(outname, "%s/%s", dir, basename(chkname));
+	else
+		strcpy(outname, basename(chkname));
 	n = strlen(outname) - 1;
 	outname[n] = '\0';
 	strcpy(lockname, chkname);

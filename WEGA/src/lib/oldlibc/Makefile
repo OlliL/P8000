@@ -16,6 +16,7 @@
 #   libc-v9.a  ld (07/83)
 #   libc-v10.a write, rmdir (01/83); perror, errlst, dup for dd (12/82, its own code not exact yet)
 #   libc-v11.a mkstr (11/82), cat (10/82), echo (08/82)
+#   libc-v12.a chkin (09/83): the shipped libc.a (../libc) with printf and doprnt 0_4 in their places
 #
 #   make        (needs ../libc made, and ccv1, ccv0, ccv0p)
 #   make clean
@@ -29,7 +30,7 @@ CCV0P = ccv0p
 CAS = cas
 AR = ar
 
-LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a
+LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a ../libc-v12.a
 
 all: $(LIBS)
 
@@ -181,6 +182,13 @@ LIBv11 = putchar/0_1.o freopen/0_1.o fseek/0_2.o ftell/0_1.o rew/0_1.o rdwr/0_3.
 # ccv0 (putchar, perror, rew, calloc)
 ../libc-v11.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv11)
+
+# the shipped library with two members replaced (ar r keeps their places)
+../libc-v12.a: objs ../libc/build/nonseg/libc.a
+	rm -rf v12.d ; mkdir v12.d ; cp printf/0_4.o v12.d/printf.o ; cp doprnt/0_4.o v12.d/doprnt.o
+	rm -f $@ ; cp ../libc/build/nonseg/libc.a $@
+	cd v12.d ; $(AR) r ../../libc-v12.a printf.o doprnt.o
+	rm -rf v12.d
 
 # the modules: each directory makes its objects with its own Makefile
 objs:
