@@ -302,8 +302,13 @@ reread:
 		case CTRL(f):
 			vsave();
 			if (vcnt > 2) {
-				dot += (vcnt - vcline) - 2 + (cnt-1)*basWLINES;
+				/* WEGA: not beyond the last line */
+				int n = (vcnt - vcline) - 2 + (cnt-1)*basWLINES;
+
 				vcnt = vcline = 0;
+				if (dot + n > dol)
+					continue;
+				dot += n;
 			}
 			vzop(0, 0, '+');
 			continue;
