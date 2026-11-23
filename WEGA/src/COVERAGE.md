@@ -12,13 +12,13 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [bin](#bin) | 111 | 55 | 3 | 27 | 26 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
-| [usr/bin](#usr-bin) | 145 | 30 | 5 | 63 | 47 |
+| [usr/bin](#usr-bin) | 145 | 30 | 6 | 63 | 46 |
 | [usr/lib](#usr-lib) | 197 | 119 | 2 | 57 | 19 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 910 | 10 | 167 | 110 |
+| **all** | 1197 | 910 | 11 | 167 | 109 |
 
 <a id="root"></a>
 ## root
@@ -410,7 +410,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `usr/bin/whois` | binary E707 | - | todo | D12 new, D1 loose | - |
 | `usr/bin/xargs` | binary E707 | `tmp/sys3/usr/src/cmd/xargs.c` | sys3 | D12 old?, D1 slots | - |
 | `usr/bin/xq` | binary E711 | - | todo | D12 new, D1 loose | - |
-| `usr/bin/xstr` | binary E707 | - | todo | D12 old, D1 tight | - |
+| `usr/bin/xstr` | binary E707 | `src/cmd/xstr.c` | partial | cc | libc.a |
 | `usr/bin/yacc` | binary E611 | `src/cmd/yacc` | partial | - | - |
 | `usr/bin/zmenu` | binary E711 | - | todo | D12 old, D1 tight | - |
 | `usr/bin/zmprint` | binary E711 | - | todo | D12 old, D1 tight | - |
