@@ -304,6 +304,9 @@ rop(c)
 	}
 	if (fstat(io, &stbuf))
 		syserror();
+	/* WEGA: tell when the owner may only read the file */
+	if ((stbuf.st_mode & 0700) == 0400)
+		printf(" [File is read only]");
 #ifdef ROOMTOBURN
 	switch (stbuf.st_mode & S_IFMT) {
 
