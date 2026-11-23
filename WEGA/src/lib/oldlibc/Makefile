@@ -175,10 +175,10 @@ LIBv10 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/build/nonseg/f
 
 LIBv11 = putchar/0_1.o freopen/0_1.o fseek/0_2.o ftell/0_1.o rew/0_1.o rdwr/0_3.o fopen/0_1.o printf/0_3.o doprnt/0_7.o ffltioc/0_1.o \
 	 ungetc/0_1.o filbuf/0_3.o setbuf/0_1.o data/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o \
-	 perror/0_3.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_3.o calloc/0_1.o malloc/0_3.o errlst/0_2.o isatty/0_1.o stty/0_1.o \
+	 perror/0_3.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_3.o calloc/0_1.o malloc/0_3.o errlst/0_1.o isatty/0_1.o stty/0_1.o \
 	 strcmp/0_1.o strcpy/0_2.o strlen/0_2.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/fstat.o ../libc/build/nonseg/ioctl.o \
 	 ../libc/build/nonseg/lseek.o open/0_1.o ../libc/build/nonseg/read.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
-# ccv0 (putchar, perror, rew; calloc .s: one reload ccv0 does not make, compare/mkstr/findings.json)
+# ccv0 (putchar, perror, rew, calloc)
 ../libc-v11.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv11)
 

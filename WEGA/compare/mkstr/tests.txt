@@ -1,0 +1,161 @@
+# The cases of the corpus of mkstr (compare/mkstr/corpus.py); the format: host/recon/casefile.py. src = src/cmd/mkstr.c.
+
+== one
+# src: error("...") becomes error(offset), the string goes to the message file
+-- a.c
+main()
+{
+	error("first message");
+	error("second\tone\n");
+	other("not this");
+	error(x);
+	errors("no");
+}
+-- case
+step: mkstr strs x a.c
+step: cat xa.c
+step: od -c strs
+
+== two-files
+# src: the second file finds the first message in the hash: the same offset
+-- a.c
+main()
+{
+	error("first message");
+	error("second\tone\n");
+	other("not this");
+	error(x);
+	errors("no");
+}
+-- b.c
+f()
+{
+	error("first message");
+	error("new in b");
+}
+-- case
+step: mkstr strs x a.c b.c
+step: cat xa.c xb.c
+step: od -c strs
+
+== append
+# src: "-": the message file is appended to, old messages are reused
+-- a.c
+main()
+{
+	error("first message");
+	error("second\tone\n");
+	other("not this");
+	error(x);
+	errors("no");
+}
+-- b.c
+f()
+{
+	error("first message");
+	error("new in b");
+}
+-- case
+step: mkstr strs x a.c
+step: mkstr - strs y b.c
+step: cat yb.c
+step: od -c strs
+
+== no-append
+# without "-" the file starts empty
+-- a.c
+main()
+{
+	error("first message");
+	error("second\tone\n");
+	other("not this");
+	error(x);
+	errors("no");
+}
+-- b.c
+f()
+{
+	error("first message");
+	error("new in b");
+}
+-- case
+step: mkstr strs x a.c
+step: mkstr strs y b.c
+step: cat yb.c
+step: od -c strs
+
+== escapes
+# src: the escapes of copystr: \\b \\f \\n \\r \\t, octal, a quote
+-- a.c
+g()
+{
+	error("a\bb\fc\nd\re\tf\\g\"h\101\0i");
+}
+-- case
+step: mkstr strs x a.c
+step: cat xa.c
+step: od -c strs
+
+== continued
+# src: a backslash-newline in the string
+-- a.c
+g()
+{
+	error("long \
+line");
+}
+-- case
+step: mkstr strs x a.c
+step: cat xa.c
+step: od -c strs
+
+== no-error
+-- a.c
+int x;
+main(){ return 0; }
+-- case
+step: mkstr strs x a.c
+step: cat xa.c
+step: od -c strs
+
+== error-prefix
+# src: "e" that is not error(
+-- a.c
+else e; erro; error ("x");
+-- case
+step: mkstr strs x a.c
+step: cat xa.c
+
+== usage
+# src: fewer than three arguments: the usage, exit 1
+-- case
+step: mkstr strs x
+
+== usage-dash
+-- case
+step: mkstr - strs
+
+== missing-input
+# src: perror of the input file
+-- case
+step: mkstr strs x nofile.c
+
+== bad-prefix
+# src: the output file cannot be created
+-- a.c
+main()
+{
+	error("first message");
+	error("second\tone\n");
+	other("not this");
+	error(x);
+	errors("no");
+}
+-- case
+step: mkstr strs nodir/x a.c
+
+== empty-file
+-- a.c
+-- case
+step: mkstr strs x a.c
+step: cat xa.c

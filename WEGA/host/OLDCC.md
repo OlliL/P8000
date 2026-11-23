@@ -748,7 +748,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cpp | cpp.c, cpy.y, yylex.c | v0p |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 | clist | clist.c | v0p | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | mkdir | mkdir.c | v0 |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| mkstr | mkstr.c, libc calloc | open (v0, older) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| mkstr | mkstr.c, libc calloc | v0 |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | kernel | sig.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
 | kernel | sys2.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
 | kernel | sys3.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |

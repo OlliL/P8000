@@ -34,13 +34,13 @@
    "file": "src/cmd/mkstr.c",
    "orig": "0x0042",
    "size_orig": 340,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000"
    ],
    "name": "main",
-   "note": "ccv0 (and ccv0p) take argv from r6 in \"argc--, progname = *argv++\" (ld r2,r6); the original reloads it from the frame (ld r2,%0000(r15)); 6 source forms tried, none reloads it. The same in libc calloc of mkstr (mult rr2,%0000(r15)), there made from oldlibc/calloc/0_1.s. A compiler older than ccv0 (crt0 and sccsid 11/01/82); phase A: stays partial."
+   "note": "exact 2026-11-23 (phase B, a source form): an unused label in front of \"argc--, progname = *argv++\" (OLD_D3K forgets the parameters at a label no jump names: argv is loaded from its frame home, ld r2,%0000(r15)). The same in libc calloc (oldlibc/calloc/0_1.c, a label in front of num *= size: mult rr2,%0000(r15)). The globals declared in the order of the bss of the original. Not an older compiler: ccv0 as it is."
   },
   "f0196": {
    "file": "src/cmd/mkstr.c",
@@ -124,6 +124,6 @@
    "name": "fgetNUL"
   }
  },
- "libc": "../lib/libc-v11.a (oldlibc/Makefile LIBv11): the members in the order of the original, all found exactly (modfind); new modules: perror 0_3 (ccv0), rew 0_1 (ccv0), calloc 0_1 (.s)",
+ "libc": "../lib/libc-v11.a (oldlibc/Makefile LIBv11): the members in the order of the original, all found exactly (modfind); new modules: perror 0_3 (ccv0), rew 0_1 (ccv0), calloc 0_1 (C, with a label)",
  "headers": "-I../head/oldv7 (getc/putc of the time)"
 }

@@ -34,10 +34,13 @@ static char sccsid[] = "@[$]mkstr.c\t1.1  11/01/82 08:23:06 - 87wega3.2";
  */
 
 
-FILE	*mesgread, *mesgwrite;
+/* the globals in the order of the bss of the original */
+char	*np;
+FILE	*mesgread;
+char	name[100];
 char	*progname;
+FILE	*mesgwrite;
 char	usagestr[] =	"usage: %s [ - ] mesgfile prefix file ...\n";
-char	name[100], *np;
 
 main(argc, argv)
 	int argc;
@@ -45,6 +48,7 @@ main(argc, argv)
 {
 	char addon = 0;
 
+start:	/* not jumped to: as in the original, argv is forgotten here and loaded from its frame home (OLD_D3K) */
 	argc--, progname = *argv++;
 	if (argc > 1 && argv[0][0] == '-')
 		addon++, argc--, argv++;

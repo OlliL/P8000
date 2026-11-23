@@ -1936,7 +1936,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v8 | cc, scc |
 | libc-v9 | ld (07/83); its order conflicts with v6, its versions do not |
 | libc-isstore | write, rmdir (01/83) |
-| libc-v11 | cat (10/82), echo (08/82), mkstr (11/82; the program stays partial, see compare/mkstr/findings.json) |
+| libc-v11 | cat (10/82), echo (08/82), mkstr (11/82) |
 
 The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see "libc.a and slibc.a: one tree".
 A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.

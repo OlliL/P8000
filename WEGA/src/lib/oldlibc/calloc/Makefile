@@ -10,8 +10,8 @@ CAS = cas
 
 objs: 0_1.o
 
-# 0_1 (mkstr): the System III calloc.c with ccv0 gives it except `mult rr2,%0000(r15)` (ccv0 takes size from r6; forms tried: host/OLDCC_LOG.md)
-0_1.o: 0_1.s
-	$(CAS) -u -o 0_1.o 0_1.s
+# 0_1 (mkstr): the System III calloc.c with an unused label in front of num *= size (size from its frame home)
+0_1.o: 0_1.c
+	$(CCV0) -O -c 0_1.c
 
 .PHONY: objs

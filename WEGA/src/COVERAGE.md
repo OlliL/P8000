@@ -12,13 +12,13 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [bin](#bin) | 111 | 55 | 3 | 27 | 26 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
-| [usr/bin](#usr-bin) | 145 | 29 | 6 | 63 | 47 |
+| [usr/bin](#usr-bin) | 145 | 30 | 5 | 63 | 47 |
 | [usr/lib](#usr-lib) | 197 | 119 | 2 | 57 | 19 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 909 | 11 | 167 | 110 |
+| **all** | 1197 | 910 | 10 | 167 | 110 |
 
 <a id="root"></a>
 ## root
@@ -343,7 +343,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `usr/bin/man` | binary E707 | `tmp/sys3/usr/src/cmd/text/shells.d/man.sh` | sys3 | D12 new, D1 loose | - |
 | `usr/bin/mesg` | binary E707 | `tmp/sys3/usr/src/cmd/mesg.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/mkmenu` | text | `src/cmd/mkmenu.sh` | exact | - | - |
-| `usr/bin/mkstr` | binary E707 | `src/cmd/mkstr.c` | partial | cc | libc.a |
+| `usr/bin/mkstr` | binary E707 | `src/cmd/mkstr.c` | exact | ccv0 | libc-v11.a |
 | `usr/bin/mm` | text | `src/cmd/mm.sh` | exact | - | - |
 | `usr/bin/mmchek` | binary E711 | - | todo | D12 new?, D1 loose | - |
 | `usr/bin/mmt` | text | `src/cmd/mmt.sh` | exact | - | - |

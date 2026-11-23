@@ -2082,3 +2082,6 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - find scomp solved by a source form (2026-11-23): an unused label in front of the second `if(s == '-')` gives the original's
   home store and reload of the char parameter with the v0p as it is (OLD_D3K: at a label no jump names a parameter is forgotten).
   The compiler rules measured before (char parameter, r5, loop order, busy, byte register) are not needed and not built.
+- mkstr solved by a source form (2026-11-23): the reload of argv in main and of size in libc calloc (the entry of 2026-11-22
+  took them for a compiler older than ccv0) come from an unused label in front of the statement, as in find scomp (OLD_D3K: a
+  parameter is forgotten at a label no jump names). ccv0 as it is; oldlibc calloc 0_1 is C again (0_1.c), no .s.

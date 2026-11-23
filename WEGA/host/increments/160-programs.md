@@ -230,3 +230,6 @@ PLZ programs and `as`: 170.
   of /usr/bin; chkin, chkout, chkwhat are WEGA's own source control); src/cmd/sccs/chkwhat.c from the disassembly, ccv1,
   libc-v4.a; the usage message as an initialised array (the data padding), the string loop as a for with two getc; corpus
   compare/chkwhat (9); quirks: no end at EOF, @@[$] not found, any -x is -w.
+- 2026-11-23 mkstr exact (phase B, source forms only): the label in main, the globals in the order of the original, calloc 0_1
+  from C with a label, libc-v11.a with errlst 0_1 (0_2 was a slip of 2026-11-22; cat and echo do not use errlst); built and
+  installed (/usr/bin/mkstr), corpus compare/mkstr (13).

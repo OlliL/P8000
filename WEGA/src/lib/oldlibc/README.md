@@ -15,11 +15,11 @@ A program finds its library with `host/tools/whichlibc.py`. `host/tools/libctabl
 
 ## State
 
-128 of 142 modules from C. Which program uses which library: `host/KNOWLEDGE.md`, "The libraries of the old programs".
+129 of 142 modules from C. Which program uses which library: `host/KNOWLEDGE.md`, "The libraries of the old programs".
 
 ## Open
 
-The 14 `.s`, waiting for a compiler or a source form (`host/tools/libcfit.py`, `libctable.py`; what was tried:
+The 13 `.s`, waiting for a compiler or a source form (`host/tools/libcfit.py`, `libctable.py`; what was tried:
 `host/OLDCC_LOG.md`):
 
 - With v1q (size): `doprnt` 0_1.
@@ -27,6 +27,5 @@ The 14 `.s`, waiting for a compiler or a source form (`host/tools/libcfit.py`, `
 - Libc of the passes: `malloc` 0_3 (a parameter reloaded at a label, the order of `q+temp-1`), `cnvt` 0_2 (`-val` of a long
   parameter from memory, one witness), `doprnt` 0_5, 0_7 (`_align` spills r5, `ap = argp` reloads, the order of a double
   argument), `fltioc` 0_1.
-- With an older v0 (mkstr): `calloc` 0_1 (`size` reloaded from the frame, OLDCC_LOG.md).
 - Others: `swap` 0_1, `malloc` 0_4, `doprnt` 0_8 (0_1 with a smaller frame in `_strout`, libc-v10).
 - Assembler in the original, these stay `.s`: `open` 0_1, `ecvt` 0_1.
