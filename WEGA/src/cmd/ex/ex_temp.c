@@ -140,8 +140,17 @@ getblock(atl, iof)
 	
 	bno = (atl >> OFFBTS) & BLKMSK;
 	off = (atl << SHFT) & LBTMSK;
-	if (bno >= NMBLKS)
-		error(" Tmp file too large");
+	if (bno >= NMBLKS) {
+		/* WEGA: the temporary file is full: give up */
+		error0();
+		merror(" Tmp file too large");
+		if (io > 0)
+			close(io);
+		if (inopen)
+			setty(normf);
+		cleanup(1);
+		exit(1);
+	}
 	nleft = BUFSIZ - off;
 	if (bno == iblock) {
 		ichanged |= iof;

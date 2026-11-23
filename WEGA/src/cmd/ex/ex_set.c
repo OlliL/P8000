@@ -92,6 +92,11 @@ printone:
 			op->ovalue = getnum();
 			if (value(TABSTOP) <= 0)
 				value(TABSTOP) = TABS;
+			/* WEGA: a new window size takes effect at once */
+			if (cp && strcmp(cp, "window") == 0) {
+				vsetsiz(value(WINDOW));
+				setwind();
+			}
 			break;
 
 		case STRING:
