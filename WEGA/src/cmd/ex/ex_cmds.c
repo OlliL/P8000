@@ -168,6 +168,11 @@ choice:
 				move();
 				continue;
 
+/* cshell (WEGA) */
+			case 's':
+				tail("cshell");
+				goto shell;
+
 #ifdef CHDIR
 /* cd */
 			case 'd':
@@ -506,11 +511,14 @@ quit:
 /* shell */
 			case 'h':
 				tail("shell");
+shell:
 				setNAEOL();
 				vnfl();
 				putpad(TE);
 				flush();
-				unixwt(1, unixex("-i", (char *) 0, 0, 0));
+				/* WEGA: the shell named by the command */
+				unixwt(1, c == 's' ? unixex("-i", (char *) 0, 0, 0, "sh") :
+				    unixex("-i", (char *) 0, 0, 0, "csh"));
 				vcontin(0);
 				putpad(TI);
 				continue;
@@ -708,7 +716,7 @@ numberit:
 				vnfl();
 				putpad(TE);
 				flush();
-				unixwt(1, unixex("-c", uxb, 0, 0));
+				unixwt(1, unixex("-c", uxb, 0, 0, options[SHELL].oabbrev));
 				vcontin(1);
 				putpad(TI);
 				nochng();

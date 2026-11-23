@@ -259,6 +259,9 @@ main(ac, av)
 	if (setexit() == 0 && !fast && intty)
 		if ((globp = getenv("EXINIT")) && *globp)
 			commands(1, 1);
+		/* WEGA: a .exrc in the current directory first */
+		else if (access("./.exrc", 0) == 0)
+			source("./.exrc", 1);
 		else if ((cp = getenv("HOME")) != 0 && *cp)
 			source(strcat(strcpy(genbuf, cp), "/.exrc"), 1);
 

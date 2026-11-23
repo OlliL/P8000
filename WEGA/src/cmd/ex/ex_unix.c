@@ -122,9 +122,10 @@ uexp:
  * must have been setup already.
  */
 ttymode
-unixex(opt, up, newstdin, mode)
+unixex(opt, up, newstdin, mode, name)
 	char *opt, *up;
 	int newstdin, mode;
+	char *name;
 {
 	int pvec[2];
 	ttymode f;
@@ -176,7 +177,8 @@ unixex(opt, up, newstdin, mode)
 		signal(SIGQUIT, oldquit);
 		if (ruptible)
 			signal(SIGINT, SIG_DFL);
-		execl(svalue(SHELL), "sh", opt, up, (char *) 0);
+		/* WEGA: sh is the shell of the option, csh /bin/csh */
+		execl(*name == 's' ? svalue(SHELL) : "/bin/csh", name, opt, up, (char *) 0);
 		printf("No %s!\n", svalue(SHELL));
 		error(NOSTR);
 	}
@@ -247,7 +249,7 @@ filter(mode)
 		io = pvec[0];
 		setrupt();
 	}
-	f = unixex("-c", uxb, (mode & 2) ? pvec[0] : 0, mode);
+	f = unixex("-c", uxb, (mode & 2) ? pvec[0] : 0, mode, options[SHELL].oabbrev);
 	if (mode == 3) {
 		delete(0);
 		addr2 = addr1 - 1;
