@@ -233,3 +233,7 @@ PLZ programs and `as`: 170.
 - 2026-11-23 mkstr exact (phase B, source forms only): the label in main, the globals in the order of the original, calloc 0_1
   from C with a label, libc-v11.a with errlst 0_1 (0_2 was a slip of 2026-11-22; cat and echo do not use errlst); built and
   installed (/usr/bin/mkstr), corpus compare/mkstr (13).
+- 2026-11-23 ex (phase B): all 26 modules built in scratch by mkstr, xstr and ccv0. Found a WEGA step between the compiler and
+  cas (src/cmd/ex/shrink.sh, not yet in the Makefile): a jp stub table per module for externals called 3 times or more (order of
+  sort | uniq -c | sort -n) and frame operands at offset 0 written @fp (not the saves of r8..r14). 130 -> 265 of 385 functions
+  exact; ex2.13strings byte-identical. Next: the source differences; listchar/normchar kept for later (compare/ex/findings.json).
