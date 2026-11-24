@@ -7,7 +7,7 @@
 #
 #   libc-v1.a  dc, ranlib, chmod, pwd, kill, mkdir, sleep, tail, env, nohup, gets, bc (07/82)
 #   libc-v2.a  cpp (12/82), clist
-#   libc-v3.a  size, od, lex (01/83; lex: atoi, calloc)
+#   libc-v3.a  size, od, lex (01/83; lex: atoi 0_3, calloc 0_2)
 #   libc-v4.a  strip (01/83), su (02/83; the members of passwd too), nice, time (01/83)
 #   libc-v5.a  codgen, scodgen, popt, spopt
 #   libc-v6.a  rm, mv, cp, ln (05/83 .. 07/83), chgrp, chown, sort, touch (02/83 .. 03/83), uname, test (01/83), tr (05/83), dog (03/83)
@@ -64,7 +64,7 @@ LIBv2 = fputs/0_1.o fopen/0_1.o printf/0_5.o doprnt/0_7.o ffltioc/0_1.o filbuf/0
 
 LIBv3 = ../libc/build/nonseg/freopen.o fseek/0_3.o rdwr/0_1.o ../libc/build/nonseg/fopen.o printf/0_1.o doprnt/0_1.o ../libc/build/nonseg/ffltioc.o filbuf/0_1.o flsbuf/0_1.o \
 	 endopen/0_1.o findiop/0_1.o ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o atoi/0_3.o cnvt/0_1.o \
-	 ../libc/build/nonseg/decimal.o length/0_1.o calloc/0_3.o malloc/0_1.o ../libc/build/nonseg/isatty.o ../libc/build/nonseg/stty.o ../libc/build/nonseg/strcmp.o \
+	 ../libc/build/nonseg/decimal.o length/0_1.o calloc/0_2.o malloc/0_1.o ../libc/build/nonseg/isatty.o ../libc/build/nonseg/stty.o ../libc/build/nonseg/strcmp.o \
 	 ../libc/build/nonseg/swab.o goodmagic/0_1.o swap/0_1.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o \
 	 ../libc/build/nonseg/creat.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/open.o ../libc/build/nonseg/read.o \
 	 ../libc/build/nonseg/umask.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o

@@ -122,7 +122,7 @@ the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibc
 
 ### v1l (01/83, the compiler of lex)
 
-- v1q with `OLD_D14L` (the value of `&&` and `||` through a temporary), `OLD_D3L` (behind a `||` the idle registers go back),
+- v1q with `OLD_D14L` (the value of `&&` and `||` through a temporary), `OLD_D3O` (behind a `||` the idle registers go back),
   `OLD_D67` and `OLD_D67S` (the switch value stays taken in the dispatch); cparse of v1, the popt of v1r. Driver `ccv1l`, runs
   `/lib/v1/cparse`, `/lib/v1l/codgen`, `/lib/v1r/popt`. Built with v1q's `-DOLD_D3 -DOLD_D14Q` and the four switches (codgen/Makefile).
 - Byte-identical: `/usr/bin/lex` (SCCS 01/14/83, System III lex, liby, libc-v3) and the libPW regcmp inside `/bin/regcmp`
@@ -374,7 +374,7 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   a byte (opshort: a new pair). Not in v0p (cparse and scparse lose genswitch and refid). One witness that needs it.
 - v1 `OLD_D3` (cbranch): at the join label of `&&` and `||` the shipped codgen gives the idle registers back, the old one keeps
   them with their contents. ld init_entry, dseek.
-- v1l `OLD_D3L` (under OLD_D3, cbranch): behind a `||` the idle registers go back, behind an `&&` they stay (lex mn2: the
+- v1l `OLD_D3O` (under OLD_D3, cbranch): behind a `||` the idle registers go back, behind an `&&` they stay (lex mn2: the
   `nullstr[tptr] = TRUE` of `if (a || b)` in r3/r4, that of `if (a && b)` in r5/r6, so popt does not merge them; yyparse,
   packtrans). Only behind a join label of its own, or for `&&` too behind its own label: the same bytes on lex and regcmp.
 - v0 `OLD_D3P` (regforsym): a name that lives in a register is taken from it also when the node wants another register, also

@@ -630,5 +630,5 @@
    ]
   }
  },
- "note": "System III lex (tmp/sys3/usr/src/cmd/lex; main.c as lmain.c, as the SCCS lines name it), byte-identical with ccv1l, the compiler of lex (host/OLDCC.md, v1l: v1q with OLD_D14L, OLD_D3L, OLD_D67, OLD_D67S and the popt of v1r), the stdio.h of the time (head/oldv7), liby, libc-v3 (with atoi 0_3 and calloc 0_3, ccv1q), linked with -i as lex.mk says. The edits of WEGA: the SCCS lines; the option -f (optim = FALSE, between -v and -n); myalloc without the branch for -1 and with the message \"OOPS - calloc returns NULL\"; the tables written as \"={\" (yyvstop, yycrank, yysvec, yymatch, yyextra, yyin)."
+ "note": "System III lex (tmp/sys3/usr/src/cmd/lex; main.c as lmain.c, as the SCCS lines name it), byte-identical with ccv1l, the compiler of lex (host/OLDCC.md, v1l: v1q with OLD_D14L, OLD_D3O, OLD_D67, OLD_D67S and the popt of v1r), the stdio.h of the time (head/oldv7), liby, libc-v3 (with atoi 0_3 of ccv1q and calloc 0_2), linked with -i as lex.mk says. The edits of WEGA: the SCCS lines; the option -f (optim = FALSE, between -v and -n); myalloc without the branch for -1 and with the message \"OOPS - calloc returns NULL\"; the tables written as \"={\" (yyvstop, yycrank, yysvec, yymatch, yyextra, yyin)."
 }

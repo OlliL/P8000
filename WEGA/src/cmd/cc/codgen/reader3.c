@@ -1666,7 +1666,7 @@ cbranch(p, true, false)
 		if (--d3depth == 0)
 			d3words();
 #endif
-#ifdef OLD_D3L
+#ifdef OLD_D3O
 		rfreeall(1);		/* v1l: behind a || (not an &&) the idle registers go back, as in the shipped codgen */
 #endif
 #ifndef OLD_D3

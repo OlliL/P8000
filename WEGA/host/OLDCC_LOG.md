@@ -2342,7 +2342,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   v1r: munput (the loop not rotated) right, 4 left.
 - mn2, yyparse, packtrans: behind `||` the registers go back (r3/r4), behind `&&` not (r5/r6). Variants: free behind `||`
   always; only behind its own join label; also `&&` behind its own label: all three 0 differ on lex and on regcmp. Built the
-  first (OLD_D3L).
+  first (OLD_D3O; first named OLD_D3L, which v0 already has: checkall showed v0 and v0p changed, renamed).
 - usescape/space (D67): a dump of rsuse/rsfree at the dispatch (popt cuts `//` lines: read without -O): in space the idle
   TEMP r6 of the switch value is in use and D67 gives it back with the free r7; in usescape the bodies gave it back. D67
   excluding TEMPs: the bodies of usescape wrong. D67 + D2T: the dispatch of usescape takes r6 again (getreg). OLD_D67S
@@ -2351,3 +2351,8 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   ccv1q (mult rr2,r6) give the whole binary: IDENTICAL.
 - regcmp: main by ccv1 as before, src/lib/libPW/regcmp.c by the new compiler: IDENTICAL at the first try. Earlier rounds
   (2026-11-24: 40 source forms, no compiler of the tree) are explained: no tree compiler had the rule.
+- Probe, units getflt (System III form `do c = get(); while(c == ' ' || c == '\t');`, alone, ccv1l -S): both compares into
+  @fp, `test r2; jpr ne` after the first, `test @fp; jpr ne` back into the loop, as the original (increment 161 note):
+  stored by OLD_D14L (guess: cparse hands the do-while condition to codgen under a `!`). Only the form, units not built.
+- The calloc of lex: ccv1 and ccv1q give the same bytes for the System III calloc.c, so libc-v3 takes calloc 0_2 (the note
+  "not exact" of 0_2 was old); atoi differs between ccv1 and ccv1q: atoi 0_3 (ccv1q).

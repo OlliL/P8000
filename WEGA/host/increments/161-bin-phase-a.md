@@ -148,15 +148,15 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
 a compiler of its own, v1l, found by restoring `/usr/bin/lex` (36 places of the same tcc form, System III source):
 
 - lex (`src/cmd/lex`, `compare/lex`): System III lex with the WEGA edits (SCCS lines, option -f, myalloc, "={" in the
-  generated tables), the stdio.h of the time, liby, libc-v3 with atoi 0_3 and calloc 0_3 (ccv1q), `ld -i`. IDENTICAL.
+  generated tables), the stdio.h of the time, liby, libc-v3 with atoi 0_3 (ccv1q) and calloc 0_2, `ld -i`. IDENTICAL.
 - v1l = v1q codgen + `OLD_D14L` (the value of `&&`/`||` through a temporary; in a condition the `&&`/`||` under `!` or on the
-  left of `||`), `OLD_D3L` (behind `||` the idle registers go back), `OLD_D67` + `OLD_D67S` (the switch value stays taken
+  left of `||`), `OLD_D3O` (behind `||` the idle registers go back), `OLD_D67` + `OLD_D67S` (the switch value stays taken
   in the dispatch), the popt of v1r (munput: loop not rotated). The rule came from lex function by function (pf diff of each
   function against the original); every switch is in `host/OLDCC.md` (v1l, D3, D14, D67).
 - The same compiler builds the libPW regcmp exactly: the cause of regcmp was the compiler, not the source.
 
 Open (later): the other witnesses of the tcc form (`host/recon/tccscan.py`): acctcom (the same regcmp code at 0x172e),
-shut, error, units; whether they are v1l too. `OLD_D3L` has two equal variants on lex and regcmp (only behind its own join
+shut, error, units; whether they are v1l too. `OLD_D3O` has two equal variants on lex and regcmp (only behind its own join
 label; `&&` too behind its own label): the simplest one is built.
 
 ## Phase B getfile: solved (2026-11-24)
