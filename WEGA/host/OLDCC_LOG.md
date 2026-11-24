@@ -2253,3 +2253,12 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   (listchar 2nd and normchar 1st have the same neighbours, short and long). Not the old cas shared with the other
   programs: cparse and the rest have ~L1(fp) at ~L1 := 0 long (D18), a change there would break them. Left: WEGA's own
   step for ex, form unknown; the rule stays in shrink.sh as read off (6 places).
+
+## 2026-11-24 v1r OLD_D67: an idle parameter word goes back (od cput)
+
+- od cput `c &= 0377`: the original r2, ccv1r r6. Instrumented v1r codgen: the word request sees free r6 (word), rr2, rr4,
+  rr0 and in use an idle r7 without a name (the register of c, stored to its home); the first free word is r6. Variants:
+  every idle nameless word back (X1): cput right, od main wrong (ldb rl3 there); only when the mate is free (X2): the same
+  (r2 idle beside a free r3 in main, line, putx, putn: the original takes r3); only r4 .. r7 with a free mate (X3): cput
+  exact, od only putn left (popt), write and rmdir byte-identical, dd unchanged, the 17 libc modules of ccv1r unchanged.
+  Taken as OLD_D67 (v1r). One witness.

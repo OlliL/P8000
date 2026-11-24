@@ -588,6 +588,23 @@ getreg(cls, reg, flag, sym)
 		}
 	}
 #endif
+#ifdef OLD_D67
+	if (cls == RCWORD && reg == -1) {	/* v1r: an idle word of r4 .. r7 that holds no name goes back first when its mate is
+						   free; the pair forms again (od cput: c &= 0377 in r2, not r6 beside the idle r7) */
+		register struct rs *t, *u;
+	d67:
+		for (t = rsuse; t; t = t->next)
+			if (t->cls == RCWORD && t->busy <= 0 && t->sym == 0 && t->reg >= R4 && t->reg < R8) {
+				for (u = rsfree; u; u = u->next)
+					if (u->cls == RCWORD && u->reg == (t->reg ^ 1))
+						break;
+				if (u) {
+					rsreturn(RCWORD, t->reg);
+					goto d67;
+				}
+			}
+	}
+#endif
 	switch (cls) {				/* register variables: the register is named */
 	case RCVBYTE:
 	case RCVWORD:

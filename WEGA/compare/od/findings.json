@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "ccv1r (ccv1: the ?: of putc and getc without the frame temporaries; ccv1q as ccv1r)",
+ "compiler": "ccv1r (ccv1: the ?: of putc and getc without the frame temporaries; ccv1q as ccv1r; OLD_D67 for cput)",
  "binary": "/bin/od",
  "functions": {
   "start": {
@@ -63,10 +63,10 @@
    "file": "od.c",
    "orig": "0x0480",
    "size_orig": 162,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [],
-   "note": "c &= 0377 in r2 in the original, ccv1r takes r6 (also cp r2,#0x7f); forms tried 2026-11-23: c = c & 0377, in the if, register c, int c: none (the compiler)."
+   "note": "exact with v1r OLD_D67 (2026-11-24): the idle r7 of the parameter goes back before c &= 0377 takes a word, so r2 (the split rr2) as in the original."
   },
   "putn": {
    "file": "od.c",
