@@ -69,7 +69,7 @@
     "0x0000",
     "0x0042"
    ],
-   "note": "the regcmp member of libPW in /bin/regcmp is an older version than src/lib/libPW/regcmp.c (40 bytes more code, tcc forms of booleans); ccv1, ccv1r, ccv1q, ccv0 tried on the current source."
+   "note": "regcmp of libPW in /bin/regcmp (and the same code in /usr/bin/acctcom at 0x172e): open, a compiler form (2026-11-24, increment 161 'regcmp'). Two places compile a condition with || or && through a temporary of the compiler: `if ((c=='*') || (c=='+') || (c=='{'))` (cp r12,#'*'; ldk r2,#0; tcc eq,r2; ld @r15,r2; test r2; jr ne; the same for '+' with test @r15; '{' a plain jump) and `while (((c = *sp++) != '}') && (c != ','))` (tcc ne into 2(r15), the inc of sp behind the store). The two words lie below the parameter homes (~L1 := 4: ldm 4(r15),r2,#6), so they are no variables of the source; with ccv1 the frame is 4 bytes smaller, all offsets 4 lower; masked, about 24 lines of real code differ. No compiler of the tree (ccv0 .. ccv1r, cc, with and without -O) makes it; about 40 source forms tried (?:, |, &, sums, != 0, de Morgan, flag variables, flag arrays: best 30 lines, the flags then lie above the parameter homes)."
   },
   "f0ab8": {
    "file": "libPW regcmp.c",
@@ -80,7 +80,7 @@
    "callers": [
     "0x061e"
    ],
-   "note": "the regcmp member of libPW in /bin/regcmp is an older version than src/lib/libPW/regcmp.c (40 bytes more code, tcc forms of booleans); ccv1, ccv1r, ccv1q, ccv0 tried on the current source."
+   "note": "behind regcmp (shifted with it); see regcmp."
   },
   "f0adc": {
    "file": "libPW regcmp.c",
@@ -89,7 +89,7 @@
    "status": "open",
    "kind": "proven",
    "callers": [],
-   "note": "the regcmp member of libPW in /bin/regcmp is an older version than src/lib/libPW/regcmp.c (40 bytes more code, tcc forms of booleans); ccv1, ccv1r, ccv1q, ccv0 tried on the current source."
+   "note": "behind regcmp (shifted with it); see regcmp."
   },
   "f0afe": {
    "file": "libPW regcmp.c",
@@ -98,7 +98,7 @@
    "status": "open",
    "kind": "proven",
    "callers": [],
-   "note": "the regcmp member of libPW in /bin/regcmp is an older version than src/lib/libPW/regcmp.c (40 bytes more code, tcc forms of booleans); ccv1, ccv1r, ccv1q, ccv0 tried on the current source."
+   "note": "behind regcmp (shifted with it); see regcmp."
   }
  },
  "note": "main is the System III regcmp.c (char %s[] = {); OWN_LIM 0x0b24 includes the regcmp functions of libPW."
