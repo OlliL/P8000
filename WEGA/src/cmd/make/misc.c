@@ -252,6 +252,7 @@ char vname[];
 {
 	register int i;
 	register CHARSTAR ps1;
+	int unused;	/* a word of the frame of the original, not used */
 	int fromlen;
 	char from[30], to[70];
 	char dftemp[128];
@@ -386,6 +387,7 @@ char vname[];
 	register VARBLOCK vbp;
 	register CHAIN pchain;
 	register NAMEBLOCK pn;
+	int unused[3];	/* 3 words of the frame of the original, not used */
 
 	vbp = srchvar(vname);
 	if( vbp != 0 && vbp->varval != 0)
@@ -430,6 +432,7 @@ setvar(v,s)
 register CHARSTAR v, s;
 {
 	register VARBLOCK p;
+	int unused;	/* a word of the frame of the original, not used */
 
 	p = srchvar(v);
 	if(p == 0)
@@ -459,6 +462,7 @@ eqsign(a)
 register CHARSTAR a;
 {
 	register CHARSTAR p;
+	int unused;	/* a word of the frame of the original, not used */
 
 	for(p = ":@;=$\n\t"; *p; p++)
 		if(any(a, *p))
@@ -542,6 +546,7 @@ register CHAIN head;
 register CHARSTAR tail;
 {
 	register CHAIN p;
+	int unused;	/* a word of the frame of the original, not used */
 
 	p = ALLOC(chain);
 	p->datap = tail;
@@ -558,6 +563,7 @@ CHARSTAR mkqlist(p)
 register CHAIN p;
 {
 	register CHARSTAR qbufp, s;
+	int unused[2];	/* 2 words of the frame of the original, not used */
 	static char qbuf[OUTMAX];
 
 	qbufp = qbuf;
@@ -601,6 +607,7 @@ CHARSTAR s2;
 	register CHARSTAR p1;
 	register CHARSTAR p2;
 	register int flag;
+	int unused;	/* a word of the frame of the original, not used */
 	int ii;
 
 	p1 = &s1[0];
@@ -718,6 +725,7 @@ is_sccs(filename)
 register CHARSTAR filename;
 {
 	register CHARSTAR p;
+	int unused;	/* a word of the frame of the original, not used */
 
 	for(p = filename; *p; p++)
 		if(*p == 's')
@@ -733,6 +741,7 @@ CHARSTAR trychk(str)
 register CHARSTAR str;
 {
 	register CHARSTAR p;
+	int unused;	/* a word of the frame of the original, not used */
 
 	for(p = str; *p++; );
 	*p-- = CNULL;
@@ -757,6 +766,7 @@ CHARSTAR addstars(pfx)
 register CHARSTAR pfx;
 {
 	register CHARSTAR p1, p2;
+	int unused[2];	/* 2 words of the frame of the original, not used */
 
 	for(p1 = pfx; *p1; p1++);
 	p2 = p1 + 3;			/* 3 characters, '*', '.', and '*'. */
@@ -791,6 +801,7 @@ setenv()
 	register CHARSTAR *ea;
 	register int nenv = 0;
 	register CHARSTAR p;
+	int unused[2];	/* 2 words of the frame of the original, not used */
 	CHARSTAR *es;
 	VARBLOCK vp;
 	int length;
@@ -833,6 +844,7 @@ readenv()
 {
 	register CHARSTAR *ea;
 	register CHARSTAR p;
+	int unused;	/* a word of the frame of the original, not used */
 
 	ea=environ;
 	for(;*ea; ea++)

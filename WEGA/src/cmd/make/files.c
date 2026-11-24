@@ -283,7 +283,7 @@ register CHARSTAR filename;
 	if(*p == LPAREN)
 	{
 		objarch = YES;
-		nc = 8;
+		nc = LONGNAME;
 		++p;
 	}
 	else
@@ -410,6 +410,7 @@ register CHARSTAR a, b;
 register int n;
 {
 	register int i;
+	int unused;	/* a word of the frame of the original, not used */
 	for(i = 0 ; i < n ; ++i)
 		if(*a++ != *b++)
 			return(NO);

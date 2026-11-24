@@ -262,3 +262,5 @@ PLZ programs and `as`: 170.
   in get(), goodmagic and symscan in files.c, isreg in intrupt, csh -cf in doshell, _cleanup in exit), shipped cc, /lib/libc.a,
   -i. Size, data and every function but 13 frames identical (cluster "register slots", phase B; OLDCC.md D1). In src/cmd
   (SUBDIRS), OPEN of checkall; corpus compare/make (45 cases, identical).
+- 2026-11-24 make exact: the unused frame words as `int unused` (14 functions; yyparse by sed in the Makefile), nc =
+  LONGNAME in lookarch; the register slots are collected in host/OLDCC_REGSLOTS.md for a session of their own. Installed.

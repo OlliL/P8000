@@ -1,5 +1,6 @@
 # make: /bin/make from System III's make (usr/src/cmd/make) with WEGA's changes (wegarules.c), built by the shipped cc
-# with /lib/libc.a, separate I and D (-i) as make.mk; not yet identical (OPEN of checkall.sh).
+# with /lib/libc.a, separate I and D (-i) as make.mk; byte-identical. The unused frame words (int unused) of 14 functions
+# and of yyparse are the register slots of the compiler of 11/83 (host/OLDCC_REGSLOTS.md).
 #
 #   make              build ./make
 #   make install PREFIX=dir
@@ -30,8 +31,10 @@ crt0.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 crt0.o: crt0.s
 	$(CAS) -u -o $@ crt0.s
 
+# yyparse of /usr/lib/yaccpar gets the unused frame word of the original behind its autos (host/OLDCC_REGSLOTS.md: the
+# compiler of 11/83 gives some register locals a frame word; yaccpar is shipped text and stays as it is)
 gram.c: gram.y
-	$(YACC) gram.y ; mv y.tab.c gram.c
+	$(YACC) gram.y ; sed 's/^\(.short yyj, yym;\)$$/\1 int unused;/' y.tab.c > gram.c ; rm -f y.tab.c
 
 $(OBJECTS): defs
 

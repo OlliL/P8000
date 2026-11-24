@@ -157,13 +157,13 @@
    "file": "main.c",
    "orig": "0x0908",
    "size_orig": 106,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
     "0x0042"
    ],
-   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "setmflgs": {
    "file": "main.c",
@@ -358,7 +358,8 @@
    "kind": "proven",
    "callers": [
     "0x1814"
-   ]
+   ],
+   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "dftrans": {
    "file": "misc.c",
@@ -375,12 +376,12 @@
    "file": "misc.c",
    "orig": "0x1b32",
    "size_orig": 124,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x1814"
    ],
-   "note": "the frame of the original is 6 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused[3] (unused: 3 frame words of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "copstr": {
    "file": "misc.c",
@@ -404,7 +405,7 @@
    "file": "misc.c",
    "orig": "0x1bce",
    "size_orig": 182,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
@@ -412,20 +413,20 @@
     "0x0908",
     "0x09ae"
    ],
-   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "eqsign": {
    "file": "misc.c",
    "orig": "0x1c84",
    "size_orig": 54,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
     "0x0042",
     "0x2186"
    ],
-   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "varptr": {
    "file": "misc.c",
@@ -517,23 +518,23 @@
    "file": "misc.c",
    "orig": "0x1da4",
    "size_orig": 42,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09ae"
    ],
-   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "mkqlist": {
    "file": "misc.c",
    "orig": "0x1dce",
    "size_orig": 96,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09ae"
    ],
-   "note": "the frame of the original is 4 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused[2] (unused: 2 frame words of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "any": {
    "file": "misc.c",
@@ -557,7 +558,7 @@
    "file": "misc.c",
    "orig": "0x1e5a",
    "size_orig": 94,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0908",
@@ -565,7 +566,7 @@
     "0x191e",
     "0x31d6"
    ],
-   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "findfl": {
    "file": "misc.c",
@@ -603,24 +604,24 @@
    "file": "misc.c",
    "orig": "0x1fbc",
    "size_orig": 58,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09ae",
     "0x237c"
    ],
-   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "trychk": {
    "file": "misc.c",
    "orig": "0x1ff6",
    "size_orig": 28,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x237c"
    ],
-   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\"; WEGA, not in System III (the chkout tree, file+): the name is a guess"
+   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md); WEGA, not in System III (the chkout tree, file+): the name is a guess"
   },
   "is_chk": {
    "file": "misc.c",
@@ -637,36 +638,36 @@
    "file": "misc.c",
    "orig": "0x203c",
    "size_orig": 76,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09ae"
    ],
-   "note": "the frame of the original is 4 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused[2] (unused: 2 frame words of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "setenv": {
    "file": "misc.c",
    "orig": "0x2088",
    "size_orig": 254,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x2dfe",
     "0x2ef4"
    ],
-   "note": "the frame of the original is 4 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused[2] (unused: 2 frame words of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "readenv": {
    "file": "misc.c",
    "orig": "0x2186",
    "size_orig": 62,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
     "0x0042"
    ],
-   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "sccstrip": {
    "file": "misc.c",
@@ -811,7 +812,7 @@
    "callers": [
     "0x262c"
    ],
-   "note": "WEGA: the entry point of an object archive by symscan (libc); \"if(!eqstr(..)) continue;\" and a goto loop around symscan: with a back jump to the loop head popt turns the loop (D7)"
+   "note": "WEGA: the entry point of an object archive by symscan (libc); \"if(!eqstr(..)) continue;\" and a goto loop around symscan: with a back jump to the loop head popt turns the loop (D7); nc = LONGNAME (127) for the entry point of an object archive (the long names of s.out)"
   },
   "clarch": {
    "file": "files.c",
@@ -857,12 +858,12 @@
    "file": "files.c",
    "orig": "0x2d34",
    "size_orig": 60,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x2a76"
    ],
-   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
   },
   "dosys": {
    "file": "dosys.c",
@@ -998,7 +999,8 @@
    "callers": [
     "0x057a",
     "0x25c4"
-   ]
+   ],
+   "note": "odd form: the unused frame word of the original is put into yyparse of yaccpar by sed in the Makefile (register slots, host/OLDCC_REGSLOTS.md)"
   },
   "dynamicdep": {
    "file": "dyndep.c",
@@ -1031,5 +1033,5 @@
    ]
   }
  },
- "note": "System III make (usr/src/cmd/make) with the changes of WEGA (SYSIII.md), the shipped cc, /lib/libc.a, separate I and D. Open: cluster \"register slots\": in 13 functions of main.c, misc.c and files.c the frame of the original has 1 to 3 unused words more (2 to 6 bytes), all else is the same. The count fits no compiler: the shipped cparse gives a register local no frame word, v1 (OLD_D1) one to each (ccv1 cparse with the shipped codgen and popt: 177 of 211 functions against 197). A guess: the cparse of make (11/83) kept sfldc of a reused symbol entry (a cparse without \"q->sfldc = 0\" in lookup fixes getmflgs, not the others). Phase B."
+ "note": "System III make (usr/src/cmd/make) with the changes of WEGA (SYSIII.md), the shipped cc, /lib/libc.a, separate I and D. Byte-identical with /bin/make. The frames of 14 functions and of yyparse have unused words of the original (int unused; for yyparse sed in the Makefile): the register slots of the compiler of 11/83, host/OLDCC_REGSLOTS.md."
 }

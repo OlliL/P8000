@@ -19,7 +19,8 @@ shipped cc with `/lib/libc.a`, separate I and D (`-i`, as `make.mk`); the files 
 - main.c `intrupt()`: only a regular file is removed (`isreg`, a `stat` of the target).
 - files.c: the s.out format of WEGA: `<s.out.h>`, `struct s_exec`, `goodmagic()` (libc) for the magic number, the skip
   `s_imsize` (doubled without `SF_STRIP`) plus `s_segt`. `lookarch` finds the entry point of an object archive by
-  `symscan()` of the libc (`struct nlist`, `<nlist.h>`) and takes a defined external symbol only; `char s[128]`.
+  `symscan()` of the libc (`struct nlist`, `<nlist.h>`) and takes a defined external symbol only; `char s[128]`,
+  `nc = LONGNAME` (127, the long names of s.out) instead of 8.
 - dosys.c `doshell()`: `/bin/csh` as SHELL gets `-cf` / `-cfe` instead of `-c` / `-ce`.
 
 ## Forms that follow the bytes, not the System III text
@@ -27,6 +28,8 @@ shipped cc with `/lib/libc.a`, separate I and D (`-i`, as `make.mk`); the files 
 - lookarch: `if(!eqstr(..)) continue;` and a goto loop around `symscan`, so that no back jump to the loop head is left
   (with one, popt turns the loop, `OLDCC.md` D7).
 - get: `varptr(chk ? "CHKOUT" : "GET")->varval` inside the call of `copstr` (the frame temporary of the original).
+- `int unused` in 14 functions and, by sed in the Makefile, in yyparse of `/usr/lib/yaccpar`: the unused frame words of the
+  compiler of 11/83 (`host/OLDCC_REGSLOTS.md`).
 
 ## Not in the tree
 

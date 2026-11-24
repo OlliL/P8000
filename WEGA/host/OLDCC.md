@@ -247,9 +247,8 @@ Each class: the form in the code, the pass, the mechanism, the switch, the witne
 - v0: no frame for leaf functions, no home slots for register parameters.
 - Not reproduced: one unexplained frame word in main, endload, slookup, pslookup, index16 of ld (kept as `int spare`);
   cas `putins` 12 bytes against 14, libc nlist and length 2 bytes smaller, fseek 14 against 20.
-- Not reproduced: make (11/83, shipped otherwise): 13 functions of main.c, misc.c, files.c have 1 to 3 unused frame words more
-  (the code is the same): neither the shipped rule (no word for a register local) nor v1 (`OLD_D1`, one word for each); open
-  (`compare/make/findings.json`, cluster "register slots").
+- Not reproduced: register slots of 1983 (make, diff, mail, nl, slibc calloc): some register locals get an unused frame
+  word, by a rule not found (neither the shipped one nor v1); rebuilt as `int unused` (`OLDCC_REGSLOTS.md`).
 
 ### D2 Scratch registers
 
