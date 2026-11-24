@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "ccv0a (v0a: v0 with OLD_D3AW, OLD_D3AC, OLD_D2NS; host/OLDCC.md) for the own code; the libraries (libtermlib-v1.a, libc-v1.a) v0. Phase A done 2026-11-23: 361 of 394 functions exact (the start-up code counted).",
+ "compiler": "ccv0a (v0a: v0 with OLD_D3AW, OLD_D3AC, OLD_D2NS, OLD_D65; host/OLDCC.md) for the own code; the libraries (libtermlib-v1.a, libc-v1.a) v0. Phase A done 2026-11-23: 362 of 394 (2026-11-24, OLD_D65) functions exact (the start-up code counted).",
  "binary": "/bin/ex (links: vi, view, edit); E711, text 63488 bytes (code to 0xf7fe)",
  "functions": {
   "start": {
@@ -846,8 +846,8 @@
    "file": "ex_re.c",
    "orig": "0x4cb4",
    "size_orig": 314,
-   "status": "open",
-   "note": "phase B, address difference: loc2 = sp + (linebuf - genbuf) (every BSD ex, Plexus): ccv0/ccv0a/ccv1 and the shipped /bin/cc fold linebuf - genbuf to 0 (wrong code, KNOWLEDGE.md quirks), the original computes ld r2,#linebuf; sub r2,#genbuf; add r2,r13. 7 forms tried (OLDCC_LOG.md 2026-11-23); sp - genbuf + linebuf is not folded (4 lines left: the order) and also removes the block order difference of the loops; not taken."
+   "status": "exact",
+   "note": "exact with v0a OLD_D65 (2026-11-24): the compiler of ex computes linebuf - genbuf; v0 folds it to 0 (treeeq compares an ICON without its name)."
   },
   "fixcase": {
    "file": "ex_re.c",

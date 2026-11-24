@@ -70,7 +70,7 @@ static void d14qarm();
 #ifdef OLD_D12K
 int d12kname();
 #endif
-#if defined(OLD_D24) || defined(OLD_D63)
+#if defined(OLD_D24) || defined(OLD_D63) || defined(OLD_D65)
 int optpre(), optpost();
 #endif
 #ifdef OLD_D3K
@@ -777,7 +777,7 @@ codgen(p, cookie)
 	   order may call codgen recursively */
 	/* cookie is used to describe the context */
 	for (;;) {
-#if defined(OLD_D24) || defined(OLD_D63)
+#if defined(OLD_D24) || defined(OLD_D63) || defined(OLD_D65)
 		fwalk(p, optpre, 0);
 		p = optim(p);
 		fwalk(p, optpost, 0);
@@ -1833,16 +1833,28 @@ d2faandor(p)
 }
 #endif
 
-#if defined(OLD_D24) || defined(OLD_D63)
+#if defined(OLD_D24) || defined(OLD_D63) || defined(OLD_D65)
 /* fwalk in front of optim (mip/optim.2.5) for the older versions: a conversion the older optim keeps is hidden from rmconv
    as PCONV (no record of cparse has one): vk, vl, vc (OLD_D24) one between a pointer and a non-pointer, v1 (OLD_D63) a
-   float widened to double */
+   float widened to double; v0a (OLD_D65): the difference of two address constants of different names is no x-x of optim
+   (treeeq compares lval and rval of an ICON, not its name): the right one gets rval 1 until optpost */
 int
 optpre(p)
 	register NODE *p;
 {
 	register int t, u;
+#ifdef OLD_D65
+	register NODE *a, *b;
+#endif
 
+#ifdef OLD_D65
+	if (p->in.op == MINUS && p->in.left->in.op == UNARY AND && p->in.right->in.op == UNARY AND &&
+			(a = p->in.left->in.left)->in.op == NAME && (b = p->in.right->in.left)->in.op == NAME &&
+			a->in.sname != 0 && b->in.sname != 0 && b->tn.rval == 0 && a->in.sname != b->in.sname) {
+		b->tn.rval = 1;	/* optim makes the NAME an ICON */
+		return 0;
+	}
+#endif
 	if (p->in.op != SCONV)
 		return 0;
 	t = p->in.type;
@@ -1866,6 +1878,12 @@ optpost(p)
 {
 	register NODE *a;
 
+#ifdef OLD_D65
+	if (p->in.op == ICON && p->in.sname != 0 && p->tn.rval == 1) {
+		p->tn.rval = 0;
+		return 0;
+	}
+#endif
 	if (p->in.op != PCONV)
 		return 0;
 	p->in.op = SCONV;

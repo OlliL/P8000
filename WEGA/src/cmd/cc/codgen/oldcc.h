@@ -40,6 +40,7 @@
 #define OLD_D3AW	/* OLD_D3A only for a parameter that is a whole argument or an address in it (argplace) */
 #define OLD_D3AC	/* an int parameter converted to a char is taken from its frame home (its low byte; delay) */
 #define OLD_D2NS	/* a word stored to a global is not remembered in its register (rnassign) */
+#define OLD_D65		/* the difference of two address constants of different names is not folded to 0 (optpre) */
 #endif
 
 #ifdef OLD_V0P

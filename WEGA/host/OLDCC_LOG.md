@@ -2171,3 +2171,10 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   `ld r2,#_linebuf; sub r2,#_genbuf; add r2,r13`. ccv0p writes `lda r2,0(r14)`. Folded too: `linebuf - genbuf + sp`,
   `(int)` casts, `&sp[linebuf - genbuf]`. `sp - genbuf + linebuf` is not folded (4 lines left: the order) and removes the
   block order difference of the loops of dosub; not taken (no source has it). A difference for a switch later (not in this run).
+
+## 2026-11-24 v0a OLD_D65: the difference of two address constants (ex dosub)
+
+- cparse passes `&linebuf - &genbuf` unfolded (the .I file: MINUS of two U&NAME); codgen folds it: optim makes each U&NAME
+  an ICON and its MINUS case (WEGA: x-x is 0) asks treeeq, which compares an ICON by lval and rval only. First attempt in
+  optpre on two ICONs: no effect (optpre runs in front of optim, the operands are still U&NAME). With the U&NAME test:
+  dosub exact (also its loop layout), ex 362 of 394 (361), no function lost. matrix check: as in the table.

@@ -144,7 +144,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 ### v0a (10/82, ex)
 
-- v0 with `OLD_D3AW`, `OLD_D3AC` and `OLD_D2NS` (codgen); cparse and popt those of v0 (`ccv0a`, `/lib/v0a/codgen`). The own code of ex (crt0 3.1
+- v0 with `OLD_D3AW`, `OLD_D3AC`, `OLD_D2NS` and `OLD_D65` (codgen); cparse and popt those of v0 (`ccv0a`, `/lib/v0a/codgen`). The own code of ex (crt0 3.1
   10/28/82) follows it, the libraries linked into ex (libc-v1.a, libtermlib-v1.a) follow v0: isatty, stty, gtty in /bin/ex
   are exact with v0 and differ with `OLD_D3AW`.
 - Measured 2026-11-23 (`OLDCC_PARAMREGS.md`): ex 323 -> 339 of 391 functions exact, none lost; 340 with `OLD_D3AC`. The programs of 07/82
@@ -586,6 +586,14 @@ when it is the first one; the next word argument then takes r3. A double paramet
 double result comes back in rq4. The shipped compiler uses the EPU registers (f3 down). A floating compare with memory has no rounding `fld dbl`
 of the left operand. The shipped atof of /lib/cparse returns in rq4 as well.
 
+### D65 The difference of two address constants
+
+v0a `OLD_D65` (codgen, optpre/optpost of reader3.c, not in mip): the optim of codgen takes `x - x` for 0 (the WEGA rule of
+the MINUS case), and treeeq compares an ICON by lval and rval, not by its name; so `&a - &b` of two different globals at
+offset 0 is 0 in v0, v0p, v1 and the shipped codgen (wrong code; KNOWLEDGE.md quirks). The compiler of ex computes it
+(`ld r2,#_linebuf; sub r2,#_genbuf; add r2,r13`). optpre gives the right NAME rval 1 in front of optim (the ICON it
+becomes is then no copy of the left one), optpost gives it 0 again. One witness: ex dosub (`loc2 = sp + (linebuf - genbuf)`).
+
 ### D23 Zero addend
 
 v0p `OLD_D23` (codgen, optim, mapregs): the optim of codgen does not take a zero addend away, so `(rv >> 8) - 1 + 1`, which cparse folds to
@@ -741,109 +749,109 @@ Changes no program of v1 that was byte-identical before (checkall).
 that it is absent). The old libc members inside size, strip, ranlib, cas are listed with D14 only. cparse, codgen, popt, cpp were built exactly by v0p;
 their marks in the older columns are from comparisons with the shipped compiler. Column "Ver.": the compiler version (section 2).
 
-| Binary | Object | Ver. | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr | D15 if/else layout | D16 frame operand | D17 call form | D18 0(r15) | D19 operand order | D20 code motion | D22 double rq4 | D23 zero addend | D24 mask | D25 mask | D29 switch |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| cas | ifile.c | old scc | x | x | x |  |  | x |  | x | x | x |  | x | x |  |  |  |  |  |  |  |  |  | x | x |  |
-| cas | instr.c | old scc | x | x |  |  |  | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | scanner.c | old scc | x | x | x |  |  | x | ? |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  | x | x |  |
-| cas | main.c | old scc |  | x |  |  |  | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | nodes.c | old scc | x | x |  |  | x | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | parser.y (parser.c) | old scc | x | x | x |  | x | x | ? |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | expr.c | old scc | x | x | x |  |  | x |  |  |  | x |  | x | x |  |  |  |  |  |  | x |  |  |  |  |  |
-| cas | p2loop.c | old scc |  | x | x |  |  | x |  | x |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | ofile.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | gen.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | assemble.c | old scc |  | x | x |  |  | x |  |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | getops.c | old scc |  | x | x | x |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | error.c | old scc |  |  | x |  |  | x |  |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | listing.c | old scc |  |  | x |  |  |  | x | x |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | optim.c | old scc |  |  | x | x |  | x | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | jpr2.c | old scc |  |  | x |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | jpr.c | old scc |  |  | x | x |  | x | x | x |  |  |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |
-| cas | locntr.c | old scc | x | x | x | x |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | ssymtab.c | old scc |  |  |  |  |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | symbols.c | old scc | x | x |  |  |  | x |  | x |  | x | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | pst.c | old scc | x | x |  |  |  |  | ? | x |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | subr.c | old scc |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| ranlib | ranlib.c | v0 | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| sum | sum.c | v0 |  | x |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| strip | strip.c | v1 | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| size | size.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | malloc.o (gen/malloc.c) | vl |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | nlist.o (gen/nlist.c) | vl | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | length.o (gen/length.c) | open | x |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | swap.o (gen/swap.c) | vl |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| size | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
-| size | libc: rdwr.o (fread, fwrite) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
-| size | libc: doprnt.o (_doprnt) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |
-| strip | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
-| cas | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | all modules | v0p | x | x | x | x |  | x | x | x |  | x | x |  |  |  | x | x | x |  |  |  |  | x |  |  |  |
-| popt | z21.c (main..backjmp) | v0p |  |  | x | x |  | x |  | x |  |  |  | x |  |  |  |  | x | x |  | x |  |  |  |  |  |
-| popt | z22.c (rmove..natural) | v0p |  | x | x | x | x | x |  |  |  |  |  | x |  |  |  | x | x | x |  | x |  |  |  |  |  |
-| popt | z23.c (procopt..markregs) | v0p |  | x |  | x | x |  |  |  |  |  |  | x |  |  |  |  | x | x |  |  |  |  |  |  |  |
-| ld | ld.c (load1, place_sec, init_entry, load2td, dseek, ranlib_scan) | v1 | x | x | x |  |  |  |  |  |  |  | x | x |  |  | x |  |  |  |  | x |  |  |  |  |  |
-| ld | symbols.c (chk_ranlib, ensure_buf) | v1 |  |  | x |  |  |  |  |  |  |  | x | x |  |  |  |  |  |  |  | x |  |  |  |  |  |
-| ld | copyname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| ld | printname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| mv, rm, rmdir, write | mv.c, rm.c, rmdir.c, write.c | v1 | x |  |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| cparse | cgram1.y | v0p | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  | ? | x | ? |  |  |  |  |  |  |  |
-| cparse | xdefs1.c | v0p | x | x |  |  |  |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |
-| cparse | scan1.c | v0p | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |
-| cparse | pftn1.c | v0p | x | x | ? |  | ? | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |
-| cparse | trees1.c | v0p | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  | x | ? | x |  | x |  |  |  |  |
-| cparse | optim1.c, optim | v0p | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  | x | ? | x |  |  |  |  |  |  |
-| cparse | code1.c | v0p | x | x | ? | ? |  | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  | x |  |  |  |  |
-| cparse | local1.c | v0p | x | x | ? |  |  | x |  |  |  |  | ? | x |  |  |  |  | x | ? | x |  | x |  |  |  |  |
-| cparse | comm1.c, common | v0p | x | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |
-| cparse | vinit1.c | v0p | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  | x |  |  |  |  |
-| cparse | sym1.c | v0p | x | x | ? |  | ? |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |
-| cpp | cpp.c, cpy.y, yylex.c | v0p |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| clist | clist.c | v0p | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| mkdir | mkdir.c | v0 |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| ex | ex 2.13 (own code) | v0a |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| mkstr | mkstr.c, libc calloc | v0 |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| chkout | chkout.c, common.c (07/23/82) | v0 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
-| kernel | sig.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
-| kernel | sys2.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
-| kernel | sys3.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
-| kernel | debug.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
-| kernel | sys1.c | vk |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| kernel | ureg.c | vk |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| kernel | tt0.c | vk |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| kernel | lock.c | vk |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| kernel | tty.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
-| libm.a, slibm.a | asin.o (asin.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | atan.o (atan.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | fmod.o (fmod.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | gamma.o (gamma.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | hypot.o (hypot.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | jn.o (jn.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | j0.o (j0.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | j1.o (j1.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | pow.o (pow.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | log.o (log.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | sin.o (sin.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | tan.o (tan.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | tanh.o (tanh.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | sinh.o (sinh.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| libm.a, slibm.a | exp.o (exp.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| slibPW.a | xalloc.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
-| slibPW.a | regcmp.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  | x | x |  |
-| slibPW.a | regex.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |
-| libPW.a, slibPW.a | xmsg.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
-| libPW.a | regcmp.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
-| slibPW.a | move.c | v1 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | comm2.c (common 2.4) | sccvc (measured) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | debug2.c (prquad: D3JB) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | dom2.c, flow2.c, lpinv2.c (linkp, dominators, eval, compress, joinblk, srchdflist: D2N for a pair) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | lpind2.c (chkfamindvar: D2R gives the half D2V refuses back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | alias2.c (affsize: D2M divides a named word in the pair of its even register) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | init2.c (initopts: D14T, the temporaries of call arguments free again) | sccvc (measured) |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | lpind2.c (mkconstopnd: D2P merges parameter words only when no pair is free, segmented) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | alias2.c (setposition: D3AW gives an idle parameter in the argument register back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | wrtil2.c (mkleaf: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| gopt | lpinv2.c (qmkstore: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Binary | Object | Ver. | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr | D15 if/else layout | D16 frame operand | D17 call form | D18 0(r15) | D19 operand order | D20 code motion | D22 double rq4 | D23 zero addend | D24 mask | D25 mask | D29 switch | D65 address difference |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| cas | ifile.c | old scc | x | x | x |  |  | x |  | x | x | x |  | x | x |  |  |  |  |  |  |  |  |  | x | x |  |  |
+| cas | instr.c | old scc | x | x |  |  |  | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | scanner.c | old scc | x | x | x |  |  | x | ? |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  | x | x |  |  |
+| cas | main.c | old scc |  | x |  |  |  | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | nodes.c | old scc | x | x |  |  | x | x | ? |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | parser.y (parser.c) | old scc | x | x | x |  | x | x | ? |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | expr.c | old scc | x | x | x |  |  | x |  |  |  | x |  | x | x |  |  |  |  |  |  | x |  |  |  |  |  |  |
+| cas | p2loop.c | old scc |  | x | x |  |  | x |  | x |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | ofile.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | gen.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | assemble.c | old scc |  | x | x |  |  | x |  |  |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | getops.c | old scc |  | x | x | x |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | error.c | old scc |  |  | x |  |  | x |  |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | listing.c | old scc |  |  | x |  |  |  | x | x |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | optim.c | old scc |  |  | x | x |  | x | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | jpr2.c | old scc |  |  | x |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | jpr.c | old scc |  |  | x | x |  | x | x | x |  |  |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
+| cas | locntr.c | old scc | x | x | x | x |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | ssymtab.c | old scc |  |  |  |  |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | symbols.c | old scc | x | x |  |  |  | x |  | x |  | x | x | x | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | pst.c | old scc | x | x |  |  |  |  | ? | x |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | subr.c | old scc |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| ranlib | ranlib.c | v0 | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| sum | sum.c | v0 |  | x |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
+| strip | strip.c | v1 | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| size | size.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | malloc.o (gen/malloc.c) | vl |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | nlist.o (gen/nlist.c) | vl | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | length.o (gen/length.c) | open | x |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | swap.o (gen/swap.c) | vl |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| size | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| size | libc: rdwr.o (fread, fwrite) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| size | libc: doprnt.o (_doprnt) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |
+| strip | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | all modules | v0p | x | x | x | x |  | x | x | x |  | x | x |  |  |  | x | x | x |  |  |  |  | x |  |  |  |  |
+| popt | z21.c (main..backjmp) | v0p |  |  | x | x |  | x |  | x |  |  |  | x |  |  |  |  | x | x |  | x |  |  |  |  |  |  |
+| popt | z22.c (rmove..natural) | v0p |  | x | x | x | x | x |  |  |  |  |  | x |  |  |  | x | x | x |  | x |  |  |  |  |  |  |
+| popt | z23.c (procopt..markregs) | v0p |  | x |  | x | x |  |  |  |  |  |  | x |  |  |  |  | x | x |  |  |  |  |  |  |  |  |
+| ld | ld.c (load1, place_sec, init_entry, load2td, dseek, ranlib_scan) | v1 | x | x | x |  |  |  |  |  |  |  | x | x |  |  | x |  |  |  |  | x |  |  |  |  |  |  |
+| ld | symbols.c (chk_ranlib, ensure_buf) | v1 |  |  | x |  |  |  |  |  |  |  | x | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
+| ld | copyname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| ld | printname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| mv, rm, rmdir, write | mv.c, rm.c, rmdir.c, write.c | v1 | x |  |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
+| cparse | cgram1.y | v0p | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  | ? | x | ? |  |  |  |  |  |  |  |  |
+| cparse | xdefs1.c | v0p | x | x |  |  |  |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |  |
+| cparse | scan1.c | v0p | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |  |
+| cparse | pftn1.c | v0p | x | x | ? |  | ? | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |  |
+| cparse | trees1.c | v0p | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  | x | ? | x |  | x |  |  |  |  |  |
+| cparse | optim1.c, optim | v0p | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  | x | ? | x |  |  |  |  |  |  |  |
+| cparse | code1.c | v0p | x | x | ? | ? |  | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  | x |  |  |  |  |  |
+| cparse | local1.c | v0p | x | x | ? |  |  | x |  |  |  |  | ? | x |  |  |  |  | x | ? | x |  | x |  |  |  |  |  |
+| cparse | comm1.c, common | v0p | x | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |  |
+| cparse | vinit1.c | v0p | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  | x |  |  |  |  |  |
+| cparse | sym1.c | v0p | x | x | ? |  | ? |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |  |  |  |  |
+| cpp | cpp.c, cpy.y, yylex.c | v0p |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| clist | clist.c | v0p | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| mkdir | mkdir.c | v0 |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| ex | ex 2.13 (own code) | v0a |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
+| mkstr | mkstr.c, libc calloc | v0 |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| chkout | chkout.c, common.c (07/23/82) | v0 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
+| kernel | sig.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |
+| kernel | sys2.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |
+| kernel | sys3.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |
+| kernel | debug.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |
+| kernel | sys1.c | vk |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| kernel | ureg.c | vk |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| kernel | tt0.c | vk |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| kernel | lock.c | vk |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| kernel | tty.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |
+| libm.a, slibm.a | asin.o (asin.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | atan.o (atan.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | fmod.o (fmod.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | gamma.o (gamma.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | hypot.o (hypot.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | jn.o (jn.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | j0.o (j0.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | j1.o (j1.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | pow.o (pow.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | log.o (log.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | sin.o (sin.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | tan.o (tan.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | tanh.o (tanh.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | sinh.o (sinh.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| libm.a, slibm.a | exp.o (exp.c) | open (v1) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| slibPW.a | xalloc.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |
+| slibPW.a | regcmp.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  | x | x |  |  |
+| slibPW.a | regex.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |
+| libPW.a, slibPW.a | xmsg.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
+| libPW.a | regcmp.c | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
+| slibPW.a | move.c | v1 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | comm2.c (common 2.4) | sccvc (measured) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | debug2.c (prquad: D3JB) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | dom2.c, flow2.c, lpinv2.c (linkp, dominators, eval, compress, joinblk, srchdflist: D2N for a pair) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | lpind2.c (chkfamindvar: D2R gives the half D2V refuses back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | alias2.c (affsize: D2M divides a named word in the pair of its even register) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | init2.c (initopts: D14T, the temporaries of call arguments free again) | sccvc (measured) |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | lpind2.c (mkconstopnd: D2P merges parameter words only when no pair is free, segmented) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | alias2.c (setposition: D3AW gives an idle parameter in the argument register back) | sccvc (measured) |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | wrtil2.c (mkleaf: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gopt | lpinv2.c (qmkstore: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
 fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`
