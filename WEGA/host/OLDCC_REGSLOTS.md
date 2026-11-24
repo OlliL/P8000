@@ -186,9 +186,28 @@ The period of about 36.6 entries is 1024 bytes, the sbrk step of the malloc. Che
 functions and yyparse with their words and all others without, no `int unused`; only files.c eqstr differs, right with
 56 .. 62 dummies. csplit needs 1: the WEGA source has a `static char sccsid[]` that the System III text of the test set
 lacks; comm, tsort, uniq allow 1 too (their WEGA sccsid). So the stale sfldc explains the words of make, diff, nl, comm,
-tsort, uniq, csplit and (with 3 more declarations) mail; what the 63 entries of make's WEGA headers are is open (the
-System V defs has 5 more than System III's, the headers of the guest: sys/types.h 14, + sys/stat.h 26, + sys/dir.h 29,
-sys/param.h 18, time.h 10, pwd.h 10, ar.h 7, s.out.h 42, nlist.h 4); ar and cpio need more than one place.
+tsort, uniq, csplit and (with 3 more declarations) mail; the 63 entries of make are the headers of files.c in defs (next
+section); ar and cpio need more than one place.
+
+## The 63 entries of make: the headers of files.c in defs (2026-11-24)
+
+The entry counts of the guest headers (with `sys/types.h` in front): `ar.h` 7, `s.out.h` 42, `nlist.h` 4, `pwd.h` 10, so
+the four headers that only files.c includes (besides `sys/types.h`, `sys/stat.h`, `sys/dir.h`) make 63. Real builds
+(`hplace.py`: each of the seven headers of files.c in defs or in the files that include it, `s.out.h` in four forms; 160
+builds): only one placement leaves a single function wrong: `defs` includes `<pwd.h>`, `<ar.h>`, `<s.out.h>` (full) and
+`<nlist.h>` after `<stdio.h>`, files.c includes only `sys/types.h`, `sys/stat.h`, `sys/dir.h`. Every frame of make then
+comes out as the original without a dummy declaration (the 14 functions and yyparse with their word, all others
+without), except files.c eqstr. The other placements: 2 to 16 wrong; `sys/types.h` and `sys/stat.h` in defs (with or
+without dummies, 0 .. 110) at least 8.
+
+eqstr needs files.c to have 2 permanent entries fewer than the rebuilt one (the simulation: any 2 before eqstr, also
+two of those made after the first function: lookarch, any, stat, n15end, strcmp, amatch, objentry; real builds: 2 or
+5 fewer at the front right, 1 or 3 not). Which 2 is not in the bytes. Not it: `archmem` and `archname` defined in
+doname.c and declared in lookarch or after the first functions; `sys/types.h` without `saddr_t`/`uaddr_t` (the System
+III types.h; it breaks main.c and misc.c); `s.out.h` without `s_head` or `v_lines` for all files (breaks misc.c).
+
+Elsewhere: no common header shift fits the other programs (diff 37, but csplit not 38, mail not 40, nl not 37). ar and
+cpio include none of these headers.
 
 ## v1: the place of the declaration (2026-11-24)
 
@@ -212,7 +231,8 @@ words of ld (main, endload, slookup, pslookup, index16; v1, `OLDCC.md` D1).
 cparse from `cparse_x.diff`, a root with it behind the shipped cc, the test set, the logs); `fscan.py` (the masked frame
 compare of a build against the original), `score.sh` (real builds of the test set), `v7sim.py` (the V7 malloc),
 `replay.py` (a log through the malloc with the sfldc model), `hyp.py` (the score of the test set, the expected words),
-`hyps1.py`, `hyps2.py` (the hypotheses above), `probe.py`, `greedy.py` (single changes of a stream), `extradecl.py` (K extra entries in front of the first function), `features.py` (the source features of the register locals of
+`hyps1.py`, `hyps2.py` (the hypotheses above), `probe.py`, `greedy.py` (single changes of a stream), `extradecl.py` (K extra entries in front of the first function), `makecand.sh` (a make source directory built by ccx,
+its wrong frames), `hplace.py` (the headers of files.c in defs or not, real builds), `features.py` (the source features of the register locals of
 make, diff, mail, nl, gpasswd against their words), `witnesses.sh` (the search among the sys3 programs). The work directory
 stays; `saved/` there holds the outputs of the first runs.
 
@@ -225,5 +245,6 @@ stays; `saved/` there holds the outputs of the first runs.
   then), comm, csplit, tsort, uniq, slibc calloc (segmented); and as counter-tests the programs of 11/18/83 without a word
   (ar, cmp, du, grep, pr, putfile, who, cpio).
 - The v1 words of ld (main, endload, slookup, pslookup, index16): the place of a register declaration (section "v1").
+- make files.c: the 2 entries fewer that eqstr needs (section "The 63 entries of make").
 - A rule that holds would be a switch of a cparse of its own (a compiler of 11/83), owner's decision; the unused locals
   would then go.
