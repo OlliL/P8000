@@ -688,10 +688,13 @@ static Ad a_ptr(Args *a)
 /*
  * The guest sees a process id as a 16-bit int: the host pid itself would be cut to 16 bits, so a host pid that is a multiple
  * of 65536 became 0 (the parent of a fork took itself for the child: cc ran popt in place of the rest of the chain) and one
- * above 32767 negative (fork() < 0). gpid maps a host pid to 1..32767, the same in every emulator process (getpid, the
- * result of fork and wait); pids up to 32767 stay as they are. kill maps back through the processes this one knows.
+ * above 32767 negative (fork() < 0). gpid maps a host pid to 1..GPIDMAX, the same in every emulator process (getpid, the
+ * result of fork and wait); pids up to GPIDMAX stay as they are. kill maps back through the processes this one knows.
+ * GPIDMAX is the last number the WEGA kernel gives (newproc, src/uts/sys/slp.c: mpid goes back to 0 at 30000); /bin/kill
+ * takes no number above 32000 ("usage"), so a guest number of 32001..32767 made `kill -16 $$` of the signal test fail.
  */
-static int gpid_host(pid_t pid) { return pid <= 0 ? (int)pid : (int)((pid - 1) % 32767) + 1; }
+#define GPIDMAX	29999
+static int gpid_host(pid_t pid) { return pid <= 0 ? (int)pid : (int)((pid - 1) % GPIDMAX) + 1; }
 
 /*
  * Z8K_PIDDIR=DIR: numbers of the guest's own, the same in every run (the corpus runner gives each step a new, empty directory): the
@@ -711,15 +714,15 @@ static int my_g, fork_k;	/* the guest number of this process (0: not known yet) 
 
 /* The number of a child is made of the parent's number and the count of its forks, not of a counter that all processes share: which
    process forks first is a matter of timing, the path in the tree of forks is not. A number in use (the file DIR/gNUM exists) is
-   passed over to the next; collisions of two paths are rare (the numbers go from 100 to 32767). */
+   passed over to the next; collisions of two paths are rare (the numbers go from 100 to GPIDMAX). */
 static int pid_child(int parent, int k)
 {
 	char f[1100];
-	int fd, g = 100 + (int)(((unsigned)parent * 2654435761u + (unsigned)k * 40503u + 17u) >> 8) % 32000;
+	int fd, g = 100 + (int)(((unsigned)parent * 2654435761u + (unsigned)k * 40503u + 17u) >> 8) % (GPIDMAX - 99);
 	for (;;) {
 		snprintf(f, sizeof f, "%s/g%d", piddir(), g);
 		if ((fd = open(f, O_WRONLY | O_CREAT | O_EXCL, 0600)) >= 0) { close(fd); return g; }
-		if (++g > 32767) g = 100;
+		if (++g > GPIDMAX) g = 100;
 	}
 }
 
@@ -804,13 +807,13 @@ static pid_t hostpid(int g)
 	if (g == gpid(getpid())) return getpid();
 	for (int i = 0; i < NKIDS; i++) if (kids[i] && g == gpid(kids[i])) return kids[i];
 	if (g == gpid(getppid())) return getppid();
-	{	/* another emulator of this session: the host pids g + k*32767 (/proc: the same program, the same session) */
+	{	/* another emulator of this session: the host pids g + k*GPIDMAX (/proc: the same program, the same session) */
 		char self[512], exe[512], path[64];
 		ssize_t n = readlink("/proc/self/exe", self, sizeof self - 1);
 		pid_t sid = getsid(0);
 		if (n > 0) {
 			self[n] = 0;
-			for (long h = g; h <= 4194304; h += 32767) {
+			for (long h = g; h <= 4194304; h += GPIDMAX) {
 				ssize_t m;
 				snprintf(path, sizeof path, "/proc/%ld/exe", h);
 				if ((m = readlink(path, exe, sizeof exe - 1)) <= 0) continue;

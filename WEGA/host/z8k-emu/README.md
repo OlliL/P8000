@@ -132,7 +132,7 @@ chmod, chown (no-op), break, ssgbrk, stat,
 fstat, fcntl, lseek, getpid, getuid/getgid, alarm, pause, utime, access, nice
 (no-op), sync, kill, dup/dup2, pipe, times, signal (handlers run: see Signals),
 ioctl (always ENOTTY), umask, utssys (uname only: the utsname of the WEGA kernel, P8000 WEGA 3.2 " 3.1 4/5"; ustat
-EINVAL). Process ids: the guest sees `(hostpid - 1) % 32767 + 1`
+EINVAL). Process ids: the guest sees `(hostpid - 1) % 29999 + 1` (the range of the WEGA kernel, newproc: 1..29999; /bin/kill takes none above 32000)
 (never 0 or negative: a cut host pid of 0 made the parent of a fork take itself for the child) in getpid, fork, wait;
 kill maps such a pid back to the host process (itself, a child, the parent, another z8k-emu of the session). Anything else prints
 `unimplemented system call N` and fails with EINVAL.
