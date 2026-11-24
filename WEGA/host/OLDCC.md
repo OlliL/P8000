@@ -84,7 +84,7 @@ the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibc
 
 ### v1 (01/83 .. 07/83)
 
-- Switches: `OLD_D1`, `OLD_D12` and `OLD_D8L` (cparse), `OLD_D25` (scparse), `OLD_D3`, `OLD_D61`, `OLD_D62` and `OLD_D63` (codgen, scodgen), `OLD_D24`
+- Switches: `OLD_D1`, `OLD_D12` and `OLD_D8L` (cparse), `OLD_D25` (scparse), `OLD_D3`, `OLD_D61`, `OLD_D62` and `OLD_D63` (codgen, scodgen), `OLD_D53` (codgen), `OLD_D24`
   (scodgen), `OLD_D2CW` (scodgen), `OLD_D20` and `OLD_D52` (popt).
 - `OLD_D24` and `OLD_D25` (a long cast to a pointer is masked through a copy) are in the segmented v1 since slibPW (07/83):
   xalloc (`(char *)((long)np + usize)`, `(char *)Lastbrk`), regcmp (`sp = (char *)*adx++` through a `long *`), regex.
@@ -724,7 +724,7 @@ strncmp of the shipped libc, A `sub r2,r2`, falls out too). One witness (one sou
 
 ### D53 No temporary for a return value in a function with a large frame
 
-vl `OLD_D53` (codgen reader3.c, `delay`). The shipped codgen takes a temporary of the frame for the value of every
+vl and v1 `OLD_D53` (codgen reader3.c, `delay`; v1 since 2026-11-24: nlist 0_1 of libc-v9 in /bin/df, 04/83, the same picture). The shipped codgen takes a temporary of the frame for the value of every
 `return (e)` (it holds the value while a delayed `x++` runs). The codgen of vl takes none in a function whose automatic
 variables fill more than 10000 bits (1250 bytes). Witness: nlist of libc.a and slibc.a (`nlist()`: 1592 and 1602 bytes of
 automatic variables, the frame 2 bytes smaller than the shipped one's; `readby` in the same file has the temporary). The

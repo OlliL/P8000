@@ -1,4 +1,4 @@
-/* calloc of System III: the calloc of df (04/83), ccv1 */
+/* calloc of System III: the calloc of df (04/83), ccv1; size declared int */
 /*LINTLIBRARY*/
 /*	calloc - allocate and clear memory block
 */
@@ -7,7 +7,8 @@
 
 char *
 calloc(num, size)
-unsigned num, size;
+unsigned num;
+int size;	/* not unsigned: num *= size then takes size from its register (r6), as the calloc of df */
 {
 	register char *mp;
 	char *malloc();

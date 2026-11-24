@@ -130,7 +130,11 @@ alloc()
 	b = sblock.s_free[i];
 	if(b == 0)
 		return(0);
+#ifdef SHIPPED
 	if(b<sblock.s_isize || b>=sblock.s_fsize) {
+#else
+	if(b<sblock.s_isize || (long)b>=(long)sblock.s_fsize) {	/* the original compares signed: daddr_t was long then (a guess) */
+#endif
 		printf("bad free block (%ld)\n", b);
 		return(0);
 	}

@@ -2272,3 +2272,16 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   OLD_D52 it does, without OLD_D20 not. v1r (01/83) gets the popt of v1 without OLD_D52 (build/nonsegv1r/popt,
   /lib/v1r/popt, cc.c): od byte-identical, write and rmdir byte-identical, dd unchanged, the 17 libc modules of ccv1r
   unchanged. v1q keeps the v1 popt (not measured).
+
+## 2026-11-24 df byte-identical: the cast in alloc, calloc 0_2 with int size, v1 OLD_D53 (nlist)
+
+- alloc: `b >= sblock.s_fsize` signed in the original, daddr_t unsigned long in WEGA's sys/param.h: `(long)` casts, not
+  under -DSHIPPED (owner). `long b` alone does not do it (my first count was wrong).
+- calloc 0_2 (`num *= size`, size from r6 in the original): cparse types the operand int, regforsym of v1 wants the very
+  type (unsigned) and takes the frame. As a v1 switch (int, unsigned, pointers one type, OLD_D68 trial) 23 files of
+  ccv1 lose (cc, scc, ld, mv, rm, sort, passwd, su, mail ...): taken out. 29 source forms (casts, operand orders, *1, +0,
+  blocks, declarations): exact with size declared int, size undeclared, or short size; taken `unsigned num; int size;`
+  (owner). calloc 0_2 is only in libc-v9, ld does not call calloc: no new version.
+- nlist 0_1 (ccv1): frame 1602 against 1600; ccv1r gives 1600 for nlist but 4 for readby (6 in the original): the return
+  temporary of v1, which the original has in readby and not in nlist (autos 1592 bytes): vl OLD_D53 exactly. OLD_D53 added
+  to the v1 codgen: checkall -b, df byte-identical, no other file lost.
