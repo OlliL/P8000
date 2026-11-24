@@ -8,7 +8,25 @@
 # 2. A frame operand with the offset 0 becomes @fp (2 bytes shorter than 0(fp)): ~L1(fp) in a function with
 #    "~L1 := 0" (lda rN,~L1(fp) there becomes ld rN,fp), and 0(fp) beside the registers r0 ... r7 (the stores of
 #    the parameters; the saves of r8 ... r14 stay 0(fp)).
+#    Not so the temporary of an indirect call (ld ~L1(fp),r2 ... ld r1,0(fp); call @r1): its store keeps the offset,
+#    and of its loads only the last one of the function becomes @fp (listchar, normchar, vgotab: 6 places, the only
+#    ones in ex; a rule read off the binary, its mechanism is not known). Written ~L1+0(fp), which step 2 leaves alone.
 s=$1
+awk '{ b[++m] = $0 }
+	$0 == "\tcall\t@r1" && b[m - 1] == "\tld\tr1,0(fp)" {
+		n++; l[n] = m - 1
+		for (i = m - 2; i > m - 5 && i > 0; i--)
+			if (b[i] == "\tld\t~L1(fp),r2") { b[i] = "\tld\t~L1+0(fp),r2"; break }
+	}
+	/^\t}\t\/\*/ {
+		for (i = 1; i < n; i++)
+			b[l[i]] = "\tld\tr1,~L1+0(fp)"
+		for (i = 1; i <= m; i++)
+			print b[i]
+		m = 0; n = 0
+	}
+	END { for (i = 1; i <= m; i++) print b[i] }' $s > icall.s
+mv icall.s $s
 sed -n 's/^\(_[A-Za-z0-9_]*\)::*$/\1/p' $s > defs.tmp
 grep '	callr	_' $s | sed 's/.*callr	//' | sort | uniq -c | sort -n | awk '$1 >= 3 { print $2 }' > stubs.tmp
 awk 'FILENAME == "defs.tmp" { d[$1] = 1; next }

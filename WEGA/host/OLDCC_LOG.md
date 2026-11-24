@@ -2215,3 +2215,13 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   an ICON on the right of the PLUS and misses the unfolded frame + member. Extended (no new switch) to PLUS of two ICONs:
   `add r2,#~L1+4; add r2,fp`. ex 363 -> 364 of 394, none lost; bench same 139, 188 lines (unchanged); matrix check as in
   the table; checkall ALL OK (cas by vc model same 152). codgen v0, v0p, v0a rebuilt into OLDROOT.
+
+## 2026-11-24 ex shrink.sh: the temporary of an indirect call (listchar, normchar, vgotab)
+
+- Not a compiler difference: the codgen text is `ld ~L1(fp),r2 ... ld r1,0(fp); call @r1` in all six places (the only
+  ones in ex; the other indirect calls load r1 from a register). In /bin/ex the store keeps its offset (0(r15)) in all
+  six, the load becomes @r15 only at the last indirect call of each function (listchar 2nd of 2, normchar 3rd of 3,
+  vgotab 1 of 1). Rule taken into shrink.sh as read off (owner 2026-11-24), written ~L1+0(fp); no mechanism known.
+  ex 364 -> 368 of 394 (listchar, normchar, vgotab; _atoip was cut by the limit of the measurement, exact).
+- The call/calr functions do not follow: the own code is still 152 bytes shorter than the original, the gap grows only
+  in them (pragged: `call _undo`, a forward call within reach, calr in the build): the length choice of the old cas.
