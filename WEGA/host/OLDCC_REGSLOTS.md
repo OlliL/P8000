@@ -238,8 +238,9 @@ tree, with their unused locals):
 
 - The programs with an SCCS line of 11/16/83 or 11/18/83: ar, cmp, diff, du, grep, mail, rmail, make, nl, pr, putfile,
   who, cpio (all 13 that the tree builds exact by the shipped cc; the test set above), and getfile (partial: its 35
-  found frames right). Differences only in the witnesses (with their unused locals, so expected); cmp, du, grep, nl, pr,
-  putfile, who right.
+  found frames right). Differences only in the programs of the witnesses (ar, diff, mail, make, cpio: built with their
+  unused locals and make without the headers in defs; without them see the test set); cmp, du, grep, nl, pr, putfile,
+  who right.
 - Programs without such a line or of another date get words they lack: tar (4 functions), dump (5), dumpdir (4),
   restor (13), sa.install (7), sa.mkfs (6). So these were built by a cparse that clears sfldc (the shipped one); sync
   (07/24/82), newgrp (09/22/83), help/bd (11/26/82) and 20 others without a date come out right.
