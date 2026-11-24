@@ -2186,3 +2186,15 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   (the slot for every register local is too much). A scratch cparse without `q->sfldc = 0` in lookup (sym1.c; the slot test of
   oalloc reads sfldc of a register local): getmflgs right, the others not (191). Guess: a cparse of 11/83 whose symbol entries
   keep the sfldc of an earlier symbol of the same place; the rule is not found. Nothing changed in the compiler.
+
+- 2026-11-24 register slots (make, phase B, step 1 and 3): the word lies in the part of cparse (sindex: the homes of s1, s2
+  stay at 0 and 2, the auto ii moves from 4 to 6), at the declaration of a register local (oalloc). Witnesses of the same
+  kind, written so far as `int unused` / `int spare`: diff prepare, equiv, main, stone; mail isfrom, system; nl main; slibc
+  calloc (vl). No feature of the source separates the 19 functions with a word from the 58 without (name, earlier use as a
+  parameter, type, number of register locals, for-init, initializer, ++/--, leaf or not). The ld spares (slookup, pslookup,
+  index16) have no register local: another cause. Experiment (scratch copy of cparse, not in the tree): without
+  `q->sfldc = 0` in lookup, sfldc is what the freed block held before (clearst frees by the hash chains, the strings of
+  savestr are malloc'd and never freed); behind the shipped cc it gives the right words in main.c (getmflgs) but in misc.c
+  words in the functions just before the right ones (intalloc, subst, colontrans, findfl, get, rm_gots instead of
+  straightrans .. eqstr): 47 of 65 functions right. The heap of the cparse of 11/83 runs otherwise (a guess: other mallocs or
+  another size of struct symtab); not found.
