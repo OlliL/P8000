@@ -1,7 +1,8 @@
 #!/bin/sh
 # trace.sh NAME: after try.sh, the popt of the tree built with -DTRACE (the same output as /lib/popt) on the codgen output
 # of NAME; prints the retry block (from the second "inc _retry" to the next "cp _retry,#10") after each iterate and comjump,
-# and the /*CM ...*/ lines of codemove (label, refc of the label, length of the moved block ...). popt [+] in out: "+" is the
+# the /*CM ...*/ lines of codemove (label, refc of the label, length of the moved block ...) and the /*XJ L0 -> L1*/ lines of
+# xjump (the jump to L0 takes over the tail in front of L0 from the new label L1). popt [+] in out: "+" is the
 # debug switch of TRACE. The TRACE popt is built once into $GF_WORK/poptT.
 S=$(cd "$(dirname "$0")" && pwd); R=$S/../../..
 : "${WEGA:?WEGA= the WEGA root}"
@@ -18,7 +19,7 @@ cd "$W/$1" || exit 1
 timeout 300 ccvm -Ihead/oldv7 -S getfile.c || exit 1
 cp "$P/popt" ./poptT
 timeout 120 "$R/host/z8k-emu/z8k-emu" -r "$WEGA" ./poptT + getfile.s trace.s > /dev/null 2>&1
-grep '/\*CM' trace.s
+grep '/\*CM\|/\*XJ' trace.s
 python3 - <<'PY'
 import re
 sec=None; buf={}; order=[]

@@ -1023,6 +1023,9 @@ xjump(p1)
 register struct node *p1;
 {
 	register struct node *p2, *p3;
+#ifdef TRACE
+	int l0 = p1->labno;
+#endif
 
 	if ((p2 = p1->ref) == 0)
 		return;
@@ -1038,6 +1041,11 @@ register struct node *p1;
 		if (!equop(p1, p2) || p1 == p2)
 			return;
 		p3 = insertl(p2);
+#ifdef TRACE
+		/* xjump: the jump to label L0 takes over the tail in front of L0 (from the new label L1) */
+		if (debug)
+			printf("/*XJ L%d -> L%d*/\n", l0, p3->labno);
+#endif
 		p1->op = JP;
 		p1->subop = 0;
 		p1->ref = p3;
