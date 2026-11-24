@@ -1,9 +1,11 @@
 /*
  * getfile - get files from a remote system over the terminal line (see remote(1), putfile(1))
  *
- * WEGA (no source; written from /bin/getfile 1.6, 11/83). The names are guesses. The protocol: SOH ESC 'S' and the option
- * byte start a transfer; per file STX name ETX and the check byte (the names xored) are sent until ACK (or DLE: an
- * executable file); then records STX, the length (two bytes), the bytes, ETX, the check byte; ACK, NAK or CAN answer.
+ * WEGA 1.6 (11/83). The structure of main follows getfile.c 1.7 of Zilog (ZEUS 3.21, tmp/zeus321_root/usr/src/getfile.c),
+ * with the code of 1.6; the names are guesses (1.7: acknak, c, timeout, time_out, look_for_etx, aread). The protocol:
+ * SOH ESC 'S' and the option byte start a transfer; per file STX name ETX and the check byte (the names xored) are sent
+ * until ACK (or DLE: an executable file); then records STX, the length (two bytes), the bytes, ETX, the check byte; ACK,
+ * NAK or CAN answer.
  */
 
 static char sccsid[] = "@[$]getfile.c\t1.6  11/18/83 13:18:30 - 87wega3.2";
@@ -115,94 +117,78 @@ char **argv;
 		if (ack != ACK && ack != DLE) {
 			printf("%c", CAN);
 			unsucc++;
-			goto skip;
-		}
-		mode = (ack & DLE) ? 0755 : 0644;
-		if ((fd = creat(name, mode)) != -1)
-			goto next;
-		drain();
-		printf("%c", CAN);
-		printf("\n\nunable to open file on remote system\r\n");
-		scanf("%c", answer);	/* sic: the value, not its address */
-	done:
-		close(fd);
-		if (answer != EOT)
-			goto fail;
-		succ++;
-		goto check;
-	record:
-		hi = getchar();
-		lo = getchar();
-		len = (hi << 8) + lo;
-		cksum = 0;
-		for (i = 0; i < len; i++) {
-			tflag = 0;
-			alarm(20);
-			buf[i] = getchar();
-			alarm(0);
-			if (tflag)
+		} else {
+			mode = (ack & DLE) ? 0755 : 0644;
+			if ((fd = creat(name, mode)) == -1) {
+				drain();
+				printf("%c", CAN);
+				printf("\n\nunable to open file on remote system\r\n");
+				scanf("%c", answer);	/* sic: the value, not its address */
+			} else {
+				while ((answer = getchar()) != CAN && answer != ESC && answer != EOT) {
+					ack = NAK;
+					for (retry = 0; retry < 10 && ack != ACK; ) {
+						if (answer != STX)
+							drain();
+						else {
+							hi = getchar();
+							lo = getchar();
+							len = (hi << 8) + lo;
+							cksum = 0;
+							for (i = 0; i < len; i++) {
+								tflag = 0;
+								alarm(20);
+								buf[i] = getchar();
+								alarm(0);
+								if (tflag)
+									break;
+								cksum ^= buf[i];
+								if (buf[i] == '\r')
+									if (!(flags & 011))
+										buf[i] = '\n';
+							}
+							if (!tflag) {
+								getc1();
+								if (!tflag && answer != ETX)
+									drain();
+								else {
+									getc1();
+									if (!tflag && answer == cksum) {
+										if ((n = write(fd, buf, len)) != len) {
+											printf("%c", CAN);
+											printf("disk write error\n\r");
+											break;
+										} else
+											ack = ACK;
+									}
+								}
+							}
+						}
+						retry++;
+						if (ack == ACK)
+							printf("%c", ack);
+						else {
+							if (retry < 10) {
+								do {
+									printf("%c", ack);
+									getc1();
+								} while (tflag);
+							} else
+								printf("%c", CAN);
+						}
+					}
+				}
+			}
+			close(fd);
+			if (answer == EOT)
+				succ++;
+			else
+				unsucc++;
+			if (answer == ESC) {
+				scanf("%c", &answer);
 				break;
-			cksum ^= buf[i];
-			if (buf[i] == '\r')
-				if (!(flags & 011))
-					buf[i] = '\n';
+			}
 		}
-		if (tflag)
-			goto bad;
-		getc1();
-		if (tflag == 0 && answer != ETX)
-			goto drn;
-		getc1();
-		if (tflag || answer != cksum)
-			goto bad;
-		if ((n = write(fd, buf, len)) != len)
-			goto werr;
-		ack = ACK;
-	bad:
-		retry++;
-		if (ack == ACK)
-			goto ok;
-		if (retry >= 10)
-			goto can;
-		goto nak;
-	werr:
-		printf("%c", CAN);
-		printf("disk write error\n\r");
-	next:
-		answer = getchar();
-		if (answer == CAN || answer == ESC || answer == EOT)
-			goto done;
-		ack = NAK;
-		retry = 0;
-		goto test;
-	ok:
-		printf("%c", ack);
-		goto test;
-	nak:
-		do {
-			printf("%c", ack);
-			getc1();
-		} while (tflag);
-		goto test;
-	can:
-		printf("%c", CAN);
-		goto test;
-	test:
-		if (retry >= 10 || ack == ACK)
-			goto next;
-		if (answer == STX)
-			goto record;
-	drn:
-		drain();
-		goto bad;
-	fail:
-		unsucc++;
-	check:
-		if (answer != ESC)
-			goto skip;
-		scanf("%c", &answer);
-		break;
-	skip:
 		scanf("%c", answer);	/* sic: the value, not its address */
 	nextfile:
 		flags &= ~01;

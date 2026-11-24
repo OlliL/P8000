@@ -134,6 +134,7 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
 - 2026-11-24 phase B od/hd, df, time, date, dd: byte-identical (OLDCC_LOG.md of the day: v1r OLD_D67 and its own popt
   without the v1 switches, v1 codgen with OLD_D53, calloc 0_2 with int size, the (long) casts of df alloc not under SHIPPED,
   the register declarations of time and date where their frame words lie (OLD_D1), libc-v13 and two forms in dd).
+- 2026-11-24 phase B getfile: IDENTICAL (later the same day): main in the structure of getfile.c 1.7 of ZEUS.
 - 2026-11-24 phase B getfile: still partial (ccvm). The retries in the order of their strings (werr, ok, nak, can); the
   buf[i] reload is gone, only the shared printf tail of ok and CAN is kept on the wrong side (81 bytes, 0x29d..0x441;
   onalarm, drain, getc1 exact). Traced with a popt built with -DTRACE (same output as /lib/popt): codemove moves CAN behind
@@ -190,7 +191,15 @@ Next steps proposed:
 3. Build it as a switch only in a compiler version these programs need (a new one if necessary), so that the users of
    ccv1, ccv1q, ccv1r stay untouched (owner: fear of other users); then regcmp, units, acctcom, lex could follow.
 
-## Phase B getfile: open, for a later session (2026-11-24)
+## Phase B getfile: solved (2026-11-24)
+
+**Result: `/bin/getfile` byte-identical (ccvm).** Step 4 found `tmp/zeus321_root/usr/src/getfile.c` (1.7, Zilog, 11/19/84):
+the source of ZEUS, structured: `while ((c = getchar()) != CAN ...) { acknak = NAK; for (i = 0; i < RETRIES && acknak !=
+ACK;) { if (c != STX) look_for_etx(); else { ... break on a write error ... acknak = ACK; } i++; if (acknak == ACK)
+printf(ok); else { if (i < RETRIES) do ... while (timeout); else printf(CAN); } } }`. main written in this structure
+with the code of 1.6 (names, the scanf quirk) gives the original at the first build. The notes below are the way
+there (the goto forms could not reach it); the scripts in `compare/getfile/forms/` stay for the record.
+
 
 State: `/bin/getfile` partial, 81 differing bytes (0x29d..0x441), all from one difference in the retry block of main;
 everything from 0x442 on (onalarm, drain, getc1) is exact. The source is written from the code (WEGA had no source;

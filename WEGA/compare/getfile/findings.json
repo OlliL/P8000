@@ -31,12 +31,12 @@
    "file": "getfile.c",
    "orig": "0x0042",
    "size_orig": 1128,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000"
    ],
-   "note": "no source; written from the code (a goto chain in the order of the code). The order of the printf calls is that of their strings in the original: werr, ok (0x2310), nak (0x2314), CAN (0x2318). Open: the shared tail of the printf of ok and of CAN: the original keeps the call in ok (CAN jumps into it at 0x416), the build keeps it in CAN (ok jumps into it): 81 bytes at 0x29d..0x441, everything else the same. Measured with a popt built with -DTRACE: CAN is moved behind the retry test by codemove in the first iterate, before comjump, so its jump stands before that of ok; about 1200 source forms tried (13 forms of the test, every order of the test, werr, ok, nak, can and test:/drn:, with and without goto test), none below 81. The CR test is two nested ifs (one if with && reloads i). Quirk: scanf(\"%c\", answer) with the value (twice), kept."
+   "note": "The structure of getfile.c 1.7 of Zilog (ZEUS 3.21: while getchar, for retry < 10 && ack != ACK, the if/else chain ok, nak, CAN at its end); a goto chain in the order of the code could not give the original (the shared tail of the printf of ok and CAN stayed in CAN, 81 bytes). The CR test is two nested ifs (as in 1.7). Quirk: scanf(\"%c\", answer) with the value (twice; 1.7 passes &c), kept."
   },
   "onalarm": {
    "file": "getfile.c",
@@ -73,5 +73,5 @@
    "note": "name guessed"
   }
  },
- "note": "No source of getfile is known (not System III ged getfile.c, not Plexus). The corpus has only cases that end: without a partner the program waits for ETX forever (EOF on the line)."
+ "note": "The source of WEGA 1.6 is not known; main is written in the structure of getfile.c 1.7 of Zilog (tmp/zeus321_root/usr/src/getfile.c, 11/19/84), the code of 1.6 (other names, the scanf quirk). The corpus has only cases that end: without a partner the program waits for ETX forever (EOF on the line)."
 }
