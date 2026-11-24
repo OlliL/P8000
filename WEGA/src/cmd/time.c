@@ -23,8 +23,8 @@ char **argv;
 	struct tms buffer;
 	int status;
 	int i = 1;
+	register p;	/* in front of the longs: its frame place (v1) lies there */
 	long before, after;
-	register p;
 
 	if(argc <= 1)
 		exit(0);

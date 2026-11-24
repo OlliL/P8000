@@ -31,12 +31,12 @@
    "file": "date.c",
    "orig": "0x0042",
    "size_orig": 1096,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000"
    ],
-   "note": "rewritten by WEGA (from the code): -u (GMT, gmtime), the usage message, tzset and ftime first (the zone from timeb), asctime, printf for the output and the messages, close of wtmp, *--aptr in the bad format message. Open: the frame: the original leaves a word free in front of tb (tb at 0xc, the frame 0xf6 as ccv1 without it): the compiler. With -u and a format the original takes argv[0] (no argv++ for -u): kept."
+   "note": "rewritten by WEGA (from the code): -u (GMT, gmtime), the usage message, tzset and ftime first (the zone from timeb), asctime, printf for the output and the messages, close of wtmp, *--aptr in the bad format message. register char *tzn declared in front of tb (2026-11-24): under OLD_D1 of v1 a register variable has a frame place at its declaration, the free word in front of tb (tb at 0xc) of the original."
   },
   "gtime": {
    "file": "date.c",

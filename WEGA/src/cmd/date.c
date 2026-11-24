@@ -54,13 +54,13 @@ int	**argv;
 	char	c;
 	struct	tm	*localtime(), *gmtime();
 	char	*asctime();
+	register char	*tzn;	/* in front of tb: its frame place (v1) lies there */
 	struct	timeb	tb;
 	struct	tm  *tim;
 	long	tbuf;
 	int	 h, hflag, i, wf, tfailed;
 	char	 buf[200];
 	struct	tm  *t;
-	register char	*tzn;
 
 	tfailed = 0;
 	tzset();

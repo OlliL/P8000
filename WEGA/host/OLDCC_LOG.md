@@ -2285,3 +2285,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - nlist 0_1 (ccv1): frame 1602 against 1600; ccv1r gives 1600 for nlist but 4 for readby (6 in the original): the return
   temporary of v1, which the original has in readby and not in nlist (autos 1592 bytes): vl OLD_D53 exactly. OLD_D53 added
   to the v1 codgen: checkall -b, df byte-identical, no other file lost.
+
+## 2026-11-24 time and date byte-identical by the place of a register declaration (OLD_D1)
+
+- time main: the longs at 0x1a/0x1e with a free word at 0x18 in the original, ccv1 0x18/0x1c with the free word at 0x20.
+  date main: tb at 0xc in the original, 0xa with ccv1. The free word is the frame place of a register variable (OLD_D1 of
+  v1 gives every register variable one at its declaration): time `register p;` declared in front of `long before, after;`,
+  date `register char *tzn;` in front of `struct timeb tb;`: both byte-identical. Earlier 11 orders of time did not move p.
+  To be tried on the other "spare" and "unused" frame words of v1 programs (ld main, endload, slookup, pslookup, index16).

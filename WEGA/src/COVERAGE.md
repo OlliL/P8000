@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 81 | 9 | 9 | 12 |
+| [bin](#bin) | 111 | 83 | 7 | 9 | 12 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 30 | 6 | 63 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 936 | 17 | 149 | 95 |
+| **all** | 1197 | 938 | 15 | 149 | 95 |
 
 <a id="root"></a>
 ## root
@@ -63,7 +63,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/copydisk` | binary E707 | `src/cmd/copydisk` | exact | cc | libc.a |
 | `bin/cp` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
 | `bin/csh` | binary E711 | - | todo | D12 old, D1 slots | - |
-| `bin/date` | binary E707 | `src/cmd/date.c` | partial | ccv1 | libc-v6.a |
+| `bin/date` | binary E707 | `src/cmd/date.c` | exact | ccv1 | libc-v6.a |
 | `bin/dc` | binary E707 | `src/cmd/dc` | exact | ccv0 | libc-v1.a |
 | `bin/dd` | binary E707 | `src/cmd/dd.c` | partial | ccv1r | libc-v10.a |
 | `bin/df` | binary E707 | `src/cmd/df.c` | exact | ccv1 | libc-v9.a |
@@ -137,7 +137,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/tar` | binary E707 | `src/cmd/tar.c` | exact | cc | libc.a |
 | `bin/tee` | binary E707 | `src/cmd/tee.c` | exact | ccv1 | libc.a |
 | `bin/test` | binary E707 | `src/cmd/test.c` | exact | ccv1 | libc-v6.a |
-| `bin/time` | binary E707 | `src/cmd/time.c` | partial | ccv1 | libc-v4.a |
+| `bin/time` | binary E707 | `src/cmd/time.c` | exact | ccv1 | libc-v4.a |
 | `bin/touch` | binary E707 | `src/cmd/touch.c` | exact | ccv1 | libc-v6.a |
 | `bin/tr` | binary E707 | `src/cmd/tr.c` | exact | ccv1 | libc-v6.a |
 | `bin/uname` | binary E707 | `src/cmd/uname.c` | exact | ccv1 | libc-v6.a |

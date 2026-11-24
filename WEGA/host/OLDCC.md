@@ -246,6 +246,9 @@ Each class: the form in the code, the pass, the mechanism, the switch, the witne
 - v0 (`OLD_D1R`, codgen, `delay`): no temporary for the value of a return; with a delayed x++ the value stays in r2, which
   stays taken while the increment runs (`ld r2,_crslab; inc _crslab,#1`: cparse getlab).
 - v0: no frame for leaf functions, no home slots for register parameters.
+- v1 (`OLD_D1`): the frame place of a register variable lies where it is declared; a free word in front of a variable of the
+  original can be that place (time main: `register p` in front of the longs, date main: `register char *tzn` in front of
+  `tb`; both byte-identical by the order of the declarations, 2026-11-24).
 - Not reproduced: one unexplained frame word in main, endload, slookup, pslookup, index16 of ld (kept as `int spare`);
   cas `putins` 12 bytes against 14, libc nlist and length 2 bytes smaller, fseek 14 against 20.
 - Not reproduced: register slots of 1983 (make, diff, mail, nl, slibc calloc): some register locals get an unused frame

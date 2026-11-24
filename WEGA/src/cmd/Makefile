@@ -266,12 +266,12 @@ df.o: df.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c df.c
 df: crt0-df.o df.o $(LIBC_V9)
 	$(LD) -e start -o $@ crt0-df.o df.o $(LIBC_V9)
-# time: written from /bin/time (WEGA's own output); partial: the frame places of before and after in main (the compiler)
+# time: written from /bin/time (WEGA's own output); register p in front of the longs (its frame place, OLD_D1)
 time.o: time.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c time.c
 time: crt0-time.o time.o $(LIBC_V4)
 	$(LD) -e start -o $@ crt0-time.o time.o $(LIBC_V4)
-# date: System III date.c as WEGA changed it (-u, the usage message, ftime for the zone, asctime and printf for the output); partial: the frame of main (the compiler)
+# date: System III date.c as WEGA changed it (-u, the usage message, ftime for the zone, asctime and printf for the output); register tzn in front of tb (its frame place, OLD_D1)
 date.o: date.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c date.c
 date: crt0-date.o date.o $(LIBC_V6)

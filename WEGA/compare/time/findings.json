@@ -31,12 +31,12 @@
    "file": "time.c",
    "orig": "0x0042",
    "size_orig": 282,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000"
    ],
-   "note": "before and after at 0x1a/0x1e in the original (a free word at 0x18), ccv1 aligns them to 0x18/0x1c (free 0x20); 11 declaration orders tried; the compiler."
+   "note": "register p declared in front of the longs before, after (2026-11-24): under OLD_D1 of v1 a register variable has a frame place at its declaration, the free word at 0x18 of the original; at the end (as before) it lay at 0x20 and the longs at 0x18/0x1c."
   },
   "cputime": {
    "file": "time.c",
