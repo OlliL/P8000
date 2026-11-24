@@ -1,0 +1,456 @@
+# The cases of the corpus of make (compare/make/corpus.py); the format: host/recon/casefile.py (the default file is
+# makefile, the default step make). Every file of a case ends with a newline (casefile).
+# Where an expectation comes from: man = /usr/man/man1/make.1 of WEGA, src = src/cmd/make (System III with WEGA's changes,
+# compare/make/SYSIII.md). A command line is printed with a tab in front (src: prompt "\t") before it runs.
+# The times: host lines touch the files (-t YYMMDDhhmm.ss), make compares them.
+
+# ---- the description file and the times (man) ----------------------------------------------------------------------
+
+== man-target-missing
+# man: a missing file is out of date: the command runs; src: the line is printed with a tab
+x: y
+	cp y x
+-- y
+hello
+-- case
+expect: output contains 'cp y x'
+expect: file x contains 'hello'
+expect: exit 0
+
+== man-up-to-date
+# man: a target newer than its dependency is not remade; src: "`x' is up to date."
+x: y
+	cp y x
+-- y
+new
+-- x
+old
+-- case
+host: touch -t 198801010000.00 y
+host: touch -t 198801020000.00 x
+expect: output contains "`x' is up to date."
+expect: file x contains 'old'
+expect: exit 0
+
+== man-out-of-date
+# man: a dependency newer than the target: the commands run
+x: y
+	cp y x
+-- y
+new
+-- x
+old
+-- case
+host: touch -t 198801020000.00 y
+host: touch -t 198801010000.00 x
+expect: output contains 'cp y x'
+expect: file x contains 'new'
+
+== man-chain
+# man: the dependencies are made first, recursively
+c: b
+	cp b c
+b: a
+	cp a b
+-- a
+A
+-- case
+expect: output contains 'cp a b'
+expect: output contains 'cp b c'
+expect: file c contains 'A'
+
+== man-named-target
+# man: the names on the command line are made, not the first target
+first:
+	echo first
+second:
+	echo second
+-- case
+step: make second
+expect: output contains 'echo second'
+expect: exit 0
+
+== man-Makefile
+# man: without -f makefile, then Makefile
+-- Makefile
+t:
+	echo from-Makefile
+-- case
+host: rm -f makefile
+expect: output contains 'echo from-Makefile'
+
+== man-f-file
+# man: -f names the description file
+-- other.mk
+t:
+	echo other
+-- case
+step: make -f other.mk
+expect: output contains 'echo other'
+
+== man-f-stdin
+# man: -f - reads the standard input
+-- in.mk
+t:
+	echo stdin
+-- case
+host: rm -f makefile
+step: make -f -
+stdin: in.mk
+expect: output contains 'echo stdin'
+
+== man-semicolon
+# man: the text after ; on the dependency line is a command
+t: ; echo semi
+-- case
+expect: output contains 'echo semi'
+
+== man-continuation
+# man: a command continues over a line ending in backslash-newline
+t:
+	echo one \
+	two
+-- case
+expect: output contains 'one two'
+
+# ---- the options (man) -------------------------------------------------------------------------------------------
+
+== man-n
+# man: -n prints the commands without running them
+x: y
+	cp y x
+-- y
+hello
+-- case
+step: make -n
+expect: output contains 'cp y x'
+expect: missing x
+
+== man-t
+# man: -t touches the target instead of running the commands; src: "touch(x)"
+x: y
+	cp y x
+-- y
+hello
+-- case
+step: make -t
+expect: output contains 'touch(x)'
+expect: exit 0
+
+== man-q-up-to-date
+# man: -q: the exit status tells whether the target is up to date; src: exit(0)
+x: y
+	cp y x
+-- y
+-- x
+-- case
+host: touch -t 198801010000.00 y
+host: touch -t 198801020000.00 x
+step: make -q
+expect: exit 0
+
+== man-q-out-of-date
+# src: exit(-1) when a command would run
+x: y
+	cp y x
+-- y
+-- case
+step: make -q
+expect: exit 255
+expect: missing x
+
+== man-s
+# man: -s does not print the commands
+t:
+	echo quiet
+-- case
+step: make -s
+expect: output is 'quiet\n'
+
+== man-silent-entry
+# man: .SILENT: in the description file as -s
+.SILENT:
+t:
+	echo quiet
+-- case
+expect: output is 'quiet\n'
+
+== man-at
+# man: a command beginning with @ is not printed
+t:
+	@echo quiet
+-- case
+expect: output is 'quiet\n'
+
+== man-error-stops
+# man: a command with a nonzero status ends make; src: "*** Error code 3" (status>>8), fatal(0): "Stop.", exit 1
+t:
+	sh -c "exit 3"
+	echo after
+-- case
+expect: output contains '*** Error code 3'
+expect: output contains 'Stop.'
+expect: exit 1
+
+== man-i
+# man: -i ignores the errors; src: " (ignored)"
+t:
+	sh -c "exit 3"
+	echo after
+-- case
+step: make -i
+expect: output contains '*** Error code 3 (ignored)'
+expect: output contains 'echo after'
+
+== man-ignore-entry
+# man: .IGNORE: as -i
+.IGNORE:
+t:
+	sh -c "exit 3"
+	echo after
+-- case
+expect: output contains '(ignored)'
+expect: output contains 'echo after'
+
+== man-dash
+# man: a command line beginning with tab and - ignores its error
+t:
+	-sh -c "exit 3"
+	echo after
+-- case
+expect: output contains '(ignored)'
+expect: output contains 'echo after'
+
+== man-k
+# man: -k goes on with the branches that do not depend on the failed one
+all: a b
+a:
+	sh -c "exit 3"
+b:
+	echo b
+-- case
+step: make -k a b
+expect: output contains 'echo b'
+
+== man-r
+# man: -r does not use the built-in rules: a .c file is no way to x.o
+-- x.c
+int x;
+-- case
+host: rm -f makefile
+step: make -r x.o
+expect: output contains "Don't know how to make x.o"
+expect: exit 1
+
+== man-p
+# man: -p prints the macros and the target descriptions; src: the built-in rules of WEGA (wegarules.c): .c+ suffixes,
+# CHKOUT, PLZ, PASCAL
+t:
+	echo t
+-- case
+step: make -p -n
+expect: output contains 'CHKOUT = chkout'
+expect: output contains 'PLZ = plz'
+expect: output contains '.c+.o:'
+expect: output contains '$(CHKOUT) $(CHKFLAGS) $<'
+
+== src-unknown-flag
+# src: fatal1("Unknown flag argument %c")
+t:
+	echo t
+-- case
+step: make -z
+expect: output contains 'Make: Unknown flag argument z.  Stop.'
+expect: exit 1
+
+== src-f-missing
+# src: fatal1("Cannot open %s")
+-- case
+step: make -f nofile
+expect: output contains 'Make: Cannot open nofile.  Stop.'
+expect: exit 1
+
+== src-no-description
+# src: no target and no description file: "No arguments or description file"
+-- case
+host: rm -f makefile
+expect: output contains 'Make: No arguments or description file.  Stop.'
+expect: exit 1
+
+== src-dont-know
+# src: fatal1(" Don't know how to make %s")
+t: missing
+	echo t
+-- case
+expect: output contains "Make:  Don't know how to make missing.  Stop."
+expect: exit 1
+
+== src-separator
+# src: gram.y "Must be a separator on rules line %d"
+t
+	echo t
+-- case
+expect: output contains 'Must be a separator on rules line'
+expect: exit 1
+
+# ---- macros (man) ------------------------------------------------------------------------------------------------
+
+== man-macro
+# man: $(A) and ${A} are replaced by the value of A
+A = hello
+B=world
+t:
+	echo $(A) ${B}
+-- case
+expect: output contains 'echo hello world'
+
+== man-macro-command-line
+# man: a macro of the command line wins over the description file
+A = file
+t:
+	echo $(A)
+-- case
+step: make A=line
+expect: output contains 'echo line'
+
+== man-macro-env
+# man: the environment is read as macros; the description file wins over it
+A = file
+t:
+	echo $(A) $(E)
+-- case
+env: A=env
+env: E=fromenv
+expect: output contains 'echo file fromenv'
+
+== man-e
+# man: -e: the environment wins over the description file
+A = file
+t:
+	echo $(A)
+-- case
+env: A=env
+step: make -e
+expect: output contains 'echo env'
+
+== man-auto-macros
+# man: $@ the target, $? the newer dependencies, $< and $* in a suffix rule
+.SUFFIXES: .u .v
+.u.v:
+	cp $< $@
+	echo $*
+x: t.v y
+	echo $@ $?
+-- t.u
+TU
+-- y
+-- case
+expect: output contains 'cp t.u t.v'
+expect: output contains 'echo x t.v y'
+expect: file t.v contains 'TU'
+
+== man-substitution
+# man: $(A:x=y) replaces the end x of each word by y
+A = a.c b.c
+t:
+	echo $(A:.c=.o)
+-- case
+expect: output contains 'echo a.o b.o'
+
+== man-include
+# man: include FILE reads FILE in its place
+include inc.mk
+t:
+	echo $(I)
+-- inc.mk
+I = included
+-- case
+expect: output contains 'echo included'
+
+== man-double-colon
+# man: a target with :: may have several entries, each with its own commands
+t:: a
+	echo first
+t:: b
+	echo second
+-- a
+-- b
+-- case
+expect: output contains 'echo first'
+expect: output contains 'echo second'
+
+== man-default
+# man: .DEFAULT: its commands make a name without rules
+.DEFAULT:
+	echo default $@
+t: zz
+	echo t
+-- case
+expect: output contains 'echo default zz'
+
+# ---- WEGA (src) --------------------------------------------------------------------------------------------------
+
+== wega-builtin-c+
+# src: wegarules.c: x.c is made from x.c+ by $(CHKOUT) $(CHKFLAGS) $< (shown by -n)
+x.o: x.c
+	echo compile
+-- case
+host: printf '&R\n&H hugo at Tue Jan 12 11:23:45 1988\na0\nint x;\n.\n&D\n' > x.c+
+step: make -n
+expect: output contains 'chkout  x.c+'
+expect: output contains 'echo compile'
+
+== wega-get-chkout
+# src: wegarules.c .c+.c: x.c is checked out from the chkfile x.c+ by chkout
+t: x.c
+	cat x.c
+-- case
+host: printf '&R\n&H hugo at Tue Jan 12 11:23:45 1988\na0\nchecked out\n.\n&D\n' > x.c+
+expect: output contains 'chkout  x.c+'
+expect: file x.c contains 'checked out'
+expect: exit 0
+
+== wega-makefile+
+# man: makefile+ is a description file too (checked out from the chkout tree)
+-- case
+host: rm -f makefile
+host: printf '&R\n&H hugo at Tue Jan 12 11:23:45 1988\na0\nt:\n\techo from-chkout\n.\n&D\n' > makefile+
+expect: output contains 'echo from-chkout'
+
+== wega-csh
+# src: doshell(): SHELL=/bin/csh runs the commands by csh -cf (-cfe)
+t:
+	echo by csh
+-- case
+env: SHELL=/bin/csh
+expect: output contains 'echo by csh'
+
+== wega-interrupt-file
+# man: an interrupt removes the target; src: "***  x removed."
+x:
+	touch x ; sleep 30
+-- case
+step: make
+signal: INT after 5
+expect: output contains 'x remove'
+expect: missing x
+
+== wega-interrupt-precious
+# man: a target depending on .PRECIOUS is not removed
+.PRECIOUS: x
+x:
+	touch x ; sleep 30
+-- case
+step: make
+signal: INT after 5
+expect: file x contains ''
+
+== wega-interrupt-directory
+# src: intrupt() removes only a regular file (isreg): a directory stays; exit(2)
+d:
+	mkdir d ; echo in d > d/f ; sleep 30
+-- case
+step: make
+signal: INT after 5
+expect: file d/f contains 'in d'
+expect: exit 2

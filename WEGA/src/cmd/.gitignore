@@ -94,6 +94,8 @@
 /bc/bc
 /bc/bc.c
 /dc/dc
+/make/make
+/make/gram.c
 /doscopy/*/doscat
 /doscopy/*/doscp
 /doscopy/*/dosdir

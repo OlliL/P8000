@@ -53,7 +53,7 @@ stamp() {
 }
 
 # not byte-identical yet: reported, not counted (compare/NAME/findings.json)
-OPEN='bin/od bin/hd bin/df bin/time bin/date bin/dd bin/regcmp bin/getfile bin/uux bin/gpasswd'
+OPEN='bin/make bin/od bin/hd bin/df bin/time bin/date bin/dd bin/regcmp bin/getfile bin/uux bin/gpasswd'
 
 # the snapshot, made once: the files known to git (or the tree of the git commit CHECK_PATCH), the patch CHECK_PATCH applied
 snapshot() {

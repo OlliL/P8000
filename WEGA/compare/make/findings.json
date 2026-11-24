@@ -1,0 +1,1035 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/make",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "main.c",
+   "orig": "0x0042",
+   "size_orig": 870,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "intrupt": {
+   "file": "main.c",
+   "orig": "0x03a8",
+   "size_orig": 148,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "isprecious": {
+   "file": "main.c",
+   "orig": "0x043c",
+   "size_orig": 104,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "isreg": {
+   "file": "main.c",
+   "orig": "0x04a4",
+   "size_orig": 46,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "WEGA, not in System III: intrupt removes only a regular file; the name is a guess"
+  },
+  "enbint": {
+   "file": "main.c",
+   "orig": "0x04d2",
+   "size_orig": 40,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x2dfe",
+    "0x2e96",
+    "0x2ef4"
+   ]
+  },
+  "rdmakecomm": {
+   "file": "main.c",
+   "orig": "0x04fa",
+   "size_orig": 2,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "rddescf": {
+   "file": "main.c",
+   "orig": "0x04fc",
+   "size_orig": 126,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "rdd1": {
+   "file": "main.c",
+   "orig": "0x057a",
+   "size_orig": 52,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x04fc"
+   ]
+  },
+  "printdesc": {
+   "file": "main.c",
+   "orig": "0x05ae",
+   "size_orig": 314,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "prname": {
+   "file": "main.c",
+   "orig": "0x06e8",
+   "size_orig": 226,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05ae"
+   ]
+  },
+  "setflags": {
+   "file": "main.c",
+   "orig": "0x07ca",
+   "size_orig": 182,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "optswitch": {
+   "file": "main.c",
+   "orig": "0x0880",
+   "size_orig": 136,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x07ca",
+    "0x0908"
+   ]
+  },
+  "getmflgs": {
+   "file": "main.c",
+   "orig": "0x0908",
+   "size_orig": 106,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "setmflgs": {
+   "file": "main.c",
+   "orig": "0x0972",
+   "size_orig": 60,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "doname": {
+   "file": "doname.c",
+   "orig": "0x09ae",
+   "size_orig": 2056,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x09ae"
+   ]
+  },
+  "docom": {
+   "file": "doname.c",
+   "orig": "0x11b6",
+   "size_orig": 272,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ]
+  },
+  "docom1": {
+   "file": "doname.c",
+   "orig": "0x12c6",
+   "size_orig": 242,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x11b6"
+   ]
+  },
+  "expand": {
+   "file": "doname.c",
+   "orig": "0x13b8",
+   "size_orig": 124,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ]
+  },
+  "dbreplace": {
+   "file": "doname.c",
+   "orig": "0x1434",
+   "size_orig": 94,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x13b8"
+   ]
+  },
+  "ballbat": {
+   "file": "doname.c",
+   "orig": "0x1492",
+   "size_orig": 208,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ]
+  },
+  "blprt": {
+   "file": "doname.c",
+   "orig": "0x1562",
+   "size_orig": 34,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ]
+  },
+  "hashloc": {
+   "file": "misc.c",
+   "orig": "0x1584",
+   "size_orig": 124,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1600",
+    "0x1618"
+   ]
+  },
+  "srchname": {
+   "file": "misc.c",
+   "orig": "0x1600",
+   "size_orig": 24,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x09ae",
+    "0x26c0",
+    "0x3b4c"
+   ]
+  },
+  "makename": {
+   "file": "misc.c",
+   "orig": "0x1618",
+   "size_orig": 116,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x26c0",
+    "0x3b4c"
+   ]
+  },
+  "copys": {
+   "file": "misc.c",
+   "orig": "0x168c",
+   "size_orig": 174,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae",
+    "0x1cba",
+    "0x237c",
+    "0x262c",
+    "0x26c0",
+    "0x2fd4",
+    "0x3110",
+    "0x3b4c"
+   ]
+  },
+  "concat": {
+   "file": "misc.c",
+   "orig": "0x173a",
+   "size_orig": 60,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae",
+    "0x26c0"
+   ]
+  },
+  "suffix": {
+   "file": "misc.c",
+   "orig": "0x1776",
+   "size_orig": 118,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ]
+  },
+  "intalloc": {
+   "file": "misc.c",
+   "orig": "0x17ec",
+   "size_orig": 40,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1618",
+    "0x1cba",
+    "0x1da4",
+    "0x237c",
+    "0x26c0",
+    "0x3110",
+    "0x3b4c"
+   ]
+  },
+  "subst": {
+   "file": "misc.c",
+   "orig": "0x1814",
+   "size_orig": 266,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x11b6",
+    "0x1b32",
+    "0x31d6",
+    "0x3b4c"
+   ]
+  },
+  "colontrans": {
+   "file": "misc.c",
+   "orig": "0x191e",
+   "size_orig": 312,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1814"
+   ]
+  },
+  "dftrans": {
+   "file": "misc.c",
+   "orig": "0x1a56",
+   "size_orig": 220,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1814",
+    "0x191e"
+   ]
+  },
+  "straightrans": {
+   "file": "misc.c",
+   "orig": "0x1b32",
+   "size_orig": 124,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x1814"
+   ],
+   "note": "the frame of the original is 6 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "copstr": {
+   "file": "misc.c",
+   "orig": "0x1bae",
+   "size_orig": 32,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae",
+    "0x1492",
+    "0x191e",
+    "0x1a56",
+    "0x1b32",
+    "0x2088",
+    "0x237c",
+    "0x2a76",
+    "0x31d6"
+   ]
+  },
+  "setvar": {
+   "file": "misc.c",
+   "orig": "0x1bce",
+   "size_orig": 182,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x0908",
+    "0x09ae"
+   ],
+   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "eqsign": {
+   "file": "misc.c",
+   "orig": "0x1c84",
+   "size_orig": 54,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x2186"
+   ],
+   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "varptr": {
+   "file": "misc.c",
+   "orig": "0x1cba",
+   "size_orig": 58,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x04fc",
+    "0x0908",
+    "0x11b6",
+    "0x1492",
+    "0x1bce",
+    "0x1eb8",
+    "0x228e",
+    "0x237c",
+    "0x2dfe"
+   ]
+  },
+  "srchvar": {
+   "file": "misc.c",
+   "orig": "0x1cf4",
+   "size_orig": 62,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x191e",
+    "0x1a56",
+    "0x1b32",
+    "0x1bce",
+    "0x1cba"
+   ]
+  },
+  "fatal1": {
+   "file": "misc.c",
+   "orig": "0x1d32",
+   "size_orig": 34,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x0880",
+    "0x09ae",
+    "0x2bfe",
+    "0x2cd0",
+    "0x2ef4",
+    "0x3540"
+   ]
+  },
+  "fatal": {
+   "file": "misc.c",
+   "orig": "0x1d54",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x057a",
+    "0x11b6",
+    "0x1618",
+    "0x168c",
+    "0x17ec",
+    "0x1814",
+    "0x1d32",
+    "0x1d7e",
+    "0x2088",
+    "0x26c0",
+    "0x2dfe",
+    "0x2e96",
+    "0x2fd4",
+    "0x31d6"
+   ]
+  },
+  "yyerror": {
+   "file": "misc.c",
+   "orig": "0x1d7e",
+   "size_orig": 38,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x35de"
+   ]
+  },
+  "appendq": {
+   "file": "misc.c",
+   "orig": "0x1da4",
+   "size_orig": 42,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ],
+   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "mkqlist": {
+   "file": "misc.c",
+   "orig": "0x1dce",
+   "size_orig": 96,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ],
+   "note": "the frame of the original is 4 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "any": {
+   "file": "misc.c",
+   "orig": "0x1e2e",
+   "size_orig": 44,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x07ca",
+    "0x09ae",
+    "0x13b8",
+    "0x1c84",
+    "0x237c",
+    "0x262c",
+    "0x3b4c"
+   ]
+  },
+  "sindex": {
+   "file": "misc.c",
+   "orig": "0x1e5a",
+   "size_orig": 94,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0908",
+    "0x11b6",
+    "0x191e",
+    "0x31d6"
+   ],
+   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "findfl": {
+   "file": "misc.c",
+   "orig": "0x1eb8",
+   "size_orig": 94,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x262c"
+   ]
+  },
+  "execat": {
+   "file": "misc.c",
+   "orig": "0x1f16",
+   "size_orig": 78,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1eb8",
+    "0x228e"
+   ]
+  },
+  "trysccs": {
+   "file": "misc.c",
+   "orig": "0x1f64",
+   "size_orig": 88,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae",
+    "0x237c"
+   ]
+  },
+  "is_sccs": {
+   "file": "misc.c",
+   "orig": "0x1fbc",
+   "size_orig": 58,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x09ae",
+    "0x237c"
+   ],
+   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "trychk": {
+   "file": "misc.c",
+   "orig": "0x1ff6",
+   "size_orig": 28,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x237c"
+   ],
+   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\"; WEGA, not in System III (the chkout tree, file+): the name is a guess"
+  },
+  "is_chk": {
+   "file": "misc.c",
+   "orig": "0x2012",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x237c"
+   ],
+   "note": "WEGA, not in System III (the chkout tree, file+): the name is a guess"
+  },
+  "addstars": {
+   "file": "misc.c",
+   "orig": "0x203c",
+   "size_orig": 76,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ],
+   "note": "the frame of the original is 4 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "setenv": {
+   "file": "misc.c",
+   "orig": "0x2088",
+   "size_orig": 254,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x2dfe",
+    "0x2ef4"
+   ],
+   "note": "the frame of the original is 4 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "readenv": {
+   "file": "misc.c",
+   "orig": "0x2186",
+   "size_orig": 62,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "sccstrip": {
+   "file": "misc.c",
+   "orig": "0x21c4",
+   "size_orig": 96,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "strshift": {
+   "file": "misc.c",
+   "orig": "0x2224",
+   "size_orig": 90,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "execlp": {
+   "file": "misc.c",
+   "orig": "0x227e",
+   "size_orig": 16,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "execvp": {
+   "file": "misc.c",
+   "orig": "0x228e",
+   "size_orig": 238,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2ef4"
+   ]
+  },
+  "get": {
+   "file": "misc.c",
+   "orig": "0x237c",
+   "size_orig": 524,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x04fc",
+    "0x09ae",
+    "0x3540"
+   ],
+   "note": "WEGA: a file+ of the chkout tree first ($(CHKOUT) $(CHKFLAGS), -v for RELEASE), the sccs file only else; no IS_OFF(GET) test"
+  },
+  "rm_gots": {
+   "file": "misc.c",
+   "orig": "0x2588",
+   "size_orig": 60,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x260c"
+   ]
+  },
+  "callyacc": {
+   "file": "misc.c",
+   "orig": "0x25c4",
+   "size_orig": 72,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1c84"
+   ]
+  },
+  "exit": {
+   "file": "misc.c",
+   "orig": "0x260c",
+   "size_orig": 32,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x09ae",
+    "0x1d54",
+    "0x508e"
+   ]
+  },
+  "exists": {
+   "file": "files.c",
+   "orig": "0x262c",
+   "size_orig": 130,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ]
+  },
+  "prestime": {
+   "file": "files.c",
+   "orig": "0x26ae",
+   "size_orig": 18,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ]
+  },
+  "srchdir": {
+   "file": "files.c",
+   "orig": "0x26c0",
+   "size_orig": 690,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae",
+    "0x13b8"
+   ]
+  },
+  "amatch": {
+   "file": "files.c",
+   "orig": "0x2972",
+   "size_orig": 210,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1814",
+    "0x191e",
+    "0x1bce",
+    "0x26c0",
+    "0x2972"
+   ]
+  },
+  "umatch": {
+   "file": "files.c",
+   "orig": "0x2a44",
+   "size_orig": 50,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "lookarch": {
+   "file": "files.c",
+   "orig": "0x2a76",
+   "size_orig": 382,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x262c"
+   ],
+   "note": "WEGA: the entry point of an object archive by symscan (libc); \"if(!eqstr(..)) continue;\" and a goto loop around symscan: with a back jump to the loop head popt turns the loop (D7)"
+  },
+  "clarch": {
+   "file": "files.c",
+   "orig": "0x2bf4",
+   "size_orig": 10,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2a76"
+   ]
+  },
+  "openarch": {
+   "file": "files.c",
+   "orig": "0x2bfe",
+   "size_orig": 124,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2a76"
+   ]
+  },
+  "getarch": {
+   "file": "files.c",
+   "orig": "0x2c7a",
+   "size_orig": 86,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2a76"
+   ]
+  },
+  "getobj": {
+   "file": "files.c",
+   "orig": "0x2cd0",
+   "size_orig": 100,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2a76"
+   ]
+  },
+  "eqstr": {
+   "file": "files.c",
+   "orig": "0x2d34",
+   "size_orig": 60,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x2a76"
+   ],
+   "note": "the frame of the original is 2 bytes larger (unused words; the code is the same): cluster \"register slots\""
+  },
+  "dosys": {
+   "file": "dosys.c",
+   "orig": "0x2d70",
+   "size_orig": 98,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x12c6"
+   ]
+  },
+  "metas": {
+   "file": "dosys.c",
+   "orig": "0x2dd2",
+   "size_orig": 44,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2d70"
+   ]
+  },
+  "doshell": {
+   "file": "dosys.c",
+   "orig": "0x2dfe",
+   "size_orig": 152,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2d70"
+   ],
+   "note": "WEGA: csh gets -cf / -cfe"
+  },
+  "await": {
+   "file": "dosys.c",
+   "orig": "0x2e96",
+   "size_orig": 58,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2dfe",
+    "0x2ef4"
+   ]
+  },
+  "doclose": {
+   "file": "dosys.c",
+   "orig": "0x2ed0",
+   "size_orig": 36,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2dfe",
+    "0x2ef4"
+   ]
+  },
+  "doexec": {
+   "file": "dosys.c",
+   "orig": "0x2ef4",
+   "size_orig": 156,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2d70"
+   ]
+  },
+  "touch": {
+   "file": "dosys.c",
+   "orig": "0x2f90",
+   "size_orig": 68,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x11b6"
+   ]
+  },
+  "yylex": {
+   "file": "gram.y",
+   "orig": "0x2fd4",
+   "size_orig": 316,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x35de"
+   ]
+  },
+  "retsh": {
+   "file": "gram.y",
+   "orig": "0x3110",
+   "size_orig": 198,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2fd4",
+    "0x31d6"
+   ]
+  },
+  "nextlin": {
+   "file": "gram.y",
+   "orig": "0x31d6",
+   "size_orig": 738,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2fd4"
+   ]
+  },
+  "GETC": {
+   "file": "gram.y",
+   "orig": "0x34b8",
+   "size_orig": 136,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x3110",
+    "0x31d6"
+   ]
+  },
+  "fstack": {
+   "file": "gram.y",
+   "orig": "0x3540",
+   "size_orig": 158,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x31d6"
+   ]
+  },
+  "yyparse": {
+   "file": "gram.y",
+   "orig": "0x35de",
+   "size_orig": 1306,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x057a",
+    "0x25c4"
+   ]
+  },
+  "dynamicdep": {
+   "file": "dyndep.c",
+   "orig": "0x3af8",
+   "size_orig": 84,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ae"
+   ]
+  },
+  "runtime": {
+   "file": "dyndep.c",
+   "orig": "0x3b4c",
+   "size_orig": 262,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x3af8"
+   ]
+  },
+  "prtmem": {
+   "file": "prtmem.c",
+   "orig": "0x3c52",
+   "size_orig": 2,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x260c"
+   ]
+  }
+ },
+ "note": "System III make (usr/src/cmd/make) with the changes of WEGA (SYSIII.md), the shipped cc, /lib/libc.a, separate I and D. Open: cluster \"register slots\": in 13 functions of main.c, misc.c and files.c the frame of the original has 1 to 3 unused words more (2 to 6 bytes), all else is the same. The count fits no compiler: the shipped cparse gives a register local no frame word, v1 (OLD_D1) one to each (ccv1 cparse with the shipped codgen and popt: 177 of 211 functions against 197). A guess: the cparse of make (11/83) kept sfldc of a reused symbol entry (a cparse without \"q->sfldc = 0\" in lookup fixes getmflgs, not the others). Phase B."
+}

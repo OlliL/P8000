@@ -2178,3 +2178,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   an ICON and its MINUS case (WEGA: x-x is 0) asks treeeq, which compares an ICON by lval and rval only. First attempt in
   optpre on two ICONs: no effect (optpre runs in front of optim, the operands are still U&NAME). With the U&NAME test:
   dosub exact (also its loop layout), ex 362 of 394 (361), no function lost. matrix check: as in the table.
+
+- 2026-11-24 make (phase A): the shipped cc gives everything but the frames of 13 functions (getmflgs, straightrans, setvar,
+  eqsign, appendq, mkqlist, sindex, is_sccs, trychk, addstars, setenv, readenv, eqstr): the original has 2, 4 or 6 bytes more,
+  as many words as some (not all) of the register locals; varptr, copstr, is_chk get none. Measured: ccv1 for the whole program loses more functions than it wins,
+  ccv1r, ccv1q worse; the v1 cparse (OLD_D1) with the shipped codgen and popt (a scratch root): 177 of 211 functions against 197
+  (the slot for every register local is too much). A scratch cparse without `q->sfldc = 0` in lookup (sym1.c; the slot test of
+  oalloc reads sfldc of a register local): getmflgs right, the others not (191). Guess: a cparse of 11/83 whose symbol entries
+  keep the sfldc of an earlier symbol of the same place; the rule is not found. Nothing changed in the compiler.

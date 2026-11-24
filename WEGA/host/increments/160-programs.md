@@ -257,3 +257,8 @@ PLZ programs and `as`: 170.
 - 2026-11-23 chkout exact: readchk and getat by OLD_D2Q/OLD_D2QI in v0, putline by `if (!eflag) keyword else wfprintf`,
   wfprintf by OLD_D2LP (codgen v0), setnames by OLD_D19K (cparse v0); one witness each (owner: as OLD_D3AC). Installed
   (751); corpus compare/chkout (16 cases). corpusrun runs with umask 022 itself (the modes of the starting files).
+
+- 2026-11-24 make (phase A, partial): System III make with WEGA's changes (wegarules.c from the 155 strings, the chkout tree
+  in get(), goodmagic and symscan in files.c, isreg in intrupt, csh -cf in doshell, _cleanup in exit), shipped cc, /lib/libc.a,
+  -i. Size, data and every function but 13 frames identical (cluster "register slots", phase B; OLDCC.md D1). In src/cmd
+  (SUBDIRS), OPEN of checkall; corpus compare/make (45 cases, identical).

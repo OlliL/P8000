@@ -41,7 +41,7 @@ SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmo
 
 FILES=		getud putud bcmp bd dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o  bcmp.o  bd.o
-SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
+SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc make ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 

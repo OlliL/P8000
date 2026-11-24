@@ -247,6 +247,9 @@ Each class: the form in the code, the pass, the mechanism, the switch, the witne
 - v0: no frame for leaf functions, no home slots for register parameters.
 - Not reproduced: one unexplained frame word in main, endload, slookup, pslookup, index16 of ld (kept as `int spare`);
   cas `putins` 12 bytes against 14, libc nlist and length 2 bytes smaller, fseek 14 against 20.
+- Not reproduced: make (11/83, shipped otherwise): 13 functions of main.c, misc.c, files.c have 1 to 3 unused frame words more
+  (the code is the same): neither the shipped rule (no word for a register local) nor v1 (`OLD_D1`, one word for each); open
+  (`compare/make/findings.json`, cluster "register slots").
 
 ### D2 Scratch registers
 
@@ -812,6 +815,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | ex | ex 2.13 (own code) | v0a |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
 | mkstr | mkstr.c, libc calloc | v0 |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | chkout | chkout.c, common.c (07/23/82) | v0 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
+| make | main.c, misc.c, files.c (11/18/83) | shipped | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | kernel | sig.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |
 | kernel | sys2.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |
 | kernel | sys3.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |

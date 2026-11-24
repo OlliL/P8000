@@ -37,6 +37,7 @@ getud
 sld
 mfs
 dc
+make
 cpp
 dosmkdir
 ranlib
