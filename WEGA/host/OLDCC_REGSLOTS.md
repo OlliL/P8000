@@ -93,6 +93,33 @@ wtmpfix, fwtmp (01/83) differ in their own functions and in the libc too: an old
 have smaller frames: v0. Not covered: the todo programs without a source (sh 08/83, csh, adb, ps, ...); their D1 verdict
 in OLDCC_DATES.md counts unused words but cannot tell these words from the shipped ones.
 
+## The heap experiment (2026-11-24)
+
+A test set of 15 programs by `cc -O -c` per file, the frames of the found functions against the originals (the masked
+compare above): the witnesses make (without its unused locals), diff, mail, nl (without theirs), comm, csplit, tsort, uniq
+and the counter-programs ar, cmp, du, grep, pr, putfile, who, cpio. The shipped cc: exactly the 27 witness functions differ.
+A scratch cparse (the shipped source, not in the tree) behind the shipped `/bin/cc`, without `q->sfldc = 0` in `lookup`:
+
+- No knob: 30 functions differ. Right as a whole: diff (4 witnesses), nl, comm, tsort, uniq, mail isfrom, csplit re_arg,
+  make getmflgs, with all their functions without a word. Wrong: misc.c of make (intalloc, subst, colontrans, findfl, get,
+  rm_gots get words, straightrans .. eqstr none), make dbreplace, eqstr, yyparse, mail system and csplit fatal one word too
+  many, ar (rcmd, notfound, longt, select) and cpio (gmatch, makdir, missdir) words they do not have.
+- The mechanism, read from a log of the scratch cparse (write(2), no stdio): `clearst` frees the entries of a function;
+  the V7 malloc starts its search at the block freed last, so a new entry takes the freed blocks in front of the rover and
+  fresh memory behind them. A parameter leaves sfldc 1 in its block; a register local that gets such a block gets a word,
+  and keeps the 1 for the next one. make misc.c: the blocks of concat's parameters a, b, c (sfldc 1) go to subst (vbp),
+  colontrans (i, ps1) and intalloc (p) in the experiment; the original gives straightrans its three words (vbp, pchain, pn)
+  instead: there these three blocks were taken two functions later.
+- Knobs that change nothing for the better (best 29 or 30): the size of an entry (+2 .. +8; -2 breaks cparse), extra bytes
+  of the string blocks of savestr, a malloc at the start, the size of the hash table (1 .. 64), the order of the buckets
+  in clearst, the malloc of the other libc versions (libc-v12 = the malloc 3.3 of /lib/libc.a, v8, v3, v4: the same reuse),
+  an extra block per clearst (freed last: 43, freed first: 30, kept: 40), entries not freed (registers 35, autos 33, locals
+  39; parameters: 27, but then no sfldc 1 is left at all, the shipped result).
+
+So the stale sfldc explains whole programs exactly, while the sequence of allocations and frees of the cparse of 11/83 is
+not the one of the shipped source: something else allocates or frees between the functions (concat .. straightrans of
+make). Not found which.
+
 ## Open, next steps
 
 - The heap of the old cparse: what else is malloc'd (the strings of `savestr`, the `fcon` blocks of code1.c, the stdio
