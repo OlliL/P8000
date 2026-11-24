@@ -249,6 +249,19 @@ Session 2026-11-24 (evening), measured with trace.sh and an xjump trace (a print
   ok's call) behind it. Left: the block bad+can stays behind drain (0x432) instead of behind `ack = ACK` (0x3ae), so
   163 bytes. Bad stands behind `call drain` (no JP), so codemove never moves it to the `goto bad` of record; the
   original has `calr drain; jr bad`. Open: a form in which bad+can goes to record only after the first comjump.
+- The wide search (`gen3.py`: the blocks also between done and `record:`, record falling into H or `goto bad`, retry
+  tests a b j k c d l, all subsets of the jumps to the next block; 1697 forms): none below 81. Best with the call in ok:
+  104 (b_RWONCHT_0: bad behind `goto bad` of record is moved in iterate 1, before the skip rule has made `jr eq,ok`
+  of the retry test; the block ends at the raw `jpr ok`, so ok is pulled into the retry test too).
+- Loop forms (`while (retry < 10 && ack != ACK) { if (answer == STX) goto record; drain(); bad: ... }`, also `for (;;)`,
+  ok/nak before or inside the loop, `continue` or `goto test`): 152..160. With ok/nak in front of the loop (falling
+  into it) everything from werr to test is laid out as in the original and the call stays in ok; only bad+can stands
+  behind drain instead of behind `ack = ACK` (the same state as W O N T H C).
+- So the open point is one: bad must be moved to `ack = ACK` of record after the first comjump (round 2), or before it
+  but only after the skip rule has made the conditional jumps of the retry test. In round 1 bad must not stand behind a
+  jump (else it moves in iterate 1 and takes can along or splits at `jpr ok`), in round 2 it must. Changes between the
+  rounds come only from comjump (tails), jumpsw (`CJP a; JP b` swapped) and rmove; none found that puts a jump in front
+  of bad.
 
 Not tried yet (next steps, each to be checked with trace.sh: when does can move, which JP is first at comjump):
 1. A loop around reception and retry instead of the labels: `for (;;)` / `while (...)` with `continue` and `break` in place
@@ -268,6 +281,7 @@ directory `$GF_WORK`, default `tmp/tmp/getfile-forms` beside WEGA):
 - `trace.sh NAME`: after try.sh, the popt of the tree built with `-DTRACE` (once; its output without `+` is the same as
   /lib/popt, checked) on the codgen output of NAME; prints the codemove lines (`/*CM label refc tlen ...*/`) and the retry
   block after each iterate and comjump.
+- `gen3.py DIR [GETFILE.C] [TESTS]`: the wide search (whole getfile.c files, the blocks also in front of `record:`).
 - `gen.py DIR`: writes the bodies of the order search above (227 forms) and DIR/list; run them with
   `cat DIR/list | xargs -P 6 -I{} sh try.sh DIR/{} > res.txt` (about 30 s), then `sort -t' ' -k4 -n res.txt | head`.
 - The Zeus check: in a work directory, `z8k-emu -r <zeus321_root> /lib/popt getfile.s out.s` on the output of
