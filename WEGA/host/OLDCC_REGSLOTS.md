@@ -166,7 +166,9 @@ the wrong ones makes the old cparse allocate or free otherwise (not yet seen wha
 cparse from `cparse_x.diff`, a root with it behind the shipped cc, the test set, the logs); `fscan.py` (the masked frame
 compare of a build against the original), `score.sh` (real builds of the test set), `v7sim.py` (the V7 malloc),
 `replay.py` (a log through the malloc with the sfldc model), `hyp.py` (the score of the test set, the expected words),
-`hyps1.py`, `hyps2.py` (the hypotheses above), `probe.py`, `greedy.py` (single changes of a stream).
+`hyps1.py`, `hyps2.py` (the hypotheses above), `probe.py`, `greedy.py` (single changes of a stream), `features.py` (the source features of the register locals of
+make, diff, mail, nl, gpasswd against their words), `witnesses.sh` (the search among the sys3 programs). The work directory
+stays; `saved/` there holds the outputs of the first runs.
 
 ## Open, next steps
 
