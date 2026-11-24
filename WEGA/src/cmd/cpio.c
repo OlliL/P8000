@@ -837,7 +837,6 @@ register char *s, *p;
 {
 	register int c;
 	register cc, ok, lc, scc;
-	int i, j, k;
 
 	scc = *s;
 	lc = 077777;
@@ -968,7 +967,6 @@ register char *namep;
 {
 	register char *np;
 	register ct = 0;
-	int i;
 
 	if(!Dir)
 		return 0;

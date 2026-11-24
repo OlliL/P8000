@@ -1,5 +1,5 @@
 """Corpus of du (host/recon/corpusrun.py): the original /bin/du against the build (src/cmd/du, du.c of System III with the
-WEGA sccsid, the shipped cc and libc.a), on the cases of compare/du/tests.txt (host/recon/casefile.py): -a, -r, -s,
+WEGA sccsid, ccvm and libc.a), on the cases of compare/du/tests.txt (host/recon/casefile.py): -a, -r, -s,
 files and trees, links (counted once), the messages of the source (the sizes of directories are those the emulator
 gives)."""
 import os

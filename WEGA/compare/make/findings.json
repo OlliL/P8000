@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "cc",
+ "compiler": "ccvm",
  "binary": "/bin/make",
  "functions": {
   "start": {
@@ -162,8 +162,7 @@
    "callers": [
     "0x0000",
     "0x0042"
-   ],
-   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "setmflgs": {
    "file": "main.c",
@@ -358,8 +357,7 @@
    "kind": "proven",
    "callers": [
     "0x1814"
-   ],
-   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "dftrans": {
    "file": "misc.c",
@@ -380,8 +378,7 @@
    "kind": "proven",
    "callers": [
     "0x1814"
-   ],
-   "note": "odd form: int unused[3] (unused: 3 frame words of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "copstr": {
    "file": "misc.c",
@@ -412,8 +409,7 @@
     "0x0042",
     "0x0908",
     "0x09ae"
-   ],
-   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "eqsign": {
    "file": "misc.c",
@@ -425,8 +421,7 @@
     "0x0000",
     "0x0042",
     "0x2186"
-   ],
-   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "varptr": {
    "file": "misc.c",
@@ -522,8 +517,7 @@
    "kind": "proven",
    "callers": [
     "0x09ae"
-   ],
-   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "mkqlist": {
    "file": "misc.c",
@@ -533,8 +527,7 @@
    "kind": "proven",
    "callers": [
     "0x09ae"
-   ],
-   "note": "odd form: int unused[2] (unused: 2 frame words of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "any": {
    "file": "misc.c",
@@ -565,8 +558,7 @@
     "0x11b6",
     "0x191e",
     "0x31d6"
-   ],
-   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "findfl": {
    "file": "misc.c",
@@ -609,8 +601,7 @@
    "callers": [
     "0x09ae",
     "0x237c"
-   ],
-   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "trychk": {
    "file": "misc.c",
@@ -621,7 +612,7 @@
    "callers": [
     "0x237c"
    ],
-   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md); WEGA, not in System III (the chkout tree, file+): the name is a guess"
+   "note": "WEGA, not in System III (the chkout tree, file+): the name is a guess"
   },
   "is_chk": {
    "file": "misc.c",
@@ -642,8 +633,7 @@
    "kind": "proven",
    "callers": [
     "0x09ae"
-   ],
-   "note": "odd form: int unused[2] (unused: 2 frame words of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "setenv": {
    "file": "misc.c",
@@ -654,8 +644,7 @@
    "callers": [
     "0x2dfe",
     "0x2ef4"
-   ],
-   "note": "odd form: int unused[2] (unused: 2 frame words of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "readenv": {
    "file": "misc.c",
@@ -666,8 +655,7 @@
    "callers": [
     "0x0000",
     "0x0042"
-   ],
-   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "sccstrip": {
    "file": "misc.c",
@@ -863,7 +851,7 @@
    "callers": [
     "0x2a76"
    ],
-   "note": "odd form: int unused (unused: 1 frame word of the original; register slots, host/OLDCC_REGSLOTS.md)"
+   "note": "odd form: int unused (1 frame word of the original that ccvm does not give: files.c would need 2 permanent symbol entries fewer in front of eqstr, which ones is not in the bytes; host/OLDCC_REGSLOTS.md)"
   },
   "dosys": {
    "file": "dosys.c",
@@ -999,8 +987,7 @@
    "callers": [
     "0x057a",
     "0x25c4"
-   ],
-   "note": "odd form: the unused frame word of the original is put into yyparse of yaccpar by sed in the Makefile (register slots, host/OLDCC_REGSLOTS.md)"
+   ]
   },
   "dynamicdep": {
    "file": "dyndep.c",
@@ -1033,5 +1020,5 @@
    ]
   }
  },
- "note": "System III make (usr/src/cmd/make) with the changes of WEGA (SYSIII.md), the shipped cc, /lib/libc.a, separate I and D. Byte-identical with /bin/make. The frames of 14 functions and of yyparse have unused words of the original (int unused; for yyparse sed in the Makefile): the register slots of the compiler of 11/83, host/OLDCC_REGSLOTS.md."
+ "note": "System III make (usr/src/cmd/make) with the changes of WEGA (SYSIII.md), ccvm (the cparse of 11/18/83, OLD_D1S), /lib/libc.a, separate I and D. Byte-identical with /bin/make. defs includes pwd.h, ar.h, s.out.h and nlist.h (the headers of files.c): their 63 symbol entries give the frame words of the register locals by OLD_D1S (host/OLDCC_REGSLOTS.md); files.c eqstr keeps an int unused."
 }

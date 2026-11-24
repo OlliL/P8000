@@ -115,6 +115,13 @@ char	*gopt		= "/lib/gopt";
 char	*codgen		= "/lib/vk/scodgen";
 char	*popt		= "/lib/vk/spopt";
 #else
+#ifdef OLD_VM
+/* ccvm (nonsegvm): the shipped passes with the cparse of the programs of 11/18/83 in /lib/vm (OLD_D1S) */
+char	*cparse		= "/lib/vm/cparse";
+char	*gopt		= "/lib/gopt";
+char	*codgen		= "/lib/codgen";
+char	*popt		= "/lib/popt";
+#else
 #ifdef OLD_VL
 /* ccvl, sccvl (nonsegvl, segvl): the shipped passes with the code generator of libc.a and slibc.a in /lib/vl
    (and the scparse of the time: the shipped one with OLD_D25) */
@@ -127,6 +134,7 @@ char	*cparse		= SEG("/lib/cparse", "/lib/scparse");
 char	*gopt		= "/lib/gopt";
 char	*codgen		= SEG("/lib/codgen", "/lib/scodgen");
 char	*popt		= SEG("/lib/popt", "/lib/spopt");
+#endif
 #endif
 #endif
 #endif

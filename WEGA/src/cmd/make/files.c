@@ -3,10 +3,6 @@ static char sccsid[] = "@[$]files.c\t2.1 11/18/83 13:38:39 - 87wega3.2";
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/dir.h>
-#include <pwd.h>
-#include <ar.h>
-#include <s.out.h>
-#include <nlist.h>
 /* UNIX DEPENDENT PROCEDURES */
 
 

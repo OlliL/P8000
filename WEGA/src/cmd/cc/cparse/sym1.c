@@ -511,7 +511,9 @@ lookup( name, s, mk, cls ) char *name; {
 	q->sflags = s;
 	q->stype = UNDEF;
 	q->sclass = SNULL;
+#ifndef OLD_D1S
 	q->sfldc = 0;
+#endif
 	if( blevel ){
 		q->sname = ntabindx;
 		t = &ntab[ntabindx];

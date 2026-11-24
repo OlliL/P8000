@@ -1,5 +1,5 @@
 """Corpus of putfile (host/recon/corpusrun.py): the original /bin/putfile against the build (src/cmd/putfile.c, written from
-/bin/putfile, the shipped cc and libc), on the cases of compare/putfile/tests.txt (host/recon/casefile.py): the summary,
+/bin/putfile, ccvm and libc), on the cases of compare/putfile/tests.txt (host/recon/casefile.py): the summary,
 the options, a missing and an empty file, a transfer whose partner answers from the standard input."""
 import os
 import sys

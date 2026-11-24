@@ -1,12 +1,12 @@
-# make: /bin/make from System III's make (usr/src/cmd/make) with WEGA's changes (wegarules.c), built by the shipped cc
-# with /lib/libc.a, separate I and D (-i) as make.mk; byte-identical. The unused frame words (int unused) of 14 functions
-# and of yyparse are the register slots of the compiler of 11/83 (host/OLDCC_REGSLOTS.md).
+# make: /bin/make from System III's make (usr/src/cmd/make) with WEGA's changes (wegarules.c), built by ccvm (the
+# cparse of 11/18/83, OLD_D1S) with /lib/libc.a, separate I and D (-i) as make.mk; byte-identical. defs includes the
+# headers of files.c: their symbol entries give the frame words of the register locals (host/OLDCC_REGSLOTS.md).
 #
 #   make              build ./make
 #   make install PREFIX=dir
 #   make clean
 
-CC = cc
+CC = ccvm
 CAS = cas
 LD = ld
 YACC = yacc
@@ -31,10 +31,8 @@ crt0.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 crt0.o: crt0.s
 	$(CAS) -u -o $@ crt0.s
 
-# yyparse of /usr/lib/yaccpar gets the unused frame word of the original behind its autos (host/OLDCC_REGSLOTS.md: the
-# compiler of 11/83 gives some register locals a frame word; yaccpar is shipped text and stays as it is)
 gram.c: gram.y
-	$(YACC) gram.y ; sed 's/^\(.short yyj, yym;\)$$/\1 int unused;/' y.tab.c > gram.c ; rm -f y.tab.c
+	$(YACC) gram.y ; mv y.tab.c gram.c
 
 $(OBJECTS): defs
 

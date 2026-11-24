@@ -1,5 +1,5 @@
 """Corpus of who (host/recon/corpusrun.py): the original /bin/who against the build (src/cmd/who.c: System III who.c with -g,
-the shipped cc and libc), on the cases of compare/who/tests.txt (host/recon/casefile.py): /etc/utmp of the root, a utmp
+ccvm and libc), on the cases of compare/who/tests.txt (host/recon/casefile.py): /etc/utmp of the root, a utmp
 file of the case, -g, an illegal option, who am i (no terminal)."""
 import os
 import sys

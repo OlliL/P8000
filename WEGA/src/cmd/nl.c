@@ -51,7 +51,6 @@ char *argv[];
 	int cnt;	/* line counter */
 	char sep[EXPSIZ];
 	char pat[EXPSIZ];
-	int spare;	/* unused: the frame of the original has a word here */
 	char *string;
 	register char *ptr ;
 	int startcnt=1;

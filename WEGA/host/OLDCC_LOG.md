@@ -2315,3 +2315,13 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   uaddr_t; s.out.h without s_head or v_lines for all files.
 - ar and cpio, taken as counter-programs, have unused locals under other names (`int u`; `int i, j, k`, `int i`): without
   them all their frames come out by the scratch cparse. Left: mail system one word too many.
+
+## 2026-11-24: vm, the cparse of 11/18/83 (owner)
+
+- `OLD_D1S` in cparse sym1.c (`lookup` keeps the stale `sfldc`), `/lib/vm/cparse` (shipped cparse built as shipped, ccv0p,
+  libc-v7.a, plus the switch), driver `ccvm` (`OLD_VM`). The test set by ccvm: the same as the scratch cparse.
+- Built by ccvm without their unused locals, byte-identical: ar, cmp, cpio, diff, du, grep, mail, make, nl, pr, putfile,
+  who; getfile as before (partial, the same bytes as by cc). make: defs with pwd.h, ar.h, s.out.h, nlist.h, the yyparse
+  sed gone, eqstr keeps `int unused`. mail: system needed 3 entries more in front of the first function; of 175
+  combinations of natural declarations only `optind, strcat, strcpy`; of headers sys/dir.h and sys/prim.h; taken
+  `<sys/dir.h>`.

@@ -545,7 +545,6 @@ getmflgs()
 	register VARBLOCK vpr;
 	register CHARSTAR *pe;
 	register CHARSTAR p;
-	int unused;	/* a word of the frame of the original, not used */
 
 	vpr = varptr(Makeflags);
 	setvar(Makeflags, "ZZZZZZZZZZZZZZZZ");

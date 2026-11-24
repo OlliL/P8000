@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "cc",
+ "compiler": "ccvm",
  "binary": "/bin/mail",
  "functions": {
   "start": {
@@ -114,8 +114,7 @@
    "callers": [
     "0x0922",
     "0x0b78"
-   ],
-   "note": "a spare local (int unused): the frame of the original has a word more (odd form)"
+   ]
   },
   "sendmail": {
    "file": "mail.c",
@@ -242,8 +241,8 @@
    "size_orig": 168,
    "status": "exact",
    "kind": "proven",
-   "callers": [],
-   "note": "a spare local (int unused): the frame of the original has a word more (odd form)"
+   "callers": []
   }
- }
+ },
+ "note": "odd form: #include <sys/dir.h>, not used: 3 symbol entries in front of the first function, which give system its one frame word by OLD_D1S as the original has it (without them two; what WEGA declared there is not in the bytes; host/OLDCC_REGSLOTS.md)"
 }

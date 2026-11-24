@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "cc",
+ "compiler": "ccvm",
  "binary": "/usr/bin/cpio",
  "functions": {
   "f0000": {
@@ -167,8 +167,7 @@
    "size_orig": 178,
    "status": "exact",
    "kind": "proven",
-   "callers": [],
-   "note": "the frame of the original has 6 bytes more than System III gmatch needs: three unused locals \"int i, j, k;\" give them (the words of a cparse with a stale sfldc, host/OLDCC_REGSLOTS.md); \"register short\" for three of the locals does not change the frame (measured)"
+   "callers": []
   },
   "umatch": {
    "file": "src/cmd/cpio.c",
@@ -216,8 +215,7 @@
    "size_orig": 78,
    "status": "exact",
    "kind": "proven",
-   "callers": [],
-   "note": "the frame of the original has 2 bytes more than System III missdir needs: an unused local \"int i;\" gives them (the word of a cparse with a stale sfldc, host/OLDCC_REGSLOTS.md); \"register short ct\" does not change the frame (measured)"
+   "callers": []
   },
   "pwd": {
    "file": "src/cmd/cpio.c",

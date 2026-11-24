@@ -1,5 +1,5 @@
 """Corpus of grep (host/recon/corpusrun.py): the original /bin/grep against the build (src/cmd/grep, grep.c of System III
-with the WEGA sccsid in front of regexp.h, the shipped cc and libc.a), on the cases of compare/grep/tests.txt
+with the WEGA sccsid in front of regexp.h, ccvm and libc.a), on the cases of compare/grep/tests.txt
 (host/recon/casefile.py): every option of the source (-b -c -l -n -s -v -y), several files, the standard input, the
 regular expressions of regexp.h and the messages."""
 import os

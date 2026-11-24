@@ -9,7 +9,7 @@ found, attempts, refuted ideas and removed switches are in `OLDCC_LOG.md`; which
 ## State
 
 With `make PROG CC=ccv0p` and strip these are byte-identical with the originals: cpp, cparse, scparse, codgen, scodgen,
-popt, spopt. With v1: size, strip, mv (also cp, ln), rm. With v1r: write, rmdir. With v0: dc, ranlib. With vc (sccvc): /bin/cas, /lib/gopt. v1q builds libc modules of its time. v1 and v0 are not complete (section 5).
+popt, spopt. With v1: size, strip, mv (also cp, ln), rm. With v1r: write, rmdir. With v0: dc, ranlib. With vc (sccvc): /bin/cas, /lib/gopt. With vm: the programs of 11/18/83 (make, diff, mail, ar, cpio, nl and others). v1q builds libc modules of its time. v1 and v0 are not complete (section 5).
 
 ## 1 Terms and building
 
@@ -69,7 +69,8 @@ register variables: "slots" (as many never used frame words as saved registers: 
 | 07/83 (crt0 3.2) | packed | ld, cp/ln/mv, login, get, yacc | v1 (ld, mv checked) |
 | 08/11/83 | packed | csh | v1 (last packed one) |
 | 08/22/83 .. 09/01/83 | padded | sh, rsh, kdb, fsdb | D1 slots with the shipped D12: between v1 and shipped |
-| 09/09/83 and later | padded | troffv7, adb 09/83, sld 10/27, ar, make, ps 11/83 | shipped (D1 loose) |
+| 09/09/83 and later | padded | troffv7, adb 09/83, sld 10/27, ps 11/83 | shipped (D1 loose) |
+| 11/16/83 .. 11/18/83 (SCCS lines `87wega3.2`) | padded | ar, cmp, cpio, diff, du, getfile, grep, mail, make, nl, pr, putfile, who | vm (D1 register slots) |
 | no stamp, built late | packed | cparse, scparse, codgen, scodgen (sources 10/06/83), popt, spopt, gopt (03/83), cpp, find 10/83, upkeep 11/83 | v0p for the passes and cpp |
 | no stamp, libc 09/83 | padded | cc, scc, tar, format, verify, copydisk, gld, pburn | shipped |
 
@@ -78,7 +79,7 @@ and stty 12/21/83 packed (built by an old compiler late, or few strings), id 05/
 
 ### shipped
 
-Builds byte-identically: cc, scc, ar, tar, dump, dumpdir, restor, sync, getud, putud, format, verify, copydisk, pburn,
+Builds byte-identically: cc, scc, tar, dump, dumpdir, restor, sync, getud, putud, format, verify, copydisk, pburn,
 the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibcurses.a` (1988, without -O) (`make -C host checkall`). All of them are linked with libc members of
 09/12/83 or later.
 
@@ -189,6 +190,20 @@ Both libraries are built by vl
 checkall measures every rule of vl on all their members. vl itself is compiled by the shipped cc: in stage 1 linked with
 the shipped /lib/libc.a (and the old printf), in stage 2 with `libc-v5.a` (codgen) and `libc-v8.a` (driver). No member of the two libraries is left in `oldcc/`.
 
+### vm: the cparse of the programs of 11/18/83
+
+The programs with the SCCS lines of 11/16/83 .. 11/18/83 (`87wega3.2`) give some register locals an unused frame word
+(D1, register slots). `ccvm` (`-DOLD_VM` in `src/cmd/cc`, `build/nonsegvm`) runs the shipped passes with `/lib/vm/cparse`:
+the shipped cparse with `OLD_D1S` (`lookup` in sym1.c does not clear `sfldc` of a new symbol entry; the entry is
+malloc'd and can be a freed one whose `sfldc` still holds the 1 of a register parameter, and `oalloc` then gives the
+register local a frame word). Built like the shipped cparse (ccv0p, `libc-v7.a`: the malloc whose reuse decides which
+entries are stale). Which local gets a word depends on every symbol entry made before it in the file (`OLDCC_REGSLOTS.md`).
+Built by vm and byte-identical: ar, cmp, cpio, diff, du, grep, mail (rmail), make, nl, pr, putfile, who; getfile (partial,
+its frames right). Source forms it needs: make's defs includes the headers of files.c (pwd.h, ar.h, s.out.h, nlist.h);
+make files.c eqstr keeps an `int unused`, mail an unused `<sys/dir.h>` (the entries in front of the first function that
+are not in the bytes). The undated tar, dump, dumpdir, restor and the standalone programs get words from it that they lack:
+they are of the shipped cparse.
+
 ### The old scc of cas
 
 cas was built by an older scc; its parser and `assemble` without `-O`, the other modules with `-O`. The working compiler
@@ -251,10 +266,9 @@ Each class: the form in the code, the pass, the mechanism, the switch, the witne
   `tb`; both byte-identical by the order of the declarations, 2026-11-24).
 - Not reproduced: one unexplained frame word in main, endload, slookup, pslookup, index16 of ld (kept as `int spare`);
   cas `putins` 12 bytes against 14, libc nlist and length 2 bytes smaller, fseek 14 against 20.
-- Not reproduced by a compiler of the tree: register slots of 1983 (make, diff, mail, nl, ar, cpio, slibc calloc): some
-  register locals get an unused frame word; rebuilt as unused locals (`int unused`, ar `int u`, cpio `int i, j, k`). A
-  scratch cparse without `q->sfldc = 0` in `lookup` (a stale sfldc from the reused heap) gives these words in the 15
-  programs of 11/18/83 of its test set but mail system and make files.c eqstr (`OLDCC_REGSLOTS.md`).
+- vm (`OLD_D1S`, cparse, `lookup`): register slots of 11/83: a register local gets an unused frame word when its
+  symbol entry is a reused one with a stale `sfldc` (section vm; make, diff, mail, nl, ar, cpio; `OLDCC_REGSLOTS.md`).
+  Not reproduced: slibc calloc (segmented, kept as `int spare`).
 
 ### D2 Scratch registers
 
@@ -846,7 +860,12 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | ex | ex 2.13 (own code) | v0a |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |  |  |  |  |  | x | x |  |
 | mkstr | mkstr.c, libc calloc | v0 |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | chkout | chkout.c, common.c (07/23/82) | v0 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
-| make | main.c, misc.c, files.c (11/18/83) | shipped | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| make | main.c, misc.c, files.c (11/18/83) | vm | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| diff | diff.c (11/18/83) | vm | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| mail | mail.c (11/16/83) | vm | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| nl | nl.c (11/18/83) | vm | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| ar | ar.c (11/18/83) | vm | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cpio | cpio.c (11/18/83) | vm | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | kernel | sig.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |  |  |
 | kernel | sys2.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |  |  |
 | kernel | sys3.c | vk |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |  |  |

@@ -1,5 +1,5 @@
 """Corpus of getfile (host/recon/corpusrun.py): the original /bin/getfile against the build (src/cmd/getfile.c, written from
-/bin/getfile, the shipped cc and libc), on the cases of compare/getfile/tests.txt (host/recon/casefile.py): the summary
+/bin/getfile, ccvm and libc), on the cases of compare/getfile/tests.txt (host/recon/casefile.py): the summary
 without files, the options, a transfer whose partner answers from the standard input (none, a refusal, a file)."""
 import os
 import sys

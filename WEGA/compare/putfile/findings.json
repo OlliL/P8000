@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "cc",
+ "compiler": "ccvm",
  "binary": "/bin/putfile",
  "functions": {
   "start": {

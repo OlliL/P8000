@@ -43,7 +43,7 @@ SOURCE = {'bin/cc': 'cmd/cc', 'bin/scc': 'cmd/cc', 'bin/cas': 'cmd/cas', 'bin/ld
 LINKOF = {'bin/edit': 'ex', 'bin/vi': 'ex', 'bin/view': 'ex'}
 
 # Makefile variable -> name of the compiler
-CCNAME = {'CC': 'cc', 'SCC': 'scc', 'CCV0': 'ccv0', 'CCV0A': 'ccv0a', 'CCV1': 'ccv1', 'CCV1R': 'ccv1r', 'CCV1Q': 'ccv1q', 'CCV0P': 'ccv0p'}
+CCNAME = {'CC': 'cc', 'SCC': 'scc', 'CCV0': 'ccv0', 'CCV0A': 'ccv0a', 'CCV1': 'ccv1', 'CCV1R': 'ccv1r', 'CCV1Q': 'ccv1q', 'CCV0P': 'ccv0p', 'CCVM': 'ccvm'}
 
 
 def files(root):

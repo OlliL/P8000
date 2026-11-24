@@ -1,4 +1,4 @@
-"""Corpus of diff (host/recon/corpusrun.py): the original /bin/diff against the build (src/cmd/diff.c, the shipped cc and libc,
+"""Corpus of diff (host/recon/corpusrun.py): the original /bin/diff against the build (src/cmd/diff.c, ccvm and libc,
 split I/D), on the cases of compare/diff/tests.txt (host/recon/casefile.py): plain, -e, -f, -b, -h, equal and missing files, stdin."""
 import os
 import sys

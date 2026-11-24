@@ -228,7 +228,6 @@ char *arg;
 {
 	register struct line *p;
 	register j,h;
-	int unused;	/* a word of the frame of the original, not used */
 	if((input[i] = fopen(arg,"r")) == NULL){
 		mesg("cannot open ", arg);
 		done();
@@ -265,7 +264,6 @@ struct line *a, *b;
 int *c;
 {
 	register int i, j;
-	int unused;	/* a word of the frame of the original, not used */
 	i = j = 1;
 	while(i<=n && j<=m) {
 		if(a[i].value <b[j].value)
@@ -293,7 +291,6 @@ main(argc, argv)
 char **argv;
 {
 	register int k;
-	int unused;	/* a word of the frame of the original, not used */
 	char **args;
 
 	args = argv;
@@ -365,7 +362,6 @@ int *b;
 int *c;
 {
 	register int i, k,y;
-	int unused;	/* a word of the frame of the original, not used */
 	int j, l;
 	int oldc, tc;
 	int oldl;

@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "cc",
+ "compiler": "ccvm",
  "binary": "/bin/diff",
  "functions": {
   "start": {
@@ -113,8 +113,7 @@
    "kind": "proven",
    "callers": [
     "0x05fe"
-   ],
-   "note": "a spare local (int unused): the frame of the original has a word more, not used (odd form)"
+   ]
   },
   "prune": {
    "file": "diff.c",
@@ -134,8 +133,7 @@
    "kind": "proven",
    "callers": [
     "0x05fe"
-   ],
-   "note": "a spare local (int unused): the frame of the original has a word more, not used (odd form)"
+   ]
   },
   "main": {
    "file": "diff.c",
@@ -145,8 +143,7 @@
    "kind": "proven",
    "callers": [
     "0x0000"
-   ],
-   "note": "a spare local (int unused): the frame of the original has a word more, not used (odd form)"
+   ]
   },
   "stone": {
    "file": "diff.c",
@@ -156,8 +153,7 @@
    "kind": "proven",
    "callers": [
     "0x05fe"
-   ],
-   "note": "a spare local (int unused): the frame of the original has a word more, not used (odd form)"
+   ]
   },
   "newcand": {
    "file": "diff.c",

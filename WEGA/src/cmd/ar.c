@@ -162,7 +162,6 @@ int (*fun)();
 rcmd()
 {
 	register f;
-	int u;
 
 	init();
 	getaf();
@@ -406,7 +405,6 @@ done(c)
 notfound()
 {
 	register i, n;
-	int u;
 
 	n = 0;
 	for(i=0; i<namc; i++)
@@ -648,7 +646,6 @@ char *s;
 longt()
 {
 	register char *cp;
-	int u;
 
 	pmode();
 	printf("%3d/%1d", arbuf.ar_uid, arbuf.ar_gid);

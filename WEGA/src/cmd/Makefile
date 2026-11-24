@@ -15,6 +15,7 @@ CCV0 = ccv0
 CCV0P = ccv0p
 CCV1 = ccv1
 CCV1R = ccv1r
+CCVM = ccvm
 LD  = ld
 STRIP = strip
 CFLAGS = -O
@@ -50,7 +51,7 @@ all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 # switches the sources to what the shipped libc and cc need (the old libc's readsym, sprintf value, swap_quad; the exit status
 # of size). Without -DSHIPPED the bytes of the originals are rebuilt. The files of /lib are not made here: empty rules below.
 SHIPFLAGS = -O -DSHIPPED
-SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBC_V13=/lib/libc.a LIBPW=/usr/lib/libPW.a
+SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CCVM=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBC_V13=/lib/libc.a LIBPW=/usr/lib/libPW.a
 
 shipped:
 	$(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $(PROGS) $(FILES) $(SIMPLE) $(SHIPCC) LIBC=/lib/libc.a
@@ -131,8 +132,10 @@ restor: restor.c
 tar: tar.c
 	$(CC) $(CFLAGS) -o $@ tar.c
 
+# ccvm (CCVM): the cparse of the programs of 11/18/83 (OLD_D1S, host/OLDCC.md vm): ar, cmp, cpio, diff, du, getfile, grep,
+# mail, nl, pr, putfile, who (and make in its directory)
 ar.o: ar.c
-	$(CC) $(CFLAGS) -c ar.c
+	$(CCVM) $(CFLAGS) -c ar.c
 
 ar: ar.o crt0-ar.o
 	$(LD) -e start -o $@ crt0-ar.o ar.o $(LIBC)
@@ -197,7 +200,7 @@ echo: crt0-echo.o echo.o $(LIBC_V11)
 	$(LD) -e start -o $@ crt0-echo.o echo.o $(LIBC_V11)
 
 cmp.o: cmp.c
-	$(CC) $(CFLAGS) -c cmp.c
+	$(CCVM) $(CFLAGS) -c cmp.c
 cmp: crt0-cmp.o cmp.o
 	$(LD) -e start -o $@ crt0-cmp.o cmp.o -lc
 
@@ -287,19 +290,19 @@ regcmp.o: regcmp.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c regcmp.c
 regcmp: crt0-regcmp.o regcmp.o $(LIBC_V4)
 	$(LD) -e start -o $@ crt0-regcmp.o regcmp.o $(LIBPW) $(LIBC_V4)
-# getfile: written from /bin/getfile (WEGA, no source), the shipped cc and libc; partial: buf[i] = '\\n' reloads i, the place of printf(CAN) in the retries
+# getfile: written from /bin/getfile (WEGA, no source), ccvm and libc; partial: buf[i] = '\\n' reloads i, the place of printf(CAN) in the retries
 getfile.o: getfile.c
-	$(CC) $(CFLAGS) -c getfile.c
+	$(CCVM) $(CFLAGS) -c getfile.c
 getfile: crt0-getfile.o getfile.o
 	$(LD) -e start -o $@ crt0-getfile.o getfile.o -lc
-# who: System III who.c with -g (the group) and the WEGA messages, the shipped cc and libc
+# who: System III who.c with -g (the group) and the WEGA messages, ccvm and libc
 who.o: who.c
-	$(CC) $(CFLAGS) -c who.c
+	$(CCVM) $(CFLAGS) -c who.c
 who: crt0-who.o who.o
 	$(LD) -e start -o $@ crt0-who.o who.o -lc
-# diff: diff.c of Plexus (as System III) with the WEGA sccsid and a spare local in prepare, equiv, main, stone (the frames of the original), the shipped cc and libc, split I/D
+# diff: diff.c of Plexus (as System III) with the WEGA sccsid, ccvm (the frame words of prepare, equiv, main, stone: OLD_D1S) and libc, split I/D
 diff.o: diff.c
-	$(CC) $(CFLAGS) -c diff.c
+	$(CCVM) $(CFLAGS) -c diff.c
 diff: crt0-diff.o diff.o
 	$(LD) -i -e start -o $@ crt0-diff.o diff.o -lc
 # newgrp: V7 newgrp.c as WEGA changed it (no argument: the passwd group; root; stderr; done starts the shell as -name), the shipped cc, libc-v12.a
@@ -312,9 +315,9 @@ passwd.o: passwd.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c passwd.c
 passwd: crt0-passwd.o passwd.o $(LIBC_V4)
 	$(LD) -e start -o $@ crt0-passwd.o passwd.o $(LIBC_V4)
-# mail: System III mail.c as WEGA changed it (/usr/spool/mail, setret, ~ in getarg, setuid in system, getuid for chown, spare locals in isfrom and system), the shipped cc, libc-v12.a; rmail is a link
+# mail: System III mail.c as WEGA changed it (/usr/spool/mail, setret, ~ in getarg, setuid in system, getuid for chown; an unused <sys/dir.h> for the frame words of OLD_D1S), ccvm, libc-v12.a; rmail is a link
 mail.o: mail.c
-	$(CC) $(CFLAGS) -c mail.c
+	$(CCVM) $(CFLAGS) -c mail.c
 mail: crt0-mail.o mail.o $(LIBC_V12)
 	$(LD) -e start -o $@ crt0-mail.o mail.o $(LIBC_V12)
 # echo2: the echo of V7 on stderr (written from /bin/echo2), ccv0, libc-v1.a
@@ -337,9 +340,9 @@ dog.o: dog.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c dog.c
 dog: crt0-dog.o dog.o $(LIBC_V6)
 	$(LD) -e start -o $@ crt0-dog.o dog.o $(LIBC_V6)
-# putfile: written from /bin/putfile (WEGA, no source), the shipped cc and libc
+# putfile: written from /bin/putfile (WEGA, no source), ccvm and libc
 putfile.o: putfile.c
-	$(CC) $(CFLAGS) -c putfile.c
+	$(CCVM) $(CFLAGS) -c putfile.c
 putfile: crt0-putfile.o putfile.o
 	$(LD) -e start -o $@ crt0-putfile.o putfile.o -lc
 # gpasswd: written from /bin/gpasswd (WEGA, after System III passwd.c), the shipped cc, libc-v12.a; partial: two temporaries of main
@@ -373,7 +376,7 @@ tee: crt0-tee.o tee.o
 	$(LD) -e start -o $@ crt0-tee.o tee.o -lc
 
 du.o: du.c
-	$(CC) $(CFLAGS) -c du.c
+	$(CCVM) $(CFLAGS) -c du.c
 du: crt0-du.o du.o
 	$(LD) -e start -o $@ crt0-du.o du.o -lc
 
@@ -403,12 +406,12 @@ touch: crt0-touch.o touch.o $(LIBC_V6)
 	$(LD) -e start -o $@ crt0-touch.o touch.o $(LIBC_V6)
 
 grep.o: grep.c
-	$(CC) $(CFLAGS) -c grep.c
+	$(CCVM) $(CFLAGS) -c grep.c
 grep: crt0-grep.o grep.o
 	$(LD) -e start -o $@ crt0-grep.o grep.o -lc
 
 nl.o: nl.c
-	$(CC) $(CFLAGS) -c nl.c
+	$(CCVM) $(CFLAGS) -c nl.c
 nl: crt0-nl.o nl.o
 	$(LD) -e start -o $@ crt0-nl.o nl.o -lc
 
@@ -449,12 +452,12 @@ sum: crt0-sum.o sum.o $(LIBC_V1)
 	$(LD) -e start -o $@ crt0-sum.o sum.o $(LIBC_V1)
 
 pr.o: pr.c
-	$(CC) $(CFLAGS) -c pr.c
+	$(CCVM) $(CFLAGS) -c pr.c
 pr: crt0-pr.o pr.o
 	$(LD) -e start -o $@ crt0-pr.o pr.o -lc
 
 cpio.o: cpio.c
-	$(CC) $(CFLAGS) -c cpio.c
+	$(CCVM) $(CFLAGS) -c cpio.c
 cpio: crt0-cpio.o cpio.o
 	$(LD) -e start -o $@ crt0-cpio.o cpio.o -lc
 

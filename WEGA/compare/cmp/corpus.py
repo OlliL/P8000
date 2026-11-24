@@ -1,5 +1,5 @@
 """Corpus of cmp (host/recon/corpusrun.py): the original /bin/cmp against the build (src/cmd/cmp, cmp.c of System III with
-the WEGA sccsid, the shipped cc and libc.a), on the cases of compare/cmp/tests.txt (host/recon/casefile.py): -s, -l,
+the WEGA sccsid, ccvm and libc.a), on the cases of compare/cmp/tests.txt (host/recon/casefile.py): -s, -l,
 the skips (never read: a quirk), "-" for the standard input, every message of the source."""
 import os
 import sys

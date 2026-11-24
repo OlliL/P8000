@@ -1,9 +1,12 @@
 # Register slots: unused frame words of the compiler of 11/83
 
-An open question of the old compilers (`OLDCC.md`, D1). Programs built in 1983 by a cc that is otherwise the shipped one
-have, in some functions, frames that are 1 to 3 words larger than the shipped cc makes them; the code is the same. The
-words are never used. The tree rebuilds them as unused locals (`int unused;`, `int unused[N];`, `int spare;`); the rule
-that gives them is not found. This file collects what is known, to be taken up on its own. Started 2026-11-24 (make).
+Programs built in 11/83 (SCCS lines of 11/16/83 .. 11/18/83) have, in some functions, frames that are 1 to 3 words
+larger than the shipped cc makes them; the code is the same and the words are never used. The rule: their cparse did not
+clear `sfldc` of a new symbol entry (a malloc'd, maybe reused block), so a register local whose entry holds the stale 1
+of a freed register parameter gets a frame word. Since 2026-11-24 the tree builds these programs by `ccvm` (`OLD_D1S`,
+`OLDCC.md` vm), without the unused locals they had before (`int unused`, `int spare`, ar `int u`, cpio `int i, j, k`).
+Left as source forms: make files.c eqstr (`int unused`), mail (an unused `<sys/dir.h>`), slibc calloc (segmented,
+`int spare`). This file collects how it was found. Started 2026-11-24 (make).
 
 ## What is known
 
@@ -277,16 +280,8 @@ stays; `saved/` there holds the outputs of the first runs.
 
 ## Open, next steps
 
-- The heap of the old cparse: what else is malloc'd (the strings of `savestr`, the `fcon` blocks of code1.c, the stdio
-  buffers), the size of `struct symtab` (26 bytes now), the malloc of its libc; which of them moves the reuse of the freed
-  entries so that misc.c of make comes out right, with main.c and files.c still right.
-- The other witnesses as tests of a rule found on make: diff, mail, nl (their `int unused` must come out by the compiler
-  then), comm, csplit, tsort, uniq, ar, cpio, slibc calloc (segmented); and as counter-tests the programs of 11/18/83
-  without a word (cmp, du, grep, pr, putfile, who).
-- mail system: one word too many by the scratch cparse.
-- Other unused locals under other names (`u`, `i`, ...) in the programs of 11/83: every exact program of that build by the
-  scratch cparse.
+- make files.c eqstr: the 2 entries fewer it needs (section "The 63 entries of make"); mail: the 3 entries in front of the
+  first function (an unused `<sys/dir.h>` now; `extern int optind; char *strcat(), *strcpy();` fits too).
+- slibc calloc (segmented): the same rule in scparse (`int spare` now).
+- comm, csplit, tsort, uniq (not in the tree yet): to be built by ccvm.
 - The v1 words of ld (main, endload, slookup, pslookup, index16): the place of a register declaration (section "v1").
-- make files.c: the 2 entries fewer that eqstr needs (section "The 63 entries of make").
-- A rule that holds would be a switch of a cparse of its own (a compiler of 11/83), owner's decision; the unused locals
-  would then go.

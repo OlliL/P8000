@@ -21,7 +21,7 @@ CRT = ../../../lib/libc/nonseg/crt
 NONSEG_OBJS = cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o sym2.o
 SEG_OBJS = $(NONSEG_OBJS)
 ALL_TARGETS = build/nonseg/cparse build/seg/scparse
-OLD_TARGETS = build/nonsegv0/cparse build/nonsegv0p/cparse build/nonsegv1/cparse build/segv1/scparse build/segvk/scparse build/segvc/scparse build/segvl/scparse
+OLD_TARGETS = build/nonsegv0/cparse build/nonsegv0p/cparse build/nonsegv1/cparse build/nonsegvm/cparse build/segv1/scparse build/segvk/scparse build/segvc/scparse build/segvl/scparse
 
 all: $(ALL_TARGETS)
 
@@ -35,6 +35,10 @@ build/nonsegv0p/cparse: crt0.o FORCE
 	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D -DOLD_D19P -DOLD_D8L"
 build/nonsegv1/cparse: crt0.o FORCE
 	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D1 -DOLD_D8L"
+
+# vm: the shipped cparse with OLD_D1S, built as the shipped one (ccv0p, libc-v7.a: the malloc whose heap OLD_D1S reads)
+build/nonsegvm/cparse: crt0.o FORCE
+	cd build/nonsegvm  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cparse LIBC="../../../../../lib/libc-v7.a" CFLAGS="$(CFLAGS) -DOLD_D1S"
 
 build/seg/scparse: crt0.o FORCE
 	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CFLAGS="$(CFLAGS) -DSEG"
@@ -71,6 +75,8 @@ oldinstall: $(OLD_TARGETS)
 		cp build/nonseg$$v/cparse $(PREFIX)/lib/$$v/cparse ; \
 	done
 	cp build/segv1/scparse $(PREFIX)/lib/v1/scparse
+	[ -d $(PREFIX)/lib/vm ] || mkdir $(PREFIX)/lib/vm
+	cp build/nonsegvm/cparse $(PREFIX)/lib/vm/cparse
 	[ -d $(PREFIX)/lib/vk ] || mkdir $(PREFIX)/lib/vk
 	cp build/segvk/scparse $(PREFIX)/lib/vk/scparse
 	[ -d $(PREFIX)/lib/vc ] || mkdir $(PREFIX)/lib/vc

@@ -10,6 +10,7 @@ static char sccsid[] = "@[$]mail.c\t2.3  11/16/83 08:53:36 - 87wega3.2";
 #include	<signal.h>
 #include	<sys/types.h>
 #include	<sys/stat.h>
+#include	<sys/dir.h>
 #include <setret.h>
 #include	<sys/utsname.h>
 
@@ -459,7 +460,6 @@ isfrom(lp)
 register char *lp;
 {
 	register char *p;
-	int unused;	/* a word of the frame of the original, not used */
 
 	for (p = from; *p; )
 		if (*lp++ != *p++)
@@ -725,7 +725,6 @@ system(s)
 char *s;
 {
 	int status, pid, w;
-	int unused;	/* a word of the frame of the original, not used */
 	register int (*istat)(), (*qstat)();
 
 	if ((pid = fork()) == 0) {

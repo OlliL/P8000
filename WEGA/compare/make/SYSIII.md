@@ -2,7 +2,7 @@
 
 `/bin/make` of WEGA against `usr/src/cmd/make` of System III (Plexus `cmd/make` has the same sources; System V and later
 makes are further away: their messages for 5.0 archives, `Cannot touch`, `NOT REMOVED` are not in the binary). Built by the
-shipped cc with `/lib/libc.a`, separate I and D (`-i`, as `make.mk`); the files in the order of `make.mk`, the rules file
+compiler of 11/18/83 (`ccvm`, OLD_D1S) with `/lib/libc.a`, separate I and D (`-i`, as `make.mk`); the files in the order of `make.mk`, the rules file
 `wegarules.c`. Measured 2026-11-24.
 
 ## WEGA's own
@@ -28,8 +28,9 @@ shipped cc with `/lib/libc.a`, separate I and D (`-i`, as `make.mk`); the files 
 - lookarch: `if(!eqstr(..)) continue;` and a goto loop around `symscan`, so that no back jump to the loop head is left
   (with one, popt turns the loop, `OLDCC.md` D7).
 - get: `varptr(chk ? "CHKOUT" : "GET")->varval` inside the call of `copstr` (the frame temporary of the original).
-- `int unused` in 14 functions and, by sed in the Makefile, in yyparse of `/usr/lib/yaccpar`: the unused frame words of the
-  compiler of 11/83 (`host/OLDCC_REGSLOTS.md`).
+- `defs` includes `<pwd.h>`, `<ar.h>`, `<s.out.h>`, `<nlist.h>` (only files.c needs them): their symbol entries give the
+  frame words of 14 functions and of yyparse by ccvm (`host/OLDCC_REGSLOTS.md`); files.c eqstr keeps an `int unused`
+  (a word that ccvm does not give).
 
 ## Not in the tree
 
