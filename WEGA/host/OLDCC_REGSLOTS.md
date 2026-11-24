@@ -120,6 +120,31 @@ So the stale sfldc explains whole programs exactly, while the sequence of alloca
 not the one of the shipped source: something else allocates or frees between the functions (concat .. straightrans of
 make). Not found which.
 
+## The simulation (2026-11-24)
+
+The scratch cparse logs every malloc and free of its own (symbol entries 26 bytes, the string list of savestr: 8 bytes and
+the string, freed in vinit1.c at the end of a function), every new entry with the byte at sfldc, every free of an entry and
+every decision of oalloc, and the start of each function (bfcode). A Python copy of the V7 malloc of
+`src/lib/oldlibc/malloc/malloc.c` (circular first fit, `allocp` = the block freed last, coalescing while searching, sbrk in
+1 KB steps) replays the log: all 668 mallocs of make misc.c at the logged addresses (no hidden malloc of stdio), and with a
+model of the byte at entry+12 (a parameter leaves its sfldc of getpreg, any other entry what it found, a malloc header or a
+string overwrites) the stale sfldc of all 350 new entries right. On the 22 files of the test set it gives exactly the 30
+functions of the real experiment. Hypotheses are then changes of the event stream, scored in seconds:
+
+| Hypothesis | Functions wrong (shipped cc: 27) |
+|---|---|
+| as logged (shipped source without `q->sfldc = 0`) | 30 |
+| clearst order: reversed, by address, by creation, inner levels first | 32 .. 59 |
+| strings not freed / not on the heap / 1 or 2 bytes longer | 33 / 26 / 30 / 30 |
+| an extra block per function or per clearst (26, 8, 2 bytes; kept or freed) | 30 .. 41 |
+| every parameter leaves 1 | 30 |
+| sfldc cleared at the declaration of autos, statics, registers (and combinations) | 25 .. 30 |
+| another size of struct symtab (16 .. 32 bytes) with sfldc at any offset | best 25 |
+
+None gives the 27 witnesses without new false ones. The programs that come out right as a whole (diff, nl, comm, tsort,
+uniq, du, grep, pr, putfile, who, cmp) and the wrong ones (make misc.c, ar, cpio, csplit, mail) are the lead: something in
+the wrong ones makes the old cparse allocate or free otherwise (not yet seen what).
+
 ## Open, next steps
 
 - The heap of the old cparse: what else is malloc'd (the strings of `savestr`, the `fcon` blocks of code1.c, the stdio
