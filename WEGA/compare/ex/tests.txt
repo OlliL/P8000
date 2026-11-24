@@ -1,0 +1,629 @@
+# The cases of the corpus of ex (compare/ex/corpus.py); the format: host/recon/casefile.py. ex reads its commands from
+# stdin (the section "in"); stdin is no terminal, so ex gives no prompt. man = /usr/man/man1/ex.1, src = src/cmd/ex.
+
+== print
+one
+two
+three
+-- in
+1,$p
+2p
+$p
+=
+q
+-- case
+step: ex t.in
+stdin: in
+
+== number-list
+one
+	tab	here
+ctl\001x
+-- in
+set nu
+1,$p
+set nonu list
+1,$p
+set nolist
+1,$#
+2l
+q
+-- case
+step: ex t.in
+stdin: in
+
+== append-insert-change
+one
+two
+-- in
+1a
+after one
+.
+1i
+first
+.
+$c
+last
+.
+w
+q
+-- case
+step: ex t.in
+stdin: in
+expect: file t.in contains 'first\none\nafter one\nlast\n'
+
+== delete-put-yank
+a
+b
+c
+d
+e
+-- in
+2,3d
+$put
+1y x
+$put x
+2,$y A
+$put a
+1,$p
+q!
+-- case
+step: ex t.in
+stdin: in
+
+== substitute
+the cat sat on the mat
+foo bar foo
+abc
+-- in
+1s/at/og/
+1p
+1s/at/og/g
+1p
+2s/foo/[&]/g
+2p
+3s/\(a\)\(b\)/\2\1/
+3p
+s/c/~X/
+3p
+1,$s/o/0/
+1,$p
+&
+1,$&
+1,$p
+w
+q
+-- case
+step: ex t.in
+stdin: in
+
+== global
+apple
+banana
+cherry
+avocado
+-- in
+g/a/p
+v/an/p
+g/^a/s/a/A/
+1,$p
+g/e/d
+1,$p
+q!
+-- case
+step: ex t.in
+stdin: in
+
+== move-copy-join
+1
+2
+3
+4
+5
+-- in
+1m$
+1,$p
+2,3t0
+1,$p
+1,3j
+1,$p
+1j!
+1p
+2,$co$
+1,$p
+q!
+-- case
+step: ex t.in
+stdin: in
+
+== marks-undo
+alpha
+beta
+gamma
+-- in
+2ka
+'ad
+1,$p
+u
+1,$p
+3s/gamma/delta/
+u
+1,$p
+q!
+-- case
+step: ex t.in
+stdin: in
+
+== shift
+one
+  two
+-- in
+set sw=4
+1,2>
+1,$l
+2<<
+1,$l
+q!
+-- case
+step: ex t.in
+stdin: in
+
+== z
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+-- in
+set window=3
+1z
+5z.
+q
+-- case
+step: ex t.in
+stdin: in
+
+== write-read
+one
+two
+-- other
+other a
+other b
+-- in
+w out
+$r other
+1,$p
+2w >> out
+w! t.in
+q
+-- case
+step: ex t.in
+stdin: in
+expect: file out contains 'one\ntwo\ntwo\n'
+
+== file-edit
+one
+-- other
+other
+-- in
+f
+f renamed
+f
+e other
+p
+e #
+p
+q
+-- case
+step: ex t.in
+stdin: in
+
+== args-next
+one
+-- b
+bee
+-- c
+sea
+-- in
+args
+p
+n
+p
+args
+n
+p
+n
+rew
+p
+q
+-- case
+step: ex t.in b c
+stdin: in
+
+== set-all
+x
+-- in
+set all
+set
+set ts=4 noai
+set ts? ai?
+set nosuch
+q
+-- case
+step: ex t.in
+stdin: in
+
+== err-address
+one
+two
+-- in
+5p
+q
+-- case
+step: ex t.in
+stdin: in
+
+== err-command
+one
+two
+-- in
+xyzzy
+q
+-- case
+step: ex t.in
+stdin: in
+
+== err-search
+one
+two
+-- in
+/nomatch/
+q
+-- case
+step: ex t.in
+stdin: in
+
+== err-subst
+one
+two
+-- in
+s/zz/y/
+q
+-- case
+step: ex t.in
+stdin: in
+
+== err-edit-noname
+one
+two
+-- in
+f
+e
+q
+-- case
+step: ex t.in
+stdin: in
+
+== err-read-noname
+one
+two
+-- in
+r
+q
+-- case
+step: ex t.in
+stdin: in
+
+== err-undo
+one
+two
+-- in
+u
+q
+-- case
+step: ex t.in
+stdin: in
+
+== err-mark
+one
+two
+-- in
+'zp
+q
+-- case
+step: ex t.in
+stdin: in
+
+== err-buffer
+one
+two
+-- in
+put q
+q
+-- case
+step: ex t.in
+stdin: in
+
+== err-range
+one
+two
+-- in
+2,1p
+q
+-- case
+step: ex t.in
+stdin: in
+
+== quit-modified
+one
+-- in
+a
+two
+.
+q
+-- case
+step: ex t.in
+stdin: in
+
+== quit-force
+one
+-- in
+d
+q!
+-- case
+step: ex t.in
+stdin: in
+expect: file t.in contains 'one\n'
+
+== new-file
+-- in
+a
+new line
+.
+wq
+-- case
+step: ex newf
+stdin: in
+# WEGA: a file that is not there is "File not found" (ex_subr.c, errno 2), and the error ends the input
+
+== shell
+one
+-- in
+!echo hello
+r !echo read
+1,$p
+w !cat
+q!
+-- case
+step: ex t.in
+stdin: in
+
+== search
+one apple
+two pear
+three apple
+-- in
+/apple/p
+//p
+?pear?p
+/p.*r/p
+set nomagic
+/p.*r/p
+set magic ic
+/APPLE/p
+q
+-- case
+step: ex t.in
+stdin: in
+
+== map-abbr
+x
+-- in
+map
+map q dd
+map
+ab teh the
+ab
+q
+-- case
+step: ex t.in
+stdin: in
+
+== version-source
+x
+-- cmds
+1s/x/y/
+p
+-- in
+ve
+so cmds
+q!
+-- case
+step: ex t.in
+stdin: in
+
+== readonly
+one
+-- in
+a
+two
+.
+w
+q!
+-- case
+step: ex -R t.in
+stdin: in
+expect: file t.in contains 'one\n'
+
+== view
+one
+-- in
+d
+w
+q!
+-- case
+step: view t.in
+stdin: in
+
+== edit
+one
+-- in
+set
+q
+-- case
+step: edit t.in
+stdin: in
+
+== plus-command
+one
+two
+three
+-- in
+.p
+q
+-- case
+step: ex +2 t.in
+stdin: in
+
+== plus-pattern
+one
+two
+three
+-- in
+.p
+q
+-- case
+step: ex +/thr/ t.in
+stdin: in
+
+== silent
+one
+two
+-- in
+1,$p
+q
+-- case
+step: ex - t.in
+stdin: in
+
+== missing-file
+-- in
+q
+-- case
+step: ex nosuch
+stdin: in
+
+== tags
+-- tags
+func	t.c	/^func()/
+-- t.c
+int x;
+func()
+{
+}
+-- in
+.p
+q
+-- case
+step: ex -t func
+stdin: in
+
+# ---- visual and open mode: the minimal terminal of the emulator (terminal: console), TERM=P8 of /etc/termcap; the keys
+# typed by the operator (\x1b ESC, \r RETURN)
+
+== vi-edit
+one
+two
+three
+-- case
+terminal: console
+env: TERM=P8
+step: vi t.in
+operator: type 'jxdd:wq\r'
+expect: file t.in contains 'one\nthree\n'
+
+== vi-insert
+one
+-- case
+terminal: console
+env: TERM=P8
+step: vi t.in
+operator: type 'Abc\x1boline\x1bOtop\x1b:wq\r'
+expect: file t.in contains 'onebc\ntop\nline\n'
+
+== vi-change-word
+the quick brown fox
+-- case
+terminal: console
+env: TERM=P8
+step: vi t.in
+operator: type 'wcwslow\x1bw.$x:wq\r'
+expect: file t.in contains 'the slow slow fo\n'
+
+== vi-search-undo
+alpha
+beta
+gamma
+-- case
+terminal: console
+env: TERM=P8
+step: vi t.in
+operator: type '/gam\rdduyyP:x\r'
+
+== vi-yank-put
+a
+b
+c
+-- case
+terminal: console
+env: TERM=P8
+step: vi t.in
+operator: type 'yyjp"ayyGp"aP:wq\r'
+
+== vi-quit-modified
+one
+-- case
+terminal: console
+env: TERM=P8
+step: vi t.in
+operator: type 'x:q\r:q!\r'
+expect: file t.in contains 'one\n'
+
+== vi-ex-command
+one
+two
+-- case
+terminal: console
+env: TERM=P8
+step: vi t.in
+operator: type ':1,$s/o/0/g\r:set nu\r:wq\r'
+
+== vi-shell
+one
+-- case
+terminal: console
+env: TERM=P8
+step: vi t.in
+operator: type ':!echo hi\r\r:q\r'
+
+== vi-unknown-term
+one
+-- case
+terminal: console
+env: TERM=nosuch
+step: vi t.in
+operator: type ':q\r'
+
+== view-term
+one
+-- case
+terminal: console
+env: TERM=P8
+step: view t.in
+operator: type 'x:w\r:q!\r'
+expect: file t.in contains 'one\n'

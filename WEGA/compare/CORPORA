@@ -90,6 +90,7 @@ mkmenu
 sum
 pr
 cpio
+ex
 fse
 cat
 echo

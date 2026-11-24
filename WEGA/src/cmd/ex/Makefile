@@ -77,6 +77,9 @@ ex: objs crt0-ex.o exbss.o $(TERMLIB) $(LIBC_V11)
 		ex_set.o ex_subr.o ex_temp.o ex_tty.o ex_unix.o ex_v.o ex_vadj.o ex_vget.o ex_vmain.o ex_voper.o ex_vops.o ex_vops2.o \
 		ex_vops3.o ex_vput.o ex_vwind.o printf.o strings.o $(TERMLIB) $(LIBC_V11)
 
+# the libraries of the tree are not made here (make shipped: /lib/libc.a, /usr/lib/libtermlib.a)
+/lib/libc.a /usr/lib/libtermlib.a:
+
 install: ex ex$(VERSION)strings
 	mkdir -p $(PREFIX)/bin $(PREFIX)/lib
 	cp ex $(PREFIX)/bin/ex ; $(STRIP) $(PREFIX)/bin/ex

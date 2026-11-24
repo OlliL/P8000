@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 74 | 13 | 9 | 15 |
+| [bin](#bin) | 111 | 78 | 12 | 9 | 12 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 30 | 6 | 63 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 929 | 21 | 149 | 98 |
+| **all** | 1197 | 933 | 20 | 149 | 95 |
 
 <a id="root"></a>
 ## root
@@ -73,10 +73,10 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/echo` | binary E707 | `src/cmd/echo.c` | exact | ccv0 | libc-v11.a |
 | `bin/echo2` | binary E707 | `src/cmd/echo2.c` | exact | ccv0 | libc-v1.a |
 | `bin/ed` | binary E707 | `tmp/sys3/usr/src/cmd/ed/ed.c` | sys3 | D12 old, D1 slots | - |
-| `bin/edit` | binary E711 | - | todo | D12 old, D1 tight | - |
+| `bin/edit` | binary E711 | `src/cmd/ex` | exact | cc | libc.a |
 | `bin/egrep` | binary E707 | `tmp/sys3/usr/src/cmd/egrep.y` | sys3 | D12 new?, D1 loose | - |
 | `bin/env` | binary E707 | `src/cmd/env.c` | exact | ccv0 | libc-v1.a |
-| `bin/ex` | binary E711 | `src/cmd/ex` | partial | cc | - |
+| `bin/ex` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
 | `bin/fc` | binary E607 | - | todo | D12 new?, D1 - | - |
 | `bin/file` | binary E707 | `tmp/sys3/usr/src/cmd/file.c` | sys3 | D12 old, D1 tight | - |
 | `bin/find` | binary E707 | `src/cmd/find.c` | exact | ccv0p | libc-v7.a |
@@ -148,8 +148,8 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/uusend` | binary E707 | - | todo | D12 old?, D1 loose | - |
 | `bin/uux` | binary E707 | `src/cmd/uucp` | partial | cc | - |
 | `bin/verify` | binary E707 | `src/cmd/verify` | exact | cc | libc.a |
-| `bin/vi` | binary E711 | - | todo | D12 old, D1 tight | - |
-| `bin/view` | binary E711 | - | todo | D12 old, D1 tight | - |
+| `bin/vi` | binary E711 | `src/cmd/ex` | exact | cc | libc.a |
+| `bin/view` | binary E711 | `src/cmd/ex` | exact | cc | libc.a |
 | `bin/whereis` | binary E707 | `src/cmd/whereis.c` | exact | ccv0 | libc-v1.a |
 | `bin/who` | binary E707 | `src/cmd/who.c` | exact | cc | libc.a |
 | `bin/whodo` | text | `src/cmd/whodo.sh` | exact | - | - |

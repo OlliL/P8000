@@ -403,7 +403,11 @@ ovflo:
 			error("Line overflow@in substitute - limit 512 chars");
 	}
 	lp = loc2;
+#ifdef SHIPPED
+	loc2 = sp - genbuf + linebuf;	/* the shipped cc folds linebuf - genbuf to 0 (KNOWLEDGE.md quirks) */
+#else
 	loc2 = sp + (linebuf - genbuf);
+#endif
 	while (*sp++ = *lp++)
 		if (sp >= &genbuf[LBSIZE])
 			goto ovflo;

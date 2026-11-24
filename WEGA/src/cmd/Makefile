@@ -63,6 +63,7 @@ shipped:
 		cas) X="SCC=scc SLIBC=/lib/slibc.a SCCFLAGS=\"$(SHIPFLAGS)\"" ;; \
 		cc/codgen|cc/popt) X='LIBC="../../../../../lib/oldlibc/printf/s1.o ../../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
 		cc/cpp|cc/cparse|cc|dc|bc|ld) X="LIBC=/lib/libc.a" ;; \
+		ex) X="CCV0A=cc TERMLIB=/usr/lib/libtermlib.a" ;; \
 		*) X="" ;; \
 		esac ; \
 		(cd $$d ; eval $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all '$(SHIPCC)' $$X) ; \
