@@ -9,16 +9,16 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 85 | 5 | 9 | 12 |
+| [bin](#bin) | 111 | 87 | 4 | 9 | 11 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
-| [usr/bin](#usr-bin) | 145 | 30 | 6 | 63 | 46 |
+| [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
 | [usr/lib](#usr-lib) | 197 | 119 | 2 | 57 | 19 |
 | [usr/sys](#usr-sys) | 28 | 28 | 0 | 0 | 0 |
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 940 | 13 | 149 | 95 |
+| **all** | 1197 | 943 | 12 | 148 | 94 |
 
 <a id="root"></a>
 ## root
@@ -83,7 +83,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/format` | binary E707 | `src/cmd/format` | exact | cc | libc.a |
 | `bin/fsc` | binary E611 | - | todo | D12 new?, D1 - | - |
 | `bin/fse` | binary E607 | `src/cmd/fse` | exact | scc | - |
-| `bin/getfile` | binary E707 | `src/cmd/getfile.c` | exact | ccvm | libc.a |
+| `bin/getfile` | binary E707 | `src/cmd/getfile` | exact | - | - |
 | `bin/gets` | binary E707 | `src/cmd/gets.c` | exact | ccv0 | libc-v1.a |
 | `bin/getud` | binary E707 | `src/cmd/getud.c` | exact | cc | libc.a |
 | `bin/gld` | binary E607 | - | todo | D12 new, D1 - | - |
@@ -114,11 +114,11 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/printenv` | binary E707 | `src/cmd/printenv.c` | exact | ccv0 | libc-v1.a |
 | `bin/ps` | binary E607 | `tmp/sys3/usr/src/cmd/ps.c` | sys3 | D12 new, D1 - | - |
 | `bin/pstat` | binary E607 | - | todo | D12 new, D1 - | - |
-| `bin/putfile` | binary E707 | `src/cmd/putfile.c` | exact | ccvm | libc.a |
+| `bin/putfile` | binary E707 | `src/cmd/putfile` | exact | - | - |
 | `bin/putud` | binary E707 | `src/cmd/putud.c` | exact | cc | libc.a |
 | `bin/pwd` | binary E707 | `src/cmd/pwd.c` | exact | ccv0 | libc-v1.a |
-| `bin/regcmp` | binary E707 | `src/cmd/regcmp.c` | partial | ccv1 | libc-v4.a |
-| `bin/remote` | binary E707 | - | todo | D12 new?, D1 loose | - |
+| `bin/regcmp` | binary E707 | `src/cmd/regcmp.c` | exact | ccv1 | libc-v4.a |
+| `bin/remote` | binary E707 | `src/cmd/remote` | exact | cc | -lc |
 | `bin/rm` | binary E707 | `src/cmd/rm.c` | exact | ccv1 | libc-v6.a |
 | `bin/rmail` | binary E707 | `src/cmd/mail.c` | exact | ccvm | libc-v12.a |
 | `bin/rmdir` | binary E707 | `src/cmd/rmdir.c` | exact | ccv1r | libc-v10.a |
@@ -332,7 +332,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `usr/bin/hyphen` | binary E707 | `tmp/sys3/usr/src/cmd/hyphen.c` | sys3 | D12 -, D1 slots | - |
 | `usr/bin/id` | binary E707 | `tmp/sys3/usr/src/cmd/id.c` | sys3 | D12 mixed, D1 slots | - |
 | `usr/bin/join` | binary E707 | `tmp/sys3/usr/src/cmd/join.c` | sys3 | D12 -, D1 tight | - |
-| `usr/bin/lex` | binary E711 | `tmp/sys3/usr/src/cmd/efl/lex.l` | sys3 | D12 old, D1 slots | - |
+| `usr/bin/lex` | binary E711 | `src/cmd/lex` | exact | ccv1l | libc-v3.a |
 | `usr/bin/line` | binary E707 | `tmp/sys3/usr/src/cmd/line.c` | sys3 | D12 -, D1 - | - |
 | `usr/bin/lint` | text | `src/cmd/lint.sh` | exact | - | - |
 | `usr/bin/logname` | binary E707 | `tmp/sys3/usr/src/cmd/logname.c` | sys3 | D12 -, D1 slots | - |

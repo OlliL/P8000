@@ -140,7 +140,8 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   onalarm, drain, getc1 exact). Traced with a popt built with -DTRACE (same output as /lib/popt): codemove moves CAN behind
   the retry test in the first iterate, before comjump; about 1200 source forms, none better (`compare/getfile/findings.json`).
   regcmp deferred (below).
-- 2026-11-25 phase B regcmp: IDENTICAL, and lex IDENTICAL (new): the compiler v1l (ccv1l), see the section below.
+- 2026-11-25 phase B regcmp: IDENTICAL, and lex IDENTICAL (new): the compiler v1l (ccv1l), see the section below. checkall
+  ALL OK (857 files), COVERAGE: exact 943.
 
 ## Phase B regcmp: solved (2026-11-25)
 
