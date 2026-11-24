@@ -42,6 +42,7 @@
 #define OLD_D2NS	/* a word stored to a global is not remembered in its register (rnassign) */
 #define OLD_D65		/* the difference of two address constants of different names is not folded to 0 (optpre) */
 #define OLD_D66		/* the base copied from r0 for a structure copy: the even half of the pair a pair request would take (zzzcode ZS, getreg) */
+#define OLD_D18A	/* OLD_D18 not for the stores of the parameters at offset 0: @fp (regargs; ex) */
 #endif
 
 #ifdef OLD_V0P

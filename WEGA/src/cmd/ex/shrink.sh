@@ -6,8 +6,8 @@
 #    code, and the calls go to the stub (calr, 2 bytes, instead of call, 4 bytes). The table is in the order of
 #    "sort | uniq -c | sort -n": by the number of calls, then by the name.
 # 2. A frame operand with the offset 0 becomes @fp (2 bytes shorter than 0(fp)): ~L1(fp) in a function with
-#    "~L1 := 0" (lda rN,~L1(fp) there becomes ld rN,fp), and 0(fp) beside the registers r0 ... r7 (the stores of
-#    the parameters; the saves of r8 ... r14 stay 0(fp)).
+#    "~L1 := 0" (lda rN,~L1(fp) there becomes ld rN,fp), and the load ld rN,0(fp). (The stores of the parameters at
+#    offset 0 are @fp from the compiler: v0a OLD_D18A, host/OLDCC.md.)
 #    Not so the temporary of an indirect call (ld ~L1(fp),r2 ... ld r1,0(fp); call @r1): its store keeps the offset,
 #    and of its loads only the last one of the function becomes @fp (listchar, normchar, vgotab: 6 places, the only
 #    ones in ex; a rule read off the binary, its mechanism is not known). Written ~L1+0(fp), which step 2 leaves alone.
@@ -51,6 +51,5 @@ awk '{ m++; b[m] = $0; if ($1 == "~L1" && $2 == ":=" && $3 == "0") z = 1 }
 	}
 	END { for (i = 1; i <= m; i++) print b[i] }' |
 sed -e '/^Z	lda	/s/lda	\(r[0-9]*\),~L1(fp)/ld	\1,fp/' -e '/^Z/s/~L1(fp)/@fp/' -e 's/^Z//' \
-	-e 's/	0(fp),r\([0-7]\)$/	@fp,r\1/' -e 's/	0(fp),rr\([0-7]\)$/	@fp,rr\1/' -e 's/	0(fp),r\([0-7]\),/	@fp,r\1,/' \
 	-e 's/	r\([0-7]\),0(fp)$/	r\1,@fp/' -e 's/	rr\([0-7]\),0(fp)$/	rr\1,@fp/' > shrink.s
 mv shrink.s $s

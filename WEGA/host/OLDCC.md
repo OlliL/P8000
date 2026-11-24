@@ -144,7 +144,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 ### v0a (10/82, ex)
 
-- v0 with `OLD_D3AW`, `OLD_D3AC`, `OLD_D2NS`, `OLD_D65` and `OLD_D66` (codgen); cparse and popt those of v0 (`ccv0a`, `/lib/v0a/codgen`). The own code of ex (crt0 3.1
+- v0 with `OLD_D3AW`, `OLD_D3AC`, `OLD_D2NS`, `OLD_D65`, `OLD_D66` and `OLD_D18A` (codgen); cparse and popt those of v0 (`ccv0a`, `/lib/v0a/codgen`). The own code of ex (crt0 3.1
   10/28/82) follows it, the libraries linked into ex (libc-v1.a, libtermlib-v1.a) follow v0: isatty, stty, gtty in /bin/ex
   are exact with v0 and differ with `OLD_D3AW`.
 - Measured 2026-11-23 (`OLDCC_PARAMREGS.md`): ex 323 -> 339 of 391 functions exact, none lost; 340 with `OLD_D3AC`. The programs of 07/82
@@ -555,6 +555,10 @@ their own (sym2.c, the name is a guess), and hash, upoff, oalloc belong to sym1.
 v0 `OLD_D18` (codgen): the spills and saves are written `0(fp)`, never `@r15`. ld and codgen as originals built by other versions use `@r15`; v1
 writes `%0000(r15)` for the home of a parameter where rmdir has `@r15`.
 
+v0a `OLD_D18A` (codgen, regargs): the stores of the parameters at offset 0 are `@fp` (`ld @r15,r7`, `ldm @r15,r5,#3`), the saves
+of r8 ... r14 stay `0(fp)` (OLD_D18). ex: every function with a parameter home at offset 0 (about 100); before, a sed rule of
+src/cmd/ex/shrink.sh made them.
+
 ### D19 Order of evaluation of the operands of a binary operator
 
 The old cc evaluates the left operand of `+`, `==`, `>` first when both are calls; the shipped cc the right one. Our sources of cparse
@@ -824,7 +828,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cpp | cpp.c, cpy.y, yylex.c | v0p |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
 | clist | clist.c | v0p | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | mkdir | mkdir.c | v0 |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| ex | ex 2.13 (own code) | v0a |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  | x | x |
+| ex | ex 2.13 (own code) | v0a |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |  |  |  |  |  |  |  | x | x |
 | mkstr | mkstr.c, libc calloc | v0 |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | chkout | chkout.c, common.c (07/23/82) | v0 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 | make | main.c, misc.c, files.c (11/18/83) | shipped | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |

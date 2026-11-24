@@ -376,7 +376,7 @@ regargs(tot)
 			if (maxoff + s->soffset)
 				printf("\t%s\t~L1+%ld(fp),%s\n", mn, s->soffset / SZCHAR, rnames[reg]);
 			else
-#ifdef OLD_D18
+#if defined(OLD_D18) && !defined(OLD_D18A)
 				printf("\t%s\t0(fp),%s\n", mn, rnames[reg]);
 #else
 				printf("\t%s\t@fp,%s\n", mn, rnames[reg]);
@@ -402,7 +402,7 @@ regargs(tot)
 #endif
 			printf("\tld\t~L1+%u(fp),r%d\n", t, lo);
 		else
-#ifdef OLD_D18
+#if defined(OLD_D18) && !defined(OLD_D18A)
 			printf("\tld\t0(fp),r%d\n", lo);
 #else
 			printf("\tld\t@fp,r%d\n", lo);
@@ -411,7 +411,7 @@ regargs(tot)
 		if ((long)(unsigned)t + maxoff)
 			printf("\tldl\t~L1+%u(fp),rr%d\n", t, lo);
 		else
-#ifdef OLD_D18
+#if defined(OLD_D18) && !defined(OLD_D18A)
 			printf("\tldl\t0(fp),rr%d\n", lo);
 #else
 			printf("\tldl\t@fp,rr%d\n", lo);
@@ -420,7 +420,7 @@ regargs(tot)
 		if ((long)(unsigned)t + maxoff)
 			printf("\tldm\t~L1+%u(fp),r%d,#%d\n", t, lo, hi - lo + 1);
 		else
-#ifdef OLD_D18
+#if defined(OLD_D18) && !defined(OLD_D18A)
 			printf("\tldm\t0(fp),r%d,#%d\n", lo, hi - lo + 1);
 #else
 			printf("\tldm\t@fp,r%d,#%d\n", lo, hi - lo + 1);

@@ -2237,3 +2237,12 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   in the locale (_column before _Copy); LC_ALL=C in shrink.sh. Last byte: _length 0_3 (libc-v1 has 0_2; 0_3 in libc-v1
   costs 17 programs). Of all libc-vN only libc-v11 has no member of ex in another version; its 19 shared members stand
   in the order of /bin/ex, the 23 others were inserted in their places (owner 2026-11-24). checkall -b: ALL OK, 847 files.
+
+## 2026-11-24 v0a OLD_D18A: the parameter stores at offset 0 (ex shrink.sh)
+
+- shrink.sh (WEGA's step between compiler and cas, rebuilt from /bin/ex) looked made up in its step 2 (owner): its rules
+  for 0(fp) beside r0..r7 are the compiler's. A v0a variant without OLD_D18 in regargs (only there) writes the parameter
+  stores at offset 0 as @fp; ex stays byte-identical without the three store rules of shrink.sh. The only loads
+  `rN,0(fp)` the compiler still writes are the six `ld r1,0(fp)` of the indirect calls (gencall, OLD_D18), the case
+  "only the last load of a function is @fp", still in shrink.sh with the ~L1(fp) rule. Step 1 (the jp tables) rewritten
+  as a short script, same output.
