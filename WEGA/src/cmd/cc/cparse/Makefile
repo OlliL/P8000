@@ -36,9 +36,10 @@ build/nonsegv0p/cparse: crt0.o FORCE
 build/nonsegv1/cparse: crt0.o FORCE
 	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D1 -DOLD_D8L"
 
-# vm: the shipped cparse with OLD_D1S, built as the shipped one (ccv0p, libc-v7.a: the malloc whose heap OLD_D1S reads)
+# vm: the shipped cparse with OLD_D1S (built by cc as the other old passes; the malloc of libc-v7.a, which the shipped
+# cparse has, and of /lib/libc.a give the same frame words: measured)
 build/nonsegvm/cparse: crt0.o FORCE
-	cd build/nonsegvm  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cparse LIBC="../../../../../lib/libc-v7.a" CFLAGS="$(CFLAGS) -DOLD_D1S"
+	cd build/nonsegvm  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cparse CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D1S"
 
 build/seg/scparse: crt0.o FORCE
 	cd build/seg ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scparse CFLAGS="$(CFLAGS) -DSEG"

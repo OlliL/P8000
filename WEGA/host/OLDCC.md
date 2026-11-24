@@ -196,8 +196,8 @@ The programs with the SCCS lines of 11/16/83 .. 11/18/83 (`87wega3.2`) give some
 (D1, register slots). `ccvm` (`-DOLD_VM` in `src/cmd/cc`, `build/nonsegvm`) runs the shipped passes with `/lib/vm/cparse`:
 the shipped cparse with `OLD_D1S` (`lookup` in sym1.c does not clear `sfldc` of a new symbol entry; the entry is
 malloc'd and can be a freed one whose `sfldc` still holds the 1 of a register parameter, and `oalloc` then gives the
-register local a frame word). Built like the shipped cparse (ccv0p, `libc-v7.a`: the malloc whose reuse decides which
-entries are stale). Which local gets a word depends on every symbol entry made before it in the file (`OLDCC_REGSLOTS.md`).
+register local a frame word). Built by cc with the libc of stage 1 as the other old passes (the malloc decides which entries are stale: those of
+`libc-v7.a`, linked into the shipped cparse, and of `/lib/libc.a` give the same words, measured on the test set). Which local gets a word depends on every symbol entry made before it in the file (`OLDCC_REGSLOTS.md`).
 Built by vm and byte-identical: ar, cmp, cpio, diff, du, grep, mail (rmail), make, nl, pr, putfile, who; getfile (partial,
 its frames right). Source forms it needs: make's defs includes the headers of files.c (pwd.h, ar.h, s.out.h, nlist.h);
 make files.c eqstr keeps an `int unused`, mail an unused `<sys/dir.h>` (the entries in front of the first function that
