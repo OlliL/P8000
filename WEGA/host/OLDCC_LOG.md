@@ -2325,3 +2325,5 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   sed gone, eqstr keeps `int unused`. mail: system needed 3 entries more in front of the first function; of 175
   combinations of natural declarations only `optind, strcat, strcpy`; of headers sys/dir.h and sys/prim.h; taken
   `<sys/dir.h>`.
+- checkall: 853 installed files identical with WEGA (the 13 by ccvm among them, /lib/cparse unchanged), all corpora but
+  casold equal; casold failed once on "Text file busy" (a host race at the start of cas), its rerun 924 of 924 equal.

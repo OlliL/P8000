@@ -44,7 +44,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | File | Kind | Source | Status | Compiler | libc |
 |---|---|---|---|---|---|
 | `bin/adb` | binary E711 | - | todo | D12 new, D1 loose | - |
-| `bin/ar` | binary E707 | `src/cmd/ar.c` | exact | cc | libc.a |
+| `bin/ar` | binary E707 | `src/cmd/ar.c` | exact | ccvm | libc.a |
 | `bin/as` | binary E711 | - | todo | D12 old?, D1 tight | - |
 | `bin/bc` | binary E707 | `src/cmd/bc` | exact | ccv0 | libc-v1.a |
 | `bin/bcmp` | binary E711 | `src/cmd/bcmp.c` | exact | cc | libc.a |
@@ -59,7 +59,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/chkwhat` | binary E707 | `src/cmd/sccs` | exact | cas, ccv1 | libc-v4.a |
 | `bin/chmod` | binary E707 | `src/cmd/chmod.c` | exact | ccv0 | libc-v1.a |
 | `bin/chown` | binary E707 | `src/cmd/chown.c` | exact | ccv1 | libc-v6.a |
-| `bin/cmp` | binary E707 | `src/cmd/cmp.c` | exact | cc | libc.a |
+| `bin/cmp` | binary E707 | `src/cmd/cmp.c` | exact | ccvm | libc.a |
 | `bin/copydisk` | binary E707 | `src/cmd/copydisk` | exact | cc | libc.a |
 | `bin/cp` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
 | `bin/csh` | binary E711 | - | todo | D12 old, D1 slots | - |
@@ -67,9 +67,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/dc` | binary E707 | `src/cmd/dc` | exact | ccv0 | libc-v1.a |
 | `bin/dd` | binary E707 | `src/cmd/dd.c` | exact | ccv1r | libc-v13.a |
 | `bin/df` | binary E707 | `src/cmd/df.c` | exact | ccv1 | libc-v9.a |
-| `bin/diff` | binary E711 | `src/cmd/diff.c` | exact | cc | libc.a |
+| `bin/diff` | binary E711 | `src/cmd/diff.c` | exact | ccvm | libc.a |
 | `bin/dog` | binary E707 | `src/cmd/dog.c` | exact | ccv1 | libc-v6.a |
-| `bin/du` | binary E707 | `src/cmd/du.c` | exact | cc | libc.a |
+| `bin/du` | binary E707 | `src/cmd/du.c` | exact | ccvm | libc.a |
 | `bin/echo` | binary E707 | `src/cmd/echo.c` | exact | ccv0 | libc-v11.a |
 | `bin/echo2` | binary E707 | `src/cmd/echo2.c` | exact | ccv0 | libc-v1.a |
 | `bin/ed` | binary E707 | `tmp/sys3/usr/src/cmd/ed/ed.c` | sys3 | D12 old, D1 slots | - |
@@ -83,12 +83,12 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/format` | binary E707 | `src/cmd/format` | exact | cc | libc.a |
 | `bin/fsc` | binary E611 | - | todo | D12 new?, D1 - | - |
 | `bin/fse` | binary E607 | `src/cmd/fse` | exact | scc | - |
-| `bin/getfile` | binary E707 | `src/cmd/getfile.c` | partial | cc | libc.a |
+| `bin/getfile` | binary E707 | `src/cmd/getfile.c` | partial | ccvm | libc.a |
 | `bin/gets` | binary E707 | `src/cmd/gets.c` | exact | ccv0 | libc-v1.a |
 | `bin/getud` | binary E707 | `src/cmd/getud.c` | exact | cc | libc.a |
 | `bin/gld` | binary E607 | - | todo | D12 new, D1 - | - |
 | `bin/gpasswd` | binary E707 | `src/cmd/gpasswd.c` | partial | cc | libc-v12.a |
-| `bin/grep` | binary E707 | `src/cmd/grep.c` | exact | cc | libc.a |
+| `bin/grep` | binary E707 | `src/cmd/grep.c` | exact | ccvm | libc.a |
 | `bin/hd` | binary E707 | `src/cmd/od.c` | exact | ccv1r | libc-v3.a |
 | `bin/kill` | binary E707 | `src/cmd/kill.c` | exact | ccv0 | libc-v1.a |
 | `bin/ld` | binary E711 | `src/cmd/ld` | exact | ccv1 | libc-v9.a |
@@ -96,31 +96,31 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/local` | binary E707 | `tmp/sys3/usr/src/cmd/cc/pcc/mdp/local.c` | sys3 | D12 -, D1 loose | - |
 | `bin/login` | binary E707 | `tmp/sys3/usr/src/cmd/login.c` | sys3 | D12 old, D1 slots | - |
 | `bin/ls` | binary E707 | `tmp/sys3/usr/src/cmd/ls.c` | sys3 | D12 old?, D1 slots | - |
-| `bin/mail` | binary E707 | `src/cmd/mail.c` | exact | cc | libc-v12.a |
-| `bin/make` | binary E711 | `src/cmd/make` | exact | cc | libc.a |
+| `bin/mail` | binary E707 | `src/cmd/mail.c` | exact | ccvm | libc-v12.a |
+| `bin/make` | binary E711 | `src/cmd/make` | exact | ccvm | libc.a |
 | `bin/mkdir` | binary E707 | `src/cmd/mkdir.c` | exact | ccv0 | libc-v1.a |
 | `bin/more` | binary E707 | `src/cmd/more` | partial | - | - |
 | `bin/mv` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
 | `bin/newgrp` | binary E707 | `src/cmd/newgrp.c` | exact | cc | libc-v12.a |
 | `bin/nice` | binary E707 | `src/cmd/nice.c` | exact | ccv1 | libc-v4.a |
-| `bin/nl` | binary E707 | `src/cmd/nl.c` | exact | cc | libc.a |
+| `bin/nl` | binary E707 | `src/cmd/nl.c` | exact | ccvm | libc.a |
 | `bin/nm` | binary E707 | `tmp/sys3/usr/src/cmd/nm.c` | sys3 | D12 new?, D1 loose | - |
 | `bin/nohup` | binary E707 | `src/cmd/nohup.c` | exact | ccv0 | libc-v1.a |
 | `bin/od` | binary E707 | `src/cmd/od.c` | exact | ccv1r | libc-v3.a |
 | `bin/page` | binary E707 | - | todo | D12 old, D1 slots | - |
 | `bin/passwd` | binary E707 | `src/cmd/passwd.c` | exact | ccv1 | libc-v4.a |
 | `bin/pburn` | binary E611 | `src/cmd/pburn` | exact | scc | slibc.a |
-| `bin/pr` | binary E707 | `src/cmd/pr.c` | exact | cc | libc.a |
+| `bin/pr` | binary E707 | `src/cmd/pr.c` | exact | ccvm | libc.a |
 | `bin/printenv` | binary E707 | `src/cmd/printenv.c` | exact | ccv0 | libc-v1.a |
 | `bin/ps` | binary E607 | `tmp/sys3/usr/src/cmd/ps.c` | sys3 | D12 new, D1 - | - |
 | `bin/pstat` | binary E607 | - | todo | D12 new, D1 - | - |
-| `bin/putfile` | binary E707 | `src/cmd/putfile.c` | exact | cc | libc.a |
+| `bin/putfile` | binary E707 | `src/cmd/putfile.c` | exact | ccvm | libc.a |
 | `bin/putud` | binary E707 | `src/cmd/putud.c` | exact | cc | libc.a |
 | `bin/pwd` | binary E707 | `src/cmd/pwd.c` | exact | ccv0 | libc-v1.a |
 | `bin/regcmp` | binary E707 | `src/cmd/regcmp.c` | partial | ccv1 | libc-v4.a |
 | `bin/remote` | binary E707 | - | todo | D12 new?, D1 loose | - |
 | `bin/rm` | binary E707 | `src/cmd/rm.c` | exact | ccv1 | libc-v6.a |
-| `bin/rmail` | binary E707 | `src/cmd/mail.c` | exact | cc | libc-v12.a |
+| `bin/rmail` | binary E707 | `src/cmd/mail.c` | exact | ccvm | libc-v12.a |
 | `bin/rmdir` | binary E707 | `src/cmd/rmdir.c` | exact | ccv1r | libc-v10.a |
 | `bin/rsh` | binary E711 | - | todo | D12 new, D1 slots | - |
 | `bin/scc` | binary E707 | `src/cmd/cc` | exact | cc | libc-v8.a |
@@ -151,7 +151,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/vi` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
 | `bin/view` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
 | `bin/whereis` | binary E707 | `src/cmd/whereis.c` | exact | ccv0 | libc-v1.a |
-| `bin/who` | binary E707 | `src/cmd/who.c` | exact | cc | libc.a |
+| `bin/who` | binary E707 | `src/cmd/who.c` | exact | ccvm | libc.a |
 | `bin/whodo` | text | `src/cmd/whodo.sh` | exact | - | - |
 | `bin/write` | binary E707 | `src/cmd/write.c` | exact | ccv1r | libc-v10.a |
 
@@ -290,7 +290,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `usr/bin/col` | binary E707 | `tmp/sys3/usr/src/cmd/col.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/comb` | binary E707 | `tmp/sys3/usr/src/cmd/sccs/src/comb.c` | sys3 | D12 old, D1 slots | - |
 | `usr/bin/comm` | binary E707 | `tmp/sys3/usr/src/cmd/comm.c` | sys3 | D12 -, D1 loose | - |
-| `usr/bin/cpio` | binary E707 | `src/cmd/cpio.c` | exact | cc | libc.a |
+| `usr/bin/cpio` | binary E707 | `src/cmd/cpio.c` | exact | ccvm | libc.a |
 | `usr/bin/cref` | binary E707 | `src/cmd/cref` | partial | cc | - |
 | `usr/bin/crypt` | binary E707 | `tmp/sys3/usr/src/cmd/crypt.c` | sys3 | D12 -, D1 tight | - |
 | `usr/bin/csplit` | binary E707 | `tmp/sys3/usr/src/cmd/csplit.c` | sys3 | D12 new?, D1 loose | - |
