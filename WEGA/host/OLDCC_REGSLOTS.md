@@ -145,13 +145,28 @@ None gives the 27 witnesses without new false ones. The programs that come out r
 uniq, du, grep, pr, putfile, who, cmp) and the wrong ones (make misc.c, ar, cpio, csplit, mail) are the lead: something in
 the wrong ones makes the old cparse allocate or free otherwise (not yet seen what).
 
+## The comparison of constructs (2026-11-24)
+
+- Per file, the freed entries by storage class (statics, labels, members, struct names, hidden copies) against right or
+  wrong in the model: no class separates the files that come out right (diff, nl, comm, tsort, uniq, du, grep, pr, putfile,
+  who, cmp) from the wrong ones (make misc.c, ar, cpio, csplit, mail).
+- The first wrong function of each wrong file: make misc.c intalloc (after concat, suffix), ar rcmd (right after setcom),
+  cpio gmatch, csplit atol, mail system, make dbreplace, eqstr, yyparse.
+- ar in detail: setcom frees its two string blocks, then clearst frees the parameter `fun` (`int (*fun)()`, sfldc 1);
+  rcmd's register local `f` takes that block: a word in the model, none in the original. The strings freed after clearst
+  instead (the rover on the string block) breaks diff, tsort, uniq, mail (32 .. 39 wrong): the order strings, then
+  symbols is right. A function pointer parameter that leaves 0: ar better (rcmd right), mail worse (isfrom): not it.
+- `probe.py FILE` (every single change of the stream in a window: an extra block kept or freed, a free left out) and
+  `greedy.py FILE` (such changes one after the other): in misc.c one change makes intalloc right, then nothing helps at
+  subst. The original is not one extra or missing block away from the model.
+
 ## The tools
 
 `host/recon/regslots/`: `setup.sh` makes the work directory (`RS_WORK`, default `tmp/tmp/regslots` beside WEGA: the scratch
 cparse from `cparse_x.diff`, a root with it behind the shipped cc, the test set, the logs); `fscan.py` (the masked frame
 compare of a build against the original), `score.sh` (real builds of the test set), `v7sim.py` (the V7 malloc),
 `replay.py` (a log through the malloc with the sfldc model), `hyp.py` (the score of the test set, the expected words),
-`hyps1.py` (the hypotheses of the table above).
+`hyps1.py`, `hyps2.py` (the hypotheses above), `probe.py`, `greedy.py` (single changes of a stream).
 
 ## Open, next steps
 
