@@ -125,3 +125,9 @@ change" by hand or by a guess; a key either matches bytes or it does not.
 3. The workers and the scheduling.
 4. v1r end to end; then v0a; then all other versions, the segmented ones the same way (scc, scparse, scodgen, spopt, the
    segmented libraries); `matrix check`; the old tables replaced; the documents.
+
+## Open questions
+
+1. Do we need to distinguish the passes for Table B as well? There are switches which act in more than one pass (v1r: `OLD_D1R` in cparse and codgen, `OLD_D67` in codgen and popt), so a witness can be lost in
+   one pass and gained in another. The table could have a column "pass" for each row, or the witness could be listed twice
+   (once per pass). The first is more compact, the second is more explicit.
