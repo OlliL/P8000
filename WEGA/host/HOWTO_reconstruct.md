@@ -75,7 +75,9 @@ More, found on sld: `KNOWLEDGE.md`, "what fixed the findings functions".
   saved parameters, then the locals of inner blocks, then the temporaries. A frame of the original that is larger means an
   unused local (or a register variable that is an auto there), a smaller one a local too many or one variable used for two
   purposes; a mapping that only mirrors when two declarations are swapped is a chain or statement order (`q = last = x`
-  against `last = q = x`, or two statements).
+  against `last = q = x`, or two statements). A program of vm (ccvm, crt0 11/16/83 or 11/18/83): unused frame words of
+  register locals come from the compiler; a wrong count of them is fixed by the symbol entries in front, not by a spare
+  local (`OLDCC.md`, vm).
 - Plain forms first. `goto`, unused labels and spare locals only when nothing plain fits; mark them in `findings.json` as odd forms.
 - `call` where `calr` reaches: the callee is in another file, or the old cas decided it long (`OLDCC.md`, D17). A backward `call` in reach always means another file.
 
