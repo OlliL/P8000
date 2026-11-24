@@ -6,7 +6,8 @@ ORIG is the path below the WEGA root (default bin/NAME; WEGA=dir names the root)
   2. the System III source (the path of src/COVERAGE.md, else tmp/sys3/usr/src/cmd/NAME.c or cmd/NAME/), copied unchanged in the
      V7 layout: cmd/NAME.c to src/cmd/NAME.c, a file of cmd/DIR/ as the directory src/cmd/DIR/; an existing target is kept;
   3. the dating (the line of host/OLDCC_DATES.md) and the compiler it points to (OLDCC.md, section 2): D1 tight = v0, slots = v1
-     (neighbours v1r, v1q), loose with the libc of 09/83 = the shipped cc; the main session decides between them;
+     (neighbours v1r, v1q), the crt0 stamp 3.2 11/16/83 or 11/18/83 = vm (ccvm), loose with the libc of 09/83 = the
+     shipped cc; the main session decides between them;
   4. stripped or not (the header);
   5. compare/NAME/progcfg.py (kept when it exists), the inventory (inventory.py), the end of the own code OWN_LIM and the
      library (the walk of whichlibc.py from the start of the text, per library: the libc starts at its first member of at
@@ -112,6 +113,8 @@ def compiler(d):
         return 'ccv0', ['ccv1r']
     if d['d1'] == 'slots':
         return 'ccv1', ['ccv1r', 'ccv1q']
+    if re.match(r'3\.2 11/1[68]/83', d['crt0']):
+        return 'ccvm', ['cc']       # the build of 11/16 .. 11/18/83 (OLDCC.md, vm)
     if d['d1'] == 'loose' and d['libc83']:
         return 'cc', ['ccv1']
     return None, ['ccv0', 'ccv1', 'cc']

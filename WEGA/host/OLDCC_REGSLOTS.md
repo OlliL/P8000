@@ -282,6 +282,7 @@ stays; `saved/` there holds the outputs of the first runs.
 
 - make files.c eqstr: the 2 entries fewer it needs (section "The 63 entries of make"); mail: the 3 entries in front of the
   first function (an unused `<sys/dir.h>` now; `extern int optind; char *strcat(), *strcpy();` fits too).
-- slibc calloc (segmented): the same rule in scparse (`int spare` now).
+- slibc calloc (segmented, malloc.c 3.3 09/12/83, built by vl, not of 11/83): whether the same rule held in the scparse of
+  09/83 (`int spare` now).
 - comm, csplit, tsort, uniq (not in the tree yet): to be built by ccvm.
 - The v1 words of ld (main, endload, slookup, pslookup, index16): the place of a register declaration (section "v1").
