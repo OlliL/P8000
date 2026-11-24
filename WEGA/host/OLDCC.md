@@ -125,8 +125,8 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 ### v1r (01/83)
 
-- v1q with `OLD_D1R` (no temporary for the value of a return) and `OLD_D67`. Driver `ccv1r`, its own codgen, its own popt (`/lib/v1r/popt`: that of v1
-  without `OLD_D52`, which came with v1). Byte-identical: `/bin/write`, `/bin/rmdir`, with `libc-isstore.a`; `/bin/od` (`hd`).
+- v1q with `OLD_D1R` (no temporary for the value of a return) and `OLD_D67`. Driver `ccv1r`, its own codgen, its own popt (`/lib/v1r/popt`: without the switches of
+  v1, `OLD_D20` and `OLD_D52` came with v1). Byte-identical: `/bin/write`, `/bin/rmdir`, with `libc-isstore.a`; `/bin/od` (`hd`), `/bin/dd`.
 
 ### v0 (1982)
 
@@ -581,7 +581,7 @@ write these operands in the order that gives the bytes (`argregs`, `rmconv`, `cl
 ### D20 Code motion of popt
 
 - v0p: no old popt. The models built with the original /lib/popt as the pass of ccv0p are byte-identical to those with our popt.
-- v1 `OLD_D20` (popt): a `jpr` to the label right behind it does not end a block to be moved, so short blocks in front of the function
+- v1 `OLD_D20` (popt; not in v1r: dd match keeps the loop with the test on top): a `jpr` to the label right behind it does not end a block to be moved, so short blocks in front of the function
   exit stay (ld ensure_buf, load1, main; libl allprint). Only for a block whose label at most 3 jumps name when codemove
   meets it: a common tail that many jumps name moves as in the shipped popt (libPW xmsg: the `fatal(str)` tail, 6;
   regcmp: 21). The bound lies between 3 (allprint) and 6 (xmsg), taken from the measurements.

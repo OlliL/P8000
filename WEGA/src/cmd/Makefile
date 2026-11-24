@@ -32,6 +32,7 @@ LIBC_V11 = ../lib/libc-v11.a
 LIBC_V7 = ../lib/libc-v7.a
 LIBC_V9 = ../lib/libc-v9.a
 LIBC_V12 = ../lib/libc-v12.a
+LIBC_V13 = ../lib/libc-v13.a
 LIBPW = ../lib/libPW/build/nonseg/libPW.a
 
 PROGS = ar
@@ -49,7 +50,7 @@ all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 # switches the sources to what the shipped libc and cc need (the old libc's readsym, sprintf value, swap_quad; the exit status
 # of size). Without -DSHIPPED the bytes of the originals are rebuilt. The files of /lib are not made here: empty rules below.
 SHIPFLAGS = -O -DSHIPPED
-SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBPW=/usr/lib/libPW.a
+SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBC_V13=/lib/libc.a LIBPW=/usr/lib/libPW.a
 
 shipped:
 	$(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $(PROGS) $(FILES) $(SIMPLE) $(SHIPCC) LIBC=/lib/libc.a
@@ -276,11 +277,11 @@ date.o: date.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c date.c
 date: crt0-date.o date.o $(LIBC_V6)
 	$(LD) -e start -o $@ crt0-date.o date.o $(LIBC_V6)
-# dd: System III dd.c as WEGA changed it (files=, chkres: the message of reserv(1), the zero count message); partial: match, the place of the string dd, ibc = ibs, open of the libc
+# dd: System III dd.c as WEGA changed it (files=, chkres: the message of reserv(1), the zero count message); ddname behind number (the place of the string), an unused label sync: (ibc = ibs in r2), libc-v13 (open 0_1)
 dd.o: dd.c
 	$(CCV1R) $(CFLAGS) -I../head/oldv7 -c dd.c
-dd: crt0-dd.o dd.o $(LIBC_V10)
-	$(LD) -e start -o $@ crt0-dd.o dd.o $(LIBC_V10)
+dd: crt0-dd.o dd.o $(LIBC_V13)
+	$(LD) -e start -o $@ crt0-dd.o dd.o $(LIBC_V13)
 # regcmp: System III regcmp.c (char %s[] = {, the WEGA sccsid); partial: the regcmp of libPW in it is an older version
 regcmp.o: regcmp.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c regcmp.c

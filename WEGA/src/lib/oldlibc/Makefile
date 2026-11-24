@@ -14,9 +14,10 @@
 #   libc-v7.a  cparse, scparse, find (10/83)
 #   libc-v8.a  cc, scc
 #   libc-v9.a  ld (07/83), df (04/83: calloc 0_2, nlist 0_1, stat, sync)
-#   libc-v10.a write, rmdir (01/83); perror, errlst, dup for dd (12/82, its own code not exact yet)
+#   libc-v10.a write, rmdir (01/83)
 #   libc-v11.a mkstr (11/82), cat (10/82), echo (08/82), ex (10/82; its members as in libc-v1, but length 0_3)
 #   libc-v12.a chkin (09/83): the shipped libc.a (../libc) with printf and doprnt 0_4 in their places
+#   libc-v13.a dd (12/82): libc-v10 with open 0_1 (two arguments)
 #
 #   make        (needs ../libc made, and ccv1, ccv0, ccv0p)
 #   make clean
@@ -30,7 +31,7 @@ CCV0P = ccv0p
 CAS = cas
 AR = ar
 
-LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a ../libc-v12.a
+LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a ../libc-v12.a ../libc-v13.a
 
 all: $(LIBS)
 
@@ -173,6 +174,18 @@ LIBv10 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/build/nonseg/f
 # ccv1r
 ../libc-v10.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv10)
+
+# dd (12/82): libc-v10 with the open of two arguments (open 0_1); write and rmdir have the one of three
+LIBv13 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/build/nonseg/ffltioc.o filbuf/0_4.o flsbuf/0_3.o endopen/0_5.o \
+	 findiop/0_3.o ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o perror/0_4.o ttyname/0_1.o cnvt/0_3.o \
+	 ../libc/build/nonseg/decimal.o length/0_4.o malloc/0_6.o errlst/0_2.o isatty/0_3.o stty/0_4.o strcat/0_3.o strcmp/0_2.o \
+	 strcpy/0_3.o strlen/0_3.o strrchr/0_3.o ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o ../libc/build/nonseg/brk.o \
+	 ../libc/build/nonseg/chmod.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/dup.o ../libc/build/nonseg/execl.o ../libc/build/nonseg/fork.o \
+	 ../libc/build/nonseg/fstat.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o open/0_1.o ../libc/build/nonseg/read.o \
+	 ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/wait.o \
+	 ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
+../libc-v13.a: objs
+	sh mklib.sh $@ $(AR) $(LIBv13)
 
 LIBv11 = putchar/0_1.o freopen/0_1.o fseek/0_2.o ftell/0_1.o rew/0_1.o rdwr/0_3.o fopen/0_1.o printf/0_3.o doprnt/0_7.o ffltioc/0_1.o \
 	 ungetc/0_1.o filbuf/0_3.o setbuf/0_1.o data/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o ../libc/build/nonseg/__callex.o getenv/0_1.o sleep/0_1.o ../libc/build/nonseg/cuexit.o \

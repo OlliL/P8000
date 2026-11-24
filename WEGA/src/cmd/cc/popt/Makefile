@@ -31,9 +31,9 @@ build/nonsegv0p/popt: FORCE
 	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS)"
 build/nonsegv1/popt: FORCE
 	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D20 -DOLD_D52"
-# v1r (01/83): the popt of v1 without OLD_D52 (od putn: the else arm of the putc moved behind as the other popt do)
+# v1r (01/83): the popt without the switches of v1 (OLD_D52: od putn; OLD_D20: dd match, the loop not rotated)
 build/nonsegv1r/popt: FORCE
-	cd build/nonsegv1r ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D20"
+	cd build/nonsegv1r ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS)"
 
 build/seg/spopt: FORCE
 	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CFLAGS="$(CFLAGS) -DSPOPT"

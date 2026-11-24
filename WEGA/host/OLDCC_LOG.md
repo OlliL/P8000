@@ -2293,3 +2293,16 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   v1 gives every register variable one at its declaration): time `register p;` declared in front of `long before, after;`,
   date `register char *tzn;` in front of `struct timeb tb;`: both byte-identical. Earlier 11 orders of time did not move p.
   To be tried on the other "spare" and "unused" frame words of v1 programs (ld main, endload, slookup, pslookup, index16).
+
+## 2026-11-24 dd byte-identical: v1r popt without OLD_D20, libc-v13 (open 0_1), two source forms
+
+- match: the loop of the original keeps the test on top; the raw ccv1r output through the popt of v0, v0p, the shipped
+  one or v1 without OLD_D20 gives it, with OLD_D20 (v1, v1r) not. The v1r popt now has no v1 switch: od, write, rmdir
+  byte-identical, the 17 libc modules of ccv1r unchanged.
+- open: dd has the open of two arguments (open 0_1), write and rmdir (libc-v10) that of three; of all libc-vN only v10
+  fits dd but for open: libc-v13 = libc-v10 with open 0_1 (owner).
+- ibc = ibs in main: r2 in the original, r3 with ccv1r (r2 still names ibc after `ld r2,_ibc; cp r2,_ibs`). 21 forms:
+  none; an unused label in front of the assignment gives it (taken, owner). OLD_D2N (v0) in v1r: no effect.
+- The string "dd" (perror in chkres): ccv1r writes data and switch tables where they stand and all string literals at the
+  end; in the original "dd" lies behind the switch table of number and in front of the strings: a global
+  `char ddname[] = "dd";` between number and cnull, perror(ddname). dd byte-identical.

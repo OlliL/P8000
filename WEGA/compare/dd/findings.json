@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "ccv1r",
+ "compiler": "ccv1r (its popt without the v1 switches); libc-v13 (libc-v10 with open 0_1)",
  "binary": "/bin/dd",
  "functions": {
   "start": {
@@ -31,12 +31,12 @@
    "file": "dd.c",
    "orig": "0x0042",
    "size_orig": 1092,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000"
    ],
-   "note": "WEGA: files= (ioctl(ibf, 0x6300, files) before skip), chkres after the open/creat messages, the zero count message. Open: ibc = ibs under SYNC in r2 (original) / r3 (ccv1r)."
+   "note": "WEGA: files= (ioctl(ibf, 0x6300, files) before skip), chkres after the open/creat messages, the zero count message. The unused label sync: in front of ibc = ibs makes the compiler forget ibc in r2, so ibs goes to r2 as in the original (a forced form)."
   },
   "flsh": {
    "file": "dd.c",
@@ -53,108 +53,100 @@
    "file": "dd.c",
    "orig": "0x04d6",
    "size_orig": 66,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
     "0x0042"
    ],
-   "note": "the loop of the original is not rotated (the test at the top: the while form of System III gives the test at the bottom with ccv1r); forms tried: for(;;) with break, goto loop, braces: none."
+   "note": "exact with the popt of v1r without OLD_D20 (2026-11-24): the loop keeps its test on top."
   },
   "number": {
    "file": "dd.c",
    "orig": "0x0518",
    "size_orig": 130,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
     "0x0042"
-   ],
-   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+   ]
   },
   "cnull": {
    "file": "dd.c",
    "orig": "0x059a",
    "size_orig": 66,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
-   "callers": [],
-   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+   "callers": []
   },
   "null": {
    "file": "dd.c",
    "orig": "0x05dc",
    "size_orig": 42,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
-   "callers": [],
-   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+   "callers": []
   },
   "ascii": {
    "file": "dd.c",
    "orig": "0x0606",
    "size_orig": 104,
-   "status": "open",
+   "status": "exact",
    "kind": "candidate",
-   "callers": [],
-   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+   "callers": []
   },
   "ebcdic": {
    "file": "dd.c",
    "orig": "0x066e",
    "size_orig": 150,
-   "status": "open",
+   "status": "exact",
    "kind": "candidate",
-   "callers": [],
-   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+   "callers": []
   },
   "ibm": {
    "file": "dd.c",
    "orig": "0x0704",
    "size_orig": 150,
-   "status": "open",
+   "status": "exact",
    "kind": "candidate",
-   "callers": [],
-   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+   "callers": []
   },
   "term": {
    "file": "dd.c",
    "orig": "0x079a",
    "size_orig": 18,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
     "0x0042",
     "0x0486"
-   ],
-   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+   ]
   },
   "stats": {
    "file": "dd.c",
    "orig": "0x07ac",
    "size_orig": 64,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
     "0x0042",
     "0x079a"
-   ],
-   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+   ]
   },
   "chkres": {
    "file": "dd.c",
    "orig": "0x07ec",
    "size_orig": 72,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
     "0x0042"
    ],
-   "note": "name guessed; written from the code: stat of the file that failed, perror(\"dd\") and exit(1) when stat fails, the reserv(1) message for a character device with mode 0. The string \"dd\" is the first string of the data in the original (before those of main), although the function is the last one: not reproduced."
+   "note": "name guessed; written from the code: stat of the file that failed, perror(ddname) and exit(1) when stat fails, the reserv(1) message for a character device with mode 0. ddname[] = \"dd\" is a global behind number (the data in front of the strings, as the original), not a literal."
   }
  },
  "note": "libc-v10.a: the open stub differs (ld r2,r5 in ours at 0x1778), not looked into. The \"not enough memory\" test of System III is gone from the code (pointer < 0 is never true), its string stays."

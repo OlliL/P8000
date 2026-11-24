@@ -85,7 +85,7 @@ char	*popt		= SEG("/lib/v1/popt", "/lib/v1/spopt");
 char	*cparse		= "/lib/v1/cparse";
 char	*gopt		= "/lib/gopt";
 char	*codgen		= "/lib/v1r/codgen";
-char	*popt		= "/lib/v1r/popt";	/* v1 without OLD_D52 */
+char	*popt		= "/lib/v1r/popt";	/* without the switches of v1 (OLD_D20, OLD_D52) */
 #else
 #ifdef OLD_V1Q
 /* ccv1q (v1q/Makefile): v1 with its own code generator */

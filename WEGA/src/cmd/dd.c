@@ -343,6 +343,7 @@ char **argv;
 			if(ibc != ibs) {
 				nipr++;
 				if(cflag&SYNC)
+			sync:	/* unused: the compiler forgets ibc in r2 (the original takes r2 for ibs) */
 					ibc = ibs;
 			} else
 				nifr++;
@@ -438,6 +439,8 @@ number()
 	}
 	/* never gets here */
 }
+
+char	ddname[] = "dd";	/* the name for perror in chkres: in the data behind the switch table of number, in front of the strings */
 
 cnull(cc)
 {
@@ -568,7 +571,7 @@ char *name;
 	struct stat sb;
 
 	if(stat(name, &sb) == -1) {
-		perror("dd");
+		perror(ddname);
 		exit(1);
 	}
 	if((sb.st_mode & S_IFCHR) && (sb.st_mode & 0777) == 0)
