@@ -180,3 +180,7 @@
 /cc/gopt/gopt
 /sccs/chkout
 /sccs/chkin
+/remote/getfile
+/remote/local
+/remote/putfile
+/remote/remote
