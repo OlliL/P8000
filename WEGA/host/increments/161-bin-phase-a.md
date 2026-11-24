@@ -128,3 +128,6 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
 - 2026-11-24 todo batch 1 (no sources): IDENTICAL echo2 (V7 echo on stderr), printenv (2BSD), whereis (2.9BSD with the WEGA
   directories), dog (written from the code; libc-v6 + freopen, setbuf, ttyname 0_2, strcat 0_1, fcntl, fstat), putfile
   (written from the code); partial: gpasswd (two temporaries of main). Deferred: uusend, remote, ps.
+- 2026-11-24 phase B ex: byte-identical (with edit, vi, view): v0a OLD_D65 (dosub), OLD_D66 (setty, gTTY), OLD_D5S extended
+  (getone), shrink.sh (indirect call temporary; ASCII sort), the old cas (the 24 call/calr functions), exbss.c (the order of
+  the commons), /lib/ex2.13strings, libc-v11 extended by the members of ex. checkall -b ALL OK, 847 files.

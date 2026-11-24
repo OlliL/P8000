@@ -12,6 +12,7 @@
 #    and of its loads only the last one of the function becomes @fp (listchar, normchar, vgotab: 6 places, the only
 #    ones in ex; a rule read off the binary, its mechanism is not known). Written ~L1+0(fp), which step 2 leaves alone.
 s=$1
+LC_ALL=C ; export LC_ALL	# sort in ASCII order (_Copy before _column), as on WEGA
 awk '{ b[++m] = $0 }
 	$0 == "\tcall\t@r1" && b[m - 1] == "\tld\tr1,0(fp)" {
 		n++; l[n] = m - 1

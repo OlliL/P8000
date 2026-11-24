@@ -2225,3 +2225,15 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   ex 364 -> 368 of 394 (listchar, normchar, vgotab; _atoip was cut by the limit of the measurement, exact).
 - The call/calr functions do not follow: the own code is still 152 bytes shorter than the original, the gap grows only
   in them (pragged: `call _undo`, a forward call within reach, calr in the build): the length choice of the old cas.
+
+## 2026-11-24 ex byte-identical: the old cas, the commons, libc-v11
+
+- The 24 call/calr functions: ex assembled with the old cas (ccv0a -c x.s, /lib/old/cas): all 394 functions exact, the own
+  code ends at 0xe96e as in /bin/ex. D17 holds for ex too.
+- Then the file: data 4 bytes longer: EXSTRINGS /usr/lib/ex2.13strings, /bin/ex has /lib/ex2.13strings. bss in another
+  order: /bin/ex has neither the first-mention order of the headers (shipped ld) nor an order of a simple hash of the
+  names (h*k+c mod m, k 1..39, m 50..2099, with and without '_', 8 or all chars: no fit); exbss.c (as bss3.c of codgen)
+  gives it; 13 unreferenced commons fill the 182 bytes of holes exactly. Two jp stubs of ex_vput swapped: the host sort
+  in the locale (_column before _Copy); LC_ALL=C in shrink.sh. Last byte: _length 0_3 (libc-v1 has 0_2; 0_3 in libc-v1
+  costs 17 programs). Of all libc-vN only libc-v11 has no member of ex in another version; its 19 shared members stand
+  in the order of /bin/ex, the 23 others were inserted in their places (owner 2026-11-24). checkall -b: ALL OK, 847 files.

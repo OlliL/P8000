@@ -9,7 +9,7 @@
 #include <local/uparm.h>
 #define	EXRECOVER	libpath(ex2.13recover)
 #define	EXPRESERVE	libpath(ex2.13preserve)
-#define	EXSTRINGS	libpath(ex2.13strings)
+#define	EXSTRINGS	"/lib/ex2.13strings"	/* WEGA: in /lib (/usr/lib holds recover and preserve) */
 
 /*
  * If your system believes that tabs expand to a width other than

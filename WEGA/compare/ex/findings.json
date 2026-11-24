@@ -1,19 +1,20 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "ccv0a (v0a: v0 with OLD_D3AW, OLD_D3AC, OLD_D2NS, OLD_D65; host/OLDCC.md) for the own code; the libraries (libtermlib-v1.a, libc-v1.a) v0. Phase A done 2026-11-23: 362 of 394 (2026-11-24, OLD_D65) functions exact (the start-up code counted).",
+ "compiler": "ccv0a (v0a: v0 with OLD_D3AW, OLD_D3AC, OLD_D2NS, OLD_D65, OLD_D66; host/OLDCC.md) for the own code, assembled by the old cas (/lib/old/cas, D17); the libraries (libtermlib-v1.a, libc-v11.a) v0. Byte-identical 2026-11-24 (all 394 functions; install bin/ex with the links edit, vi, view).",
  "binary": "/bin/ex (links: vi, view, edit); E711, text 63488 bytes (code to 0xf7fe)",
  "functions": {
   "start": {
    "file": "crt0.s",
    "orig": "0x0000",
    "size_orig": 94,
-   "status": "crt0"
+   "status": "exact"
   },
   "main": {
    "file": "ex.c",
    "orig": "0x005e",
    "size_orig": 872,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA edit: ./.exrc is sourced when there is no EXINIT, before $HOME/.exrc."
   },
   "init": {
    "file": "ex.c",
@@ -331,8 +332,7 @@
    "file": "ex_cmdsub.c",
    "orig": "0x202e",
    "size_orig": 160,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "shift": {
    "file": "ex_cmdsub.c",
@@ -422,7 +422,8 @@
    "file": "ex_get.c",
    "orig": "0x2ae4",
    "size_orig": 264,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA edit: after read(0, &lastc, 1) lastc &= 0177400; swab(&lastc, &lastc, 2) (the byte lies in the high half of the int on the Z8000)."
   },
   "gettty": {
    "file": "ex_get.c",
@@ -477,27 +478,26 @@
    "orig": "0x330e",
    "size_orig": 90,
    "status": "exact",
-   "note": "exact with OLD_D5S extended (2026-11-24): an element of an array that is a member of a local structure is (index + frame + member) + fp; v0 before: lda r3,4(r15); add r3,r2."
+   "note": "G.argv[G.argc0 - 1] of the local struct glob: (index + frame + member) + fp (OLD_D5S, its only witness for a member array)."
   },
   "rop": {
    "file": "ex_io.c",
    "orig": "0x3368",
    "size_orig": 144,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA edit: after the fstat \" [File is read only]\" when the mode & 0700 is 0400."
   },
   "rop2": {
    "file": "ex_io.c",
    "orig": "0x33f8",
    "size_orig": 22,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "rop3": {
    "file": "ex_io.c",
    "orig": "0x340e",
    "size_orig": 210,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "samei": {
    "file": "ex_io.c",
@@ -509,8 +509,7 @@
    "file": "ex_io.c",
    "orig": "0x351c",
    "size_orig": 554,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "edfile": {
    "file": "ex_io.c",
@@ -571,14 +570,14 @@
    "orig": "0x3b6c",
    "size_orig": 112,
    "status": "exact",
-   "note": "exact with shrink.sh (2026-11-24): the store of the indirect call temporary keeps 0(fp), only the last load of the function becomes @fp."
+   "note": "indirect call (*Outchar)(c): the store of the function address keeps 0(fp), only the last load of the function is @fp (shrink.sh; read off the binary, mechanism not known; 6 places, all in these three)."
   },
   "normchar": {
    "file": "ex_put.c",
    "orig": "0x3bdc",
    "size_orig": 232,
    "status": "exact",
-   "note": "exact with shrink.sh (2026-11-24): the store of the indirect call temporary keeps 0(fp), only the last load of the function becomes @fp."
+   "note": "indirect call (*Outchar)(c): the store of the function address keeps 0(fp), only the last load of the function is @fp (shrink.sh; read off the binary, mechanism not known; 6 places, all in these three)."
   },
   "numbline": {
    "file": "ex_put.c",
@@ -596,8 +595,7 @@
    "file": "ex_put.c",
    "orig": "0x3d20",
    "size_orig": 82,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "putchar": {
    "file": "ex_put.c",
@@ -609,8 +607,7 @@
    "file": "ex_put.c",
    "orig": "0x3d88",
    "size_orig": 74,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "flush": {
    "file": "ex_put.c",
@@ -622,22 +619,19 @@
    "file": "ex_put.c",
    "orig": "0x3dd8",
    "size_orig": 286,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "flush2": {
    "file": "ex_put.c",
    "orig": "0x3ef6",
    "size_orig": 16,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "fgoto": {
    "file": "ex_put.c",
    "orig": "0x3f06",
    "size_orig": 472,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "tab": {
    "file": "ex_put.c",
@@ -649,8 +643,7 @@
    "file": "ex_put.c",
    "orig": "0x40ee",
    "size_orig": 26,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences of the module)"
+   "status": "exact"
   },
   "plod": {
    "file": "ex_put.c",
@@ -765,20 +758,21 @@
    "orig": "0x46d8",
    "size_orig": 62,
    "status": "exact",
-   "note": "exact with v0a OLD_D66 (2026-11-24): the destination copied from r0 for ldir goes to the even half of the pair a pair request would take (r4 setty, r6 gTTY); v0 takes r1."
+   "note": "nttyc = ottyc: the destination is copied from r0 for ldir into r4 (setty) or r6 (gTTY), the even half of the pair a pair request would take (v0a OLD_D66; its only witnesses)."
   },
   "gTTY": {
    "file": "ex_put.c",
    "orig": "0x4716",
    "size_orig": 52,
    "status": "exact",
-   "note": "exact with v0a OLD_D66 (2026-11-24): the destination copied from r0 for ldir goes to the even half of the pair a pair request would take (r4 setty, r6 gTTY); v0 takes r1."
+   "note": "nttyc = ottyc: the destination is copied from r0 for ldir into r4 (setty) or r6 (gTTY), the even half of the pair a pair request would take (v0a OLD_D66; its only witnesses)."
   },
   "sTTY": {
    "file": "ex_put.c",
    "orig": "0x474a",
    "size_orig": 32,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA edit: stty(i, &tty), not ioctl TIOCSETN."
   },
   "noonl": {
    "file": "ex_put.c",
@@ -790,8 +784,7 @@
    "file": "ex_re.c",
    "orig": "0x479a",
    "size_orig": 390,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "substitute": {
    "file": "ex_re.c",
@@ -821,8 +814,7 @@
    "file": "ex_re.c",
    "orig": "0x4b82",
    "size_orig": 42,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences of the module)"
+   "status": "exact"
   },
   "confirmed": {
    "file": "ex_re.c",
@@ -847,7 +839,7 @@
    "orig": "0x4cb4",
    "size_orig": 314,
    "status": "exact",
-   "note": "exact with v0a OLD_D65 (2026-11-24): the compiler of ex computes linebuf - genbuf; v0 folds it to 0 (treeeq compares an ICON without its name)."
+   "note": "loc2 = sp + (linebuf - genbuf): the compiler of ex computes the difference of the two arrays (v0a OLD_D65); v0, v1 and the shipped cc fold it to 0, wrong code (KNOWLEDGE.md quirks)."
   },
   "fixcase": {
    "file": "ex_re.c",
@@ -907,7 +899,8 @@
    "file": "ex_set.c",
    "orig": "0x55f0",
    "size_orig": 614,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA edit: after the TABSTOP check, the option window calls vsetsiz(value(WINDOW)); setwind()."
   },
   "setend": {
    "file": "ex_set.c",
@@ -1303,7 +1296,8 @@
    "file": "ex_temp.c",
    "orig": "0x65e8",
    "size_orig": 300,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA edit: 'Tmp file too large' is fatal (error0, merror, close(io), setty(normf) when inopen, cleanup(1), exit(1))."
   },
   "blkio": {
    "file": "ex_temp.c",
@@ -1435,7 +1429,8 @@
    "file": "ex_unix.c",
    "orig": "0x729c",
    "size_orig": 318,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA edit: a fifth parameter, the name of the shell; runs svalue(SHELL) for sh, else /bin/csh (the cshell command)."
   },
   "unixwt": {
    "file": "ex_unix.c",
@@ -1543,8 +1538,7 @@
    "file": "ex_vadj.c",
    "orig": "0x7cf6",
    "size_orig": 242,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "vglitchup": {
    "file": "ex_vadj.c",
@@ -1604,8 +1598,7 @@
    "file": "ex_vadj.c",
    "orig": "0x83d4",
    "size_orig": 350,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "vredraw": {
    "file": "ex_vadj.c",
@@ -1617,8 +1610,7 @@
    "file": "ex_vadj.c",
    "orig": "0x8778",
    "size_orig": 104,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences of the module)"
+   "status": "exact"
   },
   "vadjDL": {
    "file": "ex_vadj.c",
@@ -1768,8 +1760,8 @@
    "file": "ex_vmain.c",
    "orig": "0x922e",
    "size_orig": 2456,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact",
+   "note": "WEGA edit (^F): the lines to move in a block variable (int n), ^F does not move beyond dol."
   },
   "grabtag": {
    "file": "ex_vmain.c",
@@ -1805,22 +1797,19 @@
    "file": "ex_voper.c",
    "orig": "0x9e52",
    "size_orig": 2112,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences of the module)"
+   "status": "exact"
   },
   "find": {
    "file": "ex_voper.c",
    "orig": "0xa692",
    "size_orig": 54,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "word": {
    "file": "ex_voper.c",
    "orig": "0xa6c8",
    "size_orig": 296,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "eend": {
    "file": "ex_voper.c",
@@ -1886,8 +1875,7 @@
    "file": "ex_vops.c",
    "orig": "0xaec4",
    "size_orig": 786,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "voOpen": {
    "file": "ex_vops.c",
@@ -2103,8 +2091,7 @@
    "file": "ex_vput.c",
    "orig": "0xcb88",
    "size_orig": 218,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "vclrech": {
    "file": "ex_vput.c",
@@ -2176,15 +2163,14 @@
    "file": "ex_vput.c",
    "orig": "0xce46",
    "size_orig": 382,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "vgotab": {
    "file": "ex_vput.c",
    "orig": "0xcfc4",
    "size_orig": 50,
    "status": "exact",
-   "note": "exact with shrink.sh (2026-11-24): the store of the indirect call temporary keeps 0(fp), only the last load of the function becomes @fp."
+   "note": "indirect call (*Outchar)(c): the store of the function address keeps 0(fp), only the last load of the function is @fp (shrink.sh; read off the binary, mechanism not known; 6 places, all in these three)."
   },
   "vprepins": {
    "file": "ex_vput.c",
@@ -2202,22 +2188,19 @@
    "file": "ex_vput.c",
    "orig": "0xd0d6",
    "size_orig": 718,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "vrigid": {
    "file": "ex_vput.c",
    "orig": "0xd3a4",
    "size_orig": 74,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "vneedpos": {
    "file": "ex_vput.c",
    "orig": "0xd3ee",
    "size_orig": 66,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences)"
+   "status": "exact"
   },
   "vnpins": {
    "file": "ex_vput.c",
@@ -2229,8 +2212,7 @@
    "file": "ex_vput.c",
    "orig": "0xd4ee",
    "size_orig": 412,
-   "status": "open",
-   "note": "only call/calr, jp/jr (cas chooses by the distance; follows the other differences of the module)"
+   "status": "exact"
   },
   "viin": {
    "file": "ex_vput.c",
@@ -2380,29 +2362,33 @@
    "file": "printf.c",
    "orig": "0xe54a",
    "size_orig": 52,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA printf.c (no source): printf as oldlibc printf 0_5, without stdout, return (0)."
   },
   "_align": {
    "file": "printf.c",
    "orig": "0xe57e",
    "size_orig": 86,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA printf.c: as doprnt 0_7."
   },
   "_doprnt": {
    "file": "printf.c",
    "orig": "0xe5d4",
    "size_orig": 806,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA printf.c: a smaller _doprnt (no file, putchar, no floating point, no sign handling, no (null); a precision prints one 0)."
   },
   "_atoip": {
    "file": "printf.c",
    "orig": "0xe8fa",
    "size_orig": 116,
-   "status": "exact"
+   "status": "exact",
+   "note": "WEGA printf.c."
   }
  },
  "note": {
-  "build": "vi.mk of Plexus: mkstr - ex2.13strings x FILE.c, cc -E | xstr -c -, cc -c x.c. WEGA adds a step between the compiler and cas (src/cmd/ex/shrink.sh, cc -S, shrink.sh x.s, cas), both parts to save room (the code ends at 0xf7fe, the text limit is 64K): (1) each module begins with a table of 'jp _name' for every external function called 3 times or more (callr) in the module, the calls go by calr to the table; order 'sort | uniq -c | sort -n' (by the number of calls, then the name, ASCII); 22 tables, 183 stubs, 944 calls, 1156 bytes saved; only in ex (all programs of the root scanned). (2) a frame operand at offset 0 becomes @fp: ~L1(fp) in a function with '~L1 := 0' (not lda), and 0(fp) beside r0..r7 (the parameter stores); the saves of r8..r14 stay 0(fp) (139 of 139); the temporary of an indirect call (ld ~L1(fp),r2 ... ld r1,0(fp); call @r1) keeps its offset in the store, and of its loads only the last one of the function becomes @fp (listchar, normchar, vgotab: the 6 places of ex; read off the binary, no mechanism known; shrink.sh writes ~L1+0(fp), 2026-11-24). Measured on the ccv0 output of all modules: 98 of 98 parameter stores and about 220 operands in the bodies as in the original. Of 310 files of the root only ex (and its links) has saves at 0(r15) with parameters at @r15. Not documented.",
+  "build": "vi.mk of Plexus: mkstr - ex2.13strings x FILE.c, cc -E | xstr -c -, cc -c x.c. WEGA adds a step between the compiler and cas (src/cmd/ex/shrink.sh, cc -S, shrink.sh x.s, cas), both parts to save room (the code ends at 0xf7fe, the text limit is 64K): (1) each module begins with a table of 'jp _name' for every external function called 3 times or more (callr) in the module, the calls go by calr to the table; order 'sort | uniq -c | sort -n' (by the number of calls, then the name, ASCII); 22 tables, 183 stubs, 944 calls, 1156 bytes saved; only in ex (all programs of the root scanned). (2) a frame operand at offset 0 becomes @fp: ~L1(fp) in a function with '~L1 := 0' (not lda), and 0(fp) beside r0..r7 (the parameter stores); the saves of r8..r14 stay 0(fp) (139 of 139); the temporary of an indirect call (ld ~L1(fp),r2 ... ld r1,0(fp); call @r1) keeps its offset in the store, and of its loads only the last one of the function becomes @fp (listchar, normchar, vgotab: the 6 places of ex; read off the binary, no mechanism known; shrink.sh writes ~L1+0(fp), 2026-11-24). Measured on the ccv0 output of all modules: 98 of 98 parameter stores and about 220 operands in the bodies as in the original. Of 310 files of the root only ex (and its links) has saves at 0(r15) with parameters at @r15. Not documented. The old cas (ccv0a -c x.s runs /lib/old/cas, D17 of host/OLDCC.md) gives the call and jump forms (with the shipped cas 24 functions differ by call/calr, jp/jr only). The jp tables are sorted in ASCII order (LC_ALL=C: _Copy before _column in ex_vput.s).",
   "open": "setjmp.h missing in WEGA (measured with setret.h, ret_buf).",
   "options": "-DZCMD -DZZCMD -DRDONLY -DWRAPMGN -DOPENCODE -DLISPCODE -DTAGSCODE -DCRNL -DSOFTTABS -DCHDIR -DBEEHIVE -DUCVISUAL, not -DUSG3TTY (the V7 tty calls, not those of System III as in vi.mk of Plexus). Measured 2026-11-23 on all modules (ccv0, shrink.sh), the sum of the differing lines: vi.mk options 2757; + OPENCODE, LISPCODE, TAGSCODE, CRNL 2455; + SOFTTABS 2421; without USG3TTY 2248; + CHDIR 900. BEEHIVE and UCVISUAL act only in ex_vget.c getbr, which is exact with both (the line sum had shown them worse: it compares a window of the length of the own function).",
   "phase B": {
@@ -2459,13 +2445,19 @@
     ],
     "difference": "loc2 = sp + (linebuf - genbuf): the original computes linebuf - genbuf at run time (ld r2,#linebuf; sub r2,#genbuf; add r2,sp), ccv0 folds it; the loop 'while (*sp++ = *lp++) if (sp >= ..) goto ovflo;' is laid out otherwise",
     "findings": "solved by codgen OLD_D65 (v0a); dosub exact"
+   },
+   "call/calr": {
+    "functions": [],
+    "difference": "24 functions differed only by call/calr, jp/jr with the shipped cas",
+    "findings": "solved by the old cas (D17)"
    }
   },
-  "wega edits": "sTTY: stty(i, &tty), not ioctl TIOCSETN (the original calls stty; sgtty.h of WEGA defines TIOCSETN). getach: after read(0, &lastc, 1) the original keeps the high byte and swaps it down (lastc &= 0177400; swab(&lastc, &lastc, 2)): the byte read lies in the high half of the int on the Z8000. set (ex_set.c, NUMERIC): after the TABSTOP check 'if (cp && strcmp(cp, \"window\") == 0) { vsetsiz(value(WINDOW)); setwind(); }'. getblock (ex_temp.c): 'Tmp file too large' is fatal: error0(); merror(msg); if (io > 0) close(io); if (inopen) setty(normf); cleanup(1); exit(1) (globals named by error1 (io) and the quit command (inopen, normf)). rop (ex_io.c): after the fstat 'if ((stbuf.st_mode & 0700) == 0400) printf(\" [File is read only]\");'. main (ex.c): after EXINIT 'else if (access(\"./.exrc\", 0) == 0) source(\"./.exrc\", 1);' before $HOME/.exrc. Shells (ex_cmds.c, ex_unix.c): a new command cshell ('c' switch: case 's': tail(\"cshell\"); goto shell;), the shell command runs c == 's' ? \"sh\" : \"csh\"; unixex has a fifth parameter, the name of the shell (argv[0]), and runs *name == 's' ? svalue(SHELL) : \"/bin/csh\"; ! and filter pass options[SHELL].oabbrev (\"sh\": the original loads the word at the oabbrev of SHELL). vmain (ex_vmain.c, ^F): the lines to move go to a block variable (int n = ...; the frame slot of sdc) and ^F does not move beyond dol ('if (dot + n > dol) continue;').",
+  "wega edits": "sTTY: stty(i, &tty), not ioctl TIOCSETN (the original calls stty; sgtty.h of WEGA defines TIOCSETN). getach: after read(0, &lastc, 1) the original keeps the high byte and swaps it down (lastc &= 0177400; swab(&lastc, &lastc, 2)): the byte read lies in the high half of the int on the Z8000. set (ex_set.c, NUMERIC): after the TABSTOP check 'if (cp && strcmp(cp, \"window\") == 0) { vsetsiz(value(WINDOW)); setwind(); }'. getblock (ex_temp.c): 'Tmp file too large' is fatal: error0(); merror(msg); if (io > 0) close(io); if (inopen) setty(normf); cleanup(1); exit(1) (globals named by error1 (io) and the quit command (inopen, normf)). rop (ex_io.c): after the fstat 'if ((stbuf.st_mode & 0700) == 0400) printf(\" [File is read only]\");'. main (ex.c): after EXINIT 'else if (access(\"./.exrc\", 0) == 0) source(\"./.exrc\", 1);' before $HOME/.exrc. Shells (ex_cmds.c, ex_unix.c): a new command cshell ('c' switch: case 's': tail(\"cshell\"); goto shell;), the shell command runs c == 's' ? \"sh\" : \"csh\"; unixex has a fifth parameter, the name of the shell (argv[0]), and runs *name == 's' ? svalue(SHELL) : \"/bin/csh\"; ! and filter pass options[SHELL].oabbrev (\"sh\": the original loads the word at the oabbrev of SHELL). vmain (ex_vmain.c, ^F): the lines to move go to a block variable (int n = ...; the frame slot of sdc) and ^F does not move beyond dol ('if (dot + n > dol) continue;'). ex_tune.h: EXSTRINGS is /lib/ex2.13strings (recover and preserve stay in /usr/lib).",
   "printf": "src/cmd/ex/printf.c (2026-11-23, written from /bin/ex 0xe546..0xe96e), the last module before strings.o instead of pprintf.c of Plexus (its functions are not in /bin/ex; removed from the tree): printf (as oldlibc printf 0_5, without stdout, return (0)), _align (as doprnt 0_7), _doprnt (a smaller one: no file, putchar, no floating point, no sign handling, no (null), a flag for a precision that prints one '0'), _atoip. _doprnt and _atoip exact; printf and _align differ only by the parameter cluster of phase B (printf reloads fmt, _align stores stkap at the entry). One module: its jp table (putchar) stands in front of printf.",
-  "compare note": "The masked comparison shows 'ld r3,#%00xx' (original) against 'ld r3,#A' (object) for the address of a switch table below 0x100 in the data (main, commands, address): not a difference of the code; to be checked when linked.",
-  "call/calr": "calr in the original where the build has call (or the other way) and jp/jr: the choice of cas. They do not follow other differences (2026-11-24: with all clusters solved the own code is still 152 bytes shorter, the gap grows only in these functions); pragged: 'call _undo' in the original, a forward call in the module within reach, calr in the build: the length choice of the old cas (OLDCC_LOG cas, castrig). Functions with only these: main, address, commands, pragged, rop2, rop3, wop, slobber, termchar, flush1, flush2, fgoto, global, vreopen, vrepaint, vmain, find, word, vchange, vclreol, vgoto, vinschar, vrigid, vneedpos (and dosubcon, plodput, vdellin, operate, vishft).",
+  "compare note": "The masked comparison showed ld r3,#%00xx (original) against ld r3,#A (object) for switch tables below 0x100 in the data (main, commands, address); the linked file is byte-identical.",
   "termlib": "src/lib/oldtermlib (libtermlib-v1.a, ccv0 -O -DCM_N -DCM_GT -DCM_B -DCM_D): termcap 6 of 6, tgoto, tputs exact in /bin/ex (termcap e96e, tgoto ee24, tputs eff2). The shipped libtermlib.a (v1, 01/83) has newer forms: tnchktc there 'tbuf + strlen(tbuf) - 2', ex's 'tbuf + (strlen(tbuf) - 2)' (the call first: 'dec r2,#2; add r2,_tbuf'). tgoto of ex reads CM and destline from their frame homes for the initial values of cp and which (ld r2,4(r15); ld 6(r15),r2; ld r12,0(r15)); ccv0 takes the registers, also with the initializers as statements; a label (start:) in front of them gives it (host/OLDCC_PARAMREGS.md, a compiler form). Plexus cmd/plx/termlib has the same code as 2.11BSD (1979 headers, result[16], E_TERMCAP from local/uparm.h).",
-  "compiler (measured)": "v0a (ccv0a: v0 with OLD_D3AW, host/OLDCC.md) for the own code; the libraries (libc-v1.a, libtermlib-v1.a) v0. Measured 2026-11-23: 355 of 391 functions exact (v0: 323; tailspec by OLD_D3AC, vreplace and _align by OLD_D3K2 of v0, the additive chains by cparse OLD_D19P, the char compares by cparse OLD_D8L, the register knowledge by OLD_D2NS of v0a). Of the other 36, 24 differ only by call/calr, jp/jr or the masked address of a switch table; the rest is in the clusters of 'phase B'. 2026-11-24: 368 of 394 (OLD_D65 dosub, OLD_D66 setty and gTTY, OLD_D5S getone, shrink.sh listchar, normchar, vgotab); _atoip exact (before: the limit of the measurement cut it); open: crt0 start and the call/calr functions."
+  "compiler (measured)": "v0a (ccv0a: v0 with OLD_D3AW, host/OLDCC.md) for the own code; the libraries (libc-v1.a, libtermlib-v1.a) v0. Measured 2026-11-23: 355 of 391 functions exact (v0: 323; tailspec by OLD_D3AC, vreplace and _align by OLD_D3K2 of v0, the additive chains by cparse OLD_D19P, the char compares by cparse OLD_D8L, the register knowledge by OLD_D2NS of v0a). Of the other 36, 24 differ only by call/calr, jp/jr or the masked address of a switch table; the rest is in the clusters of 'phase B'. 2026-11-24: 368 of 394 (OLD_D65 dosub, OLD_D66 setty and gTTY, OLD_D5S getone, shrink.sh listchar, normchar, vgotab); _atoip exact (before: the limit of the measurement cut it); open: crt0 start and the call/calr functions. Then 394 of 394 with the old cas (2026-11-24); the file byte-identical with exbss.c, libc-v11 and the strings path.",
+  "bss": "exbss.c (the name is a guess), linked behind crt0: the commons in the order of /bin/ex, which is neither the order of the headers (first mention, the shipped ld) nor any simple hash of the names (tested); how the original got it is not known. The 13 commons no code references (die, firstln, poffset, vmacbuf, tad1, slines, optname, vcntcol, xPC, precbksl, llimit, tabend, tabslack) fill the 182 bytes of holes exactly, their places guessed by their neighbours.",
+  "libc": "libc-v11.a (the library of cat, echo, mkstr of 10/82 .. 11/82), extended by the 23 members ex needs in the places of /bin/ex (2026-11-24): of all libc-vN only libc-v11 has no member of ex in another version; libc-v1 has length 0_2 (cp r3,#%0200), /bin/ex length 0_3 (#%4000), and 17 programs of libc-v1 need 0_2."
  }
 }

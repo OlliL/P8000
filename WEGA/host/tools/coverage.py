@@ -33,6 +33,7 @@ SKIP = ('tmp/', 'dev/', 'z/', '.wegafs-manifest.tsv')
 SOURCE = {'bin/cc': 'cmd/cc', 'bin/scc': 'cmd/cc', 'bin/cas': 'cmd/cas', 'bin/ld': 'cmd/ld', 'bin/sld': 'cmd/sld',
           'bin/cp': 'cmd/mv.c', 'bin/ln': 'cmd/mv.c', 'bin/mv': 'cmd/mv.c', 'bin/pburn': 'cmd/pburn',
           'bin/hd': 'cmd/od.c', 'bin/rmail': 'cmd/mail.c',
+          'bin/ex': 'cmd/ex', 'bin/edit': 'cmd/ex', 'bin/vi': 'cmd/ex', 'bin/view': 'cmd/ex',
           'usr/bin/strip': 'cmd/strip.c', 'usr/bin/ranlib': 'cmd/ranlib.c', 'bin/size': 'cmd/size.c',
           'lib/cpp': 'cmd/cc/cpp', 'lib/cparse': 'cmd/cc/cparse', 'lib/scparse': 'cmd/cc/cparse', 'lib/codgen': 'cmd/cc/codgen',
           'lib/scodgen': 'cmd/cc/codgen', 'lib/popt': 'cmd/cc/popt', 'lib/spopt': 'cmd/cc/popt', 'pb.image': 'cmd/BOOT0',

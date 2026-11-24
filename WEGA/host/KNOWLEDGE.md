@@ -1946,7 +1946,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v8 | cc, scc |
 | libc-v9 | ld (07/83); its order conflicts with v6, its versions do not; df (04/83: calloc 0_2, nlist 0_1, stat, sync) |
 | libc-isstore | write, rmdir (01/83) |
-| libc-v11 | cat (10/82), echo (08/82), mkstr (11/82) |
+| libc-v11 | cat (10/82), echo (08/82), mkstr (11/82), ex (10/82; extended by its 23 members, 2026-11-24) |
 | libc-v12 | chkin (09/83): the shipped libc.a with printf and doprnt 0_4 in their places (ar r); newgrp (09/83), mail (11/83) |
 
 The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see "libc.a and slibc.a: one tree".

@@ -545,6 +545,8 @@ and dc2.c, all forms right. The manual (ZEUS Languages Programming Tools 3.2 and
 more conditions, `.=` and a difference of labels with a jump between them; no input has a case that depends on them, so they are not
 built. The shipped cas and the ZEUS cas do not have them.
 
+ex (10/82, v0a) follows the rule too: with the old cas all 394 functions of /bin/ex are exact (with the shipped cas 24 differ by call/calr and jp/jr only).
+
 A `call` also comes from a callee in another module, because `calr` cannot leave a module. So sputc and aobeg of cparse are a module of
 their own (sym2.c, the name is a guess), and hash, upoff, oalloc belong to sym1.c.
 
@@ -822,7 +824,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cpp | cpp.c, cpy.y, yylex.c | v0p |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
 | clist | clist.c | v0p | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | mkdir | mkdir.c | v0 |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| ex | ex 2.13 (own code) | v0a |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x | x |
+| ex | ex 2.13 (own code) | v0a |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  | x | x |
 | mkstr | mkstr.c, libc calloc | v0 |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | chkout | chkout.c, common.c (07/23/82) | v0 |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 | make | main.c, misc.c, files.c (11/18/83) | shipped | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |

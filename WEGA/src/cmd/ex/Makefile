@@ -5,26 +5,27 @@
 # operands). For each source, in the order of the objects: mkstr takes the strings of the error messages out (into
 # ex2.13strings, made first over all sources, so the offsets are those of one run in this order), the preprocessed source
 # goes through xstr (the shared strings, collected in the file strings, in this order), the compiler writes x.s, shrink.sh
-# changes it, cas makes the object. The compiler is v0a (ccv0a: v0 with OLD_D3AW, host/OLDCC.md); the libraries
-# linked in (libc-v1.a, libtermlib-v1.a) are of v0 (ccv0). Then xstr writes xs.c with the strings (strings.o). mkstr (../mkstr.c) and xstr
+# changes it, the old cas makes the object (ccv0a -c x.s: the driver runs /lib/old/cas, D17 of host/OLDCC.md; the call and
+# jump forms of /bin/ex need it). The compiler is v0a (ccv0a: v0 with OLD_D3AW, host/OLDCC.md); the libraries
+# linked in (libc-v11.a, libtermlib-v1.a) are of v0 (ccv0). Then xstr writes xs.c with the strings (strings.o). mkstr (../mkstr.c) and xstr
 # (../xstr.c) are programs of the WEGA system that make runs itself: RUN is "wrun" under the emulator, empty on WEGA.
 # printf.c is WEGA's printf (printf and doprnt of the libc of the time printing by putchar), not pprintf.c of Plexus.
 #
-#   make                       ex (not installed yet) and ex2.13strings
-#   make install PREFIX=dir    install dir/lib/ex2.13strings
+#   make                       ex and ex2.13strings
+#   make install PREFIX=dir    install dir/bin/ex (links edit, vi, view) and dir/lib/ex2.13strings
 
 CC = cc
 CCV0 = ccv0
 CCV0A = ccv0a
-CAS = cas
 LD = ld
 PREFIX = /
+STRIP = strip
 VERSION = 2.13
 OPTIONS = -DZCMD -DZZCMD -DRDONLY -DWRAPMGN -DOPENCODE -DLISPCODE -DTAGSCODE -DCRNL -DSOFTTABS -DCHDIR -DBEEHIVE -DUCVISUAL
 CFLAGS = -O
 CRT = ../../lib/libc/nonseg/crt
 TERMLIB = ../../lib/libtermlib-v1.a
-LIBC_V1 = ../../lib/libc-v1.a
+LIBC_V11 = ../../lib/libc-v11.a
 SRCS = ex ex_addr ex_cmds ex_cmds2 ex_cmdsub ex_data ex_get ex_io ex_put ex_re ex_set ex_subr ex_temp ex_tty ex_unix ex_v ex_vadj ex_vget \
 	ex_vmain ex_voper ex_vops ex_vops2 ex_vops3 ex_vput ex_vwind printf
 CFILES = ex.c ex_addr.c ex_cmds.c ex_cmds2.c ex_cmdsub.c ex_data.c ex_get.c ex_io.c ex_put.c ex_re.c ex_set.c ex_subr.c \
@@ -53,12 +54,12 @@ objs: mkstr xstr ex$(VERSION)strings shrink.sh $(CFILES) $(HFILES)
 		$(CCV0) -E $(CFLAGS) $(OPTIONS) x$$f.c | $(RUN) ./xstr -c - || exit 1 ; \
 		$(CCV0A) -S $(CFLAGS) $(OPTIONS) x.c || exit 1 ; \
 		sh shrink.sh x.s ; \
-		$(CAS) -u -o $$f.o x.s || exit 1 ; \
+		$(CCV0A) -c x.s && mv x.o $$f.o || exit 1 ; \
 		rm -f x$$f.c x.c x.s ; \
 	done
 	$(RUN) ./xstr
 	$(CCV0A) -S xs.c
-	$(CAS) -u -o strings.o xs.s
+	$(CCV0A) -c xs.s && mv xs.o strings.o
 	rm -f xs.c xs.s
 	touch objs
 
@@ -66,15 +67,21 @@ crt0-ex.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh ex > $@
 
 crt0-ex.o: crt0-ex.s
-	$(CAS) -u -o $@ crt0-ex.s
+	$(CCV0A) -c crt0-ex.s
 
-ex: objs crt0-ex.o $(TERMLIB) $(LIBC_V1)
-	$(LD) -i -e start -o $@ crt0-ex.o ex.o ex_addr.o ex_cmds.o ex_cmds2.o ex_cmdsub.o ex_data.o ex_get.o ex_io.o ex_put.o ex_re.o \
+exbss.o: exbss.c
+	$(CCV0A) -c exbss.c
+
+ex: objs crt0-ex.o exbss.o $(TERMLIB) $(LIBC_V11)
+	$(LD) -i -e start -o $@ crt0-ex.o exbss.o ex.o ex_addr.o ex_cmds.o ex_cmds2.o ex_cmdsub.o ex_data.o ex_get.o ex_io.o ex_put.o ex_re.o \
 		ex_set.o ex_subr.o ex_temp.o ex_tty.o ex_unix.o ex_v.o ex_vadj.o ex_vget.o ex_vmain.o ex_voper.o ex_vops.o ex_vops2.o \
-		ex_vops3.o ex_vput.o ex_vwind.o printf.o strings.o $(TERMLIB) $(LIBC_V1)
+		ex_vops3.o ex_vput.o ex_vwind.o printf.o strings.o $(TERMLIB) $(LIBC_V11)
 
-install: ex$(VERSION)strings
-	mkdir -p $(PREFIX)/lib
+install: ex ex$(VERSION)strings
+	mkdir -p $(PREFIX)/bin $(PREFIX)/lib
+	cp ex $(PREFIX)/bin/ex ; $(STRIP) $(PREFIX)/bin/ex
+	rm -f $(PREFIX)/bin/edit $(PREFIX)/bin/vi $(PREFIX)/bin/view
+	ln $(PREFIX)/bin/ex $(PREFIX)/bin/edit ; ln $(PREFIX)/bin/ex $(PREFIX)/bin/vi ; ln $(PREFIX)/bin/ex $(PREFIX)/bin/view
 	cp ex$(VERSION)strings $(PREFIX)/lib/ex$(VERSION)strings ; chmod 644 $(PREFIX)/lib/ex$(VERSION)strings
 
 clean:

@@ -5,7 +5,7 @@
 # missing, from NAME/0_n.s; the other members are those of ../libc. The order of a library is the order of the members in
 # the original programs, ld takes what is referenced. Version numbers of the modules are invented.
 #
-#   libc-v1.a  dc, ranlib, chmod, pwd, kill, mkdir, sleep, tail, env, nohup, gets, bc (07/82), ex (10/82)
+#   libc-v1.a  dc, ranlib, chmod, pwd, kill, mkdir, sleep, tail, env, nohup, gets, bc (07/82)
 #   libc-v2.a  cpp (12/82), clist
 #   libc-v3.a  size, od (01/83)
 #   libc-v4.a  strip (01/83), su (02/83; the members of passwd too), nice, time (01/83)
@@ -15,7 +15,7 @@
 #   libc-v8.a  cc, scc
 #   libc-v9.a  ld (07/83), df (04/83: calloc 0_2, nlist 0_1, stat, sync)
 #   libc-v10.a write, rmdir (01/83); perror, errlst, dup for dd (12/82, its own code not exact yet)
-#   libc-v11.a mkstr (11/82), cat (10/82), echo (08/82)
+#   libc-v11.a mkstr (11/82), cat (10/82), echo (08/82), ex (10/82; its members as in libc-v1, but length 0_3)
 #   libc-v12.a chkin (09/83): the shipped libc.a (../libc) with printf and doprnt 0_4 in their places
 #
 #   make        (needs ../libc made, and ccv1, ccv0, ccv0p)
@@ -175,10 +175,12 @@ LIBv10 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/build/nonseg/f
 	sh mklib.sh $@ $(AR) $(LIBv10)
 
 LIBv11 = putchar/0_1.o freopen/0_1.o fseek/0_2.o ftell/0_1.o rew/0_1.o rdwr/0_3.o fopen/0_1.o printf/0_3.o doprnt/0_7.o ffltioc/0_1.o \
-	 ungetc/0_1.o filbuf/0_3.o setbuf/0_1.o data/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o \
-	 perror/0_3.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_3.o calloc/0_1.o malloc/0_3.o errlst/0_1.o isatty/0_1.o stty/0_1.o \
-	 strcmp/0_1.o strcpy/0_2.o strlen/0_2.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/fstat.o ../libc/build/nonseg/ioctl.o \
-	 ../libc/build/nonseg/lseek.o open/0_1.o ../libc/build/nonseg/read.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
+	 ungetc/0_1.o filbuf/0_3.o setbuf/0_1.o data/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o ../libc/build/nonseg/__callex.o getenv/0_1.o sleep/0_1.o ../libc/build/nonseg/cuexit.o \
+	 perror/0_3.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_3.o calloc/0_1.o malloc/0_3.o errlst/0_1.o isatty/0_1.o ../libc/build/nonseg/setret.o stty/0_1.o \
+	 swab/0_1.o toupper/0_1.o strcat/0_2.o strcmp/0_1.o strcpy/0_2.o strlen/0_2.o ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o \
+	 ../libc/build/nonseg/brk.o ../libc/build/nonseg/chdir.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/dup.o ../libc/build/nonseg/execl.o ../libc/build/nonseg/exit.o ../libc/build/nonseg/fork.o \
+	 ../libc/build/nonseg/fstat.o ../libc/build/nonseg/getpid.o ../libc/build/nonseg/getuid.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lseek.o open/0_1.o ../libc/build/nonseg/pause.o ../libc/build/nonseg/pipe.o \
+	 ../libc/build/nonseg/read.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o ../libc/build/nonseg/time.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/wait.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
 # ccv0 (putchar, perror, rew, calloc)
 ../libc-v11.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv11)
