@@ -2246,3 +2246,10 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   `rN,0(fp)` the compiler still writes are the six `ld r1,0(fp)` of the indirect calls (gencall, OLD_D18), the case
   "only the last load of a function is @fp", still in shrink.sh with the ~L1(fp) rule. Step 1 (the jp tables) rewritten
   as a short script, same output.
+- The rest of step 2 of shrink.sh (the same day): where "only the last indirect-call load of a function is @fp" comes
+  from. Not codgen: an instrumented v0a codgen has the same state at all six loads (maxoff 0, tmpoff 0, lval 0). Not
+  popt: raw codgen against -O output: popt merges the two '^' calls of listchar (that load short in /bin/ex), but also
+  the tails of the two long ones of normchar, and leaves vgotab (short) untouched. Not the next or previous instruction
+  (listchar 2nd and normchar 1st have the same neighbours, short and long). Not the old cas shared with the other
+  programs: cparse and the rest have ~L1(fp) at ~L1 := 0 long (D18), a change there would break them. Left: WEGA's own
+  step for ex, form unknown; the rule stays in shrink.sh as read off (6 places).

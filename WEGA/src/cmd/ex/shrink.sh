@@ -10,7 +10,8 @@
 #    offset 0 are @fp from the compiler: v0a OLD_D18A, host/OLDCC.md.)
 #    Not so the temporary of an indirect call (ld ~L1(fp),r2 ... ld r1,0(fp); call @r1): its store keeps the offset,
 #    and of its loads only the last one of the function becomes @fp (listchar, normchar, vgotab: 6 places, the only
-#    ones in ex; a rule read off the binary, its mechanism is not known). Written ~L1+0(fp), which step 2 leaves alone.
+#    ones in ex; a rule read off the binary: not codgen, not popt, not the shared old cas, host/OLDCC_LOG.md 2026-11-24).
+#    Written ~L1+0(fp), which step 2 leaves alone.
 s=$1
 LC_ALL=C ; export LC_ALL	# sort in ASCII order (_Copy before _column), as on WEGA
 
@@ -24,7 +25,7 @@ sed -f calls.tmp $s | awk 'FILENAME == "table.tmp" { t = t $0 "\n" ; next } { pr
 mv shrink.s $s
 rm -f stubs.tmp table.tmp calls.tmp
 
-# 2. the frame operands at offset 0 (see above; to be replaced: compiler and assembler, host/OLDCC_LOG.md 2026-11-24)
+# 2. the frame operands at offset 0 (see above)
 awk '{ b[++m] = $0 }
 	$0 == "\tcall\t@r1" && b[m - 1] == "\tld\tr1,0(fp)" {
 		n++; l[n] = m - 1
