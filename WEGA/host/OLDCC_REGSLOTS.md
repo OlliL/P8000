@@ -45,6 +45,17 @@ that gives them is not found. This file collects what is known, to be taken up o
 | mail | system | 1 | istat, qstat |
 | nl (shipped cc) | main | 1 | j, i, p, header, body, footer, ptr |
 | slibc (vl, segmented) | calloc | 1 | q, m, mp (`int spare`, `#ifdef SEG`) |
+| comm 11/18/83 (sys3, not in the tree) | compare | 2 | ra, rb |
+| csplit 11/18/83 (sys3) | fatal | 1 | fls, num |
+| csplit | re_arg | 1 | ptr, ch (char) |
+| tsort 11/18/83 (sys3) | findloop | 1 | i, j |
+| uniq 11/18/83 (sys3) | skip | 2 | nf, nl (s) |
+
+The programs of the witnesses are of one build time: make, diff, nl, comm, csplit, tsort, uniq have the crt0 stamp 3.2
+11/18/83, mail 11/16/83. The same build of 11/18/83 has programs without any such word although they have register locals:
+ar, cmp, du, grep, pr, putfile, who, cpio (exact by the shipped cc, no unused local). So the word does not belong to a
+program or a time but to something of each compilation: this fits the stale sfldc (the heap of cparse) better than a rule of
+the source.
 
 Without a word (counter-examples, same programs): make main, isprecious, rdmakecomm, prname, setflags, setmflgs, doname,
 docom1, expand, dbreplace, ballbat, hashloc, makename, copys, concat, intalloc, subst, varptr, srchvar, any, findfl,
@@ -71,12 +82,24 @@ Unused words of another kind (no register local in the function; not counted her
 - A variant whose string constants (`savestr`, malloc'd, never freed) do not use the heap hung (the output of the string
   list); no result.
 
+## The search for witnesses (2026-11-24)
+
+The masked compare of every function of a build by the shipped cc with the original (the frame instructions `dec`/`sub`,
+`inc`/`add r15` as one token, `@r15` as `%0000(r15)`), reporting the found functions whose frame differs, finds all 15
+words of make and nothing else (calibrated on the build of make without its unused locals). Run over the 66 sys3 programs of
+COVERAGE with D1 loose or unknown (System III source by the shipped cc, linked, or the object when the link fails): 17 built
+and compared (the rest are fonts or do not compile: a.out.h, missing parts); witnesses comm, csplit, tsort, uniq (above).
+wtmpfix, fwtmp (01/83) differ in their own functions and in the libc too: an older compiler, not counted. line, tabs (07/82)
+have smaller frames: v0. Not covered: the todo programs without a source (sh 08/83, csh, adb, ps, ...); their D1 verdict
+in OLDCC_DATES.md counts unused words but cannot tell these words from the shipped ones.
+
 ## Open, next steps
 
 - The heap of the old cparse: what else is malloc'd (the strings of `savestr`, the `fcon` blocks of code1.c, the stdio
   buffers), the size of `struct symtab` (26 bytes now), the malloc of its libc; which of them moves the reuse of the freed
   entries so that misc.c of make comes out right, with main.c and files.c still right.
 - The other witnesses as tests of a rule found on make: diff, mail, nl (their `int unused` must come out by the compiler
-  then), slibc calloc (segmented).
+  then), comm, csplit, tsort, uniq, slibc calloc (segmented); and as counter-tests the programs of 11/18/83 without a word
+  (ar, cmp, du, grep, pr, putfile, who, cpio).
 - A rule that holds would be a switch of a cparse of its own (a compiler of 11/83), owner's decision; the unused locals
   would then go.
