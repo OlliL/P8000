@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 78 | 12 | 9 | 12 |
+| [bin](#bin) | 111 | 80 | 10 | 9 | 12 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 30 | 6 | 63 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 933 | 20 | 149 | 95 |
+| **all** | 1197 | 935 | 18 | 149 | 95 |
 
 <a id="root"></a>
 ## root
@@ -89,7 +89,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/gld` | binary E607 | - | todo | D12 new, D1 - | - |
 | `bin/gpasswd` | binary E707 | `src/cmd/gpasswd.c` | partial | cc | libc-v12.a |
 | `bin/grep` | binary E707 | `src/cmd/grep.c` | exact | cc | libc.a |
-| `bin/hd` | binary E707 | `src/cmd/od.c` | partial | ccv1r | libc-v3.a |
+| `bin/hd` | binary E707 | `src/cmd/od.c` | exact | ccv1r | libc-v3.a |
 | `bin/kill` | binary E707 | `src/cmd/kill.c` | exact | ccv0 | libc-v1.a |
 | `bin/ld` | binary E711 | `src/cmd/ld` | exact | ccv1 | libc-v9.a |
 | `bin/ln` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
@@ -106,7 +106,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/nl` | binary E707 | `src/cmd/nl.c` | exact | cc | libc.a |
 | `bin/nm` | binary E707 | `tmp/sys3/usr/src/cmd/nm.c` | sys3 | D12 new?, D1 loose | - |
 | `bin/nohup` | binary E707 | `src/cmd/nohup.c` | exact | ccv0 | libc-v1.a |
-| `bin/od` | binary E707 | `src/cmd/od.c` | partial | ccv1r | libc-v3.a |
+| `bin/od` | binary E707 | `src/cmd/od.c` | exact | ccv1r | libc-v3.a |
 | `bin/page` | binary E707 | - | todo | D12 old, D1 slots | - |
 | `bin/passwd` | binary E707 | `src/cmd/passwd.c` | exact | ccv1 | libc-v4.a |
 | `bin/pburn` | binary E611 | `src/cmd/pburn` | exact | scc | slibc.a |

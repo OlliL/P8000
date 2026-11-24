@@ -125,7 +125,8 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 
 ### v1r (01/83)
 
-- v1q with `OLD_D1R` (no temporary for the value of a return) and `OLD_D67`. Driver `ccv1r`, its own codgen. Byte-identical: `/bin/write`, `/bin/rmdir`, with `libc-isstore.a`.
+- v1q with `OLD_D1R` (no temporary for the value of a return) and `OLD_D67`. Driver `ccv1r`, its own codgen, its own popt (`/lib/v1r/popt`: that of v1
+  without `OLD_D52`, which came with v1). Byte-identical: `/bin/write`, `/bin/rmdir`, with `libc-isstore.a`; `/bin/od` (`hd`).
 
 ### v0 (1982)
 
@@ -708,7 +709,7 @@ iputexpr, sputexpr: the merged tail of a switch, named by two jumps, stays at th
 
 ### D52 A conditional expression in front of the function exit
 
-v1 `OLD_D52` (popt z21.c, codemove; popt and spopt of v1). For `c ? a : b` as the last code in front of the function exit
+v1 `OLD_D52` (popt z21.c, codemove; popt and spopt of v1, not of v1r: od putn needs the move it leaves out). For `c ? a : b` as the last code in front of the function exit
 the raw code is `cjp M; A; jp T; M: Y; T:` with T the exit code. The shipped popt leaves it. The popt of v1 puts the
 block of the jump (the test and A) in front of T and leaves the jump behind Y: `M: Y; jp T; test; cjp M; A; T:`, so Y
 stands in front of the test and A falls into the exit. Limits (each from the measurements, not from a second

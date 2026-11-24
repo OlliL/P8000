@@ -1,6 +1,6 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
- "compiler": "ccv1r (ccv1: the ?: of putc and getc without the frame temporaries; ccv1q as ccv1r; OLD_D67 for cput)",
+ "compiler": "ccv1r (its codgen with OLD_D67; its popt: that of v1 without OLD_D52)",
  "binary": "/bin/od",
  "functions": {
   "start": {
@@ -72,7 +72,7 @@
    "file": "od.c",
    "orig": "0x0522",
    "size_orig": 166,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
@@ -80,7 +80,7 @@
     "0x0254",
     "0x0522"
    ],
-   "note": "the source of System III (if (d > 9) ... else ...); the original places the inline putc of the else branch inside the then branch and shares its inc (block order / tail merging of the optimizer); if (d < 10) swaps the branches but not the layout."
+   "note": "exact with the popt of v1r (v1 without OLD_D52, 2026-11-24): the else arm of the inline putc stands in front of the shared _ptr++, its --_cnt test at the end (jr ge back), as the popt of v0, v0p and the shipped one do; OLD_D52 of v1 kept it in source order."
   },
   "pre": {
    "file": "od.c",

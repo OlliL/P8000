@@ -2262,3 +2262,13 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   (r2 idle beside a free r3 in main, line, putx, putn: the original takes r3); only r4 .. r7 with a free mate (X3): cput
   exact, od only putn left (popt), write and rmdir byte-identical, dd unchanged, the 17 libc modules of ccv1r unchanged.
   Taken as OLD_D67 (v1r). One witness.
+
+## 2026-11-24 v1r: its own popt, without OLD_D52 (od putn; od byte-identical)
+
+- od putn: the original puts the else arm of the inline putc (`if (d > 9) putchar(..); else putchar(..);`) in front of the
+  shared `_ptr++` and its `--_cnt` test at the end (`jr ge` back); ccv1r kept the source order. Seven source forms (d <= 9,
+  ?: as a statement, return in either arm, >= 10, !(d > 9)): none. The raw codgen output through every popt: v0, v0p and
+  the shipped /lib/popt make the layout of the original, only the v1 popt (-DOLD_D20 -DOLD_D52) does not; without
+  OLD_D52 it does, without OLD_D20 not. v1r (01/83) gets the popt of v1 without OLD_D52 (build/nonsegv1r/popt,
+  /lib/v1r/popt, cc.c): od byte-identical, write and rmdir byte-identical, dd unchanged, the 17 libc modules of ccv1r
+  unchanged. v1q keeps the v1 popt (not measured).

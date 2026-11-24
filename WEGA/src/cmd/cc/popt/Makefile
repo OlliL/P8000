@@ -17,7 +17,7 @@ CRT0 = /lib/crt0.o
 NONSEG_OBJS = z20.o z21.o z22.o z23.o
 SEG_OBJS = $(NONSEG_OBJS)
 ALL_TARGETS = build/nonseg/popt build/seg/spopt
-OLD_TARGETS = build/nonsegv0/popt build/nonsegv0p/popt build/nonsegv1/popt build/segv1/spopt build/segvk/spopt build/segvc/spopt
+OLD_TARGETS = build/nonsegv0/popt build/nonsegv0p/popt build/nonsegv1/popt build/nonsegv1r/popt build/segv1/spopt build/segvk/spopt build/segvc/spopt
 
 all: $(ALL_TARGETS)
 
@@ -31,6 +31,9 @@ build/nonsegv0p/popt: FORCE
 	cd build/nonsegv0p ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS)"
 build/nonsegv1/popt: FORCE
 	cd build/nonsegv1  ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D20 -DOLD_D52"
+# v1r (01/83): the popt of v1 without OLD_D52 (od putn: the else arm of the putc moved behind as the other popt do)
+build/nonsegv1r/popt: FORCE
+	cd build/nonsegv1r ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile popt CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D20"
 
 build/seg/spopt: FORCE
 	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile spopt CFLAGS="$(CFLAGS) -DSPOPT"
@@ -57,7 +60,7 @@ install: $(ALL_TARGETS)
 	$(STRIP) $(PREFIX)/lib/spopt
 
 oldinstall: $(OLD_TARGETS)
-	for v in v0 v0p v1 ; do \
+	for v in v0 v0p v1 v1r ; do \
 		[ -d $(PREFIX)/lib/$$v ] || mkdir $(PREFIX)/lib/$$v ; \
 		cp build/nonseg$$v/popt $(PREFIX)/lib/$$v/popt ; \
 	done
