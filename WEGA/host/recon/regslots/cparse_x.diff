@@ -1,0 +1,208 @@
+--- a/sym1.c	2026-11-24 08:25:50.994230990 +0100
++++ b/sym1.c	2026-11-24 09:50:42.907380009 +0100
+@@ -1,3 +1,4 @@
++extern int xs, xh, xv, xf, xg;
+ # include "mfile1"
+ 
+ static char sccsid[] = "@[$]sym1.c\t2.8  08/24/83 14:45:09 Copr. 1981 87wega3.2.";
+@@ -18,7 +19,7 @@
+ 
+ 	h = 0;
+ 	for( p = s; *p; ++p ) h += *p;
+-	return( h %= HASHSZ );
++	return( h %= (xh ? xh : HASHSZ) );
+ 	}
+ 
+ OFFSZ
+@@ -35,6 +36,24 @@
+ 	return( off );
+ 	}
+ 
++char *xmalloc(n) {
++	static char b[40];
++	char *r, *malloc();
++	r = malloc(n);
++	if( getenv("XL") ){ sprintf(b, "#M %d %x\n", n, r); write(2, b, strlen(b)); }
++	return(r);
++	}
++xfree(p) char *p; {
++	static char b[40];
++	if( getenv("XL") ){ sprintf(b, "#F %x\n", p); write(2, b, strlen(b)); }
++	free(p);
++	}
++xlog(k, q, s) char *k; struct symtab *q; char *s; {
++	static char b[100];
++	if( !getenv("XL") ) return;
++	sprintf(b, "#X %s %x %d %d %d %s\n", k, q, q->sfldc, q->sclass, q->slevel, s ? s : "?");
++	write(2, b, strlen(b));
++	}
+ oalloc( p, poff ) register struct symtab *p; register OFFSZ *poff; {
+ 	/* allocate p with offset *poff, and update *poff */
+ 	register al;
+@@ -59,6 +78,7 @@
+ 	else off = 0;
+ #endif
+ 
++	if( p->sclass == REGISTER ) xlog("R", p, &ntab[p->sname]);
+ 	if( p->sclass != REGISTER ){ /* in case we are allocating stack space for register arguments */
+ 		if( p->offset == NOOFFSET ) p->offset = off;
+ 		else if( off != p->offset ) return(1);
+@@ -503,15 +523,15 @@
+ 		}
+ 	if( !mk ) return;
+ 
+-	if( (q = (struct symtab *) malloc( sizeof(struct symtab) )) == 0 )
++	if( (q = (struct symtab *)  xmalloc( sizeof(struct symtab) + xs )) == 0 )
+ 		cerror( "Symbol table out of space" );
++	xlog("N", q, name);
+ 	q->slink = hashtab[i];
+ 	if( hashtab[i] ) hashtab[i]->slink = (struct symtab *)((int)hashtab[i]->slink ^ (int)q);
+ 	hashtab[i] = q;
+ 	q->sflags = s;
+ 	q->stype = UNDEF;
+ 	q->sclass = SNULL;
+-	q->sfldc = 0;
+ 	if( blevel ){
+ 		q->sname = ntabindx;
+ 		t = &ntab[ntabindx];
+@@ -547,7 +567,7 @@
+ 	char *s;
+ 	register h;
+ 
+-	if( (q = (struct symtab *) malloc( sizeof(struct symtab) )) == 0 )
++	if( (q = (struct symtab *)  xmalloc( sizeof(struct symtab) + xs )) == 0 )
+ 		cerror( "Symbol table out of space" );
+ 	*q = **pp;
+ 	h = hash( &ntab[q->sname] );
+@@ -585,7 +605,7 @@
+ 	register struct symtab *q;
+ 	int i;
+ 
+-	if( (q = (struct symtab *) malloc( sizeof(struct symtab) )) == 0 )
++	if( (q = (struct symtab *)  xmalloc( sizeof(struct symtab) + xs )) == 0 )
+ 		cerror( "Symbol table out of space" );
+ 	*q = *p;
+ 	i = hash( &ntab[p->sname] );
+@@ -647,10 +667,15 @@
+ clearst( lev ){ /* clear entries of internal scope  from the symbol table */
+ 	register struct symtab *p, *prev, *next;
+ 	register int temp;
+-	int i;
++	int i, j;
++	char *xq;
+ 
++	xq = 0;
++	if( xf ) xq =  xmalloc( sizeof(struct symtab) + xs );
++	if( xf == 2 )  xfree( xq );
+ 	temp = lineno;
+-	for( i=0; i<HASHSZ; ++i ){
++	for( j=0; j<HASHSZ; ++j ){
++		i = xv ? HASHSZ-1-j : j;
+ 		for( p = hashtab[i], prev = 0; p; prev = p, p = next ){
+ 			next = (struct symtab *)((int)p->slink ^ (int)prev);
+ 			lineno = p->suse;
+@@ -671,11 +696,13 @@
+ 					prev->slink = (struct symtab *)((int)prev->slink ^ (int)next);
+ 					}
+ 				else hashtab[i] = next;
+-				free( p );
++				xlog("F", p, &ntab[p->sname]);
++				if( !(xg == 1 && p->slevel == 1) && !(xg == 2 && p->slevel >= 2) && !(xg == 3 && p->sclass == AUTO) && !(xg == 4 && p->sclass == REGISTER) )  xfree( p );
+ 				p = prev;
+ 				}
+ 			}
+ 		}
++	if( xf == 1 )  xfree( xq );
+ 	lineno = temp;
+ 	}
+ 
+--- a/scan1.c	2026-11-22 03:40:12.288520682 +0100
++++ b/scan1.c	2026-11-24 09:50:42.905380007 +0100
+@@ -290,22 +290,23 @@
+ 	*(lxgcp = cp+1) = '\0';
+ 	}
+ 
++extern int xr;
+ savestr( ct, lab ){ /* a string constant: read it and keep it with its label in the list strhead */
+ 	char *cp;
+ 
+ 	if( !strhead ){
+-		if( (strhead = (struct strlist *) malloc( sizeof(struct strlist) )) == 0 ) syserr( "malloc" );
++		if( (strhead = (struct strlist *)  xmalloc( sizeof(struct strlist) + xr )) == 0 ) syserr( "malloc" );
+ 		strcur = strhead;
+ 		}
+ 	else {
+-		if( (strcur->s_next = (struct strlist *) malloc( sizeof(struct strlist) )) == 0 ) syserr( "malloc" );
++		if( (strcur->s_next = (struct strlist *)  xmalloc( sizeof(struct strlist) + xr )) == 0 ) syserr( "malloc" );
+ 		strcur = strcur->s_next;
+ 		}
+ 	strcur->s_next = 0;
+ 	strcur->s_lab = lab;
+ 	lxstr( ct );
+ 	strcur->s_len = strsize;
+-	if( (strcur->s_str = (char *) malloc( strcur->s_len )) == 0 ) syserr( "malloc" );
++	if( (strcur->s_str = (char *)  xmalloc( strcur->s_len + xr )) == 0 ) syserr( "malloc" );
+ 	strsize = 0;
+ 	for( cp = strcur->s_str; strsize < strcur->s_len; ++strsize ) *cp++ = strbuf[strsize];
+ 	}
+--- a/code1.c	2026-11-22 03:40:12.286520682 +0100
++++ b/code1.c	2026-11-24 09:51:18.415421291 +0100
+@@ -20,13 +20,22 @@
+ extern int crslab, curloc, ftnno, retlab, regflag;
+ extern struct symtab *curftn;
+ 
++int xs, xr, xh, xv, xf, xg;
+ main( argc, argv ) char *argv[]; {
++	char *getenv(), *e;
+ 	int dexit();
+ 	register int i;
+ 
+ 	if(signal( SIGHUP, SIG_IGN) != SIG_IGN) signal(SIGHUP, dexit);
+ 	if(signal( SIGINT, SIG_IGN) != SIG_IGN) signal(SIGINT, dexit);
+ 	if(signal( SIGTERM, SIG_IGN) != SIG_IGN) signal(SIGTERM, dexit);
++	if( e = getenv("XS") ) xs = atoi(e);
++	if( e = getenv("XR") ) xr = atoi(e);
++	if( e = getenv("XH") ) xh = atoi(e);
++	if( e = getenv("XV") ) xv = atoi(e);
++	if( e = getenv("XF") ) xf = atoi(e);
++	if( e = getenv("XG") ) xg = atoi(e);
++	if( (e = getenv("XM")) && atoi(e) )  xmalloc( atoi(e) );
+ 	openfiles( argc, argv );
+ 
+ 	for( i=1; i<argc; ++i )
+@@ -121,7 +130,7 @@
+ 		}
+ 	if( fcfail ) fcp = 0;
+ 	else if( fccnt++ % 50 ) ++fcp;
+-	else fcp = (struct fcon *) malloc( 50*sizeof(struct fcon) );
++	else fcp = (struct fcon *)  xmalloc( 50*sizeof(struct fcon) );
+ 	if( fcp == 0 ){
+ 		if( !fcfail ){
+ 			werror( "no space for floating constant chain;\t\t\t\t constants duplicated" );
+@@ -300,7 +309,13 @@
+ 	}
+ #endif
+ 
++xdlog(){
++	static char b[60];
++	if( getenv("XL") ){ sprintf(b, "#D %s\n", &ntab[curftn->sname]); write(2, b, strlen(b)); }
++	return(0);
++	}
+ bfcode( a, n ) struct symtab *a[]; {
++	int xdummy = xdlog();
+ 	/* code for the beginning of a function; a is an array of
+ 		the entries of the arguments; n is the number */
+ 	register i;
+--- a/vinit1.c	2026-11-22 03:40:12.289520682 +0100
++++ b/vinit1.c	2026-11-24 09:50:42.907380009 +0100
+@@ -193,8 +193,8 @@
+ 			++i;
+ 			} while( *s++ || i < strcur->s_len );
+ 		fprintf( dfile, "\n" );
+-		free( strcur->s_str );
+-		free( strcur );
++		 xfree( strcur->s_str );
++		 xfree( strcur );
+ 		} while( strcur = strcur->s_next );
+ 	fprintf( dfile, "    .even\n" );
+ 	strcur = 0;

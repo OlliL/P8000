@@ -145,6 +145,14 @@ None gives the 27 witnesses without new false ones. The programs that come out r
 uniq, du, grep, pr, putfile, who, cmp) and the wrong ones (make misc.c, ar, cpio, csplit, mail) are the lead: something in
 the wrong ones makes the old cparse allocate or free otherwise (not yet seen what).
 
+## The tools
+
+`host/recon/regslots/`: `setup.sh` makes the work directory (`RS_WORK`, default `tmp/tmp/regslots` beside WEGA: the scratch
+cparse from `cparse_x.diff`, a root with it behind the shipped cc, the test set, the logs); `fscan.py` (the masked frame
+compare of a build against the original), `score.sh` (real builds of the test set), `v7sim.py` (the V7 malloc),
+`replay.py` (a log through the malloc with the sfldc model), `hyp.py` (the score of the test set, the expected words),
+`hyps1.py` (the hypotheses of the table above).
+
 ## Open, next steps
 
 - The heap of the old cparse: what else is malloc'd (the strings of `savestr`, the `fcon` blocks of code1.c, the stdio
