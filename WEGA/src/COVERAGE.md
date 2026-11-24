@@ -89,7 +89,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/gld` | binary E607 | - | todo | D12 new, D1 - | - |
 | `bin/gpasswd` | binary E707 | `src/cmd/gpasswd.c` | partial | cc | libc-v12.a |
 | `bin/grep` | binary E707 | `src/cmd/grep.c` | exact | cc | libc.a |
-| `bin/hd` | binary E707 | `src/cmd` | partial | cc | libc.a |
+| `bin/hd` | binary E707 | `src/cmd/od.c` | partial | ccv1r | libc-v3.a |
 | `bin/kill` | binary E707 | `src/cmd/kill.c` | exact | ccv0 | libc-v1.a |
 | `bin/ld` | binary E711 | `src/cmd/ld` | exact | ccv1 | libc-v9.a |
 | `bin/ln` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
@@ -120,7 +120,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/regcmp` | binary E707 | `src/cmd/regcmp.c` | partial | ccv1 | libc-v4.a |
 | `bin/remote` | binary E707 | - | todo | D12 new?, D1 loose | - |
 | `bin/rm` | binary E707 | `src/cmd/rm.c` | exact | ccv1 | libc-v6.a |
-| `bin/rmail` | binary E707 | `src/cmd` | exact | cc | libc.a |
+| `bin/rmail` | binary E707 | `src/cmd/mail.c` | exact | cc | libc-v12.a |
 | `bin/rmdir` | binary E707 | `src/cmd/rmdir.c` | exact | ccv1r | libc-v10.a |
 | `bin/rsh` | binary E711 | - | todo | D12 new, D1 slots | - |
 | `bin/scc` | binary E707 | `src/cmd/cc` | exact | cc | libc-v8.a |
