@@ -2,28 +2,16 @@
 
 Goal: `make install` gives the original, `cmp` is the only proof (`checkall`). Bugs of the original are rebuilt and listed in `KNOWLEDGE.md`, "Bugs and quirks". Rules of the project: `../CLAUDE.md`. The plan: `increments/README.md` (new programs: increments 140 to 160).
 
-One program per session: a fresh session (opus) with the short start message below does phase A for one program, from
-`setup.py` to the commit; a long session that carries other work costs more in every turn than the whole program
-(increment 140, measured on cpio). Subagents are not used: the cheaper model made wrong source changes that cost more to
-find than it saved (the definitions in `.claude/agents/` stay, used only when the owner names them). Phase B (an open
-block that needs the compiler) is a session of its own, for the open blocks of several programs with the same mechanism.
+Phase A of a program is done in the running session, step by step, from `setup.py` to the commit; no subagents (the definitions in
+`.claude/agents/` stay, used only when the owner names them). Phase B (an open block that needs the compiler) follows when phase A
+is through, for the open blocks of one or several programs with the same mechanism.
 
-Start message of a session (NAME, ORIG and the increment filled in):
+## Working rules (context economy)
 
-    WEGA, increment 160: rebuild /ORIG (NAME) by WEGA/host/HOWTO_reconstruct.md, phase A, steps 1 to 5.
-    Read WEGA/CLAUDE.md and the HOWTO first. No subagents. A block still open after 6 attempts: note it in findings.json,
-    put the file in OPEN of host/tools/checkall.sh, do not go deeper. At the end: checkall, the two tables, COVERAGE.md,
-    commit; a short report (bincmp, corpus, changed files).
+What costs context is the output of the tools, not the thinking. Rules:
 
-Several programs unattended, one fresh session each: `host/tools/nightly.sh [-b DOLLARS] NAME[:ORIG] ...` (the session commits,
-the script runs checkall on each commit and stops at the first failure; at the end COVERAGE.md; logs in `tmp/tmp/nightly`).
-
-## Procedure of a long session (context economy)
-
-A reconstruction without source (gopt) runs for many sessions; what costs context is the output of the tools, not the thinking. Rules:
-
-- One module, or one large function, per session; then `/clear`. The state is in `compare/NAME/HANDOFF.md`, `findings.json` (name, file,
-  status, note of every function, kept up to date after every function) and the increment log, not in the conversation.
+- The state is in `compare/NAME/findings.json` (name, file, status, note of every function, kept up to date after every function),
+  for a long reconstruction also `compare/NAME/HANDOFF.md`, not in the conversation.
 - Never print a whole disassembly or diff into the conversation. `odisc.py -s FUNC` (calls, strings, size), `odisc.py -o FUNC` (listing to
   a file, then `sed -n a,bp`), `fnc.py FILE.c FUNC ...` (one line per function, the diff in `tmp/tmp/fnc/FUNC.diff`), `fnc.py -a FILE.c`
   (only the names that are not OK). A diff is read in parts (`sed -n`), a listing only for the function in hand.
@@ -35,20 +23,6 @@ A reconstruction without source (gopt) runs for many sessions; what costs contex
   not what was tried: attempts go to `OLDCC_LOG.md` when they concern the compiler, else nowhere.
 - When fnc.py has every function masked-equal, the program is not done: link it and compare strictly (Phase B, framemap.py);
   the masked compare hides frame layout, constants, globals and members (gopt: about 50 functions).
-- Before the context is 70% full: finish the function in hand, update HANDOFF.md, commit, and give the owner the variable part of the next
-  start message (below). Do not start a new large function late in a session.
-
-Start message of such a session (only the part between the lines is filled in by the owner; the AI writes it for the next session):
-
-    WEGA, increment 150, program gopt: continue by WEGA/host/HOWTO_reconstruct.md ("Procedure of a long session").
-    Read WEGA/CLAUDE.md, WEGA/compare/NAME/HANDOFF.md (the one of the program) and only the file of the increment. No subagents.
-    ---- what we do now ----
-    TASK: <the module / function / question of this session, e.g. "alias2.c: 4:7c68 checkops with its blocks">
-    START: <what to do first, e.g. "struct qa: unsigned w0, then fnc.py -a on all files">
-    STOP WHEN: <the end of the piece, e.g. "checkops written; or at 70% of the context">
-    ----
-    At the end: findings.json, HANDOFF.md, the increment log, commit; then print the block "what we do now" for the next
-    session (TASK, START, STOP WHEN), filled in from the real state: what is done, what is open, what comes next.
 
 ## Phase A
 
@@ -60,7 +34,7 @@ of a pass (KDBG, poptrace) is phase B (owner 2026-11-23).
 
 1. **Setup: `python3 host/recon/setup.py NAME [ORIG]`** (ORIG below the WEGA root, default `bin/NAME`; nonsegmented programs, E707 or E711; the library part includes a termlib linked before the libc).
    It does the mechanical start and prints a report (RESULT, SCCS, SOURCE, DATE, COMPILER, OWN_LIM, LIBC, FILES); an existing
-   source, `progcfg.py` or `findings.json` is kept. What it does, and what the main session decides from it:
+   source, `progcfg.py` or `findings.json` is kept. What it does, and what is decided from it:
    1. **SCCS lines.** The `@[$]` strings of the binary name the own source files, their order and dates; several lines mean
       several files, a date other than System III's means WEGA changed it.
    2. **Source from System III** (`tmp/sys3/usr/src`, the path of `src/COVERAGE.md`, else `cmd/NAME.c` or `cmd/NAME/`), copied
@@ -70,14 +44,14 @@ of a pass (KDBG, poptrace) is phase B (owner 2026-11-23).
       For what is specific to the Z8000 the Plexus sources (`tmp/plexus`) are the second base; they may be copied from too (owner 2026-11-22). Without a source: step 3.
    3. **Dating.** The line of `OLDCC_DATES.md`, and the compiler of that time (`OLDCC.md`, section 2): D1 tight = v0 (1982),
       slots = v1 (01/83 .. 07/83, neighbours v1r, v1q), loose with the libc of 09/83 = the shipped cc (scc). The script names the
-      candidate; the main session decides, measuring the neighbours too ("Evidence rules").
+      candidate; the decision measures the neighbours too ("Evidence rules").
    4. **compare/NAME/.** `progcfg.py` (NAME, ORIG, OWN_LIM, ORIG_LIM when stripped, CC; for a segmented program SEG and CC by
       hand, `compare/sld` is the pattern), the inventory (`inventory.py`, kept in `tmp/tmp/NAME/inv.json`) and the first
       `findings.json` (`own_table.py`: every function start `f<entry>` with orig, size_orig, status open). Names later with `rename.py`.
    5. **Library and OWN_LIM.** The walk of `host/tools/whichlibc.py` over every `src/lib/libc-vN.a` and the shipped `/lib/libc.a`: the libc
       starts at the first member of at least 32 bytes (with the members right before it); the best library covers the most
       bytes from there. No gap: that library is LIBC. A gap is a module of another version, or a program of another library: the
-      main session decides. `ld` takes from an archive what is referenced, in its order. `crt0.list` must have the program.
+      decision is made by measuring. `ld` takes from an archive what is referenced, in its order. `crt0.list` must have the program.
 2. **Build and compare**. The own code with the stdio.h of the time for ccv0 and ccv1 (`src/head/oldv7`), the
    start-up file from `crt0.list`, linked with LIBC (`E="z8k-emu -r $OLDROOT"; $E /bin/ccv1 -O -I../head/oldv7 -c x.c`; the old
    compilers need `make -C host oldroot` once; the emulator sees only paths below its root and the working directory). Then
@@ -107,7 +81,7 @@ More, found on sld: `KNOWLEDGE.md`, "what fixed the findings functions".
 
 ## Libraries (increment 150)
 
-A library of `/lib` or `/usr/lib` (`libX.a` and its segmented `slibX.a`) the same way, one fresh session per library; the
+A library of `/lib` or `/usr/lib` (`libX.a` and its segmented `slibX.a`) the same way; the
 pattern is `src/lib/libl` (Makefile with build/nonseg and build/seg, `mkar.sh`, `arhdr_*.s`, `Library.SC`).
 
 1. **Setup: `python3 host/recon/libsetup.py libX`.** For every member of `libX.a` and `slibX.a` the source, from System III
@@ -122,8 +96,6 @@ pattern is `src/lib/libl` (Makefile with build/nonseg and build/seg, `mkar.sh`, 
    open: `findings.json` of `compare/libX`, the archive in `OPEN` of checkall). A member without a source: note it.
 4. **Done:** the archive byte-identical (`cmp`), the two tables, `COVERAGE.md`, commit. A library has no corpus of its own:
    the programs that link it are its test.
-
-Unattended: `host/tools/nightly.sh lib:libX ...` (one session per library, the start message of a library).
 
 ## Phase B
 
