@@ -73,7 +73,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/echo` | binary E707 | `src/cmd/echo.c` | exact | ccv0 | libc-v11.a |
 | `bin/echo2` | binary E707 | `src/cmd/echo2.c` | exact | ccv0 | libc-v1.a |
 | `bin/ed` | binary E707 | `tmp/sys3/usr/src/cmd/ed/ed.c` | sys3 | D12 old, D1 slots | - |
-| `bin/edit` | binary E711 | `src/cmd/ex` | exact | cc | libc.a |
+| `bin/edit` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
 | `bin/egrep` | binary E707 | `tmp/sys3/usr/src/cmd/egrep.y` | sys3 | D12 new?, D1 loose | - |
 | `bin/env` | binary E707 | `src/cmd/env.c` | exact | ccv0 | libc-v1.a |
 | `bin/ex` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
@@ -148,8 +148,8 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/uusend` | binary E707 | - | todo | D12 old?, D1 loose | - |
 | `bin/uux` | binary E707 | `src/cmd/uucp` | partial | cc | - |
 | `bin/verify` | binary E707 | `src/cmd/verify` | exact | cc | libc.a |
-| `bin/vi` | binary E711 | `src/cmd/ex` | exact | cc | libc.a |
-| `bin/view` | binary E711 | `src/cmd/ex` | exact | cc | libc.a |
+| `bin/vi` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
+| `bin/view` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
 | `bin/whereis` | binary E707 | `src/cmd/whereis.c` | exact | ccv0 | libc-v1.a |
 | `bin/who` | binary E707 | `src/cmd/who.c` | exact | cc | libc.a |
 | `bin/whodo` | text | `src/cmd/whodo.sh` | exact | - | - |

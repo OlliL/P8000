@@ -39,6 +39,9 @@ SOURCE = {'bin/cc': 'cmd/cc', 'bin/scc': 'cmd/cc', 'bin/cas': 'cmd/cas', 'bin/ld
           'lib/scodgen': 'cmd/cc/codgen', 'lib/popt': 'cmd/cc/popt', 'lib/spopt': 'cmd/cc/popt', 'pb.image': 'cmd/BOOT0',
           'lib/libc.a': 'lib/libc', 'lib/crt0.o': 'lib/libc/nonseg/csu', 'lib/slibc.a': 'lib/libc', 'lib/scrt0.o': 'lib/libc/seg/csu', 'etc/dump': 'cmd/dump.c', 'etc/dumpdir': 'cmd/dumpdir.c',
           'etc/restor': 'cmd/restor.c', 'etc/umfs': 'cmd/mfs.sh', 'etc/mlf': 'cmd/makelost+found.sh'}
+# links made by an install rule (ln): the file whose rule gives compiler and libc
+LINKOF = {'bin/edit': 'ex', 'bin/vi': 'ex', 'bin/view': 'ex'}
+
 # Makefile variable -> name of the compiler
 CCNAME = {'CC': 'cc', 'SCC': 'scc', 'CCV0': 'ccv0', 'CCV0A': 'ccv0a', 'CCV1': 'ccv1', 'CCV1R': 'ccv1r', 'CCV1Q': 'ccv1q', 'CCV0P': 'ccv0p'}
 
@@ -175,7 +178,7 @@ def tools(rel, src):
     """(compiler, libc) of a built file, from the Makefiles"""
     if not src:
         return '-', '-'
-    name = os.path.basename(rel)
+    name = LINKOF.get(rel, os.path.basename(rel))
     top = os.path.join(SRC, 'cmd', 'Makefile')
     text = open(top, errors='replace').read()
     tv = makefile_vars(top)
@@ -265,7 +268,7 @@ def complete(rel, k, src, cc, lib):
     d = os.path.join(SRC, src)
     if not os.path.isdir(d):
         return cc, lib
-    name = os.path.basename(rel)
+    name = LINKOF.get(rel, os.path.basename(rel))
     text, v, r, mkpath = find_rule(d, name)
 
     def tools_of(cmds):
