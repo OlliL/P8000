@@ -80,6 +80,13 @@ char	*gopt		= "/lib/gopt";
 char	*codgen		= SEG("/lib/v1c/codgen", "/lib/v1c/scodgen");
 char	*popt		= SEG("/lib/v1/popt", "/lib/v1/spopt");
 #else
+#ifdef OLD_V1L
+/* ccv1l: the compiler of lex (01/83): v1q with its own code generator and the popt of v1r (host/OLDCC.md, v1l) */
+char	*cparse		= "/lib/v1/cparse";
+char	*gopt		= "/lib/gopt";
+char	*codgen		= "/lib/v1l/codgen";
+char	*popt		= "/lib/v1r/popt";
+#else
 #ifdef OLD_V1R
 /* ccv1r (v1r/Makefile): v1 with its own code generator */
 char	*cparse		= "/lib/v1/cparse";
@@ -134,6 +141,7 @@ char	*cparse		= SEG("/lib/cparse", "/lib/scparse");
 char	*gopt		= "/lib/gopt";
 char	*codgen		= SEG("/lib/codgen", "/lib/scodgen");
 char	*popt		= SEG("/lib/popt", "/lib/spopt");
+#endif
 #endif
 #endif
 #endif

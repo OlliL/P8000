@@ -2327,3 +2327,27 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   `<sys/dir.h>`.
 - checkall: 853 installed files identical with WEGA (the 13 by ccvm among them, /lib/cparse unchanged), all corpora but
   casold equal; casold failed once on "Text file busy" (a host race at the start of cas), its rerun 924 of 924 equal.
+
+## 2026-11-25 v1l: the compiler of lex, and the cause of regcmp
+
+- lex (01/14/83, System III source) with ccv1: 25 of 61 functions differ, the frames larger, the tcc form of regcmp
+  everywhere. ccv1q closer (QUEST temporary; sizes of error, warning, cpyact, layout right), ccv1r worse (D1R).
+- Built v1q + a store rule, measured per function (a pf diff of each function, mapped by order, against the original):
+  `&&`/`||` as a value through a temporary: 25 > 18; the stdio.h of the time (an absolute -I is invisible to the guest:
+  copied) 18 > 12; the WEGA edits of lex (option -f, myalloc, `={`): 12 > 10, data and code sizes equal.
+- In a condition: first "the left of `&&`/`||` is `&&`/`||`": layout, cpyact wrong (`a && b && c` stays jumps); "the left
+  of `||` or the operand of `!`" (siconv `!((a && b) || c)`): right. An operand that is no comparison: `x != 0` (cclinter).
+  10 > 5, yylex exact.
+- The rest register choice: v1 switches D61 D62 D63 D53 neutral; D1R 22 differ; D67 usescape right, space wrong. The popt of
+  v1r: munput (the loop not rotated) right, 4 left.
+- mn2, yyparse, packtrans: behind `||` the registers go back (r3/r4), behind `&&` not (r5/r6). Variants: free behind `||`
+  always; only behind its own join label; also `&&` behind its own label: all three 0 differ on lex and on regcmp. Built the
+  first (OLD_D3L).
+- usescape/space (D67): a dump of rsuse/rsfree at the dispatch (popt cuts `//` lines: read without -O): in space the idle
+  TEMP r6 of the switch value is in use and D67 gives it back with the free r7; in usescape the bodies gave it back. D67
+  excluding TEMPs: the bodies of usescape wrong. D67 + D2T: the dispatch of usescape takes r6 again (getreg). OLD_D67S
+  (busy only when still in use, no getreg): 0 differ.
+- libc: atoi and calloc missing in libc-v3 (the two gaps of setup.py); atoi of ccv1q and the System III calloc.c (0_2.c) of
+  ccv1q (mult rr2,r6) give the whole binary: IDENTICAL.
+- regcmp: main by ccv1 as before, src/lib/libPW/regcmp.c by the new compiler: IDENTICAL at the first try. Earlier rounds
+  (2026-11-24: 40 source forms, no compiler of the tree) are explained: no tree compiler had the rule.

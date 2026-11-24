@@ -64,7 +64,7 @@ register variables: "slots" (as many never used frame words as saved registers: 
 | 1981 .. 1982, no crt0 stamp (sources 07/82 ..) | packed | chmod, dc, m4, eqn, cpp (12/82), ranlib, the plz tools | v0 (D1 tight) |
 | 10/82 .. 11/82 (crt0 3.1) | packed | ex, vi, at, xstr | v0a (ex, xstr measured; the libraries of ex v0); shut, dd 11/82 .. 12/82 loose |
 | 01/05/83 (crt0 3.1) | packed | write, rmdir | v1r (write fits v1q and v1 too, rmdir does not fit v1) |
-| 01/14/83 (crt0 3.1) | packed | size | v1, v1q and v1r all fit its own code; its libc: v1q |
+| 01/14/83 (crt0 3.1) | packed | size, lex | size: v1, v1q and v1r all fit its own code; its libc: v1q. lex: v1l (also the libPW regcmp in regcmp) |
 | 01/24/83 .. 05/83 (crt0 3.1) | packed | strip, ls, sort, passwd, mount, rm, lint1 | v1 (strip, rm measured: v1q, v1r do not fit) |
 | 07/83 (crt0 3.2) | packed | ld, cp/ln/mv, login, get, yacc | v1 (ld, mv checked) |
 | 08/11/83 | packed | csh | v1 (last packed one) |
@@ -119,6 +119,15 @@ the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibc
 
 - v1 with `OLD_D14Q` (codgen); cparse and popt are those of v1. Driver `ccv1q`, runs `/lib/v1/cparse`, `/lib/v1q/codgen`, `/lib/v1/popt`.
 - Byte-identical modules of libc-v3.a (the libc in size) from C: filbuf 0_1, rdwr 0_1, malloc 0_1, printf 0_1.
+
+### v1l (01/83, the compiler of lex)
+
+- v1q with `OLD_D14L` (the value of `&&` and `||` through a temporary), `OLD_D3L` (behind a `||` the idle registers go back),
+  `OLD_D67` and `OLD_D67S` (the switch value stays taken in the dispatch); cparse of v1, the popt of v1r. Driver `ccv1l`, runs
+  `/lib/v1/cparse`, `/lib/v1l/codgen`, `/lib/v1r/popt`. Built with v1q's `-DOLD_D3 -DOLD_D14Q` and the four switches (codgen/Makefile).
+- Byte-identical: `/usr/bin/lex` (SCCS 01/14/83, System III lex, liby, libc-v3) and the libPW regcmp inside `/bin/regcmp`
+  (the source of the libPW member). Not yet checked: the other witnesses of the tcc form (acctcom, shut, error, units; increment 161).
+- No D1R: the value of a return goes through the temporary as in v1q (digit, alpha).
 
 ### The time line v1r, v1q, v1
 
@@ -365,6 +374,9 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   a byte (opshort: a new pair). Not in v0p (cparse and scparse lose genswitch and refid). One witness that needs it.
 - v1 `OLD_D3` (cbranch): at the join label of `&&` and `||` the shipped codgen gives the idle registers back, the old one keeps
   them with their contents. ld init_entry, dseek.
+- v1l `OLD_D3L` (under OLD_D3, cbranch): behind a `||` the idle registers go back, behind an `&&` they stay (lex mn2: the
+  `nullstr[tptr] = TRUE` of `if (a || b)` in r3/r4, that of `if (a && b)` in r5/r6, so popt does not merge them; yyparse,
+  packtrans). Only behind a join label of its own, or for `&&` too behind its own label: the same bytes on lex and regcmp.
 - v0 `OLD_D3P` (regforsym): a name that lives in a register is taken from it also when the node wants another register, also
   under a cast between two types of the size of a pointer: v0 int, unsigned and pointers (argdebug, rstruct; int against
   unsigned: sputc). Segmented (vc): pointer, long and unsigned long, one of the two a pointer (gopt tabfree `(long)p`
@@ -543,6 +555,14 @@ The assembler of the old scc keeps bit 31 of a segmented address constant (`ldl 
 autos behind it; `ld @r15,#1; jr; ld @r15,#%0200; ...; ld r5,@r15`). Each arm is assigned to it, the delayed `x++` of the arm follows that store (`ld @r15,r3; inc @r13,#1`, not in front of the arm). The temporaries of one function are not
 used again: the offset goes up over the statements and calls (endopen: `@r15`, 2, 4). An `&&` on the left of a `||` also goes into such a temporary (endopen, with `(char)` operands). Witnesses: filbuf, rdwr, malloc, printf of size.
 
+`OLD_D14L` (v1l; codgen store, constore, order, d14larm): the value of an `&&` or `||` goes through a temporary of the parameter area
+(store: always, as the `?:` of v1q), and in a condition so does an `&&` or `||` that is the operand of a `!` or the left operand of a
+`||` (constore; not the left of an `&&`: lex layout, cpyact keep `a && b && c` as jumps). The left operand is assigned to the temporary
+and tested in its register (`ldk r2,#0; tcc ge,r2; ld @r15,r2; test r2; jr eq`; a delayed `x++` between store and test), the right
+one only assigned; an operand that is no comparison is compared with 0 (`cpb x,#0; ldk r2,#0; tcc ne,r2`, cclinter). The outer
+temporary is taken first (get1core: the innermost `||` of six lands at 6(r15)). Witnesses: lex (get1core, get2core, get3core, digit,
+alpha, printable, siconv, cclinter, nextstate, yylex, cpyact, layout), regcmp of libPW in /bin/regcmp.
+
 The printf family of size, strip and cas spills the EPU registers inline (`.word %4FFC,%8303,off`) and stores r6..r2 besides the
 `ldm`; ranlib's has the shipped form. In size `*fp->_ptr++` uses the byte before the `inc`. `_filbuf` of size and ranlib: the
 conditional value goes through a stack temporary.
@@ -651,6 +671,11 @@ again and the word request splits the first free pair. od cput: `c &= 0377` load
 without the rule r6 is taken, the free half beside the idle r7 (the register of c at the entry). Not for r0 ... r3: an idle r2
 beside a free r3 stays (od main, line, putx, putn take r3, as the original). One witness; write, rmdir and the 17 libc modules
 of ccv1r unchanged.
+
+v1l `OLD_D67S` (lcl3.c gswitch, with OLD_D67): the register of the switch value, when it is still in the use list at the dispatch
+behind the bodies, is taken there (busy), so OLD_D67 does not give it back with its free mate (lex space: the table address in
+the free r7, `cpir r6,@r7,r2`); when the bodies have given it back (usescape: the `||` and the temporaries), the dispatch takes rr2
+(`cpir r6,@r2,r3`). In the bodies OLD_D67 gives the idle TEMP back (usescape `c -= '0'` in r2, not r7). OLD_D2T without its getreg.
 
 ### D23 Zero addend
 
@@ -917,6 +942,8 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | gopt | wrtil2.c (mkleaf: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gopt | lpinv2.c (qmkstore: dead code) | sccvc (measured) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | od | od.c (cput) | v1r |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
+| lex | lmain.c, sub1.c, sub2.c, parser.y (get1core, digit, alpha, siconv, cclinter, usescape, munput, mn2, yyparse, packtrans, ...) | v1l |  | x | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  | x |
+| regcmp | libPW regcmp.c (regcmp) | v1l |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
 fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`

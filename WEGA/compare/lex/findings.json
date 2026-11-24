@@ -1,0 +1,634 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1l",
+ "binary": "/usr/bin/lex",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "lmain.c",
+   "orig": "0x0042",
+   "size_orig": 666,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "get1core": {
+   "file": "lmain.c",
+   "orig": "0x02dc",
+   "size_orig": 246,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "free1core": {
+   "file": "lmain.c",
+   "orig": "0x03d2",
+   "size_orig": 44,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "get2core": {
+   "file": "lmain.c",
+   "orig": "0x03fe",
+   "size_orig": 402,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "free2core": {
+   "file": "lmain.c",
+   "orig": "0x0590",
+   "size_orig": 174,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "get3core": {
+   "file": "lmain.c",
+   "orig": "0x063e",
+   "size_orig": 102,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "myalloc": {
+   "file": "lmain.c",
+   "orig": "0x06a4",
+   "size_orig": 40,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x02dc",
+    "0x03fe",
+    "0x063e",
+    "0x3dba"
+   ]
+  },
+  "yyerror": {
+   "file": "lmain.c",
+   "orig": "0x06cc",
+   "size_orig": 24,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x14fa"
+   ]
+  },
+  "yylex": {
+   "file": "parser.y",
+   "orig": "0x06e4",
+   "size_orig": 3606,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x14fa"
+   ]
+  },
+  "yyparse": {
+   "file": "parser.y",
+   "orig": "0x14fa",
+   "size_orig": 1872,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "getl": {
+   "file": "sub1.c",
+   "orig": "0x1c4a",
+   "size_orig": 74,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x06e4"
+   ]
+  },
+  "space": {
+   "file": "sub1.c",
+   "orig": "0x1c94",
+   "size_orig": 40,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x06e4"
+   ]
+  },
+  "digit": {
+   "file": "sub1.c",
+   "orig": "0x1cbc",
+   "size_orig": 36,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x06e4"
+   ]
+  },
+  "error": {
+   "file": "sub1.c",
+   "orig": "0x1ce0",
+   "size_orig": 138,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x02dc",
+    "0x03fe",
+    "0x063e",
+    "0x269c",
+    "0x2a78",
+    "0x2d64",
+    "0x2f88",
+    "0x3416",
+    "0x3a68",
+    "0x3dba"
+   ]
+  },
+  "warning": {
+   "file": "sub1.c",
+   "orig": "0x1d6a",
+   "size_orig": 144,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x06a4",
+    "0x06e4",
+    "0x2f88",
+    "0x3416"
+   ]
+  },
+  "index": {
+   "file": "sub1.c",
+   "orig": "0x1dfa",
+   "size_orig": 56,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "alpha": {
+   "file": "sub1.c",
+   "orig": "0x1e32",
+   "size_orig": 88,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x06e4"
+   ]
+  },
+  "printable": {
+   "file": "sub1.c",
+   "orig": "0x1e8a",
+   "size_orig": 36,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x3dba"
+   ]
+  },
+  "lgate": {
+   "file": "sub1.c",
+   "orig": "0x1eae",
+   "size_orig": 112,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "scopy": {
+   "file": "sub1.c",
+   "orig": "0x1f1e",
+   "size_orig": 38,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x06e4"
+   ]
+  },
+  "siconv": {
+   "file": "sub1.c",
+   "orig": "0x1f44",
+   "size_orig": 158,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x06e4"
+   ]
+  },
+  "slength": {
+   "file": "sub1.c",
+   "orig": "0x1fe2",
+   "size_orig": 26,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x2a78"
+   ]
+  },
+  "scomp": {
+   "file": "sub1.c",
+   "orig": "0x1ffc",
+   "size_orig": 50,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "ctrans": {
+   "file": "sub1.c",
+   "orig": "0x202e",
+   "size_orig": 150,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "cclinter": {
+   "file": "sub1.c",
+   "orig": "0x20c4",
+   "size_orig": 290,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "usescape": {
+   "file": "sub1.c",
+   "orig": "0x21e6",
+   "size_orig": 172,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "lookup": {
+   "file": "sub1.c",
+   "orig": "0x2292",
+   "size_orig": 60,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "cpyact": {
+   "file": "sub1.c",
+   "orig": "0x22ce",
+   "size_orig": 974,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "gch": {
+   "file": "sub1.c",
+   "orig": "0x269c",
+   "size_orig": 304,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x06e4",
+    "0x1c4a"
+   ]
+  },
+  "mn2": {
+   "file": "sub1.c",
+   "orig": "0x27cc",
+   "size_orig": 330,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "mn1": {
+   "file": "sub1.c",
+   "orig": "0x2916",
+   "size_orig": 226,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "mn0": {
+   "file": "sub1.c",
+   "orig": "0x29f8",
+   "size_orig": 128,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "munput": {
+   "file": "sub1.c",
+   "orig": "0x2a78",
+   "size_orig": 136,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x06e4"
+   ]
+  },
+  "dupl": {
+   "file": "sub1.c",
+   "orig": "0x2b00",
+   "size_orig": 210,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "cfoll": {
+   "file": "sub2.c",
+   "orig": "0x2bd2",
+   "size_orig": 402,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "add": {
+   "file": "sub2.c",
+   "orig": "0x2d64",
+   "size_orig": 126,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2f88"
+   ]
+  },
+  "follow": {
+   "file": "sub2.c",
+   "orig": "0x2de2",
+   "size_orig": 174,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "first": {
+   "file": "sub2.c",
+   "orig": "0x2e90",
+   "size_orig": 248,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2f88"
+   ]
+  },
+  "cgoto": {
+   "file": "sub2.c",
+   "orig": "0x2f88",
+   "size_orig": 728,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "nextstate": {
+   "file": "sub2.c",
+   "orig": "0x3260",
+   "size_orig": 322,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2f88"
+   ]
+  },
+  "notin": {
+   "file": "sub2.c",
+   "orig": "0x33a2",
+   "size_orig": 116,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2f88"
+   ]
+  },
+  "packtrans": {
+   "file": "sub2.c",
+   "orig": "0x3416",
+   "size_orig": 1576,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2f88"
+   ]
+  },
+  "member": {
+   "file": "sub2.c",
+   "orig": "0x3a3e",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x3260"
+   ]
+  },
+  "acompute": {
+   "file": "sub2.c",
+   "orig": "0x3a68",
+   "size_orig": 742,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x2f88"
+   ]
+  },
+  "mkmatch": {
+   "file": "sub2.c",
+   "orig": "0x3d4e",
+   "size_orig": 108,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "layout": {
+   "file": "sub2.c",
+   "orig": "0x3dba",
+   "size_orig": 1826,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "rprint": {
+   "file": "sub2.c",
+   "orig": "0x44dc",
+   "size_orig": 208,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x3dba"
+   ]
+  },
+  "shiftr": {
+   "file": "sub2.c",
+   "orig": "0x45ac",
+   "size_orig": 56,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x3dba"
+   ]
+  },
+  "upone": {
+   "file": "sub2.c",
+   "orig": "0x45e4",
+   "size_orig": 52,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x3dba"
+   ]
+  },
+  "bprint": {
+   "file": "sub2.c",
+   "orig": "0x4618",
+   "size_orig": 256,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x3dba"
+   ]
+  },
+  "padd": {
+   "file": "sub2.c",
+   "orig": "0x4718",
+   "size_orig": 170,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "phead1": {
+   "file": "header.c",
+   "orig": "0x47c2",
+   "size_orig": 20,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "chd1": {
+   "file": "header.c",
+   "orig": "0x47d6",
+   "size_orig": 362,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "rhd1": {
+   "file": "header.c",
+   "orig": "0x4940",
+   "size_orig": 194,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "phead2": {
+   "file": "header.c",
+   "orig": "0x4a02",
+   "size_orig": 10,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "chd2": {
+   "file": "header.c",
+   "orig": "0x4a0c",
+   "size_orig": 50,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "ptail": {
+   "file": "header.c",
+   "orig": "0x4a3e",
+   "size_orig": 32,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x06e4"
+   ]
+  },
+  "ctail": {
+   "file": "header.c",
+   "orig": "0x4a5e",
+   "size_orig": 62,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x4a3e"
+   ]
+  },
+  "rtail": {
+   "file": "header.c",
+   "orig": "0x4a9c",
+   "size_orig": 118,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x4a3e"
+   ]
+  },
+  "statistics": {
+   "file": "header.c",
+   "orig": "0x4b12",
+   "size_orig": 194,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x1ce0"
+   ]
+  }
+ },
+ "note": "System III lex (tmp/sys3/usr/src/cmd/lex; main.c as lmain.c, as the SCCS lines name it), byte-identical with ccv1l, the compiler of lex (host/OLDCC.md, v1l: v1q with OLD_D14L, OLD_D3L, OLD_D67, OLD_D67S and the popt of v1r), the stdio.h of the time (head/oldv7), liby, libc-v3 (with atoi 0_3 and calloc 0_3, ccv1q), linked with -i as lex.mk says. The edits of WEGA: the SCCS lines; the option -f (optim = FALSE, between -v and -n); myalloc without the branch for -1 and with the message \"OOPS - calloc returns NULL\"; the tables written as \"={\" (yyvstop, yycrank, yysvec, yymatch, yyextra, yyin)."
+}

@@ -67,6 +67,9 @@ long maxtemp = 0;
 #ifdef OLD_D14Q
 static void d14qarm();
 #endif
+#ifdef OLD_D14L
+static void d14larm();
+#endif
 #ifdef OLD_D12K
 int d12kname();
 #endif
@@ -1034,6 +1037,27 @@ again:
 		tfree(p2->in.right);
 		p2->in.op = FREE;
 		goto cleanup;
+#ifdef OLD_D14L
+	case ANDAND:
+	case OROR:
+		if (cookie == INTEMP) {
+			long t = freeparm(1) / SZCHAR;
+
+			d14larm(p1, t, 1);
+			printf("\tjpr\t%s,L%d\n", p->in.op == ANDAND ? "eq" : "ne", m = getlab());
+			d14larm(p2, t, 0);
+			deflab(m);
+			rfreeall(1);
+			p->in.op = OREG;
+			p->tn.rval = FP;
+			p->tn.lval = t;
+			p->in.sname = 0;
+			p->stn.stsize = 0;
+			p->in.type = INT;
+			goto cleanup;
+		}
+	case NOT:
+#else
 #ifdef OLD_D14Q
 	case ANDAND:
 		if (cookie == INTEMP) {
@@ -1066,6 +1090,7 @@ again:
 	case ANDAND:
 	case OROR:
 	case NOT:
+#endif
 #endif
 		cbranch(p, -1, m = getlab());
 		p->in.op = CCODES;
@@ -1251,6 +1276,13 @@ store(p)
 			stocook = INTEMP;
 		}
 #endif
+#ifdef OLD_D14L
+		if (o == ANDAND || o == OROR) {		/* the value of && and || goes through a temporary */
+			stotree = p;
+			stocook = INTEMP;
+			return;
+		}
+#endif
 		constore(p->in.left);
 		return;
 	case NOT:
@@ -1329,6 +1361,76 @@ d14qarm(q, t, ty)
 }
 
 #endif
+#ifdef OLD_D14L
+/* an operand of an && or || as a value is assigned to the temporary at offset t; the left one is tested in its register */
+static void
+d14larm(q, t, test)
+	NODE *q;
+	long t;
+	int test;
+{
+	register NODE *n, *a;
+	int i, i0, r;
+
+	n = talloc();
+	n->in.op = OREG;
+	n->in.type = INT;
+	n->tn.rval = FP;
+	n->tn.lval = t;
+	n->in.sname = 0;
+	n->stn.stsize = 0;
+	n->in.su = 0;
+	n->in.fsu = 0;
+	n->in.rall = NOPREF;
+	a = talloc();
+	a->in.op = ASSIGN;
+	a->in.type = INT;
+	a->in.left = n;
+	if (!logop(q->in.op)) {		/* an operand that is no comparison: q != 0 */
+		a->in.right = q;
+		q = talloc();
+		q->in.op = NE;
+		q->in.type = INT;
+		q->in.left = a->in.right;
+		q->in.right = talloc();
+		q->in.right->in.op = ICON;
+		q->in.right->in.type = a->in.right->in.type;
+		q->in.right->tn.lval = 0;
+		q->in.right->tn.rval = 0;
+		q->in.right->in.sname = 0;
+		q->in.right->in.rall = NOPREF;
+		q->in.rall = NOPREF;
+	} else if (q->in.type == CHAR) {
+		a->in.right = q;
+		q = talloc();
+		q->in.op = 110;		/* SCONV */
+		q->in.type = INT;
+		q->in.left = a->in.right;
+		q->in.rall = NOPREF;
+	}
+	a->in.right = q;
+	a->in.rall = NOPREF;
+	sucomp(a);
+	i0 = deli;
+	delay2(a);
+	if (test) {
+		codgen(a, INTAREG);
+		if (a->in.op != REG)
+			cerror("d14larm: no register");
+		r = a->tn.rval;
+		reclaim(a, RNULL, FOREFF);
+	} else {
+		codgen(a, FOREFF);
+		reclaim(a, RNULL, FOREFF);
+	}
+	for (i = i0; i < deli; i++)
+		codgen(deltrees[i], FOREFF);
+	deli = i0;
+	if (test)
+		printf("\ttest\t%s\n", rnames[r]);
+}
+
+#endif
 /* store conditional expressions: not inside a conditional context */
 void
 constore(p)
@@ -1350,6 +1452,14 @@ constore(p)
 		}
 #endif
 	case NOT:
+#ifdef OLD_D14L
+		/* an && or || as the operand of an ! or on the left of a || is evaluated into a temporary */
+		if ((p->in.op == OROR || p->in.op == NOT) && (p->in.left->in.op == ANDAND || p->in.left->in.op == OROR)) {
+			stotree = p->in.left;
+			stocook = INTEMP;
+			return;
+		}
+#endif
 		constore(p->in.left);
 		return;
 	}
@@ -1555,6 +1665,9 @@ cbranch(p, true, false)
 #ifdef OLD_D3W
 		if (--d3depth == 0)
 			d3words();
+#endif
+#ifdef OLD_D3L
+		rfreeall(1);		/* v1l: behind a || (not an &&) the idle registers go back, as in the shipped codgen */
 #endif
 #ifndef OLD_D3
 #ifdef OLD_D3K

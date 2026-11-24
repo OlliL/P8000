@@ -63,43 +63,40 @@
    "file": "libPW regcmp.c",
    "orig": "0x061e",
    "size_orig": 1178,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
     "0x0042"
    ],
-   "note": "regcmp of libPW in /bin/regcmp (and the same code in /usr/bin/acctcom at 0x172e): open, a compiler form (2026-11-24, increment 161 'regcmp'). Two places compile a condition with || or && through a temporary of the compiler: `if ((c=='*') || (c=='+') || (c=='{'))` (cp r12,#'*'; ldk r2,#0; tcc eq,r2; ld @r15,r2; test r2; jr ne; the same for '+' with test @r15; '{' a plain jump) and `while (((c = *sp++) != '}') && (c != ','))` (tcc ne into 2(r15), the inc of sp behind the store). The two words lie below the parameter homes (~L1 := 4: ldm 4(r15),r2,#6), so they are no variables of the source; with ccv1 the frame is 4 bytes smaller, all offsets 4 lower; masked, about 24 lines of real code differ. No compiler of the tree (ccv0 .. ccv1r, cc, with and without -O) makes it; about 40 source forms tried (?:, |, &, sums, != 0, de Morgan, flag variables, flag arrays: best 30 lines, the flags then lie above the parameter homes)."
+   "note": "the source of the libPW member (src/lib/libPW/regcmp.c) built by ccv1l, the compiler of lex (host/OLDCC.md, v1l): the value of && and || through a temporary of the frame (OLD_D14L): `if ((c=='*') || (c=='+') || (c=='{'))` and the && of the `while` with the increment of sp behind the store. The same code is in /usr/bin/acctcom at 0x172e."
   },
-  "f0ab8": {
+  "__size": {
    "file": "libPW regcmp.c",
    "orig": "0x0ab8",
    "size_orig": 36,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x061e"
-   ],
-   "note": "behind regcmp (shifted with it); see regcmp."
+   ]
   },
-  "f0adc": {
+  "__rpop": {
    "file": "libPW regcmp.c",
    "orig": "0x0adc",
    "size_orig": 34,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
-   "callers": [],
-   "note": "behind regcmp (shifted with it); see regcmp."
+   "callers": []
   },
-  "f0afe": {
+  "__rpush": {
    "file": "libPW regcmp.c",
    "orig": "0x0afe",
    "size_orig": 38,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
-   "callers": [],
-   "note": "behind regcmp (shifted with it); see regcmp."
+   "callers": []
   }
  },
- "note": "main is the System III regcmp.c (char %s[] = {); OWN_LIM 0x0b24 includes the regcmp functions of libPW."
+ "note": "main is the System III regcmp.c (char %s[] = {), ccv1; the regcmp of libPW in it (functions from 0x061e, up to OWN_LIM 0x0b24) is the libPW source built by ccv1l (src/cmd/Makefile regcmppw.o). Byte-identical."
 }

@@ -19,7 +19,7 @@ CRT = ../../../lib/libc/nonseg/crt
 NONSEG_OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
 SEG_OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
 ALL_TARGETS = build/nonseg/codgen build/seg/scodgen
-OLD_TARGETS = build/nonsegv0/codgen build/nonsegv0a/codgen build/nonsegv0p/codgen build/nonsegv1/codgen build/nonsegv1q/codgen build/nonsegv1r/codgen build/segv1/scodgen build/nonsegv1c/codgen build/segv1c/scodgen build/segvk/scodgen build/segvc/scodgen build/nonsegvl/codgen build/segvl/scodgen
+OLD_TARGETS = build/nonsegv0/codgen build/nonsegv0a/codgen build/nonsegv0p/codgen build/nonsegv1/codgen build/nonsegv1q/codgen build/nonsegv1r/codgen build/nonsegv1l/codgen build/segv1/scodgen build/nonsegv1c/codgen build/segv1c/scodgen build/segvk/scodgen build/segvc/scodgen build/nonsegvl/codgen build/segvl/scodgen
 
 all: $(ALL_TARGETS)
 
@@ -41,6 +41,8 @@ build/nonsegv1q/codgen: crt0.o FORCE
 	cd build/nonsegv1q ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q"
 build/nonsegv1r/codgen: crt0.o FORCE
 	cd build/nonsegv1r ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q -DOLD_D1R -DOLD_D67"
+build/nonsegv1l/codgen: crt0.o FORCE
+	cd build/nonsegv1l ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q -DOLD_D14L -DOLD_D3L -DOLD_D67 -DOLD_D67S"
 
 build/seg/scodgen: crt0.o FORCE
 	cd build/seg   ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
@@ -76,7 +78,7 @@ install: $(ALL_TARGETS)
 	$(STRIP) $(PREFIX)/lib/scodgen
 
 oldinstall: $(OLD_TARGETS)
-	for v in v0 v0a v0p v1 v1q v1r; do \
+	for v in v0 v0a v0p v1 v1q v1r v1l; do \
 		[ -d $(PREFIX)/lib/$$v ] || mkdir $(PREFIX)/lib/$$v ; \
 		cp build/nonseg$$v/codgen $(PREFIX)/lib/$$v/codgen ; \
 	done

@@ -138,7 +138,7 @@ gswitch(p)
 	register int dlab, tab;
 	NODE *r, *l;
 	int reg, a6, save, t2, ac, tlab, rb, ra, t, cnt;
-#ifdef OLD_D2T
+#if defined(OLD_D2T) || defined(OLD_D67S)
 	struct rs *tn;
 #endif
 
@@ -174,11 +174,14 @@ gswitch(p)
 		rmove(reg, t, SHORT);
 		rfree(t, SHORT);
 	}
-#ifdef OLD_D2T
-	if ((tn = rfind(reg, RCWORD)) != 0)	/* the register of the switch value is in use here (OLD_D2T frees it in between) */
+#if defined(OLD_D2T) || defined(OLD_D67S)
+	if ((tn = rfind(reg, RCWORD)) != 0)	/* the register of the switch value is in use here (OLD_D2T frees it in between; v1l
+						   OLD_D67S: only when it is still known, so OLD_D67 keeps it, else the dispatch takes rr2) */
 		tn->busy++;
+#ifdef OLD_D2T
 	else
 		getreg(RCWORD, reg, RJAM, 0);
+#endif
 #endif
 	ra = getreg(RCWORD, -1, RJAM, 0);
 	if (reg == ra || ra == 0) {

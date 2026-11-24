@@ -1,0 +1,140 @@
+# The cases of the corpus of lex (compare/lex/corpus.py); the format: host/recon/casefile.py. src = src/cmd/lex (System III
+# lex): lex [-tvnfcr] [file ...]; without -t the program goes to lex.yy.c, with -t to stdout; -v statistics (stderr),
+# -n none; -f no packing (optim); -r ratfor (/usr/lib/lex/nrform, not in WEGA: the error of the missing form).
+
+== words
+%%
+[a-z]+	printf("word %s\n", yytext);
+[0-9]+	printf("number %s\n", yytext);
+.	;
+\n	ECHO;
+
+== words-stdout
+%%
+[a-z]+	printf("word %s\n", yytext);
+[0-9]+	printf("number %s\n", yytext);
+-- case
+step: lex -t t.in
+
+== definitions
+D	[0-9]
+L	[a-zA-Z_]
+%{
+int count;
+%}
+%%
+{L}({L}|{D})*	{ count++; printf("id %s\n", yytext); }
+{D}+"."{D}*	printf("real\n");
+"/*"	{ while (input() != '*') ; }
+^#.*$	printf("directive\n");
+[ \t]+$	;
+%%
+main() { yylex(); printf("%d\n", count); }
+
+== start-conditions
+%Start COMMENT STR
+%%
+"/*"	BEGIN COMMENT;
+<COMMENT>"*/"	BEGIN 0;
+<COMMENT>.|\n	;
+\"	BEGIN STR;
+<STR>\"	BEGIN 0;
+<STR>[^"]*	printf("%s", yytext);
+ab/cd	printf("ab before cd\n");
+x{2,4}	printf("xs\n");
+a?b*c+	printf("abc\n");
+[^a-z\n]	printf("other\n");
+(ab|cd)$	printf("end\n");
+
+== verbose
+%%
+[a-z]+	printf("word\n");
+[A-Z][a-z]*	printf("name\n");
+-- case
+step: lex -v t.in
+
+== verbose-t
+%%
+[a-z]+	printf("word\n");
+-- case
+step: lex -tv t.in
+
+== nostat
+%%
+[a-z]+	printf("word\n");
+-- case
+step: lex -n t.in
+
+== nopack
+%%
+[a-z]+	printf("word %s\n", yytext);
+[0-9]+	printf("number\n");
+-- case
+step: lex -f t.in
+
+== nopack-verbose
+%%
+[a-z]+	printf("word %s\n", yytext);
+[0-9]+	printf("number\n");
+-- case
+step: lex -fv t.in
+
+== c-option
+%%
+[a-z]+	printf("word\n");
+-- case
+step: lex -c t.in
+
+== ratfor
+%%
+[a-z]+	call word
+-- case
+step: lex -r t.in
+
+== unknown-option
+%%
+[a-z]+	;
+-- case
+step: lex -q t.in
+
+== no-file
+-- case
+step: lex nonexistent.l
+
+== stdin
+%%
+[a-z]+	printf("w\n");
+-- case
+step: lex -t
+stdin: t.in
+
+== two-files
+%%
+[a-z]+	printf("one\n");
+-- b.l
+[0-9]+	printf("two\n");
+-- case
+step: lex -t t.in b.l
+
+== bad-syntax
+%%
+[a-z	printf("x\n");
+
+== undefined-definition
+%%
+{NODEF}	printf("x\n");
+
+== missing-section
+[a-z]+	printf("x\n");
+
+== empty
+-- t.in
+-- case
+step: lex t.in
+
+== ratfor-braces
+%%
+[a-z]+	{ call word }
+[0-9]+	{ n = n + 1 }
+-- case
+step: lex -r t.in

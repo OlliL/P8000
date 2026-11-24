@@ -15,6 +15,7 @@ CCV0 = ccv0
 CCV0P = ccv0p
 CCV1 = ccv1
 CCV1R = ccv1r
+CCV1L = ccv1l
 CCVM = ccvm
 LD  = ld
 STRIP = strip
@@ -43,7 +44,7 @@ SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmo
 
 FILES=		getud putud bcmp bd dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o  bcmp.o  bd.o
-SUBDIRS=	remote doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc make ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
+SUBDIRS=	remote doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc make ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen lex
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 
@@ -51,7 +52,7 @@ all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 # switches the sources to what the shipped libc and cc need (the old libc's readsym, sprintf value, swap_quad; the exit status
 # of size). Without -DSHIPPED the bytes of the originals are rebuilt. The files of /lib are not made here: empty rules below.
 SHIPFLAGS = -O -DSHIPPED
-SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CCVM=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBC_V13=/lib/libc.a LIBPW=/usr/lib/libPW.a
+SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CCV1L=cc CCVM=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBC_V13=/lib/libc.a LIBPW=/usr/lib/libPW.a
 
 shipped:
 	$(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $(PROGS) $(FILES) $(SIMPLE) $(SHIPCC) LIBC=/lib/libc.a
@@ -65,6 +66,7 @@ shipped:
 		cas) X="SCC=scc SLIBC=/lib/slibc.a SCCFLAGS=\"$(SHIPFLAGS)\"" ;; \
 		cc/codgen|cc/popt) X='LIBC="../../../../../lib/oldlibc/printf/s1.o ../../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
 		cc/cpp|cc/cparse|cc|dc|bc|ld) X="LIBC=/lib/libc.a" ;; \
+		lex) X="LIBC=/lib/libc.a LIBY=/lib/liby.a" ;; \
 		ex) X="CCV0A=cc TERMLIB=/usr/lib/libtermlib.a" ;; \
 		*) X="" ;; \
 		esac ; \
@@ -285,11 +287,14 @@ dd.o: dd.c
 	$(CCV1R) $(CFLAGS) -I../head/oldv7 -c dd.c
 dd: crt0-dd.o dd.o $(LIBC_V13)
 	$(LD) -e start -o $@ crt0-dd.o dd.o $(LIBC_V13)
-# regcmp: System III regcmp.c (char %s[] = {, the WEGA sccsid); partial: the regcmp of libPW in it is an older version
+# regcmp: System III regcmp.c (char %s[] = {, the WEGA sccsid), ccv1; the regcmp of libPW in it is the source of the
+# libPW member (../lib/libPW/regcmp.c) built by ccv1l, the compiler of lex (host/OLDCC.md, v1l)
 regcmp.o: regcmp.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c regcmp.c
-regcmp: crt0-regcmp.o regcmp.o $(LIBC_V4)
-	$(LD) -e start -o $@ crt0-regcmp.o regcmp.o $(LIBPW) $(LIBC_V4)
+regcmppw.o: ../lib/libPW/regcmp.c
+	mkdir -p regcmppw.d ; cd regcmppw.d ; $(CCV1L) $(CFLAGS) -c ../../lib/libPW/regcmp.c ; mv regcmp.o ../regcmppw.o
+regcmp: crt0-regcmp.o regcmp.o regcmppw.o $(LIBC_V4)
+	$(LD) -e start -o $@ crt0-regcmp.o regcmp.o regcmppw.o $(LIBPW) $(LIBC_V4)
 # who: System III who.c with -g (the group) and the WEGA messages, ccvm and libc
 who.o: who.c
 	$(CCVM) $(CFLAGS) -c who.c
@@ -563,7 +568,8 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	for d in $(SUBDIRS) ; do (cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) install PREFIX=$(PREFIX)) ; done
 
 clean:
-	rm -f $(PROGS) $(FILES) $(CLEANFILES) $(SIMPLE)
+	rm -f $(PROGS) $(FILES) $(CLEANFILES) $(SIMPLE) regcmppw.o
+	rm -rf regcmppw.d
 	rm -f mv.o rm.o rmdir.o write.o size.o strip.o ranlib.o sum.o pr.o cpio.o clist.o cat.o echo.o cmp.o chmod.o chgrp.o chown.o pwd.o kill.o sleep.o tail.o uname.o tee.o du.o env.o nohup.o gets.o sort.o touch.o grep.o nl.o su.o mkdir.o find.o mkstr.o
 	rm -f crt0-ar.o crt0-sync.o crt0-ar.s crt0-sync.s
 	rm -f crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o crt0-find.o crt0-mkstr.o

@@ -140,56 +140,24 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   onalarm, drain, getc1 exact). Traced with a popt built with -DTRACE (same output as /lib/popt): codemove moves CAN behind
   the retry test in the first iterate, before comjump; about 1200 source forms, none better (`compare/getfile/findings.json`).
   regcmp deferred (below).
+- 2026-11-25 phase B regcmp: IDENTICAL, and lex IDENTICAL (new): the compiler v1l (ccv1l), see the section below.
 
-## Phase B regcmp: open, for a later session (2026-11-24)
+## Phase B regcmp: solved (2026-11-25)
 
-State: `/bin/regcmp` partial. main is the System III regcmp.c and exact; open is only the member regcmp of libPW in it
-(`compare/regcmp/findings.json`, functions from 0x061e). No change of the tree was made for it; nothing in the scratch
-directories is worth keeping (all forms below were trial copies).
+`/bin/regcmp` byte-identical: the libPW regcmp in it is the source of the libPW member (`src/lib/libPW/regcmp.c`) built by
+a compiler of its own, v1l, found by restoring `/usr/bin/lex` (36 places of the same tcc form, System III source):
 
-What is known:
-- Source: `src/lib/libPW/regcmp.c` (WEGA, 281 lines, also the member of /usr/lib/libPW.a, which is byte-identical) is the
-  nearest: ccv1 238 differing lines. The System III and Plexus versions (libPW, acct/lib) are farther (323-326).
-- Masking the frame offsets, about 24 lines per side differ. The frame of the original is 4 bytes larger: two words at 0
-  and 2 below the parameter homes (`ldm %0004(r15),r2,#6` against `ldm @r15,r2,#6`), i.e. `~L1 := 4`: temporaries of the
-  compiler, not variables of the source (a source variable, also an array, lands above the homes).
-- Two places use them, a condition with `||` / `&&` evaluated as a value into the temporary and tested at once:
-  `if ((c=='*') || (c=='+') || (c=='{'))`: `cp r12,#'*'; ldk r2,#0; tcc eq,r2; ld @r15,r2; test r2; jr ne` and the same
-  for '+' with `test @r15`; the last operand '{' is a plain `jp eq`.
-  `while (((c = *sp++) != '}') && (c != ','))`: `tcc ne,r2; ld 2(r15),r2; inc r10,#1; test r2` (the increment of sp
-  behind the store), then `cp r12,#','; tcc ne; ld 2(r15),r2; test 2(r15)`.
-- No compiler of the tree makes this: ccv0, ccv0p, ccv1, ccv1q, ccv1r, ccv1c, cc, with and without -O (all `cp; jpr eq`).
-- Source forms tried (about 40, with ccv1, ccv1q, ccv1r, all three alike): `?:` chains, `(a||b)?1:c`, `?1:0` per operand,
-  `|`, `&`, sums, `!= 0`, de Morgan, `while` with `?:`; flag variables `(t = (c=='*')) || ...` declared first, last, as
-  arrays (best: 30 lines, the instruction forms right, the flags above the parameter homes, not at 0/2); constant forms
-  (`0 ||`, `|| 0`, `1 &&`, `sizeof(int) &&`, a constant `?:`; the owner's idea of a folded constant leaving code behind as in
-  switch(sizeof)): cparse folds them, no tcc at all.
+- lex (`src/cmd/lex`, `compare/lex`): System III lex with the WEGA edits (SCCS lines, option -f, myalloc, "={" in the
+  generated tables), the stdio.h of the time, liby, libc-v3 with atoi 0_3 and calloc 0_3 (ccv1q), `ld -i`. IDENTICAL.
+- v1l = v1q codgen + `OLD_D14L` (the value of `&&`/`||` through a temporary; in a condition the `&&`/`||` under `!` or on the
+  left of `||`), `OLD_D3L` (behind `||` the idle registers go back), `OLD_D67` + `OLD_D67S` (the switch value stays taken
+  in the dispatch), the popt of v1r (munput: loop not rotated). The rule came from lex function by function (pf diff of each
+  function against the original); every switch is in `host/OLDCC.md` (v1l, D3, D14, D67).
+- The same compiler builds the libPW regcmp exactly: the cause of regcmp was the compiler, not the source.
 
-Other witnesses of the same compiler form (`host/recon/tccscan.py` over the WEGA root):
-
-| Binary | Places | Note |
-|---|---|---|
-| bin/regcmp | 4 | the libPW member |
-| usr/bin/acctcom | 4 | the same regcmp code (at 0x172e) |
-| usr/bin/lex | 36 | System III lex source exists: the best ground for the rule |
-| etc/shut | 8 | `c == ' ' \|\| c == '\t'` among them |
-| usr/bin/error | 3 | `tcc gt` into 0x82(r15) |
-| usr/bin/units | 2 | 01/14/83; System III units.c getflt: `do c = get(); while(c == ' ' \|\| c == '\t');` |
-| bin/ed, adb, ex (vi, view, edit), usr/bin/strip, usr/lib/diff3prog, lint2 | 1 each | not looked at (may be plain values) |
-
-units getflt in detail: the original `sub r15,#0x20`, the temporary at `@r15`, the local f separately at 0x18 (`clr 0x18(r15)`);
-both compares into `@r15` and tested, `jr ne` back into the loop. With `(f = (c==' ')) || (f = (c=='\t'))` ccv1 gives the
-instruction forms but f at 0x16 and no extra word: again a temporary of the compiler. units (01/83) also has `get()`
-returning a char (extsb) and a smaller frame than ccv1 (0x20 against 0x26): the WEGA units differs from System III.
-
-Next steps proposed:
-1. Derive the rule from lex (36 places, System III source): classify every `||` / `&&` of lex.c into "through a temporary"
-   and "plain jumps" and find what separates them (context: loop condition, if; operand kinds: register variable against a
-   constant; position in the chain: the last operand is always a plain jump).
-2. Check the rule on units, shut, error, regcmp; find which compiler built them (units 01/14/83: v1, v1q, v1r time;
-   host/OLDCC_DATES.md).
-3. Build it as a switch only in a compiler version these programs need (a new one if necessary), so that the users of
-   ccv1, ccv1q, ccv1r stay untouched (owner: fear of other users); then regcmp, units, acctcom, lex could follow.
+Open (later): the other witnesses of the tcc form (`host/recon/tccscan.py`): acctcom (the same regcmp code at 0x172e),
+shut, error, units; whether they are v1l too. `OLD_D3L` has two equal variants on lex and regcmp (only behind its own join
+label; `&&` too behind its own label): the simplest one is built.
 
 ## Phase B getfile: solved (2026-11-24)
 
