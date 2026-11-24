@@ -253,8 +253,10 @@ fixfld(p)
 		ismember = 0;
 	}
 #ifdef OLD_D5S
-	/* v0: an element of a local array is (index + offset) + fp, the frame pointer added last */
-	if (subsr && a->in.op == PLUS && a->in.left->in.op == REG && a->in.left->tn.rval == FP && a->in.right->in.op == ICON &&
+	/* v0: an element of a local array is (index + offset) + fp, the frame pointer added last; so also of an array that is a
+	   member of a local structure, the offset still frame offset + member (ex getone G.argv[G.argc0 - 1]) */
+	if (subsr && a->in.op == PLUS && a->in.left->in.op == REG && a->in.left->tn.rval == FP && (a->in.right->in.op == ICON ||
+	    (a->in.right->in.op == PLUS && a->in.right->in.left->in.op == ICON && a->in.right->in.right->in.op == ICON)) &&
 	    p->in.right->in.op != ICON) {
 		m = a->in.left;
 		a->in.left = p->in.right;

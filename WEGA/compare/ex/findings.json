@@ -476,8 +476,8 @@
    "file": "ex_io.c",
    "orig": "0x330e",
    "size_orig": 90,
-   "status": "open",
-   "note": "phase B, local array index: G.argv[G.argc0 - 1]-like element of a local array: the original adds the offset to the index and then fp (add r2,#4; add r2,r15), ccv0 lda r3,4(r15); add r3,r2 Forms tried 2026-11-23 (6): *(G.argv + i), (G.argv - 1)[G.argc0], (&G)->argv[..], a char* offset: none."
+   "status": "exact",
+   "note": "exact with OLD_D5S extended (2026-11-24): an element of an array that is a member of a local structure is (index + frame + member) + fp; v0 before: lda r3,4(r15); add r3,r2."
   },
   "rop": {
    "file": "ex_io.c",

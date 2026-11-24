@@ -436,6 +436,9 @@ All in codgen, fixfld, mapregs, rallo.
 - v0 `OLD_D5S`, its address form (mapregs, 2026-11-23): the address of a local array plus a variable, `pname+slash`, is `(slash +
   offset) + fp`, the frame pointer added last (`lda r2,%0002(r13); add r2,r15`; mkdir `strcpy(pname+slash, ".")`). One witness for
   this form (owner's exception 2026-11-23, section 5).
+- v0 `OLD_D5S`, an array that is a member of a local structure (2026-11-24): the offset is still `PLUS(ICON frame, ICON member)`
+  in fixfld (not folded), and the element is `(index + frame + member) + fp` as well (`add r2,#%0004; add r2,r15`; ex getone
+  `G.argv[G.argc0 - 1]`, v0: `lda r3,4(r15); add r3,r2`). One witness.
 
 ### D6 switch
 

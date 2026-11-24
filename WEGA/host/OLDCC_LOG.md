@@ -2207,3 +2207,11 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   D2L, D2LP, D2G, D2P, D2W6, D2N, D2C, D2T, D2R undefined alone: no change; D2F with `>=` and "no word whose pair mate is
   busy" move the source register too. Rule that gives both: the even half of the pair a pair request takes (first free pair,
   OLD_D2W6 rr6 before rr4), only for this copy. ex 361 -> 363 of 394 (exmap), none lost. Two witnesses, one file.
+
+## 2026-11-24 OLD_D5S: an array that is a member of a local structure (ex getone)
+
+- `G.argv[G.argc0 - 1]`, G a local `struct glob`: the original `add r2,#%0004; add r2,r15`, v0 `lda r3,4(r15); add r3,r2`.
+  Tree in fixfld (instrumented codgen): SUBSR(PLUS(REG fp, PLUS(ICON ~L1, ICON 4)), index); the first OLD_D5S rule wants
+  an ICON on the right of the PLUS and misses the unfolded frame + member. Extended (no new switch) to PLUS of two ICONs:
+  `add r2,#~L1+4; add r2,fp`. ex 363 -> 364 of 394, none lost; bench same 139, 188 lines (unchanged); matrix check as in
+  the table; checkall ALL OK (cas by vc model same 152). codgen v0, v0p, v0a rebuilt into OLDROOT.
