@@ -210,7 +210,7 @@ headers and of the file itself, also declarations that make no code, and the fun
 declaration is an entry too). When the frames do not match: first the sccsid (`static char sccsid[]`, one entry) and
 the includes of the WEGA source (make: the headers of files.c in defs, 63 entries); then measure how many entries more or
 fewer in front of the first function (or of a later one) give all functions right: `host/recon/regslots/extradecl.py`
-on a log of the file (`setup.sh` makes the scratch cparse with the log), or real builds with N dummy `extern int`
+(on the test set of `setup.sh`: the program in its list and its words in `hyp.py`), or real builds with N dummy `extern int`
 declarations; then find a plain form with that many entries (a header, declarations of the libc functions it calls).
 Which entries the original had is not in the bytes; a form that fits is recorded in `findings.json` as an odd form
 (mail: an unused `<sys/dir.h>`). A word that no count gives stays an unused local (make eqstr).
