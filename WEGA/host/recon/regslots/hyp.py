@@ -9,7 +9,8 @@ from replay import parse, run
 S=WORK
 EXP={'make/main':{'getmflgs':1},'make/misc':{'colontrans':1,'straightrans':3,'setvar':1,'eqsign':1,'appendq':1,'mkqlist':2,'sindex':1,'is_sccs':1,'trychk':1,'addstars':2,'setenv':2,'readenv':1},
  'make/files':{'eqstr':1},'make/gram':{'yyparse':1},'diff/diff':{'prepare':1,'equiv':1,'main':1,'stone':1},'mail/mail':{'isfrom':1,'system':1},
- 'nl/nl':{'main':1},'comm/comm':{'compare':2},'csplit/csplit':{'fatal':1,'re_arg':1},'tsort/tsort':{'findloop':1},'uniq/uniq':{'skip':2}}
+ 'nl/nl':{'main':1},'comm/comm':{'compare':2},'csplit/csplit':{'fatal':1,'re_arg':1},'tsort/tsort':{'findloop':1},'uniq/uniq':{'skip':2},
+ 'ar/ar':{'rcmd':1,'notfound':1,'longt':1},'cpio/cpio':{'gmatch':3,'missdir':1}}
 FILES=[]
 for l in open(S+'/ts/list'):
     w=l.split()

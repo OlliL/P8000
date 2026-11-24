@@ -251,8 +251,10 @@ Each class: the form in the code, the pass, the mechanism, the switch, the witne
   `tb`; both byte-identical by the order of the declarations, 2026-11-24).
 - Not reproduced: one unexplained frame word in main, endload, slookup, pslookup, index16 of ld (kept as `int spare`);
   cas `putins` 12 bytes against 14, libc nlist and length 2 bytes smaller, fseek 14 against 20.
-- Not reproduced: register slots of 1983 (make, diff, mail, nl, slibc calloc): some register locals get an unused frame
-  word, by a rule not found (neither the shipped one nor v1); rebuilt as `int unused` (`OLDCC_REGSLOTS.md`).
+- Not reproduced by a compiler of the tree: register slots of 1983 (make, diff, mail, nl, ar, cpio, slibc calloc): some
+  register locals get an unused frame word; rebuilt as unused locals (`int unused`, ar `int u`, cpio `int i, j, k`). A
+  scratch cparse without `q->sfldc = 0` in `lookup` (a stale sfldc from the reused heap) gives these words in the 15
+  programs of 11/18/83 of its test set but mail system and make files.c eqstr (`OLDCC_REGSLOTS.md`).
 
 ### D2 Scratch registers
 

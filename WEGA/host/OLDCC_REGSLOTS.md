@@ -50,10 +50,16 @@ that gives them is not found. This file collects what is known, to be taken up o
 | csplit | re_arg | 1 | ptr, ch (char) |
 | tsort 11/18/83 (sys3) | findloop | 1 | i, j |
 | uniq 11/18/83 (sys3) | skip | 2 | nf, nl (s) |
+| ar 11/18/83 (shipped cc; `int u`) | rcmd | 1 | f |
+| ar | notfound | 1 | i, n |
+| ar | longt | 1 | cp |
+| cpio 11/18/83 (shipped cc; `int i, j, k`, `int i`) | gmatch | 3 | c, cc, ok, lc, scc (s, p) |
+| cpio | missdir | 1 | np, ct (namep) |
 
 The programs of the witnesses are of one build time: make, diff, nl, comm, csplit, tsort, uniq have the crt0 stamp 3.2
 11/18/83, mail 11/16/83. The same build of 11/18/83 has programs without any such word although they have register locals:
-ar, cmp, du, grep, pr, putfile, who, cpio (exact by the shipped cc, no unused local). So the word does not belong to a
+cmp, du, grep, pr, putfile, who (exact by the shipped cc, no unused local; ar and cpio, first taken for such, have
+unused locals under other names: `int u`, `int i, j, k`). So the word does not belong to a
 program or a time but to something of each compilation: this fits the stale sfldc (the heap of cparse) better than a rule of
 the source.
 
@@ -97,7 +103,8 @@ in OLDCC_DATES.md counts unused words but cannot tell these words from the shipp
 
 A test set of 15 programs by `cc -O -c` per file, the frames of the found functions against the originals (the masked
 compare above): the witnesses make (without its unused locals), diff, mail, nl (without theirs), comm, csplit, tsort, uniq
-and the counter-programs ar, cmp, du, grep, pr, putfile, who, cpio. The shipped cc: exactly the 27 witness functions differ.
+and the counter-programs ar, cmp, du, grep, pr, putfile, who, cpio (ar and cpio with their unused locals then: see
+"The test set by the scratch cparse"). The shipped cc: exactly the 27 witness functions differ.
 A scratch cparse (the shipped source, not in the tree) behind the shipped `/bin/cc`, without `q->sfldc = 0` in `lookup`:
 
 - No knob: 30 functions differ. Right as a whole: diff (4 witnesses), nl, comm, tsort, uniq, mail isfrom, csplit re_arg,
@@ -178,8 +185,7 @@ give every function right:
 | tsort, nl, cmp, du, grep, pr, putfile, who | 0 and many more |
 | csplit | 1, 9, 27, ... (not 0) |
 | mail | 3, 17, 19, 20, ... (not 0; with more entries before a later function many choices) |
-| cpio | none; 22 or so in front plus a few before missdir |
-| ar | none (nor with a function pointer parameter that leaves 0) |
+| ar, cpio (without their unused locals) | 0 and others |
 
 The period of about 36.6 entries is 1024 bytes, the sbrk step of the malloc. Checked by real builds (the scratch cparse,
 63 dummy `extern int` declarations at the end of make's `defs`): every frame of make comes out as the original, the 14
@@ -187,7 +193,7 @@ functions and yyparse with their words and all others without, no `int unused`; 
 56 .. 62 dummies. csplit needs 1: the WEGA source has a `static char sccsid[]` that the System III text of the test set
 lacks; comm, tsort, uniq allow 1 too (their WEGA sccsid). So the stale sfldc explains the words of make, diff, nl, comm,
 tsort, uniq, csplit and (with 3 more declarations) mail; the 63 entries of make are the headers of files.c in defs (next
-section); ar and cpio need more than one place.
+section).
 
 ## The 63 entries of make: the headers of files.c in defs (2026-11-24)
 
@@ -206,9 +212,7 @@ two of those made after the first function: lookarch, any, stat, n15end, strcmp,
 doname.c and declared in lookarch or after the first functions; `sys/types.h` without `saddr_t`/`uaddr_t` (the System
 III types.h; it breaks main.c and misc.c); `s.out.h` without `s_head` or `v_lines` for all files (breaks misc.c).
 
-Elsewhere: no common header shift fits the other programs (diff 37, but csplit not 38, mail not 40, nl not 37). ar and
-cpio include none of these headers.
-
+Elsewhere: no common header shift fits the other programs (diff 37, but csplit not 38, mail not 40, nl not 37). 
 ## The test set by the scratch cparse (2026-11-24)
 
 `score.sh ccx` (real builds, the sources without their unused locals):
@@ -219,12 +223,12 @@ cpio include none of these headers.
 | csplit | right with the `sccsid` of the WEGA source (the System III text of the test set lacks it) |
 | make | right with the four headers in defs, files.c eqstr open (section above) |
 | cmp, du, grep, pr, putfile, who | right (no word in the original) |
-| mail | isfrom right; system gets a word the original lacks (18 bytes against 16) |
-| ar | rcmd, notfound, longt, select get words the original lacks (2, 2, 2, 4 bytes) |
-| cpio | gmatch (6 bytes), makdir, missdir (2 each) get words the original lacks |
+| ar, cpio | all right without their unused locals (`int u` in rcmd, notfound, longt; `int i, j, k` in gmatch, `int i` in missdir); with them (the first run) rcmd, notfound, longt, select, gmatch, makdir, missdir wrong |
+| mail | isfrom right; system one word more than the original (18 bytes against 16) |
 | slibc calloc | not covered (segmented: scparse) |
 
-ar and cpio are exact by the shipped cc; a compiler of 11/83 would be one to choose per program, not the cc of the tree.
+So the scratch cparse gives every frame of the 15 programs of 11/18/83 but mail system and make files.c eqstr, with the
+unused locals out and make's defs including the four headers.
 
 ## v1: the place of the declaration (2026-11-24)
 
@@ -259,8 +263,11 @@ stays; `saved/` there holds the outputs of the first runs.
   buffers), the size of `struct symtab` (26 bytes now), the malloc of its libc; which of them moves the reuse of the freed
   entries so that misc.c of make comes out right, with main.c and files.c still right.
 - The other witnesses as tests of a rule found on make: diff, mail, nl (their `int unused` must come out by the compiler
-  then), comm, csplit, tsort, uniq, slibc calloc (segmented); and as counter-tests the programs of 11/18/83 without a word
-  (ar, cmp, du, grep, pr, putfile, who, cpio).
+  then), comm, csplit, tsort, uniq, ar, cpio, slibc calloc (segmented); and as counter-tests the programs of 11/18/83
+  without a word (cmp, du, grep, pr, putfile, who).
+- mail system: one word too many by the scratch cparse.
+- Other unused locals under other names (`u`, `i`, ...) in the programs of 11/83: every exact program of that build by the
+  scratch cparse.
 - The v1 words of ld (main, endload, slookup, pslookup, index16): the place of a register declaration (section "v1").
 - make files.c: the 2 entries fewer that eqstr needs (section "The 63 entries of make").
 - A rule that holds would be a switch of a cparse of its own (a compiler of 11/83), owner's decision; the unused locals

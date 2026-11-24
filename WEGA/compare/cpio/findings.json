@@ -168,7 +168,7 @@
    "status": "exact",
    "kind": "proven",
    "callers": [],
-   "note": "the frame of the original has 6 bytes more than System III gmatch needs: three unused locals \"int i, j, k;\" give them (an odd form; what was really declared is not known); \"register short\" for three of the locals does not change the frame (measured)"
+   "note": "the frame of the original has 6 bytes more than System III gmatch needs: three unused locals \"int i, j, k;\" give them (the words of a cparse with a stale sfldc, host/OLDCC_REGSLOTS.md); \"register short\" for three of the locals does not change the frame (measured)"
   },
   "umatch": {
    "file": "src/cmd/cpio.c",
@@ -217,7 +217,7 @@
    "status": "exact",
    "kind": "proven",
    "callers": [],
-   "note": "the frame of the original has 2 bytes more than System III missdir needs: an unused local \"int i;\" gives them (an odd form); \"register short ct\" does not change the frame (measured)"
+   "note": "the frame of the original has 2 bytes more than System III missdir needs: an unused local \"int i;\" gives them (the word of a cparse with a stale sfldc, host/OLDCC_REGSLOTS.md); \"register short ct\" does not change the frame (measured)"
   },
   "pwd": {
    "file": "src/cmd/cpio.c",
