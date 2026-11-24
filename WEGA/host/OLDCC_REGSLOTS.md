@@ -209,6 +209,23 @@ III types.h; it breaks main.c and misc.c); `s.out.h` without `s_head` or `v_line
 Elsewhere: no common header shift fits the other programs (diff 37, but csplit not 38, mail not 40, nl not 37). ar and
 cpio include none of these headers.
 
+## The test set by the scratch cparse (2026-11-24)
+
+`score.sh ccx` (real builds, the sources without their unused locals):
+
+| Program | Frames against the original |
+|---|---|
+| diff, nl, comm, tsort, uniq | all right: the words come from the compiler |
+| csplit | right with the `sccsid` of the WEGA source (the System III text of the test set lacks it) |
+| make | right with the four headers in defs, files.c eqstr open (section above) |
+| cmp, du, grep, pr, putfile, who | right (no word in the original) |
+| mail | isfrom right; system gets a word the original lacks (18 bytes against 16) |
+| ar | rcmd, notfound, longt, select get words the original lacks (2, 2, 2, 4 bytes) |
+| cpio | gmatch (6 bytes), makdir, missdir (2 each) get words the original lacks |
+| slibc calloc | not covered (segmented: scparse) |
+
+ar and cpio are exact by the shipped cc; a compiler of 11/83 would be one to choose per program, not the cc of the tree.
+
 ## v1: the place of the declaration (2026-11-24)
 
 A related case, not of the compiler of 11/83: under `OLD_D1` the cparse of v1 gives every register local its frame word at
