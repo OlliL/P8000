@@ -2198,3 +2198,12 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   words in the functions just before the right ones (intalloc, subst, colontrans, findfl, get, rm_gots instead of
   straightrans .. eqstr): 47 of 65 functions right. The heap of the cparse of 11/83 runs otherwise (a guess: other mallocs or
   another size of struct symtab); not found.
+
+## 2026-11-24 v0a OLD_D66: the base register of a structure copy (ex setty, gTTY)
+
+- `nttyc = ottyc` (6 bytes, ldir): the destination is loaded into r0 and, r0 being no base (notoff), copied by
+  `order(u, STAREG)` into a word register: getreg(RCWORD, -1) once. Allocator state there (instrumented codgen): setty free
+  r1, r6, rr4 (r7 holds the parameter f), gTTY free r1, rr4, rr6. v0 takes r1; the original r4 and r6. Each of D2W, D2F,
+  D2L, D2LP, D2G, D2P, D2W6, D2N, D2C, D2T, D2R undefined alone: no change; D2F with `>=` and "no word whose pair mate is
+  busy" move the source register too. Rule that gives both: the even half of the pair a pair request takes (first free pair,
+  OLD_D2W6 rr6 before rr4), only for this copy. ex 361 -> 363 of 394 (exmap), none lost. Two witnesses, one file.

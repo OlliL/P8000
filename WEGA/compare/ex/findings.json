@@ -764,15 +764,15 @@
    "file": "ex_put.c",
    "orig": "0x46d8",
    "size_orig": 62,
-   "status": "open",
-   "note": "phase B, structure copy register: nttyc = ottyc: the destination goes to r0 (ld r0,#nttyc) and is copied into an address register for ldir: r4 (setty), r6 (gTTY) in the original, r1 with ccv0"
+   "status": "exact",
+   "note": "exact with v0a OLD_D66 (2026-11-24): the destination copied from r0 for ldir goes to the even half of the pair a pair request would take (r4 setty, r6 gTTY); v0 takes r1."
   },
   "gTTY": {
    "file": "ex_put.c",
    "orig": "0x4716",
    "size_orig": 52,
-   "status": "open",
-   "note": "phase B, structure copy register: nttyc = ottyc: the destination goes to r0 (ld r0,#nttyc) and is copied into an address register for ldir: r4 (setty), r6 (gTTY) in the original, r1 with ccv0"
+   "status": "exact",
+   "note": "exact with v0a OLD_D66 (2026-11-24): the destination copied from r0 for ldir goes to the even half of the pair a pair request would take (r4 setty, r6 gTTY); v0 takes r1."
   },
   "sTTY": {
    "file": "ex_put.c",

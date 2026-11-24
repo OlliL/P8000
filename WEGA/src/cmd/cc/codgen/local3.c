@@ -19,6 +19,9 @@ extern int upperlval;
 static char sccsid[] = "@[$]local3.c\t2.4  08/24/83 11:48:31 Copr. 1981 87wega3.2.";
 char *rhnames[] = { "rh0", "rh1", "rh2", "rh3", "rh4", "rh5", "rh6", "rh7" };
 char *rlnames[] = { "rl0", "rl1", "rl2", "rl3", "rl4", "rl5", "rl6", "rl7" };
+#ifdef OLD_D66
+extern int d66pair;
+#endif
 int rstatus[] = {
 	SAREG | STAREG, SAREG | STAREG, SAREG | STAREG, SAREG | STAREG,
 	SAREG | STAREG, SAREG | STAREG, SAREG | STAREG, SAREG | STAREG,
@@ -905,8 +908,15 @@ zzzcode(p, c)
 					tmp = tcopy(u);
 				order(u, STAREG);
 			}
-			if (notoff(u->in.type, u->tn.rval))
+			if (notoff(u->in.type, u->tn.rval)) {
+#ifdef OLD_D66
+				d66pair = 1;
+#endif
 				order(u, STAREG);
+#ifdef OLD_D66
+				d66pair = 0;
+#endif
+			}
 			n2 >>= 1;
 			if (n2 < 16)
 				printf("\tldk\t%s,#%d\n", name, n2);

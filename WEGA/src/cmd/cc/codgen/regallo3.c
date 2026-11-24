@@ -551,6 +551,9 @@ d2vfirst(reg)
  * flag RJAM: if no register is free, take one from the used list (regjam). Returns the register
  * number, or -1.
  */
+#ifdef OLD_D66
+int d66pair;	/* set by zzzcode ZS (local3.c) */
+#endif
 int
 getreg(cls, reg, flag, sym)
 	register int cls;
@@ -569,6 +572,22 @@ getreg(cls, reg, flag, sym)
 	int k;
 #endif
 
+#ifdef OLD_D66
+	if (d66pair && cls == RCWORD && reg == -1) {	/* the base copied from r0 for a structure copy: the even half of the pair a pair request would take */
+		d66pair = 0;
+		for (n = rsfree; n && n->cls != RCPAIR; n = n->next)
+			;
+		if (n && n->reg < R8) {
+			reg = n->reg;
+			if (reg == R4)		/* OLD_D2W6 */
+				for (w = n; w && w->cls == RCPAIR; w = w->next)
+					if (w->reg == R6) {
+						reg = R6;
+						break;
+					}
+		}
+	}
+#endif
 	switch (cls) {				/* register variables: the register is named */
 	case RCVBYTE:
 	case RCVWORD:

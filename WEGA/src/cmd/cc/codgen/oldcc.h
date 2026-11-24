@@ -41,6 +41,7 @@
 #define OLD_D3AC	/* an int parameter converted to a char is taken from its frame home (its low byte; delay) */
 #define OLD_D2NS	/* a word stored to a global is not remembered in its register (rnassign) */
 #define OLD_D65		/* the difference of two address constants of different names is not folded to 0 (optpre) */
+#define OLD_D66		/* the base copied from r0 for a structure copy: the even half of the pair a pair request would take (zzzcode ZS, getreg) */
 #endif
 
 #ifdef OLD_V0P
