@@ -1,0 +1,24 @@
+# The cases of the corpus of getfile (compare/getfile/corpus.py); the format: host/recon/casefile.py. src = src/cmd/getfile.c.
+# The partner (remote) answers on the standard input: \006 ACK, \025 NAK, \030 CAN, \002 STX, \003 ETX, \004 EOT, \033 ESC.
+
+== none
+-- case
+step: getfile
+
+== options-only
+-- case
+step: getfile -b -B -f -q
+
+== refused
+\006\006\030
+-- case
+step: getfile f
+stdin: t.in
+
+== query-no
+old
+-- in
+n
+-- case
+step: getfile -q t.in
+stdin: in

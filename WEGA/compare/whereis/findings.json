@@ -1,0 +1,143 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv0",
+ "binary": "/bin/whereis",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "whereis.c",
+   "orig": "0x0042",
+   "size_orig": 218,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "getlist": {
+   "file": "whereis.c",
+   "orig": "0x011c",
+   "size_orig": 88,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "zerof": {
+   "file": "whereis.c",
+   "orig": "0x0174",
+   "size_orig": 32,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "lookup": {
+   "file": "whereis.c",
+   "orig": "0x0194",
+   "size_orig": 222,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "looksrc": {
+   "file": "whereis.c",
+   "orig": "0x0272",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0194"
+   ]
+  },
+  "lookbin": {
+   "file": "whereis.c",
+   "orig": "0x029c",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0194"
+   ]
+  },
+  "lookman": {
+   "file": "whereis.c",
+   "orig": "0x02c6",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0194"
+   ]
+  },
+  "findv": {
+   "file": "whereis.c",
+   "orig": "0x02f0",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0272",
+    "0x029c",
+    "0x02c6"
+   ]
+  },
+  "find": {
+   "file": "whereis.c",
+   "orig": "0x031a",
+   "size_orig": 36,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0272",
+    "0x029c",
+    "0x02c6"
+   ]
+  },
+  "findin": {
+   "file": "whereis.c",
+   "orig": "0x033e",
+   "size_orig": 112,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x02f0",
+    "0x031a"
+   ]
+  },
+  "itsit": {
+   "file": "whereis.c",
+   "orig": "0x03ae",
+   "size_orig": 134,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x033e"
+   ]
+  }
+ }
+}

@@ -1,0 +1,161 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1r",
+ "binary": "/bin/dd",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "dd.c",
+   "orig": "0x0042",
+   "size_orig": 1092,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "WEGA: files= (ioctl(ibf, 0x6300, files) before skip), chkres after the open/creat messages, the zero count message. Open: ibc = ibs under SYNC in r2 (original) / r3 (ccv1r)."
+  },
+  "flsh": {
+   "file": "dd.c",
+   "orig": "0x0486",
+   "size_orig": 80,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "match": {
+   "file": "dd.c",
+   "orig": "0x04d6",
+   "size_orig": 66,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "the loop of the original is not rotated (the test at the top: the while form of System III gives the test at the bottom with ccv1r); forms tried: for(;;) with break, goto loop, braces: none."
+  },
+  "number": {
+   "file": "dd.c",
+   "orig": "0x0518",
+   "size_orig": 130,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+  },
+  "cnull": {
+   "file": "dd.c",
+   "orig": "0x059a",
+   "size_orig": 66,
+   "status": "open",
+   "kind": "proven",
+   "callers": [],
+   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+  },
+  "null": {
+   "file": "dd.c",
+   "orig": "0x05dc",
+   "size_orig": 42,
+   "status": "open",
+   "kind": "proven",
+   "callers": [],
+   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+  },
+  "ascii": {
+   "file": "dd.c",
+   "orig": "0x0606",
+   "size_orig": 104,
+   "status": "open",
+   "kind": "candidate",
+   "callers": [],
+   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+  },
+  "ebcdic": {
+   "file": "dd.c",
+   "orig": "0x066e",
+   "size_orig": 150,
+   "status": "open",
+   "kind": "candidate",
+   "callers": [],
+   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+  },
+  "ibm": {
+   "file": "dd.c",
+   "orig": "0x0704",
+   "size_orig": 150,
+   "status": "open",
+   "kind": "candidate",
+   "callers": [],
+   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+  },
+  "term": {
+   "file": "dd.c",
+   "orig": "0x079a",
+   "size_orig": 18,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x0486"
+   ],
+   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+  },
+  "stats": {
+   "file": "dd.c",
+   "orig": "0x07ac",
+   "size_orig": 64,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x079a"
+   ],
+   "note": "behind match: shifted by 2 bytes (match); the code is the same"
+  },
+  "chkres": {
+   "file": "dd.c",
+   "orig": "0x07ec",
+   "size_orig": 72,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "name guessed; written from the code: stat of the file that failed, perror(\"dd\") and exit(1) when stat fails, the reserv(1) message for a character device with mode 0. The string \"dd\" is the first string of the data in the original (before those of main), although the function is the last one: not reproduced."
+  }
+ },
+ "note": "libc-v10.a: the open stub differs (ld r2,r5 in ours at 0x1778), not looked into. The \"not enough memory\" test of System III is gone from the code (pointer < 0 is never true), its string stays."
+}

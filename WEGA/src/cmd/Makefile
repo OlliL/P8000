@@ -30,11 +30,14 @@ LIBC_V6 = ../lib/libc-v6.a
 LIBC_V10 = ../lib/libc-v10.a
 LIBC_V11 = ../lib/libc-v11.a
 LIBC_V7 = ../lib/libc-v7.a
+LIBC_V9 = ../lib/libc-v9.a
+LIBC_V12 = ../lib/libc-v12.a
+LIBPW = ../lib/libPW/build/nonseg/libPW.a
 
 PROGS = ar
 
 # single-file commands, each with its own compiler and its own libc (byte-identical with the original)
-SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmod chgrp chown pwd kill sleep tail uname tee du env nohup gets sort touch grep nl su mkdir find mkstr
+SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmod chgrp chown pwd kill sleep tail uname tee du env nohup gets sort touch grep nl su mkdir find mkstr test tr nice od df time date dd regcmp getfile who diff newgrp passwd mail echo2 printenv whereis dog putfile gpasswd
 
 FILES=		getud putud bcmp bd dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o  bcmp.o  bd.o
@@ -46,7 +49,7 @@ all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 # switches the sources to what the shipped libc and cc need (the old libc's readsym, sprintf value, swap_quad; the exit status
 # of size). Without -DSHIPPED the bytes of the originals are rebuilt. The files of /lib are not made here: empty rules below.
 SHIPFLAGS = -O -DSHIPPED
-SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V12=/lib/libc.a
+SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBPW=/usr/lib/libPW.a
 
 shipped:
 	$(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $(PROGS) $(FILES) $(SIMPLE) $(SHIPCC) LIBC=/lib/libc.a
@@ -236,6 +239,132 @@ uname.o: uname.c
 uname: crt0-uname.o uname.o $(LIBC_V6)
 	$(LD) -e start -o $@ crt0-uname.o uname.o $(LIBC_V6)
 
+# test: V7 test.c with the operators of System III (sh/test.c: -x -c -b -u -g -k, access)
+test.o: test.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c test.c
+test: crt0-test.o test.o $(LIBC_V6)
+	$(LD) -e start -o $@ crt0-test.o test.o $(LIBC_V6)
+
+# tr: System III tr.c with the usage message of WEGA (fprintf), the WEGA sccsid
+tr.o: tr.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c tr.c
+tr: crt0-tr.o tr.o $(LIBC_V6)
+	$(LD) -e start -o $@ crt0-tr.o tr.o $(LIBC_V6)
+# nice: V7 nice.c with exit(2) and the WEGA sccsid (libc-v4.a: fputs 0_2, execvp 0_2, sleep 0_3)
+nice.o: nice.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c nice.c
+nice: crt0-nice.o nice.o $(LIBC_V4)
+	$(LD) -e start -o $@ crt0-nice.o nice.o $(LIBC_V4)
+# od: System III od.c with the main of WEGA (hd by argv[0], the name in the message, base per option, exit(1)), putn of base in cput; partial: cput, putn (compiler)
+od.o: od.c
+	$(CCV1R) $(CFLAGS) -I../head/oldv7 -c od.c
+od: crt0-od.o od.o $(LIBC_V3)
+	$(LD) -e start -o $@ crt0-od.o od.o $(LIBC_V3)
+# df: System III df.c as WEGA changed it: the mount table of Nmount entries (getnmount: nlist of /wega, /dev/kmem, calloc), free blocks counted from the super-block (no ustat), sync; partial: alloc, calloc
+df.o: df.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c df.c
+df: crt0-df.o df.o $(LIBC_V9)
+	$(LD) -e start -o $@ crt0-df.o df.o $(LIBC_V9)
+# time: written from /bin/time (WEGA's own output); partial: the frame places of before and after in main (the compiler)
+time.o: time.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c time.c
+time: crt0-time.o time.o $(LIBC_V4)
+	$(LD) -e start -o $@ crt0-time.o time.o $(LIBC_V4)
+# date: System III date.c as WEGA changed it (-u, the usage message, ftime for the zone, asctime and printf for the output); partial: the frame of main (the compiler)
+date.o: date.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c date.c
+date: crt0-date.o date.o $(LIBC_V6)
+	$(LD) -e start -o $@ crt0-date.o date.o $(LIBC_V6)
+# dd: System III dd.c as WEGA changed it (files=, chkres: the message of reserv(1), the zero count message); partial: match, the place of the string dd, ibc = ibs, open of the libc
+dd.o: dd.c
+	$(CCV1R) $(CFLAGS) -I../head/oldv7 -c dd.c
+dd: crt0-dd.o dd.o $(LIBC_V10)
+	$(LD) -e start -o $@ crt0-dd.o dd.o $(LIBC_V10)
+# regcmp: System III regcmp.c (char %s[] = {, the WEGA sccsid); partial: the regcmp of libPW in it is an older version
+regcmp.o: regcmp.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c regcmp.c
+regcmp: crt0-regcmp.o regcmp.o $(LIBC_V4)
+	$(LD) -e start -o $@ crt0-regcmp.o regcmp.o $(LIBPW) $(LIBC_V4)
+# getfile: written from /bin/getfile (WEGA, no source), the shipped cc and libc; partial: buf[i] = '\\n' reloads i, the place of printf(CAN) in the retries
+getfile.o: getfile.c
+	$(CC) $(CFLAGS) -c getfile.c
+getfile: crt0-getfile.o getfile.o
+	$(LD) -e start -o $@ crt0-getfile.o getfile.o -lc
+# who: System III who.c with -g (the group) and the WEGA messages, the shipped cc and libc
+who.o: who.c
+	$(CC) $(CFLAGS) -c who.c
+who: crt0-who.o who.o
+	$(LD) -e start -o $@ crt0-who.o who.o -lc
+# diff: diff.c of Plexus (as System III) with the WEGA sccsid and a spare local in prepare, equiv, main, stone (the frames of the original), the shipped cc and libc, split I/D
+diff.o: diff.c
+	$(CC) $(CFLAGS) -c diff.c
+diff: crt0-diff.o diff.o
+	$(LD) -i -e start -o $@ crt0-diff.o diff.o -lc
+# newgrp: V7 newgrp.c as WEGA changed it (no argument: the passwd group; root; stderr; done starts the shell as -name), the shipped cc, libc-v12.a
+newgrp.o: newgrp.c
+	$(CC) $(CFLAGS) -c newgrp.c
+newgrp: crt0-newgrp.o newgrp.o $(LIBC_V12)
+	$(LD) -e start -o $@ crt0-newgrp.o newgrp.o $(LIBC_V12)
+# passwd: System III passwd.c with the lock of WEGA (lkdata/unlk of the passwd file), chmod 0644, a spare long in main (the frame); ccv1, libc-v4.a
+passwd.o: passwd.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c passwd.c
+passwd: crt0-passwd.o passwd.o $(LIBC_V4)
+	$(LD) -e start -o $@ crt0-passwd.o passwd.o $(LIBC_V4)
+# mail: System III mail.c as WEGA changed it (/usr/spool/mail, setret, ~ in getarg, setuid in system, getuid for chown, spare locals in isfrom and system), the shipped cc, libc-v12.a; rmail is a link
+mail.o: mail.c
+	$(CC) $(CFLAGS) -c mail.c
+mail: crt0-mail.o mail.o $(LIBC_V12)
+	$(LD) -e start -o $@ crt0-mail.o mail.o $(LIBC_V12)
+# echo2: the echo of V7 on stderr (written from /bin/echo2), ccv0, libc-v1.a
+echo2.o: echo2.c
+	$(CCV0) $(CFLAGS) -I../head/oldv7 -c echo2.c
+echo2: crt0-echo2.o echo2.o $(LIBC_V1)
+	$(LD) -e start -o $@ crt0-echo2.o echo2.o $(LIBC_V1)
+# printenv: 2BSD printenv.c (Bill Joy) with the WEGA sccsid, ccv0, libc-v1.a
+printenv.o: printenv.c
+	$(CCV0) $(CFLAGS) -I../head/oldv7 -c printenv.c
+printenv: crt0-printenv.o printenv.o $(LIBC_V1)
+	$(LD) -e start -o $@ crt0-printenv.o printenv.o $(LIBC_V1)
+# whereis: 2.9BSD whereis.c as WEGA changed it, ccv0, libc-v1.a
+whereis.o: whereis.c
+	$(CCV0) $(CFLAGS) -I../head/oldv7 -c whereis.c
+whereis: crt0-whereis.o whereis.o $(LIBC_V1)
+	$(LD) -e start -o $@ crt0-whereis.o whereis.o $(LIBC_V1)
+# dog: written from /bin/dog (WEGA, no source), ccv1, libc-v6.a
+dog.o: dog.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c dog.c
+dog: crt0-dog.o dog.o $(LIBC_V6)
+	$(LD) -e start -o $@ crt0-dog.o dog.o $(LIBC_V6)
+# putfile: written from /bin/putfile (WEGA, no source), the shipped cc and libc
+putfile.o: putfile.c
+	$(CC) $(CFLAGS) -c putfile.c
+putfile: crt0-putfile.o putfile.o
+	$(LD) -e start -o $@ crt0-putfile.o putfile.o -lc
+# gpasswd: written from /bin/gpasswd (WEGA, after System III passwd.c), the shipped cc, libc-v12.a; partial: two temporaries of main
+gpasswd.o: gpasswd.c
+	$(CC) $(CFLAGS) -c gpasswd.c
+gpasswd: crt0-gpasswd.o gpasswd.o $(LIBC_V12)
+	$(LD) -e start -o $@ crt0-gpasswd.o gpasswd.o $(LIBC_V12)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 tee.o: tee.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c tee.c
 tee: crt0-tee.o tee.o
@@ -327,10 +456,10 @@ cpio.o: cpio.c
 cpio: crt0-cpio.o cpio.o
 	$(LD) -e start -o $@ crt0-cpio.o cpio.o -lc
 
-crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s crt0-mkstr.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s crt0-mkstr.s crt0-test.s crt0-tr.s crt0-nice.s crt0-od.s crt0-df.s crt0-time.s crt0-date.s crt0-dd.s crt0-regcmp.s crt0-getfile.s crt0-who.s crt0-diff.s crt0-newgrp.s crt0-passwd.s crt0-mail.s crt0-echo2.s crt0-printenv.s crt0-whereis.s crt0-dog.s crt0-putfile.s crt0-gpasswd.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh `echo $@ | sed -e 's/^crt0-//' -e 's/\.s$$//'` > $@
 
-crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o crt0-find.o crt0-mkstr.o: crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s crt0-mkstr.s
+crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o crt0-find.o crt0-mkstr.o crt0-test.o crt0-tr.o crt0-nice.o crt0-od.o crt0-df.o crt0-time.o crt0-date.o crt0-dd.o crt0-regcmp.o crt0-getfile.o crt0-who.o crt0-diff.o crt0-newgrp.o crt0-passwd.o crt0-mail.o crt0-echo2.o crt0-printenv.o crt0-whereis.o crt0-dog.o crt0-putfile.o crt0-gpasswd.o: crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s crt0-mkstr.s crt0-test.s crt0-tr.s crt0-nice.s crt0-od.s crt0-df.s crt0-time.s crt0-date.s crt0-dd.s crt0-regcmp.s crt0-getfile.s crt0-who.s crt0-diff.s crt0-newgrp.s crt0-passwd.s crt0-mail.s crt0-echo2.s crt0-printenv.s crt0-whereis.s crt0-dog.s crt0-putfile.s crt0-gpasswd.s
 	$(CAS) -u -o $@ `echo $@ | sed -e 's/\.o$$/.s/'`
 
 install: $(PROGS) $(FILES) $(SIMPLE)
@@ -345,6 +474,27 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	cp strip $(PREFIX)/usr/bin/strip ; $(STRIP) $(PREFIX)/usr/bin/strip
 	cp ranlib $(PREFIX)/usr/bin/ranlib ; $(STRIP) $(PREFIX)/usr/bin/ranlib
 	cp sum $(PREFIX)/bin/sum ; $(STRIP) $(PREFIX)/bin/sum
+	cp test $(PREFIX)/bin/test ; $(STRIP) $(PREFIX)/bin/test
+	cp gpasswd $(PREFIX)/bin/gpasswd ; $(STRIP) $(PREFIX)/bin/gpasswd
+	cp putfile $(PREFIX)/bin/putfile ; $(STRIP) $(PREFIX)/bin/putfile
+	cp dog $(PREFIX)/bin/dog ; $(STRIP) $(PREFIX)/bin/dog
+	cp whereis $(PREFIX)/bin/whereis ; $(STRIP) $(PREFIX)/bin/whereis
+	cp printenv $(PREFIX)/bin/printenv ; $(STRIP) $(PREFIX)/bin/printenv
+	cp echo2 $(PREFIX)/bin/echo2 ; $(STRIP) $(PREFIX)/bin/echo2
+	cp mail $(PREFIX)/bin/mail ; $(STRIP) $(PREFIX)/bin/mail ; rm -f $(PREFIX)/bin/rmail ; ln $(PREFIX)/bin/mail $(PREFIX)/bin/rmail
+	cp passwd $(PREFIX)/bin/passwd ; $(STRIP) $(PREFIX)/bin/passwd
+	cp newgrp $(PREFIX)/bin/newgrp ; $(STRIP) $(PREFIX)/bin/newgrp
+	cp diff $(PREFIX)/bin/diff ; $(STRIP) $(PREFIX)/bin/diff
+	cp who $(PREFIX)/bin/who ; $(STRIP) $(PREFIX)/bin/who
+	cp getfile $(PREFIX)/bin/getfile ; $(STRIP) $(PREFIX)/bin/getfile
+	cp regcmp $(PREFIX)/bin/regcmp ; $(STRIP) $(PREFIX)/bin/regcmp
+	cp dd $(PREFIX)/bin/dd ; $(STRIP) $(PREFIX)/bin/dd
+	cp date $(PREFIX)/bin/date ; $(STRIP) $(PREFIX)/bin/date
+	cp time $(PREFIX)/bin/time ; $(STRIP) $(PREFIX)/bin/time
+	cp df $(PREFIX)/bin/df ; $(STRIP) $(PREFIX)/bin/df
+	cp od $(PREFIX)/bin/od ; $(STRIP) $(PREFIX)/bin/od ; rm -f $(PREFIX)/bin/hd ; ln $(PREFIX)/bin/od $(PREFIX)/bin/hd
+	cp nice $(PREFIX)/bin/nice ; $(STRIP) $(PREFIX)/bin/nice
+	cp tr $(PREFIX)/bin/tr ; $(STRIP) $(PREFIX)/bin/tr
 	cp pr $(PREFIX)/bin/pr ; $(STRIP) $(PREFIX)/bin/pr
 	cp cpio $(PREFIX)/usr/bin/cpio ; $(STRIP) $(PREFIX)/usr/bin/cpio
 	mkdir -p $(PREFIX)/lib

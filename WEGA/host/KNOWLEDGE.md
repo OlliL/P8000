@@ -1250,6 +1250,12 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/gopt` (the printf of slibc-isbeta) | `%ld` prints the most negative long (-2147483648) as `0` (measured on src/cmd/cas/gen.c: a constant 0x80000000L in the intermediate file) | host/cc/gopt: `zl()` at the long outputs of wrtil2.c |
 | `/lib/gopt` (tables, memory) | each table area is a segment of 64 KiB: when it is full gopt stops with "C Optimizer: out of space" (area 1, the quads, moves to a new segment); `baseoff` is an int in init2.c and a long in reader2.c (the long covers the unused `unusedflag`) | kept (src/cmd/cc/gopt); host/cc/gopt counts the bytes of the original beside its own (`tabzalloc()`: mkseg/ssgbrk in units of 256 bytes up to 0x10000, as z8k-emu) and stops where the original does (measured: src/cmd/cc/codgen/order3.c); `baseoff` a long |
 | `/bin/cc` (cparse) | `sp + (a - b)` with `a`, `b` two global arrays: the difference is folded to 0, the code stores `sp` (measured 2026-11-23 on `l = sp + (a - b)`: /bin/cc, ccv0, ccv0a, ccv1 alike; ccv0p `lda r2,0(r14)`); the compiler of /bin/ex (10/82) computes `ld r2,#a; sub r2,#b; add r2,sp` (ex_re.c dosub, `loc2 = sp + (linebuf - genbuf)`) | kept in /bin/cc (cparse exact); ccv0/ccv0a fold too, so /bin/ex dosub stays open (phase A: no compiler change) | compare/ex/findings.json dosub |
+| `/bin/df` (getnmount) | after `*mp = calloc(...)` the test is `mp == 0`, the parameter, not the result: a failed calloc is not seen | kept (src/cmd/df.c, sic comment) | compare/df/findings.json |
+| `/bin/date` | `date -u +FORMAT` (or `-u MMDDHHMM`): -u does not step over its argument, the format is taken from argv[0] ("date") and fails as a bad conversion | kept | compare/date/findings.json |
+| `/bin/getfile` | `scanf("%c", answer)` passes the value of the char, not its address (after a refused file and when creat fails); at EOF on the line it waits for ETX forever | kept | compare/getfile/findings.json |
+| `/bin/passwd` | after unlocking it calls `close(pf)` with the FILE pointer of /etc/passwd (not fclose, not its descriptor); "Unable to open password file" goes to stdout by printf | kept | compare/passwd/findings.json |
+| `/bin/putfile` | the message "... transfer aborted\r\n" is printed with the format `%c%s ... transfer aborted\r\n%c`: ETX follows the newline | kept | compare/putfile/findings.json |
+| `/bin/gpasswd` | the exit status is 1 also after a successful change (no exit(0)) | kept | compare/gpasswd/findings.json |
 
 ## ar (reconstructed, byte-identical)
 
@@ -1929,18 +1935,18 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 
 | Library | Programs |
 |---|---|
-| libc-v1 | dc, ranlib, chmod, env, gets, kill, nohup, pwd, sleep, tail, bc (07/82; mkdir partial; pipe for bc); chkout (getpwuid, getpwent, fgets 0_2, rewind, fdopen 0_2, ctime 0_2, getenv in front of atoi) |
+| libc-v1 | dc, ranlib, chmod, env, gets, kill, nohup, pwd, sleep, tail, bc (07/82; mkdir partial; pipe for bc); chkout (getpwuid, getpwent, fgets 0_2, rewind, fdopen 0_2, ctime 0_2, getenv in front of atoi); echo2, printenv, whereis (07/82) |
 | libc-v2 | cpp (12/82), clist |
 | libc-v3 | size (01/83; the members of od added, od not started) |
-| libc-v4 | strip (01/83), su (02/83; the members of passwd too) |
+| libc-v4 | strip (01/83), su (02/83; the members of passwd too), nice (01/83: fputs 0_2, execvp 0_2, sleep 0_3, setret, index, alarm, nice, pause), time (01/83: fork, times 0_1, wait) |
 | libc-v5 | codgen, scodgen, popt, spopt |
-| libc-v6 | rm, mv, cp, ln (05/83 .. 07/83), chgrp, chown, sort, touch (02/83 .. 03/83), uname (01/83) |
+| libc-v6 | rm, mv, cp, ln (05/83 .. 07/83), chgrp, chown, sort, touch (02/83 .. 03/83), uname, test (01/83), tr (05/83), dog (03/83: freopen, setbuf, ttyname 0_2, strcat 0_1, fcntl, fstat); fakcu (for test, which has no stdio) |
 | libc-v7 | cparse, scparse, find (10/83) |
 | libc-v8 | cc, scc |
-| libc-v9 | ld (07/83); its order conflicts with v6, its versions do not |
+| libc-v9 | ld (07/83); its order conflicts with v6, its versions do not; df (04/83: calloc 0_2, nlist 0_1, stat, sync) |
 | libc-isstore | write, rmdir (01/83) |
 | libc-v11 | cat (10/82), echo (08/82), mkstr (11/82) |
-| libc-v12 | chkin (09/83): the shipped libc.a with printf and doprnt 0_4 in their places (ar r) |
+| libc-v12 | chkin (09/83): the shipped libc.a with printf and doprnt 0_4 in their places (ar r); newgrp (09/83), mail (11/83) |
 
 The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see "libc.a and slibc.a: one tree".
 A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.

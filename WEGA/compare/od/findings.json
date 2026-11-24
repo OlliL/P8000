@@ -1,0 +1,105 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1r (ccv1: the ?: of putc and getc without the frame temporaries; ccv1q as ccv1r)",
+ "binary": "/bin/od",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "od.c",
+   "orig": "0x0042",
+   "size_orig": 530,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "rewritten by WEGA (from the code): name = argv[0]; hd by strcmp(argv[0], \"hd\") (conv 010, max 4, base 16); options reset conv; o sets base 8, x/h base 16; the message \"%s: cannot open %s\" with the name; exit(1)."
+  },
+  "line": {
+   "file": "od.c",
+   "orig": "0x0254",
+   "size_orig": 292,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "putx": {
+   "file": "od.c",
+   "orig": "0x0378",
+   "size_orig": 264,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0254"
+   ]
+  },
+  "cput": {
+   "file": "od.c",
+   "orig": "0x0480",
+   "size_orig": 162,
+   "status": "open",
+   "kind": "proven",
+   "callers": [],
+   "note": "c &= 0377 in r2 in the original, ccv1r takes r6 (also cp r2,#0x7f); forms tried 2026-11-23: c = c & 0377, in the if, register c, int c: none (the compiler)."
+  },
+  "putn": {
+   "file": "od.c",
+   "orig": "0x0522",
+   "size_orig": 166,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x0254",
+    "0x0522"
+   ],
+   "note": "the source of System III (if (d > 9) ... else ...); the original places the inline putc of the else branch inside the then branch and shares its inc (block order / tail merging of the optimizer); if (d < 10) swaps the branches but not the layout."
+  },
+  "pre": {
+   "file": "od.c",
+   "orig": "0x05c8",
+   "size_orig": 76,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "offset": {
+   "file": "od.c",
+   "orig": "0x0614",
+   "size_orig": 264,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  }
+ }
+}

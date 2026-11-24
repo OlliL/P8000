@@ -53,44 +53,44 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 
 ### sys3 (source in tmp/sys3)
 
-- [ ] test (2478)
-- [ ] tr (6532)
-- [ ] uuname (6538)
-- [ ] nice (7218)
-- [ ] od (7526); link: hd
-- [ ] df (7718)
-- [ ] time (7812)
-- [ ] date (8550)
-- [ ] dd (8612)
-- [ ] regcmp (8844)
-- [ ] file (9254)
-- [ ] getfile (10002)
-- [ ] local (10398)
-- [ ] who (11540)
-- [ ] nm (12026)
-- [ ] diff (12258)
-- [ ] egrep (12618)
-- [ ] uulog (12784)
-- [ ] ls (13512)
-- [ ] newgrp (13898)
-- [ ] passwd (15188)
-- [ ] stty (15702)
-- [ ] ed (16750)
-- [ ] mail (18572); link: rmail
-- [ ] login (19030); same file as etc/login
-- [ ] uux (21136)
-- [ ] ps (22794; segmented E607, last of this group)
+- [x] test (2478)
+- [x] tr (6532)
+- [x] uuname (6538)
+- [x] nice (7218)
+- [x] od (7526); link: hd
+- [x] df (7718)
+- [x] time (7812)
+- [x] date (8550)
+- [x] dd (8612)
+- [x] regcmp (8844)
+- [x] file (9254) -- deferred: WEGA rewrote it (Z8000, PLZ, s.out types; about 3 KB of own code)
+- [x] getfile (10002)
+- [x] local (10398) -- deferred: 02/84, linked with a libc we do not have (large gaps)
+- [x] who (11540)
+- [x] nm (12026) -- deferred: WEGA rewrote it for s.out (vs.out, segmented, line tables)
+- [x] diff (12258)
+- [x] egrep (12618) -- deferred: built by yacc; the yacc parser of WEGA is not reconstructed yet
+- [x] uulog (12784)
+- [x] ls (13512) -- deferred: 2BSD ls with WEGA options; needs a libc with setbuf, qsort, fgetc, fread
+- [x] newgrp (13898)
+- [x] passwd (15188)
+- [x] stty (15702) -- deferred: 12/83, its doprnt/printf are of a libc we do not have
+- [x] ed (16750) -- deferred: needs libc-v4 members (fakcu, strncpy, pipe, dup, chown) and setret; 69 functions
+- [x] mail (18572); link: rmail
+- [x] login (19030); same file as etc/login -- deferred: rewritten by WEGA (ttytype, termcap, csh) and a libc with large gaps
+- [x] uux (21136)
+- [x] ps (22794; segmented E607, last of this group) -- deferred: segmented, with the WEGA modules kva.c and kpa.c
 
 ### todo (no source)
 
-- [ ] echo2 (1834)
-- [ ] printenv (3998)
-- [ ] whereis (6444)
-- [ ] dog (8330)
-- [ ] putfile (9752)
-- [ ] uusend (13216)
-- [ ] remote (15162)
-- [ ] gpasswd (15362)
+- [x] echo2 (1834)
+- [x] printenv (3998)
+- [x] whereis (6444)
+- [x] dog (8330)
+- [x] putfile (9752)
+- [x] uusend (13216) -- deferred: a WEGA form of the 4.2BSD uusend (-f, directories, mkdir) with two libc gaps
+- [x] remote (15162) -- deferred: about 5 KB of own code (24 functions), no source
+- [x] gpasswd (15362)
 - [ ] sh (24032); link: rsh
 - [ ] make (39048)
 - [ ] csh (45728)
@@ -116,3 +116,15 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
 - 2026-11-23 step 0 ex worked on: 361 of 394 exact (360 + crt0); open: the compiler clusters (indirect call, structure copy
   register, getone, dosub: the shipped cc folds `a - b` of two arrays to 0, KNOWLEDGE.md quirks) and functions with only
   call/calr; no source change taken.
+- 2026-11-23 sys3 batch 1 (state in each findings.json; COVERAGE after the next checkall -b):
+  IDENTICAL: test (V7 test.c + System III operators, ccv1, libc-v6 + fakcu), tr (usage of WEGA), uuname and uulog (BSD
+  uucp: 4BSD uuname.c, 3BSD uulog and modules, uucp.h of 3BSD), nice (V7, libc-v4 + fputs 0_2, execvp 0_2, sleep 0_3 ...),
+  who (-g of WEGA, shipped cc), diff (Plexus diff.c, spare locals), newgrp (V7 with WEGA changes, libc-v12), passwd (lock
+  with lkdata/unlk, a spare long). Partial (installed, OPEN of checkall): od/hd, df, time, date, dd, regcmp, getfile.
+  Deferred with the reason in the list: file, local, nm, egrep, ls, stty, ed. corpusrun: RC_UNDEFINED (od).
+- 2026-11-24 sys3 batch 2: mail IDENTICAL (System III mail.c with WEGA changes, libc-v12, rmail a link), uux partial (3BSD
+  uux and modules with WEGA changes, the frame of main); login deferred. The corpus of uulog wrote LOGFILE into the WEGA
+  root once (removed again); uulog and uux corpora now write into the layer (ROOT_COPY of usr/spool/uucp/remotelines).
+- 2026-11-24 todo batch 1 (no sources): IDENTICAL echo2 (V7 echo on stderr), printenv (2BSD), whereis (2.9BSD with the WEGA
+  directories), dog (written from the code; libc-v6 + freopen, setbuf, ttyname 0_2, strcat 0_1, fcntl, fstat), putfile
+  (written from the code); partial: gpasswd (two temporaries of main). Deferred: uusend, remote, ps.

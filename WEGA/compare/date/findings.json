@@ -1,0 +1,73 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/date",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "date.c",
+   "orig": "0x0042",
+   "size_orig": 1096,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "rewritten by WEGA (from the code): -u (GMT, gmtime), the usage message, tzset and ftime first (the zone from timeb), asctime, printf for the output and the messages, close of wtmp, *--aptr in the bad format message. Open: the frame: the original leaves a word free in front of tb (tb at 0xc, the frame 0xf6 as ccv1 without it): the compiler. With -u and a format the original takes argv[0] (no argv++ for -u): kept."
+  },
+  "gtime": {
+   "file": "date.c",
+   "orig": "0x048a",
+   "size_orig": 338,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "as System III without the tzset (main calls it)."
+  },
+  "gpair": {
+   "file": "date.c",
+   "orig": "0x05dc",
+   "size_orig": 88,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x048a"
+   ]
+  },
+  "itoa": {
+   "file": "date.c",
+   "orig": "0x0634",
+   "size_orig": 120,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  }
+ },
+ "note": "long ntime: a 4-byte common of the original between cbp and uflag (bss), unused; its name is a guess. dmsize is static in date.c (ctime 0_1 of libc-v6 has its own). z8k-emu has no ftime (system call 35, \"unimplemented\"): the corpus runs without the zone of timeb."
+}

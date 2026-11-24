@@ -8,12 +8,15 @@ CCV0 = ccv0
 CCV0P = ccv0p
 CAS = cas
 
-objs: 0_1.o 0_2.o
+objs: 0_1.o 0_2.o 0_3.o
 
 0_1.o: 0_1.c
 	$(CCV0) -O -c 0_1.c
 
 0_2.o: 0_2.c
 	$(CCV0P) -O -c 0_2.c
+
+0_3.o: 0_3.c
+	$(CCV1) -O -c 0_3.c
 
 .PHONY: objs

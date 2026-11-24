@@ -1,0 +1,100 @@
+# The cases of the corpus of mail (compare/mail/corpus.py); the format: host/recon/casefile.py. src = src/cmd/mail.c.
+
+== usage
+-- case
+step: mail -x
+
+== f-print
+From root Thu Mar  9 09:57 EST 1989
+hello one
+
+From adm Thu Mar  9 09:58 EST 1989
+second letter
+line two
+-- in
+p
+n
+p
+q
+-- case
+step: mail -f t.in
+stdin: in
+
+== f-delete
+From root Thu Mar  9 09:57 EST 1989
+hello one
+
+From adm Thu Mar  9 09:58 EST 1989
+second letter
+line two
+-- in
+d
+q
+-- case
+step: mail -f t.in
+stdin: in
+
+== f-help
+From root Thu Mar  9 09:57 EST 1989
+hello one
+
+From adm Thu Mar  9 09:58 EST 1989
+second letter
+line two
+-- in
+?
+x
+-- case
+step: mail -f t.in
+stdin: in
+
+== f-save
+From root Thu Mar  9 09:57 EST 1989
+hello one
+
+From adm Thu Mar  9 09:58 EST 1989
+second letter
+line two
+-- in
+s saved
+q
+-- case
+step: mail -f t.in
+stdin: in
+
+== f-empty
+-- in
+q
+-- case
+step: mail -f t.in
+stdin: in
+
+== f-missing
+-- in
+q
+-- case
+step: mail -f nofile
+stdin: in
+
+== f-p
+From root Thu Mar  9 09:57 EST 1989
+hello one
+
+From adm Thu Mar  9 09:58 EST 1989
+second letter
+line two
+-- case
+step: mail -p -f t.in
+
+== f-r
+From root Thu Mar  9 09:57 EST 1989
+hello one
+
+From adm Thu Mar  9 09:58 EST 1989
+second letter
+line two
+-- in
+q
+-- case
+step: mail -r -f t.in
+stdin: in

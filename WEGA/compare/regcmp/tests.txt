@@ -1,0 +1,49 @@
+# The cases of the corpus of regcmp (compare/regcmp/corpus.py); the format: host/recon/casefile.py. src = src/cmd/regcmp.c.
+
+== simple
+name "abc"
+num "[0-9]+"
+-- case
+step: regcmp t.in
+
+== stdout
+name "a.*b"
+id "([a-z]+)$0"
+-- case
+step: regcmp - t.in
+
+== several
+a "x"
+-- f2
+b "y{2,3}"
+-- case
+step: regcmp t.in f2
+
+== continued
+long "abc"
+	"def"
+-- case
+step: regcmp - t.in
+
+== no-quote
+bad abc
+-- case
+step: regcmp t.in
+
+== eof
+bad "abc
+-- case
+step: regcmp t.in
+
+== fail
+bad "a(b"
+-- case
+step: regcmp t.in
+
+== missing
+-- case
+step: regcmp nofile
+
+== none
+-- case
+step: regcmp

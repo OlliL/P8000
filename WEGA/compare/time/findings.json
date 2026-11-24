@@ -1,0 +1,99 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/time",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "time.c",
+   "orig": "0x0042",
+   "size_orig": 282,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "before and after at 0x1a/0x1e in the original (a free word at 0x18), ccv1 aligns them to 0x18/0x1c (free 0x20); 11 declaration orders tried; the compiler."
+  },
+  "cputime": {
+   "file": "time.c",
+   "orig": "0x015c",
+   "size_orig": 18,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x016e"
+   ],
+   "note": "name guessed (written from the code; no source of WEGA time is known)"
+  },
+  "printt": {
+   "file": "time.c",
+   "orig": "0x016e",
+   "size_orig": 162,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "name guessed (written from the code; no source of WEGA time is known)"
+  },
+  "prtime": {
+   "file": "time.c",
+   "orig": "0x0210",
+   "size_orig": 92,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x016e"
+   ],
+   "note": "name guessed (written from the code; no source of WEGA time is known)"
+  },
+  "prreal": {
+   "file": "time.c",
+   "orig": "0x026c",
+   "size_orig": 148,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x016e"
+   ],
+   "note": "name guessed (written from the code; no source of WEGA time is known)"
+  },
+  "pr2": {
+   "file": "time.c",
+   "orig": "0x0300",
+   "size_orig": 48,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x026c"
+   ],
+   "note": "name guessed (written from the code; no source of WEGA time is known)"
+  }
+ },
+ "note": "No source: WEGA wrote its own output (not System III, not V7, not BSD). libc-v4.a extended 2026-11-23: fork, times 0_1 (an int result: xor r4,r4; ld r2,r4), wait."
+}

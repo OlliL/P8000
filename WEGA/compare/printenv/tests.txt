@@ -1,0 +1,20 @@
+# The cases of the corpus of printenv (compare/printenv/corpus.py); the format: host/recon/casefile.py. src = src/cmd/printenv.c.
+
+== all
+-- case
+env: FOO=bar HOME=/usr/x
+step: printenv
+
+== one
+-- case
+env: FOO=bar
+step: printenv FOO
+
+== missing
+-- case
+step: printenv NOSUCH
+
+== prefix
+-- case
+env: FOOBAR=1 FOO=2
+step: printenv FO

@@ -1,0 +1,56 @@
+# The cases of the corpus of date (compare/date/corpus.py); the format: host/recon/casefile.py. src = src/cmd/date.c.
+
+== plain
+-- case
+time: 605545021
+step: date
+
+== u
+-- case
+time: 605545021
+step: date -u
+
+== u-format
+-- case
+time: 605545021
+step: date -u +%H
+
+== usage
+-- case
+time: 605545021
+step: date -x
+
+== fmt-all
+-- case
+time: 605545021
+step: date "+%m %d %y %D %H %M %S %T %j %w %a %h %r %n %t %%"
+
+== fmt-bad
+-- case
+time: 605545021
+step: date +%q
+
+== fmt-text
+-- case
+time: 605545021
+step: date "+today is %a"
+
+== set
+-- case
+time: 605545021
+step: date 0101120083
+
+== set-bad
+-- case
+time: 605545021
+step: date 1301120083
+
+== set-short
+-- case
+time: 605545021
+step: date 01
+
+== set-p
+-- case
+time: 605545021
+step: date 01011200p

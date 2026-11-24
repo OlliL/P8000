@@ -1,0 +1,33 @@
+# The cases of the corpus of whereis (compare/whereis/corpus.py); the format: host/recon/casefile.py. src = src/cmd/whereis.c.
+
+== usage
+-- case
+step: whereis
+
+== ls
+-- case
+step: whereis ls
+
+== b
+-- case
+step: whereis -b cat ed
+
+== m
+-- case
+step: whereis -m cc
+
+== s
+-- case
+step: whereis -s sh
+
+== u
+-- case
+step: whereis -u -m ls cat
+
+== B
+-- case
+step: whereis -B /etc -f init
+
+== missing
+-- case
+step: whereis nosuchthing

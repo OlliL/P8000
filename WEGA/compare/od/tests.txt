@@ -1,0 +1,162 @@
+# The cases of the corpus of od (compare/od/tests.txt); the format: host/recon/casefile.py. src = src/cmd/od.c.
+
+== default
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od t.in
+
+== octal
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -o t.in
+
+== decimal
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -d t.in
+
+== hex
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -x t.in
+
+== h
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -h t.in
+
+== chars
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -c t.in
+
+== bytes
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -b t.in
+
+== mix
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -cbx t.in
+
+== mix-od
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -od t.in
+
+== offset
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od t.in +10
+
+== offset-dot
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -c t.in +10.
+
+== offset-b
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -x t.in +1b
+
+== stdin
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -c
+stdin: t.in
+
+== missing
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od nofile
+
+== hd
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: hd t.in
+
+== hd-c
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: hd -c t.in
+
+== hd-o
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: hd -o t.in
+
+== hd-missing
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: hd nofile
+
+== dash-only
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od - t.in
+
+== unknown-opt
+Hello, world!\011tab\012\000\001\002\177\200\377end
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+short
+-- case
+step: od -q t.in

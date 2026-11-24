@@ -1,0 +1,9 @@
+# The cases of the corpus of gpasswd (compare/gpasswd/corpus.py); the format: host/recon/casefile.py. src = src/cmd/gpasswd.c.
+
+== unknown
+-- case
+step: gpasswd nosuchgroup
+
+== other
+-- case
+step: gpasswd adm

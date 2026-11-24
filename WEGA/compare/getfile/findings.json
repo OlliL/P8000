@@ -1,0 +1,77 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/getfile",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "getfile.c",
+   "orig": "0x0042",
+   "size_orig": 1128,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "no source; written from the code (a goto chain in the order of the code). Open: the printf of CAN after the last retry: the original merges it with the printf of ACK (shared tail), its string then lies after those of ok and nak; three source orders tried. The CR test is two nested ifs (one if with && reloads i). Quirk: scanf(\"%c\", answer) with the value (twice), kept."
+  },
+  "onalarm": {
+   "file": "getfile.c",
+   "orig": "0x04aa",
+   "size_orig": 18,
+   "status": "open",
+   "kind": "candidate",
+   "callers": [],
+   "note": "name guessed; the same code as the original, 2 bytes later (main)"
+  },
+  "drain": {
+   "file": "getfile.c",
+   "orig": "0x04bc",
+   "size_orig": 18,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "name guessed; the same code as the original, 2 bytes later (main)"
+  },
+  "getc1": {
+   "file": "getfile.c",
+   "orig": "0x04d8",
+   "size_orig": 22,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x04bc"
+   ],
+   "note": "name guessed; the same code as the original, 2 bytes later (main)"
+  }
+ },
+ "note": "No source of getfile is known (not System III ged getfile.c, not Plexus). The corpus has only cases that end: without a partner the program waits for ETX forever (EOF on the line)."
+}

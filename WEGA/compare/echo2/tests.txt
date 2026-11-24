@@ -1,0 +1,21 @@
+# The cases of the corpus of echo2 (compare/echo2/corpus.py); the format: host/recon/casefile.py. src = src/cmd/echo2.c.
+
+== none
+-- case
+step: echo2
+
+== words
+-- case
+step: echo2 hello world
+
+== n
+-- case
+step: echo2 -n a b
+
+== n-only
+-- case
+step: echo2 -n
+
+== escape
+-- case
+step: echo2 "a\\tb"

@@ -1,0 +1,105 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/regcmp",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "regcmp.c",
+   "orig": "0x0042",
+   "size_orig": 1290,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "size": {
+   "file": "regcmp.c",
+   "orig": "0x054c",
+   "size_orig": 26,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "getnm": {
+   "file": "regcmp.c",
+   "orig": "0x0566",
+   "size_orig": 184,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "regcmp": {
+   "file": "libPW regcmp.c",
+   "orig": "0x061e",
+   "size_orig": 1178,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "the regcmp member of libPW in /bin/regcmp is an older version than src/lib/libPW/regcmp.c (40 bytes more code, tcc forms of booleans); ccv1, ccv1r, ccv1q, ccv0 tried on the current source."
+  },
+  "f0ab8": {
+   "file": "libPW regcmp.c",
+   "orig": "0x0ab8",
+   "size_orig": 36,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x061e"
+   ],
+   "note": "the regcmp member of libPW in /bin/regcmp is an older version than src/lib/libPW/regcmp.c (40 bytes more code, tcc forms of booleans); ccv1, ccv1r, ccv1q, ccv0 tried on the current source."
+  },
+  "f0adc": {
+   "file": "libPW regcmp.c",
+   "orig": "0x0adc",
+   "size_orig": 34,
+   "status": "open",
+   "kind": "proven",
+   "callers": [],
+   "note": "the regcmp member of libPW in /bin/regcmp is an older version than src/lib/libPW/regcmp.c (40 bytes more code, tcc forms of booleans); ccv1, ccv1r, ccv1q, ccv0 tried on the current source."
+  },
+  "f0afe": {
+   "file": "libPW regcmp.c",
+   "orig": "0x0afe",
+   "size_orig": 38,
+   "status": "open",
+   "kind": "proven",
+   "callers": [],
+   "note": "the regcmp member of libPW in /bin/regcmp is an older version than src/lib/libPW/regcmp.c (40 bytes more code, tcc forms of booleans); ccv1, ccv1r, ccv1q, ccv0 tried on the current source."
+  }
+ },
+ "note": "main is the System III regcmp.c (char %s[] = {); OWN_LIM 0x0b24 includes the regcmp functions of libPW."
+}

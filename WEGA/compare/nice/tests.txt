@@ -1,0 +1,44 @@
+# The cases of the corpus of nice (compare/nice/corpus.py); the format: host/recon/casefile.py. src = src/cmd/nice.c.
+
+== usage
+-- case
+step: nice
+
+== usage-n
+# src: -n alone is not a command
+-- case
+step: nice -5
+
+== echo
+-- case
+step: nice echo hello
+
+== echo-n
+-- case
+step: nice -5 echo a b
+
+== echo-path
+-- case
+step: nice /bin/echo x
+
+== missing
+# src: execvp fails: sys_errlist[errno]: the name
+-- case
+step: nice nosuchcommand
+
+== missing-path
+-- case
+step: nice /bin/nosuch
+
+== cat-in
+hello world
+-- case
+step: nice cat t.in
+
+== script
+# execvp: ENOEXEC: the file is run by sh (no '#' at the start)
+-- s
+echo from script
+-- case
+host: chmod 755 s
+step: nice ./s

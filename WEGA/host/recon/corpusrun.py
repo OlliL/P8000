@@ -4,7 +4,8 @@ cases, compared. Usage: corpusrun.py [-c CANDIDATE[,CANDIDATE]] [-k] [-f FILTER]
 host/tools/corpus.sh). --show: only the original, every case printed (steps with output and exit status, the files
 afterwards, the expectations that fail); no store, no candidate: for writing cases.
 
-A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), ROOT_COPY (files of the tree a case may change: each case gets a copy in its layer, e.g.
+A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional RC_UNDEFINED (the exit status is not compared:
+main of the original ends without exit), ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), ROOT_COPY (files of the tree a case may change: each case gets a copy in its layer, e.g.
 etc/mnttab), INSTALLED (the candidate lies at its place in the tree, ORIG and
 the paths of ALIASES, in the case's layer over ROOT, z8k-emu Z8K_OVERLAY; the steps call it by that path; a shell script
 is run as execvp() of the libc does it: by /bin/csh when its first byte is #, else by /bin/sh, with $0 that path), IN_TMP (the case
@@ -744,7 +745,10 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         norm = getattr(cfg, 'normalize', None)
         if norm:
             text = norm('output', text)
-        res['steps'].append('step %d %s: exit=%d\n%s' % (i, argv[0], rc, text))
+        if getattr(cfg, 'RC_UNDEFINED', False) and rc >= 0:	# main of the original ends without exit: its status is a register left over
+            res['steps'].append('step %d %s: exit=undefined\n%s' % (i, argv[0], text))
+        else:
+            res['steps'].append('step %d %s: exit=%d\n%s' % (i, argv[0], rc, text))
     if os.path.exists(rd + '.udcon'):	# what the 8-bit part printed on its console
         res['steps'].append('8-bit console:\n' + open(rd + '.udcon', encoding='latin-1').read())
         os.remove(rd + '.udcon')

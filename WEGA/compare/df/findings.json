@@ -1,0 +1,89 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/df",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "df.c",
+   "orig": "0x0042",
+   "size_orig": 476,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "as System III, with the table of getnmount (M, Mp, nmount: names guessed) instead of M[NMOUNT] and the division of the read count."
+  },
+  "printit": {
+   "file": "df.c",
+   "orig": "0x021e",
+   "size_orig": 258,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "WEGA: no ustat; the free blocks counted with alloc in both branches, sync first."
+  },
+  "alloc": {
+   "file": "df.c",
+   "orig": "0x0320",
+   "size_orig": 184,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x021e"
+   ],
+   "note": "b >= sblock.s_fsize: the original compares signed (jr ge), daddr_t of the sys/param.h of WEGA is unsigned long (jr nc; sys/types.h has long): an older param.h is likely (a guess). (long)b >= (long)sblock.s_fsize gives the bytes; not taken (an odd form)."
+  },
+  "bread": {
+   "file": "df.c",
+   "orig": "0x03d8",
+   "size_orig": 86,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x021e",
+    "0x0320"
+   ]
+  },
+  "getnmount": {
+   "file": "df.c",
+   "orig": "0x042e",
+   "size_orig": 222,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "name guessed (no symbols); written from the code: nlist(\"/wega\") of _Nmount, read from /dev/kmem, calloc of the table; the test after calloc is mp == 0 (the parameter, not *mp: a bug of the original, kept)."
+  }
+ },
+ "note": "libc-v9.a extended 2026-11-23: calloc 0_2 (the System III calloc, ccv1; not exact: the original multiplies by size in r6), nlist 0_1 (ccv1), stat, sync. The corpus is thin: the emulator has no /dev/kmem."
+}

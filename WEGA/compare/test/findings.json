@@ -1,0 +1,151 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/test",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "test.c",
+   "orig": "0x0042",
+   "size_orig": 148,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "nxtarg": {
+   "file": "test.c",
+   "orig": "0x00d6",
+   "size_orig": 62,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0114",
+    "0x014a",
+    "0x0180",
+    "0x01b4"
+   ]
+  },
+  "exp": {
+   "file": "test.c",
+   "orig": "0x0114",
+   "size_orig": 54,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x0114",
+    "0x01b4"
+   ]
+  },
+  "e1": {
+   "file": "test.c",
+   "orig": "0x014a",
+   "size_orig": 54,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0114",
+    "0x014a"
+   ]
+  },
+  "e2": {
+   "file": "test.c",
+   "orig": "0x0180",
+   "size_orig": 52,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x014a"
+   ]
+  },
+  "e3": {
+   "file": "test.c",
+   "orig": "0x01b4",
+   "size_orig": 1152,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0180"
+   ]
+  },
+  "tio": {
+   "file": "test.c",
+   "orig": "0x0634",
+   "size_orig": 26,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01b4"
+   ]
+  },
+  "ftype": {
+   "file": "test.c",
+   "orig": "0x064e",
+   "size_orig": 48,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01b4"
+   ]
+  },
+  "fsizep": {
+   "file": "test.c",
+   "orig": "0x067e",
+   "size_orig": 46,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01b4"
+   ]
+  },
+  "synbad": {
+   "file": "test.c",
+   "orig": "0x06ac",
+   "size_orig": 88,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x00d6",
+    "0x01b4"
+   ]
+  },
+  "length": {
+   "file": "test.c",
+   "orig": "0x0704",
+   "size_orig": 34,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01b4"
+   ]
+  }
+ }
+}

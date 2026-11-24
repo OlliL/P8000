@@ -1,0 +1,43 @@
+# The cases of the corpus of putfile (compare/putfile/corpus.py); the format: host/recon/casefile.py. src = src/cmd/putfile.c.
+# The partner answers on the standard input: \006 ACK, \025 NAK, \030 CAN, \033 ESC.
+
+== none
+-- case
+step: putfile
+
+== options-only
+-- case
+step: putfile -b -B -f -q
+
+== missing
+-- case
+step: putfile nofile
+
+== empty
+-- e
+-- case
+step: putfile e
+
+== refused
+hello
+-- in
+\006\006\030\006
+-- case
+step: putfile t.in
+stdin: in
+
+== one-file
+hello world
+-- in
+\006\006\006\006\006\006
+-- case
+step: putfile t.in
+stdin: in
+
+== esc
+abc
+-- in
+\006\006\006\033\033\033
+-- case
+step: putfile t.in t.in
+stdin: in

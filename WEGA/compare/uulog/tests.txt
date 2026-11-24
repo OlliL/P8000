@@ -1,0 +1,13 @@
+# The cases of the corpus of uulog (compare/uulog/corpus.py); the format: host/recon/casefile.py. src = src/cmd/uucp/uulog.c.
+
+== unknown
+-- case
+step: uulog -x
+
+== d-removed
+-- case
+step: uulog -d
+
+== s-only
+-- case
+step: uulog -snosys -x

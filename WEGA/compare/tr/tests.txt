@@ -1,0 +1,217 @@
+# The cases of the corpus of tr (compare/tr/corpus.py); the format: host/recon/casefile.py. src = src/cmd/tr.c.
+
+== copy
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr
+stdin: t.in
+
+== lower-upper
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr a-z A-Z
+stdin: t.in
+
+== upper-lower
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr "[A-Z]" "[a-z]"
+stdin: t.in
+
+== delete
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr -d lo
+stdin: t.in
+
+== squeeze
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr -s " "
+stdin: t.in
+
+== squeeze-map
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr -s a-z A-Z
+stdin: t.in
+
+== complement-delete
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr -cd a-z
+stdin: t.in
+
+== complement-map
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr -c a-z X
+stdin: t.in
+
+== cds
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr -cds a-z "\012"
+stdin: t.in
+
+== short-string2
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr abc x
+stdin: t.in
+
+== repeat
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr a-z "[X*]"
+stdin: t.in
+
+== repeat-n
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr a-z "[X*3]Y"
+stdin: t.in
+
+== repeat-octal
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr a-z "[X*010]"
+stdin: t.in
+
+== octal
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr "\011\040" "_-"
+stdin: t.in
+
+== backslash
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr "\\" x
+stdin: t.in
+
+== range-rev
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr z-a x
+stdin: t.in
+
+== bad-option
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr -x a b
+stdin: t.in
+
+== bad-string
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr "[a" b
+stdin: t.in
+
+== dash-only
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr - x
+stdin: t.in
+
+== empty-args
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr "" ""
+stdin: t.in
+
+== d-no-arg
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr -d
+stdin: t.in
+
+== s-only-string1
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr -s lo
+stdin: t.in
+
+== high-bytes
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr "\001-\377" x
+stdin: t.in
+
+== options-combined
+Hello World 123
+the quick brown fox  jumps
+	aabbccdd   xyz
+\001\177\377end
+-- case
+step: tr -sd a b
+stdin: t.in

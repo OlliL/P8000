@@ -1,0 +1,199 @@
+# The cases of the corpus of test (compare/test/corpus.py); the format: host/recon/casefile.py. src = src/cmd/test.c.
+
+== no-args
+-- case
+step: test
+
+== empty-string
+-- case
+step: test ""
+
+== string
+-- case
+step: test abc
+
+== n-empty
+-- case
+step: test -n ""
+
+== n-word
+-- case
+step: test -n x
+
+== z-empty
+-- case
+step: test -z ""
+
+== z-word
+-- case
+step: test -z x
+
+== eq-str
+-- case
+step: test abc = abc
+
+== ne-str
+-- case
+step: test abc != abd
+
+== eq-str-false
+-- case
+step: test abc = abd
+
+== int-eq
+-- case
+step: test 3 -eq 3
+
+== int-ne
+-- case
+step: test 3 -ne 4
+
+== int-gt
+-- case
+step: test 5 -gt 4
+
+== int-lt
+-- case
+step: test 5 -lt 4
+
+== int-ge
+-- case
+step: test 4 -ge 4
+
+== int-le
+-- case
+step: test -3 -le -4
+
+== l-len
+-- case
+step: test -l abcd -eq 4
+
+== r-file
+-- case
+step: test -r t.in
+
+== r-missing
+-- case
+step: test -r nofile
+
+== w-file
+-- case
+step: test -w t.in
+
+== x-file
+-- case
+step: test -x t.in
+
+== x-dir
+-- d/f
+content
+-- case
+step: test -x d
+
+== d-dir
+-- d/f
+content
+-- case
+step: test -d d
+
+== d-file
+-- case
+step: test -d t.in
+
+== f-file
+-- case
+step: test -f t.in
+
+== f-dir
+-- d/f
+content
+-- case
+step: test -f d
+
+== c-null
+-- case
+step: test -c /dev/null
+
+== c-file
+-- case
+step: test -c t.in
+
+== b-file
+-- case
+step: test -b t.in
+
+== u-file
+-- case
+step: test -u t.in
+
+== g-file
+-- case
+step: test -g t.in
+
+== k-file
+-- case
+step: test -k t.in
+
+== s-empty
+-- case
+step: test -s t.in
+
+== s-full
+-- d/f
+content
+-- case
+step: test -s d/f
+
+== s-missing
+-- case
+step: test -s nofile
+
+== t-none
+-- case
+step: test -t
+
+== t-fd
+-- case
+step: test -t 0
+
+== not
+-- case
+step: test ! -f t.in
+
+== and
+-- d/f
+content
+-- case
+step: test -f t.in -a -d d
+
+== or
+-- d/f
+content
+-- case
+step: test -f d -o -d d
+
+== paren
+-- case
+step: test ( -f t.in )
+
+== paren-missing
+-- case
+step: test ( -f t.in
+
+== arg-expected
+-- case
+step: test -f
+
+== unknown-op
+-- case
+step: test 1 -xx 2
+
+== and-false
+-- d/f
+content
+-- case
+step: test -f d -a -d d
+
+== or-chain
+-- case
+step: test -z x -o -z y -o -n z

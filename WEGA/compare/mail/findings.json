@@ -1,0 +1,249 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/mail",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "mail.c",
+   "orig": "0x0042",
+   "size_orig": 298,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "setsig": {
+   "file": "mail.c",
+   "orig": "0x016c",
+   "size_orig": 46,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x0b78"
+   ]
+  },
+  "printmail": {
+   "file": "mail.c",
+   "orig": "0x019a",
+   "size_orig": 1472,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "copyback": {
+   "file": "mail.c",
+   "orig": "0x075a",
+   "size_orig": 456,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x019a"
+   ]
+  },
+  "copymt": {
+   "file": "mail.c",
+   "orig": "0x0922",
+   "size_orig": 126,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x019a"
+   ]
+  },
+  "areforwarding": {
+   "file": "mail.c",
+   "orig": "0x09a0",
+   "size_orig": 178,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x019a",
+    "0x0e94"
+   ]
+  },
+  "copylet": {
+   "file": "mail.c",
+   "orig": "0x0a52",
+   "size_orig": 256,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x019a",
+    "0x075a",
+    "0x0b78",
+    "0x0d9a",
+    "0x0e94"
+   ]
+  },
+  "isfrom": {
+   "file": "mail.c",
+   "orig": "0x0b52",
+   "size_orig": 38,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0922",
+    "0x0b78"
+   ],
+   "note": "a spare local (int unused): the frame of the original has a word more (odd form)"
+  },
+  "sendmail": {
+   "file": "mail.c",
+   "orig": "0x0b78",
+   "size_orig": 532,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "savdead": {
+   "file": "mail.c",
+   "orig": "0x0d8c",
+   "size_orig": 14,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "sendrmt": {
+   "file": "mail.c",
+   "orig": "0x0d9a",
+   "size_orig": 250,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0e94"
+   ]
+  },
+  "send": {
+   "file": "mail.c",
+   "orig": "0x0e94",
+   "size_orig": 338,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0b78",
+    "0x0e94"
+   ]
+  },
+  "delete": {
+   "file": "mail.c",
+   "orig": "0x0fe6",
+   "size_orig": 66,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "done": {
+   "file": "mail.c",
+   "orig": "0x1028",
+   "size_orig": 28,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x019a",
+    "0x075a",
+    "0x1044"
+   ]
+  },
+  "lock": {
+   "file": "mail.c",
+   "orig": "0x1044",
+   "size_orig": 112,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x019a",
+    "0x075a",
+    "0x0e94"
+   ]
+  },
+  "unlock": {
+   "file": "mail.c",
+   "orig": "0x10b4",
+   "size_orig": 14,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x019a",
+    "0x075a",
+    "0x0e94",
+    "0x1028"
+   ]
+  },
+  "cat": {
+   "file": "mail.c",
+   "orig": "0x10c2",
+   "size_orig": 130,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x019a",
+    "0x0e94",
+    "0x1044",
+    "0x11de"
+   ]
+  },
+  "getarg": {
+   "file": "mail.c",
+   "orig": "0x1144",
+   "size_orig": 154,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "WEGA: ~ at the start of a file name is replaced by $HOME (locals h, i, n: names guessed)"
+  },
+  "legal": {
+   "file": "mail.c",
+   "orig": "0x11de",
+   "size_orig": 134,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0b78"
+   ]
+  },
+  "system": {
+   "file": "mail.c",
+   "orig": "0x1264",
+   "size_orig": 168,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "a spare local (int unused): the frame of the original has a word more (odd form)"
+  }
+ }
+}

@@ -1,0 +1,204 @@
+# The cases of the corpus of diff (compare/diff/corpus.py); the format: host/recon/casefile.py. src = src/cmd/diff.c.
+
+== plain
+one
+two
+three
+four  five
+six
+seven
+eight
+-- b
+zero
+one
+three
+four five
+six
+SEVEN
+eight
+nine
+-- case
+step: diff t.in b
+
+== e
+one
+two
+three
+four  five
+six
+seven
+eight
+-- b
+zero
+one
+three
+four five
+six
+SEVEN
+eight
+nine
+-- case
+step: diff -e t.in b
+
+== f
+one
+two
+three
+four  five
+six
+seven
+eight
+-- b
+zero
+one
+three
+four five
+six
+SEVEN
+eight
+nine
+-- case
+step: diff -f t.in b
+
+== b
+one
+two
+three
+four  five
+six
+seven
+eight
+-- b
+zero
+one
+three
+four five
+six
+SEVEN
+eight
+nine
+-- case
+step: diff -b t.in b
+
+== h
+one
+two
+three
+four  five
+six
+seven
+eight
+-- b
+zero
+one
+three
+four five
+six
+SEVEN
+eight
+nine
+-- case
+step: diff -h t.in b
+
+== same
+one
+two
+three
+four  five
+six
+seven
+eight
+-- b
+zero
+one
+three
+four five
+six
+SEVEN
+eight
+nine
+-- case
+step: diff t.in t.in
+
+== missing
+one
+two
+three
+four  five
+six
+seven
+eight
+-- b
+zero
+one
+three
+four five
+six
+SEVEN
+eight
+nine
+-- case
+step: diff t.in nofile
+
+== stdin
+one
+two
+three
+four  five
+six
+seven
+eight
+-- b
+zero
+one
+three
+four five
+six
+SEVEN
+eight
+nine
+-- case
+step: diff - b
+stdin: t.in
+
+== usage
+one
+two
+three
+four  five
+six
+seven
+eight
+-- b
+zero
+one
+three
+four five
+six
+SEVEN
+eight
+nine
+-- case
+step: diff t.in
+
+== dir
+one
+two
+three
+four  five
+six
+seven
+eight
+-- b
+zero
+one
+three
+four five
+six
+SEVEN
+eight
+nine
+-- d/t.in
+x
+-- case
+step: diff t.in d

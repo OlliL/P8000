@@ -1,0 +1,64 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/gpasswd",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "catlist": {
+   "file": "gpasswd.c",
+   "orig": "0x0042",
+   "size_orig": 50,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0074"
+   ],
+   "note": "name guessed; a spare local (the frame of the original)"
+  },
+  "main": {
+   "file": "gpasswd.c",
+   "orig": "0x0074",
+   "size_orig": 1308,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "no source; written from the code after System III passwd.c. Open: two temporaries of the calls at 0x2c/0x2e in the original (0x2a/0x2c here); spare locals x, y; exit(1) also after a change (kept)."
+  },
+  "notify": {
+   "file": "gpasswd.c",
+   "orig": "0x0590",
+   "size_orig": 88,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0074"
+   ]
+  }
+ },
+ "note": "bss: buf[512] (the argument of notify), a word between lk and gr, line[512] behind pwbuf: their names are guesses, not used by the code."
+}

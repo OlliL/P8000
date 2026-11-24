@@ -1,0 +1,29 @@
+# The cases of the corpus of df (compare/df/corpus.py); the format: host/recon/casefile.py. src = src/cmd/df.c.
+
+== plain
+-- case
+step: df
+
+== f
+-- case
+step: df -f
+
+== t
+-- case
+step: df -t
+
+== q
+-- case
+step: df -q
+
+== bad-option
+-- case
+step: df -x
+
+== device
+-- case
+step: df /dev/fd0
+
+== file
+-- case
+step: df t.in

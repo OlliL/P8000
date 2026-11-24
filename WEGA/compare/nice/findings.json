@@ -1,0 +1,42 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/nice",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "nice.c",
+   "orig": "0x0042",
+   "size_orig": 150,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  }
+ },
+ "note": "libc-v4.a extended 2026-11-23 for nice: fputs 0_2 at 0x00d8 (the start of the library part: setup.py put OWN_LIM behind it), execvp 0_2 (ccv1; whichshell declares c before fd), sleep 0_3 (ccv1, static ret_buf), setret, index, alarm, nice, pause."
+}

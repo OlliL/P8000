@@ -1,0 +1,30 @@
+# The cases of the corpus of time (compare/time/corpus.py); the format: host/recon/casefile.py. src = src/cmd/time.c.
+
+== none
+-- case
+step: time
+
+== echo
+-- case
+step: time echo hi
+
+== v-echo
+-- case
+step: time -v echo hi
+
+== v-only
+-- case
+step: time -v
+
+== missing
+-- case
+step: time nosuchcmd
+
+== status
+-- case
+step: time sh -c "exit 3"
+
+== cat
+some text
+-- case
+step: time cat t.in

@@ -1,0 +1,24 @@
+# The cases of the corpus of uuname (compare/uuname/corpus.py); the format: host/recon/casefile.py. src = src/cmd/uucp/uuname.c.
+
+== list
+# src: the names of /usr/lib/uucp/L.sys up to the first blank, xxx lines skipped
+-- case
+step: uuname
+
+== local
+# src: -l: the node name (uucpname: uname, at most 7 characters)
+-- case
+step: uuname -l
+
+== usage
+-- case
+step: uuname a
+
+== usage-option
+-- case
+step: uuname -x
+
+== l-extra
+# src: -l is checked before the count of the arguments
+-- case
+step: uuname -l x

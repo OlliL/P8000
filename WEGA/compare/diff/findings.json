@@ -1,0 +1,276 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/diff",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "done": {
+   "file": "diff.c",
+   "orig": "0x0042",
+   "size_orig": 18,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x00b2",
+    "0x021c",
+    "0x0348",
+    "0x05fe"
+   ]
+  },
+  "talloc": {
+   "file": "diff.c",
+   "orig": "0x0054",
+   "size_orig": 32,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x01a6",
+    "0x0348",
+    "0x05fe"
+   ]
+  },
+  "ralloc": {
+   "file": "diff.c",
+   "orig": "0x0074",
+   "size_orig": 62,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0348",
+    "0x05fe",
+    "0x0926"
+   ]
+  },
+  "noroom": {
+   "file": "diff.c",
+   "orig": "0x00b2",
+   "size_orig": 16,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0054",
+    "0x0074"
+   ]
+  },
+  "sort": {
+   "file": "diff.c",
+   "orig": "0x00c2",
+   "size_orig": 228,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05fe"
+   ]
+  },
+  "unsort": {
+   "file": "diff.c",
+   "orig": "0x01a6",
+   "size_orig": 118,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05fe"
+   ]
+  },
+  "filename": {
+   "file": "diff.c",
+   "orig": "0x021c",
+   "size_orig": 300,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05fe"
+   ]
+  },
+  "prepare": {
+   "file": "diff.c",
+   "orig": "0x0348",
+   "size_orig": 148,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05fe"
+   ],
+   "note": "a spare local (int unused): the frame of the original has a word more, not used (odd form)"
+  },
+  "prune": {
+   "file": "diff.c",
+   "orig": "0x03dc",
+   "size_orig": 250,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05fe"
+   ]
+  },
+  "equiv": {
+   "file": "diff.c",
+   "orig": "0x04d6",
+   "size_orig": 296,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05fe"
+   ],
+   "note": "a spare local (int unused): the frame of the original has a word more, not used (odd form)"
+  },
+  "main": {
+   "file": "diff.c",
+   "orig": "0x05fe",
+   "size_orig": 490,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "a spare local (int unused): the frame of the original has a word more, not used (odd form)"
+  },
+  "stone": {
+   "file": "diff.c",
+   "orig": "0x07e8",
+   "size_orig": 318,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05fe"
+   ],
+   "note": "a spare local (int unused): the frame of the original has a word more, not used (odd form)"
+  },
+  "newcand": {
+   "file": "diff.c",
+   "orig": "0x0926",
+   "size_orig": 88,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x07e8"
+   ]
+  },
+  "search": {
+   "file": "diff.c",
+   "orig": "0x097e",
+   "size_orig": 144,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x07e8"
+   ]
+  },
+  "unravel": {
+   "file": "diff.c",
+   "orig": "0x0a0e",
+   "size_orig": 120,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05fe"
+   ]
+  },
+  "check": {
+   "file": "diff.c",
+   "orig": "0x0a86",
+   "size_orig": 710,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05fe"
+   ]
+  },
+  "skipline": {
+   "file": "diff.c",
+   "orig": "0x0d4c",
+   "size_orig": 92,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0a86"
+   ]
+  },
+  "output": {
+   "file": "diff.c",
+   "orig": "0x0da8",
+   "size_orig": 436,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05fe"
+   ]
+  },
+  "change": {
+   "file": "diff.c",
+   "orig": "0x0f5c",
+   "size_orig": 458,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0da8"
+   ]
+  },
+  "range": {
+   "file": "diff.c",
+   "orig": "0x1126",
+   "size_orig": 56,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0f5c"
+   ]
+  },
+  "fetch": {
+   "file": "diff.c",
+   "orig": "0x115e",
+   "size_orig": 248,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0f5c"
+   ]
+  },
+  "readhash": {
+   "file": "diff.c",
+   "orig": "0x1256",
+   "size_orig": 260,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0348"
+   ]
+  },
+  "mesg": {
+   "file": "diff.c",
+   "orig": "0x135a",
+   "size_orig": 28,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x00b2",
+    "0x021c",
+    "0x0348",
+    "0x05fe"
+   ]
+  }
+ }
+}

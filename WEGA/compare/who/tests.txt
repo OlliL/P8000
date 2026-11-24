@@ -1,0 +1,37 @@
+# The cases of the corpus of who (compare/who/corpus.py); the format: host/recon/casefile.py. src = src/cmd/who.c.
+
+== plain
+-- case
+time: 605545021
+step: who
+
+== group
+-- case
+time: 605545021
+step: who -g
+
+== illegal
+-- case
+time: 605545021
+step: who -x
+
+== am-i
+-- case
+time: 605545021
+step: who am i
+
+== file
+-- case
+time: 605545021
+step: who /etc/utmp
+
+== missing
+-- case
+time: 605545021
+step: who nofile
+
+== utmp-file
+root\000\000\000\000\000\000\000tty1\000\000\000\000\000\000\001\002\003\004
+-- case
+time: 605545021
+step: who t.in

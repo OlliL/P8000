@@ -1,0 +1,37 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/uuname",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "main": {
+   "file": "uuname.c",
+   "orig": "0x002a",
+   "size_orig": 220,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "uucpname": {
+   "file": "uucpname.c",
+   "orig": "0x0106",
+   "size_orig": 82,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  }
+ },
+ "note": "WEGA uucp is BSD uucp: uuname.c of 4BSD (Sysfiles), uucp.h of 3BSD (Rmtname[10], Myname[8]: the bss), uucpname.c of 3BSD/4BSD with UNAME (the frame has the unused int i of BSD). Measured 2026-11-23 with the shipped cc: IDENTICAL."
+}

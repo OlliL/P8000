@@ -1,0 +1,202 @@
+# The cases of the corpus of dd (compare/dd/corpus.py); the format: host/recon/casefile.py. src = src/cmd/dd.c.
+
+== copy
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o
+
+== stdin
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd of=o
+stdin: t.in
+
+== stdout
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in
+
+== bs
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o bs=7
+
+== ibs-obs
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o ibs=5 obs=3
+
+== skip
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o bs=10 skip=2
+
+== seek
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o bs=10 seek=1
+
+== count
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o bs=10 count=3
+
+== kwb
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o bs=1k
+
+== ucase
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o conv=ucase
+
+== lcase
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o conv=lcase
+
+== swab
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o conv=swab
+
+== ebcdic
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o conv=ebcdic
+
+== ibm
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o conv=ibm
+
+== ascii
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o conv=ascii
+
+== sync
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o ibs=16 conv=sync
+
+== cbs
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o cbs=20 conv=ascii
+
+== multi
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o conv=ucase,swab
+
+== noerror
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o conv=noerror
+
+== missing
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=nofile of=o
+
+== bad-arg
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd foo=1
+
+== bad-conv
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in conv=xyz
+
+== zero
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in bs=0
+
+== bad-of
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=/nodir/x
+
+== times
+The quick brown fox jumps over the lazy dog.
+abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789
+line three
+\001\002\377 end
+-- case
+step: dd if=t.in of=o bs=2x3

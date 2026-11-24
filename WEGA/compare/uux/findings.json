@@ -1,0 +1,397 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/uux",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "main": {
+   "file": "uux.c",
+   "orig": "0x002a",
+   "size_orig": 3002,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "the frame: from n (the fread count) on, the locals of the original lie 2 bytes lower; three orders of the declarations tried."
+  },
+  "cleanup": {
+   "file": "uucp (module of cleanup)",
+   "orig": "0x0be4",
+   "size_orig": 46,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a",
+    "0x0f9a",
+    "0x13ce",
+    "0x180a"
+   ]
+  },
+  "gwd": {
+   "file": "uucp (module of gwd)",
+   "orig": "0x0c12",
+   "size_orig": 100,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "anyread": {
+   "file": "uucp (module of anyread)",
+   "orig": "0x0c76",
+   "size_orig": 40,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "xcp": {
+   "file": "uucp (module of xcp)",
+   "orig": "0x0c9e",
+   "size_orig": 242,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "xmv": {
+   "file": "uucp (module of xmv)",
+   "orig": "0x0d90",
+   "size_orig": 64,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "expfile": {
+   "file": "uucp (module of expfile)",
+   "orig": "0x0dd0",
+   "size_orig": 182,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "isdir": {
+   "file": "uucp (module of isdir)",
+   "orig": "0x0e86",
+   "size_orig": 52,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "mkdirs": {
+   "file": "uucp (module of mkdirs)",
+   "orig": "0x0eba",
+   "size_orig": 152,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "gename": {
+   "file": "uucp (module of gename)",
+   "orig": "0x0f52",
+   "size_orig": 72,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "getseq": {
+   "file": "uucp (module of getseq)",
+   "orig": "0x0f9a",
+   "size_orig": 304,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0f52"
+   ]
+  },
+  "guinfo": {
+   "file": "uucp (module of guinfo)",
+   "orig": "0x10ca",
+   "size_orig": 72,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "gninfo": {
+   "file": "uucp (module of gninfo)",
+   "orig": "0x1112",
+   "size_orig": 70,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0dd0"
+   ]
+  },
+  "index": {
+   "file": "uucp (module of index)",
+   "orig": "0x1158",
+   "size_orig": 36,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1976",
+    "0x1cc2",
+    "0x1dc2",
+    "0x1ed2"
+   ]
+  },
+  "lastpart": {
+   "file": "uucp (module of lastpart)",
+   "orig": "0x117c",
+   "size_orig": 54,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a",
+    "0x0c9e",
+    "0x180a"
+   ]
+  },
+  "prefix": {
+   "file": "uucp (module of prefix)",
+   "orig": "0x11b2",
+   "size_orig": 54,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x180a"
+   ]
+  },
+  "shio": {
+   "file": "uucp (module of shio)",
+   "orig": "0x11e8",
+   "size_orig": 330,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "ulockf": {
+   "file": "uucp (module of ulockf)",
+   "orig": "0x1332",
+   "size_orig": 156,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0f9a"
+   ]
+  },
+  "stlock": {
+   "file": "uucp (module of stlock)",
+   "orig": "0x13ce",
+   "size_orig": 206,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1332"
+   ]
+  },
+  "rmlock": {
+   "file": "uucp (module of rmlock)",
+   "orig": "0x149c",
+   "size_orig": 110,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0be4",
+    "0x0f9a"
+   ]
+  },
+  "isalock": {
+   "file": "uucp (module of isalock)",
+   "orig": "0x150a",
+   "size_orig": 46,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "unlock": {
+   "file": "uucp (module of unlock)",
+   "orig": "0x1538",
+   "size_orig": 30,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "onelock": {
+   "file": "uucp (module of onelock)",
+   "orig": "0x1556",
+   "size_orig": 98,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1332"
+   ]
+  },
+  "delock": {
+   "file": "uucp (module of delock)",
+   "orig": "0x15b8",
+   "size_orig": 38,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "mlock": {
+   "file": "uucp (module of mlock)",
+   "orig": "0x15de",
+   "size_orig": 58,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "ultouch": {
+   "file": "uucp (module of ultouch)",
+   "orig": "0x1618",
+   "size_orig": 72,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "xuucico": {
+   "file": "uucp (module of xuucico)",
+   "orig": "0x1660",
+   "size_orig": 158,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "xuuxqt": {
+   "file": "uucp (module of xuuxqt)",
+   "orig": "0x16fe",
+   "size_orig": 112,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "xuucp": {
+   "file": "uucp (module of xuucp)",
+   "orig": "0x176e",
+   "size_orig": 156,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "chkpth": {
+   "file": "uucp (module of chkpth)",
+   "orig": "0x180a",
+   "size_orig": 364,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "rdpth": {
+   "file": "uucp (module of rdpth)",
+   "orig": "0x1976",
+   "size_orig": 394,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x180a"
+   ]
+  },
+  "callback": {
+   "file": "uucp (module of callback)",
+   "orig": "0x1b00",
+   "size_orig": 138,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "chkperm": {
+   "file": "uucp (module of chkperm)",
+   "orig": "0x1b8a",
+   "size_orig": 180,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "getargs": {
+   "file": "uucp (module of getargs)",
+   "orig": "0x1c3e",
+   "size_orig": 132,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1976"
+   ]
+  },
+  "getprm": {
+   "file": "uucp (module of getprm)",
+   "orig": "0x1cc2",
+   "size_orig": 256,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "split": {
+   "file": "uucp (module of split)",
+   "orig": "0x1dc2",
+   "size_orig": 190,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "uucpname": {
+   "file": "uucp (module of uucpname)",
+   "orig": "0x1e80",
+   "size_orig": 82,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "versys": {
+   "file": "uucp (module of versys)",
+   "orig": "0x1ed2",
+   "size_orig": 182,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  }
+ },
+ "note": "3BSD uux with WEGA changes (see src/cmd/uucp/Makefile). The corpus covers only what does not run uucico."
+}

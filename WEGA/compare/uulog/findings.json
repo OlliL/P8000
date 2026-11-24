@@ -1,0 +1,193 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/uulog",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "main": {
+   "file": "uulog.c",
+   "orig": "0x002a",
+   "size_orig": 836,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "onintr": {
+   "file": "uulog.c",
+   "orig": "0x036e",
+   "size_orig": 14,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "intr1": {
+   "file": "uulog.c",
+   "orig": "0x037c",
+   "size_orig": 38,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "cleanup": {
+   "file": "uulog.c",
+   "orig": "0x03a2",
+   "size_orig": 14,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a",
+    "0x067e"
+   ]
+  },
+  "appendf": {
+   "file": "uulog.c",
+   "orig": "0x03b0",
+   "size_orig": 82,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "prefix": {
+   "file": "prefix.c",
+   "orig": "0x0402",
+   "size_orig": 54,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "xuucico": {
+   "file": "xqt.c",
+   "orig": "0x0438",
+   "size_orig": 158,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "xuuxqt": {
+   "file": "xqt.c",
+   "orig": "0x04d6",
+   "size_orig": 112,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "xuucp": {
+   "file": "xqt.c",
+   "orig": "0x0546",
+   "size_orig": 156,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "ulockf": {
+   "file": "ulockf.c",
+   "orig": "0x05e2",
+   "size_orig": 156,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "stlock": {
+   "file": "ulockf.c",
+   "orig": "0x067e",
+   "size_orig": 206,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05e2"
+   ]
+  },
+  "rmlock": {
+   "file": "ulockf.c",
+   "orig": "0x074c",
+   "size_orig": 110,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  },
+  "isalock": {
+   "file": "ulockf.c",
+   "orig": "0x07ba",
+   "size_orig": 46,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "unlock": {
+   "file": "ulockf.c",
+   "orig": "0x07e8",
+   "size_orig": 30,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "onelock": {
+   "file": "ulockf.c",
+   "orig": "0x0806",
+   "size_orig": 98,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x05e2"
+   ]
+  },
+  "delock": {
+   "file": "ulockf.c",
+   "orig": "0x0868",
+   "size_orig": 38,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "mlock": {
+   "file": "ulockf.c",
+   "orig": "0x088e",
+   "size_orig": 58,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "ultouch": {
+   "file": "ulockf.c",
+   "orig": "0x08c8",
+   "size_orig": 72,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "gnamef": {
+   "file": "gnamef.c",
+   "orig": "0x0910",
+   "size_orig": 102,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ]
+  }
+ },
+ "note": "WEGA uucp 3.1 (the version string of uucpdefs.h: ZFT-KEAW/WAE 3/6/1989) is BSD uucp of 3BSD here: uulog.c, prefix.c, xqt.c, ulockf.c (without lock(): libc has a lock system call; without its sccs string; rmlock keeps the unlink result, name ret guessed), gnamef.c; uucpdefs.h with one Sysfiles entry; uucp.h: UUCP /bin/uucp, UNAME. The corpus covers only the option errors (uulog appends the spool logs first)."
+}

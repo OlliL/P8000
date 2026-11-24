@@ -1,0 +1,27 @@
+# The cases of the corpus of newgrp (compare/newgrp/corpus.py); the format: host/recon/casefile.py. src = src/cmd/newgrp.c.
+
+== usage
+-- case
+step: newgrp a b
+
+== unknown
+-- case
+step: newgrp nosuchgroup
+
+== other
+echo in shell
+-- case
+step: newgrp other
+stdin: t.in
+
+== bin
+id
+-- case
+step: newgrp bin
+stdin: t.in
+
+== none
+echo x
+-- case
+step: newgrp
+stdin: t.in
