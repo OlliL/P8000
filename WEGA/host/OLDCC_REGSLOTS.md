@@ -160,13 +160,43 @@ the wrong ones makes the old cparse allocate or free otherwise (not yet seen wha
   `greedy.py FILE` (such changes one after the other): in misc.c one change makes intalloc right, then nothing helps at
   subst. The original is not one extra or missing block away from the model.
 
+## The declarations in front of the first function (2026-11-24)
+
+The model is sensitive to every permanent entry made before the first function (a global declaration of a header or of
+the file, even one without code): it shifts all later allocations against the arena top, where the rover wraps around to
+the old parameter blocks. `extradecl.py`: K extra permanent entries in front of the first function, per file the K that
+give every function right:
+
+| File | K that give all its functions right (0 .. 200) |
+|---|---|
+| make misc.c | 63, 173 only |
+| make gram.c | 26 .. 30, 63 .. 66, 99 .. 103, ... |
+| make main, doname, dosys, dyndep | ranges that hold 63 |
+| make files.c | 56, 60, 61, 62, ... (not 63: 1 to 7 entries fewer than the others) |
+| diff | 0, 37, 73, 110, 146 |
+| uniq, comm | 0, 1, 37, 38, 73, 74, ... |
+| tsort, nl, cmp, du, grep, pr, putfile, who | 0 and many more |
+| csplit | 1, 9, 27, ... (not 0) |
+| mail | 3, 17, 19, 20, ... (not 0; with more entries before a later function many choices) |
+| cpio | none; 22 or so in front plus a few before missdir |
+| ar | none (nor with a function pointer parameter that leaves 0) |
+
+The period of about 36.6 entries is 1024 bytes, the sbrk step of the malloc. Checked by real builds (the scratch cparse,
+63 dummy `extern int` declarations at the end of make's `defs`): every frame of make comes out as the original, the 14
+functions and yyparse with their words and all others without, no `int unused`; only files.c eqstr differs, right with
+56 .. 62 dummies. csplit needs 1: the WEGA source has a `static char sccsid[]` that the System III text of the test set
+lacks; comm, tsort, uniq allow 1 too (their WEGA sccsid). So the stale sfldc explains the words of make, diff, nl, comm,
+tsort, uniq, csplit and (with 3 more declarations) mail; what the 63 entries of make's WEGA headers are is open (the
+System V defs has 5 more than System III's, the headers of the guest: sys/types.h 14, + sys/stat.h 26, + sys/dir.h 29,
+sys/param.h 18, time.h 10, pwd.h 10, ar.h 7, s.out.h 42, nlist.h 4); ar and cpio need more than one place.
+
 ## The tools
 
 `host/recon/regslots/`: `setup.sh` makes the work directory (`RS_WORK`, default `tmp/tmp/regslots` beside WEGA: the scratch
 cparse from `cparse_x.diff`, a root with it behind the shipped cc, the test set, the logs); `fscan.py` (the masked frame
 compare of a build against the original), `score.sh` (real builds of the test set), `v7sim.py` (the V7 malloc),
 `replay.py` (a log through the malloc with the sfldc model), `hyp.py` (the score of the test set, the expected words),
-`hyps1.py`, `hyps2.py` (the hypotheses above), `probe.py`, `greedy.py` (single changes of a stream), `features.py` (the source features of the register locals of
+`hyps1.py`, `hyps2.py` (the hypotheses above), `probe.py`, `greedy.py` (single changes of a stream), `extradecl.py` (K extra entries in front of the first function), `features.py` (the source features of the register locals of
 make, diff, mail, nl, gpasswd against their words), `witnesses.sh` (the search among the sys3 programs). The work directory
 stays; `saved/` there holds the outputs of the first runs.
 
