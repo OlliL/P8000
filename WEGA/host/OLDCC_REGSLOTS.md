@@ -190,6 +190,22 @@ tsort, uniq, csplit and (with 3 more declarations) mail; what the 63 entries of 
 System V defs has 5 more than System III's, the headers of the guest: sys/types.h 14, + sys/stat.h 26, + sys/dir.h 29,
 sys/param.h 18, time.h 10, pwd.h 10, ar.h 7, s.out.h 42, nlist.h 4); ar and cpio need more than one place.
 
+## v1: the place of the declaration (2026-11-24)
+
+A related case, not of the compiler of 11/83: under `OLD_D1` the cparse of v1 gives every register local its frame word at
+its declaration, like an auto of its type (`OLDCC.md` D1). So in a v1 program a free word of the original in front of some
+autos can be the word of a register local declared there, and the order of the declarations moves it. Measured:
+
+| Program (v1) | Function | Original | ccv1 with the declarations of before | The form taken |
+|---|---|---|---|---|
+| time (01/83) | main | free word at 0x18, longs before, after at 0x1a, 0x1e | longs at 0x18, 0x1c, free word at 0x20 | `register p;` in front of `long before, after;` |
+| date | main | free word in front of tb, tb at 0xc | tb at 0xa | `register char *tzn;` in front of `struct timeb tb;` |
+
+Both byte-identical (11 declaration orders of time in phase A had not moved p). Not the rule this file looks for (the
+shipped cc gives no register local a word, the compiler of 11/83 gives some of them one), but a cheap test for every
+`int spare` or `int unused` of a v1 program: move a register declaration to the place of the word. To be tried on the
+words of ld (main, endload, slookup, pslookup, index16; v1, `OLDCC.md` D1).
+
 ## The tools
 
 `host/recon/regslots/`: `setup.sh` makes the work directory (`RS_WORK`, default `tmp/tmp/regslots` beside WEGA: the scratch
@@ -208,5 +224,6 @@ stays; `saved/` there holds the outputs of the first runs.
 - The other witnesses as tests of a rule found on make: diff, mail, nl (their `int unused` must come out by the compiler
   then), comm, csplit, tsort, uniq, slibc calloc (segmented); and as counter-tests the programs of 11/18/83 without a word
   (ar, cmp, du, grep, pr, putfile, who, cpio).
+- The v1 words of ld (main, endload, slookup, pslookup, index16): the place of a register declaration (section "v1").
 - A rule that holds would be a switch of a cparse of its own (a compiler of 11/83), owner's decision; the unused locals
   would then go.
