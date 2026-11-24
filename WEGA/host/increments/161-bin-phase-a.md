@@ -189,3 +189,74 @@ Next steps proposed:
    host/OLDCC_DATES.md).
 3. Build it as a switch only in a compiler version these programs need (a new one if necessary), so that the users of
    ccv1, ccv1q, ccv1r stay untouched (owner: fear of other users); then regcmp, units, acctcom, lex could follow.
+
+## Phase B getfile: open, for a later session (2026-11-24)
+
+State: `/bin/getfile` partial, 81 differing bytes (0x29d..0x441), all from one difference in the retry block of main;
+everything from 0x442 on (onalarm, drain, getc1) is exact. The source is written from the code (WEGA had no source;
+`contrib/WEGA-Remote/getfile.c` is no model: at most written from a disassembly). Built with ccvm and libc (Makefile).
+Notes per function: `compare/getfile/findings.json`.
+
+The difference (original against the build):
+
+    orig: 3ae inc retry; cpb ack,#6; jr eq,ok; cp retry,#10; jr lt,nak
+          3c2 ld r7,#CAN-string; ld r6,#24; jr 416          CAN jumps into the call of ok
+          3cc werr ... 40a jr test
+          40c ok: ld r7; ldb rl6,ack; extsb r6
+          416 call printf; jr test
+          41c nak: ... jr ne,nak   (falls into test)
+    build: the same layout, but CAN keeps the call (3ca call printf) and ok jumps into it.
+
+What is fixed by measurement:
+- The order of the printf calls in the source is the order of their strings in the original: werr's "%c", "disk write
+  error", then ok (0x2310), nak (0x2314), CAN (0x2318). The tree has this order; with it the layout, the strings and all
+  jumps are those of the original, only the side of the shared `call printf` is wrong (it shifts the code by 4 bytes).
+- The mechanism (popt, `src/cmd/cc/popt/z21.c`): the main loop is `do { refcount; do iterate while (nchange); comjump;
+  rmove } while (nchange || jumpsw())`. iterate walks the nodes in order; for each JP it calls xjump, then codemove.
+  codemove moves the block from the target label to its first JP to the site of the JP when the label stands behind a JP
+  or RET. comjump (backjmp) keeps, of two JPs to the same label with the same code in front, the copy of the earlier JP;
+  xjump keeps the copy that falls into the target label. In our form the retry test (in front of everything) has a JP to
+  can, can stands behind a JP, so codemove moves can (with its call) to the retry test in the first iterate, before
+  comjump; then CAN's JP stands before ok's and comjump keeps the call in CAN. For the original, CAN must reach the retry
+  test only after comjump (by a JP that comes up later, e.g. from jumpsw), or the merge must be done by xjump with ok
+  falling into test and nak put between them later.
+- **A popt change is ruled out:** `tmp/zeus321_root/bin/getfile` (getfile.c 1.7, Zilog 05/27/84) has exactly the same
+  retry block (call kept in ok, strings ok, nak, CAN): Zilog did not change that part of the source. The Zeus popt
+  (z2x.c 1.2 of 08/27/84, another binary than WEGA's /lib/popt of 12/82..03/83) gives on our codgen output the same text
+  as the WEGA popt, and the whole Zeus chain (`/bin/cc -O` under zeus321_root) on our source keeps the call in CAN too.
+  Two popts of two years agree, and with Zilog's source they give the original: the difference is in the source form.
+
+Tried (none below 81; all with ccvm, the cc of WEGA gives the same):
+- 13 forms of the retry test: `if (ack == ACK) goto ok;` followed by `if (retry >= 10) goto can; goto nak;` or `if
+  (retry < 10) goto nak; goto can;`, the nested forms `if (ack != ACK) { ... } goto ok;`, if/else chains, tests that fall
+  into the next block without a goto.
+- Every order of the retry test, werr/next, ok, nak, can and test/drn (with the string order werr < ok < nak < can), each
+  block in front of test with and without its `goto test`; the retry test first (reached from `ack = ACK`) or behind with
+  `goto bad`. Without the string order (other orders) 28 bytes is reachable, but with the strings of ok, nak, CAN
+  swapped and ok and nak in the wrong order: no way to the original.
+- Structured forms: `if (ack == ACK) printf(ack); else if (retry < 10) do ... while (tflag); else printf(CAN);` and
+  variants with braces, `goto test` in the branches, `while (1) { ... break; }` for nak: 122.
+
+Not tried yet (next steps, each to be checked with trace.sh: when does can move, which JP is first at comjump):
+1. A loop around reception and retry instead of the labels: `for (;;)` / `while (...)` with `continue` and `break` in place
+   of `goto test` / `goto bad`; the loop test at the bottom gives other JPs and a loop inversion (codemove's second half).
+2. The retry test as a `switch` or with the CAN case inside the test of `test:` (`if (retry >= 10) { printf(CAN); ... }`
+   behind `test:`), so that the JP to can is made by jumpsw or by iterate only after comjump.
+3. The parts in front of `bad:` (how `ack = ACK` and the write test reach it: `if (write(...) == len) { ack = ACK; ... }`,
+   `else goto werr`) and the form of `test:` (`if (retry < 10 && ack != ACK)` ...), since they decide which JPs exist.
+4. Compare with getfile 1.7 of Zeus where it differs from 1.6 (the scanf of `&answer` fixed, other frame sizes): it may show
+   how Zilog wrote other parts of the same source.
+
+Scripts (`compare/getfile/forms/`, need `WEGA=` the WEGA root and the tools of `make -C host wbin` in tmp/wbin; work
+directory `$GF_WORK`, default `tmp/tmp/getfile-forms` beside WEGA):
+- `try.sh BODY [NAME]`: getfile.c of the tree with the text from `\t\tack = ACK;\n\tbad:` up to `\tfail:` replaced by
+  the file BODY, built like the Makefile (ccvm -O, crt0-getfile.o, libc), stripped; prints the differing bytes (bincmp).
+  The current text of the tree as BODY gives 81.
+- `trace.sh NAME`: after try.sh, the popt of the tree built with `-DTRACE` (once; its output without `+` is the same as
+  /lib/popt, checked) on the codgen output of NAME; prints the codemove lines (`/*CM label refc tlen ...*/`) and the retry
+  block after each iterate and comjump.
+- `gen.py DIR`: writes the bodies of the order search above (227 forms) and DIR/list; run them with
+  `cat DIR/list | xargs -P 6 -I{} sh try.sh DIR/{} > res.txt` (about 30 s), then `sort -t' ' -k4 -n res.txt | head`.
+- The Zeus check: in a work directory, `z8k-emu -r <zeus321_root> /lib/popt getfile.s out.s` on the output of
+  `ccvm -Ihead/oldv7 -S getfile.c`, against the same with the WEGA root; `/bin/cc -O -S` under zeus321_root for the whole
+  chain. `host/tools/sdis.py -l` disassembles with addresses (the retry block of 1.7 is at 0x3aa).
