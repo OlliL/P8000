@@ -230,6 +230,23 @@ Elsewhere: no common header shift fits the other programs (diff 37, but csplit n
 So the scratch cparse gives every frame of the 15 programs of 11/18/83 but mail system and make files.c eqstr, with the
 unused locals out and make's defs including the four headers.
 
+## The tree by the scratch cparse (2026-11-24)
+
+`src/cmd` built with `cc` = ccx (the shipped cc with the scratch cparse; a copy of src, `wbin` with that cc),
+`treescan.sh`: the 68 files of `src/COVERAGE.md` exact by the shipped cc against the originals (the sources as in the
+tree, with their unused locals):
+
+- The programs with an SCCS line of 11/16/83 or 11/18/83: ar, cmp, diff, du, grep, mail, rmail, make, nl, pr, putfile,
+  who, cpio (all 13 that the tree builds exact by the shipped cc; the test set above), and getfile (partial: its 35
+  found frames right). Differences only in the witnesses (with their unused locals, so expected); cmp, du, grep, nl, pr,
+  putfile, who right.
+- Programs without such a line or of another date get words they lack: tar (4 functions), dump (5), dumpdir (4),
+  restor (13), sa.install (7), sa.mkfs (6). So these were built by a cparse that clears sfldc (the shipped one); sync
+  (07/24/82), newgrp (09/22/83), help/bd (11/26/82) and 20 others without a date come out right.
+- The other programs of 10/83 .. 11/83 in the root: find, sld, cparse, codgen, scparse, scodgen (by ccv0p or scc in
+  the tree, not this cparse), news and cref (partial), and some 30 not yet rebuilt (todo, sys3): for them a frame word
+  of a register local is to be expected from the compiler of 11/83.
+
 ## v1: the place of the declaration (2026-11-24)
 
 A related case, not of the compiler of 11/83: under `OLD_D1` the cparse of v1 gives every register local its frame word at
@@ -253,7 +270,7 @@ cparse from `cparse_x.diff`, a root with it behind the shipped cc, the test set,
 compare of a build against the original), `score.sh` (real builds of the test set), `v7sim.py` (the V7 malloc),
 `replay.py` (a log through the malloc with the sfldc model), `hyp.py` (the score of the test set, the expected words),
 `hyps1.py`, `hyps2.py` (the hypotheses above), `probe.py`, `greedy.py` (single changes of a stream), `extradecl.py` (K extra entries in front of the first function), `makecand.sh` (a make source directory built by ccx,
-its wrong frames), `hplace.py` (the headers of files.c in defs or not, real builds), `features.py` (the source features of the register locals of
+its wrong frames), `hplace.py` (the headers of files.c in defs or not, real builds), `treescan.sh` (a tree built by ccx against the originals), `features.py` (the source features of the register locals of
 make, diff, mail, nl, gpasswd against their words), `witnesses.sh` (the search among the sys3 programs). The work directory
 stays; `saved/` there holds the outputs of the first runs.
 
