@@ -237,6 +237,19 @@ Tried (none below 81; all with ccvm, the cc of WEGA gives the same):
 - Structured forms: `if (ack == ACK) printf(ack); else if (retry < 10) do ... while (tflag); else printf(CAN);` and
   variants with braces, `goto test` in the branches, `while (1) { ... break; }` for nak: 122.
 
+Session 2026-11-24 (evening), measured with trace.sh and an xjump trace (a printf in xjump of the TRACE popt, scratch):
+- In the tree form the merge is done by xjump in iterate 1 at ok's JP: can's call falls into test then, so the copy in
+  can is kept. With can behind drn (`goto bad; can: ...`), codemove moves can to the retry test in iterate 1 and comjump
+  keeps can (81 again).
+- `switch` forms of the retry test: about 7960 bytes (other code), out.
+- Order W O N T H C with T falling into H (`drain();` then `bad:`, no `goto bad`) and `ack = ACK; goto bad;` (gen.py with
+  this case added: 42 forms, best 162): **the call stays in ok as in the original.** Why: the JP of the retry test to nak
+  lies in the straight run from nak (nak, test, drn, bad), so codemove refuses (p1 == p3); can is not moved in round 1;
+  comjump keeps ok (the earlier JP); jumpsw then gives `jr lt,nak` and the next iterate moves can (now `ld; ld; jr` into
+  ok's call) behind it. Left: the block bad+can stays behind drain (0x432) instead of behind `ack = ACK` (0x3ae), so
+  163 bytes. Bad stands behind `call drain` (no JP), so codemove never moves it to the `goto bad` of record; the
+  original has `calr drain; jr bad`. Open: a form in which bad+can goes to record only after the first comjump.
+
 Not tried yet (next steps, each to be checked with trace.sh: when does can move, which JP is first at comjump):
 1. A loop around reception and retry instead of the labels: `for (;;)` / `while (...)` with `continue` and `break` in place
    of `goto test` / `goto bad`; the loop test at the bottom gives other JPs and a loop inversion (codemove's second half).
