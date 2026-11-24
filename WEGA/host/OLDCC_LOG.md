@@ -2306,3 +2306,12 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - The string "dd" (perror in chkres): ccv1r writes data and switch tables where they stand and all string literals at the
   end; in the original "dd" lies behind the switch table of number and in front of the strings: a global
   `char ddname[] = "dd";` between number and cnull, perror(ddname). dd byte-identical.
+
+## 2026-11-24: register slots of 1983, the scratch cparse on the test set
+
+- make: the 63 extra entries in front of the first function are `<pwd.h>`, `<ar.h>`, `<s.out.h>`, `<nlist.h>` in defs
+  (160 real builds of the header placements, hplace.py); then only files.c eqstr wrong (2 entries fewer needed, which
+  not known). Refuted on the way: sys/types.h + sys/stat.h in defs with 0 .. 110 dummies; types.h without saddr_t,
+  uaddr_t; s.out.h without s_head or v_lines for all files.
+- ar and cpio, taken as counter-programs, have unused locals under other names (`int u`; `int i, j, k`, `int i`): without
+  them all their frames come out by the scratch cparse. Left: mail system one word too many.
