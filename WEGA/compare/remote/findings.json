@@ -1,0 +1,231 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccvm",
+ "binary": "/bin/remote",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "xlucent": {
+   "file": "remote.c",
+   "orig": "0x0042",
+   "size_orig": 390,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x1220"
+   ],
+   "note": "2.8 sets c_cc[VTIME] to 10 (2.10 of ZEUS: 0)"
+  },
+  "xparent": {
+   "file": "remote.c",
+   "orig": "0x01c8",
+   "size_orig": 168,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "tinit": {
+   "file": "remote.c",
+   "orig": "0x0270",
+   "size_orig": 154,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0d8e",
+    "0x13be"
+   ]
+  },
+  "term_to_unix": {
+   "file": "remote.c",
+   "orig": "0x030a",
+   "size_orig": 90,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0d8e"
+   ]
+  },
+  "unix_to_term": {
+   "file": "remote.c",
+   "orig": "0x0364",
+   "size_orig": 268,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0d8e"
+   ]
+  },
+  "watch_for_abort": {
+   "file": "remote.c",
+   "orig": "0x0470",
+   "size_orig": 110,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "own_table took total_abort as part of it (no call names total_abort: only signal)"
+  },
+  "total_abort": {
+   "file": "remote.c",
+   "orig": "0x04de",
+   "size_orig": 18,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "single_abort": {
+   "file": "remote.c",
+   "orig": "0x04f0",
+   "size_orig": 18,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "time_out": {
+   "file": "remote.c",
+   "orig": "0x0502",
+   "size_orig": 18,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "message": {
+   "file": "remote.c",
+   "orig": "0x0514",
+   "size_orig": 78,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "aread": {
+   "file": "remote.c",
+   "orig": "0x0562",
+   "size_orig": 38,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "wait_etx": {
+   "file": "remote.c",
+   "orig": "0x0588",
+   "size_orig": 46,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "getname": {
+   "file": "remote.c",
+   "orig": "0x05b6",
+   "size_orig": 254,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "getrec": {
+   "file": "remote.c",
+   "orig": "0x06b4",
+   "size_orig": 454,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "load": {
+   "file": "remote.c",
+   "orig": "0x087a",
+   "size_orig": 520,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "sendrec": {
+   "file": "remote.c",
+   "orig": "0x0a82",
+   "size_orig": 368,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "send": {
+   "file": "remote.c",
+   "orig": "0x0bf2",
+   "size_orig": 412,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "main": {
+   "file": "remote.c",
+   "orig": "0x0d8e",
+   "size_orig": 1170,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "try": {
+   "file": "remote.c",
+   "orig": "0x1220",
+   "size_orig": 390,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0d8e"
+   ]
+  },
+  "cleanup": {
+   "file": "remote.c",
+   "orig": "0x13a6",
+   "size_orig": 24,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x030a"
+   ]
+  },
+  "logout": {
+   "file": "remote.c",
+   "orig": "0x13be",
+   "size_orig": 68,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x13a6"
+   ]
+  },
+  "intrupt": {
+   "file": "remote.c",
+   "orig": "0x1402",
+   "size_orig": 50,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0d8e"
+   ]
+  }
+ },
+ "note": "remote.c 2.10 of ZEUS 3.21 (tmp/zeus321_root/usr/src/remote.c, Zilog 11/19/84) set back to 2.8 of 11/18/83: the version line and c_cc[VTIME] = 10 in xlucent; byte-identical with ccvm, the stdio.h of /usr/include (getchar as a macro with an unsigned char), its own crt0 and libc. The corpus covers the database messages only (a connection needs a second system)."
+}

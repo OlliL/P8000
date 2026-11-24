@@ -1,0 +1,39 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/local",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "main": {
+   "file": "local.c",
+   "orig": "0x002a",
+   "size_orig": 612,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "WEGA 1.5 (02/28/84), not the local.c 1.3 of ZEUS: no getlogin test; the X request (a command for the local system: the arguments joined by argcat, sent with a check byte until ACK, 10 tries; ENQ brings two bytes of an exit status, else 0x8000 and CAN). The names of the globals are those of the symbol table of the original (targ, targsave, i, acknak, checksum, commnd, rc); argc <= 1 for the quit request (jr gt), the retry loop tests NAK on top and the count at the bottom."
+  },
+  "argcat": {
+   "file": "local.c",
+   "orig": "0x028e",
+   "size_orig": 284,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x002a"
+   ],
+   "note": "name from the symbol table; s and t are never used: the original has two unused frame words (at 4 and 8: s, p, t in one declaration); buf and nargv are static (no symbol); + in front of the first argument or of argv[0] and % in front of a later one decide whether the letters go to upper case (toupper of libc)"
+  }
+ },
+ "note": "Open (partial): the original was built in one step by cc (/lib/crt0.o, a symbol table, cc.3998.o: patched in by the Makefile as for putud). Its own code is exact. The rest differs: (1) the static buf and nargv of argcat lie in the bss of the original behind the commons of libc (0x2706, 0x2b06), the shipped cparse puts static arrays into the data (.=.+n): a newer compiler (02/84) that writes them as .bss; (2) printf.o (fprintf at +0x48, sprintf at +0x8e) and doprnt.o (_atoip at +0x972) are of no libc we have (shipped: +0x4e, +0x98, +0x932; oldlibc printf 0_1..0_7, doprnt 0_1..0_8 do not fit); (3) calloc of malloc.o is 2 bytes longer than in /lib/libc.a. The corpus runs the protocol on the standard input."
+}

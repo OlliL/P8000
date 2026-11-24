@@ -39,11 +39,11 @@ LIBPW = ../lib/libPW/build/nonseg/libPW.a
 PROGS = ar
 
 # single-file commands, each with its own compiler and its own libc (byte-identical with the original)
-SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmod chgrp chown pwd kill sleep tail uname tee du env nohup gets sort touch grep nl su mkdir find mkstr test tr nice od df time date dd regcmp getfile who diff newgrp passwd mail echo2 printenv whereis dog putfile gpasswd
+SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmod chgrp chown pwd kill sleep tail uname tee du env nohup gets sort touch grep nl su mkdir find mkstr test tr nice od df time date dd regcmp who diff newgrp passwd mail echo2 printenv whereis dog gpasswd
 
 FILES=		getud putud bcmp bd dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o  bcmp.o  bd.o
-SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc make ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
+SUBDIRS=	remote doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc make ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 
@@ -132,8 +132,8 @@ restor: restor.c
 tar: tar.c
 	$(CC) $(CFLAGS) -o $@ tar.c
 
-# ccvm (CCVM): the cparse of the programs of 11/18/83 (OLD_D1S, host/OLDCC.md vm): ar, cmp, cpio, diff, du, getfile, grep,
-# mail, nl, pr, putfile, who (and make in its directory)
+# ccvm (CCVM): the cparse of the programs of 11/18/83 (OLD_D1S, host/OLDCC.md vm): ar, cmp, cpio, diff, du, grep,
+# mail, nl, pr, who (and make and remote in their directories)
 ar.o: ar.c
 	$(CCVM) $(CFLAGS) -c ar.c
 
@@ -290,11 +290,6 @@ regcmp.o: regcmp.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c regcmp.c
 regcmp: crt0-regcmp.o regcmp.o $(LIBC_V4)
 	$(LD) -e start -o $@ crt0-regcmp.o regcmp.o $(LIBPW) $(LIBC_V4)
-# getfile: written from /bin/getfile (WEGA, no source), ccvm and libc; partial: popt keeps the printf call of the CAN retry, not that of ok (compare/getfile/findings.json)
-getfile.o: getfile.c
-	$(CCVM) $(CFLAGS) -c getfile.c
-getfile: crt0-getfile.o getfile.o
-	$(LD) -e start -o $@ crt0-getfile.o getfile.o -lc
 # who: System III who.c with -g (the group) and the WEGA messages, ccvm and libc
 who.o: who.c
 	$(CCVM) $(CFLAGS) -c who.c
@@ -340,11 +335,6 @@ dog.o: dog.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c dog.c
 dog: crt0-dog.o dog.o $(LIBC_V6)
 	$(LD) -e start -o $@ crt0-dog.o dog.o $(LIBC_V6)
-# putfile: written from /bin/putfile (WEGA, no source), ccvm and libc
-putfile.o: putfile.c
-	$(CCVM) $(CFLAGS) -c putfile.c
-putfile: crt0-putfile.o putfile.o
-	$(LD) -e start -o $@ crt0-putfile.o putfile.o -lc
 # gpasswd: written from /bin/gpasswd (WEGA, after System III passwd.c), the shipped cc, libc-v12.a; partial: two temporaries of main
 gpasswd.o: gpasswd.c
 	$(CC) $(CFLAGS) -c gpasswd.c
@@ -461,10 +451,10 @@ cpio.o: cpio.c
 cpio: crt0-cpio.o cpio.o
 	$(LD) -e start -o $@ crt0-cpio.o cpio.o -lc
 
-crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s crt0-mkstr.s crt0-test.s crt0-tr.s crt0-nice.s crt0-od.s crt0-df.s crt0-time.s crt0-date.s crt0-dd.s crt0-regcmp.s crt0-getfile.s crt0-who.s crt0-diff.s crt0-newgrp.s crt0-passwd.s crt0-mail.s crt0-echo2.s crt0-printenv.s crt0-whereis.s crt0-dog.s crt0-putfile.s crt0-gpasswd.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s crt0-mkstr.s crt0-test.s crt0-tr.s crt0-nice.s crt0-od.s crt0-df.s crt0-time.s crt0-date.s crt0-dd.s crt0-regcmp.s crt0-who.s crt0-diff.s crt0-newgrp.s crt0-passwd.s crt0-mail.s crt0-echo2.s crt0-printenv.s crt0-whereis.s crt0-dog.s crt0-gpasswd.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh `echo $@ | sed -e 's/^crt0-//' -e 's/\.s$$//'` > $@
 
-crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o crt0-find.o crt0-mkstr.o crt0-test.o crt0-tr.o crt0-nice.o crt0-od.o crt0-df.o crt0-time.o crt0-date.o crt0-dd.o crt0-regcmp.o crt0-getfile.o crt0-who.o crt0-diff.o crt0-newgrp.o crt0-passwd.o crt0-mail.o crt0-echo2.o crt0-printenv.o crt0-whereis.o crt0-dog.o crt0-putfile.o crt0-gpasswd.o: crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s crt0-mkstr.s crt0-test.s crt0-tr.s crt0-nice.s crt0-od.s crt0-df.s crt0-time.s crt0-date.s crt0-dd.s crt0-regcmp.s crt0-getfile.s crt0-who.s crt0-diff.s crt0-newgrp.s crt0-passwd.s crt0-mail.s crt0-echo2.s crt0-printenv.s crt0-whereis.s crt0-dog.s crt0-putfile.s crt0-gpasswd.s
+crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o crt0-find.o crt0-mkstr.o crt0-test.o crt0-tr.o crt0-nice.o crt0-od.o crt0-df.o crt0-time.o crt0-date.o crt0-dd.o crt0-regcmp.o crt0-who.o crt0-diff.o crt0-newgrp.o crt0-passwd.o crt0-mail.o crt0-echo2.o crt0-printenv.o crt0-whereis.o crt0-dog.o crt0-gpasswd.o: crt0-mv.s crt0-rm.s crt0-rmdir.s crt0-write.s crt0-size.s crt0-strip.s crt0-ranlib.s crt0-sum.s crt0-pr.s crt0-cpio.s crt0-clist.s crt0-cat.s crt0-echo.s crt0-cmp.s crt0-chmod.s crt0-chgrp.s crt0-chown.s crt0-pwd.s crt0-kill.s crt0-sleep.s crt0-tail.s crt0-uname.s crt0-tee.s crt0-du.s crt0-env.s crt0-nohup.s crt0-gets.s crt0-sort.s crt0-touch.s crt0-grep.s crt0-nl.s crt0-su.s crt0-mkdir.s crt0-find.s crt0-mkstr.s crt0-test.s crt0-tr.s crt0-nice.s crt0-od.s crt0-df.s crt0-time.s crt0-date.s crt0-dd.s crt0-regcmp.s crt0-who.s crt0-diff.s crt0-newgrp.s crt0-passwd.s crt0-mail.s crt0-echo2.s crt0-printenv.s crt0-whereis.s crt0-dog.s crt0-gpasswd.s
 	$(CAS) -u -o $@ `echo $@ | sed -e 's/\.o$$/.s/'`
 
 install: $(PROGS) $(FILES) $(SIMPLE)
@@ -481,7 +471,6 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	cp sum $(PREFIX)/bin/sum ; $(STRIP) $(PREFIX)/bin/sum
 	cp test $(PREFIX)/bin/test ; $(STRIP) $(PREFIX)/bin/test
 	cp gpasswd $(PREFIX)/bin/gpasswd ; $(STRIP) $(PREFIX)/bin/gpasswd
-	cp putfile $(PREFIX)/bin/putfile ; $(STRIP) $(PREFIX)/bin/putfile
 	cp dog $(PREFIX)/bin/dog ; $(STRIP) $(PREFIX)/bin/dog
 	cp whereis $(PREFIX)/bin/whereis ; $(STRIP) $(PREFIX)/bin/whereis
 	cp printenv $(PREFIX)/bin/printenv ; $(STRIP) $(PREFIX)/bin/printenv
@@ -491,7 +480,6 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 	cp newgrp $(PREFIX)/bin/newgrp ; $(STRIP) $(PREFIX)/bin/newgrp
 	cp diff $(PREFIX)/bin/diff ; $(STRIP) $(PREFIX)/bin/diff
 	cp who $(PREFIX)/bin/who ; $(STRIP) $(PREFIX)/bin/who
-	cp getfile $(PREFIX)/bin/getfile ; $(STRIP) $(PREFIX)/bin/getfile
 	cp regcmp $(PREFIX)/bin/regcmp ; $(STRIP) $(PREFIX)/bin/regcmp
 	cp dd $(PREFIX)/bin/dd ; $(STRIP) $(PREFIX)/bin/dd
 	cp date $(PREFIX)/bin/date ; $(STRIP) $(PREFIX)/bin/date

@@ -1,5 +1,5 @@
-"""Corpus of getfile (host/recon/corpusrun.py): the original /bin/getfile against the build (src/cmd/getfile.c, written from
-/bin/getfile, ccvm and libc), on the cases of compare/getfile/tests.txt (host/recon/casefile.py): the summary
+"""Corpus of getfile (host/recon/corpusrun.py): the original /bin/getfile against the build (src/cmd/remote/getfile.c: getfile.c of ZEUS set back to
+1.6, ccvm and libc), on the cases of compare/getfile/tests.txt (host/recon/casefile.py): the summary
 without files, the options, a transfer whose partner answers from the standard input (none, a refusal, a file)."""
 import os
 import sys
@@ -11,7 +11,7 @@ import casefile  # noqa: E402
 NAME = 'getfile'
 ORIG = 'bin/getfile'
 PROG = 'getfile'
-CANDIDATES = {'wega': 'src/cmd/getfile'}
+CANDIDATES = {'wega': 'src/cmd/remote/getfile'}
 TIMEOUT = 30
 
 

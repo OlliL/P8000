@@ -35,9 +35,10 @@
    "kind": "proven",
    "callers": [
     "0x0000"
-   ]
+   ],
+   "note": "putfile.c 1.8 of ZEUS 3.21 (tmp/zeus321_root/usr/src, Zilog 11/19/84) set back to 1.5: the version line; without the test for a directory (15dec83)."
   },
-  "onalarm": {
+  "time_out": {
    "file": "putfile.c",
    "orig": "0x040e",
    "size_orig": 18,
@@ -45,5 +46,6 @@
    "kind": "candidate",
    "callers": []
   }
- }
+ },
+ "note": "The source is putfile.c 1.8 of ZEUS (src/cmd/remote/putfile.c), set back to WEGA 1.5; byte-identical with ccvm. The corpus has only cases that end."
 }

@@ -1,0 +1,56 @@
+# The cases of the corpus of local (compare/local/corpus.py); the format: host/recon/casefile.py. src = src/cmd/remote/local.c.
+# The partner answers on the standard input: \005 ENQ (two bytes of the exit status follow), \006 ACK, \025 NAK.
+
+== quit
+y
+-- case
+step: local
+stdin: t.in
+
+== logout
+A
+-- case
+step: local -l
+stdin: t.in
+
+== not-logout
+A\006
+-- case
+step: local -lx
+stdin: t.in
+
+== command-ack
+S\006
+-- case
+step: local ls -l /tmp
+stdin: t.in
+
+== command-status
+S\005\001\002
+-- case
+step: local cat x
+stdin: t.in
+
+== command-naks
+S\025\025\025\025\025\025\025\025\025\025\025\025
+-- case
+step: local date
+stdin: t.in
+
+== command-case
+S\006
+-- case
+step: local +ls %ABC def %Ghi
+stdin: t.in
+
+== command-case2
+S\006
+-- case
+step: local ls %ABC def
+stdin: t.in
+
+== command-eof
+S
+-- case
+step: local who
+stdin: t.in

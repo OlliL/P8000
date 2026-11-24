@@ -1,0 +1,22 @@
+# The cases of the corpus of remote (compare/remote/corpus.py); the format: host/recon/casefile.py. src = src/cmd/remote/remote.c.
+# The database /usr/spool/uucp/remotelines: per line a system name, a blank or tab, the device, a blank or tab, the speed.
+
+== no-system
+-- case
+host: printf 'WEGA_A /dev/tty0 9600\n' > $Z8K_OVERLAY/usr/spool/uucp/remotelines
+step: remote ZEUS
+
+== empty-database
+-- case
+host: : > $Z8K_OVERLAY/usr/spool/uucp/remotelines
+step: remote
+
+== empty-database-system
+-- case
+host: : > $Z8K_OVERLAY/usr/spool/uucp/remotelines
+step: remote WEGA_A
+
+== bad-line
+-- case
+host: printf 'WEGA_A\n' > $Z8K_OVERLAY/usr/spool/uucp/remotelines
+step: remote WEGA_A

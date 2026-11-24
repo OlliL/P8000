@@ -1,4 +1,4 @@
-# The cases of the corpus of getfile (compare/getfile/corpus.py); the format: host/recon/casefile.py. src = src/cmd/getfile.c.
+# The cases of the corpus of getfile (compare/getfile/corpus.py); the format: host/recon/casefile.py. src = src/cmd/remote/getfile.c.
 # The partner (remote) answers on the standard input: \006 ACK, \025 NAK, \030 CAN, \002 STX, \003 ETX, \004 EOT, \033 ESC.
 
 == none

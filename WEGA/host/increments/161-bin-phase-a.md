@@ -198,7 +198,7 @@ the source of ZEUS, structured: `while ((c = getchar()) != CAN ...) { acknak = N
 ACK;) { if (c != STX) look_for_etx(); else { ... break on a write error ... acknak = ACK; } i++; if (acknak == ACK)
 printf(ok); else { if (i < RETRIES) do ... while (timeout); else printf(CAN); } } }`. main written in this structure
 with the code of 1.6 (names, the scanf quirk) gives the original at the first build. The notes below are the way
-there (the goto forms could not reach it); the scripts in `compare/getfile/forms/` stay for the record.
+there (the goto forms could not reach it); the scripts of `compare/getfile/forms/` are in the git history (525517f0).
 
 
 State: `/bin/getfile` partial, 81 differing bytes (0x29d..0x441), all from one difference in the retry block of main;
