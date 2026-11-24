@@ -162,10 +162,9 @@ char **argv;
 		retry++;
 		if (ack == ACK)
 			goto ok;
-		if (retry < 10)
-			goto nak;
-		printf("%c", CAN);
-		goto test;
+		if (retry >= 10)
+			goto can;
+		goto nak;
 	werr:
 		printf("%c", CAN);
 		printf("disk write error\n\r");
@@ -184,6 +183,10 @@ char **argv;
 			printf("%c", ack);
 			getc1();
 		} while (tflag);
+		goto test;
+	can:
+		printf("%c", CAN);
+		goto test;
 	test:
 		if (retry >= 10 || ack == ACK)
 			goto next;

@@ -290,7 +290,7 @@ regcmp.o: regcmp.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c regcmp.c
 regcmp: crt0-regcmp.o regcmp.o $(LIBC_V4)
 	$(LD) -e start -o $@ crt0-regcmp.o regcmp.o $(LIBPW) $(LIBC_V4)
-# getfile: written from /bin/getfile (WEGA, no source), ccvm and libc; partial: buf[i] = '\\n' reloads i, the place of printf(CAN) in the retries
+# getfile: written from /bin/getfile (WEGA, no source), ccvm and libc; partial: popt keeps the printf call of the CAN retry, not that of ok (compare/getfile/findings.json)
 getfile.o: getfile.c
 	$(CCVM) $(CFLAGS) -c getfile.c
 getfile: crt0-getfile.o getfile.o
