@@ -13,6 +13,18 @@
 #    ones in ex; a rule read off the binary, its mechanism is not known). Written ~L1+0(fp), which step 2 leaves alone.
 s=$1
 LC_ALL=C ; export LC_ALL	# sort in ASCII order (_Copy before _column), as on WEGA
+
+# 1. the jp table: the external functions called three times or more, the calls to the stubs
+grep '	callr	_' $s | sed 's/.*callr	//' | sort | uniq -c | sort -n | awk '$1 >= 3 { print $2 }' > stubs.tmp
+for f in `cat stubs.tmp` ; do
+	grep "^$f::*$" $s > /dev/null || echo "S$f:	jp	$f"
+done > table.tmp
+sed -n 's/^S\(_[A-Za-z0-9_]*\):.*/s,	callr	\1$,	callr	S\1,/p' table.tmp > calls.tmp
+sed -f calls.tmp $s | awk 'FILENAME == "table.tmp" { t = t $0 "\n" ; next } { print } $1 == ".code" && !d { printf "%s", t ; d = 1 }' table.tmp - > shrink.s
+mv shrink.s $s
+rm -f stubs.tmp table.tmp calls.tmp
+
+# 2. the frame operands at offset 0 (see above; to be replaced: compiler and assembler, host/OLDCC_LOG.md 2026-11-24)
 awk '{ b[++m] = $0 }
 	$0 == "\tcall\t@r1" && b[m - 1] == "\tld\tr1,0(fp)" {
 		n++; l[n] = m - 1
@@ -26,16 +38,8 @@ awk '{ b[++m] = $0 }
 			print b[i]
 		m = 0; n = 0
 	}
-	END { for (i = 1; i <= m; i++) print b[i] }' $s > icall.s
-mv icall.s $s
-sed -n 's/^\(_[A-Za-z0-9_]*\)::*$/\1/p' $s > defs.tmp
-grep '	callr	_' $s | sed 's/.*callr	//' | sort | uniq -c | sort -n | awk '$1 >= 3 { print $2 }' > stubs.tmp
-awk 'FILENAME == "defs.tmp" { d[$1] = 1; next }
-	FILENAME == "stubs.tmp" && d[$1] != 1 { s[$1] = 1; n++; l[n] = $1; next }
-	FILENAME == "stubs.tmp" { next }
-	done != 1 && $1 == ".code" { m++; b[m] = $0; for (i = 1; i <= n; i++) { m++; b[m] = sprintf("S%s:\tjp\t%s", l[i], l[i]) } done = 1; next }
-	$1 == "callr" && s[$2] == 1 { line = "\tcallr\tS" $2 } $1 != "callr" || s[$2] != 1 { line = $0 }
-	{ m++; b[m] = line; if ($1 == "~L1" && $2 == ":=" && $3 == "0") z = 1 }
+	END { for (i = 1; i <= m; i++) print b[i] }' $s |
+awk '{ m++; b[m] = $0; if ($1 == "~L1" && $2 == ":=" && $3 == "0") z = 1 }
 	$1 == "}" || $1 == ".code" || $1 == ".data" || $1 == ".bss" {
 		for (i = 1; i <= m; i++) {
 			if (z == 1 && index(b[i], "~L1(fp)") > 0)
@@ -45,9 +49,8 @@ awk 'FILENAME == "defs.tmp" { d[$1] = 1; next }
 		}
 		m = 0; z = 0
 	}
-	END { for (i = 1; i <= m; i++) print b[i] }' defs.tmp stubs.tmp $s |
+	END { for (i = 1; i <= m; i++) print b[i] }' |
 sed -e '/^Z	lda	/s/lda	\(r[0-9]*\),~L1(fp)/ld	\1,fp/' -e '/^Z/s/~L1(fp)/@fp/' -e 's/^Z//' \
 	-e 's/	0(fp),r\([0-7]\)$/	@fp,r\1/' -e 's/	0(fp),rr\([0-7]\)$/	@fp,rr\1/' -e 's/	0(fp),r\([0-7]\),/	@fp,r\1,/' \
 	-e 's/	r\([0-7]\),0(fp)$/	r\1,@fp/' -e 's/	rr\([0-7]\),0(fp)$/	rr\1,@fp/' > shrink.s
 mv shrink.s $s
-rm -f defs.tmp stubs.tmp
