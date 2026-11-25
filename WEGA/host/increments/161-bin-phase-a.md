@@ -271,3 +271,36 @@ directory `$GF_WORK`, default `tmp/tmp/getfile-forms` beside WEGA):
 - The Zeus check: in a work directory, `z8k-emu -r <zeus321_root> /lib/popt getfile.s out.s` on the output of
   `ccvm -Ihead/oldv7 -S getfile.c`, against the same with the WEGA root; `/bin/cc -O -S` under zeus321_root for the whole
   chain. `host/tools/sdis.py -l` disassembles with addresses (the retry block of 1.7 is at 0x3aa).
+
+## ed: phase A started, open for a later session (2026-11-25)
+
+State in the tree (committed): `src/cmd/ed/` with `ed.c` of System III (unchanged but: the WEGA sccsid `ed.c 1.2 01/30/83`
+in front, `<setret.h>`, `ret_buf`, `setret`, `longret` for setjmp/longjmp: WEGA has no setjmp.h, mail.c does the same),
+`ed.mk` and `edfun` of System III (unused), a `Makefile` after `dc/Makefile` (ccv1, `-I../../head/oldv7 -DPWB`, libc-v4,
+own crt0 from crt0.list), `.gitignore`. `compare/ed/` from setup.py (progcfg.py, findings.json: 69 functions f<entry>).
+ed is NOT in SUBDIRS of src/cmd/Makefile and not installed yet: it does not link.
+
+Measured (setup.py, whichlibc.py from OWN_LIM 0x2ea0):
+- Dating: crt0 3.1 01/30/83, D1 slots: ccv1 (neighbours ccv1r, ccv1q, not measured yet). Without `-DPWB` `fss` is
+  undefined; with NULLS not tried.
+- Library: libc-v4 covers 1526 of 1618 bytes; the gaps: 3148 (2 bytes, fakcu `_cleanup`), 3260..32ac (76 bytes behind
+  strcpy: strncpy), 33f0..33fe (14 bytes behind pause: pipe). The walk takes `creat` twice (3332, 3340) and `ioctl` twice:
+  two of them are chown and dup (14 and 18 bytes; to check). The link with libc-v4 misses: ustat, chown, execlp, strncpy,
+  pipe, dup, _cleanup.
+- Source against the original: the member list of the original has no ustat: WEGA removed the ustat test of the write
+  (ed.c around line 579, `#ifndef RESEARCH`; maybe ed was built with RESEARCH, which also drops umask/oldmask: measure).
+  execlp is undefined with libc-v4: either the execvp member of the original defines execlp (check its symbols against
+  libc-v4's execvp.o) or WEGA calls execl. The own strings of the original: ... `SHELL`, `/bin/rsh`, `file name too long`,
+  `/tmp/eXXXXX`, `read may be incomplete - beware!`, `ed.hup`, `/bin/sh`, `Enter file encryption key: `, `/usr/lib/makekey`,
+  `/lib/makekey`, `crypt: cannot generate key` (then the strings of execvp: `/bin/sh`, `/bin/csh`, `PATH`, `:/bin:/usr/bin`).
+
+Next steps:
+1. Library: extend libc-v4 with the missing members at their places (fakcu, strncpy, pipe, dup, chown; as libc-v11 was
+   extended for ex), or find the members in another libc-vN (whichlibc per member, as done for stty). Ask the owner before
+   a new libc-vN; extending an existing one: analyse which programs use libc-v4 (strip, su, nice, time) and show that they
+   do not change (ld takes only what is referenced).
+2. Build with ccv1 (`make -C src/cmd/ed`), strip, `host/tools/bincmp.py ORIG NEW -v`; data first (strings, the order of
+   the message table `_msgtab`), then bss, then code (fnc.py per function, at most 6 attempts each).
+3. Decide RESEARCH / NULLS by the strings and the code (ustat, umask, nulls).
+4. When identical: add ed to SUBDIRS (and the install), checkall, corpus (compare/ed/tests.txt: ed reads commands from
+   stdin), findings, SYSIII.md, COVERAGE.
