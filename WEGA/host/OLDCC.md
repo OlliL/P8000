@@ -186,7 +186,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 The objects of `/wega` (`usr/sys/sys/LIB1`, `usr/sys/dev/LIB2`) were made by an older scc. `sccvk` (`-DSCC -DOLD_VK` in `src/cmd/cc`) runs `/lib/vk/scparse`
 (built in `src/cmd/cc/cparse/build/segvk`, `OLD_D25`), `/lib/vk/scodgen` (`src/cmd/cc/codgen/build/segvk`, `OLD_VK` in `oldcc.h` = `OLD_D3` and `OLD_D24`) and the
 `/lib/vk/spopt` (`src/cmd/cc/popt/build/segvk`: the shipped spopt with `OLD_D29`). No source form gives them; sccv1 (v1 scparse and spopt) is further away. Witnesses (identical):
-ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). The `make install` of `src/uts` is identical in all 31 files, `wega` and `LIB2` included.
+ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). Also kva.c and kpa.c of /bin/ps (08/25/83, the crash dump modules; ps.c itself by the shipped scc). The `make install` of `src/uts` is identical in all 31 files, `wega` and `LIB2` included.
 
 - Switches: `OLD_D3`, `OLD_D24` (codgen), `OLD_D25` (cparse), `OLD_D29` (popt); section 3.
 

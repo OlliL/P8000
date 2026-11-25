@@ -1,0 +1,192 @@
+# The cases of the corpus of ps (compare/ps/corpus.py); the format: host/recon/casefile.py (the default step is ps).
+# Where an expectation comes from: src = src/cmd/ps/ps.c (function), kva.c. The dump of the -k cases is made by
+# compare/ps/mkdump.py (its text names the processes); the clock stands at 425000000 (STIME).
+== usage
+# src main: an unknown option: getopt complains, then the usage (two lines) on stderr, exit 1
+-- case
+time: 425000000
+step: ps -x
+expect: exit 1
+expect: output contains 'usage: ps [ -edalf ]'
+
+
+== extra
+# src main: an argument that is no option: the usage, exit 1
+-- case
+time: 425000000
+step: ps extra
+expect: exit 1
+expect: output contains '[ -g glist ] [-k kcore]'
+
+
+== nonamelist
+# src main: nlist finds none of _proc, _swplo, _Nproc: "ps: no namelist", exit 1
+-- case
+time: 425000000
+step: ps -n /nix
+expect: exit 1
+expect: output contains 'ps: no namelist'
+
+
+== nomem
+# src main: /dev/kmem cannot be opened (the emulator has none): "ps: no mem", exit 1
+-- case
+time: 425000000
+step: ps -e
+expect: exit 1
+expect: output contains 'ps: no mem'
+
+
+== nocore
+# src main: -k with a file that does not exist: "ps: no mem", exit 1
+-- case
+time: 425000000
+step: ps -k /nix -e
+expect: exit 1
+expect: output contains 'ps: no mem'
+
+
+== badcore
+# kva.c kvtop: a file without an MMU table: the kernel address is not mapped: "ps: error on kvseek", exit 1
+-- case
+time: 425000000
+host: printf "x" > core
+step: ps -k core -e
+expect: exit 1
+expect: output contains 'ps: error on kvseek'
+
+
+== every
+# src main, prcom: -e: every process: PID TTY TIME COMMAND; the zombie as <defunct>; the swapped one with an empty user block
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -e
+expect: exit 0
+expect: output contains 'swapper'
+expect: output contains '<defunct>'
+
+
+== full
+# src prcom: -f: the user names (/etc/passwd), STIME, the arguments from the user stack
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -ef
+expect: exit 0
+expect: output contains 'STIME'
+expect: output contains 'uucp'
+
+
+== long
+# src prcom: -l: F S UID ... ADDR SZ WCHAN
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -el
+expect: exit 0
+expect: output contains 'WCHAN'
+expect: output contains '300a000'
+
+
+== fulllong
+# src prcom: -f and -l
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -efl
+expect: exit 0
+expect: output contains 'COMD'
+
+
+== pid
+# src main: -p: only the listed process ids
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -p 30,31
+expect: exit 0
+expect: output contains 'cat'
+
+
+== pidmany
+# src main: -p with a blank as separator, an id that does not exist
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -p "1 99"
+expect: exit 0
+expect: output contains 'init'
+
+
+== user
+# src uopt: -u by number (2: uucp) and by name (wega: uid 0); a name that does not exist is dropped
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -u 2,wega,nobodyhere
+expect: exit 0
+expect: output contains 'swapper'
+
+
+== group
+# src main: -g: the process groups
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -g 30
+expect: exit 0
+expect: output contains '<defunct>'
+
+
+== tty
+# src prcom: -t: the terminals (a leading tty is dropped)
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -t console,tty2
+expect: exit 0
+expect: output contains 'co   0:15 sh'
+
+
+== all
+# src main: -a: no group leaders, no process without a terminal
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -a
+expect: exit 0
+expect: output contains 'cat'
+
+
+== nolead
+# src main: -d: every process but the group leaders
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -k core -d
+expect: exit 0
+expect: output contains 'init'
+
+
+== namelist
+# src main: -n /wega given explicitly; no -e: the terminal of stderr (ttyname(2)), here none: nothing matches, exit 1
+-- case
+time: 425000000
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+device: swap image:core
+step: ps -n /wega -k core -l
+expect: exit 1
+expect: output contains 'WCHAN'
+

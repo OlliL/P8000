@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 97 | 2 | 1 | 11 |
+| [bin](#bin) | 111 | 98 | 2 | 0 | 11 |
 | [etc](#etc) | 67 | 34 | 0 | 18 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 954 | 10 | 139 | 94 |
+| **all** | 1197 | 955 | 10 | 138 | 94 |
 
 <a id="root"></a>
 ## root
@@ -112,7 +112,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/pburn` | binary E611 | `src/cmd/pburn` | exact | scc | slibc.a |
 | `bin/pr` | binary E707 | `src/cmd/pr.c` | exact | ccvm | libc.a |
 | `bin/printenv` | binary E707 | `src/cmd/printenv.c` | exact | ccv0 | libc-v1.a |
-| `bin/ps` | binary E607 | `tmp/sys3/usr/src/cmd/ps.c` | sys3 | D12 new, D1 - | - |
+| `bin/ps` | binary E607 | `src/cmd/ps` | exact | sccvk | slibc.a |
 | `bin/pstat` | binary E607 | - | todo | D12 new, D1 - | - |
 | `bin/putfile` | binary E707 | `src/cmd/remote` | exact | ccvm | -lc |
 | `bin/putud` | binary E707 | `src/cmd/putud.c` | exact | cc | libc.a |

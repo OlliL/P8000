@@ -1,0 +1,235 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "scc (ps.c), sccvk (kva.c, kpa.c)",
+ "binary": "/bin/ps",
+ "functions": {
+  "start": {
+   "file": "crt0",
+   "orig": "0x0018",
+   "size_orig": 62,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "main": {
+   "file": "ps.c",
+   "orig": "0x0056",
+   "size_orig": 1632,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "From Plexus ps.c: -k kcore (memf = coref = optarg) new, the cases s and c gone from the switch (s: and c: stay in the getopt string), Nproc (sizeof int) read before swplo."
+  },
+  "getdev": {
+   "file": "ps.c",
+   "orig": "0x06b6",
+   "size_orig": 282,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "getarg": {
+   "file": "ps.c",
+   "orig": "0x07d0",
+   "size_orig": 104,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "gettty": {
+   "file": "ps.c",
+   "orig": "0x0838",
+   "size_orig": 122,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "round": {
+   "file": "ps.c",
+   "orig": "0x08b2",
+   "size_orig": 40,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "Plexus round() (there under #ifdef pdp11)."
+  },
+  "prcom": {
+   "file": "ps.c",
+   "orig": "0x08da",
+   "size_orig": 2236,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "odd forms: ctob((long)(char *)USIZE): the pointer cast keeps 10L<<8 from being folded (host/OLDCC.md, v1, folding); the pointer to the arguments as (long)argp & 0xffff (the offset), read from the last word of the user stack, its segment word with the bytes swapped (SWAP, a union); -k: a user block of a swapped process is zeroed, not read. The register variables ip, cp, cp1 only (tp, ttyp, str: autos)."
+  },
+  "getbyte": {
+   "file": "ps.c",
+   "orig": "0x1196",
+   "size_orig": 20,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "getword": {
+   "file": "ps.c",
+   "orig": "0x11aa",
+   "size_orig": 20,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "access": {
+   "file": "ps.c",
+   "orig": "0x11be",
+   "size_orig": 160,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "odd: two unused locals (int *word = 0 of Plexus, and a char * whose name is guessed: wp); returns 1 instead of the word read."
+  },
+  "within": {
+   "file": "ps.c",
+   "orig": "0x125e",
+   "size_orig": 32,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "bug kept: the bounds are declared pos (unsigned) but the callers pass longs (map b1/e1): the callee takes the low word of the lower bound and its high word as the upper bound."
+  },
+  "done": {
+   "file": "ps.c",
+   "orig": "0x127e",
+   "size_orig": 18,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "search": {
+   "file": "ps.c",
+   "orig": "0x1290",
+   "size_orig": 58,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "uopt": {
+   "file": "ps.c",
+   "orig": "0x12ca",
+   "size_orig": 470,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "getunam": {
+   "file": "ps.c",
+   "orig": "0x14a0",
+   "size_orig": 232,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "ufind": {
+   "file": "ps.c",
+   "orig": "0x1588",
+   "size_orig": 70,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "l_lseek": {
+   "file": "ps.c",
+   "orig": "0x15ce",
+   "size_orig": 104,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "odd form: -k: return after a good kvseek, the error falls into the lseek part (no else)."
+  },
+  "r_read": {
+   "file": "ps.c",
+   "orig": "0x1636",
+   "size_orig": 50,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "k_lseek": {
+   "file": "ps.c",
+   "orig": "0x1668",
+   "size_orig": 52,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "prtim": {
+   "file": "ps.c",
+   "orig": "0x169c",
+   "size_orig": 258,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "przom": {
+   "file": "ps.c",
+   "orig": "0x179e",
+   "size_orig": 398,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "odd: the state letters through a local char *stat = \"OSWRIZT\" declared last."
+  },
+  "nothing": {
+   "file": "ps.c",
+   "orig": "0x192c",
+   "size_orig": 2,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": [],
+   "note": "dead code, name guessed: an empty function behind przom (a ret)."
+  },
+  "getmmu": {
+   "file": "kva.c",
+   "orig": "0x192e",
+   "size_orig": 94,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "kva.c by sccvk (the compiler of the kernel objects): its MMU table is read once (mmuok)."
+  },
+  "kvtop": {
+   "file": "kva.c",
+   "orig": "0x198c",
+   "size_orig": 224,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "register order seg, attr, off, base (sccvk gives seg r1)."
+  },
+  "kvseek": {
+   "file": "kva.c",
+   "orig": "0x1a6c",
+   "size_orig": 84,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "bug kept: tests getmmu() == -1, but getmmu returns 0 on an error: an unreadable table is not reported here (kvtop then answers -1 for every address, mmuok being 0)."
+  },
+  "kptop": {
+   "file": "kpa.c",
+   "orig": "0x1ac0",
+   "size_orig": 18,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "kpseek": {
+   "file": "kpa.c",
+   "orig": "0x1ad2",
+   "size_orig": 36,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "odd form: return(lseek(fd, kptop(addr), 0)): the nested call leaves its temporary in the frame."
+  }
+ }
+}

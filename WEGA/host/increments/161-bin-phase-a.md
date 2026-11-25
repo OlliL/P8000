@@ -79,7 +79,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] mail (18572); link: rmail
 - [x] login (19030); same file as etc/login -- byte-identical (2026-11-25): ccv1, libc-v9, termcap; utscan with a pointer cast
 - [x] uux (21136)
-- [x] ps (22794; segmented E607, last of this group) -- deferred: segmented, with the WEGA modules kva.c and kpa.c
+- [x] ps (22794; segmented E607) -- byte-identical (2026-11-25): Plexus ps.c by scc, kva.c and kpa.c by sccvk, slibc.a, sld -z
 
 ### todo (no source)
 
@@ -170,6 +170,12 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   folded only in optim, so the unary minus above it stays and codgen negates 20L at run time (host/OLDCC.md, v1;
   found by a search over 1000 forms: every pointer cast of the constant gives these bytes). login in SIMPLE, installed as
   bin/login and etc/login (a link); corpus in compare/CORPORA.
+- 2026-11-25 ps: IDENTICAL. Plexus' ps.c (System III with kmem/mem) with WEGA's changes (/wega, _Nproc, -k kcore, the
+  arguments through the user stack), by the shipped scc; kva.c and kpa.c (no source, written from the binary) by sccvk,
+  the compiler of the kernel objects (scc and the other segmented compilers give another register order in kvtop).
+  Odd forms: ctob((long)(char *)USIZE) (unfolded), (long)argp & 0xffff, an empty function, unused locals. Linked by sld
+  -z with the shipped slibc.a; the scrt0 of crt0.list with _environ as a common. src/cmd/ps in SUBDIRS. Corpus 18 of
+  18: -k with a crash dump made by compare/ps/mkdump.py (MMU table, six processes, user blocks).
 
 ## Phase B regcmp: solved (2026-11-25)
 
