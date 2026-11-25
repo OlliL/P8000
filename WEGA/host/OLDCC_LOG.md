@@ -2356,3 +2356,20 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   stored by OLD_D14L (guess: cparse hands the do-while condition to codgen under a `!`). Only the form, units not built.
 - The calloc of lex: ccv1 and ccv1q give the same bytes for the System III calloc.c, so libc-v3 takes calloc 0_2 (the note
   "not exact" of 0_2 was old); atoi differs between ccv1 and ccv1q: atoi 0_3 (ccv1q).
+
+## 2026-11-25 vz: local, a Zilog binary of 02/84
+
+- local built by the shipped cc: own code exact, the rest off (statics in the data, printf, doprnt, malloc). The ZEUS 3.21
+  root (`tmp/zeus321_root`) has a libc.a whose printf (0x112), doprnt (0x9ec), malloc (0x33a) have the sizes of the original;
+  its `/bin/cc` builds local.c into the original but the PID of the scratch file and the order of `_rc` in the symbol table
+  (rc declared in front of acknak: then all equal). The ZEUS `/bin/local` is another version (1.3, 05/29/84, stripped).
+- The owner: the WEGA developers patched the Zilog marks out of the ZEUS binaries with a hex editor; the SCCS line of local
+  (`aaaaaaaaaaaabbbb/local.c ... - ............`) fits that.
+- Pass by pass: the shipped chain with the ZEUS cparse alone gives the object of the ZEUS chain. Probes (t.c, u.c, v.c: 20
+  kinds of statics) on the ZEUS cparse: an uninitialised static in the .bss, `.even` on both sides for char, char arrays and a
+  scalar float (not for float arrays, pointers, structs, short, long, double). `OLD_D12B` writes that: the objects of local.c
+  and of the probes equal to those of the ZEUS cparse.
+- The libc members of local that differ from the shipped libc.a: data, filbuf (`_NFILE` 40: the stdio.h of ZEUS is the
+  shipped one with 40), doscan (no unused locals in _instr, _getccl), printf (no _pfile, no unused long in sprintf), doprnt
+  (seven changes, findings in `oldlibc/doprnt/0_9.c`), malloc (no sccsid, calloc size unsigned). Each from C by cc and by ccvl,
+  equal to the ZEUS member.

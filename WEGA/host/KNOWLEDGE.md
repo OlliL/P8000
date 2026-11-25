@@ -972,6 +972,7 @@ means it does something fixed instead (only possible where the original's result
 | Program | Bug or quirk | Rebuild | Details |
 |---------|--------------|---------|---------|
 | `/lib/clist` | an unused global array of 256 bytes (the first of the bss, name `buf` guessed); `\t.line` lines are found by their first 6 bytes, the number is read at column 7 and the name after the next tab, without a bound (a `.line` line without a tab runs past its end); the `.line` lines stay in the listing | kept | `compare/clist/findings.json` |
+| `/bin/local` | a Zilog binary of 02/84 with its SCCS line overwritten (`@[$]aaaaaaaaaaaabbbb/local.c 1.5 ... - ............`: path and trailer patched as the Zilog marks of the ZEUS binaries); the unused frame words s, t of argcat | kept (the line as the bytes have it) | `compare/local/findings.json` |
 | `/usr/lib/libcisam.a`, `slibcisam.a` (`error`) | writes `sizeof` of the message, its NUL byte too | kept | `compare/libcisam/findings.json` |
 | `/usr/lib/libcisam.a`, `slibcisam.a` (`freeopen`, `freefile`) | `freeopen(op)` clears the flags of the global `openp`, not of `op`; `freefile(fp)` drops the buffers of `filep`, not of `fp` (the same file in the callers) | kept | `compare/libcisam/findings.json` |
 | `/usr/lib/libcisam.a`, `slibcisam.a` (`isperror`) | `is_errlist` has 14 messages: EFNAME (114) and ENOLOK (115) print "Unknown error" | kept | `compare/libcisam/findings.json` |
@@ -1949,6 +1950,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v11 | cat (10/82), echo (08/82), mkstr (11/82), ex (10/82; extended by its 23 members, 2026-11-24) |
 | libc-v12 | chkin (09/83): the shipped libc.a with printf and doprnt 0_4 in their places (ar r); newgrp (09/83), mail (11/83) |
 | libc-v13 | dd (12/82): libc-v10 with open 0_1 (two arguments; write and rmdir have the open of three) |
+| libc-v14 | local (02/84): the shipped libc.a with data 0_2, filbuf 0_5 (both `_NFILE` 40, `src/head/oldnfile40`), doscan 0_2, printf 0_8, doprnt 0_9, malloc 0_7 in their places (ar r): the members of the libc.a of ZEUS 3.21 |
 
 The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see "libc.a and slibc.a: one tree".
 A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.

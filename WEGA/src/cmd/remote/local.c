@@ -28,9 +28,9 @@ static char Version[] = "@[$]aaaaaaaaaaaabbbb/local.c	1.5  02/28/84 14:21:55 - .
 #include <sgtty.h>
 struct sgttyb targ, targsave;
 int i;
+int rc = 0;		/* in front of acknak: the order of the symbol table */
 char acknak, checksum;
 char *commnd;
-int rc = 0;
 
 main (argc, argv)
 int argc;

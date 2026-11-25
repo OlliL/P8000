@@ -18,6 +18,7 @@
 #   libc-v11.a mkstr (11/82), cat (10/82), echo (08/82), ex (10/82; its members as in libc-v1, but length 0_3)
 #   libc-v12.a chkin (09/83): the shipped libc.a (../libc) with printf and doprnt 0_4 in their places
 #   libc-v13.a dd (12/82): libc-v10 with open 0_1 (two arguments)
+#   libc-v14.a local (02/84): the shipped libc.a (../libc) with _NFILE 40 and data, filbuf, doscan, printf, doprnt, malloc of 1984
 #
 #   make        (needs ../libc made, and ccv1, ccv0, ccv0p)
 #   make clean
@@ -31,7 +32,7 @@ CCV0P = ccv0p
 CAS = cas
 AR = ar
 
-LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a ../libc-v12.a ../libc-v13.a
+LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a ../libc-v12.a ../libc-v13.a ../libc-v14.a
 
 all: $(LIBS)
 
@@ -204,6 +205,14 @@ LIBv11 = putchar/0_1.o freopen/0_1.o fseek/0_2.o ftell/0_1.o rew/0_1.o rdwr/0_3.
 	rm -f $@ ; cp ../libc/build/nonseg/libc.a $@
 	cd v12.d ; $(AR) r ../../libc-v12.a printf.o doprnt.o
 	rm -rf v12.d
+
+# local (02/84): the shipped library with six members replaced (the libc of ZEUS 3.21 has the same members; _NFILE 40)
+../libc-v14.a: objs ../libc/build/nonseg/libc.a
+	rm -rf v14.d ; mkdir v14.d ; cp data/0_2.o v14.d/data.o ; cp filbuf/0_5.o v14.d/filbuf.o ; cp doscan/0_2.o v14.d/doscan.o
+	cp printf/0_8.o v14.d/printf.o ; cp doprnt/0_9.o v14.d/doprnt.o ; cp malloc/0_7.o v14.d/malloc.o
+	rm -f $@ ; cp ../libc/build/nonseg/libc.a $@
+	cd v14.d ; $(AR) r ../../libc-v14.a data.o filbuf.o doscan.o printf.o doprnt.o malloc.o
+	rm -rf v14.d
 
 # the modules: each directory makes its objects with its own Makefile
 objs:

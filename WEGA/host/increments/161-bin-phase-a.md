@@ -65,7 +65,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] regcmp (8844)
 - [x] file (9254) -- deferred: WEGA rewrote it (Z8000, PLZ, s.out types; about 3 KB of own code)
 - [x] getfile (10002)
-- [x] local (10398) -- deferred: 02/84, linked with a libc we do not have (large gaps)
+- [x] local (10398) -- byte-identical (2026-11-25): a Zilog binary of 02/84, ccvz (OLD_D12B) and libc-v14 (the ZEUS 3.21 members)
 - [x] who (11540)
 - [x] nm (12026) -- deferred: WEGA rewrote it for s.out (vs.out, segmented, line tables)
 - [x] diff (12258)
@@ -142,6 +142,8 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   regcmp deferred (below).
 - 2026-11-25 phase B regcmp: IDENTICAL, and lex IDENTICAL (new): the compiler v1l (ccv1l), see the section below. checkall
   ALL OK (857 files), COVERAGE: exact 943.
+- 2026-11-25 local: IDENTICAL. A Zilog binary of 02/84 (SCCS line patched): the cparse of 1984 (ccvz, OLD_D12B: statics in the
+  .bss) and libc-v14 (shipped libc.a with the six ZEUS 3.21 members data, filbuf, doscan, printf, doprnt, malloc, from C; `src/head/oldnfile40`).
 
 ## Phase B regcmp: solved (2026-11-25)
 

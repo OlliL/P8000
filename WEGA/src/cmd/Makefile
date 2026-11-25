@@ -52,7 +52,7 @@ all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 # switches the sources to what the shipped libc and cc need (the old libc's readsym, sprintf value, swap_quad; the exit status
 # of size). Without -DSHIPPED the bytes of the originals are rebuilt. The files of /lib are not made here: empty rules below.
 SHIPFLAGS = -O -DSHIPPED
-SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CCV1L=cc CCVM=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBC_V13=/lib/libc.a LIBPW=/usr/lib/libPW.a
+SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CCV1L=cc CCVM=cc CCVZ=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBC_V13=/lib/libc.a LIBPW=/usr/lib/libPW.a
 
 shipped:
 	$(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $(PROGS) $(FILES) $(SIMPLE) $(SHIPCC) LIBC=/lib/libc.a
@@ -67,6 +67,7 @@ shipped:
 		cc/codgen|cc/popt) X='LIBC="../../../../../lib/oldlibc/printf/s1.o ../../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
 		cc/cpp|cc/cparse|cc|dc|bc|ld) X="LIBC=/lib/libc.a" ;; \
 		lex) X="LIBC=/lib/libc.a LIBY=/lib/liby.a" ;; \
+		remote) X="LIBC_V14=" ;; \
 		ex) X="CCV0A=cc TERMLIB=/usr/lib/libtermlib.a" ;; \
 		*) X="" ;; \
 		esac ; \

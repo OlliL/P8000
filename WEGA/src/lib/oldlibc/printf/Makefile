@@ -8,7 +8,7 @@ CCV0 = ccv0
 CCV0P = ccv0p
 CAS = cas
 
-objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_5.o 0_6.o 0_7.o
+objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_5.o 0_6.o 0_7.o 0_8.o
 
 0_1.o: 0_2.c
 	-@mkdir 0_1.d 2>/dev/null
@@ -34,5 +34,8 @@ objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_5.o 0_6.o 0_7.o
 0_7.o: 0_2.c
 	-@mkdir 0_7.d 2>/dev/null
 	cd 0_7.d ; $(CCV1R) -O -I../../../../head/oldv7 -c ../0_2.c ; mv 0_2.o ../0_7.o
+
+0_8.o: 0_8.c
+	$(CC) -O -I../../../head/oldnfile40 -c 0_8.c
 
 .PHONY: objs

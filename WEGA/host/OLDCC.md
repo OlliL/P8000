@@ -71,6 +71,7 @@ register variables: "slots" (as many never used frame words as saved registers: 
 | 08/22/83 .. 09/01/83 | padded | sh, rsh, kdb, fsdb | D1 slots with the shipped D12: between v1 and shipped |
 | 09/09/83 and later | padded | troffv7, adb 09/83, sld 10/27, ps 11/83 | shipped (D1 loose) |
 | 11/16/83 .. 11/18/83 (SCCS lines `87wega3.2`) | padded | ar, cmp, cpio, diff, du, getfile, grep, mail, make, nl, pr, putfile, remote, who | vm (D1 register slots) |
+| 02/28/84 (SCCS line overwritten) | padded | local | vz (a Zilog binary: the cparse and libc of 1984, those of ZEUS 3.21) |
 | no stamp, built late | packed | cparse, scparse, codgen, scodgen (sources 10/06/83), popt, spopt, gopt (03/83), cpp, find 10/83, upkeep 11/83 | v0p for the passes and cpp |
 | no stamp, libc 09/83 | padded | cc, scc, tar, format, verify, copydisk, gld, pburn | shipped |
 
@@ -222,6 +223,17 @@ fewer in front of the first function (or of a later one) give all functions righ
 declarations; then find a plain form with that many entries (a header, declarations of the libc functions it calls).
 Which entries the original had is not in the bytes; a form that fits is recorded in `findings.json` as an odd form
 (mail: an unused `<sys/dir.h>`). A word that no count gives stays an unused local (make eqstr).
+
+### vz: the cparse of local (02/84)
+
+local 1.5 (02/28/84) is a binary of Zilog as it seems: its SCCS line has the path and the trailer overwritten as in the ZEUS
+binaries the WEGA developers patched. The whole chain of ZEUS 3.21 (`tmp/zeus321_root`: `/bin/cc`, `/lib/libc.a`) gives the
+binary; of the passes only the cparse makes a difference (the ZEUS cparse with the shipped cpp, codgen, popt gives the object of the ZEUS chain, measured).
+`ccvz` (`-DOLD_VZ` in `src/cmd/cc`, `build/nonsegvz`) runs the shipped passes with `/lib/vz/cparse`: the shipped cparse with
+`OLD_D12B` (D12). Its libc is libc-v14 (`src/lib/oldlibc`: `_NFILE` 40 and six members of 1984). The .s of the ZEUS cparse has more
+lines that make no bytes (`.data` at the head, the order of `sp`, `fp`, an `.even` behind each initialised item): not modelled.
+Measured: local.c and three test files with every kind of static (char, char arrays, structs, pointers, float, double, long,
+short, unsigned, unions, enums, statics of a function) give the object of the ZEUS cparse.
 
 ### The old scc of cas
 
@@ -542,6 +554,8 @@ Not reproduced in v1: ld load1 (the store behind a dead `ldl rr4,rr2` shared wit
 - v1, v0 `OLD_D12` (cparse, putstrs): the initialised data and the switch tables in source order, all string literals of a file
   behind them as one pool, aligned only at its start and end, equal strings not merged. The shipped one writes the strings of a
   function in front of it, each padded to an even address.
+- vz `OLD_D12B` (cparse, sym1.c nidcl, d12bss): an uninitialised static goes into the .bss (`.bss`, the name, `.=.+n`, `.data`)
+  instead of zeros in the data; a char, an array of chars and a float (not an array of floats) have `.even` on both sides (measured on the ZEUS cparse). One witness: local.
 - v0p `OLD_D12K` (codgen, reader3.c: d12kdata instead of rddata, a walk behind eread): a double constant goes into the data at its statement, not with the .D data at the head of
   the function (buildtree). One witness.
 
@@ -944,6 +958,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | od | od.c (cput) | v1r |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
 | lex | lmain.c, sub1.c, sub2.c, parser.y (get1core, digit, alpha, siconv, cclinter, usescape, munput, mn2, yyparse, packtrans, ...) | v1l |  | x | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  | x |
 | regcmp | libPW regcmp.c (regcmp) | v1l |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| local | local.c (argcat: its static buf and nargv) | vz |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
 fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`

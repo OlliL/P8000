@@ -8,7 +8,7 @@ CCV0 = ccv0
 CCV0P = ccv0p
 CAS = cas
 
-objs: 0_1.o 0_2.o 0_3.o 0_4.o
+objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_5.o
 
 0_1.o: ../../libc/common/stdio/filbuf.c
 	$(CCV1Q) -O -I../../../head/oldv7 -I../../libc/common/stdio -c ../../libc/common/stdio/filbuf.c ; mv filbuf.o 0_1.o
@@ -21,5 +21,10 @@ objs: 0_1.o 0_2.o 0_3.o 0_4.o
 
 0_4.o: ../../libc/common/stdio/filbuf.c
 	$(CCV1R) -O -I../../../head/oldv7 -c ../../libc/common/stdio/filbuf.c ; mv filbuf.o 0_4.o
+
+# libc-v14 (local): with _NFILE 40
+0_5.o: ../../libc/common/stdio/filbuf.c
+	-@mkdir 0_5.d 2>/dev/null
+	cd 0_5.d ; $(CC) -O -I../../../../head/oldnfile40 -c ../../../libc/common/stdio/filbuf.c ; mv filbuf.o ../0_5.o
 
 .PHONY: objs

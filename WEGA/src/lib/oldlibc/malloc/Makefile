@@ -8,7 +8,7 @@ CCV0 = ccv0
 CCV0P = ccv0p
 CAS = cas
 
-objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_6.o
+objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_6.o 0_7.o
 
 0_1.o: malloc.c
 	-@mkdir 0_1.d 2>/dev/null
@@ -26,5 +26,8 @@ objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_6.o
 0_6.o: malloc.c
 	-@mkdir 0_6.d 2>/dev/null
 	cd 0_6.d ; $(CCV1R) -O -c ../malloc.c ; mv malloc.o ../0_6.o
+
+0_7.o: 0_7.c
+	$(CC) -O -c 0_7.c
 
 .PHONY: objs

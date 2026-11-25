@@ -16,7 +16,7 @@ CRT0 = /lib/crt0.o
 NONSEG_OBJS = cc.o
 SEG_OBJS = cc.o
 ALL_TARGETS = build/nonseg/cc build/seg/scc
-OLD_TARGETS = build/nonsegv0/cc build/nonsegv0a/cc build/nonsegv0p/cc build/nonsegv1/cc build/nonsegv1q/cc build/nonsegv1r/cc build/nonsegv1l/cc build/nonsegv1c/cc build/segv1/scc build/segv1c/scc build/segvk/scc build/segvc/scc build/nonsegvl/cc build/segvl/scc build/nonsegvm/cc
+OLD_TARGETS = build/nonsegv0/cc build/nonsegv0a/cc build/nonsegv0p/cc build/nonsegv1/cc build/nonsegv1q/cc build/nonsegv1r/cc build/nonsegv1l/cc build/nonsegv1c/cc build/segv1/scc build/segv1c/scc build/segvk/scc build/segvc/scc build/nonsegvl/cc build/segvl/scc build/nonsegvm/cc build/nonsegvz/cc
 
 all: $(ALL_TARGETS)
 
@@ -57,6 +57,8 @@ build/segvl/scc: FORCE
 	cd build/segvl ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSCC -DOLD_VL"
 build/nonsegvm/cc: FORCE
 	cd build/nonsegvm ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_VM"
+build/nonsegvz/cc: FORCE
+	cd build/nonsegvz ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile cc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_VZ"
 
 build/segvk/scc: FORCE
 	cd build/segvk ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) -f ../../Makefile scc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSCC -DOLD_VK"
@@ -86,6 +88,7 @@ oldinstall: $(OLD_TARGETS)
 	cp build/nonsegvl/cc $(PREFIX)/bin/ccvl
 	cp build/segvl/scc $(PREFIX)/bin/sccvl
 	cp build/nonsegvm/cc $(PREFIX)/bin/ccvm
+	cp build/nonsegvz/cc $(PREFIX)/bin/ccvz
 
 ##################
 # bin targets

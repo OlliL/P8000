@@ -176,6 +176,10 @@ nidcl( p ) NODE *p; { /* handle unitialized declarations */
 
 	defid( p, class );
 
+#ifdef OLD_D12B
+	if( class==STATIC ) d12bss( STP(p->tn.rval) );
+	else
+#endif
 	if( class==EXTDEF || class==STATIC ){
 		beginit( p->tn.rval );
 		endinit();
@@ -189,6 +193,29 @@ nidcl( p ) NODE *p; { /* handle unitialized declarations */
 			uerror( "size too large" );
 		}
 	}
+
+#ifdef OLD_D12B
+d12bss( q ) register struct symtab *q; { /* vz: an uninitialized static in the .bss: no zeros in the data */
+	OFFSZ sz;
+	register TWORD t;
+	register ev;
+
+	locctr( ADATA );
+	sz = tsize( q->stype, q->dimoff, q->sizoff ) / SZCHAR;
+	if( sectfull( ADATA, sz ) ) newsect( ADATA );
+	else fprintf( dfile, "\t.bss\n" );
+	sectadd( ADATA, sz );
+	/* a char, an array of chars and a float (not an array of floats) get .even on both sides (measured) */
+	for( t = q->stype; ISARY(t); t = DECREF(t) ) ;
+	ev = t == CHAR || t == UCHAR || q->stype == FLOAT;
+	if( ev ) fprintf( dfile, "    .even\n" );
+	lineid();
+	defnam( q );
+	fprintf( dfile, "\t.=.+%ld\n", sz );
+	if( ev ) fprintf( dfile, "    .even\n" );
+	fprintf( dfile, "\t.data\n" );
+	}
+#endif
 
 TWORD
 types( t1, t2, t3 ) TWORD t1, t2, t3; {
