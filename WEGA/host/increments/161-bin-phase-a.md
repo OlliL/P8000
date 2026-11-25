@@ -75,7 +75,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] newgrp (13898)
 - [x] passwd (15188)
 - [x] stty (15702) -- byte-identical (2026-11-25): stty.c of System III with the WEGA speeds and modes, the shipped cc, libc-v15 (new: libc.a with doprnt 0_10)
-- [x] ed (16750) -- deferred: needs libc-v4 members (fakcu, strncpy, pipe, dup, chown) and setret; 69 functions
+- [x] ed (16750) -- phase A: all but putline (89 bytes, the block order of a loop: phase B); see "ed: phase A" below
 - [x] mail (18572); link: rmail
 - [x] login (19030); same file as etc/login -- deferred: rewritten by WEGA (ttytype, termcap, csh) and a libc with large gaps
 - [x] uux (21136)
@@ -272,37 +272,23 @@ directory `$GF_WORK`, default `tmp/tmp/getfile-forms` beside WEGA):
   `ccvm -Ihead/oldv7 -S getfile.c`, against the same with the WEGA root; `/bin/cc -O -S` under zeus321_root for the whole
   chain. `host/tools/sdis.py -l` disassembles with addresses (the retry block of 1.7 is at 0x3aa).
 
-## ed: phase A started, open for a later session (2026-11-25)
+## ed: phase A, all but putline (2026-11-25)
 
-State in the tree (committed): `src/cmd/ed/` with `ed.c` of System III (unchanged but: the WEGA sccsid `ed.c 1.2 01/30/83`
-in front, `<setret.h>`, `ret_buf`, `setret`, `longret` for setjmp/longjmp: WEGA has no setjmp.h, mail.c does the same),
-`ed.mk` and `edfun` of System III (unused), a `Makefile` after `dc/Makefile` (ccv1, `-I../../head/oldv7 -DPWB`, libc-v4,
-own crt0 from crt0.list), `.gitignore`. `compare/ed/` from setup.py (progcfg.py, findings.json: 69 functions f<entry>).
-ed is NOT in SUBDIRS of src/cmd/Makefile and not installed yet. libc-v4 is extended for it (done, checkall ALL OK: its other
-users unchanged): fakcu after sleep 0_3, strncpy 0_2 after strcpy 0_1, chown after chmod, dup after creat, pipe after pause,
-mktemp in front of setret (each of them measured at its place in /bin/ed: the code equal). The link now misses only ustat
-and execlp, both of the source: with `-DPWB -DRESEARCH` (no ustat, no umask) and execl for execlp ed links, but its code
-is 934 bytes larger (13554 against 14488) and its data 108: WEGA changed more (not kept in the tree: execlp is back).
+State in the tree: `src/cmd/ed/` with `ed.c` of System III and the changes of WEGA: the WEGA sccsid `ed.c 1.2 01/30/83`,
+`<setret.h>` (`ret_buf`, `setret`, `longret` for setjmp/longjmp, as mail.c), in eopen the read of the format line kept without
+its fspec test. Built by ccv1 with `-I../../head/oldv7 -DRESEARCH` (DEFS: no ustat, no oldmask) and without PWB (no fspec,
+lenchk, expnd; the original ends with save and undo), libc-v4, own crt0 from crt0.list. libc-v4: fakcu, strncpy 0_2, chown,
+dup, pipe and execlp (the assembler stub of libc/nonseg/sys/execlp.s, between cuexit and execvp) added, mktemp in front of
+setret. `compare/ed/`: progcfg.py (OWN_LIM 0x2e78: __callex, exit, execlp are libc), findings.json with the names.
 
-Measured (setup.py, whichlibc.py from OWN_LIM 0x2ea0):
-- Dating: crt0 3.1 01/30/83, D1 slots: ccv1 (neighbours ccv1r, ccv1q, not measured yet). Without `-DPWB` `fss` is
-  undefined; with NULLS not tried.
-- Library: libc-v4 covers 1526 of 1618 bytes; the gaps: 3148 (2 bytes, fakcu `_cleanup`), 3260..32ac (76 bytes behind
-  strcpy: strncpy), 33f0..33fe (14 bytes behind pause: pipe). The walk takes `creat` twice (3332, 3340) and `ioctl` twice:
-  two of them are chown and dup (14 and 18 bytes; to check). The link with libc-v4 misses: ustat, chown, execlp, strncpy,
-  pipe, dup, _cleanup.
-- Source against the original: the member list of the original has no ustat: WEGA removed the ustat test of the write
-  (ed.c around line 579, `#ifndef RESEARCH`; maybe ed was built with RESEARCH, which also drops umask/oldmask: measure).
-  execlp is undefined with libc-v4: either the execvp member of the original defines execlp (check its symbols against
-  libc-v4's execvp.o) or WEGA calls execl. The own strings of the original: ... `SHELL`, `/bin/rsh`, `file name too long`,
-  `/tmp/eXXXXX`, `read may be incomplete - beware!`, `ed.hup`, `/bin/sh`, `Enter file encryption key: `, `/usr/lib/makekey`,
-  `/lib/makekey`, `crypt: cannot generate key` (then the strings of execvp: `/bin/sh`, `/bin/csh`, `PATH`, `:/bin:/usr/bin`).
+bincmp: sizes, data and bss equal; 89 bytes differ, all in putline (62 functions exact, putline open): its loop
+`while (*bp = *lp++)` has in the original the test at the top, the exit falls through behind the newline block and the
+`--nl` part lies behind the epilogue; ours is the usual while layout. for(;;)/while(1) with break, goto loops and continue
+all give the same layout; the neighbours ccv1r, ccv1q, ccv1c, ccv1l are far off. Phase B (the block order of popt).
 
-Next steps:
-1. Library: done (libc-v4 extended). No execvp member of any libc defines execlp: the original calls execvp (its member
-   is in /bin/ed, with the strings /bin/sh, /bin/csh, PATH) and/or execl; find which call of ed.c became which.
-2. Build with ccv1 (`make -C src/cmd/ed`), strip, `host/tools/bincmp.py ORIG NEW -v`; data first (strings, the order of
-   the message table `_msgtab`), then bss, then code (fnc.py per function, at most 6 attempts each).
-3. Decide RESEARCH / NULLS by the strings and the code (ustat, umask, nulls).
-4. When identical: add ed to SUBDIRS (and the install), checkall, corpus (compare/ed/tests.txt: ed reads commands from
-   stdin), findings, SYSIII.md, COVERAGE.
+Open:
+1. ed is not in SUBDIRS of src/cmd/Makefile: the HOWTO puts a program not yet identical into the build with its file in OPEN
+   of checkall.sh; that change of the check is the owner's decision (the shipped loop then needs `ed` beside `dc`:
+   `LIBC=/lib/libc.a`).
+2. Corpus (compare/ed/tests.txt: ed reads its commands from stdin).
+3. putline (phase B), then SYSIII.md, FINDINGS.md, COVERAGE.

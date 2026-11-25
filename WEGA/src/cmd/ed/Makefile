@@ -1,5 +1,7 @@
-# ed: /bin/ed from ed.c of System III (the WEGA sccsid, ed.c 1.2 01/30/83), ccv1 -DPWB, libc-v4; NOT LINKED YET, not in SUBDIRS
-# (compare/ed/findings.json). ed.mk and edfun are the System III build files (not used).
+# ed: /bin/ed from ed.c of System III (the WEGA sccsid, ed.c 1.2 01/30/83), ccv1 -DRESEARCH (no ustat, no oldmask) without PWB
+# (no fspec: in eopen the read of the format line is kept, its test gone), libc-v4 (execlp is its member in front of execvp);
+# DEFS stays in a shipped build. Not in SUBDIRS yet: putline differs (the block order of a loop, compare/ed/findings.json).
+# ed.mk and edfun are the System III build files (not used).
 #
 #   make              build ./ed
 #   make install PREFIX=dir
@@ -8,7 +10,8 @@
 CC = ccv1
 CAS = cas
 LD = ld
-CFLAGS = -O -I../../head/oldv7 -DPWB
+CFLAGS = -O -I../../head/oldv7
+DEFS = -DRESEARCH
 PREFIX = /
 STRIP = strip
 LIBC = ../../lib/libc-v4.a
@@ -26,7 +29,7 @@ crt0.o: crt0.s
 	$(CAS) -u -o $@ crt0.s
 
 ed.o: ed.c
-	$(CC) $(CFLAGS) -c ed.c
+	$(CC) $(CFLAGS) $(DEFS) -c ed.c
 
 install: ed
 	cp ed $(PREFIX)/bin/ed

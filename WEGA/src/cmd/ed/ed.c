@@ -2052,12 +2052,7 @@ char *string;
 	if(!Xqt) {
 		if((io=open(string, rw)) >= 0) {
 			if (fflg) {
-				read(io,funny,LBSIZE);
-				if (fspec(funny,&fss,0) < 0) {
-					fss.Ffill = 0;
-					fflg = 0;
-					error(4);
-				}
+				read(io,funny,LBSIZE);	/* WEGA: without PWB, the read of the format line is kept without fspec */
 				lseek(io,0L,0);
 			}
 		}

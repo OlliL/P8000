@@ -3,189 +3,189 @@
  "compiler": "ccv1",
  "binary": "/bin/ed",
  "functions": {
-  "f0000": {
-   "file": "",
+  "start": {
+   "file": "crt0.s",
    "orig": "0x0000",
    "size_orig": 16,
-   "status": "open",
+   "status": "crt0",
    "kind": "proven",
    "callers": []
   },
   "f0010": {
-   "file": "",
+   "file": "crt0.s",
    "orig": "0x0010",
    "size_orig": 8,
-   "status": "open",
+   "status": "crt0",
    "kind": "candidate",
    "callers": []
   },
   "f0018": {
-   "file": "",
+   "file": "crt0.s",
    "orig": "0x0018",
    "size_orig": 42,
-   "status": "open",
+   "status": "crt0",
    "kind": "candidate",
    "callers": []
   },
-  "f0042": {
-   "file": "",
+  "compile": {
+   "file": "ed.c",
    "orig": "0x0042",
    "size_orig": 1028,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f0446": {
-   "file": "",
+  "step": {
+   "file": "ed.c",
    "orig": "0x0446",
    "size_orig": 106,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f04b0": {
-   "file": "",
+  "advance": {
+   "file": "ed.c",
    "orig": "0x04b0",
    "size_orig": 704,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f0770": {
-   "file": "",
+  "getrnge": {
+   "file": "ed.c",
    "orig": "0x0770",
    "size_orig": 58,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f07aa": {
-   "file": "",
+  "ecmp": {
+   "file": "ed.c",
    "orig": "0x07aa",
    "size_orig": 54,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f07e0": {
-   "file": "",
+  "onpipe": {
+   "file": "ed.c",
    "orig": "0x07e0",
    "size_orig": 6,
-   "status": "open",
+   "status": "exact",
    "kind": "candidate",
    "callers": []
   },
-  "f07e6": {
-   "file": "",
+  "main": {
+   "file": "ed.c",
    "orig": "0x07e6",
    "size_orig": 476,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000"
    ]
   },
-  "f09c2": {
-   "file": "",
+  "commands": {
+   "file": "ed.c",
    "orig": "0x09c2",
    "size_orig": 1510,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x07e6"
    ]
   },
-  "f0fa8": {
-   "file": "",
+  "address": {
+   "file": "ed.c",
    "orig": "0x0fa8",
    "size_orig": 416,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09c2"
    ]
   },
-  "f1148": {
-   "file": "",
+  "setdot": {
+   "file": "ed.c",
    "orig": "0x1148",
    "size_orig": 36,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09c2"
    ]
   },
-  "f116c": {
-   "file": "",
+  "setall": {
+   "file": "ed.c",
    "orig": "0x116c",
    "size_orig": 46,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f119a": {
-   "file": "",
+  "setnoaddr": {
+   "file": "ed.c",
    "orig": "0x119a",
    "size_orig": 14,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f11a8": {
-   "file": "",
+  "nonzero": {
+   "file": "ed.c",
    "orig": "0x11a8",
    "size_orig": 26,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09c2"
    ]
   },
-  "f11c2": {
-   "file": "",
+  "newline": {
+   "file": "ed.c",
    "orig": "0x11c2",
    "size_orig": 76,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f120e": {
-   "file": "",
+  "filename": {
+   "file": "ed.c",
    "orig": "0x120e",
    "size_orig": 296,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f1336": {
-   "file": "",
+  "exfile": {
+   "file": "ed.c",
    "orig": "0x1336",
    "size_orig": 32,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f1356": {
-   "file": "",
+  "onintr": {
+   "file": "ed.c",
    "orig": "0x1356",
    "size_orig": 62,
-   "status": "open",
+   "status": "exact",
    "kind": "candidate",
    "callers": []
   },
-  "f1394": {
-   "file": "",
+  "onhup": {
+   "file": "ed.c",
    "orig": "0x1394",
    "size_orig": 80,
-   "status": "open",
+   "status": "exact",
    "kind": "candidate",
    "callers": []
   },
-  "f13e4": {
-   "file": "",
+  "error": {
+   "file": "ed.c",
    "orig": "0x13e4",
    "size_orig": 190,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09c2",
@@ -199,11 +199,11 @@
     "0x26a8"
    ]
   },
-  "f14a2": {
-   "file": "",
+  "getchr": {
+   "file": "ed.c",
    "orig": "0x14a2",
    "size_orig": 104,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
@@ -213,242 +213,243 @@
     "0x25ee"
    ]
   },
-  "f150a": {
-   "file": "",
+  "gettty": {
+   "file": "ed.c",
    "orig": "0x150a",
    "size_orig": 140,
-   "status": "open",
+   "status": "exact",
    "kind": "candidate",
    "callers": []
   },
-  "f1596": {
-   "file": "",
+  "getfile": {
+   "file": "ed.c",
    "orig": "0x1596",
    "size_orig": 268,
-   "status": "open",
+   "status": "exact",
    "kind": "candidate",
    "callers": []
   },
-  "f16a2": {
-   "file": "",
+  "putfile": {
+   "file": "ed.c",
    "orig": "0x16a2",
    "size_orig": 252,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f179e": {
-   "file": "",
+  "append": {
+   "file": "ed.c",
    "orig": "0x179e",
    "size_orig": 144,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f182e": {
-   "file": "",
+  "unixcom": {
+   "file": "ed.c",
    "orig": "0x182e",
    "size_orig": 392,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f19b6": {
-   "file": "",
+  "quit": {
+   "file": "ed.c",
    "orig": "0x19b6",
    "size_orig": 46,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x07e6"
    ]
   },
-  "f19e4": {
-   "file": "",
+  "delete": {
+   "file": "ed.c",
    "orig": "0x19e4",
    "size_orig": 28,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f1a00": {
-   "file": "",
+  "rdelete": {
+   "file": "ed.c",
    "orig": "0x1a00",
    "size_orig": 72,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f1a48": {
-   "file": "",
+  "gdelete": {
+   "file": "ed.c",
    "orig": "0x1a48",
    "size_orig": 100,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f1aac": {
-   "file": "",
+  "getline": {
+   "file": "ed.c",
    "orig": "0x1aac",
    "size_orig": 98,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09c2"
    ]
   },
-  "f1b0e": {
-   "file": "",
+  "putline": {
+   "file": "ed.c",
    "orig": "0x1b0e",
    "size_orig": 152,
    "status": "open",
    "kind": "proven",
-   "callers": []
+   "callers": [],
+   "note": "the loop while (*bp = *lp++): the original has the test at the top, the exit falls through behind the newline block and the --nl part lies behind the epilogue; ours is the usual while layout (test at the bottom). for(;;)/while(1) with break, goto loops, continue: all give the same layout as while; ccv1r, ccv1q, ccv1c, ccv1l are far off. The block order of popt (phase B)."
   },
-  "f1ba6": {
-   "file": "",
+  "getblock": {
+   "file": "ed.c",
    "orig": "0x1ba6",
    "size_orig": 290,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x1aac"
    ]
   },
-  "f1cc8": {
-   "file": "",
+  "blkio": {
+   "file": "ed.c",
    "orig": "0x1cc8",
    "size_orig": 64,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x1ba6"
    ]
   },
-  "f1d08": {
-   "file": "",
+  "init": {
+   "file": "ed.c",
    "orig": "0x1d08",
    "size_orig": 192,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x07e6"
    ]
   },
-  "f1dc8": {
-   "file": "",
+  "global": {
+   "file": "ed.c",
    "orig": "0x1dc8",
    "size_orig": 288,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f1ee8": {
-   "file": "",
+  "join": {
+   "file": "ed.c",
    "orig": "0x1ee8",
    "size_orig": 136,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f1f70": {
-   "file": "",
+  "substitute": {
+   "file": "ed.c",
    "orig": "0x1f70",
    "size_orig": 182,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2026": {
-   "file": "",
+  "compsub": {
+   "file": "ed.c",
    "orig": "0x2026",
    "size_orig": 242,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2118": {
-   "file": "",
+  "getsub": {
+   "file": "ed.c",
    "orig": "0x2118",
    "size_orig": 46,
-   "status": "open",
+   "status": "exact",
    "kind": "candidate",
    "callers": []
   },
-  "f2146": {
-   "file": "",
+  "dosub": {
+   "file": "ed.c",
    "orig": "0x2146",
    "size_orig": 248,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f223e": {
-   "file": "",
+  "place": {
+   "file": "ed.c",
    "orig": "0x223e",
    "size_orig": 52,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2272": {
-   "file": "",
+  "move": {
+   "file": "ed.c",
    "orig": "0x2272",
    "size_orig": 194,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2334": {
-   "file": "",
+  "reverse": {
+   "file": "ed.c",
    "orig": "0x2334",
    "size_orig": 28,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2350": {
-   "file": "",
+  "getcopy": {
+   "file": "ed.c",
    "orig": "0x2350",
    "size_orig": 38,
-   "status": "open",
+   "status": "exact",
    "kind": "candidate",
    "callers": []
   },
-  "f2376": {
-   "file": "",
+  "error1": {
+   "file": "ed.c",
    "orig": "0x2376",
    "size_orig": 20,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000"
    ]
   },
-  "f238a": {
-   "file": "",
+  "execute": {
+   "file": "ed.c",
    "orig": "0x238a",
    "size_orig": 144,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f241a": {
-   "file": "",
+  "putd": {
+   "file": "ed.c",
    "orig": "0x241a",
    "size_orig": 58,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09c2",
     "0x241a"
    ]
   },
-  "f2454": {
-   "file": "",
+  "puts": {
+   "file": "ed.c",
    "orig": "0x2454",
    "size_orig": 42,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x07e6",
@@ -457,11 +458,11 @@
     "0x26a8"
    ]
   },
-  "f247e": {
-   "file": "",
+  "putchr": {
+   "file": "ed.c",
    "orig": "0x247e",
    "size_orig": 218,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x09c2",
@@ -470,157 +471,126 @@
     "0x2454"
    ]
   },
-  "f2558": {
-   "file": "",
+  "crblock": {
+   "file": "ed.c",
    "orig": "0x2558",
    "size_orig": 150,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x1ba6"
    ]
   },
-  "f25ee": {
-   "file": "",
+  "getkey": {
+   "file": "ed.c",
    "orig": "0x25ee",
    "size_orig": 186,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x07e6"
    ]
   },
-  "f26a8": {
-   "file": "",
+  "crinit": {
+   "file": "ed.c",
    "orig": "0x26a8",
    "size_orig": 682,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x07e6",
     "0x2952"
    ]
   },
-  "f2952": {
-   "file": "",
+  "makekey": {
+   "file": "ed.c",
    "orig": "0x2952",
    "size_orig": 122,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x1d08"
    ]
   },
-  "f29cc": {
-   "file": "",
+  "globaln": {
+   "file": "ed.c",
    "orig": "0x29cc",
    "size_orig": 402,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2b5e": {
-   "file": "",
+  "eopen": {
+   "file": "ed.c",
    "orig": "0x2b5e",
    "size_orig": 318,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2c9c": {
-   "file": "",
+  "eclose": {
+   "file": "ed.c",
    "orig": "0x2c9c",
    "size_orig": 30,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x13e4"
    ]
   },
-  "f2cba": {
-   "file": "",
+  "mkfunny": {
+   "file": "ed.c",
    "orig": "0x2cba",
    "size_orig": 102,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2d20": {
-   "file": "",
+  "getime": {
+   "file": "ed.c",
    "orig": "0x2d20",
    "size_orig": 32,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2d40": {
-   "file": "",
+  "chktime": {
+   "file": "ed.c",
    "orig": "0x2d40",
    "size_orig": 32,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2d60": {
-   "file": "",
+  "newtime": {
+   "file": "ed.c",
    "orig": "0x2d60",
    "size_orig": 22,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2d76": {
-   "file": "",
+  "red": {
+   "file": "ed.c",
    "orig": "0x2d76",
    "size_orig": 74,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2dc0": {
-   "file": "",
+  "save": {
+   "file": "ed.c",
    "orig": "0x2dc0",
    "size_orig": 64,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   },
-  "f2e00": {
-   "file": "",
+  "undo": {
+   "file": "ed.c",
    "orig": "0x2e00",
    "size_orig": 120,
-   "status": "open",
-   "kind": "proven",
-   "callers": []
-  },
-  "f2e78": {
-   "file": "",
-   "orig": "0x2e78",
-   "size_orig": 6,
-   "status": "open",
-   "kind": "proven",
-   "callers": [
-    "0x0000"
-   ]
-  },
-  "f2e7e": {
-   "file": "",
-   "orig": "0x2e7e",
-   "size_orig": 10,
-   "status": "open",
-   "kind": "proven",
-   "callers": [
-    "0x07e6",
-    "0x19b6",
-    "0x26a8",
-    "0x2e78"
-   ]
-  },
-  "f2e88": {
-   "file": "",
-   "orig": "0x2e88",
-   "size_orig": 24,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": []
   }

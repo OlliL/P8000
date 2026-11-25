@@ -1946,7 +1946,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v1 | dc, ranlib, chmod, env, gets, kill, nohup, pwd, sleep, tail, bc (07/82; mkdir partial; pipe for bc); chkout (getpwuid, getpwent, fgets 0_2, rewind, fdopen 0_2, ctime 0_2, getenv in front of atoi); echo2, printenv, whereis (07/82) |
 | libc-v2 | cpp (12/82), clist |
 | libc-v3 | size (01/83; the members of od added, od not started); lex (01/83: atoi 0_3 (ccv1q) behind cuexit, calloc 0_2 behind length) |
-| libc-v4 | strip (01/83), su (02/83; the members of passwd too), nice (01/83: fputs 0_2, execvp 0_2, sleep 0_3, setret, index, alarm, nice, pause), time (01/83: fork, times 0_1, wait); ed (01/83, not identical yet: fakcu, strncpy 0_2, chown, dup, pipe added, mktemp in front of setret; checkall unchanged, 2026-11-25) |
+| libc-v4 | strip (01/83), su (02/83; the members of passwd too), nice (01/83: fputs 0_2, execvp 0_2, sleep 0_3, setret, index, alarm, nice, pause), time (01/83: fork, times 0_1, wait); ed (01/83, not identical yet: fakcu, strncpy 0_2, chown, dup, pipe, execlp (in front of execvp) added, mktemp in front of setret; checkall unchanged, 2026-11-25) |
 | libc-v5 | codgen, scodgen, popt, spopt |
 | libc-v6 | rm, mv, cp, ln (05/83 .. 07/83), chgrp, chown, sort, touch (02/83 .. 03/83), uname, test (01/83), tr (05/83), dog (03/83: freopen, setbuf, ttyname 0_2, strcat 0_1, fcntl, fstat); fakcu (for test, which has no stdio) |
 | libc-v7 | cparse, scparse, find (10/83) |

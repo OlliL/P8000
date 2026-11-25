@@ -9,7 +9,7 @@
 #   libc-v2.a  cpp (12/82), clist
 #   libc-v3.a  size, od, lex (01/83; lex: atoi 0_3, calloc 0_2)
 #   libc-v4.a  strip (01/83), su (02/83; the members of passwd too), nice, time (01/83), ed (01/83: fakcu, strncpy 0_2,
-#              chown, dup, pipe added, mktemp in front of setret)
+#              chown, dup, pipe, execlp (in front of execvp) added, mktemp in front of setret)
 #   libc-v5.a  codgen, scodgen, popt, spopt
 #   libc-v6.a  rm, mv, cp, ln (05/83 .. 07/83), chgrp, chown, sort, touch (02/83 .. 03/83), uname, test (01/83), tr (05/83), dog (03/83)
 #   libc-v7.a  cparse, scparse, find (10/83)
@@ -78,7 +78,7 @@ LIBv3 = ../libc/build/nonseg/freopen.o fseek/0_3.o rdwr/0_1.o ../libc/build/nons
 LIBv4 = fseek/0_1.o cuserid/0_1.o rdwr/0_2.o getpass/0_1.o putpwent/0_1.o getpwnam/0_1.o getpwuid/0_1.o getpwent/0_1.o \
 	 fgets/0_1.o ../libc/build/nonseg/rew.o ../libc/build/nonseg/fopen.o fputs/0_2.o printf/0_2.o doprnt/0_2.o \
 	 ../libc/build/nonseg/ffltioc.o filbuf/0_2.o ../libc/build/nonseg/setbuf.o flsbuf/0_1.o endopen/0_2.o findiop/0_1.o \
-	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o execvp/0_2.o ctime/0_1.o getenv/0_2.o sleep/0_3.o ../libc/build/nonseg/fakcu.o \
+	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ../libc/build/nonseg/execlp.o execvp/0_2.o ctime/0_1.o getenv/0_2.o sleep/0_3.o ../libc/build/nonseg/fakcu.o \
 	 getlogin/0_1.o perror/0_2.o ttyslot/0_1.o ttyname/0_2.o atoi/0_2.o cnvt/0_1.o ../libc/build/nonseg/decimal.o \
 	 length/0_1.o crypt/0_1.o malloc/0_2.o errlst/0_2.o ../libc/build/nonseg/isatty.o mktemp/0_1.o ../libc/build/nonseg/setret.o \
 	 ../libc/build/nonseg/stty.o ../libc/build/nonseg/index.o ../libc/build/nonseg/swab.o strcat/0_1.o ../libc/build/nonseg/strcmp.o \
