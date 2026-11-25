@@ -5,7 +5,7 @@ host/tools/corpus.sh). --show: only the original, every case printed (steps with
 afterwards, the expectations that fail); no store, no candidate: for writing cases.
 
 A corpus is compare/NAME/corpus.py (NAME, ORIG, PROG, CANDIDATES, optional RC_UNDEFINED (the exit status is not compared:
-main of the original ends without exit), ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), ROOT_COPY (files of the tree a case may change: each case gets a copy in its layer, e.g.
+main of the original ends without exit), CONSOLE_KEEP (terminal: console keeps its settings for the whole case), ROOT_FILES, ROOT_ENV, ALIASES, DEPENDS, HOST_ENV, TIMEOUT (seconds per step, default 600), ROOT_COPY (files of the tree a case may change: each case gets a copy in its layer, e.g.
 etc/mnttab), INSTALLED (the candidate lies at its place in the tree, ORIG and
 the paths of ALIASES, in the case's layer over ROOT, z8k-emu Z8K_OVERLAY; the steps call it by that path; a shell script
 is run as execvp() of the libc does it: by /bin/csh when its first byte is #, else by /bin/sh, with $0 that path), IN_TMP (the case
@@ -26,7 +26,9 @@ the hand-written cases compare/NAME/cases/CASE/ (a file `case`, the starting fil
 The whole run has umask 022 (main: the starting files written here, every step and host line), whatever the umask of
 the caller: the modes of the files are not in the keys of the store.
   terminal: console   the minimal terminal (z8k-emu Z8K_CONSOLE): stdin/out of the steps are the console for isatty,
-                      ttyname, the tty ioctls; /dev/console and /dev/tty are it
+                      ttyname, the tty ioctls; /dev/console and /dev/tty are it. Its settings belong to one process (a fork
+                      is a host fork); with CONSOLE_KEEP = True in corpus.py they belong to the case: every process and
+                      step of it sees what one of them set (z8k-emu Z8K_CONSOLE_STATE, a file beside the case directory)
   device: driveN FILE | ud | NAME KIND:ARG [excl] [console]   the guest /dev (z8k-emu Z8K_DEVTAB; write_devtab below):
                       a floppy image of the case directory as drive N, the 8-bit part behind /dev/ud, any device model
   time: SECONDS       the clock of the guest stands at SECONDS since 1970 (z8k-emu Z8K_TIME): times written to files or
@@ -666,6 +668,8 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         env['Z8K_DEVTAB'] = write_devtab(case, rd)
         if case.get('terminal') == 'console':
             env['Z8K_CONSOLE'] = '1'
+            if getattr(cfg, 'CONSOLE_KEEP', False):	# one console for the whole case: what a step sets, a later one sees
+                env['Z8K_CONSOLE_STATE'] = rd + '.console'
     if getattr(cfg, 'IN_TMP', False):	# the case directory is /tmp/NAME of the guest (pwd works: z8k-emu, Z8K_TMPDIR)
         env['Z8K_TMPDIR'] = os.path.dirname(rd)
     else:	# the guest /tmp of this run only: the process numbers are the same in every run (Z8K_PIDDIR), so the temporary names
@@ -675,6 +679,8 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
         env['Z8K_TMPDIR'] = td
     if os.path.exists(rd + '.rootlog'):
         os.remove(rd + '.rootlog')
+    if os.path.exists(rd + '.console'):	# CONSOLE_KEEP: each run starts with the console as the model has it
+        os.remove(rd + '.console')
     if os.path.exists(rd + '.kill.log'):
         os.remove(rd + '.kill.log')
     env.pop('TZ', None)

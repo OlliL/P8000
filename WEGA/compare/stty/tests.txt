@@ -1,15 +1,26 @@
 # The cases of the corpus of stty (compare/stty/corpus.py); the format: host/recon/casefile.py. src = src/cmd/stty.c.
-# Every step on the console (terminal: console); a set mode is not seen by a later step (the console of z8k-emu per process).
+# Every step on the console (terminal: console); with CONSOLE_KEEP a later step sees what an earlier one set:
+# each mode is set and the settings printed by stty -g (the modes from sane, raw and sane again: both directions).
 
 == print
 # src: no argument: the settings that differ from sane
 -- case
 terminal: console
 step: stty
+step: stty raw
+step: stty
+step: stty sane
+step: stty
 
 == all
 -- case
 terminal: console
+step: stty -a
+step: stty raw
+step: stty -a
+step: stty sane
+step: stty -a
+step: stty cooked
 step: stty -a
 
 == encoded
@@ -17,187 +28,637 @@ step: stty -a
 terminal: console
 step: stty -g
 
-== modes-0
+== speeds
+# each one set and printed; 50, 1800, extb (System III) are no WEGA speeds
 -- case
 terminal: console
-step: stty 0
-step: stty 75
-step: stty 110
-step: stty 134
-step: stty 134.5
-step: stty 150
-step: stty 200
-step: stty 300
-step: stty 600
-step: stty 1200
-step: stty 2400
-step: stty 4800
-step: stty 9600
-step: stty 19200
-step: stty exta
-
-== modes-1
--- case
-terminal: console
-step: stty -parity
-step: stty -evenp
-step: stty -oddp
-step: stty parity
-step: stty evenp
-step: stty oddp
-step: stty parenb
-step: stty -parenb
-step: stty parodd
-step: stty -parodd
-step: stty cs8
-step: stty cs7
-step: stty cs6
-step: stty cs5
-step: stty cstopb
-step: stty -cstopb
-step: stty hupcl
-step: stty hup
-step: stty -hupcl
-step: stty -hup
-step: stty clocal
-step: stty -clocal
-step: stty cread
-step: stty -cread
-step: stty raw
-step: stty -raw
-step: stty cooked
 step: stty sane
+step: stty 0
+step: stty -g
+step: stty 75
+step: stty -g
+step: stty 110
+step: stty -g
+step: stty 134
+step: stty -g
+step: stty 134.5
+step: stty -g
+step: stty 150
+step: stty -g
+step: stty 200
+step: stty -g
+step: stty 300
+step: stty -g
+step: stty 600
+step: stty -g
+step: stty 1200
+step: stty -g
+step: stty 2400
+step: stty -g
+step: stty 4800
+step: stty -g
+step: stty 9600
+step: stty -g
+step: stty 19200
+step: stty -g
+step: stty exta
+step: stty -g
+step: stty 50
+step: stty -g
+step: stty 1800
+step: stty -g
+step: stty extb
+step: stty -g
+step: stty raw
+step: stty 0
+step: stty -g
+step: stty 75
+step: stty -g
+step: stty 110
+step: stty -g
+step: stty 134
+step: stty -g
+step: stty 134.5
+step: stty -g
+step: stty 150
+step: stty -g
+step: stty 200
+step: stty -g
+step: stty 300
+step: stty -g
+step: stty 600
+step: stty -g
+step: stty 1200
+step: stty -g
+step: stty 2400
+step: stty -g
+step: stty 4800
+step: stty -g
+step: stty 9600
+step: stty -g
+step: stty 19200
+step: stty -g
+step: stty exta
+step: stty -g
+step: stty 50
+step: stty -g
+step: stty 1800
+step: stty -g
+step: stty extb
+step: stty -g
 
-== modes-2
+== cmodes
 -- case
 terminal: console
+step: stty sane
+step: stty -parity
+step: stty -g
+step: stty -evenp
+step: stty -g
+step: stty -oddp
+step: stty -g
+step: stty parity
+step: stty -g
+step: stty evenp
+step: stty -g
+step: stty oddp
+step: stty -g
+step: stty parenb
+step: stty -g
+step: stty -parenb
+step: stty -g
+step: stty parodd
+step: stty -g
+step: stty -parodd
+step: stty -g
+step: stty cs8
+step: stty -g
+step: stty cs7
+step: stty -g
+step: stty cs6
+step: stty -g
+step: stty cs5
+step: stty -g
+step: stty cstopb
+step: stty -g
+step: stty -cstopb
+step: stty -g
+step: stty hupcl
+step: stty -g
+step: stty hup
+step: stty -g
+step: stty -hupcl
+step: stty -g
+step: stty -hup
+step: stty -g
+step: stty clocal
+step: stty -g
+step: stty -clocal
+step: stty -g
+step: stty cread
+step: stty -g
+step: stty -cread
+step: stty -g
+step: stty raw
+step: stty -g
+step: stty -raw
+step: stty -g
+step: stty cooked
+step: stty -g
+step: stty sane
+step: stty -g
+step: stty raw
+step: stty -parity
+step: stty -g
+step: stty -evenp
+step: stty -g
+step: stty -oddp
+step: stty -g
+step: stty parity
+step: stty -g
+step: stty evenp
+step: stty -g
+step: stty oddp
+step: stty -g
+step: stty parenb
+step: stty -g
+step: stty -parenb
+step: stty -g
+step: stty parodd
+step: stty -g
+step: stty -parodd
+step: stty -g
+step: stty cs8
+step: stty -g
+step: stty cs7
+step: stty -g
+step: stty cs6
+step: stty -g
+step: stty cs5
+step: stty -g
+step: stty cstopb
+step: stty -g
+step: stty -cstopb
+step: stty -g
+step: stty hupcl
+step: stty -g
+step: stty hup
+step: stty -g
+step: stty -hupcl
+step: stty -g
+step: stty -hup
+step: stty -g
+step: stty clocal
+step: stty -g
+step: stty -clocal
+step: stty -g
+step: stty cread
+step: stty -g
+step: stty -cread
+step: stty -g
+step: stty raw
+step: stty -g
+step: stty -raw
+step: stty -g
+step: stty cooked
+step: stty -g
+step: stty sane
+step: stty -g
+
+== imodes
+-- case
+terminal: console
+step: stty sane
 step: stty ignbrk
+step: stty -g
 step: stty -ignbrk
+step: stty -g
 step: stty brkint
+step: stty -g
 step: stty -brkint
+step: stty -g
 step: stty ignpar
+step: stty -g
 step: stty -ignpar
+step: stty -g
 step: stty parmrk
+step: stty -g
 step: stty -parmrk
+step: stty -g
 step: stty inpck
+step: stty -g
 step: stty -inpck
+step: stty -g
 step: stty istrip
+step: stty -g
 step: stty -istrip
+step: stty -g
 step: stty inlcr
+step: stty -g
 step: stty -inlcr
+step: stty -g
 step: stty igncr
+step: stty -g
 step: stty -igncr
+step: stty -g
 step: stty icrnl
+step: stty -g
 step: stty -icrnl
+step: stty -g
 step: stty -nl
+step: stty -g
 step: stty nl
+step: stty -g
 step: stty iuclc
+step: stty -g
 step: stty -iuclc
+step: stty -g
 step: stty lcase
+step: stty -g
 step: stty -lcase
+step: stty -g
 step: stty LCASE
+step: stty -g
 step: stty -LCASE
+step: stty -g
 step: stty ixon
+step: stty -g
 step: stty -ixon
+step: stty -g
 step: stty ixany
+step: stty -g
 step: stty -ixany
+step: stty -g
 step: stty ixoff
+step: stty -g
 step: stty -ixoff
+step: stty -g
+step: stty raw
+step: stty ignbrk
+step: stty -g
+step: stty -ignbrk
+step: stty -g
+step: stty brkint
+step: stty -g
+step: stty -brkint
+step: stty -g
+step: stty ignpar
+step: stty -g
+step: stty -ignpar
+step: stty -g
+step: stty parmrk
+step: stty -g
+step: stty -parmrk
+step: stty -g
+step: stty inpck
+step: stty -g
+step: stty -inpck
+step: stty -g
+step: stty istrip
+step: stty -g
+step: stty -istrip
+step: stty -g
+step: stty inlcr
+step: stty -g
+step: stty -inlcr
+step: stty -g
+step: stty igncr
+step: stty -g
+step: stty -igncr
+step: stty -g
+step: stty icrnl
+step: stty -g
+step: stty -icrnl
+step: stty -g
+step: stty -nl
+step: stty -g
+step: stty nl
+step: stty -g
+step: stty iuclc
+step: stty -g
+step: stty -iuclc
+step: stty -g
+step: stty lcase
+step: stty -g
+step: stty -lcase
+step: stty -g
+step: stty LCASE
+step: stty -g
+step: stty -LCASE
+step: stty -g
+step: stty ixon
+step: stty -g
+step: stty -ixon
+step: stty -g
+step: stty ixany
+step: stty -g
+step: stty -ixany
+step: stty -g
+step: stty ixoff
+step: stty -g
+step: stty -ixoff
+step: stty -g
 
-== modes-3
+== lmodes
 -- case
 terminal: console
+step: stty sane
 step: stty isig
+step: stty -g
 step: stty -isig
+step: stty -g
 step: stty icanon
+step: stty -g
 step: stty -icanon
+step: stty -g
 step: stty xcase
+step: stty -g
 step: stty -xcase
+step: stty -g
 step: stty echo
+step: stty -g
 step: stty -echo
+step: stty -g
 step: stty echoe
+step: stty -g
 step: stty -echoe
+step: stty -g
 step: stty echok
+step: stty -g
 step: stty -echok
+step: stty -g
 step: stty lfkc
+step: stty -g
 step: stty -lfkc
+step: stty -g
 step: stty echonl
+step: stty -g
 step: stty -echonl
+step: stty -g
 step: stty noflsh
+step: stty -g
 step: stty -noflsh
+step: stty -g
+step: stty raw
+step: stty isig
+step: stty -g
+step: stty -isig
+step: stty -g
+step: stty icanon
+step: stty -g
+step: stty -icanon
+step: stty -g
+step: stty xcase
+step: stty -g
+step: stty -xcase
+step: stty -g
+step: stty echo
+step: stty -g
+step: stty -echo
+step: stty -g
+step: stty echoe
+step: stty -g
+step: stty -echoe
+step: stty -g
+step: stty echok
+step: stty -g
+step: stty -echok
+step: stty -g
+step: stty lfkc
+step: stty -g
+step: stty -lfkc
+step: stty -g
+step: stty echonl
+step: stty -g
+step: stty -echonl
+step: stty -g
+step: stty noflsh
+step: stty -g
+step: stty -noflsh
+step: stty -g
 
-== modes-4
+== omodes
 -- case
 terminal: console
+step: stty sane
 step: stty opost
+step: stty -g
 step: stty -opost
+step: stty -g
 step: stty olcuc
+step: stty -g
 step: stty -olcuc
+step: stty -g
 step: stty onlcr
+step: stty -g
 step: stty -onlcr
+step: stty -g
 step: stty ocrnl
+step: stty -g
 step: stty -ocrnl
+step: stty -g
 step: stty onocr
+step: stty -g
 step: stty -onocr
+step: stty -g
 step: stty onlret
+step: stty -g
 step: stty -onlret
+step: stty -g
 step: stty fill
+step: stty -g
 step: stty -fill
+step: stty -g
 step: stty nul-fill
+step: stty -g
 step: stty del-fill
+step: stty -g
 step: stty ofill
+step: stty -g
 step: stty -ofill
+step: stty -g
 step: stty ofdel
+step: stty -g
 step: stty -ofdel
+step: stty -g
 step: stty cr0
+step: stty -g
 step: stty cr1
+step: stty -g
 step: stty cr2
+step: stty -g
 step: stty cr3
+step: stty -g
 step: stty tab0
+step: stty -g
 step: stty tabs
+step: stty -g
 step: stty tab1
+step: stty -g
 step: stty tab2
+step: stty -g
 step: stty tab3
+step: stty -g
 step: stty -tabs
+step: stty -g
 step: stty nl0
+step: stty -g
 step: stty nl1
+step: stty -g
 step: stty ff0
+step: stty -g
 step: stty ff1
+step: stty -g
 step: stty vt0
+step: stty -g
 step: stty vt1
+step: stty -g
 step: stty bs0
+step: stty -g
 step: stty bs1
+step: stty -g
 step: stty tty33
+step: stty -g
 step: stty tn300
+step: stty -g
 step: stty ti700
+step: stty -g
 step: stty vt05
+step: stty -g
 step: stty tek
+step: stty -g
 step: stty tty37
+step: stty -g
+step: stty raw
+step: stty opost
+step: stty -g
+step: stty -opost
+step: stty -g
+step: stty olcuc
+step: stty -g
+step: stty -olcuc
+step: stty -g
+step: stty onlcr
+step: stty -g
+step: stty -onlcr
+step: stty -g
+step: stty ocrnl
+step: stty -g
+step: stty -ocrnl
+step: stty -g
+step: stty onocr
+step: stty -g
+step: stty -onocr
+step: stty -g
+step: stty onlret
+step: stty -g
+step: stty -onlret
+step: stty -g
+step: stty fill
+step: stty -g
+step: stty -fill
+step: stty -g
+step: stty nul-fill
+step: stty -g
+step: stty del-fill
+step: stty -g
+step: stty ofill
+step: stty -g
+step: stty -ofill
+step: stty -g
+step: stty ofdel
+step: stty -g
+step: stty -ofdel
+step: stty -g
+step: stty cr0
+step: stty -g
+step: stty cr1
+step: stty -g
+step: stty cr2
+step: stty -g
+step: stty cr3
+step: stty -g
+step: stty tab0
+step: stty -g
+step: stty tabs
+step: stty -g
+step: stty tab1
+step: stty -g
+step: stty tab2
+step: stty -g
+step: stty tab3
+step: stty -g
+step: stty -tabs
+step: stty -g
+step: stty nl0
+step: stty -g
+step: stty nl1
+step: stty -g
+step: stty ff0
+step: stty -g
+step: stty ff1
+step: stty -g
+step: stty vt0
+step: stty -g
+step: stty vt1
+step: stty -g
+step: stty bs0
+step: stty -g
+step: stty bs1
+step: stty -g
+step: stty tty33
+step: stty -g
+step: stty tn300
+step: stty -g
+step: stty ti700
+step: stty -g
+step: stty vt05
+step: stty -g
+step: stty tek
+step: stty -g
+step: stty tty37
+step: stty -g
 
 == several
 -- case
 terminal: console
 step: stty raw -echo cs7 parenb
+step: stty -a
 step: stty sane
+step: stty -a
 step: stty -raw cooked tabs
+step: stty -a
 
 == chars
 # src: a control character, ^x, - (undefined); erase without a value
 -- case
 terminal: console
 step: stty erase ^h kill ^u intr ^c quit ^\\
+step: stty -a
 step: stty eof ^d eol ^e min 1 time 2
+step: stty -a
 step: stty erase - kill -
+step: stty -a
 step: stty line 1
+step: stty -a
 step: stty ek
+step: stty -a
 step: stty erase
+step: stty -a
+
+== shell
+# the console of the case for the processes of a shell too
+-- case
+terminal: console
+step: sh -c "stty raw; stty -g; stty sane; stty -g"
 
 == unknown
-# src: unknown mode: %s
+# src: unknown mode: %s (the modes before it are not set)
 -- case
 terminal: console
 step: stty nosuchmode
 step: stty raw nosuchmode
+step: stty -g
 
 == options
 -- case

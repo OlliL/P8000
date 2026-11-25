@@ -1,8 +1,8 @@
 """Corpus of stty (host/recon/corpusrun.py): the original /bin/stty against the build (src/cmd/stty, stty.c of System III with the
 WEGA tables, the shipped cc, libc-v15), on the cases of compare/stty/tests.txt (host/recon/casefile.py), on the console of the
-emulator (terminal: console): the settings printed (no argument, -a, -g), every mode and speed of the tables accepted, the
-control characters, the messages. What a mode sets is not seen: the console of z8k-emu keeps its settings per process (a
-host fork), so a second stty does not see what the first one set."""
+emulator (terminal: console, CONSOLE_KEEP: the console of the case, what a step sets a later one sees): every mode and speed of
+the tables set and the settings printed (-g), from sane and from raw; no argument, -a, the control characters, a shell
+with several stty, the messages."""
 import os
 import sys
 
@@ -15,6 +15,7 @@ ORIG = 'bin/stty'
 PROG = 'stty'
 CANDIDATES = {'wega': 'src/cmd/stty'}
 TIMEOUT = 60
+CONSOLE_KEEP = True    # what a step sets, a later step sees (z8k-emu Z8K_CONSOLE_STATE)
 
 
 def generate(g):

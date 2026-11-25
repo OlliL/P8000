@@ -903,6 +903,7 @@ static Dir *dirof(int fd)
  *                terminal is the console)
  * Without a model an open gives ENXIO; a name not in the table does not exist. Without Z8K_DEVTAB /dev/ is the host's.
  * Z8K_CONSOLE=1: fds 0, 1, 2 are the console (isatty, the tty ioctls, fstat gives its numbers: ttyname finds it).
+ * Z8K_CONSOLE_STATE=FILE: the settings of the console are kept in FILE for every process and run (con_load, con_save).
  */
 #define NDEV 160
 typedef struct { char name[64]; int ent; } DevName;
@@ -1141,6 +1142,46 @@ static uint8_t con_sgtty[6] = { 13, 13, '#', '@', 0, 010 | 020 };	/* B9600, eras
 static uint8_t con_tchars[6] = { 0177, 034, 021, 023, 004, 0377 };
 static uint8_t con_termio[18] = { 0x05, 0x26, 0x00, 0x05, 0x00, 0xbd, 0x00, 0x3b, 0, 0177, 034, '#', '@', 004, 0, 0, 0, 0 };
 
+/* Z8K_CONSOLE_STATE=FILE: the settings of the console live in FILE (sgtty, tchars, termio: 30 bytes), read before every
+   get and written after every set, so that every process of the run (a fork is a host fork) and every later run with the
+   same FILE sees what one of them set; without FILE (or before the first set) the settings are the model's above */
+static const char *con_statefile(void)
+{
+	static int done;
+	static const char *f;
+	if (!done) { done = 1; f = getenv("Z8K_CONSOLE_STATE"); if (f && !*f) f = NULL; }
+	return f;
+}
+
+static void con_load(void)
+{
+	const char *f = con_statefile();
+	uint8_t b[30];
+	FILE *fp;
+	if (!f || !(fp = fopen(f, "rb"))) return;
+	if (fread(b, 1, 30, fp) == 30) {
+		memcpy(con_sgtty, b, 6);
+		memcpy(con_tchars, b + 6, 6);
+		memcpy(con_termio, b + 12, 18);
+	}
+	fclose(fp);
+}
+
+static void con_save(void)
+{
+	const char *f = con_statefile();
+	char tmp[1100];
+	FILE *fp;
+	if (!f) return;
+	snprintf(tmp, sizeof tmp, "%s.%d", f, (int)getpid());	/* written whole and renamed: a reader never sees half of it */
+	if (!(fp = fopen(tmp, "wb"))) return;
+	fwrite(con_sgtty, 1, 6, fp);
+	fwrite(con_tchars, 1, 6, fp);
+	fwrite(con_termio, 1, 18, fp);
+	fclose(fp);
+	rename(tmp, f);
+}
+
 /* the blocks of 512 bytes of a floppy by its format (src/uts/dev/fd.c fdblocks: the upper 4 bits of the minor) */
 static const int fdblocks[16] = { 0, 500, 640, 320, 800, 1280, 1440, 1600, 720, 360, 720 };
 
@@ -1155,14 +1196,15 @@ static int devioctl(Z8K *c, int fd, unsigned cmd, Ad p)
 	}
 	if (e < 0 || e != console_ent())
 		return -ENOTTY;
+	con_load();
 	switch (cmd) {
 	case ('t' << 8) | 8: gwrite(c, p, con_sgtty, 6); return 0;			/* TIOCGETP */
-	case ('t' << 8) | 9: case ('t' << 8) | 10: gread(c, p, con_sgtty, 6); return 0;	/* TIOCSETP, TIOCSETN */
+	case ('t' << 8) | 9: case ('t' << 8) | 10: gread(c, p, con_sgtty, 6); con_save(); return 0;	/* TIOCSETP, TIOCSETN */
 	case ('t' << 8) | 18: gwrite(c, p, con_tchars, 6); return 0;			/* TIOCGETC */
-	case ('t' << 8) | 17: gread(c, p, con_tchars, 6); return 0;			/* TIOCSETC */
+	case ('t' << 8) | 17: gread(c, p, con_tchars, 6); con_save(); return 0;	/* TIOCSETC */
 	case ('t' << 8) | 16: case ('t' << 8) | 2: return 0;				/* TIOCFLUSH, TIOCHPCL */
 	case ('T' << 8) | 1: gwrite(c, p, con_termio, 18); return 0;			/* TCGETA */
-	case ('T' << 8) | 2: case ('T' << 8) | 3: case ('T' << 8) | 4: gread(c, p, con_termio, 18); return 0;
+	case ('T' << 8) | 2: case ('T' << 8) | 3: case ('T' << 8) | 4: gread(c, p, con_termio, 18); con_save(); return 0;	/* TCSETA, TCSETAW, TCSETAF */
 	case ('T' << 8) | 5: case ('T' << 8) | 6: case ('T' << 8) | 7: return 0;	/* TCSBRK, TCXONC, TCFLSH */
 	}
 	return -EINVAL;
