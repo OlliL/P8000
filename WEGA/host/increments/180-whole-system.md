@@ -57,6 +57,12 @@ same bytes; (2) a disk image of the install tree boots in the MAME P8000 machine
 
 1. Self-hosted build: the PATH of the build names the tools of the install tree instead of the originals.
 2. Disk image from the install tree; boot in MAME; the list of commands.
+3. Native build in MAME (owner 2026-11-25; the plan `future-project-structure.md` in the repository root, section
+   "Native build in MAME"): a file system image that holds the git files of the tree (`wegafs.py`: a command that puts
+   a whole directory tree is needed; where the image goes, a second disk or a partition, is to be measured in the MAME
+   machine), boot single-user, mount it, run the complete build with the native make and tools, end MAME, take the
+   install tree out of the image (`wegafs.py extract`), compare with the cross build. Not a must for this increment,
+   but its tools (image, boot, mount) are made here and later move to `native/p8000-wega/` of ZEUS-WEGA.
 
 ## Decisions
 
