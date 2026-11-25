@@ -9,6 +9,8 @@
 /sort
 /nl
 /grep
+/egrep
+/egrep.c
 /gets
 /kill
 /pwd

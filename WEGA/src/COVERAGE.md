@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 89 | 3 | 8 | 11 |
+| [bin](#bin) | 111 | 90 | 3 | 7 | 11 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 945 | 11 | 147 | 94 |
+| **all** | 1197 | 946 | 11 | 146 | 94 |
 
 <a id="root"></a>
 ## root
@@ -74,7 +74,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/echo2` | binary E707 | `src/cmd/echo2.c` | exact | ccv0 | libc-v1.a |
 | `bin/ed` | binary E707 | `tmp/sys3/usr/src/cmd/ed/ed.c` | sys3 | D12 old, D1 slots | - |
 | `bin/edit` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
-| `bin/egrep` | binary E707 | `tmp/sys3/usr/src/cmd/egrep.y` | sys3 | D12 new?, D1 loose | - |
+| `bin/egrep` | binary E707 | `src/cmd/egrep.y` | exact | ccvm | libc.a |
 | `bin/env` | binary E707 | `src/cmd/env.c` | exact | ccv0 | libc-v1.a |
 | `bin/ex` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
 | `bin/fc` | binary E607 | - | todo | D12 new?, D1 - | - |

@@ -1,0 +1,217 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccvm",
+ "binary": "/bin/egrep",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "yyerror": {
+   "file": "egrep.y",
+   "orig": "0x0042",
+   "size_orig": 30,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0eac"
+   ]
+  },
+  "yylex": {
+   "file": "egrep.y",
+   "orig": "0x0060",
+   "size_orig": 338,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0eac"
+   ]
+  },
+  "nextch": {
+   "file": "egrep.y",
+   "orig": "0x01b2",
+   "size_orig": 90,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0060"
+   ]
+  },
+  "synerror": {
+   "file": "egrep.y",
+   "orig": "0x020c",
+   "size_orig": 20,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "enter": {
+   "file": "egrep.y",
+   "orig": "0x0220",
+   "size_orig": 64,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "cclenter": {
+   "file": "egrep.y",
+   "orig": "0x0260",
+   "size_orig": 34,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "node": {
+   "file": "egrep.y",
+   "orig": "0x0282",
+   "size_orig": 102,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "unary": {
+   "file": "egrep.y",
+   "orig": "0x02e8",
+   "size_orig": 82,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "overflo": {
+   "file": "egrep.y",
+   "orig": "0x033a",
+   "size_orig": 20,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x03c0",
+    "0x08fc"
+   ]
+  },
+  "cfoll": {
+   "file": "egrep.y",
+   "orig": "0x034e",
+   "size_orig": 114,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x034e",
+    "0x09ee"
+   ]
+  },
+  "cgotofn": {
+   "file": "egrep.y",
+   "orig": "0x03c0",
+   "size_orig": 992,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ee"
+   ]
+  },
+  "cstate": {
+   "file": "egrep.y",
+   "orig": "0x07a0",
+   "size_orig": 186,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x03c0",
+    "0x07a0"
+   ]
+  },
+  "member": {
+   "file": "egrep.y",
+   "orig": "0x085a",
+   "size_orig": 68,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x03c0"
+   ]
+  },
+  "notin": {
+   "file": "egrep.y",
+   "orig": "0x089e",
+   "size_orig": 94,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x03c0"
+   ]
+  },
+  "add": {
+   "file": "egrep.y",
+   "orig": "0x08fc",
+   "size_orig": 106,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x034e",
+    "0x03c0"
+   ]
+  },
+  "follow": {
+   "file": "egrep.y",
+   "orig": "0x0966",
+   "size_orig": 136,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x034e"
+   ]
+  },
+  "main": {
+   "file": "egrep.y",
+   "orig": "0x09ee",
+   "size_orig": 378,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "WEGA: the usage test also asks for !eflag (egrep -e exp without a file reads the standard input); System III only !fflag"
+  },
+  "execute": {
+   "file": "egrep.y",
+   "orig": "0x0b68",
+   "size_orig": 836,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ee"
+   ]
+  },
+  "yyparse": {
+   "file": "yaccpar",
+   "orig": "0x0eac",
+   "size_orig": 748,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09ee"
+   ],
+   "note": "from /usr/lib/yaccpar by yacc"
+  }
+ }
+}

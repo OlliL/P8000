@@ -1,0 +1,424 @@
+# The cases of the corpus of egrep (compare/egrep/corpus.py); the format: host/recon/casefile.py. src = src/cmd/egrep.y.
+
+== simple
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep apple t.in
+
+== no-match
+# src: exit 1 without a match
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep zebra t.in
+
+== v
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -v apple t.in
+
+== c
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -c apple t.in
+
+== n
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -n a t.in
+
+== b
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -b cake t.in
+
+== vn
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -vn apple t.in
+
+== cv
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -cv apple t.in
+
+== alt
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep 'pie|cake' t.in
+
+== alt-group
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep '(ban|ch)an?' t.in
+
+== plus
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep 'p+l' t.in
+
+== quest
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep 'crumbl?e' t.in
+
+== star
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep 'a.*e$' t.in
+
+== class
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep '[bc]a' t.in
+
+== neg-class
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep '^[^abc]' t.in
+
+== range
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep '[A-C]' t.in
+
+== anchor
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep '^a' t.in
+
+== dollar
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep 't$' t.in
+
+== backslash
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep 'p\.' t.in
+
+== e-option
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -e '-' t.in
+
+== e-dash
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -e roll t.in
+
+== syntax-error
+# src: egrep: syntax error, exit 2
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep 'a(' t.in
+
+== syntax-error2
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep '*' t.in
+
+== missing
+# src: can't open, the other file goes on, exit 2
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep apple nofile t.in
+
+== bad-option
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -x apple t.in
+
+== empty-parens
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep '()' t.in
+
+== usage
+# src: without a pattern: the usage on stdout, exit 2
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep
+
+== f-missing
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -f nofile t.in
+
+== two-files
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- u
+apple tree
+kiwi
+-- case
+step: egrep apple t.in u
+
+== two-files-c
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- u
+apple tree
+kiwi
+-- case
+step: egrep -c apple t.in u
+
+== l
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- u
+kiwi
+-- case
+step: egrep -l apple t.in u
+
+== f
+# src: each line of the file is an alternative (the newline is OR)
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- pat
+fig
+cherry|date
+-- case
+step: egrep -f pat t.in
+
+== stdin
+-- in
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep an
+stdin: in
+
+== e-stdin
+# WEGA: -e without a file reads the standard input (System III gives the usage)
+-- in
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -e an
+stdin: in
+
+== f-stdin
+-- pat
+roll
+-- in
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -f pat
+stdin: in
+
+== l-stdin
+-- in
+apple pie
+banana split
+cherry tart
+apple crumble
+date cake
+fig roll
+Apple juice
+-- case
+step: egrep -l an
+stdin: in

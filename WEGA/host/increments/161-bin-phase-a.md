@@ -69,7 +69,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] who (11540)
 - [x] nm (12026) -- deferred: WEGA rewrote it for s.out (vs.out, segmented, line tables)
 - [x] diff (12258)
-- [x] egrep (12618) -- deferred: built by yacc; the yacc parser of WEGA is not reconstructed yet
+- [x] egrep (12618) -- byte-identical (2026-11-25): egrep.y of System III by the yacc of WEGA, ccvm, libc.a; WEGA adds the sccsid and `!eflag` in the usage test
 - [x] uulog (12784)
 - [x] ls (13512) -- deferred: 2BSD ls with WEGA options; needs a libc with setbuf, qsort, fgetc, fread
 - [x] newgrp (13898)

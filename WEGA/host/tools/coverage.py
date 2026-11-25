@@ -160,8 +160,9 @@ def find_source(rel):
         return 'cmd/doscopy'
     if name.startswith('sa.') and rel.count('/') == 0:
         return 'cmd/standalone'
-    if os.path.exists(os.path.join(SRC, 'cmd', name + '.c')):
-        return 'cmd/%s.c' % name
+    for e in ('.y', '.c'):		# a yacc source before the C file it makes (egrep.y -> egrep.c)
+        if os.path.exists(os.path.join(SRC, 'cmd', name + e)):
+            return 'cmd/%s%s' % (name, e)
     if os.path.isdir(os.path.join(SRC, 'cmd', name)):	# a directory only: not a program left built in src/cmd
         return 'cmd/%s' % name
     return None
@@ -222,7 +223,7 @@ def tools(rel, src):
     top = os.path.join(SRC, 'cmd', 'Makefile')
     text = open(top, errors='replace').read()
     tv = makefile_vars(top)
-    if src.startswith('cmd/') and src.count('/') == 1 and src.endswith('.c'):
+    if src.startswith('cmd/') and src.count('/') == 1 and src.endswith(('.c', '.y')):
         base = os.path.basename(src)[:-2]
         m = re.search(r'^%s\.o:.*\n\t\$\((\w+)\)' % re.escape(base), text, re.M)
         cc = CCNAME.get(m.group(1), m.group(1)) if m else CCNAME['CC']

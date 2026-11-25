@@ -108,6 +108,7 @@ du
 env
 nohup
 grep
+egrep
 nl
 sort
 touch
