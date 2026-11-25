@@ -1,7 +1,7 @@
 # uucp: the programs of BSD uucp (WEGA's uucp is BSD's: uuname.c of 4BSD with uucp.h of 3BSD, UNAME defined, UUCP
 # /bin/uucp; uucpname.c alike in both; uulog and its modules of 3BSD: uucpdefs.h with the version string of WEGA and one
-# Sysfiles entry, ulockf.c without lock() and its sccs string, rmlock keeps the result of unlink), built by the shipped cc with /lib/libc.a; and SQFILE (/usr/lib/uucp) and remotelines (/usr/spool/uucp) of the WEGA root, and the files of uucp in /usr/lib/uucp that System III's uucp.mk copies (cp $(UPATH)/L* $(UPATH)/USERFILE $(INSDIR); chmod 400 L.sys USERFILE); the files are those of the WEGA root. Of the programs uuname, uulog and uux are here yet (uux partial). uux: 3BSD uux.c and modules with the changes of WEGA (fread/fwrite
-# of stdin, fprintf for the unknown flag, no expfile in the local receive, no sccs strings; gename: sprintf then fprintf; chkpth:
+# Sysfiles entry, ulockf.c without lock() and its sccs string, rmlock keeps the result of unlink), built by the shipped cc with /lib/libc.a; and SQFILE (/usr/lib/uucp) and remotelines (/usr/spool/uucp) of the WEGA root, and the files of uucp in /usr/lib/uucp that System III's uucp.mk copies (cp $(UPATH)/L* $(UPATH)/USERFILE $(INSDIR); chmod 400 L.sys USERFILE); the files are those of the WEGA root. Of the programs uuname, uulog and uux are here yet. uux: 3BSD uux.c and modules with the changes of WEGA (fread/fwrite
+# of stdin with the count in ret (no variable n), fprintf for the unknown flag, no expfile in the local receive, no sccs strings; gename: sprintf then fprintf; chkpth:
 # DEBUG lines in chkperm, no ANYWRITE test, (char *)u in rdpth); uucp.h: PUBDIR /usr/spool/uucp/uucppublic.
 #
 #   make install PREFIX=dir    install below dir/ (the modes of the WEGA root)

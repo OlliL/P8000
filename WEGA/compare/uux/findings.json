@@ -15,12 +15,11 @@
    "file": "uux.c",
    "orig": "0x002a",
    "size_orig": 3002,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000"
-   ],
-   "note": "the frame: from n (the fread count) on, the locals of the original lie 2 bytes lower; three orders of the declarations tried."
+   ]
   },
   "cleanup": {
    "file": "uucp (module of cleanup)",

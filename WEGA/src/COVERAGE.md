@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 88 | 4 | 8 | 11 |
+| [bin](#bin) | 111 | 89 | 3 | 8 | 11 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 944 | 12 | 147 | 94 |
+| **all** | 1197 | 945 | 11 | 147 | 94 |
 
 <a id="root"></a>
 ## root
@@ -146,7 +146,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/uulog` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |
 | `bin/uuname` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |
 | `bin/uusend` | binary E707 | - | todo | D12 old?, D1 loose | - |
-| `bin/uux` | binary E707 | `src/cmd/uucp` | partial | cc | - |
+| `bin/uux` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |
 | `bin/verify` | binary E707 | `src/cmd/verify` | exact | cc | libc.a |
 | `bin/vi` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
 | `bin/view` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |

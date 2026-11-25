@@ -47,7 +47,6 @@ char *argv[];
 	FILE *xqtstr();
 	extern char *getprm(), *index(), *lastpart();
 	int uid, ret;
-	int n;
 	char redir = '\0';
 
 	uucpname(Myname);
@@ -140,8 +139,8 @@ char *argv[];
 		ASSERT(fpd != NULL, "CAN'T OPEN %s", dfile);
 		chmod(dfile, 0666);
 		while (!feof(stdin)) {
-			n = fread(buf, 1, BUFSIZ, stdin);
-			fwrite(buf, 1, n, fpd);
+			ret = fread(buf, 1, BUFSIZ, stdin);
+			fwrite(buf, 1, ret, fpd);
 		}
 		fclose(fpd);
 		if (strcmp(local, xsys) != SAME) {

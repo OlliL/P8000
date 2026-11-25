@@ -144,6 +144,8 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   ALL OK (857 files), COVERAGE: exact 943.
 - 2026-11-25 local: IDENTICAL. A Zilog binary of 02/84 (SCCS line patched): the cparse of 1984 (ccvz, OLD_D12B: statics in the
   .bss) and libc-v14 (shipped libc.a with the six ZEUS 3.21 members data, filbuf, doscan, printf, doprnt, malloc, from C; `src/head/oldnfile40`). checkall ALL OK (858 files), COVERAGE exact 944.
+- 2026-11-25 uux: IDENTICAL. The frame of main: the original has no variable n, the fread count goes into ret (the
+  three orders of the declarations tried before could not give it). Corpus 2 of 2; checkall ALL OK (859 files), COVERAGE exact 945.
 
 ## Phase B regcmp: solved (2026-11-25)
 
