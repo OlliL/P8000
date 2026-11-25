@@ -1,7 +1,9 @@
 # Future project structure: ZEUS and WEGA in one tree
 
 Status: plan, not implemented. Nothing moves before the restoration of
-the original WEGA is finished and ZEUS 3.21 has been restored.
+the original WEGA is finished; then only the old tool chain moves to
+`old/` (see "Steps"). The split into `src/` and `variant/` follows
+after ZEUS 3.21 has been restored.
 
 ## Background
 
@@ -19,11 +21,13 @@ the original WEGA is finished and ZEUS 3.21 has been restored.
 | Target | What | Kept as |
 |---|---|---|
 | original WEGA | the version restored now, byte-identical with the shipped one | git tag `wega-orig` only |
-| ZEUS 3.21 | latest ZEUS, byte-identical with the shipped one | variant `zeus` in the tree |
+| original ZEUS 3.21 | latest ZEUS, byte-identical with the shipped one | git tag `zeus-orig` |
+| ZEUS 3.21 | its sources, built with the newest compiler and libc | variant `zeus` in the tree |
 | new WEGA | ZEUS 3.21 plus the WEGA hardware and WEGA programs | variant `wega` in the tree |
 
 Older WEGA versions do not matter. The original WEGA lives only in its
-tag. After the tag the tree builds ZEUS 3.21 and the new WEGA.
+tag, the byte-identical ZEUS 3.21 in its own. After both tags the tree
+builds ZEUS 3.21 and the new WEGA.
 
 ## Rule: `src/` holds only what both variants share
 
@@ -117,7 +121,7 @@ P8000/
       MANIFEST
       brand.tab        string exchange in the binaries (see Branding)
   src/tools/brand.c    the branding program (shared, not installed)
-  host/                shared: emulator, recon, bincmp, tool chain (ccv0, ccv1, ccvm, ...)
+  host/                shared: emulator, recon, bincmp
   ref/                 shipped binaries as reference
     zeus-3.21/
     wega-orig/
@@ -129,9 +133,92 @@ P8000/
 
 - Build: `make VARIANT=zeus` or `make VARIANT=wega`. Sources come from
   `src/` and `variant/$(VARIANT)/`.
-- checkall takes `VARIANT` and compares against `ref/<variant>`.
-- Libraries and compilers of several generations (`libc-vN`, `ccvN`)
-  stay shared, as now.
+- checkall takes `VARIANT`. ZEUS 3.21 and the new WEGA are built with
+  the newest compiler and libc only (see "Old tool chain"), so they are
+  no longer byte-identical with `ref/`; the corpora (original binary
+  against the new build) are the test. Byte identity is checked only in
+  the tags `wega-orig` and `zeus-orig`.
+
+## Old tool chain
+
+Today the tree holds many old compiler versions (`ccv0`, `ccv1`,
+`ccvm`, ...) with many `OLD_D...` switches, and many libraries
+`libc-v0` ... `libc-v14`. They exist only so that the originals build
+byte-identically. The names follow the order in which they turned up,
+and the switches make the compiler sources hard to read.
+
+The original WEGA is based on an older ZEUS, so its old compilers are
+old ZEUS compilers. The restoration of ZEUS 3.21 reuses them and will
+probably add more. The old tool chain therefore stays until both
+originals are tagged, and is then removed from the tree.
+
+### `old/`
+
+Before the tag `wega-orig` everything old moves to its own tree:
+
+```
+old/
+  cc/            the old compilers, one clean source per version
+  libc/          the old libraries
+  BUILD.wega     per program: compiler, libc (and switches) of the original WEGA
+  BUILD.zeus     the same for ZEUS 3.21 (added during its restoration)
+  BUILD.mk       the one in use: a copy of BUILD.$(VARIANT)
+```
+
+- `src/` then holds only the newest compiler and the shipped libc.
+- `BUILD.*` is the only place that says which compiler and libc a
+  program uses. It is a make include file, one block per program:
+
+  ```
+  CC_ed = ../../../old/cc/<name>/cc
+  LIBC_ed = ../../../old/libc/<name>.a
+  ```
+
+  The Makefile of the program reads it and uses the variables instead
+  of fixed paths:
+
+  ```
+  include ../../../old/BUILD.mk
+  ed: ed.o
+  	$(CC_ed) -o ed ed.o $(LIBC_ed)
+  ```
+
+- WEGA's make (`src/cmd/make/gram.y`) has `include`, measured:
+  - the path goes to `fopen` unchanged, macros are not expanded, so
+    `include .../BUILD.$(VARIANT)` does not work: a fixed relative path
+    only (depending on the depth of the directory);
+  - exactly one blank after `include`: the loop meant to skip blanks
+    tests `*p != TAB || *p != BLANK`, which is always true (original
+    bug).
+  Therefore the root Makefile copies `old/BUILD.$(VARIANT)` to
+  `old/BUILD.mk` before it builds (`cp`, native).
+- The host tools (coverage.py, setup.py, checkall) read the same file
+  instead of parsing the Makefiles: one table for people, build and
+  tools.
+- The `OLD_D...` switches are resolved with `unifdef` and the switch set
+  of each version into one clean source per version (e.g.
+  `old/cc/<name>/` without any `#ifdef OLD_...`). checkall proves that
+  each generated version still builds byte-identically. The switched
+  source then goes (it stays in the git history).
+- Names: versions named by evidence (e.g. a date from the sccsid of a
+  compiler pass or from the programs built with it), so that the names
+  also hold for ZEUS instead of continuing the numbering in the order
+  of discovery. Many `libc-vN` are not historical libraries but mixes
+  (the shipped libc with members exchanged); a date there would be a
+  false precision, a descriptive name plus a table in `BUILD.*` is
+  better. Where a rename is not worth it, the name stays; a comment in
+  `BUILD.*` holds name and evidence.
+- Both tags have the same `old/` layout, so the tools (matrix, switches,
+  checkall) work for both.
+
+### After `zeus-orig`
+
+`git rm -r old/`; in all Makefiles one mechanical change: the `include`
+line goes, `$(CC_x)` becomes `$(CC)` and `$(LIBC_x)` becomes `-lc`. Programs
+built with an old compiler until then may behave differently with the
+newest one (undefined behaviour, quirks of old library members). The
+corpora find this; they therefore stay in the tree, not only in the
+tags.
 
 ## Trade-offs
 
@@ -145,22 +232,23 @@ P8000/
 ## Steps
 
 1. Finish the restoration of the original WEGA in the current layout.
-   Tag `wega-orig`.
-2. Record already now, per restored program, its origin:
-   - Zb: ZEUS file, only the copyright string exchanged
-   - Zm: ZEUS file changed by WEGA
-   - W: WEGA's own development
-   (e.g. a field in `findings.json` or a column in `COVERAGE.md`). This
-   is the basis for the split.
-3. Restore ZEUS 3.21 byte-identically.
-4. Split file by file:
+2. Move the old tool chain to `old/`: resolve the switches with
+   `unifdef`, rename by evidence, write `BUILD.wega`. checkall stays
+   ALL OK.
+3. Tag `wega-orig`.
+4. Restore ZEUS 3.21 byte-identically, with the same `old/` (extended
+   as needed, `BUILD.zeus`).
+5. Tag `zeus-orig`: both originals build byte-identically.
+6. Remove `old/`; everything builds with the newest compiler and libc.
+   The corpora are the test.
+7. Split file by file:
    - identical (copyright string aside): `src/`
    - only in one variant: that variant
    - different: both variants; the WEGA copy becomes a merge task
    Files that differ only in exchanged strings go to `src/` with the
    ZEUS strings; the differences become lines of `brand.tab`. Until
    then the WEGA strings stay in the source, as now.
-5. New WEGA: for each differing file decide whether the WEGA change
+8. New WEGA: for each differing file decide whether the WEGA change
    (hardware) is carried over onto the 3.21 version, or the 3.21 version
    is taken as is. Taken as is means it moves to `src/`.
 
