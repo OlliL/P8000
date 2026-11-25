@@ -1956,6 +1956,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v12 | chkin (09/83): the shipped libc.a with printf and doprnt 0_4 in their places (ar r); newgrp (09/83), mail (11/83) |
 | libc-v13 | dd (12/82): libc-v10 with open 0_1 (two arguments; write and rmdir have the open of three) |
 | libc-v14 | local (02/84): the shipped libc.a with data 0_2, filbuf 0_5 (both `_NFILE` 40, `src/head/oldnfile40`), doscan 0_2, printf 0_8, doprnt 0_9, malloc 0_7 in their places (ar r): the members of the libc.a of ZEUS 3.21 |
+| libc-v15 | stty (12/83): the shipped libc.a with doprnt 0_10 in its place (ar r): the shipped doprnt.c with `base = 0; val.l = 0;` after `fpn = 0;` (two more locals set to 0, a version after 11/83); no other libc-vN has the members of stty in its versions (printf of the shipped libc.a) |
 
 The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. `slibc.a`: see "libc.a and slibc.a: one tree".
 A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.

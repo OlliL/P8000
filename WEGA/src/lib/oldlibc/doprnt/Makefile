@@ -8,7 +8,7 @@ CCV0 = ccv0
 CCV0P = ccv0p
 CAS = cas
 
-objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_5.o 0_6.o 0_7.o 0_8.o 0_9.o
+objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_5.o 0_6.o 0_7.o 0_8.o 0_9.o 0_10.o
 
 0_1.o: 0_1.s
 	$(CAS) -u -o 0_1.o 0_1.s
@@ -36,5 +36,8 @@ objs: 0_1.o 0_2.o 0_3.o 0_4.o 0_5.o 0_6.o 0_7.o 0_8.o 0_9.o
 
 0_9.o: 0_9.c
 	$(CC) -O -I../../../head/oldnfile40 -c 0_9.c
+
+0_10.o: 0_10.c
+	$(CC) -O -c 0_10.c
 
 .PHONY: objs

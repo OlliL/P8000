@@ -1,0 +1,207 @@
+# The cases of the corpus of stty (compare/stty/corpus.py); the format: host/recon/casefile.py. src = src/cmd/stty.c.
+# Every step on the console (terminal: console); a set mode is not seen by a later step (the console of z8k-emu per process).
+
+== print
+# src: no argument: the settings that differ from sane
+-- case
+terminal: console
+step: stty
+
+== all
+-- case
+terminal: console
+step: stty -a
+
+== encoded
+-- case
+terminal: console
+step: stty -g
+
+== modes-0
+-- case
+terminal: console
+step: stty 0
+step: stty 75
+step: stty 110
+step: stty 134
+step: stty 134.5
+step: stty 150
+step: stty 200
+step: stty 300
+step: stty 600
+step: stty 1200
+step: stty 2400
+step: stty 4800
+step: stty 9600
+step: stty 19200
+step: stty exta
+
+== modes-1
+-- case
+terminal: console
+step: stty -parity
+step: stty -evenp
+step: stty -oddp
+step: stty parity
+step: stty evenp
+step: stty oddp
+step: stty parenb
+step: stty -parenb
+step: stty parodd
+step: stty -parodd
+step: stty cs8
+step: stty cs7
+step: stty cs6
+step: stty cs5
+step: stty cstopb
+step: stty -cstopb
+step: stty hupcl
+step: stty hup
+step: stty -hupcl
+step: stty -hup
+step: stty clocal
+step: stty -clocal
+step: stty cread
+step: stty -cread
+step: stty raw
+step: stty -raw
+step: stty cooked
+step: stty sane
+
+== modes-2
+-- case
+terminal: console
+step: stty ignbrk
+step: stty -ignbrk
+step: stty brkint
+step: stty -brkint
+step: stty ignpar
+step: stty -ignpar
+step: stty parmrk
+step: stty -parmrk
+step: stty inpck
+step: stty -inpck
+step: stty istrip
+step: stty -istrip
+step: stty inlcr
+step: stty -inlcr
+step: stty igncr
+step: stty -igncr
+step: stty icrnl
+step: stty -icrnl
+step: stty -nl
+step: stty nl
+step: stty iuclc
+step: stty -iuclc
+step: stty lcase
+step: stty -lcase
+step: stty LCASE
+step: stty -LCASE
+step: stty ixon
+step: stty -ixon
+step: stty ixany
+step: stty -ixany
+step: stty ixoff
+step: stty -ixoff
+
+== modes-3
+-- case
+terminal: console
+step: stty isig
+step: stty -isig
+step: stty icanon
+step: stty -icanon
+step: stty xcase
+step: stty -xcase
+step: stty echo
+step: stty -echo
+step: stty echoe
+step: stty -echoe
+step: stty echok
+step: stty -echok
+step: stty lfkc
+step: stty -lfkc
+step: stty echonl
+step: stty -echonl
+step: stty noflsh
+step: stty -noflsh
+
+== modes-4
+-- case
+terminal: console
+step: stty opost
+step: stty -opost
+step: stty olcuc
+step: stty -olcuc
+step: stty onlcr
+step: stty -onlcr
+step: stty ocrnl
+step: stty -ocrnl
+step: stty onocr
+step: stty -onocr
+step: stty onlret
+step: stty -onlret
+step: stty fill
+step: stty -fill
+step: stty nul-fill
+step: stty del-fill
+step: stty ofill
+step: stty -ofill
+step: stty ofdel
+step: stty -ofdel
+step: stty cr0
+step: stty cr1
+step: stty cr2
+step: stty cr3
+step: stty tab0
+step: stty tabs
+step: stty tab1
+step: stty tab2
+step: stty tab3
+step: stty -tabs
+step: stty nl0
+step: stty nl1
+step: stty ff0
+step: stty ff1
+step: stty vt0
+step: stty vt1
+step: stty bs0
+step: stty bs1
+step: stty tty33
+step: stty tn300
+step: stty ti700
+step: stty vt05
+step: stty tek
+step: stty tty37
+
+== several
+-- case
+terminal: console
+step: stty raw -echo cs7 parenb
+step: stty sane
+step: stty -raw cooked tabs
+
+== chars
+# src: a control character, ^x, - (undefined); erase without a value
+-- case
+terminal: console
+step: stty erase ^h kill ^u intr ^c quit ^\\
+step: stty eof ^d eol ^e min 1 time 2
+step: stty erase - kill -
+step: stty line 1
+step: stty ek
+step: stty erase
+
+== unknown
+# src: unknown mode: %s
+-- case
+terminal: console
+step: stty nosuchmode
+step: stty raw nosuchmode
+
+== options
+-- case
+terminal: console
+step: stty -x
+step: stty -ag
+step: stty -a raw

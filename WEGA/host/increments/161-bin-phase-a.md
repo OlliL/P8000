@@ -74,7 +74,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] ls (13512) -- deferred: 2BSD ls with WEGA options; needs a libc with setbuf, qsort, fgetc, fread
 - [x] newgrp (13898)
 - [x] passwd (15188)
-- [x] stty (15702) -- deferred: 12/83, its doprnt/printf are of a libc we do not have
+- [x] stty (15702) -- byte-identical (2026-11-25): stty.c of System III with the WEGA speeds and modes, the shipped cc, libc-v15 (new: libc.a with doprnt 0_10)
 - [x] ed (16750) -- deferred: needs libc-v4 members (fakcu, strncpy, pipe, dup, chown) and setret; 69 functions
 - [x] mail (18572); link: rmail
 - [x] login (19030); same file as etc/login -- deferred: rewritten by WEGA (ttytype, termcap, csh) and a libc with large gaps

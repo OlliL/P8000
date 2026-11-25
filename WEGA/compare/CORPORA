@@ -57,6 +57,7 @@ dosformat
 size
 nm
 file
+stty
 format
 write
 copydisk

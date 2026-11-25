@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 93 | 2 | 5 | 11 |
+| [bin](#bin) | 111 | 94 | 2 | 4 | 11 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 949 | 10 | 144 | 94 |
+| **all** | 1197 | 950 | 10 | 143 | 94 |
 
 <a id="root"></a>
 ## root
@@ -129,7 +129,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/sld` | binary E611 | `src/cmd/sld` | exact | scc | slibc-v9.a |
 | `bin/sleep` | binary E707 | `src/cmd/sleep.c` | exact | ccv0 | libc-v1.a |
 | `bin/sort` | binary E707 | `src/cmd/sort.c` | exact | ccv1 | libc-v6.a |
-| `bin/stty` | binary E707 | `tmp/sys3/usr/src/cmd/stty.c` | sys3 | D12 old, D1 loose | - |
+| `bin/stty` | binary E707 | `src/cmd/stty.c` | exact | cc | libc-v15.a |
 | `bin/su` | binary E707 | `src/cmd/su.c` | exact | ccv1 | libc-v4.a |
 | `bin/sum` | binary E707 | `src/cmd/sum.c` | exact | ccv0 | libc-v1.a |
 | `bin/sync` | binary E707 | `src/cmd/sync.c` | exact | cc | libc.a |

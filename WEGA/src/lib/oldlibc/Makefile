@@ -19,6 +19,7 @@
 #   libc-v12.a chkin (09/83): the shipped libc.a (../libc) with printf and doprnt 0_4 in their places
 #   libc-v13.a dd (12/82): libc-v10 with open 0_1 (two arguments)
 #   libc-v14.a local (02/84): the shipped libc.a (../libc) with _NFILE 40 and data, filbuf, doscan, printf, doprnt, malloc of 1984
+#   libc-v15.a stty (12/83): the shipped libc.a (../libc) with doprnt 0_10 (base and val set to 0 first)
 #
 #   make        (needs ../libc made, and ccv1, ccv0, ccv0p)
 #   make clean
@@ -32,7 +33,7 @@ CCV0P = ccv0p
 CAS = cas
 AR = ar
 
-LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a ../libc-v12.a ../libc-v13.a ../libc-v14.a
+LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a ../libc-v11.a ../libc-v12.a ../libc-v13.a ../libc-v14.a ../libc-v15.a
 
 all: $(LIBS)
 
@@ -213,6 +214,13 @@ LIBv11 = putchar/0_1.o freopen/0_1.o fseek/0_2.o ftell/0_1.o rew/0_1.o rdwr/0_3.
 	rm -f $@ ; cp ../libc/build/nonseg/libc.a $@
 	cd v14.d ; $(AR) r ../../libc-v14.a data.o filbuf.o doscan.o printf.o doprnt.o malloc.o
 	rm -rf v14.d
+
+# stty (12/83): the shipped library with doprnt 0_10
+../libc-v15.a: objs ../libc/build/nonseg/libc.a
+	rm -rf v15.d ; mkdir v15.d ; cp doprnt/0_10.o v15.d/doprnt.o
+	rm -f $@ ; cp ../libc/build/nonseg/libc.a $@
+	cd v15.d ; $(AR) r ../../libc-v15.a doprnt.o
+	rm -rf v15.d
 
 # the modules: each directory makes its objects with its own Makefile
 objs:

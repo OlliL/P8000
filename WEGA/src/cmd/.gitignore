@@ -13,6 +13,7 @@
 /egrep.c
 /nm
 /file
+/stty
 /gets
 /kill
 /pwd

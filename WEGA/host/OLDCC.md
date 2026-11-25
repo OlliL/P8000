@@ -76,11 +76,11 @@ register variables: "slots" (as many never used frame words as saved registers: 
 | no stamp, libc 09/83 | padded | cc, scc, tar, format, verify, copydisk, gld, pburn | shipped |
 
 To check: nroff 07/08/83 padded (its first strings may be the binary hyphenation tables), find 10/25/83, upkeep 11/22/83
-and stty 12/21/83 packed (built by an old compiler late, or few strings), id 05/83 and the getty programs mixed.
+id 05/83 and the getty programs mixed. (stty 12/21/83, packed by the measure: the shipped cc, measured; few strings.)
 
 ### shipped
 
-Builds byte-identically: cc, scc, tar, dump, dumpdir, restor, sync, getud, putud, format, verify, copydisk, pburn,
+Builds byte-identically: cc, scc, stty (with libc-v15), tar, dump, dumpdir, restor, sync, getud, putud, format, verify, copydisk, pburn,
 the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibcurses.a` (1988, without -O) (`make -C host checkall`). All of them are linked with libc members of
 09/12/83 or later.
 

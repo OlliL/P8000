@@ -1,0 +1,141 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/stty",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "stty.c",
+   "orig": "0x0042",
+   "size_orig": 1034,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ]
+  },
+  "eq": {
+   "file": "stty.c",
+   "orig": "0x044c",
+   "size_orig": 68,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "prmodes": {
+   "file": "stty.c",
+   "orig": "0x0490",
+   "size_orig": 872,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "pramodes": {
+   "file": "stty.c",
+   "orig": "0x07f8",
+   "size_orig": 1190,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "gct": {
+   "file": "stty.c",
+   "orig": "0x0c9e",
+   "size_orig": 58,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "pit": {
+   "file": "stty.c",
+   "orig": "0x0cd8",
+   "size_orig": 140,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0490",
+    "0x07f8"
+   ]
+  },
+  "delay": {
+   "file": "stty.c",
+   "orig": "0x0d64",
+   "size_orig": 26,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0490",
+    "0x07f8"
+   ]
+  },
+  "prspeed": {
+   "file": "stty.c",
+   "orig": "0x0d7e",
+   "size_orig": 26,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0490",
+    "0x07f8"
+   ]
+  },
+  "prencode": {
+   "file": "stty.c",
+   "orig": "0x0d98",
+   "size_orig": 90,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "encode": {
+   "file": "stty.c",
+   "orig": "0x0df2",
+   "size_orig": 188,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  }
+ },
+ "note": "The source of System III with the WEGA tables (speeds, speed[], the cflag modes -raw, cooked, sane, the oflag sane); its library is libc-v15: the shipped libc.a with doprnt 0_10 (src/lib/oldlibc)."
+}
