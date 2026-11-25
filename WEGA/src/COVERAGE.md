@@ -118,7 +118,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/putud` | binary E707 | `src/cmd/putud.c` | exact | cc | libc.a |
 | `bin/pwd` | binary E707 | `src/cmd/pwd.c` | exact | ccv0 | libc-v1.a |
 | `bin/regcmp` | binary E707 | `src/cmd/regcmp.c` | exact | ccv1 | libc-v4.a |
-| `bin/remote` | binary E707 | `src/cmd/remote` | exact | cc | -lc |
+| `bin/remote` | binary E707 | `src/cmd/remote` | exact | ccvm | -lc |
 | `bin/rm` | binary E707 | `src/cmd/rm.c` | exact | ccv1 | libc-v6.a |
 | `bin/rmail` | binary E707 | `src/cmd/mail.c` | exact | ccvm | libc-v12.a |
 | `bin/rmdir` | binary E707 | `src/cmd/rmdir.c` | exact | ccv1r | libc-v10.a |

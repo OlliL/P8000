@@ -174,23 +174,38 @@ def makefile_vars(path):
     return v
 
 
+def rule_of(text, target):
+    """(prerequisites, commands) of the rule of target in a Makefile text (target alone or among several), or None"""
+    m = re.search(r'^(?!#)(?:[^:=\n]*\s)?%s(?:\s[^:=\n]*)?\s*:([^=\n]*)\n((?:\t.*\n?)*)' % re.escape(target), text, re.M)
+    return (m.group(1).split(), m.group(2)) if m else None
+
+
 def rule_tools(mk, name, v):
     """(compiler, libc) from the commands of the rule `name:` of the Makefile mk: the first $(CC...) or $(SCC...) and the first
-    $(LIBC...) or $(SLIBC...) that is one archive, other than the defaults CC, SCC, LIBC, SLIBC; None where the rule names none"""
+    $(LIBC...) or $(SLIBC...) that is one archive, other than the defaults CC, SCC, LIBC, SLIBC; a compiler not in the rule
+    from the rules of its objects (remote: remote.o by $(CCVM)); None where the rules name none"""
     try:
         text = open(mk, errors='replace').read().replace('\\\n', ' ')
     except OSError:
         return None, None
-    m = re.search(r'^%s\s*:[^=\n]*\n((?:\t.*\n?)*)' % re.escape(name), text, re.M)
-    if not m:
+    r = rule_of(text, name)
+    if not r:
         return None, None
-    cmds = m.group(1)
+    deps, cmds = r
     cc = lib = None
     for var in re.findall(r'\$\((\w+)\)', cmds):
         if cc is None and re.match(r'^S?CCV\w+$', var) and var in v:
             cc = v[var]
         if lib is None and re.match(r'^S?LIBC\w+$', var) and var in v and v[var].endswith('.a'):
             lib = v[var]
+    for d in deps:
+        if cc is not None:
+            break
+        if d.endswith('.o') and (rd := rule_of(text, d)):
+            for var in re.findall(r'\$\((\w+)\)', rd[1]):
+                if re.match(r'^S?CCV\w+$', var) and var in v:
+                    cc = v[var]
+                    break
     return cc, lib
 
 
