@@ -625,5 +625,5 @@
    "callers": []
   }
  },
- "note": "Phase A started 2026-11-25 (handoff: host/increments/161-bin-phase-a.md, \"Phase B ed / phase A open\"). Source: System III ed.c with the WEGA sccsid, setret/longret for setjmp/longjmp (WEGA has no setjmp.h), -DPWB. Not linked yet: libc-v4 lacks fakcu (_cleanup), strncpy, pipe, dup, chown; ustat is not among the members of the original."
+ "note": "Phase A started 2026-11-25 (handoff: host/increments/161-bin-phase-a.md, \"ed: phase A started\"). Source: System III ed.c with the WEGA sccsid, setret/longret for setjmp/longjmp (WEGA has no setjmp.h), -DPWB. libc-v4 extended for ed (fakcu, strncpy 0_2, chown, dup, pipe; mktemp in front of setret). Open: ustat (not among the members of the original: RESEARCH?) and execlp (no libc defines it: execvp or execl in WEGA)."
 }

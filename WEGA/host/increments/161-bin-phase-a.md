@@ -278,7 +278,11 @@ State in the tree (committed): `src/cmd/ed/` with `ed.c` of System III (unchange
 in front, `<setret.h>`, `ret_buf`, `setret`, `longret` for setjmp/longjmp: WEGA has no setjmp.h, mail.c does the same),
 `ed.mk` and `edfun` of System III (unused), a `Makefile` after `dc/Makefile` (ccv1, `-I../../head/oldv7 -DPWB`, libc-v4,
 own crt0 from crt0.list), `.gitignore`. `compare/ed/` from setup.py (progcfg.py, findings.json: 69 functions f<entry>).
-ed is NOT in SUBDIRS of src/cmd/Makefile and not installed yet: it does not link.
+ed is NOT in SUBDIRS of src/cmd/Makefile and not installed yet. libc-v4 is extended for it (done, checkall ALL OK: its other
+users unchanged): fakcu after sleep 0_3, strncpy 0_2 after strcpy 0_1, chown after chmod, dup after creat, pipe after pause,
+mktemp in front of setret (each of them measured at its place in /bin/ed: the code equal). The link now misses only ustat
+and execlp, both of the source: with `-DPWB -DRESEARCH` (no ustat, no umask) and execl for execlp ed links, but its code
+is 934 bytes larger (13554 against 14488) and its data 108: WEGA changed more (not kept in the tree: execlp is back).
 
 Measured (setup.py, whichlibc.py from OWN_LIM 0x2ea0):
 - Dating: crt0 3.1 01/30/83, D1 slots: ccv1 (neighbours ccv1r, ccv1q, not measured yet). Without `-DPWB` `fss` is
@@ -295,10 +299,8 @@ Measured (setup.py, whichlibc.py from OWN_LIM 0x2ea0):
   `/lib/makekey`, `crypt: cannot generate key` (then the strings of execvp: `/bin/sh`, `/bin/csh`, `PATH`, `:/bin:/usr/bin`).
 
 Next steps:
-1. Library: extend libc-v4 with the missing members at their places (fakcu, strncpy, pipe, dup, chown; as libc-v11 was
-   extended for ex), or find the members in another libc-vN (whichlibc per member, as done for stty). Ask the owner before
-   a new libc-vN; extending an existing one: analyse which programs use libc-v4 (strip, su, nice, time) and show that they
-   do not change (ld takes only what is referenced).
+1. Library: done (libc-v4 extended). No execvp member of any libc defines execlp: the original calls execvp (its member
+   is in /bin/ed, with the strings /bin/sh, /bin/csh, PATH) and/or execl; find which call of ed.c became which.
 2. Build with ccv1 (`make -C src/cmd/ed`), strip, `host/tools/bincmp.py ORIG NEW -v`; data first (strings, the order of
    the message table `_msgtab`), then bss, then code (fnc.py per function, at most 6 attempts each).
 3. Decide RESEARCH / NULLS by the strings and the code (ustat, umask, nulls).
