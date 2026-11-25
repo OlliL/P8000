@@ -9,8 +9,8 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 96 | 3 | 1 | 11 |
-| [etc](#etc) | 67 | 33 | 1 | 18 | 15 |
+| [bin](#bin) | 111 | 97 | 2 | 1 | 11 |
+| [etc](#etc) | 67 | 34 | 0 | 18 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
 | [usr/lib](#usr-lib) | 197 | 119 | 2 | 57 | 19 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 952 | 12 | 139 | 94 |
+| **all** | 1197 | 954 | 10 | 139 | 94 |
 
 <a id="root"></a>
 ## root
@@ -94,7 +94,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/ld` | binary E711 | `src/cmd/ld` | exact | ccv1 | libc-v9.a |
 | `bin/ln` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
 | `bin/local` | binary E707 | `src/cmd/remote` | exact | ccvz | libc-v14.a |
-| `bin/login` | binary E707 | `src/cmd/login.c` | partial | ccv1 | libc-v9.a |
+| `bin/login` | binary E707 | `src/cmd/login.c` | exact | ccv1 | libc-v9.a |
 | `bin/ls` | binary E707 | `src/cmd/ls.c` | exact | ccv1 | libc-v6.a |
 | `bin/mail` | binary E707 | `src/cmd/mail.c` | exact | ccvm | libc-v12.a |
 | `bin/make` | binary E711 | `src/cmd/make` | exact | ccvm | libc.a |
@@ -193,7 +193,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `etc/killall` | text | `src/cmd/killall.sh` | exact | - | - |
 | `etc/labelit` | binary E707 | `tmp/sys3/usr/src/cmd/labelit.c` | sys3 | D12 old, D1 slots | - |
 | `etc/link` | binary E707 | `tmp/sys3/usr/src/cmd/link.c` | sys3 | D12 -, D1 - | - |
-| `etc/login` | binary E707 | `src/cmd/login.c` | partial | ccv1 | libc-v9.a |
+| `etc/login` | binary E707 | `src/cmd/login.c` | exact | ccv1 | libc-v9.a |
 | `etc/makelost+found` | text | `src/cmd/makelost+found.sh` | exact | - | - |
 | `etc/makewhatis` | text | `src/cmd/makewhatis.sh` | exact | - | - |
 | `etc/man.dbmgr` | text | `src/cmd/man.dbmgr.sh` | exact | - | - |

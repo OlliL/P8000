@@ -263,7 +263,7 @@ char *lnam;
 		for(i=0; i<8; i++)
 			if(wtmp.ut_line[i] != lnam[i])
 				goto contin;
-		lseek(utf, -(long)sizeof(wtmp), 1);
+		lseek(utf, -(long)(char *)sizeof(wtmp), 1);	/* WEGA: the pointer cast keeps -20L from being folded */
 		return(1);
 		contin:;
 	}

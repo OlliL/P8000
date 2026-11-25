@@ -77,7 +77,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] stty (15702) -- byte-identical (2026-11-25): stty.c of System III with the WEGA speeds and modes, the shipped cc, libc-v15 (new: libc.a with doprnt 0_10)
 - [x] ed (16750) -- byte-identical (2026-11-25): ccv1 -DRESEARCH without PWB, libc-v4; putline in goto form
 - [x] mail (18572); link: rmail
-- [x] login (19030); same file as etc/login -- phase A (2026-11-25): all but utscan (-20L computed at run time, 9 bytes); not in SIMPLE yet
+- [x] login (19030); same file as etc/login -- byte-identical (2026-11-25): ccv1, libc-v9, termcap; utscan with a pointer cast
 - [x] uux (21136)
 - [x] ps (22794; segmented E607, last of this group) -- deferred: segmented, with the WEGA modules kva.c and kpa.c
 
@@ -92,7 +92,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] remote (15162) -- deferred: about 5 KB of own code (24 functions), no source
 - [x] gpasswd (15362)
 - [ ] sh (24032); link: rsh
-- [ ] make (39048)
+- [x] make (39048) -- byte-identical (ced632f8, ccvm since 602346b6): System III make with the WEGA changes, libc.a; corpus 45 cases
 - [ ] csh (45728)
 - [ ] adb (46996)
 - [ ] fsc (2078; segmented E611)
@@ -158,6 +158,10 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   added there; data 0_1 behind findiop), termcap of libtermlib. df and ld stay identical. Open: utscan, the original
   has 0 - 20L at run time for lseek(utf, -(long)sizeof(wtmp), 1); no source form found (compare/login/findings.json).
   With that form by hand the whole file is identical. Rules in src/cmd/Makefile, login not in SIMPLE. Corpus 10 of 10 (negative cases only; the rest waits for increment 175: chroot, O_APPEND, ...). checkall ALL OK.
+- 2026-11-25 login: IDENTICAL. The -20L of utscan: `-(long)(char *)sizeof(wtmp)`; a cast of a constant to a pointer is
+  folded only in optim, so the unary minus above it stays and codgen negates 20L at run time (host/OLDCC.md, v1;
+  found by a search over 1000 forms: every pointer cast of the constant gives these bytes). login in SIMPLE, installed as
+  bin/login and etc/login (a link); corpus in compare/CORPORA.
 
 ## Phase B regcmp: solved (2026-11-25)
 

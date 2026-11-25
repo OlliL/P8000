@@ -150,3 +150,6 @@ whereis
 dog
 putfile
 gpasswd
+login
+ed
+ls

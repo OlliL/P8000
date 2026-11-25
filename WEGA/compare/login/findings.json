@@ -69,13 +69,13 @@
    "file": "login.c",
    "orig": "0x05e4",
    "size_orig": 108,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000",
     "0x0042"
    ],
-   "note": "open: the original computes lseek(utf, -20L, 1) at run time (subl rr4,rr4; subl rr4,#20, before ld r7,r14); every form tried (-(long)sizeof(wtmp), 0L-..., casts, off_t, unsigned, sizeof(struct utmp), with ccv0 .. ccvz) is folded to ldl rr4,#-20. With the subl form by hand the whole file is identical."
+   "note": "odd form: lseek(utf, -(long)(char *)sizeof(wtmp), 1). The original negates 20L at run time (subl rr4,rr4; subl rr4,#20, before ld r7,r14); only a cast to a pointer in the chain keeps the constant from cparse's folding (host/OLDCC.md, v1). The form is a guess: any pointer cast of the constant gives the same bytes."
   },
   "setenv": {
    "file": "login.c",
