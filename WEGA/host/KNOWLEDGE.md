@@ -973,6 +973,7 @@ means it does something fixed instead (only possible where the original's result
 |---------|--------------|---------|---------|
 | `/lib/clist` | an unused global array of 256 bytes (the first of the bss, name `buf` guessed); `\t.line` lines are found by their first 6 bytes, the number is read at column 7 and the name after the next tab, without a bound (a `.line` line without a tab runs past its end); the `.line` lines stay in the listing | kept | `compare/clist/findings.json` |
 | `/bin/local` | a Zilog binary of 02/84 with its SCCS line overwritten (`@[$]aaaaaaaaaaaabbbb/local.c 1.5 ... - ............`: path and trailer patched as the Zilog marks of the ZEUS binaries); the unused frame words s, t of argcat | kept (the line as the bytes have it) | `compare/local/findings.json` |
+| `/bin/ed` | built without PWB, but eopen still reads the first LBSIZE bytes of the file of the start and of each `e` (`fflg`: there the tab specification was looked for) into `funny` and seeks back: a dead read whose result is never used (WEGA removed only the fspec test) | kept | `compare/ed/SYSIII.md` |
 | `/usr/lib/libcisam.a`, `slibcisam.a` (`error`) | writes `sizeof` of the message, its NUL byte too | kept | `compare/libcisam/findings.json` |
 | `/usr/lib/libcisam.a`, `slibcisam.a` (`freeopen`, `freefile`) | `freeopen(op)` clears the flags of the global `openp`, not of `op`; `freefile(fp)` drops the buffers of `filep`, not of `fp` (the same file in the callers) | kept | `compare/libcisam/findings.json` |
 | `/usr/lib/libcisam.a`, `slibcisam.a` (`isperror`) | `is_errlist` has 14 messages: EFNAME (114) and ENOLOK (115) print "Unknown error" | kept | `compare/libcisam/findings.json` |
@@ -1946,7 +1947,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v1 | dc, ranlib, chmod, env, gets, kill, nohup, pwd, sleep, tail, bc (07/82; mkdir partial; pipe for bc); chkout (getpwuid, getpwent, fgets 0_2, rewind, fdopen 0_2, ctime 0_2, getenv in front of atoi); echo2, printenv, whereis (07/82) |
 | libc-v2 | cpp (12/82), clist |
 | libc-v3 | size (01/83; the members of od added, od not started); lex (01/83: atoi 0_3 (ccv1q) behind cuexit, calloc 0_2 behind length) |
-| libc-v4 | strip (01/83), su (02/83; the members of passwd too), nice (01/83: fputs 0_2, execvp 0_2, sleep 0_3, setret, index, alarm, nice, pause), time (01/83: fork, times 0_1, wait); ed (01/83, not identical yet: fakcu, strncpy 0_2, chown, dup, pipe, execlp (in front of execvp) added, mktemp in front of setret; checkall unchanged, 2026-11-25) |
+| libc-v4 | strip (01/83), su (02/83; the members of passwd too), nice (01/83: fputs 0_2, execvp 0_2, sleep 0_3, setret, index, alarm, nice, pause), time (01/83: fork, times 0_1, wait); ed (01/83: fakcu, strncpy 0_2, chown, dup, pipe, execlp (in front of execvp) added, mktemp in front of setret; checkall unchanged, 2026-11-25) |
 | libc-v5 | codgen, scodgen, popt, spopt |
 | libc-v6 | rm, mv, cp, ln (05/83 .. 07/83), chgrp, chown, sort, touch (02/83 .. 03/83), uname, test (01/83), tr (05/83), dog (03/83: freopen, setbuf, ttyname 0_2, strcat 0_1, fcntl, fstat); fakcu (for test, which has no stdio) |
 | libc-v7 | cparse, scparse, find (10/83) |

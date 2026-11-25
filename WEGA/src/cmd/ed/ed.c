@@ -1309,20 +1309,23 @@ putline()
 	bp = getblock(tl, WRITE);
 	nl = nleft;
 	tl &= ~0377;
-	while (*bp = *lp++) {
-		if (*bp++ == '\n') {
-			*--bp = 0;
-			linebp = lp;
-			break;
-		}
-		if (--nl == 0) {
-			bp = getblock(tl+=0400, WRITE);
-			nl = nleft;
-		}
-	}
+loop:
+	if ((*bp = *lp++) == 0)
+		goto out;
+	if (*bp++ != '\n')
+		goto more;
+	*--bp = 0;
+	linebp = lp;
+out:
 	nl = tline;
 	tline += (((lp-linebuf)+03)>>1)&077776;
 	return(nl);
+more:
+	if (--nl == 0) {
+		bp = getblock(tl+=0400, WRITE);
+		nl = nleft;
+	}
+	goto loop;
 }
 
 char *

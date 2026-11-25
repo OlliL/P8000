@@ -75,7 +75,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] newgrp (13898)
 - [x] passwd (15188)
 - [x] stty (15702) -- byte-identical (2026-11-25): stty.c of System III with the WEGA speeds and modes, the shipped cc, libc-v15 (new: libc.a with doprnt 0_10)
-- [x] ed (16750) -- phase A: all but putline (89 bytes, the block order of a loop: phase B); see "ed: phase A" below
+- [x] ed (16750) -- byte-identical (2026-11-25): ccv1 -DRESEARCH without PWB, libc-v4; putline in goto form
 - [x] mail (18572); link: rmail
 - [x] login (19030); same file as etc/login -- deferred: rewritten by WEGA (ttytype, termcap, csh) and a libc with large gaps
 - [x] uux (21136)
@@ -148,6 +148,7 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   .bss) and libc-v14 (shipped libc.a with the six ZEUS 3.21 members data, filbuf, doscan, printf, doprnt, malloc, from C; `src/head/oldnfile40`). checkall ALL OK (858 files), COVERAGE exact 944.
 - 2026-11-25 uux: IDENTICAL. The frame of main: the original has no variable n, the fread count goes into ret (the
   three orders of the declarations tried before could not give it). Corpus 2 of 2; checkall ALL OK (859 files), COVERAGE exact 945.
+- 2026-11-25 ed: IDENTICAL (see "ed: byte-identical" below). Corpus 22 of 22; checkall ALL OK (865 files), COVERAGE exact 951.
 
 ## Phase B regcmp: solved (2026-11-25)
 
@@ -272,23 +273,10 @@ directory `$GF_WORK`, default `tmp/tmp/getfile-forms` beside WEGA):
   `ccvm -Ihead/oldv7 -S getfile.c`, against the same with the WEGA root; `/bin/cc -O -S` under zeus321_root for the whole
   chain. `host/tools/sdis.py -l` disassembles with addresses (the retry block of 1.7 is at 0x3aa).
 
-## ed: phase A, all but putline (2026-11-25)
+## ed: byte-identical (2026-11-25)
 
-State in the tree: `src/cmd/ed/` with `ed.c` of System III and the changes of WEGA: the WEGA sccsid `ed.c 1.2 01/30/83`,
-`<setret.h>` (`ret_buf`, `setret`, `longret` for setjmp/longjmp, as mail.c), in eopen the read of the format line kept without
-its fspec test. Built by ccv1 with `-I../../head/oldv7 -DRESEARCH` (DEFS: no ustat, no oldmask) and without PWB (no fspec,
-lenchk, expnd; the original ends with save and undo), libc-v4, own crt0 from crt0.list. libc-v4: fakcu, strncpy 0_2, chown,
-dup, pipe and execlp (the assembler stub of libc/nonseg/sys/execlp.s, between cuexit and execvp) added, mktemp in front of
-setret. `compare/ed/`: progcfg.py (OWN_LIM 0x2e78: __callex, exit, execlp are libc), findings.json with the names.
-
-bincmp: sizes, data and bss equal; 89 bytes differ, all in putline (62 functions exact, putline open): its loop
-`while (*bp = *lp++)` has in the original the test at the top, the exit falls through behind the newline block and the
-`--nl` part lies behind the epilogue; ours is the usual while layout. for(;;)/while(1) with break, goto loops and continue
-all give the same layout; the neighbours ccv1r, ccv1q, ccv1c, ccv1l are far off. Phase B (the block order of popt).
-
-Open:
-1. ed is not in SUBDIRS of src/cmd/Makefile: the HOWTO puts a program not yet identical into the build with its file in OPEN
-   of checkall.sh; that change of the check is the owner's decision (the shipped loop then needs `ed` beside `dc`:
-   `LIBC=/lib/libc.a`).
-2. Corpus (compare/ed/tests.txt: ed reads its commands from stdin).
-3. putline (phase B), then SYSIII.md, FINDINGS.md, COVERAGE.
+`src/cmd/ed/ed.c` is System III's ed.c with the changes of WEGA (`compare/ed/SYSIII.md`): the WEGA sccsid, `<setret.h>`
+for setjmp, in eopen the read of the format line kept without its fspec test, putline's loop in goto form (the return in
+front of the `--nl` part: the while loop of System III gives the usual layout, every structured form too). Built by ccv1
+with `-DRESEARCH` (DEFS) and without PWB, libc-v4 (execlp, the assembler member of libc, in front of execvp), own crt0.
+In SUBDIRS of src/cmd (shipped: `LIBC=/lib/libc.a`). Corpus: 22 cases (compare/ed/tests.txt).

@@ -1,0 +1,400 @@
+# The cases of the corpus of ed (compare/ed/corpus.py); the format: host/recon/casefile.py (the default file t.in holds the
+# commands, read from the standard input; the default step is ed f).
+# Where an expectation comes from: man = /usr/man/man1/ed.1, src = src/cmd/ed/ed.c (function or command of commands()).
+
+# ---- reading, printing, addresses ----------------------------------------------------------------------------------
+
+== read-print
+# man: e/r print the number of characters read; p prints the addressed lines; q quits
+1,$p
+q
+-- f
+one
+two
+three
+-- expect
+14
+one
+two
+three
+
+== addresses
+# man: . $ n +n -n ^ , ; and a bare address prints that line
+2
+$
+1
++
+-
+.,$p
+1;+1p
+,p
+-- f
+a
+b
+c
+d
+-- expect
+8
+b
+d
+a
+b
+a
+a
+b
+c
+d
+a
+b
+a
+b
+c
+d
+
+== equals-number
+# man: = prints the line number (default $), .= the current line (= does not move it: still $ after the read); n prints
+# with the number and a tab; src putchr: l shows a control character as \ and two octal digits
+=
+2=
+.=
+2n
+1,2n
+3l
+-- f
+x
+y
+t\001z
+-- expect
+8
+3
+2
+3
+2	y
+1	x
+2	y
+t\01z
+
+== search
+# man: /re/ and ?re? search forward and backward with wrap-around; an empty re repeats the last one
+/b/
+//
+?a?
+/^c/p
+-- f
+a1
+b1
+c1
+b2
+-- expect
+12
+b1
+b2
+a1
+c1
+
+# ---- changing text ------------------------------------------------------------------------------------------------
+
+== append-insert-change
+# man: a, i, c read text up to a line with only a period; w writes and prints the count
+1a
+after one
+.
+1i
+before one
+.
+$c
+last
+.
+,p
+w
+q
+-- f
+one
+two
+-- expect
+8
+before one
+one
+after one
+last
+30
+
+== delete-join
+# man: d deletes, j joins (default . and .+1), the current line after d is the next line
+2d
+.p
+1,2j
+,p
+w
+-- f
+a
+b
+c
+d
+-- expect
+8
+c
+ac
+d
+5
+
+== move-copy
+# man: m moves the lines behind the address, t copies them; 0 is a legal destination; src quit(): at the end of the
+# input a changed buffer not written gives ? (warning: expecting `w') once, the second end of file quits
+1m$
+,p
+2,3t0
+,p
+-- f
+a
+b
+c
+-- expect
+6
+b
+c
+a
+c
+a
+b
+c
+a
+?
+
+== substitute
+# man: s/re/rep/ with g, & and \1, the newline escape \ in the replacement (this ed has no count suffix: err-suffix)
+1s/o/0/
+p
+2s/o/0/g
+2p
+4s/\(a*\)b\(c*\)/\2-&-\1/
+4p
+5s/ /\
+/
+1,$p
+-- f
+foo
+foo
+foo
+aabcc
+x y
+-- expect
+22
+f0o
+f00
+cc-aabcc-aa
+f0o
+f00
+foo
+cc-aabcc-aa
+x
+y
+?
+
+== undo
+# src: u undoes the last change (save/undo), and a second u undoes the undo
+2d
+,p
+u
+,p
+u
+,p
+-- f
+a
+b
+c
+-- expect
+6
+a
+c
+a
+b
+c
+a
+c
+?
+
+== global
+# man: g/re/cmd and v/re/cmd for every line that matches (does not match); the default command is p
+g/a/
+v/a/s/$/!/
+,p
+g/b/d
+,p
+-- f
+ab
+cd
+ba
+dc
+-- expect
+12
+ab
+ba
+ab
+cd!
+ba
+dc!
+cd!
+dc!
+?
+
+== marks
+# man: k marks a line with a lower case letter, 'x addresses it
+2ka
+$
+'ap
+'a,$d
+,p
+-- f
+a
+b
+c
+-- expect
+6
+c
+b
+a
+?
+
+# ---- files --------------------------------------------------------------------------------------------------------
+
+== write-range-new
+# man: w with a range and a file name (the remembered name stays f); f prints the remembered name, f name sets it
+2,3w g
+f
+f h
+w
+-- f
+1
+2
+3
+-- expect
+6
+4
+f
+h
+6
+
+== read-edit
+# man: r reads a file behind the addressed line (default $); e edits another file; E without the warning
+r g
+,p
+w
+e g
+,p
+-- f
+f1
+-- g
+g1
+g2
+-- expect
+3
+6
+f1
+g1
+g2
+9
+6
+g1
+g2
+
+== modified-warning
+# src: q after a change without w: ? (warning: expecting `w'), a second q quits
+1d
+q
+q
+-- f
+a
+-- expect
+2
+?
+
+== new-file
+# src: a file that cannot be opened: ? and its name (error 3); error() moves the standard input to its end (lseek(0, 0L,
+# 2)): the commands behind are not read, the end of file quits
+a
+x
+.
+w
+-- expect
+?f
+
+== dash-no-counts
+# man: ed - suppresses the counts of e, r, w and the ! of the shell escape
+-- case
+step: ed - f
+stdin: t.in
+-- t.in
+,p
+w
+q
+-- f
+z
+-- expect
+z
+
+== shell-escape
+# man: !command runs the shell, then prints !
+!echo hi
+q
+-- f
+a
+-- expect
+2
+hi
+!
+
+== prompt-help
+# src: P switches the prompt * on (printed before every command, also before the end of file), H the messages of the
+# errors; x of the old ed is error 60; a second P switches the prompt off (so that the end of file has none)
+H
+P
+1p
+P
+x
+-- f
+a
+-- expect
+2
+*a
+*?
+the x command has become X (upper case)
+
+# ---- diagnostics --------------------------------------------------------------------------------------------------
+
+== err-range
+# src: an address behind $: ? (line out of range)
+5p
+-- f
+a
+-- expect
+2
+?
+
+== err-search
+# src: a search without a match: ?, h prints the message
+/zz/
+h
+-- f
+a
+-- expect
+2
+?
+
+== err-unknown
+# src: an unknown command: ?
+y
+-- f
+a
+-- expect
+2
+?
+
+== err-suffix
+# src compsub: after the delimiter only g (or a newline) is allowed: s/o/0/2 is an error
+s/o/0/2
+-- f
+foo
+-- expect
+4
+?

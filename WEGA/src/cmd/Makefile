@@ -46,7 +46,7 @@ SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmo
 
 FILES=		getud putud bcmp bd dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o  bcmp.o  bd.o
-SUBDIRS=	remote doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc make ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen lex
+SUBDIRS=	remote doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc ed make ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen lex
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 
@@ -67,7 +67,7 @@ shipped:
 		cc/gopt) X="SCC=scc SLD=sld LIBC=/lib/slibc.a" ;; \
 		cas) X="SCC=scc SLIBC=/lib/slibc.a SCCFLAGS=\"$(SHIPFLAGS)\"" ;; \
 		cc/codgen|cc/popt) X='LIBC="../../../../../lib/oldlibc/printf/s1.o ../../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
-		cc/cpp|cc/cparse|cc|dc|bc|ld) X="LIBC=/lib/libc.a" ;; \
+		cc/cpp|cc/cparse|cc|dc|ed|bc|ld) X="LIBC=/lib/libc.a" ;; \
 		lex) X="LIBC=/lib/libc.a LIBY=/lib/liby.a" ;; \
 		remote) X="LIBC_V14=" ;; \
 		ex) X="CCV0A=cc TERMLIB=/usr/lib/libtermlib.a" ;; \

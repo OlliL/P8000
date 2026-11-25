@@ -1,6 +1,6 @@
 # ed: /bin/ed from ed.c of System III (the WEGA sccsid, ed.c 1.2 01/30/83), ccv1 -DRESEARCH (no ustat, no oldmask) without PWB
 # (no fspec: in eopen the read of the format line is kept, its test gone), libc-v4 (execlp is its member in front of execvp);
-# DEFS stays in a shipped build. Not in SUBDIRS yet: putline differs (the block order of a loop, compare/ed/findings.json).
+# DEFS stays in a shipped build. putline: the loop of WEGA in goto form (the return in front of the --nl part).
 # ed.mk and edfun are the System III build files (not used).
 #
 #   make              build ./ed

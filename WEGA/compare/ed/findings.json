@@ -301,10 +301,10 @@
    "file": "ed.c",
    "orig": "0x1b0e",
    "size_orig": 152,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [],
-   "note": "the loop while (*bp = *lp++): the original has the test at the top, the exit falls through behind the newline block and the --nl part lies behind the epilogue; ours is the usual while layout (test at the bottom). for(;;)/while(1) with break, goto loops, continue: all give the same layout as while; ccv1r, ccv1q, ccv1c, ccv1l are far off. The block order of popt (phase B)."
+   "note": "odd form: the loop as goto (loop/out/more) with the return in front of the --nl part; the while loop of System III gives the usual layout (test at the bottom)."
   },
   "getblock": {
    "file": "ed.c",
