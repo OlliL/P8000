@@ -189,3 +189,10 @@
 /remote/local
 /remote/putfile
 /remote/remote
+/lex/lex
+/lex/lexs
+/lex/y.tab.c
+/lex/crt0.s
+/uucp/uuname
+/uucp/uulog
+/uucp/uux
