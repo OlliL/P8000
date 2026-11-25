@@ -1,0 +1,121 @@
+# The cases of the corpus of login (compare/login/corpus.py); the format: host/recon/casefile.py (the default step is login).
+# Where an expectation comes from: src = src/cmd/login.c (main), man = /usr/man/man1/login.1.
+# t.in is the console input: the name, then the password (getpass reads /dev/tty, the console). At the end of the input
+# getchar gives EOF and login exits 0. The output compared is the standard output, then "-- stderr" and the standard error
+# (getpass writes Password: and a newline there). The prompt is the node name of uname (WEGA) and " login: ".
+
+== unknown
+# src: a name without an entry gets nouser (password "nope"), so any password is wrong
+-- case
+terminal: console
+step: login
+stdin: t.in
+expect: exit 0
+expect: output is 'WEGA login: Login incorrect\nWEGA login: Login incorrect\nWEGA login: -- stderr\nPassword:\nPassword:\n'
+-- t.in
+nobody
+secret
+
+== wrongpw
+# src: daemon has the password x in /etc/passwd, which no crypt gives
+-- case
+terminal: console
+step: login
+stdin: t.in
+expect: exit 0
+expect: output is 'WEGA login: Login incorrect\nWEGA login: Login incorrect\nWEGA login: -- stderr\nPassword:\nPassword:\n'
+-- t.in
+daemon
+x
+
+== eof
+# src: EOF at the prompt: exit(0)
+-- case
+terminal: console
+step: login
+stdin: t.in
+expect: exit 0
+expect: output is 'WEGA login: '
+-- t.in
+
+== empty
+# src: an empty line leaves ut_name empty: the prompt again (three empty lines, made by host: a file of the case cannot hold only newlines; four prompts)
+-- case
+terminal: console
+host: printf '\n\n\n' > t.in
+step: login
+stdin: t.in
+expect: exit 0
+expect: output is 'WEGA login: WEGA login: WEGA login: WEGA login: '
+
+== argv
+# src: argv[1] is the name, no prompt for it; then the prompt again after the wrong password
+-- case
+terminal: console
+step: login daemon
+stdin: t.in
+expect: exit 0
+expect: output is 'Login incorrect\nWEGA login: -- stderr\nPassword:\n'
+-- t.in
+x
+
+== argvdash
+# src: a - in front of argv[1] sets quiet and is dropped
+-- case
+terminal: console
+step: login -daemon
+stdin: t.in
+expect: exit 0
+expect: output is 'Login incorrect\nWEGA login: -- stderr\nPassword:\n'
+-- t.in
+x
+
+== dash
+# src: a typed - in front of the name sets quiet and is dropped
+-- case
+terminal: console
+step: login
+stdin: t.in
+expect: exit 0
+expect: output is 'WEGA login: Login incorrect\nWEGA login: Login incorrect\nWEGA login: -- stderr\nPassword:\nPassword:\n'
+-- t.in
+-daemon
+x
+
+== nul
+# src: a NUL as the first character prints a newline and asks again
+-- case
+terminal: console
+step: login
+stdin: t.in
+expect: exit 0
+expect: output is 'WEGA login: \nWEGA login: WEGA login: Login incorrect\nWEGA login: Login incorrect\nWEGA login: -- stderr\nPassword:\nPassword:\n'
+-- t.in
+\000
+nobody
+x
+
+== blanks
+# src: a blank in the name becomes _; only 8 characters are kept
+-- case
+terminal: console
+step: login
+stdin: t.in
+expect: exit 0
+expect: output is 'WEGA login: Login incorrect\nWEGA login: Login incorrect\nWEGA login: Login incorrect\nWEGA login: Login incorrect\nWEGA login: -- stderr\nPassword:\nPassword:\nPassword:\nPassword:\n'
+-- t.in
+no body
+x
+averyveryverylongname
+x
+
+== hangup
+# src: argv[2] is the alarm time (atoi), the input ends before it
+-- case
+terminal: console
+step: login daemon 5
+stdin: t.in
+expect: exit 0
+expect: output is 'Login incorrect\nWEGA login: -- stderr\nPassword:\n'
+-- t.in
+x

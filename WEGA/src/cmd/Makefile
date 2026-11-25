@@ -35,6 +35,7 @@ LIBC_V10 = ../lib/libc-v10.a
 LIBC_V11 = ../lib/libc-v11.a
 LIBC_V7 = ../lib/libc-v7.a
 LIBC_V9 = ../lib/libc-v9.a
+TERMLIB = ../lib/libtermlib/build/nonseg/libtermlib.a
 LIBC_V12 = ../lib/libc-v12.a
 LIBC_V13 = ../lib/libc-v13.a
 LIBPW = ../lib/libPW/build/nonseg/libPW.a
@@ -279,8 +280,22 @@ od: crt0-od.o od.o $(LIBC_V3)
 # df: System III df.c as WEGA changed it: the mount table of Nmount entries (getnmount: nlist of /wega, /dev/kmem, calloc), free blocks counted from the super-block (no ustat), sync; partial: alloc, calloc
 df.o: df.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c df.c
-df: crt0-df.o df.o $(LIBC_V9)
-	$(LD) -e start -o $@ crt0-df.o df.o $(LIBC_V9)
+df: crt0-df.o df.o $(LIBC_V6)
+	$(LD) -e start -o $@ crt0-df.o df.o $(LIBC_V6)
+# login: System III login.c as WEGA changed it (the node name in the prompt, -name and a leading - for no motd, /bin/csh,
+# HOME SHELL PATH LOGNAME TERM put into the environment of getty, motd by fgets, mail in /usr/spool/mail) and ttytype.c
+# (the type from /etc/ttytype; getcl, not called, brings in termcap); ccv1, libc-v9, termcap of libtermlib.
+# Not in SIMPLE yet: in utscan the original computes -20L at run time (0 - 20L, compare/login/findings.json).
+login.o: login.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c login.c
+ttytype.o: ttytype.c
+	$(CCV1) $(CFLAGS) -I../head/oldv7 -c ttytype.c
+crt0-login.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+	sh $(CRT)/mkcrt0.sh login > $@
+crt0-login.o: crt0-login.s
+	$(CAS) -u -o $@ crt0-login.s
+login: crt0-login.o login.o ttytype.o $(TERMLIB) $(LIBC_V9)
+	$(LD) -e start -o $@ crt0-login.o login.o ttytype.o $(TERMLIB) $(LIBC_V9)
 # time: written from /bin/time (WEGA's own output); register p in front of the longs (its frame place, OLD_D1)
 time.o: time.c
 	$(CCV1) $(CFLAGS) -I../head/oldv7 -c time.c
@@ -613,7 +628,7 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 clean:
 	rm -f $(PROGS) $(FILES) $(CLEANFILES) $(SIMPLE) regcmppw.o
 	rm -rf regcmppw.d
-	rm -f egrep.o egrep.c nm.o file.o stty.o ls.o
+	rm -f egrep.o egrep.c nm.o file.o stty.o ls.o login login.o ttytype.o crt0-login.s crt0-login.o
 	rm -f mv.o rm.o rmdir.o write.o size.o strip.o ranlib.o sum.o pr.o cpio.o clist.o cat.o echo.o cmp.o chmod.o chgrp.o chown.o pwd.o kill.o sleep.o tail.o uname.o tee.o du.o env.o nohup.o gets.o sort.o touch.o grep.o nl.o su.o mkdir.o find.o mkstr.o
 	rm -f crt0-ar.o crt0-sync.o crt0-ar.s crt0-sync.s
 	rm -f crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o crt0-find.o crt0-mkstr.o

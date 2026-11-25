@@ -77,7 +77,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] stty (15702) -- byte-identical (2026-11-25): stty.c of System III with the WEGA speeds and modes, the shipped cc, libc-v15 (new: libc.a with doprnt 0_10)
 - [x] ed (16750) -- byte-identical (2026-11-25): ccv1 -DRESEARCH without PWB, libc-v4; putline in goto form
 - [x] mail (18572); link: rmail
-- [x] login (19030); same file as etc/login -- deferred: rewritten by WEGA (ttytype, termcap, csh) and a libc with large gaps
+- [x] login (19030); same file as etc/login -- phase A (2026-11-25): all but utscan (-20L computed at run time, 9 bytes); not in SIMPLE yet
 - [x] uux (21136)
 - [x] ps (22794; segmented E607, last of this group) -- deferred: segmented, with the WEGA modules kva.c and kpa.c
 
@@ -152,6 +152,12 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
 - 2026-11-25 ls: IDENTICAL. The base is Plexus' bls.c (the Berkeley ls), not System III's ls.c: -D, -g, -o of WEGA,
   getpwuid/getgrgid, -R collected in pentry, its own printf (lsprintf) and _doprnt (no float, through pputchar).
   libc-v6: getgrgid, getpwuid, rdwr, calloc, qsort (V7), strncat added, atoi behind getenv. Corpus 17 of 17; checkall ALL OK (866 files), COVERAGE exact 952.
+- 2026-11-25 login: phase A. login.c (System III with the WEGA changes: node name prompt, -, setenv over the environment
+  of getty, /bin/csh, motd, mail) and ttytype.c (own file: gettype is called with call; getcl dead, links termcap). The
+  library: libc-v9 extended by the members of login (owner's decision; df moved to libc-v6, with nlist, strncmp, sync
+  added there; data 0_1 behind findiop), termcap of libtermlib. df and ld stay identical. Open: utscan, the original
+  has 0 - 20L at run time for lseek(utf, -(long)sizeof(wtmp), 1); no source form found (compare/login/findings.json).
+  With that form by hand the whole file is identical. Rules in src/cmd/Makefile, login not in SIMPLE. Corpus 10 of 10 (negative cases only; the rest waits for increment 175: chroot, O_APPEND, ...). checkall ALL OK.
 
 ## Phase B regcmp: solved (2026-11-25)
 

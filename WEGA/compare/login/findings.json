@@ -1,0 +1,221 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/login",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "login.c",
+   "orig": "0x0042",
+   "size_orig": 1296,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "odd: if (pwd->pw_uid == 0) {} is left with an empty body (the CONSOLE test is #undef, the PATH of root gone): the compare stays (cp 4(r2),#0 without a jump). quiet (the - before the name) is not initialised: an auto int, garbage unless - was given."
+  },
+  "catch": {
+   "file": "login.c",
+   "orig": "0x0552",
+   "size_orig": 14,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "showmotd": {
+   "file": "login.c",
+   "orig": "0x0560",
+   "size_orig": 96,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "bailout": {
+   "file": "login.c",
+   "orig": "0x05c0",
+   "size_orig": 36,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "utscan": {
+   "file": "login.c",
+   "orig": "0x05e4",
+   "size_orig": 108,
+   "status": "open",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "open: the original computes lseek(utf, -20L, 1) at run time (subl rr4,rr4; subl rr4,#20, before ld r7,r14); every form tried (-(long)sizeof(wtmp), 0L-..., casts, off_t, unsigned, sizeof(struct utmp), with ccv0 .. ccvz) is folded to ldl rr4,#-20. With the subl form by hand the whole file is identical."
+  },
+  "setenv": {
+   "file": "login.c",
+   "orig": "0x0650",
+   "size_orig": 142,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "name guessed: puts HOME SHELL PATH LOGNAME TERM (newenv[5][100]) over the entries of the environment of getty (findenv); environ itself is kept."
+  },
+  "findenv": {
+   "file": "login.c",
+   "orig": "0x06de",
+   "size_orig": 46,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0650"
+   ],
+   "note": "name guessed."
+  },
+  "envcmp": {
+   "file": "login.c",
+   "orig": "0x070c",
+   "size_orig": 66,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x06de"
+   ],
+   "note": "name guessed: equal up to the =."
+  },
+  "typeof": {
+   "file": "ttytype.c",
+   "orig": "0x074e",
+   "size_orig": 96,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x07ae"
+   ],
+   "note": "name guessed; file ttytype.c (guess): own file, since main calls gettype with call, not calr. fclose(f) also when fopen failed (f NULL). type and name are static."
+  },
+  "gettype": {
+   "file": "ttytype.c",
+   "orig": "0x07ae",
+   "size_orig": 26,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0650"
+   ],
+   "note": "name guessed."
+  },
+  "getcl": {
+   "file": "ttytype.c",
+   "orig": "0x07c8",
+   "size_orig": 74,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": [],
+   "note": "dead code, name guessed: never called; returns cl of termcap from a buffer on its own stack (area); brings in termcap (tgetent, tgetstr)."
+  },
+  "f0812": {
+   "file": "termcap.o (libtermlib)",
+   "orig": "0x0812",
+   "size_orig": 296,
+   "status": "lib",
+   "kind": "proven",
+   "callers": []
+  },
+  "f093a": {
+   "file": "termcap.o (libtermlib)",
+   "orig": "0x093a",
+   "size_orig": 258,
+   "status": "lib",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0a3c": {
+   "file": "termcap.o (libtermlib)",
+   "orig": "0x0a3c",
+   "size_orig": 98,
+   "status": "lib",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0a9e": {
+   "file": "termcap.o (libtermlib)",
+   "orig": "0x0a9e",
+   "size_orig": 40,
+   "status": "lib",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0ac6": {
+   "file": "termcap.o (libtermlib)",
+   "orig": "0x0ac6",
+   "size_orig": 136,
+   "status": "lib",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0b4e": {
+   "file": "termcap.o (libtermlib)",
+   "orig": "0x0b4e",
+   "size_orig": 84,
+   "status": "lib",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0ba2": {
+   "file": "termcap.o (libtermlib)",
+   "orig": "0x0ba2",
+   "size_orig": 90,
+   "status": "lib",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0bfc": {
+   "file": "termcap.o (libtermlib)",
+   "orig": "0x0bfc",
+   "size_orig": 196,
+   "status": "lib",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0cc0": {
+   "file": "getpass (libc-v9)",
+   "orig": "0x0cc0",
+   "size_orig": 306,
+   "status": "lib",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  }
+ }
+}
