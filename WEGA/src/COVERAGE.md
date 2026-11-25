@@ -93,7 +93,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/kill` | binary E707 | `src/cmd/kill.c` | exact | ccv0 | libc-v1.a |
 | `bin/ld` | binary E711 | `src/cmd/ld` | exact | ccv1 | libc-v9.a |
 | `bin/ln` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
-| `bin/local` | binary E707 | `src/cmd/remote` | exact | cc | -lc |
+| `bin/local` | binary E707 | `src/cmd/remote` | exact | ccvz | libc-v14.a |
 | `bin/login` | binary E707 | `tmp/sys3/usr/src/cmd/login.c` | sys3 | D12 old, D1 slots | - |
 | `bin/ls` | binary E707 | `tmp/sys3/usr/src/cmd/ls.c` | sys3 | D12 old?, D1 slots | - |
 | `bin/mail` | binary E707 | `src/cmd/mail.c` | exact | ccvm | libc-v12.a |

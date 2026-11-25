@@ -174,6 +174,26 @@ def makefile_vars(path):
     return v
 
 
+def rule_tools(mk, name, v):
+    """(compiler, libc) from the commands of the rule `name:` of the Makefile mk: the first $(CC...) or $(SCC...) and the first
+    $(LIBC...) or $(SLIBC...) that is one archive, other than the defaults CC, SCC, LIBC, SLIBC; None where the rule names none"""
+    try:
+        text = open(mk, errors='replace').read().replace('\\\n', ' ')
+    except OSError:
+        return None, None
+    m = re.search(r'^%s\s*:[^=\n]*\n((?:\t.*\n?)*)' % re.escape(name), text, re.M)
+    if not m:
+        return None, None
+    cmds = m.group(1)
+    cc = lib = None
+    for var in re.findall(r'\$\((\w+)\)', cmds):
+        if cc is None and re.match(r'^S?CCV\w+$', var) and var in v:
+            cc = v[var]
+        if lib is None and re.match(r'^S?LIBC\w+$', var) and var in v and v[var].endswith('.a'):
+            lib = v[var]
+    return cc, lib
+
+
 def tools(rel, src):
     """(compiler, libc) of a built file, from the Makefiles"""
     if not src:
@@ -218,6 +238,11 @@ def tools(rel, src):
         lib = v.get('LIBC', v.get('SLIBC', '-'))
         if name.startswith('s') and 'SLIBC' in v:
             lib = v['SLIBC']
+        # the rule of the file itself, where it names a compiler or a library of its own (remote: local by $(CCVZ) and $(LIBC_V14))
+        # (only where both are known here: otherwise complete() reads them from the objects)
+        if cc != '-' and lib != '-':
+            rcc, rlib = rule_tools(mk, name, v)
+            cc, lib = rcc or cc, rlib or lib
         return os.path.basename(cc), os.path.basename(lib) if lib != '-' else '-'
     if src.startswith('lib/'):
         return '-', '-'
