@@ -83,7 +83,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/format` | binary E707 | `src/cmd/format` | exact | cc | libc.a |
 | `bin/fsc` | binary E611 | - | todo | D12 new?, D1 - | - |
 | `bin/fse` | binary E607 | `src/cmd/fse` | exact | scc | - |
-| `bin/getfile` | binary E707 | `src/cmd/getfile` | exact | - | - |
+| `bin/getfile` | binary E707 | `src/cmd/remote` | exact | ccvm | -lc |
 | `bin/gets` | binary E707 | `src/cmd/gets.c` | exact | ccv0 | libc-v1.a |
 | `bin/getud` | binary E707 | `src/cmd/getud.c` | exact | cc | libc.a |
 | `bin/gld` | binary E607 | - | todo | D12 new, D1 - | - |
@@ -114,7 +114,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/printenv` | binary E707 | `src/cmd/printenv.c` | exact | ccv0 | libc-v1.a |
 | `bin/ps` | binary E607 | `tmp/sys3/usr/src/cmd/ps.c` | sys3 | D12 new, D1 - | - |
 | `bin/pstat` | binary E607 | - | todo | D12 new, D1 - | - |
-| `bin/putfile` | binary E707 | `src/cmd/putfile` | exact | - | - |
+| `bin/putfile` | binary E707 | `src/cmd/remote` | exact | ccvm | -lc |
 | `bin/putud` | binary E707 | `src/cmd/putud.c` | exact | cc | libc.a |
 | `bin/pwd` | binary E707 | `src/cmd/pwd.c` | exact | ccv0 | libc-v1.a |
 | `bin/regcmp` | binary E707 | `src/cmd/regcmp.c` | exact | ccv1 | libc-v4.a |
@@ -430,23 +430,23 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `usr/lib/acct/acctprc1` | binary E707 | `tmp/sys3/usr/src/cmd/acct/acctprc1.c` | sys3 | D12 old?, D1 loose | - |
 | `usr/lib/acct/acctprc2` | binary E707 | `tmp/sys3/usr/src/cmd/acct/acctprc2.c` | sys3 | D12 -, D1 slots | - |
 | `usr/lib/acct/acctwtmp` | binary E707 | `tmp/sys3/usr/src/cmd/acct/acctwtmp.c` | sys3 | D12 -, D1 slots | - |
-| `usr/lib/acct/chargefee` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/ckpacct` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/dodisk` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/chargefee` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/ckpacct` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/dodisk` | text | `src/cmd/acct` | exact | - | - |
 | `usr/lib/acct/fwtmp` | binary E707 | `tmp/sys3/usr/src/cmd/acct/fwtmp.c` | sys3 | D12 -, D1 loose | - |
 | `usr/lib/acct/holidays` | text | `src/cmd/acct` | exact | - | - |
-| `usr/lib/acct/lastlogin` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/monacct` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/nulladm` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/prctmp` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/prdaily` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/prtacct` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/remove` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/runacct` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/sdisk` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/shutacct` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/startup` | text | `src/?` | exact | - | - |
-| `usr/lib/acct/turnacct` | text | `src/?` | exact | - | - |
+| `usr/lib/acct/lastlogin` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/monacct` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/nulladm` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/prctmp` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/prdaily` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/prtacct` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/remove` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/runacct` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/sdisk` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/shutacct` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/startup` | text | `src/cmd/acct` | exact | - | - |
+| `usr/lib/acct/turnacct` | text | `src/cmd/acct` | exact | - | - |
 | `usr/lib/acct/wtmpfix` | binary E707 | `tmp/sys3/usr/src/cmd/acct/wtmpfix.c` | sys3 | D12 -, D1 loose | - |
 | `usr/lib/atrun` | binary E707 | - | todo | D12 old?, D1 tight | - |
 | `usr/lib/calprog` | binary E707 | `tmp/sys3/usr/src/cmd/calprog.c` | sys3 | D12 old?, D1 tight | - |
@@ -543,7 +543,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `usr/lib/me/thesis.me` | text | `src/cmd/me` | exact | - | - |
 | `usr/lib/more.help` | text | `src/cmd/more` | exact | - | - |
 | `usr/lib/news/news` | text | `src/cmd/news` | exact | - | - |
-| `usr/lib/news/wega` | text | `src/?` | exact | - | - |
+| `usr/lib/news/wega` | text | `src/cmd/news` | exact | - | - |
 | `usr/lib/plzcg.errs` | text | `src/cmd/plzcg` | exact | - | - |
 | `usr/lib/plzcg2` | binary E705 | - | todo | D12 -, D1 loose | - |
 | `usr/lib/plzcg2d` | binary E705 | - | todo | D12 old, D1 - | - |
@@ -658,9 +658,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | File | Kind | Source | Status | Compiler | libc |
 |---|---|---|---|---|---|
 | `usr/boot` | binary E707 | `src/uts/conf` | exact | cc | BOOTLIB |
-| `usr/dict/hlista` | data | `src/?` | exact | - | - |
-| `usr/dict/hlistb` | data | `src/?` | exact | - | - |
-| `usr/dict/hstop` | data | `src/?` | exact | - | - |
+| `usr/dict/hlista` | data | `src/cmd/spell` | exact | cc | - |
+| `usr/dict/hlistb` | data | `src/cmd/spell` | exact | cc | - |
+| `usr/dict/hstop` | data | `src/cmd/spell` | exact | cc | - |
 | `usr/dict/spellhist` | data | `src/cmd/spell` | exact | cc | - |
 | `usr/dict/words` | text | `src/cmd/spell` | exact | cc | - |
 | `usr/doc/fse.doc` | text | `src/cmd/fse` | exact | scc | - |

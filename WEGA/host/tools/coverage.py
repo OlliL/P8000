@@ -127,6 +127,10 @@ def installed_by(rel):
             return src
         if d and re.search(r'^\s*-?cp\b[^\n]*\b%s\b[^\n]*\$\(PREFIX\)/+%s/?\s*$' % (re.escape(name), re.escape(d)), text, re.M):
             return src
+        # for f in a b c ; do cp $$f $(PREFIX)/d/$$f ; done (remote: putfile, getfile)
+        for lst, line in re.findall(r'for\s+\w+\s+in\s+([^$;\n]+);(.*)$', text, re.M):
+            if name in lst.split() and re.search(r'\$\(PREFIX\)/+%s/\$\$' % re.escape(d), line):
+                return src
         # for f in $(LIST); do cp $$f $(PREFIX)/d/$$f; done
         for var, line in re.findall(r'for\s+\w+\s+in\s+\$\((\w+)\)(.*)$', text, re.M):
             if not re.search(r'\$\(PREFIX\)/+%s/\$\$' % re.escape(d), line):
@@ -156,9 +160,10 @@ def find_source(rel):
         return 'cmd/doscopy'
     if name.startswith('sa.') and rel.count('/') == 0:
         return 'cmd/standalone'
-    for c in ('cmd/%s.c' % name, 'cmd/%s' % name):
-        if os.path.exists(os.path.join(SRC, c)):
-            return c
+    if os.path.exists(os.path.join(SRC, 'cmd', name + '.c')):
+        return 'cmd/%s.c' % name
+    if os.path.isdir(os.path.join(SRC, 'cmd', name)):	# a directory only: not a program left built in src/cmd
+        return 'cmd/%s' % name
     return None
 
 
