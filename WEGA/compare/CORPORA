@@ -55,6 +55,8 @@ scc
 cc
 dosformat
 size
+nm
+file
 format
 write
 copydisk

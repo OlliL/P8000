@@ -1,0 +1,122 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccvm",
+ "binary": "/bin/nm",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "nm.c",
+   "orig": "0x0042",
+   "size_orig": 2046,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "System III main rewritten for s.out: getopt, -v -l, long names, segmented formats. swap_flg is declared char here (the int of goodmagic): testb reads its high byte, always 0, so byte-swapped files are never swapped back (swaphdr, swab dead) and the default file is always a.out (s.out never). A type the switch does not name (5, 6, 0x1b..0x1d) prints the letter of the symbol before (c not set). The line table warning counts one entry too many (s_lines - i + 1). arch_flg and sep_id are never reset: after an archive argument every later file is read as an archive. The buffer symrest behind sym (name guessed) takes the entries of a long name."
+  },
+  "compare": {
+   "file": "nm.c",
+   "orig": "0x0840",
+   "size_orig": 368,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": [],
+   "note": "name guessed (System III name); long names compared through the name table"
+  },
+  "savename": {
+   "file": "nm.c",
+   "orig": "0x09b0",
+   "size_orig": 130,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "name guessed; its fprintf has one argument too many (fname)"
+  },
+  "nextel": {
+   "file": "nm.c",
+   "orig": "0x0a32",
+   "size_orig": 108,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "swaphdr": {
+   "file": "nm.c",
+   "orig": "0x0a9e",
+   "size_orig": 34,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "name guessed; dead code (see main: swap_flg)"
+  },
+  "basename": {
+   "file": "nm.c",
+   "orig": "0x0ac0",
+   "size_orig": 36,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "name guessed"
+  },
+  "putname": {
+   "file": "nm.c",
+   "orig": "0x0ae4",
+   "size_orig": 186,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "name guessed; a name longer than 44 characters is cut to 40 and \"...\" follows"
+  },
+  "datasize": {
+   "file": "nm.c",
+   "orig": "0x0b9e",
+   "size_orig": 106,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ],
+   "note": "name guessed; sic: the sum is not set to 0 first (nm -s on a separate I&D file)"
+  }
+ }
+}

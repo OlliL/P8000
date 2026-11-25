@@ -1,4 +1,4 @@
-"""The cases of ranlib, strip and size (compare/{ranlib,strip,size}/corpus.py, host/recon/corpusrun.py): objects, executables and libraries of the WEGA tree,
+"""The cases of ranlib, strip, size and nm (compare/{ranlib,strip,size,nm}/corpus.py, host/recon/corpusrun.py): objects, executables and libraries of the WEGA tree,
 copies with swapped bytes, damaged files, archives that are swapped, stripped, mixed or with too many symbols. A case is one command
 line (the program and its arguments, relative to the corpus tree); the program runs in a copy of the tree (one prepared
 directory for all cases), the output, the exit status and every file afterwards are compared with the original. The inputs are made by the original ar and strip (z8k-emu)."""
@@ -17,6 +17,26 @@ def swab(b):
     for i in range(0, len(b) - 1, 2):
         b[i], b[i + 1] = b[i + 1], b[i]
     return bytes(b)
+
+
+def many(src, dst, n=90, width=95):
+    """dst: the header and the code of the object src with a symbol table of n undefined names of width + 5 characters
+    (the long names of s.out.h: the first byte 0x80 | the length + 1, the characters run on into the following entries);
+    the original cc takes too long on so many long names"""
+    d = open(src, 'rb').read()
+    segt = int.from_bytes(d[10:12], 'big')
+    im = int.from_bytes(d[2:6], 'big')
+    flag = int.from_bytes(d[18:20], 'big')
+    so = 24 + segt + im * (1 if flag & 1 else 2)
+    syms = b''
+    for i in range(n):
+        name = ('_f%03d_' % i + 'x' * width)[:width + 5].encode()
+        e = bytes(4) + bytes([0x20, 0]) + bytes([0x80 | (len(name) + 1)]) + name
+        syms += e + bytes(-len(e) % 14)
+    h = bytearray(d[:24])
+    h[12:14] = len(syms).to_bytes(2, 'big')
+    h[22:24] = bytes(2)
+    open(dst, 'wb').write(bytes(h) + d[24:so] + syms)
 
 
 def build(dest):
@@ -91,6 +111,17 @@ def build(dest):
     orig(['/bin/ar', 'r', '../x/big.a'] + sorted(os.listdir(big)), big)
     shutil.rmtree(big)
     shutil.rmtree(ex)
+    # long names (nm): an object by the original cc with names longer than 8 characters (one longer than 44), and one whose
+    # long names fill more than the 8000 bytes of the name table of nm
+    l = os.path.join(dest, 'l')
+    os.makedirs(l)
+    open(l + '/long.c', 'w').write('int verylongname_number_one;\nstatic int verylongname_number_two;\nint shrt;\n'
+                                   'another_extremely_long_name_that_goes_on_and_on_and_on_beyond_forty_four()\n'
+                                   '{ verylongname_number_two++; undefined_long_function_name(); verylongname_number_one = 1; }\n'
+                                   'verylongname_number_zzz() { aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa(); }\n')
+    orig(['/bin/cc', '-c', 'long.c'], l)
+    many(l + '/long.o', l + '/many.o')
+    orig(['/bin/ar', 'r', 'long.a', 'long.o', 'many.o', 'long.o'], l)
 
 
 def cases(prog, tree):
@@ -114,6 +145,16 @@ def cases(prog, tree):
     elif prog == 'ranlib':
         c = ['', 'nonexistent', 'j/text', 'j/empty', 'j/one'] + g('a/*.a') + ['a/libc.a a/slibc.a', 'a/libm.a nonexistent a/liby.a'] \
             + g('x/*.a') + ['x/swapped.a x/mixed.a x/stripped.a x/swapped.a']
+    elif prog == 'nm':
+        # every option alone and some together, on an object, a segmented object, an archive; the stripped binaries (no name
+        # list), the byte swapped and damaged files, -s on segmented files (refused) and on separate I&D, the default a.out
+        c = ['', 'o/read.o', 's/read.o', 'b/lib_crt0.o', 'b/lib_scrt0.o', 'b/bin_ar', 'b/*', 'o/*.o', 's/*.o', 'w/*', 'j/*',
+             'nonexistent', 'o/read.o nonexistent j/text o/write.o', 'a/libc.a', 'a/slibc.a', 'a/libm.a o/read.o'] \
+            + ['%s %s' % (o, f) for o in ('-n', '-g', '-u', '-r', '-p', '-o', '-s', '-v', '-l', '-rn', '-gu', '-on', '-sv', '-vl')
+               for f in ('o/fopen.o', 's/fopen.o', 'a/libm.a')] \
+            + ['-s b/*', '-s o/*.o', '-v s/*.o', '-l o/*.o', '-x o/read.o', '-n x/swapped.a', 'x/mixed.a', 'x/stripped.a',
+               'x/textonly.a', 'x/onlyone.a', '-o x/big.a', '-g x/big.a', '-n a/libc.a a/libm.a'] \
+            + ['%s l/long.o' % o for o in ('', '-n', '-r', '-p', '-g', '-u', '-o', '-s', '-v')] + ['l/many.o', 'l/long.a', '-r l/long.a']
     return ['%s %s' % (prog, a) for a in c]
 
 

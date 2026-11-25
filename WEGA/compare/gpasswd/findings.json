@@ -42,12 +42,12 @@
    "file": "gpasswd.c",
    "orig": "0x0074",
    "size_orig": 1308,
-   "status": "open",
+   "status": "exact",
    "kind": "proven",
    "callers": [
     "0x0000"
    ],
-   "note": "no source; written from the code after System III passwd.c. Open: two temporaries of the calls at 0x2c/0x2e in the original (0x2a/0x2c here); spare locals x, y; exit(1) also after a change (kept)."
+   "note": "no source; written from the code after System III passwd.c. Three spare locals x, y, z: words of the frame of the original (the shipped cc, no compiler gives them, measured 2026-11-25); exit(1) also after a change (kept)."
   },
   "notify": {
    "file": "gpasswd.c",

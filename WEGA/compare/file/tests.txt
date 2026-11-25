@@ -1,0 +1,270 @@
+# The cases of the corpus of file (compare/file/corpus.py); the format: host/recon/casefile.py. src = src/cmd/file.c.
+# Absolute paths are files of the WEGA root (the guest sees them below the root).
+
+== binaries
+-- case
+step: file /bin/ar /bin/adb /bin/cas /bin/fc /lib/as2 /lib/crt0.o /lib/scrt0.o /lib/libc.a /usr/lib/libPW.a
+
+== dirs-and-missing
+-- case
+step: file /bin /usr nonexistent
+
+== z8-exec
+\345\007\000\000\000\020\000\000\000\000\000\000\000\016\000\000\000\000\000\004\000\020\000\000
+-- case
+
+== z80-exec-stripped
+\345\007\000\000\000\020\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\020\000\000
+-- case
+
+== z8-separate
+\345\021\000\000\000\020\000\000\000\000\000\000\000\016\000\000\000\000\000\004\000\020\000\000
+-- case
+
+== z80-overlay
+\345\005\000\000\000\020\000\000\000\000\000\000\000\016\000\000\000\000\000\000\000\020\000\000
+-- case
+
+== swapped
+-- a
+\007\345\000\000\000\020\000\000\000\000\000\000\000\016\000\000\000\000\000\004
+-- b
+\021\345\000\000\000\020\000\000\000\000\000\000\000\000\000\000\000\000\000\004
+-- c
+\005\345\000\000\000\020
+-- d
+\005\346\000\000\000\020\000\000\000\000\000\000\000\016
+-- e
+\007\346\000\000\000\020\000\000\000\000\000\000\000\016
+-- f
+\021\346\000\000\000\020
+-- g
+\005\347\000\000\000\020
+-- h
+\007\347\000\000\000\020\000\000\000\000\000\000\000\016
+-- i
+\021\347\000\000\000\020
+-- case
+step: file a b c d e f g h i
+
+== nonseg-overlay-unstripped
+\347\005\000\000\000\020\000\000\000\000\000\000\000\016
+-- case
+
+== old-archive
+\377\155 old archive
+-- case
+
+== empty
+-- e
+-- case
+step: file e
+
+== c-program
+\043include <stdio.h>
+main()
+{
+	printf("hello\n");
+}
+-- case
+
+== c-comment-first
+/* a comment
+ * over lines */
+int x;
+-- case
+
+== c-function
+/* no keyword: a call with braces */
+foo(a)
+{
+	return a;
+}
+-- case
+
+== c-define
+\043define X 1
+\043  
+\043include "a.h"
+-- case
+
+== c-ifndef
+\043ifndef A
+\043endif
+-- case
+
+== c-hash-long
+\043 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+-- case
+
+== c-semicolon
+x;
+y;
+int z;
+-- case
+
+== c-typedef
+typedef int foo;
+-- case
+
+== csh
+set x = 1
+foreach i (a b)
+end
+-- case
+
+== fortran
+c a comment
+      function f(x)
+      f = x
+      end
+-- case
+
+== fortran-common
+      common /a/ b
+-- case
+
+== assembler-dot
+.globl _main
+_main:
+-- case
+
+== assembler-comment
+/ a comment
+/ another
+
+	.text
+-- case
+
+== assembler-labels
+start: mov r0,r1
+loop:	tst r2
+	jmp loop
+-- case
+
+== assembler-label-dot
+x: y
+	.data
+-- case
+
+== roff
+.TH FOO 1
+.SH NAME
+foo \- bar
+-- case
+
+== roff-later
+x: y
+.SH NAME
+-- case
+
+== z8
+	ld r1,r2
+	DECW rr4
+-- case
+
+== z8-plzcomment
+! a PLZ comment !
+	ldci @rr2
+-- case
+
+== plzasm
+	jr loop
+	inc r1
+-- case
+
+== plzasm-segmented
+$segmented
+	CALL foo
+-- case
+
+== plzasm-seg-later
+	call x
+	ld rr0, seg
+-- case
+
+== plzsys
+x module
+y CONSTANT z := 1
+-- case
+
+== plz-comment-only
+! only a comment
+-- case
+
+== plz-bang-bang
+! two !! inside !
+	MODULE
+-- case
+
+== english
+# sic: never English text: ccv0 compares bp[j] < NASC as a byte with 0x80 (-128), english() counts nothing (KNOWLEDGE.md, quirks)
+The tea is on the table in the kitchen and the cat is at the door
+it is not late and the rain is gentle on the stones of the street
+one more line of easy words to see the test of the tone of this one
+-- case
+
+== english-short
+short text
+-- case
+
+== shell-test
+if test -f /etc/passwd
+then echo /a/b/c > /dev/null < /dev/null
+fi
+-- case
+
+== commands
+echo hello
+-- case
+host: chmod 755 t.in
+step: file t.in
+
+== ascii
+1 2 3 4 5 6
+a b c d e f
+-- case
+
+== data
+\001\002\003\200\201 data
+-- case
+
+== troff-output
+\100\357\001\002 troff
+-- case
+
+== with-garbage
+\043include <stdio.h>
+int x;
+garbage \300 here
+-- case
+
+== fortran-garbage
+      integer i
+\377
+-- case
+
+== list
+-- names
+/bin/ar
+t.in
+nonexistent
+/lib/libc.a
+-- case
+step: file -f names
+
+== list-missing
+-- case
+step: file -f nonexistent
+
+== no-args
+-- case
+step: file
+
+== many
+-- a
+int a;
+-- b
+.globl x
+-- case
+step: file a b /bin/ar /lib/libc.a /usr/lib/llib-lc /usr/man/man1/file.1 /usr/include/stdio.h /etc/rc /etc/passwd

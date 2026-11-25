@@ -52,7 +52,7 @@ char **argv;
 	long salt;
 	int u;
 	int g;
-	int x, y;	/* two words of the frame of the original, not used */
+	int x, y;	/* three words of the frame of the original, not used (also z) */
 	int insist;
 	long lkret;
 	int mode;
@@ -61,6 +61,7 @@ char **argv;
 	int pwlen;
 	FILE *tf;
 	FILE *gf;
+	int z;
 
 	lk.lkwhnce = 0;
 	lk.lklen = 0L;

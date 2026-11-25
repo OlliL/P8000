@@ -11,6 +11,8 @@
 /grep
 /egrep
 /egrep.c
+/nm
+/file
 /gets
 /kill
 /pwd

@@ -61,7 +61,7 @@ register variables: "slots" (as many never used frame words as saved registers: 
 
 | Time (build stamp) | D12 of the data | Programs (examples) | Compiler |
 |---|---|---|---|
-| 1981 .. 1982, no crt0 stamp (sources 07/82 ..) | packed | chmod, dc, m4, eqn, cpp (12/82), ranlib, the plz tools | v0 (D1 tight) |
+| 1981 .. 1982, no crt0 stamp (sources 07/82 ..) | packed | chmod, dc, file (07/82), m4, eqn, cpp (12/82), ranlib, the plz tools | v0 (D1 tight) |
 | 10/82 .. 11/82 (crt0 3.1) | packed | ex, vi, at, xstr | v0a (ex, xstr measured; the libraries of ex v0); shut, dd 11/82 .. 12/82 loose |
 | 01/05/83 (crt0 3.1) | packed | write, rmdir | v1r (write fits v1q and v1 too, rmdir does not fit v1) |
 | 01/14/83 (crt0 3.1) | packed | size, lex | size: v1, v1q and v1r all fit its own code; its libc: v1q. lex: v1l (also the libPW regcmp in regcmp) |
@@ -70,7 +70,7 @@ register variables: "slots" (as many never used frame words as saved registers: 
 | 08/11/83 | packed | csh | v1 (last packed one) |
 | 08/22/83 .. 09/01/83 | padded | sh, rsh, kdb, fsdb | D1 slots with the shipped D12: between v1 and shipped |
 | 09/09/83 and later | padded | troffv7, adb 09/83, sld 10/27, ps 11/83 | shipped (D1 loose) |
-| 11/16/83 .. 11/18/83 (SCCS lines `87wega3.2`) | padded | ar, cmp, cpio, diff, du, egrep, getfile, grep, mail, make, nl, pr, putfile, remote, who | vm (D1 register slots) |
+| 11/16/83 .. 11/18/83 (SCCS lines `87wega3.2`) | padded | ar, cmp, cpio, diff, du, egrep, getfile, grep, mail, make, nl, nm, pr, putfile, remote, who | vm (D1 register slots) |
 | 02/28/84 (SCCS line overwritten) | padded | local | vz (a Zilog binary: the cparse and libc of 1984, those of ZEUS 3.21) |
 | no stamp, built late | packed | cparse, scparse, codgen, scodgen (sources 10/06/83), popt, spopt, gopt (03/83), cpp, find 10/83, upkeep 11/83 | v0p for the passes and cpp |
 | no stamp, libc 09/83 | padded | cc, scc, tar, format, verify, copydisk, gld, pburn | shipped |
@@ -208,7 +208,7 @@ the shipped cparse with `OLD_D1S` (`lookup` in sym1.c does not clear `sfldc` of 
 malloc'd and can be a freed one whose `sfldc` still holds the 1 of a register parameter, and `oalloc` then gives the
 register local a frame word). Built by cc with the libc of stage 1 as the other old passes (the malloc decides which entries are stale: those of
 `libc-v7.a`, linked into the shipped cparse, and of `/lib/libc.a` give the same words, measured on the test set). Which local gets a word depends on every symbol entry made before it in the file (`OLDCC_REGSLOTS.md`).
-Built by vm and byte-identical: ar, cmp, cpio, diff, du, egrep (from egrep.y by the yacc of WEGA), getfile, grep, mail (rmail), make, nl, pr, putfile, remote, who. Source forms it needs: make's defs includes the headers of files.c (pwd.h, ar.h, s.out.h, nlist.h);
+Built by vm and byte-identical: ar, cmp, cpio, diff, du, egrep (from egrep.y by the yacc of WEGA), getfile, grep, mail (rmail), make, nl, nm, pr, putfile, remote, who. Source forms it needs: make's defs includes the headers of files.c (pwd.h, ar.h, s.out.h, nlist.h);
 make files.c eqstr keeps an `int unused`, mail an unused `<sys/dir.h>` (the entries in front of the first function that
 are not in the bytes). The undated tar, dump, dumpdir, restor and the standalone programs get words from it that they lack:
 they are of the shipped cparse.

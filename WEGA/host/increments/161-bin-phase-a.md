@@ -63,11 +63,11 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] date (8550)
 - [x] dd (8612)
 - [x] regcmp (8844)
-- [x] file (9254) -- deferred: WEGA rewrote it (Z8000, PLZ, s.out types; about 3 KB of own code)
+- [x] file (9254) -- byte-identical (2026-11-25): file.c of System III rewritten from the binary (s.out, Z8/Z80, PLZ, csh), ccv0, libc-v1; quirks in KNOWLEDGE.md
 - [x] getfile (10002)
 - [x] local (10398) -- byte-identical (2026-11-25): a Zilog binary of 02/84, ccvz (OLD_D12B) and libc-v14 (the ZEUS 3.21 members)
 - [x] who (11540)
-- [x] nm (12026) -- deferred: WEGA rewrote it for s.out (vs.out, segmented, line tables)
+- [x] nm (12026) -- byte-identical (2026-11-25): nm.c of System III rewritten for s.out from the binary (getopt, long names, -v, -l, segmented formats), ccvm, libc.a; quirks in KNOWLEDGE.md
 - [x] diff (12258)
 - [x] egrep (12618) -- byte-identical (2026-11-25): egrep.y of System III by the yacc of WEGA, ccvm, libc.a; WEGA adds the sccsid and `!eflag` in the usage test
 - [x] uulog (12784)
@@ -128,6 +128,8 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
 - 2026-11-24 todo batch 1 (no sources): IDENTICAL echo2 (V7 echo on stderr), printenv (2BSD), whereis (2.9BSD with the WEGA
   directories), dog (written from the code; libc-v6 + freopen, setbuf, ttyname 0_2, strcat 0_1, fcntl, fstat), putfile
   (written from the code); partial: gpasswd (two temporaries of main). Deferred: uusend, remote, ps.
+- 2026-11-25 gpasswd: byte-identical with a third spare local z in main (the frame word of the two temporaries); every
+  nonsegmented compiler measured: cc, ccvm, ccvl, ccvz give the same 7 bytes without it, the others far more.
 - 2026-11-24 phase B ex: byte-identical (with edit, vi, view): v0a OLD_D65 (dosub), OLD_D66 (setty, gTTY), OLD_D5S extended
   (getone), shrink.sh (indirect call temporary; ASCII sort), the old cas (the 24 call/calr functions), exbss.c (the order of
   the commons), /lib/ex2.13strings, libc-v11 extended by the members of ex. checkall -b ALL OK, 847 files.
