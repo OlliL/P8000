@@ -89,7 +89,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] dog (8330)
 - [x] putfile (9752)
 - [x] uusend (13216) -- deferred: a WEGA form of the 4.2BSD uusend (-f, directories, mkdir) with two libc gaps
-- [x] remote (15162) -- deferred: about 5 KB of own code (24 functions), no source
+- [x] remote (15162) -- byte-identical (src/cmd/remote, ccvm)
 - [x] gpasswd (15362)
 - [ ] sh (24032); link: rsh
 - [x] make (39048) -- byte-identical (ced632f8, ccvm since 602346b6): System III make with the WEGA changes, libc.a; corpus 45 cases
@@ -107,6 +107,14 @@ rsh = sh, edit = vi = view = ex, bin/login = etc/login. Not in this run: `as` (1
 
 - 2026-11-23 (owner): phase A only, rules above.
 - 2026-11-23 (owner): extending setup.py / inventory.py for E711 counts as tool work, not compiler work.
+
+- 2026-11-25 (owner), the night run of the rest: ps, uusend, sh (rsh), csh, adb, fsc, fc, pstat, gld, in this order, without
+  questions. Phase A only, no compiler change (choosing an existing compiler and its switches is allowed), no new libc;
+  an existing libc may get members when every program built with it stays identical. Nothing is deferred: each program
+  from the start to the end, committed; byte-identical: into the build, the install and CORPORA; otherwise the source in
+  src/cmd, its own Makefile target (not in the build) and a corpus. Search on while it makes progress; a whole program
+  comes before a part of every program. checkall only when the build changes (identical programs, libc members) and once
+  at the end.
 
 ## Not part of it
 
