@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 95 | 2 | 3 | 11 |
+| [bin](#bin) | 111 | 96 | 2 | 2 | 11 |
 | [etc](#etc) | 67 | 33 | 0 | 19 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 951 | 10 | 142 | 94 |
+| **all** | 1197 | 952 | 10 | 141 | 94 |
 
 <a id="root"></a>
 ## root
@@ -95,7 +95,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/ln` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
 | `bin/local` | binary E707 | `src/cmd/remote` | exact | ccvz | libc-v14.a |
 | `bin/login` | binary E707 | `tmp/sys3/usr/src/cmd/login.c` | sys3 | D12 old, D1 slots | - |
-| `bin/ls` | binary E707 | `tmp/sys3/usr/src/cmd/ls.c` | sys3 | D12 old?, D1 slots | - |
+| `bin/ls` | binary E707 | `src/cmd/ls.c` | exact | ccv1 | libc-v6.a |
 | `bin/mail` | binary E707 | `src/cmd/mail.c` | exact | ccvm | libc-v12.a |
 | `bin/make` | binary E711 | `src/cmd/make` | exact | ccvm | libc.a |
 | `bin/mkdir` | binary E707 | `src/cmd/mkdir.c` | exact | ccv0 | libc-v1.a |

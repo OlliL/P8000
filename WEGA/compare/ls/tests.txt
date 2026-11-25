@@ -1,0 +1,205 @@
+# The cases of the corpus of ls (compare/ls/corpus.py); the format: host/recon/casefile.py (the default step is ls).
+# Where an expectation comes from: man = /usr/man/man1/ls.1, src = src/cmd/ls.c (function).
+# The standard output is no terminal (gtty fails): qflg and Cflg are 0, one name per line, unless an option says otherwise.
+
+== plain
+# src main/pdirectory: the names of . sorted, one per line; the names with a dot are not listed
+-- a
+-- bb
+-- .hid
+-- expect
+a
+bb
+
+== all
+# man: -a lists every entry, also . and ..; -A (not root) the ones with a dot but . and ..
+-- case
+step: ls -a
+step: ls -A
+-- a
+-- .hid
+-- expect
+.hid
+a
+
+== one-columns-across
+# src: -C columns down (width of the longest name + 1), -x across, -1 one per line, -m a stream separated by ", "
+-- case
+step: ls -C
+step: ls -x
+step: ls -m
+step: ls -1
+-- a
+-- bb
+-- ccc
+-- dddd
+-- expect
+a
+bb
+ccc
+dddd
+
+== columns
+# src pem: -C sorts down the columns (80 / colwidth columns), -x across
+-- case
+step: ls -C
+-- a
+-- bb
+-- ccc
+-- dddd
+-- expect
+a    bb   ccc  dddd
+
+== stream
+# src column: -m separates the names by ", "
+-- case
+step: ls -m
+-- a
+-- bb
+-- ccc
+-- expect
+a, bb, ccc
+
+== flags-F
+# src pentry: -F appends / to a directory, * to an executable file, a blank to the others
+-- case
+host: mkdir d && chmod 755 d && chmod 755 x
+step: ls -F
+-- a
+-- x
+-- expect
+a 
+d/
+x*
+
+== dir-d
+# man: -d lists a directory as a file; without it its content; two arguments get the heading "\nNAME:" (the expectation:
+# the last step)
+-- case
+host: mkdir d e && touch d/f e/g
+step: ls -d d
+step: ls d
+step: ls d e
+-- expect
+
+d:
+f
+
+e:
+g
+
+== recursive
+# src pentry/main: -R lists the subdirectories after the directory, each with its heading
+-- case
+host: mkdir -p d/s && touch d/f d/s/g
+step: ls -R d
+-- expect
+f
+s
+
+d/s:
+g
+
+== reverse
+# man: -r reverses the order
+-- case
+step: ls -r
+-- a
+-- bb
+-- ccc
+-- expect
+ccc
+bb
+a
+
+== dirs-only
+# src gstat: -D lists only the directories (a file argument too is dropped)
+-- case
+host: mkdir d
+step: ls -D a
+step: ls -D
+-- a
+-- expect
+d
+
+== time-sort
+# man: -t sorts by the modification time, the newest first
+-- case
+host: touch -d '1983-05-01 12:00' a && touch -d '1983-05-03 12:00' bb && touch -d '1983-05-02 12:00' ccc
+step: ls -t
+-- a
+-- bb
+-- ccc
+-- expect
+bb
+ccc
+a
+
+== long
+# src pentry: -l: the type and the modes, the links, the owner (%-9: a number when /etc/passwd has no name), the group
+# (%-8), the size (%7ld), the date (" %-12.12s " within six months, else month, day and year; the hour in the zone of the
+# guest), the name; "total" first
+-- case
+time: 425000000
+host: touch -d '1983-05-01 12:00' a && touch -d '1982-01-15 12:00' bb && chmod 640 bb
+step: ls -l
+-- a
+x
+-- bb
+yy
+-- expect
+total 2
+-rw-r--r-- 1 1000     1000          2 May  1 06:00 a
+-rw-r----- 1 1000     1000          3 Jan 15  1982 bb
+
+== long-g-o-n
+# src pentry: -g leaves out the owner, -o the group (and is a long listing by itself), -n numbers instead of names (the
+# expectation: the last step; the others are compared between the original and the build)
+-- case
+time: 425000000
+host: touch -d '1983-05-01 12:00' a
+step: ls -lg a
+step: ls -o a
+step: ls -n a
+-- a
+x
+-- expect
+-rw-r--r-- 1 1000     1000          2 May  1 06:00 a
+
+== sizes
+# src pentry/nblock: -s prints the blocks of 512 bytes (%4D, "%D " with -m), and "total" over the directory
+-- case
+step: ls -s
+-- a
+x
+-- empty
+-- expect
+total 1
+   1 a
+   0 empty
+
+== not-found
+# src gstat: a name that does not exist: "NAME not found" on the standard output
+-- case
+step: ls nosuch a
+-- a
+-- expect
+nosuch not found
+a
+
+== unreadable
+# src readdir: a directory that cannot be opened: "NAME unreadable" on the standard output
+-- case
+host: mkdir d && chmod 000 d
+step: ls d
+host: chmod 755 d
+-- expect
+d unreadable
+
+== usage
+# src main: an unknown option prints the usage line and exits 1; the libc fprintf calls the own _doprnt of ls with six
+# arguments, which takes four: the line goes through pputchar to the standard output, not to stderr (a quirk)
+-- case
+step: ls -z
+-- expect
+usage: ls [-1ACDFRacdfgilmnqrstux] [files]

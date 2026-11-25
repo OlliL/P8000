@@ -12,6 +12,7 @@
 #              chown, dup, pipe, execlp (in front of execvp) added, mktemp in front of setret)
 #   libc-v5.a  codgen, scodgen, popt, spopt
 #   libc-v6.a  rm, mv, cp, ln (05/83 .. 07/83), chgrp, chown, sort, touch (02/83 .. 03/83), uname, test (01/83), tr (05/83), dog (03/83)
+#              ls (02/83: getgrgid 0_1, getpwuid 0_1, rdwr 0_2, calloc 0_2, qsort 0_1, strncat 0_1 added; atoi behind getenv)
 #   libc-v7.a  cparse, scparse, find (10/83)
 #   libc-v8.a  cc, scc
 #   libc-v9.a  ld (07/83), df (04/83: calloc 0_2, nlist 0_1, stat, sync)
@@ -105,12 +106,12 @@ LIBv5 = freopen/0_1.o fseek/0_2.o ftell/0_2.o rdwr/0_3.o fopen/0_1.o printf/0_5.
 ../libc-v5.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv5)
 
-LIBv6 = system/0_2.o getgrnam/0_1.o getgrent/0_1.o getpwnam/0_1.o getpwent/0_1.o fgets/0_1.o ../libc/build/nonseg/rew.o \
+LIBv6 = system/0_2.o getgrnam/0_1.o getgrgid/0_1.o getgrent/0_1.o getpwuid/0_1.o getpwnam/0_1.o getpwent/0_1.o fgets/0_1.o ../libc/build/nonseg/rew.o rdwr/0_2.o \
 	 getopt/0_1.o fputc/0_1.o fputs/0_2.o ../libc/build/nonseg/freopen.o ../libc/build/nonseg/fopen.o printf/0_6.o doprnt/0_6.o \
 	 ../libc/build/nonseg/ffltioc.o gets/0_1.o filbuf/0_2.o ../libc/build/nonseg/setbuf.o flsbuf/0_1.o endopen/0_2.o findiop/0_1.o \
 	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o perror/0_2.o ttyname/0_2.o \
-	 ../libc/build/nonseg/sleep.o atoi/0_2.o ctime/0_1.o getenv/0_2.o cnvt/0_1.o ../libc/build/nonseg/decimal.o \
-	 length/0_1.o malloc/0_2.o errlst/0_2.o ../libc/build/nonseg/fakcu.o ../libc/build/nonseg/isatty.o ../libc/build/nonseg/stty.o strcat/0_1.o strrchr/0_2.o \
+	 ../libc/build/nonseg/sleep.o ctime/0_1.o getenv/0_2.o atoi/0_2.o cnvt/0_1.o ../libc/build/nonseg/decimal.o \
+	 length/0_1.o calloc/0_2.o malloc/0_2.o errlst/0_2.o ../libc/build/nonseg/fakcu.o ../libc/build/nonseg/isatty.o qsort/0_1.o ../libc/build/nonseg/stty.o strcat/0_1.o strncat/0_1.o strrchr/0_2.o \
 	 ../libc/build/nonseg/strcmp.o strcpy/0_1.o strncpy/0_2.o strlen/0_1.o ../libc/build/nonseg/access.o \
 	 ../libc/build/nonseg/alarm.o ../libc/build/nonseg/strchr.o ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/brk.o \
 	 ../libc/build/nonseg/chmod.o ../libc/build/nonseg/chown.o ../libc/build/nonseg/close.o ../libc/build/nonseg/execl.o \
@@ -238,6 +239,9 @@ objs:
 	cd crypt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd a64l ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd abs ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd qsort ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd strncat ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getgrgid ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd atoi ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd calloc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd cnvt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs

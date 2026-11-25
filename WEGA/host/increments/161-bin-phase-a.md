@@ -71,7 +71,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] diff (12258)
 - [x] egrep (12618) -- byte-identical (2026-11-25): egrep.y of System III by the yacc of WEGA, ccvm, libc.a; WEGA adds the sccsid and `!eflag` in the usage test
 - [x] uulog (12784)
-- [x] ls (13512) -- deferred: 2BSD ls with WEGA options; needs a libc with setbuf, qsort, fgetc, fread
+- [x] ls (13512) -- byte-identical (2026-11-25): the bls.c of Plexus with the WEGA options and its own printf/_doprnt; ccv1, libc-v6
 - [x] newgrp (13898)
 - [x] passwd (15188)
 - [x] stty (15702) -- byte-identical (2026-11-25): stty.c of System III with the WEGA speeds and modes, the shipped cc, libc-v15 (new: libc.a with doprnt 0_10)
@@ -149,6 +149,9 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
 - 2026-11-25 uux: IDENTICAL. The frame of main: the original has no variable n, the fread count goes into ret (the
   three orders of the declarations tried before could not give it). Corpus 2 of 2; checkall ALL OK (859 files), COVERAGE exact 945.
 - 2026-11-25 ed: IDENTICAL (see "ed: byte-identical" below). Corpus 22 of 22; checkall ALL OK (865 files), COVERAGE exact 951.
+- 2026-11-25 ls: IDENTICAL. The base is Plexus' bls.c (the Berkeley ls), not System III's ls.c: -D, -g, -o of WEGA,
+  getpwuid/getgrgid, -R collected in pentry, its own printf (lsprintf) and _doprnt (no float, through pputchar).
+  libc-v6: getgrgid, getpwuid, rdwr, calloc, qsort (V7), strncat added, atoi behind getenv. Corpus 17 of 17; checkall ALL OK (866 files), COVERAGE exact 952.
 
 ## Phase B regcmp: solved (2026-11-25)
 

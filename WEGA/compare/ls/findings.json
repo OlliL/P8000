@@ -1,0 +1,224 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/ls",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 16,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "f0010": {
+   "file": "crt0.s",
+   "orig": "0x0010",
+   "size_orig": 8,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "f0018": {
+   "file": "crt0.s",
+   "orig": "0x0018",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "candidate",
+   "callers": []
+  },
+  "main": {
+   "file": "ls.c",
+   "orig": "0x0042",
+   "size_orig": 966,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "odd: pwdf is still opened (/etc/passwd, or /etc/group with gflg, which -l sets) but never read: the names come from getpwuid and getgrgid in pentry."
+  },
+  "pdirectory": {
+   "file": "ls.c",
+   "orig": "0x0408",
+   "size_orig": 170,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042"
+   ]
+  },
+  "pem": {
+   "file": "ls.c",
+   "orig": "0x04b2",
+   "size_orig": 254,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0408"
+   ]
+  },
+  "pputchar": {
+   "file": "ls.c",
+   "orig": "0x05b0",
+   "size_orig": 124,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0888",
+    "0x0c30",
+    "0x0f10"
+   ]
+  },
+  "newline": {
+   "file": "ls.c",
+   "orig": "0x062c",
+   "size_orig": 52,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0408"
+   ]
+  },
+  "column": {
+   "file": "ls.c",
+   "orig": "0x0660",
+   "size_orig": 490,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0c30"
+   ]
+  },
+  "nblock": {
+   "file": "ls.c",
+   "orig": "0x084a",
+   "size_orig": 20,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x09fe",
+    "0x0c30"
+   ]
+  },
+  "pmode": {
+   "file": "ls.c",
+   "orig": "0x085e",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0c30"
+   ]
+  },
+  "select": {
+   "file": "ls.c",
+   "orig": "0x0888",
+   "size_orig": 54,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x085e"
+   ]
+  },
+  "makename": {
+   "file": "ls.c",
+   "orig": "0x08be",
+   "size_orig": 74,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0908",
+    "0x0c30"
+   ]
+  },
+  "readdir": {
+   "file": "ls.c",
+   "orig": "0x0908",
+   "size_orig": 246,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0408"
+   ]
+  },
+  "gstat": {
+   "file": "ls.c",
+   "orig": "0x09fe",
+   "size_orig": 396,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x0908"
+   ]
+  },
+  "compar": {
+   "file": "ls.c",
+   "orig": "0x0b8a",
+   "size_orig": 166,
+   "status": "exact",
+   "kind": "candidate",
+   "callers": []
+  },
+  "pentry": {
+   "file": "ls.c",
+   "orig": "0x0c30",
+   "size_orig": 596,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000",
+    "0x0042",
+    "0x04b2"
+   ]
+  },
+  "lsprintf": {
+   "file": "ls.c",
+   "orig": "0x0e84",
+   "size_orig": 48,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0408",
+    "0x04b2",
+    "0x0908",
+    "0x09fe",
+    "0x0c30"
+   ],
+   "note": "name guessed: the own printf of ls (int regs[5] as printf.c of libc), calls _doprnt with four arguments; the printf member of libc stays (fprintf) and calls this _doprnt with six (KNOWLEDGE.md, quirks)."
+  },
+  "_align": {
+   "file": "ls.c",
+   "orig": "0x0eb4",
+   "size_orig": 92,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "_doprnt": {
+   "file": "ls.c",
+   "orig": "0x0f10",
+   "size_orig": 866,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0e84",
+    "0x17b4"
+   ],
+   "note": "own: integers and strings only, the output through pputchar, the flag - only; a precision > 0 prints a 0 in front. The l conversions as goto (lo, lx) and if (c == d) case D: the original compares the value of c = *fmt++ three times in a row."
+  },
+  "_atoip": {
+   "file": "ls.c",
+   "orig": "0x1272",
+   "size_orig": 122,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0f10"
+   ]
+  }
+ }
+}
