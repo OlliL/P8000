@@ -138,8 +138,32 @@ ZEUS-WEGA/
   compare/
     <name>/            one corpus for both variants
       expect.wega/     only where the behaviour really differs
+  native/              the native build in MAME (see "Native build in MAME")
+    p8000-wega/
+    s8000-zeus/
   build/               (.gitignore) out/zeus, out/wega
 ```
+
+## Native build in MAME
+
+The proof that the tree builds natively: per machine (P8000 with WEGA,
+S8000 with ZEUS) one run that
+
+1. makes a file system image that holds the repository (the git files
+   only), as a second disk or partition the booted system can mount;
+2. boots the machine in MAME in single-user mode;
+3. mounts that file system and runs the complete build there with the
+   native make, cc and tools;
+4. ends MAME properly and takes the install tree out of the image;
+5. compares it with the cross build (the same bytes).
+
+`native/<machine>/` holds what is specific to the machine: the boot
+dialogue, the mount and build script run in the guest, the disk layout.
+Shared parts (making and reading the file system image, driving MAME)
+are tools in `host/`. Their first versions come from increment 180 of
+the restoration (`host/tools/wegafs.py` can already format a WEGA file
+system and put files and directories into it; `host/tools/mamerun.py`
+drives MAME and boots WEGA in single-user mode).
 
 - Build: `make VARIANT=zeus` or `make VARIANT=wega`. Sources come from
   `src/` and `variant/$(VARIANT)/`.
