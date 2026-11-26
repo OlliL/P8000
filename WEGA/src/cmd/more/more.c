@@ -58,7 +58,7 @@ static char sccsid[] = "@[$]more.c	1.13 03/31/83 09:37:26 - 87wega3.2";
 #define gtty(fd,argp)	ioctl(fd,TCGETA,argp)
 #else
 #define MBIT	CBREAK
-#define stty(fd,argp)	ioctl(fd,TIOCSETN,argp)
+#define stty(fd,argp)	ioctl(fd,TIOCSETP,argp)
 #endif
 #endif
 
@@ -77,7 +77,6 @@ int		savetty;	/* the flags of the terminal at the start */
 #endif
 long		file_pos, file_size;
 int		fnum, no_intty, no_tty, slow_tty;
-int		ispipe;		/* the file is a fifo: no percentage */
 int		dum_opt, dlines, onquit(), end_it();
 #ifdef SIGTSTP
 int		onsusp();
@@ -108,6 +107,7 @@ int		Lpp = 24;	/* lines per page */
 char		*Clear;		/* clear screen */
 char		*eraseln;	/* erase line */
 char		*Senter, *Sexit;/* enter and exit standout mode */
+int		ispipe;		/* the file is a fifo: no percentage */
 char		*tgetstr();
 int		Mcol = 80;	/* number of columns */
 int		Wrap = 1;	/* set if automargins */
@@ -118,6 +118,7 @@ struct {
 } context, screen_start;
 extern char	PC;		/* pad character */
 extern short	ospeed;
+int		unused;		/* a word of the original that no code uses (the name is a guess) */
 
 
 main(argc, argv)
@@ -601,7 +602,7 @@ char *filename;
 	    promptlen += printf ("(%d%%)", (int)((file_pos * 100) / file_size));
 	}
 	if (dum_opt) {
-	    promptlen += pr("[Hit space to continue, Rubout to abort]");
+	    promptlen += pr("--[Hit space to continue]");
 	}
 	if (Senter && Sexit)
 	    tputs (Sexit, 1, putch);

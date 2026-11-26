@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 102 | 7 | 0 | 2 |
+| [bin](#bin) | 111 | 104 | 5 | 0 | 2 |
 | [etc](#etc) | 67 | 34 | 0 | 18 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 959 | 15 | 138 | 85 |
+| **all** | 1197 | 961 | 13 | 138 | 85 |
 
 <a id="root"></a>
 ## root
@@ -99,7 +99,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/mail` | binary E707 | `src/cmd/mail.c` | exact | ccvm | libc-v12.a |
 | `bin/make` | binary E711 | `src/cmd/make` | exact | ccvm | libc.a |
 | `bin/mkdir` | binary E707 | `src/cmd/mkdir.c` | exact | ccv0 | libc-v1.a |
-| `bin/more` | binary E707 | `src/cmd/more` | partial | ccv1 | libc.a |
+| `bin/more` | binary E707 | `src/cmd/more` | exact | ccv1 | libc-v6.a |
 | `bin/mv` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
 | `bin/newgrp` | binary E707 | `src/cmd/newgrp.c` | exact | cc | libc-v12.a |
 | `bin/nice` | binary E707 | `src/cmd/nice.c` | exact | ccv1 | libc-v4.a |
@@ -107,7 +107,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/nm` | binary E707 | `src/cmd/nm.c` | exact | ccvm | libc.a |
 | `bin/nohup` | binary E707 | `src/cmd/nohup.c` | exact | ccv0 | libc-v1.a |
 | `bin/od` | binary E707 | `src/cmd/od.c` | exact | ccv1r | libc-v3.a |
-| `bin/page` | binary E707 | `src/cmd/more` | partial | ccv1 | libc.a |
+| `bin/page` | binary E707 | `src/cmd/more` | exact | ccv1 | libc-v6.a |
 | `bin/passwd` | binary E707 | `src/cmd/passwd.c` | exact | ccv1 | libc-v4.a |
 | `bin/pburn` | binary E611 | `src/cmd/pburn` | exact | scc | slibc.a |
 | `bin/pr` | binary E707 | `src/cmd/pr.c` | exact | ccvm | libc.a |
@@ -541,7 +541,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `usr/lib/me/sh.me` | text | `src/cmd/me` | exact | - | - |
 | `usr/lib/me/tbl.me` | text | `src/cmd/me` | exact | - | - |
 | `usr/lib/me/thesis.me` | text | `src/cmd/me` | exact | - | - |
-| `usr/lib/more.help` | text | `src/cmd/more` | exact | ccv1 | libc.a |
+| `usr/lib/more.help` | text | `src/cmd/more` | exact | ccv1 | libc-v6.a |
 | `usr/lib/news/news` | text | `src/cmd/news` | exact | - | - |
 | `usr/lib/news/wega` | text | `src/cmd/news` | exact | - | - |
 | `usr/lib/plzcg.errs` | text | `src/cmd/plzcg` | exact | - | - |

@@ -2,7 +2,7 @@
  "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
  "compiler": "ccv1",
  "binary": "/bin/more",
- "note": "Plexus more.c (Berkeley 4.1) and regex.c as WEGA changed them, built without -DSYS3 (the sgtty branch), ccv1 -O with the stdio.h of the time (head/oldv7). All own functions exact; termlib equal. The libc fits no libc-vN: owner decision open; built with /lib/libc.a for now (OPEN of checkall).",
+ "note": "Plexus more.c (Berkeley 4.1) and regex.c as WEGA changed them, built without -DSYS3 (the sgtty branch), ccv1 -O with the stdio.h of the time (head/oldv7), termlib, libc-v6 (owner 2026-11-26: more's order and members added to it, measured with host/recon/libcplace.py). Byte-identical. The prompt text is --[Hit space to continue]; stty is ioctl TIOCSETP (Plexus: TIOCSETN); an unused word in the bss behind screen_start (named unused).",
  "functions": {
   "main": {
    "file": "more.c",

@@ -97,7 +97,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] fsc (2078; segmented E611) -- byte-identical (2026-11-26): src/cmd/fse/fsc.c, shipped scc -O -s -i
 - [x] fc (3074; segmented E607) -- byte-identical (2026-11-26): src/cmd/fse/fc.c, shipped scc -O, not stripped (cc.341.o patched in)
 - [x] pstat (15638; segmented E607) -- byte-identical (2026-11-26): no source, rebuilt from the binary on V7's pstat.c, sccvk without -O, kva.c/kpa.c of ps
-- [ ] more (18648; link: page; owner 2026-11-26: was missing in this list, before gld) -- done but the libc (2026-11-26): Plexus' more.c/regex.c with WEGA's changes, ccv1 without -DSYS3, oldv7 stdio.h; all 43 own functions exact, termlib equal; the libc fits no libc-vN (libc-v4 + freopen, ungetc, _exit, fcntl: owner); /lib/libc.a for now, in OPEN of checkall; corpus 2 of 2
+- [x] more (18648; link: page; owner 2026-11-26: was missing in this list, before gld) -- byte-identical (2026-11-26): Plexus' more.c/regex.c with WEGA's changes, ccv1 without -DSYS3, oldv7 stdio.h, termlib, libc-v6 (owner: crt0 and date; members and order added, host/recon/libcplace.py); corpus 2 of 2
 - [ ] gld (27616; segmented E607)
 - [ ] sh (24032); link: rsh -- done but the libc (2026-11-26): System III sh with the WEGA changes, ccv1; 104 of 118 functions exact against a scratch libc, open: service.c (the compiler of 08/22/83, not built), three popt blocks; libc-v9 extended for sh (its libc part equal); built, installed with rsh, corpus 22 of 22; in OPEN of checkall
 
@@ -362,3 +362,6 @@ In SUBDIRS of src/cmd (shipped: `LIBC=/lib/libc.a`). Corpus: 22 cases (compare/e
   order against the users, SCCS stamps) went to the owner. The corpus can only
   reach reopen (no terminal on stderr).
 - 2026-11-26 more committed after checkall "more" ALL OK (built with /lib/libc.a, in OPEN).
+- 2026-11-26 more (owner: libc-v6, crt0 and date win): libc-v6 takes freopen before fputs, fseek 0_1, ungetc, setret, dup
+  and more's order (ctime before getenv: forced by a user); then the prompt text, TIOCSETP and an unused bss word: IDENTICAL.
+- 2026-11-26 more committed after checkall "more6" ALL OK (libc-v6; out of OPEN).

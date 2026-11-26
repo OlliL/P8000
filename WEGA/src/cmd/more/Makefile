@@ -1,8 +1,7 @@
 # more (link page): /bin/more, more.c 1.13 and regex.c 1.1 03/31/83: Plexus' more (Berkeley more 4.1) as WEGA changed
-# it (built without -DSYS3: the sgtty branch; its own SCCS stamps; setret/longret for setjmp/longjmp; stderr reopened for
-# reading; printf through xprintf; a fifo shows no percentage; execute by execl; the WEGA magic numbers); whoami.h of
-# Plexus; ccv1 with the stdio.h of the time (oldv7). The own code is byte-identical; the libc of the original fits no
-# libc-vN (owner's decision open): /lib/libc.a for now.
+# it (built without -DSYS3: the sgtty branch with TIOCSETP; its own SCCS stamps; setret/longret for setjmp/longjmp; stderr
+# reopened for reading; printf through xprintf; a fifo shows no percentage; execute by execl; the WEGA magic numbers);
+# whoami.h of Plexus; ccv1 with the stdio.h of the time (oldv7), libc-v6 (owner 2026-11-26: crt0 and date). Byte-identical.
 # The help text of more (/usr/lib/more.help): more.mk of Plexus copies it; the file is the one of the WEGA root.
 #
 #   make                       build ./more
@@ -15,7 +14,7 @@ CAS = cas
 LD = ld
 STRIP = strip
 PREFIX = /
-LIBC = /lib/libc.a
+LIBC = ../../lib/libc-v6.a
 TERMLIB = ../../lib/libtermlib/build/nonseg/libtermlib.a
 CRT = ../../lib/libc/nonseg/crt
 
