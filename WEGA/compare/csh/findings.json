@@ -80,9 +80,9 @@
    "file": "sh.c",
    "orig": "0x07b4",
    "size_orig": 1194,
-   "status": "open",
-   "lines": 41,
-   "note": "WEGA: the environment imported as lowercase shell variables (block local ep, val; the register v, cp declared behind name and i, j: their slots); prompt and intrflg (guessed name, for the **av = '-' of Berkeley) are globals of sh.c; /etc/cshprofile before .cshrc. Open: the lowercase loop of the environment block: the original has the test of the loop and the 'A' compare at the bottom (test; jeq set; cpb 'A'; jlt next; jr Z-compare) and set/ep++/clear loop between the entry jump and the loop body; ccv1 gives the plain loop inversion (body, test; jne body; set). Tried (2026-11-26, the same code each): continue form, nested ifs, while with i++, 'Z' first, for (;;) with break, do-while entered by goto; popt without OLD_D20 or with the vc switches D45, D49, D50, D51 neither. Phase B: popt."
+   "status": "exact",
+   "lines": 0,
+   "note": "WEGA: the environment imported as lowercase shell variables (block local ep, val; the register v, cp declared behind name and i, j: their slots); prompt and intrflg (guessed name, for the **av = '-' of Berkeley) are globals of sh.c; /etc/cshprofile before .cshrc. Odd form (2026-11-26): the lowercase loop written with gotos (i = 0; goto tst; up: set ...; continue; z: if (name[i] <= 'Z') ...; nx: i++; tst: if (name[i] == 0) goto up; if (name[i] < 'A') goto nx; goto z;): the loop inversion of popt then gives the original's layout (set and the clear loop between the entry jump and the body, the test and the 'A' compare at the bottom); the plain for, continue, nested if, while, do-while and for (;;) forms give the plain inversion."
   },
   "importpath": {
    "file": "sh.c",
@@ -180,7 +180,7 @@
    "size_orig": 400,
    "status": "exact",
    "lines": 0,
-   "note": "Source form: the ret block (Gcat, return (1)) written inside case '\\n' behind *wp = 0, the pack loop jumps to it; at the end of the function popt keeps it there (code motion, OLD_D20)."
+   "note": "Source form: the ret block (Gcat, return (1)) inside the pack loop behind *wp++ = c; continue; (its \"\" behind \"Word too long\" in the strings, as the original); there popt moves it to the goto ret of case '\\n' (at the end of the function OLD_D20 keeps it)."
   },
   "DgetC": {
    "file": "sh.dol.c",

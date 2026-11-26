@@ -43,13 +43,25 @@ main(c, av)
 				name[j] = ch;
 			name[j] = 0;
 			val = getenv(name);
-			for (i = 0; name[i]; i++)
-				if (name[i] >= 'A' && name[i] <= 'Z')
-					name[i] += 'a' - 'A';
+			i = 0;
+			goto tst;
+up:
 			set(name, val);
 			ep++;
 			for (i = 0; i < 20; i++)
 				name[i] = 0;
+			continue;
+z:
+			if (name[i] <= 'Z')
+				name[i] += 'a' - 'A';
+nx:
+			i++;
+tst:
+			if (name[i] == 0)
+				goto up;
+			if (name[i] < 'A')
+				goto nx;
+			goto z;
 		}
 	}
 	hp = getenv("HOME");

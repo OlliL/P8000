@@ -123,9 +123,7 @@ deof:
 
 	case '\n':
 		*wp = 0;
-ret:
-		Gcat("", wbuf);
-		return (1);
+		goto ret;
 
 	case ' ':
 	case '\t':
@@ -214,6 +212,10 @@ pack:
 toochars:
 			error("Word too long");
 		*wp++ = c;
+		continue;
+ret:
+		Gcat("", wbuf);
+		return (1);
 	}
 }
 
