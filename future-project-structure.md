@@ -120,14 +120,12 @@ since the sources hold the ZEUS strings.
 
 ```
 ZEUS-WEGA/
-  src/                 shared: cmd, lib, head, uts (shared objects only), etc, man
+  src/                 shared: cmd, lib, head, uts (shared objects only), etc
   variant/
     zeus/
-      cmd/ head/ uts/  ZEUS-only files and the ZEUS copy of differing files
-      MANIFEST         per program: version, compiler, libc; kernel object list
+      cmd/ head/ uts/ man/  ZEUS-only files and the ZEUS copy of differing files
     wega/
-      cmd/ head/ uts/  WEGA-only files and the WEGA copy of differing files
-      MANIFEST
+      cmd/ head/ uts/ man/  WEGA-only files and the WEGA copy of differing files
       brand.tab        string exchange in the binaries (see Branding)
       contrib/         today's WEGA/contrib
   src/tools/brand.c    the branding program (shared, not installed)
@@ -136,13 +134,43 @@ ZEUS-WEGA/
     zeus-3.21/
     wega-3.1/
   compare/
-    <name>/            one corpus for both variants
-      expect.wega/     only where the behaviour really differs
+    <name>/            one corpus for a program
+      corpus.py        systems tested, with each system's original and candidate
+      tests.txt        cases and their expected output
   native/              the native build in MAME (see "Native build in MAME")
     p8000-wega/
     s8000-zeus/
   build/               (.gitignore) out/zeus, out/wega
 ```
+
+### Corpora for both systems
+
+A corpus remains a program-level directory with `corpus.py` and
+`tests.txt`, as today. `corpus.py` declares which systems this program's
+corpus runs on and, for each one, the corresponding original binary,
+candidate build and system root. A program that exists only on WEGA lists
+only WEGA; one that exists on both lists both. This declaration is the
+scope of the corpus, not a claim that a program is absent from every
+unlisted system.
+
+Add a `system:` field to the case format in `host/recon/corpusrun.py`.
+It accepts `zeus` or `wega`; without the field, the case runs on every
+system declared by that corpus. The existing `variant:` field keeps its
+current meaning (an environment variation) and is not reused. The runner
+selects the matching original and candidate for each run, compares them
+on the same system, and checks that system's expected result. A case
+without system-specific behavior therefore runs unchanged on all declared
+systems. When behavior or output differs, write separate named cases
+with `system: zeus` and `system: wega` and their respective expectations.
+
+The runner must reject a `system:` value not declared in `corpus.py`;
+it must not silently skip a case. Include the system in generated case
+identities and result-cache keys so results from ZEUS and WEGA cannot be
+mixed. Update the case parser/generator, corpus runner and corpus
+configuration accordingly, and migrate existing corpora to declare their
+system or systems. Keep each case's inputs and expectations in the
+existing `tests.txt` format; there are no parallel `expect.wega/`
+directories.
 
 ## Native build in MAME
 
@@ -288,28 +316,36 @@ tags.
 ## Steps
 
 1. Finish the restoration of the original WEGA in the current layout.
-2. Move the old tool chain to `old/`: rename by evidence, write
+2. Move the contents of `WEGA/` from `P8000` to the new `ZEUS-WEGA`
+   repository.
+3. Move the old tool chain to `old/`: rename by evidence, write
    `BUILD.wega`, one `old/cc/oldcc.h` for all passes. checkall stays
    ALL OK.
-3. Tag `WEGA_3.1`.
-4. Restore ZEUS 3.21 byte-identically, with the same `old/` (extended
+4. Tag `WEGA_3.1`.
+5. Extend the corpus format and runner for per-system originals and
+   candidates, and add the `system:` case selector. Migrate the existing
+   corpora to declare their supported systems (initially WEGA); add ZEUS
+   configurations as ZEUS 3.21 is restored. This must be in place before
+   ZEUS restoration so its binaries can be tested against the matching
+   originals and expectations.
+6. Restore ZEUS 3.21 byte-identically, with the same `old/` (extended
    as needed, `BUILD.zeus`).
-5. Tag `ZEUS_3.21`: both originals build byte-identically.
-6. Create the clean compiler in `src/`: `unifdef` once with the switch
+7. Tag `ZEUS_3.21`: both originals build byte-identically.
+8. Create the clean compiler in `src/`: `unifdef` once with the switch
    set of the newest compiler on `old/cc` gives `src/cmd/cc` without any
    `OLD_...`. Then remove `old/`; everything builds with the newest
    compiler and libc. The corpora are the test.
-7. Split file by file:
+9. Split file by file:
    - identical (copyright string aside): `src/`
    - only in one variant: that variant
    - different: both variants; the WEGA copy becomes a merge task
    Files that differ only in exchanged strings go to `src/` with the
    ZEUS strings; the differences become lines of `brand.tab`. Until
    then the WEGA strings stay in the source, as now.
-8. WEGA 3.3: for each differing file decide whether the WEGA change
+10. WEGA 3.3: for each differing file decide whether the WEGA change
    (hardware) is carried over onto the 3.21 version, or the 3.21 version
    is taken as is. Taken as is means it moves to `src/`.
-9. Bug fixes for 3.3: until the tag `ZEUS_3.21` a bug of an original is
+11. Bug fixes for 3.3: until the tag `ZEUS_3.21` a bug of an original is
    rebuilt, not fixed (byte identity first). Only after that tag the
    bugs are fixed, each on the owner's word. The work list is the table
    "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`, which
