@@ -56,7 +56,8 @@ Lines without comments and blanks that also stand in the Plexus file.
 
 ## Library
 
-The original's libc has the member order of the shipped `/lib/libc.a`, but older members with packed data (execvp,
-perror, errlst, getenv, atoi, cnvt, length, strcat, strcpy, strlen, times; measured with a scratch archive). No
-`libc-vN` has this; the owner decides (with sh). The build links `/lib/libc.a`: the code is the same size, the data 4
-bytes longer, so the addresses of the bss differ.
+libc-v9 (ld, login, sh), extended for csh (owner 2026-11-26) by perror 0_2, errlst 0_2 (packed data), abort, dup2,
+_exit, getgid and getuid of `../libc` at the places of csh's order (v8 and v9 are the variants without a member of
+another version; v9 is the nearest in time); ld and login stay identical. The libc code of the build equals the
+original's instruction by instruction; its data differs only in code addresses (the own code is 8 bytes shorter:
+main, Dword, execute).

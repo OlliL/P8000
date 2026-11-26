@@ -1576,5 +1576,5 @@
    "status": "exact"
   }
  },
- "libc": "the order of /lib/libc.a with older members (packed data); no libc-vN fits: owner decision open"
+ "libc": "libc-v9 (extended for csh 2026-11-26): the libc code equals the original, its data up to code addresses"
 }

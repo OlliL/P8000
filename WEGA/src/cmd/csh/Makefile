@@ -2,9 +2,7 @@
 # variables from the environment, cshprofile before .cshrc, script type by its first line (#!), echo with escapes and -n,
 # time -v, unsetenv, if( and while(, the ESC-B builtin; printf.c is the small printf of ls. ccv1 -DSYS3 (no TELL, BUFSIZ 512),
 # separate I and D (-i), the files in alphabetical order (cc *.o). Four functions are open (popt block order:
-# compare/csh/findings.json). The library: the original's libc has the order of /lib/libc.a with older members (packed data:
-# execvp, perror, errlst, getenv, atoi, cnvt, length, strcat, strcpy, strlen, times); no libc-vN has it (owner's decision
-# open), /lib/libc.a is linked.
+# compare/csh/findings.json). libc-v9 (extended for csh, owner 2026-11-26).
 #
 #   make              build ./csh
 #   make install PREFIX=dir
@@ -17,7 +15,7 @@ CFLAGS = -O -I../../head/oldv7
 DEFS = -DSYS3
 PREFIX = /
 STRIP = strip
-LIBC = /lib/libc.a
+LIBC = ../../lib/libc-v9.a
 CRT = ../../lib/libc/nonseg/crt
 
 OBJECTS = alloc.o getpwent.o getpwnam.o getpwuid.o printf.o sh.o sh.dol.o sh.err.o sh.exec.o sh.exp.o sh.func.o \
@@ -25,7 +23,7 @@ OBJECTS = alloc.o getpwent.o getpwnam.o getpwuid.o printf.o sh.o sh.dol.o sh.err
 
 all: csh
 
-csh: crt0.o $(OBJECTS)
+csh: crt0.o $(OBJECTS) $(LIBC)
 	$(LD) -i -e start -o $@ crt0.o $(OBJECTS) $(LIBC)
 
 crt0.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
@@ -48,5 +46,6 @@ clean:
 
 .PHONY: all install clean
 
-# the library of /lib is not made here (csh shipped)
+
+# the library of /lib is not made here (the shipped build)
 /lib/libc.a:

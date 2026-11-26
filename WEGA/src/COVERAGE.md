@@ -62,7 +62,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/cmp` | binary E707 | `src/cmd/cmp.c` | exact | ccvm | libc.a |
 | `bin/copydisk` | binary E707 | `src/cmd/copydisk` | exact | cc | libc.a |
 | `bin/cp` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
-| `bin/csh` | binary E711 | `src/cmd/csh` | partial | ccv1 | libc.a |
+| `bin/csh` | binary E711 | `src/cmd/csh` | partial | ccv1 | libc-v9.a |
 | `bin/date` | binary E707 | `src/cmd/date.c` | exact | ccv1 | libc-v6.a |
 | `bin/dc` | binary E707 | `src/cmd/dc` | exact | ccv0 | libc-v1.a |
 | `bin/dd` | binary E707 | `src/cmd/dd.c` | exact | ccv1r | libc-v13.a |
@@ -122,9 +122,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/rm` | binary E707 | `src/cmd/rm.c` | exact | ccv1 | libc-v6.a |
 | `bin/rmail` | binary E707 | `src/cmd/mail.c` | exact | ccvm | libc-v12.a |
 | `bin/rmdir` | binary E707 | `src/cmd/rmdir.c` | exact | ccv1r | libc-v10.a |
-| `bin/rsh` | binary E711 | `src/cmd/sh` | partial | ccv1 | libc.a |
+| `bin/rsh` | binary E711 | `src/cmd/sh` | partial | ccv1 | libc-v9.a |
 | `bin/scc` | binary E707 | `src/cmd/cc` | exact | cc | libc-v8.a |
-| `bin/sh` | binary E711 | `src/cmd/sh` | partial | ccv1 | libc.a |
+| `bin/sh` | binary E711 | `src/cmd/sh` | partial | ccv1 | libc-v9.a |
 | `bin/size` | binary E707 | `src/cmd/size.c` | exact | ccv1 | libc-v3.a |
 | `bin/sld` | binary E611 | `src/cmd/sld` | exact | scc | slibc-v9.a |
 | `bin/sleep` | binary E707 | `src/cmd/sleep.c` | exact | ccv0 | libc-v1.a |

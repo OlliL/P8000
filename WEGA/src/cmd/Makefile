@@ -69,7 +69,7 @@ shipped:
 		cc/gopt) X="SCC=scc SLD=sld LIBC=/lib/slibc.a" ;; \
 		cas) X="SCC=scc SLIBC=/lib/slibc.a SCCFLAGS=\"$(SHIPFLAGS)\"" ;; \
 		cc/codgen|cc/popt) X='LIBC="../../../../../lib/oldlibc/printf/s1.o ../../../../../lib/oldlibc/doprnt/0_5.o /lib/libc.a"' ;; \
-		cc/cpp|cc/cparse|cc|dc|ed|bc|ld) X="LIBC=/lib/libc.a" ;; \
+		cc/cpp|cc/cparse|cc|dc|ed|bc|ld|sh|csh) X="LIBC=/lib/libc.a" ;; \
 		lex) X="LIBC=/lib/libc.a LIBY=/lib/liby.a" ;; \
 		remote) X="LIBC_V14=" ;; \
 		ex) X="CCV0A=cc TERMLIB=/usr/lib/libtermlib.a" ;; \

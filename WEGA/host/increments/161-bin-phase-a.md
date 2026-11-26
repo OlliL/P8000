@@ -92,13 +92,13 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] remote (15162) -- byte-identical (src/cmd/remote, ccvm)
 - [x] gpasswd (15362)
 - [x] make (39048) -- byte-identical (ced632f8, ccvm since 602346b6): System III make with the WEGA changes, libc.a; corpus 45 cases
-- [ ] csh (45728) -- done but the libc (2026-11-26): Plexus csh with the WEGA changes, ccv1; 254 of 258 functions exact against a scratch libc, 4 open (popt block order, phase B); built, installed, corpus 27 of 27; in OPEN of checkall
+- [ ] csh (45728) -- done but the libc (2026-11-26): Plexus csh with the WEGA changes, ccv1; 254 of 258 functions exact, 4 open (popt block order, phase B); libc-v9 extended for csh; built, installed, corpus 27 of 27; in OPEN of checkall
 - [ ] adb (46996)
 - [ ] fsc (2078; segmented E611)
 - [ ] fc (3074; segmented E607)
 - [ ] pstat (15638; segmented E607)
 - [ ] gld (27616; segmented E607)
-- [ ] sh (24032); link: rsh -- done but the libc (2026-11-26): System III sh with the WEGA changes, ccv1; 104 of 118 functions exact against a scratch libc, open: service.c (the compiler of 08/22/83, not built), three popt blocks; built, installed with rsh, corpus 22 of 22; in OPEN of checkall
+- [ ] sh (24032); link: rsh -- done but the libc (2026-11-26): System III sh with the WEGA changes, ccv1; 104 of 118 functions exact against a scratch libc, open: service.c (the compiler of 08/22/83, not built), three popt blocks; libc-v9 extended for sh (its libc part equal); built, installed with rsh, corpus 22 of 22; in OPEN of checkall
 
 Links found 2026-11-23 (same inode in the WEGA root): hd = od, rmail = mail, page = more (more: partial, src/cmd/more),
 rsh = sh, edit = vi = view = ex, bin/login = etc/login. Not in this run: `as` (170), `chkout` (exact).
@@ -199,6 +199,12 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   compiler between v1 and the shipped one, not built; its strings also shift the bss by 4), cmd, getch (popt blocks),
   assign (register). The libc question: libc-v4 plus five members of ../libc and another 120-byte member behind exit.
   The build links /lib/libc.a.
+- 2026-11-26 (owner): libc-v9 extended for sh (the candidates without a conflicting member: v3, v6, v8, v9; v9 is the
+  nearest in time: ld, login 07/26/83). Added: atol 0_1 (ccv1), fakcu, setret, dup, execve, fcntl, fork, geteuid, pipe,
+  profil, times, wait; ld and login stay identical; the libc part of sh equals the original's.
+- 2026-11-26 (owner): libc-v9 extended for csh as well (no conflicting member: v8, v9; v6 has members out of order):
+  perror 0_2, errlst 0_2, abort, dup2, _exit, getgid, getuid; ld and login stay identical; csh's libc code equals the
+  original's, its data up to code addresses.
   uusend committed after checkall "uus" ALL OK.
 
 ## Phase B regcmp: solved (2026-11-25)

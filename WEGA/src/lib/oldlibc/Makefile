@@ -17,7 +17,9 @@
 #   libc-v7.a  cparse, scparse, find (10/83)
 #   libc-v8.a  cc, scc
 #   libc-v9.a  ld (07/83), login (07/83: the members of getpass, getpwnam, fopen, execvp, crypt, ttyname, a64l etc.
-#              added; data 0_1 of ld fits login too)
+#              added; data 0_1 of ld fits login too); sh (08/83: atol 0_1, setret, dup, execve, fcntl, fork, geteuid,
+#              pipe, profil, times, wait and fakcu behind atol added), csh (08/83: perror 0_2, errlst 0_2,
+#              abort, dup2, _exit, getgid, getuid added; owner 2026-11-26)
 #   libc-v10.a write, rmdir (01/83)
 #   libc-v11.a mkstr (11/82), cat (10/82), echo (08/82), ex (10/82; its members as in libc-v1, but length 0_3)
 #   libc-v12.a chkin (09/83): the shipped libc.a (../libc) with printf and doprnt 0_4 in their places
@@ -160,13 +162,13 @@ LIBv8 = ../libc/build/nonseg/freopen.o ../libc/build/nonseg/fopen.o printf/0_4.o
 LIBv9 = getpass/0_1.o getpwnam/0_1.o getpwent/0_1.o fgets/0_1.o fputs/0_2.o ../libc/build/nonseg/rew.o ../libc/build/nonseg/fopen.o \
 	 ../libc/build/nonseg/scanf.o doscan/0_1.o printf/0_6.o doprnt/0_6.o ../libc/build/nonseg/ffltioc.o ../libc/build/nonseg/ungetc.o \
 	 filbuf/0_2.o ../libc/build/nonseg/setbuf.o flsbuf/0_1.o endopen/0_2.o findiop/0_1.o data/0_1.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o \
-	 ../libc/build/nonseg/execlp.o execvp/0_2.o getenv/0_2.o ../libc/build/nonseg/sleep.o ttyname/0_2.o atoi/0_2.o cnvt/0_1.o \
-	 ../libc/build/nonseg/decimal.o length/0_1.o crypt/0_1.o calloc/0_2.o malloc/0_2.o ../libc/build/nonseg/isatty.o nlist/0_1.o mktemp/0_1.o ../libc/build/nonseg/ctype_.o \
+	 ../libc/build/nonseg/execlp.o execvp/0_2.o getenv/0_2.o perror/0_2.o ../libc/build/nonseg/sleep.o ../libc/build/nonseg/abort.o ttyname/0_2.o atoi/0_2.o atol/0_1.o ../libc/build/nonseg/fakcu.o cnvt/0_1.o \
+	 ../libc/build/nonseg/decimal.o length/0_1.o crypt/0_1.o calloc/0_2.o malloc/0_2.o ../libc/build/nonseg/isatty.o nlist/0_1.o mktemp/0_1.o ../libc/build/nonseg/setret.o ../libc/build/nonseg/ctype_.o \
 	 ../libc/build/nonseg/stty.o ../libc/build/nonseg/index.o ../libc/build/nonseg/swab.o rindex/0_1.o ../libc/build/nonseg/tolower.o strcat/0_1.o \
-	 ../libc/build/nonseg/strcmp.o ../libc/build/nonseg/strncmp.o strcpy/0_1.o strncpy/0_2.o strlen/0_1.o strrchr/0_2.o a64l/0_1.o swap/0_1.o ../libc/build/nonseg/access.o \
-	 ../libc/build/nonseg/alarm.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chdir.o ../libc/build/nonseg/chroot.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/chown.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/execl.o ../libc/build/nonseg/execv.o ../libc/build/nonseg/fstat.o ../libc/build/nonseg/getpid.o \
-	 ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/link.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/nice.o ../libc/build/nonseg/open.o ../libc/build/nonseg/pause.o ../libc/build/nonseg/read.o ../libc/build/nonseg/setgid.o ../libc/build/nonseg/setuid.o \
-	 ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o ../libc/build/nonseg/sync.o ../libc/build/nonseg/time.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/uname.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
+	 ../libc/build/nonseg/strcmp.o ../libc/build/nonseg/strncmp.o strcpy/0_1.o strncpy/0_2.o strlen/0_1.o strrchr/0_2.o a64l/0_1.o errlst/0_2.o swap/0_1.o ../libc/build/nonseg/access.o \
+	 ../libc/build/nonseg/alarm.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chdir.o ../libc/build/nonseg/chroot.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/chown.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/dup.o ../libc/build/nonseg/dup2.o ../libc/build/nonseg/execl.o ../libc/build/nonseg/execv.o ../libc/build/nonseg/execve.o ../libc/build/nonseg/fcntl.o ../libc/build/nonseg/exit.o ../libc/build/nonseg/fork.o ../libc/build/nonseg/fstat.o ../libc/build/nonseg/getgid.o ../libc/build/nonseg/getpid.o ../libc/build/nonseg/geteuid.o ../libc/build/nonseg/getuid.o \
+	 ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/link.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/nice.o ../libc/build/nonseg/open.o ../libc/build/nonseg/pause.o ../libc/build/nonseg/pipe.o ../libc/build/nonseg/profil.o ../libc/build/nonseg/read.o ../libc/build/nonseg/setgid.o ../libc/build/nonseg/setuid.o \
+	 ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o ../libc/build/nonseg/sync.o ../libc/build/nonseg/time.o ../libc/build/nonseg/times.o ../libc/build/nonseg/umask.o ../libc/build/nonseg/uname.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/wait.o ../libc/build/nonseg/write.o ../libc/build/nonseg/cerror.o
 # ccv0p ccv1
 ../libc-v9.a: objs
 	sh mklib.sh $@ $(AR) $(LIBv9)
@@ -285,6 +287,7 @@ objs:
 	cd isatty ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd length ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd malloc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd atol ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd mktemp ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd open ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd perror ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs

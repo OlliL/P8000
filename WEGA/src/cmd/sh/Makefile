@@ -3,7 +3,7 @@
 # shell its first line names (#!), a login flag of argv[0], setret/longret for setjmp; profile.c (monitor) of WEGA.
 # ccv1, separate I and D (-i), the files in alphabetical order with test.c last (sh.mk). Open (compare/sh/findings.json):
 # service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings;
-# host/OLDCC.md), not built; three blocks of popt; the library (owner's decision open).
+# host/OLDCC.md), not built; three blocks of popt. libc-v9 (extended for sh, owner 2026-11-26).
 #
 #   make              build ./sh
 #   make install PREFIX=dir    (bin/sh and its link bin/rsh)
@@ -15,7 +15,7 @@ LD = ld
 CFLAGS = -O -I../../head/oldv7
 PREFIX = /
 STRIP = strip
-LIBC = /lib/libc.a
+LIBC = ../../lib/libc-v9.a
 CRT = ../../lib/libc/nonseg/crt
 
 OBJECTS = args.o blok.o builtin.o cmd.o ctype.o error.o expand.o fault.o io.o macro.o main.o msg.o name.o print.o \
@@ -23,7 +23,7 @@ OBJECTS = args.o blok.o builtin.o cmd.o ctype.o error.o expand.o fault.o io.o ma
 
 all: sh
 
-sh: crt0.o $(OBJECTS)
+sh: crt0.o $(OBJECTS) $(LIBC)
 	$(LD) -i -e start -o $@ crt0.o $(OBJECTS) $(LIBC)
 
 crt0.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
@@ -48,5 +48,6 @@ clean:
 
 .PHONY: all install clean
 
-# the library of /lib is not made here (sh shipped)
+
+# the library of /lib is not made here (the shipped build)
 /lib/libc.a:

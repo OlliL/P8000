@@ -737,5 +737,5 @@
    "size_orig": 46
   }
  },
- "libc": "libc-v4 with execve, fcntl, geteuid, profil, times of ../libc and another exit/_cleanup member; no libc-vN fits: owner decision open"
+ "libc": "libc-v9 (extended for sh 2026-11-26): the libc part equals the original"
 }

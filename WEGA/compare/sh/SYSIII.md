@@ -54,6 +54,7 @@ compiler, `host/OLDCC.md`); it is not built, so service.c and the data behind it
 
 ## Library
 
-The original's libc is libc-v4 with execve, fcntl, geteuid, profil, the times of `../libc` and another member of 120
-bytes behind exit (whichlibc); libc-v4 has times 0_1 (used by time), so no libc-vN fits (owner's decision open). The
-build links `/lib/libc.a`.
+libc-v9 (ld, login), extended for sh (owner 2026-11-26) by atol 0_1 (`libc/common/gen/atol.c` by ccv1: one register
+slot more than the atol of `../libc`), fakcu behind it, and setret, dup, execve, fcntl, fork, geteuid, pipe, profil,
+times, wait of `../libc` at the places of sh's order; ld and login stay identical. The libc part of the build equals
+the original's instruction by instruction; it starts 10 bytes later (initio, postclr, getch).
