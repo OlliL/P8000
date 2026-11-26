@@ -236,10 +236,16 @@ execute(t, pipein, pipeout)
 			nice(-10);
 */
 			cp = t->t_dcom[1];
-			if (any(cp[0], "-") && (digit(*++cp) || any(cp[0], "+-")))
-				nice(getn(cp)), lshift(t->t_dcom, 2);
-			else
+			if (!any(cp[0], "-")) {
+s:
 				nice(7), lshift(t->t_dcom, 1);
+			} else if (digit(*++cp)) {
+n:
+				nice(getn(cp)), lshift(t->t_dcom, 2);
+			} else if (any(cp[0], "+-"))
+				goto n;
+			else
+				goto s;
 			t->t_dflg = FPAR | FREDO;
 			execute(t);
 			exitstat();

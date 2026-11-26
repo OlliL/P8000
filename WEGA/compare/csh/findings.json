@@ -82,7 +82,7 @@
    "size_orig": 1194,
    "status": "open",
    "lines": 41,
-   "note": "WEGA: the environment imported as lowercase shell variables (block local ep, val; the register v, cp declared behind name and i, j: their slots); prompt and intrflg (guessed name, for the **av = '-' of Berkeley) are globals of sh.c; /etc/cshprofile before .cshrc. Open: popt places the lowercase loop of the environment block behind the loop end (code motion, phase B)."
+   "note": "WEGA: the environment imported as lowercase shell variables (block local ep, val; the register v, cp declared behind name and i, j: their slots); prompt and intrflg (guessed name, for the **av = '-' of Berkeley) are globals of sh.c; /etc/cshprofile before .cshrc. Open: the lowercase loop of the environment block: the original has the test of the loop and the 'A' compare at the bottom (test; jeq set; cpb 'A'; jlt next; jr Z-compare) and set/ep++/clear loop between the entry jump and the loop body; ccv1 gives the plain loop inversion (body, test; jne body; set). Tried (2026-11-26, the same code each): continue form, nested ifs, while with i++, 'Z' first, for (;;) with break, do-while entered by goto; popt without OLD_D20 or with the vc switches D45, D49, D50, D51 neither. Phase B: popt."
   },
   "importpath": {
    "file": "sh.c",
@@ -178,9 +178,9 @@
    "file": "sh.dol.c",
    "orig": "0x1492",
    "size_orig": 400,
-   "status": "open",
-   "lines": 12,
-   "note": "Open: popt block order (a block behind an unconditional jump), phase B."
+   "status": "exact",
+   "lines": 0,
+   "note": "Source form: the ret block (Gcat, return (1)) written inside case '\\n' behind *wp = 0, the pack loop jumps to it; at the end of the function popt keeps it there (code motion, OLD_D20)."
   },
   "DgetC": {
    "file": "sh.dol.c",
@@ -1297,9 +1297,9 @@
    "file": "sh.sem.c",
    "orig": "0x76d4",
    "size_orig": 1352,
-   "status": "open",
-   "lines": 43,
-   "note": "WEGA: \"source\" with output redirection is an error; nice with a \"-\" argument (as donice). Open: popt block order of the nice test, phase B."
+   "status": "exact",
+   "lines": 0,
+   "note": "WEGA: \"source\" with output redirection is an error; nice with a \"-\" argument (as donice). Source form of the nice test: if (!any(cp[0], \"-\")) { s: nice(7) ... } else if (digit(*++cp)) { n: nice(getn(cp)) ... } else if (any(cp[0], \"+-\")) goto n; else goto s; (the plain && || form, the negated form and the then part first give other block orders)."
   },
   "doio": {
    "file": "sh.sem.c",
@@ -1522,9 +1522,9 @@
    "file": "sh.wait.c",
    "orig": "0x8972",
    "size_orig": 108,
-   "status": "open",
-   "lines": 22,
-   "note": "WEGA: nice 7 without argument; only -N (digit or sign after the -). Open: popt block order, phase B."
+   "status": "exact",
+   "lines": 0,
+   "note": "WEGA: nice 7 without argument; only -N (digit or sign after the -). Source form: if (*v == 0 && digit(*cp)) { n: nice(getn(cp)); return (1); } if (*v == 0 && any(cp[0], \"+-\")) goto n; (the loop inversion of popt then puts the digit test behind the jump of nice(7), as the original)."
   },
   "pwait": {
    "file": "sh.wait.c",

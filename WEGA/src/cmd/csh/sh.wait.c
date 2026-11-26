@@ -121,10 +121,13 @@ donice(v)
 	}
 	if (any(cp[0], "-")) {
 		cp++;
-		if (*v == 0 && digit(*cp) || *v == 0 && any(cp[0], "+-")) {
+		if (*v == 0 && digit(*cp)) {
+n:
 			nice(getn(cp));
 			return (1);
 		}
+		if (*v == 0 && any(cp[0], "+-"))
+			goto n;
 	}
 	return (0);
 }

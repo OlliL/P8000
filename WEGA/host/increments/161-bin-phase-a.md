@@ -92,7 +92,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] remote (15162) -- byte-identical (src/cmd/remote, ccvm)
 - [x] gpasswd (15362)
 - [x] make (39048) -- byte-identical (ced632f8, ccvm since 602346b6): System III make with the WEGA changes, libc.a; corpus 45 cases
-- [ ] csh (45728) -- done but the libc (2026-11-26): Plexus csh with the WEGA changes, ccv1; 254 of 258 functions exact, 4 open (popt block order, phase B); libc-v9 extended for csh; built, installed, corpus 27 of 27; in OPEN of checkall
+- [ ] csh (45728) -- done but the libc (2026-11-26): Plexus csh with the WEGA changes, ccv1; 257 of 258 functions exact (2026-11-26: Dword, execute, donice by source forms), main open (popt block order, phase B); libc-v9 extended for csh; built, installed, corpus 27 of 27; in OPEN of checkall
 - [ ] adb (46996) -- done but 7 functions (2026-11-26): the ZEUS 3.2 adb, written from the binary on Plexus' z8000 adb; shipped cc, libu8000, kva/kpa of ps, libc.a; 88 of 95 functions exact, 7 open (codegen and popt forms, phase B); data and bss in place; built, installed, corpus 15 of 15; in OPEN of checkall
 - [x] fsc (2078; segmented E611) -- byte-identical (2026-11-26): src/cmd/fse/fsc.c, shipped scc -O -s -i
 - [x] fc (3074; segmented E607) -- byte-identical (2026-11-26): src/cmd/fse/fc.c, shipped scc -O, not stripped (cc.341.o patched in)
@@ -379,3 +379,10 @@ In SUBDIRS of src/cmd (shipped: `LIBC=/lib/libc.a`). Corpus: 22 cases (compare/e
   whatstr "uucp3.1 ZFT-KEAW/WAE 3/6/1989"): 5 blocks open; then WEGA's changes: SiD removed, versys only when Ename is
   empty (both system names), "X %s %s!%s %s %s" with User and Optns. IDENTICAL. Corpus compare/uucp (as root: uid 1000
   has no passwd entry; -e runs uux and uuxqt, not stable, no case): 4 of 4. Committed after checkall uucp ALL OK.
+- 2026-11-26 csh, phase B (owner: phase A done; poptrace, source forms): a v1 popt with TRACE (scratch) on the four
+  open functions. donice: the original's layout is the loop inversion at the jump of nice(7) when the digit test has
+  the nice(getn) block and the "+-" test jumps to it (goto n); Dword: the ret block inside case '\n'; execute: the
+  nice(7) branch first with label s, the digit branch with label n, gotos for "+-" and the rest. All three exact.
+  main: 6 forms of the lowercase loop give the same code (findings.json); popt without OLD_D20 or with OLD_D45, D49,
+  D50, D51 of vc: not better (without D20: 11 blocks instead of 15, Dword only). Open: main. Committed after checkall
+  csh ALL OK.
