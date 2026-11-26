@@ -1,0 +1,28 @@
+# The cases of the corpus of fsc (compare/fsc/corpus.py); the format: host/recon/casefile.py. Where an expectation comes
+# from: src = src/cmd/fse/fsc.c (the function named).
+
+== usage
+# main: no file name, exit 4
+-- case
+step: fsc
+expect: exit 4
+expect: output is 'usage:  fsc [options] filename\n'
+
+== ok
+# compute: /bin/scc runs with the arguments of fsc; exit status 0, errlist and errmsg removed (main)
+-- case
+step: fsc -c t.c
+expect: exit 0
+expect: output is 'start of compilation\ncompilation ok\n'
+expect: missing errlist
+expect: missing errmsg
+-- t.c
+int f(x) { return x+1; }
+
+== noname
+# compute: errors without a quoted file name (cpp: a file that cannot be read): errlist is printed, exit 1
+-- case
+step: fsc -c nosuch.c
+expect: exit 1
+expect: output is 'start of compilation\ncompilation ended with errors\nError in file nosuch.c: Cannot read file '"'"'nosuch.c'"'"'\n'
+expect: missing errlist

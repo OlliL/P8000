@@ -94,8 +94,8 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] make (39048) -- byte-identical (ced632f8, ccvm since 602346b6): System III make with the WEGA changes, libc.a; corpus 45 cases
 - [ ] csh (45728) -- done but the libc (2026-11-26): Plexus csh with the WEGA changes, ccv1; 254 of 258 functions exact, 4 open (popt block order, phase B); libc-v9 extended for csh; built, installed, corpus 27 of 27; in OPEN of checkall
 - [ ] adb (46996) -- done but 7 functions (2026-11-26): the ZEUS 3.2 adb, written from the binary on Plexus' z8000 adb; shipped cc, libu8000, kva/kpa of ps, libc.a; 88 of 95 functions exact, 7 open (codegen and popt forms, phase B); data and bss in place; built, installed, corpus 15 of 15; in OPEN of checkall
-- [ ] fsc (2078; segmented E611)
-- [ ] fc (3074; segmented E607)
+- [x] fsc (2078; segmented E611) -- byte-identical (2026-11-26): src/cmd/fse/fsc.c, shipped scc -O -s -i
+- [x] fc (3074; segmented E607) -- byte-identical (2026-11-26): src/cmd/fse/fc.c, shipped scc -O, not stripped (cc.341.o patched in)
 - [ ] pstat (15638; segmented E607)
 - [ ] gld (27616; segmented E607)
 - [ ] sh (24032); link: rsh -- done but the libc (2026-11-26): System III sh with the WEGA changes, ccv1; 104 of 118 functions exact against a scratch libc, open: service.c (the compiler of 08/22/83, not built), three popt blocks; libc-v9 extended for sh (its libc part equal); built, installed with rsh, corpus 22 of 22; in OPEN of checkall
@@ -346,3 +346,6 @@ front of the `--nl` part: the while loop of System III gives the usual layout, e
 with `-DRESEARCH` (DEFS) and without PWB, libc-v4 (execlp, the assembler member of libc, in front of execvp), own crt0.
 In SUBDIRS of src/cmd (shipped: `LIBC=/lib/libc.a`). Corpus: 22 cases (compare/ed/tests.txt).
 - 2026-11-26 adb committed after checkall "adb" ALL OK.
+- 2026-11-26 fsc, fc: IDENTICAL from the sources already in src/cmd/fse (fsc.c runs /bin/scc, fc.c /bin/cc); targets in its
+  Makefile, installed; rudimentary corpora (usage, a compilation, an error without a file name), 3 of 3 each.
+- 2026-11-26 fsc, fc committed after checkall "fsc" ALL OK.
