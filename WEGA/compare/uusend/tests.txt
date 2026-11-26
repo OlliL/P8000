@@ -1,0 +1,113 @@
+# The cases of the corpus of uusend (compare/uusend/corpus.py); the format: host/recon/casefile.py (the default step is uusend).
+# Where an expectation comes from: src = src/cmd/uucp/uusend.c (main).
+
+== usage
+# src main: not two names: the usage line on stderr, exit 1
+-- case
+step: uusend t.in
+expect: exit 1
+expect: output contains 'Usage: uusend [-fname] [-m ooo] [-r]'
+-- t.in
+x
+
+== badflag
+# src main: an unknown flag is reported and skipped; the copy is made
+-- case
+step: uusend -x t.in out
+expect: exit 0
+expect: output contains 'Bad flag: -x'
+expect: file out contains 'hello'
+-- t.in
+hello
+
+== copy
+# src main: a local destination: the file is copied, mode of the source (-m not given: mode stays -1, no chmod)
+-- case
+step: uusend t.in out
+expect: exit 0
+expect: file out same-as t.in
+-- t.in
+line one
+line two
+
+== mode
+# src main: -m 640: the mode of the new file (chmod)
+-- case
+step: uusend -m 640 t.in out
+host: ls -l out | cut -c1-10 > modes
+expect: file modes contains '-rw-r-----'
+-- t.in
+data
+
+== stdin
+# src main: - reads the standard input
+-- case
+step: uusend - out
+stdin: t.in
+expect: exit 0
+expect: file out same-as t.in
+-- t.in
+from stdin
+
+== nosource
+# src main: a source that cannot be opened: perror, exit 2
+-- case
+step: uusend nofile out
+expect: exit 2
+expect: output contains 'nofile'
+
+== dirsource
+# src main (WEGA): a directory as source: "no such file as", exit 6
+-- case
+host: mkdir d
+step: uusend d out
+expect: exit 6
+expect: output contains 'no such file as d'
+
+== intodir
+# src main: -fname and a directory as destination: the file goes to dir/name
+-- case
+host: mkdir d
+step: uusend -fname t.in d
+expect: exit 0
+expect: file d/name same-as t.in
+-- t.in
+into the directory
+
+== defname
+# src main: a directory as destination without -f: the name of the source is taken (-f + getfname)
+-- case
+host: mkdir d
+step: uusend t.in d
+expect: exit 0
+expect: file d/t.in same-as t.in
+-- t.in
+default name
+
+== uulib
+# src main: a destination below /usr/lib/uucp is refused: "illegal file", exit 4
+-- case
+step: uusend t.in /usr/lib/uucp/L.sys
+expect: exit 4
+expect: output contains 'illegal file: /usr/lib/uucp/L.sys'
+-- t.in
+x
+
+== tilde
+# src main: ~user without a slash, stdin as source (no default -f name): "Illegal ~user", exit 3
+-- case
+step: uusend - ~nouser
+stdin: t.in
+expect: exit 3
+expect: output contains 'Illegal ~user'
+-- t.in
+x
+
+== rflag
+# src main: -r only changes the uux command; a local copy is made as without it
+-- case
+step: uusend -r t.in out
+expect: exit 0
+expect: file out same-as t.in
+-- t.in
+r flag

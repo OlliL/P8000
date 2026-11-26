@@ -1,6 +1,6 @@
 # uucp: the programs of BSD uucp (WEGA's uucp is BSD's: uuname.c of 4BSD with uucp.h of 3BSD, UNAME defined, UUCP
 # /bin/uucp; uucpname.c alike in both; uulog and its modules of 3BSD: uucpdefs.h with the version string of WEGA and one
-# Sysfiles entry, ulockf.c without lock() and its sccs string, rmlock keeps the result of unlink), built by the shipped cc with /lib/libc.a; and SQFILE (/usr/lib/uucp) and remotelines (/usr/spool/uucp) of the WEGA root, and the files of uucp in /usr/lib/uucp that System III's uucp.mk copies (cp $(UPATH)/L* $(UPATH)/USERFILE $(INSDIR); chmod 400 L.sys USERFILE); the files are those of the WEGA root. Of the programs uuname, uulog and uux are here yet. uux: 3BSD uux.c and modules with the changes of WEGA (fread/fwrite
+# Sysfiles entry, ulockf.c without lock() and its sccs string, rmlock keeps the result of unlink), built by the shipped cc with /lib/libc.a; and SQFILE (/usr/lib/uucp) and remotelines (/usr/spool/uucp) of the WEGA root, and the files of uucp in /usr/lib/uucp that System III's uucp.mk copies (cp $(UPATH)/L* $(UPATH)/USERFILE $(INSDIR); chmod 400 L.sys USERFILE); the files are those of the WEGA root. Of the programs uuname, uulog, uux and uusend are here yet. uusend: the uusend.c of 2.11BSD (RECOVER) with the changes of WEGA (see the file; makedir: the default case first, a return behind exit). uux: 3BSD uux.c and modules with the changes of WEGA (fread/fwrite
 # of stdin with the count in ret (no variable n), fprintf for the unknown flag, no expfile in the local receive, no sccs strings; gename: sprintf then fprintf; chkpth:
 # DEBUG lines in chkperm, no ANYWRITE test, (char *)u in rdpth); uucp.h: PUBDIR /usr/spool/uucp/uucppublic.
 #
@@ -11,7 +11,7 @@ CC = cc
 CFLAGS = -O
 STRIP = strip
 
-all: uuname uulog uux
+all: uuname uulog uux uusend
 
 uuname: uuname.o uucpname.o
 	$(CC) -o uuname uuname.o uucpname.o
@@ -35,6 +35,12 @@ gnamef.o: gnamef.c uucp.h
 	$(CC) $(CFLAGS) -c gnamef.c
 
 UUXO = uux.o gwd.o anyread.o cpmv.o expfile.o gename.o getpwinfo.o index.o lastpart.o prefix.o shio.o ulockf.o xqt.o chkpth.o getargs.o getprm.o uucpname.o versys.o
+
+uusend: uusend.o
+	$(CC) -o uusend uusend.o
+
+uusend.o: uusend.c
+	$(CC) $(CFLAGS) -c uusend.c
 
 uux: $(UUXO)
 	$(CC) -o uux $(UUXO)
@@ -87,7 +93,8 @@ uuname.o: uuname.c uucp.h
 uucpname.o: uucpname.c uucp.h
 	$(CC) $(CFLAGS) -c uucpname.c
 
-install: uuname uulog uux
+install: uuname uulog uux uusend
+	cp uusend $(PREFIX)/bin/uusend ; $(STRIP) $(PREFIX)/bin/uusend ; chmod 555 $(PREFIX)/bin/uusend
 	cp uux $(PREFIX)/bin/uux ; $(STRIP) $(PREFIX)/bin/uux ; chmod 555 $(PREFIX)/bin/uux
 	cp uulog $(PREFIX)/bin/uulog ; $(STRIP) $(PREFIX)/bin/uulog ; chmod 555 $(PREFIX)/bin/uulog
 	cp uuname $(PREFIX)/bin/uuname ; $(STRIP) $(PREFIX)/bin/uuname ; chmod 555 $(PREFIX)/bin/uuname
@@ -101,6 +108,6 @@ install: uuname uulog uux
 	cp remotelines $(PREFIX)/usr/spool/uucp/remotelines ; chmod 664 $(PREFIX)/usr/spool/uucp/remotelines
 
 clean:
-	rm -f uuname uulog uux *.o
+	rm -f uuname uulog uux uusend *.o
 
 .PHONY: all install clean

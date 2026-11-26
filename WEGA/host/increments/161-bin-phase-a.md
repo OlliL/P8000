@@ -88,10 +88,9 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] whereis (6444)
 - [x] dog (8330)
 - [x] putfile (9752)
-- [x] uusend (13216) -- deferred: a WEGA form of the 4.2BSD uusend (-f, directories, mkdir) with two libc gaps
+- [x] uusend (13216) -- byte-identical (2026-11-25): 2.11BSD uusend.c (RECOVER) with the WEGA changes, shipped cc, libc.a
 - [x] remote (15162) -- byte-identical (src/cmd/remote, ccvm)
 - [x] gpasswd (15362)
-- [ ] sh (24032); link: rsh
 - [x] make (39048) -- byte-identical (ced632f8, ccvm since 602346b6): System III make with the WEGA changes, libc.a; corpus 45 cases
 - [ ] csh (45728)
 - [ ] adb (46996)
@@ -99,6 +98,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [ ] fc (3074; segmented E607)
 - [ ] pstat (15638; segmented E607)
 - [ ] gld (27616; segmented E607)
+- [ ] sh (24032); link: rsh -- put last (owner 2026-11-26): the libc is open (see the log)
 
 Links found 2026-11-23 (same inode in the WEGA root): hd = od, rmail = mail, page = more (more: partial, src/cmd/more),
 rsh = sh, edit = vi = view = ex, bin/login = etc/login. Not in this run: `as` (170), `chkout` (exact).
@@ -176,6 +176,16 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   Odd forms: ctob((long)(char *)USIZE) (unfolded), (long)argp & 0xffff, an empty function, unused locals. Linked by sld
   -z with the shipped slibc.a; the scrt0 of crt0.list with _environ as a common. src/cmd/ps in SUBDIRS. Corpus 18 of
   18: -k with a crash dump made by compare/ps/mkdump.py (MMU table, six processes, user blocks).
+- 2026-11-25 uusend: IDENTICAL. The two "libc gaps" were own functions behind index (getfname, makedir of BSD);
+  2.11BSD uusend.c with RECOVER and WEGA's changes (src/cmd/uucp/uusend.c), shipped cc, libc.a. Corpus 12 of 12
+  (local copies only: a remote destination runs uux, ~user writes into the tree).
+- 2026-11-25 (stopped at the usage limit) uusend: identical, not committed yet (checkall run "uus" was still running:
+  /tmp/wega_check.uus). sh: setup done (src/cmd/sh from System III, setret/longret instead of setjmp in defs.h, main.c,
+  error.c, service.c; extern end); builds with ccv1 but the libc is open: sh needs execve, fcntl, geteuid, profil and
+  the times of ../libc (libc-v4 has times 0_1, used by time): libc-v4 cannot take it without a conflict, and a new libc
+  is not allowed. profile.c (WEGA, no source) not written yet. Next: csh, adb, fsc, fc, pstat, gld.
+- 2026-11-26 (owner): sh with its libc question goes to the end of the list; on with csh, adb, fsc, fc, pstat, gld.
+  uusend committed after checkall "uus" ALL OK.
 
 ## Phase B regcmp: solved (2026-11-25)
 

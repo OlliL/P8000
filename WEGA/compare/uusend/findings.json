@@ -1,0 +1,51 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/uusend",
+ "functions": {
+  "start": {
+   "file": "crt0",
+   "orig": "0x0000",
+   "size_orig": 42,
+   "status": "crt0",
+   "kind": "proven",
+   "callers": []
+  },
+  "main": {
+   "file": "uusend.c",
+   "orig": "0x002a",
+   "size_orig": 1278,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [
+    "0x0000"
+   ],
+   "note": "2.11BSD uusend main (RECOVER) with the changes of WEGA: the usage with -fname, a directory as source refused (exit 6), uux without -gn -z, the default directory test appends to dnbuf, makedir and chmod 0777 apart; count initialised in its declaration."
+  },
+  "index": {
+   "file": "uusend.c",
+   "orig": "0x0528",
+   "size_orig": 40,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "getfname": {
+   "file": "uusend.c",
+   "orig": "0x0550",
+   "size_orig": 42,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "makedir": {
+   "file": "uusend.c",
+   "orig": "0x057a",
+   "size_orig": 108,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "odd form: the default case first in the switch, a return behind exit(1) in the child; no mode argument (main calls chmod)."
+  }
+ }
+}

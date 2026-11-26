@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 98 | 2 | 0 | 11 |
+| [bin](#bin) | 111 | 99 | 3 | 0 | 9 |
 | [etc](#etc) | 67 | 34 | 0 | 18 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 955 | 10 | 138 | 94 |
+| **all** | 1197 | 956 | 11 | 138 | 92 |
 
 <a id="root"></a>
 ## root
@@ -124,7 +124,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/rmdir` | binary E707 | `src/cmd/rmdir.c` | exact | ccv1r | libc-v10.a |
 | `bin/rsh` | binary E711 | - | todo | D12 new, D1 slots | - |
 | `bin/scc` | binary E707 | `src/cmd/cc` | exact | cc | libc-v8.a |
-| `bin/sh` | binary E711 | - | todo | D12 new, D1 slots | - |
+| `bin/sh` | binary E711 | `src/cmd/sh` | partial | - | - |
 | `bin/size` | binary E707 | `src/cmd/size.c` | exact | ccv1 | libc-v3.a |
 | `bin/sld` | binary E611 | `src/cmd/sld` | exact | scc | slibc-v9.a |
 | `bin/sleep` | binary E707 | `src/cmd/sleep.c` | exact | ccv0 | libc-v1.a |
@@ -145,7 +145,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/uucp` | binary E707 | `src/cmd/uucp` | partial | cc | - |
 | `bin/uulog` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |
 | `bin/uuname` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |
-| `bin/uusend` | binary E707 | - | todo | D12 old?, D1 loose | - |
+| `bin/uusend` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |
 | `bin/uux` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |
 | `bin/verify` | binary E707 | `src/cmd/verify` | exact | cc | libc.a |
 | `bin/vi` | binary E711 | `src/cmd/ex` | exact | ccv0a, cc | libtermlib-v1.a, libc-v11.a |
