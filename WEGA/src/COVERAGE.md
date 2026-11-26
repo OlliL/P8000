@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 105 | 5 | 0 | 1 |
+| [bin](#bin) | 111 | 106 | 4 | 0 | 1 |
 | [etc](#etc) | 67 | 34 | 0 | 18 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 962 | 13 | 138 | 84 |
+| **all** | 1197 | 963 | 12 | 138 | 84 |
 
 <a id="root"></a>
 ## root
@@ -142,7 +142,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/tr` | binary E707 | `src/cmd/tr.c` | exact | ccv1 | libc-v6.a |
 | `bin/uname` | binary E707 | `src/cmd/uname.c` | exact | ccv1 | libc-v6.a |
 | `bin/uuclear` | text | `src/cmd/uuclear.sh` | exact | - | - |
-| `bin/uucp` | binary E707 | `src/cmd/uucp` | partial | cc | - |
+| `bin/uucp` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |
 | `bin/uulog` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |
 | `bin/uuname` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |
 | `bin/uusend` | binary E707 | `src/cmd/uucp` | exact | cc | libc.a |

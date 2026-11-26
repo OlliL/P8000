@@ -1,0 +1,23 @@
+# The cases of the corpus of uucp (compare/uucp/corpus.py); the format: host/recon/casefile.py. src = src/cmd/uucp/uucp.c.
+
+== none
+-- case
+user: 0 0
+step: uucp
+
+== unknown-flag
+-- case
+user: 0 0
+step: uucp -q a
+
+== unknown-system
+-- case
+user: 0 0
+step: uucp t.in nosys!/tmp/x
+
+== local-copy
+-- case
+user: 0 0
+step: uucp /etc/passwd /tmp/uucp.out
+step: cat /tmp/uucp.out
+

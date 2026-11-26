@@ -100,7 +100,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] more (18648; link: page; owner 2026-11-26: was missing in this list, before gld) -- byte-identical (2026-11-26): Plexus' more.c/regex.c with WEGA's changes, ccv1 without -DSYS3, oldv7 stdio.h, termlib, libc-v6 (owner: crt0 and date; members and order added, host/recon/libcplace.py); corpus 2 of 2
 - [x] gld (27616; segmented E607) -- byte-identical (2026-11-26): lld.c of contrib/lcc taken back ("wega 6/22/88 gld.c V1.0 (C) ZFT-KEAW"), shipped scc without -O, scrt0.o, slibc.a; corpus 106 of 106
 - [ ] sh (24032); link: rsh -- done but the libc (2026-11-26): System III sh with the WEGA changes, ccv1; 104 of 118 functions exact against a scratch libc, open: service.c (the compiler of 08/22/83, not built), three popt blocks; libc-v9 extended for sh (its libc part equal); built, installed with rsh, corpus 22 of 22; in OPEN of checkall
-- [ ] uucp (22890): -- open: probably 3BSD or 4BSD based like the rest of the uucp stuff - has no "retracted Zilog SCCS strings" but a ZFT-KEAW whatstr
+- [x] uucp (22890) -- byte-identical (2026-11-26): 3BSD (= 4BSD) uucp.c and logent.c with the modules of uux in src/cmd/uucp, the shipped cc; WEGA: no sccs string of uucp.c, versys only without -e, the X line with User and Optns; corpus 4 of 4
 
 Links found 2026-11-23 (same inode in the WEGA root): hd = od, rmail = mail, page = more (more: partial, src/cmd/more),
 rsh = sh, edit = vi = view = ex, bin/login = etc/login. Not in this run: `as` (170), `chkout` (exact).
@@ -373,3 +373,9 @@ In SUBDIRS of src/cmd (shipped: `LIBC=/lib/libc.a`). Corpus: 22 cases (compare/e
   finishout) and gld's forms back (default directories, >= SEGSIZE, fixed origins, int sizes, signed counts, the case
   order, the identification string). IDENTICAL. The existing corpus (host) got the WEGA candidate: 106 of 106.
   src/cmd/gld.c (a single file, as tar and bd), rules in src/cmd/Makefile; committed after checkall gld ALL OK.
+- 2026-11-26 uucp (owner: probably 3BSD/4BSD like the rest; a ZFT-KEAW whatstr, no Zilog SCCS strings): the strings of
+  /bin/uucp against every uucp.c of unix-history-archive, System III, V and Plexus: 3BSD and 4BSD (the same file) have 39
+  of 45. Their uucp.c and logent.c with the link order of the 3BSD makefile and the modules of uux (uucpdefs.h holds the
+  whatstr "uucp3.1 ZFT-KEAW/WAE 3/6/1989"): 5 blocks open; then WEGA's changes: SiD removed, versys only when Ename is
+  empty (both system names), "X %s %s!%s %s %s" with User and Optns. IDENTICAL. Corpus compare/uucp (as root: uid 1000
+  has no passwd entry; -e runs uux and uuxqt, not stable, no case): 4 of 4. Committed after checkall uucp ALL OK.
