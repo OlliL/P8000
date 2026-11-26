@@ -97,6 +97,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] fsc (2078; segmented E611) -- byte-identical (2026-11-26): src/cmd/fse/fsc.c, shipped scc -O -s -i
 - [x] fc (3074; segmented E607) -- byte-identical (2026-11-26): src/cmd/fse/fc.c, shipped scc -O, not stripped (cc.341.o patched in)
 - [x] pstat (15638; segmented E607) -- byte-identical (2026-11-26): no source, rebuilt from the binary on V7's pstat.c, sccvk without -O, kva.c/kpa.c of ps
+- [ ] more (18648; link: page; owner 2026-11-26: was missing in this list, before gld) -- done but the libc (2026-11-26): Plexus' more.c/regex.c with WEGA's changes, ccv1 without -DSYS3, oldv7 stdio.h; all 43 own functions exact, termlib equal; the libc fits no libc-vN (libc-v4 + freopen, ungetc, _exit, fcntl: owner); /lib/libc.a for now, in OPEN of checkall; corpus 2 of 2
 - [ ] gld (27616; segmented E607)
 - [ ] sh (24032); link: rsh -- done but the libc (2026-11-26): System III sh with the WEGA changes, ccv1; 104 of 118 functions exact against a scratch libc, open: service.c (the compiler of 08/22/83, not built), three popt blocks; libc-v9 extended for sh (its libc part equal); built, installed with rsh, corpus 22 of 22; in OPEN of checkall
 
@@ -354,3 +355,10 @@ In SUBDIRS of src/cmd (shipped: `LIBC=/lib/libc.a`). Corpus: 22 cases (compare/e
   cp #0), kva.c and kpa.c of ../ps with -O as in ps, the shipped slibc.a. Corpus 5 of 5 (usage, errors, -p/-ap on the dump
   of the corpus of ps).
 - 2026-11-26 pstat committed after checkall "pstat" ALL OK.
+- 2026-11-26 more (owner: page = more was missing in the list; before gld): Plexus' more (tmp/plexus/cmd/plx/more) into
+  src/cmd/more; WEGA built it without -DSYS3 and changed reopen, printf/xprintf, checkf/prompt (fifo), execute (execl),
+  initterm/reset_tty (savetty), readch; regex.c re_exec needs braslist[i & 0177777] against the x - x fold of codgen
+  (KNOWLEDGE.md /bin/cc). All own code exact. libc: no libc-vN without conflict as it stands; the evaluation (members,
+  order against the users, SCCS stamps) went to the owner. The corpus can only
+  reach reopen (no terminal on stderr).
+- 2026-11-26 more committed after checkall "more" ALL OK (built with /lib/libc.a, in OPEN).

@@ -65,6 +65,7 @@ shipped:
 		case $$d in \
 		sld) X="SCC=scc LIBC=/lib/slibc.a" ;; \
 		fse) X="CC=scc" ;; \
+		more) X='CC=cc CFLAGS="-O -I." LIBC=/lib/libc.a TERMLIB=/usr/lib/libtermlib.a' ;; \
 		ps) X="SCCVK=scc LIBC=/lib/slibc.a" ;; \
 		pstat) X="SCC=scc SCCVK=scc LIBC=/lib/slibc.a" ;; \
 		cc/gopt) X="SCC=scc SLD=sld LIBC=/lib/slibc.a" ;; \

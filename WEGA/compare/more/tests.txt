@@ -1,0 +1,21 @@
+# The cases of the corpus of more (compare/more/corpus.py); the format: host/recon/casefile.py (the default step is
+# more a). Where an expectation comes from: src = src/cmd/more/more.c (function).
+
+== noreopen
+# src reopen: the standard error is not open for reading and writing and has no terminal (ttyname): the message on the
+# standard output, exit 5, before the file is looked at
+-- a
+line one
+-- case
+expect: exit 5
+expect: output is 'Can'"'"'t reopen stderr for reading\n'
+
+== noreopen-stdin
+# src reopen: the same without a file
+-- case
+step: more
+stdin: a
+expect: exit 5
+expect: output is 'Can'"'"'t reopen stderr for reading\n'
+-- a
+x

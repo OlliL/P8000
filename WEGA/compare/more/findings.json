@@ -1,0 +1,363 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/more",
+ "note": "Plexus more.c (Berkeley 4.1) and regex.c as WEGA changed them, built without -DSYS3 (the sgtty branch), ccv1 -O with the stdio.h of the time (head/oldv7). All own functions exact; termlib equal. The libc fits no libc-vN: owner decision open; built with /lib/libc.a for now (OPEN of checkall).",
+ "functions": {
+  "main": {
+   "file": "more.c",
+   "orig": "0x0042",
+   "size_orig": 978,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "WEGA calls reopen first."
+  },
+  "checkf": {
+   "file": "more.c",
+   "orig": "0x0414",
+   "size_orig": 320,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "WEGA: ispipe (name guessed) for a fifo; the magic numbers as WEGA wrote them (0x505 ... 0x711, 0177545): the first byte is sign extended and the second shifted, so no WEGA magic (E707 gives 0xffe7) is matched (KNOWLEDGE.md quirks)."
+  },
+  "putch": {
+   "file": "more.c",
+   "orig": "0x0554",
+   "size_orig": 48,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "screen": {
+   "file": "more.c",
+   "orig": "0x0584",
+   "size_orig": 344,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "onquit": {
+   "file": "more.c",
+   "orig": "0x06dc",
+   "size_orig": 142,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "end_it": {
+   "file": "more.c",
+   "orig": "0x076a",
+   "size_orig": 44,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "copy_file": {
+   "file": "more.c",
+   "orig": "0x0796",
+   "size_orig": 102,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "reopen": {
+   "file": "more.c",
+   "orig": "0x07fc",
+   "size_orig": 82,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "WEGA (name guessed): unless the standard error is open for reading and writing it is reopened on its terminal (ttyname, freopen r+); without one the message Can't reopen stderr for reading on the standard output and exit 5; then unbuffered."
+  },
+  "printf": {
+   "file": "more.c",
+   "orig": "0x084e",
+   "size_orig": 46,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "WEGA: the five register arguments into an array and xprintf (name guessed) with the place of the stack arguments; no return (a return(expr) gives the frame word)."
+  },
+  "xprintf": {
+   "file": "more.c",
+   "orig": "0x087c",
+   "size_orig": 222,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "Plexus printf with the switch to the stack arguments after five."
+  },
+  "printd": {
+   "file": "more.c",
+   "orig": "0x095a",
+   "size_orig": 110,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "scanstr": {
+   "file": "more.c",
+   "orig": "0x09c8",
+   "size_orig": 22,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "sprintf": {
+   "file": "more.c",
+   "orig": "0x09de",
+   "size_orig": 52,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "strlen": {
+   "file": "more.c",
+   "orig": "0x0a12",
+   "size_orig": 34,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "tailequ": {
+   "file": "more.c",
+   "orig": "0x0a34",
+   "size_orig": 78,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "prompt": {
+   "file": "more.c",
+   "orig": "0x0a82",
+   "size_orig": 198,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "WEGA: no percentage for a fifo (ispipe)."
+  },
+  "getline": {
+   "file": "more.c",
+   "orig": "0x0b48",
+   "size_orig": 512,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "erase": {
+   "file": "more.c",
+   "orig": "0x0d48",
+   "size_orig": 206,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "kill_line": {
+   "file": "more.c",
+   "orig": "0x0e16",
+   "size_orig": 58,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "pr": {
+   "file": "more.c",
+   "orig": "0x0e50",
+   "size_orig": 88,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "prbuf": {
+   "file": "more.c",
+   "orig": "0x0ea8",
+   "size_orig": 86,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "doclear": {
+   "file": "more.c",
+   "orig": "0x0efe",
+   "size_orig": 72,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "command": {
+   "file": "more.c",
+   "orig": "0x0f46",
+   "size_orig": 910,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "colon": {
+   "file": "more.c",
+   "orig": "0x12d4",
+   "size_orig": 294,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "number": {
+   "file": "more.c",
+   "orig": "0x13fa",
+   "size_orig": 94,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "do_shell": {
+   "file": "more.c",
+   "orig": "0x1458",
+   "size_orig": 142,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "search": {
+   "file": "more.c",
+   "orig": "0x14e6",
+   "size_orig": 356,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "execute": {
+   "file": "more.c",
+   "orig": "0x164a",
+   "size_orig": 164,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "WEGA: execl with three arguments (the callers pass no 0); the standard input from the standard error when it is no terminal."
+  },
+  "skiplns": {
+   "file": "more.c",
+   "orig": "0x16ee",
+   "size_orig": 100,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "skipf": {
+   "file": "more.c",
+   "orig": "0x1752",
+   "size_orig": 138,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "initterm": {
+   "file": "more.c",
+   "orig": "0x17dc",
+   "size_orig": 406,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "buf and clearbuf static (in the data of the original); savetty (name guessed) keeps the flags for reset_tty."
+  },
+  "readch": {
+   "file": "more.c",
+   "orig": "0x1972",
+   "size_orig": 50,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "char (no extsb of the value); end_it on a read error other than EINTR."
+  },
+  "ttyin": {
+   "file": "more.c",
+   "orig": "0x19a4",
+   "size_orig": 624,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "expand": {
+   "file": "more.c",
+   "orig": "0x1c14",
+   "size_orig": 218,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "show": {
+   "file": "more.c",
+   "orig": "0x1cee",
+   "size_orig": 96,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "error": {
+   "file": "more.c",
+   "orig": "0x1d4e",
+   "size_orig": 102,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "set_tty": {
+   "file": "more.c",
+   "orig": "0x1db4",
+   "size_orig": 24,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "reset_tty": {
+   "file": "more.c",
+   "orig": "0x1dcc",
+   "size_orig": 24,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "WEGA: the flags of the start (savetty) back."
+  },
+  "rdline": {
+   "file": "more.c",
+   "orig": "0x1de4",
+   "size_orig": 126,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "re_comp": {
+   "file": "regex.c",
+   "orig": "0x1e62",
+   "size_orig": 596,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "re_exec": {
+   "file": "regex.c",
+   "orig": "0x20b6",
+   "size_orig": 558,
+   "status": "exact",
+   "kind": "proven",
+   "callers": [],
+   "note": "braslist[i & 0177777]: the original computes braelist[i] - braslist[i]; written plainly every compiler folds the difference to 0 (codgen optim x - x, treeeq compares the array names by value only: KNOWLEDGE.md quirks /bin/cc); the mask changes the tree and codgen drops it."
+  },
+  "backref": {
+   "file": "regex.c",
+   "orig": "0x22e4",
+   "size_orig": 58,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  },
+  "cclass": {
+   "file": "regex.c",
+   "orig": "0x231e",
+   "size_orig": 62,
+   "status": "exact",
+   "kind": "proven",
+   "callers": []
+  }
+ }
+}
