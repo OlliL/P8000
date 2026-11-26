@@ -52,6 +52,14 @@ of a pass (KDBG, poptrace) is phase B (owner 2026-11-23).
       starts at the first member of at least 32 bytes (with the members right before it); the best library covers the most
       bytes from there. No gap: that library is LIBC. A gap is a module of another version, or a program of another library: the
       decision is made by measuring. `ld` takes from an archive what is referenced, in its order. `crt0.list` must have the program.
+      When the walk leaves gaps (no libc-vN fits as it is), the manual assignment: `python3 host/recon/libcplace.py PROG [START]`
+      (nonsegmented; `make -C src/lib/oldlibc` first). It names the members the program needs with every version that fits,
+      then per libc-vN the members it has in another version (a collision) and those it lacks; for the libraries without
+      collision it walks the original binaries of their users (the programs of `src/cmd` that link them; `-u vN=a,b` sets
+      them) and tests the order the program needs against the order the users force, transitively (a forced pair is a
+      collision; a pair only the Makefile list has the other way round is free); last the SCCS stamps of the users and of
+      the program (crt0 and sources, from `host/OLDCC_DATES.md`). The owner decides which library takes the program (a new
+      or extended libc-vN only with the owner).
 2. **Build and compare**. The own code with the stdio.h of the time for ccv0 and ccv1 (`src/head/oldv7`), the
    start-up file from `crt0.list`, linked with LIBC (`E="z8k-emu -r $OLDROOT"; $E /bin/ccv1 -O -I../head/oldv7 -c x.c`; the old
    compilers need `make -C host oldroot` once; the emulator sees only paths below its root and the working directory). Then
