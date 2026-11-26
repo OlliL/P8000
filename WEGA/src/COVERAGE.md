@@ -43,7 +43,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 
 | File | Kind | Source | Status | Compiler | libc |
 |---|---|---|---|---|---|
-| `bin/adb` | binary E711 | `src/cmd/adb` | partial | - | - |
+| `bin/adb` | binary E711 | `src/cmd/adb` | partial | cc | libc.a |
 | `bin/ar` | binary E707 | `src/cmd/ar.c` | exact | ccvm | libc.a |
 | `bin/as` | binary E711 | - | todo | D12 old?, D1 tight | - |
 | `bin/bc` | binary E707 | `src/cmd/bc` | exact | ccv0 | libc-v1.a |

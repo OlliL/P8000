@@ -964,6 +964,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | regcmp | libPW regcmp.c (regcmp) | v1l |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | local | local.c (argcat: its static buf and nargv) | vz |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | csh | sh.c, sh.dol.c, sh.func.c, sh.sem.c, sh.wait.c (main, Dword, execute, donice: a block behind an unconditional jump) | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
+| adb | findfn.c, sym.c, format.c, output.c, print.c, runpcs.c (stfind, findsym: a register of a compare; frsize: the frame word of a return value; exform: a call through a temporary in itol; _doprnt: lda register; getreg: popt reload; runpcs: a block behind an unconditional jump) | cc |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
 fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`

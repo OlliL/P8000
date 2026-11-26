@@ -93,7 +93,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] gpasswd (15362)
 - [x] make (39048) -- byte-identical (ced632f8, ccvm since 602346b6): System III make with the WEGA changes, libc.a; corpus 45 cases
 - [ ] csh (45728) -- done but the libc (2026-11-26): Plexus csh with the WEGA changes, ccv1; 254 of 258 functions exact, 4 open (popt block order, phase B); libc-v9 extended for csh; built, installed, corpus 27 of 27; in OPEN of checkall
-- [ ] adb (46996)
+- [ ] adb (46996) -- done but 7 functions (2026-11-26): the ZEUS 3.2 adb, written from the binary on Plexus' z8000 adb; shipped cc, libu8000, kva/kpa of ps, libc.a; 88 of 95 functions exact, 7 open (codegen and popt forms, phase B); data and bss in place; built, installed, corpus 15 of 15; in OPEN of checkall
 - [ ] fsc (2078; segmented E611)
 - [ ] fc (3074; segmented E607)
 - [ ] pstat (15638; segmented E607)
@@ -206,6 +206,14 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   perror 0_2, errlst 0_2, abort, dup2, _exit, getgid, getuid; ld and login stay identical; csh's libc code equals the
   original's, its data up to code addresses.
   uusend committed after checkall "uus" ALL OK.
+- 2026-11-26 adb (owner: source directly in src/cmd/adb, no vax/pdp11 tree): no source of WEGA's adb (= ZEUS 3.21 adb,
+  the same SCCS versions); written from the binary on the base of Plexus' cmd/adb/z8000 (compare/adb/SYSIII.md). The
+  disassembler is libu8000's disasm (as the owner guessed), kva.c/kpa.c are ps' (same SCCS lines, nonseg cc gives their
+  bytes; linked behind libu8000: maybe a library of their own, not shipped). Shipped cc, /lib/libc.a. init.c defines all
+  globals that no earlier module names: the bss in the original's order. 88 of 95 functions exact; open: stfind, findsym
+  (a register), frsize (frame word), exform (evaluation order of itol), _doprnt (a register), getreg (popt reload),
+  runpcs (popt block order). Code and data sizes equal; the bytes behind the own code (disasm, kva, kpa, libc) equal but
+  for the shift of 18/20 bytes by the open functions. Corpus 15 cases, identical.
 
 ## Phase B regcmp: solved (2026-11-25)
 
@@ -337,3 +345,4 @@ for setjmp, in eopen the read of the format line kept without its fspec test, pu
 front of the `--nl` part: the while loop of System III gives the usual layout, every structured form too). Built by ccv1
 with `-DRESEARCH` (DEFS) and without PWB, libc-v4 (execlp, the assembler member of libc, in front of execvp), own crt0.
 In SUBDIRS of src/cmd (shipped: `LIBC=/lib/libc.a`). Corpus: 22 cases (compare/ed/tests.txt).
+- 2026-11-26 adb committed after checkall "adb" ALL OK.

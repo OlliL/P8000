@@ -1,0 +1,615 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "cc",
+ "binary": "/bin/adb",
+ "libc": "/lib/libc.a",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 66,
+   "status": "crt0"
+  },
+  "put": {
+   "file": "access.c",
+   "orig": "0x0042",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "get": {
+   "file": "access.c",
+   "orig": "0x005c",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "chkget": {
+   "file": "access.c",
+   "orig": "0x0076",
+   "size_orig": 30,
+   "status": "exact",
+   "note": "The local t is never used (its frame word is in the original)."
+  },
+  "access": {
+   "file": "access.c",
+   "orig": "0x0094",
+   "size_orig": 790,
+   "status": "exact",
+   "note": "WEGA: addresses are ADDR (segment, offset); -k: the kernel through /dev/kmem or a crash dump (kvseek, kpseek of kva.c/kpa.c), the physical memory through /dev/mem for addresses above 64K; ptrace/sptrace; lseek is not declared long (its result is an int)."
+  },
+  "chkmap": {
+   "file": "access.c",
+   "orig": "0x03aa",
+   "size_orig": 298,
+   "status": "exact",
+   "note": "WEGA: the map of another segment is changed with a message ('?' map changing to segment); the stack segment (curseg) by stksiz/maxstor. The local i is never used."
+  },
+  "within": {
+   "file": "access.c",
+   "orig": "0x04d4",
+   "size_orig": 42,
+   "status": "exact",
+   "note": "WEGA: the segment must match; the bounds unsigned."
+  },
+  "command": {
+   "file": "command.c",
+   "orig": "0x04fe",
+   "size_orig": 1800,
+   "status": "exact",
+   "note": "WEGA: > into a register writes the user block through ptrace/sptrace (uaddr from u_state, pc as segment and offset); ?* and /* checked against the symbol type (symtype); w/W write the long as two words."
+  },
+  "expr": {
+   "file": "expr.c",
+   "orig": "0x0c06",
+   "size_orig": 260,
+   "status": "exact"
+  },
+  "term": {
+   "file": "expr.c",
+   "orig": "0x0d0a",
+   "size_orig": 296,
+   "status": "exact"
+  },
+  "item": {
+   "file": "expr.c",
+   "orig": "0x0e32",
+   "size_orig": 1210,
+   "status": "exact",
+   "note": "WEGA: hex with % (0x too), the radix of $x/$d (ibase), <<seg>>offset, long names truncated to 7 with a message, no local names; the variables 0..2 and e are addresses (svar)."
+  },
+  "readsym": {
+   "file": "expr.c",
+   "orig": "0x12ec",
+   "size_orig": 42,
+   "status": "exact",
+   "note": "A name longer than 127 characters makes the loop endless (readchar is called only while there is room): a bug of the original, kept."
+  },
+  "lookupsym": {
+   "file": "expr.c",
+   "orig": "0x1316",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "convdig": {
+   "file": "expr.c",
+   "orig": "0x1360",
+   "size_orig": 92,
+   "status": "exact"
+  },
+  "symchar": {
+   "file": "expr.c",
+   "orig": "0x13bc",
+   "size_orig": 80,
+   "status": "exact"
+  },
+  "varchk": {
+   "file": "expr.c",
+   "orig": "0x140c",
+   "size_orig": 114,
+   "status": "exact"
+  },
+  "chkloc": {
+   "file": "expr.c",
+   "orig": "0x147e",
+   "size_orig": 10,
+   "status": "exact",
+   "note": "WEGA: local names are not implemented; the function only says so."
+  },
+  "eqsym": {
+   "file": "expr.c",
+   "orig": "0x1488",
+   "size_orig": 96,
+   "status": "exact"
+  },
+  "stfind": {
+   "file": "findfn.c",
+   "orig": "0x14e8",
+   "size_orig": 250,
+   "status": "open",
+   "note": "WEGA: the search in the segment symbol table (struct segsym) for the symbol below an address, its own static fndseg/fnddiff (a copy of findsym in sym.c that returns the low word of the value). Open: off>=base is compared in rr4 (the shipped cc takes rr2; no source form found), 2 bytes."
+  },
+  "frsize": {
+   "file": "findfn.c",
+   "orig": "0x15e2",
+   "size_orig": 332,
+   "status": "open",
+   "note": "WEGA: the frame size of a routine from its first instruction (jr: follow; dec r15,#n; sub r15,#nn; jp: follow). Open: the frame is 16 bytes in the original, the shipped cc gives 18 (the word it adds for a return value); the jr target is computed with ap loaded first (no source form found)."
+  },
+  "stkoff": {
+   "file": "findfn.c",
+   "orig": "0x172e",
+   "size_orig": 422,
+   "status": "exact"
+  },
+  "findroutine": {
+   "file": "findfn.c",
+   "orig": "0x18d4",
+   "size_orig": 874,
+   "status": "exact"
+  },
+  "scanform": {
+   "file": "format.c",
+   "orig": "0x1c3e",
+   "size_orig": 346,
+   "status": "exact"
+  },
+  "exform": {
+   "file": "format.c",
+   "orig": "0x1d98",
+   "size_orig": 1054,
+   "status": "open",
+   "note": "WEGA: formats as printed by the original (%%%04x, %06o, %6d ...), no I z Z, 'i' through printins; a long is masked to 31 bits; f and F convert the float with the EPU first. Open: in the long case the get of the second word is done before itolws.I[0]=w (the result through a temporary), no source form found."
+  },
+  "unox": {
+   "file": "format.c",
+   "orig": "0x21b6",
+   "size_orig": 170,
+   "status": "exact"
+  },
+  "printesc": {
+   "file": "format.c",
+   "orig": "0x2260",
+   "size_orig": 80,
+   "status": "exact"
+  },
+  "inkdot": {
+   "file": "format.c",
+   "orig": "0x22b0",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "nullfn": {
+   "file": "format.c",
+   "orig": "0x22f4",
+   "size_orig": 2,
+   "status": "exact",
+   "note": "An empty function behind printesc (guessed name)."
+  },
+  "eol": {
+   "file": "input.c",
+   "orig": "0x22f6",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "rdc": {
+   "file": "input.c",
+   "orig": "0x2310",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "readchar": {
+   "file": "input.c",
+   "orig": "0x232e",
+   "size_orig": 124,
+   "status": "exact"
+  },
+  "nextchar": {
+   "file": "input.c",
+   "orig": "0x23aa",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "quotchar": {
+   "file": "input.c",
+   "orig": "0x23cc",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "getformat": {
+   "file": "input.c",
+   "orig": "0x23f0",
+   "size_orig": 94,
+   "status": "exact"
+  },
+  "round": {
+   "file": "main.c",
+   "orig": "0x244e",
+   "size_orig": 38,
+   "status": "exact"
+  },
+  "chkerr": {
+   "file": "main.c",
+   "orig": "0x2474",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "error": {
+   "file": "main.c",
+   "orig": "0x2488",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "fault": {
+   "file": "main.c",
+   "orig": "0x24a6",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "main": {
+   "file": "main.c",
+   "orig": "0x24c6",
+   "size_orig": 534,
+   "status": "exact"
+  },
+  "done": {
+   "file": "main.c",
+   "orig": "0x26dc",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "printins": {
+   "file": "opset.c",
+   "orig": "0x26ea",
+   "size_orig": 192,
+   "status": "exact"
+  },
+  "symfn": {
+   "file": "opset.c",
+   "orig": "0x27aa",
+   "size_orig": 222,
+   "status": "exact"
+  },
+  "eqstr": {
+   "file": "output.c",
+   "orig": "0x2888",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "length": {
+   "file": "output.c",
+   "orig": "0x28ac",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "printc2": {
+   "file": "output.c",
+   "orig": "0x28ce",
+   "size_orig": 298,
+   "status": "exact",
+   "note": "WEGA: printc with a second parameter: a pointer to a string pointer for sprintf (guessed name)."
+  },
+  "sprintf": {
+   "file": "output.c",
+   "orig": "0x29f8",
+   "size_orig": 116,
+   "status": "exact"
+  },
+  "printf": {
+   "file": "output.c",
+   "orig": "0x2a6c",
+   "size_orig": 100,
+   "status": "exact",
+   "note": "printf and sprintf with the four double registers (fregs) as the printf of the oldlibc (printf/0_4.c)."
+  },
+  "align": {
+   "file": "output.c",
+   "orig": "0x2ad0",
+   "size_orig": 96,
+   "status": "exact"
+  },
+  "doprnt": {
+   "file": "output.c",
+   "orig": "0x2b30",
+   "size_orig": 984,
+   "status": "open",
+   "note": "WEGA: the _doprnt of the oldlibc (ls, csh) with the floats (fpap, _fegcvt), %Y (_date), %T %t %M %m (tabs, adb's own), through printc2(c, sp) for printf and sprintf. Open: str = buf takes r3 in the shipped cc, r2 in the original (twice)."
+  },
+  "atoip": {
+   "file": "output.c",
+   "orig": "0x2f08",
+   "size_orig": 122,
+   "status": "exact"
+  },
+  "date": {
+   "file": "output.c",
+   "orig": "0x3076",
+   "size_orig": 84,
+   "status": "exact",
+   "note": "%Y of _doprnt: the date of ctime into the buffer (guessed name). The local n is never used."
+  },
+  "charpos": {
+   "file": "output.c",
+   "orig": "0x30ca",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "flushbuf": {
+   "file": "output.c",
+   "orig": "0x30d8",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "printdate": {
+   "file": "output.c",
+   "orig": "0x30e8",
+   "size_orig": 84,
+   "status": "exact"
+  },
+  "prints": {
+   "file": "output.c",
+   "orig": "0x313c",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "newline": {
+   "file": "output.c",
+   "orig": "0x314e",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "iclose": {
+   "file": "output.c",
+   "orig": "0x3156",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "oclose": {
+   "file": "output.c",
+   "orig": "0x316a",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "endline": {
+   "file": "output.c",
+   "orig": "0x3184",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "subpcs": {
+   "file": "pcs.c",
+   "orig": "0x3194",
+   "size_orig": 448,
+   "status": "exact"
+  },
+  "printtrace": {
+   "file": "print.c",
+   "orig": "0x3354",
+   "size_orig": 944,
+   "status": "exact",
+   "note": "WEGA: $x and $d set the input base (ibase); $v lists the address variables and 42 longs from var (var has 42 entries); $e prints the value of each external data and bss symbol; no $a, $o. The locals narg..dynam, hi, argp, frame are never used (their frame words are in the original)."
+  },
+  "printmap": {
+   "file": "print.c",
+   "orig": "0x3704",
+   "size_orig": 206,
+   "status": "exact"
+  },
+  "printfregs": {
+   "file": "print.c",
+   "orig": "0x37d2",
+   "size_orig": 106,
+   "status": "exact",
+   "note": "WEGA: the eight EPU registers of u_fpstate (five words each and as double, through fpcvt.s). The parameter and the local k are not used."
+  },
+  "printregs": {
+   "file": "print.c",
+   "orig": "0x383c",
+   "size_orig": 208,
+   "status": "exact",
+   "note": "The local a is never used (its frame words are in the original)."
+  },
+  "getreg": {
+   "file": "print.c",
+   "orig": "0x390c",
+   "size_orig": 162,
+   "status": "open",
+   "note": "WEGA: register names r0..r14, sp, fcw, pc (two or three letters, fcw); returns the offset in regs[] or -1. Open: popt reloads the parameter for the third and fourth comparison, the original keeps rl7."
+  },
+  "printpc": {
+   "file": "print.c",
+   "orig": "0x39ae",
+   "size_orig": 60,
+   "status": "exact"
+  },
+  "sigprint": {
+   "file": "print.c",
+   "orig": "0x39ea",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "getsig": {
+   "file": "runpcs.c",
+   "orig": "0x39fa",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "runpcs": {
+   "file": "runpcs.c",
+   "orig": "0x3a16",
+   "size_orig": 504,
+   "status": "open",
+   "note": "WEGA: ptrace or sptrace by segflg; bpwait(4,5); the breakpoint command runs with ':' replaced by '.'; samepc. Open: popt places the test of samepc behind the block of the then part (code motion, phase B)."
+  },
+  "endpcs": {
+   "file": "runpcs.c",
+   "orig": "0x3c0e",
+   "size_orig": 98,
+   "status": "exact"
+  },
+  "setup": {
+   "file": "runpcs.c",
+   "orig": "0x3c70",
+   "size_orig": 256,
+   "status": "exact"
+  },
+  "execbkpt": {
+   "file": "runpcs.c",
+   "orig": "0x3d70",
+   "size_orig": 264,
+   "status": "exact"
+  },
+  "doexec": {
+   "file": "runpcs.c",
+   "orig": "0x3e78",
+   "size_orig": 250,
+   "status": "exact"
+  },
+  "scanbkpt": {
+   "file": "runpcs.c",
+   "orig": "0x3f72",
+   "size_orig": 100,
+   "status": "exact"
+  },
+  "delbp": {
+   "file": "runpcs.c",
+   "orig": "0x3fd6",
+   "size_orig": 100,
+   "status": "exact"
+  },
+  "setbp": {
+   "file": "runpcs.c",
+   "orig": "0x403a",
+   "size_orig": 186,
+   "status": "exact"
+  },
+  "bpwait": {
+   "file": "runpcs.c",
+   "orig": "0x40f4",
+   "size_orig": 204,
+   "status": "exact"
+  },
+  "readregs": {
+   "file": "runpcs.c",
+   "orig": "0x41c0",
+   "size_orig": 288,
+   "status": "exact"
+  },
+  "setsym": {
+   "file": "setup.c",
+   "orig": "0x42e0",
+   "size_orig": 910,
+   "status": "exact",
+   "note": "WEGA: the s.out header, the segment table (struct segtab) and the segment symbol table (struct segsym, 300 entries, grown by 101); findsym(&dot) is called before the header is read; nsyms is divided by sizeof twice (pointer difference / 12): a bug of the original, kept."
+  },
+  "setcor": {
+   "file": "setup.c",
+   "orig": "0x466e",
+   "size_orig": 482,
+   "status": "exact",
+   "note": "WEGA: -k with /dev/kmem and /dev/mem or a crash dump (kdump), else the user block (0xa00 bytes, the segmented struct user: suser.h) and the registers from the state behind u_state."
+  },
+  "create": {
+   "file": "setup.c",
+   "orig": "0x4850",
+   "size_orig": 50,
+   "status": "exact"
+  },
+  "getfile": {
+   "file": "setup.c",
+   "orig": "0x4882",
+   "size_orig": 102,
+   "status": "exact"
+  },
+  "chgtmap": {
+   "file": "setup.c",
+   "orig": "0x48e8",
+   "size_orig": 408,
+   "status": "exact"
+  },
+  "chgdmap": {
+   "file": "setup.c",
+   "orig": "0x4a80",
+   "size_orig": 420,
+   "status": "exact",
+   "note": "For the core file the end of the map takes segtab[j].st_bss with the j of the loop (not i; j is not set when the program is not segmented): a bug of the original, kept."
+  },
+  "longseek": {
+   "file": "sym.c",
+   "orig": "0x4c24",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "valpr": {
+   "file": "sym.c",
+   "orig": "0x4c40",
+   "size_orig": 70,
+   "status": "exact"
+  },
+  "localsym": {
+   "file": "sym.c",
+   "orig": "0x4c86",
+   "size_orig": 8,
+   "status": "exact",
+   "note": "WEGA: returns 0 (no local symbols)."
+  },
+  "psymoff": {
+   "file": "sym.c",
+   "orig": "0x4c8e",
+   "size_orig": 132,
+   "status": "exact"
+  },
+  "findsym": {
+   "file": "sym.c",
+   "orig": "0x4d12",
+   "size_orig": 248,
+   "status": "open",
+   "note": "WEGA (sym.c): the copy of stfind that returns &fnd (static ADDR: the segment and the distance) and reads the symbol into fsymbuf. Open: off>=base in rr4 as in stfind."
+  },
+  "nextsym": {
+   "file": "sym.c",
+   "orig": "0x4e0a",
+   "size_orig": 2,
+   "status": "exact",
+   "note": "WEGA: empty (the local symbols of Plexus are gone)."
+  },
+  "symset": {
+   "file": "sym.c",
+   "orig": "0x4e0c",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "symget": {
+   "file": "sym.c",
+   "orig": "0x4e50",
+   "size_orig": 162,
+   "status": "exact"
+  },
+  "symread": {
+   "file": "sym.c",
+   "orig": "0x4ef2",
+   "size_orig": 232,
+   "status": "exact",
+   "note": "WEGA: long names (a length byte with the high bit and more 14-byte entries)."
+  },
+  "symcopy": {
+   "file": "sym.c",
+   "orig": "0x4fda",
+   "size_orig": 124,
+   "status": "exact",
+   "note": "WEGA: the name of a symbol into symname, a long name from the following entries or from the file (guessed name). The locals i, j, k, l are never used."
+  },
+  "fpcvt": {
+   "file": "fpcvt.s",
+   "orig": "0x5056",
+   "size_orig": 6,
+   "status": "exact",
+   "note": "fpcvt.s: an EPU load of the 80-bit register at r7 as a double and ret (guessed name; no C form gives this code)."
+  },
+  "acnvt": {
+   "file": "output.c",
+   "orig": "0x2f82",
+   "size_orig": 244,
+   "status": "exact",
+   "note": "The _cnvt of the oldlibc (no _hexchar), under another name (_acnvt, guessed): the libc's cnvt is linked too."
+  }
+ }
+}

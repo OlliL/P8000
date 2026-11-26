@@ -1,0 +1,217 @@
+# The cases of the corpus of adb (compare/adb/corpus.py); the format: host/recon/casefile.py. The commands are the
+# standard input (stdin: t.in); the files examined are programs of the WEGA tree with their symbols: /bin/bd
+# (nonsegmented, E707), /bin/bcmp (nonsegmented, separate I and D, E711), /bin/fc (segmented, E607).
+# Where an expectation comes from: src = src/cmd/adb (the file and function named).
+
+== disasm
+# opset.c printins through disasm(3) of libu8000; sym.c psymoff: the symbol and offset in front, ?i and a count
+-- case
+step: adb /bin/bd -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\n? _main:		sub	sp,#%019e\n? _main:		sub	sp,#%019e\n		ldl	@sp,rr6\n		cp	r7,#%0001\n		jr	nz/ne,_main+%42\n		ld	%0004(sp),#%185a\n		clr	%0006(sp)\n? _main+%10:	%185a\n? '
+-- t.in
+main?i
+main,6?i
+main+%10?i
+
+== formats
+# format.c exform: the formats x X o O d D u U b c C s S a p n " ^ + - t r and a count in front of a format
+-- case
+step: adb /bin/bd -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\n? _main:		%030f\n? _main:		%030f  %019e  %1df6  %0b07\n? _main:		%030f019e\n? _main:		001417\n? _main:		000303600636\n? _main:		   783\n? _main:		   51315102\n? _main:		0783\n? _main:		51315102\n? _main:		%0003\n? _main:		\n? _main:		@c\n? _main:		_main:\n? _main:		_sprintf+%81\n? _main:		%030f  %019e  text\n		%1df6  %0b07\n? _main:		%030f  %9e1d  %1df6  %1df6\n? _main:		  %030f	 %019e	%1df6  %0b07\n? _main:			  %030f	 %019e	%1df6  %0b07\n? '
+-- t.in
+main?x
+main?4x
+main?X
+main?o
+main?O
+main?d
+main?D
+main?u
+main?U
+main?b
+main?c
+main?C
+main?a
+main?p
+main?2x"text"n2x
+main?x+x-x^x
+main?3t4x
+main?10r4x
+
+== strings
+# format.c exform s and S: the bytes up to a zero, S with @ escapes (printesc)
+-- case
+step: adb /bin/bcmp -
+stdin: t.in
+expect: exit 1
+expect: output is 'ADB: P8000 1.6\n? symbol not found\n? symbol not found\n? symbol not found\n? '
+-- t.in
+_sccsid/s
+_sccsid/S
+_sccsid/8c
+
+== expr
+# expr.c expr, term, item: the operators + - * % & | #, unary - ~ * @, numbers decimal, octal (0), hex (% and 0x),
+# characters 'xy', . " + ^
+-- case
+step: adb /bin/bd -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\n? 		    15\n? 		    -5\n? 		    42\n? 		    14\n? 		%00f0\n? 		%00ff\n? 		    16\n? 		    -5\n? 		%ffff\n? 		000017\n? 		    31\n? 		    31\n? 		%6162\n? 		%00006364\n? 		%0000002a\n? 		%0000002c\n? 		%0000002c\n? 		%0000002c\n? 		%0000002c\n? 		%0000002c\n? 		    14\n? '
+-- t.in
+10+5=d
+10-15=d
+6*7=d
+100%7=d
+%ff&%f0=x
+%f0|%0f=x
+13#4=d
+-5=d
+~0=x
+017=o
+%1f=d
+0x1f=d
+'ab'=x
+'abcd'=X
+main=X
+main+2=X
+.=X
+"=X
++=X
+^=X
+(3+4)*2=d
+
+== variables
+# command.c the > command, expr.c varchk and item: the variables 0..9 a..z, 0..2 and e as addresses; print.c $v
+-- case
+step: adb /bin/bd -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\n? ? 		   123\n? ? 		%0000002a\n? variables\n  address\n0 = %2a\n  other\nd = %1dc\nm = %e707\nt = %1770\nx = %7b\n? '
+-- t.in
+123>x
+<x=d
+main>0
+<0=X
+$v
+
+== maps
+# print.c printmap ($m); setup.c setsym: the maps of a nonsegmented file
+-- case
+step: adb /bin/bd -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\n? ? map	    `/bin/bd'"'"'\n	      b1 = %0	       e1 = %194c	f1 = %28\n	      b2 = %0	       e2 = %194c	f2 = %28\n/ map	    `/bin/bd'"'"'\n	      b1 = %0	       e1 = %194c	f1 = %28\n	      b2 = %0	       e2 = %0		f2 = %0\n? '
+-- t.in
+$m
+
+== maps-id
+# setup.c setsym: separate I and D (E711)
+-- case
+step: adb /bin/bcmp -
+stdin: t.in
+expect: exit 1
+expect: output is 'ADB: P8000 1.6\n? ? map	    `/bin/bcmp'"'"'\n	      b1 = %0	       e1 = %1900	f1 = %28\n	      b2 = %0	       e2 = %1f6	f2 = %1928\n/ map	    `/bin/bcmp'"'"'\n	      b1 = %0	       e1 = %1f6	f1 = %1928\n	      b2 = %0	       e2 = %0		f2 = %0\n? _main:		sub	sp,#%0012\n		ldm	%000a(sp),r11,#4\n? symbol not found\n? '
+-- t.in
+$m
+main?2i
+_sccsid/x
+
+== segmented
+# setup.c setsym and chgtmap: a segmented file, the segment of the map, <<seg>>offset addresses; access.c chkmap
+-- case
+step: adb /bin/fc -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\n? ? map	    `/bin/fc'"'"'\nsegment	= <<%0>>\n	      b1 = %0	       e1 = %726	f1 = %28\n	      b2 = %0	       e2 = %726	f2 = %28\n/ map	    `/bin/fc'"'"'\nsegment	= <<%0>>\n	      b1 = %0	       e1 = %726	f1 = %28\n	      b2 = %0	       e2 = %0		f2 = %0\n? _main:		dec	sp,#12\n		ldm	|<<%7f>>%0000|(sp),r4,#4\n		ldl	rr2,rr4\n? 		%000003ee\n? start:		dec	sp,#4\n? '
+-- t.in
+$m
+main?3i
+main=X
+<<0>>0?i
+
+== externals
+# print.c printtrace e: the external data and bss symbols with their values
+-- case
+step: adb /bin/bd -
+stdin: t.in
+expect: exit 1
+expect: output is 'ADB: P8000 1.6\n? _environ:   %0000\ndata address not found\n? '
+-- t.in
+$e
+
+== settings
+# print.c printtrace: $s (maxoff), $w (maxpos), $x and $d (the base of input), $b (no breakpoints), $? without a process
+-- case
+step: adb /bin/bd -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\n? ? %002e:		ldl	@sp,rr6\n? ? ? _main:		%030f\n		%019e\n		%1df6\n		%0b07\n? ? ? 		    16\n? ? 		    10\n? breakpoints\ncount	bkpt		command\n? no process\nr0	%0000		r1	%0000		r2	%0000\nr3	%0000		r4	%0000		r5	%0000\nr6	%0000		r7	%0000		r8	%0000\nr9	%0000		r10	%0000		r11	%0000\nr12	%0000		r13	%0000		r14	%0000\nsp	%0000		fcw	%0000		pc	%0000\nstart:		ld	r7,@sp\n? '
+-- t.in
+0$s
+main+4?i
+$s
+10$w
+main?4x
+$w
+$x
+10=d
+$d
+10=d
+$b
+$?
+
+== errors
+# message.c and the places that raise them: bad command, bad modifier, symbol not found and the truncation of a long name
+# (expr.c item), address expected, unexpected ), syntax error, no process (:c, $r), not in write mode (access.c)
+-- case
+step: adb /bin/bd -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\n? _main:\nbad modifier\n? symbol not found\n? '"'"'nosuchlongname'"'"': symbol not found.  Truncated,	searching....\nsymbol not found\n? _main:		%030f\nnot in write mode\n? syntax error\n? no process\n? 		    42\n? 		    42\n? '
+-- t.in
+main?y
+nosuch=X
+nosuchlongname=X
+main?w 0
+(3=d
+:c
+=d
+%
+
+== shell
+# format.c unox: ! runs the rest of the line in /bin/sh -c
+-- case
+step: adb /bin/bd -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\n? hello from sh\n!\n? 		     1\n? '
+-- t.in
+!echo hello from sh
+1=d
+
+== readfile
+# print.c printtrace < and >: read commands from a file, write the output into a file
+-- case
+step: adb /bin/bd -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\n? ? 		     2\n? 		     3\n? ? ? 		     1\n? '
+-- t.in
+$<cmds
+$>out
+main?x
+$>
+1=d
+-- cmds
+2=d
+3=d
+
+== nofile
+# setup.c getfile: a file that cannot be opened; main.c the usage with too many arguments
+-- case
+step: adb nosuchfile -
+stdin: t.in
+expect: output is 'ADB: P8000 1.6\ncannot open `nosuchfile'"'"'\n? 		     1\n? '
+-- t.in
+1=d
+
+== usage
+-- case
+step: adb a b c d
+expect: exit 1
+expect: output is 'usage: adb [-w]	[-k] [objectfile] [corefile]\n'

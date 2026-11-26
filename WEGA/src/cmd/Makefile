@@ -47,7 +47,7 @@ SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmo
 
 FILES=		getud putud bcmp bd dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o  bcmp.o  bd.o
-SUBDIRS=	remote ps csh sh doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc ed make ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen lex
+SUBDIRS=	remote ps csh sh adb doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc ed make ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen lex
 
 all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 
@@ -73,6 +73,7 @@ shipped:
 		lex) X="LIBC=/lib/libc.a LIBY=/lib/liby.a" ;; \
 		remote) X="LIBC_V14=" ;; \
 		ex) X="CCV0A=cc TERMLIB=/usr/lib/libtermlib.a" ;; \
+		adb) X="LIBU=/usr/lib/libu8000.a" ;; \
 		*) X="" ;; \
 		esac ; \
 		(cd $$d ; eval $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all '$(SHIPCC)' $$X) ; \
