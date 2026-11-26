@@ -1,0 +1,1580 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "/bin/ccv1",
+ "binary": "/bin/csh",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 66,
+   "status": "crt0"
+  },
+  "malloc": {
+   "file": "alloc.c",
+   "orig": "0x0042",
+   "size_orig": 316,
+   "status": "exact"
+  },
+  "free": {
+   "file": "alloc.c",
+   "orig": "0x017e",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "setpwent": {
+   "file": "getpwent.c",
+   "orig": "0x0196",
+   "size_orig": 38,
+   "status": "exact"
+  },
+  "endpwent": {
+   "file": "getpwent.c",
+   "orig": "0x01bc",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "getpwent": {
+   "file": "getpwent.c",
+   "orig": "0x01fc",
+   "size_orig": 220,
+   "status": "exact"
+  },
+  "getpwnam": {
+   "file": "getpwnam.c",
+   "orig": "0x02d8",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "getpwuid": {
+   "file": "getpwuid.c",
+   "orig": "0x0316",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "printf": {
+   "file": "printf.c",
+   "orig": "0x0344",
+   "size_orig": 48,
+   "status": "exact",
+   "note": "printf.c of csh is the printf/_doprnt of ls (WEGA), through putchar."
+  },
+  "_align": {
+   "file": "printf.c",
+   "orig": "0x0374",
+   "size_orig": 92,
+   "status": "exact"
+  },
+  "_doprnt": {
+   "file": "printf.c",
+   "orig": "0x03d0",
+   "size_orig": 874,
+   "status": "exact"
+  },
+  "_atoip": {
+   "file": "printf.c",
+   "orig": "0x073a",
+   "size_orig": 122,
+   "status": "exact"
+  },
+  "main": {
+   "file": "sh.c",
+   "orig": "0x07b4",
+   "size_orig": 1194,
+   "status": "open",
+   "lines": 41,
+   "note": "WEGA: the environment imported as lowercase shell variables (block local ep, val; the register v, cp declared behind name and i, j: their slots); prompt and intrflg (guessed name, for the **av = '-' of Berkeley) are globals of sh.c; /etc/cshprofile before .cshrc. Open: popt places the lowercase loop of the environment block behind the loop end (code motion, phase B)."
+  },
+  "importpath": {
+   "file": "sh.c",
+   "orig": "0x0c5e",
+   "size_orig": 152,
+   "status": "exact"
+  },
+  "srccat": {
+   "file": "sh.c",
+   "orig": "0x0cf6",
+   "size_orig": 66,
+   "status": "exact"
+  },
+  "srcunit": {
+   "file": "sh.c",
+   "orig": "0x0d38",
+   "size_orig": 440,
+   "status": "exact"
+  },
+  "goodbye": {
+   "file": "sh.c",
+   "orig": "0x0ef0",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "exitstat": {
+   "file": "sh.c",
+   "orig": "0x0f3a",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "pintr": {
+   "file": "sh.c",
+   "orig": "0x0f5e",
+   "size_orig": 120,
+   "status": "exact"
+  },
+  "process": {
+   "file": "sh.c",
+   "orig": "0x0fd6",
+   "size_orig": 494,
+   "status": "exact"
+  },
+  "dosource": {
+   "file": "sh.c",
+   "orig": "0x11c4",
+   "size_orig": 82,
+   "status": "exact"
+  },
+  "mailchk": {
+   "file": "sh.c",
+   "orig": "0x1216",
+   "size_orig": 278,
+   "status": "exact"
+  },
+  "gethdir": {
+   "file": "sh.c",
+   "orig": "0x132c",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "initdesc": {
+   "file": "sh.c",
+   "orig": "0x135a",
+   "size_orig": 72,
+   "status": "exact"
+  },
+  "exit": {
+   "file": "sh.c",
+   "orig": "0x13a2",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "Dfix": {
+   "file": "sh.dol.c",
+   "orig": "0x13b0",
+   "size_orig": 70,
+   "status": "exact"
+  },
+  "Dfix1": {
+   "file": "sh.dol.c",
+   "orig": "0x13f6",
+   "size_orig": 88,
+   "status": "exact"
+  },
+  "Dfix2": {
+   "file": "sh.dol.c",
+   "orig": "0x144e",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "Dword": {
+   "file": "sh.dol.c",
+   "orig": "0x1492",
+   "size_orig": 400,
+   "status": "open",
+   "lines": 12,
+   "note": "Open: popt block order (a block behind an unconditional jump), phase B."
+  },
+  "DgetC": {
+   "file": "sh.dol.c",
+   "orig": "0x1622",
+   "size_orig": 194,
+   "status": "exact"
+  },
+  "Dgetdol": {
+   "file": "sh.dol.c",
+   "orig": "0x16e4",
+   "size_orig": 1136,
+   "status": "exact"
+  },
+  "setDolp": {
+   "file": "sh.dol.c",
+   "orig": "0x1b54",
+   "size_orig": 86,
+   "status": "exact"
+  },
+  "unDredc": {
+   "file": "sh.dol.c",
+   "orig": "0x1baa",
+   "size_orig": 12,
+   "status": "exact"
+  },
+  "Dredc": {
+   "file": "sh.dol.c",
+   "orig": "0x1bb6",
+   "size_orig": 90,
+   "status": "exact"
+  },
+  "Dtest": {
+   "file": "sh.dol.c",
+   "orig": "0x1c10",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "Dtestq": {
+   "file": "sh.dol.c",
+   "orig": "0x1c32",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "heredoc": {
+   "file": "sh.dol.c",
+   "orig": "0x1c54",
+   "size_orig": 708,
+   "status": "exact"
+  },
+  "error": {
+   "file": "sh.err.c",
+   "orig": "0x1f18",
+   "size_orig": 174,
+   "status": "exact"
+  },
+  "Perror": {
+   "file": "sh.err.c",
+   "orig": "0x1fc6",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "bferr": {
+   "file": "sh.err.c",
+   "orig": "0x1ffa",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "seterr": {
+   "file": "sh.err.c",
+   "orig": "0x201e",
+   "size_orig": 22,
+   "status": "exact"
+  },
+  "seterr2": {
+   "file": "sh.err.c",
+   "orig": "0x2034",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "seterrc": {
+   "file": "sh.err.c",
+   "orig": "0x2056",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "doexec": {
+   "file": "sh.exec.c",
+   "orig": "0x206e",
+   "size_orig": 404,
+   "status": "exact"
+  },
+  "pexerr": {
+   "file": "sh.exec.c",
+   "orig": "0x2202",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "texec": {
+   "file": "sh.exec.c",
+   "orig": "0x2222",
+   "size_orig": 474,
+   "status": "exact",
+   "note": "WEGA: a script without a shell alias is run by the shell of its first line (#!/path, #!sh, #!csh, # alone: csh, else sh); a #!/path is copied over the string vp[0] points to (the value of $shell or the constant \"/bin/csh\"): a bug of the original, kept."
+  },
+  "execash": {
+   "file": "sh.exec.c",
+   "orig": "0x23fc",
+   "size_orig": 48,
+   "status": "exact"
+  },
+  "xechoit": {
+   "file": "sh.exec.c",
+   "orig": "0x242c",
+   "size_orig": 50,
+   "status": "exact"
+  },
+  "dohash": {
+   "file": "sh.exec.c",
+   "orig": "0x245e",
+   "size_orig": 264,
+   "status": "exact"
+  },
+  "dounhash": {
+   "file": "sh.exec.c",
+   "orig": "0x2566",
+   "size_orig": 6,
+   "status": "exact"
+  },
+  "hash": {
+   "file": "sh.exec.c",
+   "orig": "0x256c",
+   "size_orig": 70,
+   "status": "exact"
+  },
+  "exp": {
+   "file": "sh.exp.c",
+   "orig": "0x25b2",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "exp0": {
+   "file": "sh.exp.c",
+   "orig": "0x25c4",
+   "size_orig": 96,
+   "status": "exact"
+  },
+  "exp1": {
+   "file": "sh.exp.c",
+   "orig": "0x2624",
+   "size_orig": 94,
+   "status": "exact"
+  },
+  "exp2": {
+   "file": "sh.exp.c",
+   "orig": "0x2682",
+   "size_orig": 76,
+   "status": "exact"
+  },
+  "exp2a": {
+   "file": "sh.exp.c",
+   "orig": "0x26ce",
+   "size_orig": 76,
+   "status": "exact"
+  },
+  "exp2b": {
+   "file": "sh.exp.c",
+   "orig": "0x271a",
+   "size_orig": 76,
+   "status": "exact"
+  },
+  "exp2c": {
+   "file": "sh.exp.c",
+   "orig": "0x2766",
+   "size_orig": 148,
+   "status": "exact"
+  },
+  "exp3": {
+   "file": "sh.exp.c",
+   "orig": "0x27fa",
+   "size_orig": 226,
+   "status": "exact"
+  },
+  "exp3a": {
+   "file": "sh.exp.c",
+   "orig": "0x28dc",
+   "size_orig": 150,
+   "status": "exact"
+  },
+  "exp4": {
+   "file": "sh.exp.c",
+   "orig": "0x2972",
+   "size_orig": 152,
+   "status": "exact"
+  },
+  "exp5": {
+   "file": "sh.exp.c",
+   "orig": "0x2a0a",
+   "size_orig": 208,
+   "status": "exact"
+  },
+  "exp6": {
+   "file": "sh.exp.c",
+   "orig": "0x2ada",
+   "size_orig": 730,
+   "status": "exact"
+  },
+  "evalav": {
+   "file": "sh.exp.c",
+   "orig": "0x2db4",
+   "size_orig": 172,
+   "status": "exact"
+  },
+  "isa": {
+   "file": "sh.exp.c",
+   "orig": "0x2e60",
+   "size_orig": 222,
+   "status": "exact"
+  },
+  "egetn": {
+   "file": "sh.exp.c",
+   "orig": "0x2f3e",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "isbfunc": {
+   "file": "sh.func.c",
+   "orig": "0x2f72",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "func": {
+   "file": "sh.func.c",
+   "orig": "0x2fc0",
+   "size_orig": 278,
+   "status": "exact"
+  },
+  "doonintr": {
+   "file": "sh.func.c",
+   "orig": "0x30d6",
+   "size_orig": 158,
+   "status": "exact"
+  },
+  "donohup": {
+   "file": "sh.func.c",
+   "orig": "0x3174",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "dozip": {
+   "file": "sh.func.c",
+   "orig": "0x3192",
+   "size_orig": 2,
+   "status": "exact"
+  },
+  "chngd": {
+   "file": "sh.func.c",
+   "orig": "0x3194",
+   "size_orig": 220,
+   "status": "exact"
+  },
+  "prvars": {
+   "file": "sh.func.c",
+   "orig": "0x3270",
+   "size_orig": 10,
+   "status": "exact"
+  },
+  "doalias": {
+   "file": "sh.func.c",
+   "orig": "0x327a",
+   "size_orig": 158,
+   "status": "exact"
+  },
+  "unalias": {
+   "file": "sh.func.c",
+   "orig": "0x3318",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "dologout": {
+   "file": "sh.func.c",
+   "orig": "0x3328",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "dologin": {
+   "file": "sh.func.c",
+   "orig": "0x3330",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "donewgrp": {
+   "file": "sh.func.c",
+   "orig": "0x3370",
+   "size_orig": 82,
+   "status": "exact"
+  },
+  "islogin": {
+   "file": "sh.func.c",
+   "orig": "0x33c2",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "doif": {
+   "file": "sh.func.c",
+   "orig": "0x33d2",
+   "size_orig": 132,
+   "status": "exact"
+  },
+  "reexecute": {
+   "file": "sh.func.c",
+   "orig": "0x3456",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "doelse": {
+   "file": "sh.func.c",
+   "orig": "0x3472",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "dogoto": {
+   "file": "sh.func.c",
+   "orig": "0x347a",
+   "size_orig": 102,
+   "status": "exact"
+  },
+  "doswitch": {
+   "file": "sh.func.c",
+   "orig": "0x34e0",
+   "size_orig": 114,
+   "status": "exact"
+  },
+  "doesc": {
+   "status": "exact",
+   "file": "sh.func.c",
+   "orig": "0x3552",
+   "size_orig": 2,
+   "note": "WEGA: the empty builtin of the name ESC B (guessed function name)."
+  },
+  "dobreak": {
+   "file": "sh.func.c",
+   "orig": "0x3554",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "doexit": {
+   "file": "sh.func.c",
+   "orig": "0x3568",
+   "size_orig": 112,
+   "status": "exact"
+  },
+  "doforeach": {
+   "file": "sh.func.c",
+   "orig": "0x35d8",
+   "size_orig": 210,
+   "status": "exact"
+  },
+  "dowhile": {
+   "file": "sh.func.c",
+   "orig": "0x36aa",
+   "size_orig": 180,
+   "status": "exact"
+  },
+  "preread": {
+   "file": "sh.func.c",
+   "orig": "0x375e",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "doend": {
+   "file": "sh.func.c",
+   "orig": "0x37ac",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "docontin": {
+   "file": "sh.func.c",
+   "orig": "0x37ca",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "doagain": {
+   "file": "sh.func.c",
+   "orig": "0x37dc",
+   "size_orig": 94,
+   "status": "exact"
+  },
+  "dorepeat": {
+   "file": "sh.func.c",
+   "orig": "0x383a",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "doswbrk": {
+   "file": "sh.func.c",
+   "orig": "0x38a6",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "srchx": {
+   "file": "sh.func.c",
+   "orig": "0x38ae",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "search": {
+   "file": "sh.func.c",
+   "orig": "0x38e4",
+   "size_orig": 510,
+   "status": "exact",
+   "note": "WEGA: the cases if( and while( (ZIF2, ZWHILE2: unreadc of the \"(\" then as if and while); the switch value in a local i."
+  },
+  "getword": {
+   "file": "sh.func.c",
+   "orig": "0x3ae2",
+   "size_orig": 308,
+   "status": "exact",
+   "note": "WEGA: ( and ) end a word and are skipped."
+  },
+  "toend": {
+   "file": "sh.func.c",
+   "orig": "0x3c16",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "wfree": {
+   "file": "sh.func.c",
+   "orig": "0x3c4e",
+   "size_orig": 102,
+   "status": "exact"
+  },
+  "doecho": {
+   "file": "sh.func.c",
+   "orig": "0x3cb4",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "doglob": {
+   "file": "sh.func.c",
+   "orig": "0x3cc6",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "echo": {
+   "file": "sh.func.c",
+   "orig": "0x3cda",
+   "size_orig": 434,
+   "status": "exact",
+   "note": "WEGA: -n and the escapes \\b \\c \\f \\n \\r \\t \\\\ \\0nnn (also behind ESC); an escape suppresses the blank after the word; flush at the end. The local x is never used (its frame word is in the original)."
+  },
+  "dosetenv": {
+   "file": "sh.func.c",
+   "orig": "0x3e8c",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "setenv": {
+   "file": "sh.func.c",
+   "orig": "0x3ed0",
+   "size_orig": 176,
+   "status": "exact"
+  },
+  "dounsetenv": {
+   "status": "exact",
+   "file": "sh.func.c",
+   "orig": "0x3f80",
+   "size_orig": 32
+  },
+  "unsetenv": {
+   "status": "exact",
+   "file": "sh.func.c",
+   "orig": "0x3fa0",
+   "size_orig": 106,
+   "note": "4.1BSD csh, as in WEGA."
+  },
+  "doumask": {
+   "file": "sh.func.c",
+   "orig": "0x400a",
+   "size_orig": 132,
+   "status": "exact"
+  },
+  "glob": {
+   "file": "sh.glob.c",
+   "orig": "0x408e",
+   "size_orig": 174,
+   "status": "exact"
+  },
+  "ginit": {
+   "file": "sh.glob.c",
+   "orig": "0x413c",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "collect": {
+   "file": "sh.glob.c",
+   "orig": "0x415a",
+   "size_orig": 136,
+   "status": "exact"
+  },
+  "acollect": {
+   "file": "sh.glob.c",
+   "orig": "0x41e2",
+   "size_orig": 66,
+   "status": "exact"
+  },
+  "sort": {
+   "file": "sh.glob.c",
+   "orig": "0x4224",
+   "size_orig": 92,
+   "status": "exact"
+  },
+  "expand": {
+   "file": "sh.glob.c",
+   "orig": "0x4280",
+   "size_orig": 350,
+   "status": "exact"
+  },
+  "matchdir": {
+   "file": "sh.glob.c",
+   "orig": "0x43de",
+   "size_orig": 196,
+   "status": "exact"
+  },
+  "copdent": {
+   "file": "sh.glob.c",
+   "orig": "0x44a2",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "execbrc": {
+   "file": "sh.glob.c",
+   "orig": "0x44ba",
+   "size_orig": 368,
+   "status": "exact"
+  },
+  "match": {
+   "file": "sh.glob.c",
+   "orig": "0x462a",
+   "size_orig": 88,
+   "status": "exact"
+  },
+  "amatch": {
+   "file": "sh.glob.c",
+   "orig": "0x4682",
+   "size_orig": 368,
+   "status": "exact"
+  },
+  "Gmatch": {
+   "file": "sh.glob.c",
+   "orig": "0x47f2",
+   "size_orig": 236,
+   "status": "exact"
+  },
+  "Gcat": {
+   "file": "sh.glob.c",
+   "orig": "0x48de",
+   "size_orig": 118,
+   "status": "exact"
+  },
+  "addpath": {
+   "file": "sh.glob.c",
+   "orig": "0x4954",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "rscan": {
+   "file": "sh.glob.c",
+   "orig": "0x4982",
+   "size_orig": 112,
+   "status": "exact"
+  },
+  "scan": {
+   "file": "sh.glob.c",
+   "orig": "0x49f2",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "tglob": {
+   "file": "sh.glob.c",
+   "orig": "0x4a32",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "trim": {
+   "file": "sh.glob.c",
+   "orig": "0x4a66",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "globone": {
+   "file": "sh.glob.c",
+   "orig": "0x4a76",
+   "size_orig": 140,
+   "status": "exact"
+  },
+  "dobackp": {
+   "file": "sh.glob.c",
+   "orig": "0x4b02",
+   "size_orig": 212,
+   "status": "exact"
+  },
+  "backeval": {
+   "file": "sh.glob.c",
+   "orig": "0x4bd6",
+   "size_orig": 468,
+   "status": "exact"
+  },
+  "psave": {
+   "file": "sh.glob.c",
+   "orig": "0x4daa",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "pword": {
+   "file": "sh.glob.c",
+   "orig": "0x4dd4",
+   "size_orig": 76,
+   "status": "exact"
+  },
+  "savehist": {
+   "file": "sh.hist.c",
+   "orig": "0x4e20",
+   "size_orig": 184,
+   "status": "exact"
+  },
+  "enthist": {
+   "file": "sh.hist.c",
+   "orig": "0x4ed8",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "hfree": {
+   "file": "sh.hist.c",
+   "orig": "0x4f44",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "dohist": {
+   "file": "sh.hist.c",
+   "orig": "0x4f5e",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "dohist1": {
+   "file": "sh.hist.c",
+   "orig": "0x4f80",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "phist": {
+   "file": "sh.hist.c",
+   "orig": "0x4fa2",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "lex": {
+   "file": "sh.lex.c",
+   "orig": "0x4fc4",
+   "size_orig": 152,
+   "status": "exact"
+  },
+  "prlex": {
+   "file": "sh.lex.c",
+   "orig": "0x505c",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "copylex": {
+   "file": "sh.lex.c",
+   "orig": "0x5090",
+   "size_orig": 96,
+   "status": "exact"
+  },
+  "freelex": {
+   "file": "sh.lex.c",
+   "orig": "0x50f0",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "word": {
+   "file": "sh.lex.c",
+   "orig": "0x5128",
+   "size_orig": 614,
+   "status": "exact"
+  },
+  "getC": {
+   "file": "sh.lex.c",
+   "orig": "0x538e",
+   "size_orig": 294,
+   "status": "exact"
+  },
+  "getdol": {
+   "file": "sh.lex.c",
+   "orig": "0x54b4",
+   "size_orig": 446,
+   "status": "exact"
+  },
+  "addla": {
+   "file": "sh.lex.c",
+   "orig": "0x5672",
+   "size_orig": 112,
+   "status": "exact"
+  },
+  "getexcl": {
+   "file": "sh.lex.c",
+   "orig": "0x56e2",
+   "size_orig": 444,
+   "status": "exact"
+  },
+  "getsub": {
+   "file": "sh.lex.c",
+   "orig": "0x589e",
+   "size_orig": 436,
+   "status": "exact"
+  },
+  "dosub": {
+   "file": "sh.lex.c",
+   "orig": "0x5a52",
+   "size_orig": 182,
+   "status": "exact"
+  },
+  "subword": {
+   "file": "sh.lex.c",
+   "orig": "0x5b08",
+   "size_orig": 290,
+   "status": "exact"
+  },
+  "domod": {
+   "file": "sh.lex.c",
+   "orig": "0x5c2a",
+   "size_orig": 220,
+   "status": "exact"
+  },
+  "matchs": {
+   "file": "sh.lex.c",
+   "orig": "0x5d06",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "getsel": {
+   "file": "sh.lex.c",
+   "orig": "0x5d2e",
+   "size_orig": 344,
+   "status": "exact"
+  },
+  "gethent": {
+   "file": "sh.lex.c",
+   "orig": "0x5e86",
+   "size_orig": 502,
+   "status": "exact"
+  },
+  "findev": {
+   "file": "sh.lex.c",
+   "orig": "0x607c",
+   "size_orig": 60,
+   "status": "exact"
+  },
+  "noev": {
+   "file": "sh.lex.c",
+   "orig": "0x60b8",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "matchev": {
+   "file": "sh.lex.c",
+   "orig": "0x60c8",
+   "size_orig": 116,
+   "status": "exact"
+  },
+  "setexclp": {
+   "file": "sh.lex.c",
+   "orig": "0x613c",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "unreadc": {
+   "file": "sh.lex.c",
+   "orig": "0x6156",
+   "size_orig": 12,
+   "status": "exact"
+  },
+  "readc": {
+   "file": "sh.lex.c",
+   "orig": "0x6162",
+   "size_orig": 298,
+   "status": "exact"
+  },
+  "bgetc": {
+   "file": "sh.lex.c",
+   "orig": "0x628c",
+   "size_orig": 270,
+   "status": "exact"
+  },
+  "bfree": {
+   "file": "sh.lex.c",
+   "orig": "0x639a",
+   "size_orig": 146,
+   "status": "exact"
+  },
+  "bseek": {
+   "file": "sh.lex.c",
+   "orig": "0x642c",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "btell": {
+   "status": "exact",
+   "file": "sh.lex.c",
+   "orig": "0x6464",
+   "size_orig": 10
+  },
+  "btoeof": {
+   "file": "sh.lex.c",
+   "orig": "0x646e",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "letter": {
+   "file": "sh.misc.c",
+   "orig": "0x648a",
+   "size_orig": 44,
+   "status": "exact"
+  },
+  "digit": {
+   "file": "sh.misc.c",
+   "orig": "0x64b6",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "alnum": {
+   "file": "sh.misc.c",
+   "orig": "0x64d0",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "any": {
+   "file": "sh.misc.c",
+   "orig": "0x64f4",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "calloc": {
+   "file": "sh.misc.c",
+   "orig": "0x6514",
+   "size_orig": 66,
+   "status": "exact"
+  },
+  "cfree": {
+   "file": "sh.misc.c",
+   "orig": "0x6556",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "blkend": {
+   "file": "sh.misc.c",
+   "orig": "0x6564",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "blkpr": {
+   "file": "sh.misc.c",
+   "orig": "0x657e",
+   "size_orig": 48,
+   "status": "exact"
+  },
+  "blklen": {
+   "file": "sh.misc.c",
+   "orig": "0x65ae",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "blkcpy": {
+   "file": "sh.misc.c",
+   "orig": "0x65c6",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "blkcat": {
+   "file": "sh.misc.c",
+   "orig": "0x65e8",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "blkfree": {
+   "file": "sh.misc.c",
+   "orig": "0x6604",
+   "size_orig": 44,
+   "status": "exact"
+  },
+  "saveblk": {
+   "file": "sh.misc.c",
+   "orig": "0x6630",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "strspl": {
+   "file": "sh.misc.c",
+   "orig": "0x6670",
+   "size_orig": 72,
+   "status": "exact"
+  },
+  "blkspl": {
+   "file": "sh.misc.c",
+   "orig": "0x66b8",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "lastchr": {
+   "file": "sh.misc.c",
+   "orig": "0x66f8",
+   "size_orig": 38,
+   "status": "exact"
+  },
+  "closem": {
+   "file": "sh.misc.c",
+   "orig": "0x671e",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "closech": {
+   "file": "sh.misc.c",
+   "orig": "0x6754",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "donefds": {
+   "file": "sh.misc.c",
+   "orig": "0x6792",
+   "size_orig": 24,
+   "status": "exact"
+  },
+  "dmove": {
+   "file": "sh.misc.c",
+   "orig": "0x67aa",
+   "size_orig": 72,
+   "status": "exact"
+  },
+  "dcopy": {
+   "file": "sh.misc.c",
+   "orig": "0x67f2",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "renum": {
+   "file": "sh.misc.c",
+   "orig": "0x6840",
+   "size_orig": 76,
+   "status": "exact"
+  },
+  "copy": {
+   "file": "sh.misc.c",
+   "orig": "0x688c",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "lshift": {
+   "file": "sh.misc.c",
+   "orig": "0x68aa",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "number": {
+   "file": "sh.misc.c",
+   "orig": "0x68e2",
+   "size_orig": 86,
+   "status": "exact"
+  },
+  "copyblk": {
+   "file": "sh.misc.c",
+   "orig": "0x6938",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "strend": {
+   "file": "sh.misc.c",
+   "orig": "0x6962",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "strip": {
+   "file": "sh.misc.c",
+   "orig": "0x697c",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "udvar": {
+   "file": "sh.misc.c",
+   "orig": "0x69a0",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "alias": {
+   "file": "sh.parse.c",
+   "orig": "0x69b4",
+   "size_orig": 122,
+   "status": "exact"
+  },
+  "asyntax": {
+   "file": "sh.parse.c",
+   "orig": "0x6a2e",
+   "size_orig": 58,
+   "status": "exact"
+  },
+  "asyn0": {
+   "file": "sh.parse.c",
+   "orig": "0x6a68",
+   "size_orig": 156,
+   "status": "exact"
+  },
+  "asyn3": {
+   "file": "sh.parse.c",
+   "orig": "0x6b04",
+   "size_orig": 384,
+   "status": "exact"
+  },
+  "freenod": {
+   "file": "sh.parse.c",
+   "orig": "0x6c84",
+   "size_orig": 60,
+   "status": "exact"
+  },
+  "syntax": {
+   "file": "sh.parse.c",
+   "orig": "0x6cc0",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "syn0": {
+   "file": "sh.parse.c",
+   "orig": "0x6d04",
+   "size_orig": 298,
+   "status": "exact"
+  },
+  "syn1": {
+   "file": "sh.parse.c",
+   "orig": "0x6e2e",
+   "size_orig": 176,
+   "status": "exact"
+  },
+  "syn1a": {
+   "file": "sh.parse.c",
+   "orig": "0x6ede",
+   "size_orig": 164,
+   "status": "exact"
+  },
+  "syn1b": {
+   "file": "sh.parse.c",
+   "orig": "0x6f82",
+   "size_orig": 164,
+   "status": "exact"
+  },
+  "syn2": {
+   "file": "sh.parse.c",
+   "orig": "0x7026",
+   "size_orig": 208,
+   "status": "exact"
+  },
+  "syn3": {
+   "file": "sh.parse.c",
+   "orig": "0x70f6",
+   "size_orig": 812,
+   "status": "exact"
+  },
+  "freesyn": {
+   "file": "sh.parse.c",
+   "orig": "0x7422",
+   "size_orig": 112,
+   "status": "exact"
+  },
+  "p60ths": {
+   "file": "sh.print.c",
+   "orig": "0x7492",
+   "size_orig": 76,
+   "status": "exact"
+  },
+  "psecs": {
+   "file": "sh.print.c",
+   "orig": "0x74de",
+   "size_orig": 132,
+   "status": "exact",
+   "note": "WEGA: \" real-time,\" or \"\" behind the time (time -v); printf(\"\") kept."
+  },
+  "p2dig": {
+   "file": "sh.print.c",
+   "orig": "0x7562",
+   "size_orig": 44,
+   "status": "exact"
+  },
+  "putchar": {
+   "file": "sh.print.c",
+   "orig": "0x758e",
+   "size_orig": 102,
+   "status": "exact"
+  },
+  "draino": {
+   "file": "sh.print.c",
+   "orig": "0x75f4",
+   "size_orig": 8,
+   "status": "exact"
+  },
+  "flush": {
+   "file": "sh.print.c",
+   "orig": "0x75fc",
+   "size_orig": 84,
+   "status": "exact"
+  },
+  "plist": {
+   "file": "sh.print.c",
+   "orig": "0x7650",
+   "size_orig": 132,
+   "status": "exact"
+  },
+  "execute": {
+   "file": "sh.sem.c",
+   "orig": "0x76d4",
+   "size_orig": 1352,
+   "status": "open",
+   "lines": 43,
+   "note": "WEGA: \"source\" with output redirection is an error; nice with a \"-\" argument (as donice). Open: popt block order of the nice test, phase B."
+  },
+  "doio": {
+   "file": "sh.sem.c",
+   "orig": "0x7c1c",
+   "size_orig": 382,
+   "status": "exact"
+  },
+  "dofork": {
+   "file": "sh.sem.c",
+   "orig": "0x7d9a",
+   "size_orig": 118,
+   "status": "exact"
+  },
+  "mypipe": {
+   "file": "sh.sem.c",
+   "orig": "0x7e10",
+   "size_orig": 76,
+   "status": "exact"
+  },
+  "chkclob": {
+   "file": "sh.sem.c",
+   "orig": "0x7e5c",
+   "size_orig": 58,
+   "status": "exact"
+  },
+  "doset": {
+   "file": "sh.set.c",
+   "orig": "0x7e96",
+   "size_orig": 396,
+   "status": "exact"
+  },
+  "getinx": {
+   "file": "sh.set.c",
+   "orig": "0x8022",
+   "size_orig": 88,
+   "status": "exact"
+  },
+  "asx": {
+   "file": "sh.set.c",
+   "orig": "0x807a",
+   "size_orig": 66,
+   "status": "exact"
+  },
+  "getvx": {
+   "file": "sh.set.c",
+   "orig": "0x80bc",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "dolet": {
+   "file": "sh.set.c",
+   "orig": "0x80fc",
+   "size_orig": 448,
+   "status": "exact"
+  },
+  "xset": {
+   "file": "sh.set.c",
+   "orig": "0x82bc",
+   "size_orig": 66,
+   "status": "exact"
+  },
+  "operate": {
+   "file": "sh.set.c",
+   "orig": "0x82fe",
+   "size_orig": 138,
+   "status": "exact"
+  },
+  "onlyread": {
+   "file": "sh.set.c",
+   "orig": "0x8388",
+   "size_orig": 16,
+   "status": "exact"
+  },
+  "xfree": {
+   "file": "sh.set.c",
+   "orig": "0x8398",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "savestr": {
+   "file": "sh.set.c",
+   "orig": "0x83b4",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "putn": {
+   "file": "sh.set.c",
+   "orig": "0x83ec",
+   "size_orig": 90,
+   "status": "exact"
+  },
+  "putn1": {
+   "file": "sh.set.c",
+   "orig": "0x8446",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "getn": {
+   "file": "sh.set.c",
+   "orig": "0x847e",
+   "size_orig": 128,
+   "status": "exact"
+  },
+  "value": {
+   "file": "sh.set.c",
+   "orig": "0x84fe",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "value1": {
+   "file": "sh.set.c",
+   "orig": "0x850c",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "adrof": {
+   "file": "sh.set.c",
+   "orig": "0x853a",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "madrof": {
+   "file": "sh.set.c",
+   "orig": "0x8548",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "adrof1": {
+   "file": "sh.set.c",
+   "orig": "0x8586",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "set": {
+   "file": "sh.set.c",
+   "orig": "0x85d0",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "set1": {
+   "file": "sh.set.c",
+   "orig": "0x8614",
+   "size_orig": 94,
+   "status": "exact"
+  },
+  "setq": {
+   "file": "sh.set.c",
+   "orig": "0x8672",
+   "size_orig": 98,
+   "status": "exact"
+  },
+  "unset": {
+   "file": "sh.set.c",
+   "orig": "0x86d4",
+   "size_orig": 44,
+   "status": "exact"
+  },
+  "unset1": {
+   "file": "sh.set.c",
+   "orig": "0x8700",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "unsetv": {
+   "file": "sh.set.c",
+   "orig": "0x8744",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "unsetv1": {
+   "file": "sh.set.c",
+   "orig": "0x8752",
+   "size_orig": 70,
+   "status": "exact"
+  },
+  "setNS": {
+   "file": "sh.set.c",
+   "orig": "0x8798",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "shift": {
+   "file": "sh.set.c",
+   "orig": "0x87a6",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "deletev": {
+   "file": "sh.set.c",
+   "orig": "0x87f4",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "exportpath": {
+   "file": "sh.set.c",
+   "orig": "0x880e",
+   "size_orig": 110,
+   "status": "exact",
+   "note": "WEGA: every directory gets a \":\" behind it, also the last (a trailing colon in PATH)."
+  },
+  "secs": {
+   "file": "sh.wait.c",
+   "orig": "0x887c",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "settimes": {
+   "file": "sh.wait.c",
+   "orig": "0x889a",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "dotime": {
+   "file": "sh.wait.c",
+   "orig": "0x88ac",
+   "size_orig": 198,
+   "status": "exact"
+  },
+  "donice": {
+   "file": "sh.wait.c",
+   "orig": "0x8972",
+   "size_orig": 108,
+   "status": "open",
+   "lines": 22,
+   "note": "WEGA: nice 7 without argument; only -N (digit or sign after the -). Open: popt block order, phase B."
+  },
+  "pwait": {
+   "file": "sh.wait.c",
+   "orig": "0x89de",
+   "size_orig": 524,
+   "status": "exact"
+  },
+  "ptimes": {
+   "file": "sh.wait.c",
+   "orig": "0x8bea",
+   "size_orig": 182,
+   "status": "exact",
+   "note": "WEGA: the long words with time -v; the percentage as 5 * secs / (3 * sec) (100/60 reduced in the source)."
+  },
+  "endwait": {
+   "file": "sh.wait.c",
+   "orig": "0x8ca0",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "await": {
+   "file": "sh.wait.c",
+   "orig": "0x8cb4",
+   "size_orig": 38,
+   "status": "exact"
+  },
+  "cname": {
+   "file": "sh.wait.c",
+   "orig": "0x8cda",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "cadd": {
+   "file": "sh.wait.c",
+   "orig": "0x8d08",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "cdone": {
+   "file": "sh.wait.c",
+   "orig": "0x8d40",
+   "size_orig": 72,
+   "status": "exact"
+  },
+  "cleft": {
+   "file": "sh.wait.c",
+   "orig": "0x8d88",
+   "size_orig": 42,
+   "status": "exact"
+  }
+ },
+ "libc": "the order of /lib/libc.a with older members (packed data); no libc-vN fits: owner decision open"
+}

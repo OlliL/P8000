@@ -92,13 +92,13 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] remote (15162) -- byte-identical (src/cmd/remote, ccvm)
 - [x] gpasswd (15362)
 - [x] make (39048) -- byte-identical (ced632f8, ccvm since 602346b6): System III make with the WEGA changes, libc.a; corpus 45 cases
-- [ ] csh (45728)
+- [ ] csh (45728) -- done but the libc (2026-11-26): Plexus csh with the WEGA changes, ccv1; 254 of 258 functions exact against a scratch libc, 4 open (popt block order, phase B); built, installed, corpus 27 of 27; in OPEN of checkall
 - [ ] adb (46996)
 - [ ] fsc (2078; segmented E611)
 - [ ] fc (3074; segmented E607)
 - [ ] pstat (15638; segmented E607)
 - [ ] gld (27616; segmented E607)
-- [ ] sh (24032); link: rsh -- put last (owner 2026-11-26): the libc is open (see the log)
+- [ ] sh (24032); link: rsh -- done but the libc (2026-11-26): System III sh with the WEGA changes, ccv1; 104 of 118 functions exact against a scratch libc, open: service.c (the compiler of 08/22/83, not built), three popt blocks; built, installed with rsh, corpus 22 of 22; in OPEN of checkall
 
 Links found 2026-11-23 (same inode in the WEGA root): hd = od, rmail = mail, page = more (more: partial, src/cmd/more),
 rsh = sh, edit = vi = view = ex, bin/login = etc/login. Not in this run: `as` (170), `chkout` (exact).
@@ -185,6 +185,20 @@ Compiler changes of any kind; `as` and the PLZ tools (170); usr/bin, etc, usr/li
   the times of ../libc (libc-v4 has times 0_1, used by time): libc-v4 cannot take it without a conflict, and a new libc
   is not allowed. profile.c (WEGA, no source) not written yet. Next: csh, adb, fsc, fc, pstat, gld.
 - 2026-11-26 (owner): sh with its libc question goes to the end of the list; on with csh, adb, fsc, fc, pstat, gld.
+- 2026-11-26 (owner): csh and sh as far as they go without the libc decision: Makefile, corpus, install, in OPEN of
+  checkall.
+- 2026-11-26 csh: Plexus cmd/plx/csh (2.7BSD csh) with WEGA's changes (compare/csh/SYSIII.md), ccv1 -DSYS3 (no TELL,
+  BUFSIZ 512), objects in alphabetical order, split I/D. Against a scratch archive (/lib/libc.a with the older members of
+  packed data: execvp, perror, errlst, getenv, atoi, cnvt, length, strcat, strcpy, strlen, times) the data and bss are
+  equal and 254 of 258 functions exact; open: main, Dword, execute, donice (popt places a block behind an unconditional
+  jump; ccv1q/r/l/c fit less). The libc question: the original's libc has the order of /lib/libc.a with older members;
+  no libc-vN has it. The build links /lib/libc.a (data 4 bytes longer).
+- 2026-11-26 sh: System III sh with WEGA's changes (compare/sh/SYSIII.md: unset, ESC B, execscr for #! scripts, loginsh),
+  ccv1, split I/D. Against a scratch archive (libc-v4 with execve, fcntl, geteuid, profil, times, atol of ../libc) 104 of
+  118 functions exact; open: the eleven functions of service.c (08/22/83: fewer register slots and padded strings, the
+  compiler between v1 and the shipped one, not built; its strings also shift the bss by 4), cmd, getch (popt blocks),
+  assign (register). The libc question: libc-v4 plus five members of ../libc and another 120-byte member behind exit.
+  The build links /lib/libc.a.
   uusend committed after checkall "uus" ALL OK.
 
 ## Phase B regcmp: solved (2026-11-25)

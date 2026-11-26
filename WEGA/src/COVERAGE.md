@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 99 | 3 | 0 | 9 |
+| [bin](#bin) | 111 | 99 | 6 | 0 | 6 |
 | [etc](#etc) | 67 | 34 | 0 | 18 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 956 | 11 | 138 | 92 |
+| **all** | 1197 | 956 | 14 | 138 | 89 |
 
 <a id="root"></a>
 ## root
@@ -43,7 +43,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 
 | File | Kind | Source | Status | Compiler | libc |
 |---|---|---|---|---|---|
-| `bin/adb` | binary E711 | - | todo | D12 new, D1 loose | - |
+| `bin/adb` | binary E711 | `src/cmd/adb` | partial | - | - |
 | `bin/ar` | binary E707 | `src/cmd/ar.c` | exact | ccvm | libc.a |
 | `bin/as` | binary E711 | - | todo | D12 old?, D1 tight | - |
 | `bin/bc` | binary E707 | `src/cmd/bc` | exact | ccv0 | libc-v1.a |
@@ -62,7 +62,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/cmp` | binary E707 | `src/cmd/cmp.c` | exact | ccvm | libc.a |
 | `bin/copydisk` | binary E707 | `src/cmd/copydisk` | exact | cc | libc.a |
 | `bin/cp` | binary E707 | `src/cmd/mv.c` | exact | ccv1 | libc-v6.a |
-| `bin/csh` | binary E711 | - | todo | D12 old, D1 slots | - |
+| `bin/csh` | binary E711 | `src/cmd/csh` | partial | ccv1 | libc.a |
 | `bin/date` | binary E707 | `src/cmd/date.c` | exact | ccv1 | libc-v6.a |
 | `bin/dc` | binary E707 | `src/cmd/dc` | exact | ccv0 | libc-v1.a |
 | `bin/dd` | binary E707 | `src/cmd/dd.c` | exact | ccv1r | libc-v13.a |
@@ -122,9 +122,9 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/rm` | binary E707 | `src/cmd/rm.c` | exact | ccv1 | libc-v6.a |
 | `bin/rmail` | binary E707 | `src/cmd/mail.c` | exact | ccvm | libc-v12.a |
 | `bin/rmdir` | binary E707 | `src/cmd/rmdir.c` | exact | ccv1r | libc-v10.a |
-| `bin/rsh` | binary E711 | - | todo | D12 new, D1 slots | - |
+| `bin/rsh` | binary E711 | `src/cmd/sh` | partial | ccv1 | libc.a |
 | `bin/scc` | binary E707 | `src/cmd/cc` | exact | cc | libc-v8.a |
-| `bin/sh` | binary E711 | `src/cmd/sh` | partial | - | - |
+| `bin/sh` | binary E711 | `src/cmd/sh` | partial | ccv1 | libc.a |
 | `bin/size` | binary E707 | `src/cmd/size.c` | exact | ccv1 | libc-v3.a |
 | `bin/sld` | binary E611 | `src/cmd/sld` | exact | scc | slibc-v9.a |
 | `bin/sleep` | binary E707 | `src/cmd/sleep.c` | exact | ccv0 | libc-v1.a |

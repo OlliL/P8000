@@ -1,0 +1,264 @@
+# The cases of the corpus of sh (compare/sh/corpus.py); the format: host/recon/casefile.py (the default step: sh t.in).
+# Where an expectation comes from: src = src/cmd/sh (the file and function named).
+
+== echo
+# xec.c: echo is not a builtin: /bin/echo of the tree; quoting keeps the blanks
+-- case
+step: sh t.in
+expect: output is 'hello world\na  b c  d\n'
+-- t.in
+echo hello   world
+echo "a  b" 'c  d'
+
+== variables
+# name.c, macro.c: assignment, the ${...} forms; ${e?word} ends a script
+-- case
+step: sh t.in
+expect: exit 1
+expect: output is '1 two words 1x def set new new\n-- stderr\nt.in: e: missing\n'
+-- t.in
+a=1 b="two words"
+echo $a "$b" ${a}x ${c-def} ${a+set} ${d=new} $d
+echo ${e?missing}
+
+== unset
+# name.c unsetnam (WEGA): unset removes a name from the tree; an unknown name: "not in environment"
+-- case
+step: sh t.in
+expect: exit 1
+expect: output is '26\n[]\n-- stderr\nt.in: nonesuch: not in environment\n'
+-- t.in
+a=1
+b=2
+c=3
+z=26
+echo $z
+unset z
+echo [$z]
+unset nonesuch
+echo never
+
+== unset-root
+# name.c rmnode (WEGA): a name of the first three levels of the tree may not be removed
+-- case
+step: sh t.in
+expect: exit 1
+expect: output is '-- stderr\nt.in: PATH: Node may not be removed\n'
+-- t.in
+unset PATH
+echo never
+
+== control
+# xec.c: if, while, until, for, case, break, continue
+-- case
+step: sh t.in
+expect: output is 'i=1\ni=3\nn=1\nn=2\nn=0\nabc a\nx12 digit\nzz other\n'
+-- t.in
+for i in 1 2 3 4
+do
+	if test $i = 2
+	then continue
+	elif test $i = 4
+	then break
+	fi
+	echo i=$i
+done
+n=0
+while test $n -lt 2; do n=`expr $n + 1`; echo n=$n; done
+until test $n -eq 0; do n=`expr $n - 1`; done; echo n=$n
+for w in abc x12 zz
+do
+	case $w in
+	a*) echo $w a;;
+	*[0-9]*) echo $w digit;;
+	*) echo $w other;;
+	esac
+done
+
+== test
+# test.c: the builtin test and [
+-- case
+step: sh t.in
+expect: exit 1
+expect: output is 'file\ndir\nand\nempty\nor\n-- stderr\nt.in: test: argument expected\n'
+-- t.in
+test -f t.in && echo file
+[ -d . ] && echo dir
+test 3 -gt 2 -a abc = abc && echo and
+[ ! -z "" ] || echo empty
+test x -o "" && echo or
+[ 1 -eq ]
+echo after
+
+== parameters
+# args.c, macro.c: $# $* $@, shift, set --
+-- case
+step: sh t.in one two three
+expect: output is '3 one three\n2 two three\n2 b c\n<a>\n<b c>\n'
+-- t.in
+echo $# $1 $3
+shift
+echo $# $*
+set -- a "b c"
+echo $# $2
+for x in "$@"; do echo "<$x>"; done
+
+== heredoc
+# io.c, macro.c: here documents with and without substitution
+-- case
+step: sh t.in
+expect: output is 'v is val\nv is $v\n'
+-- t.in
+v=val
+cat <<END
+v is $v
+END
+cat <<'END'
+v is $v
+END
+
+== redirect
+# io.c, xec.c: > >> < 2>&1 and a failing open
+-- case
+step: sh t.in
+expect: output is 'a\nb\ncat: cannot open nofile\nstatus 2\n'
+-- t.in
+echo a > f
+echo b >> f
+cat < f
+cat nofile 2>&1 >/dev/null
+echo status $?
+
+== subst
+# macro.c comsubst: command substitution, quoting
+-- case
+step: sh t.in
+expect: output is 'hi there\nhi\nthere\n$x $x $x\n'
+-- t.in
+x=`echo hi; echo there`
+echo $x
+echo "$x"
+echo '$x' \$x "\$x"
+
+== trap
+# fault.c, xec.c: trap on exit, the list of traps
+-- case
+step: sh t.in
+expect: output is 'body\nbye\n-- stderr\n0: echo bye\n'
+-- t.in
+trap 'echo bye' 0
+trap
+echo body
+
+== exit
+# xec.c SYSEXIT, $? of false and of a subshell
+-- case
+step: sh t.in
+expect: exit 3
+expect: output is '255\n7\n'
+-- t.in
+false
+echo $?
+(exit 7)
+echo $?
+exit 3
+
+== trace
+# args.c options: -x, the trace on stderr
+-- case
+step: sh -x t.in
+expect: output is '1\n-- stderr\na=1\n+ echo 1 \n'
+-- t.in
+a=1
+echo $a
+
+== set-e
+# args.c options: set -e: a failing command ends the shell
+-- case
+step: sh t.in
+expect: exit 255
+expect: output is 'before\n'
+-- t.in
+set -e
+echo before
+false
+echo never
+
+== script-type
+# service.c execscr (WEGA): a script without #! runs in sh, #!sh in sh, #!csh in csh, # alone in csh
+-- case
+host: printf 'echo plain\n' > a ; printf '#!sh\necho sh2\n' > b ; printf '#!csh\nset x = csh2\necho $x\n' > c ; printf '#\nset x = csh3\necho $x\n' > d ; chmod 755 a b c d
+step: sh t.in
+expect: output is 'plain\nsh2\ncsh2\ncsh3\n'
+-- t.in
+./a
+./b
+./c
+./d
+
+== script-path
+# service.c execscr (WEGA): #!/bin/sh, the path copied through the pointer shell (not set: a bug of the original)
+-- case
+host: printf '#!/bin/sh\necho path\n' > p ; chmod 755 p
+step: sh t.in
+expect: output is 'path\nafter\n'
+-- t.in
+./p
+echo after
+
+== script-unknown
+# service.c execscr (WEGA): another #!: bad, failed "Cannot determine type of shell to use."; the original prints
+# "not found" (measured; why: not traced)
+-- case
+host: printf '#!ksh\necho x\n' > e ; chmod 755 e
+step: sh t.in
+expect: output is 'after\n-- stderr\nt.in: ./e: not found\n'
+-- t.in
+./e
+echo after
+
+== cflag
+# main.c: -c command with arguments
+-- case
+step: sh -c 'echo $0 $1 ok; exit 2' x y
+expect: exit 2
+expect: output is 'x y ok\n'
+
+== readonly
+# name.c: readonly and an assignment to it
+-- case
+step: sh t.in
+expect: exit 1
+expect: output is '-- stderr\nt.in: a: is read only\n'
+-- t.in
+a=1
+readonly a
+a=2
+echo never
+
+== syntax
+# cmd.c: a syntax error
+-- case
+step: sh t.in
+expect: exit 2
+expect: output is '-- stderr\nt.in: syntax error at line 2: `then'"'"' unexpected\n'
+-- t.in
+if then
+
+== notfound
+# service.c execa: a command not found
+-- case
+step: sh t.in
+expect: output is 'after\n-- stderr\nt.in: nosuchcmd: not found\n'
+-- t.in
+nosuchcmd
+echo after
+
+== umask
+# xec.c SYSUMASK: the mask is printed on fd 2 (output is 2 in builtins: measured)
+-- case
+step: sh t.in
+expect: output is '-- stderr\n0027\n'
+-- t.in
+umask 027
+umask

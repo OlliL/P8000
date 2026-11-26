@@ -1,0 +1,345 @@
+# The cases of the corpus of csh (compare/csh/corpus.py); the format: host/recon/casefile.py (the default step: csh t.in).
+# Where an expectation comes from: src = src/cmd/csh (the file and function named).
+
+== echo
+# sh.func.c echo: the words with one blank; -n: no newline; \t \n \\ \b \f \r and \0nnn (three octal digits at most);
+# an escape suppresses the blank behind its word; \c ends the output
+-- case
+step: csh t.in
+expect: output is 'hello world\nno newline\na	bc\noct1 z\nxafter\n'
+-- t.in
+echo hello   world
+echo -n no newline
+echo
+echo 'a\tb' c
+echo 'oct\0101' z
+echo 'x\c' y
+echo after
+
+== echo-backslash
+# sh.func.c echo: \\ is one backslash, a letter without meaning keeps the backslash
+-- case
+step: csh t.in
+expect: output is 'a\\bc\\qd\n'
+-- t.in
+echo 'a\\b' 'c\qd'
+
+== variables
+# sh.set.c doset, dolet: set, @ with expressions, $#, subscripts
+set a = 5
+@ b = $a * 3 + 1
+echo $b
+set l = (one two three)
+echo $#l $l[2] $l[2-3]
+@ b++
+@ b -= 10
+echo $b
+unset a
+echo $?a $?b
+-- expect
+16
+3 two two three
+7
+0 1
+
+== if-else
+# sh.func.c doif, doelse: if then else endif, nested; if( without a blank (WEGA, sh.init.c srchn "if(")
+set x = 3
+if ($x == 3) then
+	if ($x > 5) then
+		echo big
+	else
+		echo small
+	endif
+else
+	echo other
+endif
+if($x == 3) echo paren
+if ($x != 3) echo never
+-- expect
+small
+paren
+
+== skip-if
+# sh.func.c search: an if( inside a skipped part counts as an if (ZIF2)
+set x = 0
+if ($x) then
+if(1) then
+echo inner
+endif
+echo no
+else
+echo yes
+endif
+-- expect
+yes
+
+== while
+# sh.func.c dowhile, doend, dobreak, docontin; while( without a blank (ZWHILE2)
+set i = 0
+while($i < 5)
+	@ i++
+	if ($i == 2) continue
+	if ($i == 4) break
+	echo i=$i
+end
+echo done $i
+-- expect
+i=1
+i=3
+done 4
+
+== foreach
+# sh.func.c doforeach
+foreach f (one two three)
+	echo f=$f
+end
+-- expect
+f=one
+f=two
+f=three
+
+== switch
+# sh.func.c doswitch, search ZCASE ZDEFAULT
+-- case
+step: csh t.in
+expect: exit 1
+expect: output is '-- stderr\nVariable syntax.\n'
+-- t.in
+foreach w (abc xyz 12)
+switch ($w)
+case a*:
+	echo $w: a
+	breaksw
+case [0-9]*:
+	echo $w: digit
+	breaksw
+default:
+	echo $w: default
+endsw
+end
+
+== goto
+# sh.func.c dogoto, search ZGOTO
+-- case
+step: csh t.in
+expect: exit 1
+expect: output is 'n=3\n-- stderr\nnowhere: label not found.\n'
+-- t.in
+set n = 0
+again:
+@ n++
+if ($n < 3) goto again
+echo n=$n
+goto nowhere
+
+== alias
+# sh.func.c doalias, unalias; sh.parse.c alias: the alias with an argument and !*
+-- case
+step: csh t.in
+expect: exit 1
+expect: output is 'aliased x\nfirst y\nsecond\necho aliased\n-- stderr\nll: Command not found.\n'
+-- t.in
+alias ll echo aliased
+alias two 'echo first \!* ; echo second'
+ll x
+two y
+alias ll
+unalias ll
+ll z
+
+== environment
+# sh.c main (WEGA): every variable of the environment is a shell variable too, its name in lower case
+-- case
+env: FOO=bar
+env: Mixed_Case=val
+step: csh t.in
+-- t.in
+echo $foo $mixed_case
+-- expect
+bar val
+
+== setenv
+# sh.func.c dosetenv, setenv, dounsetenv, unsetenv (WEGA): the environment of a child; printenv of the WEGA tree
+setenv XX one
+printenv XX
+setenv XX two
+printenv XX
+unsetenv XX
+printenv XX
+echo status $status
+-- expect
+one
+two
+status 1
+
+== path
+# sh.set.c exportpath (WEGA): set path writes PATH with a ":" behind every directory, "." left out
+-- case
+step: csh t.in
+expect: output is ':/bin:/usr/bin:\n'
+-- t.in
+set path = (. /bin /usr/bin)
+printenv PATH
+
+== exit
+# sh.func.c doexit: the status; with ignoreexit (WEGA) a message and no exit
+set ignoreexit
+exit 3
+echo after
+unset ignoreexit
+exit 4
+echo never
+-- case
+step: csh t.in
+expect: exit 4
+-- expect
+Can't exit, ignoreexit is set
+after
+
+== status
+# sh.wait.c pwait: $status of a command (false of WEGA exits 255)
+-- case
+step: csh t.in
+expect: output is '255\n0\n'
+-- t.in
+false
+echo $status
+true
+echo $status
+
+== glob
+# sh.glob.c glob, expand, matchdir: patterns, braces, no match
+-- case
+host: mkdir d ; touch d/a.c d/b.c d/c.h
+step: csh t.in
+expect: exit 1
+expect: output is 'd/a.c d/b.c\nd/c.h\nd/a.c d/b.c\nd/a.c d/c.h\n-- stderr\necho: No match.\n'
+-- t.in
+echo d/*.c
+echo d/?.h
+echo d/[ab].c
+echo d/{a,c}.*
+echo d/*.x
+
+== history
+# sh.lex.c getexcl: a script keeps no history: !! is "0: Event not found" (the shell stops)
+-- case
+step: csh t.in
+expect: exit 1
+expect: output is 'one two\n-- stderr\n0: Event not found.\n'
+-- t.in
+set history = 5
+echo one two
+echo !!:2
+echo !e:1
+
+== redirect
+# sh.sem.c doio: > >> < and noclobber
+-- case
+step: csh t.in
+expect: exit 1
+expect: output is 'a\nb\n-- stderr\nf: File exists.\n'
+-- t.in
+echo a > f
+echo b >> f
+cat < f
+set noclobber
+echo c > f
+echo d >! f
+cat f
+
+== source-redirect
+# sh.sem.c execute (WEGA): source with an output redirection is refused
+-- case
+step: csh t.in
+expect: exit 1
+expect: output is 'before\n-- stderr\nsource: Output redirection not allowed.\n'
+-- t.in
+echo before
+source s > out
+echo never
+-- s
+echo in source
+
+== source
+# sh.c dosource
+-- case
+step: csh t.in
+-- t.in
+source s
+echo back $v
+-- s
+echo in source
+set v = 1
+-- expect
+in source
+back 1
+
+== script-type
+# sh.exec.c texec (WEGA): a script without the x of a binary is run by the shell its first line names: #!sh and no # at all
+# give /bin/sh, #!csh and # give /bin/csh
+-- case
+host: printf 'echo sh: $0\n' > a ; printf '#!sh\necho sh2\n' > b ; printf '#!csh\nset x = csh2\necho $x\n' > c ; printf '#\nset x = csh3\necho $x\n' > d ; chmod 755 a b c d
+step: csh t.in
+-- t.in
+./a
+./b
+./c
+./d
+-- expect
+sh: ./a
+sh2
+csh2
+csh3
+
+== script-unknown
+# sh.exec.c texec (WEGA): #! with another name: bad, bferr "Cannot determine type..." in the child; the original prints "Command not found" (measured; why: not traced)
+-- case
+host: printf '#!ksh\necho x\n' > e ; chmod 755 e
+step: csh t.in
+expect: output is 'after\n-- stderr\n./e: Command not found.\n'
+-- t.in
+./e
+echo after
+
+== nice
+# sh.wait.c donice, sh.sem.c execute (WEGA): nice -N and nice alone run the command
+nice -5 echo low
+nice echo plain
+-- expect
+low
+plain
+
+== login
+# sh.func.c dologin, donewgrp, islogin: not a login shell
+login
+-- case
+step: csh t.in
+expect: exit 1
+expect: output is '-- stderr\nNot login shell.\n'
+
+== errors
+# sh.parse.c, sh.err.c: syntax errors
+echo (a
+-- case
+step: csh t.in
+expect: exit 1
+expect: output is '-- stderr\nToo many ('"'"'s.\n'
+
+== cflag
+# sh.c main, sh.dol.c: -c command; $0 is not set with -c: "No file for $0"
+-- case
+step: csh -c 'echo $0 ok'
+expect: exit 1
+expect: output is '-- stderr\nNo file for $0.\n'
+
+== umask
+# sh.func.c doumask: print, set, an improper mask
+umask 027
+umask
+umask 99
+-- case
+step: csh t.in
+expect: exit 1
+expect: output is '27\n-- stderr\numask: Improper mask.\n'

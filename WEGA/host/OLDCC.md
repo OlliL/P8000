@@ -963,6 +963,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | lex | lmain.c, sub1.c, sub2.c, parser.y (get1core, digit, alpha, siconv, cclinter, usescape, munput, mn2, yyparse, packtrans, ...) | v1l |  | x | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  | x |
 | regcmp | libPW regcmp.c (regcmp) | v1l |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | local | local.c (argcat: its static buf and nargv) | vz |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| csh | sh.c, sh.dol.c, sh.func.c, sh.sem.c, sh.wait.c (main, Dword, execute, donice: a block behind an unconditional jump) | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
 fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`

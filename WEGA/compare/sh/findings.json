@@ -1,0 +1,741 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (open, exact), kind, callers, note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "/bin/ccv1",
+ "binary": "/bin/sh",
+ "functions": {
+  "start": {
+   "file": "crt0.s",
+   "orig": "0x0000",
+   "size_orig": 66,
+   "status": "crt0"
+  },
+  "options": {
+   "status": "exact",
+   "file": "args.c",
+   "orig": "0x0042",
+   "size_orig": 446,
+   "note": "WEGA: loginsh = -1 when argv[0] starts with \"-\", else 0."
+  },
+  "setargs": {
+   "status": "exact",
+   "file": "args.c",
+   "orig": "0x0200",
+   "size_orig": 72
+  },
+  "freeargs": {
+   "status": "exact",
+   "file": "args.c",
+   "orig": "0x0248",
+   "size_orig": 68
+  },
+  "clearup": {
+   "status": "exact",
+   "file": "args.c",
+   "orig": "0x028c",
+   "size_orig": 24
+  },
+  "useargs": {
+   "status": "exact",
+   "file": "args.c",
+   "orig": "0x02a4",
+   "size_orig": 44
+  },
+  "copyargs": {
+   "status": "exact",
+   "file": "args.c",
+   "orig": "0x02d0",
+   "size_orig": 94,
+   "note": "WEGA: not LOCAL, after useargs (execscr calls it)."
+  },
+  "malloc": {
+   "status": "exact",
+   "file": "blok.c",
+   "orig": "0x032e",
+   "size_orig": 126
+  },
+  "addblok": {
+   "status": "exact",
+   "file": "blok.c",
+   "orig": "0x03ac",
+   "size_orig": 170
+  },
+  "free": {
+   "status": "exact",
+   "file": "blok.c",
+   "orig": "0x0456",
+   "size_orig": 32
+  },
+  "builtin": {
+   "status": "exact",
+   "file": "builtin.c",
+   "orig": "0x0476",
+   "size_orig": 50
+  },
+  "bfailed": {
+   "status": "exact",
+   "file": "builtin.c",
+   "orig": "0x04a8",
+   "size_orig": 62
+  },
+  "makefork": {
+   "status": "exact",
+   "file": "cmd.c",
+   "orig": "0x04e6",
+   "size_orig": 110
+  },
+  "cmd": {
+   "status": "open",
+   "file": "cmd.c",
+   "orig": "0x0554",
+   "size_orig": 1558,
+   "note": "Open: popt block order (one branch inverted), phase B."
+  },
+  "exitset": {
+   "status": "exact",
+   "file": "error.c",
+   "orig": "0x0b6a",
+   "size_orig": 14
+  },
+  "sigchk": {
+   "status": "exact",
+   "file": "error.c",
+   "orig": "0x0b78",
+   "size_orig": 16
+  },
+  "failed": {
+   "status": "exact",
+   "file": "error.c",
+   "orig": "0x0b88",
+   "size_orig": 50
+  },
+  "error": {
+   "status": "exact",
+   "file": "error.c",
+   "orig": "0x0bba",
+   "size_orig": 14
+  },
+  "exitsh": {
+   "status": "exact",
+   "file": "error.c",
+   "orig": "0x0bc8",
+   "size_orig": 54
+  },
+  "done": {
+   "status": "exact",
+   "file": "error.c",
+   "orig": "0x0bfe",
+   "size_orig": 46
+  },
+  "rmtemp": {
+   "status": "exact",
+   "file": "error.c",
+   "orig": "0x0c2c",
+   "size_orig": 44
+  },
+  "expand": {
+   "status": "exact",
+   "file": "expand.c",
+   "orig": "0x0c58",
+   "size_orig": 520
+  },
+  "gmatch": {
+   "status": "exact",
+   "file": "expand.c",
+   "orig": "0x0e60",
+   "size_orig": 448
+  },
+  "makearg": {
+   "status": "exact",
+   "file": "expand.c",
+   "orig": "0x1020",
+   "size_orig": 26
+  },
+  "chgquot": {
+   "status": "exact",
+   "file": "expand.c",
+   "orig": "0x103a",
+   "size_orig": 94
+  },
+  "fault": {
+   "status": "exact",
+   "file": "fault.c",
+   "orig": "0x1098",
+   "size_orig": 122
+  },
+  "stdsigs": {
+   "status": "exact",
+   "file": "fault.c",
+   "orig": "0x1112",
+   "size_orig": 24
+  },
+  "ignsig": {
+   "status": "exact",
+   "file": "fault.c",
+   "orig": "0x112a",
+   "size_orig": 68
+  },
+  "getsig": {
+   "status": "exact",
+   "file": "fault.c",
+   "orig": "0x116e",
+   "size_orig": 44
+  },
+  "oldsigs": {
+   "status": "exact",
+   "file": "fault.c",
+   "orig": "0x119a",
+   "size_orig": 60
+  },
+  "clrsig": {
+   "status": "exact",
+   "file": "fault.c",
+   "orig": "0x11d6",
+   "size_orig": 80
+  },
+  "chktrap": {
+   "status": "exact",
+   "file": "fault.c",
+   "orig": "0x1226",
+   "size_orig": 84
+  },
+  "initf": {
+   "status": "exact",
+   "file": "io.c",
+   "orig": "0x127a",
+   "size_orig": 72
+  },
+  "estabf": {
+   "status": "exact",
+   "file": "io.c",
+   "orig": "0x12c2",
+   "size_orig": 66
+  },
+  "push": {
+   "status": "exact",
+   "file": "io.c",
+   "orig": "0x1304",
+   "size_orig": 38
+  },
+  "pop": {
+   "status": "exact",
+   "file": "io.c",
+   "orig": "0x132a",
+   "size_orig": 52
+  },
+  "chkpipe": {
+   "status": "exact",
+   "file": "io.c",
+   "orig": "0x135e",
+   "size_orig": 46
+  },
+  "chkopen": {
+   "status": "exact",
+   "file": "io.c",
+   "orig": "0x138c",
+   "size_orig": 48
+  },
+  "rename": {
+   "status": "exact",
+   "file": "io.c",
+   "orig": "0x13bc",
+   "size_orig": 88
+  },
+  "create": {
+   "status": "exact",
+   "file": "io.c",
+   "orig": "0x1414",
+   "size_orig": 48
+  },
+  "tmpfil": {
+   "status": "exact",
+   "file": "io.c",
+   "orig": "0x1444",
+   "size_orig": 36
+  },
+  "copy": {
+   "status": "open",
+   "file": "io.c",
+   "orig": "0x1468",
+   "size_orig": 1520,
+   "note": "The range includes the statics of macro.c (copyto, skipto, getch: no symbols). Open: in getch a block of popt in another place (jr/jp, 2 bytes), phase B."
+  },
+  "macro": {
+   "status": "exact",
+   "file": "macro.c",
+   "orig": "0x1a58",
+   "size_orig": 392
+  },
+  "subst": {
+   "status": "exact",
+   "file": "macro.c",
+   "orig": "0x1be0",
+   "size_orig": 160
+  },
+  "main": {
+   "status": "exact",
+   "file": "te2.c",
+   "orig": "0x1c80",
+   "size_orig": 932
+  },
+  "chkpr": {
+   "status": "exact",
+   "file": "main.c",
+   "orig": "0x2024",
+   "size_orig": 38
+  },
+  "settmp": {
+   "status": "exact",
+   "file": "main.c",
+   "orig": "0x204a",
+   "size_orig": 40
+  },
+  "Ldup": {
+   "status": "exact",
+   "file": "main.c",
+   "orig": "0x2072",
+   "size_orig": 60
+  },
+  "syslook": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x20ae",
+   "size_orig": 70
+  },
+  "setlist": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x20f4",
+   "size_orig": 74
+  },
+  "setname": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x213e",
+   "size_orig": 280
+  },
+  "replace": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x2256",
+   "size_orig": 32
+  },
+  "dfault": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x2276",
+   "size_orig": 20
+  },
+  "assign": {
+   "status": "open",
+   "file": "name.c",
+   "orig": "0x228a",
+   "size_orig": 44,
+   "note": "Open: n->namid of the failed call is loaded through r2 in the original (register choice), phase B."
+  },
+  "readvar": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x22b6",
+   "size_orig": 496
+  },
+  "assnum": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x24a6",
+   "size_orig": 26
+  },
+  "make": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x24c0",
+   "size_orig": 58
+  },
+  "lookup": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x24fa",
+   "size_orig": 206
+  },
+  "namscan": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x25c8",
+   "size_orig": 62
+  },
+  "printnam": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x2606",
+   "size_orig": 132
+  },
+  "exname": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x268a",
+   "size_orig": 60
+  },
+  "printflg": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x26c6",
+   "size_orig": 74
+  },
+  "getenv": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x2710",
+   "size_orig": 56
+  },
+  "countnam": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x2748",
+   "size_orig": 12
+  },
+  "pushnam": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x2754",
+   "size_orig": 28
+  },
+  "setenv": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x2770",
+   "size_orig": 60
+  },
+  "unsetnam": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x27ac",
+   "size_orig": 28,
+   "note": "WEGA: the builtin unset (guessed names unsetnam, rmnode, rplnode, parent, anc, side): the name leaves the binary tree of names; the first three levels of the tree may not be removed (\"Node may not be removed\")."
+  },
+  "rmnode": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x27c8",
+   "size_orig": 208,
+   "note": "WEGA (see unsetnam)."
+  },
+  "rplnode": {
+   "status": "exact",
+   "file": "name.c",
+   "orig": "0x2898",
+   "size_orig": 254,
+   "note": "WEGA (see unsetnam): the in-order predecessor is copied into the removed node with strcpy over its strings (a longer name or value overwrites memory: a bug of the original, kept)."
+  },
+  "newline": {
+   "status": "exact",
+   "file": "print.c",
+   "orig": "0x2996",
+   "size_orig": 6
+  },
+  "blank": {
+   "status": "exact",
+   "file": "print.c",
+   "orig": "0x299c",
+   "size_orig": 8
+  },
+  "prp": {
+   "status": "exact",
+   "file": "print.c",
+   "orig": "0x29a4",
+   "size_orig": 32
+  },
+  "prs": {
+   "status": "exact",
+   "file": "print.c",
+   "orig": "0x29c4",
+   "size_orig": 44
+  },
+  "prc": {
+   "status": "exact",
+   "file": "print.c",
+   "orig": "0x29f0",
+   "size_orig": 26
+  },
+  "prt": {
+   "status": "exact",
+   "file": "print.c",
+   "orig": "0x2a0a",
+   "size_orig": 130
+  },
+  "prn": {
+   "status": "exact",
+   "file": "print.c",
+   "orig": "0x2a8c",
+   "size_orig": 18
+  },
+  "itos": {
+   "status": "exact",
+   "file": "print.c",
+   "orig": "0x2a9e",
+   "size_orig": 94
+  },
+  "stoi": {
+   "status": "exact",
+   "file": "print.c",
+   "orig": "0x2afc",
+   "size_orig": 122
+  },
+  "monitor": {
+   "status": "exact",
+   "file": "profile.c",
+   "orig": "0x2b76",
+   "size_orig": 252
+  },
+  "initio": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x2c72",
+   "size_orig": 288,
+   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "simple": {
+   "status": "exact",
+   "file": "service.c",
+   "orig": "0x2d92",
+   "size_orig": 48
+  },
+  "getpath": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x2dc2",
+   "size_orig": 94,
+   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "pathopen": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x2e20",
+   "size_orig": 54,
+   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "catpath": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x2e56",
+   "size_orig": 102,
+   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "execa": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x2ebc",
+   "size_orig": 84,
+   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "execscr": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x2f10",
+   "size_orig": 674,
+   "note": "WEGA (guessed name): on ENOEXEC the shell of the first line runs the script (#!/path, #!sh, #!csh; # alone csh, no # sh); a non-ASCII byte or another #! is an error. For #!/path the path is copied through the pointer shell, which is not set on that path (an uninitialised local: a bug of the original, kept). Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "postclr": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x31b2",
+   "size_orig": 38,
+   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "post": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x31d8",
+   "size_orig": 54,
+   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "await": {
+   "status": "exact",
+   "file": "service.c",
+   "orig": "0x320e",
+   "size_orig": 384
+  },
+  "trim": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x338e",
+   "size_orig": 78,
+   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "mactrim": {
+   "status": "exact",
+   "file": "service.c",
+   "orig": "0x33dc",
+   "size_orig": 30
+  },
+  "scan": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x33fa",
+   "size_orig": 290,
+   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "getarg": {
+   "status": "open",
+   "file": "service.c",
+   "orig": "0x351c",
+   "size_orig": 212,
+   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+  },
+  "setbrk": {
+   "status": "exact",
+   "file": "setbrk.c",
+   "orig": "0x35f0",
+   "size_orig": 34
+  },
+  "getstak": {
+   "status": "exact",
+   "file": "stak.c",
+   "orig": "0x3612",
+   "size_orig": 38
+  },
+  "locstak": {
+   "status": "exact",
+   "file": "stak.c",
+   "orig": "0x3638",
+   "size_orig": 52
+  },
+  "savstak": {
+   "status": "exact",
+   "file": "stak.c",
+   "orig": "0x366c",
+   "size_orig": 10
+  },
+  "endstak": {
+   "status": "exact",
+   "file": "stak.c",
+   "orig": "0x3676",
+   "size_orig": 34
+  },
+  "tdystak": {
+   "status": "exact",
+   "file": "stak.c",
+   "orig": "0x3698",
+   "size_orig": 70
+  },
+  "stakchk": {
+   "status": "exact",
+   "file": "stak.c",
+   "orig": "0x36de",
+   "size_orig": 24
+  },
+  "cpystak": {
+   "status": "exact",
+   "file": "stak.c",
+   "orig": "0x36f6",
+   "size_orig": 32
+  },
+  "movstr": {
+   "status": "exact",
+   "file": "string.c",
+   "orig": "0x3716",
+   "size_orig": 30
+  },
+  "any": {
+   "status": "exact",
+   "file": "string.c",
+   "orig": "0x3734",
+   "size_orig": 40
+  },
+  "cf": {
+   "status": "exact",
+   "file": "string.c",
+   "orig": "0x375c",
+   "size_orig": 46
+  },
+  "length": {
+   "status": "exact",
+   "file": "string.c",
+   "orig": "0x378a",
+   "size_orig": 36
+  },
+  "word": {
+   "status": "exact",
+   "file": "word.c",
+   "orig": "0x37ae",
+   "size_orig": 768
+  },
+  "nextc": {
+   "status": "exact",
+   "file": "word.c",
+   "orig": "0x3aae",
+   "size_orig": 128
+  },
+  "readc": {
+   "status": "exact",
+   "file": "word.c",
+   "orig": "0x3b2e",
+   "size_orig": 316
+  },
+  "execute": {
+   "status": "exact",
+   "file": "xec.c",
+   "orig": "0x3c6a",
+   "size_orig": 2452
+  },
+  "execexp": {
+   "status": "exact",
+   "file": "xec.c",
+   "orig": "0x45fe",
+   "size_orig": 82
+  },
+  "test": {
+   "status": "exact",
+   "file": "test.c",
+   "orig": "0x4650",
+   "size_orig": 118
+  },
+  "nxtarg": {
+   "status": "exact",
+   "file": "test.c",
+   "orig": "0x46c6",
+   "size_orig": 64
+  },
+  "exp": {
+   "status": "exact",
+   "file": "test.c",
+   "orig": "0x4706",
+   "size_orig": 100
+  },
+  "e1": {
+   "status": "exact",
+   "file": "test.c",
+   "orig": "0x476a",
+   "size_orig": 50
+  },
+  "e2": {
+   "status": "exact",
+   "file": "test.c",
+   "orig": "0x479c",
+   "size_orig": 48
+  },
+  "e3": {
+   "status": "exact",
+   "file": "test.c",
+   "orig": "0x47cc",
+   "size_orig": 1014
+  },
+  "tio": {
+   "status": "exact",
+   "file": "test.c",
+   "orig": "0x4bc2",
+   "size_orig": 26
+  },
+  "ftype": {
+   "status": "exact",
+   "file": "test.c",
+   "orig": "0x4bdc",
+   "size_orig": 48
+  },
+  "fsizep": {
+   "status": "exact",
+   "file": "test.c",
+   "orig": "0x4c0c",
+   "size_orig": 46
+  }
+ },
+ "libc": "libc-v4 with execve, fcntl, geteuid, profil, times of ../libc and another exit/_cleanup member; no libc-vN fits: owner decision open"
+}
