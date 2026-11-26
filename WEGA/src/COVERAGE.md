@@ -9,7 +9,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | Directory | files | exact | partial | sys3 | todo |
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
-| [bin](#bin) | 111 | 104 | 5 | 0 | 2 |
+| [bin](#bin) | 111 | 105 | 5 | 0 | 1 |
 | [etc](#etc) | 67 | 34 | 0 | 18 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 961 | 13 | 138 | 85 |
+| **all** | 1197 | 962 | 13 | 138 | 84 |
 
 <a id="root"></a>
 ## root
@@ -86,7 +86,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `bin/getfile` | binary E707 | `src/cmd/remote` | exact | ccvm | -lc |
 | `bin/gets` | binary E707 | `src/cmd/gets.c` | exact | ccv0 | libc-v1.a |
 | `bin/getud` | binary E707 | `src/cmd/getud.c` | exact | cc | libc.a |
-| `bin/gld` | binary E607 | - | todo | D12 new, D1 - | - |
+| `bin/gld` | binary E607 | `src/cmd/gld.c` | exact | scc | libc.a |
 | `bin/gpasswd` | binary E707 | `src/cmd/gpasswd.c` | exact | cc | libc-v12.a |
 | `bin/grep` | binary E707 | `src/cmd/grep.c` | exact | ccvm | libc.a |
 | `bin/hd` | binary E707 | `src/cmd/od.c` | exact | ccv1r | libc-v3.a |

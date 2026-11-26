@@ -966,6 +966,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | csh | sh.c, sh.dol.c, sh.func.c, sh.sem.c, sh.wait.c (main, Dword, execute, donice: a block behind an unconditional jump) | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 | adb | findfn.c, sym.c, format.c, output.c, print.c, runpcs.c (stfind, findsym: a register of a compare; frsize: the frame word of a return value; exform: a call through a temporary in itol; _doprnt: lda register; getreg: popt reload; runpcs: a block behind an unconditional jump) | cc |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 | pstat | pstat.c | vk (no -O) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| gld | gld.c (lld.c of contrib/lcc taken back) | shipped scc (no -O) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | more | more.c, regex.c (all exact; re_exec: braslist[i & 0177777] against the x - x of codgen) | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,

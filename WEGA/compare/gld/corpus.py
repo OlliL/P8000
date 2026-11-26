@@ -1,6 +1,6 @@
 """Corpus of gld (host/recon/corpusrun.py): the fixed and random command lines of fixtures.py on the segmented test objects of
-sld and the libraries and damaged objects of gld (made once by the original tools); the original against the host build
-(gld has no WEGA source yet)."""
+sld and the libraries and damaged objects of gld (made once by the original tools); the original against the WEGA
+build (src/cmd/gld.c) and the host build."""
 import glob
 import importlib.util
 import os
@@ -13,7 +13,7 @@ _s.loader.exec_module(_ld)
 NAME = 'gld'
 ORIG = 'bin/gld'
 PROG = 'gld'
-CANDIDATES = {'host': 'host/ld/gld'}
+CANDIDATES = {'wega': 'src/cmd/gld', 'host': 'host/ld/gld'}
 ROOT_FILES = ['lib/scrt0.o', 'lib/slibc.a', 'lib/slibib.a', 'usr/lib/slibib.a', 'z/bin/lib/slibib.a']
 PREP_FILES = ['bin/scc', 'bin/cas', 'bin/ar', 'usr/bin/ranlib', 'lib/cpp', 'lib/scparse', 'lib/scodgen', 'lib/spopt',
               'usr/include', 'usr/sys']

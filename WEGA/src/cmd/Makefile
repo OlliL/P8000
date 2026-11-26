@@ -10,6 +10,10 @@
 #   make clean                 remove the objects and the programs
 
 CAS = cas
+SCC = scc
+SLD = sld
+SLIBC = ../lib/libc/build/seg/slibc.a
+SCRT0 = ../lib/libc/build/seg/scrt0.o
 CC  = cc
 CCV0 = ccv0
 CCV0P = ccv0p
@@ -45,7 +49,7 @@ PROGS = ar
 # single-file commands, each with its own compiler and its own libc (byte-identical with the original)
 SIMPLE=		mv rm rmdir write size strip ranlib sum pr cpio clist cat echo cmp chmod chgrp chown pwd kill sleep tail uname tee du env nohup gets sort touch grep nl su mkdir find mkstr test tr nice od df time date dd regcmp who diff newgrp passwd mail echo2 printenv whereis dog gpasswd egrep nm file stty ls login
 
-FILES=		getud putud bcmp bd dump dumpdir restor sync tar
+FILES=		getud putud bcmp bd dump dumpdir restor sync tar gld
 CLEANFILES=	sync.o ar.o  getud.o  putud.o  bcmp.o  bd.o
 SUBDIRS=	remote ps pstat csh sh adb doscopy BOOT0 pburn standalone verify copydisk format cc cas cc/cpp cc/cparse cc/codgen cc/popt cc/gopt dc ed make ld sld text sccs cref spell lint ex me yacc more bc acct uucp tabset pub fse plzcg units news queuer problems screen lex
 
@@ -55,7 +59,7 @@ all: $(PROGS) $(FILES) $(SIMPLE) subdirs
 # switches the sources to what the shipped libc and cc need (the old libc's readsym, sprintf value, swap_quad; the exit status
 # of size). Without -DSHIPPED the bytes of the originals are rebuilt. The files of /lib are not made here: empty rules below.
 SHIPFLAGS = -O -DSHIPPED
-SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CCV1L=cc CCVM=cc CCVZ=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBC_V13=/lib/libc.a LIBC_V15=/lib/libc.a LIBPW=/usr/lib/libPW.a TERMLIB=/usr/lib/libtermlib.a
+SHIPCC = CC=cc CCV0=cc CCV0P=cc CCV1=cc CCV1R=cc CCV1L=cc CCVM=cc CCVZ=cc CFLAGS="$(SHIPFLAGS)" LIBC_V1=/lib/libc.a LIBC_V2=/lib/libc.a LIBC_V3=/lib/libc.a LIBC_V4=/lib/libc.a LIBC_V6=/lib/libc.a LIBC_V10=/lib/libc.a LIBC_V11=/lib/libc.a LIBC_V7=/lib/libc.a LIBC_V9=/lib/libc.a LIBC_V12=/lib/libc.a LIBC_V13=/lib/libc.a LIBC_V15=/lib/libc.a LIBPW=/usr/lib/libPW.a TERMLIB=/usr/lib/libtermlib.a SLIBC=/lib/slibc.a SCRT0=/lib/scrt0.o
 
 shipped:
 	$(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) $(PROGS) $(FILES) $(SIMPLE) $(SHIPCC) LIBC=/lib/libc.a
@@ -81,7 +85,7 @@ shipped:
 		(cd $$d ; eval $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all '$(SHIPCC)' $$X) ; \
 	done
 
-/lib/libc.a /lib/slibc.a /usr/lib/libtermlib.a:
+/lib/libc.a /lib/slibc.a /lib/scrt0.o /usr/lib/libtermlib.a:
 
 subdirs:
 	for d in $(SUBDIRS); do (cd $$d ; $(MAKE) $(MAKEARGS) MAKEARGS=$(MAKEARGS) all) ; done
@@ -141,6 +145,18 @@ restor: restor.c
 
 tar: tar.c
 	$(CC) $(CFLAGS) -o $@ tar.c
+
+# gld: /bin/gld (segmented), the loader of the segmented programs, "wega 6/22/88 09:30 gld.c V1.0 (C) ZFT-KEAW" (its
+# identification string; no SCCS stamp, no crt0 stamp). WEGA's own development; the source is the lld of the Akademie
+# der Wissenschaften (contrib/lcc/cmd/lld.c, "string table version for P8000"; its later version, a guess), taken back: the
+# default directories /lib, /usr/lib, /z/bin/lib, no file symbols (mkfsym, fsyms), fixed origins of data and bss, round
+# with an int, signed counts in bwrite and bflush1, int sizes in load2td, the order of some cases. By the shipped scc
+# without -O, the plain scrt0.o and the shipped slibc.a; sld -z as ps.
+gld: gld.o $(SCRT0) $(SLIBC)
+	$(SLD) -z -e start -o $@ $(SCRT0) gld.o $(SLIBC)
+
+gld.o: gld.c
+	$(SCC) -c gld.c
 
 # ccvm (CCVM): the cparse of the programs of 11/18/83 (OLD_D1S, host/OLDCC.md vm): ar, cmp, cpio, diff, du, grep,
 # mail, nl, pr, who (and make and remote in their directories)
@@ -517,9 +533,9 @@ crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranl
 	$(CAS) -u -o $@ `echo $@ | sed -e 's/\.o$$/.s/'`
 
 install: $(PROGS) $(FILES) $(SIMPLE)
-	for file in ar getud putud bcmp bd tar sync ; do cp $$file $(PREFIX)/bin/$$file ; done
+	for file in ar getud putud bcmp bd tar sync gld ; do cp $$file $(PREFIX)/bin/$$file ; done
 	for file in chkdiff uuclear whodo ; do cp $$file.sh $(PREFIX)/bin/$$file ; chmod 755 $(PREFIX)/bin/$$file ; done
-	for file in ar tar sync ; do $(STRIP) $(PREFIX)/bin/$$file ; done
+	for file in ar tar sync gld ; do $(STRIP) $(PREFIX)/bin/$$file ; done
 	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; $(STRIP) $(PREFIX)/etc/$$file ; done
 	cp rm $(PREFIX)/bin/rm ; $(STRIP) $(PREFIX)/bin/rm
 	cp rmdir $(PREFIX)/bin/rmdir ; $(STRIP) $(PREFIX)/bin/rmdir
@@ -630,7 +646,7 @@ install: $(PROGS) $(FILES) $(SIMPLE)
 clean:
 	rm -f $(PROGS) $(FILES) $(CLEANFILES) $(SIMPLE) regcmppw.o
 	rm -rf regcmppw.d
-	rm -f egrep.o egrep.c nm.o file.o stty.o ls.o login.o ttytype.o
+	rm -f gld.o egrep.o egrep.c nm.o file.o stty.o ls.o login.o ttytype.o
 	rm -f mv.o rm.o rmdir.o write.o size.o strip.o ranlib.o sum.o pr.o cpio.o clist.o cat.o echo.o cmp.o chmod.o chgrp.o chown.o pwd.o kill.o sleep.o tail.o uname.o tee.o du.o env.o nohup.o gets.o sort.o touch.o grep.o nl.o su.o mkdir.o find.o mkstr.o
 	rm -f crt0-ar.o crt0-sync.o crt0-ar.s crt0-sync.s
 	rm -f crt0-mv.o crt0-rm.o crt0-rmdir.o crt0-write.o crt0-size.o crt0-strip.o crt0-ranlib.o crt0-sum.o crt0-pr.o crt0-cpio.o crt0-clist.o crt0-cat.o crt0-echo.o crt0-cmp.o crt0-chmod.o crt0-chgrp.o crt0-chown.o crt0-pwd.o crt0-kill.o crt0-sleep.o crt0-tail.o crt0-uname.o crt0-tee.o crt0-du.o crt0-env.o crt0-nohup.o crt0-gets.o crt0-sort.o crt0-touch.o crt0-grep.o crt0-nl.o crt0-su.o crt0-mkdir.o crt0-find.o crt0-mkstr.o
