@@ -96,7 +96,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [ ] adb (46996) -- done but 7 functions (2026-11-26): the ZEUS 3.2 adb, written from the binary on Plexus' z8000 adb; shipped cc, libu8000, kva/kpa of ps, libc.a; 88 of 95 functions exact, 7 open (codegen and popt forms, phase B); data and bss in place; built, installed, corpus 15 of 15; in OPEN of checkall
 - [x] fsc (2078; segmented E611) -- byte-identical (2026-11-26): src/cmd/fse/fsc.c, shipped scc -O -s -i
 - [x] fc (3074; segmented E607) -- byte-identical (2026-11-26): src/cmd/fse/fc.c, shipped scc -O, not stripped (cc.341.o patched in)
-- [ ] pstat (15638; segmented E607)
+- [x] pstat (15638; segmented E607) -- byte-identical (2026-11-26): no source, rebuilt from the binary on V7's pstat.c, sccvk without -O, kva.c/kpa.c of ps
 - [ ] gld (27616; segmented E607)
 - [ ] sh (24032); link: rsh -- done but the libc (2026-11-26): System III sh with the WEGA changes, ccv1; 104 of 118 functions exact against a scratch libc, open: service.c (the compiler of 08/22/83, not built), three popt blocks; libc-v9 extended for sh (its libc part equal); built, installed with rsh, corpus 22 of 22; in OPEN of checkall
 
@@ -349,3 +349,8 @@ In SUBDIRS of src/cmd (shipped: `LIBC=/lib/libc.a`). Corpus: 22 cases (compare/e
 - 2026-11-26 fsc, fc: IDENTICAL from the sources already in src/cmd/fse (fsc.c runs /bin/scc, fc.c /bin/cc); targets in its
   Makefile, installed; rudimentary corpora (usage, a compilation, an error without a file name), 3 of 3 each.
 - 2026-11-26 fsc, fc committed after checkall "fsc" ALL OK.
+- 2026-11-26 pstat: IDENTICAL. No source known (not in System III, Plexus, V7/32V/2.11BSD are older forms): rebuilt from
+  the binary on the frame of V7's pstat.c (src/cmd/pstat); compiled by sccvk without -O (the frame set-up behind the body,
+  cp #0), kva.c and kpa.c of ../ps with -O as in ps, the shipped slibc.a. Corpus 5 of 5 (usage, errors, -p/-ap on the dump
+  of the corpus of ps).
+- 2026-11-26 pstat committed after checkall "pstat" ALL OK.

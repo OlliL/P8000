@@ -202,6 +202,7 @@
 /ed/crt0.s
 /login
 /ps/ps
+/pstat/pstat
 /uucp/uusend
 /csh/csh
 /sh/sh

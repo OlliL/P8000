@@ -186,7 +186,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
 The objects of `/wega` (`usr/sys/sys/LIB1`, `usr/sys/dev/LIB2`) were made by an older scc. `sccvk` (`-DSCC -DOLD_VK` in `src/cmd/cc`) runs `/lib/vk/scparse`
 (built in `src/cmd/cc/cparse/build/segvk`, `OLD_D25`), `/lib/vk/scodgen` (`src/cmd/cc/codgen/build/segvk`, `OLD_VK` in `oldcc.h` = `OLD_D3` and `OLD_D24`) and the
 `/lib/vk/spopt` (`src/cmd/cc/popt/build/segvk`: the shipped spopt with `OLD_D29`). No source form gives them; sccv1 (v1 scparse and spopt) is further away. Witnesses (identical):
-ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). Also kva.c and kpa.c of /bin/ps (08/25/83, the crash dump modules; ps.c itself by the shipped scc). The `make install` of `src/uts` is identical in all 31 files, `wega` and `LIB2` included.
+ureg, sys1, tt0 (D3), sig, sys2, sys3, debug (D24, D25), lock (D3), tty (D29). Also kva.c and kpa.c of /bin/ps (08/25/83, the crash dump modules; ps.c itself by the shipped scc), and pstat.c of /bin/pstat (11/18/83, without -O; its kva.c and kpa.c with -O as in ps). The `make install` of `src/uts` is identical in all 31 files, `wega` and `LIB2` included.
 
 - Switches: `OLD_D3`, `OLD_D24` (codgen), `OLD_D25` (cparse), `OLD_D29` (popt); section 3.
 
@@ -965,6 +965,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | local | local.c (argcat: its static buf and nargv) | vz |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | csh | sh.c, sh.dol.c, sh.func.c, sh.sem.c, sh.wait.c (main, Dword, execute, donice: a block behind an unconditional jump) | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 | adb | findfn.c, sym.c, format.c, output.c, print.c, runpcs.c (stfind, findsym: a register of a compare; frsize: the frame word of a return value; exform: a call through a temporary in itol; _doprnt: lda register; getreg: popt reload; runpcs: a block behind an unconditional jump) | cc |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
+| pstat | pstat.c | vk (no -O) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 Not in the columns: `OLD_D61` (D61) and `OLD_D62` (D62) of v1: every C member of `/lib/libm.a` and `/lib/slibm.a` (asin, atan, exp,
 fmod, gamma, hypot, j0, j1, jn, log, pow, sin, sinh, tan, tanh; D61 only where a float expression is deep enough). `OLD_D52`

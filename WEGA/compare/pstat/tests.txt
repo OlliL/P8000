@@ -1,0 +1,43 @@
+# The cases of the corpus of pstat (compare/pstat/corpus.py); the format: host/recon/casefile.py (the default step is
+# pstat). Where an expectation comes from: src = src/cmd/pstat/pstat.c (function). The dump is made by
+# compare/ps/mkdump.py (the proc table of seven slots, six of them used; _Nproc).
+
+== usage
+# src main: no argument: the usage, exit 1
+-- case
+step: pstat
+expect: exit 1
+expect: output is 'usage: pstat -[a]p or pstat -[ixt] [corefl]\n'
+
+== cantfind
+# src main: the core file cannot be opened: "Can't find", exit 1
+-- case
+step: pstat -p nosuchcore
+expect: exit 1
+expect: output is 'Can'"'"'t find nosuchcore\n'
+
+== nosize
+# src getnum, doproc: a namelist that cannot be read leaves the values 0 (nlist), so the size of the table is not known,
+# exit 1
+-- case
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+step: pstat -p core /nix
+expect: exit 1
+expect: output contains ': cannot determine size of proc table.'
+
+== proc
+# src doproc: the size of the table from _Nproc, the used slots counted, the empty one left out
+-- case
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+step: pstat -p core
+expect: exit 0
+expect: output contains '6 processes'
+expect: output contains '     LOC S  F  PR SG UID TIM CPU NI  PGRP   PID  PPID ADDR SZE     WCHN    LINK   TEXTP  CLKT'
+
+== allproc
+# src doproc: -a lists the empty slot too
+-- case
+host: python3 $WEGA_HOST/../compare/ps/mkdump.py core
+step: pstat -ap core
+expect: exit 0
+expect: output contains '6 processes'
