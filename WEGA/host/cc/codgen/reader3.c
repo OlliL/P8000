@@ -61,7 +61,9 @@ p2init(int argc, char **argv)
 	register int err;
 	char buf[50];
 	char *x, *b;
+#ifndef __APPLE__
 	extern char *strcpy(), *strcat();
+#endif
 
 	err = 0;
 	for (i = 1; i < argc; i++) {

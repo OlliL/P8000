@@ -24,6 +24,11 @@
 #include <signal.h>
 #include "wctime.h"
 
+#ifdef __APPLE__
+/* rcmd() is declared by <unistd.h> on macOS */
+#define rcmd ar_rcmd
+#endif
+
 #define	ARMAG0	0xFF			/* ARMAG 0177545 as two bytes, big endian */
 #define	ARMAG1	0x65
 #define	ARHDR	26			/* size of the header on disk */
