@@ -57,6 +57,9 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
 
 ## Build the emulator and check
 
+macOS: `host/tools/checkall.sh` makes and mounts a case-sensitive, noatime APFS image itself (`host/tools/macvol.sh`; default
+`~/.cache/wega/wegacs.sparseimage` on `/private/tmp/wega_cs`) and puts CORPUS_DB and CHECK_TMP there unless they are set.
+
     make -C WEGA/host/z8k-emu            # builds z8k-emu
     make -C WEGA/host check WEGA=<WEGA_ROOT>      # the host tools without a corpus: cas, ld
     make -C WEGA/host checkall WEGA=<WEGA_ROOT>   # on a copy of the git files: make in src, make install into an empty root,

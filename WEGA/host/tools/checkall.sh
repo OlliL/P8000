@@ -33,6 +33,14 @@ umask 002
 command -v timeout >/dev/null 2>&1 || PATH=$REPO/host/tools/shim:$PATH
 # the store of the corpora (CORPUS_DB) holds files whose names differ only in case (Makefile, makefile): on a case-insensitive
 # file system (the default of macOS) they clash, a corpus then fails; make the store on a case-sensitive volume (an APFS image)
+# macOS: without CORPUS_DB and CHECK_TMP the work volume is made and mounted by host/tools/macvol.sh
+if [ "`uname -s`" = Darwin ] && { [ -z "$CORPUS_DB" ] || [ -z "$CHECK_TMP" ]; }; then
+	VOL=`sh $HERE/macvol.sh` || { echo "checkall: cannot prepare the work volume" >&2; exit 2; }
+	[ -z "$CORPUS_DB" ] && CORPUS_DB=$VOL/corpusdb
+	if [ -z "$CHECK_TMP" ]; then
+		if [ -n "$CHECK_NAME" ]; then CHECK_TMP=$VOL/wega_check.$CHECK_NAME; else CHECK_TMP=$VOL/wega_check; fi
+	fi
+fi
 STORE=${CORPUS_DB:-$REPO/.corpus}
 mkdir -p $STORE
 : > $STORE/.case_A

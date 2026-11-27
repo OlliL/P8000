@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <poll.h>
 #include <sys/resource.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1064,13 +1065,47 @@ static void devfd_set(int fd, int e)
 	if (fd >= 0 && fd < 256) { devof[fd] = e + 1; devproc[fd] = 0; }
 }
 
-/* close of a proc model's socket: end the stream and wait until the model has ended its side (its files are written) */
+/* close of a proc model's socket: end the stream and wait until the model has ended its side (its files are written).
+ * macOS (XNU): a shutdown(SHUT_WR) sometimes does not wake the model blocked in its read (measured: lost wakeup, 4 of 8 test
+ * processes in 15000 rounds hang, a close of the whole end never). So if the end of the stream does not come, this end is closed
+ * (the descriptor stays, on /dev/null) and the model's process is waited for. */
 static void devproc_end(int fd)
 {
 	char b[256];
+	struct stat st;
+	struct pollfd pf;
+	int left = 120 * 100;		/* 10 ms steps: a model that does not end must not hold the guest process forever */
+#ifdef __APPLE__
+	pid_t peer = 0;
+	socklen_t pl = sizeof peer;
+	int quiet = 30;			/* 300 ms for the end of the stream, then the fallback */
+#endif
+
+	if (fstat(fd, &st) < 0 || !S_ISSOCK(st.st_mode)) return;
+#ifdef __APPLE__
+	if (getsockopt(fd, 0 /* SOL_LOCAL */, 0x002 /* LOCAL_PEERPID */, &peer, &pl) < 0) peer = 0;
+#endif
 	shutdown(fd, SHUT_WR);
-	while (read(fd, b, sizeof b) > 0)
-		;
+	pf.fd = fd;
+	pf.events = POLLIN;
+	while (left > 0) {
+		int n = poll(&pf, 1, 10);
+		if (n < 0 && errno != EINTR) break;
+		if (n == 0) {
+			left--;
+#ifdef __APPLE__
+			if (peer > 0 && --quiet == 0) {
+				int nul = open("/dev/null", O_RDWR);
+				if (nul >= 0) { dup2(nul, fd); close(nul); }
+				while (left-- > 0 && !(kill(peer, 0) < 0 && errno == ESRCH))
+					usleep(10000);
+				return;
+			}
+#endif
+			continue;
+		}
+		if (n > 0 && read(fd, b, sizeof b) <= 0) break;
+	}
 }
 
 static void devclose(int fd)
@@ -1124,7 +1159,10 @@ static int devopen(int e, int mode)
 			close(sv[0]);
 			dup2(sv[1], 0);
 			dup2(sv[1], 1);
-			if (sv[1] > 1) close(sv[1]);
+			{	/* the model holds nothing of the guest: no socket of another model, no pipe of the caller */
+				int cl;
+				for (cl = 3; cl < 1024; cl++) close(cl);
+			}
 			execl("/bin/sh", "sh", "-c", m + 5, (char *)0);
 			_exit(127);
 		}
