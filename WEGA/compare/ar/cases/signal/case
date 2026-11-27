@@ -3,10 +3,10 @@
 # was (r) and ar ends with status 100. TERM is not caught: ar dies by it; q has appended b already
 host: printf 'hello\n' > a && printf 'world\n' > b && mkfifo p && touch -d '2020-03-04 05:06:07 UTC' a b
 step: ar r l.a a b
-host: cksum < l.a
+host: cksum < l.a | tee c1
 step: ar r l.a a p
 signal: INT after 1
-host: cksum < l.a
+host: cksum < l.a | tee c2; cmp c1 c2 && echo archive-unchanged
 step: ar q l.a b p
 signal: TERM after 1
 host: cksum < l.a
@@ -20,4 +20,4 @@ expect: output contains 'step 3 ar: exit=100'
 expect: output contains 'step 5 ar: exit=-15'
 expect: output contains 'step 7 ar: exit=100'
 expect: output contains 'step 9 ar: exit=100'
-expect: output contains '3759108073 66'
+expect: output contains 'archive-unchanged'

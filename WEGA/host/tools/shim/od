@@ -5,18 +5,20 @@
 use strict;
 
 my @a = @ARGV;
-my ($an, $x1, $skip, $count, $file) = (0, 0, 0, undef, undef);
+my ($an, $x1, $skip, $count, $file, $radix) = (0, 0, 0, undef, undef, undef);
 my $ok = 1;
 while (@a) {
 	my $w = shift @a;
 	if ($w eq '-An') { $an = 1 }
 	elsif ($w eq '-tx1') { $x1 = 1 }
+	elsif ($w eq '-A') { my $r = shift @a; if ($r =~ /^[dox]$/) { $radix = $r } else { $ok = 0 } }
+	elsif ($w eq '-t') { my $t = shift @a; if ($t eq 'x1') { $x1 = 1 } else { $ok = 0 } }
 	elsif ($w =~ /^-j(\d*)$/) { $skip = length $1 ? $1 : shift @a }
 	elsif ($w =~ /^-N(\d*)$/) { $count = length $1 ? $1 : shift @a }
 	elsif ($w !~ /^-/ && !defined $file) { $file = $w }
 	else { $ok = 0 }
 }
-if ($ok && $an && $x1 && $skip =~ /^\d+$/ && (!defined $count || $count =~ /^\d+$/)) {
+if ($ok && ($an || defined $radix) && $x1 && $skip =~ /^\d+$/ && (!defined $count || $count =~ /^\d+$/)) {
 	my $fh;
 	if (defined $file) { open($fh, '<:raw', $file) or do { print STDERR "od: $file: $!\n"; exit 1 } }
 	else { $fh = \*STDIN; binmode $fh }
@@ -24,9 +26,12 @@ if ($ok && $an && $x1 && $skip =~ /^\d+$/ && (!defined $count || $count =~ /^\d+
 	my $data;
 	if (defined $count) { read($fh, $data, $count) } else { local $/; $data = <$fh> }
 	$data = '' unless defined $data;
+	my $fmt = !defined $radix ? '' : $radix eq 'd' ? '%07d' : $radix eq 'o' ? '%07o' : '%06x';
 	for (my $i = 0; $i < length $data; $i += 16) {
+		print sprintf($fmt, $i) if length $fmt;
 		print join('', map { sprintf ' %02x', ord } split //, substr($data, $i, 16)), "\n";
 	}
+	print sprintf($fmt, length $data), "\n" if length $fmt;
 	exit 0;
 }
 open(my $p, '-|', '/usr/bin/od', @ARGV) or exit 127;

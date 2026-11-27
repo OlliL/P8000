@@ -19,7 +19,7 @@ ROOT_COPY = ['etc/passwd', 'etc/group', 'etc/whois']
 TIMEOUT = 300
 PRE = ['user: 0 0', 'time: 600000000', 'terminal: console',
        'host: mkdir -p $Z8K_OVERLAY/tmp $Z8K_OVERLAY/usr/spool/mail && cd $Z8K_OVERLAY/etc && echo "zed:x:50:1::/usr/zed:/bin/csh" >> passwd '
-       '&& echo "zed:::::" >> whois && sed -i "s/^adm::4:/adm::4:zed,bin/;s/^other::1:/other::1:bin,zed,adm/;s/^system::0:/system::0:zed/" group '
+       '&& echo "zed:::::" >> whois && sed "s/^adm::4:/adm::4:zed,bin/;s/^other::1:/other::1:bin,zed,adm/;s/^system::0:/system::0:zed/" group > group.new && cat group.new > group && rm group.new '
        '&& echo "mail for zed" > $Z8K_OVERLAY/usr/spool/mail/zed']
 
 

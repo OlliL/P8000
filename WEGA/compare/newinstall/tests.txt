@@ -12,7 +12,7 @@ n
 -- case
 step: /etc/new.install
 stdin: a
-host: for f in usr root tmp z; do python3 $WEGA_HOST/tools/wegafs.py info $f.img | grep "fname" | tr '\n' ' '; echo; done; cmp -n 464 usr.img $WEGA_ROOT/pb.image && echo boot-same
+host: for f in usr root tmp z; do python3 $WEGA_HOST/tools/wegafs.py info $f.img | grep "fname" | tr '\n' ' '; echo; done; head -c 464 usr.img | cmp - $WEGA_ROOT/pb.image && echo boot-same
 expect: exit 0
 expect: output contains 'Benennen der Dateisysteme'
 expect: output contains 'NEW fsname = root, NEW volname = 1 -- DEL if wrong!!'
