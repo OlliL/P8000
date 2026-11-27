@@ -25,7 +25,7 @@ fc: fc.c fseerror.h system
 	$(CC) -O -o fc fc.c
 	@echo "Patching fc with scratchfilename used in original scc (contains PID)"
 	@dd if=fc of=fc1 bs=1 count=1921 >/dev/null 2>&1
-	@echo -n '341.o' >>fc1
+	@/bin/echo -n '341.o' >>fc1
 	@dd if=fc of=fc2 bs=1 skip=1926 >/dev/null 2>&1
 	@cat fc2 >> fc1
 	@mv fc1 fc

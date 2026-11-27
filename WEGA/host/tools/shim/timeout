@@ -1,0 +1,37 @@
+#!/usr/bin/perl
+# timeout [-s SIGNAL] DURATION COMMAND [ARG...]: a stand-in for GNU timeout on hosts without it (macOS).
+# checkall.sh puts this directory on the PATH only when there is no timeout. Exit status 124 on timeout, as GNU timeout.
+use strict;
+use warnings;
+use POSIX qw(:sys_wait_h);
+
+my $sig = 'TERM';
+while (@ARGV && $ARGV[0] =~ /^-/) {
+	my $o = shift @ARGV;
+	if ($o eq '-s' || $o eq '--signal') { $sig = shift @ARGV; }
+	elsif ($o =~ /^--signal=(.*)/) { $sig = $1; }
+	elsif ($o eq '--') { last; }
+	elsif ($o =~ /^--(foreground|preserve-status)$/) { }
+	else { print STDERR "timeout: unknown option $o\n"; exit 125; }
+}
+my $d = shift @ARGV;
+if (!defined $d || !@ARGV) { print STDERR "usage: timeout [-s SIGNAL] DURATION COMMAND [ARG...]\n"; exit 125; }
+my %mul = (s => 1, m => 60, h => 3600, d => 86400);
+$d =~ /^([0-9.]+)([smhd]?)$/ or do { print STDERR "timeout: invalid time interval '$d'\n"; exit 125; };
+my $secs = $1 * $mul{$2 || 's'};
+$sig =~ s/^SIG//;
+
+my $pid = fork();
+die "timeout: fork: $!\n" unless defined $pid;
+if ($pid == 0) {
+	exec @ARGV or do { print STDERR "timeout: cannot run $ARGV[0]: $!\n"; exit($! == 2 ? 127 : 126); };
+}
+my $timed_out = 0;
+$SIG{ALRM} = sub { $timed_out = 1; kill $sig, $pid; };
+alarm($secs > 0 ? $secs : 0) if $secs > 0;
+my $r;
+do { $r = waitpid($pid, 0); } while ($r < 0 && $!{EINTR});
+alarm(0);
+my $st = $?;
+exit 124 if $timed_out;
+exit($st & 127 ? 128 + ($st & 127) : $st >> 8);

@@ -29,6 +29,8 @@ WEGA=${WEGA:-$REPO/../tmp/wega31_root}
 WEGA=`cd $WEGA && pwd`
 # the umask of the owner's shell: z8k-emu tests/openflags.out expects a created file with mode 664
 umask 002
+# hosts without GNU timeout (macOS): a stand-in
+command -v timeout >/dev/null 2>&1 || PATH=$REPO/host/tools/shim:$PATH
 if [ -n "$CHECK_TMP" ]; then T=$CHECK_TMP
 elif [ -n "$CHECK_NAME" ]; then T=/tmp/wega_check.$CHECK_NAME
 else T=/tmp/wega_check; fi
@@ -40,7 +42,12 @@ FAIL=0
 BUILDONLY=0
 [ "$1" = -b ] && BUILDONLY=1
 # the parallel make: MAKEARGS reaches the directories that can build in parallel (src/Makefile); MAKEJOBS=-j1 for a serial run
-J=${MAKEJOBS:--j`nproc`}
+NPROC=`nproc 2>/dev/null || sysctl -n hw.ncpu`
+# load average: /proc/loadavg on Linux, uptime elsewhere (macOS)
+loadavg() { if [ -r /proc/loadavg ]; then cut -d' ' -f1-3 /proc/loadavg; else LC_ALL=C uptime | sed 's/.*load averages*: *//'; fi; }
+# the directories below the current one as "mode path" (find -printf is GNU only)
+dirmodes() { if find . -maxdepth 0 -printf '' 2>/dev/null; then find . "$@" -printf '%m %P\n'; else find . "$@" -exec stat -f '%Lp %N' {} + | sed 's| \./| |'; fi; }
+J=${MAKEJOBS:--j$NPROC}
 
 # the time of every step, in $T/timing.log: seconds of the step, seconds since the start, the step (a table at the end)
 now() { date +%s.%N; }
@@ -142,7 +149,7 @@ rm -f $T/tmplog.log $T/tmpclash.txt
 Z8K_TMPLOG=$T/tmplog.log
 export Z8K_TMPLOG
 rm -f $T/timing.log $T/timing_corpus.log
-echo "machine: `nproc` cores, load `cut -d' ' -f1-3 /proc/loadavg`, MAKEARGS=$J" >> $T/timing.log
+echo "machine: $NPROC cores, load `loadavg`, MAKEARGS=$J" >> $T/timing.log
 
 # 1. everything from the sources
 if snapshot; then :; else
@@ -193,8 +200,8 @@ for f in `cd $I && find . -type f | sed 's|^\./||' | sort`; do
 done
 result 'install root' ok "$same files identical with WEGA ($I)"
 # the directories: the same names with the same modes (the guest's /tmp below tmp is not part of it)
-(cd $WEGA && find . -mindepth 1 -type d ! -path './tmp/*' -printf '%m %P\n' | sort -k2) > $T/dirs.wega
-(cd $I && find . -mindepth 1 -type d -printf '%m %P\n' | sort -k2) > $T/dirs.install
+(cd $WEGA && dirmodes -mindepth 1 -type d ! -path './tmp/*' | sort -k2) > $T/dirs.wega
+(cd $I && dirmodes -mindepth 1 -type d | sort -k2) > $T/dirs.install
 if cmp -s $T/dirs.wega $T/dirs.install; then
 	result 'install directories' ok "`wc -l < $T/dirs.wega` directories, names and modes as in WEGA"
 else
@@ -264,12 +271,12 @@ stamp '3 emulator tests'
 CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
 touch $T/store.stamp	# the store: what the corpora of this run do not use is older than this (corpus_prune.py in finish)
-NC=${CHECK_CORPORA:-`expr \( \`nproc\` + 1 \) / 2`}
-echo "corpora start: load `cut -d' ' -f1-3 /proc/loadavg`, $NC at a time" >> $T/timing.log
+NC=${CHECK_CORPORA:-`expr \( $NPROC + 1 \) / 2`}
+echo "corpora start: load `loadavg`, $NC at a time" >> $T/timing.log
 export CS T REPO WEGA OLD CORPUS_OPTS
 echo $CORP | tr ' ' '\n' | xargs -P $NC -I{} sh -c 'CORPUS_DB=$REPO/.corpus CORPUS_TMP=$T/corpus_{} CORPUS_OPTS="-k $CORPUS_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS {} > $T/corpus_{}.log 2>&1'
 stamp '3 all corpora (CHECK_CORPORA at a time)'
-echo "corpora end: load `cut -d' ' -f1-3 /proc/loadavg`" >> $T/timing.log
+echo "corpora end: load `loadavg`" >> $T/timing.log
 grep -h '^TIME ' $T/corpus_*.log | sed 's/^TIME //' | sort >> $T/timing_corpus.log
 for n in $CORP; do
 	corpus $n $T/corpus_$n.log

@@ -52,7 +52,7 @@ local: local.c
 	$(CCVZ) -O -o $@ local.c $(LIBC_V14)
 	@echo "Patching local with scratchfilename used in original cc (contains PID)"
 	@dd if=local of=local1 bs=1 count=9007 >/dev/null 2>&1
-	@echo -n '3998.' >>local1
+	@/bin/echo -n '3998.' >>local1
 	@dd if=local of=local2 bs=1 skip=9012 >/dev/null 2>&1
 	@cat local2 >> local1
 	@mv local1 local

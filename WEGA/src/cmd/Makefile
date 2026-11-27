@@ -94,7 +94,7 @@ getud: getud.c
 	$(CC) -o $@ getud.c
 	@echo "Patching getud with scratchfilename used in original cc (contains PID)"
 	@dd if=getud of=getud1 bs=1 count=6975 >/dev/null 2>&1
-	@echo -n '524.o' >>getud1
+	@/bin/echo -n '524.o' >>getud1
 	@dd if=getud of=getud2 bs=1 skip=6980 >/dev/null 2>&1
 	@cat getud2 >> getud1
 	@mv getud1 getud
@@ -104,7 +104,7 @@ putud: putud.c
 	$(CC) -o $@ putud.c
 	@echo "Patching putud with scratchfilename used in original cc (contains PID)"
 	@dd if=putud of=putud1 bs=1 count=6885 >/dev/null 2>&1
-	@echo -n '330.o' >>putud1
+	@/bin/echo -n '330.o' >>putud1
 	@dd if=putud of=putud2 bs=1 skip=6890 >/dev/null 2>&1
 	@cat putud2 >> putud1
 	@mv putud1 putud
@@ -116,7 +116,7 @@ bcmp: bcmp.c
 	$(CC) -i -O -o $@ bcmp.c
 	@echo "Patching bcmp with scratchfilename used in original cc (contains PID)"
 	@dd if=bcmp of=bcmp1 bs=1 count=6965 >/dev/null 2>&1
-	@echo -n '211.o' >>bcmp1
+	@/bin/echo -n '211.o' >>bcmp1
 	@dd if=bcmp of=bcmp2 bs=1 skip=6970 >/dev/null 2>&1
 	@cat bcmp2 >> bcmp1
 	@mv bcmp1 bcmp
@@ -128,7 +128,7 @@ bd: bd.c
 	$(CC) -O -o $@ bd.c
 	@echo "Patching bd with scratchfilename used in original cc (contains PID)"
 	@dd if=bd of=bd1 bs=1 count=6539 >/dev/null 2>&1
-	@echo -n '818.o' >>bd1
+	@/bin/echo -n '818.o' >>bd1
 	@dd if=bd of=bd2 bs=1 skip=6544 >/dev/null 2>&1
 	@cat bd2 >> bd1
 	@mv bd1 bd

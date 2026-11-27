@@ -34,6 +34,18 @@
 #include <utime.h>
 #include "z8k.h"
 
+#ifdef __APPLE__
+/* macOS: other names of the host's struct stat times; no SIGPWR (SIGINFO is the host signal for WEGA's 19: a guess);
+   devname() of <sys/stat.h> clashes with the device name table below */
+#define st_atim st_atimespec
+#define st_mtim st_mtimespec
+#define st_ctim st_ctimespec
+#ifndef SIGPWR
+#define SIGPWR SIGINFO
+#endif
+#define devname z8k_devname
+#endif
+
 typedef struct { uint8_t seg; uint16_t off; } Ad;
 
 static const char *root = "";
@@ -569,7 +581,11 @@ static volatile sig_atomic_t sig_pend[20], sig_any;
 static int sig_host(int w)	/* WEGA number -> host number; SIGEMT (7) has none on the host: a real-time signal */
 {
 	if (w <= 0 || w >= 20) return 0;
+	#ifdef SIGRTMIN
 	return w == 7 ? SIGRTMIN + 7 : sig_host_fixed[w];
+#else
+	return w == 7 ? SIGEMT : sig_host_fixed[w];	/* macOS has SIGEMT, no real-time signals */
+#endif
 }
 
 static int sig_wega(int h)	/* host number -> WEGA number (0: none) */

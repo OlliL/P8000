@@ -109,11 +109,11 @@ crt0.o: crt0.s
 
 codgen: $(NONSEG_OBJS) ../../crt0.o
 	$(LD) -X -e start -i -o $@ ../../crt0.o $(NONSEG_OBJS) $(LIBC)
-	@if od -b $@ | sed -n 2p | grep '^0000020 [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* 000 000 ' > /dev/null ; then echo "$@: text over 64K (sg_code of the segment table wrapped to 0; ld says nothing)" ; rm -f $@ ; exit 1 ; fi
+	@if od -b $@ | sed -n 2p | tr -s ' ' | grep '^0000020 [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* 000 000 ' > /dev/null ; then echo "$@: text over 64K (sg_code of the segment table wrapped to 0; ld says nothing)" ; rm -f $@ ; exit 1 ; fi
 
 scodgen: $(SEG_OBJS) ../../crt0.o
 	$(LD) -X -e start -i -o $@ ../../crt0.o $(SEG_OBJS)    $(LIBC)
-	@if od -b $@ | sed -n 2p | grep '^0000020 [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* 000 000 ' > /dev/null ; then echo "$@: text over 64K (sg_code of the segment table wrapped to 0; ld says nothing)" ; rm -f $@ ; exit 1 ; fi
+	@if od -b $@ | sed -n 2p | tr -s ' ' | grep '^0000020 [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* [0-7]* 000 000 ' > /dev/null ; then echo "$@: text over 64K (sg_code of the segment table wrapped to 0; ld says nothing)" ; rm -f $@ ; exit 1 ; fi
 
 ###################
 # obj targets
