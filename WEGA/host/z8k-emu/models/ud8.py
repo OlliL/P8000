@@ -70,7 +70,10 @@ class Link:
         return self.recv() & 0x7F
 
     def send(self, *bs):
-        os.write(1, bytes(bs))
+        try:
+            os.write(1, bytes(bs))
+        except BrokenPipeError:		# the emulator has closed its end (macOS: it does so when the program is gone)
+            raise Stop()
 
 
 class Part8:
