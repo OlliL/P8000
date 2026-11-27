@@ -20,6 +20,13 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def running():
     """the pids of the processes that run corpusrun.py"""
     out = []
+    if not os.path.isdir('/proc'):	# macOS
+        import subprocess
+        for l in subprocess.run(['ps', '-axo', 'pid=,command='], capture_output=True, text=True).stdout.splitlines():
+            p, _, cmd = l.strip().partition(' ')
+            if p.isdigit() and int(p) != os.getpid() and 'corpusrun.py' in cmd:
+                out.append(int(p))
+        return out
     for p in os.listdir('/proc'):
         if p.isdigit() and int(p) != os.getpid():
             try:
