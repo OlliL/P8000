@@ -6,3 +6,4 @@
 **/*.o
 **/a.out
 /WEGA/.corpus/
+.DS_Store
