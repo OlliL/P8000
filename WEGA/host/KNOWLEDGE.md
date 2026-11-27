@@ -860,7 +860,7 @@ written in C. Details and limits: `z8k-emu/README.md`.
 - `long double` is 64 bit: `host/cc/cparse/local1.c` uses a software extended format (see the quirks table, `wega_atof`).
 - Binaries must be the same on every build, the cache key of a corpus holds the hash of the candidate: `host/cas` links with
   `-Wl,-S` on macOS (`-g` puts the mtimes of the objects in the binary).
-- Hidden dependency: the corpus cache key does not include the models (`z8k-emu/models/*.py`); after a change of one, remove its entries or use `make checkall-nocache`.
+- The cache key of a case that names a `device:` holds the hash of the model (`models/ud8.py`, `model_key` in `corpusrun.py`).
 - No `/proc`: `corpus_prune.py` uses `ps`. The corpora expect no fixed uid/gid (`@UID@` tokens in the cases).
 
 ## The 8-bit part and /dev/ud (increment 117)

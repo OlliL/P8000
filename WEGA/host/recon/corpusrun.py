@@ -1009,6 +1009,11 @@ def runner_key():
     return mix(sha1file(os.path.abspath(__file__)), *tools)
 
 
+def model_key(case):
+    """the model of /dev/ud (ud8.py) is part of a case that names a device: a change of it makes those results stale"""
+    return [sha1file(UD8)] if case.get('devices') and os.path.exists(UD8) else []
+
+
 def main():
     os.umask(0o022)	# the modes of the starting files and of the files of the steps do not depend on the caller (checkall: 002)
     # the steps start as from a terminal: INT and QUIT at their default, whatever the runner inherits (a corpus started
@@ -1076,7 +1081,7 @@ def main():
         ch = case_hash(cdir)
         indir = os.path.join(cdir, 'in')
         for vi, var in enumerate(case['variants'] or [{'env': {}, 'words': []}]):
-            jobs.append((cname, (lambda d=indir: d), case, vi, var, mix(*([ch, json.dumps(var, sort_keys=True)] + base))))
+            jobs.append((cname, (lambda d=indir: d), case, vi, var, mix(*([ch, json.dumps(var, sort_keys=True)] + model_key(case) + base))))
     if hasattr(cfg, 'generate'):
         gen = Gen(cfg)
         for g in cfg.generate(gen):
@@ -1091,7 +1096,7 @@ def main():
             pkey = g.key()
             ch = mix(pkey, g.text)
             for vi, var in enumerate(case['variants'] or [{'env': {}, 'words': []}]):
-                jobs.append((g.name, g.indir, case, vi, var, mix(*([ch, json.dumps(var, sort_keys=True)] + base))))
+                jobs.append((g.name, g.indir, case, vi, var, mix(*([ch, json.dumps(var, sort_keys=True)] + model_key(case) + base))))
     if show:
         for cname, getin, case, vi, var, okey in jobs:
             vt = ' '.join(['%s=%s' % kv for kv in var['env'].items()] + var['words'])
