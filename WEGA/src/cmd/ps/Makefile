@@ -24,8 +24,7 @@ ps: scrt0.o ps.o kva.o kpa.o $(LIBC)
 	$(SLD) -z -e start -o $@ scrt0.o ps.o kva.o kpa.o $(LIBC)
 
 scrt0.s: $(CRT)/scrt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
-	sh $(CRT)/mkcrt0.sh ps | sed -e 's/^	ldl	<<0>>%0000,rr2$$/	ldl	_environ,rr2/' -e 's/^	.extern	__callex$$/	.extern	__callex\
-	.comm	4,_environ/' > $@
+	sh $(CRT)/mkcrt0.sh ps | sed -e 's/^	ldl	<<0>>%0000,rr2$$/	ldl	_environ,rr2/' | awk '{ print } /^	.extern	__callex$$/ { print "	.comm	4,_environ" }' > $@
 
 scrt0.o: scrt0.s
 	$(CAS) -u -o $@ scrt0.s
