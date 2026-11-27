@@ -9,6 +9,11 @@
 
 HOSTCC = cc
 CFLAGS = -O2 -g -Wall -Wno-unused -Wno-implicit-fallthrough -funsigned-char
+# macOS: the binary holds the debug map with the mtimes of the objects: every build differs, the corpora (cache key: the
+# binary) then never hit; -Wl,-S leaves the debug map out
+ifeq ($(shell uname -s),Darwin)
+LDFLAGS += -Wl,-S
+endif
 WEGA = ../../../tmp/wega31_root
 EMU  = $(abspath ../z8k-emu/z8k-emu)
 
@@ -19,7 +24,7 @@ OBJS = main.o error.o ifile.o getops.o instr.o scanner.o nodes.o parser.o pst.o 
 all: cas casold
 
 cas: $(OBJS)
-	$(HOSTCC) $(CFLAGS) -o $@ $(OBJS)
+	$(HOSTCC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS)
 
 %.o: %.c cas.h
 	$(HOSTCC) $(CFLAGS) -c -o $@ $<
@@ -31,7 +36,7 @@ cas: $(OBJS)
 OLDOBJS = $(filter-out jpr.o ssymtab.o optim.o assemble.o p2loop.o parser.o,$(OBJS)) jpr_old.o ssymtab_old.o optim_old.o assemble_old.o p2loop_old.o parser_old.o
 
 casold: $(OLDOBJS)
-	$(HOSTCC) $(CFLAGS) -o $@ $(OLDOBJS)
+	$(HOSTCC) $(CFLAGS) $(LDFLAGS) -o $@ $(OLDOBJS)
 
 %_old.o: %.c cas.h
 	$(HOSTCC) $(CFLAGS) -DOLD_CAS -DOLD_D13 -c -o $@ $<
