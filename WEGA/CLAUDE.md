@@ -61,7 +61,6 @@ macOS: `host/tools/checkall.sh` makes and mounts a case-sensitive, noatime APFS 
 `~/.cache/wega/wegacs.sparseimage` on `/private/tmp/wega_cs`) and puts CORPUS_DB and CHECK_TMP there unless they are set.
 
     make -C WEGA/host/z8k-emu            # builds z8k-emu
-    make -C WEGA/host check WEGA=<WEGA_ROOT>      # the host tools without a corpus: cas, ld
     make -C WEGA/host checkall WEGA=<WEGA_ROOT>   # on a copy of the git files: make in src, make install into an empty root,
                                                   # every file there against WEGA; the corpora; check (about 20 min; in /tmp/wega_check)
     make -C WEGA/host checkall WEGA=<WEGA_ROOT> NAME=x                        # the same in /tmp/wega_check.x: runs with other

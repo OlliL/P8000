@@ -845,6 +845,24 @@ written in C. Details and limits: `z8k-emu/README.md`.
   shifts and rotates, C/V after `div`, DA/H after anything but byte add/sub.
   The `cpir`/`cpsir` family sets Z = condition true, P/V = counter reached zero.
 
+## macOS host (arm64, Apple clang, BSD tools; since 2026-11-27)
+
+`make all` and `make checkall` run on macOS and Linux; what differs is guarded by `__APPLE__`, a shim or `uname`.
+
+- Volume: `checkall.sh` makes and mounts a case-sensitive APFS image (`host/tools/macvol.sh`) for the corpus store and CHECK_TMP.
+  It is mounted `noatime`: with atime updates the host sets the atime of a file to today while the guest clock is 1989, `find -atime +N`
+  in `man.dbmgr` then never matches and the csh loop of the mandbmgr corpus runs without end.
+- Shims for what BSD lacks (`host/tools/shim/`: timeout, touch -d, stat, wc, od; PATH only on macOS); `sed` has no newline in the
+  replacement text and no `-i` without a suffix (Makefiles of ps, pstat use awk), `cmp -n` reports EOF at the exact length.
+- XNU: `shutdown(SHUT_WR)` on a socketpair does not always wake a reader that already blocks on the other end (lost wakeup, seen
+  as hanging doscat, dosformat, getud). `devproc_end` in `z8k-emu/wega.c` closes the end after 300 ms without EOF and waits for the
+  model (`LOCAL_PEERPID`); the model child closes all inherited descriptors; `ud8.py` takes EPIPE as EOF.
+- `long double` is 64 bit: `host/cc/cparse/local1.c` uses a software extended format (see the quirks table, `wega_atof`).
+- Binaries must be the same on every build, the cache key of a corpus holds the hash of the candidate: `host/cas` links with
+  `-Wl,-S` on macOS (`-g` puts the mtimes of the objects in the binary).
+- Hidden dependency: the corpus cache key does not include the models (`z8k-emu/models/*.py`); after a change of one, remove its entries or use `make checkall-nocache`.
+- No `/proc`: `corpus_prune.py` uses `ps`. The corpora expect no fixed uid/gid (`@UID@` tokens in the cases).
+
 ## The 8-bit part and /dev/ud (increment 117)
 
 Sources: `UDOS/WEGA/koppeldoc` and `K.*.S` (beside `WEGA/`: the coupling software of the 8-bit part, version 3.1,
@@ -1091,7 +1109,7 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/codgen`, `/lib/scodgen` | `reclaim` copies `p->op` into `want` before it frees the registers and uses `want` for the `lval` of a CCODES result; it builds the list of candidates with a pointer (`*ap++`) into a local array of 6 | kept | "codgen fidelity" |
 | `/lib/codgen` | The result depends on the order of the data: built with another bss order, codgen gave wrong `ldm` lines on 2 and a compiler loop on 1 of 269 files, scodgen failed on 5 files more than with the original's order (measured 2026-11-02, cause not looked at; a guess: `saveorig`, `savecls`, `savereg` have 2 entries in the original, `nsave` can reach more). | sizes and order of the common data as in the original (`bss3.c`) | `OLDCC_LOG.md` 2026-11-02 |
 | `/lib/codgen` | Dead code and data: `rwprint` 0x6fca with its names, `syserr` 0x854c (fprintf, `perror`, `errexit`), which pull `perror` and `errlst` into the program, the tables `tnames` 0x5e2 and `ocnames` 0x3564 of debug names, and words that nothing reads (`unused1` ... in the sources; names are ours). `eread` writes a flag at 0x24b0 behind a test that is never true (`dope & 0xE` against 0x73), read by nobody. | kept | `OLDCC_LOG.md` 2026-11-02 |
-| `/lib/codgen` | `ftitle` (our name; was `ifname`) holds 16 bytes in the data, directly in front of the version string `common`: a longer file name of a `#line` overwrites that string (harmless). | kept | `OLDCC_LOG.md` 2026-11-02 |
+| `/lib/codgen` | `ftitle` (our name; was `ifname`) holds 16 bytes in the data, directly in front of the version string `common`: a longer file name of a `#line` overwrites that string (harmless). | kept in the data; the host build has 256 bytes (macOS: a long `#line` name ran into `nerrors`, exit 103, 2026-11-27) | `OLDCC_LOG.md` 2026-11-02 |
 | `/lib/codgen` | `clocal`, a static or extern-like name (`sclass` 3, 6 with bit 2 of `sflags`): `return` without a value (`jp` to the end, r2 holds 1), the caller goes on with that as a node. Not hit on the corpus. | kept (`return;`) | `OLDCC_LOG.md` 2026-11-02 |
 | `/lib/codgen`, `/lib/scodgen` | The rewrite of a field access or an address of a static (`mapregs` in `lcl3.c`, the `STREF` and `UAND` cases) copies only some fields of the replacement node (`op`, `type`, `sname`, `lval`, `rval`). The original's `lval` and `rval` overlay `left` and `right`, so the operands come along by accident. | kept in the original; the host copy copies the whole node | `host/cc/codgen` |
 | `/lib/codgen`, `/lib/scodgen` | Reads through a null symbol pointer (a `NAME` that is a label, an `ICON` without symbol in `mkoreg`/`oreg2`, `zzzcode` for an `OREG`): the original reads the zero page (a zero word, so `sclass == 3` and `nameoff` are false). `rweight[8]` is indexed with the registers 8..15 and 16 (class 4: the value is not used). `clocal` has `return;` without value. | kept (same result): the host tests the symbol first; `rweight[16]` with defined values, the key only computed for class 3 | `host/cc/codgen`, `KNOWLEDGE.md` "codgen host version" |
@@ -1130,7 +1148,7 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/cparse` (`convert`) | for CVTL the operands of the node change places (harmless for PLUS, the only user) | kept | `compare/cparse/findings.json` |
 | `/lib/cparse` (`lxrdope`, `lxres`) | the reserved word `fortran` has the action 6, for which `lxres` has no case: a program with the word `fortran` stops with "compiler error: bad AR_?? action" (measured) | kept | `compare/cparse/findings.json` |
 | `/lib/cparse` (`clocal` ASSIGN, `chkstr`, `treeeq`) | `clocal` loads two types for an ASSIGN of an SCONV and does not use them; `chkstr` compares a symbol pointer with 500 (signed, so it never fires); `treeeq` returns no value for an operator that is not LTYPE, UTYPE or BITYPE | kept | `compare/cparse/findings.json` |
-| `/lib/cparse`, `/lib/scparse` (`isitfloat`) | a floating constant goes through the libc's `atof` (atof.s, pow10.s: up to 19 digits, then times or by 10^n in the extended format of the EPU, rounded to double at the end): the double rounding does not always give the nearest double (4 of 3007 random constants; `0.1013863514358673989967045588e10` of libm/j1.c gives `41ce372a2d2de907`, the nearest is `...e908`) | reproduced in the host build: a port of atof.s and pow10.s in long double (x87, the same format), equal with the original atof on 3007 constants | `host/cc/cparse/local1.c` (`wega_atof`) |
+| `/lib/cparse`, `/lib/scparse` (`isitfloat`) | a floating constant goes through the libc's `atof` (atof.s, pow10.s: up to 19 digits, then times or by 10^n in the extended format of the EPU, rounded to double at the end): the double rounding does not always give the nearest double (4 of 3007 random constants; `0.1013863514358673989967045588e10` of libm/j1.c gives `41ce372a2d2de907`, the nearest is `...e908`) | reproduced in the host build: a port of atof.s and pow10.s in long double (x87, the same format), equal with the original atof on 3007 constants; where `long double` is not 80 bit (arm64 macOS) the same steps in a software extended format (`xf_*`, 64 bit mantissa, round to nearest even; the x87 branch is not built or tested on this host) | `host/cc/cparse/local1.c` (`wega_atof`) |
 | codgen | `regjam`, case 1: the call `roverlap(1, reg)` for a word node has no third argument, `roverlap` takes whatever is in r5 as the node (the call for a long node passes `n`) | Kept (byte identity) | `src/cmd/cc/codgen/regallo3.c`; found in the original at 0x79fa, no `ld r5,r10` there |
 | codgen | `eread`: `op = dope[op] & 0xE; if (op == 0x73) erflag = 1;` the masked value can never be 0x73, the flag is written nowhere else and never read | Kept (byte identity) | `src/cmd/cc/codgen/rdr3.c`; original at 0x2592 |
 | codgen | `efcode` calls `prolog(a, sz, tot)` with three of five arguments, the third in the place of `b`; `prolog` takes `w` and `tot` from the stack words the call of `epilog` just before left there | Kept (byte identity) | `src/cmd/cc/codgen/local3.c`; original at 0x297c |
