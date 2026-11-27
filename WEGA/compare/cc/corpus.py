@@ -11,7 +11,7 @@ ORIG = 'bin/cc'
 PROG = 'cc'
 CANDIDATES = {'wega': 'src/cmd/cc/build/nonseg/cc', 'host': 'host/cc/cc'}
 # pass paths that exist in both worlds, so that the access() tests agree
-PASSES = '-TO/bin/ld -TP/bin/ld'
+PASSES = '-TO/bin/sh -TP/bin/sh'    # /bin/ld does not exist on macOS
 
 
 def normalize(what, data):
