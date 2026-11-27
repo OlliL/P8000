@@ -1241,7 +1241,7 @@ static long dirlen(const char *path)
 	if (devdir(path)) return (2 + ndevname) * 16L;
 	if (!(dp = opendir(path))) return 0;
 	while ((de = readdir(dp)) != NULL && nn < 2048) {
-		if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..") || !strncmp(de->d_name, ".wh.", 4)) continue;
+		if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..") || !strncmp(de->d_name, ".wh.", 4) || !strcmp(de->d_name, ".wegafs-manifest.tsv")) continue;
 		if (*rootlogf) {
 			snprintf(lp, sizeof lp, "%s/%s", path, de->d_name);
 			if (!strcmp(lp, rootlogf)) continue;
@@ -1255,7 +1255,7 @@ static long dirlen(const char *path)
 		if ((dp = opendir(rd)) != NULL) {
 			while ((de = readdir(dp)) != NULL) {
 				int have = 0;
-				if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..")) continue;
+				if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..") || !strcmp(de->d_name, ".wegafs-manifest.tsv")) continue;
 				snprintf(lp, sizeof lp, "%s/%s", path, de->d_name);
 				wh_name(lp, wh, sizeof wh);
 				if (access(wh, F_OK) == 0) continue;
@@ -1327,6 +1327,8 @@ static void dirload(int fd, const char *path)
 			name = de->d_name;
 			if (!strcmp(name, ".") || !strcmp(name, "..")) continue;
 			if (!strncmp(name, ".wh.", 4)) continue;	/* a whiteout of the layer (layer_whiteout) */
+			/* the host's manifest of the tree is no file of the guest: its name is longer than 14, pwd cannot stat it */
+			if (!strcmp(name, ".wegafs-manifest.tsv")) continue;
 			if (*rootlogf) {	/* the log of Z8K_ROOTLOG is not part of the guest's directory */
 				snprintf(sub, sizeof sub, "%s/%s", path, name);
 				if (!strcmp(sub, rootlogf)) continue;
@@ -1362,7 +1364,7 @@ static void dirload(int fd, const char *path)
 				while ((de = readdir(rp2))) {
 					int i, have = 0;
 					name = de->d_name;
-					if (!strcmp(name, ".") || !strcmp(name, "..")) continue;
+					if (!strcmp(name, ".") || !strcmp(name, "..") || !strcmp(name, ".wegafs-manifest.tsv")) continue;
 					{	/* removed in the layer: the tree's entry is hidden */
 						char wh[1100], lp[1100];
 						snprintf(lp, sizeof lp, "%s/%s", path, name);
@@ -1394,7 +1396,16 @@ static void rootfix(const char *hp, struct stat *st)
 	char rov[PATH_MAX];
 	struct stat rs;
 	int i;
-	if (!hp || !ov || !*ov) return;
+	if (!hp) return;
+	/* the guest /tmp (Z8K_TMPDIR) is a directory of ROOT for the guest, so on the same device as ROOT whatever the host says (pwd of
+	   a working directory below it compares the device of "." and "..": equal, it takes the name of the entry with the same
+	   inode, as it can only for a name of 14 characters; different, it stats every name, and the long ones are cut) */
+	if (*guesttmp() && realpath(hp, rov)) {
+		size_t tl = strlen(realtmp());
+		if (!strncmp(rov, realtmp(), tl) && (!rov[tl] || rov[tl] == '/') && stat(realroot(), &rs) == 0)
+			st->st_dev = rs.st_dev;
+	}
+	if (!ov || !*ov) return;
 	for (i = 0; i < 2; i++) {	/* the name as given, and the real one (F_GETPATH) */
 		const char *o = ov;
 		size_t ol;
@@ -2068,6 +2079,9 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		  if ((k = devfd(i)) >= 0) { dev_stat(k, &st); put_stat(c, p, &st); return sc_ok(c, 0); }
 		  if (fstat(i, &st) < 0) return sc_err(c, errno);
 		  if (S_ISDIR(st.st_mode) && (d = dirof(i)) != NULL) st.st_size = d->len;
+#ifdef __APPLE__
+		  rootfix(fcntl(i, F_GETPATH, hb) == 0 ? hb : NULL, &st);
+#endif
 		  put_stat(c, p, &st); return sc_ok(c, 0); }
 	case 19: {	/* lseek */
 		int fd = a_int(&a); int32_t off = a_long(&a); int wh = a_int(&a);

@@ -88,7 +88,7 @@ expect: output contains 'mid new'
 -- case
 host: mkdir -p $Z8K_OVERLAY/tmp/man/sub; cd $Z8K_OVERLAY/tmp/man; head -c 51200 /dev/zero > sub/old; head -c 2048 /dev/zero > new; touch -a -d '1988-12-20' sub/old; touch -a -d '1989-01-05 05:39' new
 step: /etc/man.dbmgr
-host: ls -R $Z8K_OVERLAY/tmp/man | tr '\n' ' ' | sed "s#$Z8K_OVERLAY##g"
+host: cd $Z8K_OVERLAY/tmp; for d in man man/sub; do echo "/tmp/$d:" $(ls $d); done | tr '\n' ' '
 expect: output contains '/tmp/man: new sub'
 
 == user
