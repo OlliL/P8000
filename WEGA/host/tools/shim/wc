@@ -1,0 +1,20 @@
+#!/usr/bin/perl
+# wc whose output for ONE count (-c, -l, -w, -m) is as GNU's: the number without the padding of the BSD wc
+# (the host steps of the corpora use it: t=$(wc -c < f); host/recon/corpusrun.py puts this directory in front of PATH on
+# macOS only). Everything else goes to /usr/bin/wc unchanged.
+use strict;
+
+my @a = @ARGV;
+my $n = grep { /^-[clwm]+$/ } @a;
+my $files = grep { !/^-/ } @a;
+if ($n == 1 && @a == (grep { /^-[clwm]$/ } @a) + $files && $files <= 1) {
+	open(my $p, '-|', '/usr/bin/wc', @a) or exit 1;
+	while (<$p>) {
+		s/^\s+//;
+		s/ +/ /g;
+		print;
+	}
+	close $p;
+	exit($? >> 8);
+}
+exec('/usr/bin/wc', @a) or exit 127;

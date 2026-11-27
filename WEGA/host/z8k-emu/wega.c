@@ -492,7 +492,7 @@ static const char *hostpath_rel(const char *g, char *buf, size_t n)	/* NULL: not
 	char abs[1500];
 	if (on < 0) { const char *o = getenv("Z8K_OVERLAY"); on = o && *o; }
 	if (!on || !gcwd[0] || g[0] == '/') return NULL;
-	snprintf(abs, sizeof abs, "%s/%s", gcwd, g);
+	snprintf(abs, sizeof abs, "%s/%s", gcwd[1] ? gcwd : "", g);	/* not //name below / */
 	return hostpath(abs, buf, n);
 }
 
@@ -1332,6 +1332,12 @@ static void dirload(int fd, const char *path)
 				if (!strcmp(sub, rootlogf)) continue;
 			}
 			st.st_ino = de->d_ino;
+#ifdef __APPLE__
+			/* a firmlink (/private, /Users) lists the inode of the entry, stat gives the one of its target: pwd of the guest
+			   compares them */
+			snprintf(sub, sizeof sub, "%s/%s", path, name);
+			if (lstat(sub, &st2) == 0) st.st_ino = st2.st_ino;
+#endif
 			if (*realtmp() && !strcmp(name, "tmp") && realpath(path, rp) && !strcmp(rp, realroot()) &&
 			    stat(realtmp(), &st2) == 0)
 				st.st_ino = st2.st_ino;	/* / lists tmp with the inode of the guest /tmp */
@@ -1379,6 +1385,28 @@ static void dirload(int fd, const char *path)
 	d->fd = fd;
 	d->next = dirs;
 	dirs = d;
+}
+
+/* the layer of "/" is the same directory as ROOT for the guest: "." and ".." of / are one (pwd compares them) */
+static void rootfix(const char *hp, struct stat *st)
+{
+	const char *ov = getenv("Z8K_OVERLAY");
+	char rov[PATH_MAX];
+	struct stat rs;
+	int i;
+	if (!hp || !ov || !*ov) return;
+	for (i = 0; i < 2; i++) {	/* the name as given, and the real one (F_GETPATH) */
+		const char *o = ov;
+		size_t ol;
+		if (i) { if (!realpath(ov, rov)) return; o = rov; }
+		ol = strlen(o);
+		if (!strncmp(hp, o, ol) && (!hp[ol] || !strcmp(hp + ol, "/") || !strcmp(hp + ol, "/.")) &&
+		    stat(realroot(), &rs) == 0) {
+			st->st_dev = rs.st_dev;
+			st->st_ino = rs.st_ino;
+			return;
+		}
+	}
 }
 
 static void put_stat(Z8K *c, Ad a, const struct stat *st)
@@ -1663,16 +1691,22 @@ static int um_call(Z8K *c, unsigned n)
 		hp = hostpath(gp, hb, sizeof hb);
 		if (stat(hp, &st) < 0) return sc_err(c, errno);
 		um_owner(hp, &st);
+		rootfix(hp, &st);
 		if (S_ISDIR(st.st_mode)) st.st_size = dirlen(hp);
 		put_stat(c, p2, &st);
 		return sc_ok(c, 0);
 	case 28:	/* fstat */
 		i = a_int(&a); p = a_ptr(&a);
 		if (devfd(i) >= 0 || fstat(i, &st) < 0) return -2;
+#ifdef __APPLE__
+		k = fcntl(i, F_GETPATH, hb) == 0 ? (int)strlen(hb) : -1;
+#else
 		snprintf(gp, sizeof gp, "/proc/self/fd/%d", i);
 		k = readlink(gp, hb, sizeof hb - 1);
 		if (k > 0) hb[k] = 0;
+#endif
 		um_owner(k > 0 ? hb : NULL, &st);
+		rootfix(k > 0 ? hb : NULL, &st);
 		if (S_ISDIR(st.st_mode)) { Dir *dd = dirof(i); if (dd) st.st_size = dd->len; }
 		put_stat(c, p, &st);
 		return sc_ok(c, 0);
@@ -1928,7 +1962,12 @@ static int sys_call_impl(Z8K *c, unsigned n)
 			}
 			r = link(h1, h2);
 			if (istmp(gp) || istmp(gp2)) tmplog("link %s %s -> %d", gp, gp2, r < 0 ? -errno : 0);
+#ifdef __APPLE__
+			/* macOS refuses a link to a directory (EPERM) before it finds the name taken */
+			if (r < 0 && (errno == EEXIST || errno == EPERM)) {
+#else
 			if (r < 0 && errno == EEXIST) {
+#endif
 				struct stat s1, s2;
 				/* Linux mkdir has already created the WEGA mkdir "."/".." links. */
 				if (stat(h1, &s1) == 0 && stat(h2, &s2) == 0 &&
@@ -2022,6 +2061,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		  hp = hostpath(gp, hb, sizeof hb);
 		  if (stat(hp, &st) < 0) return sc_err(c, errno);
 		  if (S_ISDIR(st.st_mode)) st.st_size = dirlen(hp);
+		  rootfix(hp, &st);
 		  put_stat(c, p2, &st); return sc_ok(c, 0); }
 	case 28:	/* fstat */
 		{ struct stat st; i = a_int(&a); p = a_ptr(&a);

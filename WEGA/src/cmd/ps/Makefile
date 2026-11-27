@@ -45,3 +45,6 @@ install: ps
 
 clean:
 	rm -f *.o scrt0.s ps
+
+# the library of /lib is not made here (the shipped build)
+/lib/slibc.a:

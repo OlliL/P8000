@@ -1,0 +1,43 @@
+#!/usr/bin/perl
+# touch with the GNU option -d DATE for hosts whose touch has none (macOS); the host steps of the corpora use it
+# (host/recon/corpusrun.py puts this directory in front of PATH on macOS only).
+# DATE: YYYY-MM-DD[ HH:MM[:SS]][ UTC], @EPOCH; without UTC in the zone of TZ. Everything else goes to /usr/bin/touch.
+use strict;
+use POSIX qw(strftime);
+use Time::Local qw(timegm timelocal);
+
+my @opt;
+my $date;
+my @a = @ARGV;
+while (@a) {
+	my $x = shift @a;
+	if ($x eq '-d' || $x eq '--date') {
+		$date = shift @a;
+	} elsif ($x =~ /^--date=(.*)$/s) {
+		$date = $1;
+	} elsif ($x =~ /^-([acmh]+)d$/) {	# -ad DATE
+		push @opt, "-$1";
+		$date = shift @a;
+	} else {
+		push @opt, $x;
+		if ($x eq '--') { push @opt, @a; last }
+	}
+}
+if (!defined $date) {
+	exec '/usr/bin/touch', @ARGV or die "touch: $!\n";
+}
+my ($epoch, $utc);
+if ($date =~ /^@(-?\d+)$/) {
+	$epoch = $1;
+	$utc = 1;
+} elsif ($date =~ /^(\d{4})-(\d\d)-(\d\d)(?:[ T](\d\d):(\d\d)(?::(\d\d))?)?\s*(UTC|GMT|Z)?$/) {
+	my @t = ($6 // 0, $5 // 0, $4 // 0, $3, $2 - 1, $1);
+	$utc = defined $7;
+	$epoch = $utc ? timegm(@t) : timelocal(@t);
+} else {
+	die "touch: invalid date format '$date'\n";
+}
+$ENV{TZ} = 'UTC' if $utc;
+my @t = $utc ? gmtime($epoch) : localtime($epoch);
+my $stamp = strftime('%Y%m%d%H%M.%S', @t);
+exec '/usr/bin/touch', '-t', $stamp, @opt or die "touch: $!\n";

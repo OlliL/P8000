@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+# stat -c FORMAT FILE... of GNU stat for hosts whose stat has no -c (macOS): %a %n %s %Y %u %g %h %A; the host steps of the
+# corpora use it (host/recon/corpusrun.py puts this directory in front of PATH on macOS only). Without -c: /usr/bin/stat.
+use strict;
+
+if (!@ARGV || $ARGV[0] ne '-c') {
+	exec '/usr/bin/stat', @ARGV or die "stat: $!\n";
+}
+shift;
+my $fmt = shift;
+my $rc = 0;
+for my $f (@ARGV) {
+	my @s = lstat($f);
+	if (!@s) {
+		print STDERR "stat: cannot stat '$f': No such file or directory\n";
+		$rc = 1;
+		next;
+	}
+	my $m = $s[2];
+	my $o = $fmt;
+	my %v = (a => sprintf('%o', $m & 07777), n => $f, s => $s[7], Y => $s[9], X => $s[8], u => $s[4], g => $s[5],
+		h => $s[3], A => symbolic($m), '%' => '%');
+	$o =~ s/%([a-zA-Z%])/exists $v{$1} ? $v{$1} : "%$1"/ge;
+	print "$o\n";
+}
+exit $rc;
+
+sub symbolic {
+	my $m = shift;
+	my $t = ($m & 0170000) == 0040000 ? 'd' : ($m & 0170000) == 0120000 ? 'l' : '-';
+	my $r = '';
+	for my $i (0 .. 8) {
+		$r .= ($m >> (8 - $i)) & 1 ? substr('rwx', $i % 3, 1) : '-';
+	}
+	return $t . $r;
+}

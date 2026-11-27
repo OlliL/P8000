@@ -6,6 +6,7 @@ A block:
   -- case                 the following lines are lines of the case file (host:, step:, stdin:, env:, expect:, variant:)
                           in their order; without a step the default step of the corpus is added at the end
   -- expect               the following lines are the whole output of the last step (expect: output is ...)
+In the expected output @UID@ and @GID@ stand for the user and group number of the host user (@UID-8@: padded to 8 columns).
 A line starting with # is a comment of the text file, everywhere (a file of a case cannot start a line with #; write
 \\043). \\ooo in a line of a file is the byte of that octal value. A file section without lines is an empty file."""
 import functools
@@ -66,6 +67,15 @@ def prepare(files, src, work):
     return True
 
 
+def owner(text):
+    """@UID@ and @GID@ in an expectation: the numbers of the user who runs the corpus (the files of the host steps belong to him);
+    @UID-8@: left-justified in 8 columns (the owner column of ls -l)"""
+    def one(m):
+        v = str(os.getuid() if m.group(1) == 'UID' else os.getgid())
+        return v.ljust(int(m.group(2))) if m.group(2) else v
+    return re.sub(r'@(UID|GID)(?:-(\d+))?@', one, text)
+
+
 def generate(g, path, default_step, first='t.in', prefix=()):
     """the cases of the text file path; prefix: case lines put before the lines of every case"""
     for name, files, lines, want in blocks(path, first):
@@ -74,5 +84,5 @@ def generate(g, path, default_step, first='t.in', prefix=()):
             lines = lines + ['step: ' + default_step]
         text = '\n'.join(lines) + '\n'
         if want is not None:
-            text += 'expect: output is %s\n' % shlex.quote(want.replace('\\', '\\\\').replace('\n', '\\n'))
+            text += 'expect: output is %s\n' % shlex.quote(owner(want).replace('\\', '\\\\').replace('\n', '\\n'))
         yield g.case(None, functools.partial(prepare, tuple(sorted(files.items()))), text, name=name, sources=[])

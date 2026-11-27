@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+# od with the output of GNU od for what the corpora use (host/recon/corpusrun.py puts this directory in front of PATH on
+# macOS only): od -An -tx1 [-j SKIP] [-N COUNT] [FILE] (a byte as " 61", 16 to a line) and od -c (the BSD od pads its
+# lines with blanks); everything else goes to /usr/bin/od.
+use strict;
+
+my @a = @ARGV;
+my ($an, $x1, $skip, $count, $file) = (0, 0, 0, undef, undef);
+my $ok = 1;
+while (@a) {
+	my $w = shift @a;
+	if ($w eq '-An') { $an = 1 }
+	elsif ($w eq '-tx1') { $x1 = 1 }
+	elsif ($w =~ /^-j(\d*)$/) { $skip = length $1 ? $1 : shift @a }
+	elsif ($w =~ /^-N(\d*)$/) { $count = length $1 ? $1 : shift @a }
+	elsif ($w !~ /^-/ && !defined $file) { $file = $w }
+	else { $ok = 0 }
+}
+if ($ok && $an && $x1 && $skip =~ /^\d+$/ && (!defined $count || $count =~ /^\d+$/)) {
+	my $fh;
+	if (defined $file) { open($fh, '<:raw', $file) or do { print STDERR "od: $file: $!\n"; exit 1 } }
+	else { $fh = \*STDIN; binmode $fh }
+	seek($fh, $skip, 0) if $skip && defined $file;
+	my $data;
+	if (defined $count) { read($fh, $data, $count) } else { local $/; $data = <$fh> }
+	$data = '' unless defined $data;
+	for (my $i = 0; $i < length $data; $i += 16) {
+		print join('', map { sprintf ' %02x', ord } split //, substr($data, $i, 16)), "\n";
+	}
+	exit 0;
+}
+open(my $p, '-|', '/usr/bin/od', @ARGV) or exit 127;
+while (<$p>) {
+	s/\s+$//;
+	print "$_\n";
+}
+close $p;
+exit($? >> 8);

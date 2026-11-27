@@ -21,7 +21,7 @@
 #
 # Environment: WEGA (the WEGA 3.1 tree), CHECK_TMP (default /tmp/wega_check, or /tmp/wega_check.NAME, a local disk),
 # CHECK_NAME, CHECK_PATCH, MAKEJOBS (default -j<cores>), CHECK_CORPORA (how many corpora run at a time, default half the cores), CORPUS_NOCACHE=1 (the corpora ignore the store: make checkall-nocache),
-# CHECK_KEEP=1 (keep CHECK_TMP after a run that passed; it is removed then, and kept after a failure or with -b).
+# CORPUS_DB (the store of the corpora, default WEGA/.corpus; on a case-sensitive file system), CHECK_KEEP=1 (keep CHECK_TMP after a run that passed; it is removed then, and kept after a failure or with -b).
 
 HERE=`cd \`dirname $0\` && pwd`
 REPO=`cd $HERE/../.. && pwd`
@@ -31,6 +31,17 @@ WEGA=`cd $WEGA && pwd`
 umask 002
 # hosts without GNU timeout (macOS): a stand-in
 command -v timeout >/dev/null 2>&1 || PATH=$REPO/host/tools/shim:$PATH
+# the store of the corpora (CORPUS_DB) holds files whose names differ only in case (Makefile, makefile): on a case-insensitive
+# file system (the default of macOS) they clash, a corpus then fails; make the store on a case-sensitive volume (an APFS image)
+STORE=${CORPUS_DB:-$REPO/.corpus}
+mkdir -p $STORE
+: > $STORE/.case_A
+if [ -e $STORE/.case_a ]; then
+	rm -f $STORE/.case_A
+	echo "checkall: the store $STORE is on a case-insensitive file system: set CORPUS_DB to a directory of a case-sensitive one" >&2
+	exit 2
+fi
+rm -f $STORE/.case_A
 if [ -n "$CHECK_TMP" ]; then T=$CHECK_TMP
 elif [ -n "$CHECK_NAME" ]; then T=/tmp/wega_check.$CHECK_NAME
 else T=/tmp/wega_check; fi
@@ -118,7 +129,7 @@ finish() {
 	# a run that passed has used every entry of the store that is still made: the rest goes (host/tools/corpus_prune.py;
 	# not without the store, CORPUS_NOCACHE: it uses none; not while another run's corpusrun.py runs)
 	if [ $FAIL = 0 ] && [ $BUILDONLY = 0 ] && [ -z "$CORPUS_NOCACHE" ] && [ -f $T/store.stamp ]; then
-		python3 $REPO/host/tools/corpus_prune.py $T/store.stamp --store $REPO/.corpus
+		python3 $REPO/host/tools/corpus_prune.py $T/store.stamp --store $STORE
 	fi
 	# a run that passed leaves nothing behind (not with -b: coverage.py reads its install tree; not with CHECK_KEEP=1);
 	# a run that failed keeps CHECK_TMP for the logs
@@ -273,8 +284,8 @@ CORP=`grep -v '^#' $T/shipped/WEGA/compare/CORPORA`
 touch $T/store.stamp	# the store: what the corpora of this run do not use is older than this (corpus_prune.py in finish)
 NC=${CHECK_CORPORA:-`expr \( $NPROC + 1 \) / 2`}
 echo "corpora start: load `loadavg`, $NC at a time" >> $T/timing.log
-export CS T REPO WEGA OLD CORPUS_OPTS
-echo $CORP | tr ' ' '\n' | xargs -P $NC -I{} sh -c 'CORPUS_DB=$REPO/.corpus CORPUS_TMP=$T/corpus_{} CORPUS_OPTS="-k $CORPUS_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS {} > $T/corpus_{}.log 2>&1'
+export CS T REPO STORE WEGA OLD CORPUS_OPTS
+echo $CORP | tr ' ' '\n' | xargs -P $NC -I{} sh -c 'CORPUS_DB=$STORE CORPUS_TMP=$T/corpus_{} CORPUS_OPTS="-k $CORPUS_OPTS" JOBS=2 WEGA_ROOT=$WEGA OLDROOT=$OLD sh $CS {} > $T/corpus_{}.log 2>&1'
 stamp '3 all corpora (CHECK_CORPORA at a time)'
 echo "corpora end: load `loadavg`" >> $T/timing.log
 grep -h '^TIME ' $T/corpus_*.log | sed 's/^TIME //' | sort >> $T/timing_corpus.log

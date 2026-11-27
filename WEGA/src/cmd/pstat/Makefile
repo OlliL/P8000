@@ -44,3 +44,6 @@ install: pstat
 
 clean:
 	rm -f *.o scrt0.s pstat
+
+# the library of /lib is not made here (the shipped build)
+/lib/slibc.a:

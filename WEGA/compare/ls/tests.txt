@@ -149,8 +149,8 @@ x
 yy
 -- expect
 total 2
--rw-r--r-- 1 1000     1000          2 May  1 06:00 a
--rw-r----- 1 1000     1000          3 Jan 15  1982 bb
+-rw-r--r-- 1 @UID-8@ @GID-8@      2 May  1 06:00 a
+-rw-r----- 1 @UID-8@ @GID-8@      3 Jan 15  1982 bb
 
 == long-g-o-n
 # src pentry: -g leaves out the owner, -o the group (and is a long listing by itself), -n numbers instead of names (the
@@ -164,7 +164,7 @@ step: ls -n a
 -- a
 x
 -- expect
--rw-r--r-- 1 1000     1000          2 May  1 06:00 a
+-rw-r--r-- 1 @UID-8@ @GID-8@      2 May  1 06:00 a
 
 == sizes
 # src pentry/nblock: -s prints the blocks of 512 bytes (%4D, "%D " with -m), and "total" over the directory

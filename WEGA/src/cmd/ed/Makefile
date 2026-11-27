@@ -39,3 +39,6 @@ clean:
 	rm -f *.o crt0.s ed
 
 .PHONY: all install clean
+
+# the library of /lib is not made here (the shipped build)
+/lib/libc.a:

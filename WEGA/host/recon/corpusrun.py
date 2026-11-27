@@ -155,7 +155,9 @@ WSIG = ['HUP', 'INT', 'QUIT', 'ILL', 'TRAP', 'IOT', 'EMT', 'FPE', 'KILL', 'BUS',
 
 def host_signal(w):
     if w == 7:
-        return signal.SIGRTMIN + 7
+        return signal.SIGRTMIN + 7 if hasattr(signal, 'SIGRTMIN') else signal.SIGEMT
+    if w == 19 and not hasattr(signal, 'SIGPWR'):
+        return signal.SIGINFO	# as the emulator on macOS
     return getattr(signal, 'SIG' + {'IOT': 'ABRT', 'CLD': 'CHLD', 'SEGV': 'SEGV'}.get(WSIG[w - 1], WSIG[w - 1]))
 
 
@@ -701,6 +703,9 @@ def run_case(cfg, indir, case, variant, side, binary, rd):
             e = dict(env)
             e['WEGA_ROOT'] = ROOT
             e['WEGA_HOST'] = os.path.join(REPO, 'host')	# the tools of the repository (e.g. $WEGA_HOST/tools/udosfs.py)
+            e['TZ'] = 'Europe/Berlin'	# the zone the dates of the cases (touch -d without UTC, ls output) are written for
+            if sys.platform == 'darwin':	# GNU touch -d and stat -c for the host steps
+                e['PATH'] = os.path.join(REPO, 'host', 'tools', 'shim') + os.pathsep + e.get('PATH', os.defpath)
             rc, out, err = spawn(['sh', '-c', 'umask 022; ' + st['line']], rd, e)
             res['steps'].append('host %d: exit=%d\n%s' % (i, rc, joined(out.decode('latin-1'), err.decode('latin-1'))))
             continue
@@ -783,10 +788,10 @@ def check_expect(case, res, rd):
         elif e[0] == 'output' and e[1] == 'is':	# the whole output of the last step; \n is a newline
             want = e[2].encode('latin-1').decode('unicode_escape')
             if not last or last[-1].split('\n', 1)[1] != want:
-                bad.append('output is %s' % e[2])
+                bad.append('output is %s (got %s)' % (e[2], repr(last[-1].split('\n', 1)[1][:300]) if last else 'no step'))
         elif e[0] == 'output':
             if not any(e[2] in s for s in res['steps']):
-                bad.append('output contains %s' % e[2])
+                bad.append('output contains %s (got %s)' % (e[2], repr('\n'.join(res['steps'])[-300:])))
         elif e[0] == 'file':
             p = os.path.join(rd, e[1])
             if not os.path.isfile(p):
