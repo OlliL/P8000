@@ -134,17 +134,25 @@ bd: bd.c
 	@mv bd1 bd
 	@rm bd2
 
-dump: dump.c
-	$(CC) $(CFLAGS) -o $@ dump.c
+dump.o: dump.c
+	$(CC) $(CFLAGS) -c dump.c
+dump: dump.o
+	$(LD) -e start -o $@ /lib/crt0.o dump.o -lc
 
-dumpdir: dumpdir.c
-	$(CC) $(CFLAGS) -o $@ dumpdir.c
+dumpdir.o: dumpdir.c
+	$(CC) $(CFLAGS) -c $@ dumpdir.c
+dumpdir: dumpdir.o
+	$(LD) -e start -o $@ /lib/crt0.o dumpdir.o -lc
 
-restor: restor.c
-	$(CC) $(CFLAGS) -o $@ restor.c
+restor.o: restor.c
+	$(CC) $(CFLAGS) -c $@ restor.c
+restor: restor.o
+	$(LD) -e start -o $@ /lib/crt0.o restor.o -lc
 
-tar: tar.c
-	$(CC) $(CFLAGS) -o $@ tar.c
+tar.o: tar.c
+	$(CC) $(CFLAGS) -c $@ tar.c
+tar: tar.o
+	$(LD) -e start -o $@ /lib/crt0.o tar.o -lc
 
 # gld: /bin/gld (segmented), the loader of the segmented programs, "wega 6/22/88 09:30 gld.c V1.0 (C) ZFT-KEAW" (its
 # identification string; no SCCS stamp, no crt0 stamp). WEGA's own development; the source is the lld of the Akademie
