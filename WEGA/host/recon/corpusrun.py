@@ -286,6 +286,14 @@ SPAWN = threading.Lock()
 def group_waiting(pgid):
     """every process of the process group sleeps (blocked in a system call: an open of a FIFO, a read, a wait)"""
     states = []
+    if not os.path.isdir('/proc'):
+        # no /proc (macOS): ps; I idle, S sleeping, U uninterruptible, T stopped
+        out = subprocess.run(['ps', '-A', '-o', 'pgid=,stat='], stdout=subprocess.PIPE, text=True).stdout
+        for ln in out.splitlines():
+            w = ln.split()
+            if len(w) == 2 and w[0] == str(pgid):
+                states.append(w[1][0])
+        return bool(states) and all(x in 'ISUT' for x in states)
     for d in os.listdir('/proc'):
         if d.isdigit():
             try:
