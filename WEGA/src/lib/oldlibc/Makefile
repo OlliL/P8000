@@ -89,7 +89,7 @@ LIBv4 = fseek/0_1.o cuserid/0_1.o rdwr/0_2.o getpass/0_1.o putpwent/0_1.o getpwn
 	 length/0_1.o crypt/0_1.o malloc/0_2.o errlst/0_2.o ../libc/build/nonseg/isatty.o mktemp/0_1.o ../libc/build/nonseg/setret.o \
 	 ../libc/build/nonseg/stty.o ../libc/build/nonseg/index.o ../libc/build/nonseg/swab.o strcat/0_1.o ../libc/build/nonseg/strcmp.o \
 	 ../libc/build/nonseg/strncmp.o strcpy/0_1.o strncpy/0_2.o goodmagic/0_1.o swap/0_1.o strlen/0_1.o rindex/0_1.o a64l/0_1.o l64a/0_1.o \
-	 ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chdir.o \
+	 ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o ../libc/build/nonseg/brk.o ../libc/build/nonseg/chdir.o ../libc/build/nonseg/chroot.o \
 	 ../libc/build/nonseg/chmod.o ../libc/build/nonseg/chown.o ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/dup.o ../libc/build/nonseg/execl.o \
 	 ../libc/build/nonseg/execv.o ../libc/build/nonseg/fork.o ../libc/build/nonseg/fstat.o ../libc/build/nonseg/getpid.o ../libc/build/nonseg/getuid.o \
 	 ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/lkdata.o ../libc/build/nonseg/link.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/nice.o \

@@ -3,7 +3,7 @@
  "compiler": "ccv0",
  "binary": "/bin/sum",
  "functions": {
-  "f0000": {
+  "start": {
    "file": "crt0",
    "orig": "0x0000",
    "size_orig": 16,

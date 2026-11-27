@@ -210,3 +210,6 @@
 /csh/csh
 /sh/sh
 /adb/adb
+/link
+/unlink
+/chroot

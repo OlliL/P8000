@@ -10,7 +10,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
 | [bin](#bin) | 111 | 107 | 3 | 0 | 1 |
-| [etc](#etc) | 67 | 34 | 0 | 18 | 15 |
+| [etc](#etc) | 67 | 37 | 0 | 15 | 15 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
 | [usr/lib](#usr-lib) | 197 | 119 | 2 | 57 | 19 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 964 | 11 | 138 | 84 |
+| **all** | 1197 | 967 | 11 | 135 | 84 |
 
 <a id="root"></a>
 ## root
@@ -168,7 +168,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `etc/checklist` | text | `src/etc/checklist` | exact | - | - |
 | `etc/chmog` | binary E707 | - | todo | D12 old, D1 slots | - |
 | `etc/chog` | binary E707 | - | todo | D12 old, D1 slots | - |
-| `etc/chroot` | binary E707 | `tmp/sys3/usr/src/cmd/chroot.c` | sys3 | D12 old, D1 slots | - |
+| `etc/chroot` | binary E707 | `src/cmd/chroot.c` | exact | ccv1 | libc-v4.a |
 | `etc/clri` | binary E707 | `tmp/sys3/usr/src/cmd/clri.c` | sys3 | D12 -, D1 tight | - |
 | `etc/cron` | binary E707 | `tmp/sys3/usr/src/cmd/cron.c` | sys3 | D12 -, D1 tight | - |
 | `etc/cshprofile` | text | `src/etc/cshprofile` | exact | - | - |
@@ -192,7 +192,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `etc/kdb` | binary E707 | - | todo | D12 new?, D1 slots | - |
 | `etc/killall` | text | `src/cmd/killall.sh` | exact | - | - |
 | `etc/labelit` | binary E707 | `tmp/sys3/usr/src/cmd/labelit.c` | sys3 | D12 old, D1 slots | - |
-| `etc/link` | binary E707 | `tmp/sys3/usr/src/cmd/link.c` | sys3 | D12 -, D1 - | - |
+| `etc/link` | binary E707 | `src/cmd/link.c` | exact | ccv0 | libc-v6.a |
 | `etc/login` | binary E707 | `src/cmd/login.c` | exact | ccv1 | libc-v9.a |
 | `etc/makelost+found` | text | `src/cmd/makelost+found.sh` | exact | - | - |
 | `etc/makewhatis` | text | `src/cmd/makewhatis.sh` | exact | - | - |
@@ -222,7 +222,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `etc/ttytype` | text | `src/etc/ttytype` | exact | - | - |
 | `etc/umfs` | text | `src/cmd/mfs.sh` | exact | - | - |
 | `etc/umount` | binary E707 | `tmp/sys3/usr/src/cmd/umount.c` | sys3 | D12 -, D1 slots | - |
-| `etc/unlink` | binary E707 | `tmp/sys3/usr/src/cmd/unlink.c` | sys3 | D12 -, D1 - | - |
+| `etc/unlink` | binary E707 | `src/cmd/unlink.c` | exact | ccv0 | libc-v6.a |
 | `etc/update` | binary E707 | - | todo | D12 -, D1 - | - |
 | `etc/upkeep` | binary E707 | - | todo | D12 old, D1 tight | - |
 | `etc/wall` | binary E707 | `tmp/sys3/usr/src/cmd/wall.sh` | sys3 | D12 -, D1 tight | - |
