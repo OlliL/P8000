@@ -1526,7 +1526,7 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 	e = exec_open(hp, &x);
 	av = NULL;
 	for (i = 0; e == ENOEXEC && i < 4; i++) {	/* a text file that starts with #!: the kernel runs the program named there, with the file as its argument */
-		char l[256], ip[256], *q, *arg = NULL, **nv;
+		char l[256], ip[300], *q, *arg = NULL, **nv;
 		size_t n;
 		FILE *f = fopen(hp, "rb");
 		if (!f) break;
@@ -1535,7 +1535,9 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 		l[n] = 0;
 		if (n < 3 || l[0] != '#' || l[1] != '!') break;
 		if ((q = strchr(l, '\n')) != NULL) *q = 0;
-		for (q = l + 2; *q == ' ' || *q == '\t'; q++) ;
+		q = l + 2;
+		while (*q == ' ' || *q == '\t')
+			q++;
 		{ char *w = q; while (*w && *w != ' ' && *w != '\t') w++; if (*w) { *w++ = 0; while (*w == ' ' || *w == '\t') w++; if (*w) arg = w; } }
 		if (!*q) break;
 		if (!strchr(q, '/')) {	/* no path: /bin, then /usr/bin (seen on the real system: #!sh in /usr/bin/sccsdiff) */
@@ -2062,7 +2064,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		p = a_ptr(&a); gstr(c, p, gp, sizeof gp);
 		r = chdir(hostpath(gp, hb, sizeof hb));
 		if (r == 0 && ((getenv("Z8K_OVERLAY") && *getenv("Z8K_OVERLAY")) || devtab_active())) {	/* the guest's idea of the directory (see gcwd) */
-			char abs[1500];
+			char abs[sizeof gcwd + sizeof gp];
 			if (gp[0] == '/') gcwd_normalize(gcwd, sizeof gcwd, gp);
 			else if (gcwd[0]) { snprintf(abs, sizeof abs, "%s/%s", gcwd, gp); gcwd_normalize(gcwd, sizeof gcwd, abs); }
 		}
