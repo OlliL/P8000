@@ -60,11 +60,17 @@ runpcs(runmode, execsig)
 			  regs[19]=shorten(bkpt->loc.a_offset);
 			  regs[18]=bkpt->loc.a_segno<<8;
 			  bkpt->flag=BKPTEXEC;
-			  IF --bkpt->count ORF samepc
+			  IF --bkpt->count
 			  THEN IF samepc==0 ANDF bkpt->comm[0]
 			       THEN command(bkpt->comm,'.');
 			       ELSE bkpt->count++;
 			       FI
+			       execbkpt(bkpt);
+			       loopcnt++;
+			       execsig=0;
+			       userpc.a_segno=0; userpc.a_offset=1;
+			  ELIF samepc
+			  THEN bkpt->count++;
 			       execbkpt(bkpt);
 			       loopcnt++;
 			       execsig=0;

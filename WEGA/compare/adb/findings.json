@@ -131,8 +131,8 @@
    "file": "findfn.c",
    "orig": "0x15e2",
    "size_orig": 332,
-   "status": "open",
-   "note": "WEGA: the frame size of a routine from its first instruction (jr: follow; dec r15,#n; sub r15,#nn; jp: follow). Open: the frame is 16 bytes in the original, the shipped cc gives 18 (the word it adds for a return value)."
+   "status": "exact",
+   "note": "WEGA: the frame size of a routine from its first instruction (jr: follow; dec r15,#n; sub r15,#nn; jp: follow). Source form: the segmented jp case ends `frsize(&b); return;` (the value from r2, no return temporary: the frame of the original is exactly its autos, 16 bytes; a return(frsize(&b)) in the block of b takes a temporary behind b); quirk in host/KNOWLEDGE.md."
   },
   "stkoff": {
    "file": "findfn.c",
@@ -436,8 +436,8 @@
    "file": "runpcs.c",
    "orig": "0x3a16",
    "size_orig": 504,
-   "status": "open",
-   "note": "WEGA: ptrace or sptrace by segflg; bpwait(4,5); the breakpoint command runs with ':' replaced by '.'; samepc. Open: popt places the test of samepc behind the block of the then part (code motion, phase B)."
+   "status": "exact",
+   "note": "WEGA: ptrace or sptrace by segflg; bpwait(4,5); the breakpoint command runs with ':' replaced by '.'; samepc. Source form: the samepc case as an ELIF of its own (count++, execbkpt, ...): popt merges its tail with the then part, so the samepc test jumps to count++ as in the original."
   },
   "endpcs": {
    "file": "runpcs.c",

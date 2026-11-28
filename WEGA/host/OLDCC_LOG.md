@@ -2555,3 +2555,10 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   the then part. Forms: the condition written six ways (order, `!=0`, `!(..&&..)`, parentheses): no; with the branches
   swapped (`IF !(--bkpt->count ORF samepc) THEN <else> ELSE <then> FI`, `!a ANDF !b`) the threading comes, but the else
   part stands in front of the then part. Open.
+- adb runpcs exact: `IF --bkpt->count THEN <then> ELIF samepc THEN bkpt->count++; execbkpt(bkpt); ... ELSE <else> FI`
+  (the samepc case written out, without the inner test it makes needless); comjump merges the tails, the samepc test
+  jumps to `count++`. adb: frsize, exform and doprnt left.
+- adb frsize exact: `frsize(&b); return;` in the block of `ADDR b` (no return temporary; the shipped codgen takes one
+  behind the autos of the block for every `return(e)`, so the 16-byte frame of the original rules out a return with a
+  value there). exform: the original reserves the temporary of get's result (0x28) before inkdot's (0x2a) and stores
+  itolws.I[0] after the calls; not by `& mask` in the same expression, `?:`, a comma or a nested assignment.

@@ -989,6 +989,7 @@ means it does something fixed instead (only possible where the original's result
 
 | Program | Bug or quirk | Rebuild | Details |
 |---------|--------------|---------|---------|
+| `/bin/adb` | frsize (findfn.c, the frame size of a routine) returns the frame of a long jump target as `frsize(&b); return;`: the value is what the call left in r2 (a return without value; the frame has no return temporary, which is how the source form was found, a guess) | kept | compare/adb/findings.json |
 | `/lib/clist` | an unused global array of 256 bytes (the first of the bss, name `buf` guessed); `\t.line` lines are found by their first 6 bytes, the number is read at column 7 and the name after the next tab, without a bound (a `.line` line without a tab runs past its end); the `.line` lines stay in the listing | kept | `compare/clist/findings.json` |
 | `/bin/local` | a Zilog binary of 02/84 with its SCCS line overwritten (`@[$]aaaaaaaaaaaabbbb/local.c 1.5 ... - ............`: path and trailer patched as the Zilog marks of the ZEUS binaries); the unused frame words s, t of argcat | kept (the line as the bytes have it) | `compare/local/findings.json` |
 | `/bin/ed` | built without PWB, but eopen still reads the first LBSIZE bytes of the file of the start and of each `e` (`fflg`: there the tab specification was looked for) into `funny` and seeks back: a dead read whose result is never used (WEGA removed only the fspec test) | kept | `compare/ed/SYSIII.md` |
