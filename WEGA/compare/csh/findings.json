@@ -180,7 +180,7 @@
    "size_orig": 400,
    "status": "exact",
    "lines": 0,
-   "note": "Source form: the ret block (Gcat, return (1)) inside the pack loop behind *wp++ = c; continue; (its \"\" behind \"Word too long\" in the strings, as the original); there popt moves it to the goto ret of case '\\n' (at the end of the function OLD_D20 keeps it)."
+   "note": "The ret block behind the pack loop as in Berkeley (popt OLD_D20 moves it to the goto ret of case '\\n', as the original)."
   },
   "DgetC": {
    "file": "sh.dol.c",

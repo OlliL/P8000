@@ -1332,6 +1332,23 @@ register struct node *p1;
 }
 #endif
 
+#ifdef OLD_D20
+/* a jump outside the stretch from a to l names the label l */
+static int
+d20outer(a, l)
+struct node *a, *l;
+{
+	register struct node *q;
+	register int n;
+
+	n = 0;
+	for (q = a; q && q != l; q = q->forw)
+		if ((q->op == JP || q->op == CJP) && q->ref == l)
+			n++;
+	return l->refc > n;
+}
+#endif
+
 struct node *
 codemove(p)
 struct node *p;
@@ -1344,7 +1361,8 @@ struct node *p;
 	int c50;
 #endif
 #ifdef OLD_D20
-	struct node *rp;
+	struct node *rp, *skip;
+	int nins, nbb;
 #endif
 #ifdef OLD_D20S
 	struct node *rp;
@@ -1362,7 +1380,29 @@ struct node *p;
 			return p1;
 	if (p2->op == JP || p2->op == RET) {
 		p2 = p2->forw;
+#ifdef OLD_D20
+		skip = 0;
+		nins = 0;
+		nbb = 0;
+#endif
 		for (p3 = p1->ref; p3; p3 = p3->forw) {
+#ifdef OLD_D20
+			/* the block that goes on behind a jump to the next label runs into the exit: it stays when it holds at
+			   most one instruction in front of that jump (ld ensure_buf, load1; libl allprint) or when a jump from
+			   outside enters it behind its first instruction (libcisam isopen: the goto chain unlock, exit, bad);
+			   else it moves, ending at that jump (sh getch: the return of a char; csh Dword: Gcat and return; sh
+			   inout: the block of IOMOV with its own if) */
+			if (p3->op == RET && skip) {
+				if (nins < 2 || nbb)
+					return p1;
+				p3 = skip;
+				goto d20mv;
+			}
+			if (skip == 0 && p3->op == LABEL && nins > 0 && d20outer(p1->ref, p3))
+				nbb++;
+			if (skip == 0 && p3->op != LABEL && p3->op != KCOMMENT && p3->op != JP)
+				nins++;
+#endif
 #ifdef OLD_D20
 			/* the old popt has removed a jump to the next label already: the block goes on behind it; only for a
 			   block whose label at most 3 jumps name (libPW xmsg 6, regcmp 21: the common tail moves) */
@@ -1370,8 +1410,11 @@ struct node *p;
 				for (rp = p3->forw; rp && (rp->op == LABEL || rp->op == KCOMMENT); rp = rp->forw)
 					if (rp == p3->ref)
 						break;
-				if (rp == p3->ref)
+				if (rp == p3->ref) {
+					if (skip == 0)
+						skip = p3;
 					continue;
+				}
 			}
 #endif
 #ifdef OLD_D20S
@@ -1387,6 +1430,9 @@ struct node *p;
 			}
 #endif
 			if (p3->op == JP) {
+#ifdef OLD_D20
+d20mv:
+#endif
 				if (p1 == p3)
 					return p1;
 #ifdef TRACE

@@ -75,7 +75,7 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] newgrp (13898)
 - [x] passwd (15188)
 - [x] stty (15702) -- byte-identical (2026-11-25): stty.c of System III with the WEGA speeds and modes, the shipped cc, libc-v15 (new: libc.a with doprnt 0_10)
-- [x] ed (16750) -- byte-identical (2026-11-25): ccv1 -DRESEARCH without PWB, libc-v4; putline in goto form
+- [x] ed (16750) -- byte-identical (2026-11-25): ccv1 -DRESEARCH without PWB, libc-v4; putline as in System III (popt D20 rule, 2026-11-28)
 - [x] mail (18572); link: rmail
 - [x] login (19030); same file as etc/login -- byte-identical (2026-11-25): ccv1, libc-v9, termcap; utscan with a pointer cast
 - [x] uux (21136)
@@ -92,14 +92,14 @@ The list, in this order (smallest first; the size of the original in bytes). Tic
 - [x] remote (15162) -- byte-identical (src/cmd/remote, ccvm)
 - [x] gpasswd (15362)
 - [x] make (39048) -- byte-identical (ced632f8, ccvm since 602346b6): System III make with the WEGA changes, libc.a; corpus 45 cases
-- [x] csh (45728) -- byte-identical (2026-11-26, phase B): Plexus csh with the WEGA changes, ccv1, libc-v9; Dword, execute, donice, main by source forms (popt trace; main and execute with gotos: odd forms, compare/csh/findings.json); corpus 27 of 27; out of OPEN of checkall
+- [x] csh (45728) -- byte-identical (2026-11-26, phase B): Plexus csh with the WEGA changes, ccv1, libc-v9; Dword (Berkeley form since the popt D20 rule of 2026-11-28), execute, donice, main by source forms (popt trace; main and execute with gotos: odd forms, compare/csh/findings.json); corpus 27 of 27; out of OPEN of checkall
 - [ ] adb (46996) -- done but 7 functions (2026-11-26): the ZEUS 3.2 adb, written from the binary on Plexus' z8000 adb; shipped cc, libu8000, kva/kpa of ps, libc.a; 88 of 95 functions exact, 7 open (codegen and popt forms, phase B); data and bss in place; built, installed, corpus 15 of 15; in OPEN of checkall Phase B (2026-11-28): frsize (the jr target) and exform (the long case) by source forms nearer, both still open (frame word; a temporary of get); stfind, getreg without a form (OLDCC_LOG 2026-11-28).
 - [x] fsc (2078; segmented E611) -- byte-identical (2026-11-26): src/cmd/fse/fsc.c, shipped scc -O -s -i
 - [x] fc (3074; segmented E607) -- byte-identical (2026-11-26): src/cmd/fse/fc.c, shipped scc -O, not stripped (cc.341.o patched in)
 - [x] pstat (15638; segmented E607) -- byte-identical (2026-11-26): no source, rebuilt from the binary on V7's pstat.c, sccvk without -O, kva.c/kpa.c of ps
 - [x] more (18648; link: page; owner 2026-11-26: was missing in this list, before gld) -- byte-identical (2026-11-26): Plexus' more.c/regex.c with WEGA's changes, ccv1 without -DSYS3, oldv7 stdio.h, termlib, libc-v6 (owner: crt0 and date; members and order added, host/recon/libcplace.py); corpus 2 of 2
 - [x] gld (27616; segmented E607) -- byte-identical (2026-11-26): lld.c of contrib/lcc taken back ("wega 6/22/88 gld.c V1.0 (C) ZFT-KEAW"), shipped scc without -O, scrt0.o, slibc.a; corpus 106 of 106
-- [ ] sh (24032); link: rsh -- phase B (2026-11-28): System III sh with the WEGA changes, ccv1, service.c by ccvm (its frames by `<sgtty.h>` and two declarations, OLDCC_LOG 2026-11-28), libc-v9; strict 113 of 118: open cmd, copy (popt blocks), assign (register), e3 (one frame word more in the original), addblok (the address of end: the bss is 2 bytes shorter); corpus 22 of 22; in OPEN of checkall
+- [x] sh (24032); link: rsh -- byte-identical (2026-11-28, phase B): System III sh with the WEGA changes, ccv1, service.c by ccvm (its frames by `<sgtty.h>` and two declarations, OLDCC_LOG 2026-11-28), libc-v9; cmd and getch in the System III forms by the popt D20 rule (2026-11-28), e3 and the bss by spare words (owner); assign by codgen OLD_D3B (v1, 2026-11-28); corpus 22 of 22; out of OPEN of checkall
 - [x] uucp (22890) -- byte-identical (2026-11-26): 3BSD (= 4BSD) uucp.c and logent.c with the modules of uux in src/cmd/uucp, the shipped cc; WEGA: no sccs string of uucp.c, versys only without -e, the X line with User and Optns; corpus 4 of 4
 
 Links found 2026-11-23 (same inode in the WEGA root): hd = od, rmail = mail, page = more (more: partial, src/cmd/more),

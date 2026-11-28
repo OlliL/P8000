@@ -319,7 +319,7 @@ MSG		badop;
 /*	comment delimeter 	*/
 
 #define	COMCHAR	'#'
-extern address	end[];
+address	end[];
 
 #include	"ctype.h"
 

@@ -86,7 +86,7 @@ the doscopy programs, the standalone programs, `/usr/lib/libcurses.a` and `slibc
 
 ### v1 (01/83 .. 07/83)
 
-- Switches: `OLD_D1`, `OLD_D12` and `OLD_D8L` (cparse), `OLD_D25` (scparse), `OLD_D3`, `OLD_D61`, `OLD_D62` and `OLD_D63` (codgen, scodgen), `OLD_D53` (codgen), `OLD_D24`
+- Switches: `OLD_D1`, `OLD_D12` and `OLD_D8L` (cparse), `OLD_D25` (scparse), `OLD_D3`, `OLD_D61`, `OLD_D62` and `OLD_D63` (codgen, scodgen), `OLD_D53` and `OLD_D3B` (codgen), `OLD_D24`
   (scodgen), `OLD_D2CW` (scodgen), `OLD_D20` and `OLD_D52` (popt).
 - `OLD_D24` and `OLD_D25` (a long cast to a pointer is masked through a copy) are in the segmented v1 since slibPW (07/83):
   xalloc (`(char *)((long)np + usize)`, `(char *)Lastbrk`), regcmp (`sp = (char *)*adx++` through a `long *`), regex.
@@ -392,6 +392,21 @@ leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (c
   a byte (opshort: a new pair). Not in v0p (cparse and scparse lose genswitch and refid). One witness that needs it.
 - v1 `OLD_D3` (cbranch): at the join label of `&&` and `||` the shipped codgen gives the idle registers back, the old one keeps
   them with their contents. ld init_entry, dseek.
+- v1 `OLD_D3B` (codgen only, not scodgen; reader3.c, the default case of cbranch, 2026-11-28): when the whole condition of a
+  statement `if` (the CBRANCH node, not a condition inside `&&`, `||`, `!` or `?:`) is `&` of an operand without a
+  conversion (an int tested in memory: `bit 10(r2),#15`), the registers that hold a copy of a parameter outside the
+  register it came in go back behind the test (rsreturn; not the parameter's own register, not r8 and up, not a codgen
+  temporary). The then part then takes the parameter from its own register again. Witness: sh assign (System III source
+  unchanged, `IF n->namflg&N_RDONLY THEN failed(n->namid,wtfailed)`): the original `ld r2,r7; bit 10(r2),#15; ...;
+  ld r2,r7; ld r7,4(r2)`, without the switch `ld r7,r2; ld r3,4(r7); ld r7,r3`. One witness, the mechanism of the old
+  codgen is not known; the two limits come from counter-witnesses, original sources that the first forms broke: csh
+  backeval (`int quoted = (literal || (cp[0] & QUOTE)) ? QUOTE : 0;`: `&` inside `||` and `?:`) and oldlibc nlist readby
+  (df; `if(sym->sn_name[0] & 128)`: a char, `ldb; extsb; bit r2,#7`: the then part keeps the copy). Measured: the codgen
+  output of all 211 modules built by ccv1 is unchanged except sh name.c. Where to look when a later v1 program differs:
+  a parameter used as a base in the then part of `if (p->field & CONST)`, the original reloading the parameter
+  (`ld rX,r7` again) where ours keeps the copy, or the other way round; then narrow the switch (e.g. to a call argument
+  in the then part, to the copy that was the index of the tested operand) and measure sh assign, csh backeval, nlist
+  readby again. Not measured for the segmented v1 (scodgen, sccv1) and not in v1c, v1q, v1l, v1r.
 - v1l `OLD_D3O` (under OLD_D3, cbranch): behind a `||` the idle registers go back, behind an `&&` they stay (lex mn2: the
   `nullstr[tptr] = TRUE` of `if (a || b)` in r3/r4, that of `if (a && b)` in r5/r6, so popt does not merge them; yyparse,
   packtrans). Only behind a join label of its own, or for `&&` too behind its own label: the same bytes on lex and regcmp.
@@ -651,6 +666,15 @@ write these operands in the order that gives the bytes (`argregs`, `rmconv`, `cl
   exit stay (ld ensure_buf, load1, main; libl allprint). Only for a block whose label at most 3 jumps name when codemove
   meets it: a common tail that many jumps name moves as in the shipped popt (libPW xmsg: the `fatal(str)` tail, 6;
   regcmp: 21). The bound lies between 3 (allprint) and 6 (xmsg), taken from the measurements.
+  When the block that goes on runs into the `ret` of the exit, it stays only with at most one instruction in front of the
+  jump to the next label (ld ensure_buf `ld r2,_rlbuf`, load1 `ldk r2,#0`, libl allprint none) or when a jump from outside
+  enters it behind its first instruction (libcisam isopen: the goto chain `unlock:`, `exit:`, `bad:` in front of
+  `return(-1)`, 11 instructions); else it moves, ending at that jump (2026-11-28: sh getch, the `return(d)` of a char, 2;
+  csh Dword, Gcat and return, 4; sh inout, the IOMOV block of 19 with an `if` of its own whose label only the block names;
+  ed putline in the System III form). Measured over the raw code of all 293 modules built by ccv1, ccv1q and sccv1 and the
+  28 of libcisam (ccv1c, sccv1c): no module changes. The mechanism of the old popt is not known (both limits are
+  measurements); where a later program differs: a block in front of the exit that the original moves or keeps against this
+  rule (the CM trace of popt shows it as `tend 1xxxx`).
 - vc `OLD_D20S` (popt): the same, but only for a straight block (no conditional jump in front of that `jpr`) whose label no other
   jump names. Witness: exprreloc of cas (the outer `default: return (0L);`, `subl rr2,rr2` in front of the exit, stays behind the
   dispatch codemove has moved; both dispatches jump to it). Without the limits exprval loses (its `return (v)`, refc 7, and the
@@ -965,7 +989,10 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | lex | lmain.c, sub1.c, sub2.c, parser.y (get1core, digit, alpha, siconv, cclinter, usescape, munput, mn2, yyparse, packtrans, ...) | v1l |  | x | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  | x |
 | regcmp | libPW regcmp.c (regcmp) | v1l |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | local | local.c (argcat: its static buf and nargv) | vz |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| csh | sh.c, sh.dol.c, sh.sem.c, sh.wait.c (all exact 2026-11-26 by source forms: main, execute, donice with gotos, Dword the ret block in the loop) | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
+| csh | sh.c, sh.dol.c, sh.sem.c, sh.wait.c (all exact 2026-11-26 by source forms: main, execute, donice with gotos; Dword in the Berkeley form since the D20 rule of 2026-11-28) | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
+| ed | ed.c (putline: the while loop of System III, D20 rule of 2026-11-28) | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
+| sh | macro.c (getch), cmd.c (inout): the System III forms by the D20 rule of 2026-11-28 | v1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
+| sh | name.c (assign: OLD_D3B, 2026-11-28) | v1 |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | adb | findfn.c, sym.c, format.c, output.c, print.c, runpcs.c (stfind, findsym: a register of a compare; frsize: the frame word of a return value; exform: a call through a temporary in itol; _doprnt: lda register; getreg: popt reload; runpcs: a block behind an unconditional jump) | cc |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 | pstat | pstat.c | vk (no -O) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | gld | gld.c (lld.c of contrib/lcc taken back) | shipped scc (no -O) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |

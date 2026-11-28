@@ -212,11 +212,10 @@ pack:
 toochars:
 			error("Word too long");
 		*wp++ = c;
-		continue;
-ret:
-		Gcat("", wbuf);
-		return (1);
 	}
+ret:
+	Gcat("", wbuf);
+	return (1);
 }
 
 /*

@@ -84,11 +84,10 @@
    "size_orig": 110
   },
   "cmd": {
-   "status": "open",
+   "status": "exact",
    "file": "cmd.c",
    "orig": "0x0554",
-   "size_orig": 1558,
-   "note": "Open: popt block order (one branch inverted), phase B."
+   "size_orig": 1558
   },
   "exitset": {
    "status": "exact",
@@ -253,11 +252,11 @@
    "size_orig": 36
   },
   "copy": {
-   "status": "open",
+   "status": "exact",
    "file": "io.c",
    "orig": "0x1468",
    "size_orig": 1520,
-   "note": "The range includes the statics of macro.c (copyto, skipto, getch: no symbols). Open: in getch a block of popt in another place (jr/jp, 2 bytes), phase B."
+   "note": "The range includes the statics of macro.c (copyto, skipto, getch: no symbols; strictcmp compares the range against copy alone, bincmp shows it equal). getch in the System III form (popt OLD_D20: the return block in front of the exit moves)."
   },
   "macro": {
    "status": "exact",
@@ -326,11 +325,11 @@
    "size_orig": 20
   },
   "assign": {
-   "status": "open",
+   "status": "exact",
    "file": "name.c",
    "orig": "0x228a",
    "size_orig": 44,
-   "note": "Open: n->namid of the failed call is loaded through r2 in the original (register choice), phase B."
+   "note": "System III source unchanged; exact by codgen OLD_D3B of v1 (host/OLDCC.md D3): behind the test the copy of n in r2 goes back, the then part reloads n from r7 (ld r2,r7; ld r7,4(r2)) as the original."
   },
   "readvar": {
    "status": "exact",
@@ -704,11 +703,11 @@
    "size_orig": 48
   },
   "e3": {
-   "status": "open",
+   "status": "exact",
    "file": "test.c",
    "orig": "0x47cc",
    "size_orig": 1014,
-   "note": "Open: the original frame has one word more than ccv1 gives (the locals from offset 0x0e up by 2); no declaration order of p1, a, p2, int1, int2 gives it (24 orders), no other old compiler either."
+   "note": "Unused local: INT unused; as the last declaration (owner 2026-11-28): the original has a word between the autos and the temporaries of codgen (traced, OLDCC_LOG 2026-11-28), cause not found. test.c also defines INT spare; behind av (owner 2026-11-28): the original has an unused word there, in front of the signal table of the libc (0xeba against 0xeb8)."
   },
   "tio": {
    "status": "exact",

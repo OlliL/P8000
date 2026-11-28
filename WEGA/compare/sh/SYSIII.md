@@ -34,7 +34,7 @@ Lines without comments and blanks that also stand in the System III file (one li
 
 ## WEGA's own
 
-- `setjmp`/`longjmp` are `setret`/`longret` (`ret_buf subshell, errshell`); `end` is `extern address end[]`.
+- `setjmp`/`longjmp` are `setret`/`longret` (`ret_buf subshell, errshell`); `end` as in System III (`address end[];`: ccv1 gives `.comm 0,_end`, the same bytes as `extern`).
 - args.c: `loginsh` (-1 when argv[0] starts with `-`, else 0; set, never read in the shell); `copyargs` is global and
   stands behind `useargs`.
 - name.c, xec.c, msg.c: the builtin `unset NAME` (the name leaves the binary tree of names: `unsetnam`, `rmnode`,

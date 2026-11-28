@@ -2401,3 +2401,112 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   `base<=off`, `!(off<base)`, `off-base>=0`), none.
 - getreg: the original compares regnam in rl7 four times, the shipped cc the last two from the home of the parameter;
   four forms of the condition, and print.c by ccvm, ccvl, ccvz, v0p, v1, v1c, v1l, v1q, v1r: none. A popt question.
+
+## 2026-11-28 sh cmd (inout) and getch: popt block order (v1)
+
+- inout (in the range of cmd): the order of the cases (6 permutations of DOCSYM, '>'+'<', default) and a nested IF for
+  the ELIF chain do not help; a `break;` behind `iof |= IOMOV` (or behind `iof |= IORDW`, or each branch its own break)
+  gives the layout of the original (popt: the '>' and '<' blocks behind the return). Taken: the break behind IOMOV.
+- getch (macro.c, in the range of copy): the original places the retry head (readc, subchar, the test of '$') behind
+  the call of comsubst and the DQUOTE block behind the return; the v1 popt (traced: popt v1 with -DTRACE) inverts the
+  goto loop and puts the head behind the DQUOTE block. Not it: `IF !subchar(d=readc())`, ELSE return(d) for the last
+  return, `;` for the endch return, peekc behind the FI, the tail with a common `goto retry` (four forms).
+- getch solved: `ELIF d==DQUOTE THEN goto dq; FI return(d); dq: quoted++; quote^=QUOTE; goto retry;` gives the layout
+  of the original (no loop inversion at the DQUOTE jump, which no longer stands in front of the label of the return).
+- assign (name.c): the original reloads n for `failed(n->namid, wtfailed)` (`ld r2,r7; ld r7,4(r2)`), ours keeps n
+  from the test in r2 (`ld r7,r2; ld r3,4(r7); ld r7,r3` before popt). Not by `(..)!=0`, the branches swapped, `(*n)`,
+  a return in the then part, `&(n->namval)`, a cast, an unused label, any old compiler (12).
+- e3 (test.c): `REG` on the longs, p2 or p1 changes the code; the extra word of the original is not found.
+
+## 2026-11-28 sh e3 (test.c): the extra frame word, traced
+
+- Trace of oalloc (v1 cparse, scratch copy, KDBG to stderr): e3 gets p1 0, a 16 (the v1 word of the register), p2 32,
+  int1 48, int2 80 (bits); `L_INT atol();` gets no place. The frame (ccv1 -S, ~L1 = 0): the autos end at 14, the
+  codgen temporaries follow at 14 (a word) and 16 (a long), r14 is saved at 20. The original has the same autos and
+  the temporaries at 16 and 18: a gap of one word between the end of the autos and the temporaries.
+- Rules tried in scratch copies (none in the tree):
+  - cparse bccode `SETOFF(autooff, SZLONG)` always: e3 exact, nxtarg and e1 of test.c get a word they lack (no temps).
+  - the same only in functions with a long auto: test.c exact, time main (01/83) and ld.c change.
+  - codgen freetemp: the first temporary of a statement at a 32-bit offset, in a function whose referenced symbols
+    hold a long auto: test.c, time, date exact; sh main.c (exfile: mailtime long, statb), ld.c, sccs chkin.c and
+    common.c change (exfile against the original: wrong).
+  So the gap is not an alignment of the temporaries by longs; the cause stays open. test.c keeps `INT unused;` (the
+  last declaration of e3) and `INT spare;` (behind av, the unused word in front of the signal table of the libc).
+- ld load2: `long u1, u2` are used (dseek offsets), not unused words; the frame of load2 (a 0, sp/lp/symno the v1
+  words 4..10, c 11, d 13, n 14, u1 16, u2 20) shows no gap in front of the temporaries. No second witness.
+
+## 2026-11-28 sh assign: n kept in r2
+
+- Before popt the shipped and the v1 codgen give for `failed(n->namid, wtfailed)` behind the test `bit 10(r2),#15`
+  the sequence `ld r7,r2; ld r3,4(r7); ld r7,r3` (n taken from r2, where the test left it); the original has
+  `ld r2,r7; ld r7,4(r2)` (n taken from its parameter register r7 again). Not by the order or the types of the
+  parameter declarations (STRING v first, STRUCT namnod *n, CHAR *v), nor by a v1 codgen without OLD_D3 (scratch copy),
+  nor by the forms tried before. Every codgen of the tree keeps n in r2 here; a trace of the register state in codgen
+  (rsuse, regforsym) is the next step.
+
+## 2026-11-28 popt D20 too wide: getch, inout, Dword, putline (owner: taken into the tree)
+
+- getch (sh macro.c) in the System III form: with the v1 popt without `OLD_D20` the range copy..getch is equal to the
+  original (0 lines); `goto dq` was a way around D20. Trace: the return block `ldb; extsb; jpr L184` (L240/L236) stands
+  in front of the exit; D20 lets the block go on behind the jump to the next label, runs into `ret` and nothing moves;
+  the original moves it to the `jpr L236` of the peekc block, and the DQUOTE jump is no longer followed by its label (no
+  loop inversion there).
+- D20 users in the tree (raw code of all 293 modules built by ccv1/ccv1q/sccv1 through popt and spopt v1, with and
+  without D20, compared with the labels renumbered): ld load1, ld ensure_buf, libl allprint (nonseg and seg). Their
+  blocks in front of the exit hold one instruction or none in front of the jump (`ldk r2,#0`, `ld r2,_rlbuf`, empty).
+  getch (2: `ldb; extsb`) and Dword of csh in the Berkeley form (`ret:` behind the loop, 4) move in the original.
+- Rule (scratch popt, an extension of `OLD_D20`): the block that goes on behind a jump to the next label and runs into
+  `ret` stays only with at most one instruction in front of that jump; a longer one moves, ending at that jump. All 293
+  modules unchanged (popt and spopt). Natural forms exact with it: getch (System III), inout of sh cmd.c without the
+  extra `break` (System III), csh Dword with `ret:` behind the loop (Berkeley), ed putline as the while loop of System
+  III. Not D20: csh donice (the natural `||` forms give 104 bytes, the original 108, with and without the rule).
+
+## 2026-11-28 sh assign: a codgen rule, OLD_D3B (owner: taken into the tree, v1 codgen)
+
+- Scratch v1 codgen (reader3.c, cbranch default case): behind the condition of a statement `if` (the CBRANCH node) whose
+  test is `&` of an operand without a conversion (`bit 10(r2),#15`, the operand tested in memory), the registers that hold
+  copies of parameters outside their own register go back. assign exact (name.c 21 of 21). First form (every AND):
+  csh backeval lost (`int quoted = (literal || (cp[0] & QUOTE)) ? QUOTE : 0;`, the AND inside `||` and `?:`, Berkeley
+  source as it is); with the statement `if` only: oldlibc nlist readby changed (`if(sym->sn_name[0] & 128)`, a char:
+  `ldb; extsb; bit r2,#7`; df is byte-identical with the old code). With both limits the codgen output of all 211 ccv1
+  modules is unchanged except sh name.c. One witness; the two limits come from the two counter-witnesses (guess, no
+  mechanism known).
+
+## 2026-11-28 sh: the sources against System III once more
+
+- Against System III only sccsid lines, setjmp/longjmp as setret/longret and WEGA's own functions (loginsh, unset,
+  ESC B, scripts, copyargs global behind useargs) are left, besides two spares in test.c. defs.h `extern address end[];`
+  went back to the System III `address end[];` (ccv1: `.comm 0,_end`): sh byte-identical with both. Without `INT spare;`
+  in test.c sh differs in 8 bytes (kept). Left as hints of a cause in the compiler: the frame word of e3 (`INT unused;`,
+  of the kind of the v1 spares of diff, mail, nl, ld; open) and the global spare (a bss word in front of the signal table
+  of the libc; compiler, libc or a lost WEGA variable: not known).
+
+- 2026-11-28, D20 rule narrowed after checkall: libcisam and slibcisam failed (isopen: the error path L85, 11
+  instructions, entered by the gotos to `exit:` and `bad:`, moved; the original keeps it; the 28 modules of ccv1c/sccv1c
+  were not in the sweep). Basic blocks only (no conditional jump, no label inside): isopen right, but sh inout lost (its
+  block of 19 has an `if` of its own, label L261 named only inside). Taken: the block stays when a label behind its first
+  instruction is named by a jump from outside the block (`d20outer`). 293 + 28 modules unchanged, getch, inout, Dword,
+  putline, assign exact.
+
+## 2026-11-28 the spare/unused words of v1 programs, systematically
+
+- ld slookup, pslookup (v1): the Plexus source has `return(lookup());`; with `return lookup_name();` the frame word is
+  the return temporary of the shipped/v1 codgen and the spares go: ld byte-identical. sld slookup, pslookup (shipped scc):
+  the same, `return(lookup_name());` for `long dummy` (the 4 bytes of a segmented pointer): sld byte-identical.
+- ld index16: 6 bytes in the original, 4 with every natural form tried (two returns, else, ?:, pointer differences,
+  sizeof, a local i (6, other code), a register parameter (6, other code)); sld index16 (shipped scc) has the same extra
+  word: two compilers agree, so the word is most likely in the common source (an unused local; guess).
+- sh e3: the original's temporaries start at 0x10 also on the outer level (`int2 = atol(nxtarg(0))`), the autos end at
+  0x0e. Refuted (scratch passes): baseoff aligned to a long in inner blocks (nxtarg, e1 lose); the same only with a long
+  auto (e3 exact, but 12 modules of 211 change: libmp mdiv, mout, oldlibc a64l, cnvt, ctime, doscan, passwd, time, strip,
+  more, csh sh.func.c, sh main.c); in every block with a long auto (16 change, among them libPW patol, xalloc, su, ld.c);
+  the first temporary of a statement at a 32-bit offset in codgen (nxtarg and e1 have their return temporary at 2 in the
+  original). test.c carries the sccsid 2.3 where the unchanged files of sh have 2.1 and the changed ones 2.2 (msg.c,
+  xec.c, name.c): WEGA changed test.c twice without a visible change of code; the two unused words (`INT unused;` in e3,
+  `INT spare;` behind av) fit such deltas (guess).
+- Other spares of v1 programs: passwd main (`long unused` between u and insist: a place among the declared autos, so a
+  declaration of WEGA's source, which changed passwd), more and ld.c (bss words of unknown commons). ld main, endload: no
+  spare left (the findings notes were old).
+- sld (shipped scc, 10/27/83): its spares (`int spare[N]`) match in several functions the number of register locals of
+  the Plexus source (load2arg 2: cp, lp; load2td 3: r, t, sp; flush 1: n): the picture of the register slots of the
+  compilers of 11/83 (OLD_D1S, OLDCC_REGSLOTS.md), here segmented. Not measured; a lead.

@@ -7,6 +7,9 @@ extern void allocinit();
 extern NODE *argprep();
 extern int callflag;
 extern void cbranch();
+#ifdef OLD_D3B
+static NODE *d3btop;	/* OLD_D3B: the condition of the statement if (CBRANCH) */
+#endif
 extern char *cnames[];
 extern void codgen();
 extern void constore();
@@ -950,7 +953,13 @@ again:
 		goto again;
 	case CBRANCH:
 		o = p2->tn.lval;
+#ifdef OLD_D3B
+		d3btop = p1;
+#endif
 		cbranch(p1, -1, o);
+#ifdef OLD_D3B
+		d3btop = 0;
+#endif
 		p2->in.op = FREE;
 		p->in.op = FREE;
 #if defined(OLD_D3K) && !defined(OLD_D3KC)
@@ -1733,6 +1742,12 @@ cbranch(p, true, false)
 			goto asgn;
 	default: {
 		int t;
+#ifdef OLD_D3B
+		int d3b;
+
+		/* the whole condition of a statement if is & of an operand without a conversion (sh assign) */
+		d3b = p == d3btop && p->in.op == AND && p->in.left->in.op != SCONV;
+#endif
 
 		t = p->in.type;
 		/* get condition codes */
@@ -1749,6 +1764,23 @@ cbranch(p, true, false)
 				cbgen(true >= 0 ? 0 : EQ, false, 'I');
 		}
 		reclaim(p, RNULL, 0);
+#ifdef OLD_D3B
+		/*
+		 * v1: behind the test the registers that hold a copy of a parameter outside the register it came in (the index
+		 * of `bit 10(r2),#15`) go back: the then part takes the parameter from its own register again (sh assign:
+		 * `ld r2,r7; ld r7,4(r2)` for failed(n->namid, ...)). Limits from counter-witnesses: not for & inside || ?:
+		 * (csh backeval), not for a converted operand (`ldb; extsb; bit`, oldlibc nlist readby). host/OLDCC.md D3.
+		 */
+		if (d3b) {
+			register struct rs *q, *nx;
+
+			for (q = rsuse; q; q = nx) {
+				nx = q->next;
+				if (q->sym && q->sym->sclass == PARAM && q->reg != q->sym->sbyte5 && q->reg < R8 && q->kind != RKTEMP)
+					rsreturn(q->cls, q->reg);
+			}
+		}
+#endif
 	}
 	}
 }

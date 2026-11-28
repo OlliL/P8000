@@ -303,8 +303,7 @@
    "size_orig": 152,
    "status": "exact",
    "kind": "proven",
-   "callers": [],
-   "note": "odd form: the loop as goto (loop/out/more) with the return in front of the --nl part; the while loop of System III gives the usual layout (test at the bottom)."
+   "callers": []
   },
   "getblock": {
    "file": "ed.c",

@@ -10,6 +10,7 @@ static char sccsid[] = "@[$]test.c\t2.3  08/06/83 19:36:53 - 87wega3.2";
 
 INT	ap, ac;
 STRING	*av;
+INT	spare;
 
 test(argn, com)
 	STRING com[];
@@ -77,6 +78,7 @@ e3() {
 	STRING	p2;
 	L_INT	atol();
         L_INT int1, int2;
+	INT	unused;
 
         a=nxtarg(0);
         IF eq(a, "(")
