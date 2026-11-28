@@ -59,10 +59,21 @@ same bytes; (2) a disk image of the install tree boots in the MAME P8000 machine
 2. Disk image from the install tree; boot in MAME; the list of commands.
 3. Native build in MAME (owner 2026-11-25; the plan `future-project-structure.md` in the repository root, section
    "Native build in MAME"): a file system image that holds the git files of the tree (`wegafs.py`: a command that puts
-   a whole directory tree is needed; where the image goes, a second disk or a partition, is to be measured in the MAME
-   machine), boot single-user, mount it, run the complete build with the native make and tools, end MAME, take the
+   a whole directory tree is needed), boot single-user, mount it, run the complete build with the native make and tools, end MAME, take the
    install tree out of the image (`wegafs.py extract`), compare with the cross build. Not a must for this increment,
    but its tools (image, boot, mount) are made here and later move to `native/p8000-wega/` of ZEUS-WEGA.
+   - The file system goes to the partition mounted as `/z` (owner 2026-11-25: no second disk, it would need a kernel
+     with a second drive). Its place, from the partition table of the kernel (`src/uts/h/mdsize.h`, used by
+     `src/uts/conf/wpar.c` `md_sizes`): drive 0, minor 4, offset USR+SWAP+ROOT+TMP = 13000+3000+7000+4000 = 27000
+     blocks, size Z = 60732 blocks (about 31 MB in blocks of 512 bytes). The end, 27000+60732 = 87732 blocks, fits the
+     45 MB disk; the root at 16000 (USR+SWAP) matches `md(0,16000)wega`. The kernel prints the layout at boot
+     (`src/uts/sys/main.c`): to be checked there against the table. The image is written into a copy of the CHD at
+     that offset (how, e.g. with MAME's chdman: to be found).
+   - Space (measured 2026-11-25 on the working tree): the git files of `src/` 2208 files, 16972 blocks; the build
+     products present in the working tree (ignored files under `src/`) 1742 files, 20784 blocks (whether that is a
+     complete build is not checked). Together about 38000 of 60732 blocks. I-nodes: mkfs makes 60732/25 = 2429 i-node
+     blocks of 8, about 19400 i-nodes. Temporary files of cc go to `/tmp`, a partition of its own (4000 blocks). A
+     guess until the first native build has run: enough.
 
 ## Decisions
 
