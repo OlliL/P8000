@@ -582,7 +582,7 @@ static volatile sig_atomic_t sig_pend[20], sig_any;
 static int sig_host(int w)	/* WEGA number -> host number; SIGEMT (7) has none on the host: a real-time signal */
 {
 	if (w <= 0 || w >= 20) return 0;
-	#ifdef SIGRTMIN
+#ifdef SIGRTMIN
 	return w == 7 ? SIGRTMIN + 7 : sig_host_fixed[w];
 #else
 	return w == 7 ? SIGEMT : sig_host_fixed[w];	/* macOS has SIGEMT, no real-time signals */
@@ -1427,6 +1427,23 @@ static void dirload(int fd, const char *path)
 	dirs = d;
 }
 
+/* the host path of an open file (NULL: unknown): F_GETPATH on macOS, /proc/self/fd elsewhere */
+static const char *fdpath(int fd, char *buf, size_t n)
+{
+#ifdef F_GETPATH
+	(void)n;
+	return fcntl(fd, F_GETPATH, buf) == 0 ? buf : NULL;
+#else
+	char l[32];
+	ssize_t k;
+	snprintf(l, sizeof l, "/proc/self/fd/%d", fd);
+	k = readlink(l, buf, n - 1);
+	if (k <= 0) return NULL;
+	buf[k] = 0;
+	return buf;
+#endif
+}
+
 /* the layer of "/" is the same directory as ROOT for the guest: "." and ".." of / are one (pwd compares them) */
 static void rootfix(const char *hp, struct stat *st)
 {
@@ -1749,15 +1766,9 @@ static int um_call(Z8K *c, unsigned n)
 	case 28:	/* fstat */
 		i = a_int(&a); p = a_ptr(&a);
 		if (devfd(i) >= 0 || fstat(i, &st) < 0) return -2;
-#ifdef __APPLE__
-		k = fcntl(i, F_GETPATH, hb) == 0 ? (int)strlen(hb) : -1;
-#else
-		snprintf(gp, sizeof gp, "/proc/self/fd/%d", i);
-		k = readlink(gp, hb, sizeof hb - 1);
-		if (k > 0) hb[k] = 0;
-#endif
-		um_owner(k > 0 ? hb : NULL, &st);
-		rootfix(k > 0 ? hb : NULL, &st);
+		hp = fdpath(i, hb, sizeof hb);
+		um_owner(hp, &st);
+		rootfix(hp, &st);
 		if (S_ISDIR(st.st_mode)) { Dir *dd = dirof(i); if (dd) st.st_size = dd->len; }
 		put_stat(c, p, &st);
 		return sc_ok(c, 0);
@@ -2119,9 +2130,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		  if ((k = devfd(i)) >= 0) { dev_stat(k, &st); put_stat(c, p, &st); return sc_ok(c, 0); }
 		  if (fstat(i, &st) < 0) return sc_err(c, errno);
 		  if (S_ISDIR(st.st_mode) && (d = dirof(i)) != NULL) st.st_size = d->len;
-#ifdef __APPLE__
-		  rootfix(fcntl(i, F_GETPATH, hb) == 0 ? hb : NULL, &st);
-#endif
+		  rootfix(fdpath(i, hb, sizeof hb), &st);
 		  put_stat(c, p, &st); return sc_ok(c, 0); }
 	case 19: {	/* lseek */
 		int fd = a_int(&a); int32_t off = a_long(&a); int wh = a_int(&a);

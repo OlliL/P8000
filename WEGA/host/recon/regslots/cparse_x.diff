@@ -47,7 +47,7 @@
  	if( p->sclass != REGISTER ){ /* in case we are allocating stack space for register arguments */
  		if( p->offset == NOOFFSET ) p->offset = off;
  		else if( off != p->offset ) return(1);
-@@ -503,15 +523,15 @@
+@@ -503,17 +523,15 @@
  		}
  	if( !mk ) return;
  
@@ -61,7 +61,9 @@
  	q->sflags = s;
  	q->stype = UNDEF;
  	q->sclass = SNULL;
+-#ifndef OLD_D1S
 -	q->sfldc = 0;
+-#endif
  	if( blevel ){
  		q->sname = ntabindx;
  		t = &ntab[ntabindx];

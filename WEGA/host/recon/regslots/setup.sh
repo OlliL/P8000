@@ -44,7 +44,7 @@ done
 echo "make bin/make main.c doname.c misc.c files.c wegarules.c dosys.c gram.c dyndep.c prtmem.c" > ts/list
 for p in diff mail nl; do mkdir -p ts/$p; grep -v 'int unused;\|int spare;' $WEGA/src/cmd/$p.c > ts/$p/$p.c; echo "$p bin/$p $p.c" >> ts/list; done
 for p in comm csplit tsort uniq; do mkdir -p ts/$p; cp $WEGA/../tmp/sys3/usr/src/cmd/$p.c ts/$p/; echo "$p usr/bin/$p $p.c" >> ts/list; done
-for p in ar cmp du grep pr putfile who; do mkdir -p ts/$p; cp $WEGA/src/cmd/$p.c ts/$p/; echo "$p bin/$p $p.c" >> ts/list; done
+for p in ar cmp du grep pr putfile who; do mkdir -p ts/$p; f=$WEGA/src/cmd/$p.c; [ -f $f ] || f=$WEGA/src/cmd/remote/$p.c; cp $f ts/$p/; echo "$p bin/$p $p.c" >> ts/list; done
 sed -i '/^\tint u;$/d' ts/ar/ar.c	# the unused locals of ar (rcmd, notfound, longt)
 mkdir -p ts/cpio; echo "cpio usr/bin/cpio cpio.c" >> ts/list	# without the unused locals of gmatch and missdir
 sed '/^gmatch(/,/^}/{/^\tint i, j, k;$/d}; /^missdir(/,/^}/{/^\tint i;$/d}' $WEGA/src/cmd/cpio.c > ts/cpio/cpio.c
