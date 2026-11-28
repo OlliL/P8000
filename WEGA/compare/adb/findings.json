@@ -124,8 +124,8 @@
    "file": "findfn.c",
    "orig": "0x14e8",
    "size_orig": 250,
-   "status": "open",
-   "note": "WEGA: the search in the segment symbol table (struct segsym) for the symbol below an address, its own static fndseg/fnddiff (a copy of findsym in sym.c that returns the low word of the value). Open: off>=base is compared in rr4 (the shipped cc takes rr2; no source form found), 2 bytes."
+   "status": "exact",
+   "note": "WEGA: the search in the segment symbol table (struct segsym) for the symbol below an address, its own static fndseg/fnddiff (a copy of findsym in sym.c that returns the low word of the value). Source form: the last two tests grouped, ... ANDF (off-(base=p->ss_base)<... ANDF off>=base): off stays known in rr4 for the then part (ldl rr2,rr4), as the original."
   },
   "frsize": {
    "file": "findfn.c",
@@ -411,8 +411,8 @@
    "file": "print.c",
    "orig": "0x390c",
    "size_orig": 162,
-   "status": "open",
-   "note": "WEGA: register names r0..r14, sp, fcw, pc (two or three letters, fcw); returns the offset in regs[] or -1. Open: popt reloads the parameter for the third and fourth comparison, the original keeps rl7."
+   "status": "exact",
+   "note": "WEGA: register names r0..r14, sp, fcw, pc (two or three letters, fcw); returns the offset in regs[] or -1. Source form: the four tests grouped to the right, regnam=='r' ORF (regnam=='f' ORF (regnam=='s' ORF regnam=='p')): codgen gives the registers back at the end of each inner ||, so only the right grouping keeps regnam in rl7 for all four (host/OLDCC_LOG.md 2026-11-28)."
   },
   "printpc": {
    "file": "print.c",
@@ -561,8 +561,8 @@
    "file": "sym.c",
    "orig": "0x4d12",
    "size_orig": 248,
-   "status": "open",
-   "note": "WEGA (sym.c): the copy of stfind that returns &fnd (static ADDR: the segment and the distance) and reads the symbol into fsymbuf. Open: off>=base in rr4 as in stfind."
+   "status": "exact",
+   "note": "WEGA (sym.c): the copy of stfind that returns &fnd (static ADDR: the segment and the distance) and reads the symbol into fsymbuf. Source form: the last two tests grouped, ... ANDF (off-(base=p->ss_base)<... ANDF off>=base): off stays known in rr4 for the then part (ldl rr2,rr4), as the original."
   },
   "nextsym": {
    "file": "sym.c",

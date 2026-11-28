@@ -237,7 +237,7 @@ CHAR	regnam;
 	CHAR		name[4];
 
 	name[0] = regnam;
-	IF regnam=='r' ORF regnam=='f' ORF regnam=='s' ORF regnam=='p'
+	IF regnam=='r' ORF (regnam=='f' ORF (regnam=='s' ORF regnam=='p'))
 	THEN	IF (name[1]=readchar())==EOR
 		THEN	name[1]=0;
 		ELSE	name[2]=readchar(); name[3]=0;

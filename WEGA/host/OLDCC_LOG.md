@@ -2529,3 +2529,29 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   ld.c 3.8. Kernel lock.c by sccvm without its unused longs: 14/20 bytes as the shipped scc, the original 18/28.
 - No program becomes exact by sccvm without guessed additions: no witness, the pass went out again (owner). The spares
   stay; their findings point here.
+
+## 2026-11-28 adb: compilers and codgen variants (scratch)
+
+- adb with every old compiler (whole build, strictcmp): cc and ccvl 14 differing functions, ccvm 17, ccvz 73, v1 family
+  82..87, v0p 91; none makes one of the open six (stfind, frsize, exform, getreg, runpcs, findsym) exact.
+- getreg is a codgen matter, not popt: the raw code compares regnam from the frame for the third and fourth `||` term;
+  ccv1 (OLD_D3) keeps rl7 for all four. Shipped codgen with OLD_D3: getreg exact, but access, chkmap, stkoff, setsym,
+  setcor lost and stfind, findsym worse. Variant: at the join of `&&`/`||` a parameter in its own register stays known
+  (rfreeall flag, the v0 OLD_D3K idea narrowed): getreg exact, nothing else of adb changes (13 left). Keeping every
+  named register there: as OLD_D3 (the five lost).
+- frsize: the original frame is exactly its autos (ap 0, inst 2, a 4, b 10..16, the ADDR b of the inner block), no return
+  temporary; getreg (no inner block with locals) and eqsym (`return(eqstr(s1,s3))` inside the block of s3) have theirs.
+  The return temporary at the base of the outer block: frsize exact, eqsym lost; temporaries of inner blocks not raised
+  by their `[` record: frsize 12 bytes, access, command, eqsym, scanform, printtrace lost. Open.
+- stfind, findsym: the original keeps `off` in rr4 from `off>=base` and copies it (`ldl rr2,rr4`) for `off-base`; not by
+  keeping named registers at the join (above).
+- The shipped codgen is byte-identical with /lib/codgen: such a rule would be an older codgen of adb's own (a new pass).
+- adb by source forms (shipped cc, owner: no other compiler): getreg exact with the tests grouped to the right
+  (`a ORF (b ORF (c ORF d))`: codgen frees the registers at the end of every `||`, the left grouping loses rl7 after
+  the second test); stfind and findsym exact with `... ANDF (off-(base=...)<... ANDF off>=base)` (off kept in rr4).
+  adb 11 differing functions left (frsize, exform, runpcs, command, sprintf, printf).
+- adb runpcs (`IF --bkpt->count ORF samepc`): the original's samepc test jumps straight to `count++` of the inner
+  `IF samepc==0 ANDF ...` (popt threads `jr ne` onto the identical `test samepc` behind the then label) and stands behind
+  the then part. Forms: the condition written six ways (order, `!=0`, `!(..&&..)`, parentheses): no; with the branches
+  swapped (`IF !(--bkpt->count ORF samepc) THEN <else> ELSE <then> FI`, `!a ANDF !b`) the threading comes, but the else
+  part stands in front of the then part. Open.

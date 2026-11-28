@@ -73,7 +73,7 @@ ADDR	*ap;
 	THEN IF p = segsyms
 	     THEN WHILE fnd.a_offset
 		  DO IF (type = p->ss_type) == -1 THEN break; FI
-		     IF type==space ANDF p->ss_seg==fnd.a_segno ANDF off-(base=p->ss_base)<fnd.a_offset ANDF off>=base
+		     IF type==space ANDF p->ss_seg==fnd.a_segno ANDF (off-(base=p->ss_base)<fnd.a_offset ANDF off>=base)
 		     THEN fnd.a_offset = off-base;
 			  best = cur;
 			  bestp = p;

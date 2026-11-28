@@ -29,7 +29,7 @@ ADDR	*ap;
 	THEN IF p = segsyms
 	     THEN WHILE fnddiff
 		  DO IF (type = p->ss_type) == -1 THEN break; FI
-		     IF type==space ANDF p->ss_seg==fndseg ANDF off-(base=p->ss_base)<fnddiff ANDF off>=base
+		     IF type==space ANDF p->ss_seg==fndseg ANDF (off-(base=p->ss_base)<fnddiff ANDF off>=base)
 		     THEN fnddiff = off-base;
 			  best = cur;
 			  bestp = p;
