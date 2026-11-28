@@ -1,15 +1,15 @@
 # sh: /bin/sh (and its link /bin/rsh) from the Bourne shell of System III (usr/src/cmd/sh) as WEGA changed it (SCCS lines
 # 08/06/83 .. 08/22/83): the builtins unset (a name leaves the tree of names) and ESC B (empty), a script is run by the
 # shell its first line names (#!), a login flag of argv[0], setret/longret for setjmp; profile.c (monitor) of WEGA.
-# ccv1, separate I and D (-i), the files in alphabetical order with test.c last (sh.mk). Open (compare/sh/findings.json):
-# service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings;
-# host/OLDCC.md), not built; three blocks of popt. libc-v9 (extended for sh, owner 2026-11-26).
+# ccv1, separate I and D (-i), the files in alphabetical order with test.c last (sh.mk); service.c (08/22/83, padded
+# strings, register slots) by ccvm (CCS). libc-v9 (extended for sh, owner 2026-11-26). Open: compare/sh/findings.json.
 #
 #   make              build ./sh
 #   make install PREFIX=dir    (bin/sh and its link bin/rsh)
 #   make clean
 
 CC = ccv1
+CCS = ccvm
 CAS = cas
 LD = ld
 CFLAGS = -O -I../../head/oldv7
@@ -36,6 +36,9 @@ $(OBJECTS): defs.h mac.h mode.h name.h stak.h brkincr.h ctype.h
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
+
+service.o: service.c
+	$(CCS) $(CFLAGS) -c service.c
 
 install: sh
 	cp sh $(PREFIX)/bin/sh

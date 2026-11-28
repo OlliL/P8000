@@ -132,7 +132,7 @@
    "orig": "0x15e2",
    "size_orig": 332,
    "status": "open",
-   "note": "WEGA: the frame size of a routine from its first instruction (jr: follow; dec r15,#n; sub r15,#nn; jp: follow). Open: the frame is 16 bytes in the original, the shipped cc gives 18 (the word it adds for a return value); the jr target is computed with ap loaded first (no source form found)."
+   "note": "WEGA: the frame size of a routine from its first instruction (jr: follow; dec r15,#n; sub r15,#nn; jp: follow). Open: the frame is 16 bytes in the original, the shipped cc gives 18 (the word it adds for a return value)."
   },
   "stkoff": {
    "file": "findfn.c",
@@ -157,7 +157,7 @@
    "orig": "0x1d98",
    "size_orig": 1054,
    "status": "open",
-   "note": "WEGA: formats as printed by the original (%%%04x, %06o, %6d ...), no I z Z, 'i' through printins; a long is masked to 31 bits; f and F convert the float with the EPU first. Open: in the long case the get of the second word is done before itolws.I[0]=w (the result through a temporary), no source form found."
+   "note": "WEGA: formats as printed by the original (%%%04x, %06o, %6d ...), no I z Z, 'i' through printins; a long is masked to 31 bits; f and F convert the float with the EPU first. The long case as in Plexus (wx=itol(w,get(...))), the mask as a statement of its own. Open: the original stores the result of get in a temporary of the frame before itolws.I[0]=w (the shipped cc stores I[1] directly; with the arguments of itol in the other order only that store differs); no source form found."
   },
   "unox": {
    "file": "format.c",

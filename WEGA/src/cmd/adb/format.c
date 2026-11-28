@@ -99,7 +99,7 @@ STRING		ifp;
 			w = shorten(dot.a_offset);
 		ELSE w=get(&dot,itype);
 		     IF longpr
-		     THEN wx=itol(w,get(inkdot(2),itype)) & 0x7fffffff;
+		     THEN wx=itol(w,get(inkdot(2),itype)); wx &= 0x7fffffff;
 		     ELSE wx=w;
 		     FI
 		FI

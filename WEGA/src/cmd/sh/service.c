@@ -9,6 +9,10 @@ static char sccsid[] = "@[$]service.c\t2.1  08/22/83 09:07:23 - 87wega3.2";
  */
 
 #include	"defs.h"
+#include	<sgtty.h>
+
+PROC VOID	prp();
+PROC VOID	prn();
 
 
 PROC VOID	gsort();

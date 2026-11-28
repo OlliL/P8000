@@ -214,7 +214,9 @@ register local a frame word). Built by cc with the libc of stage 1 as the other 
 `libc-v7.a`, linked into the shipped cparse, and of `/lib/libc.a` give the same words, measured on the test set). Which local gets a word depends on every symbol entry made before it in the file (`OLDCC_REGSLOTS.md`).
 Built by vm and byte-identical: ar, cmp, cpio, diff, du, egrep (from egrep.y by the yacc of WEGA), getfile, grep, mail (rmail), make, nl, nm, pr, putfile, remote, who. Source forms it needs: make's defs includes the headers of files.c (pwd.h, ar.h, s.out.h, nlist.h);
 make files.c eqstr keeps an `int unused`, mail an unused `<sys/dir.h>` (the entries in front of the first function that
-are not in the bytes). The undated tar, dump, dumpdir, restor and the standalone programs get words from it that they lack:
+are not in the bytes). Older than 11/83: sh service.c (08/22/83; the rest of sh is v1) has the words of vm in await,
+mactrim, scan and gsort; with an unused `<sgtty.h>` and two function declarations in front of the first function (a
+guess among equivalent forms, `compare/sh/findings.json`) every function of it is strictly equal. The undated tar, dump, dumpdir, restor and the standalone programs get words from it that they lack:
 they are of the shipped cparse.
 
 Rebuilding a program of vm: no spare locals for these words. Which register locals get one depends on the number of

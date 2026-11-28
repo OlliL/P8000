@@ -486,11 +486,10 @@
    "size_orig": 252
   },
   "initio": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x2c72",
-   "size_orig": 288,
-   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "size_orig": 288
   },
   "simple": {
    "status": "exact",
@@ -499,66 +498,60 @@
    "size_orig": 48
   },
   "getpath": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x2dc2",
-   "size_orig": 94,
-   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "size_orig": 94
   },
   "pathopen": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x2e20",
-   "size_orig": 54,
-   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "size_orig": 54
   },
   "catpath": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x2e56",
-   "size_orig": 102,
-   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "size_orig": 102
   },
   "execa": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x2ebc",
-   "size_orig": 84,
-   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "size_orig": 84
   },
   "execscr": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x2f10",
    "size_orig": 674,
-   "note": "WEGA (guessed name): on ENOEXEC the shell of the first line runs the script (#!/path, #!sh, #!csh; # alone csh, no # sh); a non-ASCII byte or another #! is an error. For #!/path the path is copied through the pointer shell, which is not set on that path (an uninitialised local: a bug of the original, kept). Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "note": "WEGA (guessed name): on ENOEXEC the shell of the first line runs the script (#!/path, #!sh, #!csh; # alone csh, no # sh); a non-ASCII byte or another #! is an error. For #!/path the path is copied through the pointer shell, which is not set on that path (an uninitialised local: a bug of the original, kept)."
   },
   "postclr": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x31b2",
-   "size_orig": 38,
-   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "size_orig": 38
   },
   "post": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x31d8",
-   "size_orig": 54,
-   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "size_orig": 54
   },
   "await": {
    "status": "exact",
    "file": "service.c",
    "orig": "0x320e",
-   "size_orig": 384
+   "size_orig": 384,
+   "note": "service.c is built by ccvm (the stale sfldc of OLD_D1S): the frame words of await, mactrim, scan and gsort come from the symbol entries made before them. The file includes <sgtty.h> (17 entries, unused) and declares prp and prn (both first called in await) after defs.h: a guess; measured equivalent: any two of blank, prn, prp, wait declared there, with 17 further entries in front of the first function (or 54, the period of 1 KB)."
   },
   "trim": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x338e",
-   "size_orig": 78,
-   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "size_orig": 78
   },
   "mactrim": {
    "status": "exact",
@@ -567,18 +560,16 @@
    "size_orig": 30
   },
   "scan": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x33fa",
-   "size_orig": 290,
-   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "size_orig": 290
   },
   "getarg": {
-   "status": "open",
+   "status": "exact",
    "file": "service.c",
    "orig": "0x351c",
-   "size_orig": 212,
-   "note": "Open: service.c (08/22/83) is of the compiler between v1 and the shipped one (fewer register slots, padded strings; host/OLDCC.md), not built: phase B."
+   "size_orig": 212
   },
   "setbrk": {
    "status": "exact",
@@ -713,10 +704,11 @@
    "size_orig": 48
   },
   "e3": {
-   "status": "exact",
+   "status": "open",
    "file": "test.c",
    "orig": "0x47cc",
-   "size_orig": 1014
+   "size_orig": 1014,
+   "note": "Open: the original frame has one word more than ccv1 gives (the locals from offset 0x0e up by 2); no declaration order of p1, a, p2, int1, int2 gives it (24 orders), no other old compiler either."
   },
   "tio": {
    "status": "exact",

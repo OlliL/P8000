@@ -57,7 +57,7 @@ ADDR	*ap;
 	inst = get(ap, ISP);
 	IF (inst&0xff00) == 0xe800		/* jr */
 	THEN	a.a_segno = (segflg==1 ? ap->a_segno : 0);
-		a.a_offset = (inst&0xff)*2 + ap->a_offset + 2;
+		a.a_offset = ap->a_offset + (inst&0xff)*2 + 2;
 		return(frsize(&a));
 	ELIF (inst&0xfff0) == 0xabf0		/* dec r15,#n */
 	THEN	return((inst&0xf)+1);

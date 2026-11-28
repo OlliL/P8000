@@ -2373,3 +2373,31 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   shipped one with 40), doscan (no unused locals in _instr, _getccl), printf (no _pfile, no unused long in sprintf), doprnt
   (seven changes, findings in `oldlibc/doprnt/0_9.c`), malloc (no sccsid, calloc size unsigned). Each from C by cc and by ccvl,
   equal to the ZEUS member.
+
+## 2026-11-28 sh service.c: the frames by vm
+
+- service.c (08/22/83) by the shipped cc: all frames right but await (+2 words), mactrim (+1), scan (+2), gsort (+2); by
+  ccv1 nearly every function has too many words; by ccvm (OLD_D1S) execscr, await, mactrim, scan wrong.
+- ccvm with K dummy `extern int` after defs.h (real builds, K = 0 .. 110): best 13 of 14 at K = 19, 56, 92 (period 1 KB),
+  scan short of its 2 words. The replay of the scratch cparse log (`host/recon/regslots`, the sh test file added in the
+  work directory) gives the same; no single change of the stream (leak, alloc/free, dropped free) and no second block of
+  entries in front of a later function (await, trim, mactrim, scan; 0 .. 40) makes all right but 39 in front of trim.
+- Not it: the declaration of gsort inside scan (three places), scan without `INT argn;`, single headers (sys/types.h,
+  sys/stat.h, sys/param.h, errno.h, signal.h, sgtty.h, termio.h, fcntl.h, time.h, ...) with K = 0 .. 40.
+- Found by the replay: the implicit declarations made inside a function are entries of their own; two of those first
+  made in await (blank, prn, prp, wait) declared in front of the first function, with 17 further entries there, give all
+  functions right (real builds: 14 of 14 masked, strictly equal in the linked sh). `<sgtty.h>` is 17 entries; taken:
+  `#include <sgtty.h>` and `PROC VOID prp(); PROC VOID prn();` after defs.h (which pair is not in the bytes).
+
+## 2026-11-28 adb: frsize, exform, stfind, getreg
+
+- frsize: `a.a_offset = ap->a_offset + (inst&0xff)*2 + 2` gives the jr target with ap loaded first (taken); the frame
+  stays 18 bytes (16 in the original): not by the (POS) casts, the place of `ADDR b`, a cast on the return of get.
+- exform, the long case: `wx=itol(w,get(...)); wx &= 0x7fffffff;` (the Plexus line and the mask as a statement; taken)
+  stores wx and masks as the original. Left: the original keeps the result of get in a frame temporary (0x28, below
+  the temporary of inkdot's result) and stores itolws.I[0] first; the shipped cc stores I[1] at once. A local for the
+  value lands at other offsets; itol with its arguments in the other order leaves only that store different.
+- stfind: `off>=base` in rr4 with the copy for `off-base` (original) against rr2: five forms of the condition (order,
+  `base<=off`, `!(off<base)`, `off-base>=0`), none.
+- getreg: the original compares regnam in rl7 four times, the shipped cc the last two from the home of the parameter;
+  four forms of the condition, and print.c by ccvm, ccvl, ccvz, v0p, v1, v1c, v1l, v1q, v1r: none. A popt question.
