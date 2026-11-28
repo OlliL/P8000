@@ -153,14 +153,13 @@
    "orig": "0x26ac",
    "size_orig": 30,
    "status": "exact",
-   "note": "Odd form: unused local spare for the frame of the original."
+   "note": "As Plexus slookup: return(lookup_name()) (its return temporary is the frame word)."
   },
   "pslookup": {
    "file": "symbols.c",
    "orig": "0x26ca",
    "size_orig": 30,
-   "status": "exact",
-   "note": "Odd form: unused local spare for the frame of the original."
+   "status": "exact"
   },
   "lookup_name": {
    "file": "symbols.c",
@@ -261,7 +260,7 @@
    "orig": "0x2b04",
    "size_orig": 54,
    "status": "exact",
-   "note": "Odd form: unused local spare for the frame of the original."
+   "note": "Odd form: unused local spare for the frame of the original (sld index16, built by the shipped scc, has the same word: in the common source, a guess)."
   },
   "load2arg": {
    "file": "ld.c",
@@ -368,14 +367,13 @@
    "orig": "0x009c",
    "size_orig": 724,
    "status": "exact",
-   "note": "Odd form: unused local spare for the frame of the original; loops as goto skeletons (body, test) instead of for/while."
+   "note": "Odd form: loops as goto skeletons (body, test) instead of for/while."
   },
   "endload": {
    "file": "ld.c",
    "orig": "0x45e",
    "size_orig": 174,
-   "status": "exact",
-   "note": "Odd form: unused local spare for the frame of the original."
+   "status": "exact"
   },
   "load1": {
    "file": "ld.c",

@@ -131,30 +131,25 @@ l2:
 	return slot;
 }
 
-/* slookup: hash slot of the C string x (the result is the one of lookup_name, there is no return statement) (sld
+/* slookup: hash slot of the C string x (Plexus: return(lookup())) (sld
    slookup, Plexus slookup; 0x26ac..0x26ca of /bin/ld) */
 struct symbol **slookup(x)
 int x;
 {
-	int spare;
-
 	cp8c(x, cursym.sname);
 	cursym.stype = ' ';
 	cursym.svalue = 0;
-	lookup_name();
+	return lookup_name();
 }
 
-/* pslookup: hash slot of a name in table form (ranlib entries; the result is the one of lookup_name, there is no
-   return statement) (sld pslookup; 0x26ca..0x26e8 of /bin/ld) */
+/* pslookup: hash slot of a name in table form (ranlib entries; as slookup) (sld pslookup; 0x26ca..0x26e8 of /bin/ld) */
 struct symbol **pslookup(x)
 int x;
 {
-	int spare;
-
 	unpack_run(x, cursym.sname);
 	cursym.stype = ' ';
 	cursym.svalue = 0;
-	lookup_name();
+	return lookup_name();
 }
 
 /* enter: enter cursym into the empty hash slot a: a new entry of the symbol table; 1 when it was entered, 0 when the

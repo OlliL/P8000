@@ -517,7 +517,7 @@
    "orig": "0x6b5a",
    "size_orig": 42,
    "status": "exact",
-   "note": "Odd form: unused local dummy for the frame of the original."
+   "note": "As Plexus slookup: return(lookup_name()) (its return temporary is the frame word of the original)."
   },
   "enter": {
    "file": "symbols.c",
@@ -561,7 +561,7 @@
    "orig": "0x6b84",
    "size_orig": 42,
    "status": "exact",
-   "note": "Odd form: unused local dummy for the frame of the original."
+   "note": "As Plexus slookup: return(lookup_name()) (its return temporary is the frame word of the original)."
   },
   "resize_symtab": {
    "file": "symbols.c",

@@ -211,30 +211,24 @@ l2:
 	return slot;
 }
 
-/* frame: the original reserves 8 bytes; the unused local dummy reproduces that (role unknown) */
 /* slookup: look up a symbol by name (packs the name first) (0x6b5a..0x6b84 of /bin/sld) */
 struct symbol **slookup(p)
 char *p;
 {
-	long dummy;
-
 	cp8c(p, cursym.sname);
 	cursym.stype = 0x20;
 	cursym.svalue = 0;
-	lookup_name();
+	return(lookup_name());
 }
 
-/* frame: the original reserves 8 bytes; the unused local dummy reproduces that (role unknown) */
 /* pslookup: look up a symbol by a name already packed (0x6b84..0x6bae of /bin/sld) */
 struct symbol **pslookup(p)
 char *p;
 {
-	long dummy;
-
 	unpack_run(p, cursym.sname);
 	cursym.stype = 0x20;
 	cursym.svalue = 0;
-	lookup_name();
+	return(lookup_name());
 }
 
 /* enter: enter a symbol into the symbol table (0x6bae..0x6c6a of /bin/sld) */
