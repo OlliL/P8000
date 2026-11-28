@@ -47,15 +47,15 @@ all: $(LIBS)
 LIBv1 = freopen/0_1.o getpwuid/0_2.o getpwent/0_2.o fgets/0_2.o fseek/0_2.o ftell/0_1.o rew/0_1.o readsym/0_1.o rdwr/0_3.o system/0_1.o fopen/0_1.o fdopen/0_2.o fputs/0_1.o printf/0_3.o doprnt/0_3.o \
 	 ../libc/build/nonseg/ffltioc.o ungetc/0_1.o gets/0_2.o filbuf/0_3.o setbuf/0_1.o flsbuf/0_2.o endopen/0_3.o findiop/0_2.o \
 	 ../libc/build/nonseg/data.o ../libc/build/nonseg/__callex.o ../libc/build/nonseg/cuexit.o ../libc/build/nonseg/abort.o ctime/0_2.o \
-	 abs/0_1.o execvp/0_1.o getenv/0_1.o atoi/0_1.o sleep/0_1.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_2.o malloc/0_3.o errlst/0_2.o isatty/0_1.o \
-	 ../libc/build/nonseg/setret.o stty/0_1.o swab/0_1.o toupper/0_1.o index/0_1.o strcat/0_2.o strcmp/0_1.o strchr/0_1.o strcpy/0_2.o strncmp/0_1.o strncpy/0_1.o strlen/0_2.o \
+	 abs/0_1.o execvp/0_1.o getenv/0_1.o atoi/0_1.o sleep/0_1.o atol/0_2.o cnvt/0_2.o ../libc/build/nonseg/decimal.o length/0_2.o malloc/0_3.o errlst/0_2.o isatty/0_1.o \
+	 l3/0_1.o  ../libc/build/nonseg/setret.o stty/0_1.o swab/0_1.o toupper/0_1.o index/0_1.o strcat/0_2.o strcmp/0_1.o strchr/0_1.o strcpy/0_2.o strncmp/0_1.o strncpy/0_1.o strlen/0_2.o \
 	 goodmagic/0_2.o swap/0_2.o ../libc/build/nonseg/ctype_.o ../libc/build/nonseg/access.o ../libc/build/nonseg/alarm.o \
 	 ../libc/build/nonseg/brk.o ../libc/build/nonseg/chdir.o ../libc/build/nonseg/chmod.o ../libc/build/nonseg/chown.o \
 	 ../libc/build/nonseg/close.o ../libc/build/nonseg/creat.o ../libc/build/nonseg/dup.o ../libc/build/nonseg/execl.o \
 	 ../libc/build/nonseg/execv.o ../libc/build/nonseg/exit.o ../libc/build/nonseg/fork.o ../libc/build/nonseg/fstat.o ../libc/build/nonseg/getpid.o \
 	 ../libc/build/nonseg/getgid.o ../libc/build/nonseg/getuid.o ../libc/build/nonseg/ioctl.o ../libc/build/nonseg/kill.o \
 	 ../libc/build/nonseg/link.o ../libc/build/nonseg/lseek.o ../libc/build/nonseg/mknod.o open/0_1.o \
-	 ../libc/build/nonseg/pause.o ../libc/build/nonseg/pipe.o ../libc/build/nonseg/read.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o \
+	 ../libc/build/nonseg/pause.o ../libc/build/nonseg/pipe.o ../libc/build/nonseg/read.o ../libc/build/nonseg/sync.o ../libc/build/nonseg/signal.o ../libc/build/nonseg/stat.o \
 	 ../libc/build/nonseg/time.o ../libc/build/nonseg/unlink.o ../libc/build/nonseg/wait.o ../libc/build/nonseg/write.o \
 	 ../libc/build/nonseg/cerror.o
 # ccv0 ccv0p
@@ -289,6 +289,7 @@ objs:
 	cd length ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd malloc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd atol ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd l3 ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd mktemp ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd open ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 	cd perror ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs

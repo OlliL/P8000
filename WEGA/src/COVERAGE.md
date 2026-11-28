@@ -10,7 +10,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 |---|---|---|---|---|---|
 | [root](#root) | 12 | 12 | 0 | 0 | 0 |
 | [bin](#bin) | 111 | 107 | 3 | 0 | 1 |
-| [etc](#etc) | 67 | 37 | 0 | 15 | 15 |
+| [etc](#etc) | 67 | 40 | 0 | 13 | 14 |
 | [lib](#lib) | 30 | 26 | 0 | 1 | 3 |
 | [usr/bin](#usr-bin) | 145 | 31 | 6 | 62 | 46 |
 | [usr/lib](#usr-lib) | 197 | 119 | 2 | 57 | 19 |
@@ -18,7 +18,7 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | [usr/other](#usr-other) | 15 | 15 | 0 | 0 | 0 |
 | [usr/include](#usr-include) | 86 | 86 | 0 | 0 | 0 |
 | [usr/man](#usr-man) | 506 | 506 | 0 | 0 | 0 |
-| **all** | 1197 | 967 | 11 | 135 | 84 |
+| **all** | 1197 | 970 | 11 | 133 | 83 |
 
 <a id="root"></a>
 ## root
@@ -169,13 +169,13 @@ of `host/OLDCC_DATES.md` (D12: data layout, D1: frame layout); an archive or an 
 | `etc/chmog` | binary E707 | - | todo | D12 old, D1 slots | - |
 | `etc/chog` | binary E707 | - | todo | D12 old, D1 slots | - |
 | `etc/chroot` | binary E707 | `src/cmd/chroot.c` | exact | ccv1 | libc-v4.a |
-| `etc/clri` | binary E707 | `tmp/sys3/usr/src/cmd/clri.c` | sys3 | D12 -, D1 tight | - |
+| `etc/clri` | binary E707 | `src/cmd/clri.c` | exact | ccv0 | libc-v1.a |
 | `etc/cron` | binary E707 | `tmp/sys3/usr/src/cmd/cron.c` | sys3 | D12 -, D1 tight | - |
 | `etc/cshprofile` | text | `src/etc/cshprofile` | exact | - | - |
 | `etc/datem` | binary E707 | - | todo | D12 old, D1 slots | - |
-| `etc/dcheck` | binary E707 | - | todo | D12 old?, D1 tight | - |
+| `etc/dcheck` | binary E707 | `src/cmd/dcheck.c` | exact | ccv0 | libc-v1.a |
 | `etc/default/dos` | text | `src/etc/default/dos` | exact | - | - |
-| `etc/devnm` | binary E707 | `tmp/sys3/usr/src/cmd/devnm.c` | sys3 | D12 -, D1 slots | - |
+| `etc/devnm` | binary E707 | `src/cmd/devnm.c` | exact | ccv1 | libc-v4.a |
 | `etc/down` | text | `src/cmd/down.sh` | exact | - | - |
 | `etc/dqueuer` | binary E711 | - | todo | D12 new, D1 loose | - |
 | `etc/dump` | binary E707 | `src/cmd/dump.c` | exact | cc | libc.a |
