@@ -20,7 +20,7 @@
    "orig": "0x34b8",
    "size_orig": 94,
    "status": "exact",
-   "note": "Odd form: unused local spare[5] for the frame of the original."
+   "note": "Unused local spare for the frame of the original: in kind the register slots of a scparse with stale sfldc (D1S), not reproducible without guessed declarations (host/OLDCC_LOG.md 2026-11-28, sccvm)."
   },
   "eq": {
    "file": "ld.c",
@@ -33,7 +33,7 @@
    "orig": "0x6fd0",
    "size_orig": 46,
    "status": "exact",
-   "note": "Odd form: unused local spare[4] for the frame of the original."
+   "note": "Unused local spare for the frame of the original; no register local, so not D1S (host/OLDCC_LOG.md 2026-11-28, sccvm); index16 of ld (v1) has the same word."
   },
   "table32_entry": {
    "file": "symbols.c",
@@ -71,7 +71,7 @@
    "orig": "0x3ac6",
    "size_orig": 88,
    "status": "exact",
-   "note": "Odd form: unused local spare for the frame of the original."
+   "note": "Unused local spare for the frame of the original: in kind the register slots of a scparse with stale sfldc (D1S), not reproducible without guessed declarations (host/OLDCC_LOG.md 2026-11-28, sccvm)."
   },
   "add": {
    "file": "ld.c",
@@ -90,7 +90,7 @@
    "orig": "0x642e",
    "size_orig": 162,
    "status": "exact",
-   "note": "Odd form: unused local spare[2] for the frame of the original."
+   "note": "Unused local spare for the frame of the original: in kind the register slots of a scparse with stale sfldc (D1S), not reproducible without guessed declarations (host/OLDCC_LOG.md 2026-11-28, sccvm)."
   },
   "finishout": {
    "file": "ld.c",
@@ -146,7 +146,7 @@
    "orig": "0x3b1e",
    "size_orig": 58,
    "status": "exact",
-   "note": "Odd form: unused local spare[8] for the frame of the original."
+   "note": "Unused local spare for the frame of the original: in kind the register slots of a scparse with stale sfldc (D1S), not reproducible without guessed declarations (host/OLDCC_LOG.md 2026-11-28, sccvm)."
   },
   "pack_entry": {
    "file": "symbols.c",
@@ -240,7 +240,7 @@
    "orig": "0x70ce",
    "size_orig": 68,
    "status": "exact",
-   "note": "Odd form: unused local spare for the frame of the original."
+   "note": "Unused local spare for the frame of the original; no register local, so not D1S (host/OLDCC_LOG.md 2026-11-28, sccvm); index16 of ld (v1) has the same word."
   },
   "limit_msg": {
    "file": "symbols.c",
@@ -363,7 +363,7 @@
    "orig": "0x23fe",
    "size_orig": 148,
    "status": "exact",
-   "note": "Odd form: unused local spare[2] for the frame of the original; loops as goto skeletons (body0, test0, body1, test1) instead of for/while."
+   "note": "Unused local spare for the frame of the original: in kind the register slots of a scparse with stale sfldc (D1S), not reproducible without guessed declarations (host/OLDCC_LOG.md 2026-11-28, sccvm)."
   },
   "getfile": {
    "file": "ld.c",
@@ -376,7 +376,7 @@
    "orig": "0x2492",
    "size_orig": 402,
    "status": "exact",
-   "note": "Odd form: unused local spare[5] for the frame of the original."
+   "note": "Unused local spare for the frame of the original: in kind the register slots of a scparse with stale sfldc (D1S), not reproducible without guessed declarations (host/OLDCC_LOG.md 2026-11-28, sccvm)."
   },
   "mget": {
    "file": "ld.c",
@@ -431,7 +431,7 @@
    "orig": "0x27d8",
    "size_orig": 1252,
    "status": "exact",
-   "note": "Odd form: unused local spare[3] for the frame of the original; label addhi that no goto names."
+   "note": "Unused local spare for the frame of the original: in kind the register slots of a scparse with stale sfldc (D1S), not reproducible without guessed declarations (host/OLDCC_LOG.md 2026-11-28, sccvm)."
   },
   "patch_hdr": {
    "file": "ld.c",
@@ -456,7 +456,7 @@
    "orig": "0x3516",
    "size_orig": 586,
    "status": "exact",
-   "note": "Odd form: unused local spare[3] for the frame of the original."
+   "note": "Unused local spare for the frame of the original: in kind the register slots of a scparse with stale sfldc (D1S), not reproducible without guessed declarations (host/OLDCC_LOG.md 2026-11-28, sccvm)."
   },
   "mlist_add": {
    "file": "ldm.c",

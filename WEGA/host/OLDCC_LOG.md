@@ -2510,3 +2510,22 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
 - sld (shipped scc, 10/27/83): its spares (`int spare[N]`) match in several functions the number of register locals of
   the Plexus source (load2arg 2: cp, lp; load2td 3: r, t, sp; flush 1: n): the picture of the register slots of the
   compilers of 11/83 (OLD_D1S, OLDCC_REGSLOTS.md), here segmented. Not measured; a lead.
+
+## 2026-11-28 sccvm (a segmented D1S scparse) for the sld spares: built, measured, taken back
+
+- Pass: the shipped scparse with `-DSEG -DOLD_D1S` (driver sccvm, the other passes shipped). sld without its 10 local
+  spares (ld.c, ldm.c, symbols.c) built by it: flush, load2arg, load2td right, lookloc, load2, readhdr, swab12 nearer,
+  eight others get a word too many (load1, setupout, mget, mput, getfile, warn_sym_redef, copy_segs, lookup_name). Built
+  by cc or ccv0p, with libc-v7 or /lib/libc.a, with OLD_D25: the same.
+- Why it fits in kind: the spare words match the register locals counted with 4 bytes for a pointer (swab12 k, t, p:
+  `char spare[8]`); the kernel lock.c (`long unused` in deadlock, one register pointer; `long unused1, unused2` in unlock,
+  two) has the same picture. table16_entry and index16 have no register locals (not D1S).
+- The words depend on the symbol table history of the file (the malloc'd entries; names live in ntab and do not count).
+  Frames of ld.c (38 functions) against the original: the headers of gld.c and System III ld (sys/param.h, sys/types.h,
+  signal.h, stdio.h with `#undef putchar` (sld calls putchar as a function), ctype.h, ar.h, s.out.h, sys/stat.h,
+  sys/file.h; no a.out.h on WEGA), all 512 subsets at the top: 7 differ at best; System III headers with every extern
+  declaration in front of the first function that uses it: 6. Exact only with 60 dummy declarations at 8 places inside
+  ld.c (a greedy search, function by function); new files at those places would leave 3, but the binary has one sccsid
+  ld.c 3.8. Kernel lock.c by sccvm without its unused longs: 14/20 bytes as the shipped scc, the original 18/28.
+- No program becomes exact by sccvm without guessed additions: no witness, the pass went out again (owner). The spares
+  stay; their findings point here.
