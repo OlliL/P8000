@@ -2566,3 +2566,13 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   `?:`; `store` would then take a call out first. Tried with the itol inside a `?:` arm (as a value, with the mask, as a
   statement), behind `||`, with `&` in the same expression: the call is never taken out first (I[0]=w stays in front,
   w still known in r2 from `w=get(&dot,itype)`). The original reloads w (`ld r2,%0008(r15)`) after both calls. Open.
+- adb exform exact: `THEN POS t; t=get(inkdot(2),itype); wx=itol(w,t); wx &= 0x7fffffff;` (a local of the then
+  block: it lies behind all autos at 0x28 as a temporary would, inkdot's temporary follows at 0x2a, the calls come
+  before the stores of itolws and w is loaded again). adb against /bin/adb (stripped, cmp): 5 bytes left, three places:
+  (1) doprnt `str = buf` after the label conv_int (output.c 215; also 252 for `_date`): `lda r3` in ours, `lda r2` in
+  the original; (2) doprnt `call %7DA6` against `%7D84` at 0x2e52 (a libc target); (3) command `jp eq,%0526` against
+  `%052C` at 0x0bdc (a target inside command). For (1): codgen frees registers at a label only in a function without
+  parameters (reader3.c, case 'L': `if (nparm <= 0) rsfreeall(1)`); doprnt has parameters, so the knowledge of r2 from
+  the switch dispatch (`ld r2,r13`, c) stays to conv_int. Not it: `str = &buf[0]`, a cast, `str = (str = buf, str)`,
+  the comma statement, `switch (conv)` and three more spellings of the switch value. Next: print rsuse at the
+  statement (scratch codgen) to see what holds r2; look at (2) and (3).

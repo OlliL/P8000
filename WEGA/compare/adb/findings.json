@@ -156,8 +156,8 @@
    "file": "format.c",
    "orig": "0x1d98",
    "size_orig": 1054,
-   "status": "open",
-   "note": "WEGA: formats as printed by the original (%%%04x, %06o, %6d ...), no I z Z, 'i' through printins; a long is masked to 31 bits; f and F convert the float with the EPU first. The long case as in Plexus (wx=itol(w,get(...))), the mask as a statement of its own. Open: the original stores the result of get in a temporary of the frame before itolws.I[0]=w (the shipped cc stores I[1] directly; with the arguments of itol in the other order only that store differs); no source form found."
+   "status": "exact",
+   "note": "WEGA: formats as printed by the original (%%%04x, %06o, %6d ...), no I z Z, 'i' through printins; a long is masked to 31 bits; f and F convert the float with the EPU first. The long case as in Plexus (wx=itol(w,get(...))), the mask as a statement of its own. Source form: the long case with a local of its own block, THEN POS t; t=get(inkdot(2),itype); wx=itol(w,t); (t lands behind the autos at 0x28, the temporary of inkdot at 0x2a, w is loaded again; the name t is a guess)."
   },
   "unox": {
    "file": "format.c",
@@ -311,7 +311,7 @@
    "orig": "0x2b30",
    "size_orig": 984,
    "status": "open",
-   "note": "WEGA: the _doprnt of the oldlibc (ls, csh) with the floats (fpap, _fegcvt), %Y (_date), %T %t %M %m (tabs, adb's own), through printc2(c, sp) for printf and sprintf. Open: str = buf takes r3 in the shipped cc, r2 in the original (twice)."
+   "note": "WEGA: the _doprnt of the oldlibc (ls, csh) with the floats (fpap, _fegcvt), %Y (_date), %T %t %M %m (tabs, adb's own), through printc2(c, sp) for printf and sprintf. Open: str = buf takes r3 in the shipped cc, r2 in the original (host/OLDCC_LOG.md 2026-11-28)."
   },
   "atoip": {
    "file": "output.c",
