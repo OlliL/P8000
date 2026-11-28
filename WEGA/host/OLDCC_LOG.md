@@ -2562,3 +2562,7 @@ mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h 
   behind the autos of the block for every `return(e)`, so the 16-byte frame of the original rules out a return with a
   value there). exform: the original reserves the temporary of get's result (0x28) before inkdot's (0x2a) and stores
   itolws.I[0] after the calls; not by `& mask` in the same expression, `?:`, a comma or a nested assignment.
+- adb exform, the long case further: `delay` splits a COMOP only outside the right side of `&&`/`||` and the arms of
+  `?:`; `store` would then take a call out first. Tried with the itol inside a `?:` arm (as a value, with the mask, as a
+  statement), behind `||`, with `&` in the same expression: the call is never taken out first (I[0]=w stays in front,
+  w still known in r2 from `w=get(&dot,itype)`). The original reloads w (`ld r2,%0008(r15)`) after both calls. Open.
